@@ -115,7 +115,11 @@ global func Loc_Wall(int direction)
 	if(direction & CNAT_Top) y = -1;
 	else
 	if(direction & CNAT_Bottom) y = 1;
-	return [LOC_WALL, x, y, !!(direction & (CNAT_Left | CNAT_Right)), !!(direction & (CNAT_Top | CNAT_Bottom))];
+	
+	var both_left_right = !!((direction & CNAT_Top) && (direction & CNAT_Bottom));
+	var both_top_bottom = !!((direction & CNAT_Left) && (direction & CNAT_Right));	
+	
+	return [LOC_WALL, x, y, both_left_right, both_top_bottom];
 }
 
 /*
@@ -226,6 +230,12 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 		for (var i = 1; i < max; ++i)
 			if (!FindLocationConditionCheckIsValid(flag[i], x, y)) return false;
 		return true;
+	}
+	
+	if (flag[0] == LOC_INRECT)
+	{
+		var rect = flag[1];
+		return Inside(x, rect.x, rect.x + rect.w) && Inside(y, rect.y, rect.y + rect.h);
 	}
 	
 	if (flag[0] == LOC_SOLID)

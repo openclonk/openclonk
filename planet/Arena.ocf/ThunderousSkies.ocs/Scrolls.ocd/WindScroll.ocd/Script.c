@@ -24,7 +24,11 @@ public func FxWindScrollStormStart(pTarget, effect, iTemp, angle, x, y, owner)
 	effect.y=y-Cos(angle,43);
 	effect.owner=owner;
 
-	
+	effect.particles =
+	{
+		Prototype = Particles_Air(),
+		Size = PV_Random(2, 5)
+	};
 }
 
 public func FxWindScrollStormTimer(pTarget, effect, iEffectTime)
@@ -36,19 +40,14 @@ public func FxWindScrollStormTimer(pTarget, effect, iEffectTime)
 	
 	if(iEffectTime<36)
 	{
-			var r=Random(360);
-			var d=Random(40);
-			CreateParticle("AirIntake",Sin(r,d)+x,-Cos(r,d)+y,xdir/3,ydir/3 +2,64,RGB(Random(80),100+Random(50),255));
-	return 1;
+		var r=Random(360);
+		var d=Random(40);
+		CreateParticle("Air", Sin(r,d)+x,-Cos(r,d)+y, xdir/3, ydir/3, PV_Random(10, 30), effect.particles, 1);
+		return 1;
 	}
 	else if(iEffectTime<180 ) 
 	{
-		for(var i=0; i<5; i++)
-		{
-			var r=Random(360);
-			var d=Random(40);
-			CreateParticle("AirIntake",Sin(r,d)+x,-Cos(r,d)+y,xdir/2,ydir/2 +2,64,RGB(Random(80),100+Random(50),255));
-		}
+		CreateParticle("Air", PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), xdir/2, ydir/2, PV_Random(10, 30), effect.particles, 5);
 		
 		for(var obj in FindObjects(Find_Distance(40,x,y),Find_Not(Find_Category(C4D_Structure))))
 		{

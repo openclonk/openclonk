@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2008-2009, 2011-2012  Günther Brammer
- * Copyright (c) 2009  Martin Plicht
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Peter Wortmann
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
@@ -37,10 +31,13 @@
 
 static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
 {
-	static int lastLeftClick = 0, lastRightClick = 0;
+	C4TimeMilliseconds lastLeftClick = C4TimeMilliseconds::Now();
+	C4TimeMilliseconds lastRightClick = C4TimeMilliseconds::Now();
 	static int lastX = 0, lastY = 0;
+	
 	static const int clickDist = 2;
-
+	static const int clickDelay = 400;
+	
 	button = C4MC_Button_None;
 	flags = 0;
 
@@ -48,14 +45,14 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 	{
 	case SDL_BUTTON_LEFT:
 		if (e.state == SDL_PRESSED)
-			if (GetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+			if (C4TimeMilliseconds::Now() - lastLeftClick < clickDelay && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
 			{
 				lastLeftClick = 0;
 				button = C4MC_Button_LeftDouble;
 			}
 			else
 			{
-				lastLeftClick = GetTime();
+				lastLeftClick = C4TimeMilliseconds::Now();
 				button = C4MC_Button_LeftDown;
 			}
 		else
@@ -63,14 +60,14 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 		break;
 	case SDL_BUTTON_RIGHT:
 		if (e.state == SDL_PRESSED)
-			if (GetTime() - lastRightClick < 400)
+			if (C4TimeMilliseconds::Now() - lastRightClick < clickDelay)
 			{
 				lastRightClick = 0;
 				button = C4MC_Button_RightDouble;
 			}
 			else
 			{
-				lastRightClick = GetTime();
+				lastRightClick = C4TimeMilliseconds::Now();
 				button = C4MC_Button_RightDown;
 			}
 		else
@@ -168,7 +165,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		break;
 	case SDL_KEYDOWN:
 	{
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
@@ -274,12 +271,12 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP& ramp, bool fForce)
 {
 	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP& ramp)
 {
 	return SDL_GetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }

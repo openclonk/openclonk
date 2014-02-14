@@ -92,7 +92,6 @@ func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 		y=-Sin(step, 6)-3;
 		if(GetChargeType() == L_WN_down) y*=-1;
 		if(pTarget->GetDir() == DIR_Left) x *= -1;
-		CreateParticle("Blast", x, y, 0, 0, 20);
 		
 		var strength = 0;
 		if(iEffectTime <= GetStrikeTime())

@@ -1,28 +1,18 @@
 /*	
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2008, 2010-2012  Sven Eberhardt
- * Copyright (c) 2002, 2004-2008, 2011  Peter Wortmann
- * Copyright (c) 2006-2012  Günther Brammer
- * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2011-2012  Felix Wagner
- * Copyright (c) 2012  David Dormagen
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles landscape and sky */
@@ -409,11 +399,8 @@ void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ShakeFreePix);
 }
 
-int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
+C4ValueArray *C4Landscape::PrepareFreeShape(C4Rect &BoundingBox, C4Object *by_object)
 {
-	C4Rect BoundingBox = getBoundingBox(vtcs,length);
-	int32_t amount;
-
 	// Remember any collectible objects in area
 	C4FindObjectInRect fo_inrect(BoundingBox);
 	C4FindObjectOCF fo_collectible(OCF_Carryable);
@@ -421,7 +408,34 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
 	C4FindObject *fo_list[] = {&fo_inrect, &fo_collectible, &fo_insolid, &fo_layer};
 	C4FindObjectAndStatic fo_srch(4, fo_list);
-	std::unique_ptr<C4ValueArray> dig_objects(fo_srch.FindMany(::Objects, ::Objects.Sectors));
+	return fo_srch.FindMany(::Objects, ::Objects.Sectors);
+}
+
+void C4Landscape::PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object)
+{
+	// Do callbacks to digger for objects that are now dug free
+	if (by_object)
+	{
+		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
+		{
+			C4Object *dig_object = dig_objects->GetItem(i).getObj();
+			if (dig_object && !GBackSolid(dig_object->GetX(), dig_object->GetY()))
+				if (!dig_object->Contained && dig_object->Status)
+				{
+					C4AulParSet pars(C4VObj(dig_object));
+					by_object->Call(PSF_DigOutObject, &pars);
+				}
+		}
+	}
+}
+
+int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
+{
+	C4Rect BoundingBox = getBoundingBox(vtcs,length);
+	int32_t amount;
+
+	// Remember any collectible objects in area
+	std::unique_ptr<C4ValueArray> dig_objects(PrepareFreeShape(BoundingBox, by_object));
 
 	if(by_object)
 	{
@@ -451,19 +465,7 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 	}
 
 	// Do callbacks to digger for objects that are now dug free
-	if (by_object)
-	{
-		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
-		{
-			C4Object *dig_object = dig_objects->GetItem(i).getObj();
-			if (dig_object && !GBackSolid(dig_object->GetX(), dig_object->GetY()))
-				if (!dig_object->Contained && dig_object->Status)
-				{
-					C4AulParSet pars(C4VObj(dig_object));
-					by_object->Call(PSF_DigOutObject, &pars);
-				}
-		}
-	}
+	PostFreeShape(dig_objects.get(), by_object);
 
 	return amount;
 }
@@ -473,6 +475,9 @@ void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int
 	C4MaterialList *MaterialContents = NULL;
 
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
+
+	// Remember any collectible objects in area
+	std::unique_ptr<C4ValueArray> dig_objects(PrepareFreeShape(BoundingBox, by_object));
 
 	uint8_t *pblast_tbl = NULL, blast_tbl[256];
 	if (iMaxDensity < C4M_Vehicle)
@@ -501,12 +506,15 @@ void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int
 		mat_list = MaterialContents;
 
 	int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetMiddleY();
-	BlastMaterial2Objects(tx,ty,mat_list,by_player,(BoundingBox.Wdt+BoundingBox.Hgt)/4);
+	BlastMaterial2Objects(tx,ty,mat_list,by_player,(BoundingBox.Wdt+BoundingBox.Hgt)/4, dig_objects.get());
 
 	if(MaterialContents) delete MaterialContents;
+
+	// Do callbacks to digger for objects that are now dug free
+	PostFreeShape(dig_objects.get(), by_object);
 }
 
-void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str)
+void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects)
 {
 	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
 	{
@@ -526,7 +534,7 @@ void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *
 				if (::MaterialMap.Map[mat].Blast2ObjectRatio != 0)
 				{
 					blastamount = mat_list->Amount[mat]/::MaterialMap.Map[mat].Blast2ObjectRatio;
-					Game.CastObjects(::MaterialMap.Map[mat].Blast2Object, NULL, blastamount, cast_strength, tx, ty, NO_OWNER, caused_by);
+					Game.CastObjects(::MaterialMap.Map[mat].Blast2Object, NULL, blastamount, cast_strength, tx, ty, NO_OWNER, caused_by, out_objects);
 				}
 			}
 
@@ -1128,13 +1136,13 @@ void C4Landscape::ScenarioInit()
 	if (Game.C4S.Landscape.AutoScanSideOpen) ScanSideOpen();
 }
 
-void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
+void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRenderer)
 {
 	if (pMapCreator && fClearMapCreator) { delete pMapCreator; pMapCreator=NULL; }
 	// clear sky
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
-	delete pLandscapeRender; pLandscapeRender=NULL;
+	if (fClearRenderer) { delete pLandscapeRender; pLandscapeRender=NULL; }
 	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
@@ -1255,7 +1263,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 		// if overloading, clear current landscape (and sections, etc.)
 		// must clear, of course, before new sky is eventually read
-		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
+		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky, false);
 
 		// assign new map
 		Map = sfcMap;
@@ -1305,7 +1313,12 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		}
 
 		// Map to landscape
-		if (!MapToLandscape()) return false;
+		// Landscape render disabled during initial landscape zoom (will be updated later)
+		C4LandscapeRender *lsrender_backup  = pLandscapeRender;
+		pLandscapeRender = NULL;
+		bool map2landscape_success = MapToLandscape();
+		pLandscapeRender = lsrender_backup;
+		if (!map2landscape_success) return false;
 	}
 
 	// Init out-of-landscape pixels for bottom
@@ -1320,8 +1333,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Create renderer
-	pLandscapeRender = NULL;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
 		pLandscapeRender = new C4LandscapeRenderGL();
 #endif
@@ -1333,8 +1345,16 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	if(pLandscapeRender)
 	{
 		// Initialize renderer
-		if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
-			return false;
+		if (fOverloadCurrent)
+		{
+			if(!pLandscapeRender->ReInit(Width, Height))
+				return false;
+		}
+		else
+		{
+			if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
+				return false;
+		}
 
 		// Write landscape data
 		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);

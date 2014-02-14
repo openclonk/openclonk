@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2006, 2008  Sven Eberhardt
- * Copyright (c) 2002-2004  Peter Wortmann
- * Copyright (c) 2006, 2008-2009, 2012  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010, 2012  Armin Burgmeier
- * Copyright (c) 2010, 2012  Nicolas Hake
- * Copyright (c) 2010  Peewee
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object motion, collision, friction */
@@ -242,13 +234,11 @@ void C4Object::DoMovement()
 			}
 		}
 
-	// store previous position
-	C4Real ix0=GetFixedX(); C4Real iy0=GetFixedY();
-
 	// store previous movement and ocf
 	C4Real oldxdir(xdir), oldydir(ydir);
 	uint32_t old_ocf = OCF;
 
+	bool fMoved = false;
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
@@ -276,7 +266,10 @@ void C4Object::DoMovement()
 				ApplyFriction(ydir,ContactVtxFriction(this));
 			}
 			else // Free horizontal movement
+			{
 				DoMotion(step, 0);
+				fMoved = true;
+			}
 		}
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
@@ -311,7 +304,10 @@ void C4Object::DoMovement()
 				}
 			}
 			else // Free vertical movement
+			{
 				DoMotion(0,step);
+				fMoved = true;
+			}
 		}
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -363,15 +359,18 @@ void C4Object::DoMovement()
 				}
 			}
 			DoMotion(ctx - GetX(), cty - GetY());
+			fMoved = true;
 		}
 		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
-		if (pSolidMaskData)
-			pSolidMaskData->Remove(true);
-	fix_x = new_x;
-	fix_y = new_y;
+	{
+		fMoved = true;
+		if (pSolidMaskData) pSolidMaskData->Remove(true);
+		fix_x = new_x;
+		fix_y = new_y;
+	}
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (OCF & OCF_Rotate && !!rdir)
 	{
@@ -433,9 +432,8 @@ void C4Object::DoMovement()
 		if (target_r > +FixHalfCircle) { target_r -= FixFullCircle; }
 		fix_r = target_r;
 	}
-	// Reput solid mask: Might have been removed by motion or
-	// motion might be out of date from last frame.
-	UpdateSolidMask(true);
+	// Reput solid mask if moved by motion
+	if (fMoved || fTurned) UpdateSolidMask(true);
 	// Misc checks ===========================================================================================
 	// InLiquid check
 	// this equals C4Object::UpdateLiquid, but the "fNoAttach=false;"-line
@@ -476,7 +474,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
+		if (fMoved) UpdatePos();
 }
 
 void C4Object::Stabilize()

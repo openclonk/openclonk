@@ -11,7 +11,5 @@ VertexY=1,-1
 VertexFriction=20
 Value=5
 Mass=10
-Components=Sulphur=1;Coal=1
 Projectile=1
 Fragile=1
-Explosive=1

@@ -1,21 +1,19 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2009  Günther Brammer
- * Copyright (c) 2005-2006  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ * Copyright (c) 2005-2006, Peter Wortmann
+ * Copyright (c) 2005, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include <C4Include.h>
 #include <C4NetIO.h>
@@ -43,12 +41,13 @@ char DummyData[1024 * 1024];
 
 class MyCBClass : public C4NetIOMan
 {
-	unsigned int iTime, iPcks;
+	unsigned int tTime, iPcks;
 public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-		iTime = GetTime(); iPcks = 0;
+		tTime = C4TimeMilliseconds::Now();
+		iPcks = 0;
 
 #ifdef ASYNC_CONNECT
 		if (!fHost)
@@ -62,10 +61,12 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-		if (GetTime() > iTime + 1000)
+		C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+		if (tNow > tTime + 1000)
 		{
-			cout << iPcks << " packets in " << GetTime() - iTime << " ms (" << iPcks * 1000 / (GetTime() - iTime) << " per second, " << (iPcks ? (GetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-			iTime = GetTime(); iPcks = 0;
+			cout << iPcks << " packets in " << tNow - tTime << " ms (" << iPcks * 1000 / (tNow - tTime) << " per second, " << (iPcks ? (tNow - tTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			tTime = C4TimeMilliseconds::Now();
+			iPcks = 0;
 		}
 		if (!rPacket.getStatus())
 		{

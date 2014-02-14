@@ -113,6 +113,8 @@ public func DrawTransform() {
 	);
 }
 
+public func SaveScenarioObject() { return false; }
+
 local ActMap = {
 
 Travel = {

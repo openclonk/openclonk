@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2012  Günther Brammer
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006, 2008-2009, 2012  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OS dependent event and window interfaces, X11 version */
@@ -189,7 +184,10 @@ void C4AbstractApp::RestoreVideoMode()
 		XRRFreeScreenConfigInfo(conf);
 		fDspModeSet = false;
 	}
-	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
+	// pWindow may be unset when C4AbstractApp gets destroyed during the
+	// initialization code, before a window has been created
+	if (pWindow)
+		gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
@@ -247,7 +245,7 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	return info;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP& ramp, bool fForce)
 {
 	if (!Active && !fForce) return false;
 	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
@@ -266,7 +264,7 @@ bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	return true;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP& ramp)
 {
 	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());

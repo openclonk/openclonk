@@ -40,9 +40,31 @@ protected func Recruitment(int plr)
 	if (!HUDcontroller)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
 	
+	HUDcontroller->OnCrewRecruitment(this, plr, ...);
 	HUDcontroller->ScheduleUpdateInventory();
 	
 	return _inherited(plr, ...);
+}
+
+protected func DeRecruitment(int plr)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeRecruitment(this, plr, ...);
+	
+	return _inherited(plr, ...);
+}
+
+protected func Death(int killed_by)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeath(this, killed_by, ...);
+
+	return _inherited(killed_by,...);
+}
+
+protected func Destruction()
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDestruction(this, ...);
+
+	return _inherited(...);
 }
 
 public func OnDisplayInfoMessage()

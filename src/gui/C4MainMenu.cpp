@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003, 2007-2008  Matthes Bender
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2003, 2007-2008  Sven Eberhardt
- * Copyright (c) 2004, 2008-2009  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Engine internal C4Menus: Main menu, Options, Player join, Hostility, etc.
 
@@ -670,7 +664,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand+13,"NewPlayer")) return ActivateNewPlayer(Player);
 		if (SEqual(szCommand+13,"Goals"))
 		{
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
+			::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::ActivateGoalMenu(::Players.Get(Player)), CDT_Queue);
 			return true;
 		}
 		if (SEqual(szCommand+13,"Rules")) return ActivateRules(Player);
@@ -701,8 +695,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
 		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
-		// TODO: doesn't really work
-		Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(Player, pOpponent->Number)), CDT_Queue);
 		return true;
 	}
 	// Abort
@@ -714,7 +707,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Surrender
 	if (SEqual2(szCommand,"Surrender"))
 	{
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::Surrender(::Players.Get(Player)), CDT_Queue);
 		return true;
 	}
 	// Save game
@@ -813,7 +806,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		Close(true);
 		C4Object *pObj; C4ID idItem(szCommand+12);
 		if ((pObj = ::Objects.Find(idItem)))
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
+			::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::ActivateGoal(::Players.Get(Player), pObj), CDT_Queue);
 		else
 			return false;
 		return true;
@@ -837,7 +830,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// check if it's still allowed
 		if (!Game.Teams.IsTeamSwitchAllowed()) return false;
 		// OK, join this team
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetTeam(::Players.Get(Player), idTeam), CDT_Queue);
 		return true;
 	}
 	// Observe

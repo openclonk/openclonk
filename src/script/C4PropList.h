@@ -1,26 +1,21 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2012  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Property lists */
+
+#include <memory>
 
 #include "C4Value.h"
 #include "C4StringTable.h"
@@ -135,7 +130,7 @@ public:
 	virtual ~C4PropList();
 
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
-	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3);
+	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
 
 	bool operator==(const C4PropList &b) const;
 #ifdef _DEBUG
@@ -157,6 +152,44 @@ private:
 	friend class C4ScriptHost;
 public:
 	int32_t Status;
+
+	class Iterator
+	{
+	private:
+		std::shared_ptr<std::vector<const C4Property*> > properties;
+		std::vector<const C4Property*>::iterator iter;
+		// needed when constructing the iterator
+		// adds a property or overwrites existing property with same name
+		void AddProperty(const C4Property * prop);
+		void Reserve(size_t additionalAmount);
+		// Initializes internal iterator. Needs to be called before actually using the iterator.
+		void Init();
+	public:
+		Iterator() : properties(0) { }
+
+		const C4Property * operator*() const { return *iter; }
+		const C4Property * operator->() const { return *iter; }
+		void operator++() { ++iter; };
+		void operator++(int) { operator++(); }
+
+		bool operator==(const Iterator & other) const
+		{
+			if ((properties == 0 || iter == properties->end()) && (other.properties == 0 || other.iter == other.properties->end()))
+				return true;
+			return properties == other.properties && iter == other.iter;
+		}
+
+		bool operator!=(const Iterator & other) const
+		{
+			return !(*this == other);
+		}
+
+		friend class C4PropList;
+	};
+
+	// do not modify the proplist while iterating over it!
+	Iterator begin();
+	Iterator end() { return Iterator(); }
 };
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
@@ -177,11 +210,16 @@ public:
 	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
+	static void ShelveNumberedPropLists(); // unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	static void UnshelveNumberedPropLists(); // re-insert shelved proplists into main list
+	static void ClearShelve();
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
-	void AcquireNumber();
+	void AcquireNumber(); // acquire a number and add to internal list
+	void ClearNumber(); // clear number and remove from internal list
 
 	static C4Set<C4PropListNumbered *> PropLists;
+	static std::vector<C4PropListNumbered *> ShelvedPropLists; // temporary storage for existing proplists while a new section loaded
 	static int32_t EnumerationIndex;
 	friend class C4Game;
 	friend class C4GameObjects;

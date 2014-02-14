@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2006, 2008  Sven Eberhardt
- * Copyright (c) 2001, 2004-2006  Peter Wortmann
- * Copyright (c) 2006-2011  Günther Brammer
- * Copyright (c) 2009, 2012  Armin Burgmeier
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Dynamic object list */
@@ -62,7 +55,7 @@ void C4ObjectList::Clear()
 const int MaxTempListID = 500;
 C4ID TempListID[MaxTempListID];
 
-C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
+C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index) const
 {
 	int clid;
 	C4ObjectLink *clnk;
@@ -87,7 +80,7 @@ C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
 	return C4ID::None;
 }
 
-int C4ObjectList::ListIDCount(int32_t dwCategory)
+int C4ObjectList::ListIDCount(int32_t dwCategory) const
 {
 	int clid;
 	C4ObjectLink *clnk;
@@ -302,7 +295,7 @@ C4Object* C4ObjectList::FindOther(C4ID id, int owner)
 	return NULL;
 }
 
-C4Object* C4ObjectList::GetObject(int Index)
+const C4Object* C4ObjectList::GetObject(int Index) const
 {
 	int cIdx;
 	C4ObjectLink *cLnk;
@@ -316,7 +309,7 @@ C4Object* C4ObjectList::GetObject(int Index)
 	return NULL;
 }
 
-C4ObjectLink* C4ObjectList::GetLink(C4Object *pObj)
+const C4ObjectLink* C4ObjectList::GetLink(const C4Object *pObj) const
 {
 	if (!pObj) return NULL;
 	C4ObjectLink *cLnk;
@@ -398,7 +391,7 @@ void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCa
 			clnk->Obj->DrawTopFace(cgo, iPlayer);
 }
 
-bool C4ObjectList::IsContained(C4Object *pObj)
+bool C4ObjectList::IsContained(const C4Object *pObj) const
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
@@ -505,7 +498,7 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Compiling: Nothing to do - list will be denumerated later
 }
 
-StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
+StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs) const
 {
 	int cpos,idcount;
 	C4ID c_id;
@@ -670,7 +663,7 @@ void C4ObjectList::UpdateFaces(bool bUpdateShapes)
 			cLnk->Obj->UpdateFace(bUpdateShapes);
 }
 
-void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo)
+void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo) const
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)

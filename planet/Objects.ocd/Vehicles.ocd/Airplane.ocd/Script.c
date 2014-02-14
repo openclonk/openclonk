@@ -69,14 +69,12 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 		var IX = Sin(GetR(), 30);
 		var IY = -Cos(GetR(), 30);
 
-		for(var i=0; i<10; ++i)
-		{
-			var speed = RandomX(0,10);
-			var r = angle;
-			CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2) + GetXDir()/2,-Cos(r,speed)+RandomX(-2,2) + GetYDir()/2,RandomX(100,400),RGBa(255,255,255,50));
-		}
-		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
-		CreateParticle("Flash",0,0,GetXDir(),GetYDir(),800,RGBa(255,255,64,150));
+		var x = Sin(angle, 20);
+		var y = -Cos(angle, 20);
+		CreateParticle("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+		
+		CreateMuzzleFlash(IX, IY, angle, 20);
+		CreateParticle("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
 
 		AddEffect("IntCooldown", this,1,1,this);
 	}
@@ -209,7 +207,13 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 
 		//Vfx
 		var colour = 255 - (GetDamage() * 3);
-		CreateParticle("EngineSmoke",0,0,0,0,RandomX(70,90),RGB(colour,colour,colour));
+		var particles = 
+		{
+			Prototype = Particles_Smoke(),
+			R = colour, G = colour, B = colour,
+			Size = PV_Linear(PV_Random(20, 30), PV_Random(70, 100))
+		};
+		CreateParticle("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 	}
 
 	//Throttle-to-thrust lag
@@ -344,7 +348,7 @@ public func Ejection(object obj)
 public func PlaneMount(object clonk)
 {
 	SetOwner(clonk->GetController());
-	clonk->PlayAnimation("Stand", 15, 0, Anim_Const(1000));
+	clonk->PlayAnimation("Stand", 15, nil, Anim_Const(1000));
 	clonkmesh = AttachMesh(clonk,"pilot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)),AM_DrawBefore);
 	return true;
 }
@@ -357,37 +361,41 @@ public func PlaneDismount(object clonk)
 	return true;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
-Fly = {
-	Prototype = Action,
-	Name = "Fly",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 0,
-	Length = 10,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 40,
-	Hgt = 56,
-	NextAction = "Fly",
-},
-Land = {
-	Prototype = Action,
-	Name = "Land",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 0,
-	Length = 1,
-	Delay = 2,
-	X = 0,
-	Y = 0,
-	Wdt = 40,
-	Hgt = 56,
-	NextAction = "Land",
-},
-}, def);
+func IsShipyardProduct() { return true; }
+
+local ActMap = {
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 10,
+		Delay = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 40,
+		Hgt = 56,
+		NextAction = "Fly",
+	},
+	Land = {
+		Prototype = Action,
+		Name = "Land",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 1,
+		Delay = 2,
+		X = 0,
+		Y = 0,
+		Wdt = 40,
+		Hgt = 56,
+		NextAction = "Land",
+	},
+};
+
+func Definition(def) 
+{
 	SetProperty("Name", "$Name$", def);
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3375,0), Trans_Rotate(25,0,1,0)));
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-5,1,0,0),Trans_Rotate(40,0,1,0),Trans_Translate(-20000,-4000,20000)),def);

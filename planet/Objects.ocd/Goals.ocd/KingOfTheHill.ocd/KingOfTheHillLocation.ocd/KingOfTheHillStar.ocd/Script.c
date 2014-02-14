@@ -20,4 +20,6 @@ func FxTimerTimer(target, effect, time)
 	SetClrModulation(origin->GetStarColor(number));
 }
 
+public func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

@@ -58,6 +58,7 @@ protected:
 
 public:
 
+	virtual bool ReInit(int32_t iWidth, int32_t iHeight) = 0;
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pTexs, C4GroupSet *pGraphics) = 0;
 	virtual void Clear() = 0;
 
@@ -71,7 +72,7 @@ public:
 	virtual void Draw(const C4TargetFacet &cgo) = 0;
 };
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 class C4LandscapeRenderGL : public C4LandscapeRender
 {
 public:
@@ -105,6 +106,7 @@ private:
 
 
 public:
+	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
 	virtual void Clear();
 
@@ -146,6 +148,7 @@ private:
 	C4Surface *Surface32;
 
 public:
+	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
 	virtual void Clear();
 

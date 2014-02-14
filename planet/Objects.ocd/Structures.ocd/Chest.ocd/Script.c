@@ -38,7 +38,7 @@ public func Interact(object clonk, int mode)
 	
 protected func RejectCollect()
 {
-	if (ContentsCount() >= MaxContentsCount())
+	if (ContentsCount() >= this->MaxContentsCount())
 		return true;
 	return false;
 }

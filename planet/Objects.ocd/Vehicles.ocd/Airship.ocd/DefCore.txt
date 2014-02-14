@@ -8,12 +8,12 @@ Offset=-32,-27
 Vertices=11
 VertexX=0,0,-20,+20,-30,+30,-20,+20,-16,+16,0
 VertexY=0,-30,-30,-30,-15,-15,-5,-5,+27,+27,+27
-VertexFriction=20,20,20,20,20,20,20,80,80,80
-VertexCNAT=6
+VertexCNAT=0,4,5,6,1,2,1,2,9,10,8
+VertexFriction=0,20,20,20,20,20,20,20,80,80,80
 Value=50
 Mass=5000
 Components=Metal=4;Wood=4;Rope=2;
 Float=-27;
-SolidMask=64,0,64,54,0,0
+SolidMask=0,0,36,4,11,49
 Picture=128,0,128,128,0,0
 BorderBound=7

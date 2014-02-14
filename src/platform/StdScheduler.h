@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006, 2009  Peter Wortmann
- * Copyright (c) 2006, 2009, 2011  Günther Brammer
- * Copyright (c) 2008  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* A simple scheduler for ccoperative multitasking */
 
@@ -47,18 +42,21 @@ struct pollfd;
 #endif // HAVE_PTHREAD
 #endif // _WIN32
 
-// helper
-inline int MaxTimeout(int iTimeout1, int iTimeout2)
-{
-	return (iTimeout1 == -1 || iTimeout2 == -1) ? -1 : Max(iTimeout1, iTimeout2);
-}
+
+#include <vector>
 
 typedef struct _GMainLoop GMainLoop;
 
 // Abstract class for a process
 class StdSchedulerProc
 {
+private:
+	class StdScheduler *scheduler;
+protected:
+	void Changed();
 public:
+
+	StdSchedulerProc(): scheduler(NULL) {}
 	virtual ~StdSchedulerProc() { }
 
 	// Do whatever the process wishes to do. Should not block longer than the timeout value.
@@ -76,14 +74,17 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	// -1 means no timeout (infinity).
-	virtual int GetNextTick(int Now) { return -1; }
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
 
 	// Is the process signal currently set?
 	bool IsSignaled();
 
 	// Is this the expensive game tick?
 	virtual bool IsLowPriority() { return false; }
+	virtual bool IsNotify() { return false; }
+	virtual uint32_t TimerInterval() { return 0; }
+
+	friend class StdScheduler;
 
 };
 
@@ -91,30 +92,35 @@ public:
 class CStdTimerProc : public StdSchedulerProc
 {
 public:
-	CStdTimerProc(uint32_t iDelay) : iLastTimer(0), iDelay(iDelay) { }
-	~CStdTimerProc() { }
+	CStdTimerProc(uint32_t iDelay) : tLastTimer(C4TimeMilliseconds::NegativeInfinity), iDelay(iDelay) { }
+	~CStdTimerProc() { Set(); }
 
 private:
-	uint32_t iLastTimer, iDelay;
+	C4TimeMilliseconds tLastTimer;
+	uint32_t iDelay;
 
 public:
-	void Set() { iLastTimer = 0; }
-	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
+	void Set()
+	{
+		tLastTimer = C4TimeMilliseconds::NegativeInfinity;
+	}
+	void SetDelay(uint32_t inDelay) { iDelay = inDelay; Changed(); }
 	bool CheckAndReset()
 	{
-		if (GetTime() < iLastTimer + iDelay) return false;
+		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
+		if (tTime < tLastTimer + iDelay) return false;
 		// Compensate light drifting
-		uint32_t iTime = GetTime();
-		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
-		iLastTimer = iTime - Min(iDrift, iDelay / 2);
+		int32_t iDrift = tTime - (tLastTimer + iDelay); // a positive time difference because of above check
+		tLastTimer = tTime - Min(iDrift, (int32_t) iDelay / 2);
 		return true;
 	}
 
 	// StdSchedulerProc override
-	virtual int GetNextTick(int Now)
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow)
 	{
-		return iLastTimer + iDelay;
+		return tLastTimer + iDelay;
 	}
+	virtual uint32_t TimerInterval() { return iDelay; }
 };
 
 // A simple alertable proc
@@ -125,6 +131,7 @@ public:
 
 	void Notify();
 	bool CheckAndReset();
+	virtual bool IsNotify() { return true; }
 
 #ifdef STDSCHEDULER_USE_EVENTS
 	~CStdNotifyProc() { }
@@ -205,8 +212,8 @@ public:
 
 private:
 	// Process list
-	StdSchedulerProc **ppProcs;
-	int iProcCnt, iProcCapacity;
+	std::vector<StdSchedulerProc*> procs;
+	bool isInManualLoop;
 
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
@@ -217,21 +224,25 @@ private:
 
 	// Dummy lists (preserved to reduce allocs)
 #ifdef STDSCHEDULER_USE_EVENTS
-	HANDLE *pEventHandles;
-	StdSchedulerProc **ppEventProcs;
+	std::vector<HANDLE> eventHandles;
+	std::vector<StdSchedulerProc*> eventProcs;
 #endif
 
 public:
-	int getProcCnt() const { return iProcCnt-1; } // ignore internal NoopNotifyProc
-	int getProc(StdSchedulerProc *pProc);
-	bool hasProc(StdSchedulerProc *pProc) { return getProc(pProc) >= 0; }
+	int getProcCnt() const { return procs.size()-1; } // ignore internal NoopNotifyProc
+	bool hasProc(StdSchedulerProc *pProc) { return std::find(procs.begin(), procs.end(), pProc) != procs.end(); }
+	bool IsInManualLoop() { return isInManualLoop; }
 
 	void Clear();
 	void Set(StdSchedulerProc **ppProcs, int iProcCnt);
 	void Add(StdSchedulerProc *pProc);
 	void Remove(StdSchedulerProc *pProc);
+	
+	void Added(StdSchedulerProc *pProc);
+	void Removing(StdSchedulerProc *pProc);
+	void Changed(StdSchedulerProc *pProc);
 
-	bool ScheduleProcs(int iTimeout = -1);
+	virtual bool ScheduleProcs(int iTimeout = -1);
 	void UnBlock();
 
 protected:
@@ -239,8 +250,7 @@ protected:
 	virtual void OnError(StdSchedulerProc *) { }
 
 private:
-	void Enlarge(int iBy);
-
+	bool DoScheduleProcs(int iTimeout);
 };
 
 // A simple process scheduler thread
@@ -253,7 +263,7 @@ public:
 private:
 
 	// thread control
-	bool fRunThreadRun, fWait;
+	bool fRunThreadRun;
 
 	bool fThread;
 #ifdef HAVE_WINTHREAD

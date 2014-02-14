@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008, 2011  Sven Eberhardt
- * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2005-2010  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // defines user controls
@@ -44,7 +35,6 @@
 
 #include <C4Id.h>
 
-#include <StdResStr2.h>
 #include <C4Window.h>
 
 // consts (load those from a def file some time)
@@ -410,6 +400,7 @@ namespace C4GUI
 		void DrawBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets);  // draw horizontal gfx bar within element bounds, using gfx of vertical one
+		void DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength);
 
 		virtual bool IsOwnPtrElement() { return false; } // if true is returned, item will not be deleted when container is cleared
 		virtual bool IsExternalDrawDialog() { return false; }
@@ -524,8 +515,10 @@ namespace C4GUI
 	class WoodenLabel : public Label
 	{
 	private:
-		time_t tAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
-		time_t tLastChangeTime;  // time when the label text was changed last. 0 if not initialized; set upon first drawing
+		uint32_t iAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
+
+		// Time when the label text was changed last. NULL if not initialized; set upon first drawing
+		C4TimeMilliseconds tLastChangeTime;  
 		int32_t iScrollPos, iScrollDir;
 		int32_t iRightIndent;
 	protected:
@@ -538,14 +531,15 @@ namespace C4GUI
 
 	public:
 		WoodenLabel(const char *szLblText, const C4Rect &rcBounds, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, int32_t iAlign=ACenter, bool fMarkup=true) // ctor
-				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), tAutoScrollDelay(0), tLastChangeTime(0), iScrollPos(0), iScrollDir(0), iRightIndent(0)
+				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), iAutoScrollDelay(0), tLastChangeTime(C4TimeMilliseconds::Now()), iScrollPos(0), iScrollDir(0), iRightIndent(0)
 		{ SetAutosize(false); this->rcBounds=rcBounds; }// ctor - re-sets bounds after SetText
 
 		static int32_t GetDefaultHeight(CStdFont *pUseFont=NULL);
 
 		void SetIcon(const C4Facet &rfctIcon);
-		void SetAutoScrollTime(time_t tDelay) { tAutoScrollDelay=tDelay; ResetAutoScroll(); }
-		void ResetAutoScroll() { tLastChangeTime=0; iScrollPos=iScrollDir=0; }
+		void SetAutoScrollTime(uint32_t tDelay) { iAutoScrollDelay=tDelay; ResetAutoScroll(); }
+		void ResetAutoScroll();
+
 		void SetRightIndent(int32_t iNewIndent) { iRightIndent = iNewIndent; }
 	};
 
@@ -1234,7 +1228,7 @@ namespace C4GUI
 		int32_t iCursorPos;            // cursor position: char, before which the cursor is located
 		int32_t iSelectionStart, iSelectionEnd; // selection range (start may be larger than end)
 		int32_t iMaxTextLength;        // maximum number of characters to be input here
-		DWORD dwLastInputTime;     // time of last input (for cursor flashing)
+		C4TimeMilliseconds tLastInputTime;     // time of last input (for cursor flashing)
 		int32_t iXScroll;              // horizontal scrolling
 		char cPasswordMask;         // character to be used for masking the contents. 0 for none.
 
@@ -1568,7 +1562,7 @@ namespace C4GUI
 		int32_t iSheetSpacing, iSheetOff; // distances of sheet captions
 		int32_t iCaptionLengthTotal, iCaptionScrollPos; // scrolling in captions (top only)
 		bool fScrollingLeft, fScrollingRight, fScrollingLeftDown, fScrollingRightDown; // scrolling in captions (top only)
-		time_t tLastScrollTime; // set when fScrollingLeftDown or fScrollingRightDown are true: Time for next scrolling if mouse is held down
+		C4TimeMilliseconds tLastScrollTime; // set when fScrollingLeftDown or fScrollingRightDown are true: Time for next scrolling if mouse is held down
 		int iSheetMargin;
 		bool fDrawSelf; // if border and bg shall be drawn
 
@@ -2244,17 +2238,21 @@ namespace C4GUI
 	private:
 		bool fHasOK;
 		int32_t *piConfigDontShowAgainSetting;
+		class C4KeyBinding *pKeyCopy;
+		StdCopyStrBuf sCopyText; // text that goes into clipboard if user presses Ctrl+C on this window
 	public:
 		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16, btnReset=32,
 		               btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort
 		             };
 		enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };
 		MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize=dsRegular, int32_t *piConfigDontShowAgainSetting=NULL, bool fDefaultNo=false);
+		~MessageDialog();
 
 	protected:
 		virtual bool OnEnter() { if (!fHasOK) return false; Close(true); return true; }
 		void OnDontShowAgainCheck(C4GUI::Element *pCheckBox)
 		{ if (piConfigDontShowAgainSetting) *piConfigDontShowAgainSetting = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked(); }
+		bool KeyCopy();
 
 		virtual const char *GetID() { return "MessageDialog"; }
 		virtual int32_t GetZOrdering() { return C4GUI_Z_INPUT; }
@@ -2445,7 +2443,7 @@ namespace C4GUI
 		int32_t LDownX, LDownY;       // position where left button was pressed last
 		DWORD dwKeys;             // shift, ctrl, etc.
 		bool fActive;
-		time_t tLastMovementTime; // GetTime() when the mouse pos changed last
+		C4TimeMilliseconds tLastMovementTime; // C4TimeMilliseconds::Now() when the mouse pos changed last
 
 		// whether last input was done by mouse
 		// set to true whenever mouse pos changes or buttons are pressed
@@ -2476,8 +2474,8 @@ namespace C4GUI
 
 		void SetOwnedMouse(bool fToVal) { fActive=fToVal; }
 
-		void ResetToolTipTime() { tLastMovementTime = GetTime(); }
-		bool IsMouseStill() { return GetTime()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
+		void ResetToolTipTime() { tLastMovementTime = C4TimeMilliseconds::Now(); }
+		bool IsMouseStill() { return C4TimeMilliseconds::Now()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
 		void ResetActiveInput() { fActiveInput = false; }
 		bool IsActiveInput() { return fActiveInput; }
 

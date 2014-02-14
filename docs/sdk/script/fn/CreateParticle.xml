@@ -5,72 +5,91 @@
 <funcs>
   <func>
     <title>CreateParticle</title>
-    <category>Particle</category>
-    <version>5.1 OC</version>
+    <category>Particles</category>
+    <version>5.3.4 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
-          <name>szName</name>
-          <desc>Name of the particle</desc>
+          <name>particle_name</name>
+          <desc>Name of the particle definition.</desc>
         </param>
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X coordinate of the particle. Offset in local calls.</desc>
+          <desc>X-coordinate of the new particle (relative to object for local calls)</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y coordinate of the particle. Offset in local calls.</desc>
+			<desc>Y-coordinate of the new particle (relative to object for local calls)</desc>
         </param>
         <param>
           <type>int</type>
-          <name>xdir</name>
-          <desc>Initial horizontal velocity of the particle.</desc>
+          <name>speed_x</name>
+          <desc>Starting speed of the particle in x-direction. Can also be a value provider function.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>ydir</name>
-          <desc>Initial vertical velocity of the particle.</desc>
+          <name>speed_y</name>
+          <desc>Starting speed of the particle in y-direction. Can also be a value provider function.</desc>
         </param>
-        <param>
+		<param>
           <type>int</type>
-          <name>a</name>
-          <desc>Extra parameter. This is usually the size of the particle in 1/5 pixels.</desc>
+          <name>lifetime</name>
+          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function.</desc>
         </param>
-        <param>
+		<param>
+          <type>proplist</type>
+          <name>properties</name>
+          <desc>PropList with the particle attributes (see the <emlink href="particle/index.html#attributes">particle documentation</emlink>).</desc>
+        </param>
+		<param>
           <type>int</type>
-          <name>b</name>
-          <desc>Extra parameter. This is usually the color modulation of the particle.</desc>
-        </param>
-        <param>
-          <type>object</type>
-          <name>target</name>
-          <desc>Target object for object local particles. Object local particles are drawn directly on top of the object and are removed when the object is deleted.</desc>
-          <optional />
-        </param>
-        <param>
-          <type>bool</type>
-          <name>behind_target</name>
-          <desc>If specified and not <code>false</code>, the particle is drawn directly behind the target object.</desc>
-          <optional />
+          <name>amount</name>
+          <desc>Amount of particles to create. Defaults to 1.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Creates a particle. The named particle definition must be loaded. For more information see the particle documentation.</desc>
-    <remark>This function returns <code>false</code> if the particle definition was not found, otherwise <code>true</code>. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
-    <examples>
-      <example>
-        <code>CreateParticle(&quot;Blast&quot;, 0,0, 0,0, 100, <funclink>RGB</funclink>(128,128,255));</code>
-        <text>Creates a blue explosion at the position of the calling object.</text>
-      </example>
-    </examples>
-    <related>
-      <funclink>PushParticles</funclink>
-      <funclink>ClearParticles</funclink>
+    <desc>Creates a new particle with the given properties. Note that particle creation is not necessarily synchronized over the network and thus, the return value is not whether the particle was actually created but whether the particle definition was found.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations.</remark>
+	<examples>    
+		<example>
+			<code>
+var particles =
+{
+	Size = <funclink>PV_KeyFrames</funclink>(0, 0, 0, 200, 50, 1000, 0),
+	DampingX = 900,
+	DampingY = 900,
+	R = 255,
+	G = <funclink>PV_Linear</funclink>(255, 0),
+	B = <funclink>PV_Linear</funclink>(128, 0),
+	Alpha = <funclink>PV_Linear</funclink>(255, 0),
+	Rotation = <funclink>PV_Direction</funclink>(),
+	Stretch = <funclink>PV_Speed</funclink>(5 * 1000),
+	ForceY = <funclink>PV_KeyFrames</funclink>(0, 0, 0, 900, 0, 1000, -20),
+	ForceX = <funclink>PV_Random</funclink>(-5, 5, 15),
+	Phase = <funclink>PV_Step</funclink>(1, 0, 10)
+};
+<funclink>CreateParticle</funclink>("Fire", 0, 0, <funclink>PV_Random(-200, 200)</funclink>, <funclink>PV_Random</funclink>(-200, 200), <funclink>PV_Random</funclink>(18, 38 * 5), particles, 100);
+			</code>
+			<text>Casts 100 particles with a previously defined behavior.</text>
+		  </example>
+	</examples>
+	<related>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PV_Gravity</funclink>
+      <funclink>PC_Die</funclink>
+      <funclink>PC_Bounce</funclink>
+      <funclink>PC_Stop</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2002-04</date>
+  <author>Zapper</author><date>2013-10</date>
 </funcs>

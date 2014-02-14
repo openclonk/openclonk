@@ -60,23 +60,16 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	}	
 	else if(iEffectTime < 70)
 	{
-		CreateParticle("FireballSmoke",x,y,Sin(Random(360),2),Cos(Random(360),2),RandomX(120,180),RGBa(100,100,100,70));
-		CreateParticle("MagicSpark",x,y,Sin(Random(360),RandomX(5,13)),Cos(Random(360),RandomX(5,13)),RandomX(30,70),RGB(255,255,255));
-
-		//if(!Random(10)) if(Random(2))angle++; else angle--;
 		angle+=Sin(iEffectTime*30,18);
-		x+=Sin(angle, 6);
-		y+=-Cos(angle, 6);
-		effect.x=x;
-		effect.y=y;
-		for(var i=0;i<6;++i)
-		{
-			var c=HSL(Random(50), 200+Random(25), Random(100));
-			var rx=RandomX(-2, 2);
-			var ry=RandomX(-2, 2);
-			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 80+Random(20), c);
-			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 20+Random(10), RGB(255,255,0));
-		}
+		var xspeed = Sin(angle, 6);
+		var yspeed = -Cos(angle, 6);
+
+		CreateParticle("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(30, 60), Particles_SmokeTrail(), 1);
+		CreateParticle("FireDense", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 20), Particles_Fire(), 10);
+		CreateParticle("Fire", x, y, PV_Random(0, - 10 * xspeed), PV_Random(0, - 10 * yspeed), PV_Random(20, 90), Particles_Glimmer(), 10);
+
+		effect.x += xspeed;
+		effect.y += yspeed;
 	}
 
 	return 1;

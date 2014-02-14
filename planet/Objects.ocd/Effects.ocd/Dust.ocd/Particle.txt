@@ -1,0 +1,3 @@
+[Particle]
+Name=Dust
+Face=0,0,128,128,-64,-64

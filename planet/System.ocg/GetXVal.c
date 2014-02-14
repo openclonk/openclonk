@@ -28,14 +28,12 @@ global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
 global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
-global func GetDefBase()        { return GetDefCoreVal("Base", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
 global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }
 global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }
 global func GetDefGrabPutGet()  { return GetDefCoreVal("GrabPutGet", "DefCore"); }
-global func GetDefCollectible() { return GetDefCoreVal("Collectible", "DefCore"); }
 global func GetDefRotate()      { return GetDefCoreVal("Rotate", "DefCore"); }
 global func GetDefFloat()       { return GetDefCoreVal("Float", "DefCore"); }
 global func GetDefContainBlast(){ return GetDefCoreVal("ContainBlast", "DefCore"); }
@@ -44,12 +42,10 @@ global func GetDefBorderBound() { return GetDefCoreVal("BorderBound", "DefCore")
 global func GetDefLiftTop()     { return GetDefCoreVal("LiftTop", "DefCore"); }
 global func GetDefUprightAttach() { return GetDefCoreVal("UprightAttach", "DefCore"); }
 global func GetDefStretchGrowth() { return GetDefCoreVal("StretchGrowth", "DefCore"); }
-global func GetDefBasement()    { return GetDefCoreVal("Basement", "DefCore"); }
 global func GetDefIncompleteActivity()  { return GetDefCoreVal("IncompleteActivity", "DefCore"); }
 global func GetDefAttractLightning()  { return GetDefCoreVal("AttractLightning", "DefCore"); }
 global func GetDefOversize()    { return GetDefCoreVal("Oversize", "DefCore"); }
 global func GetDefFragile()     { return GetDefCoreVal("Fragile", "DefCore"); }
-global func GetDefExplosive()   { return GetDefCoreVal("Explosive", "DefCore"); }
 global func GetDefProjectile()  { return GetDefCoreVal("Projectile", "DefCore"); }
 global func GetDefNoPushEnter() { return GetDefCoreVal("NoPushEnter", "DefCore"); }
 global func GetDefVehicleControl()  { return GetDefCoreVal("VehicleControl", "DefCore"); }

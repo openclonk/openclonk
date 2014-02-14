@@ -16,7 +16,7 @@
       </dd>
       <dt id="fullscreen">--fullscreen</dt>
       <dd>
-        <text>Starts in fullscreen mode (also called player mode). If no scenario and no direct join adress is given, the startup menu is shown.</text>
+        <text>Starts in fullscreen mode (also called player mode). If no scenario and no direct join address is given, the startup menu is shown.</text>
       </dd>
       <dt id="config">--config=Filename</dt>
       <dd>

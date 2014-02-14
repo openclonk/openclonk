@@ -1,0 +1,3 @@
+[Particle]
+Name=Straw
+Face=0,0,32,32,-16,-16

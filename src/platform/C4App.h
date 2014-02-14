@@ -1,21 +1,19 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2006, 2010-2012  Günther Brammer
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 2005, Sven Eberhardt
+ * Copyright (c) 2005-2006, Günther Brammer
+ * Copyright (c) 2006, Armin Burgmeier
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_STDAPP
@@ -97,9 +95,9 @@ public:
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 	// Gamma
-	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
-	bool ScheduleProcs(int iTimeout = -1);
+	virtual bool ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _GAMMARAMP &ramp);
+	virtual bool ScheduleProcs(int iTimeout = 1000/36);
 	bool FlushMessages();
 	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate

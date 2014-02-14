@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2009  Peter Wortmann
- * Copyright (c) 2004-2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2011  Günther Brammer
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2012  Philipp Kern
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -146,7 +137,7 @@ C4Network2::C4Network2()
 		pLobby(NULL), fLobbyRunning(false), pLobbyCountdown(NULL),
 		iNextClientID(0),
 		iLastChaseTargetUpdate(0),
-		iLastActivateRequest(0),
+		tLastActivateRequest(C4TimeMilliseconds::NegativeInfinity),
 		iLastReferenceUpdate(0),
 		iLastLeagueUpdate(0),
 		pLeagueClient(NULL),
@@ -368,9 +359,7 @@ bool C4Network2::DoLobby()
 		ChangeGameStatus(GS_Lobby, 0);
 
 	// determine lobby type
-	bool fFullscreenLobby = !Console.Active && (pDraw->GetEngine() != GFXENGN_NOGFX);
-
-	if (!fFullscreenLobby)
+	if (Console.Active)
 	{
 		// console lobby - update console
 		if (Console.Active) Console.UpdateMenus();
@@ -626,7 +615,7 @@ void C4Network2::Execute()
 	else
 	{
 		// request activate, if neccessary
-		if (iLastActivateRequest) RequestActivate();
+		if (!tLastActivateRequest.IsInfinite()) RequestActivate();
 	}
 }
 
@@ -666,7 +655,8 @@ void C4Network2::Clear()
 	// stuff
 	fAllowJoin = false;
 	iDynamicTick = -1; fDynamicNeeded = false;
-	iLastActivateRequest = iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
+	tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
+	iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
 	fDelayedActivateReq = false;
 	delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
@@ -1504,7 +1494,8 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 {
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
-	int32_t iProcess = -1; uint32_t iTimeout = GetTime() + iTimeoutLen;
+	int32_t iProcess = -1;
+	C4TimeMilliseconds tTimeout = C4TimeMilliseconds::Now() + iTimeoutLen;
 	// wait for resource
 	while (isEnabled())
 	{
@@ -1512,6 +1503,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		C4Network2Res::Ref pRes = ResList.getRefRes(Core.getID());
 		// res not found?
 		if (!pRes)
+		{
 			if (Core.isNull())
 			{
 				// should wait for core?
@@ -1522,6 +1514,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 				// start loading
 				pRes = ResList.AddByCore(Core);
 			}
+		}
 		// res found and loaded completely
 		else if (!pRes->isLoading())
 		{
@@ -1536,12 +1529,12 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		if (pRes && pRes->getPresentPercent() != iProcess)
 		{
 			iProcess = pRes->getPresentPercent();
-			iTimeout = GetTime() + iTimeoutLen;
+			tTimeout = C4TimeMilliseconds::Now() + iTimeoutLen;
 		}
 		else
 		{
 			// if not: check timeout
-			if (GetTime() > iTimeout)
+			if (C4TimeMilliseconds::Now() > tTimeout)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_NET_ERR_RESTIMEOUT"), szResName).getData());
 				if (pDlg) delete pDlg;
@@ -1578,7 +1571,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		}
 		else
 		{
-			if (!Application.ScheduleProcs(iTimeout - GetTime()))
+			if (!Application.ScheduleProcs(tTimeout - C4TimeMilliseconds::Now()))
 				{ return NULL; }
 		}
 
@@ -1763,7 +1756,7 @@ void C4Network2::RequestActivate()
 	// neither observer nor activated?
 	if (Game.Clients.getLocal()->isObserver() || Game.Clients.getLocal()->isActivated())
 	{
-		iLastActivateRequest = 0;
+		tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
 		return;
 	}
 	// host? just do it
@@ -1776,7 +1769,7 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (iLastActivateRequest && GetTime() < iLastActivateRequest + C4NetActivationReqInterval)
+	if(C4TimeMilliseconds::Now() < tLastActivateRequest + C4NetActivationReqInterval)
 		return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
@@ -1787,7 +1780,7 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	iLastActivateRequest = GetTime();
+	tLastActivateRequest = C4TimeMilliseconds::Now();
 }
 
 void C4Network2::DeactivateInactiveClients()
@@ -2024,7 +2017,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	    !pLeagueClient->GetStartReply(&LeagueServerMessage, &League, &StreamingAddr, &Seed, &MaxPlayersLeague))
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
+		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_REGGAME"), pError);
 		// Log message
@@ -2048,7 +2041,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	// Show message
 	if (LeagueServerMessage.getLength())
 	{
-		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LeagueServerMessage.getData());
+		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LoadResStr(LeagueServerMessage.getData()));
 		// Log message
 		Log(Message.getData());
 		// Show message
@@ -2134,7 +2127,7 @@ bool C4Network2::LeagueUpdateProcessReply()
 	if (!fSucc)
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
+		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_UPDATEGAME"), pError);
 		// Show message - no dialog, because it's not really fatal and might happen in the running game
@@ -2212,7 +2205,7 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 		if (!pLeagueClient->isSuccess() || !pLeagueClient->GetEndReply(&LeagueServerMessage, &RoundResults))
 		{
 			const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-			                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
+			                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
 			                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 			sResultMessage.Take(FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_SENDRESULT"), pError));
 			if (Application.isEditor) continue;
@@ -2362,7 +2355,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 			bool fSuccess;
 			if (Message.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
-				             Message.getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
+				             LoadResStr(Message.getData()), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 				             C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 			else if (AccountMaster.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
@@ -2448,7 +2441,7 @@ bool C4Network2::LeaguePlrAuthCheck(C4PlayerInfo *pInfo)
 	// Check if league server approves. pInfo will have league info if this call is successful.
 	if (!pLeagueClient->GetAuthCheckReply(&Message, Game.Parameters.League.getData(), pInfo))
 	{
-		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), Message.getData()).getData());
+		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), LoadResStr(Message.getData())).getData());
 		return false;
 	}
 
@@ -2483,7 +2476,7 @@ void C4Network2::LeagueNotifyDisconnect(int32_t iClientID, C4LeagueDisconnectRea
 		szMsg = LoadResStr("IDS_MSG_LEAGUEUNEXPECTEDDISCONNEC");
 	else
 		szMsg = LoadResStr("IDS_ERR_LEAGUEERRORREPORTINGUNEXP");
-	LogF(szMsg, sMessage.getData());
+	LogF(szMsg, LoadResStr(sMessage.getData()));
 }
 
 void C4Network2::LeagueWaitNotBusy()

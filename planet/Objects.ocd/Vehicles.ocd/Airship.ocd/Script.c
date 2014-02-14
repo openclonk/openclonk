@@ -1,47 +1,36 @@
-/*--
+/**
 	Airship
-	Ringwaul
-	
-	Lighter-than-air travel and transport vehicle.
-	The airship uses several objects to function; the base control/collision object,
-	an attached graphics object (due to engine limitations with solidmasks),
-	and a hitbox for the balloon.
---*/
+	Lighter-than-air travel and transport vehicle. The airship uses several objects to function; the base control/collision object,
+	an attached graphics object (due to former engine limitations with solidmasks), and a hitbox for the balloon.
+
+	@authors Ringwaul
+*/
 
 #include Library_AlignVehicleRotation
 
-local throttle;
 
-//sums of x,y dir forces upon blimp
-local xtarget;
-local ytarget;
-
-//Airship Control
-local xthrottle;
-local ythrottle;
-
-//Attached modules
+// Attached modules
 local graphic;
 local hitbox;
 
-//Graphic module variables for animation
-local animdir;
+// Graphic module variables for animation
 local turnanim;
+
+
+local throttle;
+local enginesound;
 
 local health = 30;
 
 //Rectangle defining where to look for objents contained in the gondola
 local gondola = [-20,-2,40,30];
 
-public func IsVehicle() { return true; }
 
 protected func Initialize()
 {
 	SetAction("Fly");
 	SetComDir(COMD_None);
 	throttle = 0;
-	xtarget = 0;
-	ytarget = 0;
 
 	//Create 3D Graphic
 	graphic = CreateObject(Airship_Graphic);
@@ -53,21 +42,13 @@ protected func Initialize()
 		hitbox->SetAction("Attach", this);
 		hitbox->SetAirshipParent(this);
 
-	//The airship starts facing left; so default to that value
-	animdir = -1;
+	// The airship starts facing left; so default to that value
+	SetDir(DIR_Left);
 
 	turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Const(graphic->GetAnimationLength("TurnLeft")), Anim_Const(1000));
 
-	//Start the Airship behaviour
-	AddEffect("FlyEffect",this,1,1,this);
-}
-
-//overloads normal getdir
-func GetDir()
-{
-	var dir = animdir;
-	if(dir == -1) dir = 0;
-	return dir;
+	// Start the Airship behaviour
+	AddEffect("IntAirshipMovement", this, 1, 1, this);
 }
 
 public func Damage()
@@ -78,113 +59,122 @@ public func Damage()
 	}
 }
 
-local enginesound;
-
-public func FxFlyEffectTimer(object target, int num, int timer)
+public func FxIntAirshipMovementStart(object target, proplist effect, int temporary)
 {
-	//Cancel effect if there is no graphic.
-	if(!graphic) return -1;
+	if (temporary)
+		return 1;
+	SetComDir(COMD_Stop);
+	effect.AnimDir = DIR_Left;
+	return 1;
+}
 
-	//Is the engine running?
-	if(Abs(xthrottle) == 1 || Abs(ythrottle) == 1)
+
+public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
+{
+	// Cancel effect if there is no graphic.
+	if (!graphic) 
+		return -1;
+
+	// Is the engine running?
+	if (GetComDir() != COMD_Stop && AirshipPilot())
 	{
 		//Turn the propeller
 		graphic->AnimationForward();
 
-		//Emit engine smoke
+		// Emit engine smoke
 		var i = 20;
 		var colour = 240;
-			if(animdir == 1) i = -25; //Is the airship facing right?
-		if(graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
-			CreateParticle("EngineSmoke", i, 18,0,0,RandomX(20,40),RGBa(colour,colour,colour,colour));
-
-		//Fan-blade sound
-		if(!enginesound)
+		// Is the airship facing right?
+		if (effect.AnimDir == DIR_Right) 
+			i = -25; 
+		if (graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
+		{
+			var particles = 
+			{
+				Prototype = Particles_Smoke(),
+				R = colour, G = colour, B = colour
+			};
+			CreateParticle("Smoke", i, 18, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+		}
+		// Fan-blade sound
+		if (!enginesound)
 		{
 			enginesound = true;
 			Sound("FanLoop",nil,nil,nil,1);
 		}
 	}
-	else
+	else if(enginesound == true)
 	{
-		if(enginesound == true)
-		{
-			Sound("FanLoop",nil,nil,nil,-1);
-			enginesound = nil;
-		}
+		Sound("FanLoop", nil, nil, nil, -1);
+		enginesound = false;
 	}
 
-	//Control proxy
-	if(xthrottle) xtarget = (xthrottle * 12);
-	if(ythrottle) ytarget = (ythrottle * 6);
-	if(!xthrottle) xtarget = 0;
-	if(!ythrottle) ytarget = 0;
+	// Wind movement if in the air
+	if (!GetContact(-1))
+		/* TODO: Implement */;
 
-	//Wind movement if in the air
-	if(!GetContact(-1))
-		xtarget = xtarget + GetWind()/10;
-
-	//Fall down if there is no water below nor pilot
-	if(!AirshipPilot() && !GBackLiquid(0,26) && !GetContact(-1))
+	// Fall down if there no pilot and ground.
+	if (!AirshipPilot())
 	{
-		ytarget = 10;
-	}
-
-	//Rise in water
-	if(GBackLiquid(0,25)) ytarget = -10;
-	if(GBackLiquid(0,25) && !GBackLiquid(0,24) && ytarget > 1) ytarget = 0;
-
-	//Fall to the ground if there is no pilot on board
-	if(!AirshipPilot())
-	{
-		xthrottle = 0;
-		ythrottle = 0;
-	}
-
-	//x target speed
-	if(GetXDir(100) != xtarget * 10)
-	{
-		if(GetXDir(100) > xtarget * 10) SetXDir(GetXDir(100) -1,100);
-		if(GetXDir(100) < xtarget * 10) SetXDir(GetXDir(100) +1,100);
-	}
-
-	//y target speed
-	if(GetYDir() != ytarget)
-	{
-		if(GetYDir() > ytarget) SetYDir(GetYDir() -1);
-		if(GetYDir() < ytarget) SetYDir(GetYDir() +1);
-	}
-
-	//Turn the airship right
-	if(animdir == -1 && GetXDir() > 1 && xthrottle == 1){
-		TurnAirship(1);
-	}
-
-	//turn the airship left
-	if(animdir == 1 && GetXDir() < -1 && xthrottle == -1){
-		TurnAirship(0);
-	}
-
-	//fun debug output stuff
-/*	if(!AirshipPilot()) Message(Format("^ 3^|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir()));
-	else
-	Message(Format("o _o|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir())); */
-}
-
-func TurnAirship(int dir)
-{
-	//default direction is left
-	var animName = "TurnLeft";
-	if(dir == 1){
-		animName = "TurnRight";
+		if (GetContact(-1) & CNAT_Bottom)
+			SetComDir(COMD_Stop);		
+		else
+			SetComDir(COMD_Down);
 	}
 	
+	//Rise in water
+	if (GBackLiquid(0,25))
+		//effect.SpeedY = -10;
+	if (GBackLiquid(0,25) && !GBackLiquid(0,24) && effect.SpeedY > 1)
+		//effect.SpeedY = 0;
+
+	var dir = GetComDir();
+	//Log("%v", dir );
+	// Turn the airship around if needed
+	if (effect.AnimDir == DIR_Left && GetXDir(100) > 30)
+		if (GetComDir() == COMD_Right || GetComDir() == COMD_UpRight || GetComDir() == COMD_DownRight)
+			target->TurnAirship(DIR_Right);
+	if (effect.AnimDir == DIR_Right && GetXDir(100) < -30)
+		if (GetComDir() == COMD_Left || GetComDir() == COMD_UpLeft || GetComDir() == COMD_DownLeft)
+			target->TurnAirship(DIR_Left);
+	
+	//Log("animdir: %v, xdir: %v, comdir: %v", effect.AnimDir, GetXDir(100), GetComDir());
+	
+	return 1;
+}
+
+func TurnAirship(int to_dir)
+{
+	// Default direction is left
+	var animName = "TurnLeft";
+	if (to_dir == DIR_Right)
+		animName = "TurnRight";
+
 	StopAnimation(turnanim);
 	turnanim = graphic->PlayAnimation(animName, 10, Anim_Linear(0, 0, graphic->GetAnimationLength(animName), 36, ANIM_Hold), Anim_Const(1000));
-	animdir = animdir * -1;
+	
+	SetAnimDir(to_dir);
 	
 	var g = gondola;
 	AlignObjectsToRotation(graphic, g[0],g[1],g[2],g[3]);
+	
+	return;
+}
+
+public func SetAnimDir(int to_dir)
+{
+	var effect = GetEffect("IntAirshipMovement", this);
+	if (effect)
+		effect.AnimDir = to_dir;
+	return;
+}
+
+public func GetAnimDir()
+{
+	var effect = GetEffect("IntAirshipMovement", this);
+	if (effect)
+		return effect.AnimDir;
+	return;
 }
 
 /* -- Control Inputs -- */
@@ -192,28 +182,90 @@ func TurnAirship(int dir)
 
 func ControlLeft(object clonk)
 {
-	xthrottle = -1;
+	if (GetComDir() == COMD_Up)
+		SetComDir(COMD_UpLeft);
+	else if (GetComDir() == COMD_Down)
+		SetComDir(COMD_DownLeft);
+	else
+		SetComDir(COMD_Left);
+	return true;
 }
 
 func ControlRight(object clonk)
 {
-	xthrottle = 1;
+	if (GetComDir() == COMD_Up)
+		SetComDir(COMD_UpRight);
+	else if (GetComDir() == COMD_Down)
+		SetComDir(COMD_DownRight);
+	else
+		SetComDir(COMD_Right);
+	return true;
 }
 
 func ControlUp(object clonk)
 {
-	ythrottle = -1;
+	if (GetComDir() == COMD_Left)
+		SetComDir(COMD_UpLeft);
+	else if (GetComDir() == COMD_Right)
+		SetComDir(COMD_UpRight);
+	else
+		SetComDir(COMD_Up);
+	return true;
 }
 
 func ControlDown(object clonk)
 {
-	ythrottle = 1;
+	if (GetComDir() == COMD_Left)
+		SetComDir(COMD_DownLeft);
+	else if (GetComDir() == COMD_Right)
+		SetComDir(COMD_DownRight);
+	else
+		SetComDir(COMD_Down);
+	return true;
 }
 
 func ControlStop(object clonk, int control)
 {
-	if(control == 11 || control == 12) xthrottle = 0;
-	if(control == 13 || control == 14) ythrottle = 0;
+	var comdir = GetComDir();
+	var newdir;
+	if (control == CON_Left)
+	{
+		if (comdir == COMD_Left)
+			newdir = COMD_Stop;
+		if (comdir == COMD_UpLeft)
+			newdir = COMD_Up;
+		if (comdir == COMD_DownLeft)
+			newdir = COMD_Down;
+	}
+	if (control == CON_Right)
+	{
+		if (comdir == COMD_Right)
+			newdir = COMD_Stop;
+		if (comdir == COMD_UpRight)
+			newdir = COMD_Up;
+		if (comdir == COMD_DownRight)
+			newdir = COMD_Down;
+	}
+	if (control == CON_Up)
+	{
+		if (comdir == COMD_Up)
+			newdir = COMD_Stop;
+		if (comdir == COMD_UpLeft)
+			newdir = COMD_Left;
+		if (comdir == COMD_UpRight)
+			newdir = COMD_Right;
+	}
+	if (control == CON_Down)
+	{
+		if (comdir == COMD_Down)
+			newdir = COMD_Stop;
+		if (comdir == COMD_DownLeft)
+			newdir = COMD_Left;
+		if (comdir == COMD_DownRight)
+			newdir = COMD_Right;
+	}
+	SetComDir(newdir);
+	return true;
 }
 
 private func AirshipPilot()
@@ -257,20 +309,24 @@ func AirshipDeath()
 	Explode(27);
 }
 
-func IsShipyardProduct() { return true; }
+public func IsShipyardProduct() { return true; }
+public func IsVehicle() { return true; }
 
 local ActMap = {
-		Fly = {
-			Prototype = Action,
-			Name = "Fly",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 64,
-			Hgt = 54,
-			NextAction = "Fly",
-		},
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 64,
+		Hgt = 54,
+		Speed = 100,
+		Accel = 4,
+		Decel = 8,
+		NextAction = "Fly",
+	},
 };
 
 func Definition(def)

@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003, 2005, 2008  Sven Eberhardt
- * Copyright (c) 2007-2008  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Solid areas of objects, put into the landscape */
@@ -38,7 +35,6 @@ protected:
 
 	C4TargetRect MaskPutRect; // absolute bounding screen rect at which the mask is put - tx and ty are offsets within pSolidMask (for rects outside the landscape)
 
-	BYTE *pSolidMask;        // solid mask data: 0x00 if not solid at this position; 0xff if solid
 	BYTE *pSolidMaskMatBuff; // material replaced by this solidmask. MCVehic if no solid mask data at this position OR another solidmask was already present during put
 
 	C4Object *pForObject;
@@ -59,12 +55,10 @@ protected:
 	// Remove the solidmask temporarily
 	void RemoveTemporary(C4Rect where);
 	void PutTemporary(C4Rect where);
-	static void RemoveSolidMasks();
-	static void PutSolidMasks();
 	// Reput and update Matbuf after landscape change underneath
 	void Repair(C4Rect where);
-	friend class C4Landscape;
 
+	friend class C4Landscape;
 	friend class DensityProvider;
 
 public:
@@ -87,6 +81,11 @@ public:
 #else
 	static bool CheckConsistency() { return true; }
 #endif
+
+	static void RemoveSolidMasks();
+	static void PutSolidMasks();
+
+	static CSurface8 *LoadMaskFromFile(class C4Group &hGroup, const char *szFilename);
 };
 
 #endif

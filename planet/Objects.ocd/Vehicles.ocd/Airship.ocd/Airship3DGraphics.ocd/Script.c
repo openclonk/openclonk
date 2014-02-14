@@ -1,4 +1,8 @@
-//Airship Graphic
+/**
+	Airship Graphics
+
+	@authors Ringwaul
+*/
 
 local propanim;
 local parent;
@@ -9,10 +13,11 @@ protected func Initialize()
 	AddEffect("CheckParent", this, 1, 1,this);
 }
 
-private func FxCheckParentTimer(object target, proplist, int timer)
+private func FxCheckParentTimer(object target, proplist effect, int timer)
 {
-	if(!parent) target->RemoveObject();
-	else return;
+	if (!parent)
+		target->RemoveObject();
+	return;
 }
 
 //Moves the propeller 1 tick per call
@@ -35,9 +40,13 @@ func AnimationForward()
 	//SoundEffect?
 }
 
-public func GetTurnAngle(){
+public func GetTurnAngle()
+{
+	var dir = parent->GetAnimDir();
 	var r = GetAnimationPosition(parent.turnanim) * 1242 / 10000;
-	if(parent.animdir == -1) r = 180 + (r * -1);
+	
+	if (dir == DIR_Left)
+		r = 180 - r;
 	return r;
 }
 
@@ -45,6 +54,9 @@ public func SetAirshipParent(object airship)
 {
 	parent = airship;
 }
+
+// Only save main airship object
+func SaveScenarioObject() { return false; }
 
 local ActMap = {
 		Attach = {

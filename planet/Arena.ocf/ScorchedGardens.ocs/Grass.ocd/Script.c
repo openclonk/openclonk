@@ -20,7 +20,14 @@ protected func Damage()
 
 private func Destroy()
 {
-	CastParticles("Grass", 10, 35, 0, 0, 30, 50, RGB(255,255,255), RGB(255,255,255));
+	var particles = 
+	{
+		Prototype = Particles_Straw(),
+		R = 200,
+		G = 50,
+		B = 50
+	};
+	CreateParticle("Grass", 0, 0, PV_Random(-20, 20), PV_Random(-20, 10), PV_Random(30, 100), particles, 30);
 	RemoveObject();
 }
 

@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2009, 2011  Armin Burgmeier
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Known component file names */
@@ -69,6 +65,7 @@
 #define C4CFN_Author          "Author.txt"
 #define C4CFN_Version         "Version.txt"
 #define C4CFN_Game            "Game.txt"
+#define C4CFN_ScenarioObjectsScript "Objects.c"
 #define C4CFN_PXS             "PXS.ocb"
 #define C4CFN_MassMover       "MassMover.ocb"
 #define C4CFN_CtrlRec         "CtrlRec.ocb"
@@ -110,6 +107,7 @@
 #define C4CFN_RankNameFiles   "Rank*.txt"
 #define C4CFN_RankFacesPNG    "Rank.png"
 #define C4CFN_ClonkRank       "Rank.png" // custom rank in info file: One rank image only
+#define C4CFN_SolidMask       "SolidMask.png"
 #define C4CFN_LeagueInfo      "League.txt" // read by frontend only
 #define C4CFN_PlayerInfos     "PlayerInfos.txt"
 #define C4CFN_SavePlayerInfos "SavePlayerInfos.txt"
@@ -170,11 +168,11 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|System.ocg"
-#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
+#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
-#define C4FLS_SectionObjects   "Strings.txt|Objects.txt"
-#define C4FLS_Def       "Particle.txt|DefCore.txt|*.material|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.wav|*.ogg|*.ocd"
+#define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
+#define C4FLS_Def       "Particle.txt|DefCore.txt|*.material|SolidMask.png|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.wav|*.ogg|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"

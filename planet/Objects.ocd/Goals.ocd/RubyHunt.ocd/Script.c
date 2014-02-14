@@ -22,6 +22,16 @@ func SetGoalRect(r)
 }
 
 
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (goal_rect) props->AddCall("Goal", this, "SetGoalRect", goal_rect);
+	return true;
+}
+
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if a ruby is in the goal rectangle

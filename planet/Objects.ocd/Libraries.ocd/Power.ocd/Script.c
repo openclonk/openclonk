@@ -389,7 +389,7 @@ func GetPowerHelperForObject(object who)
 	{
 		for(var obj in Library_Power_power_compounds)
 		{
-			if(!obj.neutral) continue;
+			if(!obj || !obj.neutral) continue;
 			helper = obj;
 			break;
 		}
@@ -447,7 +447,9 @@ global func MakePowerProducer(int amount /* the amount of power to produce const
 {
 	if(!this) return false;
 	Library_Power->Init();
-	return (Library_Power->GetPowerHelperForObject(this))->AddPowerProducer(this, amount);
+	var power_helper = Library_Power->GetPowerHelperForObject(this);
+	if (!power_helper) return false;
+	return power_helper->AddPowerProducer(this, amount);
 }
 
 /** Turns the power producer into an object that does not produce power */
@@ -472,4 +474,9 @@ global func MakePowerConsumer(int amount /* the amount of power to request, 0 to
 	return (Library_Power->GetPowerHelperForObject(this))->AddPowerConsumer(this, amount);
 }
 
-// helper object
+// helper object should not be saved
+func SaveScenarioObject()
+{
+	if (GetID() == Library_Power) return false;
+	return inherited(...);
+}

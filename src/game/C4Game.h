@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2005, 2008-2009  Sven Eberhardt
- * Copyright (c) 2004, 2006  Peter Wortmann
- * Copyright (c) 2005, 2009, 2011  Günther Brammer
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Main class to run the game */
@@ -80,6 +75,7 @@ public:
 	C4GroupSet          GroupSet;
 	C4Group             *pParentGroup;
 	C4Extra             Extra;
+	class C4ScenarioObjectsScriptHost *pScenarioObjectsScript;
 	C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
@@ -212,7 +208,7 @@ public:
 	     C4Object *pContainer=NULL,
 	                 int32_t iOwner=ANY_OWNER);*/
 	int32_t ObjectCount(C4ID id);
-	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
+	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=NULL);
 	C4Object *PlaceVegetation(C4PropList *def, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);
 	C4Object *PlaceAnimal(C4PropList *def);
 

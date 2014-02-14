@@ -150,7 +150,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>Clonk</string>
+	<string>oc</string>
 	<key>CFBundleIdentifier</key>
 	<string>${C4ENGINEID}</string>
 	<key>CFBundleInfoDictionaryVersion</key>

@@ -9,7 +9,5 @@ Vertices=2
 VertexX=0,0
 VertexY=-5,5
 Picture=0,0,36,32
-#RotatedSolidmasks=1
-SolidMask=50,0,2,8
 Rotate=1
 Mass=0

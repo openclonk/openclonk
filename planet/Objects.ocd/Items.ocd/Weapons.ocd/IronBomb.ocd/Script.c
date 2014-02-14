@@ -32,7 +32,7 @@ func FxFuseBurnTimer(object bomb, int num, int timer)
 	var i = 3;
 	var x = +Sin(GetR(), i);
 	var y = -Cos(GetR(), i);
-	CreateParticle("EngineSmoke", x, y, x, y, RandomX(20,50), RGB(100,100,100));
+	CreateParticle("Smoke", x, y, x, y, PV_Random(18, 36), Particles_Smoke(), 2);
 
 	if(timer == 1) Sound("FuseLoop",nil,nil,nil,+1);
 	if(timer >= 90)
@@ -59,8 +59,8 @@ func DoExplode()
 		Sound("BlastLiquid2");
 	else
 		Sound("BlastMetal");
-	CreateParticle("ExploSmoke", 0,0,0,0,390,RGBa(255,255,255,165));
-	Explode(24);
+	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), 0, 0, PV_Random(40, 60), Particles_Smoke(), 60);
+	Explode(30);
 }
 
 protected func Hit(x, y)

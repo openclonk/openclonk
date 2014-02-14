@@ -52,6 +52,23 @@ global func FxGemPyreStart(object target, effect, int temporary, c, e, owner,thr
 	effect.thrower=thrower;
 	effect.owner=owner;
 	effect.objects=[];
+	
+	effect.particles =
+	{
+		Prototype = Particles_Air(),
+		Size = PV_Linear(2, 0),
+		R = PV_Random(120, 140),
+		G = PV_Random(20, 30),
+		G = PV_Random(90, 110),
+		BlitMode = GFX_BLIT_Additive
+	};
+	
+	if (e)
+	{
+		effect.particles.R = PV_Random(190, 200);
+		effect.particles.G = 0;
+		effect.particles.B = PV_Random(20, 40);
+	}
 }
 global func FxGemPyreTimer(object target, effect, int time)
 {
@@ -68,8 +85,9 @@ global func FxGemPyreTimer(object target, effect, int time)
 		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
 		var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 		if(e)clr=RGB(190+Random(10),0,20+Random(20));
-		if(Random(2))CreateParticle("AirIntake", x + Sin(r,d), y - Cos(r,d),RandomX(-5,5),RandomX(-5,-10),BoundBy((30-time),1,25)*2 + 10 + Random(10),clr);
-		else CreateParticle("Magic", x + Sin(r,d), y - Cos(r,d),0,0,BoundBy((40-time),1,25) + 5 + Random(10),clr);
+		var xoff = Sin(r, d);
+		var yoff = -Cos(r, d);
+		CreateParticle("Air", x + xoff, y + yoff, PV_Random(xoff - 3, xoff + 3), PV_Random(yoff - 3, yoff + 3), PV_Random(5, 10), effect.particles, 2);
 	}
 	
 	for(var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(((time/2)+1)*6,x,y),Find_Not(Find_Distance((time/2)*4,x,y)),Find_ID(Clonk)))
@@ -81,8 +99,7 @@ global func FxGemPyreTimer(object target, effect, int time)
 		if(PathFree(x,y,obj->GetX(),obj->GetY()))
 		{
 			obj->DoEnergy((-BoundBy((30-time),1,26)*3)/5,0,0,effect.thrower);
-			obj->CastParticles("MagicFire",20 + (BoundBy((30-time),1,26)*2),(BoundBy((30-time),6,26)*2),0,0,26,50,clr,clr);
-			obj->CastParticles("Air",10 + BoundBy((30-time),1,26),10,0,0,16,30,clr,clr);
+			obj->CreateParticle("MagicFire", 0, 0, PV_Random(-15, 15), PV_Random(-15, 15), PV_Random(5, 10), effect.particles, 20);
 			obj->Fling(RandomX(-2,2),-2-(BoundBy((30-time),10,30)/10));
 			effect.objects[GetLength(effect.objects)] = obj;
 		}	

@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2012  Tobias Zwick
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Input to player control mapping
 
@@ -25,6 +21,7 @@
 #include "C4KeyboardInput.h"
 #include "C4LangStringTable.h"
 #include "C4Id.h"
+#include "C4TimeMilliseconds.h"
 
 #include <list>
 
@@ -134,8 +131,8 @@ public:
 struct C4PlayerControlRecentKey
 {
 	C4KeyCodeEx pressed_key, matched_key;
-	DWORD tTime;
-	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, DWORD tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
+	C4TimeMilliseconds tTime;
+	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, C4TimeMilliseconds tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
 	bool operator ==(const C4KeyCodeEx &cmp) { return pressed_key==cmp; } // comparison op for finding items in lists: Search for the pressed key only
 };
 
@@ -185,7 +182,8 @@ public:
 		CTM_Hold=      1<<0,        // the control will be put into "down"-mode
 		CTM_Release=   1<<1,        // the hold mode of the control will be released
 		CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
-		CTM_HandleDownStatesOnly = 1<<3 // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_HandleDownStatesOnly = 1<<3, // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_ClearRecentKeys = 1<<4  // if this assignment is triggered, RecentKeys are reset so no more combos can be generated
 	};
 
 private:
@@ -386,7 +384,7 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 

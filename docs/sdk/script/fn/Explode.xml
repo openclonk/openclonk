@@ -41,7 +41,8 @@
     <related>
       <funclink>RemoveObject</funclink>
       <funclink>BlastObjects</funclink>
-    </related>
+      <funclink>BlastFree</funclink>
+	</related>
   </func>
   <author>Sven2</author><date>2001-11</date>
   <author>Clonkonaut</author><date>2008-04</date>

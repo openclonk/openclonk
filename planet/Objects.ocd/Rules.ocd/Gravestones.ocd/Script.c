@@ -33,7 +33,15 @@ public func FxIntGravestoneStart(object clonk, proplist effect)
 	clonk->Enter(effect.grave);
 	
 	//smoke effect
-	effect.grave->CastParticles("ExploSmoke", RandomX(10,15), 0, 0, 6, 200, 250, HSLa(0,0,255,64), HSLa(0,0,255,64));
+	var particles =
+	{
+		Prototype = Particles_Dust(),
+		R = 200,
+		G = 100,
+		B = 50,
+		Size = PV_KeyFrames(0, 0, 0, 300, 40, 1000, 15)
+	};
+	effect.grave->CreateParticle("Dust", 0, 0, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 6);
 }
 
 public func FxIntGravestoneStop(object clonk, proplist effect, int reason)

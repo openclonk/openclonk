@@ -33,6 +33,7 @@ local ActMap = {
 		Name = "Pump",
 		Length = 30,
 		Delay = 3,
+		Sound = "Pumpjack",
 		NextAction = "Pump",
 		StartCall = "CheckState",
 		PhaseCall = "Pumping"
@@ -98,6 +99,7 @@ func Initialize()
 	animation = PlayAnimation("pump", 5, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop), Anim_Const(1000));
 	SetState("Wait");
 }
+
 
 /*-- Interaction --*/
 

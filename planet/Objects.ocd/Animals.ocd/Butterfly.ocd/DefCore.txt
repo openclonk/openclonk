@@ -17,4 +17,3 @@ Float=1
 BorderBound=7
 StretchGrowth=1
 IncompleteActivity=1
-

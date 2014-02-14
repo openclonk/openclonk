@@ -50,26 +50,17 @@ protected func Initialize()
 	AddEffect("LavaBrickReset", brick, 100, 10);
 	
 	AddEffect("DeathByFire",nil,100,2,nil);
-	AddEffect("RemoveCorpses",nil,100,2,nil);
 	return;
 }
 
-
-global func FxRemoveCorpsesTimer()
+global func FxBlessTheKingStart(target, effect, temp)
 {
-	//uber effect abuse
-	
-	for(var dead in FindObjects(Find_ID(Clonk),Find_Not(Find_OCF(OCF_Alive))))
+	if (temp) return;
+	effect.particles = 
 	{
-		CastParticles("MagicFire",100,50,dead->GetX(),dead->GetY(),50+Random(30));
-		CastParticles("MagicFire",50,30,dead->GetX(),dead->GetY(),70+Random(60));
-		dead->RemoveObject();		
-	}
-	for(var burning in FindObjects(Find_ID(Clonk),Find_OCF(OCF_OnFire)))
-	{
-		burning->DoEnergy(-3); //lava hurts a lot
-	}
-
+		Prototype = Particles_Fire(),
+		Attach = ATTACH_Back
+	};
 }
 
 global func FxBlessTheKingTimer(object target, effect, int timer)
@@ -82,26 +73,24 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 	
 	if(king->Contents(0)) king->Contents(0)->~MakeKingSize();
 	if(king->Contents(1)) king->Contents(1)->~MakeKingSize();
-	for(var i=0; i<25; i++)
-	CreateParticle("MagicFire",king->GetX()+RandomX(-3,3),king->GetY()+RandomX(-11,8),RandomX(-6,6),RandomX(-10,3),Random(30),RGBa(255,255-Random(50),255-Random(160),20+Random(160)));
-	for(; i<45; i++)
-	CreateParticle("MagicFire2",king->GetX()+RandomX(-4,4),king->GetY()+RandomX(-7,8),RandomX(-6,6),RandomX(-10,3),30+Random(30),RGBa(255,255-Random(100),255-Random(100),10+Random(20)));
+	king->CreateParticle("Fire", PV_Random(-4, 4), PV_Random(-11, 8), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 30), effect.particles, 10);
 	return 1;
 }
 
 global func FxDeathByFireTimer(object target, effect, int timer)
 {
+	for(var burning in FindObjects(Find_ID(Clonk),Find_OCF(OCF_OnFire)))
+	{
+		burning->DoEnergy(-3); //lava hurts a lot
+	}
+	
 	for(var obj in FindObjects(Find_InRect(55,0,50,70),Find_OCF(OCF_Alive)))
 		obj->~Kill();
 
 	for(var obj in FindObjects(Find_InRect(55,0,50,30),Find_OCF(OCF_Alive),Find_Not(Find_ID(MovingBrick))))
 		obj->RemoveObject();	
 		
-	for(var i=0; i<20; i++)
-	{
-		CreateParticle("MagicFire",50+Random(60),Random(60),RandomX(-3,3),RandomX(-1,10)+ Random(3)*10,150+Random(50),HSLa(-30+Random(60),200+Random(50),255,128+Random(100)));
-		CreateParticle("MagicFire",50+Random(60),Random(30),RandomX(-3,3),Random(60),150+Random(50),HSLa(-30+Random(60),200+Random(50),255,128+Random(100)));
-	}
+	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), Particles_Fire(), 20);
 }
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)

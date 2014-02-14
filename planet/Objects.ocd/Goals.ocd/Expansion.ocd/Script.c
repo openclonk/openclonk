@@ -35,6 +35,14 @@ public func GetExpansionGoal()
 	return expansion_goal;
 }
 
+// Scenario saving
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (expansion_goal) props->AddCall("Goal", this, "SetExpansionGoal", expansion_goal);
+	return true;
+}
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if the expansio goal is covered by flags.

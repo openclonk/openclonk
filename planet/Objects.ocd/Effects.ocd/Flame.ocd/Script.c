@@ -22,3 +22,11 @@ func Burning()
 		
 	}
 }
+
+// Don't incinerate twice in saved scenarios
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Fire");
+	return true;
+}

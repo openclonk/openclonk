@@ -50,6 +50,13 @@ protected func Damage()
 
 func BurstIntoAshes()
 {
+	var particles =
+	{
+		Prototype = Particles_Dust(),
+		R = 50, G = 50, B = 50,
+		Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(2, 10), 1000, 0),
+	};
+	
 	var r = GetR();
 	var size = GetCon() * 110 / 100;
 	
@@ -61,7 +68,7 @@ func BurstIntoAshes()
 		
 		for(var mirror = -1; mirror <= 1; mirror += 2)
 		{
-			CreateParticle("Dust", x * mirror, y * mirror, RandomX(-2, 2), RandomX(-2, 2), 150, RGBa(50, 50, 50, 128));
+			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
 		}
 	}

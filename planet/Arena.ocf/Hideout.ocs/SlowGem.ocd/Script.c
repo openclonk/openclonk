@@ -46,7 +46,26 @@ global func FxGemSlowFieldStart(object target, effect, int temporary, x, y, e)
 		return 1;
 	effect.x=x;
 	effect.var1=y;
-	effect.var2=e;	
+	effect.var2=e;
+	
+	effect.particles =
+	{
+		Prototype = Particles_Spark(),
+		Size = PV_Linear(3, 0),
+		ForceY = PV_Gravity(-40),
+		R = PV_Random(120, 140),
+		G = PV_Random(20, 30),
+		B = PV_Random(90, 110),
+		OnCollision = PC_Die(),
+		CollisionVertex = 1000
+	};
+	
+	if (e)
+	{
+		effect.particles.R = PV_Random(190, 210);
+		effect.particles.G = 0;
+		effect.particles.B = PV_Random(20, 40);
+	}
 }
 global func FxGemSlowFieldTimer(object target, effect, int time)
 {
@@ -59,10 +78,7 @@ global func FxGemSlowFieldTimer(object target, effect, int time)
 		var r=Random(360);
 		var d=Min(Random(20)+Random(130),62);
 		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
-		var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
-		if(e)clr=RGB(190+Random(10),0,20+Random(20));
-		if(Random(2))CreateParticle("MagicSpark", x + Sin(r,d), y - Cos(r,d),0,0,10+Random(12),clr);
-		else CreateParticle("Magic", x + Sin(r,d), y - Cos(r,d),0,0,10+Random(6),clr);
+		CreateParticle("MagicFire", x + Sin(r,d), y - Cos(r,d), PV_Random(-2, 2), PV_Random(0, 4), PV_Random(10, 40), effect.particles, 2);
 	}
 	for(var obj in FindObjects(Find_Distance(62,x,y)))
 	{

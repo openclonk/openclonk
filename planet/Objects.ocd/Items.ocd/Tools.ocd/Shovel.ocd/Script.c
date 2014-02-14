@@ -120,7 +120,8 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 		clonk->SetYDir(Cos(DigAngle,-speed)+ydir_boost,100);
 
 		// Dust
-		Dust(clonk);
+		if (!Random(10))
+			Dust(clonk);
 	}
 }
 
@@ -143,8 +144,15 @@ public func Dust(object target)
 	if(GetMaterialVal("DigFree","Material",mat))
 	{
 		var clr = GetAverageTextureColor(tex);
-		var a = 80;
-		CreateParticle("Dust",groundx,groundy,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),DoRGBaValue(clr,-255+a,0));
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+			Size = PV_KeyFrames(0, 0, 0, 300, 40, 1000, 15),
+		};
+		CreateParticle("Dust", groundx, groundy, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 3);
 	}
 }
 

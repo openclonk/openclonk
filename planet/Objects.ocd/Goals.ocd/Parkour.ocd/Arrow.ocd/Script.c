@@ -6,6 +6,8 @@ protected func Initialize()
 	return;
 }
 
+public func SaveScenarioObject() { return false; }
+
 /*-- Proplist --*/
 
 local ActMap = {

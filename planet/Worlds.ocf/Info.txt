@@ -1,0 +1,15 @@
+[Developer/Maintainer]
+Maikel 
+
+[Folder Information]
+When this folder is done it should contain 12 Worlds with varying landscapes and increasing difficulty.
+
+[Information for developers]
+Worlds.ocf is a folder for settlement scenarios with a dynamic landscape (preferably Map.c landscapes).
+Furthermore they have simple goals like mining or territorial expansion, and should be even fun to play
+after completion. Keep in mind that with the introduction of lobby option (which will happen at some
+point) we would like to introduce settings into these scenarios which the player can modify in the lobby.
+Settings which come to mind are: map size, material available and difficulty of the goals. Please already 
+implement these options with a static const set to the standard value, you'd prefer to be played.
+
+If you want your scenario in this folder please add it or contact the maintainer in IRC or the forum.

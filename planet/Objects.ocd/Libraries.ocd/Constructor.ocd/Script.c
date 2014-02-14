@@ -98,7 +98,8 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 
 	effect.structure = structure_id;
 	effect.flipable = !structure_id->~NoConstructionFlip();
-	effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
+	effect.preview = structure_id->~CreateConstructionPreview(clonk);
+	if (!effect.preview) effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
 	effect.preview->Set(structure_id, clonk);
 }
 
@@ -154,7 +155,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		return false;
 	if (!CheckConstructionSite(structure_id, x, y))
 	{
-		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
 		return false;
 	} 
 	// intersection-check with all other construction sites... bah
@@ -165,7 +166,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
-			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0));
 			return false;
 		}
 	}
@@ -175,7 +176,19 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
-	site->Set(structure_id, dir, stick_to);
+	/* note: this is necessary to have the site at the exact position x,y. Otherwise, for reasons I don't know, the
+	   ConstructionSite seems to move 2 pixels downwards (on ConstructionSite::Construction() it is still the
+	   original position) which leads to that the CheckConstructionSite function gets different parameters later
+	   when the real construction should be created which of course could mean that it returns something else. (#1012)
+	   - Newton
+	*/
+	site->SetPosition(GetX()+x,GetY()+y);
+	
+	// Randomize sign rotation
+	site -> SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
+	site -> PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
+	
+	site -> Set(structure_id, dir, stick_to);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	

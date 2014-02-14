@@ -26,6 +26,8 @@
     </syntax>
     <desc>Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.ocg will be used.</desc>
     <related><funclink>SetPlayList</funclink></related>
-  </func>
+    <related><funclink>Sound</funclink></related>
+    <related><funclink>SoundAt</funclink></related>
+	</func>
   <author>jwk</author><date>2002-08</date>
 </funcs>

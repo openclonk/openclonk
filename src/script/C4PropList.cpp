@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2007, 2009-2012  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2012  Sven Eberhardt
+ * Copyright (c) 2004, Peter Wortmann
+ * Copyright (c) 2007, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -98,7 +92,7 @@ bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
 
 void C4PropListNumbered::SetEnumerationIndex(int32_t iMaxObjectNumber)
 {
-	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	// update object enumeration index now, because calls like OnSynchronized might create objects
 	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
 }
 
@@ -106,6 +100,38 @@ void C4PropListNumbered::ResetEnumerationIndex()
 {
 	assert(!PropLists.GetSize());
 	EnumerationIndex = 0;
+}
+
+void C4PropListNumbered::ShelveNumberedPropLists()
+{
+	// unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	assert(ShelvedPropLists.empty());
+	ShelvedPropLists.reserve(PropLists.GetSize());
+	C4PropListNumbered *const* p_next = PropLists.First(), *const* p;
+	while ((p = p_next))
+	{
+		p_next = PropLists.Next(p);
+		C4PropListNumbered *pl = *p;
+		if (pl->Number != -1)
+		{
+			pl->ClearNumber();
+			ShelvedPropLists.push_back(pl);
+		}
+	}
+}
+
+void C4PropListNumbered::UnshelveNumberedPropLists()
+{
+	// re-insert shelved proplists into main list and give them a number
+	for (std::vector<C4PropListNumbered *>::iterator i=ShelvedPropLists.begin(); i!=ShelvedPropLists.end(); ++i)
+		(*i)->AcquireNumber();
+	ShelvedPropLists.clear();
+}
+
+void C4PropListNumbered::ClearShelve()
+{
+	// cleanup shelve - used in game clear, un unsuccessful section load, etc.
+	ShelvedPropLists.clear();
 }
 
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
@@ -118,7 +144,18 @@ void C4PropListNumbered::AcquireNumber()
 	do
 		Number = ++EnumerationIndex;
 	while (PropLists.Get(Number));
+	// Add to list
 	PropLists.Add(this);
+}
+
+void C4PropListNumbered::ClearNumber()
+{
+	// Make proplist invisible during denumeration process
+	if (Number != -1)
+	{
+		PropLists.Remove(this);
+		Number = -1;
+	}
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
@@ -324,7 +361,7 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Value, numbers));
 }
 
-void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth)
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth) const
 {
 	StdStrBuf & DataString = *out;
 	if (depth <= 0 && Properties.GetSize())
@@ -622,6 +659,58 @@ void C4PropList::ResetProperty(C4String * k)
 {
 	Properties.Remove(k);
 }
+
+void C4PropList::Iterator::Init()
+{
+	iter = properties->begin();
+}
+
+void C4PropList::Iterator::Reserve(size_t additionalAmount)
+{
+	properties->reserve(properties->size() + additionalAmount);
+}
+
+void C4PropList::Iterator::AddProperty(const C4Property * prop)
+{
+	std::vector<const C4Property*>::size_type i = 0, len = properties->size();
+	for(;i < len; ++i)
+	{
+		const C4Property *oldProperty = (*properties)[i];
+		if (oldProperty->Key == prop->Key)
+		{
+			(*properties)[i] = prop;
+			return;
+		}
+	}
+	// not already in vector?
+	properties->push_back(prop);
+}
+
+C4PropList::Iterator C4PropList::begin()
+{
+	C4PropList::Iterator iter;
+
+	if (prototype)
+	{
+		iter = prototype->begin();
+	}
+	else
+	{
+		iter.properties = std::make_shared<std::vector<const C4Property*> >();
+	}
+	iter.Reserve(Properties.GetSize());
+
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		iter.AddProperty(p);
+		p = Properties.Next(p);
+	}
+
+	iter.Init();
+	return iter;
+}
+
 
 template<> template<>
 unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int const & e)

@@ -182,18 +182,20 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	return self.window.inLiveResize;
 }
 
-- (NSRect) windowWillUseStandardFrame:(NSWindow*) windowdefaultFrame:(NSRect) newFrame
+- (NSRect) windowWillUseStandardFrame:(NSWindow*) window defaultFrame:(NSRect) newFrame
 {
 	return NSMakeRect(newFrame.origin.x, newFrame.origin.y, preferredContentSize.width, preferredContentSize.height);
 }
 
-- (void) windowWillEnterFullScreen:(NSNotification *)notification
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
 {
-	if (!Application.isEditor)
-	{
-		CGAssociateMouseAndMouseCursorPosition(FALSE);
-		[self.openGLView centerMouse];
-	}
+	if (stdWindow == &::FullScreen)
+		return NSMakeSize(
+			CGDisplayPixelsWide(C4OpenGLView.displayID),
+			CGDisplayPixelsHigh(C4OpenGLView.displayID)
+		);
+	else
+		return proposedSize;
 }
 
 - (void) windowWillExitFullScreen:(NSNotification *)notification

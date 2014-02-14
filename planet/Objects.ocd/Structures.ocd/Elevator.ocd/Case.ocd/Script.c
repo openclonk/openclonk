@@ -395,9 +395,9 @@ func SetMoveDirection(int dir, bool user_requested, bool drill)
 	{
 		SetYDir(dir * speed);
 		SetAction(action);
+		SetComDir(COMD_None);
 		ForceSync();
-		
-		Sound("ElevatorStart");
+
 		elevator->StartEngine();
 	}
 	else
@@ -417,7 +417,6 @@ func Halt(bool user_requested, bool power_out)
 	{
 		if(elevator)
 			elevator->StopEngine();
-		Sound("ElevatorStop");
 	}
 	
 	// clear speed
@@ -650,6 +649,8 @@ func Control2Master(string call, object clonk)
 	return partner->Call(call, clonk, ...);
 }
 
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 		Drive = {
 			Prototype = Action,
@@ -661,7 +662,6 @@ local ActMap = {
 			Wdt = 24,
 			Hgt = 26,
 			NextAction = "Drive",
-			Sound = "ElevatorMoving"
 		},
 		DriveIdle = {
 			Prototype = Action,

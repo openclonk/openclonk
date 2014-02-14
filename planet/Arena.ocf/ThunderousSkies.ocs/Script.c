@@ -6,6 +6,7 @@
 --*/
 
 
+static ThunderousSkies_air_particles, ThunderousSkies_air_particles_red;
 
 protected func Initialize()
 {
@@ -20,6 +21,7 @@ protected func Initialize()
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	Sound("BirdsLoop",true,100,nil,+1);
 		
 	CreateObject(Column,650,379);
@@ -50,6 +52,24 @@ protected func Initialize()
 	CreateObject(BrickEdge, 380, 416)->PermaEdge();
 	
 	PlaceGras();
+	
+	ThunderousSkies_air_particles =
+	{
+		Prototype = Particles_Air(),
+		Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(2, 5), 1000, 0),
+		Stretch = PV_Speed(2000, 0),
+		OnCollision = PC_Stop(),
+		ForceY = -20,
+		Attach = ATTACH_Back | ATTACH_MoveRelative
+	};
+	
+	ThunderousSkies_air_particles_red =
+	{
+		Prototype = ThunderousSkies_air_particles,
+		R = 255,
+		G = PV_KeyFrames(0, 0, 255, 250, 255, 500, 0),
+		B = PV_KeyFrames(0, 0, 255, 250, 255, 500, 0)
+	};
 	return;
 }
 global func FxLifestealDamage(object target, effect, int damage, int cause, int from)
@@ -82,40 +102,18 @@ global func FxLifedrainTimer(object target, effect, int timer)
 }
 global func FxBlessTheKingTimer(object target, effect, int timer)
 {
-	
-	//evil effect abuse :O
-	for(var dead in FindObjects(Find_ID(Clonk),Find_Not(Find_OCF(OCF_Alive))))
-	{
-		CastParticles("Air",50,50,dead->GetX(),dead->GetY(),50+Random(30));
-		for(var i=0; i<200; i++)
-		{
-			var r=Random(360);
-			CreateParticle("AirIntake",dead->GetX()+Sin(r,6-Random(5)),dead->GetY()-Cos(r,6-Random(5)),RandomX(-2,2),-(i/3),20+Random(20),dead->GetPlayerColor());
-		}
-		dead->RemoveObject();		
-	}
-
 	if(!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
 	if(FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
 	
 	var king=FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
-
-	for(var i=0; i<5; i++)
+	var particles = ThunderousSkies_air_particles;
+	var duration = 10;
+	if (GetEffect("Lifedrain", king))
 	{
-		var r=Random(360);
-		var clr=RGBa(30,100-Random(50),255-Random(160),230+Random(20));
-		var str=0;
-		var lifedrain = GetEffect("Lifedrain",king);
-		if(lifedrain)
-		{
-			clr=RGBa(BoundBy(-lifedrain.drain,30,225)+Random(20),160-(BoundBy(-lifedrain.drain/2,10,100))-Random(50),230-BoundBy(-lifedrain.drain,30,225)+Random(20), 230+Random(20));
-			var str=Random(BoundBy(-lifedrain.drain/10,2,6));
-		}
-		CreateParticle("AirIntake",king->GetX()+Sin(r,6-Random(5)),king->GetY()-Cos(r,6-Random(5)),Sin(r + 90,8+Random(4)+str),-Cos(r +90,8+Random(4)+str),20+Random(30) +str*str,clr);
-		CreateParticle("AirIntake",king->GetX()+Sin(r + 180,6-Random(5)),king->GetY()-Cos(r+180,6-Random(5)),Sin(r + 90,8+Random(4)+str),-Cos(r +90,8+Random(4)+str),20+Random(30)+str*str,clr);
-		
+		particles = ThunderousSkies_air_particles_red;
+		duration *= 2;
 	}
-	CreateParticle("AirIntake",king->GetX()+Sin(r + 180,6-Random(5)),king->GetY()-Cos(r+180,6-Random(5)),0,-25,20+Random(20),king->GetPlayerColor());
+	king->CreateParticle("Air", 0, 8, PV_Random(-10, 10),PV_Random(0, 10), PV_Random(duration, 2 * duration), particles, 4);
 	return 1;
 }
 
@@ -131,9 +129,8 @@ global func FxChanneledWindTimer()
 		obj->SetYDir(Max(obj->GetYDir()-5,-50));
 		obj->SetXDir(obj->GetXDir()+RandomX(-1,1));
 	}
-
-	CreateParticle("AirIntake",230+Random(40),398,RandomX(-1,1),-30,60+Random(10),RGB(100+Random(25),128+Random(20),255));
-	CreateParticle("AirIntake",700+Random(60),348,RandomX(-1,1),-30,60+Random(10),RGB(100+Random(25),128+Random(20),255));
+	CreateParticle("Air", 230+Random(40),398,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
+	CreateParticle("Air", 700+Random(60),348,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
 }
 
 global func FxBalloonsTimer()
@@ -163,7 +160,7 @@ global func FxBalloonsTimer()
 	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 	balloon->SetProperty("load",target);
 	target->SetAction("Attach", balloon);
-	CreateParticle("Flash", x, y - 50, 0, 0, 500, RGB(255, 255, 255));
+	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 	AddEffect("HorizontalMoving", balloon, 1, 1, balloon);
 	balloon->SetXDir(((Random(2)*2)-1) * (Random(4)+3));
 }
@@ -205,7 +202,7 @@ private func MakeTarget(int x, int y)
 	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 	balloon->SetProperty("load",target);
 	target->SetAction("Attach", balloon);
-	CreateParticle("Flash", x, y - 50, 0, 0, 500, RGB(255, 255, 255));
+	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 
 }
 

@@ -1,6 +1,7 @@
 /*-- Coconut Tree --*/
 
 #include Library_Plant
+#include Library_Tree
 
 private func SeedChance() {	return 100; }
 private func SeedArea() { return 400; }

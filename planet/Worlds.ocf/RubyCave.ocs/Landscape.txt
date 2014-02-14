@@ -1,0 +1,97 @@
+/* Ruby cave - by Sven2 */
+
+overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
+overlay GraniteBorders {turbulence=100; mat=Granite; loosebounds=1; VaryTex {mat=Rock; tex=rock_cracked; a=1;};};
+
+map CrystalCaves {
+  // Base background is earth
+  mat=Earth; tex=earth_rough;
+  VaryTex { mat=Earth; tex=earth_dry; };
+  VaryTex { mat=Earth; tex=earth; };
+
+  // Resources
+  VaryTex { mat=Rock; y=50px; zoomX=30; a=3;};
+  VaryTex { mat=Granite; y=80px; zoomX=30; a=5;};
+  VaryTex { mat=Coal; a=10; };
+  VaryTex { mat=Ore; a=10; };
+  VaryTex { mat=Firestone; y=40px; a=8; hgt=50px;x=60px;};
+  VaryTex { mat=Gold; y=70px; a=20; };
+
+  // Top caves for mushyrooms
+  overlay { hgt=32px; mask=1;
+    overlay { algo=rndchecker; x=55px; hgt=32px; mat=Tunnel; a=3;zoomX=50;zoomY=-20; turbulence=100; loosebounds=1; };
+  };
+
+  // Water. Only in bottom area.
+  overlay { y=35px; mask=1;
+    overlay WaterVein { x=100px; turbulence=100; algo=rndchecker; zoomX=-100; zoomY=100; a=5; loosebounds=1; mat=Water; };
+    WaterVein { x=70px; rotate=-20; };
+    WaterVein { x=30px; rotate=20; };
+  };
+
+  // Rock/granite in mid area
+  overlay { y=30px; hgt=12px; turbulence=1000; loosebounds=1; mask=1;
+    VaryTex { mat=Rock; zoomX=-100; };
+    VaryTex { mat=Granite; zoomX=-100; };
+  };
+
+  // Granite borders
+  GraniteBorders { y=-20px; hgt=24px; };
+  GraniteBorders { x=146px; };
+  GraniteBorders { y=126px; rotate=-10; VaryTex {mat=Water; };};
+  GraniteBorders { x=-20px; wdt=24px; };
+
+  // Ruby cave water basin
+  overlay { algo=poly; mat=Water; turbulence=10;
+    point { x=100px; y=120px; };
+    point { x=110px; y=90px; };
+    point { x=130px; y=85px; };
+    point { x=145px; y=95px; };
+    point { x=140px; y=105px; };
+    point { x=145px; y=130px; };
+    point { x=125px; y=140px; };
+    point { x=115px; y=140px; };
+  };
+  // Ruby cave socket
+  overlay { algo=poly; mat=Granite; turbulence=10;
+    point { x=100px; y=150px; };
+    point { x=115px; y=145px; };
+    point { x=117px; y=120px; };
+    point { x=123px; y=120px; };
+    point { x=125px; y=145px; };
+    point { x=140px; y=150px; };
+  };
+  // Ruby cave rubies!
+  overlay { algo=poly; mat=Ruby; turbulence=10;
+    point { x=114px; y=125px; };
+    point { x=116px; y=119px; };
+    point { x=120px; y=115px; };
+    point { x=124px; y=119px; };
+    point { x=126px; y=125px; };
+    point { x=120px; y=128px; };
+    overlay {algo=border; a=2; b=0; turbulence=10; mat=Amethyst; };
+    overlay {algo=border; a=1; b=1; mat=Granite; };
+  };
+
+  // Starting cave
+  overlay { algo=poly; mat=Tunnel; turbulence=10;
+    hgt=25px;
+    point { x=-100px; y=10px; };
+    point { x=0px; y=10px; };
+    point { x=0px; y=10px; };
+    point { x=18px; y=5px; };
+    point { x=40px; y=15px; };
+    point { x=40px; y=20px; };
+    point { x=30px; y=35px; };
+    point { x=-100px; y=35px; };
+
+    // sky back
+    VaryTex { a=2; wdt=23px; };
+    // windmill positions
+    overlay { x=5px; wdt=22px; y=10px; turbulence=10; loosebounds=1;};
+
+    overlay { y=24px; mat=Brick; };
+
+  };
+
+};

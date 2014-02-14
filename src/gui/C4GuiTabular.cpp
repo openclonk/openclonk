@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2007  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010-2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // tab control
@@ -364,7 +358,7 @@ namespace C4GUI
 	void Tabular::DoCaptionScroll(int32_t iDir)
 	{
 		// store time of scrolling change
-		tLastScrollTime = GetTime();
+		tLastScrollTime = C4TimeMilliseconds::Now();
 		// change scrolling within max range
 		int32_t iAvailableTabSpace = rcBounds.Wdt;
 		int32_t iScrollPinSize = GetTopSize();
@@ -377,7 +371,8 @@ namespace C4GUI
 		if (!fDrawSelf) return;
 		bool fGfx = HasGfx();
 		// execute scrolling
-		if ((fScrollingLeftDown || fScrollingRightDown) && GetTime()-tLastScrollTime >= C4GUI_TabCaptionScrollTime)
+		bool fCaptionScrollDelayOver = C4TimeMilliseconds::Now() - tLastScrollTime >= C4GUI_TabCaptionScrollTime;
+		if ((fScrollingLeftDown || fScrollingRightDown) && fCaptionScrollDelayOver)
 			DoCaptionScroll(fScrollingRightDown - fScrollingLeftDown);
 		// border
 		if (!fGfx) Draw3DFrame(cgo, false, 1, 0xaf, eTabPos!=tbTop, GetTopSize(), eTabPos!=tbLeft, GetLeftSize());

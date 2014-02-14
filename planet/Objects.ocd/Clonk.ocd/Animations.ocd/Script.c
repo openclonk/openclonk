@@ -385,8 +385,14 @@ func Footstep()
 	{
 		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
-		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 		Sound("StepSoft?");
 	}
 }
@@ -889,13 +895,29 @@ func StartSwim()
 	if(!InLiquid()) return;
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
-	SetVertex(1,VTX_Y,-4,2);
+	
+	return SetSwimmingVertices(true);
 }
 
 func StopSwim()
 {
 	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
-	SetVertex(1,VTX_Y,-7,2);
+	
+	return SetSwimmingVertices(false);
+}
+
+func SetSwimmingVertices(bool is_swimming)
+{
+	var vtx_list = [[0,2,0], [0,-7,4], [0,9,11], [-2,-3,1], [2,-3,2], [-4,2,1], [4,2,2], [-2,6,1], [2,6,2]];
+	if (is_swimming)
+		vtx_list = [[0,3,0], [0,-2,4], [0,7,11], [-4,0,1], [4,0,2], [-5,3,1], [5,3,2], [-4,4,1], [4,4,2]];
+	for (var i = 0; i < GetVertexNum(); i++)
+	{
+		SetVertex(i, VTX_X, vtx_list[i][0], 2);
+		SetVertex(i, VTX_Y, vtx_list[i][1], 2);
+		SetVertex(i, VTX_CNAT, vtx_list[i][2], 2);
+	}
+	return;
 }
 
 func FxIntSwimStart(pTarget, effect, fTmp)
@@ -938,14 +960,23 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 		percent = (percent%100);
 		if( percent < 40 )
 		{
-			for(var i = 0; i < 2; i++)
-				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
 			if(iTime%5 == 0)
 			{
-				var particle_name = "WaveLeft";
-				if( GetDir() == 1 ) particle_name = "WaveRight";
+				var phases = PV_Linear(0, 7);
+				if (GetDir() == 1) phases = PV_Linear(8, 15);
 				var color = GetAverageTextureColor(GetTexture(0, 0));
-				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, color, this, 1);
+				var particles =
+				{
+					Size = 16,
+					Phase = phases,
+					CollisionVertex = 750,
+					OnCollision = PC_Die(),
+					R = (color >> 16) & 0xff,
+					G = (color >>  8) & 0xff,
+					B = (color >>  0) & 0xff,
+					Attach = ATTACH_Front,
+				};
+				CreateParticle("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
 			}
 			Sound("Splash?");
 		}
@@ -1014,8 +1045,14 @@ func Hit(int iXSpeed, int iYSpeed)
 			if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 			{
 				var clr = GetAverageTextureColor(GetTexture(0,10));
-				for(var i = -3; i < 4; i++)
-					CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+				var particles =
+				{
+					Prototype = Particles_Dust(),
+					R = (clr >> 16) & 0xff,
+					G = (clr >> 8) & 0xff,
+					B = clr & 0xff,
+				};
+				CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 			}
 		}
 	}
@@ -1025,8 +1062,14 @@ func Hit(int iXSpeed, int iYSpeed)
 		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 		{
 			var clr = GetAverageTextureColor(GetTexture(0,10));
-			for(var i = -3; i < 4; i++)
-				CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+			var particles =
+			{
+				Prototype = Particles_Dust(),
+				R = (clr >> 16) & 0xff,
+				G = (clr >> 8) & 0xff,
+				B = clr & 0xff,
+			};
+			CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 		}
 	}
 }
@@ -1087,8 +1130,15 @@ func FxRollingTimer(object target, int num, int timer)
 	{
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		var dir = GetDir()*2-1;
-		CreateParticle("Dust2", dir*-3, 8, dir*-3, -3, 60+Random(10), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-2, 8, dir*-2, -4, 60+Random(10), DoRGBaValue(clr,-150,0));
+		
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
 	}
 }
 

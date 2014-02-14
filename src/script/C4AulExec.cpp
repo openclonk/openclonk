@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2005-2007  Sven Eberhardt
- * Copyright (c) 2001-2002, 2005-2007, 2009-2010  Peter Wortmann
- * Copyright (c) 2006-2012  Günther Brammer
- * Copyright (c) 2009, 2012  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // executes script functions
 
@@ -128,6 +121,12 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 	}
 }
 
+bool C4AulExec::FnLogCallStack(C4PropList * _this)
+{
+	AulExec.LogCallStack();
+	return true;
+}
+
 void C4AulExec::ClearPointers(C4Object * obj)
 {
 #if 0
@@ -169,13 +168,6 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 {
-
-#ifndef NOAULDEBUG
-	// Debugger pointer
-	C4AulDebug * const pDebug = C4AulDebug::GetDebugger();
-	if (pDebug)
-		pDebug->DebugStepIn(pCPos);
-#endif
 
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
@@ -654,12 +646,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->GetName(), pCurVal->GetDataString().getData());
 				}
 
-#ifndef NOAULDEBUG
-				// Notify debugger
 				C4Value *pReturn = pCurCtx->Return;
-				if (pDebug)
-					pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
-#endif
 
 				// External call?
 				if (!pReturn)
@@ -800,7 +787,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 			case AB_DEBUG:
 #ifndef NOAULDEBUG
-				if (pDebug) pDebug->DebugStep(pCPos);
+				if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
+					pDebug->DebugStep(pCPos, pCurVal);
 #endif
 				break;
 			}
@@ -849,7 +837,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	}
 
 	// Convert parameters (typecheck)
-	C4V_Type *pTypes = pFunc->GetParType();
+	const C4V_Type *pTypes = pFunc->GetParType();
 	for (int i = 0; i < pFunc->GetParCount(); i++)
 		if (!pPars[i].CheckParConversion(pTypes[i]))
 			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
@@ -871,12 +859,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.Func = pSFunc;
 		ctx.CPos = NULL;
 		PushContext(ctx);
-
-#ifndef NOAULDEBUG
-		// Notify debugger
-		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
-			pDebug->DebugStepIn(pSFunc->GetCode());
-#endif
 
 		// Jump to code
 		return pSFunc->GetCode();
@@ -931,14 +913,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		assert(pCtx == pCurCtx);
 #endif
 
-#ifndef NOAULDEBUG
-		// Notify debugger
-		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
-		{
-			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
-		}
-#endif
-
 		// Remove parameters from stack
 		PopValuesUntil(pReturn);
 
@@ -966,7 +940,7 @@ void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
 	fProfiling = true;
 	// resets profling times and starts recording the times
 	this->pProfiledScript = pProfiledScript;
-	time_t tNow = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	tDirectExecStart = tNow; // in case profiling is started from DirectExec
 	tDirectExecTotal = 0;
 	pProfiledScript->ResetProfilerTimes();
@@ -999,7 +973,7 @@ void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 		pCurCtx->dump(Buf);
 	}
 	// Profiler: Safe time to measure difference afterwards
-	if (fProfiling) pCurCtx->tTime = GetTime();
+	if (fProfiling) pCurCtx->tTime = C4TimeMilliseconds::Now();
 }
 
 void C4AulExec::PopContext()
@@ -1009,8 +983,8 @@ void C4AulExec::PopContext()
 	// Profiler adding up times
 	if (fProfiling)
 	{
-		time_t dt = GetTime() - pCurCtx->tTime;
-		if (dt && pCurCtx->Func)
+		uint32_t dt = C4TimeMilliseconds::Now() - pCurCtx->tTime;
+		if (pCurCtx->Func)
 			pCurCtx->Func->tProfileTime += dt;
 	}
 	// Trace done?
@@ -1039,7 +1013,7 @@ void C4AulProfiler::Abort()
 	AulExec.AbortProfiling();
 }
 
-void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime)
+void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime)
 {
 	// zero entries are not collected to have a cleaner list
 	if (!tProfileTime) return;
@@ -1061,7 +1035,7 @@ void C4AulProfiler::Show()
 	for (EntryList::iterator i = Times.begin(); i!=Times.end(); ++i)
 	{
 		Entry &e = (*i);
-		LogF("%05dms\t%s", (int) e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
+		LogF("%05ums\t%s", e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
 	}
 	Log("==============================");
 	// done!

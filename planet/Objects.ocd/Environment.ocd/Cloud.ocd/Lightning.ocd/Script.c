@@ -53,13 +53,19 @@ protected func FxLightningMoveTimer()
 	AddVertex(newx, newy);
 	
 	// Draw the new line with lightning particles.
-	DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength / 30, 2 * strength / 3, 0xa0f0f0f0);
+	DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength / 30, strength / 3, 0xa0f0f0f0);
 	
 	// Strike objects on the line.
 	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
-		if (!obj->~LightningStrike(3 + strength / 10))
-			Punch(obj, 3 + strength / 10);
+		if (obj && !obj->~LightningStrike(3 + strength / 10))
+		{
+			if (GetOCF() & OCF_Alive)
+				Punch(obj, 3 + strength / 10);
+			else
+				// Todo: Lightning strikes may have controllers? Pass them for kill tracing.
+				obj->DoDamage(3 + strength / 10, FX_Call_DmgScript); 
+		}
 	}
 	
 	// Remove lightning, if struck landscape.
@@ -96,26 +102,37 @@ private func Redraw()
 		var newx = GetVertex(vtx, 0);
 		var newy = GetVertex(vtx, 1);
 		//Log("Lightning %d: Redraw vtx %d->%d %d/%d->%d/%d", ObjectNumber(), vtx-1, vtx, oldx, oldy, newx, newy);
-		DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength/5, strength*2, 0xa0f0f0f0);
+		DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength/5, strength / 3, 0xa0f0f0f0);
 		oldx = newx; oldy = newy;
 	}
 }
 
-private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int sizeFifths, int color)
+private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int size, int color)
 {
 	distance = Max(distance, 1);
 	var angle = Angle(x1, y1, x2, y2);
-	var xdir = Sin(angle, 10);
-	var ydir = -Cos(angle, 10);
 
 	// Need at least two particles: start and end
 	var count = Max(2, Distance(x1, y1, x2, y2) / distance);
 	var deltax = x2 - x1, deltay = y2 - y1;
 	//Log("DrawRPL: %s in %d steps, angle %d xdir %d ydir %d", particle, count, angle, xdir, ydir);
+	var particle_prop = 
+	{
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Alpha = PV_Linear(128, 0),
+		Size = size,
+		Rotation = angle,
+		BlitMode = GFX_BLIT_Additive
+	};
 	for (var i = count+1; --i; )
 	{
-		CreateParticle(particle, x1 + deltax * i / count, y1 + deltay * i / count, xdir, ydir, sizeFifths, color);
+		CreateParticle(particle, x1 + deltax * i / count, y1 + deltay * i / count, 0, 0, 18, particle_prop);
 	}
 }
+
+// Don't save in scenarios
+func SaveScenarioObject() { return false; }
 
 local Name = "$Name$";

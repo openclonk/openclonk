@@ -31,21 +31,26 @@ public func OnProductionStart(id product)
 {
 	AddEffect("Working", this, 100, 1, this);
 	hold_production = false;
+	Sound("Boiling", false, nil, nil, 1);
 }
 
 public func OnProductionHold(id product)
 {
 	hold_production = true;
+	Sound("Boiling", false, nil, nil, -1);
+	Sound("Blowout");
 }
 
 public func OnProductionContinued(id product)
 {
 	hold_production = false;
+	Sound("Boiling", false, nil, nil, 1);
 }
 
 public func OnProductionFinish(id product)
 {
 	RemoveEffect("Working", this);
+	Sound("Boiling", false, nil, nil, -1);
 }
 
 protected func FxWorkingTimer()
@@ -56,7 +61,7 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if(Random(3)) CreateParticle("ExploSmoke", -10,-40, 0,-5,100 + Random(150),RGBa(128,255,128,55));
+	Smoke(-10, -40, 6);
 }
 
 local ActMap = {

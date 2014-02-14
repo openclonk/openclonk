@@ -1,28 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2008, 2011-2012  Sven Eberhardt
- * Copyright (c) 2006, 2008, 2010-2012  Günther Brammer
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2007  Julian Raschke
- * Copyright (c) 2008, 2010  Armin Burgmeier
- * Copyright (c) 2009  Carl-Philip Hänsch
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2012  Julius Michaelis
- * Copyright (c) 2012  Tobias Zwick
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Options dialog
 
@@ -792,32 +781,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 
 	// --- page graphics
 	C4GUI::ComponentAligner caSheetGraphics(pSheetGraphics->GetClientRect(), iIndentX1, iIndentY1, true);
-	// --subgroup engine
-	C4GUI::GroupBox *pGroupEngine = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,2,0,3));
-	pGroupEngine->SetTitle(LoadResStrNoAmp("IDS_CTL_GFXENGINE"));
-	pGroupEngine->SetFont(pUseFont);
-	pGroupEngine->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
-	pGroupEngine->SetToolTip(LoadResStr("IDS_MSG_GFXENGINE_DESC"));
-	pSheetGraphics->AddElement(pGroupEngine);
-	C4GUI::ComponentAligner caGroupEngine(pGroupEngine->GetClientRect(), iIndentX1, iIndentY2, true);
-	const char *szGfxEngineNames[3] = { "DirectX", "OpenGL", "DirectX Software" };
-	C4GUI::BaseCallbackHandler *pGfxEngineCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxEngineCheck);
-	for (int32_t iGfxEngine = 0; iGfxEngine<3; ++iGfxEngine)
-	{
-		pCheckGfxEngines[iGfxEngine] = new C4GUI::CheckBox(caGroupEngine.GetGridCell(0,1,iGfxEngine,3,-1,iCheckHgt,true), szGfxEngineNames[iGfxEngine], (Config.Graphics.Engine == iGfxEngine));
-		pCheckGfxEngines[iGfxEngine]->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-		pCheckGfxEngines[iGfxEngine]->SetOnChecked(pGfxEngineCheckCB);
-		pGroupEngine->AddElement(pCheckGfxEngines[iGfxEngine]);
-	}
-#ifndef USE_DIRECTX
-	pCheckGfxEngines[GFXENGN_DIRECTX]->SetEnabled(false);
-	pCheckGfxEngines[GFXENGN_DIRECTXS]->SetEnabled(false);
-#endif
-#ifndef USE_GL
-	pCheckGfxEngines[GFXENGN_OPENGL]->SetEnabled(false);
-#endif
-	pCheckGfxEngines[GFXENGN_DIRECTX]->SetEnabled(false); // as long as DX doesnt work, its disabled
-	pCheckGfxEngines[GFXENGN_DIRECTXS]->SetEnabled(false); // better not using this
 	// --subgroup resolution
 	C4GUI::GroupBox *pGroupResolution = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,0,3));
 	pGroupResolution->SetTitle(LoadResStrNoAmp("IDS_CTL_RESOLUTION"));
@@ -848,8 +811,8 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::BaseCallbackHandler *pGfxClrDepthCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxClrDepthCheck);
 	for (int32_t iBitDepthIdx = 0; iBitDepthIdx<2; ++iBitDepthIdx)
 	{
-		int iBitDepth = (iBitDepthIdx+1) * 16;
-		pCheckGfxClrDepth[iBitDepthIdx] = new C4GUI::CheckBox(caGroupEngine.GetGridCell(iBitDepthIdx,2,2,4,-1,iCheckHgt,true), FormatString("%d Bit", (int)iBitDepth).getData(), (Config.Graphics.BitDepth == iBitDepth));
+		int iBitDepth = (iBitDepthIdx+1) * 16;          //WORKAROUND
+		pCheckGfxClrDepth[iBitDepthIdx] = new C4GUI::CheckBox(caGroupResolution.GetGridCell(iBitDepthIdx,2,2,4,-1,iCheckHgt,true), FormatString("%d Bit", (int)iBitDepth).getData(), (Config.Graphics.BitDepth == iBitDepth));
 		pCheckGfxClrDepth[iBitDepthIdx]->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 		pCheckGfxClrDepth[iBitDepthIdx]->SetOnChecked(pGfxClrDepthCheckCB);
 		pCheckGfxClrDepth[iBitDepthIdx]->SetToolTip(LoadResStr("IDS_CTL_BITDEPTH"));
@@ -1093,28 +1056,6 @@ void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)
 	Application.Quit();
 }
 
-void C4StartupOptionsDlg::OnGfxEngineCheck(C4GUI::Element *pCheckBox)
-{
-	C4GUI::CheckBox *pCheck = static_cast<C4GUI::CheckBox *>(pCheckBox);
-	// radiogroup: do not allow unchecking!
-	if (!pCheck->GetChecked())
-	{
-		pCheck->SetChecked(true);
-		return;
-	}
-	// get new engine
-	int i;
-	for (i=0; i<3; ++i) if (pCheck == pCheckGfxEngines[i]) break;
-	if (i==3 || i == Config.Graphics.Engine) return;
-	// okay, engine change
-	pCheckGfxEngines[Config.Graphics.Engine]->SetChecked(false);
-	StdStrBuf sTitle; sTitle.Copy(LoadResStrNoAmp("IDS_CTL_GFXENGINE"));
-	GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), sTitle.getData(), C4GUI::Ico_Notify, &Config.Startup.HideMsgGfxEngineChange);
-	SaveGfxTroubleshoot();
-	Config.Graphics.Engine = i;
-	LoadGfxTroubleshoot();
-}
-
 void C4StartupOptionsDlg::OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
 	// clear all old entries first to allow a clean refill
@@ -1137,38 +1078,22 @@ void C4StartupOptionsDlg::OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller)
 bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 {
 	if(pTexMgr) pTexMgr->IntLock();
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	pDraw->InvalidateDeviceObjects();
 	// Note: This assumes there is only one GL context (the main context). This
 	// is true in fullscreen mode, and since the startup dlg is only shown in
 	// fullscreen mode we are safe this way.
 	if(pGL) pGL->pMainCtx->Clear();
 #endif
-#ifdef USE_DIRECTX
-	// It should also be possible to clear+reinit DDraw also for GL, however,
-	// if ReInit() does _not_ create a new window on X11 then all rendering
-	// stops until the Window is being moved again (or tasked-out and back in
-	// in fullscreen mode). This does not happen when only reinitializing the
-	// GL context instead of whole DDraw so that's why we do this currently.
-	if(pD3D) pDraw->Clear();
-#endif
-
 	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
 	Config.Graphics.MultiSampling = idNewSelection;
 	bool success = Application.pWindow->ReInit(&Application);
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
 	pDraw->RestoreDeviceObjects();
 #endif
-#ifdef USE_DIRECTX
-	// Note: Editor is hardcoded to false at this point... I guess that's OK
-	// because C4StartupOptionsDlg is never shown in editor mode anyway.
-	if(pD3D) pDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
-#endif
-
 	if(pTexMgr) pTexMgr->IntUnlock();
-	
 	if(!success) Config.Graphics.MultiSampling = PrevMultiSampling;
 	return !success;
 }
@@ -1527,10 +1452,8 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 {
 	// get it from controls
 	Config.Graphics.EnableShaders=pShaders->GetChecked();
-	// get config set to be used
-	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
-	// and apply them directly, if the engine is current
-	if (fUseGL == pDraw->IsOpenGL())
+
+	if (pDraw->IsOpenGL())
 	{
 		pDraw->RestoreDeviceObjects();
 	}

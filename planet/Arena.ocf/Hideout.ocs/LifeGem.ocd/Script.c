@@ -9,15 +9,28 @@ func HasNoFadeOut(){return true;}
 
 func Initialize()
 {
-	AddEffect("Sparkle", this, 10, 2, this);
+	AddEffect("Sparkle", this, 1, 30 + RandomX(-3, 3), this);
 	return 1;
+}
+
+func FxSparkleStart(target, effect, temp)
+{
+	if (temp) return;
+	var color = this->~GetGemColor() ?? RGB(255, 20, 20);
+	effect.particles =
+	{
+		Prototype = Particles_MagicRing(),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+	};
 }
 
 func FxSparkleTimer(target, effect, effect_time)
 {
-	if(this()->Contained()) return;
-	CreateParticle("MagicRing", 0, 0, 0, 0, Cos(effect_time*10, 100), RGBa(255,20,20,100), this, false);
-	return true;
+	if(this()->Contained() || !Random(2)) return FX_OK;
+	CreateParticle("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
+	return FX_OK;
 }
 
 public func ControlUse(object clonk, int ix, int iy)
@@ -30,6 +43,27 @@ public func ControlUse(object clonk, int ix, int iy)
 	return true;
 }
 
+func FxGemHealingStart(target, effect, temp)
+{
+	if (temp) return;
+	effect.glimmer_particles =
+	{
+		Prototype = Particles_Glimmer(),
+		R = 255,
+		G = 200,
+		B = 200
+	};
+	
+	effect.sparks = 
+	{
+		Prototype = Particles_Spark(),
+		Size = PV_Random(1, 3),
+		R = 255,
+		G = PV_Random(180, 220),
+		B = PV_Random(180, 220)
+	};
+}
+
 func FxGemHealingTimer(target, effect, effect_time)
 {
 	if(target->GetEnergy() >= target->GetMaxEnergy())
@@ -37,12 +71,13 @@ func FxGemHealingTimer(target, effect, effect_time)
 		if(effect_time < 36) return 0;
 		return -1;
 	}
+	
 	target->DoEnergy(500, true);
-	var xoff=RandomX(-5,5);
-	for(var fac=-1; fac <= 1;fac+=2)CreateParticle("Magic", AbsX(target->GetX()) + fac * xoff, AbsY(target->GetY()) + RandomX(-8,8), 0, -2, 40, RGB(255,200,200), target, Random(2));
-	if(!Random(10)) effect.switcher=!effect.switcher;
+
+	target->CreateParticle("Magic", PV_Random(-5, +5), PV_Random(-8, 8), PV_Random(-1, 1), PV_Random(-10, -5), PV_Random(10, 20), effect.glimmer_particles, 3);
+	if(!Random(10)) effect.switcher = !effect.switcher;
 	if(effect.switcher)
-		CreateParticle("MagicSpark", AbsX(target->GetX()) + RandomX(-3,3), AbsY(target->GetY()) + RandomX(-0,8), 0, -2, 30, RGBa(255,55,55, 50), target, Random(2));
+		target->CreateParticle("MagicSpark", PV_Random(-3, 3), PV_Random(0, 8), PV_Random(-1, 1), PV_Random(-2, -1), PV_Random(20, 30), effect.sparks, 2);
 }
 
 func FxGemHealingDamage(target, effect, damage, cause)

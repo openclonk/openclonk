@@ -76,7 +76,7 @@ public func HitObject(object obj)
 	var dmg = ArrowStrength()*speed/100;
 	ProjectileHit(obj,dmg,ProjectileHit_tumble);
 	// Stick does something unwanted to controller.
-	Stick();
+	if (this) Stick();
 }
 
 // called by successful hit of object after from ProjectileHit(...)

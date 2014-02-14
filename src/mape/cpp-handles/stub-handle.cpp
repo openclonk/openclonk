@@ -1,18 +1,16 @@
 /*
  * mape - C4 Landscape.txt editor
  *
- * Copyright (c) 2005-2009 Armin Burgmeier
+ * Copyright (c) 2005-2009, Armin Burgmeier
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "C4Include.h"
@@ -42,6 +40,7 @@
 C4Set<C4PropList *> C4PropList::PropLists;
 #endif
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
@@ -57,7 +56,7 @@ class C4Draw *pDraw = NULL;
 
 bool EraseItemSafe(const char *szFilename) {return false;}
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr) {}
-class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, bool, int32_t) { return NULL; }
+class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t) { return NULL; }
 
 C4Config::C4Config() {}
 C4Config::~C4Config() {}
@@ -198,9 +197,7 @@ C4Game::~C4Game() {}
 #endif
 
 C4AulDebug *C4AulDebug::pDebug;
-void C4AulDebug::DebugStepIn(C4AulBCC*) {}
-void C4AulDebug::DebugStepOut(C4AulBCC*, C4AulScriptContext*, C4Value*) {}
-void C4AulDebug::DebugStep(C4AulBCC*) {}
+void C4AulDebug::DebugStep(C4AulBCC*, C4Value*) {}
 
 C4MapScriptHost MapScript;
 C4MapScriptHost::C4MapScriptHost() {}

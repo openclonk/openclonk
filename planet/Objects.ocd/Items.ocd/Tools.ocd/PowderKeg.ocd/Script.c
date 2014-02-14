@@ -86,7 +86,7 @@ public func Incineration()
 
 public func FxFuseTimer(object target, effect, int timer)
 {
-	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
+	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
 	if(timer > 90)
 	{
 		//17-32 explosion radius
@@ -113,6 +113,14 @@ public func OnProjectileHit()
 func Hit()
 {
 	Sound("DullWoodHit?");
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = PowderCount();
+	if (v != 12) props->AddCall("Powder", this, "SetPowderCount", v);
+	return true;
 }
 
 func IsChemicalProduct() { return true; }

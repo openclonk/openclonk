@@ -13,6 +13,8 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include <GL/glew.h>
+
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Player.h>
@@ -26,7 +28,45 @@
 
 #ifdef USE_COCOA
 
+@interface InputFunctions : NSObject<NSComboBoxDataSource> {
+	NSArray* items;
+}
+- (void) setFunctions:(std::list<const char*>) functions;
+@end
+@implementation InputFunctions
+- (void) setFunctions:(std::list<const char *>)functions {
+	NSMutableArray* _items = [NSMutableArray arrayWithCapacity:functions.size()];
+	for (auto f : functions)
+		if (f != NULL)
+			[_items addObject:[NSString stringWithUTF8String:f]];;
+	[_items sortUsingSelector:@selector(compare:)];
+	items = _items;
+}
+- (NSInteger)numberOfItemsInComboBox:(NSComboBox *)aComboBox {
+	return [items count];
+}
+- (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index {
+	return [items objectAtIndex:index];
+}
+- (NSUInteger)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)string {
+	return [items indexOfObject:string];
+}
+- (NSString *)comboBox:(NSComboBox *)aComboBox completedString:(NSString *)string {
+	int x;
+	for (x = [string length]-1;
+		x >= 0 && [[NSCharacterSet letterCharacterSet] characterIsMember:[string characterAtIndex:x]]; x--);
+	x++;
+	auto pfx = [string substringWithRange:NSMakeRange(0, x)];
+	auto sub = [string substringFromIndex:x];
+	auto ndx = [items indexOfObjectPassingTest:^(NSString* item, NSUInteger x, BOOL* stop) { return [item hasPrefix:sub]; }];
+	return ndx != NSNotFound ? [pfx stringByAppendingString:[items objectAtIndex:ndx]] : nil;
+}
+@end
+
 @implementation C4EditorWindowController
+{
+	InputFunctions* inputFunctions;
+}
 
 @synthesize
 	frameLabel, timeLabel, outputTextView, objectPropertiesText,
@@ -42,6 +82,15 @@
 	[window makeMainWindow];
 	[toolsPanel setBecomesKeyOnlyIfNeeded:YES];
 	[objectsPanel setBecomesKeyOnlyIfNeeded:YES];
+	inputFunctions = [InputFunctions new];
+	[consoleCombo setUsesDataSource:YES];
+	[consoleCombo setDataSource:inputFunctions];
+	[consoleCombo setCompletes:YES];
+}
+
+- (void) setInputFunctions:(std::list<const char*>)functions {
+	[inputFunctions setFunctions:functions];
+	[consoleCombo reloadData];
 }
 
 - (void) windowWillClose:(NSNotification*)notification

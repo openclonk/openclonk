@@ -14,27 +14,37 @@ func Show(int clr, int layer, int size,bool diffuse)
 	if(layer < 100) SetCategory(GetCategory()|C4D_Background);
 	else            SetCategory(GetCategory()|C4D_Foreground);
 	
-	if(!size) size = 1800;
+	if(!size) size = 360;
 	
 	var clrmod = clr;
 	var count = 5;
 	
+	var particles =
+	{
+		Prototype = Particles_Cloud(),
+		Alpha = (clr >> 24) & 0xff,
+		R = (clr >> 16) & 0xff,
+		G = (clr >> 8) & 0xff,
+		B = clr & 0xff,
+		Size = PV_Random(size - 20, size + 20)
+	};
+	
 	// Create some clouds
 	for(var i=0; i<count; ++i)
 	{
-		var x,y,size;
+		var x, y;
 		
 		var radius = RandomX(size/10);
 		var angle =  Random(360);
 		x = Sin(angle,+radius);
 		y = Cos(angle,-radius/3);
 		
-		CreateParticle("Cloud",x,y,diffuse*RandomX(-1,1),0,size+RandomX(-200,200),clrmod,this);
+		CreateParticle("Cloud", x, y, PV_Random(-diffuse, +diffuse), 0, 0, particles);
 	}
 }
 
 // re-draw the particles of the cloud
-func UpdateTransferZone()
+func OnSynchronized()
 {
 	Show();
 }

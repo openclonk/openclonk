@@ -20,13 +20,20 @@ public func NewPlayerEntry(int plr)
 	return Scoreboard->NewEntry(GetPlayerID(plr), GetTaggedPlayerName(plr));
 }
 
-// adds a new entry to the scoreboard, will return the ID of the added entry
+public func RemovePlayerEntry(int plr)
+{
+	return Scoreboard->RemoveEntry(GetPlayerID(plr));
+}
+
+// adds a new entry (row) to the scoreboard, will return the ID of the added entry
 // the parameter new_id might be nil in which case a unique new ID is chosen
 public func NewEntry(
 	int new_id /* unique ID for the new entry, can be nil */
 	, string new_title /* text for the first column */
 	)
 {
+	// not initialized yet? Then init empty.
+	if (!Scoreboard_keys) Init([]);
 	// check for duplicates
 	if(new_id)
 	{
@@ -49,6 +56,21 @@ public func NewEntry(
 	PushBack(Scoreboard_data, {ID = new_id, title = new_title});
 	Scoreboard->Update(new_id);
 	return new_id;
+}
+
+// removes an entry (row) from the scoreboard
+public func RemoveEntry(
+	int remove_id /* unique ID for the new entry, can be nil */
+	)
+{
+	var i, len = GetLength(Scoreboard_data);
+	for(i = 0; i < len; ++i) if(Scoreboard_data[i].ID == remove_id) break;
+	if (i == len) return false; // not found
+	RemoveArrayIndex(Scoreboard_data, i);
+	// Clear all columns
+	for (var col in Scoreboard_keys) SetScoreboardData(remove_id, col.index);
+	SetScoreboardData(remove_id, Scoreboard_X_title);
+	return true;
 }
 
 // sets a value for a specific key of a scoreboard entry for a player and updates it
@@ -143,9 +165,14 @@ public func Update(
 
 		SetScoreboardData(data.ID, col.index, value, sort);
 	}
-	
-	
+	UpdateSort();
+	return true;
+}
+
+public func UpdateSort()
+{
 	// do sorting for fields neccessary
+	var len = GetLength(Scoreboard_keys);
 	for(var i = len-1; i >= 0; --i)
 	{
 		var col = Scoreboard_keys[i];
@@ -154,6 +181,7 @@ public func Update(
 		
 		SortScoreboard(col.index, col.desc);
 	}
+	return true;
 }
 
 // updates the whole scoreboard
@@ -165,6 +193,26 @@ public func UpdateAll()
 	{
 		Scoreboard->Update(Scoreboard_data[i].ID, i);
 	}
+	return true;
+}
+
+// remove a column from the scoreboard
+public func RemoveColumn(string key)
+{
+	var col, data;
+	if (!key) FatalError("Scoreboard::RemoveColumn: Key required!");
+	// find key
+	for (col in Scoreboard_keys) if (col.key == key) break;
+	if (!col || col.key != key) return false; // key not found. fail but not fatal.
+	// for every row, remove data for key
+	for (data in Scoreboard_data)
+	{
+		data[key] = data[Format("%s_", key)] = nil;
+		SetScoreboardData(data.ID, col.index);
+	}
+	// resort
+	SortScoreboard(col.index, col.desc);
+	return true;
 }
 
 // initializes the scoreboard with certain columns and attributes

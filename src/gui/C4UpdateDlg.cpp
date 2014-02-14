@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2007, 2012  Günther Brammer
- * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // dialogs for update, and the actual update application code
 // is only compiled WITH_AUTOMATIC_UPDATE
@@ -151,18 +145,6 @@ void C4UpdateDlg::UpdateText()
 // --------------------------------------------------
 // static update application function
 
-static bool IsWindowsWithUAC()
-{
-#ifdef _WIN32
-	// Determine windows version
-	OSVERSIONINFO ver;
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if (GetVersionEx((LPOSVERSIONINFO) &ver))
-		return (ver.dwMajorVersion >= 6);
-#endif
-	return false;
-}
-
 void C4UpdateDlg::RedirectToDownloadPage()
 {
 	OpenURL("http://www.openclonk.org/download");
@@ -204,11 +186,11 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	strUpdateProg += ".exe";
 #endif
 	// Determine name of local extract of update program
-	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(Config.AtExePath(strUpdateProg.getData()));
-	// Windows Vista/7: rename update program to setup.exe for UAC elevation and in temp path
-	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
+	StdStrBuf strUpdateProgEx;
+	strUpdateProgEx.Copy(Config.AtExePath(strUpdateProg.getData()));
+
 	// Extract update program (the update should be applied using the new version)
-	C4Group UpdateGroup, SubGroup;
+	C4Group UpdateGroup;
 	if (!UpdateGroup.Open(strUpdateFile))
 	{
 		LogF("Error opening \"%s\": %s", strUpdateFile, UpdateGroup.GetError());
@@ -234,30 +216,21 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 			}
 #endif
 	UpdateGroup.Close();
+
 	// Execute update program
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
 	succeeded = true;
+
 #ifdef _WIN32
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
 	DWORD ProcessID = GetCurrentProcessId();
-	StdStrBuf strUpdateArgs, strTitle;
+	StdStrBuf strUpdateArgs;
 	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
 
-	STARTUPINFOW startupInfo;
-	startupInfo.cb = sizeof(startupInfo);
-	startupInfo.lpReserved = NULL;
-	startupInfo.lpDesktop = NULL;
-	startupInfo.lpTitle = L"Updating OpenClonk...";
-	startupInfo.dwFlags = STARTF_USESHOWWINDOW;
-	startupInfo.wShowWindow = SW_SHOW;
-	startupInfo.cbReserved2 = 0;
-	startupInfo.lpReserved2 = NULL;
-	PROCESS_INFORMATION procInfo;
-	BOOL success = CreateProcessW(strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath.GetWideChar(), &startupInfo, &procInfo);
-	if(!success) return false;
+	// the magic verb "runas" opens the update program in a shell requesting elevation
+	int iError = (intptr_t)ShellExecute(NULL, L"runas", strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
+	if (iError <= 32) return false;
 
-	//int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
-	//if (iError <= 32) return false;
 	// must quit ourselves for update program to work
 	if (succeeded) Application.Quit();
 #else

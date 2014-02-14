@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Particles_Colored</title>
+    <category>Particles</category>
+    <version>5.3.3 OC</version>
+    <syntax>
+      <rtype>proplist</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>prototype</name>
+          <desc>Particle prototype of which a colored version is returned.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>color1</name>
+          <desc>RGB color in format 0xRRGGBB</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>color2</name>
+          <desc>Secondary color. If given, particles are created with a random color between color and color2.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a colored version of another particle definition.</desc>
+    <examples>
+      <example>
+        <code>CreateParticle("MagicSpark", 0,0, PV_Random(-10,10), PV_Random(-10,10), PV_Random(10,50), Particles_Colored(Particles_Spark(),0xff0000,0x00ff00), 15);</code>
+        <text>Creates 15 particles with coloration varying between red and green.</text>
+      </example>
+    </examples>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <related>
+      <funclink>CreateParticle</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2013-12</date>
+</funcs>

@@ -63,25 +63,35 @@ global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr
 
 global func BlueExplosionEffect(int level, int x, int y)
 {
-	// Blast particle.
-	CreateParticle("Blast", x, y, 0, 0, level * 10, RGB(0,25,255));
-	if(!GBackLiquid(x,y)) CastParticles("Spark", 3, 40 + level, x, y, 20, 30, RGB(0,0,255), RGB(0,30,255));
-	if(GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
-	//CastParticles("FSpark", level/5+1, level, x,y, level*5+10,level*10+10, 0x00ef0000,0xffff1010));
-
-	/*// Smoke trails.
-	var i = 0, count = 1 + level / 16, angle = Random(360);
-	while (count > 0 && ++i < count * 10)
+	var glimmer =
 	{
-		angle += RandomX(40, 80);
-		var smokex = Sin(angle, RandomX(level / 4, level / 2));
-		var smokey = -Cos(angle, RandomX(level / 4, level / 2));
-		if (GBackSolid(x + smokex, y + smokey))
-			continue;
-		//var lvl = 16 * level / 10;
-		CreateSmokeTrail(level, angle, x + smokex, y + smokey);
-		count--;
-	}*/
+		Prototype = Particles_Glimmer(),
+		R = PV_Random(100, 150),
+		G = PV_Random(100, 150),
+		B = PV_Random(200, 255)
+	};
+	var fire =
+	{
+		Prototype = Particles_Fire(),
+		R = PV_Random(100, 150),
+		G = PV_Random(100, 150),
+		B = PV_Random(200, 255),
+		Size = PV_Random(level/2, level/3)
+	};
+	var smoke =
+	{
+		Prototype = Particles_SmokeTrail(),
+		R = PV_Linear(PV_Random(100, 150), 0),
+		G = PV_Linear(PV_Random(100, 150), 0),
+		B = PV_Linear(PV_Random(200, 255), 0),
+		Size = PV_Random(level - 5, level + 5)
+	};
+	// Blast particle.
+	CreateParticle("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(20, 40), smoke, 10);
+	CreateParticle("MagicFire", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), fire, 20);
+	if(!GBackLiquid(x,y)) CreateParticle("SphereSpark", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(5, 36 * 3), glimmer, level);
+
+	if(GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 4 / 10, level, x, y);
 	return;
 }
 

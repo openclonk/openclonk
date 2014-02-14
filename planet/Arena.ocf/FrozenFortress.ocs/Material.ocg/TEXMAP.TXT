@@ -38,7 +38,7 @@ OverloadTextures
 51=Rock-rock_cracked
 52=Rock-rock
 
-53=Sulphur-sulphur
+53=Firestone-firestone
 
 54=Coal-coal
 

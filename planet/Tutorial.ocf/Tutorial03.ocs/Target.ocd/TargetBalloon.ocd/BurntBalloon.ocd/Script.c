@@ -1,9 +1,5 @@
 /*-- Burnt Target Balloon --*/
 
-func Definition(def) {
-	SetProperty("Name", "Burnt Balloon", def);
-}
-
 protected func Initialize()
 {
 	SetRDir(-2+Random(4));
@@ -25,6 +21,7 @@ func FxFadeTimer(object target, effect, int time)
 }
 
 func Definition(def) {
+	SetProperty("Name", "Burnt Balloon", def);
 	SetProperty("ActMap", {
 
 Fall = {

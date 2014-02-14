@@ -1,3 +1,16 @@
+# OpenClonk, http://www.openclonk.org
+#
+# Copyright (c) 2012-2013, The OpenClonk Team and contributors
+#
+# Distributed under the terms of the ISC license; see accompanying file
+# "COPYING" for details.
+#
+# "Clonk" is a registered trademark of Matthes Bender, used with permission.
+# See accompanying file "TRADEMARK" for details.
+#
+# To redistribute this file separately, substitute the full license texts
+# for the above references.
+
 function(git_get_changeset_id VAR)
 	find_package(Git QUIET)
 	if (GIT_FOUND)

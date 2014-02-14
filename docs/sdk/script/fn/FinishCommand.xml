@@ -24,7 +24,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Ends a command in the command stack of an object.</desc>
+    <desc>Ends a command in the command stack of an object. A finished command stays in the stack until it would be time for it to be executed and is removed only then.</desc>
     <related>
       <funclink>SetCommand</funclink>
       <funclink>GetCommand</funclink>
@@ -33,4 +33,5 @@
     </related>
   </func>
   <author>Günther</author><date>2004-04</date>
+  <author>Newton</author><date>2013-12</date>
 </funcs>

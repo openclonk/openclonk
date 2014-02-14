@@ -1,9 +1,6 @@
 /*-- Arrow target --*/
 
 local gate;
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
 
 protected func Initialize()
 {
@@ -34,9 +31,9 @@ public func OnProjectileHit()
 
 public func Burst()
 {
-	DrawParticleLine("Straw",0,0,AbsX(gate->GetX()),AbsY(gate->GetY()),6,80,RGB(255,255,255),RGB(255,150,200));
+	DrawParticleLine("Straw", 0, 0, AbsX(gate->GetX()), AbsY(gate->GetY()), 6, PV_Random(-5, 5), PV_Random(-5, 0), PV_Random(30, 60), Particles_Straw());
+	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
 	gate->OpenDoor();
-	CastParticles("Straw",130,30,0,-3,30,40,RGB(255,255,255),RGB(255,120,200));
 	RemoveObject();
 }
 
@@ -51,6 +48,7 @@ protected func Tumble()
 }
 
 func Definition(def) {
+	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 
 Fall = {

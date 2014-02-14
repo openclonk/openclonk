@@ -13,6 +13,8 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include <GL/glew.h>
+
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Application.h>
@@ -426,6 +428,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
+	[ctrler(this) setInputFunctions:functions];
 }
 
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)

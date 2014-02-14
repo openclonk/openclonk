@@ -54,6 +54,15 @@ protected func FxIntVolcanoControlTimer(object target, proplist effect, int time
 	return FX_OK;
 }
 
+// Scenario saving
+func FxIntVolcanoControlSaveScen(obj, fx, props)
+{
+	props->Add("Volcano", "Volcano->SetChance(%d)", fx.chance);
+	if (fx.material && fx.material != "Lava") props->Add("Volcano", "Volcano->SetMaterial(%v)", fx.material);
+	return true;
+}
+
+
 global func LaunchVolcano(int x, int y, int strength, string material, int angle)
 {
 	var volcano = CreateObject(Volcano);
@@ -77,7 +86,7 @@ public func Launch(int x, int y, int strength, string material, int angle)
 	// Volcano material.
 	mat = Material(material);
 	// Direction of the volcano.
-	angle = angle;
+	this.angle = angle;
 	// Safety check.
 	if (!InGround())
 	{
@@ -197,6 +206,11 @@ private func InGround()
 		return true;
 	return false;
 }
+
+// Individual volcanoes not stored in scenario. It would look weird because the
+// lava already drawn would not appear on the recreated created map.
+// Only the controller effect is saved (see FxIntVolcanoControlSaveScen).
+public func SaveScenarioObject() { return false; }
 
 
 /*-- Proplist --*/

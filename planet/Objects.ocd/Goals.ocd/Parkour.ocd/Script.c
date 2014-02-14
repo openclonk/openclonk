@@ -122,6 +122,19 @@ public func DisableRespawnHandling()
 	return true;
 }
 
+/*-- Scenario saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// force dependency on restartr rule
+	var restart_rule = FindObject(Find_ID(Rule_Restart));
+	if (restart_rule) restart_rule->MakeScenarioSaveName();
+	if (no_respawn_handling) props->AddCall("Goal", this, "DisableRespawnHandling");
+	return true;
+}
+
+
 /*-- Checkpoint interaction --*/
 
 // Called from a finish CP to indicate that plr has reached it.

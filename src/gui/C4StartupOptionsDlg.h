@@ -1,19 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007, 2011-2012  Sven Eberhardt
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Options dialog
 
@@ -129,7 +127,6 @@ private:
 	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox);
-	void OnGfxEngineCheck(C4GUI::Element *pCheckBox);
 	void OnGfxTroubleCheck(C4GUI::Element *pCheckBox)
 	{ SaveGfxTroubleshoot(); } // immediate save and test
 	void OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller);
@@ -142,7 +139,7 @@ private:
 	const char * GetWindowedName(int32_t mode = -1);
 	void OnEffectsSliderChange(int32_t iNewVal);
 
-	C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
+	C4GUI::CheckBox *pCheckGfxClrDepth[2];
 	C4GUI::GroupBox *pGroupTrouble;
 	C4GUI::CheckBox *pShaders;
 	int32_t iGfxTexIndent;

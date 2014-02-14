@@ -48,6 +48,9 @@ private func Update() {
 // only appears during the night
 public func IsCelestial() { return true; }
 
+// Not stored by itself because it's created by the time environment
+func SaveScenarioObject() { return false; }
+
 
 local ActMap = {
 

@@ -115,12 +115,22 @@
 	// better not to draw anything when the game has already finished
 	if (Application.fQuitMsgReceived)
 		return;
+
 	// don't draw if tab-switched away from fullscreen
-	if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
-		return;
-	if ([self.window isMiniaturized] || ![self.window isVisible])
-		return;
-	//[self.context update];
+	if ([NSApp respondsToSelector:@selector(occlusionState)])
+	{
+		// Mavericks - query app occlusion state
+		if (([NSApp occlusionState] & NSApplicationOcclusionStateVisible) == 0)
+			return;
+	}
+	else
+	{
+		if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
+			return;
+		if ([self.window isMiniaturized] || ![self.window isVisible])
+			return;
+	}
+
 	C4Window* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
@@ -178,75 +188,51 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		[NSCursor hide];
 }
 
-- (void) centerMouse
-{
-	savedMouse = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
-	// emulate MouseEvent assuming this method is called in game mode
-	::C4GUI::MouseMove(C4MC_Button_None,
-		savedMouse.x*ActualFullscreenX/self.frame.size.width,
-		savedMouse.y*ActualFullscreenY/self.frame.size.height,
-		0, NULL
-	);
-}
-
 - (void) mouseEvent:(NSEvent*)event
 {
 	DWORD flags = 0;
 	int32_t button = mouseButtonFromEvent(event, &flags);
 	int actualSizeX = Application.isEditor ? self.frame.size.width  : ActualFullscreenX;
 	int actualSizeY = Application.isEditor ? self.frame.size.height : ActualFullscreenY;
-	if (!Application.isEditor && lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
+	CGPoint mouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
+	if (!Application.isEditor)
 	{
-		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
-		if (button != C4MC_Button_Wheel)
-		{
-			savedMouse.x += event.deltaX * (ActualFullscreenX/self.frame.size.width);
-			savedMouse.y -= event.deltaY * (ActualFullscreenY/self.frame.size.height);
-		}
-	} else
-	{
-		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
-		if (!Application.isEditor)
-		{
-			savedMouse.x *= ActualFullscreenX/self.frame.size.width;
-			savedMouse.y *= ActualFullscreenY/self.frame.size.height;
-		}
+		mouse.x *= ActualFullscreenX/self.frame.size.width;
+		mouse.y *= ActualFullscreenY/self.frame.size.height;
 	}
-	savedMouse.x = fmin(fmax(savedMouse.x, 0), actualSizeX);
-	savedMouse.y = fmin(fmax(savedMouse.y, 0), actualSizeY);
-	int x = savedMouse.x;
-	int y = actualSizeY - savedMouse.y;
+	mouse.x = fmin(fmax(mouse.x, 0), actualSizeX);
+	mouse.y = fmin(fmax(mouse.y, 0), actualSizeY);
+	int x = mouse.x;
+	int y = actualSizeY - mouse.y;
 	
+	C4Viewport* viewport = self.controller.viewport;
+	if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
+	{	
+		DWORD keyMask = flags;
+		if ([event type] == NSScrollWheel)
+			keyMask |= (int)[event deltaY] << 16;
+		::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
+	}
+	else if (viewport)
 	{
-		C4Viewport* viewport = self.controller.viewport;
-		if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
-		{	
-			DWORD keyMask = flags;
-			if ([event type] == NSScrollWheel)
-				keyMask |= (int)[event deltaY] << 16;
-			::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
-		}
-		else if (viewport)
+		switch (button)
 		{
-			switch (button)
-			{
-			case C4MC_Button_LeftDown:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), flags);
-				Console.EditCursor.LeftButtonDown(flags);
-				break;
-			case C4MC_Button_LeftUp:
-				Console.EditCursor.LeftButtonUp(flags);
-				break;
-			case C4MC_Button_RightDown:
-				Console.EditCursor.RightButtonDown(flags);
-				break;
-			case C4MC_Button_RightUp:
-				Console.EditCursor.RightButtonUp(flags);
-				break;
-			case C4MC_Button_None:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), flags);
-				break;
-			}
+		case C4MC_Button_LeftDown:
+			Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), flags);
+			Console.EditCursor.LeftButtonDown(flags);
+			break;
+		case C4MC_Button_LeftUp:
+			Console.EditCursor.LeftButtonUp(flags);
+			break;
+		case C4MC_Button_RightDown:
+			Console.EditCursor.RightButtonDown(flags);
+			break;
+		case C4MC_Button_RightUp:
+			Console.EditCursor.RightButtonUp(flags);
+			break;
+		case C4MC_Button_None:
+			Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), flags);
+			break;
 		}
 	}
 
@@ -345,7 +331,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		{
 			for (NSString* fileName in files)
 			{
-				viewport->DropFile([fileName cStringUsingEncoding:NSUTF8StringEncoding], [sender draggingLocation].x, [sender draggingLocation].y);
+				auto loc = NSMakePoint([sender draggingLocation].x, self.bounds.size.height - [sender draggingLocation].y);
+				viewport->DropFile([fileName cStringUsingEncoding:NSUTF8StringEncoding], loc.x, loc.y);
 			}
 		}
 	}

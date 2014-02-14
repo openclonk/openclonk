@@ -11,9 +11,8 @@ public func ControlUse(object clonk, int x, int y)
 	var pos = GetRandomSpawn();
 	x = pos[0];
 	y = pos[1];	
-	
-	DrawParticleLine("Magic",0,0,-GetX()+x,-GetY()+y,3,64,RGB(0,128,255),RGB(0,200,255),-1);
-	DrawParticleLine("MagicFire",0,0,-GetX()+x,-GetY()+y,4,64,RGB(0,255,128),RGB(0,255,20),-1);
+	DrawParticleLine("Flash", 0,0,-GetX()+x,-GetY()+y, 3, 0, 0, 8, {Prototype = Particles_Flash(), Size = 20, R = 50, G = 50, B = 255});
+
 	// Make sure the clonk loses the attach procedure.
 	var action = clonk->GetAction();
 	if (action && clonk.ActMap[action].Procedure == DFA_ATTACH)

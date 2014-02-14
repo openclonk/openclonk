@@ -57,7 +57,7 @@ private func Smoking()
 	if (!Random(2))
 		Smoke(x,y + 4,20);
 	if(!Random(2))
-		CreateParticle("Fire", x + RandomX(-1, 1), y + RandomX(-2, 2), 0, -1, 30 + Random(10), RGB(255, 255, 255), this);
+		CreateParticle("Fire", PV_Random(x-1, x+1), PV_Random(y-2, y+2), 0, PV_Random(-1, 0), PV_Random(18, 36), Particles_Fire(), 2);
 }
 
 local ActMap = {

@@ -1,27 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2011  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
- * Copyright (c) 2006-2008  Matthes Bender
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2009, 2011  Nicolas Hake
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2012  Felix Wagner
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Player selection dialog
 // Also contains player creation, editing and crew management
@@ -506,7 +496,7 @@ C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player)
 	pPlrListBox->UpdateElementPositions();
 	pPlrListBox->SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelChange));
 	pPlrListBox->SetSelectionDblClickFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelDblClick));
-	AddElement(pSelectionInfo = new C4GUI::TextWindow(rcInfoWindow));
+	AddElement(pSelectionInfo = new C4GUI::TextWindow(rcInfoWindow,0,0,0,100,4096,"  ",false,NULL,0,true));
 	pSelectionInfo->SetDecoration(true, true, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSelectionInfo->UpdateHeight();
 
@@ -1065,10 +1055,18 @@ private:
 		virtual void DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	
 	private:
+		static const unsigned int HSPickerCursorSize = 5;
+		static const unsigned int VPickerCursorSize = 7;
 		C4FacetSurface hsFacet, vFacet; // chooser backgrounds
 		C4Rect hsPickerRect, vPickerRect;
 		C4GUI::Picture *flagPreview, *crewPreview;
 		uint32_t hsv; // current color
+		enum {
+			PS_Idle, // user isn't dragging anything
+			PS_IdleDragging, // user started the drag on empty space
+			PS_DragHS, // user started the drag over the HS picker
+			PS_DragV // user started the drag over the V picker
+		} state;
 
 		bool HandleMouseDown(int32_t x, int32_t y);
 		void UpdateVFacet(uint32_t h, uint32_t s);
@@ -1165,12 +1163,12 @@ void C4StartupPlrColorPickerDlg::OnClosed(bool commit)
 }
 
 C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
-	: Control(bounds)
+	: Control(bounds), state(PS_Idle)
 {
 	C4GUI::ComponentAligner caMain(bounds, 8, 8, true);
 	caMain.ExpandBottom(-(caMain.GetInnerHeight() - 256));
 	hsPickerRect = caMain.GetFromLeft(256);
-	vPickerRect = caMain.GetFromLeft(16);
+	vPickerRect = caMain.GetFromLeft(16 + VPickerCursorSize);
 	vPickerRect.Hgt = 256 - PlayerColorValueLowBound;
 
 	C4Facet &flagPreviewPic = ::GraphicsResource.fctFlagClr;
@@ -1186,14 +1184,14 @@ C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
 	AddElement(crewPreview);
 	
 	// Pre-draw the H+S chooser background, it never changes anyway
-	hsFacet.Create(256, 256);
+	hsFacet.Create(hsPickerRect.Wdt, hsPickerRect.Hgt);
 	hsFacet.Surface->Lock();
-	for (int y = 0; y < 256; ++y)
-		for (int x = 0; x < 256; ++x)
+	for (int y = 0; y < hsFacet.Hgt; ++y)
+		for (int x = 0; x < hsFacet.Wdt; ++x)
 			hsFacet.Surface->SetPixDw(x, y, HSV2RGB(C4RGB(x, 255-y, 255)));
 	hsFacet.Surface->Unlock();
 
-	vFacet.Create(16, 256 - PlayerColorValueLowBound);
+	vFacet.Create(vPickerRect.Wdt - VPickerCursorSize, vPickerRect.Hgt);
 	UpdateVFacet(255, 255);
 }
 
@@ -1201,7 +1199,7 @@ void C4StartupPlrColorPickerDlg::Picker::UpdateVFacet(uint32_t h, uint32_t s)
 {
 	// Draw the V chooser background according to current H+S values
 	vFacet.Surface->Lock();
-	for (int y = 0; y < 256 - PlayerColorValueLowBound; ++y)
+	for (int y = 0; y < vPickerRect.Hgt; ++y)
 		for (int x = 0; x < vFacet.Wdt; ++x)
 			vFacet.Surface->SetPixDw(x, y, HSV2RGB(C4RGB(h, s, 255-y)));
 	vFacet.Surface->Unlock();
@@ -1231,17 +1229,17 @@ void C4StartupPlrColorPickerDlg::Picker::DrawElement(C4TargetFacet &cgo)
 	C4Facet cgoPicker(cgo.Surface, cgo.TargetX + hsPickerRect.x, cgo.TargetY + hsPickerRect.y, hsPickerRect.Wdt, hsPickerRect.Hgt);
 	hsFacet.Draw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y);
 	// H+S cursor
-	cgoPicker.Wdt = cgoPicker.Hgt = 5;
+	cgoPicker.Wdt = cgoPicker.Hgt = HSPickerCursorSize;
 	cgoPicker.X += GetRedValue(hsv) - cgoPicker.Wdt / 2;
 	cgoPicker.Y += 255 - GetGreenValue(hsv) - cgoPicker.Hgt / 2;
 	pDraw->DrawLineDw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y, cgoPicker.X + cgoPicker.Wdt, cgoPicker.Y + cgoPicker.Hgt, C4RGB(0, 0, 0));
 	pDraw->DrawLineDw(cgoPicker.Surface, cgoPicker.X + cgoPicker.Wdt, cgoPicker.Y, cgoPicker.X, cgoPicker.Y + cgoPicker.Hgt, C4RGB(0, 0, 0));
 
 	// V chooser background
-	cgoPicker.Set(cgo.Surface, cgo.TargetX + vPickerRect.x, cgo.TargetY + vPickerRect.y, vPickerRect.Wdt, vPickerRect.Hgt);
+	cgoPicker.Set(cgo.Surface, cgo.TargetX + vPickerRect.x + VPickerCursorSize, cgo.TargetY + vPickerRect.y, vPickerRect.Wdt - VPickerCursorSize, vPickerRect.Hgt);
 	vFacet.Draw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y);
 	// V cursor
-	cgoPicker.Wdt = cgoPicker.Hgt = 7;
+	cgoPicker.Wdt = cgoPicker.Hgt = VPickerCursorSize;
 	cgoPicker.X -= cgoPicker.Wdt / 2 + 1;
 	cgoPicker.Y += 255 - GetBlueValue(hsv) - cgoPicker.Hgt / 2;
 	for (int i = 0; i < cgoPicker.Hgt / 2 + 1; ++i)
@@ -1250,30 +1248,46 @@ void C4StartupPlrColorPickerDlg::Picker::DrawElement(C4TargetFacet &cgo)
 
 bool C4StartupPlrColorPickerDlg::Picker::HandleMouseDown(int32_t x, int32_t y)
 {
-	// Check if mouse was over a picker
-	if (hsPickerRect.Contains(x, y))
+	if (state == PS_IdleDragging)
 	{
-		int h = x - hsPickerRect.x;
-		int s = 255 - (y - hsPickerRect.y);
+		// User is dragging something that is neither of the pickers. Ignore.
+		return false;
+	}
+	// Check if a drag starts or was originally started over a picker
+	else if (state == PS_DragHS || (state == PS_Idle && hsPickerRect.Contains(x, y)))
+	{
+		int h = BoundBy(x - hsPickerRect.x, 0, hsPickerRect.Wdt - 1);
+		assert(Inside(h, 0, 255));
+		int s = 255 - BoundBy(y - hsPickerRect.y, 0, hsPickerRect.Hgt - 1);
+		assert(Inside(s, 0, 255));
 		hsv = C4RGB(h, s, GetBlueValue(hsv));
 		UpdateVFacet(h, s);
 		UpdatePreview();
+		state = PS_DragHS;
 		return true;
 	}
-	else if (vPickerRect.Contains(x, y))
+	else if (state == PS_DragV || (state == PS_Idle && vPickerRect.Contains(x, y)))
 	{
-		int v = 255 - (y - vPickerRect.y);
+		int v = 255 - BoundBy(y - vPickerRect.y, 0, vPickerRect.Hgt - 1);
+		assert(Inside(v, 0, 255));
 		hsv = (hsv & 0xFFFFFF00) | v;
 		UpdatePreview();
+		state = PS_DragV;
 		return true;
 	}
-	return false;
+	else
+	{
+		// Drag started outside of all picker areas; ignore movement until user releases mouse button.
+		state = PS_IdleDragging;
+		return false;
+	}
 }
 
 void C4StartupPlrColorPickerDlg::Picker::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	Control::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 
+	if (!rMouse.IsLDown()) state = PS_Idle;
 	if (rMouse.pDragElement) return;
 	if (rMouse.IsLDown())
 	{

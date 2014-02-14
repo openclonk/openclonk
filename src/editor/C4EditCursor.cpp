@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003  Matthes Bender
- * Copyright (c) 2001, 2005-2007, 2012  Sven Eberhardt
- * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005-2012  Günther Brammer
- * Copyright (c) 2006, 2010, 2012  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2012  Julius Michaelis
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles viewport editing in console mode */
@@ -219,7 +211,7 @@ void C4EditCursor::AddToSelection(C4Object *add_obj)
 	if (!add_obj || !add_obj->Status) return;
 	// add object to selection and do script callback
 	Selection.Add(add_obj, C4ObjectList::stNone);
-	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorSelection).getData(), add_obj->Number), CDT_Decide);
+	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Select, Fix0, Fix0, add_obj), CDT_Decide);
 }
 
 bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
@@ -227,7 +219,7 @@ bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
 	if (!remove_obj || !remove_obj->Status) return false;
 	// remove object from selection and do script callback
 	if (!Selection.Remove(remove_obj)) return false;
-	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorDeselection).getData(), remove_obj->Number), CDT_Decide);
+	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, remove_obj), CDT_Decide);
 	return true;
 }
 
@@ -240,7 +232,7 @@ void C4EditCursor::ClearSelection()
 	{
 		Selection.Remove(obj);
 		if (obj->Status)
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorDeselection).getData(), obj->Number), CDT_Decide);
+			::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, obj), CDT_Decide);
 	}
 	Selection.Clear();
 }

@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004-2005, 2007-2008  Matthes Bender
- * Copyright (c) 2004-2008, 2012  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2012  Günther Brammer
- * Copyright (c) 2005-2006, 2009  Peter Wortmann
- * Copyright (c) 2009, 2011  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011-2012  Armin Burgmeier
- * Copyright (c) 2011-2012  Julius Michaelis
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Main class to initialize configuration and execute the game */
@@ -46,6 +38,7 @@
 #include <C4GameLobby.h>
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
+#include <C4Particles.h>
 
 #include <getopt.h>
 
@@ -135,7 +128,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Load language string table
 	if (!Languages.LoadLanguage(Config.General.LanguageEx))
 		// No language table was loaded - bad luck...
-		if (!IsResStrTableLoaded())
+		if (!Languages.HasStringTable())
 			Log("WARNING: No language string table loaded!");
 
 #if defined(WIN32) && defined(WITH_AUTOMATIC_UPDATE)
@@ -172,8 +165,8 @@ bool C4Application::DoInit(int argc, char * argv[])
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
-	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	// Initialize OpenGL
+	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
@@ -181,6 +174,9 @@ bool C4Application::DoInit(int argc, char * argv[])
 		if (!SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.WindowX, Config.Graphics.WindowY);
 	}
+
+	// after initializing graphics, the particle system can check for compatibility
+	::Particles.DoInit();
 
 	// Initialize gamepad
 	if (!pGamePadControl && Config.General.GamepadEnabled)
@@ -558,14 +554,17 @@ void C4Application::Clear()
 	Game.Clear();
 	NextMission.Clear();
 	// stop timer
-	Remove(pGameTimer);
-	delete pGameTimer; pGameTimer = NULL;
+	if (pGameTimer)
+	{
+		Remove(pGameTimer);
+		delete pGameTimer; pGameTimer = NULL;
+	}
 	// quit irc
 	IRCClient.Close();
 	// close system group (System.ocg)
 	SystemGroup.Close();
 	// Log
-	if (IsResStrTableLoaded()) // Avoid (double and undefined) message on (second?) shutdown...
+	if (::Languages.HasStringTable()) // Avoid (double and undefined) message on (second?) shutdown...
 		Log(LoadResStr("IDS_PRC_DEINIT"));
 	// Clear external language packs and string table
 	Languages.Clear();
@@ -643,6 +642,7 @@ void C4Application::GameTick()
 		if (!PreInit()) Quit();
 		break;
 	case C4AS_Startup:
+		SoundSystem.Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
@@ -836,7 +836,7 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		iLastGameTick(0), iGameTickDelay(0)
+		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(0)
 {
 }
 
@@ -863,18 +863,18 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 {
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
-	unsigned int Now = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	// Execute
-	if (Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
+	if (tNow >= tLastGameTick + iGameTickDelay || Game.GameGo)
 	{
 		if(iGameTickDelay)
-			iLastGameTick += iGameTickDelay;
+			tLastGameTick += iGameTickDelay;
 		else
-			iLastGameTick = Now;
+			tLastGameTick = tNow;
 
 		// Compensate if things get too slow
-		if (Now > iLastGameTick + iGameTickDelay)
-			iLastGameTick += (Now - iLastGameTick) / 2;
+		if (tNow > tLastGameTick + iGameTickDelay)
+			tLastGameTick += (tNow - tLastGameTick) / 2;
 
 		Application.GameTick();
 	}

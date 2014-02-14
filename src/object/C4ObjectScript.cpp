@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2001, 2006  Peter Wortmann
- * Copyright (c) 2004, 2006-2007, 2009-2012  Günther Brammer
- * Copyright (c) 2005, 2009-2010, 2012  Armin Burgmeier
- * Copyright (c) 2001-2002, 2004-2007, 2010  Sven Eberhardt
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -1511,8 +1504,16 @@ static long FnGetDefBottom(C4PropList * _this)
 	if (!_this || !_this->GetDef())
 		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!Object(_this) || Object(_this)->Def == _this->GetDef());
-	return _this->GetDef()->Shape.y+_this->GetDef()->Shape.Hgt + (Object(_this) ? Object(_this)->GetY() : 0);
+	C4Object *obj = Object(_this);
+	C4Def *def = _this->GetDef();
+	assert(!obj || obj->Def == def);
+	
+	if (obj)
+		return obj->GetY() + obj->Shape.GetBottom();
+	else if (def)
+		return def->Shape.GetBottom();
+	else
+		return 0;
 }
 
 static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
@@ -2172,10 +2173,11 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	return true;
 }
 
-static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* szBoneName, C4ValueArray* Pos, C4ValueArray* Dir, long a, long b, C4Object* pTarget, bool fBehindTarget)
+
+static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* szBoneName, C4ValueArray* Pos, C4ValueArray* Dir, C4Value lifetime, C4PropList *properties, int amount)
 {
 	// safety
-	if(pTarget && !pTarget->Status) return false;
+	if(!Obj || !Obj->Status) return false;
 	// Get bone
 	if(!Obj->pMeshInstance) return false;
 	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
@@ -2277,10 +2279,19 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	x.y += DrawTransform(1,3);
 	x.z += DrawTransform(2,3);
 	// get particle
-	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
+	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
 	if (!pDef) return false;
+
+	// construct data
+	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
+	valueX.Set(x.x);
+	valueY.Set(x.y);
+	valueSpeedX.Set(dir.x);
+	valueSpeedY.Set(dir.y);
+	valueLifetime.Set(lifetime);
+
 	// cast
-	::Particles.Create(pDef, x.x, x.y, dir.x, dir.y, (float) a/10.0f, b, pTarget ? (fBehindTarget ? &pTarget->BackParticles : &pTarget->FrontParticles) : NULL, pTarget);
+	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
 	// success, even if not created
 	return true;
 

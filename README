@@ -1,0 +1,55 @@
+Requirements
+============
+You should be able to build OpenClonk with any C++ compiler that supports
+ISO C++11. That said, on Windows, we recommend using Microsoft Visual C++
+2010 or higher; the Express edition will be sufficient. On Linux, you will
+be fine with GNU g++ 4.6 or later. Apple users should use a clang-based
+XCode version.
+
+To generate project files for your chosen build system, you will also have to
+install CMake from http://www.cmake.org/.
+
+Additionally, OpenClonk depends on a number of third-party libraries:
+  - zlib (http://zlib.net/)
+  - libpng (http://www.libpng.org/pub/png/libpng.html)
+  - libjpeg-turbo (http://sourceforge.net/projects/libjpeg-turbo/files/)
+  - FreeType (http://www.freetype.org/)
+  - The OpenGL Extension Wrangler Library (http://glew.sourceforge.net/)
+  - FreeALUT (https://github.com/openclonk/freealut)
+  - libogg and libvorbis (https://www.xiph.org/downloads/)
+  - Boost (http://www.boost.org/users/download/)
+
+OS X Specific
+=============
+OpenClonk supports OS X versions 10.6 "Snow Leopard" and later. You can build
+universal binaries by setting CMAKE_OSX_ARCHITECTURES to "x86_64 i386", but
+you will of course need universal versions of the dependencies in that case.
+If you are using brew (https://github.com/mxcl/homebrew) or MacPorts
+(http://www.macports.org/), the packages you'll have to install are:
+    libjpeg, libpng, freetype, glew, libogg, libvorbis, boost
+
+Linux Specific
+==============
+For building OpenClonk on Linux, you need the following libraries in addition
+to the ones listed above:
+  - libxpm
+  - libGL
+  - SDL 1.2 (http://www.libsdl.org/download-1.2.php)
+  - SDL_mixer 1.2 (http://www.libsdl.org/projects/SDL_mixer/release-1.2.html)
+Most distributions should provide these dependencies via their packaging
+system. For Debian based distributions, you will need these packages:
+    build-essential cmake libx11-dev libxxf86vm-dev libxrandr-dev libxpm-dev
+    libglew-dev libgl1-mesa-dev libpng12-dev libsdl1.2-dev
+    libsdl-mixer1.2-dev libgtk2.0-dev libjpeg8-dev zlib1g-dev libboost-dev
+(This list was compiled on Debian 7.0 "Wheezy". More recent distributions may
+provide packages with a higher version number.)
+
+Windows Specific
+================
+In addition to the libraries above, you will need one more if you want to
+target Windows:
+  - OpenAL Soft (http://kcat.strangesoft.net/openal.html)
+To create an installer, you will also need the Nullsoft Install System
+(http://nsis.sourceforge.net/). makensis needs to be in the PATH, and
+the DLLs used by openclonk must be in the build directory. To create the
+installer, build the "setup" target.

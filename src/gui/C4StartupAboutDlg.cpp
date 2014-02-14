@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2014, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // About/credits screen
 
@@ -31,28 +26,13 @@
 // ------------------------------------------------
 // --- C4StartupAboutDlg
 
-C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
+C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"))
 {
 	// ctor
 	UpdateSize();
 
-	// key bindings: No longer back on any key
-	pKeyBack = NULL;
-	//C4CustomKey::CodeList keys;
-	//keys.push_back(C4KeyCodeEx(KEY_Any)); keys.push_back(C4KeyCodeEx(KEY_JOY_AnyButton));
-	//pKeyBack = new C4KeyBinding(keys, "StartupAboutBack", KEYSCOPE_Gui,
-	//  new C4GUI::DlgKeyCB<C4StartupAboutDlg>(*this, &C4StartupAboutDlg::KeyBack), C4CustomKey::PRIO_Dlg);
-
-	// version and registration info in topright corner
-	C4Rect rcClient = GetContainedClientRect();
-	StdStrBuf sVersion; sVersion.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
 	CStdFont &rUseFont = ::GraphicsResource.TextFont;
-	int32_t iInfoWdt = Min<int32_t>(rcClient.Wdt/2, rUseFont.GetTextWidth("General info text width")*2);
-	C4GUI::ComponentAligner caInfo(C4Rect(rcClient.x + rcClient.Wdt - iInfoWdt, rcClient.y, iInfoWdt, rcClient.Hgt/8), 0,0, false);
-	AddElement(new C4GUI::Label(sVersion.getData(), caInfo.GetGridCell(0,1,0,4), ARight));
-	StdStrBuf sRegStr, sKeyFile;
-	Application.Add(this);
-	OnSec1Timer();
+	C4Rect rcClient = GetContainedClientRect();
 
 	// bottom line buttons and copyright messages
 	C4GUI::ComponentAligner caMain(rcClient, 0,0, true);
@@ -73,8 +53,6 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 
 C4StartupAboutDlg::~C4StartupAboutDlg()
 {
-	Application.Remove(this);
-	delete pKeyBack;
 }
 
 void C4StartupAboutDlg::DoBack()
@@ -82,26 +60,9 @@ void C4StartupAboutDlg::DoBack()
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Main);
 }
 
-void C4StartupAboutDlg::OnSec1Timer()
-{
-}
-
 void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
 {
-	// draw background - do not use bg drawing proc, because it stretches
-	// pre-clear background instead to prevent blinking borders
-	if (!IsFading()) pDraw->FillBG();
-	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false);
-}
-
-void C4StartupAboutDlg::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// back on any mouse button? Better not, because mouse input is required
-	/*if (iButton == C4MC_Button_LeftDown || iButton == C4MC_Button_RightDown || iButton == C4MC_Button_MiddleDown)
-	  DoBack();
-	else*/
-	// otherwise, inherited for tooltips
-	C4StartupDlg::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
+	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, true, 0, 0, true);
 }
 
 #ifdef WITH_AUTOMATIC_UPDATE

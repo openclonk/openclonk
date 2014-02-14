@@ -5,36 +5,23 @@
 <funcs>
   <func>
     <title>ClearParticles</title>
-    <category>Particle</category>
+    <category>Particles</category>
     <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
-      <params>
-        <param>
-          <type>string</type>
-          <name>name</name>
-          <desc>Name of the particle definition of which you want to delete all particles. If not specified, all particles of all types will be removed.</desc>
-		  <optional />
-        </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>If specified, only the particles local to that object are removed.</desc>
-		  <optional />
-        </param>
-      </params>
     </syntax>
-    <desc>Removes all particles of the specified type.</desc>
+    <desc>Removes all particles associated with the calling object or the global particles if not called from object context.</desc>
     <examples>
       <example>
-        <code>ClearParticles(&quot;Smoke&quot;);</code>
-        <text>Removes all smoke.</text>
+        <code>
+GetCursor(0)->ClearParticles();
+Scenario->ClearParticles();</code>
+        <text>Removes all particles belonging to the first player's Clonk and all global particles.</text>
       </example>
     </examples>
     <related>
       <funclink>CreateParticle</funclink>
-      <funclink>PushParticles</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2002-04</date>
+  <author>Zapper</author><date>2013-12</date>
 </funcs>

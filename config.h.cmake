@@ -13,9 +13,6 @@
 /* Whether FMOD shall be used */
 #cmakedefine HAVE_FMOD 1
 
-/* Define to 1 if you have FreeType2. */
-#cmakedefine HAVE_FREETYPE 1
-
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
 
@@ -160,12 +157,6 @@
 /* dedicated server mode */
 #cmakedefine USE_CONSOLE 1
 
-/* DirectX graphics */
-#cmakedefine USE_DIRECTX 1
-
-/* OpenGL graphics */
-#cmakedefine USE_GL 1
-
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
@@ -183,6 +174,9 @@
 
 /* Developer mode */
 #cmakedefine WITH_DEVELOPER_MODE 1
+
+/* Define to 1 if you want to use Boost.Regex instead of <regex>. */
+#cmakedefine USE_BOOST_REGEX 1
 
 /* Glib */
 #cmakedefine WITH_GLIB 1

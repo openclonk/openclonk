@@ -1,3 +1,9 @@
+@font-face{
+	font-family: Endeavour;
+	src: url('/Endeavour.eot');
+	src: local('Endeavour'),url('/Endeavour.ttf') format("truetype");
+}
+
 body {
 	margin: 0;
 	font-size: small;
@@ -244,4 +250,6 @@ ul.nav li.switchlang img {
 	margin: 0;
 }
 
-
+a {
+	color: rgb(0, 102, 153);
+}

@@ -26,7 +26,13 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 		DoFireworks();
 		return;
 	}
-
+	
+	if(GetAction() != "Fly")
+	{
+		SetAction("Fly");
+		SetComDir(COMD_None);
+	}
+	
 	var ignition = iEffectTime % 15;
 	
 	if(!ignition)
@@ -36,23 +42,13 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	}
 	
 	
-	if(!Random(iEffectTime % 15))
-	{
-		var sizemod = ignition*ignition/5;
-		
-		var x = -Sin(GetR(),70);
-		var y = +Cos(GetR(),70);
-		
-		CreateParticle("ExploSmoke",x,y,RandomX(-1,1),RandomX(-1,1),RandomX(250,600),RGBa(130,130,130,100));
-		CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(160,240)+sizemod,RGBa(255,200,200,200));
-	}
-	
-	if(GetAction() != "Fly")
-	{
-		SetAction("Fly");
-		SetComDir(COMD_None);
-	}
-		
+	var x = -Sin(GetR(), 80);
+	var y = +Cos(GetR(), 80);
+
+	var xdir = GetXDir() / 2;
+	var ydir = GetYDir() / 2;
+	CreateParticle("FireDense", x, y, PV_Random(xdir - 20, xdir + 20), PV_Random(ydir - 20, ydir + 20), PV_Random(16 * 6, 38 * 6), {Prototype = Particles_Thrust(), Size = PV_Random(40, 60)}, 5);
+			
 	fuel--;
 }
 

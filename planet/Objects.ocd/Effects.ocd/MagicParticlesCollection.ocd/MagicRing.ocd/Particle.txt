@@ -1,17 +1,3 @@
 [Particle]
 Name=MagicRing
-MaxCount=1000
-InitFn=StdInit
-ExecFn=StdExec
-CollisionFn=Die
-DrawFn=Std
 Face=0,0,64,64,-32,-32
-Delay=0
-Repeats=1
-GravityAcc=0
-VertexCount=1
-VertexY=20
-AlphaFade=35
-Additive=1
-RByV=3
-Attach=1

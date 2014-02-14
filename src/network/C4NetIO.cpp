@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008  Peter Wortmann
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2009, 2011  Günther Brammer
- * Copyright (c) 2007, 2010  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 #include "C4NetIO.h"
@@ -391,6 +385,13 @@ bool C4NetIOTCP::CloseBroadcast()
 	return true;
 }
 
+static int fix_poll_timeout(int timeout) {
+	if (timeout < 0 || timeout > 1000)
+		return 1000;
+	else
+		return timeout;
+}
+
 bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 {
 	// security
@@ -405,6 +406,8 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 
 	WSANETWORKEVENTS wsaEvents;
 #else
+
+	iMaxTime = fix_poll_timeout(iMaxTime);
 
 	std::vector<pollfd> fdvec;
 	std::map<SOCKET, const pollfd*> fdmap;
@@ -806,12 +809,6 @@ void C4NetIOTCP::GetFDs(std::vector<struct pollfd> & fds)
 }
 #endif
 
-
-int C4NetIOTCP::GetNextTick(int Now) // (mt-safe)
-{
-	return TO_INF;
-}
-
 bool C4NetIOTCP::GetStatistic(int *pBroadcastRate) // (mt-safe)
 {
 	// no broadcast
@@ -939,6 +936,8 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 
 	// clear add-lock
 	PeerListAddLock.Clear();
+	
+	Changed();
 
 	// ask callback if connection should be permitted
 	if (pCB && !pCB->OnConn(addr, caddr, NULL, this))
@@ -1001,6 +1000,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 
 	// ok
 	iListenPort = inListenPort;
+	Changed();
 	return true;
 }
 
@@ -1075,6 +1075,7 @@ void C4NetIOTCP::AddConnectWait(SOCKET sock, const addr_t &addr) // (mt-safe)
 	// unblock, so new FD can be realized
 	UnBlock();
 #endif
+	Changed();
 }
 
 C4NetIOTCP::ConnectWait *C4NetIOTCP::GetConnectWait(const addr_t &addr) // (mt-safe)
@@ -1537,6 +1538,7 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 		// The FIONREAD ioctl call takes an int on unix
 		int iMaxMsgSize;
 #endif
+		iMaxTime = fix_poll_timeout(iMaxTime);
 		if (::ioctlsocket(sock, FIONREAD, &iMaxMsgSize) == SOCKET_ERROR)
 		{
 			SetError("Could not determine the amount of data that can be read from socket", true);
@@ -1700,11 +1702,6 @@ enum C4NetIOSimpleUDP::WaitResult C4NetIOSimpleUDP::WaitForSocket(int iTimeout)
 
 #endif // STDSCHEDULER_USE_EVENTS
 
-int C4NetIOSimpleUDP::GetNextTick(int Now)
-{
-	return C4NetIO::TO_INF;
-}
-
 bool C4NetIOSimpleUDP::SetMCLoopback(int fLoopback)
 {
 	// enable/disable MC loopback
@@ -1806,7 +1803,7 @@ C4NetIOUDP::C4NetIOUDP()
 		pPeerList(NULL),
 		fSavePacket(false),
 		fDelayedLoopbackTest(false),
-		iNextCheck(0),
+		tNextCheck(C4TimeMilliseconds::PositiveInfinity),
 		OPackets(iMaxOPacketBacklog),
 		iOPacketCounter(0),
 		iBroadcastRate(0)
@@ -1840,7 +1837,8 @@ bool C4NetIOUDP::Init(uint16_t inPort)
 	// set flags
 	fInit = true;
 	fMultiCast = false;
-	iNextCheck = GetTime() + iCheckInterval;
+
+	tNextCheck = C4TimeMilliseconds::Now() + iCheckInterval;
 
 	// ok, that's all for now.
 	// call InitBroadcast for more initialization fun
@@ -2012,16 +2010,16 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 	ResetError();
 
 	// adjust maximum block time
-	int Now = GetTime();
-	int iMaxBlock = GetNextTick(Now) - Now;
-	if (iMaxTime == TO_INF || iMaxTime > iMaxBlock) iMaxTime = iMaxBlock;
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+	uint32_t iMaxBlock = GetNextTick(tNow) - tNow;
+	if (iMaxTime == TO_INF || iMaxTime > (int) iMaxBlock) iMaxTime = iMaxBlock;
 
 	// execute subclass
-	if (!C4NetIOSimpleUDP::Execute(iMaxBlock))
+	if (!C4NetIOSimpleUDP::Execute(iMaxTime))
 		return false;
 
 	// connection check needed?
-	if (iNextCheck <= GetTime())
+	if (tNextCheck <= C4TimeMilliseconds::Now())
 		DoCheck();
 	// client timeout?
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
@@ -2106,18 +2104,19 @@ bool C4NetIOUDP::SetBroadcast(const addr_t &addr, bool fSet) // (mt-safe)
 	return true;
 }
 
-int C4NetIOUDP::GetNextTick(int Now) // (mt-safe)
+C4TimeMilliseconds C4NetIOUDP::GetNextTick(C4TimeMilliseconds tNow) // (mt-safe)
 {
 	// maximum time: check interval
-	int iTiming = Max<int>(Now, iNextCheck);
+	C4TimeMilliseconds tTiming = tNextCheck.IsInfinite() ? tNow : Max(tNow, tNextCheck);
+	
 	// client timeouts (e.g. connection timeout)
 	CStdShareLock PeerListLock(&PeerListCSec);
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (!pPeer->Closed())
-			if (pPeer->GetTimeout() > 0)
-				iTiming = Min(iTiming, Now + pPeer->GetTimeout());
+			if (!pPeer->GetTimeout().IsInfinite())
+				tTiming = Min(tTiming, pPeer->GetTimeout());
 	// return timing value
-	return iTiming;
+	return tTiming;
 }
 
 bool C4NetIOUDP::GetStatistic(int *pBroadcastRate) // (mt-safe)
@@ -2496,7 +2495,7 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 		iIPacketCounter(0), iRIPacketCounter(0),
 		iIMCPacketCounter(0), iRIMCPacketCounter(0),
 		iMCAckPacketCounter(0),
-		iNextReCheck(0),
+		tNextReCheck(C4TimeMilliseconds::NegativeInfinity),
 		iIRate(0), iORate(0), iLoss(0)
 {
 	ZeroMem(&addr2, sizeof(addr2));
@@ -2544,7 +2543,7 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	if (eStatus != CS_Works) return true;
 	// prevent re-check (check floods)
 	// instead, ask for other packets that are missing until recheck is allowed
-	bool fNoReCheck = !!iNextReCheck && iNextReCheck > GetTime();
+	bool fNoReCheck = tNextReCheck > C4TimeMilliseconds::Now();
 	if (!fNoReCheck) iLastPacketAsked = iLastMCPacketAsked = 0;
 	unsigned int iStartAt = fNoReCheck ? Max(iLastPacketAsked + 1, iIPacketCounter) : iIPacketCounter;
 	unsigned int iStartAtMC = fNoReCheck ? Max(iLastMCPacketAsked + 1, iIMCPacketCounter) : iIMCPacketCounter;
@@ -2562,7 +2561,12 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	int iEAskCnt = iAskCnt + iMCAskCnt;
 	// no re-check limit? set it
 	if (!fNoReCheck)
-		iNextReCheck = iEAskCnt ? GetTime() + iReCheckInterval : 0;
+	{
+		if (iEAskCnt)
+			tNextReCheck = C4TimeMilliseconds::Now() + iReCheckInterval;
+		else
+			tNextReCheck = C4TimeMilliseconds::NegativeInfinity;
+	}
 	// something to ask for? (or check forced?)
 	if (iEAskCnt || fForceCheck)
 		return DoCheck(iAskCnt, iMCAskCnt, iAskList);
@@ -2627,7 +2631,11 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		else
 			iRIPacketCounter = iIPacketCounter = pPkt->Nr;
 		// clear incoming packets
-		IPackets.Clear(); IMCPackets.Clear(); iNextReCheck = 0;
+		IPackets.Clear();
+		IMCPackets.Clear();
+		
+		tNextReCheck = C4TimeMilliseconds::NegativeInfinity;
+
 		iLastPacketAsked = iLastMCPacketAsked = 0;
 		// Activate Multicast?
 		if (!pParent->fMultiCast)
@@ -2785,10 +2793,8 @@ void C4NetIOUDP::Peer::Close(const char *szReason) // (mt-safe)
 
 void C4NetIOUDP::Peer::CheckTimeout()
 {
-	// timeout set?
-	if (!iTimeout) return;
 	// check
-	if (GetTime() > iTimeout)
+	if (C4TimeMilliseconds::Now() > tTimeout)
 		OnTimeout();
 }
 
@@ -2937,9 +2943,13 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 void C4NetIOUDP::Peer::SetTimeout(int iLength, int iRetryCnt) // (mt-safe)
 {
 	if (iLength != TO_INF)
-		iTimeout = GetTime() + iLength;
+	{
+		tTimeout = C4TimeMilliseconds::Now() + iLength;
+	}
 	else
-		iTimeout = 0;
+	{
+		tTimeout = C4TimeMilliseconds::PositiveInfinity;
+	}
 	iRetries = iRetryCnt;
 }
 
@@ -3071,6 +3081,7 @@ void C4NetIOUDP::AddPeer(Peer *pPeer)
 	// add
 	pPeer->Next = pPeerList;
 	pPeerList = pPeer;
+	Changed();
 }
 
 void C4NetIOUDP::OnShareFree(CStdCSecEx *pCSec)
@@ -3155,8 +3166,9 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (pPeer->Open())
 			pPeer->Check();
+
 	// set time for next check
-	iNextCheck = GetTime() + iCheckInterval;
+	tNextCheck = C4TimeMilliseconds::Now() + iCheckInterval;
 }
 
 // debug
@@ -3204,9 +3216,8 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	unsigned int iTime = GetTime();
-	O.Format("%s %d:%02d:%02d:%03d %s:%d:", fOut ? "out" : "in ",
-	         (iTime / 1000 / 60 / 60), (iTime / 1000 / 60) % 60, (iTime / 1000) % 60, iTime % 1000,
+	O.Format("%s %s %s:%d:", fOut ? "out" : "in ",
+	         C4TimeMilliseconds::Now().AsString().getData(),
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
 
 	// header?

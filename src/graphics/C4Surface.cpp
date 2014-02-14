@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003, 2008  Matthes Bender
- * Copyright (c) 2002, 2004-2008  Sven Eberhardt
- * Copyright (c) 2005, 2007-2011  Günther Brammer
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2009-2010  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // a wrapper class to DirectDraw surfaces
 
@@ -31,9 +25,7 @@
 #include <C4DrawGL.h>
 #include <C4Window.h>
 #include <StdRegistry.h>
-#include <StdResStr.h>
 #include <C4Draw.h>
-#include <C4DrawD3D.h>
 #include <Bitmap256.h>
 #include <StdPNG.h>
 #include <C4Config.h>
@@ -69,9 +61,8 @@ C4Surface::C4Surface(C4AbstractApp * pApp, C4Window * pWindow):
 	fPrimary=true;
 	this->pWindow=pWindow;
 	// create rendering context
-#ifdef USE_GL
-	if (pGL)
-		pCtx = pGL->CreateContext(pWindow, pApp);
+#ifndef USE_CONSOLE
+	pCtx = pGL->CreateContext(pWindow, pApp);
 #endif
 	// reset clipping
 	NoClip();
@@ -94,12 +85,9 @@ void C4Surface::Default()
 	Locked=0;
 	Attached=false;
 	fPrimary=false;
-#ifdef USE_DIRECTX
-	pSfc=NULL;
-#endif
 	ppTex=NULL;
 	pMainSfc=NULL;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	pCtx=NULL;
 #endif
 	pWindow=NULL;
@@ -137,11 +125,7 @@ void C4Surface::MoveFrom(C4Surface *psfcFrom)
 	iTexSize=psfcFrom->iTexSize;
 	iTexX=psfcFrom->iTexX; iTexY=psfcFrom->iTexY;
 	byBytesPP=psfcFrom->byBytesPP;
-#ifdef USE_DIRECTX
-	dwClrFormat=psfcFrom->dwClrFormat;
-	pSfc=psfcFrom->pSfc;
-#endif
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	Format=psfcFrom->Format;
 #endif
 	fIsBackground = psfcFrom->fIsBackground;
@@ -154,14 +138,7 @@ void C4Surface::Clear()
 	// Undo all locks
 	while (Locked) Unlock();
 	// release surface
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		if (pSfc) pSfc->Release();
-	}
-	pSfc=NULL;
-#endif
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	if (pCtx)
 	{
 		delete pCtx;
@@ -179,14 +156,7 @@ void C4Surface::Clear()
 bool C4Surface::IsRenderTarget()
 {
 	// primary is always OK...
-	return fPrimary
-	       // other surfaces may be used as render targets, if offscreen rendertargets are not disabled by config,
-	       //  or the surface is split (large sfcs) or locked (landscape)
-	       //  (only D3D for now)
-#ifdef USE_DIRECTX
-	       || (!Locked && !Config.Graphics.NoOffscreenBlits && pD3D && fIsRenderTarget)
-#endif
-	       ;
+	return fPrimary;
 }
 
 void C4Surface::NoClip()
@@ -211,17 +181,9 @@ bool C4Surface::Create(int iWdt, int iHgt, bool, bool fIsRenderTarget, int MaxTe
 	if (!pDraw->DeviceReady()) return false;
 
 	// store color format that will be used
-#ifdef USE_DIRECTX
-	if (pD3D)
-		dwClrFormat=pD3D->dwSurfaceType;
-	else
+#ifndef USE_CONSOLE
+	Format=pGL->sfcFmt;
 #endif
-#ifdef USE_GL
-		if (pGL)
-			Format=pGL->sfcFmt;
-		else
-#endif
-			{/* nothing to do */}
 	byBytesPP=pDraw->byByteCnt;
 	this->fIsRenderTarget = fIsRenderTarget;
 	// create textures
@@ -253,7 +215,7 @@ namespace
 	{
 		int iNeedSize = Size;
 
-	#ifdef USE_GL
+	#ifndef USE_CONSOLE
 		if (!pGL || !GLEW_ARB_texture_non_power_of_two)
 	#endif
 		{
@@ -296,14 +258,6 @@ bool C4Surface::CreateTextures(int MaxTextureSize)
 			
 			if (fIsBackground && ppCTex) (*ppCTex)->FillBlack();
 
-#ifdef USE_DIRECTX
-			if (!(*ppCTex)->pTex && pD3D)
-			{
-				// error creating texture
-				return false;
-			}
-#endif
-
 			++ppCTex;
 		}
 	}
@@ -317,7 +271,7 @@ bool C4Surface::CreateTextures(int MaxTextureSize)
 		{
 			// last texture might be smaller
 			iNeedSize=Max(Wdt%iTexSize, Hgt%iTexSize);
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			if (!pGL || !GLEW_ARB_texture_non_power_of_two)
 #endif
 			{
@@ -328,13 +282,6 @@ bool C4Surface::CreateTextures(int MaxTextureSize)
 			*ppCTex = new C4TexRef(iNeedSize, fIsRenderTarget);
 		}
 		if (fIsBackground && ppCTex) (*ppCTex)->FillBlack();
-#ifdef USE_DIRECTX
-		if (!(*ppCTex)->pTex && pD3D)
-		{
-			// error creating texture
-			return false;
-		}
-#endif
 	}
 #endif
 
@@ -481,32 +428,6 @@ bool C4Surface::SetAsClrByOwnerOf(C4Surface *pOfSurface)
 	return true;
 }
 
-#ifdef USE_GL
-/*bool C4Surface::CreatePrimaryGLTextures()
-  {
-  if (!pGL) return false;
-  // primary OpenGL-surface: ensure context is selected
-  if (!pGL->pCurrCtx) if (!pGL->MainCtx.Select()) return false;
-  // create texture array
-  CreateTextures();
-  // get from framebuffer
-  C4TexRef **ppTexRef = ppTex;
-  for (int iY=0; iY<Hgt; iY+=iTexSize)
-    for (int iX=0; iX<Wdt; iX+=iTexSize)
-      {
-      // get tex size
-      int txWdt=Min(Wdt-iX, iTexSize), txHgt=Min(Hgt-iY, iTexSize);
-      // copy surface into texture
-      glBindTexture(GL_TEXTURE_2D, (*ppTexRef)->texName);
-      glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, iX, iY, txWdt, txHgt, 0);
-      // next texture reference
-      ++ppTexRef;
-      }
-  // done, success
-  return true;
-  }*/
-#endif
-
 bool C4Surface::UpdateSize(int wdt, int hgt)
 {
 	assert(fPrimary);
@@ -523,38 +444,11 @@ bool C4Surface::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt)
 		return false;
 	// call from gfx thread only!
 	if (!pDraw->pApp || !pDraw->pApp->AssertMainThread()) return false;
-#ifdef USE_GL
-	if (pGL)
-		return pCtx->PageFlip();
-#endif
-#ifdef USE_DIRECTX
-	if (pD3D)
-		return pD3D->PageFlip(pSrcRt, pDstRt);
+#ifndef USE_CONSOLE
+	return pCtx->PageFlip();
 #endif
 	return true;
 }
-
-#ifdef USE_DIRECTX
-IDirect3DSurface9 *C4Surface::GetSurface()
-{
-	// direct surface?
-	if (pSfc)
-	{
-		pSfc->AddRef();
-		return pSfc;
-	}
-	// surface by texture?
-	if (fIsRenderTarget && ppTex)
-	{
-		IDirect3DTexture9 *pTex = (*ppTex)->pTex;
-		IDirect3DSurface9 *pSfcResult=NULL;
-		if (pTex) pTex->GetSurfaceLevel(0, &pSfcResult);
-		return pSfcResult;
-	}
-	// split surfaces: Won't work; we're no render target anyway
-	return NULL;
-}
-#endif //USE_DIRECTX
 
 bool C4Surface::ReadBMP(CStdStream &hGroup)
 {
@@ -694,8 +588,8 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamm
 	C4Surface *pMainSfcBackup = NULL;
 	if (fSaveOverlayOnly) { pMainSfcBackup=pMainSfc; pMainSfc=NULL; }
 
-#ifdef USE_GL
-	if (fPrimary && pGL)
+#ifndef USE_CONSOLE
+	if (fPrimary)
 	{
 		// Take shortcut. FIXME: Check Endian
 		for (int y = 0; y < Hgt; ++y)
@@ -751,37 +645,9 @@ bool C4Surface::Lock()
 {
 	// lock main sfc
 	if (pMainSfc) if (!pMainSfc->Lock()) return false;
-	// not yet locked?
-	if (!Locked)
-	{
-		if (fPrimary)
-		{
-#ifdef USE_DIRECTX
-			if (pD3D)
-			{
-				D3DLOCKED_RECT lock;
-				// locking primary
-				if (!pSfc) return false;
-				// lock it
-				if (pSfc->LockRect(&lock, NULL, 0) != D3D_OK)
-					return false;
-				pDraw->LockingPrimary();
-				// store pitch and pointer
-				PrimarySurfaceLockPitch=lock.Pitch;
-				PrimarySurfaceLockBits=(BYTE*) lock.pBits;
-			}
-#endif //USE_DIRECTX
-
-			// OpenGL:
-			// cannot really lock primary surface, but Get/SetPix will emulate it
-		}
-		else
-		{
-			if (!ppTex) return false;
-			// lock texture
-			// textures will be locked when needed
-		}
-	}
+	// lock texture
+	if (!Locked && !fPrimary && !ppTex)
+		return false;
 	// count lock
 	Locked++; return true;
 }
@@ -792,32 +658,18 @@ bool C4Surface::Unlock()
 	if (pMainSfc) pMainSfc->Unlock();
 	// locked?
 	if (!Locked) return false;
-	// decrease lock counter; check if zeroed
+	// decrease lock counter; check if zeroed and unlock then
 	Locked--;
 	if (!Locked)
 	{
-		// zeroed: unlock
 		if (fPrimary)
 		{
-#ifdef USE_DIRECTX
-			if (pD3D)
-			{
-				if (!pSfc) return false;
-				// unlocking primary?
-				if (pSfc->UnlockRect() != D3D_OK)
-					return false;
-				pDraw->PrimaryUnlocked();
-			}
-			else
-#endif
-			{
-				// if tex refs exist, free them
-				/*FreeTextures();*/
-				// otherwise, emulated primary locks in OpenGL
-				delete[] PrimarySurfaceLockBits;
-				PrimarySurfaceLockBits = 0;
-				return true;
-			}
+			// if tex refs exist, free them
+			/*FreeTextures();*/
+			// otherwise, emulated primary locks in OpenGL
+			delete[] PrimarySurfaceLockBits;
+			PrimarySurfaceLockBits = 0;
+			return true;
 		}
 		else
 		{
@@ -876,17 +728,14 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 	// primary?
 	if (fPrimary)
 	{
-#ifdef USE_GL
-		// OpenGL?
-		if (pGL)
+#ifndef USE_CONSOLE
+		if (!PrimarySurfaceLockBits)
 		{
-			if (!PrimarySurfaceLockBits)
-			{
-				PrimarySurfaceLockBits = new unsigned char[Wdt*Hgt*3 + 1];
-				glReadPixels( 0, 0, Wdt, Hgt, GL_BGR, GL_UNSIGNED_BYTE, PrimarySurfaceLockBits);
-				PrimarySurfaceLockPitch = Wdt*3;
-			}
-			return * (DWORD *) (PrimarySurfaceLockBits+(Hgt-iY-1)*PrimarySurfaceLockPitch+iX*3);
+			PrimarySurfaceLockBits = new unsigned char[Wdt*Hgt*3 + 1];
+			glReadPixels( 0, 0, Wdt, Hgt, GL_BGR, GL_UNSIGNED_BYTE, PrimarySurfaceLockBits);
+			PrimarySurfaceLockPitch = Wdt*3;
+		}
+		return * (DWORD *) (PrimarySurfaceLockBits+(Hgt-iY-1)*PrimarySurfaceLockPitch+iX*3);
 
 			// copy content into textures
 			/*if (!ppTex) if (!CreatePrimaryGLTextures()) return 0;
@@ -898,42 +747,6 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 			iPitch=pTexRef->texLock.Pitch;
 			// get pixel
 			return *(DWORD *)(pBuf+iY*iPitch+iX*4);*/
-		}
-#endif
-#ifdef USE_DIRECTX
-		if (!PrimarySurfaceLockBits)
-		{
-			return 0;
-		}
-		else
-		{
-			// clip
-			if (iX<0 || iY<0 || iX>=Wdt || iY>=Hgt) return 0;
-			// get pixel from primary surface
-			WORD pix16;
-			switch (dwClrFormat)
-			{
-			case D3DFMT_X1R5G5B5:
-				// 16 bit 5-5-5
-				pix16= * (WORD *) (((BYTE *) PrimarySurfaceLockBits)+iY*PrimarySurfaceLockPitch+iX*2);
-				return ((pix16 & 0x001f) << 3)
-				       | ((pix16 & 0x03e0) << 6)
-				       | ((pix16 & 0x7c00) << 9);
-
-			case D3DFMT_R5G6B5:
-				// 16 bit 5-6-5
-				pix16= * (WORD *) (((BYTE *) PrimarySurfaceLockBits)+iY*PrimarySurfaceLockPitch+iX*2);
-				return ((pix16 & 0x001f) <<  3)
-				       | ((pix16 & 0x07e0) <<  5)
-				       | ((pix16 & 0xf800) <<  8);
-				break;
-
-			case D3DFMT_X8R8G8B8:
-				// 32 bit
-				return * (DWORD *) (((BYTE *) PrimarySurfaceLockBits)+iY*PrimarySurfaceLockPitch+iX*4);
-			default: assert(false); return 0; // should not happen
-			}
-		}
 #endif
 	}
 	else
@@ -1019,46 +832,11 @@ bool C4Surface::IsPixTransparent(int iX, int iY)
   if ((iX<ClipX) || (iX>ClipX2) || (iY<ClipY) || (iY>ClipY2)) return true;
   // primary?
   if (fPrimary)
-    {
-#ifdef USE_GL
-    // OpenGL: Use OpenGL API
-    if (pGL)
-      {
+#ifndef USE_CONSOLE
       pGL->DrawPixInt(this, iX, iY, dwClr);
-      }
     else
 #endif
       {
-#ifdef USE_DIRECTX
-      // must be locked!
-      if (!Bits) return false;
-      // set according to pixel format
-      DWORD *pPix32; WORD *pPix16;
-      switch (dwClrFormat)
-        {
-        case D3DFMT_X1R5G5B5:
-          // 16 bit 5-5-5
-          pPix16=(WORD *) (((BYTE *) Bits)+iY*Pitch+iX*2);
-          *pPix16=WORD((dwClr & 0x000000f8) >> 3)
-                | WORD((dwClr & 0x0000f800) >> 6)
-                | WORD((dwClr & 0x00f80000) >> 9);
-          break;
-
-        case D3DFMT_R5G6B5:
-          // 16 bit 5-6-5
-          pPix16=(WORD *) (((BYTE *) Bits)+iY*Pitch+iX*2);
-          *pPix16=WORD((dwClr & 0x000000f8) >> 3)
-                | WORD((dwClr & 0x0000fc00) >> 5)
-                | WORD((dwClr & 0x00f80000) >> 8);
-          break;
-
-        case D3DFMT_X8R8G8B8:
-          // 32 bit
-          pPix32=(DWORD *) (((BYTE *) Bits)+iY*Pitch+iX*4);
-          *pPix32=dwClr;
-          break;
-        }
-#endif
       }
     return true;
     }
@@ -1078,11 +856,11 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 	// if color is fully transparent, ensure it's black
 	if (dwClr>>24 == 0x00) dwClr=0x00000000;
 	C4TexRef *pTexRef;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	// openGL: use glTexSubImage2D
 	// This optimization was moved to LockForUpdate, as it only slows down mass updates here
 	// Keep this code in case there is a need for fast single pixel updates again
-	if (0 && pGL && pGL->pCurrCtx)
+	if (0 && pGL->pCurrCtx)
 	{
 		if (!GetTexAt(&pTexRef, iX, iY))
 			return false;
@@ -1285,10 +1063,7 @@ bool C4Surface::CopyBytes(BYTE *pImageData)
 C4TexRef::C4TexRef(int iSizeX, int iSizeY, bool fSingle)
 {
 	// zero fields
-#ifdef USE_DIRECTX
-	pTex=NULL;
-#endif
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	texName=0;
 #endif
 	texLock.pBits=NULL; fIntLock=false;
@@ -1302,63 +1077,32 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, bool fSingle)
 	if (!pDraw) return;
 	if (!pDraw->DeviceReady()) return;
 	// create it!
-#ifdef USE_DIRECTX
-	if (pD3D)
+#ifndef USE_CONSOLE
+	// OpenGL
+	// create mem array for texture creation
+	texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
+	texLock.Pitch = iSizeX*pGL->byByteCnt;
+	memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
+	// turn mem array into texture
+	Unlock();
+#endif
+	if (pDraw)
 	{
-		// Direct3D
-		bool fRenderTarget = fSingle && !Config.Graphics.NoOffscreenBlits;
-		if (pD3D->lpDevice->CreateTexture(iSizeX, iSizeY, 1, fRenderTarget ? D3DUSAGE_RENDERTARGET : 0, pD3D->dwSurfaceType, fRenderTarget ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED, &pTex, NULL) != D3D_OK)
-		{
-			pDraw->Error("Error creating surface");
-			return;
-		}
-		// empty texture
-		if (!Lock()) return;
-		FillMemory(texLock.pBits, texLock.Pitch*iSizeY, 0x00);
-		Unlock();
+		texLock.pBits = new unsigned char[iSizeX*iSizeY*pDraw->byByteCnt];
+		texLock.Pitch = iSizeX*pDraw->byByteCnt;
+		memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
+		// Always locked
+		LockSize.x = LockSize.y = 0;
+		LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
 	}
-	else
-#endif
-#ifdef USE_GL
-		if (pGL)
-		{
-			// OpenGL
-			// create mem array for texture creation
-			texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
-			texLock.Pitch = iSizeX*pGL->byByteCnt;
-			memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
-			// turn mem array into texture
-			Unlock();
-		}
-		else
-#endif
-			if (pDraw)
-			{
-				texLock.pBits = new unsigned char[iSizeX*iSizeY*pDraw->byByteCnt];
-				texLock.Pitch = iSizeX*pDraw->byByteCnt;
-				memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
-				// Always locked
-				LockSize.x = LockSize.y = 0;
-				LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
-			}
 }
 
 C4TexRef::~C4TexRef()
 {
 	fIntLock=false;
 	// free texture
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		if (texLock.pBits) Unlock();
-		if (pTex) pTex->Release();
-	}
-#endif
-#ifdef USE_GL
-	if (pGL)
-	{
-		if (texName && pGL->pCurrCtx) glDeleteTextures(1, &texName);
-	}
+#ifndef USE_CONSOLE
+	if (texName && pGL && pGL->pCurrCtx) glDeleteTextures(1, &texName);
 #endif
 	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = 0;
 	// remove from texture manager
@@ -1382,36 +1126,15 @@ bool C4TexRef::LockForUpdate(C4Rect & rtUpdate)
 		}
 	}
 	// lock
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		RECT r;
-		r.left   = rtUpdate.x;
-		r.top    = rtUpdate.y;
-		r.right  = rtUpdate.x + rtUpdate.Wdt;
-		r.bottom = rtUpdate.y + rtUpdate.Hgt;
-		if (pTex)
-			if (pTex->LockRect(0, &texLock, &r, D3DLOCK_DISCARD) == D3D_OK)
-			{
-				LockSize = rtUpdate;
-				return true;
-			}
-	}
-	else
-#endif
-#ifdef USE_GL
-		if (pGL)
+#ifndef USE_CONSOLE
+		if (texName)
 		{
-			if (texName)
-			{
-				// prepare texture data
-				texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
-				texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
-				LockSize = rtUpdate;
-				return true;
-			}
+			// prepare texture data
+			texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
+			texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
+			LockSize = rtUpdate;
+			return true;
 		}
-		else
 #endif
 		{
 			// nothing to do
@@ -1427,17 +1150,7 @@ bool C4TexRef::Lock()
 	LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
 	LockSize.x = LockSize.y = 0;
 	// lock
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		if (pTex)
-			if (pTex->LockRect(0, &texLock, NULL, 0) == D3D_OK) return true;
-	}
-	else
-#endif
-#ifdef USE_GL
-		if (pGL)
-		{
+#ifndef USE_CONSOLE
 			if (texName)
 			{
 				if (!pGL->pCurrCtx) return false;
@@ -1448,8 +1161,6 @@ bool C4TexRef::Lock()
 				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 				return true;
 			}
-		}
-		else
 #endif
 		{
 			// nothing to do
@@ -1462,18 +1173,7 @@ void C4TexRef::Unlock()
 {
 	// locked?
 	if (!texLock.pBits || fIntLock) return;
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		// unlock
-		if (pTex) pTex->UnlockRect(0);
-		texLock.pBits=NULL;
-	}
-	else
-#endif
-#ifdef USE_GL
-		if (pGL)
-		{
+#ifndef USE_CONSOLE
 			if (!pGL->pCurrCtx)
 			{
 //      BREAKPOINT_HERE;
@@ -1503,12 +1203,7 @@ void C4TexRef::Unlock()
 			}
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
 			// switch back to original context
-		}
-		else
 #endif
-		{
-			// nothing to do
-		}
 }
 
 bool C4TexRef::ClearRect(C4Rect &rtClear)
@@ -1603,7 +1298,7 @@ void C4TexMgr::IntLock()
 		if (pRef->Lock() && pRef->texLock.pBits)
 		{
 			pRef->fIntLock = true;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			// Release the underlying texture with GL and recreate
 			// it on unlock, so that the texture survives
 			// context recreation.

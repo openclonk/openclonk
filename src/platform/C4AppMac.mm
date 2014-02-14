@@ -63,7 +63,13 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
-	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithUTF8String:message]];
+	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error"
+		defaultButton:nil
+		alternateButton:nil
+		otherButton:nil
+		informativeTextWithFormat:@"%@",
+		[NSString stringWithUTF8String:message]
+	];
 	[alert runModal];
 }
 
@@ -94,7 +100,7 @@ void C4AbstractApp::Clear() {}
 
 void C4AbstractApp::Quit()
 {
-	fQuitMsgReceived = true;
+	[NSApp terminate:[NSApp delegate]];
 }
 
 bool C4AbstractApp::FlushMessages()
@@ -159,25 +165,35 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	C4WindowController* controller = pWindow->objectiveCObject<C4WindowController>();
 	NSWindow* window = controller.window;
 
-	if (iXRes == -1 && iYRes == -1)
-	{
-		iXRes = CGDisplayPixelsWide(C4OpenGLView.displayID);
-		iYRes = CGDisplayPixelsHigh(C4OpenGLView.displayID);
-	}
+	size_t dw = CGDisplayPixelsWide(C4OpenGLView.displayID);
+	size_t dh = CGDisplayPixelsHigh(C4OpenGLView.displayID);
+	if (iXRes == -1)
+		iXRes = dw;
+	if (iYRes == -1)
+		iYRes = dh;
 	ActualFullscreenX = iXRes;
 	ActualFullscreenY = iYRes;
 	[C4OpenGLView setSurfaceBackingSizeOf:[C4OpenGLView mainContext] width:ActualFullscreenX height:ActualFullscreenY];
-	pWindow->SetSize(iXRes, iYRes);
-	[controller setFullscreen:fFullScreen];
-	[window setAspectRatio:[[window contentView] frame].size];
-	[window center];
+	if ((window.styleMask & NSFullScreenWindowMask) == 0)
+	{
+		[window setResizeIncrements:NSMakeSize(1.0, 1.0)];
+		pWindow->SetSize(iXRes, iYRes);
+		[controller setFullscreen:fFullScreen];
+		[window setAspectRatio:[[window contentView] frame].size];
+		[window center];
+	}
+	else
+	{
+		[window toggleFullScreen:window];
+		pWindow->SetSize(dw, dh);
+	}
 	if (!fFullScreen)
 		[window makeKeyAndOrderFront:nil];
 	OnResolutionChanged(iXRes, iYRes);
 	return true;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce)
 {
 	CGGammaValue r[256];
 	CGGammaValue g[256];
@@ -192,7 +208,7 @@ bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 	return true;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP &ramp)
 {
 	CGGammaValue r[256];
 	CGGammaValue g[256];

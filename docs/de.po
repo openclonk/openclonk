@@ -2954,8 +2954,8 @@ msgid "Sets the transfer zone of the object. If the pathfinding trail of another
 msgstr "Setzt einen neuen Transferbereich für das aufrufende Objekt. Führt die Suche der Wegfindung durch einen Transferbereich (dieser gilt für die Wegfindung immer als komplett durchlaufbar), werden für den Clonk ControlTransfer-Aufrufe an das Script des Objekts aufgerufen. In diesen sollte mit Hilfe von Befehlen dafür gesorgt werden, dass der Clonk an seine Zielposition kommt."
 
 #: sdk/script/fn/SetTransferZone.xml:37(remark)
-msgid "Transfer zones have to be set anew when the object has moved. Also, they should be set anew in response to a UpdateTransferZone callback made by the engine."
-msgstr "Transferzonen müssen neu gesetzt werden, wenn sich das Objekt bewegt. Außerdem sollten sie immer als Antwort auf einen UpdateTransferZone-Callback der Engine neu gesetzt werden."
+msgid "Transfer zones have to be set anew when the object has moved. Also, they should be set anew in response to a OnSynchronized callback made by the engine."
+msgstr "Transferzonen müssen neu gesetzt werden, wenn sich das Objekt bewegt. Außerdem sollten sie immer als Antwort auf einen OnSynchronized-Callback der Engine neu gesetzt werden."
 
 #: sdk/script/fn/SetTransferZone.xml:49(text)
 msgid "Script for a cheat object: a clonk with a movement command will be immediately warped to the destination."
@@ -3102,8 +3102,8 @@ msgid "Changes the bounding rectangle of the object. This rectangle is used e.g.
 msgstr "Ändert das interne Objektrechteck des aufrufenden Objekts. Das Objektrechteck wird beispielsweise für Kollisionsabfragen verwendet. Dies hat keine Auswirkung auf die Darstellung des Objekts."
 
 #: sdk/script/fn/SetShape.xml:36(remark)
-msgid "In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should readjust the shape manually in synchronization calls like UpdateTransferZone."
-msgstr "Die Engine aktualisiert in diversen Fällen das Objektrechteck, wobei es die Definitionswerte zurückkopiert (und damit eventuelle, durch SetShape gesetzte Objektrechtecke verwirft). Die ist beispielsweise beim Ändern der Objektrotation, aber auch beim Neuladen der Spielstände der Fall. Die Funktion sollte also besser nur bei statischen, relativ unveränderten Objekten verwendet werden, und das Shape muss jeweils in einem Synchronisationsaufruf wie UpdateTransferZone neu gesetzt werden."
+msgid "In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should readjust the shape manually in synchronization calls like OnSynchronized."
+msgstr "Die Engine aktualisiert in diversen Fällen das Objektrechteck, wobei es die Definitionswerte zurückkopiert (und damit eventuelle, durch SetShape gesetzte Objektrechtecke verwirft). Die ist beispielsweise beim Ändern der Objektrotation, aber auch beim Neuladen der Spielstände der Fall. Die Funktion sollte also besser nur bei statischen, relativ unveränderten Objekten verwendet werden, und das Shape muss jeweils in einem Synchronisationsaufruf wie OnSynchronized neu gesetzt werden."
 
 #: sdk/script/fn/SetShape.xml:40(text)
 msgid "Enlarges the area or distance from which you can chop down one coniferous tree."
@@ -15347,7 +15347,7 @@ msgstr "Wenn ein durch die Wegfindungsroutine gesteuertes Objekt (obj) die Trans
 
 #: sdk/definition/script.xml:149(col)
 msgid "When an object is loaded from a savegame or network synchronization is performed. Objects with a transfer zone should reset the zone in this call. Also see <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
-msgstr "Wenn ein Objekt geladen oder synchronisiert wird. Objekte mit einer TransferZone sollten diese bei jedem Aufruf von UpdateTransferZone neu setzen. Siehe auch <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
+msgstr "Wenn ein Objekt geladen oder synchronisiert wird. Objekte mit einer TransferZone sollten diese bei jedem Aufruf von OnSynchronized neu setzen. Siehe auch <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 
 #: sdk/definition/script.xml:153(col)
 msgid "int selection, object menu_object"
@@ -18412,8 +18412,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Animation"
 #~ msgstr "Animation"
 
-#~ msgid "UpdateTransferZone"
-#~ msgstr "UpdateTransferZone"
+#~ msgid "OnSynchronized"
+#~ msgstr "OnSynchronized"
 
 #~ msgid "CatchBlow"
 #~ msgstr "CatchBlow"

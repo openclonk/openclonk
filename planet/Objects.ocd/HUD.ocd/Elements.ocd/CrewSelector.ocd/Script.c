@@ -63,7 +63,7 @@ static const GUI_CS_Hotkey		= 12;
 
 protected func Construction()
 {
-	_inherited();
+	_inherited(...);
 	
 	breathbar = false;
 	magicbar = false;
@@ -231,7 +231,7 @@ public func UpdateBreathBar()
 	if(!crew) return;
 	var phys = crew->GetMaxBreath();
 	var promille;
-	if(phys == 0) promille = 0;
+	if(!phys) promille = 0;
 	else promille = 1000 * crew->GetBreath() / phys;
 
 	// remove breath bar if full breath
@@ -364,8 +364,7 @@ public func OnMouseOut(int plr)
 
 public func FxGUIHealthMonitorDamage(object target, proplist effect, int damage, int cause)
 {
-
-	var change = Abs(damage)/(target->GetMaxEnergy()*10);
+	var change = Abs(damage)/((target->GetMaxEnergy()*10) || 1);
 	// for really small changes, like fire or higher precision DoEnergy
 	if(change == 0)
 		change = 3;

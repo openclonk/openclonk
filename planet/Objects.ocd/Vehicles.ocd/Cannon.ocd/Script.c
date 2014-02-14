@@ -275,14 +275,12 @@ protected func DoFire(object iammo, object clonk, int angle)
 	var dist = 25;
 	var px = Cos(r/angPrec - 90,dist);
 	var py = Sin(r/angPrec - 90,dist) - 4;
-	CreateParticle("Flash",px,py,0,0,420,RGB(255,255,255));
-	for(var i=0; i<15; ++i) //liberated from musket script... I'm horrible at particles :p
-	{
-		var speed = RandomX(0,10);
-		CreateParticle("ExploSmoke",px,py,+Sin(r/angPrec,speed)+RandomX(-2,2),-Cos(r/angPrec,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,75));
-	}
-	CreateParticle("MuzzleFlash",px,py,px,py+4,700,RGB(255,255,255)); //muzzle flash uses speed as Rotation... so I negate the -4
+	CreateParticle("Flash", px, py, 0, 0, 8, Particles_Flash());
 
+	var x = Sin(r/angPrec, 20);
+	var y = -Cos(r/angPrec, 20);
+	CreateParticle("Smoke", px, py, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+	CreateMuzzleFlash(px, py, r / angPrec, 60);
 	//sound
 	Sound("Blast3");
 }

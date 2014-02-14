@@ -1,31 +1,41 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2012  Armin Burgmeier
- * Copyright (c) 2009  Mark Haßelbusch
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "C4Include.h"
 #include <StdMesh.h>
 #include <algorithm>
 
-static int StdMeshFaceCmp(const StdMeshFace& face1, const StdMeshFace& face2);
+namespace
+{
+	struct StdMeshFaceOrderHelper
+	{
+		float z;
+		unsigned int i;
+	};
+}
+
+static int StdMeshFaceCmp(const StdMeshFaceOrderHelper& h1, const StdMeshFaceOrderHelper& h2)
+{
+	if(h1.z < h2.z) return -1;
+	else if(h1.z > h2.z) return +1;
+	return 0;
+}
 
 #define SORT_NAME StdMesh
-#define SORT_TYPE StdMeshFace
+#define SORT_TYPE StdMeshFaceOrderHelper
 #define SORT_CMP StdMeshFaceCmp
 #include "timsort/sort.h"
 
@@ -42,71 +52,80 @@ namespace
 		}
 	};
 
-	// Helper to sort faces for FaceOrdering
-	struct StdMeshInstanceFaceOrderingCmpPred
+	float StdMeshFaceOrderGetVertexZ(const StdMeshVertex& vtx, const StdMeshMatrix& trans)
 	{
-		const StdMeshVertex* m_vertices;
-		StdSubMeshInstance::FaceOrdering m_face_ordering;
-		const StdMeshMatrix& m_global_trans;
+		// TODO: Need to apply attach matrix in case of attached meshes
 
-		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& mesh_inst, const StdSubMeshInstance& sub_inst,
-		                                   StdSubMeshInstance::FaceOrdering face_ordering, const StdMeshMatrix& global_trans):
-				m_face_ordering(face_ordering), m_global_trans(global_trans)
+		// We need to evaluate the Z coordinate of the transformed vertex
+		// (for all three vertices of the two faces), something like
+		// float z11 = (trans*m_vertices[face1.Vertices[0]]).z;
+		// However we don't do the full matrix multiplication as we are
+		// only interested in the Z coordinate of the result, also we are
+		// not interested in the resulting normals.
+		return trans(2,0)*vtx.x + trans(2,1)*vtx.y + trans(2,2)*vtx.z + trans(2,3);
+	}
+
+	float StdMeshFaceOrderGetFaceZ(const StdMeshVertex* vertices, const StdMeshFace& face, const StdMeshMatrix& trans)
+	{
+		const float z1 = StdMeshFaceOrderGetVertexZ(vertices[face.Vertices[0]], trans);
+		const float z2 = StdMeshFaceOrderGetVertexZ(vertices[face.Vertices[1]], trans);
+		const float z3 = StdMeshFaceOrderGetVertexZ(vertices[face.Vertices[2]], trans);
+		return std::max(std::max(z1, z2), z3);
+	}
+
+	void SortFacesArray(const StdMeshVertex* vertices, std::vector<StdMeshFace>& faces, StdSubMeshInstance::FaceOrdering face_ordering, const StdMeshMatrix& trans)
+	{
+		if(faces.empty()) return;
+
+		std::vector<StdMeshFaceOrderHelper> helpers(faces.size());
+		for(unsigned int i = 0; i < faces.size(); ++i)
 		{
-			if(sub_inst.GetNumVertices() > 0)
-				m_vertices = &sub_inst.GetVertices()[0];
-			else
-				m_vertices = &mesh_inst.GetSharedVertices()[0];
+			helpers[i].i = i;
+			helpers[i].z = StdMeshFaceOrderGetFaceZ(vertices, faces[i], trans);
 		}
 
-		inline float get_z(const StdMeshVertex& vtx) const
+		// The reason to use timsort here instead of std::sort is for performance
+		// reasons. This is performance critical code, with this function being
+		// called at least once per frame for each semi-transparent object. I have
+		// measured a factor 7 difference between the two sorting algorithms on my
+		// system.
+
+		// We also pre-compute the Z values that we use for sorting, and sort the
+		// array of Z values, then use the resorted indices to sort the original
+		// faces array. The reason for this is twofold:
+		// 1. We don't need to compute the Z value every time the comparison function
+		//    is called. Even though the computation is not very expensive, we have
+		//    to do many comparisons, and small things add up. I have measured a
+		//    5-10% performance benefit.
+		// 2. More importantly, due to floating point rounding errors we cannot guarantee
+		//    that Z values computed in the sorting function always yield the exact same
+		//    number, and the same sorting result for the same faces. This can lead to
+		//    a crash, because the f(a1, a2) = -f(a2, a1) property for the sorting function
+		//    would no longer be met, resulting in undefined behaviour in the sort call.
+		//    See http://bugs.openclonk.org/view.php?id=984.
+		StdMesh_tim_sort(&helpers[0], helpers.size());
+
+		std::vector<StdMeshFace> new_faces(faces.size());
+		switch(face_ordering)
 		{
-			// We need to evaluate the Z coordinate of the transformed vertex
-			// (for all three vertices of the two faces), something like
-			// float z11 = (m_global_trans*m_vertices[face1.Vertices[0]]).z;
-			// However we don't do the full matrix multiplication as we are
-			// only interested in the Z coordinate of the result, also we are
-			// not interested in the resulting normals.
-			return m_global_trans(2,0)*vtx.x + m_global_trans(2,1)*vtx.y + m_global_trans(2,2)*vtx.z + m_global_trans(2,3);
+		case StdSubMeshInstance::FO_Fixed:
+			assert(false);
+			break;
+		case StdSubMeshInstance::FO_FarthestToNearest:
+			for(unsigned int i = 0; i < faces.size(); ++i)
+				new_faces[i] = faces[helpers[i].i];
+			break;
+		case StdSubMeshInstance::FO_NearestToFarthest:
+			for(unsigned int i = 0; i < faces.size(); ++i)
+				new_faces[i] = faces[helpers[faces.size() - i - 1].i];
+			break;
+		default:
+			assert(false);
+			break;
 		}
 
-		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
-		{
-			return compare(face1, face2) < 0;
-		}
-
-		int compare(const StdMeshFace& face1, const StdMeshFace& face2) const
-		{
-			// TODO: Need to apply attach matrix in case of attached meshes
-			switch (m_face_ordering)
-			{
-			case StdSubMeshInstance::FO_Fixed:
-				assert(false);
-				return 0;
-			case StdSubMeshInstance::FO_FarthestToNearest:
-			case StdSubMeshInstance::FO_NearestToFarthest:
-			{
-				float z11 = get_z(m_vertices[face1.Vertices[0]]);
-				float z12 = get_z(m_vertices[face1.Vertices[1]]);
-				float z13 = get_z(m_vertices[face1.Vertices[2]]);
-				float z21 = get_z(m_vertices[face2.Vertices[0]]);
-				float z22 = get_z(m_vertices[face2.Vertices[1]]);
-				float z23 = get_z(m_vertices[face2.Vertices[2]]);
-
-				float z1 = std::max(std::max(z11, z12), z13);
-				float z2 = std::max(std::max(z21, z22), z23);
-
-				if (m_face_ordering == StdSubMeshInstance::FO_FarthestToNearest)
-					return (z1 < z2 ? -1 : (z1 > z2 ? +1 : 0));
-				else
-					return (z2 < z1 ? -1 : (z2 > z1 ? +1 : 0));
-			}
-			default:
-				assert(false);
-				return 0;
-			}
-		}
-	};
+		faces.swap(new_faces);
+	}
 
 	// Serialize a ValueProvider with StdCompiler
 	struct ValueProviderAdapt
@@ -259,13 +278,6 @@ namespace
 
 		return true;
 	}
-
-	StdMeshInstanceFaceOrderingCmpPred* g_pred = NULL;
-}
-
-static int StdMeshFaceCmp(const StdMeshFace& face1, const StdMeshFace& face2)
-{
-	return g_pred->compare(face1, face2);
 }
 
 StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
@@ -475,13 +487,16 @@ void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const
 		// however we can simply give an appropriate transformation matrix to the face ordering.
 		// At this point, all vertices are in the OGRE coordinate frame, and Z in OGRE equals
 		// Y in Clonk, so we are fine without additional transformation.
-		StdMeshInstanceFaceOrderingCmpPred pred(instance, *this, FO_FarthestToNearest, StdMeshMatrix::Identity());
-		g_pred = &pred;
-		StdMesh_tim_sort(&Faces[0], Faces.size());
-		g_pred = NULL;
+		const StdMeshVertex* vertices;
+		if(GetNumVertices() > 0)
+			vertices = &GetVertices()[0];
+		else
+			vertices = &instance.GetSharedVertices()[0];
+		SortFacesArray(vertices, Faces, FO_FarthestToNearest, StdMeshMatrix::Identity());
 
 		// Third: Only use the first few ones
-		Faces.resize(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5));
+		assert(submesh.GetNumFaces() >= 1);
+		Faces.resize(BoundBy<unsigned int>(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5), 1, submesh.GetNumFaces()));
 	}
 }
 
@@ -1168,7 +1183,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 
 		// Compute transformation for each vertex. We could later think about
 		// doing this on the GPU using a vertex shader. This would then probably
-		// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
+		// need to go to CStdGL::PerformMesh.
 		// But first, we need to move vertex data to the GPU.
 		if(!Mesh->GetSharedVertices().empty())
 			ApplyBoneTransformToVertices(Mesh->GetSharedVertices(), SharedVertices);
@@ -1221,26 +1236,16 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 	{
 		StdSubMeshInstance& inst = *SubMeshInstances[i];
-		if(inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
+		assert((inst.Faces.size() > 0) && "StdMeshInstance sub-mesh instance has zero faces");
+
+		if(inst.Faces.size() > 0 && inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
-			StdMeshInstanceFaceOrderingCmpPred pred(*this, inst, inst.CurrentFaceOrdering, global_trans ? *global_trans : StdMeshMatrix::Identity());
-
-			// The usage of timsort instead of std::sort at this point is twofold.
-			// First, it's faster in our case where the array is already sorted in
-			// many cases (remember this is called at least once a frame).
-			// And it's not just a bit faster either but a lot. I have measured
-			// a factor of 7 on my system.
-			// Second, in our Windows autobuilds there is a crash within std::sort
-			// which is very hard to debug because it's hardly reproducible with
-			// anything other than the autobuilds (I tried hard). If the crash goes
-			// away with timsort then great, if not then maybe it's easier to debug
-			// since the code is in our tree.
-
-			//std::sort(inst.Faces.begin(), inst.Faces.end(), pred);
-
-			g_pred = &pred;
-			StdMesh_tim_sort(&inst.Faces[0], inst.Faces.size());
-			g_pred = NULL;
+			const StdMeshVertex* vertices;
+			if(inst.GetNumVertices() > 0)
+				vertices = &inst.GetVertices()[0];
+			else
+				vertices = &GetSharedVertices()[0];
+			SortFacesArray(vertices, inst.Faces, inst.CurrentFaceOrdering, global_trans ? *global_trans : StdMeshMatrix::Identity());
 		}
 	}
 

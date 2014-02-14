@@ -270,7 +270,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

@@ -1,10 +1,12 @@
 /*-- Mushroom --*/
 
 #include Library_Plant
+#include Library_Crop
 
 private func SeedChance() { return 400; }
 private func SeedArea() { return 150; }
 private func SeedAmount() { return 6; }
+private func SeedOffset() { return 10; }
 
 /* Initialisation */
 

@@ -5,7 +5,7 @@
 <funcs>
   <func>
     <title>CreateParticleAtBone</title>
-    <category>Particle</category>
+    <category>Particles</category>
     <version>5.4 OC</version>
     <syntax>
       <rtype>bool</rtype>
@@ -30,27 +30,20 @@
           <name>dir</name>
           <desc>Vector of three elements with the X,Y and Z components of the velocity of theparticle relative to the bone orientation.</desc>
         </param>
-        <param>
+		<param>
           <type>int</type>
-          <name>a</name>
-          <desc>Extra parameter. This is usually the size of the particle in 1/5 pixels.</desc>
+          <name>lifetime</name>
+          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function.</desc>
         </param>
-        <param>
+		<param>
+          <type>proplist</type>
+          <name>properties</name>
+          <desc>PropList with the particle attributes (see the <emlink href="particle/index.html#attributes">particle documentation</emlink>).</desc>
+        </param>
+		<param>
           <type>int</type>
-          <name>b</name>
-          <desc>Extra parameter. This is usually the color modulation of the particle.</desc>
-        </param>
-        <param>
-          <type>object</type>
-          <name>target</name>
-          <desc>Target object for object local particles. Object local particles are drawn directly on top of the object and are removed when the object is deleted.</desc>
-          <optional />
-        </param>
-        <param>
-          <type>bool</type>
-          <name>behind_target</name>
-          <desc>If specified and not <code>false</code>, the particle is drawn directly behind the target object.</desc>
-          <optional />
+          <name>amount</name>
+          <desc>Amount of particles to create. Defaults to 1.</desc>
         </param>
       </params>
     </syntax>
@@ -65,9 +58,9 @@
 
 global func FxIntColorizeTimer()
 {
-        FindObject(Find_ID(Clonk))->CreateParticleAtBone("PSpark", "skeleton_body", [0, 0, 0], [0, 0, 0], 8, RGB(255,0,0));
-        FindObject(Find_ID(Clonk))->CreateParticleAtBone("PSpark", "pos_hand1", [0, 0, 0], [0, 0, 0], 8, RGB(0,255,0));
-        FindObject(Find_ID(Clonk))->CreateParticleAtBone("PSpark", "pos_hand2", [0, 0, 0], [0, 0, 0], 8, RGB(0,0,255));
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("SphereSpark", "skeleton_body", [0, 0, 0], [0, 0, 0], PV_Random(20, 30), Particles_Spark());
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("Fire", "pos_hand1", [0, 0, 0], [0, 0, 0], PV_Random(5, 10), Particles_Fire());
+        FindObject(Find_ID(Clonk))->CreateParticleAtBone("Fire", "pos_hand2", [0, 0, 0], [0, 0, 0], PV_Random(5, 10), Particles_Fire());
         return(0);
 }</code>
         <text>Scenario script. Creates an effect which traces a Clonk's body, left hand and right hand with differently colored sparks.</text>

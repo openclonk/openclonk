@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2004, 2006-2008, 2010  Sven Eberhardt
- * Copyright (c) 2001-2004, 2006-2008, 2010  Peter Wortmann
- * Copyright (c) 2004, 2007  Matthes Bender
- * Copyright (c) 2006-2012  Günther Brammer
- * Copyright (c) 2006, 2010  Armin Burgmeier
- * Copyright (c) 2009-2010, 2012  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // parses scripts
 
@@ -203,6 +194,7 @@ private:
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
+	void DebugChunk();
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
 
@@ -886,6 +878,12 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	return 0;
 }
 
+void C4AulParse::DebugChunk()
+{
+	if (C4AulDebug::GetDebugger())
+		AddBCC(AB_DEBUG);
+}
+
 int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 {
 	if (Type != PARSER) return -1;
@@ -1403,7 +1401,14 @@ void C4AulParse::Parse_Function()
 		owner->GetPropList()->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 	}
 	assert(Fn);
-	if (Type == PARSER)
+	if (Type == PREPARSER)
+	{
+		// This might be a reload, clear all parameters and local vars
+		Fn->ParCount = 0;
+		Fn->ParNamed.Reset();
+		Fn->VarNamed.Reset();
+	}
+	else if (Type == PARSER)
 	{
 		Fn->ClearCode();
 	}
@@ -1480,9 +1485,8 @@ void C4AulParse::Parse_Function()
 	C4AulBCC * CPos = Fn->GetLastCode();
 	if (!CPos || CPos->bccType != AB_RETURN || fJump)
 	{
-		if (C4AulDebug::GetDebugger())
-			AddBCC(AB_DEBUG);
 		AddBCC(AB_NIL);
+		DebugChunk();
 		AddBCC(AB_RETURN);
 	}
 	// add separator
@@ -1547,13 +1551,14 @@ void C4AulParse::Parse_Block()
 	{
 		Parse_Statement();
 	}
+	DebugChunk();
 	Shift();
 }
 
 void C4AulParse::Parse_Statement()
 {
-	if (C4AulDebug::GetDebugger())
-		AddBCC(AB_DEBUG);
+	if (TokenType != ATT_BLOPEN)
+		DebugChunk();
 	switch (TokenType)
 	{
 		// do we have a block start?

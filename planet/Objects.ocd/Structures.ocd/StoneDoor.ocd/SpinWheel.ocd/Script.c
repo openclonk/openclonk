@@ -33,6 +33,13 @@ public func ControlDown(object clonk)
 	}
 }
 
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (targetdoor) props->AddCall("Target", this, "SetStoneDoor", targetdoor);
+	return true;
+}
+
 local ActMap = {
 	Still = {
 		Prototype = Action,

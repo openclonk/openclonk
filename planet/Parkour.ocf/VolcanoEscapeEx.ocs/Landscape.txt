@@ -29,6 +29,11 @@ map LavaParkour {
   point {x=-100%; y=200%; };
   turbulence=10;
 
+  // Ore
+  overlay Ore { algo=rndchecker; zoomX=-100; zoomY=1; a=1; turbulence=10; mask=1;
+    overlay { algo=border; a=0; b=2; invert=1; mat=Ore; tex=ore; };
+  };
+
   // Rock
   overlay Rock { algo=rndchecker; zoomX=10; zoomY=-100; a=1; turbulence=10; mask=1;
     overlay { algo=border; a=0; b=2; invert=1; mat=rock; tex=rock; };

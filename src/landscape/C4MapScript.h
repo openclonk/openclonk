@@ -1,20 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2013  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles scripted map creation */
@@ -67,6 +65,7 @@ enum C4MapScriptAlgoType
 	MAPALGO_Rect       = 20,
 	MAPALGO_Ellipsis   = 21,
 	MAPALGO_Polygon    = 22,
+	MAPALGO_Lines      = 23,
 
 	MAPALGO_And        = 30,
 	MAPALGO_Or         = 31,
@@ -135,6 +134,17 @@ class C4MapScriptAlgoPolygon : public C4MapScriptAlgo
 	bool open; // don't draw closing segment. only valid if empty=true
 public:
 	C4MapScriptAlgoPolygon(const C4PropList *props);
+
+	virtual uint8_t operator () (int32_t x, int32_t y) const;
+};
+
+// MAPALGO_Lines: 1 for pixels on stripes in direction ("X","Y"). Stripe distance "Distance". Optional offset "OffX", "OffY"
+class C4MapScriptAlgoLines : public C4MapScriptAlgo
+{
+	int32_t lx,ly,distance,ox,oy;
+	int64_t ll,dl; // (line width)^2 and distance * line width
+public:
+	C4MapScriptAlgoLines(const C4PropList *props);
 
 	virtual uint8_t operator () (int32_t x, int32_t y) const;
 };

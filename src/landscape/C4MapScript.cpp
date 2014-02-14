@@ -1,20 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2013  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles scripted map creation */
@@ -518,10 +516,12 @@ void C4MapScriptHost::InitFunctionMap(C4AulScriptEngine *pEngine)
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Xor", C4VInt(MAPALGO_Xor));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Not", C4VInt(MAPALGO_Not));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Scale", C4VInt(MAPALGO_Scale));
+	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Rotate", C4VInt(MAPALGO_Rotate));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Offset", C4VInt(MAPALGO_Offset));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Rect", C4VInt(MAPALGO_Rect));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Ellipsis", C4VInt(MAPALGO_Ellipsis));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Polygon", C4VInt(MAPALGO_Polygon));
+	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Lines", C4VInt(MAPALGO_Lines));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Turbulence", C4VInt(MAPALGO_Turbulence));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Border", C4VInt(MAPALGO_Border));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Filter", C4VInt(MAPALGO_Filter));

@@ -1,21 +1,20 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2002, 2005  Sven Eberhardt
- * Copyright (c) 2006-2007, 2010  Armin Burgmeier
- * Copyright (c) 2007, 2009-2011  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2002, 2005, Sven Eberhardt
+ * Copyright (c) 2006-2007, Armin Burgmeier
+ * Copyright (c) 2007, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -1518,7 +1517,9 @@ void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	::Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
+	C4Player *plr = ::Players.Get(GPOINTER_TO_INT(data));
+	if (!plr) return;
+	::Control.Input.Add(CID_PlrAction, C4ControlPlayerAction::Eliminate(plr));	
 }
 
 void C4ConsoleGUI::State::OnViewNew(GtkWidget* item, gpointer data)

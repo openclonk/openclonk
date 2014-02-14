@@ -117,10 +117,10 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
-global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, int prtdist, int a, int b0, int b1, int ydir)
+global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, int prtdist, xdir, ydir, lifetime, proplist properties)
 {
 	// Right parameters?
-	if (!prtdist)
+	if (!properties)
 		return 0;
 	// Calculate required number of particles.
 	var prtnum = Max(Distance(x0, y0, x1, y1) / prtdist, 2);
@@ -132,15 +132,13 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 
-		b = ((b0 & 16711935) * i1 + (b1 & 16711935) * i2) >> 8 & 16711935
-			| ((b0 >> 8 & 16711935) * i1 + (b1 >> 8 & 16711935) * i2) & -16711936;
-		if (!b && (b0 | b1))
-			b++;
-		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, 0, ydir, a, b);
+		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, xdir, ydir, lifetime, properties, 1);
 	}
 	// Succes, return number of created particles.
 	return prtnum;
 }
+
+
 
 /** Place a nice shaped forest. If no area is given, the whole landscape is used (which is not recommended!).
 	@param plants An array containing all plants that should be in the forest. plants[0] is the main plant, the others will be randomly scattered throughout the forest.

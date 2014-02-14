@@ -182,7 +182,7 @@ func DrawBackground()
 	Draw("Rock");
 	DrawVariations("Rock-rock_cracked", 50, 5,15);
 	DrawVariations("Ore", 10, 8,8);
-	DrawVariations("Sulphur", 8, 12,3);
+	DrawVariations("Firestone", 8, 12,3);
 	DrawVariations("Coal", 8, 8,3);
 	DrawVariations("Gold", 5, 4,4);
 	DrawVariations("Granite", 14, 15,5);
@@ -194,7 +194,9 @@ func DrawCaves()
 {
 	for (var cave in caves)
 	{
-	  Draw("Tunnel", {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4});
+		var cave_algo = {Algo=MAPALGO_Ellipsis, X=cave.X, Y=cave.Y, Wdt=4, Hgt=4};
+		var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=8, Scale=15, Op=cave_algo};
+		Draw("Tunnel", turb_algo);
 		//var src = cave.path;
 		//if (src && GetLength(src)) src = Format("%d,%d", src[GetLength(src)-1].X, src[GetLength(src)-1].Y);
 		//Log("Cave at %d,%d src %v", cave.X, cave.Y, src);
@@ -209,7 +211,9 @@ func DrawTunnels()
 		for (var cave2 in cave.links)
 		{
 			if (cave2.done) continue;
-			Draw("Tunnel", {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=2, Open=1, Empty=1 });
+			var tunnel_algo = {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=2, Open=1, Empty=1 };
+			var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=9, Scale=10, Op=tunnel_algo};
+			Draw("Tunnel", turb_algo);
 		}
 		cave.done = true;
 	}

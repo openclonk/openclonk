@@ -7,9 +7,31 @@ protected func Initialize()
 	return;
 }
 
+func SetClrModulation(int color, int overlay_id)
+{
+	inherited(color, overlay_id, ...);
+	var effect = GetEffect("Selfdestruction", this);
+	if (effect)
+	{
+		effect.particles.R = (color >> 16) & 0xff;
+		effect.particles.G = (color >>  8) & 0xff;
+		effect.particles.B = (color >>  0) & 0xff;
+	}
+}
+
+func FxSelfdestructionStart(target, effect, temp)
+{
+	if (temp) return;
+	effect.particles =
+	{
+		Prototype = Particles_Spark(),
+		Size = PV_Random(1, 3)
+	};
+}
+
 func FxSelfdestructionTimer(object target, effect, int timer)
 {
-	CreateParticle("Magic",RandomX(-4,4),RandomX(-4,4),0,0,12+Random(10),target->GetClrModulation());
+	CreateParticle("Magic", PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(10, 30), effect.particles, 3);
  	if(timer>175) target->RemoveObject();
  	return 1;
 }

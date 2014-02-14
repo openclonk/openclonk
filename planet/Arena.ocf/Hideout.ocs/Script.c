@@ -205,11 +205,6 @@ global func FxFillSpecialChestTimer(object target)
 	for(var i=0; i < GetLength(w_list); i++)
 		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
-	
-	var clr = RGB(0,255,0);
-	if (r == 1) clr = RGB(255,0,0);
-	if (r == 2) clr = RGB(255,128,0);
-	CastParticles("AnouncingFire",75,60,target->GetX(),target->GetY(),100,150,clr);
 	return 1;
 }
 

@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2003-2008, 2010-2011  Sven Eberhardt
- * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2006, 2008-2012  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // dialog base classes and some user dialogs
@@ -225,7 +218,7 @@ namespace C4GUI
 		{
 			pSurface->Wdt = r.Wdt;
 			pSurface->Hgt = r.Hgt;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			pGL->PrepareRendering(pSurface);
 			glClear(GL_COLOR_BUFFER_BIT);
 #endif
@@ -526,8 +519,10 @@ namespace C4GUI
 
 	bool Dialog::KeyHotkey(const C4KeyCodeEx &key)
 	{
-		WORD wKey = WORD(key.Key);
+		StdStrBuf sKey = C4KeyCodeEx::KeyCode2String(key.Key, true, true);
 		// do hotkey procs for standard alphanumerics only
+		if (sKey.getLength() != 1) return false;
+		WORD wKey = WORD(*sKey.getData());
 		if (Inside<WORD>(TOUPPERIFX11(wKey), 'A', 'Z')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		if (Inside<WORD>(TOUPPERIFX11(wKey), '0', '9')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		return false;
@@ -827,7 +822,7 @@ namespace C4GUI
 // MessageDialog
 
 	MessageDialog::MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize, int32_t *piConfigDontShowAgainSetting, bool fDefaultNo)
-			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting)
+			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting), pKeyCopy(NULL), sCopyText()
 	{
 		CStdFont &rUseFont = ::GraphicsResource.TextFont;
 		// get positions
@@ -929,7 +924,23 @@ namespace C4GUI
 		if (btnFocus) SetFocus(btnFocus, false);
 		// resize to actually needed size
 		SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
+		// Control+C copies text to clipboard
+		sCopyText.Format("[%s] %s", szCaption ? szCaption : "", szMessage ? szMessage : "");
+		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
+		               new DlgKeyCB<MessageDialog>(*this, &MessageDialog::KeyCopy), C4CustomKey::PRIO_CtrlOverride);
 	}
+
+MessageDialog::~MessageDialog()
+{
+	delete pKeyCopy;
+}
+
+bool MessageDialog::KeyCopy()
+{
+	// Copy text to clipboard
+	::Application.Copy(sCopyText);
+	return true;
+}
 
 
 // --------------------------------------------------

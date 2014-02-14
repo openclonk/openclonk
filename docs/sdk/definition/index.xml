@@ -39,6 +39,10 @@
       <dd>
         <text>Objects can also contain alternative sets of graphics which can be selected ingame using the script command <funclink>SetGraphics</funclink>(). The name corresponds to the file name portion following "Graphics". The matching overlay is automatically selected. For more information see <funclink>SetGraphics</funclink>().</text>
       </dd>
+      <dt id="SolidMask"><img height="16" src="../../images/icon_image.png" width="16"/>SolidMask.png</dt>
+      <dd>
+        <text>Image describing areas in this object that are solid, so vertices of other objects will collide with it. Pixels are made solid if they are 50% or less transparent in this image. Source rectangle within this graphic and target position on the object must be set in <emlink href="definition/defcore.html">DefCore.txt</emlink> property "SolidMask" or using the script function <funclink>SetSolidMask</funclink>.</text>
+      </dd>
 	</dl>
 	<h id="MeshGraphics">3D Graphics</h>
 	<dl>

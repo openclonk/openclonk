@@ -11,7 +11,7 @@
 #include "C4DrawGL.h"
 #include "StdColors.h"
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 // Automatically reload shaders when changed at runtime?
 #define AUTO_RELOAD_SHADERS
@@ -111,6 +111,28 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 		return false;
 	}
 
+	return true;
+}
+
+bool C4LandscapeRenderGL::ReInit(int32_t iWidth, int32_t iHeight)
+{
+	// Safe info
+	this->iWidth = iWidth;
+	this->iHeight = iHeight;
+
+	// Clear old landscape textures
+	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	{
+		delete Surfaces[i];
+		Surfaces[i] = NULL;
+	}
+
+	// Allocate new landscape textures
+	if (!InitLandscapeTexture())
+	{
+		LogFatal("[!] Could not initialize landscape texture!");
+		return false;
+	}
 	return true;
 }
 
@@ -907,7 +929,7 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		while(p = strchr(p, '-')) { p++; iPhases++; }
 		// Hard-coded hack. Fix me!
 		const int iPhaseLength = 300;
-		float phase = (iPhases == 1 ? 0 : float(GetTime() % (iPhases * iPhaseLength)) / iPhaseLength);
+		float phase = (iPhases == 1 ? 0 : float(C4TimeMilliseconds::Now().AsInt() % (iPhases * iPhaseLength)) / iPhaseLength);
 
 		// Find our transition
 		const char *pFrom = pEntry->GetTextureName();
@@ -1106,4 +1128,4 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	}
 }
 
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE

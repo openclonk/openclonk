@@ -6,6 +6,7 @@
 --*/
 
 
+static Overcast_air_particles;
 
 protected func Initialize()
 {
@@ -152,6 +153,13 @@ protected func Initialize()
 		
 	// Wind channel.
 	AddEffect("WindChannel", nil, 100, 1);
+	
+	Overcast_air_particles =
+	{
+		Prototype = Particles_Air(),
+		Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(5, 10), 1000, 0),
+		OnCollision = PC_Die()
+	};
 	return;
 }
 
@@ -176,7 +184,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("AirIntake", 464+Random(40), 344+Random(112), RandomX(-1,1), -30, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
+	CreateParticle("Air", 464+Random(40), 344+Random(112), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	// Divider with random wind.
 	if (!Random(100))
@@ -204,11 +212,11 @@ global func FxWindChannelTimer(object target, proplist effect)
 		}
 	}
 	if (effect.Divider == 1)
-		CreateParticle("AirIntake", 464+Random(40), 280+Random(10), RandomX(-1,1), -30, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
+		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 0)
-		CreateParticle("AirIntake", 464+Random(40), 280+Random(10), RandomX(-20,-10), -20, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
+		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(-20,-10), -20, PV_Random(10, 40), Overcast_air_particles);
 	if (effect.Divider == 2)
-		CreateParticle("AirIntake", 464+Random(40), 280+Random(10), RandomX(10,20), -20, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
+		CreateParticle("Air", 464+Random(40), 280+Random(10), RandomX(10,20), -20, PV_Random(10, 40), Overcast_air_particles);
 		
 	// Second shaft with upward wind.
 	for (var obj in FindObjects(Find_InRect(464, 96, 40, 144)))
@@ -235,7 +243,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			continue;
 		obj->SetYDir(speed - 36, 100);
 	}
-	CreateParticle("AirIntake", 464+Random(40), 160+Random(96), RandomX(-1,1), -30, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
+	CreateParticle("Air", 464+Random(40), 160+Random(96), RandomX(-1,1), -30, PV_Random(10, 40), Overcast_air_particles);
 	
 	return 1;
 }
@@ -332,7 +340,7 @@ func OnClonkLeftRelaunch(object clonk)
 {
 	var pos = GetRandomSpawn();
 	clonk->SetPosition(pos[0],pos[1]);
-	CastParticles("Magic",36,12,pos[0],pos[1],30,60,clonk->GetColor(),clonk->GetColor(),clonk);
+	CreateParticle("Air", pos[0],pos[1], PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), Overcast_air_particles, 25);
 	return;
 }
 

@@ -33,22 +33,22 @@ Stand = {
         <row>
           <col><code>Name</code></col>
           <col>string</col>
-          <col></col>
+          <col>Name of the object. This string should be <emlink href="lang.html">internationalized</emlink>.</col>
         </row>
         <row>
           <col><code>Collectible</code></col>
-          <col></col>
-          <col></col>
+          <col>bool</col>
+          <col>Whether the object can be picked up.</col>
         </row>
         <row>
           <col><code>Touchable</code></col>
-          <col></col>
-          <col></col>
+          <col>int</col>
+          <col>1 the object can be grabbed, 2 the object can be grabbed and pushed</col>
         </row>
         <row>
           <col><code>ActMap</code></col>
           <col>proplist</col>
-          <col></col>
+          <col>See the <emlink href="definition/actmap.html">detailed description of the ActMap</emlink></col>
         </row>
         <row>
           <col><code>Visibility</code></col>
@@ -57,68 +57,73 @@ Stand = {
         </row>
         <row>
           <col><code>LineColors</code></col>
-          <col></col>
-          <col></col>
+          <col>array</col>
+          <col>An array of two integers. The first denotes the color of the line and the second the color of the endpoints if the object is drawn as a line.</col>
         </row>
         <row>
           <col><code>LineAttach</code></col>
-          <col></col>
-          <col></col>
-        </row>
+          <col>array</col>
+          <col>An array of two integers. Denotes the position of where the endpoint of the line is located relative to the object center.</col>
+        </row>	
         <row>
           <col><code>PictureTransformation</code></col>
-          <col></col>
-          <col></col>
+          <col>array</col>
+          <col>If the object is a mesh, the picture graphic of the object can be transformed with this property. See <funclink>Trans_Mul</funclink> for an example.</col>
         </row>
         <row>
           <col><code>MeshTransformation</code></col>
-          <col></col>
-          <col></col>
-        </row>
-        <row>
-          <col><code>MouseDragImage</code></col>
-          <col></col>
-          <col></col>
+          <col>array</col>
+          <col>If the object is a mesh, the ingame graphic of the object can be transformed with this property. See <funclink>Trans_Mul</funclink> for an example.</col>
         </row>
         <row>
           <col><code>MouseDrag</code></col>
-          <col></col>
-          <col></col>
+          <col>bool</col>
+          <col>Whether the object can be dragged with the mouse. What exactly happens when an object is dragged onto another is defined in script.</col>
         </row>
         <row>
-          <col><code>Animation</code></col>
-          <col></col>
-          <col></col>
+          <col><code>MouseDragImage</code></col>
+          <col>id / object</col>
+          <col>The object or object id of which the picture should be displayed below the cursor while dragging.</col>
+        </row>
+        <row>
+          <col><code>Tooltip</code></col>
+          <col>string</col>
+          <col>A tooltip that is displayed for objects of the category <emlink href="definition/category.html">C4D_MouseSelect</emlink>. This string should be <emlink href="lang.html">internationalized</emlink>.</col>
         </row>
         <row>
           <col><code>Action</code></col>
           <col>proplist</col>
-          <col></col>
+          <col>The current action of the object as a proplist.</col>
         </row>
         <row>
           <col><code>BreatheWater</code></col>
-          <col></col>
-          <col></col>
+          <col>bool</col>
+          <col>Whether the object breathes in water rather than air.</col>
         </row>
         <row>
           <col><code>CorrosionResist</code></col>
-          <col></col>
-          <col></col>
+          <col>bool</col>
+          <col>Whether the alive object does not loose energy when in corrosive material.</col>
         </row>
         <row>
           <col><code>MaxEnergy</code></col>
           <col>int</col>
-          <col></col>
+          <col>Maximum life energy in a precision of 100.</col>
         </row>
         <row>
           <col><code>MaxBreath</code></col>
           <col>int</col>
-          <col></col>
+          <col>Maximum breath.</col>
         </row>
         <row>
           <col><code>ThrowSpeed</code></col>
           <col>int</col>
-          <col></col>
+          <col>Throwing speed in a precision of 100.</col>
+        </row>
+        <row>
+          <col><code>JumpSpeed</code></col>
+          <col>int</col>
+          <col>Jump speed in a precision of 100.</col>
         </row>
         <row id="Parallaxity">
           <col><code>Parallaxity</code></col>
@@ -138,7 +143,7 @@ Stand = {
 		<row>
           <literal_col>BlastIncinerate</literal_col>
           <col>Integer</col>
-          <col>Incineration by explosion: 0 none, otherwise the damage level of incineration.</col>
+          <col>Incineration by explosion: 0 none, otherwise the damage level that has to be reached until the object is incinerated. </col>
         </row>
 		<row>
           <literal_col>BurnTo</literal_col>

@@ -5,7 +5,7 @@
 <funcs>
   <func>
     <title>DrawParticleLine</title>
-    <category>Particle</category>
+    <category>Particles</category>
     <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>

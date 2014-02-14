@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PC_Stop</title>
+    <category>Particles</category>
+    <version>5.3.3 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+    </syntax>
+    <desc>A particle collision function. The particle will set its velocity to zero on collision.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PC_Bounce</funclink>
+      <funclink>PC_Die</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-10</date>
+</funcs>

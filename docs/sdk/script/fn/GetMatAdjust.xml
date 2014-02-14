@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetMatAdjust</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+    </syntax>
+    <desc>Returns the material modulation as set by <funclink>SetMatAdjust</funclink>.</desc>
+    <related>
+      <funclink>SetMatAdjust</funclink>
+      <funclink>SetSkyAdjust</funclink>
+      <funclink>GetSkyAdjust</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+</funcs>

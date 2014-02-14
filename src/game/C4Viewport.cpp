@@ -1,27 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2010, 2012  Sven Eberhardt
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
- * Copyright (c) 2005-2012  Günther Brammer
- * Copyright (c) 2006, 2010  Armin Burgmeier
- * Copyright (c) 2010-2011  Tobias Zwick
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A viewport to each player */
@@ -208,15 +199,16 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		if (BorderTop)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
 		if (BorderRight) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
 		if (BorderBottom)pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
-
-		// Set clippers
-		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
-		GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
-		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
-		// Apply Zoom
-		pDraw->SetZoom(GameZoom);
-		pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
+
+	// Set clippers
+	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
+	GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
+	cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
+	// Apply Zoom
+	pDraw->SetZoom(GameZoom);
+	pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
+
 	last_game_draw_cgo = cgo;
 
 	// landscape mod by FoW
@@ -255,9 +247,9 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
 	C4ST_STOP(ObjStat)
 
-	// draw global particles
-	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Particles")
-	::Particles.GlobalParticles.Draw(cgo,NULL);
+	// draw global dynamic particles
+	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
+	::Particles.DrawGlobalParticles(cgo);
 	C4ST_STOP(PartStat)
 
 	// Draw PathFinder
@@ -316,10 +308,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		C4ST_STOP(OvrStat)
 
-		// Remove zoom n clippers
-		pDraw->SetZoom(0, 0, 1.0);
-		pDraw->NoPrimaryClipper();
 	}
+
+	// Remove zoom n clippers
+	pDraw->SetZoom(0, 0, 1.0);
+	pDraw->NoPrimaryClipper();
 
 }
 
@@ -354,24 +347,36 @@ void C4Viewport::Execute()
 	BlitOutput();
 }
 
+/* This method is called whenever the viewport size is changed. Thus, its job 
+   is to recalculate the zoom and zoom limits with the new values for ViewWdt
+   and ViewHgt. */
+void C4Viewport::CalculateZoom()
+{
+	if(!ZoomInitialized)
+		InitZoom();
+
+	C4Player *plr = Players.Get(Player);
+	if (plr)
+		plr->ZoomLimitsToViewport(this);
+	else
+		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
+
+}
+
 void C4Viewport::InitZoom()
 {
-	// player viewport: Init zoom by view range parameters
 	C4Player *plr = Players.Get(Player);
 	if (plr)
 	{
-		// Note this affects all viewports for this player (not just
-		// this one), but it is a noop for the others.
-		plr->ZoomLimitsToViewport(this);
 		plr->ZoomToViewport(this, true);
 	}
 	else
 	{
-		// general viewport? Default zoom parameters
 		ZoomTarget = Max<float>(float(ViewWdt)/GBackWdt, 1.0f);
 		Zoom = ZoomTarget;
-		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
 	}
+
+	ZoomInitialized = true;
 }
 
 void C4Viewport::ChangeZoom(float by_factor)
@@ -447,7 +452,7 @@ void C4Viewport::AdjustPosition()
 
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	C4Player *pPlr = ::Players.Get(Player);
-	if (ZoomTarget < 0.000001f) InitZoom();
+	if (ZoomTarget < 0.000001f) CalculateZoom();
 	// Change Zoom
 	assert(Zoom>0);
 	assert(ZoomTarget>0);
@@ -578,6 +583,7 @@ void C4Viewport::Default()
 	DrawX=DrawY=0;
 	Zoom = 1.0;
 	ZoomTarget = 0.0;
+	ZoomInitialized = false;
 	ZoomLimitMin=ZoomLimitMax=0; // no limit
 	Next=NULL;
 	PlayerLock=true;
@@ -664,7 +670,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	DrawX=iDrawX; DrawY=iDrawY;
 	OutX=iOutX; OutY=iOutY;
 	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
-	InitZoom();
+	CalculateZoom();
 	UpdateViewPosition();
 	// Reset menus
 	ResetMenuPositions=true;

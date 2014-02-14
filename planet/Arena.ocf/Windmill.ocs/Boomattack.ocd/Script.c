@@ -32,24 +32,20 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 		SetR(angle);
 	}
 	
-	
-	if(!Random(iEffectTime % 5))
-	{
-		var sizemod = ignition*ignition/3;
-		
-		var x = -Sin(GetR(),22);
-		var y = +Cos(GetR(),22);
-		
-		CreateParticle("ExploSmoke",x,y,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
-		CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
-	}
-	
 	if(GetAction() != "Fly")
 	{
 		SetAction("Fly");
 		SetComDir(COMD_None);
 	}
-		
+	
+	var x = -Sin(GetR(), 15);
+	var y = +Cos(GetR(), 15);
+
+	var xdir = GetXDir() / 2;
+	var ydir = GetYDir() / 2;
+	CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
+	
+	
 	fuel--;
 }
 

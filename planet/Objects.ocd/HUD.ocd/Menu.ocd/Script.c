@@ -150,7 +150,7 @@ public func RemoveItem(object item)
 		}	
 	}
 	// close gap
-	for(i; i < length-1; i++)
+	for(; i < length-1; i++)
 		menu_items[i] = menu_items[i+1];
 	
 	SetLength(menu_items, length-1);

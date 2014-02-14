@@ -6,6 +6,11 @@
 --*/
 
 
+func Initialize()
+{
+	return _inherited();
+}
+
 public func ControlUse(object pClonk, int ix, int iy)
 {
 	AddEffect("Frostbolt", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
@@ -26,6 +31,23 @@ public func FxFrostboltStart(pTarget, effect, iTemp, owner, angle, x, y)
 	effect.angle=angle;
 	effect.x=x;
 	effect.y=y;
+	
+	effect.air_particles = 
+	{
+		Prototype = Particles_Air(),
+		R = PV_Random(100, 150),
+		G = PV_Random(100, 150),
+		B = PV_Random(200, 255),
+		BlitMode = GFX_BLIT_Additive,
+		Size = PV_Random(5, 10)
+	};
+	effect.fire_particles =
+	{
+		Prototype = Particles_Fire(),
+		R = PV_Random(100, 150),
+		G = PV_Random(100, 150),
+		B = PV_Random(200, 255),
+	};
 }
 
 public func FxFrostboltTimer(pTarget, effect, iEffectTime)
@@ -52,27 +74,20 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		{
 			var r=Random(10)+Random(18);
 			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.owner, nil);
-			}
+		}
 		return -1;
 	}	
 	else if(iEffectTime < 70)
 	{
-		for(var i=0; i<3; i++)
-		CreateParticle("Air",x+Sin(angle,-i*2),y-Cos(angle,-i*2),Sin(Random(360),4),Cos(Random(360),4),RandomX(120,180),RGBa(100,100,100,70));
-		CreateParticle("AirIntake",x,y,Sin(Random(360),RandomX(5,13)),Cos(Random(360),RandomX(5,13)),RandomX(30,70),RGB(255,255,255));
 		angle+=Sin(iEffectTime*50,2)*8;
 		x+=Sin(angle, 9);
 		y+=-Cos(angle, 9);
 		effect.x=x;
 		effect.y=y;
-		for(var i=0;i<6;++i)
-		{
-			var c=HSL(128+Random(40), 200+Random(25), Random(100));
-			var rx=RandomX(-3, 3);
-			var ry=RandomX(-3, 3);
-			CreateParticle("Air", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 80+Random(20), c);
-			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 20+Random(10), HSL(0,0,255));
-		}
+
+		CreateParticle("Air", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 5, effect.air_particles, 10);
+		CreateParticle("MagicFire", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 10, effect.air_particles, 10);
+		
 	}
 
 	return 1;

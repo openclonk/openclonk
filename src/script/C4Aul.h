@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2004, 2006, 2009-2010  Peter Wortmann
- * Copyright (c) 2001-2002, 2004, 2006-2007  Sven Eberhardt
- * Copyright (c) 2004, 2006-2012  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_C4Aul
@@ -174,7 +166,7 @@ struct C4AulScriptContext
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	C4AulBCC *CPos;
-	time_t tTime; // initialized only by profiler if active
+	C4TimeMilliseconds tTime; // initialized only by profiler if active
 
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
@@ -196,14 +188,20 @@ protected:
 	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
+	int ParCount;
+	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
 
 public:
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
-	int ParCount;
-	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
+	void AddPar(const char * Idtf)
+	{
+		assert(ParCount < C4AUL_MAX_Par);
+		assert(ParCount == ParNamed.iSize);
+		ParNamed.AddName(Idtf);
+		++ParCount;
+	}
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
@@ -212,16 +210,16 @@ public:
 
 	void ParseFn(C4AulScriptContext* context = NULL);
 
-	virtual bool GetPublic() { return true; }
-	virtual int GetParCount() { return ParCount; }
-	virtual C4V_Type *GetParType() { return ParType; }
-	virtual C4V_Type GetRetType() { return C4V_Any; }
+	virtual bool GetPublic() const { return true; }
+	virtual int GetParCount() const { return ParCount; }
+	virtual const C4V_Type *GetParType() const { return ParType; }
+	virtual C4V_Type GetRetType() const { return C4V_Any; }
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false); // execute func
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
 
-	time_t tProfileTime; // internally set by profiler
+	uint32_t tProfileTime; // internally set by profiler
 
 	friend class C4AulParse;
 	friend class C4ScriptHost;
@@ -266,7 +264,7 @@ private:
 	struct Entry
 	{
 		C4AulScriptFunc *pFunc;
-		time_t tProfileTime;
+		uint32_t tProfileTime;
 
 		bool operator < (const Entry &e2) const { return tProfileTime < e2.tProfileTime ; }
 	};
@@ -275,12 +273,30 @@ private:
 	std::vector<Entry> Times;
 
 public:
-	void CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime);
+	void CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime);
 	void Show();
 
 	static void Abort();
 	static void StartProfiling(C4AulScript *pScript);
 	static void StopProfiling();
+};
+
+
+// user text file to which scripts can write using FileWrite().
+// actually just writes to an internal buffer
+class C4AulUserFile
+{	
+	StdCopyStrBuf sContents;
+	int32_t handle;
+
+public:
+	C4AulUserFile(int32_t handle) : handle(handle) {}
+	void Write(const char *data, size_t data_length) { sContents.Append(data, data_length); }
+
+	const char *GetFileContents() { return sContents.getData(); }
+	StdStrBuf GrabFileContents() { StdStrBuf r; r.Take(sContents); return r; }
+	size_t GetFileLength() { return sContents.getLength(); }
+	int32_t GetHandle() const { return handle; }
 };
 
 
@@ -343,6 +359,10 @@ protected:
 	C4Value GlobalPropList;
 	C4AulScript *Child0, *ChildL; // tree structure
 
+	// all open user files
+	// user files aren't saved - they are just open temporary e.g. during game saving
+	std::list<C4AulUserFile> UserFiles;
+
 public:
 	int warnCnt, errCnt; // number of warnings/errors
 	int lineCnt; // line count parsed
@@ -383,6 +403,11 @@ public:
 
 	// Compile scenario script data (without strings and constants)
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
+
+	// Handle user files
+	int32_t CreateUserFile(); // create new file and return handle
+	void CloseUserFile(int32_t handle); // close user file given by handle
+	C4AulUserFile *GetUserFile(int32_t handle); // get user file given by handle
 
 	friend class C4AulFunc;
 	friend class C4ScriptHost;

@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2007, 2011  Sven Eberhardt
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Julius Michaelis
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // scenario record functionality
 
@@ -401,9 +394,14 @@ bool C4Playback::Open(C4Group &rGrp)
 {
 	// clean up
 	Clear();
-	fLoadSequential = !rGrp.IsPacked();
 	iLastSequentialFrame = 0;
 	bool fStrip = false;
+
+	// open group? Then do some sequential reading for large files
+	// Can't do this when a dump is forced, because the dump needs all data
+	// Also can't do this when stripping is desired
+	fLoadSequential = !rGrp.IsPacked() && !Game.RecordDumpFile.getLength() && !fStrip;
+
 	// get text record file
 	StdStrBuf TextBuf;
 	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, &TextBuf))
@@ -413,10 +411,6 @@ bool C4Playback::Open(C4Group &rGrp)
 	}
 	else
 	{
-		// open group? Then do some sequential reading for large files
-		// Can't do this when a dump is forced, because the dump needs all data
-		// Also can't do this when stripping is desired
-		if (!rGrp.IsPacked()) if (!Game.RecordDumpFile.getLength()) if (!fStrip) fLoadSequential = true;
 		// get record file
 		if (fLoadSequential)
 		{

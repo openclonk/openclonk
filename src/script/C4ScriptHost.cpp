@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2003-2005  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2006-2007, 2009-2012  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles script file components (calls, inheritance, function maps) */
@@ -117,10 +111,11 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
+
 /*--- C4ExtraScriptHost ---*/
 
-C4ExtraScriptHost::C4ExtraScriptHost():
-		ParserPropList(C4PropList::NewStatic(NULL, NULL, NULL))
+C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
+		ParserPropList(C4PropList::NewStatic(NULL, NULL, parent_key_name))
 {
 }
 
@@ -132,6 +127,15 @@ void C4ExtraScriptHost::Clear()
 C4PropListStatic * C4ExtraScriptHost::GetPropList()
 {
 	return ParserPropList._getPropList()->IsStatic();
+}
+
+
+/*--- C4ScenarioObjectsScriptHost ---*/
+
+C4ScenarioObjectsScriptHost::C4ScenarioObjectsScriptHost() : C4ExtraScriptHost(::Strings.RegString("ScenarioObjects"))
+{
+	// Note that "ScenarioObjects" is a fake key name under which you cannot access this prop list from script.
+	// It's just given to have a proper name when script errors are reported.
 }
 
 /*--- C4DefScriptHost ---*/

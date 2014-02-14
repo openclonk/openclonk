@@ -26,7 +26,7 @@ func Set(id to_construct, object constructing_clonk)
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;
-	AdjustPreview();
+	this->AdjustPreview();
 }
 
 // Positions the preview according to the landscape, coloring it green, yellow or red
@@ -50,7 +50,7 @@ func AdjustPreview(bool look_up, bool no_call)
 			}
 		}
 		if (fail && !no_call)
-			return AdjustPreview(!look_up, true);
+			return this->AdjustPreview(!look_up, true);
 		if (fail)
 			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
 		SetPosition(GetX(), GetY() + y);
@@ -126,7 +126,7 @@ func Reposition(int x, int y)
 	}
 
 	SetPosition(x, y);
-	AdjustPreview();
+	this->AdjustPreview();
 }
 
 // Flips the preview horizontally
@@ -144,3 +144,6 @@ func Flip()
 		SetObjDrawTransform(1000,0,0, 0,1000,0, GFX_StructureOverlay);
 	}
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

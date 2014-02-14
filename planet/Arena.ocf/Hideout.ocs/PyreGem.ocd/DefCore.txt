@@ -11,9 +11,7 @@ VertexY=0,-4,0,4
 VertexFriction=70,70,70,70
 Value=5
 Mass=10
-Components=Sulphur=1
 Rotate=1
 Projectile=1
 Fragile=1
-Explosive=1
 

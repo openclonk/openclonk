@@ -87,6 +87,7 @@
 			<li><emlink href="scenario/scenario.html">Scenario</emlink></li>
 			<li><emlink href="scenario/Teams.html">Multiplayer</emlink></li>
 			<li><emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
+			<li><emlink href="script/MapScript.html">Map Scripts</emlink></li>
 			<li><emlink href="scenario/script.html">Scripts</emlink></li>
 		</ul>
 		</li>

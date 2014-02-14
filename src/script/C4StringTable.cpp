@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2005  Peter Wortmann
- * Copyright (c) 2006, 2009-2010, 2012  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* string table: holds all strings used by script engine */
 
@@ -181,6 +178,22 @@ C4StringTable::C4StringTable()
 	P[P_Right] = "Right";
 	P[P_Bottom] = "Bottom";
 	P[P_Filter] = "Filter";
+	P[P_ForceX] = "ForceX";
+	P[P_ForceY] = "ForceY";
+	P[P_G] = "G";
+	P[P_B] = "B";
+	P[P_Alpha] = "Alpha";
+	P[P_DampingX] = "DampingX";
+	P[P_DampingY] = "DampingY";
+	P[P_Size] = "Size";
+	P[P_Rotation] = "Rotation";
+	P[P_BlitMode] = "BlitMode";
+	P[P_Phase] = "Phase";
+	P[P_Stretch] = "Stretch";
+	P[P_CollisionVertex] = "CollisionVertex";
+	P[P_OnCollision] = "OnCollision";
+	P[P_Distance] = "Distance";
+	P[P_Smoke] = "Smoke";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

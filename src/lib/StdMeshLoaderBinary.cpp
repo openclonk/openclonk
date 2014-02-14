@@ -1,20 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010, 2012  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010, 2012  Armin Burgmeier
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 // A loader for the OGRE .mesh binary file format
@@ -41,12 +37,8 @@ namespace
 			switch (element.semantic)
 			{
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Texcoords:
-				// Normally, you can use multiple texture coordinates, but we currently support only one.
-				// So complain if we get multiple sets.
-				if (semanticSeen[element.semantic])
-				{
-					DebugLogF("[FIXME] %s: Vertex declaration with multiple sets of texture coordinates found; game will only use the first.", filename && *filename ? filename : "<unknown>");
-				}
+				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
+				// currently only the first set is read, any additional ones are ignored
 				break;
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Position:
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Normals:

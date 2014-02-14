@@ -1,6 +1,4 @@
-// is a plant but does not have the Seed-timer-call!
-// only for the harvesting
-#include Library_Plant
+#include Library_Crop
 
 local Name = "$Name$";
 local Description = "$Description$";
@@ -212,7 +210,7 @@ func Damage()
 {
 	// splatter
 	if(grow_anim)
-		CastParticles("MaterialParticle", 20, 30, 0, 0, 10, 20, RGB(200, 200, 200), RGB(200, 255, 200));
+		CreateParticle("Dust", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(20, 60), Particles_Material(RGB(50, 50, 255)), 30);
 		
 	// ouch!
 	Die(false);
@@ -459,3 +457,6 @@ func FxQuickFadeTimer(target, effect, time)
 	if(effect.alpha <= 0) return -1;
 	return 1;
 }
+
+// Only save main bush object
+func SaveScenarioObject() { return false; }

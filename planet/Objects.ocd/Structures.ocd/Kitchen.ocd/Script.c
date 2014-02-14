@@ -62,7 +62,7 @@ private func Smoking()
 	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
 	
 	//Fire
-	CreateParticle("Fire",13*GetCalcDir(),16,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
+	CreateParticle("Fire", 13 * GetCalcDir(), 16, PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(18, 36), Particles_Fire(), 2);
 }
 
 local ActMap = {

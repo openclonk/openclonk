@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Martin Plicht
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #ifndef C4AULDEBUG_H
 #define C4AULDEBUG_H
@@ -30,7 +27,8 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 public:
 	C4AulDebug();
 	~C4AulDebug();
-	static bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+	static bool InitDebug(const char *szPassword, const char *szHost);
+	bool Listen(uint16_t iPort, bool fWait);
 	static inline C4AulDebug *GetDebugger() { return pDebug; }
 
 private:
@@ -82,16 +80,20 @@ public:
 	void ControlScriptEvaluated(const char* script, const char* result);
 
 	void OnLog(const char *szLine);
-	void DebugStep(C4AulBCC *pCPos);
-	void DebugStepIn(C4AulBCC *pCPos);
-	void DebugStepOut(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal);
+	void DebugStep(C4AulBCC *pCPos, C4Value* stackTop);
 
 private:
-	void StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx = NULL, C4Value *pRVal = NULL);
+	struct ProcessLineResult
+	{
+		bool okay;
+		std::string answer;
+		ProcessLineResult(bool okay, const std::string answer)
+			: okay(okay), answer(answer) {}
+	};
 
 	StdStrBuf FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos);
 
-	void ProcessLine(const StdStrBuf &Line);
+	ProcessLineResult ProcessLine(const StdStrBuf &Line);
 
 	bool SendLine(const char *szType, const char *szData = NULL);
 };

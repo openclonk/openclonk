@@ -125,14 +125,14 @@
 	{
 		NSLog(@"Game running, only simulating Esc key");
 		[self simulateKeyPressed:K_ESCAPE];
-		return;
 	}
 	else
 	{
 		if (Application.isEditor)
 			Console.FileClose();
 		Application.fQuitMsgReceived = true;
-		return;
+		Application.ScheduleProcs();
+		Application.Quit();
 	}
 }
 
@@ -142,9 +142,19 @@
 	if ([item action] == @selector(toggleFullScreen:))
 		return !Application.isEditor;
 	
-	// game running no matter whether console or fullscreen
-	if ([item action] == @selector(togglePause:))
-		return Game.IsRunning;
+	SEL s;
+	int i;
+	
+	SEL gameRunningSelectors[] =
+	{
+		@selector(togglePause:),
+		@selector(makeScreenshot:),
+		@selector(makeScreenshotOfWholeMap:),
+		nil
+	};
+	for (i = 0; (s = gameRunningSelectors[i]) != nil; i++)
+		if ([item action] == s)
+			return Game.IsRunning;
 
 	// enabled when game running and console mode
 	SEL gameRunningInConsoleModeSelectors[] =
@@ -162,9 +172,7 @@
 		@selector(setDrawingTool:),
 		nil
 	};
-	int i = 0;
-	SEL s;
-	while ((s = gameRunningInConsoleModeSelectors[i++]) != nil)
+	for (i = 0; (s = gameRunningInConsoleModeSelectors[i]) != nil; i++)
 	{
 		if (s == [item action])
 			return Application.isEditor && Game.IsRunning;
@@ -183,6 +191,16 @@
 {
 	Game.DoKeyboardInput(key, KEYEV_Down, false, false, false, false, NULL);
 	Game.DoKeyboardInput(key, KEYEV_Up,   false, false, false, false, NULL);
+}
+
+- (IBAction) makeScreenshot:(id)sender;
+{
+	::GraphicsSystem.SaveScreenshotKey(false);
+}
+
+- (IBAction) makeScreenshotOfWholeMap:(id)sender;
+{
+	::GraphicsSystem.SaveScreenshotKey(true);
 }
 
 @end

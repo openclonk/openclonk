@@ -1,8 +1,0 @@
-[DefCore]
-id=ChemicalLab_SplitFirestone
-Version=4,10,0,0
-Category=C4D_Object
-Width=1
-Height=1
-Components=Firestone=1
-Picture=0,0,64,64

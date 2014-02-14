@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2006  Peter Wortmann
- * Copyright (c) 2001, 2005-2006  Sven Eberhardt
- * Copyright (c) 2006-2012  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -486,30 +480,83 @@ void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 	}
 }
 
-bool C4Value::operator == (const C4Value& Value2) const
+inline bool ComparisonImpl(const C4Value &Value1, const C4Value &Value2)
 {
-	switch (Type)
+	C4V_Type Type1 = Value1.GetType();
+	C4V_Data Data1 = Value1.GetData();
+	C4V_Type Type2 = Value2.GetType();
+	C4V_Data Data2 = Value2.GetData();
+	switch (Type1)
 	{
 	case C4V_Nil:
-		assert(!Data);
-		return Type == Value2.Type;
+		assert(!Data1);
+		return Type1 == Type2;
 	case C4V_Int:
 	case C4V_Bool:
-		return (Value2.Type == C4V_Int || Value2.Type == C4V_Bool) &&
-		       Data.Int == Value2.Data.Int;
+		return (Type2 == C4V_Int || Type2 == C4V_Bool) &&
+		       Data1.Int == Data2.Int;
 	case C4V_PropList:
-		return Type == Value2.Type && *Data.PropList == *Value2.Data.PropList;
+		return Type1 == Type2 && *Data1.PropList == *Data2.PropList;
 	case C4V_String:
-		return Type == Value2.Type && Data.Str == Value2.Data.Str;
+		return Type1 == Type2 && Data1.Str == Data2.Str;
 	case C4V_Array:
-		return Type == Value2.Type &&
-		       (Data.Array == Value2.Data.Array || *(Data.Array) == *(Value2.Data.Array));
+		return Type1 == Type2 &&
+		       (Data1.Array == Data2.Array || *(Data1.Array) == *(Data2.Array));
 	case C4V_Function:
-		return Type == Value2.Type && Data.Fn == Value2.Data.Fn;
+		return Type1 == Type2 && Data1.Fn == Data2.Fn;
 	default:
 		assert(!"Unexpected C4Value type (denumeration missing?)");
-		return Data == Value2.Data;
+		return Data1 == Data2;
 	}
+}
+
+bool C4Value::operator == (const C4Value& Value2) const
+{
+	// recursion guard using a linked list of Seen structures on the stack
+	// NOT thread-safe
+	struct Seen
+	{
+		Seen *prev;
+		const C4Value *left;
+		const C4Value *right;
+		inline Seen(Seen *prev, const C4Value *left, const C4Value *right):
+			prev(prev), left(left), right(right) {}
+		inline bool operator == (const Seen& other)
+		{
+			return left == other.left && right == other.right;
+		}
+		inline bool recursion(Seen *new_top)
+		{
+			for (Seen *s = this; s; s = s->prev)
+				if (*s == *new_top)
+					return true;
+			return false;
+		}
+		inline Seen *first()
+		{
+			Seen *s = this;
+			while (s->prev) s = s->prev;
+			return s;
+		}
+	};
+	static Seen *top = NULL;
+	Seen here(top, this, &Value2);
+	
+	bool recursion = top && top->recursion(&here);
+	if (recursion)
+	{
+		Seen *first = top->first();
+		// GetDataString is fine for recursive values since after
+		// some text length has been exceeded ... will be used instead of complete values
+		LogF("Caught infinite recursion comparing %s and %s",
+			first->left->GetDataString().getData(),
+			first->right->GetDataString().getData());
+		return false;
+	}
+	top = &here;
+	bool result = ComparisonImpl(*this, Value2);
+	top = here.prev;
+	return result;
 }
 
 bool C4Value::operator != (const C4Value& Value2) const

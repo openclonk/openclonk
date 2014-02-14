@@ -1,20 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2013  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles scripted map creation */
@@ -187,6 +185,34 @@ uint8_t C4MapScriptAlgoPolygon::operator () (int32_t x, int32_t y) const
 	}
 	// x/y lies inside polygon
 	return (crossings % 2)==1;
+}
+
+C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
+{
+	// Get MAPALGO_Lines properties
+	lx = props->GetPropertyInt(P_X);
+	ly = props->GetPropertyInt(P_Y);
+	if (!lx && !ly) throw new C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
+	ox = props->GetPropertyInt(P_OffX);
+	oy = props->GetPropertyInt(P_OffY);
+		// use sync-safe distance function to calculate line width
+	int32_t l = Distance(0,0,lx,ly);
+	// default distance: double line width, so lines and gaps have same width
+	distance = props->GetPropertyInt(P_Distance);
+	if (!distance) distance = l+l; // 1+1=2
+	// cache for calculation
+	ll = int64_t(lx)*lx+int64_t(ly)*ly;
+	dl = int64_t(distance) * l;
+}
+
+uint8_t C4MapScriptAlgoLines::operator () (int32_t x, int32_t y) const
+{
+	// Evaluate MAPALGO_Lines at x,y: Return 1 for pixels contained in lines, 0 for pixels between lines
+	int64_t ax = int64_t(x)-ox;
+	int64_t ay = int64_t(y)-oy;
+	int64_t line_pos = (ax*lx + ay*ly) % dl;
+	if (line_pos < 0) line_pos += dl;
+	return line_pos < ll;
 }
 
 C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_t min_ops, int32_t max_ops)
@@ -472,6 +498,7 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	case MAPALGO_Rect:        return new C4MapScriptAlgoRect(algo_par);
 	case MAPALGO_Ellipsis:    return new C4MapScriptAlgoEllipsis(algo_par);
 	case MAPALGO_Polygon:     return new C4MapScriptAlgoPolygon(algo_par);
+	case MAPALGO_Lines:       return new C4MapScriptAlgoLines(algo_par);
 	case MAPALGO_Turbulence:  return new C4MapScriptAlgoTurbulence(algo_par);
 	case MAPALGO_Border:      return new C4MapScriptAlgoBorder(algo_par);
 	case MAPALGO_Filter:      return new C4MapScriptAlgoFilter(algo_par);

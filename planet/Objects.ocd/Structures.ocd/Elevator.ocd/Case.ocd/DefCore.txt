@@ -15,7 +15,7 @@ VertexFriction=100,100,100,100, 100,100,100,100
 Value=0
 Mass=30
 Components=Wood=1
-SolidMask=0,27,24,2,0,24
+SolidMask=0,0,24,2,0,24
 TopFace=0,0,24,26,0,0
 Picture=24,0,152,128
 HorizontalFix=1

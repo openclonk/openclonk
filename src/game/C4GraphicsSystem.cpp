@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2009  Sven Eberhardt
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2005-2006, 2008-2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Operates viewports, message board and draws the game */
@@ -216,7 +212,7 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
 }
 
-bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
+bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 {
 	// Filename
 	char szFilename[_MAX_PATH+1];
@@ -225,7 +221,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	do
 		sprintf(szFilename,"Screenshot%03i.png",iScreenshotIndex++);
 	while (FileExists(strFilePath = Config.AtScreenshotPath(szFilename)));
-	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath);
+	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath, fSaveAllZoom);
 	// log if successful/where it has been stored
 	if (!fSuccess)
 		LogF(LoadResStr("IDS_PRC_SCREENSHOTERROR"), Config.AtUserDataRelativePath(Config.AtScreenshotPath(szFilename)));
@@ -235,7 +231,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	return !!fSuccess;
 }
 
-bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
+bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom)
 {
 	// Fullscreen only
 	if (Application.isEditor) return false;
@@ -245,10 +241,12 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	// save landscape
 	if (fSaveAll)
 	{
+		// Create full map screenshots at zoom 2x. Fractional zooms (like 1.7x) should work but might cause some trouble at screen borders.
+		float zoom = fSaveAllZoom;
 		// get viewport to draw in
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landcape
-		CPNGFile png; int32_t lWdt=GBackWdt,lHgt=GBackHgt;
+		CPNGFile png; int32_t lWdt=GBackWdt * zoom,lHgt=GBackHgt * zoom;
 		if (!png.Create(lWdt, lHgt, false)) return false;
 		// get backbuffer size
 		int32_t bkWdt=C4GUI::GetScreenWdt(), bkHgt=C4GUI::GetScreenHgt();
@@ -270,7 +268,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 				if (iX+bkWdt2>lWdt) bkWdt2-=iX+bkWdt2-lWdt;
 				if (iY+bkHgt2>lHgt) bkHgt2-=iY+bkHgt2-lHgt;
 				// update facet
-				bkFct.Set(FullScreen.pSurface, 0, 0, bkWdt2, bkHgt2, iX, iY);
+				bkFct.Set(FullScreen.pSurface, 0, 0, ceil(float(bkWdt2)/zoom), ceil(float(bkHgt2)/zoom), iX/zoom, iY/zoom, zoom);
 				// draw there
 				pVP->Draw(bkFct, false);
 				// render
@@ -316,7 +314,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 	{
 		pDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 		                           FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
-		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
+		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.GetLineHeight()*2,
 		                           C4Draw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
 	}

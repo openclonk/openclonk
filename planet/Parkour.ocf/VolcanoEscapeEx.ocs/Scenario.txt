@@ -30,6 +30,7 @@ MapHeight=250
 TopOpen=1
 BottomOpen=1
 NoScan=1
+AutoScanSideOpen=0
 
 [Weather]
 Climate=0,0,0,100

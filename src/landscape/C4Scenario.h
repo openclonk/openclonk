@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2005, 2010  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Core component of a scenario file */
@@ -263,11 +258,12 @@ public:
 	char *szTempFilename; // filename of data file if in temp dir
 	char *szFilename;     // filename of section in scenario file
 	bool fModified;       // if set, the file is temp and contains runtime landscape and/or object data
+	class C4ScenarioObjectsScriptHost *pObjectScripts; // points to loaded script file for section Objects.c
 
 	C4ScenarioSection *pNext; // next member of linked list
 
 public:
-	bool ScenarioLoad(char *szFilename);  // called when scenario is loaded: extract to temp store
+	bool ScenarioLoad(C4Group &rGrp, char *szFilename);  // called when scenario is loaded: extract to temp store
 	C4Group *GetGroupfile(C4Group &rGrp); // get group at section file (returns temp group, scenario subgroup or scenario group itself)
 	bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 };

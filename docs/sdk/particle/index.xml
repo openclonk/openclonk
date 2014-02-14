@@ -7,7 +7,7 @@
   <h>Particle</h>
   <part>
     <text>Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead.</text>
-    <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles.</text>
+    <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored.</text>
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
     <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
@@ -34,190 +34,120 @@
         <row>
           <col>Name</col>
           <col>String (max. 30 chars)</col>
-          <col>Name of the particle definition. This name is also used to refer to this particle type in scripts. For multi-language display in the menu system you should use the Names.txt component.</col>
-        </row>
-        <row>
-          <col>MaxCount</col>
-          <col>Integer</col>
-          <col>Maximum number of instances of this particle type. See <a href="#maxcount">instance control</a>.</col>
-        </row>
-        <row>
-          <col>MinLifetime</col>
-          <col>Integer</col>
-          <col>Only for smoke particles: lower limit for the lifetime, which ranges from MinLifetime to MaxLifetime.</col>
-        </row>
-        <row>
-          <col>MaxLifetime</col>
-          <col>Integer</col>
-          <col>Only for smoke particles: upper limit for the lifetime, which ranges from MinLifetime to MaxLifetime.</col>
-        </row>
-        <row>
-          <col>InitFn</col>
-          <col>String (max. 30 chars)</col>
-          <col>Identifier for the function used to initialize the particle. For valid functions see section <a href="#funcs">particle functions</a>.</col>
-        </row>
-        <row>
-          <col>ExecFn</col>
-          <col>String (max. 30 chars)</col>
-          <col>Identifier for the function used to execute the particle each frame. For valid functions see section <a href="#funcs">particle functions</a>.</col>
-        </row>
-        <row>
-          <col>DrawFn</col>
-          <col>String (max. 30 chars)</col>
-          <col>Identifier for the function used to draw the particle. For valid functions see section <a href="#drawfuncs">drawing functions</a>.</col>
-        </row>
-        <row>
-          <col>CollisionFn</col>
-          <col>String (max. 30 chars)</col>
-          <col>Identifier for the function called upon collision with the landscape. Also see <a href="#collision">collision checking</a>.</col>
+          <col>Name of the particle definition. This name is also used to refer to this particle type in scripts.</col>
         </row>
         <row>
           <col>Face</col>
-          <col>6 integers</col>
+          <col>4 integers</col>
           <col>Target rectangle for the graphics within Graphics.png. See <a href="#face">particle graphics</a>.</col>
-        </row>
-        <row>
-          <col>YOff</col>
-          <col>Integer</col>
-          <col>Upper spatial limit for the particle. At this limit the particles will be deleted as if the landscape would end here. Only StdExec.</col>
-        </row>
-        <row>
-          <col>Delay</col>
-          <col>Integer</col>
-          <col>Delay between two animation phases. If Delay = 0 one randomly chosen phase is permanently displayed.</col>
-        </row>
-        <row>
-          <col>Repeats</col>
-          <col>Integer</col>
-          <col>Number of animation runs until the particle is destroyed.</col>
-        </row>
-        <row>
-          <col>Reverse</col>
-          <col>Integer</col>
-          <col>0 or 1. If 1 every seconds animation is played backwards.</col>
-        </row>
-        <row>
-          <col>FadeOutLen</col>
-          <col>Integer</col>
-          <col>If specified, this number of animation phases is truncated from the end and reserved for a death animation which is displayed after all repetitions of the standard animation.</col>
-        </row>
-        <row>
-          <col>FadeOutDelay</col>
-          <col>Integer</col>
-          <col>Delay between two animation phases of the death animation.</col>
-        </row>
-        <row>
-          <col>RByV</col>
-          <col>Integer</col>
-          <col>0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied.</col>
-        </row>
-        <row>
-          <col>GravityAcc</col>
-          <col>Integer</col>
-          <col>Effects of gravity. At 0 the particle is not affected by gravity, at 100 it is fully affected. Negative values are also possible.</col>
-        </row>
-        <row>
-          <col>WindDrift</col>
-          <col>Integer</col>
-          <col>Horizontal drift by wind. Same as the material property of the same name.</col>
-        </row>
-        <row>
-          <col>VertexCount</col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, <a href="#collision">collision detection</a> is done.</col>
-        </row>
-        <row>
-          <col>VertexY</col>
-          <col>Integer</col>
-          <col>Y offset of the collision checking point in percent. Also see <a href="#collision">collision detection</a>.</col>
-        </row>
-        <row>
-          <col>Additive</col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, the particle is drawn additively.</col>
-        </row>
-        <row>
-          <col>AlphaFade</col>
-          <col>Integer</col>
-          <col>0 to 40. Rate of fade out per FadeDelay. A fully faded particle is removed.</col>
-        </row>
-        <row>
-          <col>FadeDelay</col>
-          <col>Integer</col>
-          <col>The default is 1.</col>
-        </row>
-        <row>
-          <col>Parallaxity</col>
-          <col>2 Integer</col>
-          <col>Parallaxity in x and y directions. 0 is locked with the viewport; 100 is default (locked with the landscape).</col>
-        </row>
-        <row>
-          <col>Attach</col>
-          <col>Integer</col>
-          <col>0 or 1. If 1 the particle is moving relative to its target object's position.</col>
         </row>
       </table>
     </text>
-    <h id="attributes">Properties</h>
-    <text>Each particle has a position (x, y), horizontal and vertical impulse (xdir and ydir), life time (life), and two extra parameters (a and b). These are initialized by script and then processed by the <a href="#funcs">particle functions</a>. For more information see <a href="#funcs">particle functions</a> and <a href="#drawfuncs">drawing functions</a>.</text>
-    <h id="face">Graphics</h>
-    <text>The coordinates for the source rectangle within Graphics.png of a particle are comparable to the Face entry in an object's <emlink href="definition/actmap.html">ActMap</emlink>. The coordinates only specify the first animation phase. All following animation phases should be located on the right (with smoke also below) of the initial phase. The animation length is then automatically determined from the image size. For the drawing offset you should usually specify half the particle size. An offset 0/0 would cause the particle graphics to be drawn below actual particle position.</text>
-    <text>If Delay = 0, a random animation phase is chosen on startup and maintained. The particle will exist until is falls out of the landscape.</text>
-    <h id="maxcount">Particle Amounts</h>
-    <text>For each particle type a maximum count is defined which is then also adjusted by the configuration setting for effect levels in the graphics options. As soon as half of the maximum amount of particles is created, new particles are only created based on random selected and the closer you get to the maximum value, the smaller the chance of new particle generation. This ensures a smooth approach to the actual limit.</text>
-    <h id="collision">Collision Detection</h>
-    <text>Particles can collide with the landscape. This is not very exact, however. Fast moving particles might pass through very thin layers of solid materials. If you need more precision, you should use objects instead.</text>
-    <text>Collision detection is only done in StdExec (i.e. not with smoke particles). For valid functions see <a href="#funcs">particle functions</a>. Collision detection is done at the particle center and only if VertexCount is specified. The point of detection can be shifted using VertexY. The specified values are in percent of the particle size, meaning VertexY=100 would check at the bottom of the particle. The visual size specified in Face doesn't affect this.</text>
-    <h id="funcs">Particle Functions</h>
-    <text>The behaviour of particles can be controlled by predefined particle functions. These are executed for initialization, then at each fram, and in case of <a href="#collision">collision</a> with the landscape.</text>
-    <dl>
-      <dt id="stdexec">StdExec</dt>
-      <dd>
-        <text>Standard function ExecFn for almost all particle types. The particle runs through an animation defined by Face, Delay, Repeats, Reverse, FadeOutLen, and FadeOutDelay and is then destroyed. The extra parameter defines the size of the particle in 1/10 pixels. b defines color modulation; if b = 0 no modulation is applied. aa as well as b are not modified by this function and will preserve the <a href="#control">initial</a> values. Also, the particle moves according to xdir and ydir while ydir is affected by gravity if GravityAcc is enabled.</text>
-      </dd>
-      <dt id="stdinit">StdInit</dt>
-      <dd>
-        <text>Standard function for InitFn to be used with StdExec.</text>
-      </dd>
-      <dt id="bounce">Bounce</dt>
-      <dd>
-        <text>Collision function: the particle will bounce back into the exact opposite direction.</text>
-      </dd>
-      <dt id="bouncey">BounceY</dt>
-      <dd>
-        <text>Collision function: the particle will bounce back vertically.</text>
-      </dd>
-      <dt id="stop">Stop</dt>
-      <dd>
-        <text>Collision function: the particle will stop.</text>
-      </dd>
-      <dt id="die">Die</dt>
-      <dd>
-        <text>Collision function: the particle will be destroyed.</text>
-      </dd>
-      <dt id="smokeexec">SmokeExec</dt>
-      <dd>
-        <text>Hard coded processing function for smoke particles. a is puff size; b is color modulation. Smoke graphics must be defined in 4 x 4 animation phases in Graphics.png of which the one on the lower right is used only rarely. The other animation phases are used evenly. Smoke always rises continuously until it collides with the landscape. If the life time has passed, the smoke particle fades out until it is deleted.</text>
-      </dd>
-      <dt id="smokeinit">SmokeInit</dt>
-      <dd>
-        <text>Hard coded initialization function for smoke to be used in conjunction with SmokeExec.</text>
-      </dd>
-    </dl>
-    <h id="drawfuncs">Drawing Functions</h>
-    <text>Functions that can be assigned to DrawFn.</text>
-    <dl>
-      <dt id="drawstd">Std</dt>
-      <dd>
-        <text>Standard function for most particles except smoke. The particle is drawn at position x/y with size a/5 x a/5 and color modulated with b.</text>
-      </dd>
-      <dt id="drawsmoke">Smoke</dt>
-      <dd>
-        <text>Drawing function for smoke.</text>
-      </dd>
-    </dl>
-    <h id="control">Control</h>
-    <text>External control of particles is very limited and only allows creation, global offset, and global removal. This is necessary as particles are not synchronized on computers throughout a network game and any deviation in particle handling would cause sync loss. Particles are created using <funclink>CreateParticle</funclink>.</text>
+	<h id="face">Graphics</h>
+    <text>The coordinates for the source rectangle within Graphics.png of a particle specify the first phase of the particle graphics the other phases should follow to the right and can be continued in the next row. The animation length is then automatically determined from the image size.</text>
+	<h id="properties">Properties</h>
+    <text>Each particle has different attributes like position, lifetime, size and more. These are set by script when creating the particle.</text>
+    <text>The following properties can be contained in a proplist passed to <funclink>CreateParticle</funclink>. For an example, see <funclink>CreateParticle</funclink></text>
+	<text>You can assign either constants to the properties (f.e. <code>R = 200</code>) or use certain value provider functions (f.e. <code>R = <funclink>PV_Linear</funclink>(200, 0)</code>). Available value provider functions are:
+	  <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PV_Gravity</funclink>
+	  </text>
+    <text>
+      <table>
+        <caption id="particledef">Particle definition proplist</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Values</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>R</col>
+          <col>0 to 255</col>
+          <col>Red part of the color modulation.</col>
+        </row>
+		<row>
+          <col>G</col>
+          <col>0 to 255</col>
+          <col>Green part of the color modulation.</col>
+        </row>
+		<row>
+          <col>B</col>
+          <col>0 to 255</col>
+          <col>Blue part of the color modulation.</col>
+        </row>
+		<row>
+          <col>Alpha</col>
+          <col>0 to 255</col>
+          <col>Alpha part of the color modulation.</col>
+        </row>
+		<row>
+          <col>Size</col>
+          <col>pixels</col>
+          <col>Size of the particle in pixels.</col>
+        </row>
+		<row>
+          <col>Stretch</col>
+          <col>factor</col>
+          <col>The vertical stretch of the particle. 1000 equals no stretch.</col>
+        </row>
+		<row>
+          <col>Phase</col>
+          <col>Index of phase</col>
+          <col>The displayed phase of the particle from the Graphics.png. The index starts at 0 and will be wrapped.</col>
+        </row>
+		<row>
+          <col>Rotation</col>
+          <col>0 to 360</col>
+          <col>Rotation of the particle.</col>
+        </row>
+		<row>
+          <col>ForceX</col>
+          <col>Integer</col>
+          <col>Force in x-direction that is constantly applied to the particle's speed. Can f.e. simulate wind.</col>
+        </row>
+		<row>
+          <col>ForceY</col>
+          <col>Integer</col>
+          <col>Force in y-direction that is constantly applied to the particle's speed. Ca f.e. simulate gravity.</col>
+        </row>
+		<row>
+          <col>DampingX</col>
+          <col>0 to 1000</col>
+          <col>Damping of the particle's speed in x-direction. 1000 means no damping, 0 means instant stop.</col>
+        </row>
+		<row>
+          <col>DampingY</col>
+          <col>0 to 1000</col>
+          <col>Damping of the particle's speed in y-direction. 1000 means no damping, 0 means instant stop.</col>
+        </row>
+		<row>
+          <col>BlitMode</col>
+          <col>0 or GFX_BLIT_Additive</col>
+          <col>The particle's blit mode. Currently only additive blitting is supported.</col>
+        </row>
+		<row>
+          <col>CollisionVertex</col>
+          <col>0 to 1000</col>
+          <col>The offset of the particle's hit point relative to its width. When set, the particle will collide with the landscape. 0 means the particle will collide with its center.</col>
+        </row>
+		<row>
+          <col>OnCollision</col>
+          <col><funclink>PC_Die</funclink>, <funclink>PC_Bounce</funclink>, <funclink>PC_Stop</funclink></col>
+          <col>Defines what happens when the particle collides with the landscape.</col>
+        </row>
+		<row>
+          <col>Attach</col>
+          <col>bit mask</col>
+          <col>Defines the attachment of the particles to the calling object. Can be a combination of ATTACH_Front, ATTACH_Back, and ATTACH_MoveRelative. For example <code>ATTACH_Front | ATTACH_MoveRelative</code></col>
+        </row>
+      </table>
+    </text>
   </part>
-  <author>Sven2</author><date>2002-04</date>
+  <author>Zapper</author><date>2013-10</date>
 </doc>

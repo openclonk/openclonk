@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PV_Random</title>
+    <category>Particles</category>
+    <version>5.3.3 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>start_value</name>
+          <desc>Begin of the interval to draw the random number from.</desc>
+		  <optional />
+        </param>
+		<param>
+          <type>int</type>
+          <name>end_value</name>
+          <desc>End of the interval to draw the random number from.</desc>
+		  <optional />
+        </param>
+		<param>
+          <type>int</type>
+          <name>reroll_interval</name>
+          <desc>Interval in frames after which a new random number will be drawn.</desc>
+		  <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>The value will be a random number in the interval from start_value to (not including) end_value. The values in between are not whole integers, but are also in fraction of integers. This means that PV_Random(0, 1) can not only return one value (the 0) but a lot of different values in the interval between 0 and 1.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PC_Die</funclink>
+      <funclink>PC_Bounce</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-10</date>
+</funcs>

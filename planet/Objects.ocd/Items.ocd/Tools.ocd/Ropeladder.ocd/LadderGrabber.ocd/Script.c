@@ -1,5 +1,6 @@
 /*-- Ropeladder_Grabber --*/
 
+func SaveScenarioObject() { return false; }
 
 public func Interact(object clonk)
 {

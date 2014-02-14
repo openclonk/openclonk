@@ -1,14 +1,4 @@
 [Particle]
 Name=LightningBolt
-MaxCount=16384
-InitFn=StdInit
-ExecFn=StdExec
-DrawFn=Std
 Face=0,0,32,32,-16,-16
-Delay=2
-Repeats=10
-GravityAcc=0
-WindDrift=0
-Additive=1
-AlphaFade=10
-RByV=2
+

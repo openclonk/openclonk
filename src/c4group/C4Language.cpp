@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004  Matthes Bender
- * Copyright (c) 2005-2007, 2009, 2011  Günther Brammer
- * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2011  Armin Burgmeier
- * Copyright (c) 2011  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /*
@@ -36,6 +30,15 @@
 #include <C4Log.h>
 #include <C4Config.h>
 #include <C4Game.h>
+
+#ifdef USE_BOOST_REGEX
+#	undef new
+#	include <boost/regex.hpp>
+	namespace re = boost;
+#else
+#	include <regex>
+	namespace re = std;
+#endif
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
@@ -363,6 +366,14 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 	return r;
 }
 
+bool C4Language::LoadComponentHost(C4ComponentHost *host, C4Group &hGroup, const char *szFilename, const char *szLanguage)
+{
+	assert(host);
+	if (!host) return false;
+	C4GroupSet hGroups = ::Languages.GetPackGroups(hGroup);
+	return host->Load(hGroups, szFilename, szLanguage);
+}
+
 void C4Language::InitInfos()
 {
 	C4Group hGroup;
@@ -381,6 +392,49 @@ void C4Language::InitInfos()
 			LoadInfos(hGroup);
 			hGroup.Close();
 		}
+}
+
+namespace
+{
+	std::string GetResStr(const char *id, const char *stringtbl)
+	{
+		static re::regex line_pattern("^([^=]+)=(.*?)\r?$", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+		assert(stringtbl);
+		if (!stringtbl)
+		{
+			return std::string();
+		}
+
+		// Get beginning and end iterators of stringtbl
+		const char *begin = stringtbl;
+		const char *end = begin + std::char_traits<char>::length(begin);
+
+		for (auto it = re::cregex_iterator(begin, end, line_pattern); it != re::cregex_iterator(); ++it)
+		{
+			assert(it->size() == 3);
+			if (it->size() != 3)
+				continue;
+
+			std::string key = (*it)[1];
+			if (key != id)
+				continue;
+
+			std::string val = (*it)[2];
+			return val;
+		}
+
+		// If we get here, there was no such string in the string table
+		// return the input string so there's at least *something*
+		return id;
+	}
+
+	template<size_t N>
+	void CopyResStr(const char *id, const char *stringtbl, char (&dest)[N])
+	{
+		std::string value = GetResStr(id, stringtbl);
+		std::strncpy(dest, value.c_str(), N);
+		dest[N - 1] = '\0';
+	}
 }
 
 void C4Language::LoadInfos(C4Group &hGroup)
@@ -403,9 +457,9 @@ void C4Language::LoadInfos(C4Group &hGroup)
 				SCopy(GetFilenameOnly(strEntry) + SLen(GetFilenameOnly(strEntry)) - 2, pInfo->Code, 2);
 				SCapitalize(pInfo->Code);
 				// Get language name, info, fallback from table
-				SCopy(GetResStr("IDS_LANG_NAME", strTable), pInfo->Name, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_INFO", strTable), pInfo->Info, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_FALLBACK", strTable), pInfo->Fallback, C4MaxLanguageInfo);
+				CopyResStr("IDS_LANG_NAME", strTable, pInfo->Name);
+				CopyResStr("IDS_LANG_INFO", strTable, pInfo->Info);
+				CopyResStr("IDS_LANG_FALLBACK", strTable, pInfo->Fallback);
 				// Safety: pipe character is not allowed in any language info string
 				SReplaceChar(pInfo->Name, '|', ' ');
 				SReplaceChar(pInfo->Info, '|', ' ');
@@ -481,11 +535,9 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	char strEntry[_MAX_FNAME + 1];
 	sprintf(strEntry, "Language%s.txt", strCode); // ...should use C4CFN_Language here
 	// Load string table
-	char *strTable;
-	if (!hGroup.LoadEntry(strEntry, &strTable, 0, true))
+	if (!C4LangStringTable::GetSystemStringTable().Load(hGroup, strEntry))
 		return false;
-	// Set string table
-	SetResStrTable(strTable);
+	
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
 	const char * const to_set = nl_langinfo(CODESET);
@@ -505,7 +557,7 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 void C4Language::ClearLanguage()
 {
 	// Clear resource string table
-	ClearResStrTable();
+	C4LangStringTable::GetSystemStringTable().Clear();
 }
 
 // Closes any open language pack that has the specified path.

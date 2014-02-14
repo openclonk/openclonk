@@ -400,7 +400,7 @@ global func FxClonkOneRestoreTimer(object target, effect, int time)
 		restorer->SetPosition(x, y);
 		var to_x = effect.to_x;
 		var to_y = effect.to_y;
-		restorer->SetRestoreObject(target, nil, to_x, to_y, "ClonkOneRestore");
+		restorer->SetRestoreObject(target, nil, to_x, to_y, 0, "ClonkOneRestore");
 		return -1;
 	}
 	// Respawn to new location if reached cliff to grapple from.
@@ -462,7 +462,7 @@ global func FxClonkOneRestoreStop(object target, effect, int reason, bool  tempo
 			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
 			new_effect.to_container = clonk;
 		}
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkOneRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkOneRestore");
 	}
 	return 1;
 }
@@ -522,7 +522,7 @@ global func FxClonkTwoRestoreStop(object target, effect, int reason, bool  tempo
 			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
 			new_effect.to_container = clonk;
 		}
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkTwoRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkTwoRestore");
 	}
 	return 1;
 }
@@ -546,7 +546,7 @@ global func FxDynamiteRestoreStop(object target, effect, int reason, bool  tempo
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
 		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");
+		restorer->SetRestoreObject(restored, to_container, nil, nil, nil, "DynamiteRestore");
 	}
 	return 1;
 }
@@ -568,7 +568,7 @@ global func FxCatapultRestoreTimer(object target, effect, int time)
 		restorer->SetPosition(x, y);
 		var to_x = effect.to_x;
 		var to_y = effect.to_y;
-		restorer->SetRestoreObject(target, nil, to_x, to_y, "CatapultRestore");
+		restorer->SetRestoreObject(target, nil, to_x, to_y, 0, "CatapultRestore");
 		return -1;
 	}
 	return 1;
@@ -584,7 +584,7 @@ global func FxEquipmentRestoreTimer(object target, effect, int time)
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
-		restorer->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
+		restorer->SetRestoreObject(target, to_container, nil, nil, 0, "RopeladderRestore");
 		return -1;
 	}
 	return 1;
@@ -601,7 +601,7 @@ global func FxRopeladderRestoreStop(object target, effect, int reason, bool  tem
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
 		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");
+		restorer->SetRestoreObject(restored, to_container, nil, nil, 0, "RopeladderRestore");
 	}
 	return 1;
 }
@@ -627,7 +627,7 @@ global func FxClonkContentRestoreStop(object target, effect, int reason, bool  t
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");
+		restorer->SetRestoreObject(restored, to_container, nil, nil, 0, "ClonkContentRestore");
 	}
 	return 1;
 }

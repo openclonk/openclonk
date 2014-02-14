@@ -1,0 +1,111 @@
+/* Deadly grotto - by Sven2 */
+
+overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
+overlay GraniteBorders {turbulence=100; mat=Granite; loosebounds=1; VaryTex {mat=Rock; tex=rock_cracked; a=1;};};
+overlay AcidVein { turbulence=100; algo=rndchecker; zoomX=-100; zoomY=100; a=5; y=-100; hgt=300; loosebounds=1; mat=Acid; };
+
+map AcidCave {
+  // Base background is earth
+  mat=Earth; tex=earth_rough;
+  VaryTex { mat=Earth; tex=earth_dry; };
+  VaryTex { mat=Earth; tex=earth; };
+
+  // Resources
+  VaryTex { mat=Rock; y=50px; zoomX=30; a=3;};
+  VaryTex { mat=Granite; y=80px; zoomX=30; a=5;};
+  VaryTex { mat=Coal; a=7; wdt=140px; };
+  VaryTex { mat=Ore; a=8; };
+  VaryTex { mat=Firestone; a=8; y=50px; };
+  VaryTex { mat=Gold; hgt=30px; a=10; };
+
+  // Top caves for mushrooms
+  overlay { wdt=90px; hgt=40px; mask=1;
+    overlay { algo=rndchecker; x=5px; hgt=40px; mat=Tunnel; a=3;zoomX=20;zoomY=-20; turbulence=100; loosebounds=1; };
+  };
+
+  // Granite borders
+  GraniteBorders { y=-20px; hgt=24px; };
+  GraniteBorders { x=296px; };
+  GraniteBorders { y=96px; };
+  GraniteBorders { x=-20px; wdt=24px; };
+
+  // Acid veins
+  AcidVein { x=100px; };
+  AcidVein { x=100px; rotate=-15; };
+  AcidVein { x=100px; rotate=15; };
+
+  // Veins interrupted by some rock
+  overlay { x=100px; turbulence=10; loosebounds=1; mask=1; algo=rndchecker; a=1; zoomX=10;
+    VaryTex { mat=Rock; tex=rock_cracked; zoomX=-100; };
+    VaryTex { mat=Granite; zoomX=-100; };
+  };
+
+  // End cave
+  overlay { algo=poly; mat=DuroLava; turbulence=10;
+    point { x=250px; y=70px; };
+    point { x=260px; y=40px; };
+    point { x=280px; y=35px; };
+    point { x=295px; y=45px; };
+    point { x=290px; y=55px; };
+    point { x=295px; y=80px; };
+    point { x=275px; y=90px; };
+    point { x=265px; y=90px; };
+
+    GraniteBorders { algo=border; a=1; b=1; };
+    GraniteBorders { algo=border; a=1; b=1; turbulence=0;};
+  };
+  // End cave head pos
+  overlay { algo=poly; mat=Tunnel; turbulence=10;
+    point { x=265px; y=70px; };
+    point { x=270px; y=60px; };
+    point { x=280px; y=60px; };
+    point { x=285px; y=70px; };
+    point { x=275px; y=80px; };
+
+    overlay { y=72px; mat=Water; };
+
+    GraniteBorders { algo=border; a=1; b=1; };
+    GraniteBorders { algo=border; a=1; b=1; turbulence=0;};
+
+    overlay { x=274px; wdt=2px; y=69px; hgt=2px; mat=Tunnel; };
+  };
+
+  // Starting cave
+  overlay { algo=poly; mat=Tunnel; turbulence=10;
+    point { x=-100px; y=70px; };
+    point { x=0px; y=70px; };
+    point { x=0px; y=70px; };
+    point { x=18px; y=85px; };
+    point { x=65px; y=85px; };
+    point { x=70px; y=75px; };
+    point { x=80px; y=70px; };
+    point { x=90px; y=80px; };
+    point { x=80px; y=195px; };
+    point { x=-100px; y=195px; };
+
+    // ensure border on right side
+    overlay { algo=border; a=1; b=1; x=82px; mat=Rock; tex=rock_cracked; };
+
+    // sky back
+    VaryTex { a=2; wdt=80px; };
+    // windmill positions
+    overlay { x=70px; wdt=15px; y=80px; turbulence=10; loosebounds=1;};
+
+    // water at entrance
+    overlay { y=95px; mat=Water; };
+
+    // starting platform
+    overlay { x=70px; wdt=15px; y=92px; hgt=1px; mat=Brick; };
+    overlay { y=93px; mat=Granite; algo=poly;
+      point { x=80px; y=-20px; };
+      point { x=70px; y=0px; };
+      point { x=60px; y=10px; };
+      point { x=95px; y=10px; };
+      point { x=85px; y=0px; };
+    };
+
+    // rock at entrance
+    VaryTex { y=93px; mat=Rock; VaryTex { mat=Granite; }; };
+  };
+
+};

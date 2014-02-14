@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
- * Copyright (c) 2004, 2006-2008  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2010  Maikel de Vries
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // game object lists
 
@@ -111,7 +105,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1 = *iter); ++iter)
 		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
 		{
-			unsigned int Marker = ++LastUsedMarker;
+			uint32_t Marker = GetNextMarker();
 			C4LSector *pSct;
 			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
 				for (C4ObjectList::iterator iter2 = pLst->begin(); iter2 != pLst->end() && (obj2 = *iter2); ++iter2)
@@ -234,17 +228,10 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// Process objects
 	C4ObjectLink *cLnk;
 	C4Object *pObj;
-	bool fObjectNumberCollision = false;
 	int32_t iMaxObjectNumber = 0;
 	for (cLnk = Last; cLnk; cLnk = cLnk->Prev)
 	{
 		C4Object *pObj = cLnk->Obj;
-		// check object number collision with inactive list
-		if (fKeepInactive)
-		{
-			for (C4ObjectLink *clnk = InactiveObjects.First; clnk; clnk=clnk->Next)
-				if (clnk->Obj->Number == pObj->Number) fObjectNumberCollision = true;
-		}
 		// keep track of numbers
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
 		// add to list of foreobjects
@@ -254,22 +241,21 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	}
 
 	// Denumerate pointers
-	// if object numbers collideded, numbers will be adjusted afterwards
+	// on section load, inactive object numbers will be adjusted afterwards
 	// so fake inactive object list empty meanwhile
+	// note this has to be done to prevent even if object numbers did not collide
+	// to prevent an assertion fail when denumerating non-enumerated inactive objects
 	C4ObjectLink *pInFirst = NULL;
-	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
+	if (fKeepInactive) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate(numbers);
-	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	// update object enumeration index now, because calls like OnSynchronized might create objects
 	C4PropListNumbered::SetEnumerationIndex(iMaxObjectNumber);
 	// end faking and adjust object numbers
-	if (fObjectNumberCollision)
+	if (fKeepInactive)
 	{
 		InactiveObjects.First=pInFirst;
-		// simply renumber all inactive objects
-		for (cLnk=InactiveObjects.First; cLnk; cLnk=cLnk->Next)
-			if ((pObj=cLnk->Obj)->Status)
-				pObj->Number = ++C4PropListNumbered::EnumerationIndex;
+		C4PropListNumbered::UnshelveNumberedPropLists();
 	}
 
 	// special checks:
@@ -528,11 +514,11 @@ void C4GameObjects::SyncClearance()
 			cLnk->Obj->SyncClearance();
 }
 
-void C4GameObjects::UpdateTransferZones()
+void C4GameObjects::OnSynchronized()
 {
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Call(PSF_UpdateTransferZone);
+		cobj->Call(PSF_OnSynchronized);
 }
 
 void C4GameObjects::ResetAudibility()
@@ -548,4 +534,19 @@ void C4GameObjects::SetOCF()
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->SetOCF();
+}
+
+uint32_t C4GameObjects::GetNextMarker()
+{
+	// Get a new marker.
+	uint32_t marker = ++LastUsedMarker;
+	// If all markers are exceeded, restart marker at 1 and reset all object markers to zero.
+	if (!marker)
+	{
+		C4Object *cobj; C4ObjectLink *clnk;
+		for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			cobj->Marker = 0;
+		marker = ++LastUsedMarker;
+	}
+	return marker;
 }

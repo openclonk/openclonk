@@ -60,6 +60,15 @@ public func Set(id def, int dir, object stick)
 	ShowMissingComponents();
 }
 
+// Scenario saving
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (definition) props->AddCall("Definition", this, "Set", definition, direction, stick_to);
+	return true;
+}
+
 // only allow collection if needed
 public func RejectCollect(id def, object obj)
 {
@@ -172,6 +181,11 @@ private func StartConstructing()
 	var site;
 	if(!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, 1, 1)))
 	{
+		// spit out error message. This could happen if the landscape changed in the meantime
+		// a little hack: the message would immediately vanish because this object is deleted. So, instead display the
+		// message on one of the contents.
+		if(Contents(0))
+			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255,0,0));
 		Interact(nil, 1);
 		return;
 	}

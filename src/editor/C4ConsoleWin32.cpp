@@ -1,23 +1,20 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003  Matthes Bender
- * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2005, 2007, 2012  Sven Eberhardt
- * Copyright (c) 2005-2007, 2009-2012  Günther Brammer
- * Copyright (c) 2009  David Dormagen
- * Copyright (c) 2009, 2011  Nicolas Hake
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 1998-2000, 2003, Matthes Bender
+ * Copyright (c) 2004, Peter Wortmann
+ * Copyright (c) 2005-2007, Günther Brammer
+ * Copyright (c) 2005, 2007, Sven Eberhardt
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -26,7 +23,6 @@
 #include <C4AppWin32Impl.h>
 #include "C4ConsoleGUI.h"
 #include <C4DrawGL.h>
-#include <C4DrawD3D.h>
 #include <C4Landscape.h>
 #include <C4Object.h>
 #include <C4PlayerList.h>
@@ -263,8 +259,9 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		// Remove player
 		if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
 		{
-			::Control.Input.Add(CID_Script, new C4ControlScript(
-			                      FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
+			C4Player *plr = ::Players.Get(LOWORD(wParam) - IDM_PLAYER_QUIT1);
+			if (!plr) return true;
+			::Control.Input.Add(CID_PlrAction, C4ControlPlayerAction::Eliminate(plr));
 			return true;
 		}
 		// Remove client
@@ -308,9 +305,7 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 {
 public:
 	HWND hDialog;
-#ifdef USE_GL
 	CStdGLCtx* pGLCtx;
-#endif
 	friend INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	HBITMAP hbmBrush,hbmBrush2;
 	HBITMAP hbmLine,hbmLine2;
@@ -371,13 +366,11 @@ public:
 		if (hbmFill) DeleteObject(hbmFill);
 		if (hbmIFT) DeleteObject(hbmIFT);
 		if (hbmNoIFT) DeleteObject(hbmNoIFT);
-#ifdef USE_GL
 		if (pGLCtx)
 		{
 			delete pGLCtx;
 			pGLCtx = NULL;
 		}
-#endif
 		if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
 	}
 
@@ -953,10 +946,8 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	// Load bitmaps if necessary
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
-#ifdef USE_GL
 	if (pDraw && !dlg->state->pGLCtx)
 		dlg->state->pGLCtx = pDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
-#endif
 	// Show window
 	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
 	SetWindowPos(dlg->state->hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
@@ -1082,14 +1073,6 @@ void C4ToolsDlg::NeedPreviewUpdate()
 
 	//Application.DDraw->AttachPrimaryPalette(sfcPreview);
 
-#ifdef USE_DIRECTX
-	if (pD3D)
-		pD3D->BlitSurface2Window( sfcPreview,
-		                          0,0,iPrvWdt,iPrvHgt,
-		                          GetDlgItem(state->hDialog,IDC_PREVIEW),
-		                          rect.left,rect.top,rect.right,rect.bottom);
-#endif
-#ifdef USE_GL
 	// FIXME: This activates the wrong GL context. To avoid breaking the main window display,
 	// FIXME: it has been disabled for the moment
     //if (pGLCtx->Select())
@@ -1097,7 +1080,6 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	//	pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
 	//	Application.pWindow->pSurface->PageFlip();
 	//}
-#endif
 	delete sfcPreview;
 }
 

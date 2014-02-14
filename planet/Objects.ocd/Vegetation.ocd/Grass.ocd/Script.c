@@ -23,8 +23,15 @@ public func OnShockwaveHit()
 
 private func Destroy()
 {
-	CastParticles("Grass", 10, 35, 0, 0, 30, 50, RGB(255,255,255), RGB(255,255,255));
+	CreateParticle("Grass", 0, 0, PV_Random(-20, 20), PV_Random(-20, 10), PV_Random(30, 100), Particles_Straw(), 30);
 	RemoveObject();
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Con");
+	return true;
 }
 
 global func PlaceGrass(int amount, int start, int end, int height, int bottom)
@@ -80,6 +87,7 @@ global func MakeGrasFunction()
 	Log("}");
 }
 
+local Plane = -1;
 local Name = "Grass";
 local Placement = 0;
 local BlastIncinerate = 1;

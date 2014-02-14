@@ -18,84 +18,34 @@ protected func Initialize()
 	
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	SetSkyAdjust(RGB(255,128,0));	
+	SetSkyAdjust(RGB(255,128,0));
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	CreateObject(Column,160,304)->SetClrModulation(RGB(255,100,80));
 	CreateObject(Column,448,272)->SetClrModulation(RGB(255,100,80));
 	
 	AddEffect("RandomMeteor", nil, 100, 36-Min(GetPlayerCount()*3,20));
-	AddEffect("RemoveCorpses", nil, 100, 1);
+	AddEffect("DangerousLava", nil, 100, 1);
 	// Smooth brick edges.
 	PlaceEdges();
 	PlaceGras();
 	return;
 }
 
-global func FxRemoveCorpsesTimer()
+global func FxDangerousLavaTimer()
 {
 	//uber effect abuse
 	
-	for(var dead in FindObjects(Find_ID(Clonk),Find_Not(Find_OCF(OCF_Alive))))
-	{
-		CastParticles("MagicFire",100,50,dead->GetX(),dead->GetY(),50+Random(30));
-		CastParticles("MagicFire",50,30,dead->GetX(),dead->GetY(),70+Random(60));
-		dead->RemoveObject();		
-	}
 	for(var burning in FindObjects(Find_ID(Clonk),Find_OCF(OCF_OnFire)))
 	{
 		burning->DoEnergy(-3); //lava hurts a lot
 	}
 
 }
+
 global func FxRandomMeteorTimer()
 {
 	if(!Random(10)) return ;
-	
-	var flint = CreateObject(Firestone,50+Random(LandscapeWidth()-100),-10);
-	flint->SetYDir(25+Random(6));
-	flint->SetXDir(RandomX(-20,20));
-	flint->SetMass(0);
-	AddEffect("Meteorsparkle",flint,100,1,nil,nil,true);
-}
-
-public func FxMeteorSparkleStart(obj, effect, iTemp, natural)
-{
-	if(iTemp) return;
-	effect.n=natural;
-}
-
-global func FxMeteorsparkleTimer(obj, effect, time)
-{
-	if (!obj)
-		return -1;
-	var x=obj->GetX(), y=obj->GetY();
-	CreateParticle("FireballSmoke",x,y,Sin(Random(360),2),Cos(Random(360),2),RandomX(120,180),RGBa(100,100,100,70));
-	for(var i=0; i<6; i++) CreateParticle("MagicFire",x,y,Sin(Random(360),RandomX(5,6)),Cos(Random(360),RandomX(5,6)),RandomX(50,90),HSL(Random(50), 200+Random(25), Random(100)));
-	CreateParticle("MagicSpark",x,y,Sin(Random(360),RandomX(15,33)),Cos(Random(360),RandomX(15,33)),RandomX(30,70),RGB(255,255,255));
-	if (obj->Contained())
-	{
-		obj->Hit();
-		return -1;	
-	}
-	if (Abs(obj->GetXDir())<3 && Abs(obj->GetYDir())<3) 
-		effect.count++;
-	else effect.count=0;
-	
- 	if (effect.count>10)
- 	{
- 		obj->Hit();
- 		return -1;
- 	}	
-	return 1;
-}
-global func FxMeteorsparkleStop (obj, effect, reason, iTemp)
-{
-	if (iTemp) 
-		return;
-	if (!obj)
-		return;
-	for (var i = 0; i < 30; i++)
-		CreateParticle("MagicSpark",obj->GetX(),obj->GetY(),Sin(Random(360),RandomX(15,33)),Cos(Random(360),RandomX(15,33)),RandomX(30,70),RGB(255,255,255));
-	return;
+	LaunchMeteor(50+Random(LandscapeWidth()-100),-10, 40 + Random(40), RandomX(-20,20), 0);
 }
 
 private func PlaceEdges()
@@ -149,7 +99,7 @@ protected func OnPlayerRelaunch(int plr)
 
 func OnClonkLeftRelaunch(object clonk)
 {
-	CastParticles("Magic",36,12,clonk->GetX(),clonk->GetY(),30,60,clonk->GetColor(),clonk->GetColor(),clonk);
+	clonk->CreateParticle("Fire", 0, 0, PV_Random(-20, 20), PV_Random(-40, 5), PV_Random(20, 90), Particles_Glimmer(), 30);
 	clonk->SetYDir(-5);
 	return;
 }

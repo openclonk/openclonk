@@ -137,3 +137,4 @@ func FxBlinkingTimer(target, effect)
 	return 1;
 }
 	
+func SaveScenarioObject() { return false; }

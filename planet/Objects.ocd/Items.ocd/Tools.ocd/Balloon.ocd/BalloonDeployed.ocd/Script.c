@@ -2,23 +2,17 @@
 
 local rider;
 local parent;
-local idir,dir;
+local idir;
 
 protected func Initialize()
 {
 	idir = 0;
-	dir = 0;
 	SetAction("Inflate");
 	SetComDir(COMD_None);
 	AddEffect("Float",this,1,1,this);
 
 	//Special Effects
-	var i = 0;
-	while(i <= 7)
-	{
-		CreateParticle("Air", 0,16,-3 + Random(7),Random(2),RandomX(70,150),RGB(255,255,255), this);
-		++i;
-	}
+	CreateParticle("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
 }
 
 private func Deflate()
@@ -33,7 +27,8 @@ private func Deflate()
 
 private func DeflateEffect()
 {
-	CreateParticle("Air",0,16,0,0,GetActTime()*3,RGB(255,255,255));
+	var act_time = GetActTime();
+	CreateParticle("Air", PV_Random(-1, 1), PV_Random(-1, 5), PV_Random(-act_time, act_time), PV_Random(-act_time, act_time), 18, Particles_Air(), act_time);
 }
 
 private func Pack()
@@ -77,7 +72,7 @@ public func IsProjectileTarget(target,shooter)
 public func OnProjectileHit()
 {
 	//Pop!
-	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
+	CreateParticle("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
 	Sound("BalloonPop");
 	if (rider)
 	{
@@ -111,6 +106,11 @@ private func FxFloatTimer(object target, effect, int time)
 		return 1;
 	}
 }
+
+// Could store and restore the deployed balloon, but all the
+// dependencies to be set when recreating this mid-animation
+// will probably cause more upwards incompatibilities than benefit
+func SaveScenarioObject() { return false; }
 
 local ActMap = {
 

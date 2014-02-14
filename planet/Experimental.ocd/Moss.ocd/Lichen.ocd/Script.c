@@ -45,12 +45,18 @@ public func Damage()
 private func Destroy()
 {
 	if(Random(maxsize+35)<size) CreateObject(Moss,0,0,-1);
-	for(var r=0; r<(size); r++)
+	var particles = 
 	{
-		var i=Random(360);
-		var d=Random(size/5);
-		CreateParticle("Lichen",Sin(i,d),-Cos(i,d),RandomX(-3,3),RandomX(-3,3),10+Random(20),RGB(200+Random(50),200+Random(50),200+Random(50)),nil,Random(2));
-	}
+		Size = PV_Random(3, 7),
+		Alpha = PV_KeyFrames(0, 0, 255, 900, 255, 1000, 0),
+		ForceY = PV_Gravity(40),
+		DampingX = 900, DampingY = 900,
+		CollisionVertex = 750,
+		OnCollision = PC_Stop(),
+		Rotation = PV_Direction(PV_Random(900, 1100)),
+		Phase = PV_Random(0, 1)
+	};
+	CreateParticle("Lichen", PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(36, 36 * 4), particles, 40);
 	RemoveObject();
 }
 

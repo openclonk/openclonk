@@ -45,6 +45,13 @@ protected func FxIntMeteorControlTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
+// Scenario saving
+func FxIntMeteorControlSaveScen(obj, fx, props)
+{
+	props->Add("Meteor", "Meteor->SetChance(%d)", fx.chance);
+	return true;
+}
+
 global func LaunchMeteor(int x, int y, int size, int xdir, int ydir)
 {
 	var meteor = CreateObject(Meteor);
@@ -91,25 +98,16 @@ protected func FxIntMeteorTimer()
 	ydir -= size * ydir ** 2 / 11552000; // Magic number.
 	SetYDir(ydir, 100);
 	// Smoke trail.
-	CreateParticle("ExploSmoke", Random(5)-2, Random(5)-2, Random(3)-1, Random(3)-1, size + RandomX(-20,20), RGBa(130,130,130,90));
-	CreateParticle("FireballSmoke", 0, 0, Random(3)-1, Random(3)-1, RandomX(120,180), RGBa(100,100,100,70));
+	CreateParticle("Smoke", PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-3, 3), 30 + Random(60), Particles_SmokeTrail(), 5);
 	// Fire trail.
-	CreateParticle("MagicSpark", 0, 0, Sin(Random(360),RandomX(15,33)), Cos(Random(360), RandomX(15,33)), RandomX(30,70), RGB(255,255,255));
-	for (var i = 0; i < 6; i++)
-	{
-		var theta = RandomX(-45, 45);
-		var x = Sin(theta, size / 8);
-		var y = Cos(theta, size / 8);
-		CreateParticle("MagicFire", x, y, Random(3)-1, Random(3)-1 ,RandomX(50, 90), HSL(Random(50), 200+Random(25), Random(100)));
-	}
+	CreateParticle("MagicSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), 16, Particles_SparkFire(), 4);
+	CreateParticle("Fire", PV_Random(-size / 8, size / 8), PV_Random(-size / 8, size / 8), PV_Random(-1, 1), PV_Random(-1, 1), 30, Particles_FireTrail(), 6 + size / 10);
 	// Sound.
 
 	// Burning and friction decrease size.
-	if (!Random(5))
+	if (size > 10 && !Random(5))
 		DoCon(-1);
-	// Removal if size < 10.
-	if (size < 10)
-		RemoveObject();
+
 	return 1;
 }
 
@@ -118,19 +116,25 @@ protected func Hit(int xdir, int ydir)
 	var size = 10 + GetCon();
 	var speed2 = 20 + (xdir ** 2 + ydir ** 2) / 10000;
 	// Some fire sparks.
-	for (var i = 0; i < 6; i++)
+	var particles =
 	{
-		var theta = RandomX(135, 225);
-		var x = Sin(theta, size / 8);
-		var y = Cos(theta, size / 8);
-		CreateParticle("MagicFire", x, y, Random(3)-1, Random(3)-1 ,RandomX(50, 90), HSL(Random(50), 200+Random(25), Random(100)));
-	}
+		Prototype = Particles_Fire(),
+		Attach = nil
+	};
+	CreateParticle("Fire", PV_Random(-size / 4, size / 4), PV_Random(-size / 4, size / 4), PV_Random(-size/4, size/4), PV_Random(-size/4, size/4), 30, particles, 20 + size);
 	// Explode meteor, explode size scales with the energy of the meteor.	
-	var dam = size * speed2 / 750;
-	dam = BoundBy(dam, 5, 30);
+	var dam = size * speed2 / 500;
+	dam = BoundBy(size/2, 5, 30);
 	Explode(dam);
 	return;
 }
+
+// Scenario saving
+func FxIntMeteorSaveScen(obj, fx, props)
+{
+	props->AddCall("Meteor", obj, "AddEffect", "\"IntMeteor\"", obj, 100, 1, obj);
+	return true;
+	}
 
 /*-- Proplist --*/
 

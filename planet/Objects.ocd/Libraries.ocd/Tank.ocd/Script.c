@@ -59,3 +59,21 @@ public func LiquidInput(string sznMaterial, int inMaxAmount, object pnPump, obje
 	iLiquidAmount += inMaxAmount;
 	return inMaxAmount;
 }
+
+// Set tank liquid type and amount directly
+public func SetLiquid(string szNewLiquid, int iNewLiquidAmount)
+{
+	szLiquid = szNewLiquid;
+	iLiquidAmount = iNewLiquidAmount;
+	return true;
+}
+
+
+// Scenario saving of liquid fill levels
+// Untested. This library is not used. Plus it's called "Libary_Tank" o_O
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (szLiquid) props->AddCall("Tank", this, "SetLiquid", Format("%v", szLiquid), iLiquidAmount);
+	return true;
+}

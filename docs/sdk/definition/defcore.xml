@@ -25,20 +25,15 @@
           <col>3 Integers</col>
           <col>Minimal engine version required by the object. Should be always the current engine version at the time of the last change.</col>
         </row>
-        <row>
-          <literal_col>Name</literal_col>
-          <col>String (max. 30 chars)</col>
-          <col>Name of the object. Will be overwritten by the applicable one in the Names.txt.</col>
-        </row>
+		<row>
+          <literal_col>RequireDef</literal_col>
+          <col>Definition IDs</col>
+          <col>List of definition IDs this object depends upon.</col>
+		</row>
         <row>
           <literal_col>Category</literal_col>
           <col>Integer</col>
           <col>Category of the object. Also see <emlink href="definition/category.html">object categories</emlink>.</col>
-        </row>
-        <row>
-          <literal_col>MaxUserSelect</literal_col>
-          <col>Integer</col>
-          <col>Maximal allowed count when placed in the menu system.</col>
         </row>
         <row>
           <literal_col>ContactCalls</literal_col>
@@ -78,7 +73,7 @@
         <row>
           <literal_col>SolidMask</literal_col>
           <col>6 integers</col>
-          <col>Solid areas of the object. Target rectangle from the source graphics onto the object.</col>
+          <col>Solid areas of the object. Target rectangle from the <emlink href="definition/index.html#SolidMask">SolidMask.png</emlink> graphics onto the object.</col>
         </row>
         <row>
           <literal_col>TopFace</literal_col>
@@ -136,11 +131,6 @@
           <col>0 or 1. Determines whether the object blocks objects behind it.</col>
         </row>
         <row>
-          <literal_col>Base</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the building can be a home base.</col>
-        </row>
-        <row>
           <literal_col>Line</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1 the object is a line and exhibits special behaviour.</col>
@@ -149,16 +139,6 @@
           <literal_col>CrewMember</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href="script/fn/MakeCrewMember">MakeCrewMember</emlink>.</col>
-        </row>
-        <row>
-          <literal_col>Growth</literal_col>
-          <col>Integer</col>
-          <col>Growth of the object. Trees 1-4, living beings 15.</col>
-        </row>
-        <row>
-          <literal_col>Rebuy</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the object can be bought back after selling it.</col>
         </row>
         <row>
           <literal_col>Construction</literal_col>
@@ -171,29 +151,14 @@
           <col>Definition change upon building.</col>
         </row>
         <row>
-          <literal_col>Grab</literal_col>
-          <col>Integer</col>
-          <col>0 no grabbing, 1 grab and push, 2 grab only.</col>
-        </row>
-        <row>
           <literal_col>GrabPutGet</literal_col>
           <col>Integer</col>
           <col>Bit mask: bit 0 (value 1) putting possible, bit 1 (value 2) getting possible.</col>
         </row>
         <row>
-          <literal_col>Collectible</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the object can be collected.</col>
-        </row>
-        <row>
           <literal_col>Rotate</literal_col>
           <col>Integer</col>
           <col>0 no rotation, 1 full rotation, 2-360 limited rotation.</col>
-        </row>
-        <row>
-          <literal_col>Chop</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the object can be chopped.</col>
         </row>
         <row>
           <literal_col>Float</literal_col>
@@ -209,11 +174,6 @@
           <literal_col>ColorByOwner</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the specified sections of the object's graphcis are colored by the player color.</col>
-        </row>
-        <row>
-          <literal_col>ColorByMaterial</literal_col>
-          <col>String (max. 15)</col>
-          <col>The object is colored by the color of the specified material.</col>
         </row>
         <row>
           <literal_col>HorizontalFix</literal_col>
@@ -234,11 +194,6 @@
           <literal_col>StretchGrowth</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the uncomplete object (see <emlink href="script/fn/GetCon.html">GetCon</emlink>) is scaled, not sliced from the bottom like a construction site.</col>
-        </row>
-        <row>
-          <literal_col>Basement</literal_col>
-          <col>Integer</col>
-          <col>0 no basement, 1 normal basement, other values reserved.</col>
         </row>
         <row>
           <literal_col>IncompleteActivity</literal_col>
@@ -303,7 +258,7 @@
         <row>
           <literal_col>BlitMode</literal_col>
           <col>Integer</col>
-          <col>0 or 1. Value 1 for addtive drawing.</col>
+          <col>0 or 1. Value 1 for addtive drawing. Use <funclink>SetObjectBlitMode</funclink> for more flexibility.</col>
         </row>
         <row>
           <literal_col>NoBreath</literal_col>
@@ -314,11 +269,6 @@
           <literal_col>ConSizeOff</literal_col>
           <col>Integer</col>
           <col>Values grater than 0 are deducted from the top of necessary construction space.</col>
-        </row>
-        <row>
-          <literal_col>NoSell</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1 the object can not be sold.</col>
         </row>
         <row>
           <literal_col>NoGet</literal_col>
@@ -345,115 +295,8 @@
           <col>Integer</col>
           <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
         </row>
-        <row>
-          <literal_col>AutoContextMenu</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, the building's context menu will open automatically upon entry.</col>
-        </row>
       </table>
     </text>
-    <text>
-      <table>
-        <caption id="SektionPhysical">Section [Physical]</caption>
-        <rowh>
-          <col>Value</col>
-          <col>Data type</col>
-          <col>Description</col>
-        </rowh>
-        <row>
-          <literal_col>Energy</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Maximum life energy.</col>
-        </row>
-        <row>
-          <literal_col>Breath</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Maximum breath.</col>
-        </row>
-        <row>
-          <literal_col>Walk</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Walking speed.</col>
-        </row>
-        <row>
-          <literal_col>Jump</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Jump force.</col>
-        </row>
-        <row>
-          <literal_col>Scale</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Scaling speed.</col>
-        </row>
-        <row>
-          <literal_col>Hangle</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Hangling speed.</col>
-        </row>
-        <row>
-          <literal_col>Dig</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Digging speed.</col>
-        </row>
-        <row>
-          <literal_col>Swim</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Swimming speed.</col>
-        </row>
-        <row>
-          <literal_col>Throw</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Throwing force.</col>
-        </row>
-        <row>
-          <literal_col>Push</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Push power.</col>
-        </row>
-        <row>
-          <literal_col>Magic</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Maximal magic energy.</col>
-        </row>
-        <row>
-          <literal_col>Float</literal_col>
-          <col>Integer</col>
-          <col>0-100. Flight speed.</col>
-        </row>
-        <row>
-          <literal_col>CanScale</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Scale.</col>
-        </row>
-        <row>
-          <literal_col>CanHangle</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Brachiation.</col>
-        </row>
-        <row>
-          <literal_col>CanDig</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Dig.</col>
-        </row>
-        <row>
-          <literal_col>CanConstruct</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Construct. If greater than 1, percentage construction speed. (100 normal, 50 half, etc.)</col>
-        </row>
-        <row>
-          <literal_col>CorrosionResist</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines wether the object resists acid.</col>
-        </row>
-        <row>
-          <literal_col>BreatheWater</literal_col>
-          <col>Integer</col>
-          <col>0 object breathes air, 1 object breathes water.</col>
-        </row>
-      </table>
-    </text>
-    <h>Note:</h>
-    <text>When a crew member is created, it gets an own physical section in it's Objectinfo (oci). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects.</text>
   </part>
-  <author>Sven2</author><date>2002-04</date>
+  <author>Newton</author><date>2013-11</date>
 </doc>

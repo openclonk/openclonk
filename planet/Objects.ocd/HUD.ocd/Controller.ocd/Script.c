@@ -26,6 +26,9 @@ local wealth;		// Object, displays wealth of the player
 
 protected func Construction()
 {
+	// ensure object is not close to the bottom right border, so subobjects won't be created outside the landscape
+	SetPosition(0,0);
+	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=0; i < GetCrewCount(GetOwner()); ++i)
 	{
@@ -105,10 +108,28 @@ public func OnGoalUpdate(object goal)
 
 
 
+global func AddHUDMarker(int player, picture, string altpicture, string text, int duration, bool urgent, object inform)
+{
+	var number = 0;
+	var padding = GUI_Marker->GetDefHeight()+5;
+	var hud = FindObject(Find_ID(GUI_Controller),Find_Owner(player));
+	number = hud->GetFreeMarkerPosition();
+	hud.markers[number] = CreateObject(GUI_Marker,0,0,player);
+	hud.markers[number] -> SetPosition(5+(GUI_Marker->GetDefWidth()/2),-240-(GUI_Marker->GetDefHeight()/2) - number*padding);
+	hud.markers[number] -> SetVisual(picture, altpicture);
+	if(inform) hud.markers[number].toInform = inform;
+	if(duration) AddEffect("IntRemoveMarker",hud.markers[number],100,duration,hud.markers[number]);
+	if(urgent) AddEffect("IntUrgentMarker",hud.markers[number],100,2,hud.markers[number]);
+	if(text) hud.markers[number]->SetName(text);
+	
+	return hud.markers[number];
+}
+
+
 /** Callbacks **/
 
 // insert new clonk into crew-selectors on recruitment
-protected func OnClonkRecruitment(object clonk, int plr)
+public func OnCrewRecruitment(object clonk, int plr)
 {	
 	// not enabled
 	if(!clonk->GetCrewEnabled()) return;
@@ -137,16 +158,23 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	return _inherited(clonk, plr, ...);
 }
 
-protected func OnClonkDeRecruitment(object clonk, int plr)
+public func OnCrewDeRecruitment(object clonk, int plr)
 {
 	OnCrewDisabled(clonk);
 }
 
-protected func OnClonkDeath(object clonk, int killer)
+public func OnCrewDeath(object clonk, int killer)
 {
 	OnCrewDisabled(clonk);
 }
 
+public func OnCrewDestruction(object clonk)
+{
+	if(clonk->GetController() != GetOwner()) return;
+	if(!(clonk->~HUDAdapter())) return;
+	
+	OnCrewDisabled(clonk);
+}
 
 
 // called from engine on player eliminated
@@ -173,7 +201,7 @@ public func OnCrewDisabled(object clonk)
 
 public func OnCrewEnabled(object clonk)
 {
-	CreateSelectorFor(clonk);
+	if (!clonk->GetSelector()) CreateSelectorFor(clonk);
 	ReorderCrewSelectors();
 	
 	return _inherited(clonk, ...);
@@ -217,7 +245,7 @@ private func ReorderCrewSelectors(object leaveout)
 
 
 /* When loading a savegame, make sure the GUI still works */
-protected func UpdateTransferZone()
+func OnSynchronized()
 {
 	ScheduleCall(this, "Reset", 1);
 }

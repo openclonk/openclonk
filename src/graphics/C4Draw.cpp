@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2002-2007  Sven Eberhardt
- * Copyright (c) 2002, 2005, 2010  Peter Wortmann
- * Copyright (c) 2005-2012  Günther Brammer
- * Copyright (c) 2009-2010, 2012  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* NewGfx interfaces */
@@ -28,7 +22,6 @@
 #include "C4App.h"
 #include <C4FontLoader.h>
 #include <C4Window.h>
-#include <C4DrawD3D.h>
 #include <C4DrawGL.h>
 #include <C4DrawT.h>
 #include <C4Markup.h>
@@ -403,6 +396,7 @@ void C4Draw::Default()
 
 void C4Draw::Clear()
 {
+	ResetGamma();
 	DisableGamma();
 	Active=BlitModulated=fUseClrModMap=false;
 	dwBlitMode = 0;
@@ -913,7 +907,10 @@ bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int
 			if (iX<iToX) { iBlitX=iToX-iX; iBlitWdt+=iX-iToX; }
 			iOver=tx+iBlitWdt-iToWdt; if (iOver>0) iBlitWdt-=iOver;
 			// blit
-			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey)) return false;
+			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey))
+			{
+				// Ignore blit errors. This is usually due to blit border lying outside surface and shouldn't cause remaining blits to fail.
+			}
 			// next col
 			tx+=iBlitWdt;
 		}
@@ -928,7 +925,7 @@ bool C4Draw::TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface
 {
 	C4Markup Markup(true);
 	static char szLinebuf[2500+1];
-	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.iLineHgt))
+	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.GetLineHeight()))
 		if (!StringOut(szLinebuf,sfcDest,iTx,iTy,dwFCol,byForm,fDoMarkup,Markup,&rFont,fZoom)) return false;
 	return true;
 }
@@ -1122,6 +1119,11 @@ void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampInd
 	fSetGamma=true;
 }
 
+void C4Draw::ResetGamma()
+{
+	pApp->ApplyGammaRamp(DefRamp.ramp, false);
+}
+
 void C4Draw::ApplyGamma()
 {
 	// No gamma effects
@@ -1186,21 +1188,14 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	// create engine
-	switch (Engine)
-	{
-	default: // Use the first engine possible if none selected
-#ifdef USE_DIRECTX
-	case GFXENGN_DIRECTX: pDraw = new CStdD3D(false); break;
-	case GFXENGN_DIRECTXS: pDraw = new CStdD3D(true); break;
-#endif
-#ifdef USE_GL
-	case GFXENGN_OPENGL: pDraw = new CStdGL(); break;
-#endif
-	case GFXENGN_NOGFX: pDraw = new CStdNoGfx(); break;
-	}
+    #ifndef USE_CONSOLE
+	  pDraw = new CStdGL();
+    #else
+	  pDraw = new CStdNoGfx();
+    #endif
 	if (!pDraw) return false;
 	// init it
 	if (!pDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))

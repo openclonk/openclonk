@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2006  Peter Wortmann
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009, 2012  Günther Brammer
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009  David Dormagen
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // handles input dialogs, last-message-buffer, MessageBoard-commands
 
@@ -106,8 +98,7 @@ void C4ChatInputDialog::OnChatCancel()
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 		{
 			// there was an associated query - it must be removed on all clients synchronized via queue
-			// do this by calling OnMessageBoardAnswer without an answer
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(nullptr, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		}
 	}
 }
@@ -147,10 +138,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		}
 		// then do a script callback, incorporating the input into the answer
 		if (fUppercase) SCapitalize(szInputText);
-		StdStrBuf sInput;
-		sInput.Copy(szInputText);
-		sInput.EscapeString();
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(szInputText, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 	}
 	else
@@ -588,6 +576,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			LogF("/chart - %s", LoadResStr("IDS_TEXT_DISPLAYNETWORKSTATISTICS"));
 			LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
 			LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
+			LogF("/screenshot [zoom] - %s", LoadResStr("IDS_TEXT_SAFEZOOMEDFULLSCREENSHOT"));
 		}
 		LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
 		LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));
@@ -609,7 +598,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
 		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
-		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console), CDT_Decide);
 		return true;
 	}
 	// set runtime properties
@@ -732,7 +721,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "nodebug"))
 	{
 		if (!Game.IsRunning) return false;
-		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_DisableDebug, 0), CDT_Decide);
 		return true;
 	}
 
@@ -778,45 +767,29 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (SEqual(szCmdName, "chart"))
 			return Game.ToggleChart();
 
+	// whole map screenshot
+	if (SEqual(szCmdName, "screenshot"))
+	{
+		double zoom = atof(pCmdPar);
+		if (zoom<=0) return false;
+		::GraphicsSystem.SaveScreenshot(true, zoom);
+		return true;
+	}
+
 	// custom command
 	C4MessageBoardCommand *pCmd;
 	if (Game.IsRunning)
 		if ((pCmd = GetCommand(szCmdName)))
 		{
-			StdStrBuf Script, CmdScript;
-			// replace %player% by calling player number
-			if (SSearch(pCmd->Script, "%player%"))
-			{
-				int32_t iLocalPlr = NO_OWNER;
-				C4Player *pLocalPlr = ::Players.GetLocalByIndex(0);
-				if (pLocalPlr) iLocalPlr = pLocalPlr->Number;
-				StdStrBuf sLocalPlr; sLocalPlr.Format("%d", iLocalPlr);
-				CmdScript.Copy(pCmd->Script);
-				CmdScript.Replace("%player%", sLocalPlr.getData());
-			}
-			else
-			{
-				CmdScript.Ref(pCmd->Script);
-			}
-			// insert parameters
-			if (SSearch(CmdScript.getData(), "%d"))
-			{
-				// make sure it's a number by converting
-				Script.Format(CmdScript.getData(), (int) atoi(pCmdPar));
-			}
-			else if (SSearch(CmdScript.getData(), "%s"))
-			{
-				// escape strings
-				StdStrBuf Par;
-				Par.Copy(pCmdPar);
-				Par.EscapeString();
-				// compose script
-				Script.Format(CmdScript.getData(), Par.getData());
-			}
-			else
-				Script = CmdScript.getData();
-			// add script
-			::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+			// get player number of first local player; if multiple players
+			// share one computer, we can't distinguish between them anyway
+			int32_t player_num = NO_OWNER;
+			C4Player *player = ::Players.GetLocalByIndex(0);
+			if (player) player_num = player->Number;
+
+			// send command to network
+			::Control.DoInput(CID_MsgBoardCmd, new C4ControlMsgBoardCmd(szCmdName, pCmdPar, player_num), CDT_Decide);
+
 			// ok
 			return true;
 		}

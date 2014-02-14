@@ -121,3 +121,6 @@ func FxFadeOutTimer(target, effect, time)
 	//SetClrModulation(color|RGBa(0,0,0,fade));
 	SetObjAlpha(fade);
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

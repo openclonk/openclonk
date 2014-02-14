@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002  Peter Wortmann
- * Copyright (c) 2009-2012  Günther Brammer
- * Copyright (c) 2012  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* string table: holds all strings used by script engine */
 
@@ -286,6 +282,9 @@ inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * const & e)
 
 enum C4PropertyName
 {
+	// TODO: documentation comments can be removed
+	// as soon as all properties are documented
+
 	P_Prototype,
 	P_Name,
 	P_Priority,
@@ -300,7 +299,7 @@ enum C4PropertyName
 	P_Parallaxity,
 	P_LineColors,
 	P_LineAttach,
-	P_LineMaxDistance,
+	P_LineMaxDistance,		// unused?
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,
@@ -344,10 +343,10 @@ enum C4PropertyName
 	P_MaxEnergy,
 	P_MaxBreath,
 	P_ThrowSpeed,
-	P_Mode,
-	P_CausedBy,
-	P_Blasted,
-	P_IncineratingObj,
+	P_Mode,					// unused?
+	P_CausedBy,				// unused?
+	P_Blasted,				// unused?
+	P_IncineratingObj,		// unused?
 	P_Plane,
 	P_Tooltip,
 	P_Placement,
@@ -385,6 +384,22 @@ enum C4PropertyName
 	P_Right,
 	P_Bottom,
 	P_Filter,
+	P_ForceX,
+	P_ForceY,
+	P_G,
+	P_B,
+	P_Alpha,
+	P_DampingX,
+	P_DampingY,
+	P_Size,
+	P_Rotation,
+	P_BlitMode,
+	P_Phase,
+	P_Stretch,
+	P_CollisionVertex,
+	P_OnCollision,
+	P_Distance,
+	P_Smoke,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
