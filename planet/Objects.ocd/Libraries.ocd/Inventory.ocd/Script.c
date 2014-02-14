@@ -19,7 +19,6 @@
 	this.inventory.hand_objects: items in the hands, array
 	this.inventory.disableautosort: used to get default-Collection-behaviour (see Collection2)
 	this.inventory.force_collection: used to pick stuff up, even though the hand-slots are all full (see RejectCollect + Collect with CON_Collect)
-	this.inventory.forced_ejection: used to recognize if an object was thrown out with or without the force-key (Shift). If not, next hand slot will be selected.
 */
 
 
@@ -35,7 +34,6 @@ func Construction()
 	this.inventory.disableautosort = false;
 	this.inventory.hand_objects = [];
 	this.inventory.force_collection = false;
-	this.inventory.forced_ejection = nil;
 
 	for(var i=0; i < HandObjects(); i++)
 		this.inventory.hand_objects[i] = i;
@@ -90,7 +88,21 @@ public func SetHandItemPos(int hand, int inv)
 	if(hand >= HandObjects() || inv >= MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
-
+	// no slot change?
+	if (inv == GetHandItemPos(hand)) return nil;
+	// the current hand object needs to be both notified and asked
+	var old_object = GetHandItem(hand);
+	if (old_object && old_object->~QueryRejectDeselection(this, hand))
+		return nil;
+	// when we want to swap placed with another hand, the other object also has to be asked
+	var hand2 = GetHandPosByItemPos(inv);
+	var old_hand2_object = nil;
+	if (hand2 != nil)
+	{
+		old_hand2_object = GetHandItem(hand2);
+		if (old_hand2_object && old_hand2_object->~QueryRejectDeselection(this, hand2)) return nil;
+	}
+	
 	// changing slots cancels using, if the slot with the used object is contained
 	if(this.control.current_object) // declared in ClonkControl.ocd
 	{
@@ -99,9 +111,8 @@ public func SetHandItemPos(int hand, int inv)
 			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
 				this->~CancelUseControl(0,0);
 	}
-
+	
 	// If the item is already selected, we can't hold it in another one too.
-	var hand2 = GetHandPosByItemPos(inv);
 	if(hand2 != nil)
 	{
 		// switch places
@@ -109,8 +120,14 @@ public func SetHandItemPos(int hand, int inv)
 		this.inventory.hand_objects[hand] = inv;
 		
 		// additional callbacks
+		if (old_hand2_object)
+			old_hand2_object->~Deselection(this, hand2);
+		if (old_object)
+			old_object->~Deselection(this, hand);
+			
+		// notify new hand2 item (which should be old hand-item) that it has been selected
 		var hand_item;
-		if(hand_item = GetHandItem(hand2))
+		if (hand_item = GetHandItem(hand2))
 		{
 			this->~OnSlotFull(hand2);
 			// OnSlotFull might have done something to the item
@@ -121,9 +138,15 @@ public func SetHandItemPos(int hand, int inv)
 			this->~OnSlotEmpty(hand2);
 	}
 	else
+	{
 		this.inventory.hand_objects[hand] = inv;
+		
+		// notify the old object that it was already deselected
+		if (old_object)
+			old_object->~Deselection(this, hand);
+	}
 	
-	// call callbacks
+	// notify the new item that it was selected
 	var item;
 	if(item = GetItem(inv))
 	{
@@ -163,7 +186,7 @@ private func GetHandPosByItemPos(int o) // sorry for the horribly long name --bo
 public func DropInventoryItem(int slot)
 {
 	var obj = GetItem(slot);
-	if(!obj)
+	if(!obj || obj->~QueryRejectDeparture(this))
 		return nil;
 	
 	this->SetCommand("Drop",obj);
@@ -360,33 +383,8 @@ func Ejection(object obj)
 		// if the slot was a selected hand slot -> update it
 		if(handpos != nil)
 		{
-			// if it was a forced ejection, the hand will remain empty
-			if(this.inventory.forced_ejection == obj)
-			{
-				this->~OnSlotEmpty(handpos);
-				obj->~Deselection(this, handpos);
-			}
-			// else we'll select the next full slot
-			else
-			{
-				// look for following non-selected non-free slots
-				var found_slot = false;
-				for(var j=i; j < MaxContentsCount(); j++)
-					if(GetItem(j) && !GetHandPosByItemPos(j))
-					{
-						found_slot = true;
-						break;
-					}
-				
-				if(found_slot)
-					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
-				// no full next slot could be found. we'll stay at the same, and empty.
-				else
-				{
-					this->~OnSlotEmpty(handpos);
-					obj->~Deselection(this, handpos);
-				}
-			}
+			this->~OnSlotEmpty(handpos);
+			obj->~Deselection(this, handpos);
 		}
 	}
 	

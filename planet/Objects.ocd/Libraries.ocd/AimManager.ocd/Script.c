@@ -258,6 +258,9 @@ func FxIntAimTimer(target, effect, time)
 	}
 }
 
+// returns the current aiming angle
+public func GetAimPosition() { return aim_angle; }
+
 public func SetAimPosition(int angle)
 {
 	// Save angle

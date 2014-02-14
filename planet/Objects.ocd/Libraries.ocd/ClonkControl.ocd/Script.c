@@ -370,13 +370,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// only act on press, not release
 	if (!house && (!vehicle || proc == "ATTACH") && !release)
 	{
-		if (contents)
+		if (contents && !contents->~QueryRejectDeparture(this))
 		{
 			// special treatmant so that we know it's a forced throw
 			if(ctrl == CON_ForcedThrow)
 			{
 				ctrl = CON_Throw;
-				this.inventory.forced_ejection = contents; // used in Inventory.ocd
 			}
 			
 			// throw

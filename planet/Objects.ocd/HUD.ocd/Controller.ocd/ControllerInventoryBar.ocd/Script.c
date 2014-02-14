@@ -62,14 +62,10 @@ func Construction()
 
 func Destruction()
 {
+	// this also closes the menu
 	if (inventory_gui_target)
 		inventory_gui_target->RemoveObject();
 		
-	var menu = GetInventoryGuiID();
-	if (menu)
-	{
-		CustomGuiClose(menu, nil, this);
-	}
 	return _inherited(...);
 }
 
@@ -156,7 +152,7 @@ func UpdateInventory()
 	{
 		var item = clonk->GetItem(slot_info.slot);
 		var needs_selection = hand_item_pos == slot_info.slot;
-		if ((item != slot_info.obj) || (needs_selection != slot_info.hand))
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand))
 		{
 			var update = { Symbol = item };
 			CustomGuiUpdate(update, GetInventoryGuiID(), 1000 + slot_info.ID, GetInventoryGuiTarget());
@@ -164,6 +160,8 @@ func UpdateInventory()
 			if (needs_selection) tag = "Selected";
 			CustomGuiSetTag(tag, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
 			slot_info.hand = needs_selection;
+			slot_info.obj = item;
+			slot_info.empty = !item;
 		}
 		
 		//inventory[i]->ClearProgressBarLink();
@@ -209,7 +207,8 @@ func CreateNewInventoryButton(int max_slots)
 		slot = slot_number,
 		ID = slot_number + 1,
 		hand = false,
-		obj = nil
+		obj = nil,
+		empty = true
 	};
 	PushBack(inventory_slots, slot_info);
 	
