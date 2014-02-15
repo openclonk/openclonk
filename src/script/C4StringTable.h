@@ -367,6 +367,7 @@ enum C4PropertyName
 	P_OnMouseOut,
 	P_OnClose,
 	P_Style,
+	P_Player,
 	P_Algo,
 	P_Layer,
 	P_Seed,

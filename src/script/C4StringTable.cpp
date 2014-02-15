@@ -161,6 +161,7 @@ C4StringTable::C4StringTable()
 	P[P_OnClose] = "OnClose";
 	P[P_ID] = "ID";
 	P[P_Style] = "Style";
+	P[P_Player] = "Player";
 	P[P_Algo] = "Algo";
 	P[P_Layer] = "Layer";
 	P[P_Seed] = "Seed";

@@ -48,6 +48,7 @@ enum C4GuiWindowPropertyName
 	onCloseAction,
 	style,
 	priority,
+	player,
 	_lastProp
 };
 

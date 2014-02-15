@@ -397,6 +397,7 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 		case C4GuiWindowPropertyName::backgroundColor:
 		case C4GuiWindowPropertyName::style:
 		case C4GuiWindowPropertyName::priority:
+		case C4GuiWindowPropertyName::player:
 			val = C4Value(prop.d);
 			break;
 
@@ -498,6 +499,7 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	case C4GuiWindowPropertyName::backgroundColor:
 	case C4GuiWindowPropertyName::style:
 	case C4GuiWindowPropertyName::priority:
+	case C4GuiWindowPropertyName::player:
 		current->d = value.getInt();
 		break;
 
@@ -667,6 +669,7 @@ void C4GuiWindow::Init()
 	props[C4GuiWindowPropertyName::onCloseAction].SetNull();
 	props[C4GuiWindowPropertyName::style].SetNull();
 	props[C4GuiWindowPropertyName::priority].SetNull();
+	props[C4GuiWindowPropertyName::player].SetInt(-1);
 
 	parent = 0;
 	wasRemoved = false;
@@ -777,6 +780,7 @@ const C4Value C4GuiWindow::ToC4Value()
 		case P_Style: val = props[C4GuiWindowPropertyName::style].ToC4Value(); break;
 		case P_Mode: val = C4Value(int32_t(hasMouseFocus)); break;
 		case P_Priority: val = props[C4GuiWindowPropertyName::priority].ToC4Value(); break;
+		case P_Player: val = props[C4GuiWindowPropertyName::player].ToC4Value(); break;
 
 		default:
 			assert(false);
@@ -900,6 +904,8 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 			if (parent)
 				parent->ChildChangedPriority(this);
 		}
+		else if(&Strings.P[P_Player] == key)
+			props[C4GuiWindowPropertyName::player].Set(property, stdTag);
 		else
 		{
 			// possibly sub-window?
@@ -1303,7 +1309,8 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
 {
 	// message hidden?
-	if (!IsVisible() || (target && !target->IsVisible(player, false)))
+	const int32_t &myPlayer = props[C4GuiWindowPropertyName::player].GetInt();
+	if (!IsVisible() || (myPlayer != -1 && player != myPlayer) || (target && !target->IsVisible(player, false)))
 	{
 		// however, we need to set the rectangle to something unobstructive so that it doesn't interfere with the parent's layout
 		lastDrawPosition.left = parentLeft;
