@@ -271,3 +271,12 @@ private func UpdateInventoryButtons(object clonk)
 		}
 	}
 }
+
+// Shows the Carryheavy-Inventoryslot if obj is set
+// Removes it if it's nil
+func OnCarryHeavyChange(object obj)
+{
+	// TODO
+	
+	UpdateInventory();
+}
