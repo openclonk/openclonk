@@ -20,6 +20,8 @@ func Construction()
 	this.ID = 0xffffff;
 	
 	this.OnClose = GuiAction_Call(this, "OnCloseCallback");
+	
+	SetPosition(0, 0);
 }
 
 func OnCloseCallback()

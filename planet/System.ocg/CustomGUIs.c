@@ -2,13 +2,6 @@
 	This file contains functions that are used for layouting custom menus.
 */
 
-global func CreateCustomMenu(id menuStyle)
-{
-	var menu = CreateObject(menuStyle);
-	menu->SetPosition(1, 1);
-	return menu;
-}
-
 global func GuiAction_Call(proplist target, string function, value)
 {
 	return [GUI_Call, target, function, value];

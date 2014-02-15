@@ -16,6 +16,7 @@ local entries;
 func Construction()
 {
 	entries = [];
+	SetPosition(0, 0);
 }
 
 global func CreateClassicMenu(id symbol, object command_object, int extra, string caption, int extra_data, int style, bool permanent, id menu_id)

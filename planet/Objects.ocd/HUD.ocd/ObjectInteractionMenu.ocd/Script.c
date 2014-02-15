@@ -209,7 +209,7 @@ func OpenMenuForObject(object obj, int slot)
 	// description menu?
 }
 
-// generates a proplist that can be used as input for CreateCustomMenu and represents a side bar where objects 
+// generates a proplist that defines a custom GUI that represents a side bar where objects 
 // to interact with can be selected
 func CreateSideBar(int slot)
 {
@@ -312,7 +312,7 @@ func CreateMainMenu(object obj, int slot)
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		var menu = menus[i];
-		menu.menu_object = CreateCustomMenu(MenuStyle_Grid);
+		menu.menu_object = CreateObject(MenuStyle_Grid);
 		if (menu.decoration)
 			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
 		menu.menu_object.Y = [0, 32];

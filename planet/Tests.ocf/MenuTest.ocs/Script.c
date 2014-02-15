@@ -39,7 +39,7 @@ func StartMenu(plr)
 		body = {Y = [0, 60], right = {ID = 9999, X = 500} },
 	};
 	Gui_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
-	var menu = CreateCustomMenu(MenuStyle_List);
+	var menu = CreateObject(MenuStyle_List);
 	main_menu.body.left = menu;
 	
 	menu.Wdt = 500;
@@ -74,7 +74,7 @@ func StartMultipleListTest()
 	{
 		var inv = inventory[i];
 		var ID = 9000 + i;
-		var m = CreateCustomMenu(MenuStyle_List);
+		var m = CreateObject(MenuStyle_List);
 		m.Decoration = GUI_MenuDeco;
 		m.X = x[i]; m.Y = y[i];
 		m.Wdt = w[i]; m.Hgt = h[i];
@@ -296,7 +296,7 @@ func StartTransferTest()
 	
 	for (var i = 0; i < 2; ++i)
 	{
-		var m = CreateCustomMenu(MenuStyle_Grid);
+		var m = CreateObject(MenuStyle_Grid);
 		m.Decoration = GUI_MenuDeco;
 		m.Text = "FROM";
 		m.Style = GUI_TextHCenter | GUI_GridLayout;
