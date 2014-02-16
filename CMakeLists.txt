@@ -849,8 +849,13 @@ if(NOT WIN32)
 endif()
 
 if(NOT USE_CONSOLE)
-	find_package(Freetype REQUIRED)
-	include_directories(${FREETYPE_INCLUDE_DIRS})
+	if(APPLE)
+		include(LegacyFindFreetype)
+		include_directories(${FREETYPE_INCLUDE_DIRS})
+	else()
+		find_package(Freetype REQUIRED)
+		include_directories(${FREETYPE_INCLUDE_DIRS})
+	endif()
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
@@ -1260,7 +1265,7 @@ endif()
 ############################################################################
 
 if (APPLE)
-
+	
 	# for good measure - seems to be part of default OSX installation
 	# linking with static freetype library requires it
 	target_link_libraries(openclonk "/usr/lib/libbz2.dylib")
@@ -1269,6 +1274,9 @@ if (APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x -g -Wall -fobjc-arc")
 
 	if(CMAKE_GENERATOR STREQUAL Xcode)
+		add_custom_command(TARGET openclonk
+			POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
