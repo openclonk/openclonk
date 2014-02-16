@@ -246,15 +246,13 @@ public:
 	// needs to be called on thread tasks for this scheduler are meant to be run on
 	void StartOnCurrentThread();
 
-	virtual bool ScheduleProcs(int iTimeout = -1);
+	bool ScheduleProcs(int iTimeout = 1000/36);
 	void UnBlock();
 
 protected:
 	// overridable
 	virtual void OnError(StdSchedulerProc *) { }
-
-private:
-	bool DoScheduleProcs(int iTimeout);
+	virtual bool DoScheduleProcs(int iTimeout);
 };
 
 // A simple process scheduler thread
