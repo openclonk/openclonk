@@ -206,8 +206,8 @@ func UpdateActionBarDisplay()
 				Y = [0, 8], Hgt = [0, 8 + 64],
 			},
 			OnClick = GuiAction_Call(this, "OnActionBarSelected", button_number),
-			OnMouseIn = GuiAction_SetTag(nil, nil, "OnHover"), 
-			OnMouseOut = GuiAction_SetTag(nil, nil, "Std"), 
+			OnMouseIn = GuiAction_SetTag("OnHover"), 
+			OnMouseOut = GuiAction_SetTag("Std"), 
 		};
 		
 		var selected = (action_info.actiontype == ACTIONTYPE_VEHICLE && crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == action_info.interaction_object)

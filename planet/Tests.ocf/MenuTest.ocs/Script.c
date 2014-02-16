@@ -10,8 +10,8 @@ func Initialize()
 		Wdt = [1000, -25], Hgt = [0, 75],
 		Text = "OPEN MENU",
 		BackgroundColor = {Std = 0, Hover = 0xffff0000},
-		OnMouseIn = GuiAction_SetTag(nil, nil, "Hover"),
-		OnMouseOut = GuiAction_SetTag(nil, nil, "Std"),
+		OnMouseIn = GuiAction_SetTag("Hover"),
+		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(Scenario, "StartMenu")
 	};
 	CustomGuiOpen(starter_menu);
@@ -184,13 +184,13 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				Priority = 1,
 				BackgroundColor = {Std = 0, Hover = 0x50ff0000, On = 0x2000ff00},
 				OnMouseIn = {
-					Std = [GuiAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, false]), GuiAction_SetTag(nil, nil, "Hover")],
+					Std = [GuiAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, false]), GuiAction_SetTag("Hover")],
 					On = GuiAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, true])
 					},
-				OnMouseOut = { Hover = GuiAction_SetTag(nil, nil, "Std"), On = nil },
+				OnMouseOut = { Hover = GuiAction_SetTag("Std"), On = nil },
 				OnClick = {
-					Hover = [GuiAction_Call(Scenario, "ScenOptsActivate", [rule.def, rule.ID]), GuiAction_SetTag(nil, nil, "On")],
-					On = [GuiAction_Call(Scenario, "ScenOptsDeactivate", [rule.def, rule.ID]), GuiAction_SetTag(nil, nil, "Hover")],
+					Hover = [GuiAction_Call(Scenario, "ScenOptsActivate", [rule.def, rule.ID]), GuiAction_SetTag("On")],
+					On = [GuiAction_Call(Scenario, "ScenOptsDeactivate", [rule.def, rule.ID]), GuiAction_SetTag("Hover")],
 					},
 			},
 			tick = 

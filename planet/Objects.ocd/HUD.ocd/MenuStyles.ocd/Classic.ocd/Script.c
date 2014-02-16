@@ -77,8 +77,8 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 		Text = Format("%dx", count),
 		Priority = ID,
 		OnClick = GuiAction_Call(this, "OnClick", [symbol, ID, command, parameter]),
-		OnMouseIn = [GuiAction_SetTag(nil, 0, "Hover"), GuiAction_Call(this, "UpdateDesc")],
-		OnMouseOut = GuiAction_SetTag(nil, 0, "Std"),
+		OnMouseIn = [GuiAction_SetTag("Hover", 0, nil), GuiAction_Call(this, "UpdateDesc")],
+		OnMouseOut = GuiAction_SetTag("Std", 0, nil),
 	};
 	entries[ID] = [info_caption ?? symbol.Description];
 	

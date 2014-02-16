@@ -7,9 +7,9 @@ global func GuiAction_Call(proplist target, string function, value)
 	return [GUI_Call, target, function, value];
 }
 
-global func GuiAction_SetTag(object target, int subwindow, string tag)
+global func GuiAction_SetTag(string tag, int subwindow, object target)
 {
-	return [GUI_SetTag, target, subwindow, tag];
+	return [GUI_SetTag, tag, subwindow, target];
 }
 
 global func Gui_AddMargin(proplist submenu, int marginX, int marginY)
@@ -41,8 +41,8 @@ global func Gui_AddCloseButton(proplist menu, proplist target, string callback, 
 		Wdt = 1000, Hgt = [0, 32],
 		Symbol = Icon_Cancel,
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
-		OnMouseIn = GuiAction_SetTag(nil, nil, "Hover"),
-		OnMouseOut = GuiAction_SetTag(nil, nil, "Std"),
+		OnMouseIn = GuiAction_SetTag("Hover"),
+		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(target, callback, parameter)
 	};
 	Gui_AddSubwindow(close_button, menu);

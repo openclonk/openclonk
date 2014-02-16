@@ -250,8 +250,8 @@ func CreateSideBar(int slot)
 			Symbol = symbol,
 			Style = GUI_TextBottom | GUI_TextHCenter,
 			BackgroundColor = background_color,
-			OnMouseIn = GuiAction_SetTag(nil, nil, "OnHover"),
-			OnMouseOut = GuiAction_SetTag(nil, nil, "Std"),
+			OnMouseIn = GuiAction_SetTag("OnHover"),
+			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
 			Text = obj->GetName(),
 			obj_symbol = {Symbol = obj, X = [0, 8], Y = [0, 8], Wdt = [1000, -8], Hgt = [1000, -8]}

@@ -67,9 +67,9 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 	case C4GuiWindowActionID::SetTag:
 		array->SetSize(4);
 		array->SetItem(0, C4Value(action));
-		array->SetItem(1, C4Value(target));
+		array->SetItem(1, C4Value(text));
 		array->SetItem(2, C4Value(subwindowID));
-		array->SetItem(3, C4Value(text));
+		array->SetItem(3, C4Value(target));
 		break;
 
 	case 0: // can actually happen if the action is invalidated
@@ -163,11 +163,11 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 
 	case C4GuiWindowActionID::SetTag:
 		if (array->GetSize() < 4) return false;
-		target = array->GetItem(1).getObj(); // getObj on purpose. Need to validate that.
-		subwindowID = array->GetItem(2).getInt();
-		text = array->GetItem(3).getStr();
+		text = array->GetItem(1).getStr();
 		if (!text) return false;
 		text->IncRef();
+		subwindowID = array->GetItem(2).getInt();
+		target = array->GetItem(3).getObj(); // getObj on purpose. Need to validate that.
 		break;
 
 	default:

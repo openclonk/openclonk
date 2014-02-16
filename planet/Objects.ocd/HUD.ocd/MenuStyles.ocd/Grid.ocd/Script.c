@@ -18,10 +18,10 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 {
 	custom_menu_id = custom_menu_id ?? menu_id;
 	
-	var on_hover = GuiAction_SetTag(nil, 0, "OnHover");
+	var on_hover = GuiAction_SetTag("OnHover", 0, nil);
 	if (on_mouse_over_callback)
 		on_hover = [on_hover, GuiAction_Call(this, "DoCallback", on_mouse_over_callback)];
-	var on_hover_stop = GuiAction_SetTag(nil, 0, "Std");
+	var on_hover_stop = GuiAction_SetTag("Std", 0, nil);
 	if (on_mouse_out_callback)
 		on_hover_stop = [on_hover_stop, GuiAction_Call(this, "DoCallback", on_mouse_out_callback)];
 	
