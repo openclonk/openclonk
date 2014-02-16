@@ -385,7 +385,7 @@ bool C4NetIOTCP::CloseBroadcast()
 	return true;
 }
 
-#ifdef APPLE
+#ifdef __APPLE__
 static int fix_poll_timeout(int timeout) {
 	if (timeout < 0 || timeout > 1000)
 		return 1000;
@@ -409,7 +409,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 	WSANETWORKEVENTS wsaEvents;
 #else
 
-#ifdef APPLE
+#ifdef __APPLE__
 	iMaxTime = fix_poll_timeout(iMaxTime);
 #endif
 
@@ -1524,7 +1524,7 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 	if (!fInit) { SetError("not yet initialized"); return false; }
 	ResetError();
 
-#ifdef APPLE
+#ifdef __APPLE__
 	iMaxTime = fix_poll_timeout(iMaxTime);
 #endif
 
