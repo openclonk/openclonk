@@ -12,12 +12,12 @@ func GetPortraitDef(object talker)
 	var portrait = talker.portrait;
 	// Default definition has Clonk portrait
 	// (Can't get default from skin, because there's no function GetSkin D:)
-	if (!portrait || portrait == "" || portrait == "Clonk") return Dialogue;
+	if (!portrait || portrait == "" || portrait == "Clonk") return DialogueCastle;
 	// Otherwise, bind portrait to an invisible object
 	// (note: invisible object is leaked. can't really know when the message will be gone.)
 	if (!talker.portrait_obj)
 	{
-		talker.portrait_obj = CreateObject(Dialogue);
+		talker.portrait_obj = CreateObject(DialogueCastle);
 		talker.portrait_obj->SetAction("Attach", talker);
 		talker.portrait_obj->SetGraphics(portrait);
 		talker.portrait_obj.Visibility = VIS_None;
