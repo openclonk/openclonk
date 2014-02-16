@@ -130,11 +130,19 @@ protected func DoSwing(object clonk, int ix, int iy)
 			Sound("Clang?");
 		}
 		
-		//Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
-		// Call in clonk context to ensure DigOutObject callback is done in Clonk
-		clonk->BlastFree(GetX()+x2,GetY()+y2,5,GetController(),MaxPickDensity);
+		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
+		BlastFree(GetX()+x2,GetY()+y2,5,GetController(),MaxPickDensity);
 	}
 
+}
+
+// Reroute callback to clonk context to ensure DigOutObject callback is done in Clonk
+public func DigOutObject(object obj)
+{
+	// TODO: it would be nice if the method of finding the clonk does not rely on it to be the container of the pickaxe
+	var clonk = Contained();
+	if (clonk)
+		clonk->~DigOutObject(obj);
 }
 
 func FxIntPickaxeTimer(clonk, effect, time)
