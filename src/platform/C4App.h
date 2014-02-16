@@ -97,7 +97,7 @@ public:
 	// Gamma
 	virtual bool ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce);
 	virtual bool SaveDefaultGammaRamp(struct _GAMMARAMP &ramp);
-	virtual bool ScheduleProcs(int iTimeout = 1000/36);
+	virtual bool DoScheduleProcs(int iTimeout);
 	bool FlushMessages();
 	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
