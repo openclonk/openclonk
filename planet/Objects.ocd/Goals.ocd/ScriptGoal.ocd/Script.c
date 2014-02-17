@@ -27,6 +27,11 @@ public func Fulfill()
 	return;
 }
 
+public func GetDescription(int plr)
+{
+	return this.Description;
+}
 
 /*-- Proplist --*/
 local Name = "$Name$";
+local Description = "$Description$";

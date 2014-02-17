@@ -26,6 +26,16 @@ public func IsFulfilled()
 	return GetMaterial(basin_x, basin_y) == Material("Acid");
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnfulfilled$";
+	return message;
+}
+
 // Shows or hides a message window with information.
 public func Activate(int plr)
 {

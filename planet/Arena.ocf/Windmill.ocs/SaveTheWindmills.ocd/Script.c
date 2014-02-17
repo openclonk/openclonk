@@ -38,6 +38,11 @@ public func IsFulfilled()
 	return false;
 }
 
+public func GetDescription(int plr)
+{
+	return this.Description;
+}
+
 public func Activate(int byplr)
 {
 	MessageWindow(this.Description, byplr);

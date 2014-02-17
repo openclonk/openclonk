@@ -55,6 +55,29 @@ public func IsFulfilled()
 	return true;
 }
 
+public func GetDescription(int plr)
+{
+	// Count enemy players.
+	var hostile_count;
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var byplr = GetPlayerByIndex(i);
+		if (byplr == plr)
+			continue;
+		if (Hostile(byplr, plr) )
+			hostile_count++;
+	}
+	
+	var message;
+	
+	// Output
+	if (!hostile_count)
+		message = "$MsgGoalFulfilled$";
+	else
+		message = Format("$MsgGoalUnfulfilled$", hostile_count);
+	return message;
+}
+
 public func Activate(int byplr)
 {
 	// Count enemy players.

@@ -28,6 +28,16 @@ public func IsFulfilled()
 	return target->IsPowerAvailable(target->GetNeededPower());
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnFulfilled$";
+	return message;
+}
+
 // Shows or hides a message window with information.
 public func Activate(int plr)
 {
