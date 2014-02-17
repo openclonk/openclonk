@@ -132,11 +132,11 @@ class C4GuiWindowProperty
 
 	int32_t type; // which property do I stand for?
 
-	// the following methods will set the value for the standard tag
-	// the string's ref-count is not increased
-	void SetInt(int32_t to);
-	void SetFloat(float to);
-	void SetNull();
+	// the following methods directly set values (default Std tag)
+	// note that for int/floats no cleanup is necessary as it would be for the more general Set method
+	void SetInt(int32_t to, C4String *tag = 0);
+	void SetFloat(float to, C4String *tag = 0);
+	void SetNull(C4String *tag = 0);
 
 	public:
 	~C4GuiWindowProperty();
@@ -224,9 +224,8 @@ class C4GuiWindow
 	// should be called when the Priority property of a child changes
 	// will sort the child correctly into the children list
 	void ChildChangedPriority(C4GuiWindow *child);
-	// helper function
-	// sets property value from possible(!) array
-	void SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, C4String *tag);
+	// helper function to extract relative and absolute position values from a string
+	void SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag);
 
 	// this is only supposed to be called at ::Game.GuiWindowRoot since it uses the "ID" property
 	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
@@ -295,6 +294,11 @@ class C4GuiWindow
 	// attention: calls to this need to be synchronized!
 	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target);
 	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
+
+private:
+	// TODO: actually scale with font size (needs font to be able to scale first..)
+	float Em2Pix(float em) { return 12.0f * em; }
+	float Pix2Em(float pix) { return pix / 12.0f; }
 };
 
 #endif

@@ -321,23 +321,23 @@ C4GuiWindowProperty::~C4GuiWindowProperty()
 	// is cleaned up from destructor of C4GuiWindow
 }
 
-void C4GuiWindowProperty::SetInt(int32_t to)
+void C4GuiWindowProperty::SetInt(int32_t to, C4String *tag)
 {
-	C4String* tag = &Strings.P[P_Std];
+	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
 	current->d = to;
 }
-void C4GuiWindowProperty::SetFloat(float to)
+void C4GuiWindowProperty::SetFloat(float to, C4String *tag)
 {
-	C4String* tag = &Strings.P[P_Std];
+	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
 	current->f = to;
 }
-void C4GuiWindowProperty::SetNull()
+void C4GuiWindowProperty::SetNull(C4String *tag)
 {
-	C4String* tag = &Strings.P[P_Std];
+	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
 	current->data = 0;
@@ -394,18 +394,18 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 		case C4GuiWindowPropertyName::right:
 		case C4GuiWindowPropertyName::top:
 		case C4GuiWindowPropertyName::bottom:
+		case C4GuiWindowPropertyName::relLeft:
+		case C4GuiWindowPropertyName::relRight:
+		case C4GuiWindowPropertyName::relTop:
+		case C4GuiWindowPropertyName::relBottom:
+			assert (false && "Trying to get a single positional value from a GuiWindow for saving. Those should always be saved in pairs of two in a string.");
+			break;
+
 		case C4GuiWindowPropertyName::backgroundColor:
 		case C4GuiWindowPropertyName::style:
 		case C4GuiWindowPropertyName::priority:
 		case C4GuiWindowPropertyName::player:
 			val = C4Value(prop.d);
-			break;
-
-		case C4GuiWindowPropertyName::relLeft:
-		case C4GuiWindowPropertyName::relRight:
-		case C4GuiWindowPropertyName::relTop:
-		case C4GuiWindowPropertyName::relBottom:
-			val = C4Value(int32_t (prop.f * 1000.0f));
 			break;
 
 		case C4GuiWindowPropertyName::symbolObject:
@@ -496,6 +496,13 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	case C4GuiWindowPropertyName::right:
 	case C4GuiWindowPropertyName::top:
 	case C4GuiWindowPropertyName::bottom:
+	case C4GuiWindowPropertyName::relLeft:
+	case C4GuiWindowPropertyName::relRight:
+	case C4GuiWindowPropertyName::relTop:
+	case C4GuiWindowPropertyName::relBottom:
+		assert (false && "Trying to set positional properties directly. Those should always come parsed from a string.");
+		break;
+
 	case C4GuiWindowPropertyName::backgroundColor:
 	case C4GuiWindowPropertyName::style:
 	case C4GuiWindowPropertyName::priority:
@@ -503,12 +510,6 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		current->d = value.getInt();
 		break;
 
-	case C4GuiWindowPropertyName::relLeft:
-	case C4GuiWindowPropertyName::relRight:
-	case C4GuiWindowPropertyName::relTop:
-	case C4GuiWindowPropertyName::relBottom:
-		current->f = float(value.getInt()) / 1000.0f;
-		break;
 	case C4GuiWindowPropertyName::symbolObject:
 	{
 		C4PropList *symbol = value.getPropList();
@@ -630,10 +631,10 @@ C4GuiWindow::C4GuiWindow(float stdBorderX, float stdBorderY)
 
 	// set border values for std tag
 	// relative offsets are standard, only need to set exact offset
-	props[C4GuiWindowPropertyName::left].SetInt(int32_t(stdBorderX));
-	props[C4GuiWindowPropertyName::right].SetInt(int32_t(-stdBorderX));
-	props[C4GuiWindowPropertyName::top].SetInt(int32_t(stdBorderY));
-	props[C4GuiWindowPropertyName::bottom].SetInt(int32_t(-stdBorderY));
+	props[C4GuiWindowPropertyName::left].SetFloat(Pix2Em(stdBorderX));
+	props[C4GuiWindowPropertyName::right].SetFloat(Pix2Em(-stdBorderX));
+	props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(stdBorderY));
+	props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(-stdBorderY));
 }
 
 void C4GuiWindow::Init()
@@ -693,17 +694,63 @@ C4GuiWindow::~C4GuiWindow()
 }
 
 // helper function
-void C4GuiWindow::SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, C4String *tag)
+void C4GuiWindow::SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag)
 {
-	C4ValueArray *array;
-	if ((array = property.getArray()))
+	// the value might be a tagged proplist again
+	if (property.GetType() == C4V_Type::C4V_PropList)
 	{
-		if (array->GetSize() > 0)
-			props[first].Set(array->GetItem(0), tag);
-		if (array->GetSize() > 1)
-			props[second].Set(array->GetItem(1), tag);
+		C4PropList *proplist = property.getPropList();
+		for (C4PropList::Iterator iter = proplist->begin(); iter != proplist->end(); ++iter)
+		{
+			SetPositionStringProperties(iter->Value, relative, absolute, iter->Key);
+		}
+		return;
 	}
-	else props[first].Set(property, tag);
+	// safety
+	if (property.GetType() != C4V_Type::C4V_String) return;
+	StdStrBuf buf(property.getStr()->GetData());
+	
+	std::string trimmedString;
+	size_t maxLength = buf.getLength();
+	trimmedString.reserve(maxLength);
+	// add all non-whitespace characters to the new string (strtod could abort the parsing otherwise)
+	for (size_t i = 0; i < maxLength; ++i)
+	{
+		if (!isspace(buf[i]))
+			trimmedString.push_back(buf[i]);
+	}
+
+	float relativeValue = 0.0;
+	float absoluteValue = 0.0;
+
+	const char *currentPosition = trimmedString.data();
+	char *nextPosition;
+	const char *lastPosition = trimmedString.data() + trimmedString.size();
+
+	while (currentPosition < lastPosition)
+	{
+		// look for next float
+		nextPosition = 0;
+		float value = static_cast<float>(strtod(currentPosition, &nextPosition));
+
+		// fail? exit right here (there must be some space left in the string for a unit, too)
+		if (currentPosition == nextPosition || nextPosition == 0 || nextPosition >= lastPosition) break;
+
+		if (*nextPosition == '%')
+		{
+			relativeValue += value;
+			currentPosition = nextPosition + 1;
+		}
+		else if(*nextPosition == 'e' && *(nextPosition+1) == 'm')
+		{
+			absoluteValue += value;
+			currentPosition = nextPosition + 2;
+		}
+		else // error, abort!
+			break;
+	}
+	props[relative].SetFloat(relativeValue / 100.0f, tag);
+	props[absolute].SetFloat(absoluteValue, tag);
 }
 
 const C4Value C4GuiWindow::ToC4Value()
@@ -715,10 +762,10 @@ const C4Value C4GuiWindow::ToC4Value()
 	// if you add something, don't forget to also add the real serialization to the loop below
 	int32_t toSave[] =
 	{
-		P_X,
-		P_Y,
-		P_Wdt,
-		P_Hgt,
+		P_Left,
+		P_Top,
+		P_Right,
+		P_Bottom,
 		P_BackgroundColor,
 		P_Decoration,
 		P_Symbol,
@@ -731,7 +778,8 @@ const C4Value C4GuiWindow::ToC4Value()
 		P_OnClose,
 		P_Style,
 		P_Mode,
-		P_Priority
+		P_Priority,
+		P_Player,
 	};
 
 	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
@@ -743,17 +791,17 @@ const C4Value C4GuiWindow::ToC4Value()
 
 		switch (prop)
 		{
-		case P_X:
-		case P_Y:
-		case P_Wdt:
-		case P_Hgt:
+		case P_Left:
+		case P_Top:
+		case P_Right:
+		case P_Bottom:
 		{
 			C4Value first, second;
 #define ARRAY_TUPLE(p, prop1, prop2) if (prop == p) { first = props[prop1].ToC4Value(); second = props[prop2].ToC4Value(); }
-			ARRAY_TUPLE(P_X, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left);
-			ARRAY_TUPLE(P_Y, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top);
-			ARRAY_TUPLE(P_Wdt, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right);
-			ARRAY_TUPLE(P_Hgt, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom);
+			ARRAY_TUPLE(P_Left, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left);
+			ARRAY_TUPLE(P_Top, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top);
+			ARRAY_TUPLE(P_Right, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right);
+			ARRAY_TUPLE(P_Bottom, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom);
 #undef ARRAY_TUPLE
 			C4ValueArray *array = new C4ValueArray();
 			array->SetSize(2);
@@ -826,24 +874,24 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 
 		C4Value value;
 
-		if(&Strings.P[P_X] == key)
+		if(&Strings.P[P_Left] == key)
 		{
-			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left, stdTag);
+			SetPositionStringProperties(property, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left, stdTag);
 			layoutUpdateRequired = true;
 		}
-		else if(&Strings.P[P_Y] == key)
+		else if(&Strings.P[P_Top] == key)
 		{
-			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top, stdTag);
+			SetPositionStringProperties(property, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top, stdTag);
 			layoutUpdateRequired = true;
 		}
-		else if(&Strings.P[P_Wdt] == key)
+		else if(&Strings.P[P_Right] == key)
 		{
-			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right, stdTag);
+			SetPositionStringProperties(property, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right, stdTag);
 			layoutUpdateRequired = true;
 		}
-		else if(&Strings.P[P_Hgt] == key)
+		else if(&Strings.P[P_Bottom] == key)
 		{
-			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom, stdTag);
+			SetPositionStringProperties(property, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_BackgroundColor] == key)
@@ -1200,10 +1248,10 @@ void C4GuiWindow::UpdateLayoutGrid()
 		if (!maxChildHeight || (childHgt > maxChildHeight))
 			maxChildHeight = childHgt;
 
-		child->props[C4GuiWindowPropertyName::left].SetInt(currentX);
-		child->props[C4GuiWindowPropertyName::right].SetInt(currentX + childWdt);
-		child->props[C4GuiWindowPropertyName::top].SetInt(currentY);
-		child->props[C4GuiWindowPropertyName::bottom].SetInt(currentY + childHgt);
+		child->props[C4GuiWindowPropertyName::left].SetFloat(Pix2Em(currentX));
+		child->props[C4GuiWindowPropertyName::right].SetFloat(Pix2Em(currentX + childWdt));
+		child->props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(currentY));
+		child->props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(currentY + childHgt));
 
 		currentX += childWdt + borderX;
 		if (currentX + childWdt >= width)
@@ -1232,8 +1280,8 @@ void C4GuiWindow::UpdateLayoutVertical()
 		C4GuiWindow *child = *iter;
 		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
 
-		child->props[C4GuiWindowPropertyName::top].SetInt(currentY);
-		child->props[C4GuiWindowPropertyName::bottom].SetInt(currentY + childHgt);
+		child->props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(currentY));
+		child->props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(currentY + childHgt));
 
 		currentY += childHgt + borderY;
 	}
@@ -1273,15 +1321,15 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 {
 	if (!IsVisible()) return false;
 	// assume I am the root and use the whole viewport for drawing - minus some standard border
-	const int32_t &left = props[C4GuiWindowPropertyName::left].GetInt();
-	const int32_t &right = props[C4GuiWindowPropertyName::right].GetInt();
-	const int32_t &top = props[C4GuiWindowPropertyName::top].GetInt();
-	const int32_t &bottom = props[C4GuiWindowPropertyName::bottom].GetInt();
+	const float &left = props[C4GuiWindowPropertyName::left].GetFloat();
+	const float &right = props[C4GuiWindowPropertyName::right].GetFloat();
+	const float &top = props[C4GuiWindowPropertyName::top].GetFloat();
+	const float &bottom = props[C4GuiWindowPropertyName::bottom].GetFloat();
 
-	float leftDrawX = cgo.X + left;
-	float topDrawY = cgo.Y + top;
-	float rightDrawX = cgo.X + cgo.Wdt * cgo.Zoom + right;
-	float bottomDrawY = cgo.Y + cgo.Hgt * cgo.Zoom + bottom;
+	float leftDrawX = cgo.X + Em2Pix(left);
+	float topDrawY = cgo.Y + Em2Pix(top);
+	float rightDrawX = cgo.X + cgo.Wdt * cgo.Zoom + Em2Pix(right);
+	float bottomDrawY = cgo.Y + cgo.Hgt * cgo.Zoom + Em2Pix(bottom);
 
 	float wdt = rightDrawX - leftDrawX;
 	float hgt = bottomDrawY - topDrawY;
@@ -1299,7 +1347,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 		lastDrawPosition.dirty = 0;
 
 	// step one: draw all non-multiple windows
-	DrawChildren(cgo, player, leftDrawX - left, topDrawY  - top, rightDrawX + left, bottomDrawY + top, 1);
+	DrawChildren(cgo, player, leftDrawX - Em2Pix(left), topDrawY  - Em2Pix(top), rightDrawX + Em2Pix(left), bottomDrawY + Em2Pix(top), 1);
 	// TODO: adjust rectangle for main menu if multiple windows exist
 	// step two: draw one "main" menu
 	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 0);
@@ -1324,10 +1372,10 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	// fetch style
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
-	const int32_t &left = props[C4GuiWindowPropertyName::left].GetInt();
-	const int32_t &right = props[C4GuiWindowPropertyName::right].GetInt();
-	const int32_t &top = props[C4GuiWindowPropertyName::top].GetInt();
-	const int32_t &bottom = props[C4GuiWindowPropertyName::bottom].GetInt();
+	const float &left = props[C4GuiWindowPropertyName::left].GetFloat();
+	const float &right = props[C4GuiWindowPropertyName::right].GetFloat();
+	const float &top = props[C4GuiWindowPropertyName::top].GetFloat();
+	const float &bottom = props[C4GuiWindowPropertyName::bottom].GetFloat();
 
 	const float &relLeft = props[C4GuiWindowPropertyName::relLeft].GetFloat();
 	const float &relRight = props[C4GuiWindowPropertyName::relRight].GetFloat();
@@ -1337,10 +1385,10 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	// calculate drawing rectangle
 	float parentWidth = parentRight - parentLeft;
 	float parentHeight = parentBottom - parentTop;
-	float leftDrawX = parentLeft + relLeft * parentWidth + float(left);
-	float rightDrawX = parentLeft + relRight * parentWidth + float(right);
-	float topDrawY = parentTop + relTop * parentHeight + float(top);
-	float bottomDrawY = parentTop + relBottom * parentHeight + float(bottom);
+	float leftDrawX = parentLeft + relLeft * parentWidth + Em2Pix(left);
+	float rightDrawX = parentLeft + relRight * parentWidth + Em2Pix(right);
+	float topDrawY = parentTop + relTop * parentHeight + Em2Pix(top);
+	float bottomDrawY = parentTop + relBottom * parentHeight + Em2Pix(bottom);
 	float width = rightDrawX - leftDrawX;
 	float height = bottomDrawY - topDrawY;
 	float childOffsetY = 0.0f; // for scrolling

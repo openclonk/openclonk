@@ -6,8 +6,8 @@ func Initialize()
 	{
 		Style = GUI_Multiple | GUI_TextVCenter | GUI_TextHCenter,
 		Decoration = GUI_MenuDeco,
-		X = [1000, -100], Y = [0, 50],
-		Wdt = [1000, -25], Hgt = [0, 75],
+		Left = "100%-7em", Top = "+3em",
+		Right = "100%-1em", Bottom = "+4em",
 		Text = "OPEN MENU",
 		BackgroundColor = {Std = 0, Hover = 0xffff0000},
 		OnMouseIn = GuiAction_SetTag("Hover"),
@@ -35,14 +35,14 @@ func StartMenu(plr)
 	var main_menu = 
 	{
 		Decoration = GUI_MenuDeco,
-		head = {Hgt = [0, 50], Text = "Please choose a test!", Style = GUI_TextHCenter | GUI_TextVCenter, IDs = 0},
-		body = {Y = [0, 60], right = {ID = 9999, X = 500} },
+		head = {Bottom = "+3em", Text = "Please choose a test!", Style = GUI_TextHCenter | GUI_TextVCenter, IDs = 0},
+		body = {Top = "+3em", right = {ID = 9999, Left = "50%"} },
 	};
 	Gui_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
 	var menu = CreateObject(MenuStyle_List);
 	main_menu.body.left = menu;
 	
-	menu.Wdt = 500;
+	menu.Right = "50%";
 	menu->SetMouseOverCallback(Scenario, "MainOnHover");
 	menu->AddItem(Chest, "Test Multiple Lists (Inventory)", nil, Scenario, "StartMultipleListTest", "Shows multiple list-style menus in one big menu.");
 	menu->AddItem(Rule_TeamAccount, "Test Client/Host (Scenario Options)", nil, Scenario, "StartScenarioOptionsTest", "Shows how to display a dialogue that behaves differently for players.");
@@ -63,21 +63,21 @@ func StartMultipleListTest()
 	// layout: headline and four sections with items
 	var menu = 
 	{
-		head = { ID = 999, Hgt = [0, 50], Text = "Inventory: <c ff0000>Empty</c>", Style = GUI_TextHCenter | GUI_TextVCenter, BackgroundColor = 0x55000000},
-		contents = { Y = [0, 50], X = [0, 20], Wdt = [1000, -20] },
+		head = { ID = 999, Bottom = "+3em", Text = "Inventory: <c ff0000>Empty</c>", Style = GUI_TextHCenter | GUI_TextVCenter, BackgroundColor = 0x55000000},
+		contents = { Top = "+5em", Left = "+1em", Right = "100%-1em" },
 	};
 	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
-	var x = [0, [500, 20], 0, [500, 20]], y = [0, 0, [500, 20], [500, 20]], w = [[500, -20], 1000, [500, -20], 1000], h = [[500, -20], [500, -20], 1000, 1000];
+	var x = ["0%", "50%", "0%", "50%"], y = ["0%", "0%", "50%", "50%"], w = ["50%", "100%", "50%", "100%"], h = ["50%", "50%", "100%", "100%"];
 	for (var i = 0; i < 4; ++i)
 	{
 		var inv = inventory[i];
 		var ID = 9000 + i;
 		var m = CreateObject(MenuStyle_List);
 		m.Decoration = GUI_MenuDeco;
-		m.X = x[i]; m.Y = y[i];
-		m.Wdt = w[i]; m.Hgt = h[i];
+		m.Left = x[i]; m.Top = y[i];
+		m.Right = w[i]; m.Bottom = h[i];
 		Gui_AddSubwindow(m, menu.contents);
 		PushBack(inv_menus, m); // remember for later
 		for (var obj in inv)
@@ -140,11 +140,11 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 	{
 		list = 
 		{
-			Wdt = 500,
+			Right = "50%",
 			Style = GUI_VerticalLayout,
 		},
 		right = {
-			X = 500,
+			Left = "50%",
 			Decoration = GUI_MenuDeco,
 			hostdesc =
 			{
@@ -174,9 +174,9 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 		var subm =
 		{
 			ID = rule.ID,
-			Hgt = [0, 64],
-			icon = {Priority = 10, Symbol = rule.def, Wdt = [0, 64], Hgt = [0, 64]},
-			text = {Priority = 10, X = [0, 64], Style = GUI_TextVCenter, Text = rule.def.Name},
+			Bottom = "+4em",
+			icon = {Priority = 10, Symbol = rule.def, Right = "+4em", Bottom = "+4em"},
+			text = {Priority = 10, Left = "+4em", Style = GUI_TextVCenter, Text = rule.def.Name},
 			
 			selector = // only visible for host
 			{
@@ -195,8 +195,8 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			},
 			tick = 
 			{
-				X = [1000, -60], Y = [500, -15],
-				Wdt = [1000, -30], Hgt =[500, 15],
+				Left = "100%-3em", Top = "50%0em",
+				Right = "100%-1em", Hgt =[500, 15],
 				Symbol = {Std = 0, Unticked = 0, Ticked = Icon_Ok}
 			}
 		};
@@ -240,8 +240,8 @@ func StartPlayerListTest(parameter, int ID, int player)
 	
 	var menu =
 	{
-		X = [1000, -150], Y = [0, 100],
-		Wdt = [1000, -5], Hgt = [0, 200],
+		Left = "100%-9em", Top = "+6em",
+		Right = "100%0em", Bottom = "+12em",
 		Style = GUI_Multiple | GUI_VerticalLayout | GUI_FitChildren,
 		BackgroundColor = 0x30000000,
 	};
@@ -256,13 +256,13 @@ func StartPlayerListTest(parameter, int ID, int player)
 		var subm =
 		{
 			Priority = i,
-			Hgt = [0, 25],
+			Bottom = "+1em",
 			Text = name,
 			Style = GUI_TextRight | GUI_TextVCenter,
 			icon = 
 			{
 				Symbol = Clonk,
-				Wdt = [0, 25]
+				Right = "+1em"
 			}
 		};
 		Gui_AddSubwindow(subm, menu);
@@ -289,8 +289,8 @@ func StartTransferTest()
 	// layout: headline and two submenus
 	var menu = 
 	{
-		head = { Hgt = [0, 50], Text = "Welcome to the trade menu!", Style = GUI_TextHCenter | GUI_TextVCenter},
-		contents = { Y = [0, 25], X = [0, 20], Wdt = [1000, -20] },
+		head = { Bottom = "+3em", Text = "Welcome to the trade menu!", Style = GUI_TextHCenter | GUI_TextVCenter},
+		contents = { Top = "+1em", Left = "+1em", Right = "100%-1em" },
 	};
 	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
@@ -302,9 +302,9 @@ func StartTransferTest()
 		m.Style = GUI_TextHCenter | GUI_GridLayout;
 		if (i == 1)
 		{
-			m.X = [500, 15];
+			m.Left = "50%+0em";
 			m.Text = "TO";
-		} else m.Wdt = [500, -15];
+		} else m.Right = "50%0em";
 		Gui_AddSubwindow(m, menu.contents);
 		var a = transfer_left;
 		if (i == 1) a = transfer_right;
@@ -360,11 +360,11 @@ func StartHPBarTest(parameter, int ID, int player)
 	
 	var menu =
 	{
-		X = [0, 10], Y = [0, 50],
-		Wdt = [0, 15], Hgt = [1000, -50],
+		Left = "+0.5em", Top = "+3em",
+		Right = "+1em", Bottom = "100%-3em",
 		Style = GUI_Multiple | GUI_IgnoreMouse,
 		BackgroundColor = RGB(255, 0, 0),
-		blackOverlay = {ID = 1, Hgt = 0, BackgroundColor = RGB(10, 10, 10)},
+		blackOverlay = {ID = 1, Bottom = "0%", BackgroundColor = RGB(10, 10, 10)},
 		OnClose = GuiAction_Call(Scenario, "OnHPBarClose")
 	};
 	if (!GetEffect("FoolAroundWithHPBars"))
@@ -376,8 +376,8 @@ func StartHPBarTest(parameter, int ID, int player)
 
 global func FxFoolAroundWithHPBarTimer(target, effect, time)
 {
-	var state = Abs(Cos(time, 1000));
-	var update = {Hgt = state};
+	var state = Abs(Cos(time, 100));
+	var update = {Bottom = Format("%d%%", state)};
 	CustomGuiUpdate(update, HP_bar_menu, 1);
 }
 

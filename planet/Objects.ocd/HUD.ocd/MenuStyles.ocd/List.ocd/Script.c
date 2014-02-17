@@ -71,7 +71,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	var ID = GetLength(entries) + 1;
 	if (!custom_entry)
 	{
-		custom_entry = {Hgt = [0, 64], sym = {Wdt = [0, 64], Hgt = [0, 64]}, desc = {X = [0, 64]}};
+		custom_entry = {Bottom = "+4em", sym = {Right = "+4em", Bottom = "+4em"}, desc = {Left = "+4em"}};
 		custom_entry.sym.Symbol = symbol;
 		custom_entry.desc.Text = text;
 		custom_entry.desc.Style = GUI_TextVCenter;

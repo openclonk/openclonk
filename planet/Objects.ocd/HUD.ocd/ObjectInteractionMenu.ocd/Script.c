@@ -178,15 +178,15 @@ func OpenMenuForObject(object obj, int slot)
 	var part_menu = 
 	{
 		Style = GUI_NoCrop,
-		X = 0, Wdt = [500, -25],
+		Left = "0%", Right = "50%-1em",
 		sidebar = sidebar, main = main,
 		Target = current_menus[slot].menu_object
 	};
 	
 	if (slot == 1)
 	{
-		part_menu.X = [500, + 25];
-		part_menu.Wdt = 1000;
+		part_menu.Left = "50%+1.5em";
+		part_menu.Right = "100%";
 	}
 	
 	
@@ -221,15 +221,15 @@ func CreateSideBar(int slot)
 	var sidebar =
 	{
 		Priority = 10,
-		Wdt = [0, 64],
+		Right = "+4em",
 		Style = GUI_VerticalLayout,
 		Target = dummy,
 		OnClose = GuiAction_Call(this, "RemoveDummy", dummy),
 	};
 	if (slot == 1)
 	{
-		sidebar.X = [1000, -64];
-		sidebar.Wdt = 1000;
+		sidebar.Left = "100%-4em";
+		sidebar.Right = "100%";
 	}
 	
 	// now show the current_objects list as entries
@@ -246,7 +246,7 @@ func CreateSideBar(int slot)
 		}
 		var entry = 
 		{
-			Wdt = [0, 64], Hgt = [0, 64],
+			Right = "+4em", Bottom = "+4em",
 			Symbol = symbol,
 			Style = GUI_TextBottom | GUI_TextHCenter,
 			BackgroundColor = background_color,
@@ -254,7 +254,7 @@ func CreateSideBar(int slot)
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
 			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, X = [0, 8], Y = [0, 8], Wdt = [1000, -8], Hgt = [1000, -8]}
+			obj_symbol = {Symbol = obj, Left = "0.5em", Top = "0.5em", Right = "100%-0.5em", Bottom = "100%-0.5em"}
 		};
 		
 		Gui_AddSubwindow(entry, sidebar);
@@ -280,13 +280,13 @@ func CreateMainMenu(object obj, int slot)
 		Target = CreateDummy(),
 		Priority = 5,
 		Decoration = GUI_MenuDeco,
-		Wdt = [1000, -64],
+		Right = "100%-4em",
 		Style = GUI_VerticalLayout
 	};
 	if (slot == 0)
 	{
-		container.X = [0, 64];
-		container.Wdt = 1000;
+		container.Left = "+4em";
+		container.Right = "100%";
 	}
 	var menus = [];
 	// get all interaction info from the object and put it into a menu
@@ -315,7 +315,7 @@ func CreateMainMenu(object obj, int slot)
 		menu.menu_object = CreateObject(MenuStyle_Grid);
 		if (menu.decoration)
 			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
-		menu.menu_object.Y = [0, 32];
+		menu.menu_object.Top = "+2em";
 		menu.menu_object.Priority = 2;
 		menu.menu_object->SetPermanent();
 
@@ -333,7 +333,7 @@ func CreateMainMenu(object obj, int slot)
 			title_bar = 
 			{
 				Priority = 1,
-				Hgt = [0, 24],
+				Bottom = "+1em",
 				Text = menu.title,
 				Decoration = menu.decoration
 			},

@@ -9,7 +9,8 @@
 static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
 
 static const GUI_Controller_ActionBar_Delay = 20; // delay before the action bar is shown when pressing Interact
-static const GUI_Controller_ActionBar_IconSize = 128;
+// all values given in 10 em (-> 10 = 1.0em)
+static const GUI_Controller_ActionBar_IconSize = 80;
 static const GUI_Controller_ActionBar_Margin = 20;
 
 local interaction_check_active;
@@ -173,7 +174,7 @@ func UpdateActionBarDisplay()
 	{
 		Target = GetActionBarGuiTarget(),
 		Style = 0,//GUI_GridLayout,
-		Y = 500, Hgt = [500, GUI_Controller_ActionBar_IconSize]
+		Top = "50%", Bottom = Format("50%%%s", ToEmString(GUI_Controller_ActionBar_IconSize))
 	};
 	
 	var crew = GetCursor(GetOwner());
@@ -191,8 +192,9 @@ func UpdateActionBarDisplay()
 			ID = hotkey,
 			Priority = action_info.priority,
 			Style = GUI_NoCrop | GUI_TextTop | GUI_TextRight,
-			X = [500, pos_x], Wdt = [500, pos_x + GUI_Controller_ActionBar_IconSize],
-			Wdt = [0, GUI_Controller_ActionBar_IconSize],
+			Left = Format("50%%%s", ToEmString(pos_x)),
+			Right = Format("50%%%s", ToEmString(pos_x + GUI_Controller_ActionBar_IconSize)),
+			Bottom = Format("0%%%s", ToEmString(GUI_Controller_ActionBar_IconSize)),
 			Symbol = Icon_Menu_RectangleBrightRounded,
 			Text = Format("%2d", hotkey),
 			icon =
@@ -202,8 +204,8 @@ func UpdateActionBarDisplay()
 			info_icon =
 			{
 				Priority = 2,
-				X = [0, 8], Wdt = [0, 8 + 64],
-				Y = [0, 8], Hgt = [0, 8 + 64],
+				Left = "+1em", Right = "0%+4.5em",
+				Top = "+1em", Bottom = "0%+4.5em"
 			},
 			OnClick = GuiAction_Call(this, "OnActionBarSelected", button_number),
 			OnMouseIn = GuiAction_SetTag("OnHover"), 

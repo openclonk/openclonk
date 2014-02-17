@@ -12,9 +12,10 @@
 		hand: bool, whether select with a hand
 */
 
-static const GUI_Controller_InventoryBar_IconMarginScreenBottom = 5; // margin from left border of screen
-static const GUI_Controller_InventoryBar_IconSize = 64;
-static const GUI_Controller_InventoryBar_IconMargin = 20;
+// all values given in 10 em (-> 10 = 1.0em)
+static const GUI_Controller_InventoryBar_IconMarginScreenBottom = 2; // margin from left border of screen
+static const GUI_Controller_InventoryBar_IconSize = 40;
+static const GUI_Controller_InventoryBar_IconMargin = 10;
 
 local inventory_slots;
 local inventory_gui_target;
@@ -25,11 +26,13 @@ local progress_bar_links;
 func GetInventoryGuiID()
 {
 	if (inventory_gui_id) return inventory_gui_id;
+	var position_y_offset = -(GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize);
+	
 	var menu =
 	{
 		Target = GetInventoryGuiTarget(),
 		Style = GUI_Multiple | GUI_IgnoreMouse | GUI_NoCrop,
-		Y = [1000, -(GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize)],
+		Top = ToEmString(position_y_offset),
 		OnClose = GuiAction_Call(this, "OnInventoryGuiClose")
 		
 	};
@@ -191,9 +194,10 @@ func CalculateButtonPosition(int slot_number, int max_slots)
 	var pos_y = - (GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize);
 	var pos =
 	{
-		X = [500, pos_x], Y = [1000, pos_y],
-		Wdt = [500, pos_x + GUI_Controller_InventoryBar_IconSize],
-		Hgt = [1000, pos_y + GUI_Controller_InventoryBar_IconSize],
+		Left = Format("50%%%s", ToEmString(pos_x)),
+		Top = Format("100%%%s", ToEmString(pos_y)),
+		Right = Format("50%%%s", ToEmString(pos_x + GUI_Controller_InventoryBar_IconSize)),
+		Bottom = Format("100%%%s", ToEmString(pos_y + GUI_Controller_InventoryBar_IconSize))
 	};
 	return pos;
 }
@@ -221,19 +225,12 @@ func CreateNewInventoryButton(int max_slots)
 		Style = GUI_NoCrop,
 		ID = slot_info.ID,
 		Symbol = {Std = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
-		X = [pos.X[0], {Std = pos.X[1], Selected = pos.X[1] - 16}],
-		Y = [pos.Y[0], {Std = pos.Y[1], Selected = pos.Y[1] - 16}],
-		Wdt = [pos.Wdt[0], {Std = pos.Wdt[1], Selected = pos.Wdt[1] + 16}],
-		Hgt = [pos.Hgt[0], {Std = pos.Hgt[1], Selected = pos.Hgt[1] + 16}],
+		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
 		Text = Format("%2d", slot_info.slot + 1),
 		icon = 
 		{
 			Target = GetInventoryGuiTarget(),
-			ID = 1000 + slot_info.ID,
-			X = [0, {Std = 0, Selected = -16}],
-			Y = [0, {Std = 0, Selected = -16}],
-			Wdt = [1000, {Std = 0, Selected = 16}],
-			Hgt = [1000, {Std = 0, Selected = 16}]
+			ID = 1000 + slot_info.ID
 		}
 	};
 	CustomGuiUpdate({new_icon = icon}, GetInventoryGuiID(), 0);	

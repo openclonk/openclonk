@@ -37,8 +37,8 @@ global func Gui_AddCloseButton(proplist menu, proplist target, string callback, 
 	var close_button =
 	{
 		Priority = 0x0fffff,
-		X = [1000, -32], Y = 0,
-		Wdt = 1000, Hgt = [0, 32],
+		Left = "100%-2em", Top = "0%+0em",
+		Right = "100%", Bottom = "0%+2em",
 		Symbol = Icon_Cancel,
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
 		OnMouseIn = GuiAction_SetTag("Hover"),
@@ -66,4 +66,13 @@ global func Gui_AddSubwindow(proplist submenu, proplist menu)
 		menu[uniqueID] = submenu;
 		return true;
 	} while (true);
+}
+
+// converts an integer into a "em"-value string that can be used as a position for a GUI. The value will be divided by "factor" which is 10 by default
+global func ToEmString(int value, int factor)
+{
+	factor = factor ?? 10;
+	var sign = "";
+	if (value >= 0) sign = "+";
+	return Format("%s%d.%dem", sign, value / factor, Abs(value % factor));
 }
