@@ -105,6 +105,27 @@ public func IsFulfilled()
 	return true;
 }
 
+public func GetDescription(int plr)
+{
+	if(IsFulfilled()) 
+	{
+		if (GetKillCount(plr) >= maxkills) 
+			return "$MsgVictory$";
+	} 
+	else 
+	{
+		var score = GetRelativeScore(plr);
+		if (score.kills > 0)
+			return Format("$MsgAhead$",  score.kills,  GetPlayerName(score.best));
+		else if (score.kills < 0)
+			return Format("$MsgBehind$", -score.kills, GetPlayerName(score.best));
+		else if (score.best == plr) 
+			return Format("$MsgYouAreBest$", score.kills);
+		else 
+			return Format("$MsgEqual$", GetPlayerName(score.best));
+	}
+}
+
 public func Activate(int byplr)
 {
 	if(IsFulfilled()) 

@@ -27,6 +27,16 @@ public func IsFulfilled()
 	return false;	
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnFulfilled$";
+	return message;
+}
+
 public func Activate(int byplr)
 {
 	if (IsFulfilled())

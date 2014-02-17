@@ -25,6 +25,16 @@ public func IsFulfilled()
 	return statue && !statue->IsBroken();
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnfulfilled$";
+	return message;
+}
+
 // Shows or hides a message window with information.
 public func Activate(int plr)
 {

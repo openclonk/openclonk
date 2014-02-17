@@ -57,6 +57,17 @@ public func IsFulfilled()
 	return true;
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = Format("$MsgGoalFulfilled$", GetWealthGoal());	
+	else
+		message = Format("$MsgGoalUnfulfilled$", GetWealth(plr), GetWealthGoal());
+
+	return message;
+}
+
 // Shows or hides a message window with information.
 public func Activate(int plr)
 {

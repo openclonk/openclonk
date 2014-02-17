@@ -146,6 +146,21 @@ public func IsFulfilled()
 	return false;
 }
 
+public func GetDescription(int plr)
+{
+	var flags = GetScoreGoal() - score_list[GetPlayerTeam(plr)];
+	if (IsFulfilled())
+		return "$MsgGoalFulfilled$";
+	else
+	{
+		var msg = "$MsgGoalCaptureTheFlag$";
+		if (flags == 1)
+			return Format("%s %s", msg, "$MsgGoalUnfulfilled1$");
+		else
+			return Format("%s %s", msg, Format("$MsgGoalUnfulfilledX$", flags));
+	}
+}
+
 public func Activate(int byplr)
 {
 	var flags = GetScoreGoal() - score_list[GetPlayerTeam(byplr)];
