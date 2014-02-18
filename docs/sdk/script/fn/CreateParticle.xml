@@ -18,12 +18,12 @@
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X-coordinate of the new particle (relative to object for local calls)</desc>
+          <desc>X-coordinate of the new particle (relative to object for local calls).</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-			<desc>Y-coordinate of the new particle (relative to object for local calls)</desc>
+			<desc>Y-coordinate of the new particle (relative to object for local calls).</desc>
         </param>
         <param>
           <type>int</type>
@@ -38,7 +38,7 @@
 		<param>
           <type>int</type>
           <name>lifetime</name>
-          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function.</desc>
+          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function. If set to 0, the particle will not be removed automatically.</desc>
         </param>
 		<param>
           <type>proplist</type>
@@ -72,7 +72,7 @@ var particles =
 	ForceX = <funclink>PV_Random</funclink>(-5, 5, 15),
 	Phase = <funclink>PV_Step</funclink>(1, 0, 10)
 };
-<funclink>CreateParticle</funclink>("Fire", 0, 0, <funclink>PV_Random(-200, 200)</funclink>, <funclink>PV_Random</funclink>(-200, 200), <funclink>PV_Random</funclink>(18, 38 * 5), particles, 100);
+<funclink>CreateParticle</funclink>("Fire", 0, 0, <funclink>PV_Random</funclink>(-200, 200), <funclink>PV_Random</funclink>(-200, 200), <funclink>PV_Random</funclink>(18, 38 * 5), particles, 100);
 			</code>
 			<text>Casts 100 particles with a previously defined behavior.</text>
 		  </example>
