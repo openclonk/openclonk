@@ -1477,7 +1477,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
 			textXOffset = width - float(wdt);
 		}
-		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + leftDrawX + textXOffset, cgo.Y + topDrawY + textYOffset, 0xffffffff, ALeft);
+		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, leftDrawX + textXOffset, topDrawY + textYOffset, 0xffffffff, ALeft);
 		// enable auto scroll
 		float textBottom = lastDrawPosition.top + float(textHgt);
 		if (textBottom > lastDrawPosition.bottom)

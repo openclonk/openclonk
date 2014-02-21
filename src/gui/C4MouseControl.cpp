@@ -320,7 +320,8 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// are custom menus active?
 	bool menuProcessed = false;
 	if (pPlayer)
-		menuProcessed = ::Game.GuiWindowRoot->MouseInput(Player, iButton, iX, iY, dwKeyFlags);
+		// adjust by viewport X/Y because the GUI windows calculate their positions (and thus check input) based on that
+		menuProcessed = ::Game.GuiWindowRoot->MouseInput(Player, iButton, iX + Viewport->DrawX, iY + Viewport->DrawY, dwKeyFlags);
 
 	// if not caught by a menu
 	if (!menuProcessed)
