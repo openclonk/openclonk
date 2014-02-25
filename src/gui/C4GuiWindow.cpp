@@ -1667,7 +1667,7 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 			return true;
 	}
 
-	if (button == C4MC_Button_LeftDown)
+	if (button == C4MC_Button_LeftUp)
 	{
 		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onClickAction].GetAction();
 		if (action)
