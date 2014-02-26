@@ -47,7 +47,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 			// cancel menu
 			if (ctrl == CON_CancelMenu)
 			{
-				cursor->GetMenu()->Close();
+				cursor->TryCancelMenu();
 				return true;
 			}
 
@@ -452,8 +452,15 @@ global func ShiftCursor(int plr, bool back)
 	} while (!(GetCrew(plr,index)->GetCrewEnabled()) && cycle < maxcycle);
 
 	StopSelected();
-
-	return SetCursor(plr, GetCrew(plr,index));
+	
+	// Changing the cursor closes all menus that are associated with the old cursor.
+	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
+	var current_cursor = GetCursor(plr);
+	var new_cursor = GetCrew(plr, index);
+	if (current_cursor == new_cursor) return false;
+	if (current_cursor->~GetMenu() && !current_cursor->~TryCancelMenu()) return false;
+	
+	return SetCursor(plr, new_cursor);
 }
 
 // Temporarily used for Debugging!

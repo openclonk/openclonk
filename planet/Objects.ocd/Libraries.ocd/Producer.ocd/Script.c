@@ -56,9 +56,9 @@ public func Interact(object clonk)
 	if (open_menu)
 	{
 		var is_prod_menu = open_menu->~IsProductionMenu();
-		// Remove the open menu.
-		open_menu->RemoveObject();
-		clonk->SetMenu(nil);
+		// unclosable menu? bad luck
+		if (!clonk->TryCancelMenu()) return true;
+
 		// If open_menu is production menu, return and don't open a new one.
 		if (is_prod_menu)
 			return true;	

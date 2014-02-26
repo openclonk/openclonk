@@ -184,8 +184,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if(GetMenu())
 			{
 				// close a possible menu but still open the action bar later
-				if(!GetMenu()->~Uncloseable())
-					CancelMenu();
+				TryCancelMenu();
 				// interaction with a menu counts as a special hotkey
 				this.control.hotkeypressed = true;
 				return true;
@@ -229,11 +228,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// Close any menu if open.
 		if (GetMenu())
 		{
-			// Uncloseable menu?
-			if (GetMenu()->~Uncloseable()) return true;
-
 			var is_content = GetMenu()->~IsContentMenu();
-			CancelMenu();
+			// unclosable menu? bad luck
+			if (!TryCancelMenu()) return true;
 			// If contents menu, don't open new one and return.
 			if (is_content)
 				return true;
@@ -244,7 +241,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// the interaction menu calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
 		if(GetMenu())
-			GetMenu()->Show();		
+			GetMenu()->~Show();		
 		return true;
 	}
 	
@@ -875,62 +872,115 @@ func HasMenuControl()
 	return true;
 }
 
-func SetMenu(object m)
-{
-	// already the same
-	if ((menu == m) && m)
-	{
-		return;
-	}
-	// no multiple menus: close old one
-	if (menu && m)
-	{
-		menu->Close();
-	}
-	// new one
-	menu = m;
-	if (menu)
-	{
-		CancelUse();
-		// stop clonk
-		SetComDir(COMD_Stop);
-	
-		if (PlayerHasVirtualCursor(GetOwner()))
-			VirtualCursor()->StartAim(this,false,menu);
-		else
-		{
-			if (menu->~CursorUpdatesEnabled()) 
-				SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+// helper function that can be attached to a proplist to set callbacks on-the-fly
+func GetTrue() { return true; }
 
-			SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
-			SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
+/*
+Sets the menu this Clonk currently has focus of. Old menus that have been opened via SetMenu will be closed, making sure that only one menu is open at a time.
+Additionally, the Clonk's control is disabled while a menu is open.
+The menu parameter can either be an object that closes its menu via a Close() callback or it can be a menu ID as returned by GuiOpen. When /menu/ is such an ID,
+the menu will be closed via GuiClose when a new menu is opened. If you need to do cleaning up, you will have to use the OnClose callback of the menu.
+When you call SetMenu with a menu ID, you should also call clonk->MenuClosed(), once your menu is closed.
+*/
+func SetMenu(new_menu, bool unclosable)
+{
+	unclosable = unclosable ?? false;
+	
+	// no news?
+	if (new_menu) // if new_menu==nil, it is important that we still do the cleaning-up below even if we didn't have a menu before (see MenuClosed())
+		if (menu == new_menu) return;
+	
+	// close old one!
+	if (menu != nil)
+	{
+		if (GetType(menu) == C4V_C4Object)
+			menu->Close();
+		else if (GetType(menu) == C4V_PropList)
+			CustomGuiClose(menu.ID);
+		else
+			FatalError("Library_ClonkControl::SetMenu() was called with invalid parameter.");
+	}
+	else
+	{
+		// we have a new menu but didn't have another one before? Enable menu controls!
+		if (new_menu)
+		{
+			CancelUse();
+			// stop clonk
+			SetComDir(COMD_Stop);
+		
+			if (PlayerHasVirtualCursor(GetOwner()))
+				VirtualCursor()->StartAim(this,false, new_menu);
+			else
+			{
+				if (GetType(new_menu) == C4V_C4Object && new_menu->~CursorUpdatesEnabled()) 
+					SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+		
+				SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
+				SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
+			}
 		}
 	}
-	// close menu
-	if (!menu)
+	
+	if (new_menu)
 	{
+		if (GetType(new_menu) == C4V_C4Object)
+		{
+			menu = new_menu;
+		}
+		else if (GetType(new_menu) == C4V_Int)
+		{
+			// add a proplist, so that it is always safe to call functions on clonk->GetMenu()
+			menu =
+			{
+				ID = new_menu
+			};
+		}
+		else
+			FatalError("Library_ClonkControl::SetMenu called with invalid parameter!");
+		
+		// make sure the menu is unclosable even if it is just a GUI ID
+		if (unclosable)
+		{
+			menu.Unclosable = Library_ClonkControl.GetTrue;
+		}
+	}
+	else
+	{
+		// always disable cursors, even if no old menu existed, because it can happen that a menu removes itself and thus the Clonk never knows whether the cursors are active or not
 		RemoveVirtualCursor(); // for gamepads
 		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
+
+		menu = nil;
 	}
+	return menu;
 }
 
 func MenuClosed()
 {
+	// make sure not to clean up the menu again
+	menu = nil;
+	// and remove cursors etc.
 	SetMenu(nil);
 }
 
+/*
+Returns the current menu or nil. If a menu is returned, it is always a proplist (but not necessarily an object).
+Stuff like if (clonk->GetMenu()) clonk->GetMenu()->~IsClosable(); is always safe.
+If you want to remove the menu, the suggested method is clonk->TryCancelMenu() to handle unclosable menus correctly.
+*/
 func GetMenu()
 {
 	return menu;
 }
 
+// Returns true when an existing menu was closed
 func CancelMenu()
 {
 	if (menu)
 	{
-		menu->Close();
 		SetMenu(nil);
 		return true;
 	}
@@ -938,6 +988,14 @@ func CancelMenu()
 	return false;
 }
 
+// Tries to cancel a non-unclosable menu. Returns true when there is no menu left after this call (even if there never was one).
+func TryCancelMenu()
+{
+	if (!menu) return true;
+	if (menu->~Unclosable()) return false;
+	CancelMenu();
+	return true;
+}
 
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 

@@ -17,6 +17,8 @@
 
 local virtual_cursor;
 
+/* This part of gamepad control handles only object-style menus.
+Fullscreen menus are handled differently. */
 func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
 
@@ -24,7 +26,9 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool releas
 	   now this is just the same for gamepad control */
 	if (!PlayerHasVirtualCursor(GetOwner()))
 		return true;
-
+		
+	if (!this->GetMenu()) return false;
+	
 	// fix pos of x and y
 	var mex = this.control.mlastx+GetX()-GetMenu()->GetX();
 	var mey = this.control.mlasty+GetY()-GetMenu()->GetY();
