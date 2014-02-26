@@ -28,7 +28,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	}
 	
 	// Otherwise create a menu with possible structures to build.
-	clonk->CreateConstructionMenu(this, true);
+	OpenConstructionMenu(clonk);
+	//clonk->CreateConstructionMenu(this, true);
 	clonk->CancelUse();
 	return true;
 }
@@ -159,7 +160,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		return false;
 	} 
 	// intersection-check with all other construction sites... bah
-	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
 		if(!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
 		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
@@ -185,10 +186,10 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	site->SetPosition(GetX()+x,GetY()+y);
 	
 	// Randomize sign rotation
-	site -> SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
-	site -> PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
+	site->SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
+	site->PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
 	
-	site -> Set(structure_id, dir, stick_to);
+	site->Set(structure_id, dir, stick_to);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	
@@ -226,9 +227,275 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 			}
 		}
 	}
-
 	
 	// Message
 	clonk->Message("$TxtConstructions$", structure_id->GetName());
 	return true;
+}
+
+
+/*-- Construction Menu --*/
+
+local menu, menu_id, menu_target, menu_controller;
+
+public func OpenConstructionMenu(object clonk)
+{
+	// If the menu is already open, don't open another instance.
+	if (clonk->GetMenu() && clonk->GetMenu().ID == menu_id)
+		return;	
+		
+	// Create a menu target for visibility.
+	menu_target = CreateObject(Dummy, 0, 0, clonk->GetOwner());
+	menu_target.Visibility = VIS_Owner;
+	
+	menu_controller = clonk;
+	
+	var menu_width = 35; 
+	var menu_height = 25;
+	
+	// Construction menu proplist.
+	menu =
+	{
+		Target = menu_target,
+		Style = GUI_Multiple,
+		Decoration = GUI_MenuDeco,
+		Left = Format("%d%", 50 - menu_width),
+		Right = Format("%d%", 50 + menu_width),
+		Top = Format("%d%", 50 - menu_height),
+		Bottom = Format("%d%", 50 + menu_height),
+		BackgroundColor = {Std = 0},
+	};
+	
+	var structures = 
+	{
+		Target = menu_target,
+		ID = 1,
+		Left = "0%",
+		Right = "50%",
+		Top = "0%",
+		Bottom = "100%",
+		BackgroundColor = {Std = 0},
+	};
+	structures = MenuAddStructures(structures, clonk);
+	
+	var structinfo = 
+	{
+		Target = menu_target,
+		ID = 2,
+		Left = "50%",
+		Right = "100%",
+		Top = "0%",
+		Bottom = "100%",
+		BackgroundColor = {Std = 0},
+	};
+	structinfo.Description = 
+	{
+		Target = menu_target,
+		ID = 3,
+		Priority = 0x0fffff,
+		Left = "0%",
+		Right = "100%",
+		Top = "85%",
+		Bottom = "100%",	
+		Text = nil, // will be updated
+	};
+	structinfo.Picture = 
+	{
+		Target = menu_target,
+		ID = 4,
+		Left = "10%",
+		Right = "80%",
+		Top = "10%",
+		Bottom = "80%",	
+		Symbol = nil, // will be updated
+	};
+	structinfo.PowerConsumer =
+	{
+		Target = menu_target,
+		ID = 5,
+		Left = "10%",
+		Right = "20%",
+		Top = "10%",
+		Bottom = "20%",	
+		Symbol = nil, // will be updated
+	};
+	structinfo.PowerProducer = 
+	{
+		Target = menu_target,
+		ID = 6,
+		Left = "70%",
+		Right = "80%",
+		Top = "10%",
+		Bottom = "20%",	
+		Symbol = nil, // will be updated
+	};
+	structinfo.Materials = 
+	{
+		Target = menu_target,
+		ID = 7,
+		Left = "80%",
+		Right = "100%",
+		Top = "0%",
+		Bottom = "80%",	
+	};
+	structinfo.CloseButton = 
+	{
+		Target = menu_target,
+		ID = 8,
+		Left = "90%", 
+		Right = "100%", 
+		Top = "0%",
+		Bottom = "10%",
+		Symbol = Icon_Cancel,
+		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
+		OnMouseIn = GuiAction_SetTag("Hover"),
+		OnMouseOut = GuiAction_SetTag("Std"),
+		OnClick = GuiAction_Call(this, "CloseConstructionMenu"),
+	};
+	structinfo = MenuMaterialCosts(structinfo, nil);
+	
+	menu.Structure = structures;
+	menu.StructInfo = structinfo;
+
+	// Menu ID.
+	menu_id = CustomGuiOpen(menu);
+	clonk->SetMenu(menu_id);
+	return;
+}
+
+public func MenuAddStructures(proplist struct, object clonk)
+{
+	var plans = GetConstructionPlans(clonk->GetOwner());
+	var nr_plans = GetLength(plans);
+	var width = 100 / 5;
+	
+	var cnt = 0;
+	for (var structure in GetConstructionPlans(clonk->GetOwner()))
+	{
+		var x = cnt % 5;
+		var y = cnt / 5;
+		var str =
+		{
+			Target = menu_target,
+			ID = cnt + 100,
+			Left = Format("%d%", width * x),
+			Right = Format("%d%", width * (x + 1)),
+			Top = Format("%d%", width * y),
+			Bottom =  Format("%d%", width * (y + 1)),
+			BackgroundColor = {Std = 0, Hover = 0x50ffffff},
+			OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnConstructionHover", structure)],
+			OnMouseOut = GuiAction_SetTag("Std"), 
+			OnClick = GuiAction_Call(this, "OnConstructionSelection", {Struct = structure, Constructor = clonk}),
+			Picture = 
+			{
+				ID = cnt + 200,
+				Left = "8%",
+				Right = "92%",
+				Top = "8%",
+				Bottom = "92%",
+				Symbol = structure,
+			},
+		};
+		struct[Format("Struct%d", cnt + 4)] = str;		
+		cnt++;
+	}
+	return struct;
+}
+
+public func MenuMaterialCosts(proplist info, id structure)
+{
+	// Show text "costs:" as a submenu.
+	info.MaterialCosts = { 
+		Target = menu_target,
+		ID = 1000,
+		Left = "90%",
+		Right = "100%",
+		Top = "20%-1.2em",
+		Bottom = "20%",
+		Style = GUI_TextHCenter,
+		Text = "Costs:",		
+	};	
+	
+	// Get the different components of the structure.
+	var comp, index = 0;
+	var components = [];
+	if (structure)
+		while (comp = GetComponent(nil, index++, nil, structure))
+			components[GetLength(components)] = [comp, GetComponent(comp, nil, nil, structure)];
+					
+	// Add those components to the submenus of the info menu.
+	for (var i = 1; i <= 7; i++)
+	{
+		var amount = "";
+		var symbol = nil;
+		if (GetLength(components) >= i)
+		{
+			amount = Format("%dx", components[i - 1][1]);
+			symbol = components[i - 1][0];
+		}
+		info[Format("MaterialCost%d", i)] = 
+		{
+			Target = menu_target,
+			ID = i + 1000,
+			Left = "90%",
+			Right = "100%",
+			Top = Format("%d%", 10 + 10 * i),
+			Bottom = Format("%d%", 20 + 10 * i),
+			Symbol = symbol,
+			Style = GUI_TextRight | GUI_TextBottom,
+			Text = amount,		
+		};	
+	}
+	return info;
+}
+
+public func OnConstructionSelection(proplist par)
+{
+	ShowConstructionPreview(par.Constructor, par.Struct);
+	CloseConstructionMenu();
+	return;
+}
+
+public func OnConstructionHover(id structure)
+{
+	var structinfo = menu.StructInfo;
+	
+	// Update the description to this part of the menu.
+	structinfo.Description.Text = structure.Description;
+	CustomGuiUpdate(structinfo.Description, menu_id, structinfo.Description.ID, menu_target);
+	
+	// Update the picture of the structure.
+	structinfo.Picture.Symbol = structure;
+	CustomGuiUpdate(structinfo.Picture, menu_id, structinfo.Picture.ID, menu_target);
+	
+	// Update also power consumption/production.
+	if (structure->~IsPowerConsumer())
+		structinfo.PowerConsumer.Symbol = Library_PowerConsumer;
+	else
+		structinfo.PowerConsumer.Symbol = nil;
+	CustomGuiUpdate(structinfo.PowerConsumer, menu_id, structinfo.PowerConsumer.ID, menu_target);
+	if (structure->~IsPowerProducer())
+		structinfo.PowerProducer.Symbol = Library_PowerProducer;
+	else
+		structinfo.PowerProducer.Symbol = nil;
+	CustomGuiUpdate(structinfo.PowerProducer, menu_id, structinfo.PowerProducer.ID, menu_target);
+	
+	// Update the material costs of the structure.
+	structinfo = MenuMaterialCosts(structinfo, structure);
+	for (var i = 1; i <= 7; i++)
+		CustomGuiUpdate(structinfo[Format("MaterialCost%d", i)], menu_id, structinfo[Format("MaterialCost%d", i)].ID, menu_target);
+
+	return;
+}
+
+public func CloseConstructionMenu()
+{
+	CustomGuiClose(menu_id, nil, menu_target);
+	menu_id = nil;
+	menu_target->RemoveObject();
+	menu_target = nil;
+	if (menu_controller)
+		menu_controller->MenuClosed();
+	menu_controller = nil;
+	return;
 }
