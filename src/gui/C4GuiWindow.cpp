@@ -398,6 +398,14 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 		case C4GuiWindowPropertyName::relRight:
 		case C4GuiWindowPropertyName::relTop:
 		case C4GuiWindowPropertyName::relBottom:
+		case C4GuiWindowPropertyName::leftMargin:
+		case C4GuiWindowPropertyName::rightMargin:
+		case C4GuiWindowPropertyName::topMargin:
+		case C4GuiWindowPropertyName::bottomMargin:
+		case C4GuiWindowPropertyName::relLeftMargin:
+		case C4GuiWindowPropertyName::relRightMargin:
+		case C4GuiWindowPropertyName::relTopMargin:
+		case C4GuiWindowPropertyName::relBottomMargin:
 			assert (false && "Trying to get a single positional value from a GuiWindow for saving. Those should always be saved in pairs of two in a string.");
 			break;
 
@@ -500,6 +508,14 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	case C4GuiWindowPropertyName::relRight:
 	case C4GuiWindowPropertyName::relTop:
 	case C4GuiWindowPropertyName::relBottom:
+	case C4GuiWindowPropertyName::leftMargin:
+	case C4GuiWindowPropertyName::rightMargin:
+	case C4GuiWindowPropertyName::topMargin:
+	case C4GuiWindowPropertyName::bottomMargin:
+	case C4GuiWindowPropertyName::relLeftMargin:
+	case C4GuiWindowPropertyName::relRightMargin:
+	case C4GuiWindowPropertyName::relTopMargin:
+	case C4GuiWindowPropertyName::relBottomMargin:
 		assert (false && "Trying to set positional properties directly. Those should always come parsed from a string.");
 		break;
 
@@ -658,6 +674,15 @@ void C4GuiWindow::Init()
 	props[C4GuiWindowPropertyName::relTop].SetNull();
 	props[C4GuiWindowPropertyName::relBottom].SetFloat(1.0f);
 	props[C4GuiWindowPropertyName::relRight].SetFloat(1.0f);
+	// all margins are always standard 0
+	props[C4GuiWindowPropertyName::leftMargin].SetNull();
+	props[C4GuiWindowPropertyName::rightMargin].SetNull();
+	props[C4GuiWindowPropertyName::topMargin].SetNull();
+	props[C4GuiWindowPropertyName::bottomMargin].SetNull();
+	props[C4GuiWindowPropertyName::relLeftMargin].SetNull();
+	props[C4GuiWindowPropertyName::relTopMargin].SetNull();
+	props[C4GuiWindowPropertyName::relBottomMargin].SetNull();
+	props[C4GuiWindowPropertyName::relRightMargin].SetNull();
 	// other properties are 0
 	props[C4GuiWindowPropertyName::backgroundColor].SetNull();
 	props[C4GuiWindowPropertyName::frameDecoration].SetNull();
@@ -691,6 +716,62 @@ C4GuiWindow::~C4GuiWindow()
 
 	if (scrollBar)
 		delete scrollBar;
+}
+
+// helper function
+void C4GuiWindow::SetMarginProperties(const C4Value &property, C4String *tag)
+{
+	// the value might be a tagged proplist again
+	if (property.GetType() == C4V_Type::C4V_PropList)
+	{
+		C4PropList *proplist = property.getPropList();
+		for (C4PropList::Iterator iter = proplist->begin(); iter != proplist->end(); ++iter)
+		{
+			SetMarginProperties(iter->Value, iter->Key);
+		}
+		return;
+	}
+
+	// safety
+	if (property.GetType() == C4V_Type::C4V_Array && property.getArray()->GetSize() == 0)
+		return;
+
+	// always set all four margins
+	for (int i = 0; i < 4; ++i)
+	{
+		C4GuiWindowPropertyName relative, absolute;
+		switch (i)
+		{
+		case 0:
+			absolute = C4GuiWindowPropertyName::leftMargin;
+			relative = C4GuiWindowPropertyName::relLeftMargin;
+			break;
+		case 1:
+			absolute = C4GuiWindowPropertyName::topMargin;
+			relative = C4GuiWindowPropertyName::relTopMargin;
+			break;
+		case 2:
+			absolute = C4GuiWindowPropertyName::rightMargin;
+			relative = C4GuiWindowPropertyName::relRightMargin;
+			break;
+		case 3:
+			absolute = C4GuiWindowPropertyName::bottomMargin;
+			relative = C4GuiWindowPropertyName::relBottomMargin;
+			break;
+		default:
+			assert(false);
+		}
+
+		if (property.GetType() == C4V_Type::C4V_Array)
+		{
+			C4ValueArray *array = property.getArray();
+			int realIndex = i % array->GetSize();
+			SetPositionStringProperties(array->GetItem(realIndex), relative, absolute, tag);
+		}
+		else
+			// normal string, hopefully
+			SetPositionStringProperties(property, relative, absolute, tag);
+	}
 }
 
 // helper function
@@ -892,6 +973,11 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 		else if(&Strings.P[P_Bottom] == key)
 		{
 			SetPositionStringProperties(property, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom, stdTag);
+			layoutUpdateRequired = true;
+		}
+		else if (&Strings.P[P_Margin] == key)
+		{
+			SetMarginProperties(property, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_BackgroundColor] == key)
@@ -1242,8 +1328,13 @@ void C4GuiWindow::UpdateLayoutGrid()
 	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4GuiWindow *child = *iter;
-		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left;
-		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
+		// calculate the space the child needs, correctly respecting the margins
+		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left
+			+ Em2Pix(child->props[C4GuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::rightMargin].GetFloat())
+			+ (lastDrawPosition.right - lastDrawPosition.left) * (child->props[C4GuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relRightMargin].GetFloat());
+		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
+			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
+			+ (lastDrawPosition.bottom - lastDrawPosition.top) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
 		// remember the heighest child
 		if (!maxChildHeight || (childHgt > maxChildHeight))
 			maxChildHeight = childHgt;
@@ -1382,13 +1473,24 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	const float &relTop = props[C4GuiWindowPropertyName::relTop].GetFloat();
 	const float &relBottom = props[C4GuiWindowPropertyName::relBottom].GetFloat();
 
+	// same for margins
+	const float &leftMargin = props[C4GuiWindowPropertyName::leftMargin].GetFloat();
+	const float &rightMargin = props[C4GuiWindowPropertyName::rightMargin].GetFloat();
+	const float &topMargin = props[C4GuiWindowPropertyName::topMargin].GetFloat();
+	const float &bottomMargin = props[C4GuiWindowPropertyName::bottomMargin].GetFloat();
+
+	const float &relLeftMargin = props[C4GuiWindowPropertyName::relLeftMargin].GetFloat();
+	const float &relRightMargin = props[C4GuiWindowPropertyName::relRightMargin].GetFloat();
+	const float &relTopMargin = props[C4GuiWindowPropertyName::relTopMargin].GetFloat();
+	const float &relBottomMargin = props[C4GuiWindowPropertyName::relBottomMargin].GetFloat();
+
 	// calculate drawing rectangle
 	float parentWidth = parentRight - parentLeft;
 	float parentHeight = parentBottom - parentTop;
-	float leftDrawX = parentLeft + relLeft * parentWidth + Em2Pix(left);
-	float rightDrawX = parentLeft + relRight * parentWidth + Em2Pix(right);
-	float topDrawY = parentTop + relTop * parentHeight + Em2Pix(top);
-	float bottomDrawY = parentTop + relBottom * parentHeight + Em2Pix(bottom);
+	float leftDrawX = parentLeft + relLeft * parentWidth + Em2Pix(left) + (Em2Pix(leftMargin) + relLeftMargin * parentWidth);
+	float rightDrawX = parentLeft + relRight * parentWidth + Em2Pix(right) - (Em2Pix(rightMargin) + relRightMargin * parentWidth);
+	float topDrawY = parentTop + relTop * parentHeight + Em2Pix(top) + (Em2Pix(topMargin) + relTopMargin * parentHeight);
+	float bottomDrawY = parentTop + relBottom * parentHeight + Em2Pix(bottom) - (Em2Pix(bottomMargin) + relBottomMargin * parentHeight);
 	float width = rightDrawX - leftDrawX;
 	float height = bottomDrawY - topDrawY;
 	float childOffsetY = 0.0f; // for scrolling

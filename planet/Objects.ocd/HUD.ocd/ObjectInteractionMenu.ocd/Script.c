@@ -254,7 +254,7 @@ func CreateSideBar(int slot)
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
 			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, Left = "0.5em", Top = "0.5em", Right = "100%-0.5em", Bottom = "100%-0.5em"}
+			obj_symbol = {Symbol = obj, Margin = "0.5em"}
 		};
 		
 		Gui_AddSubwindow(entry, sidebar);

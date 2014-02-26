@@ -78,6 +78,7 @@ func StartMultipleListTest()
 		m.Decoration = GUI_MenuDeco;
 		m.Left = x[i]; m.Top = y[i];
 		m.Right = w[i]; m.Bottom = h[i];
+		m.Margin = "2em";
 		Gui_AddSubwindow(m, menu.contents);
 		PushBack(inv_menus, m); // remember for later
 		for (var obj in inv)
@@ -141,10 +142,12 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 		list = 
 		{
 			Right = "50%",
+			Margin = ["2em", "0em"],
 			Style = GUI_VerticalLayout,
 		},
 		right = {
 			Left = "50%",
+			Margin = ["2em", "0em"],
 			Decoration = GUI_MenuDeco,
 			hostdesc =
 			{
@@ -195,8 +198,8 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			},
 			tick = 
 			{
-				Left = "100%-3em", Top = "50%0em",
-				Right = "100%-1em", Hgt =[500, 15],
+				Left = "100%-3em", Top = "50%-1em",
+				Right = "100%-1em", Bottom = "50%+1em",
 				Symbol = {Std = 0, Unticked = 0, Ticked = Icon_Ok}
 			}
 		};
@@ -290,7 +293,7 @@ func StartTransferTest()
 	var menu = 
 	{
 		head = { Bottom = "+3em", Text = "Welcome to the trade menu!", Style = GUI_TextHCenter | GUI_TextVCenter},
-		contents = { Top = "+1em", Left = "+1em", Right = "100%-1em" },
+		contents = { Margin = "1em" },
 	};
 	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
@@ -302,9 +305,9 @@ func StartTransferTest()
 		m.Style = GUI_TextHCenter | GUI_GridLayout;
 		if (i == 1)
 		{
-			m.Left = "50%+0em";
+			m.Left = "50% + 2em";
 			m.Text = "TO";
-		} else m.Right = "50%0em";
+		} else m.Right = "50% - 2em";
 		Gui_AddSubwindow(m, menu.contents);
 		var a = transfer_left;
 		if (i == 1) a = transfer_right;

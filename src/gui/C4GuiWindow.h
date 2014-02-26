@@ -33,10 +33,22 @@ enum C4GuiWindowPropertyName
 	top,
 	right,
 	bottom,
+
 	relLeft,
 	relRight,
 	relTop,
 	relBottom,
+
+	leftMargin,
+	topMargin,
+	rightMargin,
+	bottomMargin,
+	
+	relLeftMargin,
+	relRightMargin,
+	relTopMargin,
+	relBottomMargin,
+
 	backgroundColor,
 	frameDecoration,
 	symbolObject,
@@ -226,6 +238,8 @@ class C4GuiWindow
 	void ChildChangedPriority(C4GuiWindow *child);
 	// helper function to extract relative and absolute position values from a string
 	void SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag);
+	// sets all margins either from a string or from an array
+	void SetMarginProperties(const C4Value &property, C4String *tag);
 
 	// this is only supposed to be called at ::Game.GuiWindowRoot since it uses the "ID" property
 	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
