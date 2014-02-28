@@ -53,8 +53,8 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 			if (ctrl == CON_GUIClick1 || ctrl == CON_GUIClick2 || ctrl == CON_GUICursor)
 			{
-				var menux = cursor->GetMenu()->GetX();
-				var menuy = cursor->GetMenu()->GetY();
+				var menux = cursor->GetMenu()->~GetX();
+				var menuy = cursor->GetMenu()->~GetY();
 				
 				var dx = x-menux;
 				var dy = y-menuy;

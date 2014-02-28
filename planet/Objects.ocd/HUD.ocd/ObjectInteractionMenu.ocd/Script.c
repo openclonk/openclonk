@@ -59,7 +59,7 @@ func Destruction()
 	// we need only to remove the top-level menu target of the open menus, since the submenus close due to a clever use of OnClose!
 	for (var menu in current_menus)
 	{
-		if (menu.menu_object)
+		if (menu && menu.menu_object)
 			menu.menu_object->RemoveObject();
 	}
 }
