@@ -701,7 +701,7 @@ void C4GuiWindow::Init()
 	wasRemoved = false;
 	closeActionWasExecuted = false;
 	visible = true;
-	hasMouseFocus = false;
+	currentMouseState = MouseState::None;
 	target = 0;
 	scrollBar = 0;
 }
@@ -907,7 +907,7 @@ const C4Value C4GuiWindow::ToC4Value()
 		case P_OnMouseOut: val = props[C4GuiWindowPropertyName::onMouseOutAction].ToC4Value(); break;
 		case P_OnClose: val = props[C4GuiWindowPropertyName::onCloseAction].ToC4Value(); break;
 		case P_Style: val = props[C4GuiWindowPropertyName::style].ToC4Value(); break;
-		case P_Mode: val = C4Value(int32_t(hasMouseFocus)); break;
+		case P_Mode: val = C4Value(int32_t(currentMouseState)); break;
 		case P_Priority: val = props[C4GuiWindowPropertyName::priority].ToC4Value(); break;
 		case P_Player: val = props[C4GuiWindowPropertyName::player].ToC4Value(); break;
 
@@ -1001,7 +1001,7 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 		else if(&Strings.P[P_Prototype] == key)
 			; // do nothing
 		else if(&Strings.P[P_Mode] == key) // note that "Mode" is abused here for saving whether we have mouse focus
-			hasMouseFocus = property.getBool();
+			currentMouseState = property.getInt();
 		else if(&Strings.P[P_ID] == key)
 		{
 			// setting IDs is only valid for subwindows or when loading savegames!
@@ -1655,8 +1655,8 @@ void C4GuiWindow::SetTag(C4String *tag)
 
 void C4GuiWindow::OnMouseIn(int32_t player)
 {
-	assert(!hasMouseFocus && "custom menu window properly loaded incorrectly!");
-	hasMouseFocus = true;
+	assert(!HasMouseFocus() && "custom menu window properly loaded incorrectly!");
+	currentMouseState = MouseState::Focus;
 
 	// no need to notify children, this is done in MouseInput
 
@@ -1669,14 +1669,14 @@ void C4GuiWindow::OnMouseIn(int32_t player)
 
 void C4GuiWindow::OnMouseOut(int32_t player)
 {
-	assert(hasMouseFocus && "custom menu window properly loaded incorrectly!");
-	hasMouseFocus = false;
+	assert(HasMouseFocus() && "custom menu window properly loaded incorrectly!");
+	currentMouseState = MouseState::None;
 
 	// needs to notify children
 	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4GuiWindow *child = *iter;
-		if (child->hasMouseFocus)
+		if (child->HasMouseFocus())
 			child->OnMouseOut(player);
 	}
 
@@ -1715,7 +1715,7 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 
 				if (!inArea) // notify child if it had mouse focus before
 				{
-					if (child->hasMouseFocus)
+					if (child->HasMouseFocus())
 						child->OnMouseOut(player);
 					continue;
 				}
@@ -1739,7 +1739,7 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 			return false;
 
 	// we have mouse focus! Is this new?
-	if (!hasMouseFocus)
+	if (!HasMouseFocus())
 		OnMouseIn(player);
 
 	// children actually have a higher priority
@@ -1759,7 +1759,7 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 
 		if (!inArea) // notify child if it had mouse focus before
 		{
-			if (child->hasMouseFocus)
+			if (child->HasMouseFocus())
 				child->OnMouseOut(player);
 			continue;
 		}
@@ -1769,7 +1769,11 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 			return true;
 	}
 
-	if (button == C4MC_Button_LeftUp)
+	// remember button-down events. The action will only be executed on button-up
+	if (button == C4MC_Button_LeftDown)
+		currentMouseState |= MouseState::MouseDown;
+	// trigger!
+	if (button == C4MC_Button_LeftUp && (currentMouseState & MouseState::MouseDown))
 	{
 		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onClickAction].GetAction();
 		if (action)

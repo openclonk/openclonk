@@ -210,14 +210,20 @@ class C4GuiWindow
 	const C4Object *GetTarget() { return target; }
 	C4GuiWindowScrollBar *scrollBar;
 
-	// this remembers whether the window currently has mouse focus
-	// all windows with this property set are remembered by their parents and notified when the mouse left
-	bool hasMouseFocus; // this needs to be saved in savegames!!!
-	// OnMouseOut() called by this window, sets "hasMouseFocus" from true to false
+	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
+	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
+	enum MouseState // values of this enum will be bit-wise combined
+	{
+		None = 0,
+		Focus = 1,
+		MouseDown = 2
+	};
+	int32_t currentMouseState; // this needs to be saved in savegames!!!
+	// OnMouseOut() called by this window, unsets the mouse focus
 	// must notify children, too!
 	void OnMouseOut(int32_t player);
-	void OnMouseIn(int32_t player); // called by this window, sets "hasMouseFocus" from false to true
-
+	void OnMouseIn(int32_t player); // called by this window, sets the mouse focus
+	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
 	// properties are stored extra to make "tags" possible
 	C4GuiWindowProperty props[C4GuiWindowPropertyName::_lastProp];
 	void Init();
