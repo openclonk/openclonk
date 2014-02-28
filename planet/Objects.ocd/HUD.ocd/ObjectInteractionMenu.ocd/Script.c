@@ -387,7 +387,7 @@ func OnContentsSelection(symbol, extra_data)
 	var obj = FindObject(Find_Container(target), Find_ID(symbol));
 	if (!obj) return;
 	
-	if (other_target->Collect(obj, nil, nil, true))
+	if (other_target->Collect(obj, true))
 	{
 		Sound("SoftTouch*", true, nil, GetOwner());
 		return true;
