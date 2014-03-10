@@ -75,6 +75,11 @@ namespace C4GUI
 					{
 						rcHotkey += static_cast<uint32_t>('A') - 'a';
 					} 
+					else if (!Inside(rcHotkey, static_cast<uint32_t>('A'), static_cast<uint32_t>('Z')))
+					{
+						// Warn about accelerator keys outside the basic latin alphabet.
+						LogF(LoadResStr("IDS_ERR_UNSUPPORTED_ACCELERATOR"), accel.c_str(), sText.getData());
+					}
 				}
 			}
 		}

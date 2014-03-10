@@ -388,6 +388,7 @@ IDS_ERR_SWITCHRES=Fehler beim Ändern der Bildschirmauflösung: %s
 IDS_ERR_TITLE=Fehler
 IDS_ERR_UNKNOWNCMD=Unbekannter Befehl: "%s" - Befehl /help für eine Liste gültiger Befehle
 IDS_ERR_HELPCMD=Grundlegende Befehle im IRC-Chat:|/join [Chatraum] - Neuen Chatraum betreten|/part - Diesen Chatraum verlassen|/notice [Benutzer] [Nachricht] - Sende eine Nachricht an den Benutzer|/query [Benutzer] - Öffne ein neues Chatfenster für einen privaten Dialog mit dem Benutzer|/msg [Benutzer] [Nachricht] - Dasselbe wie /query, nur dass bereits die erste Nachrich geschickt wird|/nick [Neuer Spitzname] - Wähle einen neuen Spitznamen|/quit - Chat ganz verlassen|/raw - Raw-Kommando senden
+IDS_ERR_UNSUPPORTED_ACCELERATOR=Die Schnelltaste "%s" wird nicht unterstützt. (Im Text "%s".) Bitte melde diesen Fehler.
 IDS_ERR_USERCANCEL=Benutzerabbruch
 IDS_ERR_WRITENEWTITLE=Fehler beim Speichern des neuen Titels in Datei "%s": %s
 IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN=Du wurdest per Abstimmung aus dem Spiel entfernt. (%s)
