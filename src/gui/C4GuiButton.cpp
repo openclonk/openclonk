@@ -71,7 +71,7 @@ namespace C4GUI
 		}
 	}
 
-	bool Button::OnHotkey(char cHotkey)
+	bool Button::OnHotkey(uint32_t cHotkey)
 	{
 		// if hotkey matches, press the button
 		if (this->cHotkey == cHotkey && fEnabled)
