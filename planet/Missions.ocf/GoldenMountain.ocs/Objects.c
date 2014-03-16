@@ -25,18 +25,6 @@ func InitializeObjects()
 
 	CreateObject(SproutBerryBush, 350, 206);
 
-	CreateObject(Rule_TeamAccount, 50, 50);
-
-	CreateObject(Rule_BuyAtFlagpole, 50, 50);
-
-	var Goal_SellGems0037 = CreateObject(Goal_SellGems, 50, 50);
-	Goal_SellGems0037->SetTargetAmount(30);
-
-	CreateObject(Rule_BuyAtFlagpole, 50, 50);
-
-	var Goal_SellGems0136 = CreateObject(Goal_SellGems, 50, 50);
-	Goal_SellGems0136->SetTargetAmount(30);
-
 	var Chest0039 = CreateObject(Chest, 200, 469);
 	var Chest0040 = CreateObject(Chest, 1192, 701);
 	var Chest0041 = CreateObject(Chest, 1807, 515);
