@@ -15,7 +15,7 @@ Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
 CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
-Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
+Mirors_         - Pshshsh (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
@@ -32,6 +32,7 @@ dobroide		- Fire (http://www.freesound.org/people/dobroide/sounds/4211/)
 bennychico11	- FHurt1, FHurt2 (http://www.freesound.org/people/bennychico11/sounds/80438/)
 cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/126302/)
 earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486/)
+qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
