@@ -441,7 +441,7 @@ StdCompilerConfigRead::~StdCompilerConfigRead()
 bool StdCompilerConfigRead::Name(const char *szName)
 {
 	// Adjust key name for lists
-	StdStrBuf sName;
+	StdCopyStrBuf sName;
 	if (pKey->LastChildName == szName)
 		sName.Format("%s%d", szName, (int)++pKey->subindex);
 	else
