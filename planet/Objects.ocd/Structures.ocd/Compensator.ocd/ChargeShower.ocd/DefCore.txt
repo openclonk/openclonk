@@ -1,10 +1,10 @@
 [DefCore]
 id=Compensator_ChargeShower
 Version=4,10,0,0
-Category=C4D_StaticBack
+Category=C4D_Vehicle
 Width=11
 Height=19
-Offset=-5,-10
+Offset=-5,-20
 BlitMode=1
 Vertices=1
 VertexX=0
