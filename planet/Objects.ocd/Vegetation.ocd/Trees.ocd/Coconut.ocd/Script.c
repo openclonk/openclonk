@@ -18,7 +18,7 @@ func Construction()
 
 public func Seed()
 {
-//	if(!IsStanding()) return false;
+	if(!IsStanding()) return false;
 
 	// Find number of plants in seed area.
 	var size = SeedArea();
