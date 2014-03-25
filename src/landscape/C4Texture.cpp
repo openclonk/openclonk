@@ -29,6 +29,9 @@
 #include <C4Landscape.h>
 #include <C4Log.h>
 
+#include <ctype.h>
+#include <algorithm>
+
 C4Texture::C4Texture()
 {
 	Name[0]=0;
@@ -207,30 +210,79 @@ bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOv
 
 int32_t C4TextureMap::LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures)
 {
+	static re::regex line_terminator("\r?\n", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+
 	char *bpMap;
-	char szLine[100+1];
-	int32_t cnt, iIndex, iTextures = 0;
+	size_t map_size;
+	int32_t iTextures = 0;
 	// Load text file into memory
-	if (!hGroup.LoadEntry(szEntryName,&bpMap,NULL,1)) return 0;
-	// Scan text buffer lines
-	for (cnt=0; SCopySegment(bpMap,cnt,szLine,0x0A,100); cnt++)
-		if ( (szLine[0]!='#') && (SCharCount('=',szLine)==1) )
+	if (!hGroup.LoadEntry(szEntryName,&bpMap,&map_size,1)) return 0;
+
+	char *begin = bpMap;
+	char *end = begin + map_size;
+
+	size_t line = 1; // Counter for error messages
+	for (auto it = re::cregex_token_iterator(begin, end, line_terminator, -1); it != re::cregex_token_iterator(); ++it, ++line)
+	{
+		if (it->compare("OverloadMaterials") == 0)
 		{
-			SReplaceChar(szLine,0x0D,0x00);
-			if (Inside<int32_t>( iIndex = strtol(szLine,NULL,10), 0, C4M_MaxTexIndex-1 ))
-			{
-				const char *szMapping = szLine+SCharPos('=',szLine)+1;
-				StdStrBuf Material, Texture;
-				Material.CopyUntil(szMapping, '-'); Texture.Copy(SSearch(szMapping, "-"));
-				if (AddEntry(iIndex, Material.getData(), Texture.getData()))
-					iTextures++;
-			}
+			fOverloadMaterials = true;
+			if (pOverloadMaterials)
+				*pOverloadMaterials = true;
+		}
+		else if (it->compare("OverloadTextures") == 0)
+		{
+			fOverloadTextures = true;
+			if (pOverloadTextures)
+				*pOverloadTextures = true;
+		}
+		else if (it->length() == 0 || it->first[0] == '#' || std::all_of(it->first, it->second, &isspace))
+		{
+			// Skip empty lines, comments, and all-whitespace lines
+			continue;
 		}
 		else
 		{
-			if (SEqual2(szLine, "OverloadMaterials")) { fOverloadMaterials = true; if (pOverloadMaterials) *pOverloadMaterials = true; }
-			if (SEqual2(szLine, "OverloadTextures")) { fOverloadTextures = true;  if (pOverloadTextures) *pOverloadTextures = true; }
+			// This must be a texmap entry now
+			std::string value;
+			
+			// Read index
+			unsigned long index;
+			try
+			{
+				size_t separator;
+				index = std::stoul(it->str(), &separator, 10);
+				if (index >= C4M_MaxTexIndex)
+					throw std::out_of_range("Texture index out of range");
+				value.assign(it->first + separator + 1, it->second);
+			}
+			catch (std::invalid_argument &)
+			{
+				DebugLogF("TexMap line %u: Texture index is not numeric", static_cast<unsigned>(line));
+				continue;
+			}
+			catch (std::out_of_range &)
+			{
+				DebugLogF("TexMap line %u: Texture index is out of range", static_cast<unsigned>(line));
+				continue;
+			}
+
+			// Split material/texture combination
+			std::string::const_iterator separator = std::find(value.cbegin(), value.cend(), '-');
+			if (separator == value.cend())
+			{
+				DebugLogF("TexMap line %u: Texture name \"%s\" is invalid (missing \"-\")", static_cast<unsigned>(line), value.c_str());
+				continue;
+			}
+
+			std::string material(value.cbegin(), separator);
+			std::string texture(separator + 1, value.cend());
+
+			if (AddEntry(index, material.c_str(), texture.c_str()))
+				++iTextures;
 		}
+	}
+
 	// Delete buffer, return entry count
 	delete [] bpMap;
 	fEntriesAdded=false;
