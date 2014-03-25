@@ -1247,20 +1247,6 @@ foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
 endforeach()
 
 ############################################################################
-# Precompiled header support, gcc part (it needs the cxx flags)
-############################################################################
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
-endif()
-if(USE_GCC_PCH)
-	add_precompiled_header(libmisc src/C4Include.h)
-	add_precompiled_header(libc4script src/C4Include.h)
-	add_precompiled_header(openclonk src/C4Include.h)
-endif()
-
-############################################################################
 # Some Xcode/OSX specific settings involving building with clang, precompiled headers...
 ############################################################################
 
@@ -1443,6 +1429,20 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY
 # call StopBuild().
 if(MSVC_VERSION EQUAL 1600)
 	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
+endif()
+
+############################################################################
+# Precompiled header support, gcc part (it needs the cxx flags)
+############################################################################
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+	include(GccPchSupport)
+	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+endif()
+if(USE_GCC_PCH)
+	add_precompiled_header(libmisc src/C4Include.h)
+	add_precompiled_header(libc4script src/C4Include.h)
+	add_precompiled_header(openclonk src/C4Include.h)
 endif()
 
 ############################################################################
