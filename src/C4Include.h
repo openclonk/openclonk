@@ -66,6 +66,14 @@ don't need to include this file or any of the files it includes. */
 #include <utility>
 #include <vector>
 
+#ifdef USE_BOOST_REGEX
+#	include <boost/regex.hpp>
+	namespace re = boost;
+#else
+#	include <regex>
+	namespace re = std;
+#endif
+
 // debug memory management - must come after standard and boost headers,
 // because those libraries use placement new
 #ifndef NODEBUGMEM

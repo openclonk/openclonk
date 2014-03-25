@@ -31,15 +31,6 @@
 #include <C4Config.h>
 #include <C4Game.h>
 
-#ifdef USE_BOOST_REGEX
-#	undef new
-#	include <boost/regex.hpp>
-	namespace re = boost;
-#else
-#	include <regex>
-	namespace re = std;
-#endif
-
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
