@@ -35,6 +35,13 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#if !defined(HAVE_VASPRINTF) && defined(HAVE___MINGW_VASPRINTF)
+// MinGW declares a vasprintf-compatible function as __mingw_vasprintf.
+// Rename it for our use.
+#define vasprintf __mingw_vasprintf
+#define HAVE_VASPRINTF
+#endif
+
 
 // *** StdBuf
 

@@ -788,6 +788,7 @@ endif()
 
 include(CheckSymbolExists)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
+CHECK_SYMBOL_EXISTS(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 if(HAVE_ICONV)
 	CHECK_SYMBOL_EXISTS(iconv iconv.h HAVE_ICONV_WO_LINK)
