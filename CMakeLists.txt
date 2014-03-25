@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2013, The OpenClonk Team and contributors
+# Copyright (c) 2009-2014, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -786,11 +786,11 @@ if(HAVE_ICONV)
 	SET(ICONV_CONST ON)
 endif()
 
-include(CheckFunctionExists)
-CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+include(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
 if(HAVE_ICONV)
-	CHECK_FUNCTION_EXISTS(iconv HAVE_ICONV_WO_LINK)
+	CHECK_SYMBOL_EXISTS(iconv iconv.h HAVE_ICONV_WO_LINK)
 	mark_as_advanced(HAVE_ICONV_WO_LINK)
 
 	if(NOT HAVE_ICONV_WO_LINK)
