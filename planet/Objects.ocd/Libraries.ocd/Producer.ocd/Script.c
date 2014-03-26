@@ -84,13 +84,13 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	var liquid, material;
 	for (var comp in costs)
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
-	if (FuelNeed(product_id))
+	if (this->~FuelNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
-	if (liquid = LiquidNeed(product_id))
+	if (liquid = this->~LiquidNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
-	if (material = MaterialNeed(product_id))
+	if (material = this->~MaterialNeed(product_id))
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(material[1], CheckMaterials(product_id)), product_id->~GetMaterialIcon(material[0]));
-	if (PowerNeed(product_id))
+	if (this->~PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 	new_box.requirements.Text = cost_msg;
 	CustomGuiUpdate(new_box, menu_id, 1, desc_menu_target);
