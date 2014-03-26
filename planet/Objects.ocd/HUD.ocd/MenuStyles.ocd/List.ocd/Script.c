@@ -32,14 +32,17 @@ func OnCloseCallback()
 
 func Close()
 {
-	if (menu_id)
-		CustomGuiClose(menu_id);
+	var self = this;
 	if (on_close_callback && on_close_callback[0])
 		on_close_callback[0]->Call(on_close_callback[1], on_close_callback[2]);
-	RemoveObject();
+	if (self && menu_id)
+		CustomGuiClose(menu_id);
+	if (self)
+		RemoveObject();
 }
 
 func SetPermanent(bool perm) { permanent = perm ?? true; }
+func SetFitChildren() { this.Style = this.Style | GUI_FitChildren; this.Bottom = "0em";}
 
 func SetCloseCallback(proplist target, callback, parameter)
 {
@@ -56,9 +59,28 @@ func SetMouseOutCallback(proplist target, callback)
 	on_mouse_out_callback = [target, callback];
 }
 
-// custom_menu_id should be passed if the menu was manually opened and not via Open()
-func AddItem(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id)
+// can be overloaded for custom menu styles
+func MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop)
 {
+	var custom_entry = {Bottom = "+4em", sym = {Right = "+4em", Bottom = "+4em"}, desc = {Left = "+4em"}};
+	custom_entry.sym.Symbol = symbol;
+	custom_entry.desc.Text = text;
+	custom_entry.desc.Style = GUI_TextVCenter;
+	custom_entry.Style = GUI_FitChildren;
+	custom_entry.ID = ID;
+	custom_entry.Target = this;
+	custom_entry.Priority = ID;
+	custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};
+	custom_entry.OnClick = GuiAction_Call(this, "OnClick");
+	custom_entry.OnMouseIn = on_hover;
+	custom_entry.OnMouseOut = on_hover_stop;
+	return custom_entry;
+}
+
+// custom_menu_id should be passed if the menu was manually opened and not via Open()
+func AddItem(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id, bool onlyUpdate)
+{
+	onlyUpdate = onlyUpdate ?? false;
 	custom_menu_id = custom_menu_id ?? menu_id;
 	
 	var on_hover = GuiAction_SetTag("OnHover", 0, nil);
@@ -68,33 +90,47 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	if (on_mouse_out_callback)
 		on_hover_stop = [on_hover_stop, GuiAction_Call(this, "DoCallback", on_mouse_out_callback)];
 	
+	// in case of a new entry, append to array
 	var ID = GetLength(entries) + 1;
-	if (!custom_entry)
+	// otherwise, replace the old entry
+	if (onlyUpdate)
 	{
-		custom_entry = {Bottom = "+4em", sym = {Right = "+4em", Bottom = "+4em"}, desc = {Left = "+4em"}};
-		custom_entry.sym.Symbol = symbol;
-		custom_entry.desc.Text = text;
-		custom_entry.desc.Style = GUI_TextVCenter;
-		custom_entry.Style = GUI_FitChildren;
-		custom_entry.ID = ID;
-		custom_entry.Target = this;
-		custom_entry.Priority = ID;
-		custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};
-		custom_entry.OnClick = GuiAction_Call(this, "OnClick");
-		custom_entry.OnMouseIn = on_hover;
-		custom_entry.OnMouseOut = on_hover_stop;
+		for (var i = 0; i < GetLength(entries); ++i)
+		{
+			if (!entries[i]) continue;
+			if (entries[i][3] != user_ID) continue;
+			ID = i + 1;
+			break;
+		}
 	}
+	
+	if (!custom_entry)
+		custom_entry = MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop);
+		
 	entries[ID - 1] = [target, command, parameter, user_ID];
 	this[Format("menuChild%d", ID)] = custom_entry;
 	
 	// need to add to existing menu?
 	if (custom_menu_id)
 	{
+		if (onlyUpdate)
+		{
+			// need to close the old entry first
+			// this is done so a full refresh is guaranteed
+			CustomGuiClose(custom_menu_id, ID, this);
+		}
+		
 		var temp = {child = custom_entry};
 		CustomGuiUpdate(temp, custom_menu_id, this.ID, this);
 	}
 	
 	return custom_entry;
+}
+
+// updates an existing entry with the given user_ID
+func UpdateItem(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id)
+{
+	return AddItem(symbol, text, user_ID, target, command, parameter, custom_entry, custom_menu_id, true);
 }
 
 // can be used when the menu has already been opened

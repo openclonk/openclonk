@@ -41,31 +41,66 @@ protected func Initialize()
 // All producers are accessible. 
 public func IsContainer() { return true; }
 
-public func IsInteractable() { return GetCon() >= 100; }
-
-public func GetInteractionMetaInfo(object clonk)
+public func GetInteractionMenus(object clonk)
 {
-	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
+	var menus = _inherited() ?? [];
+	// only open the menus if ready
+	if (GetCon() >= 100)
+	{
+		var products = GetProducts(clonk);
+		var menu_entries = [];
+		for (var product in products)
+			PushBack(menu_entries, {symbol = product, /*text = product.Name,*/ extra_data = nil});
+		var prod_menu =
+		{
+			title = "$Production$",
+			entries = menu_entries,
+			callback = "OnProductSelection",
+			callback_hover = "OnProductHover",
+			callback_target = this,
+			BackgroundColor = RGB(0, 0, 50),
+			Priority = 20
+		};
+		PushBack(menus, prod_menu);
+	}
+	return menus;
 }
 
-// On interaction the production menu should be opened.
-public func Interact(object clonk)
+public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 {
-	var open_menu = clonk->GetMenu();
-	// First try to close any other menu, which is open in the clonk.
-	if (open_menu)
+	var new_box =
 	{
-		var is_prod_menu = open_menu->~IsProductionMenu();
-		// unclosable menu? bad luck
-		if (!clonk->TryCancelMenu()) return true;
+		Text = symbol.Description,
+		requirements = 
+		{
+			Top = "100% - 2em",
+			Style = GUI_TextBottom
+		}
+	};
+	
+	var product_id = symbol;
+	var costs = ProductionCosts(product_id);
+	var cost_msg = "";
+	var liquid, material;
+	for (var comp in costs)
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
+	if (FuelNeed(product_id))
+		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
+	if (liquid = LiquidNeed(product_id))
+		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
+	if (material = MaterialNeed(product_id))
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(material[1], CheckMaterials(product_id)), product_id->~GetMaterialIcon(material[0]));
+	if (PowerNeed(product_id))
+		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
+	new_box.requirements.Text = cost_msg;
+	CustomGuiUpdate(new_box, menu_id, 1, desc_menu_target);
+}
 
-		// If open_menu is production menu, return and don't open a new one.
-		if (is_prod_menu)
-			return true;	
-	}
-	// Open production menu for the caller.
-	clonk->CreateProductionMenu(this);
-	return true;
+private func GetCostString(int amount, bool available)
+{
+	// Format amount to colored string; make it red if it's not available
+	if (available) return Format("%dx", amount);
+	return Format("<c ff0000>%dx</c>", amount);
 }
 
 protected func OnProductSelection(id product, int par, bool alt)
@@ -185,8 +220,7 @@ public func AddToQueue(id product_id, int amount)
 	else	
 		queue[pos] = { Product = product_id, Amount = amount };
 	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);		
+	UpdateInteractionMenus();
 	return pos;
 }
 
@@ -222,8 +256,7 @@ public func InsertIntoQueue(id product_id, int amount, int pos)
 		queue[pos] = { Product = product_id, Amount = amount };
 	}
 	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);		
+	UpdateInteractionMenus();	
 	return pos;
 }
 
@@ -718,6 +751,6 @@ public func OnObjectInformationDialogueOpen(object dialogue)
 	}
 	
 	if (GetLength(items) > 0)
-		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_ITEMLIST, name = "$DescInteraction$", items = items});
+		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_ITEMLIST, name = "$Production$", items = items});
 	return true;
 }

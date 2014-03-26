@@ -25,8 +25,10 @@ local current_objects;
 			type: flag (needed for content-menus f.e.)
 			title
 			decoration: ID of a menu decoration definition
-			priority: priority of the menu (Y position)
+			Priority: priority of the menu (Y position)
+			BackgroundColor: background color of the menu
 			callback: function called when an entry is selected, the function is passed the symbol of an entry and the user data
+			callback_hover: function called when hovering over an entry, the function is passed everything "callback" gets plus the target of the description box menu
 			callback_target: object to which the callback is made, ususally the target object (except for contents menus)
 			menu_object: MenuStyle_Grid object, used to add/remove entries later
 			entry_index_count: used to generate unique IDs for the entries
@@ -37,7 +39,13 @@ local current_objects;
 				unique_index: generated from entry_index_count (not set by user)
 */
 local current_menus;
-
+/*
+	current_description_box contains information about the description box at the bottom of the menu:
+		target: target object of the description box
+		symbol_target: target object of the symbol sub-box
+		desc_target: target object of the description sub-box
+*/
+local current_description_box;
 // this is the ID of the root window that contains the other subwindows (i.e. the menus which contain the sidebars and the interaction-menu)
 local current_main_menu_id;
 
@@ -52,6 +60,7 @@ func Construction()
 {
 	current_objects = [];
 	current_menus = [];
+	current_description_box = {target=nil};
 }
 
 func Destruction()
@@ -77,6 +86,7 @@ func CreateFor(object cursor)
 
 func Init(object cursor)
 {
+	this.cursor = cursor;
 	AddEffect("IntCheckObjects", cursor, 1, 10, this);
 }
 
@@ -159,6 +169,15 @@ func OpenMenuForObject(object obj, int slot)
 	current_menus[slot] = nil;
 	// before creating the sidebar, we have to create a new entry in current_menus, even if it contains not all information
 	current_menus[slot] = {target = obj};
+	// clean up old inventory-check effects that are not needed anymore
+	var effect_index = 0, inv_effect = nil;
+	while (inv_effect = GetEffect("IntRefreshContentsMenu", this, effect_index))
+	{
+		if (inv_effect.obj != current_menus[0].target && inv_effect.obj != current_menus[1].target)
+			RemoveEffect(nil, nil, inv_effect);
+		else
+			 ++effect_index;
+	}
 	// create a menu with all interaction possibilities for an object
 	// always recreate the side bar
 	var sidebar = CreateSideBar(slot);
@@ -166,26 +185,18 @@ func OpenMenuForObject(object obj, int slot)
 	// to close the part_menu automatically when the main menu is closed
 	current_menus[slot].menu_object = main.Target;
 	
-	if(false)
-	for (var key in GetProperties(sidebar))
-	{
-		var item = sidebar[key];
-		var obj;
-		if ((GetType(item) == C4V_PropList) && (obj = item.obj_symbol.Symbol))
-			Log("sidebar %s entry [%s] %s", sidebar.Target->GetName(), key, obj->GetName());
-	}
-	Log("sidebar for %s: %v", obj->GetName(), sidebar);
 	var part_menu = 
 	{
-		Style = GUI_NoCrop,
-		Left = "0%", Right = "50%-1em",
+		//Style = GUI_NoCrop,
+		Left = "0%", Right = "50%-2em",
+		Bottom = "100%-14em",
 		sidebar = sidebar, main = main,
 		Target = current_menus[slot].menu_object
 	};
 	
 	if (slot == 1)
 	{
-		part_menu.Left = "50%+1.5em";
+		part_menu.Left = "50%+2em";
 		part_menu.Right = "100%";
 	}
 	
@@ -193,10 +204,43 @@ func OpenMenuForObject(object obj, int slot)
 	// need to open a completely new menu?
 	if (!current_main_menu_id)
 	{
+		if (!current_description_box.target)
+		{
+			current_description_box.target = CreateDummy();
+			current_description_box.symbol_target = CreateDummy();
+			current_description_box.desc_target = CreateDummy();
+		}
+			
 		var root_menu = 
 		{
 			one_part = part_menu,
-			Target = this
+			Target = this,
+			description_box = 
+			{
+				Decoration = GUI_MenuDeco,
+				Top = "100%-10em",
+				Margin = ["4em", "0em"],
+				symbol_part = 
+				{
+					Right = "10em",
+					Symbol = nil,
+					Margin = "1em",
+					ID = 1,
+					Target = current_description_box.symbol_target
+				},
+				desc_part =
+				{
+					Left = "10em",
+					Margin = "1em",
+					ID = 1,
+					Target = current_description_box.target,
+					real_contents = // nested one more time so it can dynamically be replaced without messing up the layout
+					{
+						ID = 1,
+						Target = current_description_box.desc_target
+					}
+				}
+			}
 		};
 		current_main_menu_id = CustomGuiOpen(root_menu);
 	}
@@ -205,18 +249,12 @@ func OpenMenuForObject(object obj, int slot)
 		CustomGuiUpdate({update = part_menu}, current_main_menu_id, nil, nil);
 	}
 	
-	// todo: create main menu
-	// description menu?
 }
 
 // generates a proplist that defines a custom GUI that represents a side bar where objects 
 // to interact with can be selected
 func CreateSideBar(int slot)
 {
-	var s = "";
-	for (var obj in current_objects)
-		s = Format("%s, %s", s, obj->GetName());
-	Log("sidebar for: %s", s);
 	var dummy = CreateDummy();
 	var sidebar =
 	{
@@ -264,7 +302,6 @@ func CreateSideBar(int slot)
 
 func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object target)
 {
-	Log("OnSideBarEntrySelected obj: %s, slot: %d", data.obj->GetName(), data.slot); 
 	if (!data.obj) return;
 	
 	// can not open object twice!
@@ -281,14 +318,15 @@ func CreateMainMenu(object obj, int slot)
 		Priority = 5,
 		Decoration = GUI_MenuDeco,
 		Right = "100%-4em",
-		Style = GUI_VerticalLayout
+		Style = GUI_VerticalLayout,
+		BackgroundColor = RGB(50, 25, 0)
 	};
 	if (slot == 0)
 	{
 		container.Left = "+4em";
 		container.Right = "100%";
 	}
-	var menus = [];
+	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
 	if (obj->~IsContainer() || obj->~IsClonk())
@@ -301,7 +339,7 @@ func CreateMainMenu(object obj, int slot)
 			callback = "OnContentsSelection",
 			callback_target = this,
 			decoration = GUI_MenuDecoInventoryHeader,
-			priority = 10
+			Priority = 10
 		};
 		PushBack(menus, info);
 	}
@@ -309,16 +347,22 @@ func CreateMainMenu(object obj, int slot)
 	current_menus[slot].menus = menus;
 	
 	// now generate the actual menus from the information-list
+	var submenu_height = 100;
+	if (GetLength(menus))
+		submenu_height = Max(25, 100 / GetLength(menus));
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		var menu = menus[i];
+		if (!menu.flag)
+			menu.flag = InteractionMenu_Custom;
 		menu.menu_object = CreateObject(MenuStyle_Grid);
-		if (menu.decoration)
-			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
+		
 		menu.menu_object.Top = "+2em";
 		menu.menu_object.Priority = 2;
 		menu.menu_object->SetPermanent();
-
+		menu.menu_object->SetFitChildren();
+		//menu.menu_object.Bottom = "4em";
+		menu.menu_object->SetMouseOverCallback(this, "OnMenuEntryHover");
 		for (var e = 0; e < GetLength(menu.entries); ++e)
 		{
 			var entry = menu.entries[e];
@@ -328,17 +372,28 @@ func CreateMainMenu(object obj, int slot)
 		
 		var all = // menu with title bar
 		{
-			Priority = menu.priority ?? i,
-			Style = GUI_NoCrop,
+			Priority = menu.Priority ?? i,
+			Style = GUI_FitChildren,
 			title_bar = 
 			{
 				Priority = 1,
-				Bottom = "+1em",
+				Style = GUI_TextVCenter | GUI_TextHCenter,
+				Bottom = "+1.5em",
 				Text = menu.title,
-				Decoration = menu.decoration
+				BackgroundColor = 0xa0000000,
+				//Decoration = menu.decoration
+				hline = {Bottom = "0.1em", BackgroundColor = RGB(100, 100, 100)}
 			},
-			real_menu = menu.menu_object
+			Margin = [nil, nil, nil, "0.5em"],
+			real_menu = menu.menu_object,
+			spacer = {Left = "0em", Right = "0em", Bottom = "6em"} // guarantees a minimum height
 		};
+		if (menu.flag == InteractionMenu_Contents)
+			all.BackgroundColor = RGB(0, 50, 0);
+		else if (menu.BackgroundColor)
+				all.BackgroundColor = menu.BackgroundColor;
+		else if (menu.decoration)
+			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
 		Gui_AddSubwindow(all, container);
 	}
 	
@@ -352,9 +407,8 @@ func CreateMainMenu(object obj, int slot)
 	return container;
 }
 
-func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
+func GetEntryInformation(proplist menu_info, int entry_index)
 {
-	Log("OnMenuEntrySelected slot: %d, index: %d, entry: %d", menu_info.slot, menu_info.index, entry_index);
 	if (!current_menus[menu_info.slot]) return;
 	var menu;
 	if (!(menu = current_menus[menu_info.slot].menus[menu_info.index])) return;
@@ -365,18 +419,43 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 		entry = possible;
 		break;
 	}
-	if (!entry) return;
+	return {menu=menu, entry=entry};
+}
+
+func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
+{
+	var info = GetEntryInformation(menu_info, entry_index);
+	if (!info.entry) return;
+	// update symbol of description box
+	CustomGuiUpdate({Symbol = info.entry.symbol}, current_main_menu_id, 1, current_description_box.symbol_target);
+	// and update description itself
+	// clean up existing description window in case it has been cluttered by sub-windows
+	CustomGuiClose(current_main_menu_id, 1, current_description_box.desc_target);
+	// now add new subwindow to replace the recently removed one
+	CustomGuiUpdate({new_subwindow = {Target = current_description_box.desc_target, ID = 1}}, current_main_menu_id, 1, current_description_box.target);
+	// default to description of object
+	if (!info.menu.callback_target || !info.menu.callback_hover)
+		Gui_UpdateText(info.entry.symbol.Description, current_main_menu_id, 1, current_description_box.desc_target);
+	else
+	{
+		info.menu.callback_target->Call(info.menu.callback_hover, info.entry.symbol, info.entry.extra_data, current_description_box.desc_target, current_main_menu_id);
+	}
+}
+
+func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
+{
+	var info = GetEntryInformation(menu_info, entry_index);
+	if (!info.entry) return;
 	
 	var callback_target;
-	if (!(callback_target = menu.callback_target)) return;
-	var result = callback_target->Call(menu.callback, entry.symbol, entry.extra_data);
+	if (!(callback_target = info.menu.callback_target)) return;
+	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data);
 	
 	// todo: trigger refresh for special value of result
 }
 
 func OnContentsSelection(symbol, extra_data)
 {
-	Log("OnContentsSelection symbol: %s", symbol->GetName());
 	var target = current_menus[extra_data.slot].target;
 	if (!target) return;
 	// no target to swap to?
@@ -402,7 +481,7 @@ func OnContentsSelection(symbol, extra_data)
 func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object obj, int slot, int menu_index)
 {
 	if (temp) return;
-	effect.obj = obj;
+	effect.obj = obj; // the property (with this name) is externally accessed!
 	effect.slot = slot;
 	effect.menu_index = menu_index;
 	effect.last_inventory = [];
@@ -436,15 +515,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		}
 	}
 	
-	/*for(var i = 0; i < Max(GetLength(effect.last_inventory), GetLength(inventory)); ++i)
-	{
-		var ls = "left: /"; if (i < GetLength(inventory))
-			ls = Format("left: %s", inventory[i].symbol->GetName());
-		var rs = "right: /"; if (i < GetLength(effect.last_inventory))
-			rs = Format("right: %s", effect.last_inventory[i].symbol->GetName());
-		Log("%s   %s", ls, rs);
-	}*/
-	
+
 	if (GetLength(inventory) == GetLength(effect.last_inventory))
 	{
 		var same = true;
@@ -473,30 +544,63 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	var menu = current_menus[slot].menus[menu_index];
 	var current_entries = menu.entries;
 	
+	// step 0.1: update all items where the symbol did not change but other things (f.e. the text)
+	// this is done to maintain a consistent order that would be shuffled constantly if the entry was removed and re-added at the end
+	for (var c = 0; c < GetLength(current_entries); ++c)
+	{
+		var old_entry = current_entries[c];
+		var found = false;
+		var symbol_equal_index = -1;
+		for (var ni = 0; ni < GetLength(new_entries); ++ni)
+		{
+			var new_entry = new_entries[ni];
+			if (!EntriesEqual(new_entry, old_entry))
+			{
+				if (new_entry.symbol == old_entry.symbol)
+					symbol_equal_index = ni;
+				continue;
+			}
+			found = true;
+			break;
+		}
+		// if the entry exist just like that, we do not need to do anything
+		// same, if we don't have anything to replace it with, anyway
+		if (found || symbol_equal_index == -1) continue;
+		// now we can just update the symbol with the new data
+		var new_entry = new_entries[symbol_equal_index];
+		menu.menu_object->UpdateItem(new_entry.symbol, new_entry.text, old_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, nil, current_main_menu_id);
+		new_entry.unique_index = old_entry.unique_index;
+		// make sure it's not manipulated later on
+		current_entries[c] = nil;
+	}
 	// step 1: remove (close) all current entries that have been removed
 	for (var c = 0; c < GetLength(current_entries); ++c)
 	{
+		var old_entry = current_entries[c];
+		if (!old_entry) continue;
+		
 		// check for removal
 		var removed = true;
 		for (var new_entry in new_entries)
 		{
-			if (!EntriesEqual(new_entry, current_entries[c])) continue;
+			if (!EntriesEqual(new_entry, old_entry)) continue;
 			removed = false;
 			break;
 		}
 		if (removed)
 		{
-			menu.menu_object->RemoveItem(current_entries[c].unique_index, current_main_menu_id);
+			menu.menu_object->RemoveItem(old_entry.unique_index, current_main_menu_id);
 			current_entries[c] = nil;
 		}
 	}
 	
 	// step 2: add new entries
-	var debug = "new entries: ";
 	for (var c = 0; c < GetLength(new_entries); ++c)
 	{
 		var new_entry = new_entries[c];
-		debug = Format("%s, %s", debug, new_entry.symbol->GetName());
+		// the entry was already updated before?
+		if (new_entry.unique_index != nil) continue;
+		
 		var existing = false;
 		for (var old_entry in current_entries)
 		{
@@ -515,7 +619,6 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 		menu.menu_object->AddItem(new_entry.symbol, new_entry.text, new_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, nil, current_main_menu_id);
 		
 	}
-	Log(debug);
 	menu.entries = new_entries;
 }
 
@@ -536,7 +639,28 @@ func CreateDummy()
 
 func RemoveDummy(object dummy, int player, int ID, int subwindowID, object target)
 {
-	Log("removing dummy!");
 	if (dummy)
 		dummy->RemoveObject();
+}
+
+// updates the interaction menu for an object iff it is currently shown
+func UpdateInteractionMenuFor(object target)
+{
+	for (var slot = 0; slot < GetLength(current_menus); ++slot)
+	{
+		var current_menu = current_menus[slot];
+		if (current_menu.target != target) continue;
+		OpenMenuForObject(target, slot);
+	}
+}
+
+/*
+	Updates all interaction menus that are currently attached to an object.
+	This function can be called at all times, not only when a menu is open, making it more convenient for users, because there is no need to track open menus.
+*/
+global func UpdateInteractionMenus()
+{
+	if (!this) return;
+	for (var interaction_menu in FindObjects(Find_ID(GUI_ObjectInteractionMenu)))
+		interaction_menu->UpdateInteractionMenuFor(this);
 }
