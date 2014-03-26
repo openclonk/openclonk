@@ -62,7 +62,7 @@ namespace C4GUI
 	{
 	}
 
-	bool CheckBox::OnHotkey(char cHotkey)
+	bool CheckBox::OnHotkey(uint32_t cHotkey)
 	{
 		if (cHotkey != this->cHotkey) return false;
 		ToggleCheck(true);

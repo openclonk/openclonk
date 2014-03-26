@@ -179,6 +179,13 @@ func CheckSlavery()
 	}
 }
 
+// Forward config to case
+func SetNoPowerNeed(bool to_val)
+{
+	if (case) return case->SetNoPowerNeed(to_val);
+	return false;
+}
+
 local ActMap = {
 		Default = {
 			Prototype = Action,

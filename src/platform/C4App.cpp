@@ -25,7 +25,7 @@ void C4AbstractApp::Run()
 		ScheduleProcs();
 }
 
-bool C4AbstractApp::ScheduleProcs(int iTimeout)
+bool C4AbstractApp::DoScheduleProcs(int iTimeout)
 {
 	// Always fail after quit message
 	if(fQuitMsgReceived)
@@ -34,7 +34,7 @@ bool C4AbstractApp::ScheduleProcs(int iTimeout)
 	// Unfortunately, the SDL event loop needs to be polled
 	FlushMessages();
 #endif
-	return StdScheduler::ScheduleProcs(iTimeout);
+	return StdScheduler::DoScheduleProcs(iTimeout);
 }
 
 void C4Window::PerformUpdate()

@@ -27,6 +27,12 @@
           <desc>Delay in frames for every step (defaults to 1).</desc>
 		  <optional />
         </param>
+		<param>
+          <type>int</type>
+          <name>maximumValue</name>
+          <desc>If not 0, the returned value will be capped at this value and not increase further.</desc>
+		  <optional />
+        </param>
       </params>
     </syntax>
     <desc>PV_Step can be used for values that do not depend on the particle age (unlike f.e. <funclink>PV_Linear</funclink>).</desc>

@@ -203,7 +203,7 @@ public func FxIntGrappleControlControl(object target, fxnum, ctrl, x,y,strength,
 	if(ctrl == CON_Up)
 	{
 		fxnum.mv_up = !release;
-		if(target->GetAction() == "Jump" && !release && pull)
+		if ((target->GetAction() == "Jump" || target->GetAction() == "WallJump") && !release && pull)
 			rope->ConnectPull();
 	}
 	if(ctrl == CON_Down)
@@ -259,16 +259,16 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		rope->DoSpeed(+10);
 	}
 
-	if(target->GetAction() == "Tumble" && target->GetActTime() > 10)
+	if (target->GetAction() == "Tumble" && target->GetActTime() > 10)
 		target->SetAction("Jump");
 
-	if(target->GetAction() != "Jump")
+	if (target->GetAction() != "Jump" && target->GetAction() != "WallJump")
 	{
-		if(rope->GetConnectStatus())
+		if (rope->GetConnectStatus())
 			rope->ConnectLoose();
 	}
 	
-	if(target->GetAction() == "Jump" && rope->PullObjects() && !fxnum.var6)
+	if ((target->GetAction() == "Jump" || target->GetAction() == "WallJump") && rope->PullObjects() && !fxnum.var6)
 	{
 		if(!fxnum.ani_mode)
 		{

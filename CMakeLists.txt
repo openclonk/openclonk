@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2013, The OpenClonk Team and contributors
+# Copyright (c) 2009-2014, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -788,11 +788,12 @@ if(HAVE_ICONV)
 	SET(ICONV_CONST ON)
 endif()
 
-include(CheckFunctionExists)
-CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+include(CheckSymbolExists)
+CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
+CHECK_SYMBOL_EXISTS(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 if(HAVE_ICONV)
-	CHECK_FUNCTION_EXISTS(iconv HAVE_ICONV_WO_LINK)
+	CHECK_SYMBOL_EXISTS(iconv iconv.h HAVE_ICONV_WO_LINK)
 	mark_as_advanced(HAVE_ICONV_WO_LINK)
 
 	if(NOT HAVE_ICONV_WO_LINK)
@@ -851,8 +852,13 @@ if(NOT WIN32)
 endif()
 
 if(NOT USE_CONSOLE)
-	find_package(Freetype REQUIRED)
-	include_directories(${FREETYPE_INCLUDE_DIRS})
+	if(APPLE)
+		include(LegacyFindFreetype)
+		include_directories(${FREETYPE_INCLUDE_DIRS})
+	else()
+		find_package(Freetype REQUIRED)
+		include_directories(${FREETYPE_INCLUDE_DIRS})
+	endif()
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
@@ -1244,30 +1250,22 @@ foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
 endforeach()
 
 ############################################################################
-# Precompiled header support, gcc part (it needs the cxx flags)
-############################################################################
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
-endif()
-if(USE_GCC_PCH)
-	add_precompiled_header(libmisc src/C4Include.h)
-	add_precompiled_header(libc4script src/C4Include.h)
-	add_precompiled_header(openclonk src/C4Include.h)
-endif()
-
-############################################################################
 # Some Xcode/OSX specific settings involving building with clang, precompiled headers...
 ############################################################################
 
 if (APPLE)
-
+	
 	# for good measure - seems to be part of default OSX installation
 	# linking with static freetype library requires it
 	target_link_libraries(openclonk "/usr/lib/libbz2.dylib")
 
+	set(HAVE_RVALUE_REF ON)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x -g -Wall -fobjc-arc")
+
 	if(CMAKE_GENERATOR STREQUAL Xcode)
+		add_custom_command(TARGET openclonk
+			POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
@@ -1280,18 +1278,12 @@ if (APPLE)
 		set_target_properties(libmisc PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 		set_target_properties(libmisc PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
-	endif()
-
-	if (USE_APPLE_CLANG)
+		
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
 		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++0x")
 		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -stdlib=libc++ -g -Wall -fobjc-arc")
 		set_target_properties(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
-		set(HAVE_RVALUE_REF ON)
-	else()
-		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
 	endif()
 endif()
 
@@ -1440,6 +1432,20 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY
 # call StopBuild().
 if(MSVC_VERSION EQUAL 1600)
 	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
+endif()
+
+############################################################################
+# Precompiled header support, gcc part (it needs the cxx flags)
+############################################################################
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+	include(GccPchSupport)
+	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+endif()
+if(USE_GCC_PCH)
+	add_precompiled_header(libmisc src/C4Include.h)
+	add_precompiled_header(libc4script src/C4Include.h)
+	add_precompiled_header(openclonk src/C4Include.h)
 endif()
 
 ############################################################################

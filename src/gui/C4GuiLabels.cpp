@@ -105,7 +105,7 @@ namespace C4GUI
 		}
 	}
 
-	bool Label::OnHotkey(char cHotkey)
+	bool Label::OnHotkey(uint32_t cHotkey)
 	{
 		// if hotkey matches and focus control is assigned, set focus
 		if (this->cHotkey == cHotkey && pClickFocusControl)

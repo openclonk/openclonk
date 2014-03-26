@@ -371,6 +371,10 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::speedFactor, 1000.0f);
 	}
+	else if (valueFunction == &C4ParticleValueProvider::Step)
+	{
+		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
+	}
 }
 
 void C4ParticleValueProvider::RollRandom()
@@ -419,7 +423,9 @@ float C4ParticleValueProvider::Direction(C4Particle *forParticle)
 
 float C4ParticleValueProvider::Step(C4Particle *forParticle)
 {
-	return currentValue + startValue * forParticle->GetAge() / delay;
+	float value = currentValue + startValue * forParticle->GetAge() / delay;
+	if (maxValue != 0.0f && value > maxValue) value = maxValue;
+	return value;
 }
 
 float C4ParticleValueProvider::KeyFrames(C4Particle *forParticle)
@@ -555,12 +561,13 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 		}
 		break;
 	case C4PV_Step:
-		if (arraySize >= 2)
+		if (arraySize >= 4)
 		{
 			SetType(C4PV_Step);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::startValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::currentValue);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::delay);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[4], &C4ParticleValueProvider::maxValue);
 			if (delay == 0.f) delay = 1.f;
 		}
 		break;

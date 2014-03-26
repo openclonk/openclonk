@@ -3,6 +3,7 @@ Title=AcidDrilling
 Icon=30
 Version=5,2,0,1
 Difficulty=100
+NoInitialize=true
 
 [Definitions]
 Definition1=Objects.ocd

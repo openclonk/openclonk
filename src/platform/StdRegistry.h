@@ -92,8 +92,8 @@ private:
 	int iDepth;
 	struct Key
 	{
-		StdStrBuf Name;
-		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		StdCopyStrBuf Name;
+		StdCopyStrBuf LastChildName;  // last occuring child name to increase subindex if needed
 		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle;
 		Key *Parent;
@@ -152,8 +152,8 @@ private:
 	int iDepth;
 	struct Key
 	{
-		StdStrBuf Name;
-		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		StdCopyStrBuf Name;
+		StdCopyStrBuf LastChildName;  // last occuring child name to increase subindex if needed
 		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle; // for keys only
 		Key *Parent;

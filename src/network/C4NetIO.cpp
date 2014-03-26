@@ -385,12 +385,14 @@ bool C4NetIOTCP::CloseBroadcast()
 	return true;
 }
 
+#ifdef __APPLE__
 static int fix_poll_timeout(int timeout) {
 	if (timeout < 0 || timeout > 1000)
 		return 1000;
 	else
 		return timeout;
 }
+#endif
 
 bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 {
@@ -407,7 +409,9 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 	WSANETWORKEVENTS wsaEvents;
 #else
 
+#ifdef __APPLE__
 	iMaxTime = fix_poll_timeout(iMaxTime);
+#endif
 
 	std::vector<pollfd> fdvec;
 	std::map<SOCKET, const pollfd*> fdmap;
@@ -1520,6 +1524,10 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 	if (!fInit) { SetError("not yet initialized"); return false; }
 	ResetError();
 
+#ifdef __APPLE__
+	iMaxTime = fix_poll_timeout(iMaxTime);
+#endif
+
 	// wait for socket / timeout
 	WaitResult eWR = WaitForSocket(iMaxTime);
 	if (eWR == WR_Error) return false;
@@ -1538,7 +1546,6 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 		// The FIONREAD ioctl call takes an int on unix
 		int iMaxMsgSize;
 #endif
-		iMaxTime = fix_poll_timeout(iMaxTime);
 		if (::ioctlsocket(sock, FIONREAD, &iMaxMsgSize) == SOCKET_ERROR)
 		{
 			SetError("Could not determine the amount of data that can be read from socket", true);

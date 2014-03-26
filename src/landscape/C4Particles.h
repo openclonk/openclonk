@@ -117,6 +117,7 @@ protected:
 	{
 		int alreadyRolled; // for Random
 		int smoothing; // for KeyFrames
+		float maxValue; // for Step
 	};
 	
 	size_t keyFrameCount;
