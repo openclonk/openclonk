@@ -1195,6 +1195,9 @@ C4GuiWindow *C4GuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
 
 void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 {
+	// do a layout update asap
+	lastDrawPosition.dirty = 2;
+
 	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		if (child && (*iter != child)) continue;
@@ -1219,9 +1222,6 @@ void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 	}
 	if (all)
 		children.clear();
-
-	// do a layout update asap
-	lastDrawPosition.dirty = 2;
 }
 
 void C4GuiWindow::ClearChildren(bool close)
@@ -1262,8 +1262,17 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 
 	if (style & C4GuiWindowStyleFlag::FitChildren)
 	{
-		float height = lastDrawPosition.bottom - lastDrawPosition.top;
-		props[C4GuiWindowPropertyName::bottom].current->d += (childrenHeight - height);
+		float height = lastDrawPosition.bottom - lastDrawPosition.top
+				- Em2Pix(props[C4GuiWindowPropertyName::topMargin].GetFloat())
+				- Em2Pix(props[C4GuiWindowPropertyName::bottomMargin].GetFloat());
+		float adjustment = childrenHeight - height;
+		props[C4GuiWindowPropertyName::bottom].current->f += Pix2Em(adjustment);
+		assert(!isnan(props[C4GuiWindowPropertyName::bottom].current->f));
+		// instantly pseudo-update the sizes in case of multiple refreshs before the next draw
+		lastDrawPosition.bottom += adjustment;
+		// parents that are somehow affected by their children will need to refresh their layout
+		if (parent && adjustment != 0.0)
+			parent->lastDrawPosition.dirty = 2;
 		return;
 	}
 
@@ -1282,6 +1291,8 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 
 void C4GuiWindow::UpdateLayout()
 {
+	lastDrawPosition.needLayoutUpdate = false;
+
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 
 	// update scroll bar according to children
@@ -1289,30 +1300,30 @@ void C4GuiWindow::UpdateLayout()
 	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4GuiWindow *child = *iter;
-		// offset is against rounding weirdnesses
 		if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
-			lastDrawPosition.topMostChild = child->lastDrawPosition.top + 1.0f;
+			lastDrawPosition.topMostChild = child->lastDrawPosition.top;
 		if (first || (child->lastDrawPosition.bottom > lastDrawPosition.bottomMostChild))
-			lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom - 1.0f;
+			lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom;
 		first = false;
 	}
 	if (first) // no children?
 	{
-		lastDrawPosition.topMostChild = 0.0f;
-		lastDrawPosition.bottomMostChild = 0.0f;
+		lastDrawPosition.topMostChild = lastDrawPosition.top;
+		lastDrawPosition.bottomMostChild = lastDrawPosition.top;
 	}
-
-	// check whether we need a scroll-bar and then add it
-	float height = lastDrawPosition.bottom - lastDrawPosition.top;
-	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
-
-	EnableScrollBar(childHgt > height, childHgt);
 
 	// special layout selected?
 	if (style & C4GuiWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
 	else if (style & C4GuiWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
+	else
+	{
+		// check whether we need a scroll-bar and then add it
+		float height = lastDrawPosition.bottom - lastDrawPosition.top;
+		float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
+		EnableScrollBar(childHgt > height, childHgt);
+	}
 }
 
 void C4GuiWindow::UpdateLayoutGrid()
@@ -1320,25 +1331,28 @@ void C4GuiWindow::UpdateLayoutGrid()
 	const int32_t width = lastDrawPosition.right - lastDrawPosition.left;
 	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
 
-	int32_t borderX(0), borderY(0);
-	int32_t currentX = borderX;
-	int32_t currentY = borderY;
-	int32_t maxChildHeight = 0;
+	float borderX(0.0f), borderY(0.0f);
+	float currentX = borderX;
+	float currentY = borderY;
+	float lowestChildRelY = 0;
+	float maxChildHeight = 0;
 
 	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4GuiWindow *child = *iter;
 		// calculate the space the child needs, correctly respecting the margins
-		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left
+		const float childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left
 			+ Em2Pix(child->props[C4GuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::rightMargin].GetFloat())
 			+ (lastDrawPosition.right - lastDrawPosition.left) * (child->props[C4GuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relRightMargin].GetFloat());
-		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
+		const float childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
 			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
 			+ (lastDrawPosition.bottom - lastDrawPosition.top) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
 		// remember the heighest child
 		if (!maxChildHeight || (childHgt > maxChildHeight))
+		{
 			maxChildHeight = childHgt;
-
+			lowestChildRelY = currentY + childHgt;
+		}
 		child->props[C4GuiWindowPropertyName::left].SetFloat(Pix2Em(currentX));
 		child->props[C4GuiWindowPropertyName::right].SetFloat(Pix2Em(currentX + childWdt));
 		child->props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(currentY));
@@ -1349,39 +1363,43 @@ void C4GuiWindow::UpdateLayoutGrid()
 		{
 			currentX = borderX;
 			currentY += maxChildHeight + borderY;
+			maxChildHeight = 0;
 		}
 	}
 
-	lastDrawPosition.topMostChild = 0;
-	lastDrawPosition.bottomMostChild = currentY;
+	lastDrawPosition.topMostChild = lastDrawPosition.top;
+	lastDrawPosition.bottomMostChild = lastDrawPosition.top + lowestChildRelY;
 
 	// do we need a scroll bar?
-	EnableScrollBar(currentY >= height, currentY);
+	EnableScrollBar(currentY > height, lowestChildRelY);
 }
 
 void C4GuiWindow::UpdateLayoutVertical()
 {
-	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
+	const float height = lastDrawPosition.bottom - lastDrawPosition.top;
 
-	int32_t borderY(0);
-	int32_t currentY = borderY;
+	float borderY(0.0f);
+	float currentY = borderY;
 
 	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4GuiWindow *child = *iter;
-		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
-
+		const float childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
+			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
+			+ (lastDrawPosition.bottom - lastDrawPosition.top) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
 		child->props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(currentY));
 		child->props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(currentY + childHgt));
+		child->props[C4GuiWindowPropertyName::relTop].SetFloat(0.0f);
+		child->props[C4GuiWindowPropertyName::relBottom].SetFloat(0.0f);
 
 		currentY += childHgt + borderY;
 	}
 
-	lastDrawPosition.topMostChild = 0;
-	lastDrawPosition.bottomMostChild = currentY;
+	lastDrawPosition.topMostChild = lastDrawPosition.top;
+	lastDrawPosition.bottomMostChild = lastDrawPosition.top + currentY;
 
 	// do we need a scroll bar?
-	EnableScrollBar(currentY >= height, currentY);
+	EnableScrollBar(currentY > height, currentY);
 }
 
 bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
@@ -1453,9 +1471,9 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	{
 		// however, we need to set the rectangle to something unobstructive so that it doesn't interfere with the parent's layout
 		lastDrawPosition.left = parentLeft;
-		lastDrawPosition.right = parentRight;
+		lastDrawPosition.right = parentLeft;
 		lastDrawPosition.top = parentTop;
-		lastDrawPosition.bottom = parentBottom;
+		lastDrawPosition.bottom = parentTop;
 		lastDrawPosition.dirty = 0;
 		return false;
 	}
@@ -1502,9 +1520,12 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	lastDrawPosition.bottom = bottomDrawY;
 
 	// do we need to update children positions etc.?
-	bool updateLayout = lastDrawPosition.dirty == 1;
+	bool updateLayout = lastDrawPosition.needLayoutUpdate;
 	if (lastDrawPosition.dirty > 0)
 	{
+		if (lastDrawPosition.dirty == 2)
+			lastDrawPosition.needLayoutUpdate = true;
+
 		--lastDrawPosition.dirty;
 
 		if (updateLayout)
@@ -1597,7 +1618,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 		StdStrBuf buf = FormatString("%s(%d)", target ? target->GetName() : "", id);
 		pDraw->TextOut(buf.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + leftDrawX, cgo.Y + topDrawY, 0xffff00ff, ALeft);
 
-		if (scrollBar || (parent && parent->scrollBar))
+		if (scrollBar || (parent && parent->scrollBar) || (parent && lastDrawPosition.bottom > parent->lastDrawPosition.bottom))
 		{
 			float scroll = scrollBar ? scrollBar->offset : 0.0f;
 			StdStrBuf buf2 = FormatString("childHgt: %d of %d (scroll %3d%%)", int(childHgt), int(height), int(100.0f * scroll));

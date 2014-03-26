@@ -267,7 +267,8 @@ class C4GuiWindow
 
 		float topMostChild, bottomMostChild;
 		int32_t dirty; // indicates wish to update topMostChild and bottomMostChild asap
-		_lastDrawPosition() : left(0.0f), right(0.0f), top(0.0f), bottom(0.0f), topMostChild(0.0f), bottomMostChild(0.0f), dirty(2) { }
+		bool needLayoutUpdate;
+		_lastDrawPosition() : left(0.0f), right(0.0f), top(0.0f), bottom(0.0f), topMostChild(0.0f), bottomMostChild(0.0f), dirty(2), needLayoutUpdate(false){}
 	} lastDrawPosition;
 
 	bool IsVisible() { return visible; }
