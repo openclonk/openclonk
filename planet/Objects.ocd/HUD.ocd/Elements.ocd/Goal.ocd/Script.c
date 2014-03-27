@@ -70,8 +70,8 @@ private func OpenGoalWindow()
 		Target = this,
 		Style = GUI_Multiple,
 		Decoration = GUI_MenuDeco,
-		Left = Format("50%-%dem", menu_width),
-		Right = Format("50%+%dem", menu_width),
+		Left = Format("50%%-%dem", menu_width),
+		Right = Format("50%%+%dem", menu_width),
 		Top = "50%-8em",
 		Bottom = "50%+16em",
 		BackgroundColor = {Std = 0},
@@ -89,7 +89,7 @@ private func OpenGoalWindow()
 		Right = "100%",
 		Top = "0%+8em",
 		Bottom = "100%",
-		Text = "bla",
+		Text = "",
 		BackgroundColor = {Std = 0},	
 	};
 	prop_menu.TextMenu = prop_text;
@@ -126,10 +126,10 @@ private func GoalSubMenu(object g, int nr, int size)
 	{
 		Target = this,
 		ID = nr + 2,
-		Left = Format("0%+%dem", nr * size),
-		Right = Format("0%+%dem", (nr + 1) * size),
+		Left = Format("0%%+%dem", nr * size),
+		Right = Format("0%%+%dem", (nr + 1) * size),
 		Top = "0%",
-		Bottom = Format("0%+%dem", size),
+		Bottom = Format("0%%+%dem", size),
 		Symbol = g->GetID(),
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnGoalGUIHover", g)],

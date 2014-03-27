@@ -68,17 +68,6 @@ public func GetDescription(int plr)
 	return message;
 }
 
-public func GetDescription(int plr)
-{
-	var message;
-	if (IsFulfilled())
-		message = "$MsgGoalFulfilled$";	
-	else
-		message = Format("$MsgGoalUnfulfilled$", gems_to_sell);
-
-	return message;
-}
-
 // Shows or hides a message window with information.
 public func Activate(int plr)
 {
