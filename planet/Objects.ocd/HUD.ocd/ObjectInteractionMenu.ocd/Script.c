@@ -530,7 +530,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 	}
 	
 
-	effect.last_inventory = inventory;
+	effect.last_inventory = inventory[:];
 	DoMenuRefresh(effect.slot, effect.menu_index, inventory);
 	return 1;
 }
