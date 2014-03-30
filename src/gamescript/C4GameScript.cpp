@@ -1611,13 +1611,14 @@ static C4ValueArray* FnPV_Direction(C4PropList * _this, C4Value factor)
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Step(C4PropList * _this, C4Value step, C4Value startValue, C4Value delay)
+static C4ValueArray* FnPV_Step(C4PropList * _this, C4Value step, C4Value startValue, C4Value delay, C4Value maximumValue)
 {
-	C4ValueArray *pArray = new C4ValueArray(4);
+	C4ValueArray *pArray = new C4ValueArray(5);
 	pArray->SetItem(0, C4VInt(C4PV_Step));
 	pArray->SetItem(1, step);
 	pArray->SetItem(2, startValue);
 	pArray->SetItem(3, delay);
+	pArray->SetItem(4, maximumValue);
 	return pArray;
 }
 

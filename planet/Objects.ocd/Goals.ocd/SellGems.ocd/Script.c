@@ -22,13 +22,17 @@ func SetTargetAmount(int new_amount)
 	return true;
 }
 
+public func GetTargetAmount()
+{
+	return gems_to_sell;
+}
+
 func OnGemSold()
 {
 	// A gem was sold. Subtract.
-	gems_to_sell = Max(gems_to_sell-1);
+	gems_to_sell = Max(gems_to_sell - 1, 0);
 	return true;
 }
-
 
 /* Scenario saving */
 
@@ -45,7 +49,23 @@ func SaveScenarioObject(props)
 // The goal is fulfilled if no more gems need to be sold
 public func IsFulfilled()
 {
-	return (gems_to_sell<=0);
+	return gems_to_sell <= 0;
+}
+
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";	
+	else
+	{
+		var gems_solid = GetMaterialCount(Material("Ruby")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
+		gems_solid += GetMaterialCount(Material("Amethyst")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
+		var gems_pieces = ObjectCount(Find_Or(Find_ID(Ruby), Find_ID(Amethyst)));
+		message = Format("$MsgGoalUnfulfilled$", gems_to_sell, gems_solid, gems_pieces);
+	}
+
+	return message;
 }
 
 // Shows or hides a message window with information.
@@ -64,7 +84,12 @@ public func Activate(int plr)
 	if (IsFulfilled())
 		message = "@$MsgGoalFulfilled$";	
 	else
-		message = Format("@$MsgGoalUnfulfilled$", gems_to_sell);
+	{
+		var gems_solid = GetMaterialCount(Material("Ruby")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
+		gems_solid += GetMaterialCount(Material("Amethyst")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
+		var gems_pieces = ObjectCount(Find_Or(Find_ID(Ruby), Find_ID(Amethyst)));
+		message = Format("@$MsgGoalUnfulfilled$", gems_to_sell, gems_solid, gems_pieces);
+	}
 
 	CustomMessage(message, nil, plr, 0, 16 + 64, 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
 	return;

@@ -19,15 +19,8 @@ func InitializeObjects()
 
 	CreateObject(Rule_BuyAtFlagpole, 50, 40);
 
-	CreateObject(Goal_AcidDrilling, 0, -10);
-
-	CreateObject(Rule_BuyAtFlagpole, 50, 40);
-
-	CreateObject(Goal_AcidDrilling, 0, -10);
-
-	CreateObject(Rule_BuyAtFlagpole, 50, 40);
-
-	CreateObject(Goal_AcidDrilling, 0, -10);
+	var Goal_AcidDrilling0036 = CreateObject(Goal_AcidDrilling, 0, -10);
+	Goal_AcidDrilling0036->SetBasinPosition(2338, 250);
 
 	var Chest0040 = CreateObject(Chest, 71, 222);
 

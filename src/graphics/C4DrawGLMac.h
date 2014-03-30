@@ -34,6 +34,8 @@ extern int ActualFullscreenX, ActualFullscreenY;
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
 - (void) setContextSurfaceBackingSizeToOwnDimensions;
+- (IBAction) increaseZoom:(id)sender;
+- (IBAction) decreaseZoom:(id)sender;
 
 + (CGDirectDisplayID) displayID;
 + (NSOpenGLContext*) mainContext;
@@ -50,8 +52,6 @@ extern int ActualFullscreenX, ActualFullscreenY;
 - (IBAction) copy:(id) sender;
 - (IBAction) delete:(id) sender;
 - (IBAction) resetZoom:(id) sender;
-- (IBAction) increaseZoom:(id)sender;
-- (IBAction) decreaseZoom:(id)sender;
 @end
 
 #endif

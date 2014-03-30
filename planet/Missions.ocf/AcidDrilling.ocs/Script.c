@@ -5,13 +5,8 @@ static g_was_player_init, g_crystal_player;
 func Initialize()
 {
 	g_crystal_player = NO_OWNER;
-	// Goal
-	var goal = FindObject(Find_ID(Goal_AcidDrilling));
-	if (!goal) goal = CreateObject(Goal_AcidDrilling);
-	goal->SetBasinPosition(2338, 250);
-	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
+	// Environment
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	return true;
 }
 

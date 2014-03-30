@@ -63,7 +63,13 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 
 void C4AbstractApp::MessageDialog(const char * message)
 {
-	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithUTF8String:message]];
+	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error"
+		defaultButton:nil
+		alternateButton:nil
+		otherButton:nil
+		informativeTextWithFormat:@"%@",
+		[NSString stringWithUTF8String:message]
+	];
 	[alert runModal];
 }
 

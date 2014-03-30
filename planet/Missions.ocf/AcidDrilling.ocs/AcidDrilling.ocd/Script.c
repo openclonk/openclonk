@@ -17,6 +17,14 @@ public func SetBasinPosition(int x, int y)
 	return true;
 }
 
+// Scenario saving
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (basin_x || basin_y) props->AddCall("Goal", this, "SetBasinPosition", basin_x, basin_y);
+	return true;
+}
+
 
 /*-- Goal interface --*/
 
@@ -24,6 +32,16 @@ public func SetBasinPosition(int x, int y)
 public func IsFulfilled()
 {
 	return GetMaterial(basin_x, basin_y) == Material("Acid");
+}
+
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnfulfilled$";
+	return message;
 }
 
 // Shows or hides a message window with information.

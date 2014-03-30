@@ -2,4 +2,4 @@ Name=Sell gems
 
 #Goal window
 MsgGoalFulfilled=You've sold enough gems!
-MsgGoalUnfulfilled=You need to sell %d more gems.
+MsgGoalUnfulfilled=You need to sell %d more gems. Currently there are available %d gems to mine and %d gems to collect.

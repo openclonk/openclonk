@@ -35,35 +35,62 @@ namespace C4GUI
 // --------------------------------------------------
 // Generic helpers
 
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, char &rcHotkey)
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey)
 	{
-		const char *HotkeyMarkup = "<c ffffff7f>x</c>";
-		size_t iHotkeyMarkupLength = 17;
-		size_t  iHotkeyMarkupHotkeyPos = 12;
+		static const char HotkeyMarkup[] = "<c ffffff7f>%s</c>";
 
-		int iHotkeyPos;
-		const char *szCheckText = sText.getData();
-		if (!szCheckText || (iHotkeyPos=SCharPos('&', szCheckText))<0)
+		StdStrBuf output;
+
+		const char *input = sText.getData();
+		rcHotkey = 0;
+
+		// Iterate over all input characters
+		while (input && *input)
 		{
-			// hotkey not available
-			rcHotkey = 0;
+			if (*input != '&')
+			{
+				// This will correctly copy UTF-8 chars too
+				output.AppendChar(*input++);
+			}
+			else
+			{
+				++input;
+				if (*input == '\0' || *input == '&')
+				{
+					// If the ampersand is followed by another ampersand, or it is the last character, copy it verbatimly
+					// Note: This means you can't use an ampersand as an accelerator key.
+					output.AppendChar(*input);
+				}
+				else
+				{
+					// Store the start of the hotkey so we can copy it later
+					const char *accel_start = input;
+					rcHotkey = GetNextCharacter(&input);
+					// Using std::string because StdStrBuf doesn't have a ctor from two iterators
+					std::string accel(accel_start, input);
+					output.AppendFormat(HotkeyMarkup, accel.c_str());
+
+					// Converting a char code to upper case isn't trivial for unicode. (This should really just use ICU.)
+					if (Inside(rcHotkey, static_cast<uint32_t>('a'), static_cast<uint32_t>('z')))
+					{
+						rcHotkey += static_cast<uint32_t>('A') - 'a';
+					} 
+					else if (!Inside(rcHotkey, static_cast<uint32_t>('A'), static_cast<uint32_t>('Z')))
+					{
+						// Warn about accelerator keys outside the basic latin alphabet.
+						LogF(LoadResStr("IDS_ERR_UNSUPPORTED_ACCELERATOR"), accel.c_str(), sText.getData());
+					}
+				}
+			}
+		}
+
+		if (rcHotkey == 0)
+		{
+			// No accelerator found
 			return false;
 		}
-		// set hotkey
-		sText.Grow(iHotkeyMarkupLength-2);
-		char *szText = sText.GrabPointer();
-		char *szTextBegin = szText;
-		rcHotkey = szText[iHotkeyPos+1]; char cOrigHotkey = rcHotkey;
-		if (Inside(rcHotkey, 'a', 'z')) rcHotkey+=((int32_t)'A'-'a');
-		// mark hotkey
-		size_t iTextLen = SLen(szText);
-		szText += iHotkeyPos; iTextLen -= iHotkeyPos;
-		memmove(szText+iHotkeyMarkupLength*sizeof(char), szText+2*sizeof(char), (iTextLen-1)*sizeof(char));
-		memcpy(szText, HotkeyMarkup, iHotkeyMarkupLength);
-		szText[iHotkeyMarkupHotkeyPos] = cOrigHotkey; // set original here, so no conversion to UpperCase
-		//szText[iTextLen+iHotkeyMarkupLength-2] = 0;
-		// write back string
-		sText.Take(szTextBegin);
+
+		sText.Take(output);
 		// done, success
 		return true;
 	}

@@ -459,6 +459,28 @@ static NSOpenGLContext* MainContext;
 	return result;
 }
 
+- (IBAction) increaseZoom:(id)sender
+{
+	if (Application.isEditor)
+	{
+		C4Viewport* v = self.controller.viewport;
+		v->SetZoom(v->GetZoom()*2, false);
+	}
+	else
+		Viewports.ViewportZoomIn();
+}
+
+- (IBAction) decreaseZoom:(id)sender
+{
+	if (Application.isEditor)
+	{
+		C4Viewport* v = self.controller.viewport;
+		v->SetZoom(v->GetZoom()/2, false);
+	}
+	else
+		Viewports.ViewportZoomOut();
+}
+
 @end
 
 @implementation C4EditorOpenGLView
@@ -481,18 +503,6 @@ static NSOpenGLContext* MainContext;
 - (IBAction) resetZoom:(id) sender
 {
 	self.controller.viewport->SetZoom(1, true);
-}
-
-- (IBAction) increaseZoom:(id)sender
-{
-	C4Viewport* v = self.controller.viewport;
-	v->SetZoom(v->GetZoom()*2, false);
-}
-
-- (IBAction) decreaseZoom:(id)sender
-{
-	C4Viewport* v = self.controller.viewport;
-	v->SetZoom(v->GetZoom()/2, false);
 }
 
 @end

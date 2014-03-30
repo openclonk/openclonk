@@ -13,29 +13,30 @@ func DoInit(int first_player)
 {
 	// Goal
 	var goal = CreateObject(Goal_Assassination);
-	if (goal) goal->SetVictim(Object(3816));
+	if (goal) goal->SetVictim(g_king);
 	// Elevators
 	// Top
-	Object(332)->SetNoPowerNeed(true);
-	Object(331)->CreateShaft(470);
+	g_elev2->SetNoPowerNeed(true);
+	g_elev2->CreateShaft(470);
 	// Left
-	Object(420)->CreateShaft(100);
+	g_elev1->SetNoPowerNeed(true);
+	g_elev1->CreateShaft(100);
 	// Shrooms
-	Object(2318)->AddPoisonEffect(0,0); // floor left
-	Object(2369)->AddPoisonEffect(0,0); // ceiling left
-	Object(2375)->AddPoisonEffect(-20,0); // floor right
-	Object(2398)->AddPoisonEffect(10,-10); // ceiling right
+	g_shroom1->AddPoisonEffect(0,0); // floor left
+	g_shroom2->AddPoisonEffect(0,0); // ceiling left
+	g_shroom3->AddPoisonEffect(-20,0); // floor right
+	g_shroom4->AddPoisonEffect(10,-10); // ceiling right
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
-	Object(343)->AddScorch(-20,-10, -45, 50, 1500);
-	Object(344)->AddScorch(-15,42, 90, 50, 1200);
-	Object(346)->AddScorch(-12,18, 130, 80, 1300);
+	g_ruin1->AddScorch(-20,-10, -45, 50, 1500);
+	g_ruin2->AddScorch(-15,42, 90, 50, 1200);
+	g_ruin3->AddScorch(-12,18, 130, 80, 1300);
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);
 	// Horax
-	Object(3816).JumpSpeed = 200;
+	g_king.JumpSpeed = 200;
 	// Update AI stuff
 	var fx;
 	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
@@ -47,8 +48,9 @@ func DoInit(int first_player)
 			enemy->AddEnergyBar();
 		}
 	// Intro. Message 250 frames + regular message time
-	Dialogue->MessageBoxAll("$MsgIntro1$", Object(2648), true);
-	Schedule(nil, "Dialogue->MessageBoxAll(\"$MsgIntro1$\", Object(2648))", 250, 1);
+	g_farmer.portrait = "Farmer2";
+	DialogueCastle->MessageBoxAll("$MsgIntro1$", g_farmer, true);
+	Schedule(nil, "DialogueCastle->MessageBoxAll(\"$MsgIntro1$\", g_farmer)", 250, 1);
 	return true;
 }
 
@@ -106,20 +108,20 @@ func JoinPlayer(int plr)
 
 func EncounterCave(object enemy, object player)
 {
-	Dialogue->MessageBoxAll("$MsgEncounterCave$", enemy);
+	DialogueCastle->MessageBoxAll("$MsgEncounterCave$", enemy);
 	return true;
 }
 
 func EncounterOutpost(object enemy, object player)
 {
-	Dialogue->MessageBoxAll("$MsgEncounterOutpost$", enemy);
+	DialogueCastle->MessageBoxAll("$MsgEncounterOutpost$", enemy);
 	return true;
 }
 
 func EncounterKing(object enemy, object player)
 {
 	if (!player) player = enemy; // Leads to a funny message, but better than a null pointer.
-	Dialogue->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
+	DialogueCastle->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
 	return true;
 }
 
@@ -130,7 +132,7 @@ func ShroomCaveCheck()
 {
 	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
 	if (!intruder) return true;
-	Dialogue->MessageBoxAll("$MsgEncounterShrooms$", intruder);
+	DialogueCastle->MessageBoxAll("$MsgEncounterShrooms$", intruder);
 	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);
 	return true;
 }

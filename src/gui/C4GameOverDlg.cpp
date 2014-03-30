@@ -302,12 +302,19 @@ void C4GameOverDlg::OnExitBtn(C4GUI::Control *btn)
 {
 	// callback: exit button pressed.
 	Close(false);
+	Application.QuitGame();
 }
 
 void C4GameOverDlg::OnContinueBtn(C4GUI::Control *btn)
 {
 	// callback: continue button pressed
-	Close(true);
+	Close(true); // unpauses
+	if (fHasNextMissionButton)
+	{
+		// switch to next mission if next mission button is pressed
+		Application.SetNextMission(Game.NextMission.getData());
+		Application.QuitGame();
+	}
 }
 
 void C4GameOverDlg::OnShown()
@@ -324,26 +331,6 @@ void C4GameOverDlg::OnShown()
 void C4GameOverDlg::OnClosed(bool fOK)
 {
 	typedef C4GUI::Dialog BaseClass;
-	bool fNextMissBtn = fHasNextMissionButton;
 	BaseClass::OnClosed(fOK); // deletes this!
-	// continue round
-	if (fOK)
-	{
-		if (fNextMissBtn)
-		{
-			// switch to next mission if next mission button is pressed
-			Application.SetNextMission(Game.NextMission.getData());
-			Application.QuitGame();
-		}
-		else
-		{
-			// unpause game when continue is pressed
-			Game.Unpause();
-		}
-	}
-	// end round
-	else
-	{
-		Application.QuitGame();
-	}
+	Game.Unpause();
 }

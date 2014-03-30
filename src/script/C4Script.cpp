@@ -43,7 +43,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 		if (*cpFormat=='%')
 		{
 			// Scan field type
-			for (cpType=cpFormat+1; *cpType && (*cpType=='.' || Inside(*cpType,'0','9')); cpType++) {}
+			for (cpType=cpFormat+1; *cpType && (*cpType == '+' || *cpType == '-' || *cpType == '.' || *cpType == '#' || *cpType == ' ' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
 			SCopy(cpFormat,szField,Min<unsigned int>(sizeof szField - 1, cpType - cpFormat + 1));
 			// Insert field by type

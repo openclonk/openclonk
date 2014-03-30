@@ -51,7 +51,7 @@ func FxAdjustTimer()
 
 func Set(int i)
 {
-	SetObjDrawTransform((800 * i)/100, 0, 0, 0, 900, -150);
+	SetObjDrawTransform((800 * i)/100, 0, -500, 0, 900, -150);
 }
 
 func Init(to)
@@ -61,7 +61,7 @@ func Init(to)
 	SetVertexXY(0, -x, -y);
 	SetAction("Turn", to);
 	SetPhase(Random(5));
-	this.Layer = to.Layer - 1;
+	this.Plane = to.Plane + 1;
 }
 
 public func Initialize()

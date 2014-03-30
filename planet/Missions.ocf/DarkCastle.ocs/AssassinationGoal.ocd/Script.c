@@ -29,6 +29,16 @@ public func IsFulfilled()
 	return !victim->GetAlive();
 }
 
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = "$MsgGoalFulfilled$";		
+	else
+		message = "$MsgGoalUnFulfilled$";
+	return message;
+}
+
 public func Activate(int byplr)
 {
 	if (IsFulfilled())

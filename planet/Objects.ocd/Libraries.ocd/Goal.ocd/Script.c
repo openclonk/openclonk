@@ -122,7 +122,14 @@ public func SetMissionAccess(string str_password)
 
 // Base implementations to be overloaded by goal objects
 
+// Overload: return whether the goal has been fulfilled.
 public func IsFulfilled() { return true; }
+
+// Overload: return the current description for this goal.
+public func GetDescription(int plr)
+{
+	return "WARNING: GetDescription(int plr) not overloaded by goal";
+}
 
 protected func Activate(plr)
 {

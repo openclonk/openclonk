@@ -22,7 +22,7 @@ using namespace std;
 
 @interface SCHNotify : SCHAddition
 {
-	list<CFRunLoopSourceRef> socketSources;
+	list<pair<CFRunLoopSourceRef, CFSocketRef>> socketSources;
 }
 - (void) registerAt:(SCHAdditions*) _additions;
 - (void) unregisterFrom:(SCHAdditions*) _additions;
@@ -41,12 +41,14 @@ using namespace std;
 {
 	NSMutableDictionary* procAdditions;
 }
++ (SCHAdditions*) requestAdditionsForScheduler:(StdScheduler*) scheduler;
 - (id) initWithScheduler:(StdScheduler*) scheduler;
 - (SCHAddition*) additionForProc:(StdSchedulerProc*) proc;
 - (SCHAddition*) assignAdditionForProc:(StdSchedulerProc*) proc;
-+ (SCHAdditions*) requestAdditionForScheduler:(StdScheduler*) scheduler;
+- (void) changed:(SCHAddition*)addition;
 - (BOOL) removeAdditionForProc:(StdSchedulerProc*) proc;
-@property(readonly) NSRunLoop* runLoop;
+- (void) start;
+@property(readonly) __weak NSRunLoop* runLoop;
 @property(readonly) StdScheduler* scheduler;
 @end
 
@@ -54,12 +56,13 @@ using namespace std;
 
 static NSMutableDictionary* additionsDictionary;
 
+- (int) numberOfAdditions { return [additionsDictionary count]; }
+
 - (id) initWithScheduler:(StdScheduler*) scheduler
 {
 	if (self = [super init])
 	{
 		_scheduler = scheduler;
-		_runLoop = [NSRunLoop currentRunLoop];
 		procAdditions = [NSMutableDictionary new];
 		return self;
 	} else
@@ -95,12 +98,40 @@ static NSMutableDictionary* additionsDictionary;
 	if (addition)
 	{
 		[procAdditions setObject:addition forKey:[NSNumber valueWithPointer:proc]];
+		if (_runLoop)
+			[addition registerAt:self];
 		return addition;
 	} else
 		return nullptr;
 }
 
-+ (SCHAdditions*) requestAdditionForScheduler:(StdScheduler *)scheduler
+- (void) start
+{
+	auto current = [NSRunLoop currentRunLoop];
+	if (current != [NSRunLoop mainRunLoop])
+		return; // oh well
+	_runLoop = current;
+	[procAdditions enumerateKeysAndObjectsUsingBlock:
+		^void (id key, SCHAddition* obj, BOOL* stop) { [obj registerAt:self]; }];
+}
+
+- (void) changed:(SCHAddition*)addition
+{
+	[addition unregisterFrom:self];
+	if (_runLoop)
+		[addition registerAt:self];
+}
+
++ (void) removeAdditions:(SCHAdditions*)additions
+{
+	auto key = [NSNumber valueWithPointer:additions.scheduler];
+	@synchronized (additionsDictionary)
+	{
+		[additionsDictionary removeObjectForKey:key];
+	}
+}
+
++ (SCHAdditions*) requestAdditionsForScheduler:(StdScheduler *)scheduler
 {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken,
@@ -132,6 +163,8 @@ static NSMutableDictionary* additionsDictionary;
 }
 - (bool) shouldExecuteProc
 {
+	if (!proc)
+		return false;
 	auto s = schedulerAdditions;
 	return s && !s.scheduler->IsInManualLoop();
 }
@@ -145,9 +178,7 @@ static NSMutableDictionary* additionsDictionary;
 }
 - (void) changed
 {
-	auto s = schedulerAdditions;
-	[self unregisterFrom:s];
-	[self registerAt:s];
+	[schedulerAdditions changed:self];
 }
 @end
 
@@ -197,8 +228,12 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 	[super registerAt:_additions];
 	vector<struct pollfd> vecs;
 	proc->GetFDs(vecs);
-	CFSocketContext ctx = {};
-	ctx.info = (__bridge void*)self;
+	CFSocketContext ctx =
+	{
+		.info = (__bridge void*)self,
+		.retain = CFRetain,
+		.release = CFRelease
+	};
 	for (auto p : vecs)
 	{
 		auto socket = CFSocketCreateWithNative(NULL,
@@ -207,40 +242,45 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 		);
 		auto runLoopSource = CFSocketCreateRunLoopSource(NULL, socket, 0);
 		CFRunLoopAddSource([_additions.runLoop getCFRunLoop], runLoopSource, kCFRunLoopDefaultMode);
-		socketSources.push_back(runLoopSource);
+		socketSources.push_back(make_pair(runLoopSource, socket));
 	}
 }
 - (void) unregisterFrom:(SCHAdditions*) _additions
 {
+	auto runLoop = [_additions.runLoop getCFRunLoop];
 	for (auto r : socketSources)
 	{
-		CFRunLoopSourceInvalidate(r);
-		CFRelease(r);
+		CFRunLoopRemoveSource(runLoop, r.first, kCFRunLoopDefaultMode);
+		CFSocketDisableCallBacks(r.second, kCFSocketReadCallBack|kCFSocketWriteCallBack);
+		CFRunLoopSourceInvalidate(r.first);
+		CFRelease(r.second);
+		CFRelease(r.first);
 	}
 	socketSources.clear();
 	[super unregisterFrom:_additions];
 }
 @end
 
+void StdScheduler::StartOnCurrentThread()
+{
+	[[SCHAdditions requestAdditionsForScheduler:this] start];
+}
+
 void StdScheduler::Added(StdSchedulerProc *pProc)
 {
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
-	auto addition = [x assignAdditionForProc:pProc];
-	if (addition)
-		[addition registerAt:x];
+	[[SCHAdditions requestAdditionsForScheduler:this] assignAdditionForProc:pProc];
 }
 
 void StdScheduler::Removing(StdSchedulerProc *pProc)
 {
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
+	auto x = [SCHAdditions requestAdditionsForScheduler:this];
 	[x removeAdditionForProc:pProc];
+	if ([x numberOfAdditions] == 0)
+		[SCHAdditions removeAdditions:x];
 }
 
 void StdScheduler::Changed(StdSchedulerProc* pProc)
 {
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
-	auto addition = [x additionForProc:pProc];
-	if (addition)
-		[addition changed];
+	[[[SCHAdditions requestAdditionsForScheduler:this] additionForProc:pProc] changed];
 }
 #endif

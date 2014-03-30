@@ -37,7 +37,6 @@ HomeBaseProduction=Clonk=5;Bread=5;
 
 [Landscape]
 Sky=Clouds1
-SkyScrollMode=1
 TopOpen=0
 BottomOpen=0
 MapWidth=300

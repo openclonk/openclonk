@@ -11,6 +11,7 @@ Blast2Object=Firestone
 Blast2ObjectRatio=115
 MaxAirSpeed=100
 MaxSlide=1
+Corrode=50
 Placement=40
 TextureOverlay=firestone
 Inflammable=1

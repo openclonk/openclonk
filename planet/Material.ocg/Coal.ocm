@@ -11,6 +11,7 @@ Dig2ObjectRatio=170
 Blast2ObjectRatio=210
 MaxAirSpeed=100
 MaxSlide=1
+Corrode=50
 Placement=40
 TextureOverlay=coal
 OverlayType=8

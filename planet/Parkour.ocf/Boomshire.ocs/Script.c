@@ -195,13 +195,13 @@ protected func Doors()
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(StoneDoor, 1935, 550, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1935, 558, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1900, 565, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	gate->CloseDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(StoneDoor, 2965, 310, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 2965, 316, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 3260, 328, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	gate->CloseDoor();

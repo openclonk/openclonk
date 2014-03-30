@@ -68,6 +68,32 @@ public func IsFulfilled()
 }
 
 // Shows or hides a message window with information.
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+	{
+		message = "$MsgGoalFulfilled$";		
+	}
+	else
+	{
+		message = "$MsgGoalExtraction$";
+		for (var i = 0; i < GetLength(resource_list); i++)
+		{
+			var mat = resource_list[i];
+			var tol = tolerance_list[i];
+			var mat_cnt = GetMaterialCount(Material(mat));
+			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+			var res_cnt = ObjectCount(Find_ID(res_id));
+			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio), res_cnt);
+			message = Format("%s%s", message, add_msg);
+		}
+	}
+	return message;
+}
+
+// Shows or hides a message window with information.
 public func Activate(int plr)
 {
 	// If goal message open -> hide it.

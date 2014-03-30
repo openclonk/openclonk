@@ -5,7 +5,7 @@ $libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbis
 $executable_path = ENV['EXECUTABLE_PATH']
 $frameworks_folder_path = ENV['FRAMEWORKS_FOLDER_PATH']
 
-Dir.chdir ENV['TARGET_BUILD_DIR']
+Dir.chdir ENV['TARGET_BUILD_DIR'] if ENV['TARGET_BUILD_DIR']
 puts "Bundling libraries..."
 
 def bundle_dependencies(executable_path)

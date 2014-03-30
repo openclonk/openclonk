@@ -210,6 +210,33 @@ public func IsFulfilled()
 	return finished;
 }
 
+public func GetDescription(int plr)
+{
+	var team = GetPlayerTeam(plr);
+	var msg;
+	if (finished)
+	{
+		if (team)
+		{
+			if (IsWinner(plr))
+				msg = "$MsgParkourWonTeam$";
+			else
+				msg = "$MsgParkourLostTeam$";
+		}
+		else
+		{
+			if (IsWinner(plr))
+				msg = "$MsgParkourWon$";
+			else
+				msg = "$MsgParkourLost$";
+		}
+	}
+	else
+		msg = Format("$MsgParkour$", cp_count);
+
+	return msg;
+}
+
 public func Activate(int plr)
 {
 	var team = GetPlayerTeam(plr);

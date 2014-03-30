@@ -836,7 +836,7 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		tLastGameTick(0), iGameTickDelay(0)
+		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(0)
 {
 }
 

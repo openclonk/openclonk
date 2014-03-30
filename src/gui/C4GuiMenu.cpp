@@ -307,7 +307,7 @@ namespace C4GUI
 		if (Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, 'A', 'Z') || Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, '0', '9'))
 		{
 			// process hotkeys
-			char ch=char(wKey);
+			uint32_t ch = wKey;
 			for (Element *pCurr = GetFirst(); pCurr; pCurr = pCurr->GetNext())
 				if (pCurr->OnHotkey(ch))
 				{

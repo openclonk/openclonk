@@ -13,6 +13,8 @@ func Initialize()
 	// Acid rain!
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Acid", 100);
+	// SKy
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	// Earthquacks and lava!
 	Earthquake->SetChance(100);
 	Volcano->SetChance(2);

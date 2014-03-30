@@ -150,7 +150,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr,GetCrewCount()-hotkey);
+		var crew = GetCrew(plr,hotkey-1);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();

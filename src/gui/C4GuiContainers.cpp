@@ -198,7 +198,7 @@ namespace C4GUI
 		return this;
 	}
 
-	bool Container::OnHotkey(char cHotkey)
+	bool Container::OnHotkey(uint32_t cHotkey)
 	{
 		if (!IsVisible()) return false;
 		// check all nested elements

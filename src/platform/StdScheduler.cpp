@@ -132,7 +132,6 @@ C4TimeMilliseconds StdSchedulerProc::GetNextTick(C4TimeMilliseconds tNow)
 
 bool StdScheduler::ScheduleProcs(int iTimeout)
 {
-	isInManualLoop = true;
 	// Needs at least one process to work properly
 	if (!procs.size()) return false;
 
@@ -149,8 +148,10 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 		}
 	}
 	
+	bool old = isInManualLoop;
+	isInManualLoop = true;
 	bool res = DoScheduleProcs(iTimeout);
-	isInManualLoop = false;
+	isInManualLoop = old;
 	return res;
 }
 
@@ -269,6 +270,7 @@ void *StdSchedulerThread::_ThreadFunc(void *pPar)
 
 unsigned int StdSchedulerThread::ThreadFunc()
 {
+	StartOnCurrentThread();
 	// Keep calling Execute until someone gets fed up and calls StopThread()
 	while (fRunThreadRun)
 		ScheduleProcs(1000);

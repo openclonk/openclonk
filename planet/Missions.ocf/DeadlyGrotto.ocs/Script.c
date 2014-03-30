@@ -21,6 +21,8 @@ func Initialize()
 	// Misc vegetation
 	SproutBerryBush->Place(5, Rectangle(100,0,600,300));
 	Mushroom->Place(5, Rectangle(100,0,600,300));
+	// Sky
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	return true;
 }
 

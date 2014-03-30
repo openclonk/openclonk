@@ -126,26 +126,24 @@ private:
 
 	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
-	void OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox);
-	void OnGfxTroubleCheck(C4GUI::Element *pCheckBox)
-	{ SaveGfxTroubleshoot(); } // immediate save and test
+	void OnGfxShaderCheck(C4GUI::Element *pCheckBox)
+	{ SaveGfxShader(); } // immediate save and test
 	void OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
+	void OnGfxClrDepthComboFill(C4GUI::ComboBox_FillCB *pFiller);
+	bool OnGfxClrDepthComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	bool TryNewResolution(int32_t iResX, int32_t iResY);
-	void OnGfxClrDepthCheck(C4GUI::Element *pCheckBox);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox
 	const char * GetWindowedName(int32_t mode = -1);
 	void OnEffectsSliderChange(int32_t iNewVal);
 
-	C4GUI::CheckBox *pCheckGfxClrDepth[2];
-	C4GUI::GroupBox *pGroupTrouble;
 	C4GUI::CheckBox *pShaders;
 	int32_t iGfxTexIndent;
 	C4GUI::ScrollBar *pEffectLevelSlider;
 
-	void LoadGfxTroubleshoot(); void SaveGfxTroubleshoot();
+	void LoadGfxShader(); void SaveGfxShader();
 
 	// sound tab ----------------------------------------------------------
 private:

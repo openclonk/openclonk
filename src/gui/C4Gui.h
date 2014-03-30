@@ -217,7 +217,7 @@ namespace C4GUI
 
 
 	// expand text like "Te&xt" to "Te<c ffff00>x</c>t"
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, char &rcHotkey);
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey);
 
 	// make color readable on black: max alpha to 0x1f, max color hues
 	DWORD MakeColorReadableOnBlack(DWORD &rdwClr);
@@ -421,7 +421,7 @@ namespace C4GUI
 		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // called by mouse: dragging process
 		virtual void StopDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam); // called by mouse: mouse released after dragging process
 
-		virtual bool OnHotkey(char cHotkey) { return false; } // return true when hotkey has been processed
+		virtual bool OnHotkey(uint32_t cHotkey) { return false; } // return true when hotkey has been processed
 
 	public:
 		bool DoContext(); // open context menu if assigned
@@ -483,7 +483,7 @@ namespace C4GUI
 		DWORD dwFgClr; // text color
 		int32_t x0, iAlign; // x-textstart-pos; horizontal alignment
 		CStdFont *pFont;
-		char cHotkey;   // hotkey for this label
+		uint32_t cHotkey;   // hotkey for this label
 		bool fAutosize;
 		bool fMarkup;
 
@@ -494,7 +494,7 @@ namespace C4GUI
 		virtual void DrawElement(C4TargetFacet &cgo); // output label
 		virtual void UpdateOwnPos();
 
-		virtual bool OnHotkey(char cHotkey); // focus control on correct hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // focus control on correct hotkey
 
 		virtual int32_t GetLeftIndent() { return 0; }
 
@@ -736,7 +736,7 @@ namespace C4GUI
 		virtual void AfterElementRemoval()
 		{ if (pParent) pParent->AfterElementRemoval(); } // called by ScrollWindow to parent after an element has been removed
 
-		virtual bool OnHotkey(char cHotkey); // check all contained elements for hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // check all contained elements for hotkey
 
 	public:
 		Container();  // ctor
@@ -1024,7 +1024,7 @@ namespace C4GUI
 		DWORD dwCustomFontClr;    // text font color (valid only if pCustomFont)
 		bool fDown;         // if set, button is currently held down
 		bool fMouseOver;    // if set, the mouse hovers over the button
-		char cHotkey;   // hotkey for this button
+		uint32_t cHotkey;   // hotkey for this button
 		bool fEnabled;
 
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
@@ -1041,7 +1041,7 @@ namespace C4GUI
 		void SetDown(); // mark down and play sound
 		void SetUp(bool fPress);   // mark up and play sound
 
-		virtual bool OnHotkey(char cHotkey); // press btn on correct hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // press btn on correct hotkey
 
 	public:
 		Button(const char *szBtnText, const C4Rect &rtBounds); // ctor
@@ -1368,7 +1368,7 @@ namespace C4GUI
 		bool fEnabled;
 		CStdFont *pFont;
 		uint32_t dwEnabledClr, dwDisabledClr;
-		char cHotkey;
+		uint32_t cHotkey;
 
 	public:
 		CheckBox(const C4Rect &rtBounds, const char *szCaption, bool fChecked); // ctor
@@ -1388,7 +1388,7 @@ namespace C4GUI
 		virtual bool IsFocusOnClick() { return false; } // just check/uncheck on click; do not gain keyboard focus as well
 		virtual Control *IsFocusElement() { return fEnabled ? Control::IsFocusElement() : NULL; }; // this control can gain focus if enabled
 		virtual void DrawElement(C4TargetFacet &cgo); // draw checkbox
-		virtual bool OnHotkey(char cHotkey); // return true when hotkey has been processed
+		virtual bool OnHotkey(uint32_t cHotkey); // return true when hotkey has been processed
 
 	public:
 		void SetChecked(bool fToVal) { fChecked = fToVal; } // set w/o callback
@@ -1523,7 +1523,7 @@ namespace C4GUI
 		protected:
 			StdStrBuf sTitle; // sheet label
 			int32_t icoTitle; // sheet label icon
-			char cHotkey;
+			uint32_t cHotkey;
 			uint32_t dwCaptionClr; // caption color - default if 0
 			bool fHasCloseButton, fCloseButtonHighlighted;
 			bool fTitleMarkup;
@@ -1710,7 +1710,7 @@ namespace C4GUI
 
 		protected:
 			StdStrBuf sText; // entry text
-			char cHotkey;       // entry hotkey
+			uint32_t cHotkey;       // entry hotkey
 			Icons icoIcon;      // icon to be drawn left of text
 			MenuHandler *pMenuHandler; // callback when item is selected
 			ContextHandler *pSubmenuHandler; // callback when submenu is opened
@@ -1724,7 +1724,7 @@ namespace C4GUI
 			virtual void MouseLeave(CMouse &rMouse)
 			{ if (GetParent()) ((ContextMenu *) GetParent())->MouseLeaveEntry(rMouse, this); }
 
-			virtual bool OnHotkey(char cKey) { return cKey==cHotkey; }
+			virtual bool OnHotkey(uint32_t cKey) { return cKey==cHotkey; }
 
 			virtual bool IsMenu() { return true; }
 
