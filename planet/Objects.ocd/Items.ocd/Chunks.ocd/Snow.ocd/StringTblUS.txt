@@ -1,0 +1,2 @@
+Name=Snowball
+Description=Snowball fight!

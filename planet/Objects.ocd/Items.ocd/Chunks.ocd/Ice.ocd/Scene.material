@@ -1,0 +1,14 @@
+material IceChunk
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 0.800000
+			diffuse 0.5 0.5 0.9 0.800000
+			specular 0.652682 0.652682 0.952682 0.800000 18.000000
+			emissive 0.2 0.2 0.5 0.800000
+		}
+	}
+}

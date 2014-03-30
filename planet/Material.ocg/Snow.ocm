@@ -22,7 +22,7 @@ TextureOverlay=snow1
 PXSGfxSize=3
 PXSGfx=Snow
 PXSGfxRt=0,0,16,16,-8,-8
-Dig2Object=Snow
+Dig2Object=Chunk_Snow
 Dig2ObjectRatio=400
 
 [Reaction]

@@ -1,0 +1,14 @@
+material SnowChunk
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 1.000000 1.000000 1.000000 1.000000
+			diffuse 1.0 1.0 1.0 1.000000
+			specular 1.0 1.0 1.0 1.000000 18.000000
+			emissive 1.0 1.0 1.0 1.000000
+		}
+	}
+}
