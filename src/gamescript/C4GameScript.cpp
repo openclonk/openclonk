@@ -1566,6 +1566,7 @@ static bool FnCreateParticle(C4PropList * _this, C4String *name, C4Value x, C4Va
 
 static bool FnClearParticles(C4PropList * _this)
 {
+#ifndef USE_CONSOLE
 	C4Object *obj;
 	if (obj = Object(_this))
 	{
@@ -1579,7 +1580,7 @@ static bool FnClearParticles(C4PropList * _this)
 		if (::Particles.GetGlobalParticles())
 			::Particles.GetGlobalParticles()->Clear();
 	}
-
+#endif
 	// always return true
 	return true;
 }

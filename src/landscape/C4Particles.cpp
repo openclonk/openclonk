@@ -1290,6 +1290,8 @@ void C4ParticleSystem::ExecuteCalculation()
 		particleListAccessMutex.Leave();
 	}
 }
+#else // ifdef USE_CONSOLE
+void C4ParticleSystem::DoInit() {}
 #endif
 
 C4ParticleList *C4ParticleSystem::GetNewParticleList(C4Object *forObject)
@@ -1504,9 +1506,11 @@ void C4ParticleSystem::Clear()
 
 void C4ParticleSystem::ClearAllParticles()
 {
+#ifndef USE_CONSOLE
 	particleListAccessMutex.Enter();
 	particleLists.clear();
 	particleListAccessMutex.Leave();
+#endif
 }
 
 C4ParticleDef *C4ParticleSystemDefinitionList::GetDef(const char *name, C4ParticleDef *exclude)
@@ -1521,12 +1525,10 @@ C4ParticleDef *C4ParticleSystemDefinitionList::GetDef(const char *name, C4Partic
 	return 0;
 }
 
-#ifndef USE_CONSOLE
 void C4ParticleSystemDefinitionList::Clear()
 {
 	// the particle definitions update the list in their destructor
 	while (first)
 		delete first;
 }
-#endif
 C4ParticleSystem Particles;

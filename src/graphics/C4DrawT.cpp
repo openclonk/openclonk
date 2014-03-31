@@ -17,6 +17,11 @@
 #include <C4DrawT.h>
 #include <StdMeshMaterial.h>
 
+CStdNoGfx::CStdNoGfx()
+{
+	Default();
+}
+
 bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
 	Log("Graphics disabled.");
@@ -30,4 +35,3 @@ bool CStdNoGfx::PrepareMaterial(StdMeshMaterial& mesh)
 {
    	mesh.BestTechniqueIndex=0; return true;
 }
-

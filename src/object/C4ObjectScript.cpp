@@ -2183,6 +2183,10 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
 	const StdMeshBone* bone = mesh.GetBoneByName(szBoneName->GetData());
 	if(!bone) return false;
+	// get particle
+	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
+	if (!pDef) return false;
+#ifndef USE_CONSOLE
 	// Get transform
 	Obj->pMeshInstance->UpdateBoneTransforms();
 	const StdMeshMatrix transform = Obj->pMeshInstance->GetBoneTransform(bone->Index) * StdMeshMatrix::Transform(bone->Transformation);
@@ -2278,9 +2282,6 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	x.x += DrawTransform(0,3);
 	x.y += DrawTransform(1,3);
 	x.z += DrawTransform(2,3);
-	// get particle
-	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
-	if (!pDef) return false;
 
 	// construct data
 	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
@@ -2292,6 +2293,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 
 	// cast
 	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
+#endif
 	// success, even if not created
 	return true;
 
