@@ -8,6 +8,8 @@
 local Name = "$Name$";
 local Description = "$Description$";
 
+static const InteractionMenu_SideBarSize = 80; // in tenth-em
+
 static const InteractionMenu_Contents = 2;
 static const InteractionMenu_Custom = 4;
 
@@ -185,6 +187,7 @@ func OpenMenuForObject(object obj, int slot)
 	// to close the part_menu automatically when the main menu is closed
 	current_menus[slot].menu_object = main.Target;
 	
+	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
 	var part_menu = 
 	{
 		//Style = GUI_NoCrop,
@@ -219,7 +222,7 @@ func OpenMenuForObject(object obj, int slot)
 			{
 				Decoration = GUI_MenuDeco,
 				Top = "100%-10em",
-				Margin = ["4em", "0em"],
+				Margin = [sidebar_size_em, "0em"],
 				symbol_part = 
 				{
 					Right = "10em",
@@ -255,18 +258,19 @@ func OpenMenuForObject(object obj, int slot)
 // to interact with can be selected
 func CreateSideBar(int slot)
 {
+	var em_size = ToEmString(InteractionMenu_SideBarSize);
 	var dummy = CreateDummy();
 	var sidebar =
 	{
 		Priority = 10,
-		Right = "+4em",
+		Right = em_size,
 		Style = GUI_VerticalLayout,
 		Target = dummy,
 		OnClose = GuiAction_Call(this, "RemoveDummy", dummy),
 	};
 	if (slot == 1)
 	{
-		sidebar.Left = "100%-4em";
+		sidebar.Left = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize));
 		sidebar.Right = "100%";
 	}
 	
@@ -284,7 +288,7 @@ func CreateSideBar(int slot)
 		}
 		var entry = 
 		{
-			Right = "+4em", Bottom = "+4em",
+			Right = em_size, Bottom = em_size,
 			Symbol = symbol,
 			Style = GUI_TextBottom | GUI_TextHCenter,
 			BackgroundColor = background_color,
@@ -317,13 +321,13 @@ func CreateMainMenu(object obj, int slot)
 		Target = CreateDummy(),
 		Priority = 5,
 		Decoration = GUI_MenuDeco,
-		Right = "100%-4em",
+		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
 		Style = GUI_VerticalLayout,
 		BackgroundColor = RGB(50, 25, 0)
 	};
 	if (slot == 0)
 	{
-		container.Left = "+4em";
+		container.Left = ToEmString(InteractionMenu_SideBarSize);
 		container.Right = "100%";
 	}
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
