@@ -1111,31 +1111,33 @@ func GetInteractableObjects()
 	var extra_interactions = this->~GetExtraInteractions() ?? []; // if not present, just use []. Less error prone than having multiple if(!foo).
 		
 	// all except structures only if outside
-	if(!Contained())
+	var can_only_use_container = !!Contained();
+
+	// add extra-interactions
+	if (!can_only_use_container)
+	for(var interaction in extra_interactions)
 	{
-		// add extra-interactions
-		for(var interaction in extra_interactions)
+		PushBack(possible_interactions,
+			{
+				interaction_object = interaction.Object,
+				priority = interaction.Priority,
+				interaction_index = nil,
+				extra_data = interaction,
+				actiontype = ACTIONTYPE_EXTRA
+			});
+	}
+	
+	// add interactables (script interface)
+	var interactables = FindObjects(
+		Find_AtPoint(0, 0),
+		Find_Or(Find_OCF(OCF_Grab), Find_Func("IsInteractable", this), Find_OCF(OCF_Entrance)),
+		Find_NoContainer(), Find_Layer(GetObjectLayer()));
+	for(var interactable in interactables)
+	{
+		var icnt = interactable->~GetInteractionCount() ?? 1;
+		
+		if (!can_only_use_container)
 		{
-			PushBack(possible_interactions,
-				{
-					interaction_object = interaction.Object,
-					priority = interaction.Priority,
-					interaction_index = nil,
-					extra_data = interaction,
-					actiontype = ACTIONTYPE_EXTRA
-				});
-		}
-		// add interactables (script interface)
-		var interactables = FindObjects(
-			Find_AtPoint(0, 0),
-			Find_Or(Find_OCF(OCF_Grab), Find_Func("IsInteractable", this), Find_OCF(OCF_Entrance)),
-			Find_NoContainer(), Find_Layer(GetObjectLayer()));
-		for(var interactable in interactables)
-		{
-			var icnt = interactable->~GetInteractionCount() ?? 1;
-			var prio = 1;
-			var type = ACTIONTYPE_SCRIPT;
-			
 			// first the script
 			// one object could have a scripted interaction AND be a vehicle
 			if (interactable->~IsInteractable(this))
@@ -1144,39 +1146,42 @@ func GetInteractableObjects()
 					PushBack(possible_interactions,
 						{
 							interaction_object = interactable,
-							priority = prio,
+							priority = 50,
 							interaction_index = j,
 							extra_data = nil,
-							actiontype = type
+							actiontype = ACTIONTYPE_SCRIPT
 						});
 				}
 			// check whether further interactions are possible
-			type = nil;
-			// vehicle?
+	
+			// can be grabbed? (vehicles/chests..)
 			if (interactable->GetOCF() & OCF_Grab)
 			{
-				prio = 2;
-				type = ACTIONTYPE_VEHICLE;
-				icnt = 1;
-			}
-			else
-			if (interactable->GetOCF() & OCF_Entrance)
-			{
-				prio = 3;
-				type = ACTIONTYPE_STRUCTURE;
-			}
-			
-			if (type)
 				PushBack(possible_interactions,
 					{
 						interaction_object = interactable,
-						priority = prio,
+						priority = 40,
 						interaction_index = nil,
 						extra_data = nil,
-						actiontype = type
+						actiontype = ACTIONTYPE_VEHICLE
 					});
+			}
+		}
+		
+		// can be entered?
+		if (interactable->GetOCF() & OCF_Entrance && (!can_only_use_container || interactable == Contained()))
+		{
+			PushBack(possible_interactions,
+				{
+					interaction_object = interactable,
+					priority = 30,
+					interaction_index = nil,
+					extra_data = nil,
+					actiontype = ACTIONTYPE_STRUCTURE
+				});
 		}
 	}
+	
 	return possible_interactions;
 }
 
