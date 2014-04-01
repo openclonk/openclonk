@@ -127,39 +127,52 @@ int main()
 
 static void crash_handler(int signo)
 {
-	int logfd = STDERR_FILENO;
-	for (;;)
+	static unsigned signal_count = 0;
+	++signal_count;
+	switch (signo)
 	{
-		// Print out the signal
-		write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
-		switch (signo)
+	case SIGINT: case SIGTERM: case SIGHUP:
+		if (signal_count < 2) {
+			Application.Quit();
+			// reinstall handler
+			signal(signo, crash_handler);
+			break;
+		} // else/fallthrough
+	default:
+		int logfd = STDERR_FILENO;
+		for (;;)
 		{
-		case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
-		case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
-		case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
-		case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
-		case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
-		case SIGQUIT: write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
-		case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
-		case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			// Print out the signal
+			write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
+			switch (signo)
+			{
+			case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
+			case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
+			case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
+			case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
+			case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
+			case SIGQUIT: write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
+			case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
+			case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			}
+			write(logfd, "\n", sizeof ("\n") - 1);
+			if (logfd == STDERR_FILENO) logfd = GetLogFD();
+			else break;
+			if (logfd < 0) break;
 		}
-		write(logfd, "\n", sizeof ("\n") - 1);
-		if (logfd == STDERR_FILENO) logfd = GetLogFD();
-		else break;
-		if (logfd < 0) break;
-	}
 #ifdef HAVE_EXECINFO_H
-	// Get the backtrace
-	void *stack[100];
-	int count = backtrace(stack, 100);
-	// Print it out
-	backtrace_symbols_fd (stack, count, STDERR_FILENO);
-	// Also to the log file
-	if (logfd >= 0)
-		backtrace_symbols_fd (stack, count, logfd);
+		// Get the backtrace
+		void *stack[100];
+		int count = backtrace(stack, 100);
+		// Print it out
+		backtrace_symbols_fd (stack, count, STDERR_FILENO);
+		// Also to the log file
+		if (logfd >= 0)
+			backtrace_symbols_fd (stack, count, logfd);
 #endif
-	// Bye.
-	_exit(C4XRV_Failure);
+		// Bye.
+		_exit(C4XRV_Failure);
+	}
 }
 #endif // HAVE_SIGNAL_H
 
