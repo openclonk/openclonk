@@ -469,8 +469,8 @@ set(OC_CLONK_SOURCES
 	src/player/C4PlayerList.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
-	src/script/C4AulDebug.cpp
-	src/script/C4AulDebug.h
+	src/script/aul/C4AulDebug.cpp
+	src/script/aul/C4AulDebug.h
 	thirdparty/timsort/sort.h
 )
 
@@ -727,6 +727,7 @@ if(PROJECT_FOLDERS)
   source_group("Control" src/control/.*)
   source_group("Editing" src/editor/.*)
   source_group("Mape" src/mape/.*)
+  source_group("Aul" REGULAR_EXPRESSION src/script/aul/.*)
 endif()
 
 include_directories(
@@ -748,6 +749,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/player
 	${CMAKE_CURRENT_SOURCE_DIR}/src/res
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
+	${CMAKE_CURRENT_SOURCE_DIR}/src/script/aul
 	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
 
@@ -1063,15 +1065,15 @@ src/lib/C4Real.cpp
 src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
-src/script/C4Aul.cpp
-src/script/C4AulDefFunc.h
-src/script/C4AulExec.cpp
-src/script/C4AulExec.h
-src/script/C4AulFunc.cpp
-src/script/C4AulFunc.h
-src/script/C4Aul.h
-src/script/C4AulLink.cpp
-src/script/C4AulParse.cpp
+src/script/aul/C4Aul.cpp
+src/script/aul/C4AulDefFunc.h
+src/script/aul/C4AulExec.cpp
+src/script/aul/C4AulExec.h
+src/script/aul/C4AulFunc.cpp
+src/script/aul/C4AulFunc.h
+src/script/aul/C4Aul.h
+src/script/aul/C4AulLink.cpp
+src/script/aul/C4AulParse.cpp
 src/script/C4PropList.cpp
 src/script/C4PropList.h
 src/script/C4Script.cpp
