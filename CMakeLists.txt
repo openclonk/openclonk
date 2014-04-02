@@ -1438,7 +1438,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+	option(USE_GCC_PCH "Use GCC precompiled headers" OFF)
 endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(libmisc src/C4Include.h)
