@@ -114,6 +114,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
+	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        true          ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)

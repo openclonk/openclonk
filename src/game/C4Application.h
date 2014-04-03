@@ -110,6 +110,7 @@ public:
 private:
 	C4TimeMilliseconds tLastGameTick;
 	unsigned int iGameTickDelay;
+	unsigned int iExtraGameTickDelay;
 public:
 	void SetGameTickDelay(uint32_t iDelay);
 

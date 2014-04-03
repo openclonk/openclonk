@@ -115,6 +115,9 @@ public:
 	// Control rate
 	int32_t ControlRate;
 
+	// Automatic frame skip enabled for this game?
+	bool AutoFrameSkip;
+
 	// Allow debug mode?
 	bool AllowDebug;
 

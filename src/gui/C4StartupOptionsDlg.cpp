@@ -834,7 +834,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCombo->SetText(GetWindowedName());
 	pGroupResolution->AddElement(pCombo);
 	// --subgroup options
-	iNumGfxOptions = 4, iOpt=0;
+	iNumGfxOptions = 5, iOpt=0;
 	C4GUI::GroupBox *pGroupOptions = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,2,1,2));
 	pGroupOptions->SetTitle(LoadResStrNoAmp("IDS_DLG_OPTIONS"));
 	pGroupOptions->SetFont(pUseFont);
@@ -879,6 +879,11 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// high resolution landscape
 	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_HIGHRESLANDSCAPE"), NULL, &Config.Graphics.HighResLandscape);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_HIGHRESLANDSCAPE_DESC"));
+	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
+	pGroupOptions->AddElement(pCheck);
+	// automatic gfx frame skip
+	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_AUTOFRAMESKIP"), NULL, &Config.Graphics.AutoFrameSkip);
+	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOFRAMESKIP"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupOptions->AddElement(pCheck);
 	// --subgroup effects

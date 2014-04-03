@@ -117,6 +117,7 @@ public:
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
+	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
 
 	void CompileFunc(StdCompiler *pComp);
 };
