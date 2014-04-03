@@ -1,5 +1,5 @@
 [DefCore]
-id=Chunk_Wood
+id=Planks
 Version=4,10,0,0
 Category=C4D_Object
 Width=12

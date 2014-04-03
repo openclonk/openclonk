@@ -2,7 +2,7 @@
 	Sawmill
 	Authors: Ringwaul, Clonkonaut
 
-	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
+	Cuts trees or other objects into planks. Accepts only objects purely made from planks.
 --*/
 
 #include Library_Structure
@@ -19,31 +19,14 @@ public func Construction(object creator)
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0), Anim_Const(1000));
-	AddTimer("CollectionZone", 1);
 	return _inherited(...);
 }
 
 /*-- Interaction --*/
 
-// Sawmill can't be accessed as a container.
-public func IsContainer() { return false; }
-
-// Sawmill can't be interacted with.
-public func IsInteractable() { return false; }
-
-// Automatically search for trees in front of sawmill
-// Temporary solution?
-protected func FindTrees()
-{
-	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
-	if (!tree) return;
-	
-	Saw(tree);
-}
-
 private func CheckWoodObject(object target)
 {
-	if (target->GetComponent(nil, 0) != Wood) return false;
+	if (target->GetComponent(nil, 0) != Planks) return false;
 	if (target->GetComponent(nil, 1)) return false;
 	return true;
 }
@@ -52,20 +35,11 @@ private func CheckWoodObject(object target)
 
 private func IgnoreKnowledge() { return true; }
 
-public func Saw(object target)
-{
-	target->Enter(this);
-	var output = target->GetComponent(Wood);
-	target->Split2Components();
-	AddToQueue(Wood, output);
-	return true;
-}
-
 private func IsProduct(id product_id)
 {
 	return product_id->~IsSawmillProduct();
 }
-private func ProductionTime(id toProduce) { return 100; }
+private func ProductionTime(id toProduce) { return 400; }
 private func PowerNeed() { return 50; }
 
 public func NeedRawMaterial(id rawmat_id)
@@ -108,21 +82,15 @@ public func OnProductionFinish(id product)
 	}
 }	
 
-// Timer, check for objects to collect in the designated collection zone
-func CollectionZone()
-{
-	if (GetCon() < 100) return;
-	
-	// Only take one tree at a time
-	if (!(FrameCounter() % 35)) 
-		if (GetLength(queue) == 0)
-			FindTrees();
-}
-
-protected func Collection()
+func Collection()
 {
 	Sound("Clonk");
 	return _inherited(...);
+}
+
+func Collection2()
+{
+	if (!GetQueue()[0]) AddToQueue(Planks, 1);
 }
 
 public func FxSawingTimer(object target, proplist effect, int time)
@@ -145,8 +113,8 @@ public func OnProductEjection(object product)
 
 protected func RejectCollect(id id_def, object collect)
 {
-	// Don't collect wood
-	if (id_def == Wood) 
+	// Don't collect planks
+	if (id_def == Planks) 
 		return true;
 	if (collect->~IsSawmillIngredient() || CheckWoodObject(collect)) 
 		return false;

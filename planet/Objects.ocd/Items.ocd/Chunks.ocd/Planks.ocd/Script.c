@@ -1,11 +1,4 @@
-/*--- Wood Chunk ---*/
-
-/*
-What rolls down stairs alone or in pairs
-Rolls over your neighbor's dog?
-What's great for a snack and fits on your back?
-It's Log, Log, Log!
-*/
+/*--- Planks ---*/
 
 #include Library_CarryHeavy
 
@@ -20,7 +13,7 @@ protected func Hit()
 public func IsFuel() { return true; }
 public func GetFuelAmount() { return 150; }
 public func IsChunk() { return true; }
-public func IsSawmillIngredient() { return true; }
+public func IsSawmillProduct() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

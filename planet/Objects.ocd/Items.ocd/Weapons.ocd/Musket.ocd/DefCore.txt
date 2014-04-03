@@ -11,5 +11,5 @@ VertexY=0,0,2,0
 VertexFriction=50,50,70
 Value=18
 Mass=15
-Components=Metal=2;Wood=1;
+Components=Metal=2;Chunk_Wood=1;
 Rotate=1

@@ -13,7 +13,7 @@ func Incineration()
 
 public func IsFuel() { return true; }
 public func GetFuelAmount() { return 50; }
-public func IsSawmillProduct() { return true; }
+//public func IsSawmillProduct() { return true; }
 
 local Collectible = 1;
 local Name = "$Name$";
