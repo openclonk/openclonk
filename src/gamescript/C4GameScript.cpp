@@ -1907,16 +1907,20 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4Object 
 {
 	// evaluate parameters
 	const char *szEffect = FnStringPar(psEffectName);
-	// get effects
-	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
+	// if the user passed an effect, it can be used straight-away
+	C4Effect *pEffect = pEffect2;
+	// otherwise, the correct effect will be searched in the target's effects or in the global ones
+	if (!pEffect)
+	{
+		pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
+		// name/wildcard given: find effect by name
+		if (szEffect && *szEffect)
+			pEffect = pEffect->Get(szEffect, 0);
+	}
+
+	// neither passed nor found - nothing to remove!
 	if (!pEffect) return 0;
-	// name/wildcard given: find effect by name
-	if (szEffect && *szEffect)
-		pEffect = pEffect->Get(szEffect, 0);
-	else
-		pEffect = pEffect2;
-	// effect found?
-	if (!pEffect) return 0;
+
 	// kill it
 	if (fDoNoCalls)
 		pEffect->SetDead();
