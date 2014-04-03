@@ -93,7 +93,6 @@ public:
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
 	int32_t HighResLandscape;
-	int32_t SmokeLevel;
 	int32_t VideoModule;
 	int32_t MenuTransparency;
 	int32_t UpperBoard;

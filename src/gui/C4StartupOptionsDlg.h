@@ -137,11 +137,9 @@ private:
 	bool TryNewResolution(int32_t iResX, int32_t iResY);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox
 	const char * GetWindowedName(int32_t mode = -1);
-	void OnEffectsSliderChange(int32_t iNewVal);
 
 	C4GUI::CheckBox *pShaders;
 	int32_t iGfxTexIndent;
-	C4GUI::ScrollBar *pEffectLevelSlider;
 
 	void LoadGfxShader(); void SaveGfxShader();
 

@@ -835,7 +835,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupResolution->AddElement(pCombo);
 	// --subgroup options
 	iNumGfxOptions = 5, iOpt=0;
-	C4GUI::GroupBox *pGroupOptions = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,2,1,2));
+	C4GUI::GroupBox *pGroupOptions = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,1,1,2));
 	pGroupOptions->SetTitle(LoadResStrNoAmp("IDS_DLG_OPTIONS"));
 	pGroupOptions->SetFont(pUseFont);
 	pGroupOptions->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
@@ -886,27 +886,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOFRAMESKIP"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupOptions->AddElement(pCheck);
-	// --subgroup effects
-	C4GUI::GroupBox *pGroupEffects = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,1,2));
-	pGroupEffects->SetTitle(LoadResStrNoAmp("IDS_CTL_SMOKE"));
-	pGroupEffects->SetFont(pUseFont);
-	pGroupEffects->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
-	pSheetGraphics->AddElement(pGroupEffects);
-	C4GUI::ComponentAligner caGroupEffects(pGroupEffects->GetClientRect(), iIndentX1, iIndentY2, true);
-	iNumGfxOptions = 1; iOpt=0;
-	// effects level slider
-	C4GUI::ComponentAligner caEffectsLevel(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions), 1,0,false);
-	StdStrBuf sEffectsTxt; sEffectsTxt.Copy(LoadResStr("IDS_CTL_SMOKELOW"));
-	w=20; q=12; pUseFont->GetTextExtent(sEffectsTxt.getData(), w,q, true);
-	pGroupEffects->AddElement(new C4GUI::Label(sEffectsTxt.getData(), caEffectsLevel.GetFromLeft(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	sEffectsTxt.Copy(LoadResStr("IDS_CTL_SMOKEHI"));
-	w=20; q=12; pUseFont->GetTextExtent(sEffectsTxt.getData(), w,q, true);
-	pGroupEffects->AddElement(new C4GUI::Label(sEffectsTxt.getData(), caEffectsLevel.GetFromRight(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	pEffectLevelSlider = new C4GUI::ScrollBar(caEffectsLevel.GetCentered(caEffectsLevel.GetInnerWidth(), C4GUI_ScrollBarHgt), true, new C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t>(this, &C4StartupOptionsDlg::OnEffectsSliderChange), 301);
-	pEffectLevelSlider->SetDecoration(&C4Startup::Get()->Graphics.sfctBookScroll, false);
-	pEffectLevelSlider->SetToolTip(LoadResStr("IDS_MSG_PARTICLES_DESC"));
-	pEffectLevelSlider->SetScrollPos(Config.Graphics.SmokeLevel);
-	pGroupEffects->AddElement(pEffectLevelSlider);
 
 	// --- page sound
 	C4GUI::ComponentAligner caSheetSound(pSheetSound->GetClientRect(), iIndentX1, iIndentY1, true);
@@ -1442,11 +1421,6 @@ void C4StartupOptionsDlg::SaveGfxShader()
 	{
 		pDraw->RestoreDeviceObjects();
 	}
-}
-
-void C4StartupOptionsDlg::OnEffectsSliderChange(int32_t iNewVal)
-{
-	Config.Graphics.SmokeLevel = iNewVal;
 }
 
 void C4StartupOptionsDlg::OnFEMusicCheck(C4GUI::Element *pCheckBox)
