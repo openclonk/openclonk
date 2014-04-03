@@ -238,13 +238,10 @@ func FxIntSplitTimer(object clonk, effect, int time)
 
 		//Create the woodchip particle
 		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 10);
-	}
-	// Tree split!
-	if ((axe_swing_time * 12) / time == 1)
-	{
-		var wood_count = effect.tree->GetComponent(Wood) / 2;
-		CastObjects(Wood, wood_count, 5, AbsX(effect.tree->GetX()), AbsY(effect.tree->GetY()));
-		effect.tree->RemoveObject();
+
+		// Split tree!
+		effect.tree->Split();
+		if (!effect.tree) return -1;
 	}
 	//Make sure the clonk does not move
 	clonk->SetComDir(COMD_Stop);
@@ -367,7 +364,6 @@ func FxAxeStrikeStopTimer(pTarget, effect)
 {
 	return 1;
 }
-
 
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }

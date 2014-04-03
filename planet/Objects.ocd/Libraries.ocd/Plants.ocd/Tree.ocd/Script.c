@@ -26,12 +26,12 @@ public func IsStanding()
 /** Maximum damage the tree can take before it falls. Each blow from the axe deals 10 damage.
 	@return \c the maximum amount of damage.
 */
-private func MaxDamage()
+func MaxDamage()
 {
 	return 50;
 }
 
-protected func Damage()
+func Damage()
 {
 	// do not grow for a few seconds
 	var g = GetGrowthValue();
@@ -122,4 +122,31 @@ func FxTreeFallTimer(object target, proplist effect)
 		target->SetRDir(0);
 		return -1;
 	}
+}
+
+/* Splitting */
+
+local split;
+
+/** Amount of axe strikes needed to split the tree into its components.
+	@return \c the amount of strikes.
+*/
+func Toughness()
+{
+	return 5;
+}
+
+/** Call to add another strike to the split routine.
+*/
+func Split()
+{
+	split++;
+	if (split > Toughness()) SplitDown();
+}
+
+/** Called when the tree is split using an axe. Default behaviour is Split2Components();
+*/
+func SplitDown()
+{
+	Split2Components();
 }
