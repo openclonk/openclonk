@@ -64,7 +64,6 @@ protected func Damage()
 	_inherited(...);
 }
 
-
 public func ChopDown()
 {
 	// Use Special Vertex Mode 1 (see documentation) so the removed vertex won't come back when rotating the tree.
@@ -111,6 +110,34 @@ func BurstIntoAshes()
 			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
 		}
+	}
+	RemoveObject();
+}
+
+/* Splitting */
+
+// Copied from the plant library
+
+local split;
+
+func Toughness()
+{
+	return 4;
+}
+
+func Split()
+{
+	split++;
+	if (split > Toughness()) Split();
+}
+
+func SplitDown()
+{
+	for (var i = 0 ; i < GetComponent(Chunk_Wood) ; i++)
+	{
+		var x = Sin(GetR(), 15 * ( i - GetComponent(Chunk_Wood,nil,nil, GetID())/2 )); // Chunk_Wood is 12 in size, 15 seems about good
+		var y = Cos(GetR(), 15 * ( i - GetComponent(Chunk_Wood,nil,nil, GetID())/2 ));
+		CreateObject(Chunk_Wood, x,y)->SetR(GetR());
 	}
 	RemoveObject();
 }
