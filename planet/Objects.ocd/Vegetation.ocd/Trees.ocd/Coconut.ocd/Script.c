@@ -64,7 +64,7 @@ func SplitDown()
 	for (var i = 0 ; i < GetComponent(Chunk_Wood) ; i++)
 	{
 		var x = Sin(GetR(), 15 * ( i - GetComponent(Chunk_Wood,nil,nil, GetID())/2 )); // Chunk_Wood is 12 in size, 15 seems about good
-		var y = Cos(GetR(), 15 * ( i - GetComponent(Chunk_Wood,nil,nil, GetID())/2 ));
+		var y = Cos(GetR(), -15 * ( i - GetComponent(Chunk_Wood,nil,nil, GetID())/2 ));
 		CreateObject(Chunk_Wood, x,y)->SetR(GetR());
 	}
 	RemoveObject();
