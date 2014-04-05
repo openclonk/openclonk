@@ -42,6 +42,8 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 
+#include <cmath>
+
 C4GuiWindowAction::~C4GuiWindowAction()
 {
 	if (text)
@@ -1267,7 +1269,7 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 				- Em2Pix(props[C4GuiWindowPropertyName::bottomMargin].GetFloat());
 		float adjustment = childrenHeight - height;
 		props[C4GuiWindowPropertyName::bottom].current->f += Pix2Em(adjustment);
-		assert(!isnan(props[C4GuiWindowPropertyName::bottom].current->f));
+		assert(!std::isnan(props[C4GuiWindowPropertyName::bottom].current->f));
 		// instantly pseudo-update the sizes in case of multiple refreshs before the next draw
 		lastDrawPosition.bottom += adjustment;
 		// parents that are somehow affected by their children will need to refresh their layout
