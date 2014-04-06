@@ -304,7 +304,7 @@ static C4Void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, N
 		//  iCausedBy = cthr->Caller->Obj->Controller;
 		//else
 		iCausedBy = NO_OWNER;
-	Obj->DoDamage(iChange,iCausedBy, iDmgType);
+	Obj->DoDamage(iChange, iCausedBy, iDmgType);
 	return C4Void();
 }
 

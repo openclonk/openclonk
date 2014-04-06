@@ -196,7 +196,7 @@ func FxIntAxeTimer(object clonk, effect, int time)
 			particles = {Prototype = Particles_WoodChip(), Attach = ATTACH_Back};
 		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 10);
 		// Damage tree
-		effect.tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
+		effect.tree->DoDamage(this.ChopStrength, FX_Call_DmgChop, clonk->GetOwner()); 
 	}
 	//Make sure the clonk does not move
 	clonk->SetComDir(COMD_Stop);

@@ -286,7 +286,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 	{
 		if ((time*10) % 100 <= effect.strength)
 		{
-			target->DoDamage(2, true, FX_Call_DmgFire, effect.caused_by);
+			target->DoDamage(2, FX_Call_DmgFire, effect.caused_by);
 			if (target && !Random(2) && !effect.no_burn_decay) 
 				target->DoCon(-1);
 		} 
