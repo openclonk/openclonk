@@ -1,2 +1,2 @@
-Name=Ruine
+Name=Windmühle Ruine
 Description=Relikt vergangener Siedlungen.

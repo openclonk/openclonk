@@ -1,0 +1,15 @@
+[Developer/Maintainer]
+Maikel 
+
+[Folder Information]
+This folder contains objects with decorative purposes only. 
+
+[Information for developers]
+In this folder you should add objects which have a decorative purpose, this does not mean they cannot have 
+any interactions whatsoever. However, these objects do not play any role in the normal Objects.ocd and do
+not depend on any other objects (under ideal circumstances). Please make sure you give your object a unique
+identifier and place it in the most fitting sub folder of Decoration.ocd or create a new sub folder if 
+there is need for that. 
+
+If you want to contribute to this folder feel free to do so and in case of questions contact the maintainer
+in IRC or the forum.

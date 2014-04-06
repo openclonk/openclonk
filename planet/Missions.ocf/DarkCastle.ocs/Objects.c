@@ -228,15 +228,15 @@ func InitializeObjects()
 	EnvPack_Candle_Shine0102->SetClrModulation(0xddffffff);
 	EnvPack_Candle_Shine0102->SetObjectBlitMode(GFX_BLIT_Additive);
 
-	g_ruin1 = CreateObject(Ruin1, 97, 1179);
+	g_ruin1 = CreateObject(Ruin_WoodenCabin, 97, 1179);
 	g_ruin1->SetR(16);
 	g_ruin1.StaticSaveVar = "g_ruin1";
 	g_ruin1->SetPosition(97, 1150);
 
-	g_ruin2 = CreateObject(Ruin2, 353, 1145);
+	g_ruin2 = CreateObject(Ruin_Windmill, 353, 1145);
 	g_ruin2.StaticSaveVar = "g_ruin2";
 
-	g_ruin3 = CreateObject(Ruin3, 267, 1180);
+	g_ruin3 = CreateObject(Ruin_ChemicalLab, 267, 1180);
 	g_ruin3.StaticSaveVar = "g_ruin3";
 
 	CreateObject(Foundry, 238, 1287);

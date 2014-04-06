@@ -1,2 +1,2 @@
-Name=Ruin
+Name=Windmill ruin
 Description=Relic of past settlements.
