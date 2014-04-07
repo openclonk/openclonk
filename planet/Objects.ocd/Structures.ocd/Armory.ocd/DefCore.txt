@@ -11,7 +11,7 @@ VertexY=-13,-15,-14,24,24,24
 VertexFriction=50,50,50,100,100,100
 Value=200
 Mass=4500
-Components=Planks=3;Metal=2;Loam=2
+Components=Planks=3;Chunk_Metal=2;Loam=2
 Exclusive=1
 Construction=1
 ContainBlast=1

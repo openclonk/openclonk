@@ -14,7 +14,6 @@ func PowerNeed() { return 0; }
 
 public func Construction(object creator)
 {
-	
 	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
 	SetAction("Default");
 	AddTimer("CollectionZone", 1);	
@@ -33,7 +32,7 @@ private func ProductionTime(id toProduce) { return 290; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
-	if (rawmat_id->~IsFuel() || rawmat_id == Ore || rawmat_id == Nugget)
+	if (rawmat_id->~IsFuel() || rawmat_id == Chunk_Ore || rawmat_id == Chunk_Gold)
 		return true;
 	return false;
 }

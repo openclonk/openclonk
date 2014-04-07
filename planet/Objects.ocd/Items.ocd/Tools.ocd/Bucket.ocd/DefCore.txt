@@ -11,4 +11,4 @@ VertexY=3,-3,-3
 VertexFriction=75,100,100
 Value=1
 Mass=5
-Components=Metal=1
+Components=Chunk_Metal=1

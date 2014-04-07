@@ -12,7 +12,7 @@ protected func Hit()
 	return 1;
 }
 
-public func IsFoundryProduct() { return true; }
+public func IsFoundryProduct() { return false; }
 public func GetFuelNeed() { return 100; }
 
 local Name = "$Name$";

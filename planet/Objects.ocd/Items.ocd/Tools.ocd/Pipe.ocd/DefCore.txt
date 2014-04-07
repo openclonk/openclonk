@@ -11,5 +11,5 @@ VertexY=3
 VertexFriction=50
 Value=10
 Mass=15
-Components=Metal=1
+Components=Chunk_Metal=1
 Picture=64,0,64,64

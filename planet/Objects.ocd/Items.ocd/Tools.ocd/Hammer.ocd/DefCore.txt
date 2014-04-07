@@ -11,6 +11,6 @@ VertexY=1,5,-2,-2
 VertexFriction=80,80,80,80
 Value=3
 Mass=15
-Components=Chunk_Wood=1;Rock=1;
+Components=Chunk_Wood=1;Chunk_Rock=1;
 Rotate=1
  

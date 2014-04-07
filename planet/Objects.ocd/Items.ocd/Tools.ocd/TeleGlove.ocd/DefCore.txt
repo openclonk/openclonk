@@ -11,5 +11,5 @@ VertexY=-3,2,2
 VertexFriction=40,40,40
 Value=20
 Mass=7
-Components=Metal=2;Crystal=2;
+Components=Chunk_Metal=2;Crystal=2;
 Rotate=1
