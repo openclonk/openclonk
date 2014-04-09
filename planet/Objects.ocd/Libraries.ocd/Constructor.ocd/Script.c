@@ -236,6 +236,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 
 /*-- Construction Menu --*/
 
+// Local variable to keep track of the menu properties.
 local menu, menu_id, menu_target, menu_controller;
 
 public func OpenConstructionMenu(object clonk)
@@ -247,11 +248,15 @@ public func OpenConstructionMenu(object clonk)
 	// Create a menu target for visibility.
 	menu_target = CreateObject(Dummy, 0, 0, clonk->GetOwner());
 	menu_target.Visibility = VIS_Owner;
-	
 	menu_controller = clonk;
 	
-	var menu_width = 35; 
-	var menu_height = 25;
+	// Number of items, square shape.
+	var grid_size = 5; 
+	// Size of the grid items in em.
+	var item_size = 10; 
+	// Calculate menu size.
+	var menu_width = grid_size * item_size * 2 + 2; 
+	var menu_height = grid_size * item_size;
 	
 	// Construction menu proplist.
 	menu =
@@ -259,35 +264,63 @@ public func OpenConstructionMenu(object clonk)
 		Target = menu_target,
 		Style = GUI_Multiple,
 		Decoration = GUI_MenuDeco,
-		Left = Format("%d%", 50 - menu_width),
-		Right = Format("%d%", 50 + menu_width),
-		Top = Format("%d%", 50 - menu_height),
-		Bottom = Format("%d%", 50 + menu_height),
-		BackgroundColor = {Std = 0},
+		Left = Format("50%%-%dem", menu_width / 2),
+		Right = Format("50%%+%dem", menu_width / 2),
+		Top = Format("50%%-%dem", menu_height / 2),
+		Bottom = Format("50%%+%dem", menu_height / 2),
+		BackgroundColor = {Std = 0}
 	};
 	
+	menu.Structures = CreateStructureGrid(clonk, grid_size, item_size);
+	menu.StructInfo = CreateStructureInfo(grid_size * item_size);
+	menu.Separator =
+	{
+		Target = menu_target,
+		ID = 9,
+		Left = "50%-1em",
+		Right = "50%+1em",
+		Top = "0%",
+		Bottom = "100%",
+		BackgroundColor = {Std = 0x50888888}	
+	};
+
+	// Menu ID.
+	menu_id = CustomGuiOpen(menu);
+	clonk->SetMenu(menu_id);
+	return;
+}
+
+public func CreateStructureGrid(object clonk, int grid_size, int item_size)
+{
 	var structures = 
 	{
 		Target = menu_target,
 		ID = 1,
+		// Add a small amount of em to make the items fit in the grid.
 		Left = "0%",
-		Right = "50%",
+		Right = "50%+0.1em", 
 		Top = "0%",
-		Bottom = "100%",
-		BackgroundColor = {Std = 0},
+		Bottom = "100%em",
+		Style = GUI_GridLayout,
+		BackgroundColor = {Std = 0}
 	};
-	structures = MenuAddStructures(structures, clonk);
-	
+	structures = MenuAddStructures(structures, clonk, item_size);
+	return structures;
+}
+
+public func CreateStructureInfo(int size)
+{
 	var structinfo = 
 	{
 		Target = menu_target,
 		ID = 2,
-		Left = "50%",
+		Left = Format("100%%-%dem", size),
 		Right = "100%",
 		Top = "0%",
 		Bottom = "100%",
-		BackgroundColor = {Std = 0},
+		BackgroundColor = {Std = 0}
 	};
+	// Bottom 20% for description and other written information.
 	structinfo.Description = 
 	{
 		Target = menu_target,
@@ -295,19 +328,20 @@ public func OpenConstructionMenu(object clonk)
 		Priority = 0x0fffff,
 		Left = "0%",
 		Right = "100%",
-		Top = "85%",
+		Top = "80%",
 		Bottom = "100%",	
-		Text = nil, // will be updated
+		Text = nil // will be updated
 	};
+	// Upright 80% is for the picture, though only 60% used.
 	structinfo.Picture = 
 	{
 		Target = menu_target,
 		ID = 4,
 		Left = "10%",
-		Right = "80%",
+		Right = "70%",
 		Top = "10%",
-		Bottom = "80%",	
-		Symbol = nil, // will be updated
+		Bottom = "70%",	
+		Symbol = nil // will be updated
 	};
 	structinfo.PowerConsumer =
 	{
@@ -317,18 +351,19 @@ public func OpenConstructionMenu(object clonk)
 		Right = "20%",
 		Top = "10%",
 		Bottom = "20%",	
-		Symbol = nil, // will be updated
+		Symbol = nil // will be updated
 	};
 	structinfo.PowerProducer = 
 	{
 		Target = menu_target,
 		ID = 6,
-		Left = "70%",
-		Right = "80%",
+		Left = "60%",
+		Right = "70%",
 		Top = "10%",
 		Bottom = "20%",	
-		Symbol = nil, // will be updated
+		Symbol = nil // will be updated
 	};
+	// Materials and exit button are shown on left 20%.
 	structinfo.Materials = 
 	{
 		Target = menu_target,
@@ -336,7 +371,7 @@ public func OpenConstructionMenu(object clonk)
 		Left = "80%",
 		Right = "100%",
 		Top = "0%",
-		Bottom = "80%",	
+		Bottom = "80%"
 	};
 	structinfo.CloseButton = 
 	{
@@ -350,20 +385,13 @@ public func OpenConstructionMenu(object clonk)
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
 		OnMouseIn = GuiAction_SetTag("Hover"),
 		OnMouseOut = GuiAction_SetTag("Std"),
-		OnClick = GuiAction_Call(this, "CloseConstructionMenu"),
+		OnClick = GuiAction_Call(this, "CloseConstructionMenu")
 	};
 	structinfo = MenuMaterialCosts(structinfo, nil);
-	
-	menu.Structure = structures;
-	menu.StructInfo = structinfo;
-
-	// Menu ID.
-	menu_id = CustomGuiOpen(menu);
-	clonk->SetMenu(menu_id);
-	return;
+	return structinfo;
 }
 
-public func MenuAddStructures(proplist struct, object clonk)
+public func MenuAddStructures(proplist struct, object clonk, int item_size)
 {
 	var plans = GetConstructionPlans(clonk->GetOwner());
 	var nr_plans = GetLength(plans);
@@ -378,10 +406,8 @@ public func MenuAddStructures(proplist struct, object clonk)
 		{
 			Target = menu_target,
 			ID = cnt + 100,
-			Left = Format("%d%", width * x),
-			Right = Format("%d%", width * (x + 1)),
-			Top = Format("%d%", width * y),
-			Bottom =  Format("%d%", width * (y + 1)),
+			Right = Format("%dem", item_size),
+			Bottom = Format("%dem", item_size),
 			BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 			OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnConstructionHover", structure)],
 			OnMouseOut = GuiAction_SetTag("Std"), 
@@ -393,8 +419,8 @@ public func MenuAddStructures(proplist struct, object clonk)
 				Right = "92%",
 				Top = "8%",
 				Bottom = "92%",
-				Symbol = structure,
-			},
+				Symbol = structure
+			}
 		};
 		struct[Format("Struct%d", cnt + 4)] = str;		
 		cnt++;
@@ -413,7 +439,7 @@ public func MenuMaterialCosts(proplist info, id structure)
 		Top = "20%-1.2em",
 		Bottom = "20%",
 		Style = GUI_TextHCenter,
-		Text = "Costs:",		
+		Text = "Costs:"
 	};	
 	
 	// Get the different components of the structure.
@@ -443,7 +469,7 @@ public func MenuMaterialCosts(proplist info, id structure)
 			Bottom = Format("%d%", 20 + 10 * i),
 			Symbol = symbol,
 			Style = GUI_TextRight | GUI_TextBottom,
-			Text = amount,		
+			Text = amount
 		};	
 	}
 	return info;
