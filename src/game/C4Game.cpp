@@ -2840,7 +2840,7 @@ bool C4Game::InitKeyboard()
 
 	// console keys
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_PAUSE             ), "ConsolePauseToggle",     KEYSCOPE_Console,    new C4KeyCB  <C4Console>(Console, &C4Console::TogglePause)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SPACE             ), "EditCursorModeToggle",   KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::ToggleMode)));
+//	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SPACE             ), "EditCursorModeToggle",   KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::ToggleMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_ADD               ), "ToolsDlgGradeUp",        KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, +5, &C4ToolsDlg::ChangeGrade)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SUBTRACT          ), "ToolsDlgGradeDown",      KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, -5, &C4ToolsDlg::ChangeGrade)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_M,  KEYS_Control), "ToolsDlgPopMaterial",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopMaterial)));
