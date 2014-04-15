@@ -607,7 +607,12 @@ bool C4Player::ScenarioInit()
 			int32_t iPosition=iStartPos;
 			// Distribute according to availability
 			while (::Players.PositionTaken(iPosition))
-				{ ++iPosition%=iMaxPos; if (iPosition==iStartPos) break; }
+			{
+				++iPosition;
+				iPosition %= iMaxPos;
+				if (iPosition == iStartPos)
+					break;
+			}
 			Position=iPosition;
 			// Set x position
 			ptx=BoundBy(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);

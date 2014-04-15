@@ -2902,7 +2902,10 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 		}
 		// Otherwise: Turn right
 		else
-			++dir %= 4;
+		{
+			++dir;
+			dir %= 4;
+		}
 	}
 	while (x != sx || y != sy || dir != sdir);
 	// Nothing found?
