@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>GetHomebaseProduction</title>
+    <title>GetBaseProduction</title>
     <category>Player</category>
     <version>5.1 OC</version>
     <syntax>
@@ -38,14 +38,14 @@
     <desc>With id specified, the function returns how quickly objects of that type are resupplied to the player's home base. In this case index and category are ignored. If id is not specified, the function returns the id of the indicated type of objects of the specified category in the player's resupply list. This will return all object types from the resupply list, even if they are currently not being resupplied.</desc>
     <examples>
       <example>
-        <code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-&gt;<funclink>CreateContents</funclink>(Firestone);</code>
+        <code>if(!<funclink>GetBaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-&gt;<funclink>CreateContents</funclink>(Firestone);</code>
         <text>Gives a flintstone to the selected clonk of the first player if currently no flintstones are resupplied to the player's home base.</text>
       </example>
     </examples>
     <related>
-      <funclink>GetHomebaseMaterial</funclink>
-      <funclink>DoHomebaseMaterial</funclink>
-      <funclink>DoHomebaseProduction</funclink>
+      <funclink>GetBaseMaterial</funclink>
+      <funclink>DoBaseMaterial</funclink>
+      <funclink>DoBaseProduction</funclink>
       <funclink>C4D_All</funclink>
       <funclink>C4D_Goal</funclink>
       <funclink>C4D_Living</funclink>

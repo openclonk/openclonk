@@ -117,8 +117,8 @@ public:
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
 	// Home Base
-	C4IDList HomeBaseMaterial;
-	C4IDList HomeBaseProduction;
+	C4IDList BaseMaterial;
+	C4IDList BaseProduction;
 	int32_t ProductionDelay,ProductionUnit;
 	// Crew
 	C4ObjectInfoList CrewInfoList; // No Save //
@@ -214,7 +214,7 @@ protected:
 	void UpdateView();
 	void CheckElimination();
 	void UpdateCounts();
-	void ExecHomeBaseProduction();
+	void ExecBaseProduction();
 	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
 	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 	void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);

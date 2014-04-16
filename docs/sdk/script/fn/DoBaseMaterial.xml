@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>DoHomebaseMaterial</title>
+    <title>DoBaseMaterial</title>
     <category>Player</category>
     <version>5.1 OC</version>
     <syntax>
@@ -30,14 +30,14 @@
     <desc>Changes availability of buyable objects at the home base.</desc>
     <examples>
       <example>
-        <code>DoHomebaseMaterial(0, Firestone, 1);</code>
+        <code>DoBaseMaterial(0, Firestone, 1);</code>
         <text>The player can now buy one flint more.</text>
       </example>
     </examples>
     <related>
-      <funclink>GetHomebaseMaterial</funclink>
-      <funclink>GetHomebaseProduction</funclink>
-      <funclink>DoHomebaseProduction</funclink>
+      <funclink>GetBaseMaterial</funclink>
+      <funclink>GetBaseProduction</funclink>
+      <funclink>DoBaseProduction</funclink>
       <funclink>Buy</funclink>
       <funclink>Sell</funclink>
     </related>

@@ -2733,16 +2733,16 @@ msgstr "Der Wind bläst immer in die Richtung in die die Kanone geschoben wird."
 #: sdk/script/fn/GetPlayerControlAssignment.xml:8(category)
 #: sdk/script/fn/GetPlayerByName.xml:8(category)
 #: sdk/script/fn/GetPlayerByIndex.xml:8(category)
-#: sdk/script/fn/GetHomebaseProduction.xml:8(category)
-#: sdk/script/fn/GetHomebaseMaterial.xml:8(category)
+#: sdk/script/fn/GetBaseProduction.xml:8(category)
+#: sdk/script/fn/GetBaseMaterial.xml:8(category)
 #: sdk/script/fn/GetHiRank.xml:17(desc)
 #: sdk/script/fn/GetCrewExtraData.xml:8(category)
 #: sdk/script/fn/GetBase.xml:8(category)
 #: sdk/script/fn/EliminatePlayer.xml:8(category)
 #: sdk/script/fn/DoWealth.xml:8(category)
 #: sdk/script/fn/DoPlayerScore.xml:8(category)
-#: sdk/script/fn/DoHomebaseProduction.xml:8(category)
-#: sdk/script/fn/DoHomebaseMaterial.xml:8(category)
+#: sdk/script/fn/DoBaseProduction.xml:8(category)
+#: sdk/script/fn/DoBaseMaterial.xml:8(category)
 #: sdk/script/fn/CreateScriptPlayer.xml:8(category)
 msgid "Player"
 msgstr "Spieler"
@@ -7043,49 +7043,49 @@ msgstr "Gibt die ID des aufrufenden Objekts zurück."
 msgid "Creates a duplicate of the calling object."
 msgstr "Erstellt ein Duplikat des aufrufenden Objekts."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:16(desc)
+#: sdk/script/fn/GetBaseProduction.xml:16(desc)
 msgid "Number of the player whose buying options you want to determine. The first player has the player number 0."
 msgstr "Die Nummer des Spielers, dessen Kaufmöglichkeiten abgefragt werden sollen. Der erste Spieler hat die Nummer 0."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:21(desc)
+#: sdk/script/fn/GetBaseProduction.xml:21(desc)
 msgid "If specified, the function returns the number of objects of the given type which are resupplied to the player's home base. In this case index and category are ignored."
 msgstr "Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:27(desc)
-#: sdk/script/fn/GetHomebaseMaterial.xml:27(desc)
+#: sdk/script/fn/GetBaseProduction.xml:27(desc)
+#: sdk/script/fn/GetBaseMaterial.xml:27(desc)
 msgid "List index of the buyable item to check."
 msgstr "Der Index der gesuchten Kaufmöglichkeit."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:33(desc)
-#: sdk/script/fn/GetHomebaseMaterial.xml:33(desc)
+#: sdk/script/fn/GetBaseProduction.xml:33(desc)
+#: sdk/script/fn/GetBaseMaterial.xml:33(desc)
 msgid "Category of buyable items you want to check."
 msgstr "Die Kategorie der gesuchten Kaufmöglichkeit."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:38(desc)
+#: sdk/script/fn/GetBaseProduction.xml:38(desc)
 msgid "With id specified, the function returns how quickly objects of that type are resupplied to the player's home base. In this case index and category are ignored. If id is not specified, the function returns the id of the indicated type of objects of the specified category in the player's resupply list. This will return all object types from the resupply list, even if they are currently not being resupplied."
 msgstr "Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der Objekte in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert. Wird id nicht angegeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der nachgelieferten Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs nachgeliefert werden."
 
-#: sdk/script/fn/GetHomebaseProduction.xml:42(text)
+#: sdk/script/fn/GetBaseProduction.xml:42(text)
 msgid "Gives a flintstone to the selected clonk of the first player if currently no flintstones are resupplied to the player's home base."
 msgstr "Gibt dem ausgewählten Clonk des ersten Spielers einen Feuerstein, wenn in seiner Heimatbasis keine Feuersteine nachgeliefert werden."
 
-#: sdk/script/fn/GetHomebaseMaterial.xml:16(desc)
+#: sdk/script/fn/GetBaseMaterial.xml:16(desc)
 msgid "Number of the player whose buying options to determine."
 msgstr "Die Nummer des Spieler, dessen Kaufmöglichkeiten abgefragt werden sollen. Der erste Spieler hat die Nummer 0."
 
-#: sdk/script/fn/GetHomebaseMaterial.xml:21(desc)
+#: sdk/script/fn/GetBaseMaterial.xml:21(desc)
 msgid "If specified, the function returns the number of objects of the given type which the player can buy at his home base. In this case index and category are ignored."
 msgstr "Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die der Spieler in seiner Heimatbasis kaufen kann. index und category werden hierbei ignoriert."
 
-#: sdk/script/fn/GetHomebaseMaterial.xml:38(desc)
+#: sdk/script/fn/GetBaseMaterial.xml:38(desc)
 msgid "With id specified, the function returns the number of objects of that type which the player can buy at his home base. In this case index and category are ignored. If id is not specified, the function returns the id of the indicated type of objects of the specified category buyable at the players home base. This will return object types which are generally buyable, even if currently no object of that type is available."
 msgstr "Bei angegebenen id gibt die Funktion die Menge der Objekte zurück, die der Spieler in seiner Heimatbasis kaufen kann. index und category werden hierbei ignoriert. Wird id nicht angegeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der kaufbaren Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs verfügbar sind."
 
-#: sdk/script/fn/GetHomebaseMaterial.xml:42(text)
+#: sdk/script/fn/GetBaseMaterial.xml:42(text)
 msgid "Returns the number of fire stones the first player can buy."
 msgstr "Meldet die Anzahl Feuersteine, die sich der Erste Spieler kaufen kann (sofern er das benötigte Geld hat)"
 
-#: sdk/script/fn/GetHomebaseMaterial.xml:45(text)
+#: sdk/script/fn/GetBaseMaterial.xml:45(text)
 msgid "Gives the notice \"The third buyable vehicle of this player is a ...\""
 msgstr "Gibt die Nachricht \"The third buyable vehicle of this player is a ...\" aus"
 
@@ -8503,43 +8503,43 @@ msgstr "Verändert den Punktewert eines Spielers."
 msgid "Deducts 100 points from this player."
 msgstr "Zieht dem Spieler 100 Punkte ab."
 
-#: sdk/script/fn/DoHomebaseProduction.xml:16(desc)
+#: sdk/script/fn/DoBaseProduction.xml:16(desc)
 msgid "Number of the player whose home base resupply list you want to change."
 msgstr "Spielernummer des Spielers, dessen Heimatbasismaterial-Nachlieferung verändert werden soll"
 
-#: sdk/script/fn/DoHomebaseProduction.xml:21(desc)
+#: sdk/script/fn/DoBaseProduction.xml:21(desc)
 msgid "id of the object type you want to adjust."
 msgstr "ID des Objekttyps, der schneller oder langsamer nachgeliefert werden soll."
 
-#: sdk/script/fn/DoHomebaseProduction.xml:26(desc)
+#: sdk/script/fn/DoBaseProduction.xml:26(desc)
 msgid "Change of the resupply value (positive or negative)."
 msgstr "Positive oder negative Veränderung der nachgelieferten Objektmenge"
 
-#: sdk/script/fn/DoHomebaseProduction.xml:30(desc)
+#: sdk/script/fn/DoBaseProduction.xml:30(desc)
 msgid "Changes resupply speed of buyable objects at the home base."
 msgstr "Verändert die Nachlieferung von kaufbaren Objekten in der Heimatbasis."
 
-#: sdk/script/fn/DoHomebaseProduction.xml:34(text)
+#: sdk/script/fn/DoBaseProduction.xml:34(text)
 msgid "No more flintstones are resupplied for the first player."
 msgstr "Feuersteine werden für den ersten Spieler nicht mehr nachgeliefert."
 
-#: sdk/script/fn/DoHomebaseMaterial.xml:16(desc)
+#: sdk/script/fn/DoBaseMaterial.xml:16(desc)
 msgid "Number of the player whose home base material you want to change."
 msgstr "Spielernummer des Spielers, dessen Heimatbasismaterial verändert werden soll"
 
-#: sdk/script/fn/DoHomebaseMaterial.xml:21(desc)
+#: sdk/script/fn/DoBaseMaterial.xml:21(desc)
 msgid "id of the buyable object type you want to adjust."
 msgstr "ID des Objekttyps, der mehr oder weniger oft kaufbar sein soll"
 
-#: sdk/script/fn/DoHomebaseMaterial.xml:26(desc)
+#: sdk/script/fn/DoBaseMaterial.xml:26(desc)
 msgid "Change of the available amount (positive or negative)."
 msgstr "Positive oder negative Veränderung der kaufbaren Objektmenge"
 
-#: sdk/script/fn/DoHomebaseMaterial.xml:30(desc)
+#: sdk/script/fn/DoBaseMaterial.xml:30(desc)
 msgid "Changes availability of buyable objects at the home base."
 msgstr "Verändert die Kaufbarkeit von Objekten in der Heimatbasis."
 
-#: sdk/script/fn/DoHomebaseMaterial.xml:34(text)
+#: sdk/script/fn/DoBaseMaterial.xml:34(text)
 msgid "The player can now buy one flint more."
 msgstr "Der Spieler kann sich jetzt einen Flint mehr kaufen."
 
@@ -18652,8 +18652,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "BaseImage"
 #~ msgstr "BaseImage"
 
-#~ msgid "HomeBaseMaterial"
-#~ msgstr "HomeBaseMaterial"
+#~ msgid "BaseMaterial"
+#~ msgstr "BaseMaterial"
 
 #~ msgid "Vegetation"
 #~ msgstr "Vegetation"
@@ -18883,8 +18883,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "CorrosionRate"
 #~ msgstr "CorrosionRate"
 
-#~ msgid "HomeBaseProduction"
-#~ msgstr "HomeBaseProduction"
+#~ msgid "BaseProduction"
+#~ msgstr "BaseProduction"
 
 #~ msgid "Activate"
 #~ msgstr "Activate"

@@ -732,26 +732,26 @@ static bool FnSetPlayerViewLock(C4PropList * _this, long plr_idx, bool is_locked
 	return true;
 }
 
-static bool FnDoHomebaseMaterial(C4PropList * _this, long iPlr, C4ID id, long iChange)
+static bool FnDoBaseMaterial(C4PropList * _this, long iPlr, C4ID id, long iChange)
 {
 	// validity check
 	if (!ValidPlr(iPlr)) return false;
 	C4Def *pDef = C4Id2Def(id);
 	if (!pDef) return false;
 	// add to material
-	long iLastcount = ::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id);
-	return ::Players.Get(iPlr)->HomeBaseMaterial.SetIDCount(id,iLastcount+iChange,true);
+	long iLastcount = ::Players.Get(iPlr)->BaseMaterial.GetIDCount(id);
+	return ::Players.Get(iPlr)->BaseMaterial.SetIDCount(id,iLastcount+iChange,true);
 }
 
-static bool FnDoHomebaseProduction(C4PropList * _this, long iPlr, C4ID id, long iChange)
+static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iChange)
 {
 	// validity check
 	if (!ValidPlr(iPlr)) return false;
 	C4Def *pDef = C4Id2Def(id);
 	if (!pDef) return false;
 	// add to material
-	long iLastcount = ::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id);
-	return ::Players.Get(iPlr)->HomeBaseProduction.SetIDCount(id,iLastcount+iChange,true);
+	long iLastcount = ::Players.Get(iPlr)->BaseProduction.GetIDCount(id);
+	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id,iLastcount+iChange,true);
 }
 
 static bool FnSetPlrKnowledge(C4PropList * _this, long iPlr, C4ID id, bool fRemove)
@@ -810,22 +810,22 @@ static C4Value FnGetComponent(C4PropList * _this, C4ID idComponent, int iIndex, 
 	return C4Value();
 }
 
-static C4Value FnGetHomebaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
+static C4Value FnGetBaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, return available count
-	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
+	if (id) return C4VInt(::Players.Get(iPlr)->BaseMaterial.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex )));
+	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->BaseMaterial.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
-static C4Value FnGetHomebaseProduction(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
+static C4Value FnGetBaseProduction(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, return available count
-	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
+	if (id) return C4VInt(::Players.Get(iPlr)->BaseProduction.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex )));
+	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->BaseProduction.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
 static long FnGetWealth(C4PropList * _this, long iPlr)
@@ -2456,8 +2456,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetClimate", FnGetClimate);
 	AddFunc(pEngine, "SetPlayerZoomByViewRange", FnSetPlayerZoomByViewRange);
 	AddFunc(pEngine, "SetPlayerViewLock", FnSetPlayerViewLock);
-	AddFunc(pEngine, "DoHomebaseMaterial", FnDoHomebaseMaterial);
-	AddFunc(pEngine, "DoHomebaseProduction", FnDoHomebaseProduction);
+	AddFunc(pEngine, "DoBaseMaterial", FnDoBaseMaterial);
+	AddFunc(pEngine, "DoBaseProduction", FnDoBaseProduction);
 	AddFunc(pEngine, "GainMissionAccess", FnGainMissionAccess);
 	AddFunc(pEngine, "IsNetwork", FnIsNetwork);
 	AddFunc(pEngine, "GetLeague", FnGetLeague);
@@ -2531,8 +2531,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 
 	F(GetPlrKnowledge);
 	F(GetComponent);
-	F(GetHomebaseMaterial);
-	F(GetHomebaseProduction);
+	F(GetBaseMaterial);
+	F(GetBaseProduction);
 	F(GetDefCoreVal);
 	F(GetObjectVal);
 	F(GetObjectInfoCoreVal);

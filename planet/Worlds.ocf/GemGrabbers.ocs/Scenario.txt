@@ -12,19 +12,15 @@ ValueOverloads=Ruby=10;Amethyst=10
 
 [Player1]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player2]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player3]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player4]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Landscape]
 Sky=Clouds1

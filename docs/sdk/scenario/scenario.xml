@@ -161,12 +161,12 @@
         <col>Objects the player should initially be able to create.</col>
       </row>
       <row>
-        <literal_col>HomeBaseMaterial</literal_col>
+        <literal_col>BaseMaterial</literal_col>
         <col>ID list</col>
         <col>Materials available to buy at game start.</col>
       </row>
       <row>
-        <literal_col>HomeBaseProduction</literal_col>
+        <literal_col>BaseProduction</literal_col>
         <col>ID list</col>
         <col>Additional supply of materials to buy.</col>
       </row>

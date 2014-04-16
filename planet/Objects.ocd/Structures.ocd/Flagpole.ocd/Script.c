@@ -40,9 +40,9 @@ public func Interact(object clonk)
 {
 	var menu;
 	var i = 0, item, amount;
-	while (item = GetHomebaseMaterial(GetOwner(), nil, i++))
+	while (item = GetBaseMaterial(GetOwner(), nil, i++))
 	{
-		amount = GetHomebaseMaterial(GetOwner(), item);
+		amount = GetBaseMaterial(GetOwner(), item);
 		// Add even if amount==0
 		if (!menu) menu = clonk->CreateRingMenu(Flagpole, this);
 		if (!menu) return false;
@@ -69,7 +69,7 @@ public func Selected(object menu, proplist menu_item, bool alt)
 		if (obj = Contents(i))
 			Contents(i)->Exit(0, GetDefHeight() / 2);
 	// Update available count
-	menu_item->SetAmount(GetHomebaseMaterial(GetOwner(), def));
+	menu_item->SetAmount(GetBaseMaterial(GetOwner(), def));
 	menu->Show();
 	return true;
 }

@@ -146,8 +146,8 @@ public:
 	C4IDList ReadyVehic;
 	C4IDList ReadyMaterial;
 	C4IDList BuildKnowledge;
-	C4IDList HomeBaseMaterial;
-	C4IDList HomeBaseProduction;
+	C4IDList BaseMaterial;
+	C4IDList BaseProduction;
 public:
 	void Default();
 	bool EquipmentEqual(C4SPlrStart &rhs);

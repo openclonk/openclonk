@@ -206,7 +206,7 @@ void C4Player::Execute()
 	// ::Game.iTick35
 	if (!::Game.iTick35 && Status==PS_Normal)
 	{
-		ExecHomeBaseProduction();
+		ExecBaseProduction();
 		CheckElimination();
 		if (pMsgBoardQuery && LocalControl) ExecMsgBoardQueries();
 	}
@@ -582,10 +582,10 @@ bool C4Player::ScenarioInit()
 
 	// Wealth, home base materials, abilities
 	Wealth=Game.C4S.PlrStart[PlrStartIndex].Wealth.Evaluate();
-	HomeBaseMaterial=Game.C4S.PlrStart[PlrStartIndex].HomeBaseMaterial;
-	HomeBaseMaterial.ConsolidateValids(::Definitions);
-	HomeBaseProduction=Game.C4S.PlrStart[PlrStartIndex].HomeBaseProduction;
-	HomeBaseProduction.ConsolidateValids(::Definitions);
+	BaseMaterial=Game.C4S.PlrStart[PlrStartIndex].BaseMaterial;
+	BaseMaterial.ConsolidateValids(::Definitions);
+	BaseProduction=Game.C4S.PlrStart[PlrStartIndex].BaseProduction;
+	BaseProduction.ConsolidateValids(::Definitions);
 	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
 	Knowledge.ConsolidateValids(::Definitions);
 
@@ -1162,8 +1162,8 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
 	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
-	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
-	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
+	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial"          ));
+	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction"        ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
@@ -1194,18 +1194,18 @@ bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 	return true;
 }
 
-void C4Player::ExecHomeBaseProduction()
+void C4Player::ExecBaseProduction()
 {
-	const int32_t MaxHomeBaseProduction = 25;
+	const int32_t MaxBaseProduction = 25;
 	ProductionDelay++;
 	if (ProductionDelay>=60) // Minute Production Unit
 	{
 		ProductionDelay=0; ProductionUnit++;
-		for (int32_t cnt=0; HomeBaseProduction.GetID(cnt); cnt++)
-			if (HomeBaseProduction.GetCount(cnt)>0)
-				if (ProductionUnit % BoundBy<int32_t>(11-HomeBaseProduction.GetCount(cnt),1,10) ==0)
-					if (HomeBaseMaterial.GetIDCount(HomeBaseProduction.GetID(cnt))<MaxHomeBaseProduction)
-						HomeBaseMaterial.IncreaseIDCount(HomeBaseProduction.GetID(cnt));
+		for (int32_t cnt=0; BaseProduction.GetID(cnt); cnt++)
+			if (BaseProduction.GetCount(cnt)>0)
+				if (ProductionUnit % BoundBy<int32_t>(11-BaseProduction.GetCount(cnt),1,10) ==0)
+					if (BaseMaterial.GetIDCount(BaseProduction.GetID(cnt)) < MaxBaseProduction)
+						BaseMaterial.IncreaseIDCount(BaseProduction.GetID(cnt));
 	}
 }
 
@@ -1284,8 +1284,8 @@ void C4Player::DefaultRuntimeData()
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.clear();
-	HomeBaseMaterial.Default();
-	HomeBaseProduction.Default();
+	BaseMaterial.Default();
+	BaseProduction.Default();
 	Knowledge.Default();
 	FlashCom=0;
 }
