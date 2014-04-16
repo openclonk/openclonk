@@ -28,6 +28,7 @@
 #include <C4Reloc.h>
 #include <C4Record.h>
 #include <C4MapScript.h>
+#include <C4Random.h>
 
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
@@ -108,6 +109,9 @@ void C4MapScriptHost::AddEngineFunctions() {}
 int c4s_runscript(const char * filename)
 {
 	InitCoreFunctionMap(&ScriptEngine);
+
+	// Seed PRNG
+	FixedRandom(time(NULL));
 
 	C4Group File;
 	if (!File.Open(GetWorkingDirectory()))
