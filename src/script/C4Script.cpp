@@ -211,7 +211,7 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
-	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulParSet ParSet(&Pars[1], C4AUL_MAX_Par - 1);
 	C4AulFunc * fn = Pars[0].getFunction();
 	C4String * name;
 	if (!fn)
@@ -231,6 +231,7 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	}
 	if (!fn)
 		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	fn->CheckParTypes(Pars+1, C4AUL_MAX_Par - 1);
 	return fn->Exec(_this, &ParSet, true);
 }
 
