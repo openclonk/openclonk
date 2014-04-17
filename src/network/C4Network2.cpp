@@ -145,7 +145,7 @@ C4Network2::C4Network2()
 		pVoteDialog(NULL),
 		fPausedForVote(false),
 		iLastOwnVoting(0),
-		fStreaming(NULL)
+		fStreaming(false)
 {
 
 }
