@@ -47,8 +47,10 @@
     </examples>
     <related>
       <funclink>DoBaseMaterial</funclink>
+	  <funclink>SetBaseMaterial</funclink>
       <funclink>GetBaseProduction</funclink>
       <funclink>DoBaseProduction</funclink>
+      <funclink>SetBaseProduction</funclink>
       <funclink>C4D_All</funclink>
       <funclink>C4D_Goal</funclink>
       <funclink>C4D_Living</funclink>
@@ -59,5 +61,5 @@
       <funclink>C4D_Vehicle</funclink>
     </related>
   </func>
-  <author>Günther</author><date>2002-02</date>
+  <author>Maikel</author><date>2014-04</date>
 </funcs>

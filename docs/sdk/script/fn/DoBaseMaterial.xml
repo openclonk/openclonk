@@ -30,17 +30,19 @@
     <desc>Changes availability of buyable objects at the home base.</desc>
     <examples>
       <example>
-        <code>DoBaseMaterial(0, Firestone, 1);</code>
+        <code><funclink>DoBaseMaterial</funclink>(0, Firestone, 1);</code>
         <text>The player can now buy one flint more.</text>
       </example>
     </examples>
     <related>
       <funclink>GetBaseMaterial</funclink>
+      <funclink>SetBaseMaterial</funclink>
       <funclink>GetBaseProduction</funclink>
       <funclink>DoBaseProduction</funclink>
+	  <funclink>SetBaseProduction</funclink>
       <funclink>Buy</funclink>
       <funclink>Sell</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2001-11</date>
+  <author>Maikel</author><date>2014-04</date>
 </funcs>

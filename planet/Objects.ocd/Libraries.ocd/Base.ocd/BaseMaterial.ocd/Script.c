@@ -3,8 +3,10 @@
 	Library to control the players base material and production. The initial values are read
 	from the Scenario.txt entries and per script one can modify these by:
      * GetBaseMaterial(int plr, id def, int index, int category)
+     * SetBaseMaterial(int plr, id def, int cnt)
      * DoBaseMaterial(int plr, id def, int change)
      * GetBaseProduction(int plr, id def, int index, int category)
+     * SetBaseProduction(int plr, id def, int cnt)
      * DoBaseProduction(int plr, id def, int change)
     Performs also two callbacks to a base of the player:
      * OnBaseMaterialChange(id def, int change);
@@ -24,8 +26,8 @@ local production_unit = 0;
 static const BASEMATERIAL_MaxBaseMaterial = 25;
 // Maximum number of production. 
 static const BASEMATERIAL_MaxBaseProduction = 10;
-// Produce every X frames.
-static const BASEMATERIAL_ProductionRate = 10;
+// Produce every X frames (currently set to a minute).
+static const BASEMATERIAL_ProductionRate = 2160;
 
 
 /*-- Global interface --*/
@@ -37,6 +39,15 @@ global func GetBaseMaterial(int plr, id def, int index, int category)
 		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
 		return base->GetBaseMat(def, index, category);
+}
+
+global func SetBaseMaterial(int plr, id def, int cnt)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base)
+		return base->SetBaseMat(def, cnt);
 }
 
 global func DoBaseMaterial(int plr, id def, int change)
@@ -55,6 +66,15 @@ global func GetBaseProduction(int plr, id def, int index, int category)
 		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
 		return base->GetBaseProd(def, index, category);
+}
+
+global func SetBaseProduction(int plr, id def, int cnt)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base)
+		return base->SetBaseProd(def, cnt);
 }
 
 global func DoBaseProduction(int plr, id def, int change)
@@ -154,6 +174,36 @@ public func GetBaseMat(id def, int index, int category)
 	return;
 }
 
+public func SetBaseMat(id def, int cnt)
+{
+	if (cnt == nil)
+		return;
+	cnt = Max(0, cnt);
+	var change = 0;
+	// Scan through current list of id's and set material if available.
+	var found = false;
+	for (var index = 0; index < GetLength(base_material); ++index)
+	{
+		if (base_material[index][0] == def)
+		{
+			change = cnt - base_material[index][1];
+			base_material[index][1] = cnt;
+			found = true;
+		}
+	}
+	// If material is not available add it to the existing list.
+	if (!found)
+	{
+		change = cnt;
+		PushBack(base_material, [def, cnt]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseMaterialChange(def, change);
+	return;
+}
+
 public func DoBaseMat(id def, int change)
 {
 	if (change == 0) 
@@ -162,9 +212,10 @@ public func DoBaseMat(id def, int change)
 	var found = false;
 	for (var index = 0; index < GetLength(base_material); ++index)
 	{
-		var combo = base_material[index];
-		if (combo[0] == def)
+		if (base_material[index][0] == def)
 		{
+			// Change must at least be minus the original value.
+			change = Max(change, -base_material[index][1]);
 			base_material[index][1] += change;
 			found = true;
 		}
@@ -172,6 +223,7 @@ public func DoBaseMat(id def, int change)
 	// If material is not available add it to the existing list.
 	if (!found)
 	{
+		// Change must at least be zero.
 		change = Max(change, 0);
 		PushBack(base_material, [def, Max(change, 0)]);
 	}
@@ -208,6 +260,36 @@ public func GetBaseProd(id def, int index, int category)
 	return;
 }
 
+public func SetBaseProd(id def, int cnt)
+{
+	if (cnt == nil)
+		return;
+	cnt = Max(0, cnt);
+	var change = 0;
+	// Scan through current list of id's and set production if available.
+	var found = false;
+	for (var index = 0; index < GetLength(base_production); ++index)
+	{
+		if (base_production[index][0] == def)
+		{
+			change = cnt - base_production[index][1];
+			base_production[index][1] = cnt;
+			found = true;
+		}
+	}
+	// If material is not available add it to the existing list.
+	if (!found)
+	{
+		change = cnt;
+		PushBack(base_production, [def, cnt]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseProductionChange(def, change);
+	return;
+}
+
 public func DoBaseProd(id def, int change)
 {
 	if (change == 0)
@@ -216,9 +298,10 @@ public func DoBaseProd(id def, int change)
 	var found = false;
 	for (var index = 0; index < GetLength(base_production); ++index)
 	{
-		var combo = base_production[index];
-		if (combo[0] == def)
+		if (base_production[index][0] == def)
 		{
+			// Change must at least be minus the original value.
+			change = Max(change, -base_production[index][1]);
 			base_production[index][1] += change;
 			found = true;
 		}
@@ -226,6 +309,7 @@ public func DoBaseProd(id def, int change)
 	// If production is not available add it to the existing list.
 	if (!found)
 	{
+		// Change must at least be zero.
 		change = Max(change, 0);
 		PushBack(base_production, [def, Max(change, 0)]);
 	}
