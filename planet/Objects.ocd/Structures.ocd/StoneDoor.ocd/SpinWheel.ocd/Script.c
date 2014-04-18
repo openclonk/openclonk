@@ -17,6 +17,7 @@ public func ControlUp(object clonk)
 {
 	if (GetAction() == "Still" && targetdoor)
 	{
+		if (clonk) SetPlrView(clonk->GetController(), targetdoor);
 		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
 		Sound("Chain");
@@ -27,6 +28,7 @@ public func ControlDown(object clonk)
 {
 	if (GetAction() == "Still" && targetdoor)
 	{
+		if (clonk) SetPlrView(clonk->GetController(), targetdoor);
 		targetdoor->CloseDoor();
 		SetAction("SpinRight");
 		Sound("Chain");
