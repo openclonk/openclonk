@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_Painting
+Category=C4D_StaticBack
+Width=16
+Height=14
+Offset=-8,-7
+StretchGrowth=1

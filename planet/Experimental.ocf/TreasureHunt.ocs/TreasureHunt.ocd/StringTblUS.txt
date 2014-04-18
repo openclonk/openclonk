@@ -1,0 +1,3 @@
+Name=Treasure hunt
+MsgGoalFulfilled=Treasure found and sold.
+MsgGoalUnFulfilled=Treasure not yet found adn sold yet.

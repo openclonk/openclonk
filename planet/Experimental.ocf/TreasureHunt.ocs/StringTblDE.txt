@@ -1,0 +1,5 @@
+MsgIntro1=Okay, der Schatz muss hier irgendwo in der Höhle sein. Das Gebiet scheint schwer passierbar. Vielleicht sollten wir uns erst einmal nach Werkzeugen umsehen.
+MsgEncounterCastle=Ein Eindringling! Schnappt ihn!
+MsgEncounterFinal=Nein nein, der Schatz gehört NUR MIR!
+MsgTreasureCollected=Sehr gut! Nun muss der Schatz nur noch zurück zur Flagge.
+MsgGoldBarCollected=Ich habe einen Goldbarren gefunden! (%d/%d)
