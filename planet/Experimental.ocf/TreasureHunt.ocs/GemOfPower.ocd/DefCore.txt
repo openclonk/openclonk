@@ -11,6 +11,5 @@ VertexY=0,-4,0,4
 VertexFriction=70,70,70,70
 Value=250
 Mass=16
-Picture=0,20,64,64
 Components=Ruby=3;Amethyst=3
 Rotate=1
