@@ -449,6 +449,11 @@ func SaveScenarioObject(props)
           <col>0</col>
           <col>Object drawing mode (see <funclink>GetObjectBlitMode</funclink> and <funclink>SetObjectBlitMode</funclink>)</col>
         </row>
+        <row id="defprops_MeshMaterial">
+          <literal_col>MeshMaterial</literal_col>
+          <col>GetID()->GetMeshMaterial()</col>
+          <col>Custom assignments of mesh materials (see <funclink>GetMeshMaterial</funclink> and <funclink>SetMeshMaterial</funclink>)</col>
+        </row>
         <row id="defprops_Name">
           <literal_col>Name</literal_col>
           <col>GetID()->GetName()</col>
