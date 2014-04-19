@@ -403,11 +403,17 @@ static int FnGetIndexOf(C4PropList * _this, C4ValueArray * pArray, const C4Value
 	if (!pArray) return -1;
 	int32_t iSize = pArray->GetSize();
 	for (int32_t i = 0; i < iSize; ++i)
-		if (Needle == pArray->GetItem(i))
+		if (Needle.IsIdenticalTo(pArray->GetItem(i)))
 			// element found
 			return i;
 	// element not found
 	return -1;
+}
+
+static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & v2)
+{
+	// return if v1==v2 with deep comparison on arrays and proplists
+	return v1 == v2;
 }
 
 static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
@@ -670,6 +676,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetLength);
 	F(SetLength);
 	F(GetIndexOf);
+	F(DeepEqual);
 	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);

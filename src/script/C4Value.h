@@ -125,6 +125,9 @@ public:
 	bool operator == (const C4Value& Value2) const;
 	bool operator != (const C4Value& Value2) const;
 
+	// Identical comparison
+	bool IsIdenticalTo(const C4Value &cmp) const { return GetType()==cmp.GetType() && GetData()==cmp.GetData(); }
+
 	// Change and set Type to int in case it was nil or bool before
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
 	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }

@@ -162,28 +162,14 @@
         <row>
           <col>9l</col>
           <col id="==">==</col>
-          <col>Returns whether a equals b.</col>
+          <col>Returns whether a equals b. For proplists and arrays, pointers are compared. Use <funclink>DeepEqual</funclink> to compare contents.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>
         <row>
           <col>9l</col>
           <col id="!=">!=</col>
-          <col>Returns whether a is unequal to b.</col>
-          <col>postfix</col>
-          <col>bool, any/any</col>
-        </row>
-        <row>
-          <col>9l</col>
-          <col id="===">===</col>
-          <col>Returns whether a and b refer to the same thing.</col>
-          <col>postfix</col>
-          <col>bool, any/any</col>
-        </row>
-        <row>
-          <col>9l</col>
-          <col id="!==">!==</col>
-          <col>Returns whether a and b do not refer to the same thing.</col>
+          <col>Returns whether a is unequal to b. For proplists and arrays, pointers are compared. Use !<funclink>DeepEqual</funclink> to compare contents.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>

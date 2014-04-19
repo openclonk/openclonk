@@ -79,8 +79,8 @@ func FindCaveConnections()
 			// But since nothing really "breaks" on this occasion, just stick with the simple check for now.
 			var has_overlap = false;
 			for (check_link in all_links)
-				if (check_link[0] !== cave && check_link[1] !== cave)
-					if (check_link[0] !== cave2 && check_link[1] !== cave2)
+				if (check_link[0] != cave && check_link[1] != cave)
+					if (check_link[0] != cave2 && check_link[1] != cave2)
 						if (IsLineOverlap(cave.X, cave.Y, cave2.X, cave2.Y, check_link[0].X, check_link[0].Y, check_link[1].X, check_link[1].Y))
 							{ has_overlap=true; break; }
 			if (has_overlap) continue;
@@ -121,7 +121,7 @@ func MakeMaze()
 		cave.depth = path_length;
 		for (var cave2 in cave.links[:]) // force a copy because cave.links is modified in the loop
 		{
-			if (path_length && cave2 === path_to_cave[path_length-1]) continue;
+			if (path_length && cave2 == path_to_cave[path_length-1]) continue;
 			// Only first path survives
 			if (cave2.path)
 			{
