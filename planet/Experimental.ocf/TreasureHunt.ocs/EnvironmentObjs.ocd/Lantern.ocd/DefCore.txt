@@ -1,0 +1,6 @@
+[DefCore]
+id=EnvPack_Lantern
+Category=C4D_StaticBack
+Width=20
+Height=42
+Offset=-10,-21

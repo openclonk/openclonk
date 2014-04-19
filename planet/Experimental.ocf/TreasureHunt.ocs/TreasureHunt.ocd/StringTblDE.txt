@@ -1,0 +1,3 @@
+Name=Schatzsuche
+MsgGoalFulfilled=Schatz gefunden und verkauft :-)
+MsgGoalUnFulfilled=Schatz noch nicht gefunden und verkauft :-(

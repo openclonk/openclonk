@@ -228,7 +228,7 @@ void C4EditCursor::ClearSelection()
 	// remove all objects from selection and do script callbacks
 	// iterate safely because callback might delete selected objects!
 	C4Object *obj;
-	while (obj = Selection.GetObject(0))
+	while ((obj = Selection.GetObject(0)))
 	{
 		Selection.Remove(obj);
 		if (obj->Status)

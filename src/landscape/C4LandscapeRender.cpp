@@ -195,8 +195,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Find first (actual) texture
 	int iRefTexIx = 0; C4Texture *pRefTex; C4Surface *pRefSfc = NULL;
-	for(; pRefTex = pTexs->GetTexture(pTexs->GetTexture(iRefTexIx)); iRefTexIx++)
-		if(pRefSfc = pRefTex->Surface32)
+	for(; (pRefTex = pTexs->GetTexture(pTexs->GetTexture(iRefTexIx))); iRefTexIx++)
+		if((pRefSfc = pRefTex->Surface32))
 			break;
 	if(!pRefSfc)
 		return false;
@@ -901,7 +901,7 @@ void C4LandscapeRenderGL::AddTexturesFromMap(C4TextureMap *pMap)
 	//       Future work...
 
 	const C4TexMapEntry *pEntry;
-	for(int32_t i = 0; pEntry = pMap->GetEntry(i); i++)
+	for(int32_t i = 0; (pEntry = pMap->GetEntry(i)); i++)
 		// ToDo: Properly handle jumping back
 		AddTextureAnim(pEntry->GetTextureName());
 
@@ -926,7 +926,7 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 
 		// Got animation?
 		int iPhases = 1; const char *p = pEntry->GetTextureName();
-		while(p = strchr(p, '-')) { p++; iPhases++; }
+		while((p = strchr(p, '-'))) { p++; iPhases++; }
 		// Hard-coded hack. Fix me!
 		const int iPhaseLength = 300;
 		float phase = (iPhases == 1 ? 0 : float(C4TimeMilliseconds::Now().AsInt() % (iPhases * iPhaseLength)) / iPhaseLength);

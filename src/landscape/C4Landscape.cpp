@@ -752,11 +752,11 @@ bool C4Landscape::_SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask)
 bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
 {
 	int32_t mat=GetMat(tx,ty);
-	if (MatValid(mat))
+	if (MatValid(mat)) {
 		if (::MaterialMap.Map[mat].Instable)
 			return ::MassMover.Create(tx,ty);
 		// Get rid of single pixels
-		else if (::MaterialMap.Map[mat].DigFree && recursion_count<10)
+		else if (::MaterialMap.Map[mat].DigFree && recursion_count<10) 
 			if ((!::GBackSolid(tx,ty+1)) + (!::GBackSolid(tx,ty-1)) + (!::GBackSolid(tx+1,ty)) + (!::GBackSolid(tx-1,ty)) >= 3)
 			{
 				if (!ClearPix(tx,ty)) return false;
@@ -770,6 +770,7 @@ bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_cou
 				CheckInstability(tx,ty+1,recursion_count);
 				return true;
 			}
+	}
 	return false;
 }
 
@@ -1455,11 +1456,12 @@ bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave)
 	bool fChanged = false;
 	if (!fSyncSave)
 		for (int y = 0; y < Height; y++)
-			for (int x = 0; x < Width; x++)
+			for (int x = 0; x < Width; x++) {
 				if (pInitial[y * Width + x] == _GetPix(x, y))
 					Surface8->SetPix(x,y,0xff);
 				else
 					fChanged = true;
+			}
 
 	if (fSyncSave || fChanged)
 	{

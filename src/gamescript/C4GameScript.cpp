@@ -206,7 +206,7 @@ static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, i
 {
 	// Make sure parameters are valid
 	if (!PropList || !PropList->GetDef())
-		return NULL;
+		return false;
 
 	// Local object calls override position offset, owner
 	if (Object(_this))
@@ -1568,7 +1568,7 @@ static bool FnClearParticles(C4PropList * _this)
 {
 #ifndef USE_CONSOLE
 	C4Object *obj;
-	if (obj = Object(_this))
+	if ((obj = Object(_this)))
 	{
 		if (obj->BackParticles)
 			obj->BackParticles->Clear();

@@ -1,0 +1,2 @@
+Name=Skull
+Description=Relic of life.

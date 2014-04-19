@@ -836,13 +836,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		pContext = pCurCtx->Obj;
 	}
 
-	// Convert parameters (typecheck)
-	const C4V_Type *pTypes = pFunc->GetParType();
-	for (int i = 0; i < pFunc->GetParCount(); i++)
-		if (!pPars[i].CheckParConversion(pTypes[i]))
-			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
-			                                      pFunc->GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
-			                                     ).getData());
+	pFunc->CheckParTypes(pPars);
 
 	// Script function?
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();

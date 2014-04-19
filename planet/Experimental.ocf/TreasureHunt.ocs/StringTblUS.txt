@@ -1,0 +1,5 @@
+MsgIntro1=OK, let's go and search for the treasure. The terrain is rough, so we might need to look out for some tools first.
+MsgEncounterCastle=Look out, an intruder! Catch him!
+MsgEncounterFinal=The treasure is MINE ALONE!
+MsgTreasureCollected=Excellent! Now we need to bring the treasure back to the flag.
+MsgGoldBarCollected=I've found a gold bar! (%d/%d)

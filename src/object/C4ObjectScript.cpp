@@ -2150,13 +2150,28 @@ static bool FnSetAttachTransform(C4Object *Obj, long iAttachNumber, C4ValueArray
 	return true;
 }
 
-static Nillable<C4String*> FnGetMeshMaterial(C4Object *Obj, int iSubMesh)
+static Nillable<C4String*> FnGetMeshMaterial(C4PropList * _this, int iSubMesh)
 {
-	if (!Obj || !Obj->pMeshInstance) return C4Void();
-	if (iSubMesh < 0 || (unsigned int)iSubMesh >= Obj->pMeshInstance->GetNumSubMeshes()) return C4Void();
-
-	StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
-	return String(submesh.GetMaterial().Name.getData());
+	// Called in object or definition context?
+	C4Object *Obj = Object(_this);
+	if (!Obj)
+	{
+		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetMeshMaterial");
+		// Called in definition context: Get definition default mesh material
+		C4Def *def = _this->GetDef();
+		if (!def->Graphics.IsMesh()) return C4Void();
+		if (iSubMesh < 0 || (unsigned int)iSubMesh >= def->Graphics.Mesh->GetNumSubMeshes()) return C4Void();
+		const StdSubMesh &submesh = def->Graphics.Mesh->GetSubMesh(iSubMesh);
+		return String(submesh.GetMaterial().Name.getData());
+	}
+	else
+	{
+		// Called in object context: Get material of mesh instance
+		if (!Obj->pMeshInstance) return C4Void();
+		if (iSubMesh < 0 || (unsigned int)iSubMesh >= Obj->pMeshInstance->GetNumSubMeshes()) return C4Void();
+		StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
+		return String(submesh.GetMaterial().Name.getData());
+	}
 }
 
 static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)

@@ -1,0 +1,2 @@
+Name=Schädel
+Description=Relikt des Lebens.

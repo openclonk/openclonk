@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_TreeTrunks
+Category=C4D_StaticBack
+Width=24
+Height=10
+Offset=-10,-10
+StretchGrowth=1
