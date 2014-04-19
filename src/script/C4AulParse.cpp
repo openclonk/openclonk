@@ -156,6 +156,7 @@ private:
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
 	void Parse_Function();
+	void Parse_FuncBody();
 	void Parse_Statement();
 	void Parse_Block();
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
@@ -173,7 +174,8 @@ private:
 	void Parse_Static();
 	void Parse_Const();
 	C4Value Parse_ConstExpression(C4PropListStatic * parent, C4String * Name);
-	C4Value Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name);
+	C4Value Parse_ConstPropList(C4PropListStatic * parent, C4String * Name);
+	void Store_Const(C4PropListStatic * parent, C4String * Name, const C4Value & v);
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
@@ -1483,6 +1485,14 @@ void C4AulParse::Parse_Function()
 		Fn->SetOverloaded(Parent->GetFunc(Fn->Name));
 		Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 	}
+	Shift();
+	Parse_FuncBody();
+	Shift();
+}
+
+void C4AulParse::Parse_FuncBody()
+{
+	// Parse function body
 	assert(Fn);
 	if (Type == PREPARSER)
 	{
@@ -1495,9 +1505,6 @@ void C4AulParse::Parse_Function()
 	{
 		Fn->ClearCode();
 	}
-	Shift();
-
-	// Parse function body
 	Match(ATT_BOPEN);
 	// get pars
 	int cpar = 0;
@@ -1528,18 +1535,16 @@ void C4AulParse::Parse_Function()
 		else if (SEqual(Idtf, C4AUL_TypeArray)) { t = C4V_Array; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeFunction)) { t = C4V_Function; Shift(); }
 		Fn->ParType[cpar] = t;
+		// a parameter name which matched a type name?
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
 		{
 			if (Type == PREPARSER) Fn->AddPar(Idtf);
 			if (Config.Developer.ExtraWarnings)
 				Warn("'%s' used as parameter name", Idtf);
 		}
-		else if (TokenType != ATT_IDTF)
-		{
-			UnexpectedToken("parameter name");
-		}
 		else
 		{
+			Check(ATT_IDTF, "parameter name");
 			if (Type == PREPARSER) Fn->AddPar(Idtf);
 			Shift();
 		}
@@ -1576,7 +1581,6 @@ void C4AulParse::Parse_Function()
 	AddBCC(AB_EOFN);
 	// Do not blame this function for script errors between functions
 	Fn = 0;
-	Shift();
 }
 
 void C4AulParse::Parse_Block()
@@ -1924,7 +1928,7 @@ void C4AulParse::Parse_PropList()
 	Shift();
 }
 
-C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name)
+C4Value C4AulParse::Parse_ConstPropList(C4PropListStatic * parent, C4String * Name)
 {
 	C4Value v;
 	if (!Name)
@@ -1933,6 +1937,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 	if (Type == PREPARSER)
 	{
 		p = C4PropList::NewStatic(NULL, parent, Name);
+		v.SetPropList(p);
 	}
 	else
 	{
@@ -1957,6 +1962,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		// In case of script reloads
 		p->Thaw();
 	}
+	Store_Const(parent, Name, v);
 	Shift();
 	while (TokenType != ATT_BLCLOSE)
 	{
@@ -2720,6 +2726,30 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
 			r = Parse_ConstPropList(parent, Name);
+		else if (SEqual(Idtf, C4AUL_Func))
+		{
+			if (!parent)
+				throw C4AulParseError(this, "global functions must be declared with 'global func'");
+			if (!Name)
+				throw C4AulParseError(this, "functions must have a name");
+			if (Type == PREPARSER)
+			{
+				Fn = new C4AulScriptFunc(parent, pOrgScript, Name ? Name->GetCStr() : NULL, SPos);
+				r.SetFunction(Fn);
+			}
+			else
+			{
+				C4AulFunc * f;
+				if (!parent->GetPropertyByS(Name, &r) || !(f = r.getFunction()) || !(Fn = f->SFunc()))
+				{
+					throw C4AulParseError(this, FormatString("function %s was overloaded by %s",
+					      Name ? Name->GetCStr() : "", r.GetDataString().getData()).getData());
+				}
+			}
+			Store_Const(parent, Name, r);
+			Shift();
+			Parse_FuncBody();
+		}
 		else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
 			Host->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
 		else if (!Engine->GetGlobalConstant(Idtf, &r))
@@ -2826,21 +2856,26 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			r.SetInt(r.getInt() | r2.getInt());
 		}
 	}
+	Store_Const(parent, Name, r);
+	return r;
+}
+
+void C4AulParse::Store_Const(C4PropListStatic * parent, C4String * Name, const C4Value & v)
+{
 	// store as constant or property
 	if (Name)
 	{
 		if (parent)
-			parent->SetPropertyByS(Name, r);
+			parent->SetPropertyByS(Name, v);
 		else
 		{
 			C4Value oldval;
-			if (Type == PREPARSER && Engine->GetGlobalConstant(Name->GetCStr(), &oldval) && oldval != r)
+			if (Type == PREPARSER && Engine->GetGlobalConstant(Name->GetCStr(), &oldval) && oldval != v)
 				Warn("redefining constant %s from %s to %s",
-				     Name->GetCStr(), oldval.GetDataString().getData(), r.GetDataString().getData());
-			Engine->RegisterGlobalConstant(Name->GetCStr(), r);
+				     Name->GetCStr(), oldval.GetDataString().getData(), v.GetDataString().getData());
+			Engine->RegisterGlobalConstant(Name->GetCStr(), v);
 		}
 	}
-	return r;
 }
 
 void C4AulParse::Parse_Const()
