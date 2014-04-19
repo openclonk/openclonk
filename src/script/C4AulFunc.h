@@ -82,7 +82,7 @@ public:
 		return Exec(p, pPars->Par, fPassErrors);
 	}
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false) = 0;
-	void CheckParTypes(const C4Value* pPars, size_t parcount = C4AUL_MAX_Par);
+	void CheckParTypes(const C4Value pPars[]) const;
 };
 
 #endif
