@@ -327,6 +327,16 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	return fn->Exec(_this, &ParSet, true);
 }
 
+static C4String *FnGetName(C4PropList * _this, bool truename)
+{
+	if (!_this)
+		throw NeedNonGlobalContext("GetName");
+	else if(truename)
+		return _this->IsStatic() ? _this->IsStatic()->GetParentKeyName() : nullptr;
+	else
+		return String(_this->GetName());
+}
+
 /* Effects */
 
 static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4PropList * pTarget,
@@ -934,6 +944,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperty);
 	F(SetProperty);
 	F(ResetProperty);
+	F(GetName);
 	F(AddEffect);
 	F(CheckEffect);
 	F(RemoveEffect);

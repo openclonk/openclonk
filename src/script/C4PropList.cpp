@@ -264,6 +264,14 @@ StdStrBuf C4PropListStatic::GetDataString() const
 	return r;
 }
 
+const char *C4PropListStatic::GetName() const
+{
+	const C4String * s = GetPropertyStr(P_Name);
+	if (!s) s = ParentKeyName;
+	if (!s) return "";
+	return s->GetCStr();
+}
+
 C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype),
 		constant(false), Status(1)
