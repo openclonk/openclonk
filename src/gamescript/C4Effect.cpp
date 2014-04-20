@@ -502,6 +502,8 @@ void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
 			case P_CommandTarget:
 				throw C4AulExecError("effect: CommandTarget is readonly");
 			case P_Time: iTime = to.getInt(); return;
+			case P_Prototype:
+				throw new C4AulExecError("effect: Prototype is readonly");
 		}
 	}
 	C4PropListNumbered::SetPropertyByS(k, to);
@@ -521,6 +523,8 @@ void C4Effect::ResetProperty(C4String * k)
 			case P_CommandTarget:
 				throw C4AulExecError("effect: CommandTarget is readonly");
 			case P_Time: iTime = 0; return;
+			case P_Prototype:
+				throw new C4AulExecError("effect: Prototype is readonly");
 		}
 	}
 	C4PropListNumbered::ResetProperty(k);
