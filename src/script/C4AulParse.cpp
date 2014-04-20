@@ -1963,7 +1963,12 @@ C4Value C4AulParse::Parse_ConstPropList(C4PropListStatic * parent, C4String * Na
 		p->Thaw();
 	}
 	Store_Const(parent, Name, v);
-	Shift();
+	if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_New))
+	{
+		Shift();
+		Parse_ConstExpression(p, &Strings.P[P_Prototype]);
+	}
+	Match(ATT_BLOPEN);
 	while (TokenType != ATT_BLCLOSE)
 	{
 		C4String * pKey;

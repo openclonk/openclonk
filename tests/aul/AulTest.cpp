@@ -115,6 +115,7 @@ TEST_F(AulTest, Locals)
 	EXPECT_EQ(C4VInt(42), RunCode("func Main() { local i = 42; return i; }", false));
 	EXPECT_EQ(C4VInt(42), RunCode("local i = [42]; func Main() { return i[0]; }", false));
 	EXPECT_EQ(C4VInt(42), RunCode("local p = { i = 42 }; func Main() { return p.i; }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local p1 = { i = 42 }, p2 = new p1 {}; func Main() { return p2.i; }", false));
 }
 
 TEST_F(AulTest, Eval)
