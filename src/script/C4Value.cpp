@@ -76,7 +76,7 @@ C4Object * C4Value::_getObj() const
 
 C4Def * C4Value::getDef() const
 {
-	return CheckConversion(C4V_Object) ? Data.PropList->GetDef() : NULL;
+	return CheckConversion(C4V_Def) ? Data.PropList->GetDef() : NULL;
 }
 
 C4Def * C4Value::_getDef() const
