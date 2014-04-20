@@ -532,6 +532,12 @@ func QueryCatchBlow(object obj)
 	var r=0;
 	var e=0;
 	var i=0;
+	// Blocked by object effects?
+	while(e=GetEffect("*", obj, i++))
+		if(EffectCall(obj, e, "QueryHitClonk", this))
+			return true;
+	// Blocked by Clonk effects?
+	i=0;
 	while(e=GetEffect("*Control*", this, i++))
 	{
 		if(EffectCall(this, e, "QueryCatchBlow", obj))
@@ -542,6 +548,7 @@ func QueryCatchBlow(object obj)
 		
 	}
 	if(r) return r;
+	// No blocking
 	return _inherited(obj, ...);
 }
 
