@@ -556,8 +556,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 	if (recursion)
 	{
 		Seen *first = top->first();
-		// GetDataString is fine for recursive values since after
-		// some text length has been exceeded ... will be used instead of complete values
+		// GetDataString is fine for circular values
 		LogF("Caught infinite recursion comparing %s and %s",
 			first->left->GetDataString().getData(),
 			first->right->GetDataString().getData());
