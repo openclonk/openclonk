@@ -3,3 +3,4 @@ MsgEncounterCastle=Ein Eindringling! Schnappt ihn!
 MsgEncounterFinal=Nein nein, der Schatz gehört NUR MIR!
 MsgTreasureCollected=Sehr gut! Nun muss der Schatz nur noch zurück zur Flagge.
 MsgGoldBarCollected=Ich habe einen Goldbarren gefunden! (%d/%d)
+MsgStoneDoorNoDamage=Diese Steintür ist zu stabil. Ich sollte einen Schalter suchen.

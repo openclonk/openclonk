@@ -57,10 +57,11 @@ func RelaunchPlayer(int plr)
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Recover carried objects
+	// Do not recover pipes, because that would draw ugly lines across the landscape
 	if (g_plr_inventory && g_plr_inventory[plr])
 	{
 		for (var obj in g_plr_inventory[plr])
-			if (obj) obj->Enter(clonk);
+			if (obj && obj->GetID() != Pipe) obj->Enter(clonk);
 		g_plr_inventory[plr] = nil;
 	}
 	return true;
@@ -123,12 +124,41 @@ func OnTreasureCollected(object treasure)
 	return true;
 }
 
-static g_num_goldbars;
+static g_num_goldbars, g_game_finished;
 
 func OnGoldBarCollected(object collecter)
 {
 	++g_num_goldbars;
+	UpdateLeagueScores();
 	var max_gold_bars = 20;
 	DialogueSimple->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, max_gold_bars), collecter);
+	return true;
+}
+
+func OnGameOver()
+{
+	// Treasure was collected!
+	g_game_finished = true;
+	UpdateLeagueScores();
+	return true;
+}
+
+func UpdateLeagueScores()
+{
+	// +50 for finishing and +5 for every gold bar
+	return SetLeagueProgressScore(g_num_goldbars, g_num_goldbars * 5 + g_game_finished * 50);
+}
+
+func OnInvincibleDamage(object damaged_target)
+{
+	// Closest Clonk remarks that the door is invincible
+	if (damaged_target && damaged_target->GetID() == StoneDoor)
+	{
+		var observer = damaged_target->FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), damaged_target->Sort_Distance());
+		if (observer)
+		{
+			DialogueSimple->MessageBoxAll("$MsgStoneDoorNoDamage$", observer);
+		}
+	}
 	return true;
 }

@@ -7,9 +7,9 @@ global func MakeInvincible()
 	return true;
 }
 
-global func FxIntInvincibleDamage()
+global func FxIntInvincibleDamage(target)
 {
-	GameCall("OnInvincibleDamage", this);
+	GameCall("OnInvincibleDamage", target);
 	return 0;
 }
 
