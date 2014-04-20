@@ -40,6 +40,7 @@ void C4RoundResultsPlayer::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iLeagueScoreGain,  "GameScore",    -1));     // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankNew,  "Rank",    0));             // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankSymbolNew,  "RankSymbol",    0)); // name used in league reply!
+	pComp->Value(mkNamingAdapt(sLeagueProgressData,  "LeagueProgressData",    StdCopyStrBuf()));
 	StdEnumEntry<LeagueStatus> LeagueStatusEntries[] =
 	{
 		{ "",     RRPLS_Unknown },
@@ -71,6 +72,12 @@ void C4RoundResultsPlayer::EvaluatePlayer(C4Player *pPlr)
 		fctBigIcon.Create(pPlr->BigIcon.Wdt, pPlr->BigIcon.Hgt);
 		pPlr->BigIcon.Draw(fctBigIcon);
 	}
+	// progress data by player
+	C4PlayerInfo *pInfo = pPlr->GetInfo();
+	if (pInfo)
+		{
+		sLeagueProgressData.Copy(pInfo->GetLeagueProgressData());
+		}
 	// BigIcon from info: Doesn't work for some cases when player files got deleted already
 	/*C4PlayerInfo *pInfo = pPlr->GetInfo();
 	assert(pInfo);
@@ -86,6 +93,7 @@ void C4RoundResultsPlayer::EvaluateLeague(C4RoundResultsPlayer *pLeaguePlayerInf
 	iLeagueScoreGain = pLeaguePlayerInfo->iLeagueScoreGain;
 	iLeagueRankNew = pLeaguePlayerInfo->iLeagueRankNew;
 	iLeagueRankSymbolNew = pLeaguePlayerInfo->iLeagueRankSymbolNew;
+	sLeagueProgressData =pLeaguePlayerInfo->sLeagueProgressData;
 }
 
 void C4RoundResultsPlayer::AddCustomEvaluationString(const char *szCustomString)
@@ -107,6 +115,7 @@ bool C4RoundResultsPlayer::operator ==(const C4RoundResultsPlayer &cmp)
 	if (iLeagueRankNew != cmp.iLeagueRankNew) return false;
 	if (iLeagueRankSymbolNew != cmp.iLeagueRankSymbolNew) return false;
 	if (eLeagueStatus != cmp.eLeagueStatus) return false;
+	if (sLeagueProgressData != cmp.sLeagueProgressData) return false;
 	return true;
 }
 
@@ -124,6 +133,7 @@ C4RoundResultsPlayer &C4RoundResultsPlayer::operator =(const C4RoundResultsPlaye
 	iLeagueRankNew = cpy.iLeagueRankNew;
 	iLeagueRankSymbolNew = cpy.iLeagueRankSymbolNew;
 	eLeagueStatus = cpy.eLeagueStatus;
+	sLeagueProgressData = cpy.sLeagueProgressData;
 	return *this;
 }
 
@@ -361,15 +371,28 @@ bool C4RoundResults::SettlementScoreIsHidden()
 	return fHideSettlementScore;
 }
 
-void C4RoundResults::SetLeaguePerformance(int32_t iNewPerf)
+void C4RoundResults::SetLeaguePerformance(int32_t iNewPerf, int32_t idPlayer)
 {
-	// Store to be sent later
-	iLeaguePerformance = iNewPerf;
-}
+	// Store to be sent later. idPlayer == 0 means global performance.
+	if(!idPlayer)
+		{
+		iLeaguePerformance = iNewPerf;
+		}
+	else
+		{
+		C4RoundResultsPlayer *pOwnPlr = Players.GetCreateByID(idPlayer);
+		pOwnPlr->SetLeaguePerformance(iNewPerf);
+		}
+	}
 
-int32_t C4RoundResults::GetLeaguePerformance() const
+int32_t C4RoundResults::GetLeaguePerformance(int32_t idPlayer) const
 {
-	return iLeaguePerformance;
+	if(!idPlayer)
+		return iLeaguePerformance;
+	else
+		if(C4RoundResultsPlayer *pPlr = Players.GetByID(idPlayer))
+			return pPlr->GetLeaguePerformance();
+	return 0;
 }
 
 bool C4RoundResults::Load(C4Group &hGroup, const char *szFilename)

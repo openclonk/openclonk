@@ -927,11 +927,14 @@ static bool FnSurrenderPlayer(C4PropList * _this, long iPlr)
 }
 
 // undocumented!
-static bool FnSetLeaguePerformance(C4PropList * _this, long iScore)
-{
-	Game.RoundResults.SetLeaguePerformance(iScore);
+static bool FnSetLeaguePerformance(C4PropList * _this, long iScore, long idPlayer)
+	{
+	if(!Game.Parameters.isLeague()) return false;
+	if(idPlayer && !Game.PlayerInfos.GetPlayerInfoByID(idPlayer)) return false;
+	Game.RoundResults.SetLeaguePerformance(iScore, idPlayer);
 	return true;
-}
+	}
+
 
 static const int32_t CSPF_FixedAttributes = 1<<0,
     CSPF_NoScenarioInit  = 1<<1,
@@ -1130,6 +1133,34 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 	StdStrBuf sIdxLeague;
 	if (!Game.Parameters.League.GetSection(idx, &sIdxLeague)) return NULL;
 	return String(sIdxLeague.getData());
+}
+
+static int32_t FnGetLeagueScore(C4PropList * _this, long idPlayer)
+{
+	// security
+	if (idPlayer < 1) return 0;
+	// get info
+	C4PlayerInfo *pInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
+	if (!pInfo) return 0;
+	// get league score
+	return pInfo->getLeagueScore();
+}
+
+static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long idPlayer)
+{
+	if(!Game.Parameters.League.getLength()) return false;
+	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
+	if (!info) return false;
+	info->SetLeagueProgressData(pNewData ? pNewData->GetCStr() : NULL);
+	return TRUE;
+}
+
+static C4String *FnGetLeagueProgressData(C4PropList * _this, long idPlayer)
+{
+	if(!Game.Parameters.League.getLength()) return NULL;
+	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
+	if (!info) return NULL;
+	return String(info->GetLeagueProgressData());
 }
 
 // undocumented!
@@ -2430,7 +2461,10 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerByIndex", FnGetPlayerByIndex);
 	AddFunc(pEngine, "EliminatePlayer", FnEliminatePlayer);
 	AddFunc(pEngine, "SurrenderPlayer", FnSurrenderPlayer);
+	AddFunc(pEngine, "FnGetLeagueScore", FnGetLeagueScore);
 	AddFunc(pEngine, "SetLeaguePerformance", FnSetLeaguePerformance);
+	AddFunc(pEngine, "SetLeagueProgressData", FnSetLeagueProgressData);
+	AddFunc(pEngine, "GetLeagueProgressData", FnGetLeagueProgressData);
 	AddFunc(pEngine, "CreateScriptPlayer", FnCreateScriptPlayer);
 	AddFunc(pEngine, "GetCursor", FnGetCursor);
 	AddFunc(pEngine, "GetViewCursor", FnGetViewCursor);
