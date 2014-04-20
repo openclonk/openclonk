@@ -327,10 +327,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	{
 		if (!pComp->isCompiler())
 		{
-			C4PropList * p = getPropList();
+			const C4PropList * p = getPropList();
 			if (getFunction())
 			{
-				p = Data.Fn->Owner->GetPropList();
+				p = Data.Fn->Parent;
 				assert(p);
 				assert(p->GetFunc(Data.Fn->GetName()) == Data.Fn);
 				assert(p->IsStatic());

@@ -83,7 +83,7 @@ TEST(DirectExecTest, HostUnmodifedByParseTest)
 	TestHost host2 = host;
 	host.test_equality(host2);
 	char szScript[] = "8*5";
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(&host, host.GetScriptHost(), 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(host.GetPropList(), host.GetScriptHost(), 0, szScript);
 	host.test_equality(host2);
 	pFunc->ParseFn();
 	host.test_equality(host2);

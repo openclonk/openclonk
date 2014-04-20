@@ -76,7 +76,7 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		Dump.AppendChar(')');
 	}
 	else
-		Dump.Append(Func->Owner->ScriptName);
+		Dump.Append(Func->Parent->GetDataString());
 	// Script
 	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
@@ -1026,10 +1026,6 @@ void C4AulProfiler::Show()
 
 C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
-	// handle easiest case first
-	if (Owner->State != ASS_PARSED) return C4Value();
-
-	// execute
 	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
 
@@ -1046,7 +1042,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// profiler
 	AulExec.StartDirectExec();
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(this, GetScriptHost(), 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(GetPropList(), GetScriptHost(), 0, szScript);
 	// Parse function
 	try
 	{

@@ -135,10 +135,10 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 	return true;
 }
 
-C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef):
-		C4AulFunc(pOwner, pDef->Identifier), Def(pDef)
+C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
+		C4AulFunc(Parent, pDef->Identifier), Def(pDef)
 {
-	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+	Parent->SetPropertyByS(Name, C4VFunction(this));
 }
 
 C4AulDefFunc::~C4AulDefFunc()
@@ -812,7 +812,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
-		new C4AulDefFunc(pEngine, pDef);
+		new C4AulDefFunc(pEngine->GetPropList(), pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
 	F(Abs);
 	F(Min);

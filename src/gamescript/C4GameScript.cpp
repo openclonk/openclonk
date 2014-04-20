@@ -2777,7 +2777,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	}
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptGameFnMap[0]; pDef->Identifier; pDef++)
-		new C4AulDefFunc(pEngine, pDef);
+		new C4AulDefFunc(pEngine->GetPropList(), pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
 
 	AddFunc(pEngine, "GetX", FnGetX);

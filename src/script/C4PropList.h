@@ -83,6 +83,7 @@ public:
 
 	// saved as a reference to a global constant?
 	virtual class C4PropListStatic * IsStatic() { return NULL; }
+	const class C4PropListStatic * IsStatic() const { return const_cast<C4PropList*>(this)->IsStatic(); }
 	// saved as a reference to separately saved objects?
 	virtual bool IsNumbered() const { return false; }
 	// some proplists have references that are not reference-counted

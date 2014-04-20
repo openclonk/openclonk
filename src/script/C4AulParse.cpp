@@ -130,7 +130,7 @@ public:
 			pLoopStack(NULL)
 	{ }
 	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, enum Type Type):
-			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(Fn->Owner->Engine),
+			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(pOrgScript->Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
 			Type(Type),
@@ -239,7 +239,7 @@ void C4AulScript::Warn(const char *pMsg, ...)
 	// display it
 	warning.show();
 	// count warnings
-	++::ScriptEngine.warnCnt;
+	++Engine->warnCnt;
 }
 
 void C4AulParse::Warn(const char *pMsg, ...)
@@ -253,7 +253,7 @@ void C4AulParse::Warn(const char *pMsg, ...)
 	if (pOrgScript != Host)
 		DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 	// count warnings
-	++::ScriptEngine.warnCnt;
+	++Engine->warnCnt;
 }
 
 void C4AulParse::Error(const char *pMsg, ...)
@@ -1405,7 +1405,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 		{
 			err.show();
 			// and count (visible only ;) )
-			++::ScriptEngine.errCnt;
+			++Engine->errCnt;
 		}
 		all_ok = false;
 
@@ -1459,16 +1459,16 @@ void C4AulParse::Parse_Function()
 			Error("function definition: name already in use (global constant)");
 	}
 	// get script fn
-	C4AulScript * owner;
+	C4PropListStatic * Parent;
 	if (is_global)
-		owner = Engine;
+		Parent = Engine->GetPropList();
 	else
-		owner = Host;
+		Parent = Host->GetPropList();
 	Fn = 0;
-	C4AulFunc * f = owner->GetPropList()->GetFunc(Idtf);
+	C4AulFunc * f = Parent->GetFunc(Idtf);
 	while (f)
 	{
-		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Owner == owner)
+		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Parent == Parent)
 		{
 			if (Fn)
 				Warn("Duplicate function %s", Idtf);
@@ -1479,9 +1479,9 @@ void C4AulParse::Parse_Function()
 	// first preparser run or a new func in a reloaded script
 	if (!Fn && Type == PREPARSER)
 	{
-		Fn = new C4AulScriptFunc(owner, pOrgScript, Idtf, SPos);
-		Fn->SetOverloaded(owner->GetPropList()->GetFunc(Fn->Name));
-		owner->GetPropList()->SetPropertyByS(Fn->Name, C4VFunction(Fn));
+		Fn = new C4AulScriptFunc(Parent, pOrgScript, Idtf, SPos);
+		Fn->SetOverloaded(Parent->GetFunc(Fn->Name));
+		Parent->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 	}
 	assert(Fn);
 	if (Type == PREPARSER)
@@ -2227,11 +2227,8 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Shift();
 		}
 		// check for variable (local)
-		else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
+		else if (Host && Host->GetPropList() == Fn->Parent && Host->LocalNamed.GetItemNr(Idtf) != -1)
 		{
-			// global func?
-			if (Fn->Owner == &::ScriptEngine)
-				throw C4AulParseError(this, "using local variable in global function!");
 			// insert variable by id
 			C4String * pKey = Strings.RegString(Idtf);
 			AddBCC(AB_LOCALN, (intptr_t) pKey);
@@ -2327,9 +2324,8 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			if (TokenType == ATT_BOPEN)
 				Parse_Params(10, NULL);
 		}
-		else if ((FoundFn = Fn->Owner->GetPropList()->GetFunc(Idtf)))
+		else if ((FoundFn = Fn->Parent->GetFunc(Idtf)))
 		{
-			assert(Host == Fn->Owner || Fn->Owner == Engine || (Host && !Host->GetPropList()));
 			if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
 				Warn("using deprecated function %s", Idtf);
 			Shift();
@@ -2899,7 +2895,7 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 				{
 					C4AulScriptFunc *sfc;
 					if (sf->pOrgScript != this)
-						sfc = new C4AulScriptFunc(this, *sf);
+						sfc = new C4AulScriptFunc(to, *sf);
 					else
 						sfc = sf;
 					sfc->SetOverloaded(to->GetFunc(sf->Name));

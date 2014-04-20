@@ -111,8 +111,8 @@ std::string C4AulScript::Translate(const std::string &text) const
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
-		C4AulFunc(pOwner, pName),
+C4AulScriptFunc::C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
+		C4AulFunc(Parent, pName),
 		OwnerOverloaded(NULL),
 		ParCount(0),
 		Script(Script),
@@ -123,8 +123,8 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, 
 	AddBCC(AB_EOFN);
 }
 
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
-		C4AulFunc(pOwner, FromFunc.GetName()),
+C4AulScriptFunc::C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc):
+		C4AulFunc(Parent, FromFunc.GetName()),
 		OwnerOverloaded(NULL),
 		ParCount(FromFunc.ParCount),
 		Script(FromFunc.Script),

@@ -194,8 +194,8 @@ public:
 	}
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
-	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
-	C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
+	C4AulScriptFunc(C4PropListStatic * Parent, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
+	C4AulScriptFunc(C4PropListStatic * Parent, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 	~C4AulScriptFunc();
 
 	void ParseFn(C4AulScriptContext* context = NULL);

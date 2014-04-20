@@ -19,12 +19,12 @@
 #include <C4AulFunc.h>
 #include <C4Aul.h>
 
-C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
+C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
+		Parent(Parent),
 		iRefCnt(0),
 		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL)
 {
-	Owner = pOwner;
 	// add to global lookuptable with this name
 	if (GetName())
 		::ScriptEngine.FuncLookUp.Add(this);
@@ -40,24 +40,19 @@ StdStrBuf C4AulFunc::GetFullName()
 {
 	StdStrBuf r;
 	// "lost" function?
-	if (!Owner)
+	if (!Parent)
 	{
 		r.Ref("(unowned) ");
 	}
-	else if (Owner->GetPropList() && Owner->GetPropList()->IsStatic())
-	{
-		r.Take(Owner->GetPropList()->IsStatic()->GetDataString());
-		r.AppendChar('.');
-	}
-	else if (Owner->Engine == Owner)
-	{
-		r.Ref("Global.");
-	}
 	else
 	{
-		r.Ref("(unknown) ");
+		r.Take(Parent->GetDataString());
+		r.AppendChar('.');
 	}
-	r.Append(Name->GetData());
+	if (GetName())
+		r.Append(Name->GetData());
+	else
+		r.Append("(unnamed)");
 	return r;
 }
 

@@ -54,13 +54,13 @@ class C4AulFunc
 	unsigned int iRefCnt;
 
 public:
-	C4AulFunc(C4AulScript *pOwner, const char *pName);
+	C4AulFunc(C4PropListStatic * Parent, const char *pName);
 
 	// Add/Remove Reference
 	void IncRef() { iRefCnt++; }
 	void DecRef() { if (!--iRefCnt) delete this;  }
 
-	C4AulScript *Owner; // owner
+	const C4PropListStatic * Parent;
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
 	virtual StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
 

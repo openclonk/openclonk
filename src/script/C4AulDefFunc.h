@@ -208,10 +208,10 @@ template <> struct C4ValueConv<int> : public C4ValueConv<int32_t> { };
 class C4AulDefFuncHelper: public C4AulFunc
 {
 public:
-	C4AulDefFuncHelper(C4AulScript *pOwner, const char *pName, bool Public,
+	C4AulDefFuncHelper(C4PropListStatic * Parent, const char *pName, bool Public,
 	                   C4V_Type pt0 = C4V_Any, C4V_Type pt1 = C4V_Any, C4V_Type pt2 = C4V_Any, C4V_Type pt3 = C4V_Any, C4V_Type pt4 = C4V_Any,
 	                   C4V_Type pt5 = C4V_Any, C4V_Type pt6 = C4V_Any, C4V_Type pt7 = C4V_Any, C4V_Type pt8 = C4V_Any, C4V_Type pt9 = C4V_Any):
-			C4AulFunc(pOwner, pName),
+			C4AulFunc(Parent, pName),
 			Public(Public)
 	{
 		ParType[0] = pt0;
@@ -224,7 +224,7 @@ public:
 		ParType[7] = pt7;
 		ParType[8] = pt8;
 		ParType[9] = pt9;
-		Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+		Parent->SetPropertyByS(Name, C4VFunction(this));
 	}
 	~C4AulDefFuncHelper()
 	{
@@ -272,8 +272,8 @@ public C4AulDefFuncHelper {                   \
     virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
-    C4AulDefFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
-      C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
+    C4AulDefFunc##N(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public): \
+      C4AulDefFuncHelper(Parent, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
     virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { return C4ValueConv<RType>::ToC4V(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
@@ -290,8 +290,8 @@ public C4AulDefFuncHelper {                   \
     virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
-    C4AulDefObjectFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
-      C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
+    C4AulDefObjectFunc##N(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public): \
+      C4AulDefFuncHelper(Parent, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
     virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { \
@@ -304,12 +304,12 @@ public C4AulDefFuncHelper {                   \
 template <typename RType LIST(N, TYPENAMES)>  \
 inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList * LIST(N, PARS)), bool Public=true) \
   { \
-  new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
+  new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner->GetPropList(), Name, pFunc, Public); \
   } \
 template <typename RType LIST(N, TYPENAMES)> \
 inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object * LIST(N, PARS)), bool Public=true) \
   { \
-  new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
+  new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner->GetPropList(), Name, pFunc, Public); \
   }
 
 TEMPLATE(0)
@@ -361,7 +361,7 @@ class C4AulDefFunc : C4AulFunc
 public:
 	C4ScriptFnDef* Def;
 
-	C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef);
+	C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef);
 	~C4AulDefFunc();
 
 	virtual bool GetPublic() const { return !!Def->Public; }
