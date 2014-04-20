@@ -30,7 +30,7 @@
         <code>func SetLeagueProgressScore(int plr, int new_progress)
 {
 	// Safety: Valid players only
-	plrid = <funclink>GetPlayerID</funclink>(plr);
+	var plrid = <funclink>GetPlayerID</funclink>(plr);
 	if (!plrid) return;
 	// Progress must be between 0 and 25
 	new_progress = <funclink>BoundBy</funclink>(new_progress, 0, 25);
@@ -38,7 +38,7 @@
 	var progress_string = <funclink>GetLeagueProgressData</funclink>(plrid);
 	if (progress_string &amp;&amp; <funclink>GetLength</funclink>(progress_string))
 	{
-		var old_progress = <funclink>GetChar</funclink>(progress)-<funclink>GetChar</funclink>("A");
+		var old_progress = <funclink>GetChar</funclink>(progress_string)-<funclink>GetChar</funclink>("A");
 		// If old progress was better than new progress, keep old progress
 		new_progress = <funclink>Max</funclink>(old_progress, new_progress);
 	}
