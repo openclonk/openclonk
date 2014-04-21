@@ -1,4 +1,8 @@
-/* Ruby cave */
+/** 
+	Ruby cave
+
+	@author Sven2	
+*/
 
 func Initialize()
 {

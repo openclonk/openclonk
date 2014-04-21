@@ -1,4 +1,8 @@
-/* Ruby cave - by Sven2 */
+/**
+	Ruby cave
+	
+	@author Sven2
+*/
 
 overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
 overlay GraniteBorders {turbulence=100; mat=Granite; loosebounds=1; VaryTex {mat=Rock; tex=rock_cracked; a=1;};};

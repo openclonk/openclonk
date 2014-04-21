@@ -4,7 +4,7 @@
 	and some smaller islands which also have gem stalactites hanging from the bottom. Each of the smaller islands
 	have different materials.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 #include Library_Map

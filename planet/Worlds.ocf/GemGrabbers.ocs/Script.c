@@ -9,7 +9,7 @@
 	* Some other hurdles.
 	* Decoration on all the islands.
 		
-	@authors Maikel
+	@author Maikel
 */
 
 

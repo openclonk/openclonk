@@ -2,7 +2,7 @@
 	Iron Peak
 	A chilly mountain peak filled with iron ore and coal.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 
@@ -29,9 +29,6 @@ protected func Initialize()
 	// Cover the mountain in some snow already.
 	GiveMountainSnowCover();
 	
-	// Bottom of the map should only be open at the sides.
-	CloseMapBottom();
-	
 	// Add a snow storm effect, strong winds and lot's of snow.
 	AddEffect("SnowStorm", nil, 100, 5, nil);
 	
@@ -43,27 +40,26 @@ protected func Initialize()
 	// TODO: Make sure lorry stays on mountains.
 	
 	// Place some coniferous trees, but only up to 2/3 of the mountain.
-	Tree_Coniferous->Place(16+Random(5), Rectangle(0,LandscapeHeight()/3, LandscapeWidth(), 2*LandscapeHeight()/3));
+	Tree_Coniferous->Place(16 + Random(5), Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), 2 * LandscapeHeight() / 3));
 		
 	// Some mushrooms as source of food.
-	Mushroom->Place(30+Random(10));
+	Mushroom->Place(30 + Random(10));
 		
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(60*22);
+	time->SetTime(60 * 22);
 	time->SetCycleSpeed(0);
 	
 	// A light blue hue, to indicate the cold climate.
 	var blue = 12;
-	SetGamma(RGB(0,0,blue), RGB(128-blue,128-blue,128+blue), RGB(255-blue,255-blue,255));
+	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
 	
 	// Some natural disasters. 
 	// Earthquake->SetChance(30);
 	// TODO: Rockfall.
-	
-	//LogMatCounts();
+
 	return;
 }
 
@@ -91,16 +87,6 @@ private func FindMountainLocation()
 	return;
 }
 
-private func LogMatCounts()
-{
-	for (var i = 0; i < 128; i++)
-	{
-		if (GetMaterialCount(i) > 0)
-			Log("Material %s has %d count.", MaterialName(i), GetMaterialCount(i) / 100);
-	}
-	return;
-}
-
 private func GiveMountainSnowCover()
 {
 	// Loop over the map horizontally.
@@ -113,15 +99,6 @@ private func GiveMountainSnowCover()
 		if (y < 9 * LandscapeHeight() / 10)
 			CastPXS("Snow", 10 + Random(50), 40, x, y - 40, 180, 40);
 	}
-	return;
-}
-
-private func CloseMapBottom()
-{
-	var y = LandscapeHeight() - 1;
-	for (var x = 0; x < LandscapeWidth(); x++)
-		if (!GBackSky(x, y))
-			DrawMaterialQuad("Brick", x, y-1, x, y+1, x-1, y+1, x-1, y-1, true);
 	return;
 }
 
@@ -174,7 +151,18 @@ protected func InitializePlayer(int plr)
 		}
 		index++;
 	}
-	SetPlayerZoomByViewRange(plr, 5000, 3500, PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_LimitMax);
 	return;
 }
 
+/*-- Some helper functions --*/
+
+global func LogMatCounts()
+{
+	for (var i = 0; i < 128; i++)
+	{
+		if (GetMaterialCount(i) > 0)
+			Log("Material %s has %d count.", MaterialName(i), GetMaterialCount(i) / 100);
+	}
+	return;
+}
