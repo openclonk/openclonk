@@ -60,7 +60,7 @@ protected func FxLightningMoveTimer()
 	{
 		if (obj && !obj->~LightningStrike(3 + strength / 10))
 		{
-			if (GetOCF() & OCF_Alive)
+			if (obj->GetOCF() & OCF_Alive)
 				Punch(obj, 3 + strength / 10);
 			else
 				// Todo: Lightning strikes may have controllers? Pass them for kill tracing.
