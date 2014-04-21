@@ -64,40 +64,39 @@ unset(OC_BUILD_MULTIPROCESSOR CACHE)
 # Check for compiler quirks and features
 ############################################################################
 include(CheckCXXCompilerFlag)
-if(CMAKE_COMPILER_IS_GNUCXX)
-	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
-	if(USE_GCC_STD_0X)
-		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
+include(CheckCXXSourceCompiles)
+include(RequireCXXSourceCompiles)
+
+CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
+if(USE_GCC_STD_0X)
+	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 endif()
 
-# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
-include(CheckCXXSourceCompiles)
+# Convert the OC_CXX_FLAGS list to a CMAKE_REQUIRED_FLAGS string
 foreach(FLAG ${OC_CXX_FLAGS})
 	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
 endforeach()
 
-# ck 10-09-04: Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
-# otherwise they are used for C library checks as well and the C compiler bails
-# out because it does not understand -std=gnu++0x
 set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
-include(RequireCXXSourceCompiles)
-if (NOT USE_APPLE_CLANG)
+
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
-endif()
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
-set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
-# g++'s libstdc++ doesn't properly support <regex> until 4.8.1 (maybe later?).
+# g++'s libstdc++ doesn't properly support <regex> until 4.9.
 # They ship a header that declares functions, but they don't ship an
 # implementation for some things (like std::regex_iterator).
 # This needs to test *linking*, not compilation; cmake does both at the same
 # time, so the test below works.
 CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
 CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
+
+# Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
+# otherwise they are used for C library checks as well and the C compiler bails
+# out because it does not understand -std=gnu++0x
+set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
 # We link Boost statically because that makes it easier for us to distribute
 # the resulting binary. Distributions have the ability to guarantee a certain
