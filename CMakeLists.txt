@@ -1519,14 +1519,12 @@ set(OC_C4GROUPS
 	Worlds.ocf
 )
 
-get_target_property(C4GROUP_LOCATION c4group LOCATION)
-get_target_property(CLONK_LOCATION openclonk LOCATION)
 foreach(group ${OC_C4GROUPS})
 	if (APPLE)
 		if (CMAKE_GENERATOR STREQUAL Xcode)
 			add_custom_command(TARGET openclonk
 				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"${C4GROUP_LOCATION}"
+				"$<TARGET_FILE:c4group>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				# leave out third parameter here so the script can figure out Xcode-ish paths as usual
 				DEPENDS c4group
@@ -1534,7 +1532,7 @@ foreach(group ${OC_C4GROUPS})
 		else()
 			add_custom_command(TARGET openclonk
 				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"${C4GROUP_LOCATION}"
+				"$<TARGET_FILE:c4group>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
 				DEPENDS c4group
@@ -1577,12 +1575,9 @@ endif()
 
 find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
-string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
-string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
-
 add_custom_command(
 	OUTPUT setup_openclonk.exe
-	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}${C4VERSIONBUILDNAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=${CLONK_LOCATION}" "-DC4GROUP=${C4GROUP_LOCATION}" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}${C4VERSIONBUILDNAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
 	MAIN_DEPENDENCY
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
 	DEPENDS
