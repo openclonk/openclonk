@@ -124,7 +124,7 @@ func OnTreasureCollected(object treasure)
 	return true;
 }
 
-static g_num_goldbars, g_game_finished;
+static g_num_goldbars;
 
 func OnGoldBarCollected(object collecter)
 {
@@ -138,7 +138,6 @@ func OnGoldBarCollected(object collecter)
 func OnGameOver()
 {
 	// Treasure was collected!
-	g_game_finished = true;
 	UpdateLeagueScores();
 	return true;
 }
@@ -146,7 +145,9 @@ func OnGameOver()
 func UpdateLeagueScores()
 {
 	// +50 for finishing and +5 for every gold bar
-	return SetLeagueProgressScore(g_num_goldbars, g_num_goldbars * 5 + g_game_finished * 50);
+	var goal = FindObject(Find_ID(Goal_TreasureHunt));
+	var goal_finished = (goal && goal->IsFulfilled());
+	return SetLeagueProgressScore(g_num_goldbars, g_num_goldbars * 5 + goal_finished * 50);
 }
 
 func OnInvincibleDamage(object damaged_target)

@@ -25,7 +25,7 @@ Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1
 
 [Landscape]
 Sky=Clouds2
-TopOpen=0
+TopOpen=2
 MapWidth=200,0,64,10000
 MapHeight=200,0,40,10000
 NoScan=true
