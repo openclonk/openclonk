@@ -27,9 +27,9 @@ public func GetDescription(int plr)
 public func Activate(int byplr)
 {
 	if (IsFulfilled())
-		ToggleGoalMessage("$MsgGoalFulfilled$", byplr);
+		ToggleGoalMessage(Format("$MsgGoalFulfilled$|$MsgSideGoal$", g_num_goldbars, MAX_GOLD_BARS), byplr);
 	else
-		ToggleGoalMessage("$MsgGoalUnFulfilled$", byplr);
+		ToggleGoalMessage(Format("$MsgGoalUnFulfilled$|$MsgSideGoal$", g_num_goldbars, MAX_GOLD_BARS), byplr);
 	return;
 }
 

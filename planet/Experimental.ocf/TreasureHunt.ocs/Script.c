@@ -125,13 +125,13 @@ func OnTreasureCollected(object treasure)
 }
 
 static g_num_goldbars;
+static const MAX_GOLD_BARS = 20;
 
 func OnGoldBarCollected(object collecter)
 {
 	++g_num_goldbars;
 	UpdateLeagueScores();
-	var max_gold_bars = 20;
-	DialogueSimple->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, max_gold_bars), collecter);
+	DialogueSimple->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, MAX_GOLD_BARS), collecter);
 	return true;
 }
 

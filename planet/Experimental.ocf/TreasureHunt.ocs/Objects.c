@@ -11,13 +11,13 @@ func InitializeObjects()
 	CreateObject(Grass, 1585, 486);
 	CreateObject(Grass, 1739, 430);
 
-	var Chest0010 = CreateObject(Chest, 1002, 313);
-	Chest0010.Plane = 50;
+	var Column0010 = CreateObject(Column, 779, 591);
+	Column0010->SetClrModulation(0xffffd0d0);
+	Column0010->SetMeshMaterial("AncientColumn", 0);
+	Column0010.Plane = 50;
 
-	var Column0009 = CreateObject(Column, 779, 591);
-	Column0009->SetClrModulation(0xffffd0d0);
-	Column0009->SetMeshMaterial("AncientColumn", 0);
-	Column0009.Plane = 50;
+	var Chest0009 = CreateObject(Chest, 1002, 313);
+	Chest0009.Plane = 50;
 
 	CreateObject(Goal_TreasureHunt, 0, 0);
 
@@ -59,7 +59,7 @@ func InitializeObjects()
 	CreateObject(EnvPack_Rail, 564, 354);
 	CreateObject(EnvPack_Rail, 616, 356);
 	CreateObject(EnvPack_Rail, 633, 354);
-	CreateObject(EnvPack_Rail, 549, 353);
+	CreateObject(EnvPack_Rail, 554, 353);
 
 	CreateObject(EnvPack_WineBarrel, 627, 455);
 
@@ -105,7 +105,7 @@ func InitializeObjects()
 	CreateObject(BigRock, 1207, 282);
 	CreateObject(BigRock, 1291, 263);
 
-	var Amethyst0101 = CreateObject(Amethyst, 803, 582);
+	var Amethyst0101 = CreateObject(Amethyst, 803, 583);
 	Amethyst0101.Plane = 190;
 
 	var Chest0103 = CreateObject(Chest, 515, 966);
@@ -164,124 +164,124 @@ func InitializeObjects()
 	var StoneDoor0139 = CreateObject(StoneDoor, 781, 735);
 	StoneDoor0139->SetComDir(COMD_Down);
 	StoneDoor0139->SetClrModulation(0xffa0a0a0);
-	var StoneDoor0140 = CreateObject(StoneDoor, 692, 735);
+	var StoneDoor0140 = CreateObject(StoneDoor, 692, 767);
 	StoneDoor0140->SetComDir(COMD_Down);
 	StoneDoor0140->MakeInvincible();
-	var StoneDoor0445 = CreateObject(StoneDoor, 684, 350);
-	StoneDoor0445->SetComDir(COMD_Down);
-	StoneDoor0445->MakeInvincible();
+	var StoneDoor0142 = CreateObject(StoneDoor, 684, 350);
+	StoneDoor0142->SetComDir(COMD_Down);
+	StoneDoor0142->MakeInvincible();
 
-	var SpinWheel0142 = CreateObject(SpinWheel, 589, 457);
-	SpinWheel0142->SetMeshMaterial("SpinWheelGearRed", 0);
-	SpinWheel0142->SetStoneDoor(StoneDoor0123);
-	var SpinWheel0143 = CreateObject(SpinWheel, 611, 456);
-	SpinWheel0143->SetMeshMaterial("SpinWheelGearBlue", 0);
-	SpinWheel0143->SetStoneDoor(StoneDoor0125);
-	var SpinWheel0144 = CreateObject(SpinWheel, 619, 410);
-	SpinWheel0144->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel0144->SetStoneDoor(StoneDoor0127);
-	var SpinWheel0145 = CreateObject(SpinWheel, 1223, 1553);
-	SpinWheel0145->SetStoneDoor(StoneDoor0131);
-	var SpinWheel0146 = CreateObject(SpinWheel, 1117, 1048);
-	SpinWheel0146->SetStoneDoor(StoneDoor0133);
-	var SpinWheel0147 = CreateObject(SpinWheel, 2761, 690);
-	SpinWheel0147->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel0147->SetStoneDoor(StoneDoor0137);
-	var SpinWheel0148 = CreateObject(SpinWheel, 1850, 1463);
-	SpinWheel0148->SetMeshMaterial("SpinWheelGearRed", 0);
-	SpinWheel0148->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel0148->SetStoneDoor(StoneDoor0129);
-	var SpinWheel0149 = CreateObject(SpinWheel, 2793, 1521);
-	SpinWheel0149->SetMeshMaterial("SpinWheelGearRed", 0);
+	var SpinWheel0144 = CreateObject(SpinWheel, 589, 457);
+	SpinWheel0144->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel0144->SetStoneDoor(StoneDoor0123);
+	var SpinWheel0145 = CreateObject(SpinWheel, 611, 456);
+	SpinWheel0145->SetMeshMaterial("SpinWheelGearBlue", 0);
+	SpinWheel0145->SetStoneDoor(StoneDoor0125);
+	var SpinWheel0146 = CreateObject(SpinWheel, 619, 410);
+	SpinWheel0146->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel0146->SetStoneDoor(StoneDoor0127);
+	var SpinWheel0147 = CreateObject(SpinWheel, 1223, 1553);
+	SpinWheel0147->SetStoneDoor(StoneDoor0131);
+	var SpinWheel0148 = CreateObject(SpinWheel, 1117, 1048);
+	SpinWheel0148->SetStoneDoor(StoneDoor0133);
+	var SpinWheel0149 = CreateObject(SpinWheel, 2761, 690);
 	SpinWheel0149->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel0149->SetStoneDoor(StoneDoor0135);
-	var SpinWheel0150 = CreateObject(SpinWheel, 830, 735);
-	SpinWheel0150->SetStoneDoor(StoneDoor0140);
-	var SpinWheel0480 = CreateObject(SpinWheel, 703, 352);
-	SpinWheel0480->SetMeshMaterial("SpinWheelBaseAlt", 1);
-	SpinWheel0480->SetStoneDoor(StoneDoor0445);
+	SpinWheel0149->SetStoneDoor(StoneDoor0137);
+	var SpinWheel0150 = CreateObject(SpinWheel, 1850, 1463);
+	SpinWheel0150->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel0150->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel0150->SetStoneDoor(StoneDoor0129);
+	var SpinWheel0151 = CreateObject(SpinWheel, 2793, 1521);
+	SpinWheel0151->SetMeshMaterial("SpinWheelGearRed", 0);
+	SpinWheel0151->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel0151->SetStoneDoor(StoneDoor0135);
+	var SpinWheel0152 = CreateObject(SpinWheel, 830, 735);
+	SpinWheel0152->SetStoneDoor(StoneDoor0140);
+	var SpinWheel0153 = CreateObject(SpinWheel, 703, 352);
+	SpinWheel0153->SetMeshMaterial("SpinWheelBaseAlt", 1);
+	SpinWheel0153->SetStoneDoor(StoneDoor0142);
 
 	CreateObject(Pump, 1027, 1152);
 
 	CreateObject(Sawmill, 1259, 1047);
 
-	var ToolsWorkshop0155 = CreateObject(ToolsWorkshop, 1169, 903);
+	var ToolsWorkshop0158 = CreateObject(ToolsWorkshop, 1169, 903);
 
-	var Column0157 = CreateObject(Column, 779, 488);
-	Column0157->SetR(180);
-	Column0157->SetClrModulation(0xffffd0d0);
-	Column0157->SetMeshMaterial("AncientColumn", 0);
-	Column0157->SetPosition(779, 488);
-	var Column0158 = CreateObject(Column, 1419, 217);
-	Column0158->SetMeshMaterial("AncientColumn", 0);
+	var Column0160 = CreateObject(Column, 779, 488);
+	Column0160->SetR(180);
+	Column0160->SetClrModulation(0xffffd0d0);
+	Column0160->SetMeshMaterial("AncientColumn", 0);
+	Column0160->SetPosition(779, 488);
+	var Column0161 = CreateObject(Column, 1419, 217);
+	Column0161->SetMeshMaterial("AncientColumn", 0);
 	CreateObject(Column, 1386, 616);
 
 	CreateObject(Ruin_Windmill, 1672, 377);
 
 	CreateObject(Ruin_WoodenCabin, 1199, 1046);
 
-	var Idol0162 = CreateObject(Idol, 1045, 721);
-	Idol0162->SetMeshMaterial("IdolGrayColor", 0);
+	var Idol0165 = CreateObject(Idol, 1045, 721);
+	Idol0165->SetMeshMaterial("IdolGrayColor", 0);
 
-	var LotsOfCoins0163 = CreateObject(LotsOfCoins, 805, 592);
-	LotsOfCoins0163.Plane = 200;
+	var LotsOfCoins0166 = CreateObject(LotsOfCoins, 805, 592);
+	LotsOfCoins0166.Plane = 200;
 
-	var Idol0164 = CreateObject(Idol, 824, 583);
-	Idol0164->SetR(-4);
-	Idol0164.Plane = 220;
-	Idol0164->SetPosition(824, 568);
+	var Idol0167 = CreateObject(Idol, 824, 583);
+	Idol0167->SetR(-4);
+	Idol0167.Plane = 220;
+	Idol0167->SetPosition(824, 568);
 
-	var Lorry0165 = CreateObject(Lorry, 200, 1183);
-	var Lorry0167 = CreateObject(Lorry, 708, 1407);
-	Lorry0167->SetMeshMaterial("RuinedLorry", 0);
+	var Lorry0168 = CreateObject(Lorry, 200, 1183);
+	var Lorry0170 = CreateObject(Lorry, 708, 1407);
+	Lorry0170->SetMeshMaterial("RuinedLorry", 0);
 
-	var Catapult0169 = CreateObject(Catapult, 1714, 951);
-	Catapult0169->SetRDir(-2);
+	var Catapult0172 = CreateObject(Catapult, 1714, 951);
+	Catapult0172->SetRDir(-2);
 
 	CreateObject(StrawMan, 1924, 439);
 	CreateObject(StrawMan, 2642, 705);
 
-	var Clonk0172 = CreateObject(Clonk, 316, 430);
-	Clonk0172->SetColor(0xff);
-	S2AI->AddAI(Clonk0172);
-	S2AI->SetHome(Clonk0172, 315, 422, DIR_Left);
-	S2AI->SetGuardRange(Clonk0172, 296, 322, 350, 140);
-	S2AI->SetEncounterCB(Clonk0172, "EncounterCastle");
-	Clonk0172->SetDir(DIR_Left);
-	var Clonk0179 = CreateObject(Clonk, 501, 455);
-	Clonk0179->SetDir(DIR_Right);
-	Clonk0179->SetColor(0xff);
-	S2AI->AddAI(Clonk0179);
-	S2AI->SetHome(Clonk0179, 502, 445, DIR_Right);
-	S2AI->SetGuardRange(Clonk0179, 460, 300, 200, 160);
-	S2AI->SetMaxAggroDistance(Clonk0179, 60);
-	var Clonk0186 = CreateObject(Clonk, 534, 454);
-	Clonk0186->SetDir(DIR_Right);
-	Clonk0186->SetColor(0xff);
-	S2AI->AddAI(Clonk0186);
-	S2AI->SetHome(Clonk0186, 534, 446, DIR_Right);
-	S2AI->SetGuardRange(Clonk0186, 460, 300, 200, 160);
-	S2AI->SetMaxAggroDistance(Clonk0186, 60);
-	var Clonk0193 = CreateObject(Clonk, 671, 638);
-	Clonk0193->SetDir(DIR_Right);
-	Clonk0193->SetCon(150);
-	Clonk0193->SetColor(0xffffa000);
-	S2AI->AddAI(Clonk0193);
-	S2AI->SetHome(Clonk0193, 671, 629, DIR_Right);
-	S2AI->SetGuardRange(Clonk0193, 580, 480, 320, 175);
-	S2AI->SetEncounterCB(Clonk0193, "EncounterFinal");
+	var Clonk0175 = CreateObject(Clonk, 316, 430);
+	Clonk0175->SetColor(0xff);
+	S2AI->AddAI(Clonk0175);
+	S2AI->SetHome(Clonk0175, 315, 422, DIR_Left);
+	S2AI->SetGuardRange(Clonk0175, 296, 322, 350, 140);
+	S2AI->SetEncounterCB(Clonk0175, "EncounterCastle");
+	Clonk0175->SetDir(DIR_Left);
+	var Clonk0182 = CreateObject(Clonk, 501, 455);
+	Clonk0182->SetDir(DIR_Right);
+	Clonk0182->SetColor(0xff);
+	S2AI->AddAI(Clonk0182);
+	S2AI->SetHome(Clonk0182, 502, 445, DIR_Right);
+	S2AI->SetGuardRange(Clonk0182, 460, 300, 200, 160);
+	S2AI->SetMaxAggroDistance(Clonk0182, 60);
+	var Clonk0189 = CreateObject(Clonk, 534, 454);
+	Clonk0189->SetDir(DIR_Right);
+	Clonk0189->SetColor(0xff);
+	S2AI->AddAI(Clonk0189);
+	S2AI->SetHome(Clonk0189, 534, 446, DIR_Right);
+	S2AI->SetGuardRange(Clonk0189, 460, 300, 200, 160);
+	S2AI->SetMaxAggroDistance(Clonk0189, 60);
+	var Clonk0196 = CreateObject(Clonk, 671, 638);
+	Clonk0196->SetDir(DIR_Right);
+	Clonk0196->SetCon(150);
+	Clonk0196->SetColor(0xffffa000);
+	S2AI->AddAI(Clonk0196);
+	S2AI->SetHome(Clonk0196, 671, 629, DIR_Right);
+	S2AI->SetGuardRange(Clonk0196, 580, 480, 320, 175);
+	S2AI->SetEncounterCB(Clonk0196, "EncounterFinal");
 
 	CreateObject(Skull, 53, 1138);
 
-	var Bone0201 = CreateObject(Bone, 35, 1135);
-	Bone0201->SetR(-45);
-	Bone0201->SetPosition(35, 1135);
+	var Bone0204 = CreateObject(Bone, 35, 1135);
+	Bone0204->SetR(-45);
+	Bone0204->SetPosition(35, 1135);
 	CreateObject(Bone, 46, 1138);
 
-	Lorry0165->CreateContents(Loam);
-	Lorry0165->CreateContents(Loam);
-	Lorry0165->CreateContents(Loam);
-	Lorry0165->CreateContents(Loam);
+	Lorry0168->CreateContents(Loam);
+	Lorry0168->CreateContents(Loam);
+	Lorry0168->CreateContents(Loam);
+	Lorry0168->CreateContents(Loam);
 	CreateObject(Loam, 153, 1235);
 	CreateObject(Loam, 357, 1320);
 	CreateObject(Loam, 265, 1454);
@@ -301,61 +301,61 @@ func InitializeObjects()
 	CreateObject(Loam, 1578, 527);
 	CreateObject(Loam, 1746, 459);
 
-	var Metal0225 = CreateObject(Metal, 1922, 978);
-	Metal0225->SetR(20);
-	Metal0225->SetPosition(1922, 976);
+	var Metal0228 = CreateObject(Metal, 1922, 978);
+	Metal0228->SetR(20);
+	Metal0228->SetPosition(1922, 976);
 
-	var Nugget0226 = CreateObject(Nugget, 812, 590);
-	Nugget0226->SetClrModulation(0xffffd0a0);
-	CreateObject(Nugget, 869, 583);
-	var Nugget0228 = CreateObject(Nugget, 853, 584);
-	Nugget0228->SetClrModulation(0xffffd0a0);
-	var Nugget0229 = CreateObject(Nugget, 823, 584);
+	var Nugget0229 = CreateObject(Nugget, 812, 590);
 	Nugget0229->SetClrModulation(0xffffd0a0);
+	CreateObject(Nugget, 869, 583);
+	var Nugget0231 = CreateObject(Nugget, 853, 584);
+	Nugget0231->SetClrModulation(0xffffd0a0);
+	var Nugget0232 = CreateObject(Nugget, 823, 584);
+	Nugget0232->SetClrModulation(0xffffd0a0);
 
 	Chest0108->CreateContents(GoldBar);
 	Chest0112->CreateContents(GoldBar);
 	Chest0111->CreateContents(GoldBar);
 	Chest0110->CreateContents(GoldBar);
-	Lorry0167->CreateContents(GoldBar);
+	Lorry0170->CreateContents(GoldBar);
 	Chest0109->CreateContents(GoldBar);
 	Chest0114->CreateContents(GoldBar);
 	Chest0115->CreateContents(GoldBar);
 	Chest0116->CreateContents(GoldBar);
-	var GoldBar0239 = Chest0010->CreateContents(GoldBar);
-	GoldBar0239->SetR(-1);
+	var GoldBar0242 = Chest0009->CreateContents(GoldBar);
+	GoldBar0242->SetR(-1);
 	Chest0119->CreateContents(GoldBar);
-	var GoldBar0241 = Chest0118->CreateContents(GoldBar);
-	GoldBar0241->SetR(-97);
-	var GoldBar0242 = Chest0121->CreateContents(GoldBar);
-	GoldBar0242->SetClrModulation(0xffffd0a0);
-	GoldBar0242->SetR(-29);
-	var GoldBar0243 = CreateObject(GoldBar, 880, 542);
-	GoldBar0243->SetR(-29);
-	GoldBar0243->SetClrModulation(0xffffd0a0);
-	GoldBar0243->SetPosition(880, 540);
-	ToolsWorkshop0155->CreateContents(GoldBar);
+	var GoldBar0244 = Chest0118->CreateContents(GoldBar);
+	GoldBar0244->SetR(-97);
+	var GoldBar0245 = Chest0121->CreateContents(GoldBar);
+	GoldBar0245->SetClrModulation(0xffffd0a0);
+	GoldBar0245->SetR(-29);
+	var GoldBar0246 = CreateObject(GoldBar, 880, 542);
+	GoldBar0246->SetR(-29);
+	GoldBar0246->SetClrModulation(0xffffd0a0);
+	GoldBar0246->SetPosition(880, 540);
+	ToolsWorkshop0158->CreateContents(GoldBar);
 	CreateObject(GoldBar, 72, 1463);
 	CreateObject(GoldBar, 2746, 736);
 	CreateObject(GoldBar, 2507, 1262);
 	Chest0122->CreateContents(GoldBar);
-	var GoldBar0249 = CreateObject(GoldBar, 972, 1280);
-	GoldBar0249->SetR(55);
-	GoldBar0249->SetPosition(972, 1277);
+	var GoldBar0252 = CreateObject(GoldBar, 972, 1280);
+	GoldBar0252->SetR(55);
+	GoldBar0252->SetPosition(972, 1277);
 
 	CreateObject(Ruby, 864, 585);
 	CreateObject(Ruby, 806, 587);
 	CreateObject(Ruby, 849, 581);
 	CreateObject(Ruby, 856, 588);
 
-	var Amethyst0258 = CreateObject(Amethyst, 793, 587);
-	Amethyst0258->SetR(21);
-	Amethyst0258->SetPosition(793, 583);
+	var Amethyst0261 = CreateObject(Amethyst, 793, 587);
+	Amethyst0261->SetR(21);
+	Amethyst0261->SetPosition(793, 583);
 	CreateObject(Amethyst, 885, 561);
 	CreateObject(Amethyst, 828, 585);
 
-	Lorry0165->CreateContents(Dynamite);
-	Lorry0165->CreateContents(Dynamite);
+	Lorry0168->CreateContents(Dynamite);
+	Lorry0168->CreateContents(Dynamite);
 	Chest0109->CreateContents(Dynamite);
 	Chest0109->CreateContents(Dynamite);
 	Chest0109->CreateContents(Dynamite);
@@ -372,21 +372,12 @@ func InitializeObjects()
 	Chest0114->CreateContents(Dynamite);
 	Chest0114->CreateContents(Dynamite);
 
-	var Bow0281 = Clonk0172->CreateContents(Bow);
+	var Bow0284 = Clonk0175->CreateContents(Bow);
 
-	var Arrow0282 = Bow0281->CreateContents(Arrow);
-	Arrow0282->SetR(90);
-	var Arrow0283 = Clonk0172->CreateContents(Arrow);
-	Arrow0283->SetR(90);
-	var Arrow0284 = CreateObject(Arrow, 313, 431);
-	Arrow0284->SetR(90);
-	Arrow0284->SetPosition(313, 431);
-	var Arrow0285 = CreateObject(Arrow, 313, 431);
+	var Arrow0285 = Bow0284->CreateContents(Arrow);
 	Arrow0285->SetR(90);
-	Arrow0285->SetPosition(313, 431);
-	var Arrow0286 = CreateObject(Arrow, 313, 431);
+	var Arrow0286 = Clonk0175->CreateContents(Arrow);
 	Arrow0286->SetR(90);
-	Arrow0286->SetPosition(313, 431);
 	var Arrow0287 = CreateObject(Arrow, 313, 431);
 	Arrow0287->SetR(90);
 	Arrow0287->SetPosition(313, 431);
@@ -405,12 +396,21 @@ func InitializeObjects()
 	var Arrow0292 = CreateObject(Arrow, 313, 431);
 	Arrow0292->SetR(90);
 	Arrow0292->SetPosition(313, 431);
+	var Arrow0293 = CreateObject(Arrow, 313, 431);
+	Arrow0293->SetR(90);
+	Arrow0293->SetPosition(313, 431);
+	var Arrow0294 = CreateObject(Arrow, 313, 431);
+	Arrow0294->SetR(90);
+	Arrow0294->SetPosition(313, 431);
+	var Arrow0295 = CreateObject(Arrow, 313, 431);
+	Arrow0295->SetR(90);
+	Arrow0295->SetPosition(313, 431);
 
 	Chest0107->CreateContents(Bread);
 	Chest0107->CreateContents(Bread);
-	Lorry0167->CreateContents(Bread);
-	Lorry0167->CreateContents(Bread);
-	Lorry0167->CreateContents(Bread);
+	Lorry0170->CreateContents(Bread);
+	Lorry0170->CreateContents(Bread);
+	Lorry0170->CreateContents(Bread);
 
 	Chest0107->CreateContents(DynamiteBox);
 	Chest0107->CreateContents(DynamiteBox);
@@ -422,52 +422,52 @@ func InitializeObjects()
 	Chest0115->CreateContents(DynamiteBox);
 	Chest0121->CreateContents(DynamiteBox);
 
-	Clonk0186->CreateContents(Sword);
-	Clonk0179->CreateContents(Sword);
+	Clonk0189->CreateContents(Sword);
+	Clonk0182->CreateContents(Sword);
 	Chest0109->CreateContents(Sword);
-	Clonk0193->CreateContents(Sword);
-	Clonk0193->CreateContents(Sword);
+	Clonk0196->CreateContents(Sword);
+	Clonk0196->CreateContents(Sword);
 
-	var Seaweed0311 = CreateObject(Seaweed, 2494, 1263);
-	Seaweed0311->SetPhase(55);
-	var Seaweed0314 = CreateObject(Seaweed, 2508, 1263);
-	Seaweed0314->SetPhase(47);
-	var Seaweed0317 = CreateObject(Seaweed, 2520, 1263);
-	Seaweed0317->SetPhase(24);
-	var Seaweed0320 = CreateObject(Seaweed, 2508, 1263);
-	Seaweed0320->SetPhase(24);
-	var Seaweed0323 = CreateObject(Seaweed, 2503, 1263);
-	Seaweed0323->SetPhase(50);
-	var Seaweed0326 = CreateObject(Seaweed, 2526, 1262);
-	Seaweed0326->SetPhase(50);
-	var Seaweed0329 = CreateObject(Seaweed, 2514, 1262);
-	Seaweed0329->SetPhase(50);
-	var Seaweed0332 = CreateObject(Seaweed, 2499, 1263);
-	Seaweed0332->SetPhase(50);
-	var Seaweed0335 = CreateObject(Seaweed, 2663, 1278);
-	Seaweed0335->SetPhase(53);
-	var Seaweed0338 = CreateObject(Seaweed, 2769, 1272);
-	Seaweed0338->SetPhase(53);
-	var Seaweed0341 = CreateObject(Seaweed, 2751, 1279);
-	Seaweed0341->SetPhase(53);
-	var Seaweed0344 = CreateObject(Seaweed, 2762, 1271);
-	Seaweed0344->SetPhase(53);
-	var Seaweed0347 = CreateObject(Seaweed, 2775, 1279);
-	Seaweed0347->SetPhase(53);
-	var Seaweed0350 = CreateObject(Seaweed, 2762, 1271);
-	Seaweed0350->SetPhase(53);
-	var Seaweed0353 = CreateObject(Seaweed, 2661, 1278);
-	Seaweed0353->SetPhase(53);
-	var Seaweed0356 = CreateObject(Seaweed, 2416, 1245);
-	Seaweed0356->SetPhase(13);
-	var Seaweed0359 = CreateObject(Seaweed, 2395, 1239);
-	Seaweed0359->SetPhase(13);
-	var Seaweed0362 = CreateObject(Seaweed, 2396, 1239);
-	Seaweed0362->SetPhase(13);
-	var Seaweed0365 = CreateObject(Seaweed, 2332, 1145);
-	Seaweed0365->SetPhase(13);
-	var Seaweed0368 = CreateObject(Seaweed, 2407, 1246);
-	Seaweed0368->SetPhase(13);
+	var Seaweed0315 = CreateObject(Seaweed, 2494, 1263);
+	Seaweed0315->SetPhase(55);
+	var Seaweed0318 = CreateObject(Seaweed, 2508, 1263);
+	Seaweed0318->SetPhase(47);
+	var Seaweed0321 = CreateObject(Seaweed, 2520, 1263);
+	Seaweed0321->SetPhase(24);
+	var Seaweed0324 = CreateObject(Seaweed, 2508, 1263);
+	Seaweed0324->SetPhase(24);
+	var Seaweed0327 = CreateObject(Seaweed, 2503, 1263);
+	Seaweed0327->SetPhase(50);
+	var Seaweed0330 = CreateObject(Seaweed, 2526, 1262);
+	Seaweed0330->SetPhase(50);
+	var Seaweed0333 = CreateObject(Seaweed, 2514, 1262);
+	Seaweed0333->SetPhase(50);
+	var Seaweed0336 = CreateObject(Seaweed, 2499, 1263);
+	Seaweed0336->SetPhase(50);
+	var Seaweed0339 = CreateObject(Seaweed, 2663, 1278);
+	Seaweed0339->SetPhase(53);
+	var Seaweed0342 = CreateObject(Seaweed, 2769, 1272);
+	Seaweed0342->SetPhase(53);
+	var Seaweed0345 = CreateObject(Seaweed, 2751, 1279);
+	Seaweed0345->SetPhase(53);
+	var Seaweed0348 = CreateObject(Seaweed, 2762, 1271);
+	Seaweed0348->SetPhase(53);
+	var Seaweed0351 = CreateObject(Seaweed, 2775, 1279);
+	Seaweed0351->SetPhase(53);
+	var Seaweed0354 = CreateObject(Seaweed, 2762, 1271);
+	Seaweed0354->SetPhase(53);
+	var Seaweed0357 = CreateObject(Seaweed, 2661, 1278);
+	Seaweed0357->SetPhase(53);
+	var Seaweed0360 = CreateObject(Seaweed, 2416, 1245);
+	Seaweed0360->SetPhase(13);
+	var Seaweed0363 = CreateObject(Seaweed, 2395, 1239);
+	Seaweed0363->SetPhase(13);
+	var Seaweed0366 = CreateObject(Seaweed, 2396, 1239);
+	Seaweed0366->SetPhase(13);
+	var Seaweed0369 = CreateObject(Seaweed, 2332, 1145);
+	Seaweed0369->SetPhase(13);
+	var Seaweed0372 = CreateObject(Seaweed, 2407, 1246);
+	Seaweed0372->SetPhase(13);
 
 	CreateObject(Mushroom, 1580, 760);
 	CreateObject(Mushroom, 1613, 776);
@@ -480,18 +480,29 @@ func InitializeObjects()
 
 	CreateObject(Balloon, 491, 383);
 
-	var Barrel0404 = CreateObject(Barrel, 623, 456);
-	Barrel0404->SetColor(0xff000000);
+	var Barrel0408 = CreateObject(Barrel, 623, 456);
+	Barrel0408->SetColor(0xff000000);
 
 	CreateObject(Sproutberry, 1823, 488);
 	CreateObject(Sproutberry, 1823, 488);
 	CreateObject(Sproutberry, 1823, 488);
 
-	var LotsOfCoins0409 = CreateObject(LotsOfCoins, 838, 592);
-	LotsOfCoins0409.Plane = 500;
+	var LotsOfCoins0413 = CreateObject(LotsOfCoins, 838, 592);
+	LotsOfCoins0413.Plane = 500;
 
-	var GemOfPower0410 = CreateObject(GemOfPower, 825, 572);
-	GemOfPower0410->SetCategory(C4D_StaticBack);
+	var Boompack0448 = CreateObject(Boompack, 543, 383);
+	Boompack0448->SetColor(0xff);
+	var Boompack0468 = CreateObject(Boompack, 548, 384);
+	Boompack0468->SetColor(0xff);
+	var Boompack0470 = CreateObject(Boompack, 1948, 713);
+	Boompack0470->SetColor(0xff);
+	var Boompack0471 = CreateObject(Boompack, 1944, 487);
+	Boompack0471->SetR(135);
+	Boompack0471->SetColor(0xff);
+	Boompack0471->SetPosition(1944, 483);
+
+	var GemOfPower0414 = CreateObject(GemOfPower, 825, 572);
+	GemOfPower0414->SetCategory(C4D_StaticBack);
 
 	CreateObject(Firestone, 564, 1135);
 	CreateObject(Firestone, 552, 1135);
