@@ -223,7 +223,7 @@
       <row>
         <literal_col>TopOpen</literal_col>
         <col>Integer</col>
-        <col>0 or 1. Determines wether the top of the game world should be open.</col>
+        <col>0, 1 or 2. Determines wether the top of the game world should be open. Values analogous to BottomOpen.</col>
       </row>
       <row>
         <literal_col>LeftOpen</literal_col>
