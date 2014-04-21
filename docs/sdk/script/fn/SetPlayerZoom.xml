@@ -4,10 +4,10 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>SetPlayerZoomByViewRange</title>
+    <title>SetPlayerZoom</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>5.1 OC</version>
+    <version>5.5 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,13 +18,14 @@
         </param>
         <param>
           <type>int</type>
-          <name>range_x</name>
-          <desc>Horizontal range that should be covered by the zoom. Zero to use range_y only. If both range_x and range_y are zero, a default range is assumed for range_x.</desc>
+          <name>zoom</name>
+          <desc>New zoom factor. A factor of zero disables direct zoom definition and reverts to the default method of calculating zoom by view range.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>range_y</name>
-          <desc>Vertical range that should be covered by the zoom. Zero to use range_x only. If both range_x and range_y are nonzero, the number that yields the smaller zoom is used.</desc>
+          <name>precision</name>
+          <desc>Value by which zoom is divided to achieve fractional numbers.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
@@ -41,11 +42,11 @@
               </row>
               <row>
                 <literal_col>PLRZOOM_NoIncrease</literal_col>
-                <col>The new zoom ranges are only to be set if they are smaller than the current values.</col>
+                <col>The new zoom is only to be set if it is smaller than the current value.</col>
               </row>
               <row>
                 <literal_col>PLRZOOM_NoDecrease</literal_col>
-                <col>The new zoom ranges are only to be set if they are greater than the current values.</col>
+                <col>The new zoom is only to be set if it is greater than the current value.</col>
               </row>
               <row>
                 <literal_col>PLRZOOM_LimitMin</literal_col>
@@ -60,21 +61,21 @@
         </param>
       </params>
     </syntax>
-    <desc>Adjusts the zoom or zoom limit of all viewports of a player.</desc>
+    <desc>Changes zoom or zoom limits vor all viewports of a player to direct values.</desc>
+    <remark>Setting zoom to a direct value causes the game to look different depending on which screen resolution the player has configured. Use this function only if you want to achieve direct pixel correspondance between the game world and the screen, e.g. because your scenario provides low resolution graphics only or because your scenario should be played in certain screen resolutions only. Regular scenarios should use <funclink>SetPlayerZoomByViewRange</funclink> to achieve visuals whcih are independent of the player's monitor size.</remark>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
 {
-  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMin);
-  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMax);
+  SetPlayerZoom(plr, 1,1, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
   <funclink>SetPlayerViewLock</funclink>(plr, true);
   return true;
 }</code>
-        <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>
+        <text>Code for a scenario script: The zoom is fixed to 1, i.e. one landscape pixel corresponds to one pixel on the screen. Zooming in or out is not possible.</text>
       </example>
     </examples>
     <related>
-      <funclink>SetPlayerZoom</funclink>
+      <funclink>SetPlayerZoomByViewRange</funclink>
       <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>

@@ -111,6 +111,7 @@ public:
 	bool fFogOfWarInitialized; // No Save //
 	C4ObjectList FoWViewObjs; // No Save //
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
+	C4Fixed ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game
 	int32_t Wealth;
 	int32_t CurrentScore,InitialScore;
@@ -260,6 +261,9 @@ public:
 	void SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease);
 	void SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
 	void SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
+	void SetZoom(C4Fixed zoom, bool direct, bool no_increase, bool no_decrease);
+	void SetMinZoom(C4Fixed zoom, bool no_increase, bool no_decrease);
+	void SetMaxZoom(C4Fixed zoom, bool no_increase, bool no_decrease);
 	void ZoomToViewports(bool direct, bool no_increase=false, bool no_decrease=false);
 	void ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase=false, bool no_decrease=false);
 	void ZoomLimitsToViewports();
@@ -267,6 +271,7 @@ public:
 
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
+	bool AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease);
 };
 
 #endif

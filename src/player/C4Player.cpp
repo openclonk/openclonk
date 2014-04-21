@@ -931,6 +931,7 @@ void C4Player::Default()
 	NoEliminationCheck = false;
 	Evaluated = false;
 	ZoomLimitMinWdt=ZoomLimitMinHgt=ZoomLimitMaxWdt=ZoomLimitMaxHgt=ZoomWdt=ZoomHgt=0;
+	ZoomLimitMinVal=ZoomLimitMaxVal=ZoomVal=Fix0;
 	ViewLock = true;
 }
 
@@ -1146,6 +1147,9 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxHgt,     "ZoomLimitMaxHgt",      0));
 	pComp->Value(mkNamingAdapt(ZoomWdt,             "ZoomWdt",              0));
 	pComp->Value(mkNamingAdapt(ZoomHgt,             "ZoomHgt",              0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMinVal,     "ZoomLimitMinVal",      Fix0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMaxVal,     "ZoomLimitMaxVal",      Fix0));
+	pComp->Value(mkNamingAdapt(ZoomVal,             "ZoomVal",              Fix0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
@@ -1936,6 +1940,24 @@ void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool 
 	ZoomLimitsToViewports();
 }
 
+void C4Player::SetZoom(C4Fixed zoom, bool direct, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomVal, zoom, no_increase, no_decrease);
+	ZoomToViewports(direct, no_increase, no_decrease);
+}
+
+void C4Player::SetMinZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMinVal, zoom, no_increase, no_decrease);
+	ZoomLimitsToViewports();
+}
+
+void C4Player::SetMaxZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMaxVal, zoom, no_increase, no_decrease);
+	ZoomLimitsToViewports();
+}
+
 void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
 	C4Viewport *vp = NULL;
@@ -1945,7 +1967,7 @@ void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 
 void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, bool no_decrease)
 {
-	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
+	float new_zoom = ZoomVal ? fixtof(ZoomVal) : vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
 	if (new_zoom > old_zoom && no_increase) return;
 	if (new_zoom < old_zoom && no_decrease) return;
@@ -1961,8 +1983,8 @@ void C4Player::ZoomLimitsToViewports()
 
 void C4Player::ZoomLimitsToViewport(C4Viewport* vp)
 {
-	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
-	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
+	float zoom_max = ZoomLimitMaxVal ? fixtof(ZoomLimitMaxVal) : vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
+	float zoom_min = ZoomLimitMinVal ? fixtof(ZoomLimitMinVal) : vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
 	vp->SetZoomLimits(zoom_min, zoom_max);
 }
 
@@ -1977,6 +1999,22 @@ bool C4Player::AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_
 	else if(new_val > *range_par)
 	{
 		if (!no_increase) *range_par = new_val;
+		return !no_increase;
+	}
+	return true;
+}
+
+bool C4Player::AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease)
+{
+	// helper function: Adjust *zoom_par to new_val if increase/decrease not forbidden
+	if (new_val < *zoom_par)
+	{
+		if (!no_decrease) *zoom_par = new_val;
+		return !no_decrease;
+	}
+	else if(new_val > *zoom_par)
+	{
+		if (!no_increase) *zoom_par = new_val;
 		return !no_increase;
 	}
 	return true;

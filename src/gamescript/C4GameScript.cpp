@@ -716,6 +716,38 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long plr_idx, long ra
 	return true;
 }
 
+static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long precision, long flags)
+{
+	// parameter safety. 0/0 means "reset to default".
+	if (zoom < 0 || precision < 0) return false;
+	// special player NO_OWNER: apply to all viewports
+	if (plr_idx == NO_OWNER)
+	{
+		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
+			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnSetPlayerZoom(_this, plr->Number, zoom, precision, flags);
+		return true;
+	}
+	else
+	{
+		// zoom factor calculation
+		if (!precision) precision = 1;
+		C4Fixed fZoom = itofix(zoom, precision);
+		// safety check on player only, so function return result is always in sync
+		C4Player *plr = ::Players.Get(plr_idx);
+		if (!plr) return false;
+		// adjust values in player
+		if (!(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
+			plr->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		else
+		{
+			if (flags & PLRZOOM_LimitMin) plr->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+			if (flags & PLRZOOM_LimitMax) plr->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		}
+	}
+	return true;
+}
+
 static bool FnSetPlayerViewLock(C4PropList * _this, long plr_idx, bool is_locked)
 {
 	// special player NO_OWNER: apply to all players
@@ -2489,6 +2521,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetClimate", FnSetClimate);
 	AddFunc(pEngine, "GetClimate", FnGetClimate);
 	AddFunc(pEngine, "SetPlayerZoomByViewRange", FnSetPlayerZoomByViewRange);
+	AddFunc(pEngine, "SetPlayerZoom", FnSetPlayerZoom);
 	AddFunc(pEngine, "SetPlayerViewLock", FnSetPlayerViewLock);
 	AddFunc(pEngine, "DoBaseMaterial", FnDoBaseMaterial);
 	AddFunc(pEngine, "DoBaseProduction", FnDoBaseProduction);
