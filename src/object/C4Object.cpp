@@ -1121,8 +1121,6 @@ void C4Object::AssignDeath(bool fForced)
 		++Info->DeathCount;
 		Info->Retire();
 	}
-	// Lose contents
-	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
 	// Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
@@ -1132,11 +1130,12 @@ void C4Object::AssignDeath(bool fForced)
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
+	// Lose contents
+	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
 	// Update OCF. Done here because previously it would have been done in the next frame
 	// Whats worse: Having the OCF change because of some unrelated script-call like
 	// SetCategory, or slightly breaking compatibility?
 	SetOCF();
-
 	// Engine broadcast: relaunch player (in CR, this was called from clonk script.
 	// Now, it is done for every crew member)
 	if(pPlr)
