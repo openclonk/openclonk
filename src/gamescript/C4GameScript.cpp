@@ -1184,7 +1184,7 @@ static bool FnSetLeagueProgressData(C4PropList * _this, C4String *pNewData, long
 	C4PlayerInfo *info = Game.PlayerInfos.GetPlayerInfoByID(idPlayer);
 	if (!info) return false;
 	info->SetLeagueProgressData(pNewData ? pNewData->GetCStr() : NULL);
-	return TRUE;
+	return true;
 }
 
 static C4String *FnGetLeagueProgressData(C4PropList * _this, long idPlayer)
