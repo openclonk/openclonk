@@ -4,11 +4,11 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>PathFree</title>
+    <title>PathFree2</title>
     <category>Landscape</category>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>array</rtype>
       <params>
         <param>
           <type>int</type>
@@ -32,26 +32,24 @@
         </param>
       </params>
     </syntax>
-    <desc>Determines whether the path from the start point to the end point is free, meaning that no solid material is intersected by a directly line between those points.</desc>
+    <desc>Works like <emlink href="script/fn/PathFree.html">PathFree</emlink>, but instead returns an array containing the coordinates of the first solid pixel found on line. Returns nil if the path is free.</desc>
     <remark>All coordinates are global, even in local calls.</remark>
     <examples>
       <example>
-        <code>// for all living beings in a circle with a radius of 500 around it
-for(var living in <funclink>FindObjects</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>),<funclink>Find_Distance</funclink>(500)))
-{
-	// incinerate if the path is free
-	if(PathFree(GetX(),GetY(),GetX(living),GetY(living)))
-		living-&gt;<funclink>Incinerate</funclink>();
-}</code>
-        <text>Eye of the beholder: Incinerates all living beings in a distance of maximum 500 pixels and if the beholder has a line-of-sight to it.</text>
+        <code>var x = <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()),
+	pos = PathFree2(x, 0, x, <funclink>LandscapeHeight</funclink>());
+if(pos)
+	<funclink>CreateObject</funclink>(Idol, pos[0], pos[1]);
+</code>
+        <text>Creates an Idol somewhere on the surface of the landscape.</text>
       </example>
     </examples>
     <related>
       <funclink>GetMaterial</funclink>
       <funclink>GBackSolid</funclink>
       <funclink>GetPathLength</funclink>
-      <funclink>PathFree2</funclink>
+      <funclink>PathFree</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2002-08</date>
+  <author>Apfelclonk</author><date>2014-04</date>
 </funcs>

@@ -67,6 +67,11 @@
           <col>Optional ID that is passed to the script function. See <emlink href="playercontrols.xml#ExtraData">ExtraData</emlink>.</col>
         </row>
         <row>
+          <literal_col>CoordinateSpace</literal_col>
+          <col>Game, Viewport</col>
+          <col>For viewport the given coordinates are relative to the players top left corner of the window. Default ist Game.</col>
+        </row>
+        <row>
           <literal_col>SendCursorPos</literal_col>
           <col>Boolean</col>
           <col>If true then the GUI mouse position at the time of triggering the command will be sent as a separate CON_CursorPos command. If the mouse is not activated then the cursor position in GUI coordinates is transmitted.</col>
@@ -218,7 +223,7 @@
        </row>
        <row>
          <literal_col>TriggerMode</literal_col>
-         <col>bitmask</col>
+         <col>Bitmask</col>
          <col>
            <text>
              Trigger mode of this mapping. Bitmask based on the following values:
