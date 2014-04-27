@@ -13,7 +13,7 @@ VertexCNAT=5,6,9,10
 VertexFriction=80,80,10,10
 Value=20
 Mass=75
-Components=Chunk_Metal=2;Chunk_Wood=1;
+Components=Chunk_Metal=1;Chunk_Wood=1;
 Collection=-12,-8,24,10
 GrabPutGet=C4D_GrabGet|C4D_GrabPut
 Rotate=30

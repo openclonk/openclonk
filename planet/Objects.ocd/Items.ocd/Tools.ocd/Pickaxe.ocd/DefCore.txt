@@ -11,6 +11,6 @@ VertexY=-6,-5,-5,4
 VertexFriction=50,100,100,40
 Value=10
 Mass=20
-Components=Chunk_Wood=1;Chunk_Metal=1;
+Components=Planks=1;Chunk_Metal=1;
 Rotate=1
  

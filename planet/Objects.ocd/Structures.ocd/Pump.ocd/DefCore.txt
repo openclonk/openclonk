@@ -11,7 +11,7 @@ VertexY=-3,15,15
 VertexFriction=50,100,100
 Value=40
 Mass=400
-Components=Planks=1;Chunk_Metal=3;
+Components=Chunk_Rock=2;Chunk_Metal=1;
 Picture=3360,0,112,128,0,0
 Exclusive=1
 Construction=1
