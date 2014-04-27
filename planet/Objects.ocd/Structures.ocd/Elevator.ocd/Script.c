@@ -106,19 +106,19 @@ func LostCase()
 
 func StartEngine()
 {
-	Sound("ElevatorStart", nil, nil, nil, nil, 100);
+	Sound("ElevatorStart", nil, nil, nil, nil, 400);
 	ScheduleCall(this, "EngineLoop", 34);
 	//Sound("ElevatorMoving", nil, nil, nil, 1);
 }
 func EngineLoop()
 {
-	Sound("ElevatorMoving", nil, nil, nil, 1, 100);
+	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
 }
 func StopEngine()
 {
 	Sound("ElevatorMoving", nil, nil, nil, -1);
 	ClearScheduleCall(this, "EngineLoop");
-	Sound("ElevatorStop", nil, nil, nil, nil, 100);
+	Sound("ElevatorStop", nil, nil, nil, nil, 400);
 }
 
 /* Construction */
