@@ -57,7 +57,8 @@ private func DoLift(bool forceEnter)
 // ------------------
 // Lifting the object
 // ------------------
-static const lift_heavy_time = 60;
+static const lift_heavy_time = 30;
+
 func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp, bool forceEnter)
 {
 	if(tmp) return;
