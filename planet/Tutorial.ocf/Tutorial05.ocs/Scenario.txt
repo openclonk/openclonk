@@ -10,7 +10,7 @@ Definition1=Objects.ocd
 
 [Player1]
 Crew=Clonk=1
-Knowledge=Foundry=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;
+Knowledge=Foundry=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;SplitTerraflint=1
 
 [Landscape]
 Sky=Clouds2

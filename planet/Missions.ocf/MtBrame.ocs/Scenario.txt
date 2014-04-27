@@ -10,19 +10,19 @@ Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1
 
 [Player1]
 Crew=Clonk=1
-Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1
+Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1;SplitTerraflint=1
 
 [Player2]
 Crew=Clonk=1
-Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1
+Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1;SplitTerraflint=1
 
 [Player3]
 Crew=Clonk=1
-Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1
+Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1;SplitTerraflint=1
 
 [Player4]
 Crew=Clonk=1
-Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1
+Knowledge=Lorry=1;Catapult=1;Pickaxe=1;Axe=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;Loam=1;SplitTerraflint=1
 
 [Landscape]
 Sky=Clouds2

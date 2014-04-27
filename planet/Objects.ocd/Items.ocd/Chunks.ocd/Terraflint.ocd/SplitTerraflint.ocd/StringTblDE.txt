@@ -1,0 +1,2 @@
+Name=Terraflint spalten
+Description=Spaltet einen Terraflint in kleinere Feuersteine auf. Feuersteine können gezielter eingesetzt werden.

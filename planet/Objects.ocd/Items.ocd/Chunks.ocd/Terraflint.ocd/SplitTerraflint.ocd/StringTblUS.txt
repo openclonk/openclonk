@@ -1,0 +1,2 @@
+Name=Split terraflint
+Description=Split a terraflint into smaller flints. Flints may be used more precisely.

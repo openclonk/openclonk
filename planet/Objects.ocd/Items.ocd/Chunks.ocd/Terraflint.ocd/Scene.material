@@ -1,0 +1,14 @@
+material Terraflint
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 1.0 0.5 0.5 1.0
+			diffuse 1.0 0.39 0.39 1.0
+			specular 0.5 0.0 0.0 1.000000 18.000000
+			emissive 0.5 0.0 0.0 1.000000
+		}
+	}
+}

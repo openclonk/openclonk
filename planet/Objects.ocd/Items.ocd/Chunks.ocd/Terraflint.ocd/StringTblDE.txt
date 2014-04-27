@@ -1,0 +1,2 @@
+Name=Terraflint
+Description=Vulkanischem Ursprungs, explodiert bei Aufprall.
