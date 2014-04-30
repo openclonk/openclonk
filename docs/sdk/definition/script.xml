@@ -88,6 +88,11 @@
           <col>object obj</col>
           <col>When the object dug out another object that was stucked in solid material.</col>
         </row>
+		<row id="DugOut">
+          <literal_col>DugOut</literal_col>
+          <col>object object_by</col>
+          <col>When the object was spawned from dug out material. The object might get removed afterwards if the material has Dig2ObjectCollect=2.</col>
+        </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
           <col>int change, int cause, int by_player</col>
