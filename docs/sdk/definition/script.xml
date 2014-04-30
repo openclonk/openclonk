@@ -83,6 +83,11 @@
           <col></col>
           <col>When the object puts another object into a container.</col>
         </row>
+		<row id="DigOutObject">
+          <literal_col>DigOutObject</literal_col>
+          <col>object obj</col>
+          <col>When the object dug out another object that was stucked in solid material.</col>
+        </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
           <col>int change, int cause, int by_player</col>
