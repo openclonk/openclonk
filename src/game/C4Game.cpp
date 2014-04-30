@@ -2835,7 +2835,6 @@ bool C4Game::InitKeyboard()
 
 	// console keys
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_PAUSE             ), "ConsolePauseToggle",     KEYSCOPE_Console,    new C4KeyCB  <C4Console>(Console, &C4Console::TogglePause)));
-//	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SPACE             ), "EditCursorModeToggle",   KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::ToggleMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_ADD               ), "ToolsDlgGradeUp",        KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, +5, &C4ToolsDlg::ChangeGrade)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SUBTRACT          ), "ToolsDlgGradeDown",      KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, -5, &C4ToolsDlg::ChangeGrade)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_M,  KEYS_Control), "ToolsDlgPopMaterial",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopMaterial)));
@@ -2845,6 +2844,7 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_DELETE            ), "EditCursorDelete",       KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::Delete)));
 
 	// no default keys assigned
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "EditCursorModeToggle",   KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::ToggleMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "ChartToggle",            C4KeyScope(KEYSCOPE_Generic | KEYSCOPE_Gui),    new C4KeyCB  <C4Game>          (*this, &C4Game::ToggleChart)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetObsNextPlayer",       KEYSCOPE_FreeView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "CtrlRateDown",           KEYSCOPE_Generic,    new C4KeyCBEx<C4GameControl, int32_t>(Control, -1, &C4GameControl::KeyAdjustControlRate)));
