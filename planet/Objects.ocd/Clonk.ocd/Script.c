@@ -329,8 +329,6 @@ func DoUpdateAttach(bool sec)
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 		}
-		else
-			; // Don't display
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
@@ -360,8 +358,6 @@ func DoUpdateAttach(bool sec)
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
 			fBothHanded = 1;
 		}
-		else
-			; // Don't display
 	}
 	else if(iAttachMode == CARRY_Spear)
 	{
