@@ -204,6 +204,23 @@ func DigOutObject(object obj)
 	return false;
 }
 
+// Building material bridges (like loam bridge)
+func Bridge()
+{
+	var proc = GetProcedure();
+	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
+	if (proc != "WALK" && proc != "SCALE")
+		return false;
+	if (proc == "WALK")
+		SetAction("BridgeStand");
+	else
+		SetAction("BridgeScale");
+	SetComDir(COMD_Stop);
+	SetXDir(0);
+	SetYDir(0);
+	return true;
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other
@@ -212,6 +229,7 @@ public func IsClonk() { return true; }
 
 public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
+public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
 /* Carry items on the clonk */
 
@@ -416,7 +434,7 @@ func HasHandAction(sec, just_wear)
 func HasActionProcedure()
 {
 	var action = GetAction();
-	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride")
+	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride" || action == "BridgeStand")
 		return true;
 	return false;
 }
@@ -739,9 +757,9 @@ Dig = {
 //	InLiquidAction = "Swim",
 	Attach = CNAT_Left | CNAT_Right | CNAT_Bottom,
 },
-Bridge = {
+BridgeStand = {
 	Prototype = Action,
-	Name = "Bridge",
+	Name = "BridgeStand",
 	Procedure = DFA_THROW,
 	Directions = 2,
 	Length = 16,
@@ -750,7 +768,22 @@ Bridge = {
 	Y = 60,
 	Wdt = 8,
 	Hgt = 20,
-	NextAction = "Bridge",
+	NextAction = "BridgeStand",
+	StartCall = "StartStand",
+	InLiquidAction = "Swim",
+},
+BridgeScale = {
+	Prototype = Action,
+	Name = "BridgeScale",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	Length = 16,
+	Delay = 1,
+	X = 0,
+	Y = 60,
+	Wdt = 8,
+	Hgt = 20,
+	NextAction = "BridgeScale",
 	InLiquidAction = "Swim",
 },
 Swim = {
