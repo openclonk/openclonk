@@ -91,7 +91,8 @@ public func IsFulfilled()
 		if(GetKillCount(GetPlayerByIndex(i)) >= maxkills)
 			winner = GetPlayerByIndex(i);
 	if (winner == nil)
-		return false;
+		// Otherwise just check if there are no enemies
+		return Goal_Melee->IsFulfilled();
 	// Eliminate all players, that are not in a team with one of the winners
 	for (var i = 0; i < GetPlayerCount(); i++)  
 	{
