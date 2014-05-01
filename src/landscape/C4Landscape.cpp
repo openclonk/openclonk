@@ -557,7 +557,7 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 					while (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
 					{
 						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
-						pObj->Call(PSF_OnDugOut, &pars);
+						if (pObj && pObj->Status) pObj->Call(PSF_OnDugOut, &pars);
 						// Try to collect object
 						if(::MaterialMap.Map[mat].Dig2ObjectCollect && pCollect && pObj)
 							if(!pCollect->Collect(pObj))
