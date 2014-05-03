@@ -118,7 +118,7 @@ protected func FxIntEarthquakeTimer(object target, effect, int time)
 		dx = Random(str * 4 + 1) - str * 2;
 		dy = Random(str * 4 + 1) - str * 2;
 		cnt++;
-	} while (!GBackSemiSolid(x + dx, y + dy) && cnt < 10)
+	} while (!GBackSemiSolid(x + dx, y + dy) && cnt < 10);
 	// No continuation.
 	if (cnt >= 10)
 		return FX_Execute_Kill;

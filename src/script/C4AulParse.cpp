@@ -1597,7 +1597,6 @@ void C4AulParse::Parse_Statement()
 		else if (SEqual(Idtf, C4AUL_Do)) // while
 		{
 			Parse_DoWhile();
-			break;
 		}
 		else if (SEqual(Idtf, C4AUL_While)) // while
 		{
