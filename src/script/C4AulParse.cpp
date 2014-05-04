@@ -1417,8 +1417,15 @@ void C4AulParse::Parse_Function()
 		// too many parameters?
 		if (cpar >= C4AUL_MAX_Par)
 			throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
+		if (TokenType == ATT_LDOTS)
+		{
+			if (Type == PREPARSER) Fn->ParCount = C4AUL_MAX_Par;
+			Shift();
+			// don't allow any more parameters after ellipsis
+			break;
+		}
 		// must be a name or type now
-		Check(ATT_IDTF, "parameter or ')'");
+		Check(ATT_IDTF, "parameter, '...', or ')'");
 		// type identifier?
 		C4V_Type t = C4V_Any;
 		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
