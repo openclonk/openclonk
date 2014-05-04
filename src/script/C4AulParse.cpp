@@ -1734,6 +1734,8 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 	case ATT_LDOTS:
 		// functions using ... always take as many parameters as possible
 		assert(Type == PREPARSER || Fn->ParCount == C4AUL_MAX_Par);
+		if (Type == PREPARSER && Fn->ParCount != C4AUL_MAX_Par && Config.Developer.ExtraWarnings)
+			Warn("'...' in function body forces function to take varargs");
 		Fn->ParCount = C4AUL_MAX_Par;
 		Shift();
 		// Push all unnamed parameters of the current function as parameters
@@ -2231,6 +2233,8 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		}
 		else if (SEqual(Idtf, C4AUL_Par))
 		{
+			if (Type == PREPARSER && Fn->ParCount != C4AUL_MAX_Par && Config.Developer.ExtraWarnings)
+				Warn("calling 'Par' in function body forces function to take varargs");
 			// functions using Par() always take as many parameters as possible
 			Fn->ParCount = C4AUL_MAX_Par;
 			// and for Par
