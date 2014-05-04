@@ -5043,3 +5043,10 @@ C4ValueArray * C4Object::GetProperties() const
 	(*a)[i++] = C4VString(&::Strings.P[P_Plane]);
 	return a;
 }
+
+int32_t C4Object::GetSolidMaskPlane() const
+{
+	// use SolidMaskPlane property. Fallback to object plane if unassigned.
+	int32_t plane = GetPropertyInt(P_SolidMaskPlane);
+	return plane ? plane : GetPlane();
+}
