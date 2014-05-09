@@ -130,7 +130,7 @@ void C4MapScriptMatTexMask::UnmaskSpec(C4String *spec)
 				const char *tex_name;
 				int32_t col;
 				for (int32_t itex=0; (tex_name=::TextureMap.GetTexture(itex)); itex++)
-					if (col = ::TextureMap.GetIndex(cspec,tex_name,false))
+					if ((col = ::TextureMap.GetIndex(cspec,tex_name,false)))
 						mat_mask[col] = true;
 			}
 		}
@@ -262,7 +262,7 @@ static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Va
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
 	if (!layer) return false;
 	int32_t to_value; C4String *to_value_s;
-	if (to_value_s = to_value_c4v.getStr())
+	if ((to_value_s = to_value_c4v.getStr()))
 	{
 		to_value = FnParTexCol(to_value_s);
 	}
@@ -300,13 +300,13 @@ static bool FnLayerFindPosition(C4PropList * _this, C4PropList *out_pos, const C
 {
 	// Layer script function: Find a position (x,y) that has a color matching mask_spec. Set resulting position as X,Y properties in out_pos prop list
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
-	if (!layer) return NULL;
+	if (!layer) return false;
 	C4MapScriptMatTexMask mat_mask(mask_spec);
 	C4Rect search_rect;
-	if (!FnParRect(layer, rect, &search_rect)) return NULL;
+	if (!FnParRect(layer, rect, &search_rect)) return false;
 	int32_t x,y; bool result;
 	if (!max_tries) max_tries = 500;
-	if (result = layer->FindPos(search_rect, mat_mask, &x, &y, max_tries))
+	if ((result = layer->FindPos(search_rect, mat_mask, &x, &y, max_tries)))
 	{
 		if (out_pos && !out_pos->IsFrozen())
 		{
@@ -409,7 +409,7 @@ bool C4MapScriptLayer::Blit(const C4Rect &rcBounds, const C4MapScriptAlgo *algo)
 	uint8_t col;
 	for (int32_t y=rcBounds.y; y<rcBounds.y+rcBounds.Hgt; ++y)
 		for (int32_t x=rcBounds.x; x<rcBounds.x+rcBounds.Wdt; ++x)
-			if (col=(*algo)(x,y))
+			if ((col=(*algo)(x,y)))
 				surface->_SetPix(x,y,col);
 	return true;
 }

@@ -9,7 +9,7 @@
 	* Some other hurdles.
 	* Decoration on all the islands.
 		
-	@authors Maikel
+	@author Maikel
 */
 
 
@@ -65,10 +65,11 @@ protected func InitializePlayer(int plr)
 	GivePlayerKnowledge(plr);
 	
 	// Only clonks for sale at the homebase, depending on diffuculty: 3, 5, 10 available.
-	var nr_clonks = Max(8 - 2 * SCENOPT_Difficulty, 1);
+	var nr_clonks = Max(9 - 2 * SCENOPT_Difficulty, 1);
 	if (SCENOPT_Difficulty == 1)
 		nr_clonks += 3;
-	DoHomebaseMaterial(plr, Clonk, nr_clonks);
+	SetBaseMaterial(plr, Clonk, nr_clonks);
+	SetBaseProduction(plr, Clonk, nr_clonks);
 	
 	// Claim ownership of structures, last player who joins owns all the main island flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))

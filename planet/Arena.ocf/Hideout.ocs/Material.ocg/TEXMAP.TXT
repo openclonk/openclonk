@@ -58,7 +58,7 @@ OverloadTextures
 
 65=Ruby-Ruby
 66=Ice-ice2
-67=Ametyst-Ametyst
+67=Amethyst-Amethyst
 68=Ice-ice3
 
 70=Snow-snow1

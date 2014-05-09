@@ -165,6 +165,12 @@ int32_t C4LeagueResponseHeadAuthCheck::getRankSymbol(const char *szLeague) const
 	return 0;
 }
 
+const char *C4LeagueResponseHeadAuthCheck::getProgressData(const char *szLeague) const
+{
+	// progress data is the same for all leagues
+	return ProgressData.getData();
+}
+
 void C4LeagueResponseHeadAuthCheck::CompileFunc(StdCompiler *pComp)
 {
 	// Base members
@@ -175,6 +181,9 @@ void C4LeagueResponseHeadAuthCheck::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Scores, C4NetMaxLeagues, 0), "Score"));
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Ranks, C4NetMaxLeagues, 0), "Rank"));
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(RankSymbols, C4NetMaxLeagues, 0), "RankSymbol"));
+
+	// Progress data (per scenario; not per league)
+	pComp->Value(mkNamingAdapt(mkParAdapt(ProgressData, StdCompiler::RCT_All), "ProgressData", ""));
 
 	// Clan tag
 	pComp->Value(mkNamingAdapt(mkParAdapt(ClanTag, StdCompiler::RCT_All), "ClanTag", ""));
@@ -466,7 +475,7 @@ bool C4LeagueClient::GetAuthCheckReply(StdStrBuf *pMessage, const char *szLeague
 	if (pMessage)
 		pMessage->Copy(Head.getMessage());
 	if (szLeague && pPlrInfo)
-		pPlrInfo->SetLeagueData(Head.getAccount(), Head.getClanTag(), Head.getScore(szLeague), Head.getRank(szLeague), Head.getRankSymbol(szLeague));
+		pPlrInfo->SetLeagueData(Head.getAccount(), Head.getClanTag(), Head.getScore(szLeague), Head.getRank(szLeague), Head.getRankSymbol(szLeague), Head.getProgressData(szLeague));
 	return Head.isSuccess();
 }
 

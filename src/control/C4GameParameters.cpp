@@ -452,6 +452,9 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 		// network game?
 		IsNetworkGame = Game.NetworkActive;
+
+		// Auto frame skip by options
+		AutoFrameSkip = ::Config.Graphics.AutoFrameSkip;
 	}
 
 
@@ -505,9 +508,10 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 	pComp->Value(mkNamingAdapt(AllowDebug,        "AllowDebug",       true));
 	pComp->Value(mkNamingAdapt(IsNetworkGame,     "IsNetworkGame",    false));
 	pComp->Value(mkNamingAdapt(ControlRate,       "ControlRate",      -1));
+	pComp->Value(mkNamingAdapt(AutoFrameSkip,     "AutoFrameSkip",    false));
 	pComp->Value(mkNamingAdapt(Rules,             "Rules",            !pScenario ? C4IDList() : pScenario->Game.Rules));
 	pComp->Value(mkNamingAdapt(Goals,             "Goals",            !pScenario ? C4IDList() : pScenario->Game.Goals));
-	pComp->Value(mkNamingAdapt(League,          "League",             StdStrBuf()));
+	pComp->Value(mkNamingAdapt(League,            "League",           StdStrBuf()));
 
 	// These values are either stored separately (see Load/Save) or
 	// don't make sense for savegames.

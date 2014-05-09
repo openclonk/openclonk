@@ -23,6 +23,7 @@
 class CStdNoGfx : public C4Draw
 {
 public:
+	CStdNoGfx();
 	virtual bool BeginScene() { return true; }
 	virtual void EndScene() { }
 	virtual void TaskOut() { }

@@ -69,6 +69,7 @@ public:
 	bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 	void Clear(); // clear fields; delete additional graphics
+	bool IsMesh() const { return Type == TYPE_Mesh; }
 	bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
 	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics

@@ -102,7 +102,7 @@ void C4Def::IncludeDefinition(C4Def*) {}
 
 C4DefList::C4DefList() {}
 C4DefList::~C4DefList() {}
-C4Def* C4DefList::ID2Def(C4ID) {return NULL;}
+C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
 void C4DefList::Draw(C4ID, C4Facet &, bool, int32_t) {}
 C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}

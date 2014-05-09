@@ -179,7 +179,7 @@ void C4Team::RecheckColor(C4TeamList &rForList)
 		    0x00FFFF, 0x784830
 		                                           }; // cyan, dk brown
 		// no color assigned yet: Generate by team ID
-		if (iID >=1 && iID <=defTeamColorCount+1)
+		if (iID >=1 && iID <=defTeamColorCount)
 		{
 			// default colors
 			dwClr = defTeamColorRGB[iID-1] | 0xff000000;

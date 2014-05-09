@@ -1,20 +1,14 @@
 /**
 	Airship
-	Lighter-than-air travel and transport vehicle. The airship uses several objects to function; the base control/collision object,
-	an attached graphics object (due to former engine limitations with solidmasks), and a hitbox for the balloon.
+	Lighter-than-air travel and transport vehicle. The airship uses an attached hitbox object for the balloon.
 
 	@authors Ringwaul
 */
 
 #include Library_AlignVehicleRotation
 
-
-// Attached modules
-local graphic;
-local hitbox;
-
 // Graphic module variables for animation
-local turnanim;
+local propanim, turnanim;
 
 
 local throttle;
@@ -32,20 +26,17 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	throttle = 0;
 
-	//Create 3D Graphic
-	graphic = CreateObject(Airship_Graphic);
-		graphic->SetAction("Attach", this);
-		graphic->SetAirshipParent(this);
+	// init graphics
+	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
 
 	//Create Hitbox
-	hitbox = CreateObject(Airship_Hitbox);
-		hitbox->SetAction("Attach", this);
-		hitbox->SetAirshipParent(this);
+	var hitbox = CreateObject(Airship_Hitbox);
+	hitbox->SetAction("Attach", this);
 
 	// The airship starts facing left; so default to that value
 	SetDir(DIR_Left);
 
-	turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Const(graphic->GetAnimationLength("TurnLeft")), Anim_Const(1000));
+	turnanim = PlayAnimation("TurnLeft", 10, Anim_Const(GetAnimationLength("TurnLeft")), Anim_Const(1000));
 
 	// Start the Airship behaviour
 	AddEffect("IntAirshipMovement", this, 1, 1, this);
@@ -69,17 +60,43 @@ public func FxIntAirshipMovementStart(object target, proplist effect, int tempor
 }
 
 
+//Moves the propeller 1 tick per call
+func AnimationForward()
+{
+	var i = 50;
+	//Loop animation
+	if(GetAnimationPosition(propanim) + i > GetAnimationLength("Flight"))
+	{
+		SetAnimationPosition(propanim, Anim_Const(GetAnimationPosition(propanim) + i - GetAnimationLength("Flight")));
+		return 1;
+	}
+
+	//advance animation
+	else
+	{
+		SetAnimationPosition(propanim, Anim_Const(GetAnimationPosition(propanim) + i));
+		return 1;
+	}
+	//SoundEffect?
+}
+
+public func GetTurnAngle()
+{
+	var dir = GetAnimDir();
+	var r = GetAnimationPosition(turnanim) * 1242 / 10000;
+	
+	if (dir == DIR_Left)
+		r = 180 - r;
+	return r;
+}
+
 public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 {
-	// Cancel effect if there is no graphic.
-	if (!graphic) 
-		return -1;
-
 	// Is the engine running?
 	if (GetComDir() != COMD_Stop && AirshipPilot())
 	{
 		//Turn the propeller
-		graphic->AnimationForward();
+		AnimationForward();
 
 		// Emit engine smoke
 		var i = 20;
@@ -87,7 +104,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 		// Is the airship facing right?
 		if (effect.AnimDir == DIR_Right) 
 			i = -25; 
-		if (graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
+		if (GetAnimationPosition(turnanim) == GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
 		{
 			var particles = 
 			{
@@ -151,12 +168,12 @@ func TurnAirship(int to_dir)
 		animName = "TurnRight";
 
 	StopAnimation(turnanim);
-	turnanim = graphic->PlayAnimation(animName, 10, Anim_Linear(0, 0, graphic->GetAnimationLength(animName), 36, ANIM_Hold), Anim_Const(1000));
+	turnanim = PlayAnimation(animName, 10, Anim_Linear(0, 0, GetAnimationLength(animName), 36, ANIM_Hold), Anim_Const(1000));
 	
 	SetAnimDir(to_dir);
 	
 	var g = gondola;
-	AlignObjectsToRotation(graphic, g[0],g[1],g[2],g[3]);
+	AlignObjectsToRotation(this, g[0],g[1],g[2],g[3]);
 	
 	return;
 }
@@ -280,7 +297,6 @@ private func AirshipPilot()
 }
 
 /* -- Airship Destruction --*/
-//This command is called from the hitbox object
 
 func AirshipDeath()
 {
@@ -289,18 +305,13 @@ func AirshipDeath()
 
 	//Now let's copy it's animation, and hold it there
 	var animspot;
-	animspot = graphic->GetAnimationPosition(turnanim);
+	animspot = GetAnimationPosition(turnanim);
 	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot), Anim_Const(1000));
 	else
 		burntairship->PlayAnimation("TurnRight", 10, Anim_Const(animspot), Anim_Const(1000));
 
 	//Set ruin on fire
 	burntairship->Incinerate();
-
-	//Remove the old graphic (which also stops airship behaviour, how nifty!)
-	graphic->RemoveObject();
-	//Remove the hitbox
-	hitbox->RemoveObject();
 
 	//Make sure engine sound is gone
 	Sound("FanLoop",nil,nil,nil,-1);
@@ -338,4 +349,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 2;
 local Rebuy = true;
-local Plane = 275;
+local Plane = 500;
+local SolidMaskPlane = 275;

@@ -2,7 +2,7 @@
 	Gold Rush
 	A simple landscape with some gold, the goal is to mine some gold to gain wealth.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 

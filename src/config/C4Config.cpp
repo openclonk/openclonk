@@ -90,7 +90,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
 	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
-	pComp->Value(mkNamingAdapt(SmokeLevel,            "SmokeLevel",           200           ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
 	pComp->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
@@ -114,6 +113,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
+	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)

@@ -876,7 +876,9 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBreakWidth, float fZoom)
 {
 #ifdef USE_CONSOLE
-	*ppNewPos = szMsg; return 0;
+	*ppNewPos = szMsg;
+	while(**ppNewPos) ++*ppNewPos;
+	return *ppNewPos - szMsg;
 #else
 	// safety
 	if (!szMsg || !*szMsg) { *ppNewPos = szMsg; return 0; }

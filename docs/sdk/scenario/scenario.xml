@@ -161,12 +161,12 @@
         <col>Objects the player should initially be able to create.</col>
       </row>
       <row>
-        <literal_col>HomeBaseMaterial</literal_col>
+        <literal_col>BaseMaterial</literal_col>
         <col>ID list</col>
         <col>Materials available to buy at game start.</col>
       </row>
       <row>
-        <literal_col>HomeBaseProduction</literal_col>
+        <literal_col>BaseProduction</literal_col>
         <col>ID list</col>
         <col>Additional supply of materials to buy.</col>
       </row>
@@ -223,7 +223,7 @@
       <row>
         <literal_col>TopOpen</literal_col>
         <col>Integer</col>
-        <col>0 or 1. Determines wether the top of the game world should be open.</col>
+        <col>0, 1 or 2. Determines wether the top of the game world should be open. Values analogous to BottomOpen.</col>
       </row>
       <row>
         <literal_col>LeftOpen</literal_col>

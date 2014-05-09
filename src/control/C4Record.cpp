@@ -925,7 +925,7 @@ void C4Playback::Clear()
 	if (Config.General.DebugRec)
 	{
 		C4IDPacket *pkt;
-		while (pkt = DebugRec.firstPkt()) DebugRec.Delete(pkt);
+		while ((pkt = DebugRec.firstPkt())) DebugRec.Delete(pkt);
 		if (Config.General.DebugRecExternalFile[0])
 			DbgRecFile.Close();
 	}
@@ -1035,7 +1035,7 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 	{
 		// check debug rec in list
 		C4IDPacket *pkt;
-		if (pkt = DebugRec.firstPkt())
+		if ((pkt = DebugRec.firstPkt()))
 		{
 			// copy from list
 			PktInReplay = *static_cast<C4PktDebugRec *>(pkt->getPkt());

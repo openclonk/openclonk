@@ -67,13 +67,6 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			}
 			// C4ID
 			case 'i':
-			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
-				C4ID id = Pars[cPar++].getC4ID();
-				StringBuf.Append(id.ToString());
-				cpFormat+=SLen(szField);
-				break;
-			}
 			// C4Value
 			case 'v':
 			{
@@ -211,7 +204,7 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
-	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulParSet ParSet(&Pars[1], C4AUL_MAX_Par - 1);
 	C4AulFunc * fn = Pars[0].getFunction();
 	C4String * name;
 	if (!fn)
@@ -231,6 +224,7 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	}
 	if (!fn)
 		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	fn->CheckParTypes(ParSet.Par);
 	return fn->Exec(_this, &ParSet, true);
 }
 
@@ -249,11 +243,6 @@ static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
-}
-
-static C4ID FnC4Id(C4PropList * _this, C4String *szID)
-{
-	return(C4ID(FnStringPar(szID)));
 }
 
 static long FnAbs(C4PropList * _this, long iVal)
@@ -414,11 +403,17 @@ static int FnGetIndexOf(C4PropList * _this, C4ValueArray * pArray, const C4Value
 	if (!pArray) return -1;
 	int32_t iSize = pArray->GetSize();
 	for (int32_t i = 0; i < iSize; ++i)
-		if (Needle == pArray->GetItem(i))
+		if (Needle.IsIdenticalTo(pArray->GetItem(i)))
 			// element found
 			return i;
 	// element not found
 	return -1;
+}
+
+static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & v2)
+{
+	// return if v1==v2 with deep comparison on arrays and proplists
+	return v1 == v2;
 }
 
 static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
@@ -532,16 +527,12 @@ static bool FnStartCallTrace(C4PropList * _this)
 	return true;
 }
 
-static bool FnStartScriptProfiler(C4PropList * _this, C4ID idScript)
+static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 {
 	// get script to profile
 	C4AulScript *pScript;
-	if (idScript)
-	{
-		C4Def *pDef = C4Id2Def(idScript);
-		if (!pDef) return false;
+	if (pDef)
 		pScript = &pDef->Script;
-	}
 	else
 		pScript = &::ScriptEngine;
 	// profile it
@@ -676,7 +667,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperty);
 	F(SetProperty);
 	F(ResetProperty);
-	F(C4Id);
 	F(Distance);
 	F(Angle);
 	F(GetChar);
@@ -686,6 +676,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetLength);
 	F(SetLength);
 	F(GetIndexOf);
+	F(DeepEqual);
 	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);

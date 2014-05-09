@@ -8,7 +8,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 	if (settings == nil) settings = {};
 	// Default behaviour
 	var plants = [];
-	var terraform = settings.terrafom ?? true;
+	var terraform = settings.terraform ?? true;
 	
 	var max_tries = 2 * amount;
 	var loc_area = nil;

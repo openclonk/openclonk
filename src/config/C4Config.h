@@ -93,7 +93,6 @@ public:
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
 	int32_t HighResLandscape;
-	int32_t SmokeLevel;
 	int32_t VideoModule;
 	int32_t MenuTransparency;
 	int32_t UpperBoard;
@@ -117,6 +116,7 @@ public:
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
+	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
 
 	void CompileFunc(StdCompiler *pComp);
 };

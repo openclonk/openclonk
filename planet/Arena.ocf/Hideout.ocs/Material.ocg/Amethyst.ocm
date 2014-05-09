@@ -1,0 +1,15 @@
+[Material]
+Name=Amethyst
+Shape=Rough
+Density=70
+Friction=15
+BlastFree=1
+<<<<<<< HEAD:planet/Arena.ocf/Hideout.ocs/Material.ocg/Ametyst.ocm
+Blast2Object=Chunk_Ice
+=======
+>>>>>>> remotes/origin/master:planet/Arena.ocf/Hideout.ocs/Material.ocg/Amethyst.ocm
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=60
+Placement=21
+TextureOverlay=Amethyst

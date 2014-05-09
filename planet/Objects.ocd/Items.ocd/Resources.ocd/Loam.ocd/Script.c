@@ -18,19 +18,11 @@ func Hit()
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {
-	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
-	var clnk_proc = clonk->GetProcedure();
-	if (clnk_proc != "WALK" && clnk_proc != "SCALE")
+	if (!(clonk->~Bridge()))
 	{
 		clonk->CancelUse();
 		return true;
 	}
-
-	// Gfx
-	clonk->SetAction("Bridge");
-	clonk->SetComDir(COMD_Stop);
-	clonk->SetXDir(0);
-	clonk->SetYDir(0);
 	// Add bridge effect and pass target coordinates.
 	AddEffect("IntBridge", clonk, 1, 1, this, nil, x, y);
 	
@@ -58,7 +50,7 @@ func FxIntBridgeStart(object clonk, proplist effect, int temp, int x, int y)
 func FxIntBridgeTimer(object clonk, proplist effect, int time)
 {
 	// something happened - don't try to dig anymore
-	if (clonk->GetAction() != "Bridge")
+	if (!(clonk->~IsBridging()))
 	{
 		clonk->CancelUse();
 		return true;
@@ -145,7 +137,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 private func LoamDone(object clonk)
 {
 	// Get out of animation
-	if (clonk->GetAction() == "Bridge")
+	if (clonk->IsBridging())
 	{
 		clonk->SetAction("Walk");
 		clonk->SetComDir(COMD_Stop);

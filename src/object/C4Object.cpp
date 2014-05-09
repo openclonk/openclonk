@@ -1121,8 +1121,6 @@ void C4Object::AssignDeath(bool fForced)
 		++Info->DeathCount;
 		Info->Retire();
 	}
-	// Lose contents
-	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
 	// Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
@@ -1132,11 +1130,12 @@ void C4Object::AssignDeath(bool fForced)
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
+	// Lose contents
+	while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
 	// Update OCF. Done here because previously it would have been done in the next frame
 	// Whats worse: Having the OCF change because of some unrelated script-call like
 	// SetCategory, or slightly breaking compatibility?
 	SetOCF();
-
 	// Engine broadcast: relaunch player (in CR, this was called from clonk script.
 	// Now, it is done for every crew member)
 	if(pPlr)
@@ -1960,13 +1959,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				//sprintf(szCommand,"%s %d/%d",CommandName(pCom->Command),pCom->Tx,pCom->Ty,iAngle);
 				break;
 			case C4CMD_Put:
-				sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? pCom->Data.getC4ID().ToString() : "Content",pCom->Target ? pCom->Target->GetName() : "");
+				sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? pCom->Data.GetDataString().getData() : "Content",pCom->Target ? pCom->Target->GetName() : "");
 				break;
 			case C4CMD_Buy: case C4CMD_Sell:
-				sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),pCom->Data.getC4ID().ToString(),pCom->Target ? pCom->Target->GetName() : "closest base");
+				sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),pCom->Data.GetDataString().getData(),pCom->Target ? pCom->Target->GetName() : "closest base");
 				break;
 			case C4CMD_Acquire:
-				sprintf(szCommand,"%s %s",CommandName(pCom->Command),pCom->Data.getC4ID().ToString());
+				sprintf(szCommand,"%s %s",CommandName(pCom->Command),pCom->Data.GetDataString().getData());
 				break;
 			case C4CMD_Call:
 				sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
@@ -2628,7 +2627,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	// Remove components
 	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
 		for (cnt2=0; cnt2<NeededComponents.GetCount(cnt); cnt2++)
-			if (!( pObj = Contents.Find(c_id) ))
+			if (!( pObj = Contents.Find(C4Id2Def(c_id)) ))
 				return NULL;
 			else
 				pObj->AssignRemoval();
@@ -4460,17 +4459,17 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY) const
 	*parY = par->GetItem(1).getInt();
 }
 
-bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id) const
+bool C4Object::GetDragImage(C4Object **drag_object, C4Def **drag_def) const
 {
 	// drag is possible if MouseDragImage is assigned
 	C4Value parV; GetProperty(P_MouseDragImage, &parV);
 	if (!parV) return false;
 	// determine drag object/id
-	C4Object *obj=NULL; C4ID id;
-	if (parV.CheckConversion(C4V_Object)) obj = parV.getObj();
-	else if (parV.CheckConversion(C4V_Def)) id = parV.getC4ID();
+	C4Object *obj = parV.getObj();
+	C4Def * def = NULL;
+	if (!obj) def = parV.getDef();
 	if (drag_object) *drag_object = obj;
-	if (drag_id) *drag_id = id;
+	if (drag_def) *drag_def = def;
 	// drag possible, even w./o image
 	return true;
 }
@@ -5043,4 +5042,11 @@ C4ValueArray * C4Object::GetProperties() const
 	a->SetSize(i + 1);
 	(*a)[i++] = C4VString(&::Strings.P[P_Plane]);
 	return a;
+}
+
+int32_t C4Object::GetSolidMaskPlane() const
+{
+	// use SolidMaskPlane property. Fallback to object plane if unassigned.
+	int32_t plane = GetPropertyInt(P_SolidMaskPlane);
+	return plane ? plane : GetPlane();
 }

@@ -8,7 +8,12 @@ public func Activate(int plr)
 	// Remove the player's clonk, including contents.
 	var clonk = GetCrew(plr);
 	if (clonk)
+	{
+		while (clonk->Contents())
+			clonk->Contents()->RemoveObject();
+		clonk->Kill(clonk, true);
 		clonk->RemoveObject();
+	}
 }
 
 local Name = "$Name$";

@@ -206,7 +206,7 @@ void C4Player::Execute()
 	// ::Game.iTick35
 	if (!::Game.iTick35 && Status==PS_Normal)
 	{
-		ExecHomeBaseProduction();
+		ExecBaseProduction();
 		CheckElimination();
 		if (pMsgBoardQuery && LocalControl) ExecMsgBoardQueries();
 	}
@@ -582,10 +582,10 @@ bool C4Player::ScenarioInit()
 
 	// Wealth, home base materials, abilities
 	Wealth=Game.C4S.PlrStart[PlrStartIndex].Wealth.Evaluate();
-	HomeBaseMaterial=Game.C4S.PlrStart[PlrStartIndex].HomeBaseMaterial;
-	HomeBaseMaterial.ConsolidateValids(::Definitions);
-	HomeBaseProduction=Game.C4S.PlrStart[PlrStartIndex].HomeBaseProduction;
-	HomeBaseProduction.ConsolidateValids(::Definitions);
+	BaseMaterial=Game.C4S.PlrStart[PlrStartIndex].BaseMaterial;
+	BaseMaterial.ConsolidateValids(::Definitions);
+	BaseProduction=Game.C4S.PlrStart[PlrStartIndex].BaseProduction;
+	BaseProduction.ConsolidateValids(::Definitions);
 	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
 	Knowledge.ConsolidateValids(::Definitions);
 
@@ -607,7 +607,12 @@ bool C4Player::ScenarioInit()
 			int32_t iPosition=iStartPos;
 			// Distribute according to availability
 			while (::Players.PositionTaken(iPosition))
-				{ ++iPosition%=iMaxPos; if (iPosition==iStartPos) break; }
+			{
+				++iPosition;
+				iPosition %= iMaxPos;
+				if (iPosition == iStartPos)
+					break;
+			}
 			Position=iPosition;
 			// Set x position
 			ptx=BoundBy(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);
@@ -926,6 +931,7 @@ void C4Player::Default()
 	NoEliminationCheck = false;
 	Evaluated = false;
 	ZoomLimitMinWdt=ZoomLimitMinHgt=ZoomLimitMaxWdt=ZoomLimitMaxHgt=ZoomWdt=ZoomHgt=0;
+	ZoomLimitMinVal=ZoomLimitMaxVal=ZoomVal=Fix0;
 	ViewLock = true;
 }
 
@@ -1141,6 +1147,9 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxHgt,     "ZoomLimitMaxHgt",      0));
 	pComp->Value(mkNamingAdapt(ZoomWdt,             "ZoomWdt",              0));
 	pComp->Value(mkNamingAdapt(ZoomHgt,             "ZoomHgt",              0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMinVal,     "ZoomLimitMinVal",      Fix0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMaxVal,     "ZoomLimitMaxVal",      Fix0));
+	pComp->Value(mkNamingAdapt(ZoomVal,             "ZoomVal",              Fix0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
@@ -1157,8 +1166,8 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
 	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
-	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
-	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
+	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial"          ));
+	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction"        ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
@@ -1189,18 +1198,18 @@ bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 	return true;
 }
 
-void C4Player::ExecHomeBaseProduction()
+void C4Player::ExecBaseProduction()
 {
-	const int32_t MaxHomeBaseProduction = 25;
+	const int32_t MaxBaseProduction = 25;
 	ProductionDelay++;
 	if (ProductionDelay>=60) // Minute Production Unit
 	{
 		ProductionDelay=0; ProductionUnit++;
-		for (int32_t cnt=0; HomeBaseProduction.GetID(cnt); cnt++)
-			if (HomeBaseProduction.GetCount(cnt)>0)
-				if (ProductionUnit % BoundBy<int32_t>(11-HomeBaseProduction.GetCount(cnt),1,10) ==0)
-					if (HomeBaseMaterial.GetIDCount(HomeBaseProduction.GetID(cnt))<MaxHomeBaseProduction)
-						HomeBaseMaterial.IncreaseIDCount(HomeBaseProduction.GetID(cnt));
+		for (int32_t cnt=0; BaseProduction.GetID(cnt); cnt++)
+			if (BaseProduction.GetCount(cnt)>0)
+				if (ProductionUnit % BoundBy<int32_t>(11-BaseProduction.GetCount(cnt),1,10) ==0)
+					if (BaseMaterial.GetIDCount(BaseProduction.GetID(cnt)) < MaxBaseProduction)
+						BaseMaterial.IncreaseIDCount(BaseProduction.GetID(cnt));
 	}
 }
 
@@ -1279,8 +1288,8 @@ void C4Player::DefaultRuntimeData()
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.clear();
-	HomeBaseMaterial.Default();
-	HomeBaseProduction.Default();
+	BaseMaterial.Default();
+	BaseProduction.Default();
 	Knowledge.Default();
 	FlashCom=0;
 }
@@ -1931,6 +1940,24 @@ void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool 
 	ZoomLimitsToViewports();
 }
 
+void C4Player::SetZoom(C4Fixed zoom, bool direct, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomVal, zoom, no_increase, no_decrease);
+	ZoomToViewports(direct, no_increase, no_decrease);
+}
+
+void C4Player::SetMinZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMinVal, zoom, no_increase, no_decrease);
+	ZoomLimitsToViewports();
+}
+
+void C4Player::SetMaxZoom(C4Fixed zoom, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMaxVal, zoom, no_increase, no_decrease);
+	ZoomLimitsToViewports();
+}
+
 void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
 	C4Viewport *vp = NULL;
@@ -1940,7 +1967,7 @@ void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 
 void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, bool no_decrease)
 {
-	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
+	float new_zoom = ZoomVal ? fixtof(ZoomVal) : vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
 	if (new_zoom > old_zoom && no_increase) return;
 	if (new_zoom < old_zoom && no_decrease) return;
@@ -1956,8 +1983,8 @@ void C4Player::ZoomLimitsToViewports()
 
 void C4Player::ZoomLimitsToViewport(C4Viewport* vp)
 {
-	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
-	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
+	float zoom_max = ZoomLimitMaxVal ? fixtof(ZoomLimitMaxVal) : vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
+	float zoom_min = ZoomLimitMinVal ? fixtof(ZoomLimitMinVal) : vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
 	vp->SetZoomLimits(zoom_min, zoom_max);
 }
 
@@ -1972,6 +1999,22 @@ bool C4Player::AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_
 	else if(new_val > *range_par)
 	{
 		if (!no_increase) *range_par = new_val;
+		return !no_increase;
+	}
+	return true;
+}
+
+bool C4Player::AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease)
+{
+	// helper function: Adjust *zoom_par to new_val if increase/decrease not forbidden
+	if (new_val < *zoom_par)
+	{
+		if (!no_decrease) *zoom_par = new_val;
+		return !no_decrease;
+	}
+	else if(new_val > *zoom_par)
+	{
+		if (!no_increase) *zoom_par = new_val;
 		return !no_increase;
 	}
 	return true;

@@ -166,12 +166,14 @@ private:
 	int32_t Ranks[C4NetMaxLeagues];
 	int32_t RankSymbols[C4NetMaxLeagues];
 	StdCopyStrBuf ClanTag;
+	StdCopyStrBuf ProgressData;
 
 public:
 	int32_t getScore(const char *szLeague) const;
 	int32_t getRank(const char *szLeague) const;
 	int32_t getRankSymbol(const char *szLeague) const;
 	const char *getClanTag() const { return ClanTag.getData(); }
+	const char *getProgressData(const char *szLeague) const;
 
 	void CompileFunc(StdCompiler *pComp);
 };

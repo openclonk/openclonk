@@ -408,14 +408,12 @@ public:
 // cares for the management of particle definitions
 class C4ParticleSystemDefinitionList
 {
-#ifndef USE_CONSOLE
 private:
 	// pointers to the last and first element of linked list of particle definitions
 	C4ParticleDef *first, *last;
 public:
 	C4ParticleSystemDefinitionList() : first(0), last(0) {}
 	void Clear();
-#endif
 	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=0);
 
 	friend class C4ParticleDef;
@@ -435,13 +433,11 @@ class C4ParticleSystem
 	friend class CalculationThread;
 
 private:
-#ifndef USE_CONSOLE
 	// contains an array with indices for vertices, separated by a primitive restart index
 	std::vector<uint32_t> primitiveRestartIndices;
 	// these are fallbacks for if primitiveRestartIndex is not supported by the graphics card
 	std::vector<GLsizei> multiDrawElementsCountArray;
 	std::vector<uint32_t *> multiDrawElementsIndexArray;
-#endif
 	std::list<C4ParticleList> particleLists;
 
 	CalculationThread calculationThread;
@@ -509,13 +505,14 @@ public:
 
 	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
+
+#endif
 	
 	// removes all of the existing particles (used f.e. for scenario section loading)
 	void ClearAllParticles();
 
 	friend class C4ParticleList;
 
-#endif
 
 };
 

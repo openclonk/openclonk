@@ -90,8 +90,8 @@ public:
 	// Checked getters
 	int32_t getInt() const { return CheckConversion(C4V_Int) ? Data.Int : 0; }
 	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : 0; }
-	C4ID getC4ID() const;
 	C4Object * getObj() const;
+	C4Def * getDef() const;
 	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : NULL; }
 	C4String * getStr() const { return CheckConversion(C4V_String) ? Data.Str : NULL; }
 	C4ValueArray * getArray() const { return CheckConversion(C4V_Array) ? Data.Array : NULL; }
@@ -101,6 +101,7 @@ public:
 	int32_t _getInt() const { return Data.Int; }
 	bool _getBool() const { return !! Data.Int; }
 	C4Object *_getObj() const;
+	C4Def *_getDef() const;
 	C4String *_getStr() const { return Data.Str; }
 	C4ValueArray *_getArray() const { return Data.Array; }
 	C4AulFunc *_getFunction() const { return Data.Fn; }
@@ -123,6 +124,9 @@ public:
 
 	bool operator == (const C4Value& Value2) const;
 	bool operator != (const C4Value& Value2) const;
+
+	// Identical comparison
+	bool IsIdenticalTo(const C4Value &cmp) const { return GetType()==cmp.GetType() && GetData()==cmp.GetData(); }
 
 	// Change and set Type to int in case it was nil or bool before
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }

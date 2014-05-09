@@ -439,6 +439,10 @@ public func CheckLiquids(id product, bool remove)
 		for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
 			if (liq_container->~GetBarrelMaterial() == liquid)
 				liquid_amount += liq_container->~GetFillLevel();
+		// Find objects that "are" liquid (e.g. ice)
+		for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
+			if (liq_object->~IsLiquid() == liquid)
+				liquid_amount += liq_object->~GetLiquidAmount();
 		if (liquid_amount < need)
 			return false;
 		else if (remove)
@@ -450,8 +454,16 @@ public func CheckLiquids(id product, bool remove)
 				var val = liq_container->~GetLiquid(liquid, need - extracted);
 				extracted += val[1];
 				if (extracted >= need)
-					break;			
-			}			
+					return true;
+			}
+			for (var liq_object in FindObjects(Find_Container(this), Find_Func("IsLiquid")))
+			{
+				if (liq_object->~IsLiquid() != liquid) continue;
+				extracted += liq_object->~GetLiquidAmount();
+				liq_object->RemoveObject();
+				if (extracted >= need)
+					break;
+			}
 		}		
 	}
 	return true;
@@ -681,9 +693,26 @@ protected func RejectEntrance(object obj)
 		if (FuelNeed(product) > 0)
 			if (obj->~IsFuel())
 				return false;
+<<<<<<< HEAD
 		// Liquid containers may be collected if a product needs them.
 		if (LiquidNeed(product))
 			if (obj->~IsLiquidContainer())
+=======
+	}
+	// Liquid objects may be collected if a product needs them.
+	if (obj->~IsLiquid())
+	{
+		for (var product in GetProducts())
+			if (LiquidNeed(product))
+				if (LiquidNeed(product)[0] == obj->~IsLiquid())
+					return false;
+	}
+	// Liquid containers may be collected if a product needs them.
+	if (obj->~IsLiquidContainer())
+	{
+		for (var product in GetProducts())
+			if (LiquidNeed(product))
+>>>>>>> remotes/origin/master
 				return false;
 		// Material containers may be collected if a product needs them.
 		if (MaterialNeed(product))

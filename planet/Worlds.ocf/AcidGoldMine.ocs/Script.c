@@ -1,4 +1,8 @@
-/* Acid gold mine */
+/**
+	Acid gold mine 
+	
+	@author Sven2	
+*/
 
 static g_highest_plr_count; // max number of players that were ever in the round
 

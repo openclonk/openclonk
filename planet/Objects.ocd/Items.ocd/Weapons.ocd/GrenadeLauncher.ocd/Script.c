@@ -134,7 +134,7 @@ public func FinishedAiming(object clonk, int angle)
 	if(!loaded) return;
 	
 	// Fire
-	if(Contents(0) && Contents(0)->IsGrenadeLauncherAmmo())
+	if(Contents(0) && Contents(0)->~IsGrenadeLauncherAmmo())
 		FireWeapon(clonk, angle);
 	clonk->StartShoot(this);
 	return true;

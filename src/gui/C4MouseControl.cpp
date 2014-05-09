@@ -638,16 +638,16 @@ void C4MouseControl::DragNone()
 		// check if target object allows scripted dragging
 		if (fAllowDrag && DownTarget && (!FogOfWar || (DownTarget->Category & C4D_IgnoreFoW)))
 		{
-			C4Object *drag_image_obj; C4ID drag_image_id;
+			C4Object *drag_image_obj; C4Def * drag_image_def;
 
 			// Drag only if MD_SOURCE is set and drag image is present
 			if ( (DownTarget->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
-			      DownTarget->GetDragImage(&drag_image_obj, &drag_image_id))
+			      DownTarget->GetDragImage(&drag_image_obj, &drag_image_def))
 			{
 				Drag=C4MC_Drag_Script;
 
 				if(drag_image_obj) DragImageObject = drag_image_obj;
-				else DragImageDef = C4Id2Def(drag_image_id);
+				else DragImageDef = drag_image_def;
 
 				DragObject = DownTarget;
 			}

@@ -51,13 +51,15 @@ private:
 	int32_t iLeagueScoreGain;   // league score gained by this round - -1 for unknown
 	int32_t iLeagueRankNew;     // rank on league server after this round
 	int32_t iLeagueRankSymbolNew; // rank symbol on league server after this round
+	int32_t iLeaguePerformance;		// script-set performance value, effect league-dependent
+	StdCopyStrBuf sLeagueProgressData; // scenario-specific data to store more proigress info (which levels were done, etc.)
 	enum LeagueStatus
 	{
 		RRPLS_Unknown=0, RRPLS_Lost, RRPLS_Won
 	} eLeagueStatus; // whether player lost or won
 
 public:
-	C4RoundResultsPlayer() : id(0), iTotalPlayingTime(0), iScoreOld(-1), iScoreNew(-1), iLeagueScoreNew(-1), iLeagueScoreGain(0), iLeagueRankNew(0), iLeagueRankSymbolNew(0), eLeagueStatus(RRPLS_Unknown) {}
+	C4RoundResultsPlayer() : id(0), iTotalPlayingTime(0), iScoreOld(-1), iScoreNew(-1), iLeagueScoreNew(-1), iLeagueScoreGain(0), iLeagueRankNew(0), iLeagueRankSymbolNew(0), iLeaguePerformance(0), sLeagueProgressData(), eLeagueStatus(RRPLS_Unknown) {}
 	C4RoundResultsPlayer(const C4RoundResultsPlayer &cpy) { *this=cpy; }
 
 	void CompileFunc(StdCompiler *pComp);
@@ -75,12 +77,14 @@ public:
 	int32_t GetLeagueScoreGain() const { return iLeagueScoreGain; }
 	int32_t GetLeagueRankNew() const { return iLeagueRankNew; } // returns rank on league server  after round evaluation (0 for not assigned)
 	int32_t GetLeagueRankSymbolNew() const { return iLeagueRankSymbolNew; }
+	int32_t GetLeaguePerformance() const { return iLeaguePerformance; }
 
 	void EvaluateLeague(C4RoundResultsPlayer *pLeaguePlayer); // called from league evaluation; set league fields
 	void EvaluatePlayer(C4Player *pPlr); // called from C4Player::Evaluate; set fields by player
 
 	void SetID(int32_t idNew) { this->id=idNew; }
 	void AddCustomEvaluationString(const char *szCustomString);
+	void SetLeaguePerformance(int32_t iNewPerf) { iLeaguePerformance = iNewPerf; }
 
 	bool operator ==(const C4RoundResultsPlayer &cmp);
 	C4RoundResultsPlayer &operator =(const C4RoundResultsPlayer &cpy);
@@ -182,10 +186,10 @@ public:
 	void HideSettlementScore(bool fHide=true);
 	bool SettlementScoreIsHidden();
 
-	// Set league performance
-	// Used for settlement league scenarios that use a measure different from the elapsed game time
-	void SetLeaguePerformance(int32_t iNewPerf);
-	int32_t GetLeaguePerformance() const;
+	// Used for special league scenarios, e.g. settlement scenarios that wish to use a
+	// measure different from the elapsed game time
+	void SetLeaguePerformance(int32_t iNewPerf, int32_t idPlayer = 0);
+	int32_t GetLeaguePerformance(int32_t idPlayer = 0) const;
 
 	const C4RoundResultsPlayers &GetPlayers() const { return Players; }
 	const char *GetCustomEvaluationStrings() const { return sCustomEvaluationStrings.getData(); }

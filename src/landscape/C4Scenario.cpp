@@ -216,8 +216,8 @@ void C4SPlrStart::Default()
 	ReadyVehic.Default();
 	ReadyMaterial.Default();
 	BuildKnowledge.Default();
-	HomeBaseMaterial.Default();
-	HomeBaseProduction.Default();
+	BaseMaterial.Default();
+	BaseProduction.Default();
 }
 
 bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
@@ -233,8 +233,8 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 	       && (ReadyVehic == rhs.ReadyVehic)
 	       && (ReadyMaterial == rhs.ReadyMaterial)
 	       && (BuildKnowledge == rhs.BuildKnowledge)
-	       && (HomeBaseMaterial == rhs.HomeBaseMaterial)
-	       && (HomeBaseProduction == rhs.HomeBaseProduction);
+	       && (BaseMaterial == rhs.BaseMaterial)
+	       && (BaseProduction == rhs.BaseProduction);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
@@ -249,8 +249,8 @@ void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ReadyVehic,              "Vehicles",              C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
 	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
-	pComp->Value(mkNamingAdapt(HomeBaseMaterial,        "HomeBaseMaterial",      C4IDList()));
-	pComp->Value(mkNamingAdapt(HomeBaseProduction,      "HomeBaseProduction",    C4IDList()));
+	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial",      C4IDList()));
+	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction",    C4IDList()));
 }
 
 void C4SLandscape::Default()

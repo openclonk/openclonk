@@ -194,6 +194,7 @@ public:
 	void Resort();
 	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
 	int32_t GetPlane() const { return Plane; }
+	int32_t GetSolidMaskPlane() const;
 	int32_t GetAudible() const;
 	void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL);
 	void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL)
@@ -339,7 +340,7 @@ public:
 	bool IsInLiquidCheck() const;                        // returns whether the Clonk is within liquid material
 	void UpdateInLiquid(); // makes splash when a liquid is entered
 	void GrabContents(C4Object *pFrom); // grab all contents that don't reject it
-	bool GetDragImage(C4Object **drag_object, C4ID *drag_id) const; // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
+	bool GetDragImage(C4Object **drag_object, C4Def **drag_id) const; // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
 
 protected:
 	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer

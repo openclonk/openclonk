@@ -304,7 +304,7 @@ static C4Void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, N
 		//  iCausedBy = cthr->Caller->Obj->Controller;
 		//else
 		iCausedBy = NO_OWNER;
-	Obj->DoDamage(iChange,iCausedBy, iDmgType);
+	Obj->DoDamage(iChange, iCausedBy, iDmgType);
 	return C4Void();
 }
 
@@ -1156,7 +1156,7 @@ static C4Object *FnContents(C4Object *Obj, long index)
 	return NULL;
 }
 
-static bool FnShiftContents(C4Object *Obj, bool fShiftBack, C4ID idTarget, bool fDoCalls)
+static bool FnShiftContents(C4Object *Obj, bool fShiftBack, C4Def * idTarget, bool fDoCalls)
 {
 	// regular shift
 	if (!idTarget) return !!Obj->ShiftContents(fShiftBack, fDoCalls);
@@ -1186,7 +1186,7 @@ static long FnContentsCount(C4Object *Obj, C4ID id)
 	return Obj->Contents.ObjectCount(id);
 }
 
-static C4Object *FnFindContents(C4Object *Obj, C4ID c_id)
+static C4Object *FnFindContents(C4Object *Obj, C4Def * c_id)
 {
 	return Obj->Contents.Find(c_id);
 }
@@ -2150,13 +2150,28 @@ static bool FnSetAttachTransform(C4Object *Obj, long iAttachNumber, C4ValueArray
 	return true;
 }
 
-static Nillable<C4String*> FnGetMeshMaterial(C4Object *Obj, int iSubMesh)
+static Nillable<C4String*> FnGetMeshMaterial(C4PropList * _this, int iSubMesh)
 {
-	if (!Obj || !Obj->pMeshInstance) return C4Void();
-	if (iSubMesh < 0 || (unsigned int)iSubMesh >= Obj->pMeshInstance->GetNumSubMeshes()) return C4Void();
-
-	StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
-	return String(submesh.GetMaterial().Name.getData());
+	// Called in object or definition context?
+	C4Object *Obj = Object(_this);
+	if (!Obj)
+	{
+		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetMeshMaterial");
+		// Called in definition context: Get definition default mesh material
+		C4Def *def = _this->GetDef();
+		if (!def->Graphics.IsMesh()) return C4Void();
+		if (iSubMesh < 0 || (unsigned int)iSubMesh >= def->Graphics.Mesh->GetNumSubMeshes()) return C4Void();
+		const StdSubMesh &submesh = def->Graphics.Mesh->GetSubMesh(iSubMesh);
+		return String(submesh.GetMaterial().Name.getData());
+	}
+	else
+	{
+		// Called in object context: Get material of mesh instance
+		if (!Obj->pMeshInstance) return C4Void();
+		if (iSubMesh < 0 || (unsigned int)iSubMesh >= Obj->pMeshInstance->GetNumSubMeshes()) return C4Void();
+		StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
+		return String(submesh.GetMaterial().Name.getData());
+	}
 }
 
 static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
@@ -2183,6 +2198,10 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
 	const StdMeshBone* bone = mesh.GetBoneByName(szBoneName->GetData());
 	if(!bone) return false;
+	// get particle
+	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
+	if (!pDef) return false;
+#ifndef USE_CONSOLE
 	// Get transform
 	Obj->pMeshInstance->UpdateBoneTransforms();
 	const StdMeshMatrix transform = Obj->pMeshInstance->GetBoneTransform(bone->Index) * StdMeshMatrix::Transform(bone->Transformation);
@@ -2278,9 +2297,6 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	x.x += DrawTransform(0,3);
 	x.y += DrawTransform(1,3);
 	x.z += DrawTransform(2,3);
-	// get particle
-	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
-	if (!pDef) return false;
 
 	// construct data
 	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
@@ -2292,6 +2308,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 
 	// cast
 	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
+#endif
 	// success, even if not created
 	return true;
 

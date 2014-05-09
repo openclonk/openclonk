@@ -48,6 +48,8 @@ void C4PlayerInfo::Clear()
 	iLeagueProjectedGain = -1;
 	eType = C4PT_User;
 	idExtraData = C4ID::None;
+	iLeaguePerformance = 0;
+	sLeagueProgressData.Clear();
 }
 
 void C4PlayerInfo::DeleteTempFile()
@@ -248,6 +250,8 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueRankSymbol), "LeagueRankSymbol", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueProjectedGain), "ProjectedGain", -1));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sClanTag, StdCompiler::RCT_All), "ClanTag", ""));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeaguePerformance), "LeaguePerformance", 0));
+	pComp->Value(mkNamingAdapt(sLeagueProgressData, "LeagueProgressData", ""));
 
 	// file resource
 	if (pComp->isCompiler() && Game.C4S.Head.Replay)

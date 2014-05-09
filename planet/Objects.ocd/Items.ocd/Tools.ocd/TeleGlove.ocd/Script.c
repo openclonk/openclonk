@@ -217,6 +217,7 @@ public func LostTargetObject(object target)
 
 global func FxTeleGloveReleasedStart(object target, effect)
 {
+	effect.t0 = FrameCounter();
 	return;
 }
 
@@ -229,6 +230,11 @@ global func FxTeleGloveWeightStop(object target, int num, int reason, bool temp)
 {
 	target->SetMass(target->GetDefCoreVal("Mass", "DefCore"));
 }
+
+// Damaging Clonks with moving objects makes this tool stupidly strong. So it's blocked
+// while moving the object and a few frames after release
+global func FxTeleGloveWeightQueryHitClonk(object target, fx, object clonk) { return true; }
+global func FxTeleGloveReleasedQueryHitClonk(object target, fx, object clonk) { return FrameCounter()-fx.t0 <= 5; }
 
 protected func ControlUseStop(object clonk, ix, iy)
 {

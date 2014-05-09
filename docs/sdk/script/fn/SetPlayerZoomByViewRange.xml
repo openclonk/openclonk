@@ -60,7 +60,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
+    <desc>Adjusts the zoom or zoom limit of all viewports of a player.</desc>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
@@ -74,6 +74,7 @@
       </example>
     </examples>
     <related>
+      <funclink>SetPlayerZoom</funclink>
       <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>

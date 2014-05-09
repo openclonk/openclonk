@@ -145,7 +145,7 @@ C4Network2::C4Network2()
 		pVoteDialog(NULL),
 		fPausedForVote(false),
 		iLastOwnVoting(0),
-		fStreaming(NULL)
+		fStreaming(false)
 {
 
 }
@@ -2017,7 +2017,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	    !pLeagueClient->GetStartReply(&LeagueServerMessage, &League, &StreamingAddr, &Seed, &MaxPlayersLeague))
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_REGGAME"), pError);
 		// Log message
@@ -2041,7 +2041,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	// Show message
 	if (LeagueServerMessage.getLength())
 	{
-		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LoadResStr(LeagueServerMessage.getData()));
+		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LeagueServerMessage.getData());
 		// Log message
 		Log(Message.getData());
 		// Show message
@@ -2127,7 +2127,7 @@ bool C4Network2::LeagueUpdateProcessReply()
 	if (!fSucc)
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_UPDATEGAME"), pError);
 		// Show message - no dialog, because it's not really fatal and might happen in the running game
@@ -2205,7 +2205,7 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 		if (!pLeagueClient->isSuccess() || !pLeagueClient->GetEndReply(&LeagueServerMessage, &RoundResults))
 		{
 			const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-			                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+			                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 			                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 			sResultMessage.Take(FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_SENDRESULT"), pError));
 			if (Application.isEditor) continue;
@@ -2355,7 +2355,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 			bool fSuccess;
 			if (Message.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
-				             LoadResStr(Message.getData()), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
+				             Message.getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 				             C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 			else if (AccountMaster.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
@@ -2441,7 +2441,7 @@ bool C4Network2::LeaguePlrAuthCheck(C4PlayerInfo *pInfo)
 	// Check if league server approves. pInfo will have league info if this call is successful.
 	if (!pLeagueClient->GetAuthCheckReply(&Message, Game.Parameters.League.getData(), pInfo))
 	{
-		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), LoadResStr(Message.getData())).getData());
+		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), Message.getData()).getData());
 		return false;
 	}
 
@@ -2476,7 +2476,7 @@ void C4Network2::LeagueNotifyDisconnect(int32_t iClientID, C4LeagueDisconnectRea
 		szMsg = LoadResStr("IDS_MSG_LEAGUEUNEXPECTEDDISCONNEC");
 	else
 		szMsg = LoadResStr("IDS_ERR_LEAGUEERRORREPORTINGUNEXP");
-	LogF(szMsg, LoadResStr(sMessage.getData()));
+	LogF(szMsg, sMessage.getData());
 }
 
 void C4Network2::LeagueWaitNotBusy()

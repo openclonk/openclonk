@@ -1,2 +1,0 @@
-Name=Ruine
-Description=Relikt vergangener Siedlungen.

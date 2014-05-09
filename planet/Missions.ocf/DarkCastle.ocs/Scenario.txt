@@ -5,6 +5,10 @@ Version=5,3,90
 Difficulty=75
 NoInitialize=true
 
+[Definitions]
+Definition1=Objects.ocd
+Definition2=Decoration.ocd
+
 [Game]
 Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;
 

@@ -3,7 +3,7 @@
 	A mountain peak filled with iron ore, firestone and coal, the crust consists 
 	of granite, rock, ice and some entrances.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 #include Library_Map

@@ -116,7 +116,7 @@ public:
 	const C4Object* GetObject(int Index=0) const;
 	C4Object* GetObject(int Index=0)
 	{ return const_cast<C4Object*>(const_cast<const C4ObjectList*>(this)->GetObject(Index)); }
-	C4Object* Find(C4ID id, int iOwner=ANY_OWNER, DWORD dwOCF=OCF_All);
+	C4Object* Find(C4Def * def, int iOwner=ANY_OWNER, DWORD dwOCF=OCF_All);
 	C4Object* FindOther(C4ID id, int iOwner=ANY_OWNER);
 
 	const C4ObjectLink* GetLink(const C4Object *pObj) const;

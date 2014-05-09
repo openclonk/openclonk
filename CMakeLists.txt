@@ -407,6 +407,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4DefList.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
 	src/object/C4InfoCore.cpp
@@ -485,6 +487,8 @@ set(MAPE_BASE_SOURCES
 	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 )
 
 set(MAPE_SOURCES
@@ -872,10 +876,10 @@ if(USE_CONSOLE)
 	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 endif()
 
+include(FindPkgConfig)
 # Set GTK link directory. This needs to be done before add_executable,
 # otherwise the path is not used for linking clonk
 if(USE_GTK)
-	include(FindPkgConfig)
 	if (USE_GTK3)
 		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
 		include_directories(${GTK3_INCLUDE_DIRS})
@@ -888,7 +892,6 @@ if(USE_GTK)
 endif()
 
 # Try to find GTK for mape
-include(FindPkgConfig)
 if (PKG_CONFIG_FOUND)
 	if (USE_GTK3)
 		pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
@@ -1060,8 +1063,6 @@ src/lib/C4Real.cpp
 src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
-src/object/C4Id.cpp
-src/object/C4Id.h
 src/script/C4Aul.cpp
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp
@@ -1395,8 +1396,10 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	if(SDL_FOUND)
 		include_directories(${SDL_INCLUDE_DIR})
-		FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
-		if(SDLMIXER_LIBRARIES)
+		pkg_check_modules(SDLMIXER "SDL_mixer")
+		if(SDLMIXER_FOUND)
+			include_directories(${SDLMIXER_INCLUDE_DIRS})
+			link_directories(${SDLMIXER_LIBRARY_DIRS})
 			SET(HAVE_LIBSDL_MIXER ON)
 		endif()
 		target_link_libraries(openclonk
@@ -1438,7 +1441,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+	option(USE_GCC_PCH "Use GCC precompiled headers" OFF)
 endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(libmisc src/C4Include.h)

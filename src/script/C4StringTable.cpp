@@ -142,6 +142,7 @@ C4StringTable::C4StringTable()
 	P[P_Blasted] = "Blasted";
 	P[P_IncineratingObj] = "IncineratingObj";
 	P[P_Plane] = "Plane";
+	P[P_SolidMaskPlane] = "SolidMaskPlane";
 	P[P_Tooltip] = "Tooltip";
 	P[P_Placement] = "Placement";
 	P[P_BlastIncinerate] = "BlastIncinerate";

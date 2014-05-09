@@ -1,183 +1,330 @@
-/*--- The Base ---*/
-
-// Author: Randrian
-// TODO -> torough explanation how to use it
-
-func Initialize()
-{
-	var iPlrNumber = GetOwner()%4+1;
-	var szSection = Format("Player%d", iPlrNumber); // TODO: Check teams and get the fitting player section
+/**
+	Base Material & Production
+	Library to control the players base material and production. The initial values are read
+	from the Scenario.txt entries and per script one can modify these by:
+     * GetBaseMaterial(int plr, id def, int index, int category)
+     * SetBaseMaterial(int plr, id def, int cnt)
+     * DoBaseMaterial(int plr, id def, int change)
+     * GetBaseProduction(int plr, id def, int index, int category)
+     * SetBaseProduction(int plr, id def, int cnt)
+     * DoBaseProduction(int plr, id def, int change)
+    Performs also two callbacks to a base of the player:
+     * OnBaseMaterialChange(id def, int change);
+     * OnBaseProductionChange(id def, int change);
 	
-	aHomebaseMaterial = [];
-	aHomabaseProduction = [];
-	var iIndex;
-	var idID, iCount;
-	while(1)
+	@author Randrian, Maikel
+*/
+
+
+// Local variables to store the player's material and production.
+// Is an array filled with [id, count] arrays.
+local base_material;
+local base_production;
+local production_unit = 0;
+
+// Maximum number of material. 
+static const BASEMATERIAL_MaxBaseMaterial = 25;
+// Maximum number of production. 
+static const BASEMATERIAL_MaxBaseProduction = 10;
+// Produce every X frames (currently set to a minute).
+static const BASEMATERIAL_ProductionRate = 2160;
+
+
+/*-- Global interface --*/
+
+global func GetBaseMaterial(int plr, id def, int index, int category)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base) 
+		return base->GetBaseMat(def, index, category);
+}
+
+global func SetBaseMaterial(int plr, id def, int cnt)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base)
+		return base->SetBaseMat(def, cnt);
+}
+
+global func DoBaseMaterial(int plr, id def, int change)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base)
+		return base->DoBaseMat(def, change);
+}
+
+global func GetBaseProduction(int plr, id def, int index, int category)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base)
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base) 
+		return base->GetBaseProd(def, index, category);
+}
+
+global func SetBaseProduction(int plr, id def, int cnt)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base)
+		return base->SetBaseProd(def, cnt);
+}
+
+global func DoBaseProduction(int plr, id def, int change)
+{
+	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
+	if (!base) 
+		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+	if (base) 
+		return base->DoBaseProd(def, change);
+}
+
+
+/*-- Object Interface --*/
+
+protected func Initialize()
+{
+	// Gather base materials based on Scenario.txt player entries.
+	// TODO: Check teams and get the fitting player section
+	var plr = GetOwner() % 4 + 1;
+	var section = Format("Player%d", plr); 
+	
+	// Initialize arrays for material and production.
+	base_material = [];
+	base_production = [];
+	
+	// Load materials from Scenario.txt
+	var index;
+	var def, count;	
+	while (true)
 	{
-		idID = GetScenarioVal ("HomeBaseMaterial", szSection, iIndex*2);
-		iCount = GetScenarioVal ("HomeBaseMaterial", szSection, iIndex*2+1);
-		if(!idID && !iCount) break;
-		if(idID)
-			aHomebaseMaterial[GetLength(aHomebaseMaterial)] = [idID, iCount];
-		iIndex++;
+		def = GetScenarioVal("BaseMaterial", section, index * 2);
+		count = GetScenarioVal("BaseMaterial", section, index * 2 + 1);
+		if (!def && !count) break;
+		if (def)
+			PushBack(base_material, [def, count]);
+		index++;
 	}
-	iIndex = 0;
-	while(1)
+	
+	// Load production from Scenario.txt
+	index = 0;
+	while (true)
 	{
-		idID = GetScenarioVal ("HomeBaseProduction", szSection, iIndex*2);
-		iCount = GetScenarioVal ("HomeBaseProduction", szSection, iIndex*2+1);
-		if(!idID && !iCount) break;
-		if(idID)
-			aHomabaseProduction[GetLength(aHomabaseProduction)] = [idID, iCount];
-		iIndex++;
+		def = GetScenarioVal("BaseProduction", section, index * 2);
+		count = GetScenarioVal("BaseProduction", section, index * 2 + 1);
+		if (!def && !count) break;
+		if (def)
+			PushBack(base_production, [def, count]);
+		index++;
 	}
-	AddTimer("ExecHomeBaseProduction", 2100);
+	
+	// Add a timer for executing base production.
+	AddTimer("ExecBaseProduction", BASEMATERIAL_ProductionRate);
+	return;
 }
 
-static const BaseMaterial_MaxHomeBaseProduction = 25;
-
-local ProductionUnit;
-
-func ExecHomeBaseProduction()
+// Called every minute and updates the materials according to production.
+public func ExecBaseProduction()
 {
-	// Do not exec if no base is around
-	if(!FindBase(GetOwner())) return;
-
-	// Called every minute
-	ProductionUnit++;
-	var aArray;
-	// Look at all productions
-	for (aArray in aHomabaseProduction)
-		// if this id is produced check if it isn't already full
-		if (aArray[1]>0)
-			if (ProductionUnit % BoundBy(11-aArray[1],1,10) == 0)
-				if (DoGetHomebaseMaterial(aArray[0])<BaseMaterial_MaxHomeBaseProduction)
-					// Produce Material
-					DoDoHomebaseMaterial(aArray[0], 1);
-}
-
-local aHomebaseMaterial; // Array filled with [idDef, iCount] arrays
-local aHomabaseProduction;
-
-// ---------------------- global Interface ---------------------------
-
-global func GetHomebaseMaterial (int iPlr, id idDef, int iIndex, int dwCategory)
-{
-	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
-	if(pObj) return pObj->DoGetHomebaseMaterial(idDef, iIndex, dwCategory);
-}
-
-global func GetHomebaseProduction (int iPlr, id idDef, int iIndex, int dwCategory)
-{
-	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
-	if(pObj) return pObj->DoGetHomebaseProduction(idDef, iIndex, dwCategory);
-}
-
-global func DoHomebaseMaterial (int iPlr, id idID, int iChange)
-{
-	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
-	if(pObj) return pObj->DoDoHomebaseMaterial(idID, iChange);
-}
-
-global func DoHomebaseProduction (int iPlr, id idID, int iChange)
-{
-	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
-	if(pObj) return pObj->DoDoHomebaseProduction(idID, iChange);
-}
-
-// ----------------------------------------------------------------------
-
-public func DoGetHomebaseMaterial (id idDef, int iIndex, int dwCategory)
-{
-	var aArray;
-	var iCount = 0;
-	// An ID given? Then try to get the count
-	if(idDef)
+	production_unit++;
+	// Look at all production.
+	for (var combo in base_production)
 	{
-		for(aArray in aHomebaseMaterial)
-			if(aArray[0] == idDef)
-				return aArray[1];
+		// Check if this id is produced and check if it isn't already full.
+		if (combo[1] > 0 && GetBaseMat(combo[0]) < BASEMATERIAL_MaxBaseMaterial)
+		{
+			// Produce the material every production value / BASEMATERIAL_MaxBaseProduction times.
+			if (production_unit % BoundBy(BASEMATERIAL_MaxBaseProduction + 1 - combo[1], 1, BASEMATERIAL_MaxBaseProduction) == 0)
+				DoBaseMat(combo[0], 1);
+		}
+	}
+	return;
+}
+
+public func GetBaseMat(id def, int index, int category)
+{
+	// Get the count if the id is given.
+	if (def)
+	{
+		for (var combo in base_material)
+			if (combo[0] == def)
+				return combo[1];
 		return nil;
 	}
-	// A index given? Look for the id
-	if (!dwCategory) dwCategory = 0xffffff;
-	for(aArray in aHomebaseMaterial)
+	// If an index is given look for the id.
+	if (!category) 
+		category = 0xffffff;
+	var count = 0;
+	for (var combo in base_material)
 	{
-		if(aArray[0]->GetCategory() & dwCategory)
+		if (combo[0]->GetCategory() & category)
 		{
-			if(iCount == iIndex) return aArray[0];
-			iCount++;
+			if (count == index)
+				return combo[0];
+			count++;
 		}
 	}
+	return;
 }
 
-public func DoGetHomebaseProduction (id idDef, int iIndex, int dwCategory)
+public func SetBaseMat(id def, int cnt)
 {
-	var aArray;
-	var iCount = 0;
-	// An ID given? Then try to get the count
-	if(idDef)
+	if (cnt == nil)
+		return;
+	cnt = Max(0, cnt);
+	var change = 0;
+	// Scan through current list of id's and set material if available.
+	var found = false;
+	for (var index = 0; index < GetLength(base_material); ++index)
 	{
-		for(aArray in aHomabaseProduction)
-			if(aArray[0] == idDef)
-				return aArray[1];
-		return nil;
-	}
-	// A index given? Look for the id
-	for(aArray in aHomabaseProduction)
-	{
-		if(aArray[0]->GetCategory() & dwCategory)
+		if (base_material[index][0] == def)
 		{
-			if(iCount == iIndex) return aArray[0];
-			iCount++;
+			change = cnt - base_material[index][1];
+			base_material[index][1] = cnt;
+			found = true;
 		}
 	}
+	// If material is not available add it to the existing list.
+	if (!found)
+	{
+		change = cnt;
+		PushBack(base_material, [def, cnt]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseMaterialChange(def, change);
+	return;
 }
 
-public func DoDoHomebaseMaterial (id idID, int iChange)
+public func DoBaseMat(id def, int change)
 {
-	if(iChange == 0) return;
-	var aArray;
-	var iIndex = 0;
-	for(aArray in aHomebaseMaterial)
+	if (change == 0) 
+		return;
+	// Scan through current list of id's and increase material if available. 
+	var found = false;
+	for (var index = 0; index < GetLength(base_material); ++index)
 	{
-		if(aArray[0] == idID)
+		if (base_material[index][0] == def)
 		{
-			aHomebaseMaterial[iIndex][1] += iChange;
-			// Callback to the bases of the player
-			var i = 0, pBase;
-			while(pBase = FindBase(GetOwner(), i++))
-				pBase->~OnHomebaseMaterialChange();
-					return true;
+			// Change must at least be minus the original value.
+			change = Max(change, -base_material[index][1]);
+			base_material[index][1] += change;
+			found = true;
 		}
-		iIndex++;
 	}
-	return false;
+	// If material is not available add it to the existing list.
+	if (!found)
+	{
+		// Change must at least be zero.
+		change = Max(change, 0);
+		PushBack(base_material, [def, Max(change, 0)]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseMaterialChange(def, change);
+	return;
 }
 
-public func DoDoHomebaseProduction (id idID, int iChange)
+public func GetBaseProd(id def, int index, int category)
 {
-	if(iChange == 0) return;
-	var aArray;
-	var iIndex = 0;
-	for(aArray in aHomabaseProduction)
+	// Get the count if the id is given.
+	if (def)
 	{
-		if(aArray[0] == idID)
-		{
-			aHomabaseProduction[iIndex][1] += iChange;
-			return true;
-		}
-		iIndex++;
+		for (var combo in base_production)
+			if (combo[0] == def)
+				return combo[1];
+		return;
 	}
-	return false;
+	// If an index is given look for the id.
+	if (!category) 
+		category = 0xffffff;
+	var count = 0;
+	for (var combo in base_production)
+	{
+		if (combo[0]->GetCategory() & category)
+		{
+			if (count == index) 
+				return combo[0];
+			count++;
+		}
+	}
+	return;
 }
 
-// Internal management object not saved.
-// Use Scenario.txt to adjust homebase material
+public func SetBaseProd(id def, int cnt)
+{
+	if (cnt == nil)
+		return;
+	cnt = Max(0, cnt);
+	var change = 0;
+	// Scan through current list of id's and set production if available.
+	var found = false;
+	for (var index = 0; index < GetLength(base_production); ++index)
+	{
+		if (base_production[index][0] == def)
+		{
+			change = cnt - base_production[index][1];
+			base_production[index][1] = cnt;
+			found = true;
+		}
+	}
+	// If material is not available add it to the existing list.
+	if (!found)
+	{
+		change = cnt;
+		PushBack(base_production, [def, cnt]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseProductionChange(def, change);
+	return;
+}
+
+public func DoBaseProd(id def, int change)
+{
+	if (change == 0)
+		return;
+	// Scan through current list of id's and increase production if available. 
+	var found = false;
+	for (var index = 0; index < GetLength(base_production); ++index)
+	{
+		if (base_production[index][0] == def)
+		{
+			// Change must at least be minus the original value.
+			change = Max(change, -base_production[index][1]);
+			base_production[index][1] += change;
+			found = true;
+		}
+	}
+	// If production is not available add it to the existing list.
+	if (!found)
+	{
+		// Change must at least be zero.
+		change = Max(change, 0);
+		PushBack(base_production, [def, Max(change, 0)]);
+	}
+	// Callback to the bases of the player.
+	var i = 0, base;
+	while (base = FindBase(GetOwner(), i++))
+		base->~OnBaseProductionChange(def, change);
+	return;
+}
+
+
+/*-- Miscellaneous --*/
+
+// Internal management object not saved. Use Scenario.txt or script 
+// to adjust base materials and production.
 func SaveScenarioObject() { return false; }
 
 local Name = "$Name$";

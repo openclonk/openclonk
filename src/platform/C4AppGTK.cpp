@@ -214,7 +214,7 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	RROutput output = XRRGetOutputPrimary(dpy, w);
 	if(output != 0)
 	{
-		info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
+		info = XRRGetOutputInfo(dpy, r, output);
 		if (!info)
 		{
 			XRRFreeScreenResources(r);

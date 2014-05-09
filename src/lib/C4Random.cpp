@@ -22,7 +22,15 @@
 #include <C4Record.h>
 
 int RandomCount = 0;
-unsigned int RandomHold = 0;
+static unsigned int RandomHold = 0;
+
+void FixedRandom(DWORD dwSeed)
+{
+	// for SafeRandom
+	srand((unsigned)time(NULL));
+	RandomHold = dwSeed;
+	RandomCount = 0;
+}
 
 int Random(int iRange)
 {

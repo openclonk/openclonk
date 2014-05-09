@@ -177,9 +177,9 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 			}
 		}
 	}
-	else if (cnt < 0)
+	else if (cnt < 0 && errno != EINTR)
 	{
-		printf("StdScheduler::Execute: poll failed: %s\n",strerror(errno));
+		printf("StdScheduler::%s: poll failed: %s\n",__func__,strerror(errno));
 	}
 	return fSuccess;
 }

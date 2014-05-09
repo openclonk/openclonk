@@ -39,11 +39,11 @@ public func CanBlockEnemies() { return true; }
 func GetBuyObject(int iIndex)
 {
 	var aBuy = [0,0];
-	var idDef = GetHomebaseMaterial(GetOwner(), nil, iIndex, C4D_All);
+	var idDef = GetBaseMaterial(GetOwner(), nil, iIndex, C4D_All);
 	aBuy[0] = idDef;
-	aBuy[1] = GetHomebaseMaterial(GetOwner(), idDef, 0);
+	aBuy[1] = GetBaseMaterial(GetOwner(), idDef, 0);
 	if(!idDef) return nil;
-	// The default implementation returns the Homebasemaerial of the playeer
+	// The default implementation returns the Basematerial of the playeer
 	return aBuy;
 }
 
@@ -71,14 +71,14 @@ func GetBuyValue(id idObj)
 }
 
 // change the amount of buyable material
-func DoBaseMaterial(id idDef, int iCount)
+func ChangeBaseMaterial(id idDef, int iCount)
 {
-	// by default use Homebase engine function
-	DoHomebaseMaterial(GetOwner(), idDef, iCount);
+	// by default use base engine function
+	DoBaseMaterial(GetOwner(), idDef, iCount);
 	// this should also call UpdateClonkBuyMenus() if the standart function isn't used
 }
 
-public func OnHomebaseMaterialChange()
+public func OnBaseMaterialChange(id def, int change)
 {
 	// and update the buy menu
 	UpdateClonkBuyMenus();
@@ -209,7 +209,7 @@ func OpenBuyMenu(object pClonk, id idDef, int iSelection)
 	var aBuy = [0,0,0];
 	var iIndex, iSelection;
 	AddClonkBuyList(pClonk);
-	pClonk->CreateMenu (Library_Base, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal, 0, C4Id("BuyMenu"));
+	pClonk->CreateMenu (Library_Base, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal);
 	for(aBuy in GetBuyObjects())
 	{
 		if(aBuy[0] == idDef) iSelection = iIndex;
@@ -228,7 +228,7 @@ func BuyDummy(id idDef, object pClonk, bool bRight, int iValue)
 
 func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool fShowErrors)
 {
-	if(!GetHomebaseMaterial(iPayPlr, idDef)) return; //TODO
+	if(!GetBaseMaterial(iPayPlr, idDef)) return; //TODO
 	var iValue = GetBuyValue(idDef);
 	// Has the clonk enought money?
 	if(iValue > GetWealth(iPayPlr))
@@ -245,7 +245,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 	DoWealth(iPayPlr, -iValue);
 	Sound("UnCash", 0, 100, iForPlr+1); // TODO: get sound
 	// Decrease the Basematerial
-	DoBaseMaterial(idDef, -1);
+	ChangeBaseMaterial(idDef, -1);
 	// Deliver the object
 	var pObj = CreateContents(idDef);
 	pObj->SetOwner(iForPlr);
@@ -369,7 +369,7 @@ func DoSell(object pObj, int iPlr, bool bRight)
 	DoWealth(iPlr, GetSellValue(pObj));
 	Sound("Cash", 0, 100, iPlr+1); // TODO: get sound
 	if(pObj.Rebuy)
-		DoBaseMaterial(pObj->GetID(), 1);
+		ChangeBaseMaterial(pObj->GetID(), 1);
 	// right clicked? then sell other objects too
 	var pNewObj;
 	var bFound;
