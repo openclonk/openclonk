@@ -679,9 +679,9 @@ protected func RejectEntrance(object obj)
 	if (obj->~ForceEnterProducer(this->GetID()))
 		return false;
 
+	// Components of products may be collected.
 	for (var product in GetProducts())
 	{
-		// Components of products may be collected.
 		var i = 0, comp_id;
 		while (comp_id = GetComponent(nil, i, nil, product))
 		{
@@ -689,15 +689,13 @@ protected func RejectEntrance(object obj)
 				return false;
 			i++;
 		}
-		// Fuel for products may be collected.
-		if (FuelNeed(product) > 0)
-			if (obj->~IsFuel())
+	}
+	// Fuel for products may be collected.
+	if (obj->~IsFuel())
+	{
+		for (var product in GetProducts())
+			if (FuelNeed(product) > 0)
 				return false;
-<<<<<<< HEAD
-		// Liquid containers may be collected if a product needs them.
-		if (LiquidNeed(product))
-			if (obj->~IsLiquidContainer())
-=======
 	}
 	// Liquid objects may be collected if a product needs them.
 	if (obj->~IsLiquid())
@@ -712,13 +710,14 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
->>>>>>> remotes/origin/master
-				return false;
-		// Material containers may be collected if a product needs them.
-		if (MaterialNeed(product))
-			if (obj->~IsMaterialContainer())
 				return false;
 	}
-
+	// Material containers may be collected if a product needs them.
+	if (obj->~IsMaterialContainer())
+	{
+		for (var product in GetProducts())
+			if (MaterialNeed(product))
+				return false;
+	}
 	return true;
 }
