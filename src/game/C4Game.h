@@ -247,6 +247,7 @@ protected:
 	bool InitControl();
 	bool InitScriptEngine();
 	bool LinkScriptEngine();
+	bool ReLinkScriptEngine();
 	bool InitPlayers(C4ValueNumbers *);
 	bool OpenScenario();
 	bool InitDefs();

@@ -180,9 +180,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// engine is always parsed (for global funcs)
 		State = ASS_PARSED;
 
-		// update material pointers
-		::MaterialMap.UpdateScriptPointers();
-
 		rDefs->CallEveryDefinition();
 
 		// Done modifying the proplists now
@@ -214,25 +211,14 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	// display state
 	LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
 		lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
-
-	// update effect pointers
-	::Objects.UpdateScriptPointers();
-
-	// update material pointers
-	::MaterialMap.UpdateScriptPointers();
 }
 
-bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage)
+bool C4AulScriptEngine::ReloadScript(const char *szScript, const char *szLanguage)
 {
 	C4AulScript * s;
 	for (s = Child0; s; s = s->Next)
 		if (s->ReloadScript(szScript, szLanguage))
 			break;
-	if (!s)
-		return false;
-	// relink
-	ReLink(pDefs);
-	// ok
-	return true;
+	return !!s;
 }
 
