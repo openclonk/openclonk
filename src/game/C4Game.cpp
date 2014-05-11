@@ -3096,7 +3096,7 @@ bool C4Game::DoGameOver()
 	// Flag, log, call
 	GameOver=true;
 	Log(LoadResStr("IDS_PRC_GAMEOVER"));
-	::GameScript.GRBroadcast(PSF_OnGameOver);
+	GRBroadcast(PSF_OnGameOver);
 	// Flag all surviving players as winners
 	for (C4Player *pPlayer = Players.First; pPlayer; pPlayer = pPlayer->Next)
 		if (!pPlayer->Eliminated)
@@ -3742,6 +3742,16 @@ bool C4Game::SlowDown()
 bool C4Game::ToggleChat()
 {
 	return C4ChatDlg::ToggleChat();
+}
+
+C4Value C4Game::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
+{
+	// call objects first - scenario script might overwrite hostility, etc...
+	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	// rejection tests abort on first nonzero result
+	if (fRejectTest) if (!!vResult) return vResult;
+	// scenario script call
+	return ::GameScript.Call(szFunction, pPars, fPassError);
 }
 
 void C4Game::SetDefaultGamma()

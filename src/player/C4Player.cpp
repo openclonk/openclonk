@@ -328,7 +328,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		{
 			// player preinit: In case a team needs to be chosen first, no InitializePlayer-broadcast is done
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
-			::GameScript.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
+			::Game.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
 			// direct init
 			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 		}
@@ -658,7 +658,7 @@ bool C4Player::ScenarioInit()
 	if (Team) SetTeamHostility();
 
 	// Scenario script initialization
-	::GameScript.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
+	::Game.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
 	                        C4VInt(ptx),
 	                        C4VInt(pty),
 	                        C4VObj(FirstBase),
@@ -715,7 +715,7 @@ bool C4Player::SetWealth(int32_t iVal)
 
 	Wealth=Clamp<int32_t>(iVal,0,1000000000);
 
-	::GameScript.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
+	::Game.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
 	return true;
 }

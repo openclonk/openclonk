@@ -111,7 +111,6 @@ public:
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
-	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 	C4Value ScenPropList;
 	C4Value ScenPrototype;
 };

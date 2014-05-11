@@ -790,14 +790,14 @@ static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHost
 	// do rejection test first
 	if (!fNoCalls)
 	{
-		if (!!::GameScript.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile)), true, true))
+		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile)), true, true))
 			return false;
 	}
 	// OK; set hostility
 	bool fOldHostility = ::Players.HostilityDeclared(iPlr, iPlr2);
 	if (!pPlr->SetHostility(iPlr2,fHostile, fSilent)) return false;
 	// calls afterwards
-	::GameScript.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
+	::Game.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
 	return true;
 }
 
@@ -1348,7 +1348,7 @@ static C4Value FnGameCallEx(C4PropList * _this, C4Value * Pars)
 	// copy parameters
 	C4AulParSet ParSet(&Pars[1], 9);
 	// Call
-	return ::GameScript.GRBroadcast(fn->GetCStr(), &ParSet, true);
+	return ::Game.GRBroadcast(fn->GetCStr(), &ParSet, true);
 }
 
 static C4Object * FnEditCursor(C4PropList * _this)
@@ -2340,7 +2340,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	// ask script if it's allowed
 	if (!fNoCalls)
 	{
-		if (!!::GameScript.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam)), true, true))
+		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam)), true, true))
 			return false;
 	}
 	// exit previous team
@@ -2373,7 +2373,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	}
 	// do callback to reflect change in scenario
 	if (!fNoCalls)
-		::GameScript.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam), C4VInt(idOldTeam)), true);
+		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam), C4VInt(idOldTeam)), true);
 	return true;
 }
 

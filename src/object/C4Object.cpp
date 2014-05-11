@@ -1152,7 +1152,7 @@ void C4Object::AssignDeath(bool fForced)
 	// Now, it is done for every crew member)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
-			::GameScript.GRBroadcast(PSF_RelaunchPlayer,
+			::Game.GRBroadcast(PSF_RelaunchPlayer,
 			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer),Status ? C4VObj(this) : C4VNull));
 	if (pInfo)
 		pInfo->HasDied = false;
