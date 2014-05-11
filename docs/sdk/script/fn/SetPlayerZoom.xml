@@ -56,6 +56,10 @@
                 <literal_col>PLRZOOM_LimitMax</literal_col>
                 <col>Set the maximum limit for zooming. The player cannot zoom in further than this.</col>
               </row>
+              <row>
+                <literal_col>PLRZOOM_Set</literal_col>
+                <col>Set the current zoom. This flag is implied if neither PLRZOOM_LimitMin nor PLRZOOM_LimitMax is supplied but can be used if current zoom and limits should be set simultanuously.</col>
+              </row>
             </table>
           </desc>
         </param>
