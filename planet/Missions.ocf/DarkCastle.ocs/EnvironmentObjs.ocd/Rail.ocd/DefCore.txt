@@ -5,3 +5,4 @@ Width=20
 Height=12
 Offset=-10,-6
 StretchGrowth=1
+Rotate=1
