@@ -80,11 +80,12 @@
     </examples>
     <related>
       <funclink>SetPlayerZoomByViewRange</funclink>
+      <funclink>GetPlayerZoomLimits</funclink>
       <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>
       <funclink>SetFoW</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2010-09</date>
+  <author>Sven2</author><date>2014-03</date>
 </funcs>

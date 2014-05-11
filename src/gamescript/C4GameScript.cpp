@@ -716,6 +716,24 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long plr_idx, long ra
 	return true;
 }
 
+static C4PropList *FnGetPlayerZoomLimits(C4PropList * _this, long plr_idx)
+{
+	// get player
+	C4Player *plr = ::Players.Get(plr_idx);
+	if (!plr) return NULL;
+	// collect limits in a prop list
+	// if neither width not height is set for zoom limits, return engine defaults.
+	C4PropList *result = C4PropList::New();
+	if (!result) return NULL;
+	result->SetPropertyByS(::Strings.RegString("MaxWidth"), C4VInt((plr->ZoomLimitMaxWdt || plr->ZoomLimitMaxHgt) ? plr->ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX));
+	result->SetPropertyByS(::Strings.RegString("MaxHeight"), C4VInt(plr->ZoomLimitMaxHgt));
+	result->SetPropertyByS(::Strings.RegString("MaxValue"), C4VInt(fixtoi(plr->ZoomLimitMaxVal, 100)));
+	result->SetPropertyByS(::Strings.RegString("MinWidth"), C4VInt((plr->ZoomLimitMinWdt || plr->ZoomLimitMinHgt) ? plr->ZoomLimitMinWdt : C4VP_DefMinViewRangeX));
+	result->SetPropertyByS(::Strings.RegString("MinHeight"), C4VInt(plr->ZoomLimitMinHgt));
+	result->SetPropertyByS(::Strings.RegString("MinValue"), C4VInt(fixtoi(plr->ZoomLimitMinVal, 100)));
+	return result;
+}
+
 static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long precision, long flags)
 {
 	// parameter safety. 0/0 means "reset to default".
@@ -2520,6 +2538,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetClimate", FnSetClimate);
 	AddFunc(pEngine, "GetClimate", FnGetClimate);
 	AddFunc(pEngine, "SetPlayerZoomByViewRange", FnSetPlayerZoomByViewRange);
+	AddFunc(pEngine, "GetPlayerZoomLimits", FnGetPlayerZoomLimits);
 	AddFunc(pEngine, "SetPlayerZoom", FnSetPlayerZoom);
 	AddFunc(pEngine, "SetPlayerViewLock", FnSetPlayerViewLock);
 	AddFunc(pEngine, "DoBaseMaterial", FnDoBaseMaterial);

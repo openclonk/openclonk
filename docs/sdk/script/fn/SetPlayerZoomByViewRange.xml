@@ -79,6 +79,7 @@
     </examples>
     <related>
       <funclink>SetPlayerZoom</funclink>
+      <funclink>GetPlayerZoomLimits</funclink>
       <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>
