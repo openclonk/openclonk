@@ -1,7 +1,0 @@
-[DefCore]
-id=EnvPack_Guidepost
-Category=C4D_StaticBack
-Width=10
-Height=36
-Offset=-5,-18
-StretchGrowth=1
