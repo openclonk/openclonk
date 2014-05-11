@@ -9,6 +9,8 @@ static const S2DD_InitialRelaunchs = 0;
 
 static g_is_initialized;
 
+static g_shroom1, g_shroom2, g_shroom3, g_shroom4, g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
+
 func DoInit(int first_player)
 {
 	// Goal
