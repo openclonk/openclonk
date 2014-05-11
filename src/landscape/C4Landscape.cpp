@@ -559,16 +559,17 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
 						if (pObj && pObj->Status) pObj->Call(PSF_OnDugOut, &pars);
 						// Try to collect object
-						if(::MaterialMap.Map[mat].Dig2ObjectCollect && pCollect && pObj)
-							if(!pCollect->Collect(pObj))
-								// Collection forced? Don't generate objects
-								if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
-								{
-									pObj->AssignRemoval();
-									// Cap so we never have more than one object ´worth of material in the store
-									mat_list->Amount[mat] = ::MaterialMap.Map[mat].Dig2ObjectRatio;
-									break;
-								}
+						if(::MaterialMap.Map[mat].Dig2ObjectCollect)
+							if(pCollect && pCollect->Status && pObj && pObj->Status)
+								if(!pCollect->Collect(pObj))
+									// Collection forced? Don't generate objects
+									if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
+									{
+										pObj->AssignRemoval();
+										// Cap so we never have more than one object ´worth of material in the store
+										mat_list->Amount[mat] = ::MaterialMap.Map[mat].Dig2ObjectRatio;
+										break;
+									}
 						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 					}
 		}
