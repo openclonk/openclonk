@@ -222,7 +222,7 @@ func DrawTunnels()
 
 func DrawStart()
 {
-	Draw("Tunnel", nil, [0, start_cave.Y - 4, start_cave.X, 4]);
+	Draw("Tunnel", nil, [0, start_cave.Y - 8, start_cave.X + 4, 8]);
 	Draw("Brick", nil, [0, start_cave.Y, start_cave.X-2, 1]);
 	return true;
 }
@@ -235,7 +235,7 @@ func DrawEnd()
 
 protected func InitializeMap(map)
 {
-	map->Resize(300,300);
+	map->Resize(270,270);
 
 	FindCaves(200);
 	FindCaveConnections();
