@@ -1511,6 +1511,7 @@ set(OC_C4GROUPS
 	Sound.ocg
 	System.ocg
 	Objects.ocd
+	Decoration.ocd
 	Arena.ocf
 	Parkour.ocf
 	Missions.ocf
