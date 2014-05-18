@@ -982,9 +982,6 @@ add_executable(c4group
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/platform/StdScheduler.cpp
-	src/platform/StdSchedulerWin32.cpp
-	src/platform/StdSchedulerPoll.cpp
 	src/netpuncher/main.cpp
 )
 
