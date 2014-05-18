@@ -159,6 +159,7 @@ public:
 	char LastPassword[CFG_MaxString+1];
 	char AlternateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
+	StdCopyStrBuf LastLeagueServer, LastLeaguePlayerName, LastLeagueAccount, LastLeagueLoginToken;
 #ifdef WITH_AUTOMATIC_UPDATE
 	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
@@ -169,6 +170,8 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 	const char *GetLeagueServerAddress();
 	void CheckPortsForCollisions();
+	void SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken);
+	bool GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const;
 };
 
 class C4ConfigStartup

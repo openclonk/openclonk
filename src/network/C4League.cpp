@@ -50,13 +50,15 @@ void C4LeagueRequestHead::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Password, StdCompiler::RCT_All), "Password", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(NewAccount, StdCompiler::RCT_All), "NewAccount", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(NewPassword, StdCompiler::RCT_All), "NewPassword", ""));
+	pComp->Value(mkNamingAdapt(fRememberLogin, "RememberLogin", false));
 
 }
 
-void C4LeagueRequestHead::SetAuth(const char *szAccount, const char *szPassword)
+void C4LeagueRequestHead::SetAuth(const char *szAccount, const char *szPassword, bool fRememberLogin)
 {
 	Account = szAccount;
 	Password = szPassword;
+	this->fRememberLogin = fRememberLogin;
 }
 
 void C4LeagueRequestHead::SetNewAccount(const char *szNewAccount)
@@ -107,6 +109,7 @@ void C4LeagueResponseHead::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_All), "AUID", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(FBID, StdCompiler::RCT_All), "FBID", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LoginToken, StdCompiler::RCT_All), "LoginToken", ""));
 }
 
 // *** C4LeagueResponseHeadStart
@@ -401,12 +404,12 @@ bool C4LeagueClient::GetEndReply(StdStrBuf *pMessage, C4RoundResultsPlayers *pRo
 	return Head.isSuccess();
 }
 
-bool C4LeagueClient::Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount, const char *szNewPassword)
+bool C4LeagueClient::Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount, const char *szNewPassword, bool fRememberLogin)
 {
 	// Build header
 	eCurrAction = C4LA_PlrAuth;
 	C4LeagueRequestHead Head(eCurrAction);
-	Head.SetAuth(szAccount, szPassword);
+	Head.SetAuth(szAccount, szPassword, fRememberLogin);
 	if (szNewAccount)
 		Head.SetNewAccount(szNewAccount);
 	if (szNewPassword)
@@ -421,7 +424,7 @@ bool C4LeagueClient::Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, co
 	return Query(QueryText.getData(), false);
 }
 
-bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister)
+bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister, StdStrBuf *pLoginToken)
 {
 	C4LeagueResponseHead Head;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Reply"))
@@ -433,6 +436,8 @@ bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrB
 		pAccount->Copy(Head.getAccount());
 	if (pRegister)
 		*pRegister = Head.isStatusRegister();
+	if (pLoginToken)
+		pLoginToken->Copy(Head.getLoginToken());
 	// No success?
 	if (!Head.isSuccess())
 		return false;
@@ -509,8 +514,8 @@ bool C4LeagueClient::GetReportDisconnectReply(StdStrBuf *pMessage)
 
 // *** C4LeagueSignupDialog
 
-C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister)
-		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName)
+C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin)
+		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName), pChkRememberLogin(NULL)
 {
 	// get positions
 	C4GUI::ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
@@ -569,6 +574,11 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 		AddElement(pEdtPass = new C4GUI::LabeledEdit(caMain.GetFromTop(iCtrlHeight), szEdtPassCaption, fSideEdits, szPassPref));
 		// No second password edit box
 		pEdtPass2 = NULL;
+		// remember login-checkbox
+		const char *szRememberPasswordCaption = LoadResStr("IDS_CTL_LEAGUE_CHK_REMEMBERLOGIN");
+		C4GUI::CheckBox::GetStandardCheckBoxSize(NULL, &iCtrlHeight, szRememberPasswordCaption, NULL);
+		AddElement(pChkRememberLogin = new C4GUI::CheckBox(caMain.GetFromTop(iCtrlHeight), szRememberPasswordCaption, fRememberLogin));
+		pChkRememberLogin->SetToolTip(LoadResStr("IDS_DESC_REMEMBERLOGIN"));
 	}
 	// Set password box options
 	pEdtPass->GetEdit()->SetPasswordMask('*');
@@ -646,12 +656,12 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 	Dialog::UserClose(fOK);
 }
 
-bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psCUID, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister)
+bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psCUID, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister, bool *pfRememberLogin)
 {
 	// show league signup dlg modally; return whether user pressed OK and change user and pass buffers in that case
 	assert(psCUID); assert(psPass);
 	if (!psCUID || !psPass) return false;
-	C4LeagueSignupDialog *pDlg = new C4LeagueSignupDialog(szPlayerName, szLeagueName, szLeagueServerName, psCUID->getData(), psPass->getData(), fWarnThirdParty, fRegister);
+	C4LeagueSignupDialog *pDlg = new C4LeagueSignupDialog(szPlayerName, szLeagueName, szLeagueServerName, psCUID->getData(), psPass->getData(), fWarnThirdParty, fRegister, *pfRememberLogin);
 	bool fResult = ::pGUI->ShowModalDlg(pDlg, false);
 	if (fResult)
 	{
@@ -660,6 +670,7 @@ bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLea
 			psPass->Copy(pDlg->GetPass());
 		else
 			psPass->Clear();
+		*pfRememberLogin = pDlg->GetRememberLogin();
 	}
 	delete pDlg;
 	return fResult;

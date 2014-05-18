@@ -2252,59 +2252,32 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 	LeagueWaitNotBusy();
 
 	// Official league?
-	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "clonk.de");
-
-	// Try to auth with WebCode, if it's an official league server and we have valid registration information
-	bool fWebCode = fOfficialLeague && *Config.GetRegistrationData("Cuid");
+	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "league.openclonk.org");
 
 	StdStrBuf Account, Password;
-	bool fRegister = false;
+	bool fRememberLogin = false;
+
+	// Default password from login token if present
+	if (Config.Network.GetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), &Account, &Password))
+	{
+		fRememberLogin = (Password.getLength()>0);
+	}
+	else
+	{
+		Account.Copy(pInfo->GetName());
+	}
 
 	for (;;)
 	{
-
-		StdStrBuf NewAccount, NewPassword;
-
-		// Default authentication data
-		if (!Account.getLength()) Account.Copy(Config.GetRegistrationData("Cuid"));
-
-		// Try first auth with local CUID and WebCode
-		if (fWebCode)
-		{
-
-			// Default authentication data
-			Password.Copy(Config.GetRegistrationData("WebCode"));
-		};
-
-		// Ask for registration information
-		if (fRegister)
-		{
-			// Use local nick as default
-			NewAccount.Copy(Config.Network.Nick);
-			if (Config.Network.Nick.getLength() == 0)
-				NewAccount.Copy(Config.GetRegistrationData("Nick"));
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &NewAccount, &NewPassword, !fOfficialLeague, true))
-				return false;
-			if (!NewPassword.getLength())
-				NewPassword.Copy(Password);
-		}
-		else if (!fWebCode)
-		{
-
-			// CUID is default for account, no default password
-			Password.Clear();
-
-			// ask for account
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false))
-				return false;
-
-		}
+		// ask for account name and password
+		if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), Account.getData(), pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false, &fRememberLogin))
+			return false;
 
 		// safety (modal dlg may have deleted network)
 		if (!pLeagueClient) return false;
 
 		// Send authentication request
-		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NewAccount.getLength() ? NewAccount.getData() : NULL, NewPassword.getLength() ? NewPassword.getData() : NULL))
+		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NULL, NULL, fRememberLogin))
 			return false;
 
 		// safety (modal dlg may have deleted network)
@@ -2344,12 +2317,15 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		}
 
 		// Success?
-		StdStrBuf AUID, AccountMaster; bool fUnregistered = false;
-		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered))
+		StdStrBuf AUID, AccountMaster, LoginToken; bool fUnregistered = false;
+		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered, &LoginToken))
 		{
 
 			// Set AUID
 			pInfo->SetAuthID(AUID.getData());
+
+			// Remember login data; set or clear login token
+			Config.Network.SetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), Account.getData(), fRememberLogin ? LoginToken.getData() : "");
 
 			// Show welcome message, if any
 			bool fSuccess;
@@ -2378,24 +2354,10 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		else
 		{
 
-			// Error with first-time registration or manual password entry
-			if ((!fWebCode && !fUnregistered) || fRegister)
-			{
-				LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
+			// Authentification error
+			LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
 				::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESERVERMSG"), Message.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPFAILED"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-				// after a league server error message, always fall-through to try again
-			}
-
-		}
-
-		// Autommatic attempt?
-		if ((fWebCode || fUnregistered) && !fRegister)
-		{
-			// No account yet? Try to register.
-			if (fUnregistered)
-				fRegister = true;
-			else
-				fWebCode = false;
+			// after a league server error message, always fall-through to try again
 		}
 
 		// Try given account name as default next time

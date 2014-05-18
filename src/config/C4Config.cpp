@@ -162,7 +162,10 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
 
 	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "clonk.de:11115")); // maybe store default for this one?
-
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeaguePlayerName, StdCompiler::RCT_All), "LastLeaguePlayerName", ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueAccount, StdCompiler::RCT_All),    "LastLeagueAccount",    ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueLoginToken, StdCompiler::RCT_All), "LastLeagueLoginToken", ""            ));
 }
 
 void C4ConfigLobby::CompileFunc(StdCompiler *pComp)
@@ -594,6 +597,29 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 		PortDiscovery = C4NetStdPortDiscovery;
 	}
 }
+
+void C4ConfigNetwork::SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken)
+{
+	// ideally, there would be a list to store multiple logins
+	// however, we don't really support multiplayer at one computer at the moment anyway
+	LastLeagueServer.Copy(szServer);
+	LastLeaguePlayerName.Copy(szPlayerName);
+	LastLeagueAccount.Copy(szAccount);
+	LastLeagueLoginToken.Copy(szLoginToken);
+}
+
+bool C4ConfigNetwork::GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const
+{
+	// check if last login matches and store if desired
+	if (LastLeagueServer == szServer && LastLeaguePlayerName == szPlayerName)
+	{
+		pAccount->Copy(LastLeagueAccount);
+		pLoginToken->Copy(LastLeagueLoginToken);
+		return true;
+	}
+	return false;
+}
+
 void C4ConfigControls::ResetKeys()
 {
 	UserSets.Clear();
