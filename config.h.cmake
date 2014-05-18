@@ -1,6 +1,3 @@
-/* Activate DebugRecs */
-#cmakedefine DEBUGREC 1
-
 /* Generate minidumps on crash */
 #cmakedefine HAVE_DBGHELP 1
 
