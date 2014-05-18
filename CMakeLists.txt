@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.6.0)
+cmake_minimum_required (VERSION 2.8.4)
 project (openclonk CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -581,33 +581,10 @@ endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4CrashHandlerWin32.cpp
+		src/res/engine.rc
 		src/res/resource.h
 	)
-
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/res/openclonk.manifest" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.manifest" COPYONLY)
-
-	if(MINGW)
-		# cmake does not support compiling resources with MinGW
-		# natively, see http://www.cmake.org/Bug/view.php?id=4068.
-		# cross-compiler sets CMAKE_RC_COMPILER in toolchain file
-		if(NOT CMAKE_RC_COMPILER)
-			SET(CMAKE_RC_COMPILER windres)
-		endif()
-
-		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_BINARY_DIR}
-		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
-		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc)
-
-		list(APPEND OC_SYSTEM_SOURCES
-			${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		)
-	else(MINGW)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/res/engine.rc
-		)
-	endif(MINGW)
 endif()
 
 # source files specific to a GUI library
