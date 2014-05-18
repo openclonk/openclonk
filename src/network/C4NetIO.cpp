@@ -2018,7 +2018,7 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 
 	// adjust maximum block time
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
-	uint32_t iMaxBlock = GetNextTick(tNow) - tNow;
+	uint32_t iMaxBlock = Max(tNow, GetNextTick(tNow)) - tNow;
 	if (iMaxTime == TO_INF || iMaxTime > (int) iMaxBlock) iMaxTime = iMaxBlock;
 
 	// execute subclass
