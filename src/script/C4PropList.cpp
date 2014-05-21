@@ -643,7 +643,17 @@ C4Value C4PropList::Call(const char * s, C4AulParSet *Pars, bool fPassErrors)
 	if (!Status) return C4Value();
 	assert(s && s[0]);
 	C4AulFunc *pFn = GetFunc(s);
-	if (!pFn) return C4Value();
+	if (!pFn)
+	{
+		if (s[0] != '~')
+		{
+			C4AulExecError err(FormatString("Undefined function: %s", s).getData());
+			if (fPassErrors)
+				throw err;
+			err.show();
+		}
+		return C4Value();
+	}
 	return pFn->Exec(this, Pars, fPassErrors);
 }
 
