@@ -997,11 +997,7 @@ bool C4Object::ExecLife()
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (GetPropertyInt(P_ContactIncinerate) > 0)
 				{
-					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
-					if (pCallFunc)
-					{
-						pCallFunc->Exec(this, &C4AulParSet());
-					}
+					Call(PSF_OnInIncendiaryMaterial, &C4AulParSet());
 				}
 
 	// birthday

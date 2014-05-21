@@ -618,7 +618,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 		if (C >= '!' && C <= '~')
 			throw C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
 		else
-			throw C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
+			throw C4AulParseError(this, FormatString("unexpected character \\x%x found", (int)(unsigned char) C).getData());
 	}
 }
 

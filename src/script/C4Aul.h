@@ -346,6 +346,10 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
+	C4AulFunc * GetFirstFunc(C4String * Name)
+	{ return FuncLookUp.GetFirstFunc(Name); }
+	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
+	{ return FuncLookUp.GetNextSNFunc(After); }
 	C4Value GlobalPropList;
 	C4AulScript *Child0, *ChildL; // tree structure
 
@@ -373,12 +377,10 @@ public:
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink, link and parse all scripts
 	virtual C4PropListStatic * GetPropList();
+	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false)
+	{ return GetPropList()->Call(k, pPars, fPassErrors); }
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, const char *szLanguage); // search script and reload, if found
-	C4AulFunc * GetFirstFunc(C4String * Name)
-	{ return FuncLookUp.GetFirstFunc(Name); }
-	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
-	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
 	std::list<const char*> GetFunctionNames(C4PropList *);

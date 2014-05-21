@@ -489,10 +489,7 @@ void C4ControlPlayerMouse::Execute() const
 	
 	// Do call
 	if (!callback_name) return;
-	if (callback_name[0] == '~') ++callback_name;
-	C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
-	if (!callback) return;
-	callback->Exec(nullptr, &pars);
+	::ScriptEngine.Call(callback_name, &pars);
 }
 
 void C4ControlPlayerMouse::CompileFunc(StdCompiler *pComp)
@@ -701,9 +698,7 @@ void C4ControlPlayerAction::Execute() const
 		
 		// Proxy the hostility change through C4Aul, in case a script wants to capture it
 		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(param_int != 0));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetHostility"));
-		assert(callback); // this should always exist since the engine provides a default implementation
-		callback->Exec(nullptr, &pars);
+		::ScriptEngine.Call("SetHostility", &pars);
 		break;
 	}
 
@@ -718,9 +713,7 @@ void C4ControlPlayerAction::Execute() const
 
 		// Proxy the team switch through C4Aul, in case a script wants to capture it
 		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetPlayerTeam"));
-		assert(callback);
-		callback->Exec(nullptr, &pars);
+		::ScriptEngine.Call("SetPlayerTeam", &pars);
 		break;
 	}
 
@@ -728,9 +721,7 @@ void C4ControlPlayerAction::Execute() const
 	{
 		// Proxy the call through C4Aul, in case a script wants to capture it
 		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("InitScenarioPlayer"));
-		assert(callback);
-		callback->Exec(nullptr, &pars);
+		::ScriptEngine.Call("InitScenarioPlayer", &pars);
 		break;
 	}
 
@@ -738,9 +729,6 @@ void C4ControlPlayerAction::Execute() const
 	{
 		// Notify scripts about player control selection
 		const char *callback_name = PSF_InitializePlayerControl;
-		if (callback_name[0] == '~') ++callback_name;
-		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
-		if (!callback) return;
 		
 		C4AulParSet pars(C4VInt(source_player->Number));
 		// If the player is using a control set, its name is stored in param_str
@@ -751,7 +739,7 @@ void C4ControlPlayerAction::Execute() const
 			pars[3] = C4VBool(CPA_IPC_HasMouse == (param_int & CPA_IPC_HasMouse));
 			pars[4] = C4VBool(CPA_IPC_HasGamepad == (param_int & CPA_IPC_HasGamepad));
 		}
-		callback->Exec(nullptr, &pars);
+		::ScriptEngine.Call(callback_name, &pars);
 		break;
 	}
 
