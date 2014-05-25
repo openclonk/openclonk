@@ -20,8 +20,6 @@
 #include "C4Include.h"
 #include <StdSync.h>
 
-#include <sys/timeb.h>
-
 //------------------------------------- Basics ----------------------------------------
 
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
