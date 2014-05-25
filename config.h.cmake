@@ -124,7 +124,7 @@
 #cmakedefine HAVE_X11_KEYSYM_H 1
 
 /* Define as const if the declaration of iconv() needs const. */
-#cmakedefine ICONV_CONST
+#define ICONV_CONST @ICONV_CONST@
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1

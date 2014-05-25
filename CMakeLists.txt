@@ -750,11 +750,6 @@ endif()
 CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
-
-if(HAVE_ICONV)
-	SET(ICONV_CONST ON)
-endif()
 
 ############################################################################
 # Locate necessary libraries
@@ -808,11 +803,13 @@ include(CheckCXXSymbolExists)
 check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
 check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
-if(HAVE_ICONV)
-	check_cxx_symbol_exists(iconv iconv.h HAVE_ICONV_WO_LINK)
-	mark_as_advanced(HAVE_ICONV_WO_LINK)
-	if(NOT HAVE_ICONV_WO_LINK)
-		FINDLIB(ICONV_LIBRARY NAMES iconv)
+find_package(ICONV)
+
+if(ICONV_FOUND)
+	set(HAVE_ICONV true)
+
+	if(ICONV_IS_CONST)
+		set(ICONV_CONST "const")
 	endif()
 endif()
 
@@ -1067,7 +1064,7 @@ target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
-	${ICONV_LIBRARY}
+	${ICONV_LIBRARIES}
 	${EXECINFO_LIBRARY}
 	libc4script
 	libmisc
