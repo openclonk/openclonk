@@ -456,7 +456,7 @@ void C4ConfigGeneral::DeterminePaths()
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
 	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
-#elif defined(__linux__)
+#else
 
 #ifdef OC_SYSTEM_DATA_DIR
 #ifdef WITH_AUTOMATIC_UPDATE
@@ -479,10 +479,10 @@ void C4ConfigGeneral::DeterminePaths()
 	else
 #if defined(_WIN32)
 		SCopy("%APPDATA%\\" C4ENGINENAME, UserDataPath);
-#elif defined(__linux__)
-		SCopy("$HOME/.clonk/" C4ENGINENICK, UserDataPath);
 #elif defined(__APPLE__)
 		SCopy("$HOME/Library/Application Support/" C4ENGINENAME, UserDataPath);
+#else
+		SCopy("$HOME/.clonk/" C4ENGINENICK, UserDataPath);
 #endif
 	C4Config::ExpandEnvironmentVariables(UserDataPath, CFG_MaxString);
 	AppendBackslash(UserDataPath);
