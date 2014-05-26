@@ -95,15 +95,23 @@ bool C4Application::DoInit(int argc, char * argv[])
 			Config.Load();
 		}
 	}
+	// Open log
+	OpenLog();
+
+	Revision.Ref(C4REVISION);
+
+	// Engine header message
+	Log(C4ENGINEINFOLONG);
+	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
+	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
+	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);
+	LogF("UserDataPath: \"%s\"", Config.General.UserDataPath);
+
 	// Init C4Group
 	C4Group_SetProcessCallback(&ProcessCallback);
 	C4Group_SetTempPath(Config.General.TempPath.getData());
 	C4Group_SetSortList(C4CFN_FLS);
 
-	// Open log
-	OpenLog();
-
-	Revision.Ref(C4REVISION);
 
 	// Initialize game data paths
 	Reloc.Init();
@@ -160,10 +168,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	// init timers (needs window)
 	Add(pGameTimer = new C4ApplicationGameTimer());
-
-	// Engine header message
-	Log(C4ENGINEINFOLONG);
-	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize OpenGL
 	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);

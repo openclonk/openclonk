@@ -76,7 +76,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	}
 	if (Priv->xrandr_major_version >= 0)
 	{
-		LogF("Using XRandR version %d.%d", Priv->xrandr_major_version, Priv->xrandr_minor_version);
 		XRRSelectInput(dpy, DefaultRootWindow(dpy), RRScreenChangeNotifyMask);
 	}
 	else

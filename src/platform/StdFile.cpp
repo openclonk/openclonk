@@ -1014,7 +1014,7 @@ void DirectoryIterator::Read(const char *dirname)
 			return;
 		default:
 			// Something else broke
-			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			LogF("DirectoryIterator::Read(\"%s\"): %s", dirname, strerror(errno));
 			return;
 		}
 	}

@@ -456,20 +456,15 @@ void C4ConfigGeneral::DeterminePaths()
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
 	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
-#else
-
-#ifdef OC_SYSTEM_DATA_DIR
-#ifdef WITH_AUTOMATIC_UPDATE
+#elif defined(WITH_AUTOMATIC_UPDATE)
 	// WITH_AUTOMATIC_UPDATE builds are our tarball releases and
 	// development snapshots, i.e. where the game data is at the
 	// same location as the executable.
 	SCopy(ExePath.getMData(),SystemDataPath);
-#else
+#elif defined(OC_SYSTEM_DATA_DIR)
 	SCopy(OC_SYSTEM_DATA_DIR, SystemDataPath);
-#endif
 #else
 #error Please define OC_SYSTEM_DATA_DIR!
-#endif
 #endif
 	AppendBackslash(SystemDataPath);
 
