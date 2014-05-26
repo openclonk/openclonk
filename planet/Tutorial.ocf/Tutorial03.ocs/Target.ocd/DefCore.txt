@@ -9,6 +9,5 @@ Vertices=3
 VertexX=0,10,-10
 VertexY=-6,6,6
 VertexFriction=50
-Value=10
 Mass=15
 Rotate=1

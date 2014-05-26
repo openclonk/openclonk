@@ -1,7 +1,6 @@
 [DefCore]
 id=Trajectory
 Version=4,10
-Value=0
 Category=1
 Width=1
 Height=1

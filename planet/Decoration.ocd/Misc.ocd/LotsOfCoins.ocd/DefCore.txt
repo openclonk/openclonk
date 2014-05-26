@@ -5,6 +5,5 @@ Category=C4D_StaticBack
 Width=55
 Height=17
 Offset=-27,-8
-Value=1000
 Mass=1000
 Components=GoldBar=20

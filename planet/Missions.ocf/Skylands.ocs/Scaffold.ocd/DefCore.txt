@@ -9,7 +9,6 @@ Vertices=4
 VertexX=-15,15,-15,15
 VertexY=-15,-15,15,15
 VertexFriction=50,50,100,100
-Value=20
 Mass=1000
 Components=Wood=1
 Exclusive=1
