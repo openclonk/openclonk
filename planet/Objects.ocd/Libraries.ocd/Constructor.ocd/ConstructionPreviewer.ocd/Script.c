@@ -26,11 +26,12 @@ func Set(id to_construct, object constructing_clonk)
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;
-	this->AdjustPreview();
+	AdjustPreview(structure->~IsBelowSurfaceConstruction());
+	return;
 }
 
 // Positions the preview according to the landscape, coloring it green, yellow or red
-func AdjustPreview(bool look_up, bool no_call)
+func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 {
 	var half_y = dimension_y / 2;
 	// Do only if not sticking to another object
@@ -40,22 +41,27 @@ func AdjustPreview(bool look_up, bool no_call)
 		var search_dir = 1;
 		if (look_up) search_dir = -1;
 		var x = 0, y = 0, fail = false;
-		while(!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
+		while (!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
 		{
 			y += search_dir;
-			if (Abs(y) > dimension_y/2)
+			if (Abs(y) > half_y)
 			{
 				fail = true;
 				break;
 			}
 		}
+
 		if (fail && !no_call)
-			return this->AdjustPreview(!look_up, true);
+			return AdjustPreview(below_surface, !look_up, true);
 		if (fail)
 			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
-		SetPosition(GetX(), GetY() + y);
+		// Position depends on whether the object should below surface.
+		if (!below_surface)
+			SetPosition(GetX(), GetY() + y);
+		else
+			SetPosition(GetX(), GetY() + y + dimension_y + 1);
 	}
-	if (!CheckConstructionSite(structure, 0, half_y))
+	if (!below_surface && !CheckConstructionSite(structure, 0, half_y))
 		fail = true;
 	else
 	// intersection-check with all other construction sites... bah
@@ -126,7 +132,7 @@ func Reposition(int x, int y)
 	}
 
 	SetPosition(x, y);
-	this->AdjustPreview();
+	AdjustPreview(structure->~IsBelowSurfaceConstruction());
 }
 
 // Flips the preview horizontally

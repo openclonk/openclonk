@@ -162,7 +162,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
-	if (!CheckConstructionSite(structure_id, x, y))
+	if (!CheckConstructionSite(structure_id, x, y) && !structure_id->~IsBelowSurfaceConstruction())
 	{
 		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
 		return false;
