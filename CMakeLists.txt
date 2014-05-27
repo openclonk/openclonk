@@ -1558,8 +1558,8 @@ if (NOT APPLE)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 
 	# Install binaries
-	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk DESTINATION games/)
-	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+	install(TARGETS openclonk DESTINATION games)
+	install(TARGETS c4group DESTINATION bin)
 else()
 	install(TARGETS openclonk
 		BUNDLE DESTINATION .
