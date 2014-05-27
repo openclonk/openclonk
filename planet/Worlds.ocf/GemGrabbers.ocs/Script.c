@@ -81,7 +81,7 @@ protected func InitializePlayer(int plr)
 // Give the relevant knowledge to each player.
 private func GivePlayerKnowledge(int plr)
 {
-	var structures = [Flagpole, WindGenerator, SteamEngine, Compensator, Foundry, Sawmill, Elevator, Pump, ToolsWorkshop, ChemicalLab, Armory, Chest, Windmill, Kitchen];
+	var structures = [Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Foundry, Sawmill, Elevator, Pump, ToolsWorkshop, ChemicalLab, Armory, Chest, Windmill, Kitchen];
 	var items = [Loam, GoldBar, Metal, Shovel, Axe, Hammer, Pickaxe, Barrel, Bucket, Dynamite, DynamiteBox, PowderKeg, Pipe, TeleGlove, WindBag, GrappleBow, Boompack, Balloon];
 	var weapons = [Bow, Arrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher];
 	var vehicles = [Lorry, Catapult, Cannon, Airship, Plane];
