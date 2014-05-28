@@ -816,6 +816,14 @@ if(HAVE_ICONV)
 	endif()
 endif()
 
+if(HAVE_EXECINFO_H)
+	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
+	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
+	if(NOT HAVE_EXECINFO_WO_LINK)
+		FINDLIB(EXECINFO_LIBRARY execinfo)
+	endif()
+endif()
+
 if(HAVE_NATUPNP_H)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPWin32.cpp
@@ -1060,6 +1068,7 @@ target_link_libraries(openclonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
+	${EXECINFO_LIBRARY}
 	libc4script
 	libmisc
 )
