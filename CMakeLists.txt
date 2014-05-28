@@ -57,6 +57,12 @@ endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
+# We link Boost statically because that makes it easier for us to distribute
+# the resulting binary. Distributions have the ability to guarantee a certain
+# version of the library exists on the system though, so they may prefer
+# dynamic linking.
+option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
+
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
 
@@ -77,7 +83,6 @@ foreach(FLAG ${OC_CXX_FLAGS})
 	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
 endforeach()
 
-set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
@@ -92,17 +97,6 @@ CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATI
 # time, so the test below works.
 CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
 CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
-
-# Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
-# otherwise they are used for C library checks as well and the C compiler bails
-# out because it does not understand -std=gnu++0x
-set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
-
-# We link Boost statically because that makes it easier for us to distribute
-# the resulting binary. Distributions have the ability to guarantee a certain
-# version of the library exists on the system though, so they may prefer
-# dynamic linking.
-option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
@@ -731,6 +725,7 @@ include_directories(
 # Check for required system headers
 ############################################################################
 include(CheckIncludeFileCXX)
+include(CheckIncludeFilesCXX)
 CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
 CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
 CHECK_INCLUDE_FILE_CXX(locale.h HAVE_LOCALE_H)
@@ -753,13 +748,8 @@ if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
 endif()
 CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
-
-# ck 09-09-20: The following headers require Xlib.h for things such as
-# 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
-# as a CXX version (yet?).
-include(CheckIncludeFiles)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
 
 if(HAVE_ICONV)
