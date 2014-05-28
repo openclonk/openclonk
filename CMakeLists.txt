@@ -756,38 +756,6 @@ if(HAVE_ICONV)
 	SET(ICONV_CONST ON)
 endif()
 
-include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
-CHECK_SYMBOL_EXISTS(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
-
-if(HAVE_ICONV)
-	CHECK_SYMBOL_EXISTS(iconv iconv.h HAVE_ICONV_WO_LINK)
-	mark_as_advanced(HAVE_ICONV_WO_LINK)
-
-	if(NOT HAVE_ICONV_WO_LINK)
-		FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
-		MARK_AS_ADVANCED( ICONV_LIBRARY )
-	endif()
-endif()
-
-if(HAVE_NATUPNP_H)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPWin32.cpp
-	)
-else()
-	FIND_PACKAGE(Upnp)
-	SET(HAVE_UPNP ${UPNP_FOUND})
-	if(UPNP_FOUND)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPLinux.cpp
-		)
-	else()
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPDummy.cpp
-		)
-	endif()
-endif()
-
 ############################################################################
 # Locate necessary libraries
 ############################################################################
@@ -835,6 +803,36 @@ macro(FINDLIB lib)
 	find_library(${ARGV})
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
+
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
+check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
+
+if(HAVE_ICONV)
+	check_cxx_symbol_exists(iconv iconv.h HAVE_ICONV_WO_LINK)
+	mark_as_advanced(HAVE_ICONV_WO_LINK)
+	if(NOT HAVE_ICONV_WO_LINK)
+		FINDLIB(ICONV_LIBRARY NAMES iconv)
+	endif()
+endif()
+
+if(HAVE_NATUPNP_H)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPWin32.cpp
+	)
+else()
+	FIND_PACKAGE(Upnp)
+	SET(HAVE_UPNP ${UPNP_FOUND})
+	if(UPNP_FOUND)
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPLinux.cpp
+		)
+	else()
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPDummy.cpp
+		)
+	endif()
+endif()
 
 if(USE_CONSOLE)
 	find_package(Readline)
