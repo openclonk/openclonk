@@ -21,6 +21,7 @@
 
 #include <C4Aul.h>
 #include "C4TimeMilliseconds.h"
+#include <C4AulScriptFunc.h>
 
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
@@ -35,6 +36,21 @@ const int MAX_VALUE_STACK = 1024;
  last named var
  temporary values
  */
+
+// execution context
+struct C4AulScriptContext
+{
+	C4PropList *Obj;
+	C4Value *Return;
+	C4Value *Pars;
+	C4Value *Vars;
+	C4AulScriptFunc *Func;
+	C4AulBCC *CPos;
+	C4TimeMilliseconds tTime; // initialized only by profiler if active
+
+	void dump(StdStrBuf Dump = StdStrBuf(""));
+	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
+};
 
 class C4AulExec
 {

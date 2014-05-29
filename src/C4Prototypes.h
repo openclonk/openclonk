@@ -23,11 +23,13 @@
 // class declarations
 class C4AbstractApp;
 class C4Action;
-struct C4AulContext;
+struct C4AulBCC;
 class C4AulDefFunc;
+class C4AulExec;
 class C4AulFunc;
 struct C4AulParSet;
 class C4AulScript;
+struct C4AulScriptContext;
 class C4AulScriptEngine;
 class C4AulScriptFunc;
 class C4BltTransform;

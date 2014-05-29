@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Control.h>
 
+#include <C4AulExec.h>
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>

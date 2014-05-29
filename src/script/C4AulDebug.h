@@ -18,7 +18,6 @@
 
 #ifndef NOAULDEBUG
 
-#include "C4Aul.h"
 #include "C4NetIO.h"
 
 // manages a debugging interface
@@ -33,7 +32,7 @@ public:
 
 private:
 	bool fInit, fConnected;
-	class C4AulExec *pExec;
+	C4AulExec *pExec;
 	static C4AulDebug *pDebug;
 	C4NetIO::addr_t PeerAddr, AllowedAddr;
 	StdCopyStrBuf Password;

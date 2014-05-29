@@ -1051,6 +1051,8 @@ src/script/C4AulFunc.h
 src/script/C4Aul.h
 src/script/C4AulLink.cpp
 src/script/C4AulParse.cpp
+src/script/C4AulScriptFunc.cpp
+src/script/C4AulScriptFunc.h
 src/script/C4PropList.cpp
 src/script/C4PropList.h
 src/script/C4Script.cpp

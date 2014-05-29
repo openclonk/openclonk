@@ -17,6 +17,10 @@
 #ifndef INC_C4AulFunc
 #define INC_C4AulFunc
 
+#ifndef INC_C4Value
+#error Include C4Value.h instead of C4AulFunc.h
+#endif
+
 #include <C4StringTable.h>
 
 #define C4AUL_MAX_Par         10  // max number of parameters

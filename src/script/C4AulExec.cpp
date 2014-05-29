@@ -16,10 +16,11 @@
 // executes script functions
 
 #include <C4Include.h>
-#include <C4Aul.h>
 #include <C4AulExec.h>
-#include <C4AulDebug.h>
 
+#include <C4Aul.h>
+#include <C4AulScriptFunc.h>
+#include <C4AulDebug.h>
 #include <C4Object.h>
 #include <C4Config.h>
 #include <C4Game.h>
@@ -1022,11 +1023,6 @@ void C4AulProfiler::Show()
 	}
 	Log("==============================");
 	// done!
-}
-
-C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
-{
-	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
 
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)

@@ -19,8 +19,9 @@
 #include <utility>
 
 #include <C4Aul.h>
-
 #include <C4AulDebug.h>
+#include <C4AulExec.h>
+#include <C4AulScriptFunc.h>
 #include <C4Def.h>
 #include <C4Game.h>
 #include <C4Log.h>
@@ -781,63 +782,6 @@ void C4AulParse::DumpByteCode()
 			if (eType == AB_EOFN) break;
 		}
 	}
-}
-
-void C4AulScriptFunc::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
-{
-	// store chunk
-	C4AulBCC bcc;
-	bcc.bccType = eType;
-	bcc.Par.X = X;
-	Code.push_back(bcc);
-	PosForCode.push_back(SPos);
-
-	switch (eType)
-	{
-	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
-	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
-		bcc.Par.s->IncRef();
-		break;
-	case AB_CARRAY:
-		bcc.Par.a->IncRef();
-		break;
-	default: break;
-	}
-}
-
-void C4AulScriptFunc::RemoveLastBCC()
-{
-	C4AulBCC *pBCC = &Code.back();
-	switch (pBCC->bccType)
-	{
-	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
-		pBCC->Par.s->DecRef();
-		break;
-	case AB_CARRAY:
-		pBCC->Par.a->DecRef();
-		break;
-	default: break;
-	}
-	Code.pop_back();
-	PosForCode.pop_back();
-}
-
-void C4AulScriptFunc::ClearCode()
-{
-	while(Code.size() > 0)
-		RemoveLastBCC();
-	// This function is now broken until an AddBCC call
-}
-
-int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
-{
-	return SGetLine(pOrgScript ? pOrgScript->GetScript() : Script, PosForCode[bcc - &Code[0]]);
-}
-
-C4AulBCC * C4AulScriptFunc::GetCode()
-{
-	assert(!Code.empty());
-	return &Code[0];
 }
 
 bool C4ScriptHost::Preparse()
