@@ -225,6 +225,9 @@ func CheckStrike(iTime)
 				if(shield == 100)
 					continue;
 					
+				// Sound before damage to prevent null pointer access if callbacks delete this
+				Sound("WeaponHit?", false);
+				
 				// fixed damage (9)
 				var damage = SwordDamage(shield);
 				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
@@ -257,8 +260,7 @@ func CheckStrike(iTime)
 					obj->CreateParticle("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
 				}
 				
-				// sound and done. We can only hit one target
-				Sound("WeaponHit?", false);
+				// and done. We can only hit one target
 				break;
 			}
 		}
