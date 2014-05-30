@@ -7,6 +7,7 @@
 
 #include Library_Structure
 
+local parent;
 
 protected func Construction()
 {
@@ -18,6 +19,8 @@ protected func Construction()
 protected func Initialize()
 {
 	var wdt = BoundBy(GetObjWidth(), 8, 120);
+	if (parent)
+		wdt = BoundBy(parent->GetObjWidth(), 8, 120);
 	SetShape(-wdt / 2, -4, wdt, 8);
 	SetSolidMask(0, 0, wdt, 8, 20 - wdt / 2, 0);
 	SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, 0);
@@ -31,6 +34,13 @@ protected func Destruction()
 	// Cast a single rock.
 	CastObjects(Rock, 1, 15, 0, -5);
 	return _inherited(...);
+}
+
+// Set the parent if the basement is attached to a structure.
+public func CombineWith(object stick_to)
+{
+	parent = stick_to;
+	return;
 }
 
 // Move objects out of the basement.
@@ -63,6 +73,15 @@ private func MoveOutOfBasement()
 
 // Is a construction that is built just below the surface.
 public func IsBelowSurfaceConstruction() { return true; }
+
+// Sticking to other structures, at the bottom of that structure.
+public func ConstructionCombineWith() { return "IsStructure"; }
+public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Bottom; }
+
+public func NoConstructionFlip() { return true; }
+
+// Don't stick to itself, so it should not be a structure.
+public func IsStructure() { return false; }
 
 
 /*-- Proplist --*/

@@ -40,22 +40,22 @@ public func Set(id def, int dir, object stick)
 	direction = dir;
 	stick_to = stick;
 
-	var xw = (1-dir*2)*1000;
-	
-	// Height of construction site needs to exceed 12 pixels for the clonk to be able to add materials.
+	var xw = (1 - dir * 2) * 1000;
 	var w, h;
 	w = def->GetDefWidth();
-	h = Max(12, def->GetDefHeight());
-	
+	h = def->GetDefHeight();
+	// Draw the building with a wired frame and large alpha.
 	SetGraphics(nil, def, 1, GFXOV_MODE_Base);
 	SetClrModulation(RGBa(255,255,255,50), 1);
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,1);
 	SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,2);
+	// Height of construction site needs to exceed 12 pixels for the clonk to be able to add materials.
+	h = Max(12, h);
 	SetShape(-w/2, -h, w, h);
 	// Increase shape for below surface constructions to allow for adding materials.
 	if (definition->~IsBelowSurfaceConstruction())
-		SetShape(-w/2, -2*h, w, 2*h);
+		SetShape(-w/2, -2 * h, w, 2 * h);
 	
 	SetName(Translate(Format("TxtConstruction",def->GetName())));
 	

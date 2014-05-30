@@ -124,7 +124,8 @@ func StopEngine()
 /* Construction */
 
 // Sticking to other elevators
-func ConstructionCombineWith() { return "IsElevator"; }
+public func ConstructionCombineWith() { return "IsElevator"; }
+public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right; }
 
 // Called to determine if sticking is possible
 func IsElevator(object previewer)

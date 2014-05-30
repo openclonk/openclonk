@@ -26,3 +26,6 @@ public func Damage(int change, int cause, int cause_plr)
 		}
 	return _inherited(change, cause, cause_plr);
 }
+
+// This object is a structure.
+public func IsStructure() { return true; }
