@@ -5,10 +5,10 @@ Category=C4D_Structure
 Width=40
 Height=8
 Offset=-20,-4
-Vertices=4
-VertexX=-20,-20,20,20
-VertexY=-4,4,-4,4
-VertexFriction=100,100,100,100
+Vertices=5
+VertexX=0,-20,-20,20,20
+VertexY=0,-4,4,-4,4
+VertexFriction=100,100,100,100,100
 Mass=2000
 Components=Rock=2
 Exclusive=1

@@ -5,9 +5,6 @@
 #include Library_GoldSeller
 #include Library_Base // Needed for DuBuy...
 
-local Name = "$Name$";
-local Description = "$Description$";
- 
 protected func Initialize()
 {
 	// SetCategory(C4D_StaticBack);
@@ -81,3 +78,10 @@ func OnOwnerRemoved(int new_owner)
 	SetOwner(new_owner);
 	return true;
 }
+
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local HitPoints = 60;
