@@ -1346,7 +1346,8 @@ static C4Value FnGameCallEx(C4PropList * _this, C4Value * Pars)
 	if (!fn) return C4Value();
 
 	// copy parameters
-	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulParSet ParSet;
+	ParSet.Copy(&Pars[1], 9);
 	// Call
 	return ::Game.GRBroadcast(fn->GetCStr(), &ParSet, true);
 }

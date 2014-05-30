@@ -36,7 +36,7 @@ struct C4AulParSet
 		Par[0].Set(par0); Par[1].Set(par1); Par[2].Set(par2); Par[3].Set(par3); Par[4].Set(par4);
 		Par[5].Set(par5); Par[6].Set(par6); Par[7].Set(par7); Par[8].Set(par8); Par[9].Set(par9);
 	}
-	C4AulParSet(const C4Value * Pars, int ParCount)
+	void Copy(const C4Value * Pars, int ParCount)
 	{
 		for (int i = 0; i < ParCount; ++i)
 			Par[i].Set(Pars[i]);

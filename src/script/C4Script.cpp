@@ -301,7 +301,8 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) _this = ::ScriptEngine.GetPropList();
-	C4AulParSet ParSet(&Pars[1], C4AUL_MAX_Par - 1);
+	C4AulParSet ParSet;
+	ParSet.Copy(&Pars[1], C4AUL_MAX_Par - 1);
 	C4AulFunc * fn = Pars[0].getFunction();
 	C4String * name;
 	if (!fn)
