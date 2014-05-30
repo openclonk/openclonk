@@ -5,7 +5,7 @@
 	@author Clonkonaut
 */
 
-local dimension_x, dimension_y, clonk, structure, direction, stick_to;
+local dimension_x, dimension_y, clonk, structure, direction, stick_to, blocked;
 local GFX_StructureOverlay = 1;
 local GFX_CombineIconOverlay = 2;
 
@@ -26,6 +26,7 @@ func Set(id to_construct, object constructing_clonk)
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;
+	blocked = true;
 	AdjustPreview(structure->~IsBelowSurfaceConstruction());
 	return;
 }
@@ -40,20 +41,21 @@ func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 		// Place on material
 		var search_dir = 1;
 		if (look_up) search_dir = -1;
-		var x = 0, y = 0, fail = false;
+		var x = 0, y = 0;
+		blocked = false;
 		while (!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
 		{
 			y += search_dir;
 			if (Abs(y) > half_y)
 			{
-				fail = true;
+				blocked = true;
 				break;
 			}
 		}
 
-		if (fail && !no_call)
+		if (blocked && !no_call)
 			return AdjustPreview(below_surface, !look_up, true);
-		if (fail)
+		if (blocked)
 			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
 		// Position depends on whether the object should below surface.
 		if (!below_surface)
@@ -62,22 +64,23 @@ func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 			SetPosition(GetX(), GetY() + y + dimension_y + 1);
 	}
 	if (!below_surface && !CheckConstructionSite(structure, 0, half_y))
-		fail = true;
+		blocked = true;
 	else
-	// intersection-check with all other construction sites... bah
-	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if(!(other_site->GetLeftEdge()   > GetX()+dimension_x/2  ||
-		     other_site->GetRightEdge()  < GetX()-dimension_x/2  ||
-		     other_site->GetTopEdge()    > GetY()+half_y  ||
-		     other_site->GetBottomEdge() < GetY()-half_y))
-			{
-				fail = true;
-			} 
+		// intersection-check with all other construction sites... bah
+		for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+		{
+			if(!(other_site->GetLeftEdge()   > GetX()+dimension_x/2  ||
+			     other_site->GetRightEdge()  < GetX()-dimension_x/2  ||
+			     other_site->GetTopEdge()    > GetY()+half_y  ||
+			     other_site->GetBottomEdge() < GetY()-half_y))
+				{
+					blocked = true;
+				} 
+		}
 	}
 	
-	
-	if(!fail)
+	if(!blocked)
 	{
 		if (!stick_to)
 			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);

@@ -119,7 +119,7 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	{
 		// CON_Use is accept
 		if (ctrl == CON_Use)
-			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction, effect.preview.stick_to);
+			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.blocked, effect.preview.direction, effect.preview.stick_to);
 		// movement is allowed
 		else if (IsMovementControl(ctrl))
 			return false;
@@ -152,7 +152,7 @@ func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool tem
 
 /* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir, object stick_to)
+func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool blocked, int dir, object stick_to)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
@@ -162,11 +162,11 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
-	if (!CheckConstructionSite(structure_id, x, y) && !structure_id->~IsBelowSurfaceConstruction())
+	if (blocked)
 	{
 		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
 		return false;
-	} 
+	}
 	// intersection-check with all other construction sites... bah
 	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
