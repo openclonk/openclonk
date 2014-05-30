@@ -63,6 +63,6 @@ TEST_F(AulMathTest, Bug1389)
 	EXPECT_EQ(C4VINT_MAX, RunExpr("-2147483648 - 1"));
 	// x ± 1 ± 1 is handled differently from x ± 2, yet the result should be
 	// the same.
-	EXPECT_EQ(C4VTrue, RunExpr("2147483647 + 1 + 1 == 2147483647 + 2"));
-	EXPECT_EQ(C4VTrue, RunExpr("-2147483648 - 1 - 1 == -2147483648 - 2"));
+	EXPECT_EQ(C4Value(true), RunExpr("2147483647 + 1 + 1 == 2147483647 + 2"));
+	EXPECT_EQ(C4Value(true), RunExpr("-2147483648 - 1 - 1 == -2147483648 - 2"));
 }
