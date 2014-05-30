@@ -9,11 +9,9 @@
 
 func Initialize()
 {
-	if (ObjectCount(Find_ID(Rule_EnergyBarsAboveStructures)) > 0)
-	{
+	if (FindObject(Find_ID(Rule_StructureHPBars)))
 		if (this.HitPoints != nil)
 			AddEnergyBar();
-	}
 	return _inherited(...);
 }
 
