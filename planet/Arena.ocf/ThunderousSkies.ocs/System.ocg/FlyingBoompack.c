@@ -3,9 +3,10 @@
 #appendto Boompack
 
 
-func Fall(int from) 
+func Fall(int from_plr) 
 {
- 	SetOwner(from); 
+ 	SetOwner(from_plr);
+ 	SetController(from_plr);
  	Launch(RandomX(-10,10)+180);
 }
 

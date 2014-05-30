@@ -152,9 +152,9 @@ global func FxBalloonsTimer()
 	var target;
 	
 	var r = Random(3);
-	if(r == 0) target = CreateObject(Boompack, x, y, NO_OWNER);
-	if(r == 1){target = CreateObject(DynamiteBox, x, y, NO_OWNER); target->SetR(180); }
-	if(r == 2){target = CreateObject(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000,0,0,0,1000,-7500);}
+	if (r == 0) { target = CreateObject(Boompack, x, y, NO_OWNER); target->SetR(180); }
+	if (r == 1) { target = CreateObject(DynamiteBox, x, y, NO_OWNER); target->SetR(180); }
+	if (r == 2) { target = CreateObject(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000,0,0,0,1000,-7500); }
 		
 		
 	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
@@ -163,22 +163,6 @@ global func FxBalloonsTimer()
 	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 	AddEffect("HorizontalMoving", balloon, 1, 1, balloon);
 	balloon->SetXDir(((Random(2)*2)-1) * (Random(4)+3));
-}
-
-global func PlaceEdges()
-{
-	var x=[213, 780, 285, 285, 220, 220, 235, 414, 404, 668, 676, 684, 781, 694, 781, 229, 772, 364, 534, 380];
-	var y=[276, 212, 325, 404, 404, 421, 495, 285, 276, 372, 364, 356, 356, 277, 413, 309, 252, 445, 446, 412];
-	var d=[nil, 1, 2, 0, 1, 3, 3, 2, 1, 1, 1, 1, 0, 3, 2, 0, 1, 3, 2, 0];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		//edge->PermaEdge();
-	}
-	return 1;
 }
 
 global func PlaceGras()
@@ -193,17 +177,6 @@ global func PlaceGras()
 		edge->Initialize();
 	}
 	return 1;
-}
-
-private func MakeTarget(int x, int y)
-{
-
-	var target = CreateObject(DynamiteBox, x, y, NO_OWNER);
-	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
-	balloon->SetProperty("load",target);
-	target->SetAction("Attach", balloon);
-	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
-
 }
 
 // Refill/fill chests.
