@@ -636,7 +636,7 @@ static void Smoke(int32_t tx, int32_t ty, int32_t level)
 {
 	// Use scripted function (global func Smoke) to create smoke
 	// Caution: This makes engine internal smoking a synced call.
-	C4AulParSet pars(C4VInt(tx), C4VInt(ty), C4VInt(level));
+	C4AulParSet pars(tx, ty, level);
 	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
 }
 
@@ -904,7 +904,7 @@ bool C4MaterialMap::mrfScript(C4MaterialReaction *pReaction, int32_t &iX, int32_
 	// OK - let's call it!
 	//                      0           1           2                3                        4                           5                      6               7              8
 	int32_t iXDir1, iYDir1, iXDir2, iYDir2;
-	C4AulParSet pars(C4VInt(iX), C4VInt(iY), C4VInt(iLSPosX), C4VInt(iLSPosY), C4VInt(iXDir1=fixtoi(fXDir, 100)), C4VInt(iYDir1=fixtoi(fYDir, 100)), C4VInt(iPxsMat), C4VInt(iLsMat), C4VInt(evEvent));
+	C4AulParSet pars(iX, iY, iLSPosX, iLSPosY, iXDir1 = fixtoi(fXDir, 100), iYDir1 = fixtoi(fYDir, 100), iPxsMat, iLsMat, int(evEvent));
 	if (!!pReaction->pScriptFunc->Exec(NULL, &pars, false))
 	{
 		// PXS shall be killed!

@@ -54,7 +54,7 @@ bool ObjectActionJump(C4Object *cObj, C4Real xdir, C4Real ydir, bool fByCom)
 {
 	// scripted jump?
 	assert(cObj);
-	C4AulParSet pars(C4VInt(fixtoi(xdir, 100)), C4VInt(fixtoi(ydir, 100)), C4VBool(fByCom));
+	C4AulParSet pars(fixtoi(xdir, 100), fixtoi(ydir, 100), fByCom);
 	if (!!cObj->Call(PSF_OnActionJump, &pars)) return true;
 	// hardcoded jump by action
 	if (!cObj->SetActionByName("Jump")) return false;
@@ -211,9 +211,9 @@ bool ObjectComGrab(C4Object *cObj, C4Object *pTarget)
 	if (!pTarget) return false;
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	if (!ObjectActionPush(cObj,pTarget)) return false;
-	cObj->Call(PSF_Grab, &C4AulParSet(C4VObj(pTarget), C4VBool(true)));
+	cObj->Call(PSF_Grab, &C4AulParSet(pTarget, true));
 	if (pTarget->Status && cObj->Status)
-		pTarget->Call(PSF_Grabbed, &C4AulParSet(C4VObj(cObj), C4VBool(true)));
+		pTarget->Call(PSF_Grabbed, &C4AulParSet(cObj, true));
 	return true;
 }
 
@@ -226,12 +226,12 @@ bool ObjectComUnGrab(C4Object *cObj)
 		if (ObjectActionStand(cObj))
 		{
 			if (!cObj->CloseMenu(false)) return false;
-			cObj->Call(PSF_Grab, &C4AulParSet(C4VObj(pTarget), C4VBool(false)));
+			cObj->Call(PSF_Grab, &C4AulParSet(pTarget, false));
 			// clear action target
 			cObj->Action.Target = NULL;
 			if (pTarget && pTarget->Status && cObj->Status)
 			{
-				pTarget->Call(PSF_Grabbed, &C4AulParSet(C4VObj(cObj), C4VBool(false)));
+				pTarget->Call(PSF_Grabbed, &C4AulParSet(cObj, false));
 			}
 			return true;
 		}
@@ -339,7 +339,7 @@ bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
 	// Put call to object script
 	cObj->Call(PSF_Put);
 	// Target collection call
-	pTarget->Call(PSF_Collection,&C4AulParSet(C4VObj(pThing), C4VBool(true)));
+	pTarget->Call(PSF_Collection,&C4AulParSet(pThing, true));
 	// Success
 	return true;
 }
@@ -434,7 +434,7 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 {
 	if (!cObj || !pTarget) return false;
 	if (!punch) return true;
-	bool fBlowStopped = !!pTarget->Call(PSF_QueryCatchBlow,&C4AulParSet(C4VObj(cObj)));
+	bool fBlowStopped = !!pTarget->Call(PSF_QueryCatchBlow,&C4AulParSet(cObj));
 	if (fBlowStopped && punch>1) punch=punch/2; // half damage for caught blow, so shield+armor help in fistfight and vs monsters
 	pTarget->DoEnergy(-punch, false, C4FxCall_EngGetPunched, cObj->Controller);
 	int32_t tdir=+1; if (cObj->Action.Dir==DIR_Left) tdir=-1;
@@ -445,16 +445,14 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 	if (punch>=10)
 		if (ObjectActionTumble(pTarget,pTarget->Action.Dir,C4REAL100(150)*tdir,itofix(-2)))
 		{
-			pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
-			              C4VObj(cObj)));
+			pTarget->Call(PSF_CatchBlow,&C4AulParSet(punch, cObj));
 			return true;
 		}
 
 	// Regular punch
 	if (ObjectActionGetPunched(pTarget,C4REAL100(250)*tdir,Fix0))
 	{
-		pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
-		              C4VObj(cObj)));
+		pTarget->Call(PSF_CatchBlow,&C4AulParSet(punch, cObj));
 		return true;
 	}
 

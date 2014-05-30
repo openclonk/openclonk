@@ -941,7 +941,7 @@ bool C4Command::GetTryEnter()
 	// if not successfully entered for any other reason, fail
 	if (!fSuccess) { Finish(); return false; }
 	// get-callback for getting out of containers
-	if (fWasContained) cObj->Call(PSF_Get, &C4AulParSet(C4VObj(Target)));
+	if (fWasContained) cObj->Call(PSF_Get, &C4AulParSet(Target));
 	// entered
 	return true;
 }
@@ -1583,7 +1583,7 @@ void C4Command::Transfer()
 	// Call target transfer script
 	if (!::Game.iTick5)
 	{
-		if (!Target->Call(PSF_ControlTransfer, &C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty))).getBool())
+		if (!Target->Call(PSF_ControlTransfer, &C4AulParSet(cObj, Tx, Ty)).getBool())
 			// Transfer not handled by target: done
 			{ Finish(true); return; }
 	}
@@ -1656,7 +1656,7 @@ void C4Command::Acquire()
 		{ Finish(true); return; }
 
 	// script overload
-	int32_t scriptresult = cObj->Call(PSF_ControlCommandAcquire, &C4AulParSet(C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), Data)).getInt ();
+	int32_t scriptresult = cObj->Call(PSF_ControlCommandAcquire, &C4AulParSet(Target, Tx, Ty, Target2, Data)).getInt ();
 
 	// script call might have deleted object
 	if (!cObj->Status) return;
@@ -1832,7 +1832,7 @@ void C4Command::Call()
 	// Done: success
 	Finish(true);
 	// Object call FIXME:use c4string-api
-	Target->Call(Text->GetCStr(),&C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty), C4VObj(Target2)));
+	Target->Call(Text->GetCStr(),&C4AulParSet(cObj, Tx, Ty, Target2));
 	// Extreme caution notice: the script call might do just about anything
 	// including clearing all commands (including this) i.e. through a call
 	// to SetCommand. Thus, we must not do anything in this command anymore
@@ -1915,7 +1915,7 @@ int32_t C4Command::CallFailed()
 	// Compose fail-function name
 	char szFunctionFailed[1024+1]; sprintf(szFunctionFailed,"~%sFailed",Text->GetCStr());
 	// Call failed-function
-	return Target->Call(szFunctionFailed,&C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty), C4VObj(Target2)))._getInt();
+	return Target->Call(szFunctionFailed,&C4AulParSet(cObj, Tx, Ty, Target2))._getInt();
 	// Extreme caution notice: the script call might do just about anything
 	// including clearing all commands (including this) i.e. through a call
 	// to SetCommand. Thus, we must not do anything in this command anymore

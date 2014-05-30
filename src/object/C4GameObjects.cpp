@@ -121,7 +121,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							C4Real speed = dXDir * dXDir + dYDir * dYDir;
 							// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
 							if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
-							   !obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
+							   !obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(obj2)))
 							{
 								int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5);
 								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
@@ -131,7 +131,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								C4PropList* pActionDef = obj1->GetAction();
 								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
 									obj1->Fling(obj2->xdir * 50 / tmass, -Abs(obj2->ydir / 2) * 50 / tmass, false);
-								obj1->Call(PSF_CatchBlow, &C4AulParSet(C4VInt(-iHitEnergy / 5), C4VObj(obj2)));
+								obj1->Call(PSF_CatchBlow, &C4AulParSet(-iHitEnergy / 5, obj2));
 								// obj1 might have been tampered with
 								if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
 									goto out1;

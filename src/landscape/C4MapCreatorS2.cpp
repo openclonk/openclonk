@@ -124,7 +124,7 @@ void C4MCCallbackArray::Execute(int32_t iMapZoom)
 	// safety
 	if (!pSF || !pMap) return;
 	// pre-create parset
-	C4AulParSet Pars(C4VInt(0), C4VInt(0), C4VInt(iMapZoom));
+	C4AulParSet Pars(0, 0, iMapZoom);
 	// call all funcs
 	int32_t iIndex=iWdt*iHgt;
 	while (iIndex--)
@@ -1635,7 +1635,7 @@ bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
-	C4AulParSet Pars( C4VInt(iX), C4VInt(iY), C4VInt(pOvrl->Alpha.Evaluate(C4MC_SizeRes)), C4VInt(pOvrl->Beta.Evaluate(C4MC_SizeRes)));
+	C4AulParSet Pars(iX, iY, pOvrl->Alpha.Evaluate(C4MC_SizeRes), pOvrl->Beta.Evaluate(C4MC_SizeRes));
 	return ::GameScript.Call(FormatString("ScriptAlgo%s", pOvrl->Name).getData(), &Pars).getBool();
 }
 

@@ -790,7 +790,7 @@ static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHost
 	// do rejection test first
 	if (!fNoCalls)
 	{
-		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile)), true, true))
+		if (!!::Game.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(iPlr, iPlr2, fHostile), true, true))
 			return false;
 	}
 	// OK; set hostility
@@ -2326,7 +2326,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	// ask script if it's allowed
 	if (!fNoCalls)
 	{
-		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam)), true, true))
+		if (!!::Game.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(iPlayer, idNewTeam), true, true))
 			return false;
 	}
 	// exit previous team
@@ -2359,7 +2359,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	}
 	// do callback to reflect change in scenario
 	if (!fNoCalls)
-		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam), C4VInt(idOldTeam)), true);
+		::Game.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(iPlayer, idNewTeam, idOldTeam), true);
 	return true;
 }
 

@@ -254,13 +254,13 @@ static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, b
 				}
 			SCopy(szName, pInfo->Name, C4MaxName);
 			Object(_this)->SetName(); // make sure object uses info name
-			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(true)));
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(true));
 		}
 		else
 		{
 			if (!pNewName) Object(_this)->SetName();
 			else Object(_this)->SetName(pNewName->GetCStr());
-			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(false)));
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(false));
 		}
 	}
 	return true;
