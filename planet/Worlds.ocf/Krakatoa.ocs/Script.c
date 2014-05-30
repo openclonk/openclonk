@@ -19,9 +19,11 @@ func Initialize()
 	goal->SetWealthGoal(250);
 	goal = CreateObject(Goal_Expansion);
 	goal->SetExpansionGoal(250);
-	
-	// some rules
-	CreateObject(Rule_EnergyBarsAboveStructures, 0, 0, NO_OWNER);
+
+	// Some rules.
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
+	CreateObject(Rule_StructureHPBars);
 	
 	// Find start location and place lorry plus extras there.
 	FindVolcanoLocation();
@@ -36,14 +38,14 @@ func Initialize()
 		lorry->CreateContents(Barrel)->PutLiquid("Water", 300);
 	
 	// Adjust the mood, orange sky, darker feeling in general.
-	var dark = 40;
+	var dark = 10;
 	SetSkyAdjust(RGB(150, 42, 0));
 	SetGamma(RGB(0,0,0), RGB(128-dark,128-dark,128-dark), RGB(255-2*dark,255-2*dark,255-2*dark));
 	
 	// Time of days and celestials.
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(60*20);
+	time->SetTime(60 * 20);
 	time->SetCycleSpeed(20);
 		
 	// Some dark clouds which rain few ashes.
@@ -101,7 +103,11 @@ func InitializePlayer(int plr)
 	{
 		SetWealth(plr, 50);
 		plr_init = true;
-	}		
+	}
+	// Give the player its knowledge and base materials.
+	GivePlayerKnowledge(plr);
+	SetBaseMaterial(plr, Clonk, 4);
+	SetBaseProduction(plr, Clonk, 1);	
 	// Give crew some equipment.
 	var index = 0;
 	while (crew = GetCrew(plr, index++))
@@ -151,6 +157,24 @@ private func FindVolcanoLocation()
 			break;
 		}
 	}
+	return;
+}
+
+// Give the relevant knowledge to each player.
+private func GivePlayerKnowledge(int plr)
+{
+	var structures = [Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Foundry, Sawmill, Elevator, Pump, ToolsWorkshop, ChemicalLab, Armory, Chest, Windmill, Kitchen, Idol, InventorsLab, Shipyard];
+	var items = [Loam, GoldBar, Metal, Shovel, Axe, Hammer, Pickaxe, Barrel, MetalBarrel, Bucket, Dynamite, DynamiteBox, PowderKeg, Pipe, Ropeladder, WallKit, TeleGlove, WindBag, GrappleBow, Boompack, Balloon];
+	var weapons = [Bow, Arrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher];
+	var vehicles = [Lorry, Catapult, Cannon, Airship, Plane];
+	for (var structure in structures)
+		SetPlrKnowledge(plr, structure);
+	for (var item in items)
+		SetPlrKnowledge(plr, item);
+	for (var weapon in weapons)
+		SetPlrKnowledge(plr, weapon);	
+	for (var vehicle in vehicles)
+		SetPlrKnowledge(plr, vehicle);
 	return;
 }
 
