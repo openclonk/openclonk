@@ -30,11 +30,9 @@ struct C4AulParSet
 	C4Value Par[C4AUL_MAX_Par];
 
 	C4AulParSet() {} // standard-constructor
-	C4AulParSet(const C4Value &par0,             const C4Value &par1 = C4Value(), const C4Value &par2 = C4Value(), const C4Value &par3 = C4Value(), const C4Value &par4 = C4Value(),
-	            const C4Value &par5 = C4Value(), const C4Value &par6 = C4Value(), const C4Value &par7 = C4Value(), const C4Value &par8 = C4Value(), const C4Value &par9 = C4Value())
+	template<class ...T> explicit C4AulParSet(T&& ...pars):
+			Par {C4Value(std::forward<T>(pars))...}
 	{
-		Par[0].Set(par0); Par[1].Set(par1); Par[2].Set(par2); Par[3].Set(par3); Par[4].Set(par4);
-		Par[5].Set(par5); Par[6].Set(par6); Par[7].Set(par7); Par[8].Set(par8); Par[9].Set(par9);
 	}
 	void Copy(const C4Value * Pars, int ParCount)
 	{
