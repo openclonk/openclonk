@@ -277,17 +277,20 @@ private func ExecuteVehicle(fx)
 	}
 	// update catapult animation
 	fx.vehicle->~ControlUseHolding(this, tx-x, ty-y);
-	// project target position
-	var d = Distance(x,y,tx,ty);
-	fx.projectile_speed = fx.vehicle->DefinePower(tx-x, ty-y);
-	var dt = d * 10 / fx.projectile_speed; // projected travel time of the object
-	tx += fx.target->GetXDir(dt);
-	ty += fx.target->GetYDir(dt);
-	if (!fx.target->GetContact(-1)) ty += GetGravity()*dt*dt/200;
+	// Determine power needed to hit target
+	var dx = tx-x, dy=ty-y+20;
+	var power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
+	var dt = dx * 10 / power;
+	dx += fx.target->GetXDir(dt);
+	dy += fx.target->GetYDir(dt);
+	if (!fx.target->GetContact(-1)) dy += GetGravity()*dt*dt/200;
+	power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
+	power = power + Random(11)-5; // some variation
+	fx.projectile_speed = power = BoundBy(power, 20, 100); // limits imposed by catapult
 	// Can shoot now?
-	if (fx.time >= fx.aim_time + fx.aim_wait) if (PathFree(x,y,tx,ty))
+	if (fx.time >= fx.aim_time + fx.aim_wait) if (PathFree(x,y-20,x+dx,y+dy-20))
 	{
-		fx.aim_weapon->~ControlUseStop(this, tx-x,ty-y);
+		fx.aim_weapon->~DoFire(this, power, 0);
 		fx.aim_weapon = nil;
 	}
 	return true;
