@@ -11,6 +11,7 @@ func AddAI(object clonk)
 	var fx = GetEffect("S2AI", clonk);
 	if (!fx) fx = AddEffect("S2AI", clonk, 1, 3, nil, S2AI);
 	if (!fx || !clonk) return nil;
+	fx.ai = S2AI;
 	clonk.ExecuteS2AI = S2AI.Execute;
 	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
 	BindInventory(clonk);
@@ -30,7 +31,7 @@ func BindInventory(object clonk)
 	var cnt = clonk->ContentsCount();
 	fx.bound_weapons = CreateArray(cnt);
 	for (var i=0; i<cnt; ++i) fx.bound_weapons[i] = clonk->Contents(i);
-	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
 }
 
@@ -54,7 +55,7 @@ func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 	var fx = GetEffect("S2AI", clonk);
 	if (!fx || !clonk) return false;
 	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
-	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
 }
 
@@ -73,7 +74,7 @@ func SetAllyAlertRange(object clonk, int new_range)
 	var fx = GetEffect("S2AI", clonk);
 	if (!fx || !clonk) return false;
 	fx.ally_alert_range = new_range;
-	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
 }
 
@@ -85,7 +86,7 @@ func SetEncounterCB(object clonk, string cb_fn)
 	var fx = GetEffect("S2AI", clonk);
 	if (!fx || !clonk) return false;
 	fx.encounter_cb = cb_fn;
-	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
 }
 
@@ -115,7 +116,7 @@ protected func FxS2AITimer(clonk, fx, int time) { clonk->ExecuteS2AI(fx, time); 
 protected func FxS2AIStop(clonk, fx, int reason)
 {
 	// remove debug display
-	if (fx.debug) clonk->Call(S2AI.EditCursorDeselection, fx);
+	if (fx.debug) clonk->Call(fx.ai.EditCursorDeselection, fx);
 	// remove weapons on death
 	if (reason == FX_Call_RemoveDeath)
 	{
@@ -530,19 +531,19 @@ private func FindInventoryWeapon(fx)
 	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
 	if (fx.weapon = fx.vehicle)
 		if (CheckVehicleAmmo(fx, fx.weapon))
-			{ fx.strategy = S2AI.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = S2AI.CheckVehicleAmmo; return true; }
+			{ fx.strategy = fx.ai.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = fx.ai.CheckVehicleAmmo; return true; }
 		else
 			fx.weapon = nil;
 	if (fx.weapon = FindContents(Bow))
 		if (HasArrows(fx, fx.weapon))
-			{ fx.strategy = S2AI.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = S2AI.HasArrows; fx.ranged=true; return true; }
+			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
 		else
 			fx.weapon = nil;
-	if (fx.weapon = FindContents(Javelin)) { fx.strategy = S2AI.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
-	if (fx.weapon = FindContents(Firestone)) { fx.strategy = S2AI.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Rock)) { fx.strategy = S2AI.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Sword)) { fx.strategy = S2AI.ExecuteMelee; return true; }
-	//if (fx.weapon = Contents(0)) { fx.strategy = S2AI.ExecuteThrow; return true; } - don't throw empty bow, etc.
+	if (fx.weapon = FindContents(Javelin)) { fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
+	if (fx.weapon = FindContents(Firestone)) { fx.strategy = fx.ai.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Rock)) { fx.strategy = fx.ai.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Sword)) { fx.strategy = fx.ai.ExecuteMelee; return true; }
+	//if (fx.weapon = Contents(0)) { fx.strategy = fx.ai.ExecuteThrow; return true; } - don't throw empty bow, etc.
 	// no weapon :(
 	return false;
 }
