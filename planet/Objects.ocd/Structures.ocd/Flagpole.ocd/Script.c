@@ -64,11 +64,33 @@ public func Selected(object menu, proplist menu_item, bool alt)
 	var obj;
 	while (i--) 
 		if (obj = Contents(i))
-			Contents(i)->Exit(0, GetDefHeight() / 2);
+		{
+			obj->Exit(0, GetDefHeight() / 2);
+			// newly bought items do not fade out until they've been collected once
+			if (obj && ObjectCount(Find_ID(Rule_ObjectFade)) && !obj.HasNoFadeOut)
+			{
+				obj.HasNoFadeOut = this.BuyItem_HasNoFadeout;
+				obj.BuyOverload_Entrance = obj.Entrance;
+				obj.Entrance = this.BuyItem_Entrance;
+			}
+		}
 	// Update available count
 	menu_item->SetAmount(GetBaseMaterial(GetOwner(), def));
 	menu->Show();
 	return true;
+}
+
+// newly bought items do not fade out unless collected
+func BuyItem_HasNoFadeout() { return true; }
+
+func BuyItem_Entrance()
+{
+	// after first collection, fade out rule should be effective again
+	var overloaded_fn = this.BuyOverload_Entrance;
+	this.HasNoFadeOut = nil;
+	this.BuyOverload_Entranc = nil;
+	this.Entrance = overloaded_fn;
+	if (overloaded_fn) return Call(overloaded_fn, ...);
 }
 
 func OnOwnerRemoved(int new_owner)
