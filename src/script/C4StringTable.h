@@ -18,9 +18,21 @@
 #ifndef C4STRINGTABLE_H
 #define C4STRINGTABLE_H
 
-class C4String
+class C4RefCnt
 {
-	int RefCnt;
+public:
+	C4RefCnt(): RefCnt(0) {}
+	virtual ~C4RefCnt() {}
+	// Add/Remove Reference
+	void IncRef() { RefCnt++; }
+	void DecRef() { if (!--RefCnt) delete this; }
+protected:
+	// Reference counter
+	unsigned int RefCnt;
+};
+
+class C4String: public C4RefCnt
+{
 public:
 	unsigned int Hash;
 private:
@@ -33,10 +45,6 @@ private:
 	friend class C4StringTable;
 public:
 	~C4String();
-
-	// Add/Remove Reference
-	void IncRef() { ++RefCnt; }
-	void DecRef() { if (!--RefCnt) delete this; }
 
 	const char * GetCStr() const { return Data.getData(); }
 	StdStrBuf GetData() const { return Data.getRef(); }

@@ -21,7 +21,6 @@
 
 C4AulFunc::C4AulFunc(C4PropListStatic * Parent, const char *pName):
 		Parent(Parent),
-		iRefCnt(0),
 		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL)
 {

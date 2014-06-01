@@ -42,23 +42,15 @@ struct C4AulParSet
 };
 
 // base function class
-class C4AulFunc
+class C4AulFunc: public C4RefCnt
 {
 	friend class C4AulScript;
 	friend class C4AulScriptEngine;
 	friend class C4AulFuncMap;
 	friend class C4AulParse;
 	friend class C4ScriptHost;
-
-	// Reference counter
-	unsigned int iRefCnt;
-
 public:
 	C4AulFunc(C4PropListStatic * Parent, const char *pName);
-
-	// Add/Remove Reference
-	void IncRef() { iRefCnt++; }
-	void DecRef() { if (!--iRefCnt) delete this;  }
 
 	const C4PropListStatic * Parent;
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }

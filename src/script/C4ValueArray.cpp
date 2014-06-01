@@ -22,12 +22,12 @@
 #include <C4Object.h>
 
 C4ValueArray::C4ValueArray()
-		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
+		: iSize(0), iCapacity(0), pData(NULL)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
+		: iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(inSize);
 }
