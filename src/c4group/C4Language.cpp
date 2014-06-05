@@ -31,15 +31,6 @@
 #include <C4Config.h>
 #include <C4Game.h>
 
-#ifdef HAVE_ICONV
-#ifdef HAVE_LANGINFO_H
-#include <langinfo.h>
-#endif
-#include <errno.h>
-iconv_t C4Language::host_to_local = iconv_t(-1);
-iconv_t C4Language::local_to_host = iconv_t(-1);
-#endif
-
 C4Language Languages;
 
 //char strLog[2048 + 1];
@@ -157,87 +148,7 @@ void C4Language::Clear()
 		Infos = pNext;
 	}
 	Infos = NULL;
-#ifdef HAVE_ICONV
-	if (local_to_host != iconv_t(-1))
-	{
-		iconv_close(local_to_host);
-		local_to_host = iconv_t(-1);
-	}
-	if (host_to_local != iconv_t(-1))
-	{
-		iconv_close(host_to_local);
-		host_to_local = iconv_t(-1);
-	}
-#endif
 }
-
-#ifdef HAVE_ICONV
-StdStrBuf C4Language::Iconv(const char * string, iconv_t cd)
-{
-	if (cd == iconv_t(-1))
-	{
-		return StdStrBuf(string, true);
-	}
-	StdStrBuf r;
-	if (!string) return r;
-	size_t inlen = strlen(string);
-	size_t outlen = strlen(string);
-	r.SetLength(inlen);
-	const char * inbuf = string;
-	char * outbuf = r.getMData();
-	while (inlen > 0)
-	{
-		// Hope that iconv does not change the inbuf...
-		if ((size_t)(-1) == iconv(cd, const_cast<ICONV_CONST char * *>(&inbuf), &inlen, &outbuf, &outlen))
-		{
-			switch (errno)
-			{
-				// There is not sufficient room at *outbuf.
-			case E2BIG:
-			{
-				size_t done = outbuf - r.getMData();
-				r.Grow(inlen * 2);
-				outbuf = r.getMData() + done;
-				outlen += inlen * 2;
-				break;
-			}
-			// An invalid multibyte sequence has been encountered in the input.
-			case EILSEQ:
-				++inbuf;
-				--inlen;
-				break;
-				// An incomplete multibyte sequence has been encountered in the input.
-			case EINVAL:
-			default:
-				if (outlen) r.Shrink(outlen);
-				return r;
-			}
-		}
-	}
-	if (outlen) r.Shrink(outlen);
-	// StdStrBuf has taken care of the terminating zero
-	return r;
-}
-StdStrBuf C4Language::IconvSystem(const char * string)
-{
-	return Iconv(string, local_to_host);
-}
-StdStrBuf C4Language::IconvClonk(const char * string)
-{
-	return Iconv(string, host_to_local);
-}
-#else
-StdStrBuf C4Language::IconvSystem(const char * string)
-{
-	// Just copy through
-	return StdStrBuf(string, true);
-}
-StdStrBuf C4Language::IconvClonk(const char * string)
-{
-	// Just copy through
-	return StdStrBuf(string, true);
-}
-#endif
 
 int C4Language::GetPackCount()
 {
@@ -533,19 +444,6 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	// Load string table
 	if (!C4LangStringTable::GetSystemStringTable().Load(hGroup, strEntry))
 		return false;
-	
-#ifdef HAVE_ICONV
-#ifdef HAVE_LANGINFO_H
-	const char * const to_set = nl_langinfo(CODESET);
-	if (local_to_host == iconv_t(-1))
-		local_to_host = iconv_open (to_set ? to_set : "ASCII", "UTF-8");
-	if (host_to_local == iconv_t(-1))
-		host_to_local = iconv_open ("UTF-8",
-		                            to_set ? to_set : "ASCII");
-#else
-	const char * const to_set = "";
-#endif
-#endif
 	// Success
 	return true;
 }

@@ -467,7 +467,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		char *szBuf = sName.GrabPointer();
 		RemoveExtension(szBuf);
 		sName.Take(szBuf);
-		sName.Take(C4Language::IconvClonk(sName.getData()));
 		// load entry specific stuff that's in the front of the group
 		if (!LoadCustomPre(Group))
 			return false;

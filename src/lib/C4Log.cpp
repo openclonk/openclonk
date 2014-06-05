@@ -119,23 +119,17 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		}
 		*pDest++='\n'; *pDest = '\0';
 
-#ifdef HAVE_ICONV
-		StdStrBuf Line = Languages.IconvSystem(TimeMessage.getData());
-#else
-		const StdStrBuf &Line = TimeMessage;
-#endif
-
 		// Save into log file
 		if (C4LogFile)
 		{
-			fputs(Line.getData(),C4LogFile);
+			fputs(TimeMessage.getData(),C4LogFile);
 			fflush(C4LogFile);
 		}
 
 		// Save into record log file, if available
 		if(Control.GetRecord())
 		{
-			Control.GetRecord()->GetLogFile()->Write(Line.getData(), strlen(Line.getData()));
+			Control.GetRecord()->GetLogFile()->Write(TimeMessage.getData(), TimeMessage.getLength());
 			#ifdef IMMEDIATEREC
 				Control.GetRecord()->GetLogFile()->Flush();
 			#endif
@@ -147,9 +141,9 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		{
 #if defined(_DEBUG) && defined(_WIN32)
 			// debug: output to VC console
-			OutputDebugString(Line.GetWideChar());
+			OutputDebugString(TimeMessage.GetWideChar());
 #endif
-			fputs(Line.getData(),stdout);
+			fputs(TimeMessage.getData(),stdout);
 			fflush(stdout);
 		}
 

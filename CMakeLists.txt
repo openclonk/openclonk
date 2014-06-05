@@ -1248,15 +1248,6 @@ endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
-find_package(ICONV)
-if(ICONV_FOUND)
-	set(HAVE_ICONV true)
-	target_link_libraries(openclonk ${ICONV_LIBRARIES})
-	if(ICONV_IS_CONST)
-		set(ICONV_CONST "const")
-	endif()
-endif()
-
 # TinyXML
 if(WITH_SYSTEM_TINYXML)
 	pkg_search_module(TINYXML REQUIRED tinyxml)

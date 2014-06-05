@@ -10,9 +10,6 @@
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
 
-/* Define if you have the iconv() function. */
-#cmakedefine HAVE_ICONV 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H 1
 
@@ -116,9 +113,6 @@
 
 /* Define to 1 if you have the <X11/keysym.h> header file. */
 #cmakedefine HAVE_X11_KEYSYM_H 1
-
-/* Define as const if the declaration of iconv() needs const. */
-#define ICONV_CONST @ICONV_CONST@
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1
