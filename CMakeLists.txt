@@ -803,16 +803,6 @@ include(CheckCXXSymbolExists)
 check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
 check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
-find_package(ICONV)
-
-if(ICONV_FOUND)
-	set(HAVE_ICONV true)
-
-	if(ICONV_IS_CONST)
-		set(ICONV_CONST "const")
-	endif()
-endif()
-
 if(HAVE_EXECINFO_H)
 	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
 	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
@@ -1064,7 +1054,6 @@ target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
-	${ICONV_LIBRARIES}
 	${EXECINFO_LIBRARY}
 	libc4script
 	libmisc
@@ -1272,6 +1261,15 @@ endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
+find_package(ICONV)
+if(ICONV_FOUND)
+	set(HAVE_ICONV true)
+	target_link_libraries(openclonk ${ICONV_LIBRARIES})
+	if(ICONV_IS_CONST)
+		set(ICONV_CONST "const")
+	endif()
+endif()
+
 # TinyXML
 add_subdirectory(thirdparty/tinyxml)
 target_link_libraries(openclonk tinyxml)
@@ -1320,8 +1318,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	#stupid fix: just link to iconv that way
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
