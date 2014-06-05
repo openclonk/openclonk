@@ -1,7 +1,7 @@
 // Events are Windows-specific
 #include <C4Include.h>
 #include <StdScheduler.h>
-#ifdef USE_WIN32_WINDOWS
+#ifdef STDSCHEDULER_USE_EVENTS
 
 #include <mmsystem.h>
 #include <process.h>
@@ -167,11 +167,4 @@ bool CStdMultimediaTimerProc::CheckAndReset()
 	Event.Reset();
 	return true;
 }
-
-void __cdecl StdThread::_ThreadFunc(void *pPar)
-{
-	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
-	_endthreadex(pThread->ThreadFunc());
-}
-
 #endif
