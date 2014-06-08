@@ -21,9 +21,7 @@ protected func Initialize()
 	var wdt = BoundBy(GetObjWidth(), 8, 120);
 	if (parent)
 		wdt = BoundBy(parent->GetObjWidth(), 8, 120);
-	SetShape(-wdt / 2, -4, wdt, 8);
-	SetSolidMask(0, 0, wdt, 8, 20 - wdt / 2, 0);
-	SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, 0);
+	SetWidth(wdt);
 	// Move objects out of the basement.
 	MoveOutOfBasement();
 	return _inherited(...);
@@ -34,6 +32,15 @@ protected func Destruction()
 	// Cast a single rock.
 	CastObjects(Rock, 1, 15, 0, -5);
 	return _inherited(...);
+}
+
+// Set the width of the basement.
+public func SetWidth(int wdt)
+{
+	SetShape(-wdt / 2, -4, wdt, 8);
+	SetSolidMask(0, 0, wdt, 8, 20 - wdt / 2, 0);
+	SetObjDrawTransform(1000 * wdt / 40, 0, 0, 0, 1000, 0);
+	return;
 }
 
 // Set the parent if the basement is attached to a structure.
