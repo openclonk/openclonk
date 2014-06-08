@@ -479,11 +479,18 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 				ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
 	}
 
-	// add structures
+	// add structures (exit/enter)
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 	for(var structure in structures)
 	{
-		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
+		// Only show the button when in front of the entrance, or if inside.
+		var x = structure->GetDefCoreVal("Entrance", "DefCore", 0);
+		var y = structure->GetDefCoreVal("Entrance", "DefCore", 1);
+		var wdt = structure->GetDefCoreVal("Entrance", "DefCore", 2);
+		var hgt = structure->GetDefCoreVal("Entrance", "DefCore", 3);
+		var at_entrance = Inside(target->GetX() - structure->GetX(), x, x + wdt) && Inside(target->GetY() - structure->GetY(), y, y + hgt);
+		if (Contained() || at_entrance)
+			ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 	}
 	
 	// add extra-interactions after everything
