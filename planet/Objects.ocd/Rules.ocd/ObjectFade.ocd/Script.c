@@ -61,7 +61,7 @@ func CheckFadeConditions(object fade)
 	// Allow small movement because engine physics bug sometimes cause objects to wiggle forever
 	if (Distance(fade->GetXDir(), fade->GetYDir()) > 4) return false;
 	// No InEarth objects
-	if (fade->Stuck()) return false;
+	if (fade->GBackSolid()) return false;
 	// No objects that explicitely want to stay
 	if (fade->~HasNoFadeOut()) return false;
 	// Not if picked up
