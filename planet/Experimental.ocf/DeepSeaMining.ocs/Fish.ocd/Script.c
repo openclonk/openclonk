@@ -89,6 +89,7 @@ func Death()
 	if (base_transform) this.MeshTransformation = Trans_Mul(base_transform, this.MeshTransformation);
 	StopAnimation(swim_animation);
 	AddTimer(this.Decaying, 500);
+	this.Collectible = true;
 	return _inherited(...);
 }
 
@@ -97,6 +98,13 @@ func Decaying()
 	if (GetCon()<20) RemoveObject(); else DoCon(-5);
 	return true;
 }
+
+protected func ControlUse(object clonk, int iX, int iY)
+{
+	clonk->Eat(this);
+}
+
+public func NutritionalValue() { if (!GetAlive()) return 15; else return 0; }
 
 func InitFuzzyRules()
 {

@@ -14,7 +14,7 @@ protected func Initialize()
 	if (gem_goal)
 	{
 		var gems = (GetMaterialCount(Material("Ruby")) + GetMaterialCount(Material("Amethyst"))) / 125;
-		var percentage = 40;
+		var percentage = 60;
 		gem_goal->SetTargetAmount((gems * percentage) / 100);
 	}
 	
@@ -68,9 +68,8 @@ private func InitEnvironment()
 	// Set a certain parallax.
 	SetSkyParallax(0, 20, 20);
 	
-	// Disasters: lightning. Meteorites kill flint islands.
-	//Meteor->SetChance(5);
-	Cloud->SetLightning(16);
+	// No disasters for now
+	//Meteor->SetChance(5); Cloud->SetLightning(16);
 	
 	return;
 }
@@ -116,7 +115,7 @@ func EnsureTrees()
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
 	// Place a tree if there are less than eight trees, with increasing likelihood for lower amounts of trees.
-	var nr_trees = ObjectCount(Find_Func("IsTree"));
+	var nr_trees = ObjectCount(Find_Func("IsTree"), Find_Func("IsStanding"));
 	if (Random(9) >= nr_trees)
 		if (!Random(20))
 			PlaceVegetation(Tree_Coconut, main_island_x - 300, main_island_y - 200, 600, 400, 3);
@@ -126,17 +125,19 @@ func EnsureTrees()
 private func InitAnimals()
 {
 	// Place fish in upper ocean area (there tend to be small basins below, where lots of fish could get stuck)
-	var fish_area = Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight()/2 - main_island_y);
-	Fish->Place(80, fish_area);
-	Piranha->Place(40, fish_area);
+	var fish_area = GetFishArea();
+	Fish->Place(50, fish_area);
+	Piranha->Place(25, fish_area);
 	ScheduleCall(nil, this.EnsureAnimals, 237, 999999999);
 	return true;
 }
 
+private func GetFishArea() { return Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight()/2 - main_island_y); }
+
 private func EnsureAnimals()
 {
-	if (ObjectCount(Find_ID(Fish), Find_Not(Find_Action("Dead"))) < 80) Fish->Place(1);
-	if (ObjectCount(Find_ID(Piranha), Find_Not(Find_Action("Dead"))) < 40) Piranha->Place(1);
+	if (ObjectCount(Find_ID(Fish), Find_Not(Find_Action("Dead"))) < 50) Fish->Place(1, GetFishArea());
+	if (ObjectCount(Find_ID(Piranha), Find_Not(Find_Action("Dead"))) < 25) Piranha->Place(1, GetFishArea());
 	return true;
 }
 

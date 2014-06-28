@@ -14,7 +14,7 @@ static main_island_x, main_island_y; // zoomed coordinates for scenario script
 // Called be the engine: draw the complete map here.
 public func InitializeMap(proplist map)
 {
-	Resize(600,400);
+	Resize(300,400);
 	this.sea_y = 50;
 	this.ground_y = 350;
 	var map_zoom = 7;
@@ -25,10 +25,10 @@ public func InitializeMap(proplist map)
 	DrawMainIsland(80);
 	DrawGround();
 	
-	DrawSecondaryIslands(4, 15, [["Ore", 50], ["Coal", 40]], true);
-	DrawSecondaryIslands(20, 6, [["Firestone", 70]], false);
-	DrawSecondaryIslands(4, 8, [["Gold", 40]], true);
-	DrawSecondaryIslands(4, 6, [["Sand", 50]], false);
+	DrawSecondaryIslands(3, 15, [["Ore", 50], ["Coal", 40]], true);
+	DrawSecondaryIslands(10, 6, [["Firestone", 70]], false);
+	DrawSecondaryIslands(3, 8, [["Gold", 40]], true);
+	DrawSecondaryIslands(2, 6, [["Sand", 50]], false);
 	
 	FixLiquidBorders("Earth");
 	
@@ -170,7 +170,7 @@ private func DrawGround()
 	// Gem spots
 	var gem_spots = CreateLayer();
 	var earth_mats = CreateMatTexMask("Earth");
-	for (var i=0; i<5; ++i)
+	for (var i=0; i<3; ++i)
 	{
 		var gem_mat = ["Ruby", "Amethyst"][i%2];
 		// Find an earth spot

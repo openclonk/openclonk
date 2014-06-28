@@ -80,7 +80,7 @@ func UpdateVision()
 
 func DoEat(object obj)
 {
-	Sound("Munch*");
+	Sound("FishMunch*");
 	var len = GetAnimationLength("Swim");
 	PlayAnimation("Bite", 5,  Anim_Linear(0, 0, len, 36, ANIM_Remove), Anim_Const(1000));
 	if (obj->GetAlive())
