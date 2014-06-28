@@ -1,5 +1,5 @@
 [Head]
-Icon=39
+Icon=36
 Title=FightForGidl
 Version=5,4
 Difficulty=10
