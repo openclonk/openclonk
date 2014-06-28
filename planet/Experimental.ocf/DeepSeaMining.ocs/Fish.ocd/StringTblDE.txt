@@ -1,0 +1,2 @@
+Name=Fisch
+Description=Schwimmt im Ozean.

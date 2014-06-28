@@ -1,0 +1,2 @@
+Name=FuzzyLogic
+Description=Contains functions to evaluate fuzzy sets.
