@@ -375,6 +375,11 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
+	else if (valueFunction == &C4ParticleValueProvider::Sin)
+	{
+		FloatifyParameterValue(&C4ParticleValueProvider::parameterValue, 1.0f);
+		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
+	}
 }
 
 void C4ParticleValueProvider::RollRandom()
@@ -454,6 +459,11 @@ float C4ParticleValueProvider::KeyFrames(C4Particle *forParticle)
 	return startValue;
 }
 
+float C4ParticleValueProvider::Sin(C4Particle *forParticle)
+{
+	return sin(parameterValue * M_PI / 180.0f) * maxValue + startValue;
+}
+
 float C4ParticleValueProvider::Speed(C4Particle *forParticle)
 {
 	float distX = forParticle->currentSpeedX;
@@ -494,6 +504,9 @@ void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_KeyFrames:
 		valueFunction = &C4ParticleValueProvider::KeyFrames;
+		break;
+	case C4PV_Sin:
+		valueFunction = &C4ParticleValueProvider::Sin;
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4ParticleValueProvider::Speed;
@@ -598,6 +611,15 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 
 			//for (int i = 0; i < keyFrameCount; ++i)
 			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
+		}
+		break;
+	case C4PV_Sin:
+		if (arraySize >= 3)
+		{
+			SetType(C4PV_Sin); // Sin(parameterValue) * maxValue + startValue
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::parameterValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::maxValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::startValue);
 		}
 		break;
 	case C4PV_Speed:

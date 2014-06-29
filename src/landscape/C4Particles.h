@@ -28,6 +28,7 @@ enum C4ParticleValueProviderID
 	C4PV_Linear,
 	C4PV_Random,
 	C4PV_KeyFrames,
+	C4PV_Sin,
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
@@ -111,15 +112,16 @@ protected:
 		int rerollInterval; // for Random
 		float delay; // for Step
 		float speedFactor; // for Speed & Wind & Gravity
+		float parameterValue; // for Sin
 	};
 
 	union
 	{
 		int alreadyRolled; // for Random
 		int smoothing; // for KeyFrames
-		float maxValue; // for Step
+		float maxValue; // for Step & Sin
 	};
-	
+
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
 
@@ -173,6 +175,7 @@ public:
 	float Const(C4Particle *forParticle);
 	float Random(C4Particle *forParticle);
 	float KeyFrames(C4Particle *forParticle);
+	float Sin(C4Particle *forParticle);
 	float Direction(C4Particle *forParticle);
 	float Step(C4Particle *forParticle);
 	float Speed(C4Particle *forParticle);

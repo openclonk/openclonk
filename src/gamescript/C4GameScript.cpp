@@ -1723,6 +1723,16 @@ static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 	return C4Value(pArray);
 }
 
+static C4ValueArray* FnPV_Sin(C4PropList * _this, C4Value value, C4Value amplitude, C4Value offset)
+{
+	C4ValueArray *pArray = new C4ValueArray(5);
+	pArray->SetItem(0, C4VInt(C4PV_Sin));
+	pArray->SetItem(1, value);
+	pArray->SetItem(2, amplitude);
+	pArray->SetItem(3, offset);
+	return pArray;
+}
+
 static C4ValueArray* FnPV_Speed(C4PropList * _this, C4Value factor, C4Value startValue)
 {
 	C4ValueArray *pArray = new C4ValueArray(3);
@@ -2638,6 +2648,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PV_Wind);
 	F(PV_Gravity);
 	// F(PV_KeyFrames); added below
+	F(PV_Sin);
 	F(PC_Die);
 	F(PC_Bounce);
 	F(PC_Stop);
