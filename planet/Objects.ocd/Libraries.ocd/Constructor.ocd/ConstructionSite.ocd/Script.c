@@ -10,6 +10,7 @@ local direction;
 local stick_to;
 local full_material; // true when all needed material is in the site
 local no_cancel; // if true, site cannot be cancelled
+local is_constructing;
 
 public func IsContainer()		{ return !full_material; }
 // disallow taking stuff out
@@ -48,7 +49,7 @@ public func Set(id def, int dir, object stick)
 	w = def->GetDefWidth();
 	h = def->GetDefHeight();
 	// Draw the building with a wired frame and large alpha unless site graphics is overloaded by definition
-	if (!def->~SetConstructionSiteOverlay(this, dir, stick))
+	if (!def->~SetConstructionSiteOverlay(this, direction, stick_to))
 	{
 		SetGraphics(nil, def, 1, GFXOV_MODE_Base);
 		SetClrModulation(RGBa(255,255,255,50), 1);
@@ -76,6 +77,7 @@ func SaveScenarioObject(props)
 	if (!inherited(props, ...)) return false;
 	props->Remove("Name");
 	if (definition) props->AddCall("Definition", this, "Set", definition, direction, stick_to);
+	if (no_cancel) props->AddCall("NoCancel", this, "MakeUncancellable");
 	return true;
 }
 
@@ -96,13 +98,24 @@ public func RejectCollect(id def, object obj)
 // check if full
 public func Collection2(object obj)
 {
+	// Ignore any activity during construction
+	if (is_constructing) return;
+	
 	// update message
 	ShowMissingComponents();
+	
+	// Update preview image
+	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, obj);
 	
 	// check if we're done?
 	if(full_material)
 		StartConstructing();
 }
+
+// component removed (e.g.: Contained wood burned down or some externel scripts went havoc)
+// Make sure lists are updated
+public func ContentsDestruction(object obj) { return Collection2(nil); }
+public func Ejection(object obj) { return Collection2(nil); }
 
 // Interacting removes the Construction site
 public func Interact(object clonk, int num)
@@ -182,10 +195,12 @@ private func StartConstructing()
 	if(!full_material)
 		return;
 	
+	is_constructing = true;
+	
 	// find all objects on the bottom of the area that are not stuck
 	var wdt = GetObjWidth();
 	var hgt = GetObjHeight();
-	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)),Find_InRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_Not(Find_OCF(OCF_InFree)));
+	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)),Find_InRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_Not(Find_OCF(OCF_InFree)),Find_NoContainer());
 	
 	// create the construction, below surface constructions don't perform any checks.
 	// uncancellable sites (for special game goals) are forced and don't do checks either
@@ -208,13 +223,19 @@ private func StartConstructing()
 	if (stick_to)
 		site->CombineWith(stick_to);
 	
-	// Autoconstruct 2.0!
-	Schedule(site, "DoCon(2)",1,50);
-	Schedule(this,"RemoveObject()",1);
+	// Object provides custom construction effects?
+	if (!site->~DoConstructionEffects(this))
+	{
+		// If not: Autoconstruct 2.0!
+		Schedule(site, "DoCon(2)",1,50);
+		Schedule(this,"RemoveObject()",1);
+	}
 	
 	// clean up stuck objects
 	for(var o in lying_around)
 	{
+		if (!o) continue;
+		
 		var x, y;
 		var dif = 0;
 		

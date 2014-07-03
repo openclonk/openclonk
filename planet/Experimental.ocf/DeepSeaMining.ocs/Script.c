@@ -5,17 +5,29 @@
 	@authors Sven2
 */
 
-static main_island_x, main_island_y; // set in Map.c
+// set in Map.c
+static main_island_x, main_island_y;
+static goal_platform_x, goal_platform_y;
+
+static const SCEN_TEST = false;
 
 protected func Initialize()
 {
-	// Goal: Sell Gems, amount depends on availability.
-	var gem_goal = FindObject(Find_ID(Goal_SellGems));
-	if (gem_goal)
+	// Construction site on goal platform
+	var goal_site = CreateObject(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
+	goal_site->Set(CrystalCommunicator);
+	goal_site->MakeUncancellable();
+	if (SCEN_TEST)
 	{
-		var gems = (GetMaterialCount(Material("Ruby")) + GetMaterialCount(Material("Amethyst"))) / 125;
-		var percentage = 60;
-		gem_goal->SetTargetAmount((gems * percentage) / 100);
+		for (var i=0; i<6; ++i)
+		{
+			goal_site->CreateObject(Metal,-20);
+			goal_site->CreateObject(Ruby,0);
+			goal_site->CreateObject(Amethyst,20);
+		}
+		goal_site->CreateContents(Metal,6);
+		goal_site->CreateContents(Ruby,6);
+		goal_site->CreateContents(Amethyst,5);
 	}
 	
 	// Initialize different parts of the scenario.
@@ -41,6 +53,11 @@ protected func InitializePlayer(int plr)
 		var pos = FindMainIslandPosition();
 		crew->SetPosition(pos[0], pos[1] - 11);
 		crew->CreateContents(Shovel);
+		if (SCEN_TEST)
+		{
+			var cs = FindObject(Find_ID(ConstructionSite));
+			crew->SetPosition(cs->GetX(), cs->GetY()-20);
+		}
 	}
 	
 	// Claim ownership of unowned structures
@@ -52,7 +69,6 @@ protected func InitializePlayer(int plr)
 		
 	// Should be done in OnOwnerChanged? It doesn't happen ATM.
 	RedrawAllFlagRadiuses();
-	
 
 	return;
 }
@@ -136,9 +152,19 @@ private func GetFishArea() { return Rectangle(50, main_island_y, LandscapeWidth(
 
 private func EnsureAnimals()
 {
-	if (ObjectCount(Find_ID(Fish), Find_Not(Find_Action("Dead"))) < 50) Fish->Place(1, GetFishArea());
-	if (ObjectCount(Find_ID(Piranha), Find_Not(Find_Action("Dead"))) < 25) Piranha->Place(1, GetFishArea());
+	if (ObjectCount(Find_ID(Fish), Find_Not(Find_Action("Dead"))) < 50) DoFishSpawn(Fish);
+	if (ObjectCount(Find_ID(Piranha), Find_Not(Find_Action("Dead"))) < 25) DoFishSpawn(Piranha);
 	return true;
+}
+
+private func DoFishSpawn(fish_type)
+{
+	// Try placement away from Clonks. If a Clonk was nearby, just remove it immediately.
+	var fish = fish_type->Place(1, GetFishArea());
+	if (fish)
+		if (fish->FindObject(fish->Find_Distance(300), Find_ID(Clonk), Find_OCF(OCF_Alive)))
+			fish->RemoveObject();
+	return fish;
 }
 
 // Initializes the main island according to the material specification.
@@ -207,11 +233,73 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 		var y = main_island_y / 2 - 220;
 		
 		while (!GBackSolid(x, y) && y < LandscapeHeight()*3/4)
-			y++;	
+			y++;
+		
+		if (GetMaterial(x,y) == Material("Brick")) continue; // not on goal platform
 			
 		if (!no_struct || !FindObject(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole")), Find_Distance(60, x, y)))
 			break;
 	}
 
 	return [x, y];
+}
+
+// Goal fulfilled
+public func OnGoalsFulfilled()
+{
+	var communicator = FindObject(Find_Func("IsCrystalCommunicator"));
+	if (!communicator) return false; // what?
+	// Stop Clonks and disable player controls
+	ScheduleCall(nil, this.Players2EndSequence, 30, 999999999, communicator);
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		var j=0, crew;
+		while (crew = GetCrew(plr, j++))
+		{
+			crew->SetCrewEnabled(false);
+			if (crew->~GetMenu()) crew->~GetMenu()->Close();
+			crew->MakeInvincible();
+			crew->SetCommand("None");
+			crew->SetComDir(COMD_Stop);
+		}
+		SetPlrView(plr, communicator);
+	}
+	// Fade sky to dark
+	ScheduleCall(nil, this.Fade2Darkness, 5, 32, {});
+	// And start some outro
+	communicator->StartCommunication(); // 250 frames
+	ScheduleCall(nil, Scenario.Outro1, 700, 1, communicator);
+	// Return true to force goal rule to not call GameOver() yet
+	return true;
+}
+
+private func Outro1(communicator)
+{
+	communicator->SendCode("...---..."); // 159 frames
+	//Sound("Fanfare");
+	return ScheduleCall(nil, Scenario.Outro2, 200, 1, communicator);
+}
+
+private func Outro2(communicator)
+{
+	return GameOver();
+}
+
+private func Fade2Darkness(proplist v)
+{
+	v.t += 8;
+	var fade_val = Max(0xff-v.t);
+	SetSkyAdjust(RGB(fade_val,fade_val,fade_val));
+}	
+
+private func Players2EndSequence(object communicator)
+{
+	// Force view on communicator
+	if (!communicator) return;
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		SetPlrView(plr, communicator);
+	}
 }

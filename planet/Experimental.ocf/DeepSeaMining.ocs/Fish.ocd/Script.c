@@ -20,13 +20,14 @@ func Place(int amount, proplist rectangle, proplist settings)
 	var max_tries = 2 * amount;
 	var loc_area = nil;
 	if (rectangle) loc_area = Loc_InRect(rectangle);
+	var f;
 	
 	while ((amount > 0) && (--max_tries > 0))
 	{
 		var spot = FindLocation(Loc_Material("Water"), Loc_Space(50, false), loc_area);
 		if (!spot) continue;
 		
-		var f = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		f = CreateObject(this, spot.x, spot.y, NO_OWNER);
 		if (!f) continue;
 		// Randomly add some large/slim fish
 		if (Random(3))
@@ -46,7 +47,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 		}
 		--amount;
 	}
-	return true;
+	return f; // return last created fish
 }
 
 func Construction()
