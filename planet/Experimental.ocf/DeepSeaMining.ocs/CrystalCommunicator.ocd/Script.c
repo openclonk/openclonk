@@ -235,6 +235,18 @@ private func PreActivity()
 	++time;
 }
 
+public func StopCommunication()
+{
+	// forward to main object
+	if (base_face) return base_face->StopCommunication();
+	// Stop activities
+	RemoveTimer(this.PreActivity);
+	RemoveTimer(this.Activity);
+	SetAction("Idle");
+	time = 0;
+	return true;
+}
+
 private func Activity()
 {
 	// Send codes

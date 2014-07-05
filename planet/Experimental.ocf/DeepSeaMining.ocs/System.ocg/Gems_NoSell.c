@@ -1,0 +1,2 @@
+#appendto Ruby
+func IsValuable(){}

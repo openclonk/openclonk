@@ -9,7 +9,7 @@
 static main_island_x, main_island_y;
 static goal_platform_x, goal_platform_y;
 
-static const SCEN_TEST = true;
+static const SCEN_TEST = false;
 
 protected func Initialize()
 {
@@ -69,6 +69,9 @@ protected func InitializePlayer(int plr)
 		
 	// Should be done in OnOwnerChanged? It doesn't happen ATM.
 	RedrawAllFlagRadiuses();
+	
+	// Goal message for intro
+	Dialogue->MessageBox("$MsgIntro$", GetCursor(plr), GetCrew(plr), plr, true); // oh no we're stranded!
 
 	return;
 }
@@ -250,30 +253,105 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
-	var communicator = FindObject(Find_Func("IsCrystalCommunicator"));
-	if (!communicator) return false; // what?
+	var outro = {};
+	outro.communicator = FindObject(Find_Func("IsCrystalCommunicator"));
+	if (!outro.communicator) return false; // what?
 	// Stop Clonks and disable player controls
-	Dialogue->StartCinematics(communicator);
-	// Fade sky to dark
-	ScheduleCall(nil, this.Fade2Darkness, 5, 32, {});
-	// And start some outro
-	communicator->StartCommunication(); // 250 frames
-	ScheduleCall(nil, Scenario.Outro1, 700, 1, communicator);
+	Dialogue->StartCinematics(outro.communicator);
+	// Outro
+	ScheduleCall(nil, this.Fade2Darkness, 15, 32, {});
+	Dialogue->MessageBoxAll("$MsgOutro1$", GetOutroTalker(outro), true); // ok turn it on
+	ScheduleCall(nil, Scenario.Outro0, 100, 1, outro);
 	// Return true to force goal rule to not call GameOver() yet
 	return true;
 }
 
-private func Outro1(communicator)
+private func Outro0(proplist outro)
 {
-	communicator->SendCode("...---..."); // 159 frames
-	//Sound("Fanfare");
-	return ScheduleCall(nil, Scenario.Outro2, 200, 1, communicator);
+	outro.communicator->StartCommunication(); // 250 frames
+	ScheduleCall(nil, Scenario.Outro1, 650, 1, outro);
 }
 
-private func Outro2(communicator)
+private func Outro1(proplist outro)
+{
+	Dialogue->MessageBoxAll("$MsgOutro2$", GetOutroTalker(outro), true); // let's see if it works
+	ScheduleCall(nil, Scenario.Outro2, 50, 1, outro);
+}
+
+private func Outro2(proplist outro)
+{
+	outro.communicator->SendCode("...---..."); // 159 frames
+	return ScheduleCall(nil, Scenario.Outro3, 200, 1, outro);
+}
+
+private func Outro3(proplist outro)
+{
+	outro.communicator->StopCommunication();
+	Dialogue->MessageBoxAll("$MsgOutro3$", GetOutroTalker(outro), true); // i wonder if anyone has heard us
+	outro.plane = CreateObject(Plane, 100, main_island_y-100);
+	outro.plane->SetContactDensity(85); // only collision with brick for proper landing
+	outro.pilot = CreateObject(Clonk, 100, 100);
+	outro.pilot->MakeInvincible();
+	outro.pilot->SetSkin(2);
+	outro.pilot->Enter(outro.plane);
+	outro.pilot->SetAction("Walk");
+	outro.pilot->SetName("$NamePilot$");
+	outro.pilot->SetColor(RGB(55, 65, 75));
+	outro.pilot->SetDir(DIR_Right);
+	outro.plane->FaceRight();
+	outro.plane->StartInstantFlight(90, 15);
+	return ScheduleCall(nil, Scenario.Outro4, 5, 99999999, outro);
+}
+
+private func Outro4(proplist outro)
+{
+	// Wait for plane to arrive
+	if (outro.plane->GetX() < outro.communicator->GetX() - 200) return true;
+	ClearScheduleCall(nil, Scenario.Outro4);
+	// Plane in range! Ensure players see it.
+	SetPlayerZoomByViewRange(NO_OWNER, 500, 350, PLRZOOM_Direct);
+	Dialogue->MessageBoxAll("$MsgOutro4$", outro.pilot, true); // hey, our friends!
+	return ScheduleCall(nil, Scenario.Outro5, 100, 1, outro);
+}
+
+private func Outro5(proplist outro)
+{
+	Dialogue->MessageBoxAll("$MsgOutro5$", GetOutroTalker(outro), true); // we're saved!
+	outro.plane->StartInstantFlight(245, 15);
+	outro.plane->SetContactDensity(C4M_Solid);
+	return ScheduleCall(nil, Scenario.Outro6, 60, 1, outro);
+}
+
+private func Outro6(proplist outro)
+{
+	outro.plane->StartInstantFlight(280, 5);
+	return ScheduleCall(nil, Scenario.Outro7, 15, 1, outro);
+}
+
+private func Outro7(proplist outro)
+{
+	outro.plane->CancelFlight();
+	return ScheduleCall(nil, Scenario.Outro8, 40, 1, outro);
+}
+
+private func Outro8(proplist outro)
+{
+	outro.pilot->Exit();
+	Dialogue->MessageBoxAll("$MsgOutro6$", outro.pilot, true); // hop on everyone!
+	return ScheduleCall(nil, Scenario.Outro9, 100, 1, outro);
+}
+
+private func Outro9(proplist outro)
 {
 	// Reenable crew in case players want to continue playing after round
+	outro.plane->FaceRight();
 	Dialogue->StopCinematics();
+	return ScheduleCall(nil, Scenario.Outro10, 100, 1, outro);
+}
+
+private func Outro10(proplist outro)
+{
+	Sound("Fanfare");
 	return GameOver();
 }
 
@@ -283,3 +361,8 @@ private func Fade2Darkness(proplist v)
 	var fade_val = Max(0xff-v.t);
 	SetSkyAdjust(RGB(fade_val,fade_val,fade_val));
 }	
+
+private func GetOutroTalker(outro)
+{
+	return outro.communicator->FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), outro.communicator->Sort_Distance());
+}
