@@ -165,49 +165,76 @@ public func Interact(object clonk)
 
 private func InDialogue(object clonk)
 {
-	return clonk->GetMenu() == Dialogue;	
+	return clonk->GetMenu() == Dialogue;
 }
 
-public func MessageBoxAll(string message, object talker)
+public func MessageBoxAll(string message, object talker, bool as_message)
 {
-	for(var i = 0; i < GetPlayerCount(); ++i)
-		MessageBox(message, GetCursor(GetPlayerByIndex(i)), talker);
+	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		MessageBox(message, GetCursor(plr), talker, plr, as_message);
+	}
 }
 
-private func MessageBox(string message, object clonk, object talker)
+private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message)
 {
 	// Use current NPC as talker if unspecified.
-	if (!talker)
-		talker = dlg_target;	
+	// On definition call or without talker, just show the message without a source
+	if (!talker && this != Dialogue) talker = dlg_target;
+	if (talker) message = Format("<c %x>%s:</c> %s", talker->GetColor(), talker->GetName(), message);
+	var portrait;
+	if (talker) portrait = talker->~GetPortrait();
 	
-	// Use a menu for this dialogue.
-	clonk->CreateMenu(Dialogue, this, C4MN_Extra_None, nil, nil, C4MN_Style_Dialog, false, Dialogue);
-	
-	// Add NPC portrait.
-	//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
-	clonk->AddMenuItem("", "MenuOK", Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker); //TextSpec);
+	// A target Clonk is given: Use a menu for this dialogue.
+	if (clonk && !as_message)
+	{
+		var menu_target, cmd;
+		if (this != Dialogue)
+		{
+			menu_target = this;
+			cmd = "MenuOK";
+		}
+		clonk->CreateMenu(Dialogue, menu_target, C4MN_Extra_None, nil, nil, C4MN_Style_Dialog, false, Dialogue);
+		
+		// Add NPC portrait.
+		//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
+		if (talker)
+			if (portrait)
+				clonk->AddMenuItem("", cmd, Dialogue, nil, clonk, nil, C4MN_Add_ImgPropListSpec, portrait);
+			else
+				clonk->AddMenuItem("", cmd, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
 
-	// Add NPC message.
-	var msg = Format("<c %x>%s:</c> %s", talker->GetColor(), talker->GetName(), message);
-	clonk->AddMenuItem(msg, "MenuOK", nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
-	
-	// Add answers.
-	//for (var i = 0; i < GetLength(message.Answers); i++)
-	//{
-	//	var ans = message.Answers[i][0];
-	//	var call_back = message.Answers[i][1];
-	//	target->AddMenuItem(ans, call_back, nil, nil, target, nil, C4MN_Add_ForceNoDesc);
-	//}
-	
-	// Set menu decoration.
-	clonk->SetMenuDecoration(GUI_MenuDeco);
-	
-	// Set text progress to NPC name.
-	var name = dlg_target->GetName();
-	var n_length;
-	while (GetChar(name, n_length))
-		n_length++;
-	clonk->SetMenuTextProgress(n_length + 1);
+		// Add NPC message.
+		clonk->AddMenuItem(message, cmd, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
+		
+		// Add answers.
+		//for (var i = 0; i < GetLength(message.Answers); i++)
+		//{
+		//	var ans = message.Answers[i][0];
+		//	var call_back = message.Answers[i][1];
+		//	target->AddMenuItem(ans, call_back, nil, nil, target, nil, C4MN_Add_ForceNoDesc);
+		//}
+		
+		// Set menu decoration.
+		clonk->SetMenuDecoration(GUI_MenuDeco);
+		
+		// Set text progress to NPC name.
+		if (talker)
+		{
+			var name = talker->GetName();
+			var n_length;
+			while (GetChar(name, n_length))
+				n_length++;
+			clonk->SetMenuTextProgress(n_length + 1);
+		}
+	}
+	else
+	{
+		// No target is given: Global (player) message
+		if (!GetType(for_player)) for_player = NO_OWNER;
+		CustomMessage(message, nil, for_player, 150,150, nil, GUI_MenuDeco, portrait ?? talker);
+	}
 
 	return;
 }
@@ -230,6 +257,73 @@ func SaveScenarioObject(props)
 	props->RemoveCreation();
 	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v)", dlg_target->MakeScenarioSaveName(), dlg_name);
 	return true;
+}
+
+
+/* Player deactivation during dialogues */
+
+public func StartCinematics(object cinematics_target)
+{
+	// Disable crew of all players
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		var j=0, crew;
+		while (crew = GetCrew(plr, j++))
+		{
+			if (crew == GetCursor(plr)) crew.cinematics_was_cursor = true; else crew.cinematics_was_cursor = nil;
+			crew->SetCrewEnabled(false);
+			if (crew->~GetMenu()) crew->~GetMenu()->Close();
+			crew->MakeInvincible();
+			crew->SetCommand("None");
+			crew->SetComDir(COMD_Stop);
+		}
+	}
+	// Fix view on target
+	if (cinematics_target) SetCinematicsTarget(cinematics_target);
+	return true;
+}
+
+public func StopCinematics()
+{
+	SetCinematicsTarget(nil);
+	// Reenable crew and reset cursor
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		var j=0, crew;
+		while (crew = GetCrew(plr, j++))
+		{
+			crew->SetCrewEnabled(true);
+			crew->ClearInvincible();
+			if (crew.cinematics_was_cursor) SetCursor(plr, crew);
+		}
+	}
+	return true;
+}
+
+// Force all player views on given target
+public func SetCinematicsTarget(object cinematics_target)
+{
+	if (cinematics_target)
+	{
+		UpdateCinematicsTarget(cinematics_target);
+		ScheduleCall(nil, Dialogue.UpdateCinematicsTarget, 30, 999999999, cinematics_target);
+	}
+	else
+		ClearScheduleCall(nil, Dialogue.UpdateCinematicsTarget);
+	return true;
+}
+
+private func UpdateCinematicsTarget(object cinematics_target)
+{
+	// Force view of all players on target
+	if (!cinematics_target) return;
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		SetPlrView(plr, cinematics_target);
+	}
 }
 
 

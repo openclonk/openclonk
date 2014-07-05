@@ -215,6 +215,7 @@ public:
 
 	bool DrawTextSpecImage(C4Facet& fctTarget, const char *szSpec, class C4DrawTransform* pTransform, uint32_t dwClr=0xff);
 	float GetTextSpecImageAspect(const char* szSpec);
+	bool DrawPropListSpecImage(C4Facet& fctTarget, C4PropList *pSpec);
 	bool SpeedUp();
 	bool SlowDown();
 	bool InitKeyboard(); // register main keyboard input functions

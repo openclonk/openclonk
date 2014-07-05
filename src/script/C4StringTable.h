@@ -389,6 +389,8 @@ enum C4PropertyName
 	P_OnCollision,
 	P_Distance,
 	P_Smoke,
+	P_Source,
+	P_Color,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

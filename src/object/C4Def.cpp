@@ -481,7 +481,6 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
-		PictureRect.Default();
 	}
 
 	// Temporary flag

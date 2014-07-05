@@ -3512,6 +3512,37 @@ float C4Game::GetTextSpecImageAspect(const char* szSpec)
 	}
 }
 
+bool C4Game::DrawPropListSpecImage(C4Facet &fctTarget, C4PropList *pSpec)
+{
+	// safety
+	assert(pSpec);
+	if (!pSpec) return false;
+
+	// get source definition
+	C4PropList *source_def_proplist = pSpec->GetPropertyPropList(P_Source);
+	if (!source_def_proplist) return false;
+	C4Def *source_def = source_def_proplist->GetDef();
+	if (!source_def) return false;
+
+	// get custom color
+	uint32_t color = (uint32_t)pSpec->GetPropertyInt(P_Color);
+	
+	C4String *source_name = pSpec->GetPropertyStr(P_Name);
+	if (!source_name)
+	{
+		// Base graphics
+		source_def->Draw(fctTarget, false, color);
+	}
+	else
+	{
+		// Alternative named graphics
+		C4DefGraphics *source_graphics = source_def->Graphics.Get(source_name->GetCStr());
+		if (!source_graphics) return false;
+		source_graphics->Draw(fctTarget, color, NULL, 0,0, NULL);
+	}
+	return true;
+}
+
 bool C4Game::SpeedUp()
 {
 	// As these functions work stepwise, there's the old maximum speed of 50.

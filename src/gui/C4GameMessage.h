@@ -22,6 +22,7 @@
 
 #include <C4Surface.h>
 #include <C4Gui.h>
+#include <C4Value.h>
 
 const int32_t C4GM_MaxText = 256,
               C4GM_MinDelay = 20;
@@ -63,7 +64,8 @@ protected:
 	StdCopyStrBuf Text;
 	C4GameMessage *Next;
 	C4ID DecoID;
-	C4PropList *PictureDef; // can be either a definition or object
+	C4PropList *PictureDef; // can be definition, object or prop list with Source and Name properties
+	C4Value PictureDefVal; // C4Value holding PictureDef to prevent deletion
 	C4GUI::FrameDecoration *pFrameDeco;
 	uint32_t dwFlags;
 protected:

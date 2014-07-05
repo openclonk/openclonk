@@ -567,28 +567,31 @@ func QueryCatchBlow(object obj)
 	return _inherited(obj, ...);
 }
 
-local gender;
+local gender, skin, skin_name;
 
-func SetSkin(int skin)
+func SetSkin(int new_skin)
 {
+	// Remember skin
+	skin = new_skin;
+	
 	//Adventurer
 	if(skin == 0)
-	{	SetGraphics();
+	{	SetGraphics(skin_name = nil);
 		gender = 0;	}
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics("Steampunk");
+	{	SetGraphics(skin_name = "Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics("Alchemist");
+	{	SetGraphics(skin_name = "Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics("Farmer");
+	{	SetGraphics(skin_name = "Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
@@ -599,6 +602,21 @@ func SetSkin(int skin)
 }
 func GetSkinCount() { return 4; }
 
+func GetSkin() { return skin; }
+func GetSkinName() { return skin_name; }
+
+//Portrait definition of this Clonk for messages
+func GetPortrait()
+{
+	return this.portrait ?? { Source = GetID(), Name = Format("Portrait%s", skin_name ?? ""), Color = GetColor() };
+}
+
+func SetPortrait(proplist custom_portrait)
+{
+	this.portrait = custom_portrait;
+	return true;
+}
+
 /* Scenario saving */
 
 func SaveScenarioObject(props)
@@ -608,6 +626,8 @@ func SaveScenarioObject(props)
 	// out if the user wanted that specific direction. So just always save
 	// it, because that's what scenario designer usually wants.
 	if (!props->HasProp("Dir")) props->AddCall("Dir", this, "SetDir", GetConstantNameByValueSafe(GetDir(),"DIR_"));
+	// Custom portraits for dialogues
+	if (this.portrait) props->AddCall("Portrait", this, "SetPortrait", this.portrait);
 	return true;
 }
 

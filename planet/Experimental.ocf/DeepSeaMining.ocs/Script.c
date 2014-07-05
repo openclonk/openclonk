@@ -9,7 +9,7 @@
 static main_island_x, main_island_y;
 static goal_platform_x, goal_platform_y;
 
-static const SCEN_TEST = false;
+static const SCEN_TEST = true;
 
 protected func Initialize()
 {
@@ -244,27 +244,16 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 	return [x, y];
 }
 
+
+/* Outro */
+
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
 	var communicator = FindObject(Find_Func("IsCrystalCommunicator"));
 	if (!communicator) return false; // what?
 	// Stop Clonks and disable player controls
-	ScheduleCall(nil, this.Players2EndSequence, 30, 999999999, communicator);
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		var j=0, crew;
-		while (crew = GetCrew(plr, j++))
-		{
-			crew->SetCrewEnabled(false);
-			if (crew->~GetMenu()) crew->~GetMenu()->Close();
-			crew->MakeInvincible();
-			crew->SetCommand("None");
-			crew->SetComDir(COMD_Stop);
-		}
-		SetPlrView(plr, communicator);
-	}
+	Dialogue->StartCinematics(communicator);
 	// Fade sky to dark
 	ScheduleCall(nil, this.Fade2Darkness, 5, 32, {});
 	// And start some outro
@@ -283,6 +272,8 @@ private func Outro1(communicator)
 
 private func Outro2(communicator)
 {
+	// Reenable crew in case players want to continue playing after round
+	Dialogue->StopCinematics();
 	return GameOver();
 }
 
@@ -292,14 +283,3 @@ private func Fade2Darkness(proplist v)
 	var fade_val = Max(0xff-v.t);
 	SetSkyAdjust(RGB(fade_val,fade_val,fade_val));
 }	
-
-private func Players2EndSequence(object communicator)
-{
-	// Force view on communicator
-	if (!communicator) return;
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		SetPlrView(plr, communicator);
-	}
-}

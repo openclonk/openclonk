@@ -52,9 +52,30 @@
           <optional />
         </param>
         <param>
-          <type>id/object</type>
+          <type>proplist</type>
           <name>portrait</name>
-          <desc>Definition or object to take the graphics from as a portrait.</desc>
+          <desc>
+            Definition, object or image specification prop list to take the graphics from as a portrait.<br />
+            Image specification prop lists can contain the following members:
+            <table>
+              <rowh>
+                <col>Property</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>Source</col>
+                <col>Definition to draw graphics of.</col>
+              </row>
+              <row>
+                <col>Name</col>
+                <col>Name of graphics to draw from definition. Can be used to show a message e.g. of a skinned clonk. Default graphics are used if not specified.</col>
+              </row>
+              <row>
+                <col>Color</col>
+                <col>Color in which ColorByOwner surfaces of definition are drawn.</col>
+              </row>
+            </table>
+          </desc>
           <optional />
         </param>
         <param>

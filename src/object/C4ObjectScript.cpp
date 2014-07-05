@@ -824,16 +824,17 @@ static bool FnCreateMenu(C4Object *Obj, C4Def *pDef, C4Object *pCommandObj,
 	return true;
 }
 
-const int C4MN_Add_ImgRank     =   1,
-          C4MN_Add_ImgIndexed  =   2,
-          C4MN_Add_ImgObjRank  =   3,
-          C4MN_Add_ImgObject   =   4,
-          C4MN_Add_ImgTextSpec =   5,
-          C4MN_Add_ImgColor    =   6,
-          C4MN_Add_MaxImage    = 127, // mask for param which decides what to draw as the menu symbol
-          C4MN_Add_PassValue   = 128,
-          C4MN_Add_ForceCount  = 256,
-          C4MN_Add_ForceNoDesc = 512;
+const int C4MN_Add_ImgRank         =   1,
+          C4MN_Add_ImgIndexed      =   2,
+          C4MN_Add_ImgObjRank      =   3,
+          C4MN_Add_ImgObject       =   4,
+          C4MN_Add_ImgTextSpec     =   5,
+          C4MN_Add_ImgColor        =   6,
+          C4MN_Add_ImgPropListSpec =   7,
+          C4MN_Add_MaxImage        = 127, // mask for param which decides what to draw as the menu symbol
+          C4MN_Add_PassValue       = 128,
+          C4MN_Add_ForceCount      = 256,
+          C4MN_Add_ForceNoDesc     = 512;
 
 #ifndef _MSC_VER
 #define _snprintf snprintf
@@ -1071,6 +1072,16 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 				return false;
 		}
 		*caption = '\0';
+	}
+	break;
+
+	case C4MN_Add_ImgPropListSpec:
+	{
+		C4PropList *gfx_proplist = XPar.getPropList();
+		fctSymbol.Create(iSymbolSize,iSymbolSize);
+		uint32_t dwClr = XPar.getInt();
+		if (!Game.DrawPropListSpecImage(fctSymbol, gfx_proplist))
+			return false;
 	}
 	break;
 
@@ -2401,6 +2412,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4MN_Add_ImgObjRank"    ,C4V_Int,          C4MN_Add_ImgObjRank},
 	{ "C4MN_Add_ImgObject"     ,C4V_Int,          C4MN_Add_ImgObject},
 	{ "C4MN_Add_ImgTextSpec"   ,C4V_Int,          C4MN_Add_ImgTextSpec},
+	{ "C4MN_Add_ImgPropListSpec",C4V_Int,         C4MN_Add_ImgPropListSpec},
 	{ "C4MN_Add_ImgColor"      ,C4V_Int,          C4MN_Add_ImgColor},
 	{ "C4MN_Add_PassValue"     ,C4V_Int,          C4MN_Add_PassValue},
 	{ "C4MN_Add_ForceCount"    ,C4V_Int,          C4MN_Add_ForceCount},

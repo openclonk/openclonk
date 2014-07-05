@@ -58,9 +58,17 @@ global func SetObjAlpha(int by_alpha)
 // Makes the calling object invincible.
 global func MakeInvincible()
 {
-	if (!this)
-		return;
+	if (!this) return nil;
+	var fx;
+	if (fx = GetEffect("IntInvincible", this)) return fx;
 	return AddEffect("IntInvincible", this, 300);
+}
+
+// REmoves invincibility from object
+global func ClearInvincible()
+{
+	if (!this) return nil;
+	return RemoveEffect("IntInvincible", this);
 }
 
 global func FxIntInvincibleDamage()
