@@ -45,7 +45,7 @@ public func SaveScenarioObject(props)
 
 /*-- Goal interface --*/
 
-// The goal is fulfilled if the expansio goal is covered by flags.
+// The goal is fulfilled if the expansion goal is covered by flags.
 public func IsFulfilled()
 {
 	// Check if goal is fulfilled.
