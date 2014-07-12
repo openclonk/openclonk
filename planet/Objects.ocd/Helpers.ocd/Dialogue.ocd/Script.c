@@ -11,6 +11,7 @@ local dlg_info;
 local dlg_progress;
 local dlg_status;
 local dlg_interact;
+local dlg_attention;
 
 static const DLG_Status_Active = 0;
 static const DLG_Status_Stop = 1;
@@ -20,12 +21,12 @@ static const DLG_Status_Remove = 2;
 /*-- Dialogue creation --*/
 
 // Sets a new dialogue for a npc.
-global func SetDialogue(string name)
+global func SetDialogue(string name, bool attention)
 {
 	if (!this)
 		return;
 	var dialogue = CreateObject(Dialogue);
-	dialogue->InitDialogue(name, this);
+	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);
 
@@ -58,19 +59,55 @@ protected func Initialize()
 	return;
 }
 
-public func InitDialogue(string name, object target)
+public func InitDialogue(string name, object target, bool attention)
 {
 	dlg_target = target;
 	dlg_name = name;
 
 	// Attach dialogue object to target.
-	SetAction("Dialogue", target);
+	if (attention)
+	{
+		// Attention: Show exclamation mark and glitter effect every five seconds
+		AddAttention();
+	}
+	else
+	{
+		// No attention: Set invisible action
+		SetAction("Dialogue", target);
+		RemoveAttention();
+	}
 	
 	// Update dialogue to target.
 	UpdateDialogue();
 	
 	return;
 }
+
+public func AddAttention()
+{
+	// Attention: Show exclamation mark and glitter effect every five seconds
+	if (!dlg_attention)
+	{
+		SetAction("DialogueAttention", dlg_target);
+		RemoveTimer("AttentionEffect"); AddTimer("AttentionEffect", 36*5);
+		dlg_attention = true;
+	}
+	return true;
+}
+
+public func RemoveAttention()
+{
+	// No longer show exclamation mark and glitter effects
+	if (dlg_attention)
+	{
+		RemoveTimer("AttentionEffect");
+		if (dlg_target) SetAction("Dialogue", dlg_target);
+		dlg_attention = false;
+	}
+	return true;
+}
+
+private func AttentionEffect() { return SetAction("DialogueAttentionEffect", dlg_target); }
 
 private func UpdateDialogue()
 {
@@ -151,6 +188,9 @@ public func Interact(object clonk)
 		RemoveObject();
 		return true;		
 	}
+	
+	// Remove attention mark on first interaction
+	RemoveAttention();
 
 	// Start conversation context.
 	// Update dialogue progress first.
@@ -201,9 +241,9 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
 		if (talker)
 			if (portrait)
-				clonk->AddMenuItem("", cmd, Dialogue, nil, clonk, nil, C4MN_Add_ImgPropListSpec, portrait);
+				clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgPropListSpec, portrait);
 			else
-				clonk->AddMenuItem("", cmd, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
+				clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
 
 		// Add NPC message.
 		clonk->AddMenuItem(message, cmd, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
@@ -336,6 +376,33 @@ local ActMap = {
 		Procedure = DFA_ATTACH,
 		Delay = 0,
 		NextAction = "Dialogue",
+	},
+	DialogueAttention = {
+		Prototype = Action,
+		Name = "DialogueAttention",
+		Procedure = DFA_ATTACH,
+		X = 0, Y = 0, Wdt = 8, Hgt = 24, OffX = 0, OffY = -30,
+		Delay = 0,
+		NextAction = "DialogueAttention",
+	},
+	DialogueAttentionEffect = {
+		Prototype = Action,
+		Name = "DialogueAttentionEffect",
+		Procedure = DFA_ATTACH,
+		X = 0, Y = 0, Wdt = 8, Hgt = 24, OffX = 0, OffY = -30,
+		Delay = 2,
+		Length = 4,
+		NextAction = "DialogueAttentionREffect",
+	},
+	DialogueAttentionREffect = {
+		Prototype = Action,
+		Name = "DialogueAttentionREffect",
+		Procedure = DFA_ATTACH,
+		X = 0, Y = 0, Wdt = 8, Hgt = 24, OffX = 0, OffY = -30,
+		Delay = 2,
+		Length = 4,
+		Reverse = 1,
+		NextAction = "DialogueAttention",
 	}
 };
 local Name = "$Name$";
