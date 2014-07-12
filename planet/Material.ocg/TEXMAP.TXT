@@ -39,6 +39,9 @@
 55=Sand-sand_rough
 56=Sand-sand_smooth
 
+60=Ruby-Ruby
+61=Amethyst-Amethyst
+
 65=Ice-ice2
 67=Ice-ice3
 
