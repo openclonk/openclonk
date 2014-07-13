@@ -33,6 +33,7 @@ bennychico11	- FHurt1, FHurt2 (http://www.freesound.org/people/bennychico11/soun
 cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/126302/)
 earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486/)
 qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/)
+Aiwha           - Ding (modified) (http://freesound.org/people/Aiwha/sounds/196106/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
