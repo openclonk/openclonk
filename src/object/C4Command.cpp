@@ -131,6 +131,16 @@ int32_t CommandByName(const char *szCommand)
 	return C4CMD_None;
 }
 
+bool FreeMoveTo(C4Object *cObj)
+{
+	// Floating: we accept any move-to target
+	if (cObj->GetProcedure()==DFA_FLOAT) return true;
+	// Can fly: we accept any move-to target
+	//if (cObj->GetPhysical()->CanFly) return true; - needs to be adjusted once we have dragons
+	// Assume we're walking: move-to targets are adjusted
+	return false;
+}
+
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
@@ -1383,7 +1393,7 @@ bool C4Command::InitEvaluation()
 		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
+		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1392,7 +1402,7 @@ bool C4Command::InitEvaluation()
 	{
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
+		AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1515,17 +1525,21 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 		}
 
 	// Low side contact jump
+	// Only jump before almost running off a cliff
 	int32_t iLowSideRange=5;
-	if (cObj->t_contact & CNAT_Right)
-		if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
-		{
-			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
-		}
-	if (cObj->t_contact & CNAT_Left)
-		if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
-		{
-			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
-		}
+	if (!(GBackDensity(cx,cy+cObj->Shape.Hgt/2) >= cObj->Shape.ContactDensity))
+	{
+		if (cObj->t_contact & CNAT_Right)
+			if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
+			{
+				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+			}
+		if (cObj->t_contact & CNAT_Left)
+			if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
+			{
+				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+			}
+	}
 
 	// No jump control
 	return false;
