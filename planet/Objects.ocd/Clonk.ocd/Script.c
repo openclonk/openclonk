@@ -622,6 +622,12 @@ func SetPortrait(proplist custom_portrait)
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
+	// Skins override mesh material
+	if (skin)
+	{
+		props->Remove("MeshMaterial");
+		props->AddCall("Skin", this, "SetSkin", skin);
+	}
 	// Direction is randomized at creation and there's no good way to find
 	// out if the user wanted that specific direction. So just always save
 	// it, because that's what scenario designer usually wants.
