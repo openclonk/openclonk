@@ -14,7 +14,7 @@ func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
-	ClearFreeRect(GetX() + 7, GetY() + 20, 24, length + 13);
+	ClearFreeRect(GetX() + 7 - 38*GetDir(), GetY() + 20, 24, length + 13);
 	// Move the case back
 	case->SetPosition(case->GetX(), GetY()+20);
 }
@@ -64,6 +64,15 @@ func CreateRope()
 {
 	rope = CreateObject(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
 	rope->SetAction("Be", case.back);
+}
+
+func SetDir(new_dir, ...)
+{
+	var r = inherited(new_dir, ...);
+	// Update position of child objects on direction change
+	if (case) case->SetPosition(GetX() -19 * GetCalcDir(), case->GetY());
+	if (rope) rope->SetPosition(GetX() -19 * GetCalcDir(), rope->GetY());
+	return r;
 }
 
 /* Scenario saving */
