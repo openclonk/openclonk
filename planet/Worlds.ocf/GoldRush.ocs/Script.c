@@ -61,6 +61,10 @@ protected func InitializePlayer(int plr)
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [Idol]);
+	
+	// Give the player the elementary base materials and some tools.
+	GivePlayerElementaryBaseMaterial(plr);
+	GivePlayerToolsBaseMaterial(plr);
 		
 	// Claim ownership of structures, last player who joins owns all the main island flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))

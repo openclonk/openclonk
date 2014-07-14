@@ -113,8 +113,10 @@ protected func InitializePlayer(int plr)
 	GivePlayerAdvancedKnowledge(plr);
 	GivePlayerArtilleryKnowledge(plr);
 	GivePlayerAirKnowledge(plr);
-	SetBaseMaterial(plr, Clonk, 4);
-	SetBaseProduction(plr, Clonk, 1);	
+
+	// Give the player the elementary base materials.
+	GivePlayerElementaryBaseMaterial(plr);
+	
 	// Give crew some equipment.
 	var index = 0;
 	while (crew = GetCrew(plr, index++))

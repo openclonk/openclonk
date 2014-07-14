@@ -11,19 +11,15 @@ Definition1=Objects.ocd
 
 [Player1]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player2]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player3]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player4]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Landscape]
 Sky=Clouds2

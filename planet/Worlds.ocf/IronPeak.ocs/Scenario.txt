@@ -9,19 +9,15 @@ Definition1=Objects.ocd
 
 [Player1]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Clonk=5;Bread=1;
 
 [Player2]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Clonk=5;Bread=1;
 
 [Player3]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Clonk=5;Bread=1;
 
 [Player4]
 Crew=Clonk=2
-BaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Clonk=5;Bread=1;
 
 [Landscape]
 Sky=Clouds2
@@ -33,5 +29,4 @@ BottomOpen=2
 Climate=100
 YearSpeed=0
 Wind=1,100,-100,100
-Rain=40
  

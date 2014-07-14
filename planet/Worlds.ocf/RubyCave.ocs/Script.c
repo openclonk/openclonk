@@ -64,6 +64,9 @@ protected func InitializePlayer(int plr)
 	GivePlayerPumpingKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [WallKit, WindBag, TeleGlove]);
 	
+	// Give the player the elementary base materials.
+	GivePlayerElementaryBaseMaterial(plr);
+	
 	return;
 }
 

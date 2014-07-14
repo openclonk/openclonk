@@ -75,6 +75,10 @@ protected func InitializePlayer(int plr)
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [Ropeladder]);
+	
+	// Give the player the elementary base materials and some tools.
+	GivePlayerElementaryBaseMaterial(plr);
+	GivePlayerToolsBaseMaterial(plr);
 		
 	// Set player wealth.
 	SetWealth(plr, 20 + 20 * SCENOPT_Material);

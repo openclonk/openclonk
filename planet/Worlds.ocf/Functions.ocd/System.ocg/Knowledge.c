@@ -1,8 +1,8 @@
 /**
-	Worlds Knowdlege
-	Provides global functions to give players knowledge for the worlds scenarios.
+	Knowdlege
+	Provides global functions to give players knowledge for scenarios.
 	
-	@author  Maikel
+	@author Maikel
 */
 
  

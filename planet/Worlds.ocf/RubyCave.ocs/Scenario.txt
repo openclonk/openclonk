@@ -9,23 +9,15 @@ Definition1=Objects.ocd
 
 [Player1]
 Crew=Clonk=2
-BaseMaterial=Clonk=5;Bread=5;
-BaseProduction=Clonk=5;Bread=5;
 
 [Player2]
 Crew=Clonk=2
-BaseMaterial=Clonk=5;Bread=5;
-BaseProduction=Clonk=5;Bread=5;
 
 [Player3]
 Crew=Clonk=2
-BaseMaterial=Clonk=5;Bread=5;
-BaseProduction=Clonk=5;Bread=5;
 
 [Player4]
 Crew=Clonk=2
-BaseMaterial=Clonk=5;Bread=5;
-BaseProduction=Clonk=5;Bread=5;
 
 [Landscape]
 Sky=Clouds1
