@@ -12,7 +12,7 @@
 static volcano_location;
 static plr_init;
 
-func Initialize()
+protected func Initialize()
 {
 	// Create expansion and wealth goal.
 	var goal = CreateObject(Goal_Wealth);
@@ -92,7 +92,10 @@ func Initialize()
 	return;
 }
 
-func InitializePlayer(int plr)
+
+/*-- Player Initialization --*/
+
+protected func InitializePlayer(int plr)
 {
 	// Move all crew to start position.
 	var index = 0, crew;
@@ -105,7 +108,11 @@ func InitializePlayer(int plr)
 		plr_init = true;
 	}
 	// Give the player its knowledge and base materials.
-	GivePlayerKnowledge(plr);
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerPumpingKnowledge(plr);
+	GivePlayerAdvancedKnowledge(plr);
+	GivePlayerArtilleryKnowledge(plr);
+	GivePlayerAirKnowledge(plr);
 	SetBaseMaterial(plr, Clonk, 4);
 	SetBaseProduction(plr, Clonk, 1);	
 	// Give crew some equipment.
@@ -118,9 +125,9 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		crew->CreateContents(Shovel);
 	}
-	// We really want FoW for this scenario...
-	SetPlayerViewLock(plr, true);
+	// Harsh zoom range.
 	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
 	
 	// Increase difficulty of goal with player count.
 	var plr_cnt = Min(6, GetPlayerCount());
@@ -160,23 +167,8 @@ private func FindVolcanoLocation()
 	return;
 }
 
-// Give the relevant knowledge to each player.
-private func GivePlayerKnowledge(int plr)
-{
-	var structures = [Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Foundry, Sawmill, Elevator, Pump, ToolsWorkshop, ChemicalLab, Armory, Chest, Windmill, Kitchen, Idol, InventorsLab, Shipyard];
-	var items = [Loam, GoldBar, Metal, Shovel, Axe, Hammer, Pickaxe, Barrel, MetalBarrel, Bucket, Dynamite, DynamiteBox, PowderKeg, Pipe, Ropeladder, WallKit, TeleGlove, WindBag, GrappleBow, Boompack, Balloon];
-	var weapons = [Bow, Arrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher];
-	var vehicles = [Lorry, Catapult, Cannon, Airship, Plane];
-	for (var structure in structures)
-		SetPlrKnowledge(plr, structure);
-	for (var item in items)
-		SetPlrKnowledge(plr, item);
-	for (var weapon in weapons)
-		SetPlrKnowledge(plr, weapon);	
-	for (var vehicle in vehicles)
-		SetPlrKnowledge(plr, vehicle);
-	return;
-}
+
+/*-- Scenario Initialization --*/
 
 // Ensures that there will always grow some trees.
 global func FxEnsureTreesTimer()

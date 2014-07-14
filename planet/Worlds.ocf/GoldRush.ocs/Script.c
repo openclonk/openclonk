@@ -38,6 +38,9 @@ protected func Initialize()
 	return;
 }
 
+
+/*-- Player Initialization --*/
+
 protected func InitializePlayer(int plr)
 { 
 	// Move clonks to location and give them a shovel.
@@ -54,6 +57,10 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		index++;
 	}
+	
+	// Give the player basic knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [Idol]);
 		
 	// Claim ownership of structures, last player who joins owns all the main island flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))
@@ -61,6 +68,9 @@ protected func InitializePlayer(int plr)
 	
 	return;
 }
+
+
+/*-- Scenario Initialization --*/
 
 private func InitEnvironment()
 {

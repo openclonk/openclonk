@@ -40,6 +40,9 @@ protected func Initialize()
 	return;
 }
 
+
+/*-- Player Initialization --*/
+
 protected func InitializePlayer(int plr)
 { 
 	// Move clonks to location and give them a shovel.
@@ -64,9 +67,15 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(DynamiteBox);
 		index++;
 	}
+	
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_LimitMax);
-	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_Direct);
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
+	
+	// Give the player basic knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [Ropeladder]);
+		
 	// Set player wealth.
 	SetWealth(plr, 20 + 20 * SCENOPT_Material);
 	return;
@@ -96,6 +105,9 @@ private func FindMountainLocation()
 	return;
 }
 
+
+/*-- Scenario Initialization --*/
+
 private func InitEnvironment()
 {
 	// Cover the mountain in some snow already.
@@ -111,7 +123,7 @@ private func InitEnvironment()
 	time->SetCycleSpeed(0);
 	
 	// A light blue hue, to indicate the cold climate.
-	var blue = 12;
+	var blue = 6;
 	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
 	
 	// Some natural disasters. 
