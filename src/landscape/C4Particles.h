@@ -362,6 +362,7 @@ public:
 	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
+	bool IsEmpty() const { return !particleCount; }
 
 	// before adding a particle, you should ReserveSpace for it
 	C4Particle *AddNewParticle();

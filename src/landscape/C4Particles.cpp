@@ -1119,18 +1119,10 @@ void C4ParticleList::Exec(float timeDelta)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end();)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end();++iter)
 	{
 		C4ParticleChunk *chunk = *iter;
-		if (chunk->Exec(targetObject, timeDelta))
-		{
-			++iter;
-		}
-		else
-		{
-			iter = particleChunks.erase(iter);
-			lastAccessedChunk = 0;
-		}
+		chunk->Exec(targetObject, timeDelta);
 	}
 
 	accessMutex.Leave();
@@ -1171,9 +1163,19 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); )
 	{
-		(*iter)->Draw(cgo, obj);
+		if ((*iter)->IsEmpty())
+		{
+			delete *iter;
+			iter = particleChunks.erase(iter);
+			lastAccessedChunk = 0;
+		}
+		else
+		{
+			(*iter)->Draw(cgo, obj);
+			++iter;
+		}
 	}
 
 	accessMutex.Leave();
