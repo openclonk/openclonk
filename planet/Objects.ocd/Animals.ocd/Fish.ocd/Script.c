@@ -15,6 +15,7 @@ local current_angle, current_speed, current_direction;
 local swim_animation;
 local base_transform;
 
+
 func Place(int amount, proplist rectangle, proplist settings)
 {
 	var max_tries = 2 * amount;
@@ -32,12 +33,14 @@ func Place(int amount, proplist rectangle, proplist settings)
 		// Randomly add some large/slim fish
 		if (Random(3))
 		{
-			var con = Random(120)-20;
-			f->DoCon(con);
+			// there are naturally smaller and larger fishes
+			f->SetCon(RandomX(75, 125));
+			// make sure the smaller ones don't grow larger any more
+			f->StopGrowth(); 
 			// slim fish. Large fish must be made slim because otherwise the graphics are clipped D:
-			if (con>50)
+			if (f->GetCon() > 100)
 				f->SetYZScale(400+Random(300)); 
-			else if (con>0 && !Random(3))
+			else if (!Random(3))
 				f->SetYZScale(400+Random(600)); 
 		}
 		if (f->Stuck())
@@ -91,6 +94,12 @@ func Death()
 	StopAnimation(swim_animation);
 	AddTimer(this.Decaying, 500);
 	this.Collectible = true;
+	
+	// maybe respawn a new fish if roe is near
+	var roe = FindObject(Find_Distance(200), Find_ID(FishRoe));
+	if (roe)
+		roe->Hatch(GetID());
+	
 	return _inherited(...);
 }
 
@@ -334,8 +343,31 @@ func DoEat(object obj)
 	EffectCall(obj, effect, "Add");
 	
 	DoEnergy(2);
+	
+	// happy fishes can lay happy fish eggs
+	if (Random(2) && !GetEffect("PlacedRoe"))
+		AddEffect("PlaceRoe", this, 1, 30, this);
 }
 
+func FxPlaceRoeStart(target, effect, temp)
+{
+	if (temp) return;
+	effect.placed = false;
+}
+
+func FxPlaceRoeTimer(target, effect, timer)
+{
+	if (!effect.placed)
+	{
+		if (Random(4)) return FX_OK;
+		CreateObject(FishRoe, 0, 0, GetOwner());
+		effect.placed = true;
+		return FX_OK;
+	}
+	// cooldown for laying eggs!
+	if (timer < 35 * 60) return FX_OK;
+	return FX_Execute_Kill;
+}
 
 func FxIsBeingEatenStart(target, effect, temp)
 {

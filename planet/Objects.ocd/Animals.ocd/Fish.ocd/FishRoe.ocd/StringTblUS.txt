@@ -1,0 +1,2 @@
+Name=Fish roe
+Description=Floats around. This is the origin of young fishes.
