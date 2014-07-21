@@ -345,13 +345,12 @@ public func StopCinematics()
 // Force all player views on given target
 public func SetCinematicsTarget(object cinematics_target)
 {
+	ClearScheduleCall(nil, Dialogue.UpdateCinematicsTarget);
 	if (cinematics_target)
 	{
 		UpdateCinematicsTarget(cinematics_target);
 		ScheduleCall(nil, Dialogue.UpdateCinematicsTarget, 30, 999999999, cinematics_target);
 	}
-	else
-		ClearScheduleCall(nil, Dialogue.UpdateCinematicsTarget);
 	return true;
 }
 
