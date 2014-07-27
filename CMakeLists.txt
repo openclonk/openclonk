@@ -777,8 +777,10 @@ include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 find_package("Boost" 1.40.0 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
-include(FindThreads)
-if(NOT WIN32)
+if(CMAKE_SYSTEM MATCHES "Windows")
+	message(STATUS "Using Win32 threading.")
+else()
+	find_package("Threads" REQUIRED)
 	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
 endif()
 
