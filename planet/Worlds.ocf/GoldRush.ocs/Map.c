@@ -1,6 +1,6 @@
 /**
 	Gold Rush
-	Dynamic map a few layers of materials below a flat shaped earth surface.
+	Dynamic map with a few layers of materials below a flat shaped earth surface.
 	
 	@author Maikel
 */

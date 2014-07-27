@@ -9,7 +9,7 @@
 // Scenario properties which can be set later by the lobby options.
 static const SCENOPT_Material = 1; // Amount of material available from start.
 static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 3; // Difficulty settings.
+static const SCENOPT_Difficulty = 1; // Difficulty settings.
 
 protected func Initialize()
 {
