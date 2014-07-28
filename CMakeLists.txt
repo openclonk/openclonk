@@ -48,7 +48,6 @@ CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF
 CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
-CMAKE_DEPENDENT_OPTION(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON "APPLE" OFF)
 if(APPLE)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
@@ -65,6 +64,7 @@ option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
 
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
+unset(USE_APPLE_CLANG CACHE)
 
 ############################################################################
 # Check for compiler quirks and features
