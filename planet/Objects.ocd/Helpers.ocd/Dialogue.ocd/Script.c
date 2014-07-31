@@ -80,6 +80,10 @@ public func InitDialogue(string name, object target, bool attention)
 	// Update dialogue to target.
 	UpdateDialogue();
 	
+	// Custom dialogue initialization
+	if (!Call(Format("Dlg_%s_Init", dlg_name), dlg_target))
+		GameCall(Format("Dlg_%s_Init", dlg_name), this, dlg_target);
+	
 	return;
 }
 
@@ -295,7 +299,7 @@ func SaveScenarioObject(props)
 	if (!dlg_target) return false; // don't save dead dialogue object
 	// Dialog has its own creation procedure
 	props->RemoveCreation();
-	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v)", dlg_target->MakeScenarioSaveName(), dlg_name);
+	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v,%v)", dlg_target->MakeScenarioSaveName(), dlg_name, !!dlg_attention);
 	return true;
 }
 
