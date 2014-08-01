@@ -18,9 +18,9 @@
 #ifndef INC_C4MusicFile
 #define INC_C4MusicFile
 
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 #include <fmod.h>
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 #define USE_RWOPS
 #include <SDL_mixer.h>
 #undef USE_RWOPS
@@ -55,7 +55,7 @@ protected:
 	bool SongExtracted;
 
 };
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 class C4MusicFileMID : public C4MusicFile
 {
 public:
@@ -123,7 +123,7 @@ protected:
 	bool Playing;
 };
 
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 typedef struct _Mix_Music Mix_Music;
 class C4MusicFileSDL : public C4MusicFile
 {
@@ -138,6 +138,6 @@ protected:
 	char *Data;
 	Mix_Music * Music;
 };
-#endif // HAVE_LIBSDL_MIXER
+#endif
 
 #endif

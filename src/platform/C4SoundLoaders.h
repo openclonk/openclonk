@@ -13,7 +13,10 @@
  * for the above references.
  */
 
-#ifdef USE_OPEN_AL
+#ifndef INC_C4SoundLoaders
+#define INC_C4SoundLoaders
+
+#if AUDIO_TK == AUDIO_TK_OPENAL
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 #endif
@@ -29,7 +32,7 @@ namespace C4SoundLoaders
 		double sample_length;
 		uint32_t sample_rate;
 		std::vector<BYTE> sound_data;
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 		ALenum format;
 #endif
 		C4SoundHandle final_handle;
@@ -53,7 +56,7 @@ namespace C4SoundLoaders
 		virtual bool ReadInfo(SoundInfo* info, BYTE* data, size_t data_length, uint32_t options = 0) = 0;
 	};
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if AUDIO_TK == AUDIO_TK_OPENAL && defined(__APPLE__)
 	class AppleSoundLoader: public SoundLoader
 	{
 	public:
@@ -64,7 +67,7 @@ namespace C4SoundLoaders
 	};
 #endif
 
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 	class VorbisLoader: public SoundLoader
 	{
 	private:
@@ -96,18 +99,16 @@ namespace C4SoundLoaders
 		static WavLoader singleton;
 	};
 #endif // apple
-#endif // openal
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	class SDLMixerSoundLoader: public SoundLoader
 	{
 	public:
 		static SDLMixerSoundLoader singleton;
 		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
 	};
-#endif
 
-#ifdef HAVE_FMOD
+#elif AUDIO_TK == AUDIO_TK_FMOD
 	class FMODSoundLoader: public SoundLoader
 	{
 	public:
@@ -116,3 +117,5 @@ namespace C4SoundLoaders
 	};
 #endif
 }
+
+#endif

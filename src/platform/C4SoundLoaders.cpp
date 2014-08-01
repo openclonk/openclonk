@@ -19,12 +19,17 @@
 
 #include <C4Application.h>
 
-#if defined(USE_OPEN_AL) 
+#if AUDIO_TK == AUDIO_TK_OPENAL
 #if defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 #else
-#include <AL/alut.h>
+#ifdef _WIN32
+// This is an ugly hack to make FreeALUT not dllimport everything.
+#define _XBOX
+#endif
+#include <alut.h>
+#undef _XBOX
 #endif
 #endif
 
@@ -33,7 +38,7 @@ using namespace C4SoundLoaders;
 
 SoundLoader* SoundLoader::first_loader(NULL);
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if AUDIO_TK == AUDIO_TK_OPENAL && defined(__APPLE__)
 namespace
 {
 	static OSStatus AudioToolBoxReadCallback(void* context, SInt64 inPosition, UInt32 requestCount, void* buffer, UInt32* actualCount)
@@ -111,8 +116,7 @@ bool AppleSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_lengt
 AppleSoundLoader AppleSoundLoader::singleton;
 #endif
 
-#ifdef USE_OPEN_AL
-
+#if AUDIO_TK == AUDIO_TK_OPENAL
 size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource)
 {
 	size_t spaceToEOF;
@@ -254,9 +258,8 @@ bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint
 
 WavLoader WavLoader::singleton;
 #endif
-#endif
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 #define USE_RWOPS
 #include <SDL_mixer.h>
 
@@ -278,9 +281,8 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 }
 
 SDLMixerSoundLoader SDLMixerSoundLoader::singleton;
-#endif
 
-#ifdef HAVE_FMOD
+#elif AUDIO_TK == AUDIO_TK_FMOD
 bool FMODSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t options)
 {
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;

@@ -31,17 +31,13 @@ const int32_t
 class C4Object;
 class C4SoundInstance;
 
-#if defined(HAVE_FMOD)
+#if AUDIO_TK == AUDIO_TK_FMOD
 #include <fmod.h>
 typedef FSOUND_SAMPLE* C4SoundHandle;
-#elif defined(HAVE_LIBSDL_MIXER)
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 typedef struct Mix_Chunk* C4SoundHandle;
-#elif defined(USE_OPEN_AL)
-#ifdef __APPLE__
-#import <OpenAL/al.h>
-#else
-#include <AL/al.h>
-#endif
+#elif AUDIO_TK == AUDIO_TK_OPENAL
+#include <al.h>
 typedef ALuint C4SoundHandle;
 #else
 typedef void* C4SoundHandle;

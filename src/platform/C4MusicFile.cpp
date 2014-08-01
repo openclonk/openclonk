@@ -21,7 +21,7 @@
 #include <C4Application.h>
 #include <C4Log.h>
 
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 #include <fmod_errors.h>
 #endif
 
@@ -53,7 +53,7 @@ bool C4MusicFile::Init(const char *szFile)
 	return true;
 }
 
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 bool C4MusicFileMID::Play(bool loop)
 {
 	// check existance
@@ -292,7 +292,7 @@ void C4MusicFileOgg::SetVolume(int iLevel)
 	FSOUND_SetVolume(Channel, (int) ((iLevel * 255) / 100));
 }
 
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 C4MusicFileSDL::C4MusicFileSDL():
 		Data(NULL),
 		Music(NULL)

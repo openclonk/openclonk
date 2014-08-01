@@ -48,12 +48,6 @@ CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF
 CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
-if(APPLE)
-	SET(INITIAL_USE_OPEN_AL ON)
-else()
-	SET(INITIAL_USE_OPEN_AL OFF)
-endif()
-option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 # We link Boost statically because that makes it easier for us to distribute
@@ -867,21 +861,8 @@ if(MAPE_GTK_FOUND)
 	link_directories(${MAPE_GTK_LIBRARY_DIRS})
 endif()
 
-if(USE_OPEN_AL)
-	if(MSVC)
-		if(${FIND_LIBRARY_USE_LIB64_PATHS})
-			FINDLIB(OPENAL_LIBRARY NAMES OpenAL64)
-		else()
-			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
-		endif()
-	endif()
-	FINDLIB(OGG_LIBRARY NAMES libogg_static libogg ogg)
-	FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static libvorbis vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static libvorbisfile vorbisfile)
-	if(NOT APPLE)
-		FINDLIB(ALUT_LIBRARY NAMES alut_static alut)
-	endif()
-endif()
+# Select an audio library
+find_package("Audio")
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
@@ -1061,14 +1042,9 @@ target_link_libraries(openclonk
 	libmisc
 )
 
-if(USE_OPEN_AL)
-	target_link_libraries(openclonk
-		${OPENAL_LIBRARY}
-		${ALUT_LIBRARY}
-		${VORBIS_LIBRARY}
-		${VORBISFILE_LIBRARY}
-		${OGG_LIBRARY}
-	)
+if(Audio_FOUND)
+	target_link_libraries(openclonk ${Audio_LIBRARIES})
+	include_directories(${Audio_INCLUDE_DIRS})
 endif()
 
 if(MAPE_GTK_FOUND)
@@ -1320,7 +1296,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
@@ -1341,36 +1317,6 @@ if (WIN32)
 	target_link_libraries(c4script ws2_32 winmm)
 	if(MAPE_GTK_FOUND)
 		target_link_libraries(mape winmm)
-	endif()
-
-	if(NOT USE_OPEN_AL)
-		find_package(FMod)
-		if(FMOD_FOUND)
-			set(HAVE_FMOD TRUE)
-			target_link_libraries(openclonk
-				${FMOD_LIBRARIES}
-			)
-			include_directories(${FMOD_INCLUDE_DIR})
-		else()
-			set(HAVE_FMOD FALSE)
-		endif()
-	endif()
-else()
-	SET(HAVE_FMOD FALSE)
-endif()
-if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
-	include(FindSDL)
-	SET(HAVE_SDL ${SDL_FOUND})
-	if(SDL_FOUND)
-		include_directories(${SDL_INCLUDE_DIR})
-		FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
-		if(SDLMIXER_LIBRARIES)
-			SET(HAVE_LIBSDL_MIXER ON)
-		endif()
-		target_link_libraries(openclonk
-			${SDL_LIBRARY}
-			${SDLMIXER_LIBRARIES}
-		)
 	endif()
 endif()
 

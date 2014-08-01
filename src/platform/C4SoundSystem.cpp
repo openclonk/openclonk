@@ -28,7 +28,7 @@
 #include <C4Viewport.h>
 #include <C4SoundLoaders.h>
 
-#ifdef HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 #define USE_RWOPS
 #include <SDL_mixer.h>
 #endif
@@ -52,13 +52,11 @@ C4SoundEffect::~C4SoundEffect()
 void C4SoundEffect::Clear()
 {
 	while (FirstInst) RemoveInst(FirstInst);
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	if (pSample) FSOUND_Sample_Free(pSample);
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	if (pSample) Mix_FreeChunk(pSample);
-#endif
-#ifdef USE_OPEN_AL
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
 	pSample = 0;
@@ -98,7 +96,7 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fRaw)
 			}
 			else
 			{
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 				Application.MusicSystem.SelectContext();
 				alGenBuffers(1, &pSample);
 				alBufferData(pSample, info.format, &info.sound_data[0], info.sound_data.size(), info.sample_rate);
@@ -253,7 +251,7 @@ bool C4SoundInstance::CheckStart()
 
 bool C4SoundInstance::Start()
 {
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	// Start
 	if ((iChannel = FSOUND_PlaySound(FSOUND_FREE, pEffect->pSample)) == -1)
 		return false;
@@ -266,12 +264,12 @@ bool C4SoundInstance::Start()
 		int32_t iTime = (C4TimeMilliseconds::Now() - tStarted) % pEffect->Length;
 		FSOUND_SetCurrentPosition(iChannel, iTime / 10 * pEffect->SampleRate / 100);
 	}
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.MODInitialized) return false;
 	if ((iChannel = Mix_PlayChannel(-1, pEffect->pSample, fLooping? -1 : 0)) == -1)
 		return false;
-#elif defined(USE_OPEN_AL)
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	Application.MusicSystem.SelectContext();
 	alGenSources(1, (ALuint*)&iChannel);
 	alSourcei(iChannel, AL_BUFFER, pEffect->pSample);
@@ -292,16 +290,14 @@ bool C4SoundInstance::Stop()
 	if (!pEffect) return false;
 	// Stop sound
 	bool fRet = true;
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	if (Playing())
 		fRet = !! FSOUND_StopSound(iChannel);
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// iChannel == -1 will halt all channels. Is that right?
 	if (Playing())
 		Mix_HaltChannel(iChannel);
-#endif
-#ifdef USE_OPEN_AL
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (iChannel != -1)
 	{
 		if (Playing()) alSourceStop(iChannel);
@@ -318,15 +314,13 @@ bool C4SoundInstance::Stop()
 bool C4SoundInstance::Playing()
 {
 	if (!pEffect) return false;
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	if (fLooping) return true;
 	return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
 	       : C4TimeMilliseconds::Now() < tStarted + pEffect->Length;
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
-#endif
-#ifdef USE_OPEN_AL
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (iChannel == -1)
 		return false;
 	else
@@ -363,13 +357,11 @@ void C4SoundInstance::Execute()
 		// stop, if started
 		if (isStarted())
 		{
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 			FSOUND_StopSound(iChannel);
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 			Mix_HaltChannel(iChannel);
-#endif
-#ifdef USE_OPEN_AL
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 			alDeleteSources(1, (ALuint*)&iChannel);
 #endif
 			iChannel = -1;
@@ -382,16 +374,14 @@ void C4SoundInstance::Execute()
 			if (!CheckStart())
 				return;
 		// set volume & panning
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
 		FSOUND_SetPan(iChannel, BoundBy(256*(iPan+100)/200,0,255));
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
 		//Mix_SetPanning(iChannel, ((100 + iPan) * 256) / 200, ((100 - iPan) * 256) / 200);
 		Mix_SetPanning(iChannel, BoundBy((100 - iPan) * 256 / 100, 0, 255), BoundBy((100 + iPan) * 256 / 100, 0, 255));
-#endif
-#ifdef USE_OPEN_AL
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
 		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));
 #endif
@@ -448,7 +438,7 @@ bool C4SoundSystem::Init()
 		if (!Reloc.Open(SoundFile, C4CFN_Sound)) return false;
 	// Load static sound from Sound.ocg
 	LoadEffects(SoundFile);
-#ifdef HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
 	return true;
@@ -475,7 +465,7 @@ void C4SoundSystem::ClearEffects()
 
 void C4SoundSystem::Execute()
 {
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 	Application.MusicSystem.SelectContext();
 #endif
 	C4SoundEffect *csfx;

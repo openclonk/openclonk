@@ -28,14 +28,17 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 #include <fmod_errors.h>
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 #include <SDL.h>
+#elif AUDIO_TK == AUDIO_TK_OPENAL && !defined(APPLE)
+#ifdef _WIN32
+// This is an ugly hack to make FreeALUT not dllimport everything.
+#define _XBOX
 #endif
-
-#if defined(USE_OPEN_AL) && !defined(__APPLE__)
-#include <AL/alut.h>
+#include <alut.h>
+#undef _XBOX
 #endif
 
 C4MusicSystem::C4MusicSystem():
@@ -43,7 +46,7 @@ C4MusicSystem::C4MusicSystem():
 		SongCount(0),
 		PlayMusicFile(NULL),
 		Volume(100)
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 		, alcDevice(NULL), alcContext(NULL)
 #endif
 {
@@ -54,7 +57,7 @@ C4MusicSystem::~C4MusicSystem()
 	Clear();
 }
 
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 void C4MusicSystem::SelectContext()
 {
 	alcMakeContextCurrent(alcContext);
@@ -63,7 +66,7 @@ void C4MusicSystem::SelectContext()
 
 bool C4MusicSystem::InitializeMOD()
 {
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 #ifdef _WIN32
 	// Debug code
 	switch (Config.Sound.FMMode)
@@ -97,7 +100,7 @@ bool C4MusicSystem::InitializeMOD()
 	// ok
 	MODInitialized = true;
 	return true;
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	SDL_version compile_version;
 	const SDL_version * link_version;
 	MIX_VERSION(&compile_version);
@@ -118,7 +121,7 @@ bool C4MusicSystem::InitializeMOD()
 	}
 	MODInitialized = true;
 	return true;
-#elif defined(USE_OPEN_AL)
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	alcDevice = alcOpenDevice(NULL);
 	if (!alcDevice)
 	{
@@ -146,16 +149,16 @@ bool C4MusicSystem::InitializeMOD()
 
 void C4MusicSystem::DeinitializeMOD()
 {
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	FSOUND_StopSound(FSOUND_ALL); /* to prevent some hangs in FMOD */
 #ifdef DEBUG
 	Sleep(0);
 #endif
 	FSOUND_Close();
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_CloseAudio();
 	SDL_Quit();
-#elif defined(USE_OPEN_AL)
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 #ifndef __APPLE__
 	alutExit();
 #endif
@@ -237,7 +240,7 @@ void C4MusicSystem::Load(const char *szFile)
 	if (!szFile || !*szFile) return;
 	C4MusicFile *NewSong=NULL;
 	// get extension
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	const char *szExt = GetExtension(szFile);
 	// get type
 	switch (GetMusicFileTypeByExtension(GetExtension(szFile)))
@@ -258,7 +261,7 @@ void C4MusicSystem::Load(const char *szFile)
 		break;
 	default: return; // safety
 	}
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	if (GetMusicFileTypeByExtension(GetExtension(szFile)) == MUSICTYPE_UNKNOWN) return;
 	NewSong = new C4MusicFileSDL;
 #endif
@@ -382,7 +385,7 @@ void C4MusicSystem::ClearSongs()
 
 void C4MusicSystem::Clear()
 {
-#ifdef HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// Stop a fadeout
 	Mix_HaltMusic();
 #endif
@@ -392,7 +395,7 @@ void C4MusicSystem::Clear()
 
 void C4MusicSystem::Execute()
 {
-#ifndef HAVE_LIBSDL_MIXER
+#if AUDIO_TK != AUDIO_TK_SDL_MIXER
 	if (!::Game.iTick35)
 #endif
 	{
@@ -513,7 +516,7 @@ MusicType GetMusicFileTypeByExtension(const char* ext)
 {
 	if (SEqualNoCase(ext, "mid"))
 		return MUSICTYPE_MID;
-#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_FMOD || AUDIO_TK == AUDIO_TK_SDL_MIXER
 	else if (SEqualNoCase(ext, "xm") || SEqualNoCase(ext, "it") || SEqualNoCase(ext, "s3m") || SEqualNoCase(ext, "mod"))
 		return MUSICTYPE_MOD;
 #ifdef USE_MP3
