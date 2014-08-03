@@ -205,4 +205,5 @@ C4MapScriptHost::~C4MapScriptHost() {}
 void C4MapScriptHost::Clear() {}
 C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
 bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+bool C4MapScriptHost::LoadData(const char *, const char *, C4LangStringTable *) { return false; }
 void C4MapScriptHost::AddEngineFunctions() {}

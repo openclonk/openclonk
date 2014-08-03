@@ -550,6 +550,12 @@ bool C4MapScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	return C4ScriptHost::Load(g, f, l, t);
 }
 
+bool C4MapScriptHost::LoadData(const char * f, const char * d, C4LangStringTable * t)
+{
+	assert(LayerPrototype && MapPrototype);
+	return C4ScriptHost::LoadData(f, d, t);
+}
+
 void C4MapScriptHost::Clear()
 {
 	delete LayerPrototype; delete MapPrototype;

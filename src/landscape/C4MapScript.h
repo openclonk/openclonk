@@ -328,6 +328,7 @@ public:
 	void InitFunctionMap(C4AulScriptEngine *pEngine);
 	virtual void AddEngineFunctions();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
 	bool InitializeMap(C4Group &group, CSurface8 **pmap_surface);

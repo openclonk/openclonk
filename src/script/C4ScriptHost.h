@@ -33,6 +33,7 @@ public:
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
+	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
@@ -106,6 +107,7 @@ public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
