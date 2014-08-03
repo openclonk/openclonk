@@ -331,7 +331,7 @@ public:
 	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
-	bool InitializeMap(C4Group &group, CSurface8 **pmap_surface);
+	bool InitializeMap(C4SLandscape *pLandscape, uint32_t iPlayerCount, CSurface8 **pmap_surface);
 	C4PropListStatic *GetLayerPrototype() { return LayerPrototype; }
 };
 

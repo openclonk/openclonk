@@ -574,7 +574,7 @@ C4MapScriptMap *C4MapScriptHost::CreateMap()
 	return new C4MapScriptMap(MapPrototype);
 }
 
-bool C4MapScriptHost::InitializeMap(C4Group &group, CSurface8 **pmap_surface)
+bool C4MapScriptHost::InitializeMap(C4SLandscape *pLandscape, uint32_t iPlayerCount, CSurface8 **pmap_surface)
 {
 	// Init scripted map by calling InitializeMap in the proper scripts. If *pmap_surface is given, it will pass the existing map to be modified by script.
 	assert(pmap_surface);
@@ -596,7 +596,7 @@ bool C4MapScriptHost::InitializeMap(C4Group &group, CSurface8 **pmap_surface)
 	{
 		// No existing map. Create new.
 		int32_t map_wdt,map_hgt;
-		::Game.C4S.Landscape.GetMapSize(map_wdt, map_hgt, ::Game.StartupPlayerCount);
+		pLandscape->GetMapSize(map_wdt, map_hgt, iPlayerCount);
 		if (!map->CreateSurface(map_wdt, map_hgt)) return false;
 	}
 	C4AulParSet Pars(C4VPropList(map.get()));

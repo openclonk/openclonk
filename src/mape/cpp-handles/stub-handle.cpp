@@ -28,8 +28,6 @@
 #include "C4PXS.h"
 #include "C4Record.h"
 #include "C4RoundResults.h"
-#include "CSurface8.h"
-#include "C4MapScript.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. It also instantiates global variables required by mape that are
@@ -65,8 +63,6 @@ const char* C4Config::AtRelativePath(char const* s) {return s;}
 bool C4Reloc::Open(C4Group&, char const*) const {return false;}
 
 bool C4Draw::TextOut(const char *, CStdFont &, float, C4Surface *, float, float, DWORD, BYTE, bool) { return false; }
-
-CSurface8::CSurface8(int, int) {}
 
 C4Facet::C4Facet() {}
 void C4Facet::Set(C4Surface*, float, float, float, float) {}
@@ -198,12 +194,3 @@ C4Game::~C4Game() {}
 
 C4AulDebug *C4AulDebug::pDebug;
 void C4AulDebug::DebugStep(C4AulBCC*, C4Value*) {}
-
-C4MapScriptHost MapScript;
-C4MapScriptHost::C4MapScriptHost() {}
-C4MapScriptHost::~C4MapScriptHost() {}
-void C4MapScriptHost::Clear() {}
-C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
-bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
-bool C4MapScriptHost::LoadData(const char *, const char *, C4LangStringTable *) { return false; }
-void C4MapScriptHost::AddEngineFunctions() {}

@@ -464,12 +464,19 @@ set(OC_CLONK_SOURCES
 set(MAPE_BASE_SOURCES
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4MapScriptAlgo.cpp
+	src/landscape/C4MapScript.cpp
+	src/landscape/C4MapScript.h
 	src/landscape/C4Material.cpp
 	src/landscape/C4Material.h
 	src/landscape/C4Texture.cpp
 	src/landscape/C4Texture.h
 	src/landscape/C4Scenario.cpp
 	src/landscape/C4Scenario.h
+	src/graphics/Bitmap256.cpp
+	src/graphics/Bitmap256.h
+	src/graphics/CSurface8.cpp
+	src/graphics/CSurface8.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
