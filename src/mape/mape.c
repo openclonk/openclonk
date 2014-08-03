@@ -133,9 +133,6 @@ int main(int argc,
 	signal(SIGSEGV, segv_handler);
 	
 	g_thread_init(NULL);
-	gdk_threads_init();
-	gdk_threads_enter();
-
 	gtk_init(&argc, &argv);
 
 	/* TODO: Set global application icon */
@@ -175,7 +172,6 @@ int main(int argc,
 
 	gtk_main();
 	mape_window_destroy(window);
-	gdk_threads_leave();
 
 	return EXIT_SUCCESS;
 }
