@@ -1231,7 +1231,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// script may create or edit map
-		if (MapScript.InitializeMap(&Game.C4S.Landscape, Game.StartupPlayerCount, &sfcMap))
+		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap))
 			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
