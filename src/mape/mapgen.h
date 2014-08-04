@@ -53,6 +53,12 @@ typedef enum _MapeMapgenType {
   MAPE_MAPGEN_MAP_C
 } MapeMapgenType;
 
+gboolean
+mape_mapgen_init(GError** error);
+
+void
+mape_mapgen_deinit();
+
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,

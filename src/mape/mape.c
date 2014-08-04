@@ -19,6 +19,7 @@
 #include <gtk/gtk.h>
 #include "mape/editview.h"
 #include "mape/window.h"
+#include "mape/mapgen.h"
 
 static MapeWindow** _global_wnd = NULL;
 
@@ -135,8 +136,12 @@ int main(int argc,
 	g_thread_init(NULL);
 	gtk_init(&argc, &argv);
 
-	/* TODO: Set global application icon */
-	window = mape_window_new(argc, argv, &error);
+	mape_mapgen_init(&error);
+	if(error == NULL)
+	{
+		/* TODO: Set global application icon */
+		window = mape_window_new(argc, argv, &error);
+	}
 
 	if(error != NULL)
 	{
@@ -172,6 +177,7 @@ int main(int argc,
 
 	gtk_main();
 	mape_window_destroy(window);
+	mape_mapgen_deinit();
 
 	return EXIT_SUCCESS;
 }

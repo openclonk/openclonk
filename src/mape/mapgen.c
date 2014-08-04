@@ -97,6 +97,32 @@ static void mape_mapgen_read_color(guint8* dest,
  */
 
 /**
+ * mape_mapgen_init:
+ * @error: Location to store error information, if any.
+ *
+ * Initializes the map generator.
+ *
+ * Returns: %TRUE on success or %FALSE on error.
+ */
+gboolean
+mape_mapgen_init(GError** error)
+{
+  c4_mapgen_handle_init_script_engine();
+  return TRUE;
+}
+
+/**
+ * mape_mapgen_deinit():
+ *
+ * Deinitializes the map generator.
+ */
+void
+mape_mapgen_deinit()
+{
+  c4_mapgen_handle_deinit_script_engine();
+}
+
+/**
  * mape_mapgen_render:
  *
  * @filename: The filename of the file that is being parsed. This is only used

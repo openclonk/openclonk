@@ -53,6 +53,19 @@ struct _C4MapgenHandle {
 	BYTE* data;
 };
 
+void c4_mapgen_handle_init_script_engine()
+{
+	InitCoreFunctionMap(&ScriptEngine);
+	::MapScript.InitFunctionMap(&ScriptEngine);
+}
+
+void c4_mapgen_handle_deinit_script_engine()
+{
+	MapScript.Clear();
+	GameScript.Clear();
+	ScriptEngine.Clear();
+}
+
 C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* source, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)
 {
 	try
@@ -66,19 +79,8 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		landscape.MapHgt.Set(map_height, 0, map_height, map_height);
 		landscape.MapPlayerExtend = 0;
 
-		// Setup script engine
-		// TODO: Do this once and not every time the map is being
-		// rendered.
-		MapScript.Clear();
-		GameScript.Clear();
-		ScriptEngine.Clear();
-
-		InitCoreFunctionMap(&ScriptEngine);
-		::MapScript.InitFunctionMap(&ScriptEngine);
-
 		c4_log_handle_clear();
 		::MapScript.LoadData(filename, source, NULL);
-
 		// If InitializeMap() returns false, the map creator wants to
 		// call a fallback in the scenario script. This crashes if no
 		// scenario script is loaded, so simply load an empty script
@@ -107,8 +109,6 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 			1,
 			&out_ptr);
 		std::auto_ptr<CSurface8> out(out_ptr);
-		MapScript.Clear();
-		ScriptEngine.Clear();
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
@@ -192,12 +192,6 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 				throw std::runtime_error(error_msg.getData());
 			}
 
-			GameScript.Clear();
-			ScriptEngine.Clear();
-
-			// load core functions into script engine
-			InitCoreFunctionMap(&ScriptEngine);
-
 			c4_log_handle_clear();
 			GameScript.Load(File, basename, NULL, NULL);
 			g_free(dirname);
@@ -219,8 +213,6 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		c4_log_handle_clear();
 		int32_t out_width, out_height;
 		BYTE* array = mapgen.RenderBuf(NULL, out_width, out_height);
-		GameScript.Clear();
-		ScriptEngine.Clear();
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
