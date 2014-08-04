@@ -28,6 +28,7 @@ typedef struct _ThreadData ThreadData;
 struct _ThreadData {
 	MapeEditView* view;
 	gchar* source;
+	MapeMapgenType type;
 	gchar* file_path;
 	MapeMaterialMap* mat_map;
 	MapeTextureMap* tex_map;
@@ -42,6 +43,49 @@ struct _ThreadResult {
 	GError* error;
 	guint idle_id;
 };
+
+static void mape_edit_view_set_filename(MapeEditView* view,
+                                        const gchar* filename)
+{
+	gchar* basename;
+	gchar* utf8_file;
+	gchar* utf8_file_casefold;
+	gchar* utf8_landscape_txt_casefold;
+
+	/* TODO: Verify that filename is absolute and make it absolute if
+	   it is not */
+	g_free(view->file_path);
+	view->file_path = g_strdup(filename);
+
+	basename = g_path_get_basename(filename);
+
+	/* Determine document type */
+	utf8_file = g_filename_to_utf8(
+		basename,
+		-1,
+		NULL,
+		NULL,
+		NULL
+	);
+
+	g_free(basename);
+
+	if(utf8_file != NULL)
+	{
+		utf8_file_casefold = g_utf8_casefold(utf8_file, -1);
+		utf8_landscape_txt_casefold = g_utf8_casefold("landscape.txt", -1);
+		g_free(utf8_file);
+
+		if(g_utf8_collate(utf8_file_casefold, utf8_landscape_txt_casefold) == 0)
+			view->type = MAPE_MAPGEN_LANDSCAPE_TXT;
+		else
+			view->type = MAPE_MAPGEN_MAP_C;
+		g_free(utf8_file_casefold);
+		g_free(utf8_landscape_txt_casefold);
+	}
+
+	/* TODO: Set language according to document type */
+}
 
 static void
 mape_edit_view_thread_result_destroy_func(gpointer data)
@@ -67,6 +111,7 @@ static void mape_edit_view_cb_update(GtkWidget* widget,
 }
 
 static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
+                                            MapeMapgenType type,
                                             const gchar* file_path,
                                             MapeMaterialMap* mat_map,
                                             MapeTextureMap* tex_map,
@@ -104,13 +149,26 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 	else
 	{
 		basename = NULL;
-		filename = "Landscape.txt";
 		scriptname = NULL;
+		switch(type)
+		{
+		case MAPE_MAPGEN_LANDSCAPE_TXT:
+			filename = "Landscape.txt";
+			break;
+		case MAPE_MAPGEN_MAP_C:
+			filename = "Map.c";
+			break;
+		default:
+			filename = NULL;
+			g_assert_not_reached();
+			break;
+		}
 	}
 
 	pixbuf = mape_mapgen_render(
 		filename,
 		source,
+		type,
 		scriptname,
 		mat_map,
 		tex_map,
@@ -174,6 +232,7 @@ static gpointer mape_edit_view_thread_entry(gpointer data_)
 
 	res_buf = mape_edit_view_render_map(
 		data->source,
+		data->type,
 		data->file_path,
 		data->mat_map,
 		data->tex_map,
@@ -221,6 +280,7 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 	view->statusbar = statusbar;
 	view->file_path = NULL;
 	view->encoding = "UTF-8";
+	view->type = MAPE_MAPGEN_MAP_C;
 	view->render_thread = NULL;
 	view->rerender = FALSE;
 	view->fixed_seed = FALSE;
@@ -281,6 +341,7 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 	g_ptr_array_foreach(search_dirs, (GFunc)g_free, NULL);
 	g_ptr_array_free(search_dirs, TRUE);
 
+	/* TODO: Set language according to document type */
 	lang = gtk_source_language_manager_get_language(
 		view->lang_manager,
 		"c4landscape"
@@ -294,6 +355,7 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 	if(lang == NULL || style == NULL)
 	{
 		/* TODO: Show location where we search in */
+		/* TODO: Show whether we are missing the file for Landscape.txt or Map.c files */
 		error_dialog = gtk_message_dialog_new(
 			NULL,
 			GTK_DIALOG_MODAL,
@@ -387,7 +449,6 @@ gboolean mape_edit_view_open(MapeEditView* view,
 	gchar* contents;
 	gchar* conv;
 	gchar* utf8_file;
-	gchar* new_path;
 	gsize length;
 
 	result = g_file_get_contents(filename, &contents, &length, error);
@@ -447,11 +508,7 @@ gboolean mape_edit_view_open(MapeEditView* view,
 		view->encoding = "UTF-8";
 	}
 
-	/* TODO: Verify that filename is absolute and make it absolute if
-	   it is not */
-	new_path = g_strdup(filename);
-	g_free(view->file_path);
-	view->file_path = new_path;
+	mape_edit_view_set_filename(view, filename);
 
 	/* TODO: Undoable action dingsen */
 	/* (statische mape_edit_view_set_contents-Call?) */
@@ -478,7 +535,6 @@ gboolean mape_edit_view_save(MapeEditView* view,
 	GtkTextBuffer* buffer;
 	GtkTextIter begin;
 	GtkTextIter end;
-	gchar* new_path;
 	gchar* source;
 	gchar* conv;
 	gboolean result;
@@ -510,9 +566,7 @@ gboolean mape_edit_view_save(MapeEditView* view,
 		FALSE
 	);
 
-	new_path = g_strdup(filename);
-	g_free(view->file_path);
-	view->file_path = new_path;
+	mape_edit_view_set_filename(view, filename);
 
 	/* Rerender with new file path --
 	 * different Script.c lookup for algo=script overlays */
@@ -625,6 +679,7 @@ void mape_edit_view_reload(MapeEditView* edit_view)
 		 * thread result handler */
 		data->view = edit_view;
 		data->source = gtk_text_buffer_get_text(buffer, &begin, &end, TRUE);
+		data->type = edit_view->type;
 		data->file_path = g_strdup(edit_view->file_path);
 
 		/* TODO: We need to ref these so noone can delete them while the thread

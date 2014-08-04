@@ -110,14 +110,16 @@ static GtkWidget* mape_window_create_file_chooser(MapeWindow* wnd,
 	GtkWidget* dialog;
 	GtkFileFilter* filter_all;
 	GtkFileFilter* filter_landscape;
+	GtkFileFilter* filter_map;
 	
 	filter_all = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter_all, "All files");
 	gtk_file_filter_add_pattern(filter_all, "*");
 	
 	filter_landscape = gtk_file_filter_new();
-	gtk_file_filter_set_name(filter_landscape, "Landscape.txt files");
+	gtk_file_filter_set_name(filter_landscape, "Dynamic Map Descriptions");
 	gtk_file_filter_add_pattern(filter_landscape, "[Ll]andscape.txt");
+	gtk_file_filter_add_pattern(filter_landscape, "[Mm]ap.c");
 
 	dialog = gtk_file_chooser_dialog_new(
 		action == GTK_FILE_CHOOSER_ACTION_OPEN ?
@@ -141,7 +143,7 @@ static GtkWidget* mape_window_create_file_chooser(MapeWindow* wnd,
 		GTK_FILE_CHOOSER(dialog),
 		filter_all
 	);
-	
+
 	gtk_file_chooser_set_do_overwrite_confirmation(
 		GTK_FILE_CHOOSER(dialog),
 		TRUE

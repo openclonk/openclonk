@@ -39,9 +39,22 @@ typedef enum _MapeMapgenError {
   MAPE_MAPGEN_ERROR_MEMORY
 } MapeMapgenError;
 
+/**
+ * MapeMapgenType:
+ * @MAPE_MAPGEN_LANDSCAPE_TXT: Represents a Landscape.txt script.
+ * @MAPE_MAPGEN_MAP_C: Represents a Map.c script.
+ *
+ * Specifies the different types of maps that can be rendered.
+ */
+typedef enum _MapeMapgenType {
+  MAPE_MAPGEN_LANDSCAPE_TXT,
+  MAPE_MAPGEN_MAP_C
+} MapeMapgenType;
+
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,
+                   MapeMapgenType type,
                    const gchar* script_path,
                    MapeMaterialMap* material_map,
                    MapeTextureMap* texture_map,

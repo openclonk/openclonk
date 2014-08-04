@@ -102,6 +102,7 @@ static void mape_mapgen_read_color(guint8* dest,
  * @filename: The filename of the file that is being parsed. This is only used
  * for display purposes.
  * @source: The map generator source code for the map to generate.
+ * @type: Specifies how the text in @source should be interpreted.
  * @script_path: Path to the script source for algo=script overlays, or %NULL.
  * @material_map: The material map containing the materials to be used during
  * map generation.
@@ -128,6 +129,7 @@ static void mape_mapgen_read_color(guint8* dest,
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,
+                   MapeMapgenType type,
                    const gchar* script_path,
                    MapeMaterialMap* material_map,
                    MapeTextureMap* texture_map,
@@ -149,15 +151,36 @@ mape_mapgen_render(const gchar* filename,
   unsigned int x, y;
   unsigned int matnum;
 
-  handle = c4_mapgen_handle_new(
-    filename,
-    source,
-    script_path,
-    _mape_material_map_get_handle(material_map),
-    _mape_texture_map_get_handle(texture_map),
-    width,
-    height
-  );
+  switch(type)
+  {
+  case MAPE_MAPGEN_LANDSCAPE_TXT:
+    handle = c4_mapgen_handle_new(
+      filename,
+      source,
+      script_path,
+      _mape_material_map_get_handle(material_map),
+      _mape_texture_map_get_handle(texture_map),
+      width,
+      height
+    );
+
+    break;
+  case MAPE_MAPGEN_MAP_C:
+    handle = c4_mapgen_handle_new_script(
+      filename,
+      source,
+      _mape_material_map_get_handle(material_map),
+      _mape_texture_map_get_handle(texture_map),
+      width,
+      height
+    );
+
+    break;
+  default:
+    handle = NULL;
+    g_assert_not_reached();
+    break;
+  }
 
   error_message = c4_mapgen_handle_get_error(handle);
   if(error_message)
