@@ -486,6 +486,7 @@ set(MAPE_BASE_SOURCES
 )
 
 set(MAPE_SOURCES
+	src/mape/cpp-handles/c4def-handle.cpp
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
 	src/mape/cpp-handles/log-handle.h
