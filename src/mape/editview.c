@@ -401,6 +401,16 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 		g_build_filename(g_get_home_dir(), ".mape-syntax", NULL)
 	);
 
+	g_ptr_array_add(
+		search_dirs,
+		g_strdup("./mape-syntax")
+	);
+
+	g_ptr_array_add(
+		search_dirs,
+		g_strdup("./src/mape/mape-syntax")
+	);
+
 	data_dirs = g_get_system_data_dirs();
 	for(dir = data_dirs; *dir != NULL; ++ dir)
 		g_ptr_array_add(search_dirs, g_build_filename(*dir, "mape", NULL));
