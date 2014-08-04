@@ -135,7 +135,7 @@ planet/openclonk.sln
 WindowsGamesExplorer.xml
 
 # Mape
-mape
+./mape
 mape-icons.h
 
 
