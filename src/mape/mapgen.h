@@ -41,12 +41,14 @@ typedef enum _MapeMapgenError {
 
 /**
  * MapeMapgenType:
+ * @MAPE_MAPGEN_NONE: Does not represent a map description.
  * @MAPE_MAPGEN_LANDSCAPE_TXT: Represents a Landscape.txt script.
  * @MAPE_MAPGEN_MAP_C: Represents a Map.c script.
  *
  * Specifies the different types of maps that can be rendered.
  */
 typedef enum _MapeMapgenType {
+  MAPE_MAPGEN_NONE,
   MAPE_MAPGEN_LANDSCAPE_TXT,
   MAPE_MAPGEN_MAP_C
 } MapeMapgenType;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<style-scheme id="c4landscape" _name="C4Landscape" version="1.0">
+<style-scheme id="mape" _name="Mape" version="1.0">
   <author>Armin Burgmeier</author>
-  <_description>C4Landscape color scheme</_description>
+  <_description>Mape color scheme</_description>
 
   <!-- Bracket Matching -->
   <style name="bracket-match"               foreground="#white" background="#grey" bold="true"/>
@@ -13,5 +13,10 @@
   <style name="c4landscape:operator"        foreground="#0080c0"/>
   <style name="c4landscape:attribute"       foreground="#0000ff"/>
   <style name="c4landscape:algorithm"       foreground="#000080"/>
+
+  <style name="c4mapscript:comment"         foreground="#008000"/>
+  <style name="c4mapscript:literal"         foreground="#c00080"/>
+  <style name="c4mapscript:keyword"         foreground="#0000ff"/>
+  <style name="c4mapscript:property"        foreground="#c00000"/>
 
 </style-scheme>

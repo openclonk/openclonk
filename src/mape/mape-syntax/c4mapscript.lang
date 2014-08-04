@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="c4mapscript" _name="C4MapScript" version="2.0" _section="Sources">
+    <metadata>
+      <property name="mimetypes">text/plain</property>
+      <property name="globs">Map.c</property>
+      <property name="line-comment-start">//</property>
+      <property name="block-comment-start">/*</property>
+      <property name="block-comment-end">*/</property>
+    </metadata>
+
+    <styles>
+        <style id="comment"           _name="Comment"   />
+        <style id="literal"           _name="Literal"   />
+        <style id="keyword"           _name="Keyword"   />
+        <style id="property"          _name="Property"  />
+    </styles>
+
+    <definitions>
+        <context id="c4mapscript">
+            <include>
+                <context id="comment" style-ref="comment" end-at-line-end="true">
+                    <start>//</start>
+                    <end>^</end>
+                </context>
+
+                <context id="comment-multiline" style-ref="comment">
+                    <start>/\*</start>
+                    <end>\*/</end>
+                </context>
+
+                <context id="number" style-ref="literal">
+                    <match extended="true">
+                        (?&lt;![\w\.]) ([-+]?[0-9]+\s*) (?![\w\.])
+                    </match>
+                </context>
+
+                <define-regex id="escaped-character" extended="true">
+                    \\(                   # leading backslash
+                    [\\\"]                # escaped character
+                    )
+                </define-regex>
+
+                <context id="string" style-ref="literal" end-at-line-end="true">
+                    <start>"</start>
+                    <end>"</end>
+                    <include>
+                        <context id="escaped-character">
+                            <match>\%{escaped-character}</match>
+                        </context>
+                    </include>
+                </context>
+
+                <context id="boolean" style-ref="literal">
+                    <keyword>true</keyword>
+                    <keyword>false</keyword>
+                </context>
+
+                <context id="algorithms" style-ref="literal">
+                    <keyword>MAPALGO_Layer</keyword>
+                    <keyword>MAPALGO_RndChecker</keyword>
+                    <keyword>MAPALGO_Rect</keyword>
+                    <keyword>MAPALGO_Ellipsis</keyword>
+                    <keyword>MAPALGO_Polygon</keyword>
+                    <keyword>MAPALGO_Lines</keyword>
+                    <keyword>MAPALGO_And</keyword>
+                    <keyword>MAPALGO_Or</keyword>
+                    <keyword>MAPALGO_Not</keyword>
+                    <keyword>MAPALGO_Xor</keyword>
+                    <keyword>MAPALGO_Offset</keyword>
+                    <keyword>MAPALGO_Scale</keyword>
+                    <keyword>MAPALGO_Rotate</keyword>
+                    <keyword>MAPALGO_Turbulence</keyword>
+                    <keyword>MAPALGO_Border</keyword>
+                    <keyword>MAPALGO_Filter</keyword>
+                </context>
+
+                <context id="include-directive" style-ref="keyword">
+		    <match>^\s*#include</match>
+		</context>
+
+                <context id="keywords" style-ref="keyword">
+                    <keyword>array</keyword>
+                    <keyword>break</keyword>
+                    <keyword>bool</keyword>
+                    <keyword>continue</keyword>
+                    <keyword>do</keyword>
+                    <keyword>else</keyword>
+                    <keyword>for</keyword>
+                    <keyword>func</keyword>
+                    <keyword>id</keyword>
+                    <keyword>if</keyword>
+                    <keyword>int</keyword>
+                    <keyword>object</keyword>
+                    <keyword>private</keyword>
+                    <keyword>proplist</keyword>
+                    <keyword>protected</keyword>
+                    <keyword>public</keyword>
+                    <keyword>return</keyword>
+                    <keyword>string</keyword>
+                    <keyword>var</keyword>
+                    <keyword>while</keyword>
+                </context>
+
+                <context id="properties" style-ref="property">
+                    <keyword>Algo</keyword>
+                    <keyword>Amplitude</keyword>
+                    <keyword>Bottom</keyword>
+                    <keyword>Distance</keyword>
+                    <keyword>Empty</keyword>
+                    <keyword>Filter</keyword>
+                    <keyword>FixedOffset</keyword>
+                    <keyword>Hgt</keyword>
+                    <keyword>Iterations</keyword>
+                    <keyword>Layer</keyword>
+                    <keyword>Left</keyword>
+                    <keyword>OffX</keyword>
+                    <keyword>OffY</keyword>
+                    <keyword>Op</keyword>
+                    <keyword>Open</keyword>
+                    <keyword>R</keyword>
+                    <keyword>Ratio</keyword>
+                    <keyword>Right</keyword>
+                    <keyword>Scale</keyword>
+                    <keyword>Seed</keyword>
+                    <keyword>Top</keyword>
+                    <keyword>Wdt</keyword>
+                    <keyword>X</keyword>
+                    <keyword>Y</keyword>
+                </context>
+            </include>
+        </context>
+    </definitions>
+</language>

@@ -47,44 +47,127 @@ struct _ThreadResult {
 static void mape_edit_view_set_filename(MapeEditView* view,
                                         const gchar* filename)
 {
+	MapeMapgenType new_type;
+	GtkSourceBuffer* buf;
+
 	gchar* basename;
 	gchar* utf8_file;
 	gchar* utf8_file_casefold;
 	gchar* utf8_landscape_txt_casefold;
 
+	const gchar* lang_name;
+	const gchar* lang_filename;
+	GtkSourceLanguage* lang;
+	GtkSourceStyleScheme* style;
+	GtkWidget* error_dialog;
+
+	buf = GTK_SOURCE_BUFFER(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(view->view) )
+	);
+
 	/* TODO: Verify that filename is absolute and make it absolute if
 	   it is not */
 	g_free(view->file_path);
-	view->file_path = g_strdup(filename);
+	if(filename != NULL)
+		view->file_path = g_strdup(filename);
+	else
+		view->file_path = NULL;
 
-	basename = g_path_get_basename(filename);
-
-	/* Determine document type */
-	utf8_file = g_filename_to_utf8(
-		basename,
-		-1,
-		NULL,
-		NULL,
-		NULL
-	);
-
-	g_free(basename);
-
-	if(utf8_file != NULL)
+	if(filename != NULL)
 	{
-		utf8_file_casefold = g_utf8_casefold(utf8_file, -1);
-		utf8_landscape_txt_casefold = g_utf8_casefold("landscape.txt", -1);
-		g_free(utf8_file);
+		basename = g_path_get_basename(filename);
 
-		if(g_utf8_collate(utf8_file_casefold, utf8_landscape_txt_casefold) == 0)
-			view->type = MAPE_MAPGEN_LANDSCAPE_TXT;
-		else
-			view->type = MAPE_MAPGEN_MAP_C;
-		g_free(utf8_file_casefold);
-		g_free(utf8_landscape_txt_casefold);
+		/* Determine document type */
+		utf8_file = g_filename_to_utf8(
+			basename,
+			-1,
+			NULL,
+			NULL,
+			NULL
+		);
+
+		g_free(basename);
+
+		if(utf8_file != NULL)
+		{
+			utf8_file_casefold = g_utf8_casefold(utf8_file, -1);
+			utf8_landscape_txt_casefold = g_utf8_casefold("landscape.txt", -1);
+			g_free(utf8_file);
+
+			if(g_utf8_collate(utf8_file_casefold, utf8_landscape_txt_casefold) == 0)
+				new_type = MAPE_MAPGEN_LANDSCAPE_TXT;
+			else
+				new_type = MAPE_MAPGEN_MAP_C;
+			g_free(utf8_file_casefold);
+			g_free(utf8_landscape_txt_casefold);
+		}
+	}
+	else
+	{
+		new_type = MAPE_MAPGEN_MAP_C;
 	}
 
-	/* TODO: Set language according to document type */
+	if(new_type != view->type)
+	{
+		view->type = new_type;
+		switch(view->type)
+		{
+		case MAPE_MAPGEN_LANDSCAPE_TXT:
+			lang_name = "c4landscape";
+			lang_filename = "Landscape.txt";
+			break;
+		case MAPE_MAPGEN_MAP_C:
+			lang_name = "c4mapscript";
+			lang_filename = "Map.c";
+			break;
+		default:
+			lang_name = NULL;
+			g_assert_not_reached();
+			break;
+		}
+
+		/* Set language according to document type */
+		lang = gtk_source_language_manager_get_language(
+			view->lang_manager,
+			lang_name
+		);
+
+		style = gtk_source_style_scheme_manager_get_scheme(
+			view->style_manager,
+			"mape"
+		);
+
+		if(lang == NULL || style == NULL)
+		{
+			/* TODO: Show location where we search in */
+			error_dialog = gtk_message_dialog_new(
+				NULL,
+				GTK_DIALOG_MODAL,
+				GTK_MESSAGE_ERROR,
+				GTK_BUTTONS_OK,
+				"Syntax Highlighting Not Available"
+			);
+
+			gtk_message_dialog_format_secondary_text(
+				GTK_MESSAGE_DIALOG(error_dialog),
+				"The syntax highlighting file for %s files "
+				"could not be located. Perhaps mape has not "
+				"been properly installed. Syntax "
+				"highlighting is disabled.",
+				lang_filename
+			);
+
+			gtk_window_set_title(GTK_WINDOW(error_dialog), "Mape");
+
+			gtk_dialog_run(GTK_DIALOG(error_dialog) );
+			gtk_widget_destroy(error_dialog);
+		}
+		else
+		{
+			gtk_source_buffer_set_language(buf, lang);
+			gtk_source_buffer_set_style_scheme(buf, style);
+		}
+	}
 }
 
 static void
@@ -268,9 +351,6 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 {
 	MapeEditView* view;
 	GtkSourceBuffer* buf;
-	GtkSourceLanguage* lang;
-	GtkSourceStyleScheme* style;
-	GtkWidget* error_dialog;
 	GPtrArray* search_dirs;
 	const gchar* const* data_dirs;
 	const gchar* const* dir;
@@ -280,7 +360,7 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 	view->statusbar = statusbar;
 	view->file_path = NULL;
 	view->encoding = "UTF-8";
-	view->type = MAPE_MAPGEN_MAP_C;
+	view->type = MAPE_MAPGEN_NONE;
 	view->render_thread = NULL;
 	view->rerender = FALSE;
 	view->fixed_seed = FALSE;
@@ -341,41 +421,7 @@ MapeEditView* mape_edit_view_new(MapePreView* pre_view,
 	g_ptr_array_foreach(search_dirs, (GFunc)g_free, NULL);
 	g_ptr_array_free(search_dirs, TRUE);
 
-	/* TODO: Set language according to document type */
-	lang = gtk_source_language_manager_get_language(
-		view->lang_manager,
-		"c4landscape"
-	);
-
-	style = gtk_source_style_scheme_manager_get_scheme(
-	  view->style_manager,
-	  "c4landscape"
-	);
-
-	if(lang == NULL || style == NULL)
-	{
-		/* TODO: Show location where we search in */
-		/* TODO: Show whether we are missing the file for Landscape.txt or Map.c files */
-		error_dialog = gtk_message_dialog_new(
-			NULL,
-			GTK_DIALOG_MODAL,
-			GTK_MESSAGE_ERROR,
-			GTK_BUTTONS_OK,
-			"The syntax highlighting file for Landscape.txt files "
-			"could not be located. Perhaps mape has not been "
-			"properly installed. Syntax highlighting is disabled."
-		);
-
-		gtk_window_set_title(GTK_WINDOW(error_dialog), "Mape");
-
-		gtk_dialog_run(GTK_DIALOG(error_dialog) );
-		gtk_widget_destroy(error_dialog);
-	}
-	else
-	{
-		gtk_source_buffer_set_language(buf, lang);
-		gtk_source_buffer_set_style_scheme(buf, style);
-	}
+	mape_edit_view_set_filename(view, NULL);
 
 	gtk_widget_show(view->view);
 	
