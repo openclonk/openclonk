@@ -70,6 +70,7 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		// TODO: Do this once and not every time the map is being
 		// rendered.
 		MapScript.Clear();
+		GameScript.Clear();
 		ScriptEngine.Clear();
 
 		InitCoreFunctionMap(&ScriptEngine);
@@ -77,6 +78,12 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 
 		c4_log_handle_clear();
 		::MapScript.LoadData(filename, source, NULL);
+
+		// If InitializeMap() returns false, the map creator wants to
+		// call a fallback in the scenario script. This crashes if no
+		// scenario script is loaded, so simply load an empty script
+		// here:
+		::GameScript.LoadData("Script.c", "", NULL);
 
 		const char* parse_error = c4_log_handle_get_first_log_message();
 		if(parse_error)
@@ -109,7 +116,7 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 			throw std::runtime_error(runtime_error);
 
 		if(!result)
-			throw std::runtime_error("No InitializeMap() function present in the script");
+			throw std::runtime_error("No InitializeMap() function present in the script, or it returns false");
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
 		handle->width = out->Wdt;
