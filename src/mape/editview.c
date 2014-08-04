@@ -34,6 +34,7 @@ struct _ThreadData {
 	MapeTextureMap* tex_map;
 	guint map_width;
 	guint map_height;
+	gint64 start_time;
 };
 
 typedef struct _ThreadResult ThreadResult;
@@ -42,6 +43,7 @@ struct _ThreadResult {
 	GdkPixbuf* pixbuf;
 	GError* error;
 	guint idle_id;
+	gint64 start_time;
 };
 
 static void mape_edit_view_set_filename(MapeEditView* view,
@@ -270,6 +272,9 @@ mape_edit_view_thread_result(gpointer data_)
 	ThreadResult* result;
 	MapeEditView* view;
 
+	gint64 now;
+	gchar* time_text;
+
 	result = (ThreadResult*)data_;
 	view = result->view;
 
@@ -284,10 +289,16 @@ mape_edit_view_thread_result(gpointer data_)
 	}
 	else
 	{
-		mape_statusbar_set_compile(
-			view->statusbar,
-			"Landscape rendered successfully"
+		now = g_get_monotonic_time();
+		g_assert(now >= result->start_time);
+
+		time_text = g_strdup_printf(
+			"Landscape rendered successfully (%.2fs)",
+			(now - result->start_time) / 1000000.
 		);
+
+		mape_statusbar_set_compile(view->statusbar, time_text);
+		g_free(time_text);
 	}
 
 	mape_pre_view_update(view->pre_view, result->pixbuf);
@@ -328,6 +339,7 @@ static gpointer mape_edit_view_thread_entry(gpointer data_)
 	result->view = data->view;
 	result->pixbuf = res_buf;
 	result->error = error;
+	result->start_time = data->start_time;
 
 	g_free(data->source);
 	g_free(data->file_path);
@@ -745,6 +757,7 @@ void mape_edit_view_reload(MapeEditView* edit_view)
 
 		data->map_width = edit_view->map_width;
 		data->map_height = edit_view->map_height;
+		data->start_time = g_get_monotonic_time();
 
 		if(edit_view->fixed_seed == TRUE)
 			mape_random_seed(edit_view->random_seed);
