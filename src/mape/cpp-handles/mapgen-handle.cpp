@@ -14,6 +14,7 @@
  */
 
 #include "C4Include.h"
+#include <C4MapScript.h>
 #include <C4MapCreatorS2.h>
 #include <C4ScriptHost.h>
 #include <C4DefList.h>
@@ -51,6 +52,85 @@ struct _C4MapgenHandle {
 	StdCopyStrBuf error_message;
 	BYTE* data;
 };
+
+C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* source, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)
+{
+	try
+	{
+		// TODO: Could also re-use an existing CSurface8,
+		// saving unnecessary malloc/free between map renderings
+		C4SLandscape landscape;
+		landscape.Default();
+
+		landscape.MapWdt.Set(map_width, 0, map_width, map_width);
+		landscape.MapHgt.Set(map_height, 0, map_height, map_height);
+		landscape.MapPlayerExtend = 0;
+
+		// Setup script engine
+		// TODO: Do this once and not every time the map is being
+		// rendered.
+		MapScript.Clear();
+		ScriptEngine.Clear();
+
+		InitCoreFunctionMap(&ScriptEngine);
+		::MapScript.InitFunctionMap(&ScriptEngine);
+
+		c4_log_handle_clear();
+		::MapScript.LoadData(filename, source, NULL);
+
+		const char* parse_error = c4_log_handle_get_first_log_message();
+		if(parse_error)
+			throw std::runtime_error(parse_error);
+
+		// Link script engine (resolve includes/appends, generate code)
+		c4_log_handle_clear();
+		ScriptEngine.Link(&::Definitions);
+		if(ScriptEngine.warnCnt > 0 || ScriptEngine.errCnt > 0)
+			throw std::runtime_error(c4_log_handle_get_first_log_message());
+		// Set name list for globals
+		ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
+
+		// Generate map, fail if return error occurs
+		c4_log_handle_clear();
+		CSurface8* out_ptr = NULL;
+		const bool result = ::MapScript.InitializeMap(
+			&landscape,
+			HANDLE_TO_TEXTURE_MAP(texture_map),
+			HANDLE_TO_MATERIAL_MAP(material_map),
+			1,
+			&out_ptr);
+		std::auto_ptr<CSurface8> out(out_ptr);
+		MapScript.Clear();
+		ScriptEngine.Clear();
+
+		// Don't show any map if there was a script runtime error
+		const char* runtime_error = c4_log_handle_get_first_log_message();
+		if(runtime_error)
+			throw std::runtime_error(runtime_error);
+
+		if(!result)
+			throw std::runtime_error("No InitializeMap() function present in the script");
+
+		C4MapgenHandle* handle = new C4MapgenHandle;
+		handle->width = out->Wdt;
+		handle->height = out->Hgt;
+		handle->rowstride = out->Wdt;
+		handle->error_message = NULL;
+		handle->data = out->Bits;
+		out->ReleaseBuffer();
+
+		return handle;
+	}
+	catch(const std::exception& ex)
+	{
+		C4MapgenHandle* handle = new C4MapgenHandle;
+		handle->width = 0;
+		handle->height = 0;
+		handle->error_message.Copy(ex.what());
+		handle->data = NULL;
+		return handle;
+	}
+}
 
 C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, const char* script_path, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)
 {
@@ -104,6 +184,9 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 				StdStrBuf error_msg = FormatString("Failed to load '%s': No such file", script_path);
 				throw std::runtime_error(error_msg.getData());
 			}
+
+			GameScript.Clear();
+			ScriptEngine.Clear();
 
 			// load core functions into script engine
 			InitCoreFunctionMap(&ScriptEngine);
