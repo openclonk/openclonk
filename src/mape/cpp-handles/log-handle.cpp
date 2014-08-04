@@ -19,10 +19,19 @@
 // This implements the Log engine function such that the first log message
 // is stored and can be retrieved later by the C API.
 std::string first_log;
+unsigned int n_logs = 0;
+
 bool Log(const char *msg)
 {
 	if(first_log.empty())
+	{
+		assert(n_logs == 0);
 		first_log = msg;
+	}
+
+	if(*msg != '\0')
+		++n_logs;
+
 	return true;
 }
 bool DebugLog(const char *strMessage) { return Log(strMessage); }
@@ -46,12 +55,18 @@ extern "C" {
 void c4_log_handle_clear()
 {
 	first_log.clear();
+	n_logs = 0;
 }
 
 const char* c4_log_handle_get_first_log_message()
 {
 	if(first_log.empty()) return NULL;
 	return first_log.c_str();
+}
+
+unsigned int c4_log_handle_get_n_log_messages()
+{
+	return n_logs;
 }
 
 } // extern "C"

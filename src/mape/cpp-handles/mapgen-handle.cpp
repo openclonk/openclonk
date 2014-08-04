@@ -92,7 +92,7 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 		// Link script engine (resolve includes/appends, generate code)
 		c4_log_handle_clear();
 		ScriptEngine.Link(&::Definitions);
-		if(ScriptEngine.warnCnt > 0 || ScriptEngine.errCnt > 0)
+		if(c4_log_handle_get_n_log_messages() > 1)
 			throw std::runtime_error(c4_log_handle_get_first_log_message());
 		// Set name list for globals
 		ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
@@ -210,7 +210,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			// Link script engine (resolve includes/appends, generate code)
 			c4_log_handle_clear();
 			ScriptEngine.Link(&::Definitions);
-			if(ScriptEngine.warnCnt > 0 || ScriptEngine.errCnt > 0)
+			if(c4_log_handle_get_n_log_messages() > 1)
 				throw std::runtime_error(c4_log_handle_get_first_log_message());
 			// Set name list for globals
 			ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
