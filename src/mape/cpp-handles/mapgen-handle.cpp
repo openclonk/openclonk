@@ -18,6 +18,7 @@
 #include <C4MapCreatorS2.h>
 #include <C4ScriptHost.h>
 #include <C4DefList.h>
+#include <C4Def.h>
 #include <C4Aul.h>
 
 #include "mape/cpp-handles/material-handle.h"
@@ -27,6 +28,7 @@
 
 #define HANDLE_TO_MATERIAL_MAP(handle) (reinterpret_cast<C4MaterialMap*>(handle))
 #define HANDLE_TO_TEXTURE_MAP(handle) (reinterpret_cast<C4TextureMap*>(handle))
+#define HANDLE_TO_GROUP(handle) (reinterpret_cast<C4Group*>(handle))
 
 namespace
 {
@@ -64,6 +66,25 @@ void c4_mapgen_handle_deinit_script_engine()
 	MapScript.Clear();
 	GameScript.Clear();
 	ScriptEngine.Clear();
+}
+
+void c4_mapgen_handle_set_map_library(C4GroupHandle* group_handle)
+{
+	::Definitions.Clear();
+
+	C4Def* libmap = new C4Def;
+	libmap->id = C4ID(std::string("Library_Map"));
+	libmap->SetName(libmap->id.ToString());
+	libmap->Category = C4D_StaticBack;
+	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), C4D_Load_Script, NULL, NULL))
+	{
+		fprintf(stderr, "Failed to load Library_Map script\n");
+		delete libmap;
+	}
+	else
+	{
+		::Definitions.Add(libmap, false);
+	}
 }
 
 C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* source, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)

@@ -94,14 +94,13 @@ void C4IDList::CompileFunc(StdCompiler *, bool) {}
 C4IDListChunk::C4IDListChunk() {}
 C4IDListChunk::~C4IDListChunk() {}
 
+C4Shape::C4Shape() {}
+C4DefGraphics::C4DefGraphics(C4Def*) {}
+void C4DefGraphics::Clear() {}
+
 void C4Def::IncludeDefinition(C4Def*) {}
 
-C4DefList::C4DefList() {}
-C4DefList::~C4DefList() {}
-C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
 void C4DefList::Draw(C4ID, C4Facet &, bool, int32_t) {}
-C4Def * C4DefList::GetDef(int) {return 0;}
-int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }

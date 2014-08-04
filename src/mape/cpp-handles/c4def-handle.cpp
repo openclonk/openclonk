@@ -22,6 +22,22 @@
  * mape. We cannot link the full implementation since it would introduce
  * a dependency on C4Game, and therefore the rest of the engine. */
 
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+{
+        Script.SetDef(this);
+	assert(ScriptEngine.GetPropList());
+	Graphics.pDef = this;
+
+	Next = NULL;
+	Script.Clear();
+}
+
+C4Def::~C4Def()
+{
+	C4PropList::Clear();
+	Script.Clear();
+}
+
 C4DefList::C4DefList()
 {
 	FirstDef = NULL;
@@ -74,4 +90,31 @@ int C4DefList::GetDefCount()
 	for(C4Def* cdef = FirstDef; cdef != NULL; cdef = cdef->Next)
 		++counter;
 	return counter;
+}
+
+bool C4DefList::Add(C4Def* def, bool fOverload)
+{
+	assert(ID2Def(def->id) == NULL);
+
+	def->Next = FirstDef;
+	FirstDef = def;
+
+	return true;
+}
+
+bool C4Def::Load(C4Group& hGroup, DWORD dwLoadWhat, const char* szLanguage, C4SoundSystem* pSoundSystem)
+{
+	// Assume ID has been set already!
+
+	// Register with script engine
+	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
+	ParentKeyName = ::Strings.RegString(id.ToString());
+	Script.Reg2List(&::ScriptEngine);
+
+	if(!Script.Load(hGroup, "Script.c", NULL, NULL))
+	{
+		return false;
+	}
+
+	return true;
 }

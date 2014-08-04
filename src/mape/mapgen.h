@@ -59,6 +59,9 @@ mape_mapgen_init(GError** error);
 void
 mape_mapgen_deinit();
 
+void
+mape_mapgen_set_root_group(MapeGroup* group);
+
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,

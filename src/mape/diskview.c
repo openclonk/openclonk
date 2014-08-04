@@ -143,31 +143,31 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		-1
 	);
 
-	if(group == NULL)
+	has_parent = gtk_tree_model_iter_parent(
+		disk_view->tree_store,
+		&parent_iter,
+		material_iter
+	);
+		
+	if(has_parent == TRUE)
 	{
-		has_parent = gtk_tree_model_iter_parent(
+		gtk_tree_model_get(
 			disk_view->tree_store,
 			&parent_iter,
-			material_iter
+			MAPE_DISK_VIEW_COLUMN_GROUP,
+			&parent_group,
+			-1
 		);
-		
-		if(has_parent == TRUE)
-		{
-			gtk_tree_model_get(
-				disk_view->tree_store,
-				&parent_iter,
-				MAPE_DISK_VIEW_COLUMN_GROUP,
-				&parent_group,
-				-1
-			);
 			
-			g_assert(parent_group != NULL);
-		}
-		else
-		{
-			parent_group = disk_view->group_top;
-		}
+		g_assert(parent_group != NULL);
+	}
+	else
+	{
+		parent_group = disk_view->group_top;
+	}
 		
+	if(group == NULL)
+	{
 		group = mape_group_open_child(
 			parent_group,
 			"Material.ocg",
@@ -268,6 +268,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 	);
 
 	g_object_unref(texture_map);
+	mape_mapgen_set_root_group(parent_group);
 
 #if 0
 	if(overloaded_group != NULL)

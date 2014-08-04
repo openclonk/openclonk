@@ -21,6 +21,10 @@
 #include "mape/mapgen.h"
 
 /* Declare private API */
+C4GroupHandle*
+_mape_group_get_handle(MapeGroup* group);
+
+
 C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map);
 
@@ -120,6 +124,40 @@ void
 mape_mapgen_deinit()
 {
   c4_mapgen_handle_deinit_script_engine();
+}
+
+/**
+ * mape_mapgen_set_root_group:
+ * @group: The root group.
+ *
+ * Sets the root group for the map generator. This group is used to lookup the
+ * Library_Map definition.
+ */
+void
+mape_mapgen_set_root_group(MapeGroup* group)
+{
+  MapeGroup* objects;
+  MapeGroup* libraries;
+  MapeGroup* map;
+  GError* error;
+
+  error = NULL;
+  if(!error)
+    objects = mape_group_open_child(group, "Objects.ocd", &error);
+  if(!error)
+    libraries = mape_group_open_child(objects, "Libraries.ocd", &error);
+  if(!error)
+    map = mape_group_open_child(libraries, "Map.ocd", &error);
+
+  /* TODO: Error reporting? */
+  if(error == NULL)
+    c4_mapgen_handle_set_map_library(_mape_group_get_handle(map));
+
+  if(error != NULL)
+  {
+    fprintf(stderr, "Failed to load Objects.ocd/Libraries.ocd/Map.ocd/Script.c: %s\n", error->message);
+    g_error_free(error);
+  }
 }
 
 /**
