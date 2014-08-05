@@ -29,6 +29,7 @@ global func SetDialogue(string name, bool attention)
 	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);
+	dialogue.Plane = this.Plane+1; // for proper placement of the attention symbol
 
 	return dialogue;
 }
