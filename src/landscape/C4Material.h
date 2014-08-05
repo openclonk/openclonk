@@ -178,6 +178,7 @@ public:
 	int32_t  TempConvStrength;
 	int32_t  MinHeightCount; // minimum material thickness in order for it to be counted
 	int32_t  SplashRate;
+	bool KeepSinglePixels; // if true, single pixels are not destroyed (for vehicle)
 
 	void Clear();
 	void Default();

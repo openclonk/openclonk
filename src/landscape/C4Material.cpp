@@ -265,6 +265,7 @@ void C4MaterialCore::Clear()
 	TempConvStrength = 0;
 	MinHeightCount = 0;
 	SplashRate=10;
+	KeepSinglePixels=false;
 }
 
 void C4MaterialCore::Default()
@@ -364,6 +365,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	                                                "BelowTempConvertTo",  ""));
 	pComp->Value(mkNamingAdapt(MinHeightCount,      "MinHeightCount",      0));
 	pComp->Value(mkNamingAdapt(SplashRate,          "SplashRate",          10));
+	pComp->Value(mkNamingAdapt(KeepSinglePixels,    "KeepSinglePixels",    false));
 	pComp->NameEnd();
 	// material reactions
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(CustomReactionList),
