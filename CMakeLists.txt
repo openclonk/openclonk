@@ -1138,6 +1138,12 @@ if(MSVC)
 	set_property(TARGET openclonk APPEND PROPERTY LINK_FLAGS "/MANIFEST:NO")
 endif()
 
+# Suppress the console window for mape even though only a main() and not
+# a WinMain() entry point is provided.
+if(MINGW)
+	set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
+endif()
+
 ############################################################################
 # Precompiled header support, part 2 (post-target)
 ############################################################################
