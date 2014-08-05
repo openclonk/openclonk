@@ -20,6 +20,7 @@
 #include "mape/editview.h"
 #include "mape/window.h"
 #include "mape/mapgen.h"
+#include "mape/random.h"
 
 static MapeWindow** _global_wnd = NULL;
 
@@ -136,7 +137,9 @@ int main(int argc,
 	g_thread_init(NULL);
 	gtk_init(&argc, &argv);
 
+	mape_random_seed(time(NULL));
 	mape_mapgen_init(&error);
+
 	if(error == NULL)
 	{
 		/* TODO: Set global application icon */
