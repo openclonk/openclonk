@@ -25,6 +25,21 @@
 #include <fmod_errors.h>
 #endif
 
+#if AUDIO_TK == AUDIO_TK_OPENAL
+#if defined(__APPLE__)
+#import <CoreFoundation/CoreFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
+#else
+#ifdef _WIN32
+// This is an ugly hack to make FreeALUT not dllimport everything.
+#define _XBOX
+#endif
+#include <alut.h>
+#undef _XBOX
+#endif
+#define alErrorCheck(X) X; { ALenum err = alGetError(); if (err) LogF("%s (%x)", #X, err); }
+#endif
+
 /* helpers */
 
 bool C4MusicFile::ExtractFile()
@@ -389,6 +404,177 @@ void C4MusicFileSDL::CheckIfPlaying()
 void C4MusicFileSDL::SetVolume(int iLevel)
 {
 	Mix_VolumeMusic((int) ((iLevel * MIX_MAX_VOLUME) / 100));
+}
+
+#elif AUDIO_TK == AUDIO_TK_OPENAL
+
+/* Ogg Vobis */
+
+C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false)
+{
+	for (size_t i=0; i<num_buffers; ++i)
+		buffers[i] = 0;
+}
+
+C4MusicFileOgg::~C4MusicFileOgg()
+{
+	Stop();
+}
+
+bool C4MusicFileOgg::Play(bool loop)
+{
+	// stop previous
+	Stop();
+	// Get channel to use
+	alGenSources(1, (ALuint*)&channel);
+	if (!channel) return false;
+
+	// Load compressed data all at once (because reading/seeking inside C4Group is problematic). Uncompress while playing.
+	char *file_contents;
+	size_t file_size;
+	if (!C4Group_ReadFile(FileName, &file_contents, &file_size))
+		return false;
+	data.SetOwnedData((BYTE *)file_contents, file_size);
+
+	// Prepare ogg reader
+	vorbis_info* info;
+	memset(&ogg_file, 0, sizeof(ogg_file));
+	ov_callbacks callbacks;
+	callbacks.read_func  = &::C4SoundLoaders::VorbisLoader::read_func;
+	callbacks.seek_func  = &::C4SoundLoaders::VorbisLoader::seek_func;
+	callbacks.close_func = &::C4SoundLoaders::VorbisLoader::close_func;
+	callbacks.tell_func  = &::C4SoundLoaders::VorbisLoader::tell_func;
+	
+	// open using callbacks
+	if (ov_open_callbacks(&data, &ogg_file, NULL, 0, callbacks) != 0)
+	{
+		ov_clear(&ogg_file);
+		return false;
+	}
+
+	// get information about music
+	info = ov_info(&ogg_file, -1);
+	if (info->channels == 1)
+		ogg_info.format = AL_FORMAT_MONO16;
+	else
+		ogg_info.format = AL_FORMAT_STEREO16;
+	ogg_info.sample_rate = info->rate;
+	ogg_info.sample_length = ov_time_total(&ogg_file, -1)/1000.0;
+
+	playing = true;
+	streaming_done = false;
+
+	// prepare read
+	ogg_info.sound_data.resize(num_buffers * buffer_size);
+	alGenBuffers(num_buffers, buffers);
+
+	// Fill initial buffers
+	for (size_t i=0; i<num_buffers; ++i)
+		if (!FillBuffer(i)) break; // if this fails, the piece is shorter than the initial buffers
+
+	// play!
+	alErrorCheck(alSourcePlay(channel));
+	
+	return true;
+}
+
+
+void C4MusicFileOgg::Stop(int fadeout_ms)
+{
+	if (playing)
+	{
+		// clear ogg file
+		ov_clear(&ogg_file);
+		alSourceStop(channel);
+		// clear queue
+		ALint num_queued=0;
+		alErrorCheck(alGetSourcei(channel, AL_BUFFERS_QUEUED, &num_queued));
+		ALuint buffer;
+		for (size_t i = 0; i < num_queued; ++i)
+			alErrorCheck(alSourceUnqueueBuffers(channel, 1, &buffer));
+	}
+	// clear buffers
+	if (channel) 
+	{
+		alSourcei(channel, AL_BUFFER, 0);
+		alDeleteBuffers(num_buffers, buffers);
+		alDeleteSources(1, &channel);
+	}
+}
+
+void C4MusicFileOgg::CheckIfPlaying()
+{
+	Execute();
+	if (!playing) Application.MusicSystem.NotifySuccess();
+}
+
+void C4MusicFileOgg::SetVolume(int iLevel)
+{
+	
+}
+
+bool C4MusicFileOgg::FillBuffer(size_t idx)
+{
+	// uncompress from ogg data
+	int endian = 0;
+	long bytes_read_total = 0, bytes_read;
+	char uncompressed_data[buffer_size];
+	do {
+		bytes_read = ov_read(&ogg_file, uncompressed_data+bytes_read_total, (buffer_size-bytes_read_total)*sizeof(BYTE), endian, 2, 1, &current_section);
+		bytes_read_total += bytes_read;
+	} while (bytes_read > 0 && bytes_read_total < buffer_size);
+	// buffer data
+	if (bytes_read_total)
+	{
+		ALuint buffer = buffers[idx];
+		alErrorCheck(alBufferData(buffer, ogg_info.format, uncompressed_data, bytes_read_total, ogg_info.sample_rate));
+		// queue buffer
+		alErrorCheck(alSourceQueueBuffers(channel, 1, &buffer));
+	}
+	// streaming done?
+	if (bytes_read_total < buffer_size)
+	{
+		// streaming done.
+		return false;
+	}
+	else
+	{
+		// might have more data to stream
+		return true;
+	}
+}
+
+void C4MusicFileOgg::Execute()
+{
+	if (playing)
+	{
+		// get processed buffer count
+		ALint num_processed = 0;
+		alErrorCheck(alGetSourcei(channel, AL_BUFFERS_PROCESSED, &num_processed));
+		bool done = false;
+		while (num_processed--)
+		{
+			// refill processed buffers
+			ALuint buffer;
+			alErrorCheck(alSourceUnqueueBuffers(channel, 1, &buffer));
+			size_t buffer_idx;
+			for (buffer_idx=0; buffer_idx<num_buffers; ++buffer_idx)
+				if (buffers[buffer_idx] == buffer) break;
+			if (!done) done = !FillBuffer(buffer_idx);
+		}
+		if (done) streaming_done = true;
+		// check if done
+		ALint state = 0;
+		alErrorCheck(alGetSourcei(channel, AL_SOURCE_STATE, &state));
+		if (state != AL_PLAYING && streaming_done)
+		{
+			Stop();
+		}
+		else if (state == AL_STOPPED)
+		{
+			alErrorCheck(alSourcePlay(channel));
+		}
+	}
 }
 
 #endif

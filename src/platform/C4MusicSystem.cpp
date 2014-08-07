@@ -239,8 +239,11 @@ void C4MusicSystem::Load(const char *szFile)
 	// safety
 	if (!szFile || !*szFile) return;
 	C4MusicFile *NewSong=NULL;
-	// get extension
-#if AUDIO_TK == AUDIO_TK_FMOD
+#if AUDIO_TK == AUDIO_TK_OPENAL
+	// openal: Only ogg supported
+	const char *szExt = GetExtension(szFile);
+	if (SEqualNoCase(szExt, "ogg")) NewSong = new C4MusicFileOgg;
+#elif AUDIO_TK == AUDIO_TK_FMOD
 	const char *szExt = GetExtension(szFile);
 	// get type
 	switch (GetMusicFileTypeByExtension(GetExtension(szFile)))
@@ -396,7 +399,7 @@ void C4MusicSystem::Clear()
 void C4MusicSystem::Execute()
 {
 #if AUDIO_TK != AUDIO_TK_SDL_MIXER
-	if (!::Game.iTick35)
+	if (!::Game.iTick35 || !Game.IsRunning)
 #endif
 	{
 		if (!PlayMusicFile)

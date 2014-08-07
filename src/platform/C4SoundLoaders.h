@@ -70,15 +70,21 @@ namespace C4SoundLoaders
 #if AUDIO_TK == AUDIO_TK_OPENAL
 	class VorbisLoader: public SoundLoader
 	{
-	private:
+	public: // needed by C4MusicFileOgg
 		struct CompressedData
 		{
 		public:
 			BYTE* data;
 			size_t data_length;
 			size_t data_pos;
-			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0)
-			{}
+			bool is_data_owned; // if true, dtor will delete data
+			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0), is_data_owned(false) {}
+			CompressedData() : data(NULL), data_length(0), data_pos(0), is_data_owned(false) {}
+			void SetOwnedData(BYTE* data, size_t data_length)
+			{ clear(); this->data=data; this->data_length=data_length; this->data_pos=0; is_data_owned=true; }
+
+			~CompressedData() { clear(); }
+			void clear()  { if (is_data_owned) delete [] data; data=NULL; }
 		};
 		static size_t read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);
 		static int seek_func(void* datasource, ogg_int64_t offset, int whence);

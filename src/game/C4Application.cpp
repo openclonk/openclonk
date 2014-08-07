@@ -517,15 +517,15 @@ bool C4Application::PreInit()
 	if (!MusicSystem.Init("Frontend.*"))
 		Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
-	// Play some music!
-	if (fUseStartupDialog && !isEditor && Config.Sound.FEMusic)
-		MusicSystem.Play();
-
 	Game.SetInitProgress(fUseStartupDialog ? 34.0f : 2.0f);
 
 	// Sound
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
+
+	// Play some music! - after sound init because sound system might be needed by music system
+	if (fUseStartupDialog && !isEditor && Config.Sound.FEMusic)
+		MusicSystem.Play();
 
 	Game.SetInitProgress(fUseStartupDialog ? 35.0f : 3.0f);
 
@@ -647,6 +647,7 @@ void C4Application::GameTick()
 		break;
 	case C4AS_Startup:
 		SoundSystem.Execute();
+		MusicSystem.Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
