@@ -6,7 +6,7 @@
   <func>
     <title>SetPlayList</title>
     <category>Music</category>
-    <version>5.1 OC</version>
+    <version>4.2 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -14,6 +14,12 @@
           <type>string</type>
           <name>playlist</name>
           <desc>List of pieces of music to be played. The individual file names are separated with semicolons (";"). Wildcards are expanded.  If the parameter is left out, the standard playlist is restored.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>at_player</name>
+          <desc>The playlist is changed only on clients where the player with this player number is local. If left out or NO_OWNER, the playlist is changed for all clients. If the player number is invalid, no playlists are changed.</desc>
           <optional />
         </param>
       </params>
@@ -24,4 +30,5 @@
     <related><funclink>Music</funclink></related>
   </func>
   <author>PeterW</author><date>2003-01</date>
+  <author>Sven2</author><date>2014-08</date>
 </funcs>

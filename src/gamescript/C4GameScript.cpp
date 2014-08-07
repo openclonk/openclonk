@@ -522,11 +522,19 @@ static long FnMusicLevel(C4PropList * _this, long iLevel)
 	return Application.MusicSystem.SetVolume(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, C4String *szPlayList)
+static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<long> iAtPlayer)
 {
+	// If a player number is provided, set play list for clients where given player is local only
+	if (!iAtPlayer.IsNil() && iAtPlayer != NO_OWNER)
+	{
+		C4Player *at_plr = ::Players.Get(iAtPlayer);
+		if (!at_plr) return 0;
+		if (!at_plr->LocalControl) return 0;
+	}
+	// Set playlist; count entries
 	long iFilesInPlayList = Application.MusicSystem.SetPlayList(FnStringPar(szPlayList));
 	Game.PlayList.Copy(FnStringPar(szPlayList));
-	// network/record/replay: return 0
+	// network/record/replay: return 0 for sync reasons
 	if (::Control.SyncMode()) return 0;
 	return iFilesInPlayList;
 }
