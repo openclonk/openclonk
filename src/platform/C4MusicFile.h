@@ -162,6 +162,7 @@ private:
 	ALuint channel;
 	int current_section;
 	size_t byte_pos_total;
+	float volume;
 
 	bool FillBuffer(size_t idx);
 	void Execute(); // fill processed buffers

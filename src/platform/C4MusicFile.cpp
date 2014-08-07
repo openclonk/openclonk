@@ -410,7 +410,7 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 
 /* Ogg Vobis */
 
-C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false), byte_pos_total(0)
+C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false), byte_pos_total(0), volume(1.0f)
 {
 	for (size_t i=0; i<num_buffers; ++i)
 		buffers[i] = 0;
@@ -466,6 +466,9 @@ bool C4MusicFileOgg::Play(bool loop)
 	this->loop = loop;
 	byte_pos_total = 0;
 
+	// initial volume setting
+	SetVolume(float(::Config.Sound.MusicVolume) / 100.0f);
+
 	// prepare read
 	ogg_info.sound_data.resize(num_buffers * buffer_size);
 	alGenBuffers(num_buffers, buffers);
@@ -514,7 +517,8 @@ void C4MusicFileOgg::CheckIfPlaying()
 
 void C4MusicFileOgg::SetVolume(int iLevel)
 {
-	
+	volume = ((float) iLevel) / 100.0f;
+	if (channel) alSourcef(channel, AL_GAIN, volume);
 }
 
 bool C4MusicFileOgg::FillBuffer(size_t idx)
