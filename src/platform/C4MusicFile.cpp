@@ -37,7 +37,7 @@
 #include <alut.h>
 #undef _XBOX
 #endif
-#define alErrorCheck(X) X; { ALenum err = alGetError(); if (err) LogF("%s (%x)", #X, err); }
+#define alErrorCheck(X) X; { ALenum err = alGetError(); if (err) LogF("al error: %s (%x)", #X, err); }
 #endif
 
 /* helpers */
@@ -410,7 +410,7 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 
 /* Ogg Vobis */
 
-C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false)
+C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false), byte_pos_total(0)
 {
 	for (size_t i=0; i<num_buffers; ++i)
 		buffers[i] = 0;
@@ -463,6 +463,8 @@ bool C4MusicFileOgg::Play(bool loop)
 
 	playing = true;
 	streaming_done = false;
+	this->loop = loop;
+	byte_pos_total = 0;
 
 	// prepare read
 	ogg_info.sound_data.resize(num_buffers * buffer_size);
@@ -500,6 +502,8 @@ void C4MusicFileOgg::Stop(int fadeout_ms)
 		alDeleteBuffers(num_buffers, buffers);
 		alDeleteSources(1, &channel);
 	}
+	playing = false;
+	channel = 0;
 }
 
 void C4MusicFileOgg::CheckIfPlaying()
@@ -526,6 +530,7 @@ bool C4MusicFileOgg::FillBuffer(size_t idx)
 	// buffer data
 	if (bytes_read_total)
 	{
+		byte_pos_total += bytes_read_total;
 		ALuint buffer = buffers[idx];
 		alErrorCheck(alBufferData(buffer, ogg_info.format, uncompressed_data, bytes_read_total, ogg_info.sample_rate));
 		// queue buffer
@@ -534,8 +539,23 @@ bool C4MusicFileOgg::FillBuffer(size_t idx)
 	// streaming done?
 	if (bytes_read_total < buffer_size)
 	{
-		// streaming done.
-		return false;
+		// streaming done. loop or done.
+		if (loop)
+		{
+			// reset pos in ogg file
+			ov_raw_seek(&ogg_file, 0);
+			// if looping and nothing has been committed to this buffer yet, try again
+			// except if byte_pos_total==0, i.e. if the piece is completely empty
+			size_t prev_bytes_total = byte_pos_total;
+			byte_pos_total = 0;
+			if (!bytes_read_total && prev_bytes_total) return FillBuffer(idx);
+			return true;
+		}
+		else
+		{
+			// non-looping: we're done.
+			return false;
+		}
 	}
 	else
 	{

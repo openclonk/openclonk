@@ -157,10 +157,11 @@ private:
 	::C4SoundLoaders::VorbisLoader::CompressedData data;
 	::C4SoundLoaders::SoundInfo ogg_info;
 	OggVorbis_File ogg_file;
-	bool playing, streaming_done;
+	bool playing, streaming_done, loop;
 	ALuint buffers[num_buffers];
 	ALuint channel;
 	int current_section;
+	size_t byte_pos_total;
 
 	bool FillBuffer(size_t idx);
 	void Execute(); // fill processed buffers
