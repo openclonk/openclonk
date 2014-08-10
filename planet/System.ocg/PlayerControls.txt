@@ -519,6 +519,11 @@
 	Identifier=MenuDown
 	Action=MenuDown
 	
+	[ControlDef]
+	Identifier=ObjectMenuTextComplete
+	GUIName=$CON_MenuTextComplete$
+	Action=ObjectMenuTextComplete
+	
 	# hardcoded identifier called by engine mouse control - do not change!
 	
 	[ControlDef]
@@ -1491,6 +1496,12 @@
 		GUIName=None
 		Priority=90
 		Control=ObjectMenuUp
+		
+		[Assignment]
+		Key=CON_MenuOK
+		GUIName=None
+		Priority=95
+		Control=ObjectMenuTextComplete
 		
 		[Assignment]
 		Key=CON_MenuOK

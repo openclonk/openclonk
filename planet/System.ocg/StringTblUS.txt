@@ -47,6 +47,8 @@ CON_MenuCancel_Desc=Close a menu without having selected anything.
 CON_MenuOKAll=Menu: okay, all
 CON_MenuOK=Menu: OK
 CON_MenuOK_Desc=Confirm in a menu.
+CON_MenuTextComplete=Dialogues: Complete text
+CON_MenuTextComplete_Desc=Shortcuts the text animation in dialogues.
 
 CON_NextCrew=Next Clonk
 CON_NextCrew_Desc=Select the next clonk in your crew. Your crew is displayed at the upper edge of the screen in the game.

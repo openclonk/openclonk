@@ -47,6 +47,8 @@ CON_MenuCancel_Desc=Schließen eines Menüs ohne eine Auswahl getroffen zu haben
 CON_MenuOKAll=Menü - okay, alle
 CON_MenuOK=Menü: OK
 CON_MenuOK_Desc=Im Menü bestätigen.
+CON_MenuTextComplete=Dialoge: Text vervollständigen
+CON_MenuTextComplete_Desc=Kürzt die Textanimation in Dialogen ab.
 
 CON_NextCrew=Nächster Clonk
 CON_NextCrew_Desc=Auswählen des nächsten Clonks der eigenen Mannschaft. Im Spiel wird die eigene Mannschaft in der Anzeige am oberen Bildschirmrand angezeigt.
