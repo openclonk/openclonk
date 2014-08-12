@@ -714,12 +714,14 @@ static bool FnSetPlayerZoomByViewRange(C4PropList * _this, long plr_idx, long ra
 		C4Player *plr = ::Players.Get(plr_idx);
 		if (!plr) return false;
 		// adjust values in player
+		if (flags & PLRZOOM_LimitMin) plr->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		// set values after setting min/max to ensure old limits don't block new value
 		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
 		{
 			plr->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		}
-		if (flags & PLRZOOM_LimitMin) plr->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+
 	}
 	return true;
 }
@@ -763,12 +765,13 @@ static bool FnSetPlayerZoom(C4PropList * _this, long plr_idx, long zoom, long pr
 		C4Player *plr = ::Players.Get(plr_idx);
 		if (!plr) return false;
 		// adjust values in player
+		if (flags & PLRZOOM_LimitMin) plr->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		if ((flags & PLRZOOM_Set) || !(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
 		{
 			plr->SetZoom(fZoom, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
 		}
-		if (flags & PLRZOOM_LimitMin) plr->SetMinZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
-		if (flags & PLRZOOM_LimitMax) plr->SetMaxZoom(fZoom, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+
 	}
 	return true;
 }
