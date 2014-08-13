@@ -2,12 +2,12 @@
 	Iron Peak
 	A chilly mountain peak filled with iron ore and coal.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 
 // Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 1; // Amount of material available from start.
+static const SCENOPT_Material = 3; // Amount of material available from start.
 static const SCENOPT_MapSize = 1; // Size of the map.
 static const SCENOPT_Difficulty = 1; // Difficulty settings.
 
@@ -16,54 +16,72 @@ static mountain_location;
 
 protected func Initialize()
 {
-	// Goal: Resource extraction, set to ore mining.
-	var goal = CreateObject(Goal_ResourceExtraction);
-	goal->SetResource("Ore");
+	// Goal: Expand your area of influence to secure the ore.
+	var goal = CreateObject(Goal_Expansion);
+	goal->SetExpansionGoal(300 + 100 * SCENOPT_Difficulty);
 	
-	// Goal: Construct flagpole at the top.
-	// TODO: implement this goal.
+	// Second goal: Construct metal.
+	var metal_cnt = 10 + 10 * SCENOPT_Difficulty;
+	goal = CreateObject(Goal_Construction);
+	goal->AddConstruction(Metal, metal_cnt);
+	
+	// Rules: team account and buying at flagpole.
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Find A good location for the players to start.
 	FindMountainLocation();
 	
-	// Cover the mountain in some snow already.
-	GiveMountainSnowCover();
+	// Initialize different parts of the scenario.
+	InitEnvironment();
+	InitVegetation(SCENOPT_MapSize);
+	InitAnimals();
+	InitMaterial(SCENOPT_Material);
+	return;
+}
+
+
+/*-- Player Initialization --*/
+
+protected func InitializePlayer(int plr)
+{ 
+	// Move clonks to location and give them a shovel.
+	var index = 0, crew;
+	while (crew = GetCrew(plr, index))
+	{
+		crew->SetPosition(mountain_location[0], mountain_location[1]);
+		// First clonk can construct, others can mine.
+		if (index == 0)
+		{
+			crew->CreateContents(Hammer);
+			crew->CreateContents(Axe);
+		}
+		else
+		{
+			crew->CreateContents(Shovel);
+			crew->CreateContents(Pickaxe);
+		}
+		if (SCENOPT_Material >= 2)
+			crew->CreateContents(Loam, 2);
+		if (SCENOPT_Material == 3)
+			crew->CreateContents(DynamiteBox);
+		index++;
+	}
 	
-	// Bottom of the map should only be open at the sides.
-	CloseMapBottom();
+	// Harsh zoom range.
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
 	
-	// Add a snow storm effect, strong winds and lot's of snow.
-	AddEffect("SnowStorm", nil, 100, 5, nil);
+	// Give the player basic knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [Ropeladder]);
 	
-	// Create a lorry with necessary equipment to start a settlement.
-	//var lorry = CreateObject(Lorry, mountain_location[0], mountain_location[1], NO_OWNER);
-	//lorry->CreateContents(Wood, 16);
-	//lorry->CreateContents(Metal, 4);
-	//lorry->CreateContents(Dynamite, 3);
-	// TODO: Make sure lorry stays on mountains.
-	
-	// Place some coniferous trees, but only up to 2/3 of the mountain.
-	Tree_Coniferous->Place(16+Random(5), Rectangle(0,LandscapeHeight()/3, LandscapeWidth(), 2*LandscapeHeight()/3));
+	// Give the player the elementary base materials and some tools.
+	GivePlayerElementaryBaseMaterial(plr);
+	GivePlayerToolsBaseMaterial(plr);
 		
-	// Some mushrooms as source of food.
-	Mushroom->Place(30+Random(10));
-		
-	// Set time of day to evening and create some clouds and celestials.
-	Cloud->Place(20);
-	CreateObject(Environment_Celestial);
-	var time = CreateObject(Environment_Time);
-	time->SetTime(60*22);
-	time->SetCycleSpeed(0);
-	
-	// A light blue hue, to indicate the cold climate.
-	var blue = 12;
-	SetGamma(RGB(0,0,blue), RGB(128-blue,128-blue,128+blue), RGB(255-blue,255-blue,255));
-	
-	// Some natural disasters. 
-	// Earthquake->SetChance(30);
-	// TODO: Rockfall.
-	
-	//LogMatCounts();
+	// Set player wealth.
+	SetWealth(plr, 20 + 20 * SCENOPT_Material);
 	return;
 }
 
@@ -91,13 +109,65 @@ private func FindMountainLocation()
 	return;
 }
 
-private func LogMatCounts()
+
+/*-- Scenario Initialization --*/
+
+private func InitEnvironment()
 {
-	for (var i = 0; i < 128; i++)
-	{
-		if (GetMaterialCount(i) > 0)
-			Log("Material %s has %d count.", MaterialName(i), GetMaterialCount(i) / 100);
-	}
+	// Cover the mountain in some snow already.
+	GiveMountainSnowCover();
+	// Add a snow storm effect, strong winds and lot's of snow.
+	AddEffect("SnowStorm", nil, 100, 5, nil);
+	
+	// Set time of day to evening and create some clouds and celestials.
+	Cloud->Place(20);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
+	time->SetTime(60 * 22);
+	time->SetCycleSpeed(0);
+	
+	// A light blue hue, to indicate the cold climate.
+	var blue = 6;
+	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
+	
+	// Some natural disasters. 
+	Earthquake->SetChance(5 + 5 * SCENOPT_Difficulty);
+	// TODO: Rockfall.
+	return;
+}
+
+private func InitVegetation(int map_size)
+{
+	// Place some coniferous trees, but only up to 2/3 of the mountain.
+	Tree_Coniferous->Place(16 + Random(5), Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), 2 * LandscapeHeight() / 3));
+	// Also some cave mushrooms as a source of wood.
+	LargeCaveMushroom->Place(5 + 2 * map_size + Random(5), nil, { terraform = false });
+
+	// Some mushrooms as source of food.
+	Mushroom->Place(30 + Random(10));
+	
+	// Some objects in the earth.	
+	PlaceObjects(Rock, 10 + 10 * map_size + Random(10),"Earth");
+	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
+	PlaceObjects(Loam, 20 + 10 * map_size + Random(5), "Earth");
+	return;
+}
+
+private func InitAnimals()
+{
+	return;
+}
+
+private func InitMaterial(int amount)
+{
+	// An abandoned lorry somewhere close to the highest point of the peak.
+	var lorry = CreateObject(Lorry, LandscapeWidth() / 2, FindHeight(LandscapeWidth() / 2));
+	lorry->CreateContents(Pickaxe, 2);
+	lorry->CreateContents(Shovel, 2);
+	lorry->CreateContents(Bread, 2 * amount);
+	lorry->CreateContents(Dynamite, 2 * amount);
+	lorry->CreateContents(DynamiteBox, amount);	
+	lorry->CreateContents(Ropeladder, amount);	
 	return;
 }
 
@@ -113,15 +183,6 @@ private func GiveMountainSnowCover()
 		if (y < 9 * LandscapeHeight() / 10)
 			CastPXS("Snow", 10 + Random(50), 40, x, y - 40, 180, 40);
 	}
-	return;
-}
-
-private func CloseMapBottom()
-{
-	var y = LandscapeHeight() - 1;
-	for (var x = 0; x < LandscapeWidth(); x++)
-		if (!GBackSky(x, y))
-			DrawMaterialQuad("Brick", x, y-1, x, y+1, x-1, y+1, x-1, y-1, true);
 	return;
 }
 
@@ -152,29 +213,14 @@ global func FxSnowStormTimer(object target, proplist effect)
 	return 1;
 }
 
-protected func InitializePlayer(int plr)
-{ 
-	// Move clonks to location and give them a shovel.
-	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+/*-- Some helper functions --*/
+
+global func LogMatCounts()
+{
+	for (var i = 0; i < 128; i++)
 	{
-		crew->SetPosition(mountain_location[0], mountain_location[1]);
-		// First clonk can construct, others can mine.
-		if (index == 0)
-		{
-			crew->CreateContents(Hammer);
-			crew->CreateContents(Axe);
-			crew->CreateContents(Dynamite, 2);
-		}
-		else
-		{
-			crew->CreateContents(Shovel);
-			crew->CreateContents(Pickaxe);
-			crew->CreateContents(Dynamite, 2);
-		}
-		index++;
+		if (GetMaterialCount(i) > 0)
+			Log("Material %s has %d count.", MaterialName(i), GetMaterialCount(i) / 100);
 	}
-	SetPlayerZoomByViewRange(plr, 5000, 3500, PLRZOOM_LimitMax);
 	return;
 }
-

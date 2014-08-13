@@ -9,7 +9,6 @@ Vertices=6
 VertexX=0,-64,58,-64,59,  0
 VertexY=53,53,53,  3, 3,-17
 VertexFriction=100,100,100,50,50,50
-Value=200
 Mass=4500
 Components=Wood=12;Metal=6
 Exclusive=1

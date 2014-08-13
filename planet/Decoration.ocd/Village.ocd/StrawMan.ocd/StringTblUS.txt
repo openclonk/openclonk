@@ -1,0 +1,2 @@
+Name=Straw man
+Description=Straw puppet that may scare birds from your fields.

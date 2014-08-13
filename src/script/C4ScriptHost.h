@@ -33,6 +33,7 @@ public:
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
+	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
@@ -48,8 +49,8 @@ protected:
 	virtual void UnLink(); // reset to unlinked state
 
 
-	std::list<C4ID> Includes; // include list
-	std::list<C4ID> Appends; // append list
+	std::list<StdCopyStrBuf> Includes; // include list
+	std::list<StdCopyStrBuf> Appends; // append list
 
 	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
@@ -106,6 +107,7 @@ public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);

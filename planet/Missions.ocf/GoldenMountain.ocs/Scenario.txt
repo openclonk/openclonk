@@ -14,27 +14,27 @@ ValueOverloads=Ruby=5;Amethyst=5;
 
 [Player1]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;JarOfWinds=1;Shovel=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
-HomeBaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
-HomeBaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;Pump=1;Basement=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;WindBag=1;Shovel=1;Pipe=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
+BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
 
 [Player2]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;JarOfWinds=1;Shovel=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
-HomeBaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
-HomeBaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;Pump=1;Basement=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;WindBag=1;Shovel=1;Pipe=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
+BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
 
 [Player3]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;JarOfWinds=1;Shovel=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
-HomeBaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
-HomeBaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;Pump=1;Basement=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;WindBag=1;Shovel=1;Pipe=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
+BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
 
 [Player4]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;JarOfWinds=1;Shovel=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
-HomeBaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
-HomeBaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;SteamEngine=1;Compensator=1;Sawmill=1;ChemicalLab=1;InventorsLab=1;Elevator=1;ToolsWorkshop=1;Pump=1;Basement=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Dynamite=1;Hammer=1;WindBag=1;Shovel=1;Pipe=1;TeleGlove=1;GrappleBow=1;Ropeladder=1;Catapult=1;Pickaxe=1;DynamiteBox=1;
+BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
+BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50;
 
 [Landscape]
 Sky=Clouds1

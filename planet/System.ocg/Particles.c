@@ -186,7 +186,7 @@ global func Particles_SmokeTrail()
 		ForceX = PV_Wind(20),
 		DampingX = 950, DampingY = 950,
 		Alpha = PV_Linear(128, 0),
-		Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(10, 30), 1000, PV_Random(25, 35))
+		Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(3, 10), 1000, PV_Random(8, 11))
 	};
 }
 

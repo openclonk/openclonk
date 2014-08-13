@@ -28,8 +28,6 @@
 #include "C4PXS.h"
 #include "C4Record.h"
 #include "C4RoundResults.h"
-#include "CSurface8.h"
-#include "C4MapScript.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. It also instantiates global variables required by mape that are
@@ -66,8 +64,6 @@ bool C4Reloc::Open(C4Group&, char const*) const {return false;}
 
 bool C4Draw::TextOut(const char *, CStdFont &, float, C4Surface *, float, float, DWORD, BYTE, bool) { return false; }
 
-CSurface8::CSurface8(int, int) {}
-
 C4Facet::C4Facet() {}
 void C4Facet::Set(C4Surface*, float, float, float, float) {}
 int32_t C4Facet::GetSectionCount() { return 0; }
@@ -98,14 +94,13 @@ void C4IDList::CompileFunc(StdCompiler *, bool) {}
 C4IDListChunk::C4IDListChunk() {}
 C4IDListChunk::~C4IDListChunk() {}
 
+C4Shape::C4Shape() {}
+C4DefGraphics::C4DefGraphics(C4Def*) {}
+void C4DefGraphics::Clear() {}
+
 void C4Def::IncludeDefinition(C4Def*) {}
 
-C4DefList::C4DefList() {}
-C4DefList::~C4DefList() {}
-C4Def* C4DefList::ID2Def(C4ID) {return NULL;}
 void C4DefList::Draw(C4ID, C4Facet &, bool, int32_t) {}
-C4Def * C4DefList::GetDef(int) {return 0;}
-int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
@@ -198,11 +193,3 @@ C4Game::~C4Game() {}
 
 C4AulDebug *C4AulDebug::pDebug;
 void C4AulDebug::DebugStep(C4AulBCC*, C4Value*) {}
-
-C4MapScriptHost MapScript;
-C4MapScriptHost::C4MapScriptHost() {}
-C4MapScriptHost::~C4MapScriptHost() {}
-void C4MapScriptHost::Clear() {}
-C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
-bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
-void C4MapScriptHost::AddEngineFunctions() {}

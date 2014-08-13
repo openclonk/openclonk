@@ -38,7 +38,7 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 	C4GUI::ComponentAligner caMain(rcClient, 0,0, true);
 	C4GUI::ComponentAligner caButtons(caMain.GetFromBottom(caMain.GetHeight()*1/8), 0,0, false);
 	C4GUI::CallbackButton<C4StartupAboutDlg> *btn;
-#ifdef HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	AddElement(new C4GUI::Label("Using FMOD Sound System, copyright (c) Firelight Technologies Pty, Ltd., 1994-2010.",
 		caMain.GetFromBottom(rUseFont.GetLineHeight())));
 #endif

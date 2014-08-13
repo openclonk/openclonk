@@ -48,6 +48,7 @@ public:
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
 	C4Def *GetByPath(const char *szPath);
+	C4Def *GetByName(const StdStrBuf &);
 	int32_t GetDefCount();
 	int32_t GetIndex(C4ID id);
 	int32_t RemoveTemporary();

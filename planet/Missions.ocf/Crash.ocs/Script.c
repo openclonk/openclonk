@@ -30,7 +30,7 @@ func DoInit(int first_player)
 	CreateObject(Rule_TeamAccount, 50, 50);
 	
 	// NPC: Merchant.
-	var merchant = CreateObject(Clonk, 170, 870);
+	var merchant = CreateObject(Clonk, 76, 870);
 	merchant->MakeInvincible();
 	merchant->MakeNonFlammable();
 	merchant->SetSkin(1);
@@ -38,7 +38,7 @@ func DoInit(int first_player)
 	merchant->SetColor(RGB(55, 65, 75));
 	merchant->SetDir(DIR_Left);
 	merchant->SetObjectLayer(merchant);
-	merchant->SetDialogue("Merchant");
+	merchant->SetDialogue("Merchant", true);
 	return true;
 }
 

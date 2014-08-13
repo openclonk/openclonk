@@ -125,10 +125,10 @@ bool C4MaterialShape::Load(C4Group &group, const char *filename)
 			{
 				min = max = *j;
 			}
-			if (j ->x<- overlap_left     ) overlap_left   =- j ->x;
-			if (j ->y<- overlap_top      ) overlap_top    =- j ->y;
-			if (j ->x> wdt+overlap_right ) overlap_right  =  j ->x- wdt;
-			if (j ->y> hgt+overlap_bottom) overlap_bottom =  j ->y- hgt;
+			if (j ->x<- overlap_left     ) overlap_left   = -j->x;
+			if (j ->y<- overlap_top      ) overlap_top    = -j->y;
+			if (j ->x> wdt+overlap_right ) overlap_right  =  j->x - wdt;
+			if (j ->y> hgt+overlap_bottom) overlap_bottom =  j->y - hgt;
 		}
 		center.x /= n; center.y /= n;
 		i->center = center; i->min = min; i->max = max;
@@ -265,6 +265,7 @@ void C4MaterialCore::Clear()
 	TempConvStrength = 0;
 	MinHeightCount = 0;
 	SplashRate=10;
+	KeepSinglePixels=false;
 }
 
 void C4MaterialCore::Default()
@@ -364,6 +365,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	                                                "BelowTempConvertTo",  ""));
 	pComp->Value(mkNamingAdapt(MinHeightCount,      "MinHeightCount",      0));
 	pComp->Value(mkNamingAdapt(SplashRate,          "SplashRate",          10));
+	pComp->Value(mkNamingAdapt(KeepSinglePixels,    "KeepSinglePixels",    false));
 	pComp->NameEnd();
 	// material reactions
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(CustomReactionList),
@@ -585,9 +587,12 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 			{
 				// single material target
 				if (pReact->fInverseSpec)
-					for (int32_t cnt2=-1; cnt2<Num; cnt2++) if (cnt2!=tmat) SetMatReaction(cnt, cnt2, pReact);
+					for (int32_t cnt2=-1; cnt2<Num; cnt2++) {
+						if (cnt2!=tmat)
+							SetMatReaction(cnt, cnt2, pReact);
 						else
 							SetMatReaction(cnt, tmat, pReact);
+					}
 			}
 			else if (SEqualNoCase(pReact->TargetSpec.getData(), "All"))
 			{

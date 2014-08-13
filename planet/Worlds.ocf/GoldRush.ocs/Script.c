@@ -2,7 +2,7 @@
 	Gold Rush
 	A simple landscape with some gold, the goal is to mine some gold to gain wealth.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 
@@ -24,6 +24,11 @@ protected func Initialize()
 	var goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(wealth_goal);
 	
+	// Second goal: Construct golden statue, amount depends on difficulty.
+	var statue_cnt = SCENOPT_Difficulty;
+	goal = CreateObject(Goal_Construction);
+	goal->AddConstruction(Idol, statue_cnt);
+	
 	// Initialize different parts of the scenario.
 	InitEnvironment();
 	InitVegetation();
@@ -32,6 +37,9 @@ protected func Initialize()
 	
 	return;
 }
+
+
+/*-- Player Initialization --*/
 
 protected func InitializePlayer(int plr)
 { 
@@ -49,6 +57,14 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		index++;
 	}
+	
+	// Give the player basic knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [Idol]);
+	
+	// Give the player the elementary base materials and some tools.
+	GivePlayerElementaryBaseMaterial(plr);
+	GivePlayerToolsBaseMaterial(plr);
 		
 	// Claim ownership of structures, last player who joins owns all the main island flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))
@@ -56,6 +72,9 @@ protected func InitializePlayer(int plr)
 	
 	return;
 }
+
+
+/*-- Scenario Initialization --*/
 
 private func InitEnvironment()
 {

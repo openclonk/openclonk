@@ -1,0 +1,12 @@
+[DefCore]
+id=Ruin_ChemicalLab
+Version=5,4,0,0
+Category=C4D_Structure
+Width=50
+Height=52
+Offset=-25,-26
+Vertices=6
+VertexX=-1,10,20,-23,-23,0
+VertexY=-17,-25,-14,25,25,25
+VertexFriction=50,50,50,100,100,100
+Mass=500

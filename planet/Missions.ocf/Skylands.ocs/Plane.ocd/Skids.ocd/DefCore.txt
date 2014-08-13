@@ -10,7 +10,6 @@ VertexX=-12,8,-6,8
 VertexY=1,1,7,7
 VertexCNAT=5,6,9,10
 VertexFriction=80,80,10,10
-Value=20
 Mass=20
 Components=Metal=2;
 Rotate=1

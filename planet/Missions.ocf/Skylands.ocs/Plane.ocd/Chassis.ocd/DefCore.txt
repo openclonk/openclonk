@@ -10,7 +10,6 @@ Vertices=6
 VertexX=-22,-22,0,0,20,20
 VertexY=7,-7,7,-7,-8,1
 VertexFriction=30,60,30,60,60,30
-Value=40
 Mass=100
 Components=Wood=3;Metal=2;
 Rotate=1

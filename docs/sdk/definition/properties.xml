@@ -135,6 +135,11 @@ Stand = {
           <col>int</col>
           <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it. Use 1-399 for stuff behind Clonks, 401-999 for stuff before Clonks, and 1000+ for GUI objects.</col>
         </row>
+        <row id="SolidMaskPlane">
+          <col><code>SolidMaskPlane</code></col>
+          <col>int</col>
+          <col>If the object moves and other objects are attached to its SolidMask, only objects in front of this plane are moved along with it. Defaults to Plane if zero.</col>
+        </row>
 		<row>
           <literal_col>Placement</literal_col>
           <col>Integer</col>

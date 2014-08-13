@@ -1,0 +1,4 @@
+Name=Schatzsuche
+MsgSideGoal=Sekundärziel: %d von %d Goldbarren gefunden.
+MsgGoalFulfilled=Schatz gefunden und verkauft :-)
+MsgGoalUnFulfilled=Schatz noch nicht gefunden und verkauft :-(

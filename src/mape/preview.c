@@ -54,7 +54,11 @@ void mape_pre_view_update(MapePreView* view,
 {
 	/* TODO: Unref old pixbuf */
 	/* TODO: ref new pixbuf? */
-	gtk_image_set_from_pixbuf(GTK_IMAGE(view->image), pixbuf);	
+	gtk_image_set_from_pixbuf(GTK_IMAGE(view->image), pixbuf);
+
+	/* Update size from image, in case Map.c specifies different map dimensions */
+	if(pixbuf != NULL)
+		gtk_widget_set_size_request(view->image, gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf));
 }
 
 void mape_pre_view_apply_preferences(MapePreView* view,

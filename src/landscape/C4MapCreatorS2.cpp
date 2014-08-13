@@ -1129,7 +1129,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 				else if (SEqual(CurrTokenIdtf, C4MC_Point) && !pToNode->GetNodeByName(CurrTokenIdtf))
 				{
 					// only in overlays
-					if (!pToNode->Type() == MCN_Overlay)
+					if (!pToNode->Overlay())
 						throw C4MCParserErr(this, C4MCErr_PointOnlyOvl);
 					// create point node, using default template
 					pNewNode = new C4MCPoint(this, pToNode, MapCreator->DefaultPoint, false);

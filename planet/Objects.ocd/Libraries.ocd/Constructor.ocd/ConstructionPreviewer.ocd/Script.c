@@ -5,7 +5,11 @@
 	@author Clonkonaut
 */
 
-local dimension_x, dimension_y, clonk, structure, direction, stick_to;
+static const CONSTRUCTION_STICK_Left = 1;
+static const CONSTRUCTION_STICK_Right = 2;
+static const CONSTRUCTION_STICK_Bottom = 4;
+
+local dimension_x, dimension_y, clonk, structure, direction, stick_to, blocked;
 local GFX_StructureOverlay = 1;
 local GFX_CombineIconOverlay = 2;
 
@@ -26,52 +30,54 @@ func Set(id to_construct, object constructing_clonk)
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;
-	this->AdjustPreview();
+	blocked = true;
+	AdjustPreview(structure->~IsBelowSurfaceConstruction());
+	return;
 }
 
 // Positions the preview according to the landscape, coloring it green, yellow or red
-func AdjustPreview(bool look_up, bool no_call)
+func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 {
 	var half_y = dimension_y / 2;
+	blocked = false;
 	// Do only if not sticking to another object
 	if (!stick_to)
 	{
 		// Place on material
 		var search_dir = 1;
 		if (look_up) search_dir = -1;
-		var x = 0, y = 0, fail = false;
-		while(!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
+		var x = 0, y = 0;
+		while (!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
 		{
 			y += search_dir;
-			if (Abs(y) > dimension_y/2)
+			if (Abs(y) > half_y)
 			{
-				fail = true;
+				blocked = true;
 				break;
 			}
 		}
-		if (fail && !no_call)
-			return this->AdjustPreview(!look_up, true);
-		if (fail)
+
+		if (blocked && !no_call)
+			return AdjustPreview(below_surface, !look_up, true);
+		if (blocked)
 			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
-		SetPosition(GetX(), GetY() + y);
+		// Position depends on whether the object should below surface.
+		if (!below_surface)
+			SetPosition(GetX(), GetY() + y);
+		else
+			SetPosition(GetX(), GetY() + y + dimension_y + 1);
 	}
-	if (!CheckConstructionSite(structure, 0, half_y))
-		fail = true;
-	else
+	// Check for construction site.
+	if (!below_surface && !CheckConstructionSite(structure, 0, half_y))
+		blocked = true;
 	// intersection-check with all other construction sites... bah
-	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if(!(other_site->GetLeftEdge()   > GetX()+dimension_x/2  ||
-		     other_site->GetRightEdge()  < GetX()-dimension_x/2  ||
-		     other_site->GetTopEdge()    > GetY()+half_y  ||
-		     other_site->GetBottomEdge() < GetY()-half_y))
-			{
-				fail = true;
-			} 
+		if (!(other_site->GetLeftEdge() > GetX()+dimension_x/2 || other_site->GetRightEdge() < GetX()-dimension_x/2 || other_site->GetTopEdge() < GetY()+half_y || other_site->GetBottomEdge() > GetY()-half_y))
+			blocked = true;
 	}
 	
-	
-	if(!fail)
+	if(!blocked)
 	{
 		if (!stick_to)
 			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);
@@ -88,6 +94,7 @@ func Reposition(int x, int y)
 {
 	x = BoundBy(x, -dimension_x/2, dimension_x/2);
 	y = BoundBy(y, -dimension_y/2, dimension_y/2);
+	// Try to combine the structure with other structures.
 	var found = false;
 	if (structure->~ConstructionCombineWith())
 	{
@@ -99,11 +106,16 @@ func Reposition(int x, int y)
 		                              Find_NoContainer());
 		if (other)
 		{
-			if (other->GetX() < GetX())
-				x = other->GetX() + other->GetObjWidth()/2 + dimension_x / 2;
-			else
-				x = other->GetX() - other->GetObjWidth()/2 - dimension_x / 2;
+			var stick_dir = structure->~ConstructionCombineDirection();
+			x = other->GetX();
 			y = other->GetY();
+			// Combine to different directions.
+			if ((stick_dir & CONSTRUCTION_STICK_Left) && other->GetX() >= GetX())
+				x = other->GetX() - other->GetObjWidth()/2 - dimension_x / 2;
+			if ((stick_dir & CONSTRUCTION_STICK_Right) && other->GetX() < GetX())
+				x = other->GetX() + other->GetObjWidth()/2 + dimension_x / 2;
+			if ((stick_dir & CONSTRUCTION_STICK_Bottom))
+				y = other->GetY() + other->GetObjHeight()/2 + dimension_y / 2;
 			stick_to = other;
 			found = true;
 		}
@@ -118,15 +130,19 @@ func Reposition(int x, int y)
 	{
 		stick_to = nil;
 		SetGraphics(nil, nil, GFX_CombineIconOverlay);
-	} else if (stick_to) {
+	} 
+	else if (stick_to) 
+	{
 		SetGraphics(nil, ConstructionPreviewer_IconCombine, GFX_CombineIconOverlay, GFXOV_MODE_Base);
 		var dir = 1;
 		if (stick_to->GetX() < GetX()) dir = -1;
+		if (structure->~CombineToBottom())
+			dir = 0;
 		SetObjDrawTransform(1000, 0, dimension_x/2 * 1000 * dir, 0, 1000, 0, GFX_CombineIconOverlay);
 	}
 
 	SetPosition(x, y);
-	this->AdjustPreview();
+	AdjustPreview(structure->~IsBelowSurfaceConstruction());
 }
 
 // Flips the preview horizontally

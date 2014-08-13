@@ -125,41 +125,70 @@ int main()
 #include <execinfo.h>
 #endif
 
-static void crash_handler(int signo)
+static void crash_handler(int signo, siginfo_t * si, void *)
 {
-	int logfd = STDERR_FILENO;
-	for (;;)
+	static unsigned signal_count = 0;
+	++signal_count;
+	switch (signo)
 	{
-		// Print out the signal
-		write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
-		switch (signo)
+	case SIGINT: case SIGTERM: case SIGHUP:
+		if (signal_count < 2) {
+			Application.Quit();
+			break;
+		} // else/fallthrough
+	default:
+		int logfd = STDERR_FILENO;
+		for (;;)
 		{
-		case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
-		case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
-		case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
-		case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
-		case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
-		case SIGQUIT: write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
-		case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
-		case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			// Print out the signal
+			write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
+			switch (signo)
+			{
+			case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
+			case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
+			case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
+			case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
+			case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
+			case SIGHUP:  write(logfd, "SIGHUP", sizeof ("SIGHUP") - 1); break;
+			case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
+			case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			}
+			char hex[sizeof(void *) * 2];
+			int i; intptr_t x = reinterpret_cast<intptr_t>(si->si_addr);
+			switch (signo)
+			{
+			case SIGILL: case SIGFPE: case SIGSEGV: case SIGBUS: case SIGTRAP:
+				write(logfd, " (0x", sizeof (" (0x") - 1);
+				for (int i = sizeof(void *) * 2 - 1; i >= 0; --i)
+				{
+					if ((x & 0xf) > 9)
+						hex[i] = 'a' + (x & 0xf) - 9;
+					else
+						hex[i] = '0' + (x & 0xf);
+					x >>= 4;
+				}
+				write(logfd, hex, sizeof (hex));
+				write(logfd, ")", sizeof (")") - 1);
+				break;
+			}
+			write(logfd, "\n", sizeof ("\n") - 1);
+			if (logfd == STDERR_FILENO) logfd = GetLogFD();
+			else break;
+			if (logfd < 0) break;
 		}
-		write(logfd, "\n", sizeof ("\n") - 1);
-		if (logfd == STDERR_FILENO) logfd = GetLogFD();
-		else break;
-		if (logfd < 0) break;
-	}
 #ifdef HAVE_EXECINFO_H
-	// Get the backtrace
-	void *stack[100];
-	int count = backtrace(stack, 100);
-	// Print it out
-	backtrace_symbols_fd (stack, count, STDERR_FILENO);
-	// Also to the log file
-	if (logfd >= 0)
-		backtrace_symbols_fd (stack, count, logfd);
+		// Get the backtrace
+		void *stack[100];
+		int count = backtrace(stack, 100);
+		// Print it out
+		backtrace_symbols_fd (stack, count, STDERR_FILENO);
+		// Also to the log file
+		if (logfd >= 0)
+			backtrace_symbols_fd (stack, count, logfd);
 #endif
-	// Bye.
-	_exit(C4XRV_Failure);
+		// Bye.
+		_exit(C4XRV_Failure);
+	}
 }
 #endif // HAVE_SIGNAL_H
 
@@ -181,15 +210,21 @@ int main (int argc, char * argv[])
 		return C4XRV_Failure;
 	}
 #ifdef HAVE_SIGNAL_H
+	struct sigaction sa;
+	sa.sa_sigaction = crash_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+	// Quit the program when asked
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
+	sigaction(SIGHUP, &sa, NULL);
 	// Set up debugging facilities
-	signal(SIGBUS, crash_handler);
-	signal(SIGILL, crash_handler);
-	signal(SIGSEGV, crash_handler);
-	signal(SIGABRT, crash_handler);
-	signal(SIGINT, crash_handler);
-	signal(SIGQUIT, crash_handler);
-	signal(SIGFPE, crash_handler);
-	signal(SIGTERM, crash_handler);
+	sa.sa_flags |= SA_RESETHAND;
+	sigaction(SIGBUS, &sa, NULL);
+	sigaction(SIGILL, &sa, NULL);
+	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGABRT, &sa, NULL);
+	sigaction(SIGFPE, &sa, NULL);
 #endif
 
 	// Init application

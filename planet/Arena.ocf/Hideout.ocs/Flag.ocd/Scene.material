@@ -36,7 +36,7 @@ material FlagRight
 			scene_blend alpha_blend
 			texture_unit
 			{
-				texture FlagAmetyst.png
+				texture FlagAmethyst.png
 				tex_address_mode wrap
 				filtering trilinear
 			}

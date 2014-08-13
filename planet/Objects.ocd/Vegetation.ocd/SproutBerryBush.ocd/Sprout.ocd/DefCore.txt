@@ -9,7 +9,6 @@ Vertices=1
 VertexX=0
 VertexY=0
 VertexFriction=20
-Value=5
 Mass=50
 Components=Wood=1
 Rotate=1

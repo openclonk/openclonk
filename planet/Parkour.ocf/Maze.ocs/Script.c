@@ -29,10 +29,10 @@ func LaunchPlayer(int plr)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
 		for (var tool in [Pickaxe, GrappleBow, SprayCan])
-			if (obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer()))
-				obj->Enter(crew);
-			else
-				crew->CreateContents(tool);
+		{
+			if (obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer())) obj->RemoveObject();
+			crew->CreateContents(tool);
+		}
 		crew->CreateContents(Loam,2);
 		crew->CreateContents(Dynamite,2);
 	}
@@ -74,7 +74,7 @@ func CreateBonus(int x, int y, int value)
 			if (Random(value) > 90) obj->CreateContents(Shovel);
 			if (Random(value) > 90) obj->CreateContents(WindBag);
 			if (Random(value) > 90) obj->CreateContents(TeleGlove);
-			if (Random(value) > 90) obj->CreateContents(Sword);
+			if (Random(value) > 90) obj->CreateContents(Club);
 			if (Random(value) > 5) obj->CreateContents(Loam, 1+Random(2));
 			if (Random(value) > 5) obj->CreateContents(Dynamite, 1+Random(2));
 			if (Random(value) > 25) obj->CreateContents(DynamiteBox, 1+Random(2));

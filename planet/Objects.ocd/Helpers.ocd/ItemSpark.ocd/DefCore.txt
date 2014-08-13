@@ -1,6 +1,5 @@
 [DefCore]
 id=ItemSpark
-Value=0
 Category=C4D_Vehicle
 Width=1
 Height=1

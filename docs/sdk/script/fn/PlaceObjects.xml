@@ -25,7 +25,7 @@
           <type>string</type>
           <name>material_name</name>
           <desc>
-            Material in which object are to be created. This can be a material number or a string as follows: 
+            Material in which object are to be created. This can be a material name or a string as follows: 
             <table>
               <rowh>
                 <col>material_index</col>
@@ -93,7 +93,7 @@
     <remark>If there is only very little of the target material present in the landscape, placement calculation will take longer.<br/>However, endless retry loops are avoided.</remark>
     <examples>
       <example>
-        <code>PlaceObjects(Loam,20,<funclink>Material</funclink>(&quot;Earth&quot;),100,0,200)</code>
+        <code>PlaceObjects(Loam,20,&quot;Earth&quot;,100,0,200)</code>
         <text>Create 20 chunks of loam in earth within the coordinates 100,0 and 200,LandscapeHeight().</text>
       </example>
       <example>

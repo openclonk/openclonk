@@ -21,6 +21,10 @@
 #include "mape/mapgen.h"
 
 /* Declare private API */
+C4GroupHandle*
+_mape_group_get_handle(MapeGroup* group);
+
+
 C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map);
 
@@ -97,11 +101,73 @@ static void mape_mapgen_read_color(guint8* dest,
  */
 
 /**
+ * mape_mapgen_init:
+ * @error: Location to store error information, if any.
+ *
+ * Initializes the map generator.
+ *
+ * Returns: %TRUE on success or %FALSE on error.
+ */
+gboolean
+mape_mapgen_init(GError** error)
+{
+  c4_mapgen_handle_init_script_engine();
+  return TRUE;
+}
+
+/**
+ * mape_mapgen_deinit():
+ *
+ * Deinitializes the map generator.
+ */
+void
+mape_mapgen_deinit()
+{
+  c4_mapgen_handle_deinit_script_engine();
+}
+
+/**
+ * mape_mapgen_set_root_group:
+ * @group: The root group.
+ *
+ * Sets the root group for the map generator. This group is used to lookup the
+ * Library_Map definition.
+ */
+void
+mape_mapgen_set_root_group(MapeGroup* group)
+{
+  MapeGroup* objects;
+  MapeGroup* libraries;
+  MapeGroup* map;
+  GError* error;
+
+  error = NULL;
+  if(!error)
+    objects = mape_group_open_child(group, "Objects.ocd", &error);
+  if(!error)
+    libraries = mape_group_open_child(objects, "Libraries.ocd", &error);
+  if(!error)
+    map = mape_group_open_child(libraries, "Map.ocd", &error);
+
+  /* TODO: Error reporting? */
+  if(error == NULL)
+    c4_mapgen_handle_set_map_library(_mape_group_get_handle(map));
+
+  if(error != NULL)
+  {
+    fprintf(stderr, "Failed to load Objects.ocd/Libraries.ocd/Map.ocd/Script.c: %s\n", error->message);
+    g_error_free(error);
+  }
+}
+
+/**
  * mape_mapgen_render:
  *
  * @filename: The filename of the file that is being parsed. This is only used
  * for display purposes.
  * @source: The map generator source code for the map to generate.
+ * @type: Specifies how the text in @source should be interpreted. Must not be
+ * #MAPE_MAPGEN_NONE.
  * @script_path: Path to the script source for algo=script overlays, or %NULL.
  * @material_map: The material map containing the materials to be used during
  * map generation.
@@ -128,6 +194,7 @@ static void mape_mapgen_read_color(guint8* dest,
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,
+                   MapeMapgenType type,
                    const gchar* script_path,
                    MapeMaterialMap* material_map,
                    MapeTextureMap* texture_map,
@@ -149,15 +216,36 @@ mape_mapgen_render(const gchar* filename,
   unsigned int x, y;
   unsigned int matnum;
 
-  handle = c4_mapgen_handle_new(
-    filename,
-    source,
-    script_path,
-    _mape_material_map_get_handle(material_map),
-    _mape_texture_map_get_handle(texture_map),
-    width,
-    height
-  );
+  switch(type)
+  {
+  case MAPE_MAPGEN_LANDSCAPE_TXT:
+    handle = c4_mapgen_handle_new(
+      filename,
+      source,
+      script_path,
+      _mape_material_map_get_handle(material_map),
+      _mape_texture_map_get_handle(texture_map),
+      width,
+      height
+    );
+
+    break;
+  case MAPE_MAPGEN_MAP_C:
+    handle = c4_mapgen_handle_new_script(
+      filename,
+      source,
+      _mape_material_map_get_handle(material_map),
+      _mape_texture_map_get_handle(texture_map),
+      width,
+      height
+    );
+
+    break;
+  default:
+    handle = NULL;
+    g_assert_not_reached();
+    break;
+  }
 
   error_message = c4_mapgen_handle_get_error(handle);
   if(error_message)

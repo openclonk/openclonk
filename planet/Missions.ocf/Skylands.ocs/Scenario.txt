@@ -13,31 +13,34 @@ ValueOverloads=Nugget=10;GoldBar=50;
 [Player1]
 Wealth=50,0,0,250
 Crew=Clonk=2
-Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1
-HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
-HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Basement=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1
+BaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+BaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
 
 [Player2]
 Wealth=50,0,0,250
 Crew=Clonk=2
-Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
-HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Basement=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1
+BaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+BaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
 
 [Player3]
 Wealth=50,0,0,250
 Crew=Clonk=2
-Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
-HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Basement=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1
+BaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+BaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
 
 [Player4]
 Wealth=50,0,0,250
 Crew=Clonk=2
-Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
-HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+Knowledge=Plane_Engine=1;Scaffold=1;Foundry=1;ToolsWorkshop=1;ChemicalLab=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Basement=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Pump=1
+BaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
+BaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5;Firestone=5
 
 [Landscape]
 Sky=Clouds2
-BottomOpen=true
+BottomOpen=1
 MapWidth=100,0,64,10000
 MapHeight=200,0,40,10000
 NewStyleLandscape=2

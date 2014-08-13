@@ -348,6 +348,7 @@ enum C4PropertyName
 	P_Blasted,				// unused?
 	P_IncineratingObj,		// unused?
 	P_Plane,
+	P_SolidMaskPlane,
 	P_Tooltip,
 	P_Placement,
 	P_BlastIncinerate,
@@ -402,6 +403,8 @@ enum C4PropertyName
 	P_OnCollision,
 	P_Distance,
 	P_Smoke,
+	P_Source,
+	P_Color,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

@@ -1,35 +1,41 @@
-/* Ruby cave */
+/** 
+	Ruby Cave
 
-func Initialize()
+	@author Sven2	
+*/
+
+
+protected func Initialize()
 {
 	// Goal
-	var goal = FindObject(Find_ID(Goal_SellGems));
-	if (!goal) goal = CreateObject(Goal_SellGems);
+	var goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(10);
 	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	// Mushrooms before any earth materials, because they create their own caves
-	LargeCaveMushroom->Place(15, Rectangle(400,0,800,200));
+	LargeCaveMushroom->Place(15, Rectangle(400, 0, 800, 200));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting
 	PlaceBatches([Firestone], 3, 100, 5);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
 	// Misc vegetation
-	SproutBerryBush->Place(5, Rectangle(350,0,850,250));
-	Mushroom->Place(5, Rectangle(350,0,850,250));
+	SproutBerryBush->Place(5, Rectangle(350, 0, 850, 250));
+	Mushroom->Place(5, Rectangle(350, 0, 850, 250));
 	// Sky
-	SetSkyParallax(1, 20,20, 0,0, nil, nil);
+	SetSkyParallax(1, 20, 20, 0, 0, nil, nil);
 	return true;
 }
 
+
+/*-- Player Initialization --*/
+
 static g_was_player_init;
 
-func InitializePlayer(int plr)
+protected func InitializePlayer(int plr)
 {
-	// Harsh zoom range
-	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,500,350,flag);
+	// Harsh zoom range.
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 	// First player init base
 	if (!g_was_player_init)
@@ -38,21 +44,30 @@ func InitializePlayer(int plr)
 		g_was_player_init = true;
 	}
 	// Position and materials
-	var i, crew;
-	for (i=0; crew=GetCrew(plr,i); ++i)
+	var crew;
+	for (var i = 0; crew = GetCrew(plr, i); ++i)
 	{
-		crew->SetPosition(100+Random(80), 192-10);
+		crew->SetPosition(100 + Random(80), 192 - 10);
 		crew->CreateContents(Shovel);
 		if (!i)
 		{
 			crew->CreateContents(Hammer);
 		}
-		else if (i==1)
+		else if (i == 1)
 		{
 			crew->CreateContents(Axe);
 		}
 	}
-	return true;
+	
+	// Give the player basic and pumping knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerPumpingKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [WallKit, WindBag, TeleGlove]);
+	
+	// Give the player the elementary base materials.
+	GivePlayerElementaryBaseMaterial(plr);
+	
+	return;
 }
 
 private func InitBase(int owner)
@@ -66,22 +81,25 @@ private func InitBase(int owner)
 		workshop->CreateContents(Metal, 1);
 		workshop->CreateContents(Pipe, 2);
 	}
-	var windgenerator = CreateObject(WindGenerator, 150,y, owner);
-	var flag = CreateObject(Flagpole, 180,y, owner);
-	var foundry = CreateObject(Foundry, 220,y, owner);
+	var windgenerator = CreateObject(WindGenerator, 150, y, owner);
+	var flag = CreateObject(Flagpole, 180, y, owner);
+	var foundry = CreateObject(Foundry, 220, y, owner);
 	if (foundry)
 	{
 		foundry->CreateContents(Coal, 3);
 		foundry->CreateContents(Metal, 2);
 	}
-	var chest = CreateObject(Chest, 260,y, owner);
+	var chest = CreateObject(Chest, 260, y, owner);
 	if (chest)
 	{
 		chest->CreateContents(DynamiteBox, 1);
 		chest->CreateContents(Dynamite, 2);
 	}
-	return true;
+	return;
 }
+
+
+/*-- Scenario Initialization --*/
 
 private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int n_batches)
 {

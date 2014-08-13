@@ -221,8 +221,6 @@ C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype),
 		constant(false), Status(1)
 {
-	if (prototype)
-		SetProperty(P_Prototype, C4VPropList(prototype));
 #ifdef _DEBUG	
 	PropLists.Add(this);
 #endif
@@ -236,9 +234,7 @@ void C4PropList::Denumerate(C4ValueNumbers * numbers)
 		const_cast<C4Value &>(p->Value).Denumerate(numbers);
 		p = Properties.Next(p);
 	}
-	C4Value v;
-	if(GetProperty(P_Prototype, &v))
-		prototype = v.getPropList();
+	prototype.Denumerate(numbers);
 }
 
 C4PropList::~C4PropList()
@@ -279,9 +275,41 @@ bool C4PropList::operator==(const C4PropList &b) const
 
 void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(constant);
+	bool oldFormat = false;
+	// constant proplists are not serialized to savegames, but recreated from the game data instead
+	assert(!constant);
+	if (pComp->isCompiler() && pComp->hasNaming())
+	{
+		// backwards compat to savegames and scenarios before 5.5
+		try
+		{
+			pComp->Value(constant);
+			oldFormat = true;
+		}
+		catch (StdCompiler::NotFoundException *pEx)
+		{
+			delete pEx;
+			pComp->Value(mkParAdapt(prototype, numbers));
+		}
+	}
+	else
+		pComp->Value(mkParAdapt(prototype, numbers));
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	pComp->Value(mkParAdapt(Properties, numbers));
+	if (oldFormat)
+	{
+		if (Properties.Has(&::Strings.P[P_Prototype]))
+		{
+			prototype = Properties.Get(&::Strings.P[P_Prototype]).Value;
+			Properties.Remove(&::Strings.P[P_Prototype]);
+		}
+	}
+	for(C4PropList * it = GetPrototype(); it; it = it->GetPrototype())
+		if(it == this)
+		{
+			prototype.Set0();
+			pComp->excCorrupt("Cyclic prototype structure");
+		}
 }
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar)
@@ -400,43 +428,43 @@ void C4PropList::SetName(const char* NewName)
 
 C4Object * C4PropList::GetObject()
 {
-	if (prototype) return prototype->GetObject();
+	if (GetPrototype()) return GetPrototype()->GetObject();
 	return 0;
 }
 
 C4Def * C4PropList::GetDef()
 {
-	if (prototype) return prototype->GetDef();
+	if (GetPrototype()) return GetPrototype()->GetDef();
 	return 0;
 }
 
 C4Def const * C4PropList::GetDef() const
 {
-	if (prototype) return prototype->GetDef();
+	if (GetPrototype()) return GetPrototype()->GetDef();
 	return 0;
 }
 
 class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
 {
-	if (prototype) return prototype->GetMapScriptLayer();
+	if (GetPrototype()) return GetPrototype()->GetMapScriptLayer();
 	return NULL;
 }
 
 class C4MapScriptMap * C4PropList::GetMapScriptMap()
 {
-	if (prototype) return prototype->GetMapScriptMap();
+	if (GetPrototype()) return GetPrototype()->GetMapScriptMap();
 	return NULL;
 }
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
-	if (prototype) return prototype->GetPropListNumbered();
+	if (GetPrototype()) return GetPrototype()->GetPropListNumbered();
 	return 0;
 }
 
 C4Effect * C4PropList::GetEffect()
 {
-	if (prototype) return prototype->GetEffect();
+	if (GetPrototype()) return GetPrototype()->GetEffect();
 	return 0;
 }
 
@@ -479,8 +507,13 @@ bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
 		*pResult = Properties.Get(k).Value;
 		return true;
 	}
-	else if(prototype)
-		return prototype->GetPropertyByS(k, pResult);
+	else if (k == &Strings.P[P_Prototype])
+	{
+		*pResult = prototype;
+		return true;
+	}
+	else if(GetPrototype())
+		return GetPrototype()->GetPropertyByS(k, pResult);
 	else
 		return false;
 }
@@ -492,9 +525,9 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 	{
 		return Properties.Get(k).Value.getStr();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyStr(n);
+		return GetPrototype()->GetPropertyStr(n);
 	}
 	return 0;
 }
@@ -506,9 +539,9 @@ C4AulFunc * C4PropList::GetFunc(C4String * k) const
 	{
 		return Properties.Get(k).Value.getFunction();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetFunc(k);
+		return GetPrototype()->GetFunc(k);
 	}
 	return 0;
 }
@@ -551,9 +584,9 @@ C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 			return C4PropertyName(v - &Strings.P[0]);
 		return P_LAST;
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyP(n);
+		return GetPrototype()->GetPropertyP(n);
 	}
 	return P_LAST;
 }
@@ -565,9 +598,9 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	{
 		return Properties.Get(k).Value.getInt();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyInt(n);
+		return GetPrototype()->GetPropertyInt(n);
 	}
 	return 0;
 }
@@ -579,9 +612,9 @@ C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
 	{
 		return Properties.Get(k).Value.getPropList();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyPropList(n);
+		return GetPrototype()->GetPropertyPropList(n);
 	}
 	return NULL;
 }
@@ -590,9 +623,9 @@ C4ValueArray * C4PropList::GetProperties() const
 {
 	C4ValueArray * a;
 	int i;
-	if (prototype)
+	if (GetPrototype())
 	{
-		a = prototype->GetProperties();
+		a = GetPrototype()->GetProperties();
 		i = a->GetSize();
 		a->SetSize(i + Properties.GetSize());
 	}
@@ -626,16 +659,15 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);
 	/*assert(Strings.Set.Has(k));*/
-	if (k == &Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
+	if (k == &Strings.P[P_Prototype])
 	{
-		C4PropList * newpt = to.GetData().PropList;
-		for(C4PropList * it = newpt; it; it = it->prototype)
+		C4PropList * newpt = to.getPropList();
+		for(C4PropList * it = newpt; it; it = it->GetPrototype())
 			if(it == this)
 				throw new C4AulExecError("Trying to create cyclic prototype structure");
-		prototype = newpt;
-		//return;
+		prototype.SetPropList(newpt);
 	}
-	if (Properties.Has(k))
+	else if (Properties.Has(k))
 	{
 		Properties.Get(k).Value = to;
 	}
@@ -657,7 +689,10 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 
 void C4PropList::ResetProperty(C4String * k)
 {
-	Properties.Remove(k);
+	if (k == &Strings.P[P_Prototype])
+		prototype.Set0();
+	else
+		Properties.Remove(k);
 }
 
 void C4PropList::Iterator::Init()
@@ -690,9 +725,9 @@ C4PropList::Iterator C4PropList::begin()
 {
 	C4PropList::Iterator iter;
 
-	if (prototype)
+	if (GetPrototype())
 	{
-		iter = prototype->begin();
+		iter = GetPrototype()->begin();
 	}
 	else
 	{

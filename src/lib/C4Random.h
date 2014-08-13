@@ -23,15 +23,8 @@
 #include <ctime>
 
 extern int RandomCount;
-extern unsigned int RandomHold;
 
-inline void FixedRandom(DWORD dwSeed)
-{
-	// for SafeRandom
-	srand((unsigned)time(NULL));
-	RandomHold=dwSeed;
-	RandomCount=0;
-}
+void FixedRandom(DWORD dwSeed);
 
 int Random(int iRange);
 

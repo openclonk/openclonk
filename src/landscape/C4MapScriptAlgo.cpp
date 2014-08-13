@@ -35,7 +35,7 @@ bool C4MapScriptAlgo::GetXYProps(const C4PropList *props, C4PropertyName k, int3
 	}
 	C4Value val; C4ValueArray *arr;
 	props->GetProperty(k, &val);
-	if (arr = val.getArray())
+	if ((arr = val.getArray()))
 	{
 		if (arr->GetSize() != 2)
 			throw new C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
@@ -246,7 +246,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		for (int32_t i=0; i<n; ++i)
 		{
 			C4MapScriptAlgo *new_algo = FnParAlgo(ops->GetItem(i).getPropList());
-			if (!new_algo) throw new C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)min_ops, (int)max_ops).getData());
+			if (!new_algo) throw new C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)i).getData());
 			operands[i] = new_algo;
 		}
 	}
@@ -280,7 +280,7 @@ uint8_t C4MapScriptAlgoOr::operator () (int32_t x, int32_t y) const
 	// Return first nonzero operand
 	uint8_t val;
 	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if (val=(**i)(x,y)) return val;
+		if ((val=(**i)(x,y))) return val;
 	// If all operands are zero, return zero.
 	return 0;
 }

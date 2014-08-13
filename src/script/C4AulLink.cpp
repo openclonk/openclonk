@@ -40,11 +40,11 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 {
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
-	for (std::list<C4ID>::iterator a = Appends.begin(); a != Appends.end(); ++a)
+	for (std::list<StdCopyStrBuf>::iterator a = Appends.begin(); a != Appends.end(); ++a)
 	{
-		if (*a)
+		if (*a != "*")
 		{
-			C4Def *Def = rDefs->ID2Def(*a);
+			C4Def *Def = rDefs->GetByName(*a);
 			if (Def)
 			{
 				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), GetScriptHost()) == Def->Script.SourceScripts.end())
@@ -55,7 +55,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				Warn("#appendto %s not found", a->ToString());
+				Warn("#appendto %s not found", a->getData());
 			}
 		}
 		else
@@ -91,9 +91,9 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	}
 	Resolving=true;
 	// append all includes to local script
-	for (std::list<C4ID>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
+	for (std::list<StdCopyStrBuf>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
 	{
-		C4Def *Def = rDefs->ID2Def(*i);
+		C4Def *Def = rDefs->GetByName(*i);
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )
@@ -112,7 +112,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 			// save id in buffer because AulWarn will use the buffer of C4IdText
 			// to get the id of the object in which the error occurs...
 			// (stupid static buffers...)
-			Warn("#include %s not found", i->ToString());
+			Warn("#include %s not found", i->getData());
 		}
 	}
 	IncludesResolved = true;

@@ -1,29 +1,16 @@
 //Airship Hitbox
 
-local parent;
-
-public func Initialize()
-{
-	AddEffect("CheckParent", this,1,1,this);
-}
-
-private func FxCheckParentTimer(object target, proplist, int timer)
-{
-	if(!parent) target->RemoveObject();
-}
-
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage(int change)
+public func Damage(int change, int caused_by)
 {
-	//forward the damage to airship parent
-	parent->DoDamage(change);	
+	//forward the damage to airship parent (losing the damage type)
+	var parent = GetActionTarget();
+	if (parent) parent->DoDamage(change, nil, caused_by); else RemoveObject();
 }
 
-public func SetAirshipParent(object airship)
-{
-	parent = airship;
-}
+// remove if airship is lost
+public func AttachTargetLost() { RemoveObject(); }
 
 // Only save main airship object
 func SaveScenarioObject() { return false; }

@@ -131,6 +131,16 @@ int32_t CommandByName(const char *szCommand)
 	return C4CMD_None;
 }
 
+bool FreeMoveTo(C4Object *cObj)
+{
+	// Floating: we accept any move-to target
+	if (cObj->GetProcedure()==DFA_FLOAT) return true;
+	// Can fly: we accept any move-to target
+	//if (cObj->GetPhysical()->CanFly) return true; - needs to be adjusted once we have dragons
+	// Assume we're walking: move-to targets are adjusted
+	return false;
+}
+
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
@@ -940,7 +950,7 @@ void C4Command::Get()
 
 	// Get target specified by container and type
 	if (!Target && Target2 && Data)
-		if (!(Target = Target2->Contents.Find(Data.getC4ID())))
+		if (!(Target = Target2->Contents.Find(Data.getDef())))
 			{ Finish(); return; }
 
 	// No target: failure
@@ -1116,7 +1126,7 @@ void C4Command::Activate()
 			C4Object *pObj; C4ObjectLink *cLnk;
 			if (!Target)
 				for (cLnk=Target2->Contents.First; cLnk && (pObj=cLnk->Obj); cLnk=cLnk->Next)
-					if (pObj->Status && (pObj->Def->id==Data.getC4ID()))
+					if (pObj->Status && (pObj->Def==Data.getDef()))
 						if (!pObj->Command || (pObj->Command->Command!=C4CMD_Exit))
 							{ Target=pObj; break; }
 			// No target
@@ -1155,7 +1165,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 	// Thing to put specified by type
 	if (!Target2 && Data)
-		if (!(Target2 = cObj->Contents.Find(Data.getC4ID())))
+		if (!(Target2 = cObj->Contents.Find(Data.getDef())))
 			{ Finish(); return; }
 
 	// No thing to put specified
@@ -1383,7 +1393,7 @@ bool C4Command::InitEvaluation()
 		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
+		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1392,7 +1402,7 @@ bool C4Command::InitEvaluation()
 	{
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
+		AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1515,17 +1525,21 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 		}
 
 	// Low side contact jump
+	// Only jump before almost running off a cliff
 	int32_t iLowSideRange=5;
-	if (cObj->t_contact & CNAT_Right)
-		if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
-		{
-			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
-		}
-	if (cObj->t_contact & CNAT_Left)
-		if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
-		{
-			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
-		}
+	if (!(GBackDensity(cx,cy+cObj->Shape.Hgt/2) >= cObj->Shape.ContactDensity))
+	{
+		if (cObj->t_contact & CNAT_Right)
+			if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
+			{
+				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+			}
+		if (cObj->t_contact & CNAT_Left)
+			if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
+			{
+				cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
+			}
+	}
 
 	// No jump control
 	return false;
@@ -1623,7 +1637,7 @@ void C4Command::Acquire()
 	if (!Data) { Finish(); return; }
 
 	// Target material in inventory: done
-	if (cObj->Contents.Find(Data.getC4ID()))
+	if (cObj->Contents.Find(Data.getDef()))
 		{ Finish(true); return; }
 
 	// script overload
@@ -1640,7 +1654,7 @@ void C4Command::Acquire()
 	// Find available material
 	C4Object *pMaterial=NULL;
 	// Next closest
-	while ((pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
+	while ((pMaterial = Game.FindObject(Data.getDef(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
 		// Object is not in container to be ignored
 		if (!Target2 || pMaterial->Contained!=Target2)
 			// Object is near enough
@@ -1733,7 +1747,7 @@ void C4Command::Fail(const char *szFailMessage)
 			if (szFailMessage) break;
 			// Fail message with name of target type
 			SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-			C4Def *pDef; pDef = ::Definitions.ID2Def(Data.getC4ID());
+			C4Def *pDef; pDef = Data.getDef();
 			SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
 			str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 			break;

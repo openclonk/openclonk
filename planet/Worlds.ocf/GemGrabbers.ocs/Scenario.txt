@@ -1,8 +1,8 @@
 [Head]
 Title=GemGrabbers
 Icon=35
-Version=5,3,0,0
-Difficulty=100
+Version=5,4,0,0
+Difficulty=80
 
 [Definitions]
 Definition1=Objects.ocd
@@ -12,19 +12,15 @@ ValueOverloads=Ruby=10;Amethyst=10
 
 [Player1]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player2]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player3]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Player4]
 Crew=Clonk=2
-HomeBaseMaterial=Clonk=1
 
 [Landscape]
 Sky=Clouds1

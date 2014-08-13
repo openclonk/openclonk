@@ -112,6 +112,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	{
 		effect.Pilot->SetCommand("MoveTo", effect.Pilot, 120 - effect.Pilot->GetX(), 860 - effect.Pilot->GetY());
 		effect.Dialog->SetInteraction(true);
+		effect.Dialog->AddAttention();
 		return -1;
 	}
 }

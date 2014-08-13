@@ -90,7 +90,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
 	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
-	pComp->Value(mkNamingAdapt(SmokeLevel,            "SmokeLevel",           200           ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
 	pComp->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
@@ -114,6 +113,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
+	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)
@@ -162,7 +162,10 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
 
 	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "clonk.de:11115")); // maybe store default for this one?
-
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeaguePlayerName, StdCompiler::RCT_All), "LastLeaguePlayerName", ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueAccount, StdCompiler::RCT_All),    "LastLeagueAccount",    ""            ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueLoginToken, StdCompiler::RCT_All), "LastLeagueLoginToken", ""            ));
 }
 
 void C4ConfigLobby::CompileFunc(StdCompiler *pComp)
@@ -453,20 +456,15 @@ void C4ConfigGeneral::DeterminePaths()
 	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
 	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
-#elif defined(__linux__)
-
-#ifdef OC_SYSTEM_DATA_DIR
-#ifdef WITH_AUTOMATIC_UPDATE
+#elif defined(WITH_AUTOMATIC_UPDATE)
 	// WITH_AUTOMATIC_UPDATE builds are our tarball releases and
 	// development snapshots, i.e. where the game data is at the
 	// same location as the executable.
 	SCopy(ExePath.getMData(),SystemDataPath);
-#else
+#elif defined(OC_SYSTEM_DATA_DIR)
 	SCopy(OC_SYSTEM_DATA_DIR, SystemDataPath);
-#endif
 #else
 #error Please define OC_SYSTEM_DATA_DIR!
-#endif
 #endif
 	AppendBackslash(SystemDataPath);
 
@@ -476,10 +474,10 @@ void C4ConfigGeneral::DeterminePaths()
 	else
 #if defined(_WIN32)
 		SCopy("%APPDATA%\\" C4ENGINENAME, UserDataPath);
-#elif defined(__linux__)
-		SCopy("$HOME/.clonk/" C4ENGINENICK, UserDataPath);
 #elif defined(__APPLE__)
 		SCopy("$HOME/Library/Application Support/" C4ENGINENAME, UserDataPath);
+#else
+		SCopy("$HOME/.clonk/" C4ENGINENICK, UserDataPath);
 #endif
 	C4Config::ExpandEnvironmentVariables(UserDataPath, CFG_MaxString);
 	AppendBackslash(UserDataPath);
@@ -594,6 +592,29 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 		PortDiscovery = C4NetStdPortDiscovery;
 	}
 }
+
+void C4ConfigNetwork::SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken)
+{
+	// ideally, there would be a list to store multiple logins
+	// however, we don't really support multiplayer at one computer at the moment anyway
+	LastLeagueServer.Copy(szServer);
+	LastLeaguePlayerName.Copy(szPlayerName);
+	LastLeagueAccount.Copy(szAccount);
+	LastLeagueLoginToken.Copy(szLoginToken);
+}
+
+bool C4ConfigNetwork::GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const
+{
+	// check if last login matches and store if desired
+	if (LastLeagueServer == szServer && LastLeaguePlayerName == szPlayerName)
+	{
+		pAccount->Copy(LastLeagueAccount);
+		pLoginToken->Copy(LastLeagueLoginToken);
+		return true;
+	}
+	return false;
+}
+
 void C4ConfigControls::ResetKeys()
 {
 	UserSets.Clear();

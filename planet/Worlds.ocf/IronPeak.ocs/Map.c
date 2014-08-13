@@ -3,7 +3,7 @@
 	A mountain peak filled with iron ore, firestone and coal, the crust consists 
 	of granite, rock, ice and some entrances.
 	
-	@authors Maikel
+	@author Maikel
 */
 
 #include Library_Map
@@ -26,7 +26,6 @@ protected func InitializeMap(proplist map)
 	
 	// Set the map size.
 	map->Resize(map_size[0], map_size[1]);
-	
 	
 	// Draw the main surface: a mountain with the polygon algorithm.
 	var wdt = map.Wdt;
@@ -99,6 +98,5 @@ public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int rat
 	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
 	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
 	Draw(mat, algo);
-	
 	return;
 }

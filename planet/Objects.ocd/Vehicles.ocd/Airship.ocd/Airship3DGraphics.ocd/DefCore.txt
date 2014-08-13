@@ -1,7 +1,0 @@
-[DefCore]
-id=Airship_Graphic
-Version=5,2,0,1
-Width=64
-Height=54
-Offset=-32,-27
-Category=C4D_Vehicle

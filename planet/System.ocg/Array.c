@@ -102,7 +102,7 @@ global func ShuffleArray(array arr)
 	{
 		var i = Random(len);
 		arr[len] = working[i];
-		working[i] = working[-1];
+		working[i] = working[len];
 	}
   
 	return true;

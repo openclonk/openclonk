@@ -93,7 +93,6 @@ public:
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
 	int32_t HighResLandscape;
-	int32_t SmokeLevel;
 	int32_t VideoModule;
 	int32_t MenuTransparency;
 	int32_t UpperBoard;
@@ -117,6 +116,7 @@ public:
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
+	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -159,6 +159,7 @@ public:
 	char LastPassword[CFG_MaxString+1];
 	char AlternateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
+	StdCopyStrBuf LastLeagueServer, LastLeaguePlayerName, LastLeagueAccount, LastLeagueLoginToken;
 #ifdef WITH_AUTOMATIC_UPDATE
 	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
@@ -169,6 +170,8 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 	const char *GetLeagueServerAddress();
 	void CheckPortsForCollisions();
+	void SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken);
+	bool GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const;
 };
 
 class C4ConfigStartup

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetBaseMaterial</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose home base material you want to set.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>id of the buyable object type you want to adjust.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>cnt</name>
+          <desc>Set the available amount (positive).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the availability of buyable objects at the home base.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetBaseMaterial</funclink>(0, Firestone, 10);</code>
+        <text>The first player can now buy ten flints.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetBaseMaterial</funclink>
+	  <funclink>DoBaseMaterial</funclink>
+      <funclink>GetBaseProduction</funclink>
+	  <funclink>SetBaseProduction</funclink>
+      <funclink>DoBaseProduction</funclink>
+      <funclink>Buy</funclink>
+      <funclink>Sell</funclink>
+    </related>
+  </func>
+  <author>Maikel</author><date>2014-04</date>
+</funcs>

@@ -60,3 +60,15 @@ StdStrBuf C4AulFunc::GetFullName()
 	r.Append(Name->GetData());
 	return r;
 }
+
+void C4AulFunc::CheckParTypes(const C4Value pPars[]) const {
+	// Convert parameters (typecheck)
+	const C4V_Type *pTypes = GetParType();
+	int parcount = GetParCount();
+	for (int i = 0; i < parcount; i++) {
+		if (!pPars[i].CheckParConversion(pTypes[i]))
+			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
+			                                      GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
+			                                     ).getData());
+	}
+}

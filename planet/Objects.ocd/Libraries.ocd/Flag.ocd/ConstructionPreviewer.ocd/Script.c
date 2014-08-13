@@ -18,10 +18,10 @@ func Initialize()
 }
 
 // Preview update: Called on initial creation and when position is updated
-func AdjustPreview(bool look_up, bool no_call)
+func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 {
 	// Regular preview behaviour (check site, color object, etc.)
-	inherited(look_up, no_call, ...);
+	inherited(below_surface, look_up, no_call, ...);
 	if (no_call) return true;
 	// Update arrows pointing to neighboured flags
 	var neighboured_flags = Library_Flag->FindFlagsInRadius(this, structure->GetFlagRadius(), clonk->GetOwner());

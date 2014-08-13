@@ -36,17 +36,40 @@ protected func Timer()
 {
 	for (var fade in FindObjects(Find_Category(C4D_Object), Find_NoContainer(), Find_Not(Find_OCF(OCF_HitSpeed1)))) 
 	{
-		if (fade->GetXDir() || fade->GetYDir())
-			continue;
-		if (fade->GetEffect("IntFadeOut", fade)) 
-			continue;
-		if (fade->Stuck()) 
-			continue;
-		if (fade->~HasNoFadeOut())
-			continue;		
-		fade->AddEffect("IntFadeOut", fade, 100, 1, this, Rule_ObjectFade);
+		if (!CheckFadeConditions(fade)) continue;
+		if (GetEffect("IntFadeOut*", fade)) continue;
+		AddEffect("IntFadeOutCandidate", fade, 1, 36, this, Rule_ObjectFade);
 	}
 }
+
+public func FxIntFadeOutCandidateTimer(object target, effect, int time) 
+{
+	// Re-check condition a few times
+	if (!CheckFadeConditions(target)) return FX_Execute_Kill;
+	if (time > 300)
+	{
+		// OK - now fade out
+		AddEffect("IntFadeOut", target, 100, 1, this, Rule_ObjectFade);
+		return FX_Execute_Kill;
+	}
+	return FX_OK;
+}
+
+func CheckFadeConditions(object fade)
+{
+	// Moving objects should not.
+	// Allow small movement because engine physics bug sometimes cause objects to wiggle forever
+	if (Distance(fade->GetXDir(), fade->GetYDir()) > 4) return false;
+	// No InEarth objects
+	if (fade->GBackSolid()) return false;
+	// No objects that explicitely want to stay
+	if (fade->~HasNoFadeOut()) return false;
+	// Not if picked up
+	if (fade->Contained()) return false;
+	// Fade out OK
+	return true;
+}
+
 
 public func FxIntFadeOutStart(object target, effect) 
 {

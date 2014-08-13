@@ -756,6 +756,8 @@ void C4ControlPlayerAction::Execute() const
 		callback->Exec(nullptr, &pars);
 		break;
 	}
+
+	case CPA_NoAction: break;
 	}
 }
 

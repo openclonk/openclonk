@@ -559,7 +559,7 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 	char szRealGroup[_MAX_FNAME];
 	SCopy(szGroupNameN,szRealGroup,_MAX_FNAME);
 	do
-		{ if (!TruncatePath(szRealGroup)) return Error("Open: File not found"); }
+		{ if (!TruncatePath(szRealGroup)) return Error(FormatString("Open(\"%s\"): File not found", szGroupNameN).getData()); }
 	while (!FileExists(szRealGroup));
 
 	// Open mother and child in exclusive mode
@@ -568,9 +568,9 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 		return Error("Open: mem");
 	pMother->SetStdOutput(StdOutput);
 	if (!pMother->Open(szRealGroup))
-		{ Clear(); return Error("Open: Cannot open mother"); }
+		{ Clear(); Error(pMother->ErrorString); delete pMother; return false; }
 	if (!OpenAsChild(pMother,szGroupNameN+SLen(szRealGroup)+1,true))
-		{ Clear(); return Error("Open:: Cannot open as child"); }
+		{ Clear(); return false; }
 
 	// Success
 	return true;

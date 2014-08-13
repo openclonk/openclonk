@@ -95,15 +95,23 @@ bool C4Application::DoInit(int argc, char * argv[])
 			Config.Load();
 		}
 	}
+	// Open log
+	OpenLog();
+
+	Revision.Ref(C4REVISION);
+
+	// Engine header message
+	Log(C4ENGINEINFOLONG);
+	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
+	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
+	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);
+	LogF("UserDataPath: \"%s\"", Config.General.UserDataPath);
+
 	// Init C4Group
 	C4Group_SetProcessCallback(&ProcessCallback);
 	C4Group_SetTempPath(Config.General.TempPath.getData());
 	C4Group_SetSortList(C4CFN_FLS);
 
-	// Open log
-	OpenLog();
-
-	Revision.Ref(C4REVISION);
 
 	// Initialize game data paths
 	Reloc.Init();
@@ -160,10 +168,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	// init timers (needs window)
 	Add(pGameTimer = new C4ApplicationGameTimer());
-
-	// Engine header message
-	Log(C4ENGINEINFOLONG);
-	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize OpenGL
 	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);
@@ -513,15 +517,15 @@ bool C4Application::PreInit()
 	if (!MusicSystem.Init("Frontend.*"))
 		Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
-	// Play some music!
-	if (fUseStartupDialog && !isEditor && Config.Sound.FEMusic)
-		MusicSystem.Play();
-
 	Game.SetInitProgress(fUseStartupDialog ? 34.0f : 2.0f);
 
 	// Sound
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
+
+	// Play some music! - after sound init because sound system might be needed by music system
+	if (fUseStartupDialog && !isEditor && Config.Sound.FEMusic)
+		MusicSystem.Play();
 
 	Game.SetInitProgress(fUseStartupDialog ? 35.0f : 3.0f);
 
@@ -643,6 +647,7 @@ void C4Application::GameTick()
 		break;
 	case C4AS_Startup:
 		SoundSystem.Execute();
+		MusicSystem.Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
@@ -681,7 +686,6 @@ void C4Application::GameTick()
 		// Game
 		if (Game.IsRunning)
 			Game.Execute();
-		Game.DoSkipFrame = false;
 		// Sound
 		SoundSystem.Execute();
 		// Gamepad
@@ -693,15 +697,13 @@ void C4Application::GameTick()
 void C4Application::Draw()
 {
 	// Graphics
-	if (!Game.DoSkipFrame)
-	{
-		// Fullscreen mode
-		if (!isEditor)
-			FullScreen.Execute();
-		// Console mode
-		else
-			Console.Execute();
-	}
+
+	// Fullscreen mode
+	if (!isEditor)
+		FullScreen.Execute();
+	// Console mode
+	else
+		Console.Execute();
 }
 
 void C4Application::SetGameTickDelay(int iDelay)
@@ -836,26 +838,28 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(0)
+		tLastGameTick(C4TimeMilliseconds::NegativeInfinity), iGameTickDelay(28), iExtraGameTickDelay(0)
 {
 }
 
 void C4ApplicationGameTimer::SetGameTickDelay(uint32_t iDelay)
 {
+	// Remember delay
+	iGameTickDelay = iDelay;
 	// Smaller than minimum refresh delay?
 	if (iDelay < uint32_t(Config.Graphics.MaxRefreshDelay))
 	{
 		// Set critical timer
 		SetDelay(iDelay);
 		// No additional breaking needed
-		iGameTickDelay = 0;
+		iExtraGameTickDelay = 0;
 	}
 	else
 	{
 		// Set critical timer
 		SetDelay(Config.Graphics.MaxRefreshDelay);
 		// Slow down game tick
-		iGameTickDelay = iDelay;
+		iExtraGameTickDelay = iDelay;
 	}
 }
 
@@ -865,9 +869,9 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 	if (!CheckAndReset()) return true;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	// Execute
-	if (tNow >= tLastGameTick + iGameTickDelay || Game.GameGo)
+	if (tNow >= tLastGameTick + iExtraGameTickDelay || Game.GameGo)
 	{
-		if(iGameTickDelay)
+		if (iGameTickDelay)
 			tLastGameTick += iGameTickDelay;
 		else
 			tLastGameTick = tNow;
@@ -878,8 +882,18 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 
 		Application.GameTick();
 	}
-	// Draw always
-	Application.Draw();
+	// Draw
+	if (!Game.DoSkipFrame)
+	{
+		C4TimeMilliseconds tPreGfxTime = C4TimeMilliseconds::Now();
+
+		Application.Draw();
+
+		// Automatic frame skip if graphics are slowing down the game (skip max. every 2nd frame)
+		Game.DoSkipFrame = Game.Parameters.AutoFrameSkip && (tPreGfxTime + iGameTickDelay < C4TimeMilliseconds::Now());
+	} else {
+		Game.DoSkipFrame=false;
+	}
 	return true;
 }
 

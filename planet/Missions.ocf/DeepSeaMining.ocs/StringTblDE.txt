@@ -1,0 +1,8 @@
+MsgIntro=Oh nein, wir sind gestranded! Wir sollten ein Kommunikationsgerät bauen und um Hilfe rufen.
+MsgOutro1=Die Maschine ist fertig. Ob sie wohl funktioniert?
+MsgOutro2=Das sieht gut aus. Ich sende ein Notsignal...
+MsgOutro3=Hoffentlich hat uns jemand gehört.
+MsgOutro4=Hey, sind das nicht unsere gestrandeten Freunde?
+MsgOutro5=Hurra, wir sind gerettet!
+MsgOutro6=Alles einsteigen! Wir fliegen zum Goldenen Berg.
+NamePilot=Pilot

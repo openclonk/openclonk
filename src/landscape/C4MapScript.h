@@ -328,10 +328,14 @@ public:
 	void InitFunctionMap(C4AulScriptEngine *pEngine);
 	virtual void AddEngineFunctions();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
-	bool InitializeMap(C4Group &group, CSurface8 **pmap_surface);
+	bool InitializeMap(C4SLandscape *pLandscape, C4TextureMap *pTexMap, C4MaterialMap *pMatMap, uint32_t iPlayerCount, CSurface8 **pmap_surface);
 	C4PropListStatic *GetLayerPrototype() { return LayerPrototype; }
+
+	C4TextureMap* pTexMap;
+	C4MaterialMap* pMatMap;
 };
 
 extern C4MapScriptHost MapScript;

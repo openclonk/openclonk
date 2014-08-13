@@ -10,6 +10,5 @@ VertexX=0,0,-20,+20,-30,+30,-20,+20,-15,+15,0
 VertexY=0,-30,-30,-30,-15,-15,-5,-5,+26,+26,+26
 VertexFriction=20,20,20,20,20,20,20,80,80,80
 VertexCNAT=6
-Value=34
 Mass=60
 Components=Metal=4;Wood=1;

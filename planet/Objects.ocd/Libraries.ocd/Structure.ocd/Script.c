@@ -10,11 +10,9 @@
 
 func Initialize()
 {
-	if (ObjectCount(Find_ID(Rule_EnergyBarsAboveStructures)) > 0)
-	{
+	if (FindObject(Find_ID(Rule_StructureHPBars)))
 		if (this.HitPoints != nil)
 			AddEnergyBar();
-	}
 	return _inherited(...);
 }
 
@@ -65,3 +63,6 @@ public func OnObjectInformationDialogueOpen(object dialogue)
 		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_STATUS, name = "$NoFlag$", priority = 0});
 	return true;
 }
+
+// This object is a structure.
+public func IsStructure() { return true; }

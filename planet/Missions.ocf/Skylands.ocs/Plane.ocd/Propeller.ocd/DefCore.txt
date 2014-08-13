@@ -9,7 +9,6 @@ Vertices=3
 VertexX=-4,3,3
 VertexY=0,-4,4
 VertexFriction=60,60,60
-Value=12
 Mass=20
 Components=Wood=1;Metal=1;
 Rotate=1

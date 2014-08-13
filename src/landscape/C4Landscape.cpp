@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Landscape.h>
 
+#include <C4DefList.h>
 #include <C4SolidMask.h>
 #include <C4Game.h>
 #include <C4Group.h>
@@ -546,6 +547,7 @@ void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *
 
 void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect)
 {
+	C4AulParSet pars(C4VObj(pCollect));
 	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
 	{
 		if (mat_list->Amount[mat])
@@ -555,17 +557,19 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 					while (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
 					{
 						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
+						if (pObj && pObj->Status) pObj->Call(PSF_OnDugOut, &pars);
 						// Try to collect object
-						if(::MaterialMap.Map[mat].Dig2ObjectCollect && pCollect && pObj)
-							if(!pCollect->Collect(pObj))
-								// Collection forced? Don't generate objects
-								if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
-								{
-									pObj->AssignRemoval();
-									// Cap so we never have more than one object ´worth of material in the store
-									mat_list->Amount[mat] = ::MaterialMap.Map[mat].Dig2ObjectRatio;
-									break;
-								}
+						if(::MaterialMap.Map[mat].Dig2ObjectCollect)
+							if(pCollect && pCollect->Status && pObj && pObj->Status)
+								if(!pCollect->Collect(pObj))
+									// Collection forced? Don't generate objects
+									if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
+									{
+										pObj->AssignRemoval();
+										// Cap so we never have more than one object ´worth of material in the store
+										mat_list->Amount[mat] = ::MaterialMap.Map[mat].Dig2ObjectRatio;
+										break;
+									}
 						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 					}
 		}
@@ -751,15 +755,17 @@ bool C4Landscape::_SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask)
 bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
 {
 	int32_t mat=GetMat(tx,ty);
-	if (MatValid(mat))
-		if (::MaterialMap.Map[mat].Instable)
+	if (MatValid(mat)) {
+		const C4Material &material = MaterialMap.Map[mat];
+		if (material.Instable)
 			return ::MassMover.Create(tx,ty);
 		// Get rid of single pixels
-		else if (::MaterialMap.Map[mat].DigFree && recursion_count<10)
+		else if (DensitySolid(material.Density) && !material.KeepSinglePixels && recursion_count<10) 
 			if ((!::GBackSolid(tx,ty+1)) + (!::GBackSolid(tx,ty-1)) + (!::GBackSolid(tx+1,ty)) + (!::GBackSolid(tx-1,ty)) >= 3)
 			{
 				if (!ClearPix(tx,ty)) return false;
-				::PXS.Create(mat,itofix(tx),itofix(ty));
+				// Diggable material drops; other material just gets removed
+				if (material.DigFree) ::PXS.Create(mat,itofix(tx),itofix(ty));
 				// check other pixels around this
 				// Note this cannot lead to an endless recursion (unless you do funny stuff like e.g. set DigFree=1 in material Tunnel).
 				// Check recursion anyway, because very large strips of single pixel width might cause sufficient recursion to crash
@@ -769,6 +775,7 @@ bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_cou
 				CheckInstability(tx,ty+1,recursion_count);
 				return true;
 			}
+	}
 	return false;
 }
 
@@ -929,7 +936,7 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Inflammable)
 			// Not too much FLAMs
-			if (!Game.FindObject (C4ID::Flame, x - 4, y - 1, 8, 20))
+			if (!Game.FindObject (C4Id2Def(C4ID::Flame), x - 4, y - 1, 8, 20))
 				if (Game.CreateObject(C4ID::Flame,NULL,NO_OWNER,x,y))
 					return true;
 	return false;
@@ -1143,6 +1150,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
 	if (fClearRenderer) { delete pLandscapeRender; pLandscapeRender=NULL; }
+	delete [] TopRowPix; TopRowPix=NULL;
 	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
@@ -1225,7 +1233,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// script may create or edit map
-		if (MapScript.InitializeMap(hGroup, &sfcMap))
+		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap))
 			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
@@ -1322,7 +1330,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Init out-of-landscape pixels for bottom
-	InitBottomRowPix();
+	InitTopAndBottomRowPix();
 
 	Game.SetInitProgress(84);
 
@@ -1454,11 +1462,12 @@ bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave)
 	bool fChanged = false;
 	if (!fSyncSave)
 		for (int y = 0; y < Height; y++)
-			for (int x = 0; x < Width; x++)
+			for (int x = 0; x < Width; x++) {
 				if (pInitial[y * Width + x] == _GetPix(x, y))
 					Surface8->SetPix(x,y,0xff);
 				else
 					fChanged = true;
+			}
 
 	if (fSyncSave || fChanged)
 	{
@@ -1556,6 +1565,7 @@ void C4Landscape::Default()
 {
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
+	TopRowPix=NULL;
 	BottomRowPix=NULL;
 	pLandscapeRender=NULL;
 	Map=NULL;
@@ -1663,17 +1673,39 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 	return true;
 }
 
-bool C4Landscape::InitBottomRowPix()
+bool C4Landscape::InitTopAndBottomRowPix()
 {
-	// Init BottomRowPix array, which determines if out-of-landscape pixels on bottom side of the map are solid or not
-	// In case of BottomOpen=2, unit by map and not landscape to avoid runtime join sync losses
-	delete [] BottomRowPix; // safety
+	// Init Top-/BottomRowPix array, which determines if out-of-landscape pixels on top/bottom side of the map are solid or not
+	// In case of Top-/BottomOpen=2, unit by map and not landscape to avoid runtime join sync losses
+	delete [] TopRowPix; delete [] BottomRowPix; // safety
 	if (!Width) return true;
+	TopRowPix = new uint8_t[Width];
 	BottomRowPix = new uint8_t[Width];
-	// must access Game.C4S here because Landscape.BottomOpen may not be initialized yet
+	// must access Game.C4S here because Landscape.TopOpen / Landscape.BottomOpen may not be initialized yet
 	// why is there a local copy of that static variable anyway?
+	int32_t top_open_flag = Game.C4S.Landscape.TopOpen;
 	int32_t bottom_open_flag = Game.C4S.Landscape.BottomOpen;
+	if (top_open_flag == 2 && !Map) top_open_flag = 1;
 	if (bottom_open_flag == 2 && !Map) bottom_open_flag = 1;
+
+	// Init TopRowPix
+	switch (top_open_flag)
+	{
+	// TopOpen=0: Top is closed
+	case 0: for (int32_t x=0; x<Width; ++x) TopRowPix[x] = MCVehic; break;
+	// TopOpen=2: Top is open when pixel below has sky background
+	case 2:
+		for (int32_t x=0; x<Width; ++x)
+		{
+			uint8_t map_pix = Map->GetPix(x/MapZoom,0);
+			TopRowPix[x] = ((map_pix & IFT) ? MCVehic : 0);
+		}
+		break;
+	// TopOpen=1: Top is open
+	default: for (int32_t x=0; x<Width; ++x) TopRowPix[x] = 0; break;
+	}
+
+	// Init BottomRowPix
 	switch (bottom_open_flag)
 	{
 	// BottomOpen=0: Bottom is closed
@@ -2902,7 +2934,10 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 		}
 		// Otherwise: Turn right
 		else
-			++dir %= 4;
+		{
+			++dir;
+			dir %= 4;
+		}
 	}
 	while (x != sx || y != sy || dir != sdir);
 	// Nothing found?

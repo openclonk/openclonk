@@ -260,7 +260,7 @@ global func SaveScenarioObject(props)
 	// Called in object context: Default object writing procedure
 	// Overwrite this method and return false for objects that should not be saved
 	// Overwrite and call inherited for objects that add/remove/alter default creation/properties
-	var owner_string = "";
+	var owner_string = "", i;
 	if (GetOwner() != NO_OWNER) owner_string = Format(", %d", GetOwner());
 	props->Add(SAVEOBJ_Creation, "CreateObject(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
 	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
@@ -281,6 +281,8 @@ global func SaveScenarioObject(props)
 	v = GetColor();         if (v && v != 0xffffffff)             props->AddCall("Color",         this, "SetColor", Format("0x%x", v));
 	v = GetClrModulation(); if (v && v != 0xffffffff)             props->AddCall("ClrModulation", this, "SetClrModulation", Format("0x%08x", v));
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
+	for (i=0; v=def->GetMeshMaterial(i); ++i)
+	                        if (GetMeshMaterial(i) != v)          props->AddCall("MeshMaterial",  this, "SetMeshMaterial", Format("%v", GetMeshMaterial(i)), i);
 	v = GetName();          if (v != def->GetName())              props->AddCall("Name",          this, "SetName", Format("%v", v)); // TODO: Escape quotation marks, backslashes, etc. in name
 	v = this.MaxEnergy;     if (v != def.MaxEnergy)               props->AddSet ("MaxEnergy",     this, "MaxEnergy", this.MaxEnergy);
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
@@ -293,7 +295,7 @@ global func SaveScenarioObject(props)
 	// However, usually there is one base command and the rest is derived
 	// (e.g.: A Get command may lead to multiple MoveTo commands to the
 	// target object). So just store the topmost command.
-	var command, last_command, i=0;
+	var command, last_command; i=0;
 	while (command = GetCommand(0, i++)) last_command = command;
 	if (last_command)
 	{

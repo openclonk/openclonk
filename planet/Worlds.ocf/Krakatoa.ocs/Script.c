@@ -12,16 +12,18 @@
 static volcano_location;
 static plr_init;
 
-func Initialize()
+protected func Initialize()
 {
 	// Create expansion and wealth goal.
 	var goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(250);
 	goal = CreateObject(Goal_Expansion);
 	goal->SetExpansionGoal(250);
-	
-	// some rules
-	CreateObject(Rule_EnergyBarsAboveStructures, 0, 0, NO_OWNER);
+
+	// Some rules.
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
+	CreateObject(Rule_StructureHPBars);
 	
 	// Find start location and place lorry plus extras there.
 	FindVolcanoLocation();
@@ -36,14 +38,14 @@ func Initialize()
 		lorry->CreateContents(Barrel)->PutLiquid("Water", 300);
 	
 	// Adjust the mood, orange sky, darker feeling in general.
-	var dark = 40;
+	var dark = 10;
 	SetSkyAdjust(RGB(150, 42, 0));
 	SetGamma(RGB(0,0,0), RGB(128-dark,128-dark,128-dark), RGB(255-2*dark,255-2*dark,255-2*dark));
 	
 	// Time of days and celestials.
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(60*20);
+	time->SetTime(60 * 20);
 	time->SetCycleSpeed(20);
 		
 	// Some dark clouds which rain few ashes.
@@ -90,7 +92,10 @@ func Initialize()
 	return;
 }
 
-func InitializePlayer(int plr)
+
+/*-- Player Initialization --*/
+
+protected func InitializePlayer(int plr)
 {
 	// Move all crew to start position.
 	var index = 0, crew;
@@ -101,7 +106,17 @@ func InitializePlayer(int plr)
 	{
 		SetWealth(plr, 50);
 		plr_init = true;
-	}		
+	}
+	// Give the player its knowledge and base materials.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerPumpingKnowledge(plr);
+	GivePlayerAdvancedKnowledge(plr);
+	GivePlayerArtilleryKnowledge(plr);
+	GivePlayerAirKnowledge(plr);
+
+	// Give the player the elementary base materials.
+	GivePlayerElementaryBaseMaterial(plr);
+	
 	// Give crew some equipment.
 	var index = 0;
 	while (crew = GetCrew(plr, index++))
@@ -112,9 +127,9 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		crew->CreateContents(Shovel);
 	}
-	// We really want FoW for this scenario...
-	SetPlayerViewLock(plr, true);
+	// Harsh zoom range.
 	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
 	
 	// Increase difficulty of goal with player count.
 	var plr_cnt = Min(6, GetPlayerCount());
@@ -153,6 +168,9 @@ private func FindVolcanoLocation()
 	}
 	return;
 }
+
+
+/*-- Scenario Initialization --*/
 
 // Ensures that there will always grow some trees.
 global func FxEnsureTreesTimer()

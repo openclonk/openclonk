@@ -9,7 +9,6 @@ Vertices=5
 VertexX=-25,25,-5,-25,28
 VertexY=-27,-27,32,32,32
 VertexFriction=50,50,100,100,100
-Value=50
 Mass=1500
 Components=Wood=3;Metal=1
 Exclusive=1

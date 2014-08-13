@@ -1,38 +1,23 @@
 [Head]
 Icon=23
 Title=Krakatoa
-Version=5,3,0,0
+Version=5,4,0,0
 Difficulty=80
 
 [Definitions]
 Definition1=Objects.ocd
 
-[Game]
-Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
-
 [Player1]
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Pump=1;ChemicalLab=1;Armory=1;Lorry=1;Cannon=1;Catapult=1;Airship=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;MetalBarrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;Pipe=1;GrappleBow=1;PowderKeg=1;Ropeladder=1;
-HomeBaseMaterial=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
-HomeBaseProduction=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
 
 [Player2]
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Pump=1;ChemicalLab=1;Armory=1;Lorry=1;Cannon=1;Catapult=1;Airship=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;MetalBarrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;Pipe=1;GrappleBow=1;PowderKeg=1;Ropeladder=1;
-HomeBaseMaterial=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
-HomeBaseProduction=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
 
 [Player3]
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Pump=1;ChemicalLab=1;Armory=1;Lorry=1;Cannon=1;Catapult=1;Airship=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;MetalBarrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;Pipe=1;GrappleBow=1;PowderKeg=1;Ropeladder=1;
-HomeBaseMaterial=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
-HomeBaseProduction=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
 
 [Player4]
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Pump=1;ChemicalLab=1;Armory=1;Lorry=1;Cannon=1;Catapult=1;Airship=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;MetalBarrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;Pipe=1;GrappleBow=1;PowderKeg=1;Ropeladder=1;
-HomeBaseMaterial=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
-HomeBaseProduction=Clonk=2;Shovel=2;Axe=1;Hammer=1;Loam=5;Barrel=2;Bread=2;
 
 [Landscape]
 InEarth=Rock=1;Firestone=3;Loam=1

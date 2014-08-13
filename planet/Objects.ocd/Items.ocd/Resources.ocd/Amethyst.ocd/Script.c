@@ -7,3 +7,6 @@ func GetGemColor()
 {
 	return RGB(255, 20, 255);
 }
+
+local Name = "$Name$";
+local Description = "$Description$";

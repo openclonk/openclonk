@@ -20,7 +20,17 @@
 #include "C4Version.h"
 
 #include <boost/foreach.hpp>
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#pragma GCC diagnostic ignored "-Wredundant-decls"
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
 #include <natupnp.h>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
 // MinGW doesn't usually have these

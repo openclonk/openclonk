@@ -352,11 +352,14 @@ bool C4Def::Load(C4Group &hGroup,
 			DebugLogF("  Error loading SolidMask of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 			return false;
 		}
+		// check SolidMask size
+		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>pSolidMask->Wdt || SolidMask.y+SolidMask.Hgt>pSolidMask->Hgt) SolidMask.Default();
 	}
 	else if (SolidMask.Wdt)
 	{
 		// Warning in case someone wants to define SolidMasks the old way (in the main graphics file)
 		DebugLogF("WARNING: Definition %s (%s) defines SolidMask in DefCore but has no SolidMask file!", hGroup.GetFullName().getData(), id.ToString());
+		SolidMask.Default();
 	}
 
 	// Read surface bitmap
@@ -459,8 +462,6 @@ bool C4Def::Load(C4Group &hGroup,
 		// Bitmap post-load settings
 		if (Graphics.GetBitmap())
 		{
-			// check SolidMask
-			if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
 			// Set MainFace (unassigned bitmap: will be set by GetMainFace())
 			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
@@ -480,8 +481,6 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
-		PictureRect.Default();
-		SolidMask.Default();
 	}
 
 	// Temporary flag

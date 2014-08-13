@@ -14,7 +14,7 @@ func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
-	ClearFreeRect(GetX() + 7, GetY() + 20, 24, length + 13);
+	ClearFreeRect(GetX() + 7 - 38*GetDir(), GetY() + 20, 24, length + 13);
 	// Move the case back
 	case->SetPosition(case->GetX(), GetY()+20);
 }
@@ -66,6 +66,15 @@ func CreateRope()
 	rope->SetAction("Be", case.back);
 }
 
+func SetDir(new_dir, ...)
+{
+	var r = inherited(new_dir, ...);
+	// Update position of child objects on direction change
+	if (case) case->SetPosition(GetX() -19 * GetCalcDir(), case->GetY());
+	if (rope) rope->SetPosition(GetX() -19 * GetCalcDir(), rope->GetY());
+	return r;
+}
+
 /* Scenario saving */
 
 func SaveScenarioObject(props)
@@ -106,25 +115,26 @@ func LostCase()
 
 func StartEngine()
 {
-	Sound("ElevatorStart", nil, nil, nil, nil, 100);
+	Sound("ElevatorStart", nil, nil, nil, nil, 400);
 	ScheduleCall(this, "EngineLoop", 34);
 	//Sound("ElevatorMoving", nil, nil, nil, 1);
 }
 func EngineLoop()
 {
-	Sound("ElevatorMoving", nil, nil, nil, 1, 100);
+	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
 }
 func StopEngine()
 {
 	Sound("ElevatorMoving", nil, nil, nil, -1);
 	ClearScheduleCall(this, "EngineLoop");
-	Sound("ElevatorStop", nil, nil, nil, nil, 100);
+	Sound("ElevatorStop", nil, nil, nil, nil, 400);
 }
 
 /* Construction */
 
 // Sticking to other elevators
-func ConstructionCombineWith() { return "IsElevator"; }
+public func ConstructionCombineWith() { return "IsElevator"; }
+public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right; }
 
 // Called to determine if sticking is possible
 func IsElevator(object previewer)

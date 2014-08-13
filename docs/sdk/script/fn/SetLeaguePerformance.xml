@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLeaguePerformance</title>
+    <category>Network</category>
+    <subcat>League</subcat>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>score</name>
+          <desc>New player or scenario score</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player_id</name>
+          <desc>ID of player whose score shall be set. If not given, global performance for all players is set.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the league score. This function can be used for custom scenario scoring in competition or adventure leagues.</desc>
+    <remark>Use <funclink>GetPlayerID</funclink>() to get the ID of a joined player.</remark>
+    <examples>
+      <example>
+        <code>#appendto Rock
+static g_rocks_collected;
+
+func Entrance(clonk)
+{
+	var plr = clonk-><funclink>GetController</funclink>();
+	if (clonk-><funclink>GetID</funclink>() == Clonk &amp;&amp; plr != NO_OWNER)
+	{
+		++g_rocks_collected;
+		<funclink>Log</funclink>("%s found a rock! Score: %d", <funclink>GetTaggedPlayerName</funclink>(plr), g_rocks_collected);
+		SetLeaguePerformance(g_rocks_collected);
+		return <funclink>RemoveObject</funclink>();
+	}
+	return <funclink>_inherited</funclink>(clonk, ...);
+}</code>
+        <text>Rock script modification: Whenever a rock is collected by a Clonk, the score of all players is increased.</text>
+      </example>
+    </examples>
+    <related><funclink>SetLeagueProgressData</funclink><funclink>GetLeagueScore</funclink></related>
+  </func>
+  <author>Sven2</author><date>2014-04</date>
+</funcs>

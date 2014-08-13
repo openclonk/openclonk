@@ -9,6 +9,5 @@ Vertices=3
 VertexX=-4,4,0
 VertexY=8,8,0
 VertexFriction=100,100,100
-Value=20
 Mass=1000
 Components=Wood=3;Metal=1;

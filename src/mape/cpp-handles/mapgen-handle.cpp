@@ -14,9 +14,11 @@
  */
 
 #include "C4Include.h"
+#include <C4MapScript.h>
 #include <C4MapCreatorS2.h>
 #include <C4ScriptHost.h>
 #include <C4DefList.h>
+#include <C4Def.h>
 #include <C4Aul.h>
 
 #include "mape/cpp-handles/material-handle.h"
@@ -26,6 +28,7 @@
 
 #define HANDLE_TO_MATERIAL_MAP(handle) (reinterpret_cast<C4MaterialMap*>(handle))
 #define HANDLE_TO_TEXTURE_MAP(handle) (reinterpret_cast<C4TextureMap*>(handle))
+#define HANDLE_TO_GROUP(handle) (reinterpret_cast<C4Group*>(handle))
 
 namespace
 {
@@ -51,6 +54,117 @@ struct _C4MapgenHandle {
 	StdCopyStrBuf error_message;
 	BYTE* data;
 };
+
+void c4_mapgen_handle_init_script_engine()
+{
+	InitCoreFunctionMap(&ScriptEngine);
+	::MapScript.InitFunctionMap(&ScriptEngine);
+}
+
+void c4_mapgen_handle_deinit_script_engine()
+{
+	MapScript.Clear();
+	GameScript.Clear();
+	ScriptEngine.Clear();
+}
+
+void c4_mapgen_handle_set_map_library(C4GroupHandle* group_handle)
+{
+	::Definitions.Clear();
+
+	C4Def* libmap = new C4Def;
+	libmap->id = C4ID(std::string("Library_Map"));
+	libmap->SetName(libmap->id.ToString());
+	libmap->Category = C4D_StaticBack;
+	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), C4D_Load_Script, NULL, NULL))
+	{
+		fprintf(stderr, "Failed to load Library_Map script\n");
+		delete libmap;
+	}
+	else
+	{
+		::Definitions.Add(libmap, false);
+	}
+}
+
+C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* source, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)
+{
+	// Re-initialize script engine. Otherwise, we get a warning when the user
+	// changes the value of a constant, since it is defined already from the
+	// previous map rendering.  Note that we do not need to re-load the map library.
+	c4_mapgen_handle_deinit_script_engine();
+	c4_mapgen_handle_init_script_engine();
+
+	try
+	{
+		// TODO: Could also re-use an existing CSurface8,
+		// saving unnecessary malloc/free between map renderings
+		C4SLandscape landscape;
+		landscape.Default();
+
+		landscape.MapWdt.Set(map_width, 0, map_width, map_width);
+		landscape.MapHgt.Set(map_height, 0, map_height, map_height);
+		landscape.MapPlayerExtend = 0;
+
+		c4_log_handle_clear();
+		::MapScript.LoadData(filename, source, NULL);
+		// If InitializeMap() returns false, the map creator wants to
+		// call a fallback in the scenario script. This crashes if no
+		// scenario script is loaded, so simply load an empty script
+		// here:
+		::GameScript.LoadData("Script.c", "", NULL);
+
+		const char* parse_error = c4_log_handle_get_first_log_message();
+		if(parse_error)
+			throw std::runtime_error(parse_error);
+
+		// Link script engine (resolve includes/appends, generate code)
+		c4_log_handle_clear();
+		ScriptEngine.Link(&::Definitions);
+		if(c4_log_handle_get_n_log_messages() > 1)
+			throw std::runtime_error(c4_log_handle_get_first_log_message());
+		// Set name list for globals
+		ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
+
+		// Generate map, fail if return error occurs
+		c4_log_handle_clear();
+		CSurface8* out_ptr = NULL;
+		const bool result = ::MapScript.InitializeMap(
+			&landscape,
+			HANDLE_TO_TEXTURE_MAP(texture_map),
+			HANDLE_TO_MATERIAL_MAP(material_map),
+			1,
+			&out_ptr);
+		std::auto_ptr<CSurface8> out(out_ptr);
+
+		// Don't show any map if there was a script runtime error
+		const char* runtime_error = c4_log_handle_get_first_log_message();
+		if(runtime_error)
+			throw std::runtime_error(runtime_error);
+
+		if(!result)
+			throw std::runtime_error("No InitializeMap() function present in the script, or it returns false");
+
+		C4MapgenHandle* handle = new C4MapgenHandle;
+		handle->width = out->Wdt;
+		handle->height = out->Hgt;
+		handle->rowstride = out->Wdt;
+		handle->error_message = NULL;
+		handle->data = out->Bits;
+		out->ReleaseBuffer();
+
+		return handle;
+	}
+	catch(const std::exception& ex)
+	{
+		C4MapgenHandle* handle = new C4MapgenHandle;
+		handle->width = 0;
+		handle->height = 0;
+		handle->error_message.Copy(ex.what());
+		handle->data = NULL;
+		return handle;
+	}
+}
 
 C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, const char* script_path, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height)
 {
@@ -80,6 +194,12 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		// Landscape.txt file
 		if(HasAlgoScript(mapgen.GetMap(NULL)))
 		{
+			// Re-initialize script engine. Otherwise, we get a warning when the user
+			// changes the value of a constant, since it is defined already from the
+			// previous map rendering.  Note that we do not need to re-load the map library.
+			c4_mapgen_handle_deinit_script_engine();
+			c4_mapgen_handle_init_script_engine();
+
 			if(script_path == NULL)
 				throw std::runtime_error("For algo=script overlays to work, save the file first at the location of the Script.c file");
 
@@ -105,9 +225,6 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 				throw std::runtime_error(error_msg.getData());
 			}
 
-			// load core functions into script engine
-			InitCoreFunctionMap(&ScriptEngine);
-
 			c4_log_handle_clear();
 			GameScript.Load(File, basename, NULL, NULL);
 			g_free(dirname);
@@ -120,7 +237,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			// Link script engine (resolve includes/appends, generate code)
 			c4_log_handle_clear();
 			ScriptEngine.Link(&::Definitions);
-			if(ScriptEngine.warnCnt > 0 || ScriptEngine.errCnt > 0)
+			if(c4_log_handle_get_n_log_messages() > 1)
 				throw std::runtime_error(c4_log_handle_get_first_log_message());
 			// Set name list for globals
 			ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
@@ -129,8 +246,6 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		c4_log_handle_clear();
 		int32_t out_width, out_height;
 		BYTE* array = mapgen.RenderBuf(NULL, out_width, out_height);
-		GameScript.Clear();
-		ScriptEngine.Clear();
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();

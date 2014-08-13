@@ -9,7 +9,6 @@ Vertices=4
 VertexX=-26,26,-22,23
 VertexY=-4,-3,19,19
 VertexFriction=50,50,100,100
-Value=200
 Mass=4500
 Components=Wood=6;Metal=3
 Exclusive=1

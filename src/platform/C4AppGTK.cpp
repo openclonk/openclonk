@@ -76,7 +76,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	}
 	if (Priv->xrandr_major_version >= 0)
 	{
-		LogF("Using XRandR version %d.%d", Priv->xrandr_major_version, Priv->xrandr_minor_version);
 		XRRSelectInput(dpy, DefaultRootWindow(dpy), RRScreenChangeNotifyMask);
 	}
 	else
@@ -214,7 +213,7 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	RROutput output = XRRGetOutputPrimary(dpy, w);
 	if(output != 0)
 	{
-		info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
+		info = XRRGetOutputInfo(dpy, r, output);
 		if (!info)
 		{
 			XRRFreeScreenResources(r);

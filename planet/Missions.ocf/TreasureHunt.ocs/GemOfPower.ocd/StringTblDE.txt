@@ -1,0 +1,2 @@
+Name=Juwel der Macht
+Description=Ziel der Begierde von Schatzsuchern.

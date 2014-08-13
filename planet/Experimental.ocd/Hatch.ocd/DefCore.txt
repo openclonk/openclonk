@@ -13,5 +13,4 @@ VertexCNAT=64,1,2,1,2
 SolidMask=0,0,20,20,0,0
 Components=Wood=4;
 Construction=1
-Value=8
 Mass=10

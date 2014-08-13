@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetPlayerZoom</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>5.5 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose zoom or zoom limits are to be adjusted. NO_OWNER for all players.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>zoom</name>
+          <desc>New zoom factor. A factor of zero disables direct zoom definition and reverts to the default method of calculating zoom by view range.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Value by which zoom is divided to achieve fractional numbers.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>Flags controlling function behaviour:
+            <table>
+              <rowh>
+                <col>Flag</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>PLRZOOM_Direct</literal_col>
+                <col>The zoom does not scroll slowly towards the new value, but is set directly.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_NoIncrease</literal_col>
+                <col>The new zoom is only to be set if it is smaller than the current value.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_NoDecrease</literal_col>
+                <col>The new zoom is only to be set if it is greater than the current value.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_LimitMin</literal_col>
+                <col>Set the minimum limit for zooming. The player cannot zoom out further than this.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_LimitMax</literal_col>
+                <col>Set the maximum limit for zooming. The player cannot zoom in further than this.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_Set</literal_col>
+                <col>Set the current zoom. This flag is implied if neither PLRZOOM_LimitMin nor PLRZOOM_LimitMax is supplied but can be used if current zoom and limits should be set simultanuously.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes zoom or zoom limits vor all viewports of a player to direct values.</desc>
+    <remark>Setting zoom to a direct value causes the game to look different depending on which screen resolution the player has configured. Use this function only if you want to achieve direct pixel correspondance between the game world and the screen, e.g. because your scenario provides low resolution graphics only or because your scenario should be played in certain screen resolutions only. Regular scenarios should use <funclink>SetPlayerZoomByViewRange</funclink> to achieve visuals whcih are independent of the player's monitor size.</remark>
+    <examples>
+      <example>
+        <code>func InitializePlayer(int plr)
+{
+  SetPlayerZoom(plr, 1,1, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+  <funclink>SetPlayerViewLock</funclink>(plr, true);
+  return true;
+}</code>
+        <text>Code for a scenario script: The zoom is fixed to 1, i.e. one landscape pixel corresponds to one pixel on the screen. Zooming in or out is not possible.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlayerZoomByViewRange</funclink>
+      <funclink>GetPlayerZoomLimits</funclink>
+      <funclink>SetPlayerViewLock</funclink>
+      <funclink>SetPlrView</funclink>
+      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetFoW</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2014-03</date>
+</funcs>

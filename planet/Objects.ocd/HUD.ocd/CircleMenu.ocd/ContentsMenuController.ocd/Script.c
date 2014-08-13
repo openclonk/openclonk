@@ -501,6 +501,8 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 			moved_to_target[GetLength(moved_to_target)] = obj;
 			moved_length++;
 		}
+		// Safety: Callback may have deleted objects.
+		if (!this || !p_source || !p_target || !p_target.Object || !p_source.Object) return moved_length;
 	}
 	
 	// Update target menu, source menu is updated elsewhere.

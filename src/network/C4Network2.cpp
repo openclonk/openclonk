@@ -145,7 +145,7 @@ C4Network2::C4Network2()
 		pVoteDialog(NULL),
 		fPausedForVote(false),
 		iLastOwnVoting(0),
-		fStreaming(NULL)
+		fStreaming(false)
 {
 
 }
@@ -2017,7 +2017,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	    !pLeagueClient->GetStartReply(&LeagueServerMessage, &League, &StreamingAddr, &Seed, &MaxPlayersLeague))
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_REGGAME"), pError);
 		// Log message
@@ -2041,7 +2041,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 	// Show message
 	if (LeagueServerMessage.getLength())
 	{
-		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LoadResStr(LeagueServerMessage.getData()));
+		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_LEAGUEGAMESIGNUP"), pLeagueClient->getServerName(), LeagueServerMessage.getData());
 		// Log message
 		Log(Message.getData());
 		// Show message
@@ -2127,7 +2127,7 @@ bool C4Network2::LeagueUpdateProcessReply()
 	if (!fSucc)
 	{
 		const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-		                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+		                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 		                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 		StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_UPDATEGAME"), pError);
 		// Show message - no dialog, because it's not really fatal and might happen in the running game
@@ -2205,7 +2205,7 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 		if (!pLeagueClient->isSuccess() || !pLeagueClient->GetEndReply(&LeagueServerMessage, &RoundResults))
 		{
 			const char *pError = pLeagueClient->GetError() ? pLeagueClient->GetError() :
-			                     LeagueServerMessage.getLength() ? LoadResStr(LeagueServerMessage.getData()) :
+			                     LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 			                     LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 			sResultMessage.Take(FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_SENDRESULT"), pError));
 			if (Application.isEditor) continue;
@@ -2252,59 +2252,32 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 	LeagueWaitNotBusy();
 
 	// Official league?
-	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "clonk.de");
-
-	// Try to auth with WebCode, if it's an official league server and we have valid registration information
-	bool fWebCode = fOfficialLeague && *Config.GetRegistrationData("Cuid");
+	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "league.openclonk.org");
 
 	StdStrBuf Account, Password;
-	bool fRegister = false;
+	bool fRememberLogin = false;
+
+	// Default password from login token if present
+	if (Config.Network.GetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), &Account, &Password))
+	{
+		fRememberLogin = (Password.getLength()>0);
+	}
+	else
+	{
+		Account.Copy(pInfo->GetName());
+	}
 
 	for (;;)
 	{
-
-		StdStrBuf NewAccount, NewPassword;
-
-		// Default authentication data
-		if (!Account.getLength()) Account.Copy(Config.GetRegistrationData("Cuid"));
-
-		// Try first auth with local CUID and WebCode
-		if (fWebCode)
-		{
-
-			// Default authentication data
-			Password.Copy(Config.GetRegistrationData("WebCode"));
-		};
-
-		// Ask for registration information
-		if (fRegister)
-		{
-			// Use local nick as default
-			NewAccount.Copy(Config.Network.Nick);
-			if (Config.Network.Nick.getLength() == 0)
-				NewAccount.Copy(Config.GetRegistrationData("Nick"));
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &NewAccount, &NewPassword, !fOfficialLeague, true))
-				return false;
-			if (!NewPassword.getLength())
-				NewPassword.Copy(Password);
-		}
-		else if (!fWebCode)
-		{
-
-			// CUID is default for account, no default password
-			Password.Clear();
-
-			// ask for account
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false))
-				return false;
-
-		}
+		// ask for account name and password
+		if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), Account.getData(), pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false, &fRememberLogin))
+			return false;
 
 		// safety (modal dlg may have deleted network)
 		if (!pLeagueClient) return false;
 
 		// Send authentication request
-		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NewAccount.getLength() ? NewAccount.getData() : NULL, NewPassword.getLength() ? NewPassword.getData() : NULL))
+		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NULL, NULL, fRememberLogin))
 			return false;
 
 		// safety (modal dlg may have deleted network)
@@ -2344,18 +2317,21 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		}
 
 		// Success?
-		StdStrBuf AUID, AccountMaster; bool fUnregistered = false;
-		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered))
+		StdStrBuf AUID, AccountMaster, LoginToken; bool fUnregistered = false;
+		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered, &LoginToken))
 		{
 
 			// Set AUID
 			pInfo->SetAuthID(AUID.getData());
 
+			// Remember login data; set or clear login token
+			Config.Network.SetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), Account.getData(), fRememberLogin ? LoginToken.getData() : "");
+
 			// Show welcome message, if any
 			bool fSuccess;
 			if (Message.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
-				             LoadResStr(Message.getData()), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
+				             Message.getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 				             C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 			else if (AccountMaster.getLength())
 				fSuccess = ::pGUI->ShowMessageModal(
@@ -2378,24 +2354,10 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		else
 		{
 
-			// Error with first-time registration or manual password entry
-			if ((!fWebCode && !fUnregistered) || fRegister)
-			{
-				LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
+			// Authentification error
+			LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
 				::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESERVERMSG"), Message.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPFAILED"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-				// after a league server error message, always fall-through to try again
-			}
-
-		}
-
-		// Autommatic attempt?
-		if ((fWebCode || fUnregistered) && !fRegister)
-		{
-			// No account yet? Try to register.
-			if (fUnregistered)
-				fRegister = true;
-			else
-				fWebCode = false;
+			// after a league server error message, always fall-through to try again
 		}
 
 		// Try given account name as default next time
@@ -2441,7 +2403,7 @@ bool C4Network2::LeaguePlrAuthCheck(C4PlayerInfo *pInfo)
 	// Check if league server approves. pInfo will have league info if this call is successful.
 	if (!pLeagueClient->GetAuthCheckReply(&Message, Game.Parameters.League.getData(), pInfo))
 	{
-		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), LoadResStr(Message.getData())).getData());
+		LeagueShowError(FormatString(LoadResStr("IDS_MSG_LEAGUEJOINREFUSED"), pInfo->GetName(), Message.getData()).getData());
 		return false;
 	}
 
@@ -2476,7 +2438,7 @@ void C4Network2::LeagueNotifyDisconnect(int32_t iClientID, C4LeagueDisconnectRea
 		szMsg = LoadResStr("IDS_MSG_LEAGUEUNEXPECTEDDISCONNEC");
 	else
 		szMsg = LoadResStr("IDS_ERR_LEAGUEERRORREPORTINGUNEXP");
-	LogF(szMsg, LoadResStr(sMessage.getData()));
+	LogF(szMsg, sMessage.getData());
 }
 
 void C4Network2::LeagueWaitNotBusy()

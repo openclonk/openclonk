@@ -13,7 +13,10 @@
  * for the above references.
  */
 
-#ifdef USE_OPEN_AL
+#ifndef INC_C4SoundLoaders
+#define INC_C4SoundLoaders
+
+#if AUDIO_TK == AUDIO_TK_OPENAL
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 #endif
@@ -29,7 +32,7 @@ namespace C4SoundLoaders
 		double sample_length;
 		uint32_t sample_rate;
 		std::vector<BYTE> sound_data;
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 		ALenum format;
 #endif
 		C4SoundHandle final_handle;
@@ -53,7 +56,7 @@ namespace C4SoundLoaders
 		virtual bool ReadInfo(SoundInfo* info, BYTE* data, size_t data_length, uint32_t options = 0) = 0;
 	};
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if AUDIO_TK == AUDIO_TK_OPENAL && defined(__APPLE__)
 	class AppleSoundLoader: public SoundLoader
 	{
 	public:
@@ -64,18 +67,24 @@ namespace C4SoundLoaders
 	};
 #endif
 
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 	class VorbisLoader: public SoundLoader
 	{
-	private:
+	public: // needed by C4MusicFileOgg
 		struct CompressedData
 		{
 		public:
 			BYTE* data;
 			size_t data_length;
 			size_t data_pos;
-			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0)
-			{}
+			bool is_data_owned; // if true, dtor will delete data
+			CompressedData(BYTE* data, size_t data_length): data(data), data_length(data_length), data_pos(0), is_data_owned(false) {}
+			CompressedData() : data(NULL), data_length(0), data_pos(0), is_data_owned(false) {}
+			void SetOwnedData(BYTE* data, size_t data_length)
+			{ clear(); this->data=data; this->data_length=data_length; this->data_pos=0; is_data_owned=true; }
+
+			~CompressedData() { clear(); }
+			void clear()  { if (is_data_owned) delete [] data; data=NULL; }
 		};
 		static size_t read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);
 		static int seek_func(void* datasource, ogg_int64_t offset, int whence);
@@ -96,18 +105,16 @@ namespace C4SoundLoaders
 		static WavLoader singleton;
 	};
 #endif // apple
-#endif // openal
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	class SDLMixerSoundLoader: public SoundLoader
 	{
 	public:
 		static SDLMixerSoundLoader singleton;
 		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
 	};
-#endif
 
-#ifdef HAVE_FMOD
+#elif AUDIO_TK == AUDIO_TK_FMOD
 	class FMODSoundLoader: public SoundLoader
 	{
 	public:
@@ -116,3 +123,5 @@ namespace C4SoundLoaders
 	};
 #endif
 }
+
+#endif

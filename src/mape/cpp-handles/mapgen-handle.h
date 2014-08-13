@@ -25,6 +25,11 @@ G_BEGIN_DECLS
 
 typedef struct _C4MapgenHandle C4MapgenHandle;
 
+void c4_mapgen_handle_init_script_engine();
+void c4_mapgen_handle_deinit_script_engine();
+void c4_mapgen_handle_set_map_library(C4GroupHandle* group_handle);
+
+C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* source, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height);
 C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, const char* script_path, C4MaterialMapHandle* material_map, C4TextureMapHandle* texture_map, unsigned int map_width, unsigned int map_height);
 void c4_mapgen_handle_free(C4MapgenHandle* mapgen);
 

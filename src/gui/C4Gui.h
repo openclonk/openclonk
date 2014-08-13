@@ -1968,7 +1968,8 @@ namespace C4GUI
 		void Clear(); // zero data
 
 		// create from ActMap and graphics of a definition (does some script callbacks to get parameters)
-		bool SetByDef(C4ID idSourceDef);
+		bool SetByDef(C4Def *pSrcDef);
+		bool SetByDef(C4ID idSourceDef); // a wrapper for the above method
 		bool UpdateGfx(); // update Surface, e.g. after def reload
 
 		void Ref() { ++iRefCount; }

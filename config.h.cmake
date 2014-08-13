@@ -1,6 +1,3 @@
-/* Activate DebugRecs */
-#cmakedefine DEBUGREC 1
-
 /* Generate minidumps on crash */
 #cmakedefine HAVE_DBGHELP 1
 
@@ -9,9 +6,6 @@
 
 /* The backtrace function is declared in execinfo.h and works */
 #cmakedefine HAVE_EXECINFO_H 1
-
-/* Whether FMOD shall be used */
-#cmakedefine HAVE_FMOD 1
 
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
@@ -30,9 +24,6 @@
 
 /* Define if you have a readline compatible library */
 #cmakedefine HAVE_LIBREADLINE 1
-
-/* Define to 1 if you have SDL_mixer. */
-#cmakedefine HAVE_LIBSDL_MIXER 1
 
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
@@ -127,7 +118,7 @@
 #cmakedefine HAVE_X11_KEYSYM_H 1
 
 /* Define as const if the declaration of iconv() needs const. */
-#cmakedefine ICONV_CONST
+#define ICONV_CONST @ICONV_CONST@
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1
@@ -163,9 +154,6 @@
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
-/* OpenAL sound */
-#cmakedefine USE_OPEN_AL 1
-
 /* Define to 1 if SDL is used for the main loop */
 #cmakedefine USE_SDL_MAINLOOP 1
 
@@ -195,3 +183,10 @@
 
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
+
+/* Select an audio provider */
+#define AUDIO_TK_NONE 0
+#define AUDIO_TK_OPENAL 1
+#define AUDIO_TK_FMOD 2
+#define AUDIO_TK_SDL_MIXER 3
+#define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}

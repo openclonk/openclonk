@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("CrystalHit?");
+	Sound("IceHit?");
 }
 
 protected func Construction()
@@ -33,6 +33,9 @@ private func Freeze()
 	ExtractMaterialAmount(0, 0, Material("Water"), 2);
 	DoCon(1);
 }
+
+func IsLiquid() { return "Water"; }
+func GetLiquidAmount() { return GetCon()*2; }
 
 local Collectible = 1;
 local Name = "$Name$";

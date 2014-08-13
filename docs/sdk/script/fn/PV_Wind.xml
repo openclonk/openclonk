@@ -31,6 +31,7 @@
       <funclink>PV_Step</funclink>
       <funclink>PV_Speed</funclink>
       <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Sin</funclink>
       <funclink>PC_Die</funclink>
       <funclink>PC_Bounce</funclink>
       <funclink>PC_Stop</funclink>

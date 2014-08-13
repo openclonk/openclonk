@@ -38,6 +38,7 @@ don't need to include this file or any of the files it includes. */
 #define DEBUGREC_MATSCAN
 #define DEBUGREC_MENU
 #define DEBUGREC_OCF
+//#define DEBUGREC_RECRUITMENT
 
 // solidmask debugging
 //#define SOLIDMASK_DEBUG

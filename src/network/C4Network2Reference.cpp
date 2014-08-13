@@ -52,11 +52,16 @@ void C4Network2Reference::InitLocal()
 	Parameters = ::Game.Parameters;
 
 	// Discard player resources (we don't want these infos in the reference)
+	// Add league performance (but only after game end)
 	C4ClientPlayerInfos *pClientInfos; C4PlayerInfo *pPlayerInfo;
 	int32_t i, j;
 	for (i = 0; (pClientInfos = Parameters.PlayerInfos.GetIndexedInfo(i)); i++)
 		for (j = 0; (pPlayerInfo = pClientInfos->GetPlayerInfo(j)); j++)
+		{
 			pPlayerInfo->DiscardResource();
+			if(::Game.GameOver)
+				pPlayerInfo->SetLeaguePerformance(::Game.RoundResults.GetLeaguePerformance(pPlayerInfo->GetID()));
+		}
 
 	// Special additional information in reference
 	Icon = ::Game.C4S.Head.Icon;

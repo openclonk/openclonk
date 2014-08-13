@@ -153,7 +153,7 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
 			do
 			{
-				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, Target);
+				Target = Game.FindObject(NULL,X,Y,0,0,OCF_NotContained, Target);
 			}
 			while ((dwKeyState & MK_SHIFT) && Target && Selection.GetLink(Target));
 		}
@@ -228,7 +228,7 @@ void C4EditCursor::ClearSelection()
 	// remove all objects from selection and do script callbacks
 	// iterate safely because callback might delete selected objects!
 	C4Object *obj;
-	while (obj = Selection.GetObject(0))
+	while ((obj = Selection.GetObject(0)))
 	{
 		Selection.Remove(obj);
 		if (obj->Status)

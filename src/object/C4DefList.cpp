@@ -211,6 +211,11 @@ C4Def* C4DefList::ID2Def(C4ID id)
 	return NULL;
 }
 
+C4Def * C4DefList::GetByName(const StdStrBuf & name)
+{
+	return ID2Def(C4ID(name));
+}
+
 int32_t C4DefList::GetIndex(C4ID id)
 {
 	C4Def *cdef;

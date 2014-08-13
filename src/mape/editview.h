@@ -20,6 +20,7 @@
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <gtksourceview/gtksourcestyleschememanager.h>
 #include "mape/forward.h"
+#include "mape/mapgen.h"
 
 typedef enum MapeEditViewError_ {
 	MAPE_EDIT_VIEW_ERROR_MISSING_MAPS,
@@ -32,6 +33,7 @@ struct MapeEditView_ {
 	GtkWidget* view;
 	gchar* file_path;
 	const gchar* encoding;
+	MapeMapgenType type;
 
 	GtkSourceLanguageManager* lang_manager;
 	GtkSourceStyleSchemeManager* style_manager;

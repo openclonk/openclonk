@@ -142,6 +142,7 @@ C4StringTable::C4StringTable()
 	P[P_Blasted] = "Blasted";
 	P[P_IncineratingObj] = "IncineratingObj";
 	P[P_Plane] = "Plane";
+	P[P_SolidMaskPlane] = "SolidMaskPlane";
 	P[P_Tooltip] = "Tooltip";
 	P[P_Placement] = "Placement";
 	P[P_BlastIncinerate] = "BlastIncinerate";
@@ -196,6 +197,8 @@ C4StringTable::C4StringTable()
 	P[P_OnCollision] = "OnCollision";
 	P[P_Distance] = "Distance";
 	P[P_Smoke] = "Smoke";
+	P[P_Source] = "Source";
+	P[P_Color] = "Color";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

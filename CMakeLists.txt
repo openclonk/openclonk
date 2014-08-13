@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.6.0)
+cmake_minimum_required (VERSION 2.8.4)
 project (openclonk CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -48,62 +48,49 @@ CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF
 CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
-CMAKE_DEPENDENT_OPTION(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON "APPLE" OFF)
-if(APPLE)
-	SET(INITIAL_USE_OPEN_AL ON)
-else()
-	SET(INITIAL_USE_OPEN_AL OFF)
-endif()
-option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
-
-# Remove obsolete options
-unset(OC_BUILD_MULTIPROCESSOR CACHE)
-
-############################################################################
-# Check for compiler quirks and features
-############################################################################
-include(CheckCXXCompilerFlag)
-if(CMAKE_COMPILER_IS_GNUCXX)
-	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
-	if(USE_GCC_STD_0X)
-		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
-endif()
-
-# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
-include(CheckCXXSourceCompiles)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
-endforeach()
-
-# ck 10-09-04: Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
-# otherwise they are used for C library checks as well and the C compiler bails
-# out because it does not understand -std=gnu++0x
-set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
-set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
-include(RequireCXXSourceCompiles)
-if (NOT USE_APPLE_CLANG)
-REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
-endif()
-CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
-CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
-CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
-set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
-
-# g++'s libstdc++ doesn't properly support <regex> until 4.8.1 (maybe later?).
-# They ship a header that declares functions, but they don't ship an
-# implementation for some things (like std::regex_iterator).
-# This needs to test *linking*, not compilation; cmake does both at the same
-# time, so the test below works.
-CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
-CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
 
 # We link Boost statically because that makes it easier for us to distribute
 # the resulting binary. Distributions have the ability to guarantee a certain
 # version of the library exists on the system though, so they may prefer
 # dynamic linking.
 option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
+
+# Remove obsolete options
+unset(OC_BUILD_MULTIPROCESSOR CACHE)
+unset(USE_APPLE_CLANG CACHE)
+
+############################################################################
+# Check for compiler quirks and features
+############################################################################
+include(CheckCXXCompilerFlag)
+include(CheckCXXSourceCompiles)
+include(RequireCXXSourceCompiles)
+
+CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
+if(USE_GCC_STD_0X)
+	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
+endif()
+
+# Convert the OC_CXX_FLAGS list to a CMAKE_REQUIRED_FLAGS string
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
+endforeach()
+
+set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+
+REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
+CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
+CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
+CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+
+# g++'s libstdc++ doesn't properly support <regex> until 4.9.
+# They ship a header that declares functions, but they don't ship an
+# implementation for some things (like std::regex_iterator).
+# This needs to test *linking*, not compilation; cmake does both at the same
+# time, so the test below works.
+CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
+CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
@@ -409,6 +396,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4DefList.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
 	src/object/C4InfoCore.cpp
@@ -477,19 +466,29 @@ set(OC_CLONK_SOURCES
 set(MAPE_BASE_SOURCES
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4MapScriptAlgo.cpp
+	src/landscape/C4MapScript.cpp
+	src/landscape/C4MapScript.h
 	src/landscape/C4Material.cpp
 	src/landscape/C4Material.h
 	src/landscape/C4Texture.cpp
 	src/landscape/C4Texture.h
 	src/landscape/C4Scenario.cpp
 	src/landscape/C4Scenario.h
+	src/graphics/Bitmap256.cpp
+	src/graphics/Bitmap256.h
+	src/graphics/CSurface8.cpp
+	src/graphics/CSurface8.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 )
 
 set(MAPE_SOURCES
+	src/mape/cpp-handles/c4def-handle.cpp
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
 	src/mape/cpp-handles/log-handle.h
@@ -580,33 +579,10 @@ endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4CrashHandlerWin32.cpp
+		src/res/engine.rc
 		src/res/resource.h
 	)
-
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/res/openclonk.manifest" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.manifest" COPYONLY)
-
-	if(MINGW)
-		# cmake does not support compiling resources with MinGW
-		# natively, see http://www.cmake.org/Bug/view.php?id=4068.
-		# cross-compiler sets CMAKE_RC_COMPILER in toolchain file
-		if(NOT CMAKE_RC_COMPILER)
-			SET(CMAKE_RC_COMPILER windres)
-		endif()
-
-		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_BINARY_DIR}
-		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
-		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc)
-
-		list(APPEND OC_SYSTEM_SOURCES
-			${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		)
-	else(MINGW)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/res/engine.rc
-		)
-	endif(MINGW)
 endif()
 
 # source files specific to a GUI library
@@ -753,6 +729,7 @@ include_directories(
 # Check for required system headers
 ############################################################################
 include(CheckIncludeFileCXX)
+include(CheckIncludeFilesCXX)
 CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
 CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
 CHECK_INCLUDE_FILE_CXX(locale.h HAVE_LOCALE_H)
@@ -775,50 +752,12 @@ if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
 endif()
 CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
-
-# ck 09-09-20: The following headers require Xlib.h for things such as
-# 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
-# as a CXX version (yet?).
-include(CheckIncludeFiles)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
-
-if(HAVE_ICONV)
-	SET(ICONV_CONST ON)
+if(WIN32 AND NOT HAVE_NATUPNP_H)
+	include_directories(thirdparty/natupnp)
+	set(HAVE_NATUPNP_H TRUE CACHE BOOL "natupnp.h available" FORCE)
 endif()
-
-include(CheckSymbolExists)
-CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
-CHECK_SYMBOL_EXISTS(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
-
-if(HAVE_ICONV)
-	CHECK_SYMBOL_EXISTS(iconv iconv.h HAVE_ICONV_WO_LINK)
-	mark_as_advanced(HAVE_ICONV_WO_LINK)
-
-	if(NOT HAVE_ICONV_WO_LINK)
-		FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
-		MARK_AS_ADVANCED( ICONV_LIBRARY )
-	endif()
-endif()
-
-if(HAVE_NATUPNP_H)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPWin32.cpp
-	)
-else()
-	FIND_PACKAGE(Upnp)
-	SET(HAVE_UPNP ${UPNP_FOUND})
-	if(UPNP_FOUND)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPLinux.cpp
-		)
-	else()
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPDummy.cpp
-		)
-	endif()
-endif()
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 
 ############################################################################
 # Locate necessary libraries
@@ -846,8 +785,10 @@ include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 find_package("Boost" 1.40.0 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
-include(FindThreads)
-if(NOT WIN32)
+if(CMAKE_SYSTEM MATCHES "Windows")
+	message(STATUS "Using Win32 threading.")
+else()
+	find_package("Threads" REQUIRED)
 	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
 endif()
 
@@ -868,6 +809,36 @@ macro(FINDLIB lib)
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
 
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
+check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
+
+if(HAVE_EXECINFO_H)
+	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
+	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
+	if(NOT HAVE_EXECINFO_WO_LINK)
+		FINDLIB(EXECINFO_LIBRARY execinfo)
+	endif()
+endif()
+
+if(HAVE_NATUPNP_H)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPWin32.cpp
+	)
+else()
+	FIND_PACKAGE(Upnp)
+	SET(HAVE_UPNP ${UPNP_FOUND})
+	if(UPNP_FOUND)
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPLinux.cpp
+		)
+	else()
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPDummy.cpp
+		)
+	endif()
+endif()
+
 if(USE_CONSOLE)
 	find_package(Readline)
 	include_directories(${READLINE_INCLUDE_DIRS})
@@ -883,7 +854,7 @@ if(USE_GTK)
 		include_directories(${GTK3_INCLUDE_DIRS})
 		link_directories(${GTK3_LIBRARY_DIRS})
 	else()
-		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.24" "gtk+-2.0 >= 2.20")
+		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.28" "gtk+-2.0 >= 2.20")
 		include_directories(${GTK_INCLUDE_DIRS})
 		link_directories(${GTK_LIBRARY_DIRS})
 	endif()
@@ -895,7 +866,7 @@ if (PKG_CONFIG_FOUND)
 	if (USE_GTK3)
 		pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
 	else()
-		pkg_check_modules(MAPE_GTK glib-2.0>=2.24 gthread-2.0 gtk+-2.0>=2.20 gtksourceview-2.0)
+		pkg_check_modules(MAPE_GTK glib-2.0>=2.28 gthread-2.0 gtk+-2.0>=2.20 gtksourceview-2.0)
 	endif()
 endif()
 if(MAPE_GTK_FOUND)
@@ -904,21 +875,8 @@ if(MAPE_GTK_FOUND)
 	link_directories(${MAPE_GTK_LIBRARY_DIRS})
 endif()
 
-if(USE_OPEN_AL)
-	if(MSVC)
-		if(${FIND_LIBRARY_USE_LIB64_PATHS})
-			FINDLIB(OPENAL_LIBRARY NAMES OpenAL64)
-		else()
-			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
-		endif()
-	endif()
-	FINDLIB(OGG_LIBRARY NAMES libogg_static libogg ogg)
-	FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static libvorbis vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static libvorbisfile vorbisfile)
-	if(NOT APPLE)
-		FINDLIB(ALUT_LIBRARY NAMES alut_static alut)
-	endif()
-endif()
+# Select an audio library
+find_package("Audio")
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
@@ -1004,9 +962,6 @@ add_executable(c4group
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/platform/StdScheduler.cpp
-	src/platform/StdSchedulerWin32.cpp
-	src/platform/StdSchedulerPoll.cpp
 	src/netpuncher/main.cpp
 )
 
@@ -1062,8 +1017,6 @@ src/lib/C4Real.cpp
 src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
-src/object/C4Id.cpp
-src/object/C4Id.h
 src/script/C4Aul.cpp
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp
@@ -1098,19 +1051,14 @@ target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
-	${ICONV_LIBRARY}
+	${EXECINFO_LIBRARY}
 	libc4script
 	libmisc
 )
 
-if(USE_OPEN_AL)
-	target_link_libraries(openclonk
-		${OPENAL_LIBRARY}
-		${ALUT_LIBRARY}
-		${VORBIS_LIBRARY}
-		${VORBISFILE_LIBRARY}
-		${OGG_LIBRARY}
-	)
+if(Audio_FOUND)
+	target_link_libraries(openclonk ${Audio_LIBRARIES})
+	include_directories(${Audio_INCLUDE_DIRS})
 endif()
 
 if(MAPE_GTK_FOUND)
@@ -1190,6 +1138,12 @@ if(MSVC)
 	# so we add it to the resource file ourselves and tell
 	# MSVC not to create its own.
 	set_property(TARGET openclonk APPEND PROPERTY LINK_FLAGS "/MANIFEST:NO")
+endif()
+
+# Suppress the console window for mape even though only a main() and not
+# a WinMain() entry point is provided.
+if(MINGW)
+	set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
 endif()
 
 ############################################################################
@@ -1305,6 +1259,15 @@ endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
+find_package(ICONV)
+if(ICONV_FOUND)
+	set(HAVE_ICONV true)
+	target_link_libraries(openclonk ${ICONV_LIBRARIES})
+	if(ICONV_IS_CONST)
+		set(ICONV_CONST "const")
+	endif()
+endif()
+
 # TinyXML
 add_subdirectory(thirdparty/tinyxml)
 target_link_libraries(openclonk tinyxml)
@@ -1353,8 +1316,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	#stupid fix: just link to iconv that way
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
@@ -1375,36 +1337,6 @@ if (WIN32)
 	target_link_libraries(c4script ws2_32 winmm)
 	if(MAPE_GTK_FOUND)
 		target_link_libraries(mape winmm)
-	endif()
-
-	if(NOT USE_OPEN_AL)
-		find_package(FMod)
-		if(FMOD_FOUND)
-			set(HAVE_FMOD TRUE)
-			target_link_libraries(openclonk
-				${FMOD_LIBRARIES}
-			)
-			include_directories(${FMOD_INCLUDE_DIR})
-		else()
-			set(HAVE_FMOD FALSE)
-		endif()
-	endif()
-else()
-	SET(HAVE_FMOD FALSE)
-endif()
-if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
-	include(FindSDL)
-	SET(HAVE_SDL ${SDL_FOUND})
-	if(SDL_FOUND)
-		include_directories(${SDL_INCLUDE_DIR})
-		FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
-		if(SDLMIXER_LIBRARIES)
-			SET(HAVE_LIBSDL_MIXER ON)
-		endif()
-		target_link_libraries(openclonk
-			${SDL_LIBRARY}
-			${SDLMIXER_LIBRARIES}
-		)
 	endif()
 endif()
 
@@ -1440,7 +1372,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	include(GccPchSupport)
-	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+	option(USE_GCC_PCH "Use GCC precompiled headers" OFF)
 endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(libmisc src/C4Include.h)
@@ -1512,6 +1444,7 @@ set(OC_C4GROUPS
 	Sound.ocg
 	System.ocg
 	Objects.ocd
+	Decoration.ocd
 	Arena.ocf
 	Parkour.ocf
 	Missions.ocf
@@ -1519,14 +1452,12 @@ set(OC_C4GROUPS
 	Worlds.ocf
 )
 
-get_target_property(C4GROUP_LOCATION c4group LOCATION)
-get_target_property(CLONK_LOCATION openclonk LOCATION)
 foreach(group ${OC_C4GROUPS})
 	if (APPLE)
 		if (CMAKE_GENERATOR STREQUAL Xcode)
 			add_custom_command(TARGET openclonk
 				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"${C4GROUP_LOCATION}"
+				"$<TARGET_FILE:c4group>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				# leave out third parameter here so the script can figure out Xcode-ish paths as usual
 				DEPENDS c4group
@@ -1534,7 +1465,7 @@ foreach(group ${OC_C4GROUPS})
 		else()
 			add_custom_command(TARGET openclonk
 				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"${C4GROUP_LOCATION}"
+				"$<TARGET_FILE:c4group>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
 				DEPENDS c4group
@@ -1560,8 +1491,8 @@ if (NOT APPLE)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 
 	# Install binaries
-	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk DESTINATION games/)
-	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+	install(TARGETS openclonk DESTINATION games)
+	install(TARGETS c4group DESTINATION bin)
 else()
 	install(TARGETS openclonk
 		BUNDLE DESTINATION .
@@ -1577,12 +1508,9 @@ endif()
 
 find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
-string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
-string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
-
 add_custom_command(
 	OUTPUT setup_openclonk.exe
-	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}${C4VERSIONBUILDNAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=${CLONK_LOCATION}" "-DC4GROUP=${C4GROUP_LOCATION}" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}${C4VERSIONBUILDNAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=$<TARGET_FILE_DIR:openclonk>\\$<TARGET_FILE_NAME:openclonk>" "-DC4GROUP=$<TARGET_FILE_DIR:c4group>\\$<TARGET_FILE_NAME:c4group>" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
 	MAIN_DEPENDENCY
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
 	DEPENDS

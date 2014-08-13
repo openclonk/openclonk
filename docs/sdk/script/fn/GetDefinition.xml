@@ -33,7 +33,7 @@ var spawn_weapon = weapon_list[<funclink>Random</funclink>(<funclink>GetLength</
       </example>
     </examples>
     <related>
-      <funclink>GetHomebaseMaterial</funclink>
+      <funclink>GetBaseMaterial</funclink>
       <funclink>GetPlrKnowledge</funclink>
       <funclink>C4D_Goal</funclink>
       <funclink>C4D_Living</funclink>

@@ -71,6 +71,23 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 	return fSuccess;
 }
 
+bool C4ScriptHost::LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable)
+{
+	stringTable = pLocalTable;
+	ScriptName.Copy(szFilename);
+
+	StdStrBuf tempScript;
+	tempScript.Copy(szData);
+
+	Script.Clear();
+	if(stringTable)
+		stringTable->ReplaceStrings(tempScript, Script);
+	else
+		Script.Take(tempScript);
+
+	Preparse();
+	return true;
+}
 
 void C4ScriptHost::MakeScript()
 {
@@ -167,7 +184,7 @@ bool C4DefScriptHost::Parse()
 			case C4D_Living | C4D_Foreground: Plane = 1400; break;
 			case C4D_Object | C4D_Foreground: Plane = 1500; break;
 			default:
-				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->id.ToString());
+				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->GetDataString().getData());
 				gotplane = false;
 				break;
 		}
@@ -175,7 +192,7 @@ bool C4DefScriptHost::Parse()
 	}
 	if (!Def->GetPlane())
 	{
-		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->id.ToString());
+		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->GetDataString().getData());
 		Def->SetProperty(P_Plane, C4VInt(1));
 	}
 	return r;
@@ -213,9 +230,20 @@ bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangS
 	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
-	ScenPrototype.SetPropList(pScen->GetPropertyPropList(P_Prototype));
+	ScenPrototype.SetPropList(pScen->GetPrototype());
 	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);
+}
+
+bool C4GameScriptHost::LoadData(const char * f, const char * d, C4LangStringTable * t)
+{
+	assert(ScriptEngine.GetPropList());
+	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	ScenPropList.SetPropList(pScen);
+	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
+	ScenPrototype.SetPropList(pScen->GetPrototype());
+	Reg2List(&ScriptEngine);
+	return C4ScriptHost::LoadData(f, d, t);
 }
 
 void C4GameScriptHost::Clear()

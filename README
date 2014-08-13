@@ -15,7 +15,7 @@ Additionally, OpenClonk depends on a number of third-party libraries:
   - libjpeg-turbo (http://sourceforge.net/projects/libjpeg-turbo/files/)
   - FreeType (http://www.freetype.org/)
   - The OpenGL Extension Wrangler Library (http://glew.sourceforge.net/)
-  - FreeALUT (https://github.com/openclonk/freealut)
+  - FreeALUT (https://github.com/vancegroup/freealut)
   - libogg and libvorbis (https://www.xiph.org/downloads/)
   - Boost (http://www.boost.org/users/download/)
 
@@ -32,17 +32,18 @@ Linux Specific
 ==============
 For building OpenClonk on Linux, you need the following libraries in addition
 to the ones listed above:
-  - libxpm
-  - libGL
+  - GTK+ 2.0 or 3.0 (http://www.gtk.org)
+  - libGL (http://www.mesa3d.org/)
   - SDL 1.2 (http://www.libsdl.org/download-1.2.php)
   - SDL_mixer 1.2 (http://www.libsdl.org/projects/SDL_mixer/release-1.2.html)
+  - libupnp
+  - libxrandr
 Most distributions should provide these dependencies via their packaging
 system. For Debian based distributions, you will need these packages:
-    build-essential cmake libx11-dev libxxf86vm-dev libxrandr-dev libxpm-dev
-    libglew-dev libgl1-mesa-dev libpng12-dev libsdl1.2-dev
-    libsdl-mixer1.2-dev libgtk2.0-dev libjpeg8-dev zlib1g-dev libboost-dev
-(This list was compiled on Debian 7.0 "Wheezy". More recent distributions may
-provide packages with a higher version number.)
+  build-essential cmake imagemagick libboost-dev libboost-regex-dev
+  libfreetype6-dev libgl1-mesa-dev libglew-dev libgtk2.0-dev libjpeg-dev
+  libpng-dev libsdl1.2-dev libsdl-mixer1.2-dev libupnp-dev libxrandr-dev
+  x11proto-core-dev zlib1g-dev
 
 Windows Specific
 ================
@@ -50,6 +51,4 @@ In addition to the libraries above, you will need one more if you want to
 target Windows:
   - OpenAL Soft (http://kcat.strangesoft.net/openal.html)
 To create an installer, you will also need the Nullsoft Install System
-(http://nsis.sourceforge.net/). makensis needs to be in the PATH, and
-the DLLs used by openclonk must be in the build directory. To create the
-installer, build the "setup" target.
+(http://nsis.sourceforge.net/). To create the installer, build the "setup" target.

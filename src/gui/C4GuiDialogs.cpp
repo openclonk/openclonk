@@ -77,8 +77,11 @@ namespace C4GUI
 
 	bool FrameDecoration::SetByDef(C4ID idSourceDef)
 	{
-		// get source def
-		C4Def *pSrcDef = C4Id2Def(idSourceDef);
+		return SetByDef(C4Id2Def(idSourceDef));
+	}
+
+	bool FrameDecoration::SetByDef(C4Def *pSrcDef)
+	{
 		if (!pSrcDef) return false;
 		// script compiled?
 		if (!pSrcDef->Script.IsReady()) return false;

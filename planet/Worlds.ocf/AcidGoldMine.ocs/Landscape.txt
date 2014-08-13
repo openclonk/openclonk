@@ -1,4 +1,8 @@
-/* Acid world - by Sven2 */
+/** 
+	Acid world
+	
+	@author Sven2
+*/
 
 overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
 overlay Mats { algo=rndchecker; a=10; zoomX=-100; zoomY=-100; turbulence=100; y=48px; hgt=168px; };

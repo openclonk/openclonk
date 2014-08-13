@@ -28,6 +28,7 @@ enum C4ParticleValueProviderID
 	C4PV_Linear,
 	C4PV_Random,
 	C4PV_KeyFrames,
+	C4PV_Sin,
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
@@ -111,15 +112,16 @@ protected:
 		int rerollInterval; // for Random
 		float delay; // for Step
 		float speedFactor; // for Speed & Wind & Gravity
+		float parameterValue; // for Sin
 	};
 
 	union
 	{
 		int alreadyRolled; // for Random
 		int smoothing; // for KeyFrames
-		float maxValue; // for Step
+		float maxValue; // for Step & Sin
 	};
-	
+
 	size_t keyFrameCount;
 	std::vector<float> keyFrames;
 
@@ -173,6 +175,7 @@ public:
 	float Const(C4Particle *forParticle);
 	float Random(C4Particle *forParticle);
 	float KeyFrames(C4Particle *forParticle);
+	float Sin(C4Particle *forParticle);
 	float Direction(C4Particle *forParticle);
 	float Step(C4Particle *forParticle);
 	float Speed(C4Particle *forParticle);
@@ -359,6 +362,7 @@ public:
 	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
+	bool IsEmpty() const { return !particleCount; }
 
 	// before adding a particle, you should ReserveSpace for it
 	C4Particle *AddNewParticle();
@@ -408,14 +412,12 @@ public:
 // cares for the management of particle definitions
 class C4ParticleSystemDefinitionList
 {
-#ifndef USE_CONSOLE
 private:
 	// pointers to the last and first element of linked list of particle definitions
 	C4ParticleDef *first, *last;
 public:
 	C4ParticleSystemDefinitionList() : first(0), last(0) {}
 	void Clear();
-#endif
 	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=0);
 
 	friend class C4ParticleDef;
@@ -435,13 +437,11 @@ class C4ParticleSystem
 	friend class CalculationThread;
 
 private:
-#ifndef USE_CONSOLE
 	// contains an array with indices for vertices, separated by a primitive restart index
 	std::vector<uint32_t> primitiveRestartIndices;
 	// these are fallbacks for if primitiveRestartIndex is not supported by the graphics card
 	std::vector<GLsizei> multiDrawElementsCountArray;
 	std::vector<uint32_t *> multiDrawElementsIndexArray;
-#endif
 	std::list<C4ParticleList> particleLists;
 
 	CalculationThread calculationThread;
@@ -509,13 +509,14 @@ public:
 
 	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4ParticleValueProvider &x, C4ParticleValueProvider &y, C4ParticleValueProvider &speedX, C4ParticleValueProvider &speedY, C4ParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
+
+#endif
 	
 	// removes all of the existing particles (used f.e. for scenario section loading)
 	void ClearAllParticles();
 
 	friend class C4ParticleList;
 
-#endif
 
 };
 

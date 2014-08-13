@@ -109,8 +109,6 @@ enum C4AulBCCType
 	AB_LessThanEqual, // <=
 	AB_GreaterThan, // >
 	AB_GreaterThanEqual,  // >=
-	AB_Identical, // ===
-	AB_NotIdentical,  // !==
 	AB_Equal, // ==
 	AB_NotEqual,  // !=
 	AB_BitAnd,  // &

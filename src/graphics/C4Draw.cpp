@@ -1220,8 +1220,6 @@ bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned
 	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;
 
-	DebugLog("  Create Clipper");
-
 	if (!CreatePrimaryClipper(iXRes, iYRes))
 		return Error("  Clipper failure.");
 

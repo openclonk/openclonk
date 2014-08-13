@@ -67,7 +67,7 @@ class C4PropListNumbered;
 class C4PropList
 {
 public:
-	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
+	void Clear() { constant = false; Properties.Clear(); prototype.Set0(); }
 	const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
 
@@ -77,9 +77,10 @@ public:
 	virtual C4Object * GetObject();
 	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
-	C4PropList * GetPrototype() const { return prototype; }
 	virtual class C4MapScriptLayer * GetMapScriptLayer();
 	virtual class C4MapScriptMap * GetMapScriptMap();
+
+	C4PropList * GetPrototype() const { return prototype._getPropList(); }
 
 	// saved as a reference to a global constant?
 	virtual class C4PropListStatic * IsStatic() { return NULL; }
@@ -146,7 +147,7 @@ private:
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	C4Value *FirstRef; // No-Save
 	C4Set<C4Property> Properties;
-	C4PropList * prototype;
+	C4Value prototype;
 	bool constant; // if true, this proplist is not changeable
 	friend class C4Value;
 	friend class C4ScriptHost;

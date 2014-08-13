@@ -50,6 +50,7 @@ for(var living in <funclink>FindObjects</funclink>(<funclink>Find_OCF</funclink>
       <funclink>GetMaterial</funclink>
       <funclink>GBackSolid</funclink>
       <funclink>GetPathLength</funclink>
+      <funclink>PathFree2</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2002-08</date>

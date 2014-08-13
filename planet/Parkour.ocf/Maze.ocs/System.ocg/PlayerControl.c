@@ -8,8 +8,8 @@ global func PlayerControl(int plr, int ctrl)
 	{
 		CustomMessage(Format("$MsgCheater$", GetTaggedPlayerName(plr)));
 		Sound("Error", true);
-		var crew = GetCursor(plr);
-		if (crew) crew->Punch(crew, 50);
+		//var crew = GetCursor(plr); - used for cheating
+		//if (crew) crew->Punch(crew, 50);
 		return true;
 	}
 	return _inherited(plr, ctrl, ...);

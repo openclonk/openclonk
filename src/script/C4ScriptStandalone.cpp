@@ -28,6 +28,7 @@
 #include <C4Reloc.h>
 #include <C4Record.h>
 #include <C4MapScript.h>
+#include <C4Random.h>
 
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
@@ -46,7 +47,7 @@ const char * C4Config::AtRelativePath(char const*s) {return s;}
 C4DefList Definitions;
 C4DefList::C4DefList() {}
 C4DefList::~C4DefList() {}
-C4Def* C4DefList::ID2Def(C4ID id) {return NULL;}
+C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
 C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
@@ -103,11 +104,15 @@ C4MapScriptHost::~C4MapScriptHost() {}
 void C4MapScriptHost::Clear() {}
 C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
 bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+bool C4MapScriptHost::LoadData(const char *, const char *, C4LangStringTable *) { return false; }
 void C4MapScriptHost::AddEngineFunctions() {}
 
 int c4s_runscript(const char * filename)
 {
 	InitCoreFunctionMap(&ScriptEngine);
+
+	// Seed PRNG
+	FixedRandom(time(NULL));
 
 	C4Group File;
 	if (!File.Open(GetWorkingDirectory()))

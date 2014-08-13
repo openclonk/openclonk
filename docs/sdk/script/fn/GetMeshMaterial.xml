@@ -19,7 +19,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the material currently set for the calling object.</desc>
+    <desc>Returns the material currently set for the calling object. May also be called from definition context to return the default material of the graphics of this definition.</desc>
     <examples>
       <example>
         <code><funclink>if</funclink>(<funclink>GetMeshMaterial</funclink>() == &quot;Clonk_Body&quot;)
@@ -28,8 +28,14 @@ else
 	<funclink>SetMeshMaterial</funclink>(&quot;Clonk_Body&quot;);</code>
         <text>If a clonk has its eyes open then this script makes it close them, otherwise they are opened.</text>
       </example>
+      <example>
+        <code><funclink>for</funclink> (var i=0,mat; mat=<funclink>GetID</funclink>()->GetMeshMaterial(i); ++i)
+	<funclink>SetMeshMaterial</funclink>(mat, i);</code>
+        <text>Resets the mesh material of all submeshes of this object to their respective defaults.</text>
+      </example>
     </examples>
     <related><funclink>SetMeshMaterial</funclink></related>
   </func>
   <author>Clonk-Karl</author><date>2010-04</date>
+  <author>Sven2</author><date>2014-04</date>
 </funcs>

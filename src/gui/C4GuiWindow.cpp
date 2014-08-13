@@ -546,17 +546,17 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	}
 	case C4GuiWindowPropertyName::frameDecoration:
 	{
-		C4ID id = value.getC4ID();
-		if (id != C4ID::None)
-			if (C4Id2Def(id))
+		C4Def *def = value.getDef();
+		
+		if (def)
+		{
+			current->deco = new C4GUI::FrameDecoration();
+			if (!current->deco->SetByDef(def))
 			{
-				current->deco = new C4GUI::FrameDecoration();
-				if (!current->deco->SetByDef(id))
-				{
-					delete current->deco;
-					current->deco = 0;
-				}
+				delete current->deco;
+				current->deco = 0;
 			}
+		}
 		break;
 	}
 	case C4GuiWindowPropertyName::text:

@@ -1,7 +1,0 @@
-[DefCore]
-id=EnvPack_Rail
-Category=C4D_StaticBack
-Width=20
-Height=12
-Offset=-10,-6
-StretchGrowth=1

@@ -66,7 +66,7 @@ public:
 	BYTE *pInitial; // Initial landscape after creation - used for diff
 protected:
 	CSurface8 * Surface8;
-	uint8_t * BottomRowPix; // array size of landscape width: Filled with 0s for bottom row pixels that are open and MCVehic for pixels that are closed
+	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
 	C4LandscapeRender *pLandscapeRender;
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
@@ -139,8 +139,7 @@ public:
 		}
 		if (y<0)
 		{
-			if (TopOpen) return 0;
-			else return MCVehic;
+			return TopRowPix[x];
 		}
 		if (y>=Height)
 		{
@@ -206,7 +205,7 @@ protected:
 	bool TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
 	bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0, bool noClear = false); // zoom map segment to surface (or sector surfaces)
-	bool InitBottomRowPix(); // inti out-of-landscape pixels for bottom side
+	bool InitTopAndBottomRowPix(); // inti out-of-landscape pixels for bottom side
 	bool GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE &rbyCol);
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes

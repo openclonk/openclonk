@@ -12,7 +12,6 @@ VertexX=-12,11,-12,11, -12,11,-12,11
 VertexY=-10,-10,9,9, -10,-10,9,9
 VertexCNAT=5,6,9,10, 5,6,9,10
 VertexFriction=100,100,100,100, 100,100,100,100
-Value=0
 Mass=30
 Components=Wood=1
 SolidMask=0,0,24,2,0,24

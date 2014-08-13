@@ -9,5 +9,4 @@ Vertices=2
 VertexX=0,0
 VertexY=32,-32
 VertexFriction=50
-Value=10
 Mass=15

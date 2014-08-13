@@ -1,0 +1,18 @@
+MsgWave=Wave %d
+MsgWaveCleared=Wave %d done!
+MsgOutOfRelaunchs=%s has no more relaunchs.
+MsgRelaunch=Relaunch %s.
+
+EnemyNewbie=Newbie
+EnemyAmazon=Amazon
+EnemyBow=Bowman
+EnemySuicide=Bomber
+EnemySwordman=Swordie
+EnemySwordman2=Super-swordie
+EnemyFlintstone=Flintie
+EnemyOgre=Ogre
+EnemyArtillery=Artillery
+EnemyRunner=Crazy
+
+WaveNewbies=Just warming up...
+WaveBows=Bowmen alarm!

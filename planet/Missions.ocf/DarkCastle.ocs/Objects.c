@@ -72,98 +72,12 @@ func InitializeObjects()
 	CreateObject(EnvPack_BridgeRustic, 1096, 673);
 
 	CreateObject(EnvPack_Candle, 1054, 672);
-
-	var EnvPack_Candle_Shine0049 = CreateObject(EnvPack_Candle_Shine, 1054, 672);
-	EnvPack_Candle_Shine0049->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0049->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0050 = CreateObject(EnvPack_Candle_Shine, 1054, 672);
-	EnvPack_Candle_Shine0050->SetClrModulation(0xbfffffff);
-	EnvPack_Candle_Shine0050->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0051 = CreateObject(EnvPack_Candle_Shine, 1054, 672);
-	EnvPack_Candle_Shine0051->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0051->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0052 = CreateObject(EnvPack_Candle_Shine, 1054, 671);
-	EnvPack_Candle_Shine0052->SetClrModulation(0xc9ffffff);
-	EnvPack_Candle_Shine0052->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_Candle, 1054, 575);
-
-	var EnvPack_Candle_Shine0054 = CreateObject(EnvPack_Candle_Shine, 1054, 575);
-	EnvPack_Candle_Shine0054->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0054->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0055 = CreateObject(EnvPack_Candle_Shine, 1054, 575);
-	EnvPack_Candle_Shine0055->SetClrModulation(0xd9ffffff);
-	EnvPack_Candle_Shine0055->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0056 = CreateObject(EnvPack_Candle_Shine, 1054, 575);
-	EnvPack_Candle_Shine0056->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0056->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0057 = CreateObject(EnvPack_Candle_Shine, 1054, 575);
-	EnvPack_Candle_Shine0057->SetClrModulation(0xd8ffffff);
-	EnvPack_Candle_Shine0057->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_Candle, 1185, 616);
-
-	var EnvPack_Candle_Shine0059 = CreateObject(EnvPack_Candle_Shine, 1185, 616);
-	EnvPack_Candle_Shine0059->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0059->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0060 = CreateObject(EnvPack_Candle_Shine, 1185, 616);
-	EnvPack_Candle_Shine0060->SetClrModulation(0xc6ffffff);
-	EnvPack_Candle_Shine0060->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0061 = CreateObject(EnvPack_Candle_Shine, 1185, 616);
-	EnvPack_Candle_Shine0061->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0061->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0062 = CreateObject(EnvPack_Candle_Shine, 1185, 616);
-	EnvPack_Candle_Shine0062->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0062->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_Candle, 1531, 448);
-
-	var EnvPack_Candle_Shine0064 = CreateObject(EnvPack_Candle_Shine, 1531, 448);
-	EnvPack_Candle_Shine0064->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0064->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0065 = CreateObject(EnvPack_Candle_Shine, 1531, 448);
-	EnvPack_Candle_Shine0065->SetClrModulation(0xd4ffffff);
-	EnvPack_Candle_Shine0065->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0066 = CreateObject(EnvPack_Candle_Shine, 1531, 448);
-	EnvPack_Candle_Shine0066->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0066->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0067 = CreateObject(EnvPack_Candle_Shine, 1531, 447);
-	EnvPack_Candle_Shine0067->SetClrModulation(0xddffffff);
-	EnvPack_Candle_Shine0067->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_Candle, 1362, 432);
 
-	var EnvPack_Candle_Shine0069 = CreateObject(EnvPack_Candle_Shine, 1362, 432);
-	EnvPack_Candle_Shine0069->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0069->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0070 = CreateObject(EnvPack_Candle_Shine, 1362, 432);
-	EnvPack_Candle_Shine0070->SetClrModulation(0xc7ffffff);
-	EnvPack_Candle_Shine0070->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0071 = CreateObject(EnvPack_Candle_Shine, 1362, 432);
-	EnvPack_Candle_Shine0071->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0071->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0072 = CreateObject(EnvPack_Candle_Shine, 1361, 430);
-	EnvPack_Candle_Shine0072->SetClrModulation(0xcbffffff);
-	EnvPack_Candle_Shine0072->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_CandleSmall, 1556, 432);
-
-	var EnvPack_CandleSmall_Shine0074 = CreateObject(EnvPack_CandleSmall_Shine, 1556, 435);
-	EnvPack_CandleSmall_Shine0074->SetCon(40);
-	EnvPack_CandleSmall_Shine0074->SetClrModulation(0x46ffffff);
-	EnvPack_CandleSmall_Shine0074->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_CandleSmall_Shine0075 = CreateObject(EnvPack_CandleSmall_Shine, 1556, 423);
-	EnvPack_CandleSmall_Shine0075->SetCon(40);
-	EnvPack_CandleSmall_Shine0075->SetClrModulation(0x43ffffff);
-	EnvPack_CandleSmall_Shine0075->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_CandleSmall_Shine0076 = CreateObject(EnvPack_CandleSmall_Shine, 1556, 429);
-	EnvPack_CandleSmall_Shine0076->SetCon(40);
-	EnvPack_CandleSmall_Shine0076->SetClrModulation(0x46ffffff);
-	EnvPack_CandleSmall_Shine0076->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_CandleSmall_Shine0077 = CreateObject(EnvPack_CandleSmall_Shine, 1555, 432);
-	EnvPack_CandleSmall_Shine0077->SetCon(40);
-	EnvPack_CandleSmall_Shine0077->SetClrModulation(0x41ffffff);
-	EnvPack_CandleSmall_Shine0077->SetObjectBlitMode(GFX_BLIT_Additive);
 
 	CreateObject(EnvPack_Crate, 1017, 576);
 
@@ -173,34 +87,7 @@ func InitializeObjects()
 	CreateObject(EnvPack_Guidepost, 315, 1167);
 
 	CreateObject(EnvPack_Lantern, 894, 488);
-
-	var EnvPack_Lantern_Shine0083 = CreateObject(EnvPack_Lantern_Shine, 894, 477);
-	EnvPack_Lantern_Shine0083->SetClrModulation(0xe4ffffff);
-	EnvPack_Lantern_Shine0083->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0084 = CreateObject(EnvPack_Lantern_Shine, 894, 477);
-	EnvPack_Lantern_Shine0084->SetClrModulation(0xd3ffffff);
-	EnvPack_Lantern_Shine0084->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0085 = CreateObject(EnvPack_Lantern_Shine, 894, 477);
-	EnvPack_Lantern_Shine0085->SetClrModulation(0xe4ffffff);
-	EnvPack_Lantern_Shine0085->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0086 = CreateObject(EnvPack_Lantern_Shine, 894, 477);
-	EnvPack_Lantern_Shine0086->SetClrModulation(0xc6ffffff);
-	EnvPack_Lantern_Shine0086->SetObjectBlitMode(GFX_BLIT_Additive);
-
 	CreateObject(EnvPack_Lantern, 1291, 472);
-
-	var EnvPack_Lantern_Shine0088 = CreateObject(EnvPack_Lantern_Shine, 1291, 461);
-	EnvPack_Lantern_Shine0088->SetClrModulation(0xe4ffffff);
-	EnvPack_Lantern_Shine0088->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0089 = CreateObject(EnvPack_Lantern_Shine, 1291, 461);
-	EnvPack_Lantern_Shine0089->SetClrModulation(0xd5ffffff);
-	EnvPack_Lantern_Shine0089->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0090 = CreateObject(EnvPack_Lantern_Shine, 1291, 461);
-	EnvPack_Lantern_Shine0090->SetClrModulation(0xe4ffffff);
-	EnvPack_Lantern_Shine0090->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Lantern_Shine0091 = CreateObject(EnvPack_Lantern_Shine, 1291, 461);
-	EnvPack_Lantern_Shine0091->SetClrModulation(0xccffffff);
-	EnvPack_Lantern_Shine0091->SetObjectBlitMode(GFX_BLIT_Additive);
 
 	CreateObject(EnvPack_Painting, 1235, 537);
 
@@ -215,28 +102,15 @@ func InitializeObjects()
 
 	CreateObject(EnvPack_Candle, 1471, 552);
 
-	var EnvPack_Candle_Shine0099 = CreateObject(EnvPack_Candle_Shine, 1471, 552);
-	EnvPack_Candle_Shine0099->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0099->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0100 = CreateObject(EnvPack_Candle_Shine, 1471, 552);
-	EnvPack_Candle_Shine0100->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0100->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0101 = CreateObject(EnvPack_Candle_Shine, 1471, 552);
-	EnvPack_Candle_Shine0101->SetClrModulation(0xe4ffffff);
-	EnvPack_Candle_Shine0101->SetObjectBlitMode(GFX_BLIT_Additive);
-	var EnvPack_Candle_Shine0102 = CreateObject(EnvPack_Candle_Shine, 1472, 552);
-	EnvPack_Candle_Shine0102->SetClrModulation(0xddffffff);
-	EnvPack_Candle_Shine0102->SetObjectBlitMode(GFX_BLIT_Additive);
-
-	g_ruin1 = CreateObject(Ruin1, 97, 1179);
+	g_ruin1 = CreateObject(Ruin_WoodenCabin, 97, 1179);
 	g_ruin1->SetR(16);
 	g_ruin1.StaticSaveVar = "g_ruin1";
 	g_ruin1->SetPosition(97, 1150);
 
-	g_ruin2 = CreateObject(Ruin2, 353, 1145);
+	g_ruin2 = CreateObject(Ruin_Windmill, 353, 1145);
 	g_ruin2.StaticSaveVar = "g_ruin2";
 
-	g_ruin3 = CreateObject(Ruin3, 267, 1180);
+	g_ruin3 = CreateObject(Ruin_ChemicalLab, 267, 1180);
 	g_ruin3.StaticSaveVar = "g_ruin3";
 
 	CreateObject(Foundry, 238, 1287);

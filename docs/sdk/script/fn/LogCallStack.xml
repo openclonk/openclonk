@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>LogCallStack</title>
+    <category>Developer</category>
+    <version>5.3 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+    </syntax>
+    <desc>Prints out the current call stack without breaking execution flow.</desc>
+    <examples>
+      <example>
+        <code>func Destruction()
+{
+	Log("Destruction of %v!", GetID());
+	LogCallStack();
+	return _inherited(...);
+}</code>
+        <text>Helper function during development: When this object gets destructed, a call stack is printed. This may be useful to find out where a particular object removal call was coming from.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>FatalError</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2014-01</date>
+</funcs>

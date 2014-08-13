@@ -375,6 +375,11 @@ void C4ParticleValueProvider::Floatify(float denominator)
 	{
 		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
 	}
+	else if (valueFunction == &C4ParticleValueProvider::Sin)
+	{
+		FloatifyParameterValue(&C4ParticleValueProvider::parameterValue, 1.0f);
+		FloatifyParameterValue(&C4ParticleValueProvider::maxValue, denominator);
+	}
 }
 
 void C4ParticleValueProvider::RollRandom()
@@ -454,6 +459,11 @@ float C4ParticleValueProvider::KeyFrames(C4Particle *forParticle)
 	return startValue;
 }
 
+float C4ParticleValueProvider::Sin(C4Particle *forParticle)
+{
+	return sin(parameterValue * M_PI / 180.0f) * maxValue + startValue;
+}
+
 float C4ParticleValueProvider::Speed(C4Particle *forParticle)
 {
 	float distX = forParticle->currentSpeedX;
@@ -494,6 +504,9 @@ void C4ParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_KeyFrames:
 		valueFunction = &C4ParticleValueProvider::KeyFrames;
+		break;
+	case C4PV_Sin:
+		valueFunction = &C4ParticleValueProvider::Sin;
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4ParticleValueProvider::Speed;
@@ -598,6 +611,15 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 
 			//for (int i = 0; i < keyFrameCount; ++i)
 			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
+		}
+		break;
+	case C4PV_Sin:
+		if (arraySize >= 3)
+		{
+			SetType(C4PV_Sin); // Sin(parameterValue) * maxValue + startValue
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4ParticleValueProvider::parameterValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4ParticleValueProvider::maxValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4ParticleValueProvider::startValue);
 		}
 		break;
 	case C4PV_Speed:
@@ -1097,18 +1119,10 @@ void C4ParticleList::Exec(float timeDelta)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end();)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end();++iter)
 	{
 		C4ParticleChunk *chunk = *iter;
-		if (chunk->Exec(targetObject, timeDelta))
-		{
-			++iter;
-		}
-		else
-		{
-			iter = particleChunks.erase(iter);
-			lastAccessedChunk = 0;
-		}
+		chunk->Exec(targetObject, timeDelta);
 	}
 
 	accessMutex.Leave();
@@ -1149,9 +1163,19 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); )
 	{
-		(*iter)->Draw(cgo, obj);
+		if ((*iter)->IsEmpty())
+		{
+			delete *iter;
+			iter = particleChunks.erase(iter);
+			lastAccessedChunk = 0;
+		}
+		else
+		{
+			(*iter)->Draw(cgo, obj);
+			++iter;
+		}
 	}
 
 	accessMutex.Leave();
@@ -1290,6 +1314,8 @@ void C4ParticleSystem::ExecuteCalculation()
 		particleListAccessMutex.Leave();
 	}
 }
+#else // ifdef USE_CONSOLE
+void C4ParticleSystem::DoInit() {}
 #endif
 
 C4ParticleList *C4ParticleSystem::GetNewParticleList(C4Object *forObject)
@@ -1504,9 +1530,11 @@ void C4ParticleSystem::Clear()
 
 void C4ParticleSystem::ClearAllParticles()
 {
+#ifndef USE_CONSOLE
 	particleListAccessMutex.Enter();
 	particleLists.clear();
 	particleListAccessMutex.Leave();
+#endif
 }
 
 C4ParticleDef *C4ParticleSystemDefinitionList::GetDef(const char *name, C4ParticleDef *exclude)
@@ -1521,12 +1549,10 @@ C4ParticleDef *C4ParticleSystemDefinitionList::GetDef(const char *name, C4Partic
 	return 0;
 }
 
-#ifndef USE_CONSOLE
 void C4ParticleSystemDefinitionList::Clear()
 {
 	// the particle definitions update the list in their destructor
 	while (first)
 		delete first;
 }
-#endif
 C4ParticleSystem Particles;

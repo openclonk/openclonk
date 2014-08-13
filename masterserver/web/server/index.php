@@ -39,16 +39,13 @@ if ($link && $db) {
 		die();
 	}
 	$server->cleanUp(true); //Cleanup old stuff
-	
-	// register new release
 	if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'release-file') {
 		try {
 			registerRelease();
 		} catch(Exception $e) {
 			C4Network::sendAnswer(C4Network::createError($e->getMessage()));
 		}
-	// prepare data for the engine
-	} else if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
+	} else if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) { //data sent from engine?
 		$input = $GLOBALS['HTTP_RAW_POST_DATA'];
 		$action = ParseINI::parseValue('Action', $input);
 		$csid = ParseINI::parseValue('CSID', $input);
@@ -59,17 +56,17 @@ if ($link && $db) {
 			switch ($action) {
 			case 'Start': //start a new round
 				if (ParseINI::parseValue('LeagueAddress', $reference)) {
-					C4Network::sendAnswer(C4Network::createError('IDS_MSG_LEAGUENOTSUPPORTED'));
+					C4Network::sendAnswer(C4Network::createError('League not supported!'));
 				} else {
 					$csid = $server->addReference($reference);
 					if ($csid) {
 						$answer = array('Status' => 'Success', 'CSID' => $csid);
 						if(!testHostConn($input))
-							$answer['Message'] = 'IDS_MSG_MASTERSERVNATERROR';
+							$answer['Message'] = 'Your network failed to pass certain tests. It is unlikely that are you able to host for the public.|To fix that, you need port forwarding in your router.';
 						C4Network::sendAnswer(C4Network::createAnswer($answer));
 						unset($answer);
 					} else {
-						C4Network::sendAnswer(C4Network::createError('IDS_MSG_MATERSERVSIGNUPFAIL'));
+						C4Network::sendAnswer(C4Network::createError('Round signup failed. (To many tries?)'));
 					}
 				}
 				break;
@@ -77,26 +74,26 @@ if ($link && $db) {
 				if ($server->updateReference($csid, $reference)) {
 					C4Network::sendAnswer(C4Network::createAnswer(array('Status' => 'Success')));
 				} else {
-					C4Network::sendAnswer(C4Network::createError('IDS_MSG_MASTERSERVUPDATEFAIL'));
+					C4Network::sendAnswer(C4Network::createError('Round update failed.'));
 				}
 				break;
 			case 'End': //remove a round
 				if ($server->removeReference($csid)) {
 					C4Network::sendAnswer(C4Network::createAnswer(array('Status' => 'Success')));
 				} else {
-					C4Network::sendAnswer(C4Network::createError('IDS_MSG_MASTERSERVENDFAIL'));
+					C4Network::sendAnswer(C4Network::createError('Round end failed.'));
 				}
 				break;
 			default:
 				if (!empty($action)) {
-					C4Network::sendAnswer(C4Network::createError('IDS_MSG_MASTERSERVNOOP'));
+					C4Network::sendAnswer(C4Network::createError('Unknown action.'));
 				} else {
-					C4Network::sendAnswer(C4Network::createError('IDS_MSG_MASTERSERVNOOP'));
+					C4Network::sendAnswer(C4Network::createError('No action defined.'));
 				}
 				break;
 			}
 		} else {
-			C4Network::sendAnswer(C4Network::createError('IDS_MSG_MASTERSERVWRONGENGINE'));
+			C4Network::sendAnswer(C4Network::createError('Wrong engine, "' . ParseINI::parseValue('Game', $input) . '" expected.'));
 		}
 	} else { //list availabe games
 		$list = array();

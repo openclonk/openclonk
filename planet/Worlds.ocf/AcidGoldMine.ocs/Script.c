@@ -1,8 +1,12 @@
-/* Acid gold mine */
+/**
+	Acid gold mine 
+	
+	@author Sven2	
+*/
 
 static g_highest_plr_count; // max number of players that were ever in the round
 
-func Initialize()
+protected func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_Wealth));
@@ -65,12 +69,15 @@ func Initialize()
 	return true;
 }
 
-func InitializePlayer(int plr)
+
+/*-- Player Initialization --*/
+
+protected func InitializePlayer(int plr)
 {
-	// Harsh zoom range
-	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,500,350,flag);
+	// Harsh zoom range.
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
+
 	// Position and materials
 	var i, crew;
 	for (i=0; crew=GetCrew(plr,i); ++i)
@@ -87,6 +94,7 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		}
 	}
+	
 	// Update goal: More players need to mine more gold
 	if (GetPlayerCount() > g_highest_plr_count)
 	{
@@ -97,14 +105,25 @@ func InitializePlayer(int plr)
 			goal->SetWealthGoal(BoundBy(125+75*g_highest_plr_count, 225, 300));
 		}
 	}
-	return true;
+	
+	// Give the player basic plus pumping knowledge.
+	GivePlayerBasicKnowledge(plr);
+	GivePlayerPumpingKnowledge(plr);
+	GivePlayerSpecificKnowledge(plr, [WallKit]);
+	
+	// Give the player the elementary base materials.
+	GivePlayerElementaryBaseMaterial(plr);
+	
+	return;
 }
 
-func FindTopSpot()
+private func FindTopSpot()
 {
 	return FindLocation(Loc_InRect(LandscapeWidth()/4,0,LandscapeWidth()/2,LandscapeHeight()/9), Loc_Wall(CNAT_Bottom), Loc_Space(10)) ?? {x=LandscapeWidth()/3+Random(30), y=LandscapeHeight()/12  };
 }
 
+
+/*-- Scenario Initialization --*/
 
 global func FxKeepAreaClearTimer(object q, proplist fx, int time)
 {

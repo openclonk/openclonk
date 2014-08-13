@@ -61,7 +61,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	{
 		Picture.Create(C4PictureSize, C4PictureSize);
 		// get an object instance to draw (optional; may be zero)
-		C4Object *pGoalObj = ::Objects.Find(idGoal);
+		C4Object *pGoalObj = ::Objects.Find(pDrawDef);
 		// draw goal def!
 		pDrawDef->Draw(Picture, false, 0, pGoalObj);
 	}
@@ -238,11 +238,11 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 			btnContinue->SetToolTip(Game.NextMissionDesc.getData());
 		}
 	}
+	fIsQuitBtnVisible = fIsNetDone || !::Network.isHost();
 	// updates
 	Application.Add(this);
 	Update();
 	// initial focus on quit button if visible, so space/enter/low gamepad buttons quit
-	fIsQuitBtnVisible = fIsNetDone || !::Network.isHost();
 	if (fIsQuitBtnVisible) SetFocus(btnExit, false);
 }
 
@@ -301,13 +301,20 @@ void C4GameOverDlg::SetNetResult(const char *szResultString, C4RoundResults::Net
 void C4GameOverDlg::OnExitBtn(C4GUI::Control *btn)
 {
 	// callback: exit button pressed.
+	Application.QuitGame();
 	Close(false);
 }
 
 void C4GameOverDlg::OnContinueBtn(C4GUI::Control *btn)
 {
 	// callback: continue button pressed
-	Close(true);
+	if (fHasNextMissionButton)
+	{
+		// switch to next mission if next mission button is pressed
+		Application.SetNextMission(Game.NextMission.getData());
+		Application.QuitGame();
+	}
+	Close(true); // unpauses and deletes this object
 }
 
 void C4GameOverDlg::OnShown()
@@ -323,27 +330,7 @@ void C4GameOverDlg::OnShown()
 
 void C4GameOverDlg::OnClosed(bool fOK)
 {
+	Game.Unpause();
 	typedef C4GUI::Dialog BaseClass;
-	bool fNextMissBtn = fHasNextMissionButton;
-	BaseClass::OnClosed(fOK); // deletes this!
-	// continue round
-	if (fOK)
-	{
-		if (fNextMissBtn)
-		{
-			// switch to next mission if next mission button is pressed
-			Application.SetNextMission(Game.NextMission.getData());
-			Application.QuitGame();
-		}
-		else
-		{
-			// unpause game when continue is pressed
-			Game.Unpause();
-		}
-	}
-	// end round
-	else
-	{
-		Application.QuitGame();
-	}
+	BaseClass::OnClosed(fOK); // deletes this object!
 }

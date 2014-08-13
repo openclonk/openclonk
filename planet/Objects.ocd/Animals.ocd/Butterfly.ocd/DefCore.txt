@@ -6,7 +6,6 @@ ContactCalls=1
 Width=6
 Height=4
 Offset=-3,-2
-Value=1
 Mass=1
 Vertices=4
 VertexX=0,0,-3,3

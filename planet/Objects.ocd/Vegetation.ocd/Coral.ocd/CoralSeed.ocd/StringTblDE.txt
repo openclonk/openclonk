@@ -1,0 +1,2 @@
+Name=Korallensamen
+Description=Schwimmt rum.

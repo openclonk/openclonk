@@ -12,6 +12,5 @@ VertexCNAT=8
 VertexFriction=100
 Components=Wood=1;
 Construction=1
-Value=5
 Mass=5
 Rotate=1

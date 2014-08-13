@@ -117,6 +117,7 @@ xcode/build
 
 # Development files explicitely excluded
 planet/nohg*
+*.nohg*
 
 # Eclipse project file
 planet/.project
@@ -134,8 +135,11 @@ planet/openclonk.sln
 WindowsGamesExplorer.xml
 
 # Mape
-mape
+./mape
 mape-icons.h
 
 
 tests/openclonk_unittest.sln
+
+# Packed groups created directly in root path
+/*.oc*

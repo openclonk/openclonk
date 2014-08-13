@@ -83,6 +83,16 @@
           <col></col>
           <col>When the object puts another object into a container.</col>
         </row>
+		<row id="DigOutObject">
+          <literal_col>DigOutObject</literal_col>
+          <col>object obj</col>
+          <col>When the object dug out another object that was stucked in solid material.</col>
+        </row>
+		<row id="DugOut">
+          <literal_col>DugOut</literal_col>
+          <col>object object_by</col>
+          <col>When the object was spawned from dug out material. The object might get removed afterwards if the material has Dig2ObjectCollect=2.</col>
+        </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
           <col>int change, int cause, int by_player</col>
@@ -448,6 +458,11 @@ func SaveScenarioObject(props)
           <literal_col>BlitMode</literal_col>
           <col>0</col>
           <col>Object drawing mode (see <funclink>GetObjectBlitMode</funclink> and <funclink>SetObjectBlitMode</funclink>)</col>
+        </row>
+        <row id="defprops_MeshMaterial">
+          <literal_col>MeshMaterial</literal_col>
+          <col>GetID()->GetMeshMaterial()</col>
+          <col>Custom assignments of mesh materials (see <funclink>GetMeshMaterial</funclink> and <funclink>SetMeshMaterial</funclink>)</col>
         </row>
         <row id="defprops_Name">
           <literal_col>Name</literal_col>

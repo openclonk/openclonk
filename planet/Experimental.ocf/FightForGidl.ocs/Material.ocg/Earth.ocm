@@ -1,0 +1,14 @@
+# Indestructible material
+
+[Material]
+Name=Earth
+Shape=Smooth
+Density=60
+Friction=80
+DigFree=0
+BlastFree=0
+MaxAirSpeed=100
+MaxSlide=1
+Soil=1
+Placement=30
+TextureOverlay=earth_rough
