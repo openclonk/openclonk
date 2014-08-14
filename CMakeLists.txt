@@ -1281,7 +1281,7 @@ endif()
 
 if(NOT USE_CONSOLE)
 	include(FindOpenGL)
-	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
+	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
 	target_link_libraries(openclonk
 		${GLEW_LIBRARIES}
