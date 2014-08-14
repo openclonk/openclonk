@@ -232,6 +232,9 @@ global func SaveScen_SetContainers(array obj_data)
 				// the label must have been written because something depended on the object.
 				obj.props.origin->Remove(SAVEOBJ_ContentsCreation);
 				obj.props->AddCall("Container", obj.o, "Enter", obj.o->Contained());
+				// Ensure layer is written for detached contents if it is the same as the container
+				var o_layer = obj.o->GetObjectLayer();
+				if (o_layer && o_layer == obj.co->GetObjectLayer()) obj.props->AddCall("Layer", obj.o, "SetObjectLayer", o_layer);
 			}
 		}
 		else
@@ -288,6 +291,8 @@ global func SaveScenarioObject(props)
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", GetBitmaskNameByValue(v, "VIS_"));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
+	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
+	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
 	v = this.StaticSaveVar; if (v)                                props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v));
 	// update position on objects that had a shape change through rotation because creation at def bottom would incur a vertical offset
 	if (GetR() && !Contained())                                   props->AddCall("SetPosition",   this, "SetPosition", GetX(), GetY());

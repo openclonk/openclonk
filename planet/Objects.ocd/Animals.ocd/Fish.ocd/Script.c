@@ -432,6 +432,15 @@ func StartJump()
 	walking = false;
 }
 
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// Avoid saving some stuff that's reinitialized anyway
+	props->Remove("Con"); props->Remove("XDir"); props->Remove("YDir"); props->Remove("ComDir");
+	return true;
+}
+
+
 local ActMap = {
 
 Swim = {

@@ -124,3 +124,13 @@ func FxShrinkTimer(target, effect, time)
 		SetClrModulation(RGB(255 - effect.color_sub / 3, 255 - effect.color_sub / 2, 255 - effect.color_sub));
 	}
 }
+
+// Scenario saving
+func SaveScenarioObject(props, ...)
+{
+	// Do not save berries that are still attached to bushes
+	if (Contained())
+		if (Contained()->GetID() == SproutBerryBush_Sprout)
+			return false;
+	return inherited(props, ...);
+}
