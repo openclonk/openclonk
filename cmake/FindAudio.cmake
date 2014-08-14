@@ -94,7 +94,7 @@ if(Audio_TK STREQUAL "OpenAL")
 		set(Audio_INCLUDE_DIRS ${OpenAL_INCLUDE_DIRS} ${OggVorbis_INCLUDE_DIRS})
 		if (NOT APPLE)
 			# Apple doesn't need freealut
-			set(Audio_LIBRARIES ${Audio_LIBRARIES} ${Alut_LIBRARIES})
+			set(Audio_LIBRARIES ${Audio_LIBRARIES} ${Alut_LIBRARIES} ${OpenAL_LIBRARY})
 			set(Audio_INCLUDE_DIRS ${Audio_INCLUDE_DIRS} ${Alut_INCLUDE_DIRS})
 		else()
 			# but it uses the AudioToolBox framework
