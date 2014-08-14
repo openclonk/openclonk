@@ -37,14 +37,16 @@ global func SetDialogue(string name, bool attention)
 // Removes the existing dialogue of an object.
 global func RemoveDialogue()
 {
-	if (!this)
-		return;
-		
-	var dialogue = FindObject(Find_ID(Dialogue), Find_ActionTarget(this));
-	if (dialogue)
-		dialogue->RemoveObject();	
+	var dialogue = Dialogue->FindByTarget(this);
+	if (dialogue) return dialogue->RemoveObject();
+	return false;
+}
 
-	return;
+// Find dialogue attached to a target (definition call, e.g. var dlg = Dialogue->FindByTarget(foo))
+func FindByTarget(object target)
+{
+	if (!target) return nil;
+	return FindObject(Find_ID(Dialogue), Find_ActionTarget(target));
 }
 
 /*-- Dialogue properties --*/
@@ -82,8 +84,8 @@ public func InitDialogue(string name, object target, bool attention)
 	UpdateDialogue();
 	
 	// Custom dialogue initialization
-	if (!Call(Format("Dlg_%s_Init", dlg_name), dlg_target))
-		GameCall(Format("Dlg_%s_Init", dlg_name), this, dlg_target);
+	if (!Call(Format("~Dlg_%s_Init", dlg_name), dlg_target))
+		GameCall(Format("~Dlg_%s_Init", dlg_name), this, dlg_target);
 	
 	return;
 }
@@ -116,11 +118,12 @@ private func AttentionEffect() { return SetAction("DialogueAttentionEffect", dlg
 
 private func UpdateDialogue()
 {
-	// Adapt size to target and its direction.
-	var wdt = dlg_target->GetID()->GetDefWidth();
+	// Adapt size to target. Updateing to direction does not work well for NPCs that walk around 
+	// It's also not very intuitive if the player just walks to the attention symbol anyway.
+	var wdt = dlg_target->GetID()->GetDefWidth() + 10;
 	var hgt = dlg_target->GetID()->GetDefHeight();
-	var dir = dlg_target->GetDir();
-	SetShape(-wdt/2 + 2*(dir-1)*wdt, -hgt/2, 3*wdt, hgt);
+	//var dir = dlg_target->GetDir();
+	SetShape(-wdt/2, -hgt/2, wdt, hgt);
 	// Transfer target name.
 	//SetName(Format("$MsgSpeak$", dlg_target->GetName()));
 	return;
@@ -202,8 +205,13 @@ public func Interact(object clonk)
 	var progress = dlg_progress;
 	dlg_progress++;
 	// Then call relevant functions.
-	if (!Call(Format("Dlg_%s_%d", dlg_name, progress), clonk))
-		GameCall(Format("Dlg_%s_%d", dlg_name, progress), this, clonk, dlg_target);
+	// Call generic function first, then progress function
+	var fn_generic = Format("~Dlg_%s", dlg_name);
+	var fn_progress = Format("~Dlg_%s_%d", dlg_name, progress);
+	if (!Call(fn_generic, clonk))
+		if (!GameCall(fn_generic, this, clonk, dlg_target))
+			if (!Call(fn_progress, clonk))
+				GameCall(fn_progress, this, clonk, dlg_target);
 
 	return true;
 }
@@ -222,7 +230,23 @@ public func MessageBoxAll(string message, object talker, bool as_message)
 	}
 }
 
-private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message)
+// Message box as dialog to player with a message copy to all other players
+public func MessageBoxBroadcast(string message, object clonk, object talker, array options)
+{
+	// message copy to other players
+	for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		if (GetCursor(plr) != clonk)
+			MessageBox(message, GetCursor(plr), talker, plr, true);
+	}
+	// main message as dialog box
+	return MessageBox(message, clonk, talker, nil, false, options);
+}
+
+static MessageBox_last_talker, MessageBox_last_pos;
+
+private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options)
 {
 	// Use current NPC as talker if unspecified.
 	// On definition call or without talker, just show the message without a source
@@ -251,15 +275,29 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 				clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
 
 		// Add NPC message.
-		clonk->AddMenuItem(message, cmd, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
+		clonk->AddMenuItem(message, nil, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
 		
 		// Add answers.
-		//for (var i = 0; i < GetLength(message.Answers); i++)
-		//{
-		//	var ans = message.Answers[i][0];
-		//	var call_back = message.Answers[i][1];
-		//	target->AddMenuItem(ans, call_back, nil, nil, target, nil, C4MN_Add_ForceNoDesc);
-		//}
+		if (options) for (var option in options)
+		{
+			var option_text, option_command;
+			if (GetType(option) == C4V_Array)
+			{
+				// Text+Command given
+				option_text = option[0];
+				option_command = option[1];
+			}
+			else
+			{
+				// Only text given - command means regular dialogue advance
+				option_text = option;
+				option_command = cmd;
+			}
+			clonk->AddMenuItem(option_text, option_command, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
+		}
+		
+		// If there are no answers, add a next entry
+		if (cmd && !options) clonk->AddMenuItem("$Next$", cmd, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
 		
 		// Set menu decoration.
 		clonk->SetMenuDecoration(GUI_MenuDeco);
@@ -278,7 +316,21 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 	{
 		// No target is given: Global (player) message
 		if (!GetType(for_player)) for_player = NO_OWNER;
-		CustomMessage(message, nil, for_player, 150,150, nil, GUI_MenuDeco, portrait ?? talker);
+		// altenate left/right position as speakers change
+		if (talker != MessageBox_last_talker) MessageBox_last_pos = !MessageBox_last_pos;
+		MessageBox_last_talker = talker;
+		var flags = 0, xoff = 150;
+		if (!MessageBox_last_pos)
+		{
+			flags = MSG_Right;
+			xoff *= -1;
+			CustomMessage("", nil, for_player); // clear prev msg
+		}
+		else
+		{
+			CustomMessage("", nil, for_player, 0,0, nil, nil, nil, MSG_Right);  // clear prev msg
+		}
+		CustomMessage(message, nil, for_player, xoff,150, nil, GUI_MenuDeco, portrait ?? talker, flags);
 	}
 
 	return;
@@ -300,75 +352,15 @@ func SaveScenarioObject(props)
 	if (!dlg_target) return false; // don't save dead dialogue object
 	// Dialog has its own creation procedure
 	props->RemoveCreation();
+	props->Remove("Plane"); // updated when setting dialogue
 	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v,%v)", dlg_target->MakeScenarioSaveName(), dlg_name, !!dlg_attention);
+	// Force dependency on all contained objects, so dialogue initialization procedure can access them
+	var i=0, obj;
+	while (obj = dlg_target->Contents(i++)) obj->MakeScenarioSaveName();
 	return true;
 }
 
 
-/* Player deactivation during dialogues */
-
-public func StartCinematics(object cinematics_target)
-{
-	// Disable crew of all players
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		var j=0, crew;
-		while (crew = GetCrew(plr, j++))
-		{
-			if (crew == GetCursor(plr)) crew.cinematics_was_cursor = true; else crew.cinematics_was_cursor = nil;
-			crew->SetCrewEnabled(false);
-			if (crew->~GetMenu()) crew->~GetMenu()->Close();
-			crew->MakeInvincible();
-			crew->SetCommand("None");
-			crew->SetComDir(COMD_Stop);
-		}
-	}
-	// Fix view on target
-	if (cinematics_target) SetCinematicsTarget(cinematics_target);
-	return true;
-}
-
-public func StopCinematics()
-{
-	SetCinematicsTarget(nil);
-	// Reenable crew and reset cursor
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		var j=0, crew;
-		while (crew = GetCrew(plr, j++))
-		{
-			crew->SetCrewEnabled(true);
-			crew->ClearInvincible();
-			if (crew.cinematics_was_cursor) SetCursor(plr, crew);
-		}
-	}
-	return true;
-}
-
-// Force all player views on given target
-public func SetCinematicsTarget(object cinematics_target)
-{
-	ClearScheduleCall(nil, Dialogue.UpdateCinematicsTarget);
-	if (cinematics_target)
-	{
-		UpdateCinematicsTarget(cinematics_target);
-		ScheduleCall(nil, Dialogue.UpdateCinematicsTarget, 30, 999999999, cinematics_target);
-	}
-	return true;
-}
-
-private func UpdateCinematicsTarget(object cinematics_target)
-{
-	// Force view of all players on target
-	if (!cinematics_target) return;
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		SetPlrView(plr, cinematics_target);
-	}
-}
 
 
 /* Properties */
