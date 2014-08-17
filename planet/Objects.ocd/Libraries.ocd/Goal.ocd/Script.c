@@ -145,3 +145,17 @@ func SaveScenarioObject(props)
 	if (mission_password) props->AddCall("MissionAccess", this, "SetMissionAccess", Format("%v", mission_password));
 	return true;
 }
+
+
+/* Graphics storage */
+// workaround so goals with different graphics are correctly displayed in the HUD
+
+local goal_custom_graphics;
+
+func SetGraphics(string new_gfx, ...)
+{
+	goal_custom_graphics = new_gfx;
+	return inherited(new_gfx, ...);
+}
+
+func GetGraphics() { return goal_custom_graphics; }
