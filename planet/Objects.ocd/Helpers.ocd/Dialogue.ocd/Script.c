@@ -10,12 +10,14 @@ local dlg_name;
 local dlg_info;
 local dlg_progress;
 local dlg_status;
-local dlg_interact;
-local dlg_attention;
+local dlg_interact;  // default true. can be set to false to deactivate the dialogue
+local dlg_attention; // if set, a red attention mark is put above the clonk
+local dlg_broadcast; // if set, all non-message (i.e. menu) MessageBox calls are called as MessageBoxBroadcast.
 
-static const DLG_Status_Active = 0;
-static const DLG_Status_Stop = 1;
-static const DLG_Status_Remove = 2;
+static const DLG_Status_Active = 0; // next interaction calls progress function
+static const DLG_Status_Stop   = 1; // dialogue is done and menu closed on next interaction
+static const DLG_Status_Remove = 2; // dialogue is removed on next interaction
+static const DLG_Status_Wait   = 3; // dialogue is deactivated temporarily to prevent accidental restart after dialogue end
 
 
 /*-- Dialogue creation --*/
@@ -141,9 +143,10 @@ public func SetInteraction(bool allow)
 	return;
 }
 
-public func SetDialogueProgress(int progress)
+public func SetDialogueProgress(int progress, bool add_attention)
 {
 	dlg_progress = Max(1, progress);
+	if (add_attention) AddAttention();
 	return;
 }
 
@@ -151,6 +154,15 @@ public func SetDialogueStatus(int status)
 {
 	dlg_status = status;
 	return;
+}
+
+// to be called from within dialogue after the last message
+public func StopDialogue()
+{
+	// put on wait for a while; then reenable
+	SetDialogueStatus(DLG_Status_Wait);
+	ScheduleCall(this, this.SetDialogueStatus, 30, 1, DLG_Status_Stop);
+	return true;
 }
 
 /*-- Interaction --*/
@@ -182,6 +194,13 @@ public func Interact(object clonk)
 	if (!dlg_name)
 		return true;
 		
+	// Dialogue still waiting? Do nothing then
+	// (A sound might be nice here)
+	if (dlg_status == DLG_Status_Wait)
+	{
+		return true;
+	}
+		
 	// Stop dialogue?
 	if (dlg_status == DLG_Status_Stop)
 	{
@@ -199,6 +218,9 @@ public func Interact(object clonk)
 	
 	// Remove attention mark on first interaction
 	RemoveAttention();
+	
+	// Have speakers face each other
+	SetSpeakerDirs(dlg_target, clonk);
 
 	// Start conversation context.
 	// Update dialogue progress first.
@@ -248,6 +270,16 @@ static MessageBox_last_talker, MessageBox_last_pos;
 
 private func MessageBox(string message, object clonk, object talker, int for_player, bool as_message, array options)
 {
+	// broadcast enabled: message copy to other players
+	if (dlg_broadcast && !as_message)
+	{
+		for(var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+		{
+			var other_plr = GetPlayerByIndex(i, C4PT_User);
+			if (GetCursor(other_plr) != clonk)
+				MessageBox(message, GetCursor(other_plr), talker, other_plr, true);
+		}
+	}
 	// Use current NPC as talker if unspecified.
 	// On definition call or without talker, just show the message without a source
 	if (!talker && this != Dialogue) talker = dlg_target;
@@ -341,6 +373,22 @@ public func MenuOK(proplist menu_id, object clonk)
 	// prevent the menu from closing when pressing MenuOK
 	if (dlg_interact)
 		Interact(clonk);
+}
+
+// Enable or disable message broadcasting to all players for important dialogues
+public func SetBroadcast(bool to_val)
+{
+	dlg_broadcast = to_val;
+	return true;
+}
+
+public func SetSpeakerDirs(object speaker1, object speaker2)
+{
+	// Force direction of two clonks to ace each other for dialogue
+	if (!speaker1 || !speaker2) return false;
+	speaker1->SetDir(speaker1->GetX() < speaker2->GetX());
+	speaker2->SetDir(speaker1->GetX() > speaker2->GetX());
+	return true;
 }
 
 /* Scenario saving */
