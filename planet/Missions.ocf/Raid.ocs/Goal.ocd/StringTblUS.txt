@@ -1,0 +1,6 @@
+Name=Game goal
+Description1=Find an axe and chop some wood for the construction site.
+Description2=Talk to Newton.
+Description3=Find Pyrit the smith in Wipf Town in the East and talk to him.
+Description4=Build a plane and find oil to fuel it.
+Description5=This mission is fulfilled and the next mission has been unlocked.

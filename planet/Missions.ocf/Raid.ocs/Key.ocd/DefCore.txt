@@ -1,0 +1,14 @@
+[DefCore]
+id=Key
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=4
+VertexX=-2,3,2,-3
+VertexY=-2,1,2,-1
+Value=15
+Mass=4
+Components=Metal=1
+Rotate=1
