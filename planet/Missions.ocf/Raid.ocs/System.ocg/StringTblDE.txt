@@ -147,7 +147,7 @@ Pyrit9=Die Angreifer sind mit dem Flugzeug hierher gekommen. Können wir solche M
 Pyrit10=Tatsächlich hätte ich die nötigen Pläne, um ein Flugzeug zu bauen. Aber um es zu fliegen, brauchst du Öl. Und Harx hat strikte Kontrollen auf alle Ölreserven eingeführt.
 Pyrit11=Aus gutem Grund nehme ich an.
 Pyrit12=Es ist die einzige Möglichkeit, sein Schloss zu erreichen.
-Pyrit13=Einige Bewohner haben versteckte Ölvorräte. Aber die werden sie nicht so einfach herausgeben.
+Pyrit13=Einige Bewohner haben versteckte Ölvorräte. Aber die werden sie nicht so einfach herausgeben. Ich würde es mal bei Newton versuchen.
 Pyrit14=Wenn du herum fragst und von deinem Vorhaben berichtest, findest du vielleicht jemanden, der dich unterstützt.
 Pyrit15=In der Zwischenzeit nimm diese Konstruktionspläne. Du kannst meine Schiffswerft und alles, was du in den Gebäuden der Stadt findest nutzen, um das Flugzeug zu bauen.
 Pyrit16=Wo kann ich das Flugzeug bauen?
@@ -194,6 +194,9 @@ Dora3=Haha, das war ich auch. Aber den See gibt es nicht.
 Dora4=Aber...die Gerüchte...?
 Dora5=I weiß. Offenbar sind Gerüchte doch nicht immer wahr.
 Dora6=Das Gerücht um den Ölsee stimmte nicht. So ein Pech.
+Dora7=Wo könnte ich noch nach Öl suchen?
+Dora8=Hast du die Newton im Clunkerdorf schon gefragt? Wenn er sich nicht an Harxs Regeln hält, hat er vielleicht noch Reserven.
+
 
 Dora100=Ich suche nach Öl.
 Dora101=Haha, ich auch. Es gab Gerüchte von einem Ölsee hier unten.

@@ -318,6 +318,17 @@ func InitializeObjects()
 	CreateObject(Loam, 3003, 1345);
 	Foundry0124->CreateContents(Loam);
 	Foundry0124->CreateContents(Loam);
+	CreateObject(Loam, 951, 1333);
+	CreateObject(Loam, 970, 1355);
+	CreateObject(Loam, 952, 1364);
+	CreateObject(Loam, 808, 1336);
+	CreateObject(Loam, 737, 1322);
+	CreateObject(Loam, 652, 1280);
+	CreateObject(Loam, 797, 1391);
+	CreateObject(Loam, 1021, 1339);
+	CreateObject(Loam, 492, 1263);
+	CreateObject(Loam, 504, 1263);
+	CreateObject(Loam, 500, 1263);
 
 	CreateObject(Metal, 2217, 942);
 	ToolsWorkshop0139->CreateContents(Metal);

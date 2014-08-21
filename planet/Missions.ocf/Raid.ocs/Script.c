@@ -26,6 +26,7 @@ static g_is_initialized,      // intro started
 func Initialize()
 {
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
+	PlaceGrass(40);
 }
 
 func DoInit(int first_player)

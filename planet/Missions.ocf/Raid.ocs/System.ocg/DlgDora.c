@@ -36,18 +36,31 @@ func Dlg_Dora_5(object clonk)
 	MessageBox("$Dora5$", clonk, dlg_target); // aren't true
 	g_dora_spoken = true; // updates Clonkos dialogue
 	Dialogue->FindByTarget(npc_clonko)->AddAttention();
-	StopDialogue();
-	SetDialogueProgress(6);
+	SetDialogueProgress(7);
 	return true;
 }
 
 func Dlg_Dora_6(object clonk)
 {
 	MessageBox("$Dora6$", clonk, dlg_target); // rumours aren't true
+	return true;
+}
+
+func Dlg_Dora_7(object clonk)
+{
+	MessageBox("$Dora7$", clonk, clonk); // where can i find oil then?
+	return true;
+}
+
+
+func Dlg_Dora_8(object clonk)
+{
+	MessageBox("$Dora8$", clonk, dlg_target); // ask Newton
 	StopDialogue();
 	SetDialogueProgress(6);
 	return true;
 }
+
 
 
 /* Dialogue if looking for oil but not knowing about rumour */
