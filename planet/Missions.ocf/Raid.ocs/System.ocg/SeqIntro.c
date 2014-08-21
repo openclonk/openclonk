@@ -37,15 +37,16 @@ func Intro_1()
 func Intro_2()
 {
 	// Wait until balloon has dropped
+	var all_balloons = FindObjects(Find_ID(BalloonDeployed)), balloon;
 	if (this.hero) this.balloon = this.hero->GetActionTarget();
 	if (this.balloon)
 	{
 		if (this.balloon->GetX() > 330)
-			this.balloon->ControlLeft();
+			for (balloon in all_balloons) balloon->ControlLeft();
 		else if (this.balloon->GetX() < 300)
-			this.balloon->ControlRight();
+			for (balloon in all_balloons) balloon->ControlRight();
 		else if (this.hero->GetY() > 310)
-			this.balloon->~ControlUp();
+			for (balloon in all_balloons) balloon->~ControlUp();
 		return ScheduleSame(10);
 	}
 	return ScheduleNext(20);
@@ -97,9 +98,9 @@ func Intro_8()
 	return ScheduleNext(60);
 }
 
-
 func Intro_9()
 {
+	RemoveAll(Find_ID(Balloon)); // they just confuse players
 	return Stop();
 }
 
