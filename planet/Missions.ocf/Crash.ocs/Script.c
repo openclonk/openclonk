@@ -39,6 +39,10 @@ func DoInit(int first_player)
 	merchant->SetDir(DIR_Left);
 	merchant->SetObjectLayer(merchant);
 	merchant->SetDialogue("Merchant", true);
+	
+	// Start intro if not yet started
+	StartSequence("Intro", 0, GetCrew(first_player));
+	
 	return true;
 }
 
@@ -53,14 +57,11 @@ func InitializePlayer(int plr)
 	var crew;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
-	// Start intro if not yet started
-	IntroStart();
-	// Add player to intro if recently started
-	if(!IntroAddPlayer(plr))
+	// Late joining players just start in the village
+	var index;
+	for(index = 0; crew = GetCrew(plr, index); ++index)
 	{
-		// Too late for entry? Just start in the village
-		var index = 0;
-		for(var index = 0; crew = GetCrew(plr, index); ++index)
+		if (!crew->Contained()) // if not put into plane by intro
 		{
 			var x = 50 + Random(50);
 			var y = 850;
@@ -79,6 +80,6 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		}
 	}
-	return;
+	return true;
 }
 
