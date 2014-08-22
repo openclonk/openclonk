@@ -25,7 +25,7 @@ Newton5=Not yet. Where can I find useful trees.
 Newton6=East (right) of the village you can find coniferous trees. Those are perfect for us.
 
 Newton100=Hey %s! Did you survive the attacks?
-Newton101=Yes. As you can see. I was able to watch the desaster from the forest.
+Newton101=Yes. As you can see. I was able to watch the disaster from the forest.
 Newton102=It will take us month to rebuild everything. In the meantime, we'll be defenseless against their attacks.
 Newton103=Who are the attackers?
 Newton104=It's the henchmen of \"king\" Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
@@ -43,7 +43,7 @@ Newton115=That's more than any one of us can show for.
 Newton116=So, what's your decision? Will you help us defeat Harx?
 Newton117=Yes
 Newton118=Excellent!
-Newton119=Start by marching east towrds Wipf Town. You can use this shovel to get there.
+Newton119=Start by marching east towards Wipf Town. You can use this shovel to get there.
 Newton120=Once you're there, ask for Pyrit. He is an old friend of mine and should be able to help you.
 Newton121=Good luck! You will need it.
 
@@ -106,7 +106,7 @@ Attack7=I should talk to Newton.
 
 Mave1=Hello %s. Have you heard the rumbling outside? It was frightening.
 Mave2=I've stood nearby. The whole village got destroyed. You should help your friends outside rebuild it!
-Mave3=Outside? Umn, no. I'm more of a cellar-clonk.
+Mave3=Outside? Umh, no. I'm more of a cellar-clonk.
 Mave4=Could you at least help me reach Wipf Town in the East then?
 Mave5=You won't get there through the caves. The old passages got destroyed by a volcanic eruption recently.
 Mave6=Your only chance is to cross the lake.
@@ -114,7 +114,7 @@ Mave7=How do I cross the lake?
 Mave8=You could use my foundry to build some loam.
 Mave9=How do I build loam?
 Mave10=Oh, that is easy: Fill a bucket{{Bucket}} with earth and fill a barrel{{Barrel}} with water. Then put both into the foundry and produce loam.
-Mave11=You can find the necessery tools in my foundry.
+Mave11=You can find the necessary tools in my foundry.
 
 Mave100=Hi Mave. Do you have an idea where to find oil?
 Mave101=Oh, oil. You know we're not supposed to own private reserves, right?
@@ -137,7 +137,7 @@ Mave203=It's buried below the lava lakes. Maybe you can use water to cool the la
 
 Pyrit1=Hi, are you Pyrit?
 Pyrit2=Indeed. What brings you to Wipf Town?
-Pyrit3=Clunker village got destroyed by the henchmen of evil tyrant Harx. I've promised to hep and Newton sent me to you.
+Pyrit3=Clunker village got destroyed by the henchmen of evil tyrant Harx. I've promised to help and Newton sent me to you.
 Pyrit4=I've seen the planes and I've heard the rumbling. I was afraid something like that would happen. It's because of the taxes they haven't paid, isn't it?
 Pyrit5=It's not taxes. It's extortion! They aren't paying as a matter of principle.
 Pyrit6=Well, we're still paying. But he keeps rising the tribune. I'm afraid that this will not end well.
@@ -145,7 +145,7 @@ Pyrit7=So are you going to support me? I need to get there and teach that evil k
 Pyrit8=How do you plan to get there? He lives in a heavily guarded fortress on the Golden Mountain. 
 Pyrit9=He got here by plane. Can't we build those as well?
 Pyrit10=Actually, I happen to have some plans which I could give to you. But to fly it, you need to fuel it with oil. And Harx keeps all oil reserves strictly under his control.
-Pyrit11=For good reaon I suppose.
+Pyrit11=For good reason I suppose.
 Pyrit12=It's the only way to reach his castle.
 Pyrit13=Some people keep secret oil reserves, but they won't give them up easily.
 Pyrit14=Maybe if you ask around you can find someone willing to help you out. I would ask Newton first.
@@ -165,42 +165,42 @@ Clonko100=Hi, do you have any oil?
 Clonko101=What a strange request. No, of course not. King Harx keeps all oil under his control.
 Clonko102=Well, maybe there are some, you know, extra reserves?
 Clonko103=No. I'm an honest citizen who doesn't keep secrets.
-Clonko104=But...there are rumours.
+Clonko104=But...there are rumors.
 Clonko105=Tell me more!
 Clonko106=Word is of an underground lake full of oil deep below Wipf Town.
 Clonko107=How do I get to the oil lake?
-Clonko108=You will have to dig straight down from this town. But there is solid rock and water in the way. Plus it's only a rumour.
+Clonko108=You will have to dig straight down from this town. But there is solid rock and water in the way. Plus it's only a rumor.
 Clonko109=I'm on my way!
 
 Clonko200=I was there - there was no oil below this town!
-Clonko201=Oh too bad. But I told you it's just a rumour.
+Clonko201=Oh too bad. But I told you it's just a rumor.
 
 
 Matthi1=Hello my dear visitor. Do you want any sproutberries?
 Matthi2=I'm afraid I don't have anything to pay for them.
-Matthi3=Oh, no problem. Just take this free sample. It's delicous!
+Matthi3=Oh, no problem. Just take this free sample. It's delicious!
 Matthi4=Free as in free beer or as in free speech?
 Matthi5=What?
 Matthi6=Nothing beats the marvelous taste of a freshly picked sproutberry.
 
 Matthi100=Do you have any oil?
 Matthi101=Oh, that stinky black fluid? No, I wouldn't touch that.
-Matthi102=Maybe I should experiment with producing oil from spruotberries.
+Matthi102=Maybe I should experiment with producing oil from sproutberries.
 
 
 Dora1=Hello, fellow explorer. What brings you here?
 Dora2=I'm looking for an oil lake.
 Dora3=Haha, so was I. But there is no lake.
-Dora4=But...the rumours...?
-Dora5=I know. Looks like rumours aren't always true after all.
-Dora6=The rumour of the oil lake wasn't true. Tough luck.
+Dora4=But...the rumors...?
+Dora5=I know. Looks like rumors aren't always true after all.
+Dora6=The rumor of the oil lake wasn't true. Tough luck.
 Dora7=Where else could I look for oil?
 Dora8=Have you asked Newton in Clunker Village yet? Since they don't care for Harx's rules, they might keep some reserves.
 
 Dora100=I'm looking for oil.
-Dora101=Haha, so was I. There were rumours of an oil lake down here.
+Dora101=Haha, so was I. There were rumors of an oil lake down here.
 Dora102=But...?
-Dora103=Looks like rumours aren't always true after all.
+Dora103=Looks like rumors aren't always true after all.
 
 Dora200=I'm looking for Pyrit.
 Dora201=Oh, the smith. He's above this cave in Wipf Town.
