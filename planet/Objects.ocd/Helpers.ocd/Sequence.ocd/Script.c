@@ -85,6 +85,8 @@ public func Stop(bool no_remove)
 				crew->ClearInvincible();
 				//if (crew.Sequence_was_cursor) SetCursor(plr, crew);
 			}
+			// ensure proper cursor
+			if (!GetCursor(plr)) SetCursor(plr, GetCrew(plr));
 			if (crew = GetCursor(plr)) SetPlrView(plr, crew);
 			// per-player sequence callback
 			RemovePlayer(plr);
