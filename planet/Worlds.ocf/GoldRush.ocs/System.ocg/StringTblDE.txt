@@ -1,0 +1,4 @@
+# Intro sequence messages
+MsgPeacefulPlace=Hey %s, what do you think? This looks like a peaceful place where we can set up our gold mine.
+MsgSettlement=Indeed %s, there is a forest that allows us to build a settlement and according to the rumors there must be plenty of gold.
+MsgToBeRich=Perfect, we set up our operations here and we are going to be rich {{GUI_Wealth}}{{Idol}}{{GUI_Wealth}}!

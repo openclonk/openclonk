@@ -84,7 +84,7 @@ protected func InitializePlayer(int plr)
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
 	{
-		StartSequence("Intro", 0, GetCrew(plr));
+		StartSequence("Intro", 0);
 		intro_init = true;
 	}
 	return;

@@ -2,7 +2,7 @@
 
 #appendto Sequence
 
-public func Intro_Start(object hero)
+public func Intro_Start()
 {
 	// Create an airplane with pilot and fly it towards the peak.
 	this.airplane = CreateObject(Plane, 24, LandscapeHeight() - 480);
@@ -146,7 +146,7 @@ public func Intro_Stop()
 	this.pilot->RemoveObject();
 	this.airplane->RemoveObject();
 	
-	
+	// Reset player zoom.
 	SetPlayerZoomByViewRange(NO_OWNER, 500, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }
