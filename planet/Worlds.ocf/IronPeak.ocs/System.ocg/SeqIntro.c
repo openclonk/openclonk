@@ -74,13 +74,17 @@ public func Intro_3()
 		}
 		SetPlrView(plr, GetCrew(plr));
 	}
-	
-	// Tell players to land on peak.
-	MessageBoxAll("$MsgLandOnPeak$", this.pilot, true);
-	return ScheduleNext(24);
+	return ScheduleNext(20);
 }
 
 public func Intro_4()
+{
+	// Tell players to land on peak.
+	MessageBoxAll("$MsgLandOnPeak$", this.pilot, true);
+	return ScheduleNext(4);
+}
+
+public func Intro_5()
 {
 	// Try to land the crew on the peak.
 	var all_balloons = FindObjects(Find_ID(BalloonDeployed));
@@ -109,12 +113,12 @@ public func HasLandingSpace(int x, int y)
 	var dx = 0;
 	while (!GBackSemiSolid(x + dx, y - 8) && !GBackSemiSolid(x + dx, y) && !GBackSemiSolid(x + dx, y + 8) && dx < 30)
 		dx++;
-	if (dx < 12)
+	if (dx < 20)
 		return true;
 	return false;
 }
 
-public func Intro_5()
+public func Intro_6()
 {
 	// Remove balloon from crew's contents.
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
@@ -131,7 +135,7 @@ public func Intro_5()
 	return ScheduleNext(80);
 }
 
-public func Intro_6()
+public func Intro_7()
 {
 	return Stop();
 }
