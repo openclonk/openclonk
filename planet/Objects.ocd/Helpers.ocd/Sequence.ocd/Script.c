@@ -73,7 +73,7 @@ public func Stop(bool no_remove)
 {
 	if (started)
 	{
-			SetViewTarget(nil);
+		SetViewTarget(nil);
 		// Reenable crew and reset cursor
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{

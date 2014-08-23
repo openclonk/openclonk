@@ -1,6 +1,8 @@
 /**
 	Iron Peak
-	A chilly mountain peak filled with iron ore and coal.
+	A chilly mountain peak filled with iron ore and coal presents
+	the perfect opportunity to construct a small settlement. The 
+	goal is to expand and produce significant amounts of metal.
 	
 	@author Maikel
 */
@@ -11,8 +13,8 @@ static const SCENOPT_Material = 3; // Amount of material available from start.
 static const SCENOPT_MapSize = 1; // Size of the map.
 static const SCENOPT_Difficulty = 1; // Difficulty settings.
 
-// Spawn location for all players.
-static mountain_location;
+// Whether the intro has been initialized.
+static intro_init;
 
 protected func Initialize()
 {
@@ -28,9 +30,6 @@ protected func Initialize()
 	// Rules: team account and buying at flagpole.
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_BuyAtFlagpole);
-	
-	// Find A good location for the players to start.
-	FindMountainLocation();
 	
 	// Initialize different parts of the scenario.
 	InitEnvironment();
@@ -49,7 +48,6 @@ protected func InitializePlayer(int plr)
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
-		crew->SetPosition(mountain_location[0], mountain_location[1]);
 		// First clonk can construct, others can mine.
 		if (index == 0)
 		{
@@ -82,30 +80,13 @@ protected func InitializePlayer(int plr)
 		
 	// Set player wealth.
 	SetWealth(plr, 20 + 20 * SCENOPT_Material);
-	return;
-}
-
-private func FindMountainLocation()
-{
-	// Default to top middle of the map.
-	mountain_location = [LandscapeWidth() / 2, LandscapeHeight() / 2];
-	var x = 0, y = 0;
-	for (var i = 0; i < 1000; i++)
+	
+	// Initialize the intro sequence if not yet started.
+	if (!intro_init)
 	{
-		// Random x coordinate.
-		var x = Random(LandscapeWidth()), y = 0;
-		// Find corresponding y coordinate.
-		while (!GBackSolid(x, y) && y < 9 * LandscapeHeight() / 10)
-			y += 2;
-		// Check if surface is relatively flat (check for flatter surfaces first).
-		var d = i / 250 + 1;		
-		if (!GBackSolid(x + 10, y - 20) && !GBackSolid(x - 10, y - 20) && !GBackSolid(x + 10, y - d) && !GBackSolid(x - 10, y - d) && GBackSolid(x + 10, y + d) && GBackSolid(x - 10, y + d))
-			if (y > LandscapeHeight() / 2)
-			{
-				mountain_location = [x, y - 10];
-				break;
-			}
-	} 
+		StartSequence("Intro", 0, GetCrew(plr));
+		intro_init = true;
+	}
 	return;
 }
 
@@ -127,7 +108,7 @@ private func InitEnvironment()
 	time->SetCycleSpeed(0);
 	
 	// A light blue hue, to indicate the cold climate.
-	var blue = 6;
+	var blue = 4;
 	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
 	
 	// Some natural disasters. 
@@ -213,7 +194,7 @@ global func FxSnowStormTimer(object target, proplist effect)
 	return 1;
 }
 
-/*-- Some helper functions --*/
+/*-- Helper functions --*/
 
 global func LogMatCounts()
 {

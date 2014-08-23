@@ -13,3 +13,7 @@ Settings which come to mind are: map size, material available and difficulty of 
 implement these options with a static const set to the standard value, you'd prefer to be played.
 
 If you want your scenario in this folder please add it or contact the maintainer in IRC or the forum.
+
+[Open Todos]
+* Translate Iron Peak into German.
+* Implement rock fall and blizzards for Iron Peak.

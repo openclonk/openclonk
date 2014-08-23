@@ -1,0 +1,7 @@
+# Pilot Name
+PilotName=Captain Orville
+
+# Intro sequence messages
+MsgIronPeakAhead=Iron peak ahead, team ... prepare for drop!
+MsgLandOnPeak=Team ... land down there on the peak.
+MsgCrewLanded=Well done! I have given you tools to survive. Your mission: build up a settlement and produce metal.
