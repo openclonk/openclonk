@@ -122,7 +122,36 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_widget_show(dialog->hbox_map_height);
+
+	/* Map zoom */
+
+	dialog->lbl_map_zoom = gtk_label_new("Map zoom:");
+	gtk_widget_show(dialog->lbl_map_zoom);
+
+	dialog->ent_map_zoom = gtk_spin_button_new_with_range(0.2, 5.0, 0.1);
+	gtk_spin_button_set_digits(GTK_SPIN_BUTTON(dialog->ent_map_zoom), 2);
+	gtk_widget_show(dialog->ent_map_zoom);
+
+	dialog->hbox_map_zoom = gtk_hbox_new(FALSE, 5);
+
+	gtk_box_pack_start(
+		GTK_BOX(dialog->hbox_map_zoom),
+		dialog->lbl_map_zoom,
+		FALSE,
+		TRUE,
+		0
+	);
+
+	gtk_box_pack_start(
+		GTK_BOX(dialog->hbox_map_zoom),
+		dialog->ent_map_zoom,
+		TRUE,
+		TRUE,
+		0
+	);
 	
+	gtk_widget_show(dialog->hbox_map_zoom);
+
 	/* Checkboxes */
 	
 	dialog->cbx_tab_to_spaces = gtk_check_button_new_with_label(
@@ -212,6 +241,11 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 		prefs->map_height
 	);
 
+	gtk_spin_button_set_value(
+		GTK_SPIN_BUTTON(dialog->ent_map_zoom),
+		prefs->map_zoom
+	);
+
 	gtk_toggle_button_set_active(
 		GTK_TOGGLE_BUTTON(dialog->cbx_tab_to_spaces),
 		prefs->tab_to_spaces
@@ -294,7 +328,15 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 		TRUE,
 		0
 	);
-	
+
+	gtk_box_pack_start(
+		content_area,
+		dialog->hbox_map_zoom,
+		FALSE,
+		TRUE,
+		0
+	);
+
 	gtk_box_pack_start(
 		content_area,
 		dialog->cbx_tab_to_spaces,
@@ -388,6 +430,10 @@ MapePreferences mape_preferences_dialog_get(MapePreferencesDialog* dialog)
 
 	prefs.map_width = gtk_spin_button_get_value_as_int(
 		GTK_SPIN_BUTTON(dialog->ent_map_width)
+	);
+
+	prefs.map_zoom = gtk_spin_button_get_value(
+		GTK_SPIN_BUTTON(dialog->ent_map_zoom)
 	);
 
 	prefs.map_height = gtk_spin_button_get_value_as_int(

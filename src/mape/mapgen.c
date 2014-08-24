@@ -167,7 +167,7 @@ mape_mapgen_set_root_group(MapeGroup* group)
  * for display purposes.
  * @source: The map generator source code for the map to generate.
  * @type: Specifies how the text in @source should be interpreted. Must not be
- * #MAPE_MAPGEN_NONE.
+ * %MAPE_MAPGEN_NONE.
  * @script_path: Path to the script source for algo=script overlays, or %NULL.
  * @material_map: The material map containing the materials to be used during
  * map generation.

@@ -31,6 +31,7 @@ struct MapePreferences_ {
 	unsigned int random_seed;
 	unsigned int map_width;
 	unsigned int map_height;
+	double map_zoom;
 };
 
 void mape_preferences_from_config(MapePreferences* preferences,

@@ -44,7 +44,9 @@ struct MapePreferencesDialog_ {
 	GtkWidget* hbox_map_height;
 	GtkWidget* lbl_map_height;
 	GtkWidget* ent_map_height;
-	
+	GtkWidget* hbox_map_zoom;
+	GtkWidget* lbl_map_zoom;
+	GtkWidget* ent_map_zoom;
 };
 
 MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
