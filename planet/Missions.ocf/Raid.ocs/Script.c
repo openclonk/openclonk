@@ -27,6 +27,8 @@ func Initialize()
 {
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
 	PlaceGrass(40);
+	SetNextMission("Mission.ocf/Crash.ocs");
+	return true;
 }
 
 func DoInit(int first_player)

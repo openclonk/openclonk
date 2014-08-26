@@ -4,15 +4,41 @@ MsgIntro2=Schau, der schöne Lavasee!
 MsgIntro3=Komm schon, Baby...
 MsgIntro4=Oh oh...
 MsgIntro5=Schnell! Der Schleudersitz!
+MsgIntro6=Puh, das war knapp.
+MsgIntro7=Was können wir nun tun?
+MsgIntro8=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans im Schnee gelandet ist.
+MsgIntro9=Schnee ist weich. Wenn du dorthin gelangst, kannst du das Flugzeug vielleicht retten.
+MsgIntro10=Ich werde es versuchen.
 
 # NPC Pilot
-NamePilot=Pilot
 MsgCrashedPlane=Und, habt ihr das Flugzeug schon gefunden?
 AnsCrashedPlane=Nein, wir suchen noch.
+PyritQPlane=Wo ist das Flugzeug?
+PyritAPlane=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans im Schnee gelandet ist.
+PyritQLake=Wie überquere ich den See?
+PyritALake=Du braucht vermutlich ein paar fortgeschrittene Werkzeuge. Vielleicht geben uns die Dorfbewohner etwas.
+PyritQDone=Nichts weiter.
 
 # NPC Merchant
-MsgSellPlans=Ich habe hier ein paar interessante Baupläne! Für 150 Clunker würde ich sie dir überlassen.
-AnsNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme später wieder.
-AnsBuyPlans=Das ist ein guter Deal; hier sind deine Clunker.
-MsgGivePlans=Danke! Hier hast du Pläne fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}. Aber Vorsicht: Die Pumpe ist aus Holz und sollte nicht zum Pumpen von Lava verwendet werden!
-MsgLeaveVillage=Bitte verlasse unser verschlafenes Dorf!
+Merchant1=Seid gegrüßt, Fremde aus dem Himmel. Wie kann ich euch helfen?
+MerchantQPlane=Hast du unser Flugzeug gesehen?
+MerchantAPlane1=Der seltame Vogel? Er trudelte über den Vulkan und landere auf der anderen Seite im Schnee.
+MerchantAPlane2=Dorthin zu gelangen wird nicht einfach sein.
+MerchantQLake=Kannst du uns helfen, den See zu überqueren?
+MerchantSellPlans=Ich habe hier ein paar interessante Baupläne! Für 150 Clunker würde ich sie dir überlassen.
+MerchantNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme später wieder.
+MerchantBuyPlans=Das ist ein guter Deal; hier sind deine Clunker.
+MerchantGivePlans=Danke! Hier hast du Pläne fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}.
+MerchantQPump=Wie benutze ich die Pumpe?
+MerchantAPump1=Baue zwei Leitungen und benutze sie, während du vor der Pumpe stehst. Die erste Leitung wird das Zuflussrohr und die zweite Leitung das Abflussrohr.
+MerchantAPump2=Wirf dann einfach das andere Ende des zuflussrohrs ins Wasser und platziere das Abflussrohr dort, wo die Flüssigkeit hingepumpt werden soll.
+MerchantQCatapult=Wozu brauche ich ein Katapult?
+MerchantACatapult1=Ein Katapult hat viele Anwendungen. Man kann Dinge wie Leitungsenden durch die Gegend werfen. Und wenn du mutig bist, kannst du selbst ins Katapult steigen und dich über den Lavasee schleudern.
+MerchantACatapult2=Das...klingt gefährlich. Das gefällt mir!
+MerchantQDone=Tschüss.
+
+# Outro
+Outro1=Es ist vollbracht! Das Flugzeug ist zurück.
+Outro2=Gut gemacht. Dann lasst uns die Reise fortsetzen. Wir haben noch einen weiten Weg vor uns.
+Outro3=Aber diesmal fliegen wir etwas höher, ok?
+Outro4=Mal sehen, was ich tun kann.

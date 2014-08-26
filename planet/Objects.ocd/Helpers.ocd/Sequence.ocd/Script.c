@@ -18,6 +18,10 @@ func Start(string name, int progress, ...)
 	SetPosition(0,0); // force global coordinates
 	this.seq_name = name;
 	this.seq_progress = progress;
+	// call init function of this scene - difference to start function is that it is called before any player joins
+	var fn_init = Format("~%s_Init", seq_name);
+	if (!Call(fn_init, ...))
+		GameCall(fn_init, this, ...);
 	// Disable crew of all players
 	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 	{
@@ -181,10 +185,10 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 
 /* Global helper functions */
 
-global func StartSequence(string name, int progress, object view_target)
+global func StartSequence(string name, int progress, ...)
 {
 	var seq = CreateObject(Sequence, 0,0, NO_OWNER);
-	seq->Start(name, progress, view_target);
+	seq->Start(name, progress, ...);
 	return seq;
 }
 

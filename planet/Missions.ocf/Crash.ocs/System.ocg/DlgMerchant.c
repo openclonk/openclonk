@@ -2,49 +2,119 @@
 
 #appendto Dialogue
 
+static g_has_bought_plans;
 
-private func Dlg_Merchant_1(object clonk)
+func Dlg_Merchant_1(object clonk)
 {
-	MessageBox("$MsgSellPlans$", clonk);
-	return;
+	MessageBox("$Merchant1$", clonk);
+	return true;
 }
 
-private func Dlg_Merchant_2(object clonk)
+func Dlg_Merchant_2(object clonk)
 {
+	var options = [["$MerchantQPlane$", "Dlg_Merchant_Plane"]];
+	var i = GetLength(options);
+	if (g_has_bought_plans)
+	{
+		options[i++] = ["$MerchantQPump$", "Dlg_Merchant_Pump"];
+		options[i++] = ["$MerchantQCatapult$", "Dlg_Merchant_Catapult"];
+	}
+	else
+	{
+		options[i++] = ["$MerchantQLake$", "Dlg_Merchant_Lake"];
+	}
+	options[i++] = ["$MerchantQDone$", "StopDialogue()"];
+	MessageBox("", clonk, clonk, false, nil, options);
+	SetDialogueProgress(1);
+	return true;
+}
+
+func Dlg_Merchant_Lake(object clonk)
+{
+	if (g_has_bought_plans) return StopDialogue(); // in case multiple players initiate the dialogue at the same time
+	MessageBox("$MerchantSellPlans$", clonk);
+	SetDialogueProgress(10);
+	return true;
+}
+
+func Dlg_Merchant_10(object clonk)
+{
+	if (g_has_bought_plans) return StopDialogue(); // in case multiple players initiate the dialogue at the same time
 	var plr = clonk->GetOwner();
 	var wealth = GetWealth(plr);
 	if (wealth >= 150)
 	{
-		MessageBox("$AnsBuyPlans$", clonk, clonk);	
+		MessageBox("$MerchantBuyPlans$", clonk, clonk);
 	}
 	else
 	{
-		MessageBox("$AnsNoMoney$", clonk, clonk);
-		SetDialogueProgress(0);
-		SetDialogueStatus(DLG_Status_Stop);
+		MessageBox("$MerchantNoMoney$", clonk, clonk);
+		SetDialogueProgress(2);
 	}
-	return;
+	return true;
 }
 
-private func Dlg_Merchant_3(object clonk)
+func Dlg_Merchant_11(object clonk)
 {
-	MessageBox("$MsgGivePlans$", clonk);
-	DoWealth(clonk->GetOwner(), -150);
-	for (var i = 0; i < GetPlayerCount(); i++)
+	// prevent race conditions
+	if (g_has_bought_plans) return StopDialogue();
+	var plr = clonk->GetOwner();
+	var wealth = GetWealth(plr);
+	if (wealth < 150)
 	{
-		var plr = GetPlayerByIndex(i);
-		SetPlrKnowledge(plr, Pump);
-		SetPlrKnowledge(plr, Pipe);
-		SetPlrKnowledge(plr, Catapult);
-		SetPlrKnowledge(plr, Cannon);
-	}	
-	SetDialogueStatus(DLG_Status_Stop);
-	return;
+		MessageBox("$MerchantNoMoney$", clonk, clonk);
+		SetDialogueProgress(2);
+	}
+	// do transaction.
+	MessageBox("$MerchantGivePlans$", clonk);
+	DoWealth(clonk->GetOwner(), -150);
+	for (var i = 0; i < GetPlayerCount(); i++) GameCall("GiveExtraPlans", GetPlayerByIndex(i));
+	g_has_bought_plans = true;
+	SetDialogueProgress(2);
+	return true;
 }
 
-private func Dlg_Merchant_4(object clonk)
+func Dlg_Merchant_Plane(object clonk)
 {
-	MessageBox("$MsgLeaveVillage$", clonk);
-	SetDialogueStatus(DLG_Status_Stop);
-	return;
+	MessageBox("$MerchantAPlane1$", clonk);
+	SetDialogueProgress(20);
+	return true;
+}
+
+
+func Dlg_Merchant_20(object clonk)
+{
+	MessageBox("$MerchantAPlane2$", clonk);
+	SetDialogueProgress(2);
+	return true;
+}
+
+func Dlg_Merchant_Pump(object clonk)
+{
+	MessageBox("$MerchantAPump1$", clonk);
+	SetDialogueProgress(30);
+	return true;
+}
+
+
+func Dlg_Merchant_30(object clonk)
+{
+	MessageBox("$MerchantAPump2$", clonk);
+	SetDialogueProgress(2);
+	return true;
+}
+
+func Dlg_Merchant_Catapult(object clonk)
+{
+	MessageBox("$MerchantACatapult1$", clonk);
+	SetDialogueProgress(40);
+	return true;
+}
+
+
+func Dlg_Merchant_40(object clonk)
+{
+	MessageBox("$MerchantACatapult2$", clonk, clonk);
+	SetDialogueProgress(2);
+	return true;
 }

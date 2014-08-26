@@ -5,7 +5,7 @@
 func Intro_Init()
 {
 	this.plane = CreateObject(Plane, 0, 400);
-	this.pilot = CreateObject(Clonk, 100, 100, NO_OWNER);
+	this.pilot = npc_pyrit = CreateObject(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();
 	this.pilot->SetSkin(2);
@@ -24,7 +24,6 @@ func Intro_Init()
 
 func Intro_Start(object hero)
 {
-	if (!this.plane) Intro_Init();
 	this.hero = hero;
 	this.plane->StartInstantFlight(90, 15);
 
@@ -36,7 +35,6 @@ func Intro_Start(object hero)
 
 func Intro_JoinPlayer(int plr)
 {
-	if (!this.plane) Intro_Init();
 	if (this.intro_closed) return false; // too late for join - just join in village
 	var crew;
 	for(var index = 0; crew = GetCrew(plr, index); ++index)
@@ -152,40 +150,99 @@ func Intro_16()
 {
 	var x = this.plane->GetX();
 	var y = this.plane->GetY();
-		
 	this.pilot->Exit();
 	Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.pilot);
 	while(this.dialogue->Contents())
 		Intro_CreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), this.dialogue->Contents());
-		
-	SetViewTarget(nil);
-	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
-	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		SetPlrView(plr, GetCrew(plr));
-	}
-
-	return ScheduleNext(40);
+	return ScheduleNext(100);
 }
-
 
 func Intro_17()
 {
-	ScheduleCall(nil, this.Intro_PilotDlg, 330, 1, this.pilot);
+	this.pilot->SetCommand("MoveTo", nil, 120, 860);
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		var crew = GetCrew(plr);
+		if (crew)
+		{
+			crew->SetCommand("MoveTo", nil, 135+Random(25), 860);
+		}
+	}
+	this.timer=0;
+	return ScheduleNext(100);
+}
+
+func Intro_18()
+{
+	// wait until pilot has arrived in village
+	if (!Inside(this.pilot->GetX(), 100,140))
+	{
+		++this.timer;
+		if (this.timer < 12) return ScheduleSame(18);
+		// Pilot didn't arrive on time. Just put him there.
+		this.pilot->SetPosition(120,860);
+	}
+	this.pilot->SetCommand("None");
+	this.pilot->SetComDir(COMD_Stop);
+	this.pilot->SetXDir();
+	return ScheduleNext(30);
+}
+
+func Intro_19()
+{
+	// Begin dialogue in village
+	this.pilot->SetDir(DIR_Right);
+	MessageBoxAll("$MsgIntro6$", this.pilot, true); // that was close
+	return ScheduleNext(150);
+}
+
+func Intro_20()
+{
+	this.hero->SetDir(DIR_Left);
+	MessageBoxAll("$MsgIntro7$", this.hero, true); // what now?
+	return ScheduleNext(150);
+}
+
+func Intro_21()
+{
+	MessageBoxAll("$MsgIntro8$", this.pilot, true); // plane crashed into mountain on other side
+	return ScheduleNext(250);
+}
+
+func Intro_22()
+{
+	MessageBoxAll("$MsgIntro9$", this.pilot, true); // u go there n save it
+	return ScheduleNext(220);
+}
+
+func Intro_23()
+{
+	MessageBoxAll("$MsgIntro10$", this.hero, true); // ok
+	return ScheduleNext(40);
+}
+
+func Intro_24()
+{
 	return Stop();
 }
 
 func Intro_Stop()
 {
+	// if players got stuck somewhere, unstick them
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+	{
+		var plr = GetPlayerByIndex(i, C4PT_User);
+		var crew = GetCrew(plr);
+		if (crew && !Inside(crew->GetX(),125,170))
+		{
+			crew->SetPosition(135+Random(25), 860);
+		}
+		crew->Extinguish();
+		crew->DoEnergy(100);
+	}
+	this.dialogue->SetInteraction(true);
+	this.dialogue->AddAttention();
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
-	return true;
-}
-
-func Intro_PilotDlg(object pilot)
-{
-	pilot->SetCommand("MoveTo", nil, 120, 860);
-	var dialogue = Dialogue->FindByTarget(pilot);
-	dialogue->SetInteraction(true);
-	dialogue->AddAttention();
 	return true;
 }

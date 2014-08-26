@@ -35,6 +35,11 @@ MapWidth=200,0,64,10000
 MapHeight=175,0,40,10000
 NewStyleLandscape=2
 NoScan=1
+AutoScanSideOpen=0
+LeftOpen=450
+RightOpen=0
+TopOpen=1
+BottomOpen=0
 
 [Weather]
 Climate=0,10,0,100

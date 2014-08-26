@@ -318,6 +318,8 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 				// Text+Command given
 				option_text = option[0];
 				option_command = option[1];
+				// if only a command is given, the standard parameter is just the clonk
+				if (!WildcardMatch(option_command, "*(*")) option_command = Format("%s(Object(%d))", option_command, clonk->ObjectNumber());
 			}
 			else
 			{

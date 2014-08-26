@@ -5,7 +5,7 @@
 	@authors Sven2, Maikel, ck
 */
 
-static g_is_initialized;
+static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
 func DoInit(int first_player)
 {
@@ -68,6 +68,9 @@ func InitializePlayer(int plr)
 			crew->SetPosition(x , y);
 		}
 	}
+	
+	// Extra plans from merchant to newly joined players
+	if (g_has_bought_plans) GiveExtraPlans(plr);
 
 	// Give clonks initial tools
 	for(var index = 0; crew = GetCrew(plr, index); ++index)
@@ -83,3 +86,18 @@ func InitializePlayer(int plr)
 	return true;
 }
 
+
+func OnGameOver()
+{
+	GainMissionAccess("S2Crash");
+	return true;
+}
+
+func GiveExtraPlans(int plr)
+{
+	SetPlrKnowledge(plr, Pump);
+	SetPlrKnowledge(plr, Pipe);
+	SetPlrKnowledge(plr, Catapult);
+	SetPlrKnowledge(plr, Cannon);
+	return true;
+}
