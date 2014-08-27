@@ -2,3 +2,4 @@ Name=Gravestone
 Description=Where clonks rest in peace.
 
 Epitaph=Here lies
+ReadInscription=Read inscription
