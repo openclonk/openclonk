@@ -127,8 +127,6 @@ private func InitAnimals()
 
 private func InitMaterial(int amount)
 {
-	var lorry;
-	
 	// No extra materials for little materials.
 	if (amount <= 1)
 		return;
@@ -137,23 +135,22 @@ private func InitMaterial(int amount)
 	if (amount >= 2)
 	{
 		var x = 160 + Random(40);
-		lorry = CreateObject(Lorry, x, FindHeight(x) - 20);
+		var lorry = CreateObject(Lorry, x, FindHeight(x) - 20);
 		lorry->CreateContents(Wood, 6);
 		lorry->CreateContents(Metal, 4);
 		lorry->CreateContents(Rock, 4);
 		lorry->CreateContents(Dynamite, 4);
 		lorry->CreateContents(Pickaxe);
-	}
 
-	// For large amount of materials add more explosives into the lorry
-	if (amount >= 3)
-	{
-		lorry->CreateContents(Wood, 6);
-		lorry->CreateContents(Metal, 4);
-		lorry->CreateContents(Rock, 4);
-		lorry->CreateContents(DynamiteBox, 2);
+		// For large amount of materials add more explosives into the lorry
+		if (amount >= 3)
+		{
+			lorry->CreateContents(Wood, 6);
+			lorry->CreateContents(Metal, 4);
+			lorry->CreateContents(Rock, 4);
+			lorry->CreateContents(DynamiteBox, 2);
+		}
 	}
-
 	return;
 }
 

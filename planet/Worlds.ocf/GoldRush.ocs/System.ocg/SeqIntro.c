@@ -38,7 +38,6 @@ public func Intro_3()
 	return Stop();
 }
 
-
 public func Intro_Stop()
 {
 	// Reset player zoom.

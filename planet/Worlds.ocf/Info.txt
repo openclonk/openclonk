@@ -15,5 +15,12 @@ implement these options with a static const set to the standard value, you'd pre
 If you want your scenario in this folder please add it or contact the maintainer in IRC or the forum.
 
 [Open Todos]
+* Add additional decoration to all worlds.
+
+* Translate Gold Rush into German.
+
 * Translate Iron Peak into German.
 * Implement rock fall and blizzards for Iron Peak.
+
+* Translate Flooded Veins into German.
+* Improve the gem distribution (make it look more vein-like).
