@@ -167,20 +167,23 @@ public func DrawGemVeins(proplist map, int size)
 	var nodes = FindVeinNodes(map, size + 12, size / 2);
 	var connections = FindNodeConnections(nodes, 24);
 	for (var con in connections)
-	{
-		con = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 3, Op = con};
 		map->Draw("Tunnel", con);
-	}
 	
 	// Make three out of the five gems nodes contain gems and protect with granite.
-	for (var i = 0; i < 3; i++)
+	var cnt = 0, i = 0;
+	while (cnt < 3 && i < 5)
 	{
-		var gem = {Algo = MAPALGO_Ellipsis, X = nodes[i].X, Y = nodes[i].Y, Wdt = 5, Hgt = 4};
-		gem = {Algo = MAPALGO_Turbulence, Amplitude = 3, Scale = 3, Iterations = 2, Seed = Random(65536), Op = gem};
-		var gem_border = {Algo = MAPALGO_Border, Wdt = 2, Op = gem};
-		gem = {Algo = MAPALGO_And, Op = [gem, {Algo = MAPALGO_Not, Op = gem_border}]};
-		map->Draw(["Ruby", "Amethyst"][Random(2)], gem);
-		map->Draw("Granite", gem_border);
+		var node = nodes[i];
+		i++;
+		if (node.conn_count == 0)
+			continue;
+		var tunnel = node.tunnels[0];
+		var y_constraint = {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 3, Wdt = wdt, Hgt = 12};
+		var gem_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 4, Wdt = wdt, Hgt = 10}]};
+		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 6, Wdt = wdt, Hgt = 2}]};
+		map->Draw(["Ruby", "Amethyst"][Random(2)], gem_border);
+		map->Draw("Granite", granite_border);
+		cnt++;
 	}
 	
 	// Replace the tunnels with water up to a certain level.
@@ -216,6 +219,7 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 			continue;
 		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
 		node.is_gem = true;
+		node.tunnels = [];
 		PushBack(nodes, node);	
 	}
 	
@@ -225,7 +229,8 @@ public func FindVeinNodes(proplist map, int size, nr_nodes)
 		var node = {};
 		if (!mask->FindPosition(node, "Rock", [4, hgt - size + 4, wdt - 8, size - 18]))
 			continue;
-		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});	
+		mask->Draw("Tunnel", {Algo = MAPALGO_Ellipsis, X = node.X, Y = node.Y, Wdt = node_dist, Hgt = node_dist});
+		node.tunnels = [];
 		PushBack(nodes, node);
 	}
 	return nodes;
@@ -248,6 +253,9 @@ public func FindNodeConnections(array nodes, int max_length)
 			// Check for two gem nodes which may not connect.
 			if (from_node.is_gem && to_node.is_gem)
 				continue;
+			// Gem nodes may have at most one connection.
+			if ((from_node.is_gem && from_node.conn_count >= 1) || (to_node.is_gem && to_node.conn_count >= 1))
+				continue;
 			// Cave line parameters.
 			var fx = from_node.X;
 			var fy = from_node.Y;
@@ -259,9 +267,8 @@ public func FindNodeConnections(array nodes, int max_length)
 			// Check for overlap in existing connections.
 			var has_overlap = false;
 			for (var line in connections)
-				if (IsLineOverlap(fx, fy, tx, ty, line.X[0], line.Y[0], line.X[1], line.Y[1]))	
+				if (IsLineOverlap(fx, fy, tx, ty, line.Op.X[0], line.Op.Y[0], line.Op.X[1], line.Op.Y[1]))	
 				{
-					//Log("(%d,%d) to (%d,%d) overlap with (%d,%d) to (%d,%d)", fx, fy, tx, ty, line.X[0], line.Y[0], line.X[1], line.Y[1]);
 					has_overlap = true;
 					break;
 				}
@@ -271,7 +278,10 @@ public func FindNodeConnections(array nodes, int max_length)
 			if (!Random(4))
 				tunnel_width = 3;
 			var tunnel = {Algo = MAPALGO_Polygon, X = [fx, tx], Y = [fy, ty], Wdt = tunnel_width, Open = 1, Empty = 1};
+			tunnel = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 3, Seed = Random(65536), Op = tunnel};
 			PushBack(connections, tunnel);
+			PushBack(from_node.tunnels, tunnel);
+			PushBack(to_node.tunnels, tunnel);
 			nodes[i].conn_count++;
 			nodes[j].conn_count++;
 		}

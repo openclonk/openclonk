@@ -26,7 +26,7 @@ protected func Initialize()
 	
 	// Goal: Sell a certain amount of gems dependent on difficulty.
 	var goal = CreateObject(Goal_SellGems);
-	goal->SetTargetAmount(8 * SCENOPT_Difficulty);
+	goal->SetTargetAmount(10 * SCENOPT_Difficulty);
 
 	// Initialize different parts of the scenario.
 	InitEnvironment(SCENOPT_Difficulty);
@@ -44,13 +44,14 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 	
-	// First player init base
+	// First player inits the base.
 	if (!first_plr_init)
 	{
 		InitBase(plr, SCENOPT_Material);
 		first_plr_init = true;
 	}
-	// Position and materials
+	
+	// Position and materials for the crew.
 	var crew;
 	for (var i = 0; crew = GetCrew(plr, i); ++i)
 	{
