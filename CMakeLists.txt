@@ -72,12 +72,12 @@ if(USE_GCC_STD_0X)
 	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 endif()
 
-# Convert the OC_CXX_FLAGS list to a CMAKE_REQUIRED_FLAGS string
+# Convert the OC_CXX_FLAGS list to a CMAKE_CXX_FLAGS string
 foreach(FLAG ${OC_CXX_FLAGS})
 	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
 endforeach()
 
-set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+set(CMAKE_CXX_FLAGS ${OC_REQUIRED_FLAGS})
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
