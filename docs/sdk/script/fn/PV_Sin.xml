@@ -12,13 +12,19 @@
       <params>
         <param>
           <type>int</type>
-          <name>start_value</name>
-          <desc>Begin of the interval.</desc>
+          <name>value</name>
+          <desc>Value or value provider to calculate the sine of. The result of <funclink>PV_Linear</funclink> can be used to evaluate the sine function linearly over time.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>end_value</name>
-          <desc>End of the interval.</desc>
+          <name>amplitude</name>
+          <desc>Amplitude of result. May be a value or value provider.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset</name>
+          <desc>Offset added to result. May be a value or value provider. Defaults to zero.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
