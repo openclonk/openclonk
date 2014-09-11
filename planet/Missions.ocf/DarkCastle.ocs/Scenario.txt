@@ -2,8 +2,9 @@
 Icon=36
 Title=DarkCastle
 Version=5,3,90
-Difficulty=75
+Difficulty=45
 NoInitialize=true
+MissionAccess=S2Treasure
 
 [Definitions]
 Definition1=Objects.ocd

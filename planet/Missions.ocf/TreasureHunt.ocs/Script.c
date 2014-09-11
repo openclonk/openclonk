@@ -9,6 +9,12 @@ static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
 static g_plr_inventory; // array indexed by players: Array containing inventory of Clonk jsut before it died
 
+func Initialize()
+{
+	SetNextMission("Mission.ocf/DarkCastle.ocs");
+	return true;
+}
+
 func DoInit(int first_player)
 {
 	CreateObject(Flagpole, 210,1185, first_player);
@@ -137,6 +143,7 @@ func OnGoldBarCollected(object collecter)
 
 func OnGameOver()
 {
+	GainMissionAccess("S2Treasure");
 	// Treasure was collected!
 	UpdateLeagueScores();
 	return true;
@@ -163,3 +170,4 @@ func OnInvincibleDamage(object damaged_target)
 	}
 	return true;
 }
+

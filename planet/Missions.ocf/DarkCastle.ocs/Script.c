@@ -138,3 +138,9 @@ func ShroomCaveCheck()
 	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);
 	return true;
 }
+
+func OnGameOver()
+{
+	GainMissionAccess("S2Castle");
+	return true;
+}

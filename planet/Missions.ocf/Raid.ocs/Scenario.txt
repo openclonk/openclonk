@@ -3,6 +3,7 @@ Title=Raid
 Version=5,4
 Difficulty=10
 NoInitialize=true
+Icon=37
 
 [Definitions]
 Definition2=Decoration.ocd

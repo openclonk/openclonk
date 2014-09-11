@@ -1,9 +1,10 @@
 [Head]
-Icon=36
+Icon=15
 Title=TreasureHunt
 Version=5,4
-Difficulty=30
+Difficulty=40
 NoInitialize=true
+MissionAccess=S2Sea
 
 [Definitions]
 Definition2=Decoration.ocd

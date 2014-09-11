@@ -7,6 +7,12 @@
 
 static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
+func Initialize()
+{
+	SetNextMission("Mission.ocf/DeepSeaMining.ocs");
+	return true;
+}
+
 func DoInit(int first_player)
 {
 	CreateObject(Windmill, 152, 825+48, 0);

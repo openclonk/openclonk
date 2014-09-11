@@ -82,7 +82,7 @@ func Intro_4()
 
 func Intro_5()
 {
-	MessageBoxAll("$MsgIntro2$", this.hero, true);
+	MessageBoxAll("$MsgIntro2$", GetHero(), true);
 	return ScheduleNext(36);
 }
 
@@ -136,7 +136,7 @@ func Intro_13()
 
 func Intro_14()
 {
-	MessageBoxAll("$MsgIntro4$", this.hero, true);
+	MessageBoxAll("$MsgIntro4$", GetHero(), true);
 	return ScheduleNext(20);
 }
 
@@ -199,8 +199,8 @@ func Intro_19()
 
 func Intro_20()
 {
-	this.hero->SetDir(DIR_Left);
-	MessageBoxAll("$MsgIntro7$", this.hero, true); // what now?
+	GetHero()->SetDir(DIR_Left);
+	MessageBoxAll("$MsgIntro7$", GetHero(), true); // what now?
 	return ScheduleNext(150);
 }
 
@@ -218,7 +218,7 @@ func Intro_22()
 
 func Intro_23()
 {
-	MessageBoxAll("$MsgIntro10$", this.hero, true); // ok
+	MessageBoxAll("$MsgIntro10$", GetHero(), true); // ok
 	return ScheduleNext(40);
 }
 
