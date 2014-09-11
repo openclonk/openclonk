@@ -16,7 +16,14 @@
 
 local HUDselector, HUDcontroller;
 
-public func SetSelector(object sel) { HUDselector = sel; }
+public func SetSelector(object sel)
+{
+	HUDselector = sel;
+	// Ensure controller is set if it was created after creation of this clonk (e.g. after section change)
+	if (!HUDcontroller) HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(GetOwner()));
+	return true;
+}
+
 public func GetSelector() { return HUDselector; }
 
 public func HUDAdapter()
