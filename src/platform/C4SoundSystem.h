@@ -21,6 +21,7 @@
 #define INC_C4SoundSystem
 
 #include <C4Group.h>
+#include <C4SoundIncludes.h>
 
 const int32_t
 	C4MaxSoundName=100,
@@ -30,18 +31,6 @@ const int32_t
 
 class C4Object;
 class C4SoundInstance;
-
-#if AUDIO_TK == AUDIO_TK_FMOD
-#include <fmod.h>
-typedef FSOUND_SAMPLE* C4SoundHandle;
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
-typedef struct Mix_Chunk* C4SoundHandle;
-#elif AUDIO_TK == AUDIO_TK_OPENAL
-#include <al.h>
-typedef ALuint C4SoundHandle;
-#else
-typedef void* C4SoundHandle;
-#endif
 
 class C4SoundEffect
 {

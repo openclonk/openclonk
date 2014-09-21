@@ -28,19 +28,6 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 
-#if AUDIO_TK == AUDIO_TK_FMOD
-#include <fmod_errors.h>
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
-#include <SDL.h>
-#elif AUDIO_TK == AUDIO_TK_OPENAL && !defined(APPLE)
-#ifdef _WIN32
-// This is an ugly hack to make FreeALUT not dllimport everything.
-#define _XBOX
-#endif
-#include <alut.h>
-#undef _XBOX
-#endif
-
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),
 		SongCount(0),

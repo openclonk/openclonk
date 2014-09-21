@@ -19,20 +19,6 @@
 
 #include <C4Application.h>
 
-#if AUDIO_TK == AUDIO_TK_OPENAL
-#if defined(__APPLE__)
-#import <CoreFoundation/CoreFoundation.h>
-#import <AudioToolbox/AudioToolbox.h>
-#else
-#ifdef _WIN32
-// This is an ugly hack to make FreeALUT not dllimport everything.
-#define _XBOX
-#endif
-#include <alut.h>
-#undef _XBOX
-#endif
-#endif
-
 
 using namespace C4SoundLoaders;
 

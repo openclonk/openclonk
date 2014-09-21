@@ -16,11 +16,6 @@
 #ifndef INC_C4SoundLoaders
 #define INC_C4SoundLoaders
 
-#if AUDIO_TK == AUDIO_TK_OPENAL
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
-#endif
-
 #include <vector>
 #include <C4SoundSystem.h>
 
