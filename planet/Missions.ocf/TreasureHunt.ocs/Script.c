@@ -1,13 +1,16 @@
 /**
 	Treasure Hunt
-	Find the treasure and sell it
+	Find the treasure and swap it for a barrel of oil
 	
 	@authors Sven2
 */
 
 static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
-static g_plr_inventory; // array indexed by players: Array containing inventory of Clonk jsut before it died
+static g_plr_inventory; // array indexed by players: Array containing inventory of Clonk just before it died
+
+static npc_pyrit, npc_dagobert, npc_tarzan;
+static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 
 func Initialize()
 {
@@ -17,18 +20,10 @@ func Initialize()
 
 func DoInit(int first_player)
 {
-	CreateObject(Flagpole, 210,1185, first_player);
+	var flagpole = CreateObject(Flagpole, 210,1185, first_player);
 	ClearFreeRect(530,1135, 50,2);
-	// Intro. Show message twice for longer duration.
-	Schedule(nil, Format("GameCall(%v, %d)", "DoIntroMessage", first_player), 50, 1);
-	Schedule(nil, Format("GameCall(%v, %d)", "DoIntroMessage", first_player), 100, 1);
-	return true;
-}
-
-func DoIntroMessage(int first_player)
-{
-	var talker = GetCursor(first_player);
-	if (talker) DialogueSimple->MessageBoxAll("$MsgIntro1$", talker, false);
+	// Start Intro.
+	StartSequence("Intro", 0, flagpole);
 	return true;
 }
 
@@ -111,13 +106,13 @@ global func FxIntRememberInventoryStop(object clonk, fx, int reason, bool temp)
 
 func EncounterCastle(object enemy, object player)
 {
-	DialogueSimple->MessageBoxAll("$MsgEncounterCastle$", enemy);
+	Dialogue->MessageBoxAll("$MsgEncounterCastle$", enemy, true);
 	return true;
 }
 
 func EncounterFinal(object enemy, object player)
 {
-	DialogueSimple->MessageBoxAll("$MsgEncounterFinal$", enemy);
+	Dialogue->MessageBoxAll("$MsgEncounterFinal$", enemy, true);
 	return true;
 }
 
@@ -126,25 +121,47 @@ func EncounterFinal(object enemy, object player)
 
 func OnTreasureCollected(object treasure)
 {
-	DialogueSimple->MessageBoxAll("$MsgTreasureCollected$", treasure->Contained());
+	g_treasure_collected = true;
+	Dialogue->MessageBoxAll("$MsgTreasureCollected$", treasure->Contained(), true);
+	// Dagobert has something new to say now
+	if (npc_dagobert)
+	{
+		var dlg = Dialogue->FindByTarget(npc_dagobert);
+		if (dlg) dlg->AddAttention();
+	}
 	return true;
+}
+
+func OnPlaneLoaded(object plane, object oil)
+{
+	if (!plane || !oil) return false; // disappeared in that one frame?
+	oil->Enter(plane);
+	g_goal->OnOilDelivered();
+	return StartSequence("Outro", 0, plane);
 }
 
 static g_num_goldbars;
 static const MAX_GOLD_BARS = 20;
 
-func OnGoldBarCollected(object collecter)
+func OnGoldBarCollected(object collector)
 {
 	++g_num_goldbars;
 	UpdateLeagueScores();
-	DialogueSimple->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, MAX_GOLD_BARS), collecter);
+	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, MAX_GOLD_BARS), collector, true);
+	return true;
+}
+
+public func OnGoalsFulfilled()
+{
+	GainMissionAccess("S2Treasure");
+	UpdateLeagueScores();
+	// Return true to force goal rule to not call GameOver() yet, as it will be done by outro sequence
 	return true;
 }
 
 func OnGameOver()
 {
-	GainMissionAccess("S2Treasure");
-	// Treasure was collected!
+	// In case gems are collected after game end.
 	UpdateLeagueScores();
 	return true;
 }
@@ -152,8 +169,7 @@ func OnGameOver()
 func UpdateLeagueScores()
 {
 	// +50 for finishing and +5 for every gold bar
-	var goal = FindObject(Find_ID(Goal_TreasureHunt));
-	var goal_finished = (goal && goal->IsFulfilled());
+	var goal_finished = (g_goal && g_goal->IsFulfilled());
 	return SetLeagueProgressScore(g_num_goldbars, g_num_goldbars * 5 + goal_finished * 50);
 }
 
@@ -165,7 +181,7 @@ func OnInvincibleDamage(object damaged_target)
 		var observer = damaged_target->FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), damaged_target->Sort_Distance());
 		if (observer)
 		{
-			DialogueSimple->MessageBoxAll("$MsgStoneDoorNoDamage$", observer);
+			Dialogue->MessageBoxAll("$MsgStoneDoorNoDamage$", observer, true);
 		}
 	}
 	return true;

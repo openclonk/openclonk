@@ -1,0 +1,31 @@
+// S2Hat genrated by blender2ogre 0.6.0
+
+material S2Hat 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass S2Hat
+        {
+            ambient 0.13066382706165314 0.11021058261394501 0.8000000715255737 1.0
+            diffuse 0.10453106320695671 0.08816846740496853 0.640000066757203 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture S2Hat.png
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}
