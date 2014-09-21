@@ -4,8 +4,13 @@
 
 public func Intro_Start()
 {
-	SetPlayerZoomByViewRange(NO_OWNER, 200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(4);
+}
+
+public func Intro_JoinPlayer(int plr)
+{
+	SetPlayerZoomByViewRange(plr, 200, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	return;
 }
 
 public func Intro_1()

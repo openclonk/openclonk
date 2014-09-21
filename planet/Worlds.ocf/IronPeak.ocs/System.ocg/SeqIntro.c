@@ -36,7 +36,7 @@ public func Intro_JoinPlayer(int plr)
 	}
 	
 	// Reduce zoom 
-	SetPlayerZoomByViewRange(NO_OWNER, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(this.pilot);
 	return;
 }

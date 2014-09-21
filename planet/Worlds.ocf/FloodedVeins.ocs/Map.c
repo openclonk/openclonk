@@ -34,12 +34,12 @@ protected func InitializeMap(proplist map)
 	DrawCavern(map);
 	
 	// Draw the middle section of the map with useful resources.
-	// This takes 50, 55 or 60 landscape pixels.
-	DrawMiddle(map, 45 + 5 * SCENOPT_MapSize);
+	// This takes 45, 50 or 55 landscape pixels.
+	DrawMiddle(map, 40 + 5 * SCENOPT_MapSize);
 	
 	// Draw the gem veins including it being flooded at the bottom of the map.
 	// This takes up the remaining landscape pixels, which depends on the map size.
-    DrawGemVeins(map, 55 + 20 * SCENOPT_MapSize);
+    DrawGemVeins(map, 60 + 20 * SCENOPT_MapSize);
 	
 	// Return true to tell the engine a map has been successfully created.
 	return true;
@@ -180,14 +180,14 @@ public func DrawGemVeins(proplist map, int size)
 		var tunnel = node.tunnels[0];
 		var y_constraint = {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 3, Wdt = wdt, Hgt = 12};
 		var gem_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 4, Wdt = wdt, Hgt = 10}]};
-		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 6, Wdt = wdt, Hgt = 2}]};
+		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 2, Right = 2, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 6, Wdt = wdt, Hgt = 2}]};
 		map->Draw(["Ruby", "Amethyst"][Random(2)], gem_border);
 		map->Draw("Granite", granite_border);
 		cnt++;
 	}
 	
 	// Replace the tunnels with water up to a certain level.
-	var water_level = 5 * size / 6;
+	var water_level = size - 4;
 	var tunnels = Duplicate("Tunnel");
 	var tunnels_algo = {Algo = MAPALGO_Layer, Layer = tunnels};
 	tunnels_algo = {Algo = MAPALGO_And, Op = [tunnels_algo, {Algo = MAPALGO_Rect, X = 0, Y = hgt - water_level, Wdt = wdt, Hgt = water_level}]}; 
@@ -248,7 +248,7 @@ public func FindNodeConnections(array nodes, int max_length)
 		{
 			var to_node = nodes[j];
 			// Check for the maximum connections per cave.
-			if (from_node.conn_count >= 4 || to_node.conn_count >= 4)
+			if (from_node.conn_count >= RandomX(3,4) || to_node.conn_count >= RandomX(3,4))
 				continue;
 			// Check for two gem nodes which may not connect.
 			if (from_node.is_gem && to_node.is_gem)
@@ -275,8 +275,14 @@ public func FindNodeConnections(array nodes, int max_length)
 			if (has_overlap)
 				continue;
 			var tunnel_width = 2;
-			if (!Random(4))
-				tunnel_width = 3;
+			// Change tunnel width if not connecting to gem node.
+			if (!from_node.is_gem && !to_node.is_gem)
+			{
+				if (!Random(4))
+					tunnel_width = 3;
+				if (!Random(4))
+					tunnel_width = 1;
+			}
 			var tunnel = {Algo = MAPALGO_Polygon, X = [fx, tx], Y = [fy, ty], Wdt = tunnel_width, Open = 1, Empty = 1};
 			tunnel = {Algo = MAPALGO_Turbulence, Amplitude = 5, Scale = 3, Seed = Random(65536), Op = tunnel};
 			PushBack(connections, tunnel);
