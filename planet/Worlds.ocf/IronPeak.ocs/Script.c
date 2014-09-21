@@ -173,7 +173,7 @@ global func FxSnowStormStart(object target, proplist effect)
 	// Always a strong wind, either to the left or the right.
 	effect.wind = (2 * Random(2) - 1) * (90 + Random(10));
 	// Accordingly a stormy sound.
-	Sound("WindLoop.ogg", true, 80, nil, 1);
+	Sound("WindLoop.ogg", true, 50, nil, 1);
 	return 1;
 }
 

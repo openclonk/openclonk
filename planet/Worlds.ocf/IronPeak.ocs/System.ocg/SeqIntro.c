@@ -2,7 +2,7 @@
 
 #appendto Sequence
 
-public func Intro_Start()
+public func Intro_Init()
 {
 	// Create an airplane with pilot and fly it towards the peak.
 	this.airplane = CreateObject(Plane, 24, LandscapeHeight() - 480);
@@ -18,23 +18,27 @@ public func Intro_Start()
 	this.airplane->SetXDir(12);
 	this.airplane->SetYDir(-10);
 	this.airplane->MakeInvincible();
-	
-	// Move crew into airplane.
-	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
+	return;
+}
+
+public func Intro_Start()
+{
+	return ScheduleNext(4);
+}
+
+public func Intro_JoinPlayer(int plr)
+{
+	var j = 0, crew;
+	while (crew = GetCrew(plr, j++))
 	{
-		var plr = GetPlayerByIndex(i, C4PT_User);
-		var j = 0, crew;
-		while (crew = GetCrew(plr, j++))
-		{
-			crew->Enter(this.airplane);
-			crew->SetAction("Walk");	
-		}
+		crew->Enter(this.airplane);
+		crew->SetAction("Walk");	
 	}
 	
 	// Reduce zoom 
 	SetPlayerZoomByViewRange(NO_OWNER, 300, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	SetViewTarget(this.pilot);
-	return ScheduleNext(4);
+	return;
 }
 
 public func Intro_1()
