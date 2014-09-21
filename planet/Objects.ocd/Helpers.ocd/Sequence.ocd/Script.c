@@ -38,7 +38,7 @@ func Start(string name, int progress, ...)
 	return true;
 }
 
-public func IntializePlayer(int plr)
+public func InitializePlayer(int plr)
 {
 	JoinPlayer(plr);
 	return true;
@@ -195,7 +195,7 @@ func GetHero(object nearest_obj)
 	// prefer object stored as hero - if not assigned, find someone close to specified object
 	if (!this.hero)
 		if (nearest_obj)
-			this.hero = nearest_obj->FindObject(Find_ID(Clonk), Find_Not(Find_Owner()), nearest_obj->Sort_Distance());
+			this.hero = nearest_obj->FindObject(Find_ID(Clonk), Find_Not(Find_Owner(NO_OWNER)), nearest_obj->Sort_Distance());
 		else
 			this.hero = FindObject(Find_ID(Clonk), Find_Not(Find_Owner(NO_OWNER)));
 	// if there is still no hero, take any clonk. let the NPCs do the serquence among themselves

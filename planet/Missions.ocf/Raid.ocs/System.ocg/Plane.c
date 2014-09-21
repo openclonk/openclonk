@@ -8,6 +8,7 @@ func Initialize(...)
 	{
 		g_plane_built = true;
 		var closest_clonk = FindObject(Find_ID(Clonk), Find_Not(Find_Owner(NO_OWNER)), Sort_Distance());
+		SetColor(0xa04000); // Make sure it has the same color in all missions
 		Dialogue->MessageBoxAll("$PlaneBuilt$", closest_clonk, true);
 	}
 	return _inherited(...);

@@ -9,6 +9,7 @@ local dlg_target;
 local dlg_name;
 local dlg_info;
 local dlg_progress;
+local dlg_section;   // if set, this string is included in progress callbacks (i.e., func Dlg_[Name]_[Section][Progress]() is called)
 local dlg_status;
 local dlg_interact;  // default true. can be set to false to deactivate the dialogue
 local dlg_attention; // if set, a red attention mark is put above the clonk
@@ -143,9 +144,10 @@ public func SetInteraction(bool allow)
 	return;
 }
 
-public func SetDialogueProgress(int progress, bool add_attention)
+public func SetDialogueProgress(int progress, string section, bool add_attention)
 {
 	dlg_progress = Max(1, progress);
+	dlg_section = section;
 	if (add_attention) AddAttention();
 	return;
 }
@@ -177,6 +179,13 @@ public func GetInteractionMetaInfo(object clonk)
 		return { Description = Format("$MsgSpeak$", dlg_target->GetName()) , IconName = nil, IconID = Clonk, Selected = true };
 
 	return { Description = Format("$MsgSpeak$", dlg_target->GetName()) , IconName = nil, IconID = Clonk, Selected = false };
+}
+
+// Advance dialogue from script
+public func CallDialogue(object clonk, progress, string section)
+{
+	if (GetType(progress)) SetDialogueProgress(progress, section);
+	return Interact(clonk);
 }
 
 // Called on player interaction.
@@ -229,7 +238,7 @@ public func Interact(object clonk)
 	// Then call relevant functions.
 	// Call generic function first, then progress function
 	var fn_generic = Format("~Dlg_%s", dlg_name);
-	var fn_progress = Format("~Dlg_%s_%d", dlg_name, progress);
+	var fn_progress = Format("~Dlg_%s_%s%d", dlg_name, dlg_section ?? "", progress);
 	if (!Call(fn_generic, clonk))
 		if (!GameCall(fn_generic, this, clonk, dlg_target))
 			if (!Call(fn_progress, clonk))
@@ -318,8 +327,18 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 				// Text+Command given
 				option_text = option[0];
 				option_command = option[1];
-				// if only a command is given, the standard parameter is just the clonk
-				if (!WildcardMatch(option_command, "*(*")) option_command = Format("%s(Object(%d))", option_command, clonk->ObjectNumber());
+				if (GetChar(option_command) == GetChar("#"))
+				{
+					// Command given as section name: Remove leading # and call section change
+					var ichar=1, ocmd = "", c;
+					while (c = GetChar(option_command, ichar++)) ocmd = Format("%s%c", ocmd, c);
+					option_command = Format("CallDialogue(Object(%d), 1, \"%s\")", clonk->ObjectNumber(), ocmd);
+				}
+				else
+				{
+					// if only a command is given, the standard parameter is just the clonk
+					if (!WildcardMatch(option_command, "*(*")) option_command = Format("%s(Object(%d))", option_command, clonk->ObjectNumber());
+				}
 			}
 			else
 			{

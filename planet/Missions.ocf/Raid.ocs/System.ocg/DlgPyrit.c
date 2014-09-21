@@ -103,9 +103,9 @@ func Dlg_Pyrit_15(object clonk)
 	SetDialogueProgress(16);
 	SetPlrKnowledge(NO_OWNER, Plane);
 	// many NPCs get new texts now
-	Dialogue->FindByTarget(npc_newton)->SetDialogueProgress(200, true);
-	Dialogue->FindByTarget(npc_mave)->SetDialogueProgress(100, true);
-	Dialogue->FindByTarget(npc_clonko)->SetDialogueProgress(100, true);
+	Dialogue->FindByTarget(npc_newton)->SetDialogueProgress(200, nil, true);
+	Dialogue->FindByTarget(npc_mave)->SetDialogueProgress(100, nil, true);
+	Dialogue->FindByTarget(npc_clonko)->SetDialogueProgress(100, nil, true);
 	Dialogue->FindByTarget(npc_dora)->AddAttention(); // in case player spoke to Dora before speaking to Pyrit...
 	return true;
 }

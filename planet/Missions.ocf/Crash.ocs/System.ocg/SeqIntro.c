@@ -5,6 +5,7 @@
 func Intro_Init()
 {
 	this.plane = CreateObject(Plane, 0, 400);
+	this.plane->SetColor(0xa04000);
 	this.pilot = npc_pyrit = CreateObject(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();

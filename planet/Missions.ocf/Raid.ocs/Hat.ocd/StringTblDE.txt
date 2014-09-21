@@ -1,2 +1,0 @@
-Name=Hut
-Description=Mein Hut der hat drei Ecken

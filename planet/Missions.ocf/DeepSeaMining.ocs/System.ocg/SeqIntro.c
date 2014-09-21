@@ -11,6 +11,7 @@ func Intro_Start()
 	SetSkyParallax(0, 20, 20, -10, 0);
 	
 	this.plane = CreateObject(Plane, 500, 200);
+	this.plane->SetColor(0xa04000);
 	this.pilot = CreateObject(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();

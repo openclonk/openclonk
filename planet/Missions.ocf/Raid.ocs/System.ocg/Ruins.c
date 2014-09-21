@@ -38,13 +38,7 @@ global func FxIntRuinOnDamageDamage(object target, fx, int dmg, int cause)
 			ruin = CreateObject(fx.ruin_id, 0, GetDefBottom()-GetY(), GetOwner());
 		}
 		// lots of smoke!
-		var particles = Particles_Smoke();
-		particles.Alpha = PV_Linear(0xff, 0);
-		particles.R = 100;
-		particles.G = 100;
-		particles.B = 100;
-		particles.ForceY = PV_Gravity(-10);
-		particles.ForceX = PV_Wind(20);
+		var particles = Particles_Smoke(true);
 		particles.Size = PV_Linear(PV_Random(50, 100), PV_Random(100, 200));
 		CreateParticle("Smoke", PV_Random(-30,30), PV_Random(-20,20), PV_Random(-20, 20), PV_Random(-20,0), PV_Random(300, 700), particles, 20);
 		// additional flints will fall during the attack

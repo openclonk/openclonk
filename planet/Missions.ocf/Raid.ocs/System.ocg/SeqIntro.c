@@ -4,9 +4,8 @@
 
 func Intro_Start(object hero)
 {
-	this.hero = hero;
 	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
-	SetViewTarget(this.hero);
+	SetViewTarget(hero);
 	return ScheduleNext(5);
 }
 
@@ -16,6 +15,7 @@ func Intro_JoinPlayer(int plr)
 	if (this.seq_progress < 4)
 	{
 		var crew = GetCrew(plr);
+		if (!this.hero) this.hero = crew;
 		var x=300, y=20; // 328
 		if (crew != this.hero) x += plr*15 + Random(10);
 		crew->SetPosition(x,y);
@@ -29,7 +29,7 @@ func Intro_JoinPlayer(int plr)
 func Intro_1()
 {
 	MessageBox_last_pos = true; // force first message right side of screen
-	MessageBoxAll("$Intro1$", this.hero, true); // finally there
+	MessageBoxAll("$Intro1$", GetHero(), true); // finally there
 	SetPlayerZoomByViewRange(NO_OWNER, 500,300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(150);
 }
@@ -38,14 +38,14 @@ func Intro_2()
 {
 	// Wait until balloon has dropped
 	var all_balloons = FindObjects(Find_ID(BalloonDeployed)), balloon;
-	if (this.hero) this.balloon = this.hero->GetActionTarget();
+	if (GetHero()) this.balloon = GetHero()->GetActionTarget();
 	if (this.balloon)
 	{
 		if (this.balloon->GetX() > 330)
 			for (balloon in all_balloons) balloon->ControlLeft();
 		else if (this.balloon->GetX() < 300)
 			for (balloon in all_balloons) balloon->ControlRight();
-		else if (this.hero->GetY() > 310)
+		else if (GetHero()->GetY() > 310)
 			for (balloon in all_balloons) balloon->~ControlUp();
 		return ScheduleSame(10);
 	}
@@ -54,10 +54,9 @@ func Intro_2()
 
 func Intro_3()
 {
-	if (!this.hero) this.hero = FindObject(Find_ID(Clonk));
 	npc_newton.has_sequence = true;
-	Dialogue->SetSpeakerDirs(this.hero, npc_newton);
-	MessageBoxAll(Format("$Intro2$", this.hero->GetName()), npc_newton, true); // u got my letter?
+	Dialogue->SetSpeakerDirs(GetHero(), npc_newton);
+	MessageBoxAll(Format("$Intro2$", GetHero()->GetName()), npc_newton, true); // u got my letter?
 	SetViewTarget(npc_newton);
 	SetPlayerZoomByViewRange(NO_OWNER, 200,100, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return ScheduleNext(180);
@@ -65,8 +64,8 @@ func Intro_3()
 
 func Intro_4()
 {
-	MessageBoxAll("$Intro3$", this.hero, true); // yes n i came 2 help
-	SetViewTarget(this.hero);
+	MessageBoxAll("$Intro3$", GetHero(), true); // yes n i came 2 help
+	SetViewTarget(GetHero());
 	return ScheduleNext(220);
 }
 
@@ -79,8 +78,8 @@ func Intro_5()
 
 func Intro_6()
 {
-	MessageBoxAll("$Intro5$", this.hero, true); // why?
-	SetViewTarget(this.hero);
+	MessageBoxAll("$Intro5$", GetHero(), true); // why?
+	SetViewTarget(GetHero());
 	return ScheduleNext(120);
 }
 
@@ -93,8 +92,8 @@ func Intro_7()
 
 func Intro_8()
 {
-	MessageBoxAll("$Intro7$", this.hero, true); // work work
-	SetViewTarget(this.hero);
+	MessageBoxAll("$Intro7$", GetHero(), true); // work work
+	SetViewTarget(GetHero());
 	return ScheduleNext(60);
 }
 
