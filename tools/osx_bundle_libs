@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Bundle all the libraries, no matter their potential existence on pristine OSX installations
-$libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|iconv)\.[^ ]+\.dylib"
+$libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|iconv|alut)\.[^ ]+\.dylib"
 $executable_path = ENV['EXECUTABLE_PATH']
 $frameworks_folder_path = ENV['FRAMEWORKS_FOLDER_PATH']
 
