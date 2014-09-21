@@ -515,6 +515,9 @@ protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
+	
+	// NPCs only collect on demand (so they don't steal stuff form the player)
+	if (!force_collection && GetController() == NO_OWNER) return true;
 
 	// Carry heavy only gets picked up if none held already
 	if(obj->~IsCarryHeavy())
