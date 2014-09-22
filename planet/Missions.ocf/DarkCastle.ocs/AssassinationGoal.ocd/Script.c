@@ -23,6 +23,15 @@ func SetVictim(object to_victim)
 	return true;
 }
 
+// Scenario saving
+public func SaveScenarioObject(props, ...)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (victim) props->AddCall("Goal", this, "SetVictim", victim);
+	return true;
+}
+
 public func IsFulfilled()
 {
 	if (!victim) return true; // pushed out of landscape?

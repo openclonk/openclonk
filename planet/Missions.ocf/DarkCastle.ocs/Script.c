@@ -13,16 +13,6 @@ static g_shroom1, g_shroom2, g_shroom3, g_shroom4, g_ruin1, g_ruin2, g_ruin3, g_
 
 func DoInit(int first_player)
 {
-	// Goal
-	var goal = CreateObject(Goal_Assassination);
-	if (goal) goal->SetVictim(g_king);
-	// Elevators
-	// Top
-	g_elev2->SetNoPowerNeed(true);
-	g_elev2->CreateShaft(470);
-	// Left
-	g_elev1->SetNoPowerNeed(true);
-	g_elev1->CreateShaft(100);
 	// Shrooms
 	g_shroom1->AddPoisonEffect(0,0); // floor left
 	g_shroom2->AddPoisonEffect(0,0); // ceiling left
@@ -34,9 +24,6 @@ func DoInit(int first_player)
 	g_ruin1->AddScorch(-20,-10, -45, 50, 1500);
 	g_ruin2->AddScorch(-15,42, 90, 50, 1200);
 	g_ruin3->AddScorch(-12,18, 130, 80, 1300);
-	// Rules
-	CreateObject(Rule_TeamAccount);
-	CreateObject(Rule_NoPowerNeed);
 	// Horax
 	g_king.JumpSpeed = 200;
 	// Update AI stuff
@@ -67,41 +54,12 @@ func InitializePlayer(int plr)
 		SetPlayerZoomByViewRange(plr,400,250,flag);
 	SetPlayerViewLock(plr, true);
 	// Initial join
-	JoinPlayer(plr);
-	return true;
-}
-
-func RelaunchPlayer(int plr)
-{
-	var clonk = CreateObject(Clonk, 50, 1000, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	JoinPlayer(plr);
-	return true;
-}
-
-func JoinPlayer(int plr)
-{
-	// Place in village
-	var crew;
-	for(var index = 0; crew = GetCrew(plr, index); ++index)
-	{
-		var x = 35 + Random(10);
-		var y = 1140;
-		crew->SetPosition(x , y);
-		crew->SetDir(DIR_Right);
-		crew->DoEnergy(1000);
-		// First crew member gets shovel and hammer. Try to get those items from the corpse if they still exist
-		// so we don't end up with dozens of useless shovels
-		if (!index)
-		{
-			for (var equip_id in [Shovel, Hammer])
-			{
-				var obj = FindObject(Find_ID(equip_id), Find_Owner(plr));
-				if (obj) obj->Enter(crew); else crew->CreateContents(equip_id);
-			}
-		}
-	}
+	var crew = GetCrew(plr);
+	crew->SetPosition(35 + Random(10) , 1140);
+	crew->SetDir(DIR_Right);
+	crew->CreateContents(Shovel);
+	crew->CreateContents(Hammer);
+	crew->CreateContents(Axe);
 	return true;
 }
 

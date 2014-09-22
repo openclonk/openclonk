@@ -7,7 +7,7 @@ NoInitialize=true
 MissionAccess=S2Raid
 
 [Game]
-Rules=Rule_TeamAccount=1
+Rules=Rule_TeamAccount=1;Rule_BaseRespawn=1;
 
 [Player1]
 Wealth=0

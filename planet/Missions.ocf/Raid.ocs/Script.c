@@ -89,37 +89,6 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 	return true;
 }
 
-static g_player_inventory;
-
-func OnClonkDeath(object clonk)
-{
-	// Remember inventory
-	var plr = clonk->GetOwner();
-	if (plr >= 0)
-	{
-		if (!g_player_inventory) g_player_inventory = [];
-		g_player_inventory[plr] = FindObjects(Find_Container(clonk));
-	}
-	return true;
-}
-
-func RelaunchPlayer(int plr)
-{
-	if (!GetPlayerName(plr)) return false;
-	// Relaunch with new clonk
-	var new_clonk = CreateObject(Clonk, 471,338, plr);
-	if (!new_clonk) return false;
-	new_clonk->MakeCrewMember(plr);
-	// Recover inventory from old clonk
-	if (g_player_inventory && g_player_inventory[plr])
-	{
-		for (var obj in g_player_inventory[plr]) if (obj) obj->Enter(new_clonk);
-		g_player_inventory[plr] = nil;
-	}
-	// Positioning
-	return JoinPlayer(plr, new_clonk);
-}
-
 
 
 /* Attack sequence */

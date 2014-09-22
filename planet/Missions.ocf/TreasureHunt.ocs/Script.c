@@ -9,7 +9,7 @@ static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
 static g_plr_inventory; // array indexed by players: Array containing inventory of Clonk just before it died
 
-static npc_pyrit, npc_dagobert, npc_tarzan;
+static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 
 func Initialize()
@@ -20,10 +20,9 @@ func Initialize()
 
 func DoInit(int first_player)
 {
-	var flagpole = CreateObject(Flagpole, 210,1185, first_player);
 	ClearFreeRect(530,1135, 50,2);
 	// Start Intro.
-	StartSequence("Intro", 0, flagpole);
+	StartSequence("Intro", 0, g_flagpole);
 	return true;
 }
 
@@ -51,23 +50,6 @@ func InitializePlayer(int plr)
 	return true;
 }
 
-func RelaunchPlayer(int plr)
-{
-	var clonk = CreateObject(Clonk, 200, 1175, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	JoinPlayer(plr);
-	// Recover carried objects
-	// Do not recover pipes, because that would draw ugly lines across the landscape
-	if (g_plr_inventory && g_plr_inventory[plr])
-	{
-		for (var obj in g_plr_inventory[plr])
-			if (obj && obj->GetID() != Pipe) obj->Enter(clonk);
-		g_plr_inventory[plr] = nil;
-	}
-	return true;
-}
-
 func JoinPlayer(int plr)
 {
 	// Place in village
@@ -79,26 +61,8 @@ func JoinPlayer(int plr)
 		crew->SetPosition(x , y);
 		crew->SetDir(DIR_Right);
 		crew->DoEnergy(1000);
-		AddEffect("IntRememberInventory", crew, 1, 0);
 	}
 	return true;
-}
-
-global func FxIntRememberInventoryStop(object clonk, fx, int reason, bool temp)
-{
-	if (!temp && reason == FX_Call_RemoveDeath)
-	{
-		var plr = clonk->GetOwner();
-		if (plr != NO_OWNER)
-		{
-			if (!g_plr_inventory) g_plr_inventory = [];
-			g_plr_inventory[plr] = [];
-			var i=0,obj;
-			while (obj=clonk->Contents(i)) g_plr_inventory[plr][i++] = obj;
-		}
-	}
-	return FX_OK;
-
 }
 
 

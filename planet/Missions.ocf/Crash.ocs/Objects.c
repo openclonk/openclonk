@@ -6,6 +6,10 @@ func InitializeObjects()
 	CreateObject(Grass, 533, 550);
 	CreateObject(Grass, 1306, 706);
 
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
+	Rule_BaseRespawn001->SetInventoryTransfer(true);
+	Rule_BaseRespawn001->SetFreeCrew(true);
+
 	CreateObject(Tree_Coniferous, 380, 877);
 	CreateObject(Tree_Coniferous, 210, 875);
 	CreateObject(Tree_Coniferous, 207, 871);
@@ -15,45 +19,45 @@ func InitializeObjects()
 	CreateObject(Tree_Coniferous, 179, 874);
 	CreateObject(Tree_Coniferous, 271, 874);
 	CreateObject(Tree_Coniferous, 423, 547);
-	CreateObject(Tree_Coniferous, 496, 556);
+	CreateObject(Tree_Coniferous, 496, 560);
 	CreateObject(Tree_Coniferous, 322, 554);
 	CreateObject(Tree_Coniferous, 1339, 367);
 	CreateObject(Tree_Coniferous, 1357, 360);
 	CreateObject(Tree_Coniferous, 1393, 314);
 	CreateObject(Tree_Coniferous, 1304, 387);
 
-	CreateObject(Fern, 1331, 702);
-	CreateObject(Fern, 1468, 663);
+	CreateObject(Fern, 1331, 704);
+	CreateObject(Fern, 1468, 664);
 	CreateObject(Fern, 1583, 696);
 
-	var Lichen0076 = CreateObject(Lichen, 1377, 696);
-	Lichen0076->SetAction("Grow");
-	Lichen0076->SetPhase(3);
-	var Lichen0079 = CreateObject(Lichen, 1514, 695);
-	Lichen0079->SetAction("Grow");
-	Lichen0079->SetPhase(3);
+	var Lichen001 = CreateObject(Lichen, 1377, 696);
+	Lichen001->SetAction("Grow");
+	Lichen001->SetPhase(3);
+	var Lichen002 = CreateObject(Lichen, 1514, 696);
+	Lichen002->SetAction("Grow");
+	Lichen002->SetPhase(3);
 
-	var Rank0082 = CreateObject(Rank, 1352, 438);
-	Rank0082->SetR(28);
-	Rank0082->SetPosition(1352, 435);
-	var Rank0083 = CreateObject(Rank, 1428, 446);
-	Rank0083->SetR(6);
-	Rank0083->SetPosition(1428, 443);
-	var Rank0084 = CreateObject(Rank, 1431, 458);
-	Rank0084->SetR(-28);
-	Rank0084->SetPosition(1431, 455);
-	var Rank0085 = CreateObject(Rank, 552, 589);
-	Rank0085->SetR(4);
-	Rank0085->SetPosition(552, 586);
-	var Rank0086 = CreateObject(Rank, 534, 601);
-	Rank0086->SetR(-17);
-	Rank0086->SetPosition(534, 598);
-	var Rank0087 = CreateObject(Rank, 322, 615);
-	Rank0087->SetR(23);
-	Rank0087->SetPosition(322, 612);
-	var Rank0088 = CreateObject(Rank, 404, 762);
-	Rank0088->SetR(8);
-	Rank0088->SetPosition(404, 759);
+	var Rank001 = CreateObject(Rank, 1352, 438);
+	Rank001->SetR(28);
+	Rank001->SetPosition(1352, 435);
+	var Rank002 = CreateObject(Rank, 1428, 446);
+	Rank002->SetR(6);
+	Rank002->SetPosition(1428, 443);
+	var Rank003 = CreateObject(Rank, 1431, 458);
+	Rank003->SetR(-28);
+	Rank003->SetPosition(1431, 455);
+	var Rank004 = CreateObject(Rank, 552, 589);
+	Rank004->SetR(4);
+	Rank004->SetPosition(552, 586);
+	var Rank005 = CreateObject(Rank, 534, 601);
+	Rank005->SetR(-17);
+	Rank005->SetPosition(534, 598);
+	var Rank006 = CreateObject(Rank, 322, 615);
+	Rank006->SetR(23);
+	Rank006->SetPosition(322, 612);
+	var Rank007 = CreateObject(Rank, 404, 762);
+	Rank007->SetR(8);
+	Rank007->SetPosition(404, 759);
 
 	CreateObject(Trunk, 1447, 682);
 
@@ -63,26 +67,29 @@ func InitializeObjects()
 
 	CreateObject(SproutBerryBush, 565, 861);
 
-	CreateObject(Wheat, 919, 553);
-	CreateObject(Wheat, 1296, 614);
+	CreateObject(Wheat, 919, 564);
+	CreateObject(Wheat, 1296, 625);
 
-	var Tree_Coniferous0114 = CreateObject(Tree_Coniferous, 231, 878);
-	Tree_Coniferous0114->SetCon(47);
+	var Tree_Coniferous001 = CreateObject(Tree_Coniferous, 231, 878);
+	Tree_Coniferous001->SetCon(47);
 
-	var Chest0118 = CreateObject(Chest, 264, 1287);
+	var Chest001 = CreateObject(Chest, 264, 1287);
 
-	var WoodenCabin0119 = CreateObject(WoodenCabin, 62, 870);
+	var WoodenCabin001 = CreateObject(WoodenCabin, 62, 870);
 
 	CreateObject(Idol, 102, 871);
 
-	var Lorry0121 = CreateObject(Lorry, 76, 1299);
-	Lorry0121->SetR(-14);
-	Lorry0121->SetPosition(76, 1290);
+	var Flagpole001 = CreateObject(Flagpole, 119, 872);
+	Flagpole001->SetNeutral(true);
 
-	var Catapult0123 = CreateObject(Catapult, 445, 547);
-	Catapult0123->SetCon(80);
-	Catapult0123->SetRDir(1);
-	Catapult0123->SetClrModulation(0xff686868);
+	var Lorry001 = CreateObject(Lorry, 76, 1299);
+	Lorry001->SetR(-14);
+	Lorry001->SetPosition(76, 1290);
+
+	var Catapult001 = CreateObject(Catapult, 445, 547);
+	Catapult001->SetCon(80);
+	Catapult001->SetRDir(1);
+	Catapult001->SetClrModulation(0xff686868);
 
 	CreateObject(Rock, 279, 965);
 	CreateObject(Rock, 469, 1214);
@@ -130,12 +137,12 @@ func InitializeObjects()
 	CreateObject(Loam, 1348, 721);
 	CreateObject(Loam, 1379, 352);
 
-	var Wood0164 = CreateObject(Wood, 518, 1081);
-	Wood0164->SetR(35);
-	Wood0164->SetPosition(518, 1078);
+	var Wood001 = CreateObject(Wood, 518, 1081);
+	Wood001->SetR(35);
+	Wood001->SetPosition(518, 1078);
 	CreateObject(Wood, 1302, 904);
-	var Wood0166 = CreateObject(Wood, 1335, 904);
-	Wood0166->SetClrModulation(0xff302020);
+	var Wood002 = CreateObject(Wood, 1335, 904);
+	Wood002->SetClrModulation(0xff302020);
 
 	CreateObject(Moss, 1357, 695);
 	CreateObject(Moss, 1269, 905);
@@ -146,34 +153,31 @@ func InitializeObjects()
 	CreateObject(Crate, 155, 1302);
 	CreateObject(Crate, 139, 1302);
 
-	CreateObject(Bread, 171, 1301);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
-	Chest0118->CreateContents(Bread);
+	CreateObject(Bread, 171, 1302);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
+	Chest001->CreateContents(Bread);
 
-	WoodenCabin0119->CreateContents(Seeds);
-	WoodenCabin0119->CreateContents(Seeds);
+	WoodenCabin001->CreateContents(Seeds);
+	WoodenCabin001->CreateContents(Seeds);
 
-	WoodenCabin0119->CreateContents(Sproutberry);
+	WoodenCabin001->CreateContents(Sproutberry);
 
-	var Seaweed0191 = CreateObject(Seaweed, 1343, 991);
-	Seaweed0191->SetYDir(14);
-	Seaweed0191->SetPhase(73);
-	var Seaweed0194 = CreateObject(Seaweed, 1430, 918);
-	Seaweed0194->SetYDir(14);
-	Seaweed0194->SetPhase(14);
-	var Seaweed0197 = CreateObject(Seaweed, 1527, 918);
-	Seaweed0197->SetYDir(14);
-	Seaweed0197->SetPhase(32);
+	var Seaweed001 = CreateObject(Seaweed, 1343, 991);
+	Seaweed001->SetPhase(3);
+	var Seaweed002 = CreateObject(Seaweed, 1430, 918);
+	Seaweed002->SetPhase(22);
+	var Seaweed003 = CreateObject(Seaweed, 1530, 921);
+	Seaweed003->SetPhase(40);
 
 	CreateObject(Firestone, 49, 1316);
 	CreateObject(Firestone, 36, 1282);
-	Lorry0121->CreateContents(Firestone);
+	Lorry001->CreateContents(Firestone);
 	CreateObject(Firestone, 452, 920);
 	CreateObject(Firestone, 50, 949);
 	CreateObject(Firestone, 374, 894);

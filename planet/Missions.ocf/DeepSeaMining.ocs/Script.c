@@ -210,7 +210,9 @@ private func InitMainIsland()
 	if (amount >= 2)
 	{
 		pos = FindMainIslandPosition(-120, 20);
-		CreateObject(Flagpole, pos[0], pos[1]);
+		CreateObject(Flagpole, pos[0]-7, pos[1]);
+		var rfp = CreateObject(Flagpole, pos[0]+7, pos[1]);
+		rfp->SetNeutral(true);
 		pos = FindMainIslandPosition(120, 20);
 		CreateObject(Flagpole, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);

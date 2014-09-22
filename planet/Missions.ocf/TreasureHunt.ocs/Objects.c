@@ -1,9 +1,13 @@
 /* Automatically created objects file */
 
-static npc_dagobert, npc_tarzan, g_golden_shovel;
+static npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 
 func InitializeObjects()
 {
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
+	Rule_BaseRespawn001->SetInventoryTransfer(true);
+	Rule_BaseRespawn001->SetFreeCrew(true);
+
 	CreateObject(Grass, 1627, 396);
 	CreateObject(Grass, 1636, 385);
 	CreateObject(Grass, 1786, 469);
@@ -223,9 +227,9 @@ func InitializeObjects()
 	var Idol0163 = CreateObject(Idol, 1045, 721);
 	Idol0163->SetMeshMaterial("IdolGrayColor", 0);
 
-	var Flagpole0165 = CreateObject(Flagpole, 210, 1185);
-	Flagpole0165->SetCategory(C4D_StaticBack);
-	Flagpole0165->SetColor(0xfffcf41c);
+	g_flagpole = CreateObject(Flagpole, 210, 1185);
+	g_flagpole->SetNeutral(true);
+	g_flagpole.StaticSaveVar = "g_flagpole";
 
 	var LotsOfCoins0164 = CreateObject(LotsOfCoins, 805, 592);
 	LotsOfCoins0164.Plane = 200;

@@ -4,6 +4,10 @@ static g_chemical, g_cabin, g_sawmill, g_workshop, g_flagpole, g_windmill, npc_n
 
 func InitializeObjects()
 {
+	var Rule_BaseRespawn01 = CreateObject(Rule_BaseRespawn, 0, 0);
+	Rule_BaseRespawn01->SetInventoryTransfer(true);
+	Rule_BaseRespawn01->SetFreeCrew(true);
+	
 	CreateObject(Grass, 1121, 429);
 	CreateObject(Grass, 1185, 444);
 
@@ -150,8 +154,7 @@ func InitializeObjects()
 	WindGenerator0269->SetCategory(C4D_StaticBack);
 
 	g_flagpole = CreateObject(Flagpole, 502, 369);
-	g_flagpole->SetCategory(C4D_StaticBack);
-	g_flagpole->SetColor(0xff);
+	g_flagpole->SetNeutral(true);
 	g_flagpole.StaticSaveVar = "g_flagpole";
 
 	g_windmill = CreateObject(Windmill, 665, 351);

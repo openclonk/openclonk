@@ -9,7 +9,7 @@ MissionAccess=S2Crash
 Definition1=Objects.ocd
 
 [Game]
-Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
+Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;Rule_BaseRespawn=1;
 Goals=Goal_BuildCrystalCommunicator=1;
 ValueOverloads=Ruby=10;Amethyst=10
 
