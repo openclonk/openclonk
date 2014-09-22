@@ -67,7 +67,12 @@ func RefreshAllPowerHelpers()
 
 func RedrawFlagRadius()
 {
-	//ClearFlagMarkers();
+	// Flag deactivated by setting empty radius
+	if (!lflag.radius)
+	{
+		ClearFlagMarkers();
+		return true;
+	}
 	
 	//var flags = FindObjects(Find_ID(FlagPole),Find_Exclude(target), Find_Not(Find_Owner(GetOwner())), /*Find_Distance(FLAG_DISTANCE*2 + 10,0,0)*/Sort_Func("GetLifeTime"));
 	var other_flags = [];
@@ -140,6 +145,8 @@ func RedrawFlagRadius()
 		}
 		SetLength(lflag.range_markers, old + 1);
 	}
+	
+	return true;
 }
 
 func RefreshOwnershipOfSurrounding()
@@ -396,6 +403,7 @@ public func GetFlagMarkerID(){return LibraryFlag_Marker;}
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
+	props->Remove("Category"); // category is always set to StaticBack...
 	if (lflag && lflag.radius != DefaultFlagRadius) props->AddCall("Radius", this, "SetFlagRadius", lflag.radius);
 	return true;
 }
