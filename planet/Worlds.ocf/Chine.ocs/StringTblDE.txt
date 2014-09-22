@@ -1,0 +1,3 @@
+# Goal name and description
+GoalName=Kanonentransport
+GoalDesc=Transport the cannon to the top of the chine.

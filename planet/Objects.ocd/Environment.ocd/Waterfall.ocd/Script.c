@@ -17,7 +17,7 @@ protected func Initialize()
 global func CreateWaterfall(int x, int y, int strength, string mat)
 {
 	var fall = CreateObject(Waterfall, x, y, NO_OWNER);
-	if(!mat) mat = "Water";
+	if (!mat) mat = "Water";
 	AddEffect("IntWaterfall", fall, 100, 1, fall, nil, x, y, strength, mat);
 	return fall;
 }
@@ -31,7 +31,7 @@ protected func FxIntWaterfallStart(object target, proplist effect, int temporary
 	effect.Strength = strength;
 	effect.Material = mat;
 	// Start sound.
-	target->Sound("Waterfall", false, 10 * effect.Strength, nil, 1);
+	target->Sound("Waterfall", false, 5 * effect.Strength, nil, 1);
 	return 1;
 }
 
@@ -47,8 +47,8 @@ protected func FxIntWaterfallStop(object target, proplist effect, bool temporary
 {
 	if (temporary)
 		return 1;
-	// Stop sound.	
-	target->Sound("Waterfall", false, 10 * effect.Strength, nil, -1);
+	// Stop sound.
+	target->Sound("Waterfall", false, 5 * effect.Strength, nil, -1);
 	return 1;
 }
 
@@ -84,6 +84,10 @@ public func SetDirection(int xdir, int ydir, int xvar, int yvar)
 public func SetSoundLocation(int x, int y)
 {
 	SetPosition(x, y);
+	// Update sound.
+	var effect = GetEffect("IntWaterfall", this);
+	if (effect)
+		Sound("Waterfall", false, 5 * effect.Strength, nil, 1);
 	return;
 }
 
