@@ -90,6 +90,13 @@ func SetNoPowerNeed(bool to_val)
 	return true;
 }
 
+func FxNoPowerNeedSaveScen(object obj, proplist fx, proplist props)
+{
+	// this building doesn't need power. save to scenario.
+	props->AddCall("NoPowerNeed", obj, "SetNoPowerNeed", true);
+	return true;
+}
+
 // wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly
 func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip special treatment for 0 power request */)
 {	
