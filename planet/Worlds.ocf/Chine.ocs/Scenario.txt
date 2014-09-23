@@ -6,6 +6,7 @@ Difficulty=40
 
 [Definitions]
 Definition1=Objects.ocd
+Definition2=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 
 [Game]
 
@@ -32,4 +33,3 @@ BottomOpen=1
 Climate=0
 YearSpeed=0
 Wind=0,100,-100,100
- 

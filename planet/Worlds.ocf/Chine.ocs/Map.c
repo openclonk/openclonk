@@ -27,7 +27,7 @@ protected func InitializeMap(proplist map)
 	map->Resize(map_size[0], map_size[1]);
 	
 	// Draw the chine.
-	var chine = DrawChine(map);
+	var chine = DrawChine(map, 1 + SCENOPT_MapSize);
 	
 	// Draw a small starting cave.
 	DrawStartCave(map, chine);
@@ -37,7 +37,7 @@ protected func InitializeMap(proplist map)
 }
 
 // Draws the chine.
-public func DrawChine(proplist map)
+public func DrawChine(proplist map, int nr_hurdles)
 {
 	var wdt = map.Wdt;
 	var hgt = map.Hgt;
@@ -51,6 +51,17 @@ public func DrawChine(proplist map)
 	var chine_rnd1 = {Algo = MAPALGO_Turbulence, Amplitude = 20, Scale = 4, Iterations = 4, Seed = Random(65536), Op = chine};
 	var chine_rnd2 = {Algo = MAPALGO_Turbulence, Amplitude = 20, Scale = 2, Iterations = 4, Seed = Random(65536), Op = chine};
 	chine = {Algo = MAPALGO_Or, Op = [chine, chine_rnd1, chine_rnd2]};
+	// Empty out some parts of the chine to provide more serious climbing hurdles.
+	var hurdles = [];
+	for (var i = 0; i < nr_hurdles; i++)
+	{
+		var y = (i + 1) * hgt / (1 + nr_hurdles); 
+		var hurdle = {Algo = MAPALGO_Ellipsis, X = wdt / 2 + RandomX(-2, 2), Y = y + RandomX(-6, 6), Wdt = wdt / 2 - side_wdt + RandomX(3, 5), Hgt = RandomX(8, 9)};
+		hurdle = {Algo = MAPALGO_Turbulence, Amplitude = 6, Scale = 6, Iterations = 4, Seed = Random(65536), Op = hurdle};
+		hurdles[i] = hurdle;
+	}
+	hurdles = {Algo = MAPALGO_Or, Op = hurdles};
+	chine = {Algo = MAPALGO_And, Op = [chine, {Algo = MAPALGO_Not, Op = hurdles}]};
 	// Draw the material for the sides.
 	map->Draw("Earth", chine);
 	map->DrawMaterial("Earth-earth_rough", chine, 2, 20);
@@ -81,6 +92,15 @@ public func DrawChine(proplist map)
 	map->DrawMaterial("Tunnel", border, 2, 30);
 	map->DrawMaterial("Rock-rock_cracked", border, 3, 20);
 	map->DrawMaterial("Rock", border, 3, 20);
+	// Parts of this border, which covers the middle section are overground materials.
+	// This achieved by double drawing parts of the border as overgroud material.
+	var overground = {Algo = MAPALGO_Rect, X = side_wdt, Y = 0, Wdt = wdt - 2 * side_wdt, Hgt = hgt};
+	var rand_checker = {Algo = MAPALGO_RndChecker, Seed = Random(65536), Ratio = 60, Wdt = 8, Hgt = 4};
+	var border_overground = {Algo = MAPALGO_And, Op = [border, overground, rand_checker]};
+	map->Draw("^Granite", border_overground);
+	map->DrawMaterial("Tunnel", border_overground, 2, 30);
+	map->DrawMaterial("^Rock-rock_cracked", border_overground, 3, 20);
+	map->DrawMaterial("^Rock", border_overground, 3, 20);
 	
 	// The outsides of the map are covered with granite.
 	var granite = {Algo = MAPALGO_Not, Op = {Algo = MAPALGO_Rect, X = granite_wdt, Y = 0, Wdt = wdt - 2 * granite_wdt, Hgt = hgt}};
