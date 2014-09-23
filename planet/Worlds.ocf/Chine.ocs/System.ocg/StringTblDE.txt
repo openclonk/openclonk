@@ -1,0 +1,2 @@
+# Cannon messages
+TxtNeedsAmmo=Die Kanone hat keine Munition.
