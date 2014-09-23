@@ -81,7 +81,7 @@ const C4PktHandlingData PktHandlingData[] =
 
 	// C4GameLobby (main thread)
 	{ PID_LobbyCountdown,PC_Network,"Lobby countdown",            false,  false,  PH_C4GUIMainDlg,          PKT_UNPACK(C4GameLobby::C4PacketCountdown)  },
-
+	{ PID_SetScenarioParameter,PC_Network,"Scenario parameter",   false,  false,  PH_C4GUIMainDlg,          PKT_UNPACK(C4GameLobby::C4PacketSetScenarioParameter)  },
 
 	// C4Network2ClientList (main thread)
 	{ PID_Addr,         PC_Network, "Client Address",             false,  false,  PH_C4Network2ClientList,  PKT_UNPACK(C4PacketAddr)        },
@@ -503,6 +503,7 @@ void C4PacketJoinData::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iStartCtrlTick), "CtrlTick", -1));
 	pComp->Value(mkNamingAdapt(mkParAdapt(GameStatus, true), "GameStatus"));
 	pComp->Value(mkNamingAdapt(Dynamic, "Dynamic"));
+	pComp->Value(mkNamingAdapt(ScenarioParameterDefs, "ParameterDefs"));
 	pComp->Value(Parameters);
 }
 

@@ -1,0 +1,16 @@
+[ParameterDef]
+Name=$Difficulty$
+Description=$DescDifficulty$
+ID=Difficulty
+Default=1
+	[Options]
+		
+		[Option]
+		Name=$Easy$
+		Description=$DescEasy$
+		Value=1
+		
+		[Option]
+		Name=$Hard$
+		Description=$DescHard$
+		Value=99

@@ -221,6 +221,50 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
+// Definition for a custom setting for the scenario
+class C4ScenarioParameterDef
+{
+public:
+	// what kind of parameter?
+	enum ParameterType
+	{
+		SPDT_Enum, // only one type so far
+	};
+
+	// single option for an enum type parameter
+	struct Option
+	{
+		int32_t Value; // integer value that will be assigned to the script constant
+		StdCopyStrBuf Name; // localized name
+		StdCopyStrBuf Description; // localized description. to be displayed as hover text for this option.
+
+		void CompileFunc(StdCompiler *pComp);
+	};
+
+private:
+	StdCopyStrBuf Name; // localized name
+	StdCopyStrBuf Description; // localized description. to be displayed as hover text for this parameter input control
+	StdCopyStrBuf ID; // Identifier for value storage and script access
+	ParameterType Type; // Type of parameter. Always enum.
+
+	std::vector<Option> Options; // possible options to be selected for an enum type
+	int32_t Default; // value of option selected by default for an enum type
+
+public:
+	C4ScenarioParameterDef() : Default(0) {} 
+	~C4ScenarioParameterDef() {}
+
+	const char *GetName() const { return Name.getData(); }
+	const char *GetDescription() const { return Description.getData(); }
+	const char *GetID() const { return ID.getData(); }
+	ParameterType GetType() const { return Type; }
+	int32_t GetDefault() const { return Default; }
+	const Option *GetOptionByValue(int32_t val) const;
+	const Option *GetOptionByIndex(size_t idx) const;
+
+	void CompileFunc(StdCompiler *pComp);
+};
+
 class C4Scenario
 {
 public:
@@ -267,6 +311,7 @@ public:
 	C4Group *GetGroupfile(C4Group &rGrp); // get group at section file (returns temp group, scenario subgroup or scenario group itself)
 	bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 };
+
 
 
 #endif // INC_C4Scenario

@@ -38,6 +38,7 @@
 #define C4CFN_Objects         "Objects.ocd"
 
 #define C4CFN_ScenarioCore    "Scenario.txt"
+#define C4CFN_ScenarioParameterDefs "ParameterDefs.txt"
 #define C4CFN_FolderCore      "Folder.txt"
 #define C4CFN_PlayerInfoCore  "Player.txt"
 #define C4CFN_DefCore         "DefCore.txt"
@@ -168,7 +169,7 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|ParameterDefs.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"

@@ -61,6 +61,10 @@ US:Attack of the Killer Wipfs</code>
 	
     <h id="Additional">Additional files</h>
     <dl>
+      <dt id="ParameterDefstxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="scenario/ParameterDefs.html">ParameterDefs.txt</emlink></dt>
+      <dd>
+        <text>Contains custom scenario parameters that players can adjust like e.g. difficulty settings.</text>
+      </dd>
       <dt id="Teamstxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="scenario/Teams.html">Teams.txt</emlink></dt>
       <dd>
         <text>Contains the Teamsettings for multiplayer scenarios.</text>

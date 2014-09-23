@@ -59,6 +59,7 @@ public:
 	C4PlayerInfoList   &RestorePlayerInfos; // Shortcut
 	C4RoundResults      &RoundResults;
 	C4Scenario          C4S;
+	class C4ScenarioParameterDefs &ScenarioParameterDefs;
 	C4ComponentHost     Info;
 	C4ComponentHost     Title;
 	C4ComponentHost     Names;

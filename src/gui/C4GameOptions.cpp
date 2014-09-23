@@ -21,6 +21,7 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 #include "C4GraphicsResource.h"
+#include "C4GameLobby.h"
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 
@@ -72,6 +73,51 @@ C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForD
 	pDropdownList->SetComboCB(new C4GUI::ComboBox_FillCallback<C4GameOptionsList::OptionDropdown>(this, &C4GameOptionsList::OptionDropdown::OnDropdownFill, &C4GameOptionsList::OptionDropdown::OnDropdownSelChange));
 	// final init
 	InitOption(pForDlg);
+}
+
+
+
+// ----------- C4GameOptionsList::OptionScenarioParameter----------------------------------------------------------------
+
+C4GameOptionsList::OptionScenarioParameter::OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def)
+	: C4GameOptionsList::OptionDropdown(pForDlg, parameter_def->GetName(), !::Control.isCtrlHost() || ::Game.C4S.Head.SaveGame), ParameterDef(parameter_def), LastValue(0), LastValueValid(false)
+{
+	SetToolTip(parameter_def->GetDescription());
+}
+
+void C4GameOptionsList::OptionScenarioParameter::DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
+{
+	// Fill dropdown menuy with known possible options for this parameter
+	size_t idx=0; const C4ScenarioParameterDef::Option *option;
+	while (option = ParameterDef->GetOptionByIndex(idx++))
+	{
+		pFiller->AddEntry(option->Name.getData(), option->Value);
+	}
+}
+
+void C4GameOptionsList::OptionScenarioParameter::DoDropdownSelChange(int32_t idNewSelection)
+{
+	// change possible?
+	if (!::Control.isCtrlHost()) return;
+	// Then initiate an update of the parameters on all clients
+	C4GameLobby::C4PacketSetScenarioParameter pck(ParameterDef->GetID(), idNewSelection);
+	::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_SetScenarioParameter, pck));
+	// also process on host
+	::Game.Parameters.ScenarioParameters.SetValue(ParameterDef->GetID(), idNewSelection);
+}
+
+void C4GameOptionsList::OptionScenarioParameter::Update()
+{
+	// update data to currently set option
+	int32_t val = ::Game.Parameters.ScenarioParameters.GetValueByID(ParameterDef->GetID(), ParameterDef->GetDefault());
+	if (LastValueValid && val == LastValue) return;
+	const C4ScenarioParameterDef::Option *option = ParameterDef->GetOptionByValue(val);
+	if (option)
+		pDropdownList->SetText(option->Name.getData());
+	else
+		pDropdownList->SetText(FormatString("%d", (int)val).getData());
+	LastValueValid = true;
+	LastValue = val;
 }
 
 
@@ -246,6 +292,10 @@ C4GameOptionsList::C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool 
 
 void C4GameOptionsList::InitOptions()
 {
+	// create options for custom scenario parameters
+	size_t idx = 0; const C4ScenarioParameterDef *def;
+	while (def = ::Game.ScenarioParameterDefs.GetParameterDefByIndex(idx++))
+		new OptionScenarioParameter(this, def);
 	// creates option selection components
 	new OptionControlMode(this);
 	new OptionControlRate(this);

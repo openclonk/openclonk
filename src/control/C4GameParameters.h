@@ -95,6 +95,40 @@ protected:
 	void LoadFoldersWithLocalDefs(const char *szPath);
 };
 
+// Definitions of custom parameters that can be set before scenario start
+class C4ScenarioParameterDefs
+{
+	std::vector<C4ScenarioParameterDef> Parameters;
+
+public:
+	C4ScenarioParameterDefs() {}
+	~C4ScenarioParameterDefs() {}
+
+	void Clear() { Parameters.clear(); }
+
+	const C4ScenarioParameterDef *GetParameterDefByIndex(size_t idx) const;
+
+	bool Load(C4Group &hGroup, class C4LangStringTable *pLang);
+	void CompileFunc(StdCompiler *pComp);
+
+	void RegisterScriptConstants(const class C4ScenarioParameters &values); // register constants for all parameters in script engine
+};
+
+// Parameter values that correspond to settings offered in C4ScenarioParameterDefs
+class C4ScenarioParameters
+{
+	std::map<StdCopyStrBuf, int32_t> Parameters;
+
+public:
+	C4ScenarioParameters() {}
+	~C4ScenarioParameters() {}
+
+	int32_t GetValueByID(const char *id, int32_t default_value) const;
+	void SetValue(const char *id, int32_t value);
+
+	void CompileFunc(StdCompiler *pComp);
+};
+
 class C4GameParameters
 {
 public:
@@ -136,6 +170,9 @@ public:
 	C4PlayerInfoList PlayerInfos;
 	C4PlayerInfoList RestorePlayerInfos;
 	C4TeamList Teams;
+
+	// Custom scenario parameters
+	C4ScenarioParameters ScenarioParameters;
 
 	bool isLeague() const { return !!LeagueAddress.getLength(); }
 	bool doStreaming() const { return !!StreamAddress.getLength(); }

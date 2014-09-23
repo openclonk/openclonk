@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>ParameterDefs.txt</title>
+  <h>ParameterDefs.txt</h>
+  <text>This file can be used to specify custom parameters that players can set for this scenario before starting it. Intended usages include difficulty or map size settings.</text>
+  <text>Names and descriptions can be localized the same way scripts can using $id$ strings and corresponding string table entries.</text>
+  <text>At the moment, parameters can only be set in the lobby of network games.</text>
+  <text>
+    <table>
+      <caption id="SektionDefs">Any number of sections [ParameterDef]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>Name</col>
+        <col>String</col>
+        <col>Label put in front of this parameter.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Description</col>
+        <col>String</col>
+        <col>Description for setting used as tool tip on the control.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>ID</col>
+        <col>String</col>
+        <col>Identifier for this parameter. Should be a valid identifier containing only letters, numbers and underscores and should not begin with a number. The script engine prefixes this name with SCENPAR_ and uses it to register the picked value as a constant before game initialization.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Type</col>
+        <col>String</col>
+        <col>Data type of parameter. At the moment, only Enumeration is supported.</col>
+        <col>Enumeration</col>
+      </row>
+      <row>
+        <col>Default</col>
+        <col>Integer</col>
+        <col>Value of default option that is chosen if the user does not select anything.</col>
+        <col>0</col>
+      </row>
+    </table>
+  </text>
+  <text>Each parameter of type Enumeration should be followed by subordinate section [Options], which contains several subordinate sections [Option]. Subordinate sections need to be indented further than their parent section.</text>
+  <text>
+    <table>
+      <caption id="SektionOption">Any number of sections [Option]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>Name</col>
+        <col>String</col>
+        <col>Label used in dropdown menu for this option.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Description</col>
+        <col>String</col>
+        <col>Description for element in dropdown menu for this option. Currently not shown.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Value</col>
+        <col>Integer</col>
+        <col>Value that is assigned to the script constant if this option is picked. Each option within one parameter definition should have a unique value.</col>
+        <col>0</col>
+      </row>
+    </table>
+  </text>
+  <h>Example</h>
+  <text>Example ParameterDef.txt file for a difficulty setting in a scenario that controls the amount of meteorites:</text>
+  <code>[ParameterDef]
+Name=$Difficulty$
+Description=$DescDifficulty$
+ID=Difficulty
+Default=15
+	[Options]
+		[Option]
+		Name=$Easy$
+		Description=$DescEasy$
+		Value=15
+		
+		[Option]
+		Name=$Hard$
+		Description=$DescHard$
+		Value=100</code>
+	<text>The names and descriptions are localized strings which can be set for English in a StringTblUS.txt:</text>
+	<code>Difficulty=Difficulty
+Easy=Easy
+Hard=Hard
+DescDifficulty=Conrols the amount of meteorites
+DescEasy=Very few meteorites
+DescHard=Lots of meteorites</code>
+  <text>Finally, the Script.c file of the scenario should contain code to evaluate the setting:</text>
+  <code>func Initialize()
+{
+	// Meteorite amount depending on difficulty setting
+	Meteor->SetChance(SCENPAR_Difficulty);
+}</code>
+  <author>Sven2</author><date>2014-09</date>
+</doc>

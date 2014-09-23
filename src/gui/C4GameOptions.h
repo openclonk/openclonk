@@ -20,72 +20,6 @@
 
 #include "C4Gui.h"
 
-class C4GameOptionsList;
-
-// scenario-defined game options (2do)
-class C4GameOptions
-{
-public:
-	// base class for an option
-	class Option
-	{
-	private:
-		Option *pNext; // singly linked list maintained by C4GameOptions class
-		friend class C4GameOptions;
-
-	public:
-		Option() : pNext(NULL) {}
-		virtual ~Option() {}
-
-		static Option *CreateOptionByTypeName(const char *szTypeName);
-		virtual void CompileFunc(StdCompiler *pComp) = 0;
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer) = 0;
-	};
-
-	// option of enumeration type
-	class OptionEnum : public Option
-	{
-	public:
-		// element of the enumeration
-		struct Element
-		{
-			StdCopyStrBuf Name;
-			int32_t id;
-
-			Element *pNext; // singly linked list maintained by OptionEnum class
-
-			Element() : Name(), id(0), pNext(NULL) {}
-			void CompileFunc(StdCompiler *pComp);
-		};
-
-	private:
-		Element *pFirstElement;
-
-	public:
-		OptionEnum() : pFirstElement(NULL) {}
-		virtual ~OptionEnum() { Clear(); }
-
-		void Clear();
-		virtual void CompileFunc(StdCompiler *pComp);
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer);
-	};
-
-private:
-	Option *pFirstOption; // linked list of options
-
-public:
-	C4GameOptions() : pFirstOption(NULL) {}
-	~C4GameOptions() { Clear(); }
-
-	void Clear();
-
-	void CompileFunc(StdCompiler *pComp);
-};
-
 // options dialog: created as listbox inside another dialog
 // used to configure some standard runtime options, as well as custom game options
 class C4GameOptionsList : public C4GUI::ListBox, private C4ApplicationSec1Timer
@@ -134,6 +68,23 @@ private:
 		bool OnDropdownSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 		{ DoDropdownSelChange(idNewSelection); Update(); return true; }
 	};
+
+	// drop down list to specify a custom scenario parameter
+	class OptionScenarioParameter : public OptionDropdown
+	{
+		const class C4ScenarioParameterDef *ParameterDef;
+		int32_t LastValue; bool LastValueValid;
+
+	public:
+		OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def);
+
+	protected:
+		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
+		virtual void DoDropdownSelChange(int32_t idNewSelection);
+
+		virtual void Update(); // update data to currently set option
+	};
+
 
 	// drop down list to specify central/decentral control mode
 	class OptionControlMode : public OptionDropdown

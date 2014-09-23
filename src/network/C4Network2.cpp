@@ -1348,8 +1348,10 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 	HandleStatus(rPkt.getStatus());
 	if (Status.getState() != GS_Lobby && Status.getState() != GS_Pause && Status.getState() != GS_Go)
 		{ LogSilentF("Network: join data has bad game status: %s", Status.getStateName()); Clear(); return; }
+	// copy scenario parameter defs for lobby display
+	::Game.ScenarioParameterDefs = rPkt.ScenarioParameterDefs;
 	// copy parameters
-	Game.Parameters = rPkt.Parameters;
+	::Game.Parameters = rPkt.Parameters;
 	// set local client
 	C4Client *pLocalClient = Game.Clients.getClientByID(rPkt.getClientID());
 	if (!pLocalClient)
@@ -1476,6 +1478,8 @@ void C4Network2::SendJoinData(C4Network2Client *pClient)
 	JoinData.SetClientID(pClient->getID());
 	// save status into packet
 	JoinData.SetGameStatus(Status);
+	// scenario parameter defs for lobby display (localized in host language)
+	JoinData.ScenarioParameterDefs = ::Game.ScenarioParameterDefs;
 	// parameters
 	JoinData.Parameters = Game.Parameters;
 	// core join data

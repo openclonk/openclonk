@@ -82,9 +82,11 @@ public:
 };
 
 static C4GameParameters GameParameters;
+static C4ScenarioParameterDefs GameScenarioParameterDefs;
 static C4RoundResults GameRoundResults;
 
 C4Game::C4Game():
+		ScenarioParameterDefs(GameScenarioParameterDefs),
 		Parameters(GameParameters),
 		Clients(Parameters.Clients),
 		Teams(Parameters.Teams),
@@ -244,6 +246,9 @@ bool C4Game::OpenScenario()
 
 	// String tables
 	C4Language::LoadComponentHost(&ScenarioLangStringTable, ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+
+	// Custom scenario parameter definitions. Load even as network client to get localized option names
+	ScenarioParameterDefs.Load(ScenarioFile, &ScenarioLangStringTable);
 
 	// Load parameters (not as network client, because then team info has already been sent by host)
 	if (!Network.isEnabled() || Network.isHost())
@@ -576,6 +581,7 @@ void C4Game::Clear()
 	Parameters.Clear();
 	RoundResults.Clear();
 	C4S.Clear();
+	ScenarioParameterDefs.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
 	DeleteObjects(true);
@@ -2080,6 +2086,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
 		PlayerControlDefs.FinalInit();
+
+		// Register constants for scenario options
+		ScenarioParameterDefs.RegisterScriptConstants(Parameters.ScenarioParameters);
 
 		// Now that all controls and assignments are known, resolve user overloads on control assignments
 		if (!InitPlayerControlUserSettings()) return false;

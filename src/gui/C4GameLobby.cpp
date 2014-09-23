@@ -50,6 +50,15 @@ namespace C4GameLobby
 	}
 
 
+// ----------- C4PacketSetScenarioParameter ---------------------------------------------
+
+	void C4PacketSetScenarioParameter::CompileFunc(StdCompiler *pComp)
+	{
+		pComp->Value(mkNamingAdapt(mkParAdapt(ID, StdCompiler::RCT_Idtf), "ID", StdCopyStrBuf()));
+		pComp->Value(mkNamingAdapt(Value, "Value", 0));
+	}
+
+
 // ----------- ScenDescs ---------------------------------------------
 
 	ScenDesc::ScenDesc(const C4Rect &rcBounds, bool fActive) : C4GUI::Window(), fDescFinished(false)
@@ -483,6 +492,13 @@ namespace C4GameLobby
 			OnCountdownPacket(Pkt);
 		}
 		break;
+		case PID_SetScenarioParameter: // set a scenario parameter value
+			{
+				GETPKT(C4PacketSetScenarioParameter, Pkt);
+				::Game.Parameters.ScenarioParameters.SetValue(Pkt.GetID(), Pkt.GetValue());
+				// reflect updated value immediately on clients
+				if (pRightTab->GetActiveSheetIndex() == SheetIdx_Options) if (pOptionsList) pOptionsList->Update();
+			}
 		};
 #undef GETPKT
 	}
