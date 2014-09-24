@@ -2473,7 +2473,7 @@ static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_
 	// safety
 	if (!achievement_name || !achievement_name->GetData().getLength()) return false;
 	// default parameter
-	long value = avalue.IsNil() ? 1 : avalue;
+	long value = avalue.IsNil() ? 1 : (long)avalue;
 	// gain achievement
 	bool result = true;
 	if (!player.IsNil() && player != NO_OWNER)
