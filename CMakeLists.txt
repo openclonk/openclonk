@@ -457,6 +457,8 @@ set(OC_CLONK_SOURCES
 	src/player/C4PlayerList.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
+	src/player/C4ScenarioParameters.cpp
+	src/player/C4ScenarioParameters.h
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
 	thirdparty/timsort/sort.h

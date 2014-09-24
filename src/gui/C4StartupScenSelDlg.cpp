@@ -405,7 +405,7 @@ void C4MapFolderData::ResetSelection()
 // ------------------------------------
 // Entry
 
-C4ScenarioListLoader::Entry::Entry(Folder *pParent) : pNext(NULL), pParent(pParent), fBaseLoaded(false), fExLoaded(false)
+C4ScenarioListLoader::Entry::Entry(class C4ScenarioListLoader *pLoader, Folder *pParent) : pLoader(pLoader), pNext(NULL), pParent(pParent), fBaseLoaded(false), fExLoaded(false)
 {
 	// ctor: Put into parent tree node
 	if (pParent)
@@ -550,20 +550,20 @@ bool DirContainsScenarios(const char *szDir)
 	return !!szChildFilename;
 }
 
-C4ScenarioListLoader::Entry *C4ScenarioListLoader::Entry::CreateEntryForFile(const StdStrBuf &sFilename, Folder *pParent)
+C4ScenarioListLoader::Entry *C4ScenarioListLoader::Entry::CreateEntryForFile(const StdStrBuf &sFilename, C4ScenarioListLoader *pLoader, Folder *pParent)
 {
 	// determine entry type by file type
 	const char *szFilename = sFilename.getData();
 	if (!szFilename || !*szFilename) return NULL;
-	if (WildcardMatch(C4CFN_ScenarioFiles, sFilename.getData())) return new Scenario(pParent);
-	if (WildcardMatch(C4CFN_FolderFiles, sFilename.getData())) return new SubFolder(pParent);
+	if (WildcardMatch(C4CFN_ScenarioFiles, sFilename.getData())) return new Scenario(pLoader, pParent);
+	if (WildcardMatch(C4CFN_FolderFiles, sFilename.getData())) return new SubFolder(pLoader, pParent);
 	// regular, open folder (C4Group-packed folders without extensions are not regarded, because they could contain anything!)
 	const char *szExt = GetExtension(szFilename);
 	if ((!szExt || !*szExt) && DirectoryExists(sFilename.getData()))
 	{
 		// open folders only if they contain a scenario or folder
 		if (DirContainsScenarios(szFilename))
-			return new RegularFolder(pParent);
+			return new RegularFolder(pLoader, pParent);
 	}
 	// type not recognized
 	return NULL;
@@ -670,6 +670,39 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
+	// ...and localized parameter definitions. needed for achievements and parameter input boxes.
+	C4LangStringTable ScenarioLangStringTable;
+	C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	ParameterDefs.Load(rGrp, &ScenarioLangStringTable);
+	// achievement images
+	const C4ScenarioParameterDef *def; size_t idx=0, aidx=0; nAchievements = 0;
+	while (def = ParameterDefs.GetParameterDefByIndex(idx++))
+		if (def->IsAchievement())
+		{
+			int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
+			if (val)
+			{
+				// player has this achievement - find graphics for it
+				const char *achievement_gfx = def->GetAchievement();
+				StdStrBuf sAchievementFilename(C4CFN_Achievements);
+				sAchievementFilename.Replace("*", achievement_gfx);
+				if (!fctAchievements[aidx].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+				{
+					const C4FacetSurface *fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
+					if (!fct) continue; // achievement graphics not found :(
+					fctAchievements[aidx].Set((const C4Facet &)*fct);
+				}
+				// section by achievement index (1-based, since zero means no achievement)
+				if (val>1) fctAchievements[aidx].Set(fctAchievements[aidx].GetSection(val-1));
+				// description for this achievement is taken from option
+				const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
+				if (opt) sAchievementDescriptions[aidx] = opt->Description;
+				// keep track of achievement count
+				++aidx; ++nAchievements;
+				if (aidx == C4StartupScenSel_MaxAchievements) break;
+				;
+			}
+		}
 	return true;
 }
 
@@ -691,6 +724,15 @@ bool C4ScenarioListLoader::Scenario::LoadCustom(C4Group &rGrp, bool fNameLoaded,
 		iDifficulty = 0;
 	// minimum required player count
 	iMinPlrCount = C4S.GetMinPlayer();
+	return true;
+}
+
+bool C4ScenarioListLoader::Scenario::GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description)
+{
+	// return true and fill output parameters if player got the indexed achievement
+	if (idx < 0 || idx >= nAchievements) return false;
+	*out_facet = fctAchievements[idx];
+	*out_description = sAchievementDescriptions[idx].getData();
 	return true;
 }
 
@@ -978,7 +1020,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 			sChildFilename.Ref(ChildFilename);
 			// okay; create this item
 			//LogF("SubFolder \"%s\" loading \"%s\"", (const char *) sFilename, (const char *) sChildFilename);
-			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, this);
+			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
 				// ...and load it
@@ -1071,7 +1113,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 			if (names.find(szChildFilename) != names.end()) continue;
 			names.insert(szChildFilename);
 			// filename okay; create this item
-			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, this);
+			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
 				// ...and load it
@@ -1098,7 +1140,7 @@ void C4ScenarioListLoader::RegularFolder::Merge(const char *szPath)
 // ------------------------------------
 // C4ScenarioListLoader
 
-C4ScenarioListLoader::C4ScenarioListLoader() : pRootFolder(NULL), pCurrFolder(NULL),
+C4ScenarioListLoader::C4ScenarioListLoader(const C4ScenarioParameters &Achievements) : Achievements(Achievements), pRootFolder(NULL), pCurrFolder(NULL),
 		iLoading(0), iProgress(0), iMaxProgress(0), fAbortThis(false), fAbortPrevious(false)
 {
 }
@@ -1158,7 +1200,7 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	// (unthreaded) loading of all entries in root folder
 	if (!BeginActivity(true)) return false;
 	if (pRootFolder) { delete pRootFolder; pRootFolder = NULL; }
-	pCurrFolder = pRootFolder = new RegularFolder(NULL);
+	pCurrFolder = pRootFolder = new RegularFolder(this, NULL);
 	// Load regular game data if no explicit path specified
 	if(!sRootFolder.getData())
 		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
@@ -1238,10 +1280,26 @@ C4StartupScenSelDlg::ScenListItem::ScenListItem(C4GUI::ListBox *pForListBox, C4S
 	pIcon = new C4GUI::Picture(C4Rect(0, 0, iHeight, iHeight), true);
 	pIcon->SetFacet(pScenListEntry->GetIconFacet());
 	pNameLabel = new C4GUI::Label(pScenListEntry->GetName().getData(), iHeight + IconLabelSpacing, IconLabelSpacing, ALeft, fEnabled ? ClrScenarioItem : ClrScenarioItemDisabled, &rUseFont, false, false);
+	// achievement components
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i)
+	{
+		C4Facet fct; const char *desc;
+		if (pForEntry->GetAchievement(i, &fct, &desc))
+		{
+			ppAchievements[i] = new C4GUI::Picture(C4Rect(iHeight * (i+2), 0, iHeight, iHeight), true); // position will be adjusted later
+			ppAchievements[i]->SetFacet(fct);
+			ppAchievements[i]->SetToolTip(desc);
+		}
+		else
+		{
+			ppAchievements[i] = NULL;
+		}
+	}
 	// calc own bounds - use icon bounds only, because only the height is used when the item is added
 	SetBounds(pIcon->GetBounds());
 	// add components
 	AddElement(pIcon); AddElement(pNameLabel);
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i]) AddElement(ppAchievements[i]);
 	// tooltip by name, so long names can be read via tooltip
 	SetToolTip(pScenListEntry->GetName().getData());
 	// add to listbox (will get resized horizontally and moved) - zero indent; no tree structure in this dialog
@@ -1258,9 +1316,12 @@ void C4StartupScenSelDlg::ScenListItem::UpdateOwnPos()
 	// parent for client rect
 	typedef C4GUI::Window ParentClass;
 	ParentClass::UpdateOwnPos();
-	// reposition items
+	// reposition achievement items
 	C4GUI::ComponentAligner caBounds(GetContainedClientRect(), IconLabelSpacing, IconLabelSpacing);
-	// nothing to reposition for now...
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i])
+	{
+		ppAchievements[i]->SetBounds(caBounds.GetFromRight(caBounds.GetHeight()));
+	}
 }
 
 void C4StartupScenSelDlg::ScenListItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
@@ -1453,9 +1514,11 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 void C4StartupScenSelDlg::OnShown()
 {
 	C4StartupDlg::OnShown();
+	// Collect achievements of all activated players
+	UpdateAchievements();
 	// init file list
 	fIsInitialLoading = true;
-	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader();
+	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader(Achievements);
 	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
 	UpdateList();
 	UpdateSelection();
@@ -1840,4 +1903,21 @@ void C4StartupScenSelDlg::AbortRenaming()
 	if (pRenameEdit) pRenameEdit->Abort();
 }
 
-// NICHT: 9, 7.2.2, 113-114
+void C4StartupScenSelDlg::UpdateAchievements()
+{
+	// Extract all achievements from activated player files and merge them
+	Achievements.Clear();
+	char PlayerFilename[_MAX_FNAME+1];
+	C4Group PlayerGrp;
+	for (int i = 0; SCopySegment(Config.General.Participants, i, PlayerFilename, ';', _MAX_FNAME, true); i++)
+	{
+		const char *szPlayerFilename = Config.AtUserDataPath(PlayerFilename);
+		if (!FileExists(szPlayerFilename)) continue;
+		if (!PlayerGrp.Open(szPlayerFilename)) continue;
+		C4PlayerInfoCore nfo;
+		if (!nfo.Load(PlayerGrp)) continue;
+		Achievements.Merge(nfo.Achievements);
+	}
+}
+
+// NICHT: 9, 7.2.2, 113-114, 8a

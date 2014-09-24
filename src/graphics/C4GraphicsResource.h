@@ -25,6 +25,7 @@
 #include <C4Surface.h>
 #include <C4FacetEx.h>
 #include <C4Gui.h>
+#include <C4ScenarioParameters.h>
 
 class C4GraphicsResource
 {
@@ -101,6 +102,9 @@ public:
 	CStdFont FontCaption;  // used for title bars
 	CStdFont FontTitle;    // huge font for titles
 	CStdFont FontTooltip;  // normal, non-shadowed font (same as BookFont)
+
+	// achievement graphics
+	C4AchievementGraphics Achievements;
 public:
 	int32_t GetColorIndex(int32_t iColor, bool fLast=false);
 	CStdFont &GetFontByHeight(int32_t iHgt, float *pfZoom=NULL); // get optimal font for given control size

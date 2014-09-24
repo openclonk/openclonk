@@ -2028,3 +2028,17 @@ void C4Player::SetViewLocked(bool to_val)
 		if (ViewMode == C4PVM_Scrolling) SetViewMode(C4PVM_Cursor);
 	}
 }
+
+bool C4Player::GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override)
+{
+	// Determine full ID of achievement
+	if (!scen_name_override)
+		if (::Game.C4S.Head.Origin.getLength())
+			scen_name_override = ::Game.C4S.Head.Origin.getData();
+		else
+			scen_name_override = ::Game.ScenarioFilename;
+	StdStrBuf sAchvID = C4ScenarioParameters::AddFilename2ID(scen_name_override, achievement_id);
+	// Gain achievement iff it's an improvement
+	Achievements.SetValue(sAchvID.getData(), value, true);
+	return true;
+}

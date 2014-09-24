@@ -2468,6 +2468,29 @@ static int32_t FnGetStartupPlayerCount(C4PropList * _this)
 	return ::Game.StartupPlayerCount;
 }
 
+static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_name, Nillable<long> avalue, Nillable<long> player, C4String *for_scenario)
+{
+	// safety
+	if (!achievement_name || !achievement_name->GetData().getLength()) return false;
+	// default parameter
+	long value = avalue.IsNil() ? 1 : avalue;
+	// gain achievement
+	bool result = true;
+	if (!player.IsNil() && player != NO_OWNER)
+	{
+		C4Player *plr = ::Players.Get(player);
+		if (!plr) return false;
+		result = plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL);
+	}
+	else
+	{
+		for (C4Player *plr = ::Players.First; plr; plr = plr->Next)
+			if (!plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL))
+				result = false;
+	}
+	return true;
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2634,6 +2657,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetStartupPlayerCount", FnGetStartupPlayerCount);
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
+	AddFunc(pEngine, "GainScenarioAchievement", FnGainScenarioAchievement);
 
 	F(GetPlrKnowledge);
 	F(GetComponent);

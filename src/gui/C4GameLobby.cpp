@@ -495,7 +495,7 @@ namespace C4GameLobby
 		case PID_SetScenarioParameter: // set a scenario parameter value
 			{
 				GETPKT(C4PacketSetScenarioParameter, Pkt);
-				::Game.Parameters.ScenarioParameters.SetValue(Pkt.GetID(), Pkt.GetValue());
+				::Game.Parameters.ScenarioParameters.SetValue(Pkt.GetID(), Pkt.GetValue(), false);
 				// reflect updated value immediately on clients
 				if (pRightTab->GetActiveSheetIndex() == SheetIdx_Options) if (pOptionsList) pOptionsList->Update();
 			}

@@ -272,6 +272,10 @@ public:
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
 	bool AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease);
+
+public:
+	// custom scenario achievements
+	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=NULL);
 };
 
 #endif

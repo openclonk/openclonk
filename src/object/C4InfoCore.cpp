@@ -36,13 +36,20 @@
 
 C4PlayerInfoCore::C4PlayerInfoCore()
 {
-	ZeroMem(this,sizeof(C4PlayerInfoCore));
 	Default();
 }
 
 void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 {
-	ZeroMem(this,sizeof(C4PlayerInfoCore));
+	*Comment='\0';
+	*RankName='\0';
+	TotalScore=0;
+	Rounds=RoundsWon=RoundsLost=0;
+	TotalPlayingTime=0;
+	*LeagueName='\0';
+	LastRound.Default();
+	ExtraData = C4ValueMapData();
+	PrefControl.Clear();
 	Rank=0;
 	SCopy("Neuling",PrefName);
 	if (pRanks) SCopy(pRanks->GetRankName(Rank,false).getData(),RankName);
@@ -166,6 +173,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(LastRound,                "LastRound"));
 
+	pComp->Value(mkNamingAdapt(Achievements,                "Achievements"));
 }
 
 //------------------------------- Object Info ----------------------------------------

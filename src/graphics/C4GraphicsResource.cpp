@@ -29,6 +29,8 @@
 
 #include <C4DrawGL.h>
 
+/* C4GraphicsResource */
+
 C4GraphicsResource::C4GraphicsResource():
 	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),
 	CaptionFont(FontCaption), TitleFont(FontTitle), TextFont(FontRegular), MiniFont(FontTiny), TooltipFont(FontTooltip)
@@ -137,6 +139,8 @@ void C4GraphicsResource::Clear()
 
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
+
+	Achievements.Clear();
 
 	// closing the group set will also close the graphics.ocg
 	// this is just for games that failed to init
@@ -250,6 +254,9 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height)) return false;
 	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80)) return false;
 	if (!LoadFile(fctBuild,       "Build",        Files)) return false;
+
+	// achievements
+	if (!Achievements.Init(Files)) return false;
 
 	// create ColorByOwner overlay surfaces
 	if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)

@@ -103,7 +103,7 @@ void C4GameOptionsList::OptionScenarioParameter::DoDropdownSelChange(int32_t idN
 	C4GameLobby::C4PacketSetScenarioParameter pck(ParameterDef->GetID(), idNewSelection);
 	::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_SetScenarioParameter, pck));
 	// also process on host
-	::Game.Parameters.ScenarioParameters.SetValue(ParameterDef->GetID(), idNewSelection);
+	::Game.Parameters.ScenarioParameters.SetValue(ParameterDef->GetID(), idNewSelection, false);
 }
 
 void C4GameOptionsList::OptionScenarioParameter::Update()
@@ -295,7 +295,8 @@ void C4GameOptionsList::InitOptions()
 	// create options for custom scenario parameters
 	size_t idx = 0; const C4ScenarioParameterDef *def;
 	while (def = ::Game.ScenarioParameterDefs.GetParameterDefByIndex(idx++))
-		new OptionScenarioParameter(this, def);
+		if (!def->IsAchievement()) // achievements are displayed in scenario selection. no need to repeat them here
+			new OptionScenarioParameter(this, def);
 	// creates option selection components
 	new OptionControlMode(this);
 	new OptionControlRate(this);
