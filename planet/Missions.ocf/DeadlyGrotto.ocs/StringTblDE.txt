@@ -1,2 +1,1 @@
-NameMerchant=Händler
 Completed=Abgeschlossen

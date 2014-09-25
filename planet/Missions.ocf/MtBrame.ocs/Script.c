@@ -53,3 +53,8 @@ func InitializePlayer(int plr)
 	}
 }
 
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

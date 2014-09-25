@@ -3,3 +3,4 @@ MsgEncounterFinal=The treasure is MINE ALONE!
 MsgTreasureCollected=Excellent! Now we need to bring the treasure back to Dagobert.
 MsgGoldBarCollected=I've found a gold bar! (%d/%d)
 MsgStoneDoorNoDamage=This stone door is too resilient. I should search for a switch.
+Completed=Completed

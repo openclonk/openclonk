@@ -92,11 +92,11 @@ func InitializePlayer(int plr)
 	return true;
 }
 
-
-func OnGameOver()
+func OnGoalsFulfilled()
 {
+	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Crash");
-	return true;
+	return false;
 }
 
 func GiveExtraPlans(int plr)

@@ -3,3 +3,4 @@ MsgEncounterCave=Ein Eindringling klaut unser Gold! Schnappt ihn!
 MsgEncounterOutpost=Halt, im Namen des Koenigs!
 MsgEncounterKing=Ah, %s. Ich habe Euch bereits erwartet.
 MsgEncounterShrooms=Was ist denn das fuer ein Gestank? Von diesen Pflanzen sollten wir uns besser fern halten...
+Completed=Abgeschlossen

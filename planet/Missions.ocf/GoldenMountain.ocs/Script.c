@@ -69,3 +69,9 @@ private func InitBase(int owner)
 	}
 	return true;
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

@@ -7,7 +7,6 @@
 
 static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
-static g_plr_inventory; // array indexed by players: Array containing inventory of Clonk just before it died
 
 static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
@@ -117,6 +116,7 @@ func OnGoldBarCollected(object collector)
 
 public func OnGoalsFulfilled()
 {
+	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Treasure");
 	UpdateLeagueScores();
 	// Return true to force goal rule to not call GameOver() yet, as it will be done by outro sequence

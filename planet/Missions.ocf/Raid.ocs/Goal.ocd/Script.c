@@ -42,6 +42,7 @@ public func SetFulfilled()
 {
 	is_fulfilled = true;
 	GainMissionAccess("S2Raid");
+	GainScenarioAchievement("Done");
 	NotifyHUD();
 	return true;
 }

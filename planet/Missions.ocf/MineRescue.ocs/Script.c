@@ -51,3 +51,9 @@ func InitializePlayer(int plr)
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
 	return true;
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

@@ -1,0 +1,8 @@
+[ParameterDef]
+ID=Done
+Achievement=Done
+	[Options]
+		
+		[Option]
+		Description=$Completed$
+		Value=1

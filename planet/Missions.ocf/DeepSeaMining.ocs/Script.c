@@ -276,6 +276,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
+	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Sea");
 	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet

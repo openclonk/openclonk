@@ -97,8 +97,9 @@ func ShroomCaveCheck()
 	return true;
 }
 
-func OnGameOver()
+func OnGoalsFulfilled()
 {
+	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Castle");
-	return true;
+	return false;
 }

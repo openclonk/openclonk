@@ -1,1 +1,2 @@
 Tuesday=Tuesday
+Completed=Completed
