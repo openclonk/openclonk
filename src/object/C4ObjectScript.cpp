@@ -859,7 +859,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		const char * s = FnStringPar(szCaption);
 		const char * sep = strstr(s, "%s");
-		if (sep)
+		if (sep && pDef)
 		{
 			strncpy(caption, s, Min<intptr_t>(sep - s,256));
 			caption[Min<intptr_t>(sep - s,256)] = 0;
