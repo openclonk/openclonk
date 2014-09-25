@@ -7,7 +7,7 @@ global func MakeRuinsOnDamage()
 	AddEffect("IntRuinOnDamage", g_chemical, 100, 0, g_chemical, nil, Ruin_ChemicalLab,[{x=-12,y=18,r=130, s=80, t=1300}]); // -8,5 (big)   14,5 (mid)   0,-14 (small)
 	AddEffect("IntRuinOnDamage", g_cabin, 100, 0, g_cabin, nil, Ruin_WoodenCabin, [{x=-20,y=-10, r=-45, s=50, t=1500}]);
 	AddEffect("IntRuinOnDamage", g_windmill, 100, 0, g_windmill, nil, Ruin_Windmill, [{x=-15,y=42, r=45, s=50, t=1200}]);
-	AddEffect("IntRuinOnDamage", g_flagpole, 100, 0, g_flagpole, nil, Flagpole, [{x=-8,y=-26, r=-15, s=50, t=1250}]);
+	AddEffect("IntRuinOnDamage", g_flagpole, 100, 0, g_flagpole, nil, Flagpole, [{x=-2,y=-8, r=-15, s=50, t=1250}]);
 }
 
 global func FxIntRuinOnDamageStart(object target, fx, int tmp, ruin_id, fire_positions)

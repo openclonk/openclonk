@@ -210,7 +210,7 @@ func Dlg_Newton_200(object clonk)
 
 func Dlg_Newton_201(object clonk)
 {
-	MessageBox("$Newton201$", clonk, dlg_target); // no oil
+	MessageBox(Format("$Newton201$", clonk->GetName()), clonk, dlg_target); // no oil
 	return true;
 }
 
