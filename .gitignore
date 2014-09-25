@@ -55,6 +55,7 @@ docs/Functions.txt
 
 # Visual studio files
 openclonk.opensdf
+openclonk.manifest
 deps/
 planet/Release
 planet/RelWithDebInfo
