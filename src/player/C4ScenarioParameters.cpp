@@ -259,7 +259,7 @@ StdStrBuf C4ScenarioParameters::AddFilename2ID(const char *filename, const char 
 	while (sSource.GetSection(idx++, &sPart, DirectorySeparator))
 	{
 		size_t len = sPart.getLength();
-		if (len > 4 && !strncasecmp(sPart.getPtr(len - 4), ".oc", 3))
+		if (len > 4 && SEqual2NoCase(sPart.getPtr(len - 4), ".oc", 3))
 		{
 			// .oc* folders separated by underscores
 			sResult.Append(sPart.getData(), len - 4);
