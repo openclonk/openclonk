@@ -81,7 +81,7 @@ public:
 	virtual class C4MapScriptMap * GetMapScriptMap();
 
 	C4PropList * GetPrototype() const { return prototype._getPropList(); }
-	void C4PropList::RemoveCyclicPrototypes();
+	void RemoveCyclicPrototypes();
 
 	// saved as a reference to a global constant?
 	virtual class C4PropListStatic * IsStatic() { return NULL; }
