@@ -28,9 +28,14 @@ Duration: 30 - 60 minutes
 Description: Icy mountain on which the players have to expand a settlement and produce metal. 
 
 [Flooded Veins]
-Difficulty: Medium (30)
+Difficulty: Easy (30)
 Duration: 40 - 80 minutes
 Description: Flooded caves present a real challenge for this gem mining expedition.
+
+[Chine]
+Difficulty: Medium(40)
+Duration: 60 - 90 minutes
+Description: Players have to transport a cannon up a chine carved out by a waterfall.
 
 [Conquest of Krakatoa]
 Difficulty: Medium (60)

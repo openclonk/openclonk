@@ -2,6 +2,9 @@
 TxtNeedsAmmo=Die Kanone hat keine Munition.
 
 # Intro sequence messages
+MsgDroppedCannon=%s, why did you let go of this golden cannon?
+MsgSorryEarthquake=Sorry, that sudden earthquake was too strong...
+MsgBackToWork=Well, we will just bring it back up again. Get back to work!
 
 # Failure sequence messages
 MsgWhoDroppedCannon=Who dropped that cannon into the abyss?

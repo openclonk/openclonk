@@ -38,7 +38,7 @@ public func Intro_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgToBeRich$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		MessageBox("$MsgToBeRich$", GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
 	}
 	return Stop();
 }

@@ -6,6 +6,9 @@
 */
 
 
+// Whether the intro has been initialized.
+static intro_init;
+
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
@@ -72,6 +75,16 @@ protected func InitializePlayer(int plr)
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
+	
+	// Set player wealth.
+	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	
+	// Initialize the intro sequence if not yet started.
+	if (!intro_init)
+	{
+		StartSequence("Intro", 0);
+		intro_init = true;
+	}
 	return;
 }
 
@@ -108,7 +121,7 @@ private func InitEnvironment(int difficulty)
 	SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
 	
 	// Waterfalls dominate the landscape.
-	for (var i = 0; i < 20; i++)
+	for (var i = 0; i < 16 + 4 * difficulty; i++)
 	{
 		var x = Random(LandscapeWidth());
 		if (!GBackSky(x, 0))
