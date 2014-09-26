@@ -2280,6 +2280,10 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	const float dy = ty + ry*thgt;
 	x.x += dx;
 	x.y += dy;
+	// This was added in the block before and could also just be removed from tx/ty.
+	// However, the block would no longer be equal to where it came from.
+	x.x -= fixtof(Obj->fix_x);
+	x.y -= fixtof(Obj->fix_y);
 	// Finally, apply DrawTransform to the world coordinates
 	StdMeshMatrix DrawTransform;
 	if(Obj->pDrawTransform)
@@ -2318,6 +2322,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	valueLifetime.Set(lifetime);
 
 	// cast
+	if (amount < 1) amount = 1;
 	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
 #endif
 	// success, even if not created
