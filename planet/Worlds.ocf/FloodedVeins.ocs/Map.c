@@ -8,19 +8,16 @@
 #include Library_Map
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_MapSize = 1;
-
 // Called be the engine: draw the complete map here.
 protected func InitializeMap(proplist map)
 {
 	// Retrieve the settings according to the MapSize setting.
 	var map_size;
-	if (SCENOPT_MapSize == 1)
+	if (SCENPAR_MapSize == 1)
 		map_size = [100, 150]; 
-	if (SCENOPT_MapSize == 2)
+	if (SCENPAR_MapSize == 2)
 		map_size = [100, 175];
-	if (SCENOPT_MapSize == 3)
+	if (SCENPAR_MapSize == 3)
 		map_size = [100, 200];
 	
 	// Set the map size.
@@ -35,11 +32,11 @@ protected func InitializeMap(proplist map)
 	
 	// Draw the middle section of the map with useful resources.
 	// This takes 45, 50 or 55 landscape pixels.
-	DrawMiddle(map, 40 + 5 * SCENOPT_MapSize);
+	DrawMiddle(map, 40 + 5 * SCENPAR_MapSize);
 	
 	// Draw the gem veins including it being flooded at the bottom of the map.
 	// This takes up the remaining landscape pixels, which depends on the map size.
-    DrawGemVeins(map, 60 + 20 * SCENOPT_MapSize);
+    DrawGemVeins(map, 60 + 20 * SCENPAR_MapSize);
 	
 	// Return true to tell the engine a map has been successfully created.
 	return true;

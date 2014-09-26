@@ -43,6 +43,7 @@ protected func OnGoalsFulfilled()
 	return false;
 }
 
+
 /*-- Player Initialization --*/
 
 protected func InitializePlayer(int plr)

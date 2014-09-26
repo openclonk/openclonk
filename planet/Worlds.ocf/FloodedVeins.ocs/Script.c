@@ -7,11 +7,6 @@
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 3; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
-
 // Whether the intro has been initialized.
 static intro_init;
 
@@ -26,13 +21,20 @@ protected func Initialize()
 	
 	// Goal: Sell a certain amount of gems dependent on difficulty.
 	var goal = CreateObject(Goal_SellGems);
-	goal->SetTargetAmount(10 * SCENOPT_Difficulty);
+	goal->SetTargetAmount(10 * SCENPAR_Difficulty);
 
 	// Initialize different parts of the scenario.
-	InitEnvironment(SCENOPT_Difficulty);
-	InitVegetation(SCENOPT_MapSize);
-	InitAnimals(SCENOPT_MapSize, SCENOPT_Difficulty);
+	InitEnvironment(SCENPAR_Difficulty);
+	InitVegetation(SCENPAR_MapSize);
+	InitAnimals(SCENPAR_MapSize, SCENPAR_Difficulty);
 	return;
+}
+
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
 }
 
 
@@ -47,7 +49,7 @@ protected func InitializePlayer(int plr)
 	// First player inits the base.
 	if (!first_plr_init)
 	{
-		InitBase(plr, SCENOPT_Material);
+		InitBase(plr, 4 - SCENPAR_Difficulty);
 		first_plr_init = true;
 	}
 	
