@@ -6,11 +6,6 @@
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 2; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
-
 // Whether the intro has been initialized.
 static intro_init;
 
@@ -22,25 +17,31 @@ protected func Initialize()
 	
 	// Goal: Gain Wealth, amount depends on difficulty, though bounded by availability.
 	var gold = GetMaterialCount(Material("Gold")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Gold"));
-	var percentage = 70 + 10 * SCENOPT_Difficulty;
-	var wealth_goal = Min(200 + 200 * SCENOPT_Difficulty, gold * 5 * percentage / 100);
+	var percentage = 70 + 10 * SCENPAR_Difficulty;
+	var wealth_goal = Min(200 + 200 * SCENPAR_Difficulty, gold * 5 * percentage / 100);
 	var goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(wealth_goal);
 	
 	// Second goal: Construct golden statue, amount depends on difficulty.
-	var statue_cnt = SCENOPT_Difficulty;
+	var statue_cnt = SCENPAR_Difficulty;
 	goal = CreateObject(Goal_Construction);
 	goal->AddConstruction(Idol, statue_cnt);
 	
 	// Initialize different parts of the scenario.
 	InitEnvironment();
-	InitVegetation();
-	InitAnimals();
-	InitMaterial(SCENOPT_Material);
+	InitVegetation(SCENPAR_MapSize);
+	InitAnimals(SCENPAR_MapSize);
+	InitMaterial(4 - SCENPAR_Difficulty);
 	
 	return;
 }
 
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
+}
 
 /*-- Player Initialization --*/
 
@@ -101,7 +102,7 @@ private func InitEnvironment()
 	return;
 }
 
-private func InitVegetation()
+private func InitVegetation(int map_size)
 {
 	// Place some trees in a forest shape.
 	PlaceForest([Tree_Coniferous], 0, LandscapeHeight() / 2 + 50, nil, true);
@@ -110,17 +111,17 @@ private func InitVegetation()
 	PlaceGrass(100);
 	
 	// Some objects in the earth.	
-	PlaceObjects(Rock, 25 + 10 * SCENOPT_MapSize + Random(10),"Earth");
-	PlaceObjects(Firestone, 20 + 10 * SCENOPT_MapSize + Random(5), "Earth");
-	PlaceObjects(Loam, 20 + 10 * SCENOPT_MapSize + Random(5), "Earth");
+	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
+	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
+	PlaceObjects(Loam, 20 + 10 * map_size + Random(5), "Earth");
 
 	return;
 }
 
-private func InitAnimals()
+private func InitAnimals(int map_size)
 {
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 10 + 5 * SCENOPT_MapSize; i++)
+	for (var i = 0; i < 10 + 5 * map_size; i++)
 		PlaceAnimal(Butterfly);
 	return;
 }

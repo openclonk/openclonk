@@ -8,19 +8,16 @@
 #include Library_Map
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_MapSize = 1;
-
 // Called be the engine: draw the complete map here.
 protected func InitializeMap(proplist map)
 {
 	// Retrieve the settings according to the MapSize setting.
 	var map_size;
-	if (SCENOPT_MapSize == 1)
+	if (SCENPAR_MapSize == 1)
 		map_size = [100, 75]; 
-	if (SCENOPT_MapSize == 2)
+	if (SCENPAR_MapSize == 2)
 		map_size = [125, 90];
-	if (SCENOPT_MapSize == 3)
+	if (SCENPAR_MapSize == 3)
 		map_size = [150, 105];
 	
 	// Set the map size.
