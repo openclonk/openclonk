@@ -1,2 +1,9 @@
 # Cannon messages
 TxtNeedsAmmo=Cannon has no ammo.
+
+# Intro sequence messages
+
+# Failure sequence messages
+MsgWhoDroppedCannon=Who dropped that cannon into the abyss?
+MsgItWasMe=It was me ...
+MsgShame=Go shame yourself! This endeavour has now become completely useless.

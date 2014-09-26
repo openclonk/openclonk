@@ -6,11 +6,6 @@
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 1; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
-
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
@@ -27,11 +22,18 @@ protected func Initialize()
 	AddEffect("GoalCheck", nil, 100, 2, nil);
 	
 	// Initialize different parts of the scenario.
-	InitEnvironment(SCENOPT_Difficulty);
-	InitVegetation(SCENOPT_MapSize);
+	InitEnvironment(SCENPAR_Difficulty);
+	InitVegetation(SCENPAR_MapSize);
 	InitAnimals();
-	InitMaterial(SCENOPT_Material);	
+	InitMaterial(4 - SCENPAR_Difficulty);	
 	return;
+}
+
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
 }
 
 
@@ -81,8 +83,9 @@ global func FxGoalCheckTimer(object target, proplist effect)
 	var cannon = FindObject(Find_ID(Cannon));
 	if (!cannon)
 	{
-		// Start elimination dialogue due to lost cannon.
-		// TODO
+		// Start elimination sequence due to lost cannon.
+		// TODO: determine clonk which was responsible and let him take the blame in the sequence.
+		StartSequence("Failure", 0);
 		return -1;
 	}
 	if (cannon->GetY() < 100)
