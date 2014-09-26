@@ -8,11 +8,6 @@
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 3; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
-
 // Whether the intro has been initialized.
 static intro_init;
 
@@ -20,10 +15,10 @@ protected func Initialize()
 {
 	// Goal: Expand your area of influence to secure the ore.
 	var goal = CreateObject(Goal_Expansion);
-	goal->SetExpansionGoal(300 + 100 * SCENOPT_Difficulty);
+	goal->SetExpansionGoal(300 + 100 * SCENPAR_Difficulty);
 	
 	// Second goal: Construct metal.
-	var metal_cnt = 10 + 10 * SCENOPT_Difficulty;
+	var metal_cnt = 10 + 10 * SCENPAR_Difficulty;
 	goal = CreateObject(Goal_Construction);
 	goal->AddConstruction(Metal, metal_cnt);
 	
@@ -32,10 +27,10 @@ protected func Initialize()
 	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Initialize different parts of the scenario.
-	InitEnvironment();
-	InitVegetation(SCENOPT_MapSize);
+	InitEnvironment(SCENPAR_Difficulty);
+	InitVegetation(SCENPAR_MapSize);
 	InitAnimals();
-	InitMaterial(SCENOPT_Material);
+	InitMaterial(4 - SCENPAR_Difficulty);
 	return;
 }
 
@@ -44,7 +39,9 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 { 
-	// Move clonks to location and give them a shovel.
+	var amount = 4 - SCENPAR_Difficulty;
+	
+	// Give crew their items.
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
@@ -59,9 +56,9 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(Shovel);
 			crew->CreateContents(Pickaxe);
 		}
-		if (SCENOPT_Material >= 2)
+		if (amount >= 2)
 			crew->CreateContents(Loam, 2);
-		if (SCENOPT_Material == 3)
+		if (amount == 3)
 			crew->CreateContents(DynamiteBox);
 		index++;
 	}
@@ -79,7 +76,7 @@ protected func InitializePlayer(int plr)
 	GivePlayerToolsBaseMaterial(plr);
 		
 	// Set player wealth.
-	SetWealth(plr, 20 + 20 * SCENOPT_Material);
+	SetWealth(plr, 20 + 20 * amount);
 	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
@@ -93,7 +90,7 @@ protected func InitializePlayer(int plr)
 
 /*-- Scenario Initialization --*/
 
-private func InitEnvironment()
+private func InitEnvironment(int difficulty)
 {
 	// Cover the mountain in some snow already.
 	GiveMountainSnowCover();
@@ -112,7 +109,7 @@ private func InitEnvironment()
 	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
 	
 	// Some natural disasters. 
-	Earthquake->SetChance(5 + 5 * SCENOPT_Difficulty);
+	Earthquake->SetChance(5 + 5 * difficulty);
 	// TODO: Rockfall.
 	return;
 }
