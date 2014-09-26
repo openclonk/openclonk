@@ -6,16 +6,23 @@ func Initialize()
 	num_to_collect = SCENPAR_Difficulty;
 	for (var i=0; i<num_to_collect; ++i)
 	{
-		var ng = CreateObject(Nugget, Random(LandscapeWidth()-100) + 50, 10);
+		var ng = CreateObject(Nugget, Random(LandscapeWidth()-100) + 50, LandscapeHeight()/2 + Random(LandscapeHeight()/2-40));
 		ng.Entrance = Scenario.GotNugget;
 	}
 	return true;
+}
+
+func InitializePlayer(plr)
+{
+	GetCrew(plr)->CreateContents(Shovel);
 }
 
 func GotNugget()
 {
 	--num_to_collect;
 	if (num_to_collect == 0) GameCall("Finished");
+	Sound("Cash");
+	RemoveObject();
 }
 
 func Finished()
