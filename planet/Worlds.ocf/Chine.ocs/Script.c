@@ -202,7 +202,7 @@ private func InitMaterial(int amount)
 	// For medium amount of materials provide a lorry with resources.	
 	if (amount >= 2)
 	{
-		var lorry = CreateObject(Lorry, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
+		var lorry = CreateObject(Lorry, 72 + RandomX(-12, 12), LandscapeHeight() - 92);
 		lorry->CreateContents(Wood, 6);
 		lorry->CreateContents(Metal, 4);
 		lorry->CreateContents(Rock, 4);

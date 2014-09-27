@@ -46,7 +46,6 @@ protected func InitializeMap(proplist map)
 public func DrawCavern(proplist map)
 {
     var wdt = map.Wdt;
-    var hgt = map.Hgt;
     var cavern_hgt = 20;
     
     // Create a mask for the cavern part.
@@ -102,7 +101,6 @@ public func DrawCavern(proplist map)
 public func DrawMiddle(proplist map, int size)
 {
     var wdt = map.Wdt;
-    var hgt = map.Hgt;
 
     // Create a mask for the middle part.
     var map_middle = {Algo = MAPALGO_Rect, X = 0, Y = 25, Wdt = wdt, Hgt = size};
@@ -175,7 +173,6 @@ public func DrawGemVeins(proplist map, int size)
 		if (node.conn_count == 0)
 			continue;
 		var tunnel = node.tunnels[0];
-		var y_constraint = {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 3, Wdt = wdt, Hgt = 12};
 		var gem_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 4, Wdt = wdt, Hgt = 10}]};
 		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 2, Right = 2, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 6, Wdt = wdt, Hgt = 2}]};
 		map->Draw(["Ruby", "Amethyst"][Random(2)], gem_border);

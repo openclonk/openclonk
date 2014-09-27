@@ -117,7 +117,6 @@ public func DrawChine(proplist map, int nr_hurdles)
 // Draws a small cave where the players start.
 public func DrawStartCave(proplist map, proplist chine)
 {
-	var wdt = map.Wdt;
 	var hgt = map.Hgt;
 	
 	var cave = {Algo = MAPALGO_Rect, X = 6, Y = hgt - 15, Wdt = 15, Hgt = 5};
