@@ -31,6 +31,7 @@
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
+#include <C4GameOptions.h>
 
 #include <set>
 
@@ -670,39 +671,43 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
-	// ...and localized parameter definitions. needed for achievements and parameter input boxes.
-	C4LangStringTable ScenarioLangStringTable;
-	C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
-	ParameterDefs.Load(rGrp, &ScenarioLangStringTable);
-	// achievement images
-	const C4ScenarioParameterDef *def; size_t idx=0, aidx=0; nAchievements = 0;
-	while (def = ParameterDefs.GetParameterDefByIndex(idx++))
-		if (def->IsAchievement())
-		{
-			int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
-			if (val)
+	// Localized parameter definitions. needed for achievements and parameter input boxes.
+	// Only show them for "real" scenarios
+	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
+	{
+		C4LangStringTable ScenarioLangStringTable;
+		C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		ParameterDefs.Load(rGrp, &ScenarioLangStringTable);
+		// achievement images
+		const C4ScenarioParameterDef *def; size_t idx=0, aidx=0; nAchievements = 0;
+		while (def = ParameterDefs.GetParameterDefByIndex(idx++))
+			if (def->IsAchievement())
 			{
-				// player has this achievement - find graphics for it
-				const char *achievement_gfx = def->GetAchievement();
-				StdStrBuf sAchievementFilename(C4CFN_Achievements);
-				sAchievementFilename.Replace("*", achievement_gfx);
-				if (!fctAchievements[aidx].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+				int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
+				if (val)
 				{
-					const C4FacetSurface *fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
-					if (!fct) continue; // achievement graphics not found :(
-					fctAchievements[aidx].Set((const C4Facet &)*fct);
+					// player has this achievement - find graphics for it
+					const char *achievement_gfx = def->GetAchievement();
+					StdStrBuf sAchievementFilename(C4CFN_Achievements);
+					sAchievementFilename.Replace("*", achievement_gfx);
+					if (!fctAchievements[aidx].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+					{
+						const C4FacetSurface *fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
+						if (!fct) continue; // achievement graphics not found :(
+						fctAchievements[aidx].Set((const C4Facet &)*fct);
+					}
+					// section by achievement index (1-based, since zero means no achievement)
+					if (val>1) fctAchievements[aidx].Set(fctAchievements[aidx].GetSection(val-1));
+					// description for this achievement is taken from option
+					const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
+					if (opt) sAchievementDescriptions[aidx] = opt->Description;
+					// keep track of achievement count
+					++aidx; ++nAchievements;
+					if (aidx == C4StartupScenSel_MaxAchievements) break;
+					;
 				}
-				// section by achievement index (1-based, since zero means no achievement)
-				if (val>1) fctAchievements[aidx].Set(fctAchievements[aidx].GetSection(val-1));
-				// description for this achievement is taken from option
-				const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
-				if (opt) sAchievementDescriptions[aidx] = opt->Description;
-				// keep track of achievement count
-				++aidx; ++nAchievements;
-				if (aidx == C4StartupScenSel_MaxAchievements) break;
-				;
 			}
-		}
+	}
 	return true;
 }
 
@@ -1453,6 +1458,13 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSelectionInfo->SetDecoration(false, false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSheetBook->AddElement(pSelectionInfo);
 
+	// bottom of right side of book: Custom options on selection
+	// Arbitrary height and invisible by default. Height will be adjusted when options are created.
+	pSelectionOptions = new C4GameOptionsList(C4Rect(bounds.x, bounds.y+bounds.Hgt-10, bounds.Wdt, 10), false, C4GameOptionsList::GOLS_PreGame);
+	pSelectionOptions->SetDecoration(false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
+	pSelectionOptions->SetVisibility(false);
+	pSheetBook->AddElement(pSelectionOptions);
+
 	// back button
 	C4GUI::CallbackButton<C4StartupScenSelDlg> *btn;
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupScenSelDlg>(LoadResStr("IDS_BTN_BACK"), caButtonArea.GetFromLeft(iButtonWidth, iButtonHeight), &C4StartupScenSelDlg::OnBackBtn));
@@ -1666,6 +1678,37 @@ void C4StartupScenSelDlg::UpdateSelection()
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
 	if (sVersion) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DLG_VERSION"), sVersion.getData()).getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
+	// update custom scenario options panel
+	if (pSel)
+	{
+		pSelectionOptions->SetParameters(pSel->GetParameterDefs(), pSel->GetParameters());
+		pSelectionOptions->Update();
+	}
+	else
+		pSelectionOptions->SetParameters(NULL, NULL);
+	// update component heights
+	C4Rect rcSelBounds = pSelectionInfo->GetBounds();
+	int32_t ymax = pSelectionOptions->GetBounds().GetBottom();
+	C4GUI::Element *pLastOption = pSelectionOptions->GetLast();
+	if (pLastOption)
+	{
+		// custom options present: Info box reduced; options box at bottom
+		// set options box max size to 1/3rd of selection info area
+		int32_t options_hgt = Min<int32_t>(pLastOption->GetBounds().GetBottom() + pSelectionOptions->GetMarginTop() + pSelectionOptions->GetMarginTop(), rcSelBounds.Hgt/3);
+		rcSelBounds.Hgt = ymax - options_hgt - rcSelBounds.y;
+		pSelectionInfo->SetBounds(rcSelBounds);
+		rcSelBounds.y = ymax - options_hgt;
+		rcSelBounds.Hgt = options_hgt;
+		pSelectionOptions->SetBounds(rcSelBounds);
+		pSelectionOptions->SetVisibility(true);
+	}
+	else
+	{
+		// custom options absent: Info takes full area
+		pSelectionOptions->SetVisibility(false);
+		rcSelBounds.Hgt = ymax - rcSelBounds.y;
+		pSelectionInfo->SetBounds(rcSelBounds);
+	}
 	pSelectionInfo->UpdateHeight();
 }
 
@@ -1696,16 +1739,18 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 		if (!C4DefinitionSelDlg::SelectDefinitions(GetScreen(), &sDefinitions))
 			// user aborted during definition selection
 			return false;
-		SCopy(sDefinitions.getData(), Game.DefinitionFilenames, (sizeof Game.DefinitionFilenames)-1);
+		SCopy(sDefinitions.getData(), ::Game.DefinitionFilenames, (sizeof Game.DefinitionFilenames)-1);
 	}
 	else
 		// for no user change, just set default objects. Custom settings will override later anyway
-		SCopy("Objects.ocd", Game.DefinitionFilenames);
+		SCopy("Objects.ocd", ::Game.DefinitionFilenames);
 	// set other default startup parameters
-	Game.fLobby = !!Game.NetworkActive; // always lobby in network
-	Game.fObserve = false;
+	::Game.fLobby = !!::Game.NetworkActive; // always lobby in network
+	::Game.fObserve = false;
+	C4ScenarioParameters *custom_params = pStartScen->GetParameters();
+	if (custom_params) ::Game.StartupScenarioParameters = *custom_params; else ::Game.StartupScenarioParameters.Clear();
 	// start with this set!
-	Application.OpenGame(pStartScen->GetEntryFilename().getData());
+	::Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;
 }
 
@@ -1921,3 +1966,4 @@ void C4StartupScenSelDlg::UpdateAchievements()
 }
 
 // NICHT: 9, 7.2.2, 113-114, 8a
+

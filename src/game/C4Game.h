@@ -53,6 +53,7 @@ public:
 	~C4Game();
 
 	C4GameParameters   &Parameters;
+	class C4ScenarioParameters &StartupScenarioParameters; // parameters given on command line or during startup UI
 	C4ClientList       &Clients; // Shortcut
 	C4TeamList         &Teams; // Shortcut
 	C4PlayerInfoList   &PlayerInfos; // Shortcut

@@ -32,6 +32,7 @@ private:
 	{
 	protected:
 		typedef C4GUI::Control BaseClass;
+		class C4GameOptionsList *pForDlg;
 
 		// primary subcomponent: forward focus to this element
 		C4GUI::Control *pPrimarySubcomponent;
@@ -152,25 +153,41 @@ private:
 	};
 
 public:
-	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool fRuntime);
+	enum C4GameOptionsListSource
+	{
+		GOLS_PreGame,
+		GOLS_Lobby,
+		GOLS_Runtime
+	};
+
+	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=NULL, class C4ScenarioParameters *params=NULL);
 	~C4GameOptionsList() { Deactivate(); }
 
 private:
-	bool fRuntime; // set for runtime options dialog - does not provide pre-game options such as team colors
+	C4GameOptionsListSource source; // where to draw options from. e.g. lobby options such as team colors aren't presented at run-time
+	class C4ScenarioParameterDefs *param_defs; // where to pull parameters and parameter definitions from
+	class C4ScenarioParameters *params;
 
 	void InitOptions(); // creates option selection components
+	void ClearOptions(); // remove all option components
 
 public:
 	// update all option flags by current game state
 	void Update();
 	void OnSec1Timer() { Update(); }
 
+	// update to new parameter set. recreates option fields. set parameters to NULL for no options
+	void SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params);
+
 	// activate/deactivate periodic updates
 	void Activate();
 	void Deactivate();
 
 	// config
-	bool IsTabular() const { return fRuntime; } // wide runtime dialog allows tabular layout
-	bool IsRuntime() const { return fRuntime; }
+	bool IsRuntime() const { return source==GOLS_Runtime; }
+	bool IsTabular() const { return IsRuntime() || IsPreGame(); } // low lobby space doesn't allow tabular layout
+	bool IsPreGame() const { return source==GOLS_PreGame; }
+
+	C4ScenarioParameters *GetParameters() { return params; } // used by children
 };
 #endif //INC_C4GameOptions

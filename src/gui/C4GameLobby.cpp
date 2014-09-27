@@ -219,7 +219,7 @@ namespace C4GameLobby
 		pPlayerSheet->AddElement(pPlayerList);
 		pResList = new C4Network2ResDlg(pResSheet->GetContainedClientRect(), false);
 		pResSheet->AddElement(pResList);
-		pOptionsList = new C4GameOptionsList(pResSheet->GetContainedClientRect(), false, false);
+		pOptionsList = new C4GameOptionsList(pResSheet->GetContainedClientRect(), false, C4GameOptionsList::GOLS_Lobby);
 		pOptionsSheet->AddElement(pOptionsList);
 		pScenarioInfo = new ScenDesc(pResSheet->GetContainedClientRect(), false);
 		pScenarioSheet->AddElement(pScenarioInfo);

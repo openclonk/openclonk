@@ -396,9 +396,10 @@ void C4GameParameters::Clear()
 	PlayerInfos.Clear();
 	RestorePlayerInfos.Clear();
 	Teams.Clear();
+	ScenarioParameters.Clear();
 }
 
-bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames)
+bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames, C4ScenarioParameters *pStartupScenarioParameters)
 {
 	// Clear previous data
 	Clear();
@@ -457,6 +458,9 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 		// Auto frame skip by options
 		AutoFrameSkip = !!::Config.Graphics.AutoFrameSkip;
+
+		// custom parameters from startup
+		if (pStartupScenarioParameters) ScenarioParameters = *pStartupScenarioParameters;
 	}
 
 

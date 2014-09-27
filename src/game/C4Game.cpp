@@ -83,11 +83,13 @@ public:
 
 static C4GameParameters GameParameters;
 static C4ScenarioParameterDefs GameScenarioParameterDefs;
+static C4ScenarioParameters GameStartupScenarioParameters;
 static C4RoundResults GameRoundResults;
 
 C4Game::C4Game():
 		ScenarioParameterDefs(GameScenarioParameterDefs),
 		Parameters(GameParameters),
+		StartupScenarioParameters(GameStartupScenarioParameters),
 		Clients(Parameters.Clients),
 		Teams(Parameters.Teams),
 		PlayerInfos(Parameters.PlayerInfos),
@@ -252,7 +254,7 @@ bool C4Game::OpenScenario()
 
 	// Load parameters (not as network client, because then team info has already been sent by host)
 	if (!Network.isEnabled() || Network.isHost())
-		if (!Parameters.Load(ScenarioFile, &C4S, GameText.GetData(), &ScenarioLangStringTable, DefinitionFilenames))
+		if (!Parameters.Load(ScenarioFile, &C4S, GameText.GetData(), &ScenarioLangStringTable, DefinitionFilenames, &StartupScenarioParameters))
 			return false;
 
 	SetInitProgress(4);
@@ -582,6 +584,7 @@ void C4Game::Clear()
 	RoundResults.Clear();
 	C4S.Clear();
 	ScenarioParameterDefs.Clear();
+	StartupScenarioParameters.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
 	DeleteObjects(true);

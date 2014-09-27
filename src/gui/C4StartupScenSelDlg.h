@@ -101,6 +101,9 @@ public:
 		virtual bool SetTitleInGroup(C4Group &rGrp, const char *szNewTitle);
 		bool RenameTo(const char *szNewName); // change name+filename
 		virtual bool IsScenario() { return false; }
+
+		virtual C4ScenarioParameterDefs *GetParameterDefs() { return NULL; }
+		virtual C4ScenarioParameters *GetParameters() { return NULL; }
 	};
 
 	// a loaded scenario to be started
@@ -109,6 +112,7 @@ public:
 	private:
 		C4Scenario C4S;
 		C4ScenarioParameterDefs ParameterDefs;
+		C4ScenarioParameters Parameters; // each entry caches its parameters set by the user
 		C4FacetSurface fctAchievements[C4StartupScenSel_MaxAchievements];
 		StdCopyStrBuf sAchievementDescriptions[C4StartupScenSel_MaxAchievements];
 		int32_t nAchievements;
@@ -134,6 +138,9 @@ public:
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
 
 		virtual const char *GetDefaultExtension() { return "ocs"; }
+
+		virtual C4ScenarioParameterDefs *GetParameterDefs() { return &ParameterDefs; }
+		virtual C4ScenarioParameters *GetParameters() { return &Parameters; }
 
 		virtual bool IsScenario() { return true; }
 	};
@@ -405,6 +412,7 @@ private:
 	C4GUI::ListBox *pScenSelList;        // left page of book: Scenario selection
 	C4GUI::Label *pScenSelProgressLabel; // progress label shown while scenario list is being generated
 	C4GUI::TextWindow *pSelectionInfo;   // used to display the description of the current selection
+	class C4GameOptionsList *pSelectionOptions; // displays custom scenario options for selected item below description
 
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward, *pKeyRename, *pKeyDelete, *pKeyCheat;
 	class C4GameOptionButtons *pGameOptionButtons;
