@@ -25,9 +25,9 @@ protected func Initialize()
 	AddEffect("GoalCheck", nil, 100, 2, nil);
 	
 	// Initialize different parts of the scenario.
-	InitEnvironment(SCENPAR_Difficulty);
-	InitVegetation(SCENPAR_MapSize);
-	InitAnimals();
+	InitEnvironment(SCENPAR_MapSize, SCENPAR_Difficulty);
+	InitVegetation(SCENPAR_MapSize, SCENPAR_Difficulty);
+	InitAnimals(SCENPAR_Difficulty);
 	InitMaterial(4 - SCENPAR_Difficulty);	
 	return;
 }
@@ -45,7 +45,7 @@ protected func OnGoalsFulfilled()
 protected func InitializePlayer(int plr)
 { 
 	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
 
 	// Move clonks to location and give them a shovel.
@@ -114,24 +114,27 @@ global func FxGoalCheckTimer(object target, proplist effect)
 
 /*-- Scenario Initialization --*/
 
-private func InitEnvironment(int difficulty)
+private func InitEnvironment(int map_size, int difficulty)
 {
 	// Adjust the sky a bit.
 	SetSkyParallax(0, 20, 20);
 	SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
 	
-	// Waterfalls dominate the landscape.
+	// Waterfalls dominate the landscape, they are place at the top left of the chine.
+	var waterfall_x = 0;
+	while (!GBackSky(waterfall_x, 0) && waterfall_x < LandscapeWidth() / 2)
+		waterfall_x++;
 	for (var i = 0; i < 16 + 4 * difficulty; i++)
 	{
-		var x = Random(LandscapeWidth());
-		if (!GBackSky(x, 0))
-			continue;
-		var fall = CreateWaterfall(x, 0, RandomX(3, 5), "Water");
-		fall->SetDirection(0, 4, 4, 4);
+		var fall = CreateWaterfall(waterfall_x + 2, 0, RandomX(3, 4), "Water");
+		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
+	var trunk = CreateObject(Trunk, waterfall_x + 2, 20);
+	trunk->SetR(-30); trunk.Plane = 550;
+	
 	// Cast some additional PXS at the start at random locations.
-	for (var i = 0; i < 25000; i++)
+	for (var i = 0; i < 20000 + 10000 * map_size; i++)
 		InsertMaterial(Material("Water"), Random(LandscapeWidth()), Random(5 * LandscapeHeight() / 6), RandomX(-5, 5), RandomX(3, 6));
 	
 	// Some natural disasters. 
@@ -139,7 +142,7 @@ private func InitEnvironment(int difficulty)
 	return;
 }
 
-private func InitVegetation(int map_size)
+private func InitVegetation(int map_size, int difficulty)
 {
 	// Define parts of the map for even distribution.
 	var top = Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 3);
@@ -184,12 +187,17 @@ private func InitVegetation(int map_size)
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
 	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
-	PlaceObjects(Loam, 20 + 10 * map_size + Random(5), "Earth");
+	PlaceObjects(Loam, (5 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
 	return;
 }
 
-private func InitAnimals()
+private func InitAnimals(int difficulty)
 {
+	// Place some fish or piranhas on the basin.
+	var fish = Fish;
+	if (difficulty >= 3)
+		fish = Piranha;
+	fish->Place(4);	
 	return;
 }
 
@@ -221,18 +229,3 @@ private func InitMaterial(int amount)
 	}
 	return;
 }
-
-
-/*-- Some helper functions --*/
-
-global func TestGoldCount()
-{
-	var pos;
-	while (pos = FindLocation(Loc_Material("Gold")))
-	{
-		var pos = CreateObject(Rock, pos.x, pos.y)->Explode(100);
-	}
-	var gold_count = ObjectCount(Find_ID(Nugget));
-	return gold_count;
-}
-

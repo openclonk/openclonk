@@ -47,6 +47,6 @@ public func Intro_3()
 public func Intro_Stop()
 {
 	// Reset player zoom.
-	SetPlayerZoomByViewRange(NO_OWNER, 400, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(NO_OWNER, LandscapeWidth(), nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

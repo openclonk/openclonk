@@ -308,7 +308,7 @@ public func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4
 	return a * c >= 0 && !(a * a / (c * c + 1)) && b * c >= 0 && !(b * b/(c * c + 1));
 }
 
-// Draws some material inside an island.
+// Draws some material inside an existing mask.
 public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
 {
 	if (!speck_size)

@@ -98,9 +98,12 @@ public func DrawMaterials(proplist rect, proplist surface)
 	Draw("Earth-earth_topsoil", rnd_border);
 
 	return;
-} 
+}
 
-// Draws some material inside an island.
+
+/*-- Helper Functions --*/ 
+
+// Draws some material inside an existing mask.
 public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
 {
 	if (!speck_size)
@@ -111,7 +114,5 @@ public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int rat
 	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size, Hgt = speck_size};
 	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
 	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	Draw(mat, algo);
-	
-	return;
+	return Draw(mat, algo);
 }
