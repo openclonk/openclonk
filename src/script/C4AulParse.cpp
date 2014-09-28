@@ -1324,14 +1324,12 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			{
 				Parse_Local();
 				Match(ATT_SCOLON);
-				break;
 			}
 			// check for variable definition (static)
 			else if (SEqual(Idtf, C4AUL_GlobalNamed))
 			{
 				Parse_Static();
 				Match(ATT_SCOLON);
-				break;
 			}
 			else
 				Parse_Function();
@@ -1431,7 +1429,6 @@ void C4AulParse::Parse_Function()
 	}
 	Shift();
 	Parse_FuncBody();
-	Shift();
 }
 
 void C4AulParse::Parse_FuncBody()
@@ -1525,6 +1522,7 @@ void C4AulParse::Parse_FuncBody()
 	AddBCC(AB_EOFN);
 	// Do not blame this function for script errors between functions
 	Fn = 0;
+	Shift();
 }
 
 void C4AulParse::Parse_Block()
@@ -1933,6 +1931,7 @@ C4Value C4AulParse::Parse_ConstPropList(C4PropListStatic * parent, C4String * Na
 	}
 	if (Type == PARSER)
 		p->Freeze();
+	Shift();
 	return C4VPropList(p);
 }
 
@@ -2658,17 +2657,11 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	C4Value r;
 	switch (TokenType)
 	{
-	case ATT_INT: r.SetInt(cInt); break;
-	case ATT_STRING: r.SetString(cStr); break; // increases ref count of C4String in cStr
+	case ATT_INT: r.SetInt(cInt); Shift(); break;
+	case ATT_STRING: r.SetString(cStr); Shift(); break; // increases ref count of C4String in cStr
 	case ATT_IDTF:
 		// identifier is only OK if it's another constant
-		if (SEqual(Idtf, C4AUL_True))
-			r.SetBool(true);
-		else if (SEqual(Idtf, C4AUL_False))
-			r.SetBool(false);
-		else if (SEqual(Idtf, C4AUL_Nil))
-			r.Set0();
-		else if (SEqual(Idtf, C4AUL_New))
+		if (SEqual(Idtf, C4AUL_New))
 			r = Parse_ConstPropList(parent, Name);
 		else if (SEqual(Idtf, C4AUL_Func))
 		{
@@ -2694,11 +2687,21 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			Shift();
 			Parse_FuncBody();
 		}
-		else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
-			Host->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
-		else if (!Engine->GetGlobalConstant(Idtf, &r))
-			if (Type == PARSER)
-				UnexpectedToken("constant value");
+		else
+		{
+			if (SEqual(Idtf, C4AUL_True))
+				r.SetBool(true);
+			else if (SEqual(Idtf, C4AUL_False))
+				r.SetBool(false);
+			else if (SEqual(Idtf, C4AUL_Nil))
+				r.Set0();
+			else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
+				Host->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
+			else if (!Engine->GetGlobalConstant(Idtf, &r))
+				if (Type == PARSER)
+					UnexpectedToken("constant value");
+			Shift();
+		}
 		break;
 	case ATT_BOPEN2:
 		{
@@ -2745,6 +2748,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				}
 			}
 			while (!fDone);
+			Shift();
 			break;
 		}
 	case ATT_BLOPEN:
@@ -2759,7 +2763,9 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				Shift();
 				if (TokenType == ATT_INT)
 				{
-					r.SetInt(cInt); break;
+					r.SetInt(cInt);
+					Shift();
+					break;
 				}
 			}
 			if (SEqual(op->Identifier, "-"))
@@ -2767,7 +2773,9 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				Shift();
 				if (TokenType == ATT_INT)
 				{
-					r.SetInt(-cInt); break;
+					r.SetInt(-cInt);
+					Shift();
+					break;
 				}
 			}
 		}
@@ -2775,7 +2783,6 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	default:
 		UnexpectedToken("constant value");
 	}
-	Shift();
 	while (TokenType == ATT_DOT)
 	{
 		Shift();
