@@ -36,8 +36,8 @@ protected func InitializeMap(proplist map)
 	
 	// Draw the gem veins including it being flooded at the bottom of the map.
 	// This takes up the remaining landscape pixels, which depends on the map size.
-    DrawGemVeins(map, 60 + 20 * SCENPAR_MapSize);
-	
+    DrawGemVeins(map, 60 + 20 * SCENPAR_MapSize, SCENPAR_Difficulty);
+    
 	// Return true to tell the engine a map has been successfully created.
 	return true;
 }
@@ -67,9 +67,9 @@ public func DrawCavern(proplist map)
     cavern = {Algo = MAPALGO_And, Op = [cavern, map_top]};
     map->Draw("Tunnel", cavern);
     map->DrawMaterial("Tunnel-brickback", cavern, 5, 32);
-    map->DrawMaterial("Sky", cavern, 5, 16);
-    map->DrawMaterial("Sky", cavern, 4, 16);
-    map->DrawMaterial("Sky", cavern, 3, 16);
+    map->DrawMaterial("Sky", cavern, 5, 20);
+    map->DrawMaterial("Sky", cavern, 4, 20);
+    map->DrawMaterial("Sky", cavern, 3, 20);
     var cavern_ground = {Algo = MAPALGO_Border, Bottom = -2, Op = cavern};
     map->DrawMaterial("Brick", cavern_ground, 3, 80);
 
@@ -141,7 +141,7 @@ public func DrawMiddle(proplist map, int size)
 }
 
 // Draws the gem veins including it being flooded at the bottom of the map.
-public func DrawGemVeins(proplist map, int size)
+public func DrawGemVeins(proplist map, int size, int difficulty)
 {
     var wdt = map.Wdt;
     var hgt = map.Hgt;
@@ -180,8 +180,8 @@ public func DrawGemVeins(proplist map, int size)
 		cnt++;
 	}
 	
-	// Replace the tunnels with water up to a certain level.
-	var water_level = size - 4;
+	// Replace the tunnels with water up to a certain level, depends on difficulty.
+	var water_level = size - 8 * (3 - difficulty);
 	var tunnels = Duplicate("Tunnel");
 	var tunnels_algo = {Algo = MAPALGO_Layer, Layer = tunnels};
 	tunnels_algo = {Algo = MAPALGO_And, Op = [tunnels_algo, {Algo = MAPALGO_Rect, X = 0, Y = hgt - water_level, Wdt = wdt, Hgt = water_level}]}; 

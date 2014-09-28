@@ -78,8 +78,7 @@ protected func InitializePlayer(int plr)
 	{
 		StartSequence("Intro", 0);
 		intro_init = true;
-	}
-	
+	}	
 	return;
 }
 
@@ -129,9 +128,29 @@ private func InitEnvironment(int difficulty)
 	SetSkyParallax(1, 20, 20);
 	
 	// Some earthquakes if difficulty prescribes it.
+	if (difficulty >= 2)
+		Earthquake->SetChance(4 * (difficulty - 1));
+		
+	// On insane difficulty the water level keeps rising.
 	if (difficulty >= 3)
-		Earthquake->SetChance(6);
+		AddEffect("RisingWater", nil, 100, 1);
 	return;
+}
+
+global func FxRisingWaterTimer(object target, proplist effect)
+{
+	// Insert pixel on the water surface if there is tunnel above.
+	for (var x = Random(120); x < LandscapeWidth(); x += RandomX(80, 120))
+	{
+		// Find first tunnel from the bottom.
+		var y = LandscapeHeight();
+		while (GBackSemiSolid(x, y) && y > 0)
+			y -= 1;
+		// Check if there is liquid below the tunnel.
+		if (GBackLiquid(x, y + 2))
+			InsertMaterial(Material("Water"), x, y + 4);
+	}	
+	return FX_OK;
 }
 
 private func InitVegetation(int map_size)
@@ -177,12 +196,12 @@ private func InitAnimals(int map_size, int difficulty)
 {
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
-
-	// Place some fishes and piranhas if difficulty prescribes it.
+	
+	// Place some fishes and piranhas as difficulty prescribes it.
 	var place_rect = Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
-	Fish->Place(10 + 8 * map_size, place_rect);
-	if (difficulty >= 3)
-		Piranha->Place(4 + 2 * map_size, place_rect);
+	var fish_count = 10 + 10 * map_size;
+	Fish->Place(fish_count * (3 - difficulty), place_rect);
+	Piranha->Place(fish_count * (difficulty - 1), place_rect);
 	return;
 }
 
