@@ -37,11 +37,14 @@ static GQuark mape_mapgen_error_quark()
 }
 
 static void mape_mapgen_read_color(guint8* dest,
+                                   MapeMaterialMap* material_map,
                                    MapeTextureMap* texture_map,
                                    unsigned int matnum)
 {
   const gchar* texture_name;
+  const gchar* material_name;
   const gchar* first_tex_separator;
+  const MapeMaterial* material;
   gchar* own_texture_name;
   guint32 color;
 
@@ -59,19 +62,12 @@ static void mape_mapgen_read_color(guint8* dest,
       matnum
     );
 
-    if(!texture_name)
-    {
-      /* Texture not found, make the pixel black */
-      dest[matnum * 4 + 1] = 0;
-      dest[matnum * 4 + 2] = 0;
-      dest[matnum * 4 + 3] = 0;
-    }
-    else
+    own_texture_name = NULL;
+    if(texture_name != NULL)
     {
       /* When the texture is animated, the texture name consists of more than
        * one texture, separated with a '-' character. In this case, we simply
        * use the first one for display. */
-      own_texture_name = NULL;
       first_tex_separator = strchr(texture_name, '-');
       if(first_tex_separator != NULL)
       {
@@ -83,16 +79,52 @@ static void mape_mapgen_read_color(guint8* dest,
         texture_name = own_texture_name;
       }
 
+      /* Make sure the texture exists */
+      if(!mape_texture_map_lookup_texture(texture_map, texture_name))
+      {
+        material_name = mape_texture_map_get_material_name_from_mapping(
+          texture_map,
+          matnum
+        );
+
+        material = mape_material_map_get_material_by_name(
+          material_map,
+          material_name
+        );
+
+        /* It can happen that the material does not exist; this happens when
+         * a material-texture specification with texture set and invalid
+         * material occurs, such as "E-rough". In this case we display sky,
+         * since this is what happens when the texture specification is
+         * omitted (in which case no entry in the texmap is created, and
+         * matnum=0). */
+        if(!material)
+        {
+          dest[matnum * 4 + 1] = 100;
+          dest[matnum * 4 + 2] = 100;
+          dest[matnum * 4 + 3] = 255;
+          texture_name = NULL;
+        }
+        else
+        {
+          texture_name = mape_material_get_texture_overlay(material);
+        }
+      }
+    }
+
+    if(texture_name != NULL)
+    {
       color = mape_texture_map_get_average_texture_color(
         texture_map,
         texture_name
       );
-      g_free(own_texture_name);
 
       dest[matnum * 4 + 1] = (color      ) & 0xff;
       dest[matnum * 4 + 2] = (color >>  8) & 0xff;
       dest[matnum * 4 + 3] = (color >> 16) & 0xff;
     }
+
+    g_free(own_texture_name);
   }
 }
 
@@ -302,6 +334,7 @@ mape_mapgen_render(const gchar* filename,
       {
         mape_mapgen_read_color(
           matclrs,
+          material_map,
           texture_map,
           matnum
         );
