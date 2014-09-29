@@ -17,7 +17,9 @@ protected func Initialize()
 	
 	// Goal: transport the cannon to the top of the chine.
 	var cannon = CreateObject(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
-	cannon->CreateContents(PowderKeg);
+	var keg = cannon->CreateContents(PowderKeg);
+	// Infinite ammo for this cannon.
+	keg->SetPowderCount(nil);
 	var cannon_goal = CreateObject(Goal_Script);
 	cannon_goal.Name = "$GoalName$";
 	cannon_goal.Description = "$GoalDesc$";
@@ -38,6 +40,8 @@ protected func OnGoalsFulfilled()
 	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
+
+public func UpdatePicture() { Log("bla"); }
 
 
 /*-- Player Initialization --*/

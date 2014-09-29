@@ -8,7 +8,6 @@
 #include Library_CarryHeavy
 
 local count;
-local oldcount;
 
 public func GetCarryTransform(clonk)
 {
@@ -26,47 +25,61 @@ protected func Initialize()
 
 protected func Construction()
 {
-	oldcount = count;
 	count = 12;
-	AddEffect("Update",this,1,1,this);
+	var effect = AddEffect("Update",this,1,1,this);
+	effect.oldcount = count;
 }
 
 protected func MaxContentsCount() {	return 12;	}
 
-func PowderCount()
+public func GetPowderCount()
 {
 	return count;
 }
 
-func SetPowderCount(int newcount)
+public func SetPowderCount(newcount)
 {
 	count = newcount;
+	return;
+}
+
+public func DoPowderCount(int change)
+{
+	if (count == nil)
+		return;
+	return SetPowderCount(GetPowderCount() + change);
 }
 
 public func FxUpdateTimer(object target, effect, int timer)
 {
-	if(count != oldcount)
+	if(count != effect.oldcount)
 		UpdatePicture();
 	if(count == 0)
 	{
 		ChangeDef(Barrel);
 		return -1;
 	}
-	oldcount = count;
+	effect.oldcount = count;
 	return 1;
 }
 
-private func UpdatePicture()
+public func UpdatePicture()
 {
-	//modified script from Stackable.ocd
-	var one = count % 10;
-	var ten = (count / 10) % 10;
-	
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
 	var spacing = 14000;
 	
+	if (count == nil)
+	{
+		SetGraphics(nil, nil, 11);
+		SetGraphics("Inf", Icon_Number, 12, GFXOV_MODE_Picture);
+		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+		return;
+	}
+	
+	var one = count % 10;
+	var ten = (count / 10) % 10;
 	if (ten > 0)
 	{
 		SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
@@ -118,7 +131,7 @@ func Hit()
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	var v = PowderCount();
+	var v = GetPowderCount();
 	if (v != 12) props->AddCall("Powder", this, "SetPowderCount", v);
 	return true;
 }
