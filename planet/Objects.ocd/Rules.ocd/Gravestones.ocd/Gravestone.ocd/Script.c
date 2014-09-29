@@ -19,8 +19,20 @@ public func SetInscription(object dead)
 		grave_inscription = Format("$Epitaph$ %s.", dead->GetName());
 	return;
 }
+
+// Set the inscription message directly.
+public func SetInscriptionMessage(string message)
+{
+	grave_inscription = message;
+	return;
+}
  
 public func IsInteractable() { return true; }
+
+public func GetInteractionMetaInfo(object clonk)
+{
+	return { Description = "$ReadInscription$" };
+}
 
 public func Interact(object clonk)
 {

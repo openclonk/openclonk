@@ -6,6 +6,7 @@ Difficulty=20
 
 [Definitions]
 Definition1=Objects.ocd
+Definition2=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 
 [Player1]
 Crew=Clonk=2
@@ -29,4 +30,3 @@ BottomOpen=2
 Climate=100
 YearSpeed=0
 Wind=1,100,-100,100
- 

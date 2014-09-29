@@ -9,19 +9,16 @@
 #include Library_Map
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_MapSize = 1;
-
 // Called be the engine: draw the complete map here.
 protected func InitializeMap(proplist map)
 {
 	// Retrieve the settings according to the MapSize setting.
 	var map_size;
-	if (SCENOPT_MapSize == 1)
+	if (SCENPAR_MapSize == 1)
 		map_size = [150, 150]; 
-	if (SCENOPT_MapSize == 2)
+	if (SCENPAR_MapSize == 2)
 		map_size = [150, 175];
-	if (SCENOPT_MapSize == 3)
+	if (SCENPAR_MapSize == 3)
 		map_size = [150, 200];
 	
 	// Set the map size.
@@ -86,7 +83,10 @@ public func DrawMountainBorder(proplist surface)
 	return;
 }
 
-// Draws some material inside an island.
+
+/*-- Helper Functions --*/
+
+// Draws some material inside an existing mask.
 public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
 {
 	if (!speck_size)
@@ -97,6 +97,5 @@ public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int rat
 	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size, Hgt = speck_size};
 	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
 	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	Draw(mat, algo);
-	return;
+	return Draw(mat, algo);
 }

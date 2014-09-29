@@ -6,10 +6,8 @@
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 1; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
+// Whether the intro has been initialized.
+static intro_init;
 
 protected func Initialize()
 {
@@ -19,23 +17,30 @@ protected func Initialize()
 	
 	// Goal: Gain Wealth, amount depends on difficulty, though bounded by availability.
 	var gold = GetMaterialCount(Material("Gold")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Gold"));
-	var percentage = 70 + 10 * SCENOPT_Difficulty;
-	var wealth_goal = Min(200 + 200 * SCENOPT_Difficulty, gold * 5 * percentage / 100);
+	var percentage = 70 + 10 * SCENPAR_Difficulty;
+	var wealth_goal = Min(200 + 200 * SCENPAR_Difficulty, gold * 5 * percentage / 100);
 	var goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(wealth_goal);
 	
 	// Second goal: Construct golden statue, amount depends on difficulty.
-	var statue_cnt = SCENOPT_Difficulty;
+	var statue_cnt = SCENPAR_Difficulty;
 	goal = CreateObject(Goal_Construction);
 	goal->AddConstruction(Idol, statue_cnt);
 	
 	// Initialize different parts of the scenario.
 	InitEnvironment();
-	InitVegetation();
-	InitAnimals();
-	InitMaterial(SCENOPT_Material);
+	InitVegetation(SCENPAR_MapSize);
+	InitAnimals(SCENPAR_MapSize);
+	InitMaterial(4 - SCENPAR_Difficulty);
 	
 	return;
+}
+
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
 }
 
 
@@ -47,8 +52,8 @@ protected func InitializePlayer(int plr)
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
-		var x = 250 + Random(100);
-		crew->SetPosition(x , FindHeight(x) - 20);
+		var x = 80 + Random(40);
+		crew->SetPosition(x, FindHeight(x) - 20);
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can chop.
 		if (index == 0)
@@ -58,6 +63,10 @@ protected func InitializePlayer(int plr)
 		index++;
 	}
 	
+	// Harsh zoom range.
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
+	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [Idol]);
@@ -65,11 +74,13 @@ protected func InitializePlayer(int plr)
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
-		
-	// Claim ownership of structures, last player who joins owns all the main island flags.
-	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))
-		structure->SetOwner(plr);
 	
+	// Initialize the intro sequence if not yet started.
+	if (!intro_init)
+	{
+		StartSequence("Intro", 0);
+		intro_init = true;
+	}
 	return;
 }
 
@@ -92,7 +103,7 @@ private func InitEnvironment()
 	return;
 }
 
-private func InitVegetation()
+private func InitVegetation(int map_size)
 {
 	// Place some trees in a forest shape.
 	PlaceForest([Tree_Coniferous], 0, LandscapeHeight() / 2 + 50, nil, true);
@@ -101,17 +112,17 @@ private func InitVegetation()
 	PlaceGrass(100);
 	
 	// Some objects in the earth.	
-	PlaceObjects(Rock, 25 + 10 * SCENOPT_MapSize + Random(10),"Earth");
-	PlaceObjects(Firestone, 20 + 10 * SCENOPT_MapSize + Random(5), "Earth");
-	PlaceObjects(Loam, 20 + 10 * SCENOPT_MapSize + Random(5), "Earth");
+	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
+	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
+	PlaceObjects(Loam, 20 + 10 * map_size + Random(5), "Earth");
 
 	return;
 }
 
-private func InitAnimals()
+private func InitAnimals(int map_size)
 {
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 10 + 5 * SCENOPT_MapSize; i++)
+	for (var i = 0; i < 10 + 5 * map_size; i++)
 		PlaceAnimal(Butterfly);
 	return;
 }
@@ -125,39 +136,28 @@ private func InitMaterial(int amount)
 	// For medium amount of materials provide a lorry with resources.	
 	if (amount >= 2)
 	{
-		var x = 200 + Random(200);
+		var x = 160 + Random(40);
 		var lorry = CreateObject(Lorry, x, FindHeight(x) - 20);
-		lorry->CreateContents(Wood, 10);
-		lorry->CreateContents(Metal, 6);
-		lorry->CreateContents(Rock, 6);
+		lorry->CreateContents(Wood, 6);
+		lorry->CreateContents(Metal, 4);
+		lorry->CreateContents(Rock, 4);
 		lorry->CreateContents(Dynamite, 4);
 		lorry->CreateContents(Pickaxe);
-	}
 
-	// For large amount of materials provide some buildings as well.
-	if (amount >= 3)
-	{
-		// Build an elevator, flag and windmill.
-		var x = 250 + Random(100);
-		CreateObject(Flagpole, x, FindHeight(x));
-		
-		var nx = x - 35 - Random(30);
-		CreateObject(WindGenerator, nx, FindHeight(nx));
-		
-		var nx = x + 35 + Random(30);
-		CreateObject(Elevator, nx, FindHeight(nx));
-		
-		// Remove some trees at the location of the structures.
-		for (var tree in FindObjects(Find_Func("IsTree"), Find_InRect(220, 0, 160, LandscapeHeight())))
-			if (!!Random(3))
-				tree->RemoveObject();		
+		// For large amount of materials add more explosives into the lorry
+		if (amount >= 3)
+		{
+			lorry->CreateContents(Wood, 6);
+			lorry->CreateContents(Metal, 4);
+			lorry->CreateContents(Rock, 4);
+			lorry->CreateContents(DynamiteBox, 2);
+		}
 	}
-
 	return;
 }
 
 
-/*-- Some helper functions --*/
+/*-- Helper functions --*/
 
 global func TestGoldCount()
 {

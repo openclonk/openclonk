@@ -72,12 +72,12 @@ if(USE_GCC_STD_0X)
 	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 endif()
 
-# Convert the OC_CXX_FLAGS list to a CMAKE_REQUIRED_FLAGS string
+# Convert the OC_CXX_FLAGS list to a CMAKE_CXX_FLAGS string
 foreach(FLAG ${OC_CXX_FLAGS})
 	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
 endforeach()
 
-set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+set(CMAKE_CXX_FLAGS ${OC_REQUIRED_FLAGS})
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
@@ -437,6 +437,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4MusicSystem.h
 	src/platform/C4SoundLoaders.cpp
 	src/platform/C4SoundLoaders.h
+	src/platform/C4SoundIncludes.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
 	src/platform/C4TimeMilliseconds.cpp 
@@ -458,6 +459,8 @@ set(OC_CLONK_SOURCES
 	src/player/C4PlayerList.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
+	src/player/C4ScenarioParameters.cpp
+	src/player/C4ScenarioParameters.h
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
 	thirdparty/timsort/sort.h
@@ -1111,7 +1114,7 @@ if(UNIX AND NOT APPLE)
 	endif()
 endif()
 set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+#set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
@@ -1316,7 +1319,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to

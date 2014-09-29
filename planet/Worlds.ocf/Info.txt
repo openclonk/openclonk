@@ -13,3 +13,56 @@ Settings which come to mind are: map size, material available and difficulty of 
 implement these options with a static const set to the standard value, you'd prefer to be played.
 
 If you want your scenario in this folder please add it or contact the maintainer in IRC or the forum.
+
+[Scenarios]
+Below is the full list of scenarios with a short description and difficulty and estimate playing time.
+
+[Gold Rush]
+Difficulty: Easy (10)
+Duration: 20 - 40 minutes
+Description: Easy scenario for new players, in a small and hospitable landscape players have to mine gold.
+
+[Iron Peak]
+Difficulty: Easy (20)
+Duration: 30 - 60 minutes
+Description: Icy mountain on which the players have to expand a settlement and produce metal. 
+
+[Flooded Veins]
+Difficulty: Easy (30)
+Duration: 40 - 80 minutes
+Description: Flooded caves present a real challenge for this gem mining expedition.
+
+[Chine]
+Difficulty: Medium(40)
+Duration: 60 - 90 minutes
+Description: Players have to transport a cannon up a chine carved out by a waterfall.
+
+[Conquest of Krakatoa]
+Difficulty: Medium (60)
+Duration: 60 - 100 minutes
+Description: A large volcano needs to be conquered and gold needs to be extracted from its core.
+
+[Gem Grabbers]
+Difficulty: Hard (80)
+Duration: 40 - 80 minutes
+Description: Strange gem stalactites are hanging from sky islands, the player needs to mine them.
+
+[Acid Goldmine]
+Difficulty: Expert(100)
+Duration: 40 - 80 minutes
+Description: Acid raid and volcanos enclose an area of gold: extreme mining guaranteed.
+
+[Spiraling Space]
+Difficulty: Insane(120)
+Duration: 4 - 8 hours
+Description: A spiraling world filled with tough challenges and dangerous barriers, players need to escape.
+
+[Open Todos]
+* Add additional decoration to all worlds.
+
+* Translate Gold Rush into German.
+
+* Translate Iron Peak into German.
+* Implement rock fall and blizzards for Iron Peak.
+
+* Translate Flooded Veins into German.

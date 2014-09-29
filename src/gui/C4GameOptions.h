@@ -20,72 +20,6 @@
 
 #include "C4Gui.h"
 
-class C4GameOptionsList;
-
-// scenario-defined game options (2do)
-class C4GameOptions
-{
-public:
-	// base class for an option
-	class Option
-	{
-	private:
-		Option *pNext; // singly linked list maintained by C4GameOptions class
-		friend class C4GameOptions;
-
-	public:
-		Option() : pNext(NULL) {}
-		virtual ~Option() {}
-
-		static Option *CreateOptionByTypeName(const char *szTypeName);
-		virtual void CompileFunc(StdCompiler *pComp) = 0;
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer) = 0;
-	};
-
-	// option of enumeration type
-	class OptionEnum : public Option
-	{
-	public:
-		// element of the enumeration
-		struct Element
-		{
-			StdCopyStrBuf Name;
-			int32_t id;
-
-			Element *pNext; // singly linked list maintained by OptionEnum class
-
-			Element() : Name(), id(0), pNext(NULL) {}
-			void CompileFunc(StdCompiler *pComp);
-		};
-
-	private:
-		Element *pFirstElement;
-
-	public:
-		OptionEnum() : pFirstElement(NULL) {}
-		virtual ~OptionEnum() { Clear(); }
-
-		void Clear();
-		virtual void CompileFunc(StdCompiler *pComp);
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer);
-	};
-
-private:
-	Option *pFirstOption; // linked list of options
-
-public:
-	C4GameOptions() : pFirstOption(NULL) {}
-	~C4GameOptions() { Clear(); }
-
-	void Clear();
-
-	void CompileFunc(StdCompiler *pComp);
-};
-
 // options dialog: created as listbox inside another dialog
 // used to configure some standard runtime options, as well as custom game options
 class C4GameOptionsList : public C4GUI::ListBox, private C4ApplicationSec1Timer
@@ -98,6 +32,7 @@ private:
 	{
 	protected:
 		typedef C4GUI::Control BaseClass;
+		class C4GameOptionsList *pForDlg;
 
 		// primary subcomponent: forward focus to this element
 		C4GUI::Control *pPrimarySubcomponent;
@@ -134,6 +69,23 @@ private:
 		bool OnDropdownSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 		{ DoDropdownSelChange(idNewSelection); Update(); return true; }
 	};
+
+	// drop down list to specify a custom scenario parameter
+	class OptionScenarioParameter : public OptionDropdown
+	{
+		const class C4ScenarioParameterDef *ParameterDef;
+		int32_t LastValue; bool LastValueValid;
+
+	public:
+		OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def);
+
+	protected:
+		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
+		virtual void DoDropdownSelChange(int32_t idNewSelection);
+
+		virtual void Update(); // update data to currently set option
+	};
+
 
 	// drop down list to specify central/decentral control mode
 	class OptionControlMode : public OptionDropdown
@@ -201,25 +153,41 @@ private:
 	};
 
 public:
-	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool fRuntime);
+	enum C4GameOptionsListSource
+	{
+		GOLS_PreGame,
+		GOLS_Lobby,
+		GOLS_Runtime
+	};
+
+	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=NULL, class C4ScenarioParameters *params=NULL);
 	~C4GameOptionsList() { Deactivate(); }
 
 private:
-	bool fRuntime; // set for runtime options dialog - does not provide pre-game options such as team colors
+	C4GameOptionsListSource source; // where to draw options from. e.g. lobby options such as team colors aren't presented at run-time
+	class C4ScenarioParameterDefs *param_defs; // where to pull parameters and parameter definitions from
+	class C4ScenarioParameters *params;
 
 	void InitOptions(); // creates option selection components
+	void ClearOptions(); // remove all option components
 
 public:
 	// update all option flags by current game state
 	void Update();
 	void OnSec1Timer() { Update(); }
 
+	// update to new parameter set. recreates option fields. set parameters to NULL for no options
+	void SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params);
+
 	// activate/deactivate periodic updates
 	void Activate();
 	void Deactivate();
 
 	// config
-	bool IsTabular() const { return fRuntime; } // wide runtime dialog allows tabular layout
-	bool IsRuntime() const { return fRuntime; }
+	bool IsRuntime() const { return source==GOLS_Runtime; }
+	bool IsTabular() const { return IsRuntime() || IsPreGame(); } // low lobby space doesn't allow tabular layout
+	bool IsPreGame() const { return source==GOLS_PreGame; }
+
+	C4ScenarioParameters *GetParameters() { return params; } // used by children
 };
 #endif //INC_C4GameOptions

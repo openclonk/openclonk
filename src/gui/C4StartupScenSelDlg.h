@@ -21,6 +21,7 @@
 #include "C4Startup.h"
 #include "C4Scenario.h"
 #include "C4Folder.h"
+#include "C4ScenarioParameters.h"
 
 #include <list>
 #include <string>
@@ -36,7 +37,8 @@ const int32_t C4StartupScenSel_DefaultIcon_Scenario  = 14,
               C4StartupScenSel_TitlePictureWdt       = 200,
               C4StartupScenSel_TitlePictureHgt       = 150,
               C4StartupScenSel_TitlePicturePadding   = 10,
-              C4StartupScenSel_TitleOverlayMargin    = 10; // number of pixels to each side of title overlay picture
+              C4StartupScenSel_TitleOverlayMargin    = 10, // number of pixels to each side of title overlay picture
+              C4StartupScenSel_MaxAchievements       = 3; // maximum number of achievements shown next to entry
 
 // a list of loaded scenarios
 class C4ScenarioListLoader
@@ -47,6 +49,7 @@ public:
 	class Entry
 	{
 	protected:
+		class C4ScenarioListLoader *pLoader;
 		Entry *pNext;
 		class Folder *pParent;
 
@@ -61,7 +64,7 @@ public:
 		int iFolderIndex;
 
 	public:
-		Entry(class Folder *pParent);
+		Entry(class C4ScenarioListLoader *pLoader, class Folder *pParent);
 		virtual ~Entry(); // dtor: unlink from tree
 
 		bool Load(C4Group *pFromGrp, const StdStrBuf *psFilename, bool fLoadEx); // load as child if pFromGrp, else directly from filename
@@ -83,8 +86,9 @@ public:
 		Entry *GetNext() const { return pNext; }
 		class Folder *GetParent() const { return pParent; }
 		virtual StdStrBuf GetTypeName() = 0;
+		virtual bool GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description) { return false; } // return true and fill output parameters if player got the indexed achievement
 
-		static Entry *CreateEntryForFile(const StdStrBuf &sFilename, Folder *pParent); // create correct entry type based on file extension
+		static Entry *CreateEntryForFile(const StdStrBuf &sFilename, C4ScenarioListLoader *pLoader, Folder *pParent); // create correct entry type based on file extension
 
 		virtual bool CanOpen(StdStrBuf &sError) { return true; } // whether item can be started/opened (e.g. mission access, unregistered)
 		virtual bool IsGrayed() { return false; } // additional condition for graying out - notice unreg folders are grayed but can still be opened
@@ -97,6 +101,9 @@ public:
 		virtual bool SetTitleInGroup(C4Group &rGrp, const char *szNewTitle);
 		bool RenameTo(const char *szNewName); // change name+filename
 		virtual bool IsScenario() { return false; }
+
+		virtual C4ScenarioParameterDefs *GetParameterDefs() { return NULL; }
+		virtual C4ScenarioParameters *GetParameters() { return NULL; }
 	};
 
 	// a loaded scenario to be started
@@ -104,11 +111,16 @@ public:
 	{
 	private:
 		C4Scenario C4S;
+		C4ScenarioParameterDefs ParameterDefs;
+		C4ScenarioParameters Parameters; // each entry caches its parameters set by the user
+		C4FacetSurface fctAchievements[C4StartupScenSel_MaxAchievements];
+		StdCopyStrBuf sAchievementDescriptions[C4StartupScenSel_MaxAchievements];
+		int32_t nAchievements;
 		bool fNoMissionAccess;
 		int32_t iMinPlrCount;
 
 	public:
-		Scenario(class Folder *pParent) : Entry(pParent), fNoMissionAccess(false), iMinPlrCount(0) {}
+		Scenario(class C4ScenarioListLoader *pLoader, class Folder *pParent) : Entry(pLoader, pParent), fNoMissionAccess(false), iMinPlrCount(0), nAchievements(0) {}
 		virtual ~Scenario() {}
 
 		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // do fallbacks for title and icon; check whether scenario is valid
@@ -121,10 +133,14 @@ public:
 		virtual StdStrBuf GetOpenText(); // get open button text
 		virtual StdStrBuf GetOpenTooltip();
 		const C4Scenario &GetC4S() const { return C4S; } // get scenario core
+		virtual bool GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description); // return true and fill output parameters if player got the indexed achievement
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
 
 		virtual const char *GetDefaultExtension() { return "ocs"; }
+
+		virtual C4ScenarioParameterDefs *GetParameterDefs() { return &ParameterDefs; }
+		virtual C4ScenarioParameters *GetParameters() { return &Parameters; }
 
 		virtual bool IsScenario() { return true; }
 	};
@@ -140,7 +156,7 @@ public:
 		friend class Entry;
 
 	public:
-		Folder(Folder *pParent) : Entry(pParent), fContentsLoaded(false), pFirst(NULL), pMapData(NULL) {}
+		Folder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Entry(pLoader, pParent), fContentsLoaded(false), pFirst(NULL), pMapData(NULL) {}
 		virtual ~Folder();
 
 		virtual bool LoadCustomPre(C4Group &rGrp); // load folder core
@@ -171,7 +187,7 @@ public:
 	class SubFolder : public Folder
 	{
 	public:
-		SubFolder(Folder *pParent) : Folder(pParent) {}
+		SubFolder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Folder(pLoader, pParent) {}
 		virtual ~SubFolder() {}
 
 		virtual const char *GetDefaultExtension() { return "ocf"; }
@@ -187,7 +203,7 @@ public:
 	class RegularFolder : public Folder
 	{
 	public:
-		RegularFolder(Folder *pParent) : Folder(pParent) {}
+		RegularFolder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Folder(pLoader, pParent) {}
 		virtual ~RegularFolder();
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_DIRECTORY"), true); }
@@ -207,9 +223,10 @@ private:
 	Folder *pCurrFolder; // scenario list in working directory
 	int32_t iLoading, iProgress, iMaxProgress;
 	bool fAbortThis, fAbortPrevious; // activity state
+	const C4ScenarioParameters &Achievements;
 
 public:
-	C4ScenarioListLoader();
+	C4ScenarioListLoader(const C4ScenarioParameters &Achievements);
 	~C4ScenarioListLoader();
 
 private:
@@ -235,6 +252,8 @@ public:
 	int32_t GetProgress() const { return iProgress; }
 	int32_t GetMaxProgress() const { return iMaxProgress; }
 	int32_t GetProgressPercent() const { return iProgress * 100 / Max<int32_t>(iMaxProgress, 1); }
+
+	const C4ScenarioParameters &GetAchievements() const { return Achievements; }
 };
 
 
@@ -354,6 +373,7 @@ public:
 		// subcomponents
 		C4GUI::Picture *pIcon;       // item icon
 		C4GUI::Label *pNameLabel; // item caption
+		C4GUI::Picture *ppAchievements[C4StartupScenSel_MaxAchievements]; // achievement icons
 		C4ScenarioListLoader::Entry *pScenListEntry; // associated, loaded item info
 
 	public:
@@ -392,6 +412,7 @@ private:
 	C4GUI::ListBox *pScenSelList;        // left page of book: Scenario selection
 	C4GUI::Label *pScenSelProgressLabel; // progress label shown while scenario list is being generated
 	C4GUI::TextWindow *pSelectionInfo;   // used to display the description of the current selection
+	class C4GameOptionsList *pSelectionOptions; // displays custom scenario options for selected item below description
 
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward, *pKeyRename, *pKeyDelete, *pKeyCheat;
 	class C4GameOptionButtons *pGameOptionButtons;
@@ -408,6 +429,9 @@ private:
 	bool fStartNetworkGame;
 
 	C4GUI::RenameEdit *pRenameEdit;
+
+	// achievements of all activated players
+	C4ScenarioParameters Achievements;
 
 public:
 	static C4StartupScenSelDlg *pInstance; // singleton
@@ -447,6 +471,7 @@ private:
 	C4ScenarioListLoader::Entry *GetSelectedEntry();
 	void SetOpenButtonDefaultText();
 	void FocusScenList();
+	void UpdateAchievements();
 
 public:
 	bool StartScenario(C4ScenarioListLoader::Scenario *pStartScen);

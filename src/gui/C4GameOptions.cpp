@@ -21,11 +21,13 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 #include "C4GraphicsResource.h"
+#include "C4GameLobby.h"
+#include "C4Startup.h"
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 
 C4GameOptionsList::Option::Option(C4GameOptionsList *pForDlg)
-		: BaseClass(C4Rect(0,0,0,0)), pPrimarySubcomponent(NULL) { }
+		: BaseClass(C4Rect(0,0,0,0)), pPrimarySubcomponent(NULL), pForDlg(pForDlg) { }
 
 void C4GameOptionsList::Option::InitOption(C4GameOptionsList *pForDlg)
 {
@@ -43,15 +45,24 @@ void C4GameOptionsList::Option::InitOption(C4GameOptionsList *pForDlg)
 C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForDlg, const char *szCaption, bool fReadOnly)
 		: Option(pForDlg)
 {
-	CStdFont &rUseFont = ::GraphicsResource.TextFont;
+	bool fIsPreGame = pForDlg->IsPreGame();
+	CStdFont &rUseFont = fIsPreGame ? C4Startup::Get()->Graphics.BookFont : ::GraphicsResource.TextFont;
+	uint32_t dwFontClr = fIsPreGame ? C4StartupFontClr : 0xffffffff;
 	// get size of caption label
 	bool fTabular = pForDlg->IsTabular();
 	int32_t iCaptWidth, iCaptHeight;
 	if (fTabular)
 	{
-		// tabular layout: Caption label width by largest caption
+		// tabular layout: Caption label width by largest caption on runtime; fixed 1/3rd on startup
 		rUseFont.GetTextExtent(LoadResStr("IDS_NET_RUNTIMEJOIN"), iCaptWidth, iCaptHeight, true);
-		iCaptWidth = iCaptWidth * 5 / 4;
+		if (pForDlg->IsPreGame())
+		{
+			iCaptWidth = pForDlg->GetItemWidth() * 1 / 3;
+		}
+		else
+		{
+			iCaptWidth = iCaptWidth * 5 / 4;
+		}
 	}
 	else
 	{
@@ -65,13 +76,69 @@ C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForD
 	SetBounds(C4Rect(0, 0, pForDlg->GetItemWidth(), (!fTabular) * (iCaptHeight + iVerticalMargin*2) + iVerticalMargin*2 + iSelComboHgt));
 	C4GUI::ComponentAligner ca(GetContainedClientRect(), iHorizontalMargin, iVerticalMargin);
 	// create subcomponents
-	AddElement(pCaption = new C4GUI::Label(FormatString("%s:", szCaption).getData(), fTabular ? ca.GetFromLeft(iCaptWidth, iCaptHeight) : ca.GetFromTop(iCaptHeight), ALeft));
+	AddElement(pCaption = new C4GUI::Label(FormatString("%s:", szCaption).getData(), fTabular ? ca.GetFromLeft(iCaptWidth, iCaptHeight) : ca.GetFromTop(iCaptHeight), ALeft, dwFontClr, &rUseFont, false, false));
 	ca.ExpandLeft(-iComboMargin);
 	AddElement(pPrimarySubcomponent = pDropdownList = new C4GUI::ComboBox(ca.GetAll()));
 	pDropdownList->SetReadOnly(fReadOnly);
 	pDropdownList->SetComboCB(new C4GUI::ComboBox_FillCallback<C4GameOptionsList::OptionDropdown>(this, &C4GameOptionsList::OptionDropdown::OnDropdownFill, &C4GameOptionsList::OptionDropdown::OnDropdownSelChange));
+	if (fIsPreGame)
+	{
+		pDropdownList->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
+		pDropdownList->SetFont(&rUseFont);
+		pDropdownList->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
+	}
 	// final init
 	InitOption(pForDlg);
+}
+
+
+
+// ----------- C4GameOptionsList::OptionScenarioParameter----------------------------------------------------------------
+
+C4GameOptionsList::OptionScenarioParameter::OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def)
+	: C4GameOptionsList::OptionDropdown(pForDlg, parameter_def->GetName(), !pForDlg->IsPreGame() && (!::Control.isCtrlHost() || ::Game.C4S.Head.SaveGame)), ParameterDef(parameter_def), LastValue(0), LastValueValid(false)
+{
+	SetToolTip(parameter_def->GetDescription());
+}
+
+void C4GameOptionsList::OptionScenarioParameter::DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
+{
+	// Fill dropdown menuy with known possible options for this parameter
+	size_t idx=0; const C4ScenarioParameterDef::Option *option;
+	while (option = ParameterDef->GetOptionByIndex(idx++))
+	{
+		pFiller->AddEntry(option->Name.getData(), option->Value);
+	}
+}
+
+void C4GameOptionsList::OptionScenarioParameter::DoDropdownSelChange(int32_t idNewSelection)
+{
+	// runtime change needs to be synchronized
+	if (!pForDlg->IsPreGame())
+	{
+		// change possible?
+		if (!::Control.isCtrlHost()) return;
+		// Then initiate an update of the parameters on all clients
+		C4GameLobby::C4PacketSetScenarioParameter pck(ParameterDef->GetID(), idNewSelection);
+		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_SetScenarioParameter, pck));
+	}
+	// also process on host (and standalone pre-game)
+	pForDlg->GetParameters()->SetValue(ParameterDef->GetID(), idNewSelection, false);
+	if (pForDlg->IsPreGame()) Update();
+}
+
+void C4GameOptionsList::OptionScenarioParameter::Update()
+{
+	// update data to currently set option
+	int32_t val = pForDlg->GetParameters()->GetValueByID(ParameterDef->GetID(), ParameterDef->GetDefault());
+	if (LastValueValid && val == LastValue) return;
+	const C4ScenarioParameterDef::Option *option = ParameterDef->GetOptionByValue(val);
+	if (option)
+		pDropdownList->SetText(option->Name.getData());
+	else
+		pDropdownList->SetText(FormatString("%d", (int)val).getData());
+	LastValueValid = true;
+	LastValue = val;
 }
 
 
@@ -236,9 +303,15 @@ void C4GameOptionsList::OptionTeamColors::Update()
 
 // ----------- C4GameOptionsList -----------------------------------------------------------------------
 
-C4GameOptionsList::C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool fRuntime)
-		: C4GUI::ListBox(rcBounds), fRuntime(fRuntime)
+C4GameOptionsList::C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params)
+	: C4GUI::ListBox(rcBounds), source(source), param_defs(param_defs), params(params)
 {
+	// default parameter defs
+	if (!IsPreGame())
+	{
+		if (!this->param_defs) this->param_defs = &::Game.ScenarioParameterDefs;
+		if (!this->params) this->params = &::Game.Parameters.ScenarioParameters;
+	}
 	// initial option fill
 	InitOptions();
 	if (fActive) Activate();
@@ -246,15 +319,32 @@ C4GameOptionsList::C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool 
 
 void C4GameOptionsList::InitOptions()
 {
-	// creates option selection components
-	new OptionControlMode(this);
-	new OptionControlRate(this);
-	if (::Network.isHost()) new OptionRuntimeJoin(this);
-	if (!IsRuntime())
+	// create options for custom scenario parameters
+	if (param_defs)
 	{
-		if (Game.Teams.HasTeamDistOptions()) new OptionTeamDist(this);
-		if (Game.Teams.IsMultiTeams()) new OptionTeamColors(this);
+		size_t idx = 0; const C4ScenarioParameterDef *def;
+		while (def = param_defs->GetParameterDefByIndex(idx++))
+			if (!def->IsAchievement()) // achievements are displayed in scenario selection. no need to repeat them here
+				new OptionScenarioParameter(this, def);
 	}
+	// create lobby and runtime option selection components
+	if (!IsPreGame())
+	{
+		new OptionControlMode(this);
+		new OptionControlRate(this);
+		if (::Network.isHost()) new OptionRuntimeJoin(this);
+		if (!IsRuntime())
+		{
+			if (Game.Teams.HasTeamDistOptions()) new OptionTeamDist(this);
+			if (Game.Teams.IsMultiTeams()) new OptionTeamColors(this);
+		}
+	}
+}
+
+void C4GameOptionsList::ClearOptions()
+{
+	C4GUI::Element *pFirst;
+	while (pFirst = GetFirst()) delete pFirst;
 }
 
 void C4GameOptionsList::Update()
@@ -277,3 +367,13 @@ void C4GameOptionsList::Deactivate()
 	// release timer if set
 	Application.Remove(this);
 }
+
+void C4GameOptionsList::SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params)
+{
+	// update to new parameter set
+	ClearOptions();
+	this->param_defs = param_defs;
+	this->params = params;
+	InitOptions();
+}
+

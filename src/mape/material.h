@@ -94,11 +94,9 @@ const MapeMaterial*
 mape_material_map_get_material(MapeMaterialMap* map,
                                guint index);
 
-#if 0
 MapeMaterial*
 mape_material_map_get_material_by_name(MapeMaterialMap* map,
                                        const gchar* name);
-#endif
 
 const gchar*
 mape_material_get_name(const MapeMaterial* material);

@@ -547,6 +547,21 @@ int StdCompilerINIRead::NameCount(const char *szName)
 	return iCount;
 }
 
+const char *StdCompilerINIRead::GetNameByIndex(size_t idx) const 
+{
+	// not in virtual naming
+	if (iDepth > iRealDepth || !pName) return 0;
+	// count within current name
+	NameNode *pNode;
+	for (pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
+		// all valid subsections are counted
+		if (pNode->Pos)
+				if (!idx--)
+					return pNode->Name.getData();
+	// index out of range
+	return NULL;
+}
+
 // Various data readers
 void StdCompilerINIRead::DWord(int32_t &rInt)
 {

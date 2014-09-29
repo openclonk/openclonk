@@ -24,6 +24,7 @@
 #include <C4ValueMap.h>
 #include "C4Real.h"
 #include "C4InputValidation.h"
+#include "C4ScenarioParameters.h"
 
 const int32_t C4MaxPhysical = 100000,
                               C4MaxDeathMsg = 75;
@@ -108,6 +109,9 @@ public:
 	int32_t OldPrefControl;
 	int32_t OldPrefControlStyle;
 	int32_t OldPrefAutoContextMenu;
+
+	// achievements indexed by achievement name and scenario
+	C4ScenarioParameters Achievements; 
 public:
 	void Default(C4RankSystem *pRanks=NULL);
 	void Promote(int32_t iRank, C4RankSystem &rRanks);

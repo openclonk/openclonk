@@ -22,6 +22,7 @@
 #include "C4PlayerInfo.h"
 #include "C4LangStringTable.h"
 #include "C4Teams.h"
+#include "C4InfoCore.h"
 
 class C4GameRes
 {
@@ -137,6 +138,9 @@ public:
 	C4PlayerInfoList RestorePlayerInfos;
 	C4TeamList Teams;
 
+	// Custom scenario parameters
+	C4ScenarioParameters ScenarioParameters;
+
 	bool isLeague() const { return !!LeagueAddress.getLength(); }
 	bool doStreaming() const { return !!StreamAddress.getLength(); }
 	const char* getLeague() { return League.getData(); }
@@ -144,7 +148,7 @@ public:
 	void EnforceLeagueRules(class C4Scenario *pScenario);
 
 	void Clear();
-	bool Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames);
+	bool Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames, C4ScenarioParameters *pStartupScenarioParameters);
 	bool InitNetwork(C4Network2ResList *pResList);
 	bool Save(C4Group &hGroup, C4Scenario *pDefault);
 

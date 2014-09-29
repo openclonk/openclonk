@@ -106,6 +106,8 @@ void mape_preferences_from_config(MapePreferences* preferences,
 		config, "map_width", 50, 500, 150);
 	preferences->map_height = mape_preferences_read_ranged_int(
 		config, "map_height", 50, 500, 150);
+	preferences->map_zoom = mape_preferences_read_ranged_int(
+		config, "map_zoom", 20, 500, 100) / 100.;
 }
 
 void mape_preferences_to_config(MapePreferences* preferences,
@@ -133,4 +135,6 @@ void mape_preferences_to_config(MapePreferences* preferences,
 		config, "map_width", preferences->map_width);
 	mape_preferences_write_int(
 		config, "map_height", preferences->map_height);
+	mape_preferences_write_int(
+		config, "map_zoom", (int)(preferences->map_zoom * 100 + 0.5));
 }

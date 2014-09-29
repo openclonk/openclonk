@@ -2,13 +2,14 @@
 Title=DeepSeaMining
 Icon=31
 Version=5,3,0,0
-Difficulty=40
+Difficulty=30
+MissionAccess=S2Crash
 
 [Definitions]
 Definition1=Objects.ocd
 
 [Game]
-Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
+Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;Rule_BaseRespawn=1;
 Goals=Goal_BuildCrystalCommunicator=1;
 ValueOverloads=Ruby=10;Amethyst=10
 
@@ -41,7 +42,7 @@ BaseMaterial=Clonk=25;Bread=25;
 BaseProduction=Clonk=25;Bread=25;
 
 [Landscape]
-Sky=Clouds1
+Sky=Clouds2
 TopOpen=1
 BottomOpen=0
 AutoScanSideOpen=1

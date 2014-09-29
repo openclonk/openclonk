@@ -148,29 +148,29 @@ protected func Death(int killed_by)
 		return;
 	
 	// Some effects on dying.
-	if(gender == 0)
-		Sound("Die");
-	else
-		Sound("FDie");
+	if (!this.silent_death)
+	{
+		if(gender == 0)
+			Sound("Die");
+		else
+			Sound("FDie");
+			
+		DeathAnnounce();
+	}
 	CloseEyes(1);
 	
-	DeathAnnounce();
-	return;
+	return true;
 }
 
-protected func Destruction()
+protected func Destruction(...)
 {
 	_inherited(...);
 	// If the clonk wasn't dead yet, he will be now.
-	if (GetAlive())
-		GameCallEx("OnClonkDeath", this, GetKiller());
-	// If this is the last crewmember, do broadcast.
-	if (GetCrew(GetOwner()) == this)
-	if (GetCrewCount(GetOwner()) == 1)
-		// Only if the player is still alive and not yet elimnated.
-			if (GetPlayerName(GetOwner()))
-				GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
-	return;
+	// Always kill clonks first. This will ensure relaunch scripts, enemy kill counters, etc. are called
+	// even if clonks die in some weird way that causes direct removal
+	// (To prevent a death callback, you can use SetAlive(false); RemoveObject();)
+	if (GetAlive()) { this.silent_death=true; Kill(); }
+	return true;
 }
 
 protected func DeepBreath()

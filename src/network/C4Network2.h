@@ -403,6 +403,9 @@ protected:
 
 public:
 
+	// scenario parameter definitions (so the client can see them in the lobby)
+	C4ScenarioParameterDefs ScenarioParameterDefs;
+
 	// the game parameters
 	C4GameParameters Parameters;
 

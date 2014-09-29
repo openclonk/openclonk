@@ -235,6 +235,7 @@ void C4PropList::Denumerate(C4ValueNumbers * numbers)
 		p = Properties.Next(p);
 	}
 	prototype.Denumerate(numbers);
+	RemoveCyclicPrototypes();
 }
 
 C4PropList::~C4PropList()
@@ -304,11 +305,16 @@ void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			Properties.Remove(&::Strings.P[P_Prototype]);
 		}
 	}
-	for(C4PropList * it = GetPrototype(); it; it = it->GetPrototype())
+}
+
+void C4PropList::RemoveCyclicPrototypes()
+{
+	// clear any cyclic prototype chains
+	// Use prototype.getPropList() instead of GetPrototype() because denumeration might not be completed yet
+	for(C4PropList * it = prototype.getPropList(); it; it = it->prototype.getPropList())
 		if(it == this)
 		{
 			prototype.Set0();
-			pComp->excCorrupt("Cyclic prototype structure");
 		}
 }
 

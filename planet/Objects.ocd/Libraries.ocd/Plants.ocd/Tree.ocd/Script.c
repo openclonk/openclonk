@@ -42,7 +42,7 @@ protected func Damage()
 	}
 	
 	// Max damage reached -> fall down
-	if (GetDamage() > MaxDamage() && IsStanding()) ChopDown();
+	if (GetDamage() > MaxDamage() && IsStanding()) this->ChopDown();
 	_inherited(...);
 }
 

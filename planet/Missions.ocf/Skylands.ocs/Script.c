@@ -72,3 +72,9 @@ func OnPlaneFinished(object plane)
   plane->CreateObject(Plane, 0,0, NO_OWNER);
   plane->RemoveObject();
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

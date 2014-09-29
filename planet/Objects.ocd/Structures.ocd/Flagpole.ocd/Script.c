@@ -102,8 +102,48 @@ func OnOwnerRemoved(int new_owner)
 }
 
 
+/* Neutral banners - used as respawn points only */
+
+func IsNeutral() { return neutral; }
+
+func SetNeutral(bool to_val)
+{
+	// Neutral flagpoles: A bit smaller and different texture. No marker Radius.
+	if (neutral = to_val)
+	{
+		SetMeshMaterial("NeutralFlagBanner",0);
+		//SetMeshMaterial("NeutralFlagPole",1);
+		SetFlagRadius(0);
+		this.MeshTransformation = Trans_Mul(Trans_Scale(700,700,700), Trans_Translate(0,6000,0));
+	}
+	else
+	{
+		SetMeshMaterial("FlagBanner",0);
+		//SetMeshMaterial("SettlementFlagPole",1);
+		SetFlagRadius(this.DefaultFlagRadius);
+		this.MeshTransformation = Trans_Translate(0,4000,0);
+	}
+	return true;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (neutral)
+	{
+		props->Remove("Radius");
+		props->Remove("Color");
+		props->Remove("MeshMaterial");
+		props->AddCall("Neutral", this, "SetNeutral", true);
+	}
+	return true;
+}
+
+
+
 /*-- Properties --*/
 
 local Name = "$Name$";
 local Description = "$Description$";
 local HitPoints = 60;
+local neutral = false;

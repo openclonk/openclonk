@@ -69,6 +69,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 		{ "MenuUp",      CDA_MenuUp      },
 		{ "MenuRight",   CDA_MenuRight   },
 		{ "MenuDown",    CDA_MenuDown    },
+		{ "ObjectMenuTextComplete", CDA_ObjectMenuTextComplete },
 		{ "ObjectMenuOK",    CDA_ObjectMenuOK      },
 		{ "ObjectMenuOKAll", CDA_ObjectMenuOKAll   },
 		{ "ObjectMenuSelect",CDA_ObjectMenuSelect      },
@@ -1205,8 +1206,8 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	case C4PlayerControlDef::CDA_MenuLeft:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuLeft ,0); return true; // navigate
 	case C4PlayerControlDef::CDA_MenuUp:     if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuUp   ,0); return true; // navigate
 	case C4PlayerControlDef::CDA_MenuRight:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
-	case C4PlayerControlDef::CDA_MenuDown:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuDown ,0); return true; // navigate
-
+	case C4PlayerControlDef::CDA_MenuDown:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
+	case C4PlayerControlDef::CDA_ObjectMenuTextComplete:   if (!pCursorMenu || fUp || !pCursorMenu->IsTextProgressing()) return false; pCursorMenu->Control(COM_MenuShowText,0); return true; // fast-foward text display
 	case C4PlayerControlDef::CDA_ObjectMenuOK:     if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnter,0); return true; // ok on item
 	case C4PlayerControlDef::CDA_ObjectMenuOKAll:  if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnterAll,0); return true; // alt ok on item
 	case C4PlayerControlDef::CDA_ObjectMenuSelect: if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuSelect,rKeyExtraData.iStrength); return true; // select an item directly

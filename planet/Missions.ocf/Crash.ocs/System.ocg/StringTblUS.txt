@@ -4,15 +4,42 @@ MsgIntro2=Have a look at that lava lake!
 MsgIntro3=Come on old girl, hang in there...
 MsgIntro4=Uh oh...
 MsgIntro5=Quick! The ejection seats!
+MsgIntro6=Phew, that was close.
+MsgIntro7=What can we do now?
+MsgIntro8=I think I saw the plane crash into the snow on the hill on the other side of the volcano.
+MsgIntro9=The snow is soft. Maybe if you get there, you can still salvage the plane.
+MsgIntro10=I will try my best
 
 # NPC Pilot
-NamePilot=Pilot
 MsgCrashedPlane=So, have you found the plane yet?
 AnsCrashedPlane=No, we're still searching.
+PyritQPlane=Where is the plane?
+PyritAPlane=I think I saw it crash into the snow on the hill on the other side of the volcano.
+PyritQLake=How can I cross the lake
+PyritALake=You probably need some advanced tools. Maybe the villagers can give us something.
+PyritQDone=Nevermind.
 
 # NPC Merchant
-MsgSellPlans=I know some interesting construction plans, which I can share with you for 150 clunkers.
-AnsNoMoney=Then I'll have to mine for gold, I'll be back later.
-AnsBuyPlans=That's a good deal, here you go.
-MsgGivePlans=Thanks, here are the plans for {{Pump}}, {{Pipe}}, {{Catapult}} and {{Cannon}}. But be careful with the pump; it's made of wood and cannot be used to pump lava!
-MsgLeaveVillage=Please leave this quiet village.
+Merchant1=Greetings, strangers from the sky. How can I help you?
+MerchantQPlane=Have you seen our plane?
+MerchantAPlane1=The strange bird? It flew over the turublent volcano and landed on the other side in the snow.
+MerchantAPlane2=Getting there might not be that easy.
+MerchantQLake=Can you help us cross the lake?
+MerchantSellPlans=I know some interesting construction plans, which may help you in this situation. I can share them with you for 150 clunkers.
+MerchantNoMoney=Then I'll have to mine for gold, I'll be back later.
+MerchantBuyPlans=That's a good deal, here you go.
+MerchantGivePlans=Thanks, here are the plans for {{Pump}}, {{Pipe}}, {{Catapult}} and {{Cannon}}.
+MerchantQPump=How do I use the pump?
+MerchantAPump1=Just use two pipes as you're standing in front of the pump. The first pipe becomes the source pipe from which is pumped and the second pipe is the drain.
+MerchantAPump2=Then just throw the source pipe into liquid and the drain pipe to where you want to pump!
+MerchantQCatapult=Why do I need the catapult?
+MerchantACatapult1=A catapult has many uses. You can fling things like pipe ends. If you're daring, you could even try to catapult yourself over the lava lake!
+MerchantACatapult2=That...sounds scary. I like it!
+MerchantQDone=Goodbye.
+
+# Outro
+Outro1=It's done! The plane is back.
+Outro2=Good job. Let's continue our voyage then. We still have a long way ahead of us.
+Outro3=But next time we fly a bit higher, ok?
+Outro4=I'll see what I can do.
+# plane flies up vertically

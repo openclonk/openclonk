@@ -14,10 +14,10 @@ global func CreateMuzzleFlash(int x, int y, int angle, int size)
 	CreateParticle("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
 }
 
-global func Smoke(int x, int y, int level, int color)
+global func Smoke(int x, int y, int level, int color, bool heavy)
 {
 	level = level ?? 10;
-	var particles = Particles_Smoke();
+	var particles = Particles_Smoke(heavy);
 	if (color)
 	{
 		particles.Alpha = PV_Linear((color >> 24) & 0xff, 0);
@@ -56,14 +56,14 @@ global func Particles_Cloud()
 }
 
 
-global func Particles_Smoke()
+global func Particles_Smoke(bool heavy)
 {
 	return
 	{
 		CollisionVertex = 500,
 		OnCollision = PC_Stop(),
-		ForceY = PV_Gravity(-100),
-		ForceX = PV_Wind(200),
+		ForceY = PV_Gravity(-100 + heavy*90),
+		ForceX = PV_Wind(200 - heavy*180),
 		DampingX = 900, DampingY = 900,
 		Alpha = PV_Linear(255, 0),
 		R = 100, G = 100, B = 100,

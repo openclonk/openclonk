@@ -8,6 +8,9 @@
 
 #include Library_Goal
 
+local is_fulfilled = false;
+local is_outro_stated = false;
+
 protected func Initialize()
 {
 	return inherited(...);
@@ -15,6 +18,9 @@ protected func Initialize()
 
 public func IsFulfilled()
 {
+	// already done?
+	if (is_fulfilled || is_outro_stated) return is_fulfilled;
+	// not done yet. do fulfillment check
 	var cabin = FindObject(Find_ID(WoodenCabin));
 	if (!cabin)
 		return false;
@@ -22,9 +28,14 @@ public func IsFulfilled()
 	if (!plane)
 		return false;
 	// Plane has to be brought to the wooden cabin.
-	if (ObjectDistance(plane, cabin) < 80)
-		return true;
-	return false;	
+	if (ObjectDistance(plane, cabin) < 200)
+	{
+		is_outro_stated = true;
+		StartSequence("Outro", 0, this, plane);
+		// wait for end of outro for fulfillment
+		return false;
+	}
+	return false;
 }
 
 public func GetDescription(int plr)
@@ -49,6 +60,12 @@ public func Activate(int byplr)
 public func GetShortDescription(int plr)
 {
 	return "{{Plane}}"; // TODO
+}
+
+public func SetFulfilled()
+{
+	is_fulfilled = true;
+	return true;
 }
 
 /*-- Proplist --*/

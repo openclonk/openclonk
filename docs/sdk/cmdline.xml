@@ -88,6 +88,10 @@
       <dd>
         <text>Only for fullscreen startup menu: Instead of the main menu, one of the submenus is shown directly. Possible values for &lt;<em>Name</em>&gt; are <em>main</em> (Main menu), <em>scen</em> (Scenario selection), <em>netscen</em> (Scenario selection for a new network game), <em>net</em> (Network/Internet game list), <em>options</em> (Options menu) und <em>plrsel</em> (Player selection).</text>
       </dd>
+      <dt id="scenpar">--scenpar=&lt;<em>Parameter=Value</em>&gt;</dt>
+      <dd>
+        <text>Sets the <emlink href="scenario/ParameterDefs.xml">custom scenario parameter</emlink>. E.g. --scenpar=Difficulty=1.</text>
+      </dd>
       <dt id="ocs">*.ocs</dt>
       <dd>
         <text>If a scenario is specified (File extension .ocs), it will be started directly.</text>

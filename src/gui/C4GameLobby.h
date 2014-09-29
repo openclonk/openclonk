@@ -53,6 +53,21 @@ namespace C4GameLobby
 		virtual void CompileFunc(StdCompiler *pComp);
 	};
 
+	class C4PacketSetScenarioParameter : public C4PacketBase
+	{
+	private:
+		StdCopyStrBuf ID;
+		int32_t Value;
+	public:
+		C4PacketSetScenarioParameter(const char *id, int32_t v) : ID(id), Value(v) {} // ctor
+		C4PacketSetScenarioParameter() : Value(0) {} // std ctor
+
+		const char *GetID() const { return ID.getData(); }
+		int32_t GetValue() const { return Value; }
+
+		virtual void CompileFunc(StdCompiler *pComp);
+	};
+
 	// scneario info tab: displays scenario description
 	class ScenDesc : public C4GUI::Window, private C4ApplicationSec1Timer
 	{

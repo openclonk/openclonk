@@ -86,6 +86,7 @@ public:
 	// for whatever reason (suppress warning messages).
 	virtual bool Name(const char *szName)         { return true; }
 	virtual void NameEnd(bool fBreak = false)     { }
+	virtual const char *GetNameByIndex(size_t idx) const { return NULL; }
 
 	// Special: A naming that follows to the currently active naming (on the same level).
 	// Note this will end the current naming, so no additional NameEnd() is needed.
@@ -637,6 +638,7 @@ public:
 	virtual bool Name(const char *szName);
 	virtual void NameEnd(bool fBreak = false);
 	virtual bool FollowName(const char *szName);
+	virtual const char *GetNameByIndex(size_t idx) const;
 
 	// Separators
 	virtual bool Separator(Sep eSep);

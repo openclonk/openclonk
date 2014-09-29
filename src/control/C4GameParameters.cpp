@@ -370,6 +370,8 @@ void C4GameResList::CompileFunc(StdCompiler *pComp)
 	mkPtrAdaptNoNull<C4GameRes>(*pResList);
 }
 
+
+
 // *** C4GameParameters
 
 C4GameParameters::C4GameParameters()
@@ -394,9 +396,10 @@ void C4GameParameters::Clear()
 	PlayerInfos.Clear();
 	RestorePlayerInfos.Clear();
 	Teams.Clear();
+	ScenarioParameters.Clear();
 }
 
-bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames)
+bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames, C4ScenarioParameters *pStartupScenarioParameters)
 {
 	// Clear previous data
 	Clear();
@@ -454,7 +457,10 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 		IsNetworkGame = Game.NetworkActive;
 
 		// Auto frame skip by options
-		AutoFrameSkip = ::Config.Graphics.AutoFrameSkip;
+		AutoFrameSkip = !!::Config.Graphics.AutoFrameSkip;
+
+		// custom parameters from startup
+		if (pStartupScenarioParameters) ScenarioParameters = *pStartupScenarioParameters;
 	}
 
 
@@ -528,6 +534,8 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 	}
 
 	pComp->Value(Clients);
+
+	pComp->Value(mkNamingAdapt(ScenarioParameters, "ScenarioParameters"));
 
 }
 

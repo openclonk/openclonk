@@ -83,10 +83,14 @@ public:
 };
 
 static C4GameParameters GameParameters;
+static C4ScenarioParameterDefs GameScenarioParameterDefs;
+static C4ScenarioParameters GameStartupScenarioParameters;
 static C4RoundResults GameRoundResults;
 
 C4Game::C4Game():
+		ScenarioParameterDefs(GameScenarioParameterDefs),
 		Parameters(GameParameters),
+		StartupScenarioParameters(GameStartupScenarioParameters),
 		Clients(Parameters.Clients),
 		Teams(Parameters.Teams),
 		PlayerInfos(Parameters.PlayerInfos),
@@ -247,9 +251,12 @@ bool C4Game::OpenScenario()
 	// String tables
 	C4Language::LoadComponentHost(&ScenarioLangStringTable, ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
+	// Custom scenario parameter definitions. Load even as network client to get localized option names
+	ScenarioParameterDefs.Load(ScenarioFile, &ScenarioLangStringTable);
+
 	// Load parameters (not as network client, because then team info has already been sent by host)
 	if (!Network.isEnabled() || Network.isHost())
-		if (!Parameters.Load(ScenarioFile, &C4S, GameText.GetData(), &ScenarioLangStringTable, DefinitionFilenames))
+		if (!Parameters.Load(ScenarioFile, &C4S, GameText.GetData(), &ScenarioLangStringTable, DefinitionFilenames, &StartupScenarioParameters))
 			return false;
 
 	SetInitProgress(4);
@@ -578,6 +585,8 @@ void C4Game::Clear()
 	Parameters.Clear();
 	RoundResults.Clear();
 	C4S.Clear();
+	ScenarioParameterDefs.Clear();
+	StartupScenarioParameters.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
 	DeleteObjects(true);
@@ -2103,6 +2112,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
 		PlayerControlDefs.FinalInit();
+
+		// Register constants for scenario options
+		ScenarioParameterDefs.RegisterScriptConstants(Parameters.ScenarioParameters);
 
 		// Now that all controls and assignments are known, resolve user overloads on control assignments
 		if (!InitPlayerControlUserSettings()) return false;

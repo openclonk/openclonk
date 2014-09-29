@@ -506,7 +506,7 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 	C4GUI::ComponentAligner caAll(GetContainedClientRect(), 0,0);
 	C4Rect rcStatus = caAll.GetFromBottom(pUseFont->GetLineHeight());
 	// create game options; max 1/2 of dialog height
-	pGameOptions = new C4GameOptionsList(caAll.GetFromTop(caAll.GetInnerHeight()/2), true, true);
+	pGameOptions = new C4GameOptionsList(caAll.GetFromTop(caAll.GetInnerHeight()/2), true, C4GameOptionsList::GOLS_Runtime);
 	pGameOptions->SetDecoration(false, NULL, true, false);
 	pGameOptions->SetSelectionDiabled();
 	// but resize to actually used height

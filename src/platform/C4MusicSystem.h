@@ -21,11 +21,7 @@
 #define INC_C4MusicSystem
 
 #include <C4Group.h>
-
-#if AUDIO_TK == AUDIO_TK_OPENAL
-#include <al.h>
-#include <alc.h>
-#endif
+#include <C4SoundIncludes.h>
 
 class C4MusicFileInfoNode;
 class C4MusicFile;

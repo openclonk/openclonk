@@ -18,15 +18,9 @@
 #ifndef INC_C4MusicFile
 #define INC_C4MusicFile
 
-#if AUDIO_TK == AUDIO_TK_FMOD
-#include <fmod.h>
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
-#define USE_RWOPS
-#include <SDL_mixer.h>
-#undef USE_RWOPS
-#elif AUDIO_TK == AUDIO_TK_OPENAL
+#include <C4SoundIncludes.h>
 #include <C4SoundLoaders.h>
-#endif
+
 /* Base class */
 
 class C4MusicFile

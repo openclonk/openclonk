@@ -246,6 +246,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"tcpport", required_argument, 0, 't'},
 			{"join", required_argument, 0, 'j'},
 			{"language", required_argument, 0, 'L'},
+			{"scenpar", required_argument, 0, 'S'},
 
 			{"observe", no_argument, 0, 'o'},
 			{"nonetwork", no_argument, 0, 'N'},
@@ -338,6 +339,15 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		case 'D': Game.DebugPort = atoi(optarg); break;
 		case 'P': Game.DebugPassword = optarg; break;
 		case 'H': Game.DebugHost = optarg; break;
+		// set custom scenario parameter by command line
+		case 'S':
+			{
+			StdStrBuf sopt, soptval; sopt.Copy(optarg);
+			int32_t val=1;
+			if (sopt.SplitAtChar('=', &soptval)) val=atoi(soptval.getData());
+			Game.StartupScenarioParameters.SetValue(sopt.getData(), val, false);
+			}
+			break;
 		// debug configs
 		case 'h':
 			Game.NetworkActive = true;

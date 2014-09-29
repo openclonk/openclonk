@@ -87,3 +87,9 @@ private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int
 					}
 	return n_created;
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

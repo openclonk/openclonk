@@ -1,0 +1,98 @@
+PlaneNoOil=Das Flugzeug braucht noch Treibstoff. Ich muss irgendwo Öl auftreiben.
+
+Intro1=Autsch. Pyrit!
+Intro2=Wie kann der Treibstoff leer sein? Du sagtest doch, ein Fass Öl bringt uns locker an unser Ziel und zurück!
+Intro3=Dachte ich auch. Aber da wusste ich noch nicht, dass ich drei Tage über dem Ozean kreisen und auf einer einsamen Insel suchen müsste.
+Intro4=Das ist alles deine Schuld. Ich sags ja nur.
+Intro5=Was können wir nun tun?
+Intro6=Ich schlage vor du suchst neues Öl und ich repariere derweil das Flugzeug.
+Intro7=Klingt gut.
+
+Pyrit1=Ich bin fast fertig. Hast du das Öl schon gefunden?
+Pyrit1B=Das Flugzeug ist wieder bereit. Hast du das Öl schon gefunden?
+PyritQBarrel=Was soll ich mit dem Ölfass tun?
+PyritABarrel=Bringe es zum Flugzeug. D'oh.
+PyritQSearch=Wo finde ich Öl?
+PyritASearch=Keine Ahnung. Wie hast du es letztes Mal gefunden? Sieh dich um und frage andere clonks.
+PyritQGem=Hast du ein Juwel der Macht gesehen?
+PyritAGem=Ne. Nie gehört. Aber die Höhlen in diesen Bergen sind bekannt für ihre verborgenen Gefahren und Schätze. Vielleicht solltest du dort suchen.
+PyritQBye=Tschüss
+
+DagobertName=Dagobert
+Dagobert1=Gold...gold...gold...
+Dagobert1B=Welch wunderschoönes Kleinod...
+DagobertGoldQ=Gold?
+DagobertGold1=Es ist ein Hammer! Der Berg ist voll versteckter Schätze, aber ich kann nicht rein.
+DagobertGold2=Was ist das Problem?
+DagobertGold3=Der Haupteingang ist mit Lava geflutet. Es gibt andere Eingänge weiter unten, aber die sind wiederum mit Wasser vollgelaufen.
+DagobertGold4=Könntest du dort nicht durch tauchen?
+DagobertGold5=Würde ich gerne, aber meine Arthritis...
+DagobertOilQ=Ich brauche Öl
+DagobertOil1=Wer braucht das nicht? Aber du weißt vielleicht, dass König Harx es nicht erlaubt.
+DagobertOil1B=Bringe mir das Juwel und ich gebe dir Öl.
+DagobertOil1C=Ich habe dir bereits mein gesamtes Öl gegeben.
+DagobertOil2=Zum Teufel mit Harx. Ich bin auf einer Mission, ihn zu töten.
+DagobertOil3=Den König töten. Nun, das kann ich nur unterstützen. Vielleicht helfe ich dir. Aber nicht umsonst...
+DagobertOil4=Die Leute reden von einer Kammer tief im Inneren dieses Berges. Sie soll unglaubliche Mengen an Gold enthalten.
+DagobertOil5=In dieser Kammer - falls es sie überhaupt gibt - liegt auch das Juwel der Macht{{GemOfPower}}. Es ist ein unscheinbarer, kleiner Edelstein der grün und blau leuchtet.
+DagobertOil6=Ich interessiere mich aus persönlichen Gründen für dieses Kleinod. Wenn du es mir bringst, verrate ich dir, wo du Öl finden kannst. Und du kannst den Rest des Schatzes behalten!
+DagobertOil7=Klingt fair. Ich werde nach dem Edelstein suchen.
+DagobertCaveQ=Wie komme ich in die Höhle?
+DagobertCave1=Der Haupteingang ist von Lava blockiert. Dort vorbei zu kommen, könnte schwierig sein. Es gibt allerdings Nebeneingänge unterhalb.
+DagobertCave2=Wenn du das Wasser irgendwie lostwirst, könntest du dort herein kommen.
+DagobertCave3=Weißt du, was ich in der Höhle vorfinden werde?
+DagobertCave4=Die Höhlen sind rauhes Terrain und viele Forscher sind schon darin verloren gegangen.
+DagobertCave5=Einige von ihnen waren jedoch recht erfinderisch. Sie könnten nützliche Werkzeuge zurück gelassen haben, die du auf deiner Mission gebrauchen kannst.
+DagobertGem0=Schau her Dagobert, ich habe deinen Edelstein gefunden.
+DagobertGem1=Unglaublich, es gibt ihn also wirklich! Sieh nur diese Reinheit. Diese unbefleckte Schönheit. Er wird bei mir in guten Händen sein.
+DagobertGem2=Hier, nimm dieses Ölfass.
+DagobertGem3=Oh, danke.
+DagobertBye=Lebe wohl
+
+Outro1=Endlich hast du das Öl. Hat ja eine Weile gedauert.
+Outro2=Ja. Dein Job, ein wenig auf das Flugzeug zu hämmern, war etwas einfacher.
+Outro3=Lasst uns keine Zeit verlieren. Nächster Halt: Das Schloss von Hörx!
+
+Riku1=Hallo Fortscherkollege. Suchst du das Gold?
+Riku2=Fast. Ich suche das Juwel der Macht.
+Riku3=Ach das. Das ist vermutlich auch in der Schatzkammer, die sich hinter diesen verschlossenen Toren verbirgt.
+Riku4=Weißt du, wie man sie auf kriegt?
+Riku5=Ich glaube, sie werden von Schaltern kontrolliert, die irgendwo hier in den Höhlen versteckt sind.
+Riku6=Warum suchst du dann nicht die Schalter?
+Riku7=Warum sollte ich? Ich warte einfach hier und gehe dann rein, wenn jemand anderes die Arbeit für mich erledigt hat!
+Riku8=Hmpf. Dann muss ich wohl selber suchen.
+RikuOil1=Fast. Ich suche nach Öl.
+RikuOil2=Hm, Öl. Hast du Dagobert draußen mal gefragt? Er könnte etwas haben.
+RikuGem1=Hey Riku. Ich habe das Juwel gefunden.
+RikuGem2=Das ist cool! Ich bleibe dann hier und bewache den Rest des Schatzes.
+
+Sophie1=Teeheehe. Schau, es schwebt!
+Sophie2=Bist du eine Zauberin?
+Sophie3=Nee. Das ist ein Telehandschuh. Ich habe ihn in der Kiste hier neben mir gefunden.
+Sophie4=Dort sind noch mehr! Probiere sie mal aus. Einfach mit der Maus neben einen der Gegenstände zeigen und die Taste gedrückt halten um es zu bewegen.
+SophieSad=Warum hast du mir mein Spielzeug weggenommen? Das ist gemein :(
+
+Jane1=Er sollte nach Schätzen suchen. Stattdessen schwingt er einfach nur den ganzen Tag am Seil hin und her.
+Jane1B=Er sollte nach Schätzen suchen. Stattdessen schwang er einfach nur den ganzen Tag am Seil hin und her. Nun ist er tot. Typisch!
+Jane2=Cool! Kriege ich auch so ein Seil?
+Jane3=Es liegen noch Enterhaken in den Kisten hier. Nimm ihn einfach in die Hand und drücke die Richtung, die du schießen willst. Drücke noch einmal, um wieder loszulassen.
+Jane4=Du kannst sogar zwei in jeder Hand einen Enterhaken tragen. Wenn du den zweiten schießt, löst sich der erste automatisch.
+Jane5=Bitte nimm die Enterhaken alle mit! Ich hab diese Schwingerei satt.
+
+Tarzan1=Schau her, ich bin Tarzan!
+
+Ann1=Verdammt! Ich stecke fest.
+Ann2=Ich weiß, dass dort ein Schalter unter dem Lavasee rechts ist. Aber ich komme nicht heran.
+Ann3=Gibt es keinen Weg außen herum?
+Ann4=Es ist alles aus solidem Granit. Ich habe hier sogar eine Pumpe gebaut, um die Lava los zu werden. Aber ich habe kein Rohr, das der Hitze der Lava widerstehen könnte.
+Ann5=Hm. Vielleicht finde ja irgendwo ein Rohr.
+
+Donald1=Oh, ein Höhlenforscher. Bitte hilf mir! Ich habe meine ganzen Werkzeuge dort unten im Säuresee verloren.
+Donald2=Das tut mir ja Leid. Kannst du dir nicht neue Werkzeuge besorgen?
+Donald3=Das Rohr ist mir egal. Aber die goldene Schaufel ist ein unersetzbares Andenken. Ich habe sie von meinem Ur-ur-urgroßclonk geerbt!
+Donald4=Ach, eine Leitung liegt dort auch sagst du? Vielleicht sollte ich versuchen, dort heran zu kommen.
+DonaldShovel1=Hier ist deine Schaufel.
+DonaldShovel2=Vielen Dank! Ich stehe auf Ewig in deiner Schuld.
+
+Otto1=Ich liebe diesen einsamen Ort. Er ist so friedlich.
+Otto2=Schau nur diese Aussicht. Dort hinten im Osten ist sogar eine schwebende Insel über dem See. Ich frage mich, was dort wohl drauf ist.

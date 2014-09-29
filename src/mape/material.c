@@ -321,7 +321,6 @@ mape_material_map_get_material(MapeMaterialMap* map,
   return mape_material_new(map, index);
 }
 
-#if 0
 /*
  * mape_material_map_get_material_by_name:
  * @map: A #MapeMaterialMap.
@@ -346,16 +345,18 @@ mape_material_map_get_material_by_name(MapeMaterialMap* map,
 
   priv = MAPE_MATERIAL_MAP_PRIVATE(map);
 
-  for(i = 0; i < c4_material_handle_get_num(priv->handle); ++i)
+  for(i = 0; i < c4_material_map_handle_get_num(priv->handle); ++i)
   {
-    cur_name = c4_material_handle_get_name(priv->handle, i);
+    cur_name = c4_material_handle_get_name(
+      c4_material_map_handle_get_material(priv->handle, i)
+    );
+
     if(g_ascii_strcasecmp(cur_name, name) == 0)
       return mape_material_new(map, i);
   }
 
   return NULL;
 }
-#endif
 
 /**
  * mape_material_get_name:

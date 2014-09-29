@@ -1,8 +1,2 @@
-MsgIntro=Oh no we're stranded! We need to build a communication device and call for help.
-MsgOutro1=The machine is done! I wonder whether it works.
-MsgOutro2=Looks good. Let's send a rescue signal...
-MsgOutro3=I wonder if anyone has heard us.
-MsgOutro4=Hey, isn't that our stranded friends?
-MsgOutro5=Hooray, we're saved!
-MsgOutro6=Hop on everyone, we're heading for the Golden Mountain!
-NamePilot=Pilot
+Tuesday=Tuesday
+Completed=Completed

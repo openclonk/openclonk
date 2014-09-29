@@ -1,27 +1,24 @@
 /**
 	Iron Peak
-	A chilly mountain peak filled with iron ore and coal.
+	A chilly mountain peak filled with iron ore and coal presents
+	the perfect opportunity to construct a small settlement. The 
+	goal is to expand and produce significant amounts of metal.
 	
 	@author Maikel
 */
 
 
-// Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 3; // Amount of material available from start.
-static const SCENOPT_MapSize = 1; // Size of the map.
-static const SCENOPT_Difficulty = 1; // Difficulty settings.
-
-// Spawn location for all players.
-static mountain_location;
+// Whether the intro has been initialized.
+static intro_init;
 
 protected func Initialize()
 {
 	// Goal: Expand your area of influence to secure the ore.
 	var goal = CreateObject(Goal_Expansion);
-	goal->SetExpansionGoal(300 + 100 * SCENOPT_Difficulty);
+	goal->SetExpansionGoal(300 + 100 * SCENPAR_Difficulty);
 	
 	// Second goal: Construct metal.
-	var metal_cnt = 10 + 10 * SCENOPT_Difficulty;
+	var metal_cnt = 10 + 10 * SCENPAR_Difficulty;
 	goal = CreateObject(Goal_Construction);
 	goal->AddConstruction(Metal, metal_cnt);
 	
@@ -29,15 +26,19 @@ protected func Initialize()
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_BuyAtFlagpole);
 	
-	// Find A good location for the players to start.
-	FindMountainLocation();
-	
 	// Initialize different parts of the scenario.
-	InitEnvironment();
-	InitVegetation(SCENOPT_MapSize);
+	InitEnvironment(SCENPAR_Difficulty);
+	InitVegetation(SCENPAR_MapSize);
 	InitAnimals();
-	InitMaterial(SCENOPT_Material);
+	InitMaterial(4 - SCENPAR_Difficulty);
 	return;
+}
+
+protected func OnGoalsFulfilled()
+{
+	// Give the remaining players their achievement.
+	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
+	return false;
 }
 
 
@@ -45,11 +46,12 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 { 
-	// Move clonks to location and give them a shovel.
+	var amount = 4 - SCENPAR_Difficulty;
+	
+	// Give crew their items.
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
-		crew->SetPosition(mountain_location[0], mountain_location[1]);
 		// First clonk can construct, others can mine.
 		if (index == 0)
 		{
@@ -61,9 +63,9 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(Shovel);
 			crew->CreateContents(Pickaxe);
 		}
-		if (SCENOPT_Material >= 2)
+		if (amount >= 2)
 			crew->CreateContents(Loam, 2);
-		if (SCENOPT_Material == 3)
+		if (amount == 3)
 			crew->CreateContents(DynamiteBox);
 		index++;
 	}
@@ -81,38 +83,21 @@ protected func InitializePlayer(int plr)
 	GivePlayerToolsBaseMaterial(plr);
 		
 	// Set player wealth.
-	SetWealth(plr, 20 + 20 * SCENOPT_Material);
-	return;
-}
-
-private func FindMountainLocation()
-{
-	// Default to top middle of the map.
-	mountain_location = [LandscapeWidth() / 2, LandscapeHeight() / 2];
-	var x = 0, y = 0;
-	for (var i = 0; i < 1000; i++)
+	SetWealth(plr, 20 + 20 * amount);
+	
+	// Initialize the intro sequence if not yet started.
+	if (!intro_init)
 	{
-		// Random x coordinate.
-		var x = Random(LandscapeWidth()), y = 0;
-		// Find corresponding y coordinate.
-		while (!GBackSolid(x, y) && y < 9 * LandscapeHeight() / 10)
-			y += 2;
-		// Check if surface is relatively flat (check for flatter surfaces first).
-		var d = i / 250 + 1;		
-		if (!GBackSolid(x + 10, y - 20) && !GBackSolid(x - 10, y - 20) && !GBackSolid(x + 10, y - d) && !GBackSolid(x - 10, y - d) && GBackSolid(x + 10, y + d) && GBackSolid(x - 10, y + d))
-			if (y > LandscapeHeight() / 2)
-			{
-				mountain_location = [x, y - 10];
-				break;
-			}
-	} 
+		StartSequence("Intro", 0);
+		intro_init = true;
+	}
 	return;
 }
 
 
 /*-- Scenario Initialization --*/
 
-private func InitEnvironment()
+private func InitEnvironment(int difficulty)
 {
 	// Cover the mountain in some snow already.
 	GiveMountainSnowCover();
@@ -127,11 +112,11 @@ private func InitEnvironment()
 	time->SetCycleSpeed(0);
 	
 	// A light blue hue, to indicate the cold climate.
-	var blue = 6;
+	var blue = 4;
 	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
 	
 	// Some natural disasters. 
-	Earthquake->SetChance(5 + 5 * SCENOPT_Difficulty);
+	Earthquake->SetChance(5 + 5 * difficulty);
 	// TODO: Rockfall.
 	return;
 }
@@ -192,7 +177,7 @@ global func FxSnowStormStart(object target, proplist effect)
 	// Always a strong wind, either to the left or the right.
 	effect.wind = (2 * Random(2) - 1) * (90 + Random(10));
 	// Accordingly a stormy sound.
-	Sound("WindLoop.ogg", true, 80, nil, 1);
+	Sound("WindLoop.ogg", true, 50, nil, 1);
 	return 1;
 }
 
@@ -213,7 +198,7 @@ global func FxSnowStormTimer(object target, proplist effect)
 	return 1;
 }
 
-/*-- Some helper functions --*/
+/*-- Helper functions --*/
 
 global func LogMatCounts()
 {

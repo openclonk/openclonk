@@ -57,10 +57,12 @@ func VolcanoTimer()
 			y_plr += crew->GetY();
 			++n_crew;
 		}
+	if (n_crew) y_plr = y_plr / n_crew;
 	// Calc rubber band
+	var rubber_length = 85 * y_plr / LandscapeHeight() + 65;
 	var new_multiplier;
 	if (n_crew)
-		new_multiplier = Max(1, (y_volcano - y_plr/n_crew) / 150);
+		new_multiplier = Max(1, (y_volcano - y_plr) / rubber_length);
 	else
 		new_multiplier = 1;
 	g_volcano->SetSpeedMultiplier(new_multiplier);

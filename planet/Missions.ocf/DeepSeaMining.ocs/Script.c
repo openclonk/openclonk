@@ -11,7 +11,9 @@ static goal_platform_x, goal_platform_y;
 
 static const SCEN_TEST = false;
 
-protected func Initialize()
+static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos;
+
+protected func PostIntroInitialize()
 {
 	// Construction site on goal platform
 	var goal_site = CreateObject(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
@@ -35,16 +37,38 @@ protected func Initialize()
 	InitVegetation();
 	InitAnimals();
 	InitMainIsland();
-		
+	
+	// NPC
+	g_tuesday_pos = FindMainIslandPosition(0, 100, true);
+	npc_tuesday = CreateObject(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-10);
+	npc_tuesday->SetDir(DIR_Left);
+	npc_tuesday->SetColor(0x804000);
+	npc_tuesday->SetName("$Tuesday$");
+	
+	SetNextMission("Mission.ocf/TreasureHunt.ocs");
+	
 	return;
+}
+
+func DoInit(int first_player)
+{
+	StartSequence("Intro", 0, GetCrew(first_player));
+	return true;
 }
 
 protected func InitializePlayer(int plr)
 {
+	// intro has its own initialization
+	if (g_is_in_intro) return true;
+	
 	// Harsh zoom range
 	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_LimitMax);
 	SetPlayerZoomByViewRange(plr, 500, 350, PLRZOOM_Direct);
 	SetPlayerViewLock(plr, true);
+
+	// Intro
+	if (!g_is_initialized) g_is_initialized = DoInit(plr);
+	if (!g_intro_done) return true;
 	
 	// Position and materials
 	var i, crew;
@@ -69,9 +93,6 @@ protected func InitializePlayer(int plr)
 		
 	// Should be done in OnOwnerChanged? It doesn't happen ATM.
 	RedrawAllFlagRadiuses();
-	
-	// Goal message for intro
-	Dialogue->MessageBox("$MsgIntro$", GetCursor(plr), GetCrew(plr), plr, true); // oh no we're stranded!
 
 	return;
 }
@@ -189,7 +210,9 @@ private func InitMainIsland()
 	if (amount >= 2)
 	{
 		pos = FindMainIslandPosition(-120, 20);
-		CreateObject(Flagpole, pos[0], pos[1]);
+		CreateObject(Flagpole, pos[0]-7, pos[1]);
+		var rfp = CreateObject(Flagpole, pos[0]+7, pos[1]);
+		rfp->SetNeutral(true);
 		pos = FindMainIslandPosition(120, 20);
 		CreateObject(Flagpole, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
@@ -240,7 +263,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 		
 		if (GetMaterial(x,y) == Material("Brick")) continue; // not on goal platform
 			
-		if (!no_struct || !FindObject(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole")), Find_Distance(60, x, y)))
+		if (!no_struct || !FindObject(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"), Find_ID(WindGenerator)), Find_Distance(60, x, y)))
 			break;
 	}
 
@@ -253,116 +276,23 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
-	var outro = {};
-	outro.communicator = FindObject(Find_Func("IsCrystalCommunicator"));
-	if (!outro.communicator) return false; // what?
-	// Stop Clonks and disable player controls
-	Dialogue->StartCinematics(outro.communicator);
-	// Outro
-	ScheduleCall(nil, this.Fade2Darkness, 15, 32, {});
-	Dialogue->MessageBoxAll("$MsgOutro1$", GetOutroTalker(outro), true); // ok turn it on
-	ScheduleCall(nil, Scenario.Outro0, 100, 1, outro);
+	GainScenarioAchievement("Done");
+	GainMissionAccess("S2Sea");
+	StartSequence("Outro", 0);
 	// Return true to force goal rule to not call GameOver() yet
 	return true;
 }
 
-private func Outro0(proplist outro)
-{
-	outro.communicator->StartCommunication(); // 250 frames
-	ScheduleCall(nil, Scenario.Outro1, 650, 1, outro);
-}
 
-private func Outro1(proplist outro)
-{
-	Dialogue->MessageBoxAll("$MsgOutro2$", GetOutroTalker(outro), true); // let's see if it works
-	ScheduleCall(nil, Scenario.Outro2, 50, 1, outro);
-}
+// Intro helper
 
-private func Outro2(proplist outro)
+global func Particles_Smoke(...)
 {
-	outro.communicator->SendCode("...---..."); // 159 frames
-	return ScheduleCall(nil, Scenario.Outro3, 200, 1, outro);
-}
-
-private func Outro3(proplist outro)
-{
-	outro.communicator->StopCommunication();
-	Dialogue->MessageBoxAll("$MsgOutro3$", GetOutroTalker(outro), true); // i wonder if anyone has heard us
-	outro.plane = CreateObject(Plane, 100, main_island_y-100);
-	outro.plane->SetContactDensity(85); // only collision with brick for proper landing
-	outro.pilot = CreateObject(Clonk, 100, 100);
-	outro.pilot->MakeInvincible();
-	outro.pilot->SetSkin(2);
-	outro.pilot->Enter(outro.plane);
-	outro.pilot->SetAction("Walk");
-	outro.pilot->SetName("$NamePilot$");
-	outro.pilot->SetColor(RGB(55, 65, 75));
-	outro.pilot->SetDir(DIR_Right);
-	outro.plane->FaceRight();
-	outro.plane->StartInstantFlight(90, 15);
-	return ScheduleCall(nil, Scenario.Outro4, 5, 99999999, outro);
-}
-
-private func Outro4(proplist outro)
-{
-	// Wait for plane to arrive
-	if (outro.plane->GetX() < outro.communicator->GetX() - 200) return true;
-	ClearScheduleCall(nil, Scenario.Outro4);
-	// Plane in range! Ensure players see it.
-	SetPlayerZoomByViewRange(NO_OWNER, 500, 350, PLRZOOM_Direct);
-	Dialogue->MessageBoxAll("$MsgOutro4$", outro.pilot, true); // hey, our friends!
-	return ScheduleCall(nil, Scenario.Outro5, 100, 1, outro);
-}
-
-private func Outro5(proplist outro)
-{
-	Dialogue->MessageBoxAll("$MsgOutro5$", GetOutroTalker(outro), true); // we're saved!
-	outro.plane->StartInstantFlight(245, 15);
-	outro.plane->SetContactDensity(C4M_Solid);
-	return ScheduleCall(nil, Scenario.Outro6, 60, 1, outro);
-}
-
-private func Outro6(proplist outro)
-{
-	outro.plane->StartInstantFlight(280, 5);
-	return ScheduleCall(nil, Scenario.Outro7, 15, 1, outro);
-}
-
-private func Outro7(proplist outro)
-{
-	outro.plane->CancelFlight();
-	return ScheduleCall(nil, Scenario.Outro8, 40, 1, outro);
-}
-
-private func Outro8(proplist outro)
-{
-	outro.pilot->Exit();
-	Dialogue->MessageBoxAll("$MsgOutro6$", outro.pilot, true); // hop on everyone!
-	return ScheduleCall(nil, Scenario.Outro9, 100, 1, outro);
-}
-
-private func Outro9(proplist outro)
-{
-	// Reenable crew in case players want to continue playing after round
-	outro.plane->FaceRight();
-	Dialogue->StopCinematics();
-	return ScheduleCall(nil, Scenario.Outro10, 100, 1, outro);
-}
-
-private func Outro10(proplist outro)
-{
-	Sound("Fanfare");
-	return GameOver();
-}
-
-private func Fade2Darkness(proplist v)
-{
-	v.t += 8;
-	var fade_val = Max(0xff-v.t);
-	SetSkyAdjust(RGB(fade_val,fade_val,fade_val));
-}	
-
-private func GetOutroTalker(outro)
-{
-	return outro.communicator->FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), outro.communicator->Sort_Distance());
+	var p = inherited(...);
+	if (g_intro_sky_moving)
+	{
+		p.ForceX = -300;
+		p.DampingX = 800;
+	}
+	return p;
 }

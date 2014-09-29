@@ -76,3 +76,9 @@ private func InitBase(int owner)
 	CreateObject(Sawmill, 1845, y, owner);
 	return true;
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

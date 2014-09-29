@@ -71,3 +71,9 @@ func JoinPlayer(int plr)
 	}
 	return true;
 }
+
+func OnGoalsFulfilled()
+{
+	GainScenarioAchievement("Done");
+	return false;
+}

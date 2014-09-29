@@ -64,7 +64,7 @@ public func Set(id def, int dir, object stick)
 	if (definition->~IsBelowSurfaceConstruction())
 		SetShape(-w/2, -2 * h, w, 2 * h);
 	
-	SetName(Translate(Format("TxtConstruction",def->GetName())));
+	SetName(Format(Translate("TxtConstruction"),def->GetName()));
 	
 	this.visibility = VIS_Owner | VIS_Allies;
 	

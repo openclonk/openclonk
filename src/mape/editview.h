@@ -47,6 +47,7 @@ struct MapeEditView_ {
 	
 	unsigned int map_width;
 	unsigned int map_height;
+	double map_zoom;
 	
 	GThread* render_thread;
 	gboolean rerender;

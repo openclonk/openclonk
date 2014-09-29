@@ -121,6 +121,7 @@ enum C4PacketType
 
 	// * lobby
 	PID_LobbyCountdown = 0x20,
+	PID_SetScenarioParameter = 0x21, // scenario parameter update
 
 	// * resources
 	PID_NetResDis     = 0x30,

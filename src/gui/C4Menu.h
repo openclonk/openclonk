@@ -202,6 +202,7 @@ public:
 	void SetEqualItemHeight(bool fToVal) { fEqualIconItemHeight = fToVal; } // enable/disable equal item heights
 	bool TryClose(bool fOK, bool fControl);
 	void SetCloseCommand(const char *strCommand);
+	bool IsTextProgressing() const { return fTextProgressing; }
 
 #ifdef _DEBUG
 	void AssertSurfaceNotUsed(C4Surface *sfc);

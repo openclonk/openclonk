@@ -34,6 +34,7 @@ struct _ThreadData {
 	MapeTextureMap* tex_map;
 	guint map_width;
 	guint map_height;
+	gdouble map_zoom;
 	gint64 start_time;
 };
 
@@ -202,6 +203,7 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
                                             MapeTextureMap* tex_map,
                                             guint map_width,
                                             guint map_height,
+					    gdouble map_zoom,
                                             GError** error)
 {
 	GdkPixbuf* pixbuf;
@@ -209,6 +211,10 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 	gchar* dirname;
 	gchar* scriptname;
 	const gchar* filename;
+
+	guint zoom_width;
+	guint zoom_height;
+	GdkPixbuf* zoombuf;
 
 	if(mat_map == NULL || tex_map == NULL)
 	{
@@ -261,6 +267,28 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 		map_height,
 		error
 	);
+
+	/* Zoom image to output size */
+	if(pixbuf != NULL)
+	{
+		map_width = gdk_pixbuf_get_width(pixbuf);
+		map_height = gdk_pixbuf_get_height(pixbuf);
+
+		zoom_width = (guint)(map_width * map_zoom + 0.5);
+		zoom_height = (guint)(map_height * map_zoom + 0.5);
+		if(map_width != zoom_width || map_height != zoom_height)
+		{
+			zoombuf = gdk_pixbuf_scale_simple(
+				pixbuf,
+				zoom_width,
+				zoom_height,
+				GDK_INTERP_BILINEAR
+			);
+
+			g_object_unref(pixbuf);
+			pixbuf = zoombuf;
+		}
+	}
 
 	g_free(basename);
 	return pixbuf;
@@ -332,6 +360,7 @@ static gpointer mape_edit_view_thread_entry(gpointer data_)
 		data->tex_map,
 		data->map_width,
 		data->map_height,
+		data->map_zoom,
 		&error
 	);
 
@@ -722,6 +751,7 @@ void mape_edit_view_apply_preferences(MapeEditView* edit_view,
 	edit_view->random_seed = preferences->random_seed;
 	edit_view->map_width = preferences->map_width;
 	edit_view->map_height = preferences->map_height;
+	edit_view->map_zoom = preferences->map_zoom;
 
 	/* Rerender with new random settings */
 	mape_edit_view_reload(edit_view);
@@ -757,6 +787,7 @@ void mape_edit_view_reload(MapeEditView* edit_view)
 
 		data->map_width = edit_view->map_width;
 		data->map_height = edit_view->map_height;
+		data->map_zoom = edit_view->map_zoom;
 		data->start_time = g_get_monotonic_time();
 
 		if(edit_view->fixed_seed == TRUE)

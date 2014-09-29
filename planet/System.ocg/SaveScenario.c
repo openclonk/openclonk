@@ -5,6 +5,9 @@
 // Temp variable used by MakeScenarioSaveName() to store dependency
 static save_scenario_obj_dependencies;
 
+// Temp variable used by MakeScenarioSaveName() to generate indices in variable names
+static save_scenario_def_indices;
+
 // Propert identifier of object creation
 static const SAVEOBJ_Creation = "Creation";
 static const SAVEOBJ_ContentsCreation = "ContentsCreation";
@@ -31,6 +34,7 @@ global func SaveScenarioObjects(f)
 	var objs = FindObjects(Find_And()), obj, i;
 	var n = GetLength(objs);
 	var obj_type, any_written, do_write_file = false;
+	save_scenario_def_indices = nil;
 	// In reverse order (background to foreground)
 	for (i=0; i<n/2; ++i) { obj = objs[i]; objs[i] = objs[n-i-1]; objs[n-i-1] = obj; }
 	// ...Except player crew
@@ -99,6 +103,8 @@ global func SaveScenarioObjects(f)
 			fx_buffer->~Buffer2File(f);
 		}
 	}
+	// Cleanup
+	save_scenario_def_indices = save_scenario_obj_dependencies = nil;
 	// Write footer
 	FileWrite(f, "	return true;\n}\n");
 	// Done; success. Return true if any objects or effects were written to the file.
@@ -232,6 +238,9 @@ global func SaveScen_SetContainers(array obj_data)
 				// the label must have been written because something depended on the object.
 				obj.props.origin->Remove(SAVEOBJ_ContentsCreation);
 				obj.props->AddCall("Container", obj.o, "Enter", obj.o->Contained());
+				// Ensure layer is written for detached contents if it is the same as the container
+				var o_layer = obj.o->GetObjectLayer();
+				if (o_layer && o_layer == obj.co->GetObjectLayer()) obj.props->AddCall("Layer", obj.o, "SetObjectLayer", o_layer);
 			}
 		}
 		else
@@ -252,7 +261,29 @@ global func MakeScenarioSaveName()
 	// When the name is queried while properties are built, it means that there is a dependency. Store it.
 	if (save_scenario_obj_dependencies && GetIndexOf(save_scenario_obj_dependencies, this)<0) save_scenario_obj_dependencies[GetLength(save_scenario_obj_dependencies)] = this;
 	// Build actual name using unique number (unless there's a static save variable name for us)
-	return this.StaticSaveVar ?? Format("%i%04d", GetID(), ObjectNumber());
+	if (this.StaticSaveVar) return this.StaticSaveVar;
+	if (!save_scenario_def_indices) save_scenario_def_indices = {};
+	var base_name = Format("%i", GetID());
+	if (base_name == "") base_name = "Unknown";
+	// save_scenario_def_indices is a proplist containing arrays of all objects sorted by type
+	// the saved name is <ID><index>, where index is the 1-based index into the array
+	var def_indices = save_scenario_def_indices[base_name];
+	var idx;
+	if (!def_indices)
+	{
+		save_scenario_def_indices[base_name] = def_indices = [this];
+		idx = 0;
+	}
+	else
+	{
+		idx = GetIndexOf(def_indices, this);
+		if (idx<0) 
+		{
+			idx = GetLength(def_indices);
+			def_indices[idx] = this;
+		}
+	}
+	return Format("%s%03d", base_name, idx+1);
 }
 
 global func SaveScenarioObject(props)
@@ -288,6 +319,8 @@ global func SaveScenarioObject(props)
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", GetBitmaskNameByValue(v, "VIS_"));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
+	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
+	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
 	v = this.StaticSaveVar; if (v)                                props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v));
 	// update position on objects that had a shape change through rotation because creation at def bottom would incur a vertical offset
 	if (GetR() && !Contained())                                   props->AddCall("SetPosition",   this, "SetPosition", GetX(), GetY());

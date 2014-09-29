@@ -87,6 +87,7 @@ func Execute()
 	// Rise lava
 	if (true)
 	{
+		var lavamat = Material("DuroLava");
 		var any_nonlava, last_move, this_move;
 		for (var i=0; i<n_lava_y; ++i)
 		{
@@ -121,7 +122,13 @@ func Execute()
 				}
 				if (last_move || (this_move && i))
 				{
-					DrawMaterialQuad("DuroLava-lava_red", (i-1)*BigVolcano_XRes,lava_y[i-1], i*BigVolcano_XRes,lava_y[i], i*BigVolcano_XRes,lava_y[i]+speed_multiplier+1, (i-1)*BigVolcano_XRes,lava_y[i-1]+speed_multiplier+1, true);
+					var x1=(i-1)*BigVolcano_XRes, x2 = i*BigVolcano_XRes;
+					var y1=lava_y[i-1]+speed_multiplier+1, y2 = lava_y[i]+speed_multiplier+1;
+					var limit=50;
+					while (GetMaterial(x1,y1+1) != lavamat && --limit) ++y1;
+					limit=50;
+					while (GetMaterial(x1,y2+1) != lavamat && --limit) ++y2;
+					DrawMaterialQuad("DuroLava-lava_red", x1,lava_y[i-1], x2,lava_y[i], x2,y2, x1,y1, true);
 				}
 				last_move = this_move;
 			}
