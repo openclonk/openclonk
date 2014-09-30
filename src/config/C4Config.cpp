@@ -152,10 +152,10 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
 	pComp->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	pComp->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
-	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "boom.openclonk.org:80/server/"));
+	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
 	pComp->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "boom.openclonk.org:80/server/"));
+	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "league.openclonk.org:80/league.php"));
 	pComp->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
@@ -573,7 +573,7 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 		return AlternateServerAddress;
 	// Standard (hardcoded) official league server
 	else
-		return "boom.openclonk.org:80/server/";
+		return "league.openclonk.org:80/league.php";
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()
