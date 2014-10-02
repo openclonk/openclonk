@@ -26,7 +26,7 @@ Newton6=East (right) of the village you can find coniferous trees. Those are per
 
 Newton100=Hey %s! Did you survive the attacks?
 Newton101=Yes. As you can see. I was able to watch the disaster from the forest.
-Newton102=It will take us month to rebuild everything. In the meantime, we'll be defenseless against their attacks.
+Newton102=It will take us months to rebuild everything. In the meantime, we'll be defenseless against their attacks.
 Newton103=Who are the attackers?
 Newton104=It's the henchmen of \"king\" Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
 Newton105=Why \"king\"?
