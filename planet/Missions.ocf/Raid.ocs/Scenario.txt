@@ -4,7 +4,6 @@ Version=5,4
 Difficulty=10
 NoInitialize=true
 Icon=37
-MissionAccess=S2Journey
 
 [Definitions]
 Definition2=Decoration.ocd
