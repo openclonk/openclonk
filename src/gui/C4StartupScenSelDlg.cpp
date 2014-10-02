@@ -697,7 +697,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 						fctAchievements[aidx].Set((const C4Facet &)*fct);
 					}
 					// section by achievement index (1-based, since zero means no achievement)
-					if (val>1) fctAchievements[aidx].Set(fctAchievements[aidx].GetSection(val-1));
+					if (val>1) fctAchievements[aidx].X += fctAchievements[aidx].Wdt * (val-1);
 					// description for this achievement is taken from option
 					const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
 					if (opt) sAchievementDescriptions[aidx] = opt->Description;
