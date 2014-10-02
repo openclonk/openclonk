@@ -109,8 +109,24 @@ static const MAX_GOLD_BARS = 20;
 func OnGoldBarCollected(object collector)
 {
 	++g_num_goldbars;
+	var sAchievement = "";
+	if (g_num_goldbars==MAX_GOLD_BARS/4)
+	{
+		sAchievement = "|$Achieve5$";
+		GainScenarioAchievement("Bars", 1);
+	}
+	else if (g_num_goldbars==MAX_GOLD_BARS/2)
+	{
+		sAchievement = "|$Achieve10$";
+		GainScenarioAchievement("Bars", 2);
+	}
+	else if (g_num_goldbars==MAX_GOLD_BARS)
+	{
+		sAchievement = "|$Achieve20$";
+		GainScenarioAchievement("Bars", 3);
+	}
 	UpdateLeagueScores();
-	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, MAX_GOLD_BARS), collector, true);
+	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$%s", g_num_goldbars, MAX_GOLD_BARS, sAchievement), collector, true);
 	return true;
 }
 

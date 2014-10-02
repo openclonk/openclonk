@@ -2,6 +2,8 @@
 
 #appendto GoldBar
 
+public func IsFoundryProduct() { return false; } // Don't let players produce them
+
 func Entrance(container)
 {
 	if (container->GetAlive())
