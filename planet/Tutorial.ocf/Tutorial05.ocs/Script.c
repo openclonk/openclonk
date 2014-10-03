@@ -204,6 +204,7 @@ global func FxTutorialEnergyStop(object tg, e, tm) {
 		for(var i = GetPlayerCount(); i--;)
 			SetPlrKnowledge(GetPlayerByIndex(i), plan);
 	guide->ClearGuideMessage();
+	GameCall("OnGoalsFulfilled");
 	GameOver();
 }
 
@@ -275,4 +276,14 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
+}
+
+
+// Gamecall from goals
+protected func OnGoalsFulfilled()
+{
+	// Achievement star
+	GainScenarioAchievement("Done");
+	// Normal scenario ending by goal library.
+	return false;
 }
