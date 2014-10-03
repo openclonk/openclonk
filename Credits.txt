@@ -18,13 +18,14 @@ Charles Spurrill (Ringwaul)
 Richard Gerum (Randrian)
 Timo Stabbert (Mimmo)
 Matthias Rottländer (Matthi)
-Felix Riese (Fungiform)
-Florian Graier (Nachtfalter)
 
-<Coordination>
+<Music>
+Martin Strohmeier (K-Pone)
+
+<Administration>
 Tobias Zwick (Newton)
 
 <Special Thanks to Contributors>
-Benjamin Herr (Loriel), Benedict Etzel (B_E), Oliver Schneider (ker), Philipp Kern (pkern), Carl-Philip Hänsch (Carli), Manuel Rieke (MrBeast), Alexander Semeniuk (AlteredARMOR), Merten Ehmig (Pluto) Daniel Theuke (ST-DDT), Asmageddon, Faby, Russel, Peewee, Tim Blume (End), Andriel, Gurkenglas, Pyrit, Luchs, grgecko, Dominik Bayerl (Kannibal), Lauri Niskanen (Ape), Clonkine, Checkmaty, Sven-Hendrik Haase, Johannes Nixdorf (mixi), Stan, Koronis, mizipzor, Mark Haßelbusch (Marky), Sebastian Rühl and TomyLobo.
+Benjamin Herr (Loriel), Benedict Etzel (B_E), Oliver Schneider (ker), Philipp Kern (pkern), Felix Riese (Fungiform), Florian Graier (Nachtfalter), Carl-Philip Hänsch (Carli), Manuel Rieke (MrBeast), Alexander Semeniuk (AlteredARMOR), Merten Ehmig (Pluto) Daniel Theuke (ST-DDT), Asmageddon, Faby, Russel, Peewee, Tim Blume (End), Andriel, Gurkenglas, Pyrit, Luchs, grgecko, Dominik Bayerl (Kannibal), Lauri Niskanen (Ape), Clonkine, Checkmaty, Sven-Hendrik Haase, Johannes Nixdorf (mixi), Stan, Koronis, mizipzor, Mark Haßelbusch (Marky), Sebastian Rühl and TomyLobo.
  
 Also, big thanks to RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.

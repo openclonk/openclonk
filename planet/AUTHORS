@@ -19,21 +19,13 @@ Graphics and Models
 ===================
 The newest list of authors for our graphics and models used, can be found in
 our resources repository here:
-http://hg.openclonk.org/openclonk-resources/raw-file/tip/authors.txt
+https://git.openclonk.org/openclonk-resources.git/blob_plain/HEAD:/authors.txt
 
 If a particular graphic is taken from another source, there should be a 
 authors.txt in the same directory
 
-Music
+
+Music, Sounds and Material Textures
 =====
-- 
-
-
-Sounds
-======
-See authors.txt in Sound.ocg
-
-
-Material textures
-=================
-See authors.txt in Material.ocg
+See authors.txt in Music.ocg, Sound.ocg and Material.ocg. For sound and other
+content files in game content, there exist separate authors.txt
