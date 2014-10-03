@@ -143,6 +143,11 @@ private func InitEnvironment(int map_size, int difficulty)
 	
 	// Some natural disasters. 
 	Earthquake->SetChance(2 + 2 * difficulty);
+	if (difficulty >= 2)
+		Rockfall->SetChance(20);
+	if (difficulty >= 3)
+		Rockfall->SetChance(80);
+	Rockfall->SetArea(Rectangle(128, 0, 128, LandscapeHeight() - 300));
 	return;
 }
 
