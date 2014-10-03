@@ -2,7 +2,7 @@
 Icon=36
 Title=FightForGidl
 Version=5,4
-Difficulty=10
+Difficulty=120
 NoInitialize=true
 
 [Game]
