@@ -8,10 +8,10 @@
 #include Library_Plant
 #include Library_Crop
 
-private func SeedArea() { return 50; }
+private func SeedArea() { return 60; }
 private func SeedChance() {	return 250; }
-private func SeedAmount() { return 15; }
-private func SeedOffset() { return 10; }
+private func SeedAmount() { return 4; } // small seed area -> don't allow too many plants
+private func SeedOffset() { return 20; }
 
 local stalks;
 
