@@ -92,6 +92,7 @@ public:
 
 	virtual bool SetSubscreen(const char *szToScreen) { return false; } // go to specified subdialog, e.g. a specific property sheet in the options dlg
 	virtual void OnKeyboardLayoutChanged() {}
+	virtual void OnLeagueOptionChanged() {}
 };
 
 class C4Startup
@@ -132,8 +133,10 @@ public:
 	static void CloseStartup();
 	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
 	void OnKeyboardLayoutChanged();
+	void OnLeagueOptionChanged(); // callback from network options dialogue: Updates settings in scenario selction
 
 	static C4Startup *Get() { assert(pInstance); return pInstance; }
+
 };
 
 #endif // INC_C4Startup

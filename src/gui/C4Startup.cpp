@@ -356,3 +356,9 @@ void C4Startup::OnKeyboardLayoutChanged()
 	// forward message to current dialog
 	if (pCurrDlg) pCurrDlg->OnKeyboardLayoutChanged();
 }
+
+void C4Startup::OnLeagueOptionChanged()
+{
+	// forward message to current dialog
+	if (pCurrDlg) pCurrDlg->OnLeagueOptionChanged();
+}

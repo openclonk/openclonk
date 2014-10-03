@@ -471,6 +471,8 @@ protected:
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnButtonScenario(C4GUI::Control *pEl);
 
+	virtual void OnLeagueOptionChanged();
+
 	friend class C4MapFolderData;
 
 private:

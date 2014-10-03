@@ -61,6 +61,7 @@ private:
 	protected:
 		C4GUI::Label *pCaption;
 		C4GUI::ComboBox *pDropdownList;
+		bool fReadOnly;
 
 		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) = 0;
 		void OnDropdownFill(C4GUI::ComboBox_FillCB *pFiller)

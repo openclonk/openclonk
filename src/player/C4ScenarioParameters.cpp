@@ -114,6 +114,7 @@ void C4ScenarioParameterDef::CompileFunc(StdCompiler *pComp)
 	};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(Type, ParTypeEntries),         "Type",         SPDT_Enum));
 	pComp->Value(mkNamingAdapt(Default,                                             "Default",      0));
+	pComp->Value(mkNamingAdapt(LeagueValue,                                         "LeagueValue",  0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Achievement, StdCompiler::RCT_Idtf),      "Achievement",  StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Options, StdCompiler::SEP_NONE), "Options"));
 	pComp->NameEnd();

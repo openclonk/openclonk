@@ -48,6 +48,12 @@
         <col>0</col>
       </row>
       <row>
+        <col>LeagueValue</col>
+        <col>Integer</col>
+        <col>If nonzero, the parameter will be forced to this vlaue in league games.</col>
+        <col>0</col>
+      </row>
+      <row>
         <col>Achievement</col>
         <col>String</col>
         <col>If set to an achievement ID, this parameter is hidden in the selection dialogue and only used to track player achievements for this scenario. See section below.</col>

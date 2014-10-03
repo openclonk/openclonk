@@ -26,6 +26,7 @@
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 #include <C4GraphicsResource.h>
+#include <C4Startup.h>
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
@@ -675,6 +676,8 @@ void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 	btnRecord->SetEnabled(!fCheck);
 	// if the league is turned on, the game must be signed up at the masterserver
 	if (fCheck && !Config.Network.MasterServerSignUp) OnBtnInternet(btnInternet);
+	// refresh options in scenario selection dialogue
+	if (C4Startup::Get()) C4Startup::Get()->OnLeagueOptionChanged();
 }
 
 void C4GameOptionButtons::OnBtnRecord(C4GUI::Control *btn)

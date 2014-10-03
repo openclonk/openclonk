@@ -1984,5 +1984,10 @@ void C4StartupScenSelDlg::UpdateAchievements()
 	}
 }
 
+void C4StartupScenSelDlg::OnLeagueOptionChanged()
+{
+	if (pSelectionOptions) pSelectionOptions->Update();
+}
+
 // NICHT: 9, 7.2.2, 113-114, 8a
 

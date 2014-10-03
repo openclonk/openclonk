@@ -65,11 +65,12 @@ private:
 
 	std::vector<Option> Options; // possible options to be selected for an enum type
 	int32_t Default; // value of option selected by default for an enum type
+	int32_t LeagueValue; // if nonzero, option is forced to this value in league games
 
 	StdCopyStrBuf Achievement; // if this parameter is an achievement, this string contains the name of the achievement graphics to be used
 
 public:
-	C4ScenarioParameterDef() : Default(0) {} 
+	C4ScenarioParameterDef() : Default(0), LeagueValue(0) {} 
 	~C4ScenarioParameterDef() {}
 
 	const char *GetName() const { return Name.getData(); }
@@ -77,6 +78,7 @@ public:
 	const char *GetID() const { return ID.getData(); }
 	ParameterType GetType() const { return Type; }
 	int32_t GetDefault() const { return Default; }
+	int32_t GetLeagueValue() const { return LeagueValue; }
 	const Option *GetOptionByValue(int32_t val) const;
 	const Option *GetOptionByIndex(size_t idx) const;
 
