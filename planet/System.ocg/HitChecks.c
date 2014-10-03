@@ -66,6 +66,7 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 								Sort_Distance(oldx, oldy)))
 		{
 			// Excludes
+			if (!obj) continue; // hit callback of one object might have removed other objects
 			if(obj == target) continue;
 			if(obj == shooter) continue;
 
