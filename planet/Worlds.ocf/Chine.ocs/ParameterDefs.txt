@@ -45,21 +45,3 @@ LeagueValue=1
 		Name=$MapLarge$
 		Description=$DescMapLarge$
 		Value=3
-
-[ParameterDef]
-ID=Done
-Achievement=Done
-
-	[Options]
-		
-		[Option]
-		Description=$AchievementNormal$
-		Value=1
-		
-		[Option]
-		Description=$AchievementHard$
-		Value=2
-		
-		[Option]
-		Description=$AchievementInsane$
-		Value=3

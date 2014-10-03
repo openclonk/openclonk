@@ -1,0 +1,4 @@
+# Scenario parameters: achievements
+AchievementNormal=Runde auf einfach geschafft.
+AchievementHard=Runde auf schwer geschafft.
+AchievementInsane=Runde auf irrsinnig geschafft.
