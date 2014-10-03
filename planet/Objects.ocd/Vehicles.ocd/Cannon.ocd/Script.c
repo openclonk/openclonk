@@ -7,6 +7,7 @@
 
 
 #include Library_HasExtraSlot
+#include Library_ElevatorControl
 
 local animAim;
 local animTurn;
