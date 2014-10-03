@@ -251,6 +251,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
+	GainScenarioAchievement("Done");
 	GameOver();
 	return true;
 }
