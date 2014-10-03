@@ -698,7 +698,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 						StdStrBuf sAchievementFilename(C4CFN_Achievements);
 						sAchievementFilename.Replace("*", achievement_gfx);
 						// look in scenario
-						if (!fctAchievements[nAchievements].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+						if (!fctAchievements[nAchievements].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full, false, true))
 						{
 							// look in parent folder
 							const C4FacetSurface *fct = NULL;
