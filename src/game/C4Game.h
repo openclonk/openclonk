@@ -225,6 +225,7 @@ public:
 	void UpdateLanguage();
 	bool InitPlayerControlSettings();
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
+	void SetDefaultGamma();
 
 protected:
 	void Default();

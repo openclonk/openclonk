@@ -305,7 +305,7 @@ bool C4Game::PreInit()
 	// Timer flags
 	GameGo=false;
 	// set gamma
-	pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	SetDefaultGamma();
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -549,6 +549,8 @@ void C4Game::Clear()
 	delete pFileMonitor; pFileMonitor = NULL;
 	// fade out music
 	Application.MusicSystem.FadeOut(2000);
+	// Reset colors
+	SetDefaultGamma();
 	// game no longer running
 	IsRunning = false;
 	PointersDenumerated = false;
@@ -3587,4 +3589,16 @@ void C4Game::SetMusicLevel(int32_t iToLvl)
 bool C4Game::ToggleChat()
 {
 	return C4ChatDlg::ToggleChat();
+}
+
+void C4Game::SetDefaultGamma()
+{
+	// Default gamma ramps
+	for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
+	{
+		if (iRamp == C4GRI_USER)
+			pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, iRamp);
+		else
+			pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRamp);
+	}
 }
