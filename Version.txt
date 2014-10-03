@@ -18,7 +18,7 @@ SET(C4XVER3             99)
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
 # for alpha and beta releases, and meaningful and stable for stable releases.
 # Both variables need to start with a space if they aren't empty.
-SET(C4VERSIONBUILDNAME  " Beyond the Rocks")
+SET(C4VERSIONBUILDNAME  "")
 SET(C4VERSIONEXTRA      "")
 
 ############################################################################
