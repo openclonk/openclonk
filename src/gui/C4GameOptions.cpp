@@ -132,7 +132,7 @@ void C4GameOptionsList::OptionScenarioParameter::Update()
 	int32_t val=0;
 	// display forced league value?
 	bool fLeagueReadOnly = false;
-	if (::Config.Network.LeagueServerSignUp && !fReadOnly) val = ParameterDef->GetLeagueValue();
+	if (::Config.Network.LeagueServerSignUp && !fReadOnly && !pForDlg->IsPreGameSingle()) val = ParameterDef->GetLeagueValue();
 	if (val)
 		fLeagueReadOnly = true;
 	else

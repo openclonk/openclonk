@@ -156,7 +156,8 @@ private:
 public:
 	enum C4GameOptionsListSource
 	{
-		GOLS_PreGame,
+		GOLS_PreGameSingle,
+		GOLS_PreGameNetwork,
 		GOLS_Lobby,
 		GOLS_Runtime
 	};
@@ -187,7 +188,8 @@ public:
 	// config
 	bool IsRuntime() const { return source==GOLS_Runtime; }
 	bool IsTabular() const { return IsRuntime() || IsPreGame(); } // low lobby space doesn't allow tabular layout
-	bool IsPreGame() const { return source==GOLS_PreGame; }
+	bool IsPreGame() const { return source==GOLS_PreGameSingle || source==GOLS_PreGameNetwork; }
+	bool IsPreGameSingle() const { return source==GOLS_PreGameSingle; }
 
 	C4ScenarioParameters *GetParameters() { return params; } // used by children
 };

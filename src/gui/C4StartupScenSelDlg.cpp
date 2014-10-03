@@ -1479,7 +1479,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 
 	// bottom of right side of book: Custom options on selection
 	// Arbitrary height and invisible by default. Height will be adjusted when options are created.
-	pSelectionOptions = new C4GameOptionsList(C4Rect(bounds.x, bounds.y+bounds.Hgt-10, bounds.Wdt, 10), false, C4GameOptionsList::GOLS_PreGame);
+	pSelectionOptions = new C4GameOptionsList(C4Rect(bounds.x, bounds.y+bounds.Hgt-10, bounds.Wdt, 10), false, fNetwork ? C4GameOptionsList::GOLS_PreGameNetwork : C4GameOptionsList::GOLS_PreGameSingle);
 	pSelectionOptions->SetDecoration(false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSelectionOptions->SetVisibility(false);
 	pSheetBook->AddElement(pSelectionOptions);
