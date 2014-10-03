@@ -1642,6 +1642,10 @@ private func ObjectControlPush(int plr, int ctrl)
 	{
 		// ungrab only if he pushes
 		if (proc != "PUSH") return false;
+		
+		// vehicles might have set their own view and it's not reset on release controls
+		// So reset cursor view immediately when ungrabbing
+		ResetCursorView(GetController());
 
 		ObjectCommand("UnGrab");
 		return true;

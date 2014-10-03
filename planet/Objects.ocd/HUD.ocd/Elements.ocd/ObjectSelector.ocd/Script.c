@@ -108,7 +108,12 @@ public func MouseSelection(int plr)
 		{
 			// which is mine -> let go
 			if(crew->GetActionTarget() == myobject)
+			{
+				// vehicles might have set their own view and it's not reset on release controls
+				// So reset cursor view immediately when ungrabbing
+				ResetCursorView(GetController());
 				crew->ObjectCommand("UnGrab");
+			}
 			else
 				crew->ObjectCommand("Grab", myobject);
 				
