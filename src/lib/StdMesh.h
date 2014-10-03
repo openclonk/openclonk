@@ -201,6 +201,8 @@ public:
 	StdSubMeshInstance(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 	void LoadFacesForCompletion(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 
+	void CompileFunc(StdCompiler* pComp);
+
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }

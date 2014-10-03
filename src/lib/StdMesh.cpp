@@ -554,6 +554,33 @@ void StdSubMeshInstance::SetFaceOrderingForClrModulation(const StdSubMesh& subme
 		SetFaceOrdering(submesh, FO_Fixed);
 }
 
+void StdSubMeshInstance::CompileFunc(StdCompiler* pComp)
+{
+	// TODO: We should also serialize the texture animation positions
+	if(pComp->isCompiler())
+	{
+		StdCopyStrBuf material_name;
+		pComp->Value(mkNamingAdapt(material_name, "Material"));
+		if(material_name != Material->Name)
+		{
+			const StdMeshMaterial* material = ::MeshMaterialManager.GetMaterial(material_name.getData());
+			if(!material)
+			{
+				StdStrBuf buf;
+				buf.Format("There is no such material with name \"%s\"", material_name.getData());
+				pComp->excCorrupt(buf.getData());
+			}
+
+			SetMaterial(*material);
+		}
+	}
+	else
+	{
+		StdCopyStrBuf material_name = Material->Name;
+		pComp->Value(mkNamingAdapt(material_name, "Material"));
+	}
+}
+
 void StdMeshInstance::SerializableValueProvider::CompileFunc(StdCompiler* pComp)
 {
 	pComp->Value(Value);
@@ -1266,6 +1293,13 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		pComp->Value(mkNamingAdapt(valid, "Valid"));
 		if(!valid) pComp->excCorrupt("Mesh instance is invalid");
 
+		int32_t iSubMeshCnt;
+		pComp->Value(mkNamingCountAdapt(iSubMeshCnt, "SubMesh"));
+		if(static_cast<uint32_t>(iSubMeshCnt) != SubMeshInstances.size())
+			pComp->excCorrupt("Invalid number of submeshes");
+		for(int32_t i = 0; i < iSubMeshCnt; ++i)
+			pComp->Value(mkNamingAdapt(*SubMeshInstances[i], "SubMesh"));
+
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
 
@@ -1317,6 +1351,11 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		// non-existing and empty named sections.
 		bool valid = true;
 		pComp->Value(mkNamingAdapt(valid, "Valid"));
+
+		int32_t iSubMeshCnt = SubMeshInstances.size();
+		pComp->Value(mkNamingCountAdapt(iSubMeshCnt, "SubMesh"));
+		for(int32_t i = 0; i < iSubMeshCnt; ++i)
+			pComp->Value(mkNamingAdapt(*SubMeshInstances[i], "SubMesh"));
 
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
