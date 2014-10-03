@@ -678,35 +678,49 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 		C4LangStringTable ScenarioLangStringTable;
 		C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		ParameterDefs.Load(rGrp, &ScenarioLangStringTable);
-		// achievement images
-		const C4ScenarioParameterDef *def; size_t idx=0, aidx=0; nAchievements = 0;
-		while (def = ParameterDefs.GetParameterDefByIndex(idx++))
-			if (def->IsAchievement())
+		// achievement images: Loaded from this entry and parent folder
+		nAchievements = 0;
+		const C4ScenarioParameterDefs *deflists[] = { pParent ? pParent->GetAchievementDefs() : NULL, &ParameterDefs };
+		for (size_t def_list_idx=0; def_list_idx<2; ++def_list_idx)
+		{
+			const C4ScenarioParameterDefs *deflist = deflists[def_list_idx];
+			if (!deflist) continue;
+			const C4ScenarioParameterDef *def; size_t idx=0;
+			while (def = deflist->GetParameterDefByIndex(idx++))
 			{
-				int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
-				if (val)
+				if (def->IsAchievement())
 				{
-					// player has this achievement - find graphics for it
-					const char *achievement_gfx = def->GetAchievement();
-					StdStrBuf sAchievementFilename(C4CFN_Achievements);
-					sAchievementFilename.Replace("*", achievement_gfx);
-					if (!fctAchievements[aidx].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+					int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
+					if (val)
 					{
-						const C4FacetSurface *fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
-						if (!fct) continue; // achievement graphics not found :(
-						fctAchievements[aidx].Set((const C4Facet &)*fct);
+						// player has this achievement - find graphics for it
+						const char *achievement_gfx = def->GetAchievement();
+						StdStrBuf sAchievementFilename(C4CFN_Achievements);
+						sAchievementFilename.Replace("*", achievement_gfx);
+						// look in scenario
+						if (!fctAchievements[nAchievements].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full))
+						{
+							// look in parent folder
+							const C4FacetSurface *fct = NULL;
+							const C4AchievementGraphics *parent_achv_gfx;
+							if (pParent && (parent_achv_gfx = pParent->GetAchievementGfx())) fct = parent_achv_gfx->FindByName(achievement_gfx);
+							// look in main gfx group file
+							if (!fct) fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
+							if (!fct) continue; // achievement graphics not found :(
+							fctAchievements[nAchievements].Set((const C4Facet &)*fct);
+						}
+						// section by achievement index (1-based, since zero means no achievement)
+						if (val>1) fctAchievements[nAchievements].X += fctAchievements[nAchievements].Wdt * (val-1);
+						// description for this achievement is taken from option
+						const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
+						if (opt) sAchievementDescriptions[nAchievements] = opt->Description;
+						// keep track of achievement count
+						++nAchievements;
+						if (nAchievements == C4StartupScenSel_MaxAchievements) break;
 					}
-					// section by achievement index (1-based, since zero means no achievement)
-					if (val>1) fctAchievements[aidx].X += fctAchievements[aidx].Wdt * (val-1);
-					// description for this achievement is taken from option
-					const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
-					if (opt) sAchievementDescriptions[aidx] = opt->Description;
-					// keep track of achievement count
-					++aidx; ++nAchievements;
-					if (aidx == C4StartupScenSel_MaxAchievements) break;
-					;
 				}
 			}
+		}
 	}
 	return true;
 }
@@ -999,6 +1013,11 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 	else
 		// no parent group: Direct load from filename
 		if (!Group.Open(sFilename.getData())) return false;
+	// Load achievement data contained scenarios can fall back to
+	C4LangStringTable FolderLangStringTable;
+	C4Language::LoadComponentHost(&FolderLangStringTable, Group, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	AchievementDefs.Load(Group, &FolderLangStringTable);
+	AchievementGfx.Init(Group);
 	// get number of entries, to estimate progress
 	const char *szC4CFN_ScenarioFiles = C4CFN_ScenarioFiles; // assign values for constant comparison
 	const char *szSearchMask; int32_t iEntryCount=0;

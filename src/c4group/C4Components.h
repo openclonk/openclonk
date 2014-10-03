@@ -177,7 +177,7 @@
 #define C4FLS_Def       "Particle.txt|DefCore.txt|*.material|SolidMask.png|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.wav|*.ogg|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
-#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
+#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|StringTbl*.txt|ParameterDefs.txt|Achv*.png|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
 #define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.ocm"
 #define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Font*.png"\
             "|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Captain.png|Cursor.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Achv*.png"\
