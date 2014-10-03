@@ -1,2 +1,1 @@
 Tuesday=Dienstag
-Completed=Abgeschlossen
