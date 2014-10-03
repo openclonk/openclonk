@@ -30,6 +30,7 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
+#include <C4Application.h>
 
 #include <C4DrawGL.h>
 #include <StdRegistry.h>
@@ -641,14 +642,21 @@ namespace C4GUI
 
 	bool Dialog::DoModal()
 	{
+		// Cancel all dialogues if game is left (including e.g. league dialogues)
+		if (::Application.IsQuittingGame()) return false;
 		// main message loop
 		while (fShow)
 		{
 			// dialog idle proc
 			OnIdle();
+			// Modal dialogue during running game is tricky. Do not execute game!
+			bool fGameWasRunning = ::Game.IsRunning;
+			::Game.IsRunning = false;
 			// handle messages - this may block until the next timer
 			if (!Application.ScheduleProcs())
 				return false; // game GUI and lobby will deleted in Game::Clear()
+			// reset game run state
+			if (fGameWasRunning) ::Game.IsRunning = true;
 		}
 		// return whether dlg was OK
 		return fOK;

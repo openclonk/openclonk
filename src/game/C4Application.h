@@ -67,6 +67,8 @@ public:
 	void SetNextMission(const char *szMissionFilename);
 	virtual void OnCommand(const char *szCmd);
 
+	bool IsQuittingGame() const { return AppState >= C4AS_AfterGame; }
+
 	const char *GetRevision() const { return Revision.getData(); }
 
 	// set by ParseCommandLine
