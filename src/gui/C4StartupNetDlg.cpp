@@ -1213,6 +1213,7 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 
 void C4StartupNetDlg::CheckVersionUpdate()
 {
+#ifdef WITH_AUTOMATIC_UPDATE
 	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
 	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
 
@@ -1221,6 +1222,7 @@ void C4StartupNetDlg::CheckVersionUpdate()
 		pUpdateClient.SetNotify(&Application.InteractiveThread);
 		Application.InteractiveThread.AddProc(&pUpdateClient);
 	}
+#endif
 }
 
 void C4StartupNetDlg::OnChatTitleChange(const StdStrBuf &sNewTitle)
