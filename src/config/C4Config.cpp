@@ -155,7 +155,7 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
 	pComp->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "league.openclonk.org:80/league.php"));
+	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
 	pComp->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
