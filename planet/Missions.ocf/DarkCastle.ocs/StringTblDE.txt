@@ -2,3 +2,4 @@ MsgEncounterCave=Ein Eindringling klaut unser Gold! Schnappt ihn!
 MsgEncounterOutpost=Halt, im Namen des Königs!
 MsgEncounterKing=Ah, %s. Ich habe Euch bereits erwartet.
 MsgEncounterShrooms=Was ist steht denn da Feines in dieser Höhle? Vielleicht kommen wir damit ja ins Schloss hinein.
+NameHorax=Horax

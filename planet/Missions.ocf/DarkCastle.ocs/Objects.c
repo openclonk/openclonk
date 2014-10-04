@@ -111,7 +111,7 @@ func InitializeObjects()
 	g_king->SetColor(0xff);
 	g_king->SetClrModulation(0xffff8000);
 	g_king->SetObjectBlitMode(GFX_BLIT_Additive);
-	g_king->SetName("Horax");
+	g_king->SetName("$NameHorax$");
 	g_king.MaxEnergy = 200000;
 	g_king->DoEnergy(150);
 	g_king.StaticSaveVar = "g_king";
