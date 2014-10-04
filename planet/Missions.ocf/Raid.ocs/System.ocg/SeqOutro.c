@@ -78,7 +78,6 @@ func Outro_9()
 
 func Outro_Stop()
 {
-	g_goal->SetFulfilled();
 	GameOver();
 	return true;
 }

@@ -7,12 +7,6 @@
 
 static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
-func Initialize()
-{
-	SetNextMission("Mission.ocf/DeepSeaMining.ocs");
-	return true;
-}
-
 func DoInit(int first_player)
 {
 	CreateObject(Windmill, 152, 825+48, 0);
@@ -94,6 +88,7 @@ func InitializePlayer(int plr)
 
 func OnGoalsFulfilled()
 {
+	SetNextMission("Missions.ocf/DeepSeaMining.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Crash");
 	return false;

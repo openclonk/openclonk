@@ -11,12 +11,6 @@ static g_max_player_num; // max number of players that were ever joined
 static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 
-func Initialize()
-{
-	SetNextMission("Mission.ocf/DarkCastle.ocs");
-	return true;
-}
-
 func DoInit(int first_player)
 {
 	ClearFreeRect(530,1135, 50,2);
@@ -132,6 +126,7 @@ func OnGoldBarCollected(object collector)
 
 public func OnGoalsFulfilled()
 {
+	SetNextMission("Missions.ocf/DarkCastle.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Treasure");
 	UpdateLeagueScores();
