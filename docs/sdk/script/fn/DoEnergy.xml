@@ -19,7 +19,7 @@
         <param>
           <type>bool</type>
           <name>exact</name>
-          <desc>If <code>true</code>, change is applied to the exact energy value (0 to value of Physical "Energy").</desc>
+          <desc>If <code>true</code>, change is applied to the exact energy value.</desc>
           <optional />
         </param>
         <param>
@@ -39,8 +39,8 @@
     <desc>Adjusts the energy value of an object. Energy signifies life energy in living beings.</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(<funclink>GetCursor</funclink>(0)-&gt;<funclink>GetPhysical</funclink>(&quot;Energy&quot;)*50/100000);</code>
-        <text>Gives 50% more energy to the selected clonk.</text>
+        <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(1000);</code>
+        <text>Gives 1 more energy to the selected clonk.</text>
       </example>
     </examples>
     <related>
