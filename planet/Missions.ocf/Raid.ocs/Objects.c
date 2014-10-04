@@ -380,8 +380,10 @@ func InitializeObjects()
 
 	var Barrel0560 = Foundry0124->CreateContents(Barrel);
 	Barrel0560->SetColor(0xff000000);
+	Barrel0560->AddRestoreMode(Foundry0124);
 	var Barrel0562 = Foundry0124->CreateContents(Barrel);
 	Barrel0562->SetColor(0xff000000);
+	Barrel0562->AddRestoreMode(Foundry0124);
 	var Barrel0564 = CreateObject(Barrel, 484, 367);
 	Barrel0564->SetR(23);
 	Barrel0564->SetColor(0xff000000);
