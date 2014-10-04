@@ -2194,8 +2194,7 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	const StdMeshMaterial* material = ::MeshMaterialManager.GetMaterial(Material->GetData().getData());
 	if (!material) return false;
 
-	StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
-	submesh.SetMaterial(*material);
+	Obj->pMeshInstance->SetMaterial(iSubMesh, *material);
 	return true;
 }
 

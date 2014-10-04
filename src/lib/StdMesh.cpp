@@ -52,6 +52,16 @@ namespace
 		}
 	};
 
+	// Helper to sort submesh instances so that opaque ones appear before non-opaque ones,
+	// this is required if materials are changed with SetMeshMaterial.
+	struct StdMeshSubMeshInstanceVisibilityCmpPred
+	{
+		bool operator()(const StdSubMeshInstance* first, const StdSubMeshInstance* second)
+		{
+			return first->GetMaterial().IsOpaque() > second->GetMaterial().IsOpaque();
+		}
+	};
+
 	float StdMeshFaceOrderGetVertexZ(const StdMeshVertex& vtx, const StdMeshMatrix& trans)
 	{
 		// TODO: Need to apply attach matrix in case of attached meshes
@@ -524,8 +534,6 @@ void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 		}
 	}
 
-	// TODO: Reorder this submesh so that opaque submeshes are drawn
-	// before non-opaque ones.
 	// TODO: Reset face ordering
 }
 
@@ -873,6 +881,9 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
 		const StdSubMesh& submesh = Mesh->GetSubMesh(i);
 		SubMeshInstances[i] = new StdSubMeshInstance(*this, submesh, completion);
 	}
+
+	// copy, order is fine at the moment since only default materials are used.
+	SubMeshInstancesOrdered = SubMeshInstances;
 }
 
 StdMeshInstance::~StdMeshInstance()
@@ -1163,6 +1174,13 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::GetAttachedMeshByNumber(unsigned
 	return NULL;
 }
 
+void StdMeshInstance::SetMaterial(size_t i, const StdMeshMaterial& material)
+{
+	assert(i < SubMeshInstances.size());
+	SubMeshInstances[i]->SetMaterial(material);
+	std::stable_sort(SubMeshInstancesOrdered.begin(), SubMeshInstancesOrdered.end(), StdMeshSubMeshInstanceVisibilityCmpPred());
+}
+
 bool StdMeshInstance::UpdateBoneTransforms()
 {
 	bool was_dirty = BoneTransformsDirty;
@@ -1299,6 +1317,7 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 			pComp->excCorrupt("Invalid number of submeshes");
 		for(int32_t i = 0; i < iSubMeshCnt; ++i)
 			pComp->Value(mkNamingAdapt(*SubMeshInstances[i], "SubMesh"));
+		std::stable_sort(SubMeshInstancesOrdered.begin(), SubMeshInstancesOrdered.end(), StdMeshSubMeshInstanceVisibilityCmpPred());
 
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
