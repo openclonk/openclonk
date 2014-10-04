@@ -109,11 +109,8 @@ local angPrec = 1000;
 
 public func ControlUseHolding(object clonk, int ix, int iy)
 {
-	if (!clonk)
-	{
-		clonk->CancelUse();
-		return true;
-	}
+	if (!clonk) return true;
+	
 	var r = ConvertAngle(Angle(0,0,ix,iy,angPrec));
 
 	var iColor = RGB(255,255,255);
@@ -121,8 +118,14 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 		iColor = RGB(255,0,0);
 	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec), iColor, 20);
 
-	SetAnimationPosition(animAim, Anim_Const(AnimAngle(r/angPrec)*3954444/100000));
+	SetCannonAngle(r);
+	
 	return true;
+}
+
+public func SetCannonAngle(int r)
+{
+	return SetAnimationPosition(animAim, Anim_Const(AnimAngle(r/angPrec)*3954444/100000));
 }
 
 private func AnimAngle(int angle)
