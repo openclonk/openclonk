@@ -261,11 +261,6 @@ bool C4StartupNetListEntry::OnReference()
 	// special masterserver handling
 	if (eQueryType == NRQT_Masterserver)
 	{
-		// masterserver is official: So check version
-		StdStrBuf updURL;
-		StdStrBuf versInf;
-		if (pRefClient->GetUpdateURL(&updURL) && pRefClient->GetVersion(&versInf))
-			pNetDlg->CheckVersionUpdate(updURL.getData(),versInf.getData());
 		// masterserver: schedule next query
 		sInfoText[1].Format(LoadResStr("IDS_NET_INFOGAMES"), (int) iNewRefCount);
 		SetTimeout(TT_Masterserver);
@@ -278,8 +273,10 @@ bool C4StartupNetListEntry::OnReference()
 		return false;
 	}
 	else
+	{
 		// no ref found on custom adress: Schedule re-check
 		SetTimeout(TT_RefReqWait);
+	}
 	return true;
 }
 
@@ -738,6 +735,8 @@ C4StartupNetDlg::~C4StartupNetDlg()
 {
 	// disable notifies
 	Application.InteractiveThread.ClearCallback(Ev_HTTP_Response, this);
+	Application.InteractiveThread.RemoveProc(&pUpdateClient);
+
 	DiscoverClient.Close();
 	Application.Remove(this);
 	if (pMasterserverClient) delete pMasterserverClient;
@@ -761,6 +760,7 @@ void C4StartupNetDlg::OnShown()
 {
 	// callback when shown: Start searching for games
 	C4StartupDlg::OnShown();
+	CheckVersionUpdate();
 	UpdateList();
 	UpdateMasterserver();
 	OnSec1Timer();
@@ -977,7 +977,24 @@ C4StartupNetDlg::DlgMode C4StartupNetDlg::GetDlgMode()
 
 void C4StartupNetDlg::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData)
 {
+	UpdateUpdateButton();
 	UpdateList(true);
+}
+
+void C4StartupNetDlg::UpdateUpdateButton()
+{
+	if(!pUpdateClient.isSuccess() || pUpdateClient.isBusy()) return;
+
+	pUpdateClient.SetNotify(NULL);
+
+	StdCopyStrBuf versionInfo;
+
+	pUpdateClient.GetVersion(&versionInfo);
+	pUpdateClient.GetUpdateURL(&UpdateURL);
+
+#ifdef WITH_AUTOMATIC_UPDATE
+	btnUpdate->SetVisibility(C4UpdateDlg::IsValidUpdate(versionInfo.getData()));
+#endif
 }
 
 bool C4StartupNetDlg::DoOK()
@@ -1194,27 +1211,16 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 		pEntry->UpdateCollapsed(true);
 }
 
-void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL, const char *szVersion)
+void C4StartupNetDlg::CheckVersionUpdate()
 {
-#ifdef WITH_AUTOMATIC_UPDATE
-	// Is a valid update
-	if (C4UpdateDlg::IsValidUpdate(szVersion))
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
+	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
+
+	if (pUpdateClient.Init() && pUpdateClient.SetServer(strQuery.getData()) && pUpdateClient.QueryUpdateURL())
 	{
-		UpdateURL = szUpdateURL;
-		btnUpdate->SetVisibility(true);
+		pUpdateClient.SetNotify(&Application.InteractiveThread);
+		Application.InteractiveThread.AddProc(&pUpdateClient);
 	}
-	// Otherwise: no update available
-	else
-	{
-		btnUpdate->SetVisibility(false);
-	}
-#else
-	if(szUpdateURL && *szUpdateURL)
-	{
-		// TODO: We could show an item notifying the user that an
-		// update is available externally.
-	}
-#endif
 }
 
 void C4StartupNetDlg::OnChatTitleChange(const StdStrBuf &sNewTitle)
