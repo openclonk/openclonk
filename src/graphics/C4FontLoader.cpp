@@ -760,6 +760,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	       iXBreak=0, // text width as it was at last break pos
 	               iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
 	                                  iHgt=iLineHgt; // total height of output text
+	int iCharHOverlap = Max<int>(-iHSpace, 0); // character width exceeding placement of next character
 	bool fIsFirstLineChar = true;
 	// ignore any markup
 	C4Markup MarkupChecker(false);
@@ -802,7 +803,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			// add chars to output
 			pOut->Append(szLastPos, szPos - szLastPos);
 			// add to line; always add one char at minimum
-			if ((iX+=iCharWdt) <= iWdt || fIsFirstLineChar)
+			if ((iX+=iCharWdt)+iCharHOverlap <= iWdt || fIsFirstLineChar)
 			{
 				// check whether linebreak possibility shall be marked here
 				// 2do: What about unicode-spaces?
