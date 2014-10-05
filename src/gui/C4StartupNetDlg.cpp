@@ -577,7 +577,7 @@ C4Network2Reference *C4StartupNetListEntry::GrabReference()
 
 // ----------- C4StartupNetDlg ---------------------------------------------------------------------------------
 
-C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")), pChatTitleLabel(NULL), pMasterserverClient(NULL), fIsCollapsed(false), fUpdatingList(false), iGameDiscoverInterval(0), tLastRefresh(0)
+C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")), pChatTitleLabel(NULL), pMasterserverClient(NULL), fIsCollapsed(false), fUpdatingList(false), iGameDiscoverInterval(0), tLastRefresh(0), fUpdateCheckPending(false)
 {
 	// ctor
 	// key bindings
@@ -762,6 +762,7 @@ void C4StartupNetDlg::OnShown()
 	C4StartupDlg::OnShown();
 	CheckVersionUpdate();
 	UpdateList();
+	UpdateUpdateButton(); // in case update check was finished before callback registration
 	UpdateMasterserver();
 	OnSec1Timer();
 	tLastRefresh = time(0);
@@ -983,6 +984,7 @@ void C4StartupNetDlg::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventD
 
 void C4StartupNetDlg::UpdateUpdateButton()
 {
+	if (!fUpdateCheckPending) return;
 	if(!pUpdateClient.isSuccess() || pUpdateClient.isBusy()) return;
 
 	pUpdateClient.SetNotify(NULL);
@@ -995,6 +997,7 @@ void C4StartupNetDlg::UpdateUpdateButton()
 #ifdef WITH_AUTOMATIC_UPDATE
 	btnUpdate->SetVisibility(C4UpdateDlg::IsValidUpdate(versionInfo.getData()));
 #endif
+	fUpdateCheckPending = false;
 }
 
 bool C4StartupNetDlg::DoOK()
@@ -1222,6 +1225,7 @@ void C4StartupNetDlg::CheckVersionUpdate()
 		pUpdateClient.SetNotify(&Application.InteractiveThread);
 		Application.InteractiveThread.AddProc(&pUpdateClient);
 	}
+	fUpdateCheckPending = true;
 #endif
 }
 

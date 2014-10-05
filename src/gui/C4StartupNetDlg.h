@@ -198,7 +198,9 @@ private:
 
 	void AddReferenceQuery(const char *szAddress, C4StartupNetListEntry::QueryType eQueryType); // add a ref searcher entry and start searching
 
-	C4Network2UpdateClient pUpdateClient; // set during update information retrieval
+	// set during update information retrieval
+	C4Network2UpdateClient pUpdateClient;
+	bool fUpdateCheckPending;
 
 	DlgMode GetDlgMode();
 
