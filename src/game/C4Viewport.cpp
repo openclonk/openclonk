@@ -297,7 +297,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// ingame menus
 		C4ST_STARTNEW(GuiWindowStat, "C4Viewport::DrawOverlay: Menus")
 		pDraw->SetZoom(0, 0, 1.0);
-		::Game.GuiWindowRoot->Draw(gui_cgo, Player);
+		::Game.GuiWindowRoot->DrawAll(gui_cgo, Player);
 		C4ST_STOP(GuiWindowStat)
 
 		DrawOverlay(gui_cgo, GameZoom);

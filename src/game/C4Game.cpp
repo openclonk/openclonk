@@ -1486,10 +1486,12 @@ void C4Game::Default()
 	DebugHost.Clear();
 	DebugWait = false;
 
-	delete GuiWindowRoot;
+	// pGui is empty atm. Readd script window to GUI.
+	// the window will be deleted by pGui->Clear
 	const float standardVerticalBorder = 100.0f;
 	const float standardHorizontalBorder = 100.0f;
 	GuiWindowRoot = new C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
+	pGUI->AddElement(GuiWindowRoot);
 }
 
 void C4Game::Evaluate()

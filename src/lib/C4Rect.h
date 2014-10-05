@@ -55,9 +55,12 @@ public:
 	void Enlarge(int32_t iBy)
 	{ Enlarge(iBy, iBy); }
 
-	int32_t GetMiddleX() { return x+Wdt/2; }
-	int32_t GetMiddleY() { return y+Hgt/2; }
-	int32_t GetBottom() { return y+Hgt; }
+	int32_t GetMiddleX() const { return x+Wdt/2; }
+	int32_t GetMiddleY() const { return y + Hgt / 2; }
+	int32_t GetBottom() const { return y + Hgt; }
+	int32_t GetTop() const { return y; }
+	int32_t GetLeft() const { return x; }
+	int32_t GetRight() const { return x + Wdt; }
 
 	C4Rect(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt) // ctor
 	{ x=tx; y=ty; Wdt=twdt; Hgt=thgt; }

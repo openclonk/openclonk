@@ -191,10 +191,10 @@ void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, int32_t act
 		// get menu main window
 		C4GuiWindow *main = parent;
 		C4GuiWindow *from = main;
-		while (from->parent)
+		while (from->GetParent())
 		{
 			main = from;
-			from = from->parent;
+			from = static_cast<C4GuiWindow*>(from->GetParent());
 		}
 
 		switch (action)
@@ -245,10 +245,10 @@ bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, in
 		// get menu main window
 		C4GuiWindow *main = parent;
 		C4GuiWindow *from = main;
-		while (from->parent)
+		while (from->GetParent())
 		{
 			main = from;
-			from = from->parent;
+			from = static_cast<C4GuiWindow*>(from->GetParent());
 		}
 		//LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
 		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target));
@@ -310,9 +310,9 @@ bool C4GuiWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t mo
 	if (::MouseControl.IsLeftDown())
 	{
 		// calculate new position
-		float wdt = parent->lastDrawPosition.bottom - parent->lastDrawPosition.top;
+		float wdt = parent->rcBounds.Wdt;
 		if (wdt != 0.0f)
-			offset = (mouseY - parent->lastDrawPosition.top) / wdt;
+			offset = (mouseY - parent->rcBounds.y) / wdt;
 		return true;
 	}
 	return false;
@@ -638,12 +638,12 @@ std::list<C4GuiWindowAction*> C4GuiWindowProperty::GetAllActions()
 }
 
 
-C4GuiWindow::C4GuiWindow()
+C4GuiWindow::C4GuiWindow() : C4GUI::ScrollWindow(this)
 {
 	Init();
 }
 
-C4GuiWindow::C4GuiWindow(float stdBorderX, float stdBorderY)
+C4GuiWindow::C4GuiWindow(float stdBorderX, float stdBorderY) : C4GUI::ScrollWindow(this)
 {
 	Init();
 
@@ -659,6 +659,7 @@ void C4GuiWindow::Init()
 {
 	id = 0;
 	isMainWindow = false;
+	mainWindowNeedsLayoutUpdate = false;
 
 	// properties must know what they stand for
 	for (int32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
@@ -699,10 +700,8 @@ void C4GuiWindow::Init()
 	props[C4GuiWindowPropertyName::priority].SetNull();
 	props[C4GuiWindowPropertyName::player].SetInt(-1);
 
-	parent = 0;
 	wasRemoved = false;
 	closeActionWasExecuted = false;
-	visible = true;
 	currentMouseState = MouseState::None;
 	target = 0;
 	scrollBar = 0;
@@ -923,9 +922,9 @@ const C4Value C4GuiWindow::ToC4Value()
 
 	// save children now, construct new names for them
 	int32_t childIndex = 0;
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = *iter;
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
 		C4Value val = child->ToC4Value();
 		StdStrBuf childName;
 		childName.Format("child_%03d", ++childIndex);
@@ -939,7 +938,7 @@ const C4Value C4GuiWindow::ToC4Value()
 bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate, bool isLoading)
 {
 	if (!proplist) return false;
-
+	C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
 	assert((parent || isLoading) && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
@@ -1059,8 +1058,8 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 		}
 	}
 
-	if (layoutUpdateRequired && parent)
-		parent->lastDrawPosition.dirty = 2;
+	if (layoutUpdateRequired)
+		RequestLayoutUpdate();
 
 	if (resetStdTag)
 		SetTag(stdTag);
@@ -1087,36 +1086,26 @@ void C4GuiWindow::ClearPointers(C4Object *pObj)
 	props[C4GuiWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
 	props[C4GuiWindowPropertyName::onCloseAction].ClearPointers(pObj);
 
-	// can't iterate directly over the children, since they might get deleted in the process
-	std::vector<C4GuiWindow*> temp;
-	temp.reserve(children.size());
-	temp.assign(children.begin(), children.end());
-	for (std::vector<C4GuiWindow*>::iterator iter = temp.begin(); iter != temp.end(); ++iter)
-		(*iter)->ClearPointers(pObj);
+	for (auto iter = begin(); iter != end();)
+	{
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+		// increment the iterator before (possibly) deleting the child
+		++iter;
+		child->ClearPointers(pObj);
+	}
 }
 
 C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
 {
-	child->parent = this;
-	// are we the root menu? Is this a "main" submenu?
-	if (!parent)
+	if (!GetParent())
 	{
 		child->SetID(GenerateMenuID());
 		child->isMainWindow = true;
 	}
+
 	// child's priority is ususally 0 here, so just insert it in front of other windows with a priority below 0
 	// when the child's priority updates, the update function will be called and the child will be sorted to the correct position
-	bool inserted = false;
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-	{
-		C4GuiWindow *otherChild = *iter;
-		if (otherChild->props[C4GuiWindowPropertyName::priority].GetInt() < 0) continue;
-		children.insert(iter, child);
-		inserted = true;
-		break;
-	}
-	if (!inserted)
-		children.push_back(child);
+	ChildChangedPriority(child);
 
 	return child;
 }
@@ -1124,32 +1113,24 @@ C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
 void C4GuiWindow::ChildChangedPriority(C4GuiWindow *child)
 {
 	int prio = child->props[C4GuiWindowPropertyName::priority].GetInt();
-	// remove child from list first
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	C4GUI::Element * insertBefore = nullptr;
+
+	for (C4GUI::Element * element : *this)
 	{
-		if (*iter != child) continue;
-		children.erase(iter);
-		break;
-	}
-	// now insert into list at correct position
-	bool inserted = false;
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-	{
-		C4GuiWindow *otherChild = *iter;
+		C4GuiWindow * otherChild = static_cast<C4GuiWindow*>(element);
 		if (otherChild->props[C4GuiWindowPropertyName::priority].GetInt() < prio) continue;
-		children.insert(iter, child);
-		inserted = true;
+		insertBefore = element;
 		break;
 	}
-	if (!inserted)
-		children.push_back(child);
+	
+	InsertElement(child, insertBefore);
 }
 
 void C4GuiWindow::ChildWithIDRemoved(C4GuiWindow *child)
 {
-	if (!parent) return;
+	if (!GetParent()) return;
 	if (!isMainWindow)
-		return parent->ChildWithIDRemoved(child);
+		return static_cast<C4GuiWindow*>(GetParent())->ChildWithIDRemoved(child);
 	std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
 	range = childrenIDMap.equal_range(child->GetID());
 
@@ -1164,21 +1145,22 @@ void C4GuiWindow::ChildWithIDRemoved(C4GuiWindow *child)
 
 void C4GuiWindow::ChildGotID(C4GuiWindow *child)
 {
-	assert(parent && "ChildGotID called on window root, should not propagate over main windows!");
+	assert(GetParent() && "ChildGotID called on window root, should not propagate over main windows!");
 	if (!isMainWindow)
-		return parent->ChildGotID(child);
+		return static_cast<C4GuiWindow*>(GetParent())->ChildGotID(child);
 	childrenIDMap.insert(std::make_pair(child->GetID(), child));
 	//LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
-C4GuiWindow *C4GuiWindow::GetChildByID(int32_t child)
+C4GuiWindow *C4GuiWindow::GetChildByID(int32_t childID)
 {
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (Element * element : *this)
 	{
-		if ((*iter)->id != child) continue;
-		return *iter;
+		C4GuiWindow * child = static_cast<C4GuiWindow*>(element);
+		if (child->id != childID) continue;
+		return child;
 	}
-	return 0;
+	return nullptr;
 }
 
 C4GuiWindow *C4GuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
@@ -1198,32 +1180,31 @@ C4GuiWindow *C4GuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
 void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 {
 	// do a layout update asap
-	lastDrawPosition.dirty = 2;
+	RequestLayoutUpdate();
 
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	if (child && close)
 	{
-		if (child && (*iter != child)) continue;
-
-		// prevent the child from calling the parent (this window) again
-		(*iter)->wasRemoved = true;
-
-		// close properly (calls etc.?)
-		if (close)
-			(*iter)->Close();
-
-		// if the child had an quick-access entry, remove it
-		if ((*iter)->GetID() != 0)
-			ChildWithIDRemoved(*iter);
-
-		delete *iter;
-		if (!all)
+		child->wasRemoved = true;
+		child->Close();
+		if (child->GetID() != 0)
+			ChildWithIDRemoved(child);
+		RemoveElement(static_cast<C4GUI::Element*>(child));
+	}
+	else if (close) // close all children
+	{
+		assert(all);
+		for (Element * element : *this)
 		{
-			children.erase(iter);
-			return;
+			C4GuiWindow * child = static_cast<C4GuiWindow*>(element);
+			child->wasRemoved = true;
+			child->Close();
+			if (child->GetID() != 0)
+				ChildWithIDRemoved(child);
 		}
 	}
+
 	if (all)
-		children.clear();
+		ClearChildren();
 }
 
 void C4GuiWindow::ClearChildren(bool close)
@@ -1253,8 +1234,8 @@ void C4GuiWindow::Close()
 
 	if (!wasRemoved)
 	{
-		assert(parent && "Close()ing GUIWindow without parent");
-		parent->RemoveChild(this);
+		assert(GetParent() && "Close()ing GUIWindow without parent");
+		static_cast<C4GuiWindow*>(GetParent())->RemoveChild(this);
 	}
 }
 
@@ -1264,17 +1245,17 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 
 	if (style & C4GuiWindowStyleFlag::FitChildren)
 	{
-		float height = lastDrawPosition.bottom - lastDrawPosition.top
+		float height = float(rcBounds.Hgt)
 				- Em2Pix(props[C4GuiWindowPropertyName::topMargin].GetFloat())
 				- Em2Pix(props[C4GuiWindowPropertyName::bottomMargin].GetFloat());
 		float adjustment = childrenHeight - height;
 		props[C4GuiWindowPropertyName::bottom].current->f += Pix2Em(adjustment);
 		assert(!std::isnan(props[C4GuiWindowPropertyName::bottom].current->f));
 		// instantly pseudo-update the sizes in case of multiple refreshs before the next draw
-		lastDrawPosition.bottom += adjustment;
+		rcBounds.Hgt += adjustment;
 		// parents that are somehow affected by their children will need to refresh their layout
-		if (parent && adjustment != 0.0)
-			parent->lastDrawPosition.dirty = 2;
+		if (adjustment != 0.0)
+			RequestLayoutUpdate();
 		return;
 	}
 
@@ -1291,47 +1272,11 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 	}
 }
 
-void C4GuiWindow::UpdateLayout()
-{
-	lastDrawPosition.needLayoutUpdate = false;
-
-	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
-
-	// update scroll bar according to children
-	bool first = true;
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-	{
-		C4GuiWindow *child = *iter;
-		if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
-			lastDrawPosition.topMostChild = child->lastDrawPosition.top;
-		if (first || (child->lastDrawPosition.bottom > lastDrawPosition.bottomMostChild))
-			lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom;
-		first = false;
-	}
-	if (first) // no children?
-	{
-		lastDrawPosition.topMostChild = lastDrawPosition.top;
-		lastDrawPosition.bottomMostChild = lastDrawPosition.top;
-	}
-
-	// special layout selected?
-	if (style & C4GuiWindowStyleFlag::GridLayout)
-		UpdateLayoutGrid();
-	else if (style & C4GuiWindowStyleFlag::VerticalLayout)
-		UpdateLayoutVertical();
-	else
-	{
-		// check whether we need a scroll-bar and then add it
-		float height = lastDrawPosition.bottom - lastDrawPosition.top;
-		float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
-		EnableScrollBar(childHgt > height, childHgt);
-	}
-}
 
 void C4GuiWindow::UpdateLayoutGrid()
 {
-	const int32_t width = lastDrawPosition.right - lastDrawPosition.left;
-	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
+	const int32_t &width = rcBounds.Wdt;
+	const int32_t &height = rcBounds.Hgt;
 
 	float borderX(0.0f), borderY(0.0f);
 	float currentX = borderX;
@@ -1339,16 +1284,16 @@ void C4GuiWindow::UpdateLayoutGrid()
 	float lowestChildRelY = 0;
 	float maxChildHeight = 0;
 
-	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = *iter;
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
-		const float childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left
+		const float childWdt = float(child->rcBounds.Wdt)
 			+ Em2Pix(child->props[C4GuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::rightMargin].GetFloat())
-			+ (lastDrawPosition.right - lastDrawPosition.left) * (child->props[C4GuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relRightMargin].GetFloat());
-		const float childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
+			+ float(width) * (child->props[C4GuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relRightMargin].GetFloat());
+		const float childHgt = float(child->rcBounds.Hgt)
 			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
-			+ (lastDrawPosition.bottom - lastDrawPosition.top) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
+			+ (height) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
 		// remember the heighest child
 		if (!maxChildHeight || (childHgt > maxChildHeight))
 		{
@@ -1369,26 +1314,23 @@ void C4GuiWindow::UpdateLayoutGrid()
 		}
 	}
 
-	lastDrawPosition.topMostChild = lastDrawPosition.top;
-	lastDrawPosition.bottomMostChild = lastDrawPosition.top + lowestChildRelY;
-
 	// do we need a scroll bar?
 	EnableScrollBar(currentY > height, lowestChildRelY);
 }
 
 void C4GuiWindow::UpdateLayoutVertical()
 {
-	const float height = lastDrawPosition.bottom - lastDrawPosition.top;
+	const float height = rcBounds.Hgt;
 
 	float borderY(0.0f);
 	float currentY = borderY;
 
-	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = *iter;
-		const float childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		const float childHgt = float(child->rcBounds.Hgt)
 			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
-			+ (lastDrawPosition.bottom - lastDrawPosition.top) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
+			+ float(rcBounds.Hgt) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
 		child->props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(currentY));
 		child->props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(currentY + childHgt));
 		child->props[C4GuiWindowPropertyName::relTop].SetFloat(0.0f);
@@ -1397,22 +1339,33 @@ void C4GuiWindow::UpdateLayoutVertical()
 		currentY += childHgt + borderY;
 	}
 
-	lastDrawPosition.topMostChild = lastDrawPosition.top;
-	lastDrawPosition.bottomMostChild = lastDrawPosition.top + currentY;
-
 	// do we need a scroll bar?
 	EnableScrollBar(currentY > height, currentY);
 }
 
-bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
+bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag)
 {
+	// remember old target rectangle and adjust
+	int32_t oldTargetX = cgo.TargetX;
+	int32_t oldTargetY = cgo.TargetY;
+	cgo.TargetX += rcBounds.x;
+	cgo.TargetY += rcBounds.y;
+
+	// if ANY PARENT has scroll bar, then adjust clipper
+	int32_t clipX1(0), clipX2(0), clipY1(0), clipY2(0);
+	bool clipping = GetClippingRect(clipX1, clipY1, clipX2, clipY2);
+	if (clipping)
+	{
+		pDraw->StorePrimaryClipper();
+		pDraw->SetPrimaryClipper(clipX1, clipY1, clipX2, clipY2);
+	}
+
 	// note that withMultipleFlag only plays a roll for the root-menu
 	bool oneDrawn = false; // was at least one child drawn?
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = *iter;
-		if (lastDrawPosition.dirty == 1)
-			child->lastDrawPosition.dirty = 2;
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+
 		if (withMultipleFlag != -1)
 		{
 			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
@@ -1420,17 +1373,47 @@ bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentL
 			if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
 		}
 
-		if (child->Draw(cgo, player, parentLeft, parentTop, parentRight, parentBottom))
+		if (child->Draw(cgo, player))
 			oneDrawn = true;
 		// draw only one window when drawing non-Multiple windows
-		if (oneDrawn && (withMultipleFlag == 0)) return true;
+		if (oneDrawn && (withMultipleFlag == 0)) break;
 	}
+
+	// restore clipper
+	if (clipping)
+	{
+		pDraw->RestorePrimaryClipper();
+	}
+
+	// restore target rectangle
+	cgo.TargetX = oldTargetX;
+	cgo.TargetY = oldTargetY;
 	return oneDrawn;
 }
 
-bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
+void C4GuiWindow::RequestLayoutUpdate()
 {
-	if (!IsVisible()) return false;
+	assert(GetParent()); // this should not be able to propagate over a main window
+
+	if (isMainWindow)
+		mainWindowNeedsLayoutUpdate = true;
+	else static_cast<C4GuiWindow*>(GetParent())->RequestLayoutUpdate();
+}
+
+bool C4GuiWindow::UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
+{
+	for (Element * element : *this)
+	{
+		C4GuiWindow *window = static_cast<C4GuiWindow*>(element);
+		window->UpdateLayout(cgo, parentWidth, parentHeight);
+	}
+	return true;
+}
+
+bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo)
+{
+	assert(!GetParent()); // we are root
+
 	// assume I am the root and use the whole viewport for drawing - minus some standard border
 	const float &left = props[C4GuiWindowPropertyName::left].GetFloat();
 	const float &right = props[C4GuiWindowPropertyName::right].GetFloat();
@@ -1445,41 +1428,19 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 	float wdt = rightDrawX - leftDrawX;
 	float hgt = bottomDrawY - topDrawY;
 
-	// abuse properties, we are root, we are allowed to do that
-	// rounding against small errors
-	if ((int(wdt) != int(lastDrawPosition.right)) || (int(hgt) != int(lastDrawPosition.bottom)))
-	{
-		//LogF("Updating root lastDrawPosition %f|%f // %f|%f", cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
-		lastDrawPosition.right = wdt;
-		lastDrawPosition.bottom = hgt;
-		lastDrawPosition.dirty = 1;
-	}
-	else
-		lastDrawPosition.dirty = 0;
+	const bool needUpdate = (rcBounds.Wdt != wdt) || (rcBounds.Hgt != hgt);
 
-	// step one: draw all non-multiple windows
-	DrawChildren(cgo, player, leftDrawX - Em2Pix(left), topDrawY  - Em2Pix(top), rightDrawX + Em2Pix(left), bottomDrawY + Em2Pix(top), 1);
-	// TODO: adjust rectangle for main menu if multiple windows exist
-	// step two: draw one "main" menu
-	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 0);
-	return true;
+	rcBounds.x = 0;
+	rcBounds.y = 0;
+	rcBounds.Wdt = wdt;
+	rcBounds.Hgt = hgt;
+
+	if (needUpdate)
+		UpdateChildLayout(cgo, wdt, hgt);
 }
 
-bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
+bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
 {
-	// message hidden?
-	const int32_t &myPlayer = props[C4GuiWindowPropertyName::player].GetInt();
-	if (!IsVisible() || (myPlayer != -1 && player != myPlayer) || (target && !target->IsVisible(player, false)))
-	{
-		// however, we need to set the rectangle to something unobstructive so that it doesn't interfere with the parent's layout
-		lastDrawPosition.left = parentLeft;
-		lastDrawPosition.right = parentLeft;
-		lastDrawPosition.top = parentTop;
-		lastDrawPosition.bottom = parentTop;
-		lastDrawPosition.dirty = 0;
-		return false;
-	}
-
 	// fetch style
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
@@ -1505,61 +1466,113 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	const float &relBottomMargin = props[C4GuiWindowPropertyName::relBottomMargin].GetFloat();
 
 	// calculate drawing rectangle
-	float parentWidth = parentRight - parentLeft;
-	float parentHeight = parentBottom - parentTop;
-	float leftDrawX = parentLeft + relLeft * parentWidth + Em2Pix(left) + (Em2Pix(leftMargin) + relLeftMargin * parentWidth);
-	float rightDrawX = parentLeft + relRight * parentWidth + Em2Pix(right) - (Em2Pix(rightMargin) + relRightMargin * parentWidth);
-	float topDrawY = parentTop + relTop * parentHeight + Em2Pix(top) + (Em2Pix(topMargin) + relTopMargin * parentHeight);
-	float bottomDrawY = parentTop + relBottom * parentHeight + Em2Pix(bottom) - (Em2Pix(bottomMargin) + relBottomMargin * parentHeight);
+	float leftDrawX = relLeft * parentWidth + Em2Pix(left) + (Em2Pix(leftMargin) + relLeftMargin * parentWidth);
+	float rightDrawX = relRight * parentWidth + Em2Pix(right) - (Em2Pix(rightMargin) + relRightMargin * parentWidth);
+	float topDrawY = relTop * parentHeight + Em2Pix(top) + (Em2Pix(topMargin) + relTopMargin * parentHeight);
+	float bottomDrawY = relBottom * parentHeight + Em2Pix(bottom) - (Em2Pix(bottomMargin) + relBottomMargin * parentHeight);
 	float width = rightDrawX - leftDrawX;
 	float height = bottomDrawY - topDrawY;
+
+	rcBounds.x = leftDrawX;
+	rcBounds.y = topDrawY;
+	rcBounds.Wdt = width;
+	rcBounds.Hgt = height;
+
+	UpdateChildLayout(cgo, width, height);
+	
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+
+	// update scroll bar according to children
+	/*bool first = true;
+	for (Element * element : *this)
+	{
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
+			lastDrawPosition.topMostChild = child->lastDrawPosition.top;
+		if (first || (child->lastDrawPosition.bottom > lastDrawPosition.bottomMostChild))
+			lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom;
+		first = false;
+	}
+	if (first) // no children?
+	{
+		lastDrawPosition.topMostChild = lastDrawPosition.top;
+		lastDrawPosition.bottomMostChild = lastDrawPosition.top;
+	}
+	*/
+	// special layout selected?
+	if (style & C4GuiWindowStyleFlag::GridLayout)
+		UpdateLayoutGrid();
+	else if (style & C4GuiWindowStyleFlag::VerticalLayout)
+		UpdateLayoutVertical();
+	else
+	{
+		// check whether we need a scroll-bar and then add it
+		//float height = lastDrawPosition.bottom - lastDrawPosition.top;
+		//float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
+		//EnableScrollBar(childHgt > height, childHgt);
+	}
+}
+
+bool C4GuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
+{
+	assert(!GetParent()); // we are root
+	if (!IsVisible()) return false;
+	// this will check whether the viewport resized and we need an update
+	UpdateLayout(cgo);
+	// step one: draw all non-multiple windows
+	DrawChildren(cgo, player, 1);
+	// TODO: adjust rectangle for main menu if multiple windows exist
+	// step two: draw one "main" menu
+	DrawChildren(cgo, player, 0);
+	return true;
+}
+
+bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
+{
+	assert(GetParent()); // not root, root needs to receive DrawAll
+
+	// message hidden?
+	const int32_t &myPlayer = props[C4GuiWindowPropertyName::player].GetInt();
+	if (!IsVisible() || (myPlayer != -1 && player != myPlayer) || (target && !target->IsVisible(player, false)))
+	{
+		return false;
+	}
+	
+	if (mainWindowNeedsLayoutUpdate)
+	{
+		assert(GetParent() && !(GetParent()->GetParent()));
+		assert(isMainWindow);
+		C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
+		UpdateLayout(cgo, parent->rcBounds.Wdt, parent->rcBounds.Hgt);
+		mainWindowNeedsLayoutUpdate = false;
+	}
+
 	float childOffsetY = 0.0f; // for scrolling
 
-	// always update drawing position, needed for mouse input etc.
-	lastDrawPosition.left = leftDrawX;
-	lastDrawPosition.right = rightDrawX;
-	lastDrawPosition.top = topDrawY;
-	lastDrawPosition.bottom = bottomDrawY;
-
-	// do we need to update children positions etc.?
-	bool updateLayout = lastDrawPosition.needLayoutUpdate;
-	if (lastDrawPosition.dirty > 0)
-	{
-		if (lastDrawPosition.dirty == 2)
-			lastDrawPosition.needLayoutUpdate = true;
-
-		--lastDrawPosition.dirty;
-
-		if (updateLayout)
-			UpdateLayout();
-	}
 	// check whether we are scrolling
-	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
+	//float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
 
-	if (scrollBar)
-		childOffsetY = -1.0f * (scrollBar->offset * (childHgt - height));
+	//if (scrollBar)
+	//	childOffsetY = -1.0f * (scrollBar->offset * (childHgt - rcBounds.Hgt));
 
-	// if ANY PARENT has scroll bar, then adjust clipper
-	float clipX1(0.0f), clipX2(0.0f), clipY1(0.0f), clipY2(0.0f);
-	bool clipping = parent->GetClippingRect(clipX1, clipY1, clipX2, clipY2);
-	if (clipping)
-	{
-		pDraw->StorePrimaryClipper();
-		pDraw->SetPrimaryClipper(int32_t(clipX1), int32_t(clipY1), int32_t(clipX2), int32_t(clipY2));
-	}
-
+	const int32_t outDrawX = cgo.TargetX + rcBounds.x;
+	const int32_t outDrawY = cgo.TargetY + rcBounds.x;
+	const int32_t outDrawWdt = rcBounds.Wdt;
+	const int32_t outDrawHgt = rcBounds.Hgt;
+	const int32_t outDrawRight = outDrawX + rcBounds.Wdt;
+	const int32_t outDrawBottom = outDrawY + rcBounds.Hgt;
 	// draw various properties
-	C4Facet cgoOut(cgo.Surface, leftDrawX, topDrawY, width, height);
+	C4Facet cgoOut(cgo.Surface, outDrawX, outDrawY, outDrawWdt, outDrawHgt);
 
 	const int32_t &backgroundColor = props[C4GuiWindowPropertyName::backgroundColor].GetInt();
 	if (backgroundColor)
-		pDraw->DrawBoxDw(cgo.Surface, leftDrawX, topDrawY, rightDrawX - 1.0f, bottomDrawY - 1.0f, backgroundColor);
+		pDraw->DrawBoxDw(cgo.Surface, outDrawX, outDrawY, outDrawRight - 1.0f, outDrawBottom - 1.0f, backgroundColor);
 
 	C4GUI::FrameDecoration *frameDecoration = props[C4GuiWindowPropertyName::frameDecoration].GetFrameDecoration();
 
 	if (frameDecoration)
 	{
-		C4Rect rect(leftDrawX - cgo.TargetX - frameDecoration->iBorderLeft, topDrawY - cgo.TargetY - frameDecoration->iBorderTop, width + frameDecoration->iBorderRight + frameDecoration->iBorderLeft, height + frameDecoration->iBorderBottom + frameDecoration->iBorderTop);
+		C4Rect rect(outDrawX - frameDecoration->iBorderLeft, outDrawY - frameDecoration->iBorderTop, outDrawWdt + frameDecoration->iBorderRight + frameDecoration->iBorderLeft, outDrawHgt + frameDecoration->iBorderBottom + frameDecoration->iBorderTop);
 		frameDecoration->Draw(cgo, rect);
 	}
 
@@ -1583,76 +1596,72 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 	{
 		StdStrBuf sText;
 		int alignment = ALeft;
-		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), int32_t(width), &sText, true);
+		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), outDrawWdt, &sText, true);
 		float textYOffset = 0.0f, textXOffset = 0.0f;
 		if (style & C4GuiWindowStyleFlag::TextVCenter)
-			textYOffset = height/2.0f - float(textHgt)/2.0f;
+			textYOffset = float(outDrawHgt)/2.0f - float(textHgt)/2.0f;
 		else if (style & C4GuiWindowStyleFlag::TextBottom)
-			textYOffset += height - float(textHgt);
+			textYOffset += float(outDrawHgt) - float(textHgt);
 		if (style & C4GuiWindowStyleFlag::TextHCenter)
 		{
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = width/2.0f - float(wdt)/2.0f;
+			textXOffset = float(outDrawWdt)/ 2.0f - float(wdt) / 2.0f;
 		}
 		else if (style & C4GuiWindowStyleFlag::TextRight)
 		{
 			alignment = ARight;
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = width - float(wdt);
+			textXOffset = float(outDrawWdt) - float(wdt);
 		}
-		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, leftDrawX + textXOffset, topDrawY + textYOffset, 0xffffffff, ALeft);
+		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, outDrawX + textXOffset, outDrawY + textYOffset, 0xffffffff, ALeft);
 		// enable auto scroll
-		float textBottom = lastDrawPosition.top + float(textHgt);
-		if (textBottom > lastDrawPosition.bottom)
-			lastDrawPosition.bottom = textBottom;
+		if (textHgt > rcBounds.Hgt)
+			rcBounds.Hgt = textHgt;
 	}
 
-	if (clipping)
-	{
-		pDraw->RestorePrimaryClipper();
-	}
 
 	if (GraphicsSystem.ShowMenuInfo) // print helpful debug info
 	{
-		pDraw->DrawFrameDw(cgo.Surface, leftDrawX, topDrawY, rightDrawX,bottomDrawY, clipping ? C4RGB(255, 255, 0) :C4RGB(0, 255, 0));
+		pDraw->DrawFrameDw(cgo.Surface, outDrawX, outDrawY, outDrawRight, outDrawBottom, C4RGB(0, 255, 0));
 		StdStrBuf buf = FormatString("%s(%d)", target ? target->GetName() : "", id);
-		pDraw->TextOut(buf.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + leftDrawX, cgo.Y + topDrawY, 0xffff00ff, ALeft);
+		pDraw->TextOut(buf.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + outDrawX, cgo.Y + outDrawY, 0xffff00ff, ALeft);
 
-		if (scrollBar || (parent && parent->scrollBar) || (parent && lastDrawPosition.bottom > parent->lastDrawPosition.bottom))
+		C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
+		if (scrollBar || (parent && parent->scrollBar) || (parent && rcBounds.Hgt > parent->rcBounds.Hgt))
 		{
 			float scroll = scrollBar ? scrollBar->offset : 0.0f;
-			StdStrBuf buf2 = FormatString("childHgt: %d of %d (scroll %3d%%)", int(childHgt), int(height), int(100.0f * scroll));
+			StdStrBuf buf2 = FormatString("childHgt: %d of %d (scroll %3d%%)", -1, outDrawHgt, int(100.0f * scroll));
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(buf2.getData(), wdt, hgt, true);
-			pDraw->TextOut(buf2.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + rightDrawX, cgo.Y + bottomDrawY - hgt, 0xff9999ff, ARight);
+			pDraw->TextOut(buf2.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + outDrawX, cgo.Y + outDrawBottom - hgt, 0xff9999ff, ARight);
 		}
 	}
 
 	if (scrollBar)
 	{
-		scrollBar->Draw(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY);
+		scrollBar->Draw(cgo, player, outDrawX, outDrawY, outDrawRight, outDrawBottom);
 	}
 
-	DrawChildren(cgo, player, leftDrawX, topDrawY + childOffsetY, rightDrawX, bottomDrawY + childOffsetY);
+	DrawChildren(cgo, player);
 	return true;
 }
 
-bool C4GuiWindow::GetClippingRect(float &left, float &top, float &right, float &bottom)
+bool C4GuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom)
 {
 	if (scrollBar)
 	{
-		left = lastDrawPosition.left;
-		right = lastDrawPosition.right;
-		top = lastDrawPosition.top;
-		bottom = lastDrawPosition.bottom;
+		left = rcBounds.x;
+		top = rcBounds.y;
+		right = rcBounds.Wdt + left;
+		bottom = rcBounds.Hgt + right;
 		return true;
 	}
 
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
-	if (parent && !(style & C4GuiWindowStyleFlag::NoCrop))
-		return parent->GetClippingRect(left, top, right, bottom);
+	if (GetParent() && !(style & C4GuiWindowStyleFlag::NoCrop))
+		return static_cast<C4GuiWindow*>(GetParent())->GetClippingRect(left, top, right, bottom);
 	return false;
 }
 
@@ -1664,22 +1673,20 @@ void C4GuiWindow::SetTag(C4String *tag)
 		{
 			// only if tag could have changed position etc.
 			if (i <= C4GuiWindowPropertyName::relBottom || i == C4GuiWindowPropertyName::text || i == C4GuiWindowPropertyName::style || i == C4GuiWindowPropertyName::priority)
-			if (parent)
-			{
-				parent->lastDrawPosition.dirty = 2;
-			}
-
+				RequestLayoutUpdate();
 		}
 
 	// .. and children
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-		(*iter)->SetTag(tag);
+	for (C4GUI::Element * element : *this)
+		(static_cast<C4GuiWindow*>(element))->SetTag(tag);
 }
 
-void C4GuiWindow::OnMouseIn(int32_t player)
+void C4GuiWindow::MouseEnter(C4GUI::CMouse &rMouse)
 {
 	assert(!HasMouseFocus() && "custom menu window properly loaded incorrectly!");
 	currentMouseState = MouseState::Focus;
+	const int32_t &player = ::MouseControl.GetPlayer();
+	assert(player != NO_OWNER);
 
 	// no need to notify children, this is done in MouseInput
 
@@ -1690,15 +1697,17 @@ void C4GuiWindow::OnMouseIn(int32_t player)
 	action->Execute(this, player, actionType);
 }
 
-void C4GuiWindow::OnMouseOut(int32_t player)
+void C4GuiWindow::MouseLeave(C4GUI::CMouse &rMouse)
 {
 	assert(HasMouseFocus() && "custom menu window properly loaded incorrectly!");
 	currentMouseState = MouseState::None;
+	const int32_t &player = ::MouseControl.GetPlayer();
+	assert(player != NO_OWNER);
 
 	// needs to notify children
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element *iter : *this)
 	{
-		C4GuiWindow *child = *iter;
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(iter);
 		if (child->HasMouseFocus())
 			child->OnMouseOut(player);
 	}
@@ -1710,53 +1719,59 @@ void C4GuiWindow::OnMouseOut(int32_t player)
 	action->Execute(this, player, actionType);
 }
 
-bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+void C4GuiWindow::MouseInput(C4GUI::CMouse &rMouse, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
 {
-	// special handling for root
-	if (!parent)
+	// only called on root
+	assert(!GetParent());
+
+	// non-multiple-windows have a higher priority
+	// this is important since they are also drawn on top
+	for (int withMultipleFlag = 0; withMultipleFlag <= 1; ++withMultipleFlag)
 	{
-		// non-multiple-windows have a higher priority
-		// this is important since they are also drawn on top
-		for (int withMultipleFlag = 0; withMultipleFlag <= 1; ++withMultipleFlag)
+		for (auto iter = rbegin(); iter != rend(); ++iter)
 		{
-			for (std::list<C4GuiWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
+			C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+
+			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
+			if ((withMultipleFlag == 0) && (style & C4GuiWindowStyleFlag::Multiple)) continue;
+			if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
+
+			int32_t childLeft = child->rcBounds.x;
+			int32_t childRight = child->rcBounds.x + child->rcBounds.Wdt;
+			int32_t childTop = child->rcBounds.y;
+			int32_t childBottom = child->rcBounds.y + child->rcBounds.Hgt;
+			//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
+			bool inArea = true;
+			if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
+			else if ((mouseY < childTop) || (mouseY > childBottom)) inArea = false;
+
+			if (!inArea) // notify child if it had mouse focus before
 			{
-				C4GuiWindow *child = *iter;
-
-				const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
-				if ((withMultipleFlag == 0) &&  (style & C4GuiWindowStyleFlag::Multiple)) continue;
-				if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
-
-				int32_t childLeft = static_cast<int32_t>(child->lastDrawPosition.left);
-				int32_t childRight = static_cast<int32_t>(child->lastDrawPosition.right);
-				int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
-				int32_t childBottom = static_cast<int32_t>(child->lastDrawPosition.bottom);
-				//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
-				bool inArea = true;
-				if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
-				else if ((mouseY < childTop) || (mouseY > childBottom)) inArea = false;
-
-				if (!inArea) // notify child if it had mouse focus before
-				{
-					if (child->HasMouseFocus())
-						child->OnMouseOut(player);
-					continue;
-				}
-
-				if (child->MouseInput(player, button, mouseX, mouseY, dwKeyParam))
-					return true;
+				if (child->HasMouseFocus())
+					child->OnMouseOut(player);
+				continue;
 			}
+
+			// keep the mouse coordinates relative to the child's bounds
+			if (child->ProcessMouseInput(rMouse, button, mouseX - childLeft, mouseY - childTop, dwKeyParam))
+				return;
 		}
-		return false;
 	}
+	return;
+}
+
+bool C4GuiWindow::ProcessMouseInput(C4GUI::CMouse &rMouse, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+{
+	const int32_t &player = ::MouseControl.GetPlayer();
+	assert(player != NO_OWNER);
 
 	// completely ignore mouse if the appropriate flag is set
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 	if (style & C4GuiWindowStyleFlag::IgnoreMouse)
 		return false;
 
-	if (!visible) return false;
-
+	// if the window belongs to an invisible object, don't show
+	// the "normal" visibility will be handed by the parent callback
 	if (target)
 		if (!target->IsVisible(player, false))
 			return false;
@@ -1768,13 +1783,13 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 	// children actually have a higher priority
 	bool overChild = false; // remember for later, catch all actions that are in theory over children, even if not reaction (if main window)
 	// use reverse iterator since children with higher Priority appear later in the list
-	for (std::list<C4GuiWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
+	for (auto iter = rbegin(); iter != rend(); ++iter)
 	{
-		C4GuiWindow *child = *iter;
-		int32_t childLeft = static_cast<int32_t>(child->lastDrawPosition.left);
-		int32_t childRight = static_cast<int32_t>(child->lastDrawPosition.right);
-		int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
-		int32_t childBottom = static_cast<int32_t>(child->lastDrawPosition.bottom);
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+		int32_t childLeft = child->rcBounds.x;
+		int32_t childRight = child->rcBounds.x + child->rcBounds.Wdt;
+		int32_t childTop = child->rcBounds.y;
+		int32_t childBottom = child->rcBounds.y + child->rcBounds.Hgt;
 
 		bool inArea = true;
 		if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
@@ -1788,9 +1803,12 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 		}
 
 		overChild = true;
-		if (child->MouseInput(player, button, mouseX, mouseY, dwKeyParam))
+		// keep coordinates relative to children
+		if (child->ProcessMouseInput(rMouse, button, mouseX - childLeft, mouseY - childTop, dwKeyParam))
 			return true;
 	}
+
+	C4GUI::Element::MouseInput(rMouse, button, mouseX, mouseY, dwKeyParam);
 
 	// remember button-down events. The action will only be executed on button-up
 	if (button == C4MC_Button_LeftDown)
@@ -1807,24 +1825,29 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 	}
 
 	// for scroll-enabled windows, scroll contents with wheel
-	if (scrollBar && (button == C4MC_Button_Wheel))
+	if (pScrollBar && (button == C4MC_Button_Wheel))
 	{
 		short delta = (short)(dwKeyParam >> 16);
-		float fac = (lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild);
-		if (fac == 0.0f) fac = 1.0f;
-		scrollBar->ScrollBy(-float(delta) / fac);
+		ScrollBy(-delta);
+		//float fac = (lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild);
+		//if (fac == 0.0f) fac = 1.0f;
+		//scrollBar->ScrollBy(-float(delta) / fac);
 		return true;
 	}
 
 	// forward to scroll-bar if in area
-	if (scrollBar)
+	if (pScrollBar)
 	{
-		if (mouseX >= lastDrawPosition.right - 50.0f)
-			return scrollBar->MouseInput(button, mouseX, mouseY, dwKeyParam);
+		if (mouseX >= rcBounds.x + rcBounds.Wdt - 50)
+		{
+			pScrollBar->MouseInput(rMouse, button, mouseX, mouseY, dwKeyParam);
+			return true;
+		}
 	}
 
+
 	// if the user still clicked on a menu - even if it didn't do anything, catch it
-	// but do that only on the top-level to not stop traversin other branches
+	// but do that only on the top-level to not stop traversing other branches
 	if (isMainWindow)
 		return overChild;
 	return false;
@@ -1870,9 +1893,10 @@ bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwi
 	// abort if main window, though. See above
 	if (isMainWindow && subwindowID) return false;
 
-	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	//for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (C4GUI::Element *element : *this)
 	{
-		C4GuiWindow *child = *iter;
+		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
 		if (child->ExecuteCommand(actionID, player, subwindowID, actionType, target))
 			return true;
 	}

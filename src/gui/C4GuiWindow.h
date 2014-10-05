@@ -189,9 +189,10 @@ class C4GuiWindowScrollBar
 	C4GuiWindow *parent;
 };
 
-class C4GuiWindow
+class C4GuiWindow : public C4GUI::ScrollWindow
 {
 	friend class C4GuiWindowAction;
+	friend class C4GuiWindowScrollBar;
 
 	private:
 	// the menu ID is always unique, however the sub-menu IDs do NOT have to be unique
@@ -200,39 +201,18 @@ class C4GuiWindow
 	// this is not only a window inside a menu but a top-level-window?
 	// this does not mean the ::WindowMenuRoot but rather a player-created submenu
 	bool isMainWindow;
+	bool mainWindowNeedsLayoutUpdate;
+	void RequestLayoutUpdate();
 
-	std::list<C4GuiWindow*> children;
-	C4GuiWindow *parent;
 	bool wasRemoved; // to notify the window that it should not inform its parent on Close() a second time
 	bool closeActionWasExecuted; // to prevent a window from calling the close-callback twice even if f.e. closed in the close-callback..
-	bool visible;
 	C4Object *target;
 	const C4Object *GetTarget() { return target; }
 	C4GuiWindowScrollBar *scrollBar;
 
-	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
-	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
-	enum MouseState // values of this enum will be bit-wise combined
-	{
-		None = 0,
-		Focus = 1,
-		MouseDown = 2
-	};
-	int32_t currentMouseState; // this needs to be saved in savegames!!!
-	// OnMouseOut() called by this window, unsets the mouse focus
-	// must notify children, too!
-	void OnMouseOut(int32_t player);
-	void OnMouseIn(int32_t player); // called by this window, sets the mouse focus
-	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
 	// properties are stored extra to make "tags" possible
 	C4GuiWindowProperty props[C4GuiWindowPropertyName::_lastProp];
 	void Init();
-	// withMultipleFlag is there to draw only the non-multiple or the multiple windows
-	// withMultipleFlag == -1: all windows are drawn (standard)
-	// withMultipleFlag ==  0: only one non-Multiple window is drawn
-	// withMultipleFlag ==  1: only Multiple windows are drawn
-	// returns whether at least one child was drawn
-	bool DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag = -1);
 	// ID is set by parent, parent gives unique IDs to children
 	void SetID(int32_t to) { id = to; }
 	// to be used to generate the quick-access children map for main menus
@@ -252,15 +232,13 @@ class C4GuiWindow
 	int32_t GenerateMenuID() { return ++id; }
 	int32_t GenerateActionID() { return ++id; }
 
-	void UpdateLayout();
-	void UpdateLayoutGrid();
-	void UpdateLayoutVertical();
+
 	// children height should be set when enabling a scroll bar so that, with style FitChildren, the size can simply be changed
 	void EnableScrollBar(bool enable = true, float childrenHeight = 0.0f);
 
 	public:
 	// used by mouse input, this is in screen coordinates
-	struct _lastDrawPosition
+	/*struct _lastDrawPosition
 	{
 		float left, right;
 		float top, bottom;
@@ -269,10 +247,8 @@ class C4GuiWindow
 		int32_t dirty; // indicates wish to update topMostChild and bottomMostChild asap
 		bool needLayoutUpdate;
 		_lastDrawPosition() : left(0.0f), right(0.0f), top(0.0f), bottom(0.0f), topMostChild(0.0f), bottomMostChild(0.0f), dirty(2), needLayoutUpdate(false){}
-	} lastDrawPosition;
+	} lastDrawPosition;*/
 
-	bool IsVisible() { return visible; }
-	void SetVisible(bool f) { visible = f; }
 	void SetTag(C4String *tag);
 
 	C4GuiWindow();
@@ -306,16 +282,53 @@ class C4GuiWindow
 	void Close();
 	void ClearPointers(C4Object *pObj);
 
+	// this updates the window's layout and also propagates to all children
+	bool UpdateLayout(C4TargetFacet &cgo);
+	bool UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);
+	bool UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);
+	// special layouts that are set by styles
+	void UpdateLayoutGrid();
+	void UpdateLayoutVertical();
+
 	// Draw without parameters can be used for the root
+	bool DrawAll(C4TargetFacet &cgo, int32_t player);
 	bool Draw(C4TargetFacet &cgo, int32_t player);
-	bool Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom);
-	bool GetClippingRect(float &left, float &top, float &right, float &bottom);
+	bool GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom);
+
+	// withMultipleFlag is there to draw only the non-multiple or the multiple windows
+	// withMultipleFlag == -1: all windows are drawn (standard)
+	// withMultipleFlag ==  0: only one non-Multiple window is drawn
+	// withMultipleFlag ==  1: only Multiple windows are drawn
+	// returns whether at least one child was drawn
+	bool DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag = -1);
 
 	// used for commands that have been synchronized and are coming from the command queue
 	// attention: calls to this need to be synchronized!
 	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target);
-	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
-
+	
+	// virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
+	// this is called only on the root menu
+	virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	// this is then called on the child windows, note the return value
+	virtual bool ProcessMouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	// called when mouse cursor enters element region
+	virtual void MouseEnter(C4GUI::CMouse &rMouse);
+	// called when mouse cursor leaves element region
+	virtual void MouseLeave(C4GUI::CMouse &rMouse);
+	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
+	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
+	enum MouseState // values of this enum will be bit-wise combined
+	{
+		None = 0,
+		Focus = 1,
+		MouseDown = 2
+	};
+	int32_t currentMouseState; // this needs to be saved in savegames!!!
+	// OnMouseOut() called by this window, unsets the mouse focus
+	// must notify children, too!
+	void OnMouseOut(int32_t player);
+	void OnMouseIn(int32_t player); // called by this window, sets the mouse focus
+	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
 private:
 	// TODO: actually scale with font size (needs font to be able to scale first..)
 	float Em2Pix(float em) { return 12.0f * em; }

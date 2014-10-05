@@ -502,7 +502,8 @@ namespace C4GUI
 		rtBounds.x += rtBounds.Wdt; rtBounds.Wdt = C4GUI_ScrollBarWdt;
 		pScrollBar = new ScrollBar(rtBounds, this);
 		// add self and scroll bar to window
-		pParentWindow->AddElement(this);
+		if (pParentWindow != this)
+			pParentWindow->AddElement(this);
 		pParentWindow->AddElement(pScrollBar);
 	}
 
