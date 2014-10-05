@@ -179,43 +179,66 @@ bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 
 bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4GUI::Screen *pScreen)
 {
-	// Determine name of update program
-	StdStrBuf strUpdateProg; strUpdateProg.Copy(C4CFN_UpdateProgram);
-	// Windows: manually append extension because ExtractEntry() cannot properly glob and Extract() doesn't return failure values
+	// Apply update: If the update file is a .ocu, it will extract c4group and apply the update.
+	// If the update file is an installer, it will just launch that installer.
+	StdStrBuf strUpdateProgEx, strUpdateArgs;
+	bool fIsGroupUpdate = SEqualNoCase(GetExtension(strUpdateFile), C4CFN_UpdateGroupExtension+1);
+	// Is this an update executable or an update group?
+	if (fIsGroupUpdate)
+	{
+		// This is an update group (.ocu). Extract c4group and run it.
+		// Find a place to extract the update
+		Config.MakeTempUpdateFolder();
+		// Determine name of update program
+		StdStrBuf strUpdateProg;
+		strUpdateProg.Copy(C4CFN_UpdateProgram);
+		// Windows: manually append extension because ExtractEntry() cannot properly glob and Extract() doesn't return failure values
 #ifdef _WIN32
-	strUpdateProg += ".exe";
+		strUpdateProg += ".exe";
 #endif
-	// Determine name of local extract of update program
-	StdStrBuf strUpdateProgEx;
-	strUpdateProgEx.Copy(Config.AtExePath(strUpdateProg.getData()));
+		// Determine name of local extract of update program
+		strUpdateProgEx.Copy(Config.AtTempUpdatePath(strUpdateProg.getData()));
 
-	// Extract update program (the update should be applied using the new version)
-	C4Group UpdateGroup;
-	if (!UpdateGroup.Open(strUpdateFile))
-	{
-		LogF("Error opening \"%s\": %s", strUpdateFile, UpdateGroup.GetError());
-		return false;
-	}
-	// Look for update program at top level
-	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
-	{
-		LogF("Error extracting \"%s\": %s", strUpdateProg.getData(), UpdateGroup.GetError());
-		return false;
-	}
-#if 0
-	char strSubGroup[1024+1];
-		// ASK: What is this? Why should an update program not be found at the top
-		// level? This seems obsolete. - Newton
-		// Not found: look for an engine update pack one level down
-		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.ocu", C4_OS).getData(), strSubGroup))
-			// Extract update program from sub group
-			if (SubGroup.OpenAsChild(&UpdateGroup, strSubGroup))
-			{
-				SubGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData());
-				SubGroup.Close();
-			}
+		// Extract update program (the update should be applied using the new version)
+		C4Group UpdateGroup;
+		if (!UpdateGroup.Open(strUpdateFile))
+		{
+			LogF("Error opening \"%s\": %s", strUpdateFile, UpdateGroup.GetError());
+			return false;
+		}
+		// Look for update program at top level
+		if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
+		{
+			LogF("Error extracting \"%s\": %s", strUpdateProg.getData(), UpdateGroup.GetError());
+			return false;
+		}
+		// Extract any needed library files
+		UpdateGroup.Extract(C4CFN_UpdateProgramLibs, Config.AtTempUpdatePath(""), C4CFN_UpdateProgram);
+		UpdateGroup.Close();
+#ifdef _WIN32
+		// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
+		DWORD ProcessID = GetCurrentProcessId();
+		//strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
+		strUpdateArgs.Format("\"%s\" %s %lu", strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
+
+#if 0 // debug code to reroute updating via batch file
+		CStdFile f; - reroute via vi
+		f.Create(Config.AtTempUpdatePath("update.bat"));
+		f.WriteString(FormatString("%s %s\npause\n", strUpdateProgEx.getData(), strUpdateArgs.getData()).getData());
+		f.Close();
+		strUpdateProgEx.Copy(Config.AtTempUpdatePath("update.bat"));
+		strUpdateArgs.Copy(strUpdateProgEx);
 #endif
-	UpdateGroup.Close();
+#endif
+	}
+	else
+	{
+		// This "update" is actually an installer. Just run it.
+		strUpdateProgEx = strUpdateFile;
+		strUpdateArgs = "";
+		// if group was downloaded to temp path, delete it from there
+		if (fDeleteUpdate) SCopy(strUpdateProgEx.getData(), Config.General.TempUpdatePath, CFG_MaxString);
+	}
 
 	// Execute update program
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
@@ -223,10 +246,6 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 
 #ifdef _WIN32
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
-	DWORD ProcessID = GetCurrentProcessId();
-	StdStrBuf strUpdateArgs;
-	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
-
 	// the magic verb "runas" opens the update program in a shell requesting elevation
 	int iError = (intptr_t)ShellExecute(NULL, L"runas", strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), Config.General.ExePath.GetWideChar(), SW_SHOW);
 	if (iError <= 32) return false;
@@ -254,7 +273,10 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		dup2(c4group_output[1], STDERR_FILENO);
 		if (c4group_output[1] != STDOUT_FILENO && c4group_output[1] != STDERR_FILENO)
 			close(c4group_output[1]);
-		execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
+		if (fIsGroupUpdate)
+			execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
+		else
+			execl(strUpdateFile, strUpdateFile);
 		printf("execl failed: %s\n", strerror(errno));
 		exit(1);
 		// Parent process

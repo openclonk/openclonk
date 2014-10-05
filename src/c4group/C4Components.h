@@ -48,11 +48,9 @@
 #define C4CFN_UpdateCore      "AutoUpdate.txt"
 #define C4CFN_UpdateEntries   "GRPUP_Entries.txt"
 
-#ifdef __x86_64
-#define C4CFN_UpdateProgram   "c4group64"
-#else
+#define C4CFN_UpdateGroupExtension ".ocu"
 #define C4CFN_UpdateProgram   "c4group"
-#endif
+#define C4CFN_UpdateProgramLibs "*.dll"
 
 #define C4CFN_Map             "Map.bmp"
 #define C4CFN_Landscape       "Landscape.bmp"

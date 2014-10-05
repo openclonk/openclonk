@@ -112,6 +112,8 @@ bool C4Application::DoInit(int argc, char * argv[])
 	C4Group_SetTempPath(Config.General.TempPath.getData());
 	C4Group_SetSortList(C4CFN_FLS);
 
+	// Cleanup temp folders left behind
+	Config.CleanupTempUpdateFolder();
 
 	// Initialize game data paths
 	Reloc.Init();
