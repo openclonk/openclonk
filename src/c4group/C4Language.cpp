@@ -389,7 +389,12 @@ namespace
 {
 	std::string GetResStr(const char *id, const char *stringtbl)
 	{
-		static re::regex line_pattern("^([^=]+)=(.*?)\r?$", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+		// The C++11 standard does not specify whether $ and ^ match
+		// the beginning or end of a line, respectively, and it seems
+		// like in some implementations they only match the beginning
+		// or end of the whole string. See also #1127.
+		static re::regex line_pattern("(?:\n|^)([^=]+)=(.*?)\r?(?=\n|$)", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+
 		assert(stringtbl);
 		if (!stringtbl)
 		{
