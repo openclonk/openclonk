@@ -1,0 +1,4 @@
+Name=Key
+Description=Opens doors.
+UsageHelp=Use this on the locked door to Mave's secret oil chamber.
+KeyNoLock=The key to Mave's secret oil room. Now I just need to find the entrance below the lava lakes.

@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2009, 2011  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010  Benjamin Herr
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include <C4Include.h>
 #include "C4AulDebug.h"
@@ -46,7 +41,7 @@ C4AulDebug::~C4AulDebug()
 	if (pDebug == this) pDebug = NULL;
 }
 
-bool C4AulDebug::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
+bool C4AulDebug::InitDebug(const char *szPassword, const char *szHost)
 {
 	// Create debug object
 	if (!pDebug) pDebug = new C4AulDebug();
@@ -54,17 +49,22 @@ bool C4AulDebug::InitDebug(uint16_t iPort, const char *szPassword, const char *s
 	pDebug->SetPassword(szPassword);
 	pDebug->SetAllowed(szHost);
 	pDebug->SetEngine(&AulExec);
-	if (!pDebug->Init(iPort))
+	return true;
+}
+
+bool C4AulDebug::Listen(uint16_t iPort, bool fWait)
+{
+	if (!Init(iPort))
 		{ LogFatal("C4Aul debugger failed to initialize!"); return false; }
 	// Log
 	LogF("C4Aul debugger initialized on port %d", iPort);
 	// Add to application
-	Application.Add(pDebug);
+	Application.Add(this);
 	// Wait for connection
 	if (fWait)
 	{
 		Log("C4Aul debugger waiting for connection...");
-		while (!pDebug->isConnected())
+		while (!isConnected())
 			if (!Application.ScheduleProcs())
 				return false;
 	}
@@ -100,7 +100,11 @@ size_t C4AulDebug::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &add
 	StdStrBuf Buf; Buf.Copy(getBufPtr<char>(rInBuf), iLength);
 	// Password line?
 	if (fConnected)
-		ProcessLine(Buf);
+	{
+		ProcessLineResult result = ProcessLine(Buf);
+		// Send answer
+		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : NULL);
+	}
 	else if (!Password.getSize() || Password == Buf)
 	{
 		fConnected = true;
@@ -196,7 +200,7 @@ void C4AulDebug::OnLog(const char *szLine)
 	SendLine("LOG", szLine);
 }
 
-void C4AulDebug::ProcessLine(const StdStrBuf &Line)
+C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 {
 	// Get command
 	StdStrBuf Cmd;
@@ -206,12 +210,8 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	if (*szData) szData++;
 	// Identify command
 	const char *szCmd = Cmd.getData();
-	bool fOkay = true;
-	const char *szAnswer = NULL;
 	if (SEqualNoCase(szCmd, "HELP"))
-	{
-		fOkay = false; szAnswer = "Yeah, like I'm going to explain that /here/";
-	}
+		return ProcessLineResult(false, "Yeah, like I'm going to explain that /here/");
 	else if (SEqualNoCase(szCmd, "BYE") || SEqualNoCase(szCmd, "QUIT"))
 		C4NetIOTCP::Close(PeerAddr);
 	else if (SEqualNoCase(szCmd, "SAY"))
@@ -232,18 +232,18 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		int32_t objectNum = C4ControlScript::SCOPE_Global;
 		if (context && context->Obj && context->Obj->GetObject())
 			objectNum = context->Obj->GetObject()->Number;
-		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true, true), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true), CDT_Decide);
 	}
 	else if (SEqualNoCase(szCmd, "PSE"))
 		if (Game.IsPaused())
 		{
 			Game.Unpause();
-			szAnswer = "Game unpaused.";
+			return ProcessLineResult(true, "Game unpaused.");
 		}
 		else
 		{
 			Game.Pause();
-			szAnswer = "Game paused.";
+			return ProcessLineResult(true, "Game paused.");
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
@@ -256,65 +256,58 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	// toggle breakpoint
 	else if (SEqualNoCase(szCmd, "TBR"))
 	{
+		using namespace std;
 		// FIXME: this doesn't find functions which were included/appended
-		StdStrBuf scriptPath;
-		scriptPath.CopyUntil(szData, ':');
-		const char* lineStart = szData+1+scriptPath.getLength();
-		int line = strtol(szData+1+scriptPath.getLength(), const_cast<char**>(&lineStart), 10);
+		string scriptPath = szData;
+		size_t colonPos = scriptPath.find(':');
+		if (colonPos == string::npos)
+			return ProcessLineResult(false, "Missing line in breakpoint request");
+		int line = atoi(&scriptPath[colonPos+1]);
+		scriptPath.erase(colonPos);
 
-		C4AulScript* script;
+		C4AulScript *script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
-			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.getData()))
+			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.c_str()))
 				break;
 		}
 
-		if (script && script->GetScriptHost())
+		auto sh = script ? script->GetScriptHost() : NULL;
+		if (sh)
 		{
-			C4AulBCC* foundDebugChunk = NULL;
-			C4ScriptHost * sh = script->GetScriptHost();
-			const char* scriptText = sh->GetScript();
-			for (C4AulBCC* chunk = &sh->Code[0]; chunk; chunk++)
+			C4AulBCC * found = NULL;
+			for (auto script = ::ScriptEngine.Child0; script; script = script->Next)
+			for (C4PropList *props = script->GetPropList(); props; props = props->GetPrototype())
+			for (auto fname = props->EnumerateOwnFuncs(); fname; fname = props->EnumerateOwnFuncs(fname))
 			{
-				switch (chunk->bccType)
+				C4Value val;
+				if (!props->GetPropertyByS(fname, &val)) continue;
+				auto func = val.getFunction();
+				if (!func) continue;
+				auto sfunc = func->SFunc();
+				if (!sfunc) continue;
+				if (sfunc->pOrgScript != sh) continue;
+				for (auto chunk = sfunc->GetCode(); chunk->bccType != AB_EOFN; chunk++)
 				{
-				case AB_DEBUG:
+					if (chunk->bccType == AB_DEBUG)
 					{
-					int lineOfThisOne = SGetLine(scriptText, sh->PosForCode[chunk - &sh->Code[0]]);
-					if (lineOfThisOne == line)
-					{
-						foundDebugChunk = chunk;
-						goto Done;
+						int lineOfThisOne = sfunc->GetLineOfCode(chunk);
+						if (lineOfThisOne == line)
+						{
+							found = chunk;
+							goto Found;
+						}
 					}
-					/*else {
-					  DebugLogF("Debug chunk at %d", lineOfThisOne);
-					}*/
-					}
-					break;
-				case AB_EOF:
-					goto Done;
-				default:
-					break;
 				}
 			}
-Done:
-			if (foundDebugChunk)
-			{
-				foundDebugChunk->Par.i = !foundDebugChunk->Par.i; // activate breakpoint
-			}
+			Found:
+			if (found)
+				found->Par.i = !found->Par.i; // activate breakpoint
 			else
-			{
-				szAnswer = "Can't set breakpoint (wrong line?)";
-				fOkay = false;
-			}
+				return ProcessLineResult(false, "Can't set breakpoint (wrong line?)");
 		}
 		else
-		{
-			fOkay = false;
-			szAnswer = "Can't find script";
-		}
-
-
+			return ProcessLineResult(false, "Can't find script");
 	}
 	else if (SEqualNoCase(szCmd, "SST"))
 	{
@@ -347,12 +340,9 @@ Done:
 		SendLine("VAR", output.getData());
 	}
 	else
-	{
-		fOkay = false;
-		szAnswer = "Can't do that";
-	}
-	// Send answer
-	SendLine(fOkay ? "OK" : "ERR", szAnswer);
+		return ProcessLineResult(false, "Can't do that");
+	
+	return ProcessLineResult(true, "");
 }
 
 bool C4AulDebug::SendLine(const char *szType, const char *szData)
@@ -361,11 +351,8 @@ bool C4AulDebug::SendLine(const char *szType, const char *szData)
 	return Send(C4NetIOPacket(Line.getData(), Line.getSize(), false, PeerAddr));
 }
 
-void C4AulDebug::DebugStep(C4AulBCC *pCPos)
+void C4AulDebug::DebugStep(C4AulBCC *pCPos, C4Value* stackTop)
 {
-	// Get top context
-	//C4AulScriptContext *pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
-
 	// Already stopped? Ignore.
 	// This means we are doing some calculation with suspended script engine.
 	// We do /not/ want to have recursive suspensions...
@@ -376,59 +363,7 @@ void C4AulDebug::DebugStep(C4AulBCC *pCPos)
 	if (pCPos->Par.i)
 		eState = DS_Step;
 
-	StepPoint(pCPos);
-}
-
-void C4AulDebug::DebugStepIn(C4AulBCC *pCPos)
-{
-
-}
-
-void C4AulDebug::DebugStepOut(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal)
-{
-
-	// Ignore if already suspended, see above.
-	if (eState == DS_Stop)
-		return;
-
-	// This counts as a regular step point
-	StepPoint(pCPos, pRetCtx, pRVal);
-
-}
-
-void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal)
-{
-
-	// Maybe got a command in the meantime?
-	Execute(0);
-
-	// Get current script context
 	int iCallDepth = pExec->GetContextDepth();
-	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
-
-	// When we're stepping out of a script function, the context of the returning
-	// function hasn't been removed yet.
-	if (pCtx == pRetCtx)
-	{
-		iCallDepth--;
-		// Check if we are returning to a script function
-		if (pCtx->Return)
-			pCtx--;
-		else
-			pCtx = NULL;
-	}
-
-	// Stepped out?
-	if (pRVal && eState != DS_Go && iCallDepth <= iStepCallDepth)
-	{
-		StdStrBuf FuncDump = pRetCtx->ReturnDump();
-		StdStrBuf ReturnDump = pRVal->GetDataString();
-		SendLine("RET", FormatString("%s = %s", FuncDump.getData(), ReturnDump.getData()).getData());
-
-		// Ignore as step point if we didn't "really" step out
-		if (iCallDepth >= iStepCallDepth) return;
-	}
-
 	// Stop?
 	switch (eState)
 	{
@@ -451,6 +386,20 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 			return;
 		break;
 	}
+	
+	// Get current script context
+	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
+	//bool isReturn = pCPos[1].bccType = AB_RETURN;
+
+	if (!fConnected)
+	{
+		// not connected anymore? nevermind
+		eState = DS_Go;
+		return;
+	}
+	
+	// Maybe got a command in the meantime?
+	Execute(0);
 
 	// Let's stop here
 	eState = DS_Stop;
@@ -476,7 +425,7 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 	SendLine("POS", StackTrace.front()->getData());
 
 	// Suspend until we get some command
-	while (eState == DS_Stop)
+	while (fConnected && eState == DS_Stop)
 		if (!Application.ScheduleProcs())
 		{
 			Close();
@@ -523,10 +472,12 @@ void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 
 StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 {
-	// Get position in script
-	int iLine = pCtx->Func->GetLineOfCode(pCPos);
-	// Format
-	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
+	if (pCtx->Func->pOrgScript)
+		return FormatString("%s:%d",
+		                    RelativePath(pCtx->Func->pOrgScript->ScriptName),
+		                    pCtx->Func->GetLineOfCode(pCPos));
+	else
+		return StdStrBuf("(eval)");
 }
 
 C4AulDebug * C4AulDebug::pDebug = NULL;

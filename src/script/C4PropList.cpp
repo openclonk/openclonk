@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2007, 2009-2011  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2004, Peter Wortmann
+ * Copyright (c) 2007, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -25,6 +20,7 @@
 #include <C4GameObjects.h>
 #include <C4Game.h>
 #include <C4Object.h>
+#include <C4Record.h>
 
 void C4PropList::AddRef(C4Value *pRef)
 {
@@ -71,13 +67,10 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
-C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
+C4PropListStatic * C4PropList::NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
 {
 	return new C4PropListStatic(prototype, parent, key);
 }
-
-C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
-int32_t C4PropListNumbered::EnumerationIndex = 0;
 
 C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
 {
@@ -99,7 +92,7 @@ bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
 
 void C4PropListNumbered::SetEnumerationIndex(int32_t iMaxObjectNumber)
 {
-	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	// update object enumeration index now, because calls like OnSynchronized might create objects
 	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
 }
 
@@ -107,6 +100,38 @@ void C4PropListNumbered::ResetEnumerationIndex()
 {
 	assert(!PropLists.GetSize());
 	EnumerationIndex = 0;
+}
+
+void C4PropListNumbered::ShelveNumberedPropLists()
+{
+	// unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	assert(ShelvedPropLists.empty());
+	ShelvedPropLists.reserve(PropLists.GetSize());
+	C4PropListNumbered *const* p_next = PropLists.First(), *const* p;
+	while ((p = p_next))
+	{
+		p_next = PropLists.Next(p);
+		C4PropListNumbered *pl = *p;
+		if (pl->Number != -1)
+		{
+			pl->ClearNumber();
+			ShelvedPropLists.push_back(pl);
+		}
+	}
+}
+
+void C4PropListNumbered::UnshelveNumberedPropLists()
+{
+	// re-insert shelved proplists into main list and give them a number
+	for (std::vector<C4PropListNumbered *>::iterator i=ShelvedPropLists.begin(); i!=ShelvedPropLists.end(); ++i)
+		(*i)->AcquireNumber();
+	ShelvedPropLists.clear();
+}
+
+void C4PropListNumbered::ClearShelve()
+{
+	// cleanup shelve - used in game clear, un unsuccessful section load, etc.
+	ShelvedPropLists.clear();
 }
 
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
@@ -119,7 +144,18 @@ void C4PropListNumbered::AcquireNumber()
 	do
 		Number = ++EnumerationIndex;
 	while (PropLists.Get(Number));
+	// Add to list
 	PropLists.Add(this);
+}
+
+void C4PropListNumbered::ClearNumber()
+{
+	// Make proplist invisible during denumeration process
+	if (Number != -1)
+	{
+		PropLists.Remove(this);
+		Number = -1;
+	}
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
@@ -129,16 +165,19 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(Number);
+	int32_t n = Number;
+	pComp->Value(n);
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	C4PropList::CompileFunc(pComp, numbers);
 	if (pComp->isCompiler())
 	{
-		if (PropLists.Get(Number))
+		if (PropLists.Get(n))
 		{
-			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			pComp->excCorrupt("multiple PropLists with Number %d", n);
 			return;
 		}
+		// Once this proplist has a Number, it has to be in PropLists. See the destructor below.
+		Number = n;
 		PropLists.Add(this);
 	}
 }
@@ -182,8 +221,6 @@ C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype),
 		constant(false), Status(1)
 {
-	if (prototype)
-		SetProperty(P_Prototype, C4VPropList(prototype));
 #ifdef _DEBUG	
 	PropLists.Add(this);
 #endif
@@ -197,9 +234,8 @@ void C4PropList::Denumerate(C4ValueNumbers * numbers)
 		const_cast<C4Value &>(p->Value).Denumerate(numbers);
 		p = Properties.Next(p);
 	}
-	C4Value v;
-	if(GetProperty(P_Prototype, &v))
-		prototype = v.getPropList();
+	prototype.Denumerate(numbers);
+	RemoveCyclicPrototypes();
 }
 
 C4PropList::~C4PropList()
@@ -240,14 +276,51 @@ bool C4PropList::operator==(const C4PropList &b) const
 
 void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(constant);
+	bool oldFormat = false;
+	// constant proplists are not serialized to savegames, but recreated from the game data instead
+	assert(!constant);
+	if (pComp->isCompiler() && pComp->hasNaming())
+	{
+		// backwards compat to savegames and scenarios before 5.5
+		try
+		{
+			pComp->Value(constant);
+			oldFormat = true;
+		}
+		catch (StdCompiler::NotFoundException *pEx)
+		{
+			delete pEx;
+			pComp->Value(mkParAdapt(prototype, numbers));
+		}
+	}
+	else
+		pComp->Value(mkParAdapt(prototype, numbers));
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	pComp->Value(mkParAdapt(Properties, numbers));
+	if (oldFormat)
+	{
+		if (Properties.Has(&::Strings.P[P_Prototype]))
+		{
+			prototype = Properties.Get(&::Strings.P[P_Prototype]).Value;
+			Properties.Remove(&::Strings.P[P_Prototype]);
+		}
+	}
+}
+
+void C4PropList::RemoveCyclicPrototypes()
+{
+	// clear any cyclic prototype chains
+	// Use prototype.getPropList() instead of GetPrototype() because denumeration might not be completed yet
+	for(C4PropList * it = prototype.getPropList(); it; it = it->prototype.getPropList())
+		if(it == this)
+		{
+			prototype.Set0();
+		}
 }
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar)
 {
-	std::auto_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
+	std::unique_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }
@@ -322,7 +395,7 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Value, numbers));
 }
 
-void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth)
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth) const
 {
 	StdStrBuf & DataString = *out;
 	if (depth <= 0 && Properties.GetSize())
@@ -330,14 +403,13 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		DataString.Append("...");
 		return;
 	}
-	const C4Property * p = Properties.First();
-	while (p)
+	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
+	for (std::list<const C4Property *>::const_iterator p = sorted_props.begin(); p != sorted_props.end(); ++p)
 	{
-		DataString.Append(p->Key->GetData());
+		if (p != sorted_props.begin()) DataString.Append(delim);
+		DataString.Append((*p)->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append(p->Value.GetDataString(depth - 1));
-		p = Properties.Next(p);
-		if (p) DataString.Append(delim);
+		DataString.Append((*p)->Value.GetDataString(depth - 1));
 	}
 }
 
@@ -362,31 +434,43 @@ void C4PropList::SetName(const char* NewName)
 
 C4Object * C4PropList::GetObject()
 {
-	if (prototype) return prototype->GetObject();
+	if (GetPrototype()) return GetPrototype()->GetObject();
 	return 0;
 }
 
 C4Def * C4PropList::GetDef()
 {
-	if (prototype) return prototype->GetDef();
+	if (GetPrototype()) return GetPrototype()->GetDef();
 	return 0;
 }
 
 C4Def const * C4PropList::GetDef() const
 {
-	if (prototype) return prototype->GetDef();
+	if (GetPrototype()) return GetPrototype()->GetDef();
 	return 0;
+}
+
+class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
+{
+	if (GetPrototype()) return GetPrototype()->GetMapScriptLayer();
+	return NULL;
+}
+
+class C4MapScriptMap * C4PropList::GetMapScriptMap()
+{
+	if (GetPrototype()) return GetPrototype()->GetMapScriptMap();
+	return NULL;
 }
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
-	if (prototype) return prototype->GetPropListNumbered();
+	if (GetPrototype()) return GetPrototype()->GetPropListNumbered();
 	return 0;
 }
 
 C4Effect * C4PropList::GetEffect()
 {
-	if (prototype) return prototype->GetEffect();
+	if (GetPrototype()) return GetPrototype()->GetEffect();
 	return 0;
 }
 
@@ -429,8 +513,13 @@ bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
 		*pResult = Properties.Get(k).Value;
 		return true;
 	}
-	else if(prototype)
-		return prototype->GetPropertyByS(k, pResult);
+	else if (k == &Strings.P[P_Prototype])
+	{
+		*pResult = prototype;
+		return true;
+	}
+	else if(GetPrototype())
+		return GetPrototype()->GetPropertyByS(k, pResult);
 	else
 		return false;
 }
@@ -442,9 +531,9 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 	{
 		return Properties.Get(k).Value.getStr();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyStr(n);
+		return GetPrototype()->GetPropertyStr(n);
 	}
 	return 0;
 }
@@ -456,9 +545,9 @@ C4AulFunc * C4PropList::GetFunc(C4String * k) const
 	{
 		return Properties.Get(k).Value.getFunction();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetFunc(k);
+		return GetPrototype()->GetFunc(k);
 	}
 	return 0;
 }
@@ -474,33 +563,21 @@ C4AulFunc * C4PropList::GetFunc(const char * s) const
 	return GetFunc(k);
 }
 
-C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars)
+C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	C4AulFunc *pFn = GetFunc(k);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
-C4Value C4PropList::Call(const char * s, C4AulParSet *Pars)
+C4Value C4PropList::Call(const char * s, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	assert(s && s[0]);
 	C4AulFunc *pFn = GetFunc(s);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
-}
-
-C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
-{
-	C4AulFunc *pFn = Status ? GetFunc(s) : NULL;
-	if (!pFn)
-	{
-		if (s[0] == '~')
-			return C4Value();
-		throw new C4AulExecError(FormatString("Call: no function \"%s\"", s).getData());
-	}
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
 C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
@@ -513,9 +590,9 @@ C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 			return C4PropertyName(v - &Strings.P[0]);
 		return P_LAST;
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyP(n);
+		return GetPrototype()->GetPropertyP(n);
 	}
 	return P_LAST;
 }
@@ -527,20 +604,34 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	{
 		return Properties.Get(k).Value.getInt();
 	}
-	if (prototype)
+	if (GetPrototype())
 	{
-		return prototype->GetPropertyInt(n);
+		return GetPrototype()->GetPropertyInt(n);
 	}
 	return 0;
+}
+
+C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getPropList();
+	}
+	if (GetPrototype())
+	{
+		return GetPrototype()->GetPropertyPropList(n);
+	}
+	return NULL;
 }
 
 C4ValueArray * C4PropList::GetProperties() const
 {
 	C4ValueArray * a;
 	int i;
-	if (prototype)
+	if (GetPrototype())
 	{
-		a = prototype->GetProperties();
+		a = GetPrototype()->GetProperties();
 		i = a->GetSize();
 		a->SetSize(i + Properties.GetSize());
 	}
@@ -574,16 +665,15 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);
 	/*assert(Strings.Set.Has(k));*/
-	if (k == &Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
+	if (k == &Strings.P[P_Prototype])
 	{
-		C4PropList * newpt = to.GetData().PropList;
-		for(C4PropList * it = newpt; it; it = it->prototype)
+		C4PropList * newpt = to.getPropList();
+		for(C4PropList * it = newpt; it; it = it->GetPrototype())
 			if(it == this)
 				throw new C4AulExecError("Trying to create cyclic prototype structure");
-		prototype = newpt;
-		//return;
+		prototype.SetPropList(newpt);
 	}
-	if (Properties.Has(k))
+	else if (Properties.Has(k))
 	{
 		Properties.Get(k).Value = to;
 	}
@@ -591,14 +681,77 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	{
 		//C4Property p(k, to);
 		//Properties.Add(p);
+#ifdef DEBUGREC_SCRIPT
+		if (Config.General.DebugRec)
+		{
+			// deactivate this debugrec for now, because property orders seem to be out of sync
+			// after loading at the moment. might need to invastigate the cause later...
+			//if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
+		}
+#endif
 		Properties.Add(C4Property(k, to));
 	}
 }
 
 void C4PropList::ResetProperty(C4String * k)
 {
-	Properties.Remove(k);
+	if (k == &Strings.P[P_Prototype])
+		prototype.Set0();
+	else
+		Properties.Remove(k);
 }
+
+void C4PropList::Iterator::Init()
+{
+	iter = properties->begin();
+}
+
+void C4PropList::Iterator::Reserve(size_t additionalAmount)
+{
+	properties->reserve(properties->size() + additionalAmount);
+}
+
+void C4PropList::Iterator::AddProperty(const C4Property * prop)
+{
+	std::vector<const C4Property*>::size_type i = 0, len = properties->size();
+	for(;i < len; ++i)
+	{
+		const C4Property *oldProperty = (*properties)[i];
+		if (oldProperty->Key == prop->Key)
+		{
+			(*properties)[i] = prop;
+			return;
+		}
+	}
+	// not already in vector?
+	properties->push_back(prop);
+}
+
+C4PropList::Iterator C4PropList::begin()
+{
+	C4PropList::Iterator iter;
+
+	if (GetPrototype())
+	{
+		iter = GetPrototype()->begin();
+	}
+	else
+	{
+		iter.properties = std::make_shared<std::vector<const C4Property*> >();
+	}
+	iter.Reserve(Properties.GetSize());
+
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		iter.AddProperty(p);
+		p = Properties.Next(p);
+	}
+
+	iter.Init();
+	return iter;
+}
+
 
 template<> template<>
 unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int const & e)

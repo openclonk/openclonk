@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2009, 2011  Günther Brammer
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006-2008, 2010  Armin Burgmeier
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OS dependent event and window interfaces, GTK+ version */
@@ -47,7 +41,6 @@
 #ifdef USE_X11
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
-#include <X11/extensions/xf86vmode.h>
 #include <GL/glx.h>
 #endif
 
@@ -55,7 +48,7 @@
 
 // Some helper functions for choosing a proper visual
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 // Returns which XVisual attribute for two given attributes is greater.
 static int CompareVisualAttribute(Display* dpy, XVisualInfo* first, XVisualInfo* second, int attrib)
 {
@@ -207,7 +200,7 @@ static std::vector<XVisualInfo> EnumerateVisuals(Display* dpy)
 	XFree(infos);
 	return selected_infos;
 }
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE
 static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
@@ -224,16 +217,18 @@ static gboolean OnDelete(GtkWidget* widget, GdkEvent* event, gpointer data)
 static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	// keycode = scancode + 8
+	if (event->hardware_keycode <= 8) return false;
+	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	wnd->CharIn(event->string); // FIXME: Use GtkIMContext somehow
 	return true;
 }
 
 static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Game.DoKeyboardInput(key, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	// keycode = scancode + 8
+	if (event->hardware_keycode <= 8) return false;
+	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	return true;
 }
 
@@ -276,7 +271,7 @@ static void OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 
 static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-#if GTK_CHECK_VERSION(2,90,7)
+#if GTK_CHECK_VERSION(2,21,8)
 	if (event->keyval == GDK_KEY_Scroll_Lock)
 #else
 	if (event->keyval == GDK_Scroll_Lock)
@@ -285,16 +280,15 @@ static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 		return true;
 	}
-
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Console.EditCursor.KeyDown(key, event->state);
+	if (event->hardware_keycode <= 8) return false;
+	Console.EditCursor.KeyDown(event->hardware_keycode - 8, event->state);
 	return false;
 }
 
 static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Console.EditCursor.KeyUp(key, event->state);
+	if (event->hardware_keycode <= 8) return false;
+	Console.EditCursor.KeyUp(event->hardware_keycode - 8, event->state);
 	return false;
 }
 
@@ -457,7 +451,7 @@ static bool fullscreen_needs_restore = false;
 static gboolean fullscreen_restore(gpointer data)
 {
 	if (fullscreen_needs_restore)
-		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Application.FullScreenMode());
 	fullscreen_needs_restore = false;
 	return FALSE;
 }
@@ -465,7 +459,7 @@ static gboolean fullscreen_restore(gpointer data)
 static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = true;
-	if (!Config.Graphics.Windowed)
+	if (Application.FullScreenMode())
 	{
 		fullscreen_needs_restore = true;
 		gdk_threads_add_idle(fullscreen_restore, NULL);
@@ -475,7 +469,7 @@ static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_d
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = false;
-	if (!Config.Graphics.Windowed)
+	if (Application.FullScreenMode() && Application.GetConfigWidth() != -1)
 	{
 		Application.RestoreVideoMode();
 		gtk_window_iconify(GTK_WINDOW(widget));
@@ -643,7 +637,7 @@ C4Window::~C4Window ()
 
 bool C4Window::FindInfo(int samples, void** info)
 {
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
 	for(unsigned int i = 0; i < infos.size(); ++i)
@@ -661,14 +655,14 @@ bool C4Window::FindInfo(int samples, void** info)
 	}
 #else
 	// TODO: Do we need to handle this case?
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE
 
 	return false;
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
 	for(unsigned int i = 0; i < infos.size(); ++i)
@@ -892,7 +886,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Check whether multisampling settings was changed. If not then we
 	// don't need to ReInit anything.
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	int value;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	glXGetConfig(dpy, static_cast<XVisualInfo*>(Info), GLX_SAMPLES_ARB, &value);
@@ -906,6 +900,14 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, static_cast<XVisualInfo*>(new_info)->visualid);
+
+	// Un- and re-realizing the render_widget does not work, the window
+	// remains hidden afterwards. So we re-create it from scratch.
+	gtk_widget_destroy(GTK_WIDGET(render_widget));
+	render_widget = gtk_drawing_area_new();
+	gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+	g_object_set(G_OBJECT(render_widget), "can-focus", TRUE, NULL);
+	
 #if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
@@ -913,13 +915,27 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
 	g_object_unref(cmap);
 #endif
-	// create a new X11 window
-	gtk_widget_unrealize(GTK_WIDGET(render_widget));
-	gtk_widget_realize(GTK_WIDGET(render_widget));
 
 	delete static_cast<XVisualInfo*>(Info);
 	Info = new_info;
 
+	// Wait until window is mapped to get the window's XID
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(render_widget));
+	gtk_widget_show_now(GTK_WIDGET(render_widget));
+
+	if (GTK_IS_LAYOUT(render_widget))
+	{
+		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
+		renderwnd = GDK_WINDOW_XID(bin_wnd);
+	}
+	else
+	{
+		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
+		renderwnd = GDK_WINDOW_XID(render_wnd);
+	}
+
+	gdk_flush();
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
 	return true;
 }
 
@@ -948,7 +964,7 @@ void C4Window::Clear()
 
 void C4Window::SetSize(unsigned int width, unsigned int height)
 {
-	 gtk_window_resize(GTK_WINDOW(window), width, height);
+	gtk_window_resize(GTK_WINDOW(window), width, height);
 }
 
 bool C4Window::GetSize(C4Rect * r)

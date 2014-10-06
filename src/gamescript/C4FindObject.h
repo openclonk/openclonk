@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006, 2008  Günther Brammer
- * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #ifndef C4FINDOBJECT_H
 #define C4FINDOBJECT_H
@@ -67,9 +62,6 @@ enum C4SortObjectCondID
 	C4SO_Last         = 200  // no sort condition larger than this
 };
 
-class C4LSectors;
-class C4ObjectList;
-
 // Base class
 class C4FindObject
 {
@@ -82,7 +74,7 @@ public:
 	C4FindObject() : pSort(NULL) { }
 	virtual ~C4FindObject();
 
-	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=NULL); // createFindObject or SortObject - if ppSortObj==NULL, SortObject is not allowed
+	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=NULL, const C4Object *context=NULL); // createFindObject or SortObject - if ppSortObj==NULL, SortObject is not allowed
 
 	int32_t Count(const C4ObjectList &Objs); // Counts objects for which the condition is true
 	C4Object *Find(const C4ObjectList &Objs); // Returns first object for which the condition is true
@@ -136,6 +128,16 @@ protected:
 	virtual bool UseShapes() { return fUseShapes; }
 	virtual bool IsEnsured() { return !iCnt; }
 	virtual bool IsImpossible();
+	void ForgetConditions() { ppConds=NULL; iCnt=0; }
+};
+
+// Special variant of C4FindObjectAnd that does not free its conditions
+class C4FindObjectAndStatic : public C4FindObjectAnd
+{
+public:
+	C4FindObjectAndStatic(int32_t iCnt, C4FindObject **ppConds)
+		: C4FindObjectAnd(iCnt, ppConds, true) {}
+	virtual ~C4FindObjectAndStatic() {ForgetConditions(); }
 };
 
 class C4FindObjectOr : public C4FindObject
@@ -167,13 +169,13 @@ protected:
 	virtual bool Check(C4Object *pObj);
 };
 
-class C4FindObjectID : public C4FindObject
+class C4FindObjectDef : public C4FindObject
 {
 public:
-	C4FindObjectID(C4ID id)
-			: id(id) { }
+	C4FindObjectDef(C4PropList * def)
+			: def(def) { }
 private:
-	C4ID id;
+	C4PropList * def;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();
@@ -386,8 +388,8 @@ public:
 	virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2) { return Compare(pObj1, pObj2); }
 
 public:
-	static C4SortObject *CreateByValue(const C4Value &Data);
-	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data);
+	static C4SortObject *CreateByValue(const C4Value &Data, const C4Object *context=NULL);
+	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data, const C4Object *context=NULL);
 
 	void SortObjects(C4ValueArray *pArray);
 };

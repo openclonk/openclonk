@@ -1,0 +1,98 @@
+PlaneNoOil=The plane needs fuel. I must find oil somewhere.
+
+Intro1=Ouch. Pyrit!
+Intro2=How can we be out of fuel? You said one barrel would get us to our goal and back easily!
+Intro3=Yeah, but I didn't plan for having to search you for three days and picking you up on a lonely island in the ocean.
+Intro4=It's all your fault. Just saying.
+Intro5=What shall we do now?
+Intro6=I suggest you go and find new oil. Meanwhile, I will repair the plane.
+Intro7=Sounds good.
+
+Pyrit1=I'm almost done. Have you found the oil yet?
+Pyrit1B=The plane is ready again. Have you found the oil yet?
+PyritQBarrel=What do I do with the barrel?
+PyritABarrel=Just bring it to the plane. D'oh.
+PyritQSearch=Where can I find oil?
+PyritASearch=I don't know. How did you find it last time? Just look and ask around I guess.
+PyritQGem=Have you seen a Gem of Power?
+PyritAGem=No. I've never heard of such a thing. But the caves of these mountains are well known for their hidden dangers and treasures. Maybe you should look inside.
+PyritQBye=Bye
+
+DagobertName=Scrooge
+Dagobert1=Gold...gold...gold...
+Dagobert1B=Such a beautiful gem...
+DagobertGoldQ=Gold?
+DagobertGold1=It's a shame! This mountain is full of hidden treasures, but I can't get inside.
+DagobertGold2=What's the problem?
+DagobertGold3=The main entrance to the caves is flooded by lava. There are some other entrances, but they're flooded by water.
+DagobertGold4=Couldn't you dive through there.
+DagobertGold5=I would love to. But my arthritis...
+DagobertOilQ=I need oil
+DagobertOil1=Who doesn't? But you know, king Harx won't allow it.
+DagobertOil1B=Bring me the gem and I will give you oil.
+DagobertOil1C=I've already given you all the oil I have.
+DagobertOil2=Screw Harx. I'm on a mission to kill him.
+DagobertOil3=Killing the king. Very well, that's a mission I can approve of. Maybe I can help you. But not for free...
+DagobertOil4=People talk about a hidden chamber deep within this mountain, which contains unimaginable amounts of gold.
+DagobertOil5=In this chamber, there is also the Gem of Power{{GemOfPower}} - an inconspicuous little gem shining in green and teal color.
+DagobertOil6=I'm interested in this little gem for personal reasons. If you bring me this little jewel, I will tell you where you can find oil. You can keep the rest of the treasure.
+DagobertOil7=Sounds fair. I will look for this gem.
+DagobertCaveQ=How can I enter the cave?
+DagobertCave1=The main entrance is blocked by lava. That might be hard to pass. However, there are side entrances you might be able to access below.
+DagobertCave2=If you can reroute the water somehow, you might be able to get in.
+DagobertCave3=Do you know what I will find inside the caves?
+DagobertCave4=The caves are rough terrain and many explorers have been lost already.
+DagobertCave5=However, some of these explorers are quite ingenious. They might have left behind some useful tools you could use on your mission.
+DagobertGem0=Look Scrooge, I have found your gem.
+DagobertGem1=Incredible! Look at its purity. Its immaculate beauty. It will be in good hands.
+DagobertGem2=Here, just take this oil barrel I had secretly tucked away in my underpants.
+DagobertGem3=Oh, thanks a lot.
+DagobertBye=Bye
+
+Outro1=Finally you got that oil. That took you a while.
+Outro2=Yeah. Your job hammering on the plane was a bit easier.
+Outro3=Let's not waste any more time. Next stop: Harx' castle!
+
+Riku1=Hello fellow Explorer. Are you looking for gold?
+Riku2=Almost. I'm looking for the Gem of Power.
+Riku3=Oh, that one. It's probably in the treasure chamber, whch is locked behind these doors.
+Riku4=Do you know how to open them?
+Riku5=I think they are controlled by switches hidden somewhere in these caves.
+Riku6=Why don't you go search these switches then?
+Riku7=Why would I? I'll just enter the treasure chamber when someone else has done the work for me!
+Riku8=Hmpf. I guess I'll have to search then.
+RikuOil1=Almost. I'm looking for oil.
+RikuOil2=Hm, oil. Did you ask Dagobert outside this mountain? He might have an idea.
+RikuGem1=Hey Riku, I've found the gem.
+RikuGem2=That's cool bro! I'll stay here and keep the rest of the treasure then.
+
+Sophie1=Teeheehe. Look how it levitates!
+Sophie2=Are you a magician?
+Sophie3=Nope, it's tele gloves. I've found them in the chest beside me.
+Sophie4=There's more of them! Just try them out. Press and hold near a lose item to move it.
+SophieSad=Why did you have to take away my playing items? Sophie sad :(
+
+Jane1=He's supposed to search for treasures. But he's just swinging his rope all day.
+Jane1B=He was supposed to search for treasures. Instead, he was just swinging his rope all day. And now he's dead. Typical.
+Jane2=Cool! Can I have a rope too?
+Jane3=There's extra grappler bows in the chest. Just put it into your hand and click in the direction you want to shoot. Click again to let go.
+Jane4=You can even carry two and have one in each hand. Then when you shoot the second, the first one will automatically retreat.
+Jane5=Please take all the bows. I'm sick of this swinging.
+
+Tarzan1=Look, I am Tarzan!
+
+Ann1=Damn I'm stuck.
+Ann2=I know there's a switch below this lava lake on the right. But I cannot get there.
+Ann3=Is there no way around it?
+Ann4=It's all solid granite. I even built a pump to get rid of the lava, but I do not have a pipe that could resist the heat of the lava.
+Ann5=Hm. Maybe I can find a pipe somewhere.
+
+Donald1=Oh, fellow explorer, please help me! I've lost all my stuff in this acid lake.
+Donald2=Oh, I'm sorry to hear that. Can't you get new tools?
+Donald3=The pipes I don't care for. But the shovel is my golden shovel I've inherited from my grand-grand-grandparent! It's irreplacable.
+Donald4=Oh, a pipe you said? Hm, maybe I can try to rescue these tools.
+DonaldShovel1=Here is your shovel.
+DonaldShovel2=Thank you so much! I will be in your debt forever.
+
+Otto1=I love this lonely place. It's so peaceful.
+Otto2=Look at the great view. There is a sky island floating above the lake to the east. I wonder what's on there.

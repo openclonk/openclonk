@@ -51,10 +51,10 @@ protected func Construction()
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin) SetSkin(skin);
+	if(skin != nil) SetSkin(skin);
 	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
@@ -147,56 +147,29 @@ protected func Death(int killed_by)
 		return;
 	
 	// Some effects on dying.
-	if(gender == 0)
-		Sound("Die");
-	else
-		Sound("FDie");
+	if (!this.silent_death)
+	{
+		if(gender == 0)
+			Sound("Die");
+		else
+			Sound("FDie");
+			
+		DeathAnnounce();
+	}
 	CloseEyes(1);
 	
-	//Are gravestones used in the scenario?
-	if(FindObject(Find_ID(Rule_Gravestones)))
-		AddEffect("GravestoneAdd", this, 1, 1, this);
-
-	DeathAnnounce();
-	return;
+	return true;
 }
 
-func FxGravestoneAddTimer(object target, proplist effect, int timer)
-{	
-	//is the death animation over?
-	if(timer >= 20){
-		AddEffect("Gravestone",this, 1, nil, this);
-		return -1;
-	}
-}
-
-func FxGravestoneStart(object clonk, proplist effect){
-	effect.grave = CreateObject(Clonk_Grave,0,0,clonk->GetController());
-	this->Enter(effect.grave);
-	
-	//smoke effect
-	CastParticles("ExploSmoke", RandomX(10,15), 0, 0, 6, 200, 250, HSLa(0,0,255,64), HSLa(0,0,255,64));
-}
-
-func FxGravestoneStop(object clonk, proplist effect){
-	clonk->Exit();
-	effect.grave->RemoveObject();
-}
-	
-
-protected func Destruction()
+protected func Destruction(...)
 {
 	_inherited(...);
 	// If the clonk wasn't dead yet, he will be now.
-	if (GetAlive())
-		GameCallEx("OnClonkDeath", this, GetKiller());
-	// If this is the last crewmember, do broadcast.
-	if (GetCrew(GetOwner()) == this)
-	if (GetCrewCount(GetOwner()) == 1)
-		// Only if the player is still alive and not yet elimnated.
-			if (GetPlayerName(GetOwner()))
-				GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
-	return;
+	// Always kill clonks first. This will ensure relaunch scripts, enemy kill counters, etc. are called
+	// even if clonks die in some weird way that causes direct removal
+	// (To prevent a death callback, you can use SetAlive(false); RemoveObject();)
+	if (GetAlive()) { this.silent_death=true; Kill(); }
+	return true;
 }
 
 protected func DeepBreath()
@@ -223,14 +196,41 @@ public func Eat(object food)
 	}
 }
 
+func DigOutObject(object obj)
+{
+	// Collect fragile objects when dug out
+	if (obj->GetDefFragile())
+		return Collect(obj,nil,nil,true);
+	return false;
+}
+
+// Building material bridges (like loam bridge)
+func Bridge()
+{
+	var proc = GetProcedure();
+	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
+	if (proc != "WALK" && proc != "SCALE")
+		return false;
+	if (proc == "WALK")
+		SetAction("BridgeStand");
+	else
+		SetAction("BridgeScale");
+	SetComDir(COMD_Stop);
+	SetXDir(0);
+	SetYDir(0);
+	return true;
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other
 // adaptions
 public func IsClonk() { return true; }
+public func IsPrey() { return true; }
 
 public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
+public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
 /* Carry items on the clonk */
 
@@ -330,8 +330,6 @@ func DoUpdateAttach(bool sec)
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 		}
-		else
-			; // Don't display
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
@@ -361,8 +359,6 @@ func DoUpdateAttach(bool sec)
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
 			fBothHanded = 1;
 		}
-		else
-			; // Don't display
 	}
 	else if(iAttachMode == CARRY_Spear)
 	{
@@ -435,7 +431,7 @@ func HasHandAction(sec, just_wear)
 func HasActionProcedure()
 {
 	var action = GetAction();
-	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride")
+	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride" || action == "BridgeStand")
 		return true;
 	return false;
 }
@@ -518,7 +514,7 @@ func OnMaterialChanged(int new, int old)
 	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
 	// into water
 	if(newliquid && !oldliquid)
-		AddEffect("Bubble", this, 1, 52, this);
+		AddEffect("Bubble", this, 1, 8, this);
 	// out of water
 	else if(!newliquid && oldliquid)
 		RemoveEffect("Bubble", this);
@@ -528,8 +524,21 @@ func FxBubbleTimer(pTarget, effect, iTime)
 {
 	if(GBackLiquid(0,-5))
 	{
+		var mouth_off = GetCon()/11;
 		var iRot = GetSwimRotation();
-		Bubble(1, +Sin(iRot, 9), Cos(iRot, 9));
+		var mouth_off_x = Sin(iRot, mouth_off), mouth_off_y = Cos(iRot, mouth_off);
+		// Search for bubbles to breath from
+		var bubble = FindObject(Find_Func("CanBeBreathed", this), Find_AtRect(mouth_off_x-mouth_off/2, mouth_off_y, mouth_off, mouth_off/3));
+		if (bubble)
+		{
+			bubble->~OnClonkBreath(this);
+		}
+		else if (!Random(6))
+		{
+			// Make your own bubbles
+			
+			Bubble(1, mouth_off_x, mouth_off_y);
+		}
 	}
 }
 
@@ -538,6 +547,12 @@ func QueryCatchBlow(object obj)
 	var r=0;
 	var e=0;
 	var i=0;
+	// Blocked by object effects?
+	while(e=GetEffect("*", obj, i++))
+		if(EffectCall(obj, e, "QueryHitClonk", this))
+			return true;
+	// Blocked by Clonk effects?
+	i=0;
 	while(e=GetEffect("*Control*", this, i++))
 	{
 		if(EffectCall(this, e, "QueryCatchBlow", obj))
@@ -548,31 +563,35 @@ func QueryCatchBlow(object obj)
 		
 	}
 	if(r) return r;
+	// No blocking
 	return _inherited(obj, ...);
 }
 
-local gender;
+local gender, skin, skin_name;
 
-func SetSkin(int skin)
+func SetSkin(int new_skin)
 {
+	// Remember skin
+	skin = new_skin;
+	
 	//Adventurer
 	if(skin == 0)
-	{	SetGraphics();
+	{	SetGraphics(skin_name = nil);
 		gender = 0;	}
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics(nil, Skin_Steampunk);
+	{	SetGraphics(skin_name = "Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics(nil, Skin_Alchemist);
+	{	SetGraphics(skin_name = "Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics(nil, Skin_Farmer);
+	{	SetGraphics(skin_name = "Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
@@ -582,6 +601,59 @@ func SetSkin(int skin)
 	return skin;
 }
 func GetSkinCount() { return 4; }
+
+func GetSkin() { return skin; }
+func GetSkinName() { return skin_name; }
+
+//Portrait definition of this Clonk for messages
+func GetPortrait()
+{
+	return this.portrait ?? { Source = GetID(), Name = Format("Portrait%s", skin_name ?? ""), Color = GetColor() };
+}
+
+func SetPortrait(proplist custom_portrait)
+{
+	this.portrait = custom_portrait;
+	return true;
+}
+
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// Skins override mesh material
+	if (skin)
+	{
+		props->Remove("MeshMaterial");
+		props->AddCall("Skin", this, "SetSkin", skin);
+	}
+	// Direction is randomized at creation and there's no good way to find
+	// out if the user wanted that specific direction. So just always save
+	// it, because that's what scenario designer usually wants.
+	if (!props->HasProp("Dir")) props->AddCall("Dir", this, "SetDir", GetConstantNameByValueSafe(GetDir(),"DIR_"));
+	// Custom portraits for dialogues
+	if (this.portrait) props->AddCall("Portrait", this, "SetPortrait", this.portrait);
+	return true;
+}
+
+
+/* AI editor helper */
+
+func EditCursorSelection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorSelection, ai);
+	return _inherited(...);
+}
+
+func EditCursorDeselection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorDeselection, ai);
+	return _inherited(...);
+}
+
 
 /* Act Map */
 
@@ -708,9 +780,9 @@ Dig = {
 //	InLiquidAction = "Swim",
 	Attach = CNAT_Left | CNAT_Right | CNAT_Bottom,
 },
-Bridge = {
+BridgeStand = {
 	Prototype = Action,
-	Name = "Bridge",
+	Name = "BridgeStand",
 	Procedure = DFA_THROW,
 	Directions = 2,
 	Length = 16,
@@ -719,7 +791,22 @@ Bridge = {
 	Y = 60,
 	Wdt = 8,
 	Hgt = 20,
-	NextAction = "Bridge",
+	NextAction = "BridgeStand",
+	StartCall = "StartStand",
+	InLiquidAction = "Swim",
+},
+BridgeScale = {
+	Prototype = Action,
+	Name = "BridgeScale",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	Length = 16,
+	Delay = 1,
+	X = 0,
+	Y = 60,
+	Wdt = 8,
+	Hgt = 20,
+	NextAction = "BridgeScale",
 	InLiquidAction = "Swim",
 },
 Swim = {
@@ -908,7 +995,7 @@ Eat = {
 };
 local Name = "Clonk";
 local MaxEnergy = 50000;
-local MaxBreath = 252; // Clonk can breathe for 7 seconds under water.
+local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
 local NoBurnDecay = 1;

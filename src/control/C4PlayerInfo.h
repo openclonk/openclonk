@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008  Sven Eberhardt
- * Copyright (c) 2005-2007  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // permanent player information management
 //
@@ -24,7 +20,7 @@
 // This list is used for:
 // -player information to be known before actual join
 //  (player count for landscape width, team, color, etc.)
-// -player file ressource association (network mode)
+// -player file resource association (network mode)
 // -league information to be stored for each player; even after elimination
 // *-startup loader screen information; e.g. for replays
 //
@@ -99,13 +95,15 @@ private:
 	int32_t iLeagueScoreProjected;// score on league server in case of win
 	int32_t iLeagueProjectedGain; // projected league score increase if game is won - -1 for unknown; valid values always positive
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sClanTag; // clan ("team") tag
+	int32_t iLeaguePerformance; // script-set league performance value, only set temporarily for masterserver end reference
+	StdCopyStrBuf sLeagueProgressData; // level progress data as reported by league
 
 public:
 	C4PlayerInfo()                           // construct empty
 			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(), dwColor(0xffffffff),
 			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0), iInGameNumber(-1),
 			iInGameJoinFrame(-1), iInGamePartFrame(-1), idExtraData(C4ID::None), sLeagueAccount(""),
-			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1) { }
+			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1), iLeaguePerformance(0) { }
 
 	void Clear();                            // clear fields
 
@@ -119,12 +117,12 @@ public:
 	void SetColor(DWORD dwUseClr) { dwColor = dwUseClr; } // set color to be used
 	void SetOriginalColor(DWORD dwUseClr) { dwOriginalColor = dwUseClr; } // set color the player wishes to have
 	void SetFilename(const char *szToFilename);           // set new player filename
-	void SetToScenarioFilename(const char *szScenFilename); // set to file within scenario; discard ressource
+	void SetToScenarioFilename(const char *szScenFilename); // set to file within scenario; discard resource
 	void SetTempFile() { assert(!!szFilename); dwFlags |= PIF_TempFile; } // mark filename as temp, so it is deleted in dtor or after join
 	void SetTeam(int32_t idToTeam) { idTeam = idToTeam; }
 	void DeleteTempFile();                                // delete filename if temp
 	void LoadResource();                                  // network: Load resource if present and not being loaded yet
-	void DiscardResource();                               // delete any source ressource for network player infos
+	void DiscardResource();                               // delete any source resource for network player infos
 	void SetAssociatedSavegamePlayer(int32_t aidSavegamePlayer)   // link with savegame player from restore list
 	{ idSavegamePlayer=aidSavegamePlayer; }
 	int32_t GetAssociatedSavegamePlayerID() const
@@ -136,8 +134,12 @@ public:
 	bool SetSavegameResume(C4PlayerInfo *pSavegameInfo);   // take over savegame player data to do resume
 	void SetAuthID(const char *sznAuthID)
 	{ szAuthID = sznAuthID; }
-	void SetLeagueData(const char *szAccount, const char *szNewClanTag, int32_t iScore, int32_t iRank, int32_t iRankSymbol)
-	{ sLeagueAccount.CopyValidated(szAccount); sClanTag.CopyValidated(szNewClanTag); iLeagueScore = iScore; iLeagueRank = iRank; iLeagueRankSymbol = iRankSymbol; }
+	void SetLeagueData(const char *szAccount, const char *szNewClanTag, int32_t iScore, int32_t iRank, int32_t iRankSymbol, const char *szProgressData)
+	{ sLeagueAccount.CopyValidated(szAccount); sClanTag.CopyValidated(szNewClanTag); iLeagueScore = iScore; iLeagueRank = iRank; iLeagueRankSymbol = iRankSymbol; sLeagueProgressData.Copy(szProgressData); }
+	void SetLeaguePerformance(int32_t iNewPerf)
+		{ iLeaguePerformance = iNewPerf; }
+	void SetLeagueProgressData(const char *szNewProgressData)
+		{ if (szNewProgressData) sLeagueProgressData.Copy(szNewProgressData); else sLeagueProgressData.Clear(); }
 	void SetVotedOut()
 	{ dwFlags |= PIF_VotedOut; }
 	void SetLeagueProjectedGain(int32_t iProjectedGain)
@@ -160,7 +162,7 @@ public:
 	StdStrBuf GetLobbyName() const; // return player name including clan/team tag if known; fallback to regular player name
 	const char *GetFilename() const { return szFilename.getData(); } // get filename for local games
 	const char *GetLocalJoinFilename() const;              // get name of file to join the player from
-	C4Network2Res *GetRes() const { return pRes; }         // get player ressource for network games
+	C4Network2Res *GetRes() const { return pRes; }         // get player resource for network games
 	bool IsRemoved() const { return !!(dwFlags & PIF_Removed); }
 	bool HasJoined() const { return !!(dwFlags & PIF_Joined); }    // return whether player has joined
 	bool IsJoined() const { return HasJoined() && !(dwFlags & PIF_Removed); } // return whether player is currently in the game
@@ -187,6 +189,7 @@ public:
 	int32_t GetInGameNumber() const { return iInGameNumber; } // returns player number the player had in the game
 	bool IsLeagueProjectedGainValid() const { return iLeagueProjectedGain>=0; }
 	int32_t GetLeagueProjectedGain() const { return iLeagueProjectedGain; } // get score gain in primary league if this player's team wins
+	const char *GetLeagueProgressData() const { return sLeagueProgressData.getData(); } 
 
 	int32_t GetID() const { return iID; }                    // get unique ID, if assigned
 	int32_t GetTeam() const { return idTeam; }
@@ -250,7 +253,7 @@ public:
 	C4PlayerInfo *GetPlayerInfo(int32_t iIndex) const;      // get indexed player info
 	C4PlayerInfo *GetPlayerInfo(int32_t iIndex, C4PlayerType eType) const;      // get indexed player info of given type
 	C4PlayerInfo *GetPlayerInfoByID(int32_t id) const;      // get player info by unique player ID
-	C4PlayerInfo *GetPlayerInfoByRes(int32_t idResID) const; // get player info by ressource ID
+	C4PlayerInfo *GetPlayerInfoByRes(int32_t idResID) const; // get player info by resource ID
 	int32_t GetClientID() const { return iClientID; }       // get target client ID
 	bool HasUnjoinedPlayers() const;                          // check all players and return whether one of them didn't join
 	int32_t GetJoinedPlayerCount() const;                   // return number of players that are IsJoined()

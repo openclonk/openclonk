@@ -51,7 +51,7 @@ protected func Construction()
 
 public func AddMenuProducts(object producer)
 {
-	for (var product in producer->GetProducts())
+	for (var product in producer->GetProducts(GetMenuObject()))
 	{
 		var item = CreateObject(GUI_MenuItem);
 		if (!AddItem(item))
@@ -93,19 +93,26 @@ public func ShowProductInfo(object item)
 	var cost_msg = "@";
 	var liquid, material;
 	for (var comp in costs)
-		cost_msg = Format("%s %dx {{%i}}", cost_msg, comp[1], comp[0]);
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], menu_commander->CheckComponent(comp[0], comp[1])), comp[0]);
 	if (menu_commander->FuelNeed(product_id))
-		cost_msg = Format("%s 1x {{Icon_Producer_Fuel}}", cost_msg);
+		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, menu_commander->CheckFuel(product_id)));
 	if (liquid = menu_commander->LiquidNeed(product_id))
-		cost_msg = Format("%s %dx {{Icon_Producer_%s}}", cost_msg, liquid[1], liquid[0]);
+		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], menu_commander->CheckLiquids(product_id)), liquid[0]);
 	if (material = menu_commander->MaterialNeed(product_id))
-		cost_msg = Format("%s %dx {{%i}}", cost_msg, material[1], product_id->~GetMaterialIcon(material[0]));
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(material[1], menu_commander->CheckMaterials(product_id)), product_id->~GetMaterialIcon(material[0]));
 	if (menu_commander->PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 
 	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
 	productinfo_shown = item;
 	return;
+}
+
+private func GetCostString(int amount, bool available)
+{
+	// Format amount to colored string; make it red if it's not available
+	if (available) return Format("%dx", amount);
+	return Format("<c ff0000>%dx</c>", amount);
 }
 
 public func HideProductInfo()
@@ -310,3 +317,9 @@ public func OnMouseOutItem(object out_item, object dragged_item)
 	return _inherited(out_item, dragged_item, ...);
 }
 
+// Don't save open menus in scenarios
+public func SaveScenarioObject()
+{
+	if (GetID() == Library_ProductionMenu) return false;
+	return inherited(...);
+}

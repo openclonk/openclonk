@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2008  Peter Wortmann
- * Copyright (c) 2001-2002, 2005  Sven Eberhardt
- * Copyright (c) 2004, 2006-2009  Günther Brammer
- * Copyright (c) 2005-2006  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // complex dynamic landscape creator
 
@@ -196,13 +189,17 @@ C4MCNode::C4MCNode(C4MCNode *pOwner)
 	*Name=0;
 }
 
-C4MCNode::C4MCNode(C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone)
+C4MCNode::C4MCNode(C4MCParser* pParser, C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone)
 {
+	// Make sure the template is not used recursively within itself
+	for(C4MCNode* pParent = pOwner; pParent != NULL; pParent = pParent->Owner)
+		if(pParent == &rTemplate)
+			throw C4MCParserErr(pParser, C4MCErr_NoRecTemplate, rTemplate.Name);
 	// set owner and stuff
 	Reg2Owner(pOwner);
 	// copy children from template
 	for (C4MCNode *pChild=rTemplate.Child0; pChild; pChild=pChild->Next)
-		pChild->clone(this);
+		pChild->clone(pParser, this);
 	// no name
 	*Name=0;
 }
@@ -324,7 +321,7 @@ C4MCOverlay::C4MCOverlay(C4MCNode *pOwner) : C4MCNode(pOwner)
 	pEvaluateFunc=pDrawFunc=NULL;
 }
 
-C4MCOverlay::C4MCOverlay(C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone) : C4MCNode(pOwner, rTemplate, fClone)
+C4MCOverlay::C4MCOverlay(C4MCParser* pParser, C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone) : C4MCNode(pParser, pOwner, rTemplate, fClone)
 {
 	// copy fields
 	X=rTemplate.X; Y=rTemplate.Y; Wdt=rTemplate.Wdt; Hgt=rTemplate.Hgt;
@@ -485,7 +482,12 @@ void C4MCOverlay::Evaluate()
 		}
 	}
 	// calc seed
-	if (!(Seed=FixedSeed)) Seed=(Random(32768)<<16) | Random(65536);
+	if (!(Seed=FixedSeed))
+	{
+		int32_t r1=Random(32768);
+		int32_t r2=Random(65536);
+		Seed=(r1<<16) | r2;
+	}
 }
 
 C4MCOverlay *C4MCOverlay::FirstOfChain()
@@ -507,11 +509,12 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 {
 	// bounds match?
 	if (!LooseBounds) if (iX<X || iY<Y || iX>=X+Wdt || iY>=Y+Hgt) return false;
-#ifdef DEBUGREC
-	C4RCTrf rc;
-	rc.x=iX; rc.y=iY; rc.Rotate=Rotate; rc.Turbulence=Turbulence;
-	AddDbgRec(RCT_MCT1, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCTrf rc;
+		rc.x=iX; rc.y=iY; rc.Rotate=Rotate; rc.Turbulence=Turbulence;
+		AddDbgRec(RCT_MCT1, &rc, sizeof(rc));
+	}
 	C4Real dX=itofix(iX); C4Real dY=itofix(iY);
 	// apply turbulence
 	if (Turbulence)
@@ -549,11 +552,12 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 		{ iX=fixtoi(dX, ZoomX); iY=fixtoi(dY, ZoomY); }
 	else
 		{ iX*=ZoomX; iY*=ZoomY; }
-#ifdef DEBUGREC
-	C4RCPos rc2;
-	rc2.x=iX; rc2.y=iY;
-	AddDbgRec(RCT_MCT2, &rc2, sizeof(rc2));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCPos rc2;
+		rc2.x=iX; rc2.y=iY;
+		AddDbgRec(RCT_MCT2, &rc2, sizeof(rc2));
+	}
 	// apply offset
 	iX-=OffX*ZoomX; iY-=OffY*ZoomY;
 	// check bounds, if loose
@@ -637,7 +641,7 @@ C4MCPoint::C4MCPoint(C4MCNode *pOwner) : C4MCNode(pOwner)
 	X=Y=0;
 }
 
-C4MCPoint::C4MCPoint(C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone) : C4MCNode(pOwner, rTemplate, fClone)
+C4MCPoint::C4MCPoint(C4MCParser* pParser, C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone) : C4MCNode(pParser, pOwner, rTemplate, fClone)
 {
 	// copy fields
 	X=rTemplate.X; Y=rTemplate.Y;
@@ -690,7 +694,7 @@ C4MCMap::C4MCMap(C4MCNode *pOwner) : C4MCOverlay(pOwner)
 
 }
 
-C4MCMap::C4MCMap(C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone) : C4MCOverlay(pOwner, rTemplate, fClone)
+C4MCMap::C4MCMap(C4MCParser* pParser, C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone) : C4MCOverlay(pParser, pOwner, rTemplate, fClone)
 {
 
 }
@@ -700,12 +704,7 @@ void C4MCMap::Default()
 	// inherited
 	C4MCOverlay::Default();
 	// size by landscape def
-	Wdt=MapCreator->Landscape->MapWdt.Evaluate();
-	Hgt=MapCreator->Landscape->MapHgt.Evaluate();
-	// map player extend
-	MapCreator->PlayerCount = Max(MapCreator->PlayerCount, 1);
-	if (MapCreator->Landscape->MapPlayerExtend)
-		Wdt = Min(Wdt * Min(MapCreator->PlayerCount, (int) C4S_MaxMapPlayerExtend), (int) MapCreator->Landscape->MapWdt.Max);
+	MapCreator->Landscape->GetMapSize(Wdt, Hgt, MapCreator->PlayerCount);
 }
 
 bool C4MCMap::RenderTo(BYTE *pToBuf, int32_t iPitch)
@@ -895,7 +894,7 @@ BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t 
 C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg)
 {
 	// create error message
-	sprintf(Msg, "%s: %s (%d)", pParser->Filename, szMsg, pParser->Code ? SGetLine(pParser->Code, pParser->CPos) : 0);
+	sprintf(Msg, "%s: %s (%d)", pParser->Filename, szMsg, pParser->BPos ? SGetLine(pParser->BPos, pParser->CPos) : 0);
 }
 
 C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg, const char *szPar)
@@ -903,7 +902,7 @@ C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg, const char 
 	char Buf[C4MaxMessage];
 	// create error message
 	sprintf(Buf, szMsg, szPar);
-	sprintf(Msg, "%s: %s (%d)", pParser->Filename, Buf, pParser->Code ? SGetLine(pParser->Code, pParser->CPos) : 0);
+	sprintf(Msg, "%s: %s (%d)", pParser->Filename, Buf, pParser->BPos ? SGetLine(pParser->BPos, pParser->CPos) : 0);
 }
 
 void C4MCParserErr::show()
@@ -920,7 +919,7 @@ C4MCParser::C4MCParser(C4MapCreatorS2 *pMapCreator)
 	// store map creator
 	MapCreator=pMapCreator;
 	// reset some fields
-	Code=NULL; CPos=NULL; *Filename=0;
+	Code=NULL; BPos = NULL; CPos=NULL; *Filename=0;
 }
 
 C4MCParser::~C4MCParser()
@@ -932,7 +931,7 @@ C4MCParser::~C4MCParser()
 void C4MCParser::Clear()
 {
 	// clear code if present
-	if (Code) delete [] Code; Code=NULL; CPos=NULL;
+	if (Code) delete [] Code; Code=NULL; BPos = NULL; CPos=NULL;
 	// reset filename
 	*Filename=0;
 }
@@ -1124,16 +1123,16 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 				if (SEqual(CurrTokenIdtf, C4MC_Overlay))
 				{
 					// overlay: create overlay node, using default template
-					pNewNode = new C4MCOverlay(pToNode, MapCreator->DefaultOverlay, false);
+					pNewNode = new C4MCOverlay(this, pToNode, MapCreator->DefaultOverlay, false);
 					State=PS_KEYWD1;
 				}
 				else if (SEqual(CurrTokenIdtf, C4MC_Point) && !pToNode->GetNodeByName(CurrTokenIdtf))
 				{
 					// only in overlays
-					if (!pToNode->Type() == MCN_Overlay)
+					if (!pToNode->Overlay())
 						throw C4MCParserErr(this, C4MCErr_PointOnlyOvl);
 					// create point node, using default template
-					pNewNode = new C4MCPoint(pToNode, MapCreator->DefaultPoint, false);
+					pNewNode = new C4MCPoint(this, pToNode, MapCreator->DefaultPoint, false);
 					State=PS_KEYWD1;
 				}
 				else if (SEqual(CurrTokenIdtf, C4MC_Map))
@@ -1142,7 +1141,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 					if (!pToNode->GlobalScope())
 						throw C4MCParserErr(this, C4MCErr_MapNoGlobal);
 					// create map node, using default template
-					pNewNode = new C4MCMap(pToNode, MapCreator->DefaultMap, false);
+					pNewNode = new C4MCMap(this, pToNode, MapCreator->DefaultMap, false);
 					State=PS_KEYWD1;
 				}
 				else
@@ -1224,7 +1223,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 				{
 				case MCN_Overlay:
 					// create overlay
-					pNewNode=new C4MCOverlay(pToNode, *((C4MCOverlay *) pCpyNode), false);
+					pNewNode=new C4MCOverlay(this, pToNode, *((C4MCOverlay *) pCpyNode), false);
 					break;
 				case MCN_Map:
 					// maps not allowed
@@ -1458,6 +1457,7 @@ void C4MCParser::ParseFile(const char *szFilename, C4Group *pGrp)
 	pGrp->Read((void *) Code, iSize);
 	Code[iSize]=0;
 	// parse it
+	BPos=Code;
 	CPos=Code;
 	ParseTo(MapCreator);
 	if (0) PrintNodeTree(MapCreator, 0);
@@ -1471,6 +1471,7 @@ void C4MCParser::Parse(const char *szScript)
 	// clear any old data
 	Clear();
 	// parse it
+	BPos=szScript;
 	CPos=szScript;
 	ParseTo(MapCreator);
 	if (0) PrintNodeTree(MapCreator, 0);
@@ -1478,6 +1479,20 @@ void C4MCParser::Parse(const char *szScript)
 	// on errors, this will be done be destructor
 	Clear();
 
+}
+
+void C4MCParser::ParseMemFile(const char *szScript, const char *szFilename)
+{
+	// clear any old data
+	Clear();
+	// store filename
+	SCopy(szFilename, Filename, C4MaxName);
+	// parse it
+	BPos=szScript;
+	CPos=szScript;
+	ParseTo(MapCreator);
+	// on errors, this will be done be destructor
+	Clear();
 }
 
 

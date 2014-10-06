@@ -4,6 +4,9 @@
 #include Library_Ownable
 #include Library_PowerProducer
 #include Library_PowerConsumer
+#include Library_Flag
+
+local DefaultFlagRadius = 90;
 
 static const Compensator_max_seconds = 15;
 static const Compensator_power_usage = 50;
@@ -140,9 +143,7 @@ func FxSparkleTimer(target, effect, time)
 {
 	effect.Interval *= 2;
 	if(effect.Interval > 35*3) return -1;
-
-	CreateParticle("StarSpark", RandomX(-3,3), RandomX(-14, -10), RandomX(-5,5), RandomX(-8, 0), 30, RGB(200, 200, 255), this);
-	CreateParticle("StarSpark", RandomX(-3,3), RandomX(-14, -10), RandomX(-5,5), RandomX(-8, 0), 30, RGB(200, 200, 255), this);
+	CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
 }
 
 func FxProducePowerTimer(target, effect, time)

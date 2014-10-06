@@ -15,11 +15,9 @@ local fAiming;
 local hook;
 local hook_attach;
 
-public func GetCarryMode() {  if(hook->Contained() == nil) return CARRY_Back; return CARRY_HandBack; }
-
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 public func GetCarryBone2(clonk) { return "main2"; }
-public func GetCarryMode(clonk) { if(hook->Contained() == nil) return CARRY_Back; if(fAiming >= 0) return CARRY_Grappler; }
+public func GetCarryMode(clonk) { if(hook && hook->Contained() == nil) return CARRY_Back; if(fAiming >= 0) return CARRY_Grappler; }
 
 /* +++++++++++ Controls ++++++++++++++ */
 
@@ -48,13 +46,19 @@ public func SetHook(object new_hook)
 	hook = new_hook;
 }
 
+private func EnsureHook()
+{
+	// Create hook if it went missing
+	if(!hook) hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	return hook;
+}
+
 public func OnRopeBreak()
 {
 	if(hook_attach)
 		DetachMesh(hook_attach);
 
-	if(!hook)
-		hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	EnsureHook();
 	hook->Enter(this);
 	hook_attach = AttachMesh(hook, "bolt", "main");
 	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
@@ -62,30 +66,42 @@ public func OnRopeBreak()
 
 public func DrawRopeIn()
 {
-	var rope = hook->GetRope();
-	if (rope)
-		rope->DrawIn();
+	if (hook)
+	{
+		var rope = hook->GetRope();
+		if (rope)
+			rope->DrawIn();
+	}
 }
 
 protected func Destruction()
 {
-	var rope = hook->GetRope();
-	if (rope)
-		rope->BreakRope();
+	if (hook)
+	{
+		var rope = hook->GetRope();
+		if (rope)
+			rope->BreakRope();
+	}
 }
 
 protected func Departure()
 {
-	var rope = hook->GetRope();
-	if (rope)
-		rope->DrawIn();
+	if (hook)
+	{
+		var rope = hook->GetRope();
+		if (rope)
+			rope->DrawIn();
+	}
 }
 
 public func GetAnimationSet() { return animation_set; }
 
 public func ControlUseStart(object clonk, int x, int y)
 {
+	// Burned?
+	if (GetCon()<100) return false;
 	// Cut rope, or otherwise remove helper object.
+	EnsureHook();
 	if (hook->Contained() != this)
 	{
 		var rope = hook->GetRope();
@@ -93,8 +109,12 @@ public func ControlUseStart(object clonk, int x, int y)
 		{
 			rope->DrawIn();
 		//	rope->BreakRope();
+			return true;
 		}
-		return true;
+		else
+		{
+			hook->Enter(this);
+		}
 	}
 
 	// if the clonk doesn't have an action where he can use it's hands do nothing
@@ -145,6 +165,8 @@ public func ControlUseStop(object clonk, int x, int y)
 // Callback from the clonk, when he actually has stopped aiming
 public func FinishedAiming(object clonk, int angle)
 {
+	if (GetCon()<100) return false;
+	EnsureHook();
 	DetachMesh(hook_attach);
 	hook_attach = nil;
 
@@ -177,6 +199,32 @@ public func OnRestartAim(object clonk)
 	return false;
 }
 
+/* Destroyed by fire? Make it visible. */
+
+func Incineration()
+{
+	// GrappleBow becomes unusable on incineration.
+	if (hook)
+	{
+		var rope = hook->GetRope();
+		if (rope) rope->BreakRope();
+		if (hook) hook->RemoveObject();
+	}
+	SetClrModulation(0xff606060);
+	return _inherited(...);
+}
+
+func Extinguishing()
+{
+	// If extinguished on the same frame it got incinerated, make it usable again
+	if (GetCon()>=100)
+	{
+		EnsureHook();
+		SetClrModulation();
+	}
+	return _inherited(...);
+}
+
 /* ++++++++ Animation functions ++++++++ */
 
 public func Reset(clonk)
@@ -198,4 +246,4 @@ local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
 local BlastIncinerate = 30;
-local ContactIncinerate = 1;
+local ContactIncinerate = 0;

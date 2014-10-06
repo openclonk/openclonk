@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2001, 2003, 2006  Matthes Bender
- * Copyright (c) 2002, 2004-2010  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
- * Copyright (c) 2008  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Loads all standard graphics from Graphics.ocg */
@@ -26,13 +21,15 @@
 #include <C4GraphicsResource.h>
 
 #include <C4DefList.h>
+#include <C4FontLoader.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 #include <C4Def.h>
-#include <C4Fonts.h>
 
 #include <C4DrawGL.h>
+
+/* C4GraphicsResource */
 
 C4GraphicsResource::C4GraphicsResource():
 	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),
@@ -143,6 +140,8 @@ void C4GraphicsResource::Clear()
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
 
+	Achievements.Clear();
+
 	// closing the group set will also close the graphics.ocg
 	// this is just for games that failed to init
 	// normally, this is done after successful init anyway
@@ -154,15 +153,15 @@ bool C4GraphicsResource::InitFonts()
 	// this regards scenario-specific fonts or overloads in Extra.ocg
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
-	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
+	if (!::FontLoader.InitFont(&FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
-	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
+	if (!::FontLoader.InitFont(&FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
-	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Files)) return false;
+	if (!::FontLoader.InitFont(&FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
-	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Files)) return false;
+	if (!::FontLoader.InitFont(&FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Files)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
-	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files, false)) return false;
+	if (!::FontLoader.InitFont(&FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files, false)) return false;
 	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&::Definitions);
@@ -255,6 +254,9 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height)) return false;
 	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80)) return false;
 	if (!LoadFile(fctBuild,       "Build",        Files)) return false;
+
+	// achievements
+	if (!Achievements.Init(Files)) return false;
 
 	// create ColorByOwner overlay surfaces
 	if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
@@ -471,8 +473,25 @@ bool C4GraphicsResource::ReloadResolutionDependantFiles()
 	if(!fInitialized) return false;
 	// reload any files that depend on the current resolution
 	// reloads the cursor
+
+	// Re-open the graphics files if they are not open anymore -- this
+	// happens when the game is running.
+	// Note also that at the moment there are no resolution dependent
+	// graphics files...
+	const bool hadGroupsRegistered = (idRegisteredMainGroupSetFiles != -1);
+	if(!hadGroupsRegistered)
+	{
+		RegisterGlobalGraphics();
+		RegisterMainGroups();
+	}
+
 	fctMouseCursor.idSourceGroup = 0;
-	return LoadCursorGfx();
+	const bool result = true;
+	
+	if(!hadGroupsRegistered)
+		CloseFiles();
+
+	return result;
 }
 
 C4GraphicsResource GraphicsResource;

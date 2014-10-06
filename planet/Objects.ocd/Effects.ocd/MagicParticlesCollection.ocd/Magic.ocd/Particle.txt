@@ -1,17 +1,3 @@
 [Particle]
 Name=Magic
-MaxCount=1500
-InitFn=StdInit
-ExecFn=StdExec
-CollisionFn=Die
-DrawFn=Std
 Face=0,0,32,32,-16,-16
-Delay=0
-Repeats=1
-GravityAcc=0
-VertexCount=1
-VertexY=20
-AlphaFade=8
-Additive=1
-RByV=3
-Attach=0

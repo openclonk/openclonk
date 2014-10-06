@@ -296,6 +296,9 @@ func ForcesOnObjects()
 	}
 }
 
+// Only the grappler is stored.
+public func SaveScenarioObject() { return false; }
+
 func Definition(def)
 {
 	def.LineColors = [RGB(66,33,00), RGB(66,33,00)];

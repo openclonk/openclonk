@@ -21,91 +21,91 @@
         <col>Action.Attach</col>
       </row>
       <row id="WALK">
-        <col>WALK</col>
+        <col>DFA_WALK</col>
         <col>Walking</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
       <row id="FLIGHT">
-        <col>FLIGHT</col>
+        <col>DFA_FLIGHT</col>
         <col>Free fall</col>
         <col>Only gravitational effects</col>
         <col>CNAT_None</col>
       </row>
       <row id="KNEEL">
-        <col>KNEEL</col>
+        <col>DFA_KNEEL</col>
         <col>Getting up</col>
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row iD="SCALE">
-        <col>SCALE</col>
+      <row id="SCALE">
+        <col>DFA_SCALE</col>
         <col>Scaling a wall</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_Left/Right</col>
       </row>
       <row id="HANGLE">
-        <col>HANGLE</col>
+        <col>DFA_HANGLE</col>
         <col>Climbing on the ceiling</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_Top</col>
       </row>
       <row id="DIG">
-        <col>DIG</col>
+        <col>DFA_DIG</col>
         <col>Dig</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>. With <emlink href="script/fn/SetActionData.html">Data</emlink>=1 material chunks are dug free.</col>
         <col>CNAT_None</col>
       </row>
       <row id="SWIM">
-        <col>SWIM</col>
+        <col>DFA_SWIM</col>
         <col>Swimming</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_None</col>
       </row>
       <row id="THROW">
-        <col>THROW</col>
+        <col>DFA_THROW</col>
         <col>Throw</col>
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
       <row id="BRIDGE">
-        <col>BRIDGE</col>
+        <col>DFA_BRIDGE</col>
         <col>Bridge building</col>
         <col>According to <emlink href="script/fn/SetComDir.html">ComDir</emlink>. Bridge material is a material number in <emlink href="script/fn/SetActionData.html">Data</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
       <row id="PUSH">
-        <col>PUSH</col>
+        <col>DFA_PUSH</col>
         <col>Pushing</col>
         <col>Pushes the <emlink href="script/fn/SetAction.html">target object </emlink> according to <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
       <row id="LIFT">
-        <col>LIFT</col>
+        <col>DFA_LIFT</col>
         <col>Lifting</col>
         <col>Lifts the <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_None</col>
       </row>
       <row id="FLOAT">
-        <col>FLOAT</col>
+        <col>DFA_FLOAT</col>
         <col>Floating in mid-air</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_None</col>
       </row>
       <row id="ATTACH">
-        <col>ATTACH</col>
+        <col>DFA_ATTACH</col>
         <col>Attachment to another object</col>
         <col>Adjusts object position at vertex a to the position of vertex b of the <emlink href="script/fn/SetAction.html">target object</emlink>. a and b are the two low bytes of <emlink href="script/fn/SetActionData.html">ActionData</emlink> (see <emlink href="script/fn/SetActionData.html">SetActionData</emlink> for an example).</col>
         <col>CNAT_None</col>
       </row>
       <row id="CONNECT">
-        <col>CONNECT</col>
+        <col>DFA_CONNECT</col>
         <col>Line connections</col>
-        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
+        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>. If property LineMaxDistance is a nonzero integer, the line breaks when the target objects are further apart than the given distance.</col>
         <col>CNAT_None</col>
       </row>
       <row id="PULL">
-        <col>PULL</col>
+        <col>DFA_PULL</col>
         <col>Pulling</col>
         <col>Pulls the <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
         <col>CNAT_Bottom</col>

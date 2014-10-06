@@ -1,2 +1,0 @@
-NameLeft=Team Ruby
-NameRight=Team Ametyst

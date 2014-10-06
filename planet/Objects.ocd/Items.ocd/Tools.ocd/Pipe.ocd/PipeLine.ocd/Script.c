@@ -1,6 +1,18 @@
-/*-- Pipe line --*/
+/*-- Pipe line
 
-//Author: ST-DDT
+	Author: ST-DDT
+--*/
+
+local Name = "$Name$";
+
+local ActMap = {
+	Connect = {
+		Prototype = Action,
+		Name = "Connect",
+		Procedure = DFA_CONNECT,
+		NextAction = "Connect"
+	}
+};
 
 protected func Initialize()
 {
@@ -11,19 +23,19 @@ protected func Initialize()
 	return;
 }
 
-// Returns true if this object is a functioning pipe.
+/** Returns true if this object is a functioning pipe. */
 public func IsPipeLine()
 {
 	return GetAction() == "Connect";
 }
 
-// Returns whether this pipe is connected to an object.
+/** Returns whether this pipe is connected to an object. */
 public func IsConnectedTo(object obj)
 {
 	return GetActionTarget(0) == obj || GetActionTarget(1) == obj;
 }
 
-// Returns the object which is connected to obj through this pipe.
+/** Returns the object which is connected to obj through this pipe. */
 public func GetConnectedObject(object obj)
 {
 	if (GetActionTarget(0) == obj)
@@ -51,61 +63,9 @@ private func BreakMessage()
 	return;
 }
 
-local ActMap = {
-	Connect = {
-		Prototype = Action,
-		Name = "Connect",
-		Procedure = DFA_CONNECT,
-		NextAction = "Connect"
-	}
-};
-
-/**
-Extract liquid from barrel
-@param sznMaterial: Material to extract; Wildcardsupport
-@param inMaxAmount: Max Amount of Material being extracted 
-@param pnTarget: Object which extracts the liquid
-@return [irMaterial,irAmount]
-	-irMaterial: Material being extracted
-	-irAmount: Amount being extracted
-*/
-public func GetLiquid(string sznMaterial, int inMaxAmount, object pnTarget, bool bWildcard)
+func SaveScenarioObject(props)
 {
-	var pConnected = GetConnectedObject(pnTarget);
-	if (!pConnected)
-		return ["", 0];
-	var aMat = pConnected->~LiquidOutput(sznMaterial, inMaxAmount, pnTarget, this, bWildcard);
-	//Bad script? Not needed.
-	if (GetType(aMat) != C4V_Array)
-		return [-1, 0];
-	//Verify data
-	if ((aMat[0] == "") || (GetLength(aMat) == 1))
-		aMat[1] = 0;
-	//Nothing is nothing
-	if (aMat[1] <= 0)
-	{
-		aMat[0] = "";
-		aMat[1] = 0;
-	} //Bad script end
-	return aMat;
+	if (!inherited(props, ...)) return false;
+	SaveScenarioObjectAction(props);
+	return true;
 }
- 
-/** 
-Insert liquid to barrel
-	@param sznMaterial: Material to insert
-	@param inMaxAmount: Max Amount of Material being inserted 
-	@param pnSource: Object which inserts the liquid
-	@return inAmount: The inserted amount
-*/
-public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
-{
-	var pConnected = GetConnectedObject(pnSource);
-	if (!pConnected)
-		return 0;
-	if (sznMaterial == "")
-		return 0;
-	return BoundBy(pConnected->~LiquidInput(sznMaterial, inMaxAmount, pnSource, this), 0, inMaxAmount);
-}
-
-local Name = "$Name$";
-		

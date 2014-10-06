@@ -34,6 +34,18 @@ global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int
 	iYDir *= 5; iXDir *= 5;
 	iY -= 4*iFaktor;
 	iXOld = iX; iYOld = iY;
+	if (!spacing) spacing = 10;
+	
+	// particle setup
+	var particles =
+	{
+		Prototype = Particles_Trajectory(),
+		R = (iColor >> 16) & 0xff,
+		G = (iColor >>  8) & 0xff,
+		B = (iColor >>  0) & 0xff,
+		Alpha = (iColor >> 24) & 0xff
+	};
+	
 	// Trajectory simulation
 	while(++i < 500)
 	{
@@ -41,10 +53,9 @@ global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int
 		iX += iXDir;
 		iY += iYDir + GetGravity() * i / 22;
 		// If we are far enough away insert a new point
-	if(!spacing) spacing = 10;
 		if(Distance((iXOld - iX) / iFaktor, (iYOld - iY) / iFaktor) >= spacing)
 		{
-			CreateParticle("Trajectory", iX/iFaktor - pTrajectory->GetX(), iY/iFaktor - pTrajectory->GetY(), iXDir/500, iYDir/500, 15, iColor, pTrajectory);
+			pTrajectory->CreateParticle("Magic", iX/iFaktor - pTrajectory->GetX(), iY/iFaktor - pTrajectory->GetY(), 0, 0, 0, particles);
 			iXOld = iX; iYOld = iY;
 		}
 		// Or is it here already?
@@ -58,6 +69,9 @@ public func AttachTargetLost()
 {
 	RemoveObject();
 }
+
+// Don't save in scenarios
+func SaveScenarioObject() { return false; }
 
 local ActMap = {
 Attach = {

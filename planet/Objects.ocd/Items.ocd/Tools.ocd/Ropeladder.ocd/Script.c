@@ -438,7 +438,7 @@ public func GetLadderData(index)
 		var angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return [startx, starty, startx, starty-5000, angle];
 	}
-	if(index == ParticleCount-1 || segments[index+1]->CanNotBeClimbed())
+	if(index == ParticleCount-1 || segments[index+1]->~CanNotBeClimbed())
 	{
 		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}
@@ -453,6 +453,17 @@ func Hit()
 {
 	Sound("WoodHit?");
 }
+
+// Save unrolled ladders in scenario
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (UnrollDir) props->AddCall("Unroll", this, "Unroll", UnrollDir);
+	return true;
+}
+
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
 
 local ActMap = {
 Hanging = {

@@ -28,6 +28,9 @@ public func Initialize()
 // Sawmill can't be accessed as a container.
 public func IsContainer() { return false; }
 
+// Sawmill can't be interacted with.
+public func IsInteractable() { return false; }
+
 // Automatically search for trees in front of sawmill
 // Temporary solution?
 protected func FindTrees()
@@ -63,7 +66,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime(id toProduce) { return 100; }
-private func PowerNeed() { return 100; }
+private func PowerNeed() { return 50; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
@@ -109,11 +112,11 @@ public func OnProductionFinish(id product)
 func CollectionZone()
 {
 	if (GetCon() < 100) return;
-
-	if (!(FrameCounter() % 35)) FindTrees();
- 
-	for (var object in FindObjects(Find_InRect(- 13 * GetDir(),0,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		Collect(object);
+	
+	// Only take one tree at a time
+	if (!(FrameCounter() % 35)) 
+		if (GetLength(queue) == 0)
+			FindTrees();
 }
 
 protected func Collection()
@@ -123,8 +126,9 @@ protected func Collection()
 
 public func FxSawingTimer(object target, proplist effect, int time)
 {
+	var dir = GetCalcDir();
 	if (time >= this.SpinStep * 3 && time % 5)
-		CreateParticle("Axe_WoodChip", - 6 * GetCalcDir() - Random(3), RandomX(1,4), -(5 + Random(11)) * GetCalcDir(), -RandomX(2,4), 15+Random(10), RGB(255,255,255), this);
+		CreateParticle("WoodChip", PV_Random(-7 * dir, -3 * dir), PV_Random(3, 6), PV_Random(-5 * dir, -11 * dir), PV_Random(-4, -2), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 3);
 
 	if (!(time % 20))
 		Smoke(10 * GetCalcDir(),10,10);

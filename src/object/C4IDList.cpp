@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2002, 2005, 2008, 2010  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2006  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* At static list of C4IDs */
@@ -411,7 +407,7 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 		cgo2 = cgo.TruncateSection(iAlign);
 		rDefs.Draw(c_id,cgo2,(firstid+cnt==iSelection),0);
 		sprintf(buf,"%dx",idcount);
-		if (fCounts) pDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
+		if (fCounts) pDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.GetLineHeight(),C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
 	}
 
 }

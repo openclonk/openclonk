@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2005, 2007  Matthes Bender
- * Copyright (c) 2001-2007  Sven Eberhardt
- * Copyright (c) 2003, 2005-2007  Peter Wortmann
- * Copyright (c) 2006-2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Basic classes for rectangles and vertex outlines */
@@ -54,68 +50,82 @@ void C4Shape::Clear()
 	ZeroMem(this, sizeof (C4Shape));
 }
 
-void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
+void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 {
-#ifdef DEBUGREC
 	C4RCRotVtx rc;
-	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=iAngle;
 	int32_t i = 0;
-	for (; i<4; ++i)
-		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
-	AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
-#endif
-	int32_t cnt,nvtx,nvty,rdia;
+	if (Config.General.DebugRec)
+	{
+		rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=Angle;
+		for (; i<4; ++i)
+			{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
+		AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
+	}
+	int32_t cnt,nvtx,nvty,nwdt,nhgt;
 
-	//int32_t *vtx=VtxX;
-	//int32_t *vty=VtxY;
 	C4Real mtx[4];
-	C4Real fAngle = itofix(iAngle);
+
+	// Calculate rotation matrix
+	mtx[0] = Cos(Angle); mtx[1] = -Sin(Angle);
+	mtx[2] = -mtx[1];     mtx[3] = mtx[0];
 
 	if (bUpdateVertices)
 	{
-
-		// Calculate rotation matrix
-		mtx[0]=Cos(fAngle); mtx[1]=-Sin(fAngle);
-		mtx[2]=-mtx[1]; mtx[3]= mtx[0];
 		// Rotate vertices
-		for (cnt=0; cnt<VtxNum; cnt++)
+		for (cnt = 0; cnt < VtxNum; cnt++)
 		{
-			//nvtx= (int32_t) ( mtx[0]*vtx[cnt] + mtx[1]*vty[cnt] );
-			//nvty= (int32_t) ( mtx[2]*vtx[cnt] + mtx[3]*vty[cnt] );
-			nvtx = fixtoi(mtx[0]*VtxX[cnt] + mtx[1]*VtxY[cnt]);
-			nvty = fixtoi(mtx[2]*VtxX[cnt] + mtx[3]*VtxY[cnt]);
-			VtxX[cnt]=nvtx; VtxY[cnt]=nvty;
+			nvtx = fixtoi(mtx[0] * VtxX[cnt] + mtx[1] * VtxY[cnt]);
+			nvty = fixtoi(mtx[2] * VtxX[cnt] + mtx[3] * VtxY[cnt]);
+			VtxX[cnt] = nvtx; VtxY[cnt] = nvty;
 		}
-
-		/* This is freaking nuts. I used the int32_t* to shortcut the
-		  two int32_t arrays Shape.Vtx_[]. Without modifications to
-		  this code, after rotation the x-values of vertex 2 and 4
-		  are screwed to that of vertex 0. Direct use of the array
-		  variables instead of the pointers helped. Later in
-		  development, again without modification to this code, the
-		  same error occured again. I moved back to pointer array
-		  shortcut and it worked again. ?!
-
-		  The error occurs after the C4DefCore structure has
-		  changed. It must have something to do with struct
-		  member alignment. But why does pointer usage vs. array
-		  index make a difference?
-		*/
-
 	}
 
 	// Enlarge Rect
-	rdia= (int32_t) sqrt(double(x*x+y*y)) + 2;
-	x=-rdia;
-	y=-rdia;
-	Wdt=2*rdia;
-	Hgt=2*rdia;
-#ifdef DEBUGREC
-	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
-	for (i=0; i<4; ++i)
-		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
-	AddDbgRec(RCT_RotVtx2, &rc, sizeof(rc));
-#endif
+	nvtx = fixtoi(mtx[0] * x + mtx[1] * y);
+	nvty = fixtoi(mtx[2] * x + mtx[3] * y);
+	if (mtx[0] > 0)
+	{
+		if (mtx[1] > 0)
+		{
+			nwdt = fixtoi(mtx[0] * Wdt + mtx[1] * Hgt);
+			nhgt = fixtoi(mtx[1] * Wdt + mtx[0] * Hgt);
+			x = nvtx;
+			y = nvty - fixtoi(mtx[1] * Wdt);
+		}
+		else
+		{
+			nwdt = fixtoi(mtx[0] * Wdt - mtx[1] * Hgt);
+			nhgt = fixtoi(- mtx[1] * Wdt + mtx[0] * Hgt);
+			x = nvtx + fixtoi(mtx[1] * Hgt);
+			y = nvty;
+		}
+	}
+	else
+	{
+		if (mtx[1] > 0)
+		{
+			nwdt = fixtoi(- mtx[0] * Wdt + mtx[1] * Hgt);
+			nhgt = fixtoi(mtx[1] * Wdt - mtx[0] * Hgt);
+			x = nvtx + fixtoi(mtx[0] * Wdt);
+			y = nvty - nhgt;
+		}
+		else
+		{
+			nwdt = fixtoi(- mtx[0] * Wdt - mtx[1] * Hgt);
+			nhgt = fixtoi(- mtx[1] * Wdt - mtx[0] * Hgt);
+			x = nvtx - nwdt;
+			y = nvty + fixtoi(mtx[0] * Hgt);
+		}
+	}
+	Wdt = nwdt;
+	Hgt = nhgt;
+	if (Config.General.DebugRec)
+	{
+		rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
+		for (i=0; i<4; ++i)
+			{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
+		AddDbgRec(RCT_RotVtx2, &rc, sizeof(rc));
+	}
 }
 
 void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
@@ -345,7 +355,7 @@ bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 	return false;
 }
 
-bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
+bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts)
 {
 	// Check all vertices at given object position.
 	// Set ContactCNAT and ContactCount.
@@ -362,24 +372,30 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
 
 		{
-
 			VtxContactCNAT[cvtx]=CNAT_None;
-			VtxContactMat[cvtx]=GBackMat(cx+VtxX[cvtx],cy+VtxY[cvtx]);
+			int32_t x = cx+VtxX[cvtx];
+			int32_t y = cy+VtxY[cvtx];
+			VtxContactMat[cvtx]=GBackMat(x,y);
 
-			if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]) >= ContactDensity)
+			if (GBackDensity(x,y) >= ContactDensity)
 			{
 				ContactCNAT |= VtxCNAT[cvtx];
 				VtxContactCNAT[cvtx]|=CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top,bottom,left,right
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]-1) >= ContactDensity)
+				if (GBackDensity(x,y-1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Top;
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]+1) >= ContactDensity)
+				if (GBackDensity(x,y+1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Bottom;
-				if (GBackDensity(cx+VtxX[cvtx]-1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x-1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Left;
-				if (GBackDensity(cx+VtxX[cvtx]+1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x+1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Right;
+			}
+			if (border_hack_contacts)
+			{
+				if (x == 0 && GBackDensity(x-1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Left;
+				else if (x == ::Landscape.Width && GBackDensity(x+1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Right;
 			}
 		}
 
@@ -510,20 +526,24 @@ void C4Shape::CreateOwnOriginalCopy(C4Shape &rFrom)
 	memcpy(VtxContactMat+C4D_VertexCpyPos, rFrom.VtxContactMat, VtxNum*sizeof(*VtxContactMat));
 }
 
-void C4Shape::CompileFunc(StdCompiler *pComp, bool fRuntime)
+void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 {
+	// a default shape is given in object compilation context only
+	bool fRuntime = !!default_shape;
+	C4Shape default_def_shape;
+	if (!default_shape) default_shape = &default_def_shape;
 	// Note: Compiled directly into "Object" and "DefCore"-categories, so beware of name clashes
 	// (see C4Object::CompileFunc and C4Def::CompileFunc)
-	pComp->Value(mkNamingAdapt( Wdt,                        "Width",              0                 ));
-	pComp->Value(mkNamingAdapt( Hgt,                        "Height",             0                 ));
-	pComp->Value(mkNamingAdapt( mkArrayAdapt(&x,2,0),       "Offset"                                ));
-	pComp->Value(mkNamingAdapt( VtxNum,                     "Vertices",           0                 ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxX),             "VertexX"                               ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxY),             "VertexY"                               ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxCNAT),          "VertexCNAT"                            ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxFriction),      "VertexFriction"                        ));
-	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     C4M_Solid         ));
-	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            0                 ));
+	pComp->Value(mkNamingAdapt( Wdt,                        "Width",              default_shape->Wdt));
+	pComp->Value(mkNamingAdapt( Hgt,                        "Height",             default_shape->Hgt));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDefArr(&x,2,&default_shape->x),               "Offset",             &default_shape->x));
+	pComp->Value(mkNamingAdapt( VtxNum,                                                   "Vertices",           default_shape->VtxNum));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxX, default_shape->VtxX),               "VertexX",            default_shape->VtxX));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxY, default_shape->VtxY),               "VertexY",            default_shape->VtxY));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxCNAT, default_shape->VtxCNAT),         "VertexCNAT",         default_shape->VtxCNAT));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxFriction, default_shape->VtxFriction), "VertexFriction",     default_shape->VtxFriction));
+	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     default_shape->ContactDensity));
+	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            default_shape->FireTop));
 	if (fRuntime)
 	{
 		pComp->Value(mkNamingAdapt( iAttachX,                   "AttachX",            0                 ));

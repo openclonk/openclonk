@@ -92,7 +92,6 @@ func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 		y=-Sin(step, 6)-3;
 		if(GetChargeType() == L_WN_down) y*=-1;
 		if(pTarget->GetDir() == DIR_Left) x *= -1;
-		CreateParticle("Blast", x, y, 0, 0, 20);
 		
 		var strength = 0;
 		if(iEffectTime <= GetStrikeTime())
@@ -316,7 +315,6 @@ func GetJumpLength(pClonk)
 		// not a very good approximation. I really think SimFlight should return the number of iterations
 		return Sqrt((x - pClonk->GetX()) ** 2 + (y - pClonk->GetY()) ** 2);
 	}
-	return -1;
 }
 
 func ApplyShieldFactor(pFrom, pTo, damage)

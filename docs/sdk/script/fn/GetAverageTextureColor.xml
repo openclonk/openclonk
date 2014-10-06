@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAverageTextureColor</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>texture_name</name>
+          <desc>Name of the texture for which to retrieve the average color.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the average color of the given material texture.</desc>
+    <related>
+      <funclink>GetTexture</funclink>
+    </related>
+  </func>
+  <date>2014-01</date>
+</funcs>

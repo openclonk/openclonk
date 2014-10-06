@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PV_Sin</title>
+    <category>Particles</category>
+    <version>5.4.2 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value or value provider to calculate the sine of. The result of <funclink>PV_Linear</funclink> can be used to evaluate the sine function linearly over time.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amplitude</name>
+          <desc>Amplitude of result. May be a value or value provider.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset</name>
+          <desc>Offset added to result. May be a value or value provider. Defaults to zero.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>The value will is calculates as sin(value) * amplitude + offset with value given in degrees.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <examples>
+      <example>
+        <code><funclink>CreateParticle</funclink>("MagicRing", 0, 0, 0, 0, 100, {R=0xff,G=0x00,B=0x30, Size = PV_Sin(<funclink>PV_Linear</funclink>(0,180),10,0)}, 1);</code>
+        <text>Creates a particle which increases size from 0 to 10 and back to 0 during 100 frames.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PC_Die</funclink>
+      <funclink>PC_Bounce</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2014-06</date>
+</funcs>

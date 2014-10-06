@@ -24,12 +24,14 @@ local respawn_list; // List of last reached respawn CP per player.
 local plr_list; // Number of checkpoints the player completed.
 local team_list; // Number of checkpoints the team completed.
 local time_store; // String for best time storage in player file.
+local no_respawn_handling; // set to true if this goal should not handle respawn
 
 /*-- General --*/
 
 protected func Initialize()
 {
 	finished = false;
+	no_respawn_handling = false;
 	cp_list = [];
 	cp_count = 0;
 	respawn_list = [];
@@ -79,6 +81,7 @@ public func SetFinishpoint(int x, int y, bool team)
 	cp->SetCPController(this);
 	cp_count++;
 	cp_list[cp_count] = cp;
+	UpdateScoreboardTitle();
 	return cp;
 }
 
@@ -105,8 +108,32 @@ public func AddCheckpoint(int x, int y, int mode)
 		cp_list[cp_count + 1] = cp;
 	}
 	cp_count++;
+	UpdateScoreboardTitle();
 	return cp;
 }
+
+public func DisableRespawnHandling()
+{
+	// Call this to disable respawn handling by goal
+	// This might be useful if
+	// a) you don't want any respawns or
+	// b) the scenario already provides an alternate respawn handling
+	no_respawn_handling = true;
+	return true;
+}
+
+/*-- Scenario saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// force dependency on restartr rule
+	var restart_rule = FindObject(Find_ID(Rule_Restart));
+	if (restart_rule) restart_rule->MakeScenarioSaveName();
+	if (no_respawn_handling) props->AddCall("Goal", this, "DisableRespawnHandling");
+	return true;
+}
+
 
 /*-- Checkpoint interaction --*/
 
@@ -181,6 +208,33 @@ private func EliminatePlayers(int winner)
 public func IsFulfilled()
 {
 	return finished;
+}
+
+public func GetDescription(int plr)
+{
+	var team = GetPlayerTeam(plr);
+	var msg;
+	if (finished)
+	{
+		if (team)
+		{
+			if (IsWinner(plr))
+				msg = "$MsgParkourWonTeam$";
+			else
+				msg = "$MsgParkourLostTeam$";
+		}
+		else
+		{
+			if (IsWinner(plr))
+				msg = "$MsgParkourWon$";
+			else
+				msg = "$MsgParkourLost$";
+		}
+	}
+	else
+		msg = Format("$MsgParkour$", cp_count);
+
+	return msg;
 }
 
 public func Activate(int plr)
@@ -335,6 +389,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 
 protected func RelaunchPlayer(int plr)
 {
+	if (no_respawn_handling) return;
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
@@ -378,20 +433,24 @@ protected func RemovePlayer(int plr)
 static const SBRD_Checkpoints = 0;
 static const SBRD_BestTime = 1;
 
-private func InitScoreboard()
+private func UpdateScoreboardTitle()
 {
 	if (cp_count > 0)
 		var caption = Format("$MsgCaptionX$", cp_count);
 	else
 		var caption = "$MsgCaptionNone$";
-		
+	return Scoreboard->SetTitle(caption);
+}
+
+private func InitScoreboard()
+{
 	Scoreboard->Init(
 		[
 		{key = "checkpoints", title = ParkourCheckpoint, sorted = true, desc = true, default = 0, priority = 80},
 		{key = "besttime", title = "T", sorted = true, desc = true, default = 0, priority = 70}
 		]
 		);
-	Scoreboard->SetTitle(caption);
+	UpdateScoreboardTitle();
 	return;
 }
 

@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2005-2007  Peter Wortmann
- * Copyright (c) 2006-2007, 2009  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011 Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles landscape and sky */
@@ -45,10 +39,6 @@ const int32_t C4LSC_Undefined = 0,
 
 const int32_t C4LS_MaxRelights = 50;
 
-class C4MapCreatorS2;
-class C4Object;
-class C4PropList;
-
 class C4Landscape
 {
 public:
@@ -61,7 +51,7 @@ public:
 	CSurface8 * Map;
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
-	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
+	uint8_t *BridgeMatConversion[128]; // NoSave //
 
 	bool NoScan; // ExecuteScan() disabled
 	int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
@@ -77,13 +67,14 @@ public:
 protected:
 	CSurface8 * Surface8;
 	class C4LandscapeRender *pLandscapeRender;
+	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
 	uint8_t *PixCnt;
 	C4Rect Relights[C4LS_MaxRelights];
 public:
 	void Default();
-	void Clear(bool fClearMapCreator=true, bool fClearSky=true);
+	void Clear(bool fClearMapCreator=true, bool fClearSky=true, bool fClearRenderer=true);
 	void Execute();
 	void Synchronize();
 	void Draw(C4TargetFacet &cgo, class C4FoWRegion *pLight = NULL);
@@ -111,7 +102,7 @@ public:
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
-	bool InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx = 0, int32_t vy = 0);
+	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0, bool query_only=false); // modifies tx/ty to actual insertion position
 	bool InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty);
 	bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
 	bool FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
@@ -148,13 +139,11 @@ public:
 		}
 		if (y<0)
 		{
-			if (TopOpen) return 0;
-			else return MCVehic;
+			return TopRowPix[x];
 		}
 		if (y>=Height)
 		{
-			if (BottomOpen) return 0;
-			else return MCVehic;
+			return BottomRowPix[x];
 		}
 		return Surface8->_GetPix(x,y);
 	}
@@ -224,6 +213,7 @@ protected:
 	bool TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
 	bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0, bool noClear = false); // zoom map segment to surface (or sector surfaces)
+	bool InitTopAndBottomRowPix(); // inti out-of-landscape pixels for bottom side
 	bool GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE &rbyCol);
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes
@@ -236,7 +226,7 @@ protected:
 	void PrepareChange(C4Rect BoundingBox);
 	void FinishChange(C4Rect BoundingBox);
 	static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
-	uint8_t *GetBridgeMatConversion(int for_material);
+	uint8_t *GetBridgeMatConversion(int for_material_col);
 	bool SaveInternal(C4Group &hGroup);
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
 
@@ -244,17 +234,17 @@ public:
 	int32_t ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
 	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
 
-	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false);
-	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER);
+	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
+	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
 
 	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
-	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false);
-	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false);
+	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
+	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
 	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
+	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL, int32_t iMaxDensity = C4M_Vehicle);
 
 	void CheckInstabilityRange(int32_t tx, int32_t ty);
-	bool CheckInstability(int32_t tx, int32_t ty);
+	bool CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count=0);
 
 	bool ClearPix(int32_t tx, int32_t ty);	// also used by mass mover (corrode)
 
@@ -264,11 +254,15 @@ private:
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
-	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str);
+	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
 
 	bool DigFreePix(int32_t tx, int32_t ty);
+	bool DigFreePixNoInstability(int32_t tx, int32_t ty);
 	bool BlastFreePix(int32_t tx, int32_t ty);
 	bool ShakeFreePix(int32_t tx, int32_t ty);
+
+	C4ValueArray *PrepareFreeShape(C4Rect &BoundingBox, C4Object *by_object);
+	void PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object);
 
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
@@ -289,7 +283,8 @@ bool FindSurfaceLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
 bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange);
 bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, int32_t Plane, int32_t hrange=-1);
 bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, int32_t iHeight, int32_t &rX, int32_t &rY);
-bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy);
 bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 bool FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
 bool ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);

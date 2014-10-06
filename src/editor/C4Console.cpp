@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2004, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2007, 2009-2011  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles engine execution in developer mode */
@@ -46,7 +38,7 @@
 #include <StdFile.h>
 #include <StdRegistry.h>
 
-#define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
+#define FILE_SELECT_FILTER_FOR_C4S "OpenClonk Scenario\0"         \
                                    "*.ocs;*.ocf;Scenario.txt\0" \
                                    "\0"
 
@@ -83,7 +75,7 @@ bool C4Console::In(const char *szText)
 		// done
 		return true;
 	}
-	// begins with '#'? then it's a message. Route cia ProcessInput to allow #/sound
+	// begins with '#'? then it's a message. Route via ProcessInput to allow #/sound
 	if (*szText == '#')
 	{
 		::MessageInput.ProcessInput(szText + 1);
@@ -92,7 +84,7 @@ bool C4Console::In(const char *szText)
 	// editing enabled?
 	if (!EditCursor.EditingOK()) return false;
 	// pass through network queue
-	::Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+	::Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console), CDT_Decide);
 	return true;
 }
 
@@ -236,10 +228,10 @@ bool C4Console::FileSave()
 bool C4Console::FileSaveAs(bool fSaveGame)
 {
 	// Do save-as dialog
-	StdStrBuf filename;
+	StdCopyStrBuf filename("");
 	filename.Copy(Game.ScenarioFile.GetName());
 	if (!FileSelect(&filename,
-	                "Clonk 4 Scenario\0*.ocs\0\0",
+	                "OpenClonk Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
@@ -259,7 +251,7 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 bool C4Console::FileOpen()
 {
 	// Get scenario file name
-	StdStrBuf c4sfile ("");
+	StdCopyStrBuf c4sfile("");
 	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
@@ -273,15 +265,15 @@ bool C4Console::FileOpen()
 bool C4Console::FileOpenWPlrs()
 {
 	// Get scenario file name
-	StdStrBuf c4sfile ("");
+	StdCopyStrBuf c4sfile("");
 	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	// Get player file name(s)
-	StdStrBuf c4pfile ("");
+	StdCopyStrBuf c4pfile("");
 	if (!FileSelect(&c4pfile,
-	                "Clonk 4 Player\0*.ocp\0\0",
+	                "OpenClonk Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return false;
 	// Compose command line
@@ -437,9 +429,9 @@ void C4Console::UpdateMenus()
 void C4Console::PlayerJoin()
 {
 	// Get player file name(s)
-	StdStrBuf c4pfile ("");
+	StdCopyStrBuf c4pfile("");
 	if (!FileSelect(&c4pfile,
-	                "Clonk 4 Player\0*.ocp\0\0",
+	                "OpenClonk Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return;
 
@@ -558,7 +550,7 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
+C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) { return this; }
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

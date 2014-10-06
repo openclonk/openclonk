@@ -1,0 +1,15 @@
+Decoration objects from EnvironmentPack by Dustin Ness (Dragonclonk) released under ISC:
+* Bag
+* BridgeRustic
+* Candle
+* CandleSmall
+* Crate
+* FenceRustic
+* Guidepost
+* Lantern
+* ManaAltar
+* Painting
+* Rail
+* Scarecrow
+* TreeTrunks
+* WineBarrel

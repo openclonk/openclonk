@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2006-2009  Sven Eberhardt
- * Copyright (c) 2005, 2008, 2011  Günther Brammer
- * Copyright (c) 2006  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // landscape sector base class
 
@@ -109,9 +104,8 @@ void C4LSectors::Add(C4Object *pObj, C4ObjectList *pMainList)
 	{
 		pSct->ObjectShapes.Add(pObj, C4ObjectList::stMain, pMainList);
 	}
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'A');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'A');
 }
 
 void C4LSectors::Update(C4Object *pObj, C4ObjectList *pMainList)
@@ -152,9 +146,8 @@ void C4LSectors::Update(C4Object *pObj, C4ObjectList *pMainList)
 		}
 	// Update area
 	pObj->Area = NewArea;
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'U');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'U');
 }
 
 void C4LSectors::Remove(C4Object *pObj)
@@ -187,9 +180,8 @@ void C4LSectors::Remove(C4Object *pObj)
 	// Remove from all sectors in shape area
 	for (pSct = pObj->Area.First(); pSct; pSct = pObj->Area.Next(pSct))
 		pSct->ObjectShapes.Remove(pObj);
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'R');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'R');
 }
 
 void C4LSectors::AssertObjectNotInList(C4Object *pObj)
@@ -338,7 +330,6 @@ C4ObjectList *C4LArea::NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct)
 	return &(*ppSct)->ObjectShapes;
 }
 
-#ifdef DEBUGREC
 void C4LArea::DebugRec(class C4Object *pObj, char cMarker)
 {
 	C4RCArea rc;
@@ -352,4 +343,3 @@ void C4LArea::DebugRec(class C4Object *pObj, char cMarker)
 	rc.out = !!pOut;
 	AddDbgRec(RCT_Area, &rc, sizeof(C4RCArea));
 }
-#endif

@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2005, 2009  Sven Eberhardt
- * Copyright (c) 2004-2007  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Control packets contain all player input in the message queue */
@@ -30,8 +26,6 @@
 #include "C4Client.h"
 #include "C4KeyboardInput.h"
 #include "C4ObjectList.h"
-
-class C4Record;
 
 // *** control base classes
 
@@ -107,7 +101,7 @@ enum C4CtrlValueType
 {
 	C4CVT_None = -1,
 	C4CVT_ControlRate = 0,
-	C4CVT_AllowDebug = 1,
+	C4CVT_DisableDebug = 1,
 	C4CVT_MaxPlayer = 2,
 	C4CVT_TeamDistribution = 3,
 	C4CVT_TeamColors = 4,
@@ -138,18 +132,55 @@ public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
 	C4ControlScript()
-			: iTargetObj(-1), fInternal(true), fUseVarsFromCallerContext(false)
+			: iTargetObj(-1), fUseVarsFromCallerContext(false)
 	{ }
-	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true, bool fUseVarsFromCallerContext = false)
-			: iTargetObj(iTargetObj), fInternal(fInternal), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
+	C4ControlScript(const char *szScript, int32_t iTargetObj, bool fUseVarsFromCallerContext = false)
+			: iTargetObj(iTargetObj), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
 	{ }
 protected:
 	int32_t iTargetObj;
-	bool fInternal;         // silent execute
 	bool fUseVarsFromCallerContext;
 	StdStrBuf Script;
 public:
 	void SetTargetObj(int32_t iObj) { iTargetObj = iObj; }
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
+class C4ControlMsgBoardReply : public C4ControlPacket // sync
+{
+public:
+	C4ControlMsgBoardReply()
+		: target(-1), player(NO_OWNER)
+	{}
+	C4ControlMsgBoardReply(const char *reply, int32_t target, int32_t player)
+		: reply(reply), target(target), player(player)
+	{}
+
+private:
+	StdCopyStrBuf reply;
+	int32_t target;
+	int32_t player;
+
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
+class C4ControlMsgBoardCmd : public C4ControlPacket // sync
+{
+public:
+	C4ControlMsgBoardCmd()
+		: player(NO_OWNER)
+	{}
+	C4ControlMsgBoardCmd(const char *command, const char *parameter, int32_t player)
+		: command(command), parameter(parameter), player(player)
+	{}
+
+private:
+	StdCopyStrBuf command;
+	StdCopyStrBuf parameter;
+	int32_t player;
+
+public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -203,6 +234,31 @@ public:
 	void SetExtraData(const C4KeyEventData &new_extra_data) { ExtraData = new_extra_data; }
 };
 
+class C4ControlPlayerMouse : public C4ControlPacket // sync
+{
+public:
+	enum Action
+	{
+		CPM_NoAction = 0,
+
+		CPM_Hover = 0x01,
+		CPM_Drop = 0x02
+	};
+
+	C4ControlPlayerMouse() : action(CPM_NoAction), player(NO_OWNER), target_obj(0), drag_obj(0), old_obj(0) {}
+	static C4ControlPlayerMouse *Hover(const C4Player *player, const C4Object *target, const C4Object *old_target, const C4Object *drag = nullptr);
+	static C4ControlPlayerMouse *DragDrop(const C4Player *player, const C4Object *target, const C4Object *drag);
+
+private:
+	int32_t action;
+	int32_t player;
+	int32_t target_obj;
+	int32_t drag_obj;
+	int32_t old_obj;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
 class C4ControlPlayerCommand : public C4ControlPacket // sync
 {
 public:
@@ -212,6 +268,53 @@ public:
 	                       C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode);
 protected:
 	int32_t iPlr, iCmd, iX, iY, iTarget, iTarget2, iData, iAddMode;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
+class C4ControlPlayerAction : public C4ControlPacket // sync
+{
+public:
+	enum Action
+	{
+		CPA_NoAction = 0,
+
+		CPA_Surrender = 0x01,
+		CPA_ActivateGoal = 0x02,
+		CPA_ActivateGoalMenu = 0x03,
+		CPA_Eliminate = 0x04,
+
+		CPA_SetHostility = 0x10,
+		CPA_SetTeam = 0x11,
+		
+		CPA_InitScenarioPlayer = 0x20,
+		CPA_InitPlayerControl = 0x21
+	};
+
+	C4ControlPlayerAction(const C4Player *source = nullptr);
+	static C4ControlPlayerAction *Surrender(const C4Player *source);
+	static C4ControlPlayerAction *Eliminate(const C4Player *source);
+	static C4ControlPlayerAction *ActivateGoalMenu(const C4Player *source);
+	static C4ControlPlayerAction *ActivateGoal(const C4Player *source, const C4Object *target);
+	static C4ControlPlayerAction *SetHostility(const C4Player *source, const C4Player *target, bool hostile);
+	static C4ControlPlayerAction *SetTeam(const C4Player *source, int32_t team);
+	static C4ControlPlayerAction *InitScenarioPlayer(const C4Player *source, int32_t team);
+	static C4ControlPlayerAction *InitPlayerControl(const C4Player *source, const C4PlayerControlAssignmentSet *ctrl_set = nullptr);
+
+private:
+	Action action;
+	int32_t source;
+	int32_t target;
+	int32_t param_int;
+	StdCopyStrBuf param_str;
+
+	enum IpcParam
+	{
+		CPA_IPC_HasKeyboard = 1<<0,
+		CPA_IPC_HasMouse = 1<<1,
+		CPA_IPC_HasGamepad = 1<<2
+	};
+
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -345,7 +448,10 @@ enum C4ControlEMObjectAction
 	EMMO_Duplicate, // duplicate objects at same position; reset EditCursor
 	EMMO_Script,    // execute Script
 	EMMO_Remove,    // remove objects
-	EMMO_Exit   // exit objects
+	EMMO_Exit,      // exit objects
+	EMMO_Select,    // select object
+	EMMO_Deselect,  // deselect object
+	EMMO_Create     // create a new object (used by C4Game::DropDef)
 };
 
 class C4ControlEMMoveObject : public C4ControlPacket // sync
@@ -354,6 +460,7 @@ public:
 	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
+	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y);
 	~C4ControlEMMoveObject();
 protected:
 	C4ControlEMObjectAction eAction; // action to be performed
@@ -361,7 +468,7 @@ protected:
 	int32_t iTargetObj;   // enumerated ptr to target object
 	int32_t iObjectNum;   // number of objects moved
 	int32_t *pObjects;    // pointer on array of objects moved
-	StdStrBuf Script; // script to execute
+	StdStrBuf StringParam; // script to execute, or ID of object to create
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };

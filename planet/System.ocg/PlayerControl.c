@@ -26,6 +26,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
 	if (cursor)
+	if (cursor->GetCrewEnabled())
 	{
 		// Object controlled by plr
 		cursor->SetController(plr);
@@ -149,7 +150,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr,GetCrewCount()-hotkey);
+		var crew = GetCrew(plr,hotkey-1);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();

@@ -6,82 +6,96 @@
   <title>Object Categories</title>
   <h>Object Categories</h>
   <part>
-    <text>An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
+    <text>An object's category specifies parts of its behavior. For a definition it is set by the <code id="Category">Category</code> entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
+	<text>A category also specifies the default plane an object is drawn in if it doesn't specify this property itself. The higher the plane number, the further in the front an object is drawn. See <emlink href="definition/properties.html">Properties</emlink>.</text>
     <text>
       <table>
         <rowh>
           <col>Category</col>
           <col>Description</col>
+		  <col>Default plane</col>
         </rowh>
         <row>
           <col>C4D_StaticBack</col>
           <col>Immovable object.</col>
+          <col>100</col>
         </row>
         <row>
           <col>C4D_Structure</col>
-          <col>Unused.</col>
+          <col>Structures.</col>
+          <col>200</col>
         </row>
         <row>
           <col>C4D_Vehicle</col>
-          <col>Unused.</col>
+          <col>Vehicles.</col>
+          <col>300</col>
         </row>
         <row>
           <col>C4D_Living</col>
           <col>A living being.</col>
+          <col>400</col>
         </row>
         <row>
           <col>C4D_Object</col>
           <col>An item that can hit alive objects.</col>
+          <col>500</col>
         </row>
         <row>
           <col>C4D_Goal</col>
           <col>Game goal.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_Environment</col>
           <col>Environmental control object.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_Rule</col>
           <col>Rule control object.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_Background</col>
-          <col>Object is behind the landscape.</col>
+          <col>Object is behind the landscape. Can be combined with any of the first 5 categories.</col>
+          <col>-600 (combined with C4D_StaticBack) to -100 (C4D_Object)</col>
         </row>
         <row>
           <col>C4D_Parallax</col>
           <col>Object moves parallax according to the Parallaxity property. For more information see <funclink>C4D_Parallax</funclink>.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_MouseSelect</col>
           <col>Object can be clicked with the mouse, causing a MouseSelection(int player) callback in the object.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_Foreground</col>
           <col>Object is always in the foreground, even before global particles.</col>
+          <col>+1100 (combined with C4D_StaticBack) to +1500 (C4D_Object)</col>
         </row>
         <row>
           <col>C4D_MouseIgnore</col>
           <col>Object cannot be selected with the mouse.</col>
+          <col></col>
         </row>
         <row>
           <col>C4D_IgnoreFoW</col>
           <col>Object is drawn above fog of war. Useful for creating status displays or gui elements using objects.</col>
+          <col></col>
         </row>
       </table>
     </text>
-    <h id="Beispiel">Example</h>
-    <text>
-      <examples>
-        <example>
-          <code>Category=C4D_StaticBack|C4D_Rule</code>
-          <text>Category for a rule.</text>
-        </example>
-      </examples>
-    </text>
+    <h>Example</h>
+    <examples>
+      <example>
+        <code>Category=C4D_StaticBack|C4D_Rule</code>
+        <text>Category for a rule.</text>
+      </example>
+    </examples>
   </part>
   <author>Sven2</author><date>2006-05</date>
-  <author>Newton</author><date>2005-01</date>
   <author>Günther</author><date>2005, 2011</date>
+  <date>2013-11</date>
 </doc>

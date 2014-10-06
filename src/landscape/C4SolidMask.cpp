@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003, 2005, 2008  Sven Eberhardt
- * Copyright (c) 2007  Peter Wortmann
- * Copyright (c) 2007-2010  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Solid areas of objects, put into the landscape */
@@ -29,6 +23,8 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
+#include <C4DrawGL.h>
+#include <StdPNG.h>
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)
@@ -37,7 +33,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	// storing background pixels in cSolidMask.
 
 	// No mask
-	if (!pSolidMask || !pSolidMaskMatBuff) { iAttachingObjectsCount = 0; return; }
+	if (!pForObject || !pForObject->Def || !pForObject->Def->pSolidMask || !pSolidMaskMatBuff) { iAttachingObjectsCount = 0; return; }
 	// Contained
 	if (pForObject->Contained) { iAttachingObjectsCount = 0; return; }
 	// Mask is put
@@ -47,7 +43,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	if (!pClipRect)
 	{
 		// Regular Put: Update MaskPutRect and MaskPutRotation
-		MaskPutRotation = pForObject->r;
+		MaskPutRotation = pForObject->GetR();
 		pClipRect = &MaskPutRect;
 		RegularPut = true;
 	}
@@ -59,10 +55,10 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 		if (!pClipRect->ClipBy(MaskPutRect)) return;
 		RegularPut = false;
 	}
-	// Lock mask surface
-	int iPitch = pForObject->SolidMask.Wdt;
-	int xcnt,ycnt,iTx,iTy;
+	// Get mask surface
+	CSurface8 *pSolidMask = pForObject->Def->pSolidMask;
 	// Put mask pixels
+	int xcnt,ycnt,iTx,iTy;
 	BYTE byPixel;
 	// not rotated?
 	if (!MaskPutRotation)
@@ -85,7 +81,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 		// fill rect with mask
 		for (ycnt=0; ycnt<pClipRect->Hgt; ++ycnt)
 		{
-			BYTE *pPix=pSolidMask + (ycnt+pClipRect->ty)*pForObject->SolidMask.Wdt + pClipRect->tx;
+			BYTE *pPix=pSolidMask->Bits + (ycnt+pClipRect->ty+pForObject->SolidMask.y)*pSolidMask->Pitch + pClipRect->tx + pForObject->SolidMask.x;
 			for (xcnt=0; xcnt<pClipRect->Wdt; ++xcnt,++pPix)
 			{
 				if (*pPix)
@@ -139,8 +135,10 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 		const C4Real y0 = itofix(pClipRect->ty - MatBuffPitch/2);
 		const C4Real x0 = itofix(pClipRect->tx - MatBuffPitch/2);
 		iTy=pClipRect->y;
-		int w = pForObject->SolidMask.Wdt;
-		int h = pForObject->SolidMask.Hgt;
+		int32_t w = pForObject->SolidMask.Wdt;
+		int32_t h = pForObject->SolidMask.Hgt;
+		int32_t mx0 = pForObject->SolidMask.x;
+		int32_t my0 = pForObject->SolidMask.y;
 		C4Real ya = y0 * Ma2;
 		C4Real yb = y0 * Mb2;
 		for (ycnt = 0; ycnt < pClipRect->Hgt; ycnt++)
@@ -152,10 +150,10 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			for (xcnt = 0; xcnt < pClipRect->Wdt; xcnt++)
 			{
 				// calc position in solidmask buffer
-				int iMx = fixtoi(xa + ya) + w / 2;
-				int iMy = fixtoi(xb + yb) + h / 2;
+				int32_t iMx = fixtoi(xa + ya) + w / 2;
+				int32_t iMy = fixtoi(xb + yb) + h / 2;
 				// in bounds? and solidmask?
-				if (iMx >= 0 && iMy >= 0 && iMx < w && iMy < h && pSolidMask[iMy*iPitch+iMx])
+				if (iMx >= 0 && iMy >= 0 && iMx < w && iMy < h && pSolidMask->_GetPix(iMx+mx0, iMy+my0))
 				{
 					// is background mat to be stored?
 					if (!MaskPut)
@@ -191,8 +189,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			for (int i = 0; i < iAttachingObjectsCount; ++i)
 			{
 				C4Object *pObj = ppAttachingObjects[i];
-				if (pObj->IsMoveableBySolidMask(pForObject->GetPlane()))
-					if (!pObj->Shape.ContactCheck(pObj->GetFixedX()+dx, pObj->GetFixedY()+dy))
+				if (pObj->IsMoveableBySolidMask(pForObject->GetSolidMaskPlane()))
+					if (!pObj->Shape.ContactCheck(fixtoi(pObj->GetFixedX()+dx), fixtoi(pObj->GetFixedY()+dy)))
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
 							pObj->iLastAttachMovementFrame = Game.FrameCounter;
@@ -214,11 +212,14 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 	    || !Inside<int32_t>(y, 0, rSolidMaskData.MaskPutRect.Hgt-1))
 		return 0;
 	// check put mask. Easy for unrotated
-	BYTE *pPix;
+	BYTE pix;
 	if (!rSolidMaskData.MaskPutRotation)
 	{
-		pPix=rSolidMaskData.pSolidMask+(y+rSolidMaskData.MaskPutRect.ty)*rSolidMaskData.pForObject->SolidMask.Wdt+rSolidMaskData.MaskPutRect.tx+x;
-		if (*pPix == 0xff)
+		CSurface8 *pSolidMask = rSolidMaskData.pForObject->Def->pSolidMask;
+		if (!pSolidMask) return 0; // can't really happen
+		pix=pSolidMask->_GetPix(x+rSolidMaskData.pForObject->SolidMask.x+rSolidMaskData.MaskPutRect.tx,
+		                        y+rSolidMaskData.pForObject->SolidMask.y+rSolidMaskData.MaskPutRect.ty);
+		if (pix == 0xff)
 			return C4M_Solid;
 		else
 			return 0;
@@ -227,8 +228,8 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 	{
 		// Using put-buffer for rotated masks
 		// for SolidMask-pixels not put because there was another SolidMask already, this will not return solid
-		pPix=rSolidMaskData.pSolidMaskMatBuff+(y+rSolidMaskData.MaskPutRect.ty)*rSolidMaskData.MatBuffPitch+rSolidMaskData.MaskPutRect.tx+x;
-		if (*pPix == MCVehic)
+		pix=*(rSolidMaskData.pSolidMaskMatBuff+(y+rSolidMaskData.MaskPutRect.ty)*rSolidMaskData.MatBuffPitch+rSolidMaskData.MaskPutRect.tx+x);
+		if (pix == MCVehic)
 			return 0;
 		else
 			return C4M_Solid;
@@ -240,7 +241,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 	// If put, restore background pixels from buffer
 
 	// Not put
-	if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
+	if (!MaskPut || !pSolidMaskMatBuff) return;
 
 	CheckConsistency();
 
@@ -289,14 +290,13 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 		C4LSector *pSct; C4Object *pObj;
 		for (C4ObjectList *pLst=SolidArea.FirstObjectShapes(&pSct); pLst; pLst=SolidArea.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *clnk=pLst->First; clnk; clnk=clnk->Next)
-				if ((pObj = clnk->Obj) && pObj != pForObject && pObj->IsMoveableBySolidMask(pForObject->GetPlane()) && !pObj->Shape.CheckContact(pObj->GetX(),pObj->GetY()))
+				if ((pObj = clnk->Obj) && pObj != pForObject && pObj->IsMoveableBySolidMask(pForObject->GetSolidMaskPlane()) && !pObj->Shape.CheckContact(pObj->GetX(),pObj->GetY()))
 				{
 					// check for any contact to own SolidMask - attach-directions, bottom - "stuck" (CNAT_Center) is ignored, because that causes problems with things being stuck in basements :(
 					int iVtx = 0;
 					for (; iVtx < pObj->Shape.VtxNum; ++iVtx)
 						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
-							if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
-								break;
+							break;
 					if (iVtx == pObj->Shape.VtxNum) continue; // no contact
 					// contact: Add object to list
 					if (iAttachingObjectsCapacity == iAttachingObjectsCount)
@@ -330,7 +330,7 @@ void C4SolidMask::Draw(C4TargetFacet &cgo)
 
 void C4SolidMask::RemoveTemporary(C4Rect where)
 {
-	if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
+	if (!MaskPut || !pSolidMaskMatBuff) return;
 	where.Intersect(MaskPutRect);
 	// reput background pixels
 	for (int y = where.y; y < where.y + where.Hgt; ++y)
@@ -351,7 +351,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 
 void C4SolidMask::PutTemporary(C4Rect where)
 {
-	if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
+	if (!MaskPut || !pSolidMaskMatBuff) return;
 	where.Intersect(MaskPutRect);
 	// reput vehicle pixels
 	for (int y = where.y; y < where.y + where.Hgt; ++y)
@@ -372,7 +372,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 
 void C4SolidMask::Repair(C4Rect where)
 {
-	if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
+	if (!MaskPut || !pSolidMaskMatBuff) return;
 	where.Intersect(MaskPutRect);
 	// reput vehicle pixels
 	for (int y = where.y; y < where.y + where.Hgt; ++y)
@@ -406,25 +406,11 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	Last = this;
 	if (Prev) Prev->Next = this;
 	else First = this;
-	// copy solid mask from bitmap
-	int iNeededBufSize = pForObject->SolidMask.Wdt * pForObject->SolidMask.Hgt;
-	if (!(pSolidMask = new BYTE [iNeededBufSize])) return;
-	C4Surface * sfcBitmap = pForObject->GetGraphics()->GetBitmap();
-	if (!sfcBitmap->Lock()) return;
-	for (int ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
-		for (int xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
-		{
-			// Solid mask target x/y is relative to def bitmap top-left, not object center
-			int dx = sfcBitmap->Scale*(pForObject->SolidMask.x+xcnt);
-			int dy = sfcBitmap->Scale*(pForObject->SolidMask.y+ycnt);
-			pSolidMask[xcnt+ycnt*pForObject->SolidMask.Wdt] = sfcBitmap->IsPixTransparent(dx,dy) ? 0x00 : 0xff;
-		}
 	// create mat buff to store the material replaced by the solid mask
 	// the upper left corner is here the [objpos]+rot([shapexy]+[targetxy]+[realWH]/2)-maxWH/2
 	MatBuffPitch = (int) sqrt(double(pForObject->SolidMask.Wdt * pForObject->SolidMask.Wdt + pForObject->SolidMask.Hgt * pForObject->SolidMask.Hgt))+1;
 	if (!(pSolidMaskMatBuff= new BYTE [MatBuffPitch * MatBuffPitch] )) return;
 	memset(pSolidMaskMatBuff, 0, MatBuffPitch * MatBuffPitch);
-	sfcBitmap->Unlock();
 }
 
 C4SolidMask::~C4SolidMask()
@@ -435,7 +421,6 @@ C4SolidMask::~C4SolidMask()
 	if (Prev) Prev->Next = Next;
 	if (First == this) First = Next;
 	if (Last == this) Last = Prev;
-	delete [] pSolidMask;
 	delete [] pSolidMaskMatBuff;
 	delete [] ppAttachingObjects;
 }
@@ -485,3 +470,19 @@ bool C4SolidMask::CheckConsistency()
 }
 
 #endif
+
+CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFilename)
+{
+	// Construct SolidMask surface from PNG bitmap:
+	// All pixels that are more than 50% transparent are not solid
+	CPNGFile png;
+	StdBuf png_buf;
+	if (!hGroup.LoadEntry(szFilename, &png_buf)) return NULL; // error messages done by caller
+	if (!png.Load((BYTE*)png_buf.getData(), png_buf.getSize())) return NULL;
+	CSurface8 *result = new CSurface8(png.iWdt, png.iHgt);
+	for (size_t y=0u; y<png.iHgt; ++y)
+		for (size_t x=0u; x<png.iWdt; ++x)
+			result->SetPix(x,y,((png.GetPix(x,y)>>24)<128) ? 0x00 : 0xff);
+	return result;
+}
+

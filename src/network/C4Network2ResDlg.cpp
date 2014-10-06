@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // resource display list box
 
@@ -119,7 +115,7 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 	const char *szTarget = Config.AtUserDataPath(szFilename);
 	if (!fDoOverwrite && ItemExists(szTarget))
 	{
-		// show a confirmation dlg, asking whether the ressource should be overwritten
+		// show a confirmation dlg, asking whether the resource should be overwritten
 		GetScreen()->ShowRemoveDlg(new C4GUI::ConfirmationDialog(
 		                             FormatString(LoadResStr("IDS_NET_RES_SAVE_OVERWRITE"), GetFilename(szTarget)).getData(), LoadResStr("IDS_NET_RES_SAVE"),
 		                             new C4GUI::CallbackHandler<C4Network2ResDlg::ListItem>(this, &C4Network2ResDlg::ListItem::OnButtonSaveConfirm), C4GUI::MessageDialog::btnYesNo));
@@ -142,7 +138,7 @@ C4Network2Res::Ref C4Network2ResDlg::ListItem::GetRefRes()
 
 bool C4Network2ResDlg::ListItem::IsSavePossible()
 {
-	// check ressource
+	// check resource
 	bool fCanSave = false;
 	C4Network2Res::Ref pRes = GetRefRes();
 	if (!pRes) return false;
@@ -192,7 +188,7 @@ void C4Network2ResDlg::Update()
 	while ((pRes = ::Network.ResList.getRefNextRes(++iResID)))
 	{
 		iResID = pRes->getResID();
-		// resource checking: deleted ressource(s) present?
+		// resource checking: deleted resource(s) present?
 		while (pItem && (pItem->GetResID() < iResID))
 		{
 			pNext = static_cast<ListItem *>(pItem->GetNext());

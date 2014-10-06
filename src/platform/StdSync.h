@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2005, 2007  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* synchronization helper classes */
 
@@ -56,14 +53,22 @@ public:
 	HANDLE GetEvent() { return hEvent; }
 };
 
-#elif defined(HAVE_PTHREAD)
-
-#include <pthread.h>
-
+#else
 // Value to specify infinite wait.
-#ifndef INFINITE
 #define INFINITE (~0u)
+
+#if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
+inline long InterlockedIncrement(long * p) { return __sync_add_and_fetch(p, 1); }
+inline long InterlockedDecrement(long * p) { return __sync_sub_and_fetch(p, 1); }
+#else
+// Defined in Standard.cpp
+long InterlockedIncrement(long *);
+long InterlockedDecrement(long *);
+#define NEED_FALLBACK_ATOMIC_FUNCS 1
 #endif
+
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
 
 class CStdCSec
 {
@@ -144,16 +149,6 @@ public:
 	}
 };
 
-#if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
-inline long InterlockedIncrement(long * p) { return __sync_add_and_fetch(p, 1); }
-inline long InterlockedDecrement(long * p) { return __sync_sub_and_fetch(p, 1); }
-#else
-// Defined in Standard.cpp
-long InterlockedIncrement(long *);
-long InterlockedDecrement(long *);
-#define NEED_FALLBACK_ATOMIC_FUNCS 1
-#endif
-
 #else
 // Some stubs to silence the compiler
 class CStdCSec
@@ -175,6 +170,7 @@ public:
 	bool WaitFor(int) { return false; }
 };
 #endif // HAVE_PTHREAD
+#endif // _WIN32
 
 class CStdLock
 {

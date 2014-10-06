@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
- * Copyright (c) 2004-2010  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* In-game menu as used by objects, players, and fullscreen options */
@@ -123,7 +119,7 @@ int32_t C4MenuItem::GetSymbolWidth(int32_t iForHeight)
 {
 	// Context or dialog menus
 	if (iStyle==C4MN_Style_Context || (iStyle==C4MN_Style_Dialog && Symbol.Surface))
-		return Max(Symbol.Wdt * iForHeight / Max<int32_t>(Symbol.Hgt, 1), iForHeight);
+		return Max(Symbol.Wdt * iForHeight / Max(Symbol.Hgt, 1.0f), static_cast<float>(iForHeight));
 	// Info menus
 	if (iStyle==C4MN_Style_Info && Symbol.Surface && Symbol.Wdt)
 		return Symbol.Wdt;
@@ -157,7 +153,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Draw if there is no text progression at all (TextDisplayProgress==-1, or if it's progressed far enough already (TextDisplayProgress>0)
 	if(pSymbolObj && TextDisplayProgress)
 	{
-		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL, NULL);
+		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL);
 	}
 	else if (pSymbolGraphics && TextDisplayProgress)
 	{
@@ -205,7 +201,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	{
 		char szCount[10+1];
 		sprintf(szCount,"%ix",Count);
-		pDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
+		pDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.GetLineHeight(), C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
 	}
 }
 
@@ -242,30 +238,6 @@ void C4MenuItem::MouseEnter(C4GUI::CMouse &rMouse)
 	typedef C4GUI::Element ParentClass;
 	ParentClass::MouseEnter(rMouse);
 }
-
-void C4MenuItem::DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// is this a drag element?
-	if (!IsDragElement()) { rMouse.pDragElement = NULL; }
-	// check if outside drag range
-	if (Max(Abs(iX - iDragX), Abs(iY - iDragY)) >= C4MC_DragSensitivity)
-	{
-		// then do a drag!
-		::MouseControl.StartConstructionDrag(id);
-		// this disables the window: Release mouse
-		rMouse.ReleaseButtons();
-		rMouse.pDragElement = NULL;
-		rMouse.pMouseOverElement = NULL;
-	}
-}
-
-void C4MenuItem::StopDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// drag stop: Nothing to do, really
-	// Mouse up will be processed by regular procedure
-	rMouse.pDragElement = NULL;
-}
-
 
 // -----------------------------------------------------------
 // C4Menu
@@ -427,13 +399,14 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
                      C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
 {
 #ifdef DEBUGREC_MENU
-	if (pObject)
-	{
-		C4RCMenuAdd rc = { pObject ? pObject->Number : -1, iCount, idID, fOwnValue, iValue, fIsSelectable };
-		AddDbgRec(RCT_MenuAdd, &rc, sizeof(C4RCMenuAdd));
-		if (szCommand) AddDbgRec(RCT_MenuAddC, szCommand, strlen(szCommand)+1);
-		if (szCommand2) AddDbgRec(RCT_MenuAddC, szCommand2, strlen(szCommand2)+1);
-	}
+	if (Config.General.DebugRec)
+		if (pObject)
+		{
+			C4RCMenuAdd rc = { pObject ? pObject->Number : -1, iCount, idID, fOwnValue, iValue, fIsSelectable };
+			AddDbgRec(RCT_MenuAdd, &rc, sizeof(C4RCMenuAdd));
+			if (szCommand) AddDbgRec(RCT_MenuAddC, szCommand, strlen(szCommand)+1);
+			if (szCommand2) AddDbgRec(RCT_MenuAddC, szCommand2, strlen(szCommand2)+1);
+		}
 #endif
 	// Add it to the list
 	pClientWindow->AddElement(pNew);

@@ -1,0 +1,16 @@
+[DefCore]
+id=Rockfall
+Version=5,4,0,0
+Category=C4D_Object|C4D_Environment
+Width=16
+Height=16
+Offset=-8,-8
+Vertices=6
+VertexX=0,0,6,6,-6,-6
+VertexY=-7,7,-4,4,-4,4
+VertexFriction=40,40,40,40,40,40
+VertexCNAT=4,8,1,2,1,2
+Mass=30
+Rotate=1
+StretchGrowth=1
+Oversize=1

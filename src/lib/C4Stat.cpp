@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2007-2008  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // statistics
 
@@ -140,9 +137,9 @@ void C4MainStat::Show()
 
 		// output it!
 		if (pAkt->iCount)
-			LogSilentF("%s: n = %d, t = %d, td = %.2f",
-			           pAkt->strName, pAkt->iCount, pAkt->iTimeSum,
-			           double(pAkt->iTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
+			LogSilentF("%s: n = %u, t = %u, td = %.2f",
+			           pAkt->strName, pAkt->iCount, pAkt->tTimeSum,
+			           double(pAkt->tTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
 
 	}
 
@@ -162,7 +159,7 @@ void C4MainStat::ShowPart(int FrameCounter)
 
 	// insert all stats
 	for (pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
-		LogSilentF("%s: n=%d, t=%d", pAkt->strName, pAkt->iCountPart, pAkt->iTimeSumPart);
+		LogSilentF("%s: n=%u, t=%u", pAkt->strName, pAkt->iCountPart, pAkt->tTimeSumPart);
 
 	// insert part stat end idtf
 	LogSilentF("** PartStat end\n");
@@ -186,7 +183,7 @@ void C4Stat::Reset()
 {
 	iStartCalled = 0;
 
-	iTimeSum = 0;
+	tTimeSum = 0;
 	iCount = 0;
 
 	ResetPart();
@@ -194,7 +191,7 @@ void C4Stat::Reset()
 
 void C4Stat::ResetPart()
 {
-	iTimeSumPart = 0;
+	tTimeSumPart = 0;
 	iCountPart = 0;
 }
 

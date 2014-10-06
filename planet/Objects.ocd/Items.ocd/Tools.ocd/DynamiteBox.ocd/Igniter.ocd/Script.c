@@ -73,6 +73,9 @@ public func ResetClonk(clonk)
 	RemoveObject();
 }
 
+// Only the main dynamite box is stored.
+public func SaveScenarioObject() { return false; }
+
 public func IsTool() { return true; }
 public func IsToolProduct() { return false; }
 public func IsAlchemyProduct() { return false; }

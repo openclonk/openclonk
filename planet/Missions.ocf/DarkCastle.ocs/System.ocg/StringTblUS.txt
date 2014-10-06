@@ -1,0 +1,4 @@
+MsgIntro1=Finally we've arrived at Harx's castle. Now let's find a good place to land.
+MsgIntro2=Intruders! Shoot them!
+MsgIntro3=Aaaaah we got hit.
+MsgIntro4=Damn Harz and his artillery! Looks like we need to find another way into his castle.

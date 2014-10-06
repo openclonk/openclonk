@@ -1,0 +1,4 @@
+# Scenario parameters: achievements
+AchievementNormal=Finished round with difficulty normal.
+AchievementHard=Finished round with difficulty hard.
+AchievementInsane=Finished round with difficulty insane.

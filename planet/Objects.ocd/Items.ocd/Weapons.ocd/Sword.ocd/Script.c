@@ -18,12 +18,9 @@ public func Initialize()
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarrySpecial(clonk) { return carry_bone; }
-public func GetCarryTransform()
+public func GetCarryTransform(clonk, sec, back)
 {
-	var act = Contained()->GetAction();
-	if(act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Translate(0,4500,0), Trans_Rotate(90,0,1,0), Trans_Rotate(180,0,0,1) );
-
+	if(back) return Trans_Mul(Trans_Rotate(180,0,0,1), Trans_Rotate(90,0,1,0), Trans_Translate(0,-7000,0));
 	return Trans_Rotate(90, 0, 1, 0);
 }
 
@@ -69,9 +66,12 @@ public func ControlUse(object clonk, int x, int y)
 		{
 			// check whether the player aims below the Clonk
 			var a=Angle(0, 0, x,y);
-			if(Inside(a, 35+90, 35+180))
+			var x_dir = Sin(a, 60);
+			
+			if(Inside(a, 35+90, 35+180)) // the player aims downwards
+			if((BoundBy(x_dir, -1, 1) == BoundBy(clonk->GetXDir(), -1, 1)) || (clonk->GetXDir() == 0)) // the player aims into the direction the Clonk is already jumping
 			{
-				clonk->SetXDir(Sin(a, 60));
+				clonk->SetXDir(x_dir);
 				clonk->SetYDir(-Cos(a, 60));
 				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
 				
@@ -79,7 +79,11 @@ public func ControlUse(object clonk, int x, int y)
 				length = 50;
 				animation = Format("SwordSlash1.%s", arm);
 				downwards_stab = true;
+
 				if(GetEffect("Fall", clonk)) RemoveEffect("Fall", clonk);
+				
+				// visual effect
+				AddEffect("VisualJumpStrike", clonk, 1, 2, nil, Sword);
 			}
 		}
 	}
@@ -104,8 +108,35 @@ public func ControlUse(object clonk, int x, int y)
 	magic_number = ObjectNumber();
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
-	this->Sound("WeaponSwing?", false, nil, nil, nil);
+	this->Sound("WeaponSwing?");
 	return true;
+}
+
+func FxVisualJumpStrikeStart(target, effect, temp)
+{
+	if(temp) return;
+	effect.x_add = 20;
+	if(target->GetXDir() < 0) effect.x_add *= -1;
+	effect.visual = CreateObject(Sword_JumpEffect, 0, 0, nil);
+	effect.visual->Point({x = target->GetX() + effect.x_add, y = target->GetY() + 10}, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
+}
+
+func FxVisualJumpStrikeTimer(target, effect, time)
+{
+	if(!target->~IsJumping())
+	{
+		effect.visual->FadeOut();
+		effect.visual = nil;
+		return -1;
+	}
+	effect.visual->Point(nil, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
+}
+
+func FxVisualJumpStrikeStop(target, effect, reason, temp)
+{
+	if(temp) return;
+	if(!effect.visual) return;
+	effect.visual->FadeOut();
 }
 
 func OnWeaponHitCheckStop(clonk)
@@ -194,6 +225,9 @@ func CheckStrike(iTime)
 				if(shield == 100)
 					continue;
 					
+				// Sound before damage to prevent null pointer access if callbacks delete this
+				Sound("WeaponHit?", false);
+				
 				// fixed damage (9)
 				var damage = SwordDamage(shield);
 				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
@@ -211,18 +245,22 @@ func CheckStrike(iTime)
 							DoWeaponSlow(obj, 300);
 					
 					// Particle effect
-					var x=-1;
-					var p="Slice2";
-					if(Contained()->GetDir() == DIR_Right)
+					var particle =
 					{
-						x=1;
-						p="Slice1";
+						Size = 20,
+						BlitMode = GFX_BLIT_Additive,
+						Attach = ATTACH_Front | ATTACH_MoveRelative,
+						Phase = PV_Linear(0, 3)
+					};
+
+					if(Contained()->GetDir() == DIR_Left)
+					{
+						particle.Phase = PV_Linear(4, 7);
 					} 
-					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
+					obj->CreateParticle("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
 				}
 				
-				// sound and done. We can only hit one target
-				Sound("WeaponHit?", false);
+				// and done. We can only hit one target
 				break;
 			}
 		}

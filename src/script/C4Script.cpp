@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2004, 2006-2007, 2010  Sven Eberhardt
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2005-2006  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Functions mapped by C4Script */
@@ -50,7 +43,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 		if (*cpFormat=='%')
 		{
 			// Scan field type
-			for (cpType=cpFormat+1; *cpType && (*cpType=='.' || Inside(*cpType,'0','9')); cpType++) {}
+			for (cpType=cpFormat+1; *cpType && (*cpType == '+' || *cpType == '-' || *cpType == '.' || *cpType == '#' || *cpType == ' ' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
 			SCopy(cpFormat,szField,Min<unsigned int>(sizeof szField - 1, cpType - cpFormat + 1));
 			// Insert field by type
@@ -74,13 +67,6 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			}
 			// C4ID
 			case 'i':
-			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
-				C4ID id = Pars[cPar++].getC4ID();
-				StringBuf.Append(id.ToString());
-				cpFormat+=SLen(szField);
-				break;
-			}
 			// C4Value
 			case 'v':
 			{
@@ -168,6 +154,132 @@ C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 
 //=============================== C4Script Functions ====================================
 
+#define MAKE_AND_RETURN_ARRAY(values) do { \
+	C4ValueArray *matrix = new C4ValueArray(sizeof(values) / sizeof(*values)); \
+	for (long i = 0; i < sizeof(values) / sizeof(*values); ++i) \
+		(*matrix)[i] = C4VInt(values[i]); \
+	return matrix; \
+} while (0)
+
+static C4ValueArray *FnTrans_Identity(C4PropList * _this)
+{
+	long values[] = 
+	{
+		1000, 0, 0, 0,
+		0, 1000, 0, 0,
+		0, 0, 1000, 0
+	};
+	MAKE_AND_RETURN_ARRAY(values);
+}
+
+static C4ValueArray *FnTrans_Translate(C4PropList * _this, long dx, long dy, long dz)
+{
+	long values[] = 
+	{
+		1000, 0, 0, dx,
+		0, 1000, 0, dy,
+		0, 0, 1000, dz
+	};
+	MAKE_AND_RETURN_ARRAY(values);
+}
+
+static C4ValueArray *FnTrans_Scale(C4PropList * _this, long sx, long sy, long sz)
+{
+	if (sy == 0 && sz == 0)
+		sy = sz = sx;
+	long values[] = 
+	{
+		sx, 0, 0, 0,
+		0, sy, 0, 0,
+		0, 0, sz, 0
+	};
+	MAKE_AND_RETURN_ARRAY(values);
+}
+
+static C4ValueArray *FnTrans_Rotate(C4PropList * _this, long angle, long rx, long ry, long rz)
+{
+	long c = fixtoi(Cos(itofix(angle, 1)), 1000);
+	long s = fixtoi(Sin(itofix(angle, 1)), 1000);
+
+	long sqrt_val = rx * rx + ry * ry + rz * rz;
+	long n = long(sqrt(double(sqrt_val)));
+	if (n * n < sqrt_val) n++;
+	else if (n * n > sqrt_val) n--;
+
+	rx = (1000 * rx) / n;
+	ry = (1000 * ry) / n;
+	rz = (1000 * rz) / n;
+
+	long values[] = 
+	{
+		rx*rx*(1000-c)/1000000+c, rx*ry*(1000-c)/1000000-rz*s/1000, rx*rz*(1000-c)/1000000+ry*s/1000, 0,
+		ry*rx*(1000-c)/1000000+rz*s/1000, ry*ry*(1000-c)/1000000+c, ry*rz*(1000-c)/1000000-rx*s/1000, 0,
+		rz*rx*(1000-c)/1000000-ry*s/1000, ry*rz*(1000-c)/1000000+rx*s/1000, rz*rz*(1000-c)/1000000+c, 0
+	};
+	MAKE_AND_RETURN_ARRAY(values);
+}
+
+static C4Value FnTrans_Mul(C4PropList * _this, C4Value *pars)
+{
+	const int32_t matrixSize = 12;
+	long values[] = 
+	{
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+	};
+
+	// Read all parameters
+	bool first = true;
+	for (int32_t i = 0; i < C4AUL_MAX_Par; i++)
+	{
+		C4Value Data = *(pars++);
+		// No data given?
+		if (!Data) break;
+		C4ValueArray *factorArray = Data.getArray();
+		if (!factorArray || factorArray->GetSize() != matrixSize) continue;
+
+		if (first)
+		{
+			first = false;
+			
+			for (int32_t c = 0; c < matrixSize; ++c)
+				values[c] = (*factorArray)[c].getInt();
+			continue;
+		}
+
+		// multiply current matrix with new one
+		long values_rhs[matrixSize], values_result[matrixSize];
+		for (int32_t c = 0; c < matrixSize; ++c)
+			values_rhs[c] = (*factorArray)[c].getInt();
+
+		// matrix multiplication
+		values_result[ 0] = values[0]*values_rhs[0]/1000 + values[1]*values_rhs[4]/1000 + values[ 2]*values_rhs[ 8]/1000;
+		values_result[ 1] = values[0]*values_rhs[1]/1000 + values[1]*values_rhs[5]/1000 + values[ 2]*values_rhs[ 9]/1000;
+		values_result[ 2] = values[0]*values_rhs[2]/1000 + values[1]*values_rhs[6]/1000 + values[ 2]*values_rhs[10]/1000;
+		values_result[ 3] = values[0]*values_rhs[3]/1000 + values[1]*values_rhs[7]/1000 + values[ 2]*values_rhs[11]/1000 + values[3];
+		values_result[ 4] = values[4]*values_rhs[0]/1000 + values[5]*values_rhs[4]/1000 + values[ 6]*values_rhs[ 8]/1000;
+		values_result[ 5] = values[4]*values_rhs[1]/1000 + values[5]*values_rhs[5]/1000 + values[ 6]*values_rhs[ 9]/1000;
+		values_result[ 6] = values[4]*values_rhs[2]/1000 + values[5]*values_rhs[6]/1000 + values[ 6]*values_rhs[10]/1000;
+		values_result[ 7] = values[4]*values_rhs[3]/1000 + values[5]*values_rhs[7]/1000 + values[ 6]*values_rhs[11]/1000 + values[7];
+		values_result[ 8] = values[8]*values_rhs[0]/1000 + values[9]*values_rhs[4]/1000 + values[10]*values_rhs[ 8]/1000;
+		values_result[ 9] = values[8]*values_rhs[1]/1000 + values[9]*values_rhs[5]/1000 + values[10]*values_rhs[ 9]/1000;
+		values_result[10] = values[8]*values_rhs[2]/1000 + values[9]*values_rhs[6]/1000 + values[10]*values_rhs[10]/1000;
+		values_result[11] = values[8]*values_rhs[3]/1000 + values[9]*values_rhs[7]/1000 + values[10]*values_rhs[11]/1000 + values[11];
+
+		for (int32_t c = 0; c < matrixSize; ++c)
+			values[c] = values_result[c];
+	}
+
+	// unlike in the other Trans_*-functions, we have to put the array into a C4Value manually here
+	C4ValueArray *matrix = new C4ValueArray(sizeof(values) / sizeof(*values));
+	for (long i = 0; i < sizeof(values) / sizeof(*values); ++i)
+		(*matrix)[i] = C4VInt(values[i]);
+	return C4VArray(matrix);
+}
+
+#undef MAKE_AND_RETURN_ARRAY
+
 static C4PropList * FnCreatePropList(C4PropList * _this, C4PropList * prototype)
 {
 	return C4PropList::New(prototype);
@@ -215,6 +327,33 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4Value FnCall(C4PropList * _this, C4Value * Pars)
+{
+	if (!_this) _this = ::ScriptEngine.GetPropList();
+	C4AulParSet ParSet(&Pars[1], C4AUL_MAX_Par - 1);
+	C4AulFunc * fn = Pars[0].getFunction();
+	C4String * name;
+	if (!fn)
+	{
+		name = Pars[0].getStr();
+		if (name) fn = _this->GetFunc(name);
+	}
+	if (!fn)
+	{
+		const char * s = FnStringPar(name);
+		if (s[0] == '~')
+		{
+			fn = _this->GetFunc(&s[1]);
+			if (!fn)
+				return C4Value();
+		}
+	}
+	if (!fn)
+		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	fn->CheckParTypes(ParSet.Par);
+	return fn->Exec(_this, &ParSet, true);
+}
+
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
 	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
@@ -230,11 +369,6 @@ static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
-}
-
-static C4ID FnC4Id(C4PropList * _this, C4String *szID)
-{
-	return(C4ID(FnStringPar(szID)));
 }
 
 static long FnAbs(C4PropList * _this, long iVal)
@@ -395,11 +529,17 @@ static int FnGetIndexOf(C4PropList * _this, C4ValueArray * pArray, const C4Value
 	if (!pArray) return -1;
 	int32_t iSize = pArray->GetSize();
 	for (int32_t i = 0; i < iSize; ++i)
-		if (Needle == pArray->GetItem(i))
+		if (Needle.IsIdenticalTo(pArray->GetItem(i)))
 			// element found
 			return i;
 	// element not found
 	return -1;
+}
+
+static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & v2)
+{
+	// return if v1==v2 with deep comparison on arrays and proplists
+	return v1 == v2;
 }
 
 static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
@@ -513,16 +653,12 @@ static bool FnStartCallTrace(C4PropList * _this)
 	return true;
 }
 
-static bool FnStartScriptProfiler(C4PropList * _this, C4ID idScript)
+static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 {
 	// get script to profile
 	C4AulScript *pScript;
-	if (idScript)
-	{
-		C4Def *pDef = C4Id2Def(idScript);
-		if (!pDef) return false;
+	if (pDef)
 		pScript = &pDef->Script;
-	}
 	else
 		pScript = &::ScriptEngine;
 	// profile it
@@ -555,6 +691,44 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 	return C4Void();
 }
 
+static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArray: no array given");
+	// sort array by its members
+	pArray->Sort(descending);
+	return true;
+}
+
+static bool FnSortArrayByProperty(C4PropList * _this, C4ValueArray *pArray, C4String *prop_name, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArrayByProperty: no array given");
+	if (!prop_name) throw new C4AulExecError("SortArrayByProperty: no property name given");
+	// sort array by property
+	if (!pArray->SortByProperty(prop_name, descending)) throw new C4AulExecError("SortArrayByProperty: not all array elements are proplists");
+	return true;
+}
+
+static bool FnSortArrayByArrayElement(C4PropList * _this, C4ValueArray *pArray, int32_t element_index, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArrayByArrayElement: no array given");
+	if (element_index<0) throw new C4AulExecError("SortArrayByArrayElement: element index must be >=0");
+	// sort array by array element
+	if (!pArray->SortByArrayElement(element_index, descending)) throw new C4AulExecError("SortArrayByArrayElement: not all array elements are arrays of sufficient length");
+	return true;
+}
+
+static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
+{
+	// resolve file handle to user file
+	C4AulUserFile *file = ::ScriptEngine.GetUserFile(file_handle);
+	if (!file) throw new C4AulExecError("FileWrite: invalid file handle");
+	// prepare string to write
+	if (!data) return false; // write NULL? No.
+	// write it
+	file->Write(data->GetCStr(), data->GetData().getLength());
+	return true;
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptConstMap[]=
@@ -573,16 +747,17 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},
 	{ "C4X_Ver2",        C4V_Int, C4XVER2},
 	{ "C4X_Ver3",        C4V_Int, C4XVER3},
-	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
 	{ NULL, C4V_Nil, 0}
 };
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
+	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
 	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
 	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
 	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
+	{ "Trans_Mul",     1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnTrans_Mul},
 
 	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
 };
@@ -619,7 +794,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperty);
 	F(SetProperty);
 	F(ResetProperty);
-	F(C4Id);
 	F(Distance);
 	F(Angle);
 	F(GetChar);
@@ -629,15 +803,25 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetLength);
 	F(SetLength);
 	F(GetIndexOf);
+	F(DeepEqual);
 	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
+	F(SortArray);
+	F(SortArrayByProperty);
+	F(SortArrayByArrayElement);
+	F(Trans_Identity);
+	F(Trans_Translate);
+	F(Trans_Scale);
+	F(Trans_Rotate);
 	F(LocateFunc);
+	F(FileWrite);
 
 	F(eval);
 	F(GetConstantNameByValue);
 
 	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
+	AddFunc(pEngine, "LogCallStack", C4AulExec::FnLogCallStack);
 #undef F
 }

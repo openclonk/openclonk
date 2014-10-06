@@ -1,21 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2006  Matthes Bender
- * Copyright (c) 2001, 2005-2006, 2008-2009  Sven Eberhardt
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Structures for object and player info components */
@@ -27,6 +24,7 @@
 #include <C4ValueMap.h>
 #include "C4Real.h"
 #include "C4InputValidation.h"
+#include "C4ScenarioParameters.h"
 
 const int32_t C4MaxPhysical = 100000,
                               C4MaxDeathMsg = 75;
@@ -111,6 +109,9 @@ public:
 	int32_t OldPrefControl;
 	int32_t OldPrefControlStyle;
 	int32_t OldPrefAutoContextMenu;
+
+	// achievements indexed by achievement name and scenario
+	C4ScenarioParameters Achievements; 
 public:
 	void Default(C4RankSystem *pRanks=NULL);
 	void Promote(int32_t iRank, C4RankSystem &rRanks);

@@ -9,7 +9,6 @@ Vertices=6
 VertexX=0,-12,12,-15,15,0
 VertexY=0,-4,-4,10,10,10
 VertexFriction=50, 50,50,100,100
-Value=20
 Mass=100
 Components=Coal=1;Metal=1
 Exclusive=1

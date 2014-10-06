@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2004  Peter Wortmann
- * Copyright (c) 2005-2006, 2008  Sven Eberhardt
- * Copyright (c) 2005-2006  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -24,16 +19,12 @@
 
 #include <C4Application.h>
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
-#import <CoreFoundation/CoreFoundation.h>
-#import <AudioToolbox/AudioToolbox.h>
-#endif
 
 using namespace C4SoundLoaders;
 
 SoundLoader* SoundLoader::first_loader(NULL);
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if AUDIO_TK == AUDIO_TK_OPENAL && defined(__APPLE__)
 namespace
 {
 	static OSStatus AudioToolBoxReadCallback(void* context, SInt64 inPosition, UInt32 requestCount, void* buffer, UInt32* actualCount)
@@ -111,8 +102,7 @@ bool AppleSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_lengt
 AppleSoundLoader AppleSoundLoader::singleton;
 #endif
 
-#ifdef USE_OPEN_AL
-
+#if AUDIO_TK == AUDIO_TK_OPENAL
 size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource)
 {
 	size_t spaceToEOF;
@@ -136,8 +126,6 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 
 int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 {
-	size_t spaceToEOF;
-	ogg_int64_t actualOffset; // How much we can actually offset it by
 	CompressedData* data = (CompressedData*)datasource;
 	
 	switch (whence)
@@ -215,9 +203,49 @@ bool VorbisLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, u
 }
 
 VorbisLoader VorbisLoader::singleton;
+
+#ifndef __APPLE__
+bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
+{
+	// load WAV resource
+	Application.MusicSystem.SelectContext();
+	ALuint wav = alutCreateBufferFromFileImage((const ALvoid *)data, data_length);
+	if (wav == AL_NONE)
+	{
+		// wouldn't want an error on any .ogg file
+		//LogF("load wav error: %s", alutGetErrorString(alutGetError()));
+		return false;
+	}
+
+	// get information about sound
+	ALint freq, chans, bits, size;
+	alGetBufferi(wav, AL_FREQUENCY, &freq);
+	result->sample_rate = freq;
+	alGetBufferi(wav, AL_CHANNELS, &chans);
+	alGetBufferi(wav, AL_BITS, &bits);
+	alGetBufferi(wav, AL_SIZE, &size);
+	if (chans == 1)
+		if (bits == 8)
+			result->format = AL_FORMAT_MONO8;
+		else
+			result->format = AL_FORMAT_MONO16;
+	else
+		if (bits == 8)
+			result->format = AL_FORMAT_STEREO8;
+		else
+			result->format = AL_FORMAT_STEREO16;
+	// can't find any function to determine sample length
+	// just calc ourselves
+	result->sample_length = double(size) / double(bits*chans*freq/8);
+	// buffer loaded
+	result->final_handle = wav;
+	return true;
+}
+
+WavLoader WavLoader::singleton;
 #endif
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 #define USE_RWOPS
 #include <SDL_mixer.h>
 
@@ -239,9 +267,8 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 }
 
 SDLMixerSoundLoader SDLMixerSoundLoader::singleton;
-#endif
 
-#ifdef HAVE_FMOD
+#elif AUDIO_TK == AUDIO_TK_FMOD
 bool FMODSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t options)
 {
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;

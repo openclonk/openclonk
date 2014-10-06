@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
- * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2009-2011  Nicolas Hake
- * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010-2011  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* All the ifdefs in one place (Hah, I wish) */
@@ -88,31 +80,7 @@
 
 
 // Integer dataypes
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#elif defined(_MSC_VER)
-#include <cstddef>
-typedef signed __int8 int8_t;
-typedef signed __int16 int16_t;
-typedef signed __int32 int32_t;
-typedef signed __int64 int64_t;
-typedef unsigned __int8 uint8_t;
-typedef unsigned __int16 uint16_t;
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int64 uint64_t;
-// Copied from newer stddef.h
-#ifndef _INTPTR_T_DEFINED
-#ifdef  _WIN64
-typedef __int64 intptr_t;
-#else
-typedef __int32 intptr_t;
-#endif
-#define _INTPTR_T_DEFINED
-#endif
-#else
-#error Could not find integer datatypes!
-#endif
-
 
 
 #ifdef HAVE_UNISTD_H
@@ -217,7 +185,7 @@ inline int stricmp(const char *s1, const char *s2)
 #elif defined(__APPLE__)
 #define C4_OS "mac-x86"
 #else
-#define C4_OS "unknown";
+#define C4_OS ""
 #endif
 
 // delete item to the recycle bin
@@ -228,29 +196,6 @@ bool IsGermanSystem();
 
 // open a weblink in an external browser
 bool OpenURL(const char* szURL);
-
-// Get a monotonically increasing timestamp in milliseconds
-unsigned int GetTime();
-
-// Windows swprintf: MinGW vs MSVC
-#if defined(__MINGW32__) || defined(__MINGW64__)
-// See http://lists-archives.org/mingw-users/17617-compilation-problem-with-swprintf.html
-
-// For _vsnwprintf:
-#include <cstdio>
-#include <cstdarg>
-
-inline int swprintf(wchar_t* buffer, size_t n, const wchar_t* format, ...)
-{
-	int retval;
-	va_list argptr;
-
-	va_start(argptr, format);
-	retval = _vsnwprintf(buffer, n, format, argptr);
-	va_end(argptr);
-	return retval;
-}
-#endif
 
 #ifdef _WIN32
 #include <io.h>

@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001, 2004, 2006-2007  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Game configuration as stored in registry */
@@ -60,8 +55,14 @@ public:
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];
+	char TempUpdatePath[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
+	int32_t DebugRec;
+	// if defined, the external file is used for debugrec writing. Otherwise read/check
+	int32_t DebugRecWrite;
+	// if defined, an external file is used for debugrec writing (replays only)
+	char DebugRecExternalFile[_MAX_PATH+1];
 
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
@@ -93,21 +94,18 @@ public:
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
 	int32_t HighResLandscape;
-	int32_t SmokeLevel;
 	int32_t VideoModule;
 	int32_t MenuTransparency;
 	int32_t UpperBoard;
 	int32_t ShowClock;
 	int32_t ResX,ResY;
+	int32_t WindowX,WindowY;
 	int32_t RefreshRate;	// monitor vertical refresh rate
-	int32_t GuiResX,GuiResY;
-	int32_t Windowed;
-	int32_t ShowAllResolutions;
+	int32_t Windowed; // 0: fullscreen, 1: windowed, 2: fullscreen in game, windowed in menu
 	int32_t ShowCrewNames; // show player name above clonks?
 	int32_t ShowCrewCNames; // show clonk names above clonks?
 	int32_t BitDepth; // used bit depth for newgfx
 	int32_t PXSGfx;     // show PXS-graphics (instead of sole pixels)
-	int32_t Engine;     // 0: D3D; 1: OpenGL;
 	int32_t Gamma1, Gamma2, Gamma3; // gamma ramps
 	int32_t Currency;   // default wealth symbolseb
 	int32_t RenderInactiveEM; // draw vieports even if inactive in CPEM
@@ -119,6 +117,7 @@ public:
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
+	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -161,6 +160,7 @@ public:
 	char LastPassword[CFG_MaxString+1];
 	char AlternateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
+	StdCopyStrBuf LastLeagueServer, LastLeaguePlayerName, LastLeagueAccount, LastLeagueLoginToken;
 #ifdef WITH_AUTOMATIC_UPDATE
 	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
@@ -171,6 +171,8 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 	const char *GetLeagueServerAddress();
 	void CheckPortsForCollisions();
+	void SetLeagueLoginData(const char *szServer, const char *szPlayerName, const char *szAccount, const char *szLoginToken);
+	bool GetLeagueLoginData(const char *szServer, const char *szPlayerName, StdStrBuf *pAccount, StdStrBuf *pLoginToken) const;
 };
 
 class C4ConfigStartup
@@ -185,7 +187,6 @@ public:
 	int32_t HideMsgPlrNoTakeOver;
 	int32_t HideMsgNoOfficialLeague;
 	int32_t HideMsgIRCDangerous;
-	int32_t NoSplash;
 	int32_t AlphabeticalSorting; // if set, Folder.txt-sorting is ignored in scenario selection
 	int32_t LastPortraitFolderIdx;
 	void CompileFunc(StdCompiler *pComp);
@@ -195,7 +196,7 @@ class C4ConfigLobby
 {
 public:
 	int32_t CountdownTime;
-	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player ressources
+	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player resources
 	void CompileFunc(StdCompiler *pComp);
 };
 
@@ -270,6 +271,7 @@ public:
 	bool Registered();
 	const char *AtExePath(const char *szFilename);
 	const char *AtTempPath(const char *szFilename);
+	const char *AtTempUpdatePath(const char *szFilename);
 	const char *AtNetworkPath(const char *szFilename);
 	const char *AtScreenshotPath(const char *szFilename);
 	const char *AtUserDataPath(const char *szFilename);
@@ -285,6 +287,8 @@ public:
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
 	void GetConfigFileName(StdStrBuf &filename, const char *szConfigFile);
+	void CleanupTempUpdateFolder();
+	const char *MakeTempUpdateFolder();
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 };

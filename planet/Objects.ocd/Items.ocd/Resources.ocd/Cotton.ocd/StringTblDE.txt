@@ -1,0 +1,4 @@
+Name=Baumwolle
+Description=Baumwolle zum Anpflanzen oder Verarbeiten zu Stoff
+UsageHelp=Drücke [Benutzen] um hier eine Baumwollpflanze anzupflanzen.
+NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!

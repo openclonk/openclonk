@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2006-2007, 2009  Sven Eberhardt
- * Copyright (c) 2002, 2006-2007  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* engine handler of league system */
@@ -50,7 +47,7 @@ class C4LeagueRequestHead
 {
 public:
 	C4LeagueRequestHead(C4LeagueAction eAction, const char *szCSID = "", const char *szAUID = "")
-			: eAction(eAction), CSID(szCSID), AUID(szAUID)
+			: eAction(eAction), CSID(szCSID), AUID(szAUID), fRememberLogin(false)
 	{ }
 
 private:
@@ -63,9 +60,10 @@ private:
 	StdCopyStrBuf Password;
 	StdCopyStrBuf NewAccount;
 	StdCopyStrBuf NewPassword;
+	bool fRememberLogin;
 
 public:
-	void SetAuth(const char *szAccount, const char *szPassword);
+	void SetAuth(const char *szAccount, const char *szPassword, bool fRememberLogin);
 	void SetNewAccount(const char *szNewAccount);
 	void SetNewPassword(const char *szNewPassword);
 
@@ -115,6 +113,7 @@ private:
 	StdCopyStrBuf Account;
 	StdCopyStrBuf AUID;
 	StdCopyStrBuf FBID;
+	StdCopyStrBuf LoginToken;
 
 public:
 	const char *getCSID() const { return CSID.getData(); }
@@ -124,6 +123,7 @@ public:
 	const char *getAccount() const { return Account.getData(); }
 	const char *getAUID() const { return AUID.getData(); }
 	const char *getFBID() const { return FBID.getData(); }
+	const char *getLoginToken() const { return LoginToken.getData(); }
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -169,12 +169,14 @@ private:
 	int32_t Ranks[C4NetMaxLeagues];
 	int32_t RankSymbols[C4NetMaxLeagues];
 	StdCopyStrBuf ClanTag;
+	StdCopyStrBuf ProgressData;
 
 public:
 	int32_t getScore(const char *szLeague) const;
 	int32_t getRank(const char *szLeague) const;
 	int32_t getRankSymbol(const char *szLeague) const;
 	const char *getClanTag() const { return ClanTag.getData(); }
+	const char *getProgressData(const char *szLeague) const;
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -227,8 +229,8 @@ public:
 	bool GetEndReply(StdStrBuf *pMessage, class C4RoundResultsPlayers *pRoundResults);
 
 	// Action "Auth"
-	bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = NULL, const char *szNewPassword = NULL);
-	bool GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister);
+	bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = NULL, const char *szNewPassword = NULL, bool fRememberLogin = false);
+	bool GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister, StdStrBuf *pLoginToken);
 
 	// Action "Join"
 	bool AuthCheck(const C4PlayerInfo &PlrInfo);
@@ -243,24 +245,26 @@ public:
 class C4LeagueSignupDialog : public C4GUI::Dialog
 {
 private:
-	C4GUI::CheckBox *pChkPassword;
+	C4GUI::CheckBox *pChkPassword, *pChkRememberLogin;
 	C4GUI::LabeledEdit *pEdtAccount, *pEdtPass, *pEdtPass2;
 	C4GUI::Button *pBtnOK, *pBtnAbort;
 	int32_t iEdtPassSpace;
 	StdStrBuf strPlayerName;
+	bool fRememberLogin;
 public:
-	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister);
+	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister, bool fRememberLogin);
 	~C4LeagueSignupDialog() {}
 
 	const char *GetAccount() { return pEdtAccount->GetText(); }
 	bool HasPass() { return !pChkPassword || pChkPassword->GetChecked(); }
 	const char *GetPass() { return pEdtPass->GetText(); }
+	bool GetRememberLogin() { return pChkRememberLogin && pChkRememberLogin->GetChecked(); }
 
 	// check for errors (overridden)
 	virtual void UserClose(bool fOK);
 
 	// show modal league dialog to query password for player; return
-	static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister);
+	static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister, bool *pfRememberLogin);
 
 private:
 	void OnChkPassword();

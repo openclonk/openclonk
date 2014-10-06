@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002  Sven Eberhardt
- * Copyright (c) 2005, 2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // png file reading functionality
 
@@ -23,14 +20,10 @@
 
 #include <StdColors.h>
 
-CPNGFile *pCurrPng=NULL; // global crap for file-reading callback
-
 // png reading proc
-void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)
+void PNGAPI CPNGFile::CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)
 {
-	// read from current pnt
-	if (!pCurrPng) return;
-	pCurrPng->Read(data, length);
+	static_cast<CPNGFile*>(png_get_io_ptr(png_ptr))->Read(data, length);
 }
 
 void CPNGFile::Read(unsigned char *pData, int iLength)
@@ -44,8 +37,6 @@ void CPNGFile::Read(unsigned char *pData, int iLength)
 
 bool CPNGFile::DoLoad()
 {
-	// set current png ptr
-	pCurrPng=this;
 	// reset file ptr
 	pFilePtr=pFile;
 	// check file
@@ -61,7 +52,7 @@ bool CPNGFile::DoLoad()
 	// error handling
 	if (setjmp(png_jmpbuf(png_ptr))) return false;
 	// set file-reading proc
-	png_set_read_fn(png_ptr, png_get_io_ptr(png_ptr), &CPNGReadFn);
+	png_set_read_fn(png_ptr, this, &CPNGFile::CPNGReadFn);
 	// read info
 	png_read_info(png_ptr, info_ptr);
 	// assign local vars

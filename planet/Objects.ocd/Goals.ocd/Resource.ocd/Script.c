@@ -33,6 +33,25 @@ public func SetResource(string resource)
 	return;
 }
 
+/*-- Scenario saving --*/
+
+public func SaveResource(string resource, int init_cnt)
+{
+	var pos = GetLength(resource_list);
+	resource_list[pos] = resource;
+	tolerance_list[pos] = init_cnt;
+	return;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	for (var i = 0; i < GetLength(resource_list); i++)
+		props->AddCall("Goal", this, "SaveResource", resource_list[i], tolerance_list[i]);
+	return true;
+}
+
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if all specified resource have been mined.
@@ -45,7 +64,7 @@ public func IsFulfilled()
 		var mat_cnt = GetMaterialCount(Material(mat));
 		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
 		// Still solid material to be mined.
-		if (mat_cnt == -1 || mat_cnt > (2*tol+1) * blast_ratio / 2)
+		if (mat_cnt == -1 || mat_cnt > (2 * tol + 1) * blast_ratio / 2)
 			return false; 
 		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 		// Still objects of material to be collected.
@@ -54,6 +73,32 @@ public func IsFulfilled()
 	}
 	// Goal fulfilled.
 	return true;
+}
+
+// Shows or hides a message window with information.
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+	{
+		message = "$MsgGoalFulfilled$";		
+	}
+	else
+	{
+		message = "$MsgGoalExtraction$";
+		for (var i = 0; i < GetLength(resource_list); i++)
+		{
+			var mat = resource_list[i];
+			var tol = tolerance_list[i];
+			var mat_cnt = GetMaterialCount(Material(mat));
+			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
+			var res_cnt = ObjectCount(Find_ID(res_id));
+			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
+			message = Format("%s%s", message, add_msg);
+		}
+	}
+	return message;
 }
 
 // Shows or hides a message window with information.
@@ -84,7 +129,7 @@ public func Activate(int plr)
 			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 			var res_cnt = ObjectCount(Find_ID(res_id));
 			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio), res_cnt);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio), res_cnt);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -106,7 +151,7 @@ public func GetShortDescription(int plr)
 		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 		var res_cnt = ObjectCount(Find_ID(res_id));
 		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio) + res_cnt);
+		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2 * tol + 1) * blast_ratio / 2) / blast_ratio) + res_cnt);
 	}	
 	return msg;
 }

@@ -1,19 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #ifndef INC_C4Network2IO
 #define INC_C4Network2IO
@@ -89,10 +87,11 @@ protected:
 	bool fExclusiveConn;
 
 	// timer & ping
-	unsigned long iLastExecute, iLastPing;
+	C4TimeMilliseconds tLastExecute;
+	C4TimeMilliseconds tLastPing;
 
 	// statistics
-	unsigned long iLastStatistic;
+	C4TimeMilliseconds tLastStatistic;
 	int iTCPIRate, iTCPORate, iTCPBCRate,
 	iUDPIRate, iUDPORate, iUDPBCRate;
 
@@ -162,7 +161,7 @@ protected:
 	virtual void OnError(const char *strError, C4NetIO *pNetIO);
 	// StdSchedulerProc
 	virtual bool Execute(int iTimeout, pollfd *);
-	virtual int GetNextTick(int Now);
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
 	// Event callback by C4InteractiveThread
 	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData); // by main thread
 
@@ -229,8 +228,8 @@ protected:
 	bool fBroadcastTarget;                  // broadcast target?
 	time_t iTimestamp;                      // timestamp of last status change
 	int iPingTime;                          // ping
-	unsigned long iLastPing;                // if > iLastPong, it's the first ping that hasn't been answered yet
-	unsigned long iLastPong;                // last pong received
+	C4TimeMilliseconds tLastPing;          // if > iLastPong, it's the first ping that hasn't been answered yet, NULL if no ping received yet
+	C4TimeMilliseconds tLastPong;          // last pong received, NULL if no pong received yet
 	C4ClientCore CCore;                     // client core (>= CS_HalfAccepted)
 	CStdCSec CCoreCSec;
 	int iIRate, iORate;                     // input/output rates (by C4NetIO, in b/s)
@@ -333,7 +332,7 @@ public:
 	C4PacketPing(uint32_t iPacketCounter = 0, uint32_t iRemotePacketCounter = 0);
 
 protected:
-	uint32_t iTime;
+	C4TimeMilliseconds tTime;
 	uint32_t iPacketCounter;
 
 public:

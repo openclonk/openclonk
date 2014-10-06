@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
- * Copyright (c) 2001-2007, 2009-2010  Sven Eberhardt
- * Copyright (c) 2003-2008  Peter Wortmann
- * Copyright (c) 2004-2006, 2008-2011  Günther Brammer
- * Copyright (c) 2005, 2009-2010  Armin Burgmeier
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Richard Gerum
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object definition */
@@ -35,10 +27,11 @@
 #include <C4Object.h>
 #include <C4RankSystem.h>
 #include <C4SoundSystem.h>
+#include <C4SolidMask.h>
 
 void C4Def::DefaultDefCore()
 {
-	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
+	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=0;
 	RequireDef.Clear();
 	Shape.Default();
 	Entrance.Default();
@@ -75,9 +68,7 @@ void C4Def::DefaultDefCore()
 	Oversize=0;
 	Fragile=0;
 	NoPushEnter=0;
-	Explosive=0;
 	Projectile=0;
-	DragImagePicture=0;
 	VehicleControl=0;
 	Pathfinder=0;
 	NoComponentMass=0;
@@ -90,7 +81,6 @@ void C4Def::DefaultDefCore()
 	NoBreath=0;
 	ConSizeOff=0;
 	NoGet=0;
-	NeededGfxMode=0;
 	NoTransferZones=0;
 }
 
@@ -105,7 +95,7 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		Source.Clear();
 
 		// Let's be bold: Rewrite, with current version
-		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2; rC4XVer[2] = C4XVER3; rC4XVer[3] = C4XVER4;
+		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2; rC4XVer[2] = C4XVER3;
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
@@ -173,18 +163,18 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	                           "Category",           0             ));
 
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
-	pComp->Value(mkParAdapt(Shape, false));
+	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
 	pComp->Value(mkNamingAdapt(Component,                     "Components",         C4IDList()        ));
 	pComp->Value(mkNamingAdapt(SolidMask,                     "SolidMask",          TargetRect0       ));
 	pComp->Value(mkNamingAdapt(TopFace,                       "TopFace",            TargetRect0       ));
 	pComp->Value(mkNamingAdapt(PictureRect,                   "Picture",            Rect0             ));
-	pComp->Value(mkNamingAdapt(StdNullAdapt(),                "PictureFE"                             ));
 	pComp->Value(mkNamingAdapt(Entrance,                      "Entrance",           Rect0             ));
 	pComp->Value(mkNamingAdapt(Collection,                    "Collection",         Rect0             ));
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
 	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
+	// <Newton> undocumented, but obsolete? I don't understand the sense of this value.
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
@@ -216,11 +206,12 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(IncompleteActivity,            "IncompleteActivity", 0                 ));
 	pComp->Value(mkNamingAdapt(AttractLightning,              "AttractLightning",   0                 ));
 	pComp->Value(mkNamingAdapt(Oversize,                      "Oversize",           0                 ));
+	// <Newton> Fragile and Projectile are kinda obsolete.
+	// Only used at one point in the command system. Should rather be solved with properties if at all
 	pComp->Value(mkNamingAdapt(Fragile,                       "Fragile",            0                 ));
-	pComp->Value(mkNamingAdapt(Explosive,                     "Explosive",          0                 ));
 	pComp->Value(mkNamingAdapt(Projectile,                    "Projectile",         0                 ));
+
 	pComp->Value(mkNamingAdapt(NoPushEnter,                   "NoPushEnter",        0                 ));
-	pComp->Value(mkNamingAdapt(DragImagePicture,              "DragImagePicture",   0                 ));
 	pComp->Value(mkNamingAdapt(VehicleControl,                "VehicleControl",     0                 ));
 	pComp->Value(mkNamingAdapt(Pathfinder,                    "Pathfinder",         0                 ));
 	pComp->Value(mkNamingAdapt(MoveToRange,                   "MoveToRange",        0                 ));
@@ -234,7 +225,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
-	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));
 
 	const StdBitfieldEntry<int32_t> AllowPictureStackModes[] =
 	{
@@ -246,14 +236,15 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ NULL,             0            }
 	};
 
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),		//undocumented
 	                           "AllowPictureStack",   0                ));
 }
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def(): Script(this), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
 {
+	Script.SetDef(this);
 	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 	Default();
@@ -275,6 +266,7 @@ void C4Def::Default()
 	pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	iNumRankSymbols=1;
+	pSolidMask = NULL;
 }
 
 C4Def::~C4Def()
@@ -294,6 +286,7 @@ void C4Def::Clear()
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
+	delete pSolidMask; pSolidMask = NULL;
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -350,6 +343,25 @@ bool C4Def::Load(C4Group &hGroup,
 		return false;
 	}
 
+	// Read and parse SolidMask bitmap
+	if (hGroup.FindEntry(C4CFN_SolidMask))
+	{
+		pSolidMask = C4SolidMask::LoadMaskFromFile(hGroup, C4CFN_SolidMask);
+		if (!pSolidMask)
+		{
+			DebugLogF("  Error loading SolidMask of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
+			return false;
+		}
+		// check SolidMask size
+		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>pSolidMask->Wdt || SolidMask.y+SolidMask.Hgt>pSolidMask->Hgt) SolidMask.Default();
+	}
+	else if (SolidMask.Wdt)
+	{
+		// Warning in case someone wants to define SolidMasks the old way (in the main graphics file)
+		DebugLogF("WARNING: Definition %s (%s) defines SolidMask in DefCore but has no SolidMask file!", hGroup.GetFullName().getData(), id.ToString());
+		SolidMask.Default();
+	}
+
 	// Read surface bitmap
 	if (dwLoadWhat & C4D_Load_Bitmap)
 		if (!Graphics.Load(hGroup, !!ColorByOwner))
@@ -359,7 +371,7 @@ bool C4Def::Load(C4Group &hGroup,
 		}
 
 	// Read string table
-	StringTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
+	C4Language::LoadComponentHost(&StringTable, hGroup, C4CFN_ScriptStringTbl, szLanguage);
 
 	// Register ID with script engine
 	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
@@ -383,7 +395,7 @@ bool C4Def::Load(C4Group &hGroup,
 		{
 			// create new
 			pClonkNames = new C4ComponentHost();
-			if (!pClonkNames->LoadEx(hGroup, C4CFN_ClonkNames, szLanguage))
+			if (!C4Language::LoadComponentHost(pClonkNames, hGroup, C4CFN_ClonkNames, szLanguage))
 			{
 				delete pClonkNames; pClonkNames = NULL;
 			}
@@ -450,8 +462,6 @@ bool C4Def::Load(C4Group &hGroup,
 		// Bitmap post-load settings
 		if (Graphics.GetBitmap())
 		{
-			// check SolidMask
-			if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
 			// Set MainFace (unassigned bitmap: will be set by GetMainFace())
 			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
@@ -471,8 +481,6 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
-		PictureRect.Default();
-		SolidMask.Default();
 	}
 
 	// Temporary flag

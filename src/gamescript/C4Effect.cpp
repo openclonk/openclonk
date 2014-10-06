@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2006-2011  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 // C4AulFun-based effects assigned to an object
@@ -67,7 +61,6 @@ C4PropList * C4Effect::GetCallbackScript()
 
 C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
-	C4Effect *pPrev, *pCheck;
 	// assign values
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	iInterval = iTimerInterval;
@@ -75,10 +68,16 @@ C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t i
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
 	AcquireNumber();
+	Register(pForObj, iPrio);
+	// Set name and callback functions
+	SetProperty(P_Name, C4VString(szName));
+}
+
+void C4Effect::Register(C4Object *pForObj, int32_t iPrio)
+{
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
-	// register into object
-	pPrev = *ppEffectList;
+	C4Effect *pCheck, *pPrev = *ppEffectList;
 	if (pPrev && Abs(pPrev->iPriority) < iPrio)
 	{
 		while ((pCheck = pPrev->pNext))
@@ -93,8 +92,6 @@ C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t i
 		pNext = *ppEffectList;
 		*ppEffectList = this;
 	}
-	// Set name and callback functions
-	SetProperty(P_Name, C4VString(szName));
 }
 
 C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
@@ -605,12 +602,18 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 			// Splash bubbles and liquid
 			for (int32_t cnt=0; cnt<amt; cnt++)
 			{
-				BubbleOut(tx+Random(16)-8,ty+Random(16)-6);
+				int32_t bubble_x = tx+Random(16)-8;
+				int32_t bubble_y = ty+Random(16)-6;
+				BubbleOut(bubble_x,bubble_y);
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
+				{
+					C4Real xdir = C4REAL100(Random(151)-75);
+					C4Real ydir = C4REAL100(-Random(200));
 					::PXS.Create(::Landscape.ExtractMaterial(tx,ty),
 					             itofix(tx),itofix(sy),
-					             C4REAL100(Random(151)-75),
-					             C4REAL100(-Random(200)));
+					             xdir,
+					             ydir);
+				}
 			}
 		}
 	// Splash sound
@@ -621,9 +624,8 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 {
-	if (::Particles.pSmoke)
-	{
-		::Particles.Create(::Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
-		return;
-	}
+	// Use scripted function (global func Smoke) to create smoke
+	// Caution: This makes engine internal smoking a synced call.
+	C4AulParSet pars(C4VInt(tx), C4VInt(ty), C4VInt(level), C4VInt(dwClr));
+	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
 }

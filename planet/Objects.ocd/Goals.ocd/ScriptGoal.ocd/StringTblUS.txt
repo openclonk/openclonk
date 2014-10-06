@@ -1,1 +1,2 @@
 Name=Script goal
+Description=Script goal description: please change me

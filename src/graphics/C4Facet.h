@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2003, 2005-2006  Sven Eberhardt
- * Copyright (c) 2006  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A piece of a DirectDraw surface */
@@ -121,15 +117,15 @@ class C4Facet
 {
 public:
 	C4Surface * Surface;
-	int32_t X,Y,Wdt,Hgt;
+	float X,Y,Wdt,Hgt;
 public:
 	C4Facet();
-	C4Facet(C4Surface * pSfc, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+	C4Facet(C4Surface * pSfc, float iX, float iY, float iWdt, float iHgt)
 			: Surface(pSfc), X(iX), Y(iY), Wdt(iWdt), Hgt(iHgt) {  }
 public:
 	void Default();
 	void Set(C4Surface &rSfc);
-	void Set(C4Surface * nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
+	void Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
 	void DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);

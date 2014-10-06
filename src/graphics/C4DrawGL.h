@@ -1,27 +1,23 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2006  Sven Eberhardt
- * Copyright (c) 2004-2007  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* OpenGL implementation of NewGfx */
 
-#if !defined(INC_StdGL) && defined(USE_GL)
+
+#if !defined(INC_StdGL) && !defined(USE_CONSOLE)
 #define INC_StdGL
 
 #ifdef _WIN32
@@ -30,6 +26,9 @@
 #include <GL/glew.h>
 
 #if defined(__APPLE__)
+#ifdef USE_COCOA
+#import "ObjectiveCAssociated.h"
+#endif
 #include <OpenGL/glu.h>
 #else
 #include <GL/glu.h>
@@ -40,6 +39,9 @@ class C4Window;
 
 // one OpenGL context
 class CStdGLCtx
+#ifdef USE_COCOA
+	: public ObjectiveCAssociated
+#endif
 {
 public:
 	CStdGLCtx();  // ctor
@@ -52,10 +54,6 @@ public:
 	std::vector<int> EnumerateMultiSamples() const;
 #else
 	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
-#endif
-
-#ifdef USE_COCOA
-	/*NSOpenGLContext*/void* GetNativeCtx();
 #endif
 
 	bool Select(bool verbose = false);              // select this context
@@ -74,8 +72,6 @@ protected:
 	static bool InitGlew(HINSTANCE hInst);
 #elif defined(USE_X11)
 	/*GLXContext*/void * ctx;
-#elif defined(USE_COCOA)
-	/*NSOpenGLContext*/void* ctx;
 #endif
 
 	friend class CStdGL;
@@ -106,7 +102,6 @@ public:
 	// General
 	void Clear();
 	void Default();
-	virtual int GetEngine() { return 1; }   // get indexed engine
 	virtual bool IsOpenGL() { return true; }
 	virtual bool IsShaderific() { return shaders[0] != 0; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
@@ -137,6 +132,7 @@ public:
 	void SetTexture();
 	void ResetTexture();
 	bool DeviceReady() { return !!pMainCtx; }
+	bool EnsureAnyContext();
 
 protected:
 	bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);

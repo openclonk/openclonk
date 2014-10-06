@@ -1,26 +1,25 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2002  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A structure for handling 256-color bitmap files */
 
 #include "C4Include.h"
 #include <Bitmap256.h>
+#include <StdColors.h>
 
 C4BMPInfo::C4BMPInfo()
 {
@@ -73,7 +72,7 @@ int C4BMP256Info::FileBitsOffset()
 	return Head.bfOffBits-sizeof(C4BMP256Info);
 }
 
-void C4BMP256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
+void C4BMP256Info::Set(int iWdt, int iHgt, CStdPalette *Palette)
 {
 	Default();
 	// Set header
@@ -92,9 +91,9 @@ void C4BMP256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 	// Set palette
 	for (int cnt=0; cnt<256; cnt++)
 	{
-		Colors[cnt].rgbRed   = bypPalette[cnt*3+0];
-		Colors[cnt].rgbGreen = bypPalette[cnt*3+1];
-		Colors[cnt].rgbBlue  = bypPalette[cnt*3+2];
+		Colors[cnt].rgbRed   = GetRedValue(Palette->Colors[cnt]);
+		Colors[cnt].rgbGreen = GetGreenValue(Palette->Colors[cnt]);
+		Colors[cnt].rgbBlue  = GetBlueValue(Palette->Colors[cnt]);
 	}
 }
 

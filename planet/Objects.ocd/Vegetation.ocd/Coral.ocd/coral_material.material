@@ -1,0 +1,32 @@
+// coral_material genrated by blender2ogre 0.6.0
+
+material coral_material 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass coral_material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            specular 0.19072166085243225 0.19072166085243225 0.19072166085243225 1.0 18.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture coral.png
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

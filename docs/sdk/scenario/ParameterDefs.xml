@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>ParameterDefs.txt</title>
+  <h>ParameterDefs.txt</h>
+  <text>This file can be used to specify custom parameters that players can set for this scenario before starting it. Intended usages include difficulty or map size settings.</text>
+  <text>Names and descriptions can be localized the same way scripts can using $id$ strings and corresponding string table entries.</text>
+  <text>At the moment, parameters can only be set in the lobby of network games.</text>
+  <text>
+    <table>
+      <caption id="SektionDefs">Any number of sections [ParameterDef]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>Name</col>
+        <col>String</col>
+        <col>Label put in front of this parameter.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Description</col>
+        <col>String</col>
+        <col>Description for setting used as tool tip on the control.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>ID</col>
+        <col>String</col>
+        <col>Identifier for this parameter. Should be a valid identifier containing only letters, numbers and underscores and should not begin with a number. The script engine prefixes this name with SCENPAR_ and uses it to register the picked value as a constant before game initialization.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Type</col>
+        <col>String</col>
+        <col>Data type of parameter. At the moment, only Enumeration is supported.</col>
+        <col>Enumeration</col>
+      </row>
+      <row>
+        <col>Default</col>
+        <col>Integer</col>
+        <col>Value of default option that is chosen if the user does not select anything.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>LeagueValue</col>
+        <col>Integer</col>
+        <col>If nonzero, the parameter will be forced to this vlaue in league games.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>Achievement</col>
+        <col>String</col>
+        <col>If set to an achievement ID, this parameter is hidden in the selection dialogue and only used to track player achievements for this scenario. See section below.</col>
+        <col></col>
+      </row>
+    </table>
+  </text>
+  <text>Each parameter of type Enumeration should be followed by subordinate section [Options], which contains several subordinate sections [Option]. Subordinate sections need to be indented further than their parent section.</text>
+  <text>
+    <table>
+      <caption id="SektionOption">Any number of sections [Option]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>Name</col>
+        <col>String</col>
+        <col>Label used in dropdown menu for this option.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Description</col>
+        <col>String</col>
+        <col>Description for element in dropdown menu for this option. Currently not shown.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Value</col>
+        <col>Integer</col>
+        <col>Value that is assigned to the script constant if this option is picked. Each option within one parameter definition should have a unique value.</col>
+        <col>0</col>
+      </row>
+    </table>
+  </text>
+  <h>Achievements</h>
+  <text>Scenario achievements are special parameter definitions for which the values are stored per player and per scenario. These parameters cannot be set maually, but can only be gained in game using the <funclink>GainScenarioAchievement</funclink> function. Each achievement that has been gained is represented by a small image beside the scenario title in the scenario selection dialogue.</text>
+  <text>Achievements need to be defined as parameter definition with the Achievement value set in the [ParameterDef] section. The value corresponds to the icon file name formatted as Achv*.png, where * is replaced by the achievement name. The icon may either be placed in the scenario or - if multiple scenarios share the same icon - in the global Graphics.ocg file. Icons are square with the height determining the dimensions.</text>
+  <text>By using achievement values higher than one, multiple stages of an achievement may be defined e.g. for finishing a scenario on different difficulties. The achievement value denotes the 1-based index in the icon file with multiple icons arranged from left to right.</text>
+  <text>If several players are activated while the scenario selection dialogue is opened, the player with the highest achievement value is considered for each achievement.</text>
+  <h>Example</h>
+  <text>Example ParameterDef.txt file for a difficulty setting in a scenario that controls the amount of meteorites:</text>
+  <code>[ParameterDef]
+Name=$Difficulty$
+Description=$DescDifficulty$
+ID=Difficulty
+Default=15
+	[Options]
+		[Option]
+		Name=$Easy$
+		Description=$DescEasy$
+		Value=15
+		
+		[Option]
+		Name=$Hard$
+		Description=$DescHard$
+		Value=100
+
+[ParameterDef]
+ID=Done
+Achievement=Done
+	[Options]
+		
+		[Option]
+		Description=$AchvEasy$
+		Value=1
+		
+		[Option]
+		Description=$AchvHard$
+		Value=3</code>
+	<text>The names and descriptions are localized strings which can be set for English in a StringTblUS.txt:</text>
+	<code>Difficulty=Difficulty
+Easy=Easy
+Hard=Hard
+DescDifficulty=Conrols the amount of meteorites
+DescEasy=Very few meteorites
+DescHard=Lots of meteorites
+AchvEasy=Finished on easy.
+AchvHard=Finished on hard.</code>
+  <text>Finally, the Script.c file of the scenario should contain code to evaluate the setting and give an achievement accordingly:</text>
+  <code>func Initialize()
+{
+	// Meteorite amount depending on difficulty setting
+	Meteor->SetChance(SCENPAR_Difficulty);
+}
+
+func OnGoalsFulfilled()
+{
+	<funclink>GainScenarioAchievement</funclink>("Done", BoundBy(SCENPAR_Difficulty, 1, 3)); // 1 for easy, 3 for hard
+	return false;
+}</code>
+  <author>Sven2</author><date>2014-09</date>
+</doc>

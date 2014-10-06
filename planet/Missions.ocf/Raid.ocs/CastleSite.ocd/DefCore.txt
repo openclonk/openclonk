@@ -1,0 +1,13 @@
+[DefCore]
+id=Castle_ConstructionSite
+Version=5,4,0,0
+Category=C4D_Structure
+Width=242
+Height=133
+Offset=-121,-66
+Vertices=4
+VertexX=-110,-40,40,110
+VertexY=65,65
+VertexFriction=100,100,100,100
+Mass=500
+SolidMask=0,0,127,23,45,110

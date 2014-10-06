@@ -1,27 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
- * Copyright (c) 2005, 2007-2008  Matthes Bender
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2008  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2011  Armin Burgmeier
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Scenario selection dialog
 
@@ -41,6 +31,7 @@
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
+#include <C4GameOptions.h>
 
 #include <set>
 
@@ -127,7 +118,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	Clear();
 	// load localization info
 	C4LangStringTable LangTable;
-	bool fHasLangTable = !!LangTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	bool fHasLangTable = C4Language::LoadComponentHost(&LangTable, hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 	// load core data
 	StdStrBuf Buf;
 	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, &Buf)) return false;
@@ -415,7 +406,7 @@ void C4MapFolderData::ResetSelection()
 // ------------------------------------
 // Entry
 
-C4ScenarioListLoader::Entry::Entry(Folder *pParent) : pNext(NULL), pParent(pParent), fBaseLoaded(false), fExLoaded(false)
+C4ScenarioListLoader::Entry::Entry(class C4ScenarioListLoader *pLoader, Folder *pParent) : pLoader(pLoader), pNext(NULL), pParent(pParent), fBaseLoaded(false), fExLoaded(false)
 {
 	// ctor: Put into parent tree node
 	if (pParent)
@@ -482,7 +473,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			return false;
 		// Load entry name
 		C4ComponentHost DefNames;
-		if (DefNames.LoadEx(Group, C4CFN_Title, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefNames, Group, C4CFN_Title, Config.General.LanguageEx))
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
 		// load entry icon
@@ -523,15 +514,14 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	{
 		// load desc
 		C4ComponentHost DefDesc;
-		if (DefDesc.LoadEx(Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefDesc, Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 		{
 			C4RTFFile rtf;
 			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 			sDesc.Take(rtf.GetPlainText());
 		}
 		// load title
-		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
-			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
+		fctTitle.Load(Group, C4CFN_ScenarioTitle,C4FCT_Full,C4FCT_Full,false,true);
 		fExLoaded = true;
 		// load version
 		Group.LoadEntryString(C4CFN_Version, &sVersion);
@@ -561,20 +551,20 @@ bool DirContainsScenarios(const char *szDir)
 	return !!szChildFilename;
 }
 
-C4ScenarioListLoader::Entry *C4ScenarioListLoader::Entry::CreateEntryForFile(const StdStrBuf &sFilename, Folder *pParent)
+C4ScenarioListLoader::Entry *C4ScenarioListLoader::Entry::CreateEntryForFile(const StdStrBuf &sFilename, C4ScenarioListLoader *pLoader, Folder *pParent)
 {
 	// determine entry type by file type
 	const char *szFilename = sFilename.getData();
 	if (!szFilename || !*szFilename) return NULL;
-	if (WildcardMatch(C4CFN_ScenarioFiles, sFilename.getData())) return new Scenario(pParent);
-	if (WildcardMatch(C4CFN_FolderFiles, sFilename.getData())) return new SubFolder(pParent);
+	if (WildcardMatch(C4CFN_ScenarioFiles, sFilename.getData())) return new Scenario(pLoader, pParent);
+	if (WildcardMatch(C4CFN_FolderFiles, sFilename.getData())) return new SubFolder(pLoader, pParent);
 	// regular, open folder (C4Group-packed folders without extensions are not regarded, because they could contain anything!)
 	const char *szExt = GetExtension(szFilename);
 	if ((!szExt || !*szExt) && DirectoryExists(sFilename.getData()))
 	{
 		// open folders only if they contain a scenario or folder
 		if (DirContainsScenarios(szFilename))
-			return new RegularFolder(pParent);
+			return new RegularFolder(pLoader, pParent);
 	}
 	// type not recognized
 	return NULL;
@@ -681,6 +671,57 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
+	// Localized parameter definitions. needed for achievements and parameter input boxes.
+	// Only show them for "real" scenarios
+	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
+	{
+		C4LangStringTable ScenarioLangStringTable;
+		C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		ParameterDefs.Load(rGrp, &ScenarioLangStringTable);
+		// achievement images: Loaded from this entry and parent folder
+		nAchievements = 0;
+		const C4ScenarioParameterDefs *deflists[] = { pParent ? pParent->GetAchievementDefs() : NULL, &ParameterDefs };
+		for (size_t def_list_idx=0; def_list_idx<2; ++def_list_idx)
+		{
+			const C4ScenarioParameterDefs *deflist = deflists[def_list_idx];
+			if (!deflist) continue;
+			const C4ScenarioParameterDef *def; size_t idx=0;
+			while (def = deflist->GetParameterDefByIndex(idx++))
+			{
+				if (def->IsAchievement())
+				{
+					int32_t val = pLoader->GetAchievements().GetValueByID(C4ScenarioParameters::AddFilename2ID(rGrp.GetFullName().getData(), def->GetID()).getData(), def->GetDefault());
+					if (val)
+					{
+						// player has this achievement - find graphics for it
+						const char *achievement_gfx = def->GetAchievement();
+						StdStrBuf sAchievementFilename(C4CFN_Achievements);
+						sAchievementFilename.Replace("*", achievement_gfx);
+						// look in scenario
+						if (!fctAchievements[nAchievements].Load(rGrp, sAchievementFilename.getData(), C4FCT_Height, C4FCT_Full, false, true))
+						{
+							// look in parent folder
+							const C4FacetSurface *fct = NULL;
+							const C4AchievementGraphics *parent_achv_gfx;
+							if (pParent && (parent_achv_gfx = pParent->GetAchievementGfx())) fct = parent_achv_gfx->FindByName(achievement_gfx);
+							// look in main gfx group file
+							if (!fct) fct = ::GraphicsResource.Achievements.FindByName(achievement_gfx);
+							if (!fct) continue; // achievement graphics not found :(
+							fctAchievements[nAchievements].Set((const C4Facet &)*fct);
+						}
+						// section by achievement index (1-based, since zero means no achievement)
+						if (val>1) fctAchievements[nAchievements].X += fctAchievements[nAchievements].Wdt * (val-1);
+						// description for this achievement is taken from option
+						const C4ScenarioParameterDef::Option *opt = def->GetOptionByValue(val);
+						if (opt) sAchievementDescriptions[nAchievements] = opt->Description;
+						// keep track of achievement count
+						++nAchievements;
+						if (nAchievements == C4StartupScenSel_MaxAchievements) break;
+					}
+				}
+			}
+		}
+	}
 	return true;
 }
 
@@ -702,6 +743,15 @@ bool C4ScenarioListLoader::Scenario::LoadCustom(C4Group &rGrp, bool fNameLoaded,
 		iDifficulty = 0;
 	// minimum required player count
 	iMinPlrCount = C4S.GetMinPlayer();
+	return true;
+}
+
+bool C4ScenarioListLoader::Scenario::GetAchievement(int32_t idx, C4Facet *out_facet, const char **out_description)
+{
+	// return true and fill output parameters if player got the indexed achievement
+	if (idx < 0 || idx >= nAchievements) return false;
+	*out_facet = fctAchievements[idx];
+	*out_description = sAchievementDescriptions[idx].getData();
 	return true;
 }
 
@@ -963,6 +1013,11 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 	else
 		// no parent group: Direct load from filename
 		if (!Group.Open(sFilename.getData())) return false;
+	// Load achievement data contained scenarios can fall back to
+	C4LangStringTable FolderLangStringTable;
+	C4Language::LoadComponentHost(&FolderLangStringTable, Group, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	AchievementDefs.Load(Group, &FolderLangStringTable);
+	AchievementGfx.Init(Group);
 	// get number of entries, to estimate progress
 	const char *szC4CFN_ScenarioFiles = C4CFN_ScenarioFiles; // assign values for constant comparison
 	const char *szSearchMask; int32_t iEntryCount=0;
@@ -989,7 +1044,7 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 			sChildFilename.Ref(ChildFilename);
 			// okay; create this item
 			//LogF("SubFolder \"%s\" loading \"%s\"", (const char *) sFilename, (const char *) sChildFilename);
-			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, this);
+			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
 				// ...and load it
@@ -1082,7 +1137,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 			if (names.find(szChildFilename) != names.end()) continue;
 			names.insert(szChildFilename);
 			// filename okay; create this item
-			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, this);
+			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
 				// ...and load it
@@ -1109,7 +1164,7 @@ void C4ScenarioListLoader::RegularFolder::Merge(const char *szPath)
 // ------------------------------------
 // C4ScenarioListLoader
 
-C4ScenarioListLoader::C4ScenarioListLoader() : pRootFolder(NULL), pCurrFolder(NULL),
+C4ScenarioListLoader::C4ScenarioListLoader(const C4ScenarioParameters &Achievements) : Achievements(Achievements), pRootFolder(NULL), pCurrFolder(NULL),
 		iLoading(0), iProgress(0), iMaxProgress(0), fAbortThis(false), fAbortPrevious(false)
 {
 }
@@ -1169,7 +1224,7 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	// (unthreaded) loading of all entries in root folder
 	if (!BeginActivity(true)) return false;
 	if (pRootFolder) { delete pRootFolder; pRootFolder = NULL; }
-	pCurrFolder = pRootFolder = new RegularFolder(NULL);
+	pCurrFolder = pRootFolder = new RegularFolder(this, NULL);
 	// Load regular game data if no explicit path specified
 	if(!sRootFolder.getData())
 		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
@@ -1249,10 +1304,26 @@ C4StartupScenSelDlg::ScenListItem::ScenListItem(C4GUI::ListBox *pForListBox, C4S
 	pIcon = new C4GUI::Picture(C4Rect(0, 0, iHeight, iHeight), true);
 	pIcon->SetFacet(pScenListEntry->GetIconFacet());
 	pNameLabel = new C4GUI::Label(pScenListEntry->GetName().getData(), iHeight + IconLabelSpacing, IconLabelSpacing, ALeft, fEnabled ? ClrScenarioItem : ClrScenarioItemDisabled, &rUseFont, false, false);
+	// achievement components
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i)
+	{
+		C4Facet fct; const char *desc;
+		if (pForEntry->GetAchievement(i, &fct, &desc))
+		{
+			ppAchievements[i] = new C4GUI::Picture(C4Rect(iHeight * (i+2), 0, iHeight, iHeight), true); // position will be adjusted later
+			ppAchievements[i]->SetFacet(fct);
+			ppAchievements[i]->SetToolTip(desc);
+		}
+		else
+		{
+			ppAchievements[i] = NULL;
+		}
+	}
 	// calc own bounds - use icon bounds only, because only the height is used when the item is added
 	SetBounds(pIcon->GetBounds());
 	// add components
 	AddElement(pIcon); AddElement(pNameLabel);
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i]) AddElement(ppAchievements[i]);
 	// tooltip by name, so long names can be read via tooltip
 	SetToolTip(pScenListEntry->GetName().getData());
 	// add to listbox (will get resized horizontally and moved) - zero indent; no tree structure in this dialog
@@ -1269,9 +1340,12 @@ void C4StartupScenSelDlg::ScenListItem::UpdateOwnPos()
 	// parent for client rect
 	typedef C4GUI::Window ParentClass;
 	ParentClass::UpdateOwnPos();
-	// reposition items
+	// reposition achievement items
 	C4GUI::ComponentAligner caBounds(GetContainedClientRect(), IconLabelSpacing, IconLabelSpacing);
-	// nothing to reposition for now...
+	for (int32_t i=0; i<C4StartupScenSel_MaxAchievements; ++i) if (ppAchievements[i])
+	{
+		ppAchievements[i]->SetBounds(caBounds.GetFromRight(caBounds.GetHeight()));
+	}
 }
 
 void C4StartupScenSelDlg::ScenListItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
@@ -1346,22 +1420,29 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);
 	C4Rect rcMap = caMain.GetCentered(caMain.GetWidth(), caMain.GetHeight());
+#if 0
+	// Was used for the custom map scenario selection style
 	int iYOversize = caMain.GetHeight()/10; // overlap of map to top
 	rcMap.y -= iYOversize; rcMap.Hgt += iYOversize;
-	C4GUI::ComponentAligner caMap(rcMap, 0,0, true);
+#endif
+	C4GUI::ComponentAligner caMap(rcMap, caMain.GetWidth()/10,0, true);
+#if 0
 	caMap.ExpandTop(-iYOversize);
-	C4GUI::ComponentAligner caBook(caMap.GetCentered(caMap.GetWidth()*11/12-4*iExtraHPadding, caMap.GetHeight()), rcBounds.Wdt/30,iExtraVPadding, false);
-	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+#endif
 
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
 	pScenSelStyleTabular->SetSheetMargin(0);
-	pScenSelStyleTabular->SetDrawDecoration(false);
+	//pScenSelStyleTabular->SetDrawDecoration(false);
+	pScenSelStyleTabular->SetGfx(&C4Startup::Get()->Graphics.fctDlgPaper, &C4Startup::Get()->Graphics.fctOptionsTabClip, &C4Startup::Get()->Graphics.fctOptionsIcons, &C4Startup::Get()->Graphics.BookSmallFont, false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
 	/* C4GUI::Tabular::Sheet *pSheetMap = */ pScenSelStyleTabular->AddSheet(NULL);
 
 	// scenario selection list
+	C4GUI::ComponentAligner caBook(pSheetBook->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
+	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+
 	CStdFont &rScenSelCaptionFont = C4Startup::Get()->Graphics.BookFontTitle;
 	pScenSelCaption = new C4GUI::Label("", caBookLeft.GetFromTop(rScenSelCaptionFont.GetLineHeight()), ACenter, ClrScenarioItem, &rScenSelCaptionFont, false);
 	pSheetBook->AddElement(pScenSelCaption);
@@ -1377,10 +1458,31 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSheetBook->AddElement(pScenSelProgressLabel);
 
 	// right side of book: Displaying current selection
-	pSelectionInfo = new C4GUI::TextWindow(caBook.GetFromRight(iBookPageWidth), C4StartupScenSel_TitlePictureWdt+2*C4StartupScenSel_TitleOverlayMargin, C4StartupScenSel_TitlePictureHgt+2*C4StartupScenSel_TitleOverlayMargin,
+	C4Rect bounds = caBook.GetFromRight(iBookPageWidth);
+	const int32_t AvailWidth = bounds.Wdt;
+	const int32_t AvailHeight = 2 * bounds.Hgt / 5;
+	int32_t PictureWidth, PictureHeight;
+	if(AvailWidth * C4StartupScenSel_TitlePictureHgt < AvailHeight * C4StartupScenSel_TitlePictureWdt)
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+	}
+	else
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+	}
+	pSelectionInfo = new C4GUI::TextWindow(bounds, PictureWidth+2*C4StartupScenSel_TitleOverlayMargin, PictureHeight+2*C4StartupScenSel_TitleOverlayMargin,
 	                                       C4StartupScenSel_TitlePicturePadding, 100, 4096, NULL, true, &C4Startup::Get()->Graphics.fctScenSelTitleOverlay, C4StartupScenSel_TitleOverlayMargin);
 	pSelectionInfo->SetDecoration(false, false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSheetBook->AddElement(pSelectionInfo);
+
+	// bottom of right side of book: Custom options on selection
+	// Arbitrary height and invisible by default. Height will be adjusted when options are created.
+	pSelectionOptions = new C4GameOptionsList(C4Rect(bounds.x, bounds.y+bounds.Hgt-10, bounds.Wdt, 10), false, fNetwork ? C4GameOptionsList::GOLS_PreGameNetwork : C4GameOptionsList::GOLS_PreGameSingle);
+	pSelectionOptions->SetDecoration(false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
+	pSelectionOptions->SetVisibility(false);
+	pSheetBook->AddElement(pSelectionOptions);
 
 	// back button
 	C4GUI::CallbackButton<C4StartupScenSelDlg> *btn;
@@ -1413,7 +1515,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyRename), C4CustomKey::PRIO_CtrlOverride);
 	pKeyDelete = new C4KeyBinding(C4KeyCodeEx(K_DELETE), "StartupScenSelDelete", KEYSCOPE_Gui,
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyDelete), C4CustomKey::PRIO_CtrlOverride);
-	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(KEY_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
+	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
 	                             new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyCheat), C4CustomKey::PRIO_CtrlOverride);
 }
 
@@ -1434,16 +1536,20 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	if (pfctBackground)
 		DrawBackground(cgo, *pfctBackground);
+#if 0
 	else
 		DrawBackground(cgo, C4Startup::Get()->Graphics.fctScenSelBG);
+#endif
 }
 
 void C4StartupScenSelDlg::OnShown()
 {
 	C4StartupDlg::OnShown();
+	// Collect achievements of all activated players
+	UpdateAchievements();
 	// init file list
 	fIsInitialLoading = true;
-	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader();
+	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader(Achievements);
 	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
 	UpdateList();
 	UpdateSelection();
@@ -1591,6 +1697,37 @@ void C4StartupScenSelDlg::UpdateSelection()
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
 	if (sVersion) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DLG_VERSION"), sVersion.getData()).getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
+	// update custom scenario options panel
+	if (pSel)
+	{
+		pSelectionOptions->SetParameters(pSel->GetParameterDefs(), pSel->GetParameters());
+		pSelectionOptions->Update();
+	}
+	else
+		pSelectionOptions->SetParameters(NULL, NULL);
+	// update component heights
+	C4Rect rcSelBounds = pSelectionInfo->GetBounds();
+	int32_t ymax = pSelectionOptions->GetBounds().GetBottom();
+	C4GUI::Element *pLastOption = pSelectionOptions->GetLast();
+	if (pLastOption)
+	{
+		// custom options present: Info box reduced; options box at bottom
+		// set options box max size to 1/3rd of selection info area
+		int32_t options_hgt = Min<int32_t>(pLastOption->GetBounds().GetBottom() + pSelectionOptions->GetMarginTop() + pSelectionOptions->GetMarginTop(), rcSelBounds.Hgt/3);
+		rcSelBounds.Hgt = ymax - options_hgt - rcSelBounds.y;
+		pSelectionInfo->SetBounds(rcSelBounds);
+		rcSelBounds.y = ymax - options_hgt;
+		rcSelBounds.Hgt = options_hgt;
+		pSelectionOptions->SetBounds(rcSelBounds);
+		pSelectionOptions->SetVisibility(true);
+	}
+	else
+	{
+		// custom options absent: Info takes full area
+		pSelectionOptions->SetVisibility(false);
+		rcSelBounds.Hgt = ymax - rcSelBounds.y;
+		pSelectionInfo->SetBounds(rcSelBounds);
+	}
 	pSelectionInfo->UpdateHeight();
 }
 
@@ -1621,16 +1758,18 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 		if (!C4DefinitionSelDlg::SelectDefinitions(GetScreen(), &sDefinitions))
 			// user aborted during definition selection
 			return false;
-		SCopy(sDefinitions.getData(), Game.DefinitionFilenames, (sizeof Game.DefinitionFilenames)-1);
+		SCopy(sDefinitions.getData(), ::Game.DefinitionFilenames, (sizeof Game.DefinitionFilenames)-1);
 	}
 	else
 		// for no user change, just set default objects. Custom settings will override later anyway
-		SCopy("Objects.ocd", Game.DefinitionFilenames);
+		SCopy("Objects.ocd", ::Game.DefinitionFilenames);
 	// set other default startup parameters
-	Game.fLobby = !!Game.NetworkActive; // always lobby in network
-	Game.fObserve = false;
+	::Game.fLobby = !!::Game.NetworkActive; // always lobby in network
+	::Game.fObserve = false;
+	C4ScenarioParameters *custom_params = pStartScen->GetParameters();
+	if (custom_params) ::Game.StartupScenarioParameters = *custom_params; else ::Game.StartupScenarioParameters.Clear();
 	// start with this set!
-	Application.OpenGame(pStartScen->GetEntryFilename().getData());
+	::Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;
 }
 
@@ -1828,4 +1967,27 @@ void C4StartupScenSelDlg::AbortRenaming()
 	if (pRenameEdit) pRenameEdit->Abort();
 }
 
-// NICHT: 9, 7.2.2, 113-114
+void C4StartupScenSelDlg::UpdateAchievements()
+{
+	// Extract all achievements from activated player files and merge them
+	Achievements.Clear();
+	char PlayerFilename[_MAX_FNAME+1];
+	C4Group PlayerGrp;
+	for (int i = 0; SCopySegment(Config.General.Participants, i, PlayerFilename, ';', _MAX_FNAME, true); i++)
+	{
+		const char *szPlayerFilename = Config.AtUserDataPath(PlayerFilename);
+		if (!FileExists(szPlayerFilename)) continue;
+		if (!PlayerGrp.Open(szPlayerFilename)) continue;
+		C4PlayerInfoCore nfo;
+		if (!nfo.Load(PlayerGrp)) continue;
+		Achievements.Merge(nfo.Achievements);
+	}
+}
+
+void C4StartupScenSelDlg::OnLeagueOptionChanged()
+{
+	if (pSelectionOptions) pSelectionOptions->Update();
+}
+
+// NICHT: 9, 7.2.2, 113-114, 8a
+

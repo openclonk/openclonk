@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2004  Sven Eberhardt
- * Copyright (c) 2006  Peter Wortmann
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // game object lists
 
@@ -35,14 +31,17 @@ public:
 	void Default();
 	void Init(int32_t iWidth, int32_t iHeight);
 	void Clear(bool fClearInactive); // clear objects
-	void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
+	// don't use default parameters so we get a correct vtbl entry
+	// don't clear internal objects, because they should not be cleared on section load
+	void Clear() { Clear(false); }
+
+private:
+	uint32_t LastUsedMarker; // last used value for C4Object::Marker
 
 public:
 	C4LSectors Sectors; // section object lists
 	C4ObjectList InactiveObjects; // inactive objects (Status=2)
 	C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
-
-	unsigned int LastUsedMarker; // last used value for C4Object::Marker
 
 	using C4ObjectList::Add;
 	bool Add(C4Object *nObj); // add object
@@ -55,7 +54,7 @@ public:
 	void Synchronize(); // network synchronization
 	void UpdateSolidMasks();
 
-	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
+	C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int PostLoad(bool fKeepInactive, C4ValueNumbers *);
@@ -77,8 +76,10 @@ public:
 	void AssignPlrViewRange();
 	void SyncClearance();
 	void ResetAudibility();
-	void UpdateTransferZones();
+	void OnSynchronized();
 	void SetOCF();
+
+	uint32_t GetNextMarker(); // Get a new marker. If all markers are exceeded (LastUsedMarker is 0xffffffff), restart marker at 1 and reset all object markers to zero.
 };
 
 extern C4GameObjects Objects;

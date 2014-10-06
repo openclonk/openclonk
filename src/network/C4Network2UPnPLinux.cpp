@@ -1,18 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2012  Armin Burgmeier
+ * Copyright (c) 2012-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* Linux implementation of a UPnP port mapper (using libupnp) */
 
@@ -242,7 +240,7 @@ int C4Network2UPnPP::Callback_Static(Upnp_EventType EventType, void* Event, void
 		break;
 	case UPNP_CONTROL_ACTION_COMPLETE:
 		{
-			std::auto_ptr<ActionData> data(static_cast<ActionData*>(Cookie));
+			std::unique_ptr<ActionData> data(static_cast<ActionData*>(Cookie));
 			Upnp_Action_Complete* complete = static_cast<Upnp_Action_Complete*>(Event);
 			std::string action = ixmlNode_getNodeName(ixmlNode_getFirstChild(&complete->ActionRequest->n));
 			Application.InteractiveThread.PushEvent(Ev_UPNP_Response, new NotifyActionComplete(*data, action, complete->ErrCode));
@@ -258,7 +256,7 @@ int C4Network2UPnPP::Callback_Static(Upnp_EventType EventType, void* Event, void
 
 void C4Network2UPnPP::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData)
 {
-	std::auto_ptr<Notify> notify(static_cast<Notify*>(pEventData));
+	std::unique_ptr<Notify> notify(static_cast<Notify*>(pEventData));
 
 	// TODO: Should call a virtual method instead of dynamic_casting
 	NotifySearchResult* notify_search_result = dynamic_cast<NotifySearchResult*>(notify.get());

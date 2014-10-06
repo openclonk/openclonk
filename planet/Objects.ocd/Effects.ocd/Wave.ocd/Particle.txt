@@ -1,16 +1,3 @@
 [Particle]
-Name=WaveLeft
-MaxCount=1500
-InitFn=StdInit
-ExecFn=StdExec
-CollisionFn=Die
-DrawFn=Std
+Name=Wave
 Face=0,0,100,50,-50,-25
-Delay=2
-Repeats=1
-GravityAcc=0
-VertexCount=1
-VertexY=20
-AlphaFade=0
-RByV=0
-Attach=0

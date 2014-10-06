@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004-2005, 2007  Matthes Bender
- * Copyright (c) 2005-2006  Peter Wortmann
- * Copyright (c) 2006, 2011  Sven Eberhardt
- * Copyright (c) 2009, 2011  Günther Brammer
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2010  Julius Michaelis
- * Copyright (c) 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Some wrappers for easier access to the Windows registry */
@@ -169,15 +162,15 @@ bool SetRegShell(const wchar_t *szClassName,
 {
 	wchar_t szKeyName[256+1];
 	// Set shell caption
-	swprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
+	_snwprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
 	// Set shell command
-	swprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
+	_snwprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
-		swprintf(szKeyName, 256,L"%s\\Shell", szClassName);
+		_snwprintf(szKeyName, 256,L"%s\\Shell", szClassName);
 		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
 	}
 	return true;
@@ -187,7 +180,7 @@ bool RemoveRegShell(const char *szClassName,
                     const char *szShellName)
 {
 	wchar_t strKey[256+1];
-	swprintf(strKey, 256, L"%s\\Shell\\%s", GetWideChar(szClassName).p, GetWideChar(szShellName).p);
+	_snwprintf(strKey, 256, L"%s\\Shell\\%s", GetWideChar(szClassName).p, GetWideChar(szShellName).p);
 	if (!DeleteRegistryKey(HKEY_CLASSES_ROOT, strKey)) return false;
 	return true;
 }
@@ -448,7 +441,7 @@ StdCompilerConfigRead::~StdCompilerConfigRead()
 bool StdCompilerConfigRead::Name(const char *szName)
 {
 	// Adjust key name for lists
-	StdStrBuf sName;
+	StdCopyStrBuf sName;
 	if (pKey->LastChildName == szName)
 		sName.Format("%s%d", szName, (int)++pKey->subindex);
 	else

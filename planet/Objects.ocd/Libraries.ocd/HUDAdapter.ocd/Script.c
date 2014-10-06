@@ -16,7 +16,14 @@
 
 local HUDselector, HUDcontroller;
 
-public func SetSelector(object sel) { HUDselector = sel; }
+public func SetSelector(object sel)
+{
+	HUDselector = sel;
+	// Ensure controller is set if it was created after creation of this clonk (e.g. after section change)
+	if (!HUDcontroller) HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(GetOwner()));
+	return true;
+}
+
 public func GetSelector() { return HUDselector; }
 
 public func HUDAdapter()
@@ -40,9 +47,31 @@ protected func Recruitment(int plr)
 	if (!HUDcontroller)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
 	
+	HUDcontroller->OnCrewRecruitment(this, plr, ...);
 	HUDcontroller->ScheduleUpdateInventory();
 	
 	return _inherited(plr, ...);
+}
+
+protected func DeRecruitment(int plr)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeRecruitment(this, plr, ...);
+	
+	return _inherited(plr, ...);
+}
+
+protected func Death(int killed_by)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeath(this, killed_by, ...);
+
+	return _inherited(killed_by,...);
+}
+
+protected func Destruction()
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDestruction(this, ...);
+
+	return _inherited(...);
 }
 
 public func OnDisplayInfoMessage()

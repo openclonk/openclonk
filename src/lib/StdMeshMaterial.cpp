@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Mark Haßelbusch
- * Copyright (c) 2009-2011  Armin Burgmeier
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "C4Include.h"
@@ -649,7 +644,7 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 
 void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
 {
-	std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
+	std::unique_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
 	if (!surface.get())
 		ctx.Error(StdCopyStrBuf("Could not load texture '") + texname + "'");
 
@@ -831,7 +826,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass():
-		DepthWrite(true), CullHardware(CH_Clockwise)
+	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise)
 {
 	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
 	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
@@ -885,6 +880,10 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			ctx.AdvanceColor(true, Emissive);
 		}
+		else if (token_name == "depth_check")
+		{
+			DepthCheck = ctx.AdvanceBoolean();
+		}
 		else if (token_name == "depth_write")
 		{
 			DepthWrite = ctx.AdvanceBoolean();
@@ -911,11 +910,6 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			ctx.AdvanceBoolean();
 			ctx.WarningNotSupported("colour_write");
-		}
-		else if (token_name == "depth_check")
-		{
-			ctx.AdvanceBoolean();
-			ctx.WarningNotSupported(token_name.getData());
 		}
 		else if (token_name == "depth_func")
 		{
@@ -1090,11 +1084,14 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 			mat.Load(ctx);
 
+			Materials[material_name] = mat;
+
 			// To Gfxspecific setup of the material; choose working techniques
-			if (pDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
-				Materials[material_name] = mat;
-			else
+			if (!pDraw->PrepareMaterial(Materials[material_name]))
+			{
+				Materials.erase(material_name);
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
+			}
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);

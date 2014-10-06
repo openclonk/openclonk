@@ -22,7 +22,7 @@ protected func Initialize()
 {
 	reach = 150;
 	radius = 60;
-	radiusparticle = 60;
+	radiusparticle = radius / 4;
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
@@ -125,30 +125,30 @@ public func ControlUseHolding(object clonk, ix, iy)
 	var ys = -Cos(Random(359),radiusparticle/2);
 	var anglep = Angle(0,0,ix,iy);
 	var distp = Distance(0,0,ix,iy);
-
+	
+	var particles;
+	if (Random(2)) particles = Particles_ElectroSpark1();
+	else particles = Particles_ElectroSpark2();
+	
 	if(distp < reach)
 	{
 		//Particles moving towards object
-		for(var i; i < 2; i++)
-		{
-			CreateParticle("Spark1", ix + xs, iy + ys, -xs/3, -ys/3, RandomX(30,90), RGB(185,250,250));
-			CreateParticle("Spark2", ix + xs, iy + ys, -xs/3, -ys/3, RandomX(30,90), RGB(185,250,250));
-		}
+		CreateParticle("ElectroSpark", ix + xs, iy + ys, PV_Random(-xs/2, -xs/4), PV_Random(-ys/2, -ys/4), PV_Random(5, 10), particles, 5);
 		
 		//Particles emitting from clonk
 		var wp = 1;
 		if(Random(2)) wp = -1;
-		var xp = anglep - 90 + (Angle(0,0,distp,radiusparticle/2 * wp));
-		var yp = anglep - 90 + (Angle(0,0,distp,radiusparticle/2 * wp));
-
-		CreateParticle("Spark1", Sin(xp, Random(distp)), -Cos(yp, Random(distp)), Sin(xp, 10), -Cos(yp, 10), RandomX(30,90), RGB(185,250,250));
+		var xp = anglep + RandomX(-3, 3);
+		var yp = anglep + RandomX(-3, 3);
+		var xdir = Sin(xp, 10);
+		var ydir = -Cos(yp, 10);
+		var distance = Random(distp);
+		CreateParticle("ElectroSpark", Sin(xp, distance), -Cos(yp, distance), PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 2, ydir + 2), PV_Random(5, 10), particles, 5);
 	}
 
 	var target;
 	if(target_object)
 	{
-		radiusparticle = 30;
-
 		if(Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy) > radius ||
 		Distance(target_object->GetX(), target_object->GetY(), clonk->GetX(), clonk->GetY()) > reach)
 		{
@@ -159,8 +159,6 @@ public func ControlUseHolding(object clonk, ix, iy)
 
 	if(!target_object)
 	{
-		radiusparticle = 60;
-
 		target = FindObject(Find_Exclude(this),
 					Find_NoContainer(),
 					Find_Category(C4D_Object),
@@ -190,7 +188,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		target_object->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
 
 		//Particles emitting from object
-		target_object->CreateParticle("Spark1", 0, 0, xs/10, ys/10, RandomX(20,40), RGB(185,250,250));
+		target_object->CreateParticle("ElectroSpark", 0, 0, PV_Random(xs/8, xs/10), PV_Random(ys/8, ys/10), PV_Random(5, 10), particles, 5);
 	}
 	else
 		LostTargetObject(target_object);
@@ -219,6 +217,7 @@ public func LostTargetObject(object target)
 
 global func FxTeleGloveReleasedStart(object target, effect)
 {
+	effect.t0 = FrameCounter();
 	return;
 }
 
@@ -231,6 +230,11 @@ global func FxTeleGloveWeightStop(object target, int num, int reason, bool temp)
 {
 	target->SetMass(target->GetDefCoreVal("Mass", "DefCore"));
 }
+
+// Damaging Clonks with moving objects makes this tool stupidly strong. So it's blocked
+// while moving the object and a few frames after release
+global func FxTeleGloveWeightQueryHitClonk(object target, fx, object clonk) { return true; }
+global func FxTeleGloveReleasedQueryHitClonk(object target, fx, object clonk) { return FrameCounter()-fx.t0 <= 5; }
 
 protected func ControlUseStop(object clonk, ix, iy)
 {
@@ -252,7 +256,6 @@ protected func CancelUse(object clonk)
 	aiming = 0;
 	if(target_object) LostTargetObject(target_object);
 	target_object = nil;
-	radiusparticle = 60;
 	return 1;
 }
 

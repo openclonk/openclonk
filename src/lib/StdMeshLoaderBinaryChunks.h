@@ -1,18 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_StdMeshLoaderChunks
@@ -353,7 +351,8 @@ namespace Ogre
 			static Chunk *Read(DataStream *stream);
 		};
 
-		class ChunkUnknown; class ChunkFileHeader;
+		class ChunkUnknown; class 
+		ChunkFileHeader;
 		class ChunkMesh; class ChunkMeshSkeletonLink; class ChunkMeshBoneAssignments; class ChunkMeshBounds;
 		class ChunkSubmesh; class ChunkSubmeshOp;
 		class ChunkGeometry; class ChunkGeometryVertexDecl; class ChunkGeometryVertexDeclElement; class ChunkGeometryVertexBuffer; class ChunkGeometryVertexData;
@@ -538,9 +537,11 @@ namespace Ogre
 		{
 			CID_Invalid = 0,
 			CID_Header = 0x1000,
+			CID_BlendMode=  0x1010,
 			CID_Bone = 0x2000,
 			CID_Bone_Parent = 0x3000,
 			CID_Animation = 0x4000,
+			CID_Animation_BaseInfo = 0x4010,
 			CID_Animation_Track = 0x4100,
 			CID_Animation_Track_KF = 0x4110,
 			CID_Animation_Link = 0x5000
@@ -564,12 +565,22 @@ namespace Ogre
 
 		class ChunkFileHeader : public Chunk
 		{
-			static const std::string ExpectedVersion;
+			typedef std::map<std::string, uint32_t> VersionTable_t;
+			static const VersionTable_t VersionTable;
+			static const uint32_t CurrentVersion;
 		public:
 			std::string version;
 
 		protected:
 			virtual void ReadImpl(DataStream *stream);
+		};
+
+		class ChunkBlendMode : public Chunk
+		{
+		public:
+			uint16_t blend_mode;
+		protected:
+			virtual void ReadImpl(DataStream* stream);
 		};
 
 		class ChunkBone : public Chunk
@@ -602,6 +613,15 @@ namespace Ogre
 			boost::ptr_vector<ChunkAnimationTrack> tracks;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
+		};
+
+		class ChunkAnimationBaseInfo : public Chunk
+		{
+		public:
+			std::string base_animation_name;
+			float base_key_frame_time;
+		protected:
+			virtual void ReadImpl(DataStream* stream);
 		};
 
 		class ChunkAnimationTrack : public Chunk

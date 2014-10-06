@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2005, 2007-2008, 2010-2011  Günther Brammer
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005, 2008  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2007  Julian Raschke
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Main program entry point */
@@ -33,10 +25,10 @@
 #include <C4Version.h>
 #include "C4Network2.h"
 
-void InstallCrashHandler();
-
 #ifdef _WIN32
 #include <shellapi.h>
+
+void InstallCrashHandler();
 
 int WINAPI WinMain (HINSTANCE hInst,
                     HINSTANCE hPrevInstance,
@@ -47,6 +39,23 @@ int WINAPI WinMain (HINSTANCE hInst,
 	// enable debugheap!
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	// This should be handled in an application manifest, but that is
+	// decidedly non-trivial to do portably across compilers and compiler
+	// versions, so we do it in code instead.
+	// Also we aren't really DPI aware (we'd have to default ingame zoom
+	// differently and scale the menus), but this is better than clipping.
+	// Fixes #891.
+	HMODULE user32 = LoadLibrary(L"user32");
+	if (user32)
+	{
+		typedef BOOL (WINAPI *SETPROCESSDPIAWAREPROC)();
+		SETPROCESSDPIAWAREPROC SetProcessDPIAware =
+			reinterpret_cast<SETPROCESSDPIAWAREPROC>(GetProcAddress(user32, "SetProcessDPIAware"));
+		if (SetProcessDPIAware)
+			SetProcessDPIAware();
+		FreeLibrary(user32);
+	}
 
 	InstallCrashHandler();
 
@@ -116,41 +125,70 @@ int main()
 #include <execinfo.h>
 #endif
 
-static void crash_handler(int signo)
+static void crash_handler(int signo, siginfo_t * si, void *)
 {
-	int logfd = STDERR_FILENO;
-	for (;;)
+	static unsigned signal_count = 0;
+	++signal_count;
+	switch (signo)
 	{
-		// Print out the signal
-		write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
-		switch (signo)
+	case SIGINT: case SIGTERM: case SIGHUP:
+		if (signal_count < 2) {
+			Application.Quit();
+			break;
+		} // else/fallthrough
+	default:
+		int logfd = STDERR_FILENO;
+		for (;;)
 		{
-		case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
-		case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
-		case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
-		case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
-		case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
-		case SIGQUIT: write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
-		case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
-		case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			// Print out the signal
+			write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
+			switch (signo)
+			{
+			case SIGBUS:  write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
+			case SIGILL:  write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
+			case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
+			case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
+			case SIGINT:  write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
+			case SIGHUP:  write(logfd, "SIGHUP", sizeof ("SIGHUP") - 1); break;
+			case SIGFPE:  write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
+			case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			}
+			char hex[sizeof(void *) * 2];
+			int i; intptr_t x = reinterpret_cast<intptr_t>(si->si_addr);
+			switch (signo)
+			{
+			case SIGILL: case SIGFPE: case SIGSEGV: case SIGBUS: case SIGTRAP:
+				write(logfd, " (0x", sizeof (" (0x") - 1);
+				for (int i = sizeof(void *) * 2 - 1; i >= 0; --i)
+				{
+					if ((x & 0xf) > 9)
+						hex[i] = 'a' + (x & 0xf) - 9;
+					else
+						hex[i] = '0' + (x & 0xf);
+					x >>= 4;
+				}
+				write(logfd, hex, sizeof (hex));
+				write(logfd, ")", sizeof (")") - 1);
+				break;
+			}
+			write(logfd, "\n", sizeof ("\n") - 1);
+			if (logfd == STDERR_FILENO) logfd = GetLogFD();
+			else break;
+			if (logfd < 0) break;
 		}
-		write(logfd, "\n", sizeof ("\n") - 1);
-		if (logfd == STDERR_FILENO) logfd = GetLogFD();
-		else break;
-		if (logfd < 0) break;
-	}
 #ifdef HAVE_EXECINFO_H
-	// Get the backtrace
-	void *stack[100];
-	int count = backtrace(stack, 100);
-	// Print it out
-	backtrace_symbols_fd (stack, count, STDERR_FILENO);
-	// Also to the log file
-	if (logfd >= 0)
-		backtrace_symbols_fd (stack, count, logfd);
+		// Get the backtrace
+		void *stack[100];
+		int count = backtrace(stack, 100);
+		// Print it out
+		backtrace_symbols_fd (stack, count, STDERR_FILENO);
+		// Also to the log file
+		if (logfd >= 0)
+			backtrace_symbols_fd (stack, count, logfd);
 #endif
-	// Bye.
-	_exit(C4XRV_Failure);
+		// Bye.
+		_exit(C4XRV_Failure);
+	}
 }
 #endif // HAVE_SIGNAL_H
 
@@ -172,15 +210,21 @@ int main (int argc, char * argv[])
 		return C4XRV_Failure;
 	}
 #ifdef HAVE_SIGNAL_H
+	struct sigaction sa;
+	sa.sa_sigaction = crash_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+	// Quit the program when asked
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
+	sigaction(SIGHUP, &sa, NULL);
 	// Set up debugging facilities
-	signal(SIGBUS, crash_handler);
-	signal(SIGILL, crash_handler);
-	signal(SIGSEGV, crash_handler);
-	signal(SIGABRT, crash_handler);
-	signal(SIGINT, crash_handler);
-	signal(SIGQUIT, crash_handler);
-	signal(SIGFPE, crash_handler);
-	signal(SIGTERM, crash_handler);
+	sa.sa_flags |= SA_RESETHAND;
+	sigaction(SIGBUS, &sa, NULL);
+	sigaction(SIGILL, &sa, NULL);
+	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGABRT, &sa, NULL);
+	sigaction(SIGFPE, &sa, NULL);
 #endif
 
 	// Init application

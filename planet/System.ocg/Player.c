@@ -102,11 +102,8 @@ global func MessageWindow(string msg, int for_plr, id icon, string caption)
 	// Get caption.
 	if (!caption)
 		caption = GetName();
-	// Create msg window (menu).
-	var cursor = GetCursor(for_plr);
-	if (!cursor->CreateMenu(icon, cursor, 0, caption, 0, 2))
-		return false;
-	cursor->AddMenuItem(caption, nil, nil, 0, 0, msg);
+	// Create msg window as regular text
+	CustomMessage(Format("<c ffff00>%s</c>: %s", caption, msg), nil, for_plr, 0,150, nil, GUI_MenuDeco, icon, MSG_HCenter);
 	return true;
 }
 

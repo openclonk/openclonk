@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2007  Peter Wortmann
- * Copyright (c) 2005-2007  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008  Günther Brammer
- * Copyright (c) 2007  Julian Raschke
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Armin Burgmeier
- * Copyright (c) 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include <C4Include.h>
 #include <C4Network2Res.h>
@@ -383,7 +374,7 @@ C4Network2Res::~C4Network2Res()
 bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName, bool fSilent)
 {
 	CStdLock FileLock(&FileCSec);
-	// default ressource name: relative path
+	// default resource name: relative path
 	if (!szResName) szResName = Config.AtRelativePath(strFilePath);
 	SCopy(strFilePath, szFile, sizeof(szFile)-1);
 	// group?
@@ -418,7 +409,7 @@ bool C4Network2Res::SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eTyp
 {
 	Clear();
 	CStdLock FileLock(&FileCSec);
-	// default ressource name: relative path
+	// default resource name: relative path
 	StdStrBuf sResName;
 	if (szResName)
 		sResName = szResName;
@@ -547,7 +538,7 @@ bool C4Network2Res::SetDerived(const char *strName, const char *strFilePath, boo
 	fRemoved = false;
 	iLastReqTime = time(NULL);
 	fLoading = false;
-	// Do not set any chunk data - anonymous ressources are very likely to change.
+	// Do not set any chunk data - anonymous resources are very likely to change.
 	// Wait for FinishDerived()-call.
 	return true;
 }
@@ -559,7 +550,7 @@ void C4Network2Res::ChangeID(int32_t inID)
 
 bool C4Network2Res::IsBinaryCompatible()
 {
-	// returns wether the standalone of this ressource is binary compatible
+	// returns wether the standalone of this resource is binary compatible
 	// to the official version (means: matches the file checksum)
 
 	CStdLock FileLock(&FileCSec);
@@ -700,7 +691,7 @@ bool C4Network2Res::CalculateSHA()
 C4Network2Res::Ref C4Network2Res::Derive()
 {
 	// Called before the file is changed. Rescues all files and creates a
-	// new ressource for the file. This ressource is flagged as "anonymous", as it
+	// new resource for the file. This resource is flagged as "anonymous", as it
 	// has no official core (no res ID, to be exact).
 	// The resource gets its final core when FinishDerive() is called.
 
@@ -734,11 +725,11 @@ C4Network2Res::Ref C4Network2Res::Derive()
 		fTempFile = true;
 	}
 
-	Application.InteractiveThread.ThreadLogS("Network: Ressource: deriving from %d:%s, original at %s", getResID(), Core.getFileName(), szFile);
+	Application.InteractiveThread.ThreadLogS("Network: Resource: deriving from %d:%s, original at %s", getResID(), Core.getFileName(), szFile);
 
 	// (note: should remove temp file if something fails after this point)
 
-	// create new ressource
+	// create new resource
 	C4Network2Res::Ref pDRes = new C4Network2Res(pParent);
 	if (!pDRes) return NULL;
 
@@ -749,13 +740,13 @@ C4Network2Res::Ref C4Network2Res::Derive()
 	// add to list
 	pParent->Add(pDRes);
 
-	// return new ressource
+	// return new resource
 	return pDRes;
 }
 
 bool C4Network2Res::FinishDerive() // by main thread
 {
-	// All changes have been made. Register this ressource with a new ID.
+	// All changes have been made. Register this resource with a new ID.
 
 	// security
 	if (!isAnonymous()) return false;
@@ -787,13 +778,13 @@ bool C4Network2Res::FinishDerive(const C4Network2ResCore &nCore)
 	if (!isAnonymous()) return false;
 	// Set core
 	Core = nCore;
-	// Set chunks (assume the ressource is complete)
+	// Set chunks (assume the resource is complete)
 	Chunks.SetComplete(Core.getChunkCnt());
 
 	// Note that the Contents-CRC is /not/ checked. Derivation needs to be
 	// synchronized outside of C4Network2Res.
 
-	// But note that the ressource /might/ be binary compatible (though very
+	// But note that the resource /might/ be binary compatible (though very
 	// unlikely), so do not set fNotBinaryCompatible.
 
 	// ok
@@ -903,14 +894,14 @@ void C4Network2Res::OnStatus(const C4Network2ResChunkData &rChunkData, C4Network
 void C4Network2Res::OnChunk(const C4Network2ResChunk &rChunk)
 {
 	if (!fLoading) return;
-	// correct ressource?
+	// correct resource?
 	if (rChunk.getResID() != getResID()) return;
-	// add ressource data
+	// add resource data
 	CStdLock FileLock(&FileCSec);
 	bool fSuccess = rChunk.AddTo(this, pParent->getIOClass());
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
-	Application.InteractiveThread.ThreadLogS("Network: Res: %s chunk %d to ressource %s (%s)%s", fSuccess ? "added" : "could not add", rChunk.getChunkNr(), Core.getFileName(), szFile, fSuccess ? "" : "!");
+	Application.InteractiveThread.ThreadLogS("Network: Res: %s chunk %d to resource %s (%s)%s", fSuccess ? "added" : "could not add", rChunk.getChunkNr(), Core.getFileName(), szFile, fSuccess ? "" : "!");
 #endif
 	if (fSuccess)
 	{
@@ -984,12 +975,12 @@ void C4Network2Res::Clear()
 	if (fTempFile)
 		if (FileExists(szFile))
 			if (!EraseFile(szFile))
-				//Log(_strerror("Network: Could not delete temporary ressource file"));
+				//Log(_strerror("Network: Could not delete temporary resource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	if (szStandalone[0] && !SEqual(szFile, szStandalone))
 		if (FileExists(szStandalone))
 			if (!EraseFile(szStandalone))
-				//Log(_strerror("Network: Could not delete temporary ressource file"));
+				//Log(_strerror("Network: Could not delete temporary resource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	szFile[0] = szStandalone[0] = '\0';
 	fDirty = false;
@@ -1244,7 +1235,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 	if (iResID != pRes->getResID())
 	{
 #ifdef C4NET2RES_DEBUG_LOG
-		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): Ressource ID mismatch!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID());
+		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): Resource ID mismatch!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID());
 #endif
 		return false;
 	}
@@ -1341,7 +1332,7 @@ void C4Network2ResList::SetLocalID(int32_t inClientID)
 	// set new counter
 	iClientID = inClientID;
 	iNextResID += iIDDiff;
-	// change ressource ids
+	// change resource ids
 	CStdLock ResListLock(&ResListCSec);
 	for (C4Network2Res *pRes = pFirst; pRes; pRes = pRes->pNext)
 		if (pRes->getResClient() == iOldClientID)
@@ -1420,9 +1411,9 @@ C4Network2Res::Ref C4Network2ResList::AddByFile(const char *strFilePath, bool fT
 	// already in list?
 	C4Network2Res::Ref pRes = getRefRes(strFilePath);
 	if (pRes) return pRes;
-	// get ressource ID
+	// get resource ID
 	if (iResID < 0) iResID = nextResID();
-	if (iResID < 0) { Log("AddByFile: no more ressource IDs available!"); return NULL; }
+	if (iResID < 0) { Log("AddByFile: no more resource IDs available!"); return NULL; }
 	// create new
 	pRes = new C4Network2Res(this);
 	// initialize
@@ -1443,9 +1434,9 @@ C4Network2Res::Ref C4Network2ResList::AddByFile(const char *strFilePath, bool fT
 
 C4Network2Res::Ref C4Network2ResList::AddByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName, bool fAllowUnloadable)
 {
-	// get ressource ID
+	// get resource ID
 	if (iResID < 0) iResID = nextResID();
-	if (iResID < 0) { Log("AddByGroup: no more ressource IDs available!"); return NULL; }
+	if (iResID < 0) { Log("AddByGroup: no more resource IDs available!"); return NULL; }
 	// create new
 	C4Network2Res::Ref pRes = new C4Network2Res(this);
 	// initialize
@@ -1534,7 +1525,7 @@ void C4Network2ResList::Clear()
 
 void C4Network2ResList::OnClientConnect(C4Network2IOConnection *pConn) // by main thread
 {
-	// discover ressources
+	// discover resources
 	SendDiscover(pConn);
 }
 
@@ -1550,11 +1541,11 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	switch (cStatus)
 	{
 
-	case PID_NetResDis: // ressource discover
+	case PID_NetResDis: // resource discover
 	{
 		if (!pConn->isOpen()) break;
 		GETPKT(C4PacketResDiscover, Pkt);
-		// search matching ressources
+		// search matching resources
 		CStdShareLock ResListLock(&ResListCSec);
 		for (C4Network2Res *pRes = pFirst; pRes; pRes = pRes->pNext)
 			if (Pkt.isIDPresent(pRes->getResID()))
@@ -1564,11 +1555,11 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	}
 	break;
 
-	case PID_NetResStat: // ressource status
+	case PID_NetResStat: // resource status
 	{
 		if (!pConn->isOpen()) break;
 		GETPKT(C4PacketResStatus, Pkt);
-		// matching ressource?
+		// matching resource?
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Pkt.getResID());
 		// present / being loaded? call handler
@@ -1577,11 +1568,11 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	}
 	break;
 
-	case PID_NetResDerive: // ressource derive
+	case PID_NetResDerive: // resource derive
 	{
 		GETPKT(C4Network2ResCore, Core);
 		if (Core.getDerID() < 0) break;
-		// Check if there is a anonymous derived ressource with matching parent.
+		// Check if there is a anonymous derived resource with matching parent.
 		CStdShareLock ResListLock(&ResListCSec);
 		for (C4Network2Res *pRes = pFirst; pRes; pRes = pRes->pNext)
 			if (pRes->isAnonymous() && pRes->getCore().getDerID() == Core.getDerID())
@@ -1589,10 +1580,10 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	}
 	break;
 
-	case PID_NetResReq: // ressource request
+	case PID_NetResReq: // resource request
 	{
 		GETPKT(C4PacketResRequest, Pkt);
-		// find ressource
+		// find resource
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Pkt.getReqID());
 		// send requested chunk
@@ -1603,7 +1594,7 @@ void C4Network2ResList::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 	case PID_NetResData: // a chunk of data is coming in
 	{
 		GETPKT(C4Network2ResChunk, Chunk);
-		// find ressource
+		// find resource
 		CStdShareLock ResListLock(&ResListCSec);
 		C4Network2Res *pRes = getRes(Chunk.getResID());
 		// send requested chunk
@@ -1699,7 +1690,7 @@ void C4Network2ResList::OnResComplete(C4Network2Res *pRes)
 {
 	// log (network thread -> ThreadLog)
 	Application.InteractiveThread.ThreadLogS("Network: %s received.", pRes->getCore().getFileName());
-	// call handler (ctrl might wait for this ressource)
+	// call handler (ctrl might wait for this resource)
 	::Control.Network.OnResComplete(pRes);
 }
 

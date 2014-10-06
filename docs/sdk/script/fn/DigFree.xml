@@ -25,10 +25,17 @@
           <name>radius</name>
           <desc>Radius</desc>
         </param>
-		<param>
+        <param>
           <type>bool</type>
           <name>no_dig2objects</name>
           <desc>Prevent objects from being dug out</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_instability_check</name>
+          <desc>Does not perform instability checks around dug pixels, i.e. prevents surrounding single pixels and liquids from becoming loose.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
@@ -41,8 +48,7 @@
     </examples>
     <related>
       <funclink>DigFreeRect</funclink>
-      <funclink>Explode</funclink>
     </related>
   </func>
-  <author>jwk</author><date>2002-04</date>
+  <date>2013-03</date>
 </funcs>

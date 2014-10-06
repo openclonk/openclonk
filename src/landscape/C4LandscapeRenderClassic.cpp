@@ -17,9 +17,10 @@ C4LandscapeRenderClassic::~C4LandscapeRenderClassic()
 	Clear();
 }
 
-bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pTexs, C4GroupSet *pGraphics)
+bool C4LandscapeRenderClassic::ReInit(int32_t iWidth, int32_t iHeight)
 {
 	// Create surface
+	delete Surface32; Surface32 = NULL;
 	Surface32 = new C4Surface();
 	// without shaders, the FoW is only as detailed as the landscape has tiles.
 	if(!Surface32->Create(iWidth, iHeight,false,false,pDraw->IsShaderific() ? 0 : 64))
@@ -27,6 +28,13 @@ bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMa
 	// Safe back info
 	this->iWidth = iWidth;
 	this->iHeight = iHeight;
+	return true;
+}
+
+bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pTexs, C4GroupSet *pGraphics)
+{
+	// Init proc
+	if (!ReInit(iWidth, iHeight)) return false;
 	this->pTexs = pTexs;
 	return true;
 }

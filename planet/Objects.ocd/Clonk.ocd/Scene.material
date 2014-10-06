@@ -21,7 +21,7 @@ material Clonk_Body
 			}
 			texture_unit Clonk
 			{
-				texture Clonk.png
+				texture Clonk.jpg
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture
@@ -30,7 +30,8 @@ material Clonk_Body
 			}
 			texture_unit Light
 			{
-				// apply lighting
+				// apply lighting -- note this texture unit does not need an
+				// actual texture image: no hardware TIU will be used.
 				colour_op_ex modulate src_current src_diffuse
 				alpha_op_ex modulate src_current src_diffuse
 			}

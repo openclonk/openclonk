@@ -9,9 +9,8 @@ Vertices=6
 VertexX=0,20,25,-20,-25,0
 VertexY=-14,-13,14,-13,14,14
 VertexFriction=50,50,100,50,100,100
-Value=50
 Mass=1500
-Components=Rock=4;Wood=2;
+Components=Rock=4;Wood=1;
 Exclusive=1
 Construction=1
 ContainBlast=1

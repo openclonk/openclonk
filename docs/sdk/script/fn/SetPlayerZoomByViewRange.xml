@@ -55,12 +55,16 @@
                 <literal_col>PLRZOOM_LimitMax</literal_col>
                 <col>Set the maximum limit for zooming. The player cannot zoom in further than this.</col>
               </row>
+              <row>
+                <literal_col>PLRZOOM_Set</literal_col>
+                <col>Set the current zoom. This flag is implied if neither PLRZOOM_LimitMin nor PLRZOOM_LimitMax is supplied but can be used if current zoom and limits should be set simultanuously.</col>
+              </row>
             </table>
           </desc>
         </param>
       </params>
     </syntax>
-    <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
+    <desc>Adjusts the zoom or zoom limit of all viewports of a player.</desc>
     <examples>
       <example>
         <code>func InitializePlayer(int plr)
@@ -74,6 +78,8 @@
       </example>
     </examples>
     <related>
+      <funclink>SetPlayerZoom</funclink>
+      <funclink>GetPlayerZoomLimits</funclink>
       <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>

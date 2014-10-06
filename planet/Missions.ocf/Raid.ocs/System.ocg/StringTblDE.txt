@@ -1,0 +1,213 @@
+DoorUnlocked=Die Tür ist aufgeschlossen.
+DoorNoKey=Diese Tür braucht einen Schlüssel.
+DoorTooFar=Das Schloss ist zu weit weg.
+
+OilBarrelMsg=Perfekt. Die Metallfässer sind voll mit Öl. Ich sollte eines davon zum Flugzeug bringen.
+
+PlaneBuilt=Das Flugzeug ist fertig. Nun brauche ich nur noch Öl, um es zu starten.
+PlaneNoOil=Das Flugzeug braucht noch Treibstoff. Ich muss irgendwo Öl auftreiben.
+
+
+Intro1=Endlich im Clunkertal.
+Intro2=Ah, %s. Du hast meinen Brief also erhalten?
+Intro3=Ja. Ich habe mich natürlich sofort auf den Weg gemacht.
+Intro4=Sehr gut. Die Situation is äußerst brenzlig. Wir müssen diese Festung unbedingt fertig stellen, ehe die nächste Angriffswelle eintrifft.
+Intro5=Angriffswelle?
+Intro6=Ich erzähle dir später mehr. Wir brauchen jetzt erst noch mehr Holz. Kannst du welches fällen?
+Intro7=Okay, bin schon dabei.
+
+
+Newton1=Gut, dass du da bist, %s! Wir können jeden Helfer auf der Burgbaustelle gebrauchen.
+Newton2=Hast du schon Holz gefällt?
+Newton3=Würde ich gerne. Aber ich habe keine Axt.
+Newton4=Schaue mal in der Mine westlich (links) von hier. Rocky sollte noch Werkzeuge haben.
+Newton5=Noch nicht. Wo finde ich denn passende Bäume?
+Newton6=Östlich (rechts) von hier im Wald findest du gutes Kiefernholz.
+
+Newton100=Hey %s! Hast du den Angriff überstanden?
+Newton101=Bestens. Ich konnte das Spektakel in aller Ruhe aus dem Wald beobachten.
+Newton102=Wir werden Monate brauchen, um alles wieder aufzubauen. Und in der Zeit sind wir ihren Angriffen schutzlos ausgesetzt.
+Newton103=Wer sind denn die Angreifer?
+Newton104=Das sind die Schergen von \"König\" Hörx. Wir haben uns geweigert, unfaire Tribute abzuführen und nun wollen sie an uns ein Exempel statuieren.
+Newton105=Wieso \"König\"?
+Newton106=Er hat eine Krone auf dem Kopf. Na und? Wir haben ihn nicht gewählt. Wir werden niemals einen Herrscher anerkennen, der keine demokratische Legitimation hat!
+Newton107=Okay. Aber was wollt ihr nun tun?
+Newton108=Nichts. Es ist hoffnungslos. Wir werden alle sterben. Es sei denn...
+Newton109=...?
+Newton110=...es sei denn, du hilfst uns.
+Newton111=Ich hab's gewusst.
+Newton112=Wir sind unerfahrene Bauern. Dein Vater sagte uns, du hast schon einmal gekämpft?
+Newton113=Uh...ja.
+Newton114=Mit dem Holzschwert gegen Wompfbeerensträucher.
+Newton115=Das ist mehr, als wir vorweisen können.
+Newton116=Also, was ist? Wirst du uns helfen, Hörx zu besiegen?
+Newton117=Ja
+Newton118=Sehr gut!
+Newton119=Mache dich auf dem Weg nach Osten zum Wipfstadt. Hier hast du eine Schaufel, um dich dorthin durchzugraben.
+Newton120=Frage dort nach Pyrit, dem Schmied. Er ist ein alter Freund von mir und wird dir weiter helfen.
+Newton121=Viel Glück! Du wirst es brauchen.
+
+Newton200=Newton, ich habe ein Flugzeug für den Gegenschlag auf Hörx. Aber leider keinen Treibstoff.
+Newton200a=Newton, ich habe die Pläne für ein Flugzeug für den Gegenschlag auf Hörx. Aber leider keinen Treibstoff.
+Newton201=Sehr gut, %s. Du brauchst Öl? Das ist in der Tat ein Problem. Hörx hat den Privatbesitz von Öl unter Strafe gestellt.
+Newton202=Natürlich haben wir uns nicht daran gehalten. Aber für unsere Verteidigung und den Burgenbau mussten wir alles verkaufen.
+Newton203=Hier im Dorf ist nichts mehr. Frag mal Mave in der Höhle. Der hamstert vielleicht noch etwas.	
+
+
+Lara1=Wir brauchen mehr Holz. Dann schaffen wir heute vor der Dunkelheit noch das äußere Gerüst.
+Lara2=Warum die Eile?
+Lara3=Wir wissen nie, wann <i>sie</i> zurück kommen.
+Lara4=Wer sind <i>sie</i>?
+Lara5=Später. Bitte besorge jetzt das Holz!
+Lara6=Bitte besorge jetzt das Holz!
+
+Lara100=Sie werden uns nie in Frieden lassen.
+
+
+Lisa1=Schön, dass die Burg jetzt endlich wieder Fortschritte macht.
+Lisa2=Wozu braucht ihr ein solches Bollwerk?
+Lisa3=Wir werden angegriffen. Immer wieder.
+Lisa4=Angegriffen? Von wem?
+Lisa5=Du wirst sie hoffentlich nie kennen lernen. Bitte hilf nun mit auf der Baustelle.
+Lisa6=Bitte hilf mit auf der Baustelle.
+
+Lisa100=Bitte hilf uns gegen diese Monster!
+
+Lisa200=Du bist unser Retter!
+
+
+Woody1=Oh nein, ich habe mir den Arm verstaucht. Nun steht das Sägewerk still.
+Woody2=Kann ich dir irgendwie helfen?
+Woody3=Du kannst nach Osten (rechts) gehen und eine Kiefer fällen? Ich kümmere mich dann um das Zersägen.
+Woody4=Okay. Aber deine Axt sieht für einen Anfänger wie mich etwas zu groß aus. Hast du irgendwo eine kleinere Axt?
+Woody5=Die Werkzeuge liegen bei Rocky in der Mine im Westen (links).
+Woody6=Wo kann ich Bäume fällen?
+Woody7=Nimm einfach eine der Kiefern östlich (rechts) von hier.
+
+Woody100=Wie können wir diese Angriffe jemals abwehren?
+
+
+Rocky1=Hi, hast du eine Axt für mich?
+Rocky2=Schau mal in der Lore nach.
+Rocky3=Ich sollte ihn besser nicht mehr stören.
+
+Rocky100=Rocky, du kannst aufhören. Die Burgbaustelle wurde gerade zerestört.
+Rocky101=Klappe. Rocky muss arbeiten.
+
+
+Attack1=Baum fällt!
+Attack2=Huch? Was ist das für ein Lärm?
+Attack3=Oh Gott!
+Attack4=Sind alle wohlauf?
+Attack5=Ja. Nur unser Dorf...
+Attack6=Jetzt haben sie es wirklich auf uns abgesehen. Wir müssen etwas unternehmen!
+Attack7=Ich sollte mit Newton sprechen.
+
+
+Mave1=Hallo %s. Hast du das Rumpeln dort draußen gehört?
+Mave2=Aus nächster Nähe. Das gesamte Dorf wurde zerstört. Du solltest deinen Freunden draußen beim Wiederaufbau helfen.
+Mave3=Draußen? Puh, lieber nicht. Bin eher so der Kellerclonk.
+Mave4=Kannst du mir denn helfen, Wipfstadt im Osten zu erreichen?
+Mave5=Die erreichst du nicht über die Höhlen. Die alten Wege wurden alle vom Vulkan zerstört.
+Mave6=Deine einzige Chance ist draußen über den See.
+Mave7=Wie komme ich über den See?
+Mave8=Du könntest meinen Hochofen nutzen, um Lehm zu bauen.
+Mave9=Wie funktioniert das mit dem Lehm?
+Mave10=Oh, das ist ganz einfach: Fülle einen Eimer{{Bucket}} mit Erde und ein Fass{{Barrel}} mit Wasser, lege beides in den Hochofen und starte die Lehmproduktion.
+Mave11=Die Werkzeuge im Hochofen kannst du benutzen.
+
+Mave100=Hi Mave. Weißt du, wo ich Öl finden könnte?
+Mave101=Oh, Öl. Du weißt, dass wir auf Dekret des Königs keine privaten Vorräte haben dürfen?
+Mave102=Es ist wichtig. Ich will den König töten.
+Mave103=Das klingt nach einem noblen Plan. Vielleicht kann ich dir helfen...
+Mave104=Ja, bitte!
+Mave105=Nicht so hastig. Es gibt da eine geheime Kammer. Sie ist inzwischen tief unter diesen Lavaseen begraben. Aber die Wände sind aus purem Granit. Also denke ich, dass die Höhle noch intakt ist.
+Mave106=Um die Kammer zu betreten, brauchst du einen Schlüssel.
+Mave107=Okay. Gib Schlüssel bitte.
+Mave108=Ich verkaufe ihn dir für einen Goldbarren.
+Mave109=Wo finde ich Gold?
+Mave110=Wenn ich das wüsste, wäre ich selber mit der Spitzhacke losgezogen. Normalerweise liegen die Goldadern irgendwo im Untergrund.
+Mave111=Wenn du Nuggets gefunden hast, kannst du sie bei mir im Hochofen zu einem Barren schmelzen.
+
+Mave200=Hier ist dein Goldbarren.
+Mave201=Es war mir eine Ehre, mit dir Geschäfte zu machen. Hier ist dein Schlüssel.
+Mave202=Wo finde ich die versteckte Kammer?
+Mave203=Sie ist tief unter den Lavaseen begraben. Vielleicht kannst du das Wasser aus dem See benutzen, um die Lava abzukühlen?
+
+
+Pyrit1=Hi, bist du Pyrit?
+Pyrit2=In der Tat. Was bringt dich nach Wipfstadt?
+Pyrit3=Clunkerdorf wurde von den finsteren Schergen des Tyrannen Hörx zerstört. Ich versuche, ihnen zu helfen. Newton hat mich zu dir geschickt.
+Pyrit4=Ich habe die Flugzeuge gesehen und den Donner gehört. Da dachte ich mir schon, dass so etwas passiert sein könnte. Es ist wegen der nicht gezahlten Steuern an König Hörx, oder?
+Pyrit5=Steuern? Das ist Schutzgelderpressung! Clunkerdorf zahlt aus Prinzip nicht an einen Tyrannen.
+Pyrit6=Nun, wir zahlen noch. Aber Hörx erhöht den Tribut immer weiter. Irgendwann werden wir wohl auch Probleme bekommen.
+Pyrit7=Wirst du mir also helfen? Ich muss zu Hörx und ihm eine Lektion erteilen!
+Pyrit8=Wie willst du dort hinkommen? Er lebt in einer gut geschützten Burg auf der Spitze des Goldenen Bergs.
+Pyrit9=Die Angreifer sind mit dem Flugzeug hierher gekommen. Können wir solche Maschinen nicht auch bauen?
+Pyrit10=Tatsächlich hätte ich die nötigen Pläne, um ein Flugzeug zu bauen. Aber um es zu fliegen, brauchst du Öl. Und Hörx hat strikte Kontrollen auf alle Ölreserven eingeführt.
+Pyrit11=Aus gutem Grund nehme ich an.
+Pyrit12=Es ist die einzige Möglichkeit, sein Schloss zu erreichen.
+Pyrit13=Einige Bewohner haben versteckte Ölvorräte. Aber die werden sie nicht so einfach herausgeben. Ich würde es mal bei Newton versuchen.
+Pyrit14=Wenn du herum fragst und von deinem Vorhaben berichtest, findest du vielleicht jemanden, der dich unterstützt.
+Pyrit15=In der Zwischenzeit nimm diese Konstruktionspläne. Du kannst meine Schiffswerft und alles, was du in den Gebäuden der Stadt findest nutzen, um das Flugzeug zu bauen.
+Pyrit16=Wo kann ich das Flugzeug bauen?
+Pyrit17=Du kannst meine Schiffswerft und das Material darin benutzen.
+Pyrit18=Wo finde ich Öl?
+Pyrit19=Wo finde ich Gold?
+Pyrit20=Puh, unter der Erde denke ich.
+
+Clonko1=Guten tag, Fremder. Was führt dich nach Wipfstadt?
+Clonko2=Ich bin auf der Suche nach Pyrit.
+Clonko3=Pyrit ist der Typ in rot, der dort auf das Katapult einhämmert. Ich frage mich, wozu er das wohl tut?
+Clonko4=Vielen Dank.
+
+Clonko100=Hi, hast du Öl für mich?
+Clonko101=Welch seltsame Frage. Nein, natürlich nicht. König Hörx kontrolliert alle Ölreserven.
+Clonko102=Vielleicht hast du ja einige - du weißt schon - Reserven für den Notfall?
+Clonko103=Nein. Ich bin ein ehrlicher Bürger ohne Geheimnisse.
+Clonko104=Allerdings...es gibt da Gerüchte.
+Clonko105=Erzähl mir mehr!
+Clonko106=Es gibt Geschichten von einem unterirdischen See aus purem Öl tief unter Wipfstadt.
+Clonko107=Wie komme ich zu diesem See?
+Clonko108=Du müsstest von hier aus gerade herunter graben. Allerdings blockieren Felsen und Wasseradern den Weg. Außerdem sind es ja nur Gerüchte.
+Clonko109=Ich mache mich auf den Weg!
+
+Clonko200=Unter der Stadt war kein Ölsee!
+Clonko201=Oh, wie schade. Aber es war ja auch nur ein Gerücht.
+
+
+Matthi1=Hallo lieber Besucher. Möchtest du ein paar Sprossenbeeren?
+Matthi2=Sehr gerne, aber ich habe leider nichts zum Bezahlen.
+Matthi3=Oh, kein Problem. Hier, nimm eine freie Probe. Sie schmecken köstlich!
+Matthi4='Frei' wie in 'Freibier' oder wie in 'Freier Rede'?
+Matthi5=Was?
+Matthi6=Nichts schlägt den wundervollen Geschmack frisch gesammelter Sprossenbeeren.
+
+Matthi100=Hast du zufällig Öl?
+Matthi101=Das stinkende, schwarze Zeug? Nein. Das würde ich niemals anfassen.
+Matthi102=Hm. Vielleicht sollte ich mit Ölproduktion aus Sprossenbeeren experimentieren?
+
+
+Dora1=Hallo, Forscherkollege. Was treibst du hier unten?
+Dora2=Ich bin auf der Suche nach einem Ölsee.
+Dora3=Haha, das war ich auch. Aber den See gibt es nicht.
+Dora4=Aber...die Gerüchte...?
+Dora5=I weiß. Offenbar sind Gerüchte doch nicht immer wahr.
+Dora6=Das Gerücht um den Ölsee stimmte nicht. So ein Pech.
+Dora7=Wo könnte ich noch nach Öl suchen?
+Dora8=Hast du die Newton im Clunkerdorf schon gefragt? Wenn er sich nicht an Hörxs Regeln hält, hat er vielleicht noch Reserven.
+
+
+Dora100=Ich suche nach Öl.
+Dora101=Haha, ich auch. Es gab Gerüchte von einem Ölsee hier unten.
+Dora102=Aber...?
+Dora103=Es waren wohl doch nur Gerüchte.
+
+Dora200=Ich suche Pyrit.
+Dora201=Oh, Pyrit der Schmied? Er ist oberhalb dieser Höhle in Wipfstadt.
+
+
+Outro1=Gut! Das Flugzeug hat Treibstoff. Aber wie fliegt man so ein Ding?
+Outro2=Wie ich sehe, hast du deine Königsmordmission gut vorbereitet.
+Outro3=Aber keine Angst. Ich hasse Hörx genau ebenso wie du. Ich werde das Flugzeug fliegen.
+Outro4=Worauf warten wir dann noch? Los gehts!

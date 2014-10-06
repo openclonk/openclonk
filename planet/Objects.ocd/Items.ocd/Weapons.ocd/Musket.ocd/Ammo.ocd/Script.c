@@ -17,18 +17,18 @@ protected func Hit()
 	
 		Sound("BulletHitGround?");
 		
-		CastParticles("Spark",1,20,0,0,15,25,RGB(255,200,0),RGB(255,255,150));
+		CreateParticle("StarSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 		
 		RemoveObject();
 	}
 }
 
-public func Launch(object shooter, int angle, int dist, int speed)
+public func Launch(object shooter, int angle, int dist, int speed, int offset_x, int offset_y)
 {
 	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 
-	LaunchProjectile(angle, dist, speed);
+	LaunchProjectile(angle, dist, speed, offset_x, offset_y);
 	
 	// remove after some time
 	SetAction("Travel");

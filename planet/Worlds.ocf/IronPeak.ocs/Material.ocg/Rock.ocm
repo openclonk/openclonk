@@ -1,0 +1,13 @@
+[Material]
+Name=Rock
+Shape=Rough
+Density=70
+Friction=100
+BlastFree=1
+Blast2Object=Rock
+Blast2ObjectRatio=75
+MaxAirSpeed=100
+MaxSlide=250
+Placement=50
+Soil=1
+TextureOverlay=rock

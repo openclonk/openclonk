@@ -10,6 +10,18 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Manifest
+//
+#ifndef CREATEPROCESS_MANIFEST_RESOURCE_ID
+#define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
+#endif
+#ifndef RT_MANIFEST
+#define RT_MANIFEST 24
+#endif
+CREATEPROCESS_MANIFEST_RESOURCE_ID    RT_MANIFEST "openclonk.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Icons
 //
 
@@ -41,8 +53,8 @@ __GDF_XML DATA	"WindowsGamesExplorer.xml"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION C4XVER1,C4XVER2,C4XVER3,C4XVER4
- PRODUCTVERSION C4XVER1,C4XVER2,C4XVER3,C4XVER4
+ FILEVERSION C4XVER1,C4XVER2,C4XVER3,0
+ PRODUCTVERSION C4XVER1,C4XVER2,C4XVER3,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -61,10 +73,10 @@ BEGIN
             VALUE "FileVersion", C4VERSION "\0"
             VALUE "SpecialBuild", C4BUILDOPT "\0"
             VALUE "ProductVersion", C4VERSION "\0"
-            VALUE "InternalName", "Clonk 4 Engine\0"
+            VALUE "InternalName", "OpenClonk Engine\0"
             VALUE "LegalCopyright", "Copyright © " C4COPYRIGHT_YEAR " " C4COPYRIGHT_COMPANY "\0"
             VALUE "LegalTrademarks", "Clonk is a registered trademark of Matthes Bender.\0"
-            VALUE "OriginalFilename", "Clonk.exe\0"
+            VALUE "OriginalFilename", "openclonk.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", C4ENGINENAME "\0"
             VALUE "Comments", "\0"

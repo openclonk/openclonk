@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010  Armin Burgmeier
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 // A loader for the OGRE .mesh XML file format
@@ -183,6 +180,8 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 
 			if(attributes & TEXCOORDS)
 			{
+				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
+				// currently only the first set is read, any additional ones are ignored
 				TiXmlElement* texcoord_elem = RequireFirstChild(vertex_elem, "texcoord");
 				vertices[i].u = RequireFloatAttribute(texcoord_elem, "u");
 				vertices[i].v = RequireFloatAttribute(texcoord_elem, "v");
@@ -244,7 +243,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 {
 	StdMeshXML xml(filename ? filename : "<unknown>", xml_data);
 
-	std::auto_ptr<StdMesh> mesh(new StdMesh);
+	std::unique_ptr<StdMesh> mesh(new StdMesh);
 
 	TiXmlElement* mesh_elem = xml.RequireFirstChild(NULL, "mesh");
 

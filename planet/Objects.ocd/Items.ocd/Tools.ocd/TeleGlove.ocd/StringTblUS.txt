@@ -1,3 +1,3 @@
-Name=Telekinetic Gyroglove
-Description=With this experimental glove it is possible to telekinetically move through the air and and even fling small objects around.
+Name=Tele Glove
+Description=With this experimental glove it is possible to telekinetically move objects through the air and and even fling them away.
 UsageHelp=Aim for a small object in your vicinity and press and hold [Use] to move it around.

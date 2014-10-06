@@ -1,0 +1,5 @@
+Name=Grabstein
+Description=Da wo clonks ruhen.
+
+Epitaph=Hier liegt
+ReadInscription=Lese Grabinschrift

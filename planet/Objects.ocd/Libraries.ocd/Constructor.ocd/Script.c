@@ -87,7 +87,7 @@ public func GetConstructionPlans(int plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;
-	while (construct_id = GetPlrKnowledge(plr, 0, index++, C4D_Structure))
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure))
 		construction_plans[index-1] = construct_id;
 	return construction_plans;
 }
@@ -107,7 +107,8 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 
 	effect.structure = structure_id;
 	effect.flipable = !structure_id->~NoConstructionFlip();
-	effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
+	effect.preview = structure_id->~CreateConstructionPreview(clonk);
+	if (!effect.preview) effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
 	effect.preview->Set(structure_id, clonk);
 }
 
@@ -118,7 +119,7 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	{
 		// CON_Use is accept
 		if (ctrl == CON_Use)
-			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction, effect.preview.stick_to);
+			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.blocked, effect.preview.direction, effect.preview.stick_to);
 		// movement is allowed
 		else if (IsMovementControl(ctrl))
 			return false;
@@ -151,7 +152,7 @@ func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool tem
 
 /* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir, object stick_to)
+func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool blocked, int dir, object stick_to)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
@@ -161,11 +162,11 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
-	if (!CheckConstructionSite(structure_id, x, y))
+	if (blocked)
 	{
-		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); 
 		return false;
-	} 
+	}
 	// intersection-check with all other construction sites... bah
 	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
@@ -174,7 +175,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
-			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0));
 			return false;
 		}
 	}
@@ -184,7 +185,19 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
-	site->Set(structure_id, dir, stick_to);
+	/* note: this is necessary to have the site at the exact position x,y. Otherwise, for reasons I don't know, the
+	   ConstructionSite seems to move 2 pixels downwards (on ConstructionSite::Construction() it is still the
+	   original position) which leads to that the CheckConstructionSite function gets different parameters later
+	   when the real construction should be created which of course could mean that it returns something else. (#1012)
+	   - Newton
+	*/
+	site->SetPosition(GetX()+x,GetY()+y);
+	
+	// Randomize sign rotation
+	site -> SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
+	site -> PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
+	
+	site -> Set(structure_id, dir, stick_to);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	

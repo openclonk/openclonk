@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2005-2006  Sven Eberhardt
- * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
- * Copyright (c) 2006  Julian Raschke
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* OpenGL implementation of NewGfx, the context */
@@ -30,7 +24,7 @@
 #include <C4Window.h>
 #include <C4Config.h>
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 void CStdGLCtx::SelectCommon()
 {
@@ -565,4 +559,4 @@ bool CStdGLCtx::PageFlip()
 
 #endif //USE_X11/USE_SDL_MAINLOOP
 
-#endif // USE_GL
+#endif // USE_CONSOLE

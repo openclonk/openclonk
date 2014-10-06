@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001, 2004-2005, 2008  Sven Eberhardt
- * Copyright (c) 2005-2006, 2010  Günther Brammer
- * Copyright (c) 2007, 2009  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_C4Application
@@ -30,7 +26,6 @@
 #include <C4App.h>
 
 class C4ApplicationGameTimer;
-class C4GamePadControl;
 
 /* Main class to initialize configuration and execute the game */
 
@@ -50,6 +45,7 @@ public:
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
 	C4Network2IRCClient &IRCClient;
+	// clear app
 	void Clear();
 	void ClearCommandLine();
 	// Tick timing
@@ -60,6 +56,7 @@ public:
 	void CloseSystemGroup() { SystemGroup.Close(); }
 	void SetGameTickDelay(int iDelay);
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes);
+	virtual void OnKeyboardLayoutChanged();
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
 	void NextTick();
 
@@ -70,16 +67,21 @@ public:
 	void SetNextMission(const char *szMissionFilename);
 	virtual void OnCommand(const char *szCmd);
 
+	bool IsQuittingGame() const { return AppState >= C4AS_AfterGame; }
+
 	const char *GetRevision() const { return Revision.getData(); }
 
 	// set by ParseCommandLine
 	int isEditor;
-	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
-	int NoSplash;
 	// set by ParseCommandLine, for manually applying downloaded update packs
 	StdStrBuf IncomingUpdate;
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
-	int CheckForUpdates;	
+	int CheckForUpdates;
+
+	bool FullScreenMode();
+	int GetConfigWidth()  { return (!FullScreenMode()) ? Config.Graphics.WindowX : Config.Graphics.ResX; }
+	int GetConfigHeight() { return (!FullScreenMode()) ? Config.Graphics.WindowY : Config.Graphics.ResY; }
+	
 protected:
 	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_AfterGame, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;
@@ -108,7 +110,9 @@ class C4ApplicationGameTimer : public CStdMultimediaTimerProc
 public:
 	C4ApplicationGameTimer();
 private:
-	unsigned int iLastGameTick, iGameTickDelay;
+	C4TimeMilliseconds tLastGameTick;
+	unsigned int iGameTickDelay;
+	unsigned int iExtraGameTickDelay;
 public:
 	void SetGameTickDelay(uint32_t iDelay);
 

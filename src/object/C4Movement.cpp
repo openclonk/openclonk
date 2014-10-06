@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2006, 2008  Sven Eberhardt
- * Copyright (c) 2002-2004  Peter Wortmann
- * Copyright (c) 2006, 2008-2009  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2010  Peewee
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object motion, collision, friction */
@@ -160,10 +152,10 @@ void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, i
 	}
 }
 
-int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
+int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts)
 {
 	// Check shape contact at given position
-	Shape.ContactCheck(iAtX,iAtY);
+	Shape.ContactCheck(iAtX,iAtY,border_hack_contacts);
 
 	// Store shape contact values in object t_contact
 	t_contact=Shape.ContactCNAT;
@@ -215,7 +207,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 
 void C4Object::DoMovement()
 {
-	int32_t ctcox,ctcoy,ctcor/*,ctx,cty*/,iContact=0;
+	int32_t iContact=0;
 	bool fAnyContact=false; int iContacts = 0;
 	BYTE fTurned=0,fRedirectYR=0,fNoAttach=0;
 	// Restrictions
@@ -225,6 +217,7 @@ void C4Object::DoMovement()
 	if (pActionDef)
 		if (pActionDef->GetPropertyInt(P_DigFree))
 		{
+			int ctcox, ctcoy;
 			// Shape size square
 			if (pActionDef->GetPropertyInt(P_DigFree)==1)
 			{
@@ -241,54 +234,57 @@ void C4Object::DoMovement()
 			}
 		}
 
-	// store previous position
-	C4Real ix0=GetFixedX(); C4Real iy0=GetFixedY();
-
 	// store previous movement and ocf
 	C4Real oldxdir(xdir), oldydir(ydir);
 	uint32_t old_ocf = OCF;
 
+	bool fMoved = false;
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
-	ctcox = fixtoi(new_x);
 
 	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
+		while (fixtoi(new_x) != fixtoi(fix_x))
 		{
 			// Next step
-			int step = Sign<C4Real>(new_x - fix_x);
-			if ((iContact=ContactCheck(GetX() + step, GetY())))
+			int step = Sign(new_x - fix_x);
+			uint32_t border_hack_contacts = 0;
+			iContact=ContactCheck(GetX() + step, GetY(), &border_hack_contacts);
+			if (iContact || border_hack_contacts)
 			{
-				fAnyContact=true; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact | border_hack_contacts;
+			}
+			if (iContact)
+			{
 				// Abort horizontal movement
-				ctcox = GetX();
 				new_x = fix_x;
 				// Vertical redirection (always)
 				RedirectForce(xdir,ydir,-1);
 				ApplyFriction(ydir,ContactVtxFriction(this));
 			}
 			else // Free horizontal movement
+			{
 				DoMotion(step, 0);
+				fMoved = true;
+			}
 		}
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
 		new_y = fix_y + ydir;
 		// Movement bounds (vertical)
 		VerticalBounds(new_y);
-		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
+		while (fixtoi(new_y) != fixtoi(fix_y))
 		{
 			// Next step
-			int step = Sign<C4Real>(new_y - fix_y);
+			int step = Sign(new_y - fix_y);
 			if ((iContact=ContactCheck(GetX(), GetY() + step)))
 			{
 				fAnyContact=true; iContacts |= t_contact;
-				ctcoy=GetY(); new_y = fix_y;
+				new_y = fix_y;
 				// Vertical contact horizontal friction
 				ApplyFriction(xdir,ContactVtxFriction(this));
 				// Redirection slide or rotate
@@ -308,22 +304,24 @@ void C4Object::DoMovement()
 				}
 			}
 			else // Free vertical movement
+			{
 				DoMotion(0,step);
+				fMoved = true;
+			}
 		}
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
 		VerticalBounds(new_y);
-		ctcoy=fixtoi(new_y);
 		// Move to target
 		do
 		{
 			// Set next step target
 			int step_x = 0, step_y = 0;
-			if (ctcox != GetX())
-				step_x = Sign(ctcox - GetX());
-			else if (ctcoy != GetY())
-				step_y = Sign(ctcoy - GetY());
+			if (fixtoi(new_x) != GetX())
+				step_x = Sign(fixtoi(new_x) - GetX());
+			else if (fixtoi(new_y) != GetY())
+				step_y = Sign(fixtoi(new_y) - GetY());
 			int32_t ctx = GetX() + step_x;
 			int32_t cty = GetY() + step_y;
 			// Attachment check
@@ -331,62 +329,68 @@ void C4Object::DoMovement()
 				fNoAttach=1;
 			else
 			{
-				// Attachment change to ctx/cty overrides ctco target
+				// Attachment change to ctx/cty overrides target
 				if (ctx != GetX() + step_x)
 				{
-					ctcox = ctx; xdir = Fix0; new_x = itofix(ctx);
+					xdir = Fix0; new_x = itofix(ctx);
 				}
 				if (cty != GetY() + step_y)
 				{
-					ctcoy = cty; ydir = Fix0; new_y = itofix(cty);
+					ydir = Fix0; new_y = itofix(cty);
 				}
 			}
 			// Contact check & evaluation
-			if ((iContact=ContactCheck(ctx,cty)))
+			uint32_t border_hack_contacts = 0;
+			iContact=ContactCheck(ctx,cty,&border_hack_contacts);
+			if (iContact || border_hack_contacts)
 			{
-				fAnyContact=true; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= border_hack_contacts | t_contact;
+			}
+			if (iContact)
+			{
 				// Abort movement
 				if (ctx != GetX())
 				{
-					ctx = ctcox = GetX(); new_x = fix_x;
+					ctx = GetX(); new_x = fix_x;
 				}
 				if (cty != GetY())
 				{
-					cty = ctcoy = GetY(); new_y = fix_y;
+					cty = GetY(); new_y = fix_y;
 				}
 			}
 			DoMotion(ctx - GetX(), cty - GetY());
+			fMoved = true;
 		}
-		while (ctcox != GetX() || ctcoy != GetY());
+		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
-		if (pSolidMaskData)
-			pSolidMaskData->Remove(true);
-	fix_x = new_x;
-	fix_y = new_y;
+	{
+		fMoved = true;
+		if (pSolidMaskData) pSolidMaskData->Remove(true);
+		fix_x = new_x;
+		fix_y = new_y;
+	}
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (OCF & OCF_Rotate && !!rdir)
 	{
-		// Set target
-		fix_r+=rdir*5;
+		C4Real target_r = fix_r + rdir * 5;
 		// Rotation limit
 		if (Def->Rotateable>1)
 		{
-			if (fix_r > itofix(Def->Rotateable))
-				{ fix_r = itofix(Def->Rotateable); rdir=0; }
-			if (fix_r < itofix(-Def->Rotateable))
-				{ fix_r = itofix(-Def->Rotateable); rdir=0; }
+			if (target_r > itofix(Def->Rotateable))
+				{ target_r = itofix(Def->Rotateable); rdir=0; }
+			if (target_r < itofix(-Def->Rotateable))
+				{ target_r = itofix(-Def->Rotateable); rdir=0; }
 		}
-		ctcor=fixtoi(fix_r);
 		int32_t ctx=GetX(); int32_t cty=GetY();
 		// Move to target
-		while (r!=ctcor)
+		while (fixtoi(fix_r) != fixtoi(target_r))
 		{
 			// Save step undos
-			int32_t lcobjr=r; C4Shape lshape=Shape;
+			C4Real lcobjr = fix_r; C4Shape lshape=Shape;
 			// Try next step
-			r+=Sign(ctcor-r);
+			fix_r += Sign(target_r - fix_r);
 			UpdateShape();
 			// attached rotation: rotate around attachment pos
 			if (Action.t_attach && !fNoAttach)
@@ -405,9 +409,7 @@ void C4Object::DoMovement()
 				fAnyContact=true; iContacts |= t_contact;
 				// Undo step and abort movement
 				Shape=lshape;
-				r=lcobjr;
-				ctcor=r;
-				fix_r=itofix(r);
+				target_r = fix_r = lcobjr;
 				// last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
@@ -419,16 +421,19 @@ void C4Object::DoMovement()
 			else
 			{
 				fTurned=1;
-				fix_x=itofix(ctx); fix_y=itofix(cty);
+				if (ctx != GetX() || cty != GetY())
+				{
+					fix_x = itofix(ctx); fix_y = itofix(cty);
+				}
 			}
 		}
 		// Circle bounds
-		if (fix_r<-FixHalfCircle) { fix_r+=FixFullCircle; r=fixtoi(fix_r); }
-		if (fix_r>+FixHalfCircle) { fix_r-=FixFullCircle; r=fixtoi(fix_r); }
+		if (target_r < -FixHalfCircle) { target_r += FixFullCircle; }
+		if (target_r > +FixHalfCircle) { target_r -= FixFullCircle; }
+		fix_r = target_r;
 	}
-	// Reput solid mask: Might have been removed by motion or
-	// motion might be out of date from last frame.
-	UpdateSolidMask(true);
+	// Reput solid mask if moved by motion
+	if (fMoved || fTurned) UpdateSolidMask(true);
 	// Misc checks ===========================================================================================
 	// InLiquid check
 	// this equals C4Object::UpdateLiquid, but the "fNoAttach=false;"-line
@@ -469,7 +474,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
+		if (fMoved) UpdatePos();
 }
 
 void C4Object::Stabilize()
@@ -477,24 +482,25 @@ void C4Object::Stabilize()
 	// def allows stabilization?
 	if (Def->NoStabilize) return;
 	// normalize angle
-	int32_t nr = r; while (nr < -180) nr+=360; while (nr > 180) nr-=360;
-	if (nr!=0)
-		if (Inside<int32_t>(nr,-StableRange,+StableRange))
+	C4Real nr = fix_r;
+	while (nr < itofix(-180)) nr += 360;
+	while (nr > itofix(180)) nr -= 360;
+	if (nr != Fix0)
+		if (Inside<C4Real>(nr,itofix(-StableRange),itofix(+StableRange)))
 		{
 			// Save step undos
-			int32_t lcobjr=r;
+			C4Real lcobjr=fix_r;
 			C4Shape lshape=Shape;
 			// Try rotation
-			r=0;
+			fix_r=Fix0;
 			UpdateShape();
 			if (ContactCheck(GetX(),GetY()))
 			{ // Undo rotation
 				Shape=lshape;
-				r=lcobjr;
+				fix_r=lcobjr;
 			}
 			else
 			{ // Stabilization okay
-				fix_r=itofix(r);
 				UpdateFace(true);
 			}
 		}
@@ -570,13 +576,12 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		{
 			// Gravity mobilization
 			xdir=ydir=rdir=0;
-			fix_r=itofix(r);
 			Mobile=1;
 		}
 	}
 
 	// Enforce zero rotation
-	if (!Def->Rotateable) r=0;
+	if (!Def->Rotateable) fix_r=Fix0;
 
 	// Out of bounds check
 	if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
@@ -617,12 +622,19 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 	do
 	{
 		if (!--i) {hitOnTime = false; break;}
+		// If the object isn't moving and there is no gravity either, abort
+		if (xdir == 0 && ydir == 0 && GravAccel == 0)
+			return false;
+		// If the object is above the landscape flying upwards in no/negative gravity, abort
+		if (ydir <= 0 && GravAccel <= 0 && cy < 0)
+			return false;
 		// Set target position by momentum
 		x+=xdir; y+=ydir;
 		// Movement to target
 		ctcox=fixtoi(x); ctcoy=fixtoi(y);
 		// Bounds
-		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt)) return false;
+		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt))
+			return false;
 		// Move to target
 		do
 		{

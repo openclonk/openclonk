@@ -1,0 +1,15 @@
+[DefCore]
+id=CrystalCommunicator
+Version=5,2,0,1
+Category=C4D_Structure
+Width=90
+Height=70
+Offset=-45,-35
+Vertices=2
+VertexX=-40,40
+VertexY=34,34
+VertexFriction=100,100
+Mass=300
+Components=Ruby=6;Amethyst=6;Metal=6;
+Rotate=0
+Construction=1

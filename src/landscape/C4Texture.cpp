@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2003, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2002, 2004, 2007-2008, 2011  Peter Wortmann
- * Copyright (c) 2006-2007, 2009  Günther Brammer
- * Copyright (c) 2008, 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Textures used by the landscape */
@@ -33,6 +28,9 @@
 #include <C4Material.h>
 #include <C4Landscape.h>
 #include <C4Log.h>
+
+#include <ctype.h>
+#include <algorithm>
 
 C4Texture::C4Texture()
 {
@@ -139,27 +137,35 @@ bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 	FirstTexture=pTexture;
 
 	// Compute average texture color
-	sfcSurface->Lock();
-	uint32_t avg_c[4] = { 0, 0, 0, 0 };
-	for(int32_t y = 0; y < sfcSurface->Hgt; ++y)
+	if(sfcSurface)
 	{
-		for(int32_t x = 0; x < sfcSurface->Wdt; ++x)
+		sfcSurface->Lock();
+		uint32_t avg_c[4] = { 0, 0, 0, 0 };
+		for(int32_t y = 0; y < sfcSurface->Hgt; ++y)
 		{
-			DWORD c = sfcSurface->GetPixDw(x, y, false);
-			avg_c[0] += c & 0xff;
-			avg_c[1] += (c >> 8) & 0xff;
-			avg_c[2] += (c >> 16) & 0xff;
-			avg_c[3] += (c >> 24) & 0xff;
+			for(int32_t x = 0; x < sfcSurface->Wdt; ++x)
+			{
+				DWORD c = sfcSurface->GetPixDw(x, y, false);
+				avg_c[0] += c & 0xff;
+				avg_c[1] += (c >> 8) & 0xff;
+				avg_c[2] += (c >> 16) & 0xff;
+				avg_c[3] += (c >> 24) & 0xff;
+			}
 		}
-	}
-	sfcSurface->Unlock();
+		sfcSurface->Unlock();
 
-	double Size = sfcSurface->Wdt * sfcSurface->Hgt;
-	avg_c[0] = static_cast<uint32_t>(avg_c[0] / Size + 0.5);
-	avg_c[1] = static_cast<uint32_t>(avg_c[1] / Size + 0.5);
-	avg_c[2] = static_cast<uint32_t>(avg_c[2] / Size + 0.5);
-	avg_c[3] = static_cast<uint32_t>(avg_c[3] / Size + 0.5);
-	pTexture->AvgColor = avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24);
+		double Size = sfcSurface->Wdt * sfcSurface->Hgt;
+		avg_c[0] = static_cast<uint32_t>(avg_c[0] / Size + 0.5);
+		avg_c[1] = static_cast<uint32_t>(avg_c[1] / Size + 0.5);
+		avg_c[2] = static_cast<uint32_t>(avg_c[2] / Size + 0.5);
+		avg_c[3] = static_cast<uint32_t>(avg_c[3] / Size + 0.5);
+		pTexture->SetAverageColor(avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24));
+	}
+	else
+	{
+		pTexture->SetAverageColor(0x00000000);
+	}
+
 	return true;
 }
 
@@ -203,30 +209,79 @@ bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOv
 
 int32_t C4TextureMap::LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures)
 {
+	static re::regex line_terminator("\r?\n", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
+
 	char *bpMap;
-	char szLine[100+1];
-	int32_t cnt, iIndex, iTextures = 0;
+	size_t map_size;
+	int32_t iTextures = 0;
 	// Load text file into memory
-	if (!hGroup.LoadEntry(szEntryName,&bpMap,NULL,1)) return 0;
-	// Scan text buffer lines
-	for (cnt=0; SCopySegment(bpMap,cnt,szLine,0x0A,100); cnt++)
-		if ( (szLine[0]!='#') && (SCharCount('=',szLine)==1) )
+	if (!hGroup.LoadEntry(szEntryName,&bpMap,&map_size,1)) return 0;
+
+	char *begin = bpMap;
+	char *end = begin + map_size;
+
+	size_t line = 1; // Counter for error messages
+	for (auto it = re::cregex_token_iterator(begin, end, line_terminator, -1); it != re::cregex_token_iterator(); ++it, ++line)
+	{
+		if (it->compare("OverloadMaterials") == 0)
 		{
-			SReplaceChar(szLine,0x0D,0x00);
-			if (Inside<int32_t>( iIndex = strtol(szLine,NULL,10), 0, C4M_MaxTexIndex-1 ))
-			{
-				const char *szMapping = szLine+SCharPos('=',szLine)+1;
-				StdStrBuf Material, Texture;
-				Material.CopyUntil(szMapping, '-'); Texture.Copy(SSearch(szMapping, "-"));
-				if (AddEntry(iIndex, Material.getData(), Texture.getData()))
-					iTextures++;
-			}
+			fOverloadMaterials = true;
+			if (pOverloadMaterials)
+				*pOverloadMaterials = true;
+		}
+		else if (it->compare("OverloadTextures") == 0)
+		{
+			fOverloadTextures = true;
+			if (pOverloadTextures)
+				*pOverloadTextures = true;
+		}
+		else if (it->length() == 0 || it->first[0] == '#' || std::all_of(it->first, it->second, &isspace))
+		{
+			// Skip empty lines, comments, and all-whitespace lines
+			continue;
 		}
 		else
 		{
-			if (SEqual2(szLine, "OverloadMaterials")) { fOverloadMaterials = true; if (pOverloadMaterials) *pOverloadMaterials = true; }
-			if (SEqual2(szLine, "OverloadTextures")) { fOverloadTextures = true;  if (pOverloadTextures) *pOverloadTextures = true; }
+			// This must be a texmap entry now
+			std::string value;
+			
+			// Read index
+			unsigned long index;
+			try
+			{
+				size_t separator;
+				index = std::stoul(it->str(), &separator, 10);
+				if (index >= C4M_MaxTexIndex)
+					throw std::out_of_range("Texture index out of range");
+				value.assign(it->first + separator + 1, it->second);
+			}
+			catch (std::invalid_argument &)
+			{
+				DebugLogF("TexMap line %u: Texture index is not numeric", static_cast<unsigned>(line));
+				continue;
+			}
+			catch (std::out_of_range &)
+			{
+				DebugLogF("TexMap line %u: Texture index is out of range", static_cast<unsigned>(line));
+				continue;
+			}
+
+			// Split material/texture combination
+			std::string::const_iterator separator = std::find(value.cbegin(), value.cend(), '-');
+			if (separator == value.cend())
+			{
+				DebugLogF("TexMap line %u: Texture name \"%s\" is invalid (missing \"-\")", static_cast<unsigned>(line), value.c_str());
+				continue;
+			}
+
+			std::string material(value.cbegin(), separator);
+			std::string texture(separator + 1, value.cend());
+
+			if (AddEntry(index, material.c_str(), texture.c_str()))
+				++iTextures;
 		}
+	}
+
 	// Delete buffer, return entry count
 	delete [] bpMap;
 	fEntriesAdded=false;
@@ -421,14 +476,10 @@ void C4TextureMap::Default()
 	fInitialized = false;
 }
 
-void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
+void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMaterial)
 {
-	// Zero palette
-	ZeroMem(bypPalette,256*3);
 	// Sky color
-	bypPalette[0]=192;
-	bypPalette[1]=196;
-	bypPalette[2]=252;
+	Palette->Colors[0] = C4RGB(192, 196, 252);
 	// Material colors by texture map entries
 	bool fSet[256];
 	ZeroMem(&fSet, sizeof (fSet));
@@ -437,12 +488,8 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
 	{
 		// Find material
 		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
-		bypPalette[3*i+0]=dwPix >> 16;
-		bypPalette[3*i+1]=dwPix >> 8;
-		bypPalette[3*i+2]=dwPix;
-		bypPalette[3*(i+IFT)+0]=dwPix >> 16;
-		bypPalette[3*(i+IFT)+1]=dwPix >> 8;
-		bypPalette[3*(i+IFT)+2]=dwPix | 0x0F; // IFT arbitrarily gets more blue
+		Palette->Colors[i] = dwPix;
+		Palette->Colors[i + IFT] = dwPix | 0x0F; // IFT arbitrarily gets more blue
 		fSet[i] = fSet[i + IFT] = true;
 	}
 	// Crosscheck colors, change equal palette entries
@@ -451,17 +498,16 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
 			{
 				// search equal entry
 				int32_t j = 0;
-				for (; j < i; j++) if (fSet[j])
-						if (bypPalette[3*i+0] == bypPalette[3*j+0] &&
-						    bypPalette[3*i+1] == bypPalette[3*j+1] &&
-						    bypPalette[3*i+2] == bypPalette[3*j+2])
+				for (; j < i; j++)
+					if (fSet[j] && Palette->Colors[i] == Palette->Colors[j])
 							break;
 				// not found? ok then
 				if (j >= i) break;
 				// change randomly
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+0] += 3; else bypPalette[3*i+0] -= 3;
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+1] += 3; else bypPalette[3*i+1] -= 3;
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+2] += 3; else bypPalette[3*i+2] -= 3;
+				Palette->Colors[i] = C4RGB(
+					(rand() < RAND_MAX / 2) ? GetRedValue(Palette->Colors[i]) + 3 : GetRedValue(Palette->Colors[i]) - 3,
+					(rand() < RAND_MAX / 2) ? GetGreenValue(Palette->Colors[i]) + 3 : GetGreenValue(Palette->Colors[i]) - 3,
+					(rand() < RAND_MAX / 2) ? GetBlueValue(Palette->Colors[i]) + 3 : GetBlueValue(Palette->Colors[i]) - 3);
 			}
 }
 

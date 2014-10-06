@@ -1,0 +1,2 @@
+Name=Scaffold
+Description=Allows you to build greater structures.

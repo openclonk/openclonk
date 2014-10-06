@@ -1,0 +1,5 @@
+Name=Sell gems
+
+#Goal window
+MsgGoalFulfilled=A ruby has been delivered.
+MsgGoalUnfulfilled=Mine a ruby and deliver it to the starting platform.

@@ -1,0 +1,6 @@
+[DefCore]
+id=DebugLine
+Version=5,2,0,1
+Category=C4D_StaticBack
+Vertices=2
+Line=1

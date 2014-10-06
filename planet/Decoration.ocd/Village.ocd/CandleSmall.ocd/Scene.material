@@ -1,0 +1,22 @@
+material EnvPack_CandleSmall
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+			ambient 2.500000 2.400000 2.700000 1.000000
+			diffuse 2.000000 2.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 1.250000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			texture_unit
+			{
+				texture candlesmall.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

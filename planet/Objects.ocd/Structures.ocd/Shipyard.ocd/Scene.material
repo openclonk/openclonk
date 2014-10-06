@@ -8,7 +8,7 @@ material Shipyard
             diffuse 1.0 1.0 1.0 1.0
             texture_unit
             {
-                texture shipyard.png
+                texture shipyard.jpg
                 tex_address_mode wrap
 				filtering trilinear
             }

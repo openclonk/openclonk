@@ -117,10 +117,10 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
-global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, int prtdist, int a, int b0, int b1, int ydir)
+global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, int prtdist, xdir, ydir, lifetime, proplist properties)
 {
 	// Right parameters?
-	if (!prtdist)
+	if (!properties)
 		return 0;
 	// Calculate required number of particles.
 	var prtnum = Max(Distance(x0, y0, x1, y1) / prtdist, 2);
@@ -132,15 +132,13 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 
-		b = ((b0 & 16711935) * i1 + (b1 & 16711935) * i2) >> 8 & 16711935
-			| ((b0 >> 8 & 16711935) * i1 + (b1 >> 8 & 16711935) * i2) & -16711936;
-		if (!b && (b0 | b1))
-			b++;
-		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, 0, ydir, a, b);
+		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, xdir, ydir, lifetime, properties, 1);
 	}
 	// Succes, return number of created particles.
 	return prtnum;
 }
+
+
 
 /** Place a nice shaped forest. If no area is given, the whole landscape is used (which is not recommended!).
 	@param plants An array containing all plants that should be in the forest. plants[0] is the main plant, the others will be randomly scattered throughout the forest.
@@ -164,22 +162,22 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 	var plant_size = plants[0]->GetDefWidth()/2;
 
 	var growth, y_pos, plant, x_variance, variance = 0, count, j, spot;
-	for (var i = plant_size ; i < width ; i += plant_size)
+	for (var i = plant_size; i < width; i += plant_size)
 	{
 		growth = 100;
 		y_pos = y;
-		x_variance = RandomX(-10,10);
+		x_variance = RandomX(-plant_size/2, plant_size/2);
 		// End zone check
 		if (i < end_zone)
-			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * (i/plant_size), 10,90);
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * (i/plant_size), 10, 90);
 		else if (i > width - end_zone)
-			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * ((width-i)/plant_size), 10,90);
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * ((width-i)/plant_size), 10, 90);
 		else if (!Random(10) && GetLength(plants) > 1)
 		{
 			variance = Random(GetLength(plants)-1)+1;
 			// Scatter some other plants
-			count = RandomX(2,4);
-			for (j = 0 ; j < count ; j++)
+			count = RandomX(2, 4);
+			for (j = 0; j < count; j++)
 			{
 				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
 				y_pos = y;

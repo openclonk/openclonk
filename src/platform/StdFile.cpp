@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
- * Copyright (c) 2002-2003, 2006-2009, 2011  Sven Eberhardt
- * Copyright (c) 2002, 2004-2005, 2008  Peter Wortmann
- * Copyright (c) 2004-2006, 2008, 2011  Günther Brammer
- * Copyright (c) 2009-2011  Nicolas Hake
- * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Lots of file helpers */
@@ -932,14 +925,28 @@ DirectoryIterator::~DirectoryIterator()
 		delete p;
 }
 
+void DirectoryIterator::Clear()
+{
+	// clear cache
+	if (p->ref > 1)
+	{
+		// Detach from shared memory
+		--p->ref;
+		p = new DirectoryIteratorP;
+	}
+	p->directory.clear();
+	p->files.clear();
+	iter = p->files.end();
+}
+
 void DirectoryIterator::Reset ()
 {
 	iter = p->files.begin();
 }
 
-void DirectoryIterator::Reset (const char * dirname)
+void DirectoryIterator::Reset (const char * dirname, bool force_reread)
 {
-	if (p->directory == dirname)
+	if (p->directory == dirname && !force_reread)
 	{
 		// Skip reinitialisation and just reset the iterator
 		iter = p->files.begin();
@@ -1007,7 +1014,7 @@ void DirectoryIterator::Read(const char *dirname)
 			return;
 		default:
 			// Something else broke
-			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			LogF("DirectoryIterator::Read(\"%s\"): %s", dirname, strerror(errno));
 			return;
 		}
 	}

@@ -3,6 +3,9 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 200;
 
 static const SteamEngine_produced_power = 300;
 
@@ -15,34 +18,22 @@ func Construction(object creator)
 	power_seconds = 0;
 
 	SetAction("Default");
-	AddTimer("CollectionZone", 1);
+	AddTimer("ContentsCheck", 30);
 	return _inherited(creator, ...);
 }
 
 public func IsContainer() { return true; }
 
-// Timer, check for objects to collect in the designated collection zone
-func CollectionZone()
-{
-	if (GetCon() < 100) return;
-
-	if (!(FrameCounter() % 35)) ContentsCheck();
- 
-	for (var object in FindObjects(Find_InRect(- 31 + 52 * GetDir(),9,10,10), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		Collect(object);
-}
-
-protected func RejectEntrance(object obj)
+func RejectCollect(id item, object obj)
 {
 	if (obj->~IsFuel())
 		return false;
 	return true;
 }
 
-protected func RejectCollect(id item, object obj)
+func Collection(object obj, bool put)
 {
-	// Just return RejectEntrance for this object.
-	return RejectEntrance(obj);
+	Sound("Clonk");
 }
 
 func ContentsCheck()
@@ -106,6 +97,7 @@ func FxCreatesPowerStart(target, effect, temp)
 	MakePowerProducer(SteamEngine_produced_power);
 	
 	AddEffect("Smoking", this, 1, 5, this);
+	Sound("SteamEngine", false, nil, nil, 1);
 }
 
 func FxCreatesPowerTimer(target, effect)
@@ -122,6 +114,7 @@ func FxCreatesPowerStop(target, effect, reason, temp)
 	
 	if(GetEffect("Smoking", this))
 		RemoveEffect("Smoking", this);
+	Sound("SteamEngine", false, nil, nil, -1);
 }
 
 func FxSmokingTimer()

@@ -1,0 +1,212 @@
+DoorUnlocked=The door is unlocked.
+DoorNoKey=This door needs a key.
+DoorTooFar=That lock is too far away.
+
+OilBarrelMsg=Perfect. The metal barrels are filled with oil. I should bring one of them to the plane.
+
+PlaneBuilt=The plane is finished. Now I only need to find oil to fuel it.
+PlaneNoOil=The plane needs fuel. I must find oil somewhere.
+
+
+Intro1=Finally, this is Clunker Valley.
+Intro2=Ah, %s. So you've received my letter?
+Intro3=Yes. Naturally, I've come immediately to help.
+Intro4=Excellent. We're in deep trouble at the moment. We need to finish building this castle before the next wave of attackers arrives.
+Intro5=Wave of attackers?
+Intro6=I'll tell you everything later. Right now, we need more wood. Can you chop some?
+Intro7=Of course, I'm on it!
+
+
+Newton1=%s, good that you're here! Any help for our construction site is appreciated.
+Newton2=Have you already chopped some wood?
+Newton3=I would love to, but I don't have an axe.
+Newton4=Look in the mine West (left) of this village. Some tools might be in there.
+Newton5=Not yet. Where can I find useful trees.
+Newton6=East (right) of the village you can find coniferous trees. Those are perfect for us.
+
+Newton100=Hey %s! Did you survive the attacks?
+Newton101=Yes. As you can see. I was able to watch the disaster from the forest.
+Newton102=It will take us months to rebuild everything. In the meantime, we'll be defenseless against their attacks.
+Newton103=Who are the attackers?
+Newton104=It's the henchmen of \"king\" Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
+Newton105=Why \"king\"?
+Newton106=He's got a crown on his head. So what? We haven't voted for him. We will never acknowledge a monarch that has no democratic legitimation!
+Newton107=Okay. What will you do now?
+Newton108=Nothing. It's hopeless. We will all die. Except if...
+Newton109=...?
+Newton110=...except if you will help us.
+Newton111=I knew it.
+Newton112=We're inexperienced farmers. Your dad told me you have some battle experience?
+Newton113=Well...yes.
+Newton114=I've used my wooden sword to fight Wompf berry bushes.
+Newton115=That's more than any one of us can show for.
+Newton116=So, what's your decision? Will you help us defeat Harx?
+Newton117=Yes
+Newton118=Excellent!
+Newton119=Start by marching east towards Wipf Town. You can use this shovel to get there.
+Newton120=Once you're there, ask for Pyrit. He is an old friend of mine and should be able to help you.
+Newton121=Good luck! You will need it.
+
+Newton200=Newton, I've built a plane for the counter-attack on Harx. But I don't have any fuel yet.
+Newton200a=Newton, I've got plans for a plane for the counter-attack on Harx. But I don't have any fuel yet.
+Newton201=Very good, %s. So you need oil? That is a problem indeed. Harx has outlawed private possession of oil.
+Newton202=We don't care for his silly rules of course. But we needed to sell our oil to fund the defense and construction of the castle.
+Newton203=We've got nothing left here in the village. But you could ask Mave down in the cave. He likes to have spare stockings of things.
+
+
+Lara1=We need more wood, so we can at least finish the scaffolds before nightfall.
+Lara2=Why so much haste?
+Lara3=We will never know when <i>they</i> might return.
+Lara4=Who are <i>they</i>?
+Lara5=I'll tell you later. Please get some wood now!
+Lara6=Please get some wood now!
+
+Lara100=They will never leave us in peace.
+
+
+Lisa1=Good to see the castle is finally making some progress.
+Lisa2=Why do you need such a sturdy castle?
+Lisa3=We're being attacked. Over and over again.
+Lisa4=Attacked? By whom?
+Lisa5=If our bad luck holds, you'll meet them soon enough. Please help us with the construction site now.
+Lisa6=Please help us with the construction site.
+
+Lisa100=Please do something against those monsters!
+
+Lisa200=Thank you so much for helping us!
+
+
+Woody1=Oh no, I've injured my arm. Now I can't chop wood and the sawmill is idle.
+Woody2=Is there any way I can help you?
+Woody3=Could you go East (right) and chop down a coniferous tree? I'll handle the sawing then.
+Woody4=Okay. But I think your axe is a bit large for a beginner like me. Do you have a regular axe somewhere?
+Woody5=My tools are stored near Rocky in the mine West (left) of here.
+Woody6=Where can I chop down trees?
+Woody7=Just work on one of the coniferous trees East (right) of here.
+
+Woody100=How can we possibly stand against this?
+
+
+Rocky1=Hi, do you have an axe for me?
+Rocky2=Check out the lorry.
+Rocky3=He's very productive. I should better not disturb him.
+
+Rocky100=Rocky, you can stop picking. The castle site just got destroyed.
+Rocky101=Shut up. Rocky must work.
+
+
+Attack1=Tree down!
+Attack2=Huh? What is that noise?
+Attack3=Oh god!
+Attack4=Is everyone alright?
+Attack5=Yes. But our village...
+Attack6=They're really trying to get rid of us now. We must do something!
+Attack7=I should talk to Newton.
+
+
+Mave1=Hello %s. Have you heard the rumbling outside? It was frightening.
+Mave2=I've stood nearby. The whole village got destroyed. You should help your friends outside rebuild it!
+Mave3=Outside? Umh, no. I'm more of a cellar-clonk.
+Mave4=Could you at least help me reach Wipf Town in the East then?
+Mave5=You won't get there through the caves. The old passages got destroyed by a volcanic eruption recently.
+Mave6=Your only chance is to cross the lake.
+Mave7=How do I cross the lake?
+Mave8=You could use my foundry to build some loam.
+Mave9=How do I build loam?
+Mave10=Oh, that is easy: Fill a bucket{{Bucket}} with earth and fill a barrel{{Barrel}} with water. Then put both into the foundry and produce loam.
+Mave11=You can find the necessary tools in my foundry.
+
+Mave100=Hi Mave. Do you have an idea where to find oil?
+Mave101=Oh, oil. You know we're not supposed to own private reserves, right?
+Mave102=It's very important! I'm trying to kill the king.
+Mave103=That sounds like a noble plan. Maybe I could help you...
+Mave104=Yes, please!
+Mave105=Not so hasty. I've got a secret chamber. It's buried below these lava lakes but the walls are of solid granite so I think it should still be intact.
+Mave106=To enter it, you need a key.
+Mave107=Okay. Give key please.
+Mave108=I'll sell it to you for one gold bar.
+Mave109=Where can I find gold?
+Mave110=If I knew that, I would mine it myself. Typically it's somewhere underground.
+Mave111=When you have found gold nuggets, you can use my foundry to melt them to a shiny bar.
+
+Mave200=Here is your gold bar.
+Mave201=Glad to make business with you. Here is your key.
+Mave202=Where can I find the hidden chamber?
+Mave203=It's buried below the lava lakes. Maybe you can use water to cool the lava?
+
+
+Pyrit1=Hi, are you Pyrit?
+Pyrit2=Indeed. What brings you to Wipf Town?
+Pyrit3=Clunker village got destroyed by the henchmen of evil tyrant Harx. I've promised to help and Newton sent me to you.
+Pyrit4=I've seen the planes and I've heard the rumbling. I was afraid something like that would happen. It's because of the taxes they haven't paid, isn't it?
+Pyrit5=It's not taxes. It's extortion! They aren't paying as a matter of principle.
+Pyrit6=Well, we're still paying. But he keeps rising the tribute. I'm afraid that this will not end well.
+Pyrit7=So are you going to support me? I need to get there and teach that evil king a lesson.
+Pyrit8=How do you plan to get there? He lives in a heavily guarded fortress on the Golden Mountain. 
+Pyrit9=He got here by plane. Can't we build those as well?
+Pyrit10=Actually, I happen to have some plans which I could give to you. But to fly it, you need to fuel it with oil. And Harx keeps all oil reserves strictly under his control.
+Pyrit11=For good reason I suppose.
+Pyrit12=It's the only way to reach his castle.
+Pyrit13=Some people keep secret oil reserves, but they won't give them up easily.
+Pyrit14=Maybe if you ask around you can find someone willing to help you out. I would ask Newton first.
+Pyrit15=In the meantime, take these plane construction plans. Feel free to use my shipyard and anything you find in the buildings of this town to construct the plane.
+Pyrit16=Where can I build the plane?
+Pyrit17=Feel free to use my shipyard and anything you find in the buildings of this town to construct the plane.
+Pyrit18=Where can I find oil?
+Pyrit19=Where can I find gold?
+Pyrit20=Uh, look underground I guess.
+
+Clonko1=Hello stranger, what brings you to Wipf Town?
+Clonko2=I'm looking for Pyrit.
+Clonko3=It's the guy in red hammering at the catapult. I wonder what he's doing there?
+Clonko4=Thank you.
+
+Clonko100=Hi, do you have any oil?
+Clonko101=What a strange request. No, of course not. King Harx keeps all oil under his control.
+Clonko102=Well, maybe there are some, you know, extra reserves?
+Clonko103=No. I'm an honest citizen who doesn't keep secrets.
+Clonko104=But...there are rumors.
+Clonko105=Tell me more!
+Clonko106=Word is of an underground lake full of oil deep below Wipf Town.
+Clonko107=How do I get to the oil lake?
+Clonko108=You will have to dig straight down from this town. But there is solid rock and water in the way. Plus it's only a rumor.
+Clonko109=I'm on my way!
+
+Clonko200=I was there - there was no oil below this town!
+Clonko201=Oh too bad. But I told you it's just a rumor.
+
+
+Matthi1=Hello my dear visitor. Do you want any sproutberries?
+Matthi2=I'm afraid I don't have anything to pay for them.
+Matthi3=Oh, no problem. Just take this free sample. It's delicious!
+Matthi4=Free as in free beer or as in free speech?
+Matthi5=What?
+Matthi6=Nothing beats the marvelous taste of a freshly picked sproutberry.
+
+Matthi100=Do you have any oil?
+Matthi101=Oh, that stinky black fluid? No, I wouldn't touch that.
+Matthi102=Maybe I should experiment with producing oil from sproutberries.
+
+
+Dora1=Hello, fellow explorer. What brings you here?
+Dora2=I'm looking for an oil lake.
+Dora3=Haha, so was I. But there is no lake.
+Dora4=But...the rumors...?
+Dora5=I know. Looks like rumors aren't always true after all.
+Dora6=The rumor of the oil lake wasn't true. Tough luck.
+Dora7=Where else could I look for oil?
+Dora8=Have you asked Newton in Clunker Village yet? Since they don't care for Harx's rules, they might keep some reserves.
+
+Dora100=I'm looking for oil.
+Dora101=Haha, so was I. There were rumors of an oil lake down here.
+Dora102=But...?
+Dora103=Looks like rumors aren't always true after all.
+
+Dora200=I'm looking for Pyrit.
+Dora201=Oh, the smith. He's above this cave in Wipf Town.
+
+
+Outro1=Great! The plane has fuel now. But how do I fly this?
+Outro2=I see your mission to kill the king has been well prepared.
+Outro3=Don't worry. I hate Harx as much as you do. I'll be your pilot.
+Outro4=Well, then what are we waiting for? Let's go!

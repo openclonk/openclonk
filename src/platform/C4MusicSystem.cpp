@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2001  Carlo Teubner
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2002-2003  Peter Wortmann
- * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles Music.ocg and randomly plays songs */
@@ -36,18 +28,12 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 
-#if defined HAVE_FMOD
-#include <fmod_errors.h>
-#elif defined HAVE_LIBSDL_MIXER
-#include <SDL.h>
-#endif
-
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),
 		SongCount(0),
 		PlayMusicFile(NULL),
 		Volume(100)
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 		, alcDevice(NULL), alcContext(NULL)
 #endif
 {
@@ -58,7 +44,7 @@ C4MusicSystem::~C4MusicSystem()
 	Clear();
 }
 
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 void C4MusicSystem::SelectContext()
 {
 	alcMakeContextCurrent(alcContext);
@@ -67,7 +53,7 @@ void C4MusicSystem::SelectContext()
 
 bool C4MusicSystem::InitializeMOD()
 {
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 #ifdef _WIN32
 	// Debug code
 	switch (Config.Sound.FMMode)
@@ -77,7 +63,9 @@ bool C4MusicSystem::InitializeMOD()
 		break;
 	case 1:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
+#ifdef USE_WIN32_WINDOWS
 		FSOUND_SetHWND(Application.pWindow->hWindow);
+#endif
 		break;
 	case 2:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
@@ -99,7 +87,7 @@ bool C4MusicSystem::InitializeMOD()
 	// ok
 	MODInitialized = true;
 	return true;
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	SDL_version compile_version;
 	const SDL_version * link_version;
 	MIX_VERSION(&compile_version);
@@ -120,13 +108,27 @@ bool C4MusicSystem::InitializeMOD()
 	}
 	MODInitialized = true;
 	return true;
-#elif defined(USE_OPEN_AL)
+#elif AUDIO_TK == AUDIO_TK_OPENAL
 	alcDevice = alcOpenDevice(NULL);
 	if (!alcDevice)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
 	alcContext = alcCreateContext(alcDevice, NULL);
 	if (!alcContext)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
+#ifndef __APPLE__
+	if (!alutInitWithoutContext(NULL, NULL))
+	{
+		LogF("Sound system: ALUT init error");
+		return false;
+	}
+#endif
+	MODInitialized = true;
 	return true;
 #endif
 	return false;
@@ -134,16 +136,19 @@ bool C4MusicSystem::InitializeMOD()
 
 void C4MusicSystem::DeinitializeMOD()
 {
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_FMOD
 	FSOUND_StopSound(FSOUND_ALL); /* to prevent some hangs in FMOD */
 #ifdef DEBUG
 	Sleep(0);
 #endif
 	FSOUND_Close();
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_CloseAudio();
 	SDL_Quit();
-#elif defined(USE_OPEN_AL)
+#elif AUDIO_TK == AUDIO_TK_OPENAL
+#ifndef __APPLE__
+	alutExit();
+#endif
 	alcDestroyContext(alcContext);
 	alcCloseDevice(alcDevice);
 	alcContext = NULL;
@@ -221,8 +226,11 @@ void C4MusicSystem::Load(const char *szFile)
 	// safety
 	if (!szFile || !*szFile) return;
 	C4MusicFile *NewSong=NULL;
-	// get extension
-#if defined HAVE_FMOD
+#if AUDIO_TK == AUDIO_TK_OPENAL
+	// openal: Only ogg supported
+	const char *szExt = GetExtension(szFile);
+	if (SEqualNoCase(szExt, "ogg")) NewSong = new C4MusicFileOgg;
+#elif AUDIO_TK == AUDIO_TK_FMOD
 	const char *szExt = GetExtension(szFile);
 	// get type
 	switch (GetMusicFileTypeByExtension(GetExtension(szFile)))
@@ -243,7 +251,7 @@ void C4MusicSystem::Load(const char *szFile)
 		break;
 	default: return; // safety
 	}
-#elif defined HAVE_LIBSDL_MIXER
+#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	if (GetMusicFileTypeByExtension(GetExtension(szFile)) == MUSICTYPE_UNKNOWN) return;
 	NewSong = new C4MusicFileSDL;
 #endif
@@ -367,7 +375,7 @@ void C4MusicSystem::ClearSongs()
 
 void C4MusicSystem::Clear()
 {
-#ifdef HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// Stop a fadeout
 	Mix_HaltMusic();
 #endif
@@ -377,8 +385,8 @@ void C4MusicSystem::Clear()
 
 void C4MusicSystem::Execute()
 {
-#ifndef HAVE_LIBSDL_MIXER
-	if (!::Game.iTick35)
+#if AUDIO_TK != AUDIO_TK_SDL_MIXER
+	if (!::Game.iTick35 || !Game.IsRunning)
 #endif
 	{
 		if (!PlayMusicFile)
@@ -498,7 +506,7 @@ MusicType GetMusicFileTypeByExtension(const char* ext)
 {
 	if (SEqualNoCase(ext, "mid"))
 		return MUSICTYPE_MID;
-#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
+#if AUDIO_TK == AUDIO_TK_FMOD || AUDIO_TK == AUDIO_TK_SDL_MIXER
 	else if (SEqualNoCase(ext, "xm") || SEqualNoCase(ext, "it") || SEqualNoCase(ext, "s3m") || SEqualNoCase(ext, "mod"))
 		return MUSICTYPE_MOD;
 #ifdef USE_MP3

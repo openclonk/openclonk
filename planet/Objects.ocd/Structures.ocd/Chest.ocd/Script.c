@@ -25,7 +25,7 @@ public func IsInteractable() { return true; }
 
 private func MaxContentsCount()
 {
-	return 5;
+	return 25;
 }
 
 
@@ -38,7 +38,7 @@ public func Interact(object clonk, int mode)
 	
 protected func RejectCollect()
 {
-	if (ContentsCount() >= MaxContentsCount())
+	if (ContentsCount() >= this->MaxContentsCount())
 		return true;
 	return false;
 }

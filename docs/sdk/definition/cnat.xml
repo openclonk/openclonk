@@ -5,61 +5,45 @@
 <doc>
   <title>CNAT - Contact Attachment</title>
   <h>CNAT - Contact Attachment</h>
-  <text>In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the CNAT bit <em>left</em>. If that object has <emlink href="definition/defcore.html">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:</text>
+  <text>In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the <code id="CNAT">CNAT</code> bit <em>left</em>. If that object has <emlink href="definition/defcore.html">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:</text>
   <text>
     <table>
       <rowh>
-        <col>Bit</col>
-        <col>Value</col>
         <col>CNAT</col>
         <col>Description</col>
       </rowh>
       <row>
-        <col>0</col>
-        <col>1</col>
         <col>CNAT_Left</col>
         <col>Direction: Left</col>
       </row>
       <row>
-        <col>1</col>
-        <col>2</col>
         <col>CNAT_Right</col>
         <col>Direction: Right</col>
       </row>
       <row>
-        <col>2</col>
-        <col>4</col>
         <col>CNAT_Top</col>
         <col>Direction: Up</col>
       </row>
       <row>
-        <col>3</col>
-        <col>8</col>
         <col>CNAT_Bottom</col>
         <col>Direction: Down</col>
       </row>
       <row>
-        <col>4</col>
-        <col>16</col>
         <col>CNAT_Center</col>
         <col>Direction: Center (not for attachment)</col>
       </row>
       <row>
-        <col>5</col>
-        <col>32</col>
         <col>CNAT_MultiAttach</col>
         <col>Special flag: new attachment behaviour for objects with the same direction value at several vertices.</col>
       </row>
       <row>
-        <col>6</col>
-        <col>64</col>
         <col>CNAT_NoCollision</col>
         <col>Extra flag: non-colliding vertex</col>
       </row>
       <bitmask>CNAT</bitmask>
     </table>
   </text>
-  <author>Sven2</author><date>2002-04</date>
-  <author>Newton &amp; Günther</author><date>2005-01</date>
-  <author>Matthes</author><date>2005-08</date>
+  <text>A vertex can have multiple CNAT values, they can be combined them with the | operator. Example:</text>
+  <code>Attach = CNAT_Bottom | CNAT_Left</code>
+  <author>Newton</author><date>2013-11</date>
 </doc>

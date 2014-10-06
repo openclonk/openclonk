@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2009  Peter Wortmann
- * Copyright (c) 2004-2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2011  Günther Brammer
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -145,7 +137,7 @@ C4Network2::C4Network2()
 		pLobby(NULL), fLobbyRunning(false), pLobbyCountdown(NULL),
 		iNextClientID(0),
 		iLastChaseTargetUpdate(0),
-		iLastActivateRequest(0),
+		tLastActivateRequest(C4TimeMilliseconds::NegativeInfinity),
 		iLastReferenceUpdate(0),
 		iLastLeagueUpdate(0),
 		pLeagueClient(NULL),
@@ -153,7 +145,7 @@ C4Network2::C4Network2()
 		pVoteDialog(NULL),
 		fPausedForVote(false),
 		iLastOwnVoting(0),
-		fStreaming(NULL)
+		fStreaming(false)
 {
 
 }
@@ -262,7 +254,7 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 			return IR_Error;
 		}
 	}
-	// initialize ressources
+	// initialize resources
 	if (!Game.Parameters.InitNetwork(&ResList))
 		return IR_Fatal;
 	// init league
@@ -367,9 +359,7 @@ bool C4Network2::DoLobby()
 		ChangeGameStatus(GS_Lobby, 0);
 
 	// determine lobby type
-	bool fFullscreenLobby = !Console.Active && (pDraw->GetEngine() != GFXENGN_NOGFX);
-
-	if (!fFullscreenLobby)
+	if (Console.Active)
 	{
 		// console lobby - update console
 		if (Console.Active) Console.UpdateMenus();
@@ -625,7 +615,7 @@ void C4Network2::Execute()
 	else
 	{
 		// request activate, if neccessary
-		if (iLastActivateRequest) RequestActivate();
+		if (!tLastActivateRequest.IsInfinite()) RequestActivate();
 	}
 }
 
@@ -658,14 +648,15 @@ void C4Network2::Clear()
 	Clients.Clear();
 	// close net classes
 	NetIO.Clear();
-	// clear ressources
+	// clear resources
 	ResList.Clear();
 	// clear password
 	sPassword.Clear();
 	// stuff
 	fAllowJoin = false;
 	iDynamicTick = -1; fDynamicNeeded = false;
-	iLastActivateRequest = iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
+	tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
+	iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
 	fDelayedActivateReq = false;
 	delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
@@ -1073,9 +1064,9 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 
 	// check engine version
 	bool fWrongPassword = false;
-	if (Pkt.getVer() != C4XVER4)
+	if (Pkt.getVer() != C4XVER1*10000 + C4XVER2*100 + C4XVER3)
 	{
-		reply.Format("wrong engine (%d, I have %d)", Pkt.getVer(), C4XVER4);
+		reply.Format("wrong engine (%d.%d.%d, I have %d.%d.%d)", Pkt.getVer()/10000, Pkt.getVer()/100%100, Pkt.getVer()%100, C4XVER1, C4XVER2, C4XVER3);
 		fOK = false;
 	}
 	else
@@ -1357,8 +1348,10 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 	HandleStatus(rPkt.getStatus());
 	if (Status.getState() != GS_Lobby && Status.getState() != GS_Pause && Status.getState() != GS_Go)
 		{ LogSilentF("Network: join data has bad game status: %s", Status.getStateName()); Clear(); return; }
+	// copy scenario parameter defs for lobby display
+	::Game.ScenarioParameterDefs = rPkt.ScenarioParameterDefs;
 	// copy parameters
-	Game.Parameters = rPkt.Parameters;
+	::Game.Parameters = rPkt.Parameters;
 	// set local client
 	C4Client *pLocalClient = Game.Clients.getClientByID(rPkt.getClientID());
 	if (!pLocalClient)
@@ -1372,12 +1365,12 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 	pControl->CopyClientList(Game.Parameters.Clients);
 	// set local core
 	NetIO.SetLocalCCore(pLocalClient->getCore());
-	// add the resources to the network ressource list
+	// add the resources to the network resource list
 	Game.Parameters.GameRes.InitNetwork(&ResList);
 	// load dynamic
 	if (!ResList.AddByCore(ResDynamic))
 		{ LogFatal("Network: can not not retrieve dynamic!"); Clear(); return; }
-	// load player ressources
+	// load player resources
 	Game.Parameters.PlayerInfos.LoadResources();
 	// send additional addresses
 	Clients.SendAddresses(NULL);
@@ -1485,6 +1478,8 @@ void C4Network2::SendJoinData(C4Network2Client *pClient)
 	JoinData.SetClientID(pClient->getID());
 	// save status into packet
 	JoinData.SetGameStatus(Status);
+	// scenario parameter defs for lobby display (localized in host language)
+	JoinData.ScenarioParameterDefs = ::Game.ScenarioParameterDefs;
 	// parameters
 	JoinData.Parameters = Game.Parameters;
 	// core join data
@@ -1503,14 +1498,16 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 {
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
-	int32_t iProcess = -1; uint32_t iTimeout = GetTime() + iTimeoutLen;
-	// wait for ressource
+	int32_t iProcess = -1;
+	C4TimeMilliseconds tTimeout = C4TimeMilliseconds::Now() + iTimeoutLen;
+	// wait for resource
 	while (isEnabled())
 	{
-		// find ressource
+		// find resource
 		C4Network2Res::Ref pRes = ResList.getRefRes(Core.getID());
 		// res not found?
 		if (!pRes)
+		{
 			if (Core.isNull())
 			{
 				// should wait for core?
@@ -1521,6 +1518,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 				// start loading
 				pRes = ResList.AddByCore(Core);
 			}
+		}
 		// res found and loaded completely
 		else if (!pRes->isLoading())
 		{
@@ -1535,12 +1533,12 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		if (pRes && pRes->getPresentPercent() != iProcess)
 		{
 			iProcess = pRes->getPresentPercent();
-			iTimeout = GetTime() + iTimeoutLen;
+			tTimeout = C4TimeMilliseconds::Now() + iTimeoutLen;
 		}
 		else
 		{
 			// if not: check timeout
-			if (GetTime() > iTimeout)
+			if (C4TimeMilliseconds::Now() > tTimeout)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_NET_ERR_RESTIMEOUT"), szResName).getData());
 				if (pDlg) delete pDlg;
@@ -1577,7 +1575,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		}
 		else
 		{
-			if (!Application.ScheduleProcs(iTimeout - GetTime()))
+			if (!Application.ScheduleProcs(tTimeout - C4TimeMilliseconds::Now()))
 				{ return NULL; }
 		}
 
@@ -1604,7 +1602,7 @@ bool C4Network2::CreateDynamic(bool fInit)
 	C4GameSaveNetwork SaveGame(fInit);
 	if (!SaveGame.Save(szDynamicFilename) || !SaveGame.Close())
 		{ Log(LoadResStr("IDS_NET_SAVE_ERR_SAVEDYNFILE")); return false; }
-	// add ressource
+	// add resource
 	C4Network2Res::Ref pRes = ResList.AddByFile(szDynamicFilename, true, NRT_Dynamic);
 	if (!pRes) { Log(LoadResStr("IDS_NET_SAVE_ERR_ADDDYNDATARES")); return false; }
 	// save
@@ -1762,7 +1760,7 @@ void C4Network2::RequestActivate()
 	// neither observer nor activated?
 	if (Game.Clients.getLocal()->isObserver() || Game.Clients.getLocal()->isActivated())
 	{
-		iLastActivateRequest = 0;
+		tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
 		return;
 	}
 	// host? just do it
@@ -1775,7 +1773,7 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (iLastActivateRequest && GetTime() < iLastActivateRequest + C4NetActivationReqInterval)
+	if(C4TimeMilliseconds::Now() < tLastActivateRequest + C4NetActivationReqInterval)
 		return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
@@ -1786,7 +1784,7 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	iLastActivateRequest = GetTime();
+	tLastActivateRequest = C4TimeMilliseconds::Now();
 }
 
 void C4Network2::DeactivateInactiveClients()
@@ -2258,59 +2256,32 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 	LeagueWaitNotBusy();
 
 	// Official league?
-	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "clonk.de");
-
-	// Try to auth with WebCode, if it's an official league server and we have valid registration information
-	bool fWebCode = fOfficialLeague && *Config.GetRegistrationData("Cuid");
+	bool fOfficialLeague = SEqual(pLeagueClient->getServerName(), "league.openclonk.org");
 
 	StdStrBuf Account, Password;
-	bool fRegister = false;
+	bool fRememberLogin = false;
+
+	// Default password from login token if present
+	if (Config.Network.GetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), &Account, &Password))
+	{
+		fRememberLogin = (Password.getLength()>0);
+	}
+	else
+	{
+		Account.Copy(pInfo->GetName());
+	}
 
 	for (;;)
 	{
-
-		StdStrBuf NewAccount, NewPassword;
-
-		// Default authentication data
-		if (!Account.getLength()) Account.Copy(Config.GetRegistrationData("Cuid"));
-
-		// Try first auth with local CUID and WebCode
-		if (fWebCode)
-		{
-
-			// Default authentication data
-			Password.Copy(Config.GetRegistrationData("WebCode"));
-		};
-
-		// Ask for registration information
-		if (fRegister)
-		{
-			// Use local nick as default
-			NewAccount.Copy(Config.Network.Nick);
-			if (Config.Network.Nick.getLength() == 0)
-				NewAccount.Copy(Config.GetRegistrationData("Nick"));
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &NewAccount, &NewPassword, !fOfficialLeague, true))
-				return false;
-			if (!NewPassword.getLength())
-				NewPassword.Copy(Password);
-		}
-		else if (!fWebCode)
-		{
-
-			// CUID is default for account, no default password
-			Password.Clear();
-
-			// ask for account
-			if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), "", pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false))
-				return false;
-
-		}
+		// ask for account name and password
+		if (!C4LeagueSignupDialog::ShowModal(pInfo->GetName(), Account.getData(), pLeagueClient->getServerName(), &Account, &Password, !fOfficialLeague, false, &fRememberLogin))
+			return false;
 
 		// safety (modal dlg may have deleted network)
 		if (!pLeagueClient) return false;
 
 		// Send authentication request
-		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NewAccount.getLength() ? NewAccount.getData() : NULL, NewPassword.getLength() ? NewPassword.getData() : NULL))
+		if (!pLeagueClient->Auth(*pInfo, Account.getData(), Password.getData(), NULL, NULL, fRememberLogin))
 			return false;
 
 		// safety (modal dlg may have deleted network)
@@ -2350,12 +2321,15 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		}
 
 		// Success?
-		StdStrBuf AUID, AccountMaster; bool fUnregistered = false;
-		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered))
+		StdStrBuf AUID, AccountMaster, LoginToken; bool fUnregistered = false;
+		if (pLeagueClient->GetAuthReply(&Message, &AUID, &AccountMaster, &fUnregistered, &LoginToken))
 		{
 
 			// Set AUID
 			pInfo->SetAuthID(AUID.getData());
+
+			// Remember login data; set or clear login token
+			Config.Network.SetLeagueLoginData(pLeagueClient->getServerName(), pInfo->GetName(), Account.getData(), fRememberLogin ? LoginToken.getData() : "");
 
 			// Show welcome message, if any
 			bool fSuccess;
@@ -2384,24 +2358,10 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		else
 		{
 
-			// Error with first-time registration or manual password entry
-			if ((!fWebCode && !fUnregistered) || fRegister)
-			{
-				LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
+			// Authentification error
+			LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
 				::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESERVERMSG"), Message.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPFAILED"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-				// after a league server error message, always fall-through to try again
-			}
-
-		}
-
-		// Autommatic attempt?
-		if ((fWebCode || fUnregistered) && !fRegister)
-		{
-			// No account yet? Try to register.
-			if (fUnregistered)
-				fRegister = true;
-			else
-				fWebCode = false;
+			// after a league server error message, always fall-through to try again
 		}
 
 		// Try given account name as default next time

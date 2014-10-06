@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2004-2005  Sven Eberhardt
- * Copyright (c) 2004  Matthes Bender
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // a set of group files
 // manages system file overwriting by scearios or folders
@@ -53,16 +50,11 @@
 
 #define C4GSCnt_All        ~0
 
-// class predefs
-class C4Group;
-class C4GroupSet;
-class C4GroupSetNode;
-
 // one node in the group set holds one group
 class C4GroupSetNode
 {
 protected:
-	C4GroupSet *pParent;  // owning set
+	class C4GroupSet *pParent;  // owning set
 	C4GroupSetNode *pPrev, *pNext; // linked list - always valid
 
 	C4Group *pGroup;      // ptr to group owned by this node
@@ -71,7 +63,7 @@ protected:
 	int32_t id;               // group node ID
 
 public:
-	C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id);  // ctor
+	C4GroupSetNode(class C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id);  // ctor
 	~C4GroupSetNode();                                          // dtor
 
 	int32_t Priority;         // group priority

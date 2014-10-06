@@ -22,6 +22,10 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	MoveToTarget();
 	AddTimer("Activity");
+	
+	// Make butterflies a bit more colorful.
+	SetClrModulation(HSL(Random(256), 255, 100 + Random(60)));
+	
 	return 1;
 }
 
@@ -110,6 +114,14 @@ private func GetHorizonHeight(int x)
 	while ( height < LandscapeHeight() && !GBackSemiSolid(x,height))
 		height += 10;
 	return height;
+}
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("ClrModulation"); // randomized in Initialize
+	SaveScenarioObjectAction(props);
+	return true;
 }
 
 local ActMap = {

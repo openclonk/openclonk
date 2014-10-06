@@ -1,26 +1,23 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2007  Sven Eberhardt
- * Copyright (c) 2011-2012  Günther Brammer
+ * Copyright (c) 2001, 2007, Sven Eberhardt
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
 #include <C4Value.h>
 #include <C4AulFunc.h>
 #include <C4Aul.h>
-#include <C4ScriptHost.h>
 
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		iRefCnt(0),
@@ -28,28 +25,15 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		MapNext(NULL)
 {
 	Owner = pOwner;
-	assert(GetName() || Owner->Temporary);
 	// add to global lookuptable with this name
 	if (GetName())
-		Owner->Engine->FuncLookUp.Add(this);
+		::ScriptEngine.FuncLookUp.Add(this);
 }
 
 C4AulFunc::~C4AulFunc()
 {
-	if (Owner)
-	{
-		C4AulScriptEngine * Engine = Owner->Engine;
-		if (!Engine)
-			Engine = &::ScriptEngine;
-		if (GetName())
-			Engine->FuncLookUp.Remove(this);
-		if (Owner->GetPropList() && Name)
-		{
-			C4Value v;
-			Owner->GetPropList()->GetPropertyByS(Name, &v);
-			assert(v.getFunction() != this);
-		}
-	}
+	if (GetName())
+		::ScriptEngine.FuncLookUp.Remove(this);
 }
 
 StdStrBuf C4AulFunc::GetFullName()
@@ -65,10 +49,6 @@ StdStrBuf C4AulFunc::GetFullName()
 		r.Take(Owner->GetPropList()->IsStatic()->GetDataString());
 		r.AppendChar('.');
 	}
-	else if (Owner == &GameScript)
-	{
-		r.Ref("Scenario.");
-	}
 	else if (Owner->Engine == Owner)
 	{
 		r.Ref("Global.");
@@ -79,4 +59,16 @@ StdStrBuf C4AulFunc::GetFullName()
 	}
 	r.Append(Name->GetData());
 	return r;
+}
+
+void C4AulFunc::CheckParTypes(const C4Value pPars[]) const {
+	// Convert parameters (typecheck)
+	const C4V_Type *pTypes = GetParType();
+	int parcount = GetParCount();
+	for (int i = 0; i < parcount; i++) {
+		if (!pPars[i].CheckParConversion(pTypes[i]))
+			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
+			                                      GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
+			                                     ).getData());
+	}
 }

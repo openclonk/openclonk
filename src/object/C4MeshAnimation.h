@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Value providers for mesh animation, cf. StdMeshInstance */
@@ -24,10 +21,6 @@
 
 #include "StdMesh.h"
 #include "C4ObjectPtr.h"
-
-class C4Action;
-class C4Object;
-class C4ValueArray;
 
 enum C4AnimationValueProviderID
 {
@@ -91,6 +84,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -107,6 +101,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -123,6 +118,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -138,6 +134,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -154,6 +151,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -170,6 +168,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -186,6 +185,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -202,6 +202,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -218,6 +219,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -234,6 +236,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -250,6 +253,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -266,6 +270,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -282,6 +287,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
 private:
 	C4ObjectPtr Object;
 };

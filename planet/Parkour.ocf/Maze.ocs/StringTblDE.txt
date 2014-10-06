@@ -1,0 +1,4 @@
+MsgGoalAbove=Das Ziel ist oberhalb von hier.
+MsgGoalBelow=Das Ziel ist unterhalb von hier.
+MsgGoalLeft=Das Ziel ist links von hier.
+MsgGoalRight=Das Ziel ist rechts von hier.

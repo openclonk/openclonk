@@ -33,7 +33,7 @@
       </params>
     </syntax>
     <desc>Changes the bounding rectangle of the object. This rectangle is used e.g. for collision or overlap detection. It does not affect object drawing.</desc>
-    <remark>In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should readjust the shape manually in synchronization calls like UpdateTransferZone.</remark>
+    <remark>In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should read just the shape manually in synchronization calls like OnSynchronized.</remark>
     <examples>
       <example>
         <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Tree_Coniferous))-&gt;SetShape(-200,-300,400,600);</code>

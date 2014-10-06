@@ -76,11 +76,11 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 {
 	//Message(Format("Smelting %d",timer));
 	// Fire in the furnace.
-	CreateParticle("Fire",-10*GetCalcDir(),20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
+	CreateParticle("Fire", -10 * GetCalcDir() + RandomX(-1, 1), 20 + RandomX(-1, 1), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(3, 10), Particles_Fire(), 2);
 
 	// Smoke from the pipes.
-	CreateParticle("ExploSmoke", -9*GetCalcDir(), -31, RandomX(-2,1), -7 + RandomX(-2,2), RandomX(60,125), RGBa(255,255,255,50));
-	CreateParticle("ExploSmoke", -16*GetCalcDir(), -27, RandomX(-1,2), -7 + RandomX(-2,2), RandomX(30,90), RGBa(255,255,255,50));
+	Smoke( -10*GetCalcDir(), -26, 6);
+	Smoke(-16*GetCalcDir(), -22, 3);
 	
 	// Furnace sound after some time.
 	if (time == 30)
@@ -96,7 +96,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 	// Fire from the pouring exit.
 	if (Inside(time, 244, 290))
-		CreateParticle("Fire",17*GetCalcDir(),19,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
+		CreateParticle("SphereSpark", 16 * GetCalcDir(), 20, PV_Random(2 * GetCalcDir(), 0), PV_Random(-2, 3), PV_Random(18, 36), Particles_Material(RGB(255, 200, 0)), 2);
 
 	if (time == 290)
 	{

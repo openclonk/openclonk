@@ -1,0 +1,9 @@
+[DefCore]
+id=LotsOfCoins
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=55
+Height=17
+Offset=-27,-8
+Mass=1000
+Components=GoldBar=20

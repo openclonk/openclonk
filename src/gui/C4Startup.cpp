@@ -1,28 +1,24 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007, 2011  Sven Eberhardt
- * Copyright (c) 2006-2007, 2009-2011  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start
 
 #include <C4Include.h>
 #include <C4Startup.h>
 
+#include <C4FontLoader.h>
 #include <C4StartupMainDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupNetDlg.h>
@@ -34,7 +30,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
-#include <C4Fonts.h>
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
@@ -46,14 +41,16 @@ bool C4StartupGraphics::Init()
 	::GraphicsResource.ProgressStart = 50;
 	::GraphicsResource.ProgressIncrement = 8;
 	// load startup specific graphics from gfxsys groupset
-	fctScenSelBG.GetFace().SetBackground();
 	Game.SetInitProgress(38.0f);
+#if 0
 	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
 	if (!LoadFile(fctPlrSelBG, "StartupPlrSelBG")) return false;
-	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
 	if (!LoadFile(fctNetBG, "StartupNetworkBG")) return false;
+#endif
+	if (!LoadFile(fctDlgPaper, "StartupDlgPaper")) return false;
+	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
 	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
-	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
+	fctAboutBG.GetFace().SetBackground();
 	if (!LoadFile(fctStartupLogo, "StartupLogo")) return false;
 	::GraphicsResource.ProgressStart = 92;
 	::GraphicsResource.ProgressIncrement = 0.5;
@@ -66,14 +63,6 @@ bool C4StartupGraphics::Init()
 	sfctBookScrollR.Set(fctBookScroll, 1);
 	sfctBookScrollG.Set(fctBookScroll, 2);
 	sfctBookScrollB.Set(fctBookScroll, 3);
-	/*  if (!LoadFile(fctCrew, "StartupCrew")) return false; - currently unused
-	  if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
-	    {
-	    if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return false; }
-	    fctCrewClr.Wdt=fctCrew.Wdt;
-	    fctCrewClr.Hgt=fctCrew.Hgt;
-	    fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
-	    }*/
 	if (!LoadFile(fctContext, "StartupContext")) return false;
 	fctContext.Set(fctContext.Surface,0,0,fctContext.Hgt,fctContext.Hgt);
 	if (!LoadFile(fctScenSelIcons, "StartupScenSelIcons")) return false;
@@ -95,16 +84,16 @@ bool C4StartupGraphics::Init()
 bool C4StartupGraphics::InitFonts()
 {
 	const char *szFont = Config.General.RXFontName;
-	if (!::FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (1)"); return false; }
 	Game.SetInitProgress(97);
-	if (!::FontLoader.InitFont(BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (2)"); return false; }
 	Game.SetInitProgress(98);
-	if (!::FontLoader.InitFont(BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (3)"); return false; }
 	Game.SetInitProgress(99);
-	if (!::FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (4)"); return false; }
 	return true;
 }
@@ -133,7 +122,6 @@ CStdFont &C4StartupGraphics::GetBlackFontByHeight(int32_t iHgt, float *pfZoom)
 // statics
 C4Startup::DialogID C4Startup::eLastDlgID = C4Startup::SDID_Main;
 StdCopyStrBuf C4Startup::sSubDialog = StdCopyStrBuf();
-bool C4Startup::fFirstRun = false;
 
 // startup singleton instance
 C4Startup *C4Startup::pInstance = NULL;
@@ -242,19 +230,6 @@ void C4Startup::DoStartup()
 	fInStartup = true;
 	fLastDlgWasBack = false;
 
-	// first run: Splash video
-#ifndef USE_CONSOLE
-	if (!fFirstRun)
-	{
-		fFirstRun = true;
-		if (!Config.Startup.NoSplash && !Application.NoSplash)
-		{
-			Game.VideoPlayer.PlayVideo(C4CFN_Splash);
-		}
-	}
-#endif
-
-	// make sure loader is drawn after splash
 	::GraphicsSystem.EnableLoaderDrawing();
 
 	// clear any previous
@@ -374,4 +349,16 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 		eLastDlgID = SDID_About;
 	else return false;
 	return true;
+}
+
+void C4Startup::OnKeyboardLayoutChanged()
+{
+	// forward message to current dialog
+	if (pCurrDlg) pCurrDlg->OnKeyboardLayoutChanged();
+}
+
+void C4Startup::OnLeagueOptionChanged()
+{
+	// forward message to current dialog
+	if (pCurrDlg) pCurrDlg->OnLeagueOptionChanged();
 }

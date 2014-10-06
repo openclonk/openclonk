@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2004-2007, 2010  Sven Eberhardt
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Player data at runtime */
@@ -43,9 +39,9 @@ const int32_t C4MaxPlayer = 5000; // ought to be enough for everybody (used to c
 const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to catch invalid client counts)
 
 // view ranges in "CR-pixels" covered by viewport
-static const int C4VP_DefViewRangeX    = 1000,
-                 C4VP_DefMinViewRangeX = 100,
-                 C4VP_DefMaxViewRangeX = 3000;
+static const int C4VP_DefViewRangeX    = 300,
+                 C4VP_DefMinViewRangeX = 150,
+                 C4VP_DefMaxViewRangeX = 750;
 #define C4FOW_Def_View_RangeX 500
 
 class C4Player: public C4PlayerInfoCore
@@ -115,14 +111,15 @@ public:
 	bool fFogOfWarInitialized; // No Save //
 	C4ObjectList FoWViewObjs; // No Save //
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
+	C4Fixed ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game
 	int32_t Wealth;
 	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
 	// Home Base
-	C4IDList HomeBaseMaterial;
-	C4IDList HomeBaseProduction;
+	C4IDList BaseMaterial;
+	C4IDList BaseProduction;
 	int32_t ProductionDelay,ProductionUnit;
 	// Crew
 	C4ObjectInfoList CrewInfoList; // No Save //
@@ -218,7 +215,7 @@ protected:
 	void UpdateView();
 	void CheckElimination();
 	void UpdateCounts();
-	void ExecHomeBaseProduction();
+	void ExecBaseProduction();
 	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
 	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 	void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
@@ -264,6 +261,9 @@ public:
 	void SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease);
 	void SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
 	void SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
+	void SetZoom(C4Fixed zoom, bool direct, bool no_increase, bool no_decrease);
+	void SetMinZoom(C4Fixed zoom, bool no_increase, bool no_decrease);
+	void SetMaxZoom(C4Fixed zoom, bool no_increase, bool no_decrease);
 	void ZoomToViewports(bool direct, bool no_increase=false, bool no_decrease=false);
 	void ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase=false, bool no_decrease=false);
 	void ZoomLimitsToViewports();
@@ -271,6 +271,11 @@ public:
 
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
+	bool AdjustZoomParameter(C4Fixed *zoom_par, C4Fixed new_val, bool no_increase, bool no_decrease);
+
+public:
+	// custom scenario achievements
+	bool GainScenarioAchievement(const char *achievement_id, int32_t value, const char *scen_name_override=NULL);
 };
 
 #endif

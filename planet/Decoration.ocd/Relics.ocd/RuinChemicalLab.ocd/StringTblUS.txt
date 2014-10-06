@@ -1,0 +1,2 @@
+Name=Chemical lab ruin
+Description=Relic of past settlements.

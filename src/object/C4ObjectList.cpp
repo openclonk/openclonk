@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2006, 2008  Sven Eberhardt
- * Copyright (c) 2001, 2004-2006  Peter Wortmann
- * Copyright (c) 2006-2011  Günther Brammer
- * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Dynamic object list */
@@ -30,7 +23,6 @@
 #include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Application.h>
-#include <C4Region.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
@@ -63,7 +55,7 @@ void C4ObjectList::Clear()
 const int MaxTempListID = 500;
 C4ID TempListID[MaxTempListID];
 
-C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
+C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index) const
 {
 	int clid;
 	C4ObjectLink *clnk;
@@ -88,7 +80,7 @@ C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
 	return C4ID::None;
 }
 
-int C4ObjectList::ListIDCount(int32_t dwCategory)
+int C4ObjectList::ListIDCount(int32_t dwCategory) const
 {
 	int clid;
 	C4ObjectLink *clnk;
@@ -278,13 +270,13 @@ bool C4ObjectList::Remove(C4Object *pObj)
 	return true;
 }
 
-C4Object* C4ObjectList::Find(C4ID id, int owner, DWORD dwOCF)
+C4Object* C4ObjectList::Find(C4Def * def, int owner, DWORD dwOCF)
 {
 	C4ObjectLink *cLnk;
 	// Find link and object
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
-			if (cLnk->Obj->Def->id==id)
+			if (cLnk->Obj->Def==def)
 				if ((owner==ANY_OWNER) || (cLnk->Obj->Owner==owner))
 					if (dwOCF & cLnk->Obj->OCF)
 						return cLnk->Obj;
@@ -303,7 +295,7 @@ C4Object* C4ObjectList::FindOther(C4ID id, int owner)
 	return NULL;
 }
 
-C4Object* C4ObjectList::GetObject(int Index)
+const C4Object* C4ObjectList::GetObject(int Index) const
 {
 	int cIdx;
 	C4ObjectLink *cLnk;
@@ -317,7 +309,7 @@ C4Object* C4ObjectList::GetObject(int Index)
 	return NULL;
 }
 
-C4ObjectLink* C4ObjectList::GetLink(C4Object *pObj)
+const C4ObjectLink* C4ObjectList::GetLink(const C4Object *pObj) const
 {
 	if (!pObj) return NULL;
 	C4ObjectLink *cLnk;
@@ -346,60 +338,6 @@ int C4ObjectList::MassCount()
 			iMass+=cLnk->Obj->Mass;
 	Mass=iMass;
 	return iMass;
-}
-
-void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
-                              C4DefList &rDefs, int32_t dwCategory,
-                              C4RegionList *pRegions, int iRegionCom,
-                              bool fDrawOneCounts)
-{
-	// Calculations & variables
-	/*int iSections = cgo.GetSectionCount();
-	int iItems = ListIDCount(dwCategory);*/
-	//int iFirstItem = BoundBy(iSelection-iSections/2,0,Max(iItems-iSections,0));
-	int32_t cSec = 0;
-	int32_t iCount;
-	C4Facet cgo2;
-	C4Object *pFirstObj;
-	char szCount[10];
-	// objects are sorted in the list already, so just draw them!
-	C4ObjectListIterator iter(*this);
-	while ((pFirstObj = iter.GetNext(&iCount)))
-	{
-		// Section
-		cgo2 = cgo.GetSection(cSec);
-		// draw picture
-		pFirstObj->DrawPicture(cgo2, cSec==iSelection);
-		// Draw count
-		sprintf(szCount,"%dx",iCount);
-		if ((iCount!=1) || fDrawOneCounts)
-			pDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
-		// Region
-		if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->Number);
-		// Next section
-		cSec++;
-	}
-	// Draw by list sorted ids
-	/* for (cPos=0; c_id=GetListID(dwCategory,cPos); cPos++)
-	  if (Inside(cPos,iFirstItem,iFirstItem+iSections-1))
-	    {
-	    // First object of this type
-	    pFirstObj = Find(c_id);
-	    // Count
-	    iCount=ObjectCount(c_id);
-	    // Section
-	    cgo2 = cgo.GetSection(cSec);
-	    // Draw by definition
-	    rDefs.Draw( c_id, cgo2, (cPos==iSelection), pFirstObj->Color, pFirstObj );
-	    // Draw count
-	    sprintf(szCount,"%dx",iCount);
-	    if ((iCount!=1) || fDrawOneCounts)
-	      pDraw->TextOut(szCount,cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-pDraw->TextHeight(),FWhite,ARight);
-	    // Region
-	    if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->id);
-	    // Next section
-	    cSec++;
-	    } */
 }
 
 int C4ObjectList::ClearPointers(C4Object *pObj)
@@ -453,7 +391,7 @@ void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCa
 			clnk->Obj->DrawTopFace(cgo, iPlayer);
 }
 
-bool C4ObjectList::IsContained(C4Object *pObj)
+bool C4ObjectList::IsContained(const C4Object *pObj) const
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
@@ -560,7 +498,7 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Compiling: Nothing to do - list will be denumerated later
 }
 
-StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
+StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs) const
 {
 	int cpos,idcount;
 	C4ID c_id;
@@ -725,7 +663,7 @@ void C4ObjectList::UpdateFaces(bool bUpdateShapes)
 			cLnk->Obj->UpdateFace(bUpdateShapes);
 }
 
-void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo)
+void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo) const
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)

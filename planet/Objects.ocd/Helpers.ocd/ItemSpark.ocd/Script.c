@@ -25,6 +25,8 @@
 
 local toSpawn;
 
+static ItemSpark_particle;
+static ItemSpark_particle_additive;
 
 global func StartItemSparks(int rate, bool mirror)
 {
@@ -87,8 +89,36 @@ global func FxGlobalItemSparksTimer(_, effect, time)
 	s.toSpawn=what;
 }
 
+global func FxGlobalItemSparksSaveScen(_, effect, props)
+{
+	props->Add("Sparks", "StartItemSparks(%d, %v)", effect.rate, effect.mirror);
+	return true;
+}
+
 protected func Initialize()
 {
+	if (!ItemSpark_particle)
+	{
+		ItemSpark_particle =
+		{
+			Size = PV_Linear(15, 0),
+			Rotation = PV_Step(1, PV_Random(0, 90)),
+			Alpha = PV_Linear(0, 255),
+			R = PV_Random(0, 50),
+			G = PV_Random(0, 50),
+			B = PV_Random(200, 255),
+			Attach = ATTACH_Back,
+			CollisionVertex = 500,
+			OnCollision = PC_Die()
+		};
+		
+		ItemSpark_particle_additive =
+		{
+			Prototype = ItemSpark_particle,
+			BlitMode = GFX_BLIT_Additive,
+			Attach = ATTACH_Front
+		};
+	}
 	AddEffect("Sparkle", this, 1, 2, this);
 	AddEffect("CheckStuck", this, 1, 30);
 }
@@ -102,12 +132,8 @@ func FxCheckStuckTimer(_, effect)
 
 func FxSparkleTimer(_, effect)
 {
-	//var x=RandomX(-4, 4);
-	//var p="ItemSpark";
-	//if(Random(2)) p="ItemSparkA";
-	//CreateParticle(p, x, (4-Abs(x))/2, -x/2, -3, 40, RGBa(50,50,150+Random(100), 200), nil); 
-	CreateParticle("ItemSpark", 0, 0, 0, GetYDir(), 40, RGBa(50,50,150+Random(100), 255), this, true); 
-	CreateParticle("ItemSparkA", 0, 0, 0, GetYDir(), 20, RGBa(50,50,200+Random(50), 255), this, false); 
+	CreateParticle("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 36, ItemSpark_particle, 5); 
+	CreateParticle("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 20, ItemSpark_particle_additive, 5); 
 	
 	if(!Random(36))
 	for(var i=0;i<3;++i)
@@ -140,8 +166,9 @@ func FxSparkleDeathTimer(_, effect, effect_time)
 		effect.velX*=-1;
 		effect.velY*=-1;
 	}
-	CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, effect.size, RGBa(50,50,150, 175), effect.from, true);
-	CreateParticle("ItemSparkA", AbsX(effect.x), AbsY(effect.y), 0, 0, effect.size/2, RGBa(50,50,255, 175), effect.from, false);
+	
+	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 18, ItemSpark_particle, 1); 
+	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 10, ItemSpark_particle_additive, 1); 
 	
 	effect.xT+=effect.velX;
 	effect.yT+=effect.velY;
@@ -157,9 +184,13 @@ func DoSpawn()
 {
 	if(toSpawn == nil)
 		toSpawn=GameCall("GetSparkItem", GetX(), GetY());
-	var o=CreateObject(toSpawn, 0, 0, NO_OWNER);
-	o->SetYDir(-1);
-	GameCall("SetupSparkItem", o);
+	var item = CreateObject(toSpawn, 0, 0, NO_OWNER);
+	
+	if (item)
+	{
+		item->SetYDir(-1);
+		GameCall("SetupSparkItem", item);
+	}
 	
 	for(var cnt=0;cnt<5;++cnt) 
 	{
@@ -188,3 +219,5 @@ func Hit()
 	if(GetEffect("Off", this)) return SetSpeed();
 	DoSpawn();
 }
+
+func SaveScenarioObject() { return false; }

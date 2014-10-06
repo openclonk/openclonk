@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2001  Carlo Teubner
- * Copyright (c) 2002  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles Music.ocg and randomly plays songs */
@@ -27,16 +21,7 @@
 #define INC_C4MusicSystem
 
 #include <C4Group.h>
-
-#if defined(USE_OPEN_AL)
-#ifdef __APPLE__
-#import <OpenAL/al.h>
-#import <OpenAL/alc.h>
-#else
-#include <AL/al.h>
-#include <AL/alc.h>
-#endif
-#endif
+#include <C4SoundIncludes.h>
 
 class C4MusicFileInfoNode;
 class C4MusicFile;
@@ -83,7 +68,7 @@ protected:
 	bool MODInitialized;
 	bool InitializeMOD();
 	void DeinitializeMOD();
-#ifdef USE_OPEN_AL
+#if AUDIO_TK == AUDIO_TK_OPENAL
 private:
 	ALCdevice* alcDevice;
 	ALCcontext* alcContext;

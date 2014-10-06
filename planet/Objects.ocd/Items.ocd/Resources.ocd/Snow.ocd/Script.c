@@ -25,6 +25,10 @@ private func Hit()
 	RemoveObject();
 }
 
+func IsLiquid() { return "Water"; }
+func GetLiquidAmount() { return GetCon(); }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 450;

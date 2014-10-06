@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2005, 2008-2009  Sven Eberhardt
- * Copyright (c) 2004, 2006  Peter Wortmann
- * Copyright (c) 2005, 2009, 2011  Günther Brammer
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Main class to run the game */
@@ -29,7 +24,6 @@
 #include <C4PathFinder.h>
 #include <C4Extra.h>
 #include "C4Scoreboard.h"
-#include <C4VideoPlayback.h>
 #include <C4PlayerControl.h>
 
 class C4Game
@@ -41,9 +35,10 @@ private:
 		bool fScenarioSection;
 		bool fPlayers;
 		bool fExact;
+		bool fSync;
 
-		CompileSettings(bool fScenarioSection, bool fPlayers, bool fExact)
-				: fScenarioSection(fScenarioSection), fPlayers(fPlayers), fExact(fExact) { }
+		CompileSettings(bool fScenarioSection, bool fPlayers, bool fExact, bool fSync)
+				: fScenarioSection(fScenarioSection), fPlayers(fPlayers), fExact(fExact), fSync(fSync) { }
 	};
 
 	// struct of keyboard set and indexed control key
@@ -59,12 +54,14 @@ public:
 	~C4Game();
 
 	C4GameParameters   &Parameters;
+	class C4ScenarioParameters &StartupScenarioParameters; // parameters given on command line or during startup UI
 	C4ClientList       &Clients; // Shortcut
 	C4TeamList         &Teams; // Shortcut
 	C4PlayerInfoList   &PlayerInfos; // Shortcut
 	C4PlayerInfoList   &RestorePlayerInfos; // Shortcut
 	C4RoundResults      &RoundResults;
 	C4Scenario          C4S;
+	class C4ScenarioParameterDefs &ScenarioParameterDefs;
 	C4ComponentHost     Info;
 	C4ComponentHost     Title;
 	C4ComponentHost     Names;
@@ -79,12 +76,12 @@ public:
 	C4GroupSet          GroupSet;
 	C4Group             *pParentGroup;
 	C4Extra             Extra;
+	class C4ScenarioObjectsScriptHost *pScenarioObjectsScript;
 	C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
-	C4VideoPlayer       VideoPlayer;
 	C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
 	C4KeyboardInput &KeyboardInput;
 	C4FileMonitor *pFileMonitor;
@@ -159,6 +156,7 @@ public:
 	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
 	void SetInitProgress(float fToProgress);
 	void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // update anything that's dependant on screen resolution
+	void OnKeyboardLayoutChanged();
 	void InitFullscreenComponents(bool fRunning);
 	bool ToggleChat();
 	// Pause
@@ -194,7 +192,7 @@ public:
 	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 	                           int32_t tx=50, int32_t ty=50);
 	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane);
-	C4Object *FindObject(C4ID id,
+	C4Object *FindObject(C4Def * pDef,
 	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
 	                     DWORD ocf=OCF_All,
 	                     C4Object *pFindNext=NULL);
@@ -211,7 +209,7 @@ public:
 	     C4Object *pContainer=NULL,
 	                 int32_t iOwner=ANY_OWNER);*/
 	int32_t ObjectCount(C4ID id);
-	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
+	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER, C4ValueArray *out_objects=NULL);
 	C4Object *PlaceVegetation(C4PropList *def, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);
 	C4Object *PlaceAnimal(C4PropList *def);
 
@@ -220,12 +218,14 @@ public:
 
 	bool DrawTextSpecImage(C4Facet& fctTarget, const char *szSpec, class C4DrawTransform* pTransform, uint32_t dwClr=0xff);
 	float GetTextSpecImageAspect(const char* szSpec);
+	bool DrawPropListSpecImage(C4Facet& fctTarget, C4PropList *pSpec);
 	bool SpeedUp();
 	bool SlowDown();
 	bool InitKeyboard(); // register main keyboard input functions
 	void UpdateLanguage();
 	bool InitPlayerControlSettings();
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
+	void SetDefaultGamma();
 
 protected:
 	void Default();
@@ -266,9 +266,9 @@ protected:
 	bool PlaceInEarth(C4ID id);
 public:
 	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
-	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4ValueNumbers *);
+	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool fSaveSync, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, C4ValueNumbers *);
+	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers *);
 	bool StoreParticipantPlayers();
 	bool RecreatePlayerFiles();
 

@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2008  Günther Brammer
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Value to identify object definitions */
@@ -32,15 +27,15 @@ C4ID::NamesList C4ID::names;
 C4ID::LookupTable C4ID::lookup;
 
 const C4ID C4ID::None(std::string("None"));
+const C4ID C4ID::Clonk(std::string("Clonk"));
+const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 // TODO: Remove these eventually, since they are deprecated.
 const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
-const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Flame(std::string("FLAM"));
 const C4ID C4ID::Melee(std::string("MELE"));
-const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }
 

@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2003-2007  Sven Eberhardt
- * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2009, 2011  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object definition */
@@ -33,9 +27,7 @@
 #include <C4GameVersion.h>
 #include <C4Language.h>
 
-#ifdef DEBUGREC
 #include <C4Record.h>
-#endif
 
 C4DefList::C4DefList()
 {
@@ -219,6 +211,11 @@ C4Def* C4DefList::ID2Def(C4ID id)
 	return NULL;
 }
 
+C4Def * C4DefList::GetByName(const StdStrBuf & name)
+{
+	return ID2Def(C4ID(name));
+}
+
 int32_t C4DefList::GetIndex(C4ID id)
 {
 	C4Def *cdef;
@@ -290,14 +287,14 @@ int32_t C4DefList::RemoveTemporary()
 	return removed;
 }
 
-int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4)
+int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3)
 {
 	int32_t rcount=0;
 	C4Def *cdef,*prev,*next;
 	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
 	{
 		next=cdef->Next;
-		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],cdef->rC4XVer[3],ver1,ver2,ver3,ver4) > 0)
+		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],ver1,ver2,ver3) > 0)
 		{
 			if (prev) prev->Next=cdef->Next;
 			else FirstDef=cdef->Next;
@@ -395,13 +392,14 @@ void C4DefList::CallEveryDefinition()
 {
 	for (Table::iterator it = table.begin(); it != table.end(); ++it)
 	{
-#ifdef DEBUGREC
-		// TODO: Might not be synchronous on runtime join since is run by joining
-		// client but not by host. Might need to go to Synchronize().
-		char sz[32+1];
-		strncpy(sz, it->second->GetName(), 32+1);
-		AddDbgRec(RCT_Definition, sz, 32);
-#endif
+		if (Config.General.DebugRec)
+		{
+			// TODO: Might not be synchronous on runtime join since is run by joining
+			// client but not by host. Might need to go to Synchronize().
+			char sz[32+1];
+			strncpy(sz, it->first.ToString(), 32+1);
+			AddDbgRec(RCT_Definition, sz, 32);
+		}
 		C4AulParSet Pars(C4VPropList(it->second));
 		it->second->Call(PSF_Definition, &Pars);
 	}

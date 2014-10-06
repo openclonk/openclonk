@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Input to player control mapping
 
@@ -24,6 +21,7 @@
 #include "C4KeyboardInput.h"
 #include "C4LangStringTable.h"
 #include "C4Id.h"
+#include "C4TimeMilliseconds.h"
 
 #include <list>
 
@@ -58,6 +56,7 @@ public:
 		CDA_Script,          // default: Script callback
 		CDA_Menu,            // open player menu (async)
 		CDA_MenuOK, CDA_MenuCancel, CDA_MenuLeft, CDA_MenuUp, CDA_MenuRight, CDA_MenuDown, // player menu controls (async)
+		CDA_ObjectMenuTextComplete, // object menu fast-foward through text animation (async)
 		CDA_ObjectMenuOK, CDA_ObjectMenuOKAll, CDA_ObjectMenuSelect, CDA_ObjectMenuCancel, CDA_ObjectMenuLeft, CDA_ObjectMenuUp, CDA_ObjectMenuRight, CDA_ObjectMenuDown, // object menu controls (sync)
 		CDA_ZoomIn, CDA_ZoomOut // player viewport control (async)
 	};
@@ -87,9 +86,9 @@ public:
 	bool operator ==(const C4PlayerControlDef &cmp) const;
 
 	bool Execute(bool fUp, const C4KeyEventData &rKeyExtraData); // key was triggered - execute and return if handled
-	bool IsObjectMenuControl() const { return eAction>=CDA_ObjectMenuOK && eAction<=CDA_ObjectMenuDown; }
-	bool IsAsync() const { return eAction != CDA_None && eAction != CDA_Script && !IsObjectMenuControl(); } // true if to be executed directly when triggered
-	bool IsSync() const { return eAction == CDA_Script || IsObjectMenuControl(); } // true if to be executed via control queue
+	bool IsSyncObjectMenuControl() const { return eAction>=CDA_ObjectMenuOK && eAction<=CDA_ObjectMenuDown; }
+	bool IsAsync() const { return eAction != CDA_None && eAction != CDA_Script && !IsSyncObjectMenuControl(); } // true if to be executed directly when triggered
+	bool IsSync() const { return eAction == CDA_Script || IsSyncObjectMenuControl(); } // true if to be executed via control queue
 	bool IsValid() const { return eAction != CDA_None; }
 };
 
@@ -133,8 +132,8 @@ public:
 struct C4PlayerControlRecentKey
 {
 	C4KeyCodeEx pressed_key, matched_key;
-	DWORD tTime;
-	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, DWORD tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
+	C4TimeMilliseconds tTime;
+	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, C4TimeMilliseconds tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
 	bool operator ==(const C4KeyCodeEx &cmp) { return pressed_key==cmp; } // comparison op for finding items in lists: Search for the pressed key only
 };
 
@@ -155,7 +154,7 @@ private:
 		StdCopyStrBuf sKeyName;
 		void CompileFunc(StdCompiler *pComp);
 		void UpdateKeyName();
-		bool operator ==(const KeyComboItem &cmp) const { return sKeyName==cmp.sKeyName; }
+		bool operator ==(const KeyComboItem &cmp) const { return Key==cmp.Key; }
 	};
 	typedef std::vector<KeyComboItem> KeyComboVec;
 	KeyComboVec KeyCombo;
@@ -165,10 +164,13 @@ private:
 	C4KeyCodeEx TriggerKey;
 
 	StdCopyStrBuf sControlName; // name of the control to be executed on this key
+	StdCopyStrBuf sGUIName;    // name as displayed to player. If empty, name stored in control def should be used.
+	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog. If empty, name stored in control def should be used.
+	bool fGUIDisabled;   // whether this key can't be reassigned through the GUI dialogue
+	int32_t iGUIGroup;  // in which this control is grouped in the gui
 	int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 	int32_t iPriority;          // higher priority assignments get handled first
 	bool fOverrideAssignments;  // override all other assignments to the same key?
-	bool is_group_start; // true for first assignment in a group (for grouping in control config list box)
 
 	const C4PlayerControlAssignment *inherited_assignment; // valid for assignments that were copied from a parent: source assignment
 	bool is_inherited; // set for assignments that were copied from a parent set without modification
@@ -181,7 +183,8 @@ public:
 		CTM_Hold=      1<<0,        // the control will be put into "down"-mode
 		CTM_Release=   1<<1,        // the hold mode of the control will be released
 		CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
-		CTM_HandleDownStatesOnly = 1<<3 // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_HandleDownStatesOnly = 1<<3, // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_ClearRecentKeys = 1<<4  // if this assignment is triggered, RecentKeys are reset so no more combos can be generated
 	};
 
 private:
@@ -190,7 +193,7 @@ private:
 	bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 public:
-	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), is_group_start(false) {}
+	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), iGUIGroup(0) {}
 	~C4PlayerControlAssignment() {}
 
 	void CompileFunc(StdCompiler *pComp);
@@ -208,8 +211,12 @@ public:
 	bool operator <(const C4PlayerControlAssignment &cmp) const { return iPriority > cmp.iPriority; } // assignments are processed in DESCENDING priority!
 	const char *GetControlName() const { return sControlName.getData(); }
 	int32_t GetControl() const { return iControl; }
-	bool IsGroupStart() const { return is_group_start; }
+	const char *GetGUIName(const C4PlayerControlDefs &defs) const;
+	const char *GetGUIDesc(const C4PlayerControlDefs &defs) const;
+	bool IsGUIDisabled() const;
+	int32_t GetGUIGroup() const; 
 	bool IsRefsResolved() const { return fRefsResolved; }
+	void ResetRefsResolved() { fRefsResolved = false; } // Mark references to other assignments as not resolved
 	bool IsAlwaysUnhandled() const { return !!(iTriggerMode & CTM_AlwaysUnhandled); }
 	int32_t GetTriggerMode() const { return iTriggerMode; }
 	const C4KeyCodeEx &GetTriggerKey() const { return TriggerKey; }
@@ -230,7 +237,8 @@ class C4PlayerControlAssignmentSet
 private:
 	StdCopyStrBuf sName, sGUIName, sParentSetName;
 	const C4PlayerControlAssignmentSet *parent_set;
-	C4PlayerControlAssignmentVec Assignments;
+	C4PlayerControlAssignmentVec Assignments; // ordered by priority
+
 	bool has_keyboard;  
 	bool has_mouse;
 	bool has_gamepad;
@@ -254,7 +262,7 @@ public:
 	const char *GetGUIName() const { return sGUIName.getData(); }
 	bool IsWildcardName() const { return IsWildcardString(sName.getData()); }
 
-	C4PlayerControlAssignment *GetAssignmentByIndex(int32_t index);
+	C4PlayerControlAssignment *GetAssignmentByIndex(int32_t index); // assignments are ordered by priority
 	C4PlayerControlAssignment *GetAssignmentByControlName(const char *szControlName);
 	C4PlayerControlAssignment *GetAssignmentByControl(int32_t control);
 	void GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // match only by TriggerKey (last key of Combo) if fHoldKeysOnly
@@ -377,7 +385,7 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 

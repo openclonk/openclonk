@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetStartupPlayerCount</title>
+    <category>Player</category>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+    </syntax>
+    <desc>Returns the number of players scheduled to join the game when it intiially started. This value is determined before game start, so it can be used in early scenario initialization functions such as Initialize or InitializeMap.</desc>
+    <remark>The startup player count is not updated when a savegame is resumed with a different number of players.</remark>
+    <remark>The number of players actually joining the game might be lower due to clients disconnecting at game start or players trying to join with invalid player files. To get a reliable number of players, handle player joins and leaves directly in InitializePlayer and RemovePlayer callbacks or call <funclink>GetPlayerByCount</funclink> shortly after game start.</remark>
+    <related>
+      <funclink>GetPlayerCount</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2013-03</date>
+</funcs>

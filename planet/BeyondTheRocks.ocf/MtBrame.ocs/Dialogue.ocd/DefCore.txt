@@ -1,9 +1,0 @@
-[DefCore]
-id=Dialogue
-Version=5,2,0,1
-Category=C4D_StaticBack
-Width=8
-Height=20
-Offset=-4,-10
-
-

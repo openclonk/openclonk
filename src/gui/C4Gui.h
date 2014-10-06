@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008, 2011  Sven Eberhardt
- * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2005-2010  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // defines user controls
@@ -32,6 +23,7 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
+#include <C4FontLoader.h>
 #include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"
@@ -43,7 +35,6 @@
 
 #include <C4Id.h>
 
-#include <StdResStr2.h>
 #include <C4Window.h>
 
 // consts (load those from a def file some time)
@@ -226,7 +217,7 @@ namespace C4GUI
 
 
 	// expand text like "Te&xt" to "Te<c ffff00>x</c>t"
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, char &rcHotkey);
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey);
 
 	// make color readable on black: max alpha to 0x1f, max color hues
 	DWORD MakeColorReadableOnBlack(DWORD &rdwClr);
@@ -409,6 +400,7 @@ namespace C4GUI
 		void DrawBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets);  // draw horizontal gfx bar within element bounds, using gfx of vertical one
+		void DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength);
 
 		virtual bool IsOwnPtrElement() { return false; } // if true is returned, item will not be deleted when container is cleared
 		virtual bool IsExternalDrawDialog() { return false; }
@@ -429,7 +421,7 @@ namespace C4GUI
 		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // called by mouse: dragging process
 		virtual void StopDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam); // called by mouse: mouse released after dragging process
 
-		virtual bool OnHotkey(char cHotkey) { return false; } // return true when hotkey has been processed
+		virtual bool OnHotkey(uint32_t cHotkey) { return false; } // return true when hotkey has been processed
 
 	public:
 		bool DoContext(); // open context menu if assigned
@@ -491,7 +483,7 @@ namespace C4GUI
 		DWORD dwFgClr; // text color
 		int32_t x0, iAlign; // x-textstart-pos; horizontal alignment
 		CStdFont *pFont;
-		char cHotkey;   // hotkey for this label
+		uint32_t cHotkey;   // hotkey for this label
 		bool fAutosize;
 		bool fMarkup;
 
@@ -502,7 +494,7 @@ namespace C4GUI
 		virtual void DrawElement(C4TargetFacet &cgo); // output label
 		virtual void UpdateOwnPos();
 
-		virtual bool OnHotkey(char cHotkey); // focus control on correct hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // focus control on correct hotkey
 
 		virtual int32_t GetLeftIndent() { return 0; }
 
@@ -523,8 +515,10 @@ namespace C4GUI
 	class WoodenLabel : public Label
 	{
 	private:
-		time_t tAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
-		time_t tLastChangeTime;  // time when the label text was changed last. 0 if not initialized; set upon first drawing
+		uint32_t iAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
+
+		// Time when the label text was changed last. NULL if not initialized; set upon first drawing
+		C4TimeMilliseconds tLastChangeTime;  
 		int32_t iScrollPos, iScrollDir;
 		int32_t iRightIndent;
 	protected:
@@ -537,14 +531,15 @@ namespace C4GUI
 
 	public:
 		WoodenLabel(const char *szLblText, const C4Rect &rcBounds, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, int32_t iAlign=ACenter, bool fMarkup=true) // ctor
-				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), tAutoScrollDelay(0), tLastChangeTime(0), iScrollPos(0), iScrollDir(0), iRightIndent(0)
+				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), iAutoScrollDelay(0), tLastChangeTime(C4TimeMilliseconds::Now()), iScrollPos(0), iScrollDir(0), iRightIndent(0)
 		{ SetAutosize(false); this->rcBounds=rcBounds; }// ctor - re-sets bounds after SetText
 
 		static int32_t GetDefaultHeight(CStdFont *pUseFont=NULL);
 
 		void SetIcon(const C4Facet &rfctIcon);
-		void SetAutoScrollTime(time_t tDelay) { tAutoScrollDelay=tDelay; ResetAutoScroll(); }
-		void ResetAutoScroll() { tLastChangeTime=0; iScrollPos=iScrollDir=0; }
+		void SetAutoScrollTime(uint32_t tDelay) { iAutoScrollDelay=tDelay; ResetAutoScroll(); }
+		void ResetAutoScroll();
+
 		void SetRightIndent(int32_t iNewIndent) { iRightIndent = iNewIndent; }
 	};
 
@@ -741,7 +736,7 @@ namespace C4GUI
 		virtual void AfterElementRemoval()
 		{ if (pParent) pParent->AfterElementRemoval(); } // called by ScrollWindow to parent after an element has been removed
 
-		virtual bool OnHotkey(char cHotkey); // check all contained elements for hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // check all contained elements for hotkey
 
 	public:
 		Container();  // ctor
@@ -1029,7 +1024,7 @@ namespace C4GUI
 		DWORD dwCustomFontClr;    // text font color (valid only if pCustomFont)
 		bool fDown;         // if set, button is currently held down
 		bool fMouseOver;    // if set, the mouse hovers over the button
-		char cHotkey;   // hotkey for this button
+		uint32_t cHotkey;   // hotkey for this button
 		bool fEnabled;
 
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
@@ -1046,7 +1041,7 @@ namespace C4GUI
 		void SetDown(); // mark down and play sound
 		void SetUp(bool fPress);   // mark up and play sound
 
-		virtual bool OnHotkey(char cHotkey); // press btn on correct hotkey
+		virtual bool OnHotkey(uint32_t cHotkey); // press btn on correct hotkey
 
 	public:
 		Button(const char *szBtnText, const C4Rect &rtBounds); // ctor
@@ -1233,7 +1228,7 @@ namespace C4GUI
 		int32_t iCursorPos;            // cursor position: char, before which the cursor is located
 		int32_t iSelectionStart, iSelectionEnd; // selection range (start may be larger than end)
 		int32_t iMaxTextLength;        // maximum number of characters to be input here
-		DWORD dwLastInputTime;     // time of last input (for cursor flashing)
+		C4TimeMilliseconds tLastInputTime;     // time of last input (for cursor flashing)
 		int32_t iXScroll;              // horizontal scrolling
 		char cPasswordMask;         // character to be used for masking the contents. 0 for none.
 
@@ -1373,7 +1368,7 @@ namespace C4GUI
 		bool fEnabled;
 		CStdFont *pFont;
 		uint32_t dwEnabledClr, dwDisabledClr;
-		char cHotkey;
+		uint32_t cHotkey;
 
 	public:
 		CheckBox(const C4Rect &rtBounds, const char *szCaption, bool fChecked); // ctor
@@ -1393,7 +1388,7 @@ namespace C4GUI
 		virtual bool IsFocusOnClick() { return false; } // just check/uncheck on click; do not gain keyboard focus as well
 		virtual Control *IsFocusElement() { return fEnabled ? Control::IsFocusElement() : NULL; }; // this control can gain focus if enabled
 		virtual void DrawElement(C4TargetFacet &cgo); // draw checkbox
-		virtual bool OnHotkey(char cHotkey); // return true when hotkey has been processed
+		virtual bool OnHotkey(uint32_t cHotkey); // return true when hotkey has been processed
 
 	public:
 		void SetChecked(bool fToVal) { fChecked = fToVal; } // set w/o callback
@@ -1528,7 +1523,7 @@ namespace C4GUI
 		protected:
 			StdStrBuf sTitle; // sheet label
 			int32_t icoTitle; // sheet label icon
-			char cHotkey;
+			uint32_t cHotkey;
 			uint32_t dwCaptionClr; // caption color - default if 0
 			bool fHasCloseButton, fCloseButtonHighlighted;
 			bool fTitleMarkup;
@@ -1567,7 +1562,7 @@ namespace C4GUI
 		int32_t iSheetSpacing, iSheetOff; // distances of sheet captions
 		int32_t iCaptionLengthTotal, iCaptionScrollPos; // scrolling in captions (top only)
 		bool fScrollingLeft, fScrollingRight, fScrollingLeftDown, fScrollingRightDown; // scrolling in captions (top only)
-		time_t tLastScrollTime; // set when fScrollingLeftDown or fScrollingRightDown are true: Time for next scrolling if mouse is held down
+		C4TimeMilliseconds tLastScrollTime; // set when fScrollingLeftDown or fScrollingRightDown are true: Time for next scrolling if mouse is held down
 		int iSheetMargin;
 		bool fDrawSelf; // if border and bg shall be drawn
 
@@ -1715,7 +1710,7 @@ namespace C4GUI
 
 		protected:
 			StdStrBuf sText; // entry text
-			char cHotkey;       // entry hotkey
+			uint32_t cHotkey;       // entry hotkey
 			Icons icoIcon;      // icon to be drawn left of text
 			MenuHandler *pMenuHandler; // callback when item is selected
 			ContextHandler *pSubmenuHandler; // callback when submenu is opened
@@ -1729,7 +1724,7 @@ namespace C4GUI
 			virtual void MouseLeave(CMouse &rMouse)
 			{ if (GetParent()) ((ContextMenu *) GetParent())->MouseLeaveEntry(rMouse, this); }
 
-			virtual bool OnHotkey(char cKey) { return cKey==cHotkey; }
+			virtual bool OnHotkey(uint32_t cKey) { return cKey==cHotkey; }
 
 			virtual bool IsMenu() { return true; }
 
@@ -2235,7 +2230,7 @@ namespace C4GUI
 	class ResetButton : public CloseButton
 	{
 	public: ResetButton(const C4Rect &rtBounds) // ctor
-				: CloseButton(LoadResStr("[!]Reset"), rtBounds, true) {} };
+				: CloseButton(LoadResStr("IDS_BTN_RESET"), rtBounds, true) {} };
 
 	// a simple message dialog
 	class MessageDialog : public Dialog
@@ -2243,17 +2238,21 @@ namespace C4GUI
 	private:
 		bool fHasOK;
 		int32_t *piConfigDontShowAgainSetting;
+		class C4KeyBinding *pKeyCopy;
+		StdCopyStrBuf sCopyText; // text that goes into clipboard if user presses Ctrl+C on this window
 	public:
 		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16, btnReset=32,
 		               btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort
 		             };
 		enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };
 		MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize=dsRegular, int32_t *piConfigDontShowAgainSetting=NULL, bool fDefaultNo=false);
+		~MessageDialog();
 
 	protected:
 		virtual bool OnEnter() { if (!fHasOK) return false; Close(true); return true; }
 		void OnDontShowAgainCheck(C4GUI::Element *pCheckBox)
 		{ if (piConfigDontShowAgainSetting) *piConfigDontShowAgainSetting = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked(); }
+		bool KeyCopy();
 
 		virtual const char *GetID() { return "MessageDialog"; }
 		virtual int32_t GetZOrdering() { return C4GUI_Z_INPUT; }
@@ -2444,7 +2443,7 @@ namespace C4GUI
 		int32_t LDownX, LDownY;       // position where left button was pressed last
 		DWORD dwKeys;             // shift, ctrl, etc.
 		bool fActive;
-		time_t tLastMovementTime; // GetTime() when the mouse pos changed last
+		C4TimeMilliseconds tLastMovementTime; // C4TimeMilliseconds::Now() when the mouse pos changed last
 
 		// whether last input was done by mouse
 		// set to true whenever mouse pos changes or buttons are pressed
@@ -2475,8 +2474,8 @@ namespace C4GUI
 
 		void SetOwnedMouse(bool fToVal) { fActive=fToVal; }
 
-		void ResetToolTipTime() { tLastMovementTime = GetTime(); }
-		bool IsMouseStill() { return GetTime()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
+		void ResetToolTipTime() { tLastMovementTime = C4TimeMilliseconds::Now(); }
+		bool IsMouseStill() { return C4TimeMilliseconds::Now()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
 		void ResetActiveInput() { fActiveInput = false; }
 		bool IsActiveInput() { return fActiveInput; }
 

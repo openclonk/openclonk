@@ -12,7 +12,7 @@ material TeleGlove
 			scene_blend alpha_blend
 			texture_unit
 			{
-				texture TeleGlove.png
+				texture TeleGlove.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

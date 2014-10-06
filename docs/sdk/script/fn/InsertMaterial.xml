@@ -40,12 +40,18 @@
           <desc>vertical speed of material pixel to be inserted</desc>
           <optional />
         </param>
-      </params>
+        <param>
+          <type>proplist</type>
+          <name>out_insertpos</name>
+          <desc>If a writeable proplist is passed, members x and y are filled with the actual insertion position.</desc>
+          <optional />
+        </param>
+</params>
     </syntax>
     <desc>Inserts a material pixel at the given position and given speed.</desc>
+    <remark>If the target position already contains material of the same density as the inserted material, the engine will search upwards for a proper insertion position.</remark>
     <related>
       <funclink>Material</funclink>
-      <funclink>InsertMaterialAmount</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>

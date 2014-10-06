@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004, 2008-2009  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2008  Julian Raschke
- * Copyright (c) 2009  David Dormagen
- * Copyright (c) 2011  Maikel de Vries
- * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Round result information to be displayed in game over dialog
 
@@ -30,6 +24,7 @@
 #include <C4Object.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4DefList.h>
 
 // *** C4RoundResultsPlayer
 
@@ -45,6 +40,7 @@ void C4RoundResultsPlayer::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iLeagueScoreGain,  "GameScore",    -1));     // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankNew,  "Rank",    0));             // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankSymbolNew,  "RankSymbol",    0)); // name used in league reply!
+	pComp->Value(mkNamingAdapt(sLeagueProgressData,  "LeagueProgressData",    StdCopyStrBuf()));
 	StdEnumEntry<LeagueStatus> LeagueStatusEntries[] =
 	{
 		{ "",     RRPLS_Unknown },
@@ -76,6 +72,12 @@ void C4RoundResultsPlayer::EvaluatePlayer(C4Player *pPlr)
 		fctBigIcon.Create(pPlr->BigIcon.Wdt, pPlr->BigIcon.Hgt);
 		pPlr->BigIcon.Draw(fctBigIcon);
 	}
+	// progress data by player
+	C4PlayerInfo *pInfo = pPlr->GetInfo();
+	if (pInfo)
+		{
+		sLeagueProgressData.Copy(pInfo->GetLeagueProgressData());
+		}
 	// BigIcon from info: Doesn't work for some cases when player files got deleted already
 	/*C4PlayerInfo *pInfo = pPlr->GetInfo();
 	assert(pInfo);
@@ -91,6 +93,7 @@ void C4RoundResultsPlayer::EvaluateLeague(C4RoundResultsPlayer *pLeaguePlayerInf
 	iLeagueScoreGain = pLeaguePlayerInfo->iLeagueScoreGain;
 	iLeagueRankNew = pLeaguePlayerInfo->iLeagueRankNew;
 	iLeagueRankSymbolNew = pLeaguePlayerInfo->iLeagueRankSymbolNew;
+	sLeagueProgressData =pLeaguePlayerInfo->sLeagueProgressData;
 }
 
 void C4RoundResultsPlayer::AddCustomEvaluationString(const char *szCustomString)
@@ -112,6 +115,7 @@ bool C4RoundResultsPlayer::operator ==(const C4RoundResultsPlayer &cmp)
 	if (iLeagueRankNew != cmp.iLeagueRankNew) return false;
 	if (iLeagueRankSymbolNew != cmp.iLeagueRankSymbolNew) return false;
 	if (eLeagueStatus != cmp.eLeagueStatus) return false;
+	if (sLeagueProgressData != cmp.sLeagueProgressData) return false;
 	return true;
 }
 
@@ -129,6 +133,7 @@ C4RoundResultsPlayer &C4RoundResultsPlayer::operator =(const C4RoundResultsPlaye
 	iLeagueRankNew = cpy.iLeagueRankNew;
 	iLeagueRankSymbolNew = cpy.iLeagueRankSymbolNew;
 	eLeagueStatus = cpy.eLeagueStatus;
+	sLeagueProgressData = cpy.sLeagueProgressData;
 	return *this;
 }
 
@@ -288,8 +293,8 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
-		C4Object *pObj;
-		if ((pObj = ::Objects.Find(idGoal)))
+		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : NULL;
+		if (pObj)
 		{
 			// Check fulfilled per player, this enables the possibility of rivalry.
 			C4AulParSet pars(C4VInt(iPlayerNumber));
@@ -366,15 +371,28 @@ bool C4RoundResults::SettlementScoreIsHidden()
 	return fHideSettlementScore;
 }
 
-void C4RoundResults::SetLeaguePerformance(int32_t iNewPerf)
+void C4RoundResults::SetLeaguePerformance(int32_t iNewPerf, int32_t idPlayer)
 {
-	// Store to be sent later
-	iLeaguePerformance = iNewPerf;
-}
+	// Store to be sent later. idPlayer == 0 means global performance.
+	if(!idPlayer)
+		{
+		iLeaguePerformance = iNewPerf;
+		}
+	else
+		{
+		C4RoundResultsPlayer *pOwnPlr = Players.GetCreateByID(idPlayer);
+		pOwnPlr->SetLeaguePerformance(iNewPerf);
+		}
+	}
 
-int32_t C4RoundResults::GetLeaguePerformance() const
+int32_t C4RoundResults::GetLeaguePerformance(int32_t idPlayer) const
 {
-	return iLeaguePerformance;
+	if(!idPlayer)
+		return iLeaguePerformance;
+	else
+		if(C4RoundResultsPlayer *pPlr = Players.GetByID(idPlayer))
+			return pPlr->GetLeaguePerformance();
+	return 0;
 }
 
 bool C4RoundResults::Load(C4Group &hGroup, const char *szFilename)

@@ -48,32 +48,36 @@ private func Check()
 	if (GBackLiquid(0, iSource))
 	{
 		FillWithLiquid();
+		this.Name = this.Prototype.Name;
 	}
 	
 	if (iVolume == 0)
 	{
-		SetGraphics();
+		SetColor(RGB(0,0,0));
 		szLiquid = nil;
 	}
 	
 	//Value. Base value is 10.
 	if (iVolume == 0)
 		SetProperty("Value", 10);
-	//if(szLiquid == Oil)	SetProperty("Value", 10 + (iVolume / 15)); //No oil in current build
 	
 	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
-//over-ridden with metal barrel
 private func FillWithLiquid()
 {
 	var mat = GetMaterial();
-	// Accepts only water.
-	if (mat == Material("Water"))
+	if (AcceptMaterial(mat))
 	{
 		FillBarrel(MaterialName(mat));
 		UpdateBarrel();
 	}
+}
+
+private func AcceptMaterial(int material)
+{
+	// Accepts only water.
+	return material == Material("Water");
 }
 
 private func FillBarrel(string szMat)
@@ -112,9 +116,18 @@ private func EmptyBarrel(int angle, int strength, object clonk)
 private func UpdateBarrel()
 {
 	if (iVolume == 0)
-		SetMeshMaterial("Barrel");
+	{
+		SetColor(RGB(0,0,0));
+		this.Name = this.Prototype.Name;
+	}
 	else
-		SetMeshMaterial("Barrel_Water");
+	{
+		var tex = GetMaterialVal("TextureOverlay","Material",Material(szLiquid));
+		var color = GetAverageTextureColor(tex);
+		SetColor(color);
+		var materialTranslation = Translate(Format("Material%s",szLiquid));
+		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, materialTranslation);
+	}
 	return;
 }
 
@@ -209,6 +222,41 @@ public func IsBarrelForMaterial(string sznMaterial)
 
 public func IsLiquidContainer() { return true; }
 
+public func SetFilled(material, volume)
+{
+	szLiquid = material;
+	iVolume = volume;
+}
+
+public func CalcValue(object in_base, int for_player)
+{
+	var val = GetDefValue();
+	if (iVolume > 0)
+	{
+		val += GetValueOf(szLiquid) * iVolume / 300;
+	}
+	return val;
+}
+
+private func GetValueOf(string szMaterial) // 300 px of...
+{
+	// just some provisional values, feel free to change them
+	// for gameplay reasons
+	if (szMaterial == "Water") return -6;
+	if (szMaterial == "Lava") return -10;
+	if (szMaterial == "DuroLava") return -10;
+	if (szMaterial == "Acid") return -8;
+	if (szMaterial == "Firefluid") return 10;
+	return 0;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (szLiquid) props->AddCall("Fill", this, "SetFilled", Format("%v", szLiquid), iVolume);
+	return true;
+}
+
 /**
 Extract liquid from barrel
 @param sznMaterial: Material to extract; Wildcardsupport
@@ -243,7 +291,7 @@ public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
 		if (iVolume > 0)
 			return 0;
 		else if (IsBarrelForMaterial(sznMaterial))
-			szLiquid=sznMaterial;
+			szLiquid = sznMaterial;
 	inMaxAmount = BoundBy(BarrelMaxFillLevel() - iVolume, 0, inMaxAmount);
 	iVolume += inMaxAmount;
 	UpdateBarrel();

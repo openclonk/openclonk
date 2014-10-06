@@ -211,6 +211,21 @@ private func CheckForWinner()
 	return;
 }
 
+public func GetDescription(int plr)
+{
+	var teams=GetTeamPoints();
+	var lines=[];
+	
+	for(var i=0;i<GetLength(teams);++i)
+	{
+		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
+	}
+	
+	var msg=Format("$MsgGoalDesc$", GetPointLimit());
+	for(var i=0;i<GetLength(lines);++i)
+		msg=Format("%s|%s", msg, lines[i]);
+	return msg;
+}
 
 public func Activate(int byplr)
 {
@@ -228,19 +243,19 @@ public func Activate(int byplr)
 	return MessageWindow(msg, byplr);
 }
 
+// returns a list of the teams ingame
 private func GetTeamList()
 {
-	// Count enemy players.
 	var teams=[];
 	for(var i = 0; i < GetPlayerCount(); i++)
 	{
 		var p=GetPlayerByIndex(i);
 		var t=GetPlayerTeam(p);
-		var found=false;
+		
+		var found = false;
 		for(var x=0;x<GetLength(teams);++x)
-			if(teams[x] == t) found=true;
-		if(found)
-			continue;
+			if(teams[x] == t) {found = true; break;}
+		if(found) continue;
 		teams[GetLength(teams)]=t;
 	}
 	return teams;
@@ -254,15 +269,19 @@ private func GetTeamPoints()
 	
 	for(var i=0;i<GetLength(teams);++i)
 	{
-		var t=teams[i];
-		var p=0;
-		var names="";
+		var t = teams[i];
+		var p = 0;
+		var names = "";
 		for(var d=0;d<GetPlayerCount();++d)
 		{
 			var p=GetPlayerByIndex(d);
-			p+=player_points[p];
-			names=Format("%s, ", names);
-			names=Format("%s%s", names, GetTaggedPlayerName(p));
+			if(GetPlayerTeam(p) != t) continue;
+			
+			p += player_points[p];
+
+			var comma = ", ";
+			if(GetLength(names) == 0) comma = "";
+			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
 		}
 		
 
@@ -275,6 +294,14 @@ private func GetTeamPoints()
 public func GetShortDescription(int plr)
 {
 	return ""; // TODO
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetPointLimit() != 10) props->AddCall("Goal", this, "SetPointLimit", GetPointLimit());
+	if (GetRadius() != 300) props->AddCall("Goal", this, "SetRadius", GetRadius());
+	return true;
 }
 
 local Name = "$Name$";

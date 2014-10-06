@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2004, 2007-2008  Sven Eberhardt
- * Copyright (c) 2001, 2009  Peter Wortmann
- * Copyright (c) 2006-2009, 2011  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Miscellaneous script engine bits
 
@@ -48,9 +40,6 @@ C4AulScript::C4AulScript()
 {
 	// not compiled
 	State = ASS_NONE;
-
-	// defaults
-	Temporary = false;
 
 	// prepare lists
 	Prev = Next = NULL;
@@ -119,7 +108,6 @@ std::string C4AulScript::Translate(const std::string &text) const
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
 		C4AulFunc(pOwner, pName),
-		CodePos(0),
 		Script(Script),
 		OwnerOverloaded(NULL),
 		ParCount(0),
@@ -127,11 +115,11 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, 
 		tProfileTime(0)
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+	AddBCC(AB_EOFN);
 }
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
 		C4AulFunc(pOwner, FromFunc.GetName()),
-		CodePos(0),
 		Script(FromFunc.Script),
 		VarNamed(FromFunc.VarNamed),
 		ParNamed(FromFunc.ParNamed),
@@ -142,11 +130,13 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &Fro
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];
+	AddBCC(AB_EOFN);
 }
 
 C4AulScriptFunc::~C4AulScriptFunc()
 {
 	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	ClearCode();
 }
 
 void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
@@ -159,7 +149,7 @@ void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"))),
+		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine
@@ -210,6 +200,7 @@ void C4AulScriptEngine::Clear()
 	RegisterGlobalConstant("Global", GlobalPropList);
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
+	UserFiles.clear();
 }
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
@@ -244,6 +235,7 @@ bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
+	assert(UserFiles.empty()); // user files must not be kept open
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
@@ -274,6 +266,42 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 	global_functions.sort();
 	functions.splice(functions.end(), global_functions);
 	return functions;
+}
+
+int32_t C4AulScriptEngine::CreateUserFile()
+{
+	// create new file and return handle
+	// find empty handle
+	int32_t last_handle = 1;
+	for (std::list<C4AulUserFile>::const_iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() >= last_handle)
+			last_handle = (*i).GetHandle()+1;
+	// Create new user file
+	UserFiles.push_back(C4AulUserFile(last_handle));
+	return last_handle;
+}
+
+void C4AulScriptEngine::CloseUserFile(int32_t handle)
+{
+	// close user file given by handle
+	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() == handle)
+		{
+			UserFiles.erase(i);
+			break;
+		}
+}
+
+C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
+{
+	// get user file given by handle
+	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() == handle)
+		{
+			return &*i;
+		}
+	// not found
+	return NULL;
 }
 
 /*--- C4AulFuncMap ---*/

@@ -18,70 +18,99 @@ public func GetCarryTransform()
 	return Trans_Mul(Trans_Rotate(-90, 0, 0, 1), Trans_Translate(-4000,3500));
 }
 
-public func ControlUseStart(object clonk, int iX, int iY)
+public func ControlUse(object clonk, int iX, int iY)
 {
-	// Can clonk use the bucket?
-	if (!clonk->IsWalking() && !clonk->IsJumping())
-		return true;
-
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if (!clonk->HasHandAction())
-		return true;
-
-	var arm = "R";
-	var carry_bone = "pos_hand2";
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
-	{
-		arm = "L";
-		carry_bone = "pos_hand1";
-	}
-	var animation = Format("SwordSlash2.%s", arm);
-	
-	// figure out the kind of animation to use
-	var length=15;
-	if(clonk->IsJumping())
-		animation = Format("SwordJump2.%s",arm);
-
-	clonk->PlayAnimation(animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
-	clonk->UpdateAttach();
-
-	//Creates an imaginary line which runs for 'maxreach' distance (units in pixels)
-	//or until it hits a solid wall.
 	var angle = Angle(0,0,iX,iY);
+	var distance = GetBucketReachDistance(angle);
+	var x2 = Sin(180-angle,distance);
+	var y2 = Cos(180-angle,distance);
+
+	// spill bucket
+	if (IsBucketFilled())
+	{
+		Spill(x2, y2, distance >= maxreach);
+		EmptyBucket();
+		PlayAnimation(clonk);
+		return true;
+	}
+	
+	// otherwise try to fill bucket
+	if(GBackSolid(x2,y2))
+	{
+		if (clonk->HasHandAction())
+		{
+			var mat = GetMaterial(x2,y2);
+
+			if(GetMaterialVal("DigFree","Material",mat))
+			{
+				Sound("SoftTouch2");
+				var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
+				FillBucket(mat, amount);
+				PlayAnimation(clonk);
+			}
+		}
+	}
+	return true;
+}
+
+public func EmptyBucket()
+{
+	in_bucket_amount = 0;
+	in_bucket_mat = nil;
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350));
+}
+
+public func FillBucket(int mat, int amount)
+{
+	in_bucket_amount = amount;
+	in_bucket_mat = mat;
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(20,0,1,0), Trans_Rotate(-15,0,0,1), Trans_Scale(1350));
+}
+
+public func IsBucketFilled()
+{
+	return in_bucket_mat != nil;
+}
+
+/** Creates an imaginary line which runs for 'maxreach' distance (units in pixels) or until it hits a solid wall */
+private func GetBucketReachDistance(int angle)
+{
 	var distance = 0;
 	while(!GBackSolid(Sin(180-angle,distance),Cos(180-angle,distance)) && distance < maxreach)
 	{
 		++distance;
 	}
+	return distance;
+}
 
-	var x2 = Sin(180-angle,distance);
-	var y2 = Cos(180-angle,distance);
+private func PlayAnimation(object clonk)
+{
+	// animation only available for jumping and walking
+	if(!clonk->IsJumping() && !clonk->IsWalking())
+		return;
 
-	if (this.spill)
+	var arm, carry_bone;
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
-		Spill(x2, y2, distance >= maxreach);
-		this.spill = false;
-		in_bucket_amount = 0;
-		in_bucket_mat = nil;
-		clonk->CancelUse();
-		return true;
+		arm = "L";
+		carry_bone = "pos_hand1";
 	}
-
-	if(GBackSolid(x2,y2))
+	else
 	{
-		var mat = GetMaterial(x2,y2);
-
-		if(GetMaterialVal("DigFree","Material",mat))
-		{
-			var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
-			in_bucket_amount = amount;
-			in_bucket_mat = mat;
-			this.spill = true;
-			Sound("SoftTouch2");
-		}
+		arm = "R";
+		carry_bone = "pos_hand2";
 	}
-	clonk->CancelUse();
-	return true;
+	
+	// figure out the kind of animation to use
+	var length=15;
+	var animation;
+	if(clonk->IsJumping())
+		animation = Format("SwordJump2.%s",arm);
+	else
+		animation = Format("SwordSlash2.%s", arm);
+
+	clonk->PlayAnimation(animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+	clonk->UpdateAttach();
 }
 
 private func Spill(int x, int y, bool soft_spill)
@@ -173,7 +202,7 @@ private func DrawPixel(int x, int y)
 	in_bucket_amount--;
 }
 
-private func Hit()
+protected func Hit()
 {
 	Sound("DullWoodHit?");
 }
@@ -199,9 +228,23 @@ public func GetFillLevel() { return in_bucket_amount; }
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+public func SetFilled(string mat, int amount)
+{
+	in_bucket_mat = mat;
+	in_bucket_amount = amount;
+	return true;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (in_bucket_mat) props->AddCall("Fill", this, "SetFilled", Format("%v", in_bucket_mat), in_bucket_amount);
+	return true;
+}
+
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(15,1,0,0), Trans_Rotate(5,0,1,0), Trans_Rotate(-5,0,0,1), Trans_Translate(500,-400,0), Trans_Scale(1350)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350)),def);
 }
 
 local Name = "$Name$";

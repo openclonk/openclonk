@@ -21,3 +21,4 @@ local Description = "$Description$";
 local Rebuy = true;
 local BlastIncinerate = 5;
 local ContactIncinerate = 1;
+local Plane = 470;

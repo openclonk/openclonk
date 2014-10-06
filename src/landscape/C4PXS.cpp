@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2005, 2007  Peter Wortmann
- * Copyright (c) 2002, 2004-2006  Sven Eberhardt
- * Copyright (c) 2006-2007, 2009  Günther Brammer
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Pixel Sprite system for tiny bits of moving material */
@@ -38,6 +33,7 @@ static const C4Real WindDrift_Factor = itofix(1, 800);
 void C4PXS::Execute()
 {
 #ifdef DEBUGREC_PXS
+	if (Config.General.DebugRec)
 	{
 		C4RCExecPXS rc;
 		rc.x=x; rc.y=y; rc.iMat=Mat;
@@ -127,6 +123,7 @@ void C4PXS::Execute()
 	// No contact? Free movement
 	x=ctcox; y=ctcoy;
 #ifdef DEBUGREC_PXS
+	if (Config.General.DebugRec)
 	{
 		C4RCExecPXS rc;
 		rc.x=x; rc.y=y; rc.iMat=Mat;
@@ -140,10 +137,13 @@ void C4PXS::Execute()
 void C4PXS::Deactivate()
 {
 #ifdef DEBUGREC_PXS
-	C4RCExecPXS rc;
-	rc.x=x; rc.y=y; rc.iMat=Mat;
-	rc.pos = 2;
-	AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
+	if (Config.General.DebugRec)
+	{
+		C4RCExecPXS rc;
+		rc.x=x; rc.y=y; rc.iMat=Mat;
+		rc.pos = 2;
+		AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
+	}
 #endif
 	Mat=MNone;
 	::PXS.Delete(this);
@@ -247,12 +247,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	C4Rect VisibleRect(cgo.TargetX, cgo.TargetY, cgo.Wdt, cgo.Hgt);
 	VisibleRect.Enlarge(20);
 
-	// Lock primary surface
-#ifdef USE_DIRECTX
-	if (pD3D)
-		cgo.Surface->Lock();
-#endif
-
 	// First pass: draw simple PXS (lines/pixels)
 	float cgox = cgo.X - cgo.TargetX, cgoy = cgo.Y - cgo.TargetY;
 	unsigned int cnt;
@@ -283,12 +277,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
 				}
 		}
-
-	// Unlock primary surface
-#ifdef USE_DIRECTX
-	if (pD3D)
-		cgo.Surface->Unlock();
-#endif
 
 	// PXS graphics disabled?
 	if (!Config.Graphics.PXSGfx)
@@ -325,10 +313,16 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
 {
 	int32_t cnt;
 	for (cnt=0; cnt<num; cnt++)
+	{
+		// Must do these calculation steps separately, because the order of
+		// invokations of Random() is not defined if they're used as parameters
+		C4Real xdir = itofix(Random(level+1)-level/2); xdir/=10;
+		C4Real ydir = itofix(Random(level+1)-level); ydir/=10;
 		Create(mat,
 		       itofix(tx),itofix(ty),
-		       itofix(Random(level+1)-level/2)/10,
-		       itofix(Random(level+1)-level)/10);
+		       xdir,
+		       ydir);
+	}
 }
 
 bool C4PXSSystem::Save(C4Group &hGroup)

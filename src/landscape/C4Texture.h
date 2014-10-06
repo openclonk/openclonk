@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2007  Sven Eberhardt
- * Copyright (c) 2007  Peter Wortmann
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Textures used by the landscape */
@@ -36,6 +32,7 @@ public:
 	~C4Texture();
 	C4Surface * Surface32;
 
+	void SetAverageColor(uint32_t Color) { AvgColor = Color; }
 	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
 	StdStrBuf Name;
@@ -83,7 +80,7 @@ public:
 	void RemoveEntry(int32_t iIndex) { if (Inside<int32_t>(iIndex, 1, C4M_MaxTexIndex-1)) Entry[iIndex].Clear(); }
 	void Default();
 	void Clear();
-	void StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterials);
+	void StoreMapPalette(CStdPalette *, C4MaterialMap &rMaterials);
 	static bool LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t Init();
@@ -97,9 +94,9 @@ public:
 	C4Texture * GetTexture(const char *szTexture);
 	bool CheckTexture(const char *szTexture); // return whether texture exists
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
+	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 	int32_t GetTextureIndex(const char *pTexName);
 protected:
-	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 };
 
 extern C4TextureMap TextureMap;

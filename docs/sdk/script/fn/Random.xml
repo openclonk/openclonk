@@ -13,7 +13,7 @@
         <param>
           <type>int</type>
           <name>max</name>
-          <desc>Maximum value</desc>
+          <desc>Maximum value. Must be zero or greater. The bevaviour for negative values is undefined.</desc>
         </param>
       </params>
     </syntax>

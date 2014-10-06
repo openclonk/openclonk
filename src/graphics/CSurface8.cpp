@@ -1,21 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2002, 2007  Sven Eberhardt
- * Copyright (c) 2007, 2009-2010  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // a wrapper class to DirectDraw surfaces
 
@@ -131,10 +128,9 @@ bool CSurface8::Read(CStdStream &hGroup)
 		// Copy palette
 		for (cnt=0; cnt<256; cnt++)
 		{
-			pPal->Colors[cnt*3+0]=BitmapInfo.Colors[cnt].rgbRed;
-			pPal->Colors[cnt*3+1]=BitmapInfo.Colors[cnt].rgbGreen;
-			pPal->Colors[cnt*3+2]=BitmapInfo.Colors[cnt].rgbBlue;
-			pPal->Alpha[cnt]=0xff;
+			pPal->Colors[cnt] = C4RGB(BitmapInfo.Colors[cnt].rgbRed,
+			                          BitmapInfo.Colors[cnt].rgbGreen,
+			                          BitmapInfo.Colors[cnt].rgbBlue);
 		}
 	}
 
@@ -164,10 +160,10 @@ bool CSurface8::Read(CStdStream &hGroup)
 	return true;
 }
 
-bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
+bool CSurface8::Save(const char *szFilename, CStdPalette *bpPalette)
 {
 	C4BMP256Info BitmapInfo;
-	BitmapInfo.Set(Wdt,Hgt,bpPalette ? bpPalette : pPal->Colors);
+	BitmapInfo.Set(Wdt,Hgt, bpPalette ? bpPalette : pPal);
 
 	// Create file & write info
 	CStdFile hFile;

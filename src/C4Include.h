@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2005  Tobias Zwick
- * Copyright (c) 2005, 2008, 2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2010  Günther Brammer
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* This header is included first from every source file. It serves three purposes:
@@ -36,16 +31,14 @@ don't need to include this file or any of the files it includes. */
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
 #define DEBUGREC_PXS
 #define DEBUGREC_OBJCOM
 #define DEBUGREC_MATSCAN
-//#define DEBUGREC_RECRUITMENT
 #define DEBUGREC_MENU
 #define DEBUGREC_OCF
-#endif
+//#define DEBUGREC_RECRUITMENT
 
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
@@ -73,6 +66,14 @@ don't need to include this file or any of the files it includes. */
 #include <string>
 #include <utility>
 #include <vector>
+
+#ifdef USE_BOOST_REGEX
+#	include <boost/regex.hpp>
+	namespace re = boost;
+#else
+#	include <regex>
+	namespace re = std;
+#endif
 
 // debug memory management - must come after standard and boost headers,
 // because those libraries use placement new
@@ -104,7 +105,7 @@ inline void operator delete(void *p, const char *, long)
 #include "C4Real.h"
 #include "StdBuf.h"
 #include "StdFile.h"
-#include "StdResStr2.h"
+#include "C4Language.h"
 #include "C4Log.h"
 #include "C4Reloc.h"
 #include "C4Config.h"

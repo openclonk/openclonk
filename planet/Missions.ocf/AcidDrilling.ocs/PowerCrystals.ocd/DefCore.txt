@@ -1,0 +1,17 @@
+[DefCore]
+id=PowerCrystals
+Version=5,2,0,1
+Category=C4D_Structure
+Width=32
+Height=32
+Offset=-16,-16
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=100
+Value=50
+Mass=50
+Components=Metal=2
+Picture=0,0,32,32
+Exclusive=1
+Construction=1

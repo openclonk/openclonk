@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Custom game options and configuration dialog
 
@@ -22,72 +19,6 @@
 #define INC_C4GameOptions
 
 #include "C4Gui.h"
-
-class C4GameOptionsList;
-
-// scenario-defined game options (2do)
-class C4GameOptions
-{
-public:
-	// base class for an option
-	class Option
-	{
-	private:
-		Option *pNext; // singly linked list maintained by C4GameOptions class
-		friend class C4GameOptions;
-
-	public:
-		Option() : pNext(NULL) {}
-		virtual ~Option() {}
-
-		static Option *CreateOptionByTypeName(const char *szTypeName);
-		virtual void CompileFunc(StdCompiler *pComp) = 0;
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer) = 0;
-	};
-
-	// option of enumeration type
-	class OptionEnum : public Option
-	{
-	public:
-		// element of the enumeration
-		struct Element
-		{
-			StdCopyStrBuf Name;
-			int32_t id;
-
-			Element *pNext; // singly linked list maintained by OptionEnum class
-
-			Element() : Name(), id(0), pNext(NULL) {}
-			void CompileFunc(StdCompiler *pComp);
-		};
-
-	private:
-		Element *pFirstElement;
-
-	public:
-		OptionEnum() : pFirstElement(NULL) {}
-		virtual ~OptionEnum() { Clear(); }
-
-		void Clear();
-		virtual void CompileFunc(StdCompiler *pComp);
-
-	private:
-		virtual C4GUI::Element *CreateOptionControl(C4GameOptionsList *pContainer);
-	};
-
-private:
-	Option *pFirstOption; // linked list of options
-
-public:
-	C4GameOptions() : pFirstOption(NULL) {}
-	~C4GameOptions() { Clear(); }
-
-	void Clear();
-
-	void CompileFunc(StdCompiler *pComp);
-};
 
 // options dialog: created as listbox inside another dialog
 // used to configure some standard runtime options, as well as custom game options
@@ -101,6 +32,7 @@ private:
 	{
 	protected:
 		typedef C4GUI::Control BaseClass;
+		class C4GameOptionsList *pForDlg;
 
 		// primary subcomponent: forward focus to this element
 		C4GUI::Control *pPrimarySubcomponent;
@@ -129,6 +61,7 @@ private:
 	protected:
 		C4GUI::Label *pCaption;
 		C4GUI::ComboBox *pDropdownList;
+		bool fReadOnly;
 
 		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller) = 0;
 		void OnDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
@@ -137,6 +70,23 @@ private:
 		bool OnDropdownSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
 		{ DoDropdownSelChange(idNewSelection); Update(); return true; }
 	};
+
+	// drop down list to specify a custom scenario parameter
+	class OptionScenarioParameter : public OptionDropdown
+	{
+		const class C4ScenarioParameterDef *ParameterDef;
+		int32_t LastValue; bool LastValueValid;
+
+	public:
+		OptionScenarioParameter(class C4GameOptionsList *pForDlg, const class C4ScenarioParameterDef *parameter_def);
+
+	protected:
+		virtual void DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller);
+		virtual void DoDropdownSelChange(int32_t idNewSelection);
+
+		virtual void Update(); // update data to currently set option
+	};
+
 
 	// drop down list to specify central/decentral control mode
 	class OptionControlMode : public OptionDropdown
@@ -204,25 +154,43 @@ private:
 	};
 
 public:
-	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, bool fRuntime);
+	enum C4GameOptionsListSource
+	{
+		GOLS_PreGameSingle,
+		GOLS_PreGameNetwork,
+		GOLS_Lobby,
+		GOLS_Runtime
+	};
+
+	C4GameOptionsList(const C4Rect &rcBounds, bool fActive, C4GameOptionsListSource source, class C4ScenarioParameterDefs *param_defs=NULL, class C4ScenarioParameters *params=NULL);
 	~C4GameOptionsList() { Deactivate(); }
 
 private:
-	bool fRuntime; // set for runtime options dialog - does not provide pre-game options such as team colors
+	C4GameOptionsListSource source; // where to draw options from. e.g. lobby options such as team colors aren't presented at run-time
+	class C4ScenarioParameterDefs *param_defs; // where to pull parameters and parameter definitions from
+	class C4ScenarioParameters *params;
 
 	void InitOptions(); // creates option selection components
+	void ClearOptions(); // remove all option components
 
 public:
 	// update all option flags by current game state
 	void Update();
 	void OnSec1Timer() { Update(); }
 
+	// update to new parameter set. recreates option fields. set parameters to NULL for no options
+	void SetParameters(C4ScenarioParameterDefs *param_defs, C4ScenarioParameters *params);
+
 	// activate/deactivate periodic updates
 	void Activate();
 	void Deactivate();
 
 	// config
-	bool IsTabular() const { return fRuntime; } // wide runtime dialog allows tabular layout
-	bool IsRuntime() const { return fRuntime; }
+	bool IsRuntime() const { return source==GOLS_Runtime; }
+	bool IsTabular() const { return IsRuntime() || IsPreGame(); } // low lobby space doesn't allow tabular layout
+	bool IsPreGame() const { return source==GOLS_PreGameSingle || source==GOLS_PreGameNetwork; }
+	bool IsPreGameSingle() const { return source==GOLS_PreGameSingle; }
+
+	C4ScenarioParameters *GetParameters() { return params; } // used by children
 };
 #endif //INC_C4GameOptions

@@ -35,11 +35,7 @@ global func RandomX(int start, int end)
 // Returns the sign of x.
 global func Sign(int x)
 {
-	if (x > 0)
-		return 1;
-	else if (x < 0)
-		return -1;
-	return 0;
+	return (x>0)-(x<0);
 }
 
 // Tangens.
@@ -143,6 +139,12 @@ global func RectangleEnsureWithin(proplist first, proplist second)
 	return adjusted;
 }
 
+// checks whether a point {x, y} is in a normalized rectangle {x, y, w, h}
+global func IsPointInRectangle(proplist point, proplist rectangle)
+{
+	return (point.x >= rectangle.x && point.x <= rectangle.x + rectangle.w) && (point.y >= rectangle.y && point.y <= rectangle.w + rectangle.h);
+}
+
 //Moves param 'a' towards param 'b' by 'max' amount per frame
 global func MoveTowards(int a, int b, int max)
 {
@@ -150,4 +152,35 @@ global func MoveTowards(int a, int b, int max)
 	if(max == nil) max = 1;
 	if(a < b) return BoundBy(a + max,a,b);
 	if(a > b) return BoundBy(a - max,b,a);
+}
+
+global func FindHeight(int x)
+{
+	var y = 0;
+	while (!GBackSemiSolid(x, y) && y < LandscapeHeight())
+		y += 10;
+	while (GBackSemiSolid(x, y) && y)
+		y--;
+	return y;
+}
+
+/*
+	Returns the normal vector of the (solid) landscape at a point relative to an object.
+	Can f.e. be used to bounce projectiles.
+*/
+global func GetSurfaceVector(int x, int y)
+{
+	var normal = {x = 0, y = 0};
+	
+	var fac = 1;
+	for(var fac = 1; fac <= 4; fac *= 2)
+	{
+		if(GBackSolid(x + fac, y)) {--normal.x;}
+		if(GBackSolid(x - fac, y)) {++normal.x;}
+	
+		if(GBackSolid(x, y + fac)) {--normal.y;}
+		if(GBackSolid(x, y - fac)) {++normal.y;}
+	}
+	
+	return normal;
 }

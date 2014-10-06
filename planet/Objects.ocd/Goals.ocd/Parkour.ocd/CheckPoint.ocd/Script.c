@@ -26,6 +26,9 @@ static const PARKOUR_CP_Ordered = 16;
 static const PARKOUR_CP_Team = 32;
 static const PARKOUR_CP_Bonus = 64;
 
+// particle definition used for the effect around the check point
+local checkpoint_particles;
+
 public func SetCPMode(int mode)
 {
 	// PARKOUR_CP_Start always occurs alone.
@@ -87,6 +90,12 @@ local cleared_by_plr; // Array to keep track of players which were already here.
 
 protected func Initialize()
 {
+	checkpoint_particles =
+	{
+		Size = PV_KeyFrames(0, 0, 0, 250, 10, 500, 0, 750, 10),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 0, 501, 255, 1000, 0),
+		BlitMode = GFX_BLIT_Additive
+	};
 	cleared_by_plr = [];
 	cp_mode = PARKOUR_CP_Check;
 	cp_size = 20;
@@ -250,7 +259,7 @@ protected func DoGraphics()
 {
 	// Clear all overlays first.
 	for (var i = 1; i <= 3; i++)
-		SetGraphics(nil, 0, i);
+		SetGraphics(nil, nil, i);
 	// Start & Finish.
 	if (cp_mode & PARKOUR_CP_Start || cp_mode & PARKOUR_CP_Finish)
 	{
@@ -282,10 +291,10 @@ protected func UpdateGraphics(int time)
 	// Create two sparks at opposite sides.
 	var angle = (time * 10) % 360;
 	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
-	angle = (angle + 180) % 360;
-	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
+	checkpoint_particles.R = (color >> 16) & 0xff;
+	checkpoint_particles.G = (color >>  8) & 0xff;
+	checkpoint_particles.B = (color >>  0) & 0xff;
+	CreateParticle("SphereSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 18 * 5, checkpoint_particles);
 	return;
 }
 
@@ -335,6 +344,35 @@ public func ClearCPBack()
 	}
 	return;
 }
+
+// Storing checkpoints in Objects.c
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = GetCPSize();
+	if (v != 20) props->AddCall("Checkpoint", this, "SetCPSize", v);
+	// Checkpoints without a goal? Use regular saving.
+	if (!cp_con)
+	{
+		
+		if (v = GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(v, "PARKOUR_CP_"));
+		if (v = GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", v);
+		return true;
+	}
+	// Special checkpoints
+	props->RemoveCreation();
+	if (cp_mode & PARKOUR_CP_Start)
+		props->AddCall(SAVEOBJ_Creation, cp_con, "SetStartpoint", GetX(), GetY());
+	else if (cp_mode & PARKOUR_CP_Finish)
+		props->AddCall(SAVEOBJ_Creation, cp_con, "SetFinishpoint", GetX(), GetY(), !!(cp_mode & PARKOUR_CP_Team));
+	else
+	{
+		var other_cp_modes = cp_mode & (~PARKOUR_CP_Finish) & (~PARKOUR_CP_Start);
+		props->AddCall(SAVEOBJ_Creation, cp_con, "AddCheckpoint", GetX(), GetY(), GetBitmaskNameByValue(other_cp_modes, "PARKOUR_CP_"));
+	}
+	return true;
+}
+
 
 /*-- Proplist --*/
 local Name = "$Name$";

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetAnimationBoneTransform</title>
+    <category>Animations</category>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>animation_number</name>
+          <desc>Animation number of the animation whose bone transformation to change. The animation must have been created with <funclink>TransformBone</funclink>.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>transformation</name>
+          <desc>An array with 12 entries representing a 3x4 transformation matrix in row-major order. These matrices can be created via <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> and <funclink>Trans_Scale</funclink> or they can be combined via <funclink>Trans_Mul</funclink>.</desc>
+        </param>
+	<param>
+	  <type>int</type>
+	  <name>attach_number</name>
+	  <desc>If given, refers to the number of the attached mesh whose animation to change.</desc>
+	  <optional />
+	</param>
+      </params>
+    </syntax>
+    <desc>This function can be used to change the transformation of a bone set with <funclink>TransformBone</funclink>. This allows to create dynamic animations by script. Returns <code>true</code> if the new transformation was set or <code>false</code> if there is no such animation node or it was not created with <funclink>TransformBone</funclink>.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <remark>The transformation passed to this function is not completely arbitrary, in particular it must not have components which skew the mesh along one of the axes. Skewing is not supported by the animation blending system. Skew matrices cannot be produced with one of the Trans_* functions directly, but it can result of the multiplication of a rotation matrix with a rotated scale matrix, e.g. <code><funclink>Trans_Mul</funclink>(<funclink>Trans_Rotate</funclink>(...), <funclink>Trans_Scale(...)</funclink>, <funclink>Trans_Rotate</funclink>(...))</code>. Skewing cannot occur by combining translation and rotation matrices only.</remark>
+    <examples>
+      <example>
+        <code><funclink>SetAnimationBoneTransform</funclink>(animation_number, <funclink>Trans_Rotate</funclink>(<funclink>FrameCounter</funclink>() % 360, 0, 1, 0));</code>
+        <text>Script for a timer to be called each frame: The bone for which the animation with <code>animation_number</code> was started is turning with one revolution per 360 frames.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>TransformBone</funclink>
+      <funclink>StopAnimation</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2013-05</date>
+</funcs>

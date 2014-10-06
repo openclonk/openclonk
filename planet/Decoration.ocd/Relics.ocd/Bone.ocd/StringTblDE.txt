@@ -1,0 +1,2 @@
+Name=Knochen
+Description=Relikt des Lebens.

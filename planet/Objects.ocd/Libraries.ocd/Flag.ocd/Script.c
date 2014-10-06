@@ -3,16 +3,16 @@
 	It also serves as an energy transmitter.
 */
 
-static const LibraryFlag_standard_radius = 200;
 static LibraryFlag_flag_list;
 
+local DefaultFlagRadius = 200; // Radius of new flag of this type, unless overwritten by SetFlagRadius().
 local lflag;
 
 public func IsFlagpole(){return true;}
 
 func RefreshAllFlagLinks()
 {
-	for(var f in LibraryFlag_flag_list)
+	for(var f in LibraryFlag_flag_list) if (f)
 	{
 		f->ScheduleRefreshLinkedFlags();
 	}
@@ -38,7 +38,7 @@ func RefreshAllPowerHelpers()
 	var neutral = nil;
 	for(var obj in Library_Power_power_compounds)
 	{
-		if(!obj.neutral) continue;
+		if(!obj || !obj.neutral) continue;
 		neutral = obj;
 		break;
 	}
@@ -52,6 +52,7 @@ func RefreshAllPowerHelpers()
 	for(var i = GetLength(Library_Power_power_compounds); --i >= 0;)
 	{
 		var obj = Library_Power_power_compounds[i];
+		if (!obj) continue;
 		if(GetLength(obj.power_links) == 0 && GetLength(obj.sleeping_links) == 0)
 		{
 			obj->RemoveObject();
@@ -66,12 +67,17 @@ func RefreshAllPowerHelpers()
 
 func RedrawFlagRadius()
 {
-	//ClearFlagMarkers();
+	// Flag deactivated by setting empty radius
+	if (!lflag.radius)
+	{
+		ClearFlagMarkers();
+		return true;
+	}
 	
 	//var flags = FindObjects(Find_ID(FlagPole),Find_Exclude(target), Find_Not(Find_Owner(GetOwner())), /*Find_Distance(FLAG_DISTANCE*2 + 10,0,0)*/Sort_Func("GetLifeTime"));
 	var other_flags = [];
 	var i = 0;
-	for(var f in LibraryFlag_flag_list)
+	for(var f in LibraryFlag_flag_list) if (f)
 	{
 		//if(f->GetOwner() == GetOwner()) continue;
 		if(f == this) continue;
@@ -89,7 +95,7 @@ func RedrawFlagRadius()
 		var y=-Cos(i, lflag.radius);	
 		//var inEnemy = false;
 		
-		for(var f in other_flags)
+		for(var f in other_flags) if (f)
 		{
 			if(Distance(GetX()+x,GetY()+y,f->GetX(),f->GetY()) <= f->GetFlagRadius())
 			{
@@ -139,6 +145,8 @@ func RedrawFlagRadius()
 		}
 		SetLength(lflag.range_markers, old + 1);
 	}
+	
+	return true;
 }
 
 func RefreshOwnershipOfSurrounding()
@@ -149,11 +157,13 @@ func RefreshOwnershipOfSurrounding()
 		if(obj->GetOwner() == o) continue;
 		var old = obj->GetOwner();
 		obj->SetOwner(o);
-		obj->~OnOwnerChange(old);
 	}
 }
 public func Initialize()
 {
+	// no falling down anymore
+	SetCategory(C4D_StaticBack);
+	
 	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
 		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
 
@@ -165,6 +175,8 @@ public func Initialize()
 	
 	// linked flags - optimization for power system
 	RefreshAllFlagLinks();
+	
+	return _inherited(...);
 }
 
 public func Construction()
@@ -175,7 +187,7 @@ public func Construction()
 	lflag =
 	{
 		construction_time = FrameCounter(),
-		radius = LibraryFlag_standard_radius,
+		radius = GetID()->GetFlagRadius(),
 		range_markers = [],
 		linked_flags = [],
 		power_helper = nil
@@ -227,6 +239,20 @@ func FxRefreshLinkedFlagsTimer()
 	return -1;
 }
 
+// Returns all flags allied to owner of which the radius intersects the given circle
+func FindFlagsInRadius(object center_object, int radius, int owner)
+{
+	var flag_list = [];
+	if (LibraryFlag_flag_list) for(var flag in LibraryFlag_flag_list)
+	{
+		if(!IsAllied(flag->GetOwner(), owner)) continue;
+		if(flag == center_object) continue;
+		if(ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) continue;
+		flag_list[GetLength(flag_list)] = flag;
+	}
+	return flag_list;
+}
+
 func RefreshLinkedFlags()
 {
 	// failsafe - the array should exist
@@ -248,6 +274,7 @@ func RefreshLinkedFlags()
 		{
 			if(!IsAllied(flag->GetOwner(), owner)) continue;
 			if(GetIndexOf(current, flag) != -1) continue;
+			if(GetIndexOf(new, flag) != -1) continue;
 			if(flag == this) continue;
 			
 			if(ObjectDistance(oldflag, flag) > oldflag->GetFlagRadius() + flag->GetFlagRadius()) continue;
@@ -298,6 +325,7 @@ func RefreshPowerHelper(h)
 		if(o == nil) continue; // possible
 		
 		var actual = Library_Power->GetPowerHelperForObject(o.obj);
+		if (!actual) continue;
 		if(actual == h) continue; // right one already
 		// remove from old and add to new
 		h->RemovePowerLink(o.obj, true);
@@ -334,7 +362,7 @@ public func GetLinkedFlags(){return lflag.linked_flags;}
 private func ClearFlagMarkers()
 {
 	for(var obj in lflag.range_markers)
-		obj->RemoveObject();
+		if (obj) obj->RemoveObject();
 	lflag.range_markers = [];
 }
 
@@ -352,9 +380,8 @@ public func SetFlagRadius(int to)
 }
 
 // reassign owner of flag markers for correct color
-func OnOwnerChange(old)
+func OnOwnerChanged(int new_owner, int old_owner)
 {
-	var new_owner = GetOwner();
 	for(var marker in lflag.range_markers)
 	{
 		if(!marker) continue;
@@ -363,6 +390,20 @@ func OnOwnerChange(old)
 	}
 }
 
-public func GetFlagRadius(){return lflag.radius;}
+// callback from construction library: Create a special preview that gives extra info about affected buildings / flags
+func CreateConstructionPreview(object constructing_clonk)
+{
+	return CreateObject(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
+}
+
+public func GetFlagRadius(){if (lflag) return lflag.radius; else return DefaultFlagRadius;}
 public func GetFlagConstructionTime() {return lflag.construction_time;}
 public func GetFlagMarkerID(){return LibraryFlag_Marker;}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Category"); // category is always set to StaticBack...
+	if (lflag && lflag.radius != DefaultFlagRadius) props->AddCall("Radius", this, "SetFlagRadius", lflag.radius);
+	return true;
+}

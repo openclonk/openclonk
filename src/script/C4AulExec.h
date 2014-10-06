@@ -1,26 +1,26 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2006-2007  Sven Eberhardt
- * Copyright (c) 2006, 2009-2010  Peter Wortmann
- * Copyright (c) 2007, 2009-2011  Günther Brammer
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+ * Copyright (c) 2001, 2006-2007, Sven Eberhardt
+ * Copyright (c) 2006, Peter Wortmann
+ * Copyright (c) 2007, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #ifndef C4AULEXEC_H
 #define C4AULEXEC_H
 
 #include <C4Aul.h>
+#include "C4TimeMilliseconds.h"
 
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
@@ -50,27 +50,29 @@ private:
 
 	int iTraceStart;
 	bool fProfiling;
-	time_t tDirectExecStart, tDirectExecTotal; // profiler time for DirectExec
+	C4TimeMilliseconds tDirectExecStart;
+	uint32_t tDirectExecTotal; // profiler time for DirectExec
 	C4AulScript *pProfiledScript;
 
 	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
 	C4Value Values[MAX_VALUE_STACK];
 
 public:
-	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
+	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 
 	void StartTrace();
 	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
 	void StopProfiling(); // stop the profiler and displays results
 	void AbortProfiling() { fProfiling=false; }
-	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = GetTime(); }
-	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += GetTime() - tDirectExecStart; }
+	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = C4TimeMilliseconds::Now(); }
+	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += C4TimeMilliseconds::Now() - tDirectExecStart; }
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
 	void LogCallStack();
 	static C4String *FnTranslate(C4PropList * _this, C4String *text);
+	static bool FnLogCallStack(C4PropList * _this);
 	void ClearPointers(C4Object *);
 
 private:

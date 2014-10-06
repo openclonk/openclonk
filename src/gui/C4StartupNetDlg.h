@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Sven Eberhardt
- * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2010  Julius Michaelis
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Network game selection dialog
 
@@ -66,6 +61,7 @@ private:
 	StdStrBuf sRefClientAddress;      // set during reference retrieval: reference server address
 	C4Network2RefClient *pRefClient; // set during reference retrieval: reference request client
 	C4Network2Reference *pRef;       // set for retrieved references
+	
 	bool fError;                     // if set, the label was changed to an error message and no more updates are done
 	StdStrBuf sError;
 	QueryType eQueryType;            // valid if pRefClient is set: Where the ref query is originating
@@ -159,7 +155,7 @@ private:
 
 
 protected:
-	virtual bool HasBackground() { return true; }
+	virtual bool HasBackground() { return false; }
 	virtual void DrawElement(C4TargetFacet &cgo);
 
 	virtual C4GUI::Control *GetDefaultControl(); // get Auto-Focus control
@@ -195,11 +191,16 @@ protected:
 private:
 	void UpdateMasterserver(); // creates masterserver object if masterserver is enabled; destroy otherwise
 	void UpdateList(bool fGotReference = false);
+	void UpdateUpdateButton();
 	void UpdateCollapsed();
 	void UpdateSelection(bool fUpdateCollapsed);
 	void UpdateDlgMode(); // update button visibility after switching between game sel list and chat
 
 	void AddReferenceQuery(const char *szAddress, C4StartupNetListEntry::QueryType eQueryType); // add a ref searcher entry and start searching
+
+	// set during update information retrieval
+	C4Network2UpdateClient pUpdateClient;
+	bool fUpdateCheckPending;
 
 	DlgMode GetDlgMode();
 
@@ -216,7 +217,7 @@ public:
 
 	void OnSec1Timer(); // idle proc: update list
 
-	void CheckVersionUpdate(const char *szUpdateURL, const char *szVersion); // make an update button visible if the passed url is a valid update url
+	void CheckVersionUpdate(); // check if a new update is available and make an update button visible if yes
 };
 
 

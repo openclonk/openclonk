@@ -12,7 +12,6 @@ uniform vec2 resolution;
 
 // Center position
 uniform vec2 center;
-
 // Texture map
 #ifndef NO_BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;

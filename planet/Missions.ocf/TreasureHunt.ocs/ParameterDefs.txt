@@ -1,0 +1,15 @@
+[ParameterDef]
+ID=Bars
+Achievement=Bars
+	[Options]
+		[Option]
+		Description=$Found5$
+		Value=1
+
+		[Option]
+		Description=$Found10$
+		Value=2
+
+		[Option]
+		Description=$Found20$
+		Value=3

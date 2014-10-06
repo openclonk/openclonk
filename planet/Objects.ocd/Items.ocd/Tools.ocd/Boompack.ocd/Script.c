@@ -23,6 +23,14 @@ local controllable;
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 700; }
 
+public func GetCarryTransform(clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 0, -6500);
+	
+	return Trans_Translate(-1500, 0, 0);
+}
+
 protected func Construction()
 {
 	//flight length
@@ -103,6 +111,8 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 		JumpOff(rider,30);
 	}
 
+	if(!Random(105)) Sound("Cracker");
+
 	if(fuel<=0)
 	{
 		DoFireworks();
@@ -119,13 +129,12 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 		SetR(angle);
 	}
 	
-	var sizemod = ignition*ignition/3;
-	
-	var x = -Sin(GetR(),22);
-	var y = +Cos(GetR(),22);
-	
-	CreateParticle("ExploSmoke",x,y,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
-	CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
+	var x = -Sin(GetR(), 10);
+	var y = +Cos(GetR(), 10);
+
+	var xdir = GetXDir() / 2;
+	var ydir = GetYDir() / 2;
+	CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
 	
 	fuel--;
 }
@@ -189,7 +198,9 @@ func Launch(int angle, object clonk)
 	SetCategory(C4D_Vehicle);
 
 	Exit();
+	Sound("BoompackLaunch");
 	AddEffect("Flight",this,150,1,this);
+	Sound("BoompackFly", false, 60, nil, 1);
 	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
@@ -220,6 +231,7 @@ func DoFireworks()
 {
 	RemoveEffect("Flight",this);
 	Fireworks();
+	Sound("BlastFirework", false, 200);
 	Explode(30);
 }
 
@@ -253,7 +265,7 @@ func OnProjectileHit()
 	Incinerate();
 }
 
-func IsChemicalProduct() { return true; }
+func IsInventorProduct() { return true; }
 
 private func DefaultPicTransform() { return SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300))); }
 

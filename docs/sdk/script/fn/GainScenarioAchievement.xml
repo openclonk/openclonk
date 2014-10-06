@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GainScenarioAchievement</title>
+    <category>Player</category>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>id</name>
+          <desc>ID of achievement to gain. Must be defined as a custom scenario parameter for the scenario.</desc>
+        </param>
+        <param>
+          <type>value</type>
+          <name>int</name>
+          <desc>Value to set for this achievement. Defaults to 1.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>player</type>
+          <name>int</name>
+          <desc>Value to set for this achievement. If nil or NO_OWNER, the achievement is gained for all player currently in the game.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>scenario_name</name>
+          <desc>Can be set to the filename of another scenario to gain an achievement for that scenario. Scenario paths contain all .oc* paths, e.g. "Missions.ocf\Raid.ocs". Defaults to the filename of the current scenario or its origin.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Gain a scenario achievement. Gained achievements are represented as small symbols beside the scenario name in the selection screen.</desc>
+    <remark>Make sure the gain the achievement before players are saved, i.e. before the game is evaluated. Otherwise, gained achievements are not stored.</remark>
+    <related><funclink>GainMissionAccess</funclink></related>
+    <related><emlink href="scenario/ParameterDefs.xml">Scenario parameter definitions</emlink></related>
+  </func>
+  <author>Sven2</author><date>2014-09</date>
+</funcs>

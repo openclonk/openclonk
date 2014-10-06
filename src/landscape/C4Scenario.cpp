@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2002, 2004-2008  Sven Eberhardt
- * Copyright (c) 2004-2005  Peter Wortmann
- * Copyright (c) 2006, 2009, 2011  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Core component of a scenario file */
@@ -147,7 +142,7 @@ void C4SHead::Default()
 	Origin.Clear();
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
-	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
+	C4XVer[0] = C4XVer[1] = C4XVer[2] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
 	Film = 0;
@@ -213,8 +208,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 
 void C4SPlrStart::Default()
 {
-	NativeCrew=C4ID::None;
-	Crew.Set(1,0,1,10);
 	Wealth.Set(0,0,0,250);
 	Position[0]=Position[1]=-1;
 	EnforcePosition=0;
@@ -223,8 +216,8 @@ void C4SPlrStart::Default()
 	ReadyVehic.Default();
 	ReadyMaterial.Default();
 	BuildKnowledge.Default();
-	HomeBaseMaterial.Default();
-	HomeBaseProduction.Default();
+	BaseMaterial.Default();
+	BaseProduction.Default();
 }
 
 bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
@@ -234,32 +227,30 @@ bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
 
 bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 {
-	return (NativeCrew==rhs.NativeCrew)
-	       && (Crew == rhs.Crew)
-	       && (Wealth == rhs.Wealth)
+	return (Wealth == rhs.Wealth)
 	       && (ReadyCrew == rhs.ReadyCrew)
 	       && (ReadyBase == rhs.ReadyBase)
 	       && (ReadyVehic == rhs.ReadyVehic)
 	       && (ReadyMaterial == rhs.ReadyMaterial)
 	       && (BuildKnowledge == rhs.BuildKnowledge)
-	       && (HomeBaseMaterial == rhs.HomeBaseMaterial)
-	       && (HomeBaseProduction == rhs.HomeBaseProduction);
+	       && (BaseMaterial == rhs.BaseMaterial)
+	       && (BaseProduction == rhs.BaseProduction);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(NativeCrew, "StandardCrew",          C4ID::None));
-	pComp->Value(mkNamingAdapt(Crew,                    "Clonks",                C4SVal(1, 0, 1, 10), true));
+	C4IDList crewDefault;
+	crewDefault.SetIDCount(C4ID::Clonk,1,true);
 	pComp->Value(mkNamingAdapt(Wealth,                  "Wealth",                C4SVal(0, 0, 0,250), true));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
-	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  C4IDList()));
+	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  crewDefault));
 	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyVehic,              "Vehicles",              C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
 	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
-	pComp->Value(mkNamingAdapt(HomeBaseMaterial,        "HomeBaseMaterial",      C4IDList()));
-	pComp->Value(mkNamingAdapt(HomeBaseProduction,      "HomeBaseProduction",    C4IDList()));
+	pComp->Value(mkNamingAdapt(BaseMaterial,        "BaseMaterial",      C4IDList()));
+	pComp->Value(mkNamingAdapt(BaseProduction,      "BaseProduction",    C4IDList()));
 }
 
 void C4SLandscape::Default()
@@ -291,7 +282,8 @@ void C4SLandscape::Default()
 	KeepMapCreator=0;
 	SkyScrollMode=0;
 	FoWRes=C4FogOfWar::DefResolutionX;
-	MaterialZoom=8;
+	MaterialZoom=4;
+	FlatChunkShapes=false;
 }
 
 void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
@@ -312,8 +304,8 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
 	pComp->Value(mkNamingAdapt(mkStringAdaptMA(SkyDef), "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
-	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            false));
-	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               true));
+	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));
+	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               1));
 	pComp->Value(mkNamingAdapt(LeftOpen,                "LeftOpen",              0));
 	pComp->Value(mkNamingAdapt(RightOpen,               "RightOpen",             0));
 	pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      true));
@@ -334,7 +326,8 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
-	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          8));
+	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          4));
+	pComp->Value(mkNamingAdapt(FlatChunkShapes,         "FlatChunkShapes",       false));
 }
 
 void C4SWeather::Default()
@@ -486,127 +479,5 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 
 bool C4SGame::IsMelee()
 {
-	return (Goals.GetIDCount(C4ID::Melee));
+	return !!(Goals.GetIDCount(C4ID::Melee));
 }
-
-// scenario sections
-
-const char *C4ScenSect_Main = "main";
-
-C4ScenarioSection::C4ScenarioSection(char *szName)
-{
-	// copy name
-	if (szName && !SEqualNoCase(szName, C4ScenSect_Main) && *szName)
-	{
-		this->szName = new char[strlen(szName)+1];
-		SCopy(szName, this->szName);
-	}
-	else
-		this->szName = const_cast<char *>(C4ScenSect_Main);
-	// zero fields
-	szTempFilename = szFilename = 0;
-	fModified = false;
-	// link into main list
-	pNext = Game.pScenarioSections;
-	Game.pScenarioSections = this;
-}
-
-C4ScenarioSection::~C4ScenarioSection()
-{
-	// del following scenario sections
-	while (pNext)
-	{
-		C4ScenarioSection *pDel = pNext;
-		pNext = pNext->pNext;
-		pDel->pNext = NULL;
-		delete pDel;
-	}
-	// del temp file
-	if (szTempFilename)
-	{
-		EraseItem(szTempFilename);
-		delete szTempFilename;
-	}
-	// del filename if assigned
-	if (szFilename) delete szFilename;
-	// del name if owned
-	if (szName != C4ScenSect_Main) delete szName;
-}
-
-bool C4ScenarioSection::ScenarioLoad(char *szFilename)
-{
-	// safety
-	if (this->szFilename || !szFilename) return false;
-	// store name
-	this->szFilename = new char[strlen(szFilename)+1];
-	SCopy(szFilename, this->szFilename, _MAX_FNAME);
-	// extract if it's not an open folder
-	if (Game.ScenarioFile.IsPacked()) if (!EnsureTempStore(true, true)) return false;
-	// donce, success
-	return true;
-}
-
-C4Group *C4ScenarioSection::GetGroupfile(C4Group &rGrp)
-{
-	// check temp filename
-	if (szTempFilename)
-	{
-		if (rGrp.Open(szTempFilename)) return &rGrp;
-		else return NULL;
-	}
-	// check filename within scenario
-	if (szFilename)
-	{
-		if (rGrp.OpenAsChild(&Game.ScenarioFile, szFilename)) return &rGrp;
-		else return NULL;
-	}
-	// unmodified main section: return main group
-	if (SEqualNoCase(szName, C4ScenSect_Main)) return &Game.ScenarioFile;
-	// failure
-	return NULL;
-}
-
-bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObjects)
-{
-	// if it's temp store already, don't do anything
-	if (szTempFilename) return true;
-	// make temp filename
-	char *szTmp = const_cast<char *>(Config.AtTempPath(szFilename ? GetFilename(szFilename) : szName));
-	MakeTempFilename(szTmp);
-	// main section: extract section files from main scenario group (create group as open dir)
-	if (!szFilename)
-	{
-		if (!CreatePath(szTmp)) return false;
-		C4Group hGroup;
-		if (!hGroup.Open(szTmp, true)) { EraseItem(szTmp); return false; }
-		// extract all desired section files
-		Game.ScenarioFile.ResetSearch();
-		char fn[_MAX_FNAME+1]; *fn=0;
-		while (Game.ScenarioFile.FindNextEntry(C4FLS_Section, fn))
-			if (fExtractLandscape || !WildcardMatch(C4FLS_SectionLandscape, fn))
-				if (fExtractObjects || !WildcardMatch(C4FLS_SectionObjects, fn))
-					Game.ScenarioFile.ExtractEntry(fn, szTmp);
-		hGroup.Close();
-	}
-	else
-	{
-		// subsection: simply extract section from main group
-		if (!Game.ScenarioFile.ExtractEntry(szFilename, szTmp)) return false;
-		// delete undesired landscape/object files
-		if (!fExtractLandscape || !fExtractObjects)
-		{
-			C4Group hGroup;
-			if (hGroup.Open(szFilename))
-			{
-				if (!fExtractLandscape) hGroup.Delete(C4FLS_SectionLandscape);
-				if (!fExtractObjects) hGroup.Delete(C4FLS_SectionObjects);
-			}
-		}
-	}
-	// copy temp filename
-	szTempFilename = new char[strlen(szTmp)+1];
-	SCopy(szTmp, szTempFilename, _MAX_PATH);
-	// done, success
-	return true;
-}
-

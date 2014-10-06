@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FileWrite</title>
+    <category>System</category>
+    <version>5.3 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>fid</name>
+          <desc>ID of file to be written to.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>data</name>
+          <desc>String to be written to the file.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a text string to an open file. Currently, this function is only used to write to the Objects.c file in the SaveScenarioObjects callback defined in System.ocg/SaveScenario.c (See <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>).</desc>
+    <examples>
+      <example>
+        <code>global func SaveScenarioObjects(f)
+{
+	FileWrite(f, "func InitializeObjects() { return true; }\n");
+}</code>
+        <text>When the user presses "Save scenario" in the editor, he won't save any objects.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="definition/script.html#ScenSave">Scenario objects saving</emlink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2013-12</date>
+</funcs>

@@ -1,0 +1,11 @@
+# Indestructible material
+
+[Material]
+Name=Rock
+Shape=Rough
+Density=70
+Friction=100
+MaxAirSpeed=100
+MaxSlide=250
+Placement=50
+TextureOverlay=rock

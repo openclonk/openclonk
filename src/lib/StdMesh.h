@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006, 2010  Sven Eberhardt
- * Copyright (c) 2009-2011  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_StdMesh
@@ -24,8 +19,6 @@
 
 #include <StdMeshMath.h>
 #include <StdMeshMaterial.h>
-
-class StdCompiler;
 
 class StdMeshBone
 {
@@ -208,6 +201,8 @@ public:
 	StdSubMeshInstance(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 	void LoadFacesForCompletion(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 
+	void CompileFunc(StdCompiler* pComp);
+
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }
@@ -216,17 +211,17 @@ public:
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
-	const StdMeshFace* GetFaces() const { return &Faces[0]; }
+	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : 0; }
 	size_t GetNumFaces() const { return Faces.size(); }
 
 	unsigned int GetTexturePhase(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
 	double GetTexturePosition(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Position; }
 
-	void SetMaterial(const StdMeshMaterial& material);
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 protected:
+	void SetMaterial(const StdMeshMaterial& material);
 	void SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod);
 
@@ -363,6 +358,7 @@ public:
 
 		virtual void CompileFunc(StdCompiler* pComp);
 		virtual void DenumeratePointers() {}
+		virtual void ClearPointers(class C4Object* pObj) {}
 	};
 
 	// A node in the animation tree
@@ -372,10 +368,11 @@ public:
 		friend class StdMeshInstance;
 		friend class StdMeshUpdate;
 	public:
-		enum NodeType { LeafNode, LinearInterpolationNode };
+		enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
 
 		AnimationNode();
 		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
+		AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
 		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
 		~AnimationNode();
 
@@ -397,6 +394,7 @@ public:
 
 		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
 		void DenumeratePointers();
+		void ClearPointers(class C4Object* pObj);
 
 	protected:
 		int Slot;
@@ -411,6 +409,12 @@ public:
 				const StdMeshAnimation* Animation;
 				ValueProvider* Position;
 			} Leaf;
+
+			struct
+			{
+				unsigned int BoneIndex;
+				StdMeshTransformation* Transformation;
+			} Custom;
 
 			struct
 			{
@@ -434,6 +438,7 @@ public:
 
 			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
 			virtual void DenumeratePointers(AttachedMesh* attach) {}
+			virtual bool ClearPointers(class C4Object* pObj) { return true; }
 		};
 
 		typedef Denumerator*(*DenumeratorFactoryFunc)();
@@ -460,6 +465,7 @@ public:
 
 		void CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory);
 		void DenumeratePointers();
+		bool ClearPointers(class C4Object* pObj);
 
 	private:
 		unsigned int ParentBone;
@@ -488,6 +494,7 @@ public:
 
 	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
 	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	AnimationNode* PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight);
 	void StopAnimation(AnimationNode* node);
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
@@ -496,6 +503,7 @@ public:
 	// Set new value providers for a node's position or weight - cannot be in
 	// class AnimationNode since we need to mark BoneTransforms dirty.
 	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
+	void SetAnimationBoneTransform(AnimationNode* node, const StdMeshTransformation& trans);
 	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
 
 	// Update animations; call once a frame
@@ -519,6 +527,10 @@ public:
 	size_t GetNumSubMeshes() const { return SubMeshInstances.size(); }
 	StdSubMeshInstance& GetSubMesh(size_t i) { return *SubMeshInstances[i]; }
 	const StdSubMeshInstance& GetSubMesh(size_t i) const { return *SubMeshInstances[i]; }
+	const StdSubMeshInstance& GetSubMeshOrdered(size_t i) const { return *SubMeshInstancesOrdered[i]; }
+
+	// Set material of submesh i.
+	void SetMaterial(size_t i, const StdMeshMaterial& material);
 
 	const StdMeshMatrix& GetBoneTransform(size_t i) const { return BoneTransforms[i]; }
 
@@ -543,6 +555,7 @@ public:
 
 	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
 	void DenumeratePointers();
+	void ClearPointers(class C4Object* pObj);
 
 	const StdMesh& GetMesh() const { assert(Mesh != NULL); return *Mesh; }
 
@@ -550,6 +563,7 @@ protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
+	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight);
 	bool ExecuteAnimationNode(AnimationNode* node);
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 
@@ -564,6 +578,7 @@ protected:
 	std::vector<StdMeshMatrix> BoneTransforms;
 
 	std::vector<StdSubMeshInstance*> SubMeshInstances;
+	std::vector<StdSubMeshInstance*> SubMeshInstancesOrdered; // ordered by opacity, in case materials were changed
 
 	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
 	// In theory map would fit better, but it's probably not worth the extra overhead.
@@ -578,7 +593,7 @@ private:
 
 inline void CompileNewFuncCtx(StdMeshInstance::SerializableValueProvider *&pStruct, StdCompiler *pComp, const StdMeshInstance::SerializableValueProvider::IDBase& rID)
 {
-	std::auto_ptr<StdMeshInstance::SerializableValueProvider> temp(rID.newfunc());
+	std::unique_ptr<StdMeshInstance::SerializableValueProvider> temp(rID.newfunc());
 	pComp->Value(*temp);
 	pStruct = temp.release();
 }

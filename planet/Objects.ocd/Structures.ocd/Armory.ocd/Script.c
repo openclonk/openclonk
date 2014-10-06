@@ -9,6 +9,7 @@ local hold_production;
 func Construction(object creator)
 {
 	SetAction("Default");
+	this.MeshTransformation = Trans_Rotate(RandomX(0, 20), 0, 1, 0);
 	return _inherited(creator, ...);
 }
 
@@ -51,8 +52,12 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if (!Random(4)) Smoke(16 * GetCalcDir(),-14,16);
-	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
+	var x = 8;
+	var y = -17;
+	if (!Random(2))
+		Smoke(x,y + 4,20);
+	if(!Random(2))
+		CreateParticle("Fire", PV_Random(x-1, x+1), PV_Random(y-2, y+2), 0, PV_Random(-1, 0), PV_Random(18, 36), Particles_Fire(), 2);
 }
 
 local ActMap = {

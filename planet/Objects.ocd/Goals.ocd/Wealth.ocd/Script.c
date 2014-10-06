@@ -29,6 +29,19 @@ public func GetWealthGoal()
 	return wealth_goal;
 }
 
+
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = GetWealthGoal();
+	if (v) props->AddCall("Goal", this, "SetWealthGoal", v);
+	return true;
+}
+
+
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if all players have the specfied wealth.
@@ -42,6 +55,17 @@ public func IsFulfilled()
 	}
 	// Goal fulfilled.
 	return true;
+}
+
+public func GetDescription(int plr)
+{
+	var message;
+	if (IsFulfilled())
+		message = Format("$MsgGoalFulfilled$", GetWealthGoal());	
+	else
+		message = Format("$MsgGoalUnfulfilled$", GetWealth(plr), GetWealthGoal());
+
+	return message;
 }
 
 // Shows or hides a message window with information.

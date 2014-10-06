@@ -1,19 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // a class holding a 8 bpp memory surface
 
@@ -45,6 +43,11 @@ public:
 		// set pix in local copy...
 		if (Bits) Bits[iY*Pitch+iX]=byCol;
 	}
+	void _SetPix(int iX, int iY, BYTE byCol)
+	{
+		// set pix in local copy without bounds or surface checks
+		Bits[iY*Pitch+iX]=byCol;
+	}
 	BYTE GetPix(int iX, int iY) // get pixel
 	{
 		if (iX<0 || iY<0 || iX>=Wdt || iY>=Hgt) return 0;
@@ -60,7 +63,7 @@ public:
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();
 	bool Read(class CStdStream &hGroup);
-	bool Save(const char *szFilename, BYTE *bpPalette = NULL);
+	bool Save(const char *szFilename, CStdPalette * = NULL);
 	void GetSurfaceSize(int &irX, int &irY); // get surface size
 	void AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero=false);
 	void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);

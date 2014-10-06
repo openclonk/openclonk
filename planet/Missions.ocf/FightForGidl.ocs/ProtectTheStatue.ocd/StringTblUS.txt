@@ -1,0 +1,2 @@
+Name=Protect the statue
+Description=Defend the statue against enemy attacks!

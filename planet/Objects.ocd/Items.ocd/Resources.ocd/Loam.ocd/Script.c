@@ -1,8 +1,6 @@
 /* Loam */
 
-local loamused;       // amound of loam already used
-
-static const LOAM_Bridge_Amount = 37; // bridge length in pixels
+local loamused;       // amount of loam already used
 
 protected func Construction()
 {
@@ -20,19 +18,11 @@ func Hit()
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {
-	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
-	var clnk_proc = clonk->GetProcedure();
-	if (clnk_proc != "WALK" && clnk_proc != "SCALE")
+	if (!(clonk->~Bridge()))
 	{
 		clonk->CancelUse();
 		return true;
 	}
-
-	// Gfx
-	clonk->SetAction("Bridge");
-	clonk->SetComDir(COMD_Stop);
-	clonk->SetXDir(0);
-	clonk->SetYDir(0);
 	// Add bridge effect and pass target coordinates.
 	AddEffect("IntBridge", clonk, 1, 1, this, nil, x, y);
 	
@@ -60,7 +50,7 @@ func FxIntBridgeStart(object clonk, proplist effect, int temp, int x, int y)
 func FxIntBridgeTimer(object clonk, proplist effect, int time)
 {
 	// something happened - don't try to dig anymore
-	if (clonk->GetAction() != "Bridge")
+	if (!(clonk->~IsBridging()))
 	{
 		clonk->CancelUse();
 		return true;
@@ -114,7 +104,7 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 
 	// bridge time is up?
 	loamused += Max(line_len/10,1);
-	if (loamused >= LOAM_Bridge_Amount)
+	if (loamused >= BridgeLength)
 	{
 		clonk->CancelUse();
 	}
@@ -147,7 +137,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 private func LoamDone(object clonk)
 {
 	// Get out of animation
-	if (clonk->GetAction() == "Bridge")
+	if (clonk->IsBridging())
 	{
 		clonk->SetAction("Walk");
 		clonk->SetComDir(COMD_Stop);
@@ -155,13 +145,13 @@ private func LoamDone(object clonk)
 	// Remove Effect
 	RemoveEffect("IntBridge", clonk);
 	// Remove loam object if most of it has been consumed
-	if (loamused > LOAM_Bridge_Amount - 10)
+	if (loamused > BridgeLength - 10)
 		RemoveObject();
 	return;
 }
 
 public func IsFoundryProduct() { return true; }
-public func GetLiquidNeed() { return ["Water", 150]; }
+public func GetLiquidNeed() { return ["Water", 60]; }
 public func GetMaterialNeed() { return ["Earth", 25]; }
 
 public func GetMaterialIcon(string mat) { return Earth; }
@@ -171,3 +161,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local BridgeLength = 37; // bridge length in pixels
+local Plane = 470;

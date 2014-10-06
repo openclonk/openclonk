@@ -21,7 +21,7 @@
     </syntax>
     <desc>Checks whether this object is visible for the given player.</desc>
     <related>
-      <emlink href="definition/visibility.html">Visibility</emlink>-Property
+      <emlink href="definition/visibility.html">Visibility Property</emlink>
     </related>
   </func>
   <author>Newton</author><date>2009-07</date>

@@ -155,4 +155,7 @@ func CreateStarCircle()
 	}
 }
 
+// stored by main goal
+public func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

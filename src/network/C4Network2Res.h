@@ -1,22 +1,19 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2007  Peter Wortmann
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
-// network ressource: data needed for the game (scenario, plr files, definitions...)
+// network resource: data needed for the game (scenario, plr files, definitions...)
 
 #ifndef INC_C4Network2Res
 #define INC_C4Network2Res
@@ -360,7 +357,7 @@ protected:
 	C4Network2Res *getRes(const char *szFile, bool fLocalOnly); // by both
 
 public:
-	// returns referenced ressource ptrs
+	// returns referenced resource ptrs
 	C4Network2Res::Ref getRefRes(int32_t iResID); // by both
 	C4Network2Res::Ref getRefRes(const char *szFile, bool fLocalOnly = false); // by both
 	C4Network2Res::Ref getRefNextRes(int32_t iResID); // by both

@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001  Peter Wortmann
- * Copyright (c) 2001, 2004, 2007  Sven Eberhardt
- * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Functions mapped by C4Script */
@@ -25,9 +21,6 @@
 #define INC_C4Script
 
 #include <C4Value.h>
-
-class C4AulScriptEngine;
-class StdMeshMatrix;
 
 const int C4SCR_Access_Public     = 0,
           C4SCR_Access_Protected  = 1,
@@ -63,6 +56,8 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_InitializeScriptPlayer    "~InitializeScriptPlayer" // iPlayer, idTeam
 #define PSF_PreInitializePlayer "~PreInitializePlayer" // iPlayer
 #define PSF_InitializePlayerControl "~InitializePlayerControl" // iPlayer, szControlSet, hasKeyboard, hasMouse, hasGamepad
+#define PSF_InitializeMap       "~InitializeMap" // map
+#define PSF_InitializeObjects   "~InitializeObjects"
 #define PSF_RemovePlayer        "~RemovePlayer" // iPlayer
 #define PSF_RelaunchPlayer      "~RelaunchPlayer" // iPlayer, iKilledBy
 #define PSF_Time1               "~Time1"
@@ -96,7 +91,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_LineBreak           "~LineBreak" // iCause
 #define PSF_BuildNeedsMaterial  "~BuildNeedsMaterial" // idMat1, iAmount1, idMat2, iAmount2...
 #define PSF_ControlTransfer     "~ControlTransfer" // C4Object* pObj, int iTx, int iTy
-#define PSF_UpdateTransferZone  "~UpdateTransferZone"
+#define PSF_OnSynchronized       "~OnSynchronized"
 #define PSF_CalcValue           "~CalcValue" // C4Object *pInBase, int iForPlayer
 #define PSF_CalcDefValue        "~CalcDefValue" // C4Object *pInBase, int iForPlayer
 #define PSF_InputCallback       "InputCallback" // const char *szText
@@ -113,6 +108,11 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
 #define PSF_OnInIncendiaryMaterial "OnInIncendiaryMaterial"
+#define PSF_EditCursorSelection   "~EditCursorSelection"
+#define PSF_EditCursorDeselection "~EditCursorDeselection"
+#define PSF_DigOutObject        "~DigOutObject" // C4Object *obj
+#define PSF_OnDugOut            "~DugOut" //C4Object *by_obj
+#define PSF_SaveScenarioObjects "~SaveScenarioObjects" // int file_handle
 
 // Effect callbacks
 

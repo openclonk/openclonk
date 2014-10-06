@@ -5,7 +5,9 @@
 	A volatile tool that can be pressed into walls
 	for accurate mining, burning a short fuse before exploding.
 */
-	
+
+// time in frames until explosion
+func FuseTime() { return 140; }
 
 public func ControlUse(object clonk, int x, int y, bool box)
 {
@@ -120,21 +122,20 @@ public func Reset()
 
 private func Fusing()
 {
-	var sin=Sin(180-GetR(),5);
-	var cos=Cos(180-GetR(),5);
+	var x = Sin(GetR(), 5);
+	var y = -Cos(GetR(), 5);
 
 	if(Contained()!=nil)
 	{
 		//If the dynamite is held, sparks come from clonk's center.
-		sin=0;
-		cos=0;
+		x = y = 0;
 	}
 
 	// Effekt
-	if(GetActTime() < 120)
-		CastParticles("Spark",1,20,sin,cos,15,25,RGB(255,200,0),RGB(255,255,150));
+	if(GetActTime() < FuseTime() - 20)
+		CreateParticle("Fire", x, y, PV_Random(x - 5, x + 5), PV_Random(y - 15, y + 5), PV_Random(10, 40), Particles_Glimmer(), 3);
 	// Explosion
-	else if(GetActTime() > 140)
+	else if(GetActTime() > FuseTime())
 		DoExplode();
 }
 
@@ -148,10 +149,11 @@ public func DoExplode()
 	// Activate all fuses
 	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 		obj->~StartFusing(this);
-	Explode(18);
+	Explode(26);
 }
 
 public func IsChemicalProduct() { return true; }
+public func IsGrenadeLauncherAmmo() { return true; }
 
 local ActMap = {
 	Fuse = {

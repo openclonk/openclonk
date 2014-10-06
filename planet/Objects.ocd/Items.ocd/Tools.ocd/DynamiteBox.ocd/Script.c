@@ -10,8 +10,8 @@ public func Initialize()
 	aWires = CreateArray(iCount);
 	for(var i = 0; i < iCount; i++)
 	{
-		aDynamites[i] = 0;
-		aWires[i] = 0;
+		aDynamites[i] = nil;
+		aWires[i] = nil;
 	}
 
 	this.PictureTransformation = Trans_Scale(); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set

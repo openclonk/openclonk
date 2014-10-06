@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2006  Matthes Bender
- * Copyright (c) 2002-2003, 2005-2006, 2008  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A piece of a DirectDraw surface */
@@ -26,7 +21,6 @@
 #include <C4Facet.h>
 #include <C4GraphicsResource.h>
 
-#include <C4DrawD3D.h>
 #include <StdAdaptors.h>
 
 #ifdef WITH_GLIB
@@ -38,7 +32,7 @@ void C4Facet::Default()
 	Set(NULL,0,0,0,0);
 }
 
-void C4Facet::Set(C4Surface * nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt)
+void C4Facet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt)
 {
 	Surface=nsfc; X=nx; Y=ny; Wdt=nwdt; Hgt=nhgt;
 }
@@ -162,20 +156,20 @@ void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY,
 	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
 	// Drawing area
 	C4Facet ccgo = cgo;
-	// Adjust for fixed aspect ratio
+	// Adjust for fixed aspect ratio (letterbox)
 	if (fAspect)
 	{
 		// By height
-		if (100*cgo.Wdt/Wdt<100*cgo.Hgt/Hgt)
+		if (cgo.Wdt / Wdt < cgo.Hgt / Hgt)
 		{
-			ccgo.Hgt=Hgt*cgo.Wdt/Wdt;
-			ccgo.Y+=(cgo.Hgt-ccgo.Hgt)/2;
+			ccgo.Hgt = Hgt * cgo.Wdt / Wdt;
+			ccgo.Y += (cgo.Hgt - ccgo.Hgt) / 2;
 		}
 		// By width
-		else if (100*cgo.Hgt/Hgt<100*cgo.Wdt/Wdt)
+		else if (cgo.Hgt / Hgt < cgo.Wdt / Wdt)
 		{
-			ccgo.Wdt=Wdt*cgo.Hgt/Hgt;
-			ccgo.X+=(cgo.Wdt-ccgo.Wdt)/2;
+			ccgo.Wdt = Wdt * cgo.Hgt / Hgt;
+			ccgo.X += (cgo.Wdt - ccgo.Wdt) / 2;
 		}
 	}
 	// Blit
@@ -188,14 +182,31 @@ void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY,
 
 void C4Facet::DrawFullScreen(C4Facet &cgo)
 {
+	// Valid parameter check
+	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
+	// Drawing area
+	C4Facet ccgo = cgo;
 	// stretched fullscreen blit: make sure right and lower side are cleared, because this may be missed due to stretching
 	if (cgo.Wdt > Wdt+2 || cgo.Hgt > Wdt+2)
 	{
-		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
-		pDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
+		ccgo.X -= 1; ccgo.Y -= 1;
+		ccgo.Wdt += 2; ccgo.Hgt += 2;
 	}
-	// normal blit OK
-	Draw(cgo, false);
+	// Adjust for fixed aspect ratio (crop)
+	// By height
+	if (cgo.Wdt / Wdt < cgo.Hgt / Hgt)
+	{
+		ccgo.Wdt = Wdt * cgo.Hgt / Hgt;
+		ccgo.X += (cgo.Wdt - ccgo.Wdt) / 2;
+	}
+	// By width
+	else if (cgo.Hgt / Hgt < cgo.Wdt / Wdt)
+	{
+		ccgo.Hgt = Hgt * cgo.Wdt / Wdt;
+		ccgo.Y += (cgo.Hgt - ccgo.Hgt) / 2;
+	}
+	// Blit
+	pDraw->Blit(Surface, X, Y, Wdt, Hgt, ccgo.Surface, ccgo.X, ccgo.Y, ccgo.Wdt, ccgo.Hgt);
 }
 
 void C4Facet::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
@@ -227,7 +238,7 @@ void C4Facet::DrawXR(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt
 {
 	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 	C4BltTransform rot;
-	rot.SetRotate(r, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
+	rot.SetRotate(r / 100.0f, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
 	pDraw->Blit(Surface,
 	              float(X+Wdt*iSectionX),float(Y+Hgt*iSectionY),float(Wdt),float(Hgt),
 	              sfcTarget,
@@ -553,7 +564,7 @@ C4Facet C4Facet::GetFraction(int32_t percentWdt, int32_t percentHgt, int32_t ali
 	// Simple spec for square fractions
 	if (percentHgt == 0) percentHgt = percentWdt;
 	// Alignment
-	int iX = X, iY = Y, iWdt = Max(Wdt*percentWdt/100, 1), iHgt = Max(Hgt*percentHgt/100, 1);
+	int iX = X, iY = Y, iWdt = Max(Wdt*percentWdt/100, 1.0f), iHgt = Max(Hgt*percentHgt/100, 1.0f);
 	if (alignX & C4FCT_Right) iX += Wdt - iWdt;
 	if (alignX & C4FCT_Center)  iX += Wdt/2 - iWdt/2;
 	if (alignY & C4FCT_Bottom) iY += Hgt - iHgt;

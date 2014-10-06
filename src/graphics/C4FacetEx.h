@@ -1,21 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2004, 2008-2009  Sven Eberhardt
- * Copyright (c) 2008-2010  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A facet that can hold its own surface and also target coordinates */
@@ -30,10 +27,6 @@ const int C4FCT_Full   = -1,
           C4FCT_Height = -2,
           C4FCT_Width  = -3;
 
-class C4TargetRect;
-class C4Surface;
-class C4Rect;
-
 class C4TargetFacet: public C4Facet
 {
 public:
@@ -47,7 +40,7 @@ public:
 
 	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; C4Facet::Set(cpy); }
 	void Set(const C4TargetFacet &cpy) { *this = cpy; }
-	void Set(class C4Surface *nsfc, int nx, int ny, int nwdt, int nhgt, float ntx=0, float nty=0, float Zoom=1);
+	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx=0, float nty=0, float Zoom=1);
 	void Set(class C4Surface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
 
 	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2); // uses Target and position

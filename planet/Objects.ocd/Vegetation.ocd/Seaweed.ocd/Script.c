@@ -1,5 +1,25 @@
 /*-- Seaweed --*/
 
+#include Library_Plant
+
+
+func Place(int amount, proplist rectangle, proplist settings)
+{
+	var max_tries = 2 * amount;
+	var loc_area = nil;
+	if (rectangle) loc_area = Loc_InRect(rectangle);
+	
+	while ((amount > 0) && (--max_tries > 0))
+	{
+		var spot = FindLocation(Loc_Material("Water"), Loc_Wall(CNAT_Bottom), loc_area);
+		if (!spot) continue;
+		
+		var f = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		--amount;
+	}
+	return true;
+}
+
 private func Initialize()
 {
 	SetAction("Sway");
@@ -8,6 +28,13 @@ private func Initialize()
 private func Check()
 {
 	if(!GBackLiquid()) SetAction("Limp");
+}
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetPhase()) props->AddCall("Phase", this, "SetPhase", GetPhase()); // ensure that not all seaweed are synced on scenario load
+	return true;
 }
 
 
@@ -46,3 +73,4 @@ local ActMap = {
 		Animation = "Limp",
 	},
 };
+

@@ -1,0 +1,2 @@
+Name=Fundament
+Description=Eine stabile Basis für Gebäude. 

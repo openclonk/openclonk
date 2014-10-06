@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001, 2003-2006  Sven Eberhardt
- * Copyright (c) 2005-2006  Peter Wortmann
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Basic classes for rectangles and vertex outlines */
@@ -28,10 +24,7 @@
 
 #include <vector>
 
-class StdCompiler;
-
 struct FLOAT_RECT { float left,right,top,bottom; };
-class C4TargetFacet;
 
 class C4Rect
 {
@@ -43,14 +36,14 @@ public:
 	bool Overlap(C4Rect &rTarget);
 	void Intersect(const C4Rect &r2);
 	void Add(const C4Rect &r2);
-	bool operator ==(const C4Rect &r2) { return !((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
-	bool operator !=(const C4Rect &r2) { return 0 != ((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
+	bool operator ==(const C4Rect &r2) const { return !((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
+	bool operator !=(const C4Rect &r2) const { return 0 != ((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
 
-	bool Contains(int32_t iX, int32_t iY)
+	bool Contains(int32_t iX, int32_t iY) const
 	{ return iX>=x && iX<x+Wdt && iY>=y && iY<y+Hgt; }
-	bool Contains(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+	bool Contains(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt) const
 	{ return iX>=x && iX+iWdt<x+Wdt && iY>=y && iY+iHgt<y+Hgt; }
-	bool Contains(const C4Rect &rect)
+	bool Contains(const C4Rect &rect) const
 	{ return Contains(rect.x, rect.y, rect.Wdt, rect.Hgt); }
 	bool IntersectsLine(int32_t iX, int32_t iY, int32_t iX2, int32_t iY2);
 

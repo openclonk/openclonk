@@ -12,10 +12,30 @@ material Elevator
 
 			texture_unit
 			{
-				texture Elevator.png
+				texture Elevator.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}
 		}
 	}
 }
+
+material elevatorCable
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			diffuse 1.000000 1.000000 1.000000 1.000000
+
+			texture_unit
+			{			
+				texture cable.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+

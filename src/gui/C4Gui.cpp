@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2006-2010  Günther Brammer
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // all generic classes that do not fit into other C4Gui*-files
@@ -40,35 +35,62 @@ namespace C4GUI
 // --------------------------------------------------
 // Generic helpers
 
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, char &rcHotkey)
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey)
 	{
-		const char *HotkeyMarkup = "<c ffffff7f>x</c>";
-		size_t iHotkeyMarkupLength = 17;
-		size_t  iHotkeyMarkupHotkeyPos = 12;
+		static const char HotkeyMarkup[] = "<c ffffff7f>%s</c>";
 
-		int iHotkeyPos;
-		const char *szCheckText = sText.getData();
-		if (!szCheckText || (iHotkeyPos=SCharPos('&', szCheckText))<0)
+		StdStrBuf output;
+
+		const char *input = sText.getData();
+		rcHotkey = 0;
+
+		// Iterate over all input characters
+		while (input && *input)
 		{
-			// hotkey not available
-			rcHotkey = 0;
+			if (*input != '&')
+			{
+				// This will correctly copy UTF-8 chars too
+				output.AppendChar(*input++);
+			}
+			else
+			{
+				++input;
+				if (*input == '\0' || *input == '&')
+				{
+					// If the ampersand is followed by another ampersand, or it is the last character, copy it verbatimly
+					// Note: This means you can't use an ampersand as an accelerator key.
+					output.AppendChar(*input);
+				}
+				else
+				{
+					// Store the start of the hotkey so we can copy it later
+					const char *accel_start = input;
+					rcHotkey = GetNextCharacter(&input);
+					// Using std::string because StdStrBuf doesn't have a ctor from two iterators
+					std::string accel(accel_start, input);
+					output.AppendFormat(HotkeyMarkup, accel.c_str());
+
+					// Converting a char code to upper case isn't trivial for unicode. (This should really just use ICU.)
+					if (Inside(rcHotkey, static_cast<uint32_t>('a'), static_cast<uint32_t>('z')))
+					{
+						rcHotkey += static_cast<uint32_t>('A') - 'a';
+					} 
+					else if (!Inside(rcHotkey, static_cast<uint32_t>('A'), static_cast<uint32_t>('Z')))
+					{
+						// Warn about accelerator keys outside the basic latin alphabet.
+						LogF(LoadResStr("IDS_ERR_UNSUPPORTED_ACCELERATOR"), accel.c_str(), sText.getData());
+					}
+				}
+			}
+		}
+
+		if (rcHotkey == 0)
+		{
+			// No accelerator found
 			return false;
 		}
-		// set hotkey
-		sText.Grow(iHotkeyMarkupLength-2);
-		char *szText = sText.GrabPointer();
-		char *szTextBegin = szText;
-		rcHotkey = szText[iHotkeyPos+1]; char cOrigHotkey = rcHotkey;
-		if (Inside(rcHotkey, 'a', 'z')) rcHotkey+=((int32_t)'A'-'a');
-		// mark hotkey
-		size_t iTextLen = SLen(szText);
-		szText += iHotkeyPos; iTextLen -= iHotkeyPos;
-		memmove(szText+iHotkeyMarkupLength*sizeof(char), szText+2*sizeof(char), (iTextLen-1)*sizeof(char));
-		memcpy(szText, HotkeyMarkup, iHotkeyMarkupLength);
-		szText[iHotkeyMarkupHotkeyPos] = cOrigHotkey; // set original here, so no conversion to UpperCase
-		//szText[iTextLen+iHotkeyMarkupLength-2] = 0;
-		// write back string
-		sText.Take(szTextBegin);
+
+		sText.Take(output);
 		// done, success
 		return true;
 	}
@@ -337,33 +359,42 @@ namespace C4GUI
 
 	void Element::DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		rFacets.fctBegin.Draw(cgo.Surface, x0,y0);
-		while (iY < rcBounds.Hgt-5)
-		{
-			int32_t h2=Min(h, rcBounds.Hgt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.Draw(cgo.Surface, x0, y0+iY);
-			iY += h;
-		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.Draw(cgo.Surface, x0, y0+rcBounds.Hgt-rFacets.fctEnd.Hgt);
+		C4DrawTransform trf(1);
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Hgt);
 	}
 
 	void Element::DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		C4DrawTransform trf; trf.SetRotate(-90*100, (float)(cgo.TargetX+rcBounds.x+rcBounds.Hgt/2), (float)(cgo.TargetY+rcBounds.y+rcBounds.Hgt/2));
-		rFacets.fctBegin.DrawT(cgo.Surface, x0,y0, 0, 0, &trf);
-		while (iY < rcBounds.Wdt-5)
+		C4DrawTransform trf;
+		float fOffX = cgo.TargetX + rcBounds.x + rcBounds.Hgt/2;
+		float fOffY = cgo.TargetY + rcBounds.y + rcBounds.Hgt/2;
+		trf.SetRotate(-90.0f, fOffX, fOffY);
+
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Wdt);
+	}
+
+	void Element::DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength)
+	{
+		int32_t y0 = cgo.TargetY + rcBounds.y;
+		int32_t x0 = cgo.TargetX + rcBounds.x;
+
+		// draw up arrow
+		rFacets.fctBegin.DrawT(cgo.Surface, x0, y0, 0, 0, &trf);
+
+		// draw middle part
+		int32_t h = rFacets.fctMiddle.Hgt;
+		int32_t barHeight = iMiddleLength - (rFacets.fctBegin.Hgt + rFacets.fctEnd.Hgt);
+
+		for (int32_t iY = 0; iY <= barHeight; iY += h)
 		{
-			int32_t h2=Min(h, rcBounds.Wdt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0+iY, 0, 0, &trf);
-			iY += h;
+			int32_t h2 = Min(h, barHeight - iY);
+			rFacets.fctMiddle.Hgt = h2;
+			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0 + rFacets.fctBegin.Hgt + iY, 0, 0, &trf);
 		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0+rcBounds.Wdt-rFacets.fctEnd.Hgt, 0, 0, &trf);
+		rFacets.fctMiddle.Hgt = h;
+
+		// draw lower arrow
+		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0 + iMiddleLength - rFacets.fctEnd.Hgt, 0, 0, &trf);
 	}
 
 	C4Rect Element::GetToprightCornerRect(int32_t iWidth, int32_t iHeight, int32_t iHIndent, int32_t iVIndent, int32_t iIndexX)
@@ -539,10 +570,7 @@ namespace C4GUI
 	{
 		Mouse.x = tx+twdt/2;
 		Mouse.y = ty+thgt/2;
-		// calculate zoom
-		float fZoomX = float(Config.Graphics.ResX) / twdt;
-		float fZoomY = float(Config.Graphics.ResY) / thgt;
-		fZoom = Min<float>(fZoomX, fZoomY);
+		fZoom = 1.0f;
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));

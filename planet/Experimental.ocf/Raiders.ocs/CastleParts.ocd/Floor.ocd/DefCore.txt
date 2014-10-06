@@ -1,0 +1,12 @@
+[DefCore]
+id=Raiders_CastleFloor
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=87
+Height=14
+Offset=-43,-7
+Value=7
+Mass=300
+Exclusive=1
+Construction=1
+SolidMask=0,14,87,6,0,0

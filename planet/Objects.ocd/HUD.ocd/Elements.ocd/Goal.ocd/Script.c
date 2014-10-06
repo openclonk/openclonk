@@ -34,7 +34,7 @@ public func Update()
 	else
 		CustomMessage("", this, GetOwner(), 0, 90);
 	// Set goal graphics to current goal.
-	SetGraphics(nil, goal->GetID(), 1, GFXOV_MODE_IngamePicture);
+	SetGraphics(goal->GetGraphics(), goal->GetID(), 1, GFXOV_MODE_IngamePicture);
 	return;
 }
 

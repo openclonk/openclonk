@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2005  Peter Wortmann
- * Copyright (c) 2006, 2009-2010  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* string table: holds all strings used by script engine */
 
@@ -130,6 +127,7 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
+	P[P_LineMaxDistance] = "LineMaxDistance";
 	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
@@ -144,10 +142,49 @@ C4StringTable::C4StringTable()
 	P[P_Blasted] = "Blasted";
 	P[P_IncineratingObj] = "IncineratingObj";
 	P[P_Plane] = "Plane";
+	P[P_SolidMaskPlane] = "SolidMaskPlane";
 	P[P_Tooltip] = "Tooltip";
 	P[P_Placement] = "Placement";
 	P[P_BlastIncinerate] = "BlastIncinerate";
 	P[P_ContactIncinerate] = "ContactIncinerate";
+	P[P_Global] = "Global";
+	P[P_Scenario] = "Scenario";
+	P[P_JumpSpeed] = "JumpSpeed";
+	P[P_Algo] = "Algo";
+	P[P_Layer] = "Layer";
+	P[P_Seed] = "Seed";
+	P[P_Ratio] = "Ratio";
+	P[P_FixedOffset] = "FixedOffset";
+	P[P_Op] = "Op";
+	P[P_R] = "R";
+	P[P_Scale] = "Scale";
+	P[P_Amplitude] = "Amplitude";
+	P[P_Iterations] = "Iterations";
+	P[P_Empty] = "Empty";
+	P[P_Open] = "Open";
+	P[P_Left] = "Left";
+	P[P_Top] = "Top";
+	P[P_Right] = "Right";
+	P[P_Bottom] = "Bottom";
+	P[P_Filter] = "Filter";
+	P[P_ForceX] = "ForceX";
+	P[P_ForceY] = "ForceY";
+	P[P_G] = "G";
+	P[P_B] = "B";
+	P[P_Alpha] = "Alpha";
+	P[P_DampingX] = "DampingX";
+	P[P_DampingY] = "DampingY";
+	P[P_Size] = "Size";
+	P[P_Rotation] = "Rotation";
+	P[P_BlitMode] = "BlitMode";
+	P[P_Phase] = "Phase";
+	P[P_Stretch] = "Stretch";
+	P[P_CollisionVertex] = "CollisionVertex";
+	P[P_OnCollision] = "OnCollision";
+	P[P_Distance] = "Distance";
+	P[P_Smoke] = "Smoke";
+	P[P_Source] = "Source";
+	P[P_Color] = "Color";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
@@ -175,9 +212,20 @@ C4StringTable::~C4StringTable()
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
 			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
-				fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+			{
+				if ((*s)->RefCnt != 1)
+#ifdef _WIN32
+					OutputDebugString(FormatString(" \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
+					fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
+			}
 			else
+#ifdef _WIN32
+				OutputDebugString(FormatString("\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
 				fprintf(stderr, "\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
 		}
 	}
 #endif

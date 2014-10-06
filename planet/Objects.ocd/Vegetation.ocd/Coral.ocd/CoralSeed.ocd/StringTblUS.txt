@@ -1,0 +1,2 @@
+Name=Coral seed
+Description=Floats around.

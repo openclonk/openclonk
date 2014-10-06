@@ -1,21 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2009, 2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object definition */
@@ -23,13 +20,9 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include <StdFont.h>
+#include <C4FontLoader.h>
 
-const int32_t C4D_None           =    0,
-C4D_All            =    ~C4D_None;
-
-class C4DefList
-		: public CStdFont::CustomImages
+class C4DefList: public CStdFont::CustomImages
 {
 public:
 	C4DefList();
@@ -55,10 +48,11 @@ public:
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
 	C4Def *GetByPath(const char *szPath);
+	C4Def *GetByName(const StdStrBuf &);
 	int32_t GetDefCount();
 	int32_t GetIndex(C4ID id);
 	int32_t RemoveTemporary();
-	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
+	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3);
 	int32_t CheckRequireDef();
 	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
 	void Remove(C4Def *def);

@@ -4,6 +4,7 @@
  * Copyright (c) 2001-2002, 2010  Peter Wortmann
  * Copyright (c) 2005, 2009-2010  Günther Brammer
  * Copyright (c) 2009  Matthes Bender
+ * Copyright (c) 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -36,7 +37,6 @@
 #define C4XVER1               @C4XVER1@
 #define C4XVER2               @C4XVER2@
 #define C4XVER3               @C4XVER3@
-#define C4XVER4               @C4XVER4@
 #define C4VERSIONBUILDNAME    "@C4VERSIONBUILDNAME@"
 #define C4VERSIONEXTRA        "@C4VERSIONEXTRA@"
 #define C4REVISION            "@C4REVISION@"
@@ -53,22 +53,17 @@
 #define C4ENGINEINFOLONG      "@C4ENGINENAME@@C4VERSIONBUILDNAME@@C4VERSIONEXTRA@"
 #define C4ENGINECAPTION       "@C4ENGINENAME@@C4VERSIONBUILDNAME@"
 
-#if C4XVER4 < 10
-#define C4XVER4S "00" C4XVERTOC4XVERS(C4XVER4)
-#elif C4XVER4 < 100
-#define C4XVER4S "0" C4XVERTOC4XVERS(C4XVER4)
-#else
-#define C4XVER4S C4XVERTOC4XVERS(C4XVER4)
-#endif
-
 #define C4XVERTOC4XVERS(s) C4XVERTOC4XVERS2(s)
 #define C4XVERTOC4XVERS2(s) #s
 
-// if C4XVER3 >= 90, this is a pre-release version; add VCS revision instead of build number
+// if C4XVER3 >= 90, this is a pre-release version; add VCS revision
 #if C4XVER3 >= 90
 #define C4VERSION            C4XVERTOC4XVERS(C4XVER1) "." C4XVERTOC4XVERS(C4XVER2)  "." C4XVERTOC4XVERS(C4XVER3) " [" C4REVISION "]" C4VERSIONEXTRA C4BUILDOPT
 #else
-#define C4VERSION            C4XVERTOC4XVERS(C4XVER1) "." C4XVERTOC4XVERS(C4XVER2)  "." C4XVERTOC4XVERS(C4XVER3) " [" C4XVER4S "]" C4VERSIONEXTRA C4BUILDOPT
+#define C4VERSION            C4XVERTOC4XVERS(C4XVER1) "." C4XVERTOC4XVERS(C4XVER2)  "." C4XVERTOC4XVERS(C4XVER3) C4VERSIONEXTRA C4BUILDOPT
 #endif
+
+// if this is set, add a build identifier to the logs and crash dumps
+#define OC_BUILD_ID "@OC_BUILD_ID@"
 
 #endif

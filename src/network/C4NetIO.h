@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2007  Peter Wortmann
- * Copyright (c) 2005-2006, 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* network i/o, featuring tcp, udp and multicast */
 
@@ -39,6 +36,8 @@
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #include <arpa/inet.h>
+// for htons
+#include <netinet/in.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
@@ -115,6 +114,7 @@ public:
 	virtual bool CloseBroadcast() = 0;
 
 	virtual bool Execute(int iTimeout = -1, pollfd * = 0) = 0; // (for StdSchedulerProc)
+	virtual bool IsNotify() { return true; }
 
 	// * multithreading safe
 	virtual bool Connect(const addr_t &addr) = 0; // async!
@@ -216,7 +216,6 @@ public:
 #else
 	virtual void GetFDs(std::vector<struct pollfd> & FDs);
 #endif
-	virtual int GetNextTick(int Now);
 
 	// statistics
 	virtual bool GetStatistic(int *pBroadcastRate);
@@ -371,7 +370,6 @@ public:
 #else
 	virtual void GetFDs(std::vector<struct pollfd> & FDs);
 #endif
-	virtual int GetNextTick(int Now);
 
 	// not implemented
 	virtual bool Connect(const addr_t &addr) { assert(false); return false; }
@@ -458,7 +456,7 @@ public:
 	virtual bool Broadcast(const C4NetIOPacket &rPacket);
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true);
 
-	virtual int GetNextTick(int Now);
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
 
 	virtual bool GetStatistic(int *pBroadcastRate);
 	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
@@ -619,12 +617,12 @@ protected:
 		// output critical section
 		CStdCSec OutCSec;
 
-		// connection check time limit
-		unsigned int iNextReCheck;
+		// connection check time limit.
+		C4TimeMilliseconds tNextReCheck;
 		unsigned int iLastPacketAsked, iLastMCPacketAsked;
 
-		// timeout
-		unsigned int iTimeout;
+		// timeout time.
+		C4TimeMilliseconds tTimeout;
 		unsigned int iRetries;
 
 		// statistics
@@ -660,7 +658,7 @@ protected:
 		unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
 
 		// timeout checking
-		int GetTimeout() { return iTimeout; }
+		C4TimeMilliseconds GetTimeout() { return tTimeout; }
 		void CheckTimeout();
 
 		// selected for broadcast?
@@ -725,8 +723,8 @@ protected:
 	addr_t MCLoopbackAddr;
 	bool fDelayedLoopbackTest;
 
-	// check timing
-	unsigned int iNextCheck;
+	// check timing.
+	C4TimeMilliseconds tNextCheck;
 
 	// outgoing packet list (for multicast)
 	PacketList OPackets;

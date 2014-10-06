@@ -6,9 +6,9 @@
   <func>
     <title>GetID</title>
     <category>Objects</category>
-    <version>5.1 OC</version>
-    <syntax><rtype>id</rtype></syntax>
-    <desc>Returns the object definition id of an object.</desc>
+    <version>5.1 OC<extversion>5.4 OC</extversion></version>
+    <syntax><rtype>proplist</rtype></syntax>
+    <desc>Returns the definition of an object. This is most often a <code>def</code>, but can also be a <code>proplist</code> deriving from a <code>def</code>.</desc>
     <examples>
       <example>
         <code><funclink>CreateObject</funclink>(GetID())</code>
@@ -17,4 +17,5 @@
     </examples>
   </func>
   <author>jwk</author><date>2002-04</date>
+  <author>Günther</author><date>2013</date>
 </funcs>

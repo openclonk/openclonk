@@ -1,6 +1,7 @@
 /*-- Coconut Tree --*/
 
 #include Library_Plant
+#include Library_Tree
 
 private func SeedChance() {	return 100; }
 private func SeedArea() { return 400; }
@@ -17,6 +18,8 @@ func Construction()
 
 public func Seed()
 {
+	if(!IsStanding()) return false;
+
 	// Find number of plants in seed area.
 	var size = SeedArea();
 	var amount = SeedAmount();

@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2002, 2005-2008  Sven Eberhardt
- * Copyright (c) 2004, 2006, 2009-2010  Günther Brammer
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Text messages drawn inside the viewport */
@@ -31,7 +27,7 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 
-const int32_t TextMsgDelayFactor = 2; // frames per char message display time
+const int32_t ObjectMsgDelayFactor = 2, GlobalMsgDelayFactor = 3; // frames per char message display time
 
 C4GameMessage::C4GameMessage() : pFrameDeco(NULL)
 {
@@ -54,13 +50,17 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Player=iPlayer;
 	ColorDw=dwClr;
 	Type=iType;
-	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * TextMsgDelayFactor);
+	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * (Target ? ObjectMsgDelayFactor : GlobalMsgDelayFactor));
 	DecoID=idDecoID;
 	this->dwFlags=dwFlags;
 	PictureDef=NULL;
+	PictureDefVal.Set0();
 	if (pSrc)
-		if (pSrc->GetDef() || pSrc->GetObject())
+		if (pSrc->GetDef() || pSrc->GetObject() || pSrc->GetPropertyPropList(P_Source))
+		{
 			PictureDef = pSrc;
+			PictureDefVal.SetPropList(pSrc);
+		}
 	// Permanent message
 	if ('@' == Text[0])
 	{
@@ -90,7 +90,7 @@ void C4GameMessage::Append(const char *szText, bool fNoDuplicates)
 				return;
 	// Append new line
 	Text.AppendFormat("|%s", szText);
-	Delay += SLen(szText) * TextMsgDelayFactor;
+	Delay += SLen(szText) * (Target ? ObjectMsgDelayFactor : GlobalMsgDelayFactor);
 }
 
 bool C4GameMessage::Execute()
@@ -179,6 +179,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				PictureDef->GetObject()->DrawPicture(facet);
 			else if (PictureDef->GetDef())
 				PictureDef->GetDef()->Draw(facet);
+			else
+				Game.DrawPropListSpecImage(facet, PictureDef);
 
 			// draw message
 			pDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PictureWidth+PictureIndent,iDrawY,ColorDw,ALeft);

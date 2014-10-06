@@ -232,17 +232,17 @@ global func FxFireTimer(object target, proplist effect, int time)
 		// check spreading of fire
 		if (effect.strength > 10)
 		{
-			// If contained only incinerate objects inside the same container and the container itself.
 			var container = target->Contained(), inc_objs;
+			// If contained do not incinerate anything. This would mostly affect inventory items and burns the Clonk too easily while lacking feedback.
 			if (container)
 			{
-				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Container(container));
-				inc_objs[GetLength(inc_objs)] = container;	
+				inc_objs = [];
 			}
-			// Or if not contained incinerate all objects outside and inside the burning object.
+			// Or if not contained incinerate all objects outside the burning object.
+			// Do not incinerate inventory objects, since this, too, would mostly affect Clonks and losing one's bow in a fight without noticing it is nothing but annoying to the player.
 			else
 			{
-				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Or(Find_NoContainer(), Find_Container(target)));
+				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_NoContainer());
 			}
 			// Loop through the selected set of objects and check contact incinerate.
 			for (var obj in inc_objs)
@@ -258,7 +258,19 @@ global func FxFireTimer(object target, proplist effect, int time)
 	
 				if (!amount)
 					continue;
-				obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+					
+				var old_fire_value = obj->OnFire();
+				if(old_fire_value < 100) // only if the object was not already fully ablaze
+				{
+					// incinerate the other object a bit
+					obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+				
+					// Incinerating other objects weakens the own fire.
+					// This is done in order to make fires spread slower especially as a chain reaction.
+					var min = Min(10, effect.strength);
+					if(effect.strength > 50) min = 50;
+					effect.strength = BoundBy(effect.strength - amount/2, min, 100);
+				}
 			}
 		}
 	}
@@ -274,7 +286,7 @@ global func FxFireTimer(object target, proplist effect, int time)
 	{
 		if ((time*10) % 100 <= effect.strength)
 		{
-			target->DoDamage(2, true, FX_Call_DmgFire, effect.caused_by);
+			target->DoDamage(2, FX_Call_DmgFire, effect.caused_by);
 			if (target && !Random(2) && !effect.no_burn_decay) 
 				target->DoCon(-1);
 		} 
@@ -288,37 +300,22 @@ global func FxFireTimer(object target, proplist effect, int time)
 		return FX_OK;
 	
 	// particles
-	//var smoke;//, sparks, bright;
-	//smoke=BoundBy(effect.strength, 0, 100);
-	//sparks=BoundBy((effect.strength*3)/4, 0, 100);
-	//bright=BoundBy((effect.strength-50), 0, 100);
 	if(time % 4 == 0)
 	{
-		var size = BoundBy(10*Max(width, height), 50, 800);
-		if (size > 300) 
+		var size = BoundBy(Max(width, height), 5, 50);
+		if (size > 40) 
 			if (time % 8 == 0)
 				return;
 		
-		var wind = BoundBy(GetWind(target->GetX(), target->GetY()), -5, 5);
 		var smoke_color; 
 		if(effect.strength < 50)
 			smoke_color = RGBa(255,255,255, 50); 
 		else
 			smoke_color = RGBa(100, 100, 100, 50);
-		
-		CreateParticle("ExploSmoke", RandomX(-width, width), RandomX(-height, height), wind, -effect.strength/8, size, smoke_color);
+
+		Smoke(RandomX(-width, width), RandomX(-height, height), size, smoke_color);
 	}
-	
-	/*for(var i=0;i<Max(1, sparks/20);++i)
-	{
-		CreateParticle("MagicSpark", RandomX(-width, width), RandomX(-height, height), wind/2, -10, 100, RGBa(255,255,255, 200), target, Random(2));
-	}*/
-	
-	/*for(var i=0;i<bright/10;++i)
-	{
-		CreateParticle("Flash", RandomX(-width, width), RandomX(-height, height), wind, -10, 5*Max(width, height)*Max(1, bright/15), RGBa(255,200,100, 50), target, Random(2));
-	}*/
-	
+		
 	return FX_OK;
 }
 
@@ -335,6 +332,8 @@ global func FxFireStop(object target, proplist effect, int reason, bool temp)
 	// stop sound
 	if (effect.fire_sound)
 		target->Sound("Fire", false, 100, nil, -1);
+	// callback
+	target->~Extinguishing();
 	// done, success
 	return true;
 }

@@ -1,0 +1,2 @@
+Name=Wooden cabin ruin
+Description=Relic of past settlements.

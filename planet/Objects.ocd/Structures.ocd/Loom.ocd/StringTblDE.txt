@@ -1,0 +1,5 @@
+NoPlrKnowledge=Keine Baupläne vorhanden
+Construction=Konstruktion
+Production=Produktion
+Name=Webstuhl
+Description=Hier werden Stoffe hergestellt.

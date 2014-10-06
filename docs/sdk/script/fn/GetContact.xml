@@ -19,7 +19,7 @@
         <param>
           <type>int</type>
           <name>dwCNAT</name>
-          <desc>Bit mask of CNAT values which determine which directions to check. If not specified, all directions are checked.</desc>
+          <desc>Bit mask of CNAT values which determine which directions to check. If not specified, defaults to the vertices own CNAT mode, i.e. usually the one specified in VertexCNAT in the definition DefCore.txt file. If the vertex does not have any CNAT value, no direction is checked.</desc>
           <optional />
         </param>
       </params>

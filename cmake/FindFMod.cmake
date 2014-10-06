@@ -1,23 +1,22 @@
+# OpenClonk, http://www.openclonk.org
+#
+# Copyright (c) 2011-2013, The OpenClonk Team and contributors
+#
+# Distributed under the terms of the ISC license; see accompanying file
+# "COPYING" for details.
+#
+# "Clonk" is a registered trademark of Matthes Bender, used with permission.
+# See accompanying file "TRADEMARK" for details.
+#
+# To redistribute this file separately, substitute the full license texts
+# for the above references.
+
 # - Find FMod
 # Find the FMod library
 # This module defines
 #  FMOD_INCLUDE_DIR, where to find fmod.h, etc.
 #  FMOD_LIBRARIES, the libraries needed to use FMod.
 #  FMOD_FOUND, If false, do not try to use FMod.
-
-#=============================================================================
-# OpenClonk, http://www.openclonk.org
-#
-# Copyright (c) 2011  Nicolas Hake
-#
-# Permission to use, copy, modify, and/or distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-# See isc_license.txt for full license and disclaimer.
-#
-# "Clonk" is a registered trademark of Matthes Bender.
-# See clonk_trademark_license.txt for full license.
-#=============================================================================
 
 find_path(FMOD_INCLUDE_DIR fmod.h)
 

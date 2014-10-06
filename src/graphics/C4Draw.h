@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002-2005  Sven Eberhardt
- * Copyright (c) 2004-2010  Günther Brammer
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OpenGL and Direct3d */
@@ -30,12 +26,6 @@
 #include <C4windowswrapper.h>
 #endif
 
-// engines
-#define GFXENGN_DIRECTX  0
-#define GFXENGN_OPENGL   1
-#define GFXENGN_DIRECTXS 2
-#define GFXENGN_NOGFX    3
-
 // Global Draw access pointer
 extern C4Draw *pDraw;
 
@@ -48,12 +38,12 @@ public:
 	C4BltTransform() {} // default: don't init fields
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
-	void SetRotate(int iAngle, float fOffX, float fOffY); // set by angle and rotation offset
+	void SetRotate(float iAngle, float fOffX, float fOffY); // set by angle and rotation offset
 	bool SetAsInv(C4BltTransform &rOfTransform);
-	void Rotate(int iAngle, float fOffX, float fOffY) // rotate by angle around rotation offset
+	void Rotate(float Angle, float fOffX, float fOffY) // rotate by angle around rotation offset
 	{
 		// multiply matrix as seen in SetRotate by own matrix
-		C4BltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
+		C4BltTransform rot; rot.SetRotate(Angle, fOffX, fOffY);
 		(*this) *= rot;
 	}
 	void SetMoveScale(float dx, float dy, float sx, float sy)
@@ -130,14 +120,12 @@ struct C4BltData
 
 
 // This structure is used by StdGL, too
-#ifndef USE_DIRECTX
-typedef struct _D3DGAMMARAMP
+typedef struct _GAMMARAMP
 {
 	WORD                red  [256];
 	WORD                green[256];
 	WORD                blue [256];
-} D3DGAMMARAMP;
-#endif
+} GAMMARAMP;
 
 // gamma ramp control
 class C4GammaControl
@@ -146,7 +134,7 @@ private:
 	void SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3); // set color channel ramp
 
 protected:
-	D3DGAMMARAMP ramp;
+	GAMMARAMP ramp;
 
 public:
 	C4GammaControl() { Default(); } // ctor
@@ -157,7 +145,6 @@ public:
 	DWORD ApplyTo(DWORD dwClr);   // apply gamma to color value
 
 	friend class C4Draw;
-	friend class CStdD3D;
 	friend class CStdGL;
 };
 
@@ -212,7 +199,6 @@ public:
 #ifdef _WIN32
 	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
-	virtual int GetEngine() = 0;    // get indexed engine
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	virtual bool IsOpenGL() { return false; }
 	virtual bool IsShaderific() { return false; }
@@ -250,9 +236,9 @@ public:
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
-	bool BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+	bool BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-	                int iAngle, bool fTransparency=true);
+	                bool fTransparency=true);
 	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
 	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
 	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
@@ -271,9 +257,10 @@ public:
 	virtual void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
+	void ResetGamma();                                        // reset all gamma ramps to default
 	void ApplyGamma();                                        // apply gamma ramp to ddraw
-	void DisableGamma();                                      // reset gamma ramp to default
-	void EnableGamma();                                       // set current gamma ramp
+	void DisableGamma();                                      // temporarily reset app gamma to default
+	void EnableGamma();                                       // set current gamma ramp in app
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
@@ -325,7 +312,6 @@ protected:
 	friend class C4Surface;
 	friend class C4TexRef;
 	friend class C4Pattern;
-	friend class CStdD3DShader;
 };
 
 struct ZoomDataStackItem: public ZoomData
@@ -340,5 +326,5 @@ bool UnLockSurfaceGlobal(C4Surface * sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

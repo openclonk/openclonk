@@ -11,7 +11,7 @@ material Base
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture Base.png
+				texture Base.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}
@@ -31,7 +31,7 @@ material Gear
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture Brass.png
+				texture Brass.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

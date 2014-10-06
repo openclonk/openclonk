@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2002-2007  Sven Eberhardt
- * Copyright (c) 2002, 2005, 2010  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2009-2010  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* NewGfx interfaces */
@@ -26,12 +20,11 @@
 #include <C4Draw.h>
 
 #include "C4App.h"
+#include <C4FontLoader.h>
 #include <C4Window.h>
-#include <C4DrawD3D.h>
 #include <C4DrawGL.h>
 #include <C4DrawT.h>
 #include <C4Markup.h>
-#include <StdFont.h>
 #include "C4Rect.h"
 #include <C4Config.h>
 #include "StdMesh.h"
@@ -50,13 +43,13 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
-void C4BltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by angle and rotation offset
+void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
-	// iAngle is in 1/100-degrees (cycling from 0 to 36000)
+	// iAngle is in degrees (cycling from 0 to 360)
 	// determine sine and cos of reversed angle in radians
-	// fAngle = -iAngle/100 * pi/180 = iAngle * -pi/18000
-	float fAngle=(float) iAngle*(-1.7453292519943295769236907684886e-4f);
-	float fsin=(float)sin(fAngle); float fcos=(float)cos(fAngle);
+	// fAngle = -iAngle * pi/180 = iAngle * -pi/180
+	float fAngle = iAngle * -0.0174532925f;
+	float fsin = sinf(fAngle); float fcos = cosf(fAngle);
 	// set matrix values
 	mat[0] = +fcos; mat[1] = +fsin; mat[2] = (1-fcos)*fOffX - fsin*fOffY;
 	mat[3] = -fsin; mat[4] = +fcos; mat[5] = (1-fcos)*fOffY + fsin*fOffX;
@@ -403,6 +396,7 @@ void C4Draw::Default()
 
 void C4Draw::Clear()
 {
+	ResetGamma();
 	DisableGamma();
 	Active=BlitModulated=fUseClrModMap=false;
 	dwBlitMode = 0;
@@ -746,7 +740,7 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
                       C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
                       bool fSrcColKey, const C4BltTransform *pTransform)
 {
-	if (!pTransform) return BlitRotate(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, 0, fSrcColKey!=false);
+	if (!pTransform) return BlitSimple(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, fSrcColKey!=false);
 	// safety
 	if (!fwdt || !fhgt) return true;
 	// Lock the surfaces
@@ -787,21 +781,17 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	return true;
 }
 
-bool C4Draw::BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+bool C4Draw::BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
                            C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-                           int iAngle, bool fTransparency)
+                           bool fTransparency)
 {
 	// rendertarget?
 	if (sfcTarget->IsRenderTarget())
 	{
-		C4BltTransform rot;
-		rot.SetRotate(iAngle, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
-		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true, &rot);
+		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true);
 	}
-	// Object is first stretched to dest rect, then rotated at place.
-	int xcnt,ycnt,fcx,fcy,tcx,tcy,cpcx,cpcy;
-	int npcx,npcy;
-	double mtx[4],dang;
+	// Object is first stretched to dest rect
+	int xcnt,ycnt,tcx,tcy,cpcx,cpcy;
 	if (!fwdt || !fhgt || !twdt || !thgt) return false;
 	// Lock the surfaces
 	if (!sfcSource->Lock())
@@ -809,71 +799,12 @@ bool C4Draw::BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhg
 	if (!sfcTarget->Lock())
 		{ sfcSource->Unlock(); return false; }
 	// Rectangle centers
-	fcx=fwdt/2; fcy=fhgt/2;
 	tcx=twdt/2; tcy=thgt/2;
-	// Adjust angle range
-	while (iAngle<0) iAngle+=36000; while (iAngle>35999) iAngle-=36000;
-	// Exact/free rotation
-	switch (iAngle)
-	{
-	case 0:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcy=ty+tcy-thgt/2+ycnt,0,sfcTarget->Hgt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcx=tx+tcx-twdt/2+xcnt,0,sfcTarget->Wdt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 9000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcx=ty+tcy+thgt/2-ycnt,0,sfcTarget->Wdt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcy=tx+tcx-twdt/2+xcnt,0,sfcTarget->Hgt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 18000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcy=ty+tcy+thgt/2-ycnt,0,sfcTarget->Hgt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcx=tx+tcx+twdt/2-xcnt,0,sfcTarget->Wdt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 27000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcx=ty+tcy-thgt/2+ycnt,0,sfcTarget->Wdt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcy=tx+tcx+twdt/2-xcnt,0,sfcTarget->Hgt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	default:
-		// Calculate rotation matrix
-		dang=M_PI*iAngle/18000.0;
-		mtx[0]=cos(dang); mtx[1]=-sin(dang);
-		mtx[2]=sin(dang); mtx[3]= cos(dang);
-		// Blit source rect
-		for (ycnt=0; ycnt<fhgt; ycnt++)
-		{
-			// Source line start
-			for (xcnt=0; xcnt<fwdt; xcnt++)
-			{
-				// Current pixel coordinate as from source
-				cpcx=xcnt-fcx; cpcy=ycnt-fcy;
-				// Convert to coordinate as in dest
-				cpcx=cpcx*twdt/fwdt; cpcy=cpcy*thgt/fhgt;
-				// Rotate current pixel coordinate
-				npcx= (int) ( mtx[0]*cpcx + mtx[1]*cpcy );
-				npcy= (int) ( mtx[2]*cpcx + mtx[3]*cpcy );
-				// Place in dest
-				sfcTarget->BltPix(tx+tcx+npcx, ty+tcy+npcy, sfcSource, xcnt+fx, ycnt+fy, fTransparency);
-				sfcTarget->BltPix(tx+tcx+npcx+1, ty+tcy+npcy, sfcSource, xcnt+fx, ycnt+fy, fTransparency);
-			}
-		}
-		break;
-	}
-
+	for (ycnt=0; ycnt<thgt; ycnt++)
+		if (Inside(cpcy=ty+tcy-thgt/2+ycnt,0,sfcTarget->Hgt-1))
+			for (xcnt=0; xcnt<twdt; xcnt++)
+				if (Inside(cpcx=tx+tcx-twdt/2+xcnt,0,sfcTarget->Wdt-1))
+					sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
 	// Unlock the surfaces
 	sfcSource->Unlock();
 	sfcTarget->Unlock();
@@ -976,7 +907,10 @@ bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int
 			if (iX<iToX) { iBlitX=iToX-iX; iBlitWdt+=iX-iToX; }
 			iOver=tx+iBlitWdt-iToWdt; if (iOver>0) iBlitWdt-=iOver;
 			// blit
-			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey)) return false;
+			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey))
+			{
+				// Ignore blit errors. This is usually due to blit border lying outside surface and shouldn't cause remaining blits to fail.
+			}
 			// next col
 			tx+=iBlitWdt;
 		}
@@ -991,7 +925,7 @@ bool C4Draw::TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface
 {
 	C4Markup Markup(true);
 	static char szLinebuf[2500+1];
-	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.iLineHgt))
+	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.GetLineHeight()))
 		if (!StringOut(szLinebuf,sfcDest,iTx,iTy,dwFCol,byForm,fDoMarkup,Markup,&rFont,fZoom)) return false;
 	return true;
 }
@@ -1185,6 +1119,11 @@ void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampInd
 	fSetGamma=true;
 }
 
+void C4Draw::ResetGamma()
+{
+	pApp->ApplyGammaRamp(DefRamp.ramp, false);
+}
+
 void C4Draw::ApplyGamma()
 {
 	// No gamma effects
@@ -1249,21 +1188,14 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	// create engine
-	switch (Engine)
-	{
-	default: // Use the first engine possible if none selected
-#ifdef USE_DIRECTX
-	case GFXENGN_DIRECTX: pDraw = new CStdD3D(false); break;
-	case GFXENGN_DIRECTXS: pDraw = new CStdD3D(true); break;
-#endif
-#ifdef USE_GL
-	case GFXENGN_OPENGL: pDraw = new CStdGL(); break;
-#endif
-	case GFXENGN_NOGFX: pDraw = new CStdNoGfx(); break;
-	}
+    #ifndef USE_CONSOLE
+	  pDraw = new CStdGL();
+    #else
+	  pDraw = new CStdNoGfx();
+    #endif
 	if (!pDraw) return false;
 	// init it
 	if (!pDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
@@ -1287,8 +1219,6 @@ bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned
 
 	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;
-
-	DebugLog("  Create Clipper");
 
 	if (!CreatePrimaryClipper(iXRes, iYRes))
 		return Error("  Clipper failure.");

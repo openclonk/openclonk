@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2005-2006, 2010  Sven Eberhardt
- * Copyright (c) 2005-2010  Günther Brammer
- * Copyright (c) 2007  Julian Raschke
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009  Carl-Philip Hänsch
- * Copyright (c) 2009-2011  Armin Burgmeier
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* OpenGL implementation of NewGfx */
@@ -31,11 +22,10 @@
 #include <C4Surface.h>
 #include <C4Window.h>
 #include "C4Rect.h"
-#include "StdMesh.h"
 #include "C4Config.h"
 #include "C4Application.h"
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 // MSVC doesn't define M_PI in math.h unless requested
 #ifdef  _MSC_VER
@@ -126,186 +116,6 @@ bool CStdGL::UpdateClipper()
 	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
-}
-
-bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
-{
-	// select context, if not already done
-	if (!pCurrCtx) return false;
-
-	for (unsigned int i = 0; i < mat.Techniques.size(); ++i)
-	{
-		StdMeshMaterialTechnique& technique = mat.Techniques[i];
-		technique.Available = true;
-		for (unsigned int j = 0; j < technique.Passes.size(); ++j)
-		{
-			StdMeshMaterialPass& pass = technique.Passes[j];
-
-			GLint max_texture_units;
-			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
-			assert(max_texture_units >= 1);
-			if (pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for clrmodmap as soon as we apply clrmodmap with a shader for meshes
-				technique.Available = false;
-
-			for (unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
-			{
-				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
-				for (unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
-				{
-					const C4TexRef& texture = texunit.GetTexture(l);
-					glBindTexture(GL_TEXTURE_2D, texture.texName);
-					switch (texunit.TexAddressMode)
-					{
-					case StdMeshMaterialTextureUnit::AM_Wrap:
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-						break;
-					case StdMeshMaterialTextureUnit::AM_Border:
-						glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, texunit.TexBorderColor);
-						// fallthrough
-					case StdMeshMaterialTextureUnit::AM_Clamp:
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-						break;
-					case StdMeshMaterialTextureUnit::AM_Mirror:
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-						break;
-					}
-
-					if (texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Point ||
-					    texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Linear)
-					{
-						// If mipmapping is enabled, then autogenerate mipmap data.
-						// In OGRE this is deactivated for several OS/graphics card
-						// combinations because of known bugs...
-
-						// This does work for me, but requires re-upload of texture data...
-						// so the proper way would be to set this prior to the initial
-						// upload, which would be the same place where we could also use
-						// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
-						// efficient though.
-
-						// Disabled for now, until we find a better place for this (C4TexRef?)
-#if 0
-						if (GLEW_VERSION_1_4)
-							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<C4TexRef*>(&texunit.GetTexture())->Lock(); const_cast<C4TexRef*>(&texunit.GetTexture())->Unlock(); }
-						else
-							technique.Available = false;
-#else
-						// Disable mipmap for now as a workaround.
-						texunit.Filtering[2] = StdMeshMaterialTextureUnit::F_None;
-#endif
-					}
-
-					switch (texunit.Filtering[0]) // min
-					{
-					case StdMeshMaterialTextureUnit::F_None:
-						technique.Available = false;
-						break;
-					case StdMeshMaterialTextureUnit::F_Point:
-						switch (texunit.Filtering[2]) // mip
-						{
-						case StdMeshMaterialTextureUnit::F_None:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-							break;
-						case StdMeshMaterialTextureUnit::F_Point:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-							break;
-						case StdMeshMaterialTextureUnit::F_Linear:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-							break;
-						case StdMeshMaterialTextureUnit::F_Anisotropic:
-							technique.Available = false; // invalid
-							break;
-						}
-						break;
-					case StdMeshMaterialTextureUnit::F_Linear:
-						switch (texunit.Filtering[2]) // mip
-						{
-						case StdMeshMaterialTextureUnit::F_None:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-							break;
-						case StdMeshMaterialTextureUnit::F_Point:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-							break;
-						case StdMeshMaterialTextureUnit::F_Linear:
-							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-							break;
-						case StdMeshMaterialTextureUnit::F_Anisotropic:
-							technique.Available = false; // invalid
-							break;
-						}
-						break;
-					case StdMeshMaterialTextureUnit::F_Anisotropic:
-						// unsupported
-						technique.Available = false;
-						break;
-					}
-
-					switch (texunit.Filtering[1]) // max
-					{
-					case StdMeshMaterialTextureUnit::F_None:
-						technique.Available = false; // invalid
-						break;
-					case StdMeshMaterialTextureUnit::F_Point:
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-						break;
-					case StdMeshMaterialTextureUnit::F_Linear:
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-						break;
-					case StdMeshMaterialTextureUnit::F_Anisotropic:
-						// unsupported
-						technique.Available = false;
-						break;
-					}
-
-					for (unsigned int m = 0; m < texunit.Transformations.size(); ++m)
-					{
-						StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[m];
-						if (trans.TransformType == StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM)
-						{
-							// transpose so we can directly pass it to glMultMatrixf
-							std::swap(trans.Transform.M[ 1], trans.Transform.M[ 4]);
-							std::swap(trans.Transform.M[ 2], trans.Transform.M[ 8]);
-							std::swap(trans.Transform.M[ 3], trans.Transform.M[12]);
-							std::swap(trans.Transform.M[ 6], trans.Transform.M[ 9]);
-							std::swap(trans.Transform.M[ 7], trans.Transform.M[13]);
-							std::swap(trans.Transform.M[11], trans.Transform.M[14]);
-						}
-					}
-				} // loop over textures
-
-				// Check blending: Can only have one manual source color
-				unsigned int manu_count = 0;
-				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-					++manu_count;
-				if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-				if (texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-
-				if (manu_count > 1)
-					technique.Available = false;
-
-				manu_count = 0;
-				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-					++manu_count;
-				if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-				if (texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-
-				if (manu_count > 1)
-					technique.Available = false;
-			}
-		}
-
-		if (technique.Available && mat.BestTechniqueIndex == -1)
-			mat.BestTechniqueIndex = i;
-	}
-
-	return mat.BestTechniqueIndex != -1;
 }
 
 bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
@@ -492,7 +302,6 @@ void CStdGL::PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, boo
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 }
-
 
 void CStdGL::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
                            C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * mattextures[])
@@ -1104,6 +913,14 @@ void CStdGL::ResetTexture()
 	glDisable(GL_TEXTURE_2D);
 }
 
+bool CStdGL::EnsureAnyContext()
+{
+	// Make sure some context is selected
+	if (pCurrCtx) return true;
+	if (!pMainCtx) return false;
+	return pMainCtx->Select();
+}
+
 bool CStdGL::Error(const char *szMsg)
 {
 #ifdef USE_WIN32_WINDOWS
@@ -1175,4 +992,4 @@ void CStdGL::Default()
 	iClrDpt=0;
 }
 
-#endif // USE_GL
+#endif // USE_CONSOLE

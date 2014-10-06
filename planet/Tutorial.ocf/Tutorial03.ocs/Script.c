@@ -42,7 +42,7 @@ protected func Initialize()
 	var target = MakeTarget(380, 300, true)->GetActionTarget();
 	AddEffect("HorizontalMoving", target, 1, 1, target);
 	// A flying target which drops a flint.
-	var target = MakeTarget(690, 421, true);
+	var target = MakeTarget(690, 400, true);
 	AddEffect("FlintDrop", target, 1, 0, target);
 	// A moving and a static target.
 	var target = MakeTarget(880, 520, true)->GetActionTarget();
@@ -69,6 +69,8 @@ protected func Initialize()
 // Gamecall from goals, set next mission.
 protected func OnGoalsFulfilled()
 {
+	// Achievement star
+	GainScenarioAchievement("Done");
 	// Dialogue options -> next round.
 	 SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -172,20 +174,16 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 private func MakeTarget(int x, int y, bool flying)
 {
-	if (flying == nil)
-		var balloon = false;
-
 	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);
-	if (flying == true)
+	if (flying)
 	{
 		var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 		target->SetAction("Attach", balloon);
-		CreateParticle("Flash", x, y - 50, 0, 0, 500, RGB(255, 255, 255));
+		CreateParticle("Flash", x, y - 50, 0, 0, 8, Particles_Flash());
 	}
-
-	if (flying == false)
+	else
 	{
-		CreateParticle("Flash", x, y, 0, 0, 500, RGB(255, 255, 255));
+		CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 		target->SetAction("Float");
 	}
 	return target;
@@ -259,7 +257,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var transfer, index = target->ContentsCount();
 		while (transfer = target->Contents(--index))
 			transfer->Enter(clonk);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

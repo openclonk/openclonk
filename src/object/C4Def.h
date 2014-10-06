@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2001  Matthes Bender
- * Copyright (c) 2001-2007  Sven Eberhardt
- * Copyright (c) 2003  Peter Wortmann
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2010  Maikel de Vries
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Object definition */
@@ -44,6 +38,7 @@
 #include <set>
 
 const int32_t
+C4D_All            =      ~0,
 C4D_StaticBack     =    1<<0,
 C4D_Structure      =    1<<1,
 C4D_Vehicle        =    1<<2,
@@ -106,7 +101,7 @@ class C4Def: public C4PropListStatic
 {
 public:
 	C4ID id;
-	int32_t rC4XVer[4];
+	int32_t rC4XVer[3];
 	C4IDList RequireDef;
 	C4Shape Shape;
 	C4Rect Entrance;
@@ -142,9 +137,7 @@ public:
 	int32_t Oversize;
 	int32_t Fragile;
 	int32_t Projectile;
-	int32_t Explosive;
 	int32_t NoPushEnter;
-	int32_t DragImagePicture;
 	int32_t VehicleControl;
 	int32_t Pathfinder;
 	int32_t MoveToRange;
@@ -157,7 +150,6 @@ public:
 	int32_t NoBreath;         // object does not need to breath, although it's living
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
-	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
 	int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
@@ -192,6 +184,7 @@ public:
 	C4FacetSurface *pRankSymbols; bool fRankSymbolsOwned;
 	int32_t iNumRankSymbols;    // number of rank symbols available, if loaded
 	C4DefGraphics Graphics; // base graphics. points to additional graphics
+	CSurface8 *pSolidMask; // SolidMask-bitmap. Nonzero pixels are solid.
 
 protected:
 	C4Facet MainFace;

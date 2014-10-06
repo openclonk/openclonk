@@ -114,7 +114,7 @@ public func GetHandItem(int i)
 public func SetHandItemPos(int hand, int inv)
 {
 	// indices are in range?	
-	if(hand >= HandObjects() || inv >= MaxContentsCount())
+	if(hand >= HandObjects() || inv >= this->MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
 
@@ -222,8 +222,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount()-1)) return;
-	if (!Inside(two,0,MaxContentsCount()-1)) return;
+	if (!Inside(one,0,this->MaxContentsCount()-1)) return;
+	if (!Inside(two,0,this->MaxContentsCount()-1)) return;
 
 	// switch them around
 	var temp = inventory[one];
@@ -282,7 +282,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
+	if (GetItem(pos) == nil && pos >= 0 && pos < this->MaxContentsCount())
 	{
 		if (item)
 		{
@@ -366,7 +366,7 @@ protected func Collection2(object obj)
 	// otherwise, first empty slot
 	if(!success)
 	{
-		for(var i = 0; i < MaxContentsCount(); ++i)
+		for(var i = 0; i < this->MaxContentsCount(); ++i)
 		{
 			if (!GetItem(i))
 			{
@@ -440,7 +440,7 @@ protected func Ejection(object obj)
 			{
 				// look for following non-selected non-free slots
 				var found_slot = false;
-				for(var j=i; j < MaxContentsCount(); j++)
+				for(var j=i; j < this->MaxContentsCount(); j++)
 					if(GetItem(j) && !GetHandPosByItemPos(j))
 					{
 						found_slot = true;
@@ -515,6 +515,9 @@ protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
+	
+	// NPCs only collect on demand (so they don't steal stuff form the player)
+	if (!force_collection && GetController() == NO_OWNER) return true;
 
 	// Carry heavy only gets picked up if none held already
 	if(obj->~IsCarryHeavy())
@@ -547,7 +550,7 @@ protected func RejectCollect(id objid, object obj)
 			
 
 	// check max contents
-	if (ContentsCount() >= MaxContentsCount()) return true;
+	if (ContentsCount() >= this->MaxContentsCount()) return true;
 
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
@@ -562,7 +565,7 @@ protected func RejectCollect(id objid, object obj)
 public func AllowTransfer(object obj)
 {
 	// Only check max contents.
-	if (GetItemCount() >= MaxContentsCount()) 
+	if (GetItemCount() >= this->MaxContentsCount()) 
 		return false;
 
 	// don't allow picking up multiple carryheavy-objects
@@ -742,7 +745,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// some controls should only do something on release (everything that has to do with interaction)
-	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_GrabNext || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
 	{
 		if(!release)
 		{
@@ -902,7 +905,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
 	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
 	
-	if(hot > 0  && hot <= MaxContentsCount())
+	if(hot > 0  && hot <= this->MaxContentsCount())
 	{
 		SetHandItemPos(hand, hot-1);
 		this->~OnInventoryHotkeyRelease(hot-1);
@@ -924,7 +927,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// only the last-pressed key is taken into consideration.
 	// if 2 hotkeys are held, the earlier one is beeing treated as released
-	if (hot > 0 && hot <= MaxContentsCount())
+	if (hot > 0 && hot <= this->MaxContentsCount())
 	{
 		// if released, we chose, if not chosen already
 		if(release)
@@ -1053,8 +1056,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Collecting
 	if (ctrl == CON_Collect)
 	{
+		// only if not inside something
+		if(Contained()) return false; // not handled
+		
 		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
 		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
 		if(obj)
 		{
@@ -1062,6 +1068,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// collected into the hands
 			Collect(obj,nil,nil,true);
 		}
+		
+		// return not handled to still receive other controls - collection should not block anything else
+		return false;
 	}
 	
 	// Throwing and dropping
@@ -1083,7 +1092,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				CancelUse();
 				
-				if (proc == "SCALE" || proc == "HANGLE")
+				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
@@ -1633,6 +1642,10 @@ private func ObjectControlPush(int plr, int ctrl)
 	{
 		// ungrab only if he pushes
 		if (proc != "PUSH") return false;
+		
+		// vehicles might have set their own view and it's not reset on release controls
+		// So reset cursor view immediately when ungrabbing
+		ResetCursorView(GetController());
 
 		ObjectCommand("UnGrab");
 		return true;
@@ -1859,8 +1872,8 @@ private func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
-	iX = 8; if (!GetDir()) iX = -iX;
-	iY = Cos(angle,-8);
+	iX = 4; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-4);
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 

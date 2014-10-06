@@ -15,7 +15,7 @@ global func FxHitCheckStart(object target, proplist effect, int temp, object by_
 		return;
 	effect.x = target->GetX();
 	effect.y = target->GetY();
-	if (!by_obj)
+	if (!by_obj || GetType(by_obj) != C4V_C4Object)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
@@ -66,6 +66,7 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 								Sort_Distance(oldx, oldy)))
 		{
 			// Excludes
+			if (!obj) continue; // hit callback of one object might have removed other objects
 			if(obj == target) continue;
 			if(obj == shooter) continue;
 

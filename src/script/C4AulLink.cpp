@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2006-2007  Sven Eberhardt
- * Copyright (c) 2001-2002, 2004, 2007  Peter Wortmann
- * Copyright (c) 2006-2009, 2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // links aul scripts; i.e. resolves includes & appends, etc
 
@@ -44,11 +40,11 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 {
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
-	for (std::list<C4ID>::iterator a = Appends.begin(); a != Appends.end(); ++a)
+	for (std::list<StdCopyStrBuf>::iterator a = Appends.begin(); a != Appends.end(); ++a)
 	{
-		if (*a)
+		if (*a != "*")
 		{
-			C4Def *Def = rDefs->ID2Def(*a);
+			C4Def *Def = rDefs->GetByName(*a);
 			if (Def)
 			{
 				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), GetScriptHost()) == Def->Script.SourceScripts.end())
@@ -59,7 +55,7 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				Warn("#appendto %s not found", a->ToString());
+				Warn("#appendto %s not found", a->getData());
 			}
 		}
 		else
@@ -95,9 +91,9 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	}
 	Resolving=true;
 	// append all includes to local script
-	for (std::list<C4ID>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
+	for (std::list<StdCopyStrBuf>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
 	{
-		C4Def *Def = rDefs->ID2Def(*i);
+		C4Def *Def = rDefs->GetByName(*i);
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )
@@ -116,7 +112,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 			// save id in buffer because AulWarn will use the buffer of C4IdText
 			// to get the id of the object in which the error occurs...
 			// (stupid static buffers...)
-			Warn("#include %s not found", i->ToString());
+			Warn("#include %s not found", i->getData());
 		}
 	}
 	IncludesResolved = true;
@@ -133,9 +129,6 @@ void C4AulScript::UnLink()
 
 void C4ScriptHost::UnLink()
 {
-	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
-	if (Temporary) return;
-
 	C4PropList * p = GetPropList();
 	if (p)
 	{

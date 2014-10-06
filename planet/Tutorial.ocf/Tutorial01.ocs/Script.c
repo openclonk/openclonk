@@ -44,6 +44,8 @@ protected func Initialize()
 // Gamecall from goals, set next mission.
 protected func OnGoalsFulfilled()
 {
+	// Achievement star
+	GainScenarioAchievement("Done");
 	// Dialogue options -> next round.
 	SetNextMission("Tutorial.ocf\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
@@ -212,8 +214,8 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show inventory slots.
 	if (index == 9)
 	{
-		TutArrowShowGUIPos(248 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
-		TutArrowShowGUIPos(341 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
+		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 153 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
+		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 225 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
 	}
 	return;
 }
@@ -260,7 +262,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

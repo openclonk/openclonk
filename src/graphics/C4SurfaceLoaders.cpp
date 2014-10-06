@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003, 2008  Matthes Bender
- * Copyright (c) 2002, 2007-2008, 2010-2011  Sven Eberhardt
- * Copyright (c) 2004-2009  Günther Brammer
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Extension to C4Surface that handles bitmaps in C4Group files */
@@ -265,6 +260,8 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 
 /* JPEG loading */
 
+#ifndef USE_CONSOLE
+
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
@@ -394,3 +391,13 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup)
 	// return if successful
 	return true;
 }
+
+#else // ifndef USE_CONSOLE
+
+bool C4Surface::ReadJPEG(CStdStream &hGroup) {
+	// Dummy surface
+	if (!Create(1, 1)) return false;
+	return true;
+}
+
+#endif // USE_CONSOLE

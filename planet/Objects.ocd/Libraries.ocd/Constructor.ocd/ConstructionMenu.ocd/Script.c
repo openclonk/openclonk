@@ -177,3 +177,6 @@ public func OnMouseOutItem(object out_item, object dragged_item)
 	
 	return _inherited(out_item, dragged_item, ...);
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

@@ -1,21 +1,19 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2010-2011  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 2005, Sven Eberhardt
+ * Copyright (c) 2005-2006, Günther Brammer
+ * Copyright (c) 2006, Armin Burgmeier
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_STDAPP
@@ -23,6 +21,7 @@
 
 #include <StdScheduler.h>
 #include <StdSync.h>
+#include <C4StdInProc.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -41,8 +40,10 @@
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
 #define MK_ALT (KMOD_LALT | KMOD_RALT)
 #elif defined(USE_CONSOLE)
+#ifndef _WIN32
 #define MK_SHIFT 0
 #define MK_CONTROL 0
+#endif
 #define MK_ALT 0
 #elif defined(USE_COCOA)
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
@@ -50,8 +51,10 @@ extern int MK_SHIFT;
 extern int MK_CONTROL;
 extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
-#define MK_ALT 0x10000 // well beyond the pre-defined values
 #include <C4windowswrapper.h>
+#ifndef MK_ALT
+#define MK_ALT 0x20 // as defined in oleidl.h
+#endif
 #endif
 
 #ifdef USE_WIN32_WINDOWS
@@ -74,27 +77,6 @@ public:
 };
 #endif
 
-#ifdef USE_CONSOLE
-// A simple alertable proc
-class CStdInProc : public StdSchedulerProc
-{
-public:
-	CStdInProc();
-	~CStdInProc();
-
-	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { 0, POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
-private:
-	// commands from stdin
-	StdCopyStrBuf CmdBuf;
-};
-#endif
-
 class C4AbstractApp : public StdScheduler
 {
 public:
@@ -113,9 +95,9 @@ public:
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 	// Gamma
-	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
-	bool ScheduleProcs(int iTimeout = -1);
+	virtual bool ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _GAMMARAMP &ramp);
+	virtual bool DoScheduleProcs(int iTimeout);
 	bool FlushMessages();
 	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
@@ -130,6 +112,8 @@ public:
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0;
+	// Keyboard layout changed
+	virtual void OnKeyboardLayoutChanged() = 0;
 	// notify user to get back to the program
 	void NotifyUserIfInactive();
 	void MessageDialog(const char * message);
@@ -140,6 +124,8 @@ public:
 private:
 	HINSTANCE hInstance;
 	HANDLE hMainThread; // handle to main thread that initialized the app
+
+	void SetLastErrorFromOS();
 
 public:
 	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
@@ -178,7 +164,7 @@ public:
 
 #elif defined(USE_CONSOLE)
 protected:
-	CStdInProc InProc;
+	C4StdInProc InProc;
 #endif
 
 #ifdef USE_WIN32_WINDOWS

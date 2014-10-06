@@ -1,0 +1,4 @@
+# Intro sequence messages
+MsgPeacefulPlace=Hey %s, was meinst du? Dies sieht nach einem friedlichen Ort für unsere Goldmine aus.
+MsgSettlement=Fürwahr, %s. Der Wald liefert uns Holz für den Bau der Siedlung und im Erdboden soll es jede MEnge Gold geben.
+MsgToBeRich=Perfekt. Wir bauen unseren Betrieb hier auf und werden reich! {{GUI_Wealth}}{{Idol}}{{GUI_Wealth}}

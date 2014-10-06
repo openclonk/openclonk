@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2004, 2006, 2010  Peter Wortmann
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2006, 2010  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "C4Value.h"
@@ -75,8 +70,11 @@ public:
 	// Sets sub-array [startIndex, endIndex). Might resize the array.
 	void SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val);
 
-	void Sort(class C4SortObject &rSort);
-	void SortStrings();
+	void Sort(class C4SortObject &rSort); // assume array of objects and sort by object sorting function
+	void SortStrings(); // sort by values as strings
+	void Sort(bool descending=false); // sort by values as integers or strings
+	bool SortByProperty(C4String *prop_name, bool descending=false); // checks that this is an array of all proplists and sorts by values of given property. return false if an element is not a proplist.
+	bool SortByArrayElement(int32_t array_idx, bool descending=false); // checks that this is an array of all arrays and sorts by array elements at index. returns false if an element is not an array or smaller than array_idx+1
 
 private:
 	// Reference counter

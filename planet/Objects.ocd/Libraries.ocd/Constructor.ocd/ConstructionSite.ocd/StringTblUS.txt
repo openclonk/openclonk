@@ -1,3 +1,4 @@
 TxtTransfer=Transfer Material
 TxtAbort=Abort Construction
 TxtConstruction=Construction Site: %s
+TxtNoConstructionHere=The building ground is not fit for construction anymore!

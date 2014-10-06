@@ -1,30 +1,24 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2005, 2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A viewport to each player */
 
 #ifndef INC_C4Viewport
 #define INC_C4Viewport
-
-#include <C4Region.h>
 
 #include <C4Shape.h>
 
@@ -34,7 +28,6 @@ class C4Viewport
 public:
 	C4Viewport();
 	~C4Viewport();
-	C4RegionList Regions;
 	// "landscape" coordinates
 	float ViewX,ViewY;
 	int32_t ViewOffsX, ViewOffsY;
@@ -56,7 +49,7 @@ public:
 	void ClearPointers(C4Object *pObj);
 	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
 	void UpdateViewPosition(); // update view position: Clip properly; update border variables
-	void InitZoom();
+	void CalculateZoom();
 	void ChangeZoom(float by_factor);
 	void SetZoom(float to_zoom, bool direct=false);
 	void SetZoomLimits(float to_min_zoom, float to_max_zoom);
@@ -78,11 +71,11 @@ protected:
 	float Zoom;
 	float ZoomTarget;
 	float ZoomLimitMin,ZoomLimitMax;
+	bool ZoomInitialized;
 	int32_t Player;
 	bool PlayerLock;
 	int32_t OutX,OutY;
 	bool ResetMenuPositions;
-	C4RegionList *SetRegions;
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
 	class C4FoWRegion *pFoW;
@@ -91,6 +84,7 @@ protected:
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
 	void DrawMenu(C4TargetFacet &cgo);
 	void DrawPlayerInfo(C4TargetFacet &cgo);
+	void InitZoom();
 	void BlitOutput();
 	void AdjustPosition();
 public:

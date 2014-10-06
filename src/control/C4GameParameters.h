@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* Game parameters - game data that is valid before the game is started */
 
@@ -25,6 +22,7 @@
 #include "C4PlayerInfo.h"
 #include "C4LangStringTable.h"
 #include "C4Teams.h"
+#include "C4InfoCore.h"
 
 class C4GameRes
 {
@@ -118,6 +116,9 @@ public:
 	// Control rate
 	int32_t ControlRate;
 
+	// Automatic frame skip enabled for this game?
+	bool AutoFrameSkip;
+
 	// Allow debug mode?
 	bool AllowDebug;
 
@@ -137,6 +138,9 @@ public:
 	C4PlayerInfoList RestorePlayerInfos;
 	C4TeamList Teams;
 
+	// Custom scenario parameters
+	C4ScenarioParameters ScenarioParameters;
+
 	bool isLeague() const { return !!LeagueAddress.getLength(); }
 	bool doStreaming() const { return !!StreamAddress.getLength(); }
 	const char* getLeague() { return League.getData(); }
@@ -144,7 +148,7 @@ public:
 	void EnforceLeagueRules(class C4Scenario *pScenario);
 
 	void Clear();
-	bool Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames);
+	bool Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames, C4ScenarioParameters *pStartupScenarioParameters);
 	bool InitNetwork(C4Network2ResList *pResList);
 	bool Save(C4Group &hGroup, C4Scenario *pDefault);
 

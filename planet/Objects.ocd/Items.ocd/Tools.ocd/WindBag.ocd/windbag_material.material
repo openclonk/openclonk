@@ -1,0 +1,31 @@
+// windbag_material genrated by blender2ogre 0.6.0
+
+material windbag_material 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass windbag_material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            specular 0.009999999776482582 0.009999999776482582 0.009999999776482582 1.0 3.75
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture bagpipe.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

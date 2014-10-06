@@ -37,3 +37,6 @@ func Set(to, con)
 	SetCon(con);
 	SetAction("Turn", to);
 }
+
+// Don't duplicate on scenario load
+func SaveScenarioObject() { return false; }

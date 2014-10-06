@@ -26,6 +26,11 @@ public func IsFulfilled()
 	return false;
 }
 
+public func GetDescription(int plr)
+{
+	return this.Description;
+}
+
 public func CreateGoalFlag(int x, int y)
 {
 	flag = CreateObject(TutorialFlag, 0, 0, NO_OWNER);

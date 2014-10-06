@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2007-2009  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Menus attached to objects; script created or internal
 
@@ -168,7 +162,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				{
 					// easy way: only if first concat check matches
 					// this doesn't catch all possibilities, but that will rarely matter
-					C4Object *pObj2=pTarget->Contents.Find(pDef->id, ANY_OWNER, OCF_FullCon);
+					C4Object *pObj2=pTarget->Contents.Find(pDef, ANY_OWNER, OCF_FullCon);
 					if (pObj2) if (pObj2->CanConcatPictureWith(pObj)) pObj = pObj2;
 				}
 				// Caption
@@ -205,7 +199,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				{
 					// easy way: only if first concat check matches
 					// this doesn't catch all possibilities, but that will rarely matter
-					C4Object *pObj2 = pTarget->Contents.Find(pDef->id, ANY_OWNER, OCF_FullCon);
+					C4Object *pObj2 = pTarget->Contents.Find(pDef, ANY_OWNER, OCF_FullCon);
 					if (pObj2) if (pObj2->CanConcatPictureWith(pObj)) pObj = pObj2;
 				}
 				// Determine whether to get or activate

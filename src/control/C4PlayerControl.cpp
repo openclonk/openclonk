@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Input to player control mapping
 
@@ -38,9 +34,7 @@
 
 #include <algorithm>
 
-#ifdef DEBUGREC
 #include "C4Record.h"
-#endif
 
 /* C4PlayerControlDef */
 
@@ -75,6 +69,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 		{ "MenuUp",      CDA_MenuUp      },
 		{ "MenuRight",   CDA_MenuRight   },
 		{ "MenuDown",    CDA_MenuDown    },
+		{ "ObjectMenuTextComplete", CDA_ObjectMenuTextComplete },
 		{ "ObjectMenuOK",    CDA_ObjectMenuOK      },
 		{ "ObjectMenuOKAll", CDA_ObjectMenuOKAll   },
 		{ "ObjectMenuSelect",CDA_ObjectMenuSelect      },
@@ -195,22 +190,11 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 		Key.dwShift = 0;
 		sKeyName.Clear();
 		pComp->Value(mkParAdapt(Key, &sKeyName));
-		if (!sKeyName)
-		{
-			// key was not assigned during compilation - this means it's a regular key (or undefined)
-			// store this as the name
-			UpdateKeyName();
-		}
-		else if (Key.dwShift)
-		{
-			// key name and shift was assigned during compilation - keep both in key name for later decompilation
-			sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
-		}
 	}
 	else
 	{
 		// decompiler: If there's a stored key name, just write it. Regardless of whether it's a key, undefined or a reference
-		// IF no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
+		// If no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
 		if (!sKeyName) UpdateKeyName();
 		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
 	}
@@ -220,6 +204,8 @@ void C4PlayerControlAssignment::KeyComboItem::UpdateKeyName()
 {
 	// update key name from key
 	sKeyName.Copy(Key.ToString(false, false));
+	if (Key.dwShift)
+		sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
 }
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
@@ -228,14 +214,18 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(KeyCombo), "Key", KeyComboVec()));
 	pComp->Value(mkNamingAdapt(fComboIsSequence, "ComboIsSequence", false));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIDesc, StdCompiler::RCT_All), "GUIDesc", ""));
+	pComp->Value(mkNamingAdapt(iGUIGroup,"GUIGroup",0));
+	pComp->Value(mkNamingAdapt(fGUIDisabled, "GUIDisabled", false));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
-	pComp->Value(mkNamingAdapt(is_group_start, "Group", false));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] =
 	{
 		{ "Default",      CTM_Default  },
 		{ "Hold",         CTM_Hold     },
 		{ "Release",      CTM_Release  },
 		{ "AlwaysUnhandled", CTM_AlwaysUnhandled  },
+		{ "ClearRecentKeys", CTM_ClearRecentKeys  },
 		{ NULL, 0 }
 	};
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt< int32_t>(iTriggerMode, TriggerModeNames), "TriggerMode", CTM_Default));
@@ -281,12 +271,13 @@ void C4PlayerControlAssignment::CopyKeyFrom(const C4PlayerControlAssignment &src
 bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs)
 {
 	// avoid circular chains
-	static C4PlayerControlAssignment *pCircularDetect = NULL;
-	if (!pCircularDetect) pCircularDetect = this; else if (pCircularDetect == this)
+	static int32_t recursion_check = 0;
+	if (recursion_check > 10)
 	{
-		LogFatal(FormatString("Circular reference chain detected in player control assignments of set %s in assignment for key %s!", pParentSet->GetName(), GetControlName()).getData());
+		LogFatal(FormatString("Maximum recursion limit reached while resolving player control assignments of set %s in assignment for key %s. This is probably due to a circular control chain.", pParentSet->GetName(), GetControlName()).getData());
 		return false;
 	}
+	++recursion_check;
 	// resolve control name
 	iControl = pControlDefs->GetControlIndexByIdentifier(sControlName.getData());
 	// resolve keys
@@ -294,21 +285,29 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i)
 	{
 		KeyComboItem &rKeyComboItem = *i;
-		if (rKeyComboItem.Key.Key == KEY_Default && rKeyComboItem.sKeyName.getLength())
+		const char *szKeyName = rKeyComboItem.sKeyName.getData();
+		// check if this is a key reference. A key reference must be preceded by CON_
+		// it may also be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
+		bool is_key_reference = false;
+		int last_shift_delim_pos;
+		if (szKeyName && *szKeyName)
+		{
+			if ((last_shift_delim_pos=SCharLastPos('+', szKeyName)) > -1) szKeyName += last_shift_delim_pos+1;
+			if (SEqual2(szKeyName, "CON_"))
+			{
+				is_key_reference = true;
+				szKeyName +=4;
+			}
+		}
+		if (is_key_reference)
 		{
 			// this is a key reference
-			// it may be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
-			// it may be preceded by CON_ to avoid ambigous keus
-			const char *szKeyName = rKeyComboItem.sKeyName.getData();
-			int last_shift_delim_pos;
-			if ((last_shift_delim_pos=SCharLastPos('+', szKeyName)) > -1) szKeyName += last_shift_delim_pos+1;
-			if (SEqual2(szKeyName, "CON_")) szKeyName +=4;
-			// - find it
+			// - find referenced target assignment
 			C4PlayerControlAssignment *pRefAssignment = pParentSet->GetAssignmentByControlName(szKeyName);
 			if (pRefAssignment)
 			{
 				// resolve itself if necessary
-				if (!pRefAssignment->IsRefsResolved()) if (!pRefAssignment->ResolveRefs(pParentSet, pControlDefs)) return false;
+				if (!pRefAssignment->IsRefsResolved()) if (!pRefAssignment->ResolveRefs(pParentSet, pControlDefs)) { --recursion_check; return false; }
 				// insert all keys of that combo into own combo
 				// add any extra shift states from reference
 				DWORD ref_shift = rKeyComboItem.Key.dwShift;
@@ -335,6 +334,12 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 		}
 		else
 		{
+			// non-reference: check if the assignment was valid
+#ifndef USE_CONSOLE
+			if (rKeyComboItem.Key == KEY_Default)
+				LogF("WARNING: Control %s of set %s contains undefined key \"%s\".", GetControlName(), pParentSet->GetName(), szKeyName);
+#endif
+			// ...and just keep this item.
 			NewCombo.push_back(rKeyComboItem);
 		}
 	}
@@ -343,7 +348,7 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	if (KeyCombo.size()) TriggerKey = KeyCombo.back().Key; else TriggerKey = C4KeyCodeEx();
 	// done
 	fRefsResolved = true;
-	if (pCircularDetect == this) pCircularDetect = NULL;
+	--recursion_check;
 	return true;
 }
 
@@ -353,22 +358,28 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 	// check if combo is currently fulfilled (assuming TriggerKey is already matched)
 	if (fComboIsSequence)
 	{
-		DWORD tKeyLast = GetTime();
+		C4TimeMilliseconds tKeyLast = C4TimeMilliseconds::Now();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
-		C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin();
-		for (KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1; i!=KeyCombo.rend(); ++i,++ri)
+		KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1;
+		for (C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin(); i!=KeyCombo.rend(); ++ri)
 		{
 			// no more keys pressed but combo didn't end? -> no combo match
 			if (ri == RecentKeys.rend()) return false;
 			const C4PlayerControlRecentKey &rk = *ri;
 			// user waited for too long?
-			DWORD tKeyRecent = rk.tTime;
+			C4TimeMilliseconds tKeyRecent = rk.tTime;
 			if (tKeyLast - tKeyRecent > C4PlayerControl::MaxSequenceKeyDelay) return false;
 			// key doesn't match?
 			const KeyComboItem &k = *i;
-			if (!(rk.matched_key == k.Key)) return false;
+			if (!(rk.matched_key == k.Key))
+			{
+				// mouse movement commands do not break sequences
+				if (Key_IsMouse(rk.matched_key.Key) && Key_GetMouseEvent(rk.matched_key.Key) == KEY_MOUSE_Move) continue;
+				return false;
+			}
 			// key OK
+			++i;
 		}
 	}
 	else
@@ -395,6 +406,9 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 	// doesn't compare resolved TriggerKey/iControl
 	return KeyCombo == cmp.KeyCombo
 	       && sControlName == cmp.sControlName
+	       && sGUIName == cmp.sGUIName
+	       && sGUIDesc == cmp.sGUIDesc
+		   && fGUIDisabled == cmp.fGUIDisabled
 	       && iTriggerMode == cmp.iTriggerMode
 	       && iPriority == cmp.iPriority;
 }
@@ -417,6 +431,42 @@ StdStrBuf C4PlayerControlAssignment::GetKeysAsString(bool human_readable, bool s
 	return result;
 }
 
+const char *C4PlayerControlAssignment::GetGUIName(const C4PlayerControlDefs &defs) const
+{
+	// local name?
+	if (sGUIName.getLength())
+	{
+		// special: None defaults to empty name
+		if (sGUIName == "None") return "";
+		return sGUIName.getData();
+	}
+	// otherwise, fall back to def
+	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
+	if (def) return def->GetGUIName();
+	// no def and no name...
+	return NULL;
+}
+
+const char *C4PlayerControlAssignment::GetGUIDesc(const C4PlayerControlDefs &defs) const
+{
+	// local desc?
+	if (sGUIDesc.getLength()) return sGUIDesc.getData();
+	// otherwise, fall back to def
+	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
+	if (def) return def->GetGUIDesc();
+	// no def and no desc...
+	return NULL;
+}
+
+bool C4PlayerControlAssignment::IsGUIDisabled() const
+{
+	return fGUIDisabled;
+}
+
+int32_t C4PlayerControlAssignment::GetGUIGroup() const
+{
+	return iGUIGroup;
+}
 
 /* C4PlayerControlAssignmentSet */
 
@@ -443,6 +493,8 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkSTLContainerAdapt(Assignments, StdCompiler::SEP_NONE));
 	pComp->NameEnd();
 }
+
+
 
 void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, MergeMode merge_mode)
 {
@@ -524,6 +576,9 @@ void C4PlayerControlAssignmentSet::RemoveAssignmentByControlName(const char *con
 
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 {
+	// reset all resolved flags to allow re-resolve after overloads
+	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+		(*i).ResetRefsResolved();
 	// resolve in order; ignore already resolved because they might have been resolved by cross reference
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
 		if (!(*i).IsRefsResolved())
@@ -924,7 +979,7 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", DefaultSync));
 }
 
-bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only)
+bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only, bool *clear_recent_keys)
 {
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
@@ -940,6 +995,8 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControlIndex);
 		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (!fUp || pControlDef->IsHoldKey()))
 		{
+			// clear RecentKeys if requested by this assignment. Must be done before sync queue, so multiple combos can be issued in a single control frame.
+			if (clear_recent_keys && (pAssignment->GetTriggerMode() & C4PlayerControlAssignment::CTM_ClearRecentKeys)) *clear_recent_keys = true;
 			// extra data from key or overwrite by current cursor pos if definition requires it
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
@@ -977,15 +1034,19 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 {
 	// add key to local "down" list if it's not already in there
 	// except for some mouse events for which a down state does not make sense
-	C4PlayerControlRecentKey RKey(pressed_key,matched_key,GetTime());
+	C4PlayerControlRecentKey RKey(pressed_key,matched_key,C4TimeMilliseconds::Now());
 	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
 	{
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	}
 	// process!
-	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData());
-	// add to recent list unless repeated
-	if (!pressed_key.IsRepeated()) RecentKeys.push_back(RKey);
+	bool clear_recent_keys = false;
+	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData(), false, &clear_recent_keys);
+	// unless assignment requests a clear, always add keys to recent list even if not handled
+	if (clear_recent_keys)
+		RecentKeys.clear();
+	else if (!pressed_key.IsRepeated()) // events caused by holding down the key are not added to recent list (so you cannot cause "double-Q" just by holding down Q)
+		RecentKeys.push_back(RKey);
 	return fResult;
 }
 
@@ -1013,12 +1074,13 @@ void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *p
 		const C4PlayerControlDef *pCtrlDef = ControlDefs.GetControlByIndex(rItem.iControl);
 		if (pCtrlDef)
 		{
-#ifdef DEBUGREC
-			if (pCtrlDef->IsSync())
+			if (Config.General.DebugRec)
 			{
-				AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
+				if (pCtrlDef->IsSync())
+				{
+					AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
+				}
 			}
-#endif
 			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
 				if (pCtrlDef->IsSync())
 				{
@@ -1144,8 +1206,8 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	case C4PlayerControlDef::CDA_MenuLeft:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuLeft ,0); return true; // navigate
 	case C4PlayerControlDef::CDA_MenuUp:     if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuUp   ,0); return true; // navigate
 	case C4PlayerControlDef::CDA_MenuRight:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
-	case C4PlayerControlDef::CDA_MenuDown:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuDown ,0); return true; // navigate
-
+	case C4PlayerControlDef::CDA_MenuDown:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
+	case C4PlayerControlDef::CDA_ObjectMenuTextComplete:   if (!pCursorMenu || fUp || !pCursorMenu->IsTextProgressing()) return false; pCursorMenu->Control(COM_MenuShowText,0); return true; // fast-foward text display
 	case C4PlayerControlDef::CDA_ObjectMenuOK:     if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnter,0); return true; // ok on item
 	case C4PlayerControlDef::CDA_ObjectMenuOKAll:  if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnterAll,0); return true; // alt ok on item
 	case C4PlayerControlDef::CDA_ObjectMenuSelect: if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuSelect,rKeyExtraData.iStrength); return true; // select an item directly
@@ -1222,8 +1284,8 @@ void C4PlayerControl::Execute()
 		}
 	}
 	// cleanup old recent keys
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	C4PlayerControlRecentKeyList::iterator irk;
-	DWORD tNow = GetTime();
 	for (irk = RecentKeys.begin(); irk != RecentKeys.end(); ++irk)
 	{
 		C4PlayerControlRecentKey &rk = *irk;

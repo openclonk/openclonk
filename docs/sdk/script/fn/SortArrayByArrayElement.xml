@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SortArrayByArrayElement</title>
+    <category>Script</category>
+    <subcat>Arrays</subcat>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>array2sort</name>
+          <desc>Array that is to be sorted</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>element_index</name>
+          <desc>Index of element in sub-array by which sorting should happen</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>descending</name>
+          <desc>If true, elements are sorted in descending (highest to lowest) order. Otherwise ascending order.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sorts an array of arrays by a subarray element. All elements must be arrays of at least element_index+1 size. Subarray elements should be either all strings or all integer.</desc>
+    <related>
+      <funclink>SortArray</funclink>
+      <funclink>SortArrayByProperty</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2012-12</date>
+</funcs>

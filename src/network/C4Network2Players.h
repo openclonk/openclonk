@@ -1,19 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2005  Sven Eberhardt
- * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // network player management
 // manages synchronization of the player info list in network mode (lobby and runtime)
@@ -47,7 +45,7 @@ public:
 	C4Network2Players();     // ctor
 	~C4Network2Players() { } // dtor
 
-	void Init();            // add local players; add player file ressources - should be called with net connections initialized
+	void Init();            // add local players; add player file resources - should be called with net connections initialized
 	void Clear();           // clear all player infos
 	bool JoinLocalPlayer(const char *szLocalPlayerFilename, bool fAdd); // join a local player (to game or lobby) - sends to host/and or schedules for queue
 

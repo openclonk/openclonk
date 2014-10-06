@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008, 2010  Sven Eberhardt
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2009-2011  Armin Burgmeier
- * Copyright (c) 2005-2006, 2010-2011  Günther Brammer
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Richard Gerum
- * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // graphics used by object definitions (object and portraits)
 
@@ -46,13 +37,13 @@
 #include <C4MeshAnimation.h>
 #include "StdMeshLoader.h"
 
-// Helper class to load additional ressources required for meshes from
+// Helper class to load additional resources required for meshes from
 // a C4Group.
-class AdditionalRessourcesLoader:
+class AdditionalResourcesLoader:
 		public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
 {
 public:
-	AdditionalRessourcesLoader(C4Group& hGroup): Group(hGroup) {}
+	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
 	virtual C4Surface* LoadTexture(const char* filename)
 	{
@@ -116,11 +107,11 @@ void C4DefGraphics::Clear()
 	pNext = NULL; fColorBitmapAutoCreated = false;
 }
 
-bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner)
+bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, bool fColorByOwner)
 {
-	if (!szFilenamePNG) return false;
+	if (!szFilename) return false;
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilenamePNG)) return false;
+	if (!Bmp.Bitmap->Load(hGroup, szFilename)) return false;
 
 	// Create owner color bitmaps
 	if (fColorByOwner)
@@ -128,23 +119,23 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const
 		// Create additionmal bitmap
 		Bmp.BitmapClr=new C4Surface();
 		// if overlay-surface is present, load from that
-		if (szOverlayPNG && hGroup.AccessEntry(szOverlayPNG))
+		if (szOverlay && Bmp.BitmapClr->Load(hGroup, szOverlay))
 		{
-			if (!Bmp.BitmapClr->ReadPNG(hGroup))
-				return false;
 			// set as Clr-surface, also checking size
 			if (!Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap))
 			{
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
-				          hGroup.GetFullName().getData(), szFilenamePNG, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
-				          szOverlayPNG, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
+				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
+				          szOverlay, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
 				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
 				return false;
 			}
 		}
 		else
+		{
 			// otherwise, create by all blue shades
 			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap)) return false;
+		}
 		fColorBitmapAutoCreated = true;
 	}
 	Type = TYPE_Bitmap;
@@ -152,19 +143,19 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const
 	return true;
 }
 
-bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
+bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
 {
 	char* buf = NULL;
 	size_t size;
 
 	try
 	{
-		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
-		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
+		if(!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
+
+		if(SEqualNoCase(GetExtension(szFileName), "xml"))
 			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else
-			return false;
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		delete[] buf;
 
 		// Create mirrored animations (#401), order submeshes
@@ -184,7 +175,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	AdditionalRessourcesLoader loader(hGroup);
+	AdditionalResourcesLoader loader(hGroup);
 
 	// Load all materials for this definition:
 	hGroup.ResetSearch();
@@ -208,49 +199,60 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 
 	// Try from Mesh first
-	if (LoadMesh(hGroup, loader)) return true;
-	// load basic graphics
-	if (!LoadBitmap(hGroup, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
+	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
 
 	// load additional graphics
 	C4DefGraphics *pLastGraphics = this;
-	int32_t iWildcardPos;
-	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsExPNG);
-	int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerExPNG);
-	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefGraphicsExPNG, Filename, NULL, !!*Filename))
+	const int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerEx);
+	hGroup.ResetSearch(); *Filename=0;
+	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsEx, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, NULL };
+	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
 	{
-		// skip def graphics
-		if (SEqualNoCase(Filename, C4CFN_DefGraphicsPNG)) continue;
-		// skip scaled def graphics
-		if (WildcardMatch(C4CFN_DefGraphicsScaledPNG, Filename)) continue;
-		// get name
-		char GrpName[_MAX_PATH+1];
-		SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
-		RemoveExtension(GrpName);
-		// remove trailing number for scaled graphics
-		int32_t extpos; int scale;
-		if ((extpos = SCharLastPos('.', GrpName)) > -1)
-			if (sscanf(GrpName+extpos+1, "%d", &scale) == 1)
-				GrpName[extpos] = '\0';
-		// clip to max length
-		GrpName[C4MaxName]=0;
-		// create new graphics
-		pLastGraphics->pNext = new C4AdditionalDefGraphics(pDef, GrpName);
-		pLastGraphics = pLastGraphics->pNext;
-		// create overlay-filename
-		char OverlayFn[_MAX_PATH+1];
-		if (fColorByOwner)
+		for(const char* const* szWildcard = AdditionalGraphics; *szWildcard != NULL; ++szWildcard)
 		{
-			// GraphicsX.png -> OverlayX.png
-			SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
-			OverlayFn[iOverlayWildcardPos]=0;
-			SAppend(Filename + iWildcardPos, OverlayFn);
-			EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
+			if(!WildcardMatch(*szWildcard, Filename)) continue;
+			// skip def graphics
+			if (SEqualNoCase(Filename, C4CFN_DefGraphics) || SEqualNoCase(Filename, C4CFN_DefMesh) || SEqualNoCase(Filename, C4CFN_DefMeshXml)) continue;
+			// skip scaled def graphics
+			if (WildcardMatch(C4CFN_DefGraphicsScaled, Filename)) continue;
+			// get name
+			char GrpName[_MAX_PATH+1];
+			const int32_t iWildcardPos = SCharPos('*', *szWildcard);
+			SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
+			RemoveExtension(GrpName);
+			// remove trailing number for scaled graphics
+			int32_t extpos; int scale;
+			if ((extpos = SCharLastPos('.', GrpName)) > -1)
+				if (sscanf(GrpName+extpos+1, "%d", &scale) == 1)
+					GrpName[extpos] = '\0';
+			// clip to max length
+			GrpName[C4MaxName]=0;
+			// create new graphics
+			pLastGraphics->pNext = new C4AdditionalDefGraphics(pDef, GrpName);
+			pLastGraphics = pLastGraphics->pNext;
+			if(*szWildcard == AdditionalGraphics[0])
+			{
+				// create overlay-filename
+				char OverlayFn[_MAX_PATH+1];
+				if(fColorByOwner)
+				{
+					// GraphicsX.png -> OverlayX.png
+					SCopy(C4CFN_ClrByOwnerEx, OverlayFn, _MAX_PATH);
+					OverlayFn[iOverlayWildcardPos]=0;
+					SAppend(Filename + iWildcardPos, OverlayFn);
+					EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerEx));
+				}
+
+				// load them
+				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
+					return false;
+			}
+			else
+			{
+				if(!pLastGraphics->LoadMesh(hGroup, Filename, loader))
+					return false;
+			}
 		}
-		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
-			return false;
 	}
 	// done, success
 	return true;
@@ -314,7 +316,7 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 		break;
 	case C4DefGraphics::TYPE_Mesh:
 		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-		std::auto_ptr<StdMeshInstance> dummy;
+		std::unique_ptr<StdMeshInstance> dummy;
 		StdMeshInstance* instance;
 
 		C4Value value;
@@ -943,7 +945,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4Facet fctTarget;
 			fctTarget.Set(cgo.Surface, offX+pForObj->Shape.x, offY+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
 
-			OverlayObj->DrawPicture(fctTarget, false, NULL, &C4DrawTransform(Transform, fctTarget.X+float(fctTarget.Wdt)/2, fctTarget.Y+float(fctTarget.Hgt)/2));
+			OverlayObj->DrawPicture(fctTarget, false, &C4DrawTransform(Transform, fctTarget.X+float(fctTarget.Wdt)/2, fctTarget.Y+float(fctTarget.Hgt)/2));
 		}
 		else
 		{
