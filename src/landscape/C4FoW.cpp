@@ -644,10 +644,15 @@ bool C4FoWRegion::BindFramebuf()
 	// Can simply reuse old texture?
 	if (!pSurface || pSurface->Wdt < Region.Wdt || pSurface->Hgt < Region.Hgt)
 	{
-		// Create texture
+		// Create texture. Round up to next power of two in order to
+		// prevent rounding errors, as well as preventing lots of
+		// re-allocations when region size changes quickly (think zoom).
 		if (!pSurface)
 			pSurface = new C4Surface();
-		if (!pSurface->Create(Region.Wdt, Region.Hgt))
+		int iWdt = 1, iHgt = 1;
+		while (iWdt < Region.Wdt) iWdt *= 2;
+		while (iHgt < Region.Hgt) iHgt *= 2;
+		if (!pSurface->Create(iWdt, iHgt))
 			return false;
 	}
 
@@ -742,12 +747,36 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 			dx1 = Region.x + Region.Wdt - OldRegion.x - OldRegion.Wdt,
 			dy1 = Region.y + Region.Hgt - OldRegion.y - OldRegion.Hgt;
 
-		glBlitFramebufferEXT(
+		/*glBlitFramebufferEXT(
 			Max(0, dx0),                  Max(0, -dy1),
 			OldRegion.Wdt - Max(0, -dx1), OldRegion.Hgt - Max(0, dy0),
 			Max(0, -dx0),                 Max(0, dy1),
 			Region.Wdt - Max(0, dx1),     Region.Hgt - Max(0, -dy0),
 			GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			*/
+
+		int sx0 = Max(0, dx0),
+			sy0 = Max(0, dy1),
+			sx1 = OldRegion.Wdt - Max(0, -dx1),
+			sy1 = OldRegion.Hgt - Max(0, -dy0),
+			tx0 = Max(0, -dx0),
+			ty0 = Max(0, -dy1),
+			tx1 = Region.Wdt - Max(0, dx1),
+			ty1 = Region.Hgt - Max(0, dy0);
+
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, getBackSurface()->ppTex[0]->texName);
+
+		glBlendFunc(GL_ONE, GL_ZERO);
+		glBegin(GL_QUADS);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx0, ty0);
+		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx0, ty1);
+		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx1, ty1);
+		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx1, ty0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
 
 		glCheck();
 
@@ -1442,6 +1471,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 	}
 
 	delete[] gFanLX;
+	delete[] fAscend;
 	
 	// Reset GL state
 	glBlendEquation(GL_FUNC_ADD);

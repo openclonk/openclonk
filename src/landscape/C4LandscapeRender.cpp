@@ -1056,8 +1056,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_ScalerTex], GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
