@@ -173,6 +173,7 @@ class C4DrawMeshGLError: public std::exception
 {
 public:
 	C4DrawMeshGLError(const StdStrBuf& buf): Buf(buf) {}
+	virtual ~C4DrawMeshGLError() throw() {}
 
 	virtual const char* what() const throw() { return Buf.getData(); }
 
