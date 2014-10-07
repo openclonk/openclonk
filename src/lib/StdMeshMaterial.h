@@ -40,9 +40,32 @@ protected:
 	StdCopyStrBuf Buf;
 };
 
-// Interface to load textures. Given a texture filename occuring in the
+// An abstract shader class. This is supposed to be implemented by the
+// GFX implementation, such as C4DrawGL.
+class StdMeshMaterialShader
+{
+public:
+	enum Type {
+		FRAGMENT,
+		VERTEX,
+		GEOMETRY
+	};
+
+	virtual ~StdMeshMaterialShader() {}
+	virtual Type GetType() const = 0;
+};
+
+class StdMeshMaterialProgram
+{
+public:
+	virtual ~StdMeshMaterialProgram() {}
+};
+
+// Interface to load additional resources.
+// Given a texture filename occuring in the
 // material script, this should load the texture from wherever the material
 // script is actually loaded, for example from a C4Group.
+// Given a shader filename, this should load the shader.
 class StdMeshMaterialTextureLoader
 {
 public:
@@ -273,33 +296,11 @@ public:
 	SceneBlendType SceneBlendFactors[2];
 	bool AlphaToCoverage;
 
-	// An abstract shader class. This is supposed to be implemented by the
-	// GFX implementation, such as C4DrawGL.
-	class Shader { public: virtual ~Shader() {} };
-
-	// This is a simple reference to a shader. It is allowed to be copied as long
-	// as the shader is not set.
-	class ShaderRef
-	{
-	public:
-		ShaderRef(): Program(NULL) {}
-		ShaderRef(const ShaderRef& other) { Program = NULL; /* don't copy the program pointer */ }
-		~ShaderRef() { delete Program; }
-
-		ShaderRef& operator=(Shader* NewProgram) { assert(Program == NULL); Program = NewProgram; return *this; }
-		ShaderRef& operator=(const ShaderRef& other) { assert(Program == NULL); assert(other.Program == NULL); Program = NULL; return *this; }
-
-		const Shader* operator->() const { return Program; }
-		const Shader& operator*() const { return *Program; }
-		operator const Shader*() const { return Program; }
-
-		Shader* Program;
-	};
-
-	// A compiled shader which applies the blending between the texture units,
-	// and also applies color modulation and MOD2.
-	// The actual compilation is being done in PrepareMaterial() of the C4Draw.
-	ShaderRef Program;
+	// These point into the StdMeshMatManager maps
+	const StdMeshMaterialShader* FragmentShader;
+	const StdMeshMaterialShader* VertexShader;
+	const StdMeshMaterialShader* GeometryShader;
+	const StdMeshMaterialProgram* Program;
 };
 
 class StdMeshMaterialTechnique
@@ -387,8 +388,22 @@ public:
 	Iterator End() { return Iterator(Materials.end()); }
 	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
 
+	const StdMeshMaterialShader* AddShader(const char* name, const char* language, StdMeshMaterialShader::Type type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
+	const StdMeshMaterialProgram& AddProgram(const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader, std::unique_ptr<StdMeshMaterialProgram> RREF program);
 private:
 	MaterialMap Materials;
+
+	// Compiled shaders
+	// TODO: Some sort of post-init should delete compiled shaders after all programs have been linked
+	// c.f. http://stackoverflow.com/questions/9113154/proper-way-to-delete-glsl-shader
+	typedef std::map<StdCopyStrBuf, std::unique_ptr<StdMeshMaterialShader> > ShaderMap;
+	ShaderMap FragmentShaders;
+	ShaderMap VertexShaders;
+	ShaderMap GeometryShaders;
+
+	// Linked programs
+	typedef std::map<std::tuple<const StdMeshMaterialShader*, const StdMeshMaterialShader*, const StdMeshMaterialShader*>, std::unique_ptr<StdMeshMaterialProgram> > ProgramMap;
+	ProgramMap Programs;
 };
 
 extern StdMeshMatManager MeshMaterialManager;

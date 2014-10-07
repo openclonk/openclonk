@@ -18,6 +18,7 @@
 
 #include "C4Include.h"
 #include <C4DrawGL.h>
+#include <SHA1.h>
 
 #include "StdMesh.h"
 
@@ -96,121 +97,47 @@ namespace
 		default: assert(false); return GL_ZERO;
 		}
 	}
-} // anonymous namespace
 
-class C4DrawMeshGLShader: public StdMeshMaterialPass::Shader
-{
-public:
-	C4DrawMeshGLShader(const StdMeshMaterialPass& pass);
-	virtual ~C4DrawMeshGLShader();
-
-	class Error
+	// TODO: Functions that generate the below code, to be used in PrepareMaterial...
+	StdStrBuf GetVertexShaderCodeForPass(const StdMeshMaterialPass& pass)
 	{
-	public:
-		Error(const StdStrBuf& buf): Message(buf) {}
-		StdCopyStrBuf Message;
-	};
+		StdStrBuf buf;
 
-	class ShaderObject
-	{
-		friend class C4DrawMeshGLShader;
-	public:
-		ShaderObject(GLint shader_type);
-		~ShaderObject();
+		buf.Copy(
+			"varying vec4 diffuse;"
+			"varying vec2 texcoord;"
+			"void main()"
+			"{"
+			"  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to...
+			"  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);" // TODO: Do we need to normalize?
+			"  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);"
+			"  texcoord = gl_MultiTexCoord0.xy;"
+			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+			"}"
+		);
 
-		void Load(const char* code);
-	private:
-		GLuint Shader;
-	};
-
-	GLuint Program;
-
-	GLint TexturesLocation;
-	GLint PlayerColorLocation;
-	GLint ColorModulationLocation;
-	GLint Mod2Location;
-};
-
-C4DrawMeshGLShader::ShaderObject::ShaderObject(GLint shader_type)
-{
-	Shader = glCreateShaderObjectARB(shader_type);
-	if(!Shader) throw Error(StdStrBuf("Failed to create shader"));
-}
-
-C4DrawMeshGLShader::ShaderObject::~ShaderObject()
-{
-	glDeleteObjectARB(Shader);
-}
-
-void C4DrawMeshGLShader::ShaderObject::Load(const char* code)
-{
-	glShaderSourceARB(Shader, 1, &code, NULL);
-	glCompileShaderARB(Shader);
-
-	GLint compile_status;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
-	if(compile_status != GL_TRUE)
-	{
-		GLint shader_type;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
-		const char* shader_type_str;
-		switch(shader_type)
-		{
-		case GL_VERTEX_SHADER_ARB: shader_type_str = "vertex"; break;
-		case GL_FRAGMENT_SHADER_ARB: shader_type_str = "fragment"; break;
-		//case GL_GEOMETRY_SHADER_ARB: shader_type_str = "geometry"; break;
-		default: assert(false); break;
-		}
-
-		GLint length;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
-			throw Error(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
-		}
-		else
-		{
-			throw Error(FormatString("Failed to compile %s shader", shader_type_str));
-		}
-	}
-}
-
-C4DrawMeshGLShader::C4DrawMeshGLShader(const StdMeshMaterialPass& pass)
-{
-	ShaderObject FragmentShader(GL_FRAGMENT_SHADER_ARB);
-	ShaderObject VertexShader(GL_VERTEX_SHADER_ARB);
-
-	VertexShader.Load(
-		"varying vec4 diffuse;"
-		"varying vec2 texcoord;"
-		"void main()"
-		"{"
-		"  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to...
-		"  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);" // TODO: Do we need to normalize?
-		"  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);"
-		"  texcoord = gl_MultiTexCoord0.xy;"
-		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
-		"}"
-	);
-
-	// Produce the fragment shader... first we create one code fragment for each
-	// texture unit, and we count the number of active textures, i.e. texture
-	// units that actually use a texture.
-	unsigned int texIndex = 0;
-	StdStrBuf textureUnitCode("");
-	for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
-	{
-		const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
-		textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
-
-		if(texunit.HasTexture())
-			++texIndex;
+		return buf;
 	}
 
-	FragmentShader.Load(
-		FormatString(
+	StdStrBuf GetFragmentShaderCodeForPass(const StdMeshMaterialPass& pass)
+	{
+		StdStrBuf buf;
+
+		// Produce the fragment shader... first we create one code fragment for each
+		// texture unit, and we count the number of active textures, i.e. texture
+		// units that actually use a texture.
+		unsigned int texIndex = 0;
+		StdStrBuf textureUnitCode("");
+		for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
+		{
+			const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
+			textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
+
+			if(texunit.HasTexture())
+				++texIndex;
+		}
+
+		return FormatString(
 			"varying vec4 diffuse;"
 			"varying vec2 texcoord;"
 			"%s" // Texture units with active textures, only if >0 texture units
@@ -228,12 +155,134 @@ C4DrawMeshGLShader::C4DrawMeshGLShader(const StdMeshMaterialPass& pass)
 			"}",
 			((texIndex > 0) ? FormatString("uniform sampler2D oc_Textures[%d];", texIndex).getData() : ""),
 			textureUnitCode.getData()
-		).getData()
-	);
+		);
+	}
 
+	StdStrBuf GetSHA1HexDigest(const char* text, std::size_t len)
+	{
+		sha1 ctx;
+		ctx.process_bytes(text, len);
+		unsigned int digest[5];
+		ctx.get_digest(digest);
+
+		return FormatString("%08x%08x%08x%08x%08x", digest[0], digest[1], digest[2], digest[3], digest[4]);
+	}
+} // anonymous namespace
+
+class C4DrawMeshGLError: public std::exception
+{
+public:
+	C4DrawMeshGLError(const StdStrBuf& buf): Buf(buf) {}
+
+	virtual const char* what() const throw() { return Buf.getData(); }
+
+private:
+	StdCopyStrBuf Buf;
+};
+
+class C4DrawMeshGLShader: public StdMeshMaterialShader
+{
+public:
+	C4DrawMeshGLShader(Type shader_type);
+	virtual ~C4DrawMeshGLShader();
+
+	void Load(const char* code);
+
+	virtual Type GetType() const;
+
+	GLuint Shader;
+};
+
+class C4DrawMeshGLProgram: public StdMeshMaterialProgram
+{
+public:
+	C4DrawMeshGLProgram(const C4DrawMeshGLShader* fragment_shader, const C4DrawMeshGLShader* vertex_shader, const C4DrawMeshGLShader* geometry_shader);
+	virtual ~C4DrawMeshGLProgram();
+
+	GLuint Program;
+
+	GLint TexturesLocation;
+	GLint PlayerColorLocation;
+	GLint ColorModulationLocation;
+	GLint Mod2Location;
+};
+
+C4DrawMeshGLShader::C4DrawMeshGLShader(Type shader_type)
+{
+	GLint gl_type;
+	switch(shader_type)
+	{
+	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
+	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
+	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
+	default: assert(false); break;
+	}
+
+	Shader = glCreateShaderObjectARB(gl_type);
+	if(!Shader) throw C4DrawMeshGLError(FormatString("Failed to create shader")); // TODO: custom error class?
+}
+
+C4DrawMeshGLShader::~C4DrawMeshGLShader()
+{
+	glDeleteObjectARB(Shader);
+}
+
+void C4DrawMeshGLShader::Load(const char* code)
+{
+	glShaderSourceARB(Shader, 1, &code, NULL);
+	glCompileShaderARB(Shader);
+
+	GLint compile_status;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
+	if(compile_status != GL_TRUE)
+	{
+		const char* shader_type_str;
+		switch(GetType())
+		{
+		case VERTEX: shader_type_str = "vertex"; break;
+		case FRAGMENT: shader_type_str = "fragment"; break;
+		case GEOMETRY: shader_type_str = "geometry"; break;
+		default: assert(false); break;
+		}
+
+		GLint length;
+		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
+			throw C4DrawMeshGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
+		}
+		else
+		{
+			throw C4DrawMeshGLError(FormatString("Failed to compile %s shader", shader_type_str));
+		}
+	}
+}
+
+StdMeshMaterialShader::Type C4DrawMeshGLShader::GetType() const
+{
+	GLint shader_type;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
+
+	switch(shader_type)
+	{
+	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
+	case GL_VERTEX_SHADER_ARB: return VERTEX;
+	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
+	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
+	}
+}
+
+C4DrawMeshGLProgram::C4DrawMeshGLProgram(const C4DrawMeshGLShader* fragment_shader, const C4DrawMeshGLShader* vertex_shader, const C4DrawMeshGLShader* geometry_shader)
+{
 	Program = glCreateProgramObjectARB();
-	glAttachObjectARB(Program, VertexShader.Shader);
-	glAttachObjectARB(Program, FragmentShader.Shader);
+	if(fragment_shader != NULL)
+		glAttachObjectARB(Program, fragment_shader->Shader);
+	if(vertex_shader != NULL)
+		glAttachObjectARB(Program, vertex_shader->Shader);
+	if(geometry_shader != NULL)
+		glAttachObjectARB(Program, geometry_shader->Shader);
 	glLinkProgramARB(Program);
 
 	GLint link_status;
@@ -247,27 +296,38 @@ C4DrawMeshGLShader::C4DrawMeshGLShader(const StdMeshMaterialPass& pass)
 			std::vector<char> error_message(length);
 			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
 			glDeleteObjectARB(Program);
-			throw Error(FormatString("Failed to link program: %s", &error_message[0]));
+			throw C4DrawMeshGLError(FormatString("Failed to link program: %s", &error_message[0]));
 		}
 		else
 		{
 			glDeleteObjectARB(Program);
-			throw Error(StdStrBuf("Failed to link program"));
+			throw C4DrawMeshGLError(StdStrBuf("Failed to link program"));
 		}
 	}
 
+	// TODO: Specify this as an addition to the OGRE params section
 	TexturesLocation = glGetUniformLocationARB(Program, "oc_Textures");
 	PlayerColorLocation = glGetUniformLocationARB(Program, "oc_PlayerColor");
 	ColorModulationLocation = glGetUniformLocationARB(Program, "oc_ColorModulation");
 	Mod2Location = glGetUniformLocationARB(Program, "oc_Mod2");
 }
 
-C4DrawMeshGLShader::~C4DrawMeshGLShader()
+C4DrawMeshGLProgram::~C4DrawMeshGLProgram()
 {
 	glDeleteObjectARB(Program);
 }
 
-bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
+std::unique_ptr<StdMeshMaterialShader> CStdGL::CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text)
+{
+	if(strcmp(language, "glsl") != 0)
+		throw C4DrawMeshGLError(StdStrBuf("Not a GLSL shader"));
+
+	std::unique_ptr<C4DrawMeshGLShader> shader(new C4DrawMeshGLShader(type));
+	shader->Load(text);
+	return std::move(shader);
+}
+
+bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat)
 {
 	// TODO: If a technique is not available, show an error message what the problem is
 
@@ -426,13 +486,32 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 
 			try
 			{
-				assert(pass.Program == NULL);
-				pass.Program = new C4DrawMeshGLShader(pass);
+				// Create fragment and/or vertex shader
+				// if a custom shader is not provided.
+				// Re-use existing programs if the generated
+				// code is the same (determined by SHA1 hash).
+				if(!pass.VertexShader)
+				{
+					StdStrBuf buf = GetVertexShaderCodeForPass(pass);
+					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+					pass.VertexShader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::VERTEX, buf.getData(), true);
+				}
+
+				if(!pass.FragmentShader)
+				{
+					StdStrBuf buf = GetFragmentShaderCodeForPass(pass);
+					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+					pass.FragmentShader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::FRAGMENT, buf.getData(), true);
+				}
+
+				// Then, link the program.
+				std::unique_ptr<C4DrawMeshGLProgram> program(new C4DrawMeshGLProgram(static_cast<const C4DrawMeshGLShader*>(pass.FragmentShader), static_cast<const C4DrawMeshGLShader*>(pass.VertexShader), static_cast<const C4DrawMeshGLShader*>(pass.GeometryShader)));
+				pass.Program = &mat_manager.AddProgram(pass.FragmentShader, pass.VertexShader, pass.GeometryShader, std::move(program));
 			}
-			catch(const C4DrawMeshGLShader::Error& error)
+			catch(const C4DrawMeshGLError& error)
 			{
 				technique.Available = false;
-				LogF("Failed to compile shader: %s\n", error.Message.getData());
+				LogF("Failed to compile shader: %s\n", error.what());
 			}
 		}
 
@@ -622,13 +701,14 @@ namespace
 
 			const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
 
-			const C4DrawMeshGLShader& shader = static_cast<const C4DrawMeshGLShader&>(*pass.Program);
+			assert(pass.Program != NULL);
+			const C4DrawMeshGLProgram& program = static_cast<const C4DrawMeshGLProgram&>(*pass.Program);
 
-			glUseProgramObjectARB(shader.Program);
-			if(shader.TexturesLocation != -1 && !textures.empty()) glUniform1ivARB(shader.TexturesLocation, textures.size(), &textures[0]);
-			if(shader.PlayerColorLocation != -1) glUniform3fvARB(shader.PlayerColorLocation, 1, dwPlrClr);
-			if(shader.ColorModulationLocation != -1) glUniform4fvARB(shader.ColorModulationLocation, 1, dwMod);
-			if(shader.Mod2Location != -1) glUniform1iARB(shader.Mod2Location, fMod2);
+			glUseProgramObjectARB(program.Program);
+			if(program.TexturesLocation != -1 && !textures.empty()) glUniform1ivARB(program.TexturesLocation, textures.size(), &textures[0]);
+			if(program.PlayerColorLocation != -1) glUniform3fvARB(program.PlayerColorLocation, 1, dwPlrClr);
+			if(program.ColorModulationLocation != -1) glUniform4fvARB(program.ColorModulationLocation, 1, dwMod);
+			if(program.Mod2Location != -1) glUniform1iARB(program.Mod2Location, fMod2);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 			// Clean-up, re-set default state

@@ -107,7 +107,8 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
-	bool PrepareMaterial(StdMeshMaterial& mat);
+	std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text);
+	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat);
 	// Surface
 	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);

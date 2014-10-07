@@ -22,6 +22,7 @@
 #include <C4Surface.h>
 #include <CSurface8.h>
 #include <StdBuf.h>
+#include <StdMeshMaterial.h>
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
@@ -217,7 +218,8 @@ public:
 	void Grayscale(C4Surface * sfcSfc, int32_t iOffset = 0);
 	void LockingPrimary() { PrimaryLocked=true; }
 	void PrimaryUnlocked() { PrimaryLocked=false; }
-	virtual bool PrepareMaterial(StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
+	virtual std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text) = 0; // Compile shader of the given language
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
