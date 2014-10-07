@@ -37,6 +37,41 @@
 
 class C4Window;
 
+class C4DrawGLError: public std::exception
+{
+public:
+	C4DrawGLError(const StdStrBuf& buf): Buf(buf) {}
+	virtual ~C4DrawGLError() throw() {}
+
+	virtual const char* what() const throw() { return Buf.getData(); }
+
+private:
+	StdCopyStrBuf Buf;
+};
+
+// GLSL shaders
+class C4DrawGLShader: public StdMeshMaterialShader
+{
+public:
+	C4DrawGLShader(Type shader_type);
+	virtual ~C4DrawGLShader();
+
+	void Load(const char* code);
+
+	virtual Type GetType() const;
+
+	GLuint Shader;
+};
+
+class C4DrawGLProgram: public StdMeshMaterialProgram
+{
+public:
+	C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader);
+	virtual ~C4DrawGLProgram();
+
+	GLuint Program;
+};
+
 // one OpenGL context
 class CStdGLCtx
 #ifdef USE_COCOA

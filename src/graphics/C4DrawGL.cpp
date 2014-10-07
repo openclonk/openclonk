@@ -36,6 +36,110 @@
 #include <math.h>
 #include <limits.h>
 
+C4DrawGLShader::C4DrawGLShader(Type shader_type)
+{
+	GLint gl_type;
+	switch(shader_type)
+	{
+	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
+	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
+	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
+	default: assert(false); break;
+	}
+
+	Shader = glCreateShaderObjectARB(gl_type);
+	if(!Shader) throw C4DrawGLError(FormatString("Failed to create shader")); // TODO: custom error class?
+}
+
+C4DrawGLShader::~C4DrawGLShader()
+{
+	glDeleteObjectARB(Shader);
+}
+
+void C4DrawGLShader::Load(const char* code)
+{
+	glShaderSourceARB(Shader, 1, &code, NULL);
+	glCompileShaderARB(Shader);
+
+	GLint compile_status;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
+	if(compile_status != GL_TRUE)
+	{
+		const char* shader_type_str;
+		switch(GetType())
+		{
+		case VERTEX: shader_type_str = "vertex"; break;
+		case FRAGMENT: shader_type_str = "fragment"; break;
+		case GEOMETRY: shader_type_str = "geometry"; break;
+		default: assert(false); break;
+		}
+
+		GLint length;
+		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
+			throw C4DrawGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
+		}
+		else
+		{
+			throw C4DrawGLError(FormatString("Failed to compile %s shader", shader_type_str));
+		}
+	}
+}
+
+StdMeshMaterialShader::Type C4DrawGLShader::GetType() const
+{
+	GLint shader_type;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
+
+	switch(shader_type)
+	{
+	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
+	case GL_VERTEX_SHADER_ARB: return VERTEX;
+	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
+	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
+	}
+}
+
+C4DrawGLProgram::C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader)
+{
+	Program = glCreateProgramObjectARB();
+	if(fragment_shader != NULL)
+		glAttachObjectARB(Program, fragment_shader->Shader);
+	if(vertex_shader != NULL)
+		glAttachObjectARB(Program, vertex_shader->Shader);
+	if(geometry_shader != NULL)
+		glAttachObjectARB(Program, geometry_shader->Shader);
+	glLinkProgramARB(Program);
+
+	GLint link_status;
+	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
+	if(link_status != GL_TRUE)
+	{
+		GLint length;
+		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
+			glDeleteObjectARB(Program);
+			throw C4DrawGLError(FormatString("Failed to link program: %s", &error_message[0]));
+		}
+		else
+		{
+			glDeleteObjectARB(Program);
+			throw C4DrawGLError(StdStrBuf("Failed to link program"));
+		}
+	}
+}
+
+C4DrawGLProgram::~C4DrawGLProgram()
+{
+	glDeleteObjectARB(Program);
+}
+
 static void glColorDw(DWORD dwClr)
 {
 	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));

@@ -169,38 +169,10 @@ namespace
 	}
 } // anonymous namespace
 
-class C4DrawMeshGLError: public std::exception
+class C4DrawMeshGLProgram: public C4DrawGLProgram
 {
 public:
-	C4DrawMeshGLError(const StdStrBuf& buf): Buf(buf) {}
-	virtual ~C4DrawMeshGLError() throw() {}
-
-	virtual const char* what() const throw() { return Buf.getData(); }
-
-private:
-	StdCopyStrBuf Buf;
-};
-
-class C4DrawMeshGLShader: public StdMeshMaterialShader
-{
-public:
-	C4DrawMeshGLShader(Type shader_type);
-	virtual ~C4DrawMeshGLShader();
-
-	void Load(const char* code);
-
-	virtual Type GetType() const;
-
-	GLuint Shader;
-};
-
-class C4DrawMeshGLProgram: public StdMeshMaterialProgram
-{
-public:
-	C4DrawMeshGLProgram(const C4DrawMeshGLShader* fragment_shader, const C4DrawMeshGLShader* vertex_shader, const C4DrawMeshGLShader* geometry_shader);
-	virtual ~C4DrawMeshGLProgram();
-
-	GLuint Program;
+	C4DrawMeshGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader);
 
 	GLint TexturesLocation;
 	GLint PlayerColorLocation;
@@ -208,104 +180,9 @@ public:
 	GLint Mod2Location;
 };
 
-C4DrawMeshGLShader::C4DrawMeshGLShader(Type shader_type)
+C4DrawMeshGLProgram::C4DrawMeshGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader):
+	C4DrawGLProgram(fragment_shader, vertex_shader, geometry_shader)
 {
-	GLint gl_type;
-	switch(shader_type)
-	{
-	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
-	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
-	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
-	default: assert(false); break;
-	}
-
-	Shader = glCreateShaderObjectARB(gl_type);
-	if(!Shader) throw C4DrawMeshGLError(FormatString("Failed to create shader")); // TODO: custom error class?
-}
-
-C4DrawMeshGLShader::~C4DrawMeshGLShader()
-{
-	glDeleteObjectARB(Shader);
-}
-
-void C4DrawMeshGLShader::Load(const char* code)
-{
-	glShaderSourceARB(Shader, 1, &code, NULL);
-	glCompileShaderARB(Shader);
-
-	GLint compile_status;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
-	if(compile_status != GL_TRUE)
-	{
-		const char* shader_type_str;
-		switch(GetType())
-		{
-		case VERTEX: shader_type_str = "vertex"; break;
-		case FRAGMENT: shader_type_str = "fragment"; break;
-		case GEOMETRY: shader_type_str = "geometry"; break;
-		default: assert(false); break;
-		}
-
-		GLint length;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
-			throw C4DrawMeshGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
-		}
-		else
-		{
-			throw C4DrawMeshGLError(FormatString("Failed to compile %s shader", shader_type_str));
-		}
-	}
-}
-
-StdMeshMaterialShader::Type C4DrawMeshGLShader::GetType() const
-{
-	GLint shader_type;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
-
-	switch(shader_type)
-	{
-	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
-	case GL_VERTEX_SHADER_ARB: return VERTEX;
-	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
-	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
-	}
-}
-
-C4DrawMeshGLProgram::C4DrawMeshGLProgram(const C4DrawMeshGLShader* fragment_shader, const C4DrawMeshGLShader* vertex_shader, const C4DrawMeshGLShader* geometry_shader)
-{
-	Program = glCreateProgramObjectARB();
-	if(fragment_shader != NULL)
-		glAttachObjectARB(Program, fragment_shader->Shader);
-	if(vertex_shader != NULL)
-		glAttachObjectARB(Program, vertex_shader->Shader);
-	if(geometry_shader != NULL)
-		glAttachObjectARB(Program, geometry_shader->Shader);
-	glLinkProgramARB(Program);
-
-	GLint link_status;
-	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
-	if(link_status != GL_TRUE)
-	{
-		GLint length;
-		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
-			glDeleteObjectARB(Program);
-			throw C4DrawMeshGLError(FormatString("Failed to link program: %s", &error_message[0]));
-		}
-		else
-		{
-			glDeleteObjectARB(Program);
-			throw C4DrawMeshGLError(StdStrBuf("Failed to link program"));
-		}
-	}
-
 	// TODO: Specify this as an addition to the OGRE params section
 	TexturesLocation = glGetUniformLocationARB(Program, "oc_Textures");
 	PlayerColorLocation = glGetUniformLocationARB(Program, "oc_PlayerColor");
@@ -313,17 +190,12 @@ C4DrawMeshGLProgram::C4DrawMeshGLProgram(const C4DrawMeshGLShader* fragment_shad
 	Mod2Location = glGetUniformLocationARB(Program, "oc_Mod2");
 }
 
-C4DrawMeshGLProgram::~C4DrawMeshGLProgram()
-{
-	glDeleteObjectARB(Program);
-}
-
 std::unique_ptr<StdMeshMaterialShader> CStdGL::CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text)
 {
 	if(strcmp(language, "glsl") != 0)
-		throw C4DrawMeshGLError(StdStrBuf("Not a GLSL shader"));
+		throw C4DrawGLError(StdStrBuf("Not a GLSL shader"));
 
-	std::unique_ptr<C4DrawMeshGLShader> shader(new C4DrawMeshGLShader(type));
+	std::unique_ptr<C4DrawGLShader> shader(new C4DrawGLShader(type));
 	shader->Load(text);
 	return std::move(shader);
 }
@@ -506,10 +378,10 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& ma
 				}
 
 				// Then, link the program.
-				std::unique_ptr<C4DrawMeshGLProgram> program(new C4DrawMeshGLProgram(static_cast<const C4DrawMeshGLShader*>(pass.FragmentShader), static_cast<const C4DrawMeshGLShader*>(pass.VertexShader), static_cast<const C4DrawMeshGLShader*>(pass.GeometryShader)));
+				std::unique_ptr<C4DrawMeshGLProgram> program(new C4DrawMeshGLProgram(static_cast<const C4DrawGLShader*>(pass.FragmentShader), static_cast<const C4DrawGLShader*>(pass.VertexShader), static_cast<const C4DrawGLShader*>(pass.GeometryShader)));
 				pass.Program = &mat_manager.AddProgram(pass.FragmentShader, pass.VertexShader, pass.GeometryShader, std::move(program));
 			}
-			catch(const C4DrawMeshGLError& error)
+			catch(const C4DrawGLError& error)
 			{
 				technique.Available = false;
 				LogF("Failed to compile shader: %s\n", error.what());
