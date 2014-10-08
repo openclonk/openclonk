@@ -805,24 +805,23 @@ void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, fl
 	}
 }
 
-void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
+void CStdGL::SetupMultiBlt(GLuint tex)
 {
-	// Only direct rendering
-	assert(sfcTarget->IsRenderTarget());
-	if(!PrepareRendering(sfcTarget)) return;
-
+	// Initialize multi blit shader. If pTexRef is given, use that as texture.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
+	// TODO: The locations could be cached
 	GLint fMod2Location = glGetUniformLocationARB(multi_blt_program->Program, "fMod2");
 	GLint fUseClrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseClrModMap");
 	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
 	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
 	GLint clrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrModMap");
+	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "texture");
 
 	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
 	const int fUseClrModMap = this->fUseClrModMap;
-	/*const int fUseTexture = false;*/
+	const int fUseTexture = (tex != 0);
 	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 	const float dwMod[4] = {
 		((dwModClr >> 16) & 0xff) / 255.0f,
@@ -834,24 +833,60 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glUseProgramObjectARB(multi_blt_program->Program);
 	glUniform1iARB(fMod2Location, fMod2);
 	glUniform1iARB(fUseClrModMapLocation, fUseClrModMap);
-	glUniform1iARB(fUseTextureLocation, 0);
+	glUniform1iARB(fUseTextureLocation, fUseTexture);
 	glUniform4fvARB(clrModLocation, 1, dwMod);
 
 	if(fUseClrModMap)
 	{
+		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, pClrModMap->GetSurface()->ppTex[0]->texName);
-		glUniform1iARB(clrModMapLocation, 0);
+		glUniform1iARB(clrModMapLocation, 1);
+
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
+		C4Surface * pSurface = pClrModMap->GetSurface();
+		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
+		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+		glMatrixMode(GL_MODELVIEW);
 	}
+
+	glActiveTexture(GL_TEXTURE0);
+	if(tex != 0)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glUniform1iARB(textureLocation, 0);
+	}
+
+	// Apply zoom
+	glPushMatrix();
+	glTranslatef(ZoomX, ZoomY, 0.0f);
+	glScalef(Zoom, Zoom, 1.0f);
+	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+}
+
+void CStdGL::ResetMultiBlt(GLuint tex)
+{
+	glPopMatrix();
+	if(fUseClrModMap) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
+	glActiveTexture(GL_TEXTURE0);
+	if(tex != 0) glDisable(GL_TEXTURE_2D);
+	glUseProgramObjectARB(0);
+}
+
+void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
 
 	// Draw on pixel center:
 	glPushMatrix();
 	glTranslatef(0.5f, 0.5f, 0.0f);
 
-	// Apply zoom
-	glTranslatef(ZoomX, ZoomY, 0.0f);
-	glScalef(Zoom, Zoom, 1.0f);
-	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+	// Feed the vertices to the GL
+	SetupMultiBlt(0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -870,9 +905,77 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	if(fUseClrModMap) glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-	glUseProgramObjectARB(0);
+
+	ResetMultiBlt(0);
+}
+
+void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	// In a first step, we transform the lines array to a triangle array, so that we can draw
+	// the lines with some thickness.
+	// In principle, this step could be easily (and probably much more efficiently) performed
+	// by a geometry shader as well, however that would require OpenGL 3.2.
+	C4BltVertex* tri_vertices = new C4BltVertex[n_vertices * 3];
+	for(unsigned int i = 0; i < n_vertices; i += 2)
+	{
+		const float x1 = vertices[i].ftx;
+		const float y1 = vertices[i].fty;
+		const float x2 = vertices[i+1].ftx;
+		const float y2 = vertices[i+1].fty;
+
+		float offx = y1 - y2;
+		float offy = x2 - x1;
+		float l = sqrtf(offx * offx + offy * offy);
+		// avoid division by zero
+		l += 0.000000005f;
+		offx *= width/l;
+		offy *= width/l;
+
+		tri_vertices[3*i + 0].ftx = x1 + offx; tri_vertices[3*i + 0].fty = y1 + offy;
+		tri_vertices[3*i + 1].ftx = x1 - offx; tri_vertices[3*i + 1].fty = y1 - offy;
+		tri_vertices[3*i + 2].ftx = x2 - offx; tri_vertices[3*i + 2].fty = y2 - offy;
+		tri_vertices[3*i + 3].ftx = x2 + offx; tri_vertices[3*i + 3].fty = y2 + offy;
+
+		for(int j = 0; j < 4; ++j)
+		{
+			tri_vertices[3*i + 0].color[j] = vertices[i].color[j];
+			tri_vertices[3*i + 1].color[j] = vertices[i].color[j];
+			tri_vertices[3*i + 2].color[j] = vertices[i + 1].color[j];
+			tri_vertices[3*i + 3].color[j] = vertices[i + 1].color[j];
+		}
+
+		tri_vertices[3*i + 0].tx = 0.f; tri_vertices[3*i + 0].ty = 0.f;
+		tri_vertices[3*i + 1].tx = 0.f; tri_vertices[3*i + 1].ty = 2.f;
+		tri_vertices[3*i + 2].tx = 1.f; tri_vertices[3*i + 2].ty = 2.f;
+		tri_vertices[3*i + 3].tx = 1.f; tri_vertices[3*i + 3].ty = 0.f;
+
+		tri_vertices[3*i + 4] = tri_vertices[3*i + 2]; // duplicate vertex
+		tri_vertices[3*i + 5] = tri_vertices[3*i + 0]; // duplicate vertex
+	}
+
+	// Then, feed the vertices to the GL
+	SetupMultiBlt(lines_tex);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glClientActiveTexture(GL_TEXTURE0); // lines_tex was loaded in tex0 by SetupMultiBlt
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].tx);
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].ftx);
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &tri_vertices[0].color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, n_vertices * 3);
+	delete[] tri_vertices;
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	ResetMultiBlt(lines_tex);
 }
 
 static void DefineShaderARB(const char * p, GLuint & s)
@@ -1002,6 +1105,7 @@ bool CStdGL::RestoreDeviceObjects()
 	// on top of the original fragment color.
 	// The vertex shader does not do anything special, but it delegates input values to the
 	// fragment shader.
+	// TODO: It might be more efficient to use separate shaders for pixels, lines and blits.
 	const char* vertex_shader_text =
 		"varying vec2 texcoord;"
 		"varying vec2 pos;"
@@ -1025,14 +1129,14 @@ bool CStdGL::RestoreDeviceObjects()
 		"{"
 		"  vec4 primaryColor = gl_Color;"
 		"  if(fUseTexture != 0)"
-		"    primaryColor = texture2D(Texture, texcoord);"
+		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
 		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
 		"  if(fUseClrModMap != 0)"
 		"    clrModMapClr = texture2D(ClrModMap, pos);"
 		"  if(fMod2 != 0)"
-		"    gl_FragColor = clamp(2.0 * primaryColor * clrMod - 0.5, 0.0, 1.0);"
+		"    gl_FragColor = clamp(2.0 * primaryColor * clrMod * clrModMapClr - 0.5, 0.0, 1.0);"
 		"  else"
-		"    gl_FragColor = primaryColor * clrMod;"
+		"    gl_FragColor = primaryColor * clrMod * clrModMapClr;"
 		"}";
 
 	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);
