@@ -1000,57 +1000,30 @@ void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 
 void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
-	ApplyZoom(x1, y1);
-	ApplyZoom(x2, y2);
-	// manual clipping?
-	if (Config.Graphics.ClipManuallyE)
-	{
-		float i;
-		// sort left/right
-		if (x1>x2) { i=x1; x1=x2; x2=i; i=y1; y1=y2; y2=i; }
-		// clip horizontally
-		if (x1 < iClipX1)
-			if (x2 < iClipX1)
-				return; // left out
-			else
-				{ y1+=(y2-y1)*((float)iClipX1-x1)/(x2-x1); x1=(float)iClipX1; } // clip left
-		else if (x2 > iClipX2)
-		{
-			if (x1 > iClipX2)
-				return; // right out
-			else
-				{ y2-=(y2-y1)*(x2-(float)iClipX2)/(x2-x1); x2=(float)iClipX2; } // clip right
-		}
-		// sort top/bottom
-		if (y1>y2) { i=x1; x1=x2; x2=i; i=y1; y1=y2; y2=i; }
-		// clip vertically
-		if (y1 < iClipY1)
-		{
-			if (y2 < iClipY1)
-				return; // top out
-			else
-				{ x1+=(x2-x1)*((float)iClipY1-y1)/(y2-y1); y1=(float)iClipY1; } // clip top
-		}
-		else if (y2 > iClipY2)
-		{
-			if (y1 > iClipY2)
-				return; // bottom out
-			else
-				{ x2-=(x2-x1)*(y2-(float)iClipY2)/(y2-y1); y2=(float)iClipY2; } // clip bottom
-		}
-	}
-	// apply color modulation
-	ClrByCurrentBlitMod(dwClr);
-
-	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr, width);
+	C4BltVertex vertices[2];
+	vertices[0].ftx = x1; vertices[0].fty = y1;
+	vertices[1].ftx = x1; vertices[1].fty = y1;
+	DwTo4UB(dwClr, vertices[0].color);
+	DwTo4UB(dwClr, vertices[1].color);
+	PerformMultiLines(sfcTarget, vertices, 2, width);
 }
 
 void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
 {
-	DrawLineDw(sfcDest,(float)x1,(float)y1,(float)x2,(float)y1, dwClr);
-	DrawLineDw(sfcDest,(float)x2,(float)y1,(float)x2,(float)y2, dwClr);
-	DrawLineDw(sfcDest,(float)x2,(float)y2,(float)x1,(float)y2, dwClr);
-	DrawLineDw(sfcDest,(float)x1,(float)y2,(float)x1,(float)y1, dwClr);
+	C4BltVertex vertices[8];
+	vertices[0].ftx = x1; vertices[0].fty = y1;
+	vertices[1].ftx = x2; vertices[1].fty = y1;
+	vertices[2] = vertices[1];
+	vertices[3].ftx = x2; vertices[3].fty = y2;
+	vertices[4] = vertices[3];
+	vertices[5].ftx = x1; vertices[5].fty = y2;
+	vertices[6] = vertices[5];
+	vertices[7] = vertices[0];
+
+	for(int i = 0; i < 8; ++i)
+		DwTo4UB(dwClr, vertices[i].color);
+
+	PerformMultiLines(sfcDest, vertices, 8, 1.0f);
 }
 
 // Globally locked surface variables - for DrawLine callback crap
