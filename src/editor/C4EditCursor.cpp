@@ -539,21 +539,24 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	if (!cgo.Surface) return;
 
-	pDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
+	const C4BltVertex vertices[] = {
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.top, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left+1, frame.top, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.top+1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left+1, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.left, frame.bottom-2, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.top, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-2, frame.top, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.top+1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-2, frame.bottom-1, 0.f },
+		{ 0.f, 0.f, { 0xFF, 0xFF, 0xFF, 0xFF }, frame.right-1, frame.bottom-2, 0.f },
+	};
 
-	pDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
+	const unsigned int n_vertices = sizeof(vertices) / sizeof(vertices[0]);
 
-	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
-
-	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
-	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
+	pDraw->PerformMultiPix(cgo.Surface, vertices, n_vertices);
 }
 
 
