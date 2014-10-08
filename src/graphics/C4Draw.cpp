@@ -43,6 +43,15 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
+inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
+{
+	//unsigned char r[4];
+	r[0] = GLubyte( (dwClr >> 16) & 0xff);
+	r[1] = GLubyte( (dwClr >>  8) & 0xff);
+	r[2] = GLubyte( (dwClr      ) & 0xff);
+	r[3] = GLubyte( (dwClr >> 24) & 0xff);
+}
+
 void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
 	// iAngle is in degrees (cycling from 0 to 360)
@@ -482,13 +491,34 @@ void C4Draw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 		thgt *= Zoom;
 	}
 
-	// blit 8 bit pix
+	// blit 8 bit pix in batches of 1024 pixels
+	static const int BUF_SIZE = 1024;
+	C4BltVertex* vertices = new C4BltVertex[BUF_SIZE];
+	int bufcnt = 0;
+
 	for (int ycnt=0; ycnt<thgt; ++ycnt)
+	{
 		for (int xcnt=0; xcnt<twdt; ++xcnt)
 		{
 			BYTE byPix = sfcSource->GetPix(fx+wdt*xcnt/twdt, fy+hgt*ycnt/thgt);
-			if (byPix) PerformPix(sfcTarget,(float)(tfx+xcnt), (float)(tfy+ycnt), sfcSource->pPal->GetClr(byPix));
+			DWORD dwClr = byPix ? sfcSource->pPal->GetClr(byPix) : 0x00000000;
+
+			vertices[bufcnt].ftx = (float)(tx + xcnt / Zoom);
+			vertices[bufcnt].fty = (float)(ty + ycnt / Zoom);
+			DwTo4UB(dwClr, vertices[bufcnt].color);
+			++bufcnt;
+
+			if(bufcnt == BUF_SIZE)
+			{
+				PerformMultiPix(sfcTarget, vertices, BUF_SIZE);
+				bufcnt = 0;
+			}
 		}
+
+	}
+	if(bufcnt > 0)
+		PerformMultiPix(sfcTarget, vertices, bufcnt);
+	delete[] vertices;
 	// unlock
 	if (!fRender) sfcTarget->Unlock();
 }
@@ -960,23 +990,12 @@ bool C4Draw::StringOut(const char *szText, C4Surface * sfcDest, float iTx, float
 
 void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 {
-	ApplyZoom(tx, ty);
-	// FIXME: zoom to a box
-	// manual clipping?
-	if (Config.Graphics.ClipManuallyE)
-	{
-		if (tx < iClipX1) { return; }
-		if (ty < iClipY1) { return; }
-		if (iClipX2 < tx) { return; }
-		if (iClipY2 < ty) { return; }
-	}
-	// apply global modulation
-	ClrByCurrentBlitMod(dwClr);
-	// apply modulation map
-	if (fUseClrModMap)
-		ModulateClr(dwClr, pClrModMap->GetModAt((int)tx, (int)ty));
 	// Draw
-	PerformPix(sfcDest, tx, ty, dwClr);
+	C4BltVertex vtx;
+	vtx.ftx = tx;
+	vtx.fty = ty;
+	DwTo4UB(dwClr, vtx.color);
+	PerformMultiPix(sfcDest, &vtx, 1);
 }
 
 void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)

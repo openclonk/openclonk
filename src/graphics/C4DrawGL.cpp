@@ -140,11 +140,6 @@ C4DrawGLProgram::~C4DrawGLProgram()
 	glDeleteObjectARB(Program);
 }
 
-static void glColorDw(DWORD dwClr)
-{
-	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));
-}
-
 // GLubyte (&r)[4] is a reference to an array of four bytes named r.
 static void DwTo4UB(DWORD dwClr, GLubyte (&r)[4])
 {
@@ -810,28 +805,6 @@ void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, fl
 	}
 }
 
-void CStdGL::PerformPix(C4Surface * sfcTarget, float tx, float ty, DWORD dwClr)
-{
-	// render target?
-	if (sfcTarget->IsRenderTarget())
-	{
-		if (!PrepareRendering(sfcTarget)) return;
-		int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-		// use a different blendfunc here because of GL_POINT_SMOOTH
-		glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-		// convert the alpha value for that blendfunc
-		glBegin(GL_POINTS);
-		glColorDw(dwClr);
-		glVertex2f(tx + 0.5f, ty + 0.5f);
-		glEnd();
-	}
-	else
-	{
-		// emulate
-		sfcTarget->SetPixDw((int)tx, (int)ty, dwClr);
-	}
-}
-
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
 {
 	// Only direct rendering
@@ -880,11 +853,20 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glScalef(Zoom, Zoom, 1.0f);
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
-	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices->ftx);
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices->color[0]);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glDrawArrays(GL_POINTS, 0, n_vertices);
+
+	// This is a workaround. Instead of submitting the whole vertex array to the GL, we do it
+	// in batches of 256 vertices. The intel graphics driver on Linux crashes with
+	// significantly larger arrays, such as 400. It's not clear to me why, maybe POINT drawing
+	// is just not very well tested.
+	const unsigned int BATCH_SIZE = 256;
+	for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
+	{
+		glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[i].ftx);
+		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[i].color[0]);
+		glDrawArrays(GL_POINTS, 0, std::min(n_vertices - i, BATCH_SIZE));
+	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
