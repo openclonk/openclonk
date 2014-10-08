@@ -832,6 +832,67 @@ void CStdGL::PerformPix(C4Surface * sfcTarget, float tx, float ty, DWORD dwClr)
 	}
 }
 
+void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
+	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
+	GLint fMod2Location = glGetUniformLocationARB(multi_blt_program->Program, "fMod2");
+	GLint fUseClrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseClrModMap");
+	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
+	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
+	GLint clrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrModMap");
+
+	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
+	const int fUseClrModMap = this->fUseClrModMap;
+	/*const int fUseTexture = false;*/
+	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
+	const float dwMod[4] = {
+		((dwModClr >> 16) & 0xff) / 255.0f,
+		((dwModClr >>  8) & 0xff) / 255.0f,
+		((dwModClr      ) & 0xff) / 255.0f,
+		((dwModClr >> 24) & 0xff) / 255.0f
+	};
+
+	glUseProgramObjectARB(multi_blt_program->Program);
+	glUniform1iARB(fMod2Location, fMod2);
+	glUniform1iARB(fUseClrModMapLocation, fUseClrModMap);
+	glUniform1iARB(fUseTextureLocation, 0);
+	glUniform4fvARB(clrModLocation, 1, dwMod);
+
+	if(fUseClrModMap)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, pClrModMap->GetSurface()->ppTex[0]->texName);
+		glUniform1iARB(clrModMapLocation, 0);
+	}
+
+	// Draw on pixel center:
+	glPushMatrix();
+	glTranslatef(0.5f, 0.5f, 0.0f);
+
+	// Apply zoom
+	glTranslatef(ZoomX, ZoomY, 0.0f);
+	glScalef(Zoom, Zoom, 1.0f);
+	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices->ftx);
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices->color[0]);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glDrawArrays(GL_POINTS, 0, n_vertices);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	if(fUseClrModMap) glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	glUseProgramObjectARB(0);
+}
+
 static void DefineShaderARB(const char * p, GLuint & s)
 {
 	glBindProgramARB (GL_FRAGMENT_PROGRAM_ARB, s);
@@ -952,6 +1013,54 @@ bool CStdGL::RestoreDeviceObjects()
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
 		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_mod, grey, fow, end).getData(), shaders[11]);
 	}
+
+	// The following shaders are used for drawing primitives such as points, lines and sprites.
+	// They are used in PerformMultiPix, PerformMultiLines and PerformMultiBlt.
+	// The fragment shader applies the color modulation, mod2 drawing and the color modulation map
+	// on top of the original fragment color.
+	// The vertex shader does not do anything special, but it delegates input values to the
+	// fragment shader.
+	const char* vertex_shader_text =
+		"varying vec2 texcoord;"
+		"varying vec2 pos;"
+		"void main()"
+		"{"
+		"  texcoord = gl_MultiTexCoord0.xy;"
+                "  pos = gl_Vertex.xy;"
+		"  gl_FrontColor = gl_Color;"
+		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+		"}";
+	const char* fragment_shader_text =
+		"uniform int fMod2;"
+		"uniform int fUseClrModMap;"
+		"uniform int fUseTexture;"
+		"uniform vec4 clrMod;"
+		"uniform sampler2D Texture;"
+		"uniform sampler2D ClrModMap;"
+		"varying vec2 texcoord;"
+		"varying vec2 pos;"
+		"void main()"
+		"{"
+		"  vec4 primaryColor = gl_Color;"
+		"  if(fUseTexture != 0)"
+		"    primaryColor = texture2D(Texture, texcoord);"
+		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
+		"  if(fUseClrModMap != 0)"
+		"    clrModMapClr = texture2D(ClrModMap, pos);"
+		"  if(fMod2 != 0)"
+		"    gl_FragColor = clamp(2.0 * primaryColor * clrMod - 0.5, 0.0, 1.0);"
+		"  else"
+		"    gl_FragColor = primaryColor * clrMod;"
+		"}";
+
+	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);
+	vertex_shader.Load(vertex_shader_text);
+
+	C4DrawGLShader fragment_shader(StdMeshMaterialShader::FRAGMENT);
+	fragment_shader.Load(fragment_shader_text);
+
+	multi_blt_program.reset(new C4DrawGLProgram(&fragment_shader, &vertex_shader, NULL));
+
 	// done
 	return Active;
 }
@@ -965,6 +1074,7 @@ bool CStdGL::InvalidateDeviceObjects()
 #endif
 	// deactivate
 	Active=false;
+	multi_blt_program.reset(NULL);
 	// invalidate font objects
 	// invalidate primary surfaces
 	if (lines_tex)

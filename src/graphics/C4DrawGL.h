@@ -133,6 +133,8 @@ protected:
 	GLuint vbo;
 	// texture for smooth lines
 	GLuint lines_tex;
+	// programs for drawing points, lines, quads
+	std::unique_ptr<C4DrawGLProgram> multi_blt_program;
 public:
 	// General
 	void Clear();
@@ -162,6 +164,7 @@ public:
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
 	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width);
 	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
