@@ -43,15 +43,6 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
-inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
-{
-	//unsigned char r[4];
-	r[0] = GLubyte( (dwClr >> 16) & 0xff);
-	r[1] = GLubyte( (dwClr >>  8) & 0xff);
-	r[2] = GLubyte( (dwClr      ) & 0xff);
-	r[3] = GLubyte( (dwClr >> 24) & 0xff);
-}
-
 void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
 	// iAngle is in degrees (cycling from 0 to 360)

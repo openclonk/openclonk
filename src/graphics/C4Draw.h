@@ -30,6 +30,15 @@
 // Global Draw access pointer
 extern C4Draw *pDraw;
 
+inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
+{
+	//unsigned char r[4];
+	r[0] = (unsigned char)( (dwClr >> 16) & 0xff);
+	r[1] = (unsigned char)( (dwClr >>  8) & 0xff);
+	r[2] = (unsigned char)( (dwClr      ) & 0xff);
+	r[3] = (unsigned char)( (dwClr >> 24) & 0xff);
+}
+
 // rotation info class
 class C4BltTransform
 {
@@ -252,6 +261,7 @@ public:
 	// Drawing
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex) = 0; // blit the same texture many times
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
 	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);

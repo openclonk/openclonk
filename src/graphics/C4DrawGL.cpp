@@ -140,16 +140,6 @@ C4DrawGLProgram::~C4DrawGLProgram()
 	glDeleteObjectARB(Program);
 }
 
-// GLubyte (&r)[4] is a reference to an array of four bytes named r.
-static void DwTo4UB(DWORD dwClr, GLubyte (&r)[4])
-{
-	//unsigned char r[4];
-	r[0] = GLubyte(dwClr>>16);
-	r[1] = GLubyte(dwClr>>8);
-	r[2] = GLubyte(dwClr);
-	r[3] = GLubyte(dwClr>>24);
-}
-
 CStdGL::CStdGL():
 		pMainCtx(0)
 {
@@ -901,6 +891,35 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	ResetMultiBlt(lines_tex);
+}
+
+void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	// Feed the vertices to the GL
+	SetupMultiBlt(pTex ? pTex->texName : 0);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	if(pTex)
+	{
+		glClientActiveTexture(GL_TEXTURE0); // pTex was loaded in tex0 by SetupMultiBlt
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].tx);
+	}
+
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].ftx);
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[0].color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, n_vertices);
+
+	if(pTex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	ResetMultiBlt(pTex ? pTex->texName : 0);
 }
 
 static void DefineShaderARB(const char * p, GLuint & s)
