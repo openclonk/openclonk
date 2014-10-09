@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <map>
+#include <tuple>
 
 // TODO: Support more features of OGRE material scripts
 // Refer to http://www.ogre3d.org/docs/manual/manual_14.html
