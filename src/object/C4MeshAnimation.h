@@ -34,7 +34,7 @@ enum C4AnimationValueProviderID
 	C4AVP_Dist,
 	C4AVP_XDir,
 	C4AVP_YDir,
-	C4AVP_RDir,
+	C4AVP_AbsRDir,
 	C4AVP_CosR,
 	C4AVP_SinR,
 	C4AVP_CosV,
@@ -211,11 +211,11 @@ private:
 	C4Real MaxYDir;
 };
 
-class C4ValueProviderRDir: public StdMeshInstance::SerializableValueProvider
+class C4ValueProviderAbsRDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderRDir(): Object(NULL), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
-	C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
+	C4ValueProviderAbsRDir(): Object(NULL), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
+	C4ValueProviderAbsRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
 	virtual bool Execute();
 
 	virtual void CompileFunc(StdCompiler* pComp);
