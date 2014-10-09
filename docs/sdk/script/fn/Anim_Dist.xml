@@ -4,9 +4,9 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>Anim_AbsY</title>
+    <title>Anim_Dist</title>
     <category>Animations</category>
-    <version>5.1 OC</version>
+    <version>5.6 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -28,16 +28,16 @@
         <param>
           <type>int</type>
           <name>length</name>
-          <desc>Number of pixels that need to be moved in Y direction for the animation to be played from begin to end.</desc>
+          <desc>Number of pixels to be moved for the animation to be played from begin to end.</desc>
         </param>
       </params>
     </syntax>
-    <desc>The value depends on the movement of the object into Y direction. Every pixel the object moves into Y direction increases the value a little bit. Once end is reached the value is reset to begin. In contrast to <funclink>Anim_Y</funclink> the value always moves towards end, not depending on whether the object moves upwards or downwards.</desc>
+    <desc>The value depends on the distance travelled by the aboject. Every pixel the object moves increases the value a little bit. Once end has been reached the value is reset to begin. This is a combination of <funclink>Anim_AbsX</funclink> and <funclink>Anim_AbsY</funclink>, where the movement in both coordinates is considered.</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-        <code><funclink>PlayAnimation</funclink>(&quot;Lift&quot;, 5, <funclink>Anim_AbsY</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;Lift&quot;), 25), <funclink>Anim_Const</funclink>(1000));</code>
-        <text>Plays the animation "Lift" in slot 5 and superimposes any other potential animations played in slot 5. The animation is playdethe faster the faster the object moves into Y direction. After it moved 25 pixels the animation has been played from its beginning to its end and will be restarted.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;Fly&quot;, 5, <funclink>Anim_Dist</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;Fly&quot;), 20), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Fly" in slot 5, superimposing any other potential animations in slot 5. The animation is played the faster the faster the object moves. Once it moved 20 pixels the animation has been played from begin to end and restarts at its beginning. This could be used for an engine animation of a flying object where the engine should only be animated as long as the object is moving.</text>
       </example>
     </examples>
     <related>
@@ -50,11 +50,12 @@
       <funclink>Anim_Y</funclink>
       <funclink>Anim_R</funclink>
       <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
       <funclink>Anim_Dist</funclink>
       <funclink>Anim_XDir</funclink>
       <funclink>Anim_YDir</funclink>
       <funclink>Anim_Action</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>2010-01</date>
+  <author>Clonk-Karl</author><date>2014-10</date>
 </funcs>

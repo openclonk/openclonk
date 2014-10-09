@@ -46,6 +46,7 @@
       <funclink>Anim_R</funclink>
       <funclink>Anim_AbsX</funclink>
       <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_Dist</funclink>
       <funclink>Anim_XDir</funclink>
       <funclink>Anim_Action</funclink>
     </related>

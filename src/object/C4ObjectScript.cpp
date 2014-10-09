@@ -2485,6 +2485,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4AVP_R"                   ,C4V_Int,      C4AVP_R },
 	{ "C4AVP_AbsX"                ,C4V_Int,      C4AVP_AbsX },
 	{ "C4AVP_AbsY"                ,C4V_Int,      C4AVP_AbsY },
+	{ "C4AVP_Dist"                ,C4V_Int,      C4AVP_Dist },
 	{ "C4AVP_XDir"                ,C4V_Int,      C4AVP_XDir },
 	{ "C4AVP_YDir"                ,C4V_Int,      C4AVP_YDir },
 	{ "C4AVP_RDir"                ,C4V_Int,      C4AVP_RDir },
