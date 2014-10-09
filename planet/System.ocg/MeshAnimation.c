@@ -60,6 +60,13 @@ global func Anim_YDir(int begin, int end, int max_ydir, int prec)
 	return [C4AVP_YDir, begin, end, max_ydir, prec];
 }
 
+global func Anim_RDir(int begin, int end, int min_rdir, int max_rdir, int prec)
+{
+	if (prec == nil)
+		prec = 10;
+	return [C4AVP_RDir, begin, end, min_rdir, max_rdir, prec];
+}
+
 global func Anim_AbsRDir(int begin, int end, int min_rdir, int max_rdir, int prec)
 {
 	if (prec == nil)
