@@ -55,7 +55,7 @@ const int32_t C4MC_Cursor_Select      = 0,		// click cursor to select/click stuf
               C4MC_Cursor_DownRight   = 10,
               C4MC_Cursor_Passive     = 11;		// passive cursor in records and and fog of war and outside viewport
 
-const int32_t C4MC_Time_on_Target     = 10;
+const int32_t C4MC_Tooltip_Delay = 20;
 
 C4MouseControl::C4MouseControl()
 {
@@ -92,7 +92,6 @@ void C4MouseControl::Default()
 	Drag=C4MC_Drag_None;
 	Selection.Default();
 	TargetObject=DownTarget=NULL;
-	TimeOnTargetObject=0;
 	ControlDown=false;
 	ShiftDown=false;
 	AltDown=false;
@@ -321,7 +320,10 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	bool menuProcessed = false;
 	if (pPlayer)
 		// adjust by viewport X/Y because the GUI windows calculate their positions (and thus check input) based on that
-		menuProcessed = ::Game.GuiWindowRoot->MouseInput(Player, iButton, iX + Viewport->DrawX, iY + Viewport->DrawY, dwKeyFlags);
+		menuProcessed = ::Game.GuiWindowRoot->MouseInput(iButton, iX, iY, dwKeyFlags);
+
+	if (menuProcessed)
+		Cursor = C4MC_Cursor_Select;
 
 	// if not caught by a menu
 	if (!menuProcessed)
@@ -527,31 +529,46 @@ void C4MouseControl::UpdateCursorTarget()
 		if (IsPassive())
 			Cursor=C4MC_Cursor_Passive;
 
-		// Time on target: caption
-		if (TargetObject && Cursor == C4MC_Cursor_Select)
+		// update tooltip information
+		if (OldTargetObject != TargetObject)
 		{
-			TimeOnTargetObject++;
-			if (TimeOnTargetObject>=C4MC_Time_on_Target)
+			if (TargetObject && (Cursor == C4MC_Cursor_Select) && (TargetObject->Category & C4D_MouseSelect))
 			{
-				if (TargetObject->Category & C4D_MouseSelect)
-				{
-					// set caption
-					if (!KeepCaption)
-					{
-						C4String *tooltip = TargetObject->GetPropertyStr(P_Tooltip);
-						if(tooltip) {
-							Caption = TargetObject->GetPropertyStr(P_Tooltip)->GetData();
-						}
-					}
-				}
+				float objX, objY;
+				TargetObject->GetViewPos(objX, objY, -fctViewportGUI.X, -fctViewportGUI.Y, fctViewportGUI);
+				objX += TargetObject->Shape.x;
+				objY += TargetObject->Shape.y - TargetObject->addtop();
+				SetTooltipRectangle(C4Rect(objX, objY, TargetObject->Shape.Wdt, TargetObject->Shape.Hgt + TargetObject->addtop()));
+				SetTooltipText(StdStrBuf(TargetObject->GetPropertyStr(P_Tooltip)->GetCStr()));
+			}
+			else
+			{
+				SetTooltipRectangle(C4Rect(0, 0, 0, 0));
+			}
+		}
+
+		if (!KeepCaption
+			&& ToolTipRectangle.Wdt != 0
+			&& Inside(GuiX, ToolTipRectangle.x, ToolTipRectangle.x + ToolTipRectangle.Wdt)
+			&& Inside(GuiY, ToolTipRectangle.y, ToolTipRectangle.y + ToolTipRectangle.Hgt))
+		{
+			++TimeInTooltipRectangle;
+
+			if (TimeInTooltipRectangle >= C4MC_Tooltip_Delay)
+			{
+				Caption = TooltipText;
 			}
 		}
 		else
-			TimeOnTargetObject=0;
+		{
+			// disable tooltip pop-up; whatever set it in the first place will set it again on the next mouse-enter
+			TimeInTooltipRectangle = 0;
+			ToolTipRectangle.Wdt = 0;
+		}
 	}
 
 	// Make a script callback if the object being hovered changes
-	if(OldTargetObject != TargetObject)
+	if (OldTargetObject != TargetObject)
 	{
 		// TODO: This might put a heavy load on the network, depending on the number of
 		// selectable objects around. If it turns out to be a problem we might want to
@@ -883,6 +900,20 @@ void C4MouseControl::HideCursor()
 const char *C4MouseControl::GetCaption()
 {
 	return Caption.getData();
+}
+
+void C4MouseControl::SetTooltipRectangle(const C4Rect &rectangle)
+{
+	// Set the tooltip rectangle slightly larger than originally requested.
+	// The tooltip will be removed when the cursor leaves the rectangle, so make sure that the tooltip is not already disabled when the cursor moves to the border-pixel of the GUI item
+	// in case the GUI item uses a different check for bounds (< vs <=) than the tooltip rectangle.
+	ToolTipRectangle = C4Rect(rectangle.x - 2, rectangle.y - 2, rectangle.Wdt + 4, rectangle.Hgt + 4);
+	TimeInTooltipRectangle = 0;
+}
+
+void C4MouseControl::SetTooltipText(const StdStrBuf &text)
+{
+	TooltipText = text;
 }
 
 C4Object *C4MouseControl::GetTargetObject()

@@ -126,6 +126,10 @@ namespace C4GUI
 		if (pLast) pLast->pNext = pChild; else pFirst = pChild;
 		pChild->pPrev = pLast; pChild->pNext = NULL; pLast = pChild;
 		pChild->pParent = this;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	void Container::ReaddElement(Element *pChild)
@@ -138,6 +142,10 @@ namespace C4GUI
 		// add to end of list
 		if (pLast) pLast->pNext = pChild; else pFirst = pChild;
 		pChild->pPrev = pLast; pChild->pNext = NULL; pLast = pChild;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	void Container::InsertElement(Element *pChild, Element *pInsertBefore)
@@ -155,6 +163,10 @@ namespace C4GUI
 			pFirst = pChild;
 		pChild->pNext = pInsertBefore; pInsertBefore->pPrev = pChild;
 		pChild->pParent = this;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	Element *Container::GetNextNestedElement(Element *pPrevElement, bool fBackwards)
@@ -503,8 +515,10 @@ namespace C4GUI
 		pScrollBar = new ScrollBar(rtBounds, this);
 		// add self and scroll bar to window
 		if (pParentWindow != this)
+		{
 			pParentWindow->AddElement(this);
-		pParentWindow->AddElement(pScrollBar);
+			pParentWindow->AddElement(pScrollBar);
+		}
 	}
 
 	void ScrollWindow::Update()

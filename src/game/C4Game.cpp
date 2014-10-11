@@ -1485,13 +1485,7 @@ void C4Game::Default()
 	DebugPassword.Clear();
 	DebugHost.Clear();
 	DebugWait = false;
-
-	// pGui is empty atm. Readd script window to GUI.
-	// the window will be deleted by pGui->Clear
-	const float standardVerticalBorder = 100.0f;
-	const float standardHorizontalBorder = 100.0f;
-	GuiWindowRoot = new C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
-	pGUI->AddElement(GuiWindowRoot);
+	GuiWindowRoot = nullptr; // will be initialized when the game starts
 }
 
 void C4Game::Evaluate()
@@ -2252,6 +2246,14 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetMusicLevel(iMusicLevel);
 		SetInitProgress(97);
 	}
+
+	// prepare script menus
+	assert(!GuiWindowRoot);
+	const float standardVerticalBorder = 100.0f;
+	const float standardHorizontalBorder = 100.0f;
+	GuiWindowRoot = new C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
+	pGUI->AddElement(GuiWindowRoot);
+
 	return true;
 }
 

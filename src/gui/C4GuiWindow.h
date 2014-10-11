@@ -61,6 +61,7 @@ enum C4GuiWindowPropertyName
 	style,
 	priority,
 	player,
+	tooltip,
 	_lastProp
 };
 
@@ -172,35 +173,26 @@ class C4GuiWindowProperty
 	void ClearPointers(C4Object *pObj);
 };
 
-class C4GuiWindowScrollBar
-{
-	friend class C4GuiWindow;
-
-	public:
-	float offset;
-	C4GuiWindowScrollBar();
-	virtual ~C4GuiWindowScrollBar();
-	void ScrollBy(float val) { offset += val; if (offset < 0.0f) offset = 0.0f; else if (offset > 1.0f) offset = 1.0f;	}
-	void Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom);
-	virtual bool MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
-
-	private:
-	C4GUI::ScrollBarFacets *decoration;
-	C4GuiWindow *parent;
-};
-
 class C4GuiWindow : public C4GUI::ScrollWindow
 {
 	friend class C4GuiWindowAction;
 	friend class C4GuiWindowScrollBar;
 
 	private:
-	// the menu ID is always unique, however the sub-menu IDs do NOT have to be unique
+	// the "main" menu ID is always unique, however the sub-menu IDs do NOT have to be unique
 	// they can be set from script and in combination with the target should suffice to identify windows
 	int32_t id;
+	// The name of a window is used when updating a window to identify the correct child;
+	// however, it is NOT generally used to identify windows, f.e. to close them.
+	// The reasoning behind that is that EVERY window needs a name (in the defining proplist) but only windows that need to be addressed later need an ID;
+	// so separating the identifying property from the name hopefully reduces clashes - especially since names will often be "left"/"right" etc.
+	// Note that a window does not necessarily have a name and names starting with an underscore are never saved (to be able to f.e. add new windows without knowing the names of the existing windows).
+	C4String *name;
 	// this is not only a window inside a menu but a top-level-window?
 	// this does not mean the ::WindowMenuRoot but rather a player-created submenu
 	bool isMainWindow;
+	// whether this menu is the root of all script-created menus (aka of the isMainWindow windows)
+	bool IsRoot();
 	bool mainWindowNeedsLayoutUpdate;
 	void RequestLayoutUpdate();
 
@@ -208,7 +200,6 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	bool closeActionWasExecuted; // to prevent a window from calling the close-callback twice even if f.e. closed in the close-callback..
 	C4Object *target;
 	const C4Object *GetTarget() { return target; }
-	C4GuiWindowScrollBar *scrollBar;
 
 	// properties are stored extra to make "tags" possible
 	C4GuiWindowProperty props[C4GuiWindowPropertyName::_lastProp];
@@ -224,8 +215,10 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	void ChildChangedPriority(C4GuiWindow *child);
 	// helper function to extract relative and absolute position values from a string
 	void SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag);
+	C4Value PositionToC4Value(C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute);
 	// sets all margins either from a string or from an array
 	void SetMarginProperties(const C4Value &property, C4String *tag);
+	C4Value MarginsToC4Value();
 
 	// this is only supposed to be called at ::Game.GuiWindowRoot since it uses the "ID" property
 	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
@@ -258,6 +251,8 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	int32_t GetID() { return id; }
 	// finds a child with a certain ID, usually called on ::MainWindowRoot to get submenus
 	C4GuiWindow *GetChildByID(int32_t child);
+	// finds a child by name, usually called when updating a window with a new proplist
+	C4GuiWindow *GetChildByName(C4String *childName);
 	// finds any fitting sub menu - not necessarily direct child
 	// has to be called on children of ::MainWindowRoot, uses the childrenIDMap
 	// note: always checks the target to avoid ambiguities, even if 0
@@ -289,10 +284,13 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	// special layouts that are set by styles
 	void UpdateLayoutGrid();
 	void UpdateLayoutVertical();
-
+	// the window will be drawn in the context of a viewport BY the viewport
+	// so just do nothing when TheScreen wants to draw the window
+	virtual void Draw(C4TargetFacet &cgo) {}
 	// Draw without parameters can be used for the root
 	bool DrawAll(C4TargetFacet &cgo, int32_t player);
-	bool Draw(C4TargetFacet &cgo, int32_t player);
+	// the clipping rectangle has already been set, but currentClippingRect must be passed to DrawChildren
+	bool Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippingRect);
 	bool GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom);
 
 	// withMultipleFlag is there to draw only the non-multiple or the multiple windows
@@ -300,7 +298,7 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	// withMultipleFlag ==  0: only one non-Multiple window is drawn
 	// withMultipleFlag ==  1: only Multiple windows are drawn
 	// returns whether at least one child was drawn
-	bool DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag = -1);
+	bool DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag = -1, C4Rect *currentClippingRect = nullptr);
 
 	// used for commands that have been synchronized and are coming from the command queue
 	// attention: calls to this need to be synchronized!
@@ -308,13 +306,13 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	
 	// virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
 	// this is called only on the root menu
-	virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	virtual bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	// this is then called on the child windows, note the return value
-	virtual bool ProcessMouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	virtual bool ProcessMouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, int32_t parentOffsetX, int32_t parentOffsetY);
 	// called when mouse cursor enters element region
-	virtual void MouseEnter(C4GUI::CMouse &rMouse);
+	virtual void MouseEnter();
 	// called when mouse cursor leaves element region
-	virtual void MouseLeave(C4GUI::CMouse &rMouse);
+	virtual void MouseLeave();
 	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
 	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
 	enum MouseState // values of this enum will be bit-wise combined
@@ -327,7 +325,8 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	// OnMouseOut() called by this window, unsets the mouse focus
 	// must notify children, too!
 	void OnMouseOut(int32_t player);
-	void OnMouseIn(int32_t player); // called by this window, sets the mouse focus
+	// called by this window, sets the mouse focus; the offset is used to set the correct tooltip rectangle for ::MouseControl
+	void OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY);
 	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
 private:
 	// TODO: actually scale with font size (needs font to be able to scale first..)

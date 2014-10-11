@@ -31,7 +31,10 @@ func MainOnHover(parameter, int ID)
 func StartMenu(plr)
 {
 	if (active_menu)
-		CustomGuiClose(active_menu);
+	{
+		if (CustomGuiClose(active_menu)) return;
+	}
+	
 	var main_menu = 
 	{
 		Decoration = GUI_MenuDeco,
@@ -153,7 +156,13 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			{
 				ID = 1,
 				Target = scenoptions_dummies[0],
-				Text = "Please select the scenario options!"
+				// this is also a test for updating children by name
+				icon = {Left="50%-4em", Right="50%+4em", Bottom="5em", Top="1em", Symbol=Clonk},
+				textwindow =
+				{
+					Top = "6em",
+					Text = "Please select the scenario options!"
+				}
 			},
 			clientdesc =
 			{
@@ -178,6 +187,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 		{
 			ID = rule.ID,
 			Bottom = "+4em",
+			Tooltip = rule.def->GetName(),
 			icon = {Priority = 10, Symbol = rule.def, Right = "+4em", Bottom = "+4em"},
 			text = {Priority = 10, Left = "+4em", Style = GUI_TextVCenter, Text = rule.def.Name},
 			
@@ -227,7 +237,12 @@ func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target
 	var text = "<c ff0000>Do you really want to remove the rule???</c>";
 	if (!data[2])
 		text = data[0].Description;
-	Gui_UpdateText(text, active_menu, 1, scenoptions_dummies[0]);
+	var update = 
+	{
+		icon = {Symbol = data[0]},
+		textwindow = {Text = text}
+	};
+	CustomGuiUpdate(update, active_menu, 1, scenoptions_dummies[0]);
 }
 
 /* ------------------------ player list test ----------------------------- */

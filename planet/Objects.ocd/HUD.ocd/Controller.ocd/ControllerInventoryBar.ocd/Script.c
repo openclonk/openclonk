@@ -233,7 +233,7 @@ func CreateNewInventoryButton(int max_slots)
 			ID = 1000 + slot_info.ID
 		}
 	};
-	CustomGuiUpdate({new_icon = icon}, GetInventoryGuiID(), 0);	
+	CustomGuiUpdate({_new_icon = icon}, GetInventoryGuiID(), 0);	
 	//return bt;
 }
 

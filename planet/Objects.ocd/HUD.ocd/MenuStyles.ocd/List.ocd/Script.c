@@ -108,7 +108,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 		custom_entry = MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop);
 		
 	entries[ID - 1] = [target, command, parameter, user_ID];
-	this[Format("menuChild%d", ID)] = custom_entry;
+	this[Format("_menuChild%d", ID)] = custom_entry;
 	
 	// need to add to existing menu?
 	if (custom_menu_id)
@@ -120,7 +120,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 			CustomGuiClose(custom_menu_id, ID, this);
 		}
 		
-		var temp = {child = custom_entry};
+		var temp = {_child = custom_entry};
 		CustomGuiUpdate(temp, custom_menu_id, this.ID, this);
 	}
 	

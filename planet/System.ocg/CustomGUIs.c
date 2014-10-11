@@ -61,7 +61,8 @@ global func Gui_AddSubwindow(proplist submenu, proplist menu)
 {
 	do
 	{
-		var uniqueID = Format("child%d", RandomX(10000, 0xffffff));
+		// use an anonymous name starting with an underscore
+		var uniqueID = Format("_child%d", RandomX(10000, 0xffffff));
 		if (menu[uniqueID] != nil) continue;
 		menu[uniqueID] = submenu;
 		return true;

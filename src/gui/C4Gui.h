@@ -910,6 +910,7 @@ namespace C4GUI
 		void SetScrollPos(int32_t iToPos) { iScrollPos = iToPos * GetMaxScroll() / (iCBMaxRange-1); }
 
 		friend class ScrollWindow;
+		friend class C4GuiWindow;
 	};
 
 	// a window that can be scrolled
@@ -2492,7 +2493,6 @@ namespace C4GUI
 	{
 	public:
 		int32_t x,y; // cursor position
-		int32_t forPlayer; // player that the mouse movement originated from
 		bool LDown, MDown, RDown; // mouse button states
 		int32_t LDownX, LDownY;       // position where left button was pressed last
 		DWORD dwKeys;             // shift, ctrl, etc.
