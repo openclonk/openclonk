@@ -1,121 +1,49 @@
 
 #include "C4Include.h"
-#include "C4FoW.h"
-#include "C4Rect.h"
+#include "C4FoWLightSection.h"
+#include "C4FoWRay.h"
+#include "C4FoWLight.h"
+#include "C4FoWRegion.h"
 #include "C4Landscape.h"
 #include "C4DrawGL.h"
-#include "C4Object.h"
 
-#include <float.h>
+// Gives the point where the line through (x1,y1) and (x2,y2) crosses through the line
+// through (x3,y3) and (x4,y4)
+bool find_cross(float x1, float y1, float x2, float y2,
+                float x3, float y3, float x4, float y4,
+				float *px, float *py, float *pb = NULL)
+{
+	// We are looking for a, b so that
+	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
+	//  py = a*y1 + (1-a)*y2 = b*y3 + (1-b)*y4
 
-// TODO: Make sure to use int32_t throughout!
+	// Cross product
+	float d = (x3-x4)*(y1-y2) - (y3-y4)*(x1-x2);
+	if (d == 0) return false; // parallel - or vector(s) 0
 
-//#define LIGHT_DEBUG
+	// We actually just need b - the unique solution
+	// to above equation. A refreshing piece of elementary math
+	// that I got wrong two times.
+	float b = ((y4-y2)*(x1-x2) - (x4-x2)*(y1-y2)) / d;
+	*px = b*x3 + (1-b)*x4;
+	*py = b*y3 + (1-b)*y4;
+	if (pb) *pb = b;
 
-bool glCheck() {
-	if (int err = glGetError()) {
-		LogF("GL error %d: %s", err, gluErrorString(err));
-		return false;
+	// Sanity-test solution
+#ifdef _DEBUG
+	if (x1 != x2) {
+		float a = (b*(x3-x4) + (x4-x2)) / (x1-x2);
+		float eps = 0.01f;
+		//assert(fabs(a*x1 + (1-a)*x2 - *px) < eps);
+		//assert(fabs(a*y1 + (1-a)*y2 - *py) < eps);
 	}
+#endif
+
 	return true;
 }
 
 const float C4FoWSmooth = 8.0;
 
-// Maximum error allowed while merging rays. Actually double, see below.
-const int32_t C4FoWMergeThreshold = 10; // (in landscape pixels)
-
-// A = 1/2 | a x b |
-static inline int32_t getTriangleSurface(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3)
-{
-	int32_t ax = x2 - x1, ay = y2 - y1;
-	int32_t bx = x3 - x1, by = y3 - y1;
-	// We don't bother to actually halve so we can stay with integers.
-	// Doesn't matter as long as we keep in mind the threshold needs to
-	// be doubled.
-	return abs(ax * by - ay * bx);
-}
-
-C4FoW::C4FoW()
-	: pLights(NULL)
-{
-}
-
-void C4FoW::Add(C4Object *pObj)
-{
-	// No view range? Probably want to remove instead
-	if(!pObj->PlrViewRange) {
-		Remove(pObj);
-		return;
-	}
-
-	// Look for matching light
-	C4FoWLight *pLight;
-	for (pLight = pLights; pLight; pLight = pLight->getNext())
-		if (pLight->getObj() == pObj)
-			break;
-	if (pLight) {
-
-		// Update reach
-		pLight->SetReach(pObj->PlrViewRange, 50);
-
-	} else {
-
-		// Create new light otherwise
-		pLight = new C4FoWLight(pObj);
-		pLight->pNext = pLights;
-		pLights = pLight;
-	}
-
-}
-
-void C4FoW::Remove(C4Object *pObj)
-{
-
-	// Look for matching light
-	C4FoWLight *pPrev = NULL, *pLight;
-	for (pLight = pLights; pLight; pPrev = pLight, pLight = pLight->getNext())
-		if (pLight->getObj() == pObj)
-			break;
-	if (!pLight)
-		return;
-
-	// Remove
-	(pPrev ? pLights : pPrev->pNext) = pLight->getNext();
-	delete pLight;
-}
-
-void C4FoW::Invalidate(C4Rect r)
-{
-	// Invalidate all lights
-	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
-		pLight->Invalidate(r);
-}
-
-void C4FoWLight::Invalidate(C4Rect r)
-{
-	// Invalidate all sections
-	for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-		pSect->Invalidate(r);
-}
-
-void C4FoW::Update(C4Rect r)
-{
-	// Update all lights
-	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
-		pLight->Update(r);
-}
-
-C4FoWLight::C4FoWLight(C4Object *pObj)
-	: iX(fixtoi(pObj->fix_x)), iY(fixtoi(pObj->fix_y)),
-	  iReach(pObj->PlrViewRange), iFadeout(50), iSize(20),
-	  pNext(NULL), pObj(pObj)
-{
-	pSections = new C4FoWLightSection(this, 0);
-	pSections = new C4FoWLightSection(this, 90, pSections);
-	pSections = new C4FoWLightSection(this, 180, pSections);
-	pSections = new C4FoWLightSection(this, 270, pSections);
-}
 
 C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r, C4FoWLightSection *pNext)
 	: pLight(pLight), iRot(r), pNext(pNext)
@@ -146,14 +74,6 @@ C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r, C4FoWLightSectio
 	pRays = new C4FoWRay(-1, +1, +1, +1);
 }
 
-C4FoWLight::~C4FoWLight()
-{
-	while (C4FoWLightSection *pSect = pSections) {
-		pSections = pSect->getNext();
-		delete pSect;
-	}
-}
-
 C4FoWLightSection::~C4FoWLightSection()
 {
 	ClearRays();
@@ -164,29 +84,6 @@ void C4FoWLightSection::ClearRays()
 	while (C4FoWRay *pRay = pRays) {
 		pRays = pRay->getNext();
 		delete pRay;
-	}
-}
-
-void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
-{
-	// Fadeout changes don't matter
-	iFadeout = iFadeout2;
-
-	// Reach unchanged? Easy.
-	if (iReach == iReach2) return;
-
-	// Reach decreased? Prune rays
-	if (iReach2 < iReach) {
-		iReach = iReach2;
-		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-			pSect->Prune(iReach);
-
-	} else {
-
-		// Reach increased? Dirty rays that might get longer now
-		iReach = iReach2;
-		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-			pSect->Dirty(iReach);
 	}
 }
 
@@ -228,23 +125,6 @@ C4FoWRay *C4FoWLightSection::FindRayOver(int32_t x, int32_t y)
 {
 	C4FoWRay *pPrev = FindRayLeftOf(x, y);
 	return pPrev ? pPrev->getNext() : pRays;
-}
-
-void C4FoWLight::Update(C4Rect Rec)
-{
-
-	// Update position from object. Clear if we moved in any way
-	int32_t iNX = fixtoi(pObj->fix_x), iNY = fixtoi(pObj->fix_y);
-	if (iNX != iX || iNY != iY) {
-		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-			pSect->Prune(0);
-		iX = iNX; iY = iNY;
-	}
-
-	// Update all sections
-	for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-		pSect->Update(Rec);
-
 }
 
 void C4FoWLightSection::Update(C4Rect RectIn)
@@ -441,6 +321,14 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 #endif
 }
 
+
+
+bool C4FoWLightSection::isConsistent() const {
+	return (a * c + b * d == 1) && (ra * rc + rb * rd == 1) &&
+		   (a * ra + b * rc == 1) && (a * rb + b * rd == 0) &&
+		   (c * ra + d * rc == 0) && (c * rb + d * rd == 1);
+}
+
 void C4FoWLightSection::Invalidate(C4Rect r)
 {
 	// Assume normalized rectangle
@@ -474,390 +362,6 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 	if (pLast && pRay && pLast->isDirty() && pRay->isDirty())
 		pLast->MergeDirty();
 
-}
-
-bool C4FoWRay::MergeRight(int x, int y)
-{
-	// Note: Right-merging is the most common and most important optimization.
-	// This procedure will probably be *hammered* as a result. Worth inlining?
-
-	assert(!isDirty()); assert(isRight(x, y));
-
-	// Calculate error. Note that simply summing up errors is not correct,
-	// strictly speaking (as new and old error surfaces might overlap). Still,
-	// this is quite elaborate already, no need to make it even more 
-	int32_t iErr = getTriangleSurface(
-		getLeftEndX(), iLeftEndY,
-		getRightEndX(), iRightEndY,
-		x, y);
-	if (iError + iErr > C4FoWMergeThreshold)
-		return false;
-
-	// Move right endpoint.
-	iRightX = x;
-	iRightY = y;
-	iRightEndY = y;
-	iError += iErr;
-	return true;
-}
-
-bool C4FoWRay::MergeLeft(int x, int y)
-{
-	assert(!isDirty()); assert(isLeft(x, y));
-
-	// Calculate error.
-	float iErr = getTriangleSurface(
-		getLeftEndX(), iLeftEndY,
-		getRightEndX(), iRightEndY,
-		x, y);
-	if (iError + iErr > C4FoWMergeThreshold)
-		return false;
-
-	// Move left endpoint.
-	iLeftX = x;
-	iLeftY = y;
-	iLeftEndY = y;
-	iError += iErr;
-	return true;
-}
-
-bool C4FoWRay::Eliminate(int x, int y)
-{
-	// Called on the ray left of the one getting eliminated
-	C4FoWRay *pElim = pNext, *pMerge = pNext->pNext;
-	assert(!!pElim); assert(!!pMerge);
-	assert(!isDirty()); assert(!pMerge->isDirty());
-
-	// Calc errors, add those accumulated on both merged rays
-	int32_t iErr = getTriangleSurface(
-		getLeftEndX(), iLeftEndY,
-		pMerge->getRightEndX(), pMerge->iLeftEndY,
-		x, y);
-	iErr += iError + pMerge->iError;
-	if (iErr > C4FoWMergeThreshold)
-		return false;
-
-	// Do elimination
-	iRightX = pMerge->iRightX;
-	iRightY = pMerge->iRightY;
-	iRightEndY = pMerge->iRightEndY;
-	pNext = pMerge->pNext;
-	delete pElim;
-	delete pMerge;
-	return true;
-}
-
-C4FoWRay *C4FoWRay::Split(int x, int y)
-{
-	// Make sure to newer create negative-surface rays
-	assert(isDirty()); assert(isInside(x, y));
-
-	// Allocate a new ray. Ugh, expensive.
-	C4FoWRay *pRay = new C4FoWRay(x, y, iRightX, iRightY);
-	pRay->Dirty(iLeftEndY);
-
-	// Move to make space
-	iRightX = x;
-	iRightY = y;
-
-	// Relink
-	pRay->pNext = pNext;
-	pNext = pRay;
-	return pRay;
-}
-
-void C4FoWRay::MergeDirty()
-{
-	// As a rule, dirty rays following each other should
-	// always be merged, so splits can be reverted once
-	// the landscape changes.
-	C4FoWRay *pWith = pNext;
-	assert(isDirty()); assert(!!pWith); assert(pWith->isDirty());
-
-	// Figure out how far the new dirty ray reaches. Note that
-	// we might lose information about the landscape here.
-	Dirty(Min(getLeftEndY(), pWith->getLeftEndY()));
-
-	// Set right
-	iRightX = pWith->iRightX;
-	iRightY = pWith->iRightY;
-
-	// Relink & delete
-	pNext = pWith->getNext();
-	delete pWith;
-}
-
-void C4FoWRay::Clean(int y)
-{
-	// Search hit something, this ray is now clean.
-	assert(isDirty());
-	iLeftEndY = y;
-	iRightEndY = y;
-	fDirty = false;
-}
-
-void C4FoWRay::Dirty(int y)
-{
-	// Got invalidated, ray is dirty until updated
-	iLeftEndY = y;
-	iRightEndY = y;
-	fDirty = true;
-}
-
-void C4FoWRay::Prune(int32_t y)
-{
-	// Check which sides we need to prune
-	bool fLeft = (iLeftEndY >= y),
-		 fRight = (iRightEndY >= y);
-	// If both sides got pruned, we are clean
-	// (can't possibly extend this ray further)
-	if (fLeft && fRight)
-		Clean(y);
-	else if (fLeft)
-		iLeftEndY = y;
-	if (fRight)
-		iRightEndY = y;
-}
-
-C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
-	: pFoW(pFoW)
-	, pPlayer(pPlayer)
-	, hFrameBufDraw(0), hFrameBufRead(0)
-	, Region(0,0,0,0), OldRegion(0,0,0,0)
-	, pSurface(NULL), pBackSurface(NULL)
-{
-}
-
-C4FoWRegion::~C4FoWRegion()
-{
-	Clear();
-}
-
-bool C4FoWRegion::BindFramebuf()
-{
-
-	// Flip texture
-	C4Surface *pSfc = pSurface;
-	pSurface = pBackSurface;
-	pBackSurface = pSfc;
-
-	// Can simply reuse old texture?
-	if (!pSurface || pSurface->Wdt < Region.Wdt || pSurface->Hgt < Region.Hgt)
-	{
-		// Create texture. Round up to next power of two in order to
-		// prevent rounding errors, as well as preventing lots of
-		// re-allocations when region size changes quickly (think zoom).
-		if (!pSurface)
-			pSurface = new C4Surface();
-		int iWdt = 1, iHgt = 1;
-		while (iWdt < Region.Wdt) iWdt *= 2;
-		while (iHgt < Region.Hgt) iHgt *= 2;
-		if (!pSurface->Create(iWdt, iHgt))
-			return false;
-	}
-
-	// Generate frame buffer object
-	if (!hFrameBufDraw) {
-		glGenFramebuffersEXT(1, &hFrameBufDraw);
-		glGenFramebuffersEXT(1, &hFrameBufRead);
-	}
-
-	// Bind current texture to frame buffer
-	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, hFrameBufDraw);
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, hFrameBufRead);
-	glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER_EXT,
-		GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-		pSurface->ppTex[0]->texName, 0);
-	if (pBackSurface)
-		glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT,
-			GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-			pBackSurface->ppTex[0]->texName, 0);
-
-	// Check status, unbind if something was amiss
-	GLenum status1 = glCheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER_EXT),
-		   status2 = glCheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER_EXT);
-	if (status1 != GL_FRAMEBUFFER_COMPLETE_EXT ||
-		(pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE_EXT) ||
-		!glCheck())
-	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		return false;
-	}
-
-	// Worked!
-	return true;
-}
-
-void C4FoWRegion::Clear()
-{
-	if (hFrameBufDraw) {
-		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
-		glDeleteFramebuffersEXT(1, &hFrameBufRead);
-	}
-	hFrameBufDraw = hFrameBufRead = 0;
-	delete pSurface; pSurface = NULL;
-	delete pBackSurface; pBackSurface = NULL;
-}
-
-void C4FoWRegion::Update(C4Rect r)
-{
-	// Set the new region
-	Region = r;
-}
-
-void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
-{
-	// Update FoW at interesting location
-	pFoW->Update(Region);
-
-	// On screen? No need to set up frame buffer - simply shortcut
-	if (pOnScreen)
-	{
-		pFoW->Render(this, pOnScreen);
-		return;
-	}
-
-	// Create & bind the frame buffer
-	pDraw->StorePrimaryClipper();
-	if(!BindFramebuf())
-	{
-		pDraw->RestorePrimaryClipper();
-		return;
-	}
-	assert(pSurface && hFrameBufDraw);
-	if (!pSurface || !hFrameBufDraw)
-		return;
-
-	// Set up a clean context
-	glViewport(0, 0, getSurface()->Wdt, getSurface()->Hgt);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0, getSurface()->Wdt, getSurface()->Hgt, 0);
-
-	// Clear texture contents
-	glClearColor(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Copy over the old state
-	if (OldRegion.Wdt > 0) {
-
-		int dx0 = Region.x - OldRegion.x,
-			dy0 = Region.y - OldRegion.y,
-			dx1 = Region.x + Region.Wdt - OldRegion.x - OldRegion.Wdt,
-			dy1 = Region.y + Region.Hgt - OldRegion.y - OldRegion.Hgt;
-
-		/*glBlitFramebufferEXT(
-			Max(0, dx0),                  Max(0, -dy1),
-			OldRegion.Wdt - Max(0, -dx1), OldRegion.Hgt - Max(0, dy0),
-			Max(0, -dx0),                 Max(0, dy1),
-			Region.Wdt - Max(0, dx1),     Region.Hgt - Max(0, -dy0),
-			GL_COLOR_BUFFER_BIT, GL_LINEAR);
-			*/
-
-		int sx0 = Max(0, dx0),
-			sy0 = Max(0, dy1),
-			sx1 = OldRegion.Wdt - Max(0, -dx1),
-			sy1 = OldRegion.Hgt - Max(0, -dy0),
-			tx0 = Max(0, -dx0),
-			ty0 = Max(0, -dy1),
-			tx1 = Region.Wdt - Max(0, dx1),
-			ty1 = Region.Hgt - Max(0, dy0);
-
-		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, getBackSurface()->ppTex[0]->texName);
-
-		glBlendFunc(GL_ONE, GL_ZERO);
-		glBegin(GL_QUADS);
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx0, ty0);
-		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx0, ty1);
-		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx1, ty1);
-		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx1, ty0);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-
-		glCheck();
-
-		// Fade out. Note we constantly vary the alpha factor all the time -
-		// this is barely visible but makes it a lot less likely that we 
-		// hit cases where we add the same thing every time, but still don't
-		// converge to the same color due to rounding.
-		int iAdd = (Game.FrameCounter/3) % 2;
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f/16.0f+iAdd*1.0f/256.0f);
-		glBegin(GL_QUADS);
-		glVertex2i(0, 0);
-		glVertex2i(getSurface()->Wdt, 0);
-		glVertex2i(getSurface()->Wdt, getSurface()->Hgt);
-		glVertex2i(0, getSurface()->Hgt);
-		glEnd();
-	}
-
-	// Render FoW to frame buffer object
-	glBlendFunc(GL_ONE, GL_ONE);
-	pFoW->Render(this);
-	
-	// Done!
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	pDraw->RestorePrimaryClipper();
-	glCheck();
-
-	OldRegion = Region;
-
-}
-
-void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
-{
-	// Render all lights
-	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
-		pLight->Render(pRegion, pOnScreen);
-}
-
-void C4FoWLight::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
-{
-	// Render all sections
-	//C4FoWLightSection *pSect = pSections;
-	for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-		pSect->Render(pRegion, pOnScreen);
-}
-
-// Gives the point where the line through (x1,y1) and (x2,y2) crosses through the line
-// through (x3,y3) and (x4,y4)
-bool find_cross(float x1, float y1, float x2, float y2,
-                float x3, float y3, float x4, float y4,
-				float *px, float *py, float *pb = NULL)
-{
-	// We are looking for a, b so that
-	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
-	//  py = a*y1 + (1-a)*y2 = b*y3 + (1-b)*y4
-
-	// Cross product
-	float d = (x3-x4)*(y1-y2) - (y3-y4)*(x1-x2);
-	if (d == 0) return false; // parallel - or vector(s) 0
-
-	// We actually just need b - the unique solution
-	// to above equation. A refreshing piece of elementary math
-	// that I got wrong two times.
-	float b = ((y4-y2)*(x1-x2) - (x4-x2)*(y1-y2)) / d;
-	*px = b*x3 + (1-b)*x4;
-	*py = b*y3 + (1-b)*y4;
-	if (pb) *pb = b;
-
-	// Sanity-test solution
-#ifdef _DEBUG
-	if (x1 != x2) {
-		float a = (b*(x3-x4) + (x4-x2)) / (x1-x2);
-		float eps = 0.01f;
-		//assert(fabs(a*x1 + (1-a)*x2 - *px) < eps);
-		//assert(fabs(a*y1 + (1-a)*y2 - *py) < eps);
-	}
-#endif
-
-	return true;
 }
 
 void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
@@ -1156,7 +660,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 		// For once we actually calculate this using the real distance
 		float dx = gFanLX[i] - gLightLX, dy = gFanLY[i] - gLightLY;
-		float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);;
+		float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
 		gFadeLX[i] = gFanLX[i] + d * dx;
 		gFadeLY[i] = gFanLY[i] + d * dy;
 
@@ -1478,18 +982,3 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 }
 
-
-StdStrBuf C4FoWRay::getDesc() const {
-	return FormatString("%d:%d@%d:%d%s",
-		getLeftX(1000),
-		getRightX(1000),
-		getLeftEndY(),
-		getRightEndY(),
-		fDirty ? "*" : "");
-}
-
-bool C4FoWLightSection::isConsistent() const {
-	return (a * c + b * d == 1) && (ra * rc + rb * rd == 1) &&
-		   (a * ra + b * rc == 1) && (a * rb + b * rd == 0) &&
-		   (c * ra + d * rc == 0) && (c * rb + d * rd == 1);
-}

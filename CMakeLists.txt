@@ -286,8 +286,16 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupScenSelDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
-	src/landscape/C4FoW.cpp
-	src/landscape/C4FoW.h
+	src/landscape/fow/C4FoW.cpp
+	src/landscape/fow/C4FoW.h
+	src/landscape/fow/C4FoWRay.cpp
+	src/landscape/fow/C4FoWRay.h
+	src/landscape/fow/C4FoWLight.cpp
+	src/landscape/fow/C4FoWLight.h
+	src/landscape/fow/C4FoWLightSection.cpp
+	src/landscape/fow/C4FoWLightSection.h
+	src/landscape/fow/C4FoWRegion.cpp
+	src/landscape/fow/C4FoWRegion.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
 	src/landscape/C4LandscapeRenderClassic.cpp
@@ -718,6 +726,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/graphics
 	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
 	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape
+	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape/fow
 	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network
 	${CMAKE_CURRENT_SOURCE_DIR}/src/object

@@ -4,7 +4,7 @@
 
 #include "C4Landscape.h"
 #include "C4Texture.h"
-#include "C4FoW.h"
+#include "C4FoWRegion.h"
 
 #include "C4GroupSet.h"
 #include "C4Components.h"

@@ -36,7 +36,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
-#include <C4FoW.h>
+#include <C4FoWRegion.h>
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
