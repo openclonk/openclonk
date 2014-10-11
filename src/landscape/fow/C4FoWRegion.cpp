@@ -168,7 +168,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		// converge to the same color due to rounding.
 		int iAdd = (Game.FrameCounter/3) % 2;
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f/16.0f+iAdd*1.0f/256.0f);
+		glColor4f(0.0f, 0.0f, 0.0f, 1.0f/16.0f+iAdd*1.0f/256.0f );  
 		glBegin(GL_QUADS);
 		glVertex2i(0, 0);
 		glVertex2i(getSurface()->Wdt, 0);
