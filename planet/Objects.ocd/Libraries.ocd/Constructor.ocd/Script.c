@@ -285,7 +285,7 @@ public func OpenConstructionMenu(object clonk)
 	};
 
 	// Menu ID.
-	menu_id = CustomGuiOpen(menu);
+	menu_id = GuiOpen(menu);
 	clonk->SetMenu(menu_id);
 	return;
 }
@@ -488,35 +488,35 @@ public func OnConstructionHover(id structure)
 	
 	// Update the description to this part of the menu.
 	structinfo.Description.Text = structure.Description;
-	CustomGuiUpdate(structinfo.Description, menu_id, structinfo.Description.ID, menu_target);
+	GuiUpdate(structinfo.Description, menu_id, structinfo.Description.ID, menu_target);
 	
 	// Update the picture of the structure.
 	structinfo.Picture.Symbol = structure;
-	CustomGuiUpdate(structinfo.Picture, menu_id, structinfo.Picture.ID, menu_target);
+	GuiUpdate(structinfo.Picture, menu_id, structinfo.Picture.ID, menu_target);
 	
 	// Update also power consumption/production.
 	if (structure->~IsPowerConsumer())
 		structinfo.PowerConsumer.Symbol = Library_PowerConsumer;
 	else
 		structinfo.PowerConsumer.Symbol = nil;
-	CustomGuiUpdate(structinfo.PowerConsumer, menu_id, structinfo.PowerConsumer.ID, menu_target);
+	GuiUpdate(structinfo.PowerConsumer, menu_id, structinfo.PowerConsumer.ID, menu_target);
 	if (structure->~IsPowerProducer())
 		structinfo.PowerProducer.Symbol = Library_PowerProducer;
 	else
 		structinfo.PowerProducer.Symbol = nil;
-	CustomGuiUpdate(structinfo.PowerProducer, menu_id, structinfo.PowerProducer.ID, menu_target);
+	GuiUpdate(structinfo.PowerProducer, menu_id, structinfo.PowerProducer.ID, menu_target);
 	
 	// Update the material costs of the structure.
 	structinfo = MenuMaterialCosts(structinfo, structure);
 	for (var i = 1; i <= 7; i++)
-		CustomGuiUpdate(structinfo[Format("MaterialCost%d", i)], menu_id, structinfo[Format("MaterialCost%d", i)].ID, menu_target);
+		GuiUpdate(structinfo[Format("MaterialCost%d", i)], menu_id, structinfo[Format("MaterialCost%d", i)].ID, menu_target);
 
 	return;
 }
 
 public func CloseConstructionMenu()
 {
-	CustomGuiClose(menu_id, nil, menu_target);
+	GuiClose(menu_id, nil, menu_target);
 	menu_id = nil;
 	menu_target->RemoveObject();
 	menu_target = nil;

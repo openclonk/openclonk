@@ -78,7 +78,7 @@ private func OpenGoalWindow()
 	};
 	
 	// Close button
-	Gui_AddCloseButton(prop_menu, this, "OnCloseButtonClick");
+	GuiAddCloseButton(prop_menu, this, "OnCloseButtonClick");
 	
 	// Text submenu
 	var prop_text =
@@ -106,12 +106,12 @@ private func OpenGoalWindow()
 	// Select first goal and its description.
 	OnGoalGUIHover(goals[0]);
 
-	id_menu = CustomGuiOpen(prop_menu);
+	id_menu = GuiOpen(prop_menu);
 }
 
 private func CloseGoalWindow()
 {
-	CustomGuiClose(id_menu, nil, this);
+	GuiClose(id_menu, nil, this);
 	id_menu = nil;
 	prop_menu = nil;
 }
@@ -163,5 +163,5 @@ public func OnGoalGUIHover(object g)
 	var prop_text = prop_menu.TextMenu;
 	prop_text.Text = g->~GetDescription(GetOwner());
 	var id_text = prop_text.ID;
-	CustomGuiUpdate(prop_text, id_menu, id_text, this);
+	GuiUpdate(prop_text, id_menu, id_text, this);
 }

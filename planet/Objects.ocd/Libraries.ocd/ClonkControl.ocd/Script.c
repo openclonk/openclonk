@@ -896,7 +896,7 @@ func SetMenu(new_menu, bool unclosable)
 		if (GetType(menu) == C4V_C4Object)
 			menu->Close();
 		else if (GetType(menu) == C4V_PropList)
-			CustomGuiClose(menu.ID);
+			GuiClose(menu.ID);
 		else
 			FatalError("Library_ClonkControl::SetMenu() was called with invalid parameter.");
 	}

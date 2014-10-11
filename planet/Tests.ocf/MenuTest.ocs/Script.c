@@ -14,25 +14,25 @@ func Initialize()
 		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(Scenario, "StartMenu")
 	};
-	CustomGuiOpen(starter_menu);
+	GuiOpen(starter_menu);
 }
 
 func CloseCurrentMenu()
 {
-	CustomGuiClose(active_menu);
+	GuiClose(active_menu);
 	active_menu = 0;
 }	
 
 /* -------------------------------- MAIN ----------------------------- */
 func MainOnHover(parameter, int ID)
 {
-	Gui_UpdateText(parameter, active_menu, 9999);
+	GuiUpdateText(parameter, active_menu, 9999);
 }
 func StartMenu(plr)
 {
 	if (active_menu)
 	{
-		if (CustomGuiClose(active_menu)) return;
+		if (GuiClose(active_menu)) return;
 	}
 	
 	var main_menu = 
@@ -41,7 +41,7 @@ func StartMenu(plr)
 		head = {Bottom = "+3em", Text = "Please choose a test!", Style = GUI_TextHCenter | GUI_TextVCenter, IDs = 0},
 		body = {Top = "+3em", right = {ID = 9999, Left = "50%"} },
 	};
-	Gui_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
+	GuiAddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
 	var menu = CreateObject(MenuStyle_List);
 	main_menu.body.left = menu;
 	
@@ -53,14 +53,14 @@ func StartMenu(plr)
 	menu->AddItem(Lorry, "Tests Two Grid Menus (Trade Menu)", nil, Scenario, "StartTransferTest", "Shows how to work with two grid menus.");
 	menu->AddItem(Sproutberry, "Test HP Bars (HP Bars!)", nil, Scenario, "StartHPBarTest", "HP BARS!!!");
 	
-	active_menu = CustomGuiOpen(main_menu);
+	active_menu = GuiOpen(main_menu);
 }
 
 /* ------------------------ inventory test ----------------------------- */
 static selected_inventory, inv_menus;
 func StartMultipleListTest()
 {
-	CustomGuiClose(active_menu);
+	GuiClose(active_menu);
 	selected_inventory = [];
 	inv_menus = [];
 	// layout: headline and four sections with items
@@ -69,7 +69,7 @@ func StartMultipleListTest()
 		head = { ID = 999, Bottom = "+3em", Text = "Inventory: <c ff0000>Empty</c>", Style = GUI_TextHCenter | GUI_TextVCenter, BackgroundColor = 0x55000000},
 		contents = { Top = "+5em", Left = "+1em", Right = "100%-1em" },
 	};
-	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
 	var x = ["0%", "50%", "0%", "50%"], y = ["0%", "0%", "50%", "50%"], w = ["50%", "100%", "50%", "100%"], h = ["50%", "50%", "100%", "100%"];
@@ -82,12 +82,12 @@ func StartMultipleListTest()
 		m.Left = x[i]; m.Top = y[i];
 		m.Right = w[i]; m.Bottom = h[i];
 		m.Margin = "2em";
-		Gui_AddSubwindow(m, menu.contents);
+		GuiAddSubwindow(m, menu.contents);
 		PushBack(inv_menus, m); // remember for later
 		for (var obj in inv)
 			m->AddItem(obj, obj.Description, nil, Scenario, "SelectInventory", [obj, ID]);
 	}
-	active_menu = CustomGuiOpen(menu);
+	active_menu = GuiOpen(menu);
 }
 
 func SelectInventory(info)
@@ -103,12 +103,12 @@ func SelectInventory(info)
 		Log("HERO! YOU WILL SPAWN NOW! %s", text);
 		for (var m in inv_menus)
 			if (m) m->Close();
-		CustomGuiClose(active_menu);
+		GuiClose(active_menu);
 	}
 	else
 	{
 		var update = { Text = text };
-		CustomGuiUpdate(update, active_menu, 999);
+		GuiUpdate(update, active_menu, 999);
 	}
 }
 
@@ -116,7 +116,7 @@ func SelectInventory(info)
 static scenoptions_dummies;
 func StartScenarioOptionsTest(parameter, int ID, int player)
 {
-	CustomGuiClose(active_menu);
+	GuiClose(active_menu);
 	scenoptions_dummies = [];
 	scenoptions_dummies[0] = CreateObject(Dummy, nil, nil, player);
 	scenoptions_dummies[1] = CreateObject(Dummy, nil, nil, player);
@@ -173,7 +173,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			}
 		}
 	};
-	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var def, rules =[], i = 0;
 	while (def = GetDefinition(i++))
@@ -213,23 +213,23 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				Symbol = {Std = 0, Unticked = 0, Ticked = Icon_Ok}
 			}
 		};
-		Gui_AddSubwindow(subm, menu.list);
+		GuiAddSubwindow(subm, menu.list);
 	}
 	
-	active_menu = CustomGuiOpen(menu);
+	active_menu = GuiOpen(menu);
 }
 
 func ScenOptsActivate(data, int player, int ID, int subwindowID, object target)
 {
 	if (!ObjectCount(Find_ID(data[0])))
 		CreateObject(data[0]);
-	CustomGuiSetTag("Ticked", active_menu, data[1], nil);
+	GuiUpdateTag("Ticked", active_menu, data[1], nil);
 }
 
 func ScenOptsDeactivate(data, int player, int ID, int subwindowID, object target)
 {
 	RemoveAll(Find_ID(data[0]));
-	CustomGuiSetTag("Unticked", active_menu, data[1], nil);
+	GuiUpdateTag("Unticked", active_menu, data[1], nil);
 }
 
 func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target)
@@ -242,7 +242,7 @@ func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target
 		icon = {Symbol = data[0]},
 		textwindow = {Text = text}
 	};
-	CustomGuiUpdate(update, active_menu, 1, scenoptions_dummies[0]);
+	GuiUpdate(update, active_menu, 1, scenoptions_dummies[0]);
 }
 
 /* ------------------------ player list test ----------------------------- */
@@ -251,7 +251,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 {
 	if (player_list_menu)
 	{
-		CustomGuiClose(player_list_menu);
+		GuiClose(player_list_menu);
 		player_list_menu = nil;
 		return -1;
 	}
@@ -283,10 +283,10 @@ func StartPlayerListTest(parameter, int ID, int player)
 				Right = "+1em"
 			}
 		};
-		Gui_AddSubwindow(subm, menu);
+		GuiAddSubwindow(subm, menu);
 	}
 	
-	player_list_menu = CustomGuiOpen(menu);
+	player_list_menu = GuiOpen(menu);
 	
 	return -1; // keep open
 }
@@ -295,7 +295,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 static transfer_left, transfer_right, transfer_menus, transfer_id_count;
 func StartTransferTest()
 {
-	CustomGuiClose(active_menu);
+	GuiClose(active_menu);
 	if (transfer_left == nil)
 	{
 		transfer_left = [Rock, Loam, Wood, Metal, Nugget, Coal, Shovel, Sword, Bow, Arrow, Boompack];
@@ -310,7 +310,7 @@ func StartTransferTest()
 		head = { Bottom = "+3em", Text = "Welcome to the trade menu!", Style = GUI_TextHCenter | GUI_TextVCenter},
 		contents = { Margin = "1em" },
 	};
-	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	GuiAddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	for (var i = 0; i < 2; ++i)
 	{
@@ -323,7 +323,7 @@ func StartTransferTest()
 			m.Left = "50% + 2em";
 			m.Text = "TO";
 		} else m.Right = "50% - 2em";
-		Gui_AddSubwindow(m, menu.contents);
+		GuiAddSubwindow(m, menu.contents);
 		var a = transfer_left;
 		if (i == 1) a = transfer_right;
 		
@@ -334,7 +334,7 @@ func StartTransferTest()
 		}
 		transfer_menus[i] = m;
 	}
-	active_menu = CustomGuiOpen(menu);
+	active_menu = GuiOpen(menu);
 }
 
 func SelectTransferGood(data, int user_id, int player)
@@ -372,7 +372,7 @@ func StartHPBarTest(parameter, int ID, int player)
 {	
 	if (HP_bar_menu)
 	{
-		CustomGuiClose(HP_bar_menu);
+		GuiClose(HP_bar_menu);
 		return -1; // keep open
 	}
 	
@@ -387,7 +387,7 @@ func StartHPBarTest(parameter, int ID, int player)
 	};
 	if (!GetEffect("FoolAroundWithHPBars"))
 		AddEffect("FoolAroundWithHPBar", nil, 1, 2);
-	HP_bar_menu = CustomGuiOpen(menu);
+	HP_bar_menu = GuiOpen(menu);
 	
 	return -1; // keep open
 }
@@ -396,7 +396,7 @@ global func FxFoolAroundWithHPBarTimer(target, effect, time)
 {
 	var state = Abs(Cos(time, 100));
 	var update = {Bottom = Format("%d%%", state)};
-	CustomGuiUpdate(update, HP_bar_menu, 1);
+	GuiUpdate(update, HP_bar_menu, 1);
 }
 
 func OnHPBarClose()

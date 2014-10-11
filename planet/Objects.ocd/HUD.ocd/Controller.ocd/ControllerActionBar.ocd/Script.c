@@ -29,7 +29,7 @@ func GetActionBarGuiID()
 func CloseActionBarGui()
 {
 	if (actionbar_gui_id)
-		CustomGuiClose(actionbar_gui_id);
+		GuiClose(actionbar_gui_id);
 	
 	actionbar_gui_id = nil;
 	actionbar_items = [];
@@ -279,12 +279,12 @@ func UpdateActionBarDisplay()
 			entry.info_icon.background = { Symbol = graphics_id };
 		}
 		
-		Gui_AddSubwindow(entry, menu);
+		GuiAddSubwindow(entry, menu);
 		
 		++button_number;
 	}
 	
-	actionbar_gui_id = CustomGuiOpen(menu);
+	actionbar_gui_id = GuiOpen(menu);
 }
 
 // insert a button into the actionbar

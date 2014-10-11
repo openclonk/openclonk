@@ -12,27 +12,7 @@ global func GuiAction_SetTag(string tag, int subwindow, object target)
 	return [GUI_SetTag, tag, subwindow, target];
 }
 
-global func Gui_AddMargin(proplist submenu, int marginX, int marginY)
-{
-	submenu.X = submenu.X ?? [0, 0];
-	submenu.Y = submenu.Y ?? [0, 0];
-	submenu.Wdt = submenu.Wdt ?? [1000, 0];
-	submenu.Hgt = submenu.Hgt ?? [1000, 0];
-	
-	// safety, the coordinates could be a single value
-	if (GetType(submenu.X) != C4V_Array) submenu.X = [submenu.X, 0];
-	if (GetType(submenu.Y) != C4V_Array) submenu.Y = [submenu.Y, 0];
-	if (GetType(submenu.Wdt) != C4V_Array) submenu.Wdt = [submenu.Wdt, 0];
-	if (GetType(submenu.Hgt) != C4V_Array) submenu.Hgt = [submenu.Hgt, 0];
-	
-	submenu.X[1] += marginX;
-	submenu.Y[1] += marginY;
-	submenu.Wdt[1] -= marginX;
-	submenu.Hgt[1] -= marginY;
-	return true;
-}
-
-global func Gui_AddCloseButton(proplist menu, proplist target, string callback, parameter)
+global func GuiAddCloseButton(proplist menu, proplist target, string callback, parameter)
 {
 	var close_button =
 	{
@@ -45,11 +25,11 @@ global func Gui_AddCloseButton(proplist menu, proplist target, string callback, 
 		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(target, callback, parameter)
 	};
-	Gui_AddSubwindow(close_button, menu);
+	GuiAddSubwindow(close_button, menu);
 	return close_button;
 }
 
-global func Gui_UpdateText(string text, int menu, int submenu, object target)
+global func GuiUpdateText(string text, int menu, int submenu, object target)
 {
 	var update = {Text = text};
 	CustomGuiUpdate(update, menu, submenu, target);
@@ -57,7 +37,7 @@ global func Gui_UpdateText(string text, int menu, int submenu, object target)
 }
 
 // adds proplist /submenu/ as a new property to /menu/
-global func Gui_AddSubwindow(proplist submenu, proplist menu)
+global func GuiAddSubwindow(proplist submenu, proplist menu)
 {
 	do
 	{
@@ -73,7 +53,5 @@ global func Gui_AddSubwindow(proplist submenu, proplist menu)
 global func ToEmString(int value, int factor)
 {
 	factor = factor ?? 10;
-	var sign = "";
-	if (value >= 0) sign = "+";
-	return Format("%s%d.%dem", sign, value / factor, Abs(value % factor));
+	return Format("%+d.%dem", value / factor, Abs(value % factor));
 }

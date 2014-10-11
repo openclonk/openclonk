@@ -2328,7 +2328,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
 }
 
-static int FnCustomGuiOpen(C4PropList * _this, C4PropList *menu)
+static int FnGuiOpen(C4PropList * _this, C4PropList *menu)
 {
 	C4GuiWindow *window = new C4GuiWindow;
 
@@ -2343,7 +2343,7 @@ static int FnCustomGuiOpen(C4PropList * _this, C4PropList *menu)
 	return window->GetID();
 }
 
-static bool FnCustomGuiSetTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnGuiUpdateTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
 {
 	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	if (!window) return false;
@@ -2358,7 +2358,7 @@ static bool FnCustomGuiSetTag(C4PropList * _this, C4String *tag, int32_t menuID,
 	return true;
 }
 
-static bool FnCustomGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
 {
 	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	if (!window) return false;
@@ -2373,7 +2373,7 @@ static bool FnCustomGuiClose(C4PropList *_this, int32_t menuID, int32_t childID,
 	return true;
 }
 
-static bool FxCustomGuiUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
+static bool FxGuiUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
 {
 	if (!update) return false;
 	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
@@ -2712,10 +2712,10 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
-	AddFunc(pEngine, "CustomGuiOpen", FnCustomGuiOpen);
-	AddFunc(pEngine, "CustomGuiSetTag", FnCustomGuiSetTag);
-	AddFunc(pEngine, "CustomGuiClose", FnCustomGuiClose);
-	AddFunc(pEngine, "CustomGuiUpdate", FxCustomGuiUpdate);
+	AddFunc(pEngine, "GuiOpen", FnGuiOpen);
+	AddFunc(pEngine, "GuiUpdateTag", FnGuiUpdateTag);
+	AddFunc(pEngine, "GuiClose", FnGuiClose);
+	AddFunc(pEngine, "GuiUpdate", FxGuiUpdate);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "PathFree2", FnPathFree2);

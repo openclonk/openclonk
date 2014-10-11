@@ -36,7 +36,7 @@ func Close()
 	if (on_close_callback && on_close_callback[0])
 		on_close_callback[0]->Call(on_close_callback[1], on_close_callback[2]);
 	if (self && menu_id)
-		CustomGuiClose(menu_id);
+		GuiClose(menu_id);
 	if (self)
 		RemoveObject();
 }
@@ -117,11 +117,11 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 		{
 			// need to close the old entry first
 			// this is done so a full refresh is guaranteed
-			CustomGuiClose(custom_menu_id, ID, this);
+			GuiClose(custom_menu_id, ID, this);
 		}
 		
 		var temp = {_child = custom_entry};
-		CustomGuiUpdate(temp, custom_menu_id, this.ID, this);
+		GuiUpdate(temp, custom_menu_id, this.ID, this);
 	}
 	
 	return custom_entry;
@@ -143,7 +143,7 @@ func RemoveItem(user_ID, int custom_menu_id)
 		var ID = i+1;
 		if (!entries[i]) continue;
 		if (entries[i][3] != user_ID) continue;
-		CustomGuiClose(custom_menu_id, ID, this);
+		GuiClose(custom_menu_id, ID, this);
 		entries[i] = nil;
 		return true;
 	}
@@ -177,6 +177,6 @@ func DoCallback(data, int player, int ID, int subwindowID, object target)
 
 func Open()
 {
-	menu_id = CustomGuiOpen(this);
+	menu_id = GuiOpen(this);
 	return menu_id;
 }

@@ -245,11 +245,11 @@ func OpenMenuForObject(object obj, int slot)
 				}
 			}
 		};
-		current_main_menu_id = CustomGuiOpen(root_menu);
+		current_main_menu_id = GuiOpen(root_menu);
 	}
 	else // menu already exists and only one part has to be added
 	{
-		CustomGuiUpdate({update = part_menu}, current_main_menu_id, nil, nil);
+		GuiUpdate({update = part_menu}, current_main_menu_id, nil, nil);
 	}
 	
 }
@@ -431,15 +431,15 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	var info = GetEntryInformation(menu_info, entry_index);
 	if (!info.entry) return;
 	// update symbol of description box
-	CustomGuiUpdate({Symbol = info.entry.symbol}, current_main_menu_id, 1, current_description_box.symbol_target);
+	GuiUpdate({Symbol = info.entry.symbol}, current_main_menu_id, 1, current_description_box.symbol_target);
 	// and update description itself
 	// clean up existing description window in case it has been cluttered by sub-windows
-	CustomGuiClose(current_main_menu_id, 1, current_description_box.desc_target);
+	GuiClose(current_main_menu_id, 1, current_description_box.desc_target);
 	// now add new subwindow to replace the recently removed one
-	CustomGuiUpdate({new_subwindow = {Target = current_description_box.desc_target, ID = 1}}, current_main_menu_id, 1, current_description_box.target);
+	GuiUpdate({new_subwindow = {Target = current_description_box.desc_target, ID = 1}}, current_main_menu_id, 1, current_description_box.target);
 	// default to description of object
 	if (!info.menu.callback_target || !info.menu.callback_hover)
-		Gui_UpdateText(info.entry.symbol.Description, current_main_menu_id, 1, current_description_box.desc_target);
+		GuiUpdateText(info.entry.symbol.Description, current_main_menu_id, 1, current_description_box.desc_target);
 	else
 	{
 		info.menu.callback_target->Call(info.menu.callback_hover, info.entry.symbol, info.entry.extra_data, current_description_box.desc_target, current_main_menu_id);

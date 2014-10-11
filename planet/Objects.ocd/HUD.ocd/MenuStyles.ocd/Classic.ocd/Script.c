@@ -35,6 +35,7 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 		Target = menu,
 		inner =
 		{
+			Margin = "1em",
 			header =
 			{
 				Bottom = "2em",
@@ -59,7 +60,6 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 			}
 		}
 	};
-	Gui_AddMargin(menu.menu_layout.inner, 15, 15);
 	return menu;
 }
 
@@ -88,18 +88,18 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 
 func Open()
 {
-	return CustomGuiOpen(menu_layout);
+	return GuiOpen(menu_layout);
 }
 
 func UpdateDesc(data, int player, int ID, int subwindowID, object target)
 {
 	var update = { Text = entries[subwindowID][0] };
-	CustomGuiUpdate(update, ID, 1, 0);
+	GuiUpdate(update, ID, 1, 0);
 }
 
 func OnClick(data, int player, int ID, int subwindowID, object target)
 {
 	target->Call(data[2], data[0], data[3]);
 	if (!permanent)
-		CustomGuiClose(ID);
+		GuiClose(ID);
 }

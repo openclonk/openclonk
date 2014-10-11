@@ -93,7 +93,7 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	if (this->~PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 	new_box.requirements.Text = cost_msg;
-	CustomGuiUpdate(new_box, menu_id, 1, desc_menu_target);
+	GuiUpdate(new_box, menu_id, 1, desc_menu_target);
 }
 
 private func GetCostString(int amount, bool available)
