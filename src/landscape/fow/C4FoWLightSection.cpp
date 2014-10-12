@@ -7,6 +7,8 @@
 #include "C4Landscape.h"
 #include "C4DrawGL.h"
 
+#include "float.h"
+
 // Gives the point where the line through (x1,y1) and (x2,y2) crosses through the line
 // through (x3,y3) and (x4,y4)
 bool find_cross(float x1, float y1, float x2, float y2,

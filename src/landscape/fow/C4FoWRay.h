@@ -1,5 +1,5 @@
-#ifndef C4FOW_H
-#define C4FOW_H
+#ifndef C4FOWRAY_H
+#define C4FOWRAY_H
 
 #include "StdBuf.h"
 

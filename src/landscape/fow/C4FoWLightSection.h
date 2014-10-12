@@ -1,11 +1,9 @@
-
 #ifndef C4FOWLIGHTSECTION_H
 #define C4FOWLIGHTSECTION_H
 
 #include "C4Rect.h"
-#include "C4Surface.h"
+#include "C4FoWLight.h"
 
-class C4FoWLight;
 class C4FoWRegion;
 class C4FoWRay;
 
@@ -40,7 +38,7 @@ public:
 	/** Update all light rays within the given rectangle */
 	void Update(C4Rect r);
 
-	void Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+	void Render(C4FoWRegion *pRegion, const class C4TargetFacet *pOnScreen = NULL);
 
 	/** Shorten all light rays to the given reach.
 	    Called when the size of the light has decreased to the given value */
