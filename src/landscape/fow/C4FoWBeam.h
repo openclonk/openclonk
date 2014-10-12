@@ -3,13 +3,20 @@
 
 #include "StdBuf.h"
 
-/** This class represents one beam. A beam is a triangle spanned by two line segment: one going from the origin to the
+/** This class represents one beam. A beam is a triangle spanned by two rays: one going from the origin to the
     left delimiter point, one going from the origin to the right delimiter point.
 
-	Other than this, a beam keeps the position at which it hit solid material, each for the left and for the right
-	line segment.
+	LeftEndX/Y and RightEndX/Y are the positions where this beam hit a solid material pixel while LeftX/Y and RightX/Y
+	are the positions at which this beam did not hit but merely streaked a solid pixel (= the neighboring beam hits it)
+	and thus continues until *EndX/Y.
 
-	A beam can be marked as dirty. This means... TODO
+	It is assumed that the beam always goes up (in cartesian coordinate system, or down in display coordinate system),
+	thus the Y-position of the delimiting points is always > 0.
+	C4FoWLightSection transforms the coordinate system after calculation to implement the beams that go into other 
+	directions. This class here always assumes one direction.
+
+	A beam is initially marked as "dirty", meaning that the end points of the beam haven't been found yet (by the ray
+	trace algorithm) and the beam will extend further. When all beams are "clean", the algorithm is done.
 	*/
 class C4FoWBeam
 {
@@ -73,7 +80,6 @@ public:
 
 	    Asserts that the given point is really right of the right delimiter point
 	*/
-	// ASK: this procedure must certainly involve the beam right of this one, the code for this is probably in C4FoWLightSection? If yes, this should probably be managed by this class? (as it already manages things like that in Split and Eliminate)
 	bool MergeRight(int x, int y);
 
 	/** Set the new left delimiter point to the given point if the resulting difference in size is less than the error
@@ -86,24 +92,27 @@ public:
 	/** Split this beam into two: this beam and the returned one. The given point x,y is the position at
 	    which the two resulting beams are connected with their left/right endpoints.
 	    It is asserted that the given point is inside the previous beam. (So the beam can only made smaller) */
-	// ASK: is it intended that the beam can only be made smaller by splitting?
 	C4FoWBeam *Split(int x, int y);
 	/** Makes this beam span from its left delimiter point to the right delimiter point of the next but one beam,
 	    removing the two beams in between in the process.
-	    The position x,y is only used for the error calcualation and not actually inserted.
-	    Returns false and does not do the action in case the error threshold would be reached with these parameters
+	    In other words, removes the next beam and merges this beam with the next but one beam.
+	    Returns false and does not do the action in case the error threshold would be reached.
 	    */
-	// ASK: iError is not added to the error counter of this beam on success
-	// ASK: the x,y coordinate given is never actually added - even though it counts towards the error counter
-	bool Eliminate(int x, int y);
+	bool EliminateRight(int x, int y);
 	
 	void MergeDirty();
 	
+	/** Set a new end point, making the beam "clean". */
 	void Clean(int32_t y);
+
+	/** Extend this beam to the new maximum length, making it "dirty" because now the end points haven't been found anymore
+	    Called when the size of the light has been increased to the given value. */
 	void Dirty(int32_t y);
+
+	/** Prune this beam to a new maximum length.
+	    Called when the size of the light has been decreased to the given value. */
 	void Prune(int32_t y);
-	
-	// TODO: find out more about this DIRTY stuff
+
 };
 
 #endif // C4FOWBEAM

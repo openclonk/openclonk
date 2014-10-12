@@ -70,7 +70,7 @@ bool C4FoWBeam::MergeLeft(int x, int y)
 	return true;
 }
 
-bool C4FoWBeam::Eliminate(int x, int y)
+bool C4FoWBeam::EliminateRight(int x, int y)
 {
 	// Called on the beams left of the one getting eliminated
 	C4FoWBeam *pElim = pNext, *pMerge = pNext->pNext;
@@ -79,11 +79,11 @@ bool C4FoWBeam::Eliminate(int x, int y)
 
 	// Calc errors, add those accumulated on both merged beams
 	int32_t iErr = getDoubleTriangleSurface(
-		getLeftEndX(), iLeftEndY,
-		pMerge->getRightEndX(), pMerge->iLeftEndY,
+		getLeftEndX(), getLeftEndY(),
+		pMerge->getRightEndX(), pMerge->getRightEndY(),
 		x, y);
-	iErr += iError + pMerge->iError;
-	if (iErr > C4FoWMergeThreshold)
+	iErr += pMerge->iError;
+	if (iError + iErr > C4FoWMergeThreshold)
 		return false;
 
 	// Do elimination
@@ -91,6 +91,7 @@ bool C4FoWBeam::Eliminate(int x, int y)
 	iRightY = pMerge->iRightY;
 	iRightEndY = pMerge->iRightEndY;
 	pNext = pMerge->pNext;
+	iError += iErr;
 	delete pElim;
 	delete pMerge;
 	return true;

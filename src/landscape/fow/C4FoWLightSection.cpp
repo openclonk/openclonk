@@ -251,7 +251,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 
 				// Double merge?
 				if (!fSplitLeft && !fSplitRight && pLast && pBeam->getNext()) {
-					if(pLast->Eliminate(x, y)) {
+					if(pLast->EliminateRight(x,y)) {
 						pBeam = pLast;
 						break; // no typo. fSplitRight => x == xr
 					}

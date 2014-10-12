@@ -30,7 +30,6 @@ public:
 	void Remove(C4Object *pObj);
 
 	/** Update all light beams within the given rectangle */
-	// ASK: only called by C4FoWRegion??
 	void Update(C4Rect r);
 	/** Triggers the recalculation of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
