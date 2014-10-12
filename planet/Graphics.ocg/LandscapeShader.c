@@ -137,4 +137,15 @@ void main()
 		vec4(bright2 * otherMaterialPx.rgb, otherMaterialPx.a),
 		vec4(bright * materialPx.rgb, materialPx.a),
 		scalerPx.r);
+	
+	// uncomment the following lines for debugging light directions:
+	// yellow: light up, blue: light down, turqoise: light right, pink: light left, opacity: light strength
+	//float lightYDir = lightPx.b - 1.0/3.0;
+	//float lightXDir = lightPx.g - 1.0/3.0;
+	//float lightStrength = lightPx.r;
+	//gl_FragColor = vec4(
+	//	1.0-1.5*(max(0.0, lightYDir) + max(0.0,lightXDir)),
+	//	1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),
+	//	1.0-1.5*max(0.0, -lightYDir),
+	//	lightStrength);
 }
