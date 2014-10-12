@@ -1,8 +1,8 @@
 
 #include "C4Include.h"
-#include "C4FoWRay.h"
+#include "C4FoWBeam.h"
 
-// Maximum error allowed while merging rays.
+// Maximum error allowed while merging beams.
 const int32_t C4FoWMergeThreshold = 10; // (in landscape pixels * 2)
 
 // A = 1/2 | a x b |
@@ -16,7 +16,7 @@ static inline int32_t getDoubleTriangleSurface(int32_t x1, int32_t y1, int32_t x
 	return abs(ax * by - ay * bx);
 }
 
-StdStrBuf C4FoWRay::getDesc() const {
+StdStrBuf C4FoWBeam::getDesc() const {
 	return FormatString("%d:%d@%d:%d%s",
 		getLeftX(1000),
 		getRightX(1000),
@@ -25,7 +25,7 @@ StdStrBuf C4FoWRay::getDesc() const {
 		fDirty ? "*" : "");
 }
 
-bool C4FoWRay::MergeRight(int x, int y)
+bool C4FoWBeam::MergeRight(int x, int y)
 {
 	// Note: Right-merging is the most common and most important optimization.
 	// This procedure will probably be *hammered* as a result. Worth inlining?
@@ -50,7 +50,7 @@ bool C4FoWRay::MergeRight(int x, int y)
 	return true;
 }
 
-bool C4FoWRay::MergeLeft(int x, int y)
+bool C4FoWBeam::MergeLeft(int x, int y)
 {
 	assert(!isDirty()); assert(isLeft(x, y));
 
@@ -70,14 +70,14 @@ bool C4FoWRay::MergeLeft(int x, int y)
 	return true;
 }
 
-bool C4FoWRay::Eliminate(int x, int y)
+bool C4FoWBeam::Eliminate(int x, int y)
 {
-	// Called on the ray left of the one getting eliminated
-	C4FoWRay *pElim = pNext, *pMerge = pNext->pNext;
+	// Called on the beams left of the one getting eliminated
+	C4FoWBeam *pElim = pNext, *pMerge = pNext->pNext;
 	assert(!!pElim); assert(!!pMerge);
 	assert(!isDirty()); assert(!pMerge->isDirty());
 
-	// Calc errors, add those accumulated on both merged rays
+	// Calc errors, add those accumulated on both merged beams
 	int32_t iErr = getDoubleTriangleSurface(
 		getLeftEndX(), iLeftEndY,
 		pMerge->getRightEndX(), pMerge->iLeftEndY,
@@ -96,34 +96,34 @@ bool C4FoWRay::Eliminate(int x, int y)
 	return true;
 }
 
-C4FoWRay *C4FoWRay::Split(int x, int y)
+C4FoWBeam *C4FoWBeam::Split(int x, int y)
 {
-	// Make sure to never create negative-surface rays
+	// Make sure to never create negative-surface beams
 	assert(isDirty()); assert(isInside(x, y));
 
-	// Allocate a new ray. Ugh, expensive.
-	C4FoWRay *pRay = new C4FoWRay(x, y, iRightX, iRightY);
-	pRay->Dirty(iLeftEndY);
+	// Allocate a new beam. Ugh, expensive.
+	C4FoWBeam *pBeam = new C4FoWBeam(x, y, iRightX, iRightY);
+	pBeam->Dirty(iLeftEndY);
 
 	// Move to make space
 	iRightX = x;
 	iRightY = y;
 
 	// Relink
-	pRay->pNext = pNext;
-	pNext = pRay;
-	return pRay;
+	pBeam->pNext = pNext;
+	pNext = pBeam;
+	return pBeam;
 }
 
-void C4FoWRay::MergeDirty()
+void C4FoWBeam::MergeDirty()
 {
-	// As a rule, dirty rays following each other should
+	// As a rule, dirty beams following each other should
 	// always be merged, so splits can be reverted once
 	// the landscape changes.
-	C4FoWRay *pWith = pNext;
+	C4FoWBeam *pWith = pNext;
 	assert(isDirty()); assert(!!pWith); assert(pWith->isDirty());
 
-	// Figure out how far the new dirty ray reaches. Note that
+	// Figure out how far the new dirty beams reaches. Note that
 	// we might lose information about the landscape here.
 	Dirty(Min(getLeftEndY(), pWith->getLeftEndY()));
 
@@ -136,30 +136,30 @@ void C4FoWRay::MergeDirty()
 	delete pWith;
 }
 
-void C4FoWRay::Clean(int y)
+void C4FoWBeam::Clean(int y)
 {
-	// Search hit something, this ray is now clean.
+	// Search hit something, this beam is now clean.
 	assert(isDirty());
 	iLeftEndY = y;
 	iRightEndY = y;
 	fDirty = false;
 }
 
-void C4FoWRay::Dirty(int y)
+void C4FoWBeam::Dirty(int y)
 {
-	// Got invalidated, ray is dirty until updated
+	// Got invalidated, beam is dirty until updated
 	iLeftEndY = y;
 	iRightEndY = y;
 	fDirty = true;
 }
 
-void C4FoWRay::Prune(int32_t y)
+void C4FoWBeam::Prune(int32_t y)
 {
 	// Check which sides we need to prune
 	bool fLeft = (iLeftEndY >= y),
 		 fRight = (iRightEndY >= y);
 	// If both sides got pruned, we are clean
-	// (can't possibly extend this ray further)
+	// (can't possibly extend this beam further)
 	if (fLeft && fRight)
 		Clean(y);
 	else if (fLeft)

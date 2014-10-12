@@ -29,10 +29,10 @@ public:
 	/** Removes the light associated with the given object, if any */
 	void Remove(C4Object *pObj);
 
-	/** Update all light rays within the given rectangle */
+	/** Update all light beams within the given rectangle */
 	// ASK: only called by C4FoWRegion??
 	void Update(C4Rect r);
-	/** Triggers the recalculation of all light rays within the given rectangle because the landscape changed. */
+	/** Triggers the recalculation of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
 
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);

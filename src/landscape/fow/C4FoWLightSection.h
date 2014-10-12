@@ -5,9 +5,9 @@
 #include "C4FoWLight.h"
 
 class C4FoWRegion;
-class C4FoWRay;
+class C4FoWBeam;
 
-/** The light section manages the rays for one light for one direction of 90°. */
+/** The light section manages the beams for one light for one direction of 90°. */
 class C4FoWLightSection
 {
 public:
@@ -24,8 +24,8 @@ private:
 	int a, b, c, d;
 	int ra, rb, rc, rd;
 
-	/* This section's rays */
-	class C4FoWRay *pRays;
+	/* This section's beams */
+	class C4FoWBeam *pBeams;
 
 	C4FoWLightSection *pNext;
 
@@ -33,38 +33,38 @@ public:
 
 	C4FoWLightSection *getNext() const { return pNext; }
 
-	/** Recalculate of all light rays within the given rectangle because the landscape changed. */
+	/** Recalculate of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
-	/** Update all light rays within the given rectangle */
+	/** Update all light beams within the given rectangle */
 	void Update(C4Rect r);
 
 	void Render(C4FoWRegion *pRegion, const class C4TargetFacet *pOnScreen = NULL);
 
-	/** Shorten all light rays to the given reach.
+	/** Shorten all light beams to the given reach.
 	    Called when the size of the light has decreased to the given value */
 	void Prune(int32_t iReach);
-	/** Extend all light rays to the given reach.
+	/** Extend all light beams to the given reach.
 	    Called when the size of the light has increased to the given value */
 	void Dirty(int32_t iReach);
 
 private:
 
-	/** Remove all rays. pRays is NULL after that. */
-	void ClearRays();
+	/** Remove all beams. pBeams is NULL after that. */
+	void ClearBeams();
 
-	// Ray coordinate to landscape coordinate. Ray coordinates are relative to the light source.
+	// Beam coordinate to landscape coordinate. Beam coordinates are relative to the light source.
 	template <class T> T transDX(T dx, T dy) const { return T(a) * dx + T(b) * dy; }
 	template <class T> T transDY(T dx, T dy) const { return T(c) * dx + T(d) * dy; }
 	template <class T> T transX(T x, T y) const { return transDX(x, y) + T(pLight->getX()); }
 	template <class T> T transY(T x, T y) const { return transDY(x, y) + T(pLight->getY()); }
 
-	// Landscape coordinate to ray coordinate. Ray coordinates are relative to the light source.
+	// Landscape coordinate to beam coordinate. Beam coordinates are relative to the light source.
 	template <class T> T rtransDX(T dx, T dy) const { return T(ra) * dx + T(rb) * dy; }
 	template <class T> T rtransDY(T dx, T dy) const { return T(rc) * dx + T(rd) * dy; }
 	template <class T> T rtransX(T x, T y) const { return rtransDX(x-T(pLight->getX()),y-T(pLight->getY())); }
 	template <class T> T rtransY(T x, T y) const { return rtransDY(x-T(pLight->getX()),y-T(pLight->getY())); }
 
-	/** Returns a rectangle in ray coordinates */
+	/** Returns a rectangle in beam coordinates */
 	C4Rect rtransRect(C4Rect r) const {
 		C4Rect Rect(rtransX(r.x, r.y), rtransY(r.x, r.y),
 		            rtransDX(r.Wdt, r.Hgt), rtransDY(r.Wdt, r.Hgt));
@@ -81,10 +81,10 @@ private:
 	    This function assumes a cartesian coordinate system (y axis up) */
 	int32_t RectRightMostY(const C4Rect &r) const { return r.x + r.Wdt <= 0 ? r.y+r.Hgt : r.y; }
 
-	/** Find right-most ray left of point */
-	C4FoWRay *FindRayLeftOf(int32_t x, int32_t y);
-	/** Find left-most ray to extend over point */
-	C4FoWRay *FindRayOver(int32_t x, int32_t y);
+	/** Find right-most beam left of point */
+	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y);
+	/** Find left-most beam to extend over point */
+	C4FoWBeam *FindBeamOver(int32_t x, int32_t y);
 
 };
 

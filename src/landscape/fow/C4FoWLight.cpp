@@ -36,7 +36,7 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 
 	if (iReach == iReach2) return;
 
-	// Reach decreased? Prune rays
+	// Reach decreased? Prune beams
 	if (iReach2 < iReach) {
 		iReach = iReach2;
 		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
@@ -44,7 +44,7 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 
 	} else {
 
-		// Reach increased? Dirty rays that might get longer now
+		// Reach increased? Dirty beams that might get longer now
 		iReach = iReach2;
 		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
 			pSect->Dirty(iReach);
@@ -59,7 +59,7 @@ void C4FoWLight::Update(C4Rect Rec)
 	if (iNX != iX || iNY != iY)
 	{
 		for (C4FoWLightSection *pSect = pSections; pSect; pSect = pSect->getNext())
-			// pruning to zero length results in the rays being cleared and new ones created
+			// pruning to zero length results in the beam being cleared and new ones created
 			pSect->Prune(0);
 		iX = iNX; iY = iNY;
 	}

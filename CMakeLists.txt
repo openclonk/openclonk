@@ -288,8 +288,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4UpperBoard.h
 	src/landscape/fow/C4FoW.cpp
 	src/landscape/fow/C4FoW.h
-	src/landscape/fow/C4FoWRay.cpp
-	src/landscape/fow/C4FoWRay.h
+	src/landscape/fow/C4FoWBeam.cpp
+	src/landscape/fow/C4FoWBeam.h
 	src/landscape/fow/C4FoWLight.cpp
 	src/landscape/fow/C4FoWLight.h
 	src/landscape/fow/C4FoWLightSection.cpp
