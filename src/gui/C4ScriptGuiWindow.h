@@ -17,8 +17,8 @@
 
 /* a flexisble ingame menu system that can be composed out of multiple windows */
 
-#ifndef INC_C4GuiWindow
-#define INC_C4GuiWindow
+#ifndef INC_C4ScriptGuiWindow
+#define INC_C4ScriptGuiWindow
 
 #include <C4Surface.h>
 #include <C4Gui.h>
@@ -27,7 +27,7 @@
 
 #include <map>
 
-enum C4GuiWindowPropertyName
+enum C4ScriptGuiWindowPropertyName
 {
 	left = 0,
 	top,
@@ -65,13 +65,13 @@ enum C4GuiWindowPropertyName
 	_lastProp
 };
 
-enum C4GuiWindowActionID
+enum C4ScriptGuiWindowActionID
 {
 	SetTag = 1,
 	Call,
 };
 
-enum C4GuiWindowStyleFlag
+enum C4ScriptGuiWindowStyleFlag
 {
 	None = 0,
 	GridLayout = 1,
@@ -86,18 +86,18 @@ enum C4GuiWindowStyleFlag
 	NoCrop = 512
 };
 
-class C4GuiWindow;
+class C4ScriptGuiWindow;
 
-class C4GuiWindowAction
+class C4ScriptGuiWindowAction
 {
-	friend class C4GuiWindow;
+	friend class C4ScriptGuiWindow;
 
 	private:
 	// the ID is unique among all actions. It is used later to synchronize callbacks
 	int32_t id;
 
 	int32_t action;
-	C4GuiWindowAction *nextAction; // a linked list of actions
+	C4ScriptGuiWindowAction *nextAction; // a linked list of actions
 	// note: depending on the action not all of the following attributes always have values
 	C4PropList *target; // contains a valid C4Object in case of SetTag, a generic proplist in case of Call
 	C4String *text; // can be either a function name to call or a tag to set
@@ -105,22 +105,22 @@ class C4GuiWindowAction
 	int32_t subwindowID;
 
 	public:
-	C4GuiWindowAction() : id(0), action(0), nextAction(0), target(0), text(0), value(0), subwindowID(0) { }
-	~C4GuiWindowAction();
+	C4ScriptGuiWindowAction() : id(0), action(0), nextAction(0), target(0), text(0), value(0), subwindowID(0) { }
+	~C4ScriptGuiWindowAction();
 	void ClearPointers(C4Object *pObj);
 	bool Init(C4ValueArray *array, int32_t index = 0); // index is the current action in an array of actions
 	// executes non-synced actions and syncs the others
 	// the action type parameters is only used to be able to sync commands
-	void Execute(C4GuiWindow *parent, int32_t player, int32_t actionType);
-	// used to execute synced commands, explanation see C4GuiWindow::ExecuteCommand
-	bool ExecuteCommand(int32_t actionID, C4GuiWindow *parent, int32_t player);
+	void Execute(C4ScriptGuiWindow *parent, int32_t player, int32_t actionType);
+	// used to execute synced commands, explanation see C4ScriptGuiWindow::ExecuteCommand
+	bool ExecuteCommand(int32_t actionID, C4ScriptGuiWindow *parent, int32_t player);
 	// used for serialization. The "first" parameter is used so that chained actions are stored correctly into an array
 	const C4Value ToC4Value(bool first = true);
 };
 
-class C4GuiWindowProperty
+class C4ScriptGuiWindowProperty
 {
-	friend class C4GuiWindow;
+	friend class C4ScriptGuiWindow;
 
 	private:
 	typedef union
@@ -132,7 +132,7 @@ class C4GuiWindowProperty
 		C4Def *def;
 		C4GUI::FrameDecoration *deco;
 		StdCopyStrBuf *strBuf;
-		C4GuiWindowAction *action;
+		C4ScriptGuiWindowAction *action;
 	} Prop;
 
 	Prop *current;
@@ -152,8 +152,8 @@ class C4GuiWindowProperty
 	void SetNull(C4String *tag = 0);
 
 	public:
-	~C4GuiWindowProperty();
-	C4GuiWindowProperty() : current(0), currentTag(0), type(-1) {}
+	~C4ScriptGuiWindowProperty();
+	C4ScriptGuiWindowProperty() : current(0), currentTag(0), type(-1) {}
 	void Set(const C4Value &value, C4String *tag);
 
 	int32_t GetInt() { return current->d; }
@@ -162,8 +162,8 @@ class C4GuiWindowProperty
 	C4Def *GetDef() { return current->def; }
 	C4GUI::FrameDecoration *GetFrameDecoration() { return current->deco; }
 	StdCopyStrBuf *GetStrBuf() { return current->strBuf; }
-	C4GuiWindowAction *GetAction() { return current->action; }
-	std::list<C4GuiWindowAction*> GetAllActions(); // used to synchronize actions
+	C4ScriptGuiWindowAction *GetAction() { return current->action; }
+	std::list<C4ScriptGuiWindowAction*> GetAllActions(); // used to synchronize actions
 
 	bool SwitchTag(C4String *tag);
 	C4String *GetCurrentTag() { return currentTag; }
@@ -173,10 +173,10 @@ class C4GuiWindowProperty
 	void ClearPointers(C4Object *pObj);
 };
 
-class C4GuiWindow : public C4GUI::ScrollWindow
+class C4ScriptGuiWindow : public C4GUI::ScrollWindow
 {
-	friend class C4GuiWindowAction;
-	friend class C4GuiWindowScrollBar;
+	friend class C4ScriptGuiWindowAction;
+	friend class C4ScriptGuiWindowScrollBar;
 
 	private:
 	// the "main" menu ID is always unique, however the sub-menu IDs do NOT have to be unique
@@ -202,20 +202,20 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	const C4Object *GetTarget() { return target; }
 
 	// properties are stored extra to make "tags" possible
-	C4GuiWindowProperty props[C4GuiWindowPropertyName::_lastProp];
+	C4ScriptGuiWindowProperty props[C4ScriptGuiWindowPropertyName::_lastProp];
 	void Init();
 	// ID is set by parent, parent gives unique IDs to children
 	void SetID(int32_t to) { id = to; }
 	// to be used to generate the quick-access children map for main menus
-	void ChildGotID(C4GuiWindow *child);
-	void ChildWithIDRemoved(C4GuiWindow *child);
-	std::multimap<int32_t, C4GuiWindow *> childrenIDMap;
+	void ChildGotID(C4ScriptGuiWindow *child);
+	void ChildWithIDRemoved(C4ScriptGuiWindow *child);
+	std::multimap<int32_t, C4ScriptGuiWindow *> childrenIDMap;
 	// should be called when the Priority property of a child changes
 	// will sort the child correctly into the children list
-	void ChildChangedPriority(C4GuiWindow *child);
+	void ChildChangedPriority(C4ScriptGuiWindow *child);
 	// helper function to extract relative and absolute position values from a string
-	void SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag);
-	C4Value PositionToC4Value(C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute);
+	void SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag);
+	C4Value PositionToC4Value(C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute);
 	// sets all margins either from a string or from an array
 	void SetMarginProperties(const C4Value &property, C4String *tag);
 	C4Value MarginsToC4Value();
@@ -244,19 +244,19 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 
 	void SetTag(C4String *tag);
 
-	C4GuiWindow();
-	C4GuiWindow(float stdBorderX, float stdBorderY);
-	virtual ~C4GuiWindow();
+	C4ScriptGuiWindow();
+	C4ScriptGuiWindow(float stdBorderX, float stdBorderY);
+	virtual ~C4ScriptGuiWindow();
 
 	int32_t GetID() { return id; }
 	// finds a child with a certain ID, usually called on ::MainWindowRoot to get submenus
-	C4GuiWindow *GetChildByID(int32_t child);
+	C4ScriptGuiWindow *GetChildByID(int32_t child);
 	// finds a child by name, usually called when updating a window with a new proplist
-	C4GuiWindow *GetChildByName(C4String *childName);
+	C4ScriptGuiWindow *GetChildByName(C4String *childName);
 	// finds any fitting sub menu - not necessarily direct child
 	// has to be called on children of ::MainWindowRoot, uses the childrenIDMap
 	// note: always checks the target to avoid ambiguities, even if 0
-	C4GuiWindow *GetSubWindow(int32_t childID, C4Object *childTarget);
+	C4ScriptGuiWindow *GetSubWindow(int32_t childID, C4Object *childTarget);
 
 
 
@@ -268,12 +268,12 @@ class C4GuiWindow : public C4GUI::ScrollWindow
 	// constructs a C4Value (proplist) that contains everything that is needed for saving this window
 	const C4Value ToC4Value();
 
-	// C4GuiWindow will delete its children on close. Make sure you don't delete anything twice
-	C4GuiWindow *AddChild(C4GuiWindow *child);
-	C4GuiWindow *AddChild() { return AddChild(new C4GuiWindow()); }
+	// C4ScriptGuiWindow will delete its children on close. Make sure you don't delete anything twice
+	C4ScriptGuiWindow *AddChild(C4ScriptGuiWindow *child);
+	C4ScriptGuiWindow *AddChild() { return AddChild(new C4ScriptGuiWindow()); }
 
 	void ClearChildren(bool close = true); // close: whether to properly "Close" them, alias for RemoveChild
-	void RemoveChild(C4GuiWindow *child, bool close = true, bool all = false); // child = 0 & all = true to clear all
+	void RemoveChild(C4ScriptGuiWindow *child, bool close = true, bool all = false); // child = 0 & all = true to clear all
 	void Close();
 	void ClearPointers(C4Object *pObj);
 

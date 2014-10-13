@@ -36,7 +36,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#include <C4GuiWindow.h>
+#include <C4ScriptGuiWindow.h>
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,
@@ -320,7 +320,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	bool menuProcessed = false;
 	if (pPlayer)
 		// adjust by viewport X/Y because the GUI windows calculate their positions (and thus check input) based on that
-		menuProcessed = ::Game.GuiWindowRoot->MouseInput(iButton, iX, iY, dwKeyFlags);
+		menuProcessed = ::Game.ScriptGuiRoot->MouseInput(iButton, iX, iY, dwKeyFlags);
 
 	if (menuProcessed)
 		Cursor = C4MC_Cursor_Select;

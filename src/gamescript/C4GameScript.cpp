@@ -32,7 +32,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Log.h>
 #include <C4MessageInput.h>
-#include <C4GuiWindow.h>
+#include <C4ScriptGuiWindow.h>
 #include <C4MouseControl.h>
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
@@ -2330,26 +2330,26 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 
 static int FnGuiOpen(C4PropList * _this, C4PropList *menu)
 {
-	C4GuiWindow *window = new C4GuiWindow;
+	C4ScriptGuiWindow *window = new C4ScriptGuiWindow;
 
-	::Game.GuiWindowRoot->AddChild(window);
+	::Game.ScriptGuiRoot->AddChild(window);
 
 	if (!window->CreateFromPropList(menu, true))
 	{
-		::Game.GuiWindowRoot->RemoveChild(window, false);
+		::Game.ScriptGuiRoot->RemoveChild(window, false);
 		return 0;
 	}
 
 	return window->GetID();
 }
 
-static bool FnGuiUpdateTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnGuiUpdateTag(C4PropList * _this, C4String *tag, int32_t guiID, int32_t childID, C4Object *target)
 {
-	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
+	C4ScriptGuiWindow *window = ::Game.ScriptGuiRoot->GetChildByID(guiID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
+		C4ScriptGuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->SetTag(tag);
 		return true;
@@ -2358,13 +2358,13 @@ static bool FnGuiUpdateTag(C4PropList * _this, C4String *tag, int32_t menuID, in
 	return true;
 }
 
-static bool FnGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnGuiClose(C4PropList *_this, int32_t guiID, int32_t childID, C4Object *target)
 {
-	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
+	C4ScriptGuiWindow *window = ::Game.ScriptGuiRoot->GetChildByID(guiID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
+		C4ScriptGuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->Close();
 		return true;
@@ -2373,14 +2373,14 @@ static bool FnGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Obj
 	return true;
 }
 
-static bool FxGuiUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
+static bool FxGuiUpdate(C4PropList *_this, C4PropList *update, int32_t guiID, int32_t childID, C4Object *target)
 {
 	if (!update) return false;
-	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
+	C4ScriptGuiWindow *window = ::Game.ScriptGuiRoot->GetChildByID(guiID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
+		C4ScriptGuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->CreateFromPropList(update, false, true);
 		return true;
@@ -2891,20 +2891,20 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "ATTACH_Back"               ,C4V_Int,      C4ATTACH_Back },
 	{ "ATTACH_MoveRelative"       ,C4V_Int,      C4ATTACH_MoveRelative },
 
-	{ "GUI_SetTag"               ,C4V_Int,      C4GuiWindowActionID::SetTag },
-	{ "GUI_Call"                 ,C4V_Int,      C4GuiWindowActionID::Call },
-	{ "GUI_GridLayout"           ,C4V_Int,      C4GuiWindowStyleFlag::GridLayout },
-	{ "GUI_VerticalLayout"       ,C4V_Int,      C4GuiWindowStyleFlag::VerticalLayout },
-	{ "GUI_TextVCenter"          ,C4V_Int,      C4GuiWindowStyleFlag::TextVCenter },
-	{ "GUI_TextHCenter"          ,C4V_Int,      C4GuiWindowStyleFlag::TextHCenter },
-	{ "GUI_TextRight"            ,C4V_Int,      C4GuiWindowStyleFlag::TextRight },
-	{ "GUI_TextBottom"           ,C4V_Int,      C4GuiWindowStyleFlag::TextBottom },
-	{ "GUI_TextTop"              ,C4V_Int,      C4GuiWindowStyleFlag::None }, // note that top and left are considered default
-	{ "GUI_TextLeft"             ,C4V_Int,      C4GuiWindowStyleFlag::None }, // they are only included for completeness
-	{ "GUI_FitChildren"          ,C4V_Int,      C4GuiWindowStyleFlag::FitChildren },
-	{ "GUI_Multiple"             ,C4V_Int,      C4GuiWindowStyleFlag::Multiple },
-	{ "GUI_IgnoreMouse"          ,C4V_Int,      C4GuiWindowStyleFlag::IgnoreMouse },
-	{ "GUI_NoCrop"               ,C4V_Int,      C4GuiWindowStyleFlag::NoCrop },
+	{ "GUI_SetTag"               ,C4V_Int,      C4ScriptGuiWindowActionID::SetTag },
+	{ "GUI_Call"                 ,C4V_Int,      C4ScriptGuiWindowActionID::Call },
+	{ "GUI_GridLayout"           ,C4V_Int,      C4ScriptGuiWindowStyleFlag::GridLayout },
+	{ "GUI_VerticalLayout"       ,C4V_Int,      C4ScriptGuiWindowStyleFlag::VerticalLayout },
+	{ "GUI_TextVCenter"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextVCenter },
+	{ "GUI_TextHCenter"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextHCenter },
+	{ "GUI_TextRight"            ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextRight },
+	{ "GUI_TextBottom"           ,C4V_Int,      C4ScriptGuiWindowStyleFlag::TextBottom },
+	{ "GUI_TextTop"              ,C4V_Int,      C4ScriptGuiWindowStyleFlag::None }, // note that top and left are considered default
+	{ "GUI_TextLeft"             ,C4V_Int,      C4ScriptGuiWindowStyleFlag::None }, // they are only included for completeness
+	{ "GUI_FitChildren"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::FitChildren },
+	{ "GUI_Multiple"             ,C4V_Int,      C4ScriptGuiWindowStyleFlag::Multiple },
+	{ "GUI_IgnoreMouse"          ,C4V_Int,      C4ScriptGuiWindowStyleFlag::IgnoreMouse },
+	{ "GUI_NoCrop"               ,C4V_Int,      C4ScriptGuiWindowStyleFlag::NoCrop },
 	{ NULL, C4V_Nil, 0}
 };
 

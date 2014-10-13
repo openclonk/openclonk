@@ -30,7 +30,7 @@
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
-#include <C4GuiWindow.h>
+#include <C4ScriptGuiWindow.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
@@ -297,7 +297,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// ingame menus
 		C4ST_STARTNEW(GuiWindowStat, "C4Viewport::DrawOverlay: Menus")
 		pDraw->SetZoom(0, 0, 1.0);
-		::Game.GuiWindowRoot->DrawAll(gui_cgo, Player);
+		::Game.ScriptGuiRoot->DrawAll(gui_cgo, Player);
 		C4ST_STOP(GuiWindowStat)
 
 		DrawOverlay(gui_cgo, GameZoom);

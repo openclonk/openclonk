@@ -29,7 +29,7 @@
 */
 
 #include <C4Include.h>
-#include <C4GuiWindow.h>
+#include <C4ScriptGuiWindow.h>
 
 #include <C4Application.h>
 #include <C4DefList.h>
@@ -45,7 +45,7 @@
 
 #include <cmath>
 
-C4GuiWindowAction::~C4GuiWindowAction()
+C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()
 {
 	if (text)
 		text->DecRef();
@@ -53,13 +53,13 @@ C4GuiWindowAction::~C4GuiWindowAction()
 		delete nextAction;
 }
 
-const C4Value C4GuiWindowAction::ToC4Value(bool first)
+const C4Value C4ScriptGuiWindowAction::ToC4Value(bool first)
 {
 	C4ValueArray *array = new C4ValueArray();
 
 	switch (action)
 	{
-	case C4GuiWindowActionID::Call:
+	case C4ScriptGuiWindowActionID::Call:
 		array->SetSize(4);
 		array->SetItem(0, C4Value(action));
 		array->SetItem(1, C4Value(target));
@@ -67,7 +67,7 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 		array->SetItem(3, value);
 		break;
 
-	case C4GuiWindowActionID::SetTag:
+	case C4ScriptGuiWindowActionID::SetTag:
 		array->SetSize(4);
 		array->SetItem(0, C4Value(action));
 		array->SetItem(1, C4Value(text));
@@ -79,7 +79,7 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 		break;
 
 	default:
-		assert(false && "trying to save C4GuiWindowAction without valid action");
+		assert(false && "trying to save C4ScriptGuiWindowAction without valid action");
 		break;
 	}
 
@@ -96,7 +96,7 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 	container->SetSize(size);
 	container->SetItem(0, C4Value(array));
 
-	C4GuiWindowAction *next = nextAction;
+	C4ScriptGuiWindowAction *next = nextAction;
 	while (next)
 	{
 		C4Value val = next->ToC4Value(false);
@@ -108,7 +108,7 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 	return C4Value(container);
 }
 
-void C4GuiWindowAction::ClearPointers(C4Object *pObj)
+void C4ScriptGuiWindowAction::ClearPointers(C4Object *pObj)
 {
 	C4Object *targetObj = target ? target->GetObject() : 0;
 
@@ -121,7 +121,7 @@ void C4GuiWindowAction::ClearPointers(C4Object *pObj)
 	if (nextAction)
 		nextAction->ClearPointers(pObj);
 }
-bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
+bool C4ScriptGuiWindowAction::Init(C4ValueArray *array, int32_t index)
 {
 	if (array->GetSize() == 0) // safety
 		return false;
@@ -132,7 +132,7 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 		// add action to action chain?
 		if (index+1 < array->GetSize())
 		{
-			nextAction = new C4GuiWindowAction();
+			nextAction = new C4ScriptGuiWindowAction();
 			nextAction->Init(array, index + 1);
 		}
 		// continue with one sub array
@@ -149,7 +149,7 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 
 	switch (newAction)
 	{
-	case C4GuiWindowActionID::Call:
+	case C4ScriptGuiWindowActionID::Call:
 		if (array->GetSize() < 3) return false;
 		target = array->GetItem(1).getPropList();
 		text = array->GetItem(2).getStr();
@@ -160,11 +160,11 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 
 		// important! needed to identify actions later!
 		if (!id)
-			id = ::Game.GuiWindowRoot->GenerateActionID();
+			id = ::Game.ScriptGuiRoot->GenerateActionID();
 
 		break;
 
-	case C4GuiWindowActionID::SetTag:
+	case C4ScriptGuiWindowActionID::SetTag:
 		if (array->GetSize() < 4) return false;
 		text = array->GetItem(1).getStr();
 		if (!text) return false;
@@ -181,26 +181,26 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 	return true;
 }
 
-void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, int32_t actionType)
+void C4ScriptGuiWindowAction::Execute(C4ScriptGuiWindow *parent, int32_t player, int32_t actionType)
 {
-	assert(parent && "C4GuiWindow::Execute must always be called with parent");
+	assert(parent && "C4ScriptGuiWindow::Execute must always be called with parent");
 	//LogF("Excuting action (nextAction: %x, subwID: %d, target: %x, text: %s, type: %d)", nextAction, subwindowID, target, text->GetCStr(), actionType);
 
 	// invalid ID? can be set by removal of target object
 	if (action)
 	{
 		// get menu main window
-		C4GuiWindow *main = parent;
-		C4GuiWindow *from = main;
+		C4ScriptGuiWindow *main = parent;
+		C4ScriptGuiWindow *from = main;
 		while (!from->IsRoot())
 		{
 			main = from;
-			from = static_cast<C4GuiWindow*>(from->GetParent());
+			from = static_cast<C4ScriptGuiWindow*>(from->GetParent());
 		}
 
 		switch (action)
 		{
-		case C4GuiWindowActionID::Call:
+		case C4ScriptGuiWindowActionID::Call:
 		{
 			if (!target) // ohject removed in the meantime?
 				break;
@@ -209,9 +209,9 @@ void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, int32_t act
 			break;
 		}
 
-		case C4GuiWindowActionID::SetTag:
+		case C4ScriptGuiWindowActionID::SetTag:
 		{
-			C4GuiWindow *window = main;
+			C4ScriptGuiWindow *window = main;
 			if (subwindowID == 0)
 				window = parent;
 			else if (subwindowID > 0)
@@ -225,7 +225,7 @@ void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, int32_t act
 		}
 
 		default:
-			assert(false && "C4GuiWindowAction without valid or invalidated ID");
+			assert(false && "C4ScriptGuiWindowAction without valid or invalidated ID");
 			break;
 		}
 	} // action
@@ -236,20 +236,20 @@ void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, int32_t act
 	}
 }
 
-bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, int32_t player)
+bool C4ScriptGuiWindowAction::ExecuteCommand(int32_t actionID, C4ScriptGuiWindow *parent, int32_t player)
 {
 	// target has already been checked for validity
 	if (id == actionID && action)
 	{
-		assert(action == C4GuiWindowActionID::Call && "C4ControlMenuCommand for invalid action!");
+		assert(action == C4ScriptGuiWindowActionID::Call && "C4ControlMenuCommand for invalid action!");
 
 		// get menu main window
-		C4GuiWindow *main = parent;
-		C4GuiWindow *from = main;
+		C4ScriptGuiWindow *main = parent;
+		C4ScriptGuiWindow *from = main;
 		while (!from->IsRoot())
 		{
 			main = from;
-			from = static_cast<C4GuiWindow*>(from->GetParent());
+			from = static_cast<C4ScriptGuiWindow*>(from->GetParent());
 		}
 		//LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
 		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target));
@@ -261,26 +261,26 @@ bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, in
 	return false;
 }
 
-C4GuiWindowProperty::~C4GuiWindowProperty()
+C4ScriptGuiWindowProperty::~C4ScriptGuiWindowProperty()
 {
-	// is cleaned up from destructor of C4GuiWindow
+	// is cleaned up from destructor of C4ScriptGuiWindow
 }
 
-void C4GuiWindowProperty::SetInt(int32_t to, C4String *tag)
+void C4ScriptGuiWindowProperty::SetInt(int32_t to, C4String *tag)
 {
 	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
 	current->d = to;
 }
-void C4GuiWindowProperty::SetFloat(float to, C4String *tag)
+void C4ScriptGuiWindowProperty::SetFloat(float to, C4String *tag)
 {
 	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
 	current = &taggedProperties[tag];
 	current->f = to;
 }
-void C4GuiWindowProperty::SetNull(C4String *tag)
+void C4ScriptGuiWindowProperty::SetNull(C4String *tag)
 {
 	if (!tag) tag = &Strings.P[P_Std];
 	taggedProperties[tag] = Prop();
@@ -288,7 +288,7 @@ void C4GuiWindowProperty::SetNull(C4String *tag)
 	current->data = 0;
 }
 
-void C4GuiWindowProperty::CleanUp(Prop &prop)
+void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 {
 	switch (type)
 	{
@@ -309,7 +309,7 @@ void C4GuiWindowProperty::CleanUp(Prop &prop)
 	}
 }
 
-void C4GuiWindowProperty::CleanUpAll()
+void C4ScriptGuiWindowProperty::CleanUpAll()
 {
 	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
@@ -319,7 +319,7 @@ void C4GuiWindowProperty::CleanUpAll()
 	}
 }
 
-const C4Value C4GuiWindowProperty::ToC4Value()
+const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 {
 	C4PropList *proplist = C4PropList::New();
 	
@@ -335,46 +335,46 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 		// get value to save
 		switch (type)
 		{
-		case C4GuiWindowPropertyName::left:
-		case C4GuiWindowPropertyName::right:
-		case C4GuiWindowPropertyName::top:
-		case C4GuiWindowPropertyName::bottom:
-		case C4GuiWindowPropertyName::relLeft:
-		case C4GuiWindowPropertyName::relRight:
-		case C4GuiWindowPropertyName::relTop:
-		case C4GuiWindowPropertyName::relBottom:
-		case C4GuiWindowPropertyName::leftMargin:
-		case C4GuiWindowPropertyName::rightMargin:
-		case C4GuiWindowPropertyName::topMargin:
-		case C4GuiWindowPropertyName::bottomMargin:
-		case C4GuiWindowPropertyName::relLeftMargin:
-		case C4GuiWindowPropertyName::relRightMargin:
-		case C4GuiWindowPropertyName::relTopMargin:
-		case C4GuiWindowPropertyName::relBottomMargin:
+		case C4ScriptGuiWindowPropertyName::left:
+		case C4ScriptGuiWindowPropertyName::right:
+		case C4ScriptGuiWindowPropertyName::top:
+		case C4ScriptGuiWindowPropertyName::bottom:
+		case C4ScriptGuiWindowPropertyName::relLeft:
+		case C4ScriptGuiWindowPropertyName::relRight:
+		case C4ScriptGuiWindowPropertyName::relTop:
+		case C4ScriptGuiWindowPropertyName::relBottom:
+		case C4ScriptGuiWindowPropertyName::leftMargin:
+		case C4ScriptGuiWindowPropertyName::rightMargin:
+		case C4ScriptGuiWindowPropertyName::topMargin:
+		case C4ScriptGuiWindowPropertyName::bottomMargin:
+		case C4ScriptGuiWindowPropertyName::relLeftMargin:
+		case C4ScriptGuiWindowPropertyName::relRightMargin:
+		case C4ScriptGuiWindowPropertyName::relTopMargin:
+		case C4ScriptGuiWindowPropertyName::relBottomMargin:
 			assert (false && "Trying to get a single positional value from a GuiWindow for saving. Those should always be saved in pairs of two in a string.");
 			break;
 
-		case C4GuiWindowPropertyName::backgroundColor:
-		case C4GuiWindowPropertyName::style:
-		case C4GuiWindowPropertyName::priority:
-		case C4GuiWindowPropertyName::player:
+		case C4ScriptGuiWindowPropertyName::backgroundColor:
+		case C4ScriptGuiWindowPropertyName::style:
+		case C4ScriptGuiWindowPropertyName::priority:
+		case C4ScriptGuiWindowPropertyName::player:
 			val = C4Value(prop.d);
 			break;
 
-		case C4GuiWindowPropertyName::symbolObject:
+		case C4ScriptGuiWindowPropertyName::symbolObject:
 			val = C4Value(prop.obj);
 			break;
 
-		case C4GuiWindowPropertyName::symbolDef:
+		case C4ScriptGuiWindowPropertyName::symbolDef:
 			val = C4Value(prop.def);
 			break;
 
-		case C4GuiWindowPropertyName::frameDecoration:
+		case C4ScriptGuiWindowPropertyName::frameDecoration:
 			val = C4Value(prop.deco ? prop.deco->idSourceDef : C4ID::None);
 			break;
 
-		case C4GuiWindowPropertyName::text:
-		case C4GuiWindowPropertyName::tooltip:
+		case C4ScriptGuiWindowPropertyName::text:
+		case C4ScriptGuiWindowPropertyName::tooltip:
 		{
 			if (prop.strBuf)
 			{
@@ -386,16 +386,16 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 			break;
 		}
 
-		case C4GuiWindowPropertyName::onClickAction:
-		case C4GuiWindowPropertyName::onMouseInAction:
-		case C4GuiWindowPropertyName::onMouseOutAction:
-		case C4GuiWindowPropertyName::onCloseAction:
+		case C4ScriptGuiWindowPropertyName::onClickAction:
+		case C4ScriptGuiWindowPropertyName::onMouseInAction:
+		case C4ScriptGuiWindowPropertyName::onMouseOutAction:
+		case C4ScriptGuiWindowPropertyName::onCloseAction:
 			if (prop.action)
 				val = prop.action->ToC4Value();
 			break;
 
 		default:
-			assert(false && "C4GuiWindowAction should never have undefined type");
+			assert(false && "C4ScriptGuiWindowAction should never have undefined type");
 			break;
 		} // switch
 
@@ -405,7 +405,7 @@ const C4Value C4GuiWindowProperty::ToC4Value()
 	return C4Value(proplist);
 }
 
-void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
+void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 {
 	C4PropList *proplist = value.getPropList();
 	bool isTaggedPropList = false;
@@ -446,33 +446,33 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	// now that a new property entry has been created and the old has been cleaned up, get the data from the C4Value
 	switch (type)
 	{
-	case C4GuiWindowPropertyName::left:
-	case C4GuiWindowPropertyName::right:
-	case C4GuiWindowPropertyName::top:
-	case C4GuiWindowPropertyName::bottom:
-	case C4GuiWindowPropertyName::relLeft:
-	case C4GuiWindowPropertyName::relRight:
-	case C4GuiWindowPropertyName::relTop:
-	case C4GuiWindowPropertyName::relBottom:
-	case C4GuiWindowPropertyName::leftMargin:
-	case C4GuiWindowPropertyName::rightMargin:
-	case C4GuiWindowPropertyName::topMargin:
-	case C4GuiWindowPropertyName::bottomMargin:
-	case C4GuiWindowPropertyName::relLeftMargin:
-	case C4GuiWindowPropertyName::relRightMargin:
-	case C4GuiWindowPropertyName::relTopMargin:
-	case C4GuiWindowPropertyName::relBottomMargin:
+	case C4ScriptGuiWindowPropertyName::left:
+	case C4ScriptGuiWindowPropertyName::right:
+	case C4ScriptGuiWindowPropertyName::top:
+	case C4ScriptGuiWindowPropertyName::bottom:
+	case C4ScriptGuiWindowPropertyName::relLeft:
+	case C4ScriptGuiWindowPropertyName::relRight:
+	case C4ScriptGuiWindowPropertyName::relTop:
+	case C4ScriptGuiWindowPropertyName::relBottom:
+	case C4ScriptGuiWindowPropertyName::leftMargin:
+	case C4ScriptGuiWindowPropertyName::rightMargin:
+	case C4ScriptGuiWindowPropertyName::topMargin:
+	case C4ScriptGuiWindowPropertyName::bottomMargin:
+	case C4ScriptGuiWindowPropertyName::relLeftMargin:
+	case C4ScriptGuiWindowPropertyName::relRightMargin:
+	case C4ScriptGuiWindowPropertyName::relTopMargin:
+	case C4ScriptGuiWindowPropertyName::relBottomMargin:
 		assert (false && "Trying to set positional properties directly. Those should always come parsed from a string.");
 		break;
 
-	case C4GuiWindowPropertyName::backgroundColor:
-	case C4GuiWindowPropertyName::style:
-	case C4GuiWindowPropertyName::priority:
-	case C4GuiWindowPropertyName::player:
+	case C4ScriptGuiWindowPropertyName::backgroundColor:
+	case C4ScriptGuiWindowPropertyName::style:
+	case C4ScriptGuiWindowPropertyName::priority:
+	case C4ScriptGuiWindowPropertyName::player:
 		current->d = value.getInt();
 		break;
 
-	case C4GuiWindowPropertyName::symbolObject:
+	case C4ScriptGuiWindowPropertyName::symbolObject:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -480,7 +480,7 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		else current->obj = 0;
 		break;
 	}
-	case C4GuiWindowPropertyName::symbolDef:
+	case C4ScriptGuiWindowPropertyName::symbolDef:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -488,7 +488,7 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		else current->def = 0;
 		break;
 	}
-	case C4GuiWindowPropertyName::frameDecoration:
+	case C4ScriptGuiWindowPropertyName::frameDecoration:
 	{
 		C4Def *def = value.getDef();
 		
@@ -503,8 +503,8 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		}
 		break;
 	}
-	case C4GuiWindowPropertyName::text:
-	case C4GuiWindowPropertyName::tooltip:
+	case C4ScriptGuiWindowPropertyName::text:
+	case C4ScriptGuiWindowPropertyName::tooltip:
 	{
 		C4String *string = value.getStr();
 		StdCopyStrBuf *buf = new StdCopyStrBuf();
@@ -514,28 +514,28 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		current->strBuf = buf;
 		break;
 	}
-	case C4GuiWindowPropertyName::onClickAction:
-	case C4GuiWindowPropertyName::onMouseInAction:
-	case C4GuiWindowPropertyName::onMouseOutAction:
-	case C4GuiWindowPropertyName::onCloseAction:
+	case C4ScriptGuiWindowPropertyName::onClickAction:
+	case C4ScriptGuiWindowPropertyName::onMouseInAction:
+	case C4ScriptGuiWindowPropertyName::onMouseOutAction:
+	case C4ScriptGuiWindowPropertyName::onCloseAction:
 	{
 		C4ValueArray *array = value.getArray();
 		if (array)
 		{
 			assert (!current->action && "Prop() contains action prior to assignment");
-			current->action = new C4GuiWindowAction();
+			current->action = new C4ScriptGuiWindowAction();
 			current->action->Init(array);
 		}
 		break;
 	}
 
 	default:
-		assert(false && "C4GuiWindowAction should never have undefined type");
+		assert(false && "C4ScriptGuiWindowAction should never have undefined type");
 		break;
 	} // switch
 }
 
-void C4GuiWindowProperty::ClearPointers(C4Object *pObj)
+void C4ScriptGuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
 	// go through all the tags and, in case the tag has anything to do with objects, check and clear it
@@ -543,15 +543,15 @@ void C4GuiWindowProperty::ClearPointers(C4Object *pObj)
 	{
 		switch (type)
 		{
-		case C4GuiWindowPropertyName::symbolObject:
+		case C4ScriptGuiWindowPropertyName::symbolObject:
 			if (iter->second.obj == pObj)
 				iter->second.obj = 0;
 		break;
 
-		case C4GuiWindowPropertyName::onClickAction:
-		case C4GuiWindowPropertyName::onMouseInAction:
-		case C4GuiWindowPropertyName::onMouseOutAction:
-		case C4GuiWindowPropertyName::onCloseAction:
+		case C4ScriptGuiWindowPropertyName::onClickAction:
+		case C4ScriptGuiWindowPropertyName::onMouseInAction:
+		case C4ScriptGuiWindowPropertyName::onMouseOutAction:
+		case C4ScriptGuiWindowPropertyName::onCloseAction:
 			if (iter->second.action)
 				iter->second.action->ClearPointers(pObj);
 		break;
@@ -561,7 +561,7 @@ void C4GuiWindowProperty::ClearPointers(C4Object *pObj)
 	}
 }
 
-bool C4GuiWindowProperty::SwitchTag(C4String *tag)
+bool C4ScriptGuiWindowProperty::SwitchTag(C4String *tag)
 {
 	if (!taggedProperties.count(tag)) return false; // tag not available
 	if (current == &taggedProperties[tag]) return false; // tag already set?
@@ -570,9 +570,9 @@ bool C4GuiWindowProperty::SwitchTag(C4String *tag)
 	return true;
 }
 
-std::list<C4GuiWindowAction*> C4GuiWindowProperty::GetAllActions()
+std::list<C4ScriptGuiWindowAction*> C4ScriptGuiWindowProperty::GetAllActions()
 {
-	std::list<C4GuiWindowAction*> allActions;
+	std::list<C4ScriptGuiWindowAction*> allActions;
 	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
 		Prop &p = iter->second;
@@ -583,24 +583,24 @@ std::list<C4GuiWindowAction*> C4GuiWindowProperty::GetAllActions()
 }
 
 
-C4GuiWindow::C4GuiWindow() : C4GUI::ScrollWindow(this)
+C4ScriptGuiWindow::C4ScriptGuiWindow() : C4GUI::ScrollWindow(this)
 {
 	Init();
 }
 
-C4GuiWindow::C4GuiWindow(float stdBorderX, float stdBorderY) : C4GUI::ScrollWindow(this)
+C4ScriptGuiWindow::C4ScriptGuiWindow(float stdBorderX, float stdBorderY) : C4GUI::ScrollWindow(this)
 {
 	Init();
 
 	// set border values for std tag
 	// relative offsets are standard, only need to set exact offset
-	props[C4GuiWindowPropertyName::left].SetFloat(Pix2Em(stdBorderX));
-	props[C4GuiWindowPropertyName::right].SetFloat(Pix2Em(-stdBorderX));
-	props[C4GuiWindowPropertyName::top].SetFloat(Pix2Em(stdBorderY));
-	props[C4GuiWindowPropertyName::bottom].SetFloat(Pix2Em(-stdBorderY));
+	props[C4ScriptGuiWindowPropertyName::left].SetFloat(Pix2Em(stdBorderX));
+	props[C4ScriptGuiWindowPropertyName::right].SetFloat(Pix2Em(-stdBorderX));
+	props[C4ScriptGuiWindowPropertyName::top].SetFloat(Pix2Em(stdBorderY));
+	props[C4ScriptGuiWindowPropertyName::bottom].SetFloat(Pix2Em(-stdBorderY));
 }
 
-void C4GuiWindow::Init()
+void C4ScriptGuiWindow::Init()
 {
 	id = 0;
 	name = nullptr;
@@ -609,44 +609,44 @@ void C4GuiWindow::Init()
 	mainWindowNeedsLayoutUpdate = false;
 
 	// properties must know what they stand for
-	for (int32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
+	for (int32_t i = 0; i < C4ScriptGuiWindowPropertyName::_lastProp; ++i)
 		props[i].type = i;
 
 	// standard values for all of the properties
 
 	// exact offsets are standard 0
-	props[C4GuiWindowPropertyName::left].SetNull();
-	props[C4GuiWindowPropertyName::right].SetNull();
-	props[C4GuiWindowPropertyName::top].SetNull();
-	props[C4GuiWindowPropertyName::bottom].SetNull();
+	props[C4ScriptGuiWindowPropertyName::left].SetNull();
+	props[C4ScriptGuiWindowPropertyName::right].SetNull();
+	props[C4ScriptGuiWindowPropertyName::top].SetNull();
+	props[C4ScriptGuiWindowPropertyName::bottom].SetNull();
 	// relative offsets are standard full screen 0,0 - 1,1
-	props[C4GuiWindowPropertyName::relLeft].SetNull();
-	props[C4GuiWindowPropertyName::relTop].SetNull();
-	props[C4GuiWindowPropertyName::relBottom].SetFloat(1.0f);
-	props[C4GuiWindowPropertyName::relRight].SetFloat(1.0f);
+	props[C4ScriptGuiWindowPropertyName::relLeft].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relTop].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relBottom].SetFloat(1.0f);
+	props[C4ScriptGuiWindowPropertyName::relRight].SetFloat(1.0f);
 	// all margins are always standard 0
-	props[C4GuiWindowPropertyName::leftMargin].SetNull();
-	props[C4GuiWindowPropertyName::rightMargin].SetNull();
-	props[C4GuiWindowPropertyName::topMargin].SetNull();
-	props[C4GuiWindowPropertyName::bottomMargin].SetNull();
-	props[C4GuiWindowPropertyName::relLeftMargin].SetNull();
-	props[C4GuiWindowPropertyName::relTopMargin].SetNull();
-	props[C4GuiWindowPropertyName::relBottomMargin].SetNull();
-	props[C4GuiWindowPropertyName::relRightMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::leftMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::rightMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::topMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::bottomMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relLeftMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relTopMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relBottomMargin].SetNull();
+	props[C4ScriptGuiWindowPropertyName::relRightMargin].SetNull();
 	// other properties are 0
-	props[C4GuiWindowPropertyName::backgroundColor].SetNull();
-	props[C4GuiWindowPropertyName::frameDecoration].SetNull();
-	props[C4GuiWindowPropertyName::symbolObject].SetNull();
-	props[C4GuiWindowPropertyName::symbolDef].SetNull();
-	props[C4GuiWindowPropertyName::text].SetNull();
-	props[C4GuiWindowPropertyName::tooltip].SetNull();
-	props[C4GuiWindowPropertyName::onClickAction].SetNull();
-	props[C4GuiWindowPropertyName::onMouseInAction].SetNull();
-	props[C4GuiWindowPropertyName::onMouseOutAction].SetNull();
-	props[C4GuiWindowPropertyName::onCloseAction].SetNull();
-	props[C4GuiWindowPropertyName::style].SetNull();
-	props[C4GuiWindowPropertyName::priority].SetNull();
-	props[C4GuiWindowPropertyName::player].SetInt(-1);
+	props[C4ScriptGuiWindowPropertyName::backgroundColor].SetNull();
+	props[C4ScriptGuiWindowPropertyName::frameDecoration].SetNull();
+	props[C4ScriptGuiWindowPropertyName::symbolObject].SetNull();
+	props[C4ScriptGuiWindowPropertyName::symbolDef].SetNull();
+	props[C4ScriptGuiWindowPropertyName::text].SetNull();
+	props[C4ScriptGuiWindowPropertyName::tooltip].SetNull();
+	props[C4ScriptGuiWindowPropertyName::onClickAction].SetNull();
+	props[C4ScriptGuiWindowPropertyName::onMouseInAction].SetNull();
+	props[C4ScriptGuiWindowPropertyName::onMouseOutAction].SetNull();
+	props[C4ScriptGuiWindowPropertyName::onCloseAction].SetNull();
+	props[C4ScriptGuiWindowPropertyName::style].SetNull();
+	props[C4ScriptGuiWindowPropertyName::priority].SetNull();
+	props[C4ScriptGuiWindowPropertyName::player].SetInt(-1);
 
 	wasRemoved = false;
 	closeActionWasExecuted = false;
@@ -655,12 +655,12 @@ void C4GuiWindow::Init()
 	pScrollBar->fAutoHide = true;
 }
 
-C4GuiWindow::~C4GuiWindow()
+C4ScriptGuiWindow::~C4ScriptGuiWindow()
 {
 	ClearChildren(false);
 
 	// delete certain properties that contain allocated elements or referenced strings
-	for (int32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
+	for (int32_t i = 0; i < C4ScriptGuiWindowPropertyName::_lastProp; ++i)
 		props[i].CleanUpAll();
 
 	if (pScrollBar)
@@ -668,7 +668,7 @@ C4GuiWindow::~C4GuiWindow()
 }
 
 // helper function
-void C4GuiWindow::SetMarginProperties(const C4Value &property, C4String *tag)
+void C4ScriptGuiWindow::SetMarginProperties(const C4Value &property, C4String *tag)
 {
 	// the value might be a tagged proplist again
 	if (property.GetType() == C4V_Type::C4V_PropList)
@@ -688,24 +688,24 @@ void C4GuiWindow::SetMarginProperties(const C4Value &property, C4String *tag)
 	// always set all four margins
 	for (int i = 0; i < 4; ++i)
 	{
-		C4GuiWindowPropertyName relative, absolute;
+		C4ScriptGuiWindowPropertyName relative, absolute;
 		switch (i)
 		{
 		case 0:
-			absolute = C4GuiWindowPropertyName::leftMargin;
-			relative = C4GuiWindowPropertyName::relLeftMargin;
+			absolute = C4ScriptGuiWindowPropertyName::leftMargin;
+			relative = C4ScriptGuiWindowPropertyName::relLeftMargin;
 			break;
 		case 1:
-			absolute = C4GuiWindowPropertyName::topMargin;
-			relative = C4GuiWindowPropertyName::relTopMargin;
+			absolute = C4ScriptGuiWindowPropertyName::topMargin;
+			relative = C4ScriptGuiWindowPropertyName::relTopMargin;
 			break;
 		case 2:
-			absolute = C4GuiWindowPropertyName::rightMargin;
-			relative = C4GuiWindowPropertyName::relRightMargin;
+			absolute = C4ScriptGuiWindowPropertyName::rightMargin;
+			relative = C4ScriptGuiWindowPropertyName::relRightMargin;
 			break;
 		case 3:
-			absolute = C4GuiWindowPropertyName::bottomMargin;
-			relative = C4GuiWindowPropertyName::relBottomMargin;
+			absolute = C4ScriptGuiWindowPropertyName::bottomMargin;
+			relative = C4ScriptGuiWindowPropertyName::relBottomMargin;
 			break;
 		default:
 			assert(false);
@@ -723,21 +723,21 @@ void C4GuiWindow::SetMarginProperties(const C4Value &property, C4String *tag)
 	}
 }
 
-C4Value C4GuiWindow::MarginsToC4Value()
+C4Value C4ScriptGuiWindow::MarginsToC4Value()
 {
 	C4ValueArray *array = new C4ValueArray();
 	array->SetSize(4);
 
-	array->SetItem(0, PositionToC4Value(C4GuiWindowPropertyName::relLeftMargin, C4GuiWindowPropertyName::leftMargin));
-	array->SetItem(1, PositionToC4Value(C4GuiWindowPropertyName::relTopMargin, C4GuiWindowPropertyName::topMargin));
-	array->SetItem(2, PositionToC4Value(C4GuiWindowPropertyName::relRightMargin, C4GuiWindowPropertyName::rightMargin));
-	array->SetItem(3, PositionToC4Value(C4GuiWindowPropertyName::relBottomMargin, C4GuiWindowPropertyName::bottomMargin));
+	array->SetItem(0, PositionToC4Value(C4ScriptGuiWindowPropertyName::relLeftMargin, C4ScriptGuiWindowPropertyName::leftMargin));
+	array->SetItem(1, PositionToC4Value(C4ScriptGuiWindowPropertyName::relTopMargin, C4ScriptGuiWindowPropertyName::topMargin));
+	array->SetItem(2, PositionToC4Value(C4ScriptGuiWindowPropertyName::relRightMargin, C4ScriptGuiWindowPropertyName::rightMargin));
+	array->SetItem(3, PositionToC4Value(C4ScriptGuiWindowPropertyName::relBottomMargin, C4ScriptGuiWindowPropertyName::bottomMargin));
 
 	return C4Value(array);
 }
 
 // helper function
-void C4GuiWindow::SetPositionStringProperties(const C4Value &property, C4GuiWindowPropertyName relative, C4GuiWindowPropertyName absolute, C4String *tag)
+void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4ScriptGuiWindowPropertyName relative, C4ScriptGuiWindowPropertyName absolute, C4String *tag)
 {
 	// the value might be a tagged proplist again
 	if (property.GetType() == C4V_Type::C4V_PropList)
@@ -797,16 +797,16 @@ void C4GuiWindow::SetPositionStringProperties(const C4Value &property, C4GuiWind
 }
 
 // for saving
-C4Value C4GuiWindow::PositionToC4Value(C4GuiWindowPropertyName relativeName, C4GuiWindowPropertyName absoluteName)
+C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relativeName, C4ScriptGuiWindowPropertyName absoluteName)
 {
 	// Go through all tags of the position attributes and save.
 	// Note that the tags for both the relative and the absolute attribute are always the same.
-	C4GuiWindowProperty &relative = props[relativeName];
-	C4GuiWindowProperty &absolute = props[absoluteName];
+	C4ScriptGuiWindowProperty &relative = props[relativeName];
+	C4ScriptGuiWindowProperty &absolute = props[absoluteName];
 	
 	C4PropList *proplist = nullptr;
 	const bool onlyStdTag = relative.taggedProperties.size() == 1;
-	for (std::map<C4String*, C4GuiWindowProperty::Prop>::iterator iter = relative.taggedProperties.begin(); iter != relative.taggedProperties.end(); ++iter)
+	for (std::map<C4String*, C4ScriptGuiWindowProperty::Prop>::iterator iter = relative.taggedProperties.begin(); iter != relative.taggedProperties.end(); ++iter)
 	{
 		C4String *tag = iter->first;
 		StdStrBuf buf;
@@ -825,7 +825,7 @@ C4Value C4GuiWindow::PositionToC4Value(C4GuiWindowPropertyName relativeName, C4G
 	return C4Value(proplist);
 }
 
-const C4Value C4GuiWindow::ToC4Value()
+const C4Value C4ScriptGuiWindow::ToC4Value()
 {
 	C4PropList *proplist = C4PropList::New();
 
@@ -870,34 +870,34 @@ const C4Value C4GuiWindow::ToC4Value()
 		case P_Bottom:
 		{
 #define PROPERTY_TUPLE(p, prop1, prop2) if (prop == p) { val = PositionToC4Value(prop1, prop2); }
-			PROPERTY_TUPLE(P_Left, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left);
-			PROPERTY_TUPLE(P_Top, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top);
-			PROPERTY_TUPLE(P_Right, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right);
-			PROPERTY_TUPLE(P_Bottom, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom);
+			PROPERTY_TUPLE(P_Left, C4ScriptGuiWindowPropertyName::relLeft, C4ScriptGuiWindowPropertyName::left);
+			PROPERTY_TUPLE(P_Top, C4ScriptGuiWindowPropertyName::relTop, C4ScriptGuiWindowPropertyName::top);
+			PROPERTY_TUPLE(P_Right, C4ScriptGuiWindowPropertyName::relRight, C4ScriptGuiWindowPropertyName::right);
+			PROPERTY_TUPLE(P_Bottom, C4ScriptGuiWindowPropertyName::relBottom, C4ScriptGuiWindowPropertyName::bottom);
 #undef PROPERTY_TUPLE
 			break;
 		}
 		case P_Margin: val = MarginsToC4Value(); break;
-		case P_BackgroundColor: val = props[C4GuiWindowPropertyName::backgroundColor].ToC4Value(); break;
-		case P_Decoration: val = props[C4GuiWindowPropertyName::frameDecoration].ToC4Value(); break;
+		case P_BackgroundColor: val = props[C4ScriptGuiWindowPropertyName::backgroundColor].ToC4Value(); break;
+		case P_Decoration: val = props[C4ScriptGuiWindowPropertyName::frameDecoration].ToC4Value(); break;
 		case P_Symbol:
 			// either object or def
-			val = props[C4GuiWindowPropertyName::symbolObject].ToC4Value();
+			val = props[C4ScriptGuiWindowPropertyName::symbolObject].ToC4Value();
 			if (val == C4Value()) // is nil?
-				val = props[C4GuiWindowPropertyName::symbolDef].ToC4Value();
+				val = props[C4ScriptGuiWindowPropertyName::symbolDef].ToC4Value();
 			break;
 		case P_Target: val = C4Value(target); break;
-		case P_Text: val = props[C4GuiWindowPropertyName::text].ToC4Value(); break;
-		case P_Tooltip: val = props[C4GuiWindowPropertyName::tooltip].ToC4Value(); break;
+		case P_Text: val = props[C4ScriptGuiWindowPropertyName::text].ToC4Value(); break;
+		case P_Tooltip: val = props[C4ScriptGuiWindowPropertyName::tooltip].ToC4Value(); break;
 		case P_ID: val = C4Value(id); break;
-		case P_OnClick: val = props[C4GuiWindowPropertyName::onClickAction].ToC4Value(); break;
-		case P_OnMouseIn: val = props[C4GuiWindowPropertyName::onMouseInAction].ToC4Value(); break;
-		case P_OnMouseOut: val = props[C4GuiWindowPropertyName::onMouseOutAction].ToC4Value(); break;
-		case P_OnClose: val = props[C4GuiWindowPropertyName::onCloseAction].ToC4Value(); break;
-		case P_Style: val = props[C4GuiWindowPropertyName::style].ToC4Value(); break;
+		case P_OnClick: val = props[C4ScriptGuiWindowPropertyName::onClickAction].ToC4Value(); break;
+		case P_OnMouseIn: val = props[C4ScriptGuiWindowPropertyName::onMouseInAction].ToC4Value(); break;
+		case P_OnMouseOut: val = props[C4ScriptGuiWindowPropertyName::onMouseOutAction].ToC4Value(); break;
+		case P_OnClose: val = props[C4ScriptGuiWindowPropertyName::onCloseAction].ToC4Value(); break;
+		case P_Style: val = props[C4ScriptGuiWindowPropertyName::style].ToC4Value(); break;
 		case P_Mode: val = C4Value(int32_t(currentMouseState)); break;
-		case P_Priority: val = props[C4GuiWindowPropertyName::priority].ToC4Value(); break;
-		case P_Player: val = props[C4GuiWindowPropertyName::player].ToC4Value(); break;
+		case P_Priority: val = props[C4ScriptGuiWindowPropertyName::priority].ToC4Value(); break;
+		case P_Player: val = props[C4ScriptGuiWindowPropertyName::player].ToC4Value(); break;
 
 		default:
 			assert(false);
@@ -911,7 +911,7 @@ const C4Value C4GuiWindow::ToC4Value()
 	int32_t childIndex = 0;
 	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		C4Value val = child->ToC4Value();
 		C4String *childName = child->name;
 		if (!childName)
@@ -926,10 +926,10 @@ const C4Value C4GuiWindow::ToC4Value()
 	return C4Value(proplist);
 }
 
-bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate, bool isLoading)
+bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate, bool isLoading)
 {
 	if (!proplist) return false;
-	C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
+	C4ScriptGuiWindow * parent = static_cast<C4ScriptGuiWindow*>(GetParent());
 	assert((parent || isLoading) && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
@@ -949,22 +949,22 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 
 		if(&Strings.P[P_Left] == key)
 		{
-			SetPositionStringProperties(property, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left, stdTag);
+			SetPositionStringProperties(property, C4ScriptGuiWindowPropertyName::relLeft, C4ScriptGuiWindowPropertyName::left, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Top] == key)
 		{
-			SetPositionStringProperties(property, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top, stdTag);
+			SetPositionStringProperties(property, C4ScriptGuiWindowPropertyName::relTop, C4ScriptGuiWindowPropertyName::top, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Right] == key)
 		{
-			SetPositionStringProperties(property, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right, stdTag);
+			SetPositionStringProperties(property, C4ScriptGuiWindowPropertyName::relRight, C4ScriptGuiWindowPropertyName::right, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Bottom] == key)
 		{
-			SetPositionStringProperties(property, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom, stdTag);
+			SetPositionStringProperties(property, C4ScriptGuiWindowPropertyName::relBottom, C4ScriptGuiWindowPropertyName::bottom, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if (&Strings.P[P_Margin] == key)
@@ -973,31 +973,34 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_BackgroundColor] == key)
-			props[C4GuiWindowPropertyName::backgroundColor].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::backgroundColor].Set(property, stdTag);
 		else if(&Strings.P[P_Target] == key)
 			target = property.getObj();
 		else if(&Strings.P[P_Symbol] == key)
 		{
-			props[C4GuiWindowPropertyName::symbolDef].Set(property, stdTag);
-			props[C4GuiWindowPropertyName::symbolObject].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::symbolDef].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::symbolObject].Set(property, stdTag);
 		}
 		else if(&Strings.P[P_Decoration] == key)
 		{
-			props[C4GuiWindowPropertyName::frameDecoration].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::frameDecoration].Set(property, stdTag);
 		}
 		else if(&Strings.P[P_Text] == key)
 		{
-			props[C4GuiWindowPropertyName::text].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::text].Set(property, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if (&Strings.P[P_Tooltip] == key)
 		{
-			props[C4GuiWindowPropertyName::tooltip].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::tooltip].Set(property, stdTag);
 		}
 		else if(&Strings.P[P_Prototype] == key)
 			; // do nothing
-		else if(&Strings.P[P_Mode] == key) // note that "Mode" is abused here for saving whether we have mouse focus
-			currentMouseState = property.getInt();
+		else if (&Strings.P[P_Mode] == key) // note that "Mode" is abused here for saving whether we have mouse focus
+		{
+			if (isLoading)
+				currentMouseState = property.getInt();
+		}
 		else if(&Strings.P[P_ID] == key)
 		{
 			// setting IDs is only valid for subwindows or when loading savegames!
@@ -1014,28 +1017,28 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 					id = property.getInt();
 		}
 		else if(&Strings.P[P_OnClick] == key)
-			props[C4GuiWindowPropertyName::onClickAction].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::onClickAction].Set(property, stdTag);
 		else if(&Strings.P[P_OnMouseIn] == key)
-			props[C4GuiWindowPropertyName::onMouseInAction].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::onMouseInAction].Set(property, stdTag);
 		else if(&Strings.P[P_OnMouseOut] == key)
-			props[C4GuiWindowPropertyName::onMouseOutAction].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::onMouseOutAction].Set(property, stdTag);
 		else if(&Strings.P[P_OnClose] == key)
-			props[C4GuiWindowPropertyName::onCloseAction].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::onCloseAction].Set(property, stdTag);
 		else if(&Strings.P[P_Style] == key)
 		{
-			props[C4GuiWindowPropertyName::style].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::style].Set(property, stdTag);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Priority] == key)
 		{
-			props[C4GuiWindowPropertyName::priority].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::priority].Set(property, stdTag);
 			layoutUpdateRequired = true;
 			// resort into parent's list
 			if (parent)
 				parent->ChildChangedPriority(this);
 		}
 		else if(&Strings.P[P_Player] == key)
-			props[C4GuiWindowPropertyName::player].Set(property, stdTag);
+			props[C4ScriptGuiWindowPropertyName::player].Set(property, stdTag);
 		else
 		{
 			// possibly sub-window?
@@ -1048,13 +1051,13 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 					childName = key;
 
 				// Do we already have a child with that name? That implies that we are updating here.
-				C4GuiWindow *child = GetChildByName(childName);
+				C4ScriptGuiWindow *child = GetChildByName(childName);
 				bool freshlyAdded = false;
 				
 				// first time referencing a child with that name? Create a new one!
 				if (!child)
 				{
-					child = new C4GuiWindow();
+					child = new C4ScriptGuiWindow();
 					child->name = childName;
 					AddChild(child);
 					freshlyAdded = true;
@@ -1081,7 +1084,7 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 	return true;
 }
 
-void C4GuiWindow::ClearPointers(C4Object *pObj)
+void C4ScriptGuiWindow::ClearPointers(C4Object *pObj)
 {
 	// not removing or clearing anything twice
 	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
@@ -1094,22 +1097,22 @@ void C4GuiWindow::ClearPointers(C4Object *pObj)
 	}
 	
 	// all properties which have anything to do with objects need to be called from here!
-	props[C4GuiWindowPropertyName::symbolObject].ClearPointers(pObj);
-	props[C4GuiWindowPropertyName::onClickAction].ClearPointers(pObj);
-	props[C4GuiWindowPropertyName::onMouseInAction].ClearPointers(pObj);
-	props[C4GuiWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
-	props[C4GuiWindowPropertyName::onCloseAction].ClearPointers(pObj);
+	props[C4ScriptGuiWindowPropertyName::symbolObject].ClearPointers(pObj);
+	props[C4ScriptGuiWindowPropertyName::onClickAction].ClearPointers(pObj);
+	props[C4ScriptGuiWindowPropertyName::onMouseInAction].ClearPointers(pObj);
+	props[C4ScriptGuiWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
+	props[C4ScriptGuiWindowPropertyName::onCloseAction].ClearPointers(pObj);
 
 	for (auto iter = begin(); iter != end();)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(*iter);
 		// increment the iterator before (possibly) deleting the child
 		++iter;
 		child->ClearPointers(pObj);
 	}
 }
 
-C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
+C4ScriptGuiWindow *C4ScriptGuiWindow::AddChild(C4ScriptGuiWindow *child)
 {
 	if (IsRoot())
 	{
@@ -1126,15 +1129,15 @@ C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
 	return child;
 }
 
-void C4GuiWindow::ChildChangedPriority(C4GuiWindow *child)
+void C4ScriptGuiWindow::ChildChangedPriority(C4ScriptGuiWindow *child)
 {
-	int prio = child->props[C4GuiWindowPropertyName::priority].GetInt();
+	int prio = child->props[C4ScriptGuiWindowPropertyName::priority].GetInt();
 	C4GUI::Element * insertBefore = nullptr;
 
 	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow * otherChild = static_cast<C4GuiWindow*>(element);
-		if (otherChild->props[C4GuiWindowPropertyName::priority].GetInt() <= prio) continue;
+		C4ScriptGuiWindow * otherChild = static_cast<C4ScriptGuiWindow*>(element);
+		if (otherChild->props[C4ScriptGuiWindowPropertyName::priority].GetInt() <= prio) continue;
 		insertBefore = element;
 		break;
 	}
@@ -1145,15 +1148,15 @@ void C4GuiWindow::ChildChangedPriority(C4GuiWindow *child)
 	InsertElement(child, insertBefore);
 }
 
-void C4GuiWindow::ChildWithIDRemoved(C4GuiWindow *child)
+void C4ScriptGuiWindow::ChildWithIDRemoved(C4ScriptGuiWindow *child)
 {
 	if (IsRoot()) return;
 	if (!isMainWindow)
-		return static_cast<C4GuiWindow*>(GetParent())->ChildWithIDRemoved(child);
-	std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
+		return static_cast<C4ScriptGuiWindow*>(GetParent())->ChildWithIDRemoved(child);
+	std::pair<std::multimap<int32_t, C4ScriptGuiWindow*>::iterator, std::multimap<int32_t, C4ScriptGuiWindow*>::iterator> range;
 	range = childrenIDMap.equal_range(child->GetID());
 
-	for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+	for (std::multimap<int32_t, C4ScriptGuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 	{
 		if (iter->second != child) continue;
 		childrenIDMap.erase(iter);
@@ -1162,34 +1165,34 @@ void C4GuiWindow::ChildWithIDRemoved(C4GuiWindow *child)
 	}
 }
 
-void C4GuiWindow::ChildGotID(C4GuiWindow *child)
+void C4ScriptGuiWindow::ChildGotID(C4ScriptGuiWindow *child)
 {
 	assert(!IsRoot() && "ChildGotID called on window root, should not propagate over main windows!");
 	if (!isMainWindow)
-		return static_cast<C4GuiWindow*>(GetParent())->ChildGotID(child);
+		return static_cast<C4ScriptGuiWindow*>(GetParent())->ChildGotID(child);
 	childrenIDMap.insert(std::make_pair(child->GetID(), child));
 	//LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
-C4GuiWindow *C4GuiWindow::GetChildByID(int32_t childID)
+C4ScriptGuiWindow *C4ScriptGuiWindow::GetChildByID(int32_t childID)
 {
 	for (Element * element : *this)
 	{
-		C4GuiWindow * child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
 		if (child->id != childID) continue;
 		return child;
 	}
 	return nullptr;
 }
 
-C4GuiWindow *C4GuiWindow::GetChildByName(C4String *childName)
+C4ScriptGuiWindow *C4ScriptGuiWindow::GetChildByName(C4String *childName)
 {
 	// invalid child names never match
 	if (childName == nullptr) return nullptr;
 
 	for (Element * element : *this)
 	{
-		C4GuiWindow * child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
 		// every C4String is unique, so we can compare pointers here
 		if (child->name != childName) continue;
 		return child;
@@ -1197,21 +1200,21 @@ C4GuiWindow *C4GuiWindow::GetChildByName(C4String *childName)
 	return nullptr;
 }
 
-C4GuiWindow *C4GuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
+C4ScriptGuiWindow *C4ScriptGuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
 {
-	std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
+	std::pair<std::multimap<int32_t, C4ScriptGuiWindow*>::iterator, std::multimap<int32_t, C4ScriptGuiWindow*>::iterator> range;
 	range = childrenIDMap.equal_range(childID);
 
-	for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+	for (std::multimap<int32_t, C4ScriptGuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 	{
-		C4GuiWindow *subwindow = iter->second;
+		C4ScriptGuiWindow *subwindow = iter->second;
 		if (subwindow->GetTarget() != childTarget) continue;
 		return subwindow;
 	}
 	return 0;
 }
 
-void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
+void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool all)
 {
 	// do a layout update asap
 	if (!all && !IsRoot())
@@ -1230,7 +1233,7 @@ void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 		assert(all);
 		for (Element * element : *this)
 		{
-			C4GuiWindow * child = static_cast<C4GuiWindow*>(element);
+			C4ScriptGuiWindow * child = static_cast<C4ScriptGuiWindow*>(element);
 			child->wasRemoved = true;
 			child->Close();
 			if (child->GetID() != 0)
@@ -1242,12 +1245,12 @@ void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 		C4GUI::ScrollWindow::ClearChildren();
 }
 
-void C4GuiWindow::ClearChildren(bool close)
+void C4ScriptGuiWindow::ClearChildren(bool close)
 {
 	RemoveChild(0, close, true);
 }
 
-void C4GuiWindow::Close()
+void C4ScriptGuiWindow::Close()
 {
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
@@ -1257,9 +1260,9 @@ void C4GuiWindow::Close()
 		closeActionWasExecuted = true;
 
 		// make call to target object if applicable
-		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onCloseAction].GetAction();
+		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onCloseAction].GetAction();
 		// only calls are valid actions for OnClose
-		if (action && action->action == C4GuiWindowActionID::Call)
+		if (action && action->action == C4ScriptGuiWindowActionID::Call)
 		{
 			// close is always syncronized (script call/object removal) and thus the action can be executed immediately
 			// (otherwise the GUI&action would have been removed anyway..)
@@ -1270,22 +1273,22 @@ void C4GuiWindow::Close()
 	if (!wasRemoved)
 	{
 		assert(GetParent() && "Close()ing GUIWindow without parent");
-		static_cast<C4GuiWindow*>(GetParent())->RemoveChild(this);
+		static_cast<C4ScriptGuiWindow*>(GetParent())->RemoveChild(this);
 	}
 }
 
-void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
+void C4ScriptGuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 {
-	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 
-	if (style & C4GuiWindowStyleFlag::FitChildren)
+	if (style & C4ScriptGuiWindowStyleFlag::FitChildren)
 	{
 		float height = float(rcBounds.Hgt)
-				- Em2Pix(props[C4GuiWindowPropertyName::topMargin].GetFloat())
-				- Em2Pix(props[C4GuiWindowPropertyName::bottomMargin].GetFloat());
+				- Em2Pix(props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat())
+				- Em2Pix(props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat());
 		float adjustment = childrenHeight - height;
-		props[C4GuiWindowPropertyName::bottom].current->f += Pix2Em(adjustment);
-		assert(!std::isnan(props[C4GuiWindowPropertyName::bottom].current->f));
+		props[C4ScriptGuiWindowPropertyName::bottom].current->f += Pix2Em(adjustment);
+		assert(!std::isnan(props[C4ScriptGuiWindowPropertyName::bottom].current->f));
 		// instantly pseudo-update the sizes in case of multiple refreshs before the next draw
 		rcBounds.Hgt += adjustment;
 		// parents that are somehow affected by their children will need to refresh their layout
@@ -1294,13 +1297,13 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 		return;
 	}
 
-	if (style & C4GuiWindowStyleFlag::NoCrop) return;
+	if (style & C4ScriptGuiWindowStyleFlag::NoCrop) return;
 
 	C4GUI::ScrollWindow::SetScrollBarEnabled(enable);
 }
 
 
-void C4GuiWindow::UpdateLayoutGrid()
+void C4ScriptGuiWindow::UpdateLayoutGrid()
 {
 	const int32_t &width = rcBounds.Wdt;
 	const int32_t &height = rcBounds.Hgt;
@@ -1313,14 +1316,14 @@ void C4GuiWindow::UpdateLayoutGrid()
 
 	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
 		const float childWdtF = float(child->rcBounds.Wdt)
-			+ Em2Pix(child->props[C4GuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::rightMargin].GetFloat())
-			+ float(width) * (child->props[C4GuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relRightMargin].GetFloat());
+			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::rightMargin].GetFloat())
+			+ float(width) * (child->props[C4ScriptGuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relRightMargin].GetFloat());
 		const float childHgtF = float(child->rcBounds.Hgt)
-			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
-			+ float(height) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
+			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat())
+			+ float(height) * (child->props[C4ScriptGuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relBottomMargin].GetFloat());
 		// do all the rounding after the calculations
 		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
 		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
@@ -1346,20 +1349,20 @@ void C4GuiWindow::UpdateLayoutGrid()
 	EnableScrollBar(currentY > height, lowestChildRelY);
 }
 
-void C4GuiWindow::UpdateLayoutVertical()
+void C4ScriptGuiWindow::UpdateLayoutVertical()
 {
 	const int32_t borderY(0);
 	int32_t currentY = borderY;
 
 	for (C4GUI::Element * element : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 
 		// Do the calculations in floats first to not lose accuracy.
 		// Take the height of the child and then add the margins.
 		const float childHgtF = float(child->rcBounds.Hgt)
-			+ Em2Pix(child->props[C4GuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4GuiWindowPropertyName::bottomMargin].GetFloat())
-			+ float(rcBounds.Hgt) * (child->props[C4GuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4GuiWindowPropertyName::relBottomMargin].GetFloat());
+			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat())
+			+ float(rcBounds.Hgt) * (child->props[C4ScriptGuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relBottomMargin].GetFloat());
 		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
 
 		child->rcBounds.y = currentY;
@@ -1370,7 +1373,7 @@ void C4GuiWindow::UpdateLayoutVertical()
 	EnableScrollBar(currentY > rcBounds.Hgt, currentY);
 }
 
-bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag, C4Rect *currentClippingRect)
+bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withMultipleFlag, C4Rect *currentClippingRect)
 {
 	// remember old target rectangle and adjust
 	float oldTargetX = cgo.TargetX;
@@ -1419,13 +1422,13 @@ bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withM
 	for (auto iter = begin(); iter != end(); ++iter)
 	{
 		C4GUI::Element *element = *iter;
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 
 		if (withMultipleFlag != -1)
 		{
-			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
-			if ((withMultipleFlag == 0) && (style & C4GuiWindowStyleFlag::Multiple)) continue;
-			if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
+			const int32_t &style = child->props[C4ScriptGuiWindowPropertyName::style].GetInt();
+			if ((withMultipleFlag == 0) && (style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
+			if ((withMultipleFlag == 1) && !(style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 		}
 		
 		pDraw->SetPrimaryClipper(currentClippingRect->x, currentClippingRect->y, currentClippingRect->Wdt, currentClippingRect->Hgt);
@@ -1452,39 +1455,39 @@ bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t withM
 	return oneDrawn;
 }
 
-void C4GuiWindow::RequestLayoutUpdate()
+void C4ScriptGuiWindow::RequestLayoutUpdate()
 {
 	if (isMainWindow)
 	{
-		const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+		const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 		
-		if (!(style & C4GuiWindowStyleFlag::Multiple)) // are we a simple centered window?
+		if (!(style & C4ScriptGuiWindowStyleFlag::Multiple)) // are we a simple centered window?
 			mainWindowNeedsLayoutUpdate = true;
 		else // we are one of the multiple windows.. the root better do a full refresh
-			static_cast<C4GuiWindow*>(GetParent())->mainWindowNeedsLayoutUpdate = true;
+			static_cast<C4ScriptGuiWindow*>(GetParent())->mainWindowNeedsLayoutUpdate = true;
 	}
-	else static_cast<C4GuiWindow*>(GetParent())->RequestLayoutUpdate();
+	else static_cast<C4ScriptGuiWindow*>(GetParent())->RequestLayoutUpdate();
 }
 
-bool C4GuiWindow::UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
+bool C4ScriptGuiWindow::UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
 {
 	for (Element * element : *this)
 	{
-		C4GuiWindow *window = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *window = static_cast<C4ScriptGuiWindow*>(element);
 		window->UpdateLayout(cgo, parentWidth, parentHeight);
 	}
 	return true;
 }
 
-bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo)
+bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo)
 {
 	assert(IsRoot()); // we are root
 
 	// assume I am the root and use the whole viewport for drawing - minus some standard border
-	const float &left = props[C4GuiWindowPropertyName::left].GetFloat();
-	const float &right = props[C4GuiWindowPropertyName::right].GetFloat();
-	const float &top = props[C4GuiWindowPropertyName::top].GetFloat();
-	const float &bottom = props[C4GuiWindowPropertyName::bottom].GetFloat();
+	const float &left = props[C4ScriptGuiWindowPropertyName::left].GetFloat();
+	const float &right = props[C4ScriptGuiWindowPropertyName::right].GetFloat();
+	const float &top = props[C4ScriptGuiWindowPropertyName::top].GetFloat();
+	const float &bottom = props[C4ScriptGuiWindowPropertyName::bottom].GetFloat();
 
 	float fullWidth = cgo.Wdt * cgo.Zoom;
 	float fullHeight = cgo.Hgt * cgo.Zoom;
@@ -1507,18 +1510,18 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo)
 		// first update all multiple windows (that can cover the whole screen)
 		for (Element * element : *this)
 		{
-			C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
-			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
-			if (!(style & C4GuiWindowStyleFlag::Multiple)) continue;
+			C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
+			const int32_t &style = child->props[C4ScriptGuiWindowPropertyName::style].GetInt();
+			if (!(style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 			child->UpdateLayout(cgo, fullWidth, fullHeight);
 		}
 		// then update all "main" windows in the center of the screen
 		// todo: adjust the size of the main window based on the border-windows drawn before
 		for (Element * element : *this)
 		{
-			C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
-			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
-			if ((style & C4GuiWindowStyleFlag::Multiple)) continue;
+			C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
+			const int32_t &style = child->props[C4ScriptGuiWindowPropertyName::style].GetInt();
+			if ((style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 			child->UpdateLayout(cgo, wdt, hgt);
 		}
 
@@ -1527,31 +1530,31 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo)
 	return true;
 }
 
-bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
+bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
 {
 	// fetch style
-	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
-	const float &left = props[C4GuiWindowPropertyName::left].GetFloat();
-	const float &right = props[C4GuiWindowPropertyName::right].GetFloat();
-	const float &top = props[C4GuiWindowPropertyName::top].GetFloat();
-	const float &bottom = props[C4GuiWindowPropertyName::bottom].GetFloat();
+	const float &left = props[C4ScriptGuiWindowPropertyName::left].GetFloat();
+	const float &right = props[C4ScriptGuiWindowPropertyName::right].GetFloat();
+	const float &top = props[C4ScriptGuiWindowPropertyName::top].GetFloat();
+	const float &bottom = props[C4ScriptGuiWindowPropertyName::bottom].GetFloat();
 
-	const float &relLeft = props[C4GuiWindowPropertyName::relLeft].GetFloat();
-	const float &relRight = props[C4GuiWindowPropertyName::relRight].GetFloat();
-	const float &relTop = props[C4GuiWindowPropertyName::relTop].GetFloat();
-	const float &relBottom = props[C4GuiWindowPropertyName::relBottom].GetFloat();
+	const float &relLeft = props[C4ScriptGuiWindowPropertyName::relLeft].GetFloat();
+	const float &relRight = props[C4ScriptGuiWindowPropertyName::relRight].GetFloat();
+	const float &relTop = props[C4ScriptGuiWindowPropertyName::relTop].GetFloat();
+	const float &relBottom = props[C4ScriptGuiWindowPropertyName::relBottom].GetFloat();
 
 	// same for margins
-	const float &leftMargin = props[C4GuiWindowPropertyName::leftMargin].GetFloat();
-	const float &rightMargin = props[C4GuiWindowPropertyName::rightMargin].GetFloat();
-	const float &topMargin = props[C4GuiWindowPropertyName::topMargin].GetFloat();
-	const float &bottomMargin = props[C4GuiWindowPropertyName::bottomMargin].GetFloat();
+	const float &leftMargin = props[C4ScriptGuiWindowPropertyName::leftMargin].GetFloat();
+	const float &rightMargin = props[C4ScriptGuiWindowPropertyName::rightMargin].GetFloat();
+	const float &topMargin = props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat();
+	const float &bottomMargin = props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat();
 
-	const float &relLeftMargin = props[C4GuiWindowPropertyName::relLeftMargin].GetFloat();
-	const float &relRightMargin = props[C4GuiWindowPropertyName::relRightMargin].GetFloat();
-	const float &relTopMargin = props[C4GuiWindowPropertyName::relTopMargin].GetFloat();
-	const float &relBottomMargin = props[C4GuiWindowPropertyName::relBottomMargin].GetFloat();
+	const float &relLeftMargin = props[C4ScriptGuiWindowPropertyName::relLeftMargin].GetFloat();
+	const float &relRightMargin = props[C4ScriptGuiWindowPropertyName::relRightMargin].GetFloat();
+	const float &relTopMargin = props[C4ScriptGuiWindowPropertyName::relTopMargin].GetFloat();
+	const float &relBottomMargin = props[C4ScriptGuiWindowPropertyName::relBottomMargin].GetFloat();
 
 	// calculate drawing rectangle
 	float leftDrawX = relLeft * parentWidth + Em2Pix(left) + (Em2Pix(leftMargin) + relLeftMargin * parentWidth);
@@ -1567,7 +1570,7 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float pare
 	rcBounds.Hgt = height;
 
 	// if this window contains text, we auto-fit to the text height
-	StdCopyStrBuf *strBuf = props[C4GuiWindowPropertyName::text].GetStrBuf();
+	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::text].GetStrBuf();
 	if (strBuf)
 	{
 		StdStrBuf sText;
@@ -1583,9 +1586,9 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float pare
 	// C4GUI::ScrollWindow::UpdateOwnPos();
 
 	// special layout selected?
-	if (style & C4GuiWindowStyleFlag::GridLayout)
+	if (style & C4ScriptGuiWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
-	else if (style & C4GuiWindowStyleFlag::VerticalLayout)
+	else if (style & C4ScriptGuiWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
 
 	// check if we need a scroll-bar
@@ -1593,7 +1596,7 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float pare
 	int32_t bottomMostChild = rcBounds.Hgt;
 	for (Element * element : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		const int32_t &childTop = child->rcBounds.y;
 		const int32_t childBottom = childTop + child->rcBounds.Hgt;
 		if (childTop < topMostChild) topMostChild = childTop;
@@ -1612,7 +1615,7 @@ bool C4GuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, float pare
 	return true;
 }
 
-bool C4GuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
+bool C4ScriptGuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
 {
 	assert(IsRoot()); // we are root
 	if (!IsVisible()) return false;
@@ -1626,12 +1629,12 @@ bool C4GuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
 	return true;
 }
 
-bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippingRect)
+bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippingRect)
 {
 	assert(!IsRoot()); // not root, root needs to receive DrawAll
 
 	// message hidden?
-	const int32_t &myPlayer = props[C4GuiWindowPropertyName::player].GetInt();
+	const int32_t &myPlayer = props[C4ScriptGuiWindowPropertyName::player].GetInt();
 	if (!IsVisible() || (myPlayer != -1 && player != myPlayer) || (target && !target->IsVisible(player, false)))
 	{
 		return false;
@@ -1639,9 +1642,9 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 	
 	if (mainWindowNeedsLayoutUpdate)
 	{
-		assert(GetParent() && (static_cast<C4GuiWindow*>(GetParent())->IsRoot()));
+		assert(GetParent() && (static_cast<C4ScriptGuiWindow*>(GetParent())->IsRoot()));
 		assert(isMainWindow);
-		C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
+		C4ScriptGuiWindow * parent = static_cast<C4ScriptGuiWindow*>(GetParent());
 		UpdateLayout(cgo, parent->rcBounds.Wdt, parent->rcBounds.Hgt);
 		mainWindowNeedsLayoutUpdate = false;
 	}
@@ -1665,11 +1668,11 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 	// draw various properties
 	C4Facet cgoOut(cgo.Surface, outDrawX, outDrawY, outDrawWdt, outDrawHgt);
 
-	const int32_t &backgroundColor = props[C4GuiWindowPropertyName::backgroundColor].GetInt();
+	const int32_t &backgroundColor = props[C4ScriptGuiWindowPropertyName::backgroundColor].GetInt();
 	if (backgroundColor)
 		pDraw->DrawBoxDw(cgo.Surface, outDrawX, outDrawY, outDrawRight - 1.0f, outDrawBottom - 1.0f, backgroundColor);
 
-	C4GUI::FrameDecoration *frameDecoration = props[C4GuiWindowPropertyName::frameDecoration].GetFrameDecoration();
+	C4GUI::FrameDecoration *frameDecoration = props[C4ScriptGuiWindowPropertyName::frameDecoration].GetFrameDecoration();
 
 	if (frameDecoration)
 	{
@@ -1682,21 +1685,21 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 		frameDecoration->Draw(cgo, rect);
 	}
 
-	C4Object *symbolObject = props[C4GuiWindowPropertyName::symbolObject].GetObject();
+	C4Object *symbolObject = props[C4ScriptGuiWindowPropertyName::symbolObject].GetObject();
 	if (symbolObject)
 	{
 		symbolObject->DrawPicture(cgoOut, false, NULL);
 	}
 	else
 	{
-		C4Def *symbolDef = props[C4GuiWindowPropertyName::symbolDef].GetDef();
+		C4Def *symbolDef = props[C4ScriptGuiWindowPropertyName::symbolDef].GetDef();
 		if (symbolDef)
 		{
 			symbolDef->Draw(cgoOut);
 		}
 	}
 
-	StdCopyStrBuf *strBuf = props[C4GuiWindowPropertyName::text].GetStrBuf();
+	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::text].GetStrBuf();
 
 	if (strBuf)
 	{
@@ -1704,17 +1707,17 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 		int alignment = ALeft;
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), outDrawWdt, &sText, true);
 		float textYOffset = 0.0f, textXOffset = 0.0f;
-		if (style & C4GuiWindowStyleFlag::TextVCenter)
+		if (style & C4ScriptGuiWindowStyleFlag::TextVCenter)
 			textYOffset = float(outDrawHgt)/2.0f - float(textHgt)/2.0f;
-		else if (style & C4GuiWindowStyleFlag::TextBottom)
+		else if (style & C4ScriptGuiWindowStyleFlag::TextBottom)
 			textYOffset += float(outDrawHgt) - float(textHgt);
-		if (style & C4GuiWindowStyleFlag::TextHCenter)
+		if (style & C4ScriptGuiWindowStyleFlag::TextHCenter)
 		{
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
 			textXOffset = float(outDrawWdt)/ 2.0f - float(wdt) / 2.0f;
 		}
-		else if (style & C4GuiWindowStyleFlag::TextRight)
+		else if (style & C4ScriptGuiWindowStyleFlag::TextRight)
 		{
 			alignment = ARight;
 			int wdt, hgt;
@@ -1727,7 +1730,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 
 	if (GraphicsSystem.ShowMenuInfo) // print helpful debug info
 	{
-		C4GuiWindow * parent = static_cast<C4GuiWindow*>(GetParent());
+		C4ScriptGuiWindow * parent = static_cast<C4ScriptGuiWindow*>(GetParent());
 
 		DWORD frameColor = C4RGB(100, 150, 100);
 		if (currentMouseState & MouseState::Focus) frameColor = C4RGB(0, 255, 0);
@@ -1746,10 +1749,10 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *currentClippi
 	return true;
 }
 
-bool C4GuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom)
+bool C4ScriptGuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom)
 {
-	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
-	if (IsRoot() || isMainWindow || (style & C4GuiWindowStyleFlag::NoCrop))
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
+	if (IsRoot() || isMainWindow || (style & C4ScriptGuiWindowStyleFlag::NoCrop))
 		return false;
 
 	if (pScrollBar->IsVisible())
@@ -1761,36 +1764,36 @@ bool C4GuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &right, i
 		return true;
 	}
 
-	/*const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
-	if (!isMainWindow && !(style & C4GuiWindowStyleFlag::NoCrop))
-		return static_cast<C4GuiWindow*>(GetParent())->GetClippingRect(left, top, right, bottom);
+	/*const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
+	if (!isMainWindow && !(style & C4ScriptGuiWindowStyleFlag::NoCrop))
+		return static_cast<C4ScriptGuiWindow*>(GetParent())->GetClippingRect(left, top, right, bottom);
 		*/
 	return false;
 }
 
-void C4GuiWindow::SetTag(C4String *tag)
+void C4ScriptGuiWindow::SetTag(C4String *tag)
 {
 	// set tag on all properties
-	for (uint32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
+	for (uint32_t i = 0; i < C4ScriptGuiWindowPropertyName::_lastProp; ++i)
 		if (props[i].SwitchTag(tag))
 		{
 			// only if tag could have changed position etc.
-			if (i <= C4GuiWindowPropertyName::relBottom || i == C4GuiWindowPropertyName::text || i == C4GuiWindowPropertyName::style || i == C4GuiWindowPropertyName::priority)
+			if (i <= C4ScriptGuiWindowPropertyName::relBottom || i == C4ScriptGuiWindowPropertyName::text || i == C4ScriptGuiWindowPropertyName::style || i == C4ScriptGuiWindowPropertyName::priority)
 				RequestLayoutUpdate();
 		}
 
 	// .. and children
 	for (C4GUI::Element * element : *this)
-		(static_cast<C4GuiWindow*>(element))->SetTag(tag);
+		(static_cast<C4ScriptGuiWindow*>(element))->SetTag(tag);
 }
 
-void C4GuiWindow::MouseEnter()
+void C4ScriptGuiWindow::MouseEnter()
 {
 	const int32_t &player = ::MouseControl.GetPlayer();
 	assert(player != NO_OWNER);
 }
 
-void C4GuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY)
+void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY)
 {
 	assert(!HasMouseFocus() && "custom menu window properly loaded incorrectly!");
 	currentMouseState = MouseState::Focus;
@@ -1798,7 +1801,7 @@ void C4GuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t paren
 	// no need to notify children, this is done in MouseInput
 
 	// update tooltip info if applicable
-	StdCopyStrBuf *strBuf = props[C4GuiWindowPropertyName::tooltip].GetStrBuf();
+	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::tooltip].GetStrBuf();
 	if (strBuf)
 	{
 		C4Viewport * viewport = ::Viewports.GetViewport(player);
@@ -1814,19 +1817,19 @@ void C4GuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t paren
 		}
 	}
 	// execute action
-	int32_t actionType = C4GuiWindowPropertyName::onMouseInAction;
-	C4GuiWindowAction *action = props[actionType].GetAction();
+	int32_t actionType = C4ScriptGuiWindowPropertyName::onMouseInAction;
+	C4ScriptGuiWindowAction *action = props[actionType].GetAction();
 	if (!action) return;
 	action->Execute(this, player, actionType);
 }
 
-void C4GuiWindow::MouseLeave()
+void C4ScriptGuiWindow::MouseLeave()
 {
 	const int32_t &player = ::MouseControl.GetPlayer();
 	assert(player != NO_OWNER);
 
 }
-void C4GuiWindow::OnMouseOut(int32_t player)
+void C4ScriptGuiWindow::OnMouseOut(int32_t player)
 {
 	assert(HasMouseFocus() && "custom menu window probably loaded incorrectly!");
 	currentMouseState = MouseState::None;
@@ -1834,19 +1837,19 @@ void C4GuiWindow::OnMouseOut(int32_t player)
 	// needs to notify children
 	for (C4GUI::Element *iter : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(iter);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(iter);
 		if (child->HasMouseFocus())
 			child->OnMouseOut(player);
 	}
 
 	// execute action
-	int32_t actionType = C4GuiWindowPropertyName::onMouseOutAction;
-	C4GuiWindowAction *action = props[actionType].GetAction();
+	int32_t actionType = C4ScriptGuiWindowPropertyName::onMouseOutAction;
+	C4ScriptGuiWindowAction *action = props[actionType].GetAction();
 	if (!action) return;
 	action->Execute(this, player, actionType);
 }
 
-bool C4GuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+bool C4ScriptGuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
 {
 	// only called on root
 	assert(IsRoot());
@@ -1859,11 +1862,11 @@ bool C4GuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWO
 	{
 		for (auto iter = rbegin(); iter != rend(); ++iter)
 		{
-			C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+			C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(*iter);
 
-			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
-			if ((withMultipleFlag == 0) && (style & C4GuiWindowStyleFlag::Multiple)) continue;
-			if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
+			const int32_t &style = child->props[C4ScriptGuiWindowPropertyName::style].GetInt();
+			if ((withMultipleFlag == 0) && (style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
+			if ((withMultipleFlag == 1) && !(style & C4ScriptGuiWindowStyleFlag::Multiple)) continue;
 			
 			// we are root, we have to adjust the position for the "main" windows that are centered
 			int32_t adjustedMouseX = 0, adjustedMouseY = mouseY;
@@ -1907,14 +1910,14 @@ bool C4GuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWO
 	return oneActionAlreadyExecuted;
 }
 
-bool C4GuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam, int32_t parentOffsetX, int32_t parentOffsetY)
+bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam, int32_t parentOffsetX, int32_t parentOffsetY)
 {
 	const int32_t &player = ::MouseControl.GetPlayer();
 	assert(player != NO_OWNER);
 
 	// completely ignore mouse if the appropriate flag is set
-	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
-	if (style & C4GuiWindowStyleFlag::IgnoreMouse)
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
+	if (style & C4ScriptGuiWindowStyleFlag::IgnoreMouse)
 		return false;
 
 	// if the window belongs to an invisible object, don't show
@@ -1937,7 +1940,7 @@ bool C4GuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_t mous
 	// use reverse iterator since children with higher Priority appear later in the list
 	for (auto iter = rbegin(); iter != rend(); ++iter)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(*iter);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(*iter);
 		const int32_t childLeft = child->rcBounds.x;
 		const int32_t childRight = child->rcBounds.x + child->rcBounds.Wdt;
 		const int32_t childTop = child->rcBounds.y;
@@ -1974,10 +1977,10 @@ bool C4GuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_t mous
 	// trigger!
 	if (button == C4MC_Button_LeftUp && (currentMouseState & MouseState::MouseDown))
 	{
-		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onClickAction].GetAction();
+		C4ScriptGuiWindowAction *action = props[C4ScriptGuiWindowPropertyName::onClickAction].GetAction();
 		if (action)
 		{
-			action->Execute(this, player, C4GuiWindowPropertyName::onClickAction);
+			action->Execute(this, player, C4ScriptGuiWindowPropertyName::onClickAction);
 			return true;
 		}
 	}
@@ -2013,17 +2016,17 @@ bool C4GuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_t mous
 	return false;
 }
 
-bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target)
+bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target)
 {
 	if (isMainWindow && subwindowID) // we are a main window! try a shortcut through the ID?
 	{
 		//LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
 		// the reasoning for that shortcut is that I assume that usually windows with actions will also have an ID assigned
 		// this obviously doesn't have to be the case, but I believe it's worth the try
-		std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
+		std::pair<std::multimap<int32_t, C4ScriptGuiWindow*>::iterator, std::multimap<int32_t, C4ScriptGuiWindow*>::iterator> range;
 		range = childrenIDMap.equal_range(subwindowID);
 
-		for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+		for (std::multimap<int32_t, C4ScriptGuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 		{
 			if (iter->second->ExecuteCommand(actionID, player, subwindowID, actionType, target))
 				return true;
@@ -2035,11 +2038,11 @@ bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwi
 	if ((id == subwindowID) && (this->target == target))
 	{
 
-		std::list<C4GuiWindowAction*> allActions = props[actionType].GetAllActions();
-		for (std::list<C4GuiWindowAction*>::iterator iter = allActions.begin(); iter != allActions.end(); ++iter)
+		std::list<C4ScriptGuiWindowAction*> allActions = props[actionType].GetAllActions();
+		for (std::list<C4ScriptGuiWindowAction*>::iterator iter = allActions.begin(); iter != allActions.end(); ++iter)
 		{
-			C4GuiWindowAction *action = *iter;
-			assert(action && "C4GuiWindowProperty::GetAllActions returned list with null-pointer");
+			C4ScriptGuiWindowAction *action = *iter;
+			assert(action && "C4ScriptGuiWindowProperty::GetAllActions returned list with null-pointer");
 
 			if (action->ExecuteCommand(actionID, this, player))
 				return true;
@@ -2053,17 +2056,17 @@ bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwi
 	// abort if main window, though. See above
 	if (isMainWindow && subwindowID) return false;
 
-	//for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	//for (std::list<C4ScriptGuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	for (C4GUI::Element *element : *this)
 	{
-		C4GuiWindow *child = static_cast<C4GuiWindow*>(element);
+		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		if (child->ExecuteCommand(actionID, player, subwindowID, actionType, target))
 			return true;
 	}
 	return false;
 }
 
-bool C4GuiWindow::IsRoot()
+bool C4ScriptGuiWindow::IsRoot()
 {
-	return this == Game.GuiWindowRoot;
+	return this == Game.ScriptGuiRoot;
 }

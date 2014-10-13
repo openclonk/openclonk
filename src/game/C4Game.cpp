@@ -57,7 +57,7 @@
 #include <C4RankSystem.h>
 #include <C4RoundResults.h>
 #include <C4GameMessage.h>
-#include <C4GuiWindow.h>
+#include <C4ScriptGuiWindow.h>
 #include <C4Material.h>
 #include <C4Network2Reference.h>
 #include <C4Weather.h>
@@ -102,7 +102,7 @@ C4Game::C4Game():
 		pSec1Timer(new C4GameSec1Timer()),
 		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
 		fQuitWithError(false),
-		GuiWindowRoot(0)
+		ScriptGuiRoot(0)
 {
 	Default();
 }
@@ -916,7 +916,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MessageInput.ClearPointers(pObj);
 	::Console.ClearPointers(pObj);
 	::MouseControl.ClearPointers(pObj);
-	GuiWindowRoot->ClearPointers(pObj);
+	ScriptGuiRoot->ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
@@ -1485,7 +1485,7 @@ void C4Game::Default()
 	DebugPassword.Clear();
 	DebugHost.Clear();
 	DebugWait = false;
-	GuiWindowRoot = nullptr; // will be initialized when the game starts
+	ScriptGuiRoot = nullptr; // will be initialized when the game starts
 }
 
 void C4Game::Evaluate()
@@ -1628,12 +1628,12 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		{
 			C4Value val;
 			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
-			assert (GuiWindowRoot->GetID() == 0);
-			GuiWindowRoot->CreateFromPropList(val.getPropList(), false, false, true);
+			assert (ScriptGuiRoot->GetID() == 0);
+			ScriptGuiRoot->CreateFromPropList(val.getPropList(), false, false, true);
 		}
 		else
 		{
-			C4Value val = GuiWindowRoot->ToC4Value();
+			C4Value val = ScriptGuiRoot->ToC4Value();
 			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
 		}
 	}
@@ -2248,11 +2248,11 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	}
 
 	// prepare script menus
-	assert(!GuiWindowRoot);
+	assert(!ScriptGuiRoot);
 	const float standardVerticalBorder = 100.0f;
 	const float standardHorizontalBorder = 100.0f;
-	GuiWindowRoot = new C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
-	pGUI->AddElement(GuiWindowRoot);
+	ScriptGuiRoot = new C4ScriptGuiWindow(standardVerticalBorder, standardHorizontalBorder);
+	pGUI->AddElement(ScriptGuiRoot);
 
 	return true;
 }
