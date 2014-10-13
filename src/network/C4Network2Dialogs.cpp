@@ -26,6 +26,7 @@
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 #include <C4GraphicsResource.h>
+#include <C4Startup.h>
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
@@ -607,11 +608,11 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		btnInternet->SetToolTip(LoadResStr("IDS_DLGTIP_STARTINTERNETGAME"));
 		btnInternet->SetEnabled(!fIsDisabled);
 		AddElement(btnInternet);
-	}	
+	}
 	else btnInternet = NULL;
 	bool fIsLeague = false;
-	// League button disabled by default, but enabled if a custom league server is set (#479, re-enable completely when an OC league exists)
-	if (fNetwork && ::Config.Network.UseAlternateServer)
+	// League button
+	if (fNetwork)
 	{
 		C4GUI::Icons eLeagueIcon;
 		fIsLeague = fLobby ? Game.Parameters.isLeague() : !!Config.Network.LeagueServerSignUp;
@@ -675,6 +676,8 @@ void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 	btnRecord->SetEnabled(!fCheck);
 	// if the league is turned on, the game must be signed up at the masterserver
 	if (fCheck && !Config.Network.MasterServerSignUp) OnBtnInternet(btnInternet);
+	// refresh options in scenario selection dialogue
+	if (C4Startup::Get()) C4Startup::Get()->OnLeagueOptionChanged();
 }
 
 void C4GameOptionButtons::OnBtnRecord(C4GUI::Control *btn)

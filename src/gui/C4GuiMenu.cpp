@@ -303,7 +303,10 @@ namespace C4GUI
 		// not if focus is in submenu
 		if (pSubmenu) return false;
 		Element *pPrevSelectedItem = pSelectedItem;
-		C4KeyCode wKey = TOUPPERIFX11(key.Key);
+		StdStrBuf sKey = C4KeyCodeEx::KeyCode2String(key.Key, true, true);
+		// do hotkey procs for standard alphanumerics only
+		if (sKey.getLength() != 1) return false;
+		WORD wKey = WORD(*sKey.getData());
 		if (Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, 'A', 'Z') || Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, '0', '9'))
 		{
 			// process hotkeys

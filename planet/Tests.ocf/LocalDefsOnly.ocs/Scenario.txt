@@ -1,2 +1,5 @@
+[Head]
+Title=LocalDefsOnly
+
 [Definitions]
 LocalOnly=1

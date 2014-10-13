@@ -1,5 +1,5 @@
 # Intro sequence messages
-MsgAbandonedSettlement=%s do you see that abandoned settlement as well?
-MsgLegendGems=Yes, I do. Do you know that legends describe large amounts of gems near this location?!
-MsgExplore=Yes %s, I have heard those tales. Let's explore the caves below!
-MsgAgree=I am dying to find out if this legend is true, I'll join.
+MsgAbandonedSettlement=%s sieht du auch die verlassene Siedlung?
+MsgLegendGems=Sehe ich. Wusstest du, dass Legenden von großen Mengen Edelsteinen in der Gegend erzählen?!
+MsgExplore=Ja %s, davon habe ich gehört. Lasst uns die Höhlen unter uns erforschen!
+MsgAgree=Ich will unbedingt herausfinden, ob die Legenden wahr sind. Ich bin dabei.

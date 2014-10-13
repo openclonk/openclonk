@@ -3,6 +3,7 @@ Name=$Difficulty$
 Description=$DescDifficulty$
 ID=Difficulty
 Default=1
+LeagueValue=2
 
 	[Options]
 		
@@ -26,6 +27,7 @@ Name=$MapSize$
 Description=$DescMapSize$
 ID=MapSize
 Default=1
+LeagueValue=1
 
 	[Options]
 
@@ -42,22 +44,4 @@ Default=1
 		[Option]
 		Name=$MapLarge$
 		Description=$DescMapLarge$
-		Value=3
-
-[ParameterDef]
-ID=Done
-Achievement=Done
-
-	[Options]
-		
-		[Option]
-		Description=$AchievementNormal$
-		Value=1
-		
-		[Option]
-		Description=$AchievementHard$
-		Value=2
-		
-		[Option]
-		Description=$AchievementInsane$
 		Value=3

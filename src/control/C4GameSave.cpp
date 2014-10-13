@@ -191,7 +191,7 @@ bool C4GameSave::SaveRuntimeData()
 {
 	// Game.txt data (general runtime data and objects)
 	C4ValueNumbers numbers;
-	if (!Game.SaveData(*pSaveGroup, false, IsExact(), &numbers))
+	if (!Game.SaveData(*pSaveGroup, false, IsExact(), IsSynced(), &numbers))
 		{ Log(LoadResStr("IDS_ERR_SAVE_RUNTIMEDATA")); return false; }
 	// scenario sections (exact only)
 	if (IsExact()) if (!SaveScenarioSections())

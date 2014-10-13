@@ -21,8 +21,3 @@ MapAverage=Average
 DescMapAverage=This round's map will be average.
 MapLarge=Large
 DescMapLarge=This round's map will be large.
-
-# Scenario parameters: achievements
-AchievementNormal=Finished round with difficulty normal.
-AchievementHard=Finished round with difficulty hard.
-AchievementInsane=Finished round with difficulty insane.

@@ -9,15 +9,11 @@ static const S2DD_InitialRelaunchs = 0;
 
 static g_is_initialized;
 
-static g_shroom1, g_shroom2, g_shroom3, g_shroom4, g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
+static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
+static npc_pyrit, g_cannon, g_cannoneer;
 
 func DoInit(int first_player)
 {
-	// Shrooms
-	g_shroom1->AddPoisonEffect(0,0); // floor left
-	g_shroom2->AddPoisonEffect(0,0); // ceiling left
-	g_shroom3->AddPoisonEffect(-20,0); // floor right
-	g_shroom4->AddPoisonEffect(10,-10); // ceiling right
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
@@ -36,10 +32,9 @@ func DoInit(int first_player)
 			enemy->DoEnergy(10000);
 			enemy->AddEnergyBar();
 		}
-	// Intro. Message 250 frames + regular message time
 	g_farmer.portrait = { Source=DialogueCastle };
-	Dialogue->MessageBoxAll("$MsgIntro1$", g_farmer, true);
-	Schedule(nil, "Dialogue->MessageBoxAll(\"$MsgIntro1$\", g_farmer, true)", 250, 1);
+	// Start intro if not yet started
+	StartSequence("Intro", 0, GetCrew(first_player));
 	return true;
 }
 

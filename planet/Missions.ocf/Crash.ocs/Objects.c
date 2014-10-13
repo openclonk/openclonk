@@ -67,8 +67,7 @@ func InitializeObjects()
 
 	CreateObject(SproutBerryBush, 565, 861);
 
-	CreateObject(Wheat, 919, 564);
-	CreateObject(Wheat, 1296, 625);
+	CreateObject(Wheat, 1345, 696);
 
 	var Tree_Coniferous001 = CreateObject(Tree_Coniferous, 231, 878);
 	Tree_Coniferous001->SetCon(47);

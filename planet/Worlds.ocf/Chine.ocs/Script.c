@@ -17,7 +17,9 @@ protected func Initialize()
 	
 	// Goal: transport the cannon to the top of the chine.
 	var cannon = CreateObject(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
-	cannon->CreateContents(PowderKeg);
+	var keg = cannon->CreateContents(PowderKeg);
+	// Infinite ammo for this cannon.
+	keg->SetPowderCount(nil);
 	var cannon_goal = CreateObject(Goal_Script);
 	cannon_goal.Name = "$GoalName$";
 	cannon_goal.Description = "$GoalDesc$";
@@ -38,6 +40,8 @@ protected func OnGoalsFulfilled()
 	GainScenarioAchievement("Done", BoundBy(SCENPAR_Difficulty, 1, 3));
 	return false;
 }
+
+public func UpdatePicture() { Log("bla"); }
 
 
 /*-- Player Initialization --*/
@@ -139,6 +143,11 @@ private func InitEnvironment(int map_size, int difficulty)
 	
 	// Some natural disasters. 
 	Earthquake->SetChance(2 + 2 * difficulty);
+	if (difficulty >= 2)
+		Rockfall->SetChance(20);
+	if (difficulty >= 3)
+		Rockfall->SetChance(80);
+	Rockfall->SetArea(Rectangle(128, 0, 128, LandscapeHeight() - 300));
 	return;
 }
 
@@ -187,7 +196,9 @@ private func InitVegetation(int map_size, int difficulty)
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
 	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
-	PlaceObjects(Loam, (5 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
+	PlaceObjects(Loam, (6 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
+	if (difficulty == 1)
+		PlaceObjects(Loam, 12, "Earth");
 	return;
 }
 

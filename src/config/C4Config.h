@@ -55,6 +55,7 @@ public:
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];
+	char TempUpdatePath[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
 	int32_t DebugRec;
@@ -270,6 +271,7 @@ public:
 	bool Registered();
 	const char *AtExePath(const char *szFilename);
 	const char *AtTempPath(const char *szFilename);
+	const char *AtTempUpdatePath(const char *szFilename);
 	const char *AtNetworkPath(const char *szFilename);
 	const char *AtScreenshotPath(const char *szFilename);
 	const char *AtUserDataPath(const char *szFilename);
@@ -285,6 +287,8 @@ public:
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
 	void GetConfigFileName(StdStrBuf &filename, const char *szConfigFile);
+	void CleanupTempUpdateFolder();
+	const char *MakeTempUpdateFolder();
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 };

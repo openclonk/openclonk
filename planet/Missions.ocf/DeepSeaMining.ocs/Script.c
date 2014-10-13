@@ -45,9 +45,7 @@ protected func PostIntroInitialize()
 	npc_tuesday->SetColor(0x804000);
 	npc_tuesday->SetName("$Tuesday$");
 	
-	SetNextMission("Mission.ocf/TreasureHunt.ocs");
-	
-	return;
+	return true;
 }
 
 func DoInit(int first_player)
@@ -276,6 +274,7 @@ private func FindMainIslandPosition(int xpos, int sep, bool no_struct)
 // Goal fulfilled
 public func OnGoalsFulfilled()
 {
+	SetNextMission("Missions.ocf/TreasureHunt.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Sea");
 	StartSequence("Outro", 0);

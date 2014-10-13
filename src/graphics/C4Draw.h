@@ -22,12 +22,22 @@
 #include <C4Surface.h>
 #include <CSurface8.h>
 #include <StdBuf.h>
+#include <StdMeshMaterial.h>
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
 
 // Global Draw access pointer
 extern C4Draw *pDraw;
+
+inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
+{
+	//unsigned char r[4];
+	r[0] = (unsigned char)( (dwClr >> 16) & 0xff);
+	r[1] = (unsigned char)( (dwClr >>  8) & 0xff);
+	r[2] = (unsigned char)( (dwClr      ) & 0xff);
+	r[3] = (unsigned char)( (dwClr >> 24) & 0xff);
+}
 
 // rotation info class
 class C4BltTransform
@@ -217,7 +227,8 @@ public:
 	void Grayscale(C4Surface * sfcSfc, int32_t iOffset = 0);
 	void LockingPrimary() { PrimaryLocked=true; }
 	void PrimaryUnlocked() { PrimaryLocked=false; }
-	virtual bool PrepareMaterial(StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
+	virtual std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text) = 0; // Compile shader of the given language
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
@@ -248,12 +259,15 @@ public:
 	bool TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	bool StringOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	// Drawing
-	virtual void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
+	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex) = 0; // blit the same texture many times
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
 	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
 	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
-	virtual void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f);
+	virtual void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
+	virtual void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
 	virtual void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
@@ -297,8 +311,6 @@ public:
 
 protected:
 	bool StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom);
-	virtual void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol) = 0; // without ClrModMap
-	virtual void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width) = 0;
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 	virtual bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);

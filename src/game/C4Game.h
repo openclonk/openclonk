@@ -37,9 +37,10 @@ private:
 		bool fScenarioSection;
 		bool fPlayers;
 		bool fExact;
+		bool fSync;
 
-		CompileSettings(bool fScenarioSection, bool fPlayers, bool fExact)
-				: fScenarioSection(fScenarioSection), fPlayers(fPlayers), fExact(fExact) { }
+		CompileSettings(bool fScenarioSection, bool fPlayers, bool fExact, bool fSync)
+				: fScenarioSection(fScenarioSection), fPlayers(fPlayers), fExact(fExact), fSync(fSync) { }
 	};
 
 	// struct of keyboard set and indexed control key
@@ -226,6 +227,7 @@ public:
 	void UpdateLanguage();
 	bool InitPlayerControlSettings();
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
+	void SetDefaultGamma();
 
 	C4ScriptGuiWindow *ScriptGuiRoot;
 protected:
@@ -267,9 +269,9 @@ protected:
 	bool PlaceInEarth(C4ID id);
 public:
 	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
-	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4ValueNumbers *);
+	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool fSaveSync, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, C4ValueNumbers *);
+	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers *);
 	bool StoreParticipantPlayers();
 	bool RecreatePlayerFiles();
 

@@ -11,12 +11,6 @@ static g_max_player_num; // max number of players that were ever joined
 static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 
-func Initialize()
-{
-	SetNextMission("Mission.ocf/DarkCastle.ocs");
-	return true;
-}
-
 func DoInit(int first_player)
 {
 	ClearFreeRect(530,1135, 50,2);
@@ -109,13 +103,30 @@ static const MAX_GOLD_BARS = 20;
 func OnGoldBarCollected(object collector)
 {
 	++g_num_goldbars;
+	var sAchievement = "";
+	if (g_num_goldbars==MAX_GOLD_BARS/4)
+	{
+		sAchievement = "|$Achieve5$";
+		GainScenarioAchievement("Bars", 1);
+	}
+	else if (g_num_goldbars==MAX_GOLD_BARS/2)
+	{
+		sAchievement = "|$Achieve10$";
+		GainScenarioAchievement("Bars", 2);
+	}
+	else if (g_num_goldbars==MAX_GOLD_BARS)
+	{
+		sAchievement = "|$Achieve20$";
+		GainScenarioAchievement("Bars", 3);
+	}
 	UpdateLeagueScores();
-	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$", g_num_goldbars, MAX_GOLD_BARS), collector, true);
+	Dialogue->MessageBoxAll(Format("$MsgGoldBarCollected$%s", g_num_goldbars, MAX_GOLD_BARS, sAchievement), collector, true);
 	return true;
 }
 
 public func OnGoalsFulfilled()
 {
+	SetNextMission("Missions.ocf/DarkCastle.ocs");
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Treasure");
 	UpdateLeagueScores();

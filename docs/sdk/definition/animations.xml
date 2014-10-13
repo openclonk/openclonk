@@ -53,6 +53,10 @@
           <col>Linear with Y position. However, the animation is always played in the same direction, not taking into account whether the object moves upwards or downwards.</col>
         </row>
         <row>
+          <col><funclink>Anim_Dist</funclink></col>
+          <col>Linear in distance travelled. This is basically a combination of <funclink>Anim_AbsX</funclink> and <funclink>Anim_AbsY</funclink> where both coordinates are taken into account.</col>
+        </row>
+        <row>
           <col><funclink>Anim_XDir</funclink></col>
           <col>Proportional to the horizontal speed of the object.</col>
         </row>

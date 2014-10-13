@@ -201,6 +201,8 @@ public:
 	StdSubMeshInstance(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 	void LoadFacesForCompletion(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 
+	void CompileFunc(StdCompiler* pComp);
+
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }
@@ -215,11 +217,11 @@ public:
 	unsigned int GetTexturePhase(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
 	double GetTexturePosition(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Position; }
 
-	void SetMaterial(const StdMeshMaterial& material);
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 protected:
+	void SetMaterial(const StdMeshMaterial& material);
 	void SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod);
 
@@ -525,6 +527,10 @@ public:
 	size_t GetNumSubMeshes() const { return SubMeshInstances.size(); }
 	StdSubMeshInstance& GetSubMesh(size_t i) { return *SubMeshInstances[i]; }
 	const StdSubMeshInstance& GetSubMesh(size_t i) const { return *SubMeshInstances[i]; }
+	const StdSubMeshInstance& GetSubMeshOrdered(size_t i) const { return *SubMeshInstancesOrdered[i]; }
+
+	// Set material of submesh i.
+	void SetMaterial(size_t i, const StdMeshMaterial& material);
 
 	const StdMeshMatrix& GetBoneTransform(size_t i) const { return BoneTransforms[i]; }
 
@@ -572,6 +578,7 @@ protected:
 	std::vector<StdMeshMatrix> BoneTransforms;
 
 	std::vector<StdSubMeshInstance*> SubMeshInstances;
+	std::vector<StdSubMeshInstance*> SubMeshInstancesOrdered; // ordered by opacity, in case materials were changed
 
 	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
 	// In theory map would fit better, but it's probably not worth the extra overhead.

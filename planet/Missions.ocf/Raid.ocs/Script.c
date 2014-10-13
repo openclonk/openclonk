@@ -27,7 +27,6 @@ func Initialize()
 {
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
 	PlaceGrass(40);
-	SetNextMission("Mission.ocf/Crash.ocs");
 	return true;
 }
 
@@ -106,5 +105,14 @@ func OnPlaneLoaded(object plane, object oil)
 	if (!plane || !oil) return false; // disappeared in that one frame?
 	oil->Enter(plane);
 	g_goal->SetStageDone();
+	g_goal->SetFulfilled();
 	return StartSequence("Outro", 0, plane);
+}
+
+func OnGoalsFulfilled()
+{
+	SetNextMission("Missions.ocf/Crash.ocs");
+	GainMissionAccess("S2Raid");
+	GainScenarioAchievement("Done");
+	return true; // GameOver done by outro
 }

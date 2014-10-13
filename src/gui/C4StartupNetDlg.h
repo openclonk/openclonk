@@ -61,6 +61,7 @@ private:
 	StdStrBuf sRefClientAddress;      // set during reference retrieval: reference server address
 	C4Network2RefClient *pRefClient; // set during reference retrieval: reference request client
 	C4Network2Reference *pRef;       // set for retrieved references
+	
 	bool fError;                     // if set, the label was changed to an error message and no more updates are done
 	StdStrBuf sError;
 	QueryType eQueryType;            // valid if pRefClient is set: Where the ref query is originating
@@ -190,11 +191,16 @@ protected:
 private:
 	void UpdateMasterserver(); // creates masterserver object if masterserver is enabled; destroy otherwise
 	void UpdateList(bool fGotReference = false);
+	void UpdateUpdateButton();
 	void UpdateCollapsed();
 	void UpdateSelection(bool fUpdateCollapsed);
 	void UpdateDlgMode(); // update button visibility after switching between game sel list and chat
 
 	void AddReferenceQuery(const char *szAddress, C4StartupNetListEntry::QueryType eQueryType); // add a ref searcher entry and start searching
+
+	// set during update information retrieval
+	C4Network2UpdateClient pUpdateClient;
+	bool fUpdateCheckPending;
 
 	DlgMode GetDlgMode();
 
@@ -211,7 +217,7 @@ public:
 
 	void OnSec1Timer(); // idle proc: update list
 
-	void CheckVersionUpdate(const char *szUpdateURL, const char *szVersion); // make an update button visible if the passed url is a valid update url
+	void CheckVersionUpdate(); // check if a new update is available and make an update button visible if yes
 };
 
 

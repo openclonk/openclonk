@@ -36,19 +36,108 @@
 #include <math.h>
 #include <limits.h>
 
-static void glColorDw(DWORD dwClr)
+C4DrawGLShader::C4DrawGLShader(Type shader_type)
 {
-	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));
+	GLint gl_type;
+	switch(shader_type)
+	{
+	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
+	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
+	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
+	default: assert(false); break;
+	}
+
+	Shader = glCreateShaderObjectARB(gl_type);
+	if(!Shader) throw C4DrawGLError(FormatString("Failed to create shader")); // TODO: custom error class?
 }
 
-// GLubyte (&r)[4] is a reference to an array of four bytes named r.
-static void DwTo4UB(DWORD dwClr, GLubyte (&r)[4])
+C4DrawGLShader::~C4DrawGLShader()
 {
-	//unsigned char r[4];
-	r[0] = GLubyte(dwClr>>16);
-	r[1] = GLubyte(dwClr>>8);
-	r[2] = GLubyte(dwClr);
-	r[3] = GLubyte(dwClr>>24);
+	glDeleteObjectARB(Shader);
+}
+
+void C4DrawGLShader::Load(const char* code)
+{
+	glShaderSourceARB(Shader, 1, &code, NULL);
+	glCompileShaderARB(Shader);
+
+	GLint compile_status;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
+	if(compile_status != GL_TRUE)
+	{
+		const char* shader_type_str;
+		switch(GetType())
+		{
+		case VERTEX: shader_type_str = "vertex"; break;
+		case FRAGMENT: shader_type_str = "fragment"; break;
+		case GEOMETRY: shader_type_str = "geometry"; break;
+		default: assert(false); break;
+		}
+
+		GLint length;
+		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
+			throw C4DrawGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
+		}
+		else
+		{
+			throw C4DrawGLError(FormatString("Failed to compile %s shader", shader_type_str));
+		}
+	}
+}
+
+StdMeshMaterialShader::Type C4DrawGLShader::GetType() const
+{
+	GLint shader_type;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
+
+	switch(shader_type)
+	{
+	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
+	case GL_VERTEX_SHADER_ARB: return VERTEX;
+	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
+	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
+	}
+}
+
+C4DrawGLProgram::C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader)
+{
+	Program = glCreateProgramObjectARB();
+	if(fragment_shader != NULL)
+		glAttachObjectARB(Program, fragment_shader->Shader);
+	if(vertex_shader != NULL)
+		glAttachObjectARB(Program, vertex_shader->Shader);
+	if(geometry_shader != NULL)
+		glAttachObjectARB(Program, geometry_shader->Shader);
+	glLinkProgramARB(Program);
+
+	GLint link_status;
+	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
+	if(link_status != GL_TRUE)
+	{
+		GLint length;
+		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
+			glDeleteObjectARB(Program);
+			throw C4DrawGLError(FormatString("Failed to link program: %s", &error_message[0]));
+		}
+		else
+		{
+			glDeleteObjectARB(Program);
+			throw C4DrawGLError(StdStrBuf("Failed to link program"));
+		}
+	}
+}
+
+C4DrawGLProgram::~C4DrawGLProgram()
+{
+	glDeleteObjectARB(Program);
 }
 
 CStdGL::CStdGL():
@@ -631,101 +720,206 @@ static inline long int lrintf(float f)
 }
 #endif
 
-void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
+void CStdGL::SetupMultiBlt(GLuint tex)
 {
-	// render target?
-	if (sfcTarget->IsRenderTarget())
+	// Initialize multi blit shader. If pTexRef is given, use that as texture.
+	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
+	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
+	// TODO: The locations could be cached
+	GLint fMod2Location = glGetUniformLocationARB(multi_blt_program->Program, "fMod2");
+	GLint fUseClrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseClrModMap");
+	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
+	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
+	GLint clrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrModMap");
+	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "texture");
+
+	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
+	const int fUseClrModMap = this->fUseClrModMap;
+	const int fUseTexture = (tex != 0);
+	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
+	const float dwMod[4] = {
+		((dwModClr >> 16) & 0xff) / 255.0f,
+		((dwModClr >>  8) & 0xff) / 255.0f,
+		((dwModClr      ) & 0xff) / 255.0f,
+		((dwModClr >> 24) & 0xff) / 255.0f
+	};
+
+	glUseProgramObjectARB(multi_blt_program->Program);
+	glUniform1iARB(fMod2Location, fMod2);
+	glUniform1iARB(fUseClrModMapLocation, fUseClrModMap);
+	glUniform1iARB(fUseTextureLocation, fUseTexture);
+	glUniform4fvARB(clrModLocation, 1, dwMod);
+
+	if(fUseClrModMap)
 	{
-		// prepare rendering to target
-		if (!PrepareRendering(sfcTarget)) return;
-		SetTexture();
-		SetupTextureEnv(false, false);
+		glActiveTexture(GL_TEXTURE1);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, pClrModMap->GetSurface()->ppTex[0]->texName);
+		glUniform1iARB(clrModMapLocation, 1);
+
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
+		C4Surface * pSurface = pClrModMap->GetSurface();
+		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
+		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+		glMatrixMode(GL_MODELVIEW);
+	}
+
+	glActiveTexture(GL_TEXTURE0);
+	if(tex != 0)
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glUniform1iARB(textureLocation, 0);
+	}
+
+	// Apply zoom
+	glPushMatrix();
+	glTranslatef(ZoomX, ZoomY, 0.0f);
+	glScalef(Zoom, Zoom, 1.0f);
+	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+}
+
+void CStdGL::ResetMultiBlt(GLuint tex)
+{
+	glPopMatrix();
+	if(fUseClrModMap) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
+	glActiveTexture(GL_TEXTURE0);
+	if(tex != 0) glDisable(GL_TEXTURE_2D);
+	glUseProgramObjectARB(0);
+}
+
+void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	// Draw on pixel center:
+	glPushMatrix();
+	glTranslatef(0.5f, 0.5f, 0.0f);
+
+	// Feed the vertices to the GL
+	SetupMultiBlt(0);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	// This is a workaround. Instead of submitting the whole vertex array to the GL, we do it
+	// in batches of 256 vertices. The intel graphics driver on Linux crashes with
+	// significantly larger arrays, such as 400. It's not clear to me why, maybe POINT drawing
+	// is just not very well tested.
+	const unsigned int BATCH_SIZE = 256;
+	for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
+	{
+		glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[i].ftx);
+		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[i].color[0]);
+		glDrawArrays(GL_POINTS, 0, std::min(n_vertices - i, BATCH_SIZE));
+	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glPopMatrix();
+
+	ResetMultiBlt(0);
+}
+
+void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
+{
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	// In a first step, we transform the lines array to a triangle array, so that we can draw
+	// the lines with some thickness.
+	// In principle, this step could be easily (and probably much more efficiently) performed
+	// by a geometry shader as well, however that would require OpenGL 3.2.
+	C4BltVertex* tri_vertices = new C4BltVertex[n_vertices * 3];
+	for(unsigned int i = 0; i < n_vertices; i += 2)
+	{
+		const float x1 = vertices[i].ftx;
+		const float y1 = vertices[i].fty;
+		const float x2 = vertices[i+1].ftx;
+		const float y2 = vertices[i+1].fty;
+
 		float offx = y1 - y2;
 		float offy = x2 - x1;
 		float l = sqrtf(offx * offx + offy * offy);
 		// avoid division by zero
 		l += 0.000000005f;
-		offx /= l; offx *= Zoom * width;
-		offy /= l; offy *= Zoom * width;
-		C4BltVertex vtx[4];
-		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
-		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;
-		vtx[2].ftx = x2 - offx; vtx[2].fty = y2 - offy; vtx[2].ftz = 0;
-		vtx[3].ftx = x2 + offx; vtx[3].fty = y2 + offy; vtx[3].ftz = 0;
-		// global clr modulation map
-		DWORD dwClr1 = dwClr;
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
-		if (fUseClrModMap)
-		{
-			if (shaders[0])
-			{
-				glActiveTexture(GL_TEXTURE3);
-				glLoadIdentity();
-				C4Surface * pSurface = pClrModMap->GetSurface();
-				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
-				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+		offx *= width/l;
+		offy *= width/l;
 
-				glClientActiveTexture(GL_TEXTURE3);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vtx[0].ftx);
-				glClientActiveTexture(GL_TEXTURE0);
-			}
-			else
-			{
-				ModulateClr(dwClr1, pClrModMap->GetModAt(lrintf(x1), lrintf(y1)));
-				ModulateClr(dwClr, pClrModMap->GetModAt(lrintf(x2), lrintf(y2)));
-			}
+		tri_vertices[3*i + 0].ftx = x1 + offx; tri_vertices[3*i + 0].fty = y1 + offy;
+		tri_vertices[3*i + 1].ftx = x1 - offx; tri_vertices[3*i + 1].fty = y1 - offy;
+		tri_vertices[3*i + 2].ftx = x2 - offx; tri_vertices[3*i + 2].fty = y2 - offy;
+		tri_vertices[3*i + 3].ftx = x2 + offx; tri_vertices[3*i + 3].fty = y2 + offy;
+
+		for(int j = 0; j < 4; ++j)
+		{
+			tri_vertices[3*i + 0].color[j] = vertices[i].color[j];
+			tri_vertices[3*i + 1].color[j] = vertices[i].color[j];
+			tri_vertices[3*i + 2].color[j] = vertices[i + 1].color[j];
+			tri_vertices[3*i + 3].color[j] = vertices[i + 1].color[j];
 		}
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		DwTo4UB(dwClr1,vtx[0].color);
-		DwTo4UB(dwClr1,vtx[1].color);
-		DwTo4UB(dwClr,vtx[2].color);
-		DwTo4UB(dwClr,vtx[3].color);
-		vtx[0].tx = 0; vtx[0].ty = 0;
-		vtx[1].tx = 0; vtx[1].ty = 2;
-		vtx[2].tx = 1; vtx[2].ty = 2;
-		vtx[3].tx = 1; vtx[3].ty = 0;
-		// draw two triangles
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, lines_tex);
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), vtx);
-		glDrawArrays(GL_POLYGON, 0, 4);
-		glClientActiveTexture(GL_TEXTURE3);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glClientActiveTexture(GL_TEXTURE0);
-		ResetTexture();
+
+		tri_vertices[3*i + 0].tx = 0.f; tri_vertices[3*i + 0].ty = 0.f;
+		tri_vertices[3*i + 1].tx = 0.f; tri_vertices[3*i + 1].ty = 2.f;
+		tri_vertices[3*i + 2].tx = 1.f; tri_vertices[3*i + 2].ty = 2.f;
+		tri_vertices[3*i + 3].tx = 1.f; tri_vertices[3*i + 3].ty = 0.f;
+
+		tri_vertices[3*i + 4] = tri_vertices[3*i + 2]; // duplicate vertex
+		tri_vertices[3*i + 5] = tri_vertices[3*i + 0]; // duplicate vertex
 	}
-	else
-	{
-		// emulate
-		if (!LockSurfaceGlobal(sfcTarget)) return;
-		ForLine((int32_t)x1,(int32_t)y1,(int32_t)x2,(int32_t)y2,&DLineSPixDw,(int) dwClr);
-		UnLockSurfaceGlobal(sfcTarget);
-	}
+
+	// Then, feed the vertices to the GL
+	SetupMultiBlt(lines_tex);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glClientActiveTexture(GL_TEXTURE0); // lines_tex was loaded in tex0 by SetupMultiBlt
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].tx);
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].ftx);
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &tri_vertices[0].color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, n_vertices * 3);
+	delete[] tri_vertices;
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	ResetMultiBlt(lines_tex);
 }
 
-void CStdGL::PerformPix(C4Surface * sfcTarget, float tx, float ty, DWORD dwClr)
+void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex)
 {
-	// render target?
-	if (sfcTarget->IsRenderTarget())
+	// Only direct rendering
+	assert(sfcTarget->IsRenderTarget());
+	if(!PrepareRendering(sfcTarget)) return;
+
+	// Feed the vertices to the GL
+	SetupMultiBlt(pTex ? pTex->texName : 0);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	if(pTex)
 	{
-		if (!PrepareRendering(sfcTarget)) return;
-		int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-		// use a different blendfunc here because of GL_POINT_SMOOTH
-		glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-		// convert the alpha value for that blendfunc
-		glBegin(GL_POINTS);
-		glColorDw(dwClr);
-		glVertex2f(tx + 0.5f, ty + 0.5f);
-		glEnd();
+		glClientActiveTexture(GL_TEXTURE0); // pTex was loaded in tex0 by SetupMultiBlt
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].tx);
 	}
-	else
-	{
-		// emulate
-		sfcTarget->SetPixDw((int)tx, (int)ty, dwClr);
-	}
+
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].ftx);
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[0].color[0]);
+	glDrawArrays(GL_TRIANGLES, 0, n_vertices);
+
+	if(pTex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	ResetMultiBlt(pTex ? pTex->texName : 0);
 }
 
 static void DefineShaderARB(const char * p, GLuint & s)
@@ -848,6 +1042,55 @@ bool CStdGL::RestoreDeviceObjects()
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
 		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_mod, grey, fow, end).getData(), shaders[11]);
 	}
+
+	// The following shaders are used for drawing primitives such as points, lines and sprites.
+	// They are used in PerformMultiPix, PerformMultiLines and PerformMultiBlt.
+	// The fragment shader applies the color modulation, mod2 drawing and the color modulation map
+	// on top of the original fragment color.
+	// The vertex shader does not do anything special, but it delegates input values to the
+	// fragment shader.
+	// TODO: It might be more efficient to use separate shaders for pixels, lines and blits.
+	const char* vertex_shader_text =
+		"varying vec2 texcoord;"
+		"varying vec2 pos;"
+		"void main()"
+		"{"
+		"  texcoord = gl_MultiTexCoord0.xy;"
+                "  pos = gl_Vertex.xy;"
+		"  gl_FrontColor = gl_Color;"
+		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+		"}";
+	const char* fragment_shader_text =
+		"uniform int fMod2;"
+		"uniform int fUseClrModMap;"
+		"uniform int fUseTexture;"
+		"uniform vec4 clrMod;"
+		"uniform sampler2D Texture;"
+		"uniform sampler2D ClrModMap;"
+		"varying vec2 texcoord;"
+		"varying vec2 pos;"
+		"void main()"
+		"{"
+		"  vec4 primaryColor = gl_Color;"
+		"  if(fUseTexture != 0)"
+		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
+		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
+		"  if(fUseClrModMap != 0)"
+		"    clrModMapClr = texture2D(ClrModMap, pos);"
+		"  if(fMod2 != 0)"
+		"    gl_FragColor = clamp(2.0 * primaryColor * clrMod * clrModMapClr - 0.5, 0.0, 1.0);"
+		"  else"
+		"    gl_FragColor = primaryColor * clrMod * clrModMapClr;"
+		"}";
+
+	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);
+	vertex_shader.Load(vertex_shader_text);
+
+	C4DrawGLShader fragment_shader(StdMeshMaterialShader::FRAGMENT);
+	fragment_shader.Load(fragment_shader_text);
+
+	multi_blt_program.reset(new C4DrawGLProgram(&fragment_shader, &vertex_shader, NULL));
+
 	// done
 	return Active;
 }
@@ -861,6 +1104,7 @@ bool CStdGL::InvalidateDeviceObjects()
 #endif
 	// deactivate
 	Active=false;
+	multi_blt_program.reset(NULL);
 	// invalidate font objects
 	// invalidate primary surfaces
 	if (lines_tex)

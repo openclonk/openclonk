@@ -1403,12 +1403,6 @@ install(
 )
 
 if (NOT APPLE)
-	add_custom_target(icon32 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png)
-	add_custom_target(icon64 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png)
-	add_custom_target(icon128 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png)
-	add_custom_target(icon256 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png)
-	add_custom_target(icon512 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png)
-	add_dependencies(data icon32 icon64 icon128 icon256 icon512)
 	install(
 		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png
 		DESTINATION share/icons/hicolor/32x32/apps

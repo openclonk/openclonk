@@ -8,48 +8,23 @@
 #include Library_Plant
 #include Library_Crop
 
-private func SeedArea() { return 50; }
+private func SeedArea() { return 60; }
 private func SeedChance() {	return 250; }
-private func SeedAmount() { return 15; }
-private func SeedOffset() { return 10; }
-
-local stalks;
+private func SeedAmount() { return 4; } // small seed area -> don't allow too many plants
+private func SeedOffset() { return 20; }
 
 protected func Construction()
 {
+	// Editable ActMap
+	ActMap = { Prototype = this.Prototype.ActMap };
 	StartGrowth(this.growth);
-	stalks = [];
 	return _inherited(...);
 }
 
 protected func Initialize()
 {
-	if (GetLength(stalks)) return;
-	// Create 3-5 stalks
-	var num = Random(3);
-	for (var i = 0; i < 3+num; i++)
-	{
-		var x = 12/(3+num) * i - 6;
-		var y = GetObjHeight()/2;
-		// Search for ground level
-		while (GBackSolid(x,y) && y > -13) y--;
-		// Skip the stalk
-		if (GBackSolid(x,y)) continue;
-		while (!GBackSolid(x,y+1) && y < 13) y++;
-		// Skip the stalk maybe again!
-		if (!GBackSolid(x,y+1)) continue;
+	SetAction("Swing");
 
-		var stalk = CreateObject(WheatStalk, x,y+1, GetOwner());
-		stalk->SetCon(GetCon());
-		stalk->StartGrowth(this.growth);
-		stalk->SetAction("Swing");
-		stalk->SetDir(Random(2)*2-1);
-		stalk->SetPhase(Random(25));
-		stalk->SetMother(this);
-		// Be sure that the stalk will adjust its growth in 1 frame
-		ScheduleCall(stalk, "AdjustGrowth", 1);
-		stalks[GetLength(stalks)] = stalk;
-	}
 	AddEffect("WaterCheck", this, 2, 70, this);
 	AddEffect("WindCheck", this, 3, 350, this);
 }
@@ -120,8 +95,7 @@ protected func FxWindCheckStart(object obj, effect)
 	if (Abs(GetWind()) < 25) effect.speed = 0;
 	else if (Abs(GetWind()) == 100) effect.speed = 1;
 	else effect.speed = 4 - Abs(GetWind())/25;
-	for (var stalk in stalks)
-		stalk->SetSwingSpeed(effect.speed);
+	SetSwingSpeed(effect.speed);
 }
 
 protected func FxWindCheckTimer(object obj, effect)
@@ -144,25 +118,23 @@ protected func FxWindCheckTimer(object obj, effect)
 	}
 	if (change)
 	{
-		for (var stalk in stalks)
-		{
-			if (stalk)
-				stalk->SetSwingSpeed(effect.speed);
-		}
+		SetSwingSpeed(effect.speed);
 	}
 }
 
-/* Callbacks, engine calls */
-
-// Destroy all stalks!
-protected func Destruction()
+// Sets the actions' delays
+// Of course this does mean that: 0 = no movement, 1 = fastest movement, >1 = movements slows down
+public func SetSwingSpeed(int delay)
 {
-	for (var stalk in stalks)
-	{
-		if (stalk)
-			stalk->RemoveObject();
-	}
+	ActMap["Swing"] = { Prototype = ActMap["Swing"], Delay = delay };
+	ActMap["Swing2"] = { Prototype = ActMap["Swing2"], Delay = delay };
+	// Restart action
+	var phase = GetPhase();
+	SetAction(GetAction());
+	SetPhase(phase);
 }
+
+/* Callbacks */
 
 public func IsCrop() { return true; }
 
@@ -172,3 +144,35 @@ local Collectible = 0;
 local growth = 3;
 local degrowth = -6;
 local fastgrowth = 9;
+
+local ActMap = {
+		Swing = {
+			Prototype = Action,
+			Name = "Swing",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			X = 0,
+			Y = 0,
+			Wdt = 10,
+			Hgt = 20,
+			Delay = 1,
+			Length = 18,
+			NextAction = "Swing2"
+		},
+		Swing2 = {
+			Prototype = Action,
+			Name = "Swing",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			X = 0,
+			Y = 0,
+			Wdt = 10,
+			Hgt = 20,
+			Delay = 1,
+			Length = 18,
+			Reverse = 1,
+			NextAction = "Swing"
+		}
+};

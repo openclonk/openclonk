@@ -96,9 +96,13 @@ Section
   File "*.oc?"
   
   ; delete obsolete folders
+  ; from 1.0
   Delete "BackToTheRocks.ocf"
+  ; from 2.0
   Delete "BeyondTheRocks.ocf"
-  ; these got in in release 4.0, bug #1029
+  ; from 3.0
+  Delete "Settlement.ocf"
+  ; from 4.0 (these accidentally got in in release, bug #1029)
   Delete "Issues.ocf"
   Delete "Experimental.ocd"
   Delete "Experimental.ocf"

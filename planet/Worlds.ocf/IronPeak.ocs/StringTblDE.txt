@@ -5,8 +5,8 @@ DiffNormal=Normal
 DescDiffNormal=Die Schwierigkeit dieser Runde ist normal.
 DiffHard=Schwer
 DescDiffHard=Die Schwierigkeit dieser Runde ist schwer.
-DiffInsane=Insane
-DescDiffInsane=Die Schwierigkeit dieser Runde ist insane.
+DiffInsane=Irrsinnig
+DescDiffInsane=Die Schwierigkeit dieser Runde ist irrsinnig.
 
 # Scenario parameters: map size
 MapSize=Kartengröße
@@ -17,8 +17,3 @@ MapAverage=Durchschnittlich
 DescMapAverage=Die Karte dieser Runde wird durchschnittlich sein.
 MapLarge=Groß
 DescMapLarge=Die Karte dieser Runde wird groß sein.
-
-# Scenario parameters: achievements
-AchievementNormal=Runde auf einfach geschafft.
-AchievementHard=Runde auf schwer geschafft.
-AchievementInsane=Runde auf insane geschafft.

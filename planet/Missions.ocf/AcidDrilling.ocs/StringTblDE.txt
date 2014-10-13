@@ -1,3 +1,2 @@
 NamePlrTeam=Spieler
 NameCrysTeam=Kristalle
-Completed=Abgeschlossen

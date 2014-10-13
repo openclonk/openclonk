@@ -60,6 +60,8 @@ protected func Initialize()
 // Gamecall from goals, set next mission.
 protected func OnGoalsFulfilled()
 {
+	// Achievement star
+	GainScenarioAchievement("Done");
 	// Dialogue options -> next round.
 	SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
 	// Normal scenario ending by goal library.

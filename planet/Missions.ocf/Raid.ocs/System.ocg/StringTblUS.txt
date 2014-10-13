@@ -26,7 +26,7 @@ Newton6=East (right) of the village you can find coniferous trees. Those are per
 
 Newton100=Hey %s! Did you survive the attacks?
 Newton101=Yes. As you can see. I was able to watch the disaster from the forest.
-Newton102=It will take us month to rebuild everything. In the meantime, we'll be defenseless against their attacks.
+Newton102=It will take us months to rebuild everything. In the meantime, we'll be defenseless against their attacks.
 Newton103=Who are the attackers?
 Newton104=It's the henchmen of \"king\" Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
 Newton105=Why \"king\"?
@@ -140,7 +140,7 @@ Pyrit2=Indeed. What brings you to Wipf Town?
 Pyrit3=Clunker village got destroyed by the henchmen of evil tyrant Harx. I've promised to help and Newton sent me to you.
 Pyrit4=I've seen the planes and I've heard the rumbling. I was afraid something like that would happen. It's because of the taxes they haven't paid, isn't it?
 Pyrit5=It's not taxes. It's extortion! They aren't paying as a matter of principle.
-Pyrit6=Well, we're still paying. But he keeps rising the tribune. I'm afraid that this will not end well.
+Pyrit6=Well, we're still paying. But he keeps rising the tribute. I'm afraid that this will not end well.
 Pyrit7=So are you going to support me? I need to get there and teach that evil king a lesson.
 Pyrit8=How do you plan to get there? He lives in a heavily guarded fortress on the Golden Mountain. 
 Pyrit9=He got here by plane. Can't we build those as well?

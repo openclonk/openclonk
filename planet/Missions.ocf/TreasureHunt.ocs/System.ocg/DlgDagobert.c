@@ -69,12 +69,12 @@ func Dlg_Dagobert_Oil1(object clonk)
 {
 	if (g_got_oil)
 	{
-		MessageBox("$DagobertOil1B$", clonk, dlg_target); // oil for gem
+		MessageBox("$DagobertOil1C$", clonk, dlg_target); // oil for gem
 		SetDialogueProgress(2);
 	}
 	else if (g_got_gem_task)
 	{
-		MessageBox("$DagobertOil1C$", clonk, dlg_target); // u already got oil
+		MessageBox("$DagobertOil1B$", clonk, dlg_target); // u already got oil
 		SetDialogueProgress(2);
 	}
 	else

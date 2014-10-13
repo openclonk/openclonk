@@ -226,7 +226,15 @@ namespace C4GUI
 
 	void ComboBox::SetText(const char *szToText)
 	{
-		if (szToText) SCopy(szToText, Text, C4MaxTitle); else *Text=0;
+		// set text without accelerator keys
+		if (szToText)
+		{
+			StdStrBuf sTxt(szToText);
+			sTxt.Replace("&", "");
+			SCopy(sTxt.getData(), Text, C4MaxTitle);
+		}
+		else
+			*Text=0;
 	}
 
 	void ComboBox::OnCtxComboSelect(C4GUI::Element *pListItem, const ComboMenuCBStruct &rNewSel)

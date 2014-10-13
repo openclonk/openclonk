@@ -157,8 +157,8 @@ public func StartInstantFlight(int angle, int new_throttle)
 	throttle = new_throttle;
 	thrust = new_throttle;
 	SetR(angle);
-	SetXDir(Cos(angle, thrust));
-	SetYDir(Sin(angle, thrust));
+	SetXDir(Sin(angle, thrust));
+	SetYDir(-Cos(angle, thrust));
 	return;
 }
 

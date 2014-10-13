@@ -2194,8 +2194,7 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	const StdMeshMaterial* material = ::MeshMaterialManager.GetMaterial(Material->GetData().getData());
 	if (!material) return false;
 
-	StdSubMeshInstance& submesh = Obj->pMeshInstance->GetSubMesh(iSubMesh);
-	submesh.SetMaterial(*material);
+	Obj->pMeshInstance->SetMaterial(iSubMesh, *material);
 	return true;
 }
 
@@ -2486,9 +2485,11 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4AVP_R"                   ,C4V_Int,      C4AVP_R },
 	{ "C4AVP_AbsX"                ,C4V_Int,      C4AVP_AbsX },
 	{ "C4AVP_AbsY"                ,C4V_Int,      C4AVP_AbsY },
+	{ "C4AVP_Dist"                ,C4V_Int,      C4AVP_Dist },
 	{ "C4AVP_XDir"                ,C4V_Int,      C4AVP_XDir },
 	{ "C4AVP_YDir"                ,C4V_Int,      C4AVP_YDir },
 	{ "C4AVP_RDir"                ,C4V_Int,      C4AVP_RDir },
+	{ "C4AVP_AbsRDir"             ,C4V_Int,      C4AVP_AbsRDir },
 	{ "C4AVP_CosR"                ,C4V_Int,      C4AVP_CosR },
 	{ "C4AVP_SinR"                ,C4V_Int,      C4AVP_SinR },
 	{ "C4AVP_CosV"                ,C4V_Int,      C4AVP_CosV },

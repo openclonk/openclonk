@@ -7,6 +7,7 @@
 
 
 #include Library_HasExtraSlot
+#include Library_ElevatorControl
 
 local animAim;
 local animTurn;
@@ -108,11 +109,8 @@ local angPrec = 1000;
 
 public func ControlUseHolding(object clonk, int ix, int iy)
 {
-	if (!clonk)
-	{
-		clonk->CancelUse();
-		return true;
-	}
+	if (!clonk) return true;
+	
 	var r = ConvertAngle(Angle(0,0,ix,iy,angPrec));
 
 	var iColor = RGB(255,255,255);
@@ -120,8 +118,14 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 		iColor = RGB(255,0,0);
 	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec), iColor, 20);
 
-	SetAnimationPosition(animAim, Anim_Const(AnimAngle(r/angPrec)*3954444/100000));
+	SetCannonAngle(r);
+	
 	return true;
+}
+
+public func SetCannonAngle(int r)
+{
+	return SetAnimationPosition(animAim, Anim_Const(AnimAngle(r/angPrec)*3954444/100000));
 }
 
 private func AnimAngle(int angle)
@@ -138,7 +142,7 @@ private func AnimAngle(int angle)
 private func ConvertAngle(int angle)
 {
 	var nR = BoundBy(Normalize(angle,-180 * angPrec,angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
-	var r2 = nR - GetR() * angPrec;
+	//var r2 = nR - GetR() * angPrec;
 	//debug messages
 	//Message(Format("nR = %d|rL = %d",nR,r2));
 	
@@ -164,9 +168,8 @@ private func UseAnyStop(object clonk, int ix, int iy, int item)
 {
 
 	RemoveTrajectory(this);
-	
-	var result = CheckForKeg(clonk);
-	if (!result)
+
+	if (!CheckForKeg(clonk))
 		return true;
 
 	var projectile = clonk->GetHandItem(item);
@@ -182,16 +185,16 @@ private func UseAnyStop(object clonk, int ix, int iy, int item)
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy,angPrec));
-		var powder = Contents(0)->PowderCount();
+		var powder = Contents(0)->GetPowderCount();
 		if(powder >= 1 || projectile->~IsSelfPropellent())
 		{
 			var powderkeg = Contents(0);
 			//If there is a powder keg, take powder from it
-			powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
+			powderkeg->DoPowderCount(-1);
 			
 			DoFire(projectile, clonk, Angle(0,0,ix,iy, angPrec));
 			AddEffect("IntCooldown",this,1,1,this);
-			if(powderkeg->PowderCount() == 0)
+			if(powderkeg->GetPowderCount() == 0)
 			{
 				powderkeg->RemoveObject();
 				CreateObject(Barrel);

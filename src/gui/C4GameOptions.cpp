@@ -43,7 +43,7 @@ void C4GameOptionsList::Option::InitOption(C4GameOptionsList *pForDlg)
 // ----------- C4GameOptionsList::OptionDropdown ----------------------------------------------------------------
 
 C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForDlg, const char *szCaption, bool fReadOnly)
-		: Option(pForDlg)
+		: Option(pForDlg), fReadOnly(fReadOnly)
 {
 	bool fIsPreGame = pForDlg->IsPreGame();
 	CStdFont &rUseFont = fIsPreGame ? C4Startup::Get()->Graphics.BookFont : ::GraphicsResource.TextFont;
@@ -129,8 +129,16 @@ void C4GameOptionsList::OptionScenarioParameter::DoDropdownSelChange(int32_t idN
 
 void C4GameOptionsList::OptionScenarioParameter::Update()
 {
+	int32_t val=0;
+	// display forced league value?
+	bool fLeagueReadOnly = false;
+	if (::Config.Network.LeagueServerSignUp && !fReadOnly && !pForDlg->IsPreGameSingle()) val = ParameterDef->GetLeagueValue();
+	if (val)
+		fLeagueReadOnly = true;
+	else
+		val = pForDlg->GetParameters()->GetValueByID(ParameterDef->GetID(), ParameterDef->GetDefault());
+	if (!fReadOnly) pDropdownList->SetReadOnly(fLeagueReadOnly);
 	// update data to currently set option
-	int32_t val = pForDlg->GetParameters()->GetValueByID(ParameterDef->GetID(), ParameterDef->GetDefault());
 	if (LastValueValid && val == LastValue) return;
 	const C4ScenarioParameterDef::Option *option = ParameterDef->GetOptionByValue(val);
 	if (option)

@@ -181,11 +181,18 @@ public:
 		virtual StdStrBuf GetOpenText(); // get open button text
 		virtual StdStrBuf GetOpenTooltip();
 		C4MapFolderData *GetMapData() const { return pMapData; }
+
+		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return NULL; }
+		virtual const C4AchievementGraphics *GetAchievementGfx() const { return NULL; }
 	};
 
 	// .ocf subfolder: Read through by group
 	class SubFolder : public Folder
 	{
+	private:
+		C4ScenarioParameterDefs AchievementDefs;
+		C4AchievementGraphics AchievementGfx;
+
 	public:
 		SubFolder(class C4ScenarioListLoader *pLoader, Folder *pParent) : Folder(pLoader, pParent) {}
 		virtual ~SubFolder() {}
@@ -193,6 +200,9 @@ public:
 		virtual const char *GetDefaultExtension() { return "ocf"; }
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_FOLDER"), true); }
+
+		virtual const C4ScenarioParameterDefs *GetAchievementDefs() const { return &AchievementDefs; }
+		virtual const C4AchievementGraphics *GetAchievementGfx() const { return &AchievementGfx; }
 
 	protected:
 		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // load custom data for entry type - icon fallback to folder icon
@@ -460,6 +470,8 @@ protected:
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
 	void OnButtonScenario(C4GUI::Control *pEl);
+
+	virtual void OnLeagueOptionChanged();
 
 	friend class C4MapFolderData;
 

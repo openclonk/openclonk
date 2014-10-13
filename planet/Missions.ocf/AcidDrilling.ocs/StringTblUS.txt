@@ -1,3 +1,2 @@
 NamePlrTeam=Players
 NameCrysTeam=Crystals
-Completed=Completed

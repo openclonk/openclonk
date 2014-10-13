@@ -198,13 +198,13 @@ public:
 	bool GetVersion(StdStrBuf *pVersion);
 };
 
-// Loads references + current update url string (mini-HTTP-client)
-class C4Network2RefClient : public C4Network2UpdateClient
+// Loads references (mini-HTTP-client)
+class C4Network2RefClient : public C4Network2HTTPClient
 {
 protected:
 	virtual int32_t GetDefaultPort() { return C4NetStdPortRefServer; }
 public:
-	C4Network2RefClient() : C4Network2UpdateClient() {}
+	C4Network2RefClient() : C4Network2HTTPClient() {}
 
 	bool QueryReferences();
 	bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);

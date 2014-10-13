@@ -242,71 +242,119 @@ void C4PXSSystem::Execute()
 
 void C4PXSSystem::Draw(C4TargetFacet &cgo)
 {
-
 	// Draw PXS in this region
 	C4Rect VisibleRect(cgo.TargetX, cgo.TargetY, cgo.Wdt, cgo.Hgt);
 	VisibleRect.Enlarge(20);
 
-	// First pass: draw simple PXS (lines/pixels)
+	// Go through all PXS and build vertex arrays. The vertex arrays are
+	// then submitted to the GL in one go.
+	std::vector<C4BltVertex> pixVtx;
+	std::vector<C4BltVertex> lineVtx;
+	std::map<int, std::vector<C4BltVertex> > bltVtx;
+	// TODO: reserve some space to avoid too many allocations
+	// TODO: keep vertex mem allocated between draw invocations
+
 	float cgox = cgo.X - cgo.TargetX, cgoy = cgo.Y - cgo.TargetY;
+	// First pass: draw simple PXS (lines/pixels)
 	unsigned int cnt;
 	for (cnt=0; cnt < PXSMaxChunk; cnt++)
+	{
 		if (Chunk[cnt] && iChunkPXS[cnt])
 		{
 			C4PXS *pxp = Chunk[cnt];
 			for (unsigned int cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 				{
-					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
-					if (pMat->PXSFace.Surface && Config.Graphics.PXSGfx)
-						continue;
-					// old-style: unicolored pixels or lines
-					DWORD dwMatClr = ::Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
-					if (fixtoi(pxp->xdir) || fixtoi(pxp->ydir))
+					C4Material *pMat = &::MaterialMap.Map[pxp->Mat];
+					const DWORD dwMatClr = ::Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
+					if(pMat->PXSFace.Surface)
 					{
-						// lines for stuff that goes whooosh!
-						int len = fixtoi(Abs(pxp->xdir) + Abs(pxp->ydir));
-						dwMatClr = uint32_t(Max<int>(dwMatClr >> 24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr & 0xffffff);
-						pDraw->DrawLineDw(cgo.Surface,
-						                              fixtof(pxp->x - pxp->xdir) + cgox, fixtof(pxp->y - pxp->ydir) + cgoy,
-						                              fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy,
-						                              dwMatClr);
+						int32_t pnx, pny;
+						pMat->PXSFace.GetPhaseNum(pnx, pny);
+						int32_t fcWdt = pMat->PXSFace.Wdt;
+						int32_t fcHgt = pMat->PXSFace.Hgt;
+						// calculate draw width and tile to use (random-ish)
+						uint32_t size = (1103515245 * (cnt * PXSChunkSize + cnt2) + 12345) >> 3;
+						float z = pMat->PXSGfxSize * (0.625f + 0.05f * int(size % 16));
+						pny = (cnt2 / pnx) % pny; pnx = cnt2 % pnx;
+
+						const float w = z;
+						const float h = z * fcHgt / fcWdt;
+						const float x1 = fixtof(pxp->x) + cgox + z * pMat->PXSGfxRt.tx / fcWdt;
+						const float y1 = fixtof(pxp->y) + cgoy + z * pMat->PXSGfxRt.ty / fcWdt;
+						const float x2 = x1 + w;
+						const float y2 = y1 + h;
+
+						int32_t sfcWdt = pMat->PXSFace.Surface->Wdt;
+						int32_t sfcHgt = pMat->PXSFace.Surface->Hgt;
+
+						C4BltVertex vtx[6];
+						vtx[0].tx = (pnx + 0.f) * fcWdt / sfcWdt; vtx[0].ty = (pny + 0.f) * fcHgt / sfcHgt;
+						vtx[0].ftx = x1; vtx[0].fty = y1;
+						vtx[1].tx = (pnx + 1.f) * fcWdt / sfcWdt; vtx[1].ty = (pny + 0.f) * fcHgt / sfcHgt;
+						vtx[1].ftx = x2; vtx[1].fty = y1;
+						vtx[2].tx = (pnx + 1.f) * fcWdt / sfcWdt; vtx[2].ty = (pny + 1.f) * fcHgt / sfcHgt;
+						vtx[2].ftx = x2; vtx[2].fty = y2;
+						vtx[3].tx = (pnx + 0.f) * fcWdt / sfcWdt; vtx[3].ty = (pny + 1.f) * fcHgt / sfcHgt;
+						vtx[3].ftx = x1; vtx[3].fty = y2;
+						DwTo4UB(0xFFFFFFFF, vtx[0].color);
+						DwTo4UB(0xFFFFFFFF, vtx[1].color);
+						DwTo4UB(0xFFFFFFFF, vtx[2].color);
+						DwTo4UB(0xFFFFFFFF, vtx[3].color);
+						vtx[4] = vtx[2];
+						vtx[5] = vtx[0];
+
+						std::vector<C4BltVertex>& vec = bltVtx[pxp->Mat];
+						vec.push_back(vtx[0]);
+						vec.push_back(vtx[1]);
+						vec.push_back(vtx[2]);
+						vec.push_back(vtx[3]);
+						vec.push_back(vtx[4]);
+						vec.push_back(vtx[5]);
 					}
 					else
-						// single pixels for slow stuff
-						pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
+					{
+						// old-style: unicolored pixels or lines
+						if (fixtoi(pxp->xdir) || fixtoi(pxp->ydir))
+						{
+							// lines for stuff that goes whooosh!
+							int len = fixtoi(Abs(pxp->xdir) + Abs(pxp->ydir));
+							const DWORD dwMatClrLen = uint32_t(Max<int>(dwMatClr >> 24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr & 0xffffff);
+							C4BltVertex begin, end;
+							begin.ftx = fixtof(pxp->x - pxp->xdir) + cgox; begin.fty = fixtof(pxp->y - pxp->ydir) + cgoy;
+							end.ftx = fixtof(pxp->x) + cgox; end.fty = fixtof(pxp->y) + cgoy;
+							DwTo4UB(dwMatClrLen, begin.color);
+							DwTo4UB(dwMatClrLen, end.color);
+							lineVtx.push_back(begin);
+							lineVtx.push_back(end);
+						}
+						else
+						{
+							// single pixels for slow stuff
+							//pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
+							C4BltVertex vtx;
+							vtx.ftx = fixtof(pxp->x) + cgox;
+							vtx.fty = fixtof(pxp->y) + cgoy;
+							DwTo4UB(dwMatClr, vtx.color);
+							pixVtx.push_back(vtx);
+						}
+					}
 				}
 		}
+	}
+
+	pDraw->PerformMultiPix(cgo.Surface, &pixVtx[0], pixVtx.size());
+	pDraw->PerformMultiLines(cgo.Surface, &lineVtx[0], lineVtx.size(), 1.0f);
 
 	// PXS graphics disabled?
 	if (!Config.Graphics.PXSGfx)
 		return;
 
-	// Second pass: draw sprites
-	for (cnt=0; cnt < PXSMaxChunk; cnt++)
-		if (Chunk[cnt] && iChunkPXS[cnt])
-		{
-			C4PXS *pxp = Chunk[cnt];
-			for (unsigned int cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++)
-				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
-				{
-					C4Material * pMat = &::MaterialMap.Map[pxp->Mat];
-					if (!pMat->PXSFace.Surface)
-						continue;
-					int32_t pnx, pny;
-					pMat->PXSFace.GetPhaseNum(pnx, pny);
-					int32_t fcWdt = pMat->PXSFace.Wdt; //int32_t fcWdtH = Max(fcWdt / 3, 1);
-					// calculate draw width and tile to use (random-ish)
-					uint32_t size = (1103515245 * (cnt * PXSChunkSize + cnt2) + 12345) >> 3;
-					float z = pMat->PXSGfxSize * (0.625f + 0.05f * int(size % 16));
-					pny = (cnt2 / pnx) % pny; pnx = cnt2 % pnx;
-					// draw
-					pMat->PXSFace.DrawX(cgo.Surface,
-					                    fixtof(pxp->x) + cgox + z * pMat->PXSGfxRt.tx / fcWdt, fixtof(pxp->y) + cgoy + z * pMat->PXSGfxRt.ty / fcWdt,
-					                    z, z * pMat->PXSFace.Hgt / fcWdt, pnx, pny);
-				}
-		}
-
+	for(std::map<int, std::vector<C4BltVertex> >::const_iterator iter = bltVtx.begin(); iter != bltVtx.end(); ++iter)
+	{
+		C4Material *pMat = &::MaterialMap.Map[iter->first];
+		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), pMat->PXSFace.Surface->ppTex[0]);
+	}
 }
 
 void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t level)

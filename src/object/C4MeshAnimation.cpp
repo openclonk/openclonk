@@ -30,9 +30,11 @@ namespace
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderR> C4ValueProviderRID("r");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsX> C4ValueProviderAbsXID("absx");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsY> C4ValueProviderAbsYID("absy");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderDist> C4ValueProviderDistID("dist");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderXDir> C4ValueProviderXDirID("xdir"); 
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderYDir> C4ValueProviderYDirID("ydir"); 
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderRDir> C4ValueProviderRDirID("rdir");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsRDir> C4ValueProviderAbsRDirID("absrdir");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderCosR> C4ValueProviderCosRID("cosr");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderSinR> C4ValueProviderSinRID("sinr");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderCosV> C4ValueProviderCosVID("cosv");
@@ -78,6 +80,11 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 		if (Data[4].getInt() == 0)
 			throw new C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderAbsY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
+	case C4AVP_Dist:
+		if (!pForObj) return NULL;
+		if (Data[4].getInt() == 0)
+			throw new C4AulExecError("Length cannot be zero");
+		return new C4ValueProviderDist(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_XDir:
 		if (!pForObj) return NULL;
 		if (Data[3].getInt() == 0)
@@ -90,9 +97,15 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 		return new C4ValueProviderYDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_RDir:
 		if (!pForObj) return NULL;
-		if (Data[3].getInt() == 0)
-			throw new C4AulExecError("MaxRDir cannot be zero");
-		return new C4ValueProviderRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
+		if (Data[4].getInt() - Data[3].getInt() == 0)
+			throw new C4AulExecError("MaxRDir - MinRDir cannot be zero");
+		return new C4ValueProviderRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
+
+	case C4AVP_AbsRDir:
+		if (!pForObj) return NULL;
+		if (Data[4].getInt() - Data[3].getInt() == 0)
+			throw new C4AulExecError("MaxRDir - MinRDir cannot be zero");
+		return new C4ValueProviderAbsRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
 	case C4AVP_CosR:
 		if (!pForObj) return NULL;
 		return new C4ValueProviderCosR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
@@ -317,6 +330,14 @@ bool C4ValueProviderAbsX::Execute()
 	// Object might have been removed
 	if(!Object) return false;
 
+	C4Real dist;
+	if(Object->xdir > itofix(100) || Object->ydir > itofix(100))
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir), fixtoi(Object->ydir)));
+	else if(Object->xdir > itofix(1) || Object->ydir > itofix(1))
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir, 256), fixtoi(Object->ydir, 256)), 16);
+	else
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir, 16384), fixtoi(Object->ydir, 16384)), 128);
+
 	Value += (End - Begin) * Abs(Object->xdir) / Length;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
@@ -360,6 +381,50 @@ bool C4ValueProviderAbsY::Execute()
 }
 
 void C4ValueProviderAbsY::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Separator();
+	pComp->Value(Object);
+	pComp->Separator();
+	pComp->Value(Begin);
+	pComp->Separator();
+	pComp->Value(End);
+	pComp->Separator();
+	pComp->Value(Length);
+}
+
+C4ValueProviderDist::C4ValueProviderDist(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
+		Object(object), Begin(begin), End(end), Length(length)
+{
+	Value = pos;
+}
+
+bool C4ValueProviderDist::Execute()
+{
+	// Object might have been removed
+	if(!Object) return false;
+
+	// The following computes sqrt(xdir**2 + ydir**2), and it attempts to
+	// do so without involving floating point numbers, and at the same
+	// time cover a large range of xdir and ydir.
+	C4Real dist;
+	if(Object->xdir > itofix(256) || Object->ydir > itofix(256))
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir), fixtoi(Object->ydir)));
+	else if(Object->xdir > itofix(1) || Object->ydir > itofix(1))
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir, 256), fixtoi(Object->ydir, 256)), 256);
+	else
+		dist = itofix(Distance(0, 0, fixtoi(Object->xdir, 65536), fixtoi(Object->ydir, 65536)), 65536);
+
+	Value += (End - Begin) * dist / Length;
+
+	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
+	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
+		Value -= (End - Begin);
+
+	return true;
+}
+
+void C4ValueProviderDist::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
 	pComp->Separator();
@@ -428,8 +493,8 @@ void C4ValueProviderYDir::CompileFunc(StdCompiler* pComp)
 	pComp->Value(MaxYDir);
 }
 
-C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real max_rdir):
-		Object(object), Begin(begin), End(end), MaxRDir(max_rdir)
+C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir):
+		Object(object), Begin(begin), End(end), MinRDir(min_rdir), MaxRDir(max_rdir)
 {
 	Execute();
 }
@@ -439,11 +504,43 @@ bool C4ValueProviderRDir::Execute()
 	// Object might have been removed
 	if(!Object) return false;
 
-	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->rdir/MaxRDir), itofix(1));
+	C4Real val = (Object->rdir - MinRDir) / (MaxRDir - MinRDir);
+
+	Value = Begin + (End - Begin) * BoundBy<C4Real>(val, itofix(0), itofix(1));
 	return true;
 }
 
 void C4ValueProviderRDir::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Separator();
+	pComp->Value(Object);
+	pComp->Separator();
+	pComp->Value(Begin);
+	pComp->Separator();
+	pComp->Value(End);
+	pComp->Separator();
+	pComp->Value(MaxRDir);
+}
+
+C4ValueProviderAbsRDir::C4ValueProviderAbsRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir):
+		Object(object), Begin(begin), End(end), MinRDir(min_rdir), MaxRDir(max_rdir)
+{
+	Execute();
+}
+
+bool C4ValueProviderAbsRDir::Execute()
+{
+	// Object might have been removed
+	if(!Object) return false;
+
+	C4Real val = (Abs(Object->rdir) - MinRDir) / (MaxRDir - MinRDir);
+
+	Value = Begin + (End - Begin) * BoundBy<C4Real>(val, itofix(0), itofix(1));
+	return true;
+}
+
+void C4ValueProviderAbsRDir::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
 	pComp->Separator();

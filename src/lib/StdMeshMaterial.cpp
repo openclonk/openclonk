@@ -826,7 +826,9 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass():
-	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise)
+	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise),
+	FragmentShader(NULL), VertexShader(NULL), GeometryShader(NULL),
+	Program(NULL)
 {
 	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
 	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
@@ -1033,6 +1035,11 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 void StdMeshMatManager::Clear()
 {
 	Materials.clear();
+
+	Programs.clear();
+	FragmentShaders.clear();
+	VertexShaders.clear();
+	GeometryShaders.clear();
 }
 
 void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader)
@@ -1087,7 +1094,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			Materials[material_name] = mat;
 
 			// To Gfxspecific setup of the material; choose working techniques
-			if (!pDraw->PrepareMaterial(Materials[material_name]))
+			if (!pDraw->PrepareMaterial(*this, Materials[material_name]))
 			{
 				Materials.erase(material_name);
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
@@ -1115,6 +1122,51 @@ StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdM
   ++next_iter;
   Materials.erase(iter.iter_);
   return next_iter;
+}
+
+const StdMeshMaterialShader* StdMeshMatManager::AddShader(const char* name, const char* language, StdMeshMaterialShader::Type type, const char* text, bool success_if_exists)
+{
+	ShaderMap* map = NULL;
+	switch(type)
+	{
+	case StdMeshMaterialShader::FRAGMENT:
+		map = &FragmentShaders;
+		break;
+	case StdMeshMaterialShader::VERTEX:
+		map = &VertexShaders;
+		break;
+	case StdMeshMaterialShader::GEOMETRY:
+		map = &GeometryShaders;
+		break;
+	}
+
+	StdCopyStrBuf name_buf(name);
+	ShaderMap::iterator iter = map->find(name_buf);
+	if(iter != map->end())
+	{
+		// Shader exists
+		if(success_if_exists)
+			return iter->second.get();
+		else
+			return NULL;
+	}
+	else
+	{
+		std::unique_ptr<StdMeshMaterialShader> shader = pDraw->CompileShader(language, type, text);
+		std::pair<ShaderMap::iterator, bool> inserted = map->insert(std::make_pair(name_buf, std::move(shader)));
+		assert(inserted.second == true);
+		iter = inserted.first;
+
+		return iter->second.get();
+	}
+}
+
+const StdMeshMaterialProgram& StdMeshMatManager::AddProgram(const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader, std::unique_ptr<StdMeshMaterialProgram> RREF program)
+{
+	std::tuple<const StdMeshMaterialShader*, const StdMeshMaterialShader*, const StdMeshMaterialShader*> key = std::make_tuple(fragment_shader, vertex_shader, geometry_shader);
+
+	std::pair<ProgramMap::iterator, bool> inserted = Programs.insert(std::make_pair(key, std::move(program)));
+	return *inserted.first->second;
 }
 
 StdMeshMatManager MeshMaterialManager;

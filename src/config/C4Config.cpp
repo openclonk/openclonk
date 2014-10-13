@@ -56,6 +56,9 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	// assimilate old data
 	pComp->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 
+	// temporary path only set during updates
+	pComp->Value(mkNamingAdapt(s(TempUpdatePath),   "TempUpdatePath",     ""));
+
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
@@ -152,10 +155,10 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MasterReferencePeriod,   "MasterReferencePeriod",120           ));
 	pComp->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	pComp->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
-	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "boom.openclonk.org:80/server/"));
+	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "league.openclonk.org:80/league.php"));
 	pComp->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
 #ifdef WITH_AUTOMATIC_UPDATE
-	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "boom.openclonk.org:80/server/"));
+	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "www.openclonk.org:80/update/"));
 	pComp->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
@@ -176,7 +179,7 @@ void C4ConfigLobby::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.ham.de.euirc.net", false, true));
+	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.euirc.net", false, true));
 	pComp->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));
@@ -573,7 +576,7 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 		return AlternateServerAddress;
 	// Standard (hardcoded) official league server
 	else
-		return "boom.openclonk.org:80/server/";
+		return "league.openclonk.org:80/league.php";
 }
 
 void C4ConfigNetwork::CheckPortsForCollisions()
@@ -778,6 +781,35 @@ void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 		strncpy(rest - SLen("$HOME"), home.getData(), home.getLength());
 	}
 #endif
+}
+
+void C4Config::CleanupTempUpdateFolder()
+{
+	// Get rid of update path present from before update
+	if (*General.TempUpdatePath)
+	{
+		EraseItem(General.TempUpdatePath);
+		*General.TempUpdatePath = '\0';
+	}
+}
+
+const char *C4Config::MakeTempUpdateFolder()
+{
+	// just pick a temp name
+	StdStrBuf sTempName;
+	sTempName.Copy(AtTempPath("update"));
+	MakeTempFilename(&sTempName);
+	SCopy(sTempName.getData(), General.TempUpdatePath);
+	CreatePath(General.TempUpdatePath);
+	return General.TempUpdatePath;
+}
+
+const char *C4Config::AtTempUpdatePath(const char *szFilename)
+{
+	SCopy(General.TempUpdatePath,AtPathFilename,_MAX_PATH-1);
+	AppendBackslash(AtPathFilename);
+	SAppend(szFilename,AtPathFilename,_MAX_PATH);
+	return AtPathFilename;
 }
 
 C4Config Config;

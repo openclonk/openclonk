@@ -37,6 +37,41 @@
 
 class C4Window;
 
+class C4DrawGLError: public std::exception
+{
+public:
+	C4DrawGLError(const StdStrBuf& buf): Buf(buf) {}
+	virtual ~C4DrawGLError() throw() {}
+
+	virtual const char* what() const throw() { return Buf.getData(); }
+
+private:
+	StdCopyStrBuf Buf;
+};
+
+// GLSL shaders
+class C4DrawGLShader: public StdMeshMaterialShader
+{
+public:
+	C4DrawGLShader(Type shader_type);
+	virtual ~C4DrawGLShader();
+
+	void Load(const char* code);
+
+	virtual Type GetType() const;
+
+	GLuint Shader;
+};
+
+class C4DrawGLProgram: public StdMeshMaterialProgram
+{
+public:
+	C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader);
+	virtual ~C4DrawGLProgram();
+
+	GLuint Program;
+};
+
 // one OpenGL context
 class CStdGLCtx
 #ifdef USE_COCOA
@@ -98,6 +133,8 @@ protected:
 	GLuint vbo;
 	// texture for smooth lines
 	GLuint lines_tex;
+	// programs for drawing points, lines, quads
+	std::unique_ptr<C4DrawGLProgram> multi_blt_program;
 public:
 	// General
 	void Clear();
@@ -107,7 +144,8 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
-	bool PrepareMaterial(StdMeshMaterial& mat);
+	std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text);
+	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat);
 	// Surface
 	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
@@ -117,6 +155,8 @@ public:
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);
+	void SetupMultiBlt(GLuint tex);
+	void ResetMultiBlt(GLuint tex);
 	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
@@ -124,8 +164,9 @@ public:
 	void FillBG(DWORD dwClr=0);
 	// Drawing
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width);
-	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices);
+	void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width);
+	void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects

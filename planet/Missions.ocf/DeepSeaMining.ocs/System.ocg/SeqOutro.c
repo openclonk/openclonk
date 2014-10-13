@@ -12,25 +12,25 @@ func Outro_Start()
 	return ScheduleNext(100);
 }
 
-func Outro_0()
+func Outro_1()
 {
 	this.communicator->StartCommunication(); // 250 frames
 	return ScheduleNext(650);
 }
 
-func Outro_1()
+func Outro_2()
 {
 	Dialogue->MessageBoxAll("$Outro2$", this.hero, true); // let's see if it works
 	return ScheduleNext(50);
 }
 
-func Outro_2()
+func Outro_3()
 {
 	this.communicator->SendCode("...---..."); // 159 frames
 	return ScheduleNext(200);
 }
 
-func Outro_3()
+func Outro_4()
 {
 	this.communicator->StopCommunication();
 	MessageBoxAll("$Outro3$", this.hero, true); // i wonder if anyone has heard us
@@ -49,7 +49,7 @@ func Outro_3()
 	return ScheduleNext(5);
 }
 
-func Outro_4()
+func Outro_5()
 {
 	// Wait for plane to arrive
 	if (this.plane->GetX() < this.communicator->GetX() - 200) return ScheduleSame(5);
@@ -59,7 +59,7 @@ func Outro_4()
 	return ScheduleNext(100);
 }
 
-func Outro_5()
+func Outro_6()
 {
 	MessageBoxAll("$Outro5$", this.hero, true); // we're saved!
 	this.plane->StartInstantFlight(245, 15);
@@ -67,32 +67,32 @@ func Outro_5()
 	return ScheduleNext(60);
 }
 
-func Outro_6()
+func Outro_7()
 {
 	this.plane->StartInstantFlight(280, 5);
 	return ScheduleNext(15);
 }
 
-func Outro_7()
+func Outro_8()
 {
 	this.plane->CancelFlight();
 	return ScheduleNext(40);
 }
 
-func Outro_8()
+func Outro_9()
 {
 	this.pilot->Exit();
 	MessageBoxAll("$Outro6$", this.pilot, true); // hop on everyone!
 	return ScheduleNext(100);
 }
 
-func Outro_9()
+func Outro_10()
 {
 	this.plane->FaceRight();
 	return ScheduleNext(100);
 }
 
-func Outro_10()
+func Outro_11()
 {
 	Sound("Fanfare");
 	return GameOver();
