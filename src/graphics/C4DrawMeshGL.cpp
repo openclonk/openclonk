@@ -17,6 +17,7 @@
 /* OpenGL implementation of Mesh Rendering */
 
 #include "C4Include.h"
+#include <C4Object.h>
 #include <C4DrawGL.h>
 #include <SHA1.h>
 
@@ -612,6 +613,17 @@ namespace
 			FinalTrans(0,2), FinalTrans(1,2), FinalTrans(2,2), 0,
 			FinalTrans(0,3), FinalTrans(1,3), FinalTrans(2,3), 1
 		};
+
+		// Take the player color from the C4Object, if the attached object is not a definition
+		// This is a bit unfortunate because it requires access to C4Object which is otherwise
+		// avoided in this code. It could be replaced by virtual function calls to StdMeshDenumerator
+		C4MeshDenumerator* denumerator = dynamic_cast<C4MeshDenumerator*>(attach->ChildDenumerator);
+		if(denumerator && denumerator->GetObject())
+		{
+			dwModClr = denumerator->GetObject()->ColorMod;
+			dwBlitMode = denumerator->GetObject()->BlitMode;
+			dwPlayerColor = denumerator->GetObject()->Color;
+		}
 
 		// TODO: Take attach transform's parity into account
 		glPushMatrix();
