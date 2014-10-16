@@ -773,7 +773,7 @@ C4AbstractApp::C4AbstractApp() :
 	ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
 	ZeroMemory(&OldDspMode, sizeof(OldDspMode)); OldDspMode.dmSize =  sizeof(OldDspMode);
-	hMainThread = NULL;
+	idMainThread = 0;
 #ifdef _WIN32
 	MessageProc.SetApp(this);
 	Add(&MessageProc);
@@ -787,14 +787,14 @@ C4AbstractApp::~C4AbstractApp()
 bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set instance vars
-	hMainThread = ::GetCurrentThread();
+	idMainThread = ::GetCurrentThreadId();
 	// Custom initialization
 	return DoInit (argc, argv);
 }
 
 void C4AbstractApp::Clear()
 {
-	hMainThread = NULL;
+	idMainThread = 0;
 }
 
 void C4AbstractApp::Quit()

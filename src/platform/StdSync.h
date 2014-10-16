@@ -293,12 +293,12 @@ public:
 class StdThreadCheck
 {
 #if defined(_DEBUG) && defined(_WIN32)
-	HANDLE hThread;
+	DWORD idThread;
 public:
-	StdThreadCheck() : hThread(0) {}
+	StdThreadCheck() : idThread(0) {}
 
-	inline void Set() { hThread = ::GetCurrentThread(); }
-	inline void Check() { assert(hThread == ::GetCurrentThread()); }
+	inline void Set() { idThread = ::GetCurrentThreadId(); }
+	inline void Check() { assert(idThread == ::GetCurrentThreadId()); }
 #else
 public:
 	inline void Set() {}
