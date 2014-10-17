@@ -34,14 +34,11 @@ int32_t PixCol2Mat(BYTE pixc)
 
 void C4Landscape::HandleTexMapUpdate()
 {
-	printf("HandleTexMex\n");
 	UpdatePixMaps();
 }
 
 void C4Landscape::UpdatePixMaps() // Copied from C4Landscape.cpp
 {
-	printf("UpdatePixMaps\n");
-
         int32_t i;
         for (i = 0; i < 256; i++) Pix2Mat[i] = PixCol2Mat(i);
         for (i = 0; i < 256; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]); 
