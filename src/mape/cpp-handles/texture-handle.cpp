@@ -33,6 +33,7 @@ C4TextureMapHandle* c4_texture_map_handle_new(void)
   //but yeah...
   C4TextureMap* map = &::TextureMap;
   map->Clear();
+  map->Init();
   return TEXTURE_MAP_TO_HANDLE(map); //new C4TextureMap);
 }
 

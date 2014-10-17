@@ -495,6 +495,7 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/c4def-handle.cpp
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/landscape-handle.cpp
 	src/mape/cpp-handles/log-handle.h
 	src/mape/cpp-handles/log-handle.cpp
 	src/mape/cpp-handles/mapgen-handle.h
