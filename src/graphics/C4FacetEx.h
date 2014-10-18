@@ -43,7 +43,6 @@ public:
 	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx=0, float nty=0, float Zoom=1);
 	void Set(class C4Surface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
 
-	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2); // uses Target and position
 public:
 	C4TargetFacet &operator = (const C4Facet& rhs)
 	{
