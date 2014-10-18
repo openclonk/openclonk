@@ -993,7 +993,7 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 {
 	C4BltVertex vertices[2];
 	vertices[0].ftx = x1; vertices[0].fty = y1;
-	vertices[1].ftx = x1; vertices[1].fty = y1;
+	vertices[1].ftx = x2; vertices[1].fty = y2;
 	DwTo4UB(dwClr, vertices[0].color);
 	DwTo4UB(dwClr, vertices[1].color);
 	PerformMultiLines(sfcTarget, vertices, 2, width);
