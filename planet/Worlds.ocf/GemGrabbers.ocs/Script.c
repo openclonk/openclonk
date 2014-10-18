@@ -101,8 +101,6 @@ private func InitEnvironment(int difficulty)
 	Cloud->SetPrecipitation("Water", 100 + 25 * difficulty);
 	for (var cloud in FindObjects(Find_ID(Cloud)))
 	{
-		while (cloud->RemoveVertex())
-			/* Empty */;
 		// Make some clouds appear in the foreground with high alpha.
 		if (Random(3) == 0)
 		{

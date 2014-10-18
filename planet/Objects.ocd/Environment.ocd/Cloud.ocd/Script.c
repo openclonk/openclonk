@@ -194,7 +194,7 @@ private func MoveCloud()
 	// Some other safety.
 	if (GetY() <= 5) 
 		SetPosition(0, 6);
-	if (GetYDir()!=0) 
+	if (GetYDir() != 0) 
 		SetYDir(0);
 	while (Stuck()) 
 		SetPosition(GetX(), GetY() - 5);
