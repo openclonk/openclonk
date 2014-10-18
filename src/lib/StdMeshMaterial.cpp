@@ -189,7 +189,7 @@ enum Token
 class StdMeshMaterialParserCtx
 {
 public:
-	StdMeshMaterialParserCtx(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader);
+	StdMeshMaterialParserCtx(StdMeshMatManager& manager, const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
 
 	void SkipWhitespace();
 	Token Peek(StdStrBuf& name);
@@ -215,7 +215,8 @@ public:
 	const char* Script;
 
 	StdCopyStrBuf FileName;
-	StdMeshMaterialTextureLoader& TextureLoader;
+	StdMeshMatManager& Manager;
+	StdMeshMaterialLoader& Loader;
 };
 
 class StdMeshMaterialSubLoader
@@ -228,8 +229,8 @@ private:
 	unsigned int CurIndex;
 };
 
-StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader):
-		Line(1), Script(mat_script), FileName(filename), TextureLoader(tex_loader)
+StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(StdMeshMatManager& manager, const char* mat_script, const char* filename, StdMeshMaterialLoader& loader):
+		Line(1), Script(mat_script), FileName(filename), Manager(manager), Loader(loader)
 {
 }
 
@@ -509,6 +510,48 @@ StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
 {
 }
 
+void LoadShader(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShader::Type type)
+{
+	StdStrBuf token_name;
+	StdStrBuf name, language;
+	ctx.AdvanceRequired(name, TOKEN_IDTF);
+	ctx.AdvanceRequired(language, TOKEN_IDTF);
+	ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
+
+	Token token;
+	StdStrBuf source, code, syntax;
+	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+	{
+		if(token_name == "source")
+		{
+			ctx.AdvanceRequired(source, TOKEN_IDTF);
+			code = ctx.Loader.LoadShaderCode(source.getData());
+			if(code.getSize() == 0)
+				ctx.Error(StdCopyStrBuf("Could not load shader code from '") + source + "'");
+		}
+		else if(token_name == "syntax")
+		{
+			ctx.AdvanceRequired(syntax, TOKEN_IDTF);
+		}
+		else
+		{
+			ctx.ErrorUnexpectedIdentifier(token_name);
+		}
+	}
+
+	if (token != TOKEN_BRACE_CLOSE)
+		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
+
+	try
+	{
+		ctx.Manager.AddShader(name.getData(), language.getData(), type, code.getData(), false);
+	}
+	catch(const std::exception& ex)
+	{
+		ctx.Error(StdCopyStrBuf("Failed to compile shader: ") + ex.what());
+	}
+}
+
 template<typename SubT>
 void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec)
 {
@@ -644,7 +687,7 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 
 void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
 {
-	std::unique_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
+	std::unique_ptr<C4Surface> surface(ctx.Loader.LoadTexture(texname)); // be exception-safe
 	if (!surface.get())
 		ctx.Error(StdCopyStrBuf("Could not load texture '") + texname + "'");
 
@@ -1020,6 +1063,18 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			technique_loader.Load(ctx, Techniques);
 		}
+		else if (token_name == "vertex_program")
+		{
+			LoadShader(ctx, StdMeshMaterialShader::VERTEX);
+		}
+		else if (token_name == "fragment_program")
+		{
+			LoadShader(ctx, StdMeshMaterialShader::FRAGMENT);
+		}
+		else if (token_name == "geometry_program")
+		{
+			LoadShader(ctx, StdMeshMaterialShader::GEOMETRY);
+		}
 		else if (token_name == "receive_shadows")
 		{
 			ReceiveShadows = ctx.AdvanceBoolean();
@@ -1042,9 +1097,9 @@ void StdMeshMatManager::Clear()
 	GeometryShaders.clear();
 }
 
-void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader)
+void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader)
 {
-	StdMeshMaterialParserCtx ctx(mat_script, filename, tex_loader);
+	StdMeshMaterialParserCtx ctx(*this, mat_script, filename, loader);
 
 	Token token;
 	StdCopyStrBuf token_name;

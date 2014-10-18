@@ -41,6 +41,55 @@ protected:
 	StdCopyStrBuf Buf;
 };
 
+class StdMeshMaterialProgramParameter
+{
+public:
+	enum Type {
+		AUTO,
+		INT,
+		FLOAT,
+		FLOAT4
+	};
+
+	enum Auto {
+		AUTO_OC_PLAYER_COLOR,
+		AUTO_OC_COLOR_MODULATION,
+		AUTO_OC_MOD2,
+		AUTO_OC_USECLRMODMAP,
+		AUTO_OC_CLRMODMAP,
+
+		// TODO: Other ogre auto values
+	};
+
+	StdMeshMaterialProgramParameter();
+	~StdMeshMaterialProgramParameter();
+
+	Type GetType() const { return type; }
+	Auto GetAuto() const { return a; }
+	int GetInt() const { return i; }
+	float GetFloat() const { return f[0]; }
+	const float* GetFloatv() const { return f; }
+private:
+	StdCopyStrBuf name;
+	Type type;
+
+	union {
+		Auto a;
+		int i;
+		float f[4];
+	};
+};
+
+class StdMeshMaterialProgramParameters
+{
+public:
+	StdMeshMaterialProgramParameters();
+
+	void Load(StdMeshMaterialParserCtx& ctx);
+protected:
+	std::vector<StdMeshMaterialProgramParameter> NamedParameters;
+};
+
 // An abstract shader class. This is supposed to be implemented by the
 // GFX implementation, such as C4DrawGL.
 class StdMeshMaterialShader
@@ -66,12 +115,13 @@ public:
 // Given a texture filename occuring in the
 // material script, this should load the texture from wherever the material
 // script is actually loaded, for example from a C4Group.
-// Given a shader filename, this should load the shader.
-class StdMeshMaterialTextureLoader
+// Given a shader filename, this should load the shader text.
+class StdMeshMaterialLoader
 {
 public:
 	virtual C4Surface* LoadTexture(const char* filename) = 0;
-	virtual ~StdMeshMaterialTextureLoader() {}
+	virtual StdStrBuf LoadShaderCode(const char* filename) = 0;
+	virtual ~StdMeshMaterialLoader() {}
 };
 
 class StdMeshMaterialTextureUnit
@@ -380,7 +430,7 @@ public:
 	// filename may be NULL if the source is not a file. It will only be used
 	// for error messages.
 	// Throws StdMeshMaterialError.
-	void Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader);
+	void Parse(const char* mat_script, const char* filename, StdMeshMaterialLoader& loader);
 
 	// Get material by name. NULL if there is no such material with this name.
 	const StdMeshMaterial* GetMaterial(const char* material_name) const;

@@ -40,7 +40,7 @@
 // Helper class to load additional resources required for meshes from
 // a C4Group.
 class AdditionalResourcesLoader:
-		public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
+		public StdMeshMaterialLoader, public StdMeshSkeletonLoader
 {
 public:
 	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
@@ -57,6 +57,13 @@ public:
 	}
 
 	virtual StdStrBuf LoadSkeleton(const char* filename)
+	{
+		StdStrBuf ret;
+		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
+		return ret;
+	}
+
+	virtual StdStrBuf LoadShaderCode(const char* filename)
 	{
 		StdStrBuf ret;
 		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
