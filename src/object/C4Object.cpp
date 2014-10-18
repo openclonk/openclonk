@@ -2279,10 +2279,22 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 		color0 = colors->GetItem(0).getInt();
 		color1 = colors->GetItem(1).getInt();
 	}
+
+	std::vector<C4BltVertex> vertices;
+	vertices.resize( (Shape.VtxNum - 1) * 2);
 	for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
-		cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
-						Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-						color0, color1);
+	{
+		DwTo4UB(color0, vertices[2*vtx].color);
+		DwTo4UB(color0, vertices[2*vtx+1].color);
+
+		vertices[2*vtx].ftx = Shape.VtxX[vtx] + cgo.X - cgo.TargetX;
+		vertices[2*vtx].fty = Shape.VtxY[vtx] + cgo.Y - cgo.TargetY;
+		vertices[2*vtx+1].ftx = Shape.VtxX[vtx+1] + cgo.X - cgo.TargetX;
+		vertices[2*vtx+1].fty = Shape.VtxY[vtx+1] + cgo.Y - cgo.TargetY;
+	}
+
+	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f);
+
 	// reset blit mode
 	FinishedDrawing();
 #endif
