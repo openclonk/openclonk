@@ -33,9 +33,14 @@ Duration: 40 - 80 minutes
 Description: Flooded caves present a real challenge for this gem mining expedition.
 
 [Chine]
-Difficulty: Medium(40)
+Difficulty: Medium (40)
 Duration: 60 - 90 minutes
 Description: Players have to transport a cannon up a chine carved out by a waterfall.
+
+[Acid Rift]
+Difficulty: Medium (50)
+Duration: 60 - 100 minutes
+Description: A rift is slowly filled by acid rain, gems need to be mined from an acid lake.
 
 [Conquest of Krakatoa]
 Difficulty: Medium (60)
