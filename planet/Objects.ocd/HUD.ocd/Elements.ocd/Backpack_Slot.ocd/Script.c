@@ -92,6 +92,7 @@ public func SetSymbol(obj)
 		// set tooltip
 		var desc = obj.UsageHelp;
 		if(!desc) desc = obj.Description;
+		desc = Format("%s: %s", obj.Name, desc);
 		this.Tooltip = desc;
 	}
 }
