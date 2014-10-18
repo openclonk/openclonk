@@ -106,6 +106,11 @@ private func InitEnvironment(int difficulty)
 	
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
+	Cloud->SetPrecipitation("Snow", 20 + 5 * difficulty);
+	for (var cloud in FindObjects(Find_ID(Cloud)))
+		while (cloud->RemoveVertex())
+			/* Empty */;
+
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(60 * 22);
