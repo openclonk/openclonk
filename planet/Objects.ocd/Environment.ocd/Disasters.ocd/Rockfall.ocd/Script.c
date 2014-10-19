@@ -158,6 +158,20 @@ protected func FxIntRockMovementTimer(object target, proplist effect, int time)
 
 protected func Hit(int dx, int dy)
 {
+	// Acid kills rockfall
+	if (GetMaterialVal("Corrosive", "Material", GetMaterial()))
+	{
+		Sound("Pshshsh");
+		var sz = Max(GetCon()/10, 5);
+		var particles = new Particles_Dust() { Size = sz*3, };
+		if (is_explosive)
+			{ particles.R = 200; particles.G =100; particles.B = 0; }
+		else
+			{ particles.R = 100; particles.G =200; particles.B = 100; }
+		CreateParticle("Dust", PV_Random(-sz, sz), PV_Random(-sz, sz), PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(36, 2 * 36), particles, sz/2);
+		return RemoveObject();
+	}
+	
 	// Determine caused damage to this rock by impact.
 	damage += Distance(dx, dy, 0, 0) / 100;
 	if (damage > 12)
