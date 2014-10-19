@@ -150,26 +150,6 @@ func InitializeMap(proplist map)
 }
 
 
-// Takes array of format [[x1,y1], [x2,y2], ...] and returns array [[x1,x2,...],[y1,y2,...]]
-private func TransposeArray(array v)
-{
-	var result = [], i=0;
-	for (var vc in v)
-	{
-		var j=0;
-		for (var c in vc)
-		{
-			if (!result[j]) result[j] = CreateArray(GetLength(v));
-			result[j][i] = c;
-			++j;
-		}
-		++i;
-	}
-	return result;
-}
-
-
-
 /*-- Helper Functions --*/
 
 // Draws some material inside an existing mask.
