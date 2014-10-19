@@ -110,7 +110,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	if (difficulty >= 2) Rockfall->SetExplosiveness(difficulty * 25);
 	
 	// Acid rain!
-	Cloud->Place(20 * difficulty - 10);
+	Cloud->Place(40 * difficulty - 30);
 	Cloud->SetPrecipitation("Acid", 100);
 	
 	return;
