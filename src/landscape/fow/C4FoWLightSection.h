@@ -7,7 +7,12 @@
 class C4FoWRegion;
 class C4FoWBeam;
 
-/** The light section manages the beams for one light for one direction of 90°. */
+/** The light section manages the beams for one light for one direction of 90°.
+    
+	For understanding the internal calculations made in this class, note that this class assumes all of its beams to 
+	go into a positive y-direction (="down" in display coordinates). Only after the calculation, it transforms its
+	result into the global coordinate system again by applying a transformation matrix. 
+	*/
 class C4FoWLightSection
 {
 public:
@@ -74,18 +79,25 @@ private:
 
 	bool isConsistent() const;
 
-	/** Returns the Y-position of the given rectangle's left most point when observed from the origin.
-	    This function assumes a cartesian coordinate system (y axis up) */
-	int32_t RectLeftMostY(const C4Rect &r) const { return r.x >= 0 ? r.y+r.Hgt : r.y; }
-	/** Returns the Y-position of the given rectangle's right most point when observed from the origin.
-	    This function assumes a cartesian coordinate system (y axis up) */
-	int32_t RectRightMostY(const C4Rect &r) const { return r.x + r.Wdt <= 0 ? r.y+r.Hgt : r.y; }
+	/** These methods return the position of the left delimiter point of a beam from the origin that would enclose the 
+	    given rectangle. Note that we assume the rect to have a positive Y-position.
+		In other words, the given rectangle's right most point when looked at from the origin.
+	  */
+	int32_t RectLeftMostX(const C4Rect &r) const { return r.x; }
+	int32_t RectLeftMostY(const C4Rect &r) const { return Max(0, r.x >= 0 ? r.y + r.Hgt : r.y); }
+	/** These methods return the position of the left delimiter point of a beam from the origin that would enclose the 
+	    given rectangle. Note that we assume the rect to have a positive Y-position.
+		In other words, the given rectangle's right most point when looked at from the origin.
+	  */
+	int32_t RectRightMostX(const C4Rect &r) const { return r.x + r.Wdt; }
+	int32_t RectRightMostY(const C4Rect &r) const { return Max(0, r.x + r.Wdt <= 0 ? r.y + r.Hgt : r.y); }
 
 	/** Find right-most beam left of point */
 	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y);
-	/** Find left-most beam to extend over point */
-	C4FoWBeam *FindBeamOver(int32_t x, int32_t y);
 
+	/** Find beams that go through the given rectangle. Returns the number of beams that are in the rectangle and makes
+	    pFirst and pLast point to the first and the last beam of these */
+	int32_t FindBeamsClipped(const C4Rect &pInRect, C4FoWBeam *&pFirst, C4FoWBeam *&pLast);
 };
 
 

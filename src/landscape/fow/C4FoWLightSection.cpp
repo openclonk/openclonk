@@ -123,12 +123,6 @@ C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y)
 	return pBeam;
 }
 
-C4FoWBeam *C4FoWLightSection::FindBeamOver(int32_t x, int32_t y)
-{
-	C4FoWBeam *pPrev = FindBeamLeftOf(x, y);
-	return pPrev ? pPrev->getNext() : pBeams;
-}
-
 void C4FoWLightSection::Update(C4Rect RectIn)
 {
 
@@ -157,9 +151,12 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 		return;
 	
 	// Get last beam that's positively *not* affected
-	int iLY = Max(0, RectLeftMostY(Rect)),
-		iRX = Rect.x+Rect.Wdt, iRY = Max(0, RectRightMostY(Rect));
-	C4FoWBeam *pStart = FindBeamLeftOf(Rect.x, iLY);
+	int32_t iLY = RectLeftMostY(Rect),
+	        iLX = RectLeftMostX(Rect),
+	        iRY = RectRightMostY(Rect),
+	        iRX = RectRightMostX(Rect);
+
+	C4FoWBeam *pStart = FindBeamLeftOf(iLX, iLY);
 
 	// Skip clean beams
 	while (C4FoWBeam *pNext = pStart ? pStart->getNext() : pBeams) {
@@ -174,7 +171,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 #endif
 	C4FoWBeam *pEnd = NULL;
 	int32_t iStartY = Rect.GetBottom();
-	while (pBeam && !pBeam->isLeft(Rect.x+Rect.Wdt, iRY)) {
+	while (pBeam && !pBeam->isLeft(iRX, iRY)) {
 		if (pBeam->isDirty() && pBeam->getLeftEndY() <= Rect.y+Rect.Hgt) {
 			pEnd = pBeam;
 			iStartY = Min(iStartY, pBeam->getLeftEndY());
@@ -218,10 +215,10 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 				continue;
 
 			// Out left?
-			if (pBeam->isRight(Rect.x, y))
+			if (pBeam->isRight(iLX, y))
 				continue;
 			// Out right?
-			if (pBeam->isLeft(Rect.x + Rect.Wdt, y) || pBeam->isLeft(iRX, iRY))
+			if (pBeam->isLeft(iRX, y) || pBeam->isLeft(iRX, iRY))
 				break;
 
 			// We have an active beam that we're about to scan
@@ -337,12 +334,15 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 	assert(r.Wdt > 0 && r.Hgt > 0);
 	
 	// Get rectangle corners that bound the possibly affected beams
-	int iLY = RectLeftMostY(r), iRY = RectRightMostY(r);
-	C4FoWBeam *pLast = FindBeamLeftOf(r.x, iLY);
+	int32_t iLY = RectLeftMostY(r),
+	        iLX = RectLeftMostX(r),
+	        iRY = RectRightMostY(r),
+	        iRX = RectRightMostX(r);
+	C4FoWBeam *pLast = FindBeamLeftOf(iLX, iLY);
 	C4FoWBeam *pBeam = pLast ? pLast->getNext() : pBeams;
 
 	// Scan over beams
-	while (pBeam && !pBeam->isLeft(r.x+r.Wdt, iRY)) {
+	while (pBeam && !pBeam->isLeft(iRX, iRY)) {
 
 		// Dirty beam?
 		if (pBeam->getLeftEndY() > r.y || pBeam->getRightEndY() > r.y)
@@ -366,41 +366,53 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 
 }
 
-void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
+int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &pInRect, C4FoWBeam *&pFirst, C4FoWBeam *&pLast)
 {
-	C4Rect Reg = rtransRect(pRegion->getRegion());
+	if(pInRect.y + pInRect.Hgt < 0) return 0;
 
-	// Find start beam
-	int iLY = Max(0, RectLeftMostY(Reg)),
-		iRY = Max(0, RectRightMostY(Reg)),
-	    iRX = Reg.x + Reg.Wdt;
-	C4FoWBeam *pStart = FindBeamOver(Reg.x, iLY);
+	int32_t iLY = RectLeftMostY(pInRect),
+	        iLX = RectLeftMostX(pInRect),
+	        iRY = RectRightMostY(pInRect),
+	        iRX = RectRightMostX(pInRect);
+
+	C4FoWBeam *pPrev = FindBeamLeftOf(iLX, iLY);
+	pFirst = pPrev ? pPrev->getNext() : pBeams;
 
 	// Find end beam - determine the number of beams we actually need to draw
-	C4FoWBeam *pBeam = pStart; int32_t iBeamCnt = 0;
-	while (pBeam && !pBeam->isLeft(iRX, iRY)) {
-
-		// TODO: Remove clipped beams on the left so we can in the
-		// most extreme case completely ignore lights here?
-
+	C4FoWBeam *pBeam = pFirst;
+	int32_t iBeamCount = 0;
+	while (pBeam && !pBeam->isLeft(iRX, iRY))
+	{
 		pBeam = pBeam->getNext();
-		iBeamCnt++;
+		iBeamCount++;
 	}
-	int32_t iOriginalBeamCnt = iBeamCnt;
+	pLast = pBeam;
 
-	// Allocate arbeams for our points (lots of them)
-	float *gFanLX = new float [iBeamCnt * 10],
-		  *gFanLY = gFanLX + iBeamCnt,
-		  *gFanRX = gFanLY + iBeamCnt,
-		  *gFanRY = gFanRX + iBeamCnt,
-		  *gFadeLX = gFanRY + iBeamCnt,
-		  *gFadeLY = gFadeLX + iBeamCnt,
-		  *gFadeRX = gFadeLY + iBeamCnt,
-		  *gFadeRY = gFadeRX + iBeamCnt,
-		  *gFadeIX = gFadeRY + iBeamCnt,
-		  *gFadeIY = gFadeIX + iBeamCnt;
+	return iBeamCount;
+}
+
+void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
+{
+	C4FoWBeam *pStart = NULL, *pEnd = NULL;
+	int32_t iBeamCount = FindBeamsClipped(rtransRect(pRegion->getRegion()), pStart, pEnd);
+	// no beams inside the rectangle? Good, nothing to render 
+	if(!iBeamCount) return;
+	int32_t iOriginalBeamCount = iBeamCount;
+
+	// Allocate array for our points (lots of them)
+	float *gFanLX = new float [iBeamCount * 10],	// positions where the left lines of beams end
+		  *gFanLY = gFanLX + iBeamCount,			
+		  *gFanRX = gFanLY + iBeamCount,			// positions where the right lines of beams end
+		  *gFanRY = gFanRX + iBeamCount,
+		  *gFadeLX = gFanRY + iBeamCount,
+		  *gFadeLY = gFadeLX + iBeamCount,
+		  *gFadeRX = gFadeLY + iBeamCount,
+		  *gFadeRY = gFadeRX + iBeamCount,
+		  *gFadeIX = gFadeRY + iBeamCount,
+		  *gFadeIY = gFadeIX + iBeamCount;
 	int32_t i;
-	for (i = 0, pBeam = pStart; i < iBeamCnt; i++, pBeam = pBeam->getNext()) {
+	C4FoWBeam *pBeam = pStart;
+	for (i = 0, pBeam = pStart; i < iBeamCount; i++, pBeam = pBeam->getNext()) {
 		gFanLX[i] = pBeam->getLeftEndXf();
 		gFanLY[i] = float(pBeam->getLeftEndY());
 		gFanRX[i] = pBeam->getRightEndXf();
@@ -444,7 +456,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		// but I see no other way to make the whole thing robust :/
 		float gBestLevel = FLT_MAX;
 		int j;
-		for (j = 0; j+1 < iBeamCnt; j++) {
+		for (j = 0; j+1 < iBeamCount; j++) {
 			float gLevel = Min(gFanRY[j], gFanLY[j+1]);
 			if (gLevel <= gScanLevel || gLevel >= gBestLevel)
 				continue;
@@ -454,7 +466,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			break;
 		gScanLevel = gBestLevel;
 
-		for(int i = 0; i+1 < iBeamCnt; i++) {
+		for(int i = 0; i+1 < iBeamCount; i++) {
 
 		if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
 			continue;
@@ -548,7 +560,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			if (fEliminate && i) {
 
 				// Remove it then
-				for(int j = i; j+1 < iBeamCnt; j++) {
+				for(int j = i; j+1 < iBeamCount; j++) {
 					gFanLX[j] = gFanLX[j+1];
 					gFanLY[j] = gFanLY[j+1];
 					gFanRX[j] = gFanRX[j+1];
@@ -559,7 +571,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 				// beam, as it might be more shadowed than we realized.
 				// Note that the last point might have been projected already - 
 				// but that's okay, 
-				iBeamCnt--; i-=2;
+				iBeamCount--; i-=2;
 			}
 
 		// Descending - same, but mirrored. And without comments.
@@ -590,14 +602,14 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 				gFanLY[i+1] = gCrossY;
 			}
 			assert(gFanRY[i] < gFanLY[i+1]);
-			if (fEliminate && i+2 < iBeamCnt) {
-				for(int j = i+1; j+1 < iBeamCnt; j++) {
+			if (fEliminate && i+2 < iBeamCount) {
+				for(int j = i+1; j+1 < iBeamCount; j++) {
 					gFanLX[j] = gFanLX[j+1];
 					gFanLY[j] = gFanLY[j+1];
 					gFanRX[j] = gFanRX[j+1];
 					gFanRY[j] = gFanRY[j+1];
 				}
-				iBeamCnt--; i--;
+				iBeamCount--; i--;
 			}
 		}
 
@@ -620,8 +632,8 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			  continue;
 
 			// This should always follow an elimination, but better check
-			assert(iOriginalBeamCnt > iBeamCnt);
-			for (int j = iBeamCnt - 1; j >= i+1; j--) {
+			assert(iOriginalBeamCount > iBeamCount);
+			for (int j = iBeamCount - 1; j >= i+1; j--) {
 				gFanLX[j+1] = gFanLX[j];
 				gFanLY[j+1] = gFanLY[j];
 				gFanRX[j+1] = gFanRX[j];
@@ -639,7 +651,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			// zero-length pseudo-surface. This will cause find_cross
 			// above to eliminate the pseudo-surface and back-track
 			// further to the left, which is exactly how it should work.
-			iBeamCnt++; i++;
+			iBeamCount++; i++;
 		}
 
 		}
@@ -649,7 +661,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 #ifdef FAN_STEP_DEBUG
 	LogSilent("Fade points");
 #endif // FAN_STEP_DEBUG
-	for (i = 0; i < iBeamCnt; i++) {
+	for (i = 0; i < iBeamCount; i++) {
 
 		// Calculate light bounds. Note that the way light size is calculated
 		// and we are using it below, we need to consider an "asymetrical" light.
@@ -697,8 +709,8 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 #ifdef NEWER_INTER_FADE_CODE
 	pBeam = pStart;
 #endif
-	bool *fAscend = new bool[iBeamCnt];
-	for (i = 0; i+1 < iBeamCnt; i++) {
+	bool *fAscend = new bool[iBeamCount];
+	for (i = 0; i+1 < iBeamCount; i++) {
 
 		// Calculate light bounds. We assume a "smaller" light for closer beams
 		CALC_LIGHT(gFanRX[i], gFanRY[i], 1, gLightLX, gLightLY);
@@ -800,9 +812,9 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 	// Phase 4: Transform all points into region coordinates
 	for (i = 0; i < 5; i++) {
-		float *pX = gFanLX + 2 * i * iOriginalBeamCnt,
-			  *pY = gFanLY + 2 * i * iOriginalBeamCnt;
-		for (int32_t j = 0; j < iBeamCnt; j++) {
+		float *pX = gFanLX + 2 * i * iOriginalBeamCount,
+			  *pY = gFanLY + 2 * i * iOriginalBeamCount;
+		for (int32_t j = 0; j < iBeamCount; j++) {
 			float x = pX[j], y = pY[j];
 			if (pOnScreen)
 			{
@@ -879,7 +891,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		if (!pOnScreen) {
 			LIGHT(gLightX, gLightY);
 		}
-		for (i = 0; i < iBeamCnt; i++) {
+		for (i = 0; i < iBeamCount; i++) {
 			if (i == 0 || gFanRX[i-1] != gFanLX[i] || gFanRY[i-1] != gFanLY[i]) {
 				LIGHT(gFanLX[i], gFanLY[i]);
 			}
@@ -893,7 +905,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		glShadeModel(GL_SMOOTH);
 		if(!pOnScreen) glBegin(GL_TRIANGLES);
 
-		for (i = 0; i < iBeamCnt; i++) {
+		for (i = 0; i < iBeamCount; i++) {
 
 			// The quad. Will be empty if fan points match
 			if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
@@ -916,7 +928,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			}
 
 			// No intermediate fade for last point
-			if (i+1 >= iBeamCnt) continue;
+			if (i+1 >= iBeamCount) continue;
 
 			// Ascending?
 			if (fAscend[i]) {

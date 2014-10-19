@@ -57,12 +57,12 @@ public:
 
 	StdStrBuf getDesc() const;
 
-	/** returns whether the given point is left of an imaginery line drawn from the left delimiter point to the origin (point is left of beam) */
+	/** returns whether the given point is left of an imaginery line drawn from the origin to the left delimiter point (point is left of beam) */
 	bool isLeft(int x, int y) const {
 		return iLeftX * y > x * iLeftY;
 	}
 	
-	/** returns whether the given point is right of an imaginery line drawn from the right delimiter point to the origin (point is right of beam) */
+	/** returns whether the given point is right of an imaginery line drawn from the origin to the right delimiter point (point is right of beam) */
 	bool isRight(int x, int y) const {
 		return iRightX * y < x * iRightY;
 	}
