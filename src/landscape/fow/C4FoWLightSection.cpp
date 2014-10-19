@@ -149,6 +149,10 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	// Out of reach?
 	if (Rect.y > pLight->getTotalReach())
 		return;
+
+	// will be clipped on rendering anyway, don't bother to run the algorithm
+	if (Rect.y + Rect.Hgt < 0)
+		return;
 	
 	// Get last beam that's positively *not* affected
 	int32_t iLY = RectLeftMostY(Rect),
