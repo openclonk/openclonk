@@ -20,7 +20,7 @@ func InitializeMap(proplist map)
 	Resize(map_size[0], map_size[1]);
 	
 	// Parameters by map size and difficulty
-	var acid_level = [10, 30, 50][d];	 // filling (in %) of basin with acid
+	var acid_level = [10, 30, 40][d];	 // filling (in %) of basin with acid
 	var num_earth = [15, 20, 30][s];
 	var num_coal = [12, 15, 20][s];
 	var num_ore = [4, 5, 8][s];

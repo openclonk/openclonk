@@ -66,6 +66,7 @@ protected func InitializePlayer(int plr)
 		}
 		else
 		{
+			crew->CreateContents(Shovel);
 			crew->CreateContents(Axe);
 			crew->CreateContents(Hammer);
 		}
@@ -74,7 +75,7 @@ protected func InitializePlayer(int plr)
 	
 	// Give the player basic knowledge.
 	GivePlayerBasicKnowledge(plr);
-	GivePlayerSpecificKnowledge(plr, [InventorsLab, Ropeladder, MetalBarrel, PowderKeg, GrappleBow, WallKit, Pipe, Pump]);
+	GivePlayerSpecificKnowledge(plr, [InventorsLab, Ropeladder, MetalBarrel, PowderKeg, GrappleBow, WallKit, Pipe, Pump, TeleGlove, WindBag]);
 	
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);
@@ -105,12 +106,12 @@ private func InitEnvironment(int map_size, int difficulty)
 
 	// Disasters
 	Meteor->SetChance(difficulty * 11);
-	if (difficulty >= 2) Rockfall->SetChance(difficulty * 60 - 100);
+	if (difficulty >= 2) Rockfall->SetChance(difficulty * 50 - 80);
 	Rockfall->SetArea(Rectangle(200, 0, LandscapeWidth()-400, 1));
-	if (difficulty >= 2) Rockfall->SetExplosiveness(difficulty * 25);
+	if (difficulty >= 2) Rockfall->SetExplosiveness(BoundBy(difficulty * 25, 50, 60));
 	
 	// Acid rain!
-	Cloud->Place(40 * difficulty - 30);
+	Cloud->Place(BoundBy(40 * difficulty - 30, 10, 70));
 	Cloud->SetPrecipitation("Acid", 100);
 	
 	return;
@@ -168,16 +169,16 @@ private func InitAnimals(int difficulty)
 
 private func InitMaterial(int amount)
 {
-	// No extra materials for little materials.
-	if (amount <= 1)
-		return;
-		
+	// Always material for a starting flagpole
+	var lorry = CreateObject(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
+	lorry->CreateContents(Wood, 3);
+	lorry->CreateContents(Metal, 1);
+	
 	// For medium amount of materials provide a lorry with resources.	
 	if (amount >= 2)
 	{
-		var lorry = CreateObject(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
-		lorry->CreateContents(Wood, 6);
-		lorry->CreateContents(Metal, 4);
+		lorry->CreateContents(Wood, 4);
+		lorry->CreateContents(Metal, 3);
 		lorry->CreateContents(Rock, 4);
 		lorry->CreateContents(Dynamite, 4);
 		lorry->CreateContents(Loam, 4);
