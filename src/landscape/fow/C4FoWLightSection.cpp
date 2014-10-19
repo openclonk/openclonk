@@ -419,34 +419,6 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		gFanRY[i] = float(pBeam->getRightEndY());
 	}
 
-	// Outputs the rightmost (l=1) or leftmost (l=-1) position of the
-	// light, as seen from the given point. Shinks the light if it is
-	// too close, to work against exessive fades.
-#define ROUND_LIGHT
-#ifdef ROUND_LIGHT
-	const float gLightShrink = 5.0f;
-	#define CALC_LIGHT(x, y, l, gOutX, gOutY) \
-		float gOutX, gOutY; \
-		{ \
-			float d = sqrt(x * x + y * y); \
-			float s = Min(float(pLight->getSize()), d / gLightShrink); \
-			gOutX = s / d * l * y; \
-			gOutY = s / d * l * -x; \
-		}
-	// Sadly, this causes beams to cross when the light shrinks...
-#else
-	// I think this is the only version that guarantees no crossing beams.
-	// Unsatisfying as it might be.
-	const float gLightShrink = 1.1f;
-	#define CALC_LIGHT(x, y, l, gOutX, gOutY) \
-		float gOutX, gOutY; \
-		{ \
-			float d = y; \
-			gOutX = BoundBy(x + l * d * gLightShrink, -float(pLight->getSize()), +float(pLight->getSize())); \
-			gOutY = 0; \
-		}
-#endif
-
 	// Phase 1: Project lower point so it lies on a line with outer left/right
 	// light lines.
 	float gScanLevel = 0;
@@ -468,194 +440,194 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 		for(int i = 0; i+1 < iBeamCount; i++) {
 
-		if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
-			continue;
+			if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
+				continue;
 
-		// Debugging
-		// #define FAN_STEP_DEBUG
+			// Debugging
+			// #define FAN_STEP_DEBUG
 #ifdef FAN_STEP_DEBUG
-		LogSilentF("Fan step %d (i=%d)", iStep, i);
-		for (j = 0; j < iBeamCnt; j++) {
-			LogSilentF(" %.02f %.02f", gFanLX[j], gFanLY[j]);
-			LogSilentF(" %.02f %.02f", gFanRX[j], gFanRY[j]);	
-		}
+			LogSilentF("Fan step %d (i=%d)", iStep, i);
+			for (j = 0; j < iBeamCnt; j++) {
+				LogSilentF(" %.02f %.02f", gFanLX[j], gFanLY[j]);
+				LogSilentF(" %.02f %.02f", gFanRX[j], gFanRY[j]);	
+			}
 #endif
 
-		// Calculate light bounds. We assume a "smaller" light for closer beams
-		CALC_LIGHT(gFanRX[i], gFanRY[i], -1, gLightLX, gLightLY);
-		CALC_LIGHT(gFanLX[i+1], gFanLY[i+1], 1, gLightRX, gLightRY);
+			// Calculate light bounds. We assume a "smaller" light for closer beams
+			float gLightLX, gLightLY, gLightRX, gLightRY;
+			LightBallLeftMostPoint(gFanRX[i], gFanRY[i], gLightLX, gLightLY);
+			LightBallRightMostPoint(gFanLX[i+1], gFanLY[i+1], gLightRX, gLightRY);
 
-		// Ascending
-		float gCrossX, gCrossY;
-		bool fDescendCollision = false;
-		if (gFanRY[i] > gFanLY[i+1]) {
+			// Ascending
+			float gCrossX, gCrossY;
+			bool fDescendCollision = false;
+			if (gFanRY[i] > gFanLY[i+1]) {
 
+				// Left beam surface self-shadowing? We test whether the scalar product
+				// of the beam's normal and the light vector is positive.
+				if (  (gFanRY[i] - gFanLY[i]) * (gFanLX[i+1] - gLightRX) >=
+					  (gFanRX[i] - gFanLX[i]) * (gFanLY[i+1] - gLightRY)) {
 
-			// Left beam surface self-shadowing? We test whether the scalar product
-			// of the beam's normal and the light vector is positive.
-			if (  (gFanRY[i] - gFanLY[i]) * (gFanLX[i+1] - gLightRX) >=
-				  (gFanRX[i] - gFanLX[i]) * (gFanLY[i+1] - gLightRY)) {
-
-				// Reduce to upper point (Yep, we now that the upper point
-				// must be the right one. Try to figure out why!)
-				assert(gFanRY[i] <= gFanLY[i]);
-				gFanLX[i] = gFanRX[i];
-				gFanLY[i] = gFanRY[i];
-			}
-
-			// Left beam reduced?
-			float gFanRXp = gFanRX[i]; float thresh = 1.0;
-			if (gFanRX[i] == gFanLX[i] && gFanRY[i] == gFanLY[i]) {
-
-				// Move point to the right for the purpose of finding the cross
-				// point - after all, given that gFanRX[i] == gFanLX[i], we
-				// only care about whether to eliminate or insert an additional
-				// point for the descend collision, so the exact value doesn't
-				// really matter - but we don't want find_cross to bail out!
-				gFanRXp += 1.0;
-				thresh = 0.0;
-			}
-
-			// Move right point of left beam to the left (the original point is partly shadowed)
-			bool fEliminate = false; float b;
-			bool f = find_cross(gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
-			                    gFanLX[i], gFanLY[i], gFanRXp, gFanRY[i],
-			                    &gCrossX, &gCrossY, &b);
-			
-			// The self-shadow-check should have made sure that the two are
-			// never parallel.
-			assert(f);
-
-			// Cross point to left of surface? Then the surface itself is
-			// shadowed, and we don't need to draw it.
-			if (b >= thresh) {
-
-				fEliminate = true;
-
-			// Cross point actually right of surface? This can happen when
-			// we eliminated surfaces. It means that the light doesn't reach
-			// down far enough between this and the next beam to hit anything.
-			// As a result, we insert a new zero-width surface where the light
-			// stops.
-			} else if (b < 0.0) {
-
-				// As it doesn't matter from this point on whether we were
-				// in an ascend or a descend case, this gets handled top-level.
-				// ... still debating with myself whether a "goto" would be
-				// cleaner here ;)
-				fDescendCollision = true;
-
-			} else {
-
-				// Set cross point
-				gFanRX[i] = gCrossX;
-				gFanRY[i] = gCrossY;
-
-			}
-
-			// This shouldn't change the case we are in (uh, I think)
-			assert(gFanRY[i] > gFanLY[i+1]);
-
-			// Did we eliminate the surface with this step?
-			if (fEliminate && i) {
-
-				// Remove it then
-				for(int j = i; j+1 < iBeamCount; j++) {
-					gFanLX[j] = gFanLX[j+1];
-					gFanLY[j] = gFanLY[j+1];
-					gFanRX[j] = gFanRX[j+1];
-					gFanRY[j] = gFanRY[j+1];
+					// Reduce to upper point (Yep, we now that the upper point
+					// must be the right one. Try to figure out why!)
+					assert(gFanRY[i] <= gFanLY[i]);
+					gFanLX[i] = gFanRX[i];
+					gFanLY[i] = gFanRY[i];
 				}
 
-				// With the elimination, we need to re-process the last
-				// beam, as it might be more shadowed than we realized.
-				// Note that the last point might have been projected already - 
-				// but that's okay, 
-				iBeamCount--; i-=2;
+				// Left beam reduced?
+				float gFanRXp = gFanRX[i]; float thresh = 1.0;
+				if (gFanRX[i] == gFanLX[i] && gFanRY[i] == gFanLY[i]) {
+
+					// Move point to the right for the purpose of finding the cross
+					// point - after all, given that gFanRX[i] == gFanLX[i], we
+					// only care about whether to eliminate or insert an additional
+					// point for the descend collision, so the exact value doesn't
+					// really matter - but we don't want find_cross to bail out!
+					gFanRXp += 1.0;
+					thresh = 0.0;
+				}
+
+				// Move right point of left beam to the left (the original point is partly shadowed)
+				bool fEliminate = false; float b;
+				bool f = find_cross(gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
+									gFanLX[i], gFanLY[i], gFanRXp, gFanRY[i],
+									&gCrossX, &gCrossY, &b);
+			
+				// The self-shadow-check should have made sure that the two are
+				// never parallel.
+				assert(f);
+
+				// Cross point to left of surface? Then the surface itself is
+				// shadowed, and we don't need to draw it.
+				if (b >= thresh) {
+
+					fEliminate = true;
+
+				// Cross point actually right of surface? This can happen when
+				// we eliminated surfaces. It means that the light doesn't reach
+				// down far enough between this and the next beam to hit anything.
+				// As a result, we insert a new zero-width surface where the light
+				// stops.
+				} else if (b < 0.0) {
+
+					// As it doesn't matter from this point on whether we were
+					// in an ascend or a descend case, this gets handled top-level.
+					// ... still debating with myself whether a "goto" would be
+					// cleaner here ;)
+					fDescendCollision = true;
+
+				} else {
+
+					// Set cross point
+					gFanRX[i] = gCrossX;
+					gFanRY[i] = gCrossY;
+
+				}
+
+				// This shouldn't change the case we are in (uh, I think)
+				assert(gFanRY[i] > gFanLY[i+1]);
+
+				// Did we eliminate the surface with this step?
+				if (fEliminate && i) {
+
+					// Remove it then
+					for(int j = i; j+1 < iBeamCount; j++) {
+						gFanLX[j] = gFanLX[j+1];
+						gFanLY[j] = gFanLY[j+1];
+						gFanRX[j] = gFanRX[j+1];
+						gFanRY[j] = gFanRY[j+1];
+					}
+
+					// With the elimination, we need to re-process the last
+					// beam, as it might be more shadowed than we realized.
+					// Note that the last point might have been projected already - 
+					// but that's okay, 
+					iBeamCount--; i-=2;
+				}
+
+			// Descending - same, but mirrored. And without comments.
+			} else if (gFanRY[i] < gFanLY[i+1]) {
+				if (  (gFanRY[i+1] - gFanLY[i+1]) * (gFanRX[i] - gLightLX) >=
+					  (gFanRX[i+1] - gFanLX[i+1]) * (gFanRY[i] - gLightLY)) {
+					assert(gFanLY[i+1] <= gFanRY[i+1]);
+					gFanRX[i+1] = gFanLX[i+1];
+					gFanRY[i+1] = gFanLY[i+1];
+				}
+				float gFanRXp = gFanRX[i+1], thresh = 0.0;
+				if (gFanRX[i+1] == gFanLX[i+1] && gFanRY[i+1] == gFanLY[i+1]) {
+					gFanRXp += 1.0;
+					thresh = 1.0;
+				}
+				bool fEliminate = false;
+				float b;
+				bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
+									gFanLX[i+1], gFanLY[i+1], gFanRXp, gFanRY[i+1],
+									&gCrossX, &gCrossY, &b);
+				assert(f);
+				if (b <= thresh) {
+					fEliminate = true;
+				} else if (b > 1.0) {
+					fDescendCollision = true;
+				} else {
+					gFanLX[i+1] = gCrossX;
+					gFanLY[i+1] = gCrossY;
+				}
+				assert(gFanRY[i] < gFanLY[i+1]);
+				if (fEliminate && i+2 < iBeamCount) {
+					for(int j = i+1; j+1 < iBeamCount; j++) {
+						gFanLX[j] = gFanLX[j+1];
+						gFanLY[j] = gFanLY[j+1];
+						gFanRX[j] = gFanRX[j+1];
+						gFanRY[j] = gFanRY[j+1];
+					}
+					iBeamCount--; i--;
+				}
 			}
 
-		// Descending - same, but mirrored. And without comments.
-		} else if (gFanRY[i] < gFanLY[i+1]) {
-			if (  (gFanRY[i+1] - gFanLY[i+1]) * (gFanRX[i] - gLightLX) >=
-				  (gFanRX[i+1] - gFanLX[i+1]) * (gFanRY[i] - gLightLY)) {
-				assert(gFanLY[i+1] <= gFanRY[i+1]);
-				gFanRX[i+1] = gFanLX[i+1];
-				gFanRY[i+1] = gFanLY[i+1];
-			}
-			float gFanRXp = gFanRX[i+1], thresh = 0.0;
-			if (gFanRX[i+1] == gFanLX[i+1] && gFanRY[i+1] == gFanLY[i+1]) {
-				gFanRXp += 1.0;
-				thresh = 1.0;
-			}
-			bool fEliminate = false;
-			float b;
-			bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
-			                    gFanLX[i+1], gFanLY[i+1], gFanRXp, gFanRY[i+1],
-						        &gCrossX, &gCrossY, &b);
-			assert(f);
-			if (b <= thresh) {
-				fEliminate = true;
-			} else if (b > 1.0) {
-				fDescendCollision = true;
-			} else {
+			if (fDescendCollision) {
+
+				// Should never be parallel -- otherwise we wouldn't be here
+				// in the first place.
+				bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
+									gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
+									&gCrossX, &gCrossY);
+				assert(f);
+
+				// Ensure some minimum distance to existing
+				// points - don't bother with too small
+				// bumps. This also catches some floating
+				// point inacurracies.
+				const float gDescendEta = 0.5;
+				if (gCrossY <= gFanRY[i] + gDescendEta ||
+					gCrossY <= gFanLY[i+1] + gDescendEta)
+				  continue;
+
+				// This should always follow an elimination, but better check
+				assert(iOriginalBeamCount > iBeamCount);
+				for (int j = iBeamCount - 1; j >= i+1; j--) {
+					gFanLX[j+1] = gFanLX[j];
+					gFanLY[j+1] = gFanLY[j];
+					gFanRX[j+1] = gFanRX[j];
+					gFanRY[j+1] = gFanRY[j];
+				}
+
+				// Okay, now i+1 should be free
 				gFanLX[i+1] = gCrossX;
 				gFanLY[i+1] = gCrossY;
-			}
-			assert(gFanRY[i] < gFanLY[i+1]);
-			if (fEliminate && i+2 < iBeamCount) {
-				for(int j = i+1; j+1 < iBeamCount; j++) {
-					gFanLX[j] = gFanLX[j+1];
-					gFanLY[j] = gFanLY[j+1];
-					gFanRX[j] = gFanRX[j+1];
-					gFanRY[j] = gFanRY[j+1];
-				}
-				iBeamCount--; i--;
-			}
-		}
+				gFanRX[i+1] = gCrossX;
+				gFanRY[i+1] = gCrossY;
 
-		if (fDescendCollision) {
-
-			// Should never be parallel -- otherwise we wouldn't be here
-			// in the first place.
-			bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
-					            gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
-							    &gCrossX, &gCrossY);
-			assert(f);
-
-			// Ensure some minimum distance to existing
-			// points - don't bother with too small
-			// bumps. This also catches some floating
-			// point inacurracies.
-			const float gDescendEta = 0.5;
-			if (gCrossY <= gFanRY[i] + gDescendEta ||
-			    gCrossY <= gFanLY[i+1] + gDescendEta)
-			  continue;
-
-			// This should always follow an elimination, but better check
-			assert(iOriginalBeamCount > iBeamCount);
-			for (int j = iBeamCount - 1; j >= i+1; j--) {
-				gFanLX[j+1] = gFanLX[j];
-				gFanLY[j+1] = gFanLY[j];
-				gFanRX[j+1] = gFanRX[j];
-				gFanRY[j+1] = gFanRY[j];
+				// Jump over surface. Note that our right beam might get
+				// eliminated later on, causing us to back-track into this
+				// zero-length pseudo-surface. This will cause find_cross
+				// above to eliminate the pseudo-surface and back-track
+				// further to the left, which is exactly how it should work.
+				iBeamCount++; i++;
 			}
 
-			// Okay, now i+1 should be free
-			gFanLX[i+1] = gCrossX;
-			gFanLY[i+1] = gCrossY;
-			gFanRX[i+1] = gCrossX;
-			gFanRY[i+1] = gCrossY;
-
-			// Jump over surface. Note that our right beam might get
-			// eliminated later on, causing us to back-track into this
-			// zero-length pseudo-surface. This will cause find_cross
-			// above to eliminate the pseudo-surface and back-track
-			// further to the left, which is exactly how it should work.
-			iBeamCount++; i++;
-		}
-
-		}
-	}
+		} // end for(int i = 0; i+1 < iBeamCount; i++) loop
+	} // end for (int iStep = 0; iStep < 100000; iStep++) loop
 
 	// Phase 2: Calculate fade points
 #ifdef FAN_STEP_DEBUG
@@ -665,9 +637,10 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 		// Calculate light bounds. Note that the way light size is calculated
 		// and we are using it below, we need to consider an "asymetrical" light.
-		CALC_LIGHT(gFanRX[i], gFanRY[i], 1, gLightRX, gLightRY);
-		CALC_LIGHT(gFanLX[i], gFanLY[i], -1, gLightLX, gLightLY);
-
+		float gLightLX, gLightLY, gLightRX, gLightRY;
+		LightBallLeftMostPoint(gFanLX[i], gFanLY[i], gLightLX, gLightLY);
+		LightBallRightMostPoint(gFanRX[i], gFanRY[i], gLightRX, gLightRY);
+		
 		// This is simply the projection of the left point using the left-most
 		// light point, as well as the projection of the right point using the
 		// right-most light point.
@@ -713,8 +686,9 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 	for (i = 0; i+1 < iBeamCount; i++) {
 
 		// Calculate light bounds. We assume a "smaller" light for closer beams
-		CALC_LIGHT(gFanRX[i], gFanRY[i], 1, gLightLX, gLightLY);
-		CALC_LIGHT(gFanLX[i+1], gFanLY[i+1], -1, gLightRX, gLightRY);
+		float gLightLX, gLightLY, gLightRX, gLightRY;
+		LightBallLeftMostPoint(gFanLX[i+1], gFanLY[i+1], gLightRX, gLightRY);
+		LightBallRightMostPoint(gFanRX[i], gFanRY[i], gLightLX, gLightLY);
 
 #ifdef NEWER_INTER_FADE_CODE
 		// Midpoint
