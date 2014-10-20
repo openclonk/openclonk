@@ -161,18 +161,8 @@ func RefreshOwnershipOfSurrounding()
 }
 public func Initialize()
 {
-	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
-		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
-
-	// redraw
-	RedrawAllFlagRadiuses();
-	
-	// ownership
-	RefreshOwnershipOfSurrounding();
-	
-	// linked flags - optimization for power system
-	RefreshAllFlagLinks();
-	
+	AddOwnership();
+	AddEffect("IntFlagMovementCheck", this, 100, 12, this);
 	return _inherited(...);
 }
 
@@ -195,6 +185,28 @@ public func Construction()
 
 public func Destruction()
 {
+	RemoveOwnership();
+	
+	return _inherited(...);
+}
+
+private func AddOwnership()
+{
+	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
+		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
+
+	// redraw
+	RedrawAllFlagRadiuses();
+	
+	// ownership
+	RefreshOwnershipOfSurrounding();
+	
+	// linked flags - optimization for power system
+	RefreshAllFlagLinks();
+}
+
+private func RemoveOwnership()
+{
 	ClearFlagMarkers();
 	
 	// remove from global array
@@ -214,8 +226,43 @@ public func Destruction()
 	
 	// refresh all flag links
 	RefreshAllFlagLinks();
-	
-	return _inherited(...);
+}
+
+protected func FxIntFlagMovementCheckStart(object target, proplist effect, int temp)
+{
+	if (temp)
+		return FX_OK;
+	effect.moving = false;
+	effect.Interval = 12;
+	effect.X = target->GetX();
+	effect.Y = target->GetY();
+	return FX_OK;
+}
+
+protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
+{
+	// Check if flag started moving.
+	if (!effect.moving)
+	{
+		if (effect.X != target->GetX() || effect.Y != target->GetY())
+		{
+			effect.moving = true;
+			RemoveOwnership();
+		}	
+	}
+	// Check if flag stopped moving.
+	else
+	{
+		if (effect.X == target->GetX() && effect.Y == target->GetY())
+		{
+			effect.moving = false;
+			AddOwnership();
+		}	
+	}
+	// Update coordinates.
+	effect.X = target->GetX();
+	effect.Y = target->GetY();
+	return FX_OK;
 }
 
 func ScheduleRefreshLinkedFlags()
