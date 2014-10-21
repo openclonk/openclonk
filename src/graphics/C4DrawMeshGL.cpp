@@ -146,6 +146,8 @@ namespace
 		params.AddParameter("oc_PlayerColor", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR;
 		params.AddParameter("oc_ColorModulation", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION;
 		params.AddParameter("oc_Mod2", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_MOD2;
+		params.AddParameter("oc_UseClrModMap", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP;
+		params.AddParameter("oc_ClrModMap", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP;
 
 		return FormatString(
 			"varying vec4 diffuse;"
@@ -154,14 +156,19 @@ namespace
 			"uniform vec3 oc_PlayerColor;"
 			"uniform vec4 oc_ColorModulation;"
 			"uniform int oc_Mod2;"
+			"uniform int oc_UseClrModMap;"
+			"uniform sampler2D oc_ClrModMap;"
 			"void main()"
 			"{"
 			"  vec4 currentColor = diffuse;"
 			"  %s"
+		        "  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
+		        "  if(oc_UseClrModMap != 0)"
+		        "    clrModMapClr = texture2D(oc_ClrModMap, gl_FragCoord.xy);"
 			"  if(oc_Mod2 != 0)"
-			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation - 0.5, 0.0, 1.0);"
+			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation * clrModMapClr - 0.5, 0.0, 1.0);"
 			"  else"
-			"    gl_FragColor = currentColor * oc_ColorModulation;"
+			"    gl_FragColor = currentColor * oc_ColorModulation * clrModMapClr;"
 			"}",
 			textureUnitDeclCode.getData(),
 			textureUnitCode.getData()
@@ -425,12 +432,43 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& ma
 }
 
 // TODO: We should add a class, C4MeshRenderer, which contains all the functions
-// in this method, and avoids passing around so many parameters.
+// in this namespace, and avoids passing around so many parameters.
 namespace
 {
-	void ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode)
+	// Apply Zoom and Transformation to the current matrix stack. Return
+	// parity of the transformation.
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
+	{
+		// Apply zoom
+		glTranslatef(ZoomX, ZoomY, 0.0f);
+		glScalef(Zoom, Zoom, 1.0f);
+		glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+		// Apply transformation
+		if (pTransform)
+		{
+			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+			glMultMatrixf(transform);
+
+			// Compute parity of the transformation matrix - if parity is swapped then
+			// we need to cull front faces instead of back faces.
+			const float det = transform[0]*transform[5]*transform[15]
+			                  + transform[4]*transform[13]*transform[3]
+			                  + transform[12]*transform[1]*transform[7]
+			                  - transform[0]*transform[13]*transform[7]
+			                  - transform[4]*transform[1]*transform[15]
+			                  - transform[12]*transform[5]*transform[3];
+			return det > 0;
+		}
+
+		return true;
+	}
+
+	void ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool fUseClrModMap, C4FogOfWar* pClrModMap, std::vector<GLint>& textures)
 	{
 		float* out;
+		GLint texIndex;
+		C4Surface* pSurface;
 
 		switch(value)
 		{
@@ -456,14 +494,37 @@ namespace
 			parameter.GetInt() = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
 			break;
 		case StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP:
-			// TODO
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = 0;
+			parameter.GetInt() = (fUseClrModMap == true);
 			break;
 		case StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP:
-			// TODO
+			if(!fUseClrModMap) return;
+	                pSurface = pClrModMap->GetSurface();
+
+			texIndex = textures.size();
+			textures.push_back(texIndex);
+
+			// Load the clr mod map
+			glActiveTexture(GL_TEXTURE0+texIndex);
+			glClientActiveTexture(GL_TEXTURE0+texIndex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, pSurface->ppTex[0]->texName);
+
+			glLoadIdentity();
+        	        glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
+                	glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+			// TODO: Fix this once FoW rendering is fixed:
+
+			// TODO ApplyZoomAndTransform();
+
+			// TODO: Here, scale from device coordinates to viewport coordinates ( (x+1) * size/2)
+			// This allows the clrmod lookup to be performed with the fragment coordinate. We cannot
+			// use the interpolated vertex coordinate (after modelview matrix but before projection),
+			// since the modelview coordinates do not correspond to viewport coordinates 
+
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = -1;
+			parameter.GetInt() = texIndex;
 			break;
 		default:
 			assert(false);
@@ -471,7 +532,7 @@ namespace
 		}
 	}
 
-	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
@@ -631,12 +692,10 @@ namespace
 				}
 			}
 
-			glMatrixMode(GL_MODELVIEW);
-
 			assert(pass.Program.get() != NULL);
 			const C4DrawMeshGLProgramInstance& program_instance = static_cast<const C4DrawMeshGLProgramInstance&>(*pass.Program);
 
-			// Upload all parameters to the shader
+			// Upload all parameters to the shader (keep GL_TEXTURE matrix mode, since we might initialize clrmodmap during this)
 			glUseProgramObjectARB(static_cast<const C4DrawGLProgram*>(program_instance.Program)->Program);
 			for(unsigned int i = 0; i < program_instance.Parameters.size(); ++i)
 			{
@@ -646,7 +705,7 @@ namespace
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
 				{
-					ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode);
+					ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, fUseClrModMap, pClrModMap, textures);
 					parameter = &auto_resolved;
 				}
 
@@ -676,6 +735,7 @@ namespace
 				}
 			}
 
+			glMatrixMode(GL_MODELVIEW);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 			// Clean-up, re-set default state
@@ -692,9 +752,9 @@ namespace
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity); // Needed by RenderAttachedMesh
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModmap, C4FogOfWar* pClrModMap, bool parity); // Needed by RenderAttachedMesh
 
-	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
 
@@ -721,7 +781,7 @@ namespace
 		// TODO: Take attach transform's parity into account
 		glPushMatrix();
 		glMultMatrixf(attach_trans_gl);
-		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, parity);
+		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 		glPopMatrix();
 
 #if 0
@@ -743,7 +803,7 @@ namespace
 #endif
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMesh& mesh = instance.GetMesh();
 
@@ -751,7 +811,7 @@ namespace
 		StdMeshInstance::AttachedMeshIter attach_iter = instance.AttachedMeshesBegin();
 
 		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 		GLint modes[2];
 		// Check if we should draw in wireframe or normal mode
@@ -764,7 +824,7 @@ namespace
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 		// reset old mode to prevent rendering errors
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
@@ -796,36 +856,7 @@ namespace
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
-	}
-
-	// Apply Zoom and Transformation to the current matrix stack. Return
-	// parity of the transformation.
-	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
-	{
-		// Apply zoom
-		glTranslatef(ZoomX, ZoomY, 0.0f);
-		glScalef(Zoom, Zoom, 1.0f);
-		glTranslatef(-ZoomX, -ZoomY, 0.0f);
-
-		// Apply transformation
-		if (pTransform)
-		{
-			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
-			glMultMatrixf(transform);
-
-			// Compute parity of the transformation matrix - if parity is swapped then
-			// we need to cull front faces instead of back faces.
-			const float det = transform[0]*transform[5]*transform[15]
-			                  + transform[4]*transform[13]*transform[3]
-			                  + transform[12]*transform[1]*transform[7]
-			                  - transform[0]*transform[13]*transform[7]
-			                  - transform[4]*transform[1]*transform[15]
-			                  - transform[12]*transform[5]*transform[3];
-			return det > 0;
-		}
-
-		return true;
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 	}
 }
 
@@ -1052,20 +1083,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
-	if(fUseClrModMap)
-	{
-		float x = tx + twdt/2.0f;
-		float y = ty + thgt/2.0f;
-
-		if(pTransform)
-			pTransform->TransformPoint(x,y);
-
-		ApplyZoom(x, y);
-		DWORD c = pClrModMap->GetModAt(int(x), int(y));
-		ModulateClr(dwModClr, c);
-	}
-
-	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, parity);
+	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 	glUseProgramObjectARB(0);
 
