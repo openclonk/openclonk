@@ -1052,11 +1052,9 @@ bool CStdGL::RestoreDeviceObjects()
 	// TODO: It might be more efficient to use separate shaders for pixels, lines and blits.
 	const char* vertex_shader_text =
 		"varying vec2 texcoord;"
-		"varying vec2 pos;"
 		"void main()"
 		"{"
 		"  texcoord = gl_MultiTexCoord0.xy;"
-                "  pos = gl_Vertex.xy;"
 		"  gl_FrontColor = gl_Color;"
 		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
 		"}";
@@ -1068,7 +1066,6 @@ bool CStdGL::RestoreDeviceObjects()
 		"uniform sampler2D Texture;"
 		"uniform sampler2D ClrModMap;"
 		"varying vec2 texcoord;"
-		"varying vec2 pos;"
 		"void main()"
 		"{"
 		"  vec4 primaryColor = gl_Color;"
@@ -1076,7 +1073,7 @@ bool CStdGL::RestoreDeviceObjects()
 		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
 		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
 		"  if(fUseClrModMap != 0)"
-		"    clrModMapClr = texture2D(ClrModMap, pos);"
+		"    clrModMapClr = texture2D(ClrModMap, gl_FragCoord.xy);"
 		"  if(fMod2 != 0)"
 		"    gl_FragColor = clamp(2.0 * primaryColor * clrMod * clrModMapClr - 0.5, 0.0, 1.0);"
 		"  else"

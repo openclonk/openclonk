@@ -30,7 +30,7 @@ public:
 	virtual void TaskIn() { }
 	virtual bool UpdateClipper() { return true; }
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
-	virtual bool PrepareMaterial(StdMeshMaterial& mesh);
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat);
 	virtual bool PrepareRendering(C4Surface *) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformBlt(C4BltData &, C4TexRef *, DWORD, bool, bool) { }

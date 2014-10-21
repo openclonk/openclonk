@@ -41,53 +41,82 @@ protected:
 	StdCopyStrBuf Buf;
 };
 
-class StdMeshMaterialProgramParameter
+class StdMeshMaterialShaderParameter
 {
 public:
 	enum Type {
 		AUTO,
 		INT,
 		FLOAT,
-		FLOAT4
+		FLOAT2,
+		FLOAT3,
+		FLOAT4,
+		MATRIX_4X4
 	};
 
 	enum Auto {
 		AUTO_OC_PLAYER_COLOR,
 		AUTO_OC_COLOR_MODULATION,
 		AUTO_OC_MOD2,
-		AUTO_OC_USECLRMODMAP,
+		AUTO_OC_USE_CLRMODMAP,
 		AUTO_OC_CLRMODMAP,
 
 		// TODO: Other ogre auto values
 	};
 
-	StdMeshMaterialProgramParameter();
-	~StdMeshMaterialProgramParameter();
+	StdMeshMaterialShaderParameter(); // type=FLOAT, value uninitialized
+	StdMeshMaterialShaderParameter(Type type); // value uninitialized
+	StdMeshMaterialShaderParameter(const StdMeshMaterialShaderParameter& other);
+	StdMeshMaterialShaderParameter(StdMeshMaterialShaderParameter RREF other);
+	~StdMeshMaterialShaderParameter();
+
+	StdMeshMaterialShaderParameter& operator=(const StdMeshMaterialShaderParameter& other);
+	StdMeshMaterialShaderParameter& operator=(StdMeshMaterialShaderParameter RREF other);
 
 	Type GetType() const { return type; }
-	Auto GetAuto() const { return a; }
-	int GetInt() const { return i; }
-	float GetFloat() const { return f[0]; }
-	const float* GetFloatv() const { return f; }
+	void SetType(Type type); // changes type, new value is uninitialized
+
+	// Getters
+	Auto GetAuto() const { assert(type == AUTO); return a; }
+	int GetInt() const { assert(type == INT); return i; }
+	float GetFloat() const { assert(type == FLOAT); return f[0]; }
+	const float* GetFloatv() const { assert(type == FLOAT2 || type == FLOAT3 || type == FLOAT4); return f; }
+	const float* GetMatrix() const { assert(type == MATRIX_4X4); return matrix; }
+
+	// Setters
+	Auto& GetAuto() { assert(type == AUTO); return a; }
+	int& GetInt() { assert(type == INT); return i; }
+	float& GetFloat() { assert(type == FLOAT); return f[0]; }
+	float* GetFloatv() { assert(type == FLOAT2 || type == FLOAT3 || type == FLOAT4); return f; }
+	float* GetMatrix() { assert(type == MATRIX_4X4); return matrix; }
 private:
-	StdCopyStrBuf name;
+	void CopyShallow(const StdMeshMaterialShaderParameter& other);
+	void CopyDeep(const StdMeshMaterialShaderParameter& other);
+	void Move(StdMeshMaterialShaderParameter RREF other);
+
 	Type type;
 
 	union {
 		Auto a;
 		int i;
 		float f[4];
+		float* matrix; // 16 floats, row-major order
 	};
 };
 
-class StdMeshMaterialProgramParameters
+class StdMeshMaterialShaderParameters
 {
 public:
-	StdMeshMaterialProgramParameters();
+	StdMeshMaterialShaderParameters();
 
 	void Load(StdMeshMaterialParserCtx& ctx);
-protected:
-	std::vector<StdMeshMaterialProgramParameter> NamedParameters;
+
+	StdMeshMaterialShaderParameter& AddParameter(const char* name, StdMeshMaterialShaderParameter::Type type);
+
+	std::vector<std::pair<StdCopyStrBuf, StdMeshMaterialShaderParameter> > NamedParameters;
+private:
+	StdMeshMaterialShaderParameter LoadConstParameter(StdMeshMaterialParserCtx& ctx);
+	StdMeshMaterialShaderParameter LoadAutoParameter(StdMeshMaterialParserCtx& ctx);
 };
 
 // An abstract shader class. This is supposed to be implemented by the
@@ -347,11 +376,38 @@ public:
 	SceneBlendType SceneBlendFactors[2];
 	bool AlphaToCoverage;
 
-	// These point into the StdMeshMatManager maps
-	const StdMeshMaterialShader* FragmentShader;
-	const StdMeshMaterialShader* VertexShader;
-	const StdMeshMaterialShader* GeometryShader;
-	const StdMeshMaterialProgram* Program;
+	struct ShaderInstance
+	{
+		// This points into the StdMeshMatManager maps
+		const StdMeshMaterialShader* Shader;
+		// Parameters for this instance
+		StdMeshMaterialShaderParameters Parameters;
+	};
+
+	class ProgramInstance
+	{
+	public:
+		ProgramInstance(const StdMeshMaterialProgram* program):
+			Program(program) {}
+		virtual ~ProgramInstance() {}
+
+		// This points into the StdMeshMatManager map
+		const StdMeshMaterialProgram* const Program;
+	};
+
+	ShaderInstance FragmentShader;
+	ShaderInstance VertexShader;
+	ShaderInstance GeometryShader;
+	// This is a shared_ptr and not a unique_ptr so that this class is
+	// copyable, so it can be inherited. However, when the inherited
+	// material is prepared, the ProgramInstance will be overwritten
+	// anyway, so in that sense a unique_ptr would be enough. We could
+	// change it and make this class only movable (not copyable), and
+	// provide inheritance by copying all other fields, and letting
+	// PrepareMaterial fill the program instance.
+	std::shared_ptr<ProgramInstance> Program;
+private:
+	void LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShader::Type type);
 };
 
 class StdMeshMaterialTechnique
@@ -441,6 +497,10 @@ public:
 
 	const StdMeshMaterialShader* AddShader(const char* name, const char* language, StdMeshMaterialShader::Type type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
 	const StdMeshMaterialProgram& AddProgram(const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader, std::unique_ptr<StdMeshMaterialProgram> RREF program);
+
+	const StdMeshMaterialShader* GetFragmentShader(const char* name) const;
+	const StdMeshMaterialShader* GetVertexShader(const char* name) const;
+	const StdMeshMaterialShader* GetGeometryShader(const char* name) const;
 private:
 	MaterialMap Materials;
 
