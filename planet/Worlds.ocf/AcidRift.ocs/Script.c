@@ -103,15 +103,17 @@ private func InitEnvironment(int map_size, int difficulty)
 	// Adjust the sky a bit.
 	SetSkyParallax(0, 20, 20);
 	SetSkyAdjust(RGBa(225, 255, 205, 191), RGB(63, 200, 0));
+	
+	var map_size_factor = [90,120,140][map_size];
 
 	// Disasters
-	Meteor->SetChance(difficulty * 11);
-	if (difficulty >= 2) Rockfall->SetChance(difficulty * 50 - 80);
+	Meteor->SetChance((difficulty * 11) * map_size_factor / 120);
+	if (difficulty >= 2) Rockfall->SetChance((difficulty * 50 - 80) * map_size_factor / 120);
 	Rockfall->SetArea(Rectangle(200, 0, LandscapeWidth()-400, 1));
 	if (difficulty >= 2) Rockfall->SetExplosiveness(BoundBy(difficulty * 25, 50, 60));
 	
 	// Acid rain!
-	Cloud->Place(BoundBy(40 * difficulty - 30, 10, 70));
+	Cloud->Place(BoundBy(40 * difficulty - 30, 10, 70) * map_size_factor / 120);
 	Cloud->SetPrecipitation("Acid", 100);
 	
 	return;
