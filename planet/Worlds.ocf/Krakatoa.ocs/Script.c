@@ -90,14 +90,14 @@ private func FindVolcanoLocation()
 	for (var i = cnt; i > 0; i--)
 	{
 		// Random x coordinate, biased to the middle of the map.
-		var var_wdt = wdt * (400 - 200 * i / cnt) / 400;
+		var var_wdt = wdt * (300 - 200 * i / cnt) / 400;
 		var x = wdt / 2 + RandomX(-var_wdt, var_wdt);
 		var y = 0;
 		// Find corresponding y coordinate.
 		while (!GBackSolid(x, y) && y < 9 * hgt / 10)
 			y += 2;
 		// Check if surface is relatively flat (check for flatter surfaces first).
-		var d = i / 40 + 1;
+		var d = i / 150 + 1;
 		if (!GBackSolid(x+d, y-4) && !GBackSolid(x-d, y-4) && GBackSolid(x+d, y+4) && GBackSolid(x-d, y+4))
 		{
 			volcano_location = [x, y - 10];
@@ -219,10 +219,6 @@ global func FxBigVolcanoStart(object target, proplist effect, int temporary)
 		return FX_OK;
 	// Ensure right effect interval.
 	effect.Interval = 5;
-	
-	for (var pos in chasm_exits)
-	 	CreateObject(Flagpole, pos[0], pos[1]);
-	
 	return FX_OK;
 }
 
