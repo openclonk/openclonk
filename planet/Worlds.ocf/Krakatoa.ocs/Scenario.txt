@@ -2,7 +2,7 @@
 Icon=23
 Title=Krakatoa
 Version=5,4,0,0
-Difficulty=80
+Difficulty=60
 
 [Definitions]
 Definition1=Objects.ocd
@@ -20,8 +20,6 @@ Crew=Clonk=2
 Crew=Clonk=2
 
 [Landscape]
-InEarth=Rock=1;Firestone=3;Loam=1
-InEarthLevel=20
 Sky=Clouds2
 MapWidth=200
 MapHeight=150
