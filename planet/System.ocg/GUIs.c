@@ -32,7 +32,7 @@ global func GuiAddCloseButton(proplist menu, proplist target, string callback, p
 global func GuiUpdateText(string text, int menu, int submenu, object target)
 {
 	var update = {Text = text};
-	CustomGuiUpdate(update, menu, submenu, target);
+	GuiUpdate(update, menu, submenu, target);
 	return true;
 }
 

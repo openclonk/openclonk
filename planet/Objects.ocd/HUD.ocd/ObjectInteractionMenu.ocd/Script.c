@@ -299,7 +299,7 @@ func CreateSideBar(int slot)
 			obj_symbol = {Symbol = obj, Margin = "0.5em"}
 		};
 		
-		Gui_AddSubwindow(entry, sidebar);
+		GuiAddSubwindow(entry, sidebar);
 	}
 	return sidebar;
 }
@@ -398,7 +398,7 @@ func CreateMainMenu(object obj, int slot)
 				all.BackgroundColor = menu.BackgroundColor;
 		else if (menu.decoration)
 			menu.menu_object.BackgroundColor = menu.decoration->FrameDecorationBackClr();
-		Gui_AddSubwindow(all, container);
+		GuiAddSubwindow(all, container);
 	}
 	
 	// add refreshing effects for all of the contents menus
