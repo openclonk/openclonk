@@ -45,6 +45,9 @@
 
 #include <cmath>
 
+const float C4ScriptGuiWindow::standardVerticalMargin = 100.0f;
+const float C4ScriptGuiWindow::standardHorizontalMargin = 100.0f;
+
 C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()
 {
 	if (text)
@@ -321,8 +324,12 @@ void C4ScriptGuiWindowProperty::CleanUpAll()
 
 const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 {
-	C4PropList *proplist = C4PropList::New();
+	C4PropList *proplist = nullptr; 
 	
+	bool onlyOneTag = taggedProperties.size() == 1;
+	if (!onlyOneTag) // we will need a tagged proplist
+		proplist = C4PropList::New();
+
 	// go through all of the tagged properties and add a property to the proplist containing both the tag name
 	// and the serialzed C4Value of the properties' value
 	for(std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
@@ -370,7 +377,8 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 			break;
 
 		case C4ScriptGuiWindowPropertyName::frameDecoration:
-			val = C4Value(prop.deco ? prop.deco->idSourceDef : C4ID::None);
+			if (prop.deco)
+				val = C4Value(prop.deco->pSourceDef);
 			break;
 
 		case C4ScriptGuiWindowPropertyName::text:
@@ -399,6 +407,8 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 			break;
 		} // switch
 
+		if (onlyOneTag) return val;
+		assert(proplist);
 		proplist->SetPropertyByS(tagString, val);
 	}
 
@@ -810,7 +820,7 @@ C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relat
 	{
 		C4String *tag = iter->first;
 		StdStrBuf buf;
-		buf.Format("%f%%%+fem", iter->second.f, absolute.taggedProperties[tag].f);
+		buf.Format("%f%%%+fem", 100.0f * iter->second.f, absolute.taggedProperties[tag].f);
 		C4String *propString = Strings.RegString(buf);
 
 		if (onlyStdTag)
@@ -823,6 +833,25 @@ C4Value C4ScriptGuiWindow::PositionToC4Value(C4ScriptGuiWindowPropertyName relat
 		}
 	}
 	return C4Value(proplist);
+}
+
+void C4ScriptGuiWindow::Denumerate(C4ValueNumbers *numbers)
+{
+	assert(IsRoot());
+	if (id == 0)
+	{
+		// nothing to do, note that the id is abused for the id in the enumeration
+		return;
+	}
+	C4Value value =	numbers->GetValue(id);
+	id = 0;
+	CreateFromPropList(value.getPropList(), false, false, true);
+
+	for (C4GUI::Element * element : *this)
+	{
+		C4ScriptGuiWindow *mainWindow = static_cast<C4ScriptGuiWindow*>(element);
+		mainWindow->RequestLayoutUpdate();
+	}
 }
 
 const C4Value C4ScriptGuiWindow::ToC4Value()
@@ -903,6 +932,9 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 			assert(false);
 			break;
 		}
+
+		// don't save "nil" values
+		if (val == C4Value()) continue;
 
 		proplist->SetProperty(C4PropertyName(prop), val);
 	}
@@ -1013,7 +1045,7 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 					parent->ChildGotID(this);
 			}
 			else
-				if (!isLoading)
+				if (isLoading)
 					id = property.getInt();
 		}
 		else if(&Strings.P[P_OnClick] == key)
@@ -1075,10 +1107,10 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 		}
 	}
 
-	if (layoutUpdateRequired)
+	if (!isLoading && layoutUpdateRequired)
 		RequestLayoutUpdate();
 
-	if (resetStdTag)
+	if (resetStdTag || isLoading)
 		SetTag(stdTag);
 
 	return true;

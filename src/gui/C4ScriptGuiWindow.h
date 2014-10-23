@@ -177,6 +177,10 @@ class C4ScriptGuiWindow : public C4GUI::ScrollWindow
 {
 	friend class C4ScriptGuiWindowAction;
 	friend class C4ScriptGuiWindowScrollBar;
+public:
+	// the margins around the centered "main menus"
+	static const float standardVerticalMargin;
+	static const float standardHorizontalMargin;
 
 	private:
 	// the "main" menu ID is always unique, however the sub-menu IDs do NOT have to be unique
@@ -267,7 +271,9 @@ class C4ScriptGuiWindow : public C4GUI::ScrollWindow
 
 	// constructs a C4Value (proplist) that contains everything that is needed for saving this window
 	const C4Value ToC4Value();
-
+	// this MUST only be called when loading
+	void SetEnumeratedID(int enumID) { id = enumID; }
+	void Denumerate(C4ValueNumbers *numbers);
 	// C4ScriptGuiWindow will delete its children on close. Make sure you don't delete anything twice
 	C4ScriptGuiWindow *AddChild(C4ScriptGuiWindow *child);
 	C4ScriptGuiWindow *AddChild() { return AddChild(new C4ScriptGuiWindow()); }

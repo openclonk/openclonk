@@ -596,6 +596,7 @@ void C4Game::Clear()
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
+	if (ScriptGuiRoot) { delete ScriptGuiRoot; ScriptGuiRoot = nullptr; }
 	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
@@ -1487,7 +1488,8 @@ void C4Game::Default()
 	DebugPassword.Clear();
 	DebugHost.Clear();
 	DebugWait = false;
-	ScriptGuiRoot = nullptr; // will be initialized when the game starts
+	assert(!ScriptGuiRoot);
+	ScriptGuiRoot = nullptr;
 }
 
 void C4Game::Evaluate()
@@ -1627,19 +1629,30 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
 
-		// save custom GUIs only if a real savegame and not for editor-scenario-saves
-
-		if (pComp->isCompiler())
+		// save custom GUIs only if a real savegame and not for editor-scenario-saves or section changes
+		if (!comp.fScenarioSection)
 		{
-			C4Value val;
-			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
-			assert (ScriptGuiRoot->GetID() == 0);
-			ScriptGuiRoot->CreateFromPropList(val.getPropList(), false, false, true);
-		}
-		else
-		{
-			C4Value val = ScriptGuiRoot->ToC4Value();
-			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
+			pComp->Name("GUI");
+			if (pComp->isCompiler())
+			{
+				C4Value val;
+				pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "ScriptGUIs", C4VNull));
+				// if loading, assume
+				assert(ScriptGuiRoot->GetID() == 0); // ID of 0 means "had no subwindows ever" aka "is fresh" for root
+				// we will need to denumerate and create the actual GUI post-loading
+				// for now, just remember our enumerated ID
+				if (val.GetType() == C4V_Enum)
+				{
+					int enumID = val._getInt();
+					ScriptGuiRoot->SetEnumeratedID(enumID);
+				}
+			}
+			else
+			{
+				C4Value *val = new C4Value(ScriptGuiRoot->ToC4Value());
+				pComp->Value(mkNamingAdapt(mkParAdapt(*val, numbers), "ScriptGUIs", C4VNull));
+			}
+			pComp->NameEnd();
 		}
 	}
 
@@ -2131,6 +2144,10 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		if (!InitMaterialTexture())
 			{ LogFatal(LoadResStr("IDS_PRC_MATERROR")); return false; }
 		SetInitProgress(60);
+
+		// prepare script menus
+		assert(!ScriptGuiRoot);
+		ScriptGuiRoot = new C4ScriptGuiWindow(C4ScriptGuiWindow::standardHorizontalMargin, C4ScriptGuiWindow::standardVerticalMargin);
 	}
 
 	// Load section sounds
@@ -2200,6 +2217,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
 	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	numbers->Denumerate();
+	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
@@ -2251,13 +2269,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetMusicLevel(iMusicLevel);
 		SetInitProgress(97);
 	}
-
-	// prepare script menus
-	assert(!ScriptGuiRoot);
-	const float standardVerticalBorder = 100.0f;
-	const float standardHorizontalBorder = 100.0f;
-	ScriptGuiRoot = new C4ScriptGuiWindow(standardVerticalBorder, standardHorizontalBorder);
-	pGUI->AddElement(ScriptGuiRoot);
 
 	return true;
 }

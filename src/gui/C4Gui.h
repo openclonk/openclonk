@@ -2011,6 +2011,7 @@ namespace C4GUI
 		bool SetFacetByAction(C4Def *pOfDef, class C4TargetFacet &rfctTarget, const char *szFacetName);
 
 	public:
+		C4Def *pSourceDef;
 		C4ID idSourceDef;
 		uint32_t dwBackClr; // background face color
 		C4TargetFacet fctTop, fctTopRight, fctRight, fctBottomRight, fctBottom, fctBottomLeft, fctLeft, fctTopLeft;

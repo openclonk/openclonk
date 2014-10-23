@@ -43,6 +43,7 @@ namespace C4GUI
 
 	void FrameDecoration::Clear()
 	{
+		pSourceDef = nullptr;
 		idSourceDef = C4ID::None;
 		dwBackClr = C4GUI_StandardBGColor;
 		iBorderTop=iBorderLeft=iBorderRight=iBorderBottom=0;
@@ -88,7 +89,8 @@ namespace C4GUI
 		if (!pSrcDef->Script.IsReady()) return false;
 		// reset old
 		Clear();
-		this->idSourceDef = idSourceDef;
+		this->pSourceDef = pSrcDef;
+		this->idSourceDef = pSrcDef->id;
 		// query values
 		dwBackClr     = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BackClr"     ).getData()).getInt();
 		iBorderTop    = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderTop"   ).getData()).getInt();
