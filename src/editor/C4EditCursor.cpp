@@ -150,7 +150,7 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 		// Shift always indicates a target outside the current selection
 		else
 		{
-			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
+			Target = (dwKeyState & MK_SHIFT) ? Selection.GetLastObject() : NULL;
 			do
 			{
 				Target = Game.FindObject(NULL,X,Y,0,0,OCF_NotContained, Target);
@@ -259,13 +259,20 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 			// Click on unselected: select single
 			if (Target)
 			{
-				C4ObjectLink * it;
-				for(it = Selection.First; it; it = it->Next){
-					if(it->Obj->At(X, Y))
+				bool found = false;
+				for (C4Object *obj : Selection)
+				{
+					if(obj->At(X, Y))
+					{
+						found = true;
 						break;
+					}
 				}
-				if(!it) // means loop didn't break
-					{ ClearSelection(); AddToSelection(Target); }
+				if(!found) // means loop didn't break
+				{
+					ClearSelection();
+					AddToSelection(Target);
+				}
 			}
 			// Click on nothing: drag frame
 			if (!Target)
