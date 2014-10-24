@@ -60,7 +60,7 @@ bool C4GameObjects::Add(C4Object *nObj)
 		return InactiveObjects.Add(nObj, C4ObjectList::stMain);
 	// if this is a foreground object, add it to the list
 	if (nObj->Category & C4D_Foreground)
-		::Objects.ForeObjects.Add(nObj, C4ObjectList::stMain);
+		ForeObjects.Add(nObj, C4ObjectList::stMain);
 	// manipulate main list
 	if (!C4ObjectList::Add(nObj, C4ObjectList::stMain))
 		return false;
@@ -77,7 +77,7 @@ bool C4GameObjects::Remove(C4Object *pObj)
 	// remove from sectors
 	Sectors.Remove(pObj);
 	// remove from forelist
-	::Objects.ForeObjects.Remove(pObj);
+	ForeObjects.Remove(pObj);
 	// manipulate main list
 	return C4ObjectList::Remove(pObj);
 }
@@ -230,7 +230,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
 		// add to list of foreobjects
 		if (pObj->Category & C4D_Foreground)
-			::Objects.ForeObjects.Add(pObj, C4ObjectList::stMain, this);
+			ForeObjects.Add(pObj, C4ObjectList::stMain, this);
 		// Unterminate end
 	}
 
