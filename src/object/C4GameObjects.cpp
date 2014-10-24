@@ -102,7 +102,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	}
 	focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
 
-	for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1 = *iter); ++iter)
+	for (auto obj1 : *this)
 		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
 		{
 			uint32_t Marker = GetNextMarker();
@@ -159,9 +159,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 C4Object* C4GameObjects::AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude)
 {
 	DWORD cocf;
-	C4Object *cObj; C4ObjectLink *clnk;
-
-	for (clnk=ObjectsAt(ctx,cty).First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *cObj : ObjectsAt(ctx,cty))
 		if (!exclude || (cObj!=exclude && exclude->Layer == cObj->Layer)) if (cObj->Status)
 			{
 				cocf=ocf | OCF_Exclusive;
@@ -201,10 +199,9 @@ C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
 
 void C4GameObjects::UpdateSolidMasks()
 {
-	C4ObjectLink *cLnk;
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->UpdateSolidMask(false);
+	for (C4Object *obj : *this)
+		if (obj->Status)
+			obj->UpdateSolidMask(false);
 }
 
 void C4GameObjects::DeleteObjects(bool fDeleteInactive)
@@ -226,12 +223,9 @@ void C4GameObjects::Clear(bool fClearInactive)
 int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 {
 	// Process objects
-	C4ObjectLink *cLnk;
-	C4Object *pObj;
 	int32_t iMaxObjectNumber = 0;
-	for (cLnk = Last; cLnk; cLnk = cLnk->Prev)
+	for (C4Object *pObj : reverse())
 	{
-		C4Object *pObj = cLnk->Obj;
 		// keep track of numbers
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
 		// add to list of foreobjects
@@ -261,8 +255,8 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// special checks:
 	// -contained/contents-consistency
 	// -StaticBack-objects zero speed
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if ((pObj=cLnk->Obj)->Status)
+	for (C4Object *pObj : *this)
+		if (pObj->Status)
 		{
 			// staticback must not have speed
 			if (pObj->Category & C4D_StaticBack)
@@ -300,7 +294,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 		}
 	// sort out inactive objects
 	C4ObjectLink *cLnkNext;
-	for (cLnk=First; cLnk; cLnk=cLnkNext)
+	for (C4ObjectLink *cLnk=First; cLnk; cLnk=cLnkNext)
 	{
 		cLnkNext = cLnk->Next;
 		if (cLnk->Obj->Status == C4OS_INACTIVE)
@@ -332,8 +326,8 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	//Sectors.Dump();
 
 	// misc updates
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if ((pObj=cLnk->Obj)->Status)
+	for (C4Object *pObj : *this)
+		if (pObj->Status)
 		{
 			// add to plrview
 			pObj->PlrFoWActualize();
@@ -365,9 +359,8 @@ void C4GameObjects::UpdateScriptPointers()
 C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
 	// call objects first - scenario script might overwrite hostility, etc...
-	C4Object *pObj;
-	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
-		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
+	for (C4Object *pObj : *this)
+		if (pObj && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
 		{
 			C4Value vResult = pObj->Call(szFunction, pPars/*, fPassError*/);
 			// rejection tests abort on first nonzero result
@@ -460,10 +453,8 @@ void C4GameObjects::FixObjectOrder()
 
 void C4GameObjects::ResortUnsorted()
 {
-	C4ObjectLink *clnk=First; C4Object *cObj;
-	while (clnk && (cObj=clnk->Obj))
+	for (C4Object *cObj : *this)
 	{
-		clnk=clnk->Next;
 		if (cObj->Unsorted)
 		{
 			// readd to main object list
@@ -500,40 +491,37 @@ bool C4GameObjects::AssignInfo()
 
 void C4GameObjects::AssignPlrViewRange()
 {
-	C4ObjectLink *cLnk;
-	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->AssignPlrViewRange();
+	for (C4Object *obj : reverse())
+		if (obj->Status)
+			obj->AssignPlrViewRange();
 }
 
 void C4GameObjects::SyncClearance()
 {
-	C4ObjectLink *cLnk;
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj)
-			cLnk->Obj->SyncClearance();
+	for (C4Object *obj : *this)
+		if (obj)
+			obj->SyncClearance();
 }
 
 void C4GameObjects::OnSynchronized()
 {
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Call(PSF_OnSynchronized);
+	for (C4Object *obj : *this)
+		if (obj)
+			obj->Call(PSF_OnSynchronized);
 }
 
 void C4GameObjects::ResetAudibility()
 {
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Audible=cobj->AudiblePan=0;
+	for (C4Object *obj : *this)
+		if (obj)
+			obj->Audible = obj->AudiblePan = 0;
 }
 
 void C4GameObjects::SetOCF()
 {
-	C4ObjectLink *cLnk;
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->SetOCF();
+	for (C4Object *obj : *this)
+		if (obj->Status)
+			obj->SetOCF();
 }
 
 uint32_t C4GameObjects::GetNextMarker()
@@ -543,9 +531,11 @@ uint32_t C4GameObjects::GetNextMarker()
 	// If all markers are exceeded, restart marker at 1 and reset all object markers to zero.
 	if (!marker)
 	{
-		C4Object *cobj; C4ObjectLink *clnk;
-		for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-			cobj->Marker = 0;
+		for (C4Object *cobj : *this)
+		{
+			if (cobj)
+				cobj->Marker = 0;
+		}
 		marker = ++LastUsedMarker;
 	}
 	return marker;

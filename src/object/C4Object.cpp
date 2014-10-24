@@ -375,10 +375,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// count decrease
 	Def->Count--;
 	// Kill contents
-	C4Object *cobj; C4ObjectLink *clnk,*next;
-	for (clnk=Contents.First; clnk && (cobj=clnk->Obj); clnk=next)
+	for (C4Object *cobj : Contents)
 	{
-		next=clnk->Next;
 		if (fExitContents)
 			cobj->Exit(GetX(), GetY());
 		else
@@ -1187,8 +1185,8 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
 	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
-	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
-		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
+	for (C4Object *obj : Objects)
+		if (obj->pEffects) obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,false);
 	// Done
@@ -4750,10 +4748,8 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 void C4Object::ClearContentsAndContained(bool fDoCalls)
 {
 	// exit contents from container
-	C4Object *cobj; C4ObjectLink *clnk,*next;
-	for (clnk=Contents.First; clnk && (cobj=clnk->Obj); clnk=next)
+	for (C4Object *cobj : Contents)
 	{
-		next=clnk->Next;
 		cobj->Exit(GetX(), GetY(), 0,Fix0,Fix0,Fix0, fDoCalls);
 	}
 	// remove from container *after* contents have been removed!
@@ -4875,10 +4871,9 @@ void C4Object::GrabContents(C4Object *pFrom)
 	// create a temp list of all objects and transfer it
 	// this prevents nasty deadlocks caused by RejectEntrance-scripts
 	C4ObjectList tmpList; tmpList.Copy(pFrom->Contents);
-	C4ObjectLink *cLnk;
-	for (cLnk=tmpList.First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->Enter(this);
+	for (C4Object *obj : tmpList)
+		if (obj->Status)
+			obj->Enter(this);
 }
 
 bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const

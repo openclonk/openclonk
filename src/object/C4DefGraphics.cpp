@@ -452,9 +452,9 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+		{
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -500,6 +500,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							if (!pDeco->UpdateGfx())
 								pObj->Menu->SetFrameDeco(NULL);
 				}
+		}
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
@@ -517,9 +518,8 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -572,9 +572,9 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
 
 	// Update mesh materials for all mesh instances.
-	C4Object *pObj;
-	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-		if ((pObj=pLnk->Obj)) if (pObj->Status)
+	for (C4Object *pObj : Objects)
+	{
+		if (pObj && pObj->Status)
 		{
 			if(pObj->pMeshInstance)
 				UpdateMesh(pObj->pMeshInstance);
@@ -582,6 +582,7 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 				if(pGfxOverlay->pMeshInstance)
 					UpdateMesh(pGfxOverlay->pMeshInstance);
 		}
+	}
 }
 
 void C4DefGraphicsPtrBackup::UpdateMesh(StdMeshInstance* instance)

@@ -1605,9 +1605,9 @@ static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 	// set layer object
 	Obj->Layer = pNewLayer;
 	// set for all contents as well
-	for (C4ObjectLink *pLnk=Obj->Contents.First; pLnk; pLnk=pLnk->Next)
-		if ((Obj=pLnk->Obj) && Obj->Status)
-			Obj->Layer = pNewLayer;
+	for (C4Object* contentObj : Obj->Contents)
+		if (contentObj && contentObj->Status)
+			contentObj->Layer = pNewLayer;
 	// success
 	return C4Void();
 }

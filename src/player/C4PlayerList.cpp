@@ -214,8 +214,7 @@ bool C4PlayerList::Remove(int iPlayer, bool fDisconnect, bool fNoCalls)
 bool C4PlayerList::RemoveUnjoined(int32_t iPlayer)
 {
 	// Savegame resume missing player: Remove player objects only
-	C4Object *pObj;
-	for (C4ObjectLink *clnk=::Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *pObj : Objects)
 		if (pObj->Status)
 			if (pObj->IsPlayerObject(iPlayer))
 				pObj->AssignRemoval(true);
