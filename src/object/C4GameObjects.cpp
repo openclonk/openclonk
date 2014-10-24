@@ -300,20 +300,12 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 			}
 		}
 	// sort out inactive objects
-	C4ObjectLink *cLnkNext;
-	for (C4ObjectLink *cLnk=First; cLnk; cLnk=cLnkNext)
+	for (C4Object *obj : *this)
 	{
-		cLnkNext = cLnk->Next;
-		if (cLnk->Obj->Status == C4OS_INACTIVE)
+		if (obj->Status == C4OS_INACTIVE)
 		{
-			if (cLnk->Prev) cLnk->Prev->Next=cLnkNext; else First=cLnkNext;
-			if (cLnkNext) cLnkNext->Prev=cLnk->Prev; else Last=cLnk->Prev;
-			if ((cLnk->Prev = InactiveObjects.Last))
-				InactiveObjects.Last->Next = cLnk;
-			else
-				InactiveObjects.First = cLnk;
-			InactiveObjects.Last = cLnk; cLnk->Next = NULL;
-			Mass-=cLnk->Obj->Mass;
+			Remove(obj);
+			InactiveObjects.Add(obj, C4ObjectList::stNone);
 		}
 	}
 
