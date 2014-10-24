@@ -1066,38 +1066,6 @@ void C4Player::AdjustCursorCommand()
 	}
 }
 
-void C4Player::CursorRight()
-{
-	C4ObjectLink *cLnk;
-	// Get next crew member
-	if ((cLnk=Crew.GetLink(Cursor)))
-		for (cLnk=cLnk->Next; cLnk; cLnk=cLnk->Next)
-			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (!cLnk)
-		for (cLnk=Crew.First; cLnk; cLnk=cLnk->Next)
-			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (cLnk) SetCursor(cLnk->Obj, true);
-	// Updates
-	CursorFlash=30;
-	UpdateView();
-}
-
-void C4Player::CursorLeft()
-{
-	C4ObjectLink *cLnk;
-	// Get prev crew member
-	if ((cLnk=Crew.GetLink(Cursor)))
-		for (cLnk=cLnk->Prev; cLnk; cLnk=cLnk->Prev)
-			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (!cLnk)
-		for (cLnk=Crew.Last; cLnk; cLnk=cLnk->Prev)
-			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (cLnk) SetCursor(cLnk->Obj, true);
-	// Updates
-	CursorFlash=30;
-	UpdateView();
-}
-
 bool C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
 {
 	// Eliminated
