@@ -276,25 +276,27 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 					pObj->Contained->Contents.Add(pObj, C4ObjectList::stContents);
 				}
 			// all contents must have contained set; otherwise, remove them!
-			C4Object *pObj2;
-			for (C4ObjectLink *cLnkCont=pObj->Contents.First; cLnkCont; cLnkCont=cLnkCont->Next)
+			auto contentsIt = pObj->Contents.begin();
+			while (!contentsIt.atEnd())
 			{
+				C4Object* pObj2 = *contentsIt;
 				// check double links
-				if (pObj->Contents.GetLink(cLnkCont->Obj) != cLnkCont)
+				auto it2 = pObj->Contents.begin();
+				if (it2.find(pObj2) && it2 != contentsIt)
 				{
-					DebugLogF("Error in Objects.txt: Double containment of #%d by #%d!", cLnkCont->Obj->Number, pObj->Number);
+					DebugLogF("Error in Objects.txt: Double containment of #%d by #%d!", pObj2->Number, pObj->Number);
 					// this remove-call will only remove the previous (dobuled) link, so cLnkCont should be save
-					pObj->Contents.Remove(cLnkCont->Obj);
+					pObj->Contents.Remove(pObj2);
 					// contents checked already
 					continue;
 				}
 				// check contents/contained-relation
-				if ((pObj2=cLnkCont->Obj)->Status)
-					if (pObj2->Contained != pObj)
-					{
-						DebugLogF("Error in Objects.txt: Object #%d not in container #%d as referenced!", pObj2->Number, pObj->Number);
-						pObj2->Contained = pObj;
-					}
+				if (pObj2->Status && pObj2->Contained != pObj)
+				{
+					DebugLogF("Error in Objects.txt: Object #%d not in container #%d as referenced!", pObj2->Number, pObj->Number);
+					pObj2->Contained = pObj;
+				}
+				contentsIt++;
 			}
 		}
 	// sort out inactive objects
