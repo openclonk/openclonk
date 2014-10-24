@@ -251,7 +251,19 @@ bool C4ObjectList::Remove(C4Object *pObj)
 	// Fix iterators
 	for (iterator * i = FirstIter; i; i = i->Next)
 	{
-		if (i->pLink == cLnk) i->pLink = cLnk->Next;
+		// adjust pointers of internal link field
+		if (i->link.Prev == cLnk)
+		{
+			i->link.Prev = cLnk->Prev;
+		}
+		else if (i->link.Next == cLnk)
+		{
+			i->link.Next = cLnk->Next;
+		}
+		else if (i->link.Obj == cLnk->Obj)
+		{
+			i->link.Obj = nullptr;
+		}
 	}
 
 	// Remove link from list
@@ -295,7 +307,7 @@ C4Object* C4ObjectList::FindOther(C4ID id, int owner)
 	return NULL;
 }
 
-const C4Object* C4ObjectList::GetObject(int Index) const
+C4Object* C4ObjectList::GetObject(int Index) const
 {
 	int cIdx;
 	C4ObjectLink *cLnk;
@@ -830,18 +842,15 @@ void C4ObjectList::CheckCategorySort()
 		}
 }
 
-C4ObjectList::iterator::iterator(C4ObjectList & List):
-		List(List), pLink(List.First)
-{
-	Next = List.AddIter(this);
-}
-C4ObjectList::iterator::iterator(C4ObjectList & List, C4ObjectLink * pLink):
-		List(List), pLink(pLink)
+static const C4ObjectLink NULL_LINK = {};
+
+C4ObjectList::iterator::iterator(const C4ObjectList & List, const C4ObjectLink * pLink, bool reverse):
+		List(List), link(pLink ? *pLink : NULL_LINK), reverse(reverse)
 {
 	Next=List.AddIter(this);
 }
 C4ObjectList::iterator::iterator(const C4ObjectList::iterator & iter):
-		List(iter.List), pLink(iter.pLink), Next()
+		List(iter.List), link(iter.link), Next(), reverse(iter.reverse)
 {
 	Next=List.AddIter(this);
 }
@@ -851,26 +860,64 @@ C4ObjectList::iterator::~iterator()
 }
 C4ObjectList::iterator& C4ObjectList::iterator::operator++ ()
 {
-	pLink = pLink ? pLink->Next : pLink;
+	C4ObjectLink* advance = reverse ? link.Prev : link.Next;
+	link = advance ? *advance : NULL_LINK;
 	return *this;
 }
 C4ObjectList::iterator C4ObjectList::iterator::operator++ (int)
 {
 	iterator old = *this;
-	pLink = pLink ? pLink->Next : pLink;
+	iterator::operator++();
 	return old;
 }
 C4Object * C4ObjectList::iterator::operator* ()
 {
-	return pLink ? pLink->Obj : 0;
+	return link.Obj;
 }
 bool C4ObjectList::iterator::operator== (const iterator & iter) const
 {
-	return &iter.List == &List && iter.pLink == pLink;
+	return
+		&iter.List == &List &&
+		iter.link.Obj == link.Obj /* checking for same object should be enough */ &&
+		iter.reverse == reverse;
 }
 bool C4ObjectList::iterator::operator!= (const iterator & iter) const
 {
-	return &iter.List != &List || iter.pLink != pLink;
+	return !(*this == iter);
+}
+
+bool C4ObjectList::iterator::find(C4Object* target)
+{
+	while (link.Obj)
+	{
+		if (link.Obj == target)
+		{
+			return true;
+		}
+		else
+		{
+			(*this)++;
+		}
+	}
+	return false;
+}
+
+bool C4ObjectList::iterator::atEnd() const
+{
+	return link.Obj == nullptr;
+}
+
+bool C4ObjectList::iterator::reset()
+{
+	C4ObjectLink* l = reverse ? List.Last : List.First;
+	link = l ? *l : NULL_LINK;
+	return !atEnd();
+}
+
+bool C4ObjectList::iterator::advance()
+{
+	(*this)++;
+	return !atEnd();
 }
 
 C4ObjectList::iterator& C4ObjectList::iterator::operator=(const iterator & iter)
@@ -878,25 +925,26 @@ C4ObjectList::iterator& C4ObjectList::iterator::operator=(const iterator & iter)
 	// Can only assign iterators into the same list
 	assert(&iter.List == &List);
 
-	pLink = iter.pLink;
+	link = iter.link;
+	reverse = iter.reverse;
 	return *this;
 }
 
-C4ObjectList::iterator C4ObjectList::begin()
+C4ObjectList::iterator C4ObjectList::begin() const
 {
-	return iterator(*this);
+	return iterator(*this, First, false);
 }
-const C4ObjectList::iterator C4ObjectList::end()
+const C4ObjectList::iterator C4ObjectList::end() const
 {
-	return iterator(*this, 0);
+	return iterator(*this, nullptr, false);
 }
-C4ObjectList::iterator * C4ObjectList::AddIter(iterator * iter)
+C4ObjectList::iterator * C4ObjectList::AddIter(iterator * iter) const
 {
 	iterator * r = FirstIter;
 	FirstIter = iter;
 	return r;
 }
-void C4ObjectList::RemoveIter(iterator * iter)
+void C4ObjectList::RemoveIter(iterator * iter) const
 {
 	if (iter == FirstIter)
 		FirstIter = iter->Next;
@@ -907,4 +955,14 @@ void C4ObjectList::RemoveIter(iterator * iter)
 			i = i->Next;
 		i->Next = iter->Next;
 	}
+}
+
+C4ObjectList::iterator C4ObjectList::ReverseView::begin() const
+{
+	return iterator(list, list.Last, true);
+}
+
+C4ObjectList::iterator C4ObjectList::ReverseView::end() const
+{
+	return iterator(list, nullptr, true);
 }
