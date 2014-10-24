@@ -1,3 +1,7 @@
+# Goal name and description
+GoalName=Gold Transport
+GoalDesc=Construct an airplane and load it with %d gold bars to transport them to a safe location.
+
 # Scenario parameters: difficulty
 Difficulty=Difficulty
 DescDifficulty=Sets this round's difficulty.

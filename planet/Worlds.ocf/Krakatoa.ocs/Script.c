@@ -1,23 +1,29 @@
 /**
-	Krakatoa
-	Players are challenged to build up a settlement on top of an active volcano.
-	The goal is to expand your reign by building flags to cover the landscape.
-	Also you need to gather some gold to show your skills of entering a volcano.
+	Krakatoa's Krach
+	Players are challenged to build up a settlement on top of an active volcano
+	after their airplane crashed. They need to gather gold from the core of the
+	volcano to show your skills of entering a volcano. The gold bars need to be
+	transported out by a newly constructed airplane.
 	
 	@author Maikel
 */
 
 
-static volcano_location;
-static plr_init;
+// Whether the intro has been initialized.
+static intro_init;
 
 protected func Initialize()
 {
-	// Create expansion and wealth goal.
-	var goal = CreateObject(Goal_Wealth);
-	goal->SetWealthGoal(100 + 100 * SCENPAR_Difficulty);
-	goal = CreateObject(Goal_Expansion);
-	goal->SetExpansionGoal(200 + 50 * SCENPAR_Difficulty);
+	// Goal: construct an airplane and fill it with gold bars.
+	var goal = CreateObject(Goal_Script);
+	// Add an effect to check whether the goal is fulfilled.
+	var effect = AddEffect("GoalCheck", nil, 100, 2, nil);
+	effect.goal = goal;
+	effect.barcnt = 8 * SCENPAR_Difficulty;
+	// Set goal name and description.	
+	goal.Name = "$GoalName$";
+	goal.Description = Format("$GoalDesc$", effect.barcnt);
+
 
 	// Some rules.
 	CreateObject(Rule_TeamAccount);
@@ -43,16 +49,10 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-	// Move all crew to start position.
-	var index = 0, crew;
-	while (crew = GetCrew(plr, index++))
-		crew->SetPosition(volcano_location[0] + RandomX(-5, 5), volcano_location[1]);
-	// Give only the first joined player some wealth.
-	if (!plr_init)
-	{
-		SetWealth(plr, 50);
-		plr_init = true;
-	}
+	// Set zoom range.
+	SetPlayerZoomByViewRange(plr, 500, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
+	
 	// Give the player its knowledge and base materials.
 	GivePlayerBasicKnowledge(plr);
 	GivePlayerPumpingKnowledge(plr);
@@ -64,7 +64,7 @@ protected func InitializePlayer(int plr)
 	GivePlayerElementaryBaseMaterial(plr);
 	
 	// Give crew some equipment.
-	var index = 0;
+	var index = 0, crew;
 	while (crew = GetCrew(plr, index++))
 	{
 		if (index == 1)
@@ -73,38 +73,34 @@ protected func InitializePlayer(int plr)
 			crew->CreateContents(Axe);
 		crew->CreateContents(Shovel);
 	}
-	// Harsh zoom range.
-	SetPlayerZoomByViewRange(plr, 5000, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
-	SetPlayerViewLock(plr, true);
+
+	// Initialize the intro sequence if not yet started.
+	if (!intro_init)
+	{
+		StartSequence("Intro", 0, SCENPAR_Difficulty);
+		intro_init = true;
+		// Give only the first joined player some wealth.
+		SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
+	}
 	return;
 }
 
-// Returns a suitable location to start the conquest.
-private func FindVolcanoLocation()
+
+/*-- Goal Check --*/
+
+global func FxGoalCheckTimer(object target, proplist effect)
 {
-	// Default to the middle of the map.
-	var wdt = LandscapeWidth();
-	var hgt = LandscapeHeight();
-	volcano_location = [wdt / 2, hgt / 2];
-	var x, y, cnt = 1000;
-	for (var i = cnt; i > 0; i--)
+	// Complete goal if there is an airplane with the required amount of gold bars.
+	for (var plane in FindObjects(Find_ID(Plane), Find_Not(Find_Func("IsBroken"))))
 	{
-		// Random x coordinate, biased to the middle of the map.
-		var var_wdt = wdt * (300 - 200 * i / cnt) / 400;
-		var x = wdt / 2 + RandomX(-var_wdt, var_wdt);
-		var y = 0;
-		// Find corresponding y coordinate.
-		while (!GBackSolid(x, y) && y < 9 * hgt / 10)
-			y += 2;
-		// Check if surface is relatively flat (check for flatter surfaces first).
-		var d = i / 150 + 1;
-		if (!GBackSolid(x+d, y-4) && !GBackSolid(x-d, y-4) && GBackSolid(x+d, y+4) && GBackSolid(x-d, y+4))
+		if (plane->ContentsCount(GoldBar) >= effect.barcnt)
 		{
-			volcano_location = [x, y - 10];
-			break;
+			if (effect.goal)
+				effect.goal->Fulfill();
+			return -1;
 		}
 	}
-	return;
+	return 1;
 }
 
 
@@ -182,17 +178,6 @@ private func InitAnimals()
 
 private func InitMaterial(int amount)
 {
-	// Find start location and place lorry plus extras there.
-	FindVolcanoLocation();
-	var lorry = CreateObject(Lorry);
-	lorry->SetPosition(volcano_location[0], volcano_location[1]);
-	lorry->CreateContents(Loam, 5);
-	lorry->CreateContents(Bread, 5);
-	lorry->CreateContents(Wood, 8);
-	lorry->CreateContents(Rock, 4);
-	lorry->CreateContents(Metal, 4);
-	for (var i = 0; i < 5; i++)
-		lorry->CreateContents(Barrel)->PutLiquid("Water", 300);
 	return;
 }
 

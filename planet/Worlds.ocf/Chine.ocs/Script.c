@@ -41,8 +41,6 @@ protected func OnGoalsFulfilled()
 	return false;
 }
 
-public func UpdatePicture() { Log("bla"); }
-
 
 /*-- Player Initialization --*/
 

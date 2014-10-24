@@ -1,8 +1,6 @@
 /**
-	Krakatoa
-	A Volcano with lot's of small islands and chasms.
-	
-	TODO: Scaling with mapsize.
+	Krakatoa's Krach
+	A Volcano with one main chasm and a few side chasms.
 	
 	@author Maikel
 */
