@@ -4409,13 +4409,11 @@ bool C4Object::ShiftContents(bool fShiftBack, bool fDoCalls)
 	C4Object *c_obj = Contents.GetObject();
 	if (!c_obj) return false;
 	// get next/previous
-	C4ObjectLink *pLnk = fShiftBack ? (Contents.Last) : (Contents.First->Next);
-	for (;;)
+	auto it = fShiftBack ? Contents.reverse().begin() : ++Contents.begin();
+	while (!it.atEnd())
 	{
-		// end reached without success
-		if (!pLnk) return false;
+		auto pObj = (*it);
 		// check object
-		C4Object *pObj = pLnk->Obj;
 		if (pObj->Status)
 			if (!c_obj->CanConcatPictureWith(pObj))
 			{
@@ -4424,9 +4422,9 @@ bool C4Object::ShiftContents(bool fShiftBack, bool fDoCalls)
 				return true;
 			}
 		// next/prev item
-		pLnk = fShiftBack ? (pLnk->Prev) : (pLnk->Next);
+		it++;
 	}
-	// not reached
+	return false;
 }
 
 void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
