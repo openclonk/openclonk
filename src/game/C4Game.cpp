@@ -3122,38 +3122,48 @@ bool C4Game::InitNetworkHost()
 
 bool C4Game::CheckObjectEnumeration()
 {
-	// Check valid & maximum number & duplicate numbers
-	int32_t iMax = 0;
-	C4Object *cObj; C4ObjectLink *clnk;
-	C4Object *cObj2; C4ObjectLink *clnk2;
-	clnk=Objects.First; if (!clnk) clnk=Objects.InactiveObjects.First;
-	while (clnk)
+
+	struct Check
 	{
-		// Invalid number
-		cObj = clnk->Obj;
-		if (cObj->Number<1)
+		int32_t maxNumber = 0;
+		// Check valid & maximum number & duplicate numbers
+		bool that(C4Object* cObj)
 		{
-			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, cObj->id.ToString(), cObj->GetX()).getData()); return false;
+			// Invalid number
+			if (cObj->Number<1)
+			{
+				LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, cObj->id.ToString(), cObj->GetX()).getData()); return false;
+			}
+			// Max
+			if (cObj->Number>maxNumber) maxNumber=cObj->Number;
+			// Duplicate
+			for (C4Object *cObj2 : Objects)
+				if (cObj2!=cObj)
+					if (cObj->Number==cObj2->Number)
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+			for (C4Object *cObj2 : Objects.InactiveObjects)
+				if (cObj2!=cObj)
+					if (cObj->Number==cObj2->Number)
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+			return true;
 		}
-		// Max
-		if (cObj->Number>iMax) iMax=cObj->Number;
-		// Duplicate
-		for (clnk2=Objects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
-			if (cObj2!=cObj)
-				if (cObj->Number==cObj2->Number)
-					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
-		for (clnk2=Objects.InactiveObjects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
-			if (cObj2!=cObj)
-				if (cObj->Number==cObj2->Number)
-					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
-		// next
-		if (!clnk->Next)
-				if (clnk == Objects.Last) clnk=Objects.InactiveObjects.First; else clnk=NULL;
-		else
-			clnk=clnk->Next;
+	};
+
+	Check check;
+	for (C4Object *cObj : Objects)
+	{
+		if (!check.that(cObj))
+			return false;
 	}
+
+	for (C4Object *cObj : Objects.InactiveObjects)
+	{
+		if (!check.that(cObj))
+			return false;
+	}
+
 	// Adjust enumeration index
-	C4PropListNumbered::SetEnumerationIndex(iMax);
+	C4PropListNumbered::SetEnumerationIndex(check.maxNumber);
 	// Done
 	return true;
 }
