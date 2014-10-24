@@ -4585,10 +4585,10 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 	else
 	{
 		// is there any unused object to put away?
-		if (!Contents.Last) return false;
+		if (!Contents.GetLastObject()) return false;
 		// defaultly, it's the last object in the list
 		// (contents list cannot have invalid status-objects)
-		pUnusedObject = Contents.Last->Obj;
+		pUnusedObject = Contents.GetLastObject();
 	}
 	// no object to put away? fail
 	if (!pUnusedObject) return false;
