@@ -239,8 +239,12 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// so fake inactive object list empty meanwhile
 	// note this has to be done to prevent even if object numbers did not collide
 	// to prevent an assertion fail when denumerating non-enumerated inactive objects
-	C4ObjectLink *pInFirst = NULL;
-	if (fKeepInactive) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
+	C4ObjectList inactiveObjectsCopy;
+	if (fKeepInactive)
+	{
+		inactiveObjectsCopy.Copy(InactiveObjects);
+		InactiveObjects.Clear();
+	}
 	// denumerate pointers
 	Denumerate(numbers);
 	// update object enumeration index now, because calls like OnSynchronized might create objects
@@ -248,7 +252,8 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// end faking and adjust object numbers
 	if (fKeepInactive)
 	{
-		InactiveObjects.First=pInFirst;
+		InactiveObjects.Copy(inactiveObjectsCopy);
+		inactiveObjectsCopy.Clear();
 		C4PropListNumbered::UnshelveNumberedPropLists();
 	}
 
