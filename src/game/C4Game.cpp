@@ -3125,7 +3125,8 @@ bool C4Game::CheckObjectEnumeration()
 
 	struct Check
 	{
-		int32_t maxNumber = 0;
+		int32_t maxNumber;
+		Check() : maxNumber(0) {}
 		// Check valid & maximum number & duplicate numbers
 		bool that(C4Object* cObj)
 		{
