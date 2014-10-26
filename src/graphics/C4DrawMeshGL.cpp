@@ -194,7 +194,7 @@ public:
 
 	struct Parameter {
 		GLint Location;
-		const StdMeshMaterialShaderParameter* Parameter;
+		const StdMeshMaterialShaderParameter* ShaderParameter;
 	};
 
 	std::vector<Parameter> Parameters;
@@ -213,7 +213,7 @@ void C4DrawMeshGLProgramInstance::AddParameters(const StdMeshMaterialShaderParam
 		const GLint location = glGetUniformLocationARB(program->Program, parameters.NamedParameters[i].first.getData());
 		Parameters.push_back(Parameter());
 		Parameters.back().Location = location;
-		Parameters.back().Parameter = &parameters.NamedParameters[i].second;
+		Parameters.back().ShaderParameter = &parameters.NamedParameters[i].second;
 	}
 }
 
@@ -700,7 +700,7 @@ namespace
 			for(unsigned int i = 0; i < program_instance.Parameters.size(); ++i)
 			{
 				const GLint location = program_instance.Parameters[i].Location;
-				const StdMeshMaterialShaderParameter* parameter = program_instance.Parameters[i].Parameter;
+				const StdMeshMaterialShaderParameter* parameter = program_instance.Parameters[i].ShaderParameter;
 
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
