@@ -24,7 +24,6 @@ protected func Initialize()
 	goal.Name = "$GoalName$";
 	goal.Description = Format("$GoalDesc$", effect.barcnt);
 
-
 	// Some rules.
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_BuyAtFlagpole);
@@ -121,12 +120,12 @@ private func InitEnvironment(int difficulty)
 		
 	// Some dark clouds which rain few ashes.
 	Cloud->Place(15);
-	Cloud->SetPrecipitation("Ashes", 10);
+	Cloud->SetPrecipitation("Ashes", 10 * difficulty);
 	
 	// Some natural disasters, earthquakes, volcanos, meteorites.
 	Meteor->SetChance(2 + 4 * difficulty);
 	if (difficulty >= 2)
-		Earthquake->SetChance(3 * difficulty);
+		Earthquake->SetChance(6 * difficulty);
 
 	// Initialize the effect for controlling the big volcano.
 	var effect = AddEffect("BigVolcano", nil, 100, 5, nil);
@@ -136,31 +135,35 @@ private func InitEnvironment(int difficulty)
 
 private func InitVegetation(int map_size)
 {
+	var wdt = LandscapeWidth();
+	var hgt = LandscapeHeight();
+	
 	// Place some trees, rather with leaves.
 	var veg;
 	for (var i = 0; i < 20 + Random(4); i++)
-		PlaceVegetation(Tree_Coconut, 0, 0, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
+		PlaceVegetation(Tree_Coconut, 0, 0, wdt, hgt, 1000 * (61 + Random(40)));
 	// Create an effect to make sure there will always grow some new trees.	
 	AddEffect("EnsureTrees", nil, 100, 20, nil);
-	// Some large cave mushrooms.
-	LargeCaveMushroom->Place(20 + 4 * map_size, Rectangle(0, LandscapeHeight() / 2, LandscapeWidth(), LandscapeHeight() / 2), { terraform = false });
+	// Some large cave mushrooms, equals amounts on both sides.
+	LargeCaveMushroom->Place(12 + 4 * map_size, Rectangle(0, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
+	LargeCaveMushroom->Place(12 + 4 * map_size, Rectangle(wdt / 2, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
 	// Some dead tree trunks.
 	for (var i = 0; i < 16 + Random(4); i++)
 	{
-		veg = PlaceVegetation(Trunk, 0, 0, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(20)));
+		veg = PlaceVegetation(Trunk, 0, 0, LandscapeWidth(), hgt, 1000 * (61 + Random(20)));
 		if (veg)
 			veg->SetR(RandomX(-20, 20));
 	}
 	// Some mushrooms as source of food.
 	for (var i = 0; i < 30 + Random(5); i++)
-		PlaceVegetation(Mushroom, 0, 0, LandscapeWidth(), LandscapeHeight());
+		PlaceVegetation(Mushroom, 0, 0, wdt, hgt);
 	// Some ferns, to be burned soon.
 	for (var i = 0; i < 25 + Random(5); i++)
-		PlaceVegetation(Fern, 0, 0, LandscapeWidth(), LandscapeHeight());
+		PlaceVegetation(Fern, 0, 0, wdt, hgt);
 	// Ranks as a nice additional source of wood.
 	for (var i = 0; i < 16 + Random(4); i++)
 	{
-		veg = PlaceVegetation(Rank, 0, 0, LandscapeWidth(), LandscapeHeight());
+		veg = PlaceVegetation(Rank, 0, 0, wdt, hgt);
 		if (veg)
 			veg->SetR(RandomX(-20, 20));
 	}
@@ -185,7 +188,7 @@ private func InitMaterial(int amount)
 global func FxEnsureTreesTimer()
 {
 	// Place a tree if there are less than eight trees, with increasing likelihood for lower amounts of trees.
-	var nr_trees = ObjectCount(Find_Func("IsTree"));
+	var nr_trees = ObjectCount(Find_Func("IsTree"), Find_ID(Tree_Coconut));
 	if (Random(9) >= nr_trees)
 		if (!Random(20))
 			PlaceVegetation(Tree_Coconut, 0, 0, LandscapeWidth(), LandscapeHeight(), 3);

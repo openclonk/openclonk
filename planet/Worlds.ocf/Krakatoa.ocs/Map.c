@@ -36,7 +36,7 @@ protected func InitializeMap(proplist map)
 	var main_chasm = CreateChasm(map, volcano);
 	
 	// Draw the various parts of the map.
-	DrawVolcano(map, volcano);
+	DrawVolcano(map, volcano, SCENPAR_Difficulty);
 	DrawChasm(map, volcano, main_chasm);
 	
 	// Return true to tell the engine a map has been successfully created.
@@ -116,7 +116,7 @@ public func CreateChasm(proplist map, proplist volcano)
 }
 
 // Draws the main volcano shape.
-public func DrawVolcano(proplist map, proplist volcano)
+public func DrawVolcano(proplist map, proplist volcano, int difficulty)
 {
 	// The main material for the volcano is earth.
 	map->Draw("Earth", volcano);
@@ -133,7 +133,8 @@ public func DrawVolcano(proplist map, proplist volcano)
 	map->DrawMaterial("Ore", volcano, 5, 12);
 	map->DrawMaterial("Firestone", volcano, 5, 12);
 	map->DrawMaterial("Coal", volcano, 5, 12);
-	map->DrawMaterial("DuroLava", volcano, 6, 4);
+	map->DrawMaterial(["Water", "Water", "DuroLava"][difficulty - 1], volcano, 6, 2);
+	map->DrawMaterial(["Water", "DuroLava", "DuroLava"][difficulty - 1], volcano, 6, 2);
 	
 	// Draw ashes borders around the lava parts.
 	var lava = this->Duplicate("DuroLava");
