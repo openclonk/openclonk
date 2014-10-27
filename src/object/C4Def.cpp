@@ -29,6 +29,37 @@
 #include <C4SoundSystem.h>
 #include <C4SolidMask.h>
 
+// Helper class to load additional resources required for meshes from
+// a C4Group.
+class C4DefAdditionalResourcesLoader: public StdMeshMaterialLoader
+{
+public:
+	C4DefAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
+
+	virtual C4Surface* LoadTexture(const char* filename)
+	{
+		if (!Group.AccessEntry(filename)) return NULL;
+		C4Surface* surface = new C4Surface;
+		// Suppress error message here, StdMeshMaterial loader
+		// will show one.
+		if (!surface->Read(Group, GetExtension(filename)))
+			{ delete surface; surface = NULL; }
+		return surface;
+	}
+
+	virtual StdStrBuf LoadShaderCode(const char* filename)
+	{
+		StdStrBuf ret;
+		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
+		return ret;
+	}
+
+private:
+	C4Group& Group;
+};
+
+
+
 void C4Def::DefaultDefCore()
 {
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=0;
@@ -308,6 +339,29 @@ bool C4Def::Load(C4Group &hGroup,
 		Log(hGroup.GetFullName().getData());
 
 	if (AddFileMonitoring) Game.pFileMonitor->AddDirectory(Filename);
+
+	// Load all mesh materials from this folder
+	C4DefAdditionalResourcesLoader loader(hGroup);
+	hGroup.ResetSearch();
+	char MaterialFilename[_MAX_PATH+1]; *MaterialFilename=0;
+	while (hGroup.FindNextEntry(C4CFN_DefMaterials, MaterialFilename, NULL, !!*MaterialFilename))
+	{
+		StdStrBuf material;
+		if (hGroup.LoadEntryString(MaterialFilename, &material))
+		{
+			try
+			{
+				StdStrBuf buf;
+				buf.Copy(hGroup.GetName());
+				buf.Append("/"); buf.Append(MaterialFilename);
+				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
+			}
+			catch (const StdMeshMaterialError& ex)
+			{
+				DebugLogF("Failed to read material script: %s", ex.what());
+			}
+		}
+	}
 
 	// particle def?
 	if (hGroup.AccessEntry(C4CFN_ParticleCore))

@@ -39,31 +39,12 @@
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.
-class AdditionalResourcesLoader:
-		public StdMeshMaterialLoader, public StdMeshSkeletonLoader
+class C4DefGraphicsAdditionalResourcesLoader: public StdMeshSkeletonLoader
 {
 public:
-	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
-
-	virtual C4Surface* LoadTexture(const char* filename)
-	{
-		if (!Group.AccessEntry(filename)) return NULL;
-		C4Surface* surface = new C4Surface;
-		// Suppress error message here, StdMeshMaterial loader
-		// will show one.
-		if (!surface->Read(Group, GetExtension(filename)))
-			{ delete surface; surface = NULL; }
-		return surface;
-	}
+	C4DefGraphicsAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
 	virtual StdStrBuf LoadSkeleton(const char* filename)
-	{
-		StdStrBuf ret;
-		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
-		return ret;
-	}
-
-	virtual StdStrBuf LoadShaderCode(const char* filename)
 	{
 		StdStrBuf ret;
 		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
@@ -182,28 +163,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	AdditionalResourcesLoader loader(hGroup);
-
-	// Load all materials for this definition:
-	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, !!*Filename))
-	{
-		StdStrBuf material;
-		if (hGroup.LoadEntryString(Filename, &material))
-		{
-			try
-			{
-				StdStrBuf buf;
-				buf.Copy(hGroup.GetName());
-				buf.Append("/"); buf.Append(Filename);
-				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
-			}
-			catch (const StdMeshMaterialError& ex)
-			{
-				DebugLogF("Failed to read material script: %s", ex.what());
-			}
-		}
-	}
+	C4DefGraphicsAdditionalResourcesLoader loader(hGroup);
 
 	// Try from Mesh first
 	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
