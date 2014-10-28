@@ -472,6 +472,8 @@ protected func Ejection(object obj)
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
 			var o = Contents(c);
+			if (!o)
+				continue;			
 			if(o->~IsCarryHeavy())
 				continue;
 			if (GetItemPos(o) == nil)
