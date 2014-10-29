@@ -276,7 +276,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		if (fIsGroupUpdate)
 			execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
 		else
-			execl(strUpdateFile, strUpdateFile);
+			execl(strUpdateFile, strUpdateFile, static_cast<char *>(0));
 		printf("execl failed: %s\n", strerror(errno));
 		exit(1);
 		// Parent process
