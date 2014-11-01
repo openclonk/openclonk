@@ -89,7 +89,6 @@ C4ObjectList &C4GameObjects::ObjectsAt(int ix, int iy)
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 {
-	C4Object *obj1 = NULL, *obj2 = NULL;
 	DWORD focf,tocf;
 
 	// Reverse area check: Checks for all obj2 at obj1
@@ -102,13 +101,13 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	}
 	focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
 
-	for (auto obj1 : *this)
+	for (C4Object* obj1 : *this)
 		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
 		{
 			uint32_t Marker = GetNextMarker();
 			C4LSector *pSct;
 			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
-				for (C4ObjectList::iterator iter2 = pLst->begin(); iter2 != pLst->end() && (obj2 = *iter2); ++iter2)
+				for (C4Object* obj2 : *pLst)
 					if ((obj2 != obj1) && obj2->Status && !obj2->Contained && (obj2->OCF & tocf) &&
 					    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Shape.x), 0, obj1->Shape.Wdt - 1) &&
 					    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Shape.y), 0, obj1->Shape.Hgt - 1) &&
