@@ -27,6 +27,8 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
+static const C4ObjectLink NULL_LINK = {};
+
 C4ObjectList::C4ObjectList(): FirstIter(0)
 {
 	Default();
@@ -49,7 +51,16 @@ void C4ObjectList::Clear()
 	for (cLnk=First; cLnk; cLnk=nextLnk)
 		{ nextLnk=cLnk->Next; delete cLnk; }
 	First=Last=NULL;
-	if (pEnumerated) delete pEnumerated; pEnumerated=NULL;
+	if (pEnumerated)
+	{
+		delete pEnumerated;
+		pEnumerated=NULL;
+	}
+
+	for (iterator* it = FirstIter; it; it = it->Next)
+	{
+		it->link = NULL_LINK;
+	}
 }
 
 const int MaxTempListID = 500;
@@ -620,6 +631,18 @@ void C4ObjectList::InsertLink(C4ObjectLink *pLnk, C4ObjectLink *pAfter)
 		if (First) First->Prev=pLnk; else Last=pLnk;
 		First=pLnk;
 	}
+
+	// adjust iterators
+	if (pAfter)
+	{
+		for (iterator* it = FirstIter; it; it = it->Next)
+		{
+			if (it->link.Obj == pAfter->Obj)
+			{
+				it->link.Next = pLnk;
+			}
+		}
+	}
 }
 
 void C4ObjectList::InsertLinkBefore(C4ObjectLink *pLnk, C4ObjectLink *pBefore)
@@ -637,6 +660,18 @@ void C4ObjectList::InsertLinkBefore(C4ObjectLink *pLnk, C4ObjectLink *pBefore)
 		pLnk->Next = NULL; pLnk->Prev = Last;
 		if (Last) Last->Next = pLnk; else First = pLnk;
 		Last = pLnk;
+	}
+
+	// adjust iterators
+	if (pBefore)
+	{
+		for (iterator* it = FirstIter; it; it = it->Next)
+		{
+			if (it->link.Obj == pBefore->Obj)
+			{
+				it->link.Prev = pLnk;
+			}
+		}
 	}
 }
 
@@ -841,8 +876,6 @@ void C4ObjectList::CheckCategorySort()
 			cPrev = cLnk;
 		}
 }
-
-static const C4ObjectLink NULL_LINK = {};
 
 C4ObjectList::iterator::iterator(const C4ObjectList & List, const C4ObjectLink * pLink, bool reverse):
 		List(List), link(pLink ? *pLink : NULL_LINK), reverse(reverse)
