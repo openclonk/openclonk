@@ -113,8 +113,6 @@ public:
 	int32_t Monitor;    // monitor index to play on
 	int32_t FireParticles; // draw extended fire particles if enabled (default on)
 	int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
-	int32_t EnableShaders; // enable pixel shaders on engines that support them
-	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
 	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
