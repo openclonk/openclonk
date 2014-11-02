@@ -548,48 +548,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 
 		return Blit8(sfcSource, int(fx), int(fy), int(fwdt), int(fhgt), sfcTarget, int(tx), int(ty), int(twdt), int(thgt), fSrcColKey, pTransform);
 	}
+
 	// calc stretch
 	float scaleX = twdt/fwdt;
 	float scaleY = thgt/fhgt;
 	// bound
 	if (ClipAll) return true;
-	// manual clipping? (primary surface only)
-	if (Config.Graphics.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
-	{
-		float iOver;
-		// Left
-		iOver=tx-iClipX1;
-		if (iOver<0)
-		{
-			twdt+=iOver;
-			fwdt+=iOver/scaleX;
-			fx-=iOver/scaleX;
-			tx=float(iClipX1);
-		}
-		// Top
-		iOver=ty-iClipY1;
-		if (iOver<0)
-		{
-			thgt+=iOver;
-			fhgt+=iOver/scaleY;
-			fy-=iOver/scaleY;
-			ty=float(iClipY1);
-		}
-		// Right
-		iOver=iClipX2+1-(tx+twdt);
-		if (iOver<0)
-		{
-			fwdt+=iOver/scaleX;
-			twdt+=iOver;
-		}
-		// Bottom
-		iOver=iClipY2+1-(ty+thgt);
-		if (iOver<0)
-		{
-			fhgt+=iOver/scaleY;
-			thgt+=iOver;
-		}
-	}
 	// inside screen?
 	if (twdt<=0 || thgt<=0) return false;
 	// prepare rendering to surface
