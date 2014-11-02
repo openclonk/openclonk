@@ -459,7 +459,7 @@ bool C4Draw::NoPrimaryClipper()
 }
 
 void C4Draw::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
-                              C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[])
+                              C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt)
 {
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, false);
 }

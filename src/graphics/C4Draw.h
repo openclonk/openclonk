@@ -232,7 +232,7 @@ public:
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
-	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[]);
+	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt);
 	void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 	               C4Surface * sfcTarget, int tx, int ty, int wdt, int hgt);
 	bool Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
