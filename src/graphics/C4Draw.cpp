@@ -528,34 +528,31 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 {
 	// safety
 	if (!sfcSource || !sfcTarget || !twdt || !thgt || !fwdt || !fhgt) return false;
-	// Apply Zoom
-	C4BltTransform t;
-	if (pTransform && Zoom != 1.0)
-	{
-		//tx = tx * Zoom - ZoomX * Zoom + ZoomX;
-		//ty = ty * Zoom - ZoomY * Zoom + ZoomY;
-		// The transformation is not location-independant, thus has to be zoomed, too.
-		t.Set(pTransform->mat[0]*Zoom, pTransform->mat[1]*Zoom, pTransform->mat[2]*Zoom + ZoomX*(1-Zoom),
-		      pTransform->mat[3]*Zoom, pTransform->mat[4]*Zoom, pTransform->mat[5]*Zoom + ZoomY*(1-Zoom),
-		      pTransform->mat[6], pTransform->mat[7], pTransform->mat[8]);
-		pTransform = &t;
-	}
-	else if (Zoom != 1.0)
-	{
-		ApplyZoom(tx, ty);
-		twdt *= Zoom;
-		thgt *= Zoom;
-	}
 	// emulated blit?
 	if (!sfcTarget->IsRenderTarget())
+	{
+		C4BltTransform t;
+		if(pTransform && Zoom != 1.0)
+		{
+			t.Set(pTransform->mat[0]*Zoom, pTransform->mat[1]*Zoom, pTransform->mat[2]*Zoom + ZoomX*(1-Zoom),
+			      pTransform->mat[3]*Zoom, pTransform->mat[4]*Zoom, pTransform->mat[5]*Zoom + ZoomY*(1-Zoom),
+			      pTransform->mat[6], pTransform->mat[7], pTransform->mat[8]);
+			pTransform = &t;
+		}
+		else if(Zoom != 1.0)
+		{
+			ApplyZoom(tx, ty);
+			twdt *= Zoom;
+			thgt *= Zoom;
+		}
+
 		return Blit8(sfcSource, int(fx), int(fy), int(fwdt), int(fhgt), sfcTarget, int(tx), int(ty), int(twdt), int(thgt), fSrcColKey, pTransform);
+	}
 	// calc stretch
 	float scaleX = twdt/fwdt;
 	float scaleY = thgt/fhgt;
 	// bound
 	if (ClipAll) return true;
-	// check exact
-	bool fExact = !pTransform && fwdt==twdt && fhgt==thgt;
 	// manual clipping? (primary surface only)
 	if (Config.Graphics.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
 	{
@@ -608,10 +605,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 		}
 		return false;
 	}
-	// create blitting struct
-	C4BltData BltData;
-	// pass down pTransform
-	BltData.pTransform=pTransform;
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
@@ -626,8 +619,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// calc stretch regarding texture size and indent
 /*	float scaleX2 = scaleX * iTexSizeX;
 	float scaleY2 = scaleY * iTexSizeY;*/
-	// Enable textures
-	SetTexture();
 	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 	{
@@ -698,15 +689,22 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 #endif
 
 			// set up blit data as rect
-			BltData.byNumVertices = 4;
-			BltData.vtVtx[0].ftx = tTexBlt.left;  BltData.vtVtx[0].fty = tTexBlt.top;
-			BltData.vtVtx[1].ftx = tTexBlt.right; BltData.vtVtx[1].fty = tTexBlt.top;
-			BltData.vtVtx[2].ftx = tTexBlt.right; BltData.vtVtx[2].fty = tTexBlt.bottom;
-			BltData.vtVtx[3].ftx = tTexBlt.left;  BltData.vtVtx[3].fty = tTexBlt.bottom;
-			BltData.vtVtx[0].tx = fTexBlt.left / iTexSizeX; BltData.vtVtx[0].ty = fTexBlt.top / iTexSizeY;
-			BltData.vtVtx[1].tx = fTexBlt.right / iTexSizeX; BltData.vtVtx[1].ty = fTexBlt.top / iTexSizeY;
-			BltData.vtVtx[2].tx = fTexBlt.right / iTexSizeX; BltData.vtVtx[2].ty = fTexBlt.bottom / iTexSizeY;
-			BltData.vtVtx[3].tx = fTexBlt.left / iTexSizeX; BltData.vtVtx[3].ty = fTexBlt.bottom / iTexSizeY;
+			C4BltVertex vertices[6];
+			vertices[0].ftx = tTexBlt.left;  vertices[0].fty = tTexBlt.top;
+			vertices[1].ftx = tTexBlt.right; vertices[1].fty = tTexBlt.top;
+			vertices[2].ftx = tTexBlt.right; vertices[2].fty = tTexBlt.bottom;
+			vertices[3].ftx = tTexBlt.left;  vertices[3].fty = tTexBlt.bottom;
+			vertices[0].tx = fTexBlt.left / iTexSizeX;  vertices[0].ty = fTexBlt.top / iTexSizeY;
+			vertices[1].tx = fTexBlt.right / iTexSizeX; vertices[1].ty = fTexBlt.top / iTexSizeY;
+			vertices[2].tx = fTexBlt.right / iTexSizeX; vertices[2].ty = fTexBlt.bottom / iTexSizeY;
+			vertices[3].tx = fTexBlt.left / iTexSizeX;  vertices[3].ty = fTexBlt.bottom / iTexSizeY;
+			DwTo4UB(0xffffffff, vertices[0].color);
+			DwTo4UB(0xffffffff, vertices[1].color);
+			DwTo4UB(0xffffffff, vertices[2].color);
+			DwTo4UB(0xffffffff, vertices[3].color);
+
+			// duplicate vertices
+			vertices[4] = vertices[0]; vertices[5] = vertices[2];
 
 			C4TexRef * pBaseTex = pTex;
 			// is there a base-surface to be blitted first?
@@ -717,21 +715,14 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 				// organizing partially used textures together!
 				pBaseTex = *(sfcSource->pMainSfc->ppTex + iY * sfcSource->iTexX + iX);
 			}
-			// base blit
-			PerformBlt(BltData, pBaseTex, BlitModulated ? BlitModulateClr : 0xffffffff, !!(dwBlitMode & C4GFXBLIT_MOD2), fExact);
-			// overlay
-			if (fBaseSfc)
-			{
-				DWORD dwModClr = sfcSource->ClrByOwnerClr;
-				// apply global modulation to overlay surfaces only if desired
-				if (BlitModulated && !(dwBlitMode & C4GFXBLIT_CLRSFC_OWNCLR))
-					ModulateClr(dwModClr, BlitModulateClr);
-				PerformBlt(BltData, pTex, dwModClr, !!(dwBlitMode & C4GFXBLIT_CLRSFC_MOD2), fExact);
-			}
+
+			// ClrByOwner is always fully opaque
+			DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
+			if (BlitModulated && !(dwBlitMode & C4GFXBLIT_CLRSFC_OWNCLR))
+				ModulateClr(dwOverlayClrMod, BlitModulateClr);
+			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, dwOverlayClrMod);
 		}
 	}
-	// reset texture
-	ResetTexture();
 	// success
 	return true;
 }
