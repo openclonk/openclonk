@@ -608,7 +608,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
-	// set blitting state - done by PerformBlt
 	// get involved texture offsets
 	int iTexSizeX=sfcSource->iTexSize;
 	int iTexSizeY=sfcSource->iTexSize;

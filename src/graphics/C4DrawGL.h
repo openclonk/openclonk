@@ -157,7 +157,6 @@ public:
 	void SetupTextureEnv(bool fMod2, bool landscape);
 	void SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr);
 	void ResetMultiBlt(GLuint baseTex, GLuint overlayTex);
-	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
 	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[]);

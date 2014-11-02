@@ -242,7 +242,6 @@ public:
 	                  C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
 	                  bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
 	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
-	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
@@ -299,8 +298,6 @@ public:
 	void RemoveZoom(float & X, float & Y);
 	void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-NULL make sure to keep matrix valid
 	void SetPerspective(bool fSet) { fUsePerspective = fSet; }
-	virtual void SetTexture() = 0;
-	virtual void ResetTexture() = 0;
 
 	// device objects
 	virtual bool RestoreDeviceObjects() = 0;    // restore device dependant objects

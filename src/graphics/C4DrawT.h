@@ -33,7 +33,6 @@ public:
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat);
 	virtual bool PrepareRendering(C4Surface *) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
-	virtual void PerformBlt(C4BltData &, C4TexRef *, DWORD, bool, bool) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
 	virtual void DrawQuadDw(C4Surface *, float *, DWORD, DWORD, DWORD, DWORD) { }
