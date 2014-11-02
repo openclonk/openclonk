@@ -37,8 +37,6 @@ public:
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
 	virtual void DrawQuadDw(C4Surface *, float *, DWORD, DWORD, DWORD, DWORD) { }
 	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
-	virtual void SetTexture() { }
-	virtual void ResetTexture() { }
 	virtual bool InitDeviceObjects() { return true; }
 	virtual bool RestoreDeviceObjects() { return true; }
 	virtual bool InvalidateDeviceObjects() { return true; }

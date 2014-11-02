@@ -147,8 +147,6 @@ CStdGL::CStdGL():
 	byByteCnt=4;
 	// global ptr
 	pGL = this;
-	shaders[0] = 0;
-	vbo = 0;
 	lines_tex = 0;
 }
 
@@ -236,46 +234,6 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 	return true;
 }
 
-void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
-{
-	if (shaders[0])
-	{
-		GLuint s = landscape ? 2 : (fMod2 ? 1 : 0);
-		if (Saturation < 255)
-		{
-			s += 3;
-		}
-		if (fUseClrModMap)
-		{
-			s += 6;
-		}
-		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
-		if (Saturation < 255)
-		{
-			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-		}
-	}
-	// texture environment
-	else
-	{
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-	}
-	// set modes
-	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
-}
-
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	DebugLog("  gl: Create Context...");
@@ -324,7 +282,6 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorDepth, unsigned int)
 {
 	// store options
-
 	return RestoreDeviceObjects();
 }
 
@@ -616,18 +573,6 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	ResetMultiBlt(pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0);
 }
 
-static void DefineShaderARB(const char * p, GLuint & s)
-{
-	glBindProgramARB (GL_FRAGMENT_PROGRAM_ARB, s);
-	glProgramStringARB (GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, strlen(p), p);
-	if (GL_INVALID_OPERATION == glGetError())
-	{
-		GLint errPos; glGetIntegerv (GL_PROGRAM_ERROR_POSITION_ARB, &errPos);
-		fprintf (stderr, "ARB program%d:%d: Error: %s\n", s, errPos, glGetString (GL_PROGRAM_ERROR_STRING_ARB));
-		s = 0;
-	}
-}
-
 bool CStdGL::RestoreDeviceObjects()
 {
 	assert(pMainCtx);
@@ -638,6 +583,7 @@ bool CStdGL::RestoreDeviceObjects()
 	Active = pMainCtx->Select();
 	RenderTarget = pApp->pWindow->pSurface;
 
+	// TODO: I think this should be updated. We need at least GLSL shaders now, which I think is OpenGL 2.0(?)
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	// Check for GL 1.2 and two functions from 1.3 we need.
 	if( !GLEW_VERSION_1_2 ||
@@ -670,75 +616,8 @@ bool CStdGL::RestoreDeviceObjects()
 	// reset blit states
 	dwBlitMode = 0;
 
-	// Vertex Buffer Objects crash some versions of the free radeon driver. TODO: provide an option for them
-	if (0 && GLEW_ARB_vertex_buffer_object)
-	{
-		glGenBuffersARB(1, &vbo);
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(C4BltVertex), 0, GL_STREAM_DRAW_ARB);
-	}
-
-	if (!Config.Graphics.EnableShaders)
-	{
-	}
-	else if (!shaders[0] && GLEW_ARB_fragment_program)
-	{
-		glGenProgramsARB (sizeof(shaders)/sizeof(*shaders), shaders);
-		const char * preface =
-		  "!!ARBfp1.0\n"
-		  "TEMP tmp;\n"
-		  // sample the texture
-		  "TXP tmp, fragment.texcoord[0], texture, 2D;\n";
-		const char * alpha_mod =
-		  // perform the modulation
-		  "MUL tmp.rgba, tmp, fragment.color.primary;\n";
-		const char * funny_add =
-		  // perform the modulation
-		  "ADD tmp.rgb, tmp, fragment.color.primary;\n"
-		  "MUL tmp.a, tmp, fragment.color.primary;\n"
-		  "MAD_SAT tmp, tmp, { 2.0, 2.0, 2.0, 1.0 }, { -1.0, -1.0, -1.0, 0.0 };\n";
-		const char * grey =
-		  "TEMP grey;\n"
-		  "DP3 grey, tmp, { 0.299, 0.587, 0.114, 1.0 };\n"
-		  "LRP tmp.rgb, program.local[0], tmp, grey;\n";
-		const char * landscape =
-		  "TEMP col;\n"
-		  "MOV col.x, program.local[1].x;\n" //Load color to indentify
-		  "ADD col.y, col.x, 0.001;\n"
-		  "SUB col.z, col.x, 0.001;\n"  //epsilon-range
-		  "SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
-		  "MAD tmp.r, tmp.r, -0.5019, tmp.b;\n"
-		  "SGE col.z, tmp.r, col.z;\n" //mat identified?
-		  "SLT col.y, tmp.r, col.y;\n"
-		  "TEMP coo;\n"
-		  "MOV coo, fragment.texcoord;\n"
-		  "MUL coo.xy, coo, 3.0;\n"
-		  "TXP tmp, coo, texture[1], 2D;\n"
-		  "MUL tmp.a, col.y, col.z;\n";
-		const char * fow =
-		  "TEMP fow;\n"
-		  // sample the texture
-		  "TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
-		  "LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
-		const char * end =
-		  "MOV result.color, tmp;\n"
-		  "END\n";
-		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_mod,            end).getData(), shaders[0]);
-		DefineShaderARB(FormatString("%s%s%s",       preface,            funny_add,            end).getData(), shaders[1]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_mod,            end).getData(), shaders[2]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_mod, grey,      end).getData(), shaders[3]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add, grey,      end).getData(), shaders[4]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_mod, grey,      end).getData(), shaders[5]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_mod,       fow, end).getData(), shaders[6]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add,       fow, end).getData(), shaders[7]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_mod,       fow, end).getData(), shaders[8]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_mod, grey, fow, end).getData(), shaders[9]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
-		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_mod, grey, fow, end).getData(), shaders[11]);
-	}
-
 	// The following shaders are used for drawing primitives such as points, lines and sprites.
-	// They are used in PerformMultiPix, PerformMultiLines and PerformMultiBlt.
+	// They are used in PerformMultiPix, PerformMultiLines and PerformMultiTris.
 	// The fragment shader applies the color modulation, mod2 drawing and the color modulation map
 	// on top of the original fragment color.
 	// The vertex shader does not do anything special, but it delegates input values to the
@@ -821,49 +700,7 @@ bool CStdGL::InvalidateDeviceObjects()
 		glDeleteTextures(1, &lines_tex);
 		lines_tex = 0;
 	}
-	if (shaders[0])
-	{
-		glDeleteProgramsARB(sizeof(shaders)/sizeof(*shaders), shaders);
-		shaders[0] = 0;
-	}
-	if (vbo)
-	{
-		glDeleteBuffersARB(1, &vbo);
-		vbo = 0;
-	}
 	return fSuccess;
-}
-
-void CStdGL::SetTexture()
-{
-	glBlendFunc(GL_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-	if (shaders[0])
-	{
-		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		if (fUseClrModMap)
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glActiveTexture(GL_TEXTURE0);
-		}
-	}
-	glEnable(GL_TEXTURE_2D);
-}
-
-void CStdGL::ResetTexture()
-{
-	// disable texturing
-	if (shaders[0])
-	{
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-		glActiveTexture(GL_TEXTURE3);
-		glDisable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-	}
-	glDisable(GL_TEXTURE_2D);
 }
 
 bool CStdGL::EnsureAnyContext()

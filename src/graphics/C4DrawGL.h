@@ -127,10 +127,6 @@ protected:
 	CStdGLCtx * pMainCtx;         // main GL context
 	CStdGLCtx *pCurrCtx;        // current context (owned if fullscreen)
 	int iClrDpt;                // color depth
-	// shaders for the ARB extension
-	GLuint shaders[12];
-	// vertex buffer object
-	GLuint vbo;
 	// texture for smooth lines
 	GLuint lines_tex;
 	// programs for drawing points, lines, quads
@@ -140,7 +136,7 @@ public:
 	void Clear();
 	void Default();
 	virtual bool IsOpenGL() { return true; }
-	virtual bool IsShaderific() { return shaders[0] != 0; }
+	virtual bool IsShaderific() { return true; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
@@ -154,7 +150,6 @@ public:
 	void TaskOut();
 #endif
 	// Blit
-	void SetupTextureEnv(bool fMod2, bool landscape);
 	void SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr);
 	void ResetMultiBlt(GLuint baseTex, GLuint overlayTex);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
@@ -167,8 +162,6 @@ public:
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
-	void SetTexture();
-	void ResetTexture();
 	bool DeviceReady() { return !!pMainCtx; }
 	bool EnsureAnyContext();
 
