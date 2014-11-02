@@ -155,8 +155,8 @@ public:
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);
-	void SetupMultiBlt(GLuint tex);
-	void ResetMultiBlt(GLuint tex);
+	void SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr);
+	void ResetMultiBlt(GLuint baseTex, GLuint overlayTex);
 	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
@@ -166,7 +166,7 @@ public:
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
 	void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices);
 	void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width);
-	void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4TexRef* pTex);
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayClrMod);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
