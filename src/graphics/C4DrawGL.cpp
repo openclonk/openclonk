@@ -990,17 +990,18 @@ bool CStdGL::RestoreDeviceObjects()
 		"void main()"
 		"{"
                 // Start with the base color
-                "  vec4 primaryColor = gl_Color * clrMod;"
-                // Add (modulated) texture
+                "  vec4 primaryColor = gl_Color;"
+                // Get texture
 		"  if(fUseTexture != 0)"
 		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
-                // Add overlay, if any
+                // Get overlay, if any
+                "  vec4 overlayColor = vec4(1.0, 1.0, 1.0, 0.0);"
                 "  if(fUseOverlay != 0)"
-                "  {"
-                "    vec4 overlayColor = gl_Color * overlayClrMod * texture2D(Overlay, texcoord);"
-                "    primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
-                "    primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
-                "  }"
+                "    overlayColor = gl_Color * texture2D(Overlay, texcoord);"
+                // Mix base with overlay, and apply clrmod (separately for base and overlay)
+                "  primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
+		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
+                "  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
                 // Add fog of war
 		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
 		"  if(fUseClrModMap != 0)"
