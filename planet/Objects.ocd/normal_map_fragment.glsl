@@ -1,5 +1,5 @@
 varying vec2 texcoord;
-uniform sampler2D base;
+uniform sampler2D basemap;
 uniform sampler2D normalmap;
 
 uniform int oc_Mod2;
@@ -15,7 +15,7 @@ void main()
   vec4 lightColor = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);
 
   // Modulate with base texture
-  vec4 finalColor = lightColor * texture2D(base, texcoord);
+  vec4 finalColor = lightColor * texture2D(basemap, texcoord);
 
   // Apply openclonk blit parameters
   vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);
