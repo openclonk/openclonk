@@ -141,8 +141,8 @@ namespace
 			}
 		}
 
-		// TODO: Add clrmodmap
-
+		// TODO: Only add this parameter if the player color is actually used in the shader -- otherwise
+		// it is optimized out anyway.
 		params.AddParameter("oc_PlayerColor", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR;
 		params.AddParameter("oc_ColorModulation", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION;
 		params.AddParameter("oc_Mod2", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_MOD2;
@@ -464,7 +464,7 @@ namespace
 		return true;
 	}
 
-	void ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool fUseClrModMap, C4FogOfWar* pClrModMap, std::vector<GLint>& textures)
+	bool ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool fUseClrModMap, C4FogOfWar* pClrModMap, std::vector<GLint>& textures)
 	{
 		float* out;
 		GLint texIndex;
@@ -479,7 +479,7 @@ namespace
 			out[0] = ((dwPlayerColor >> 16) & 0xff) / 255.0f;
 			out[1] = ((dwPlayerColor >>  8) & 0xff) / 255.0f;
 			out[2] = ((dwPlayerColor      ) & 0xff) / 255.0f;
-			break;
+			return true;
 		case StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION:
 			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT4);
 			out = parameter.GetFloatv();
@@ -488,17 +488,17 @@ namespace
 			out[1] = ((dwModClr >>  8) & 0xff) / 255.0f;
 			out[2] = ((dwModClr      ) & 0xff) / 255.0f;
 			out[3] = ((dwModClr >> 24) & 0xff) / 255.0f;
-			break;
+			return true;
 		case StdMeshMaterialShaderParameter::AUTO_OC_MOD2:
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-			break;
+			return true;
 		case StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP:
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = (fUseClrModMap == true);
-			break;
+			return true;
 		case StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP:
-			if(!fUseClrModMap) return;
+			if(!fUseClrModMap) return false;
 	                pSurface = pClrModMap->GetSurface();
 
 			texIndex = textures.size();
@@ -525,10 +525,10 @@ namespace
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = texIndex;
-			break;
+			return true;
 		default:
 			assert(false);
-			break;
+			return false;
 		}
 	}
 
@@ -700,12 +700,15 @@ namespace
 			for(unsigned int i = 0; i < program_instance.Parameters.size(); ++i)
 			{
 				const GLint location = program_instance.Parameters[i].Location;
+				if(location == -1) continue; // parameter optimized out, or misnamed
+
 				const StdMeshMaterialShaderParameter* parameter = program_instance.Parameters[i].ShaderParameter;
 
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
 				{
-					ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, fUseClrModMap, pClrModMap, textures);
+					if(!ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, fUseClrModMap, pClrModMap, textures))
+						continue;
 					parameter = &auto_resolved;
 				}
 
