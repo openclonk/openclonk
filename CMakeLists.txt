@@ -56,6 +56,9 @@ option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project 
 # dynamic linking.
 option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
 
+# Allow distributions to use the system tinyxml instead of our bundled copy.
+option(USE_SYSTEM_TINYXML "Use system tinyxml library" OFF)
+
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
 unset(USE_APPLE_CLANG CACHE)
@@ -502,6 +505,7 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/c4def-handle.cpp
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/landscape-handle.cpp
 	src/mape/cpp-handles/log-handle.h
 	src/mape/cpp-handles/log-handle.cpp
 	src/mape/cpp-handles/mapgen-handle.h
@@ -1281,8 +1285,14 @@ if(ICONV_FOUND)
 endif()
 
 # TinyXML
-add_subdirectory(thirdparty/tinyxml)
-target_link_libraries(openclonk tinyxml)
+if(WITH_SYSTEM_TINYXML)
+	pkg_search_module(TINYXML REQUIRED tinyxml)
+	target_link_libraries(openclonk ${TINYXML_LIBRARIES})
+else()
+	add_subdirectory(thirdparty/tinyxml)
+	include_directories(thirdparty/tinyxml)
+	target_link_libraries(openclonk tinyxml)
+endif()
 
 if(WIN32)
 	find_package(DbgHelp)

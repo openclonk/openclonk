@@ -41,8 +41,6 @@ protected func OnGoalsFulfilled()
 	return false;
 }
 
-public func UpdatePicture() { Log("bla"); }
-
 
 /*-- Player Initialization --*/
 
@@ -196,7 +194,9 @@ private func InitVegetation(int map_size, int difficulty)
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
 	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
-	PlaceObjects(Loam, (5 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
+	PlaceObjects(Loam, (6 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
+	if (difficulty == 1)
+		PlaceObjects(Loam, 12, "Earth");
 	return;
 }
 

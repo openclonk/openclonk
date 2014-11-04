@@ -1,4 +1,6 @@
 Name=Pumpe
-Description=Die Pumpe kann beliebige Flüssigkeiten von A nach B pumpen. Pumpt sie Flüssigkeiten abwärts, erzeugt sie dabei sogar ein wenig Strom.
+Description=Die Pumpe kann beliebige Flï¿½ssigkeiten von A nach B pumpen. Pumpt sie Flï¿½ssigkeiten abwï¿½rts, erzeugt sie dabei sogar ein wenig Strom.
 MsgTurnOff=Pumpe abschalten
 MsgTurnOn=Pumpe anschalten
+MsgCutSource=Zufluss trennen
+MsgCutDrain=Abfluss trennen

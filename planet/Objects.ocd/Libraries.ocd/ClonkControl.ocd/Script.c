@@ -472,6 +472,8 @@ protected func Ejection(object obj)
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
 			var o = Contents(c);
+			if (!o)
+				continue;			
 			if(o->~IsCarryHeavy())
 				continue;
 			if (GetItemPos(o) == nil)
@@ -1137,7 +1139,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_ThrowAlt)
 			{
 				CancelUse();
-				if (proc == "SCALE" || proc == "HANGLE")
+				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
 					return ObjectCommand("Drop", contents2);
 				else
 					return ObjectCommand("Throw", contents2, x, y);

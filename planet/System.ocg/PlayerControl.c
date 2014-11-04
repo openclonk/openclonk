@@ -487,6 +487,7 @@ global func MouseHover(int player, object leaving, object entering, object dragg
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
+	if (!source) return false; // can happen if source got deleted after control was queued
 	var src_drag = source->~OnMouseDrag(plr);
 	if (!src_drag) 
 		return false;

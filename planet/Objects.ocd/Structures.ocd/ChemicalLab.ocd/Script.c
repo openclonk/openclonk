@@ -61,7 +61,7 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	Smoke(-10, -40, 6);
+	Smoke(-10, -28, 6);
 }
 
 local ActMap = {

@@ -863,14 +863,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	Application.pWindow->EnumerateMultiSamples(multisamples);
 	pGfxMSCombo->SetReadOnly(multisamples.empty());
 	pGroupOptions->AddElement(pGfxMSCombo);
-	// Shaders
-	pShaders = new C4GUI::CheckBox(caGroupOptions.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), "Shaders", false);
-	pShaders->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pShaders->SetToolTip("Shaders");
-	C4GUI::BaseCallbackHandler *pGfxGroubleCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxShaderCheck);
-	pShaders->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupOptions->AddElement(pShaders);
-	LoadGfxShader();
 	// fire particles
 	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FIREPARTICLES"), NULL, &Config.Graphics.FireParticles);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FIREPARTICLES_DESC"));
@@ -1238,7 +1230,6 @@ bool C4StartupOptionsDlg::SaveConfig(bool fForce, bool fKeepOpen)
 		}
 	}
 	// store some config values
-	SaveGfxShader();
 	pPortCfgTCP->SavePort();
 	pPortCfgUDP->SavePort();
 	pPortCfgRef->SavePort();
@@ -1405,22 +1396,6 @@ void C4StartupOptionsDlg::RecreateDialog(bool fFade)
 	C4StartupOptionsDlg *pNewDlg = static_cast<C4StartupOptionsDlg *>(C4Startup::Get()->SwitchDialog(C4Startup::SDID_Options, fFade));
 	pNewDlg->pOptionsTabular->SelectSheet(iPage, false);
 	pNewDlg->fCanGoBack = false;
-}
-
-void C4StartupOptionsDlg::LoadGfxShader()
-{
-	pShaders->SetChecked(!!Config.Graphics.EnableShaders);
-}
-
-void C4StartupOptionsDlg::SaveGfxShader()
-{
-	// get it from controls
-	Config.Graphics.EnableShaders=pShaders->GetChecked();
-
-	if (pDraw->IsOpenGL())
-	{
-		pDraw->RestoreDeviceObjects();
-	}
 }
 
 void C4StartupOptionsDlg::OnFEMusicCheck(C4GUI::Element *pCheckBox)

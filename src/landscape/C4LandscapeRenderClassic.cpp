@@ -126,5 +126,5 @@ void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo, const C4FoWRegion 
 {
 	// Ignore light for now
 	pDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
-	                                  cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, 0);
+	                                  cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
 }

@@ -31,7 +31,7 @@ bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsig
 	return true;
 }
 
-bool CStdNoGfx::PrepareMaterial(StdMeshMaterial& mesh)
+bool CStdNoGfx::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat)
 {
-   	mesh.BestTechniqueIndex=0; return true;
+   	mat.BestTechniqueIndex=0; return true;
 }

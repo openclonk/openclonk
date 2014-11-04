@@ -1605,9 +1605,9 @@ static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 	// set layer object
 	Obj->Layer = pNewLayer;
 	// set for all contents as well
-	for (C4ObjectLink *pLnk=Obj->Contents.First; pLnk; pLnk=pLnk->Next)
-		if ((Obj=pLnk->Obj) && Obj->Status)
-			Obj->Layer = pNewLayer;
+	for (C4Object* contentObj : Obj->Contents)
+		if (contentObj && contentObj->Status)
+			contentObj->Layer = pNewLayer;
 	// success
 	return C4Void();
 }
@@ -2485,9 +2485,11 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4AVP_R"                   ,C4V_Int,      C4AVP_R },
 	{ "C4AVP_AbsX"                ,C4V_Int,      C4AVP_AbsX },
 	{ "C4AVP_AbsY"                ,C4V_Int,      C4AVP_AbsY },
+	{ "C4AVP_Dist"                ,C4V_Int,      C4AVP_Dist },
 	{ "C4AVP_XDir"                ,C4V_Int,      C4AVP_XDir },
 	{ "C4AVP_YDir"                ,C4V_Int,      C4AVP_YDir },
 	{ "C4AVP_RDir"                ,C4V_Int,      C4AVP_RDir },
+	{ "C4AVP_AbsRDir"             ,C4V_Int,      C4AVP_AbsRDir },
 	{ "C4AVP_CosR"                ,C4V_Int,      C4AVP_CosR },
 	{ "C4AVP_SinR"                ,C4V_Int,      C4AVP_SinR },
 	{ "C4AVP_CosV"                ,C4V_Int,      C4AVP_CosV },

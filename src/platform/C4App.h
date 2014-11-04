@@ -123,7 +123,7 @@ public:
 #ifdef _WIN32
 private:
 	HINSTANCE hInstance;
-	HANDLE hMainThread; // handle to main thread that initialized the app
+	DWORD idMainThread; // ID of main thread that initialized the app
 
 	void SetLastErrorFromOS();
 
@@ -133,7 +133,7 @@ public:
 	bool AssertMainThread()
 	{
 #  ifdef _DEBUG
-		if (hMainThread && hMainThread != ::GetCurrentThread())
+		if (idMainThread && idMainThread != ::GetCurrentThreadId())
 		{
 			assert(false);
 			return false;

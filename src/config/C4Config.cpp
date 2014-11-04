@@ -112,9 +112,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
 	pComp->Value(mkNamingAdapt(FireParticles,         "FireParticles",        1         ));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));
-	pComp->Value(mkNamingAdapt(EnableShaders,         "Shader",               0             ,false, true));
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
-	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
 	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
 	pComp->Value(mkNamingAdapt(AutoFrameSkip,         "AutoFrameSkip",        1          ));
 }
@@ -179,7 +177,7 @@ void C4ConfigLobby::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.ham.de.euirc.net", false, true));
+	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.euirc.net", false, true));
 	pComp->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));

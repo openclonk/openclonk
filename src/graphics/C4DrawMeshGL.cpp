@@ -17,7 +17,9 @@
 /* OpenGL implementation of Mesh Rendering */
 
 #include "C4Include.h"
+#include <C4Object.h>
 #include <C4DrawGL.h>
+#include <SHA1.h>
 
 #include "StdMesh.h"
 
@@ -36,7 +38,7 @@ namespace
 		switch(source)
 		{
 		case StdMeshMaterialTextureUnit::BOS_Current: return StdStrBuf("currentColor");
-		case StdMeshMaterialTextureUnit::BOS_Texture: return FormatString("texture2D(oc_Textures[%d], texcoord)", index);
+		case StdMeshMaterialTextureUnit::BOS_Texture: return FormatString("texture2D(oc_Texture%d, texcoord)", index);
 		case StdMeshMaterialTextureUnit::BOS_Diffuse: return StdStrBuf("diffuse");
 		case StdMeshMaterialTextureUnit::BOS_Specular: return StdStrBuf("diffuse"); // TODO: Should be specular
 		case StdMeshMaterialTextureUnit::BOS_PlayerColor: return StdStrBuf("vec4(oc_PlayerColor, 1.0)");
@@ -59,7 +61,7 @@ namespace
 		case StdMeshMaterialTextureUnit::BOX_AddSmooth: return FormatString("%s + %s - %s*%s", source1, source2, source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_Subtract: return FormatString("%s - %s", source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1.0 - diffuse.a) * %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1.0 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Texture%d, texcoord).a * %s + (1.0 - texture2D(oc_Texture%d, texcoord).a) * %s", index, source1, index, source2);
 		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1.0 - currentColor.a) * %s", source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1.0 - %f) * %s", manualFactor, source1, manualFactor, source2);
 		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
@@ -96,178 +98,136 @@ namespace
 		default: assert(false); return GL_ZERO;
 		}
 	}
-} // anonymous namespace
 
-class C4DrawMeshGLShader: public StdMeshMaterialPass::Shader
-{
-public:
-	C4DrawMeshGLShader(const StdMeshMaterialPass& pass);
-	virtual ~C4DrawMeshGLShader();
-
-	class Error
+	StdStrBuf GetVertexShaderCodeForPass(const StdMeshMaterialPass& pass)
 	{
-	public:
-		Error(const StdStrBuf& buf): Message(buf) {}
-		StdCopyStrBuf Message;
-	};
+		StdStrBuf buf;
 
-	class ShaderObject
-	{
-		friend class C4DrawMeshGLShader;
-	public:
-		ShaderObject(GLint shader_type);
-		~ShaderObject();
+		buf.Copy(
+			"varying vec4 diffuse;"
+			"varying vec2 texcoord;"
+			"void main()"
+			"{"
+			"  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to...
+			"  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);" // TODO: Do we need to normalize?
+			"  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);"
+			"  texcoord = gl_MultiTexCoord0.xy;"
+			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+			"}"
+		);
 
-		void Load(const char* code);
-	private:
-		GLuint Shader;
-	};
-
-	GLuint Program;
-
-	GLint TexturesLocation;
-	GLint PlayerColorLocation;
-	GLint ColorModulationLocation;
-	GLint Mod2Location;
-};
-
-C4DrawMeshGLShader::ShaderObject::ShaderObject(GLint shader_type)
-{
-	Shader = glCreateShaderObjectARB(shader_type);
-	if(!Shader) throw Error(StdStrBuf("Failed to create shader"));
-}
-
-C4DrawMeshGLShader::ShaderObject::~ShaderObject()
-{
-	glDeleteObjectARB(Shader);
-}
-
-void C4DrawMeshGLShader::ShaderObject::Load(const char* code)
-{
-	glShaderSourceARB(Shader, 1, &code, NULL);
-	glCompileShaderARB(Shader);
-
-	GLint compile_status;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
-	if(compile_status != GL_TRUE)
-	{
-		GLint shader_type;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
-		const char* shader_type_str;
-		switch(shader_type)
-		{
-		case GL_VERTEX_SHADER_ARB: shader_type_str = "vertex"; break;
-		case GL_FRAGMENT_SHADER_ARB: shader_type_str = "fragment"; break;
-		//case GL_GEOMETRY_SHADER_ARB: shader_type_str = "geometry"; break;
-		default: assert(false); break;
-		}
-
-		GLint length;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
-			throw Error(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
-		}
-		else
-		{
-			throw Error(FormatString("Failed to compile %s shader", shader_type_str));
-		}
-	}
-}
-
-C4DrawMeshGLShader::C4DrawMeshGLShader(const StdMeshMaterialPass& pass)
-{
-	ShaderObject FragmentShader(GL_FRAGMENT_SHADER_ARB);
-	ShaderObject VertexShader(GL_VERTEX_SHADER_ARB);
-
-	VertexShader.Load(
-		"varying vec4 diffuse;"
-		"varying vec2 texcoord;"
-		"void main()"
-		"{"
-		"  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to...
-		"  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);" // TODO: Do we need to normalize?
-		"  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);"
-		"  texcoord = gl_MultiTexCoord0.xy;"
-		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
-		"}"
-	);
-
-	// Produce the fragment shader... first we create one code fragment for each
-	// texture unit, and we count the number of active textures, i.e. texture
-	// units that actually use a texture.
-	unsigned int texIndex = 0;
-	StdStrBuf textureUnitCode("");
-	for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
-	{
-		const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
-		textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
-
-		if(texunit.HasTexture())
-			++texIndex;
+		return buf;
 	}
 
-	FragmentShader.Load(
-		FormatString(
+	StdStrBuf GetFragmentShaderCodeForPass(const StdMeshMaterialPass& pass, StdMeshMaterialShaderParameters& params)
+	{
+		StdStrBuf buf;
+
+		// Produce the fragment shader... first we create one code fragment for each
+		// texture unit, and we count the number of active textures, i.e. texture
+		// units that actually use a texture.
+		unsigned int texIndex = 0;
+		StdStrBuf textureUnitCode(""), textureUnitDeclCode("");
+		for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
+		{
+			const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
+			textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
+
+			if(texunit.HasTexture())
+			{
+				textureUnitDeclCode.Append(FormatString("uniform sampler2D oc_Texture%u;", texIndex).getData());
+				params.AddParameter(FormatString("oc_Texture%u", texIndex).getData(), StdMeshMaterialShaderParameter::INT).GetInt() = texIndex;
+				++texIndex;
+			}
+		}
+
+		// TODO: Only add this parameter if the player color is actually used in the shader -- otherwise
+		// it is optimized out anyway.
+		params.AddParameter("oc_PlayerColor", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR;
+		params.AddParameter("oc_ColorModulation", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION;
+		params.AddParameter("oc_Mod2", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_MOD2;
+		params.AddParameter("oc_UseClrModMap", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP;
+		params.AddParameter("oc_ClrModMap", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP;
+
+		return FormatString(
 			"varying vec4 diffuse;"
 			"varying vec2 texcoord;"
 			"%s" // Texture units with active textures, only if >0 texture units
 			"uniform vec3 oc_PlayerColor;"
 			"uniform vec4 oc_ColorModulation;"
 			"uniform int oc_Mod2;"
+			"uniform int oc_UseClrModMap;"
+			"uniform sampler2D oc_ClrModMap;"
 			"void main()"
 			"{"
 			"  vec4 currentColor = diffuse;"
 			"  %s"
+		        "  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
+		        "  if(oc_UseClrModMap != 0)"
+		        "    clrModMapClr = texture2D(oc_ClrModMap, gl_FragCoord.xy);"
 			"  if(oc_Mod2 != 0)"
-			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation - 0.5, 0.0, 1.0);"
+			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation * clrModMapClr - 0.5, 0.0, 1.0);"
 			"  else"
-			"    gl_FragColor = currentColor * oc_ColorModulation;"
+			"    gl_FragColor = currentColor * oc_ColorModulation * clrModMapClr;"
 			"}",
-			((texIndex > 0) ? FormatString("uniform sampler2D oc_Textures[%d];", texIndex).getData() : ""),
+			textureUnitDeclCode.getData(),
 			textureUnitCode.getData()
-		).getData()
-	);
-
-	Program = glCreateProgramObjectARB();
-	glAttachObjectARB(Program, VertexShader.Shader);
-	glAttachObjectARB(Program, FragmentShader.Shader);
-	glLinkProgramARB(Program);
-
-	GLint link_status;
-	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
-	if(link_status != GL_TRUE)
-	{
-		GLint length;
-		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
-			glDeleteObjectARB(Program);
-			throw Error(FormatString("Failed to link program: %s", &error_message[0]));
-		}
-		else
-		{
-			glDeleteObjectARB(Program);
-			throw Error(StdStrBuf("Failed to link program"));
-		}
+		);
 	}
 
-	TexturesLocation = glGetUniformLocationARB(Program, "oc_Textures");
-	PlayerColorLocation = glGetUniformLocationARB(Program, "oc_PlayerColor");
-	ColorModulationLocation = glGetUniformLocationARB(Program, "oc_ColorModulation");
-	Mod2Location = glGetUniformLocationARB(Program, "oc_Mod2");
-}
+	StdStrBuf GetSHA1HexDigest(const char* text, std::size_t len)
+	{
+		sha1 ctx;
+		ctx.process_bytes(text, len);
+		unsigned int digest[5];
+		ctx.get_digest(digest);
 
-C4DrawMeshGLShader::~C4DrawMeshGLShader()
+		return FormatString("%08x%08x%08x%08x%08x", digest[0], digest[1], digest[2], digest[3], digest[4]);
+	}
+} // anonymous namespace
+
+class C4DrawMeshGLProgramInstance: public StdMeshMaterialPass::ProgramInstance
 {
-	glDeleteObjectARB(Program);
+public:
+	C4DrawMeshGLProgramInstance(const C4DrawGLProgram* program);
+	void AddParameters(const StdMeshMaterialShaderParameters& parameters);
+
+	struct Parameter {
+		GLint Location;
+		const StdMeshMaterialShaderParameter* ShaderParameter;
+	};
+
+	std::vector<Parameter> Parameters;
+};
+
+C4DrawMeshGLProgramInstance::C4DrawMeshGLProgramInstance(const C4DrawGLProgram* program):
+	StdMeshMaterialPass::ProgramInstance(program)
+{
 }
 
-bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
+void C4DrawMeshGLProgramInstance::AddParameters(const StdMeshMaterialShaderParameters& parameters)
+{
+	const C4DrawGLProgram* program = static_cast<const C4DrawGLProgram*>(Program);
+	for(unsigned int i = 0; i < parameters.NamedParameters.size(); ++i)
+	{
+		const GLint location = glGetUniformLocationARB(program->Program, parameters.NamedParameters[i].first.getData());
+		Parameters.push_back(Parameter());
+		Parameters.back().Location = location;
+		Parameters.back().ShaderParameter = &parameters.NamedParameters[i].second;
+	}
+}
+
+std::unique_ptr<StdMeshMaterialShader> CStdGL::CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text)
+{
+	if(strcmp(language, "glsl") != 0)
+		throw C4DrawGLError(StdStrBuf("Not a GLSL shader"));
+
+	std::unique_ptr<C4DrawGLShader> shader(new C4DrawGLShader(type));
+	shader->Load(text);
+	return std::move(shader);
+}
+
+bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat)
 {
 	// TODO: If a technique is not available, show an error message what the problem is
 
@@ -426,13 +386,41 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 
 			try
 			{
-				assert(pass.Program == NULL);
-				pass.Program = new C4DrawMeshGLShader(pass);
+				// Create fragment and/or vertex shader
+				// if a custom shader is not provided.
+				// Re-use existing programs if the generated
+				// code is the same (determined by SHA1 hash).
+				if(!pass.VertexShader.Shader)
+				{
+					StdStrBuf buf = GetVertexShaderCodeForPass(pass);
+					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+					pass.VertexShader.Shader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::VERTEX, buf.getData(), true);
+				}
+
+				if(!pass.FragmentShader.Shader)
+				{
+					// TODO: Should use shared_params once we introduce them
+					StdStrBuf buf = GetFragmentShaderCodeForPass(pass, pass.FragmentShader.Parameters);
+					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+					pass.FragmentShader.Shader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::FRAGMENT, buf.getData(), true);
+				}
+
+				// Then, link the program, and resolve parameter locations
+				const C4DrawGLShader* fragment_shader = static_cast<const C4DrawGLShader*>(pass.FragmentShader.Shader);
+				const C4DrawGLShader* vertex_shader = static_cast<const C4DrawGLShader*>(pass.VertexShader.Shader);
+				const C4DrawGLShader* geometry_shader = static_cast<const C4DrawGLShader*>(pass.GeometryShader.Shader);
+				std::unique_ptr<C4DrawGLProgram> program(new C4DrawGLProgram(fragment_shader, vertex_shader, geometry_shader));
+				const StdMeshMaterialProgram* added_program = &mat_manager.AddProgram(fragment_shader, vertex_shader, geometry_shader, std::move(program));
+				std::unique_ptr<C4DrawMeshGLProgramInstance> program_instance(new C4DrawMeshGLProgramInstance(static_cast<const C4DrawGLProgram*>(added_program)));
+				if(pass.FragmentShader.Shader) program_instance->AddParameters(pass.FragmentShader.Parameters);
+				if(pass.VertexShader.Shader) program_instance->AddParameters(pass.VertexShader.Parameters);
+				if(pass.GeometryShader.Shader) program_instance->AddParameters(pass.GeometryShader.Parameters);
+				pass.Program = std::move(program_instance);
 			}
-			catch(const C4DrawMeshGLShader::Error& error)
+			catch(const C4DrawGLError& error)
 			{
 				technique.Available = false;
-				LogF("Failed to compile shader: %s\n", error.Message.getData());
+				LogF("Failed to compile shader: %s\n", error.what());
 			}
 		}
 
@@ -443,9 +431,108 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 	return mat.BestTechniqueIndex != -1;
 }
 
+// TODO: We should add a class, C4MeshRenderer, which contains all the functions
+// in this namespace, and avoids passing around so many parameters.
 namespace
 {
-	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	// Apply Zoom and Transformation to the current matrix stack. Return
+	// parity of the transformation.
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
+	{
+		// Apply zoom
+		glTranslatef(ZoomX, ZoomY, 0.0f);
+		glScalef(Zoom, Zoom, 1.0f);
+		glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+		// Apply transformation
+		if (pTransform)
+		{
+			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+			glMultMatrixf(transform);
+
+			// Compute parity of the transformation matrix - if parity is swapped then
+			// we need to cull front faces instead of back faces.
+			const float det = transform[0]*transform[5]*transform[15]
+			                  + transform[4]*transform[13]*transform[3]
+			                  + transform[12]*transform[1]*transform[7]
+			                  - transform[0]*transform[13]*transform[7]
+			                  - transform[4]*transform[1]*transform[15]
+			                  - transform[12]*transform[5]*transform[3];
+			return det > 0;
+		}
+
+		return true;
+	}
+
+	bool ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool fUseClrModMap, C4FogOfWar* pClrModMap, std::vector<GLint>& textures)
+	{
+		float* out;
+		GLint texIndex;
+		C4Surface* pSurface;
+
+		switch(value)
+		{
+		case StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR:
+			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT3);
+			out = parameter.GetFloatv();
+
+			out[0] = ((dwPlayerColor >> 16) & 0xff) / 255.0f;
+			out[1] = ((dwPlayerColor >>  8) & 0xff) / 255.0f;
+			out[2] = ((dwPlayerColor      ) & 0xff) / 255.0f;
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION:
+			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT4);
+			out = parameter.GetFloatv();
+
+			out[0] = ((dwModClr >> 16) & 0xff) / 255.0f;
+			out[1] = ((dwModClr >>  8) & 0xff) / 255.0f;
+			out[2] = ((dwModClr      ) & 0xff) / 255.0f;
+			out[3] = ((dwModClr >> 24) & 0xff) / 255.0f;
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_MOD2:
+			parameter.SetType(StdMeshMaterialShaderParameter::INT);
+			parameter.GetInt() = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP:
+			parameter.SetType(StdMeshMaterialShaderParameter::INT);
+			parameter.GetInt() = (fUseClrModMap == true);
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP:
+			if(!fUseClrModMap) return false;
+	                pSurface = pClrModMap->GetSurface();
+
+			texIndex = textures.size();
+			textures.push_back(texIndex);
+
+			// Load the clr mod map
+			glActiveTexture(GL_TEXTURE0+texIndex);
+			glClientActiveTexture(GL_TEXTURE0+texIndex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, pSurface->ppTex[0]->texName);
+
+			glLoadIdentity();
+        	        glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
+                	glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+			// TODO: Fix this once FoW rendering is fixed:
+
+			// TODO ApplyZoomAndTransform();
+
+			// TODO: Here, scale from device coordinates to viewport coordinates ( (x+1) * size/2)
+			// This allows the clrmod lookup to be performed with the fragment coordinate. We cannot
+			// use the interpolated vertex coordinate (after modelview matrix but before projection),
+			// since the modelview coordinates do not correspond to viewport coordinates 
+
+			parameter.SetType(StdMeshMaterialShaderParameter::INT);
+			parameter.GetInt() = texIndex;
+			return true;
+		default:
+			assert(false);
+			return false;
+		}
+	}
+
+	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
@@ -605,30 +692,53 @@ namespace
 				}
 			}
 
+			assert(pass.Program.get() != NULL);
+			const C4DrawMeshGLProgramInstance& program_instance = static_cast<const C4DrawMeshGLProgramInstance&>(*pass.Program);
+
+			// Upload all parameters to the shader (keep GL_TEXTURE matrix mode, since we might initialize clrmodmap during this)
+			glUseProgramObjectARB(static_cast<const C4DrawGLProgram*>(program_instance.Program)->Program);
+			for(unsigned int i = 0; i < program_instance.Parameters.size(); ++i)
+			{
+				const GLint location = program_instance.Parameters[i].Location;
+				if(location == -1) continue; // parameter optimized out, or misnamed
+
+				const StdMeshMaterialShaderParameter* parameter = program_instance.Parameters[i].ShaderParameter;
+
+				StdMeshMaterialShaderParameter auto_resolved;
+				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
+				{
+					if(!ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, fUseClrModMap, pClrModMap, textures))
+						continue;
+					parameter = &auto_resolved;
+				}
+
+				switch(parameter->GetType())
+				{
+				case StdMeshMaterialShaderParameter::INT:
+					glUniform1iARB(location, parameter->GetInt());
+					break;
+				case StdMeshMaterialShaderParameter::FLOAT:
+					glUniform1fARB(location, parameter->GetFloat());
+					break;
+				case StdMeshMaterialShaderParameter::FLOAT2:
+					glUniform2fvARB(location, 1, parameter->GetFloatv());
+					break;
+				case StdMeshMaterialShaderParameter::FLOAT3:
+					glUniform3fvARB(location, 1, parameter->GetFloatv());
+					break;
+				case StdMeshMaterialShaderParameter::FLOAT4:
+					glUniform4fvARB(location, 1, parameter->GetFloatv());
+					break;
+				case StdMeshMaterialShaderParameter::MATRIX_4X4:
+					glUniformMatrix4fvARB(location, 1, GL_TRUE, parameter->GetMatrix());
+					break;
+				default:
+					assert(false);
+					break;
+				}
+			}
+
 			glMatrixMode(GL_MODELVIEW);
-
-			const float dwMod[4] = {
-				((dwModClr >> 16) & 0xff) / 255.0f,
-				((dwModClr >>  8) & 0xff) / 255.0f,
-				((dwModClr      ) & 0xff) / 255.0f,
-				((dwModClr >> 24) & 0xff) / 255.0f
-			};
-			
-			const float dwPlrClr[3] = {
-				((dwPlayerColor >> 16) & 0xff) / 255.0f,
-				((dwPlayerColor >>  8) & 0xff) / 255.0f,
-				((dwPlayerColor      ) & 0xff) / 255.0f
-			};
-
-			const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-
-			const C4DrawMeshGLShader& shader = static_cast<const C4DrawMeshGLShader&>(*pass.Program);
-
-			glUseProgramObjectARB(shader.Program);
-			if(shader.TexturesLocation != -1 && !textures.empty()) glUniform1ivARB(shader.TexturesLocation, textures.size(), &textures[0]);
-			if(shader.PlayerColorLocation != -1) glUniform3fvARB(shader.PlayerColorLocation, 1, dwPlrClr);
-			if(shader.ColorModulationLocation != -1) glUniform4fvARB(shader.ColorModulationLocation, 1, dwMod);
-			if(shader.Mod2Location != -1) glUniform1iARB(shader.Mod2Location, fMod2);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 			// Clean-up, re-set default state
@@ -645,9 +755,9 @@ namespace
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity); // Needed by RenderAttachedMesh
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModmap, C4FogOfWar* pClrModMap, bool parity); // Needed by RenderAttachedMesh
 
-	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
 
@@ -660,10 +770,21 @@ namespace
 			FinalTrans(0,3), FinalTrans(1,3), FinalTrans(2,3), 1
 		};
 
+		// Take the player color from the C4Object, if the attached object is not a definition
+		// This is a bit unfortunate because it requires access to C4Object which is otherwise
+		// avoided in this code. It could be replaced by virtual function calls to StdMeshDenumerator
+		C4MeshDenumerator* denumerator = dynamic_cast<C4MeshDenumerator*>(attach->ChildDenumerator);
+		if(denumerator && denumerator->GetObject())
+		{
+			dwModClr = denumerator->GetObject()->ColorMod;
+			dwBlitMode = denumerator->GetObject()->BlitMode;
+			dwPlayerColor = denumerator->GetObject()->Color;
+		}
+
 		// TODO: Take attach transform's parity into account
 		glPushMatrix();
 		glMultMatrixf(attach_trans_gl);
-		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, parity);
+		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 		glPopMatrix();
 
 #if 0
@@ -685,7 +806,7 @@ namespace
 #endif
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool fUseClrModMap, C4FogOfWar* pClrModMap, bool parity)
 	{
 		const StdMesh& mesh = instance.GetMesh();
 
@@ -693,7 +814,7 @@ namespace
 		StdMeshInstance::AttachedMeshIter attach_iter = instance.AttachedMeshesBegin();
 
 		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 		GLint modes[2];
 		// Check if we should draw in wireframe or normal mode
@@ -706,7 +827,7 @@ namespace
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 		// reset old mode to prevent rendering errors
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
@@ -738,36 +859,7 @@ namespace
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
-	}
-
-	// Apply Zoom and Transformation to the current matrix stack. Return
-	// parity of the transformation.
-	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
-	{
-		// Apply zoom
-		glTranslatef(ZoomX, ZoomY, 0.0f);
-		glScalef(Zoom, Zoom, 1.0f);
-		glTranslatef(-ZoomX, -ZoomY, 0.0f);
-
-		// Apply transformation
-		if (pTransform)
-		{
-			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
-			glMultMatrixf(transform);
-
-			// Compute parity of the transformation matrix - if parity is swapped then
-			// we need to cull front faces instead of back faces.
-			const float det = transform[0]*transform[5]*transform[15]
-			                  + transform[4]*transform[13]*transform[3]
-			                  + transform[12]*transform[1]*transform[7]
-			                  - transform[0]*transform[13]*transform[7]
-			                  - transform[4]*transform[1]*transform[15]
-			                  - transform[12]*transform[5]*transform[3];
-			return det > 0;
-		}
-
-		return true;
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 	}
 }
 
@@ -994,20 +1086,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
-	if(fUseClrModMap)
-	{
-		float x = tx + twdt/2.0f;
-		float y = ty + thgt/2.0f;
-
-		if(pTransform)
-			pTransform->TransformPoint(x,y);
-
-		ApplyZoom(x, y);
-		DWORD c = pClrModMap->GetModAt(int(x), int(y));
-		ModulateClr(dwModClr, c);
-	}
-
-	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, parity);
+	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, fUseClrModMap, pClrModMap, parity);
 
 	glUseProgramObjectARB(0);
 

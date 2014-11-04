@@ -68,18 +68,18 @@ public func ShowsItem()
 
 public func MouseSelectionAlt(int plr)
 {
-	if(!myobject) return;
+	if (!myobject) return;
 	
 	var desc = myobject.UsageHelp;
-	if(!desc) desc = myobject.Description; // fall back to general description
+	if (!desc) desc = myobject.Description; // fall back to general description
 	
 	// close other messages...
 	crew->OnDisplayInfoMessage();
 	
-	if(desc)
+	if (desc)
 	{
-		var msg = Format("<c ff0000>%s</c>",desc);
-		CustomMessage(msg,this,plr);
+		var msg = Format("<c ff0000>%s</c>", desc);
+		CustomMessage(msg, this, plr);
 	}
 	return true;
 }

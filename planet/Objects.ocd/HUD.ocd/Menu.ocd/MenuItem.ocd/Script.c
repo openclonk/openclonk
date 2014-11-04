@@ -273,6 +273,6 @@ private func UpdateTooltip()
 		this.Tooltip = nil;
 	else
 	{
-		this.Tooltip = item_object.Description;
+		this.Tooltip = Format("%s: %s", item_object.Name, item_object.Description);
 	}
 }

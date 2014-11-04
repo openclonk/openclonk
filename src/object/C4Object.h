@@ -82,6 +82,8 @@ public:
 	C4MeshDenumerator(C4Def* def): Def(def), Object(NULL) {}
 	C4MeshDenumerator(C4Object* object): Def(NULL), Object(object) {}
 
+	C4Object* GetObject() const { return Object; }
+
 	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
 	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
 	virtual bool ClearPointers(C4Object* pObj);

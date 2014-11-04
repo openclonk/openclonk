@@ -1,0 +1,45 @@
+vertex_program normal_map_vertex glsl
+{
+    source normal_map_vertex.glsl
+}
+
+fragment_program normal_map_fragment glsl
+{
+    source normal_map_fragment.glsl
+}
+
+// This material can be derived from in order to use a normal map with a
+// single base texture.
+material NormalMap
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass
+        {
+            texture_unit base
+            {
+            }
+
+            texture_unit normal
+            {
+            }
+
+            vertex_program_ref normal_map_vertex
+            {
+            }
+
+            fragment_program_ref normal_map_fragment
+            {
+                param_named_auto oc_Mod2 oc_mod2
+                param_named_auto oc_ColorModulation oc_color_modulation
+                param_named_auto oc_UseClrModMap oc_use_clrmodmap
+                param_named_auto oc_ClrModMap oc_clrmodmap
+
+                param_named basemap int 0
+                param_named normalmap int 1
+            }
+        }
+    }
+}

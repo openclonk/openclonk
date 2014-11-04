@@ -172,7 +172,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	Add(pGameTimer = new C4ApplicationGameTimer());
 
 	// Initialize OpenGL
-	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);
+	bool success = DDrawInit(this, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)

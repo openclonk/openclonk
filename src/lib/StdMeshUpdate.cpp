@@ -27,7 +27,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 {
 	for(std::vector<StdSubMesh>::iterator iter = mesh->SubMeshes.begin(); iter != mesh->SubMeshes.end(); ++iter)
 	{
-		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter =	Materials.find(iter->Material);
+		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter = Materials.find(iter->Material);
 		if(mat_iter != Materials.end())
 		{
 			const StdMeshMaterial* new_material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
@@ -42,7 +42,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 				// material into the material map. This is mainly just to keep things
 				// going - next time the scenario will be started the mesh will fail
 				// to load because the material cannot be found.
-				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second;
+				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second; // TODO: could be moved
 				iter->Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 			}
 		}
@@ -70,13 +70,13 @@ void StdMeshMaterialUpdate::Cancel() const
 {
 	// Reset all materials in manager
 	for(std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator iter = Materials.begin(); iter != Materials.end(); ++iter)
-		MaterialManager.Materials[iter->second.Name] = iter->second;
+		MaterialManager.Materials[iter->second.Name] = iter->second; // TODO: could be moved
 }
 
 void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 {
 	assert(Materials.find(material) == Materials.end());
-	Materials[material] = *material;
+	Materials[material] = *material; // TODO: could be moved
 }
 
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):

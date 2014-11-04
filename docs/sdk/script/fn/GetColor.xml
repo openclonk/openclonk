@@ -17,7 +17,7 @@
       </example>
     </examples>
     <related>
-      <funclink>GetPlrColor</funclink>
+      <funclink>GetPlayerColor</funclink>
       <funclink>SetColor</funclink>
       <funclink>GetClrModulation</funclink>
     </related>

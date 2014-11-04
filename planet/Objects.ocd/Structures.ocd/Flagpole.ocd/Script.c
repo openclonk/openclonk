@@ -7,7 +7,7 @@
 
 protected func Initialize()
 {
-	// SetCategory(C4D_StaticBack);
+	SetCategory(C4D_StaticBack);
 	return _inherited(...);
 }
 

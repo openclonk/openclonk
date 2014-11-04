@@ -132,6 +132,7 @@
 			Console.FileClose();
 		Application.fQuitMsgReceived = true;
 		Application.ScheduleProcs();
+		Application.Clear();
 		Application.Quit();
 	}
 }

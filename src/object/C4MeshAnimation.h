@@ -31,9 +31,11 @@ enum C4AnimationValueProviderID
 	C4AVP_R,
 	C4AVP_AbsX,
 	C4AVP_AbsY,
+	C4AVP_Dist,
 	C4AVP_XDir,
 	C4AVP_YDir,
 	C4AVP_RDir,
+	C4AVP_AbsRDir,
 	C4AVP_CosR,
 	C4AVP_SinR,
 	C4AVP_CosV,
@@ -159,6 +161,23 @@ private:
 	int32_t Length;
 };
 
+class C4ValueProviderDist: public StdMeshInstance::SerializableValueProvider
+{
+public:
+	C4ValueProviderDist(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderDist(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
+	virtual bool Execute();
+
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
+private:
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
+};
+
 class C4ValueProviderXDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
@@ -196,8 +215,8 @@ private:
 class C4ValueProviderRDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderRDir(): Object(NULL), Begin(Fix0), End(Fix0), MaxRDir(Fix0) {}
-	C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real max_rdir);
+	C4ValueProviderRDir(): Object(NULL), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
+	C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
 	virtual bool Execute();
 
 	virtual void CompileFunc(StdCompiler* pComp);
@@ -207,6 +226,25 @@ private:
 	C4ObjectPtr Object;
 	C4Real Begin;
 	C4Real End;
+	C4Real MinRDir;
+	C4Real MaxRDir;
+};
+
+class C4ValueProviderAbsRDir: public StdMeshInstance::SerializableValueProvider
+{
+public:
+	C4ValueProviderAbsRDir(): Object(NULL), Begin(Fix0), End(Fix0), MinRDir(Fix0), MaxRDir(Fix0) {}
+	C4ValueProviderAbsRDir(C4Object* object, C4Real begin, C4Real end, C4Real min_rdir, C4Real max_rdir);
+	virtual bool Execute();
+
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+	virtual void ClearPointers(C4Object* pObj) { if(Object == pObj) Object = NULL; }
+private:
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real MinRDir;
 	C4Real MaxRDir;
 };
 

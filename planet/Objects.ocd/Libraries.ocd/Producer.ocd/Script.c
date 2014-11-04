@@ -602,6 +602,9 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 // Standard behaviour for product ejection.
 public func OnProductEjection(object product)
 {
+	// Safety for the product removing itself on construction.
+	if (!product)
+		return;	
 	// Vehicles in front fo buildings.
 	if (product->GetCategory() & C4D_Vehicle)
 	{

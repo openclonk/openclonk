@@ -41,6 +41,11 @@ global func Anim_AbsY(int position, int begin, int end, int length)
 	return [C4AVP_AbsY, position, begin, end, length];
 }
 
+global func Anim_Dist(int position, int begin, int end, int length)
+{
+	return [C4AVP_Dist, position, begin, end, length];
+}
+
 global func Anim_XDir(int begin, int end, int max_xdir, int prec)
 {
 	if (prec == nil)
@@ -55,11 +60,18 @@ global func Anim_YDir(int begin, int end, int max_ydir, int prec)
 	return [C4AVP_YDir, begin, end, max_ydir, prec];
 }
 
-global func Anim_RDir(int begin, int end, int max_rdir, int prec)
+global func Anim_RDir(int begin, int end, int min_rdir, int max_rdir, int prec)
 {
 	if (prec == nil)
 		prec = 10;
-	return [C4AVP_RDir, begin, end, max_rdir, prec];
+	return [C4AVP_RDir, begin, end, min_rdir, max_rdir, prec];
+}
+
+global func Anim_AbsRDir(int begin, int end, int min_rdir, int max_rdir, int prec)
+{
+	if (prec == nil)
+		prec = 10;
+	return [C4AVP_AbsRDir, begin, end, min_rdir, max_rdir, prec];
 }
 
 global func Anim_CosR(int begin, int end, int offset, int prec)

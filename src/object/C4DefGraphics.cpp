@@ -39,22 +39,10 @@
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.
-class AdditionalResourcesLoader:
-		public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
+class C4DefGraphicsAdditionalResourcesLoader: public StdMeshSkeletonLoader
 {
 public:
-	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
-
-	virtual C4Surface* LoadTexture(const char* filename)
-	{
-		if (!Group.AccessEntry(filename)) return NULL;
-		C4Surface* surface = new C4Surface;
-		// Suppress error message here, StdMeshMaterial loader
-		// will show one.
-		if (!surface->Read(Group, GetExtension(filename)))
-			{ delete surface; surface = NULL; }
-		return surface;
-	}
+	C4DefGraphicsAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
 	virtual StdStrBuf LoadSkeleton(const char* filename)
 	{
@@ -175,28 +163,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	AdditionalResourcesLoader loader(hGroup);
-
-	// Load all materials for this definition:
-	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, !!*Filename))
-	{
-		StdStrBuf material;
-		if (hGroup.LoadEntryString(Filename, &material))
-		{
-			try
-			{
-				StdStrBuf buf;
-				buf.Copy(hGroup.GetName());
-				buf.Append("/"); buf.Append(Filename);
-				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
-			}
-			catch (const StdMeshMaterialError& ex)
-			{
-				DebugLogF("Failed to read material script: %s", ex.what());
-			}
-		}
-	}
+	C4DefGraphicsAdditionalResourcesLoader loader(hGroup);
 
 	// Try from Mesh first
 	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
@@ -445,9 +412,9 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+		{
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -493,6 +460,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							if (!pDeco->UpdateGfx())
 								pObj->Menu->SetFrameDeco(NULL);
 				}
+		}
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
@@ -510,9 +478,8 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -565,9 +532,9 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
 
 	// Update mesh materials for all mesh instances.
-	C4Object *pObj;
-	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-		if ((pObj=pLnk->Obj)) if (pObj->Status)
+	for (C4Object *pObj : Objects)
+	{
+		if (pObj && pObj->Status)
 		{
 			if(pObj->pMeshInstance)
 				UpdateMesh(pObj->pMeshInstance);
@@ -575,6 +542,7 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 				if(pGfxOverlay->pMeshInstance)
 					UpdateMesh(pGfxOverlay->pMeshInstance);
 		}
+	}
 }
 
 void C4DefGraphicsPtrBackup::UpdateMesh(StdMeshInstance* instance)

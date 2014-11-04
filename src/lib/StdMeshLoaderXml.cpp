@@ -19,7 +19,7 @@
 #include "C4Include.h"
 #include "StdMesh.h"
 #include "StdMeshLoader.h"
-#include <tinyxml/tinyxml.h>
+#include <tinyxml.h>
 
 // Helper class to load things from an XML file with error checking
 class StdMeshLoader::StdMeshXML
