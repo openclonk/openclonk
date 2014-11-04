@@ -35,7 +35,6 @@ public:
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
-	virtual void DrawQuadDw(C4Surface *, float *, DWORD, DWORD, DWORD, DWORD) { }
 	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
 	virtual bool InitDeviceObjects() { return true; }
 	virtual bool RestoreDeviceObjects() { return true; }

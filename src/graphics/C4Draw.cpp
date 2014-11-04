@@ -971,6 +971,22 @@ void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DW
 	PerformMultiLines(sfcDest, vertices, 8, 1.0f);
 }
 
+void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
+{
+	C4BltVertex vertices[6];
+	vertices[0].ftx = ipVtx[0]; vertices[0].fty = ipVtx[1];
+	vertices[1].ftx = ipVtx[2]; vertices[1].fty = ipVtx[3];
+	vertices[2].ftx = ipVtx[4]; vertices[2].fty = ipVtx[5];
+	vertices[3].ftx = ipVtx[6]; vertices[3].fty = ipVtx[7];
+	DwTo4UB(dwClr1, vertices[0].color);
+	DwTo4UB(dwClr2, vertices[1].color);
+	DwTo4UB(dwClr3, vertices[2].color);
+	DwTo4UB(dwClr4, vertices[3].color);
+	vertices[4] = vertices[0];
+	vertices[5] = vertices[2];
+	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, 0);
+}
+
 // Globally locked surface variables - for DrawLine callback crap
 
 C4Surface *GLSBuffer=NULL;
@@ -1167,42 +1183,6 @@ bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned
 
 void C4Draw::DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY)
 {
-	ApplyZoom(iX, iY);
-	iWdt *= Zoom;
-	iHgt *= Zoom;
-	// clipping not performed - this fn should be called for clipped rects only
-	// apply modulation map: Must sectionize blit
-	if (fUseClrModMap)
-	{
-		int iModResX = pClrModMap ? pClrModMap->GetResolutionX() : C4FogOfWar::DefResolutionX;
-		int iModResY = pClrModMap ? pClrModMap->GetResolutionY() : C4FogOfWar::DefResolutionY;
-		iBoxOffX %= iModResX;
-		iBoxOffY %= iModResY;
-		if (iWdt+iBoxOffX > iModResX || iHgt+iBoxOffY > iModResY)
-		{
-			if (iWdt<=0 || iHgt<=0) return;
-			CColorFadeMatrix clrs(int(iX), int(iY), int(iWdt), int(iHgt), dwClr1, dwClr2, dwClr3, dwClr4);
-			float iMaxH = float(iModResY - iBoxOffY);
-			float w,h;
-			for (float y = iY, H = iHgt; H > 0; (y += h), (H -= h), (iMaxH = float(iModResY)))
-			{
-				h = Min(H, iMaxH);
-				float iMaxW = float(iModResX - iBoxOffX);
-				for (float x = iX, W = iWdt; W > 0; (x += w), (W -= w), (iMaxW = float(iModResX)))
-				{
-					w = Min(W, iMaxW);
-					//DrawBoxFade(sfcDest, x,y,w,h, clrs.GetColorAt(x,y), clrs.GetColorAt(x+w,y), clrs.GetColorAt(x,y+h), clrs.GetColorAt(x+w,y+h), 0,0);
-					float vtx[8];
-					vtx[0] = x     ; vtx[1] = y;
-					vtx[2] = x     ; vtx[3] = y+h;
-					vtx[4] = x+w; vtx[5] = y+h;
-					vtx[6] = x+w; vtx[7] = y;
-					DrawQuadDw(sfcDest, vtx, clrs.GetColorAt(int(x),int(y)), clrs.GetColorAt(int(x),int(y+h)), clrs.GetColorAt(int(x+w),int(y+h)), clrs.GetColorAt(int(x+w),int(y)));
-				}
-			}
-			return;
-		}
-	}
 	// set vertex buffer data
 	// vertex order:
 	// 0=upper left   dwClr1

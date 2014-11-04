@@ -285,41 +285,6 @@ bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorD
 	return RestoreDeviceObjects();
 }
 
-void CStdGL::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
-{
-	// prepare rendering to target
-	if (!PrepareRendering(sfcTarget)) return;
-	// apply global modulation
-	ClrByCurrentBlitMod(dwClr1);
-	ClrByCurrentBlitMod(dwClr2);
-	ClrByCurrentBlitMod(dwClr3);
-	ClrByCurrentBlitMod(dwClr4);
-	// apply modulation map
-	if (fUseClrModMap)
-	{
-		ModulateClr(dwClr1, pClrModMap->GetModAt(int(ipVtx[0]), int(ipVtx[1])));
-		ModulateClr(dwClr2, pClrModMap->GetModAt(int(ipVtx[2]), int(ipVtx[3])));
-		ModulateClr(dwClr3, pClrModMap->GetModAt(int(ipVtx[4]), int(ipVtx[5])));
-		ModulateClr(dwClr4, pClrModMap->GetModAt(int(ipVtx[6]), int(ipVtx[7])));
-	}
-	glShadeModel((dwClr1 == dwClr2 && dwClr1 == dwClr3 && dwClr1 == dwClr4) ? GL_FLAT : GL_SMOOTH);
-	// set blitting state
-	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-	// draw two triangles
-	glInterleavedArrays(GL_V2F, sizeof(float)*2, ipVtx);
-	GLubyte colors[4][4];
-	DwTo4UB(dwClr1,colors[0]);
-	DwTo4UB(dwClr2,colors[1]);
-	DwTo4UB(dwClr3,colors[2]);
-	DwTo4UB(dwClr4,colors[3]);
-	glColorPointer(4,GL_UNSIGNED_BYTE,0,colors);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glDrawArrays(GL_POLYGON, 0, 4);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glShadeModel(GL_FLAT);
-}
-
 #ifdef _MSC_VER
 #ifdef _M_X64
 # include <emmintrin.h>
