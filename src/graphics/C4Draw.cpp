@@ -376,7 +376,6 @@ uint32_t CColorFadeMatrix::GetColorAt(int iX, int iY)
 
 void C4Draw::Default()
 {
-	Editor=true;
 	RenderTarget=NULL;
 	ClipAll=false;
 	Active=false;
@@ -987,32 +986,6 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, 0);
 }
 
-// Globally locked surface variables - for DrawLine callback crap
-
-C4Surface *GLSBuffer=NULL;
-
-bool LockSurfaceGlobal(C4Surface * sfcTarget)
-{
-	if (GLSBuffer) return false;
-	GLSBuffer=sfcTarget;
-	return !!sfcTarget->Lock();
-}
-
-bool UnLockSurfaceGlobal(C4Surface * sfcTarget)
-{
-	if (!GLSBuffer) return false;
-	sfcTarget->Unlock();
-	GLSBuffer=NULL;
-	return true;
-}
-
-bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
-{
-	if (!GLSBuffer) return false;
-	GLSBuffer->SetPixDw(x,y,(DWORD) dwClr);
-	return true;
-}
-
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
 {
 	if (!sfcDest->Lock()) return;
@@ -1141,7 +1114,7 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	// create engine
     #ifndef USE_CONSOLE
@@ -1151,7 +1124,7 @@ bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned in
     #endif
 	if (!pDraw) return false;
 	// init it
-	if (!pDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!pDraw->Init(pApp, iXRes, iYRes, iBitDepth, iMonitor))
 	{
 		delete pDraw;
 		return false;
@@ -1160,7 +1133,7 @@ bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned in
 	return true;
 }
 
-bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	this->pApp = pApp;
 
@@ -1170,13 +1143,11 @@ bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!CreatePrimarySurfaces(iXRes, iYRes, iBitDepth, iMonitor))
 		return false;
 
 	if (!CreatePrimaryClipper(iXRes, iYRes))
 		return Error("  Clipper failure.");
-
-	this->Editor = Editor;
 
 	return true;
 }

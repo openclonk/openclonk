@@ -120,15 +120,6 @@ struct C4BltVertex
 	float ftx,fty,ftz; // blit positions
 };
 
-// blit bounds polygon - note that blitting procedures are not designed for inner angles (>pi)
-struct C4BltData
-{
-	BYTE byNumVertices;  // number of valid vertices
-	C4BltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
-	const C4BltTransform *pTransform; // Vertex transformation
-};
-
-
 // This structure is used by StdGL, too
 typedef struct _GAMMARAMP
 {
@@ -183,7 +174,6 @@ public:
 protected:
 	bool fSetGamma;     // must gamma ramp be reassigned?
 	BYTE                byByteCnt;    // bytes per pixel (2 or 4)
-	bool Editor;
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 	float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates
 	int32_t iClipX1,iClipY1,iClipX2,iClipY2; // clipper in pixel coordinates
@@ -202,7 +192,7 @@ protected:
 public:
 	float Zoom;
 	// General
-	bool Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+	bool Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
 	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return NULL; }
@@ -261,13 +251,14 @@ public:
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
 	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayClrMod) = 0; // blit the same texture many times
+	// Convenience drawing functions
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
 	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
 	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	virtual void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
-	virtual void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
+	void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
+	void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
 	// gamma
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
 	void ResetGamma();                                        // reset all gamma ramps to default
@@ -280,13 +271,7 @@ public:
 	void DeactivateBlitModulation() { BlitModulated=false; }  // stop color modulation of blits
 	bool GetBlitModulation(DWORD &rdwColor) { rdwColor=BlitModulateClr; return BlitModulated; }
 	void SetBlitMode(DWORD dwBlitMode) { this->dwBlitMode=dwBlitMode & C4GFXBLIT_ALL; } // set blit mode extra flags (additive blits, mod2-modulation, etc.)
-	DWORD SetBlitModeGetPrev(DWORD dwNewBlitMode) { DWORD dwTemp=dwBlitMode; SetBlitMode(dwNewBlitMode); return dwTemp; } // set blit mode extra flags, returning old flags
 	void ResetBlitMode() { dwBlitMode=0; }
-	void ClrByCurrentBlitMod(DWORD &rdwClr)
-	{
-		// apply modulation if activated
-		if (BlitModulated) ModulateClr(rdwClr, BlitModulateClr);
-	}
 	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
 	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
 	bool GetClrModMapEnabled() const { return fUseClrModMap; }
@@ -304,12 +289,10 @@ public:
 	virtual bool InvalidateDeviceObjects() = 0; // free device dependant objects
 	virtual bool DeviceReady() = 0;             // return whether device exists
 
-	int GetByteCnt() { return byByteCnt; } // return bytes per pixel
-
 protected:
 	bool StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom);
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
-	virtual bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
+	virtual bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
 	void DebugLog(const char *szMsg)
 	{
@@ -330,10 +313,5 @@ struct ZoomDataStackItem: public ZoomData
 	~ZoomDataStackItem() { pDraw->SetZoom(*this); }
 };
 
-bool LockSurfaceGlobal(C4Surface * sfcTarget);
-bool UnLockSurfaceGlobal(C4Surface * sfcTarget);
-bool DLineSPix(int32_t x, int32_t y, int32_t col);
-bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
-
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

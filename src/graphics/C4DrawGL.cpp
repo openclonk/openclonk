@@ -279,35 +279,15 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 }
 #endif
 
-bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorDepth, unsigned int)
+bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, unsigned int)
 {
 	// store options
 	return RestoreDeviceObjects();
 }
 
-#ifdef _MSC_VER
-#ifdef _M_X64
-# include <emmintrin.h>
-#endif
-static inline long int lrintf(float f)
-{
-#ifdef _M_X64
-	return _mm_cvtt_ss2si(_mm_load_ps1(&f));
-#else
-	long int i;
-	__asm
-	{
-		fld f
-		fistp i
-	};
-	return i;
-#endif
-}
-#endif
-
 void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr)
 {
-	// Initialize multi blit shader. If pTexRef is given, use that as texture.
+	// Initialize multi blit shader.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 

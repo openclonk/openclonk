@@ -165,7 +165,7 @@ public:
 	bool EnsureAnyContext();
 
 protected:
-	bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
+	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
 	bool CheckGLError(const char *szAtOp);
 	virtual bool Error(const char *szMsg);
