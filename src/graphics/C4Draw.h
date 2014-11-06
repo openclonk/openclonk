@@ -156,6 +156,8 @@ struct ZoomData
 	int X, Y;
 };
 
+class C4FoWRegion;
+
 // direct draw encapsulation
 class C4Draw
 {
@@ -185,6 +187,7 @@ protected:
 	DWORD dwBlitMode;               // extra flags for blit
 	C4FogOfWar *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
 	bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
+	const C4FoWRegion* pFoW;     // new-style FoW
 	unsigned char Saturation;   // if < 255, an extra filter is used to reduce the saturation
 	int ZoomX; int ZoomY;
 	const StdMeshMatrix* MeshTransform; // Transformation to apply to mesh before rendering
@@ -275,6 +278,8 @@ public:
 	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
 	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
 	bool GetClrModMapEnabled() const { return fUseClrModMap; }
+	void SetFoW(const C4FoWRegion* fow) { pFoW = fow; }
+	const C4FoWRegion* GetFoW() const { return pFoW; }
 	unsigned char SetSaturation(unsigned char s) { unsigned char o = Saturation; Saturation = s; return o; }
 	void SetZoom(int X, int Y, float Zoom);
 	void SetZoom(const ZoomData &zoom) { SetZoom(zoom.X, zoom.Y, zoom.Zoom); }

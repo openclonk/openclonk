@@ -599,7 +599,7 @@ namespace
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				else
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
-						          OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
+					            OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
 			}
 			else
 			{

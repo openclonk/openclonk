@@ -21,6 +21,7 @@
 
 #include <C4Surface.h>
 #include <C4Window.h>
+#include <C4FoWRegion.h>
 #include "C4Rect.h"
 #include "C4Config.h"
 #include "C4Application.h"
@@ -293,17 +294,17 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 
 	// TODO: The locations could be cached
 	GLint fMod2Location = glGetUniformLocationARB(multi_blt_program->Program, "fMod2");
-	GLint fUseClrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseClrModMap");
+	GLint fUseLightLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseLight");
 	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
 	GLint fUseOverlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseOverlay");
 	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
 	GLint overlayClrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "overlayClrMod");
-	GLint clrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "ClrModMap");
+	GLint lightLocation = glGetUniformLocationARB(multi_blt_program->Program, "Light");
 	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "Texture");
 	GLint overlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "Overlay");
 
 	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-	const int fUseClrModMap = this->fUseClrModMap;
+	const int fUseLight = (pFoW != NULL);
 	const int fUseTexture = (baseTex != 0);
 	const int fUseOverlay = (overlayTex != 0);
 	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
@@ -322,26 +323,31 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 
 	glUseProgramObjectARB(multi_blt_program->Program);
 	glUniform1iARB(fMod2Location, fMod2);
-	glUniform1iARB(fUseClrModMapLocation, fUseClrModMap);
+	glUniform1iARB(fUseLightLocation, fUseLight);
 	glUniform1iARB(fUseTextureLocation, fUseTexture);
 	glUniform1iARB(fUseOverlayLocation, fUseOverlay);
 	glUniform4fvARB(clrModLocation, 1, dwMod);
 
-	if(fUseClrModMap)
+	if(fUseLight)
 	{
 		glActiveTexture(GL_TEXTURE2);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, pClrModMap->GetSurface()->ppTex[0]->texName);
-		glUniform1iARB(clrModMapLocation, 2);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
+		glUniform1iARB(lightLocation, 2);
 
+		// Setup the texture matrix such that fragment coordinates
+		// are converted to coordinates inside the light texture.
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
-		C4Surface * pSurface = pClrModMap->GetSurface();
-		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
-		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
-		// Zoom and transform are applied in the modelview matrix, which
-		// is applied in the vertex shader before passing the viewport
-		// position to the fragment shader for clrmodmap lookup
+
+		const C4Rect LightRect = pFoW->getRegion();
+		const int32_t iLightWdt = pFoW->getSurface()->Wdt;
+		const int32_t iLightHgt = pFoW->getSurface()->Hgt;
+
+		glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
+		glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
+		glScalef(1.0f/Zoom, 1.0f/Zoom, 1.0f);
+
 		glMatrixMode(GL_MODELVIEW);
 	}
 
@@ -377,7 +383,7 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 void CStdGL::ResetMultiBlt(GLuint baseTex, GLuint overlayTex)
 {
 	glPopMatrix();
-	if(fUseClrModMap) { glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
+	if(pFoW != NULL) { glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
 	if(overlayTex != 0) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
 	glActiveTexture(GL_TEXTURE0);
 	if(baseTex != 0) glDisable(GL_TEXTURE_2D);
@@ -570,26 +576,23 @@ bool CStdGL::RestoreDeviceObjects()
 	// TODO: It might be more efficient to use separate shaders for pixels, lines and tris.
 	const char* vertex_shader_text =
 		"varying vec2 texcoord;"
-		"varying vec2 pos;"
 		"void main()"
 		"{"
 		"  texcoord = gl_MultiTexCoord0.xy;"
-		"  pos = (gl_ModelViewMatrix * gl_Vertex).xy;"
 		"  gl_FrontColor = gl_Color;"
 		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
 		"}";
 	const char* fragment_shader_text =
 		"uniform int fMod2;"
-		"uniform int fUseClrModMap;"
+		"uniform int fUseLight;"
 		"uniform int fUseTexture;"
 		"uniform int fUseOverlay;"
 		"uniform vec4 clrMod;"
 		"uniform vec4 overlayClrMod;"
 		"uniform sampler2D Texture;"
 		"uniform sampler2D Overlay;"
-		"uniform sampler2D ClrModMap;"
+		"uniform sampler2D Light;"
 		"varying vec2 texcoord;"
-		"varying vec2 pos;"
 		"void main()"
 		"{"
                 // Start with the base color
@@ -605,15 +608,30 @@ bool CStdGL::RestoreDeviceObjects()
                 "  primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
 		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
                 "  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
-                // Add fog of war
-		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
-		"  if(fUseClrModMap != 0)"
-		"    clrModMapClr = texture2D(ClrModMap, pos);"
+                // Add fog of war (light)
+		"  vec3 lightDir;"
+                "  float lightIntensity;"
+
+                "  if(fUseLight != 0)"
+                "  {"
+                "    vec4 lightPx = texture2D(Light, (gl_TextureMatrix[2] * gl_FragCoord).xy);"
+		"    lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
+                "    lightIntensity = 2.0 * lightPx.r;"
+                "  }"
+                "  else"
+                "  {"
+                     // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
+                "    lightDir = vec3(0.0, 0.0, 1.0);"
+                "    lightIntensity = 1.0;"
+                "  }"
+		// Front-facing normals
+		"  vec3 normal = vec3(0.0, 0.0, 1.0);"
+		"  vec4 lightClr = vec4(vec3(1.0, 1.0, 1.0) * lightIntensity * dot(normal, lightDir), 1.0);"
                 // Final output, depending on blit mode
 		"  if(fMod2 != 0)"
-		"    gl_FragColor = clamp(2.0 * primaryColor * clrModMapClr - 0.5, 0.0, 1.0);"
+		"    gl_FragColor = clamp(2.0 * primaryColor * lightClr - 0.5, 0.0, 1.0);"
 		"  else"
-		"    gl_FragColor = primaryColor * clrModMapClr;"
+		"    gl_FragColor = clamp(primaryColor * lightClr, 0.0, 1.0);"
 		"}";
 
 	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);

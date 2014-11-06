@@ -385,6 +385,7 @@ void C4Draw::Default()
 	DefRamp.Default();
 	// pClrModMap = NULL; - invalid if !fUseClrModMap anyway
 	fUseClrModMap = false;
+	pFoW = NULL;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
 	MeshTransform = NULL;
 	fUsePerspective = false;

@@ -213,11 +213,6 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	// --- activate FoW here ---
 
-	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
-	::Landscape.Sky.Draw(cgo);
-	C4ST_STOP(SkyStat)
-	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
-
 	// Update FoW
 	if (pFoW)
 	{
@@ -227,6 +222,14 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		pFoW->Render();
 	}
+
+	pDraw->SetFoW(pFoW);
+
+	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
+	::Landscape.Sky.Draw(cgo);
+	C4ST_STOP(SkyStat)
+
+	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
@@ -248,6 +251,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Particles.DrawGlobalParticles(cgo);
 	C4ST_STOP(PartStat)
 
+	// Draw everything else without FoW
+	pDraw->SetFoW(NULL);
 
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
