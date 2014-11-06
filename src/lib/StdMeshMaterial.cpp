@@ -59,8 +59,8 @@ namespace
 		{ "oc_color_modulation", StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION },
 		{ "oc_colour_modulation", StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION },
 		{ "oc_mod2", StdMeshMaterialShaderParameter::AUTO_OC_MOD2 },
-		{ "oc_use_clrmodmap", StdMeshMaterialShaderParameter::AUTO_OC_USE_CLRMODMAP },
-		{ "oc_clrmodmap", StdMeshMaterialShaderParameter::AUTO_OC_CLRMODMAP },
+		{ "oc_use_light", StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT },
+		{ "oc_light", StdMeshMaterialShaderParameter::AUTO_OC_LIGHT },
 		{ NULL, static_cast<StdMeshMaterialShaderParameter::Auto>(0) }
 	};
 
