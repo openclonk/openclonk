@@ -577,10 +577,7 @@ namespace
 			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 
-			// Use two-sided light model so that vertex normals are inverted for lighting calculation on back-facing polygons
-			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
 			glFrontFace(parity ? GL_CW : GL_CCW);
-
 			if(mesh_instance.GetCompletion() < 1.0f)
 			{
 				// Backfaces might be visible when completion is < 1.0f since front
@@ -809,7 +806,6 @@ namespace
 
 			// Draw attached bone
 			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_LIGHTING);
 			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 			GLUquadric* quad = gluNewQuadric();
 			glPushMatrix();
@@ -818,7 +814,6 @@ namespace
 			glPopMatrix();
 			gluDeleteQuadric(quad);
 			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_LIGHTING);
 #endif
 	}
 
@@ -860,7 +855,6 @@ namespace
 			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.GetMesh().GetBone(attached->ChildBone).Transformation);
 
 			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_LIGHTING);
 			glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
 			GLUquadric* quad = gluNewQuadric();
 			glPushMatrix();
@@ -869,7 +863,6 @@ namespace
 			glPopMatrix();
 			gluDeleteQuadric(quad);
 			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_LIGHTING);
 		}
 #endif
 
@@ -917,7 +910,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -1040,14 +1032,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glPushMatrix();
 	glLoadIdentity();
 
-	if (!fUsePerspective)
-	{
-		// Put a light source in front of the object
-		const GLfloat light_position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-		glEnable(GL_LIGHT0);
-	}
-	else
+	if (fUsePerspective)
 	{
 		// Setup camera position so that the mesh with uniform transformation
 		// fits well into a square target (without distortion).
@@ -1060,11 +1045,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const float UpX = 0;//-sinEyePhi * sinEyeTheta;
 		const float UpY = -1;//-cosEyeTheta;
 		const float UpZ = 0;//-cosEyePhi * sinEyeTheta;
-
-		// Apply lighting (light source at camera position)
-		const GLfloat light_position[] = { EyeX, EyeY, EyeZ, 1.0f };
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-		glEnable(GL_LIGHT0);
 
 		// Fix X axis (???)
 		glScalef(-1.0f, 1.0f, 1.0f);
@@ -1119,8 +1099,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisableClientState(GL_VERTEX_ARRAY);
 
 	glDisable(GL_NORMALIZE);
-	glDisable(GL_LIGHT0);
-	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
