@@ -72,7 +72,6 @@ public:
 	bool IsMesh() const { return Type == TYPE_Mesh; }
 	bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
-	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
 	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
 

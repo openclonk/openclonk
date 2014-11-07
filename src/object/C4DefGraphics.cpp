@@ -236,33 +236,6 @@ C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 	return NULL;
 }
 
-bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
-{
-	if (Type != TYPE_Bitmap) return false; // TODO!
-	// clear previous
-	if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
-	if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
-	// copy from source
-	if (rSource.Bmp.Bitmap)
-	{
-		Bmp.Bitmap = new C4Surface();
-		if (!Bmp.Bitmap->Copy(*rSource.Bmp.Bitmap))
-			{ delete Bmp.Bitmap; Bmp.Bitmap=NULL; return false; }
-	}
-	if (rSource.Bmp.BitmapClr)
-	{
-		Bmp.BitmapClr = new C4Surface();
-		if (!Bmp.BitmapClr->Copy(*rSource.Bmp.BitmapClr))
-		{
-			if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
-			delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; return false;
-		}
-		if (Bmp.Bitmap) Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap);
-	}
-	// done, success
-	return true;
-}
-
 void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
 {
 	// default: def picture rect
