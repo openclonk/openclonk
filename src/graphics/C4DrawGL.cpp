@@ -595,39 +595,39 @@ bool CStdGL::RestoreDeviceObjects()
 		"varying vec2 texcoord;"
 		"void main()"
 		"{"
-                // Start with the base color
-                "  vec4 primaryColor = gl_Color;"
-                // Get texture
+		// Start with the base color
+		"  vec4 primaryColor = gl_Color;"
+		// Get texture
 		"  if(fUseTexture != 0)"
 		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
-                // Get overlay, if any
-                "  vec4 overlayColor = vec4(1.0, 1.0, 1.0, 0.0);"
-                "  if(fUseOverlay != 0)"
-                "    overlayColor = gl_Color * texture2D(Overlay, texcoord);"
-                // Mix base with overlay, and apply clrmod (separately for base and overlay)
-                "  primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
+		// Get overlay, if any
+		"  vec4 overlayColor = vec4(1.0, 1.0, 1.0, 0.0);"
+		"  if(fUseOverlay != 0)"
+		"    overlayColor = gl_Color * texture2D(Overlay, texcoord);"
+		// Mix base with overlay, and apply clrmod (separately for base and overlay)
+		"  primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
 		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
-                "  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
-                // Add fog of war (light)
+		"  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
+		// Add fog of war (light)
 		"  vec3 lightDir;"
-                "  float lightIntensity;"
+		"  float lightIntensity;"
 
-                "  if(fUseLight != 0)"
-                "  {"
-                "    vec4 lightPx = texture2D(Light, (gl_TextureMatrix[2] * gl_FragCoord).xy);"
+		"  if(fUseLight != 0)"
+		"  {"
+		"    vec4 lightPx = texture2D(Light, (gl_TextureMatrix[2] * gl_FragCoord).xy);"
 		"    lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
-                "    lightIntensity = 2.0 * lightPx.r;"
-                "  }"
-                "  else"
-                "  {"
-                     // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
-                "    lightDir = vec3(0.0, 0.0, 1.0);"
-                "    lightIntensity = 1.0;"
-                "  }"
+		"    lightIntensity = 2.0 * lightPx.r;"
+		"  }"
+		"  else"
+		"  {"
+		     // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
+		"    lightDir = vec3(0.0, 0.0, 1.0);"
+		"    lightIntensity = 1.0;"
+		"  }"
 		// Front-facing normals
 		"  vec3 normal = vec3(0.0, 0.0, 1.0);"
 		"  vec4 lightClr = vec4(vec3(1.0, 1.0, 1.0) * lightIntensity * dot(normal, lightDir), 1.0);"
-                // Final output, depending on blit mode
+		// Final output, depending on blit mode
 		"  if(fMod2 != 0)"
 		"    gl_FragColor = clamp(2.0 * primaryColor * lightClr - 0.5, 0.0, 1.0);"
 		"  else"

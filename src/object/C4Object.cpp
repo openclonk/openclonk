@@ -2022,12 +2022,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (Contained && !eDrawMode) return;
 
 	// Visibility inside FoW
-	bool fOldClrModEnabled = !!(Category & C4D_IgnoreFoW);
-	if (fOldClrModEnabled)
-	{
-		fOldClrModEnabled = pDraw->GetClrModMapEnabled();
-		pDraw->SetClrModMapEnabled(false);
-	}
+	const C4FoWRegion* pOldFoW = pDraw->GetFoW();
+	if(pOldFoW && (Category & C4D_IgnoreFoW))
+		pDraw->SetFoW(NULL);
 
 	// Fire facet - always draw, even if particles are drawn as well
 	if (OnFire && eDrawMode!=ODM_BaseOnly)
@@ -2145,7 +2142,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Debug Display ///////////////////////////////////////////////////////////////////////
 
 	// Restore visibility inside FoW
-	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
+	if (pOldFoW) pDraw->SetFoW(pOldFoW);
 #endif
 }
 

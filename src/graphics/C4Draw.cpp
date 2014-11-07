@@ -205,175 +205,6 @@ DWORD C4GammaControl::ApplyTo(DWORD dwClr)
 
 //--------------------------------------------------------------------
 
-C4FogOfWar::~C4FogOfWar()
-{
-	delete[]pMap; delete pSurface;
-}
-
-void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY, unsigned char StartVis, int x0, int y0, uint32_t dwBackClr, class C4Surface *backsfc)
-{
-	// set values
-	ResolutionX = ResX; ResolutionY = ResY;
-	this->dwBackClr = dwBackClr;
-	this->OffX = -((OffX) % ResolutionX);
-	this->OffY = -((OffY) % ResolutionY);
-	// calc w/h required for map
-	Wdt = (WdtPx - this->OffX + ResolutionX-1) / ResolutionX + 1;
-	Hgt = (HgtPx - this->OffY + ResolutionY-1) / ResolutionY + 1;
-	this->OffX += x0;
-	this->OffY += y0;
-	size_t NewMapSize = Wdt * Hgt;
-	if (NewMapSize > MapSize || NewMapSize < MapSize / 2)
-	{
-		delete [] pMap;
-		pMap = new unsigned char[MapSize = NewMapSize];
-	}
-	if (!pSurface || pSurface->Wdt<Wdt || pSurface->Hgt<Hgt)
-	{
-		delete pSurface;
-		pSurface = new C4Surface(Max(Wdt, Hgt), Max(Wdt, Hgt)); // force larger texture size by making it squared!
-	}
-	// is a background color desired?
-	if (dwBackClr && backsfc)
-	{
-		// then draw a background now and fade against transparent later
-		// FIXME: don't do this if shaders are used
-		pDraw->DrawBoxDw(backsfc, x0,y0, x0+WdtPx-1, y0+HgtPx-1, dwBackClr);
-		FadeTransparent = true;
-	}
-	else
-		FadeTransparent = false;
-	// reset all of map to given values
-	memset(pMap, StartVis, MapSize);
-	pSurface->Lock();
-	pSurface->ClearBoxDw(0, 0, Wdt, Hgt);
-}
-
-C4Surface *C4FogOfWar::GetSurface()
-{
-	if (pSurface->IsLocked())
-	{
-		for (int x = 0; x < Wdt; ++x)
-			for (int y = 0; y < Hgt; ++y)
-				pSurface->SetPixDw(x, y, pMap[y * Wdt + x] << 24 | (dwBackClr & 0xFFFFFF));
-		//pSurface->SetPixDw(x, y, 0x7f000000 + (((0xff*x)/iWdt) << 24) + (((0xff*y)/iHgt) << 16));
-		pSurface->Unlock();
-	}
-	return pSurface;
-}
-
-void C4FogOfWar::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int))
-{
-	// landscape coordinates: cx, cy, VisProc
-	// display coordinates: zx, zy, x, y
-	float zx = float(cx);
-	float zy = float(cy);
-	pDraw->ApplyZoom(zx, zy);
-	Radius = int(pDraw->Zoom * Radius);
-	// reveal all within iRadius1; fade off squared until iRadius2
-	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
-	int RadiusSq = Radius*Radius;
-	for (unsigned int i = 0; i < MapSize; i++)
-	{
-		if ((x-zx)*(x-zx)+(y-zy)*(y-zy) < RadiusSq)
-		{
-			float lx = float(x);
-			float ly = float(y);
-			pDraw->RemoveZoom(lx, ly);
-			pMap[i] = Max<int>(pMap[i], VisProc(255, int(lx), int(ly), int(cx), int(cy)));
-		}
-		// next pos
-		x += ResolutionX;
-		if (x >= xe) { x = OffX; y += ResolutionY; }
-	}
-}
-
-void C4FogOfWar::AddModulation(int cx, int cy, int Radius, uint8_t Transparency)
-{
-	{
-		float x=float(cx); float y=float(cy);
-		pDraw->ApplyZoom(x,y);
-		cx=int(x); cy=int(y);
-	}
-	Radius = int(pDraw->Zoom * Radius);
-	// hide all within iRadius1; fade off squared until iRadius2
-	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
-	int RadiusSq = Radius*Radius;
-	for (unsigned int i = 0; i < MapSize; i++)
-	{
-		int d = (x-cx)*(x-cx)+(y-cy)*(y-cy);
-		if (d < RadiusSq)
-			pMap[i] = Min<uint8_t>(Transparency, pMap[i]);
-		// next pos
-		x += ResolutionX;
-		if (x >= xe) { x = OffX; y += ResolutionY; }
-	}
-}
-
-uint32_t C4FogOfWar::GetModAt(int x, int y) const
-{
-#if 0
-	// fast but inaccurate method
-	x = BoundBy((x - iOffX + iResolutionX/2) / iResolutionX, 0, iWdt-1);
-	y = BoundBy((y - iOffY + iResolutionY/2) / iResolutionY, 0, iHgt-1);
-	return pMap[y * iWdt + x]->dwModClr;
-#else
-	// slower, more accurate method: Interpolate between 4 neighboured modulations
-	x -= OffX;
-	y -= OffY;
-	int tx = BoundBy(x / ResolutionX, 0, Wdt-1);
-	int ty = BoundBy(y / ResolutionY, 0, Hgt-1);
-	int tx2 = Min(tx + 1, Wdt-1);
-	int ty2 = Min(ty + 1, Hgt-1);
-
-	// TODO: Alphafixed. Correct?
-	unsigned char Vis = pMap[ty*Wdt+tx];
-	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
-	Vis = pMap[ty*Wdt+tx2];
-	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
-	Vis = pMap[ty2*Wdt+tx];
-	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
-	Vis = pMap[ty2*Wdt+tx2];
-	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
-	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c2, c3, c4);
-	return clrs.GetColorAt(x, y);
-#endif
-}
-
-// -------------------------------------------------------------------
-
-CColorFadeMatrix::CColorFadeMatrix(int iX, int iY, int iWdt, int iHgt, uint32_t dwClr1, uint32_t dwClr2, uint32_t dwClr3, uint32_t dwClr4)
-		: ox(iX), oy(iY), w(iWdt), h(iHgt)
-{
-	uint32_t dwMask = 0xff;
-	for (int iChan = 0; iChan < 4; (++iChan),(dwMask<<=8))
-	{
-		int c0 = (dwClr1 & dwMask) >> (iChan*8);
-		int cx = (dwClr2 & dwMask) >> (iChan*8);
-		int cy = (dwClr3 & dwMask) >> (iChan*8);
-		int ce = (dwClr4 & dwMask) >> (iChan*8);
-		clrs[iChan].c0 = c0;
-		clrs[iChan].cx = cx - c0;
-		clrs[iChan].cy = cy - c0;
-		clrs[iChan].ce = ce;
-	}
-}
-
-uint32_t CColorFadeMatrix::GetColorAt(int iX, int iY)
-{
-	iX -= ox; iY -= oy;
-	uint32_t dwResult = 0x00;
-	for (int iChan = 0; iChan < 4; ++iChan)
-	{
-		int clr = clrs[iChan].c0 + clrs[iChan].cx * iX / w + clrs[iChan].cy * iY / h;
-		clr += iX*iY * (clrs[iChan].ce - clr) / (w*h);
-		dwResult |= (BoundBy(clr, 0, 255) << (iChan*8));
-	}
-	return dwResult;
-}
-
-// -------------------------------------------------------------------
-
 void C4Draw::Default()
 {
 	RenderTarget=NULL;
@@ -383,8 +214,6 @@ void C4Draw::Default()
 	dwBlitMode = 0;
 	Gamma.Default();
 	DefRamp.Default();
-	// pClrModMap = NULL; - invalid if !fUseClrModMap anyway
-	fUseClrModMap = false;
 	pFoW = NULL;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
 	MeshTransform = NULL;
@@ -398,7 +227,7 @@ void C4Draw::Clear()
 {
 	ResetGamma();
 	DisableGamma();
-	Active=BlitModulated=fUseClrModMap=false;
+	Active=BlitModulated=false;
 	dwBlitMode = 0;
 }
 

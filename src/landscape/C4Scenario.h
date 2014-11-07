@@ -181,7 +181,6 @@ public:
 	char Liquid[C4M_MaxDefName+1];
 	bool KeepMapCreator; // set if the mapcreator will be needed in the scenario (for DrawDefMap)
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
-	int32_t FoWRes; // chunk size of FoGOfWar
 	int32_t MaterialZoom;
 	bool FlatChunkShapes; // if true, all material chunks are drawn flat
 public:

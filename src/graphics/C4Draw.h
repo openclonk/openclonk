@@ -164,7 +164,7 @@ class C4Draw
 public:
 	static const StdMeshMatrix OgreToClonk;
 
-	C4Draw(): MaxTexSize(0), Saturation(255) { }
+	C4Draw(): MaxTexSize(0) { }
 	virtual ~C4Draw() { pDraw=NULL; }
 public:
 	C4AbstractApp * pApp; // the application
@@ -185,10 +185,7 @@ protected:
 	bool BlitModulated;             // set if blits should be modulated with BlitModulateClr
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
-	C4FogOfWar *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
-	bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
 	const C4FoWRegion* pFoW;     // new-style FoW
-	unsigned char Saturation;   // if < 255, an extra filter is used to reduce the saturation
 	int ZoomX; int ZoomY;
 	const StdMeshMatrix* MeshTransform; // Transformation to apply to mesh before rendering
 	bool fUsePerspective;
@@ -275,12 +272,8 @@ public:
 	bool GetBlitModulation(DWORD &rdwColor) { rdwColor=BlitModulateClr; return BlitModulated; }
 	void SetBlitMode(DWORD dwBlitMode) { this->dwBlitMode=dwBlitMode & C4GFXBLIT_ALL; } // set blit mode extra flags (additive blits, mod2-modulation, etc.)
 	void ResetBlitMode() { dwBlitMode=0; }
-	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
-	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
-	bool GetClrModMapEnabled() const { return fUseClrModMap; }
 	void SetFoW(const C4FoWRegion* fow) { pFoW = fow; }
 	const C4FoWRegion* GetFoW() const { return pFoW; }
-	unsigned char SetSaturation(unsigned char s) { unsigned char o = Saturation; Saturation = s; return o; }
 	void SetZoom(int X, int Y, float Zoom);
 	void SetZoom(const ZoomData &zoom) { SetZoom(zoom.X, zoom.Y, zoom.Zoom); }
 	void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
