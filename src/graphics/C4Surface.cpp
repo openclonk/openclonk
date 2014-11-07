@@ -87,6 +87,7 @@ void C4Surface::Default()
 	fPrimary=false;
 	ppTex=NULL;
 	pMainSfc=NULL;
+	pNormalSfc=NULL;
 #ifndef USE_CONSOLE
 	pCtx=NULL;
 #endif
@@ -121,6 +122,7 @@ void C4Surface::MoveFrom(C4Surface *psfcFrom)
 	fPrimary=psfcFrom->fPrimary; // shouldn't be true!
 	ppTex=psfcFrom->ppTex;
 	pMainSfc=psfcFrom->pMainSfc;
+	pNormalSfc=psfcFrom->pNormalSfc;
 	ClrByOwnerClr=psfcFrom->ClrByOwnerClr;
 	iTexSize=psfcFrom->iTexSize;
 	iTexX=psfcFrom->iTexX; iTexY=psfcFrom->iTexY;

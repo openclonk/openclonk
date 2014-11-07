@@ -150,14 +150,14 @@ public:
 	void TaskOut();
 #endif
 	// Blit
-	void SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr);
-	void ResetMultiBlt(GLuint baseTex, GLuint overlayTex);
+	void SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr);
+	void ResetMultiBlt(GLuint baseTex, GLuint overlayTex, GLuint normalTex);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices);
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width);
-	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayClrMod);
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects

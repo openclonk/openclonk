@@ -286,7 +286,7 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 	return RestoreDeviceObjects();
 }
 
-void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr)
+void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr)
 {
 	// Initialize multi blit shader.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
@@ -297,16 +297,19 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 	GLint fUseLightLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseLight");
 	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
 	GLint fUseOverlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseOverlay");
+	GLint fUseNormalLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseNormal");
 	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
 	GLint overlayClrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "overlayClrMod");
 	GLint lightLocation = glGetUniformLocationARB(multi_blt_program->Program, "Light");
 	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "Texture");
 	GLint overlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "Overlay");
+	GLint normalLocation = glGetUniformLocationARB(multi_blt_program->Program, "Normal");
 
 	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
 	const int fUseLight = (pFoW != NULL);
 	const int fUseTexture = (baseTex != 0);
 	const int fUseOverlay = (overlayTex != 0);
+	const int fUseNormal = (normalTex != 0);
 	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 	const float dwMod[4] = {
 		((dwModClr >> 16) & 0xff) / 255.0f,
@@ -326,7 +329,16 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 	glUniform1iARB(fUseLightLocation, fUseLight);
 	glUniform1iARB(fUseTextureLocation, fUseTexture);
 	glUniform1iARB(fUseOverlayLocation, fUseOverlay);
+	glUniform1iARB(fUseNormalLocation, fUseNormal);
 	glUniform4fvARB(clrModLocation, 1, dwMod);
+
+	if(fUseNormal)
+	{
+		glActiveTexture(GL_TEXTURE3);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, normalTex);
+		glUniform1iARB(normalLocation, 3);
+	}
 
 	if(fUseLight)
 	{
@@ -380,9 +392,10 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 	}
 }
 
-void CStdGL::ResetMultiBlt(GLuint baseTex, GLuint overlayTex)
+void CStdGL::ResetMultiBlt(GLuint baseTex, GLuint overlayTex, GLuint normalTex)
 {
 	glPopMatrix();
+	if(normalTex != 0) { glActiveTexture(GL_TEXTURE3); glDisable(GL_TEXTURE_2D); }
 	if(pFoW != NULL) { glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
 	if(overlayTex != 0) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
 	glActiveTexture(GL_TEXTURE0);
@@ -401,7 +414,7 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glTranslatef(0.5f, 0.5f, 0.0f);
 
 	// Feed the vertices to the GL
-	SetupMultiBlt(NULL, 0, 0, 0);
+	SetupMultiBlt(NULL, 0, 0, 0, 0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -422,7 +435,7 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glPopMatrix();
 
-	ResetMultiBlt(0, 0);
+	ResetMultiBlt(0, 0, 0);
 }
 
 void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
@@ -474,7 +487,7 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	}
 
 	// Then, feed the vertices to the GL
-	SetupMultiBlt(NULL, lines_tex, 0, 0);
+	SetupMultiBlt(NULL, lines_tex, 0, 0, 0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -490,17 +503,17 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	ResetMultiBlt(lines_tex, 0);
+	ResetMultiBlt(lines_tex, 0, 0);
 }
 
-void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayModClr)
+void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayModClr)
 {
 	// Only direct rendering
 	assert(sfcTarget->IsRenderTarget());
 	if(!PrepareRendering(sfcTarget)) return;
 
 	// Feed the vertices to the GL
-	SetupMultiBlt(pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, dwOverlayModClr);
+	SetupMultiBlt(pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -521,7 +534,7 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	if(pTex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	ResetMultiBlt(pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0);
+	ResetMultiBlt(pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0);
 }
 
 bool CStdGL::RestoreDeviceObjects()
@@ -587,11 +600,13 @@ bool CStdGL::RestoreDeviceObjects()
 		"uniform int fUseLight;"
 		"uniform int fUseTexture;"
 		"uniform int fUseOverlay;"
+		"uniform int fUseNormal;"
 		"uniform vec4 clrMod;"
 		"uniform vec4 overlayClrMod;"
 		"uniform sampler2D Texture;"
 		"uniform sampler2D Overlay;"
 		"uniform sampler2D Light;"
+		"uniform sampler2D Normal;"
 		"varying vec2 texcoord;"
 		"void main()"
 		"{"
@@ -609,24 +624,36 @@ bool CStdGL::RestoreDeviceObjects()
 		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
 		"  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
 		// Add fog of war (light)
-		"  vec3 lightDir;"
+		"  vec3 lightDir, normalDir;"
 		"  float lightIntensity;"
 
 		"  if(fUseLight != 0)"
 		"  {"
 		"    vec4 lightPx = texture2D(Light, (gl_TextureMatrix[2] * gl_FragCoord).xy);"
-		"    lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
-		"    lightIntensity = 2.0 * lightPx.r;"
+                "    if(fUseNormal != 0)"
+                "    {"
+		"      lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
+                // Overwrite Z component of normal with 0.3 -- might make this configurable later
+                "      vec4 normalPx = texture2D(Normal, texcoord);"
+                "      normalDir = normalize(vec3( (normalPx.xy - vec2(0.5, 0.5))*2.0, 0.3));"
+		"      lightIntensity = 2.0 * lightPx.r;"
+                "    }"
+                "    else"
+                "    {"
+                // No normal map -- front-facing light and normals, only take light intensity into account
+		"      lightDir = vec3(0.0, 0.0, 1.0);"
+		"      normalDir = vec3(0.0, 0.0, 1.0);"
+		"      lightIntensity = lightPx.r;"
+		"    }"
 		"  }"
 		"  else"
 		"  {"
 		     // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
 		"    lightDir = vec3(0.0, 0.0, 1.0);"
+		"    normalDir = vec3(0.0, 0.0, 1.0);"
 		"    lightIntensity = 1.0;"
 		"  }"
-		// Front-facing normals
-		"  vec3 normal = vec3(0.0, 0.0, 1.0);"
-		"  vec4 lightClr = vec4(vec3(1.0, 1.0, 1.0) * lightIntensity * dot(normal, lightDir), 1.0);"
+		"  vec4 lightClr = vec4(vec3(1.0, 1.0, 1.0) * lightIntensity * dot(normalDir, lightDir), 1.0);"
 		// Final output, depending on blit mode
 		"  if(fMod2 != 0)"
 		"    gl_FragColor = clamp(2.0 * primaryColor * lightClr - 0.5, 0.0, 1.0);"

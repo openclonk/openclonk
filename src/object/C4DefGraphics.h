@@ -51,7 +51,7 @@ public:
 	{
 		struct
 		{
-			C4Surface *Bitmap, *BitmapClr;
+			C4Surface *Bitmap, *BitmapClr, *BitmapNormal;
 		} Bmp;
 		StdMesh *Mesh;
 	};
@@ -63,7 +63,7 @@ public:
 	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor
 
-	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
+	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, const char *szNormal, bool fColorByOwner); // load specified graphics from group
 	bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	bool LoadMesh(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
 	bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group

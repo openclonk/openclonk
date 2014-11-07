@@ -508,11 +508,15 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 				pBaseTex = *(sfcSource->pMainSfc->ppTex + iY * sfcSource->iTexX + iX);
 			}
 
+			C4TexRef* pNormalTex = NULL;
+			if (sfcSource->pNormalSfc)
+				pNormalTex = *(sfcSource->pNormalSfc->ppTex + iY * sfcSource->iTexX + iX);
+
 			// ClrByOwner is always fully opaque
 			DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
 			if (BlitModulated && !(dwBlitMode & C4GFXBLIT_CLRSFC_OWNCLR))
 				ModulateClr(dwOverlayClrMod, BlitModulateClr);
-			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, dwOverlayClrMod);
+			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod);
 		}
 	}
 	// success
@@ -813,7 +817,7 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 	DwTo4UB(dwClr4, vertices[3].color);
 	vertices[4] = vertices[0];
 	vertices[5] = vertices[2];
-	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, 0);
+	PerformMultiTris(sfcTarget, vertices, 6, NULL, NULL, NULL, NULL, 0);
 }
 
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
