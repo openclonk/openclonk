@@ -343,8 +343,8 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 		}
 	}
 
-	pDraw->PerformMultiPix(cgo.Surface, &pixVtx[0], pixVtx.size());
-	pDraw->PerformMultiLines(cgo.Surface, &lineVtx[0], lineVtx.size(), 1.0f);
+	if(!pixVtx.empty()) pDraw->PerformMultiPix(cgo.Surface, &pixVtx[0], pixVtx.size());
+	if(!lineVtx.empty()) pDraw->PerformMultiLines(cgo.Surface, &lineVtx[0], lineVtx.size(), 1.0f);
 
 	// PXS graphics disabled?
 	if (!Config.Graphics.PXSGfx)

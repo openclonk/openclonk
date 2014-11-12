@@ -2283,29 +2283,33 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	// However, the block would no longer be equal to where it came from.
 	x.x -= fixtof(Obj->fix_x);
 	x.y -= fixtof(Obj->fix_y);
-	// Finally, apply DrawTransform to the world coordinates
-	StdMeshMatrix DrawTransform;
+	// Finally, apply DrawTransform to the world coordinates,
+	// and incorporate object rotation into the transformation
+	C4DrawTransform draw_transform;
 	if(Obj->pDrawTransform)
 	{
-		C4DrawTransform transform(*Obj->pDrawTransform, fixtof(Obj->fix_x), fixtof(Obj->fix_y));
-
-		DrawTransform(0, 0) = transform.mat[0];
-		DrawTransform(0, 1) = transform.mat[1];
-		DrawTransform(0, 2) = 0.0f;
-		DrawTransform(0, 3) = transform.mat[2];
-		DrawTransform(1, 0) = transform.mat[3];
-		DrawTransform(1, 1) = transform.mat[4];
-		DrawTransform(1, 2) = 0.0f;
-		DrawTransform(1, 3) = transform.mat[5];
-		DrawTransform(2, 0) = 0.0f;
-		DrawTransform(2, 1) = 0.0f;
-		DrawTransform(2, 2) = 1.0f;
-		DrawTransform(2, 3) = 0.0f;
+		draw_transform.SetTransformAt(*Obj->pDrawTransform, fixtof(Obj->fix_x), fixtof(Obj->fix_y));
+		draw_transform.Rotate(fixtof(Obj->fix_r), 0.0f, 0.0f);
 	}
 	else
 	{
-		DrawTransform = StdMeshMatrix::Identity();
+		draw_transform.SetRotate(fixtof(Obj->fix_r), 0.0f, 0.0f);
 	}
+
+	StdMeshMatrix DrawTransform;
+	DrawTransform(0, 0) = draw_transform.mat[0];
+	DrawTransform(0, 1) = draw_transform.mat[1];
+	DrawTransform(0, 2) = 0.0f;
+	DrawTransform(0, 3) = draw_transform.mat[2];
+	DrawTransform(1, 0) = draw_transform.mat[3];
+	DrawTransform(1, 1) = draw_transform.mat[4];
+	DrawTransform(1, 2) = 0.0f;
+	DrawTransform(1, 3) = draw_transform.mat[5];
+	DrawTransform(2, 0) = 0.0f;
+	DrawTransform(2, 1) = 0.0f;
+	DrawTransform(2, 2) = 1.0f;
+	DrawTransform(2, 3) = 0.0f;
+
 	x = DrawTransform * x;
 	dir = DrawTransform * dir;
 	x.x += DrawTransform(0,3);
