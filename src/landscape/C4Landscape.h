@@ -116,14 +116,14 @@ public:
 	bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT, bool fDrawBridge);
 	bool DrawPolygon(int *vtcs, int length, const char *szMaterial, bool bIFT, bool fDrawBridge);
 	CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
-	inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
+	inline BYTE _GetPix(int32_t x, int32_t y) const // get landscape pixel (bounds not checked)
 	{
 #ifdef _DEBUG
 		if (x<0 || y<0 || x>=Width || y>=Height) { BREAKPOINT_HERE; }
 #endif
 		return Surface8->_GetPix(x,y);
 	}
-	inline BYTE GetPix(int32_t x, int32_t y) // get landscape pixel (bounds checked)
+	inline BYTE GetPix(int32_t x, int32_t y) const // get landscape pixel (bounds checked)
 	{
 		extern BYTE MCVehic;
 		// Border checks
