@@ -1,11 +1,11 @@
 
 #include "C4Include.h"
 #include "C4FoWLightSection.h"
+#include "C4FoWBeamTriangle.h"
 #include "C4FoWBeam.h"
 #include "C4FoWLight.h"
 #include "C4FoWRegion.h"
 #include "C4Landscape.h"
-#include "C4DrawGL.h"
 
 #include "float.h"
 
@@ -44,11 +44,7 @@ bool find_cross(float x1, float y1, float x2, float y2,
 	return true;
 }
 
-const float C4FoWSmooth = 8.0;
-
-
-C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r, C4FoWLightSection *pNext)
-	: pLight(pLight), iRot(r), pNext(pNext)
+C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r) : pLight(pLight), iRot(r)
 {
 	// Rotation matrices
 	iRot = r % 360;
@@ -81,6 +77,20 @@ C4FoWLightSection::~C4FoWLightSection()
 	ClearBeams();
 }
 
+inline void C4FoWLightSection::LightBallExtremePoint(float x, float y, float dir, float &lightX, float &lightY) const
+{
+	float d = sqrt(x * x + y * y);
+	float s = Min(float(pLight->getSize()), d / 5.0f);
+	lightX = dir * y * s / d;
+	lightY = dir * -x * s / d;
+}
+
+inline void C4FoWLightSection::LightBallRightMostPoint(float x, float y, float &lightX, float &lightY) const
+	{ LightBallExtremePoint(x,y,+1.0f,lightX,lightY); }
+
+inline void C4FoWLightSection::LightBallLeftMostPoint(float x, float y, float &lightX, float &lightY) const
+	{ LightBallExtremePoint(x,y,-1.0f,lightX,lightY); }
+
 void C4FoWLightSection::ClearBeams()
 {
 	while (C4FoWBeam *pBeam = pBeams) {
@@ -96,7 +106,7 @@ void C4FoWLightSection::Prune(int32_t iReach)
 		pBeams = new C4FoWBeam(-1, 1, 1, 1);
 		return;
 	}
-	// TODO: Merge active beams that we have pruned to same length
+	// TODO PeterW: Merge active beams that we have pruned to same length
 	for (C4FoWBeam *pBeam = pBeams; pBeam; pBeam = pBeam->getNext())
 		pBeam->Prune(iReach);
 }
@@ -232,7 +242,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 			// Do a scan
 			int32_t xl = Max(pBeam->getLeftX(y), Bounds.x),
 			        xr = Min(pBeam->getRightX(y), Bounds.x+Bounds.Wdt-1);
-			for(int x = xl; x <= xr; x++) {
+			for(int32_t x = xl; x <= xr; x++) {
 
 				// Fast free?
 				if (!Landscape._FastSolidCheck(transX(x,y), transY(x,y)))
@@ -246,7 +256,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 				if (!GBackSolid(transX(x,y), transY(x,y))) continue;
 
 				// Split points
-				int x1 = x - 1, x2 = x + 1;
+				int32_t x1 = x - 1, x2 = x + 1;
 				bool fSplitLeft = !pBeam->isLeft(x1, y);
 				bool fSplitRight = !pBeam->isRight(x2, y);
 
@@ -395,12 +405,14 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &pInRect, C4FoWBeam *&p
 	return iBeamCount;
 }
 
-void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
+std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *pRegion)
 {
 	C4FoWBeam *pStart = NULL, *pEnd = NULL;
 	int32_t iBeamCount = FindBeamsClipped(rtransRect(pRegion->getRegion()), pStart, pEnd);
 	// no beams inside the rectangle? Good, nothing to render 
-	if(!iBeamCount) return;
+	std::list<C4FoWBeamTriangle> result;
+	if(!iBeamCount) return result;
+
 	int32_t iOriginalBeamCount = iBeamCount;
 
 	// Allocate array for our points (lots of them)
@@ -411,9 +423,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		  *gFadeLX = gFanRY + iBeamCount,
 		  *gFadeLY = gFadeLX + iBeamCount,
 		  *gFadeRX = gFadeLY + iBeamCount,
-		  *gFadeRY = gFadeRX + iBeamCount,
-		  *gFadeIX = gFadeRY + iBeamCount,
-		  *gFadeIY = gFadeIX + iBeamCount;
+		  *gFadeRY = gFadeRX + iBeamCount;
 	int32_t i;
 	C4FoWBeam *pBeam = pStart;
 	for (i = 0, pBeam = pStart; i < iBeamCount; i++, pBeam = pBeam->getNext()) {
@@ -447,16 +457,6 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
 				continue;
 
-			// Debugging
-			// #define FAN_STEP_DEBUG
-#ifdef FAN_STEP_DEBUG
-			LogSilentF("Fan step %d (i=%d)", iStep, i);
-			for (j = 0; j < iBeamCnt; j++) {
-				LogSilentF(" %.02f %.02f", gFanLX[j], gFanLY[j]);
-				LogSilentF(" %.02f %.02f", gFanRX[j], gFanRY[j]);	
-			}
-#endif
-
 			// Calculate light bounds. We assume a "smaller" light for closer beams
 			float gLightLX, gLightLY, gLightRX, gLightRY;
 			LightBallLeftMostPoint(gFanRX[i], gFanRY[i], gLightLX, gLightLY);
@@ -472,7 +472,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 				if (  (gFanRY[i] - gFanLY[i]) * (gFanLX[i+1] - gLightRX) >=
 					  (gFanRX[i] - gFanLX[i]) * (gFanLY[i+1] - gLightRY)) {
 
-					// Reduce to upper point (Yep, we now that the upper point
+					// Reduce to upper point (Yep, we know that the upper point
 					// must be the right one. Try to figure out why!)
 					assert(gFanRY[i] <= gFanLY[i]);
 					gFanLX[i] = gFanRX[i];
@@ -634,9 +634,6 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 	} // end for (int iStep = 0; iStep < 100000; iStep++) loop
 
 	// Phase 2: Calculate fade points
-#ifdef FAN_STEP_DEBUG
-	LogSilent("Fade points");
-#endif // FAN_STEP_DEBUG
 	for (i = 0; i < iBeamCount; i++) {
 
 		// Calculate light bounds. Note that the way light size is calculated
@@ -650,7 +647,8 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		// right-most light point.
 
 		// For once we actually calculate this using the real distance
-		float dx = gFanLX[i] - gLightLX, dy = gFanLY[i] - gLightLY;
+		float dx = gFanLX[i] - gLightLX;
+		float dy = gFanLY[i] - gLightLY;
 		float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
 		gFadeLX[i] = gFanLX[i] + d * dx;
 		gFadeLY[i] = gFanLY[i] + d * dy;
@@ -671,306 +669,37 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 		}
 
-#ifdef FAN_STEP_DEBUG
-		LogSilentF(" %.02f %.02f", gFadeLX[i], gFadeLY[i]);
-		LogSilentF(" %.02f %.02f", gFadeRX[i], gFadeRY[i]);
-#endif
 	}
 
-	// Phase 3: Calculate intermediate fade point
-#ifdef FAN_STEP_DEBUG
-	LogSilent("Intermediate points");
-#endif // FAN_STEP_DEBUG
-#define NEWER_INTER_FADE_CODE
-//#define NEW_INTER_FADE_CODE
-#ifdef NEWER_INTER_FADE_CODE
-	pBeam = pStart;
-#endif
-	bool *fAscend = new bool[iBeamCount];
-	for (i = 0; i+1 < iBeamCount; i++) {
-
-		// Calculate light bounds. We assume a "smaller" light for closer beams
-		float gLightLX, gLightLY, gLightRX, gLightRY;
-		LightBallLeftMostPoint(gFanLX[i+1], gFanLY[i+1], gLightRX, gLightRY);
-		LightBallRightMostPoint(gFanRX[i], gFanRY[i], gLightLX, gLightLY);
-
-#ifdef NEWER_INTER_FADE_CODE
-		// Midpoint
-		float mx = (gFadeRX[i] + gFadeLX[i+1]) / 2,
-		      my = (gFadeRY[i] + gFadeLY[i+1]) / 2;
-		while (pBeam->getNext() && pBeam->isRight(mx, my))
-			pBeam = pBeam->getNext();
-#endif
-
-		// Ascending?
-		fAscend[i] = gFanRY[i] > gFanLY[i+1];
-		if (gFanRY[i] > gFanLY[i+1]) {
-
-#ifdef NEWER_INTER_FADE_CODE
-
-			float dx, dy;
-			find_cross(0,0, mx, my,
-			           pBeam->getLeftEndXf(), pBeam->getLeftEndY(), pBeam->getRightEndXf(), pBeam->getRightEndY(),
-					   &dx, &dy);
-			float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
-			gFadeIX[i] = mx + d * dx;
-			gFadeIY[i] = my + d * dy;
-			if (gFadeRY[i] < gFadeIY[i]) {
-				gFadeIX[i] = gFadeLX[i+1];
-				gFadeIY[i] = gFadeLY[i+1];
-			}
-
-#elif defined(NEW_INTER_FADE_CODE)
-
-			// Fade intermediate point is on the left side
-			float dx = gFanRX[i] - gLightLX;
-			float dy = gFanRY[i] - gLightLY;
-			float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
-			gFadeIX[i] = gFanRX[i] + d * dx;
-			gFadeIY[i] = gFanRY[i] + d * dy;
-
-#else
-			// Fade intermediate point is on the right side
-			gFadeIX[i] = gFadeLX[i+1];
-			gFadeIY[i] = gFadeLY[i+1];
-			
-			// Project on left beam's height where necessary
-			if (gFadeIY[i] < gFanRY[i]) {
-				float d = (gFanRY[i] - gFadeIY[i]) / (gFadeIY[i] - gLightY);
-				gFadeIX[i] += d * (gFadeIX[i] - gLightRX);
-				gFadeIY[i] = gFanRY[i];
-			}
-#endif
-
-		// Descending?
-		} else {
-
-#ifdef NEWER_INTER_FADE_CODE
-
-			float dx, dy;
-			find_cross(0,0, mx,my,
-			           pBeam->getLeftEndXf(), pBeam->getLeftEndY(), pBeam->getRightEndXf(), pBeam->getRightEndY(),
-					   &dx, &dy);
-			float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy) / 2;
-			gFadeIX[i] = mx + d * dx;
-			gFadeIY[i] = my + d * dy;
-			if (gFadeLY[i+1] < gFadeIY[i]) {
-				gFadeIX[i] = gFadeRX[i];
-				gFadeIY[i] = gFadeRY[i];
-			}
-
-#elif defined(NEW_INTER_FADE_CODE)
-			
-			// Fade intermediate point is on the right side
-			float dx = gFanLX[i+1] - gLightRX;
-			float dy = gFanLY[i+1] - gLightRY;
-			float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
-			gFadeIX[i] = gFanLX[i+1] + d * dx;
-			gFadeIY[i] = gFanLY[i+1] + d * dy;
-
-#else
-			// Fade intermediate point is on the left side
-			gFadeIX[i] = gFadeRX[i];
-			gFadeIY[i] = gFadeRY[i];
-			
-			// Project on right beam's height where necessary
-			if (gFadeIY[i] < gFanLY[i+1]) {
-				float d = (gFanLY[i+1] - gFadeIY[i]) / (gFadeIY[i] - gLightY);
-				gFadeIX[i] += d * (gFadeIX[i] - gLightLX);
-				gFadeIY[i] = gFanLY[i+1];
-			}
-#endif
-
-		}
-
-#ifdef FAN_STEP_DEBUG
-		LogSilentF(" %.02f %.02f", gFadeIX[i], gFadeIY[i]);
-#endif // FAN_STEP_DEBUG
-	}
-
-	// Phase 4: Transform all points into region coordinates
-	for (i = 0; i < 5; i++) {
+	// Phase 4: Transform all points into global coordinates
+	for (i = 0; i < 4; i++) {
 		float *pX = gFanLX + 2 * i * iOriginalBeamCount,
 			  *pY = gFanLY + 2 * i * iOriginalBeamCount;
 		for (int32_t j = 0; j < iBeamCount; j++) {
 			float x = pX[j], y = pY[j];
-			if (pOnScreen)
-			{
-				pX[j] = float(pOnScreen->X) + transX(x, y) - pOnScreen->TargetX,
-				pY[j] = float(pOnScreen->Y) + transY(x, y) - pOnScreen->TargetY;
-				pGL->ApplyZoom(pX[j], pY[j]);
-			}
-			else
-			{
-				pX[j] = transX(x, y) - pRegion->getRegion().x;
-				pY[j] = transY(x, y) - pRegion->getRegion().y;
-			}
+			pX[j] = transX(x, y);
+			pY[j] = transY(x, y);
 		}
 	}
 
-	// Calculate position of the light in the buffer
-	float gLightX = transX(0,0) - pRegion->getRegion().x,
-	      gLightY = transY(0,0) - pRegion->getRegion().y;
-
-	// Here's the master plan for updating the lights texture. We
-	// want to add intensity (R channel) as well as the normal (GB channels).
-	// Normals are obviously meant to be though of as signed, though,
-	// so the equation we want would be something like
-	//
-	//  R_new = BoundBy(R_old + R,       0.0, 1.0)
-	//  G_new = BoundBy(G_old + G - 0.5, 0.0, 1.0)
-	//  B_new = BoundBy(B_old + B - 0.5, 0.0, 1.0)
-	//
-	// It seems we can't get that directly though - glBlendFunc only talks
-	// about two operands. Even if we make two passes, we have to take
-	// care that that we don't over- or underflow in the intermediate pass.
-	//
-	// Therefore, we store G/1.5 instead of G, losing a bit of accuracy,
-	// but allowing us to formulate the following approximation without
-	// overflows:
-	//
-	//  G_new = BoundBy(BoundBy(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
-	//  B_new = BoundBy(BoundBy(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
-
-	// Two passes
-	for(int iPass = 0; iPass < (pOnScreen ? 1 : 2); iPass++) {  
-
-		// Pass 2: Subtract
-		if (!pOnScreen && iPass == 1) {
-			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-			glBlendFunc(GL_ONE, GL_ONE);
-		}
-
-		// Help me! My brain can't program without local function definitions anymore!
-		#define VERTEX(x,y,light)                                        \
-			if(pOnScreen) {                                              \
-				if(light)       glColor3f(1.0f, 0.0f, 0.0f);             \
-				else            glColor3f(0.5f, 0.5f, 0.0f);             \
-			} else if(iPass == 0) {                                      \
-			    float dx = (x) - gLightX, dy = (y) - gLightY;            \
-				float gDist = sqrt(dx*dx+dy*dy);                         \
-				float gMult = Min(0.5f / pLight->getSize(), 0.5f / gDist); \
-				float gNormX = (0.5f + dx * gMult) / 1.5f / C4FoWSmooth; \
-				float gNormY = (0.5f + dy * gMult) / 1.5f / C4FoWSmooth; \
-				if(light)       glColor3f(0.5f/C4FoWSmooth, gNormX, gNormY);         \
-				else            glColor3f(0.0f, gNormX, gNormY);         \
-			} else              glColor3f(0.0f, 0.5f/1.5f/C4FoWSmooth, 0.5f/1.5f/C4FoWSmooth);   \
-			glVertex2f(x,y)
-		#define DARK(x,y) VERTEX(x,y,false)
-		#define LIGHT(x,y) VERTEX(x,y,true)
-		#define BEGIN_TRIANGLE                                           \
-			if(pOnScreen) glBegin(GL_LINE_LOOP)
-		#define END_TRIANGLE                                             \
-			if(pOnScreen) glEnd()
-
-		// Draw the fan
-		glShadeModel(GL_SMOOTH);
-		glBegin(pOnScreen ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
-		if (!pOnScreen) {
-			LIGHT(gLightX, gLightY);
-		}
-		for (i = 0; i < iBeamCount; i++) {
-			if (i == 0 || gFanRX[i-1] != gFanLX[i] || gFanRY[i-1] != gFanLY[i]) {
-				LIGHT(gFanLX[i], gFanLY[i]);
-			}
-			if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
-				LIGHT(gFanRX[i], gFanRY[i]);
-			}
-		}
-		glEnd();
-
-		// Draw the fade
-		glShadeModel(GL_SMOOTH);
-		if(!pOnScreen) glBegin(GL_TRIANGLES);
-
-		for (i = 0; i < iBeamCount; i++) {
-
-			// The quad. Will be empty if fan points match
-			if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
-
-				// upper triangle
-				BEGIN_TRIANGLE;
-				LIGHT(gFanLX[i], gFanLY[i]);
-				LIGHT(gFanRX[i], gFanRY[i]);
-				DARK(gFadeLX[i], gFadeLY[i]);
-				END_TRIANGLE;
-
-				// lower triangle, if necessary
-				if (gFadeLX[i] != gFadeRX[i] || gFadeLY[i] != gFadeRY[i]) {
-					BEGIN_TRIANGLE;
-					LIGHT(gFanRX[i], gFanRY[i]);
-					DARK(gFadeRX[i], gFadeRY[i]);
-					DARK(gFadeLX[i], gFadeLY[i]);
-					END_TRIANGLE;
-				}
-			}
-
-			// No intermediate fade for last point
-			if (i+1 >= iBeamCount) continue;
-
-			// Ascending?
-			if (fAscend[i]) {
-
-				// Lower fade triangle
-				BEGIN_TRIANGLE;
-				LIGHT(gFanRX[i], gFanRY[i]);
-				DARK(gFadeIX[i], gFadeIY[i]);
-				DARK(gFadeRX[i], gFadeRY[i]);
-				END_TRIANGLE;
-
-				// Intermediate fade triangle, if necessary
-				if (gFadeIY[i] != gFadeLY[i+1]) {
-					BEGIN_TRIANGLE;
-					LIGHT(gFanRX[i], gFanRY[i]);
-					DARK(gFadeLX[i+1], gFadeLY[i+1]);
-					DARK(gFadeIX[i], gFadeIY[i]);
-					END_TRIANGLE;
-				}
-
-				// Upper fade triangle
-				BEGIN_TRIANGLE;
-				LIGHT(gFanRX[i], gFanRY[i]);
-				LIGHT(gFanLX[i+1], gFanLY[i+1]);
-				DARK(gFadeLX[i+1], gFadeLY[i+1]);
-				END_TRIANGLE;
-
-			// Descending?
-			} else {
-
-				// Lower fade triangle
-				BEGIN_TRIANGLE;
-				LIGHT(gFanLX[i+1], gFanLY[i+1]);
-				DARK(gFadeLX[i+1], gFadeLY[i+1]);
-				DARK(gFadeIX[i], gFadeIY[i]);
-				END_TRIANGLE;
-
-				// Intermediate fade triangle, if necessary
-				if (gFadeIY[i] != gFadeRY[i]) {
-					BEGIN_TRIANGLE;
-					LIGHT(gFanLX[i+1], gFanLY[i+1]);
-					DARK(gFadeIX[i], gFadeIY[i]);
-					DARK(gFadeRX[i], gFadeRY[i]);
-					END_TRIANGLE;
-				}
-
-				// Upper fade triangle
-				BEGIN_TRIANGLE;
-				LIGHT(gFanLX[i+1], gFanLY[i+1]);
-				DARK(gFadeRX[i], gFadeRY[i]);
-				LIGHT(gFanRX[i], gFanRY[i]);
-				END_TRIANGLE;
-
-			}
-		}
-		if (!pOnScreen)
-			glEnd(); // GL_TRIANGLES
+	for (i = 0; i < iBeamCount; i++)
+	{
+		C4FoWBeamTriangle triangle = C4FoWBeamTriangle();
+		triangle.fanLX = gFanLX[i];
+		triangle.fanLY = gFanLY[i];
+		triangle.fanRX = gFanRX[i];
+		triangle.fanRY = gFanRY[i];
+		triangle.fadeLX = gFadeLX[i];
+		triangle.fadeLY = gFadeLY[i];
+		triangle.fadeRX = gFadeRX[i];
+		triangle.fadeRY = gFadeRY[i];
+		triangle.clipLeft = false; // TODO Newton: pBeams.start != pStart
+		triangle.clipRight = false; // TODO Newton: pBeams.end != pEnd
+		result.push_back(triangle);
 	}
 
 	delete[] gFanLX;
-	delete[] fAscend;
-	
-	// Reset GL state
-	glBlendEquation(GL_FUNC_ADD);
 
+	return result;
 }
 

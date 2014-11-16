@@ -25,7 +25,7 @@ StdStrBuf C4FoWBeam::getDesc() const {
 		fDirty ? "*" : "");
 }
 
-bool C4FoWBeam::MergeRight(int x, int y)
+bool C4FoWBeam::MergeRight(int32_t x, int32_t y)
 {
 	// Note: Right-merging is the most common and most important optimization.
 	// This procedure will probably be *hammered* as a result. Worth inlining?
@@ -50,7 +50,7 @@ bool C4FoWBeam::MergeRight(int x, int y)
 	return true;
 }
 
-bool C4FoWBeam::MergeLeft(int x, int y)
+bool C4FoWBeam::MergeLeft(int32_t x, int32_t y)
 {
 	assert(!isDirty()); assert(isLeft(x, y));
 
@@ -70,7 +70,7 @@ bool C4FoWBeam::MergeLeft(int x, int y)
 	return true;
 }
 
-bool C4FoWBeam::EliminateRight(int x, int y)
+bool C4FoWBeam::EliminateRight(int32_t x, int32_t y)
 {
 	// Called on the beams left of the one getting eliminated
 	C4FoWBeam *pElim = pNext, *pMerge = pNext->pNext;
@@ -97,7 +97,7 @@ bool C4FoWBeam::EliminateRight(int x, int y)
 	return true;
 }
 
-C4FoWBeam *C4FoWBeam::Split(int x, int y)
+C4FoWBeam *C4FoWBeam::Split(int32_t x, int32_t y)
 {
 	// Make sure to never create negative-surface beams
 	assert(isDirty()); assert(isInside(x, y));
@@ -137,7 +137,7 @@ void C4FoWBeam::MergeDirty()
 	delete pWith;
 }
 
-void C4FoWBeam::Clean(int y)
+void C4FoWBeam::Clean(int32_t y)
 {
 	// Search hit something, this beam is now clean.
 	assert(isDirty());
@@ -146,7 +146,7 @@ void C4FoWBeam::Clean(int y)
 	fDirty = false;
 }
 
-void C4FoWBeam::Dirty(int y)
+void C4FoWBeam::Dirty(int32_t y)
 {
 	// Got invalidated, beam is dirty until updated
 	iLeftEndY = y;

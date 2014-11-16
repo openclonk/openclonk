@@ -10,10 +10,9 @@
 	are the positions at which this beam did not hit but merely streaked a solid pixel (= the neighboring beam hits it)
 	and thus continues until *EndX/Y.
 
-	It is assumed that the beam always goes up (in cartesian coordinate system, or down in display coordinate system),
-	thus the Y-position of the delimiting points is always > 0.
-	C4FoWLightSection transforms the coordinate system after calculation to implement the beams that go into other 
-	directions. This class here always assumes one direction.
+	It is assumed that the beam always goes down in display coordinate system, thus the Y-position of the delimiting
+	points is always > 0. C4FoWLightSection transforms the coordinate system after calculation to implement the beams
+	that go into other directions. This class here always assumes one direction.
 
 	A beam is initially marked as "dirty", meaning that the end points of the beam haven't been found yet (by the ray
 	trace algorithm) and the beam will extend further. When all beams are "clean", the algorithm is done.
@@ -58,47 +57,47 @@ public:
 	StdStrBuf getDesc() const;
 
 	/** returns whether the given point is left of an imaginery line drawn from the origin to the left delimiter point (point is left of beam) */
-	bool isLeft(int x, int y) const {
+	bool isLeft(int32_t x, int32_t y) const {
 		return iLeftX * y > x * iLeftY;
 	}
 	
 	/** returns whether the given point is right of an imaginery line drawn from the origin to the right delimiter point (point is right of beam) */
-	bool isRight(int x, int y) const {
+	bool isRight(int32_t x, int32_t y) const {
 		return iRightX * y < x * iRightY;
 	}
 	
 	/** returns whether the given point is inside the triangle that is defined by this beam */
-	bool isInside(int x, int y) const {
+	bool isInside(int32_t x, int32_t y) const {
 		return !isLeft(x, y) && !isRight(x, y);
 	}
 
-	void SetLeft(int x, int y) { iLeftX = x; iLeftY = y; }
-	void SetRight(int x, int y) { iRightX = x; iRightY = y; }
+	void SetLeft(int32_t x, int32_t y) { iLeftX = x; iLeftY = y; }
+	void SetRight(int32_t x, int32_t y) { iRightX = x; iRightY = y; }
 
 	/** Set the new right delimiter point to the given point if the resulting difference in size is less than the error
 	    threshold. If successfull, adds the introduced error to iError.
 
 	    Asserts that the given point is really right of the right delimiter point
 	*/
-	bool MergeRight(int x, int y);
+	bool MergeRight(int32_t x, int32_t y);
 
 	/** Set the new left delimiter point to the given point if the resulting difference in size is less than the error
 	    threshold. If successfull, adds the introduced error to iError.
 
 	    Asserts that the given point is really left of the right delimiter point
 	*/
-	bool MergeLeft(int x, int y);
+	bool MergeLeft(int32_t x, int32_t y);
 	
 	/** Split this beam into two: this beam and the returned one. The given point x,y is the position at
 	    which the two resulting beams are connected with their left/right endpoints.
 	    It is asserted that the given point is inside the previous beam. (So the beam can only made smaller) */
-	C4FoWBeam *Split(int x, int y);
+	C4FoWBeam *Split(int32_t x, int32_t y);
 	/** Makes this beam span from its left delimiter point to the right delimiter point of the next but one beam,
 	    removing the two beams in between in the process.
 	    In other words, removes the next beam and merges this beam with the next but one beam.
 	    Returns false and does not do the action in case the error threshold would be reached.
 	    */
-	bool EliminateRight(int x, int y);
+	bool EliminateRight(int32_t x, int32_t y);
 	
 	void MergeDirty();
 	

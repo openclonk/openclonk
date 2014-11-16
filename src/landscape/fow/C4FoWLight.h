@@ -2,9 +2,10 @@
 #define C4FOWLIGHT_H
 
 #include "C4Object.h"
-#include "C4Rect.h"
 #include "C4Surface.h"
 #include "C4FacetEx.h"
+#include "C4FoWLightSection.h"
+#include "C4Rect.h"
 
 /** This class represents one light source. A light source has an associated object with which the light source moves
     and one light section that handles the light beams for each direction (up, down, left, right).
@@ -23,16 +24,19 @@ private:
 	int32_t iReach; // maximum length of beams
 	int32_t iFadeout; // number of pixels over which beams fade out
 	int32_t iSize; // size of the light source. Decides smoothness of shadows
-	class C4FoWLightSection *pSections;
 	C4FoWLight *pNext;
 	C4Object *pObj; // Associated object
+
+	C4FoWLightSection sectionUp;
+	C4FoWLightSection sectionLeft;
+	C4FoWLightSection sectionDown;
+	C4FoWLightSection sectionRight;
 
 public:
 	int32_t getX() const { return iX; }
 	int32_t getY() const { return iY; }
 	int32_t getReach() const { return iReach; }
 	int32_t getFadeout() const { return iFadeout; }
-	// ASK: the code suggests taht total reach is iReach and iFadeout is subtracted from it, rather than added
 	int32_t getTotalReach() const { return iReach + iFadeout; }
 	int32_t getSize() const { return iSize; }
 	C4FoWLight *getNext() const { return pNext; }
@@ -46,8 +50,22 @@ public:
 	void Invalidate(C4Rect r);
 	/** Update all light beams within the given rectangle for this light */
 	void Update(C4Rect r);
-
+	/** Render this light*/
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+
+private:
+	/** Calculate the intermediate fade points used for constructing the intermediate fade triangles later on */
+	void CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles);
+
+	/** Draws the triangle fan (the area with 100% light around the light source) with the given strategy */
+	void DrawFan(class C4FoWDrawStrategy* pen, std::list<class C4FoWBeamTriangle> &triangles);
+	/** Draws the fadeoot triangles - those around the triangle fan - with the given strategy */
+	void DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	/** Draws the fadeout triangles in between the normal fadeout triangles with the given strategy */
+	void DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	/** Returns the (squared) distance from this light source to the given point. Squared simply because we only need this
+	    for comparison of distances. So we don't bother to sqrt it */
+	float GetSquaredDistanceTo(int32_t x, int32_t y) { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
 
 };
 

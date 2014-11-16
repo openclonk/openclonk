@@ -299,6 +299,9 @@ set(OC_CLONK_SOURCES
 	src/landscape/fow/C4FoWLightSection.h
 	src/landscape/fow/C4FoWRegion.cpp
 	src/landscape/fow/C4FoWRegion.h
+	src/landscape/fow/C4FoWDrawStrategy.cpp
+	src/landscape/fow/C4FoWDrawStrategy.h
+	src/landscape/fow/C4FoWBeamTriangle.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
 	src/landscape/C4LandscapeRenderClassic.cpp

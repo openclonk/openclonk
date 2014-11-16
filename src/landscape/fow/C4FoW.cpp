@@ -4,9 +4,6 @@
 
 #include <float.h>
 
-// TODO: Make sure to use int32_t throughout!
-
-//#define LIGHT_DEBUG
 
 C4FoW::C4FoW()
 	: pLights(NULL)

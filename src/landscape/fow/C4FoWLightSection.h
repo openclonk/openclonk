@@ -2,10 +2,11 @@
 #define C4FOWLIGHTSECTION_H
 
 #include "C4Rect.h"
-#include "C4FoWLight.h"
 
+class C4FoWLight;
 class C4FoWRegion;
 class C4FoWBeam;
+class C4FoWBeamTriangle;
 
 /** The light section manages the beams for one light for one direction of 90°.
     
@@ -16,7 +17,7 @@ class C4FoWBeam;
 class C4FoWLightSection
 {
 public:
-	C4FoWLightSection(C4FoWLight *pLight, int r, C4FoWLightSection *pNext = NULL);
+	C4FoWLightSection(C4FoWLight *pLight, int r);
 	~C4FoWLightSection();
 
 private:
@@ -30,20 +31,17 @@ private:
 	int ra, rb, rc, rd;
 
 	/* This section's beams */
-	class C4FoWBeam *pBeams;
-
-	C4FoWLightSection *pNext;
-
+	C4FoWBeam *pBeams;
+	
 public:
-
-	C4FoWLightSection *getNext() const { return pNext; }
-
+	
 	/** Recalculate of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
 	/** Update all light beams within the given rectangle */
 	void Update(C4Rect r);
 
-	void Render(C4FoWRegion *pRegion, const class C4TargetFacet *pOnScreen = NULL);
+
+	std::list<C4FoWBeamTriangle> CalculateTriangles(C4FoWRegion *pRegion);
 
 	/** Shorten all light beams to the given reach.
 	    Called when the size of the light has decreased to the given value */
@@ -92,23 +90,15 @@ private:
 	inline int32_t RectRightMostX(const C4Rect &r) const { return r.x + r.Wdt; }
 	inline int32_t RectRightMostY(const C4Rect &r) const { return Max(0, r.x + r.Wdt <= 0 ? r.y + r.Hgt : r.y); }
 
-	inline void LightBallExtremePoint(float x, float y, float dir, float &lightX, float &lightY) const
-	{
-		float d = sqrt(x * x + y * y);
-		float s = Min(float(pLight->getSize()), d / 5.0f);
-		lightX = dir * y * s / d;
-		lightY = dir * -x * s / d;
-	}
+	inline void LightBallExtremePoint(float x, float y, float dir, float &lightX, float &lightY) const;
 
 	/** Outputs the rightmost position of the light ball, as seen from the given point. Shrinks the light if it is too close
 	    to work against excessive fades. The light ball is the imaginery size of the light to enable soft shadows. */
-	inline void LightBallRightMostPoint(float x, float y, float &lightX, float &lightY) const
-		{ LightBallExtremePoint(x,y,+1.0f,lightX,lightY); }
+	inline void LightBallRightMostPoint(float x, float y, float &lightX, float &lightY) const;
 
 	/** Outputs the leftmost position of the light ball, as seen from the given point. Shrinks the light if it is too close
 	    to work against excessive fades. The light ball is the imaginery size of the light to enable soft shadows. */
-	inline void LightBallLeftMostPoint(float x, float y, float &lightX, float &lightY) const
-		{ LightBallExtremePoint(x,y,-1.0f,lightX,lightY); }
+	inline void LightBallLeftMostPoint(float x, float y, float &lightX, float &lightY) const;
 
 
 	/** Find right-most beam left of point */
