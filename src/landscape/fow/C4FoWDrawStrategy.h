@@ -87,7 +87,7 @@ public:
 	virtual void EndFan() { C4FoWDrawStrategy::EndFan(); draw = true; };
 
 private:
-	void C4FoWDrawWireframeStrategy::DrawVertex(float x, float y);
+	void DrawVertex(float x, float y);
 
 	const C4FoWLight* light;
 	const C4TargetFacet* screen;
