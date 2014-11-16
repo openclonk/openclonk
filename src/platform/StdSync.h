@@ -135,7 +135,8 @@ public:
 		{
 			// Use pthread_cond_wait or pthread_cond_timedwait depending on wait length. Check return value.
 			// Note this will temporarily unlock the mutex, so no deadlock should occur.
-			timespec ts = { iMillis / 1000, (iMillis % 1000) * 1000000 };
+			timespec ts = { static_cast<time_t>(iMillis / 1000),
+				static_cast<long>((iMillis % 1000) * 1000000) };
 			if (0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
 			{
 				pthread_mutex_unlock(&mutex);
