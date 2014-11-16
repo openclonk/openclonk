@@ -56,16 +56,16 @@ private:
 	void ClearBeams();
 
 	// Beam coordinate to landscape coordinate. Beam coordinates are relative to the light source.
-	template <class T> T transDX(T dx, T dy) const { return T(a) * dx + T(b) * dy; }
-	template <class T> T transDY(T dx, T dy) const { return T(c) * dx + T(d) * dy; }
-	template <class T> T transX(T x, T y) const { return transDX(x, y) + T(pLight->getX()); }
-	template <class T> T transY(T x, T y) const { return transDY(x, y) + T(pLight->getY()); }
+	template <class T> T transDX(T dx, T dy) const;
+	template <class T> T transDY(T dx, T dy) const;
+	template <class T> T transX(T x, T y) const;
+	template <class T> T transY(T x, T y) const;
 
 	// Landscape coordinate to beam coordinate. Beam coordinates are relative to the light source.
-	template <class T> T rtransDX(T dx, T dy) const { return T(ra) * dx + T(rb) * dy; }
-	template <class T> T rtransDY(T dx, T dy) const { return T(rc) * dx + T(rd) * dy; }
-	template <class T> T rtransX(T x, T y) const { return rtransDX(x-T(pLight->getX()),y-T(pLight->getY())); }
-	template <class T> T rtransY(T x, T y) const { return rtransDY(x-T(pLight->getX()),y-T(pLight->getY())); }
+	template <class T> T rtransDX(T dx, T dy) const;
+	template <class T> T rtransDY(T dx, T dy) const;
+	template <class T> T rtransX(T x, T y) const;
+	template <class T> T rtransY(T x, T y) const;
 
 	/** Returns a rectangle in beam coordinates */
 	C4Rect rtransRect(C4Rect r) const {

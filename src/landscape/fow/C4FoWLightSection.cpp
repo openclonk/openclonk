@@ -91,6 +91,16 @@ inline void C4FoWLightSection::LightBallRightMostPoint(float x, float y, float &
 inline void C4FoWLightSection::LightBallLeftMostPoint(float x, float y, float &lightX, float &lightY) const
 	{ LightBallExtremePoint(x,y,-1.0f,lightX,lightY); }
 
+template <class T> T C4FoWLightSection::transDX(T dx, T dy) const { return T(a) * dx + T(b) * dy; }
+template <class T> T C4FoWLightSection::transDY(T dx, T dy) const { return T(c) * dx + T(d) * dy; }
+template <class T> T C4FoWLightSection::transX(T x, T y) const { return transDX(x, y) + T(pLight->getX()); }
+template <class T> T C4FoWLightSection::transY(T x, T y) const { return transDY(x, y) + T(pLight->getY()); }
+
+template <class T> T C4FoWLightSection::rtransDX(T dx, T dy) const { return T(ra) * dx + T(rb) * dy; }
+template <class T> T C4FoWLightSection::rtransDY(T dx, T dy) const { return T(rc) * dx + T(rd) * dy; }
+template <class T> T C4FoWLightSection::rtransX(T x, T y) const { return rtransDX(x-T(pLight->getX()),y-T(pLight->getY())); }
+template <class T> T C4FoWLightSection::rtransY(T x, T y) const { return rtransDY(x-T(pLight->getX()),y-T(pLight->getY())); }
+
 void C4FoWLightSection::ClearBeams()
 {
 	while (C4FoWBeam *pBeam = pBeams) {
