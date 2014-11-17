@@ -21,6 +21,7 @@ private:
 	GLuint hFrameBufDraw, hFrameBufRead;
 
 public:
+	const C4FoW* getFoW() const { return pFoW; }
 	const C4Rect &getRegion() const { return Region; }
 	const C4Surface *getSurface() const { return pSurface; }
 	const C4Surface *getBackSurface() const { return pBackSurface; }

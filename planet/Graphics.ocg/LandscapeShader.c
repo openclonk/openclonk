@@ -4,6 +4,7 @@
 // Input textures
 uniform sampler2D landscapeTex[2];
 uniform sampler2D lightTex;
+uniform sampler2D ambientTex;
 uniform sampler2D scalerTex;
 uniform sampler3D materialTex;
 
@@ -20,6 +21,9 @@ uniform float matMap[256];
 #endif
 uniform int materialDepth;
 uniform vec2 materialSize;
+
+// Factor between landscape coordinates and ambient map coordinates
+uniform vec2 ambientScale;
 
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
@@ -119,7 +123,7 @@ void main()
 
 	// Brightness
 	vec4 lightPx = texture2D(lightTex, gl_TexCoord[1].st);
-	float ambientBright = lightPx.r, shadeBright = ambientBright;
+	float shadeBright = lightPx.r;
 
 	// Normal calculation
 	vec3 landscapeNormal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5));
@@ -128,16 +132,22 @@ void main()
 	vec3 normal = landscapeNormal + textureNormal;
 	vec3 normal2 = landscapeNormal2 + textureNormal;
 
-	// Light calculation
+	// Ambient light
+	float ambient = texture2D(ambientTex, ambientScale * texCoo).r;
+	float ambient2 = texture2D(ambientTex, ambientScale * otherCoo).r;
+
+	// Light calculation; the ambient part actually uses some shading with
+	// a light direction of (0.0, -1.0, 0.0) so that it does not look utterly
+	// boring at the sky/material edges.
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
-	float bright = 2.0 * shadeBright * dot(normal, lightDir);
-	float bright2 = 2.0 * shadeBright * dot(normal2, lightDir);
+	float bright = ambient * (1.0 + 1.0 * dot(normal, vec3(0.0, -1.0, 0.0))) + (1.0 - ambient) * 2.0 * shadeBright * dot(normal, lightDir);
+	float bright2 = ambient2 * (1.0 +  1.0 * dot(normal2, vec3(0.0, -1.0, 0.0))) + (1.0 - ambient2) * 2.0 * shadeBright * dot(normal2, lightDir);
 
 	gl_FragColor = mix(
 		vec4(bright2 * otherMaterialPx.rgb, otherMaterialPx.a),
 		vec4(bright * materialPx.rgb, materialPx.a),
 		scalerPx.r);
-	
+
 	// uncomment the following lines for debugging light directions:
 	// yellow: light up, blue: light down, turqoise: light right, pink: light left, opacity: light strength
 	//float lightYDir = lightPx.b - 1.0/3.0;

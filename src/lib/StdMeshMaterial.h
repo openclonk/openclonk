@@ -59,7 +59,8 @@ public:
 		AUTO_OC_COLOR_MODULATION,
 		AUTO_OC_MOD2,
 		AUTO_OC_USE_LIGHT,
-		AUTO_OC_LIGHT
+		AUTO_OC_LIGHT,
+		AUTO_OC_AMBIENT
 
 		// TODO: Other ogre auto values
 	};

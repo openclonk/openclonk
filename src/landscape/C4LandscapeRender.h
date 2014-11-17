@@ -24,6 +24,7 @@ enum C4LR_Uniforms
 	C4LRU_ScalerTex,
 	C4LRU_MaterialTex,
 	C4LRU_LightTex,
+	C4LRU_AmbientTex,
 
 	C4LRU_Resolution,
 	C4LRU_Center,
@@ -31,6 +32,7 @@ enum C4LR_Uniforms
 	C4LRU_MatMapTex,
 	C4LRU_MaterialDepth,
 	C4LRU_MaterialSize,
+	C4LRU_AmbientScale,
 
 	C4LRU_Count
 };

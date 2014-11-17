@@ -1306,7 +1306,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// progress
-	Game.SetInitProgress(80);
+	Game.SetInitProgress(75);
 
 	// copy noscan-var
 	NoScan=Game.C4S.Landscape.NoScan!=0;
@@ -1338,7 +1338,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Init out-of-landscape pixels for bottom
 	InitTopAndBottomRowPix();
 
-	Game.SetInitProgress(84);
+	Game.SetInitProgress(80);
 
 	if (Config.General.DebugRec)
 	{
@@ -1404,6 +1404,9 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// and not creating the map
 	Game.FixRandom(Game.RandomSeed);
 
+	// Create ambient light map after landscape creation
+	pFoW->Ambient.CreateFromLandscape(*this, 10., 50., 0.25);
+	Game.SetInitProgress(84);
 
 	// Success
 	rfLoaded=true;

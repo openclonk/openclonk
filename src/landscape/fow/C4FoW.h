@@ -7,6 +7,7 @@
 #include "C4Rect.h"
 #include "C4Object.h"
 #include "C4FoWLight.h"
+#include "C4FoWAmbient.h"
 
 /**
 	This class holds all lights for the objects. It forwards the update, invalidation and render calls each to the
@@ -22,6 +23,8 @@ private:
 	class C4FoWLight *pLights;
 
 public:
+	C4FoWAmbient Ambient;
+
 	void Clear();
 
 	/** Updates the view range of the given object in its associated light or create a new light if none exists yet. */

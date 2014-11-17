@@ -36,6 +36,7 @@ material NormalMap
                 param_named_auto oc_ColorModulation oc_color_modulation
                 param_named_auto oc_UseLight oc_use_light
                 param_named_auto oc_Light oc_light
+                param_named_auto oc_Ambient oc_ambient
 
                 param_named basemap int 0
                 param_named normalmap int 1

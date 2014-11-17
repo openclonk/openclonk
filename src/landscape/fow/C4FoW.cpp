@@ -39,7 +39,6 @@ void C4FoW::Add(C4Object *pObj)
 		pLight->pNext = pLights;
 		pLights = pLight;
 	}
-
 }
 
 void C4FoW::Remove(C4Object *pObj)

@@ -52,12 +52,14 @@ static const char *GetUniformName(int iUniform)
 	case C4LRU_ScalerTex:    return "scalerTex";
 	case C4LRU_MaterialTex:  return "materialTex";
 	case C4LRU_LightTex:     return "lightTex";
+	case C4LRU_AmbientTex:     return "ambientTex";
 	case C4LRU_Resolution:   return "resolution";
 	case C4LRU_Center:       return "center";
 	case C4LRU_MatMap:       return "matMap";
 	case C4LRU_MatMapTex:    return "matMapTex";
 	case C4LRU_MaterialDepth:return "materialDepth";
 	case C4LRU_MaterialSize: return "materialSize";
+	case C4LRU_AmbientScale: return "ambientScale";
 	}
 	assert(false);
 	return "mysterious";
@@ -1011,7 +1013,16 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	if (hUniforms[C4LRU_MaterialSize] != GLhandleARB(-1))
 		glUniform2fARB(hUniforms[C4LRU_MaterialSize], float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
 		                                              float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
-		
+	if (hUniforms[C4LRU_AmbientScale] != GLhandleARB(-1))
+	{
+		// factor between actual landscape size and surface size, so that we can use the landscape
+		// coordinates for the ambient map lookup.
+		// TODO: These could actually be shader constants, and do not really need to be uniforms...
+		const float sx = static_cast<float>(Surfaces[0]->Wdt) / iWidth;
+		const float sy = static_cast<float>(Surfaces[0]->Hgt) / iHeight;
+		glUniform2fARB(hUniforms[C4LRU_AmbientScale], sx, sy);
+	}
+
 	// Setup facilities for texture unit allocation (gimme local functions...)
 	int iUnit = 0; int iUnitMap[32]; ZeroMem(iUnitMap, sizeof(iUnitMap));
 	#define ALLOC_UNIT(hUniform, iType) do { \
@@ -1051,6 +1062,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 		glBindTexture(GL_TEXTURE_2D, Light.getSurface()->ppTex[0]->texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	if(hUniforms[C4LRU_AmbientTex] != GLhandleARB(-1))
+	{
+		ALLOC_UNIT(hUniforms[C4LRU_AmbientTex], GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, Light.getFoW()->Ambient.Tex);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 	if(hUniforms[C4LRU_ScalerTex] != GLhandleARB(-1))
 	{

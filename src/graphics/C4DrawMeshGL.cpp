@@ -147,6 +147,7 @@ namespace
 		params.AddParameter("oc_Mod2", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_MOD2;
 		params.AddParameter("oc_UseLight", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT;
 		params.AddParameter("oc_Light", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_LIGHT;
+		params.AddParameter("oc_Ambient", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT;
 
 		return FormatString(
 			"varying vec3 normal;" // linearly interpolated -- not necessarily normalized
@@ -157,29 +158,32 @@ namespace
 			"uniform int oc_Mod2;"
 			"uniform int oc_UseLight;"
 			"uniform sampler2D oc_Light;"
+			"uniform sampler2D oc_Ambient;"
 			"void main()"
 			"{"
-                        "  vec3 lightDir;"
-                        "  float lightIntensity;"
+                        "  vec4 diffuse;"
                         "  if(oc_UseLight != 0)"
                         "  {"
 			     // Light calculation
                         "    vec4 lightPx = texture2D(oc_Light, (gl_TextureMatrix[%d] * gl_FragCoord).xy);"
-			"    lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
-                        "    lightIntensity = 2.0 * lightPx.r;"
+			"    vec3 lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
+                        "    float lightIntensity = 2.0 * lightPx.r;"
+                        "    float ambient = texture2D(oc_Ambient, (gl_TextureMatrix[%d] * gl_FragCoord).xy).r;"
+                             // Don't actually use the ambient part of the material and instead a diffuse light from the front, like in the master branch
+			     // Because meshes are not tuned for ambient light at the moment, every mesh material would need to be fixed.
+			     // Otherwise the first term would be ambient * gl_FrontMaterial.ambient
+			"    diffuse = ambient * (gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * (0.25 + 0.75 * max(dot(normalize(normal), vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * (0.25 + 0.75 * max(dot(normalize(normal), lightDir), 0.0)));"
                         "  }"
                         "  else"
                         "  {"
-                             // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
-                        "    lightDir = vec3(0.0, 0.0, 1.0);"
-                        "    lightIntensity = 1.0;"
+                             // No light -- place a simple directional light from the front (equivalent to the behaviour in
+			     // the master branch, modulo interpolated normals)
+                        "    vec3 lightDir = vec3(0.0, 0.0, 1.0);"
+			"    diffuse = gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * max(dot(normalize(normal), lightDir), 0.0);"
                         "  }"
-			"  vec4 diffuse = gl_FrontMaterial.emission + 0.0 * gl_FrontMaterial.ambient + gl_FrontMaterial.diffuse * max(dot(normalize(normal), lightDir), 0.0);" // ambient is ignored since we don't have ambient lights
 			// Texture units from material script
 			"  vec4 currentColor = diffuse;"
 			"  %s"
-			// Intensity (lightPx.r) only applies to RGB components, not A
-			"  currentColor = vec4(lightIntensity * currentColor.rgb, currentColor.a);"
 			// Output with color modulation and mod2
 			"  if(oc_Mod2 != 0)"
 			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation - 0.5, 0.0, 1.0);"
@@ -187,7 +191,7 @@ namespace
 			"    gl_FragColor = clamp(currentColor * oc_ColorModulation, 0.0, 1.0);"
 			"}",
 			textureUnitDeclCode.getData(),
-			(int)texIndex, // The light texture is added after all other textures
+			(int)texIndex, (int)texIndex + 1, // The light and ambient textures are added after all other textures
 			textureUnitCode.getData()
 		);
 	}
@@ -481,7 +485,7 @@ namespace
 		return true;
 	}
 
-	bool ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, float zoom, std::vector<GLint>& textures)
+	bool ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect, std::vector<GLint>& textures)
 	{
 		float* out;
 		GLint texIndex;
@@ -524,7 +528,7 @@ namespace
 
 			// Load the texture
 			glActiveTexture(GL_TEXTURE0+texIndex);
-			glClientActiveTexture(GL_TEXTURE0+texIndex);
+			//glClientActiveTexture(GL_TEXTURE0+texIndex);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
 
@@ -537,7 +541,36 @@ namespace
 			glLoadIdentity();
 			glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
 			glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
-			glScalef(1.0f/zoom, 1.0f/zoom, 1.0f);
+			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
+
+			parameter.SetType(StdMeshMaterialShaderParameter::INT);
+			parameter.GetInt() = texIndex;
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT:
+			if(!pFoW) return false;
+
+			texIndex = textures.size();
+			textures.push_back(texIndex);
+
+			// Load the texture
+			glActiveTexture(GL_TEXTURE0+texIndex);
+			//glClientActiveTexture(GL_TEXTURE0+texIndex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
+
+			// Transformation matrix for the texture coordinates
+			// TODO: Should maybe be a separate uniform variable?
+			LightRect = pFoW->getRegion();
+			iLightWdt = pFoW->getSurface()->Wdt;
+			iLightHgt = pFoW->getSurface()->Hgt;
+
+			// Setup the texture matrix
+			glLoadIdentity();
+			glScalef(1.0f/pFoW->getFoW()->Ambient.GetLandscapeWidth(), 1.0f/pFoW->getFoW()->Ambient.GetLandscapeHeight(), 1.0f);
+			glTranslatef(LightRect.x, LightRect.y, 0.0f);
+			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
+			glTranslatef(0.0f, clipRect.Hgt, 0.0f);
+			glScalef(1.0f, -1.0f, 1.0f);
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = texIndex;
@@ -548,7 +581,7 @@ namespace
 		}
 	}
 
-	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, float zoom, bool parity)
+	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
@@ -720,7 +753,7 @@ namespace
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
 				{
-					if(!ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, pFoW, zoom, textures))
+					if(!ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect, textures))
 						continue;
 					parameter = &auto_resolved;
 				}
@@ -768,9 +801,9 @@ namespace
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, float zoom, bool parity); // Needed by RenderAttachedMesh
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, bool parity); // Needed by RenderAttachedMesh
 
-	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, float zoom, bool parity)
+	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, bool parity)
 	{
 		const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
 
@@ -797,7 +830,7 @@ namespace
 		// TODO: Take attach transform's parity into account
 		glPushMatrix();
 		glMultMatrixf(attach_trans_gl);
-		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, pFoW, zoom, parity);
+		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 		glPopMatrix();
 
 #if 0
@@ -817,7 +850,7 @@ namespace
 #endif
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, float zoom, bool parity)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, bool parity)
 	{
 		const StdMesh& mesh = instance.GetMesh();
 
@@ -825,7 +858,7 @@ namespace
 		StdMeshInstance::AttachedMeshIter attach_iter = instance.AttachedMeshesBegin();
 
 		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, zoom, parity);
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 
 		GLint modes[2];
 		// Check if we should draw in wireframe or normal mode
@@ -838,7 +871,7 @@ namespace
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, pFoW, zoom, parity);
+			RenderSubMeshImpl(instance, instance.GetSubMeshOrdered(i), dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 
 		// reset old mode to prevent rendering errors
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
@@ -868,7 +901,7 @@ namespace
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
-			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, zoom, parity);
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 	}
 }
 
@@ -1082,7 +1115,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
-	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, pFoW, Zoom, parity);
+	C4Rect clipRect;
+	clipRect.Wdt = Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+	clipRect.Hgt = Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+	clipRect.x   = iClipX1; if(clipRect.x < 0) { clipRect.Wdt += clipRect.x; clipRect.x = 0; }
+	clipRect.y   = iClipY1; if(clipRect.y < 0) { clipRect.Hgt += clipRect.y; clipRect.y = 0; }
+	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 
 	glUseProgramObjectARB(0);
 

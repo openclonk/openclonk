@@ -291,6 +291,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4UpperBoard.h
 	src/landscape/fow/C4FoW.cpp
 	src/landscape/fow/C4FoW.h
+	src/landscape/fow/C4FoWAmbient.cpp
+	src/landscape/fow/C4FoWAmbient.h
 	src/landscape/fow/C4FoWBeam.cpp
 	src/landscape/fow/C4FoWBeam.h
 	src/landscape/fow/C4FoWLight.cpp

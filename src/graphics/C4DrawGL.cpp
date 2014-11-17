@@ -301,6 +301,7 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
 	GLint overlayClrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "overlayClrMod");
 	GLint lightLocation = glGetUniformLocationARB(multi_blt_program->Program, "Light");
+	GLint ambientLocation = glGetUniformLocationARB(multi_blt_program->Program, "Ambient");
 	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "Texture");
 	GLint overlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "Overlay");
 	GLint normalLocation = glGetUniformLocationARB(multi_blt_program->Program, "Normal");
@@ -334,31 +335,49 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 
 	if(fUseNormal)
 	{
-		glActiveTexture(GL_TEXTURE3);
+		glActiveTexture(GL_TEXTURE4);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, normalTex);
-		glUniform1iARB(normalLocation, 3);
+		glUniform1iARB(normalLocation, 4);
 	}
 
 	if(fUseLight)
 	{
+		const C4Rect LightRect = pFoW->getRegion();
+		const int32_t iLightWdt = pFoW->getSurface()->Wdt;
+		const int32_t iLightHgt = pFoW->getSurface()->Hgt;
+
+		const int iVpWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+		const int iVpHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+
+		glMatrixMode(GL_TEXTURE);
+
+		// Ambient texture
+		glActiveTexture(GL_TEXTURE3);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
+		glUniform1iARB(ambientLocation, 3);
+
+		// Setup the texture matrix
+		glLoadIdentity();
+		glScalef(1.0f/pFoW->getFoW()->Ambient.GetLandscapeWidth(), 1.0f/pFoW->getFoW()->Ambient.GetLandscapeHeight(), 1.0f);
+		glTranslatef(LightRect.x, LightRect.y, 0.0f); // TODO: LightRect should have floating point accuracy for this to work best
+		glScalef( (float)LightRect.Wdt / (float)iVpWdt, (float)LightRect.Hgt / (float)iVpHgt, 1.0f);
+		glTranslatef(0.0f, iVpHgt, 0.0f);
+		glScalef(1.0f, -1.0f, 1.0f);
+
+		// Light texture
 		glActiveTexture(GL_TEXTURE2);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
 		glUniform1iARB(lightLocation, 2);
 
-		// Setup the texture matrix such that fragment coordinates
-		// are converted to coordinates inside the light texture.
-		glMatrixMode(GL_TEXTURE);
+		// Setup the texture matrix
 		glLoadIdentity();
-
-		const C4Rect LightRect = pFoW->getRegion();
-		const int32_t iLightWdt = pFoW->getSurface()->Wdt;
-		const int32_t iLightHgt = pFoW->getSurface()->Hgt;
 
 		glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
 		glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
-		glScalef(1.0f/Zoom, 1.0f/Zoom, 1.0f);
+		glScalef( (float)LightRect.Wdt / (float)iVpWdt, (float)LightRect.Hgt / (float)iVpHgt, 1.0f);
 
 		glMatrixMode(GL_MODELVIEW);
 	}
@@ -395,8 +414,8 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 void CStdGL::ResetMultiBlt(GLuint baseTex, GLuint overlayTex, GLuint normalTex)
 {
 	glPopMatrix();
-	if(normalTex != 0) { glActiveTexture(GL_TEXTURE3); glDisable(GL_TEXTURE_2D); }
-	if(pFoW != NULL) { glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
+	if(normalTex != 0) { glActiveTexture(GL_TEXTURE4); glDisable(GL_TEXTURE_2D); }
+	if(pFoW != NULL) { glActiveTexture(GL_TEXTURE3); glDisable(GL_TEXTURE_2D); glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
 	if(overlayTex != 0) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
 	glActiveTexture(GL_TEXTURE0);
 	if(baseTex != 0) glDisable(GL_TEXTURE_2D);
@@ -568,7 +587,6 @@ bool CStdGL::RestoreDeviceObjects()
 	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 
-
 	MaxTexSize = 64;
 	GLint s = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
@@ -606,6 +624,7 @@ bool CStdGL::RestoreDeviceObjects()
 		"uniform sampler2D Texture;"
 		"uniform sampler2D Overlay;"
 		"uniform sampler2D Light;"
+		"uniform sampler2D Ambient;"
 		"uniform sampler2D Normal;"
 		"varying vec2 texcoord;"
 		"void main()"
@@ -624,41 +643,30 @@ bool CStdGL::RestoreDeviceObjects()
 		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
 		"  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
 		// Add fog of war (light)
-		"  vec3 lightDir, normalDir;"
-		"  float lightIntensity;"
-
+                "  vec3 lightClr = vec3(1.0, 1.0, 1.0);"
 		"  if(fUseLight != 0)"
 		"  {"
 		"    vec4 lightPx = texture2D(Light, (gl_TextureMatrix[2] * gl_FragCoord).xy);"
+		"    vec3 lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
+		"    float lightIntensity = 2.0 * lightPx.r;"
+                "    vec3 normalDir;"
                 "    if(fUseNormal != 0)"
                 "    {"
-		"      lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
-                // Overwrite Z component of normal with 0.3 -- might make this configurable later
                 "      vec4 normalPx = texture2D(Normal, texcoord);"
                 "      normalDir = normalize(vec3( (normalPx.xy - vec2(0.5, 0.5))*2.0, 0.3));"
-		"      lightIntensity = 2.0 * lightPx.r;"
                 "    }"
                 "    else"
                 "    {"
-                // No normal map -- front-facing light and normals, only take light intensity into account
-		"      lightDir = vec3(0.0, 0.0, 1.0);"
 		"      normalDir = vec3(0.0, 0.0, 1.0);"
-		"      lightIntensity = lightPx.r;"
 		"    }"
+		"    float ambient = texture2D(Ambient, (gl_TextureMatrix[3] * gl_FragCoord).xy).r;"
+		"    lightClr = ambient * lightClr + (1.0 - ambient) * vec3(1.0, 1.0, 1.0) * lightIntensity * (0.25 + 0.75 * dot(normalDir, lightDir));"
 		"  }"
-		"  else"
-		"  {"
-		     // No light -- place a simple directional light from the front (equivalent to the behaviour in the main branch, modulo interpolated normals)
-		"    lightDir = vec3(0.0, 0.0, 1.0);"
-		"    normalDir = vec3(0.0, 0.0, 1.0);"
-		"    lightIntensity = 1.0;"
-		"  }"
-		"  vec4 lightClr = vec4(vec3(1.0, 1.0, 1.0) * lightIntensity * dot(normalDir, lightDir), 1.0);"
 		// Final output, depending on blit mode
 		"  if(fMod2 != 0)"
-		"    gl_FragColor = clamp(2.0 * primaryColor * lightClr - 0.5, 0.0, 1.0);"
+		"    gl_FragColor = clamp(2.0 * primaryColor * vec4(lightClr, 1.0) - 0.5, 0.0, 1.0);"
 		"  else"
-		"    gl_FragColor = clamp(primaryColor * lightClr, 0.0, 1.0);"
+		"    gl_FragColor = clamp(primaryColor * vec4(lightClr, 1.0), 0.0, 1.0);"
 		"}";
 
 	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);
