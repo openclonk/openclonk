@@ -41,14 +41,14 @@ public:
 	void Update(C4Rect r);
 
 
-	std::list<C4FoWBeamTriangle> CalculateTriangles(C4FoWRegion *pRegion);
+	std::list<C4FoWBeamTriangle> CalculateTriangles(C4FoWRegion *region);
 
 	/** Shorten all light beams to the given reach.
 	    Called when the size of the light has decreased to the given value */
-	void Prune(int32_t iReach);
+	void Prune(int32_t reach);
 	/** Extend all light beams to the given reach.
 	    Called when the size of the light has increased to the given value */
-	void Dirty(int32_t iReach);
+	void Dirty(int32_t reach);
 
 private:
 
@@ -106,7 +106,7 @@ private:
 
 	/** Find beams that go through the given rectangle. Returns the number of beams that are in the rectangle and makes
 	    pFirst and pLast point to the first and the last beam of these */
-	int32_t FindBeamsClipped(const C4Rect &pInRect, C4FoWBeam *&pFirst, C4FoWBeam *&pLast);
+	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&lastBeam);
 };
 
 

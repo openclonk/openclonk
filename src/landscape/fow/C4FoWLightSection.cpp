@@ -48,25 +48,26 @@ C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r) : pLight(pLight)
 {
 	// Rotation matrices
 	iRot = r % 360;
-	switch(iRot % 360) {
-	default:
-		assert(false);
-	case 0:
-		a = 1; b = 0; c = 0; d = 1;
-		ra = 1; rb = 0; rc = 0; rd = 1;
-		break;
-	case 90:
-		a = 0; b = 1; c = -1; d = 0;
-		ra = 0; rb = -1; rc = 1; rd = 0;
-		break;
-	case 180:
-		a = -1; b = 0; c = 0; d = -1;
-		ra = -1; rb = 0; rc = 0; rd = -1;
-		break;
-	case 270: 
-		a = 0; b = -1; c =1; d = 0;
-		ra = 0; rb = 1; rc = -1; rd = 0;
-		break;
+	switch(iRot % 360)
+	{
+		default:
+			assert(false);
+		case 0:
+			a = 1; b = 0; c = 0; d = 1;
+			ra = 1; rb = 0; rc = 0; rd = 1;
+			break;
+		case 90:
+			a = 0; b = 1; c = -1; d = 0;
+			ra = 0; rb = -1; rc = 1; rd = 0;
+			break;
+		case 180:
+			a = -1; b = 0; c = 0; d = -1;
+			ra = -1; rb = 0; rc = 0; rd = -1;
+			break;
+		case 270: 
+			a = 0; b = -1; c =1; d = 0;
+			ra = 0; rb = 1; rc = -1; rd = 0;
+			break;
 	}
 	// Beam list
 	pBeams = new C4FoWBeam(-1, +1, +1, +1);
@@ -103,29 +104,31 @@ template <class T> T C4FoWLightSection::rtransY(T x, T y) const { return rtransD
 
 void C4FoWLightSection::ClearBeams()
 {
-	while (C4FoWBeam *pBeam = pBeams) {
-		pBeams = pBeam->getNext();
-		delete pBeam;
+	while (C4FoWBeam *beam = pBeams)
+	{
+		pBeams = beam->getNext();
+		delete beam;
 	}
 }
 
-void C4FoWLightSection::Prune(int32_t iReach)
+void C4FoWLightSection::Prune(int32_t reach)
 {
-	if (iReach == 0) {
+	if (reach == 0)
+	{
 		ClearBeams();
 		pBeams = new C4FoWBeam(-1, 1, 1, 1);
 		return;
 	}
-	// TODO PeterW: Merge active beams that we have pruned to same length
-	for (C4FoWBeam *pBeam = pBeams; pBeam; pBeam = pBeam->getNext())
-		pBeam->Prune(iReach);
+	// TODO PeterW: Merge active pBeams that we have pruned to same length
+	for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
+		beam->Prune(reach);
 }
 
-void C4FoWLightSection::Dirty(int32_t iReach)
+void C4FoWLightSection::Dirty(int32_t reach)
 {
-	for (C4FoWBeam *pBeam = pBeams; pBeam; pBeam = pBeam->getNext())
-		if (pBeam->getLeftEndY() >= iReach || pBeam->getRightEndY() >= iReach)
-			pBeam->Dirty(Min(pBeam->getLeftEndY(), pBeam->getRightEndY()));
+	for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
+		if (beam->getLeftEndY() >= reach || beam->getRightEndY() >= reach)
+			beam->Dirty(Min(beam->getLeftEndY(), beam->getRightEndY()));
 }
 
 C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y)
@@ -137,15 +140,14 @@ C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y)
 	// Go through list
 	// Note: In case this turns out expensive, one might think about implementing
 	// a skip-list. But I highly doubt it.
-	C4FoWBeam *pBeam = pBeams;
-	while (pBeam->getNext() && pBeam->getNext()->isRight(x, y))
-		pBeam = pBeam->getNext();
-	return pBeam;
+	C4FoWBeam *beam = pBeams;
+	while (beam->getNext() && beam->getNext()->isRight(x, y))
+		beam = beam->getNext();
+	return beam;
 }
 
 void C4FoWLightSection::Update(C4Rect RectIn)
 {
-
 	// Transform rectangle into our coordinate system
 	C4Rect Rect = rtransRect(RectIn);
 	C4Rect Bounds = rtransRect(C4Rect(0,0,GBackWdt,GBackHgt));
@@ -153,12 +155,12 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 #ifdef LIGHT_DEBUG
 	if (!::Game.iTick255) {
 		LogSilentF("Full beam list:");
-		StdStrBuf Beams;
-		for(C4FoWBeam *pBeam = pBeams; pBeam; pBeam = pBeam->getNext()) {
-			Beams.AppendChar(' ');
-			Beams.Append(pBeam->getDesc());
+		StdStrBuf beamsString;
+		for(C4FoWBeam *beam = pBeams; beam; beam = beam->getNext()) {
+			beamsString.ApendBeamChar(' ');
+			beamsString.ApendBeam(beam->getDesc());
 		}
-		LogSilent(Beams.getData());
+		LogSilent(beamsString.getData());
 	}
 #endif
 
@@ -175,85 +177,87 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 		return;
 	
 	// Get last beam that's positively *not* affected
-	int32_t iLY = RectLeftMostY(Rect),
-	        iLX = RectLeftMostX(Rect),
-	        iRY = RectRightMostY(Rect),
-	        iRX = RectRightMostX(Rect);
+	int32_t ly = RectLeftMostY(Rect),
+	        lx = RectLeftMostX(Rect),
+	        ry = RectRightMostY(Rect),
+	        rx = RectRightMostX(Rect);
 
-	C4FoWBeam *pStart = FindBeamLeftOf(iLX, iLY);
+	C4FoWBeam *startBeam = FindBeamLeftOf(lx, ly);
 
 	// Skip clean beams
-	while (C4FoWBeam *pNext = pStart ? pStart->getNext() : pBeams) {
-		if (pNext->isDirty()) break;
-		pStart = pNext;
+	while (C4FoWBeam *nextBeam = startBeam ? startBeam->getNext() : pBeams) {
+		if (nextBeam->isDirty()) break;
+		startBeam = nextBeam;
 	}
 	// Find end beam, determine at which position we have to start scanning
-	C4FoWBeam *pBeam = pStart ? pStart->getNext() : pBeams;
+	C4FoWBeam *beam = startBeam ? startBeam->getNext() : pBeams;
 #ifdef LIGHT_DEBUG
-	if (pBeam)
-		LogSilentF("Start beam is %s", pBeam->getDesc().getData());
+	if (beam)
+		LogSilentF("Start beam is %s", beam->getDesc().getData());
 #endif
-	C4FoWBeam *pEnd = NULL;
-	int32_t iStartY = Rect.GetBottom();
-	while (pBeam && !pBeam->isLeft(iRX, iRY)) {
-		if (pBeam->isDirty() && pBeam->getLeftEndY() <= Rect.y+Rect.Hgt) {
-			pEnd = pBeam;
-			iStartY = Min(iStartY, pBeam->getLeftEndY());
+	C4FoWBeam *endBeam = NULL;
+	int32_t startY = Rect.GetBottom();
+	while (beam && !beam->isLeft(rx, ry)) {
+		if (beam->isDirty() && beam->getLeftEndY() <= Rect.y + Rect.Hgt) {
+			endBeam = beam;
+			startY = Min(startY, beam->getLeftEndY());
 		}
-		pBeam = pBeam->getNext();
+		beam = beam->getNext();
 	}
 
 	// Can skip scan completely?
-	if (!pEnd)
+	if (!endBeam)
 		return;
 
 	// Update right end coordinates
 #ifdef LIGHT_DEBUG
-	LogSilentF("End beam is %s", pEnd->getDesc().getData());
+	LogSilentF("End beam is %s", endBeam->getDesc().getData());
 #endif
 
-	if (pEnd->isRight(iRX, iRY)) {
-		iRX = pEnd->getRightEndX() + 1;
-		iRY = pEnd->getRightEndY();
-		// We want pEnd itself to get scanned
-		//assert(!pEnd->isLeft(iRX, iRY));
+	if (endBeam->isRight(rx, ry)) {
+		rx = endBeam->getRightEndX() + 1;
+		ry = endBeam->getRightEndY();
+		// We want endBeam itself to get scanned
+		//assert(!endBeam->isLeft(rx, ry));
 	}
 #ifdef LIGHT_DEBUG
 	//LogSilentF("Right limit at %d, start line %d", 1000 * (iRX - iX) / (iRY - iY), iStartY);
 #endif
 
 	// Bottom of scan - either bound by rectangle or by light's reach
-	int32_t iEndY = Min(Rect.GetBottom(), pLight->getReach());
+	int32_t endY = Min(Rect.GetBottom(), pLight->getReach());
 
 	// Scan lines
 	int32_t y;
-	for(y = Max(0, iStartY); y < iEndY; y++) {
+	for(y = Max(0, startY); y < endY; y++) {
 
-		// Scan all beams
-		C4FoWBeam *pLast = pStart; int32_t iDirty = 0;
-		for(C4FoWBeam *pBeam = pStart ? pStart->getNext() : pBeams; pBeam; pLast = pBeam, pBeam = pBeam->getNext()) {
-			assert(pLast ? pLast->getNext() == pBeam : pBeam == pBeams);
+		// Scan all pBeams
+		C4FoWBeam *lastBeam = startBeam;
+		int32_t dirty = 0;
+		for(C4FoWBeam *beam = startBeam ? startBeam->getNext() : pBeams; beam; lastBeam = beam, beam = beam->getNext())
+		{
+			assert(lastBeam ? lastBeam->getNext() == beam : beam == pBeams);
 
 			// Clean (enough)?
-			if (!pBeam->isDirty() || y < pBeam->getLeftEndY())
+			if (!beam->isDirty() || y < beam->getLeftEndY())
 				continue;
 
 			// Out left?
-			if (pBeam->isRight(iLX, y))
+			if (beam->isRight(lx, y))
 				continue;
 			// Out right?
-			if (pBeam->isLeft(iRX, y) || pBeam->isLeft(iRX, iRY))
+			if (beam->isLeft(rx, y) || beam->isLeft(rx, ry))
 				break;
 
 			// We have an active beam that we're about to scan
-			iDirty++;
-			pBeam->Dirty(y+1);
+			dirty++;
+			beam->Dirty(y+1);
 
 			// Do a scan
-			int32_t xl = Max(pBeam->getLeftX(y), Bounds.x),
-			        xr = Min(pBeam->getRightX(y), Bounds.x+Bounds.Wdt-1);
-			for(int32_t x = xl; x <= xr; x++) {
-
+			int32_t xl = Max(beam->getLeftX(y), Bounds.x),
+			        xr = Min(beam->getRightX(y), Bounds.x+Bounds.Wdt-1);
+			for(int32_t x = xl; x <= xr; x++)
+			{
 				// Fast free?
 				if (!Landscape._FastSolidCheck(transX(x,y), transY(x,y)))
 				{
@@ -267,79 +271,81 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 
 				// Split points
 				int32_t x1 = x - 1, x2 = x + 1;
-				bool fSplitLeft = !pBeam->isLeft(x1, y);
-				bool fSplitRight = !pBeam->isRight(x2, y);
+				bool splitLeft = !beam->isLeft(x1, y);
+				bool splitRight = !beam->isRight(x2, y);
 
 				// Double merge?
-				if (!fSplitLeft && !fSplitRight && pLast && pBeam->getNext()) {
-					if(pLast->EliminateRight(x,y)) {
-						pBeam = pLast;
+				if (!splitLeft && !splitRight && lastBeam && beam->getNext())
+				{
+					if(lastBeam->EliminateRight(x,y))
+					{
+						beam = lastBeam;
 						break; // no typo. fSplitRight => x == xr
 					}
 				}
 
 				// Merge possible?
-				if (!fSplitLeft && fSplitRight && pLast)
-					if (pLast->MergeRight(x2, y)) {
-						pBeam->SetLeft(x2, y);
-						assert(pBeam->isDirty());
+				if (!splitLeft && splitRight && lastBeam)
+					if (lastBeam->MergeRight(x2, y))
+					{
+						beam->SetLeft(x2, y);
+						assert(beam->isDirty());
 						continue;
 					}
-				if (fSplitLeft && !fSplitRight && pBeam->getNext())
-					if (pBeam->getNext()->MergeLeft(x1, y)) {
-						pBeam->SetRight(x1, y);
+				if (splitLeft && !splitRight && beam->getNext())
+					if (beam->getNext()->MergeLeft(x1, y))
+					{
+						beam->SetRight(x1, y);
 						break; // no typo. fSplitRight => x == xr
 					}
 
 				// Split out left
-				if (fSplitLeft) {
-					pLast = pBeam;
-					pBeam = pLast->Split(x1, y);
-					assert(pLast->getNext() == pBeam);
+				if (splitLeft)
+				{
+					lastBeam = beam;
+					beam = lastBeam->Split(x1, y);
+					assert(lastBeam->getNext() == beam);
 				}
 
 				// Split out right
-				if(fSplitRight) {
-					pLast = pBeam;
-					pBeam = pLast->Split(x2, y);
-					assert(pLast->getNext() == pBeam);
+				if(splitRight)
+				{
+					lastBeam = beam;
+					beam = lastBeam->Split(x2, y);
+					assert(lastBeam->getNext() == beam);
 
 					// Deactivate left/middle beam
-					pLast->Clean(y);
-					assert(pBeam->isDirty());
-
-				} else {
-
-					// Deactivate beam
-					pBeam->Clean(y);
-					break;
-
+					lastBeam->Clean(y);
+					assert(beam->isDirty());
 				}
-
+				else
+				{
+					// Deactivate beam
+					beam->Clean(y);
+					break;
+				}
 			}
-
 		}
 
-		// No active beams left?
-		if (!iDirty)
+		// No active pBeams left?
+		if (!dirty)
 			break;
-			
 	}
 
-	// At end of light's reach? Mark all beams that got scanned all the way to the end as clean.
+	// At end of light's reach? Mark all pBeams that got scanned all the way to the end as clean.
 	// There's no need to scan them anymore.
 	if (y >= pLight->getReach()) {
-		for (C4FoWBeam *pBeam = pStart ? pStart->getNext() : pBeams; pBeam; pBeam = pBeam->getNext())
-			if (pBeam->isDirty() && pBeam->getLeftEndY() > pLight->getReach())
-				pBeam->Clean(pLight->getReach());
+		for (C4FoWBeam *beam = startBeam ? startBeam->getNext() : pBeams; beam; beam = beam->getNext())
+			if (beam->isDirty() && beam->getLeftEndY() > pLight->getReach())
+				beam->Clean(pLight->getReach());
 	}
 
 #ifdef LIGHT_DEBUG
 	LogSilentF("Updated beam list:");
-	for(C4FoWBeam *pBeam = pStart ? pStart->getNext() : pBeams; pBeam; pBeam = pBeam->getNext()) {
-		if (pBeam->isLeft(iRX, iRY))
+	for(C4FoWBeam *beam = startBeam ? startBeam->getNext() : pBeams; beam; beam = beam->getNext()) {
+		if (beam->isLeft(iRX, iRY))
 			break;
-		LogSilent(pBeam->getDesc().getData());
+		LogSilent(beam->getDesc().getData());
 	}
 #endif
 }
@@ -357,156 +363,157 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 	// Assume normalized rectangle
 	assert(r.Wdt > 0 && r.Hgt > 0);
 	
-	// Get rectangle corners that bound the possibly affected beams
-	int32_t iLY = RectLeftMostY(r),
-	        iLX = RectLeftMostX(r),
-	        iRY = RectRightMostY(r),
-	        iRX = RectRightMostX(r);
-	C4FoWBeam *pLast = FindBeamLeftOf(iLX, iLY);
-	C4FoWBeam *pBeam = pLast ? pLast->getNext() : pBeams;
+	// Get rectangle corners that bound the possibly affected pBeams
+	int32_t ly = RectLeftMostY(r),
+	        lx = RectLeftMostX(r),
+	        ry = RectRightMostY(r),
+	        rx = RectRightMostX(r);
+	C4FoWBeam *lastBeam = FindBeamLeftOf(lx, ly);
+	C4FoWBeam *beam = lastBeam ? lastBeam->getNext() : pBeams;
 
 	// Scan over beams
-	while (pBeam && !pBeam->isLeft(iRX, iRY)) {
-
+	while (beam && !beam->isLeft(rx, ry))
+	{
 		// Dirty beam?
-		if (pBeam->getLeftEndY() > r.y || pBeam->getRightEndY() > r.y)
-			pBeam->Dirty(r.y);
+		if (beam->getLeftEndY() > r.y || beam->getRightEndY() > r.y)
+			beam->Dirty(r.y);
 
 		// Merge with last beam?
-		if (pLast && pLast->isDirty() && pBeam->isDirty()) {
-			pLast->MergeDirty();
-			pBeam = pLast->getNext();
-
-		// Advance otherwise
-		} else {
-			pLast = pBeam;
-			pBeam = pBeam->getNext();
+		if (lastBeam && lastBeam->isDirty() && beam->isDirty())
+		{
+			lastBeam->MergeDirty();
+			beam = lastBeam->getNext();
+		}
+		else		// Advance otherwise
+		{
+			lastBeam = beam;
+			beam = beam->getNext();
 		}
 	}
 
-	// Final check for merging dirty beams on the right end
-	if (pLast && pBeam && pLast->isDirty() && pBeam->isDirty())
-		pLast->MergeDirty();
+	// Final check for merging dirty pBeams on the right end
+	if (lastBeam && beam && lastBeam->isDirty() && beam->isDirty())
+		lastBeam->MergeDirty();
 
 }
 
-int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &pInRect, C4FoWBeam *&pFirst, C4FoWBeam *&pLast)
+int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&lastBeam)
 {
-	if(pInRect.y + pInRect.Hgt < 0) return 0;
+	if(rect.y + rect.Hgt < 0) return 0;
 
-	int32_t iLY = RectLeftMostY(pInRect),
-	        iLX = RectLeftMostX(pInRect),
-	        iRY = RectRightMostY(pInRect),
-	        iRX = RectRightMostX(pInRect);
+	int32_t ly = RectLeftMostY(rect),
+	        lx = RectLeftMostX(rect),
+	        ry = RectRightMostY(rect),
+	        rx = RectRightMostX(rect);
 
-	C4FoWBeam *pPrev = FindBeamLeftOf(iLX, iLY);
-	pFirst = pPrev ? pPrev->getNext() : pBeams;
+	C4FoWBeam *pPrev = FindBeamLeftOf(lx, ly);
+	firstBeam = pPrev ? pPrev->getNext() : pBeams;
 
-	// Find end beam - determine the number of beams we actually need to draw
-	C4FoWBeam *pBeam = pFirst;
-	int32_t iBeamCount = 0;
-	while (pBeam && !pBeam->isLeft(iRX, iRY))
+	// Find end beam - determine the number of pBeams we actually need to draw
+	C4FoWBeam *beam = firstBeam;
+	int32_t beamCount = 0;
+	while (beam && !beam->isLeft(rx, ry))
 	{
-		pBeam = pBeam->getNext();
-		iBeamCount++;
+		beam = beam->getNext();
+		beamCount++;
 	}
-	pLast = pBeam;
+	lastBeam = beam;
 
-	return iBeamCount;
+	return beamCount;
 }
 
-std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *pRegion)
+std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region)
 {
-	C4FoWBeam *pStart = NULL, *pEnd = NULL;
-	int32_t iBeamCount = FindBeamsClipped(rtransRect(pRegion->getRegion()), pStart, pEnd);
+	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
+	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
 	// no beams inside the rectangle? Good, nothing to render 
 	std::list<C4FoWBeamTriangle> result;
-	if(!iBeamCount) return result;
+	if(!beamCount) return result;
 
-	int32_t iOriginalBeamCount = iBeamCount;
-
-	// Allocate array for our points (lots of them)
-	float *gFanLX = new float [iBeamCount * 10],	// positions where the left lines of beams end
-		  *gFanLY = gFanLX + iBeamCount,			
-		  *gFanRX = gFanLY + iBeamCount,			// positions where the right lines of beams end
-		  *gFanRY = gFanRX + iBeamCount,
-		  *gFadeLX = gFanRY + iBeamCount,
-		  *gFadeLY = gFadeLX + iBeamCount,
-		  *gFadeRX = gFadeLY + iBeamCount,
-		  *gFadeRY = gFadeRX + iBeamCount;
-	int32_t i;
-	C4FoWBeam *pBeam = pStart;
-	for (i = 0, pBeam = pStart; i < iBeamCount; i++, pBeam = pBeam->getNext()) {
-		gFanLX[i] = pBeam->getLeftEndXf();
-		gFanLY[i] = float(pBeam->getLeftEndY());
-		gFanRX[i] = pBeam->getRightEndXf();
-		gFanRY[i] = float(pBeam->getRightEndY());
+	C4FoWBeam *beam = startBeam;
+	for (int32_t i = 0; i < beamCount; i++, beam = beam->getNext())
+	{
+		C4FoWBeamTriangle tri;
+		tri.fanLX = beam->getLeftEndXf();
+		tri.fanLY = float(beam->getLeftEndY());
+		tri.fanRX = beam->getRightEndXf();
+		tri.fanRY = float(beam->getRightEndY());
+		tri.clipLeft = false; // TODO Newton: pBeams.start != startBeam
+		tri.clipRight = false; // TODO Newton: pBeams.end != endBeam
+		result.push_back(tri);
 	}
 
 	// Phase 1: Project lower point so it lies on a line with outer left/right
 	// light lines.
-	float gScanLevel = 0;
-	for (int iStep = 0; iStep < 100000; iStep++) {
-
+	float scanLevel = 0;
+	for (int step = 0; step < 100000; step++)
+	{
 		// Find the beam to project. This makes this whole algorithm O(n²),
 		// but I see no other way to make the whole thing robust :/
-		float gBestLevel = FLT_MAX;
-		int j;
-		for (j = 0; j+1 < iBeamCount; j++) {
-			float gLevel = Min(gFanRY[j], gFanLY[j+1]);
-			if (gLevel <= gScanLevel || gLevel >= gBestLevel)
+		float bestLevel = FLT_MAX;
+		for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); ++it)
+		{
+			nextIt = it; ++nextIt;
+			float level = Min(it->fanRY, nextIt->fanLY);
+			if (level <= scanLevel || level >= bestLevel)
 				continue;
-			gBestLevel = gLevel;
+			bestLevel = level;
 		}
-		if(gBestLevel == FLT_MAX)
+		if(bestLevel == FLT_MAX)
 			break;
-		gScanLevel = gBestLevel;
+		scanLevel = bestLevel;
 
-		for(int i = 0; i+1 < iBeamCount; i++) {
+		for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); ++it)
+		{
+			nextIt = it; ++nextIt;
+			C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt;
 
-			if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
+			float level = Min(tri.fanRY, nextTri.fanLY);
+			if(level != bestLevel)
 				continue;
 
 			// Calculate light bounds. We assume a "smaller" light for closer beams
-			float gLightLX, gLightLY, gLightRX, gLightRY;
-			LightBallLeftMostPoint(gFanRX[i], gFanRY[i], gLightLX, gLightLY);
-			LightBallRightMostPoint(gFanLX[i+1], gFanLY[i+1], gLightRX, gLightRY);
+			float lightLX, lightLY, lightRX, lightRY;
+			LightBallLeftMostPoint(tri.fanRX, tri.fanRY, lightLX, lightLY);
+			LightBallRightMostPoint(nextTri.fanLX, nextTri.fanLY, lightRX, lightRY);
 
 			// Ascending
-			float gCrossX, gCrossY;
-			bool fDescendCollision = false;
-			if (gFanRY[i] > gFanLY[i+1]) {
-
+			float crossX, crossY;
+			bool descendCollision = false;
+			if (tri.fanRY > nextTri.fanLY)
+			{
 				// Left beam surface self-shadowing? We test whether the scalar product
 				// of the beam's normal and the light vector is positive.
-				if (  (gFanRY[i] - gFanLY[i]) * (gFanLX[i+1] - gLightRX) >=
-					  (gFanRX[i] - gFanLX[i]) * (gFanLY[i+1] - gLightRY)) {
-
+				if (  (tri.fanRY - tri.fanLY) * (nextTri.fanLX - lightRX) >=
+					  (tri.fanRX - tri.fanLX) * (nextTri.fanLY - lightRY))
+				{
 					// Reduce to upper point (Yep, we know that the upper point
 					// must be the right one. Try to figure out why!)
-					assert(gFanRY[i] <= gFanLY[i]);
-					gFanLX[i] = gFanRX[i];
-					gFanLY[i] = gFanRY[i];
+					assert(tri.fanRY <= tri.fanLY);
+					tri.fanLX = tri.fanRX;
+					tri.fanLY = tri.fanRY;
 				}
 
 				// Left beam reduced?
-				float gFanRXp = gFanRX[i]; float thresh = 1.0;
-				if (gFanRX[i] == gFanLX[i] && gFanRY[i] == gFanLY[i]) {
-
+				float fanRXp = tri.fanRX;
+				float threshold = 1.0;
+				if (tri.fanRX == tri.fanLX && tri.fanRY == tri.fanLY)
+				{
 					// Move point to the right for the purpose of finding the cross
-					// point - after all, given that gFanRX[i] == gFanLX[i], we
+					// point - after all, given that tri.fanRX == tri.fanLX, we
 					// only care about whether to eliminate or insert an additional
 					// point for the descend collision, so the exact value doesn't
 					// really matter - but we don't want find_cross to bail out!
-					gFanRXp += 1.0;
-					thresh = 0.0;
+					fanRXp += 1.0;
+					threshold = 0.0;
 				}
 
 				// Move right point of left beam to the left (the original point is partly shadowed)
-				bool fEliminate = false; float b;
-				bool f = find_cross(gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
-									gFanLX[i], gFanLY[i], gFanRXp, gFanRY[i],
-									&gCrossX, &gCrossY, &b);
+				bool eliminate = false;
+				float b;
+				bool f = find_cross(lightRX, lightRY, nextTri.fanLX, nextTri.fanLY,
+									tri.fanLX, tri.fanLY, fanRXp, tri.fanRY,
+									&crossX, &crossY, &b);
 			
 				// The self-shadow-check should have made sure that the two are
 				// never parallel.
@@ -514,202 +521,191 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 
 				// Cross point to left of surface? Then the surface itself is
 				// shadowed, and we don't need to draw it.
-				if (b >= thresh) {
-
-					fEliminate = true;
+				if (b >= threshold)
+				{
+					eliminate = true;
 
 				// Cross point actually right of surface? This can happen when
 				// we eliminated surfaces. It means that the light doesn't reach
 				// down far enough between this and the next beam to hit anything.
 				// As a result, we insert a new zero-width surface where the light
 				// stops.
-				} else if (b < 0.0) {
-
+				}
+				else if (b < 0.0)
+				{
 					// As it doesn't matter from this point on whether we were
 					// in an ascend or a descend case, this gets handled top-level.
 					// ... still debating with myself whether a "goto" would be
 					// cleaner here ;)
-					fDescendCollision = true;
-
-				} else {
-
+					descendCollision = true;
+				}
+				else
+				{
 					// Set cross point
-					gFanRX[i] = gCrossX;
-					gFanRY[i] = gCrossY;
-
+					tri.fanRX = crossX;
+					tri.fanRY = crossY;
 				}
 
 				// This shouldn't change the case we are in (uh, I think)
-				assert(gFanRY[i] > gFanLY[i+1]);
+				assert(tri.fanRY > nextTri.fanLY);
 
 				// Did we eliminate the surface with this step?
-				if (fEliminate && i) {
-
-					// Remove it then
-					for(int j = i; j+1 < iBeamCount; j++) {
-						gFanLX[j] = gFanLX[j+1];
-						gFanLY[j] = gFanLY[j+1];
-						gFanRX[j] = gFanRX[j+1];
-						gFanRY[j] = gFanRY[j+1];
-					}
+				if (eliminate && it != result.begin())
+				{
+					// Remove it then (increment iterator so it doesn't get invalidated)
+					result.erase(it++);
 
 					// With the elimination, we need to re-process the last
 					// beam, as it might be more shadowed than we realized.
 					// Note that the last point might have been projected already - 
-					// but that's okay, 
-					iBeamCount--; i-=2;
+					// but that's okay
+					--it;
 				}
 
 			// Descending - same, but mirrored. And without comments.
-			} else if (gFanRY[i] < gFanLY[i+1]) {
-				if (  (gFanRY[i+1] - gFanLY[i+1]) * (gFanRX[i] - gLightLX) >=
-					  (gFanRX[i+1] - gFanLX[i+1]) * (gFanRY[i] - gLightLY)) {
-					assert(gFanLY[i+1] <= gFanRY[i+1]);
-					gFanRX[i+1] = gFanLX[i+1];
-					gFanRY[i+1] = gFanLY[i+1];
+			}
+			else if (tri.fanRY < nextTri.fanLY)
+			{
+				if (  (nextTri.fanRY - nextTri.fanLY) * (tri.fanRX - lightLX) >=
+					  (nextTri.fanRX - nextTri.fanLX) * (tri.fanRY - lightLY))
+				{
+					assert(nextTri.fanLY <= nextTri.fanRY);
+					nextTri.fanRX = nextTri.fanLX;
+					nextTri.fanRY = nextTri.fanLY;
 				}
-				float gFanRXp = gFanRX[i+1], thresh = 0.0;
-				if (gFanRX[i+1] == gFanLX[i+1] && gFanRY[i+1] == gFanLY[i+1]) {
-					gFanRXp += 1.0;
-					thresh = 1.0;
+				float fanRXp = nextTri.fanRX;
+				float threshold = 0.0;
+				if (nextTri.fanRX == nextTri.fanLX && nextTri.fanRY == nextTri.fanLY)
+				{
+					fanRXp += 1.0;
+					threshold = 1.0;
 				}
-				bool fEliminate = false;
+
+				bool eliminate = false;
 				float b;
-				bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
-									gFanLX[i+1], gFanLY[i+1], gFanRXp, gFanRY[i+1],
-									&gCrossX, &gCrossY, &b);
+				bool f = find_cross(lightLX, lightLY, tri.fanRX, tri.fanRY,
+									nextTri.fanLX, nextTri.fanLY, fanRXp, nextTri.fanRY,
+									&crossX, &crossY, &b);
 				assert(f);
-				if (b <= thresh) {
-					fEliminate = true;
-				} else if (b > 1.0) {
-					fDescendCollision = true;
-				} else {
-					gFanLX[i+1] = gCrossX;
-					gFanLY[i+1] = gCrossY;
+				if (b <= threshold)
+				{
+					eliminate = true;
 				}
-				assert(gFanRY[i] < gFanLY[i+1]);
-				if (fEliminate && i+2 < iBeamCount) {
-					for(int j = i+1; j+1 < iBeamCount; j++) {
-						gFanLX[j] = gFanLX[j+1];
-						gFanLY[j] = gFanLY[j+1];
-						gFanRX[j] = gFanRX[j+1];
-						gFanRY[j] = gFanRY[j+1];
-					}
-					iBeamCount--; i--;
+				else if (b > 1.0)
+				{
+					descendCollision = true;
+				}
+				else
+				{
+					nextTri.fanLX = crossX;
+					nextTri.fanLY = crossY;
+				}
+				assert(tri.fanRY < nextTri.fanLY);
+				if (eliminate && nextIt != --result.end())
+				{
+					result.erase(it++);
+					if(it != result.begin()) --it;
 				}
 			}
 
-			if (fDescendCollision) {
-
+			if (descendCollision)
+			{
 				// Should never be parallel -- otherwise we wouldn't be here
 				// in the first place.
-				bool f = find_cross(gLightLX, gLightLY, gFanRX[i], gFanRY[i],
-									gLightRX, gLightRY, gFanLX[i+1], gFanLY[i+1],
-									&gCrossX, &gCrossY);
+				bool f = find_cross(lightRX, lightRY, tri.fanRX, tri.fanRY,
+									lightLX, lightLY, nextTri.fanLX, nextTri.fanLY,
+									&crossX, &crossY);
 				assert(f);
 
-				// Ensure some minimum distance to existing
-				// points - don't bother with too small
-				// bumps. This also catches some floating
+				// Ensure some minimum distance to existing points - don't
+				// bother with too small bumps. This also catches some floating
 				// point inacurracies.
-				const float gDescendEta = 0.5;
-				if (gCrossY <= gFanRY[i] + gDescendEta ||
-					gCrossY <= gFanLY[i+1] + gDescendEta)
+				const float descendEta = 0.5;
+				if (crossY <= tri.fanRY + descendEta ||	crossY <= nextTri.fanLY + descendEta)
 				  continue;
 
 				// This should always follow an elimination, but better check
-				assert(iOriginalBeamCount > iBeamCount);
-				for (int j = iBeamCount - 1; j >= i+1; j--) {
-					gFanLX[j+1] = gFanLX[j];
-					gFanLY[j+1] = gFanLY[j];
-					gFanRX[j+1] = gFanRX[j];
-					gFanRY[j+1] = gFanRY[j];
-				}
+				assert(beamCount > result.size());
 
-				// Okay, now i+1 should be free
-				gFanLX[i+1] = gCrossX;
-				gFanLY[i+1] = gCrossY;
-				gFanRX[i+1] = gCrossX;
-				gFanRY[i+1] = gCrossY;
+				C4FoWBeamTriangle newTriangle;
+				newTriangle.fanLX = crossX;
+				newTriangle.fanLY = crossY;
+				newTriangle.fanRX = crossX;
+				newTriangle.fanRY = crossY;
+
+				result.insert(nextIt, newTriangle);
 
 				// Jump over surface. Note that our right beam might get
 				// eliminated later on, causing us to back-track into this
 				// zero-length pseudo-surface. This will cause find_cross
 				// above to eliminate the pseudo-surface and back-track
 				// further to the left, which is exactly how it should work.
-				iBeamCount++; i++;
+				++it;
 			}
 
-		} // end for(int i = 0; i+1 < iBeamCount; i++) loop
-	} // end for (int iStep = 0; iStep < 100000; iStep++) loop
+		} // end for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt = it; it != --result.end(); ++it) loop
+	} // end for (int step = 0; step < 100000; step++) loop
 
 	// Phase 2: Calculate fade points
-	for (i = 0; i < iBeamCount; i++) {
+	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
+	{
+		C4FoWBeamTriangle &tri = *it;
 
 		// Calculate light bounds. Note that the way light size is calculated
 		// and we are using it below, we need to consider an "asymetrical" light.
-		float gLightLX, gLightLY, gLightRX, gLightRY;
-		LightBallLeftMostPoint(gFanLX[i], gFanLY[i], gLightLX, gLightLY);
-		LightBallRightMostPoint(gFanRX[i], gFanRY[i], gLightRX, gLightRY);
+		float lightLX, lightLY, lightRX, lightRY;
+		LightBallLeftMostPoint(tri.fanLX, tri.fanLY, lightLX, lightLY);
+		LightBallRightMostPoint(tri.fanRX, tri.fanRY, lightRX, lightRY);
 		
 		// This is simply the projection of the left point using the left-most
 		// light point, as well as the projection of the right point using the
 		// right-most light point.
 
 		// For once we actually calculate this using the real distance
-		float dx = gFanLX[i] - gLightLX;
-		float dy = gFanLY[i] - gLightLY;
+		float dx = tri.fanLX - lightLX;
+		float dy = tri.fanLY - lightLY;
 		float d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
-		gFadeLX[i] = gFanLX[i] + d * dx;
-		gFadeLY[i] = gFanLY[i] + d * dy;
+		tri.fadeLX = tri.fanLX + d * dx;
+		tri.fadeLY = tri.fanLY + d * dy;
 
-		dx = gFanRX[i] - gLightRX;
-		dy = gFanRY[i] - gLightRY;
+		dx = tri.fanRX - lightRX;
+		dy = tri.fanRY - lightRY;
 		d = float(pLight->getFadeout()) / sqrt(dx*dx + dy*dy);
-		gFadeRX[i] = gFanRX[i] + d * dx;
-		gFadeRY[i] = gFanRY[i] + d * dy;
+		tri.fadeRX = tri.fanRX + d * dx;
+		tri.fadeRY = tri.fanRY + d * dy;
 
 		// Do the fades cross?
-		if ((gFadeRX[i] - gLightRX) / (gFadeRY[i] - gLightRY)
-			< (gFadeLX[i] - gLightRX) / (gFadeLY[i] - gLightRY)) {
-
+		if ((tri.fadeRX - lightRX) / (tri.fadeRY - lightRY)
+			< (tri.fadeLX - lightRX) / (tri.fadeLY - lightRY))
+		{
 			// Average it
-			gFadeLX[i] = gFadeRX[i] = (gFadeLX[i] + gFadeRX[i]) / 2;
-			gFadeLY[i] = gFadeRY[i] = (gFadeLY[i] + gFadeRY[i]) / 2;
-
+			tri.fadeLX = tri.fadeRX = (tri.fadeLX + tri.fadeRX) / 2;
+			tri.fadeLY = tri.fadeRY = (tri.fadeLY + tri.fadeRY) / 2;
 		}
-
 	}
 
 	// Phase 4: Transform all points into global coordinates
-	for (i = 0; i < 4; i++) {
-		float *pX = gFanLX + 2 * i * iOriginalBeamCount,
-			  *pY = gFanLY + 2 * i * iOriginalBeamCount;
-		for (int32_t j = 0; j < iBeamCount; j++) {
-			float x = pX[j], y = pY[j];
-			pX[j] = transX(x, y);
-			pY[j] = transY(x, y);
-		}
-	}
-
-	for (i = 0; i < iBeamCount; i++)
+	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
 	{
-		C4FoWBeamTriangle triangle = C4FoWBeamTriangle();
-		triangle.fanLX = gFanLX[i];
-		triangle.fanLY = gFanLY[i];
-		triangle.fanRX = gFanRX[i];
-		triangle.fanRY = gFanRY[i];
-		triangle.fadeLX = gFadeLX[i];
-		triangle.fadeLY = gFadeLY[i];
-		triangle.fadeRX = gFadeRX[i];
-		triangle.fadeRY = gFadeRY[i];
-		triangle.clipLeft = false; // TODO Newton: pBeams.start != pStart
-		triangle.clipRight = false; // TODO Newton: pBeams.end != pEnd
-		result.push_back(triangle);
-	}
+		C4FoWBeamTriangle &tri = *it;
+		float x,y;
 
-	delete[] gFanLX;
+		x = tri.fanRX, y = tri.fanRY;
+		tri.fanRX = transX(x,y);
+		tri.fanRY = transY(x,y);
+
+		x = tri.fanLX, y = tri.fanLY;
+		tri.fanLX = transX(x,y);
+		tri.fanLY = transY(x,y);
+
+		x = tri.fadeRX, y = tri.fadeRY;
+		tri.fadeRX = transX(x,y);
+		tri.fadeRY = transY(x,y);
+
+		x = tri.fadeLX, y = tri.fadeLY;
+		tri.fadeLX = transX(x,y);
+		tri.fadeLY = transY(x,y);
+	}
 
 	return result;
 }
-
