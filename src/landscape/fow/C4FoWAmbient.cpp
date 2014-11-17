@@ -119,12 +119,13 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 		for(unsigned int x = 0; x < SizeX; ++x)
 		{
 			debug.SetPix(x, y, int(ambient[y * SizeX + x] * 255. + 0.5));
-			CStdPalette pal;
-			for(int i = 0; i < 256; ++i)
-				pal.Colors[i] = i + (i << 8) + (i << 16);
-			debug.Save("Ambient.bmp", &pal);
 		}
 	}
+
+	CStdPalette pal;
+	for(int i = 0; i < 256; ++i)
+		pal.Colors[i] = i + (i << 8) + (i << 16);
+	debug.Save("Ambient.bmp", &pal);
 #endif
 
 	// Store it in a GL texture
