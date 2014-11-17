@@ -50,11 +50,10 @@ struct IFTZoom {
 	bool operator()(int x, int y) const
 	{
 		// Landscape coordinates
-		const int lx = static_cast<int>((x + 0.5) * sx);
-		const int ly = static_cast<int>((y + 0.5) * sy);
+		const int lx = BoundBy(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
+		const int ly = BoundBy(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
 		// IFT check
-		//return (Landscape.GetPix(lx, ly) & IFT) != 0;
-		return Landscape.GetPix(lx, ly) != 0;
+		return (Landscape._GetPix(lx, ly) & IFT) != 0;
 	}
 
 	const C4Landscape& Landscape;
