@@ -5,6 +5,8 @@
 #include "C4FoWBeamTriangle.h"
 #include "C4FoWDrawStrategy.h"
 
+#include <vector>
+
 C4FoWLight::C4FoWLight(C4Object *pObj)
 	: iX(fixtoi(pObj->fix_x)),
 	  iY(fixtoi(pObj->fix_y)),
@@ -13,23 +15,24 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 	  iSize(20),
 	  pNext(NULL),
 	  pObj(pObj),
-	  sectionUp(this, 0),
-	  sectionLeft(this, 270),
-	  sectionDown(this, 180),
-	  sectionRight(this, 90)
+	  sections(4)
 {
+	sections[0] = new C4FoWLightSection(this,0);
+	sections[1] = new C4FoWLightSection(this,90);
+	sections[2] = new C4FoWLightSection(this,180);
+	sections[3] = new C4FoWLightSection(this,270);
 }
 
 C4FoWLight::~C4FoWLight()
 {
+	for( int i = 0; i < sections.size(); ++i )
+		delete sections[i];
 }
 
 void C4FoWLight::Invalidate(C4Rect r)
 {
-	sectionUp.Invalidate(r);
-	sectionDown.Invalidate(r);
-	sectionLeft.Invalidate(r);
-	sectionRight.Invalidate(r);
+	for( int i = 0; i < sections.size(); ++i )
+		sections[i]->Invalidate(r);
 }
 
 void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
@@ -43,52 +46,53 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 	if (iReach2 < iReach)
 	{
 		iReach = iReach2;
-		sectionUp.Prune(iReach);
-		sectionDown.Prune(iReach);
-		sectionLeft.Prune(iReach);
-		sectionRight.Prune(iReach);
+		for( int i = 0; i < sections.size(); ++i )
+			sections[i]->Prune(iReach);
 
 	} else {
 
 		// Reach increased? Dirty beams that might get longer now
 		iReach = iReach2;
-		sectionUp.Dirty(iReach);
-		sectionDown.Dirty(iReach);
-		sectionLeft.Dirty(iReach);
-		sectionRight.Dirty(iReach);
+		for( int i = 0; i < sections.size(); ++i )
+			sections[i]->Dirty(iReach);
 	}
 }
 
 void C4FoWLight::Update(C4Rect Rec)
 {
-
 	// Update position from object. Clear if we moved in any way
 	int32_t iNX = fixtoi(pObj->fix_x), iNY = fixtoi(pObj->fix_y);
 	if (iNX != iX || iNY != iY)
 	{
-		sectionUp.Prune(0);
-		sectionDown.Prune(0);
-		sectionLeft.Prune(0);
-		sectionRight.Prune(0);
+		for( int i = 0; i < sections.size(); ++i )
+			sections[i]->Prune(0);
 		iX = iNX; iY = iNY;
 	}
 
-	sectionUp.Update(Rec);
-	sectionDown.Update(Rec);
-	sectionLeft.Update(Rec);
-	sectionRight.Update(Rec);
+	for( int i = 0; i < sections.size(); ++i )
+		sections[i]->Update(Rec);
 }
 
 void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 {
 	std::list<C4FoWBeamTriangle> triangles;
-	triangles.splice(triangles.end(), sectionUp.CalculateTriangles(region));
-	triangles.splice(triangles.end(), sectionRight.CalculateTriangles(region));
-	triangles.splice(triangles.end(), sectionDown.CalculateTriangles(region));
-	triangles.splice(triangles.end(), sectionLeft.CalculateTriangles(region));
 
-	CalculateIntermediateFadeTriangles(triangles);
+	bool clip = false;
 	
+	for( int i = 0; i < sections.size(); ++i )
+	{
+		std::list<C4FoWBeamTriangle> &sectionTriangles = sections[i]->CalculateTriangles(region);
+
+		// if the triangles of one section are clipped completely, the neighbouring triangles
+		// must be marked as clipped
+		if(!triangles.empty()) triangles.rbegin()->clipRight |= clip;
+		if(!sectionTriangles.empty()) sectionTriangles.begin()->clipLeft |= clip;
+
+		clip = sectionTriangles.empty();
+		triangles.splice(triangles.end(), sectionTriangles);
+	}
+	CalculateIntermediateFadeTriangles(triangles);
+
 	// Here's the master plan for updating the lights texture. We
 	// want to add intensity (R channel) as well as the normal (GB channels).
 	// Normals are obviously meant to be though of as signed, though,
@@ -184,7 +188,9 @@ void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &t
 		C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt; // just for convenience
 
 		pen->DrawLightVertex(tri.fanLX, tri.fanLY);	
-		pen->DrawLightVertex(tri.fanRX, tri.fanRY);
+
+		if(nextTri.fanLX != tri.fanRX || nextTri.fanLY != tri.fanRY)
+			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
 	}
 	pen->EndFan();
 }

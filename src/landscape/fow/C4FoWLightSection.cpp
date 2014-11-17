@@ -397,7 +397,7 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 
 }
 
-int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&lastBeam)
+int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam)
 {
 	if(rect.y + rect.Hgt < 0) return 0;
 
@@ -417,7 +417,7 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firs
 		beam = beam->getNext();
 		beamCount++;
 	}
-	lastBeam = beam;
+	endBeam = beam;
 
 	return beamCount;
 }
@@ -426,9 +426,13 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 {
 	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
-	// no beams inside the rectangle? Good, nothing to render 
 	std::list<C4FoWBeamTriangle> result;
+
+	// no beams inside the rectangle? Good, nothing to render 
 	if(!beamCount) return result;
+
+	bool isStartClipped = startBeam != pBeams;
+	bool isEndClipped = !!endBeam;
 
 	C4FoWBeam *beam = startBeam;
 	for (int32_t i = 0; i < beamCount; i++, beam = beam->getNext())
@@ -438,9 +442,15 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		tri.fanLY = float(beam->getLeftEndY());
 		tri.fanRX = beam->getRightEndXf();
 		tri.fanRY = float(beam->getRightEndY());
-		tri.clipLeft = false; // TODO Newton: pBeams.start != startBeam
-		tri.clipRight = false; // TODO Newton: pBeams.end != endBeam
-		result.push_back(tri);
+		if(i == 0 && isStartClipped)
+			tri.clipLeft = true;
+		if(i == beamCount - 1 && isEndClipped)
+		{
+			tri.clipRight = true;
+		}
+
+		if(tri.fanLX != tri.fanRX || tri.fanLY != tri.fanRY)
+			result.push_back(tri);
 	}
 
 	// Phase 1: Project lower point so it lies on a line with outer left/right

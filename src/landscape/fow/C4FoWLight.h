@@ -7,6 +7,8 @@
 #include "C4FoWLightSection.h"
 #include "C4Rect.h"
 
+#include <vector>
+
 /** This class represents one light source. A light source has an associated object with which the light source moves
     and one light section that handles the light beams for each direction (up, down, left, right).
 
@@ -27,10 +29,7 @@ private:
 	C4FoWLight *pNext;
 	C4Object *pObj; // Associated object
 
-	C4FoWLightSection sectionUp;
-	C4FoWLightSection sectionLeft;
-	C4FoWLightSection sectionDown;
-	C4FoWLightSection sectionRight;
+	std::vector<C4FoWLightSection*> sections;
 
 public:
 	int32_t getX() const { return iX; }

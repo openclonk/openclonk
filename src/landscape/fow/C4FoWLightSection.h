@@ -105,8 +105,9 @@ private:
 	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y);
 
 	/** Find beams that go through the given rectangle. Returns the number of beams that are in the rectangle and makes
-	    pFirst and pLast point to the first and the last beam of these */
-	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&lastBeam);
+	    firstBeam point to the first and endBeam point to the beam after the last of these. Thus, endBeam is NULL if 
+		no beams were clipped at the end. */
+	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam);
 };
 
 
