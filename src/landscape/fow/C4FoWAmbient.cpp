@@ -97,7 +97,7 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	const double zoom_y = static_cast<double>(landscape.Height) / (float)(SizeY);
 
 	// Zoomed radius
-	const double R = (radius / sqrt(zoom_x * zoom_y) + 0.5);
+	const double R = radius / sqrt(zoom_x * zoom_y);
 	// Normalization factor with the full circle
 	// The analytic result is 2*R*M_PI, and this number is typically close to it
 	const double norm = AmbientForPix(0, 0, R, IFTFull()) * full_coverage;
