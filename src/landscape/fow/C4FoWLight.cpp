@@ -189,7 +189,7 @@ void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &t
 
 		pen->DrawLightVertex(tri.fanLX, tri.fanLY);	
 
-		if(nextTri.fanLX != tri.fanRX || nextTri.fanLY != tri.fanRY)
+		if(nextIt == triangles.begin() || nextTri.fanLX != tri.fanRX || nextTri.fanLY != tri.fanRY)
 			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
 	}
 	pen->EndFan();

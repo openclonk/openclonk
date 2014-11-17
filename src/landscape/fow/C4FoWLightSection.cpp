@@ -453,6 +453,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			result.push_back(tri);
 	}
 
+	if(result.empty()) return result;
+
 	// Phase 1: Project lower point so it lies on a line with outer left/right
 	// light lines.
 	float scanLevel = 0;
