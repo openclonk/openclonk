@@ -6,11 +6,12 @@ namespace
 {
 
 template<typename IFT>
-double AmbientForPix(int x0, int y0, int R, const IFT& ift)
+double AmbientForPix(int x0, int y0, double R, const IFT& ift)
 {
 	double d = 0.;
 
-	for(int y = 1; y <= R; ++y)
+	const int Ri = static_cast<int>(R);
+	for(int y = 1; y <= Ri; ++y)
 	{
 		// quarter circle
 		int max_x = static_cast<int>(sqrt(R * R - y * y));
@@ -68,7 +69,8 @@ struct IFTZoom {
 } // anonymous namespace
 
 C4FoWAmbient::C4FoWAmbient()
-	: Tex(0), SizeX(0), SizeY(0), LandscapeX(0), LandscapeY(0)
+	: Tex(0), Resolution(0.), Radius(0.), FullCoverage(0.),
+	  SizeX(0), SizeY(0), LandscapeX(0), LandscapeY(0)
 {
 }
 
@@ -81,16 +83,23 @@ void C4FoWAmbient::Clear()
 {
 	if(Tex != 0) glDeleteTextures(1, &Tex);
 	Tex = 0;
+	Resolution = Radius = FullCoverage = 0.;
 	SizeX = SizeY = 0;
 	LandscapeX = LandscapeY = 0;
 }
 
 void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double resolution, double radius, double full_coverage)
 {
+	assert(resolution >= 1.);
+	assert(radius >= 1.);
+	assert(full_coverage > 0 && full_coverage <= 1.);
+
 	// Clear old map
 	if(Tex != 0) Clear();
 
-	const C4TimeMilliseconds begin = C4TimeMilliseconds::Now();
+	Resolution = resolution;
+	Radius = radius;
+	FullCoverage = full_coverage;
 
 	// Number of zoomed pixels
 	LandscapeX = landscape.Width;
@@ -98,23 +107,47 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	SizeX = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
 	SizeY = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
 
-	// Factor to go from zoomed to landscape coordinates
-	const double zoom_x = static_cast<double>(landscape.Width) / (float)(SizeX);
-	const double zoom_y = static_cast<double>(landscape.Height) / (float)(SizeY);
+	glGenTextures(1, &Tex);
+	glBindTexture(GL_TEXTURE_2D, Tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, NULL);
 
+	const C4TimeMilliseconds begin = C4TimeMilliseconds::Now();
+	UpdateFromLandscape(landscape, C4Rect(0, 0, landscape.Width, landscape.Height));
+	uint32_t dt = C4TimeMilliseconds::Now() - begin;
+	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
+}
+
+void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rect& update)
+{
+	assert(Tex != 0);
+
+	// Factor to go from zoomed to landscape coordinates
+	const double zoom_x = static_cast<double>(landscape.Width) / SizeX;
+	const double zoom_y = static_cast<double>(landscape.Height) / SizeY;
+	// Update region in zoomed coordinates
+	const unsigned int left = Max(static_cast<int>( (update.x - Radius) / zoom_x), 0);
+	const unsigned int right = Min(static_cast<unsigned int>( (update.x + update.Wdt + Radius) / zoom_x), SizeX - 1) + 1;
+	const unsigned int top = Max(static_cast<int>( (update.y - Radius) / zoom_y), 0);
+	const unsigned int bottom = Min(static_cast<unsigned int>( (update.y + update.Hgt + Radius) / zoom_y), SizeY - 1) + 1;
+	assert(right > left);
+	assert(bottom > top);
 	// Zoomed radius
-	const double R = radius / sqrt(zoom_x * zoom_y);
+	const double R = Radius / sqrt(zoom_x * zoom_y);
 	// Normalization factor with the full circle
 	// The analytic result is 2*R*M_PI, and this number is typically close to it
-	const double norm = AmbientForPix(0, 0, R, IFTFull()) * full_coverage;
+	const double norm = AmbientForPix(0, 0, R, IFTFull()) * FullCoverage;
 	// Create the ambient map
 	IFTZoom iftZoom(landscape, zoom_x, zoom_y);
-	float* ambient = new float[SizeX * SizeY];
-	for(unsigned int y = 0; y < SizeY; ++y)
+	float* ambient = new float[(right - left) * (bottom - top)];
+	for(unsigned int y = top; y < bottom; ++y)
 	{
-		for(unsigned int x = 0; x < SizeX; ++x)
+		for(unsigned int x = left; x < right; ++x)
 		{
-			ambient[y * SizeX + x] = Min(AmbientForPix(x, y, R, iftZoom) / norm, 1.0);
+			ambient[(y - top) * (right - left) + (x - left)] = Min(AmbientForPix(x, y, R, iftZoom) / norm, 1.0);
 		}
 	}
 
@@ -134,16 +167,8 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	debug.Save("Ambient.bmp", &pal);
 #endif
 
-	// Store it in a GL texture
-	glGenTextures(1, &Tex);
+	// Update the texture
 	glBindTexture(GL_TEXTURE_2D, Tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, ambient);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, left, top, (right - left), (bottom - top), GL_RED, GL_FLOAT, ambient);
 	delete[] ambient;
-
-	uint32_t dt = C4TimeMilliseconds::Now() - begin;
-	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
 }

@@ -17,6 +17,10 @@ public:
 	GLuint Tex;
 
 private:
+	// Parameters
+	double Resolution;
+	double Radius;
+	double FullCoverage;
 	// Landscape size
 	unsigned int LandscapeX;
 	unsigned int LandscapeY;
@@ -34,6 +38,9 @@ public:
 	// full_coverage is a number between 0 and 1, and it specifies what portion of the full circle
 	// needs to be illuminated for full ambient light intensity.
 	void CreateFromLandscape(const C4Landscape& landscape, double resolution, double radius, double full_coverage);
+
+	// Update the map after the landscape has changed in the region indicated by update.
+	void UpdateFromLandscape(const C4Landscape& landscape, const C4Rect& update);
 
 	unsigned int GetLandscapeWidth() const { return LandscapeX; }
 	unsigned int GetLandscapeHeight() const { return LandscapeY; }
