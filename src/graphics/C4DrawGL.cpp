@@ -347,8 +347,10 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 		const int32_t iLightWdt = pFoW->getSurface()->Wdt;
 		const int32_t iLightHgt = pFoW->getSurface()->Hgt;
 
-		const int iVpWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
-		const int iVpHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+		int iVpWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+		int iVpHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+		int iX=iClipX1; if (iX<0) { iVpWdt+=iX; iX=0; }
+		int iY=iClipY1; if (iY<0) { iVpHgt+=iY; iY=0; }
 
 		glMatrixMode(GL_TEXTURE);
 
@@ -363,7 +365,7 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 		glScalef(1.0f/pFoW->getFoW()->Ambient.GetLandscapeWidth(), 1.0f/pFoW->getFoW()->Ambient.GetLandscapeHeight(), 1.0f);
 		glTranslatef(LightRect.x, LightRect.y, 0.0f); // TODO: LightRect should have floating point accuracy for this to work best
 		glScalef( (float)LightRect.Wdt / (float)iVpWdt, (float)LightRect.Hgt / (float)iVpHgt, 1.0f);
-		glTranslatef(0.0f, iVpHgt, 0.0f);
+		glTranslatef(-iX, iVpHgt + iY, 0.0f);
 		glScalef(1.0f, -1.0f, 1.0f);
 
 		// Light texture
