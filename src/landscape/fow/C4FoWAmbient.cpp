@@ -10,27 +10,31 @@ double AmbientForPix(int x0, int y0, int R, const IFT& ift)
 {
 	double d = 0.;
 
-	for(int y = y0 - R; y <= y0 + R; ++y)
+	for(int y = 1; y <= R; ++y)
 	{
-		for(int x = x0 - R; x <= x0 + R; ++x)
+		// quarter circle
+		int max_x = static_cast<int>(sqrt(R * R - y * y));
+		for(int x = 1; x <= max_x; ++x)
 		{
-			const double l2 = (x - x0) * (x - x0) + (y - y0) * (y - y0);
-			if(l2 > R*R || ift(x, y)) continue;
+			const double l = sqrt(x*x + y*y);
+			assert(l <= R);
 
-			if(x == x0 && y == y0)
-			{
-				// Central pixel, this corresponds to the integral
-				// for a round pixel with the same area as a square pixel
-				d += 2 * sqrt(M_PI);
-			}
-			else
-			{
-				// Non-central pixel; assume same weight over the full
-				// pixel.
-				d += 1. / sqrt(l2);
-			}
+			if(!ift(x0 + x, y0 + y)) d += 1. / l;
+			if(!ift(x0 + x, y0 - y)) d += 1. / l;
+			if(!ift(x0 - x, y0 - y)) d += 1. / l;
+			if(!ift(x0 - x, y0 + y)) d += 1. / l;
 		}
+
+		// Vertical/Horizontal lines
+		const double l = static_cast<double>(y);
+		if(!ift(x0 + y, y0)) d += 1. / l;
+		if(!ift(x0 - y, y0)) d += 1. / l;
+		if(!ift(x0, y0 + y)) d += 1. / l;
+		if(!ift(x0, y0 - y)) d += 1. / l;
 	}
+
+	// Central pix
+	if(!ift(x0, y0)) d += 2 * sqrt(M_PI); // int_0^2pi int_0^1/sqrt(pi) 1/r dr r dphi
 
 	return d;
 }
@@ -86,6 +90,8 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	// Clear old map
 	if(Tex != 0) Clear();
 
+	const C4TimeMilliseconds begin = C4TimeMilliseconds::Now();
+
 	// Number of zoomed pixels
 	LandscapeX = landscape.Width;
 	LandscapeY = landscape.Height;
@@ -138,5 +144,6 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SizeX, SizeY, 0, GL_RED, GL_FLOAT, ambient);
 	delete[] ambient;
 
-	LogF("Created %ux%u ambient map", SizeX, SizeY);
+	uint32_t dt = C4TimeMilliseconds::Now() - begin;
+	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
 }
