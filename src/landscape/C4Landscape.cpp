@@ -295,6 +295,7 @@ bool C4Landscape::DoRelights()
 		if (!Relights[i].Wdt)
 			break;
 		// Remove all solid masks in the (twice!) extended region around the change
+		// TODO: Isn't Relights[i] already an "affected" rect? Might save a bit here...
 		C4Rect SolidMaskRect = pLandscapeRender->GetAffectedRect(Relights[i]);
 		C4SolidMask * pSolid;
 		for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
@@ -1162,6 +1163,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete Map; Map=NULL;
 	// clear initial landscape
 	delete [] pInitial; pInitial = NULL;
+	delete pFoW; pFoW = NULL;
 	// clear scan
 	ScanX=0;
 	Mode=C4LSC_Undefined;
@@ -1599,7 +1601,7 @@ void C4Landscape::Default()
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
 	}
-	delete pFoW; pFoW = NULL;
+	pFoW = NULL;
 }
 
 void C4Landscape::ClearMatCount()
