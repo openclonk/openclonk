@@ -282,6 +282,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 		pDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else if(pLandscapeRender)
 	{
+		DoRelights();
 		pLandscapeRender->Draw(cgo, *pLight);
 	}
 	if (Modulation) pDraw->DeactivateBlitModulation();
