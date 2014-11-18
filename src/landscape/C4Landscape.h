@@ -218,8 +218,6 @@ protected:
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes
 	CSurface8 * CreateMapS2(C4Group &ScenFile); // create map by def file
-	bool Relight(C4Rect To);
-	bool ApplyLighting(C4Rect To);
 	bool Mat2Pal(); // assign material colors to landscape palette
 	void UpdatePixCnt(const class C4Rect &Rect, bool fCheck = false);
 	void UpdateMatCnt(C4Rect Rect, bool fPlus);
