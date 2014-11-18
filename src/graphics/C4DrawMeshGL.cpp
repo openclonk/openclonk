@@ -161,7 +161,8 @@ namespace
 			"uniform sampler2D oc_Ambient;"
 			"void main()"
 			"{"
-                        "  vec4 diffuse;"
+                        "  vec4 lightClr;"
+                        "  vec3 normalDir = normalize(normal);"
                         "  if(oc_UseLight != 0)"
                         "  {"
 			     // Light calculation
@@ -172,16 +173,17 @@ namespace
                              // Don't actually use the ambient part of the material and instead a diffuse light from the front, like in the master branch
 			     // Because meshes are not tuned for ambient light at the moment, every mesh material would need to be fixed.
 			     // Otherwise the first term would be ambient * gl_FrontMaterial.ambient
-			"    diffuse = ambient * (gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * (0.25 + 0.75 * max(dot(normalize(normal), vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * (0.25 + 0.75 * max(dot(normalize(normal), lightDir), 0.0)));"
+			"    lightClr = ambient * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0)), gl_FrontMaterial.diffuse.a)) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a));"
                         "  }"
                         "  else"
                         "  {"
                              // No light -- place a simple directional light from the front (equivalent to the behaviour in
 			     // the master branch, modulo interpolated normals)
                         "    vec3 lightDir = vec3(0.0, 0.0, 1.0);"
-			"    diffuse = gl_FrontMaterial.emission + gl_FrontMaterial.diffuse * max(dot(normalize(normal), lightDir), 0.0);"
+			"    lightClr = gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a);"
                         "  }"
 			// Texture units from material script
+			"  vec4 diffuse = lightClr;"
 			"  vec4 currentColor = diffuse;"
 			"  %s"
 			// Output with color modulation and mod2
