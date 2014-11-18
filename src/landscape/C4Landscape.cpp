@@ -100,7 +100,9 @@ void C4Landscape::Execute()
 	    }
 	  }*/
 #endif
-	// Relights
+	// Queued Relights -- note that normally we process them before drawing every frame;
+	// this just makes sure relights don't accumulate over a long period of time if no
+	// viewport is open (developer mode).
 	if (!::Game.iTick35)
 		DoRelights();
 }
