@@ -173,14 +173,14 @@ namespace
                              // Don't actually use the ambient part of the material and instead a diffuse light from the front, like in the master branch
 			     // Because meshes are not tuned for ambient light at the moment, every mesh material would need to be fixed.
 			     // Otherwise the first term would be ambient * gl_FrontMaterial.ambient
-			"    lightClr = ambient * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0)), gl_FrontMaterial.diffuse.a)) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a));"
+			"    lightClr = vec4(ambient * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0))), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
                         "  }"
                         "  else"
                         "  {"
                              // No light -- place a simple directional light from the front (equivalent to the behaviour in
 			     // the master branch, modulo interpolated normals)
                         "    vec3 lightDir = vec3(0.0, 0.0, 1.0);"
-			"    lightClr = gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a);"
+			"    lightClr = vec4(gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
                         "  }"
 			// Texture units from material script
 			"  vec4 diffuse = lightClr;"

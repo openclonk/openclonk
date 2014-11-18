@@ -20,12 +20,12 @@ void main()
     vec3 lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));
     float lightIntensity = 2.0 * lightPx.r;
     float ambient = texture2D(oc_Ambient, (gl_TextureMatrix[3] * gl_FragCoord).xy).r;
-    lightClr = ambient * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0)), gl_FrontMaterial.diffuse.a)) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a));
+    lightClr = vec4(ambient * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0))), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);
   }
   else
   {
     vec3 lightDir = vec3(0.0, 0.0, 1.0);
-    lightClr = gl_FrontMaterial.emission + vec4(gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.diffuse.a);
+    lightClr = vec4(gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);
   }
 
   // Modulate with base texture
