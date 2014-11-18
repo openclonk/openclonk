@@ -81,7 +81,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	
 	for( int i = 0; i < sections.size(); ++i )
 	{
-		std::list<C4FoWBeamTriangle> &sectionTriangles = sections[i]->CalculateTriangles(region);
+		std::list<C4FoWBeamTriangle> sectionTriangles = sections[i]->CalculateTriangles(region);
 
 		// if the triangles of one section are clipped completely, the neighbouring triangles
 		// must be marked as clipped
