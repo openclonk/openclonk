@@ -303,6 +303,7 @@ bool C4Landscape::DoRelights()
 			pSolid->RemoveTemporary(SolidMaskRect);
 		// Perform the update
 		pLandscapeRender->Update(Relights[i], this);
+		if (pFoW) pFoW->Ambient.UpdateFromLandscape(*this, Relights[i]);
 		// Restore Solidmasks
 		for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 			pSolid->PutTemporary(SolidMaskRect);
@@ -3329,7 +3330,10 @@ void C4Landscape::FinishChange(C4Rect BoundingBox)
 	UpdatePixCnt(BoundingBox);
 	// update FoW
 	if (pFoW)
+	{
 		pFoW->Invalidate(BoundingBox);
+		pFoW->Ambient.UpdateFromLandscape(*this, BoundingBox);
+	}
 }
 
 
