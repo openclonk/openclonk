@@ -380,6 +380,7 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 		glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
 		glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
 		glScalef( (float)LightRect.Wdt / (float)iVpWdt, (float)LightRect.Hgt / (float)iVpHgt, 1.0f);
+		glTranslatef(-iX, -iY, 0.0f);
 
 		glMatrixMode(GL_MODELVIEW);
 	}

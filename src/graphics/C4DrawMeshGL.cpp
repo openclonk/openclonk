@@ -544,6 +544,7 @@ namespace
 			glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
 			glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
 			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
+			glTranslatef(-clipRect.x, -clipRect.y, 0.0f);
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = texIndex;
