@@ -34,6 +34,7 @@ const int C4LR_BiasDistanceY = 8;
 
 // Name used for the seperator texture
 const char *const SEPERATOR_TEXTURE = "--SEP--";
+
 C4LandscapeRenderGL::C4LandscapeRenderGL()
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
@@ -523,18 +524,19 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 
 	// Make uniform name map
 	ZeroMem(UniformNames, sizeof(UniformNames));
-	UniformNames[C4LRU_LandscapeTex] = "landscapeTex";
-	UniformNames[C4LRU_ScalerTex]	 = "scalerTex";
-	UniformNames[C4LRU_MaterialTex]	 = "materialTex";
-	UniformNames[C4LRU_LightTex]	 = "lightTex";
-	UniformNames[C4LRU_AmbientTex]	 = "ambientTex";
-	UniformNames[C4LRU_Resolution]	 = "resolution";
-	UniformNames[C4LRU_Center]       = "center";
-	UniformNames[C4LRU_MatMap]       = "matMap";
-	UniformNames[C4LRU_MatMapTex]	 = "matMapTex";
-	UniformNames[C4LRU_MaterialDepth]= "materialDepth";
-	UniformNames[C4LRU_MaterialSize] = "materialSize";
-	UniformNames[C4LRU_AmbientScale] = "ambientScale";
+	UniformNames[C4LRU_LandscapeTex]      = "landscapeTex";
+	UniformNames[C4LRU_ScalerTex]         = "scalerTex";
+	UniformNames[C4LRU_MaterialTex]       = "materialTex";
+	UniformNames[C4LRU_LightTex]          = "lightTex";
+	UniformNames[C4LRU_AmbientTex]        = "ambientTex";
+	UniformNames[C4LRU_Resolution]        = "resolution";
+	UniformNames[C4LRU_Center]            = "center";
+	UniformNames[C4LRU_MatMap]            = "matMap";
+	UniformNames[C4LRU_MatMapTex]         = "matMapTex";
+	UniformNames[C4LRU_MaterialDepth]     = "materialDepth";
+	UniformNames[C4LRU_MaterialSize]      = "materialSize";
+	UniformNames[C4LRU_AmbientBrightness] = "ambientBrightness";
+	UniformNames[C4LRU_AmbientScale]      = "ambientScale";
 
 	// Initialise!
 	if (!Shader.Init("landscape", UniformNames)) {
@@ -836,13 +838,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	                        float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
 	                        float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
 
-
 	// factor between actual landscape size and surface size, so that we can use the landscape
 	// coordinates for the ambient map lookup.
 	// TODO: These could actually be shader constants, and do not really need to be uniforms...
 	ShaderCall.SetUniform2f(C4LRU_AmbientScale,
 	                        static_cast<float>(Surfaces[0]->Wdt) / iWidth,
 	                        static_cast<float>(Surfaces[0]->Hgt) / iHeight);
+	ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light.getFoW()->Ambient.GetBrightness());
 
 	// Start binding textures
 	if(Shader.HaveUniform(C4LRU_LandscapeTex))

@@ -300,6 +300,7 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 	GLint fUseNormalLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseNormal");
 	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
 	GLint overlayClrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "overlayClrMod");
+	GLint ambientBrightnessLocation = glGetUniformLocationARB(multi_blt_program->Program, "ambientBrightness");
 	GLint lightLocation = glGetUniformLocationARB(multi_blt_program->Program, "Light");
 	GLint ambientLocation = glGetUniformLocationARB(multi_blt_program->Program, "Ambient");
 	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "Texture");
@@ -383,6 +384,8 @@ void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLu
 		glTranslatef(-iX, -iY, 0.0f);
 
 		glMatrixMode(GL_MODELVIEW);
+
+		glUniform1fARB(ambientBrightnessLocation, pFoW->getFoW()->Ambient.GetBrightness());
 	}
 
 	if(overlayTex != 0)
@@ -624,6 +627,7 @@ bool CStdGL::RestoreDeviceObjects()
 		"uniform int fUseNormal;"
 		"uniform vec4 clrMod;"
 		"uniform vec4 overlayClrMod;"
+		"uniform float ambientBrightness;"
 		"uniform sampler2D Texture;"
 		"uniform sampler2D Overlay;"
 		"uniform sampler2D Light;"
@@ -662,8 +666,8 @@ bool CStdGL::RestoreDeviceObjects()
                 "    {"
 		"      normalDir = vec3(0.0, 0.0, 1.0);"
 		"    }"
-		"    float ambient = texture2D(Ambient, (gl_TextureMatrix[3] * gl_FragCoord).xy).r;"
-		"    lightClr = ambient * lightClr + (1.0 - ambient) * vec3(1.0, 1.0, 1.0) * lightIntensity * (0.25 + 0.75 * dot(normalDir, lightDir));"
+		"    float ambient = texture2D(Ambient, (gl_TextureMatrix[3] * gl_FragCoord).xy).r * ambientBrightness;"
+		"    lightClr = ambient * lightClr + (1.0 - min(ambient, 1.0)) * vec3(1.0, 1.0, 1.0) * lightIntensity * (0.25 + 0.75 * dot(normalDir, lightDir));"
 		"  }"
 		// Final output, depending on blit mode
 		"  if(fMod2 != 0)"

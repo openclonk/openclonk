@@ -62,6 +62,7 @@ namespace
 		{ "oc_use_light", StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT },
 		{ "oc_light", StdMeshMaterialShaderParameter::AUTO_OC_LIGHT },
 		{ "oc_ambient", StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT },
+		{ "oc_ambient_brightness", StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT_BRIGHTNESS },
 		{ NULL, static_cast<StdMeshMaterialShaderParameter::Auto>(0) }
 	};
 

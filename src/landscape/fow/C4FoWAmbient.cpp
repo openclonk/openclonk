@@ -70,7 +70,8 @@ struct IFTZoom {
 
 C4FoWAmbient::C4FoWAmbient()
 	: Tex(0), Resolution(0.), Radius(0.), FullCoverage(0.),
-	  SizeX(0), SizeY(0), LandscapeX(0), LandscapeY(0)
+	  SizeX(0), SizeY(0), LandscapeX(0), LandscapeY(0),
+	  Brightness(1.)
 {
 }
 
@@ -86,6 +87,7 @@ void C4FoWAmbient::Clear()
 	Resolution = Radius = FullCoverage = 0.;
 	SizeX = SizeY = 0;
 	LandscapeX = LandscapeY = 0;
+	Brightness = 1.;
 }
 
 void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double resolution, double radius, double full_coverage)

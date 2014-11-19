@@ -41,6 +41,7 @@
 #include <C4Texture.h>
 #include <C4Weather.h>
 #include <C4Viewport.h>
+#include <C4FoW.h>
 
 // undocumented!
 static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
@@ -1086,6 +1087,20 @@ static C4Void FnSetTemperature(C4PropList * _this, long iTemperature)
 static long FnGetTemperature(C4PropList * _this)
 {
 	return ::Weather.GetTemperature();
+}
+
+static C4Void FnSetAmbientBrightness(C4PropList * _this, long iBrightness)
+{
+	if (::Landscape.pFoW)
+		::Landscape.pFoW->Ambient.SetBrightness(iBrightness / 100.);
+	return C4Void();
+}
+
+static long FnGetAmbientBrightness(C4PropList * _this)
+{
+	if (!::Landscape.pFoW)
+		return 100;
+	return static_cast<long>(::Landscape.pFoW->Ambient.GetBrightness() * 100. + 0.5);
 }
 
 static C4Void FnSetSeason(C4PropList * _this, long iSeason)
@@ -2577,6 +2592,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CanInsertMaterial", FnCanInsertMaterial);
 	AddFunc(pEngine, "LandscapeWidth", FnLandscapeWidth);
 	AddFunc(pEngine, "LandscapeHeight", FnLandscapeHeight);
+	AddFunc(pEngine, "SetAmbientBrightness", FnSetAmbientBrightness);
+	AddFunc(pEngine, "GetAmbientBrightness", FnGetAmbientBrightness);
 	AddFunc(pEngine, "SetSeason", FnSetSeason);
 	AddFunc(pEngine, "GetSeason", FnGetSeason);
 	AddFunc(pEngine, "SetClimate", FnSetClimate);

@@ -60,7 +60,8 @@ public:
 		AUTO_OC_MOD2,
 		AUTO_OC_USE_LIGHT,
 		AUTO_OC_LIGHT,
-		AUTO_OC_AMBIENT
+		AUTO_OC_AMBIENT,
+		AUTO_OC_AMBIENT_BRIGHTNESS
 
 		// TODO: Other ogre auto values
 	};

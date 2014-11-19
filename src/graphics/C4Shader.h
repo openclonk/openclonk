@@ -124,6 +124,10 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform1iARB(pShader->GetUniform(iUniform), iX);
 	}
+	void SetUniform1f(int iUniform, float gX) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1fARB(pShader->GetUniform(iUniform), gX);
+	}
 	void SetUniform2f(int iUniform, float gX, float gY) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform2fARB(pShader->GetUniform(iUniform), gX, gY);

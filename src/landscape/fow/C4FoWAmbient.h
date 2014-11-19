@@ -27,9 +27,13 @@ private:
 	// Size of ambient map
 	unsigned int SizeX;
 	unsigned int SizeY;
-
+	// Brightness (not premultiplied)
+	double Brightness;
 public:
 	void Clear();
+
+	void SetBrightness(double brightness) { Brightness = brightness; }
+	double GetBrightness() const { return Brightness; }
 
 	// High resolution will make the map coarser, but speed up the generation process
 	// and save video memory.

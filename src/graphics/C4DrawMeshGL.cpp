@@ -148,6 +148,7 @@ namespace
 		params.AddParameter("oc_UseLight", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT;
 		params.AddParameter("oc_Light", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_LIGHT;
 		params.AddParameter("oc_Ambient", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT;
+		params.AddParameter("oc_AmbientBrightness", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT_BRIGHTNESS;
 
 		return FormatString(
 			"varying vec3 normal;" // linearly interpolated -- not necessarily normalized
@@ -159,6 +160,7 @@ namespace
 			"uniform int oc_UseLight;"
 			"uniform sampler2D oc_Light;"
 			"uniform sampler2D oc_Ambient;"
+			"uniform float oc_AmbientBrightness;"
 			"void main()"
 			"{"
                         "  vec4 lightClr;"
@@ -169,11 +171,11 @@ namespace
                         "    vec4 lightPx = texture2D(oc_Light, (gl_TextureMatrix[%d] * gl_FragCoord).xy);"
 			"    vec3 lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
                         "    float lightIntensity = 2.0 * lightPx.r;"
-                        "    float ambient = texture2D(oc_Ambient, (gl_TextureMatrix[%d] * gl_FragCoord).xy).r;"
+                        "    float ambient = texture2D(oc_Ambient, (gl_TextureMatrix[%d] * gl_FragCoord).xy).r * oc_AmbientBrightness;"
                              // Don't actually use the ambient part of the material and instead a diffuse light from the front, like in the master branch
 			     // Because meshes are not tuned for ambient light at the moment, every mesh material would need to be fixed.
 			     // Otherwise the first term would be ambient * gl_FrontMaterial.ambient
-			"    lightClr = vec4(ambient * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - ambient) * lightIntensity * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0))), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
+			"    lightClr = vec4(ambient * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - min(ambient, 1.0)) * lightIntensity * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0))), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
                         "  }"
                         "  else"
                         "  {"
@@ -577,6 +579,11 @@ namespace
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = texIndex;
+			return true;
+		case StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT_BRIGHTNESS:
+			if(!pFoW) return false;
+			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT);
+			parameter.GetFloat() = pFoW->getFoW()->Ambient.GetBrightness();
 			return true;
 		default:
 			assert(false);

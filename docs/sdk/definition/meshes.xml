@@ -54,6 +54,11 @@
           <literal_col>sampler2D</literal_col>
           <col>Texture containing the ambient light map. The red component of the map corresponds to the intensity of ambient light. The texture contains only the red channel. The fragment coordinates (<code>gl_FragCoord</code>) can be used as texture coordinates to look up the ambient light information when transformed with the texture matrix of 2 plus the last texture unit. Therefore, if the pass uses one texture unit, the third texture unit will be used for the light texture, and the lookup can be performed with <code>texture2D(oc_Light, (gl_TextureMatrix[3] * gl_FragCoord).xy)</code>.</col>
         </row>
+        <row>
+          <literal_col>oc_ambient_brightness</literal_col>
+          <literal_col>float</literal_col>
+          <col>Global intensity of the ambient light, as set by the script function <funclink>SetAmbientBrightness</funclink>.</col>
+        </row>
       </table>
     </text>
     <text>When a custom fragment shader is used, then that shader is responsible for applying the player color and color modulation to the object, since in that case the engine cannot take care of that. The additional parameters mentioned above can be used for that purpose. Also, when a custom fragment shader is used, the colour_op, colour_op_ex, alpha_op and alpha_op_ex directives in all texture units are ignored.</text>
