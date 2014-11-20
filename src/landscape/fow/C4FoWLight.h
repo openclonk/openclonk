@@ -68,4 +68,10 @@ private:
 
 };
 
+// Finds the point where the line through (ax,ay) and (bx,by) crosses through the line
+// through (px,py) and (qx,qy)
+bool find_cross(float ax, float ay, float bx, float by,
+                float px, float py, float qx, float qy,
+				float *ix, float *iy, float *abParameter = NULL);
+
 #endif

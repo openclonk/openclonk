@@ -9,41 +9,6 @@
 
 #include "float.h"
 
-// Gives the point where the line through (x1,y1) and (x2,y2) crosses through the line
-// through (x3,y3) and (x4,y4)
-bool find_cross(float x1, float y1, float x2, float y2,
-                float x3, float y3, float x4, float y4,
-				float *px, float *py, float *pb = NULL)
-{
-	// We are looking for a, b so that
-	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
-	//  py = a*y1 + (1-a)*y2 = b*y3 + (1-b)*y4
-
-	// Cross product
-	float d = (x3-x4)*(y1-y2) - (y3-y4)*(x1-x2);
-	if (d == 0) return false; // parallel - or vector(s) 0
-
-	// We actually just need b - the unique solution
-	// to above equation. A refreshing piece of elementary math
-	// that I got wrong two times.
-	float b = ((y4-y2)*(x1-x2) - (x4-x2)*(y1-y2)) / d;
-	*px = b*x3 + (1-b)*x4;
-	*py = b*y3 + (1-b)*y4;
-	if (pb) *pb = b;
-
-	// Sanity-test solution
-#ifdef _DEBUG
-	if (x1 != x2) {
-		float a = (b*(x3-x4) + (x4-x2)) / (x1-x2);
-		float eps = 0.01f;
-		//assert(fabs(a*x1 + (1-a)*x2 - *px) < eps);
-		//assert(fabs(a*y1 + (1-a)*y2 - *py) < eps);
-	}
-#endif
-
-	return true;
-}
-
 C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r) : pLight(pLight), iRot(r)
 {
 	// Rotation matrices

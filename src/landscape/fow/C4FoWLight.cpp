@@ -270,3 +270,59 @@ void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list
 	}
 	pen->EndIntermediateFade();
 }
+
+bool find_cross(float ax, float ay, float bx, float by,
+                float px, float py, float qx, float qy,
+				float *ix, float *iy, float *abParameter)
+{
+
+	float numerator =   (py - ay) * (bx - ax) - (by - ay) * (px - ax);
+	float denominator = (qx - px) * (by - ay) - (qy - py) * (bx - ax);
+
+	//  if the denominator is zero, the lines are parallel. If the numerator
+	//  is zero, too, the lines are on the same line.
+	if (denominator == 0)
+	{
+		if(numerator == 0)
+		{
+			// just return any point then
+			*ix = ax;
+			*iy = ay;
+			if(abParameter) *abParameter = 0;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	float pqParam = numerator / denominator;
+
+	// One of them might be division by zero. We can use either equation to get the result.
+	// Both denominators only could be /0 if this line is a point
+
+	if(by - ay != 0)
+	{
+		numerator = py - ay + pqParam * (qy - py);
+		denominator = by - ay;
+	}
+	else if(bx - ax != 0)
+	{
+		numerator = px - ax + pqParam * (qx - px);
+		denominator = bx - ax;
+	}
+	else
+	{
+		return false;
+	}
+
+	float abParam = numerator / denominator;
+
+	*ix = ax + abParam * (bx - ax);
+	*iy = ay + abParam * (by - ay);
+
+	if(abParameter) *abParameter = abParam;
+
+	return true;
+}
