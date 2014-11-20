@@ -10,6 +10,26 @@ C4FoW::C4FoW()
 {
 }
 
+C4Shader *C4FoW::GetFramebufShader()
+{
+	// Not created yet?
+	if (!FramebufShader.Initialised())
+	{
+		FramebufShader.AddVertexDefaults();
+		FramebufShader.AddTexCoord("texCoord");
+		FramebufShader.AddFragmentSlice(-1, "uniform sampler2D tex;");
+		const char *szShader =
+			"gl_FragColor = vec4(texture2D(tex, texCoord.st).rgb, 15.0/16.0);";
+		FramebufShader.AddFragmentSlice(0, szShader);
+		const char *szUniforms[] = { "tex", NULL };
+		if (!FramebufShader.Init("framebuf", szUniforms)) {
+			FramebufShader.ClearSlices();
+			return NULL;
+		}
+	}
+	return &FramebufShader;
+}
+
 void C4FoW::Add(C4Object *pObj)
 {
 	// No view range? Probably want to remove instead

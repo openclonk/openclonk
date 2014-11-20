@@ -8,6 +8,7 @@
 #include "C4Object.h"
 #include "C4FoWLight.h"
 #include "C4FoWAmbient.h"
+#include "C4Shader.h"
 
 /**
 	This class holds all lights for the objects. It forwards the update, invalidation and render calls each to the
@@ -25,6 +26,9 @@ private:
 public:
 	C4FoWAmbient Ambient;
 
+	// Shader to use for updating the frame buffer
+	C4Shader *GetFramebufShader();
+
 	void Clear();
 
 	/** Updates the view range of the given object in its associated light or create a new light if none exists yet. */
@@ -38,6 +42,10 @@ public:
 	void Invalidate(C4Rect r);
 
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+
+private:
+	// Shader for updating the frame buffer
+	C4Shader FramebufShader;
 };
 
 #endif // C4FOW_H

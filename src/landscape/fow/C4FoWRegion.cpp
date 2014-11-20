@@ -121,66 +121,56 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	glClearColor(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Render FoW to frame buffer object
+	glBlendFunc(GL_ONE, GL_ONE);
+	pFoW->Render(this);
+
 	// Copy over the old state
 	if (OldRegion.Wdt > 0) {
 
+		// Set up shader. If this one doesn't work, we're really in trouble.
+		C4Shader *pShader = pFoW->GetFramebufShader();
+		assert(pShader);
+
+		// How much the borders have moved
 		int dx0 = Region.x - OldRegion.x,
 			dy0 = Region.y - OldRegion.y,
 			dx1 = Region.x + Region.Wdt - OldRegion.x - OldRegion.Wdt,
 			dy1 = Region.y + Region.Hgt - OldRegion.y - OldRegion.Hgt;
 
-		/*glBlitFramebufferEXT(
-			Max(0, dx0),                  Max(0, -dy1),
-			OldRegion.Wdt - Max(0, -dx1), OldRegion.Hgt - Max(0, dy0),
-			Max(0, -dx0),                 Max(0, dy1),
-			Region.Wdt - Max(0, dx1),     Region.Hgt - Max(0, -dy0),
-			GL_COLOR_BUFFER_BIT, GL_LINEAR);
-			*/
+		// Source and target rect coordinates (landscape coordinate system)
+		int sx0 = Max(0, dx0),                  sy0 = Max(0, dy0),
+			sx1 = OldRegion.Wdt - Max(0, -dx1), sy1 = OldRegion.Hgt - Max(0, -dy1),
+			tx0 = Max(0, -dx0),                 ty0 = Max(0, -dy0),
+			tx1 = Region.Wdt - Max(0, dx1),     ty1 = Region.Hgt - Max(0, dy1);
 
-		int sx0 = Max(0, dx0),
-			sy0 = Max(0, dy1),
-			sx1 = OldRegion.Wdt - Max(0, -dx1),
-			sy1 = OldRegion.Hgt - Max(0, -dy0),
-			tx0 = Max(0, -dx0),
-			ty0 = Max(0, -dy1),
-			tx1 = Region.Wdt - Max(0, dx1),
-			ty1 = Region.Hgt - Max(0, dy0);
+		// Quad coordinates
+		float squad[8] = { float(sx0), float(sy0),  float(sx0), float(sy1),
+			               float(sx1), float(sy1),  float(sx1), float(sy0) };
+		int tquad[8] = { sx0, ty0,  tx0, ty1,  tx1, ty1, tx1, ty0, };
 
-		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, getBackSurface()->ppTex[0]->texName);
+		// Transform into texture coordinates
+		for (int i = 0; i < 4; i++) {
+			squad[i*2] = squad[i*2] / getBackSurface()->Wdt;
+			squad[i*2+1] = 1.0 - squad[i*2+1] / getBackSurface()->Hgt;
+		}
 
-		glBlendFunc(GL_ONE, GL_ZERO);
-		glBegin(GL_QUADS);
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx0, ty0);
-		glTexCoord2f(float(sx0)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx0, ty1);
-		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy1)/getBackSurface()->Hgt); glVertex2i(tx1, ty1);
-		glTexCoord2f(float(sx1)/getBackSurface()->Wdt,float(getBackSurface()->Hgt-sy0)/getBackSurface()->Hgt); glVertex2i(tx1, ty0);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-
-		glCheck();
-
-		// Fade out. Note we constantly vary the alpha factor all the time -
-		// this is barely visible but makes it a lot less likely that we 
-		// hit cases where we add the same thing every time, but still don't
-		// converge to the same color due to rounding.
-		int iAdd = (Game.FrameCounter/3) % 2;
+		// Copy using shader
+		C4ShaderCall Call(pShader);
+		Call.Start();
+		if (Call.AllocTexUnit(0, GL_TEXTURE_2D))
+			glBindTexture(GL_TEXTURE_2D, getBackSurface()->ppTex[0]->texName);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f/16.0f+iAdd*1.0f/256.0f);
 		glBegin(GL_QUADS);
-		glVertex2i(0, 0);
-		glVertex2i(getSurface()->Wdt, 0);
-		glVertex2i(getSurface()->Wdt, getSurface()->Hgt);
-		glVertex2i(0, getSurface()->Hgt);
+		for (int i = 0; i < 4; i++)
+		{
+			glTexCoord2f(squad[i*2], squad[i*2+1]);
+			glVertex2i(tquad[i*2], tquad[i*2+1]);
+		}
 		glEnd();
-	}
+		Call.Finish();
+    }
 
-	// Render FoW to frame buffer object
-	glBlendFunc(GL_ONE, GL_ONE);
-	pFoW->Render(this);
-	
 	// Done!
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glMatrixMode(GL_PROJECTION);
