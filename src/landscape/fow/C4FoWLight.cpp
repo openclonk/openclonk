@@ -165,7 +165,7 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTri
 		else
 		{
 			float distNextFadeL = GetSquaredDistanceTo(nextTri.fadeLX, nextTri.fadeLY);
-			if (nextTri.fadeLY < tri.fadeIY)
+			if (distNextFadeL < distFadeI)
 			{
 				tri.fadeIX = tri.fadeRX;
 				tri.fadeIY = tri.fadeRY;
