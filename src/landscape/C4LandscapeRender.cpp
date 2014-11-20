@@ -35,7 +35,6 @@ const int C4LR_BiasDistanceY = 8;
 // Name used for the seperator texture
 const char *const SEPERATOR_TEXTURE = "--SEP--";
 C4LandscapeRenderGL::C4LandscapeRenderGL()
-	: iLandscapeShaderTime(0)
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
 	ZeroMem(hMaterialTexture, sizeof(hMaterialTexture));
@@ -126,8 +125,6 @@ void C4LandscapeRenderGL::Clear()
 	}
 
     Shader.Clear(); Shader.ClearSlices();
-	LandscapeShaderPath.Clear();
-	iLandscapeShaderTime = 0;
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -505,7 +502,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	// No support?
 	if(!GLEW_ARB_fragment_program)
 	{
-		Log("	gl: no shader support!");
+		Log("  gl: no shader support!");
 		return false;
 	}
 

@@ -71,6 +71,7 @@ slice material
 #ifdef HAVE_2PX
 	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
 	vec4 materialPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2));
+	vec4 normalPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2+0.5));
 #endif
 }
 
@@ -84,7 +85,8 @@ slice normal
 
 #ifdef HAVE_2PX
 	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
-	normal2 = normal2 + textureNormal;
+	vec3 textureNormal2 = normalPx2.xyz - vec3(0.5,0.5,0.5);
+	normal2 = normal2 + textureNormal2;
 #endif
 
 }

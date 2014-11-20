@@ -43,7 +43,7 @@ slice texture+5
 
 }
 
-slice color+5 {
+slice color+10 {
 	// Mix second color into main color according to scaler
 	color = mix(color2, color, scalerPx.r);
 }

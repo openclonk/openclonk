@@ -122,7 +122,7 @@ void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szS
 						pStart = pPos+1;
 						fGotContent = false;
 					} else {
-						LogF(" gl: Missing opening brace in %s!", szWhat);
+						LogF("  gl: Missing opening brace in %s!", szWhat);
 					}
 					pPos++;
 					continue;
@@ -163,7 +163,7 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 		}
 	}
 	if (iPosition == -1) {
-		LogF(" gl: Unknown slice position in %s: %s", szWhat, Name.getData());
+		LogF("  gl: Unknown slice position in %s: %s", szWhat, Name.getData());
 		return -1;
 	}
 
@@ -172,7 +172,7 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 	if (*pPos == '+') {
 		int iMod, iModLen;
 		if (!sscanf(pPos+1, "%d%n", &iMod, &iModLen)) {
-			LogF(" gl: Invalid slice modifier in %s", szWhat);
+			LogF("  gl: Invalid slice modifier in %s", szWhat);
 			return -1;
 		}
 		iPosition += iMod;
@@ -181,7 +181,7 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 	if (*pPos == '-') {
 		int iMod, iModLen;
 		if (!sscanf(pPos+1, "%d%n", &iMod, &iModLen)) {
-			LogF(" gl: Invalid slice modifier in %s", szWhat);
+			LogF("  gl: Invalid slice modifier in %s", szWhat);
 			return -1;
 		}
 		iPosition -= iMod;
@@ -262,7 +262,7 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	// No support?
 	if(!GLEW_ARB_fragment_program)
 	{
-		Log(" gl: no shader support!");
+		Log("  gl: no shader support!");
 		return false;
 	}
 
@@ -295,10 +295,10 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	DumpInfoLog(FormatString("%s shader program", szWhat).getData(), hProg);
 	if(GetObjectStatus(hProg, GL_OBJECT_LINK_STATUS_ARB) != 1) {
 		Clear();
-		LogF(" gl: Failed to link %s shader!", szWhat);
+		LogF("  gl: Failed to link %s shader!", szWhat);
 		return false;
 	}
-	LogF(" gl: %s shader linked successfully", szWhat);
+	LogF("  gl: %s shader linked successfully", szWhat);
 
 	// Okay, allocate uniform array
 	iUniformCount = 0;
@@ -344,7 +344,7 @@ bool C4Shader::Refresh(const char *szWhat, const char **szUniforms)
 	   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
 	   !Group.Close())
 	{
-		LogF(" gl: Failed to refresh %s shader from %s!", szWhat, Source.getData());
+		LogF("  gl: Failed to refresh %s shader from %s!", szWhat, Source.getData());
 		return Refresh(szWhat, szUniforms);
 	}
 
@@ -451,7 +451,7 @@ void C4Shader::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
 
 	// Terminate, log
 	pBuf[iActualLength] = '\0';
-	LogSilentF(" gl: Compiling %s:", szWhat);
+	LogSilentF("  gl: Compiling %s:", szWhat);
 	LogSilent(pBuf);
 	delete[] pBuf;
 }

@@ -89,9 +89,6 @@ private:
 	// surfaces
 	C4Surface *Surfaces[C4LR_SurfaceCount];
 
-	// shader sources
-	StdStrBuf LandscapeShaderPath;
-	int iLandscapeShaderTime;
 	// shader
 	C4Shader Shader;
 	static const char *UniformNames[];
