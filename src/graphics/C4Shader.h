@@ -1,0 +1,144 @@
+
+// Shader implementation somewhere in the middle between easy and extensible.
+
+#ifndef INC_C4Shader
+#define INC_C4Shader
+
+#include "StdBuf.h"
+#include "C4Surface.h"
+
+// Shader version
+const int C4Shader_Version = 110; // GLSL 1.10
+
+// Maximum number of texture coordinates
+const int C4Shader_MaxTexCoords = 8;
+
+// Maximum number of texture units per shader call
+const int C4ShaderCall_MaxUnits = 32;
+
+// Positions in fragment shader
+const int C4Shader_PositionInit = 0;
+const int C4Shader_PositionCoordinate = 20;
+const int C4Shader_PositionTexture = 40;
+const int C4Shader_PositionMaterial = 60;
+const int C4Shader_PositionNormal = 80;
+const int C4Shader_PositionLight = 100;
+const int C4Shader_PositionColor = 120;
+const int C4Shader_PositionFinish = 140;
+const int C4Shader_LastPosition = 256;
+
+// Positions in vertex shader
+const int C4Shader_Vertex_TexCoordPos = 50;
+const int C4Shader_Vertex_PositionPos = 80;
+
+class C4Shader
+{
+	friend class C4ShaderCall;
+public:
+	C4Shader();
+	~C4Shader();
+
+private:
+
+	// Program texts
+	struct ShaderSlice {
+		int Position;
+		StdCopyStrBuf Text;
+		StdCopyStrBuf Source;
+		int SourceTime;
+	};
+	typedef std::list<ShaderSlice> ShaderSliceList;
+	ShaderSliceList VertexSlices, FragmentSlices;
+
+	// Used texture coordinates
+	int iTexCoords;
+
+	// shaders
+	GLhandleARB hVert, hFrag, hProg;
+	// shader variables
+	int iUniformCount;
+	GLint *pUniforms;
+
+public:
+
+	bool Initialised() const { return hVert != 0; }
+
+	// Uniform getters
+	GLint GetUniform(int iUniform) const {
+		return iUniform >= 0 && iUniform < iUniformCount ? pUniforms[iUniform] : -1;
+	}
+	bool HaveUniform(int iUniform) const {
+		return GetUniform(iUniform) != GLint(-1);
+	}
+
+	// Shader is composed from various slices
+	void AddVertexSlice(int iPos, const char *szText);
+	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
+	void AddSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
+	bool LoadSlices(C4GroupSet *pGroupSet, const char *szFile);
+
+	// Add default vertex code (2D - no transformation)
+	void AddVertexDefaults();
+
+	// Allocate a texture coordinate, returning its ID to be used with glMultiTexCoord.
+	// The texture coordinate will be visible to both shaders under the given name.
+	// Note that in contrast to uniforms, these will not disappear if not used!
+	GLenum AddTexCoord(const char *szName);
+
+	// Assemble and link the shader. Should be called again after new slices are added.
+	bool Init(const char *szWhat, const char **szUniforms);
+	bool Refresh(const char *szWhat, const char **szUniforms);
+
+	void ClearSlices();
+	void Clear();
+
+private:
+	int ParsePosition(const char *szWhat, const char **ppPos);
+
+	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
+	GLhandleARB Create(GLenum iShaderType, const char *szWhat, const char *szShader);
+	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
+	int GetObjectStatus(GLhandleARB hObj, GLenum type);
+};
+
+class C4ShaderCall
+{
+public:
+	C4ShaderCall(C4Shader *pShader) 
+		: fStarted(false), pShader(pShader), iUnits(0)
+	{ }
+	~C4ShaderCall() { Finish(); }
+
+private:
+	bool fStarted;
+	C4Shader *pShader;
+	int iUnits;
+	GLenum hUnit[C4ShaderCall_MaxUnits];
+
+public:
+	GLint AllocTexUnit(int iUniform, GLenum iType);
+
+	// Setting uniforms... Lots of code duplication here, not quite sure whether
+	// something could be done about it.
+	void SetUniform1i(int iUniform, int iX) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1iARB(pShader->GetUniform(iUniform), iX);
+	}
+	void SetUniform2f(int iUniform, float gX, float gY) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2fARB(pShader->GetUniform(iUniform), gX, gY);
+	}
+	void SetUniform1iv(int iUniform, int iLength, int *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1ivARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform1fv(int iUniform, int iLength, float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform1fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+
+	void Start();
+	void Finish();
+};
+
+#endif // INC_C4Shader

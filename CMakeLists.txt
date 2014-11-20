@@ -216,6 +216,8 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4FontLoader.h
 	src/graphics/C4GraphicsResource.cpp
 	src/graphics/C4GraphicsResource.h
+	src/graphics/C4Shader.cpp
+	src/graphics/C4Shader.h
 	src/graphics/C4Surface.cpp
 	src/graphics/C4Surface.h
 	src/graphics/C4SurfaceLoaders.cpp

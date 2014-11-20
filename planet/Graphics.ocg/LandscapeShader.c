@@ -1,10 +1,7 @@
 
-#version 110
 
 // Input textures
 uniform sampler2D landscapeTex[2];
-uniform sampler2D lightTex;
-uniform sampler2D ambientTex;
 uniform sampler2D scalerTex;
 uniform sampler3D materialTex;
 
@@ -22,24 +19,11 @@ uniform float matMap[256];
 uniform int materialDepth;
 uniform vec2 materialSize;
 
-// Factor between landscape coordinates and ambient map coordinates
-uniform vec2 ambientScale;
-
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
 const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
-
-#ifdef NO_TEXTURE_LOD_IN_FRAGMENT
-#define texture1DLod(t,c,l) texture1D(t,c)
-#define texture2DLod(t,c,l) texture2D(t,c)
-#endif
-
-// Converts the pixel range 0.0..1.0 into the integer range 0..255
-int f2i(float x) {
-	return int(x * 255.9);
-}
 
 float queryMatMap(int pix)
 {
@@ -51,111 +35,64 @@ float queryMatMap(int pix)
 #endif
 }
 
-vec3 extend_normal(vec2 v)
+slice coordinate
 {
-	return normalize(vec3(v, 0.3));
-}
-
-void main()
-{
-
 	// full pixel steps in the landscape texture (depends on landscape resolution)
 	vec2 fullStep = vec2(1.0, 1.0) / resolution;
 	vec2 fullStepX = vec2(fullStep.x, 0.0);
 	vec2 fullStepY = vec2(0.0, fullStep.y);
 
 	vec2 texCoo = gl_TexCoord[0].st;
-	
+
 	// calculate pixel position in landscape, find center of current pixel
 	vec2 pixelCoo = texCoo * resolution;
 	vec2 centerCoo = (floor(pixelCoo) + vec2(0.5, 0.5)) / resolution;
 
+	// Texture coordinate for material
+	vec2 materialCoo = texCoo * resolution / materialSize;
+}
+
+slice texture
+{
 	// our pixel color (without/with interpolation)
 	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
 	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
+}
 
-	// find scaler coordinate
-	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
-
-#ifdef SCALER_IN_GPU
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == landscapePx.r)
-		scalerCoo += scalerStepX;
-	if(texture2D(landscapeTex[0], centerCoo             - fullStepY).r == landscapePx.r)
-		scalerCoo += 2.0 * scalerStepX;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX - fullStepY).r == landscapePx.r)
-		scalerCoo += 4.0 * scalerStepX;
-		
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX            ).r == landscapePx.r)
-		scalerCoo += scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX            ).r == landscapePx.r)
-		scalerCoo += 2.0 * scalerStepY;
-	
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX + fullStepY).r == landscapePx.r)
-		scalerCoo += 4.0 * scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo             + fullStepY).r == landscapePx.r)
-		scalerCoo += 8.0 * scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == landscapePx.r)
-		scalerCoo += 16.0 * scalerStepY;
-
-#else
-
-	int iScaler = f2i(landscapePx.a), iRow = iScaler / 8;
-	scalerCoo.x += float(iScaler - iRow * 8) / 8.0;
-	scalerCoo.y += float(iScaler / 8) / 32.0;
-	
-#endif
-
-	// Note: scalerCoo will jump around a lot, causing some GPUs to apparantly get confused with
-	//       the level-of-detail calculation. We therefore try to disable LOD.
-	vec4 scalerPx = texture2DLod(scalerTex, scalerCoo, 0.0);
-
-	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
-	vec2 otherCoo = centerCoo + fullStep * floor(vec2(-0.5, -0.5) + scalerPx.gb * 255.0 / 64.0);
-	vec4 otherLandscapePx = texture2D(landscapeTex[0], otherCoo);
+slice material
+{
 
 	// Get material pixels
 	float materialIx = queryMatMap(f2i(landscapePx.r));
-	vec2 tcoo = texCoo * resolution / materialSize;
-	vec4 materialPx = texture3D(materialTex, vec3(tcoo, materialIx));
-	vec4 normalPx = texture3D(materialTex, vec3(tcoo, materialIx+0.5));
-	float otherMaterialIx = queryMatMap(f2i(otherLandscapePx.r));
-	vec4 otherMaterialPx = texture3D(materialTex, vec3(tcoo, otherMaterialIx));
+	vec4 materialPx = texture3D(materialTex, vec3(materialCoo, materialIx));
+	vec4 normalPx = texture3D(materialTex, vec3(materialCoo, materialIx+0.5));
 
-	// Brightness
-	vec4 lightPx = texture2D(lightTex, gl_TexCoord[1].st);
-	float shadeBright = lightPx.r;
+	// Same for second pixel, but we'll simply use the first normal
+#ifdef HAVE_2PX
+	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
+	vec4 materialPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2));
+#endif
+}
 
+slice normal
+{
 	// Normal calculation
-	vec3 landscapeNormal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5));
-	vec3 landscapeNormal2 = extend_normal(otherLandscapePx.yz - vec2(0.5, 0.5));
+	vec3 normal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
+								- vec2(0.5, 0.5));
 	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
-	vec3 normal = landscapeNormal + textureNormal;
-	vec3 normal2 = landscapeNormal2 + textureNormal;
+	normal = normal + textureNormal;
 
-	// Ambient light
-	float ambient = texture2D(ambientTex, ambientScale * texCoo).r;
-	float ambient2 = texture2D(ambientTex, ambientScale * otherCoo).r;
+#ifdef HAVE_2PX
+	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
+	normal2 = normal2 + textureNormal;
+#endif
 
-	// Light calculation; the ambient part actually uses some shading with
-	// a light direction of (0.0, -1.0, 0.0) so that it does not look utterly
-	// boring at the sky/material edges.
-	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
-	float bright = ambient * (1.0 + 1.0 * dot(normal, vec3(0.0, -1.0, 0.0))) + (1.0 - ambient) * 2.0 * shadeBright * dot(normal, lightDir);
-	float bright2 = ambient2 * (1.0 +  1.0 * dot(normal2, vec3(0.0, -1.0, 0.0))) + (1.0 - ambient2) * 2.0 * shadeBright * dot(normal2, lightDir);
+}
 
-	gl_FragColor = mix(
-		vec4(bright2 * otherMaterialPx.rgb, otherMaterialPx.a),
-		vec4(bright * materialPx.rgb, materialPx.a),
-		scalerPx.r);
-
-	// uncomment the following lines for debugging light directions:
-	// yellow: light up, blue: light down, turqoise: light right, pink: light left, opacity: light strength
-	//float lightYDir = lightPx.b - 1.0/3.0;
-	//float lightXDir = lightPx.g - 1.0/3.0;
-	//float lightStrength = lightPx.r;
-	//gl_FragColor = vec4(
-	//	1.0-1.5*(max(0.0, lightYDir) + max(0.0,lightXDir)),
-	//	1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),
-	//	1.0-1.5*max(0.0, -lightYDir),
-	//	lightStrength);
+slice color {
+#define color gl_FragColor
+	color = materialPx;
+#ifdef HAVE_2PX
+	vec4 color2 = materialPx2;
+#endif
 }

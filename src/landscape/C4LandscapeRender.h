@@ -4,6 +4,7 @@
 
 #include "C4Surface.h"
 #include "C4FacetEx.h"
+#include "C4Shader.h"
 
 // Data we want to store per landscape pixel
 enum C4LR_Byte {
@@ -89,13 +90,12 @@ private:
 	C4Surface *Surfaces[C4LR_SurfaceCount];
 
 	// shader sources
-	StdStrBuf LandscapeShader;
 	StdStrBuf LandscapeShaderPath;
 	int iLandscapeShaderTime;
-	// shaders
-	GLhandleARB hVert, hFrag, hProg;
-	// shader variables
-	GLhandleARB hUniforms[C4LRU_Count];
+	// shader
+	C4Shader Shader;
+	static const char *UniformNames[];
+	GLenum hLandscapeTexCoord, hLightTexCoord;
 
 	// 3D texture of material textures
 	GLuint hMaterialTexture[C4LR_MipMapCount];
@@ -108,7 +108,6 @@ private:
 
 	// scaler image
 	C4FacetSurface fctScaler;
-
 
 public:
 	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
@@ -126,14 +125,8 @@ private:
 	bool InitLandscapeTexture();
 	bool InitMaterialTexture(C4TextureMap *pMap);
 	bool LoadShaders(C4GroupSet *pGraphics);
+    void ClearShaders();
 	bool LoadScaler(C4GroupSet *pGraphics);
-
-	void DumpInfoLog(const char *szWhat, GLhandleARB hShader, int32_t iWorkaround);
-	int GetObjectStatus(GLhandleARB hObj, GLenum type);
-	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, int32_t iWorkaround);
-
-	bool InitShaders();
-	void ClearShaders();
 
 	int32_t LookupTextureTransition(const char *szFrom, const char *szTo);
 	void AddTextureTransition(const char *szFrom, const char *szTo);
