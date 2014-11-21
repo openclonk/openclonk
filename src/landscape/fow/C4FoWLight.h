@@ -38,6 +38,7 @@ public:
 	int32_t getFadeout() const { return iFadeout; }
 	int32_t getTotalReach() const { return iReach + iFadeout; }
 	int32_t getSize() const { return iSize; }
+	int32_t getNormalSize() const { return iSize * 2; }
 	C4FoWLight *getNext() const { return pNext; }
 	C4Object *getObj() const { return pObj; }
 
@@ -53,15 +54,21 @@ public:
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
 
 private:
+	typedef std::list<class C4FoWBeamTriangle> TriangleList;
+
+	/** Calculate "normal" fan points - where the normal hasn't maxed out yet */
+	void CalculateFanMaxed(TriangleList &triangles);
 	/** Calculate the intermediate fade points used for constructing the intermediate fade triangles later on */
-	void CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles);
+	void CalculateIntermediateFadeTriangles(TriangleList &triangles);
 
 	/** Draws the triangle fan (the area with 100% light around the light source) with the given strategy */
-	void DrawFan(class C4FoWDrawStrategy* pen, std::list<class C4FoWBeamTriangle> &triangles);
+	void DrawFan(class C4FoWDrawStrategy* pen, TriangleList &triangles);
+	/** Draws the triangle fan (100% light, maxed out normals) with the given strategy */
+	void DrawFanMaxed(class C4FoWDrawStrategy* pen, TriangleList &triangles);
 	/** Draws the fadeoot triangles - those around the triangle fan - with the given strategy */
-	void DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	void DrawFade(C4FoWDrawStrategy* pen, TriangleList &triangles);
 	/** Draws the fadeout triangles in between the normal fadeout triangles with the given strategy */
-	void DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	void DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, TriangleList &triangles);
 	/** Returns the (squared) distance from this light source to the given point. Squared simply because we only need this
 	    for comparison of distances. So we don't bother to sqrt it */
 	float GetSquaredDistanceTo(int32_t x, int32_t y) { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
