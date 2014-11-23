@@ -208,10 +208,10 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 				continue;
 
 			// Out left?
-			if (beam->isRight(lx, y))
+			if (beam->isRight(lx, ly))
 				continue;
 			// Out right?
-			if (beam->isLeft(rx, y) || beam->isLeft(rx, ry))
+			if (beam->isLeft(rx, ry))
 				break;
 
 			// We have an active beam that we're about to scan
