@@ -57,7 +57,7 @@ private:
 	typedef std::list<class C4FoWBeamTriangle> TriangleList;
 
 	/** Calculate "normal" fan points - where the normal hasn't maxed out yet */
-	void CalculateFanMaxed(TriangleList &triangles);
+	void CalculateFanMaxed(TriangleList &triangles) const;
 	/** Calculate the intermediate fade points used for constructing the intermediate fade triangles later on */
 	void CalculateIntermediateFadeTriangles(TriangleList &triangles) const;
 

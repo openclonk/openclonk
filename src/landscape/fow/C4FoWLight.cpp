@@ -134,6 +134,38 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	delete pen;
 }
 
+void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const
+{
+	for (TriangleList::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	{
+		C4FoWBeamTriangle &tri = *it;
+
+		// Is the left point close enough that normals don't max out?
+		float dist = sqrt(GetSquaredDistanceTo(tri.fanLX, tri.fanLY));
+		if (dist <= getNormalSize()) {
+			tri.nfanLX = tri.fanLX;
+			tri.nfanLY = tri.fanLY;
+		} else {
+			// Otherwise, calculate point where they do. We will add a seperate
+			// triangle/quad later on to capture that.
+			float f = float(getNormalSize() / dist);
+			tri.nfanLX = f * tri.fanLX + (1.0f - f) * getX();
+			tri.nfanLY = f * tri.fanLY + (1.0f - f) * getY();
+		}
+
+		// Same for the right point
+		dist = sqrt(GetSquaredDistanceTo(tri.fanRX, tri.fanRY));
+		if (dist <= getNormalSize()) {
+			tri.nfanRX = tri.fanRX;
+			tri.nfanRY = tri.fanRY;
+		} else {
+			float f = float(getNormalSize()) / dist;
+			tri.nfanRX = f * tri.fanRX + (1.0f - f) * getX();
+			tri.nfanRY = f * tri.fanRY + (1.0f - f) * getY();
+		}
+	}
+}
+
 void C4FoWLight::ProjectPointOutward(float &x, float &y, float maxDistance) const
 {
 	float distanceDifference = Min(maxDistance, (float) getTotalReach()) / sqrt((x - getX()) * (x - getX()) + (y - getY()) * (y - getY()));
@@ -143,36 +175,6 @@ void C4FoWLight::ProjectPointOutward(float &x, float &y, float maxDistance) cons
 }
 
 void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) const
-{
-	for (TriangleList::iterator pTriangle = Triangles.begin(); pTriangle != Triangles.end(); ++pTriangle)
-	{
-		// Is the left point close enough that normals don't max out?
-		float dist = sqrt(GetSquaredDistanceTo(pTriangle->fanLX, pTriangle->fanLY));
-		if (dist <= getNormalSize()) {
-			pTriangle->nfanLX = pTriangle->fanLX;
-			pTriangle->nfanLY = pTriangle->fanLY;
-		} else {
-			// Otherwise, calculate point where they do. We will add a seperate
-			// triangle/quad later on to capture that.
-			float f = float(getNormalSize() / dist);
-			pTriangle->nfanLX = f * pTriangle->fanLX + (1.0f - f) * getX();
-			pTriangle->nfanLY = f * pTriangle->fanLY + (1.0f - f) * getY();
-		}
-
-		// Same for the right point
-		dist = sqrt(GetSquaredDistanceTo(pTriangle->fanRX, pTriangle->fanRY));
-		if (dist <= getNormalSize()) {
-			pTriangle->nfanRX = pTriangle->fanRX;
-			pTriangle->nfanRY = pTriangle->fanRY;
-		} else {
-			float f = float(getNormalSize()) / dist;
-			pTriangle->nfanRX = f * pTriangle->fanRX + (1.0f - f) * getX();
-			pTriangle->nfanRY = f * pTriangle->fanRY + (1.0f - f) * getY();
-		}
-	}
-}
-
-void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles)
 {
 	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
@@ -220,6 +222,7 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles)
 		
 	}
 }
+
 
 void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
