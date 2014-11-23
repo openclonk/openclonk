@@ -672,8 +672,14 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		}
 	}
 
-	// Phase 4: Transform all points into global coordinates
-	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
+	transTriangles(result);
+	
+	return result;
+}
+
+void C4FoWLightSection::transTriangles(std::list<C4FoWBeamTriangle> &triangles) const
+{
+	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(); it != triangles.end(); ++it)
 	{
 		C4FoWBeamTriangle &tri = *it;
 		float x,y;
@@ -694,6 +700,4 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		tri.fadeLX = transX(x,y);
 		tri.fadeLY = transY(x,y);
 	}
-
-	return result;
 }

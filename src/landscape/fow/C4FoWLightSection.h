@@ -2,6 +2,7 @@
 #define C4FOWLIGHTSECTION_H
 
 #include "C4Rect.h"
+#include <list>
 
 class C4FoWLight;
 class C4FoWRegion;
@@ -66,6 +67,9 @@ private:
 	template <class T> T rtransDY(T dx, T dy) const;
 	template <class T> T rtransX(T x, T y) const;
 	template <class T> T rtransY(T x, T y) const;
+
+	/** Convert triangles to landscape coordinates */
+	void transTriangles(std::list<C4FoWBeamTriangle> &triangles) const;
 
 	/** Returns a rectangle in beam coordinates */
 	C4Rect rtransRect(C4Rect r) const {
