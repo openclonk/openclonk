@@ -54,17 +54,17 @@ public:
 
 private:
 	/** Calculate the intermediate fade points used for constructing the intermediate fade triangles later on */
-	void CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles);
+	void CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles) const;
 
 	/** Draws the triangle fan (the area with 100% light around the light source) with the given strategy */
-	void DrawFan(class C4FoWDrawStrategy* pen, std::list<class C4FoWBeamTriangle> &triangles);
+	void DrawFan(class C4FoWDrawStrategy* pen, std::list<class C4FoWBeamTriangle> &triangles) const;
 	/** Draws the fadeoot triangles - those around the triangle fan - with the given strategy */
-	void DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	void DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const;
 	/** Draws the fadeout triangles in between the normal fadeout triangles with the given strategy */
-	void DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles);
+	void DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const;
 	/** Returns the (squared) distance from this light source to the given point. Squared simply because we only need this
 	    for comparison of distances. So we don't bother to sqrt it */
-	float GetSquaredDistanceTo(int32_t x, int32_t y) { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
+	float GetSquaredDistanceTo(int32_t x, int32_t y) const { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
 
 };
 

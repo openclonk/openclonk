@@ -41,7 +41,7 @@ public:
 	void Update(C4Rect r);
 
 
-	std::list<C4FoWBeamTriangle> CalculateTriangles(C4FoWRegion *region);
+	std::list<C4FoWBeamTriangle> CalculateTriangles(C4FoWRegion *region) const;
 
 	/** Shorten all light beams to the given reach.
 	    Called when the size of the light has decreased to the given value */
@@ -102,13 +102,13 @@ private:
 
 
 	/** Find right-most beam left of point */
-	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y);
+	C4FoWBeam *FindBeamLeftOf(int32_t x, int32_t y) const;
 
 	/** Find beams that go through the given rectangle. Returns the number of beams that are in the rectangle and makes
 	    firstBeam point to the first and endBeam point to the beam after the last of these. Thus, endBeam is NULL if 
 		no beams were clipped at the end. */
-	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam);
-};
+	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam) const;
 
+};
 
 #endif

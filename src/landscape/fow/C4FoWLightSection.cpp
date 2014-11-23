@@ -96,7 +96,7 @@ void C4FoWLightSection::Dirty(int32_t reach)
 			beam->Dirty(Min(beam->getLeftEndY(), beam->getRightEndY()));
 }
 
-C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y)
+C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y) const
 {
 	// Trivial
 	y = Max(y, 0);
@@ -362,7 +362,7 @@ void C4FoWLightSection::Invalidate(C4Rect r)
 
 }
 
-int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam)
+int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam) const
 {
 	if(rect.y + rect.Hgt < 0) return 0;
 
@@ -387,7 +387,7 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firs
 	return beamCount;
 }
 
-std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region)
+std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region) const
 {
 	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);

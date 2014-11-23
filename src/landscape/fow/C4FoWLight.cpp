@@ -131,7 +131,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	delete pen;
 }
 
-void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles)
+void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles) const
 {
 	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
@@ -192,7 +192,7 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTri
 	}
 }
 
-void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles)
+void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
 {
 	pen->BeginFan();
 	pen->DrawLightVertex(getX(), getY());
@@ -213,7 +213,7 @@ void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &t
 	pen->EndFan();
 }
 
-void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles)
+void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
 {
 	pen->BeginFade();
 
@@ -232,7 +232,7 @@ void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &
 	pen->EndFade();
 }
 
-void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles)
+void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
 {
 	pen->BeginIntermediateFade();
 
