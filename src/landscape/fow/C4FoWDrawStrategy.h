@@ -41,7 +41,7 @@ public:
 	virtual void EndFade() { glEnd(); };
 
 	/** Called before rendering the triangles that fill the space between the fadeout quads */
-	virtual void BeginIntermediateFade() { glBegin(GL_TRIANGLES); };
+	virtual void BeginIntermediateFade() { glBegin(GL_TRIANGLE_FAN); };
 	/** Called after rendering the triangles that fill the space between the fadeout quads */
 	virtual void EndIntermediateFade() { glEnd(); };
 };

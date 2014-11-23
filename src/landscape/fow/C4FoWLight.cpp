@@ -230,7 +230,6 @@ void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &
 
 void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
 {
-	pen->BeginIntermediateFade();
 
 	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
@@ -243,46 +242,37 @@ void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list
 		// no inter-fade triangles when it should be clipped
 		if (tri.clipRight || nextTri.clipLeft) continue;
 
+		pen->BeginIntermediateFade();
+
 		if (tri.descending) {
 
-			// Lower fade triangle
 			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
-			pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
-			pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
+			pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
+			pen->DrawDarkVertex(nextTri.fadeLX, nextTri.fadeLY);
 
-			// Intermediate fade triangle, if necessary
-				pen->DrawLightVertex(tri.fanRX, tri.fanRY);
-				pen->DrawDarkVertex(nextTri.fadeLX, nextTri.fadeLY);
+			// if necessary
 			if (tri.fadeIY != nextTri.fadeLY || tri.fadeIX != nextTri.fadeLX) {
 				pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
 			}
 
-			// Upper fade triangle
-			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
-			pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
-			pen->DrawDarkVertex(nextTri.fadeLX, nextTri.fadeLY);
+			pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
 
 		} else {
 
-			// Lower fade triangle
 			pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
 			pen->DrawDarkVertex(nextTri.fadeLX, nextTri.fadeLY);
-			pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
 
-			// Intermediate fade triangle, if necessary
-				pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
+			// if necessary
 			if (tri.fadeIY != tri.fadeRY || tri.fadeIX != tri.fadeRX) {
 				pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
-				pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
 			}
 
-			// Upper fade triangle
-			pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
 			pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
-			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
+			pen->DrawLightVertex(tri.fanRX, tri.fanRY);			
 		}
+
+		pen->EndIntermediateFade();
 	}
-	pen->EndIntermediateFade();
 }
 
 bool find_cross(float ax, float ay, float bx, float by,
