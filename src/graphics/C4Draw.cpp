@@ -864,6 +864,15 @@ bool C4Draw::GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2)
 	return true;
 }
 
+C4Rect C4Draw::GetClipRect() const
+{
+	int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
+	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
+	return C4Rect(iX, iY, iWdt, iHgt);
+}
+
 void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
 {
 	// No gamma effects

@@ -182,26 +182,22 @@ bool CStdGL::UpdateClipper()
 	// no render target? do nothing
 	if (!RenderTarget || !Active) return true;
 	// negative/zero?
-	int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
-	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
-	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
-	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
-
-	if (iWdt<=0 || iHgt<=0)
+	C4Rect clipRect = GetClipRect();
+	if (clipRect.Wdt<=0 || clipRect.Hgt<=0)
 	{
 		ClipAll=true;
 		return true;
 	}
 	ClipAll=false;
 	// set it
-	glViewport(iX, RenderTarget->Hgt-iY-iHgt, iWdt, iHgt);
+	glViewport(clipRect.x, RenderTarget->Hgt-clipRect.y-clipRect.Hgt, clipRect.Wdt, clipRect.Hgt);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	// Set clipping plane to -1000 and 1000 so that large meshes are not
 	// clipped away.
 	//glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
-	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
+	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 }
