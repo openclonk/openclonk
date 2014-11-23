@@ -174,3 +174,22 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	glTexSubImage2D(GL_TEXTURE_2D, 0, left, top, (right - left), (bottom - top), GL_RED, GL_FLOAT, ambient);
 	delete[] ambient;
 }
+
+void C4FoWAmbient::GetFragTransform(const C4Rect& lightRect, const C4Rect& clipRect, float ambientTransform[6]) const
+{
+	// We need to perform four steps here:
+	// 1) invert Y and subtract viewport offset
+	// 2) apply the zoom factor, given by the ratio of lightRect size to viewport size
+	// 3) Add the lightrect offset
+	// 4) Divide by landscape width, to go from landscape coordinates to texture coordinates in the range [0,1]
+
+	const float zx = static_cast<float>(lightRect.Wdt) / clipRect.Wdt;
+	const float zy = static_cast<float>(lightRect.Hgt) / clipRect.Hgt;
+
+	ambientTransform[0] = zx / LandscapeX;
+	ambientTransform[1] = 0.f;
+	ambientTransform[2] = ((zx * (-clipRect.x)) + lightRect.x) / LandscapeX;
+	ambientTransform[3] = 0.f;
+	ambientTransform[4] = -zy / LandscapeY;
+	ambientTransform[5] = ((zy * (clipRect.Hgt + clipRect.y)) + lightRect.y) / LandscapeY;
+}

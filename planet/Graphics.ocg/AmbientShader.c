@@ -3,14 +3,13 @@
 
 uniform sampler2D ambientTex;
 
-// Factor between landscape coordinates and ambient map coordinates
-uniform vec2 ambientScale;
+uniform mat3x2 ambientTransform;
 uniform float ambientBrightness;
 
 slice texture+6
 {
 	// Ambient light
-	float ambient = texture2D(ambientTex, ambientScale * texCoo).r * ambientBrightness;
+	float ambient = texture2D(ambientTex, ambientTransform * vec3(gl_FragCoord.xy, 1.0)).r * ambientBrightness;
 }
 
 slice light+1

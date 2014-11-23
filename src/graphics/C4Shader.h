@@ -8,7 +8,7 @@
 #include "C4Surface.h"
 
 // Shader version
-const int C4Shader_Version = 110; // GLSL 1.10
+const int C4Shader_Version = 120; // GLSL 1.20 / OpenGL 2.1
 
 // Maximum number of texture coordinates
 const int C4Shader_MaxTexCoords = 8;
@@ -139,6 +139,12 @@ public:
 	void SetUniform1fv(int iUniform, int iLength, float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+
+	// Matrices are in row-major order
+	void SetUniformMatrix2x3fv(int iUniform, int iLength, const float* pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix3x2fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
 
 	void Start();

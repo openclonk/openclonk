@@ -536,7 +536,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_MaterialDepth]     = "materialDepth";
 	UniformNames[C4LRU_MaterialSize]      = "materialSize";
 	UniformNames[C4LRU_AmbientBrightness] = "ambientBrightness";
-	UniformNames[C4LRU_AmbientScale]      = "ambientScale";
+	UniformNames[C4LRU_AmbientTransform]  = "ambientTransform";
 
 	// Initialise!
 	if (!Shader.Init("landscape", UniformNames)) {
@@ -838,12 +838,11 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	                        float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
 	                        float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
 
-	// factor between actual landscape size and surface size, so that we can use the landscape
-	// coordinates for the ambient map lookup.
-	// TODO: These could actually be shader constants, and do not really need to be uniforms...
-	ShaderCall.SetUniform2f(C4LRU_AmbientScale,
-	                        static_cast<float>(Surfaces[0]->Wdt) / iWidth,
-	                        static_cast<float>(Surfaces[0]->Hgt) / iHeight);
+	const C4Rect LightRect = Light.getRegion();
+	const C4Rect ClipRect = pDraw->GetClipRect();
+	float ambientTransform[6];
+	Light.getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, ambientTransform);
+	ShaderCall.SetUniformMatrix2x3fv(C4LRU_AmbientTransform, 1, ambientTransform);
 	ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light.getFoW()->Ambient.GetBrightness());
 
 	// Start binding textures
@@ -852,7 +851,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 		GLint iLandscapeUnits[C4LR_SurfaceCount];
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
 		{
-            iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1, GL_TEXTURE_2D) - GL_TEXTURE0;
+			iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1, GL_TEXTURE_2D) - GL_TEXTURE0;
 			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->ppTex[0]->texName);
 			if (pGL->Zoom != 1.0)
 			{
@@ -913,7 +912,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 
 	// Calculate coordinates into light texture
 	FLOAT_RECT lTexBlt;
-	C4Rect LightRect = Light.getRegion();
 	int32_t iLightWdt = Light.getSurface()->Wdt,
 		    iLightHgt = Light.getSurface()->Hgt;
 	lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;

@@ -34,7 +34,7 @@ enum C4LR_Uniforms
 	C4LRU_MaterialDepth,
 	C4LRU_MaterialSize,
 	C4LRU_AmbientBrightness,
-	C4LRU_AmbientScale,
+	C4LRU_AmbientTransform,
 
 	C4LRU_Count
 };
