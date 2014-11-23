@@ -56,6 +56,8 @@ private:
 	/** Calculate the intermediate fade points used for constructing the intermediate fade triangles later on */
 	void CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles) const;
 
+	void ProjectPointOutward(float &x, float &y, float maxDistance) const;
+
 	/** Draws the triangle fan (the area with 100% light around the light source) with the given strategy */
 	void DrawFan(class C4FoWDrawStrategy* pen, std::list<class C4FoWBeamTriangle> &triangles) const;
 	/** Draws the fadeoot triangles - those around the triangle fan - with the given strategy */

@@ -623,18 +623,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		} // end for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt = it; it != --result.end(); ++it) loop
 	} // end for (int step = 0; step < 100000; step++) loop
 
-	// Phase 2: Remove triangles with 0 size
-	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
-	{
-		C4FoWBeamTriangle &tri = *it;
-		if( tri.fanLX == tri.fanRX && tri.fanLY == tri.fanRY )
-		{
-			it = result.erase(it);
-			if(it != result.begin()) --it;
-		}
-	}
-
-	// Phase 3: Calculate fade points
+	// Phase 2: Calculate fade points
 	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
 	{
 		C4FoWBeamTriangle &tri = *it;

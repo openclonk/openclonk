@@ -131,6 +131,14 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	delete pen;
 }
 
+void C4FoWLight::ProjectPointOutward(float &x, float &y, float maxDistance) const
+{
+	float distanceDifference = Min(maxDistance, (float) getTotalReach()) / sqrt((x - getX()) * (x - getX()) + (y - getY()) * (y - getY()));
+
+	x = getX() + distanceDifference * (x-getX());
+	y = getY() + distanceDifference * (y-getY());
+}
+
 void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles) const
 {
 	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
@@ -144,37 +152,25 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTri
 		// don't calculate if it should not be drawn anyway
 		if (tri.clipRight || nextTri.clipLeft) continue;
 		
+		// Midpoint
+		tri.fadeIX = (tri.fadeRX + nextTri.fadeLX) / 2;
+		tri.fadeIY = (tri.fadeRY + nextTri.fadeLY) / 2;
+
+		float distFadeR = GetSquaredDistanceTo(tri.fadeRX, tri.fadeRY);
+		float distNextFadeL = GetSquaredDistanceTo(nextTri.fadeLX, nextTri.fadeLY);
+
+		// the following function makes certain fades a bit smoother. This is
+		// especially visible for sharp edges like just looking  over a cliff
+		// (= the length of fanR and nextFanL is very different)
+		ProjectPointOutward(tri.fadeIX, tri.fadeIY, sqrt(Max(distFadeR, distNextFadeL)));
+
 		float distFanR = GetSquaredDistanceTo(tri.fanRX, tri.fanRY);
 		float distNextFanL = GetSquaredDistanceTo(nextTri.fanLX, nextTri.fanLY);
-
-		// Midpoint
-		float mx = (tri.fadeRX + nextTri.fadeLX) / 2;
-		float my = (tri.fadeRY + nextTri.fadeLY) / 2;
-
-		// we could set tri.fadeIX and Y to mx and my, but the following section makes certain
-		// fades a bit smoother by extending the fade mid point further away from the light.
-		// This is especially visible for sharp edges like just looking over a cliff (= the 
-		// length of fanR and nextFanL is very different)
-		float dx, dy;
-		C4FoWBeamTriangle &largerTri = distFanR > distNextFanL ? tri : nextTri;
-		find_cross(getX(), getY(), mx, my,
-		           largerTri.fanLX, largerTri.fanLY, largerTri.fanRX, largerTri.fanRY,
-		           &dx, &dy);
-		// make dx, dy relative to light source
-		dx -= getX();
-		dy -= getY();
-		float distanceDifference = float(getTotalReach()) / sqrt(dx*dx + dy*dy);
-		tri.fadeIX = getX() + distanceDifference * dx;
-		tri.fadeIY = getY() + distanceDifference * dy;
-		// end section
-
-		float distFadeI = GetSquaredDistanceTo(tri.fadeIX, tri.fadeIY);
-
-		// an intermediate fade point is not necessery in all cases
+				
+		// an extra intermediate fade point is only necessary on cliffs
 		tri.descending = distFanR > distNextFanL;
 		if (tri.descending) {
-			float distFadeR = GetSquaredDistanceTo(tri.fadeRX, tri.fadeRY);
-			if (distFadeR < distFadeI)
+			if (distFanR < distNextFadeL)
 			{
 				tri.fadeIX = nextTri.fadeLX;
 				tri.fadeIY = nextTri.fadeLY;
@@ -182,13 +178,13 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTri
 		}
 		else
 		{
-			float distNextFadeL = GetSquaredDistanceTo(nextTri.fadeLX, nextTri.fadeLY);
-			if (distNextFadeL < distFadeI)
+			if (distNextFanL < distFadeR)
 			{
 				tri.fadeIX = tri.fadeRX;
 				tri.fadeIY = tri.fadeRY;
 			}
 		}
+		
 	}
 }
 
