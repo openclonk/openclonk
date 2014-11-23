@@ -251,9 +251,9 @@ void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list
 			pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
 
 			// Intermediate fade triangle, if necessary
-			if (tri.fadeIY != nextTri.fadeRY || tri.fadeIX != nextTri.fadeRX) {
 				pen->DrawLightVertex(tri.fanRX, tri.fanRY);
 				pen->DrawDarkVertex(nextTri.fadeLX, nextTri.fadeLY);
+			if (tri.fadeIY != nextTri.fadeLY || tri.fadeIX != nextTri.fadeLX) {
 				pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
 			}
 
@@ -270,8 +270,8 @@ void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list
 			pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
 
 			// Intermediate fade triangle, if necessary
-			if (tri.fadeIY != nextTri.fadeRY || tri.fadeIX != nextTri.fadeRX) {
 				pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
+			if (tri.fadeIY != tri.fadeRY || tri.fadeIX != tri.fadeRX) {
 				pen->DrawDarkVertex(tri.fadeIX, tri.fadeIY);
 				pen->DrawDarkVertex(tri.fadeRX, tri.fadeRY);
 			}
