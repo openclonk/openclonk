@@ -8,11 +8,16 @@ uniform sampler2D lightTex;
 // brightness: light strength
 //#define LIGHT_DEBUG
 
+// At what point of light intensity we set the "darkness" point. This
+// is to compensate for the fact that the engien "smoothes" the light
+// and therefore will often never arrive at 0 light intensity.
+const float lightDarknessLevel = 8.0 / 256.0;
+
 slice texture+5
 {
 	// Query light texture
 	vec4 lightPx = texture2D(lightTex, lightCoord.st);
-	float lightBright = lightPx.x;
+	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
 }
 
