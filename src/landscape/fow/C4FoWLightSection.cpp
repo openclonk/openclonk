@@ -162,13 +162,14 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 #endif
 	C4FoWBeam *endBeam = NULL;
 	int32_t startY = Rect.GetBottom();
-	while (beam && !beam->isLeft(rx, ry)) {
+	if(!beam) return;
+	do {
 		if (beam->isDirty() && beam->getLeftEndY() <= Rect.y + Rect.Hgt) {
 			endBeam = beam;
 			startY = Min(startY, beam->getLeftEndY());
 		}
 		beam = beam->getNext();
-	}
+	} while(beam && !beam->isLeft(rx, ry));
 
 	// Can skip scan completely?
 	if (!endBeam)
