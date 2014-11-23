@@ -35,6 +35,11 @@ public:
 	/** Called after rendering the inner triangle fan */
 	virtual void EndFan() { glEnd(); };
 	
+	/** Called before rendering the triangle fan existnsion (100% light, maxed out normals) */
+	virtual void BeginFanMaxed() { glBegin(GL_QUADS); };
+	/** Called after rendering the inner triangle fan */
+	virtual void EndFanMaxed() { glEnd(); };
+
 	/** Called before rendering the quads in which the light fades out */
 	virtual void BeginFade() { glBegin(GL_QUADS); };
 	/** Called after rendering the quads in which the light fades out */

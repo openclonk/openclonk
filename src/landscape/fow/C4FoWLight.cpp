@@ -75,13 +75,13 @@ void C4FoWLight::Update(C4Rect Rec)
 
 void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 {
-	std::list<C4FoWBeamTriangle> triangles;
+	TriangleList triangles;
 
 	bool clip = false;
 	
 	for( int i = 0; i < sections.size(); ++i )
 	{
-		std::list<C4FoWBeamTriangle> sectionTriangles = sections[i]->CalculateTriangles(region);
+		TriangleList sectionTriangles = sections[i]->CalculateTriangles(region);
 
 		// if the triangles of one section are clipped completely, the neighbouring triangles
 		// must be marked as clipped
@@ -91,6 +91,8 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 		clip = sectionTriangles.empty();
 		triangles.splice(triangles.end(), sectionTriangles);
 	}
+
+	CalculateFanMaxed(triangles);
 	CalculateIntermediateFadeTriangles(triangles);
 
 	// Here's the master plan for updating the lights texture. We
@@ -122,6 +124,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 		pen->Begin(pass);
 
 		DrawFan(pen, triangles);
+		DrawFanMaxed(pen, triangles);
 		DrawFade(pen, triangles);
 		DrawIntermediateFadeTriangles(pen, triangles);
 
@@ -139,9 +142,39 @@ void C4FoWLight::ProjectPointOutward(float &x, float &y, float maxDistance) cons
 	y = getY() + distanceDifference * (y-getY());
 }
 
-void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTriangle> &triangles) const
+void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) const
 {
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
+	for (TriangleList::iterator pTriangle = Triangles.begin(); pTriangle != Triangles.end(); ++pTriangle)
+	{
+		// Is the left point close enough that normals don't max out?
+		float dist = sqrt(GetSquaredDistanceTo(pTriangle->fanLX, pTriangle->fanLY));
+		if (dist <= getNormalSize()) {
+			pTriangle->nfanLX = pTriangle->fanLX;
+			pTriangle->nfanLY = pTriangle->fanLY;
+		} else {
+			// Otherwise, calculate point where they do. We will add a seperate
+			// triangle/quad later on to capture that.
+			float f = float(getNormalSize() / dist);
+			pTriangle->nfanLX = f * pTriangle->fanLX + (1.0f - f) * getX();
+			pTriangle->nfanLY = f * pTriangle->fanLY + (1.0f - f) * getY();
+		}
+
+		// Same for the right point
+		dist = sqrt(GetSquaredDistanceTo(pTriangle->fanRX, pTriangle->fanRY));
+		if (dist <= getNormalSize()) {
+			pTriangle->nfanRX = pTriangle->fanRX;
+			pTriangle->nfanRY = pTriangle->fanRY;
+		} else {
+			float f = float(getNormalSize()) / dist;
+			pTriangle->nfanRX = f * pTriangle->fanRX + (1.0f - f) * getX();
+			pTriangle->nfanRY = f * pTriangle->fanRY + (1.0f - f) * getY();
+		}
+	}
+}
+
+void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles)
+{
+	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
 		// wrap around
 		++nextIt;
@@ -188,12 +221,12 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(std::list<class C4FoWBeamTri
 	}
 }
 
-void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
+void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
 	pen->BeginFan();
 	pen->DrawLightVertex(getX(), getY());
 
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
+	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
 		// wrap around
 		++nextIt;
@@ -201,19 +234,48 @@ void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &t
 
 		C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt; // just for convenience
 
-		pen->DrawLightVertex(tri.fanLX, tri.fanLY);	
+		pen->DrawLightVertex(tri.nfanLX, tri.nfanLY);
 
-		if(nextIt == triangles.begin() || nextTri.fanLX != tri.fanRX || nextTri.fanLY != tri.fanRY)
-			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
+		if(nextIt == triangles.begin() || nextTri.nfanLX != tri.nfanRX || nextTri.nfanLY != tri.nfanRY)
+			pen->DrawLightVertex(tri.nfanRX, tri.nfanRY);
 	}
 	pen->EndFan();
 }
 
-void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
+void C4FoWLight::DrawFanMaxed(C4FoWDrawStrategy* pen, TriangleList &triangles) const
+{
+	pen->BeginFanMaxed();
+	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
+	{
+		// Wrap around for next triangle
+		++nextIt; if(nextIt == triangles.end()) nextIt = triangles.begin();
+		C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt;
+
+		// First for the current beam
+		if (tri.nfanLX != tri.nfanRX || tri.nfanLY != tri.nfanRY)
+		{
+			pen->DrawLightVertex(tri.nfanLX, tri.nfanLY);
+			pen->DrawLightVertex(tri.nfanRX, tri.nfanRY);
+			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
+			pen->DrawLightVertex(tri.fanLX, tri.fanLY);
+		}
+		// Then for the space in-between
+		if (tri.nfanRX != nextTri.nfanLX || tri.nfanRY != nextTri.nfanLY)
+		{
+			pen->DrawLightVertex(tri.nfanRX, tri.nfanRY);
+			pen->DrawLightVertex(nextTri.nfanLX, nextTri.nfanLY);
+			pen->DrawLightVertex(nextTri.fanLX, nextTri.fanLY);
+			pen->DrawLightVertex(tri.fanRX, tri.fanRY);
+		}
+	}
+	pen->EndFanMaxed();
+}
+
+void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
 	pen->BeginFade();
 
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(); it != triangles.end(); ++it)
+	for (TriangleList::iterator it = triangles.begin(); it != triangles.end(); ++it)
 	{
 		C4FoWBeamTriangle &tri = *it; // just for convenience
 
@@ -228,10 +290,10 @@ void C4FoWLight::DrawFade(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &
 	pen->EndFade();
 }
 
-void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, std::list<C4FoWBeamTriangle> &triangles) const
+void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
 
-	for (std::list<C4FoWBeamTriangle>::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
+	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
 		// wrap around
 		++nextIt;
