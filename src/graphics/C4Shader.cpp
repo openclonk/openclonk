@@ -505,10 +505,10 @@ void C4ShaderCall::Finish()
 	}
 
 	// Deactivate all texture units
-	for (int i = 0; i < iUnits; i++)
+	for (int i = iUnits; i > 0; i--)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glDisable(hUnit[i]);
+		glActiveTexture(GL_TEXTURE0 + i - 1);
+		glDisable(hUnit[i - 1]);
 	}
 	iUnits = 0;
 	fStarted = false;
