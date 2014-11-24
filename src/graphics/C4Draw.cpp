@@ -513,9 +513,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 				pNormalTex = *(sfcSource->pNormalSfc->ppTex + iY * sfcSource->iTexX + iX);
 
 			// ClrByOwner is always fully opaque
-			DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
-			if (BlitModulated && !(dwBlitMode & C4GFXBLIT_CLRSFC_OWNCLR))
-				ModulateClr(dwOverlayClrMod, BlitModulateClr);
+			const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
 			PerformMultiTris(sfcTarget, vertices, 6, pTransform, pBaseTex, fBaseSfc ? pTex : NULL, pNormalTex, dwOverlayClrMod);
 		}
 	}

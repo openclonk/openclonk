@@ -341,6 +341,7 @@ IDS_ERR_FILEEXISTS=Datei mit Namen "%s" existiert bereits.
 IDS_ERR_GAMELEFTVIAPLAYERMENU=Spiel per Spielermenü verlassen.
 IDS_ERR_GBACK=Fehler beim Landschaftsgenerator.
 IDS_ERR_GFX_REGISTERMAIN=Fehler beim Laden der Grafikdatei
+IDS_ERR_GFX_INITSHADERS=Fehler beim Initialisieren der GLSL-Shader
 IDS_ERR_INITFONTS=Fehler bei der Schriftinitialisierung
 IDS_ERR_INSUFFICIENTPARAMETERS=/%s: fehlende Parameter
 IDS_ERR_INVALIDCHANNELNAME=Kein gültiger Chat-Kanal.

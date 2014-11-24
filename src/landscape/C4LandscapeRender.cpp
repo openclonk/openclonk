@@ -516,6 +516,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	hLightTexCoord = Shader.AddTexCoord("lightCoord");
 
 	// Then load slices for fragment shader
+	Shader.AddFragmentSlice(-1, "#define LANDSCAPE");
 	Shader.LoadSlices(pGroups, "UtilShader.c");
 	Shader.LoadSlices(pGroups, "LandscapeShader.c");
 	Shader.LoadSlices(pGroups, "LightShader.c");
