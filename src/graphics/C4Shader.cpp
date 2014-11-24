@@ -516,6 +516,6 @@ void C4ShaderCall::Finish()
 	// Got an error?
 	if(int err = glGetError())
 	{
-		LogF("GL error: %d", err /*, gluErrorString(err)*/);
+		LogF("GL error: %d - %s", err, gluErrorString(err));
 	}
 }

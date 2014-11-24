@@ -743,17 +743,7 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 {
 	GLenum err = glGetError();
 	if (!err) return true;
-	Log(szAtOp);
-	switch (err)
-	{
-	case GL_INVALID_ENUM:       Log("GL_INVALID_ENUM"); break;
-	case GL_INVALID_VALUE:      Log("GL_INVALID_VALUE"); break;
-	case GL_INVALID_OPERATION:  Log("GL_INVALID_OPERATION"); break;
-	case GL_STACK_OVERFLOW:     Log("GL_STACK_OVERFLOW"); break;
-	case GL_STACK_UNDERFLOW:    Log("GL_STACK_UNDERFLOW"); break;
-	case GL_OUT_OF_MEMORY:      Log("GL_OUT_OF_MEMORY"); break;
-	default: Log("unknown error"); break;
-	}
+	LogF("GL error with %s: %d - %s", szAtOp, err, gluErrorString(err));
 	return false;
 }
 
