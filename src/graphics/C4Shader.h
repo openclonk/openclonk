@@ -132,13 +132,17 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform2fARB(pShader->GetUniform(iUniform), gX, gY);
 	}
-	void SetUniform1iv(int iUniform, int iLength, int *pVals) const {
+	void SetUniform1iv(int iUniform, int iLength, const int *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1ivARB(pShader->GetUniform(iUniform), iLength, pVals);
 	}
-	void SetUniform1fv(int iUniform, int iLength, float *pVals) const {
+	void SetUniform1fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform1fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform4fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform4fvARB(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 
 	// Matrices are in row-major order
