@@ -517,11 +517,11 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 
 	// Then load slices for fragment shader
 	Shader.AddFragmentSlice(-1, "#define LANDSCAPE");
-	Shader.LoadSlices(pGroups, "UtilShader.c");
-	Shader.LoadSlices(pGroups, "LandscapeShader.c");
-	Shader.LoadSlices(pGroups, "LightShader.c");
-	Shader.LoadSlices(pGroups, "AmbientShader.c");
-	Shader.LoadSlices(pGroups, "ScalerShader.c");
+	Shader.LoadSlices(pGroups, "UtilShader.glsl");
+	Shader.LoadSlices(pGroups, "LandscapeShader.glsl");
+	Shader.LoadSlices(pGroups, "LightShader.glsl");
+	Shader.LoadSlices(pGroups, "AmbientShader.glsl");
+	Shader.LoadSlices(pGroups, "ScalerShader.glsl");
 
 	// Make uniform name map
 	ZeroMem(UniformNames, sizeof(UniformNames));

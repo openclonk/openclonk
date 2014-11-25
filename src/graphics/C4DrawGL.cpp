@@ -567,16 +567,16 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	// Then load slices for fragment shader
 	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
 	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
-	shader.LoadSlices(pGroups, "UtilShader.c");
-	shader.LoadSlices(pGroups, "SpriteBaseShader.c");
+	shader.LoadSlices(pGroups, "UtilShader.glsl");
+	shader.LoadSlices(pGroups, "SpriteBaseShader.glsl");
 
-	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.c");
-	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.c");
+	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
+	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
 	if (ssc & C4SSC_LIGHT)
 	{
-		shader.LoadSlices(pGroups, "SpriteLightShader.c");
-		shader.LoadSlices(pGroups, "LightShader.c");
-		shader.LoadSlices(pGroups, "AmbientShader.c");
+		shader.LoadSlices(pGroups, "SpriteLightShader.glsl");
+		shader.LoadSlices(pGroups, "LightShader.glsl");
+		shader.LoadSlices(pGroups, "AmbientShader.glsl");
 	}
 
 	if (!shader.Init(name, uniformNames))
