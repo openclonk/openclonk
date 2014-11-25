@@ -971,15 +971,13 @@ bool C4ParticleChunk::Exec(C4Object *obj, float timeDelta)
 #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #endif
 
-void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
+void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 {
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
 	assert(sourceDefinition && "No source definition assigned to particle chunk.");
 	C4TexRef *textureRef = (*sourceDefinition->Gfx.GetFace().ppTex);
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
-
-	
 
 	// use a relative offset?
 	bool resetMatrix(false);
@@ -990,10 +988,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 		glTranslatef((float)obj->GetX(), (float)obj->GetY(), 0.0f);
 	}
 
-	glBlendFunc(GL_SRC_ALPHA, (blitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-
-	glActiveTexture(GL_TEXTURE0);
-	glClientActiveTexture(GL_TEXTURE0);
+	glActiveTexture(texUnit);
 	glBindTexture(GL_TEXTURE_2D, textureRef->texName);
 
 	if (!Particles.useBufferObjectWorkaround)
@@ -1138,21 +1133,25 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
 	
-	glEnable(GL_TEXTURE_2D);
-
 	if (!Particles.usePrimitiveRestartIndexWorkaround)
 	{
 		glPrimitiveRestartIndex(0xffffffff);
 		glEnable(GL_PRIMITIVE_RESTART);
 	}
-	// apply zoom
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
 
-	glTranslatef(cgo.X, cgo.Y, 0.0f);
-	glScalef(cgo.Zoom, cgo.Zoom, 1.0f);
-	glTranslatef(-cgo.TargetX, -cgo.TargetY, 0.0f);
+	// enable shader
+	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
+	// apply zoom and upload shader uniforms
+	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0);
+	// go to correct output position
+	glTranslatef(cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
+	// allocate texture unit for particle texture, and remember allocated
+	// texture unit. Will be used for each particle chunk to bind
+	// their texture to this unit.
+	const GLint texUnit = call.AllocTexUnit(C4SSU_BaseTex, GL_TEXTURE_2D);
+	// Texture coordinates are always associated to texture unit 0, since
+	// there is only one set of texture coordinates
+	glClientActiveTexture(GL_TEXTURE0);
 
 	if (Particles.useBufferObjectWorkaround)
 	{
@@ -1173,12 +1172,14 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 		}
 		else
 		{
-			(*iter)->Draw(cgo, obj);
+			(*iter)->Draw(cgo, obj, texUnit);
 			++iter;
 		}
 	}
 
 	accessMutex.Leave();
+
+	pGL->ResetMultiBlt();
 
 	if (Particles.useBufferObjectWorkaround)
 	{
@@ -1187,13 +1188,10 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
-	glPopMatrix();
-
 	if (!Particles.usePrimitiveRestartIndexWorkaround)
 	{
 		glDisable(GL_PRIMITIVE_RESTART);
 	}
-	glDisable(GL_TEXTURE_2D);
 }
 
 void C4ParticleList::Clear()

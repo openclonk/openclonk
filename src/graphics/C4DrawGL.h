@@ -205,11 +205,13 @@ public:
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width);
 	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod);
 	// device objects
-	bool InitShaders(C4GroupSet* pGroups); // load shaders from given group
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
 	bool DeviceReady() { return !!pMainCtx; }
 	bool EnsureAnyContext();
+	bool InitShaders(C4GroupSet* pGroups); // load shaders from given group
+	C4Shader* GetSpriteShader(int ssc);
+	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);
 
 protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
@@ -218,8 +220,6 @@ protected:
 	virtual bool Error(const char *szMsg);
 
 	bool CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups);
-	C4Shader* GetSpriteShader(int ssc);
-	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);
 
 	friend class C4Surface;
 	friend class C4TexRef;
