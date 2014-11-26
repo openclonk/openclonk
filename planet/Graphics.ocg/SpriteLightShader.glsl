@@ -13,8 +13,8 @@ slice normal
 {
 #ifdef HAVE_NORMALMAP
 	vec4 normalPx = texture2D(normalTex, texcoord.xy);
-	// Ignore Z component of the normal map for now
-	vec3 normal = extend_normal( (normalPx.xy - vec2(0.5, 0.5))*2.0);
+	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
+	vec3 normal = normalize(gl_NormalMatrix * normalPxDir);
 #else
 	vec3 normal = vec3(0.0, 0.0, 1.0);
 #endif

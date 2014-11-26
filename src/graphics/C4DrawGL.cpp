@@ -382,12 +382,19 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 	// Apply zoom and transform
 	glPushMatrix();
 	glTranslatef(ZoomX, ZoomY, 0.0f);
-	glScalef(Zoom, Zoom, 1.0f);
+	// Scale Z as well so that we don't distort normals.
+	glScalef(Zoom, Zoom, Zoom);
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
 	if(pTransform)
 	{
-		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+		// Decompose scale factors and scale Z accordingly to X and Y, again to avoid distorting normals
+		// We could instead work around this by using the projection matrix, but then for object rotations (SetR)
+		// the normals would not be correct.
+		const float sx = sqrt(pTransform->mat[0]*pTransform->mat[0] + pTransform->mat[1]*pTransform->mat[1]);
+		const float sy = sqrt(pTransform->mat[3]*pTransform->mat[3] + pTransform->mat[4]*pTransform->mat[4]);
+		const float sz = sqrt(sx * sy);
+		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, sz, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
 		glMultMatrixf(transform);
 	}
 }
