@@ -22,7 +22,7 @@
 
 class StdMeshBone
 {
-	friend class StdMesh;
+	friend class StdMeshSkeleton;
 	friend class StdMeshLoader;
 public:
 	StdMeshBone() {}
@@ -38,15 +38,34 @@ public:
 
 	const StdMeshBone* GetParent() const { return Parent; }
 
-	const StdMeshBone& GetChild(size_t i) const { return *Children[i]; }
-	size_t GetNumChildren() const { return Children.size(); }
-
 private:
 	StdMeshBone* Parent; // Parent bone
 	std::vector<StdMeshBone*> Children; // Children. Not owned.
 
 	StdMeshBone(const StdMeshBone&); // non-copyable
 	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
+};
+
+class StdMeshSkeleton
+{
+	friend class StdMeshLoader; 
+	friend class StdMesh;
+
+	StdMeshSkeleton();
+public:
+	~StdMeshSkeleton();
+
+	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
+	size_t GetNumBones() const { return Bones.size(); }
+	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
+
+private:
+	void AddMasterBone(StdMeshBone* bone);
+
+	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
+	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
+
+	std::vector<StdMeshBone*> Bones; // Master Bone Table
 };
 
 class StdMeshVertexBoneAssignment
@@ -155,9 +174,7 @@ public:
 
 	const std::vector<Vertex>& GetSharedVertices() const { return SharedVertices; }
 
-	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
-	size_t GetNumBones() const { return Bones.size(); }
-	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
+	const StdMeshSkeleton& GetSkeleton() const { return *Skeleton; }
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
 
@@ -169,7 +186,6 @@ public:
 	void PostInit();
 
 private:
-	void AddMasterBone(StdMeshBone* bone);
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable
@@ -177,7 +193,7 @@ private:
 	std::vector<Vertex> SharedVertices;
 
 	std::vector<StdSubMesh> SubMeshes;
-	std::vector<StdMeshBone*> Bones; // Master Bone Table
+	std::shared_ptr<StdMeshSkeleton> Skeleton; // Skeleton
 
 	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
@@ -273,8 +289,8 @@ public:
 	typedef StdSubMeshInstance::FaceOrdering FaceOrdering;
 
 	enum AttachMeshFlags {
-		AM_None        = 0,
-		AM_DrawBefore  = 1 << 0
+		AM_None          = 0,
+		AM_DrawBefore    = 1 << 0
 	};
 
 	// Provider for animation position or weight.

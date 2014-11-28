@@ -80,13 +80,13 @@ void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 }
 
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):
-	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetNumBones())
+	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetSkeleton().GetNumBones())
 {
 	for(std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->Animations.begin(); iter != OldMesh->Animations.end(); ++iter)
 		AnimationNames[&iter->second] = iter->first;
 
-	for(unsigned int i = 0; i < OldMesh->GetNumBones(); ++i)
-		BoneNamesByIndex[i] = OldMesh->GetBone(i).Name;
+	for (unsigned int i = 0; i < OldMesh->GetSkeleton().GetNumBones(); ++i)
+		BoneNamesByIndex[i] = OldMesh->GetSkeleton().GetBone(i).Name;
 }
 
 void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) const
@@ -95,7 +95,7 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 
 	// Update instance to represent new mesh
 	instance->Mesh = &new_mesh;
-	instance->BoneTransforms = std::vector<StdMeshMatrix>(new_mesh.GetNumBones(), StdMeshMatrix::Identity());
+	instance->BoneTransforms = std::vector<StdMeshMatrix>(new_mesh.GetSkeleton().GetNumBones(), StdMeshMatrix::Identity());
 	instance->BoneTransformsDirty = true;
 
 	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
@@ -168,7 +168,7 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 		{
 			// Update bone index by bone name
 			StdCopyStrBuf bone_name = BoneNamesByIndex[node->Custom.BoneIndex];
-			const StdMeshBone* bone = new_mesh.GetBoneByName(bone_name);
+			const StdMeshBone* bone = new_mesh.GetSkeleton().GetBoneByName(bone_name);
 			if(!bone) return false;
 			node->Custom.BoneIndex = bone->Index;
 			return true;

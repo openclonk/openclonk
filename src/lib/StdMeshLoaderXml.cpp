@@ -213,9 +213,9 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 			Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
 
 		StdMeshBone* bone = NULL;
-		for (unsigned int i = 0; !bone && i < mesh.Bones.size(); ++i)
-			if (mesh.Bones[i]->ID == BoneID)
-				bone = mesh.Bones[i];
+		for (unsigned int i = 0; !bone && i < mesh.GetSkeleton().GetNumBones(); ++i)
+			if (mesh.GetSkeleton().Bones[i]->ID == BoneID)
+				bone = mesh.GetSkeleton().Bones[i];
 
 		if (!bone) Error(FormatString("There is no such bone with ID %d", BoneID), vertexboneassignment_elem);
 
@@ -386,7 +386,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		// Fill master bone table in hierarchical order:
 		for (unsigned int i = 0; i < bones.size(); ++i)
 			if (bones[i]->Parent == NULL)
-				mesh->AddMasterBone(bones[i]);
+				mesh->Skeleton->AddMasterBone(bones[i]);
 
 		// Vertex<->Bone assignments for shared geometry
 		if(sharedgeometry_elem)
@@ -420,16 +420,16 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 				StdMeshAnimation& animation = mesh->Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
 				animation.Name = name;
 				animation.Length = skeleton.RequireFloatAttribute(animation_elem, "length");
-				animation.Tracks.resize(mesh->Bones.size());
+				animation.Tracks.resize(mesh->GetSkeleton().GetNumBones());
 
 				TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
 				for (TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
 				{
 					const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
 					StdMeshBone* bone = NULL;
-					for (unsigned int i = 0; !bone && i < mesh->Bones.size(); ++i)
-						if (mesh->Bones[i]->Name == bone_name)
-							bone = mesh->Bones[i];
+					for (unsigned int i = 0; !bone && i < mesh->GetSkeleton().GetNumBones(); ++i)
+						if (mesh->GetSkeleton().Bones[i]->Name == bone_name)
+							bone = mesh->GetSkeleton().Bones[i];
 					if (!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
 
 					if (animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
@@ -504,14 +504,14 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	// Apply parent transformation to each bone transformation. We need to
 	// do this late since animation keyframe computation needs the bone
 	// transformations, not bone+parent.
-	for (unsigned int i = 0; i < mesh->Bones.size(); ++i)
+	for (unsigned int i = 0; i < mesh->GetSkeleton().GetNumBones(); ++i)
 	{
-		if (mesh->Bones[i]->Parent)
+		if (mesh->GetSkeleton().Bones[i]->Parent)
 		{
 			// Apply parent transformation
-			mesh->Bones[i]->Transformation = mesh->Bones[i]->Parent->Transformation * mesh->Bones[i]->Transformation;
+			mesh->GetSkeleton().Bones[i]->Transformation = mesh->GetSkeleton().Bones[i]->Parent->Transformation * mesh->GetSkeleton().Bones[i]->Transformation;
 			// Update inverse
-			mesh->Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(mesh->Bones[i]->Transformation);
+			mesh->GetSkeleton().Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(mesh->GetSkeleton().Bones[i]->Transformation);
 		}
 	}
 
