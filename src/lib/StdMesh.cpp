@@ -1025,7 +1025,7 @@ void StdMeshInstance::StopAnimation(AnimationNode* node)
 
 	while (!AnimationNodes.empty() && AnimationNodes.back() == NULL)
 		AnimationNodes.erase(AnimationNodes.end()-1);
-	BoneTransformsDirty = true;
+	SetBoneTransformsDirty(true);
 }
 
 StdMeshInstance::AnimationNode* StdMeshInstance::GetAnimationNodeByNumber(unsigned int number)
@@ -1049,14 +1049,14 @@ void StdMeshInstance::SetAnimationPosition(AnimationNode* node, ValueProvider* p
 
 	position->Value = BoundBy(position->Value, Fix0, ftofix(node->Leaf.Animation->Length));
 
-	BoneTransformsDirty = true;
+	SetBoneTransformsDirty(true);
 }
 
 void StdMeshInstance::SetAnimationBoneTransform(AnimationNode* node, const StdMeshTransformation& trans)
 {
 	assert(node->GetType() == AnimationNode::CustomNode);
 	*node->Custom.Transformation = trans;
-	BoneTransformsDirty = true;
+	SetBoneTransformsDirty(true);
 }
 
 void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* weight)
@@ -1066,7 +1066,7 @@ void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* wei
 
 	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
 
-	BoneTransformsDirty = true;
+	SetBoneTransformsDirty(true);
 }
 
 void StdMeshInstance::ExecuteAnimation(float dt)
@@ -1190,6 +1190,18 @@ void StdMeshInstance::SetMaterial(size_t i, const StdMeshMaterial& material)
 	std::stable_sort(SubMeshInstancesOrdered.begin(), SubMeshInstancesOrdered.end(), StdMeshSubMeshInstanceVisibilityCmpPred());
 }
 
+const StdMeshMatrix& StdMeshInstance::GetBoneTransform(size_t i) const
+{
+	if ((AttachParent != NULL) && (AttachParent->GetFlags() & AM_MatchSkeleton))
+	{
+		return AttachParent->Parent->BoneTransforms[i];
+	}
+	else
+	{
+		return BoneTransforms[i];
+	}
+}
+
 bool StdMeshInstance::UpdateBoneTransforms()
 {
 	bool was_dirty = BoneTransformsDirty;
@@ -1271,17 +1283,17 @@ bool StdMeshInstance::UpdateBoneTransforms()
 			// (saves per-instance memory, but requires recomputation if the animation does not change).
 			// TODO: We might also be able to cache child inverse, and only recomupte it if
 			// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
-			attach->FinalTrans = BoneTransforms[attach->ParentBone]
-			                     * StdMeshMatrix::Transform(Mesh->GetSkeleton().GetBone(attach->ParentBone).Transformation)
-			                     * attach->AttachTrans
-			                     * StdMeshMatrix::Transform(attach->Child->Mesh->GetSkeleton().GetBone(attach->ChildBone).InverseTransformation)
-			                     * StdMeshMatrix::Inverse(attach->Child->BoneTransforms[attach->ChildBone]);
+			attach->FinalTrans = GetBoneTransform(attach->ParentBone)
+				* StdMeshMatrix::Transform(Mesh->GetSkeleton().GetBone(attach->ParentBone).Transformation)
+				* attach->AttachTrans
+				* StdMeshMatrix::Transform(attach->Child->Mesh->GetSkeleton().GetBone(attach->ChildBone).InverseTransformation)
+				* StdMeshMatrix::Inverse(attach->Child->GetBoneTransform(attach->ChildBone));
 
 			attach->FinalTransformDirty = false;
 		}
 	}
 
-	BoneTransformsDirty = false;
+	SetBoneTransformsDirty(false);
 	return was_dirty;
 }
 
@@ -1314,7 +1326,7 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		assert(!AttachParent);
 		assert(AttachChildren.empty());
 		assert(AnimationStack.empty());
-		BoneTransformsDirty = true;
+		SetBoneTransformsDirty(true);
 
 		bool valid;
 		pComp->Value(mkNamingAdapt(valid, "Valid"));
@@ -1511,7 +1523,7 @@ void StdMeshInstance::InsertAnimationNode(AnimationNode* node, int slot, Animati
 		*iter = node;
 	}
 
-	BoneTransformsDirty = true;
+	SetBoneTransformsDirty(true);
 }
 
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
@@ -1568,7 +1580,7 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 		if (provider->Value != old_value)
 		{
 			provider->Value = BoundBy(provider->Value, min, max);
-			BoneTransformsDirty = true;
+			SetBoneTransformsDirty(true);
 		}
 
 		if (node->GetType() == AnimationNode::LinearInterpolationNode)
@@ -1607,12 +1619,32 @@ void StdMeshInstance::ApplyBoneTransformToVertices(const std::vector<StdSubMesh:
 			for (unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
 			{
 				const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
-				instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+				instance_vertex += assignment.Weight * (GetBoneTransform(assignment.BoneIndex) * vertex);
 			}
 		}
 		else
 		{
 			instance_vertex = vertex;
+		}
+	}
+}
+
+void StdMeshInstance::SetBoneTransformsDirty(bool value)
+{
+	BoneTransformsDirty = value;
+
+	// only if the value is true, so that updates happen
+	if (value)
+	{
+		// Update attachment's attach transformations. Note this is done recursively.
+		for (AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+		{
+			AttachedMesh* attach = *iter;
+
+			if (attach->GetFlags() & AM_MatchSkeleton)
+			{
+				attach->Child->SetBoneTransformsDirty(value);
+			}
 		}
 	}
 }

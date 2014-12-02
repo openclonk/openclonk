@@ -2506,6 +2506,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
+	{ "AM_MatchSkeleton"          ,C4V_Int,      StdMeshInstance::AM_MatchSkeleton },
 
 	{ NULL, C4V_Nil, 0}
 };

@@ -290,7 +290,8 @@ public:
 
 	enum AttachMeshFlags {
 		AM_None          = 0,
-		AM_DrawBefore    = 1 << 0
+		AM_DrawBefore    = 1 << 0,
+		AM_MatchSkeleton = 1 << 1
 	};
 
 	// Provider for animation position or weight.
@@ -548,7 +549,7 @@ public:
 	// Set material of submesh i.
 	void SetMaterial(size_t i, const StdMeshMaterial& material);
 
-	const StdMeshMatrix& GetBoneTransform(size_t i) const { return BoneTransforms[i]; }
+	const StdMeshMatrix& GetBoneTransform(size_t i) const;
 
 	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
 	// This is called recursively for attached children, so there is no need to call it on attached children only
@@ -582,6 +583,7 @@ protected:
 	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight);
 	bool ExecuteAnimationNode(AnimationNode* node);
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
+	void SetBoneTransformsDirty(bool value);
 
 	const StdMesh* Mesh;
 
