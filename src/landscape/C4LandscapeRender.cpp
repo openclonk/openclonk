@@ -517,6 +517,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 
 	// Then load slices for fragment shader
 	Shader.AddFragmentSlice(-1, "#define LANDSCAPE");
+	Shader.AddFragmentSlice(-1, "#define HAVE_LIGHT"); // sample light from light texture
 	Shader.LoadSlices(pGroups, "UtilShader.glsl");
 	Shader.LoadSlices(pGroups, "LandscapeShader.glsl");
 	Shader.LoadSlices(pGroups, "LightShader.glsl");

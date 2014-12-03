@@ -3,6 +3,10 @@ uniform mat3x2 lightTransform;
 uniform sampler2D normalTex;
 #endif
 
+#ifdef MESH
+varying vec3 normalDir;
+#endif
+
 slice(texture+4)
 {
 	// prepare texture coordinate for light lookup in LightShader.c
@@ -16,6 +20,10 @@ slice(normal)
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
 	vec3 normal = normalize(gl_NormalMatrix * normalPxDir);
 #else
+#ifdef MESH
+	vec4 normal = normalize(gl_NormalMatrix * normalDir);
+#else
 	vec3 normal = vec3(0.0, 0.0, 1.0);
+#endif
 #endif
 }

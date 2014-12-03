@@ -1,7 +1,9 @@
 
 // Base light calculations
 
+#ifdef HAVE_LIGHT
 uniform sampler2D lightTex;
+#endif
 
 // uncomment the following lines for debugging light directions:
 // yellow: light up, blue: light down, turqoise: light right, pink: light left
@@ -15,18 +17,25 @@ const float lightDarknessLevel = 8.0 / 256.0;
 
 slice(texture+5)
 {
+#ifdef HAVE_LIGHT
 	// Query light texture
 	vec4 lightPx = texture2D(lightTex, lightCoord.st);
 	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
+#else
+	// This is used for meshes; if no light is specified we put one that is coming from
+	// the camera.
+	float lightBright = 0.5;
+	vec3 lightDir = vec3(0.0, 0.0, 1.0);
+#endif
 }
 
 slice(light)
 {
 	// Light direction
-	float light = 2.0 * lightBright * dot(normal, lightDir);
+	float light = 2.0 * lightBright * max(dot(normal, lightDir), 0.0);
 #ifdef HAVE_2PX
-	float light2 = 2.0 * lightBright * dot(normal2, lightDir);
+	float light2 = 2.0 * lightBright * max(dot(normal2, lightDir), 0.0);
 #endif
 }
 

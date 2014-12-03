@@ -587,14 +587,15 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	// Then load slices for fragment shader
 	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
 	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
+	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
 	shader.LoadSlices(pGroups, "UtilShader.glsl");
-	shader.LoadSlices(pGroups, "SpriteBaseShader.glsl");
+	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
 
 	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
 	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
 	if (ssc & C4SSC_LIGHT)
 	{
-		shader.LoadSlices(pGroups, "SpriteLightShader.glsl");
+		shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
 		shader.LoadSlices(pGroups, "LightShader.glsl");
 		shader.LoadSlices(pGroups, "AmbientShader.glsl");
 	}

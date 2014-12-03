@@ -32,15 +32,16 @@ material NormalMap
 
             fragment_program_ref normal_map_fragment
             {
-                param_named_auto oc_Mod2 oc_mod2
-                param_named_auto oc_ColorModulation oc_color_modulation
-                param_named_auto oc_UseLight oc_use_light
-                param_named_auto oc_Light oc_light
-                param_named_auto oc_Ambient oc_ambient
-                param_named_auto oc_AmbientBrightness oc_ambient_brightness
+              // Will be configured automatically via slices:
+//                param_named_auto oc_Mod2 oc_mod2
+//                param_named_auto oc_ColorModulation oc_color_modulation
+//                param_named_auto oc_UseLight oc_use_light
+//                param_named_auto oc_Light oc_light
+//                param_named_auto oc_Ambient oc_ambient
+//                param_named_auto oc_AmbientBrightness oc_ambient_brightness
 
                 param_named basemap int 0
-                param_named normalmap int 1
+                param_named normalTex int 1
             }
         }
     }
