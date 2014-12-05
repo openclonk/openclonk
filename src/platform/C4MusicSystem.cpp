@@ -549,8 +549,8 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 		// match
 		char szFileName[_MAX_FNAME + 1];
 		for (int cnt = 0; SGetModule(szPlayList, cnt, szFileName, _MAX_FNAME); cnt++)
-			for (pFile = Songs; pFile; pFile = pFile->pNext)
-				if (pFile->NoPlay && WildcardMatch(szFileName, GetFilename(pFile->FileName)))
+			for (pFile = Songs; pFile; pFile = pFile->pNext) if (pFile->NoPlay)
+				if (WildcardMatch(szFileName, GetFilename(pFile->FileName)) || pFile->HasCategory(szFileName))
 				{
 					ASongCount++;
 					pFile->NoPlay = false;

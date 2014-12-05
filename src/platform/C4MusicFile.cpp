@@ -410,7 +410,7 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 
 /* Ogg Vobis */
 
-C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false), byte_pos_total(0), volume(1.0f)
+C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0), streaming_done(false), byte_pos_total(0), volume(1.0f), loaded(false)
 {
 	for (size_t i=0; i<num_buffers; ++i)
 		buffers[i] = 0;
@@ -418,18 +418,32 @@ C4MusicFileOgg::C4MusicFileOgg() : playing(false), current_section(0), channel(0
 
 C4MusicFileOgg::~C4MusicFileOgg()
 {
+	Clear();
 	Stop();
 }
 
-bool C4MusicFileOgg::Play(bool loop)
+void C4MusicFileOgg::Clear()
 {
-	// stop previous
-	Stop();
-	// Get channel to use
-	alGenSources(1, (ALuint*)&channel);
-	if (!channel) return false;
+	// clear ogg file
+	if (loaded)
+	{
+		ov_clear(&ogg_file);
+		loaded = false;
+	}
+	categories.clear();
+}
 
-	// Load compressed data all at once (because reading/seeking inside C4Group is problematic). Uncompress while playing.
+bool C4MusicFileOgg::Init(const char *strFile)
+{
+	// Clear previous
+	Clear();
+	// Base init file
+	if (!C4MusicFile::Init(strFile)) return false;
+	// Initial file loading
+	// Currently, the whole compressed file is kept in memory because reading/seeking inside C4Group is problematic. Uncompress while playing.
+	// This uses about 50MB of RAM (for ala's music pack) and increases startup time a bit.
+	// Later, this could be replaced with proper random access in c4group. Either replacing the file format or e.g. storing the current zlib state here
+	//  and then updating callbacks.read/seek/close/tell_func to read data from the group directly as needed
 	char *file_contents;
 	size_t file_size;
 	if (!C4Group_ReadFile(FileName, &file_contents, &file_size))
@@ -440,11 +454,11 @@ bool C4MusicFileOgg::Play(bool loop)
 	vorbis_info* info;
 	memset(&ogg_file, 0, sizeof(ogg_file));
 	ov_callbacks callbacks;
-	callbacks.read_func  = &::C4SoundLoaders::VorbisLoader::read_func;
-	callbacks.seek_func  = &::C4SoundLoaders::VorbisLoader::seek_func;
+	callbacks.read_func = &::C4SoundLoaders::VorbisLoader::read_func;
+	callbacks.seek_func = &::C4SoundLoaders::VorbisLoader::seek_func;
 	callbacks.close_func = &::C4SoundLoaders::VorbisLoader::close_func;
-	callbacks.tell_func  = &::C4SoundLoaders::VorbisLoader::tell_func;
-	
+	callbacks.tell_func = &::C4SoundLoaders::VorbisLoader::tell_func;
+
 	// open using callbacks
 	if (ov_open_callbacks(&data, &ogg_file, NULL, 0, callbacks) != 0)
 	{
@@ -459,7 +473,46 @@ bool C4MusicFileOgg::Play(bool loop)
 	else
 		ogg_info.format = AL_FORMAT_STEREO16;
 	ogg_info.sample_rate = info->rate;
-	ogg_info.sample_length = ov_time_total(&ogg_file, -1)/1000.0;
+	ogg_info.sample_length = ov_time_total(&ogg_file, -1) / 1000.0;
+	
+	// Get categories from ogg comment header
+	vorbis_comment *comment = ov_comment(&ogg_file, -1);
+	const char *comment_id = "COMMENTS=";
+	size_t comment_id_len = strlen(comment_id);
+	for (int i = 0; i < comment->comments; ++i)
+	{
+		if (comment->comment_lengths[i] > comment_id_len)
+		{
+			if (SEqual2NoCase(comment->user_comments[i], comment_id, comment_id_len))
+			{
+				// Add all categories delimeted by ';'
+				const char *categories_string = comment->user_comments[i] + comment_id_len;
+				for (;;)
+				{
+					int delimeter = SCharPos(';', categories_string);
+					StdCopyStrBuf category;
+					category.Copy(categories_string, delimeter >= 0 ? delimeter : SLen(categories_string));
+					categories.push_back(category);
+					if (delimeter < 0) break;
+					categories_string += delimeter+1;
+				}
+			}
+		}
+	}
+
+	// mark successfully loaded
+	return loaded = true;
+}
+
+bool C4MusicFileOgg::Play(bool loop)
+{
+	// Valid file?
+	if (!loaded) return false;
+	// stop previous
+	Stop();
+	// Get channel to use
+	alGenSources(1, (ALuint*)&channel);
+	if (!channel) return false;
 
 	playing = true;
 	streaming_done = false;
@@ -472,6 +525,7 @@ bool C4MusicFileOgg::Play(bool loop)
 	// prepare read
 	ogg_info.sound_data.resize(num_buffers * buffer_size);
 	alGenBuffers(num_buffers, buffers);
+	ov_pcm_seek(&ogg_file, 0);
 
 	// Fill initial buffers
 	for (size_t i=0; i<num_buffers; ++i)
@@ -488,14 +542,12 @@ void C4MusicFileOgg::Stop(int fadeout_ms)
 {
 	if (playing)
 	{
-		// clear ogg file
-		ov_clear(&ogg_file);
 		alSourceStop(channel);
 		// clear queue
 		ALint num_queued=0;
 		alErrorCheck(alGetSourcei(channel, AL_BUFFERS_QUEUED, &num_queued));
 		ALuint buffer;
-		for (size_t i = 0; i < num_queued; ++i)
+		for (size_t i = 0; i < (size_t)num_queued; ++i)
 			alErrorCheck(alSourceUnqueueBuffers(channel, 1, &buffer));
 	}
 	// clear buffers
@@ -519,6 +571,16 @@ void C4MusicFileOgg::SetVolume(int iLevel)
 {
 	volume = ((float) iLevel) / 100.0f;
 	if (channel) alSourcef(channel, AL_GAIN, volume);
+}
+
+bool C4MusicFileOgg::HasCategory(const char *szcat) const
+{
+	if (!szcat) return false;
+	// check all stored categories
+	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
+		if (WildcardMatch(szcat, i->getData()))
+			return true;
+	return false;
 }
 
 bool C4MusicFileOgg::FillBuffer(size_t idx)
