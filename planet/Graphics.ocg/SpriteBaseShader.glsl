@@ -1,13 +1,13 @@
 uniform vec4 clrMod;
 
-slice init
+slice(init)
 {
 #define color gl_FragColor
 	vec4 baseColor = gl_Color;
 	color = baseColor;
 }
 
-slice color
+slice(color)
 {
 	// TODO: Instead of a conditional, we could compute the color as
 	// color = A + B*color + C*clrMod + D*color*clrMod;

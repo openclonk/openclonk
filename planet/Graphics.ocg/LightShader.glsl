@@ -13,7 +13,7 @@ uniform sampler2D lightTex;
 // and therefore will often never arrive at 0 light intensity.
 const float lightDarknessLevel = 8.0 / 256.0;
 
-slice texture+5
+slice(texture+5)
 {
 	// Query light texture
 	vec4 lightPx = texture2D(lightTex, lightCoord.st);
@@ -21,7 +21,7 @@ slice texture+5
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
 }
 
-slice light
+slice(light)
 {
 	// Light direction
 	float light = 2.0 * lightBright * dot(normal, lightDir);
@@ -30,7 +30,7 @@ slice light
 #endif
 }
 
-slice color+5
+slice(color+5)
 {
 	// Add light
 	color = vec4(light * color.rgb, color.a);
@@ -39,7 +39,7 @@ slice color+5
 #endif
 }
 
-slice finish+5
+slice(finish+5)
 {
 
 #ifdef LIGHT_DEBUG

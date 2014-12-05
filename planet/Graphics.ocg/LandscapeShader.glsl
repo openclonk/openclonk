@@ -35,7 +35,7 @@ float queryMatMap(int pix)
 #endif
 }
 
-slice coordinate
+slice(coordinate)
 {
 	// full pixel steps in the landscape texture (depends on landscape resolution)
 	vec2 fullStep = vec2(1.0, 1.0) / resolution;
@@ -52,14 +52,14 @@ slice coordinate
 	vec2 materialCoo = texCoo * resolution / materialSize;
 }
 
-slice texture
+slice(texture)
 {
 	// our pixel color (without/with interpolation)
 	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
 	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
 }
 
-slice material
+slice(material)
 {
 
 	// Get material pixels
@@ -75,7 +75,7 @@ slice material
 #endif
 }
 
-slice normal
+slice(normal)
 {
 	// Normal calculation
 	vec3 normal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
@@ -91,7 +91,7 @@ slice normal
 
 }
 
-slice color {
+slice(color) {
 #define color gl_FragColor
 	color = materialPx;
 #ifdef HAVE_2PX

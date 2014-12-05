@@ -1,6 +1,6 @@
 uniform sampler2D baseTex;
 
-slice texture
+slice(texture)
 {
 	color = baseColor * texture2D(baseTex, texcoord.xy);
 }

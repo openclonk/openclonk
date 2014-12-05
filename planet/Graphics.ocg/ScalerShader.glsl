@@ -1,7 +1,7 @@
 
 #define HAVE_2PX
 
-slice texture+5
+slice(texture+5)
 {
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
@@ -43,7 +43,7 @@ slice texture+5
 
 }
 
-slice color+10 {
+slice(color+10) {
 	// Mix second color into main color according to scaler
 	color = mix(color2, color, scalerPx.r);
 }

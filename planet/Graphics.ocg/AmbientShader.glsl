@@ -6,13 +6,13 @@ uniform sampler2D ambientTex;
 uniform mat3x2 ambientTransform;
 uniform float ambientBrightness;
 
-slice texture+6
+slice(texture+6)
 {
 	// Ambient light
 	float ambient = texture2D(ambientTex, ambientTransform * vec3(gl_FragCoord.xy, 1.0)).r * ambientBrightness;
 }
 
-slice light+1
+slice(light+1)
 {
 	// Add ambience to brightness
 #ifdef LANDSCAPE

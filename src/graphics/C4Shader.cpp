@@ -100,12 +100,19 @@ void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szS
 
 		// New slice? We need a newline followed by "slice"
 		if (iDepth < 0 && isspace(*pPos)) {
-			if (SEqual2(pPos+1, "slice") && isspace(*(pPos+6))) {
+			if (SEqual2(pPos+1, "slice") && !isalnum(*(pPos+6))) {
 				const char *pSliceEnd = pPos; pPos += 6;
+				while(isspace(*pPos)) pPos++;
+				if(*pPos != '(') { pPos++; continue; }
+				pPos++;
 
 				// Now let's parse the position
 				iPosition = ParsePosition(szWhat, &pPos);
 				if (iPosition != -1) {
+					// Make sure a closing parenthesis
+					while(isspace(*pPos)) pPos++;
+					if(*pPos != ')') { pPos++; continue; }
+					pPos++;
 
 					// Make sure an opening brace follows
 					while(isspace(*pPos)) pPos++;
