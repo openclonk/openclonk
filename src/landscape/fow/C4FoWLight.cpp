@@ -186,19 +186,9 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 
 		// don't calculate if it should not be drawn anyway
 		if (tri.clipRight || nextTri.clipLeft) continue;
-		
-		// Midpoint
-		tri.fadeIX = (tri.fadeRX + nextTri.fadeLX) / 2;
-		tri.fadeIY = (tri.fadeRY + nextTri.fadeLY) / 2;
 
 		float distFadeR = GetSquaredDistanceTo(tri.fadeRX, tri.fadeRY);
 		float distNextFadeL = GetSquaredDistanceTo(nextTri.fadeLX, nextTri.fadeLY);
-
-		// the following function makes certain fades a bit smoother. This is
-		// especially visible for sharp edges like just looking  over a cliff
-		// (= the length of fanR and nextFanL is very different)
-		ProjectPointOutward(tri.fadeIX, tri.fadeIY, sqrt(Max(distFadeR, distNextFadeL)));
-
 		float distFanR = GetSquaredDistanceTo(tri.fanRX, tri.fanRY);
 		float distNextFanL = GetSquaredDistanceTo(nextTri.fanLX, nextTri.fanLY);
 				
@@ -210,6 +200,12 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 				tri.fadeIX = nextTri.fadeLX;
 				tri.fadeIY = nextTri.fadeLY;
 			}
+			else
+			{
+				tri.fadeIX = (tri.fanRX + nextTri.fadeLX) / 2;
+				tri.fadeIY = (tri.fanRY + nextTri.fadeLY) / 2;
+				ProjectPointOutward(tri.fadeIX, tri.fadeIY, sqrt(distFadeR));
+			}
 		}
 		else
 		{
@@ -217,6 +213,12 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 			{
 				tri.fadeIX = tri.fadeRX;
 				tri.fadeIY = tri.fadeRY;
+			}
+			else
+			{
+				tri.fadeIX = (tri.fadeRX + nextTri.fanLX) / 2;
+				tri.fadeIY = (tri.fadeRY + nextTri.fanLY) / 2;
+				ProjectPointOutward(tri.fadeIX, tri.fadeIY, sqrt(distNextFadeL));
 			}
 		}
 		
