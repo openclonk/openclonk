@@ -1727,20 +1727,32 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 		// Save objects to file using system scripts
 		int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
 		C4AulParSet pars(C4VInt(objects_file_handle));
-		bool result = !!::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars);
-		C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
-		if (!result || !file || !file->GetFileLength())
+		C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
+		bool result = !!result_c4v;
+		if (result_c4v.GetType() == C4V_Nil)
 		{
-			// Nothing written? Then we don't have objects.
-			hGroup.Delete(C4CFN_ScenarioObjectsScript);
-			// That's OK; not an error.
-			result = true;
+			// Function returned nil: This usually means there was a script error during object writing.
+			// It could also mean the scripter overloaded global func SaveScenarioObjects and returned nil.
+			// In either case, objects will not match landscape any more, so better fail and don't save at all.
+			LogF("ERROR: No valid result from global func " PSF_SaveScenarioObjects ". Saving objects failed.");
 		}
 		else
 		{
-			// Write objects script to file!
-			StdStrBuf data = file->GrabFileContents();
-			result = hGroup.Add(C4CFN_ScenarioObjectsScript,data,false,true);
+			// Function completed successfully (returning true or false)
+			C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
+			if (!result || !file || !file->GetFileLength())
+			{
+				// Nothing written? Then we don't have objects.
+				hGroup.Delete(C4CFN_ScenarioObjectsScript);
+				// That's OK; not an error.
+				result = true;
+			}
+			else
+			{
+				// Write objects script to file!
+				StdStrBuf data = file->GrabFileContents();
+				result = hGroup.Add(C4CFN_ScenarioObjectsScript, data, false, true);
+			}
 		}
 		::ScriptEngine.CloseUserFile(objects_file_handle);
 		return result;
