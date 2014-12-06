@@ -731,7 +731,8 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 #ifndef USE_CONSOLE
 		if (!PrimarySurfaceLockBits)
 		{
-			PrimarySurfaceLockBits = new unsigned char[Wdt*Hgt*3 + 1];
+			PrimarySurfaceLockBits = new unsigned char[Wdt*Hgt*3];
+			glPixelStorei(GL_PACK_ALIGNMENT, 1);
 			glReadPixels( 0, 0, Wdt, Hgt, GL_BGR, GL_UNSIGNED_BYTE, PrimarySurfaceLockBits);
 			PrimarySurfaceLockPitch = Wdt*3;
 		}
