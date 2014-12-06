@@ -700,6 +700,7 @@ void C4Application::GameTick()
 			Game.Execute();
 		// Sound
 		SoundSystem.Execute();
+		MusicSystem.Execute();
 		// Gamepad
 		if (pGamePadControl) pGamePadControl->Execute();
 		break;
