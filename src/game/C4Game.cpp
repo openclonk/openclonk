@@ -295,10 +295,6 @@ bool C4Game::PreInit()
 	// the function may return false, if no extra group is present - that is OK
 	Extra.InitGroup();
 
-	Log(LoadResStr("IDS_PRC_GFXRES"));
-	if (!GraphicsResource.Init()) return false;
-	Game.SetInitProgress(30.0f);
-
 	RandomSeed = time(NULL);
 	// Randomize
 	FixRandom(RandomSeed);
@@ -783,6 +779,12 @@ bool C4Game::Execute() // Returns true if the game is over
 
 void C4Game::InitFullscreenComponents(bool fRunning)
 {
+	// It can happen that this is called before graphics are loaded due to
+	// an early OnResolutionChanged() call. Ignore it, the message board,
+	// upper board and viewports will be initialized within the regular
+	// startup sequence then.
+	if(!GraphicsResource.IsInitialized()) return;
+
 	// fullscreen message board
 	C4Facet cgo;
 	cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
