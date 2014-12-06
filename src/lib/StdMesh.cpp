@@ -847,8 +847,8 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 
 	const StdBitfieldEntry<uint8_t> AM_Entries[] =
 	{
+		{ "MatchSkeleton", AM_MatchSkeleton },
 		{ "DrawBefore",    AM_DrawBefore },
-
 		{ NULL,            0 }
 	};
 
@@ -867,6 +867,9 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 void StdMeshInstance::AttachedMesh::DenumeratePointers()
 {
 	ChildDenumerator->DenumeratePointers(this);
+
+	assert(Child != NULL);
+	Child->AttachParent = this;
 }
 
 bool StdMeshInstance::AttachedMesh::ClearPointers(class C4Object* pObj)
