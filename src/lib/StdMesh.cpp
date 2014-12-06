@@ -802,6 +802,7 @@ StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance
 		ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform), Flags(flags),
 		FinalTransformDirty(true)
 {
+		MapBonesOfChildToParent(parent->GetMesh().GetSkeleton(), child->GetMesh().GetSkeleton());
 }
 
 StdMeshInstance::AttachedMesh::~AttachedMesh()
@@ -870,11 +871,43 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 
 	assert(Child != NULL);
 	Child->AttachParent = this;
+
+	MapBonesOfChildToParent(Parent->GetMesh().GetSkeleton(), Child->GetMesh().GetSkeleton());
 }
 
 bool StdMeshInstance::AttachedMesh::ClearPointers(class C4Object* pObj)
 {
 	return ChildDenumerator->ClearPointers(pObj);
+}
+
+void StdMeshInstance::AttachedMesh::MapBonesOfChildToParent(const StdMeshSkeleton& parent_skeleton, const StdMeshSkeleton& child_skeleton)
+{
+	// not necessary if we do not match anyway.
+	if (!(Flags & AM_MatchSkeleton)) return;
+
+	// clear array to avoid filling it twice
+	MatchedBoneInParentSkeleton.clear();
+
+	// find matching bones names in both skeletons
+	for (unsigned int i = 0; i < child_skeleton.GetNumBones(); ++i)
+	{
+		int parent_bone_index = -1; // instantiate with invalid index == no match
+
+		for (unsigned int j = 0; j < parent_skeleton.GetNumBones(); ++j)
+		{
+			// start searching at the same index
+			int sample_index = (i + j) % parent_skeleton.GetNumBones(); 
+
+			if (parent_skeleton.GetBone(sample_index).Name == child_skeleton.GetBone(i).Name)
+			{
+				parent_bone_index = sample_index;
+				break;
+			}
+		}
+
+		// add valid or invalid mapped index to list of mapped bones
+		MatchedBoneInParentSkeleton.push_back(parent_bone_index);
+	}
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
@@ -1197,12 +1230,17 @@ const StdMeshMatrix& StdMeshInstance::GetBoneTransform(size_t i) const
 {
 	if ((AttachParent != NULL) && (AttachParent->GetFlags() & AM_MatchSkeleton))
 	{
-		return AttachParent->Parent->BoneTransforms[i];
+		assert(i < AttachParent->MatchedBoneInParentSkeleton.size());
+
+		int parent_bone_index = AttachParent->MatchedBoneInParentSkeleton[i];
+		
+		if (parent_bone_index > -1)
+		{
+			return AttachParent->Parent->BoneTransforms[i];
+		}
 	}
-	else
-	{
-		return BoneTransforms[i];
-	}
+
+	return BoneTransforms[i];
 }
 
 bool StdMeshInstance::UpdateBoneTransforms()
@@ -1421,7 +1459,9 @@ void StdMeshInstance::DenumeratePointers()
 			AnimationNodes[i]->DenumeratePointers();
 
 	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
+	{
 		AttachChildren[i]->DenumeratePointers();
+	}
 }
 
 void StdMeshInstance::ClearPointers(class C4Object* pObj)

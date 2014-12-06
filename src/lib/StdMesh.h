@@ -24,6 +24,7 @@ class StdMeshBone
 {
 	friend class StdMeshSkeleton;
 	friend class StdMeshLoader;
+
 public:
 	StdMeshBone() {}
 
@@ -493,6 +494,10 @@ public:
 		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans; // NoSave
 		bool FinalTransformDirty; // NoSave; Whether FinalTrans is up to date or not
+
+		std::vector<int> MatchedBoneInParentSkeleton; // Only filled if AM_MatchSkeleton is set
+
+		void MapBonesOfChildToParent(const StdMeshSkeleton& parent_skeleton, const StdMeshSkeleton& child_skeleton);
 	};
 
 	typedef std::vector<AttachedMesh*> AttachedMeshList;

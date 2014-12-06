@@ -48,7 +48,7 @@
               </row>
 			  <row>
                 <literal_col>AM_MatchSkeleton</literal_col>
-                <col>Normally the attached mesh uses its own animations. If this flag is set, then the attached mesh uses the animation of the parent mesh. Does not work correctly unless the skeleton structure of both meshes is the same.</col>
+                <col>Normally the attached mesh uses its own animations. If this flag is set, then the attached mesh uses the animation data of the parent mesh for all bones that have the same name as a bone in the parent mesh skeleton.</col>
               </row>
             </table>
           </desc>
