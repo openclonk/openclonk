@@ -2491,6 +2491,25 @@ static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_
 	return true;
 }
 
+static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable<long> iX0, Nillable<long> iY0, Nillable<long> iWdt, Nillable<long> iHgt)
+{
+	if (iX0.IsNil())
+	{
+		// Search everywhere
+		// All materials everywhere
+		if (iMaterial.IsNil() || iMaterial == MNone) return ::PXS.GetCount();
+		// Specific material everywhere
+		return ::PXS.GetCount(iMaterial);
+	}
+	else
+	{
+		// Material in area; offset by caller
+		int32_t x = iX0, y = iY0;
+		if (Object(_this)) { x += Object(_this)->GetX(); y += Object(_this)->GetY(); }
+		return ::PXS.GetCount(iMaterial.IsNil() ? MNone : iMaterial, x, y, iWdt, iHgt);
+	}
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2658,6 +2677,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
 	AddFunc(pEngine, "GainScenarioAchievement", FnGainScenarioAchievement);
+	AddFunc(pEngine, "GetPXSCount", FnGetPXSCount);
 
 	F(GetPlrKnowledge);
 	F(GetComponent);
