@@ -2506,7 +2506,7 @@ static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable
 		// Material in area; offset by caller
 		int32_t x = iX0, y = iY0;
 		if (Object(_this)) { x += Object(_this)->GetX(); y += Object(_this)->GetY(); }
-		return ::PXS.GetCount(iMaterial.IsNil() ? MNone : iMaterial, x, y, iWdt, iHgt);
+		return ::PXS.GetCount(iMaterial.IsNil() ? MNone : static_cast<int32_t>(iMaterial), x, y, iWdt, iHgt);
 	}
 }
 
