@@ -191,5 +191,5 @@ void C4FoWAmbient::GetFragTransform(const C4Rect& lightRect, const C4Rect& clipR
 	ambientTransform[2] = ((zx * (-clipRect.x)) + lightRect.x) / LandscapeX;
 	ambientTransform[3] = 0.f;
 	ambientTransform[4] = -zy / LandscapeY;
-	ambientTransform[5] = ((zy * (clipRect.Hgt + clipRect.y)) + lightRect.y) / LandscapeY;
+	ambientTransform[5] = ((zy * (clipRect.Hgt)) + lightRect.y) / LandscapeY;
 }

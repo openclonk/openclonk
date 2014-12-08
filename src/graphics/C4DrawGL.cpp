@@ -366,7 +366,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		lightTransform[2] = -ClipRect.x * zx / iLightWdt;
 		lightTransform[3] = 0.f;
 		lightTransform[4] = zy / iLightHgt;
-		lightTransform[5] = 1.0f - (ClipRect.y * zy + LightRect.Hgt) / iLightHgt;
+		lightTransform[5] = 1.0f - (LightRect.Hgt) / iLightHgt;
 		call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
 		// Ambient Light

@@ -546,7 +546,7 @@ namespace
 			glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
 			glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
 			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
-			glTranslatef(-clipRect.x, -clipRect.y, 0.0f);
+			glTranslatef(-clipRect.x, 0.0f, 0.0f);
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
 			parameter.GetInt() = texIndex;
@@ -574,7 +574,7 @@ namespace
 			glScalef(1.0f/pFoW->getFoW()->Ambient.GetLandscapeWidth(), 1.0f/pFoW->getFoW()->Ambient.GetLandscapeHeight(), 1.0f);
 			glTranslatef(LightRect.x, LightRect.y, 0.0f);
 			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
-			glTranslatef(-clipRect.x, clipRect.Hgt + clipRect.y, 0.0f);
+			glTranslatef(-clipRect.x, clipRect.Hgt, 0.0f);
 			glScalef(1.0f, -1.0f, 1.0f);
 
 			parameter.SetType(StdMeshMaterialShaderParameter::INT);
