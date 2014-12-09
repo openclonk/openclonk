@@ -1,0 +1,5 @@
+Name=Build crystal communicator
+
+#Goal window
+MsgGoalFulfilled=Congratulations, the crystal communicator is done.
+MsgGoalUnfulfilled=Find the missing components and bring them to the crystal communicator construction site!
