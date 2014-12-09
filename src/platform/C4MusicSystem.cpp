@@ -464,6 +464,8 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms)
 	if (!NewFile)
 		return false;
 
+	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(NewFile->FileName));
+
 	// Stop/Fade out old music
 	bool is_fading = fadetime_ms && NewFile != PlayMusicFile && PlayMusicFile;
 	if (!is_fading)
@@ -472,14 +474,34 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms)
 	}
 	else
 	{
-		if (FadeMusicFile) FadeMusicFile->Stop();
+		C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+		if (FadeMusicFile)
+		{
+			if (FadeMusicFile == NewFile && FadeMusicFile->IsLooping() == fLoop && tNow < FadeTimeEnd)
+			{
+				// Fading back to a song while it wasn't fully faded out yet. Just swap our pointers and fix timings for that.
+				FadeMusicFile = PlayMusicFile;
+				PlayMusicFile = NewFile;
+				FadeTimeEnd = tNow + fadetime_ms * (tNow - FadeTimeStart) / (FadeTimeEnd - FadeTimeStart);
+				FadeTimeStart = FadeTimeEnd - fadetime_ms;
+				return true;
+			}
+			else
+			{
+				// Fading to a third song while the previous wasn't faded out yet
+				// That's pretty chaotic anyway, so just cancel the last song
+				// Also happens if fading should already be done, in which case it won't harm to stop now
+				// (It would stop on next call to Execute() anyway)
+				// Also happens when fading back to the same song but loop status changes, but that should be really uncommon.
+				FadeMusicFile->Stop();
+			}
+			
+		}
 		FadeMusicFile = PlayMusicFile;
 		PlayMusicFile = NULL;
-		FadeTimeStart = C4TimeMilliseconds::Now();
+		FadeTimeStart = tNow;
 		FadeTimeEnd = FadeTimeStart + fadetime_ms;
 	}
-
-	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(NewFile->FileName));
 
 	// Play new song
 	if (!NewFile->Play(fLoop)) return false;

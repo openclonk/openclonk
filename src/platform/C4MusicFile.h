@@ -27,7 +27,7 @@ class C4MusicFile
 {
 public:
 
-	C4MusicFile() : LastPlayed(-1), NoPlay(false), SongExtracted(false) { }
+	C4MusicFile() : LastPlayed(-1), NoPlay(false), SongExtracted(false), loop(false) { }
 	virtual ~C4MusicFile() { }
 
 	// data
@@ -35,6 +35,7 @@ public:
 	C4MusicFile *pNext;
 	int LastPlayed;
 	bool NoPlay;
+	bool loop;
 
 	virtual bool Init(const char *strFile);
 	virtual bool Play(bool loop = false) = 0;
@@ -42,6 +43,8 @@ public:
 	virtual void CheckIfPlaying() = 0;
 	virtual void SetVolume(int) = 0;
 	virtual bool HasCategory(const char *szcat) const { return false; }
+
+	bool IsLooping() const { return loop; }
 
 protected:
 
@@ -155,7 +158,7 @@ private:
 	::C4SoundLoaders::VorbisLoader::CompressedData data;
 	::C4SoundLoaders::SoundInfo ogg_info;
 	OggVorbis_File ogg_file;
-	bool playing, streaming_done, loop, loaded;
+	bool playing, streaming_done, loaded;
 	ALuint buffers[num_buffers];
 	ALuint channel;
 	int current_section;
