@@ -477,8 +477,8 @@ bool C4MusicFileOgg::Init(const char *strFile)
 	
 	// Get categories from ogg comment header
 	vorbis_comment *comment = ov_comment(&ogg_file, -1);
-	const char *comment_id = "COMMENTS=";
-	size_t comment_id_len = strlen(comment_id);
+	const char *comment_id = "COMMENT=";
+	int comment_id_len = strlen(comment_id);
 	for (int i = 0; i < comment->comments; ++i)
 	{
 		if (comment->comment_lengths[i] > comment_id_len)
