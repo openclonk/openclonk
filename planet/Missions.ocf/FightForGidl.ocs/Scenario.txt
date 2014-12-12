@@ -1,7 +1,7 @@
 [Head]
 Icon=36
 Title=FightForGidl
-Version=5,4
+Version=6,0
 Difficulty=120
 NoInitialize=true
 

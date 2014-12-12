@@ -1,6 +1,6 @@
 [DefCore]
 id=Environment_Celestial
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Environment|C4D_StaticBack
 Width=1
 Height=1

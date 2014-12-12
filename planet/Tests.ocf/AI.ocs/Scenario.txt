@@ -1,6 +1,6 @@
 [Head]
 Title=AIBattle
-Version=5,3,2
+Version=6,0
 MaxPlayer=2
 
 [Definitions]

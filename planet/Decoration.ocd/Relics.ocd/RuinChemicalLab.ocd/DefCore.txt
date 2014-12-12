@@ -1,6 +1,6 @@
 [DefCore]
 id=Ruin_ChemicalLab
-Version=5,4,0,0
+Version=6,0
 Category=C4D_Structure
 Width=50
 Height=52

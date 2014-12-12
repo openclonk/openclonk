@@ -1,6 +1,6 @@
 [DefCore]
 id=Mushroom
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Object
 Width=12
 Height=20

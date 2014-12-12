@@ -1,5 +1,5 @@
 [Head]
-Version=5,5,1
+Version=6,0
 NoInitialize=true
 
 [Player1]

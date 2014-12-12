@@ -1,7 +1,7 @@
 [Head]
 Icon=15
 Title=TreasureHunt
-Version=5,4
+Version=6,0
 Difficulty=40
 NoInitialize=true
 MissionAccess=S2Sea

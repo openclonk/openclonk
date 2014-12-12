@@ -1,6 +1,6 @@
 [DefCore]
 id=CloudEffect
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Vehicle|C4D_Parallax
 Width=10
 Height=10

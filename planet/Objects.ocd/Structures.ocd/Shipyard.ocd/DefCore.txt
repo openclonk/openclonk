@@ -1,6 +1,6 @@
 [DefCore]
 id=Shipyard
-Version=5,2,90,21
+Version=6,0
 Category=C4D_Structure
 Width=128
 Height=106

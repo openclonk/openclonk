@@ -1,6 +1,6 @@
 [DefCore]
 id=Clonk_Grave
-Version=5,4,0,0
+Version=6,0
 Category=C4D_Vehicle
 Width=8
 Height=12

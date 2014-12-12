@@ -1,7 +1,7 @@
 [Head]
 Icon=36
 Title=AcidRift
-Version=5,4,0,0
+Version=6,0
 Difficulty=60
 
 [Definitions]

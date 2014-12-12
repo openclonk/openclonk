@@ -1,6 +1,6 @@
 [DefCore]
 id=WindGenerator_Wheel
-Version=4,10,0,0
+Version=6,0
 Category=C4D_Vehicle | C4D_MouseIgnore
 Width=50
 Height=50

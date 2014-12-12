@@ -1,6 +1,6 @@
 [DefCore]
 id=Vehicle_FloorHelper
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Vehicle
 Width=6
 Height=4

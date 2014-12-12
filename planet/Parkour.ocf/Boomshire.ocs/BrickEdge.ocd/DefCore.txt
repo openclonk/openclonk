@@ -1,6 +1,6 @@
 [DefCore]
 id=BrickEdge
-Version=5,2,0,1
+Version=6,0
 Category=C4D_StaticBack|C4D_MouseIgnore
 Width=10
 Height=10
