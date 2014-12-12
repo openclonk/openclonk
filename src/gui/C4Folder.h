@@ -19,13 +19,10 @@
 #ifndef INC_C4Folder
 #define INC_C4Folder
 
-const int C4MaxFolderSort = 4096;
-
 class C4FolderHead
 {
 public:
 	int32_t Index;                      // Folder index in scenario selection dialog
-	char Sort[C4MaxFolderSort + 1];     // Folder-defined group sort list (to be used for folder maps)
 public:
 	void Default();
 	void CompileFunc(StdCompiler *pComp);

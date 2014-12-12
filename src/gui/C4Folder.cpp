@@ -30,13 +30,11 @@
 void C4FolderHead::Default()
 {
 	Index = 0;
-	Sort[0] = 0;
 }
 
 void C4FolderHead::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Index,                     "Index",                0));
-	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Sort),     "Sort",                 ""));
 }
 
 //=================== C4Folder ======================
