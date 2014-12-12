@@ -287,14 +287,14 @@ int32_t C4DefList::RemoveTemporary()
 	return removed;
 }
 
-int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3)
+int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2)
 {
 	int32_t rcount=0;
 	C4Def *cdef,*prev,*next;
 	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
 	{
 		next=cdef->Next;
-		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],ver1,ver2,ver3) > 0)
+		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],ver1,ver2) > 0)
 		{
 			if (prev) prev->Next=cdef->Next;
 			else FirstDef=cdef->Next;

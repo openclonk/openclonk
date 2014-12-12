@@ -62,7 +62,7 @@ private:
 
 void C4Def::DefaultDefCore()
 {
-	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=0;
+	rC4XVer[0]=rC4XVer[1]=0;
 	RequireDef.Clear();
 	Shape.Default();
 	Entrance.Default();
@@ -126,7 +126,7 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		Source.Clear();
 
 		// Let's be bold: Rewrite, with current version
-		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2; rC4XVer[2] = C4XVER3;
+		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2;
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 

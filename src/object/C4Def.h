@@ -101,7 +101,7 @@ class C4Def: public C4PropListStatic
 {
 public:
 	C4ID id;
-	int32_t rC4XVer[3];
+	int32_t rC4XVer[2];
 	C4IDList RequireDef;
 	C4Shape Shape;
 	C4Rect Entrance;
