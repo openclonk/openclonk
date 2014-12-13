@@ -1170,5 +1170,17 @@ void C4Draw::DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, fl
 
 void C4Draw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
-	DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2-iX1+1), float(iY2-iY1+1), dwClr, dwClr, dwClr, dwClr, 0,0);
+	if (!sfcDest->IsRenderTarget())
+	{
+		// Box on non-render target: Emulate by setting pixels
+		if (!sfcDest->Lock()) return;
+		for (int y = iY1; y <= iY2; ++y)
+			for (int x = iX1; x <= iX2; ++x)
+				sfcDest->SetPixDw(x,y, dwClr);
+		sfcDest->Unlock();
+	}
+	else
+	{
+		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, 0, 0);
+	}
 }
