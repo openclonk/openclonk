@@ -32,6 +32,13 @@
 #include <stdio.h>
 #include <limits.h>
 
+// Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
+#if defined(_WIN32) && !defined(USE_CONSOLE)
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
+#endif
+
 // Global access pointer
 C4Draw *pDraw=NULL;
 
