@@ -317,7 +317,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_HSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=HIWORD(wParam); break;
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=float(HIWORD(wParam))/cvp->Zoom; break;
 		case SB_LINELEFT: cvp->ViewX-=ViewportScrollSpeed; break;
 		case SB_LINERIGHT: cvp->ViewX+=ViewportScrollSpeed; break;
 		case SB_PAGELEFT: cvp->ViewX-=cvp->ViewWdt; break;
@@ -330,7 +330,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_VSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY=HIWORD(wParam); break;
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY = float(HIWORD(wParam))/cvp->Zoom; break;
 		case SB_LINEUP: cvp->ViewY-=ViewportScrollSpeed; break;
 		case SB_LINEDOWN: cvp->ViewY+=ViewportScrollSpeed; break;
 		case SB_PAGEUP: cvp->ViewY-=cvp->ViewWdt; break;
