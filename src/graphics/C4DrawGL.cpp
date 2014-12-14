@@ -241,8 +241,21 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	if (!pWindow) return NULL;
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
-	if (!pMainCtx) pMainCtx = pCtx;
-	if (!pCtx->Init(pWindow, pApp))
+	bool first_ctx = !pMainCtx;
+	if (first_ctx) pMainCtx = pCtx;
+	bool success = pCtx->Init(pWindow, pApp);
+	// First context: Log some information about hardware/drivers
+	// Must log after context creation to get valid results
+	if (first_ctx)
+	{
+		const char *gl_vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
+		const char *gl_renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		const char *gl_version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		const char *gl_extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
+		LogF("GL %s on %s (%s)", gl_version ? gl_version : "", gl_renderer ? gl_renderer : "", gl_vendor ? gl_vendor : "");
+		// LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : ""); // uncomment to flood the log with extension list
+	}
+	if (!success)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
