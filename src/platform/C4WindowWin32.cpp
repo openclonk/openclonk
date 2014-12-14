@@ -533,6 +533,7 @@ C4Window::~C4Window ()
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
+	eKind = windowKind;
 	if (windowKind == W_Viewport)
 	{
 		static bool fViewportClassRegistered = false;
@@ -647,6 +648,11 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		hRenderWindow = hWindow;
 		return hWindow ? this : 0;
 	}
+	else if (windowKind == W_Control)
+	{
+		// controlled externally
+		hWindow = hRenderWindow = NULL;
+	}
 	return this;
 }
 
@@ -674,9 +680,12 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 void C4Window::Clear()
 {
-	// Destroy window
-	if (hRenderWindow) DestroyWindow(hRenderWindow);
-	if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
+	// Destroy window if we own it
+	if (eKind != W_Control)
+	{
+		if (hRenderWindow) DestroyWindow(hRenderWindow);
+		if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
+	}
 	hRenderWindow = NULL;
 	hWindow = NULL;
 }

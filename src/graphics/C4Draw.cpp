@@ -995,17 +995,28 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
 {
-	if (!sfcDest->Lock()) return;
+	bool fRenderTarget = sfcDest->IsRenderTarget();
+	if (!fRenderTarget) if (!sfcDest->Lock()) return;
 	for (int ycnt = -r; ycnt < r; ycnt++)
 	{
-		int lwdt = (int) sqrt(float(r * r - ycnt * ycnt));
+		int lwdt = (int)sqrt(float(r * r - ycnt * ycnt));
 		// Set line
-		for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+		if (fRenderTarget)
 		{
-			sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+			{
+				DrawPix(sfcDest, xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			}
+		}
+		else
+		{
+			for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+			{
+				sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			}
 		}
 	}
-	sfcDest->Unlock();
+	if (!fRenderTarget) sfcDest->Unlock();
 }
 
 void C4Draw::Grayscale(C4Surface * sfcSfc, int32_t iOffset)

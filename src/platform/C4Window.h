@@ -287,13 +287,15 @@ public:
 		W_GuiWindow,
 		W_Console,
 		W_Viewport,
-		W_Fullscreen
+		W_Fullscreen,
+		W_Control // wrapper to a render target control inside a window
 	};
 public:
 	C4Window ();
 	virtual ~C4Window ();
 	bool Active;
 	C4Surface * pSurface;
+	WindowKind eKind;
 	virtual void Clear();
 	// Only when the wm requests a close
 	// For example, when the user clicks the little x in the corner or uses Alt-F4
