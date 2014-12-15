@@ -1,7 +1,7 @@
 [Head]
 Title=GemGrabbers
 Icon=35
-Version=5,4,0,0
+Version=6,0
 Difficulty=80
 
 [Definitions]

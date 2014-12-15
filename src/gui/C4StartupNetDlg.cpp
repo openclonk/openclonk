@@ -864,7 +864,7 @@ void C4StartupNetDlg::UpdateMasterserver()
 	else
 	{
 		pMasterserverClient = new C4StartupNetListEntry(pGameSelList, NULL, this);
-		StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
+		StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
 		StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s", Config.Network.GetLeagueServerAddress(), strVersion.getData(), C4_OS);
 		pMasterserverClient->SetRefQuery(strQuery.getData(), C4StartupNetListEntry::NRQT_Masterserver);
 	}
@@ -1217,7 +1217,7 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 void C4StartupNetDlg::CheckVersionUpdate()
 {
 #ifdef WITH_AUTOMATIC_UPDATE
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
+	StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
 	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
 
 	if (pUpdateClient.Init() && pUpdateClient.SetServer(strQuery.getData()) && pUpdateClient.QueryUpdateURL())

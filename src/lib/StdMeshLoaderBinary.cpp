@@ -218,9 +218,9 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 
 	// Build bone handle->index quick access table
 	std::map<uint16_t, size_t> bone_lookup;
-	for (size_t i = 0; i < mesh->GetNumBones(); ++i)
+	for (size_t i = 0; i < mesh->GetSkeleton().GetNumBones(); ++i)
 	{
-		bone_lookup[mesh->GetBone(i).ID] = i;
+		bone_lookup[mesh->GetSkeleton().GetBone(i).ID] = i;
 	}
 
 	// Read submeshes
@@ -345,7 +345,7 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		if (!it->second->Parent)
 		{
 			master = it->second;
-			mesh->AddMasterBone(master);
+			mesh->Skeleton->AddMasterBone(master);
 		}
 	}
 	if (!master)
@@ -356,9 +356,9 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 
 	// Build handle->index quick access table
 	std::map<uint16_t, size_t> handle_lookup;
-	for (size_t i = 0; i < mesh->GetNumBones(); ++i)
+	for (size_t i = 0; i < mesh->GetSkeleton().GetNumBones(); ++i)
 	{
-		handle_lookup[mesh->GetBone(i).ID] = i;
+		handle_lookup[mesh->GetSkeleton().GetBone(i).ID] = i;
 	}
 
 	// Fixup animations
@@ -367,10 +367,10 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		StdMeshAnimation &anim = mesh->Animations[StdCopyStrBuf(canim.name.c_str())];
 		anim.Name = canim.name.c_str();
 		anim.Length = canim.duration;
-		anim.Tracks.resize(mesh->GetNumBones());
+		anim.Tracks.resize(mesh->GetSkeleton().GetNumBones());
 		BOOST_FOREACH(Ogre::Skeleton::ChunkAnimationTrack &catrack, canim.tracks)
 		{
-			const StdMeshBone &bone = mesh->GetBone(handle_lookup[catrack.bone]);
+			const StdMeshBone &bone = mesh->GetSkeleton().GetBone(handle_lookup[catrack.bone]);
 			StdMeshTrack *&track = anim.Tracks[bone.Index];
 			if (track != NULL)
 				throw Ogre::Skeleton::MultipleBoneTracks();
@@ -386,7 +386,7 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 	}
 
 	// Fixup bone transforms
-	BOOST_FOREACH(StdMeshBone *bone, mesh->Bones)
+	BOOST_FOREACH(StdMeshBone *bone, mesh->GetSkeleton().Bones)
 	{
 		if (bone->Parent)
 		{

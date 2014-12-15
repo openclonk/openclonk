@@ -1866,7 +1866,7 @@ static Nillable<int> FnTransformBone(C4Object *Obj, C4String *szBoneName, C4Valu
 		if (!s_node || s_node->GetSlot() != iSlot) return C4Void();
 	}
 
-	const StdMeshBone* bone = Instance->GetMesh().GetBoneByName(szBoneName->GetData());
+	const StdMeshBone* bone = Instance->GetMesh().GetSkeleton().GetBoneByName(szBoneName->GetData());
 	if(!bone) return C4Void();
 
 	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
@@ -2206,7 +2206,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	// Get bone
 	if(!Obj->pMeshInstance) return false;
 	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
-	const StdMeshBone* bone = mesh.GetBoneByName(szBoneName->GetData());
+	const StdMeshBone* bone = mesh.GetSkeleton().GetBoneByName(szBoneName->GetData());
 	if(!bone) return false;
 	// get particle
 	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
@@ -2506,6 +2506,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
+	{ "AM_MatchSkeleton"          ,C4V_Int,      StdMeshInstance::AM_MatchSkeleton },
 
 	{ NULL, C4V_Nil, 0}
 };

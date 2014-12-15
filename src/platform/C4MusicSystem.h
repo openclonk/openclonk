@@ -40,11 +40,11 @@ public:
 	void NotifySuccess();
 	bool Init(const char * PlayList = NULL);
 	bool InitForScenario(C4Group & hGroup);
-	bool Play(const char *szSongname = NULL, bool fLoop = false);
+	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
 
-	int SetPlayList(const char *szPlayList);
+	int SetPlayList(const char *szPlayList, bool fForceSwitch = false, int fadetime_ms = 0);
 
 	bool ToggleOnOff(); // keyboard callback
 
@@ -56,6 +56,10 @@ protected:
 	// play
 	C4MusicFile *PlayMusicFile;
 	int Volume; bool Loop;
+
+	// fading between two songs
+	C4MusicFile *FadeMusicFile;
+	C4TimeMilliseconds FadeTimeStart, FadeTimeEnd;
 
 	void LoadDir(const char *szPath); // load some music files (by wildcard / directory)
 	void Load(const char *szFile); // load a music file

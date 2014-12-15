@@ -142,7 +142,7 @@ void C4SHead::Default()
 	Origin.Clear();
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
-	C4XVer[0] = C4XVer[1] = C4XVer[2] = 0;
+	C4XVer[0] = C4XVer[1] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
 	Film = 0;

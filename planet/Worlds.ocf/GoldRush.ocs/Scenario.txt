@@ -1,7 +1,7 @@
 [Head]
 Icon=15
 Title=GoldRush
-Version=5,4,0,0
+Version=6,0
 Difficulty=10
 
 [Definitions]

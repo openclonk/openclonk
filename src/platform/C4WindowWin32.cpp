@@ -317,7 +317,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_HSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=HIWORD(wParam); break;
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=float(HIWORD(wParam))/cvp->Zoom; break;
 		case SB_LINELEFT: cvp->ViewX-=ViewportScrollSpeed; break;
 		case SB_LINERIGHT: cvp->ViewX+=ViewportScrollSpeed; break;
 		case SB_PAGELEFT: cvp->ViewX-=cvp->ViewWdt; break;
@@ -330,7 +330,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_VSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY=HIWORD(wParam); break;
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY = float(HIWORD(wParam))/cvp->Zoom; break;
 		case SB_LINEUP: cvp->ViewY-=ViewportScrollSpeed; break;
 		case SB_LINEDOWN: cvp->ViewY+=ViewportScrollSpeed; break;
 		case SB_PAGEUP: cvp->ViewY-=cvp->ViewWdt; break;
@@ -533,6 +533,7 @@ C4Window::~C4Window ()
 C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
+	eKind = windowKind;
 	if (windowKind == W_Viewport)
 	{
 		static bool fViewportClassRegistered = false;
@@ -647,6 +648,11 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		hRenderWindow = hWindow;
 		return hWindow ? this : 0;
 	}
+	else if (windowKind == W_Control)
+	{
+		// controlled externally
+		hWindow = hRenderWindow = NULL;
+	}
 	return this;
 }
 
@@ -674,9 +680,12 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 void C4Window::Clear()
 {
-	// Destroy window
-	if (hRenderWindow) DestroyWindow(hRenderWindow);
-	if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
+	// Destroy window if we own it
+	if (eKind != W_Control)
+	{
+		if (hRenderWindow) DestroyWindow(hRenderWindow);
+		if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
+	}
 	hRenderWindow = NULL;
 	hWindow = NULL;
 }

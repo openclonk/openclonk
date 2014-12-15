@@ -185,6 +185,6 @@
 	<key>CFBundleShortVersionString</key>
 	<string>${C4VERSION}</string>
 	<key>CFBundleVersion</key>
-	<string>${C4XVER1}.${C4XVER2}.${C4XVER3}</string>
+	<string>${C4XVER1}.${C4XVER2}</string>
 </dict>
 </plist>

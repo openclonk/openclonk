@@ -1,6 +1,6 @@
 [Head]
 Title=ScorchedGardens
-Version=5,2,0,1
+Version=6,0
 MinPlayer=2
 Difficulty=40
 

@@ -1,6 +1,6 @@
 [DefCore]
 id=Pump
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Structure
 Width=28
 Height=32

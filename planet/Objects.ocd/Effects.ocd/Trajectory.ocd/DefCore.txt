@@ -1,6 +1,6 @@
 [DefCore]
 id=Trajectory
-Version=4,10
+Version=6,0
 Category=1
 Width=1
 Height=1

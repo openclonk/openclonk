@@ -27,7 +27,7 @@ class C4MusicFile
 {
 public:
 
-	C4MusicFile() : LastPlayed(-1), NoPlay(false), SongExtracted(false) { }
+	C4MusicFile() : LastPlayed(-1), NoPlay(false), SongExtracted(false), loop(false) { }
 	virtual ~C4MusicFile() { }
 
 	// data
@@ -35,12 +35,16 @@ public:
 	C4MusicFile *pNext;
 	int LastPlayed;
 	bool NoPlay;
+	bool loop;
 
 	virtual bool Init(const char *strFile);
 	virtual bool Play(bool loop = false) = 0;
 	virtual void Stop(int fadeout_ms = 0) = 0;
 	virtual void CheckIfPlaying() = 0;
 	virtual void SetVolume(int) = 0;
+	virtual bool HasCategory(const char *szcat) const { return false; }
+
+	bool IsLooping() const { return loop; }
 
 protected:
 
@@ -142,21 +146,25 @@ class C4MusicFileOgg : public C4MusicFile
 public:
 	C4MusicFileOgg();
 	~C4MusicFileOgg();
+	void Clear();
+	virtual bool Init(const char *strFile);
 	bool Play(bool loop = false);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
+	virtual bool HasCategory(const char *szcat) const;
 private:
 	enum { num_buffers = 4, buffer_size = 160*1024 };
 	::C4SoundLoaders::VorbisLoader::CompressedData data;
 	::C4SoundLoaders::SoundInfo ogg_info;
 	OggVorbis_File ogg_file;
-	bool playing, streaming_done, loop;
+	bool playing, streaming_done, loaded;
 	ALuint buffers[num_buffers];
 	ALuint channel;
 	int current_section;
 	size_t byte_pos_total;
 	float volume;
+	std::vector<StdCopyStrBuf> categories; // cateogries stored in meta info
 
 	bool FillBuffer(size_t idx);
 	void Execute(); // fill processed buffers

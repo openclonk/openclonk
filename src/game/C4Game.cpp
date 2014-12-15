@@ -141,7 +141,7 @@ bool C4Game::InitDefs()
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return false; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2);
 	if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
@@ -199,9 +199,9 @@ bool C4Game::OpenScenario()
 		{ LogFatal(LoadResStr("IDS_PRC_FILEINVALID")); return false; }
 
 	// Check minimum engine version
-	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]) > 0)
+	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1]) > 0)
 	{
-		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]).getData());
+		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1]).getData());
 		return false;
 	}
 
@@ -743,8 +743,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
 	EXEC_S_DR(  Landscape.Execute();              , LandscapeStat       , "LdsEx")
 	EXEC_S_DR(  Players.Execute();                , PlayersStat         , "PlrEx")
-	//FIXME: C4Application::Execute should do this, but what about the stats?
-	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
@@ -1731,20 +1729,32 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 		// Save objects to file using system scripts
 		int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
 		C4AulParSet pars(C4VInt(objects_file_handle));
-		bool result = !!::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars);
-		C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
-		if (!result || !file || !file->GetFileLength())
+		C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
+		bool result = !!result_c4v;
+		if (result_c4v.GetType() == C4V_Nil)
 		{
-			// Nothing written? Then we don't have objects.
-			hGroup.Delete(C4CFN_ScenarioObjectsScript);
-			// That's OK; not an error.
-			result = true;
+			// Function returned nil: This usually means there was a script error during object writing.
+			// It could also mean the scripter overloaded global func SaveScenarioObjects and returned nil.
+			// In either case, objects will not match landscape any more, so better fail and don't save at all.
+			LogF("ERROR: No valid result from global func " PSF_SaveScenarioObjects ". Saving objects failed.");
 		}
 		else
 		{
-			// Write objects script to file!
-			StdStrBuf data = file->GrabFileContents();
-			result = hGroup.Add(C4CFN_ScenarioObjectsScript,data,false,true);
+			// Function completed successfully (returning true or false)
+			C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
+			if (!result || !file || !file->GetFileLength())
+			{
+				// Nothing written? Then we don't have objects.
+				hGroup.Delete(C4CFN_ScenarioObjectsScript);
+				// That's OK; not an error.
+				result = true;
+			}
+			else
+			{
+				// Write objects script to file!
+				StdStrBuf data = file->GrabFileContents();
+				result = hGroup.Add(C4CFN_ScenarioObjectsScript, data, false, true);
+			}
 		}
 		::ScriptEngine.CloseUserFile(objects_file_handle);
 		return result;
@@ -2121,7 +2131,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!FrameCounter) StartupPlayerCount = PlayerInfos.GetStartupCount();
 
 	// The Landscape is the last long chunk of loading time, so it's a good place to start the music fadeout
-	Application.MusicSystem.FadeOut(2000);
+	if (!fLoadSection) Application.MusicSystem.FadeOut(2000);
 	// Landscape
 	Log(LoadResStr("IDS_PRC_LANDSCAPE"));
 	bool fLandscapeLoaded = false;

@@ -1,6 +1,6 @@
 [DefCore]
 id=InventorsLab
-Version=5,2,90,21
+Version=6,0
 Category=C4D_Structure
 Width=82
 Height=82

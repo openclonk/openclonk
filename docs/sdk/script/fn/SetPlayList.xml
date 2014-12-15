@@ -13,7 +13,7 @@
         <param>
           <type>string</type>
           <name>playlist</name>
-          <desc>List of pieces of music to be played. The individual file names are separated with semicolons (";"). Wildcards are expanded.  If the parameter is left out, the standard playlist is restored.</desc>
+          <desc>List of pieces of music to be played. The individual file and category names are separated with semicolons (";"). Wildcards are expanded. If the parameter is left out, the standard playlist is restored.</desc>
           <optional />
         </param>
         <param>
@@ -22,9 +22,22 @@
           <desc>The playlist is changed only on clients where the player with this player number is local. If left out or NO_OWNER, the playlist is changed for all clients. If the player number is invalid, no playlists are changed.</desc>
           <optional />
         </param>
+        <param>
+          <type>bool</type>
+          <name>force_change</name>
+          <desc>If true and the new playlist does not contain the piece currently playing, a new song is selected and played.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>fadetime_ms</name>
+          <desc>Fade time to the new piece if force_change is true and the current song is changed in response to this call. Set to zero to change music instantly.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Sets the play list of pieces of music to be played in random order, if music is activated. The actual number of pieces of music in the playlist is returned, or 0 in network mode.</desc>
+    <remark>Pieces are identified either by matching file name or any matching category. Categories are only available for .ogg files and may be set as a semicolon-delimited list in the comment field. Matching is case-insensitive, but case insensitive matching does not work for extended UTF8 characters.</remark>
     <remark>SetPlayList does not activate music playback when the player has turned the music off. If the player enables music, the new playlist takes effect.</remark>
     <remark><code>SetPlayList("*.*")</code> is not identical to <code>SetPlayList()</code>. The former activates all music, the latter only those not starting with "@", the standard behavior.</remark>
     <related><funclink>Music</funclink></related>

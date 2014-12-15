@@ -53,7 +53,6 @@ CStdFile::~CStdFile()
 
 bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable, bool fMemory)
 {
-	SCopy(szFilename,Name,_MAX_PATH);
 	thread_check.Set();
 	// Set modes
 	ModeWrite=true;
@@ -62,10 +61,15 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 	{
 		if (!(pMemory = new StdBuf())) return false;
 		MemoryPtr = 0;
+
+		StdStrBuf buf;
+		buf.Format("<%p>", pMemory);
+		SCopy(buf.getData(), Name, _MAX_PATH);
 	}
 	// Open standard file
 	else
 	{
+		SCopy(szFilename,Name,_MAX_PATH);
 		int flags = _O_BINARY|O_CLOEXEC|O_CREAT|O_WRONLY|O_TRUNC;
 #ifdef _WIN32
 		int mode = _S_IREAD|_S_IWRITE;

@@ -6,7 +6,7 @@
 
 // disable ShiftContents for objects with ClonkControl.ocd
 
-global func ShiftContents()
+global func ShiftContents(...)
 {
 	if (this)
 		if (this->~HandObjects() != nil)

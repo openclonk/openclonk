@@ -1273,7 +1273,7 @@ C4ParticleSystem::~C4ParticleSystem()
 	CalculateNextStep();
 
 	for (std::vector<uint32_t *>::iterator iter = multiDrawElementsIndexArray.begin(); iter != multiDrawElementsIndexArray.end(); ++iter)
-		delete (*iter);
+		delete[] (*iter);
 }
 
 void C4ParticleSystem::DoInit()

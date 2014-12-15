@@ -101,7 +101,7 @@ class C4Def: public C4PropListStatic
 {
 public:
 	C4ID id;
-	int32_t rC4XVer[3];
+	int32_t rC4XVer[2];
 	C4IDList RequireDef;
 	C4Shape Shape;
 	C4Rect Entrance;
@@ -161,6 +161,16 @@ public:
 protected:
 	bool Compile(const char *szSource, const char *szName);
 	bool Decompile(StdStrBuf *pOut, const char *szName);
+private:
+	void LoadMeshMaterials(C4Group &hGroup);
+	bool LoadParticleDef(C4Group &hGroup);
+	bool LoadSolidMask(C4Group &hGroup);
+	bool LoadGraphics(C4Group &hGroup);
+	void LoadScript(C4Group &hGroup, const char* szLanguage);
+	void LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const char* szLanguage);
+	void LoadRankNames(C4Group &hGroup, const char* szLanguage);
+	void LoadRankFaces(C4Group &hGroup);
+	void LoadSounds(C4Group &hGroup, C4SoundSystem* pSoundSystem);
 
 
 // Here begins the C4Def

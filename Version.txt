@@ -11,9 +11,8 @@ SET(C4ENGINENAME        "OpenClonk")
 SET(C4ENGINENICK        "openclonk")
 SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 
-SET(C4XVER1             5)
-SET(C4XVER2             5)
-SET(C4XVER3             1)
+SET(C4XVER1             6)
+SET(C4XVER2             0)
 
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
 # for alpha and beta releases, and meaningful and stable for stable releases.
@@ -46,7 +45,7 @@ SET(C4COPYRIGHT_YEAR ${YEARFIXED})
 SET(C4ENGINECAPTION     "${C4ENGINENAME}{$C4VERSIONBUILDNAME}")
 set(C4ENGINEINFO        "${C4ENGINENAME}")
 
-set(C4VERSION           "${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(C4VERSION           "${C4XVER1}.${C4XVER2}")
 
 if(C4XVER4 LESS 10)
 	set(C4VERSION       "${C4VERSION} [00${C4XVER4}]")

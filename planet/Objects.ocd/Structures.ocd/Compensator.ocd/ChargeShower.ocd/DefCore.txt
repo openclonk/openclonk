@@ -1,6 +1,6 @@
 [DefCore]
 id=Compensator_ChargeShower
-Version=4,10,0,0
+Version=6,0
 Category=C4D_StaticBack
 Width=11
 Height=19

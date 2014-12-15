@@ -22,8 +22,9 @@
 
 class StdMeshBone
 {
-	friend class StdMesh;
+	friend class StdMeshSkeleton;
 	friend class StdMeshLoader;
+
 public:
 	StdMeshBone() {}
 
@@ -38,15 +39,34 @@ public:
 
 	const StdMeshBone* GetParent() const { return Parent; }
 
-	const StdMeshBone& GetChild(size_t i) const { return *Children[i]; }
-	size_t GetNumChildren() const { return Children.size(); }
-
 private:
 	StdMeshBone* Parent; // Parent bone
 	std::vector<StdMeshBone*> Children; // Children. Not owned.
 
 	StdMeshBone(const StdMeshBone&); // non-copyable
 	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
+};
+
+class StdMeshSkeleton
+{
+	friend class StdMeshLoader; 
+	friend class StdMesh;
+
+	StdMeshSkeleton();
+public:
+	~StdMeshSkeleton();
+
+	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
+	size_t GetNumBones() const { return Bones.size(); }
+	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
+
+private:
+	void AddMasterBone(StdMeshBone* bone);
+
+	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
+	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
+
+	std::vector<StdMeshBone*> Bones; // Master Bone Table
 };
 
 class StdMeshVertexBoneAssignment
@@ -155,9 +175,7 @@ public:
 
 	const std::vector<Vertex>& GetSharedVertices() const { return SharedVertices; }
 
-	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
-	size_t GetNumBones() const { return Bones.size(); }
-	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
+	const StdMeshSkeleton& GetSkeleton() const { return *Skeleton; }
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
 
@@ -169,7 +187,6 @@ public:
 	void PostInit();
 
 private:
-	void AddMasterBone(StdMeshBone* bone);
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable
@@ -177,7 +194,7 @@ private:
 	std::vector<Vertex> SharedVertices;
 
 	std::vector<StdSubMesh> SubMeshes;
-	std::vector<StdMeshBone*> Bones; // Master Bone Table
+	std::shared_ptr<StdMeshSkeleton> Skeleton; // Skeleton
 
 	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
@@ -273,8 +290,9 @@ public:
 	typedef StdSubMeshInstance::FaceOrdering FaceOrdering;
 
 	enum AttachMeshFlags {
-		AM_None        = 0,
-		AM_DrawBefore  = 1 << 0
+		AM_None          = 0,
+		AM_DrawBefore    = 1 << 0,
+		AM_MatchSkeleton = 1 << 1
 	};
 
 	// Provider for animation position or weight.
@@ -476,6 +494,10 @@ public:
 		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans; // NoSave
 		bool FinalTransformDirty; // NoSave; Whether FinalTrans is up to date or not
+
+		std::vector<int> MatchedBoneInParentSkeleton; // Only filled if AM_MatchSkeleton is set
+
+		void MapBonesOfChildToParent(const StdMeshSkeleton& parent_skeleton, const StdMeshSkeleton& child_skeleton);
 	};
 
 	typedef std::vector<AttachedMesh*> AttachedMeshList;
@@ -532,7 +554,7 @@ public:
 	// Set material of submesh i.
 	void SetMaterial(size_t i, const StdMeshMaterial& material);
 
-	const StdMeshMatrix& GetBoneTransform(size_t i) const { return BoneTransforms[i]; }
+	const StdMeshMatrix& GetBoneTransform(size_t i) const;
 
 	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
 	// This is called recursively for attached children, so there is no need to call it on attached children only
@@ -566,6 +588,7 @@ protected:
 	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight);
 	bool ExecuteAnimationNode(AnimationNode* node);
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
+	void SetBoneTransformsDirty(bool value);
 
 	const StdMesh* Mesh;
 

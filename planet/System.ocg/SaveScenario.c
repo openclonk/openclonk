@@ -421,7 +421,7 @@ global func GetConstantNameByValueSafe(v, prefix)
 /* SaveScen_PropList functions */
 // I would like to use non-global here, but how can I take a pointer then?
 
-global func SaveScenP_Add(string name, string s)
+global func SaveScenP_Add(string name, string s, ...)
 {
 	// apply format parametrers
 	s = Format(s, ...);
@@ -466,7 +466,7 @@ global func SaveScenP_Clear()
 	return true;
 }
 
-global func SaveScenP_AddCall(string name, proplist obj, string set_fn)
+global func SaveScenP_AddCall(string name, proplist obj, string set_fn, ...)
 {
 	// add string of style Obj123->SetFoo(bar, baz, ...)
 	// string parameters will not be quoted, so the caller can do some parameter formatting

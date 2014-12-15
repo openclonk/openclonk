@@ -52,7 +52,7 @@ public:
 	int32_t GetDefCount();
 	int32_t GetIndex(C4ID id);
 	int32_t RemoveTemporary();
-	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3);
+	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2);
 	int32_t CheckRequireDef();
 	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
 	void Remove(C4Def *def);

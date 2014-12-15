@@ -1,4 +1,4 @@
 [DefCore]
 id=Library_Structure
-Version=5,2,2,0
+Version=6,0
 Category=C4D_StaticBack

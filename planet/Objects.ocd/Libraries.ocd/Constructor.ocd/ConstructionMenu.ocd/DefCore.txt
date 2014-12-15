@@ -1,6 +1,6 @@
 [DefCore]
 id=Library_ConstructionMenu
-Version=5,2,0,1
+Version=6,0
 Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax | C4D_MouseSelect
 Width=640
 Height=320

@@ -226,7 +226,7 @@ global func StonyObjectHit(int x, int y)
 }
 
 // Removes all objects of the given type.
-global func RemoveAll(p)
+global func RemoveAll(p, ...)
 {
 	var cnt;
 	if (GetType(p) == C4V_PropList) p = Find_ID(p); // RemoveAll(ID) shortcut

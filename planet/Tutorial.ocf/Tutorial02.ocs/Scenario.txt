@@ -1,7 +1,7 @@
 [Head]
 Icon=3
 Title=Tutorial02
-Version=5,2,0,1
+Version=6,0
 MaxPlayer=1
 Difficulty=2
 

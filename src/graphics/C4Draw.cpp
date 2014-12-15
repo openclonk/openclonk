@@ -32,6 +32,13 @@
 #include <stdio.h>
 #include <limits.h>
 
+// Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
+#if defined(_WIN32) && !defined(USE_CONSOLE)
+extern "C" {
+	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
+#endif
+
 // Global access pointer
 C4Draw *pDraw=NULL;
 
@@ -820,17 +827,28 @@ void C4Draw::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD
 
 void C4Draw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
 {
-	if (!sfcDest->Lock()) return;
+	bool fRenderTarget = sfcDest->IsRenderTarget();
+	if (!fRenderTarget) if (!sfcDest->Lock()) return;
 	for (int ycnt = -r; ycnt < r; ycnt++)
 	{
-		int lwdt = (int) sqrt(float(r * r - ycnt * ycnt));
+		int lwdt = (int)sqrt(float(r * r - ycnt * ycnt));
 		// Set line
-		for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+		if (fRenderTarget)
 		{
-			sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+			{
+				DrawPix(sfcDest, xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			}
+		}
+		else
+		{
+			for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
+			{
+				sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
+			}
 		}
 	}
-	sfcDest->Unlock();
+	if (!fRenderTarget) sfcDest->Unlock();
 }
 
 void C4Draw::Grayscale(C4Surface * sfcSfc, int32_t iOffset)
@@ -1011,5 +1029,17 @@ void C4Draw::DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, fl
 
 void C4Draw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
-	DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2-iX1+1), float(iY2-iY1+1), dwClr, dwClr, dwClr, dwClr, 0,0);
+	if (!sfcDest->IsRenderTarget())
+	{
+		// Box on non-render target: Emulate by setting pixels
+		if (!sfcDest->Lock()) return;
+		for (int y = iY1; y <= iY2; ++y)
+			for (int x = iX1; x <= iX2; ++x)
+				sfcDest->SetPixDw(x,y, dwClr);
+		sfcDest->Unlock();
+	}
+	else
+	{
+		DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2 - iX1 + 1), float(iY2 - iY1 + 1), dwClr, dwClr, dwClr, dwClr, 0, 0);
+	}
 }

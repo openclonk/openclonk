@@ -1,6 +1,6 @@
 [DefCore]
 id=ConstructionSite
-Version=5,3,3
+Version=6,0
 Category=C4D_StaticBack
 Width=16
 Height=16

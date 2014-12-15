@@ -90,16 +90,16 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	// Vertical
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
-	scroll.nMax=GBackHgt;
+	scroll.nMax = GBackHgt * Zoom;
 	scroll.nPage=ViewHgt;
-	scroll.nPos=int(ViewY);
+	scroll.nPos=int(ViewY * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_VERT,&scroll,true);
 	// Horizontal
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
-	scroll.nMax=GBackWdt;
+	scroll.nMax=GBackWdt * Zoom;
 	scroll.nPage=ViewWdt;
-	scroll.nPos=int(ViewX);
+	scroll.nPos = int(ViewX * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,true);
 	return true;
 }
