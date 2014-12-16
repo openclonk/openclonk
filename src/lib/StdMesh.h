@@ -23,8 +23,8 @@
 class StdMeshBone
 {
 	friend class StdMeshSkeleton;
-	friend class StdMeshLoader;
-
+	friend class StdMeshSkeletonLoader;
+	friend class StdMeshXML;
 public:
 	StdMeshBone() {}
 
@@ -45,28 +45,6 @@ private:
 
 	StdMeshBone(const StdMeshBone&); // non-copyable
 	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
-};
-
-class StdMeshSkeleton
-{
-	friend class StdMeshLoader; 
-	friend class StdMesh;
-
-	StdMeshSkeleton();
-public:
-	~StdMeshSkeleton();
-
-	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
-	size_t GetNumBones() const { return Bones.size(); }
-	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
-
-private:
-	void AddMasterBone(StdMeshBone* bone);
-
-	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
-	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
-
-	std::vector<StdMeshBone*> Bones; // Master Bone Table
 };
 
 class StdMeshVertexBoneAssignment
@@ -92,8 +70,8 @@ public:
 // Animation track, specifies transformation for one bone for each keyframe
 class StdMeshTrack
 {
-	friend class StdMesh;
-	friend class StdMeshLoader;
+	friend class StdMeshSkeleton;
+	friend class StdMeshSkeletonLoader;
 public:
 	StdMeshTransformation GetTransformAt(float time) const;
 
@@ -104,8 +82,8 @@ private:
 // Animation, consists of one Track for each animated Bone
 class StdMeshAnimation
 {
-	friend class StdMesh;
-	friend class StdMeshLoader;
+	friend class StdMeshSkeleton;
+	friend class StdMeshSkeletonLoader;
 	friend class StdMeshInstance;
 public:
 	StdMeshAnimation() {}
@@ -119,6 +97,38 @@ public:
 
 private:
 	std::vector<StdMeshTrack*> Tracks; // bone-indexed
+};
+
+class StdMeshSkeleton
+{
+	friend class StdMeshSkeletonLoader;
+	friend class StdMeshXML;
+	friend class StdMesh;
+	friend class StdMeshUpdate;
+
+	StdMeshSkeleton();
+public:
+	~StdMeshSkeleton();
+
+	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
+	size_t GetNumBones() const { return Bones.size(); }
+	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
+
+	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
+
+	// TODO: This code should maybe better be placed in StdMeshLoader...
+	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
+	void PostInit();
+
+private:
+	void AddMasterBone(StdMeshBone* bone);
+
+	StdMeshSkeleton(const StdMeshSkeleton& other); // non-copyable
+	StdMeshSkeleton& operator=(const StdMeshSkeleton& other); // non-assignable
+
+	std::vector<StdMeshBone*> Bones; // Master Bone Table
+
+	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 };
 
 struct StdMeshBox
@@ -162,7 +172,6 @@ class StdMesh
 {
 	friend class StdMeshLoader;
 	friend class StdMeshMaterialUpdate;
-	friend class StdMeshUpdate;
 
 	StdMesh();
 public:
@@ -177,13 +186,9 @@ public:
 
 	const StdMeshSkeleton& GetSkeleton() const { return *Skeleton; }
 
-	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
-
 	const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
 	float GetBoundingRadius() const { return BoundingRadius; }
 
-	// TODO: This code should maybe better be placed in StdMeshLoader...
-	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
 	void PostInit();
 
 private:
@@ -194,9 +199,7 @@ private:
 	std::vector<Vertex> SharedVertices;
 
 	std::vector<StdSubMesh> SubMeshes;
-	std::shared_ptr<StdMeshSkeleton> Skeleton; // Skeleton
-
-	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
+	std::shared_ptr<const StdMeshSkeleton> Skeleton; // Skeleton
 
 	StdMeshBox BoundingBox;
 	float BoundingRadius;

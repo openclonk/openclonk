@@ -84,6 +84,8 @@
 
 #define C4CFN_DefMesh              "Graphics.mesh"
 #define C4CFN_DefMeshXml           C4CFN_DefMesh ".xml"
+#define C4CFN_DefSkeleton          "*.skeleton"
+#define C4CFN_DefSkeletonXml       C4CFN_DefSkeleton ".xml"
 #define C4CFN_DefGraphicsExMesh    "Graphics*.mesh"
 #define C4CFN_DefGraphicsExMeshXml C4CFN_DefGraphicsExMesh ".xml"
 
@@ -172,7 +174,7 @@
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
-#define C4FLS_Def       "*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|SolidMask.png|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.ocd"
+#define C4FLS_Def       "*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|SolidMask.png|*.skeleton|Graphics.mesh|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|StringTbl*.txt|ParameterDefs.txt|Achv*.png|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"

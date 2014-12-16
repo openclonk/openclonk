@@ -355,7 +355,6 @@ StdMeshAnimation& StdMeshAnimation::operator=(const StdMeshAnimation& other)
 	return *this;
 }
 
-
 StdMeshSkeleton::StdMeshSkeleton()
 {
 }
@@ -384,6 +383,84 @@ const StdMeshBone* StdMeshSkeleton::GetBoneByName(const StdStrBuf& name) const
 	return NULL;
 }
 
+const StdMeshAnimation* StdMeshSkeleton::GetAnimationByName(const StdStrBuf& name) const
+{
+	StdCopyStrBuf name2(name);
+	std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name2);
+	if (iter == Animations.end()) return NULL;
+	return &iter->second;
+}
+
+void StdMeshSkeleton::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation)
+{
+	StdCopyStrBuf name2(name);
+	assert(Animations.find(name2) == Animations.end());
+
+	StdMeshAnimation& new_anim = Animations.insert(std::make_pair(name2, animation)).first->second;
+	new_anim.Name = name2;
+
+	// Go through all bones
+	for (unsigned int i = 0; i < GetNumBones(); ++i)
+	{
+		const StdMeshBone& bone = GetBone(i);
+		StdCopyStrBuf other_bone_name(bone.Name);
+		if (MirrorName(other_bone_name))
+		{
+			const StdMeshBone* other_bone = GetBoneByName(other_bone_name);
+			if (!other_bone)
+				throw std::runtime_error(std::string("No counterpart for bone ") + bone.Name.getData() + " found");
+
+			// Make sure to not swap tracks twice
+			if ((animation.Tracks[i] != NULL || animation.Tracks[other_bone->Index] != NULL) &&
+				other_bone->Index > bone.Index)
+			{
+				std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
+
+				StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
+				StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
+
+				// Mirror all the keyframes of both tracks
+				if (new_anim.Tracks[i] != NULL)
+					for (std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
+						MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(other_own_trans));
+
+				if (new_anim.Tracks[other_bone->Index] != NULL)
+					for (std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[other_bone->Index]->Frames.begin(); iter != new_anim.Tracks[other_bone->Index]->Frames.end(); ++iter)
+						MirrorKeyFrame(iter->second, other_own_trans, StdMeshTransformation::Inverse(own_trans));
+			}
+		}
+		else if (bone.Name.Compare_(".N", bone.Name.getLength() - 2) != 0)
+		{
+			if (new_anim.Tracks[i] != NULL)
+			{
+				StdMeshTransformation own_trans = bone.Transformation;
+				if (bone.GetParent()) own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
+
+				for (std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
+					MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(own_trans));
+			}
+		}
+	}
+}
+
+void StdMeshSkeleton::PostInit()
+{
+	// Mirror .R and .L animations without counterpart
+	for (std::map<StdCopyStrBuf, StdMeshAnimation>::iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
+	{
+		// For debugging purposes:
+		//		if(iter->second.Name == "Jump")
+		//			MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
+
+		StdCopyStrBuf buf = iter->second.Name;
+		if (MirrorName(buf))
+		{
+			if (Animations.find(buf) == Animations.end())
+				MirrorAnimation(buf, iter->second);
+		}
+	}
+}
+
 StdSubMesh::StdSubMesh():
 		Material(NULL)
 {
@@ -400,83 +477,8 @@ StdMesh::~StdMesh()
 {
 }
 
-const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
-{
-	StdCopyStrBuf name2(name);
-	std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name2);
-	if (iter == Animations.end()) return NULL;
-	return &iter->second;
-}
-
-void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation)
-{
-	StdCopyStrBuf name2(name);
-	assert(Animations.find(name2) == Animations.end());
-
-	StdMeshAnimation& new_anim = Animations.insert(std::make_pair(name2, animation)).first->second;
-	new_anim.Name = name2;
-
-	// Go through all bones
-	for(unsigned int i = 0; i < Skeleton->GetNumBones(); ++i)
-	{
-		const StdMeshBone& bone = Skeleton->GetBone(i);
-		StdCopyStrBuf other_bone_name(bone.Name);
-		if(MirrorName(other_bone_name))
-		{
-			const StdMeshBone* other_bone = Skeleton->GetBoneByName(other_bone_name);
-			if(!other_bone)
-				throw std::runtime_error(std::string("No counterpart for bone ") + bone.Name.getData() + " found");
-
-			// Make sure to not swap tracks twice
-			if( (animation.Tracks[i] != NULL || animation.Tracks[other_bone->Index] != NULL) &&
-			   other_bone->Index > bone.Index)
-			{
-				std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
-
-				StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
-				StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
-
-				// Mirror all the keyframes of both tracks
-				if(new_anim.Tracks[i] != NULL)
-					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
-						MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(other_own_trans));
-
-				if(new_anim.Tracks[other_bone->Index] != NULL)
-					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[other_bone->Index]->Frames.begin(); iter != new_anim.Tracks[other_bone->Index]->Frames.end(); ++iter)
-						MirrorKeyFrame(iter->second, other_own_trans, StdMeshTransformation::Inverse(own_trans));
-			}
-		}
-		else if(bone.Name.Compare_(".N", bone.Name.getLength()-2) != 0)
-		{
-			if(new_anim.Tracks[i] != NULL)
-			{
-				StdMeshTransformation own_trans = bone.Transformation;
-				if(bone.GetParent()) own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
-
-				for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
-					MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(own_trans));
-			}
-		}
-	}
-}
-
 void StdMesh::PostInit()
 {
-	// Mirror .R and .L animations without counterpart
-	for(std::map<StdCopyStrBuf, StdMeshAnimation>::iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
-	{
-		// For debugging purposes:
-//		if(iter->second.Name == "Jump")
-//			MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
-
-		StdCopyStrBuf buf = iter->second.Name;
-		if(MirrorName(buf))
-		{
-			if(Animations.find(buf) == Animations.end())
-				MirrorAnimation(buf, iter->second);
-		}
-	}
-
 	// Order submeshes so that opaque submeshes come before non-opaque ones
 	std::sort(SubMeshes.begin(), SubMeshes.end(), StdMeshSubMeshVisibilityCmpPred());
 }
@@ -705,7 +707,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 		{
 			StdCopyStrBuf anim_name;
 			pComp->Value(mkNamingAdapt(toC4CStrBuf(anim_name), "Animation"));
-			Leaf.Animation = Mesh->GetAnimationByName(anim_name);
+			Leaf.Animation = Mesh->GetSkeleton().GetAnimationByName(anim_name);
 			if(!Leaf.Animation) pComp->excCorrupt("No such animation: \"%s\"", anim_name.getData());
 		}
 		else
@@ -896,7 +898,7 @@ void StdMeshInstance::AttachedMesh::MapBonesOfChildToParent(const StdMeshSkeleto
 		for (unsigned int j = 0; j < parent_skeleton.GetNumBones(); ++j)
 		{
 			// start searching at the same index
-			int sample_index = (i + j) % parent_skeleton.GetNumBones(); 
+			int sample_index = (i + j) % parent_skeleton.GetNumBones();
 
 			if (parent_skeleton.GetBone(sample_index).Name == child_skeleton.GetBone(i).Name)
 			{
@@ -986,7 +988,7 @@ void StdMeshInstance::SetCompletion(float completion)
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
-	const StdMeshAnimation* animation = Mesh->GetAnimationByName(animation_name);
+	const StdMeshAnimation* animation = Mesh->GetSkeleton().GetAnimationByName(animation_name);
 	if (!animation) { delete position; delete weight; return NULL; }
 
 	return PlayAnimation(*animation, slot, sibling, position, weight);
@@ -1233,7 +1235,7 @@ const StdMeshMatrix& StdMeshInstance::GetBoneTransform(size_t i) const
 		assert(i < AttachParent->MatchedBoneInParentSkeleton.size());
 
 		int parent_bone_index = AttachParent->MatchedBoneInParentSkeleton[i];
-		
+
 		if (parent_bone_index > -1)
 		{
 			return AttachParent->Parent->BoneTransforms[i];

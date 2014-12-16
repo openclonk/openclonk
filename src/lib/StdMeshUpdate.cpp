@@ -82,7 +82,7 @@ void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):
 	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetSkeleton().GetNumBones())
 {
-	for(std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->Animations.begin(); iter != OldMesh->Animations.end(); ++iter)
+	for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->GetSkeleton().Animations.begin(); iter != OldMesh->GetSkeleton().Animations.end(); ++iter)
 		AnimationNames[&iter->second] = iter->first;
 
 	for (unsigned int i = 0; i < OldMesh->GetSkeleton().GetNumBones(); ++i)
@@ -154,7 +154,7 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 			assert(iter != AnimationNames.end());
 
 			// Update to new animation
-			node->Leaf.Animation = new_mesh.GetAnimationByName(iter->second);
+			node->Leaf.Animation = new_mesh.GetSkeleton().GetAnimationByName(iter->second);
 			if(!node->Leaf.Animation) return false;
 
 			// Clamp provider value

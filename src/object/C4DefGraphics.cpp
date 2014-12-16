@@ -140,13 +140,17 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 	{
 		if(!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
 
-		if(SEqualNoCase(GetExtension(szFileName), "xml"))
+		if (SEqualNoCase(GetExtension(szFileName), "xml"))
+		{
 			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
+		}
 		else
+		{
 			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
+		}
 		delete[] buf;
 
-		// Create mirrored animations (#401), order submeshes
+		// order submeshes
 		Mesh->PostInit();
 	}
 	catch (const std::runtime_error& ex)
@@ -160,10 +164,51 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 	return true;
 }
 
+bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
+{
+	char* buf = NULL;
+	size_t size;
+
+	try
+	{
+		if (!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
+
+		StdCopyStrBuf filename = StdCopyStrBuf();
+		StdMeshSkeletonLoader::MakeFullSkeletonPath(filename, hGroup.GetName(), szFileName);
+
+		if (SEqualNoCase(GetExtension(szFileName), "xml"))
+		{
+			loader.LoadSkeletonXml(filename, buf, size);
+		}
+		else
+		{
+			loader.LoadSkeletonBinary(filename, buf, size);
+		}
+
+		delete[] buf;
+	}
+	catch (const std::runtime_error& ex)
+	{
+		DebugLogF("Failed to load skeleton in definition %s: %s", hGroup.GetName(), ex.what());
+		delete[] buf;
+		return false;
+	}
+
+	return true;
+}
+
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
 	C4DefGraphicsAdditionalResourcesLoader loader(hGroup);
+
+	// load skeletons
+	hGroup.ResetSearch();
+	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
+	{
+		if (!WildcardMatch(C4CFN_DefSkeleton, Filename) && !WildcardMatch(C4CFN_DefSkeletonXml, Filename)) continue;
+		LoadSkeleton(hGroup, Filename, loader);
+	}
 
 	// Try from Mesh first
 	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
@@ -216,7 +261,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 			}
 			else
 			{
-				if(!pLastGraphics->LoadMesh(hGroup, Filename, loader))
+				if (!pLastGraphics->LoadMesh(hGroup, Filename, loader))
 					return false;
 			}
 		}
@@ -658,7 +703,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			if (!AnimationName) return;
 
 			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
-			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetAnimationByName(AnimationName->GetData());
+			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetSkeleton().GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
 			pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)));

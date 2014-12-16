@@ -19,17 +19,6 @@
 #define INC_StdMeshLoader
 #include <stdexcept>
 
-// Interface to load skeleton files. Given a filename occuring in the
-// mesh file, this should load the skeleton file from wherever the mesh file
-// was loaded from, for example from a C4Group. Return default-construted
-// StdStrBuf with NULL data in case of error.
-class StdMeshSkeletonLoader
-{
-public:
-	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
-	virtual ~StdMeshSkeletonLoader() {}
-};
-
 class StdMeshLoader
 {
 public:
@@ -38,11 +27,33 @@ public:
 
 	// filename is only used to show it in error messages. The model is
 	// loaded from src. Throws LoaderException.
-	static StdMesh *LoadMeshBinary(const char *src, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
-	static StdMesh *LoadMeshXml(const char *src, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
+	static StdMesh *LoadMeshBinary(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
+	static StdMesh *LoadMeshXml(const char *sourcefile, size_t size, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename = 0);
+};
+
+// Interface to load skeleton files. Given a filename occuring in the
+// mesh file, this should load the skeleton file from wherever the mesh file
+// was loaded from, for example from a C4Group. Return default-construted
+// StdStrBuf with NULL data in case of error.
+class StdMeshSkeletonLoader
+{
+public:
+	void StoreSkeleton(const StdCopyStrBuf &filename, std::shared_ptr<StdMeshSkeleton> skeleton);
+
+	std::shared_ptr<const StdMeshSkeleton> GetSkeletonByName(const StdStrBuf& name) const;
+	void LoadSkeletonXml(const StdCopyStrBuf &filename, const char *sourcefile, size_t size);
+	void LoadSkeletonBinary(const StdCopyStrBuf &filename, const char *sourcefile, size_t size);
+
+	static void MakeFullSkeletonPath(StdCopyStrBuf &out, const char* groupname, const char* filename)
+	{
+		out = StdCopyStrBuf(groupname);
+		out.AppendBackslash();
+		out.Append(filename);
+		out.ToLowerCase();
+	}
 
 private:
-	static void LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t size);
+	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>> Skeletons;
 };
 
 #define DEFINE_EXCEPTION(_cls, _text) class _cls : public StdMeshLoader::LoaderException { public: _cls(const char *msg = _text) : LoaderException(msg) {} }

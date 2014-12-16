@@ -181,10 +181,160 @@ namespace
 	}
 }
 
-StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename)
+void StdMeshSkeletonLoader::StoreSkeleton(const StdCopyStrBuf &filename, std::shared_ptr<StdMeshSkeleton> skeleton)
+{
+	assert(!filename.isNull());
+	assert(skeleton != NULL);
+
+	// Create mirrored animations (#401)
+	// this is still going to be somewhere else, but for now it will keep moving around
+	skeleton->PostInit();
+	
+	Skeletons.insert(std::make_pair(filename, skeleton));
+}
+
+std::shared_ptr<const StdMeshSkeleton> StdMeshSkeletonLoader::GetSkeletonByName(const StdStrBuf& name) const
+{
+	StdCopyStrBuf filename(name);
+
+	//DebugLogF("Loading skeleton %s\n", filename.getData());
+
+	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::const_iterator iter = Skeletons.find(filename);
+	if (iter == Skeletons.end()) return NULL;
+	return iter->second;
+}
+
+void StdMeshSkeletonLoader::LoadSkeletonBinary(const StdCopyStrBuf &filename, const char *sourcefile, size_t size)
+{
+	boost::scoped_ptr<Ogre::Skeleton::Chunk> chunk;
+	Ogre::DataStream stream(sourcefile, size);
+
+	std::shared_ptr<StdMeshSkeleton> Skeleton(new StdMeshSkeleton);
+
+	// First chunk must be the header
+	chunk.reset(Ogre::Skeleton::Chunk::Read(&stream));
+	if (chunk->GetType() != Ogre::Skeleton::CID_Header)
+		throw Ogre::Skeleton::InvalidVersion();
+
+	boost::ptr_map<uint16_t, StdMeshBone> bones;
+	boost::ptr_vector<Ogre::Skeleton::ChunkAnimation> animations;
+	for (Ogre::Skeleton::ChunkID id = Ogre::Skeleton::Chunk::Peek(&stream);
+		id == Ogre::Skeleton::CID_BlendMode || id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
+		id = Ogre::Skeleton::Chunk::Peek(&stream)
+		)
+	{
+		std::unique_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
+		switch (chunk->GetType())
+		{
+		case Ogre::Skeleton::CID_BlendMode:
+		{
+			Ogre::Skeleton::ChunkBlendMode& cblend = *static_cast<Ogre::Skeleton::ChunkBlendMode*>(chunk.get());
+			// TODO: Handle it
+			if (cblend.blend_mode != 0) // 0 is average, 1 is cumulative. I'm actually not sure what the difference really is... anyway we implement only one method yet. I think it's average, but not 100% sure.
+				LogF("StdMeshLoader: CID_BlendMode not implemented.");
+		}
+		break;
+		case Ogre::Skeleton::CID_Bone:
+		{
+			Ogre::Skeleton::ChunkBone &cbone = *static_cast<Ogre::Skeleton::ChunkBone*>(chunk.get());
+			// Check that the bone ID is unique
+			if (bones.find(cbone.handle) != bones.end())
+				throw Ogre::Skeleton::IdNotUnique();
+			StdMeshBone *bone = new StdMeshBone;
+			bone->Parent = NULL;
+			bone->ID = cbone.handle;
+			bone->Name = cbone.name.c_str();
+			bone->Transformation.translate = cbone.position;
+			bone->Transformation.rotate = cbone.orientation;
+			bone->Transformation.scale = cbone.scale;
+			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
+			bones.insert(cbone.handle, bone);
+		}
+		break;
+		case Ogre::Skeleton::CID_Bone_Parent:
+		{
+			Ogre::Skeleton::ChunkBoneParent &cbparent = *static_cast<Ogre::Skeleton::ChunkBoneParent*>(chunk.get());
+			if (bones.find(cbparent.parentHandle) == bones.end() || bones.find(cbparent.childHandle) == bones.end())
+				throw Ogre::Skeleton::BoneNotFound();
+			bones[cbparent.parentHandle].Children.push_back(&bones[cbparent.childHandle]);
+			bones[cbparent.childHandle].Parent = &bones[cbparent.parentHandle];
+		}
+		break;
+		case Ogre::Skeleton::CID_Animation:
+			// Collect animations for later (need bone table index, which we don't know yet)
+			animations.push_back(static_cast<Ogre::Skeleton::ChunkAnimation*>(chunk.release()));
+			break;
+		default:
+			assert(!"Unexpected enum value");
+			break;
+		}
+		if (stream.AtEof()) break;
+	}
+
+	// Find master bone (i.e., the one without a parent)
+	StdMeshBone *master = NULL;
+	for (boost::ptr_map<uint16_t, StdMeshBone>::iterator it = bones.begin(); it != bones.end(); ++it)
+	{
+		if (!it->second->Parent)
+		{
+			master = it->second;
+			Skeleton->AddMasterBone(master);
+		}
+	}
+	if (!master)
+		throw Ogre::Skeleton::MissingMasterBone();
+
+	// Transfer bone ownership to mesh (double .release() is correct)
+	while (!bones.empty()) bones.release(bones.begin()).release();
+
+	// Build handle->index quick access table
+	std::map<uint16_t, size_t> handle_lookup;
+	for (size_t i = 0; i < Skeleton->GetNumBones(); ++i)
+	{
+		handle_lookup[Skeleton->GetBone(i).ID] = i;
+	}
+
+	// Fixup animations
+	BOOST_FOREACH(Ogre::Skeleton::ChunkAnimation &canim, animations)
+	{
+		StdMeshAnimation &anim = Skeleton->Animations[StdCopyStrBuf(canim.name.c_str())];
+		anim.Name = canim.name.c_str();
+		anim.Length = canim.duration;
+		anim.Tracks.resize(Skeleton->GetNumBones());
+		BOOST_FOREACH(Ogre::Skeleton::ChunkAnimationTrack &catrack, canim.tracks)
+		{
+			const StdMeshBone &bone = Skeleton->GetBone(handle_lookup[catrack.bone]);
+			StdMeshTrack *&track = anim.Tracks[bone.Index];
+			if (track != NULL)
+				throw Ogre::Skeleton::MultipleBoneTracks();
+			track = new StdMeshTrack;
+			BOOST_FOREACH(Ogre::Skeleton::ChunkAnimationTrackKF &catkf, catrack.keyframes)
+			{
+				StdMeshKeyFrame &kf = track->Frames[catkf.time];
+				kf.Transformation.rotate = catkf.rotation;
+				kf.Transformation.scale = catkf.scale;
+				kf.Transformation.translate = bone.InverseTransformation.rotate * (bone.InverseTransformation.scale * catkf.translation);
+			}
+		}
+	}
+
+	// Fixup bone transforms
+	BOOST_FOREACH(StdMeshBone *bone, Skeleton->Bones)
+	{
+		if (bone->Parent)
+		{
+			bone->Transformation = bone->Parent->Transformation * bone->Transformation;
+			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
+		}
+	}
+
+	StoreSkeleton(filename, Skeleton);
+}
+
+StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, const StdMeshMatManager &mat_mgr, StdMeshSkeletonLoader &loader, const char *filename)
 {
 	boost::scoped_ptr<Ogre::Mesh::Chunk> root;
-	Ogre::DataStream stream(src, length);
+	Ogre::DataStream stream(sourcefile, length);
 
 	// First chunk must be the header
 	root.reset(Ogre::Mesh::Chunk::Read(&stream));
@@ -207,14 +357,27 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
 		throw Ogre::Mesh::EmptyBoundingBox();
 
-	// Read skeleton (if exists)
+	// if the mesh has a skeleton, then try loading
+	// it from the loader by the definition name
 	if (!cmesh.skeletonFile.empty())
 	{
-		StdStrBuf skel = loader.LoadSkeleton(cmesh.skeletonFile.c_str());
-		if (skel.isNull())
-			throw Ogre::InsufficientData("The specified skeleton file was not found");
-		LoadSkeletonBinary(mesh.get(), skel.getData(), skel.getLength());
+		StdCopyStrBuf skeleton_filename = StdCopyStrBuf();
+		StdMeshSkeletonLoader::MakeFullSkeletonPath(skeleton_filename, filename, cmesh.skeletonFile.c_str());
+
+		mesh->Skeleton = loader.GetSkeletonByName(skeleton_filename);
+
+		// with this exception the assert below is useless
+		// also, I think the bone_lookup should only be used if there is a skeleton anyway
+		// so there could be meshes without bones even?
+		if (mesh->Skeleton == NULL)
+		{
+			StdCopyStrBuf exception("The specified skeleton file was not found: ");
+			exception.Append(skeleton_filename.getData());
+			throw Ogre::InsufficientData(exception.getData());
+		}
 	}
+
+	assert(mesh->Skeleton != NULL); // the bone assignments could instead be added only, if there is a skeleton
 
 	// Build bone handle->index quick access table
 	std::map<uint16_t, size_t> bone_lookup;
@@ -271,127 +434,4 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 		}
 	}
 	return mesh.release();
-}
-
-void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t size)
-{
-	boost::scoped_ptr<Ogre::Skeleton::Chunk> chunk;
-	Ogre::DataStream stream(src, size);
-
-	// First chunk must be the header
-	chunk.reset(Ogre::Skeleton::Chunk::Read(&stream));
-	if (chunk->GetType() != Ogre::Skeleton::CID_Header)
-		throw Ogre::Skeleton::InvalidVersion();
-
-	boost::ptr_map<uint16_t, StdMeshBone> bones;
-	boost::ptr_vector<Ogre::Skeleton::ChunkAnimation> animations;
-	for (Ogre::Skeleton::ChunkID id = Ogre::Skeleton::Chunk::Peek(&stream);
-	     id == Ogre::Skeleton::CID_BlendMode || id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
-	     id = Ogre::Skeleton::Chunk::Peek(&stream)
-	    )
-	{
-		std::unique_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
-		switch (chunk->GetType())
-		{
-		case Ogre::Skeleton::CID_BlendMode:
-		{
-			Ogre::Skeleton::ChunkBlendMode& cblend = *static_cast<Ogre::Skeleton::ChunkBlendMode*>(chunk.get());
-			// TODO: Handle it
-			if(cblend.blend_mode != 0) // 0 is average, 1 is cumulative. I'm actually not sure what the difference really is... anyway we implement only one method yet. I think it's average, but not 100% sure.
-				LogF("StdMeshLoader: CID_BlendMode not implemented.");
-		}
-		break;
-		case Ogre::Skeleton::CID_Bone:
-		{
-			Ogre::Skeleton::ChunkBone &cbone = *static_cast<Ogre::Skeleton::ChunkBone*>(chunk.get());
-			// Check that the bone ID is unique
-			if (bones.find(cbone.handle) != bones.end())
-				throw Ogre::Skeleton::IdNotUnique();
-			StdMeshBone *bone = new StdMeshBone;
-			bone->Parent = NULL;
-			bone->ID = cbone.handle;
-			bone->Name = cbone.name.c_str();
-			bone->Transformation.translate = cbone.position;
-			bone->Transformation.rotate = cbone.orientation;
-			bone->Transformation.scale = cbone.scale;
-			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
-			bones.insert(cbone.handle, bone);
-		}
-		break;
-		case Ogre::Skeleton::CID_Bone_Parent:
-		{
-			Ogre::Skeleton::ChunkBoneParent &cbparent = *static_cast<Ogre::Skeleton::ChunkBoneParent*>(chunk.get());
-			if (bones.find(cbparent.parentHandle) == bones.end() || bones.find(cbparent.childHandle) == bones.end())
-				throw Ogre::Skeleton::BoneNotFound();
-			bones[cbparent.parentHandle].Children.push_back(&bones[cbparent.childHandle]);
-			bones[cbparent.childHandle].Parent = &bones[cbparent.parentHandle];
-		}
-		break;
-		case Ogre::Skeleton::CID_Animation:
-			// Collect animations for later (need bone table index, which we don't know yet)
-			animations.push_back(static_cast<Ogre::Skeleton::ChunkAnimation*>(chunk.release()));
-			break;
-		default:
-			assert(!"Unexpected enum value");
-			break;
-		}
-		if (stream.AtEof()) break;
-	}
-
-	// Find master bone (i.e., the one without a parent)
-	StdMeshBone *master = NULL;
-	for (boost::ptr_map<uint16_t, StdMeshBone>::iterator it = bones.begin(); it != bones.end(); ++it)
-	{
-		if (!it->second->Parent)
-		{
-			master = it->second;
-			mesh->Skeleton->AddMasterBone(master);
-		}
-	}
-	if (!master)
-		throw Ogre::Skeleton::MissingMasterBone();
-
-	// Transfer bone ownership to mesh (double .release() is correct)
-	while (!bones.empty()) bones.release(bones.begin()).release();
-
-	// Build handle->index quick access table
-	std::map<uint16_t, size_t> handle_lookup;
-	for (size_t i = 0; i < mesh->GetSkeleton().GetNumBones(); ++i)
-	{
-		handle_lookup[mesh->GetSkeleton().GetBone(i).ID] = i;
-	}
-
-	// Fixup animations
-	BOOST_FOREACH(Ogre::Skeleton::ChunkAnimation &canim, animations)
-	{
-		StdMeshAnimation &anim = mesh->Animations[StdCopyStrBuf(canim.name.c_str())];
-		anim.Name = canim.name.c_str();
-		anim.Length = canim.duration;
-		anim.Tracks.resize(mesh->GetSkeleton().GetNumBones());
-		BOOST_FOREACH(Ogre::Skeleton::ChunkAnimationTrack &catrack, canim.tracks)
-		{
-			const StdMeshBone &bone = mesh->GetSkeleton().GetBone(handle_lookup[catrack.bone]);
-			StdMeshTrack *&track = anim.Tracks[bone.Index];
-			if (track != NULL)
-				throw Ogre::Skeleton::MultipleBoneTracks();
-			track = new StdMeshTrack;
-			BOOST_FOREACH(Ogre::Skeleton::ChunkAnimationTrackKF &catkf, catrack.keyframes)
-			{
-				StdMeshKeyFrame &kf = track->Frames[catkf.time];
-				kf.Transformation.rotate = catkf.rotation;
-				kf.Transformation.scale = catkf.scale;
-				kf.Transformation.translate = bone.InverseTransformation.rotate * (bone.InverseTransformation.scale * catkf.translation);
-			}
-		}
-	}
-
-	// Fixup bone transforms
-	BOOST_FOREACH(StdMeshBone *bone, mesh->GetSkeleton().Bones)
-	{
-		if (bone->Parent)
-		{
-			bone->Transformation = bone->Parent->Transformation * bone->Transformation;
-			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
-		}
-	}
 }
