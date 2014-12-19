@@ -170,6 +170,10 @@ func QueryWaivePowerRequest()
 	return 10;
 }
 
+public func GetConsumerPriority() { return 25; }
+
+public func GetProducerPriority() { return 100; }
+
 func OnNotEnoughPower()
 {
 	_inherited(...);

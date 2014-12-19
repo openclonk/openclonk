@@ -316,6 +316,8 @@ func QueryWaivePowerRequest()
 	return 0;
 }
 
+public func GetConsumerPriority() { return 100; }
+
 func OnNotEnoughPower()
 {
 	_inherited(...); // on purpose before the rest

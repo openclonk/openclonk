@@ -43,6 +43,8 @@ public func IsContainer() { return true; }
 
 public func IsInteractable() { return GetCon() >= 100; }
 
+public func GetConsumerPriority() { return 50; }
+
 public func GetInteractionMetaInfo(object clonk)
 {
 	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };

@@ -23,7 +23,7 @@ protected func InitializePlayer(int plr)
 	GetCrew(plr)->SetPosition(120, 150);
 	
 	// Add test control effect.
-	var effect = AddEffect("IntTestControl", nil, 100, 10);
+	var effect = AddEffect("IntTestControl", nil, 100, 2);
 	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
@@ -31,7 +31,58 @@ protected func InitializePlayer(int plr)
 }
 
 
+/*-- Test Control --*/
+
+// Aborts the current test and launches the specified test instead.
+global func LaunchTest(int nr)
+{
+	// Get the control effect.
+	var effect = GetEffect("IntTestControl", nil);
+	if (!effect)
+	{
+		// Create a new control effect and launch the test.
+		effect = AddEffect("IntTestControl", nil, 100, 2);
+		effect.testnr = nr;
+		effect.launched = false;
+		effect.plr = GetPlayerByIndex(0, C4PT_User);
+		return;
+	}
+	// Finish the currently running test.
+	Call(Format("~Test%d_OnFinished", effect.testnr));
+	// Start the requested test by just setting the test number and setting 
+	// effect.launched to false, effect will handle the rest.
+	effect.testnr = nr;
+	effect.launched = false;
+	return;
+}
+
+// Calling this function skips the current test, does not work if last test has been ran already.
+global func SkipTest()
+{
+	// Get the control effect.
+	var effect = GetEffect("IntTestControl", nil);
+	if (!effect)
+		return;
+	// Finish the previous test.
+	Call(Format("~Test%d_OnFinished", effect.testnr));
+	// Start the next test by just increasing the test number and setting 
+	// effect.launched to false, effect will handle the rest.
+	effect.testnr++;
+	effect.launched = false;
+	return;
+}
+
+
 /*-- Tests --*/
+
+global func FxIntTestControlStart(object target, proplist effect, int temporary)
+{
+	if (temporary)
+		return FX_OK;
+	// Set default interval.
+	effect.Interval = 2;
+	return FX_OK;
+}
 
 global func FxIntTestControlTimer(object target, proplist effect)
 {
@@ -50,8 +101,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 			return -1;
 		}
 		effect.launched = true;
-	}
-		
+	}		
 	// Check whether the current test has been finished.
 	if (Call(Format("Test%d_Completed", effect.testnr)))
 	{
@@ -181,7 +231,7 @@ global func Test3_OnStart(int plr)
 	
 	// Power consumer: one elevator.
 	var elevator = CreateObject(Elevator, 372, 104, plr);
-	ScheduleCall(elevator.case, "SetMoveDirection", 20, 0, ElevatorCase_down, true);
+	ScheduleCall(elevator.case, "SetMoveDirection", 4 * 36, 0, ElevatorCase_down, true);
 	
 	// Log what the test is about.
 	Log("A steady power source (wind generator) supplying a steady power consumer (pump), while an on-demand consumer is turned on and should be prioritized.");
@@ -190,7 +240,7 @@ global func Test3_OnStart(int plr)
 
 global func Test3_Completed()
 {
-	if (FindObject(Find_ID(ElevatorCase), Find_InRect(372, 218, 40, 40)))
+	if (FindObject(Find_ID(ElevatorCase), Find_InRect(372, 230, 40, 40)))
 		return true;
 	return false;
 }

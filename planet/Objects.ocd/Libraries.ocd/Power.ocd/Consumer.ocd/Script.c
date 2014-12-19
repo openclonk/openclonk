@@ -24,14 +24,16 @@
 	@author Zapper, Maikel
 */
 
+// Local variables to track power requests and amount.
 local has_power = false;
+local last_request = 0;
+local last_amount = 0;
 
 // States for being able to handle 0-power requests.
 static const PowerConsumer_LPR_None = 0;
 static const PowerConsumer_LPR_Zero = 1;
 static const PowerConsumer_LPR_NonZero = 2;
-local last_request = 0;
-local last_amount = 0;
+
 
 // This object is a power consumer.
 public func IsPowerConsumer() { return true; }
@@ -45,6 +47,7 @@ public func CurrentlyHasPower()
 {
 	return has_power;
 }
+
 
 /*-- Interface --*/
 

@@ -24,6 +24,8 @@ func Construction(object creator)
 
 public func IsContainer() { return true; }
 
+public func GetProducerPriority() { return 0; }
+
 func RejectCollect(id item, object obj)
 {
 	if (obj->~IsFuel())

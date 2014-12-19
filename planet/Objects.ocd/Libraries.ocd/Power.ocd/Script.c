@@ -141,6 +141,8 @@ public func AddPowerLink(object power_link, int power_amount, bool surpress_bala
 	return true;
 }
 
+// Main function of the power library which checks the power balance in a closed network.
+// This function will deactivate consumers and activate producers whenever necessary.
 public func CheckPowerBalance()
 {
 	// Special handling for ownerless links: always sleep them.
@@ -159,12 +161,13 @@ public func CheckPowerBalance()
 		return false;
 	}
 	
-	// Message("@Power: %d", power_balance);
-	
 	// Network is not neutral so we can revive sleeping links if the balance is positive.	
 	if (power_balance >= 0) 
 	{
-		// Loop over all sleeping links and find one to revive.
+		// Loop over all sleeping links and find the best one to revive.
+		// This is the link with highest priority and which fits the power surplus.
+		var highest_priority = -0xffffff;
+		var best_link = nil;
 		for (var i = GetLength(sleeping_links) - 1; i >= 0; i--)
 		{
 			var link = sleeping_links[i];
@@ -177,61 +180,48 @@ public func CheckPowerBalance()
 			// Check if there is enough power to revive this link.
 			if (power_balance + link.amount < 0) 
 				continue;
-			
-			// Found a link to revive.
-			UnsleepLink(i);
-			
-			// Can not continue since UnsleepLink changes the array.
-			return true;
+			// Store the link with current highest priority.	
+			var priority = link.obj->~GetConsumerPriority();	
+			if (priority > highest_priority)
+			{
+				highest_priority = priority;
+				best_link = i;		
+			}
 		}
+		// Revive the best link if found and don't execute the rest of this function.
+		if (best_link != nil)
+			UnsleepLink(best_link);
 		return true;
 	}
 	
-	// Network has not enough available power: we need to sleep some consumers.
+	// Network has not enough available power: we need to deactivate some consumers.
 	// Look for the best link to sleep.
-	var best_fit = 0xFFFFFF;
-	var best_volunteer = 0;
-	var best = -1;
-	var abs_diff = Abs(power_balance);
+	var best_amount = -0xffffff;
+	var least_priority = 0xffffff;
+	var best_link = nil;
 	for (var i = GetLength(power_links) - 1; i >= 0; i--)
 	{
 		var link = power_links[i];
 		// Do not shut down producers or invalid links.
 		if (link == nil || link.amount > 0) 
 			continue;
-		
-		var d = Abs((-link.amount) - abs_diff);
-		
-		var v = link.obj->~QueryWaivePowerRequest();
-		
-		if (!best_volunteer) // no volunteers yet
+		// New best link if priority is less or equal and amount is larger.
+		var amount = -link.amount;
+		var priority = link.obj->~GetConsumerPriority();
+		if (priority < least_priority || (priority == least_priority && amount > best_amount))
 		{
-			if ((d < best_fit) || (best == nil) || (v > 0))
-			{
-				best_fit = d;
-				best = i;
-				
-				if(v)
-					best_volunteer = v;
-			}
-		}
-		else // we already have volunteers
-		{
-			if (v < best_volunteer) 
-				continue;
-			best_volunteer = v;
-			best = i;
+			best_amount = amount;
+			least_priority = priority;
+			best_link = i;		
 		}
 	}
 	
 	// Total blackout? No consumer active anymore?
-	if (best == -1)
-	{
+	if (best_link == nil)
 		return false;
-	}
 	
 	// There is a link which we can sleep.
-	SleepLink(best);
+	SleepLink(best_link);
 	
 	// Recurse, because we might need to sleep another link or might activate a consumer with less demands.
 	CheckPowerBalance();	
