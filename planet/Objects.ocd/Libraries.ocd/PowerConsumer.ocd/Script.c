@@ -1,5 +1,8 @@
 /**
-	Power consumer
+	Power Consumer
+	Handles some aspects of power producing structures, this library 
+	should be included by all power producing structures.
+	
 	Cares about showing the "No Power"-symbol
 	and provides CurrentlyHasPower()
 	also handles requesting 0 power and the NoPowerNeed-rule correctly
@@ -17,71 +20,78 @@
 	other:
 	the callback GetActualPowerConsumer can return another object that acts as the power consumer when checking for the affiliation to a flag. For example the elevator case could be the power consumer but use the elevator building as the actual power consumer.
 	CurrentlyHasPower() returns true when the object has requested power and is not in the sleeping queue.
+	
+	@author Zapper, Maikel
 */
 
-local PowerConsumer_has_power = false;
+local has_power = false;
 
-// states for being able to handle 0-power requests
+// States for being able to handle 0-power requests.
 static const PowerConsumer_LPR_None = 0;
 static const PowerConsumer_LPR_Zero = 1;
 static const PowerConsumer_LPR_NonZero = 2;
-local PowerConsumer_last_power_request = 0;
-local PowerConsumer_last_power_request_amount = 0;
+local last_request = 0;
+local last_amount = 0;
 
-
+// This object is a power consumer.
 public func IsPowerConsumer() { return true; }
+
+// Consumer priority: the need of a consumer to have power. This can be used
+// by the structures to prioritize certain consumption, for example letting
+// an elevator be dominant over a pump.
+public func GetConsumerPriority() { return 0; }
 
 public func CurrentlyHasPower()
 {
-	return PowerConsumer_has_power;
+	return has_power;
 }
 
-// interface to power handling:
+/*-- Interface --*/
 
-// is the object just a part of a building?
-// elevator <-> case for example
+// Is the object just a part of a building? For example elevator and its case.
 public func GetActualPowerConsumer()
 {
 	return nil;
 }
 
-// how much would you like to withdraw your power request?
-// normal objects: not so much, battery: very much!
+// How much would you like to withdraw your power request?
+// Normal objects: not so much, battery: very much.
 public func QueryWaivePowerRequest()
 {
 	return 0;
 }
 
-// the object requested power but there is no power!
-// should possibly not use MakePowerConsumer/Producer in this callback
+// The object requested power but there is no power!
+// Should possibly not use MakePowerConsumer/Producer in this callback.
 public func OnNotEnoughPower()
 {
-	PowerConsumer_has_power = false;
-	
-	// show symbol
+	has_power = false;
+	// Show symbol.
 	this->AddStatusSymbol(Library_PowerConsumer);
+	return;
 }
 
 // called when the object was deleted from the sleeping queue
 // that means, the object had requested power before
 public func OnRemovedFromPowerSleepingQueue()
 {
-	// remove symbol
+	// Remove symbol.
 	this->RemoveStatusSymbol(Library_PowerConsumer);
+	return;
 }
 
-// called when consumer was sleeping but power is available again
-// should possibly not use MakePowerConsumer/Producer in this callback
+// Called when consumer was sleeping but power is available again.
+// Should possibly not use MakePowerConsumer/Producer in this callback.
 public func OnEnoughPower()
 {
-	PowerConsumer_has_power = true;
-	
-	// remove symbol
+	has_power = true;
+	// Remove symbol.
 	this->RemoveStatusSymbol(Library_PowerConsumer);
+	return;
 }
 
 // Add/Remove an effect such that this structure does not need power
-func SetNoPowerNeed(bool to_val)
+public func SetNoPowerNeed(bool to_val)
 {
 	if (to_val)
 		AddEffect("NoPowerNeed", this, 1);
@@ -90,86 +100,91 @@ func SetNoPowerNeed(bool to_val)
 	return true;
 }
 
-func FxNoPowerNeedSaveScen(object obj, proplist fx, proplist props)
+public func FxNoPowerNeedSaveScen(object obj, proplist fx, proplist props)
 {
-	// this building doesn't need power. save to scenario.
+	// This building doesn't need power, save that to scenario.
 	props->AddCall("NoPowerNeed", obj, "SetNoPowerNeed", true);
 	return true;
 }
 
-// wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly
-func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip special treatment for 0 power request */)
+// Wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly.
+// With an option to just pass on to the global method.
+public func MakePowerConsumer(int amount, bool just_pass_to_global)
 {	
-	if(just_pass_to_global == true)
-	{
+	if (just_pass_to_global == true)
 		return inherited(amount, just_pass_to_global, ...);
-	}
 	
 	var no_power_need = !!ObjectCount(Find_ID(Rule_NoPowerNeed)) || GetEffect("NoPowerNeed", this);
 	
-	if((amount > 0) && !no_power_need) // requesting non-zero?
-	if(PowerConsumer_last_power_request == PowerConsumer_LPR_NonZero) // having requested non-zero before?
-	if(PowerConsumer_last_power_request_amount == amount) // requesting the exact amount again? (successive call)
-		// nothing has changed
-		return true;
+	// Don't do anything if the request is the exact same as the previous one (succesive call). 
+	if ((amount > 0) && !no_power_need)
+		if (last_request == PowerConsumer_LPR_NonZero)
+			if (last_amount == amount) 
+				return true;
 	
-	// special handling for amount == 0
-	if((amount == 0) || no_power_need)
+	// Special handling for zero amount.
+	if ((amount == 0) || no_power_need)
 	{
-		if(PowerConsumer_last_power_request == PowerConsumer_LPR_None) // initially requesting 0 power?
+		 // Initially requesting 0 power?
+		if (last_request == PowerConsumer_LPR_None)
 		{
-			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
-			PowerConsumer_last_power_request_amount = amount;
-			// always enable
+			last_request = PowerConsumer_LPR_Zero;
+			last_amount = amount;
+			// Always enable.
 			this->~OnEnoughPower();
 			return true;
 		}
-		else if(PowerConsumer_last_power_request == PowerConsumer_LPR_Zero)// requesting 0 power as a second request
+		// Requesting 0 power as a second request.
+		else if (last_request == PowerConsumer_LPR_Zero)
 		{
-			PowerConsumer_last_power_request_amount = amount;
-			// should still have power at this point
+			last_amount = amount;
+			// Should still have power at this point.
 			return true;
 		}
-		else // requesting 0 power after having requested nonzero power
+		// Requesting 0 power after having requested nonzero power.
+		else 
 		{
-			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
-			PowerConsumer_last_power_request_amount = amount;
-			inherited(0); // removes as official power consumer
-			// re-enable power supply
+			last_request = PowerConsumer_LPR_Zero;
+			last_amount = amount;
+			// Remove as official power consumer.
+			inherited(0); 
+			// Re-enable power supply.
 			this->~OnEnoughPower();
 			return true;
 		}
 	}
 	else
 	{
-		PowerConsumer_last_power_request = PowerConsumer_LPR_NonZero; // requesting power != 0
-		PowerConsumer_last_power_request_amount = amount;
+		// Requesting power != 0.
+		last_request = PowerConsumer_LPR_NonZero; 
+		last_amount = amount;
 	}
 	
-	return inherited(amount, just_pass_to_global,  ...);
+	return inherited(amount, just_pass_to_global, ...);
 }
 
-// turns the object off as a power consumer
-func UnmakePowerConsumer()
+// Turns the object off as a power consumer.
+public func UnmakePowerConsumer()
 {
-	// succesive calls have no effect
-	if(PowerConsumer_last_power_request == PowerConsumer_LPR_None)
+	// Succesive calls have no effect.
+	if (last_request == PowerConsumer_LPR_None)
 		return true;
 		
-	// we don't have no power anymore
-	PowerConsumer_has_power = false;
+	// We don't have power anymore.
+	has_power = false;
 	
-	// we were not officially registered as power consumer anyway
-	if(PowerConsumer_last_power_request == PowerConsumer_LPR_Zero)
+	// We were not officially registered as power consumer anyway.
+	if (last_request == PowerConsumer_LPR_Zero)
 	{
-		PowerConsumer_last_power_request = PowerConsumer_LPR_None;
+		last_request = PowerConsumer_LPR_None;
 		return true;
 	}
-	PowerConsumer_last_power_request = PowerConsumer_LPR_None;
+	last_request = PowerConsumer_LPR_None;
 	return MakePowerConsumer(0, true);
 }
 
-func Destruction()
+// Destruction callback: let power network know this object is not a consumer anymore.
+public func Destruction()
 {
 	UnmakePowerConsumer();
 	return _inherited(...);

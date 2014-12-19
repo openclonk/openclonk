@@ -1,98 +1,110 @@
-/*-- Power usage --*/
+/**
+	No Energy Rule
+	If this rule is activated, power consumers do not need energy supply 
+	anymore to operate.
+	
+	@author Zapper, Maikel
+*/
 
-func Initialize()
+
+protected func Initialize()
 {
-	// we are not the first?
-	if(ObjectCount(Find_ID(GetID())) != 1) return;
+	// Don't do anything if this is not the first rule of this type.
+	if (ObjectCount(Find_ID(Rule_NoPowerNeed)) > 1) 
+		return;
 	
-	// no power consumers yet, nothing to be done
-	if(Library_Power_power_compounds == nil) return;
+	// If there are no power consumers yet, there is nothing to be done.
+	if (Library_Power_power_compounds == nil) 
+		return;
 	
-	// update all consumers forcefully
+	// Update all consumers forcefully.
 	var remember = [];
 	
-	// get all power compounds (bases)
-	for(var base in Library_Power_power_compounds)
+	// Get all power compounds (bases).
+	for (var base in Library_Power_power_compounds)
 	{
-		// iterate through all registered consumers & producers
-		// these are not the sleeping power links!
-		for(var i = GetLength(base.power_links) - 1; i >= 0; --i)
+		// Iterate through all registered consumers & producers, these are not the sleeping power links.
+		for (var i = GetLength(base.power_links) - 1; i >= 0; --i)
 		{
 			var obj_data = base.power_links[i];
-			if(obj_data == nil) continue;
-			// is a power producer?
-			if(!obj_data.obj->~CurrentlyHasPower()) continue;
-			if(obj_data.amount > 0) continue;
+			if (obj_data == nil) 
+				continue;
+			// If it is a power producer, continue to next link.
+			if (!obj_data.obj->~CurrentlyHasPower() || obj_data.amount > 0) 
+				continue;
 			
-			// temporarily stop consuming power to make sure the callback order is correct
+			// Temporarily stop consuming power to make sure the callback order is correct.
 			obj_data.obj->~OnNotEnoughPower();
 			
-			// power consumer behavior
-			var lpr = obj_data.obj.PowerConsumer_last_power_request;
-			obj_data.obj.PowerConsumer_last_power_request = 0;
-			var lpr_a = obj_data.obj.PowerConsumer_last_power_request_amount;
-			obj_data.obj.PowerConsumer_last_power_request_amount = 0;
+			// Power consumer behavior.
+			obj_data.obj.last_request = 0;
+			var lpr_a = obj_data.obj.last_amount;
+			obj_data.obj.last_amount = 0;
 			
-			// remove from list
+			// Remove from list.
 			RemoveArrayIndexUnstable(base.power_links, i);
 			
-			// make new power consumer later
+			// Make new power consumer later.
 			PushBack(remember, {obj = obj_data.obj, amount = lpr_a});
 		}
 		
-		// now awake the sleeping links (later)
-		for(var i = GetLength(base.sleeping_links) - 1; i >= 0; --i)
+		// Now awake the sleeping links, after the consumers.
+		for (var i = GetLength(base.sleeping_links) - 1; i >= 0; --i)
 		{
 			var obj_data = base.sleeping_links[i];
 			PushBack(remember, {obj = obj_data.obj, amount = obj_data.amount});
 		}
-		
+		// Reset the sleeping links to an empty list.
 		base.sleeping_links = [];
 	}
 	
-	// let all remembered consumers consume again!
-	for(var obj_data in remember)
+	// Let all remembered consumers consume again!
+	for (var obj_data in remember)
 	{
-		if(obj_data == nil) continue;
+		if (obj_data == nil) 
+			continue;
 		obj_data.obj->MakePowerConsumer(Abs(obj_data.amount));
 	}
+	return;
 }
 
-func Destruction()
+protected func Destruction()
 {
-	// we are not the last?
-	if(ObjectCount(Find_ID(GetID())) != 1) return;
+	// If this is not the last copy of this rule do nothing. 
+	if (ObjectCount(Find_ID(Rule_NoPowerNeed)) >= 1)
+		return;
 	
-	// schedule the call so that the removal is complete
+	// Schedule the a destruction definition call so that the removal is complete.
 	Schedule(nil, "Rule_NoPowerNeed->DestructionEx()", 1);
+	return;
 }
 
-func DestructionEx()
+public func DestructionEx()
 {
-	// we were not the last?
-	if(ObjectCount(Find_ID(Rule_NoPowerNeed)) != 0) return;
+	// Only perform resetting the links if there are no more rule objects active.
+	if (ObjectCount(Find_ID(Rule_NoPowerNeed)) >= 1) 
+		return;
 	
-	// update consumers again
-	// go through all existing consumers and see whether they are consuming atm
-	for(var obj in FindObjects(Find_Func("IsPowerConsumer")))
+	// Update all consumers again by going through all existing consumers.
+	for (var obj in FindObjects(Find_Func("IsPowerConsumer")))
 	{
-		var last_request = obj.PowerConsumer_last_power_request;
-		var last_amount = obj.PowerConsumer_last_power_request_amount;
-
-		// had not requested power aka "is not running"
-		if(last_request == PowerConsumer_LPR_None) continue;
-		// temporarily stop consuming power to make sure the callback order is correct
+		var request = obj.last_request;
+		var amount = obj.last_amount;
+		// Did not requested power aka "is not running".
+		if (request == PowerConsumer_LPR_None) 
+			continue;
+		// Temporarily stop consuming power to make sure the callback order is correct.
 		obj->OnNotEnoughPower();
-		
-		obj.PowerConsumer_last_power_request = PowerConsumer_LPR_None;
-		obj.PowerConsumer_last_power_request_amount = 0;
-		obj->MakePowerConsumer(last_amount);
+		obj.last_request = PowerConsumer_LPR_None;
+		obj.last_amount = 0;
+		obj->MakePowerConsumer(amount);
 	}
+	return;
 }
 
-protected func Activate(int iByPlayer)
+protected func Activate(int plr)
 {
-	MessageWindow(GetProperty("Description"), iByPlayer);
+	MessageWindow(GetProperty("Description"), plr);
 	return true;
 }
 
