@@ -281,7 +281,7 @@ public func GetPowerBalance()
 public func IsPowerAvailable(object obj, int amount)
 {
 	// Ignore object for now.
-	return power_balance > amount;
+	return power_balance >= amount;
 }
 
 public func Init()
