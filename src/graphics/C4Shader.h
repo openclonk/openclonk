@@ -107,14 +107,14 @@ private:
 class C4ShaderCall
 {
 public:
-	C4ShaderCall(C4Shader *pShader) 
+	C4ShaderCall(const C4Shader *pShader) 
 		: fStarted(false), pShader(pShader), iUnits(0)
 	{ }
 	~C4ShaderCall() { Finish(); }
 
 private:
 	bool fStarted;
-	C4Shader *pShader;
+	const C4Shader *pShader;
 	int iUnits;
 	GLenum hUnit[C4ShaderCall_MaxUnits];
 
