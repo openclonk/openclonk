@@ -32,24 +32,35 @@ C4Shader::~C4Shader()
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
 {
-	ShaderSlice Slice;
-	Slice.Position = iPos;
-	Slice.Text.Copy(szText);
-	Slice.SourceTime = 0;
-	VertexSlices.push_back(Slice);
+	AddSlice(VertexSlices, iPos, szText, NULL, 0);
 }
 
 void C4Shader::AddFragmentSlice(int iPos, const char *szText, const char *szSource, int iSourceTime)
+{
+	AddSlice(FragmentSlices, iPos, szText, szSource, iSourceTime);
+}
+
+void C4Shader::AddVertexSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
+{
+	AddSlices(VertexSlices, szWhat, szText, szSource, iSourceTime);
+}
+
+void C4Shader::AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
+{
+	AddSlices(FragmentSlices, szWhat, szText, szSource, iSourceTime);
+}
+
+void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iSourceTime)
 {
 	ShaderSlice Slice;
 	Slice.Position = iPos;
 	Slice.Text.Copy(szText);
 	Slice.Source = szSource;
 	Slice.SourceTime = iSourceTime;
-	FragmentSlices.push_back(Slice);
+	slices.push_back(Slice);
 }
 
-void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
+void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iSourceTime)
 {
 	const char *pStart = szText, *pPos = szText;
 	int iDepth = -1;
@@ -85,7 +96,7 @@ void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szS
 				if (fGotContent)
 				{
 					StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-					AddFragmentSlice(iPosition, Str.getData(), szSource, iSourceTime);
+					AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
 				}
 
 				iPosition = -1;
@@ -122,7 +133,7 @@ void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szS
 						if (fGotContent)
 						{
 							StdStrBuf Str; Str.Copy(pStart, pSliceEnd - pStart);
-							AddFragmentSlice(-1, Str.getData(), szSource, iSourceTime);
+							AddSlice(slices, -1, Str.getData(), szSource, iSourceTime);
 						}
 
 						iDepth = 0;
@@ -146,7 +157,7 @@ void C4Shader::AddSlices(const char *szWhat, const char *szText, const char *szS
 	if (fGotContent)
 	{
 		StdStrBuf Str; Str.Copy(pStart, pPos - pStart);
-		AddFragmentSlice(iPosition, Str.getData(), szSource, iSourceTime);
+		AddSlice(slices, iPosition, Str.getData(), szSource, iSourceTime);
 	}
 
 }
@@ -217,9 +228,10 @@ bool C4Shader::LoadSlices(C4GroupSet *pGroups, const char *szFile)
 		iSourceTime = FileTime(Source.getData());
 	// Load
 	StdStrBuf What = FormatString("file %s", Config.AtRelativePath(Source.getData()));
-	AddSlices(What.getData(), Shader.getData(), Source.getData(), iSourceTime);
+	AddFragmentSlices(What.getData(), Shader.getData(), Source.getData(), iSourceTime);
 	return true;
 }
+
 void C4Shader::AddVertexDefaults()
 {
 	AddVertexSlice(C4Shader_Vertex_PositionPos, "gl_Position = ftransform();\n");
@@ -358,7 +370,7 @@ bool C4Shader::Refresh(const char *szWhat, const char **szUniforms)
 	// Load slices
 	int iSourceTime = FileTime(Source.getData());
 	StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
-	AddSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
+	AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
 
 	// Reinitialise
 	if (!Init(szWhat, szUniforms))

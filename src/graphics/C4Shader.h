@@ -74,7 +74,8 @@ public:
 	// Shader is composed from various slices
 	void AddVertexSlice(int iPos, const char *szText);
 	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
-	void AddSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
+	void AddVertexSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
+	void AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	bool LoadSlices(C4GroupSet *pGroupSet, const char *szFile);
 
 	// Add default vertex code (2D - no transformation)
@@ -93,6 +94,8 @@ public:
 	void Clear();
 
 private:
+	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iFileTime);
+	void AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iFileTime);
 	int ParsePosition(const char *szWhat, const char **ppPos);
 
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
