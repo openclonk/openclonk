@@ -15,6 +15,10 @@ C4ShaderPosName C4SH_PosNames[] = {
 	{ C4Shader_PositionLight,		 "light" },
 	{ C4Shader_PositionColor,		 "color" },
 	{ C4Shader_PositionFinish,		 "finish" },
+
+	{ C4Shader_Vertex_TexCoordPos,		"texcoord" },
+	{ C4Shader_Vertex_NormalPos,            "normal" },
+	{ C4Shader_Vertxe_PositionPos,          "position" }
 };
 
 C4Shader::C4Shader()

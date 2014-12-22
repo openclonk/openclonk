@@ -29,6 +29,7 @@ const int C4Shader_LastPosition = 256;
 
 // Positions in vertex shader
 const int C4Shader_Vertex_TexCoordPos = 50;
+const int C4Shader_Vertex_NormalPos = 60;
 const int C4Shader_Vertex_PositionPos = 80;
 
 class C4Shader
