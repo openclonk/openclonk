@@ -78,7 +78,7 @@ namespace
 		StdStrBuf alpha_source1 = FormatString("%s.a", TextureUnitSourceToCode(index, texunit.AlphaOpSources[0], texunit.ColorOpManualColor1, texunit.AlphaOpManualAlpha1).getData());
 		StdStrBuf alpha_source2 = FormatString("%s.a", TextureUnitSourceToCode(index, texunit.AlphaOpSources[1], texunit.ColorOpManualColor2, texunit.AlphaOpManualAlpha2).getData());
 
-		return FormatString("currentColor = vec4(%s, %s);", TextureUnitBlendToCode(index, texunit.ColorOpEx, color_source1.getData(), color_source2.getData(), texunit.ColorOpManualFactor).getData(), TextureUnitBlendToCode(index, texunit.AlphaOpEx, alpha_source1.getData(), alpha_source2.getData(), texunit.AlphaOpManualFactor).getData());
+		return FormatString("currentColor = vec4(%s, %s);\n", TextureUnitBlendToCode(index, texunit.ColorOpEx, color_source1.getData(), color_source2.getData(), texunit.ColorOpManualFactor).getData(), TextureUnitBlendToCode(index, texunit.AlphaOpEx, alpha_source1.getData(), alpha_source2.getData(), texunit.AlphaOpManualFactor).getData());
 	}
 
 	// Simple helper function
@@ -105,19 +105,29 @@ namespace
 		StdStrBuf buf;
 
 		buf.Copy(
-			"varying vec3 normal;"
-			"varying vec2 texcoord;"
-			"void main()"
-			"{"
-			"  normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to... note if we don't normalize, interpolation of normals won't work
-			"  texcoord = gl_MultiTexCoord0.xy;"
-			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
-			"}"
+			"varying vec3 normalDir;\n"
+			"\n"
+			"slice(position)\n"
+			"{\n"
+			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+			"}\n"
+			"\n"
+			"slice(texcoord)\n"
+			"{\n"
+			"  texcoord = gl_MultiTexCoord0.xy;\n"
+			"}\n"
+			"\n"
+			"slice(normal)\n"
+			"{\n"
+			"  normalDir = normalize(gl_NormalMatrix * gl_Normal);\n"
+			"}\n"
 		);
 
 		return buf;
 	}
 
+	// Note this only gets the code which inserts the slices specific for the pass
+	// -- other slices are independent from this!
 	StdStrBuf GetFragmentShaderCodeForPass(const StdMeshMaterialPass& pass, StdMeshMaterialShaderParameters& params)
 	{
 		StdStrBuf buf;
@@ -134,68 +144,24 @@ namespace
 
 			if(texunit.HasTexture())
 			{
-				textureUnitDeclCode.Append(FormatString("uniform sampler2D oc_Texture%u;", texIndex).getData());
+				textureUnitDeclCode.Append(FormatString("uniform sampler2D oc_Texture%u;\n", texIndex).getData());
 				params.AddParameter(FormatString("oc_Texture%u", texIndex).getData(), StdMeshMaterialShaderParameter::INT).GetInt() = texIndex;
 				++texIndex;
 			}
 		}
 
-		// TODO: Only add this parameter if the player color is actually used in the shader -- otherwise
-		// it is optimized out anyway.
-		params.AddParameter("oc_PlayerColor", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR;
-		params.AddParameter("oc_ColorModulation", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION;
-		params.AddParameter("oc_Mod2", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_MOD2;
-		params.AddParameter("oc_UseLight", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT;
-		params.AddParameter("oc_Light", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_LIGHT;
-		params.AddParameter("oc_Ambient", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT;
-		params.AddParameter("oc_AmbientBrightness", StdMeshMaterialShaderParameter::AUTO).GetAuto() = StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT_BRIGHTNESS;
-
 		return FormatString(
-			"varying vec3 normal;" // linearly interpolated -- not necessarily normalized
-			"varying vec2 texcoord;"
-			"%s" // Texture units with active textures, only if >0 texture units
-			"uniform vec3 oc_PlayerColor;"
-			"uniform vec4 oc_ColorModulation;"
-			"uniform int oc_Mod2;"
-			"uniform int oc_UseLight;"
-			"uniform sampler2D oc_Light;"
-			"uniform sampler2D oc_Ambient;"
-			"uniform float oc_AmbientBrightness;"
-			"void main()"
-			"{"
-                        "  vec4 lightClr;"
-                        "  vec3 normalDir = normalize(normal);"
-                        "  if(oc_UseLight != 0)"
-                        "  {"
-			     // Light calculation
-                        "    vec4 lightPx = texture2D(oc_Light, (gl_TextureMatrix[%d] * gl_FragCoord).xy);"
-			"    vec3 lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.gb * 3.0, 0.3));"
-                        "    float lightIntensity = 2.0 * lightPx.r;"
-                        "    float ambient = texture2D(oc_Ambient, (gl_TextureMatrix[%d] * gl_FragCoord).xy).r * oc_AmbientBrightness;"
-                             // Don't actually use the ambient part of the material and instead a diffuse light from the front, like in the master branch
-			     // Because meshes are not tuned for ambient light at the moment, every mesh material would need to be fixed.
-			     // Otherwise the first term would be ambient * gl_FrontMaterial.ambient
-			"    lightClr = vec4(ambient * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, vec3(0.0, 0.0, 1.0)), 0.0))) + (1.0 - min(ambient, 1.0)) * lightIntensity * (gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0))), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
-                        "  }"
-                        "  else"
-                        "  {"
-                             // No light -- place a simple directional light from the front (equivalent to the behaviour in
-			     // the master branch, modulo interpolated normals)
-                        "    vec3 lightDir = vec3(0.0, 0.0, 1.0);"
-			"    lightClr = vec4(gl_FrontMaterial.emission.rgb + gl_FrontMaterial.diffuse.rgb * (0.25 + 0.75 * max(dot(normalDir, lightDir), 0.0)), gl_FrontMaterial.emission.a + gl_FrontMaterial.diffuse.a);"
-                        "  }"
-			// Texture units from material script
-			"  vec4 diffuse = lightClr;"
-			"  vec4 currentColor = diffuse;"
-			"  %s"
-			// Output with color modulation and mod2
-			"  if(oc_Mod2 != 0)"
-			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation - 0.5, 0.0, 1.0);"
-			"  else"
-			"    gl_FragColor = clamp(currentColor * oc_ColorModulation, 0.0, 1.0);"
-			"}",
+			"%s\n" // Texture units with active textures, only if >0 texture units
+			"uniform vec3 oc_PlayerColor;\n" // This needs to be in-sync with the naming in StdMeshMaterialProgram::CompileShader()
+			"\n"
+			"slice(texture)\n"
+			"{\n"
+			"  vec4 diffuse = color;\n"
+			"  vec4 currentColor = diffuse;\n"
+			"  %s\n"
+			"  color = currentColor;\n"
+			"}\n",
 			textureUnitDeclCode.getData(),
-			(int)texIndex, (int)texIndex + 1, // The light and ambient textures are added after all other textures
 			textureUnitCode.getData()
 		);
 	}
@@ -211,48 +177,7 @@ namespace
 	}
 } // anonymous namespace
 
-class C4DrawMeshGLProgramInstance: public StdMeshMaterialPass::ProgramInstance
-{
-public:
-	C4DrawMeshGLProgramInstance(const C4DrawGLProgram* program);
-	void AddParameters(const StdMeshMaterialShaderParameters& parameters);
-
-	struct Parameter {
-		GLint Location;
-		const StdMeshMaterialShaderParameter* ShaderParameter;
-	};
-
-	std::vector<Parameter> Parameters;
-};
-
-C4DrawMeshGLProgramInstance::C4DrawMeshGLProgramInstance(const C4DrawGLProgram* program):
-	StdMeshMaterialPass::ProgramInstance(program)
-{
-}
-
-void C4DrawMeshGLProgramInstance::AddParameters(const StdMeshMaterialShaderParameters& parameters)
-{
-	const C4DrawGLProgram* program = static_cast<const C4DrawGLProgram*>(Program);
-	for(unsigned int i = 0; i < parameters.NamedParameters.size(); ++i)
-	{
-		const GLint location = glGetUniformLocationARB(program->Program, parameters.NamedParameters[i].first.getData());
-		Parameters.push_back(Parameter());
-		Parameters.back().Location = location;
-		Parameters.back().ShaderParameter = &parameters.NamedParameters[i].second;
-	}
-}
-
-std::unique_ptr<StdMeshMaterialShader> CStdGL::CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text)
-{
-	if(strcmp(language, "glsl") != 0)
-		throw C4DrawGLError(StdStrBuf("Not a GLSL shader"));
-
-	std::unique_ptr<C4DrawGLShader> shader(new C4DrawGLShader(type));
-	shader->Load(text);
-	return std::move(shader);
-}
-
-bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat)
+bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat)
 {
 	// TODO: If a technique is not available, show an error message what the problem is
 
@@ -409,43 +334,36 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& ma
 				} // loop over textures
 			} // loop over texture units
 
-			try
+			// Create fragment and/or vertex shader
+			// if a custom shader is not provided.
+			// Re-use existing programs if the generated
+			// code is the same (determined by SHA1 hash).
+			if(!pass.VertexShader.Shader)
 			{
-				// Create fragment and/or vertex shader
-				// if a custom shader is not provided.
-				// Re-use existing programs if the generated
-				// code is the same (determined by SHA1 hash).
-				if(!pass.VertexShader.Shader)
-				{
-					StdStrBuf buf = GetVertexShaderCodeForPass(pass);
-					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-					pass.VertexShader.Shader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::VERTEX, buf.getData(), true);
-				}
-
-				if(!pass.FragmentShader.Shader)
-				{
-					// TODO: Should use shared_params once we introduce them
-					StdStrBuf buf = GetFragmentShaderCodeForPass(pass, pass.FragmentShader.Parameters);
-					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
-					pass.FragmentShader.Shader = mat_manager.AddShader(hash.getData(), "glsl", StdMeshMaterialShader::FRAGMENT, buf.getData(), true);
-				}
-
-				// Then, link the program, and resolve parameter locations
-				const C4DrawGLShader* fragment_shader = static_cast<const C4DrawGLShader*>(pass.FragmentShader.Shader);
-				const C4DrawGLShader* vertex_shader = static_cast<const C4DrawGLShader*>(pass.VertexShader.Shader);
-				const C4DrawGLShader* geometry_shader = static_cast<const C4DrawGLShader*>(pass.GeometryShader.Shader);
-				std::unique_ptr<C4DrawGLProgram> program(new C4DrawGLProgram(fragment_shader, vertex_shader, geometry_shader));
-				const StdMeshMaterialProgram* added_program = &mat_manager.AddProgram(fragment_shader, vertex_shader, geometry_shader, std::move(program));
-				std::unique_ptr<C4DrawMeshGLProgramInstance> program_instance(new C4DrawMeshGLProgramInstance(static_cast<const C4DrawGLProgram*>(added_program)));
-				if(pass.FragmentShader.Shader) program_instance->AddParameters(pass.FragmentShader.Parameters);
-				if(pass.VertexShader.Shader) program_instance->AddParameters(pass.VertexShader.Parameters);
-				if(pass.GeometryShader.Shader) program_instance->AddParameters(pass.GeometryShader.Parameters);
-				pass.Program = std::move(program_instance);
+				StdStrBuf buf = GetVertexShaderCodeForPass(pass);
+				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
 			}
-			catch(const C4DrawGLError& error)
+
+			if(!pass.FragmentShader.Shader)
+			{
+				// TODO: Should use shared_params once we introduce them
+				StdStrBuf buf = GetFragmentShaderCodeForPass(pass, pass.FragmentShader.Parameters);
+				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+				pass.FragmentShader.Shader = mat_manager.AddShader("auto-generated fragment shader", hash.getData(), "glsl", SMMS_FRAGMENT, buf.getData(), true);
+			}
+
+			// Then, link the program, and resolve parameter locations
+			StdStrBuf name(FormatString("%s:%s:%s", mat.Name.getData(), technique.Name.getData(), pass.Name.getData()));
+			const StdMeshMaterialProgram* added_program = mat_manager.AddProgram(name.getData(), loader, pass.FragmentShader, pass.VertexShader, pass.GeometryShader);
+			if(!added_program)
 			{
 				technique.Available = false;
-				LogF("Failed to compile shader: %s\n", error.what());
+			}
+			else
+			{
+				std::unique_ptr<StdMeshMaterialPass::ProgramInstance> program_instance(new StdMeshMaterialPass::ProgramInstance(added_program, &pass.FragmentShader, &pass.VertexShader, &pass.GeometryShader));
+				pass.Program = std::move(program_instance);
 			}
 		}
 
@@ -489,106 +407,48 @@ namespace
 		return true;
 	}
 
-	bool ResolveAutoParameter(StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect, std::vector<GLint>& textures)
+	void SetStandardUniforms(C4ShaderCall& call, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect)
 	{
-		float* out;
-		GLint texIndex;
-		C4Rect LightRect;
-		int32_t iLightWdt;
-		int32_t iLightHgt;
+		// Draw transform
+		const float fMod[4] = {
+			((dwModClr >> 16) & 0xff) / 255.0f,
+			((dwModClr >>  8) & 0xff) / 255.0f,
+			((dwModClr      ) & 0xff) / 255.0f,
+			((dwModClr >> 24) & 0xff) / 255.0f
+		};
+		call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
 
-		switch(value)
+		// Player color
+		const float fPlrClr[3] = {
+			((dwPlayerColor >> 16) & 0xff) / 255.0f,
+			((dwPlayerColor >>  8) & 0xff) / 255.0f,
+			((dwPlayerColor      ) & 0xff) / 255.0f,
+		};
+		call.SetUniform3fv(C4SSU_OverlayClr, 1, fPlrClr);
+
+		// Dynamic light
+		if(pFoW != NULL)
 		{
-		case StdMeshMaterialShaderParameter::AUTO_OC_PLAYER_COLOR:
-			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT3);
-			out = parameter.GetFloatv();
-
-			out[0] = ((dwPlayerColor >> 16) & 0xff) / 255.0f;
-			out[1] = ((dwPlayerColor >>  8) & 0xff) / 255.0f;
-			out[2] = ((dwPlayerColor      ) & 0xff) / 255.0f;
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_COLOR_MODULATION:
-			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT4);
-			out = parameter.GetFloatv();
-
-			out[0] = ((dwModClr >> 16) & 0xff) / 255.0f;
-			out[1] = ((dwModClr >>  8) & 0xff) / 255.0f;
-			out[2] = ((dwModClr      ) & 0xff) / 255.0f;
-			out[3] = ((dwModClr >> 24) & 0xff) / 255.0f;
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_MOD2:
-			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_USE_LIGHT:
-			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = (pFoW != NULL);
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_LIGHT:
-			if(!pFoW) return false;
-
-			texIndex = textures.size();
-			textures.push_back(texIndex);
-
-			// Load the texture
-			glActiveTexture(GL_TEXTURE0+texIndex);
-			//glClientActiveTexture(GL_TEXTURE0+texIndex);
-			glEnable(GL_TEXTURE_2D);
+			call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
+			float lightTransform[6];
+			pFoW->GetFragTransform(clipRect, lightTransform);
+			call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
-			// Transformation matrix for the texture coordinates
-			// TODO: Should maybe be a separate uniform variable?
-			LightRect = pFoW->getRegion();
-			iLightWdt = pFoW->getSurface()->Wdt;
-			iLightHgt = pFoW->getSurface()->Hgt;
-
-			glLoadIdentity();
-			glTranslatef(0.0f, 1.0f - (float)LightRect.Hgt/(float)iLightHgt, 0.0f);
-			glScalef(1.0f/iLightWdt, 1.0f/iLightHgt, 1.0f);
-			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
-			glTranslatef(-clipRect.x, 0.0f, 0.0f);
-
-			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = texIndex;
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT:
-			if(!pFoW) return false;
-
-			texIndex = textures.size();
-			textures.push_back(texIndex);
-
-			// Load the texture
-			glActiveTexture(GL_TEXTURE0+texIndex);
-			//glClientActiveTexture(GL_TEXTURE0+texIndex);
-			glEnable(GL_TEXTURE_2D);
+			call.AllocTexUnit(C4SSU_AmbientTex, GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
-
-			// Transformation matrix for the texture coordinates
-			// TODO: Should maybe be a separate uniform variable?
-			LightRect = pFoW->getRegion();
-			iLightWdt = pFoW->getSurface()->Wdt;
-			iLightHgt = pFoW->getSurface()->Hgt;
-
-			// Setup the texture matrix
-			glLoadIdentity();
-			glScalef(1.0f/pFoW->getFoW()->Ambient.GetLandscapeWidth(), 1.0f/pFoW->getFoW()->Ambient.GetLandscapeHeight(), 1.0f);
-			glTranslatef(LightRect.x, LightRect.y, 0.0f);
-			glScalef( (float)LightRect.Wdt / (float)clipRect.Wdt, (float)LightRect.Hgt / (float)clipRect.Hgt, 1.0f);
-			glTranslatef(-clipRect.x, clipRect.Hgt, 0.0f);
-			glScalef(1.0f, -1.0f, 1.0f);
-
-			parameter.SetType(StdMeshMaterialShaderParameter::INT);
-			parameter.GetInt() = texIndex;
-			return true;
-		case StdMeshMaterialShaderParameter::AUTO_OC_AMBIENT_BRIGHTNESS:
-			if(!pFoW) return false;
-			parameter.SetType(StdMeshMaterialShaderParameter::FLOAT);
-			parameter.GetFloat() = pFoW->getFoW()->Ambient.GetBrightness();
-			return true;
-		default:
-			assert(false);
-			return false;
+			call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
+			float ambientTransform[6];
+			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getRegion(), clipRect, ambientTransform);
+			call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 		}
+	}
+
+	bool ResolveAutoParameter(C4ShaderCall& call, StdMeshMaterialShaderParameter& parameter, StdMeshMaterialShaderParameter::Auto value, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect)
+	{
+		// There are no auto parameters implemented yet
+		assert(false);
+		return false;
 	}
 
 	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, bool parity)
@@ -667,35 +527,30 @@ namespace
 
 			// TODO: Use vbo if available.
 
+			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
 			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), &vertices->x);
 			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), &vertices->nx);
 
 			glMatrixMode(GL_TEXTURE);
 
-			std::vector<GLint> textures;
-			textures.reserve(pass.TextureUnits.size());
+			assert(pass.Program.get() != NULL);
+
+			// Upload all parameters to the shader (keep GL_TEXTURE matrix mode for this)
+			int ssc = 0;
+			if(dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
+			if(pFoW != NULL) ssc |= C4SSC_LIGHT;
+			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
+			C4ShaderCall call(shader);
+			call.Start();
+
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
-				const unsigned int texIndex = textures.size();
-
 				if (texunit.HasTexture())
 				{
-					// Array with texture indices set for passing the textures to the
-					// shader -- shader cannot use fixed texture image units before OGL 4.2.
-					textures.push_back(texIndex);
-
-					// Note that it is guaranteed that the GL_TEXTUREn
-					// constants are contiguous.
-					glActiveTexture(GL_TEXTURE0+texIndex);
-					glClientActiveTexture(GL_TEXTURE0+texIndex);
-					glEnable(GL_TEXTURE_2D);
-
+					call.AllocTexUnit(-1, GL_TEXTURE_2D);
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
 					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName);
-
-					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
 
 					// Setup texture coordinate transform
 					glLoadIdentity();
@@ -748,22 +603,19 @@ namespace
 				}
 			}
 
-			assert(pass.Program.get() != NULL);
-			const C4DrawMeshGLProgramInstance& program_instance = static_cast<const C4DrawMeshGLProgramInstance&>(*pass.Program);
-
-			// Upload all parameters to the shader (keep GL_TEXTURE matrix mode, since we might initialize clrmodmap during this)
-			glUseProgramObjectARB(static_cast<const C4DrawGLProgram*>(program_instance.Program)->Program);
-			for(unsigned int i = 0; i < program_instance.Parameters.size(); ++i)
+			// Set uniforms and instance parameters
+			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect);
+			for(unsigned int i = 0; i < pass.Program->Parameters.size(); ++i)
 			{
-				const GLint location = program_instance.Parameters[i].Location;
-				if(location == -1) continue; // parameter optimized out, or misnamed
+				const int uniform = pass.Program->Parameters[i].UniformIndex;
+				if(!shader->HaveUniform(uniform)) continue; // optimized out
 
-				const StdMeshMaterialShaderParameter* parameter = program_instance.Parameters[i].ShaderParameter;
+				const StdMeshMaterialShaderParameter* parameter = pass.Program->Parameters[i].Parameter;
 
 				StdMeshMaterialShaderParameter auto_resolved;
 				if(parameter->GetType() == StdMeshMaterialShaderParameter::AUTO)
 				{
-					if(!ResolveAutoParameter(auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect, textures))
+					if(!ResolveAutoParameter(call, auto_resolved, parameter->GetAuto(), dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect))
 						continue;
 					parameter = &auto_resolved;
 				}
@@ -771,22 +623,22 @@ namespace
 				switch(parameter->GetType())
 				{
 				case StdMeshMaterialShaderParameter::INT:
-					glUniform1iARB(location, parameter->GetInt());
+					call.SetUniform1i(uniform, parameter->GetInt());
 					break;
 				case StdMeshMaterialShaderParameter::FLOAT:
-					glUniform1fARB(location, parameter->GetFloat());
+					call.SetUniform1f(uniform, parameter->GetFloat());
 					break;
 				case StdMeshMaterialShaderParameter::FLOAT2:
-					glUniform2fvARB(location, 1, parameter->GetFloatv());
+					call.SetUniform2fv(uniform, 1, parameter->GetFloatv());
 					break;
 				case StdMeshMaterialShaderParameter::FLOAT3:
-					glUniform3fvARB(location, 1, parameter->GetFloatv());
+					call.SetUniform3fv(uniform, 1, parameter->GetFloatv());
 					break;
 				case StdMeshMaterialShaderParameter::FLOAT4:
-					glUniform4fvARB(location, 1, parameter->GetFloatv());
+					call.SetUniform4fv(uniform, 1, parameter->GetFloatv());
 					break;
 				case StdMeshMaterialShaderParameter::MATRIX_4X4:
-					glUniformMatrix4fvARB(location, 1, GL_TRUE, parameter->GetMatrix());
+					call.SetUniformMatrix4x4fv(uniform, 1, parameter->GetMatrix());
 					break;
 				default:
 					assert(false);
@@ -796,15 +648,7 @@ namespace
 
 			glMatrixMode(GL_MODELVIEW);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
-
-			// Clean-up, re-set default state
-			for (unsigned int j = 0; j < textures.size(); ++j)
-			{
-				glActiveTexture(GL_TEXTURE0+textures[j]);
-				glClientActiveTexture(GL_TEXTURE0+textures[j]);
-				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-				glDisable(GL_TEXTURE_2D);
-			}
+			call.Finish();
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);
@@ -955,11 +799,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
 
+	glClientActiveTexture(GL_TEXTURE0); // our only texcoord corresponds to tex0
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY); // might still be active from a previous (non-mesh-rendering) GL operation
-	glClientActiveTexture(GL_TEXTURE0);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY); // same -- we enable this individually for every texture unit in RenderSubMeshImpl
+	glDisableClientState(GL_COLOR_ARRAY);
 
 	// TODO: We ignore the additive drawing flag for meshes but instead
 	// set the blending mode of the corresponding material. I'm not sure
@@ -1132,8 +976,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	clipRect.y   = iClipY1; if(clipRect.y < 0) { clipRect.Hgt += clipRect.y; clipRect.y = 0; }
 	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, parity);
 
-	glUseProgramObjectARB(0);
-
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -1143,6 +985,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
 	glDepthMask(GL_TRUE);
 
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 

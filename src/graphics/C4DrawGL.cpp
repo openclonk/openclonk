@@ -37,110 +37,6 @@
 #include <math.h>
 #include <limits.h>
 
-C4DrawGLShader::C4DrawGLShader(Type shader_type)
-{
-	GLint gl_type;
-	switch(shader_type)
-	{
-	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
-	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
-	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
-	default: assert(false); break;
-	}
-
-	Shader = glCreateShaderObjectARB(gl_type);
-	if(!Shader) throw C4DrawGLError(FormatString("Failed to create shader")); // TODO: custom error class?
-}
-
-C4DrawGLShader::~C4DrawGLShader()
-{
-	glDeleteObjectARB(Shader);
-}
-
-void C4DrawGLShader::Load(const char* code)
-{
-	glShaderSourceARB(Shader, 1, &code, NULL);
-	glCompileShaderARB(Shader);
-
-	GLint compile_status;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
-	if(compile_status != GL_TRUE)
-	{
-		const char* shader_type_str;
-		switch(GetType())
-		{
-		case VERTEX: shader_type_str = "vertex"; break;
-		case FRAGMENT: shader_type_str = "fragment"; break;
-		case GEOMETRY: shader_type_str = "geometry"; break;
-		default: assert(false); break;
-		}
-
-		GLint length;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
-			throw C4DrawGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
-		}
-		else
-		{
-			throw C4DrawGLError(FormatString("Failed to compile %s shader", shader_type_str));
-		}
-	}
-}
-
-StdMeshMaterialShader::Type C4DrawGLShader::GetType() const
-{
-	GLint shader_type;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
-
-	switch(shader_type)
-	{
-	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
-	case GL_VERTEX_SHADER_ARB: return VERTEX;
-	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
-	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
-	}
-}
-
-C4DrawGLProgram::C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader)
-{
-	Program = glCreateProgramObjectARB();
-	if(fragment_shader != NULL)
-		glAttachObjectARB(Program, fragment_shader->Shader);
-	if(vertex_shader != NULL)
-		glAttachObjectARB(Program, vertex_shader->Shader);
-	if(geometry_shader != NULL)
-		glAttachObjectARB(Program, geometry_shader->Shader);
-	glLinkProgramARB(Program);
-
-	GLint link_status;
-	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
-	if(link_status != GL_TRUE)
-	{
-		GLint length;
-		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
-			glDeleteObjectARB(Program);
-			throw C4DrawGLError(FormatString("Failed to link program: %s", &error_message[0]));
-		}
-		else
-		{
-			glDeleteObjectARB(Program);
-			throw C4DrawGLError(StdStrBuf("Failed to link program"));
-		}
-	}
-}
-
-C4DrawGLProgram::~C4DrawGLProgram()
-{
-	glDeleteObjectARB(Program);
-}
-
 CStdGL::CStdGL():
 		pMainCtx(0)
 {
@@ -362,24 +258,13 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 	{
 		const C4Rect ClipRect = GetClipRect();
 		const C4Rect LightRect = pFoW->getRegion();
-		const int32_t iLightWdt = pFoW->getSurface()->Wdt;
-		const int32_t iLightHgt = pFoW->getSurface()->Hgt;
-		const float zx = static_cast<float>(LightRect.Wdt) / ClipRect.Wdt;
-		const float zy = static_cast<float>(LightRect.Hgt) / ClipRect.Hgt;
 
 		// Dynamic Light
 		call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
 
-		// Transformation to go from fragment coordinates to light texture coordinates
-		// TODO: Should be moved to C4FoWRegion...
 		float lightTransform[6];
-		lightTransform[0] = zx / iLightWdt;
-		lightTransform[1] = 0.f;
-		lightTransform[2] = -ClipRect.x * zx / iLightWdt;
-		lightTransform[3] = 0.f;
-		lightTransform[4] = zy / iLightHgt;
-		lightTransform[5] = 1.0f - (LightRect.Hgt) / iLightHgt;
+		pFoW->GetFragTransform(ClipRect, lightTransform);
 		call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
 		// Ambient Light
@@ -585,6 +470,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 		shader.AddTexCoord("texcoord");
 
 	// Then load slices for fragment shader
+	shader.AddFragmentSlice(-1, "#define OPENCLONK");
 	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
 	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
 	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");

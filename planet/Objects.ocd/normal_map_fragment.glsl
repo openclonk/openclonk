@@ -1,4 +1,5 @@
 uniform sampler2D basemap;
+uniform sampler2D normalTex;
 
 #ifndef OPENCLONK
 #define slice(x)
@@ -11,11 +12,10 @@ void main()
 
 slice(init+1)
 {
-	// This will make ObjectLightShader.glsl pick up the path that
-	// Looks up the direction from the normal map.
+	// This picks up the normal map lookup in ObjectLightShader.c:
 #define HAVE_NORMALMAP
 
-	color = color * gl_FrontMaterial.diffuse * texture2D(basemap, texcoord);
+	color = color * texture2D(basemap, texcoord);
 
 #ifndef OPENCLONK
 	// TODO: Could apply some default lighting here, for viewing the mesh in

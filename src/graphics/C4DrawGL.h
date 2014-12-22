@@ -50,29 +50,6 @@ private:
 	StdCopyStrBuf Buf;
 };
 
-// GLSL shaders
-class C4DrawGLShader: public StdMeshMaterialShader
-{
-public:
-	C4DrawGLShader(Type shader_type);
-	virtual ~C4DrawGLShader();
-
-	void Load(const char* code);
-
-	virtual Type GetType() const;
-
-	GLuint Shader;
-};
-
-class C4DrawGLProgram: public StdMeshMaterialProgram
-{
-public:
-	C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader);
-	virtual ~C4DrawGLProgram();
-
-	GLuint Program;
-};
-
 // Shader combinations
 static const int C4SSC_MOD2 = 1; // signed addition instead of multiplication for clrMod
 static const int C4SSC_BASE = 2; // use a base texture instead of just a single color
@@ -186,8 +163,7 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
-	std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text);
-	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial& mat);
+	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	// Surface
 	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);

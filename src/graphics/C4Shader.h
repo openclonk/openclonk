@@ -144,6 +144,14 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniform1fvARB(pShader->GetUniform(iUniform), iLength, pVals);
 	}
+	void SetUniform2fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform2fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
+	void SetUniform3fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniform3fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+	}
 	void SetUniform4fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniform4fvARB(pShader->GetUniform(iUniform), iLength, pVals);
@@ -153,6 +161,10 @@ public:
 	void SetUniformMatrix2x3fv(int iUniform, int iLength, const float* pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix3x2fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+	}
+	void SetUniformMatrix4x4fv(int iUniform, int iLength, const float* pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
 
 	void Start();

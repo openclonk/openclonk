@@ -19,6 +19,8 @@
 
 #include <C4Include.h>
 #include <C4Def.h>
+#include <C4DrawGL.h>
+#include <C4GraphicsResource.h>
 
 #include <C4Components.h>
 #include <C4Config.h>
@@ -52,6 +54,29 @@ public:
 		StdStrBuf ret;
 		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
 		return ret;
+	}
+
+	virtual void AddShaderSlices(C4Shader& shader, int ssc)
+	{
+		// Add mesh-independent slices
+		shader.AddFragmentSlice(-1, "#define OPENCLONK");
+		shader.AddVertexSlice(-1, "#define OPENCLONK");
+
+		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
+		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+
+		shader.LoadSlices(&::GraphicsResource.Files, "UtilShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "ObjectBaseShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "MeshShader.glsl");
+
+		if (ssc & C4SSC_BASE) shader.LoadSlices(&::GraphicsResource.Files, "SpriteTextureShader.glsl");
+		if (ssc & C4SSC_OVERLAY) shader.LoadSlices(&::GraphicsResource.Files, "SpriteOverlayShader.glsl");
+		if (ssc & C4SSC_LIGHT)
+		{
+			shader.LoadSlices(&::GraphicsResource.Files, "ObjectLightShader.glsl");
+			shader.LoadSlices(&::GraphicsResource.Files, "LightShader.glsl");
+			shader.LoadSlices(&::GraphicsResource.Files, "AmbientShader.glsl");
+		}
 	}
 
 private:

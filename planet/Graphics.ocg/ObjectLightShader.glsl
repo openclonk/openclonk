@@ -21,7 +21,7 @@ slice(normal)
 	vec3 normal = normalize(gl_NormalMatrix * normalPxDir);
 #else
 #ifdef MESH
-	vec4 normal = normalize(gl_NormalMatrix * normalDir);
+	vec3 normal = normalDir; // Normal matrix is already applied in vertex shader
 #else
 	vec3 normal = vec3(0.0, 0.0, 1.0);
 #endif

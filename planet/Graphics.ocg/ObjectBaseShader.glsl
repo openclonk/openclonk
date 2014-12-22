@@ -3,8 +3,17 @@ uniform vec4 clrMod;
 slice(init)
 {
 #define color gl_FragColor
+
+#ifdef MESH
+	// TODO: Add emission part of the material. Note we cannot just
+	// add this to the color, but it would need to be handled separately,
+	// such that it is independent from the incident light direction.
+	color = gl_FrontMaterial.diffuse;
+#else
 	vec4 baseColor = gl_Color;
 	color = baseColor;
+#endif
+
 }
 
 slice(color)

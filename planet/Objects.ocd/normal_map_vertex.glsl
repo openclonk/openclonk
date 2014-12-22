@@ -1,7 +1,7 @@
-varying vec2 texcoord;
-
 #ifndef OPENCLONK
 #define slice(x)
+varying vec2 texcoord;
+
 void main()
 {
 #endif

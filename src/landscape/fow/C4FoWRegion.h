@@ -31,6 +31,9 @@ public:
 	void Update(C4Rect r);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
 
+	// Fills a 2x3 matrix to transform fragment coordinates to light texture coordinates
+	// TODO: This might be more precise for highly zoomed cases if the lightRect was using floating point accuracy
+	void GetFragTransform(const C4Rect& clipRect, float lightTransform[6]) const;
 private:
 	bool BindFramebuf();
 

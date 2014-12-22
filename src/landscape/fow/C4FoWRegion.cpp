@@ -182,6 +182,22 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 }
 
+void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, float lightTransform[6]) const
+{
+	const C4Rect& lightRect = getRegion();
+	const int32_t iLightWdt = getSurface()->Wdt;
+	const int32_t iLightHgt = getSurface()->Hgt;
+	const float zx = static_cast<float>(lightRect.Wdt) / clipRect.Wdt;
+	const float zy = static_cast<float>(lightRect.Hgt) / clipRect.Hgt;
+
+	lightTransform[0] = zx / iLightWdt;
+	lightTransform[1] = 0.f;
+	lightTransform[2] = -clipRect.x * zx / iLightWdt;
+	lightTransform[3] = 0.f;
+	lightTransform[4] = zy / iLightHgt;
+	lightTransform[5] = 1.0f - (lightRect.Hgt) / iLightHgt;
+}
+
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
 	, pPlayer(pPlayer)

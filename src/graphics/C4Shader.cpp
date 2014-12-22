@@ -18,7 +18,7 @@ C4ShaderPosName C4SH_PosNames[] = {
 
 	{ C4Shader_Vertex_TexCoordPos,		"texcoord" },
 	{ C4Shader_Vertex_NormalPos,            "normal" },
-	{ C4Shader_Vertxe_PositionPos,          "position" }
+	{ C4Shader_Vertex_PositionPos,          "position" }
 };
 
 C4Shader::C4Shader()
@@ -516,6 +516,7 @@ GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
 void C4ShaderCall::Start()
 {
 	assert(!fStarted);
+	assert(pShader->hProg != 0); // Shader must be initialized
 
 	// Activate shader
 	glUseProgramObjectARB(pShader->hProg);
