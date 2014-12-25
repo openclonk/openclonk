@@ -264,6 +264,10 @@ public func Switch2Items(int one, int two)
 */
 public func Collect(object item, bool ignoreOCF, int pos, bool force)
 {
+	// Whenever a script calls the Collect function manually, an intended force is assumed.
+	// That means, items will usually be collected with Collect() even if the current hand-slot is not free.
+	force = force ?? true;
+	
 	this.inventory.force_collection = force;
 	var success = false;
 	if (pos == nil || item->~IsCarryHeavy())
