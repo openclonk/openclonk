@@ -614,7 +614,11 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		return false;
 	}
 	else
+	{
 		this.control.started_use = true;
+		// add helper effect that prevents errors when objects are suddenly deleted by quickly cancelling their use beforehand
+		AddEffect("ItemRemovalCheck", this.control.current_object, 1, 100, this, nil); // the slow timer is arbitrary and will just clean up the effect if necessary
+	}
 		
 	return handled;
 }
@@ -673,8 +677,24 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 		// object is finally cancelled on ControlUseCancel.
 		if(cancel || handled != -1)
 		{
+			// look for correct removal helper effect and remove it
+			var effect_index = 0;
+			var removal_helper = nil;
+			do
+			{
+				removal_helper = GetEffect("ItemRemovalCheck", this.control.current_object, effect_index++);
+				if (!removal_helper) break;
+				if (removal_helper.CommandTarget != this) continue;
+				break;
+			} while (true);
+			
 			this.control.current_object = nil;
 			this.control.using_type = nil;
+			
+			if (removal_helper)
+			{
+				RemoveEffect(nil, nil, removal_helper, true);
+			}		
 		}
 		this.control.noholdingcallbacks = false;
 		
@@ -759,6 +779,28 @@ func StopUseDelayedControl(object obj)
 	}
 		
 	return handled;
+}
+
+// very infrequent timer to prevent dangling effects, this is not necessary for correct functioning
+func FxItemRemovalCheckTimer(object target, proplist effect, int time)
+{
+	if (!effect.CommandTarget) return -1;
+	if (effect.CommandTarget.control.current_object != target) return -1;
+	return 1;
+}
+
+// this will be called when an inventory object (that is in use) is suddenly removed
+func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool temporary)
+{
+	if (temporary) return;
+	// only trigger when the object has been removed
+	if (reason != FX_Call_RemoveClear) return;
+	// safety
+	if (!effect.CommandTarget) return;
+	if (effect.CommandTarget.control.current_object != target) return;
+	// quickly cancel use in a clean way while the object is still available
+	effect.CommandTarget->CancelUse();
+	return;
 }
 
 
