@@ -439,7 +439,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	GuiUpdate({new_subwindow = {Target = current_description_box.desc_target, ID = 1}}, current_main_menu_id, 1, current_description_box.target);
 	// default to description of object
 	if (!info.menu.callback_target || !info.menu.callback_hover)
-		GuiUpdateText(info.entry.symbol.Description, current_main_menu_id, 1, current_description_box.desc_target);
+		GuiUpdateText(Format("%s:|%s", info.entry.symbol.Name, info.entry.symbol.Description), current_main_menu_id, 1, current_description_box.desc_target);
 	else
 	{
 		info.menu.callback_target->Call(info.menu.callback_hover, info.entry.symbol, info.entry.extra_data, current_description_box.desc_target, current_main_menu_id);
