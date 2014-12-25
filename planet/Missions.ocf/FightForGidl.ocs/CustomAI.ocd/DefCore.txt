@@ -1,6 +1,6 @@
 [DefCore]
 id=CustomAI
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Vehicle | C4D_MouseIgnore
 Width=1
 Height=1

@@ -1,7 +1,7 @@
 [Head]
 Icon=39
 Title=Windmill
-Version=5,2,0,1
+Version=6,0
 Difficulty=10
 
 [Definitions]

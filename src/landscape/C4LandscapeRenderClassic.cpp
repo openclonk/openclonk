@@ -125,5 +125,5 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo)
 {
 	pDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
-	                                  cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, 0);
+	                                  cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
 }

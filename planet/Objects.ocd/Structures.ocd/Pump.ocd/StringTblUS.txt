@@ -2,3 +2,5 @@ Name=Pump
 Description=The pump can transport liquid from A to B. If it pumps liquids downwards, it even generates a bit of power.
 MsgTurnOff=Turn off pump
 MsgTurnOn=Turn on pump
+MsgCutSource=Cut off source
+MsgCutDrain=Cut off drain

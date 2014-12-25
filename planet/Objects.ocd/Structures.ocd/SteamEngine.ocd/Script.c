@@ -24,6 +24,8 @@ func Construction(object creator)
 
 public func IsContainer() { return true; }
 
+public func GetProducerPriority() { return 0; }
+
 func RejectCollect(id item, object obj)
 {
 	if (obj->~IsFuel())
@@ -119,7 +121,8 @@ func FxCreatesPowerStop(target, effect, reason, temp)
 
 func FxSmokingTimer()
 {
-	Smoke(-20 * GetCalcDir(), -15, 10);
+	Smoke(-20 * GetCalcDir(), -26, 10);
+	Smoke(-20 * GetCalcDir(), -24, 8);
 	return 1;
 }
 

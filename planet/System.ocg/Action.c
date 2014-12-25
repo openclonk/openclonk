@@ -28,7 +28,7 @@ static const Action = {
 	Procedure = DFA_NONE,
 };
 
-global func GameCall(string fn) {
+global func GameCall(string fn, ...) {
 	if (!fn) return;
 	var f = Scenario[fn];
 	if (!f) return;

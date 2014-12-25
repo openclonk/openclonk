@@ -14,6 +14,7 @@ local last_wind;
 
 func TurnAnimation(){return "Turn";}
 func MinRevolutionTime(){return 4500;} // in frames
+public func GetProducerPriority() { return 100; }
 
 protected func Construction()
 {

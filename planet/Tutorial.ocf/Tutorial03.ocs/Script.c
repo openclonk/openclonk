@@ -42,7 +42,7 @@ protected func Initialize()
 	var target = MakeTarget(380, 300, true)->GetActionTarget();
 	AddEffect("HorizontalMoving", target, 1, 1, target);
 	// A flying target which drops a flint.
-	var target = MakeTarget(690, 400, true);
+	var target = MakeTarget(686, 400, true);
 	AddEffect("FlintDrop", target, 1, 0, target);
 	// A moving and a static target.
 	var target = MakeTarget(880, 520, true)->GetActionTarget();

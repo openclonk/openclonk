@@ -13,7 +13,7 @@ global func Find_Not(cond)
 	return [C4FO_Not, cond];
 }
 
-global func Find_And()
+global func Find_And(...)
 {
 	var result = [C4FO_And];
 	for (var i = 0; Par(i); i++)
@@ -21,7 +21,7 @@ global func Find_And()
 	return result;
 }
 
-global func Find_Or()
+global func Find_Or(...)
 {
 	var result = [C4FO_Or];
 	for (var i = 0; Par(i); i++)
@@ -175,7 +175,7 @@ global func Sort_Reverse(array sort)
 	return [C4SO_Reverse, sort];
 }
 
-global func Sort_Multiple()
+global func Sort_Multiple(...)
 {
 	var result = [C4SO_Multiple];
 	for (var i = 0; Par(i); i++)

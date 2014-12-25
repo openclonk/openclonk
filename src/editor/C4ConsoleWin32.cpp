@@ -305,7 +305,7 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 {
 public:
 	HWND hDialog;
-	CStdGLCtx* pGLCtx;
+	C4Window *pPreviewWindow;
 	friend INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	HBITMAP hbmBrush,hbmBrush2;
 	HBITMAP hbmLine,hbmLine2;
@@ -330,7 +330,7 @@ public:
 		hbmStatic(0),
 		hbmExact(0)
 	{
-		pGLCtx = NULL;
+		pPreviewWindow = NULL;
 	}
 	
 	void LoadBitmaps(HINSTANCE instance)
@@ -366,10 +366,10 @@ public:
 		if (hbmFill) DeleteObject(hbmFill);
 		if (hbmIFT) DeleteObject(hbmIFT);
 		if (hbmNoIFT) DeleteObject(hbmNoIFT);
-		if (pGLCtx)
+		if (pPreviewWindow)
 		{
-			delete pGLCtx;
-			pGLCtx = NULL;
+			delete pPreviewWindow;
+			pPreviewWindow = NULL;
 		}
 		if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
 	}
@@ -931,6 +931,20 @@ void C4ConsoleGUI::ClearPropertyDlg(C4PropertyDlg *dlg)
 }
 */
 
+// Wrapper window around preview control: Used to create GL context and target surface
+class C4ConsoleGUIPreviewWindow : public C4Window
+{
+public:
+	C4ConsoleGUIPreviewWindow(HWND hwndControl)
+	{
+		Init(C4Window::WindowKind::W_Control, &Application, NULL, NULL);
+		this->hWindow = this->hRenderWindow = hwndControl;
+		pSurface = new C4Surface(&Application, this);
+	}
+
+	virtual void Close() {}
+};
+
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 {
 	if (dlg->state->hDialog) return true;
@@ -946,8 +960,10 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	// Load bitmaps if necessary
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
-	if (pDraw && !dlg->state->pGLCtx)
-		dlg->state->pGLCtx = pDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
+	if (pDraw && !dlg->state->pPreviewWindow)
+	{
+		dlg->state->pPreviewWindow = new C4ConsoleGUIPreviewWindow(GetDlgItem(dlg->state->hDialog, IDC_PREVIEW));
+	}
 	// Show window
 	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
 	SetWindowPos(dlg->state->hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
@@ -1025,9 +1041,11 @@ void C4ToolsDlg::UpdateTextures()
 
 void C4ToolsDlg::NeedPreviewUpdate()
 {
-	if (!state->hDialog) return;
+	if (!state->hDialog || !state->pPreviewWindow) return;
 
-	C4Surface * sfcPreview;
+	C4Surface * sfcPreview = state->pPreviewWindow->pSurface;
+	if (!sfcPreview) return;
+
 	int32_t iPrvWdt,iPrvHgt;
 	RECT rect;
 
@@ -1036,10 +1054,12 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	iPrvWdt=rect.right-rect.left;
 	iPrvHgt=rect.bottom-rect.top;
 
-	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
+	if (!sfcPreview->UpdateSize(iPrvWdt, iPrvHgt)) return;
+	sfcPreview->NoClip();
+	if (!pDraw->PrepareRendering(sfcPreview)) return;
 
 	// fill bg
-	pDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
+	pDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0xa0,0xa0,0xa0));
 	BYTE bCol = 0;
 	C4Pattern Pattern;
 	// Sky material: sky as pattern only
@@ -1071,16 +1091,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 		                              Grade,
 		                              bCol, Pattern, *::Landscape.GetPal());
 
-	//Application.DDraw->AttachPrimaryPalette(sfcPreview);
-
-	// FIXME: This activates the wrong GL context. To avoid breaking the main window display,
-	// FIXME: it has been disabled for the moment
-    //if (pGLCtx->Select())
-	//{
-	//	pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
-	//	Application.pWindow->pSurface->PageFlip();
-	//}
-	delete sfcPreview;
+	sfcPreview->PageFlip();
 }
 
 void C4ToolsDlg::InitGradeCtrl()

@@ -40,20 +40,6 @@ void C4TargetFacet::SetRect(C4TargetRect &rSrc)
 	X=rSrc.x; Y=rSrc.y; Wdt=rSrc.Wdt; Hgt=rSrc.Hgt; TargetX=rSrc.tx; TargetY=rSrc.ty;
 }
 
-void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2)
-{
-	if (!pDraw || !Surface || !Wdt || !Hgt) return;
-	// Scroll position
-	float gX1 = float(iX1)-TargetX;
-	float gY1 = float(iY1)-TargetY;
-	float gX2 = float(iX2)-TargetX;
-	float gY2 = float(iY2)-TargetY;
-	// No clipping is done here, because clipping will be done by gfx wrapper anyway
-	// Draw line
-	pDraw->DrawLineDw(Surface,gX1+X,gY1+Y,gX2+X,gY2+Y,col1);
-	pDraw->DrawPix(Surface,gX1+X,gY1+Y,col2);
-}
-
 // ------------------------
 // C4FacetSurface
 

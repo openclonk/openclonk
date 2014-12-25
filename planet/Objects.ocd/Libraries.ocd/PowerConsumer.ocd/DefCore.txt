@@ -1,7 +1,0 @@
-[DefCore]
-id=Library_PowerConsumer
-Version=5,2,0,1
-Category=C4D_StaticBack
-Width=13
-Height=19
-Offset=-6,-19

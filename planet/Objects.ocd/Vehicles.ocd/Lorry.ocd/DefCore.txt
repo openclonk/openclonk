@@ -1,6 +1,6 @@
 [DefCore]
 id=Lorry
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Vehicle
 ContactCalls=1
 Width=22

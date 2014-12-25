@@ -150,7 +150,7 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 		// Shift always indicates a target outside the current selection
 		else
 		{
-			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
+			Target = (dwKeyState & MK_SHIFT) ? Selection.GetLastObject() : NULL;
 			do
 			{
 				Target = Game.FindObject(NULL,X,Y,0,0,OCF_NotContained, Target);
@@ -259,13 +259,20 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 			// Click on unselected: select single
 			if (Target)
 			{
-				C4ObjectLink * it;
-				for(it = Selection.First; it; it = it->Next){
-					if(it->Obj->At(X, Y))
+				bool found = false;
+				for (C4Object *obj : Selection)
+				{
+					if(obj->At(X, Y))
+					{
+						found = true;
 						break;
+					}
 				}
-				if(!it) // means loop didn't break
-					{ ClearSelection(); AddToSelection(Target); }
+				if(!found) // means loop didn't break
+				{
+					ClearSelection();
+					AddToSelection(Target);
+				}
 			}
 			// Click on nothing: drag frame
 			if (!Target)
@@ -306,12 +313,14 @@ bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 		{
 			// Check whether cursor is on anything in the selection
 			bool fCursorIsOnSelection = false;
-			for (C4ObjectLink *pLnk = Selection.First; pLnk; pLnk = pLnk->Next)
-				if (pLnk->Obj->At(X,Y))
+			for (C4Object *obj : Selection)
+			{
+				if (obj->At(X,Y))
 				{
 					fCursorIsOnSelection = true;
 					break;
 				}
+			}
 			if (!fCursorIsOnSelection)
 			{
 				// Click on unselected
@@ -478,8 +487,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
 	ZoomDataStackItem zdsi(cgo.X, cgo.Y, cgo.Zoom);
 	// Draw selection marks
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=Selection.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *cobj : Selection)
 	{
 		// target pos (parallax)
 		float offX, offY, newzoom;
@@ -577,13 +585,14 @@ void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 void C4EditCursor::FrameSelection()
 {
 	ClearSelection();
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
-			{
-				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
-					AddToSelection(cobj);
-			}
+	for (C4Object *cobj : Objects)
+	{
+		if (cobj->Status && cobj->OCF & OCF_NotContained)
+		{
+			if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
+				AddToSelection(cobj);
+		}
+	}
 	OnSelectionChanged();
 }
 
@@ -829,19 +838,20 @@ void C4EditCursor::GrabContents()
 
 void C4EditCursor::UpdateDropTarget(DWORD dwKeyState)
 {
-	C4Object *cobj; C4ObjectLink *clnk;
 
 	DropTarget=NULL;
 
 	if (dwKeyState & MK_CONTROL)
 		if (Selection.GetObject())
-			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			for (C4Object *cobj : Objects)
+			{
 				if (cobj->Status)
 					if (!cobj->Contained)
 						if (Inside<int32_t>(X-(cobj->GetX()+cobj->Shape.x),0,cobj->Shape.Wdt-1))
 							if (Inside<int32_t>(Y-(cobj->GetY()+cobj->Shape.y),0,cobj->Shape.Hgt-1))
 								if (!Selection.GetLink(cobj))
 									{ DropTarget=cobj; break; }
+			}
 
 }
 
@@ -927,9 +937,11 @@ void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Re
 		pObjIDs = new int32_t [iObjCnt];
 		// fill
 		int32_t i = 0;
-		for (C4ObjectLink *pLnk = pObjs->First; pLnk; pLnk = pLnk->Next, i++)
-			if (pLnk->Obj && pLnk->Obj->Status)
-				pObjIDs[i] = pLnk->Obj->Number;
+		for (C4Object *obj : *pObjs)
+		{
+			if (obj && obj->Status)
+				pObjIDs[i] = obj->Number;
+		}
 	}
 
 	// execute control

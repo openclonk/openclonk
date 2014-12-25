@@ -1,2 +1,2 @@
-DE:Bezwingung des Krakataus
-US:Conquest of Krakatoa
+DE:Krakatau's Krach
+US:Krakatoa's Krach

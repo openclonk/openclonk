@@ -1,6 +1,6 @@
 [DefCore]
 id=LavaChunk
-Version=5,2,1,0
+Version=6,0
 Category=C4D_Object
 Width=12
 Height=12

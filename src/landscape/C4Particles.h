@@ -444,9 +444,9 @@ private:
 	std::vector<uint32_t *> multiDrawElementsIndexArray;
 	std::list<C4ParticleList> particleLists;
 
-	CalculationThread calculationThread;
 	CStdCSec particleListAccessMutex;
 	CStdEvent frameCounterAdvancedEvent;
+	CalculationThread calculationThread;
 
 	int currentSimulationTime; // in game time
 

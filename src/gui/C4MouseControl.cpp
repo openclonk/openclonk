@@ -568,7 +568,7 @@ void C4MouseControl::UpdateCursorTarget()
 	}
 
 	// Make a script callback if the object being hovered changes
-	if (OldTargetObject != TargetObject)
+	if(!IsPassive() && OldTargetObject != TargetObject)
 	{
 		// TODO: This might put a heavy load on the network, depending on the number of
 		// selectable objects around. If it turns out to be a problem we might want to

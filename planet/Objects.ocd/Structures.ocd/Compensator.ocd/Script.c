@@ -40,6 +40,9 @@ func Initialize()
 	return _inherited(...);
 }
 
+public func GetProducerPriority() { return 50 * (power_seconds - Compensator_max_seconds) / Compensator_max_seconds; }
+public func GetConsumerPriority() { return 0; }
+
 func OnNotEnoughPower()
 {
 	// not enough power to sustain a battery - turn off

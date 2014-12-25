@@ -32,7 +32,8 @@ C4MusicSystem::C4MusicSystem():
 		Songs(NULL),
 		SongCount(0),
 		PlayMusicFile(NULL),
-		Volume(100)
+		Volume(100),
+		FadeMusicFile(NULL)
 #if AUDIO_TK == AUDIO_TK_OPENAL
 		, alcDevice(NULL), alcContext(NULL)
 #endif
@@ -385,6 +386,26 @@ void C4MusicSystem::Clear()
 
 void C4MusicSystem::Execute()
 {
+	// Execute music fading
+	if (FadeMusicFile)
+	{
+		C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+		// Fading done?
+		if (tNow >= FadeTimeEnd)
+		{
+			FadeMusicFile->Stop();
+			FadeMusicFile = NULL;
+			if (PlayMusicFile) PlayMusicFile->SetVolume(Volume);
+		}
+		else
+		{
+			// Fade process
+			int fade_volume = 1000 * (tNow - FadeTimeStart) / (FadeTimeEnd - FadeTimeStart);
+			FadeMusicFile->SetVolume(Volume * (1000 - fade_volume) / 1000);
+			if (PlayMusicFile) PlayMusicFile->SetVolume(Volume * fade_volume / 1000);
+		}
+	}
+	// Ensure a piece is played
 #if AUDIO_TK != AUDIO_TK_SDL_MIXER
 	if (!::Game.iTick35 || !Game.IsRunning)
 #endif
@@ -396,7 +417,7 @@ void C4MusicSystem::Execute()
 	}
 }
 
-bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
+bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms)
 {
 	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
 		return false;
@@ -443,10 +464,44 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 	if (!NewFile)
 		return false;
 
-	// Stop old music
-	Stop();
-
 	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(NewFile->FileName));
+
+	// Stop/Fade out old music
+	bool is_fading = fadetime_ms && NewFile != PlayMusicFile && PlayMusicFile;
+	if (!is_fading)
+	{
+		Stop();
+	}
+	else
+	{
+		C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+		if (FadeMusicFile)
+		{
+			if (FadeMusicFile == NewFile && FadeMusicFile->IsLooping() == fLoop && tNow < FadeTimeEnd)
+			{
+				// Fading back to a song while it wasn't fully faded out yet. Just swap our pointers and fix timings for that.
+				FadeMusicFile = PlayMusicFile;
+				PlayMusicFile = NewFile;
+				FadeTimeEnd = tNow + fadetime_ms * (tNow - FadeTimeStart) / (FadeTimeEnd - FadeTimeStart);
+				FadeTimeStart = FadeTimeEnd - fadetime_ms;
+				return true;
+			}
+			else
+			{
+				// Fading to a third song while the previous wasn't faded out yet
+				// That's pretty chaotic anyway, so just cancel the last song
+				// Also happens if fading should already be done, in which case it won't harm to stop now
+				// (It would stop on next call to Execute() anyway)
+				// Also happens when fading back to the same song but loop status changes, but that should be really uncommon.
+				FadeMusicFile->Stop();
+			}
+			
+		}
+		FadeMusicFile = PlayMusicFile;
+		PlayMusicFile = NULL;
+		FadeTimeStart = tNow;
+		FadeTimeEnd = FadeTimeStart + fadetime_ms;
+	}
 
 	// Play new song
 	if (!NewFile->Play(fLoop)) return false;
@@ -455,7 +510,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 	Loop = fLoop;
 
 	// Set volume
-	PlayMusicFile->SetVolume(Volume);
+	PlayMusicFile->SetVolume(Volume * !is_fading);
 
 	return true;
 }
@@ -474,9 +529,14 @@ void C4MusicSystem::NotifySuccess()
 
 void C4MusicSystem::FadeOut(int fadeout_ms)
 {
+	// Kill any previous fading music and schedule current piece to fade
 	if (PlayMusicFile)
 	{
-		PlayMusicFile->Stop(fadeout_ms);
+		if (FadeMusicFile) FadeMusicFile->Stop();
+		FadeMusicFile = PlayMusicFile;
+		PlayMusicFile = NULL;
+		FadeTimeStart = C4TimeMilliseconds::Now();
+		FadeTimeEnd = FadeTimeStart + fadeout_ms;
 	}
 }
 
@@ -486,6 +546,11 @@ bool C4MusicSystem::Stop()
 	{
 		PlayMusicFile->Stop();
 		PlayMusicFile=NULL;
+	}
+	if (FadeMusicFile)
+	{
+		FadeMusicFile->Stop();
+		FadeMusicFile = NULL;
 	}
 	return true;
 }
@@ -533,7 +598,7 @@ bool C4MusicSystem::GrpContainsMusic(C4Group &rGrp)
 	                 || rGrp.FindEntry("*.ogg");
 }
 
-int C4MusicSystem::SetPlayList(const char *szPlayList)
+int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fadetime_ms)
 {
 	// reset
 	C4MusicFile *pFile;
@@ -549,8 +614,8 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 		// match
 		char szFileName[_MAX_FNAME + 1];
 		for (int cnt = 0; SGetModule(szPlayList, cnt, szFileName, _MAX_FNAME); cnt++)
-			for (pFile = Songs; pFile; pFile = pFile->pNext)
-				if (pFile->NoPlay && WildcardMatch(szFileName, GetFilename(pFile->FileName)))
+			for (pFile = Songs; pFile; pFile = pFile->pNext) if (pFile->NoPlay)
+				if (WildcardMatch(szFileName, GetFilename(pFile->FileName)) || pFile->HasCategory(szFileName))
 				{
 					ASongCount++;
 					pFile->NoPlay = false;
@@ -568,6 +633,11 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 				ASongCount++;
 				pFile->NoPlay = false;
 			}
+	}
+	// Force switch of music if currently playing piece is not in list?
+	if (fForceSwitch && PlayMusicFile && PlayMusicFile->NoPlay)
+	{
+		Play(NULL, false, fadetime_ms);
 	}
 	return ASongCount;
 }

@@ -276,7 +276,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		if (fIsGroupUpdate)
 			execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
 		else
-			execl(strUpdateFile, strUpdateFile);
+			execl(strUpdateFile, strUpdateFile, static_cast<char *>(0));
 		printf("execl failed: %s\n", strerror(errno));
 		exit(1);
 		// Parent process
@@ -296,7 +296,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 
 bool C4UpdateDlg::IsValidUpdate(const char *szVersion)
 {
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
+	StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
 	if (szVersion == NULL || strlen(szVersion) == 0) return false;
 	return strcmp(szVersion,strVersion.getData()) != 0;
 }
@@ -319,7 +319,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 
 	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
+	StdStrBuf strVersion; strVersion.Format("%d.%d", C4XVER1, C4XVER2);
 	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
 	if (UpdateClient.Init() && UpdateClient.SetServer(strQuery.getData()) && UpdateClient.QueryUpdateURL())
 	{

@@ -1,6 +1,6 @@
 [DefCore]
 id=Tree_Coconut
-Version=5,2,0,1
+Version=6,0
 Category=C4D_StaticBack
 Width=80
 Height=80

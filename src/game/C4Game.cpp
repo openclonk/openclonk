@@ -143,7 +143,7 @@ bool C4Game::InitDefs()
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return false; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2);
 	if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
@@ -201,9 +201,9 @@ bool C4Game::OpenScenario()
 		{ LogFatal(LoadResStr("IDS_PRC_FILEINVALID")); return false; }
 
 	// Check minimum engine version
-	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]) > 0)
+	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1]) > 0)
 	{
-		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]).getData());
+		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1]).getData());
 		return false;
 	}
 
@@ -750,8 +750,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
 	EXEC_S_DR(  Landscape.Execute();              , LandscapeStat       , "LdsEx")
 	EXEC_S_DR(  Players.Execute();                , PlayersStat         , "PlrEx")
-	//FIXME: C4Application::Execute should do this, but what about the stats?
-	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
@@ -899,12 +897,15 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 	// May not call Objects.ClearPointers() because that would
 	// remove pObj from primary list and pObj is to be kept
 	// until CheckObjectRemoval().
-	C4Object *cObj; C4ObjectLink *clnk;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *cObj : Objects)
+	{
 		cObj->ClearPointers(pObj);
+	}
 	// check in inactive objects as well
-	for (clnk=Objects.InactiveObjects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *cObj : Objects)
+	{
 		cObj->ClearPointers(pObj);
+	}
 }
 
 void C4Game::ClearPointers(C4Object * pObj)
@@ -1126,12 +1127,11 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 
 C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane)
 {
-	C4Object *cObj; C4ObjectLink *clnk;
 	C4Rect rect1,rect2;
 	rect1.x=tx; rect1.y=ty; rect1.Wdt=wdt; rect1.Hgt=hgt;
 	C4LArea Area(&::Objects.Sectors, tx, ty, wdt, hgt); C4LSector *pSector;
 	for (C4ObjectList *pObjs = Area.FirstObjectShapes(&pSector); pSector; pObjs = Area.NextObjectShapes(pObjs, &pSector))
-		for (clnk=pObjs->First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+		for (C4Object *cObj : *pObjs)
 			if (cObj->Status && !cObj->Contained)
 				if (cObj->GetPlane() == Plane)
 				{
@@ -1149,8 +1149,6 @@ C4Object* C4Game::FindObject(C4Def * pDef,
 
 	C4Object *pClosest=NULL;
 	int32_t iClosest = 0,iDistance,iFartherThan=-1;
-	C4Object *cObj;
-	C4ObjectLink *cLnk;
 	C4Object *pFindNextCpy=pFindNext;
 
 	// check the easy case first: no instances at all?
@@ -1164,7 +1162,7 @@ C4Object* C4Game::FindObject(C4Def * pDef,
 	}
 
 	// Scan all objects
-	for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+	for (C4Object *cObj : Objects)
 	{
 		// Not skipping to find next
 		if (!pFindNext)
@@ -1224,8 +1222,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 	while (pLst)
 	{
 		// Scan all objects in list
-		C4ObjectLink *cLnk; C4Object *cObj;
-		for (cLnk=pLst->First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+		for (C4Object *cObj : *pLst)
 		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)
@@ -1284,10 +1281,8 @@ int32_t C4Game::ObjectCount(C4ID id)
 		if (!(pDef=C4Id2Def(id))) return 0; // no valid def
 		return pDef->Count;
 	}
-	C4Object *cObj;
-	C4ObjectLink *clnk;
 	int32_t iResult = 0;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (C4Object *cObj : Objects)
 		// Status
 		if (cObj->Status)
 			++iResult;
@@ -1299,10 +1294,8 @@ int32_t C4Game::ObjectCount(C4ID id)
 
 void C4Game::ObjectRemovalCheck() // Every ::Game.iTick255 by ExecObjects
 {
-	C4Object *cObj; C4ObjectLink *clnk,*next;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=next)
+	for (C4Object *cObj : Objects)
 	{
-		next=clnk->Next;
 		if (!cObj->Status && (cObj->RemovalDelay==0))
 		{
 			Objects.Remove(cObj);
@@ -1317,14 +1310,18 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 		AddDbgRec(RCT_Block, "ObjEx", 6);
 
 	// Execute objects - reverse order to ensure
-	C4Object *cObj; C4ObjectLink *clnk;
-	for (clnk=Objects.Last; clnk && (cObj=clnk->Obj); clnk=clnk->Prev)
-		if (cObj->Status)
-			// Execute object
-			cObj->Execute();
-		else
-			// Status reset: process removal delay
-			if (cObj->RemovalDelay>0) cObj->RemovalDelay--;
+	for (C4Object *cObj : Objects.reverse())
+	{
+		if (cObj)
+		{
+			if (cObj->Status)
+				// Execute object
+				cObj->Execute();
+			else
+				// Status reset: process removal delay
+				if (cObj->RemovalDelay>0) cObj->RemovalDelay--;
+		}
+	}
 
 	if (Config.General.DebugRec)
 		AddDbgRec(RCT_Block, "ObjCC", 6);
@@ -1762,20 +1759,32 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 		// Save objects to file using system scripts
 		int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
 		C4AulParSet pars(C4VInt(objects_file_handle));
-		bool result = !!::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars);
-		C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
-		if (!result || !file || !file->GetFileLength())
+		C4Value result_c4v(::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars));
+		bool result = !!result_c4v;
+		if (result_c4v.GetType() == C4V_Nil)
 		{
-			// Nothing written? Then we don't have objects.
-			hGroup.Delete(C4CFN_ScenarioObjectsScript);
-			// That's OK; not an error.
-			result = true;
+			// Function returned nil: This usually means there was a script error during object writing.
+			// It could also mean the scripter overloaded global func SaveScenarioObjects and returned nil.
+			// In either case, objects will not match landscape any more, so better fail and don't save at all.
+			LogF("ERROR: No valid result from global func " PSF_SaveScenarioObjects ". Saving objects failed.");
 		}
 		else
 		{
-			// Write objects script to file!
-			StdStrBuf data = file->GrabFileContents();
-			result = hGroup.Add(C4CFN_ScenarioObjectsScript,data,false,true);
+			// Function completed successfully (returning true or false)
+			C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
+			if (!result || !file || !file->GetFileLength())
+			{
+				// Nothing written? Then we don't have objects.
+				hGroup.Delete(C4CFN_ScenarioObjectsScript);
+				// That's OK; not an error.
+				result = true;
+			}
+			else
+			{
+				// Write objects script to file!
+				StdStrBuf data = file->GrabFileContents();
+				result = hGroup.Add(C4CFN_ScenarioObjectsScript, data, false, true);
+			}
 		}
 		::ScriptEngine.CloseUserFile(objects_file_handle);
 		return result;
@@ -1985,7 +1994,6 @@ bool C4Game::ReloadDef(C4ID id)
 	// SolidMasks might be updated
 	C4SolidMask::RemoveSolidMasks();
 	// reload def
-	C4ObjectLink *clnk;
 	C4Def *pDef = ::Definitions.ID2Def(id);
 	if (!pDef) return false;
 	// Message
@@ -1996,19 +2004,19 @@ bool C4Game::ReloadDef(C4ID id)
 		// Success, update all concerned object faces
 		// may have been done by graphics-update already - but not for objects using graphics of another def
 		// better update everything :)
-		for (clnk=Objects.First; clnk && clnk->Obj; clnk=clnk->Next)
+		for (C4Object *obj : Objects)
 		{
-			if (clnk->Obj->id == id)
-				clnk->Obj->UpdateFace(true);
+			if (obj->id == id)
+				obj->UpdateFace(true);
 		}
 		fSucc = true;
 	}
 	else
 	{
 		// Failure, remove all objects of this type
-		for (clnk=Objects.First; clnk && clnk->Obj; clnk=clnk->Next)
-			if (clnk->Obj->id == id)
-				clnk->Obj->AssignRemoval();
+		for (C4Object *obj : Objects)
+			if (obj->id == id)
+				obj->AssignRemoval();
 		// safety: If a removed def is being profiled, profiling must stop
 		C4AulProfiler::Abort();
 		// Kill def
@@ -2157,7 +2165,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!FrameCounter) StartupPlayerCount = PlayerInfos.GetStartupCount();
 
 	// The Landscape is the last long chunk of loading time, so it's a good place to start the music fadeout
-	Application.MusicSystem.FadeOut(2000);
+	if (!fLoadSection) Application.MusicSystem.FadeOut(2000);
 	// Landscape
 	Log(LoadResStr("IDS_PRC_LANDSCAPE"));
 	bool fLandscapeLoaded = false;
@@ -3162,38 +3170,49 @@ bool C4Game::InitNetworkHost()
 
 bool C4Game::CheckObjectEnumeration()
 {
-	// Check valid & maximum number & duplicate numbers
-	int32_t iMax = 0;
-	C4Object *cObj; C4ObjectLink *clnk;
-	C4Object *cObj2; C4ObjectLink *clnk2;
-	clnk=Objects.First; if (!clnk) clnk=Objects.InactiveObjects.First;
-	while (clnk)
+
+	struct Check
 	{
-		// Invalid number
-		cObj = clnk->Obj;
-		if (cObj->Number<1)
+		int32_t maxNumber;
+		Check() : maxNumber(0) {}
+		// Check valid & maximum number & duplicate numbers
+		bool that(C4Object* cObj)
 		{
-			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, cObj->id.ToString(), cObj->GetX()).getData()); return false;
+			// Invalid number
+			if (cObj->Number<1)
+			{
+				LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, cObj->id.ToString(), cObj->GetX()).getData()); return false;
+			}
+			// Max
+			if (cObj->Number>maxNumber) maxNumber=cObj->Number;
+			// Duplicate
+			for (C4Object *cObj2 : Objects)
+				if (cObj2!=cObj)
+					if (cObj->Number==cObj2->Number)
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+			for (C4Object *cObj2 : Objects.InactiveObjects)
+				if (cObj2!=cObj)
+					if (cObj->Number==cObj2->Number)
+						{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
+			return true;
 		}
-		// Max
-		if (cObj->Number>iMax) iMax=cObj->Number;
-		// Duplicate
-		for (clnk2=Objects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
-			if (cObj2!=cObj)
-				if (cObj->Number==cObj2->Number)
-					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
-		for (clnk2=Objects.InactiveObjects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
-			if (cObj2!=cObj)
-				if (cObj->Number==cObj2->Number)
-					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return false; }
-		// next
-		if (!clnk->Next)
-				if (clnk == Objects.Last) clnk=Objects.InactiveObjects.First; else clnk=NULL;
-		else
-			clnk=clnk->Next;
+	};
+
+	Check check;
+	for (C4Object *cObj : Objects)
+	{
+		if (!check.that(cObj))
+			return false;
 	}
+
+	for (C4Object *cObj : Objects.InactiveObjects)
+	{
+		if (!check.that(cObj))
+			return false;
+	}
+
 	// Adjust enumeration index
-	C4PropListNumbered::SetEnumerationIndex(iMax);
+	C4PropListNumbered::SetEnumerationIndex(check.maxNumber);
 	// Done
 	return true;
 }
@@ -3384,13 +3403,13 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	}
 	// remove all objects (except inactive)
 	// do correct removal calls, because this will stop fire sounds, etc.
-	C4ObjectLink *clnk;
-	for (clnk=Objects.First; clnk; clnk=clnk->Next) clnk->Obj->AssignRemoval();
-	for (clnk=Objects.First; clnk; clnk=clnk->Next)
-		if (clnk->Obj->Status)
+	for (C4Object *obj : Objects)
+		obj->AssignRemoval();
+	for (C4Object *obj : Objects)
+		if (obj->Status)
 		{
-			DebugLogF("LoadScenarioSection: WARNING: Object %d created in destruction process!", (int) clnk->Obj->Number);
-			ClearPointers(clnk->Obj);
+			DebugLogF("LoadScenarioSection: WARNING: Object %d created in destruction process!", (int) obj->Number);
+			ClearPointers(obj);
 			//clnk->Obj->AssignRemoval(); - this could create additional objects in endless recursion...
 		}
 	DeleteObjects(false);

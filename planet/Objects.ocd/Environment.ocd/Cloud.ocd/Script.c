@@ -195,7 +195,7 @@ private func MoveCloud()
 	// Some other safety.
 	if (GetY() <= 5) 
 		SetPosition(0, 6);
-	if (GetYDir()!=0) 
+	if (GetYDir() != 0) 
 		SetYDir(0);
 	while (Stuck()) 
 		SetPosition(GetX(), GetY() - 5);
@@ -232,8 +232,8 @@ private func RainDrop(string mat)
 	// Check if liquid is maybe in frozen form.
 	var temp = GetTemperature();
 	var melt_temp = GetMaterialVal("BelowTempConvert", "Material", Material(mat));
-	if (temp < melt_temp)
-		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));		
+	if (melt_temp != nil && temp < melt_temp)
+		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));
 	// Create rain drop.	
 	CastPXS(mat, 1, 1, x, y);
 	return true;
@@ -291,7 +291,7 @@ protected func Evaporation()
 		y += prec;
 	
 	// Try to extract the specified material.
-	if(GetMaterial(evap_x, y) == Material(rain_mat))
+	if (GetMaterial(evap_x, y) == Material(rain_mat))
 	{
 		ExtractMaterialAmount(evap_x, y, Material("Water"), 3);
 		rain += 3;

@@ -1123,9 +1123,8 @@ void C4Command::Activate()
 		{
 			// If not specified get object from target contents by type
 			// Find first object requested id that has no command exit yet
-			C4Object *pObj; C4ObjectLink *cLnk;
 			if (!Target)
-				for (cLnk=Target2->Contents.First; cLnk && (pObj=cLnk->Obj); cLnk=cLnk->Next)
+				for (C4Object *pObj : Target2->Contents)
 					if (pObj->Status && (pObj->Def==Data.getDef()))
 						if (!pObj->Command || (pObj->Command->Command!=C4CMD_Exit))
 							{ Target=pObj; break; }
@@ -1584,9 +1583,8 @@ void C4Command::Attack()
 	if (Target->OCF & OCF_CrewMember)
 	{
 
-		C4Object *pProjectile=NULL;
 		// Throw projectile at target
-		for (C4ObjectLink *pLnk=cObj->Contents.First; pLnk && (pProjectile=pLnk->Obj); pLnk=pLnk->Next)
+		for (C4Object *pProjectile : cObj->Contents)
 			if (pProjectile->Def->Projectile)
 			{
 				// Add throw command

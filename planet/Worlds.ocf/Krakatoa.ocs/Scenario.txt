@@ -1,11 +1,12 @@
 [Head]
 Icon=23
 Title=Krakatoa
-Version=5,4,0,0
-Difficulty=80
+Version=6,0
+Difficulty=50
 
 [Definitions]
 Definition1=Objects.ocd
+Definition2=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 
 [Player1]
 Crew=Clonk=2
@@ -20,8 +21,6 @@ Crew=Clonk=2
 Crew=Clonk=2
 
 [Landscape]
-InEarth=Rock=1;Firestone=3;Loam=1
-InEarthLevel=20
 Sky=Clouds2
 MapWidth=200
 MapHeight=150

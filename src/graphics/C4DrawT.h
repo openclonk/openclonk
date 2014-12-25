@@ -30,16 +30,12 @@ public:
 	virtual void TaskIn() { }
 	virtual bool UpdateClipper() { return true; }
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
-	virtual bool PrepareMaterial(StdMeshMaterial& mesh);
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat);
 	virtual bool PrepareRendering(C4Surface *) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
-	virtual void PerformBlt(C4BltData &, C4TexRef *, DWORD, bool, bool) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
-	virtual void DrawQuadDw(C4Surface *, float *, DWORD, DWORD, DWORD, DWORD) { }
 	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
-	virtual void SetTexture() { }
-	virtual void ResetTexture() { }
 	virtual bool InitDeviceObjects() { return true; }
 	virtual bool RestoreDeviceObjects() { return true; }
 	virtual bool InvalidateDeviceObjects() { return true; }

@@ -1,6 +1,6 @@
 [DefCore]
 id=Rockfall
-Version=5,4,0,0
+Version=6,0
 Category=C4D_Object|C4D_Environment
 Width=16
 Height=16

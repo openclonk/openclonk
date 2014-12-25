@@ -1,6 +1,6 @@
 [DefCore]
 id=Raiders_CastleFloor
-Version=5,2,0,1
+Version=6,0
 Category=C4D_StaticBack
 Width=87
 Height=14

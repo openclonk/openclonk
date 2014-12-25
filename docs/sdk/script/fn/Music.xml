@@ -22,6 +22,12 @@
           <desc>If 1, the specified track will be looped forever.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>fadetime_ms</name>
+          <desc>Fading time between any currently playing piece and the newly selected song. Ignored if both are the same. Set to zero to avoid fading.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.ocg will be used.</desc>

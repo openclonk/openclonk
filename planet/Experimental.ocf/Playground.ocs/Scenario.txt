@@ -1,7 +1,7 @@
 [Head]
 Icon=26
 Title=Test1
-Version=4,10
+Version=6,0
 Difficulty=10
 MaxPlayer=8
 NoInitialize=0

@@ -1,6 +1,6 @@
 [DefCore]
 id=Skull
-Version=5,2,0,1
+Version=6,0
 Category=C4D_Object
 Width=11
 Height=13

@@ -46,6 +46,10 @@
                 <literal_col>AM_DrawBefore</literal_col>
                 <col>Normally the mesh of the object itself is drawn first and afterwards the attached mesh. If this flag is present then the attached mesh is drawn before the object's mesh is drawn. Note that normally this makes no difference since a Z buffer is used to make sure the drawing order is correct. However if one or both of the meshes make use of alpha blending then the drawing order becomes relevant so that a mesh is not hidden behind otherwise (partly) translucent parts of the other mesh.</col>
               </row>
+			  <row>
+                <literal_col>AM_MatchSkeleton</literal_col>
+                <col>Normally the attached mesh uses its own animations. If this flag is set, then the attached mesh uses the animation data of the parent mesh for all bones that have the same name as a bone in the parent mesh skeleton.</col>
+              </row>
             </table>
           </desc>
           <optional />

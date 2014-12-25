@@ -1218,6 +1218,11 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// don't change landscape mode in runtime joins
 	bool fLandscapeModeSet = (Mode != C4LSC_Undefined);
 
+	// Make pixel maps
+	// Pixel maps only depend on loaded materials and textures
+	// They might be accessed in map scripts, so they should be ready before map creation
+	UpdatePixMaps();
+
 	Game.SetInitProgress(60);
 	// create map if necessary
 	if (!Game.C4S.Landscape.ExactLandscape)
@@ -1295,9 +1300,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		rfLoaded=true;
 		if (!Load(hGroup, fLoadSky, fSavegame)) return false;
 	}
-
-	// Make pixel maps
-	UpdatePixMaps();
 
 	// progress
 	Game.SetInitProgress(80);

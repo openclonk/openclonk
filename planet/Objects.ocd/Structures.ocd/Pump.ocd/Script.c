@@ -105,20 +105,48 @@ func Initialize()
 
 public func IsInteractable() { return GetCon() >= 100; }
 
-public func GetInteractionMetaInfo(object clonk)
+public func GetInteractionCount() 
 {
-	if (switched_on)
-		return { Description = "$MsgTurnOff$", IconName = nil, IconID = Icon_Stop };
-	else
-		return { Description = "$MsgTurnOn$", IconName = nil, IconID = Icon_Play };
+	var cnt = 1;
+	if (source_pipe)
+		cnt++;
+	if (drain_pipe)
+		cnt++;
+	return cnt;
 }
 
-/** Turn on or off. */
-public func Interact(object clonk)
+public func GetInteractionMetaInfo(object clonk, int num)
 {
-	switched_on = !switched_on;
-	CheckState();
-	
+	// Turning on/off.
+	if (num == 0)
+	{
+		if (switched_on)
+			return { Description = "$MsgTurnOff$", IconName = nil, IconID = Icon_Stop };
+		else
+			return { Description = "$MsgTurnOn$", IconName = nil, IconID = Icon_Play };
+	}
+	// Cutting the source pipe.
+	if (num == 1 && source_pipe)
+		return { Description = "$MsgCutSource$", IconName = nil, IconID = Icon_Cancel };
+	// Cutting the drain pipe.
+	if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
+		return { Description = "$MsgCutDrain$", IconName = nil, IconID = Icon_Cancel };
+}
+
+public func Interact(object clonk, int num)
+{
+	// Turning on/off.
+	if (num == 0)
+	{
+		switched_on = !switched_on;
+		CheckState();
+	}
+	// Cutting the source pipe.
+	else if (num == 1 && source_pipe)
+		source_pipe->RemoveObject();
+	// Cutting the drain pipe.
+	else if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
+		drain_pipe->RemoveObject();
 	return true;
 }
 
@@ -142,6 +170,10 @@ func QueryWaivePowerRequest()
 	return 10;
 }
 
+public func GetConsumerPriority() { return 25; }
+
+public func GetProducerPriority() { return 100; }
+
 func OnNotEnoughPower()
 {
 	_inherited(...);
@@ -163,7 +195,7 @@ private func GetDrainObject()
 	return this;
 }
 
-/** Re	turns object to which the liquid is pumped */
+/** Returns object from which the liquid is pumped */
 private func GetSourceObject()
 {
 	if (source_pipe) return source_pipe->GetConnectedObject(this) ?? this;

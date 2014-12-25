@@ -1,6 +1,6 @@
 [DefCore]
 id=DoorTarget
-Version=4,9,8
+Version=6,0
 Category=C4D_Vehicle
 Width=25
 Height=25

@@ -70,8 +70,8 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if (Random(6)) Smoke(16 * GetCalcDir(),-14,16);
-	if (Random(8)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
+	if (Random(6)) Smoke(16 * GetCalcDir(), -20, 10);
+	if (Random(8)) Smoke(14 * GetCalcDir(), -20, 8 + Random(3));
 	return 1;
 }
 

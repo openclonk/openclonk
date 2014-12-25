@@ -27,7 +27,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 {
 	for(std::vector<StdSubMesh>::iterator iter = mesh->SubMeshes.begin(); iter != mesh->SubMeshes.end(); ++iter)
 	{
-		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter =	Materials.find(iter->Material);
+		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter = Materials.find(iter->Material);
 		if(mat_iter != Materials.end())
 		{
 			const StdMeshMaterial* new_material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
@@ -42,7 +42,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 				// material into the material map. This is mainly just to keep things
 				// going - next time the scenario will be started the mesh will fail
 				// to load because the material cannot be found.
-				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second;
+				MaterialManager.Materials[mat_iter->second.Name] = mat_iter->second; // TODO: could be moved
 				iter->Material = MaterialManager.GetMaterial(mat_iter->second.Name.getData());
 			}
 		}
@@ -70,23 +70,23 @@ void StdMeshMaterialUpdate::Cancel() const
 {
 	// Reset all materials in manager
 	for(std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator iter = Materials.begin(); iter != Materials.end(); ++iter)
-		MaterialManager.Materials[iter->second.Name] = iter->second;
+		MaterialManager.Materials[iter->second.Name] = iter->second; // TODO: could be moved
 }
 
 void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 {
 	assert(Materials.find(material) == Materials.end());
-	Materials[material] = *material;
+	Materials[material] = *material; // TODO: could be moved
 }
 
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):
-	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetNumBones())
+	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetSkeleton().GetNumBones())
 {
-	for(std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->Animations.begin(); iter != OldMesh->Animations.end(); ++iter)
+	for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->GetSkeleton().Animations.begin(); iter != OldMesh->GetSkeleton().Animations.end(); ++iter)
 		AnimationNames[&iter->second] = iter->first;
 
-	for(unsigned int i = 0; i < OldMesh->GetNumBones(); ++i)
-		BoneNamesByIndex[i] = OldMesh->GetBone(i).Name;
+	for (unsigned int i = 0; i < OldMesh->GetSkeleton().GetNumBones(); ++i)
+		BoneNamesByIndex[i] = OldMesh->GetSkeleton().GetBone(i).Name;
 }
 
 void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) const
@@ -95,7 +95,7 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 
 	// Update instance to represent new mesh
 	instance->Mesh = &new_mesh;
-	instance->BoneTransforms = std::vector<StdMeshMatrix>(new_mesh.GetNumBones(), StdMeshMatrix::Identity());
+	instance->BoneTransforms = std::vector<StdMeshMatrix>(new_mesh.GetSkeleton().GetNumBones(), StdMeshMatrix::Identity());
 	instance->BoneTransformsDirty = true;
 
 	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
@@ -154,7 +154,7 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 			assert(iter != AnimationNames.end());
 
 			// Update to new animation
-			node->Leaf.Animation = new_mesh.GetAnimationByName(iter->second);
+			node->Leaf.Animation = new_mesh.GetSkeleton().GetAnimationByName(iter->second);
 			if(!node->Leaf.Animation) return false;
 
 			// Clamp provider value
@@ -168,7 +168,7 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 		{
 			// Update bone index by bone name
 			StdCopyStrBuf bone_name = BoneNamesByIndex[node->Custom.BoneIndex];
-			const StdMeshBone* bone = new_mesh.GetBoneByName(bone_name);
+			const StdMeshBone* bone = new_mesh.GetSkeleton().GetBoneByName(bone_name);
 			if(!bone) return false;
 			node->Custom.BoneIndex = bone->Index;
 			return true;

@@ -1,6 +1,6 @@
 [DefCore]
 id=Airship_Hitbox
-Version=5,2,0,1
+Version=6,0
 Width=42
 Height=28
 Offset=-21,-28

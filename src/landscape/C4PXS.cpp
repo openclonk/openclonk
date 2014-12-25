@@ -343,8 +343,8 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 		}
 	}
 
-	if (!pixVtx.empty()) pDraw->PerformMultiPix(cgo.Surface, &pixVtx[0], pixVtx.size());
-	if (!lineVtx.empty()) pDraw->PerformMultiLines(cgo.Surface, &lineVtx[0], lineVtx.size(), 1.0f);
+	if(!pixVtx.empty()) pDraw->PerformMultiPix(cgo.Surface, &pixVtx[0], pixVtx.size());
+	if(!lineVtx.empty()) pDraw->PerformMultiLines(cgo.Surface, &lineVtx[0], lineVtx.size(), 1.0f);
 
 	// PXS graphics disabled?
 	if (!Config.Graphics.PXSGfx)
@@ -353,7 +353,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	for(std::map<int, std::vector<C4BltVertex> >::const_iterator iter = bltVtx.begin(); iter != bltVtx.end(); ++iter)
 	{
 		C4Material *pMat = &::MaterialMap.Map[iter->first];
-		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), pMat->PXSFace.Surface->ppTex[0]);
+		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, pMat->PXSFace.Surface->ppTex[0], NULL, 0);
 	}
 }
 
@@ -499,6 +499,33 @@ void C4PXSSystem::Delete(C4PXS *pPXS)
 	// decrease pxs counter
 	if (cnt < PXSMaxChunk)
 		iChunkPXS[cnt]--;
+}
+
+int32_t C4PXSSystem::GetCount(int32_t mat) const
+{
+	// count PXS of given material
+	int32_t result = 0;
+	for (size_t cnt = 0; cnt < PXSMaxChunk; cnt++) if (Chunk[cnt] && iChunkPXS[cnt])
+	{
+		C4PXS *pxp = Chunk[cnt];
+		for (size_t cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++) if (pxp->Mat == mat) ++result;
+	}
+	return result;
+}
+
+int32_t C4PXSSystem::GetCount(int32_t mat, int32_t x, int32_t y, int32_t wdt, int32_t hgt) const
+{
+	// count PXS of given material in given area
+	int32_t result = 0;
+	for (size_t cnt = 0; cnt < PXSMaxChunk; cnt++) if (Chunk[cnt] && iChunkPXS[cnt])
+	{
+		C4PXS *pxp = Chunk[cnt];
+		for (size_t cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++)
+			if (pxp->Mat != MNone)
+				if (pxp->Mat == mat || mat == MNone)
+					if (Inside(pxp->x, x, x + wdt - 1) && Inside(pxp->y, y, y + hgt - 1)) ++result;
+	}
+	return result;
 }
 
 C4PXSSystem PXS;

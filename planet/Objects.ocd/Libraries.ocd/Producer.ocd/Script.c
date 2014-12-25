@@ -41,6 +41,10 @@ protected func Initialize()
 // All producers are accessible. 
 public func IsContainer() { return true; }
 
+public func IsInteractable() { return GetCon() >= 100; }
+
+public func GetConsumerPriority() { return 50; }
+
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
@@ -635,6 +639,9 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 // Standard behaviour for product ejection.
 public func OnProductEjection(object product)
 {
+	// Safety for the product removing itself on construction.
+	if (!product)
+		return;	
 	// Vehicles in front fo buildings.
 	if (product->GetCategory() & C4D_Vehicle)
 	{

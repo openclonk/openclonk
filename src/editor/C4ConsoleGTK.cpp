@@ -1301,7 +1301,7 @@ void C4ToolsDlg::State::UpdatePreview()
 			*data = (dw >> 16) & 0xff; ++ data;
 			*data = (dw >> 8 ) & 0xff; ++ data;
 			*data = (dw      ) & 0xff; ++ data;
-			*data = 0xff - ((dw >> 24) & 0xff); ++ data;
+			*data = (dw >> 24) & 0xff; ++ data;
 		}
 
 	sfcPreview->Unlock();

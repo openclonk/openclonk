@@ -1,7 +1,7 @@
 [Head]
 Title=AcidGoldMine
 Icon=22
-Version=5,4,0,0
+Version=6,0
 Difficulty=100
 
 [Definitions]

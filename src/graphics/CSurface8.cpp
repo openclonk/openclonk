@@ -88,6 +88,7 @@ bool CSurface8::Create(int iWdt, int iHgt)
 	// create pal
 	pPal = new CStdPalette;
 	if (!pPal) return false;
+	memset(pPal->Colors, 0, sizeof(pPal->Colors));
 
 	Bits=new BYTE[Wdt*Hgt];
 	if (!Bits) return false;
@@ -163,6 +164,7 @@ bool CSurface8::Read(CStdStream &hGroup)
 bool CSurface8::Save(const char *szFilename, CStdPalette *bpPalette)
 {
 	C4BMP256Info BitmapInfo;
+	ZeroMem(&BitmapInfo, sizeof(BitmapInfo));
 	BitmapInfo.Set(Wdt,Hgt, bpPalette ? bpPalette : pPal);
 
 	// Create file & write info
@@ -173,7 +175,8 @@ bool CSurface8::Save(const char *szFilename, CStdPalette *bpPalette)
 		{ return false; }
 
 	// Write lines
-	char bpEmpty[4]; int iEmpty = DWordAligned(Wdt)-Wdt;
+	char bpEmpty[4]; ZeroMem(bpEmpty, 4);
+	const int iEmpty = DWordAligned(Wdt)-Wdt;
 	for (int cnt=Hgt-1; cnt>=0; cnt--)
 	{
 		if (!hFile.Write(Bits+(Pitch*cnt),Wdt))

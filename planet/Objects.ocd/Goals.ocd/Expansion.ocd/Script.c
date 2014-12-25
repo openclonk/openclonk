@@ -18,7 +18,7 @@ protected func Initialize()
 	expansion_goal = 0;
 	// Start running the monte carlo simulation.
 	mc_data = [];
-	var effect = AddEffect("IntAreaMonteCarlo", this, 100, 1, this);
+	AddEffect("IntAreaMonteCarlo", this, 100, 1, this);
 	return inherited(...);
 }
 

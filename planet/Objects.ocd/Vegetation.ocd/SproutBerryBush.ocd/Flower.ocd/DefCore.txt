@@ -1,5 +1,5 @@
 [DefCore]
 id=SproutBerryBush_Flower
-Version=4,10,0,0
+Version=6,0
 Category=C4D_Object
 

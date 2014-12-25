@@ -58,6 +58,9 @@ public:
 	bool Create(int32_t mat, C4Real ix, C4Real iy, C4Real ixdir=Fix0, C4Real iydir=Fix0);
 	bool Load(C4Group &hGroup);
 	bool Save(C4Group &hGroup);
+	int32_t GetCount() const { return Count; } // count all PXS
+	int32_t GetCount(int32_t mat) const; // count PXS of given material
+	int32_t GetCount(int32_t mat, int32_t x, int32_t y, int32_t wdt, int32_t hgt) const; // count PXS of given material in given area. mat==-1 for all materials.
 protected:
 	C4PXS *New();
 };

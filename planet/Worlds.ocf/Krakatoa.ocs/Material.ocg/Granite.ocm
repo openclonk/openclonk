@@ -1,0 +1,9 @@
+[Material]
+Name=Granite
+Shape=Rough
+Density=80
+Friction=100
+MaxAirSpeed=100
+MaxSlide=250
+Placement=60
+TextureOverlay=granite

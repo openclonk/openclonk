@@ -39,22 +39,10 @@
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.
-class AdditionalResourcesLoader:
-		public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
+class C4DefGraphicsAdditionalResourcesLoader: public StdMeshSkeletonLoader
 {
 public:
-	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
-
-	virtual C4Surface* LoadTexture(const char* filename)
-	{
-		if (!Group.AccessEntry(filename)) return NULL;
-		C4Surface* surface = new C4Surface;
-		// Suppress error message here, StdMeshMaterial loader
-		// will show one.
-		if (!surface->Read(Group, GetExtension(filename)))
-			{ delete surface; surface = NULL; }
-		return surface;
-	}
+	C4DefGraphicsAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
 	virtual StdStrBuf LoadSkeleton(const char* filename)
 	{
@@ -152,13 +140,17 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 	{
 		if(!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
 
-		if(SEqualNoCase(GetExtension(szFileName), "xml"))
+		if (SEqualNoCase(GetExtension(szFileName), "xml"))
+		{
 			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
+		}
 		else
+		{
 			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
+		}
 		delete[] buf;
 
-		// Create mirrored animations (#401), order submeshes
+		// order submeshes
 		Mesh->PostInit();
 	}
 	catch (const std::runtime_error& ex)
@@ -172,30 +164,50 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 	return true;
 }
 
+bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
+{
+	char* buf = NULL;
+	size_t size;
+
+	try
+	{
+		if (!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
+
+		StdCopyStrBuf filename = StdCopyStrBuf();
+		StdMeshSkeletonLoader::MakeFullSkeletonPath(filename, hGroup.GetName(), szFileName);
+
+		if (SEqualNoCase(GetExtension(szFileName), "xml"))
+		{
+			loader.LoadSkeletonXml(filename, buf, size);
+		}
+		else
+		{
+			loader.LoadSkeletonBinary(filename, buf, size);
+		}
+
+		delete[] buf;
+	}
+	catch (const std::runtime_error& ex)
+	{
+		DebugLogF("Failed to load skeleton in definition %s: %s", hGroup.GetName(), ex.what());
+		delete[] buf;
+		return false;
+	}
+
+	return true;
+}
+
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	AdditionalResourcesLoader loader(hGroup);
+	C4DefGraphicsAdditionalResourcesLoader loader(hGroup);
 
-	// Load all materials for this definition:
+	// load skeletons
 	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, !!*Filename))
+	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
 	{
-		StdStrBuf material;
-		if (hGroup.LoadEntryString(Filename, &material))
-		{
-			try
-			{
-				StdStrBuf buf;
-				buf.Copy(hGroup.GetName());
-				buf.Append("/"); buf.Append(Filename);
-				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
-			}
-			catch (const StdMeshMaterialError& ex)
-			{
-				DebugLogF("Failed to read material script: %s", ex.what());
-			}
-		}
+		if (!WildcardMatch(C4CFN_DefSkeleton, Filename) && !WildcardMatch(C4CFN_DefSkeletonXml, Filename)) continue;
+		LoadSkeleton(hGroup, Filename, loader);
 	}
 
 	// Try from Mesh first
@@ -249,7 +261,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 			}
 			else
 			{
-				if(!pLastGraphics->LoadMesh(hGroup, Filename, loader))
+				if (!pLastGraphics->LoadMesh(hGroup, Filename, loader))
 					return false;
 			}
 		}
@@ -445,9 +457,9 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+		{
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -493,6 +505,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							if (!pDeco->UpdateGfx())
 								pObj->Menu->SetFrameDeco(NULL);
 				}
+		}
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
@@ -510,9 +523,8 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	if (pGraphicsPtr)
 	{
 		// check all objects
-		C4Object *pObj;
-		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if ((pObj=pLnk->Obj)) if (pObj->Status)
+		for (C4Object *pObj : Objects)
+			if (pObj && pObj->Status)
 				{
 					if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -565,9 +577,9 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
 
 	// Update mesh materials for all mesh instances.
-	C4Object *pObj;
-	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-		if ((pObj=pLnk->Obj)) if (pObj->Status)
+	for (C4Object *pObj : Objects)
+	{
+		if (pObj && pObj->Status)
 		{
 			if(pObj->pMeshInstance)
 				UpdateMesh(pObj->pMeshInstance);
@@ -575,6 +587,7 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 				if(pGfxOverlay->pMeshInstance)
 					UpdateMesh(pGfxOverlay->pMeshInstance);
 		}
+	}
 }
 
 void C4DefGraphicsPtrBackup::UpdateMesh(StdMeshInstance* instance)
@@ -690,7 +703,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			if (!AnimationName) return;
 
 			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
-			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetAnimationByName(AnimationName->GetData());
+			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetSkeleton().GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
 			pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, ftofix(Animation->Length / action->GetPropertyInt(P_Length))), new C4ValueProviderConst(itofix(1)));

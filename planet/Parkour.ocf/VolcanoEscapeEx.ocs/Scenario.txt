@@ -1,7 +1,7 @@
 [Head]
 Icon=23
 Title=VolcanoEscapeEx
-Version=5,2,0,1
+Version=6,0
 Difficulty=70
 
 [Definitions]

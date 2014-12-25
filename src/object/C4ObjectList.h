@@ -65,18 +65,43 @@ public:
 		C4Object * operator* ();
 		bool operator== (const iterator & iter) const;
 		bool operator!= (const iterator & iter) const;
+		// advance until end reached or link with target Obj found - return false in former case, true in latter
+		bool find(C4Object* target);
+		// return whether the iterator has reached the end
+		bool atEnd() const;
+		// advance the iterator position, either going forward or backward depending on the reverse flag
+		bool advance();
+		// reset the iterator to either the beginning or the end of the list, depending on the reverse flag
+		bool reset();
 
 		iterator& operator=(const iterator & iter);
 	private:
-		explicit iterator(C4ObjectList & List);
-		iterator(C4ObjectList & List, C4ObjectLink * pLink);
-		C4ObjectList & List;
-		C4ObjectLink * pLink;
+		iterator(const C4ObjectList & List, const C4ObjectLink * pLink, bool reverse);
+		const C4ObjectList & List;
+		// instead of pointing to the current link make a copy of it
+		C4ObjectLink link;
 		iterator * Next;
+		bool reverse;
 		friend class C4ObjectList;
 	};
-	iterator begin();
-	const iterator end();
+	iterator begin() const;
+	const iterator end() const;
+
+	// Helper object returned by reverse() - allows for iterating the C4ObjectList in reverse order, still using the for (x : list) syntax
+	class ReverseView
+	{
+	private:
+		const C4ObjectList& list;
+	public:
+		ReverseView(const C4ObjectList& list): list(list) {}
+		// return an iterator at the end of the list
+		iterator begin() const;
+		// return an iterator at the position before the first item in the list
+		iterator end() const;
+	};
+
+	// Return a temporary object allowing for reverse-order iteration of the C4ObjectList
+	const ReverseView reverse() const { return ReverseView(*this); }
 
 	virtual void Default();
 	virtual void Clear();
@@ -113,9 +138,9 @@ public:
 	int MassCount();
 	int ListIDCount(int32_t dwCategory) const;
 
-	const C4Object* GetObject(int Index=0) const;
-	C4Object* GetObject(int Index=0)
-	{ return const_cast<C4Object*>(const_cast<const C4ObjectList*>(this)->GetObject(Index)); }
+	C4Object* GetObject(int Index=0) const;
+	C4Object* GetFirstObject() const { return First ? First->Obj : NULL; }
+	C4Object* GetLastObject() const { return Last ? Last->Obj : NULL; }
 	C4Object* Find(C4Def * def, int iOwner=ANY_OWNER, DWORD dwOCF=OCF_All);
 	C4Object* FindOther(C4ID id, int iOwner=ANY_OWNER);
 
@@ -138,9 +163,9 @@ protected:
 	virtual void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore);
 	virtual void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter);
 	virtual void RemoveLink(C4ObjectLink *pLnk);
-	iterator * FirstIter;
-	iterator * AddIter(iterator * iter);
-	void RemoveIter(iterator * iter);
+	mutable iterator * FirstIter;
+	iterator * AddIter(iterator * iter) const;
+	void RemoveIter(iterator * iter) const;
 
 	friend class iterator;
 };

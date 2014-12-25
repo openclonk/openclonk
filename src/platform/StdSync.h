@@ -135,7 +135,8 @@ public:
 		{
 			// Use pthread_cond_wait or pthread_cond_timedwait depending on wait length. Check return value.
 			// Note this will temporarily unlock the mutex, so no deadlock should occur.
-			timespec ts = { iMillis / 1000, (iMillis % 1000) * 1000000 };
+			timespec ts = { static_cast<time_t>(iMillis / 1000),
+				static_cast<long>((iMillis % 1000) * 1000000) };
 			if (0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
 			{
 				pthread_mutex_unlock(&mutex);
@@ -293,12 +294,12 @@ public:
 class StdThreadCheck
 {
 #if defined(_DEBUG) && defined(_WIN32)
-	HANDLE hThread;
+	DWORD idThread;
 public:
-	StdThreadCheck() : hThread(0) {}
+	StdThreadCheck() : idThread(0) {}
 
-	inline void Set() { hThread = ::GetCurrentThread(); }
-	inline void Check() { assert(hThread == ::GetCurrentThread()); }
+	inline void Set() { idThread = ::GetCurrentThreadId(); }
+	inline void Check() { assert(idThread == ::GetCurrentThreadId()); }
 #else
 public:
 	inline void Set() {}

@@ -375,10 +375,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// count decrease
 	Def->Count--;
 	// Kill contents
-	C4Object *cobj; C4ObjectLink *clnk,*next;
-	for (clnk=Contents.First; clnk && (cobj=clnk->Obj); clnk=next)
+	for (C4Object *cobj : Contents)
 	{
-		next=clnk->Next;
 		if (fExitContents)
 			cobj->Exit(GetX(), GetY());
 		else
@@ -1187,8 +1185,8 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
 	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
-	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
-		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
+	for (C4Object *obj : Objects)
+		if (obj->pEffects) obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,false);
 	// Done
@@ -2279,10 +2277,22 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 		color0 = colors->GetItem(0).getInt();
 		color1 = colors->GetItem(1).getInt();
 	}
+
+	std::vector<C4BltVertex> vertices;
+	vertices.resize( (Shape.VtxNum - 1) * 2);
 	for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
-		cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
-						Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-						color0, color1);
+	{
+		DwTo4UB(color0, vertices[2*vtx].color);
+		DwTo4UB(color0, vertices[2*vtx+1].color);
+
+		vertices[2*vtx].ftx = Shape.VtxX[vtx] + cgo.X - cgo.TargetX;
+		vertices[2*vtx].fty = Shape.VtxY[vtx] + cgo.Y - cgo.TargetY;
+		vertices[2*vtx+1].ftx = Shape.VtxX[vtx+1] + cgo.X - cgo.TargetX;
+		vertices[2*vtx+1].fty = Shape.VtxY[vtx+1] + cgo.Y - cgo.TargetY;
+	}
+
+	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f);
+
 	// reset blit mode
 	FinishedDrawing();
 #endif
@@ -4399,13 +4409,11 @@ bool C4Object::ShiftContents(bool fShiftBack, bool fDoCalls)
 	C4Object *c_obj = Contents.GetObject();
 	if (!c_obj) return false;
 	// get next/previous
-	C4ObjectLink *pLnk = fShiftBack ? (Contents.Last) : (Contents.First->Next);
-	for (;;)
+	auto it = fShiftBack ? Contents.reverse().begin() : ++Contents.begin();
+	while (!it.atEnd())
 	{
-		// end reached without success
-		if (!pLnk) return false;
+		auto pObj = (*it);
 		// check object
-		C4Object *pObj = pLnk->Obj;
 		if (pObj->Status)
 			if (!c_obj->CanConcatPictureWith(pObj))
 			{
@@ -4414,9 +4422,9 @@ bool C4Object::ShiftContents(bool fShiftBack, bool fDoCalls)
 				return true;
 			}
 		// next/prev item
-		pLnk = fShiftBack ? (pLnk->Prev) : (pLnk->Next);
+		it++;
 	}
-	// not reached
+	return false;
 }
 
 void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
@@ -4575,10 +4583,10 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 	else
 	{
 		// is there any unused object to put away?
-		if (!Contents.Last) return false;
+		if (!Contents.GetLastObject()) return false;
 		// defaultly, it's the last object in the list
 		// (contents list cannot have invalid status-objects)
-		pUnusedObject = Contents.Last->Obj;
+		pUnusedObject = Contents.GetLastObject();
 	}
 	// no object to put away? fail
 	if (!pUnusedObject) return false;
@@ -4738,10 +4746,8 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 void C4Object::ClearContentsAndContained(bool fDoCalls)
 {
 	// exit contents from container
-	C4Object *cobj; C4ObjectLink *clnk,*next;
-	for (clnk=Contents.First; clnk && (cobj=clnk->Obj); clnk=next)
+	for (C4Object *cobj : Contents)
 	{
-		next=clnk->Next;
 		cobj->Exit(GetX(), GetY(), 0,Fix0,Fix0,Fix0, fDoCalls);
 	}
 	// remove from container *after* contents have been removed!
@@ -4863,10 +4869,9 @@ void C4Object::GrabContents(C4Object *pFrom)
 	// create a temp list of all objects and transfer it
 	// this prevents nasty deadlocks caused by RejectEntrance-scripts
 	C4ObjectList tmpList; tmpList.Copy(pFrom->Contents);
-	C4ObjectLink *cLnk;
-	for (cLnk=tmpList.First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->Enter(this);
+	for (C4Object *obj : tmpList)
+		if (obj->Status)
+			obj->Enter(this);
 }
 
 bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const

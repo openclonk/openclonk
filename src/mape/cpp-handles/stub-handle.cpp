@@ -114,7 +114,6 @@ bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t
 bool C4Landscape::Incinerate(int32_t, int32_t) { return false; }
 bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
 void C4Landscape::CheckInstabilityRange(int32_t, int32_t) {}
-void C4Landscape::HandleTexMapUpdate() {}
 
 void C4Sky::Default() {}
 C4Sky::~C4Sky() {}
