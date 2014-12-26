@@ -1625,7 +1625,7 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 
 	// check if we need a scroll-bar
 	int32_t topMostChild = 0;
-	int32_t bottomMostChild = rcBounds.Hgt;
+	int32_t bottomMostChild = 0;
 	for (Element * element : *this)
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
@@ -1634,7 +1634,14 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 		if (childTop < topMostChild) topMostChild = childTop;
 		if (childBottom > bottomMostChild) bottomMostChild = childBottom;
 	}
-	// subtract one against rounding errors
+	// do we need to adjust our size to fit the child windows?
+	if (style & C4ScriptGuiWindowStyleFlag::FitChildren)
+	{
+		rcBounds.Hgt = bottomMostChild;
+	}
+	// update scroll rectangle:
+	// (subtract one against rounding errors)
+	bottomMostChild = std::max(bottomMostChild, rcBounds.Hgt);
 	iClientHeight = bottomMostChild - topMostChild - 1;
 	C4GUI::ScrollWindow::Update();
 
