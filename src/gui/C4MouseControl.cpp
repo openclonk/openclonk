@@ -532,14 +532,15 @@ void C4MouseControl::UpdateCursorTarget()
 		// update tooltip information
 		if (OldTargetObject != TargetObject)
 		{
-			if (TargetObject && (Cursor == C4MC_Cursor_Select) && (TargetObject->Category & C4D_MouseSelect))
+			C4String *newTooltip = nullptr;
+			if (TargetObject && (Cursor == C4MC_Cursor_Select) && (TargetObject->Category & C4D_MouseSelect) && (newTooltip = TargetObject->GetPropertyStr(P_Tooltip)))
 			{
 				float objX, objY;
 				TargetObject->GetViewPos(objX, objY, -fctViewportGUI.X, -fctViewportGUI.Y, fctViewportGUI);
 				objX += TargetObject->Shape.x;
 				objY += TargetObject->Shape.y - TargetObject->addtop();
 				SetTooltipRectangle(C4Rect(objX, objY, TargetObject->Shape.Wdt, TargetObject->Shape.Hgt + TargetObject->addtop()));
-				SetTooltipText(StdStrBuf(TargetObject->GetPropertyStr(P_Tooltip)->GetCStr()));
+				SetTooltipText(StdStrBuf(newTooltip->GetCStr()));
 			}
 			else
 			{
