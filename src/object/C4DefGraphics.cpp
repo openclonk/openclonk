@@ -184,16 +184,13 @@ bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMes
 	{
 		if (!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
 
-		StdCopyStrBuf filename = StdCopyStrBuf();
-		StdMeshSkeletonLoader::MakeFullSkeletonPath(filename, hGroup.GetName(), szFileName);
-
 		if (SEqualNoCase(GetExtension(szFileName), "xml"))
 		{
-			loader.LoadSkeletonXml(filename, buf, size);
+			loader.LoadSkeletonXml(hGroup.GetName(), szFileName, buf, size);
 		}
 		else
 		{
-			loader.LoadSkeletonBinary(filename, buf, size);
+			loader.LoadSkeletonBinary(hGroup.GetName(), szFileName, buf, size);
 		}
 
 		delete[] buf;
@@ -395,8 +392,11 @@ C4AdditionalDefGraphics::C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szN
 	SCopy(szName, Name, C4MaxName);
 }
 
-C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics):
-	MeshMaterialUpdate(::MeshMaterialManager), pMeshUpdate(NULL)
+// ---------------------------------------------------------------------------
+// C4DefGraphicsPtrBackup: Functionality to reload def graphics at runtime
+
+C4DefGraphicsPtrBackupEntry::C4DefGraphicsPtrBackupEntry(C4DefGraphics *pSourceGraphics):
+	pMeshUpdate(NULL)
 {
 	// assign graphics + def
 	pGraphicsPtr = pSourceGraphics;
@@ -405,43 +405,22 @@ C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics):
 	const char *szName = pGraphicsPtr->GetName();
 	if (szName) SCopy(szName, Name, C4MaxName); else *Name=0;
 
-	// Remove all mesh materials that were loaded from this definition
-	for(StdMeshMatManager::Iterator iter = ::MeshMaterialManager.Begin(); iter != MeshMaterialManager.End(); )
-	{
-		StdStrBuf Filename;
-		Filename.Copy(pDef->Filename);
-		Filename.Append("/"); Filename.Append(GetFilename(iter->FileName.getData()));
-
-		if(Filename == iter->FileName)
-			iter = ::MeshMaterialManager.Remove(iter, &MeshMaterialUpdate);
-		else
-			++iter;
-	}
-
 	// assign mesh update
 	if(pSourceGraphics->Type == C4DefGraphics::TYPE_Mesh)
 		pMeshUpdate = new StdMeshUpdate(*pSourceGraphics->Mesh);
-
-	// create next graphics recursively
-	C4DefGraphics *pNextGfx = pGraphicsPtr->pNext;
-	if (pNextGfx)
-		pNext = new C4DefGraphicsPtrBackup(pNextGfx);
-	else
-		pNext = NULL;
 }
 
-C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
+C4DefGraphicsPtrBackupEntry::~C4DefGraphicsPtrBackupEntry()
 {
 	// graphics ptr still assigned? then remove dead graphics pointers from objects
 	if (pGraphicsPtr) AssignRemoval();
 	delete pMeshUpdate;
-	// delete following graphics recursively
-	if (pNext) delete pNext;
 }
 
-void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
+void C4DefGraphicsPtrBackupEntry::AssignUpdate()
 {
-	UpdateMeshes();
+	// Update all attached meshes that were using this mesh
+	UpdateAttachedMeshes();
 
 	// only if graphics are assigned
 	if (pGraphicsPtr)
@@ -499,15 +478,12 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
-	// check next graphics
-	if (pNext) pNext->AssignUpdate(pNewGraphics);
 }
 
-void C4DefGraphicsPtrBackup::AssignRemoval()
+void C4DefGraphicsPtrBackupEntry::AssignRemoval()
 {
-	// Reset all mesh materials to what they were before the update
-	MeshMaterialUpdate.Cancel();
-	UpdateMeshes();
+	// Remove all attached meshes that were using this mesh
+	UpdateAttachedMeshes();
 
 	// only if graphics are assigned
 	if (pGraphicsPtr)
@@ -555,18 +531,115 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
-	// check next graphics
-	if (pNext) pNext->AssignRemoval();
 }
 
-void C4DefGraphicsPtrBackup::UpdateMeshes()
+void C4DefGraphicsPtrBackupEntry::UpdateAttachedMeshes()
+{
+	for (C4Object *pObj : Objects)
+	{
+		if (pObj && pObj->Status)
+		{
+			if(pObj->pMeshInstance)
+				UpdateAttachedMesh(pObj->pMeshInstance);
+			for (C4GraphicsOverlay* pGfxOverlay = pObj->pGfxOverlay; pGfxOverlay; pGfxOverlay = pGfxOverlay->GetNext())
+				if(pGfxOverlay->pMeshInstance)
+					UpdateAttachedMesh(pGfxOverlay->pMeshInstance);
+		}
+	}
+}
+
+void C4DefGraphicsPtrBackupEntry::UpdateAttachedMesh(StdMeshInstance* instance)
+{
+	// Update if instance is an owned attached mesh
+	if(pMeshUpdate &&
+	   &instance->GetMesh() == &pMeshUpdate->GetOldMesh() &&
+	   instance->GetAttachParent() &&
+	   instance->GetAttachParent()->OwnChild)
+	{
+		C4DefGraphics *pGrp = pDef->Graphics.Get(Name); // null for failed def. reload
+		if(pGrp && pGrp->Type == C4DefGraphics::TYPE_Mesh)
+		{
+			pMeshUpdate->Update(instance, *pGrp->Mesh); // might detach from parent
+		}
+		else
+		{
+			instance->GetAttachParent()->Parent->DetachMesh(instance->GetAttachParent()->Number);
+		}
+	}
+	// Non-attached meshes and unowned attached meshes are updated in
+	// AssignUpdate or AssignRemoval, respectively, since they are
+	// contained in the object list.
+
+	// Copy the attached mesh list before recursion because the recursive
+	// call might detach meshes, altering the list and invalidating
+	// iterators.
+	std::vector<StdMeshInstance::AttachedMesh*> attached_meshes;
+	for(StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
+		attached_meshes.push_back(*iter);
+
+	for(std::vector<StdMeshInstance::AttachedMesh*>::iterator iter = attached_meshes.begin(); iter != attached_meshes.end(); ++iter)
+		// TODO: Check that this mesh is still attached?
+		UpdateAttachedMesh((*iter)->Child);
+}
+
+C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup():
+	MeshMaterialUpdate(::MeshMaterialManager),
+	MeshAnimationUpdate(::Definitions.GetSkeletonLoader()),
+	fApplied(false)
+{
+}
+
+C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
+{
+	if(!fApplied) AssignRemoval();
+
+	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
+		delete *iter;
+}
+
+void C4DefGraphicsPtrBackup::Add(C4DefGraphics* pGfx)
+{
+	for(C4DefGraphics* pCur = pGfx; pCur != NULL; pCur = pCur->pNext)
+		Entries.push_back(new C4DefGraphicsPtrBackupEntry(pCur));
+
+	// Remove all mesh materials that were loaded from this definition
+	C4Def* pDef = pGfx->pDef;
+	for(StdMeshMatManager::Iterator iter = ::MeshMaterialManager.Begin(); iter != MeshMaterialManager.End(); )
+	{
+		StdStrBuf Filename;
+		Filename.Copy(pDef->Filename);
+		Filename.Append("/"); Filename.Append(GetFilename(iter->FileName.getData()));
+
+		if(Filename == iter->FileName)
+			iter = ::MeshMaterialManager.Remove(iter, &MeshMaterialUpdate);
+		else
+			++iter;
+	}
+}
+
+void C4DefGraphicsPtrBackup::AssignRemoval()
+{
+	MeshMaterialUpdate.Cancel();
+
+	// Remove gfx
+	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
+		(*iter)->AssignRemoval();
+
+	fApplied = true;
+}
+
+void C4DefGraphicsPtrBackup::AssignUpdate()
 {
 	// Update mesh materials for all meshes
 	for(C4DefList::Table::iterator iter = Definitions.table.begin(); iter != Definitions.table.end(); ++iter)
 		if(iter->second->Graphics.Type == C4DefGraphics::TYPE_Mesh)
 			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
 
-	// Update mesh materials for all mesh instances.
+	// Then, update mesh references in instances, attach bones by name, and update sprite gfx
+	for(std::list<C4DefGraphicsPtrBackupEntry*>::iterator iter = Entries.begin(); iter != Entries.end(); ++iter)
+		(*iter)->AssignUpdate();
+
+	// Update mesh materials and animations for all mesh instances.
 	for (C4Object *pObj : Objects)
 	{
 		if (pObj && pObj->Status)
@@ -578,44 +651,19 @@ void C4DefGraphicsPtrBackup::UpdateMeshes()
 					UpdateMesh(pGfxOverlay->pMeshInstance);
 		}
 	}
+
+	fApplied = true;
 }
 
 void C4DefGraphicsPtrBackup::UpdateMesh(StdMeshInstance* instance)
 {
-	if(pMeshUpdate)
-	{
-		// Update materials for meshes that need not to be updated
-		if(&instance->GetMesh() != &pMeshUpdate->GetOldMesh()) // TODO: Won't work for multiple graphics
-		{
-			MeshMaterialUpdate.Update(instance);
-		}
-		// Updated if instance is an owned attached mesh
-		else if(instance->GetAttachParent() && instance->GetAttachParent()->OwnChild)
-		{
-			C4DefGraphics *pGrp = pDef->Graphics.Get(Name); // null for failed def. reload
-			if(pGrp && pGrp->Type == C4DefGraphics::TYPE_Mesh)
-			{
-				pMeshUpdate->Update(instance, *pGrp->Mesh); // might detach from parent
-			}
-			else
-			{
-				instance->GetAttachParent()->Parent->DetachMesh(instance->GetAttachParent()->Number);
-			}
-		}
-		// Non-attached meshes and unowned attached meshes are updated in
-		// AssignUpdate or AssignRemoval, respectively, since they are contained
-		// in the object list.
-	}
+	MeshMaterialUpdate.Update(instance);
+	MeshAnimationUpdate.Update(instance);
 
-	// Copy the attached mesh list before recursion because the recursive call
-	// might detach meshes, altering the list and invalidating iterators.
-	std::vector<StdMeshInstance::AttachedMesh*> attached_meshes;
-	for(StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
-		attached_meshes.push_back(*iter);
-
-	for(std::vector<StdMeshInstance::AttachedMesh*>::iterator iter = attached_meshes.begin(); iter != attached_meshes.end(); ++iter)
-		// TODO: Check that this mesh is still attached?
-		UpdateMesh((*iter)->Child);
+	// Recursive for attached meshes not in object list
+	for (StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
+		if ((*iter)->OwnChild)
+			UpdateMesh((*iter)->Child);
 }
 
 // ---------------------------------------------------------------------------

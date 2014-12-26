@@ -150,6 +150,9 @@ bool C4Game::InitDefs()
 	// build quick access table
 	::Definitions.BuildTable();
 
+	// handle skeleton appends and includes
+	::Definitions.AppendAndIncludeSkeletons();
+
 	// Done
 	return true;
 }

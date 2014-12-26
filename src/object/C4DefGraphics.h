@@ -99,26 +99,50 @@ public:
 };
 
 // backup class holding dead graphics pointers and names
-class C4DefGraphicsPtrBackup
+class C4DefGraphicsPtrBackupEntry
 {
 protected:
 	C4DefGraphics *pGraphicsPtr; // dead graphics ptr
 	C4Def *pDef;                 // definition of dead graphics
 	char Name[C4MaxName+1];        // name of graphics
-	C4DefGraphicsPtrBackup *pNext; // next member of linked list
-	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
 	StdMeshUpdate* pMeshUpdate;    // Dead mesh
 
 public:
-	C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics); // ctor
-	~C4DefGraphicsPtrBackup();                              // dtor
+	C4DefGraphicsPtrBackupEntry(C4DefGraphics *pSourceGraphics); // ctor
+	~C4DefGraphicsPtrBackupEntry();                              // dtor
 
-	void AssignUpdate(C4DefGraphics *pNewGraphics); // update all game objects with new graphics pointers
-	void AssignRemoval();                           // remove graphics of this def from all game objects
+	void AssignUpdate();   // update all game objects with new graphics pointers
+	void AssignRemoval();  // remove graphics of this def from all game objects
 
 private:
-	void UpdateMeshes();
+	void UpdateAttachedMeshes();
+	void UpdateAttachedMesh(StdMeshInstance* instance);
+};
+
+// On definition reload, all graphics updates need to be performed in one
+// batch using this class.
+class C4DefGraphicsPtrBackup
+{
+public:
+	C4DefGraphicsPtrBackup();
+	~C4DefGraphicsPtrBackup();
+
+	// Add a def graphics to the list of graphics to be updated.
+	// Also adds additional graphics linked from pGraphics.
+	void Add(C4DefGraphics *pGraphics);
+
+	void AssignUpdate();   // update all game objects with new graphics pointers
+	void AssignRemoval();  // remove graphics of all defs from all game objects
+
+private:
 	void UpdateMesh(StdMeshInstance* instance);
+
+	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
+	StdMeshAnimationUpdate MeshAnimationUpdate; // Backup of animation names in the animation tree
+
+	std::list<C4DefGraphicsPtrBackupEntry*> Entries;
+
+	bool fApplied;
 };
 
 // Helper to compile C4DefGraphics-Pointer
@@ -138,6 +162,7 @@ public:
 // graphics overlay used to attach additional graphics to objects
 class C4GraphicsOverlay
 {
+	friend class C4DefGraphicsPtrBackupEntry;
 	friend class C4DefGraphicsPtrBackup;
 public:
 	enum Mode

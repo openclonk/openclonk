@@ -328,6 +328,8 @@ StdMeshAnimation::StdMeshAnimation(const StdMeshAnimation& other):
 	for (unsigned int i = 0; i < Tracks.size(); ++i)
 		if (other.Tracks[i])
 			Tracks[i] = new StdMeshTrack(*other.Tracks[i]);
+
+	OriginSkeleton = other.OriginSkeleton;
 }
 
 StdMeshAnimation::~StdMeshAnimation()
@@ -443,6 +445,40 @@ void StdMeshSkeleton::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimat
 	}
 }
 
+void StdMeshSkeleton::InsertAnimation(const StdMeshAnimation& animation)
+{
+	assert(Animations.find(animation.Name) == Animations.end());
+
+	Animations.insert(std::make_pair(animation.Name, animation));
+}
+
+void StdMeshSkeleton::InsertAnimation(const StdMeshSkeleton& source, const StdMeshAnimation& animation)
+{
+	assert(Animations.find(animation.Name) == Animations.end());
+
+	// get matching bones from the source
+	std::vector<int> bone_index_source = source.GetMatchingBones(*this);
+
+	// create a new animation and copy the basic data from the other animation
+	StdMeshAnimation anim;
+	anim.Name = animation.Name;
+	anim.Length = animation.Length;
+	anim.Tracks.resize(GetNumBones());
+	anim.OriginSkeleton = &source;
+
+	// sort the tracks according to the matched bones
+	for (unsigned int i = 0; i < anim.Tracks.size(); ++i)
+	{
+		if (bone_index_source[i] > -1 && animation.Tracks[bone_index_source[i]] != NULL)
+		{
+			anim.Tracks[i] = new StdMeshTrack(*animation.Tracks[bone_index_source[i]]);
+		}
+	}
+
+	// and add it to the map
+	Animations.insert(std::make_pair(animation.Name, anim));
+}
+
 void StdMeshSkeleton::PostInit()
 {
 	// Mirror .R and .L animations without counterpart
@@ -459,6 +495,34 @@ void StdMeshSkeleton::PostInit()
 				MirrorAnimation(buf, iter->second);
 		}
 	}
+}
+
+std::vector<int> StdMeshSkeleton::GetMatchingBones(const StdMeshSkeleton& child_skeleton) const
+{
+	std::vector<int> MatchedBoneInParentSkeleton;
+
+	// find matching bones names in both skeletons
+	for (unsigned int i = 0; i < child_skeleton.GetNumBones(); ++i)
+	{
+		int parent_bone_index = -1; // instantiate with invalid index == no match
+
+		for (unsigned int j = 0; j < GetNumBones(); ++j)
+		{
+			// start searching at the same index
+			int sample_index = (i + j) % GetNumBones();
+
+			if (GetBone(sample_index).Name == child_skeleton.GetBone(i).Name)
+			{
+				parent_bone_index = sample_index;
+				break;
+			}
+		}
+
+		// add valid or invalid mapped index to list of mapped bones
+		MatchedBoneInParentSkeleton.push_back(parent_bone_index);
+	}
+
+	return MatchedBoneInParentSkeleton;
 }
 
 StdSubMesh::StdSubMesh():
@@ -889,27 +953,7 @@ void StdMeshInstance::AttachedMesh::MapBonesOfChildToParent(const StdMeshSkeleto
 
 	// clear array to avoid filling it twice
 	MatchedBoneInParentSkeleton.clear();
-
-	// find matching bones names in both skeletons
-	for (unsigned int i = 0; i < child_skeleton.GetNumBones(); ++i)
-	{
-		int parent_bone_index = -1; // instantiate with invalid index == no match
-
-		for (unsigned int j = 0; j < parent_skeleton.GetNumBones(); ++j)
-		{
-			// start searching at the same index
-			int sample_index = (i + j) % parent_skeleton.GetNumBones();
-
-			if (parent_skeleton.GetBone(sample_index).Name == child_skeleton.GetBone(i).Name)
-			{
-				parent_bone_index = sample_index;
-				break;
-			}
-		}
-
-		// add valid or invalid mapped index to list of mapped bones
-		MatchedBoneInParentSkeleton.push_back(parent_bone_index);
-	}
+	MatchedBoneInParentSkeleton = parent_skeleton.GetMatchingBones(child_skeleton);
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):

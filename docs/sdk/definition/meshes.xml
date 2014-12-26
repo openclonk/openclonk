@@ -144,6 +144,7 @@ slice(XXX) { ... }
     <h id="Animations">Animations</h>
     <text>As for bitmap based graphics an object can play an animation while executing an action. To do so first a rig for the model and then an animation needs to be created. When exporting it is saved in the *.skeleton (or *.skeleton.xml for the OGRE XML format) file. To play it during an action the Animation field of the action needs to be set in the <emlink href="definition/actmap.html">ActMap</emlink>. The Facet fields are ignored for mesh graphics.</text>
     <text>It is also possible, via script, to play multiple animations at the same time or to specify transitions between animations. To learn more about this possibility see <emlink href="definition/animations.html">Animations</emlink>.</text>
+    <text>Just as scripts, animations can be appended or included to certain definitions. For this purpose the *.skeleton file has to match a certain pattern: appendto.<i>Definition</i>.skeleton adds the animations in that skeleton to the skeleton that was loaded by <i>Definition</i>. Existing animations will not be overloaded. Similarly, include.<i>Definition</i>.skeleton includes animations. Make sure to name your skeleton accordingly when rigging the mesh, if you want to include animations. Obviously, animations from only one definition can be included, but skeletons from multiple animations can be appended.</text>
     <h id="Attachment">Attachment of meshes</h>
     <text>Meshes can be attached to each other so that they always move together. This allows the clonk to carry objects or to aim with the bow. To attach two meshes the C4Script function <funclink>AttachMesh</funclink> can be used, or <funclink>DetachMesh</funclink> to detach them again. When attaching a bone of both meshes needs to be specified. The attached mesh is then aligned so that its bone has always the same position and orientation as the one to which it is attached.</text>
     <text>However it needs to be taken care of the fact that only the meshes, that is the graphics of the objects, are attached. The real position of the attached object (so what is returned by the functions <funclink>GetX</funclink> and <funclink>GetY</funclink> or the area in which the object is found by the functions <funclink>Find_AtPoint</funclink>, <funclink>Find_InRect</funclink> or <funclink>Find_AtRect</funclink>) is <em>not</em> affected.</text>
@@ -163,4 +164,5 @@ slice(XXX) { ... }
     </ul>
   </part>
   <author>Clonk-Karl</author><date>2010-04</date>
+  <author>Marky</author><date>2015-01/<date>
 </doc>

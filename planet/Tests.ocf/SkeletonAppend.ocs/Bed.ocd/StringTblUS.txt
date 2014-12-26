@@ -1,0 +1,3 @@
+Name=Bed
+Description=Tired knights rest here.
+

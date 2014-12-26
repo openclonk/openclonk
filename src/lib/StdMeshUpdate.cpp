@@ -17,6 +17,7 @@
 #include <StdMesh.h>
 #include <StdMeshMaterial.h>
 #include <StdMeshUpdate.h>
+#include <StdMeshLoader.h>
 
 StdMeshMaterialUpdate::StdMeshMaterialUpdate(StdMeshMatManager& manager):
 	MaterialManager(manager)
@@ -54,7 +55,7 @@ void StdMeshMaterialUpdate::Update(StdMeshInstance* instance) const
 	for(unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i) //std::vector<StdSubMeshInstance*>::iterator iter = instance->SubMeshInstances->begin(); iter != instance->SubMeshInstances->end(); ++iter)
 	{
 		StdSubMeshInstance* sub_instance = instance->SubMeshInstances[i];
-		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter =	Materials.find(sub_instance->Material);
+		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter = Materials.find(sub_instance->Material);
 		if(mat_iter != Materials.end())
 		{
 			// Material needs to be updated
@@ -82,9 +83,6 @@ void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):
 	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetSkeleton().GetNumBones())
 {
-	for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->GetSkeleton().Animations.begin(); iter != OldMesh->GetSkeleton().Animations.end(); ++iter)
-		AnimationNames[&iter->second] = iter->first;
-
 	for (unsigned int i = 0; i < OldMesh->GetSkeleton().GetNumBones(); ++i)
 		BoneNamesByIndex[i] = OldMesh->GetSkeleton().GetBone(i).Name;
 }
@@ -105,10 +103,11 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 	{
 		instance->SubMeshInstances[i] = new StdSubMeshInstance(*instance, new_mesh.GetSubMesh(i), instance->GetCompletion());
 
-		// Submeshes are reset to their default material, so the submesh order is unaltered
+		// Submeshes are reset to their default material,
+		// so the submesh order is unaltered
 		instance->SubMeshInstancesOrdered = instance->SubMeshInstances;
 
-		// TODO: We might try to store the previous mesh material here
+		// TODO: We might try to restore the previous mesh material here, using global material manager, maybe iff the number of submesh instances is unchanged.
 	}
 
 	// Update child bone of attach parent. If the bone does not exist anymore
@@ -143,34 +142,21 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 	for(unsigned int i = 0; i < Removal.size(); ++i)
 		instance->DetachMesh(Removal[i]);
 
-	// Update the animation tree. Leaf nodes which refer to an animation that
+	// Update custom nodes in the animation tree. Leaf nodes which refer to an animation that
 	// does not exist anymore are removed.
 	for (unsigned int i = instance->AnimationStack.size(); i > 0; --i)
-		if(!UpdateAnimationNode(instance, new_mesh, instance->AnimationStack[i-1]))
+		if(!UpdateAnimationNode(instance, instance->AnimationStack[i-1]))
 			instance->StopAnimation(instance->AnimationStack[i-1]);
 }
 
-bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh& new_mesh, StdMeshInstance::AnimationNode* node) const
+bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstance::AnimationNode* node) const
 {
+	const StdMesh& new_mesh = *instance->Mesh;
 	switch (node->GetType())
 	{
 	case StdMeshInstance::AnimationNode::LeafNode:
-		{
-			// Find dead animation
-			std::map<const StdMeshAnimation*, StdCopyStrBuf>::const_iterator iter = AnimationNames.find(node->Leaf.Animation);
-			assert(iter != AnimationNames.end());
-
-			// Update to new animation
-			node->Leaf.Animation = new_mesh.GetSkeleton().GetAnimationByName(iter->second);
-			if(!node->Leaf.Animation) return false;
-
-			// Clamp provider value
-			StdMeshInstance::ValueProvider* provider = node->GetPositionProvider();
-			C4Real min = Fix0;
-			C4Real max = ftofix(node->GetAnimation()->Length);
-			provider->Value = BoundBy(provider->Value, min, max);
-			return true;
-		}
+		// Animation pointer is updated by StdMeshAnimationUpdate
+		return true;
 	case StdMeshInstance::AnimationNode::CustomNode:
 		{
 			// Update bone index by bone name
@@ -182,8 +168,8 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 		}
 	case StdMeshInstance::AnimationNode::LinearInterpolationNode:
 		{
-			const bool left_result = UpdateAnimationNode(instance, new_mesh, node->GetLeftChild());
-			const bool right_result = UpdateAnimationNode(instance, new_mesh, node->GetRightChild());
+			const bool left_result = UpdateAnimationNode(instance, node->GetLeftChild());
+			const bool right_result = UpdateAnimationNode(instance, node->GetRightChild());
 
 			// Remove this node completely
 			if (!left_result && !right_result)
@@ -204,3 +190,76 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 	}
 }
 
+StdMeshAnimationUpdate::StdMeshAnimationUpdate(const StdMeshSkeletonLoader& skeleton_loader)
+{
+	// Store all animation names of all skeletons by pointer, we need those when
+	// updating the animation state of mesh instances after the update.
+	for(StdMeshSkeletonLoader::skeleton_iterator iter = skeleton_loader.skeletons_begin(); iter != skeleton_loader.skeletons_end(); ++iter)
+	{
+		const StdMeshSkeleton& skeleton = *iter->second;
+		for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = skeleton.Animations.begin(); iter != skeleton.Animations.end(); ++iter)
+		{
+			AnimationNames[&iter->second] = iter->first;
+		}
+	}
+}
+
+void StdMeshAnimationUpdate::Update(StdMeshInstance* instance) const
+{
+	// Update the animation tree. Leaf nodes which refer to an animation that
+	// does not exist anymore are removed.
+	for (unsigned int i = instance->AnimationStack.size(); i > 0; --i)
+		if(!UpdateAnimationNode(instance, instance->AnimationStack[i-1]))
+			instance->StopAnimation(instance->AnimationStack[i-1]);
+}
+
+bool StdMeshAnimationUpdate::UpdateAnimationNode(StdMeshInstance* instance, StdMeshInstance::AnimationNode* node) const
+{
+	const StdMesh& new_mesh = *instance->Mesh;
+	switch (node->GetType())
+	{
+	case StdMeshInstance::AnimationNode::LeafNode:
+		{
+			// Find dead animation
+			std::map<const StdMeshAnimation*, StdCopyStrBuf>::const_iterator iter = AnimationNames.find(node->Leaf.Animation);
+
+			// If this assertion fires, it typically means that UpdateAnimations() was called twice for the same mesh instance
+			assert(iter != AnimationNames.end());
+
+			// Update to new animation
+			node->Leaf.Animation = new_mesh.GetSkeleton().GetAnimationByName(iter->second);
+			if(!node->Leaf.Animation) return false;
+
+			// Clamp provider value
+			StdMeshInstance::ValueProvider* provider = node->GetPositionProvider();
+			C4Real min = Fix0;
+			C4Real max = ftofix(node->GetAnimation()->Length);
+			provider->Value = BoundBy(provider->Value, min, max);
+			return true;
+		}
+	case StdMeshInstance::AnimationNode::CustomNode:
+		// Nothing to do here; bone index is updated in StdMeshUpdate
+		return true;
+	case StdMeshInstance::AnimationNode::LinearInterpolationNode:
+		{
+			const bool left_result = UpdateAnimationNode(instance, node->GetLeftChild());
+			const bool right_result = UpdateAnimationNode(instance, node->GetRightChild());
+
+			// Remove this node completely
+			if (!left_result && !right_result)
+				return false;
+
+			// Note that either of this also removes this node (and replaces by
+			// the other child in the tree).
+			if (!left_result)
+				instance->StopAnimation(node->GetLeftChild());
+			if (!right_result)
+				instance->StopAnimation(node->GetRightChild());
+
+			return true;
+		}
+	default:
+		assert(false);
+		return false;
+	}
+}

@@ -14,10 +14,12 @@
  */
 
 // A loader for the OGRE .mesh binary file format
+#include <StdMesh.h>
 
 #ifndef INC_StdMeshLoader
 #define INC_StdMeshLoader
 #include <stdexcept>
+
 
 class StdMeshLoader
 {
@@ -38,11 +40,16 @@ public:
 class StdMeshSkeletonLoader
 {
 public:
-	void StoreSkeleton(const StdCopyStrBuf &filename, std::shared_ptr<StdMeshSkeleton> skeleton);
+	virtual ~StdMeshSkeletonLoader() {}
 
-	std::shared_ptr<const StdMeshSkeleton> GetSkeletonByName(const StdStrBuf& name) const;
-	void LoadSkeletonXml(const StdCopyStrBuf &filename, const char *sourcefile, size_t size);
-	void LoadSkeletonBinary(const StdCopyStrBuf &filename, const char *sourcefile, size_t size);
+	void StoreSkeleton(const char* groupname, const char* filename, std::shared_ptr<StdMeshSkeleton> skeleton);
+
+	virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const = 0;
+	std::shared_ptr<StdMeshSkeleton> GetSkeletonByName(const StdStrBuf& name) const;
+	void LoadSkeletonXml(const char* groupname, const char* filename, const char *sourcefile, size_t size);
+	void LoadSkeletonBinary(const char* groupname, const char* filename, const char *sourcefile, size_t size);
+
+	void ResolveIncompleteSkeletons();
 
 	static void MakeFullSkeletonPath(StdCopyStrBuf &out, const char* groupname, const char* filename)
 	{
@@ -52,8 +59,28 @@ public:
 		out.ToLowerCase();
 	}
 
+	void Clear()
+	{
+		Skeletons.clear();
+		AppendtoSkeletons.clear();
+		IncludeSkeletons.clear();
+	}
+
+	// Allows to iterate over loaded skeletons:
+	typedef std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>> SkeletonMap;
+	typedef SkeletonMap::const_iterator skeleton_iterator;
+
+	skeleton_iterator skeletons_begin() const { return Skeletons.begin(); }
+	skeleton_iterator skeletons_end() const { return Skeletons.end(); }
+
 private:
-	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>> Skeletons;
+	void DoResetSkeletons();
+	void DoAppendSkeletons();
+	void DoIncludeSkeletons();
+
+	SkeletonMap Skeletons;
+	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf> AppendtoSkeletons; // skeleton pointer is unique, id to append to is not
+	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf> IncludeSkeletons;  // skeleton pointer is unique, id to include is not
 };
 
 #define DEFINE_EXCEPTION(_cls, _text) class _cls : public StdMeshLoader::LoaderException { public: _cls(const char *msg = _text) : LoaderException(msg) {} }
