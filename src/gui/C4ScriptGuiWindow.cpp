@@ -295,16 +295,16 @@ void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 {
 	switch (type)
 	{
-	case frameDecoration:
+	case C4ScriptGuiWindowPropertyName::frameDecoration:
 		if (prop.deco) delete prop.deco;
 		break;
-	case onClickAction:
-	case onMouseInAction:
-	case onMouseOutAction:
-	case onCloseAction:
+	case C4ScriptGuiWindowPropertyName::onClickAction:
+	case C4ScriptGuiWindowPropertyName::onMouseInAction:
+	case C4ScriptGuiWindowPropertyName::onMouseOutAction:
+	case C4ScriptGuiWindowPropertyName::onCloseAction:
 		if (prop.action) delete prop.action;
 		break;
-	case text:
+	case C4ScriptGuiWindowPropertyName::text:
 		if (prop.strBuf) delete prop.strBuf;
 		break;
 	default:
@@ -1688,7 +1688,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 		mainWindowNeedsLayoutUpdate = false;
 	}
 
-	
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 
 	float childOffsetY = 0.0f; // for scrolling
 
@@ -1747,23 +1747,24 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), outDrawWdt, &sText, true);
 		float textYOffset = 0.0f, textXOffset = 0.0f;
 		if (style & C4ScriptGuiWindowStyleFlag::TextVCenter)
-			textYOffset = float(outDrawHgt)/2.0f - float(textHgt)/2.0f;
+			textYOffset = float(outDrawHgt) / 2.0f - float(textHgt) / 2.0f;
 		else if (style & C4ScriptGuiWindowStyleFlag::TextBottom)
-			textYOffset += float(outDrawHgt) - float(textHgt);
+			textYOffset = float(outDrawHgt) - float(textHgt);
 		if (style & C4ScriptGuiWindowStyleFlag::TextHCenter)
 		{
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = float(outDrawWdt)/ 2.0f - float(wdt) / 2.0f;
+			textXOffset = float(outDrawWdt) / 2.0f;
+			alignment = ACenter;
 		}
 		else if (style & C4ScriptGuiWindowStyleFlag::TextRight)
 		{
 			alignment = ARight;
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = float(outDrawWdt) - float(wdt);
+			textXOffset = float(outDrawWdt);
 		}
-		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, outDrawX + textXOffset, outDrawY + textYOffset, 0xffffffff, ALeft);
+		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, outDrawX + textXOffset, outDrawY + textYOffset, 0xffffffff, alignment);
 	}
 
 
