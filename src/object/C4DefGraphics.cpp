@@ -37,24 +37,6 @@
 #include <C4MeshAnimation.h>
 #include "StdMeshLoader.h"
 
-// Helper class to load additional resources required for meshes from
-// a C4Group.
-class C4DefGraphicsAdditionalResourcesLoader: public StdMeshSkeletonLoader
-{
-public:
-	C4DefGraphicsAdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
-
-	virtual StdStrBuf LoadSkeleton(const char* filename)
-	{
-		StdStrBuf ret;
-		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
-		return ret;
-	}
-
-private:
-	C4Group& Group;
-};
-
 //-------------------------------- C4DefGraphics -----------------------------------------------
 
 C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
@@ -226,10 +208,9 @@ bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMes
 	return true;
 }
 
-bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
+bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	C4DefGraphicsAdditionalResourcesLoader loader(hGroup);
 
 	// load skeletons
 	hGroup.ResetSearch();

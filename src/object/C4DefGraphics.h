@@ -67,7 +67,7 @@ public:
 	bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	bool LoadMesh(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
 	bool LoadSkeleton(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
-	bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group
+	bool Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fColorByOwner); // load graphics from group
 	C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 	void Clear(); // clear fields; delete additional graphics
 	bool IsMesh() const { return Type == TYPE_Mesh; }

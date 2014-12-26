@@ -29,7 +29,9 @@
 
 #include <C4Record.h>
 
-C4DefList::C4DefList()
+#include <StdMeshLoader.h>
+
+C4DefList::C4DefList() : SkeletonLoader(new StdMeshSkeletonLoader)
 {
 	Default();
 }
@@ -67,7 +69,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	// Load primary definition
 	if ((nDef=new C4Def))
 	{
-		if ( nDef->Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem) && Add(nDef,fOverload) )
+		if (nDef->Load(hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem) && Add(nDef, fOverload))
 			{ iResult++; fPrimaryDef=true; }
 		else
 			{ delete nDef; }
@@ -354,7 +356,7 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// Reload def
 	C4Group hGroup;
 	if (!hGroup.Open(pDef->Filename)) return false;
-	if (!pDef->Load( hGroup, dwLoadWhat, szLanguage, pSoundSystem )) return false;
+	if (!pDef->Load( hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem)) return false;
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();

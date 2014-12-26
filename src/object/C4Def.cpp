@@ -348,6 +348,7 @@ void C4Def::Clear()
 }
 
 bool C4Def::Load(C4Group &hGroup,
+				 StdMeshSkeletonLoader &loader,
                  DWORD dwLoadWhat,
                  const char *szLanguage,
                  C4SoundSystem *pSoundSystem)
@@ -384,7 +385,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (!LoadSolidMask(hGroup)) return false;
 
 	// Read surface bitmap, meshes, skeletons
-	if ((dwLoadWhat & C4D_Load_Bitmap) && !LoadGraphics(hGroup)) return false;
+	if ((dwLoadWhat & C4D_Load_Bitmap) && !LoadGraphics(hGroup, loader)) return false;
 
 	// Read string table
 	C4Language::LoadComponentHost(&StringTable, hGroup, C4CFN_ScriptStringTbl, szLanguage);
@@ -481,9 +482,9 @@ bool C4Def::LoadSolidMask(C4Group &hGroup)
 	return true;
 }
 
-bool C4Def::LoadGraphics(C4Group &hGroup)
+bool C4Def::LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader)
 {
-	if (!Graphics.Load(hGroup, !!ColorByOwner))
+	if (!Graphics.Load(hGroup, loader, !!ColorByOwner))
 	{
 		DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 		return false;

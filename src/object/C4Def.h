@@ -165,7 +165,7 @@ private:
 	void LoadMeshMaterials(C4Group &hGroup);
 	bool LoadParticleDef(C4Group &hGroup);
 	bool LoadSolidMask(C4Group &hGroup);
-	bool LoadGraphics(C4Group &hGroup);
+	bool LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader);
 	void LoadScript(C4Group &hGroup, const char* szLanguage);
 	void LoadClonkNames(C4Group &hGroup, C4ComponentHost* pClonkNames, const char* szLanguage);
 	void LoadRankNames(C4Group &hGroup, const char* szLanguage);
@@ -206,6 +206,7 @@ public:
 	void Clear();
 	void Default();
 	bool Load(C4Group &hGroup,
+		      StdMeshSkeletonLoader &loader,
 	          DWORD dwLoadWhat, const char *szLanguage,
 	          class C4SoundSystem *pSoundSystem = NULL);
 	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0,C4DrawTransform* trans=NULL);

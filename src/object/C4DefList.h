@@ -67,6 +67,8 @@ public:
 	// callback from font renderer: get ID image
 	virtual bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform);
 	virtual float GetFontImageAspect(const char* szImageTag);
+private:
+	std::unique_ptr<StdMeshSkeletonLoader> SkeletonLoader;
 };
 
 extern C4DefList Definitions;
