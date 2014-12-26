@@ -889,6 +889,11 @@ C4Rect C4Draw::GetClipRect() const
 	return C4Rect(iX, iY, iWdt, iHgt);
 }
 
+C4Rect C4Draw::GetOutRect() const
+{
+	return C4Rect(0, 0, RenderTarget->Wdt, RenderTarget->Hgt);
+}
+
 void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
 {
 	// No gamma effects

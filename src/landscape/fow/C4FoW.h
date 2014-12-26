@@ -10,6 +10,47 @@
 #include "C4FoWAmbient.h"
 #include "C4Shader.h"
 
+/** Simple transformation class which allows translation and scales in x and y.
+ * This is typically used to initialize shader uniforms to transform fragment
+ * coordinates to some texture coordinates (e.g. landscape coordinates or
+ * light texture coordinates). */
+class C4FragTransform
+{
+public:
+	C4FragTransform(): x(1.0f), y(1.0f), x0(0.0f), y0(0.0f) {}
+
+	// Multiplies from left
+	inline void Translate(float dx, float dy)
+	{
+		x0 += dx;
+		y0 += dy;
+	}
+
+	// Multiplies from left
+	inline void Scale(float sx, float sy)
+	{
+		x *= sx;
+		y *= sy;
+
+		x0 *= sx;
+		y0 *= sy;
+	}
+
+	inline void Get2x3(float transform[6])
+	{
+		transform[0] = x;
+		transform[1] = 0.f;
+		transform[2] = x0;
+		transform[3] = 0.f;
+		transform[4] = y;
+		transform[5] = y0;
+	}
+
+private:
+	float x, y;
+	float x0, y0;
+};
+
 /**
 	This class holds all lights for the objects. It forwards the update, invalidation and render calls each to the
 	lights.

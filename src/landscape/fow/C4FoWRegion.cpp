@@ -182,20 +182,23 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 }
 
-void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, float lightTransform[6]) const
+void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const
 {
 	const C4Rect& lightRect = getRegion();
-	const int32_t iLightWdt = getSurface()->Wdt;
-	const int32_t iLightHgt = getSurface()->Hgt;
-	const float zx = static_cast<float>(lightRect.Wdt) / clipRect.Wdt;
-	const float zy = static_cast<float>(lightRect.Hgt) / clipRect.Hgt;
 
-	lightTransform[0] = zx / iLightWdt;
-	lightTransform[1] = 0.f;
-	lightTransform[2] = -clipRect.x * zx / iLightWdt;
-	lightTransform[3] = 0.f;
-	lightTransform[4] = zy / iLightHgt;
-	lightTransform[5] = 1.0f - (lightRect.Hgt) / iLightHgt;
+	C4FragTransform trans;
+	// Clip offset
+	trans.Translate(-clipRect.x, -clipRect.y);
+	// Clip normalization (0,0 -> 1,1)
+	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
+	// Light surface normalization
+	trans.Scale(lightRect.Wdt, lightRect.Hgt);
+	trans.Scale(1.0f / getSurface()->Wdt, 1.0f / getSurface()->Hgt);
+	// Light surface Y offset
+	trans.Translate(0.0f, 1.0f - (float)lightRect.Hgt / (float)getSurface()->Hgt);
+
+	// Extract matrix
+	trans.Get2x3(lightTransform);
 }
 
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)

@@ -48,7 +48,7 @@ public:
 
 	// Fills a 2x3 matrix to transform fragment coordinates to ambient map texture coordinates
 	// TODO: This might be more precise for highly zoomed cases if the lightRect was using floating point accuracy
-	void GetFragTransform(const C4Rect& lightRect, const C4Rect& clipRect, float ambientTransform[6]) const;
+	void GetFragTransform(const C4Rect& lightRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const;
 
 	unsigned int GetLandscapeWidth() const { return LandscapeX; }
 	unsigned int GetLandscapeHeight() const { return LandscapeY; }

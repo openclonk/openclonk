@@ -207,6 +207,7 @@ public:
 	bool SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
 	bool SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
 	C4Rect GetClipRect() const;
+	C4Rect GetOutRect() const;
 	bool StorePrimaryClipper();
 	bool RestorePrimaryClipper();
 	bool NoPrimaryClipper();

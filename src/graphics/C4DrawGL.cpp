@@ -256,6 +256,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	if(pFoW != NULL)
 	{
+		const C4Rect OutRect = GetOutRect();
 		const C4Rect ClipRect = GetClipRect();
 		const C4Rect LightRect = pFoW->getRegion();
 
@@ -264,7 +265,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
 
 		float lightTransform[6];
-		pFoW->GetFragTransform(ClipRect, lightTransform);
+		pFoW->GetFragTransform(ClipRect, OutRect, lightTransform);
 		call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
 		// Ambient Light
@@ -273,7 +274,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
 
 		float ambientTransform[6];
-		pFoW->getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, ambientTransform);
+		pFoW->getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, OutRect, ambientTransform);
 		call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 	}
 
