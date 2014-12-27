@@ -69,14 +69,16 @@ public:
 		shader.LoadSlices(&::GraphicsResource.Files, "ObjectBaseShader.glsl");
 		shader.LoadSlices(&::GraphicsResource.Files, "MeshShader.glsl");
 
+		// Note that these shader slices are always loaded, even if lighting
+		// is disabled. The shaders then assume a default light if HAVE_LIGHT
+		// is not defined. This avoids completely flat shading for meshes
+		// that are shown as picture graphics for example.
+		shader.LoadSlices(&::GraphicsResource.Files, "ObjectLightShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "LightShader.glsl");
+
 		if (ssc & C4SSC_BASE) shader.LoadSlices(&::GraphicsResource.Files, "SpriteTextureShader.glsl");
 		if (ssc & C4SSC_OVERLAY) shader.LoadSlices(&::GraphicsResource.Files, "SpriteOverlayShader.glsl");
-		if (ssc & C4SSC_LIGHT)
-		{
-			shader.LoadSlices(&::GraphicsResource.Files, "ObjectLightShader.glsl");
-			shader.LoadSlices(&::GraphicsResource.Files, "LightShader.glsl");
-			shader.LoadSlices(&::GraphicsResource.Files, "AmbientShader.glsl");
-		}
+		if (ssc & C4SSC_LIGHT) shader.LoadSlices(&::GraphicsResource.Files, "AmbientShader.glsl");
 	}
 
 private:
