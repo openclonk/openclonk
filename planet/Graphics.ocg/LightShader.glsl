@@ -23,8 +23,9 @@ slice(texture+5)
 	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
 #else
-	// This is used for meshes; if no light is specified we put one that is coming from
-	// the camera.
+	// When lighting is disabled, put a light source coming from the camera.
+	// Note that in most cases this does not actually matter, since in the
+	// case with lighting disabled, ambient lighting takes fully over.
 	float lightBright = 0.5;
 	vec3 lightDir = vec3(0.0, 0.0, 1.0);
 #endif
@@ -32,7 +33,6 @@ slice(texture+5)
 
 slice(light)
 {
-	// Light direction
 	float light = 2.0 * lightBright * max(dot(normal, lightDir), 0.0);
 #ifdef HAVE_2PX
 	float light2 = 2.0 * lightBright * max(dot(normal2, lightDir), 0.0);

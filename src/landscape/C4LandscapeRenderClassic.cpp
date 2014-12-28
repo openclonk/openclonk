@@ -122,7 +122,7 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 	Surface32->Unlock();
 }
 
-void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light)
+void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light)
 {
 	// Ignore light for now
 	pDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,

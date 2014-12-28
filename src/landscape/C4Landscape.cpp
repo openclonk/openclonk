@@ -283,7 +283,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 	else if(pLandscapeRender)
 	{
 		DoRelights();
-		pLandscapeRender->Draw(cgo, *pLight);
+		pLandscapeRender->Draw(cgo, pLight);
 	}
 	if (Modulation) pDraw->DeactivateBlitModulation();
 }

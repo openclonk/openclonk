@@ -480,12 +480,12 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 
 	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
 	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
-	if (ssc & C4SSC_LIGHT)
-	{
-		shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
-		shader.LoadSlices(pGroups, "LightShader.glsl");
-		shader.LoadSlices(pGroups, "AmbientShader.glsl");
-	}
+
+	// In case light is disabled, these shaders use a default light source
+	// (typically ambient light everywhere).
+	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
+	shader.LoadSlices(pGroups, "LightShader.glsl");
+	shader.LoadSlices(pGroups, "AmbientShader.glsl");
 
 	if (!shader.Init(name, uniformNames))
 	{

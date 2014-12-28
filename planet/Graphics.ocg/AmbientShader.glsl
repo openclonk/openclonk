@@ -1,15 +1,22 @@
 
 // Ambient light calculation
 
+#ifdef HAVE_LIGHT
 uniform sampler2D ambientTex;
 
 uniform mat3x2 ambientTransform;
 uniform float ambientBrightness;
+#endif
 
 slice(texture+6)
 {
+#ifdef HAVE_LIGHT
 	// Ambient light
 	float ambient = texture2D(ambientTex, ambientTransform * vec3(gl_FragCoord.xy, 1.0)).r * ambientBrightness;
+#else
+	// Lighting disabled: Ambient light everywhere
+	float ambient = 1.0;
+#endif
 }
 
 slice(light+1)

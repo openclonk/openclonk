@@ -627,7 +627,8 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	}
 	// Initialize FoW
-	if (::Landscape.pFoW)
+	assert(pFoW == NULL);
+	if (::Landscape.pFoW && Player != NO_OWNER)
 		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(iPlayer));
 	return true;
 }

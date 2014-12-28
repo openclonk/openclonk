@@ -124,8 +124,6 @@ void C4LandscapeRenderGL::Clear()
 		glDeleteObjectARB(hMaterialTexture[i]);
 		hMaterialTexture[i] = 0;
 	}
-
-    Shader.Clear(); Shader.ClearSlices();
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -498,6 +496,32 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 
 const char *C4LandscapeRenderGL::UniformNames[C4LRU_Count+1];
 
+bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, const char* name, int ssc)
+{
+	// Create vertex shader (hard-coded)
+	shader.AddVertexDefaults();
+	hLandscapeTexCoord = shader.AddTexCoord("landscapeCoord");
+	if(ssc & C4SSC_LIGHT) hLightTexCoord = shader.AddTexCoord("lightCoord");
+
+	// Then load slices for fragment shader
+	shader.AddFragmentSlice(-1, "#define LANDSCAPE");
+	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT"); // sample light from light texture
+
+	shader.LoadSlices(pGroups, "UtilShader.glsl");
+	shader.LoadSlices(pGroups, "LandscapeShader.glsl");
+	shader.LoadSlices(pGroups, "LightShader.glsl");
+	shader.LoadSlices(pGroups, "AmbientShader.glsl");
+	shader.LoadSlices(pGroups, "ScalerShader.glsl");
+
+	// Initialise!
+	if (!shader.Init(name, UniformNames)) {
+		shader.ClearSlices();
+		return false;
+	}
+
+	return true;
+}
+
 bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 {
 	// No support?
@@ -509,20 +533,6 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 
 	// First, clear out all existing shaders
 	ClearShaders();
-
-	// Create vertex shader (hard-coded)
-	Shader.AddVertexDefaults();
-	hLandscapeTexCoord = Shader.AddTexCoord("landscapeCoord");
-	hLightTexCoord = Shader.AddTexCoord("lightCoord");
-
-	// Then load slices for fragment shader
-	Shader.AddFragmentSlice(-1, "#define LANDSCAPE");
-	Shader.AddFragmentSlice(-1, "#define HAVE_LIGHT"); // sample light from light texture
-	Shader.LoadSlices(pGroups, "UtilShader.glsl");
-	Shader.LoadSlices(pGroups, "LandscapeShader.glsl");
-	Shader.LoadSlices(pGroups, "LightShader.glsl");
-	Shader.LoadSlices(pGroups, "AmbientShader.glsl");
-	Shader.LoadSlices(pGroups, "ScalerShader.glsl");
 
 	// Make uniform name map
 	ZeroMem(UniformNames, sizeof(UniformNames));
@@ -540,24 +550,33 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_AmbientBrightness] = "ambientBrightness";
 	UniformNames[C4LRU_AmbientTransform]  = "ambientTransform";
 
-	// Initialise!
-	if (!Shader.Init("landscape", UniformNames)) {
-		Shader.ClearSlices();
+	if(!LoadShader(pGroups, Shader, "landscape", 0))
 		return false;
-	}
+	if(!LoadShader(pGroups, ShaderLight, "landscapeLight", C4SSC_LIGHT))
+		return false;
+
 	return true;
 }
 
 void C4LandscapeRenderGL::ClearShaders()
 {
-	if (!Shader.Initialised()) return;
-	Shader.Clear();
-	Shader.ClearSlices();
+	if (Shader.Initialised())
+	{
+		Shader.Clear();
+		Shader.ClearSlices();
+	}
+
+	if (ShaderLight.Initialised())
+	{
+		ShaderLight.Clear();
+		ShaderLight.ClearSlices();
+	}
 }
 
 void C4LandscapeRenderGL::RefreshShaders()
 {
 	Shader.Refresh("landscape", UniformNames);
+	ShaderLight.Refresh("landscapeLight", UniformNames);
 }
 
 bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
@@ -802,10 +821,10 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 	}
 }
 
-void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light)
+void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light)
 {
 	// Must have GL and be initialized
-	if(!pGL && !Shader.Initialised()) return;
+	if(!pGL && !Shader.Initialised() && !ShaderLight.Initialised()) return;
 	
 	// prepare rendering to surface
 	C4Surface *sfcTarget = cgo.Surface;
@@ -818,8 +837,12 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	// Clear error(s?)
 	while(glGetError()) {}
 
+	// Choose the right shader depending on whether we have dynamic lighting or not
+	const C4Shader* shader = &Shader;
+	if (Light) shader = &ShaderLight;
+
 	// Activate shader
-	C4ShaderCall ShaderCall(&Shader);
+	C4ShaderCall ShaderCall(shader);
 	ShaderCall.Start();
 
 	// Bind data
@@ -829,7 +852,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	ShaderCall.SetUniform2f(C4LRU_Center,
 	                        centerX / float(Surfaces[0]->Wdt),
 	                        centerY / float(Surfaces[0]->Hgt));
-	if (Shader.HaveUniform(C4LRU_MatMap))
+	if (shader->HaveUniform(C4LRU_MatMap))
 	{
 		GLfloat MatMap[256];
 		BuildMatMap(MatMap, NULL);
@@ -840,16 +863,19 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 	                        float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
 	                        float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
 
-	const C4Rect LightRect = Light.getRegion();
-	const C4Rect ClipRect = pDraw->GetClipRect();
-	const C4Rect OutRect = pDraw->GetOutRect();
-	float ambientTransform[6];
-	Light.getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, OutRect, ambientTransform);
-	ShaderCall.SetUniformMatrix2x3fv(C4LRU_AmbientTransform, 1, ambientTransform);
-	ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light.getFoW()->Ambient.GetBrightness());
+	if (Light)
+	{
+		const C4Rect LightRect = Light->getRegion();
+		const C4Rect ClipRect = pDraw->GetClipRect();
+		const C4Rect OutRect = pDraw->GetOutRect();
+		float ambientTransform[6];
+		Light->getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, OutRect, ambientTransform);
+		ShaderCall.SetUniformMatrix2x3fv(C4LRU_AmbientTransform, 1, ambientTransform);
+		ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light->getFoW()->Ambient.GetBrightness());
+	}
 
 	// Start binding textures
-	if(Shader.HaveUniform(C4LRU_LandscapeTex))
+	if(shader->HaveUniform(C4LRU_LandscapeTex))
 	{
 		GLint iLandscapeUnits[C4LR_SurfaceCount];
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
@@ -869,17 +895,15 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 		}
 		ShaderCall.SetUniform1iv(C4LRU_LandscapeTex, C4LR_SurfaceCount, iLandscapeUnits);
 	}
-	if(ShaderCall.AllocTexUnit(C4LRU_LightTex, GL_TEXTURE_2D))
+	if(Light && ShaderCall.AllocTexUnit(C4LRU_LightTex, GL_TEXTURE_2D))
 	{
-		glBindTexture(GL_TEXTURE_2D, Light.getSurface()->ppTex[0]->texName);
+		glBindTexture(GL_TEXTURE_2D, Light->getSurface()->ppTex[0]->texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(ShaderCall.AllocTexUnit(C4LRU_AmbientTex, GL_TEXTURE_2D))
+	if(Light && ShaderCall.AllocTexUnit(C4LRU_AmbientTex, GL_TEXTURE_2D))
 	{
-		glBindTexture(GL_TEXTURE_2D, Light.getFoW()->Ambient.Tex);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, Light->getFoW()->Ambient.Tex);
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_ScalerTex, GL_TEXTURE_2D))
 	{
@@ -915,12 +939,16 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 
 	// Calculate coordinates into light texture
 	FLOAT_RECT lTexBlt;
-	int32_t iLightWdt = Light.getSurface()->Wdt,
-		    iLightHgt = Light.getSurface()->Hgt;
-	lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;
-	lTexBlt.top   = 1.0 - (fy - LightRect.y) / iLightHgt;
-	lTexBlt.right =       (fx + cgo.Wdt - LightRect.x) / iLightWdt;
-	lTexBlt.bottom= 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+	if (Light)
+	{
+		const C4Rect LightRect = Light->getRegion();
+		int32_t iLightWdt = Light->getSurface()->Wdt,
+			    iLightHgt = Light->getSurface()->Hgt;
+		lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;
+		lTexBlt.top   = 1.0 - (fy - LightRect.y) / iLightHgt;
+		lTexBlt.right =       (fx + cgo.Wdt - LightRect.x) / iLightWdt;
+		lTexBlt.bottom= 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+	}
 
 	// Calculate coordinates on screen (zoomed!)
 	FLOAT_RECT tTexBlt;
@@ -940,7 +968,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Ligh
 
 	#define VERTEX(x, y) \
 		glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
-		glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
+		if (Light) glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
 		glVertex2f(tTexBlt.x, tTexBlt.y);
 
 	VERTEX(left, top);

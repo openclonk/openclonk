@@ -76,7 +76,7 @@ public:
 	// the given rectangle
 	virtual void Update(C4Rect Rect, C4Landscape *pSource) = 0;
 
-	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion &Light) = 0;
+	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion *Light) = 0;
 };
 
 #ifndef USE_CONSOLE
@@ -92,6 +92,7 @@ private:
 
 	// shader
 	C4Shader Shader;
+	C4Shader ShaderLight;
 	static const char *UniformNames[];
 	GLenum hLandscapeTexCoord, hLightTexCoord;
 
@@ -115,13 +116,14 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
 
 	void RefreshShaders();
 
 private:
 	bool InitLandscapeTexture();
 	bool InitMaterialTexture(C4TextureMap *pMap);
+	bool LoadShader(C4GroupSet *pGraphics, C4Shader& shader, const char* name, int ssc);
 	bool LoadShaders(C4GroupSet *pGraphics);
     void ClearShaders();
 	bool LoadScaler(C4GroupSet *pGraphics);
@@ -151,7 +153,7 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
 
 };
 
