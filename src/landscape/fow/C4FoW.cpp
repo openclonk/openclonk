@@ -72,7 +72,7 @@ void C4FoW::Remove(C4Object *pObj)
 		return;
 
 	// Remove
-	(pPrev ? pLights : pPrev->pNext) = pLight->getNext();
+	(pPrev ? pPrev->pNext : pLights) = pLight->getNext();
 	delete pLight;
 }
 
