@@ -583,6 +583,7 @@ else()
 endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPWin32.cpp
 		src/platform/C4CrashHandlerWin32.cpp
 		src/res/engine.rc
 		src/res/resource.h
@@ -759,7 +760,6 @@ endif()
 CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 if(WIN32 AND NOT HAVE_NATUPNP_H)
 	include_directories(thirdparty/natupnp)
-	set(HAVE_NATUPNP_H TRUE CACHE BOOL "natupnp.h available" FORCE)
 endif()
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
@@ -826,11 +826,7 @@ if(HAVE_EXECINFO_H)
 	endif()
 endif()
 
-if(HAVE_NATUPNP_H)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPWin32.cpp
-	)
-else()
+if(NOT WIN32)
 	FIND_PACKAGE(Upnp)
 	SET(HAVE_UPNP ${UPNP_FOUND})
 	if(UPNP_FOUND)
