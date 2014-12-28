@@ -86,6 +86,7 @@ C4Viewport::~C4Viewport()
 
 void C4Viewport::Clear()
 {
+	if (pFoW) { delete pFoW; pFoW = NULL; }
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
 	ViewX=ViewY=0;
@@ -568,6 +569,7 @@ void C4Viewport::UpdateViewPosition()
 void C4Viewport::Default()
 {
 	pWindow=NULL;
+	pFoW = NULL;
 	Player=0;
 	ViewX=ViewY=0;
 	ViewWdt=ViewHgt=0;
