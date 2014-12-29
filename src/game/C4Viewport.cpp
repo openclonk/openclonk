@@ -214,6 +214,16 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	// --- activate FoW here ---
 
+	// Render FoW only if active for player
+	C4FoWRegion* pFoW = NULL;
+	if (Player != NO_OWNER)
+	{
+		C4Player *pPlr = ::Players.Get(Player);
+		assert(pPlr != NULL);
+
+		if(pPlr->fFogOfWar) pFoW = this->pFoW;
+	}
+
 	// Update FoW
 	if (pFoW)
 	{
