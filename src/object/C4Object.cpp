@@ -395,6 +395,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pCont->SetOCF();
 		Contained=NULL;
 	}
+	// Light system
+	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
 	// Object info
 	if (Info) Info->Retire();
 	Info = NULL;
@@ -1123,9 +1125,8 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
-	// ensure objects that won't be affected by dead-plrview-decay are handled properly
-	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
-		SetPlrViewRange(0);
+	// Remove from light sources
+	SetPlrViewRange(0);
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
