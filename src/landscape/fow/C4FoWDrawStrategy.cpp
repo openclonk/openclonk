@@ -11,7 +11,6 @@ void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 {
 	pass = passPar;
 
-	glShadeModel( GL_SMOOTH ); 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -68,7 +67,6 @@ void C4FoWDrawLightTextureStrategy::DrawLightVertex(float x, float y)
 
 void C4FoWDrawWireframeStrategy::Begin(int32_t pass)
 {
-	glShadeModel( GL_SMOOTH ); 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
 
