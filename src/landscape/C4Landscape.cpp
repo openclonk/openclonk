@@ -1353,7 +1353,9 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Create FoW
-	pFoW = new C4FoW();
+	assert(pFoW == NULL);
+	if (Game.C4S.Game.FoWEnabled)
+		pFoW = new C4FoW();
 
 	// Create renderer
 #ifndef USE_CONSOLE
@@ -1411,7 +1413,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	Game.FixRandom(Game.RandomSeed);
 
 	// Create ambient light map after landscape creation
-	pFoW->Ambient.CreateFromLandscape(*this, 10., 50., 0.25);
+	if (pFoW) pFoW->Ambient.CreateFromLandscape(*this, 10., 50., 0.25);
 	Game.SetInitProgress(84);
 
 	// Success

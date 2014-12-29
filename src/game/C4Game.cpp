@@ -2218,11 +2218,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 	// Weather
 	if (fLandscapeLoaded) Weather.Init(!C4S.Head.SaveGame);
-	SetInitProgress(95);
-
-	// FoW-color
-	FoWColor = C4S.Game.FoWColor;
-
 	SetInitProgress(96);
 
 	// close any gfx groups, because they are no longer needed (after sky is initialized)

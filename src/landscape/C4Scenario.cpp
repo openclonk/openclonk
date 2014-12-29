@@ -189,7 +189,7 @@ void C4SGame::Default()
 {
 	Goals.Clear();
 	Rules.Clear();
-	FoWColor=0;
+	FoWEnabled = true;
 }
 
 void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -203,7 +203,7 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 
 	pComp->Value(mkNamingAdapt(Goals,                    "Goals",               C4IDList()));
 	pComp->Value(mkNamingAdapt(Rules,                    "Rules",               C4IDList()));
-	pComp->Value(mkNamingAdapt(FoWColor,                 "FoWColor",            0u));
+	pComp->Value(mkNamingAdapt(FoWEnabled,               "FoWEnabled",          true));
 }
 
 void C4SPlrStart::Default()

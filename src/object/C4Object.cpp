@@ -4205,7 +4205,7 @@ bool C4Object::SetPlrViewRange(int32_t iToRange)
 void C4Object::PlrFoWActualize()
 {
 	C4Player *pPlr;
-	Landscape.pFoW->Add(this);
+	if (Landscape.pFoW) Landscape.pFoW->Add(this);
 	// single owner?
 	if (ValidPlr(Owner))
 	{
