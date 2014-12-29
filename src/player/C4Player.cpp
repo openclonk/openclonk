@@ -77,11 +77,6 @@ void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
 	if (ViewCursor==pObj) ViewCursor = NULL;
 	// View
 	if (ViewTarget==pObj) ViewTarget=NULL;
-	// FoW
-	// (do not clear locals!)
-	// no clear when death to do normal decay
-	if (!fDeath)
-		while (FoWViewObjs.Remove(pObj)) {}
 	// Menu
 	Menu.ClearPointers(pObj);
 	// messageboard-queries
@@ -187,17 +182,6 @@ void C4Player::Execute()
 	UpdateView();
 	ExecuteControl();
 	Menu.Execute();
-
-	// decay of dead viewtargets
-	for (C4Object *pDeadClonk : FoWViewObjs)
-	{
-		if (!pDeadClonk->GetAlive() && (pDeadClonk->Category & C4D_Living) && pDeadClonk->Status)
-		{
-			pDeadClonk->PlrViewRange -= 10;
-			if (pDeadClonk->PlrViewRange <= 0)
-				FoWViewObjs.Remove(pDeadClonk);
-		}
-	}
 
 	// ::Game.iTick35
 	if (!::Game.iTick35 && Status==PS_Normal)
@@ -636,13 +620,6 @@ bool C4Player::ScenarioInit()
 	// set initial hostility by team info
 	if (Team) SetTeamHostility();
 
-	if (fFogOfWar && !fFogOfWarInitialized)
-	{
-		fFogOfWarInitialized = true;
-		// reset view objects
-		::Objects.AssignPlrViewRange();
-	}
-
 	// Scenario script initialization
 	::GameScript.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
 	                        C4VInt(ptx),
@@ -674,24 +651,13 @@ bool C4Player::FinalInit(bool fInitialScore)
 	// Update counts, pointers, views
 	Execute();
 
-	// Restore FoW after savegame
-	if (fFogOfWar && !fFogOfWarInitialized)
-	{
-		fFogOfWarInitialized = true;
-		// reset view objects
-		::Objects.AssignPlrViewRange();
-	}
-
 	return true;
 }
 
 void C4Player::SetFoW(bool fEnable)
 {
-	// enable FoW
-	if (fEnable && !fFogOfWarInitialized)
-		::Objects.AssignPlrViewRange();
 	// set flag
-	fFogOfWar = fFogOfWarInitialized = fEnable;
+	fFogOfWar = fEnable;
 }
 
 bool C4Player::DoWealth(int32_t iChange)
@@ -888,8 +854,6 @@ void C4Player::Clear()
 	Menu.Clear();
 	BigIcon.Clear();
 	fFogOfWar=true;
-	FoWViewObjs.Clear();
-	fFogOfWarInitialized=false;
 	while (pMsgBoardQuery)
 	{
 		C4MessageBoardQuery *pNext = pMsgBoardQuery->pNext;
@@ -915,8 +879,7 @@ void C4Player::Default()
 	LocalControl=false;
 	BigIcon.Default();
 	Next=NULL;
-	fFogOfWar=true; fFogOfWarInitialized=false;
-	FoWViewObjs.Default();
+	fFogOfWar=true;
 	LeagueEvaluated=false;
 	GameJoinTime=0; // overwritten in Init
 	pstatControls = pstatActions = NULL;
@@ -1116,8 +1079,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxVal,     "ZoomLimitMaxVal",      Fix0));
 	pComp->Value(mkNamingAdapt(ZoomVal,             "ZoomVal",              Fix0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
-	bool bForceFogOfWar = false;
-	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
 	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
 	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
 	pComp->Value(mkNamingAdapt(CurrentScore,        "Score",                0));

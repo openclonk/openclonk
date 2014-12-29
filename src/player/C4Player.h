@@ -108,8 +108,6 @@ public:
 	bool ShowStartup;
 	int32_t FlashCom; // NoSave //
 	bool fFogOfWar;
-	bool fFogOfWarInitialized; // No Save //
-	C4ObjectList FoWViewObjs; // No Save //
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
 	C4Fixed ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game

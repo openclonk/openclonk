@@ -4168,21 +4168,9 @@ bool C4Object::SetOwner(int32_t iOwner)
 		}
 	// no change?
 	if (Owner == iOwner) return true;
-	// remove old owner view
-	if (ValidPlr(Owner))
-	{
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-	}
-	else
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
 	Owner=iOwner;
-	if (Owner != NO_OWNER)
-		// add to plr view
-		PlrFoWActualize();
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
@@ -4205,26 +4193,7 @@ bool C4Object::SetPlrViewRange(int32_t iToRange)
 
 void C4Object::PlrFoWActualize()
 {
-	C4Player *pPlr;
 	if (Landscape.pFoW) Landscape.pFoW->Add(this);
-	// single owner?
-	if (ValidPlr(Owner))
-	{
-		// single player's FoW-list
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-	}
-	// no owner?
-	else
-	{
-		// all players!
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-		{
-			while (pPlr->FoWViewObjs.Remove(this)) {}
-			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-		}
-	}
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
