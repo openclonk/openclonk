@@ -6,6 +6,10 @@
 	true. Then Test*_OnFinished() is called, to be able to reset 
 	the scenario for the next test.
 	
+	With LaunchTest(int nr) a specific test can be launched when
+	called during runtime. A test can be skipped by calling the
+	function SkipTest().
+	
 	@author Maikel
 */
 
@@ -18,8 +22,10 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
-	// Set zoom and move player to the middle of the scenario.
+	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	
+	// Move player to the start of the scenario.
 	GetCrew(plr)->SetPosition(120, 150);
 	
 	// Add test control effect.
@@ -27,7 +33,7 @@ protected func InitializePlayer(int plr)
 	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
-	return true;
+	return;
 }
 
 
@@ -121,47 +127,74 @@ global func Test1_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(50);
-	CreateObjectAbove(WindGenerator, 88, 160, plr);
+	CreateObjectAbove(WindGenerator, 72, 160, plr);
 	
-	// Power consumer: one pump.
-	var pump = CreateObjectAbove(Pump, 124, 160, plr);
-	var source = CreateObjectAbove(Pipe, 176, 292, plr);
-	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
-	source_pipe->SetActionTargets(source, pump);
-	pump->SetSource(source_pipe);
-	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
-	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
-	drain_pipe->AddVertex(208, 48);
-	drain_pipe->SetActionTargets(drain, pump);
-	pump->SetDrain(drain_pipe);
+	// Power consumer: one workshop.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
+	workshop->CreateContents(Wood, 2);
+	workshop->CreateContents(Metal, 2);
+	workshop->AddToQueue(Shovel, 2);
 	
 	// Log what the test is about.
-	Log("A steady power source (wind generator) supplying a steady power consumer (pump).");
+	Log("A steady power source (wind generator) supplying a steady power consumer (workshop).");
 	return true;
 }
 
 global func Test1_Completed()
 {
-	if (GetMaterial(248, 84) == Material("Water"))
+	if (ObjectCount(Find_ID(Shovel)) >= 2)
 		return true;
 	return false;
 }
 
 global func Test1_OnFinished()
 {
-	// Restore water levels.
-	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
-	for (var x = 216; x <= 280; x++)
-		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
-	// Remove wind generator, pump and the pipes.
-	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Pump), Find_ID(Pipe)));
+	// Remove wind generator, compensator and workshop.
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Compensator), Find_ID(ToolsWorkshop)));
+	return;
+}
+
+// Test for one on-demand source and a few consumers.
+global func Test2_OnStart(int plr)
+{
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 100, 160, plr);
+	var coal = engine->CreateContents(Coal, 1);
+	coal->SetCon(10);
+	
+	// Power consumer: sawmill.
+	CreateObject(Sawmill, 40, 160, plr);
+	for (var i = 0; i < 1; i++)
+		CreateObject(Tree_Coconut, 40, 160)->ChopDown();
+	
+	// Power consumer: armory.
+	var armory = CreateObject(Armory, 280, 160, plr);
+	armory->CreateContents(Firestone, 8);
+	armory->CreateContents(Metal, 8);
+	armory->AddToQueue(IronBomb, 8);
+	
+	// Log what the test is about.
+	Log("An on-demand power source (steam engine) supplying a few on-demand power consumers (sawmill, armory).");
+	return true;	
+}
+
+global func Test2_Completed()
+{
+	// One wood is being burned as fuel by the steam engine: 3 * 4 - 1 = 11.
+	if (ObjectCount(Find_ID(Wood)) >= 3 && ObjectCount(Find_ID(IronBomb)) >= 8)
+		return true;
+	return false;
+}
+
+global func Test2_OnFinished()
+{
+	// Remove steam engine, sawmill, armory.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Sawmill), Find_ID(Armory)));
 	return;
 }
 
 // Test for one on-demand source and one steady consumer.
-global func Test2_OnStart(int plr)
+global func Test3_OnStart(int plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -187,14 +220,14 @@ global func Test2_OnStart(int plr)
 	return true;
 }
 
-global func Test2_Completed()
+global func Test3_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test2_OnFinished()
+global func Test3_OnFinished()
 {
 	// Restore water levels.
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
@@ -208,7 +241,7 @@ global func Test2_OnFinished()
 }
 
 // Test one steady source with one steady consumer and a prioritized on-demand consumer.
-global func Test3_OnStart(int plr)
+global func Test4_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
@@ -238,14 +271,14 @@ global func Test3_OnStart(int plr)
 	return true;
 }
 
-global func Test3_Completed()
+global func Test4_Completed()
 {
 	if (FindObject(Find_ID(ElevatorCase), Find_InRect(372, 230, 40, 40)))
 		return true;
 	return false;
 }
 
-global func Test3_OnFinished()
+global func Test4_OnFinished()
 {
 	// Restore water levels.
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
@@ -261,7 +294,7 @@ global func Test3_OnFinished()
 }
 
 // Basic test for power storage: one steady supplier, one storage and one consumer which needs energy from both sources.
-global func Test4_OnStart(int plr)
+global func Test5_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
@@ -281,14 +314,14 @@ global func Test4_OnStart(int plr)
 	return true;
 }
 
-global func Test4_Completed()
+global func Test5_Completed()
 {
 	if (ObjectCount(Find_ID(Shovel)) >= 2)
 		return true;
 	return false;
 }
 
-global func Test4_OnFinished()
+global func Test5_OnFinished()
 {
 	// Remove wind generator, compensator and workshop.
 	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Compensator), Find_ID(ToolsWorkshop)));
@@ -296,7 +329,7 @@ global func Test4_OnFinished()
 }
 
 // Test one overproducing on-demand producer with power storage and one steady consumer.
-global func Test5_OnStart(int plr)
+global func Test6_OnStart(int plr)
 {
 	// Power source: one steam engine.
 	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
@@ -320,37 +353,78 @@ global func Test5_OnStart(int plr)
 	return true;
 }
 
-global func Test5_Completed()
+global func Test6_Completed()
 {
 	if (ObjectCount(Find_ID(Shovel)) >= 16)
 		return true;
 	return false;
 }
 
-global func Test5_OnFinished()
+global func Test6_OnFinished()
 {
 	// Remove steam engine, compensators and workshop.
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Compensator), Find_ID(ToolsWorkshop)));
 	return;
 }
 
-/*-- Helper Functions --*/
-
-global func RemoveTest()
+// Test an on-demand producer as back-up for a steady producer with for steady consumers.
+global func Test7_OnStart(int plr)
 {
-	// Remove all objects besides the clonk.
-	RemoveAll(Find_Not(Find_OCF(OCF_CrewMember)));
+	// Power source: one steam engine.
+	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	engine->CreateContents(Coal, 1);
 	
-	// Remove all effects besides the test control effect.
-	/*var effect;
-	var index = 0;
-	while (effect = GetEffect("*", nil, index))
+	// Power source: wind generators which are turned on and off again due to wind.
+	CreateObject(WindGenerator, 356, 104, plr);
+	SetWindFixed(80);
+	Schedule(nil, "SetWindFixed(0)", 5 * 36);
+	Schedule(nil, "SetWindFixed(80)", 8 * 36);
+	
+	// Power connection: flagpole.
+	CreateObject(Flagpole, 328, 132, plr);
+	
+	// Power consumer: two pumps.
+	for (var i = 0; i < 2; i++)
 	{
-		Log("%v", effect);
-		index++;
-	}*/
+		var pump = CreateObject(Pump, 92 + i * 20, 160, plr);
+		var source = CreateObject(Pipe, 176, 292, plr);
+		var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+		source_pipe->SetActionTargets(source, pump);
+		pump->SetSource(source_pipe);
+		var drain = CreateObject(Pipe, 248, 100, plr);
+		var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+		drain_pipe->AddVertex(208, 48);
+		drain_pipe->SetActionTargets(drain, pump);
+		pump->SetDrain(drain_pipe);
+	}
+	
+	// Log what the test is about.
+	Log("An on-demand producer (steam engine) as back-up for a steady producer (wind generator) with for steady consumers (pumps).");
+	return true;
+}
+
+global func Test7_Completed()
+{
+	if (GetMaterial(248, 48) == Material("Water"))
+		return true;
+	return false;
+}
+
+global func Test7_OnFinished()
+{
+	// Restore water levels.
+	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+	for (var x = 216; x <= 280; x++)
+		for (var y = 24; y <= 120; y++)
+			if (GetMaterial(x, y) == Material("Water"))
+				ClearFreeRect(x, y, 1, 1);
+	// Remove steam engine, wind generator, flagpole, pump and the pipes.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe)));
 	return;
 }
+
+
+/*-- Helper Functions --*/
 
 global func SetWindFixed(int strength)
 {

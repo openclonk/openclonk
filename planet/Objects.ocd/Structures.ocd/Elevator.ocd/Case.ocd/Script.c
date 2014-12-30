@@ -70,6 +70,7 @@ func Destruction()
 		wood->SetXDir(RandomX(-10, 10));
 		wood->SetYDir(RandomX(-2, 0));
 	}
+	return _inherited(...);
 }
 
 func LostElevator()
@@ -126,8 +127,8 @@ func ExecuteSync()
 	SetPartnerVertices(partner->GetX() - GetX(), partner->GetY() - GetY());
 	
 	// reset power usage
-	UnmakePowerConsumer();
-	partner->UnmakePowerConsumer();
+	//UnmakePowerConsumer();
+	//partner->UnmakePowerConsumer();
 	
 	// can now attach partner on one of the new vertices
 	partner->SetAction("Attach", this);
@@ -292,45 +293,38 @@ func FxFetchVehiclesTimer(target, effect, time)
 	return 1;
 }
 
-/* Energy */
+/*-- Power Consumption --*/
 
-func GetNeededPower()
+private func GetNeededPower()
 {
-	var p = Elevator_needed_power;
-	if(partner_was_synced) p = 2 * p;
-	return p;
+	if (partner_was_synced)
+		return 2 * Elevator_needed_power;
+	return Elevator_needed_power;
 }
 
 
-// for the position
-func GetActualPowerConsumer()
+// The elevator is the actual power consumer.
+public func GetActualPowerConsumer()
 {
 	return elevator;
 }
 
-// the lift may not need power when not used
-func QueryWaivePowerRequest()
-{
-	// no clonk on elevator? must be automatic
-	if(CheckIdle()) return 20;
-	return 0;
-}
-
+// Elevator has a high priority.
 public func GetConsumerPriority() { return 100; }
 
-func OnNotEnoughPower()
+public func OnNotEnoughPower()
 {
 	_inherited(...); // on purpose before the rest
 	
-	if(GetYDir())
+	if (GetYDir())
 		StoreMovementData();
 	else; // already has data stored
 	
-	if(GetAction() != "DriveIdle")
+	if (GetAction() != "DriveIdle")
 		Halt(false, true);
 }
 
-func OnEnoughPower()
+public func OnEnoughPower()
 {
 	_inherited(...); // on purpose before the rest
 	RestoreMovementData();
@@ -393,7 +387,7 @@ func SetMoveDirection(int dir, bool user_requested, bool drill)
 		speed = GetDrillSpeed();
 	}
 	
-	if(CurrentlyHasPower())
+	//if(CurrentlyHasPower())
 	{
 		SetYDir(dir * speed);
 		SetAction(action);
@@ -402,10 +396,10 @@ func SetMoveDirection(int dir, bool user_requested, bool drill)
 
 		elevator->StartEngine();
 	}
-	else
+	//else
 	{
 		StoreMovementData(dir * speed, action);
-		MakePowerConsumer(GetNeededPower());
+	//	MakePowerConsumer(GetNeededPower());
 	}
 }
 
@@ -428,7 +422,7 @@ func Halt(bool user_requested, bool power_out)
 	
 	if(user_requested)
 	{		
-		UnmakePowerConsumer();
+		//UnmakePowerConsumer();
 	}
 	else
 	{
@@ -440,7 +434,7 @@ func Halt(bool user_requested, bool power_out)
 
 func FxStopPowerConsumptionTimer(object target, effect, int time)
 {
-	UnmakePowerConsumer();
+	//UnmakePowerConsumer();
 	return -1;
 }
 

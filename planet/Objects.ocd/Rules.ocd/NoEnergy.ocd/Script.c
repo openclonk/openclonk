@@ -14,14 +14,14 @@ protected func Initialize()
 		return;
 	
 	// If there are no power consumers yet, there is nothing to be done.
-	if (Library_Power_power_compounds == nil) 
+	if (LIB_POWR_Networks == nil) 
 		return;
 	
 	// Update all consumers forcefully.
 	var remember = [];
 	
 	// Get all power compounds (bases).
-	for (var base in Library_Power_power_compounds)
+	for (var base in LIB_POWR_Networks)
 	{
 		// Iterate through all registered consumers & producers, these are not the sleeping power links.
 		for (var i = GetLength(base.power_links) - 1; i >= 0; --i)
@@ -90,12 +90,8 @@ public func DestructionEx()
 	{
 		var request = obj.last_request;
 		var amount = obj.last_amount;
-		// Did not requested power aka "is not running".
-		if (request == PowerConsumer_LPR_None) 
-			continue;
 		// Temporarily stop consuming power to make sure the callback order is correct.
 		obj->OnNotEnoughPower();
-		obj.last_request = PowerConsumer_LPR_None;
 		obj.last_amount = 0;
 		obj->MakePowerConsumer(amount);
 	}

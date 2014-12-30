@@ -531,9 +531,14 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Callback to the producer.
 	this->~OnProductionStart(effect.Product);
 	
-	// consume power
-	if(PowerNeed() > 0)
-		MakePowerConsumer(PowerNeed());
+	// Consume power by registering as a consumer for the needed amount.
+	// But first hold the production until the power system gives it ok.
+	if (PowerNeed() > 0)
+	{
+		this->~OnProductionHold(effect.Product, effect.Duration);
+		effect.Active = false;
+		RegisterPowerRequest(PowerNeed());
+	}
 	
 	return 1;
 }
@@ -541,7 +546,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 public func OnNotEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
-	if(effect)
+	if (effect)
 	{
 		effect.Active = false;
 		this->~OnProductionHold(effect.Product, effect.Duration);
@@ -554,7 +559,7 @@ public func OnNotEnoughPower()
 public func OnEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
-	if(effect)
+	if (effect)
 	{
 		effect.Active = true;
 		this->~OnProductionContinued(effect.Product, effect.Duration);
@@ -586,7 +591,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if(temp) return;
 	
 	// no need to consume power anymore
-	UnmakePowerConsumer();
+	UnregisterPowerRequest();
 		
 	if (reason != 0)
 		return 1;

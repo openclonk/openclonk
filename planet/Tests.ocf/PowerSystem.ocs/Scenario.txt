@@ -3,3 +3,6 @@ Title=Power System
 
 [Landscape]
 NoScan=1
+
+[Weather]
+Wind=0,0,-100,100

@@ -1,4 +1,9 @@
-/*-- compensator --*/
+/**
+	Compensator
+	A small structure which stores surplus energy available in a network.
+	
+	@author Zapper, Maikel
+*/
 
 #include Library_Structure
 #include Library_Ownable
@@ -8,189 +13,253 @@
 
 local DefaultFlagRadius = 90;
 
-static const Compensator_max_seconds = 15;
-static const Compensator_power_usage = 50;
+// Power storage variables.
+local stored_power;
+static const POWR_COMP_PowerUsage = 50;
+static const POWR_COMP_MaxStorage = 27000; // 15 * 36 * 50
 
-local power_seconds;
+// Variables for displaying the charge.
+local leftcharge, rightcharge, anim;
 
-
-local Name = "$Name$";
-local Description = "$Description$";
-local leftcharge, rightcharge, lastcharge;
-local anim;
-
-func Construction(object creator)
+protected func Construction(object creator)
 {
-	power_seconds = 0;
-	lastcharge = 0;
-	
+	stored_power = 0;
 	anim = PlayAnimation("Charge", 1, Anim_Const(GetAnimationLength("Charge")), Anim_Const(1000));
-
 	SetAction("Default");
 	return _inherited(creator, ...);
 }
 
-func Initialize()
+protected func Initialize()
 {
 	leftcharge = CreateObjectAbove(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);
 	leftcharge->Init(this);
 	rightcharge = CreateObjectAbove(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
 	rightcharge->Init(this);
-	AddTimer("EnergyCheck", 100);
+	AddTimer("PowerCheck", 10);
 	return _inherited(...);
 }
 
-public func GetProducerPriority() { return 50 * (power_seconds - Compensator_max_seconds) / Compensator_max_seconds; }
+protected func Incineration()
+{
+	if (stored_power == 0)
+		return Extinguish();
+	
+	for (var i = 0; i < 2; ++i)
+	{
+		var x = -7 + 14 * i;
+		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER);
+		// Set controller for correct kill tracing.
+		b->SetController(GetController()); 
+		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
+	}
+	return Explode(30);
+}
+
+
+/*-- Power --*/
+
+public func SetCharge(int to)
+{
+	stored_power = BoundBy(to, 0, POWR_COMP_MaxStorage);
+	RefreshAnimationPosition();
+	return;
+}
+
+private func PowerCheck()
+{
+	// Not fully constructed or neutral compensators don't do anything.
+	if (GetCon() < 100 || GetOwner() == NO_OWNER)
+		return;
+		
+	// Register as producer while still consuming if power level is above 2/3.	
+	if (GetEffect("ConsumePower", this))
+	{
+		if (stored_power >= 2 * POWR_COMP_MaxStorage / 3)
+			RegisterPowerProduction(POWR_COMP_PowerUsage);
+		return;
+	}
+	
+	// Register as consumer while still producing if power level is below 1/3.	
+	if (GetEffect("ProducePower", this))
+	{
+		if (stored_power <= 1 * POWR_COMP_MaxStorage / 3)
+			RegisterPowerRequest(POWR_COMP_PowerUsage);
+		return;
+	}
+		
+	// Register as consumer if stored power is zero.
+	if (stored_power == 0)
+	{
+		RegisterPowerRequest(POWR_COMP_PowerUsage);
+		return; 
+	}
+	
+	// Register as producer if storage is full.
+	if (stored_power >= POWR_COMP_MaxStorage)
+	{
+		RegisterPowerProduction(POWR_COMP_PowerUsage);
+		return;	
+	}
+	return;
+}
+
+
+/*-- Power Production --*/
+
+// Produces power on demand, so not steady.
+public func IsSteadyPowerProducer() { return false; }
+
+// Producer priority depends on the amount of power that is stored.
+public func GetProducerPriority() { return 50 * (2 * stored_power - POWR_COMP_MaxStorage) / POWR_COMP_MaxStorage; }
+
+// Callback from the power library for production of power request.
+public func OnPowerProductionStart(int amount) 
+{ 
+	// Start the production of power.
+	if (!GetEffect("ProducePower", this))
+		AddEffect("ProducePower", this, 1, 2, this);
+	// Stop the consumption of power.
+	if (GetEffect("ConsumePower", this))
+	{
+		RemoveEffect("ConsumePower", this);
+		// Notify the power network.
+		UnregisterPowerRequest();
+	}
+	return true;
+}
+
+// Callback from the power library requesting to stop power production.
+public func OnPowerProductionStop()
+{
+	// Stop the production of power.
+	if (GetEffect("ProducePower", this))
+		RemoveEffect("ProducePower", this);
+	return true;
+}
+
+protected func FxProducePowerStart(object target, proplist effect, int temp)
+{
+	if (temp) 
+		return 1;
+	// Set Interval to 2.
+	effect.Interval = 2;	
+	// Sparkle effect when releasing power.
+	if (!GetEffect("Sparkle", this))
+		AddEffect("Sparkle", this, 1, 1, this);
+	return 1;
+}
+
+protected func FxProducePowerTimer(object target, proplist effect, time)
+{
+	// Increase the stored power.
+	stored_power -= effect.Interval * POWR_COMP_PowerUsage;
+	// Refresh the animation.
+	RefreshAnimationPosition();
+	// If stored power is zero then stop producing power.
+	if (stored_power <= 0)
+	{
+		// Notify the power network.
+		UnregisterPowerProduction();
+		return -1;
+	}
+	return 1;
+}
+
+protected func FxProducePowerStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp) 
+		return 1;
+	if (GetEffect("Sparkle", this))
+		RemoveEffect("Sparkle", this);
+	return 1;
+}
+
+
+/*-- Power Consumption --*/
+
+// It has a low consumer priority so that all other consumers are supplied first.
 public func GetConsumerPriority() { return 0; }
 
-func OnNotEnoughPower()
+// Callback from the power library saying there is enough power.
+public func OnEnoughPower()
 {
-	// not enough power to sustain a battery - turn off
-	if(GetEffect("ConsumePower", this))
+	// Start the consumption of power.
+	if (!GetEffect("ConsumePower", this))
+		AddEffect("ConsumePower", this, 1, 2, this);
+	// Stop the production of power.
+	if (GetEffect("ProducePower", this))
+	{
+		RemoveEffect("ProducePower", this);
+		// Notify the power network.
+		UnregisterPowerProduction();
+	}
+	return _inherited(...);
+}
+
+// Callback from the power library saying there is not enough power.
+public func OnNotEnoughPower()
+{
+	if (GetEffect("ConsumePower", this))
 		RemoveEffect("ConsumePower", this);
-	
-	ScheduleCall(this, "UnmakePowerConsumer", 1, 0);
 	return _inherited(...);
 }
 
-// devour energy
-func OnEnoughPower()
+protected func FxConsumePowerStart(object target, proplist effect, int temp)
 {
-	if(!GetEffect("ConsumePower", this))
-		AddEffect("ConsumePower", this, 1, 36, this);
-	return _inherited(...);
+	if (temp) 
+		return 1;
+	// Set Interval to 2.
+	effect.Interval = 2;	
+	return 1;
 }
 
-func SetCharge(int to)
+protected func FxConsumePowerTimer(object target, proplist effect, int time)
 {
-	power_seconds = BoundBy(to, 0, Compensator_max_seconds);
+	// Increase the stored power.
+	stored_power += effect.Interval * POWR_COMP_PowerUsage;
+	// Refresh the animation.
 	RefreshAnimationPosition();
+	// If fully charged remove this effect.
+	if (stored_power >= POWR_COMP_MaxStorage)
+	{
+		// Notify the power network.
+		UnregisterPowerRequest();
+		return -1;
+	}
+	return 1;
 }
 
-func RefreshAnimationPosition()
+protected func FxConsumePowerStop(object target, proplist effect, int reason, bool temp)
 {
-	var charge = (power_seconds * 100) / Compensator_max_seconds;
+	if (temp) 
+		return 1;
+	return 1;
+}
+
+
+/*-- Animations & Effects --*/
+
+private func RefreshAnimationPosition()
+{
+	var charge = (stored_power * 100) / POWR_COMP_MaxStorage;
 	/*var current = GetAnimationPosition(anim);
 	var len = GetAnimationLength("Charge");
 	SetAnimationPosition(anim, Anim_Linear(current, current, len - (charge * len) / 100, 35, ANIM_Hold));*/
 	leftcharge->To(Min(charge, 50)*2);
 	rightcharge->To(Max(0, charge-50)*2);
-}	
-
-func FxConsumePowerTimer(target, effect, time)
-{
-	++power_seconds;
-	RefreshAnimationPosition();
-	// fully charged?
-	if(power_seconds >= Compensator_max_seconds)
-	{
-		UnmakePowerConsumer();
-		return -1;
-	}	
-	return 1;
 }
 
-func EnergyCheck()
-{
-	if(GetCon() < 100) return;
-	
-	// consuming - everything is alright
-	if(GetEffect("ConsumePower", this))
-		return true;
-	// producing - nothing to change either
-	if(GetEffect("ProducePower", this))
-		return true;
-	
-	// neutral compensators don't do anything
-	if(GetOwner() == NO_OWNER) return false;
-	
-	// are we needed?
-	if(power_seconds > 0)
-	{
-		var s = GetPendingPowerAmount();
-		if(s > 0)
-		{
-			// turn on, start the machines!
-			AddEffect("ProducePower", this, 1, 36, this);
-			return true;
-		}
-	}
-	
-	// fully charged
-	if(power_seconds >= Compensator_max_seconds)
-		return false;
-	
-	// can we leech power?
-	var p = GetCurrentPowerBalance();
-	
-	// we have some play here?
-	if(p >= Compensator_power_usage)
-	{
-		MakePowerConsumer(Compensator_power_usage);
-		return true;
-	}
-	
-	return false;
-}
-
-func FxProducePowerStart(target, effect, temp)
-{
-	if(temp) return;
-	MakePowerProducer(Compensator_power_usage);
-	
-	// todo: effects
-	AddEffect("Sparkle", this, 1, 1, this);
-}
-
-func FxSparkleTimer(target, effect, time)
+protected func FxSparkleTimer(object target, proplist effect, int time)
 {
 	effect.Interval *= 2;
-	if(effect.Interval > 35*3) return -1;
+	if (effect.Interval > 35 * 3) 
+		return -1;
 	CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
-}
-
-func FxProducePowerTimer(target, effect, time)
-{
-	--power_seconds;
-	RefreshAnimationPosition();
-	if(power_seconds <= 0)
-	{
-		return -1;
-	}
-	
-	// stop when not needed
-	if((GetCurrentPowerBalance() >= Compensator_power_usage) && GetPendingPowerAmount() == 0)
-		return -1;
-		
 	return 1;
 }
 
-func FxProducePowerStop(target, effect, reason, temp)
-{
-	if(temp) return;
-	MakePowerProducer(0);
-	
-	if(GetEffect("Sparkle", this))
-		RemoveEffect("Sparkle", this);
-}
 
-func Incineration()
-{
-	if(power_seconds == 0)
-		return Extinguish();
-	
-	
-	for(var i = 0; i < 2; ++i)
-	{
-		var x = -7 + 14 * i;
-		var b = CreateObjectAbove(Compensator_BurningBattery, x, 6, NO_OWNER);
-		b->SetController(GetController()); // killtracing
-
-		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
-	}
-	
-	Explode(30);
-}
+/*-- Properties --*/
 
 local ActMap = {
 		Default = {
@@ -205,6 +274,9 @@ local ActMap = {
 			NextAction = "Default",
 		},
 };
+
+local Name = "$Name$";
+local Description = "$Description$";
 local BlastIncinerate = 1;
 local HitPoints = 25;
 local ContactIncinerate = 1;

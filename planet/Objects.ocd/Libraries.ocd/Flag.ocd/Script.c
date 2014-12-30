@@ -28,40 +28,39 @@ func FxScheduleRefreshAllPowerHelpersTimer()
 	return -1;
 }
 
+// Refreshes all power networks (Library_Power objects).
 func RefreshAllPowerHelpers()
 {
-	// no power helpers created yet
-	if(GetType(Library_Power_power_compounds) != C4V_Array)
+	// Don't do anything if there are no power helpers created yet.
+	if (GetType(LIB_POWR_Networks) != C4V_Array)
 		return;
 	
-	// special handling for neutral
-	var neutral = nil;
-	for(var obj in Library_Power_power_compounds)
+	// Special handling for neutral networks of which there is only at most one.
+	var neutral_network = nil;
+	for (var network in LIB_POWR_Networks)
 	{
-		if(!obj || !obj.neutral) continue;
-		neutral = obj;
+		if (!network || !network.lib_neutral_network) continue;
+		neutral_network = network;
 		break;
 	}
+	if (neutral_network)
+		RefreshPowerHelper(neutral_network);
 	
-	if(neutral)
+	// Do the same for all other helpers: delete / refresh.
+	for (var i = GetLength(LIB_POWR_Networks) - 1; i >= 0; i--)
 	{
-		RefreshPowerHelper(neutral);
-	}
-	
-	// same for all helpers - delete / refresh
-	for(var i = GetLength(Library_Power_power_compounds); --i >= 0;)
-	{
-		var obj = Library_Power_power_compounds[i];
-		if (!obj) continue;
-		if(GetLength(obj.power_links) == 0 && GetLength(obj.sleeping_links) == 0)
-		{
-			obj->RemoveObject();
-			Library_Power_power_compounds[i] = Library_Power_power_compounds[GetLength(Library_Power_power_compounds) - 1];
-			SetLength(Library_Power_power_compounds, GetLength(Library_Power_power_compounds) - 1);
+		var network = LIB_POWR_Networks[i];
+		if (!network) 
 			continue;
-		}
 		
-		obj->CheckPowerBalance();
+		/*if (GetLength(network.power_links) == 0 && GetLength(network.sleeping_links) == 0)
+		{
+			network->RemoveObject();
+			LIB_POWR_Networks[i] = LIB_POWR_Networks[GetLength(LIB_POWR_Networks) - 1];
+			SetLength(LIB_POWR_Networks, GetLength(LIB_POWR_Networks) - 1);
+			continue;
+		}*/
+		network->CheckPowerBalance();
 	}
 }
 
@@ -334,8 +333,8 @@ func RefreshLinkedFlags()
 	// since we don't know whether flag links have been lost we will create a new power helper and possibly remove old ones
 	Library_Power->Init(); // make sure the power system is set up
 	var old = lflag.power_helper;
-	lflag.power_helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
-	Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = lflag.power_helper;
+	lflag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+	LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = lflag.power_helper;
 	
 	// list of helpers yet to merge
 	var to_merge = [old];
@@ -364,29 +363,29 @@ func RefreshLinkedFlags()
 func RefreshPowerHelper(h)
 {
 	// merge both power_links and sleeping_links
-	for(var o in h.power_links)
+	/*for(var o in h.power_links)
 	{
 		if(o == nil) continue; // possible
 		
-		var actual = Library_Power->GetPowerHelperForObject(o.obj);
+		var actual = Library_Power->GetPowerNetwork(o.obj);
 		if (!actual) continue;
-		if(actual == h) continue; // right one already
+		if (actual == h) continue; // right one already
 		// remove from old and add to new
-		h->RemovePowerLink(o.obj, true);
+		//h->RemovePowerLink(o.obj, true);
 		actual->AddPowerLink(o.obj, o.amount, true);
 	}
 		
-	for(var i = GetLength(h.sleeping_links); --i >= 0;)
+	for (var i = GetLength(h.sleeping_links); --i >= 0;)
 	{
 		var o = h.sleeping_links[i];
-		var actual = Library_Power->GetPowerHelperForObject(o.obj);
+		var actual = Library_Power->GetPowerNetwork(o.obj);
 		if(actual == h) continue; // right one already
 		// remove from old one and add to new
 		actual.sleeping_links[GetLength(actual.sleeping_links)] = o;
 			
 		h.sleeping_links[i] = h.sleeping_links[GetLength(h.sleeping_links) - 1];
 		SetLength(h.sleeping_links, GetLength(h.sleeping_links) - 1);
-	}
+	}*/
 }
 
 public func CopyLinkedFlags(object from, array flaglist)

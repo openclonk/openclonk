@@ -1,65 +1,17 @@
-/*--
+/**
 	Pump
-	Author: Maikel, ST-DDT, Sven2, Newton
-	
 	Pumps liquids using drain and source pipes. Features include:
 	+ switch on and off
 	+ consume/produce a variable amount of power depending on the height of
 	  source and drain
 	
---*/
+	@author Maikel, ST-DDT, Sven2, Newton
+*/
 
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerConsumer
 #include Library_PowerProducer
-
-local Name = "$Name$";
-local Description = "$Description$";
-local BlastIncinerate = 50;
-local HitPoints = 70;
-
-/*
-	States
-	"Wait":				turned off or source pipe not connected
-	"WaitForPower":		turned on but no power (does consume power)
-	"WaitForLiquid":	turned on but no liquid (does not consume power)
-	"Pump":				currently working and consuming/producing power
-
-*/
-local ActMap = {
-	Pump = {
-		Prototype = Action,
-		Name = "Pump",
-		Length = 30,
-		Delay = 3,
-		Sound = "Pumpjack",
-		NextAction = "Pump",
-		StartCall = "CheckState",
-		PhaseCall = "Pumping"
-	},
-	Wait = {
-		Prototype = Action,
-		Name = "Wait",
-		Delay = 90,
-		NextAction = "Wait",
-		EndCall = "CheckState"
-	},
-	WaitForPower = {
-		Prototype = Action,
-		Name = "WaitForPower",
-		Delay = 30,
-		NextAction = "WaitForPower",
-		EndCall = "CheckState"
-	},
-	WaitForLiquid = {
-		Prototype = Action,
-		Name = "WaitForLiquid",
-		Delay = 30,
-		NextAction = "WaitForLiquid",
-		EndCall = "CheckState"
-	}
-};
 
 local animation; // animation handle
 
@@ -77,18 +29,10 @@ local drain_pipe;
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 
-func Definition(def) 
-{
-	// for title image
-	SetProperty("PictureTransformation",Trans_Rotate(50,0,1,0),def);
-	// for building preview
-	SetProperty("MeshTransformation",Trans_Rotate(50,0,1,0),def);
-}
-
 func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
-	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10,10),0,1,0);
+	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10, 10), 0, 1, 0);
 }
 
 func Initialize()
@@ -164,24 +108,20 @@ public func SetSource(object pipe)
 
 /*-- Power stuff --*/
 
-func QueryWaivePowerRequest()
-{
-	// has less priority than other objects, but not too low
-	return 10;
-}
-
 public func GetConsumerPriority() { return 25; }
 
 public func GetProducerPriority() { return 100; }
 
-func OnNotEnoughPower()
+public func IsSteadyPowerProducer() { return true; }
+
+public func OnNotEnoughPower()
 {
 	_inherited(...);
 	powered = false;
 	CheckState();
 }
 
-func OnEnoughPower()
+public func OnEnoughPower()
 {
 	_inherited(...);
 	powered = true;
@@ -224,13 +164,13 @@ protected func Pumping()
 	{
 
 		// get new materials
-		var aMat = GetSourceObject()->ExtractLiquidAmount(0,0, GetPumpSpeed()/10);
+		var mat = GetSourceObject()->ExtractLiquidAmount(0, 0, GetPumpSpeed()/10);
 	
 		// no material to pump?
-		if (aMat)
+		if (mat)
 		{
-		stored_material_index = aMat[0];
-		stored_material_amount = aMat[1];
+		stored_material_index = mat[0];
+		stored_material_amount = mat[1];
 		}
 		else
 		{
@@ -259,10 +199,9 @@ protected func Pumping()
 			stored_material_index = nil;
 	}
 	
-	if(!pump_ok)
-	{
+	if (!pump_ok)
 		SetState("WaitForLiquid");
-	}
+	return;
 }
 
 /** Re check state and change the state if needed */
@@ -326,7 +265,7 @@ private func GetPumpHeight()
 private func UpdatePowerUsage()
 {
 	var new_power;
-	if(IsUsingPower())
+	if (IsUsingPower())
 		new_power = PumpHeight2Power(GetPumpHeight());
 	else
 		new_power = 0;
@@ -341,22 +280,23 @@ private func UpdatePowerUsage()
 		if (power_used < 0)
 		{
 			powered = false; // needed since the flag was set manually
-			UnmakePowerProducer();
+			UnregisterPowerProduction();
 		}
-		MakePowerConsumer(new_power);
-		
+		RegisterPowerRequest(new_power);
 	}
 	else if (new_power < 0)
 	{
 		if (power_used > 0)
-			UnmakePowerConsumer();
-		MakePowerProducer(-new_power);
+			UnregisterPowerRequest();
+		RegisterPowerProduction(-new_power);
 		powered = true; // when producing, we always have power
 	}
 	else // new_power == 0
 	{
-		if (power_used < 0) UnmakePowerProducer();
-		else if (power_used > 0) UnmakePowerConsumer();
+		if (power_used < 0) 
+			UnregisterPowerProduction();
+		else if (power_used > 0)
+			UnregisterPowerRequest();
 		powered = true;
 	}
 	
@@ -377,7 +317,7 @@ private func PumpHeight2Power(int pump_height)
 	// max power consumed/produced
 	var max_power = 150;
 	
-	return BoundBy((pump_height + power_offset)/15*5, -max_power,max_power+power_offset);
+	return BoundBy((pump_height + power_offset) / 15 * 5, -max_power, max_power + power_offset);
 }
 
 /** Returns whether there is liquid at the source pipe to pump */
@@ -421,11 +361,73 @@ func SetState(string act)
 	// deactivate power usage when not pumping
 	if (powered && (act == "Wait" || act == "WaitForLiquid"))
 	{
-		if (power_used < 0) UnmakePowerProducer();
-		else if(power_used > 0) UnmakePowerConsumer();
+		if (power_used < 0) 
+			UnregisterPowerProduction();
+		else if (power_used > 0) 
+			UnregisterPowerRequest();
+		
 		power_used = 0;
 		powered = false;
 	}
 	// finally, set the action
 	SetAction(act);
+	return;
 }
+
+
+/*-- Properties --*/
+
+protected func Definition(def) 
+{
+	// for title image
+	SetProperty("PictureTransformation", Trans_Rotate(50, 0, 1, 0), def);
+	// for building preview
+	SetProperty("MeshTransformation", Trans_Rotate(50, 0, 1, 0), def);
+}
+
+/*
+	States
+	"Wait":				turned off or source pipe not connected
+	"WaitForPower":		turned on but no power (does consume power)
+	"WaitForLiquid":	turned on but no liquid (does not consume power)
+	"Pump":				currently working and consuming/producing power
+
+*/
+local ActMap = {
+	Pump = {
+		Prototype = Action,
+		Name = "Pump",
+		Length = 30,
+		Delay = 3,
+		Sound = "Pumpjack",
+		NextAction = "Pump",
+		StartCall = "CheckState",
+		PhaseCall = "Pumping"
+	},
+	Wait = {
+		Prototype = Action,
+		Name = "Wait",
+		Delay = 90,
+		NextAction = "Wait",
+		EndCall = "CheckState"
+	},
+	WaitForPower = {
+		Prototype = Action,
+		Name = "WaitForPower",
+		Delay = 30,
+		NextAction = "WaitForPower",
+		EndCall = "CheckState"
+	},
+	WaitForLiquid = {
+		Prototype = Action,
+		Name = "WaitForLiquid",
+		Delay = 30,
+		NextAction = "WaitForLiquid",
+		EndCall = "CheckState"
+	}
+};
+
+local Name = "$Name$";
+local Description = "$Description$";
+local BlastIncinerate = 50;
+local HitPoints = 70;
