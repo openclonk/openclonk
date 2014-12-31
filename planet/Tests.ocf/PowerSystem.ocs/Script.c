@@ -101,7 +101,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 		// Start the test if available, otherwise finish test sequence.
 		if (!Call(Format("~Test%d_OnStart", effect.testnr), effect.plr))
 		{
-			Log("Test %d not available, this was the last test.", effect.testnr);
+			Log("Test %d not available, the previous test was the last test.", effect.testnr);
 			Log("=====================================");
 			Log("All tests have been successfully completed!");
 			return -1;
@@ -136,14 +136,14 @@ global func Test1_OnStart(int plr)
 	workshop->AddToQueue(Shovel, 2);
 	
 	// Log what the test is about.
-	Log("A steady power source (wind generator) supplying a steady power consumer (workshop).");
+	Log("A steady power source (wind generator) supplying an on-demand consumer (workshop).");
 	return true;
 }
 
 global func Test1_Completed()
 {
 	if (ObjectCount(Find_ID(Shovel)) >= 2)
-		return true;
+		return false;
 	return false;
 }
 
@@ -267,7 +267,7 @@ global func Test4_OnStart(int plr)
 	ScheduleCall(elevator.case, "SetMoveDirection", 4 * 36, 0, ElevatorCase_down, true);
 	
 	// Log what the test is about.
-	Log("A steady power source (wind generator) supplying a steady power consumer (pump), while an on-demand consumer is turned on and should be prioritized.");
+	Log("A steady power source (wind generator) supplying a steady power consumer (pump), while an on-demand consumer (elevator) is turned on and should be prioritized.");
 	return true;
 }
 

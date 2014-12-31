@@ -28,7 +28,7 @@
 	
 	OPEN TODOS:
 	 * Figure out where the nil's and the errors come from.
-	 * Implement correct treatment for steady producers.
+	 * Fix the visualization of power on the nodes.
 	 * Check the flag library for network merging.
 	 * Check the power balance, also with merging.
 
@@ -212,6 +212,7 @@ public func AddPowerProducer(object producer, int amount, int prio)
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
+		// If it is in the list but nothing has changed just return.
 		return;
 	}
 	// Check if it is not already in the list of active producers.
@@ -223,14 +224,29 @@ public func AddPowerProducer(object producer, int amount, int prio)
 		// If it is in the list update the values if they have changed.
 		if (link.prod_amount != amount || link.priority != prio)
 		{
+			// Adjust the power balance accordingly.
+			lib_power_balance += amount - link.prod_amount;
+			VisualizePowerChange(producer, link.prod_amount, amount, false);
 			lib_active_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
+		// If it is in the list but nothing has changed just return.
 		return;
 	}
 	// Producer was in neither list, so add it to the list of idle producers.
-	PushBack(lib_idle_producers, {obj = producer, prod_amount = amount, priority = prio});
+	// Add steady power producers directly into the list of active producers.
+	if (producer->IsSteadyPowerProducer())
+	{
+		// Adjust the power balance accordingly.
+		lib_power_balance += amount;
+		PushBack(lib_active_producers, {obj = producer, prod_amount = amount, priority = prio});
+		VisualizePowerChange(producer, 0, amount, false);
+	}
+	else
+	{
+		PushBack(lib_idle_producers, {obj = producer, prod_amount = amount, priority = prio});
+	}
 	// Check the power balance of this network, since a change has been made.
 	CheckPowerBalance();
 	return;
@@ -259,11 +275,11 @@ public func RemovePowerProducer(object producer)
 		// Reduce the power balance and remove the producer from the list.
 		lib_power_balance -= link.prod_amount;
 		RemoveArrayIndex(lib_active_producers, index);
+		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 		// Notify the active power producer that it should stop producing power.
 		producer->OnPowerProductionStop();
 		// Check the power balance of this network, since a change has been made.
 		CheckPowerBalance();
-		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 		return;
 	}
 	// If found in neither lists just return without doing anything.
@@ -287,6 +303,7 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
+		// If it is in the list but nothing has changed just return.
 		return;
 	}
 	// Check if it is not already in the list of active consumers.
@@ -302,6 +319,7 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
+		// If it is in the list but nothing has changed just return.
 		return;
 	}
 	// Consumer was in neither list, so add it to the list of waiting consumers.
@@ -416,7 +434,7 @@ private func ActivateProducers(int power_need)
 		PushBack(lib_active_producers, link);
 		link.obj->OnPowerProductionStart(link.prod_amount);
 		lib_power_balance += link.prod_amount;
-		SetLength(lib_idle_producers, index);
+		RemoveArrayIndex(lib_idle_producers, index);
 		VisualizePowerChange(link.obj, 0, link.prod_amount, false);
 		// Stop activatng producers if power need is satisfied.
 		if (power_found >= power_need)
@@ -436,6 +454,9 @@ private func DeactivateProducers(int power_surplus)
 	for (var index = GetLength(lib_active_producers) - 1; index >= 0; index--)
 	{
 		var link = lib_active_producers[index];
+		// It is not possible to deactivate a steady power producer.
+		if (link.obj->IsSteadyPowerProducer())
+			continue;		
 		power_killed += link.prod_amount;
 		// Stop deactivating producers if power surplus has been reached.
 		if (power_killed > power_surplus)
@@ -444,7 +465,7 @@ private func DeactivateProducers(int power_surplus)
 		PushBack(lib_idle_producers, link);
 		link.obj->OnPowerProductionStop();
 		lib_power_balance -= link.prod_amount;
-		SetLength(lib_active_producers, index);
+		RemoveArrayIndex(lib_active_producers, index);
 		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 	}
 	return;
@@ -489,7 +510,7 @@ private func DeactivateConsumers(int power_need)
 		PushBack(lib_waiting_consumers, link);
 		link.obj->OnNotEnoughPower(link.cons_amount);
 		lib_power_balance += link.cons_amount;
-		SetLength(lib_active_consumers, index);
+		RemoveArrayIndex(lib_active_consumers, index);
 		VisualizePowerChange(link.obj, link.cons_amount, 0, true);
 		// Stop deactivating consumers if enough power has been freed.
 		if (power_restored >= power_need)
@@ -528,6 +549,10 @@ private func VisualizePowerChange(object obj, int old_val, int new_val, bool los
 	if (!obj)
 		return FatalError("VisualizePowerChange() is called for a non-existing object.");
 		
+	// Don't do anything if old and new value are the same.
+	if (old_val == new_val)
+		return;
+		
 	var before_current = nil;
 	var effect = GetEffect("VisualPowerChange", obj);
 	if (!effect)
@@ -560,6 +585,7 @@ private func VisualizePowerChange(object obj, int old_val, int new_val, bool los
 	}
 
 	EffectCall(obj, effect, "Refresh");
+	return;
 }
 
 protected func FxVisualPowerChangeRefresh(object target, proplist effect)
