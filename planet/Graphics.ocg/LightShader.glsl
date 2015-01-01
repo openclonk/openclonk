@@ -8,7 +8,7 @@ uniform sampler2D lightTex;
 // uncomment the following lines for debugging light directions:
 // yellow: light up, blue: light down, turqoise: light right, pink: light left
 // brightness: light strength
-#define LIGHT_DEBUG
+//#define LIGHT_DEBUG
 
 // At what point of light intensity we set the "darkness" point. This
 // is to compensate for the fact that the engien "smoothes" the light
