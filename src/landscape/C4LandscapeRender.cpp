@@ -366,6 +366,8 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	int *placementSumsDown = placementSumsUp + To.Wdt;
 	for(x = 0; x < To.Wdt; x++)
 	{
+		placementSumsUp[x] = 0;
+		placementSumsDown[x] = 0;
 		for(y = 1; y <= Min(C4LR_BiasDistanceY, To.y); y++)
 			placementSumsUp[x] += pSource->_GetPlacement(To.x+x, To.y-y);
 		for(y = 1; y <= Min(C4LR_BiasDistanceY, iHeight - 1 - To.y); y++)
