@@ -24,7 +24,8 @@ Crew=Clonk=1
 
 [Landscape]
 InEarthLevel=0,0
-Sky=Clouds2
+Sky=Default
+SkyFade=1,1,1,1,1,1
 MapWidth=50
 MapHeight=250
 TopOpen=1
