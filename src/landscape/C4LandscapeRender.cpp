@@ -472,8 +472,8 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			if(To.x+x + C4LR_BiasDistanceX < iWidth)
 				iRight += pSource->_GetPlacement(To.x+x + C4LR_BiasDistanceX, To.y+y);
 			iLeft += pSource->_GetPlacement(To.x+x, To.y+y);
-			if(To.x+x - C4LR_BiasDistanceX - 1 >= 0)
-				iLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX - 1, To.y+y);
+			if(To.x+x - C4LR_BiasDistanceX + 1 >= 0)
+				iLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX + 1, To.y+y);
 
 			// Update up & down arrays
 			if(To.y+y + 1 < iHeight)
