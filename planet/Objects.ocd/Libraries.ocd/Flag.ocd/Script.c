@@ -1,6 +1,8 @@
-/*
-	The flagpoles mark the area a player owns.
-	It also serves as an energy transmitter.
+/**
+	Flag Library
+	The flagpoles mark the area a player owns. It also serves as an energy transmitter.
+	
+	@author Zapper
 */
 
 static LibraryFlag_flag_list;
@@ -35,33 +37,31 @@ func RefreshAllPowerHelpers()
 	if (GetType(LIB_POWR_Networks) != C4V_Array)
 		return;
 	
-	// Special handling for neutral networks of which there is only at most one.
-	var neutral_network = nil;
+	// Special handling for neutral networks of which there should be at most one.
 	for (var network in LIB_POWR_Networks)
 	{
-		if (!network || !network.lib_neutral_network) continue;
-		neutral_network = network;
+		if (!network || !network.lib_neutral_network) 
+			continue;
+		RefreshPowerHelper(network);
 		break;
 	}
-	if (neutral_network)
-		RefreshPowerHelper(neutral_network);
 	
 	// Do the same for all other helpers: delete / refresh.
-	for (var i = GetLength(LIB_POWR_Networks) - 1; i >= 0; i--)
+	for (var index = GetLength(LIB_POWR_Networks) - 1; index >= 0; index--)
 	{
-		var network = LIB_POWR_Networks[i];
+		var network = LIB_POWR_Networks[index];
 		if (!network) 
 			continue;
 		
-		/*if (GetLength(network.power_links) == 0 && GetLength(network.sleeping_links) == 0)
+		if (network->IsEmpty())
 		{
 			network->RemoveObject();
-			LIB_POWR_Networks[i] = LIB_POWR_Networks[GetLength(LIB_POWR_Networks) - 1];
-			SetLength(LIB_POWR_Networks, GetLength(LIB_POWR_Networks) - 1);
+			RemoveArrayIndex(LIB_POWR_Networks, index);
 			continue;
-		}*/
-		network->CheckPowerBalance();
+		}
+		//network->CheckPowerBalance();
 	}
+	return;
 }
 
 func RedrawFlagRadius()
@@ -340,52 +340,51 @@ func RefreshLinkedFlags()
 	var to_merge = [old];
 	
 	// copy from me
-	
 	lflag.linked_flags = current;
-	for(var other in lflag.linked_flags)
+	for (var other in lflag.linked_flags)
 	{
 		other->CopyLinkedFlags(this, lflag.linked_flags);
 		
-		if(GetIndexOf(to_merge, other.lflag.power_helper) == -1)
+		if (GetIndexOf(to_merge, other.lflag.power_helper) == -1)
 			to_merge[GetLength(to_merge)] = other.lflag.power_helper;
 		other.lflag.power_helper = lflag.power_helper;
 	}
 	
 	// for every object in to_merge check if it actually (still) belongs to the group
-	for(var h in to_merge)
+	for (var h in to_merge)
 	{
-		if(h == nil)
+		if (h == nil)
 			continue;
 		RefreshPowerHelper(h);
 	}
 }
 
-func RefreshPowerHelper(h)
+func RefreshPowerHelper(object network)
 {
-	// merge both power_links and sleeping_links
-	/*for(var o in h.power_links)
+	// Merge all the producers and consumers into their actual networks.
+	for (var link in Concatenate(network.lib_idle_producers, network.lib_active_producers))
 	{
-		if(o == nil) continue; // possible
-		
-		var actual = Library_Power->GetPowerNetwork(o.obj);
-		if (!actual) continue;
-		if (actual == h) continue; // right one already
-		// remove from old and add to new
-		//h->RemovePowerLink(o.obj, true);
-		actual->AddPowerLink(o.obj, o.amount, true);
+		if (!link)
+			continue;
+		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		if (!actual_network || actual_network == network)
+			continue;
+		// Remove from old network and add to new network.
+		network->RemovePowerProducer(link.obj);
+		actual_network->AddPowerProducer(link.obj, link.prod_amount, link.priority);
 	}
-		
-	for (var i = GetLength(h.sleeping_links); --i >= 0;)
+	for (var link in Concatenate(network.lib_waiting_consumers, network.lib_active_consumers))
 	{
-		var o = h.sleeping_links[i];
-		var actual = Library_Power->GetPowerNetwork(o.obj);
-		if(actual == h) continue; // right one already
-		// remove from old one and add to new
-		actual.sleeping_links[GetLength(actual.sleeping_links)] = o;
-			
-		h.sleeping_links[i] = h.sleeping_links[GetLength(h.sleeping_links) - 1];
-		SetLength(h.sleeping_links, GetLength(h.sleeping_links) - 1);
-	}*/
+		if (!link)
+			continue;
+		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		if (!actual_network || actual_network == network)
+			continue;
+		// Remove from old network and add to new network.
+		network->RemovePowerConsumer(link.obj);
+		actual_network->AddPowerConsumer(link.obj, link.cons_amount, link.priority);
+	}
+	return;
 }
 
 public func CopyLinkedFlags(object from, array flaglist)

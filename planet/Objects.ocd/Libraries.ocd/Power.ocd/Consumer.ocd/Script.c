@@ -30,8 +30,9 @@
 	Using the callback GetActualPowerConsumer() the power consumption of an object
 	can be passed to its main structure.
 	
-	Note that the object including this library should return _inherited(...) in
-	the Destruction callback if overloaded.
+	Important notes when including this library:
+	 * The object including this library should return _inherited(...) in the
+	   Destruction callback if overloaded.
 	
 	@author Zapper, Maikel
 */

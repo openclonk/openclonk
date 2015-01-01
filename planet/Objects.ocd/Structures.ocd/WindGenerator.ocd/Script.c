@@ -7,14 +7,14 @@
 
 #include Library_Structure
 #include Library_Ownable
-#include Library_PowerProducer
 #include Library_Flag
+#include Library_PowerProducer
+
 
 local DefaultFlagRadius = 90;
 
 /*-- Initialization --*/
 
-local wind_anim;
 local last_power;
 local wheel;
 
@@ -23,23 +23,27 @@ func MinRevolutionTime() { return 4500; } // in frames
 
 protected func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Mul(Trans_Rotate(RandomX(-15,15),0,1,0), Trans_Translate(1200,0,0)));
-	return _inherited(...);
+	// First initialize the libraries (especially the flag library).
+	_inherited(...);
+	// Rotate each wind generator a bit to make them look different.
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-15, 15), 0, 1, 0), Trans_Translate(1200, 0, 0)));
+	return;
 }
 
 protected func Initialize()
 {
-	// create wheel
+	// First initialize the libraries (especially the flag library).
+	_inherited(...);	
+	// Create a helper object for the wheel.
 	wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER);
 	wheel->SetParent(this);
-
-	// Start animation
-	wind_anim = PlayAnimation(TurnAnimation(), 5, wheel->Anim_R(0, GetAnimationLength(TurnAnimation())), Anim_Const(1000));
-	
-	// Set initial position
+	// Start the animation for the wheel.
+	PlayAnimation(TurnAnimation(), 5, wheel->Anim_R(0, GetAnimationLength(TurnAnimation())), Anim_Const(1000));
+	// Initialize a regular check of the wheel's position and speed, also handles power updates.
+	last_power = 0;
 	AddTimer("Wind2Turn", 4);
 	Wind2Turn();
-	return _inherited(...);
+	return;
 }
 
 /*-- Power Production --*/
@@ -82,32 +86,25 @@ public func Wind2Turn()
 	// Only produce power if fully constructed.
 	if (GetCon() < 100) 
 		return;
-	
-	var current_wind = GetWeightedWind();
+	// Determine the current power production.	
 	var power = 0;
-	
-	if (wheel->Stuck() || wheel->HasStopped())
+	if (!wheel->Stuck() && !wheel->HasStopped())
 	{
-		power = 0;
-	}
-	else
-	{
-		power = Abs(wheel->GetRDir(this->MinRevolutionTime() / 90));
+		power = Abs(wheel->GetRDir(MinRevolutionTime() / 90));
 		if (power < 5) 
 			power = 0;
 		else 
 			power = Max((power + 5) / 25, 1) * 50;
 	}
-
 	// Register the new power production if it changed.
 	if (last_power != power)
 	{
 		last_power = power;
 		RegisterPowerProduction(last_power);
 	}
-
 	// Adjust the wheel speed.
-	wheel->SetRDir(current_wind * 90, this->MinRevolutionTime());
+	var current_wind = GetWeightedWind();
+	wheel->SetRDir(current_wind * 90, MinRevolutionTime());
 	// Make some sounds.
 	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
 		Sound(["WoodCreak?","HingeCreak?"][Random(2)], false, nil, nil, nil, 75);

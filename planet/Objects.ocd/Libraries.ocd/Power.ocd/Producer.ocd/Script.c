@@ -29,8 +29,11 @@
 	See also the scripts of these structures for more details on the usage of the
 	power producer library.
 	
-	Note that the object including this library should return _inherited(...) in
-	the Destruction callback if overloaded.
+	Important notes when including this library:
+	 * The object including this library should return _inherited(...) in 
+	   the Destruction callback if overloaded.
+	 * If the power producer also serves as a flag it is cleaner to initialize 
+	   the flag before making any power requests.
 	
 	@author Zapper, Maikel
 */

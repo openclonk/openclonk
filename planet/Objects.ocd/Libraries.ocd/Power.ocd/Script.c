@@ -142,18 +142,18 @@ public func GetPowerNetwork(object for_obj)
 	var helper = nil;
 	if (!flag) // neutral - needs neutral helper
 	{
-		for (var obj in LIB_POWR_Networks)
+		for (var network in LIB_POWR_Networks)
 		{
-			if (!obj || !obj.neutral) 
+			if (!network || !network.lib_neutral_network) 
 				continue;
-			helper = obj;
+			helper = network;
 			break;
 		}
 		
 		if (helper == nil) // not yet created?
 		{
-			helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
-			helper.neutral = true;
+			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+			helper.lib_neutral_network = true;
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 		}		
 	} 
@@ -199,6 +199,7 @@ public func AddPowerProducer(object producer, int amount, int prio)
 {
 	// Debugging logs.
 	Log("POWR - AddPowerProducer(): network = %v, frame = %d, producer = %v, amount = %d, priority = %d", this, FrameCounter(), producer, amount, prio);
+	LogCallStack();
 	// Check if it is not already in the list of idle producers.
 	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -256,6 +257,7 @@ public func RemovePowerProducer(object producer)
 {
 	// Debugging logs.
 	Log("POWR - RemovePowerProducer(): network = %v, frame = %d, producer = %v", this, FrameCounter(), producer);
+	LogCallStack();
 	// Remove producer from the list of idle producers if it is in there.
 	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -519,6 +521,18 @@ private func DeactivateConsumers(int power_need)
 	// This should not ever happen, so put a log here.
 	Log("Not enough power consumers to deactivate for restoring the power balance. How could this happen?");
 	return false;
+}
+
+
+/*-- Network State --*/
+
+// Returns whether the network does not control any power nodes.
+public func IsEmpty()
+{
+	return GetLength(lib_idle_producers) == 0
+		&& GetLength(lib_active_producers) == 0
+		&& GetLength(lib_waiting_consumers) == 0
+		&& GetLength(lib_active_consumers) == 0;
 }
 
 

@@ -143,7 +143,7 @@ global func Test1_OnStart(int plr)
 global func Test1_Completed()
 {
 	if (ObjectCount(Find_ID(Shovel)) >= 2)
-		return false;
+		return true;
 	return false;
 }
 
@@ -431,7 +431,7 @@ global func SetWindFixed(int strength)
 	strength = BoundBy(strength, -100, 100);
 	var effect = GetEffect("IntFixedWind");
 	if (!effect)
-		effect = AddEffect("IntFixedWind", nil, 100, 5);
+		effect = AddEffect("IntFixedWind", nil, 100, 1);
 	effect.strength = strength;
 	return;
 }
