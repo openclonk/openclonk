@@ -1106,7 +1106,7 @@ if(UNIX AND NOT APPLE)
 	endif()
 endif()
 set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
-#set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
