@@ -8,7 +8,7 @@ uniform sampler2D lightTex;
 // uncomment the following lines for debugging light directions:
 // yellow: light up, blue: light down, turqoise: light right, pink: light left
 // brightness: light strength
-//#define LIGHT_DEBUG
+#define LIGHT_DEBUG
 
 // At what point of light intensity we set the "darkness" point. This
 // is to compensate for the fact that the engien "smoothes" the light
@@ -52,14 +52,16 @@ slice(finish+5)
 {
 
 #ifdef LIGHT_DEBUG
+#ifdef HAVE_LIGHT
 	float lightYDir = lightPx.b - 1.0/3.0;
 	float lightXDir = lightPx.g - 1.0/3.0;
 	float lightStrength = lightPx.r;
-	gl_FragColor =
+	color =
 	  vec4(lightStrength * vec3(1.0-1.5*(max(0.0, lightYDir) + max(0.0,lightXDir)),
 	                            1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),
 	                            1.0-1.5*max(0.0, -lightYDir)),
 	       1.0);
+#endif
 #endif
 
 }
