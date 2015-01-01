@@ -29,8 +29,8 @@
 #endif
 
 // How much to look into each direction for bias
-const int C4LR_BiasDistanceX = 8;
-const int C4LR_BiasDistanceY = 8;
+const int C4LR_BiasDistanceX = 7;
+const int C4LR_BiasDistanceY = 7;
 
 // Name used for the seperator texture
 const char *const SEPERATOR_TEXTURE = "--SEP--";
@@ -352,146 +352,164 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	// main memory buffer for the box, so that only that box needs to be
 	// sent to the gpu, and not the whole texture, or every pixel
 	// separately. It's an important optimization.
-	for (int i = 0; i < C4LR_SurfaceCount; i++) {
+	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	{
 		if (!Surfaces[i]->Lock()) return;
 		Surfaces[i]->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
 	}
 
-	// Initialize up & down arrays
+	// Initialize up & down placement arrays:
+	// Calculate the placement sums for the first line in the rectangle only. For the consecutive lines, it is updated 
+	// for each line in the below for-loop.
 	int x, y;
-	int *pUp = new int [To.Wdt * 2];
-	int *pDown = pUp + To.Wdt;
-	for(x = 0; x < To.Wdt; x++) {
-		int iSum = 0;
-		for(y = 1; y < Min(C4LR_BiasDistanceY, To.y+1); y++)
-			iSum += pSource->_GetPlacement(To.x+x, To.y-y);
-		pUp[x] = iSum;
-		iSum = 0;
-		for(y = 1; y < Min(C4LR_BiasDistanceY, iHeight - To.y); y++)
-			iSum += pSource->_GetPlacement(To.x+x, To.y+y);
-		pDown[x] = iSum;
+	int *placementSumsUp = new int [To.Wdt * 2];
+	int *placementSumsDown = placementSumsUp + To.Wdt;
+	for(x = 0; x < To.Wdt; x++)
+	{
+		for(y = 1; y <= Min(C4LR_BiasDistanceY, To.y); y++)
+			placementSumsUp[x] += pSource->_GetPlacement(To.x+x, To.y-y);
+		for(y = 1; y <= Min(C4LR_BiasDistanceY, iHeight - 1 - To.y); y++)
+			placementSumsDown[x] += pSource->_GetPlacement(To.x+x, To.y+y);
 	}
 
 	// Get tex refs (shortcut, we will use them quite heavily)
-	C4TexRef *TexRefs[C4LR_SurfaceCount];
+	C4TexRef *texture[C4LR_SurfaceCount];
 	x = y = 0;
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
-		Surfaces[i]->GetTexAt(&TexRefs[i], x, y);
+		Surfaces[i]->GetTexAt(&texture[i], x, y);
 
 	// Go through it from top to bottom
-	for(y = 0; y < To.Hgt; y++) {
+	for(y = 0; y < To.Hgt; y++)
+	{
+		// Initialize left & right placement for the left-most pixel. Will be updated in the below loop for every pixel
+		// in the line
+		int placementSumLeft = 0;
+		int placementSumRight = 0;
+		for(x = 1; x <= Min(C4LR_BiasDistanceX, To.x); x++)
+			placementSumLeft += pSource->_GetPlacement(To.x-x,To.y+y);
+		for(x = 1; x <= Min(C4LR_BiasDistanceX, iWidth - 1 - To.x ); x++)
+			placementSumRight += pSource->_GetPlacement(To.x+x,To.y+y);
 
-		// Initialize left & right
-		int iLeft = 0;
-		int iRight = 0;
-		for(x = 1; x < Min(C4LR_BiasDistanceX, To.x+1); x++)
-			iLeft += pSource->_GetPlacement(To.x-x,To.y+y);
-		for(x = 1; x < Min(C4LR_BiasDistanceX, iWidth - To.x); x++)
-			iRight += pSource->_GetPlacement(To.x+x,To.y+y);
+		for(x = 0; x < To.Wdt; x++)
+		{
+			int pixel = pSource->_GetPix(To.x+x, To.y+y);
+			int placement = pSource->_GetPlacement(To.x+x, To.y+y);
 
-		for(x = 0; x < To.Wdt; x++) {
+			int horizontalBias = Max(0, placement * C4LR_BiasDistanceX - placementSumRight) -
+			                     Max(0, placement * C4LR_BiasDistanceX - placementSumLeft);
+			int verticalBias = Max(0, placement * C4LR_BiasDistanceY - placementSumsDown[x]) -
+			                   Max(0, placement * C4LR_BiasDistanceY - placementSumsUp[x]);
 
-			// Biases
-			int iPix = pSource->_GetPix(To.x+x, To.y+y);
-			int iPlac = pSource->_GetPlacement(To.x+x, To.y+y);
-			int iHBias = Max(0, iPlac * (C4LR_BiasDistanceY-1) - iRight) -
-			             Max(0, iPlac * (C4LR_BiasDistanceY-1) - iLeft);
-			int iVBias = Max(0, iPlac * (C4LR_BiasDistanceY-1) - pDown[x]) -
-			             Max(0, iPlac * (C4LR_BiasDistanceY-1) - pUp[x]);
-
-			// Maximum placement differences that make a difference in the result, 
-			// after which we are at the limits of what can be packed into a byte
-			const int iMaxPlacDiff = 40;
-			int iHBiasScaled = BoundBy(iHBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceX + 128, 0, 255);
-			int iVBiasScaled = BoundBy(iVBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceY + 128, 0, 255);
-
-			// Visit our neighbours
-			int iNeighbours[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-			if(To.y+y > 0) {
-				if(To.x+x > 0)
-					iNeighbours[0] = pSource->_GetPix(To.x+x-1, To.y+y-1);
-				iNeighbours[1] = pSource->_GetPix(To.x+x, To.y+y-1);
-				if(To.x+x < iWidth-1)
-					iNeighbours[2] = pSource->_GetPix(To.x+x+1, To.y+y-1);
-			}
-			if(To.x+x > 0)
-				iNeighbours[3] = pSource->_GetPix(To.x+x-1, To.y+y);
-			if(To.x+x < iWidth-1)
-				iNeighbours[4] = pSource->_GetPix(To.x+x+1, To.y+y);
-			if(To.y+y+1 < iHeight-1) {
-				if(To.x+x > 0)
-					iNeighbours[5] = pSource->_GetPix(To.x+x-1, To.y+y+1);
-				iNeighbours[6] = pSource->_GetPix(To.x+x, To.y+y+1);
-				if(To.x+x < iWidth-1)
-					iNeighbours[7] = pSource->_GetPix(To.x+x+1, To.y+y+1);
-			}
-
-			// Look for highest-placement material in our surroundings
-			int iMaxPix = iPix, iMaxPlace = iPlac, i;
-			for(i = 0; i < 8; i++) {
-				int iTempPlace = MatPlacement(PixCol2Mat(iNeighbours[i]));
-				if(iTempPlace > iMaxPlace || (iTempPlace == iMaxPlace && iNeighbours[i] > iMaxPix) ) {
-					iMaxPix = iNeighbours[i]; iMaxPlace = iTempPlace;
-				}
-			}
-
-			// Scaler calculation depends on whether this is the highest-placement material around
-			int iScaler = 0;
-			if(iMaxPix == iPix) {
-
-				// If yes, we consider all other materials as "other"
-				for(i = 0; i < 8; i++)
-					if(iNeighbours[i] == iPix)
-						iScaler += (1<<i);
-
-			} else {
-
-				// Otherwise, we *only* consider the highest-placement material as "other"
-				for(i = 0; i < 8; i++)
-					if(iNeighbours[i] != iMaxPix)
-						iScaler += (1<<i);
-			}
+			// Maximum placement differences that make a difference in the result,  after which we are at the limits of
+			// what can be packed into a byte
+			const int maximumPlacementDifference = 40;
+			int horizontalBiasScaled = BoundBy(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
+			int verticalBiasScaled = BoundBy(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
 
 			// Collect data to save per pixel
 			unsigned char data[C4LR_SurfaceCount * 4];
 			memset(data, 0, sizeof(data));
 
-			data[C4LR_Material] = iPix;
-			data[C4LR_BiasX] = iHBiasScaled;
-			data[C4LR_BiasY] = iVBiasScaled;
-			data[C4LR_Scaler] = iScaler;
-			data[C4LR_Place] = iPlac;
+			data[C4LR_Material] = pixel;
+			data[C4LR_BiasX] = horizontalBiasScaled;
+			data[C4LR_BiasY] = verticalBiasScaled;
+			data[C4LR_Scaler] = CalculateScalerBitmask(x, y, To, pSource);
+			data[C4LR_Place] = placement;
 
 			for(int i = 0; i < C4LR_SurfaceCount; i++)
-				TexRefs[i]->SetPix4(To.x+x, To.y+y, 
+				texture[i]->SetPix4(To.x+x, To.y+y, 
 					RGBA(data[i*4+0], data[i*4+1], data[i*4+2], data[i*4+3]));
 
-			// Update left & right
-			if(To.x+x + 1 < iWidth)
-				iRight -= pSource->_GetPlacement(To.x+x + 1, To.y+y);
-			if(To.x+x + C4LR_BiasDistanceX < iWidth)
-				iRight += pSource->_GetPlacement(To.x+x + C4LR_BiasDistanceX, To.y+y);
-			iLeft += pSource->_GetPlacement(To.x+x, To.y+y);
-			if(To.x+x - C4LR_BiasDistanceX + 1 >= 0)
-				iLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX + 1, To.y+y);
+			// Update left & right for next pixel in line
+			if(x + To.x + 1 < iWidth)
+				placementSumRight -= pSource->_GetPlacement(To.x+x + 1, To.y+y);
+			if(To.x+x + C4LR_BiasDistanceX + 1 < iWidth)
+				placementSumRight += pSource->_GetPlacement(To.x+x + C4LR_BiasDistanceX + 1, To.y+y);
+			placementSumLeft += placement;
+			if(To.x+x - C4LR_BiasDistanceX >= 0)
+				placementSumLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX, To.y+y);
 
-			// Update up & down arrays
+			// Update up & down arrays (for next line already)
 			if(To.y+y + 1 < iHeight)
-				pDown[x] -= pSource->_GetPlacement(To.x+x, To.y+y + 1);
-			if(To.y+y + C4LR_BiasDistanceY < iHeight)
-				pDown[x] += pSource->_GetPlacement(To.x+x, To.y+y + C4LR_BiasDistanceY);
-			pUp[x] += pSource->_GetPlacement(To.x+x, To.y+y);
-			if(To.y+y - C4LR_BiasDistanceY + 1 >= 0) {
-				pUp[x] -= pSource->_GetPlacement(To.x+x, To.y+y - C4LR_BiasDistanceY + 1);
+				placementSumsDown[x] -= pSource->_GetPlacement(To.x+x, To.y+y + 1);
+			if(To.y+y + C4LR_BiasDistanceY + 1 < iHeight)
+				placementSumsDown[x] += pSource->_GetPlacement(To.x+x, To.y+y + C4LR_BiasDistanceY + 1);
+			placementSumsUp[x] += placement;
+			if(To.y+y - C4LR_BiasDistanceY >= 0) {
+				placementSumsUp[x] -= pSource->_GetPlacement(To.x+x, To.y+y - C4LR_BiasDistanceY);
 			}
 		}
 	}
 
 	// done
-	delete[] pUp;
+	delete[] placementSumsUp;
 	for (int i = 0; i < C4LR_SurfaceCount; i++)
 		Surfaces[i]->Unlock();
+}
 
+/** Returns the data used for the scaler shader for the given pixel. It is a 8-bit bitmask. The bits stand for the 8
+    neighbouring pixels in this order:
+	  1 2 3
+	  4 . 5
+	  6 7 8
+	... and denote whether the pixels belongs to the same group as this pixel.
+	*/
+int C4LandscapeRenderGL::CalculateScalerBitmask(int x, int y, C4Rect To, C4Landscape *pSource)
+{
+	int pixel = pSource->_GetPix(To.x+x, To.y+y);
+	int placement = pSource->_GetPlacement(To.x+x, To.y+y);
+
+	int neighbours[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	if(To.y+y > 0)
+	{
+		if(To.x+x > 0)
+			neighbours[0] = pSource->_GetPix(To.x+x-1, To.y+y-1);
+		neighbours[1] = pSource->_GetPix(To.x+x, To.y+y-1);
+		if(To.x+x < iWidth-1)
+			neighbours[2] = pSource->_GetPix(To.x+x+1, To.y+y-1);
+	}
+	if(To.x+x > 0)
+		neighbours[3] = pSource->_GetPix(To.x+x-1, To.y+y);
+	if(To.x+x < iWidth-1)
+		neighbours[4] = pSource->_GetPix(To.x+x+1, To.y+y);
+	if(To.y+y < iHeight-1)
+	{
+		if(To.x+x > 0)
+			neighbours[5] = pSource->_GetPix(To.x+x-1, To.y+y+1);
+		neighbours[6] = pSource->_GetPix(To.x+x, To.y+y+1);
+		if(To.x+x < iWidth-1)
+			neighbours[7] = pSource->_GetPix(To.x+x+1, To.y+y+1);
+	}
+
+	// Look for highest-placement material in our surroundings
+	int maxPixel = pixel, maxPlacement = placement;
+	for(int i = 0; i < 8; i++)
+	{
+		int tempPlacement = MatPlacement(PixCol2Mat(neighbours[i]));
+		if(tempPlacement > maxPlacement || (tempPlacement == maxPlacement && neighbours[i] > maxPixel) )
+		{
+			maxPixel = neighbours[i];
+			maxPlacement = tempPlacement;
+		}
+	}
+
+	// Scaler calculation depends on whether this is the highest-placement material around
+	int scaler = 0;
+	if(maxPixel == pixel)
+	{
+		// If yes, we consider all other materials as "other"
+		for(int i = 0; i < 8; i++)
+			if(neighbours[i] == pixel)
+				scaler += (1<<i);
+
+	} else {
+
+		// Otherwise, we *only* consider the highest-placement material as "other"
+		for(int i = 0; i < 8; i++)
+			if(neighbours[i] != maxPixel)
+				scaler += (1<<i);
+	}
+	return scaler;
 }
 
 const char *C4LandscapeRenderGL::UniformNames[C4LRU_Count+1];

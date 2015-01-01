@@ -128,6 +128,8 @@ private:
     void ClearShaders();
 	bool LoadScaler(C4GroupSet *pGraphics);
 
+	int CalculateScalerBitmask(int x, int y, C4Rect To, C4Landscape *pSource);
+
 	int32_t LookupTextureTransition(const char *szFrom, const char *szTo);
 	void AddTextureTransition(const char *szFrom, const char *szTo);
 	void AddTextureAnim(const char *szTextureAnim);
