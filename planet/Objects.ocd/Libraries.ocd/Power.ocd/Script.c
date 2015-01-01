@@ -28,6 +28,7 @@
 	
 	OPEN TODOS:
 	 * Figure out where the nil's and the errors come from.
+	 * Remove all the if (!link) checks, they are not needed in principle but cause errors.
 	 * Fix the visualization of power on the nodes.
 	 * Check the flag library for network merging.
 	 * Check the power balance, also with merging.
@@ -199,7 +200,6 @@ public func AddPowerProducer(object producer, int amount, int prio)
 {
 	// Debugging logs.
 	Log("POWR - AddPowerProducer(): network = %v, frame = %d, producer = %v, amount = %d, priority = %d", this, FrameCounter(), producer, amount, prio);
-	LogCallStack();
 	// Check if it is not already in the list of idle producers.
 	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -257,7 +257,6 @@ public func RemovePowerProducer(object producer)
 {
 	// Debugging logs.
 	Log("POWR - RemovePowerProducer(): network = %v, frame = %d, producer = %v", this, FrameCounter(), producer);
-	LogCallStack();
 	// Remove producer from the list of idle producers if it is in there.
 	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -434,9 +433,10 @@ private func ActivateProducers(int power_need)
 			continue;
 		power_found += link.prod_amount;
 		PushBack(lib_active_producers, link);
-		link.obj->OnPowerProductionStart(link.prod_amount);
 		lib_power_balance += link.prod_amount;
 		RemoveArrayIndex(lib_idle_producers, index);
+		// On production start callback to the activated producer.
+		link.obj->OnPowerProductionStart(link.prod_amount);
 		VisualizePowerChange(link.obj, 0, link.prod_amount, false);
 		// Stop activatng producers if power need is satisfied.
 		if (power_found >= power_need)
@@ -456,6 +456,8 @@ private func DeactivateProducers(int power_surplus)
 	for (var index = GetLength(lib_active_producers) - 1; index >= 0; index--)
 	{
 		var link = lib_active_producers[index];
+		if (!link)
+			continue;
 		// It is not possible to deactivate a steady power producer.
 		if (link.obj->IsSteadyPowerProducer())
 			continue;		
@@ -465,9 +467,10 @@ private func DeactivateProducers(int power_surplus)
 			break;
 		// Move active producer to idle producers.
 		PushBack(lib_idle_producers, link);
-		link.obj->OnPowerProductionStop();
 		lib_power_balance -= link.prod_amount;
 		RemoveArrayIndex(lib_active_producers, index);
+		// On production stop callback to the deactivated producer.
+		link.obj->OnPowerProductionStop();
 		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 	}
 	return;
@@ -484,14 +487,17 @@ private func ActivateConsumers(int power_available)
 	for (var index = GetLength(lib_waiting_consumers) - 1; index >= 0; index--)
 	{
 		var link = lib_waiting_consumers[index];
+		if (!link)
+			continue;
 		// If this consumer requires to much power try one of lower priority.
 		if (power_used + link.cons_amount > power_available)
 			continue;
 		power_used += link.cons_amount;
 		PushBack(lib_active_consumers, link);
-		link.obj->OnEnoughPower(link.cons_amount);
 		lib_power_balance -= link.cons_amount;
 		RemoveArrayIndex(lib_waiting_consumers, index);
+		// On enough power callback to the activated consumer.
+		link.obj->OnEnoughPower(link.cons_amount);
 		VisualizePowerChange(link.obj, 0, link.cons_amount, false);
 	}
 	return;
@@ -508,11 +514,14 @@ private func DeactivateConsumers(int power_need)
 	for (var index = GetLength(lib_active_consumers) - 1; index >= 0; index--)
 	{
 		var link = lib_active_consumers[index];
+		if (!link)
+			continue;
 		power_restored += link.cons_amount;
 		PushBack(lib_waiting_consumers, link);
-		link.obj->OnNotEnoughPower(link.cons_amount);
 		lib_power_balance += link.cons_amount;
 		RemoveArrayIndex(lib_active_consumers, index);
+		// On not enough power callback to the deactivated consumer.
+		link.obj->OnNotEnoughPower(link.cons_amount);
 		VisualizePowerChange(link.obj, link.cons_amount, 0, true);
 		// Stop deactivating consumers if enough power has been freed.
 		if (power_restored >= power_need)

@@ -28,7 +28,7 @@ protected func Construction()
 protected func Initialize()
 {
 	SetAction("Idle");
-	AddTimer("ContentsCheck", 30);
+	AddTimer("ContentsCheck", 10);
 	return _inherited(...);
 }
 
