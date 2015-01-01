@@ -16,7 +16,6 @@
 
 protected func Initialize()
 {
-
 	return;
 }
 
@@ -79,7 +78,7 @@ global func SkipTest()
 }
 
 
-/*-- Tests --*/
+/*-- Test Effect --*/
 
 global func FxIntTestControlStart(object target, proplist effect, int temporary)
 {
@@ -121,6 +120,9 @@ global func FxIntTestControlTimer(object target, proplist effect)
 	}
 	return FX_OK;
 }
+
+
+/*-- Power Tests --*/
 
 // Simple test for one steady source and one steady consumer.
 global func Test1_OnStart(int plr)
@@ -164,14 +166,13 @@ global func Test2_OnStart(int plr)
 	
 	// Power consumer: sawmill.
 	CreateObject(Sawmill, 40, 160, plr);
-	for (var i = 0; i < 1; i++)
-		CreateObject(Tree_Coconut, 40, 160)->ChopDown();
+	CreateObject(Tree_Coconut, 40, 160)->ChopDown();
 	
 	// Power consumer: armory.
 	var armory = CreateObject(Armory, 280, 160, plr);
-	armory->CreateContents(Firestone, 8);
-	armory->CreateContents(Metal, 8);
-	armory->AddToQueue(IronBomb, 8);
+	armory->CreateContents(Firestone, 5);
+	armory->CreateContents(Metal, 5);
+	armory->AddToQueue(IronBomb, 5);
 	
 	// Log what the test is about.
 	Log("An on-demand power source (steam engine) supplying a few on-demand power consumers (sawmill, armory).");
@@ -181,15 +182,15 @@ global func Test2_OnStart(int plr)
 global func Test2_Completed()
 {
 	// One wood is being burned as fuel by the steam engine: 3 * 4 - 1 = 11.
-	if (ObjectCount(Find_ID(Wood)) >= 3 && ObjectCount(Find_ID(IronBomb)) >= 8)
+	if (ObjectCount(Find_ID(Wood)) >= 3 && ObjectCount(Find_ID(IronBomb)) >= 5)
 		return true;
 	return false;
 }
 
 global func Test2_OnFinished()
 {
-	// Remove steam engine, sawmill, armory.
-	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Sawmill), Find_ID(Armory)));
+	// Remove steam engine, sawmill (possibly with wood), armory.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Armory)));
 	return;
 }
 
@@ -420,6 +421,78 @@ global func Test7_OnFinished()
 				ClearFreeRect(x, y, 1, 1);
 	// Remove steam engine, wind generator, flagpole, pump and the pipes.
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe)));
+	return;
+}
+
+// Test double network and power producing pumps.
+global func Test8_OnStart(int plr)
+{
+	// Power source (network 1): one wind generator.
+	SetWindFixed(50);
+	CreateObject(WindGenerator, 40, 160, plr);
+	
+	// Power consumer (network 1): five pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObject(Pump, 80 + i * 10, 160, plr);
+		var source = CreateObject(Pipe, 168, 292, plr);
+		var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+		source_pipe->SetActionTargets(source, pump);
+		pump->SetSource(source_pipe);
+		var drain = CreateObject(Pipe, 240, 100, plr);
+		var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+		drain_pipe->AddVertex(208, 48);
+		drain_pipe->SetActionTargets(drain, pump);
+		pump->SetDrain(drain_pipe);
+	}
+	
+	// Power source (network 2): five pumps.
+	for (var i = 0; i < 5; i++)
+	{
+		var pump = CreateObject(Pump, 228 + i * 10, 160, plr);
+		var source = CreateObject(Pipe, 256, 100, plr);
+		var source_pipe = CreateObject(PipeLine, 272, 24, plr);
+		source_pipe->AddVertex(288, 24);
+		source_pipe->AddVertex(288, 114);
+		source_pipe->AddVertex(282, 120);
+		source_pipe->SetActionTargets(source, pump);
+		pump->SetSource(source_pipe);
+		var drain = CreateObject(Pipe, 184, 292, plr);
+		var drain_pipe = CreateObject(PipeLine, 208, 160, plr);
+		drain_pipe->SetActionTargets(drain, pump);
+		pump->SetDrain(drain_pipe);
+	}
+	
+	// Power connection (network 2): flagpole.
+	CreateObject(Flagpole, 364, 104, plr);
+	
+	// Power consumer (network 2): one sawmill.
+	CreateObject(Sawmill, 400, 248, plr);
+	for (var i = 0; i < 2; i++)
+		CreateObject(Tree_Coconut, 400, 248 - 30)->ChopDown();
+	
+	// Log what the test is about.
+	Log("Network 1 (steady producer (wind generator) supplying steady consumers (pumps) connected to network 2 where steady producers (pumps) supply an on-demand consumer (sawmill).");
+	return true;
+}
+
+global func Test8_Completed()
+{
+	if (ObjectCount(Find_ID(Wood)) >= 5)
+		return true;
+	return false;
+}
+
+global func Test8_OnFinished()
+{
+	// Restore water levels.
+	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+	for (var x = 216; x <= 280; x++)
+		for (var y = 24; y <= 120; y++)
+			if (GetMaterial(x, y) == Material("Water"))
+				ClearFreeRect(x, y, 1, 1);
+	// Remove wind generator, sawmill, wood flagpole, pump and the pipes.
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe)));
 	return;
 }
 
