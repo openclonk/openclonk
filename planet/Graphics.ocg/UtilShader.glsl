@@ -6,7 +6,8 @@
 
 vec3 extend_normal(vec2 v)
 {
-	return normalize(vec3(v, 0.3));
+	// the higher the second value, the further away the light source from the landscape
+	return normalize(vec3(v, 0.45));
 }
 
 // Converts the pixel range 0.0..1.0 into the integer range 0..255
