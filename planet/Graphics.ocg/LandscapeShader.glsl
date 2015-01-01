@@ -25,6 +25,12 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
+// Parameters
+
+// how much % the normals from the normal map are added up to the landscape normal. The higher the strength, the more
+// structure within the material is visible but also the less the borders between the different materials stand out.
+const float normalMapStrength = 0.75;
+
 float queryMatMap(int pix)
 {
 #ifndef NO_BROKEN_ARRAYS_WORKAROUND
@@ -81,12 +87,12 @@ slice(normal)
 	vec3 normal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
 								- vec2(0.5, 0.5));
 	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
-	normal = normal + textureNormal;
+	normal = normal + textureNormal * normalMapStrength;
 
 #ifdef HAVE_2PX
 	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
 	vec3 textureNormal2 = normalPx2.xyz - vec3(0.5,0.5,0.5);
-	normal2 = normal2 + textureNormal2;
+	normal2 = normal2 + textureNormal2 * normalMapStrength;
 #endif
 
 }
