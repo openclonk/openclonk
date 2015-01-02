@@ -533,12 +533,12 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	
 	// Consume power by registering as a consumer for the needed amount.
 	// But first hold the production until the power system gives it ok.
-	if (PowerNeed() > 0)
-	{
-		this->~OnProductionHold(effect.Product, effect.Duration);
-		effect.Active = false;
-		RegisterPowerRequest(PowerNeed());
-	}
+	// Always register the power request even if power need is zero. The
+	// power network handles this correctly and a producer may decide to
+	// change its power need during production.
+	this->~OnProductionHold(effect.Product, effect.Duration);
+	effect.Active = false;
+	RegisterPowerRequest(PowerNeed());
 	
 	return 1;
 }
