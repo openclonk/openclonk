@@ -10,7 +10,6 @@
 #include Library_Flag
 #include Library_PowerProducer
 
-
 local DefaultFlagRadius = 90;
 
 /*-- Initialization --*/

@@ -424,11 +424,49 @@ global func Test7_OnFinished()
 	return;
 }
 
-// Test double network and power producing pumps.
+// Test the reduced on-demand consumer (wind mill) with an on-demand producer to always have power.
 global func Test8_OnStart(int plr)
 {
-	// Power source (network 1): one wind generator.
+	// Power source: one steam engine.
+	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	engine->CreateContents(Coal, 1);
+	
+	// Change the windlevels so that the engine is needed from time to time.
 	SetWindFixed(50);
+	Schedule(nil, "SetWindFixed(25)", 5 * 36);
+	Schedule(nil, "SetWindFixed(0)", 10 * 36);
+	Schedule(nil, "SetWindFixed(50)", 15 * 36);
+	Schedule(nil, "SetWindFixed(0)", 20 * 36);
+	
+	// Power consumer: one wind mill.
+	var windmill = CreateObject(Windmill, 116, 160, plr);
+	windmill->CreateContents(Seeds, 3);
+	windmill->AddToQueue(Flour, 3);
+
+	// Log what the test is about.
+	Log("An on-demand producer (steam engine) always provides power to an reduced on-demand consumer (wind mill).");
+	return true;
+}
+
+global func Test8_Completed()
+{
+	if (ObjectCount(Find_ID(Flour)) >= 3)
+		return true;
+	return false;
+}
+
+global func Test8_OnFinished()
+{
+	// Remove steam engine, wind mill and flour.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Windmill), Find_ID(Flour)));
+	return;
+}
+
+// Test a double separated network and power producing pumps.
+global func Test9_OnStart(int plr)
+{
+	// Power source (network 1): one wind generator.
+	SetWindFixed(100);
 	CreateObject(WindGenerator, 40, 160, plr);
 	
 	// Power consumer (network 1): five pumps.
@@ -476,14 +514,14 @@ global func Test8_OnStart(int plr)
 	return true;
 }
 
-global func Test8_Completed()
+global func Test9_Completed()
 {
 	if (ObjectCount(Find_ID(Wood)) >= 5)
 		return true;
 	return false;
 }
 
-global func Test8_OnFinished()
+global func Test9_OnFinished()
 {
 	// Restore water levels.
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
