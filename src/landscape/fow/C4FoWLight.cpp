@@ -4,6 +4,8 @@
 #include "C4FoWLightSection.h"
 #include "C4FoWBeamTriangle.h"
 #include "C4FoWDrawStrategy.h"
+#include "C4PlayerList.h"
+#include "C4Player.h"
 
 #include <vector>
 
@@ -25,13 +27,13 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 
 C4FoWLight::~C4FoWLight()
 {
-	for( int i = 0; i < sections.size(); ++i )
+	for(size_t i = 0; i < sections.size(); ++i )
 		delete sections[i];
 }
 
 void C4FoWLight::Invalidate(C4Rect r)
 {
-	for( int i = 0; i < sections.size(); ++i )
+	for(size_t i = 0; i < sections.size(); ++i )
 		sections[i]->Invalidate(r);
 }
 
@@ -46,14 +48,14 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 	{
 		// Reach decreased? Prune beams
 		iReach = iReach2;
-		for( int i = 0; i < sections.size(); ++i )
+		for(size_t i = 0; i < sections.size(); ++i )
 			sections[i]->Prune(iReach);
 
 	} else {
 
 		// Reach increased? Dirty beams that might get longer now
 		iReach = iReach2;
-		for( int i = 0; i < sections.size(); ++i )
+		for(size_t i = 0; i < sections.size(); ++i )
 			sections[i]->Dirty(iReach);
 	}
 }
@@ -64,12 +66,12 @@ void C4FoWLight::Update(C4Rect Rec)
 	int32_t iNX = fixtoi(pObj->fix_x), iNY = fixtoi(pObj->fix_y);
 	if (iNX != iX || iNY != iY)
 	{
-		for( int i = 0; i < sections.size(); ++i )
+		for(size_t i = 0; i < sections.size(); ++i )
 			sections[i]->Prune(0);
 		iX = iNX; iY = iNY;
 	}
 
-	for( int i = 0; i < sections.size(); ++i )
+	for(size_t i = 0; i < sections.size(); ++i )
 		sections[i]->Update(Rec);
 }
 
@@ -79,7 +81,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 
 	bool clip = false;
 	
-	for( int i = 0; i < sections.size(); ++i )
+	for(size_t i = 0; i < sections.size(); ++i )
 	{
 		TriangleList sectionTriangles = sections[i]->CalculateTriangles(region);
 
@@ -366,4 +368,11 @@ bool find_cross(float ax, float ay, float bx, float by,
 	if(abParameter) *abParameter = abParam;
 
 	return true;
+}
+
+bool C4FoWLight::IsVisibleForPlayer(C4Player *player) const
+{
+	// check if attached to an object that is not hostile to the given player
+	if (!pObj || !player) return true;
+	return !::Hostile(pObj->Owner,player->Number);
 }

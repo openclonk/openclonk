@@ -78,11 +78,11 @@ public:
 	void Remove(C4Object *pObj);
 
 	/** Update all light beams within the given rectangle */
-	void Update(C4Rect r);
+	void Update(C4Rect r, C4Player *player);
 	/** Triggers the recalculation of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
 
-	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr);
 
 private:
 	// Shader for updating the frame buffer

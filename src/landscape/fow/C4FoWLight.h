@@ -53,6 +53,8 @@ public:
 	/** Render this light*/
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
 
+	bool IsVisibleForPlayer(C4Player *player) const; // check if attached to an object that is not hostile to the given player
+
 private:
 	typedef std::list<class C4FoWBeamTriangle> TriangleList;
 

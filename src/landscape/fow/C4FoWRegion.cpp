@@ -90,12 +90,12 @@ void C4FoWRegion::Update(C4Rect r)
 void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 {
 	// Update FoW at interesting location
-	pFoW->Update(Region);
+	pFoW->Update(Region, pPlayer);
 
 	// On screen? No need to set up frame buffer - simply shortcut
 	if (pOnScreen)
 	{
-		pFoW->Render(this, pOnScreen);
+		pFoW->Render(this, pOnScreen, pPlayer);
 		return;
 	}
 
@@ -123,7 +123,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Render FoW to frame buffer object
 	glBlendFunc(GL_ONE, GL_ONE);
-	pFoW->Render(this);
+	pFoW->Render(this, NULL, pPlayer);
 
 	// Copy over the old state
 	if (OldRegion.Wdt > 0) {

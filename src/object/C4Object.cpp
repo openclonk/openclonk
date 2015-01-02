@@ -4156,7 +4156,6 @@ void C4Object::ExecAction()
 
 bool C4Object::SetOwner(int32_t iOwner)
 {
-	C4Player *pPlr;
 	// Check valid owner
 	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
 	// always set color, even if no owner-change is done

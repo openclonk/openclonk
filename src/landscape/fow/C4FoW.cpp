@@ -82,14 +82,16 @@ void C4FoW::Invalidate(C4Rect r)
 		pLight->Invalidate(r);
 }
 
-void C4FoW::Update(C4Rect r)
+void C4FoW::Update(C4Rect r, C4Player *pPlr)
 {
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
-		pLight->Update(r);
+		if (pLight->IsVisibleForPlayer(pPlr))
+			pLight->Update(r);
 }
 
-void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen)
+void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr)
 {
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
-		pLight->Render(pRegion, pOnScreen);
+		if (pLight->IsVisibleForPlayer(pPlr))
+			pLight->Render(pRegion, pOnScreen);
 }
