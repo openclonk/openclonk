@@ -284,7 +284,7 @@ static boolean fill_input_buffer (j_decompress_ptr cinfo)
 	// The doc says to give fake end-of-inputs if there is no more data
 	cinfo->src->next_input_byte = &end_of_input;
 	cinfo->src->bytes_in_buffer = 1;
-	return true;
+	return (boolean)true;
 }
 static void skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 {
@@ -335,7 +335,7 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 	blub.term_source = jpeg_noop;
 
 	// a missing image is an error
-	jpeg_read_header(&cinfo, true);
+	jpeg_read_header(&cinfo, (boolean)true);
 
 	// Let libjpeg convert for us
 	cinfo.out_color_space = JCS_RGB;
