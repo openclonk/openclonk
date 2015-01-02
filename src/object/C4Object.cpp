@@ -181,7 +181,8 @@ void C4Object::Default()
 	Breath=0;
 	InMat=MNone;
 	Color=0;
-	PlrViewRange=0;
+	lightRange=0;
+	lightFadeoutRange=0;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
@@ -1126,7 +1127,7 @@ void C4Object::AssignDeath(bool fForced)
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
 	// Remove from light sources
-	SetPlrViewRange(0);
+	SetLightRange(0,0);
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
@@ -2353,7 +2354,8 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
-	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
+	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
+	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
@@ -2555,13 +2557,11 @@ bool C4Object::AssignInfo()
 	return false;
 }
 
-bool C4Object::AssignPlrViewRange()
+bool C4Object::AssignLightRange()
 {
-	// no range?
-	if (!PlrViewRange) return true;
-	// add to FoW-repellers
-	PlrFoWActualize();
-	// success
+	if (!lightRange && !lightFadeoutRange) return true;
+
+	UpdateLight();
 	return true;
 }
 
@@ -4180,18 +4180,19 @@ bool C4Object::SetOwner(int32_t iOwner)
 }
 
 
-bool C4Object::SetPlrViewRange(int32_t iToRange)
+bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 {
 	// set new range
-	PlrViewRange = iToRange;
+	lightRange = iToRange;
+	lightFadeoutRange = iToFadeoutRange;
 	// resort into player's FoW-repeller-list
-	PlrFoWActualize();
+	UpdateLight();
 	// success
 	return true;
 }
 
 
-void C4Object::PlrFoWActualize()
+void C4Object::UpdateLight()
 {
 	if (Landscape.pFoW) Landscape.pFoW->Add(this);
 }

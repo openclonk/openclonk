@@ -12,7 +12,7 @@
 /** This class represents one light source. A light source has an associated object with which the light source moves
     and one light section that handles the light beams for each direction (up, down, left, right).
 
-    Furthermore, each light source has a size. This is usually the object's PlrViewRange. See SetReach.
+    Furthermore, each light source has a size. This is usually the object's lightRange. See SetReach.
 */
 class C4FoWLight
 {

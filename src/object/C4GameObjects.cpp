@@ -328,7 +328,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 		if (pObj->Status)
 		{
 			// add to plrview
-			pObj->PlrFoWActualize();
+			pObj->UpdateLight();
 			// update flipdir (for old objects.txt with no flipdir defined)
 			// assigns Action.DrawDir as well
 			pObj->UpdateFlipDir();
@@ -487,11 +487,11 @@ bool C4GameObjects::AssignInfo()
 	return fSucc;
 }
 
-void C4GameObjects::AssignPlrViewRange()
+void C4GameObjects::AssignLightRange()
 {
 	for (C4Object *obj : reverse())
 		if (obj->Status)
-			obj->AssignPlrViewRange();
+			obj->AssignLightRange();
 }
 
 void C4GameObjects::SyncClearance()

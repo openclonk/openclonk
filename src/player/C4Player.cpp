@@ -342,8 +342,8 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	// Init FoW-viewobjects: NO_OWNER-FoW-repellers might need to be added
 	for (C4Object *pObj : Objects)
 	{
-		if (pObj->PlrViewRange && pObj->Owner == NO_OWNER)
-			pObj->PlrFoWActualize();
+		if ((pObj->lightRange || pObj->lightFadeoutRange) && pObj->Owner == NO_OWNER)
+			pObj->UpdateLight();
 	}
 
 	// init graphs
@@ -449,7 +449,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 				// Add object to crew
 				Crew.Add(nobj, C4ObjectList::stNone);
 				// add visibility range
-				nobj->SetPlrViewRange(C4FOW_Def_View_RangeX);
+				nobj->SetLightRange(C4FOW_DefLightRangeX, C4FOW_DefLightFadeoutRangeX);
 				// If base is present, enter base
 				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
 				// OnJoinCrew callback
@@ -993,8 +993,11 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 	if (!Crew.GetLink(pObj))
 		Crew.Add(pObj, C4ObjectList::stNone);
 
-	// add plr view
-	if (!pObj->PlrViewRange) pObj->SetPlrViewRange(C4FOW_Def_View_RangeX); else pObj->PlrFoWActualize();
+	// add light
+	if (!pObj->lightRange)
+		pObj->SetLightRange(C4FOW_DefLightRangeX, C4FOW_DefLightFadeoutRangeX);
+	else
+		pObj->UpdateLight();
 
 	// controlled by the player
 	pObj->Controller = Number;

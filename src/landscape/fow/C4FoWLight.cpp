@@ -10,8 +10,8 @@
 C4FoWLight::C4FoWLight(C4Object *pObj)
 	: iX(fixtoi(pObj->fix_x)),
 	  iY(fixtoi(pObj->fix_y)),
-	  iReach(pObj->PlrViewRange),
-	  iFadeout(50),
+	  iReach(pObj->lightRange),
+	  iFadeout(pObj->lightFadeoutRange),
 	  iSize(20),
 	  pNext(NULL),
 	  pObj(pObj),
@@ -42,9 +42,9 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 
 	if (iReach == iReach2) return;
 
-	// Reach decreased? Prune beams
 	if (iReach2 < iReach)
 	{
+		// Reach decreased? Prune beams
 		iReach = iReach2;
 		for( int i = 0; i < sections.size(); ++i )
 			sections[i]->Prune(iReach);

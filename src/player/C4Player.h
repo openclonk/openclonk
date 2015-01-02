@@ -42,7 +42,9 @@ const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to c
 static const int C4VP_DefViewRangeX    = 300,
                  C4VP_DefMinViewRangeX = 150,
                  C4VP_DefMaxViewRangeX = 750;
-#define C4FOW_Def_View_RangeX 500
+
+static const int C4FOW_DefLightRangeX = 300,
+                 C4FOW_DefLightFadeoutRangeX = 80;
 
 class C4Player: public C4PlayerInfoCore
 {

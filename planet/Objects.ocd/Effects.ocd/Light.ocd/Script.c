@@ -25,11 +25,11 @@ func Init(int lrange, int light_type)
 	if (ltype == LGT_Constant)
 	{
 		// Just a fixed light
-		SetPlrViewRange(range);
+		SetLightRange(range);
 	}
 	else if (ltype == LGT_Blast)
 	{
-		SetPlrViewRange(range);
+		SetLightRange(range);
 		var time = Sqrt(range)+10;
 		ScheduleCall(this, Global.RemoveObject, time, 1);
 	}

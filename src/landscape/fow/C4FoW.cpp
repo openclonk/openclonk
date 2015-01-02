@@ -33,7 +33,7 @@ C4Shader *C4FoW::GetFramebufShader()
 void C4FoW::Add(C4Object *pObj)
 {
 	// No view range? Probably want to remove instead
-	if(!pObj->PlrViewRange)
+	if(!pObj->lightRange && !pObj->lightFadeoutRange)
 	{
 		Remove(pObj);
 		return;
@@ -49,7 +49,7 @@ void C4FoW::Add(C4Object *pObj)
 	{
 
 		// Update reach
-		pLight->SetReach(pObj->PlrViewRange, 50);
+		pLight->SetReach(pObj->lightRange, pObj->lightFadeoutRange);
 
 	}
 	else

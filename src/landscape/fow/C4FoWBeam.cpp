@@ -140,7 +140,6 @@ void C4FoWBeam::MergeDirty()
 void C4FoWBeam::Clean(int32_t y)
 {
 	// Search hit something, this beam is now clean.
-	assert(isDirty());
 	iLeftEndY = y;
 	iRightEndY = y;
 	fDirty = false;

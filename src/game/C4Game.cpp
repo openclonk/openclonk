@@ -2246,7 +2246,7 @@ bool C4Game::InitGameFinal()
 	// Validate object owners & assign loaded info objects
 	Objects.ValidateOwners();
 	Objects.AssignInfo();
-	Objects.AssignPlrViewRange(); // update FoW-repellers
+	Objects.AssignLightRange(); // update FoW-repellers
 
 	// Script constructor call
 	int32_t iObjCount = Objects.ObjectCount();
