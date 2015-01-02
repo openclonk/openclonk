@@ -227,8 +227,8 @@ public func AddPowerProducer(object producer, int amount, int prio)
 		{
 			// Adjust the power balance accordingly.
 			lib_power_balance += amount - link.prod_amount;
-			VisualizePowerChange(producer, link.prod_amount, amount, false);
 			lib_active_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
+			VisualizePowerChange(producer, link.prod_amount, amount, false);
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
@@ -316,7 +316,10 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 		// If it is in the list update the values if they have changed.
 		if (link.cons_amount != amount || link.priority != prio)
 		{
+			// Adjust the power balance accordingly.
+			lib_power_balance -= amount - link.cons_amount;
 			lib_active_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
+			VisualizePowerChange(link.obj, link.cons_amount, amount, false);
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
