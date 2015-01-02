@@ -33,6 +33,7 @@
 
 #include "C4Application.h"
 
+#include <StdScheduler.h>
 #include <C4Id.h>
 
 #include <C4Window.h>
@@ -2355,7 +2356,7 @@ namespace C4GUI
 	public:
 		InfoDialog(const char *szCaption, int32_t iLineCount); // ctor
 		InfoDialog(const char *szCaption, int iLineCount, const StdStrBuf &sText); // ctor - init w/o timer
-		~InfoDialog() { Application.Remove(this); }
+		~InfoDialog();
 	};
 
 	// a keyboard event that's only executed if the dialog is activated

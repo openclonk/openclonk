@@ -123,6 +123,20 @@ public:
 	virtual uint32_t TimerInterval() { return iDelay; }
 };
 
+class C4ApplicationSec1Timer : protected CStdTimerProc
+{
+public:
+	C4ApplicationSec1Timer() : CStdTimerProc(1000) { }
+	virtual void OnSec1Timer() = 0;
+protected:
+	virtual bool Execute(int, pollfd *)
+	{
+		if (CheckAndReset())
+			OnSec1Timer();
+		return true;
+	}
+};
+
 // A simple alertable proc
 class CStdNotifyProc : public StdSchedulerProc
 {
