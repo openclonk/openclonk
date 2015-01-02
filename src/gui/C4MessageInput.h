@@ -19,7 +19,6 @@
 #define INC_C4MessageInput
 
 #include "C4Gui.h"
-#include "C4KeyboardInput.h"
 #include "C4ObjectPtr.h"
 
 const int32_t C4MSGB_BackBufferMax  = 20;

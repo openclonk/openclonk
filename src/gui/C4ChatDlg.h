@@ -20,7 +20,6 @@
 
 #include "C4Gui.h"
 #include "C4InteractiveThread.h"
-#include "C4Network2IRC.h"
 
 // a GUI control to chat in
 class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callback

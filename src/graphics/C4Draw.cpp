@@ -28,9 +28,9 @@
 #include "C4Rect.h"
 #include <C4Config.h>
 #include "StdMesh.h"
+#include <CSurface8.h>
 
 #include <stdio.h>
-#include <limits.h>
 
 // Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
 #if defined(_WIN32) && !defined(USE_CONSOLE)

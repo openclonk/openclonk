@@ -22,16 +22,11 @@
 
 #include <C4Viewport.h>
 #include <C4Console.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
 #include <C4PlayerList.h>
-#include <StdRegistry.h>
 
-#ifdef USE_X11
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
-#endif
 #endif
 
 #ifdef USE_WIN32_WINDOWS

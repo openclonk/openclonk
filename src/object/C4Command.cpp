@@ -28,6 +28,7 @@
 #include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
+#include <C4SoundSystem.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>

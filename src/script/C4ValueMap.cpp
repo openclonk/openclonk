@@ -13,8 +13,11 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
+
 #include "C4Include.h"
 #include "C4ValueMap.h"
+
+#include <C4Value.h>
 
 // *** C4ValueMapData ***
 

@@ -20,8 +20,7 @@
 #ifndef INC_C4GameMessage
 #define INC_C4GameMessage
 
-#include <C4Surface.h>
-#include <C4Gui.h>
+#include <StdColors.h>
 #include <C4Value.h>
 
 const int32_t C4GM_MaxText = 256,

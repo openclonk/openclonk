@@ -18,6 +18,8 @@
 #include <C4Include.h>
 #include <C4StartupMainDlg.h>
 
+#include <C4Application.h>
+#include <C4Components.h>
 #include <C4UpdateDlg.h>
 #include <C4Version.h>
 #include <C4StartupNetDlg.h>

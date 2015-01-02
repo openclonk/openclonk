@@ -24,10 +24,7 @@
 #include <C4FontLoader.h>
 #include <C4Log.h>
 #include <C4Game.h>
-#include <C4GraphicsSystem.h>
-#include <C4Def.h>
-
-#include <C4DrawGL.h>
+#include <C4Components.h>
 
 /* C4GraphicsResource */
 

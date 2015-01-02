@@ -20,12 +20,7 @@
 #define INC_STDDDRAW2
 
 #include <C4Surface.h>
-#include <CSurface8.h>
-#include <StdBuf.h>
 #include <StdMeshMaterial.h>
-#ifdef _WIN32
-#include <C4windowswrapper.h>
-#endif
 
 // Global Draw access pointer
 extern C4Draw *pDraw;

@@ -19,7 +19,6 @@
 #include <C4Include.h>
 #include <C4GroupSet.h>
 
-#include <C4Game.h>
 #include <C4Components.h>
 #include <C4Group.h>
 #include <C4Log.h>

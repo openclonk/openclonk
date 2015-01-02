@@ -27,6 +27,7 @@
 #include <C4FullScreen.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
+#include <C4Components.h>
 
 // *** C4PlayerInfo
 

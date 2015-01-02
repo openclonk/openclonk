@@ -30,6 +30,7 @@
 #include <C4MaterialList.h>
 #include <C4Record.h>
 #include <C4SolidMask.h>
+#include <C4SoundSystem.h>
 #include <C4Random.h>
 #include <C4Log.h>
 #include <C4Player.h>

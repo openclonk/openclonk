@@ -16,6 +16,7 @@
 #include <C4Include.h>
 #include "C4AulDebug.h"
 
+#include <C4Application.h>
 #include <C4Version.h>
 #include <C4GameControl.h>
 #include <C4Game.h>

@@ -16,7 +16,6 @@
 #include <C4Include.h>
 #include "C4Update.h"
 #include "C4Version.h"
-#include "C4Config.h"
 #include "C4Components.h"
 #include "C4Group.h"
 #include "C4Log.h"

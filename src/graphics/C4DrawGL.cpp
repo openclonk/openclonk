@@ -24,7 +24,7 @@
 #include <C4FoWRegion.h>
 #include "C4Rect.h"
 #include "C4Config.h"
-#include "C4Application.h"
+#include <C4App.h>
 
 #ifndef USE_CONSOLE
 
@@ -35,7 +35,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <limits.h>
 
 CStdGL::CStdGL():
 		pMainCtx(0)

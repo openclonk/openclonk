@@ -20,8 +20,6 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#include <ctime>
-
 extern int RandomCount;
 
 void FixedRandom(DWORD dwSeed);

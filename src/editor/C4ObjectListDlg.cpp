@@ -20,8 +20,6 @@
 #include <C4ObjectListDlg.h>
 #include <C4Console.h>
 #include <C4Object.h>
-#include <C4Language.h>
-#include <C4Game.h>
 #include <C4GameObjects.h>
 
 

@@ -32,8 +32,6 @@
 #ifndef INC_C4Real
 #define INC_C4Real
 
-#include <math.h>
-
 // activate to switch to classic fixed-point math
 #define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE

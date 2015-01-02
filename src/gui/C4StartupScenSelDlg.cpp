@@ -18,6 +18,8 @@
 #include <C4Include.h>
 #include <C4StartupScenSelDlg.h>
 
+#include <C4Application.h>
+#include <C4GameOptions.h>
 #include <C4Network2Dialogs.h>
 #include <C4StartupMainDlg.h>
 #include <C4StartupNetDlg.h>
@@ -31,8 +33,6 @@
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4GameOptions.h>
-
 #include <set>
 
 // singleton

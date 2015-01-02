@@ -18,7 +18,6 @@
 /* All kinds of valuable helpers */
 
 #include "C4Include.h"
-#include <StdSync.h>
 
 //------------------------------------- Basics ----------------------------------------
 

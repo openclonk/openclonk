@@ -18,6 +18,7 @@
 #include <C4Include.h>
 #include <C4StartupOptionsDlg.h>
 
+#include <C4Application.h>
 #include <C4StartupMainDlg.h>
 #include <C4Language.h>
 #include <C4GamePadCon.h>

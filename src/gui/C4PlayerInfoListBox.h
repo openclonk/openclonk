@@ -20,10 +20,6 @@
 
 #include "C4Gui.h"
 
-#include "C4Scenario.h"
-#include "C4Network2Res.h"
-#include "C4GameLobby.h"
-
 class C4PlayerInfoListBox : public C4GUI::ListBox
 {
 public:

@@ -24,7 +24,6 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Components.h>
-#include <C4Application.h>
 #include <C4Material.h>
 #include <C4Landscape.h>
 #include <C4Log.h>

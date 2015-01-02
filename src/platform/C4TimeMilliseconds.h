@@ -15,8 +15,6 @@
 #ifndef INC_C4TimeMilliseconds
 #define INC_C4TimeMilliseconds
 
-#include "PlatformAbstraction.h"
-
 /* Class to store times in milliseconds for measurement purposes.
 
    This class behaves for the most part like an unsigned integer, with the

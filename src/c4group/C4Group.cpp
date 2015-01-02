@@ -24,21 +24,7 @@
 
 #include <C4Components.h>
 #include <C4InputValidation.h>
-#include <C4Config.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#ifdef _WIN32
-#include <sys/utime.h>
-#else
-#include <utime.h>
-#include <fcntl.h>
-#include <unistd.h>
-#endif
-
-#include <StdPNG.h>
 #include <zlib.h>
-#include <fcntl.h>
 
 
 //------------------------------ File Sort Lists -------------------------------------------

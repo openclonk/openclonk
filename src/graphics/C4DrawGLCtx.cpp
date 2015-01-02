@@ -19,10 +19,8 @@
 #include "C4Include.h"
 #include <C4DrawGL.h>
 
-#include <C4App.h>
-#include <C4Surface.h>
 #include <C4Window.h>
-#include <C4Config.h>
+#include <C4App.h>
 
 #ifndef USE_CONSOLE
 

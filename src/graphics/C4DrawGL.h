@@ -25,13 +25,8 @@
 #endif
 #include <GL/glew.h>
 
-#if defined(__APPLE__)
 #ifdef USE_COCOA
 #import "ObjectiveCAssociated.h"
-#endif
-#include <OpenGL/glu.h>
-#else
-#include <GL/glu.h>
 #endif
 #include <C4Draw.h>
 #include <C4Shader.h>

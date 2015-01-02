@@ -20,7 +20,6 @@
 #ifndef INC_C4GraphicsResource
 #define INC_C4GraphicsResource
 
-#include <C4Group.h>
 #include <C4GroupSet.h>
 #include <C4Surface.h>
 #include <C4FacetEx.h>

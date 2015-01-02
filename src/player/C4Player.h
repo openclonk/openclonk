@@ -26,7 +26,7 @@
 #include "C4ObjectList.h"
 #include "C4ObjectPtr.h"
 #include "C4PlayerControl.h"
-
+#include <C4Value.h>
 #include <set>
 
 const int32_t C4PVM_Cursor    = 0,

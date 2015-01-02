@@ -20,8 +20,6 @@
 #ifndef INC_C4ComponentHost
 #define INC_C4ComponentHost
 
-#include "C4GroupSet.h"
-
 class C4ComponentHost
 {
 public:

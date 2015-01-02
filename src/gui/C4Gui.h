@@ -25,17 +25,11 @@
 
 #include <C4FontLoader.h>
 #include "C4Rect.h"
-#include "C4Shape.h"
 #include "C4FacetEx.h"
 #include "C4LogBuf.h"
 #include "C4KeyboardInput.h"
-#include "C4Id.h"
-
-#include "C4Application.h"
-
 #include <StdScheduler.h>
 #include <C4Id.h>
-
 #include <C4Window.h>
 
 // consts (load those from a def file some time)

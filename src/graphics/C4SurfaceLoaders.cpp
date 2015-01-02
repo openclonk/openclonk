@@ -19,14 +19,11 @@
 
 #include <C4Include.h>
 #include <C4Surface.h>
-#include <C4GroupSet.h>
 
+#include <C4GroupSet.h>
 #include <C4Group.h>
 #include <C4Log.h>
-
-#include <Bitmap256.h>
 #include <StdPNG.h>
-#include <C4Draw.h>
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
 {

@@ -21,21 +21,15 @@
 #include <C4GraphicsSystem.h>
 
 #include <C4Viewport.h>
-#include <C4ViewportWindow.h>
 #include <C4Application.h>
 #include <C4Console.h>
-#include <C4Random.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
 #include <C4LoaderScreen.h>
-#include <C4Player.h>
-#include <C4SoundSystem.h>
-#include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Landscape.h>
 #include <C4Network2.h>
 #include <C4Game.h>
-#include <C4PlayerList.h>
 #include <C4GameObjects.h>
 
 #include <StdPNG.h>

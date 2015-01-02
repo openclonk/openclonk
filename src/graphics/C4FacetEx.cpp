@@ -20,7 +20,6 @@
 #include <C4Include.h>
 #include <C4FacetEx.h>
 
-#include <C4Random.h>
 #include <C4Rect.h>
 #include <C4Group.h>
 

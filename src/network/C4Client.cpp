@@ -16,6 +16,7 @@
 #include <C4Include.h>
 #include <C4Client.h>
 
+#include <C4Application.h>
 #include <C4Config.h>
 #include <C4Network2Client.h>
 #include <C4Game.h>

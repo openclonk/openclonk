@@ -16,11 +16,7 @@
 /* string table: holds all strings used by script engine */
 
 #ifndef C4STRINGTABLE_H
-
 #define C4STRINGTABLE_H
-
-class C4StringTable;
-class C4Group;
 
 class C4String
 {

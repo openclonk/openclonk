@@ -30,6 +30,7 @@
 #include <C4RankSystem.h>
 #include <C4SoundSystem.h>
 #include <C4SolidMask.h>
+#include <CSurface8.h>
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.

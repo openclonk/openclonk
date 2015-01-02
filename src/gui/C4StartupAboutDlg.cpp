@@ -17,11 +17,10 @@
 
 #include <C4Include.h>
 #include <C4StartupAboutDlg.h>
+
 #include <C4UpdateDlg.h>
 #include <C4GraphicsResource.h>
 #include <C4Version.h>
-
-#include <C4StartupMainDlg.h>
 
 // ------------------------------------------------
 // --- C4StartupAboutDlg
