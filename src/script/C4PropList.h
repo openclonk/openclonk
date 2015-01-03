@@ -102,6 +102,7 @@ public:
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
+	C4ValueArray * GetPropertyArray(C4PropertyName n) const;
 	C4AulFunc * GetFunc(C4PropertyName k) const
 	{ return GetFunc(&Strings.P[k]); }
 	C4AulFunc * GetFunc(C4String * k) const;

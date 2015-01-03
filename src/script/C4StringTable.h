@@ -391,6 +391,7 @@ enum C4PropertyName
 	P_Smoke,
 	P_Source,
 	P_Color,
+	P_EditCursorCommands,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

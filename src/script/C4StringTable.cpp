@@ -185,6 +185,7 @@ C4StringTable::C4StringTable()
 	P[P_Smoke] = "Smoke";
 	P[P_Source] = "Source";
 	P[P_Color] = "Color";
+	P[P_EditCursorCommands] = "EditCursorCommands";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

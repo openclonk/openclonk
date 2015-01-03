@@ -538,6 +538,20 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 	return 0;
 }
 
+C4ValueArray * C4PropList::GetPropertyArray(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getArray();
+	}
+	if (GetPrototype())
+	{
+		return GetPrototype()->GetPropertyArray(n);
+	}
+	return 0;
+}
+
 C4AulFunc * C4PropList::GetFunc(C4String * k) const
 {
 	assert(k);

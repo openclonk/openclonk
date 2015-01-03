@@ -165,6 +165,11 @@ Stand = {
           <col>Integer</col>
           <col>Probability of incineration by contact: 0 none, or 1 (high) to 5 (low).</col>
         </row>
+		<row>
+          <literal_col>EditCursorCommands</literal_col>
+          <col>Array</col>
+          <col>Array of functions made available in the context menu when right-clicking an object in the editor. Functions may be either strings (like "Explode(20)") or function pointers (like this.Hit). Function pointers are always called by name. Windows only.</col>
+        </row>
       </table>
     </text>
   </part>
