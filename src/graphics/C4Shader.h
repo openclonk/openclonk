@@ -103,6 +103,9 @@ private:
 	GLhandleARB Create(GLenum iShaderType, const char *szWhat, const char *szShader);
 	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
 	int GetObjectStatus(GLhandleARB hObj, GLenum type);
+
+public:
+	static bool IsLogging();
 };
 
 class C4ShaderCall

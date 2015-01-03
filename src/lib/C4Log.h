@@ -22,6 +22,7 @@
 #include <StdBuf.h>
 
 bool OpenLog();
+bool OpenExtraLogs();
 bool CloseLog();
 
 bool Log(const char *szMessage);
@@ -30,6 +31,8 @@ bool LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 bool LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 bool DebugLog(const char *strMessage);
 bool DebugLogF(const char *strMessage ...) GNUC_FORMAT_ATTRIBUTE;
+bool ShaderLog(const char *strMessage);
+bool ShaderLogF(const char *strMessage ...) GNUC_FORMAT_ATTRIBUTE;
 
 bool LogFatal(const char *szMessage); // log message and store it as a fatal error
 void ResetFatalError();               // clear any fatal error message

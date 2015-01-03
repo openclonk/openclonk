@@ -133,6 +133,9 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Parse command line
 	ParseCommandLine(argc, argv);
 
+	// Open additional logs that depend on command line
+	OpenExtraLogs();
+
 	// Init external language packs
 	Languages.Init();
 	// Load language string table

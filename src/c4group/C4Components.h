@@ -133,6 +133,7 @@
 
 #define C4CFN_Log             "OpenClonk.log"
 #define C4CFN_LogEx           "OpenClonk%d.log" // created if regular logfile is in use
+#define C4CFN_LogShader       "OpenClonkShaders.log" // created in editor mode to dump shader code
 #define C4CFN_Intro           "Clonk4.avi"
 #define C4CFN_Names           "Names.txt"
 #define C4CFN_Titles          "Title*.txt|Title.txt"
