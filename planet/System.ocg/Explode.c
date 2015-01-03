@@ -433,12 +433,11 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 
 			// shake strength lowers as a function of the distance
 			var distance = Distance(cursor->GetX(), cursor->GetY(), shaker.x, shaker.y);
-			var level = (300 * shaker.strength) / Max(300, distance);
+			var maxDistance = 700;
+			var level = shaker.strength * BoundBy(100-100*distance/maxDistance,0,100)/100;
 
 			// calculate total shake strength by adding up all shake positions in the player's vicinity
 			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
-			
-			
 		}
 		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
