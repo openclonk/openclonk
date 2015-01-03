@@ -663,6 +663,9 @@ void C4ScriptGuiWindow::Init()
 	currentMouseState = MouseState::None;
 	target = 0;
 	pScrollBar->fAutoHide = true;
+
+	rcBounds.x = rcBounds.y = 0;
+	rcBounds.Wdt = rcBounds.Hgt = 0;
 }
 
 C4ScriptGuiWindow::~C4ScriptGuiWindow()
@@ -1331,7 +1334,7 @@ void C4ScriptGuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 
 	if (style & C4ScriptGuiWindowStyleFlag::NoCrop) return;
 
-	C4GUI::ScrollWindow::SetScrollBarEnabled(enable);
+	C4GUI::ScrollWindow::SetScrollBarEnabled(enable, true);
 }
 
 
@@ -1534,8 +1537,8 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo)
 		mainWindowNeedsLayoutUpdate = false;
 
 		// these are the coordinates for the centered non-multiple windows
-		rcBounds.x = Em2Pix(left);
-		rcBounds.y = Em2Pix(top);
+		rcBounds.x = static_cast<int>(Em2Pix(left));
+		rcBounds.y = static_cast<int>(Em2Pix(top));
 		rcBounds.Wdt = wdt;
 		rcBounds.Hgt = hgt;
 

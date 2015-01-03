@@ -964,7 +964,7 @@ namespace C4GUI
 
 		int32_t GetScrollY() { return iScrollY; }
 
-		void SetScrollBarEnabled(bool fToVal);
+		void SetScrollBarEnabled(bool fToVal, bool noAutomaticPositioning = false);
 		bool IsScrollBarEnabled() { return fHasBar; }
 
 		bool IsScrollingActive() { return fHasBar && pScrollBar && pScrollBar->IsScrolling(); }

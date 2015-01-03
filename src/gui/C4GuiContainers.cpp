@@ -633,11 +633,13 @@ namespace C4GUI
 		Update();
 	}
 
-	void ScrollWindow::SetScrollBarEnabled(bool fToVal)
+	void ScrollWindow::SetScrollBarEnabled(bool fToVal, bool noAutomaticPositioning)
 	{
 		if (fHasBar == fToVal) return;
 		pScrollBar->SetVisibility(fHasBar = fToVal);
-		UpdateOwnPos();
+		// in some cases the windows will already care for the correct positioning themselves (see C4ScriptGuiWindow)
+		if (!noAutomaticPositioning)
+			UpdateOwnPos();
 	}
 
 	void ScrollWindow::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
