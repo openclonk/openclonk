@@ -165,6 +165,7 @@ public:
 	int32_t LastUpdateTime;
 #endif
 	int32_t AsyncMaxWait;
+	int32_t PacketLogging;
 public:
 	void CompileFunc(StdCompiler *pComp);
 	const char *GetLeagueServerAddress();
