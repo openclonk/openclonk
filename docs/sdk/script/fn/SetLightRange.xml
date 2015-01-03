@@ -4,27 +4,31 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>SetPlrViewRange</title>
-    <category>Player</category>
-    <subcat>View</subcat>
-    <version>5.1 OC</version>
+    <title>SetLightRange</title>
+    <category>Objects</category>
+    <version>6.0 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
         <param>
           <type>int</type>
           <name>range</name>
-          <desc>View distance in pixels.</desc>
+          <desc>Light reach in pixels. In this range, the light has 100% intensity.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>fadeout</name>
+          <desc>Light fadeout reach in pixels. Default is 80. If the range is set to 0 and this parameter is not defined, the fadeout will also be 0.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-    <desc>Sets the view distance of the object.</desc>
-    <remark>Due to the fuzzyness of the fog of war this will only be an approximation.</remark>
+    <desc>Sets the light reach of the object. When a clonk is added to the crew via <funclink>MakeCrewMember</funclink>, a light is added automatically with the default range of 300 and a fadeout of 80.</desc>
     <examples>
       <example>
         <code>func ControlUse(object clonk)
 {
-	clonk-&gt;SetPlrViewRange(0);
+	clonk-&gt;SetLightRange(0);
 	<funclink>Sound</funclink>(&quot;Scream&quot;);
 	return true;
 }</code>
@@ -36,5 +40,4 @@
       <funclink>SetFoW</funclink>
     </related>
   </func>
-  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

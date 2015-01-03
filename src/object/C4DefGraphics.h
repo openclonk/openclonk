@@ -51,7 +51,7 @@ public:
 	{
 		struct
 		{
-			C4Surface *Bitmap, *BitmapClr;
+			C4Surface *Bitmap, *BitmapClr, *BitmapNormal;
 		} Bmp;
 		StdMesh *Mesh;
 	};
@@ -63,7 +63,7 @@ public:
 	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor
 
-	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
+	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, const char *szNormal, bool fColorByOwner); // load specified graphics from group
 	bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	bool LoadMesh(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
 	bool LoadSkeleton(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
@@ -73,7 +73,6 @@ public:
 	bool IsMesh() const { return Type == TYPE_Mesh; }
 	bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
-	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
 	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
 

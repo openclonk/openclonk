@@ -36,6 +36,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
+#include <C4FoWRegion.h>
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
@@ -85,6 +86,7 @@ C4Viewport::~C4Viewport()
 
 void C4Viewport::Clear()
 {
+	if (pFoW) { delete pFoW; pFoW = NULL; }
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
 	ViewX=ViewY=0;
@@ -210,30 +212,39 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	last_game_draw_cgo = cgo;
 
-	// landscape mod by FoW
-	/*
-	Fog of war disabled until proper Shader-implementation is around
+	// --- activate FoW here ---
 
-	C4Player *pPlr=::Players.Get(Player);
-	if (pPlr && pPlr->fFogOfWar)
+	// Render FoW only if active for player
+	C4FoWRegion* pFoW = NULL;
+	if (Player != NO_OWNER)
 	{
-		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
-		pPlr->FoW2Map(ClrModMap, int(float(cgo.X)/Zoom-cgo.TargetX), int(float(cgo.Y)/Zoom-cgo.TargetY));
-		pDraw->SetClrModMap(&ClrModMap);
-		pDraw->SetClrModMapEnabled(true);
+		C4Player *pPlr = ::Players.Get(Player);
+		assert(pPlr != NULL);
+
+		if(pPlr->fFogOfWar) pFoW = this->pFoW;
 	}
-	else
-		pDraw->SetClrModMapEnabled(false);
-		*/
+
+	// Update FoW
+	if (pFoW)
+	{
+		pFoW->Update(C4Rect(
+			int32_t(cgo.TargetX), int32_t(cgo.TargetY),
+			cgo.Wdt + 1, cgo.Hgt + 1));
+
+		pFoW->Render();
+	}
+
+	pDraw->SetFoW(pFoW);
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
+
 	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
-	::Landscape.Draw(cgo,Player);
+	::Landscape.Draw(cgo, pFoW);
 	C4ST_STOP(LandStat)
 
 	// draw PXS (unclipped!)
@@ -251,17 +262,17 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Particles.DrawGlobalParticles(cgo);
 	C4ST_STOP(PartStat)
 
+	// Draw everything else without FoW
+	pDraw->SetFoW(NULL);
+
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
 
-	/* Fog of war disabled, see above 
-	// FogOfWar-mod off
-	pDraw->SetClrModMapEnabled(false);
-
-	*/
+	// Lights overlay
+	if (::GraphicsSystem.ShowLights && pFoW) pFoW->Render(&cgo);
 
 	if (fDrawOverlay)
 	{
@@ -417,7 +428,7 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 	{
 		// 0/0 size passed - zoom to default
 		if (!size_x)
-			size_x = C4FOW_Def_View_RangeX * 2;
+			size_x = C4VP_DefViewRangeX * 2;
 		zoom_by_y = false;
 	}
 	// zoom calculation
@@ -568,6 +579,7 @@ void C4Viewport::UpdateViewPosition()
 void C4Viewport::Default()
 {
 	pWindow=NULL;
+	pFoW = NULL;
 	Player=0;
 	ViewX=ViewY=0;
 	ViewWdt=ViewHgt=0;
@@ -624,6 +636,10 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		// Owned viewport: clear any flash message explaining observer menu
 		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	}
+	// Initialize FoW
+	assert(pFoW == NULL);
+	if (::Landscape.pFoW && Player != NO_OWNER)
+		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(iPlayer));
 	return true;
 }
 

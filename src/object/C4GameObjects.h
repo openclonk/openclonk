@@ -73,7 +73,7 @@ public:
 
 	bool ValidateOwners();
 	bool AssignInfo();
-	void AssignPlrViewRange();
+	void AssignLightRange();
 	void SyncClearance();
 	void ResetAudibility();
 	void OnSynchronized();

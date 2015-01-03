@@ -156,13 +156,15 @@ struct ZoomData
 	int X, Y;
 };
 
+class C4FoWRegion;
+
 // direct draw encapsulation
 class C4Draw
 {
 public:
 	static const StdMeshMatrix OgreToClonk;
 
-	C4Draw(): MaxTexSize(0), Saturation(255) { }
+	C4Draw(): MaxTexSize(0) { }
 	virtual ~C4Draw() { pDraw=NULL; }
 public:
 	C4AbstractApp * pApp; // the application
@@ -183,9 +185,7 @@ protected:
 	bool BlitModulated;             // set if blits should be modulated with BlitModulateClr
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
-	C4FogOfWar *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
-	bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
-	unsigned char Saturation;   // if < 255, an extra filter is used to reduce the saturation
+	const C4FoWRegion* pFoW;     // new-style FoW
 	int ZoomX; int ZoomY;
 	const StdMeshMatrix* MeshTransform; // Transformation to apply to mesh before rendering
 	bool fUsePerspective;
@@ -206,6 +206,8 @@ public:
 	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
 	bool SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
 	bool SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
+	C4Rect GetClipRect() const;
+	C4Rect GetOutRect() const;
 	bool StorePrimaryClipper();
 	bool RestorePrimaryClipper();
 	bool NoPrimaryClipper();
@@ -217,8 +219,7 @@ public:
 	void Grayscale(C4Surface * sfcSfc, int32_t iOffset = 0);
 	void LockingPrimary() { PrimaryLocked=true; }
 	void PrimaryUnlocked() { PrimaryLocked=false; }
-	virtual std::unique_ptr<StdMeshMaterialShader> CompileShader(const char* language, StdMeshMaterialShader::Type type, const char* text) = 0; // Compile shader of the given language
-	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
@@ -250,7 +251,7 @@ public:
 	// Drawing
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
-	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayClrMod) = 0; // blit the same texture many times
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod) = 0; // blit the same texture many times
 	// Convenience drawing functions
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
@@ -272,10 +273,8 @@ public:
 	bool GetBlitModulation(DWORD &rdwColor) { rdwColor=BlitModulateClr; return BlitModulated; }
 	void SetBlitMode(DWORD dwBlitMode) { this->dwBlitMode=dwBlitMode & C4GFXBLIT_ALL; } // set blit mode extra flags (additive blits, mod2-modulation, etc.)
 	void ResetBlitMode() { dwBlitMode=0; }
-	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
-	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
-	bool GetClrModMapEnabled() const { return fUseClrModMap; }
-	unsigned char SetSaturation(unsigned char s) { unsigned char o = Saturation; Saturation = s; return o; }
+	void SetFoW(const C4FoWRegion* fow) { pFoW = fow; }
+	const C4FoWRegion* GetFoW() const { return pFoW; }
 	void SetZoom(int X, int Y, float Zoom);
 	void SetZoom(const ZoomData &zoom) { SetZoom(zoom.X, zoom.Y, zoom.Zoom); }
 	void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }

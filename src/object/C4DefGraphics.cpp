@@ -63,7 +63,7 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	pDef = pOwnDef;
 	// zero fields
 	Type = TYPE_Bitmap;
-	Bmp.Bitmap = Bmp.BitmapClr = NULL;
+	Bmp.Bitmap = Bmp.BitmapClr = Bmp.BitmapNormal = NULL;
 	pNext = NULL;
 	fColorBitmapAutoCreated = false;
 }
@@ -81,6 +81,7 @@ void C4DefGraphics::Clear()
 	switch (Type)
 	{
 	case TYPE_Bitmap:
+		if (Bmp.BitmapNormal) { delete Bmp.BitmapNormal; Bmp.BitmapNormal=NULL; }
 		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
 		if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
 		break;
@@ -95,7 +96,7 @@ void C4DefGraphics::Clear()
 	pNext = NULL; fColorBitmapAutoCreated = false;
 }
 
-bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, bool fColorByOwner)
+bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, const char *szNormal, bool fColorByOwner)
 {
 	if (!szFilename) return false;
 	Bmp.Bitmap = new C4Surface();
@@ -126,6 +127,34 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 		}
 		fColorBitmapAutoCreated = true;
 	}
+
+	if (szNormal)
+	{
+		Bmp.BitmapNormal = new C4Surface();
+		if (Bmp.BitmapNormal->Load(hGroup, szNormal, false, true))
+		{
+			// Normal map loaded. Sanity check and link.
+			if(Bmp.BitmapNormal->Wdt != Bmp.Bitmap->Wdt ||
+			   Bmp.BitmapNormal->Hgt != Bmp.Bitmap->Hgt)
+			{
+				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match normal %s (%d x %d) - invalid file or size mismatch",
+				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
+				          szNormal, Bmp.BitmapNormal->Wdt, Bmp.BitmapNormal->Hgt);
+				delete Bmp.BitmapNormal; Bmp.BitmapNormal = NULL;
+				return false;
+			}
+
+			Bmp.Bitmap->pNormalSfc = Bmp.BitmapNormal;
+			if(Bmp.BitmapClr) Bmp.BitmapClr->pNormalSfc = Bmp.BitmapNormal;
+		}
+		else
+		{
+			// No normal map
+			delete Bmp.BitmapNormal;
+			Bmp.BitmapNormal = NULL;
+		}
+	}
+
 	Type = TYPE_Bitmap;
 	// success
 	return true;
@@ -211,7 +240,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 
 	// Try from Mesh first
-	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
+	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, C4CFN_NormalMap, fColorByOwner)) return false;
 
 	// load additional graphics
 	C4DefGraphics *pLastGraphics = this;
@@ -255,8 +284,15 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 					EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerEx));
 				}
 
+				// create normal filename
+				char NormalFn[_MAX_PATH+1];
+				SCopy(C4CFN_NormalMapEx, NormalFn, _MAX_PATH);
+				NormalFn[iOverlayWildcardPos]=0;
+				SAppend(Filename + iWildcardPos, NormalFn);
+				EnforceExtension(NormalFn, GetExtension(C4CFN_NormalMapEx));
+
 				// load them
-				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
+				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, NormalFn, fColorByOwner))
 					return false;
 			}
 			else
@@ -279,33 +315,6 @@ C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 		if (SEqualNoCase(pGrp->GetName(), szGrpName)) return pGrp;
 	// nothing found
 	return NULL;
-}
-
-bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
-{
-	if (Type != TYPE_Bitmap) return false; // TODO!
-	// clear previous
-	if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
-	if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
-	// copy from source
-	if (rSource.Bmp.Bitmap)
-	{
-		Bmp.Bitmap = new C4Surface();
-		if (!Bmp.Bitmap->Copy(*rSource.Bmp.Bitmap))
-			{ delete Bmp.Bitmap; Bmp.Bitmap=NULL; return false; }
-	}
-	if (rSource.Bmp.BitmapClr)
-	{
-		Bmp.BitmapClr = new C4Surface();
-		if (!Bmp.BitmapClr->Copy(*rSource.Bmp.BitmapClr))
-		{
-			if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
-			delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; return false;
-		}
-		if (Bmp.Bitmap) Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap);
-	}
-	// done, success
-	return true;
 }
 
 void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)

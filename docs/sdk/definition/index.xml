@@ -35,6 +35,10 @@
       <dd>
         <text>The part of the object's graphics which is to be colored in the player color (see ColorByOwner in <emlink href="definition/defcore.html">DefCore.txt</emlink>) can also be defined using a separate graphics file. In Overlay.png gray scales should be used instead of blue color.</text>
       </dd>
+      <dt id="Normalpng"><img height="16" src="../../images/icon_image.png" width="16"/>Normal.png</dt>
+      <dd>
+        <text>An optional normal map for the object, where the red, green and blue components in the image correspond to the normal vectors to be used for the lighting of the object. If this file is not present, the normal vector at each pixel points straight into Z direction (outside of the screen).</text>
+      </dd>
       <dt id="Graphicsex"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics*.png/Overlay*.png</dt>
       <dd>
         <text>Objects can also contain alternative sets of graphics which can be selected ingame using the script command <funclink>SetGraphics</funclink>(). The name corresponds to the file name portion following "Graphics". The matching overlay is automatically selected. For more information see <funclink>SetGraphics</funclink>().</text>

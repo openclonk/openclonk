@@ -506,6 +506,13 @@ bool C4Application::PreInit()
 	// startup dialog: Only use if no next mission has been provided
 	bool fUseStartupDialog = !Game.HasScenario();
 
+	// Load graphics early, before we draw anything, since we need shaders
+	// loaded to draw.
+	Game.SetInitProgress(0.0f);
+	Log(LoadResStr("IDS_PRC_GFXRES"));
+	if (!GraphicsResource.Init()) return false;
+	Game.SetInitProgress(fUseStartupDialog ? 10.0f : 1.0f);
+
 	// Startup message board
 	if (!isEditor)
 		if (Config.Graphics.ShowStartupMessages || Game.NetworkActive)
@@ -513,7 +520,6 @@ bool C4Application::PreInit()
 			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
 			GraphicsSystem.MessageBoard.Init(cgo,true);
 		}
-	Game.SetInitProgress(0.0f);
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
 	if (fUseStartupDialog && !isEditor)
@@ -521,7 +527,7 @@ bool C4Application::PreInit()
 		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
-	Game.SetInitProgress(fUseStartupDialog ? 10.0f : 1.0f);
+	Game.SetInitProgress(fUseStartupDialog ? 20.0f : 2.0f);
 
 	if (!Game.PreInit()) return false;
 

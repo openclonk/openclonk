@@ -42,7 +42,9 @@ const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to c
 static const int C4VP_DefViewRangeX    = 300,
                  C4VP_DefMinViewRangeX = 150,
                  C4VP_DefMaxViewRangeX = 750;
-#define C4FOW_Def_View_RangeX 500
+
+static const int C4FOW_DefLightRangeX = 300,
+                 C4FOW_DefLightFadeoutRangeX = 80;
 
 class C4Player: public C4PlayerInfoCore
 {
@@ -108,8 +110,6 @@ public:
 	bool ShowStartup;
 	int32_t FlashCom; // NoSave //
 	bool fFogOfWar;
-	bool fFogOfWarInitialized; // No Save //
-	C4ObjectList FoWViewObjs; // No Save //
 	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
 	C4Fixed ZoomLimitMinVal,ZoomLimitMaxVal,ZoomVal; // direct zoom values. 
 	// Game
@@ -226,10 +226,6 @@ public:
 	void CloseMenu(); // close all player menus (keep sync object menus!)
 
 	void EvaluateLeague(bool fDisconnected, bool fWon);
-
-	void FoW2Map(C4FogOfWar &rMap, int iOffX, int iOffY);
-	void FoWGenerators2Map(C4FogOfWar &rMap, int iOffX, int iOffY);
-	bool FoWIsVisible(int32_t x, int32_t y); // check whether a point in the landscape is visible
 
 	// runtime statistics
 	void CreateGraphs();

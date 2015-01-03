@@ -236,6 +236,9 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 		CreateSmokeTrail(lvl, angle, x + smokex, y + smokey);
 		smoke_trail_count--;
 	}
+	
+	// Temporary light effect
+	if (level>5) CreateLight(x, y, level, Fx_Light.LGT_Blast);
 
 	return;
 }

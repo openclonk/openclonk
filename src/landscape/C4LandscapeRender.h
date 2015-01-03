@@ -4,6 +4,7 @@
 
 #include "C4Surface.h"
 #include "C4FacetEx.h"
+#include "C4Shader.h"
 
 // Data we want to store per landscape pixel
 enum C4LR_Byte {
@@ -11,6 +12,7 @@ enum C4LR_Byte {
 	C4LR_BiasX,
 	C4LR_BiasY,
 	C4LR_Scaler,
+	C4LR_Place,
 
 	C4LR_ByteCount
 };
@@ -22,12 +24,17 @@ enum C4LR_Uniforms
 	C4LRU_LandscapeTex,
 	C4LRU_ScalerTex,
 	C4LRU_MaterialTex,
+	C4LRU_LightTex,
+	C4LRU_AmbientTex,
 
 	C4LRU_Resolution,
+	C4LRU_Center,
 	C4LRU_MatMap,
 	C4LRU_MatMapTex,
 	C4LRU_MaterialDepth,
 	C4LRU_MaterialSize,
+	C4LRU_AmbientBrightness,
+	C4LRU_AmbientTransform,
 
 	C4LRU_Count
 };
@@ -69,7 +76,7 @@ public:
 	// the given rectangle
 	virtual void Update(C4Rect Rect, C4Landscape *pSource) = 0;
 
-	virtual void Draw(const C4TargetFacet &cgo) = 0;
+	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion *Light) = 0;
 };
 
 #ifndef USE_CONSOLE
@@ -83,14 +90,11 @@ private:
 	// surfaces
 	C4Surface *Surfaces[C4LR_SurfaceCount];
 
-	// shader sources
-	StdStrBuf LandscapeShader;
-	StdStrBuf LandscapeShaderPath;
-	int iLandscapeShaderTime;
-	// shaders
-	GLhandleARB hVert, hFrag, hProg;
-	// shader variables
-	GLhandleARB hUniforms[C4LRU_Count];
+	// shader
+	C4Shader Shader;
+	C4Shader ShaderLight;
+	static const char *UniformNames[];
+	GLenum hLandscapeTexCoord, hLightTexCoord;
 
 	// 3D texture of material textures
 	GLuint hMaterialTexture[C4LR_MipMapCount];
@@ -104,7 +108,6 @@ private:
 	// scaler image
 	C4FacetSurface fctScaler;
 
-
 public:
 	virtual bool ReInit(int32_t iWidth, int32_t iHeight);
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
@@ -113,22 +116,19 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
 
 	void RefreshShaders();
 
 private:
 	bool InitLandscapeTexture();
 	bool InitMaterialTexture(C4TextureMap *pMap);
+	bool LoadShader(C4GroupSet *pGraphics, C4Shader& shader, const char* name, int ssc);
 	bool LoadShaders(C4GroupSet *pGraphics);
+    void ClearShaders();
 	bool LoadScaler(C4GroupSet *pGraphics);
 
-	void DumpInfoLog(const char *szWhat, GLhandleARB hShader, int32_t iWorkaround);
-	int GetObjectStatus(GLhandleARB hObj, GLenum type);
-	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, int32_t iWorkaround);
-
-	bool InitShaders();
-	void ClearShaders();
+	int CalculateScalerBitmask(int x, int y, C4Rect To, C4Landscape *pSource);
 
 	int32_t LookupTextureTransition(const char *szFrom, const char *szTo);
 	void AddTextureTransition(const char *szFrom, const char *szTo);
@@ -155,7 +155,7 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
 
 };
 

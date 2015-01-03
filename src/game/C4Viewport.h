@@ -78,7 +78,7 @@ protected:
 	bool ResetMenuPositions;
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
-	C4FogOfWar ClrModMap; // color modulation map for viewport drawing
+	class C4FoWRegion *pFoW;
 	void DrawPlayerStartup(C4TargetFacet &cgo);
 	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);

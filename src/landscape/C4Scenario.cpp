@@ -189,7 +189,7 @@ void C4SGame::Default()
 {
 	Goals.Clear();
 	Rules.Clear();
-	FoWColor=0;
+	FoWEnabled = true;
 }
 
 void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -203,7 +203,7 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 
 	pComp->Value(mkNamingAdapt(Goals,                    "Goals",               C4IDList()));
 	pComp->Value(mkNamingAdapt(Rules,                    "Rules",               C4IDList()));
-	pComp->Value(mkNamingAdapt(FoWColor,                 "FoWColor",            0u));
+	pComp->Value(mkNamingAdapt(FoWEnabled,               "FoWEnabled",          true));
 }
 
 void C4SPlrStart::Default()
@@ -281,7 +281,6 @@ void C4SLandscape::Default()
 	NoScan=0;
 	KeepMapCreator=0;
 	SkyScrollMode=0;
-	FoWRes=C4FogOfWar::DefResolutionX;
 	MaterialZoom=4;
 	FlatChunkShapes=false;
 }
@@ -325,7 +324,6 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoScan,                  "NoScan",                false));
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
-	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
 	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          4));
 	pComp->Value(mkNamingAdapt(FlatChunkShapes,         "FlatChunkShapes",       false));
 }

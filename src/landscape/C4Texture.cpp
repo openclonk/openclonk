@@ -34,7 +34,6 @@
 
 C4Texture::C4Texture()
 {
-	Name[0]=0;
 	Surface32=NULL;
 	AvgColor = 0x00000000;
 	Next=NULL;
@@ -132,7 +131,7 @@ bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 {
 	C4Texture *pTexture;
 	if (!(pTexture=new C4Texture)) return false;
-	SCopy(szTexture,pTexture->Name,C4M_MaxName);
+	pTexture->Name.Copy(szTexture);
 	pTexture->Surface32=sfcSurface;
 	pTexture->Next=FirstTexture;
 	FirstTexture=pTexture;
@@ -434,7 +433,7 @@ C4Texture * C4TextureMap::GetTexture(const char *szTexture)
 {
 	C4Texture *pTexture;
 	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next)
-		if (SEqualNoCase(pTexture->Name,szTexture))
+		if (SEqualNoCase(pTexture->Name.getData(),szTexture))
 			return pTexture;
 	return NULL;
 }
@@ -444,7 +443,7 @@ int32_t C4TextureMap::GetTextureIndex(const char *szName)
 	C4Texture *pTexture;
 	int32_t i=0;
 	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next, i++)
-		if (SEqualNoCase(pTexture->Name,szName))
+		if (SEqualNoCase(pTexture->Name.getData(),szName))
 			return i;
 	return -1;
 }
@@ -453,7 +452,7 @@ bool C4TextureMap::CheckTexture(const char *szTexture)
 {
 	C4Texture *pTexture;
 	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next)
-		if (SEqualNoCase(pTexture->Name,szTexture))
+		if (SEqualNoCase(pTexture->Name.getData(),szTexture))
 			return true;
 	return false;
 }
@@ -464,7 +463,7 @@ const char* C4TextureMap::GetTexture(int32_t iIndex)
 	int32_t cindex;
 	for (pTexture=FirstTexture,cindex=0; pTexture; pTexture=pTexture->Next,cindex++)
 		if (cindex==iIndex)
-			return pTexture->Name;
+			return pTexture->Name.getData();
 	return NULL;
 }
 

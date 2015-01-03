@@ -178,6 +178,7 @@ void C4GraphicsSystem::Default()
 	ShowPathfinder=false;
 	ShowNetstatus=false;
 	ShowSolidMask=false;
+	ShowLights=false;
 	ShowHelp=false;
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
@@ -302,6 +303,7 @@ void C4GraphicsSystem::DeactivateDebugOutput()
 	ShowCommand=false;
 	ShowEntrance=false;
 	ShowPathfinder=false; // allow pathfinder! - why this??
+	ShowLights=false;
 	ShowSolidMask=false;
 	ShowNetstatus=false;
 }
@@ -420,14 +422,16 @@ bool C4GraphicsSystem::ToggleShowVertices()
 bool C4GraphicsSystem::ToggleShowAction()
 {
 	if (!Game.DebugMode && !Console.Active) { FlashMessage(LoadResStr("IDS_MSG_NODEBUGMODE")); return false; }
-	if (!(ShowAction || ShowCommand || ShowPathfinder))
+	if (!(ShowAction || ShowCommand || ShowPathfinder || ShowLights))
 		{ ShowAction = true; FlashMessage("Actions"); }
 	else if (ShowAction)
 		{ ShowAction = false; ShowCommand = true; FlashMessage("Commands"); }
 	else if (ShowCommand)
 		{ ShowCommand = false; ShowPathfinder = true; FlashMessage("Pathfinder"); }
 	else if (ShowPathfinder)
-		{ ShowPathfinder = false; FlashMessageOnOff("Actions/Commands/Pathfinder", false); }
+		{ ShowPathfinder = false; ShowLights = true; FlashMessage("Lights"); }
+	else if (ShowLights)
+		{ ShowLights = false; FlashMessageOnOff("Actions/Commands/Pathfinder/Lights", false); }
 	return true;
 }
 

@@ -6,7 +6,7 @@ local cable_car;
 protected func Construction(object constructor)
 {
 	cable_car = constructor;
-	SetPlrViewRange(10);
+	SetLightRange(10);
 	this["Visibility"] = VIS_Owner;
 	AddEffect("Particles", this, 1, 2, this);
 }

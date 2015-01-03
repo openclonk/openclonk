@@ -214,12 +214,17 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				// check fog of war
 				C4Player *pPlr = ::Players.Get(iPlayer);
 				if (pPlr && pPlr->fFogOfWar)
-					if (!pPlr->FoWIsVisible(iMsgX + cgo.TargetX - cgo.X, iMsgY + cgo.TargetY - cgo.Y))
+				{
+					// TODO: Should we render the message with a shader to apply lighting to it?
+					// Otherwise use pDraw->GetFoW() to check for visibility...
+					//if (!pPlr->FoWIsVisible(iMsgX + cgo.TargetX - cgo.X, iMsgY + cgo.TargetY - cgo.Y))
+					if(false)
 					{
 						// special: Target objects that ignore FoW should display the message even if within FoW
 						if (Type != C4GM_Target && Type != C4GM_TargetPlayer) return;
 						if (~Target->Category & C4D_IgnoreFoW) return;
 					}
+				}
 				// Word wrap to cgo width
 				StdStrBuf sText;
 				if (~dwFlags & C4GM_NoBreak)

@@ -91,11 +91,14 @@
 
 #define C4CFN_DefGraphics          "Graphics.png"
 #define C4CFN_ClrByOwner           "Overlay.png"
+#define C4CFN_NormalMap            "Normal.png"
 #define C4CFN_DefGraphicsEx        "Graphics*.png"
 #define C4CFN_ClrByOwnerEx         "Overlay*.png"
+#define C4CFN_NormalMapEx          "Normal*.png"
 
 #define C4CFN_DefGraphicsScaled    "Graphics.*.png"
 #define C4CFN_ClrByOwnerScaled     "Graphics.*.png"
+#define C4CFN_NormalMapScaled      "Normal.*.png"
 
 #define C4CFN_DefDesc         "Desc%s.txt"
 #define C4CFN_BigIcon         "BigIcon.png"
@@ -174,7 +177,7 @@
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
-#define C4FLS_Def       "*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|SolidMask.png|*.skeleton|Graphics.mesh|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.ocd"
+#define C4FLS_Def       "*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|SolidMask.png|*.skeleton|Graphics.mesh|Graphics.png|Overlay.png|Normal.png|Graphics*.png|Overlay*.png|Normal*.png|*.png|*.jpg|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|StringTbl*.txt|ParameterDefs.txt|Achv*.png|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"

@@ -48,6 +48,8 @@
 #include <CSurface8.h>
 #include <StdPNG.h>
 #include <C4MaterialList.h>
+#include <C4LandscapeRender.h>
+#include <C4FoW.h>
 #include <C4FindObject.h>
 #include <C4GameObjects.h>
 #include <C4MapScript.h>
@@ -98,7 +100,9 @@ void C4Landscape::Execute()
 	    }
 	  }*/
 #endif
-	// Relights
+	// Queued Relights -- note that normally we process them before drawing every frame;
+	// this just makes sure relights don't accumulate over a long period of time if no
+	// viewport is open (developer mode).
 	if (!::Game.iTick35)
 		DoRelights();
 }
@@ -270,7 +274,7 @@ void C4Landscape::ScanSideOpen()
 
 
 
-void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
+void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 {
 	if (Modulation) pDraw->ActivateBlitModulation(Modulation);
 	// blit landscape
@@ -279,7 +283,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 	else if(pLandscapeRender)
 	{
 		DoRelights();
-		pLandscapeRender->Draw(cgo);
+		pLandscapeRender->Draw(cgo, pLight);
 	}
 	if (Modulation) pDraw->DeactivateBlitModulation();
 }
@@ -292,12 +296,14 @@ bool C4Landscape::DoRelights()
 		if (!Relights[i].Wdt)
 			break;
 		// Remove all solid masks in the (twice!) extended region around the change
+		// TODO: Isn't Relights[i] already an "affected" rect? Might save a bit here...
 		C4Rect SolidMaskRect = pLandscapeRender->GetAffectedRect(Relights[i]);
 		C4SolidMask * pSolid;
 		for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 			pSolid->RemoveTemporary(SolidMaskRect);
 		// Perform the update
 		pLandscapeRender->Update(Relights[i], this);
+		if (pFoW) pFoW->Ambient.UpdateFromLandscape(*this, Relights[i]);
 		// Restore Solidmasks
 		for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 			pSolid->PutTemporary(SolidMaskRect);
@@ -672,6 +678,9 @@ bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 				Relights[i].Add(CheckRect);
 				break;
 			}
+		// Invalidate FoW
+		if (pFoW)
+			pFoW->Invalidate(CheckRect);
 	}
 	// set pixel
 	return _SetPix(x, y, npix);
@@ -1156,6 +1165,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete Map; Map=NULL;
 	// clear initial landscape
 	delete [] pInitial; pInitial = NULL;
+	delete pFoW; pFoW = NULL;
 	// clear scan
 	ScanX=0;
 	Mode=C4LSC_Undefined;
@@ -1302,7 +1312,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// progress
-	Game.SetInitProgress(80);
+	Game.SetInitProgress(75);
 
 	// copy noscan-var
 	NoScan=Game.C4S.Landscape.NoScan!=0;
@@ -1334,13 +1344,18 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Init out-of-landscape pixels for bottom
 	InitTopAndBottomRowPix();
 
-	Game.SetInitProgress(84);
+	Game.SetInitProgress(80);
 
 	if (Config.General.DebugRec)
 	{
 		AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
 		AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
 	}
+
+	// Create FoW
+	assert(pFoW == NULL);
+	if (Game.C4S.Game.FoWEnabled)
+		pFoW = new C4FoW();
 
 	// Create renderer
 #ifndef USE_CONSOLE
@@ -1397,6 +1412,9 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// and not creating the map
 	Game.FixRandom(Game.RandomSeed);
 
+	// Create ambient light map after landscape creation
+	if (pFoW) pFoW->Ambient.CreateFromLandscape(*this, 10., 50., 0.25);
+	Game.SetInitProgress(84);
 
 	// Success
 	rfLoaded=true;
@@ -1587,6 +1605,7 @@ void C4Landscape::Default()
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
 	}
+	pFoW = NULL;
 }
 
 void C4Landscape::ClearMatCount()
@@ -3311,6 +3330,12 @@ void C4Landscape::FinishChange(C4Rect BoundingBox)
 	}
 	C4SolidMask::CheckConsistency();
 	UpdatePixCnt(BoundingBox);
+	// update FoW
+	if (pFoW)
+	{
+		pFoW->Invalidate(BoundingBox);
+		pFoW->Ambient.UpdateFromLandscape(*this, BoundingBox);
+	}
 }
 
 

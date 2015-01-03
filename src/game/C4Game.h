@@ -122,7 +122,6 @@ public:
 	bool GameGo;
 	bool FullSpeed;
 	int32_t FrameSkip; bool DoSkipFrame;
-	uint32_t FoWColor;        // FoW-color; may contain transparency
 	bool fResortAnyObject; // if set, object list will be checked for unsorted objects next frame
 	bool IsRunning;        // (NoSave) if set, the game is running; if not, just the startup message board is painted
 	bool PointersDenumerated; // (NoSave) set after object pointers have been denumerated

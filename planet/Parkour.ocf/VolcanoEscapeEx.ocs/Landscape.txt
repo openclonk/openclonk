@@ -52,7 +52,7 @@ map LavaParkour {
 
 
   // Some lava
-  overlay LavaVeins { algo=rndchecker; zoomX=-100; zoomY=-50; a=3; turbulence=100; mat=DuroLava;
+  overlay LavaVeins { algo=rndchecker; zoomX=-100; zoomY=-50; a=3; turbulence=100; mat=DuroLava; sub=0;
     // some earth to the bottom of lava veins
     EarthBorder { a=0; b=1; oy=-1px; turbulence=10; };
     // no ashes on top of lava vein
@@ -65,7 +65,7 @@ map LavaParkour {
   };
 
   // Bottom volcano
-  overlay { y=95%; loosebounds=1; turbulence=10; x=-100%; wdt=300%;mat=DuroLava; };
+  overlay { y=95%; loosebounds=1; turbulence=10; x=-100%; wdt=300%;mat=DuroLava; sub=0; };
 
   // Starting cave
   overlay {
@@ -99,5 +99,5 @@ map LavaParkour {
   SideWall { x=94; };
 
   // Bottom volcano
-  overlay { y=97%; loosebounds=1; turbulence=10; x=-100%; wdt=300%;mat=DuroLava; };
+  overlay { y=97%; loosebounds=1; turbulence=10; x=-100%; wdt=300%;mat=DuroLava; sub=0; };
 };

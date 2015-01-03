@@ -341,6 +341,7 @@ IDS_ERR_FILEEXISTS=A file with the name "%s" exists already.
 IDS_ERR_GAMELEFTVIAPLAYERMENU=Game left via player menu.
 IDS_ERR_GBACK=Landscape error.
 IDS_ERR_GFX_REGISTERMAIN=Could not register main graphic groups
+IDS_ERR_GFX_INITSHADERS=Failed to initialize GLSL shaders
 IDS_ERR_INITFONTS=Error initializing fonts
 IDS_ERR_INSUFFICIENTPARAMETERS=/%s: insufficient parameters
 IDS_ERR_INVALIDCHANNELNAME=Invalid channel name.

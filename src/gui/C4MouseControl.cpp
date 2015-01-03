@@ -850,7 +850,9 @@ void C4MouseControl::UpdateFogOfWar()
 	// Assume no fog of war
 	FogOfWar=false;
 	// Check for fog of war
-	if ((pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || GameX<0 || GameY<0 || int32_t(GameX)>=GBackWdt || int32_t(GameY)>=GBackHgt)
+	// TODO: Check C4FoWRegion... should maybe be passed as a parameter?
+	// pDraw->GetFoW() might not be current at this time.
+	if (/*(pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || */GameX<0 || GameY<0 || int32_t(GameX)>=GBackWdt || int32_t(GameY)>=GBackHgt)
 	{
 		FogOfWar=true;
 		// allow dragging, scrolling, region selection and manipulations of objects not affected by FoW

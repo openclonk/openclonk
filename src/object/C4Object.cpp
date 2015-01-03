@@ -43,6 +43,7 @@
 #include <C4GameObjects.h>
 #include <C4Record.h>
 #include <C4MeshAnimation.h>
+#include <C4FoW.h>
 
 namespace
 {
@@ -180,7 +181,8 @@ void C4Object::Default()
 	Breath=0;
 	InMat=MNone;
 	Color=0;
-	PlrViewRange=0;
+	lightRange=0;
+	lightFadeoutRange=0;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
@@ -394,6 +396,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pCont->SetOCF();
 		Contained=NULL;
 	}
+	// Light system
+	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
 	// Object info
 	if (Info) Info->Retire();
 	Info = NULL;
@@ -1122,9 +1126,8 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
-	// ensure objects that won't be affected by dead-plrview-decay are handled properly
-	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
-		SetPlrViewRange(0);
+	// Remove from light sources
+	SetLightRange(0,0);
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
@@ -2021,12 +2024,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (Contained && !eDrawMode) return;
 
 	// Visibility inside FoW
-	bool fOldClrModEnabled = !!(Category & C4D_IgnoreFoW);
-	if (fOldClrModEnabled)
-	{
-		fOldClrModEnabled = pDraw->GetClrModMapEnabled();
-		pDraw->SetClrModMapEnabled(false);
-	}
+	const C4FoWRegion* pOldFoW = pDraw->GetFoW();
+	if(pOldFoW && (Category & C4D_IgnoreFoW))
+		pDraw->SetFoW(NULL);
 
 	// Fire facet - always draw, even if particles are drawn as well
 	if (OnFire && eDrawMode!=ODM_BaseOnly)
@@ -2144,7 +2144,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Debug Display ///////////////////////////////////////////////////////////////////////
 
 	// Restore visibility inside FoW
-	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
+	if (pOldFoW) pDraw->SetFoW(pOldFoW);
 #endif
 }
 
@@ -2354,7 +2354,8 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
-	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
+	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
+	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
@@ -2556,13 +2557,11 @@ bool C4Object::AssignInfo()
 	return false;
 }
 
-bool C4Object::AssignPlrViewRange()
+bool C4Object::AssignLightRange()
 {
-	// no range?
-	if (!PlrViewRange) return true;
-	// add to FoW-repellers
-	PlrFoWActualize();
-	// success
+	if (!lightRange && !lightFadeoutRange) return true;
+
+	UpdateLight();
 	return true;
 }
 
@@ -4157,7 +4156,6 @@ void C4Object::ExecAction()
 
 bool C4Object::SetOwner(int32_t iOwner)
 {
-	C4Player *pPlr;
 	// Check valid owner
 	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
 	// always set color, even if no owner-change is done
@@ -4169,21 +4167,9 @@ bool C4Object::SetOwner(int32_t iOwner)
 		}
 	// no change?
 	if (Owner == iOwner) return true;
-	// remove old owner view
-	if (ValidPlr(Owner))
-	{
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-	}
-	else
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
 	Owner=iOwner;
-	if (Owner != NO_OWNER)
-		// add to plr view
-		PlrFoWActualize();
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
@@ -4193,38 +4179,21 @@ bool C4Object::SetOwner(int32_t iOwner)
 }
 
 
-bool C4Object::SetPlrViewRange(int32_t iToRange)
+bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 {
 	// set new range
-	PlrViewRange = iToRange;
+	lightRange = iToRange;
+	lightFadeoutRange = iToFadeoutRange;
 	// resort into player's FoW-repeller-list
-	PlrFoWActualize();
+	UpdateLight();
 	// success
 	return true;
 }
 
 
-void C4Object::PlrFoWActualize()
+void C4Object::UpdateLight()
 {
-	C4Player *pPlr;
-	// single owner?
-	if (ValidPlr(Owner))
-	{
-		// single player's FoW-list
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-	}
-	// no owner?
-	else
-	{
-		// all players!
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-		{
-			while (pPlr->FoWViewObjs.Remove(this)) {}
-			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-		}
-	}
+	if (Landscape.pFoW) Landscape.pFoW->Add(this);
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
