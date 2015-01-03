@@ -436,7 +436,9 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 			var level = (300 * shaker.strength) / Max(300, distance);
 
 			// calculate total shake strength by adding up all shake positions in the player's vicinity
-			totalShakeStrength += level / ((3 * shakerTime) / 2 + 3) - shakerTime**2 / 400;
+			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
+			
+			
 		}
 		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
@@ -446,7 +448,7 @@ global func FxShakeViewportTimer(object target, effect e, int time)
 	{
 		var shaker = e.shakers[shakerIndex];
 		var shakerTime = time - shaker.time;
-		if (shaker.strength / ((3 * shakerTime) / 2 + 3) - shakerTime**2 / 400 <= 0)
+		if (shaker.strength / Max(1,shakerTime*2/3) - shakerTime**2 / 400 <= 0)
 			e.shakers[shakerIndex] = nil;
 	}
 	RemoveHoles(e.shakers);
