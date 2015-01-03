@@ -277,7 +277,7 @@ global func FxBigEruptionStart(object target, proplist effect, int temporary, in
 	// Use earthquake sound for this eruption.
 	Sound("Earthquake", true, 100, nil, 1);
 	// Shake also the viewport a bit on a big eruption.
-	ShakeViewPort(3200, x, y);
+	ShakeViewport(3200, x, y);
 	return FX_OK;
 }
 

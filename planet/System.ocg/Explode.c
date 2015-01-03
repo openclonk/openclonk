@@ -119,8 +119,8 @@ global func Explode(int level, bool silent)
 	if(!this) FatalError("Function Explode must be called from object context");
 
 	// Shake the viewport.
-	ShakeViewPort(level, GetX(), GetY());
-
+	ShakeViewport(level);
+	
 	// Sound must be created before object removal, for it to be played at the right position.
 	if(!silent) //Does object use it's own explosion sound effect?
 	{
@@ -383,82 +383,85 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 
 /*-- Shake view port --*/
 
-global func ShakeViewPort(int level, int x_off, int y_off)
+global func ShakeViewport(int level, int x_off, int y_off)
 {
 	if (level <= 0)
 		return false;
+		
+	if (x_off == nil) x_off = GetX();
+	if (y_off == nil) y_off = GetY();
 
-	var eff = GetEffect("ShakeEffect", this);
-
-	if (eff)
-	{
-		eff.level += level;
-		return true;
-	}
-
-	eff = AddEffect("ShakeEffect", this, 200, 1);
-	if (!eff)
-		return false;
-
-	eff.level = level;
-
-	if (x_off || y_off)
-	{
-		eff.x = x_off;
-		eff.y = y_off;
-	}
-	else
-	{
-		eff.x = GetX();
-		eff.y = GetY();
-	}
-	return true;
+	AddEffect("ShakeViewport", nil, 300, 1, nil, nil, level, x_off, y_off);
 }
 
-// Duration of the effect: as soon as strength==0
-// Strength of the effect: strength=level/(1.5*fxtime+3)-fxtime^2/400
-
-global func FxShakeEffectTimer(object target, effect, int fxtime)
+global func FxShakeViewportEffect(string new_name)
 {
-	var strength;
+	// there is only one global ShakeViewport effect which manages all the shake positions and strengths
+	if (new_name == "ShakeViewport")
+		return -2;
+	return;
+}
 
-	var str = effect.level;
-	var xpos = effect.x;
-	var ypos = effect.y;
+global func FxShakeViewportStart(object target, effect e, int temporary, level, xpos, ypos)
+{
+	if(temporary != 0) return;
+	
+	e.shakers = CreateArray();
+	e.shakers[0] = { x = xpos, y = ypos, strength = level, time = 0 };
+}
 
+global func FxShakeViewportAdd(object target, effect e, string new_name, int new_timer, level, xpos, ypos)
+{
+	e.shakers[GetLength(e.shakers)] = { x = xpos, y = ypos, strength = level, time = e.Time};
+}
 
+global func FxShakeViewportTimer(object target, effect e, int time)
+{
+	// shake for all players
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
 		var cursor = GetCursor(plr);
 		if (!cursor)
 			continue;
-		var distance = Distance(cursor->GetX(), cursor->GetY(), xpos, ypos);
 
-		// Shake effect lowers as a function of the distance.
-		var level = (300 * str) / Max(300, distance);
+		var totalShakeStrength = 0;
+		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+		{
+			var shaker = e.shakers[shakerIndex];
+			var shakerTime = time - shaker.time;
 
-		if ((strength = level / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400) <= 0)
-			continue;
+			// shake strength lowers as a function of the distance
+			var distance = Distance(cursor->GetX(), cursor->GetY(), shaker.x, shaker.y);
+			var level = (300 * shaker.strength) / Max(300, distance);
 
-		// FixME: Use GetViewOffset, make this relative, not absolute
-		SetViewOffset(plr, Sin(fxtime * 100, strength), Cos(fxtime * 100, strength));
+			// calculate total shake strength by adding up all shake positions in the player's vicinity
+			totalShakeStrength += level / ((3 * shakerTime) / 2 + 3) - shakerTime**2 / 400;
+		}
+		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
 
-	if (str / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400 <= 0)
+	// remove shakers that are done shaking
+	for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+	{
+		var shaker = e.shakers[shakerIndex];
+		var shakerTime = time - shaker.time;
+		if (shaker.strength / ((3 * shakerTime) / 2 + 3) - shakerTime**2 / 400 <= 0)
+			e.shakers[shakerIndex] = nil;
+	}
+	RemoveHoles(e.shakers);
+	
+	// no shakers left: remove this effect
+	if(GetLength(e.shakers) == 0)
+	{
 		return -1;
+	}
 }
 
-global func FxShakeEffectStart(object target, effect)
-{
-	FxShakeEffectTimer(target, effect, effect.Time);
-}
-
-global func FxShakeEffectStop()
+global func FxShakeViewportStop()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		// FxME: Return the offset to the previous value, not zero
 		SetViewOffset(GetPlayerByIndex(i), 0, 0);
 	}
 }

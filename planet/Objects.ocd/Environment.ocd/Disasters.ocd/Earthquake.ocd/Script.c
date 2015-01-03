@@ -94,7 +94,7 @@ protected func FxIntEarthquakeTimer(object target, effect, int time)
 	var l = 4 * str;
 	// Shake viewport.
 	if (!Random(10))
-		ShakeViewPort(str, x, y);
+		ShakeViewport(str, x, y);
 	// Shake ground & objects.
 	ShakeFree(x, y, Random(str / 2) + str / 5 + 5);
 	for (var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_InRect(x - l, y - l, l, l)))
