@@ -17,6 +17,7 @@
 #define INC_C4SoundLoaders
 
 #include <vector>
+#include <C4SoundIncludes.h>
 #include <C4SoundSystem.h>
 
 namespace C4SoundLoaders
