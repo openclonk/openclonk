@@ -146,15 +146,15 @@ protected func OnActionChanged(string oldaction)
 /** Returns additional interactions the clonk possesses as an array of function pointers.
 	Returned Proplist contains:
 		Fn			= Name of the function to call
-		Object		= object to call the function in. Will also be displayed on the interaction-button
-		Description	= a description of what the interaction does
+		Object		= Object to call the function in. Will also be displayed on the interaction-button
+		Description	= A description of what the interaction does
 		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
-		IconName	= Namo of the graphic for teh icon (like GetInteractionMetaInfo)
-		[Priority]	= Where to sort in in the interaction-list. 0=front, 1=after script, 2=after vehicles, >=3=at the end, nil equals 3
+		IconName	= Name of the graphic for the icon (like GetInteractionMetaInfo)
+		Priority	= Where to sort in in the interaction-list. 0=front, 10=after script, 20=after vehicles, 30=after structures, nil means no preverence
 */
 public func GetExtraInteractions()
 {
-	var functions = CreateArray();
+	var functions = _inherited(...) ?? [];
 	
 	// flipping construction-preview
 	var effect;
@@ -213,7 +213,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// look for minimum priority
 			var best = nil;
 			for (var info in interaction_objects)
-				if (best == nil || (info.priority > best.priority)) best = info;
+				if (best == nil || (info.priority < best.priority)) best = info;
 			if (best)
 			{
 				ExecuteInteraction(best);
@@ -1188,7 +1188,7 @@ func GetInteractableObjects()
 					PushBack(possible_interactions,
 						{
 							interaction_object = interactable,
-							priority = 50,
+							priority = 9,
 							interaction_index = j,
 							extra_data = nil,
 							actiontype = ACTIONTYPE_SCRIPT
@@ -1199,10 +1199,14 @@ func GetInteractableObjects()
 			// can be grabbed? (vehicles/chests..)
 			if (interactable->GetOCF() & OCF_Grab)
 			{
+				var priority = 19;
+				// high priority if already grabbed
+				if (GetActionTarget() == interactable) priority = 0;
+				
 				PushBack(possible_interactions,
 					{
 						interaction_object = interactable,
-						priority = 40,
+						priority = priority,
 						interaction_index = nil,
 						extra_data = nil,
 						actiontype = ACTIONTYPE_VEHICLE
@@ -1213,10 +1217,12 @@ func GetInteractableObjects()
 		// can be entered?
 		if (interactable->GetOCF() & OCF_Entrance && (!can_only_use_container || interactable == Contained()))
 		{
+			var priority = 29;
+			if (Contained() == interactable) priority = 0;
 			PushBack(possible_interactions,
 				{
 					interaction_object = interactable,
-					priority = 30,
+					priority = priority,
 					interaction_index = nil,
 					extra_data = nil,
 					actiontype = ACTIONTYPE_STRUCTURE

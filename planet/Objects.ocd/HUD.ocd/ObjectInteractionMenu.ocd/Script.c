@@ -73,6 +73,10 @@ func Destruction()
 		if (menu && menu.menu_object)
 			menu.menu_object->RemoveObject();
 	}
+	// remove all remaining contained dummy objects to prevent script warnings about objects in removed containers
+	var i = ContentsCount(), obj = nil;
+	while (obj = Contents(--i))
+		obj->RemoveObject(false);
 }
 
 // used as a static function
@@ -101,7 +105,6 @@ func FxIntCheckObjectsStart(target, effect, temp)
 func FxIntCheckObjectsTimer(target, effect, timer)
 {
 	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk")));
-	
 	if (new_objects == current_objects) return;
 	
 	UpdateObjects(new_objects);
@@ -286,10 +289,13 @@ func CreateSideBar(int slot)
 			background_color = RGBa(255, 255, 0, 10);
 			symbol = Icon_Menu_RectangleBrightRounded;
 		}
+		var priority = 10000 - obj.Plane;
+		if (obj == cursor) priority = 1;
 		var entry = 
 		{
 			Right = em_size, Bottom = em_size,
 			Symbol = symbol,
+			Priority = priority,
 			Style = GUI_TextBottom | GUI_TextHCenter,
 			BackgroundColor = background_color,
 			OnMouseIn = GuiAction_SetTag("OnHover"),

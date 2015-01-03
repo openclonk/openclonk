@@ -128,7 +128,8 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	// only update if we see any changes
 	var old_actionbar_items = actionbar_items;
 	actionbar_items = target->GetInteractableObjects();
-
+	PrepareAndSortNewActionBarItems(GetCursor(GetOwner()));
+	
 	// determine if update is necessary
 	var do_update = GetLength(actionbar_items) != GetLength(old_actionbar_items);
 	if (!do_update)
@@ -160,15 +161,21 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	return 1;
 }
 
+func IsActionInfoSelected(action_info, crew)
+{
+	return (action_info.actiontype == ACTIONTYPE_VEHICLE && crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == action_info.interaction_object)
+					|| (action_info.actiontype == ACTIONTYPE_STRUCTURE && crew->Contained() == action_info.interaction_object)
+					|| (action_info.actiontype == ACTIONTYPE_INVENTORY);
+}
+
 func UpdateActionBarDisplay()
 {
+	var crew = GetCursor(GetOwner());
 	// clean up old first
 	// the action bar is always completely re-created when an update is detected
 	var current_bar = actionbar_items;
 	CloseActionBarGui();
 	actionbar_items = current_bar;
-	SortActionBar();
-	
 
 	var menu =
 	{
@@ -176,8 +183,6 @@ func UpdateActionBarDisplay()
 		Style = 0,//GUI_GridLayout,
 		Top = "50%", Bottom = Format("50%%%s", ToEmString(GUI_Controller_ActionBar_IconSize))
 	};
-	
-	var crew = GetCursor(GetOwner());
 	
 	var button_number = 0;
 	var all_buttons_count = GetLength(actionbar_items);
@@ -212,9 +217,7 @@ func UpdateActionBarDisplay()
 			OnMouseOut = GuiAction_SetTag("Std"), 
 		};
 		
-		var selected = (action_info.actiontype == ACTIONTYPE_VEHICLE && crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == action_info.interaction_object)
-					|| (action_info.actiontype == ACTIONTYPE_STRUCTURE && crew->Contained() == action_info.interaction_object)
-					|| (action_info.actiontype == ACTIONTYPE_INVENTORY);
+		var selected = IsActionInfoSelected(action_info, crew);
 		
 		var graphics_name = nil;
 		var graphics_id = nil, tooltip = nil;
@@ -307,17 +310,18 @@ func CreateNewActionButton(int priority, object interaction_object, int actionty
 	PushBack(actionbar_items, button_info);
 }
 
-func SortActionBar()
+func PrepareAndSortNewActionBarItems(object crew)
 {
 	RemoveHoles(actionbar_items);
 	
+	// sort correctly for priority
 	var len = GetLength(actionbar_items);
 	for (var c = 0; c < len; ++c)
 	{
 		var min = nil;
 		for (var i = c; i < len; ++i)
 		{
-			if (min == nil || actionbar_items[min].priority < actionbar_items[i].priority)
+			if (min == nil || actionbar_items[min].priority > actionbar_items[i].priority)
 				min = i;
 		}
 		var temp = actionbar_items[min];

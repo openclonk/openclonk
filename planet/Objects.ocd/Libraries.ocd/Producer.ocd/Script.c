@@ -41,7 +41,8 @@ protected func Initialize()
 // All producers are accessible. 
 public func IsContainer() { return true; }
 
-public func IsInteractable() { return GetCon() >= 100; }
+// not per-se interactable via [Space]; interaction happens via the interaction menu
+public func IsInteractable() { return false; }
 
 public func GetConsumerPriority() { return 50; }
 
@@ -74,7 +75,7 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 {
 	var new_box =
 	{
-		Text = symbol.Description,
+		Text = Format("%s:|%s", symbol.Name, symbol.Description,),
 		requirements = 
 		{
 			Top = "100% - 2em",
