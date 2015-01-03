@@ -240,7 +240,7 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 {
 #ifndef USE_CONSOLE
 	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
-	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
+	pComp->Value(mkNamingAdapt(MouseAutoScroll,      "MouseAutoScroll",      33));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
 #endif
 }

@@ -74,11 +74,11 @@ bool C4Viewport::ViewPositionByScrollBars()
 	// Vertical
 	scroll.fMask=SIF_POS;
 	GetScrollInfo(pWindow->hWindow,SB_VERT,&scroll);
-	ViewY=float(scroll.nPos);
+	SetViewY(float(scroll.nPos));
 	// Horizontal
 	scroll.fMask=SIF_POS;
 	GetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll);
-	ViewX=float(scroll.nPos);
+	SetViewX(float(scroll.nPos));
 	return true;
 }
 
@@ -92,14 +92,14 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	scroll.nMin=0;
 	scroll.nMax = GBackHgt * Zoom;
 	scroll.nPage=ViewHgt;
-	scroll.nPos=int(ViewY * Zoom);
+	scroll.nPos=int(GetViewY() * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_VERT,&scroll,true);
 	// Horizontal
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
 	scroll.nMax=GBackWdt * Zoom;
 	scroll.nPage=ViewWdt;
-	scroll.nPos = int(ViewX * Zoom);
+	scroll.nPos = int(GetViewX() * Zoom);
 	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,true);
 	return true;
 }
@@ -134,7 +134,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 
 	gtk_adjustment_configure(adjustment,
-	                         ViewX, // value
+	                         GetViewX(), // value
 	                         0, // lower
 	                         GBackWdt, // upper
 	                         ViewportScrollSpeed, // step_increment
@@ -144,7 +144,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
 	gtk_adjustment_configure(adjustment,
-	                         ViewY, // value
+	                         GetViewY(), // value
 	                         0, // lower
 	                         GBackHgt, // upper
 	                         ViewportScrollSpeed, // step_increment
@@ -199,5 +199,5 @@ void C4ViewportWindow::Close()
 }
 void C4ViewportWindow::EditCursorMove(int X, int Y, uint32_t state)
 {
-	Console.EditCursor.Move(cvp->ViewX + X / cvp->Zoom, cvp->ViewY + Y / cvp->Zoom, state);
+	Console.EditCursor.Move(cvp->GetViewX() + X / cvp->Zoom, cvp->GetViewY() + Y / cvp->Zoom, state);
 }

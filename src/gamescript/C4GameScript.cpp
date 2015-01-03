@@ -2094,8 +2094,7 @@ static bool FnSetViewOffset(C4PropList * _this, long iPlayer, long iX, long iY)
 	C4Viewport *pView = ::Viewports.GetViewport(iPlayer);
 	if (!pView) return 1; // sync safety
 	// set
-	pView->ViewOffsX = iX;
-	pView->ViewOffsY = iY;
+	pView->SetViewOffset(iX, iY);
 	// ok
 	return 1;
 }

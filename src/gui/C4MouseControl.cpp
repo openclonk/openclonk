@@ -209,7 +209,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// get view position
 	C4Rect rcViewport = Viewport->GetOutputRect();
 	fctViewport.Set(NULL, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);
-	ViewX=Viewport->ViewX; ViewY=Viewport->ViewY;
+	ViewX=Viewport->GetViewX(); ViewY=Viewport->GetViewY();
 	fctViewportGame = Viewport->last_game_draw_cgo;
 	fctViewportGUI = Viewport->last_gui_draw_cgo;
 	// First time viewport attachment: center mouse
@@ -900,9 +900,7 @@ void C4MouseControl::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt
 	else if (Viewport)
 	{
 		// no player: Scroll fullscreen viewport
-		Viewport->ViewX = Viewport->ViewX+iX;
-		Viewport->ViewY = Viewport->ViewY+iY;
-		Viewport->UpdateViewPosition();
+		Viewport->ScrollView(iX, iY);
 	}
 
 }

@@ -303,10 +303,11 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	}
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_USER_DROPDEF:
-		Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
+		Game.DropDef(C4ID(lParam),cvp->GetViewX()+float(LOWORD(wParam))/cvp->Zoom,cvp->GetViewY()+float(HIWORD(wParam)/cvp->Zoom));
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_SIZE:
+	case WM_SIZING:
 		cvp->UpdateOutputSize();
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
@@ -317,11 +318,12 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_HSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=float(HIWORD(wParam))/cvp->Zoom; break;
-		case SB_LINELEFT: cvp->ViewX-=ViewportScrollSpeed; break;
-		case SB_LINERIGHT: cvp->ViewX+=ViewportScrollSpeed; break;
-		case SB_PAGELEFT: cvp->ViewX-=cvp->ViewWdt; break;
-		case SB_PAGERIGHT: cvp->ViewX+=cvp->ViewWdt; break;
+			case SB_THUMBTRACK:
+			case SB_THUMBPOSITION: cvp->SetViewX(float(HIWORD(wParam))/cvp->Zoom); break;
+			case SB_LINELEFT: cvp->ScrollView(-ViewportScrollSpeed, 0.0f); break;
+			case SB_LINERIGHT: cvp->ScrollView(+ViewportScrollSpeed, 0.0f); break;
+			case SB_PAGELEFT: cvp->ScrollView(-cvp->ViewWdt/cvp->Zoom, 0.0f); break;
+			case SB_PAGERIGHT: cvp->ScrollView(+cvp->ViewWdt/cvp->Zoom, 0.0f); break;
 		}
 		cvp->Execute();
 		cvp->ScrollBarsByViewPosition();
@@ -330,11 +332,12 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_VSCROLL:
 		switch (LOWORD(wParam))
 		{
-		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY = float(HIWORD(wParam))/cvp->Zoom; break;
-		case SB_LINEUP: cvp->ViewY-=ViewportScrollSpeed; break;
-		case SB_LINEDOWN: cvp->ViewY+=ViewportScrollSpeed; break;
-		case SB_PAGEUP: cvp->ViewY-=cvp->ViewWdt; break;
-		case SB_PAGEDOWN: cvp->ViewY+=cvp->ViewWdt; break;
+			case SB_THUMBTRACK:
+			case SB_THUMBPOSITION: cvp->SetViewY(float(HIWORD(wParam))/cvp->Zoom); break;
+			case SB_LINEUP: cvp->ScrollView(0.0f,-ViewportScrollSpeed); break;
+			case SB_LINEDOWN: cvp->ScrollView(0.0f,+ViewportScrollSpeed); break;
+			case SB_PAGEUP: cvp->ScrollView(0.0f,-cvp->ViewWdt/cvp->Zoom); break;
+			case SB_PAGEDOWN: cvp->ScrollView(0.0f,+cvp->ViewWdt/cvp->Zoom); break;
 		}
 		cvp->Execute();
 		cvp->ScrollBarsByViewPosition();

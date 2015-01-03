@@ -40,7 +40,7 @@
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
-	Game.DropFile(fileName, ViewX+x/Zoom, ViewY+y/Zoom);
+	Game.DropFile(fileName, GetViewX()+x/Zoom, GetViewY()+y/Zoom);
 }
 
 bool C4Viewport::UpdateOutputSize()
@@ -63,6 +63,7 @@ bool C4Viewport::UpdateOutputSize()
 #endif
 	OutX=rect.x; OutY=rect.y;
 	ViewWdt=rect.Wdt; ViewHgt=rect.Hgt;
+	ScrollView(0,0);
 	// Scroll bars
 	ScrollBarsByViewPosition();
 	// Reset menus
@@ -89,11 +90,12 @@ void C4Viewport::Clear()
 	if (pFoW) { delete pFoW; pFoW = NULL; }
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
-	ViewX=ViewY=0;
+	viewX=viewY=0;
+	targetViewX=targetViewY=0;
 	ViewWdt=ViewHgt=0;
 	OutX=OutY=ViewWdt=ViewHgt=0;
 	DrawX=DrawY=0;
-	ViewOffsX = ViewOffsY = 0;
+	viewOffsX = viewOffsY = 0;
 }
 
 void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -286,7 +288,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		gui_cgo.X = DrawX; gui_cgo.Y = DrawY; gui_cgo.Zoom = fGUIZoom;
 		gui_cgo.Wdt = int(float(ViewWdt)/fGUIZoom); gui_cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
-		gui_cgo.TargetX = ViewX; gui_cgo.TargetY = ViewY;
+		gui_cgo.TargetX = GetViewX(); gui_cgo.TargetY = GetViewY();
 
 		last_gui_draw_cgo = gui_cgo;
 
@@ -339,7 +341,7 @@ void C4Viewport::Execute()
 	C4TargetFacet cgo;
 	C4Window * w = pWindow;
 	if (!w) w = &FullScreen;
-	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),ViewX,ViewY,Zoom);
+	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),GetViewX(),GetViewY(),Zoom);
 	pDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);
@@ -461,8 +463,6 @@ void C4Viewport::AdjustPosition()
 	assert(Zoom>0);
 	assert(ZoomTarget>0);
 
-	float PrefViewX = ViewX + ViewWdt / (Zoom * 2) - ViewOffsX;
-	float PrefViewY = ViewY + ViewHgt / (Zoom * 2) - ViewOffsY;
 
 	if(Zoom != ZoomTarget)
 	{
@@ -486,50 +486,59 @@ void C4Viewport::AdjustPosition()
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 	{
-		
-		float ScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
-		float ExtraBoundsX = 0, ExtraBoundsY = 0;
+		float scrollRange, extraBoundsX, extraBoundsY;
+
+		scrollRange = extraBoundsX = extraBoundsY = 0;
+
+		// target view position (landscape coordinates)
+		float targetCenterViewX = fixtof(pPlr->ViewX);
+		float targetCenterViewY = fixtof(pPlr->ViewY);
+
 		if (pPlr->ViewMode == C4PVM_Scrolling)
 		{
-			ScrollRange=0;
-			ExtraBoundsX=ExtraBoundsY=ViewportScrollBorder;
+			extraBoundsX = extraBoundsY = ViewportScrollBorder;
 		}
 		else
 		{
+			scrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
+
 			// if view is close to border, allow scrolling
-			if (fixtof(pPlr->ViewX) < ViewportScrollBorder) ExtraBoundsX = Min<float>(ViewportScrollBorder - fixtof(pPlr->ViewX), ViewportScrollBorder);
-			else if (fixtof(pPlr->ViewX) >= GBackWdt - ViewportScrollBorder) ExtraBoundsX = Min<float>(fixtof(pPlr->ViewX) - GBackWdt, 0) + ViewportScrollBorder;
-			if (fixtof(pPlr->ViewY) < ViewportScrollBorder) ExtraBoundsY = Min<float>(ViewportScrollBorder - fixtof(pPlr->ViewY), ViewportScrollBorder);
-			else if (fixtof(pPlr->ViewY) >= GBackHgt - ViewportScrollBorder) ExtraBoundsY = Min<float>(fixtof(pPlr->ViewY) - GBackHgt, 0) + ViewportScrollBorder;
+			if (targetCenterViewX < ViewportScrollBorder) extraBoundsX = Min<float>(ViewportScrollBorder - targetCenterViewX, ViewportScrollBorder);
+			else if (targetCenterViewX >= GBackWdt - ViewportScrollBorder) extraBoundsX = Min<float>(targetCenterViewX - GBackWdt, 0) + ViewportScrollBorder;
+			if (targetCenterViewY < ViewportScrollBorder) extraBoundsY = Min<float>(ViewportScrollBorder - targetCenterViewY, ViewportScrollBorder);
+			else if (targetCenterViewY >= GBackHgt - ViewportScrollBorder) extraBoundsY = Min<float>(targetCenterViewY - GBackHgt, 0) + ViewportScrollBorder;
 		}
-		ExtraBoundsX = Max(ExtraBoundsX, (ViewWdt/Zoom - GBackWdt) / 2+1);
-		ExtraBoundsY = Max(ExtraBoundsY, (ViewHgt/Zoom - GBackHgt) / 2+1);
-		// calc target view position
-		float TargetViewX = fixtof(pPlr->ViewX) /* */;
-		float TargetViewY = fixtof(pPlr->ViewY) /* */;
+
+		extraBoundsX = Max(extraBoundsX, (ViewWdt/Zoom - GBackWdt)/2 + 1);
+		extraBoundsY = Max(extraBoundsY, (ViewHgt/Zoom - GBackHgt)/2 + 1);
+
 		// add mouse auto scroll
-		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAScroll)
+		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAutoScroll)
 		{
-			TargetViewX += (::MouseControl.VpX - ViewWdt / 2) / Zoom;
-			TargetViewY += (::MouseControl.VpY - ViewHgt / 2) / Zoom;
+			float strength = Config.Controls.MouseAutoScroll/100.0f;
+			targetCenterViewX += strength*(::MouseControl.VpX - ViewWdt/2.0f)/Zoom;
+			targetCenterViewY += strength*(::MouseControl.VpY - ViewHgt/2.0f)/Zoom;
 		}
+		
 		// scroll range
-		TargetViewX = BoundBy(PrefViewX, TargetViewX - ScrollRange, TargetViewX + ScrollRange);
-		TargetViewY = BoundBy(PrefViewY, TargetViewY - ScrollRange, TargetViewY + ScrollRange);
+		targetCenterViewX = BoundBy(targetCenterViewX, targetCenterViewX - scrollRange, targetCenterViewX + scrollRange);
+		targetCenterViewY = BoundBy(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
 		// bounds
-		TargetViewX = BoundBy(TargetViewX, ViewWdt / (Zoom * 2) - ExtraBoundsX, GBackWdt - ViewWdt / (Zoom * 2) + ExtraBoundsX);
-		TargetViewY = BoundBy(TargetViewY, ViewHgt / (Zoom * 2) - ExtraBoundsY, GBackHgt - ViewHgt / (Zoom * 2) + ExtraBoundsY);
+		targetCenterViewX = BoundBy(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, GBackWdt - ViewWdt/Zoom/2 + extraBoundsX);
+		targetCenterViewY = BoundBy(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, GBackHgt - ViewHgt/Zoom/2 + extraBoundsY);
+
+		targetViewX = targetCenterViewX - ViewWdt/Zoom/2 + viewOffsX;
+		targetViewY = targetCenterViewY - ViewHgt/Zoom/2 + viewOffsY;
 		// smooth
-		ViewX = PrefViewX + (TargetViewX - PrefViewX) / BoundBy<int32_t>(Config.General.ScrollSmooth, 1, 50);
-		ViewY = PrefViewY + (TargetViewY - PrefViewY) / BoundBy<int32_t>(Config.General.ScrollSmooth, 1, 50);
-		// apply offset
-		ViewX -= ViewWdt / (Zoom * 2) - ViewOffsX;
-		ViewY -= ViewHgt / (Zoom * 2) - ViewOffsY;
+		int32_t smooth = BoundBy<int32_t>(Config.General.ScrollSmooth, 1, 50);
+		ScrollView((targetViewX - viewX) / smooth, (targetViewY - viewY) / smooth);
 	}
+
+	UpdateBordersX();
+	UpdateBordersY();
+
 	// NO_OWNER can't scroll
-	if (fIsNoOwnerViewport) { ViewOffsX=0; ViewOffsY=0; }
-	// clip at borders, update vars
-	UpdateViewPosition();
+	if (fIsNoOwnerViewport) { viewOffsX=0; viewOffsY=0; }
 #ifdef WITH_DEVELOPER_MODE
 	//ScrollBarsByViewPosition();
 #endif
@@ -539,41 +548,20 @@ void C4Viewport::CenterPosition()
 {
 	// center viewport position on map
 	// set center position
-	ViewX = (GBackWdt-ViewWdt/Zoom)/2;
-	ViewY = (GBackHgt-ViewHgt/Zoom)/2;
-	// clips and updates
-	UpdateViewPosition();
+	SetViewX(GBackWdt/2 + ViewWdt/Zoom/2);
+	SetViewY(GBackHgt/2 + ViewHgt/Zoom/2);
 }
 
-void C4Viewport::UpdateViewPosition()
+void C4Viewport::UpdateBordersX()
 {
-	// no-owner viewports should not scroll outside viewing area
-	if (fIsNoOwnerViewport)
-	{
-		if (!Application.isEditor && GBackWdt<ViewWdt / Zoom)
-		{
-			ViewX = (GBackWdt-ViewWdt / Zoom)/2;
-		}
-		else
-		{
-			ViewX = Min(ViewX, GBackWdt-ViewWdt / Zoom);
-			ViewX = Max(ViewX, 0.0f);
-		}
-		if (!Application.isEditor && GBackHgt<ViewHgt / Zoom)
-		{
-			ViewY = (GBackHgt-ViewHgt / Zoom)/2;
-		}
-		else
-		{
-			ViewY = Min(ViewY, GBackHgt-ViewHgt / Zoom);
-			ViewY = Max(ViewY, 0.0f);
-		}
-	}
-	// update borders
-	BorderLeft = int32_t(Max(-ViewX * Zoom, 0.0f));
-	BorderTop = int32_t(Max(-ViewY * Zoom, 0.0f));
-	BorderRight = int32_t(Max(ViewWdt - GBackWdt * Zoom + ViewX * Zoom, 0.0f));
-	BorderBottom = int32_t(Max(ViewHgt - GBackHgt * Zoom + ViewY * Zoom, 0.0f));
+	BorderLeft = int32_t(Max(-GetViewX() * Zoom, 0.0f));
+	BorderRight = int32_t(Max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f));
+}
+
+void C4Viewport::UpdateBordersY()
+{
+	BorderTop = int32_t(Max(-GetViewY() * Zoom, 0.0f));
+	BorderBottom = int32_t(Max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f));
 }
 
 void C4Viewport::Default()
@@ -581,7 +569,8 @@ void C4Viewport::Default()
 	pWindow=NULL;
 	pFoW = NULL;
 	Player=0;
-	ViewX=ViewY=0;
+	viewX=viewY=0;
+	targetViewX=targetViewY=0;
 	ViewWdt=ViewHgt=0;
 	BorderLeft=BorderTop=BorderRight=BorderBottom=0;
 	OutX=OutY=ViewWdt=ViewHgt=0;
@@ -593,7 +582,7 @@ void C4Viewport::Default()
 	Next=NULL;
 	PlayerLock=true;
 	ResetMenuPositions=false;
-	ViewOffsX = ViewOffsY = 0;
+	viewOffsX = viewOffsY = 0;
 	fIsNoOwnerViewport = false;
 	last_game_draw_cgo.Default();
 	last_gui_draw_cgo.Default();
@@ -670,17 +659,62 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	                           pPlr->ColorDw | 0xff000000, ACenter);
 }
 
+void C4Viewport::ScrollView(float byX, float byY)
+{
+	SetViewX(viewX + byX);
+	SetViewY(viewY + byY);
+}
+
+void C4Viewport::SetViewX(float x)
+{
+	viewX = x;
+
+	if (fIsNoOwnerViewport)
+	{
+		if(GBackWdt < ViewWdt / Zoom)
+		{
+			viewX = GBackWdt/2 - ViewWdt / Zoom / 2;
+		}
+		else
+		{
+			viewX = BoundBy(x, 0.0f, GBackWdt - ViewWdt / Zoom);
+		}
+	}
+
+	UpdateBordersX();
+}
+
+void C4Viewport::SetViewY(float y)
+{
+	viewY = y;
+
+	if (fIsNoOwnerViewport)
+	{
+		if(GBackHgt < ViewHgt / Zoom)
+		{
+			viewY = GBackHgt/2 - ViewHgt / Zoom / 2;
+		}
+		else
+		{
+			viewY = BoundBy(y, 0.0f, GBackHgt - ViewHgt / Zoom);
+		}
+	}
+
+	UpdateBordersY();
+}
+
 void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt)
 {
-	// update view position: Remain centered at previous position
-	ViewX += (ViewWdt-iOutWdt)/2;
-	ViewY += (ViewHgt-iOutHgt)/2;
+	int32_t deltaWidth = ViewWdt-iOutWdt;
+	int32_t deltaHeight = ViewHgt-iOutHgt;
 	// update output parameters
 	DrawX=iDrawX; DrawY=iDrawY;
 	OutX=iOutX; OutY=iOutY;
 	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
+	// update view position: Remain centered at previous position
+	// scrolling the view must be done after setting the new view width and height
+	ScrollView(deltaWidth/2, deltaHeight/2);
 	CalculateZoom();
-	UpdateViewPosition();
 	// Reset menus
 	ResetMenuPositions=true;
 	// player uses mouse control? then clip the cursor
@@ -972,9 +1006,10 @@ int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int
 	int32_t iAudible=0; *iPan = 0;
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 	{
+		float distanceToCenterOfViewport = Distance(cvp->GetViewCenterX(),cvp->GetViewCenterY(),iX,iY);
 		iAudible = Max( iAudible,
-		                BoundBy<int32_t>(100-100*Distance(cvp->ViewX+cvp->ViewWdt/2,cvp->ViewY+cvp->ViewHgt/2,iX,iY)/C4AudibilityRadius,0,100) );
-		*iPan += (iX-(cvp->ViewX+cvp->ViewWdt/2)) / 5;
+		                BoundBy<int32_t>(100-100*distanceToCenterOfViewport/C4AudibilityRadius,0,100) );
+		*iPan += (iX-(cvp->GetViewCenterX())) / 5;
 	}
 	*iPan = BoundBy<int32_t>(*iPan, -100, 100);
 	return iAudible;
@@ -1039,7 +1074,7 @@ bool C4ViewportList::FreeScroll(C4Vec2D vScrollBy)
 	if (Game.FrameCounter-vp_vf < 5)
 		{ dx += vp_vx; dy += vp_vy; }
 	vp_vx=dx; vp_vy=dy; vp_vf=Game.FrameCounter;
-	vp->ViewX+=dx; vp->ViewY+=dy;
+	vp->ScrollView(dx, dy);
 	return true;
 }
 
