@@ -2373,7 +2373,7 @@ static bool FnGuiClose(C4PropList *_this, int32_t guiID, int32_t childID, C4Obje
 	return true;
 }
 
-static bool FxGuiUpdate(C4PropList *_this, C4PropList *update, int32_t guiID, int32_t childID, C4Object *target)
+static bool FnGuiUpdate(C4PropList *_this, C4PropList *update, int32_t guiID, int32_t childID, C4Object *target)
 {
 	if (!update) return false;
 	C4ScriptGuiWindow *window = ::Game.ScriptGuiRoot->GetChildByID(guiID);
@@ -2734,7 +2734,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GuiOpen", FnGuiOpen);
 	AddFunc(pEngine, "GuiUpdateTag", FnGuiUpdateTag);
 	AddFunc(pEngine, "GuiClose", FnGuiClose);
-	AddFunc(pEngine, "GuiUpdate", FxGuiUpdate);
+	AddFunc(pEngine, "GuiUpdate", FnGuiUpdate);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "PathFree2", FnPathFree2);
