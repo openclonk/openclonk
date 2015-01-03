@@ -339,7 +339,7 @@ bool ShaderLog(const char *szMessage)
 	if (!szMessage) return false;
 	// output into shader log file
 #ifdef HAVE_ICONV
-	StdStrBuf Line = Languages.IconvSystem(TimeMessage.getData());
+	StdStrBuf Line = Languages.IconvSystem(szMessage);
 #else
 	StdStrBuf Line; Line.Ref(szMessage);
 #endif
