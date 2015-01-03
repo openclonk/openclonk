@@ -77,7 +77,22 @@ bool OpenExtraLogs()
 {
 	// shader log in editor mode (only one file)
 	bool success = true;
-	if (C4Shader::IsLogging()) if (!(C4ShaderLogFile = _fsopen(Config.AtUserDataPath(C4CFN_LogShader), "wt", _SH_DENYWR))) success = false;
+	if (C4Shader::IsLogging())
+	{
+#ifdef _WIN32
+		C4ShaderLogFile = _fsopen(Config.AtUserDataPath(C4CFN_LogShader), "wt", _SH_DENYWR);
+#elif HAVE_SYS_FILE_H
+		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
+		if (C4ShaderLogFile) if (!flock(fileno(C4ShaderLogFile), LOCK_EX | LOCK_NB))
+		{
+			fclose(C4ShaderLogFile);
+			C4ShaderLogFile = NULL;
+		}
+#else
+		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
+#endif
+		if (!C4ShaderLogFile) success = false;
+	}
 	return success;
 }
 
