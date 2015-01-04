@@ -104,7 +104,7 @@ func FxIntCheckObjectsStart(target, effect, temp)
 
 func FxIntCheckObjectsTimer(target, effect, timer)
 {
-	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk")));
+	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk")));
 	if (new_objects == current_objects) return;
 	
 	UpdateObjects(new_objects);
