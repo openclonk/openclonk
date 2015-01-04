@@ -2089,14 +2089,14 @@ static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 
 static bool FnSetViewOffset(C4PropList * _this, long iPlayer, long iX, long iY)
 {
-	if (!ValidPlr(iPlayer)) return 0;
+	if (!ValidPlr(iPlayer)) return false;
 	// get player viewport
 	C4Viewport *pView = ::Viewports.GetViewport(iPlayer);
 	if (!pView) return 1; // sync safety
 	// set
 	pView->SetViewOffset(iX, iY);
 	// ok
-	return 1;
+	return true;
 }
 
 // undocumented!
