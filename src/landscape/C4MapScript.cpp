@@ -459,15 +459,15 @@ bool C4MapScriptLayer::FindPos(const C4Rect &search_rect, const C4MapScriptMatTe
 	// (this guantuess to find a pixel if there is one, but favours border pixels)
 	int32_t sx=search_rect.x + Random(search_rect.Wdt);
 	int32_t sy=search_rect.y + Random(search_rect.Hgt);
-	for (int32_t x=sx; x<surface->Wdt; ++x)
+	for (int32_t x = sx; x < search_rect.x + search_rect.Wdt; ++x)
 		if (col_mask(surface->_GetPix(x,sy))) { *out_x=x; *out_y=sy; return true; }
-	for (int32_t y=sy+1; y<surface->Hgt; ++y)
-		for (int32_t x=0; x<surface->Wdt; ++x)
+	for (int32_t y = sy + 1; y<search_rect.y + search_rect.Hgt; ++y)
+		for (int32_t x = search_rect.x; x < search_rect.x + search_rect.Wdt; ++x)
 			if (col_mask(surface->_GetPix(x,y))) { *out_x=x; *out_y=y; return true; }
-	for (int32_t y=0; y<sy; ++y)
-		for (int32_t x=0; x<surface->Wdt; ++x)
+	for (int32_t y = search_rect.y; y<sy; ++y)
+		for (int32_t x = search_rect.x; x < search_rect.x + search_rect.Wdt; ++x)
 			if (col_mask(surface->_GetPix(x,y))) { *out_x=x; *out_y=y; return true; }
-	for (int32_t x=0; x<sx; ++x)
+	for (int32_t x = search_rect.x; x<sx; ++x)
 		if (col_mask(surface->_GetPix(x,sy))) { *out_x=x; *out_y=sy; return true; }
 	// Nothing found
 	return false;
