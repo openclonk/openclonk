@@ -184,7 +184,6 @@ public:
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
 	bool DeviceReady() { return !!pMainCtx; }
-	bool EnsureAnyContext();
 	bool InitShaders(C4GroupSet* pGroups); // load shaders from given group
 	C4Shader* GetSpriteShader(int ssc);
 	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);

@@ -653,14 +653,6 @@ bool CStdGL::InvalidateDeviceObjects()
 	return fSuccess;
 }
 
-bool CStdGL::EnsureAnyContext()
-{
-	// Make sure some context is selected
-	if (pCurrCtx) return true;
-	if (!pMainCtx) return false;
-	return pMainCtx->Select();
-}
-
 bool CStdGL::Error(const char *szMsg)
 {
 #ifdef USE_WIN32_WINDOWS
