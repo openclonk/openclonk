@@ -37,7 +37,7 @@
     </examples>
     <related>
       <funclink>SetPlrView</funclink>
-      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetLightRange</funclink>
     </related>
   </func>
   <author>Günther</author><date>2002-11</date>

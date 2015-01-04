@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ShakeViewport</title>
+    <category>Environment</category>
+    <subcat>Effects</subcat>
+    <version>6.0 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>The strength of the shake in pixels. As a point of reference, for explosions, the shake strength is the same as the explosion level.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X offset in relative coordinates from the calling object.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Y offset in relative coordinates from the calling object.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Shake the player viewports near the given position. This disorienting effect is used for earthquakes, explosions
+and other rumbling effects. The further away the player is from the source, the less his viewport is shaken. The 
+strength falls off linearly by distance from 100% to 0% when the player is 700 pixels away.</desc>
+    <related><funclink>SetViewOffset</funclink></related>
+  </func>
+</funcs>
