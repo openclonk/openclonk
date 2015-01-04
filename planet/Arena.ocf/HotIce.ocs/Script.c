@@ -12,9 +12,13 @@ func Initialize()
 			if (chest)
 			{
 				chest->CreateContents(Firestone,5);
-				chest->CreateContents(Bread,2);
-				var bonus = [[Bow,Arrow],[Shield,Sword]][Random(2)];
-				for (var obj in bonus) chest->CreateContents(obj);
+				chest->CreateContents(Bread,1);
+				chest->CreateContents(Bow,1);
+				//chest->CreateContents(Arrow,1); - avoid extra layer in ring menu
+				chest->CreateContents(FireArrow,1);
+				chest->CreateContents(BombArrow,1)->SetStackCount(5);
+				chest->CreateContents(Shield,1);
+				chest->CreateContents(Sword,1);
 			}
 		}
 	// Materials: Firestones
@@ -32,6 +36,8 @@ func Initialize()
 
 func InitializePlayer(int plr)
 {
+	// everything visible
+	SetFoW(false, plr);
 	// player positioning
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr);
@@ -41,7 +47,8 @@ func InitializePlayer(int plr)
 	// initial material
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Club);
-	crew->CreateContents(Firestone);
+	crew->CreateContents(WindBag);
+	crew->CreateContents(Firestone,3);
 	crew.MaxEnergy = 120000;
 	crew->DoEnergy(1000);
 	return true;
