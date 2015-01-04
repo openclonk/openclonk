@@ -2,3 +2,31 @@ MsgGoalAbove=The goal is above this post.
 MsgGoalBelow=The goal is below this post.
 MsgGoalLeft=The goal is left of this post.
 MsgGoalRight=The goal is right of this post.
+
+# Scenario parameters: goal
+Goal=Game mode
+DescGoal=Determines if players play with or against each other.
+GoalCooperative=Cooperative
+DescGoalCooperative=Players try together to find a ruby.
+GoalRace=Race
+DescGoalRace=The first player to find a ruby and return it home wins the round.
+
+# Scenario parameters: difficulty
+Difficulty=Difficulty
+DescDifficulty=Sets this round's difficulty.
+DiffNormal=Normal
+DescDiffNormal=This round's difficulty will be set to normal.
+DiffHard=Hard
+DescDiffHard=This round's difficulty will be set to hard.
+DiffInsane=Insane
+DescDiffInsane=This round's difficulty will be set to insane.
+
+# Scenario parameters: map size
+MapSize=Map size
+DescMapSize=Sets this round's map size.
+MapSmall=Small
+DescMapSmall=This round's map will be small.
+MapAverage=Average
+DescMapAverage=This round's map will be average.
+MapLarge=Large
+DescMapLarge=This round's map will be large.

@@ -2,3 +2,31 @@ MsgGoalAbove=Das Ziel ist oberhalb von hier.
 MsgGoalBelow=Das Ziel ist unterhalb von hier.
 MsgGoalLeft=Das Ziel ist links von hier.
 MsgGoalRight=Das Ziel ist rechts von hier.
+
+# Scenario parameters: goal
+Goal=Spielmodus
+DescGoal=Setzt das Spielziel auf mit- oder gegeneinander
+GoalCooperative=Kooperativ
+DescGoalCooperative=Spieler versuchen gemeinsam, einen Rubin zu finden.
+GoalRace=Wettrennen
+DescGoalRace=Der erste Spieler, der einen Rubin findet und zum Start zurück bringt, gewinnt die Runde.
+
+# Scenario parameters: difficulty
+Difficulty=Schwierigkeit
+DescDifficulty=Setzt die Schwierigkeit dieser Runde.
+DiffNormal=Normal
+DescDiffNormal=Die Schwierigkeit dieser Runde ist normal.
+DiffHard=Schwer
+DescDiffHard=Die Schwierigkeit dieser Runde ist schwer.
+DiffInsane=Irrsinnig
+DescDiffInsane=Die Schwierigkeit dieser Runde ist irrsinnig.
+
+# Scenario parameters: map size
+MapSize=Kartengröße
+DescMapSize=Setzt die Kartengröße dieser Runde.
+MapSmall=Klein
+DescMapSmall=Die Karte dieser Runde wird klein sein
+MapAverage=Durchschnittlich
+DescMapAverage=Die Karte dieser Runde wird durchschnittlich sein.
+MapLarge=Groß
+DescMapLarge=Die Karte dieser Runde wird groß sein.
