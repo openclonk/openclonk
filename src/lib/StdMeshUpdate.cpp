@@ -102,7 +102,14 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 		delete instance->SubMeshInstances[i];
 	instance->SubMeshInstances.resize(new_mesh.GetNumSubMeshes());
 	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
+	{
 		instance->SubMeshInstances[i] = new StdSubMeshInstance(*instance, new_mesh.GetSubMesh(i), instance->GetCompletion());
+
+		// Submeshes are reset to their default material, so the submesh order is unaltered
+		instance->SubMeshInstancesOrdered = instance->SubMeshInstances;
+
+		// TODO: We might try to store the previous mesh material here
+	}
 
 	// Update child bone of attach parent. If the bone does not exist anymore
 	// in the updated mesh, then detach the mesh from its parent
