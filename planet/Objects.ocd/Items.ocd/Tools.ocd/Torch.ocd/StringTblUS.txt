@@ -1,0 +1,4 @@
+Name=Torch
+Description=Can be produced in the tools workshop. Illuminates even the darkest caves.
+MsgTorchAttach=Torch can only be attached to a wall.
+MsgTorchDetach=Detach the torch from the wall.
