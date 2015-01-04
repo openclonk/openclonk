@@ -159,10 +159,10 @@ bool C4Viewport::ViewPositionByScrollBars()
 	if (PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-	ViewX = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
+	SetViewX(gtk_adjustment_get_value(adjustment));
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	ViewY = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
+	SetViewY(gtk_adjustment_get_value(adjustment));
 
 	return true;
 }
