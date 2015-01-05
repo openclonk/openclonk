@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4V_Def</title>
+    <category>Variables</category>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: Definition. Definitions are a special type of proplist, and this data type is used for distinguishing definitions from proplists.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (<funclink>GetType</funclink>(definition) == C4V_Def) CreateObject(definition);</code>
+        <text>Creates an object specified by <code>definition</code>, if that variable is actually a definition.</text>
+      </example>
+    </examples>
+    <related><funclink>GetType</funclink></related>
+  </const>
+  <author>Marky</author><date>2015-01</date>
+</funcs>
