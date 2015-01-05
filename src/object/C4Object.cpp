@@ -1889,7 +1889,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (BackParticles) BackParticles->Draw(cgo, this);
 
 	// Object output position
-	float newzoom;
+	float newzoom = cgo.Zoom;
 	if (eDrawMode!=ODM_Overlay)
 	{
 		if (!GetDrawPosition(cgo, offX, offY, newzoom)) return;
@@ -2159,7 +2159,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// visible?
 	if (!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
-	float newzoom;
+	float newzoom = cgo.Zoom;
 	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, offX, offY, newzoom);
 	ZoomDataStackItem zdsi(newzoom);
 	// Clonk name
