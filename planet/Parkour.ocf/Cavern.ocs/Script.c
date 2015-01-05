@@ -51,7 +51,7 @@ protected func Initialize()
 		d += RandomX(250, 300);
 	}
 	// Fill chests.
-	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam];
+	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam, Torch];
 	for (var chest in FindObjects(Find_ID(Chest)))
 		for (var i = 0; i < 4; i++)
 			chest->CreateContents(content_list[Random(GetLength(content_list))]);
