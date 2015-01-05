@@ -1,21 +1,22 @@
-/*-- 
-	Down the Fountain
-	Author: Mimmo_O
-	
-	An arena like last man standing round for up two to three players.
---*/
+/** 
+	Rock Bottom
+	An arena like chaotic last man standing round in a well.
+
+	@author Mimmo_O, Maikel
+*/
 
 
 protected func Initialize()
 {
-	// Goal.
+	// Goal and rules.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	
 	// Chests with weapons.
-	CreateObject(Chest, 108, 248, NO_OWNER)->MakeInvincible();
-	AddEffect("IntFillChests", nil, 100, 3 * 36);
+	var chest = CreateObject(Chest, 108, 248);
+	chest->MakeInvincible();
+	AddEffect("IntFillChests", nil, 100, 36, nil, nil, chest);
 
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
@@ -72,26 +73,24 @@ protected func OnPlayerRelaunch(int plr)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, effect, int temporary)
+global func FxIntFillChestsStart(object target, proplist effect, int temporary, object chest)
 {
-	if(temporary) return 1;
-	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Bow, Musket, Shield, Sword, Club, Javelin, Bow, Musket, Shield, Sword, Club, Javelin, DynamiteBox];
-	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
-			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	if (temporary)
+		return 1;
+	// Store weapon list and chest.		
+	effect.w_list = [Dynamite, Dynamite, Firestone, Firestone, Bow, Musket, Club, Sword, Javelin, IronBomb, PowderKeg];
+	effect.chest = chest;
+	// Fill the chest with ten items.
+	for (var i = 0; i < 10; i++)
+		effect.chest->CreateChestContents(effect.w_list[Random(GetLength(effect.w_list))]);
 	return 1;
 }
 
-global func FxIntFillChestsTimer()
+global func FxIntFillChestsTimer(object target, proplist effect, int time)
 {
-	SetTemperature(100); 
-	var chest = FindObject(Find_ID(Chest));
-	var w_list = [Dynamite, Rock, Dynamite, Firestone, Firestone, Bow, Musket, Sword, Javelin];
-	
-	if (chest->ContentsCount() < 5 || !Random((chest->ContentsCount())+4))
-		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	// Refill the chest with up to ten items.
+	if (effect.chest->ContentsCount() < 10 || !Random(effect.chest->ContentsCount()))
+		effect.chest->CreateChestContents(effect.w_list[Random(GetLength(effect.w_list))]);
 	return 1;
 }
 
@@ -101,7 +100,7 @@ global func CreateChestContents(id obj_id)
 		return;
 	var obj = CreateObject(obj_id);
 	if (obj_id == Bow)
-		obj->CreateContents(Arrow);
+		obj->CreateContents([Arrow, BombArrow][Random(2)]);
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	obj->Enter(this);
@@ -109,11 +108,12 @@ global func CreateChestContents(id obj_id)
 }
 
 // GameCall from RelaunchContainer.
-func OnClonkLeftRelaunch(object clonk)
+public func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(120, 160), -20);
 	clonk->Fling(0,5);
+	return;
 }
 
-func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList() { return [Bow, Shield, Sword, Firestone, Dynamite, Javelin, Musket]; }
+public func KillsToRelaunch() { return 0; }
+public func RelaunchWeaponList() { return [Bow, Shield, Sword, Firestone, Dynamite, Javelin, Musket]; }
