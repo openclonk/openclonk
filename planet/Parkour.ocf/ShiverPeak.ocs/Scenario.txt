@@ -25,7 +25,7 @@ VegetationLevel=100,0,0,100
 InEarth=Rock=1;Nugget=1;Dynamite=2;Loam=2;Firestone=1
 InEarthLevel=40,0,0,100
 Sky=WinterMountains
-BottomOpen=1
+BottomOpen=2
 MapWidth=250
 MapHeight=320
 SkyScrollMode=2
