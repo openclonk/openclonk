@@ -16,12 +16,12 @@ func InitializeObjects()
 
 	CreateObject(Trunk, 301, 202);
 
-	var Rank0029 = CreateObject(Rank, 41, 169);
-	Rank0029->SetR(18);
-	Rank0029->SetPosition(41, 166);
-	var Rank0030 = CreateObject(Rank, 322, 201);
-	Rank0030->SetR(6);
-	Rank0030->SetPosition(322, 198);
+	var Branch0029 = CreateObject(Branch, 41, 169);
+	Branch0029->SetR(188);
+	Branch0029->SetPosition(41, 166);
+	var Branch0030 = CreateObject(Branch, 322, 195);
+	Branch0030->SetR(6);
+	Branch0030->SetPosition(322, 192);
 
 	CreateObject(SproutBerryBush, 350, 206);
 

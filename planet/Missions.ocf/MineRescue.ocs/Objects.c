@@ -79,15 +79,15 @@ func InitializeObjects()
 	Trunk0075->SetR(140);
 	Trunk0075->SetPosition(353, 280);
 
-	var Rank0076 = CreateObject(Rank, 338, 290);
-	Rank0076->SetR(140);
-	Rank0076->SetPosition(338, 290);
-	var Rank0077 = CreateObject(Rank, 618, 122);
-	Rank0077->SetR(-140);
-	Rank0077->SetPosition(618, 122);
-	var Rank0078 = CreateObject(Rank, 585, 104);
-	Rank0078->SetR(-150);
-	Rank0078->SetPosition(585, 104);
+	var Branch0076 = CreateObject(Branch, 338, 290);
+	Branch0076->SetR(140);
+	Branch0076->SetPosition(338, 293);
+	var Branch0077 = CreateObject(Branch, 618, 122);
+	Branch0077->SetR(-140);
+	Branch0077->SetPosition(618, 125);
+	var Branch0078 = CreateObject(Branch, 585, 104);
+	Branch0078->SetR(-150);
+	Branch0078->SetPosition(585, 107);
 
 	var Trunk0079 = CreateObject(Trunk, 643, 153);
 	Trunk0079->SetCon(60);

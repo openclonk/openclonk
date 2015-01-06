@@ -73,24 +73,24 @@ func InitializeObjects()
 	CreateObject(Fern, 1645, 384);
 	CreateObject(Fern, 1525, 535);
 
-	var Rank0066 = CreateObject(Rank, 1320, 326);
-	Rank0066->SetR(148);
-	Rank0066->SetPosition(1320, 326);
-	var Rank0067 = CreateObject(Rank, 1327, 298);
-	Rank0067->SetR(165);
-	Rank0067->SetPosition(1327, 298);
-	var Rank0068 = CreateObject(Rank, 1424, 257);
-	Rank0068->SetR(108);
-	Rank0068->SetPosition(1424, 257);
-	var Rank0069 = CreateObject(Rank, 1430, 248);
-	Rank0069->SetR(39);
-	Rank0069->SetPosition(1430, 246);
-	var Rank0070 = CreateObject(Rank, 1413, 262);
-	Rank0070->SetR(128);
-	Rank0070->SetPosition(1413, 262);
-	var Rank0071 = CreateObject(Rank, 1396, 263);
-	Rank0071->SetR(-131);
-	Rank0071->SetPosition(1396, 263);
+	var Branch0066 = CreateObject(Branch, 1320, 326);
+	Branch0066->SetR(148);
+	Branch0066->SetPosition(1320, 329);
+	var Branch0067 = CreateObject(Branch, 1327, 298);
+	Branch0067->SetR(165);
+	Branch0067->SetPosition(1327, 291);
+	var Branch0068 = CreateObject(Branch, 1424, 257);
+	Branch0068->SetR(108);
+	Branch0068->SetPosition(1424, 260);
+	var Branch0069 = CreateObject(Branch, 1430, 248);
+	Branch0069->SetR(39);
+	Branch0069->SetPosition(1430, 240);
+	var Branch0070 = CreateObject(Branch, 1413, 262);
+	Branch0070->SetR(128);
+	Branch0070->SetPosition(1413, 265);
+	var Branch0071 = CreateObject(Branch, 1396, 263);
+	Branch0071->SetR(-131);
+	Branch0071->SetPosition(1396, 266);
 
 	CreateObject(SproutBerryBush, 1823, 493);
 

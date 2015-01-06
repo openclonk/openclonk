@@ -160,13 +160,8 @@ private func InitVegetation(int map_size)
 	// Some ferns, to be burned soon.
 	for (var i = 0; i < 25 + Random(5); i++)
 		PlaceVegetation(Fern, 0, 0, wdt, hgt);
-	// Ranks as a nice additional source of wood.
-	for (var i = 0; i < 16 + Random(4); i++)
-	{
-		veg = PlaceVegetation(Rank, 0, 0, wdt, hgt);
-		if (veg)
-			veg->SetR(RandomX(-20, 20));
-	}
+	// Branches as a nice additional source of wood.
+	Branch->Place(30 + Random(8));
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 30 + 15 * map_size + Random(10),"Earth");
 	PlaceObjects(Firestone, 40 + 15 * map_size + Random(5), "Earth");

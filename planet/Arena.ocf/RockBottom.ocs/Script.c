@@ -47,16 +47,16 @@ protected func Initialize()
 	CreateObject(Pickaxe, 260, 128)->SetR(-45); 
 	CreateObject(Mushroom, 271, 136);
 	
-	CreateObject(Rank, 146, 302)->SetR(180);
-	CreateObject(Rank, 198, 190)->SetR(225);
-	CreateObject(Rank, 54, 66)->SetR(180);
-	CreateObject(Rank, 42, 232)->SetR(120);
-	CreateObject(Rank, 269, 230)->SetR(-120);
+	CreateObject(Branch, 146, 316)->SetR(180);
+	CreateObject(Branch, 192, 198)->SetR(225);
+	CreateObject(Branch, 54, 76)->SetR(180);
+	CreateObject(Branch, 50, 232)->SetR(120);
+	CreateObject(Branch, 264, 238)->SetR(-120);
 	
 	for (var i = 0; i < 2 + Random(6); i++) 
-		CreateObject(Rank, 114, 10 + Random(140))->SetR(RandomX(60, 120));
+		CreateObject(Branch, 121, 10 + Random(140))->SetR(RandomX(60, 120));
 	for (var i = 0; i < 2 + Random(6); i++) 
-		CreateObject(Rank, 190, 10 + Random(140))->SetR(-RandomX(60, 120));
+		CreateObject(Branch, 183, 10 + Random(140))->SetR(-RandomX(60, 120));
 	
 	// Some lights to have the well visible at all times.
 	CreateLight(152, 40, 80, Fx_Light.LGT_Constant);

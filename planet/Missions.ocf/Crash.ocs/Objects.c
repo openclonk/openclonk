@@ -37,27 +37,27 @@ func InitializeObjects()
 	Lichen002->SetAction("Grow");
 	Lichen002->SetPhase(3);
 
-	var Rank001 = CreateObject(Rank, 1352, 438);
-	Rank001->SetR(28);
-	Rank001->SetPosition(1352, 435);
-	var Rank002 = CreateObject(Rank, 1428, 446);
-	Rank002->SetR(6);
-	Rank002->SetPosition(1428, 443);
-	var Rank003 = CreateObject(Rank, 1431, 458);
-	Rank003->SetR(-28);
-	Rank003->SetPosition(1431, 455);
-	var Rank004 = CreateObject(Rank, 552, 589);
-	Rank004->SetR(4);
-	Rank004->SetPosition(552, 586);
-	var Rank005 = CreateObject(Rank, 534, 601);
-	Rank005->SetR(-17);
-	Rank005->SetPosition(534, 598);
-	var Rank006 = CreateObject(Rank, 322, 615);
-	Rank006->SetR(23);
-	Rank006->SetPosition(322, 612);
-	var Rank007 = CreateObject(Rank, 404, 762);
-	Rank007->SetR(8);
-	Rank007->SetPosition(404, 759);
+	var Branch001 = CreateObject(Branch, 1352, 447);
+	Branch001->SetR(170);
+	Branch001->SetPosition(1352, 435);
+	var Branch002 = CreateObject(Branch, 1427, 453);
+	Branch002->SetR(160);
+	Branch002->SetPosition(1427, 442);
+	var Branch003 = CreateObject(Branch, 1430, 460);
+	Branch003->SetR(150);
+	Branch003->SetPosition(1430, 450);
+	var Branch004 = CreateObject(Branch, 552, 596);
+	Branch004->SetR(150);
+	Branch004->SetPosition(552, 586);
+	var Branch005 = CreateObject(Branch, 524, 611);
+	Branch005->SetR(160);
+	Branch005->SetPosition(524, 600);
+	var Branch006 = CreateObject(Branch, 317, 623);
+	Branch006->SetR(-170);
+	Branch006->SetPosition(317, 611);
+	var Branch007 = CreateObject(Branch, 398, 774);
+	Branch007->SetR(-110);
+	Branch007->SetPosition(398, 770);
 
 	CreateObject(Trunk, 1447, 682);
 

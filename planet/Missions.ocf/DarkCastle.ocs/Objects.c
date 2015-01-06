@@ -28,9 +28,9 @@ func InitializeObjects()
 	Tree_Coniferous001->SetClrModulation(0xffc08060);
 	Tree_Coniferous001->SetPosition(415, 1117);
 
-	var Rank001 = CreateObject(Rank, 241, 1183);
-	Rank001->SetR(17);
-	Rank001->SetPosition(241, 1180);
+	var Branch001 = CreateObject(Branch, 241, 1179);
+	Branch001->SetR(17);
+	Branch001->SetPosition(241, 1176);
 
 	var Fern001 = CreateObject(Fern, 312, 1432);
 	Fern001->SetClrModulation(0xffa08060);
@@ -48,9 +48,9 @@ func InitializeObjects()
 	LargeCaveMushroom004->SetClrModulation(0xffeaedfb);
 	LargeCaveMushroom004->SetPosition(1420, 1374);
 
-	var Rank002 = CreateObject(Rank, 1430, 1423);
-	Rank002->SetR(-25);
-	Rank002->SetPosition(1430, 1420);
+	var Branch002 = CreateObject(Branch, 1430, 1420);
+	Branch002->SetR(-25);
+	Branch002->SetPosition(1430, 1417);
 
 	var Lichen001 = CreateObject(Lichen, 1387, 1440);
 	Lichen001->SetAction("Grown");

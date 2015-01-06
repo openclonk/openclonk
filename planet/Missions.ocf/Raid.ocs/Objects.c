@@ -23,9 +23,9 @@ func InitializeObjects()
 
 	CreateObject(SproutBerryBush, 1154, 445);
 
-	var Rank0012 = CreateObject(Rank, 1509, 664);
-	Rank0012->SetR(-26);
-	Rank0012->SetPosition(1509, 661);
+	var Branch0012 = CreateObject(Branch, 1509, 664);
+	Branch0012->SetR(-26);
+	Branch0012->SetPosition(1509, 657);
 
 	CreateObject(Trunk, 1194, 454);
 
@@ -62,9 +62,9 @@ func InitializeObjects()
 	CreateObject(SproutBerryBush, 3332, 653);
 	CreateObject(SproutBerryBush, 2674, 593);
 
-	var Rank0084 = CreateObject(Rank, 2335, 607);
-	Rank0084->SetR(21);
-	Rank0084->SetPosition(2335, 604);
+	var Branch0084 = CreateObject(Branch, 2335, 607);
+	Branch0084->SetR(21);
+	Branch0084->SetPosition(2335, 600);
 
 	CreateObject(BigRock, 3273, 609);
 

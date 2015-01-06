@@ -50,6 +50,7 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct);
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
+	SetFoW(false, plr);
 	return;
 }
 
@@ -101,7 +102,7 @@ private func FindStartCave()
 private func InitVegetation()
 {
 	// Cave mushrooms provide wood, extra place them in the large caves.
-	LargeCaveMushroom->Place(100 + Random(30), nil, { terrafom = false });
+	LargeCaveMushroom->Place(100 + Random(30), nil, { terraform = false });
 	
 	// Some mushrooms to regain health.
 	Mushroom->Place(80);
@@ -112,6 +113,9 @@ private func InitVegetation()
 	PlaceObjects(Firestone, 50 + Random(30), "Earth");
 	PlaceObjects(Dynamite, 20 + Random(10), "Earth");
 	PlaceObjects(DynamiteBox, 10 + Random(5), "Rock");
+	
+	// Place some branches and trunks around the map.
+	Branch->Place(100);
 	
 	return;
 }

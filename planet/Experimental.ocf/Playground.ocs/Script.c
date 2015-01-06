@@ -22,7 +22,7 @@ func Initialize()
   Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
   Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
   CreateObject(Ropebridge, 515, 547)->MakeBridge(Anchor1, Anchor2);
-  CreateObject(Rank, 505, 547);
+  CreateObject(Branch, 505, 547);
   CreateObject(Rock,495, 547);
 //	CreateObject(Ropeladder, 197, 432)->MakeBridge(Rock1, Rock2);
 //   for(var i = 0; i < 10; i++)
@@ -30,35 +30,35 @@ func Initialize()
   
   
   var obj;
-  obj = CreateObject(Rank, 395, 484);
+  obj = CreateObject(Branch, 395, 484);
 obj->SetR(40);
 obj->SetProperty("MeshTransformation", [-1000, 0, 0, 0, 0, 1000, 0, 0, 0, 0, -1000, 0]);
 obj.Plane = 400;
-obj = CreateObject(Rank, 433, 509);
+obj = CreateObject(Branch, 433, 509);
 obj->SetR(-26);
 obj->SetProperty("MeshTransformation", [-602, 0, -799, 0, 0, 1000, 0, 0, 799, 0, -602, 0]);
 obj.Plane = 400;
-obj = CreateObject(Rank, 448, 517);
+obj = CreateObject(Branch, 448, 517);
 obj->SetR(24);
 obj->SetProperty("MeshTransformation", [-848, 0, 530, 0, 0, 1000, 0, 0, -530, 0, -848, 0]);
 obj.Plane = 100;
-obj = CreateObject(Rank, 366, 482);
+obj = CreateObject(Branch, 366, 482);
 obj->SetR(16);
 obj->SetProperty("MeshTransformation", [-999, 0, -52, 0, 0, 1000, 0, 0, 52, 0, -999, 0]);
 obj.Plane = 100;
-obj = CreateObject(Rank, 501, 548);
+obj = CreateObject(Branch, 501, 548);
 obj->SetR(-16);
 obj->SetProperty("MeshTransformation", [629, 0, 777, 0, 0, 1000, 0, 0, -777, 0, 629, 0]);
 obj.Plane = 100;
-obj = CreateObject(Rank, 417, 474);
+obj = CreateObject(Branch, 417, 474);
 obj->SetR(-4);
 obj->SetProperty("MeshTransformation", [978, 0, 208, 0, 0, 1000, 0, 0, -208, 0, 978, 0]);
 obj.Plane = 100;
-obj = CreateObject(Rank, 482, 532);
+obj = CreateObject(Branch, 482, 532);
 obj->SetR(11);
 obj->SetProperty("MeshTransformation", [743, 0, 669, 0, 0, 1000, 0, 0, -669, 0, 743, 0]);
 obj.Plane = 100;
-obj = CreateObject(Rank, 468, 511);
+obj = CreateObject(Branch, 468, 511);
 obj->SetR(40);
 obj->SetProperty("MeshTransformation", [-423, 0, 906, 0, 0, 1000, 0, 0, -906, 0, -423, 0]);
 obj.Plane = -400;
@@ -108,7 +108,7 @@ obj.Plane = 500;
 func SerializeObjects(ids)
 {
   if(!ids)
-    ids = [Rank, Trunk, Tree_Coniferous, BigRock, Fern];
+    ids = [Branch, Trunk, Tree_Coniferous, BigRock, Fern];
   for( findid in ids)
     for(var obj in FindObjects(Find_ID(findid)))
     {

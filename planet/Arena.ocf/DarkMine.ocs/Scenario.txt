@@ -2,11 +2,10 @@
 Title=DarkMine
 Version=6,0
 MinPlayer=2
-MaxPlayer=12
-Icon=19
+Icon=15
 
 [Game]
-Goals=Goal_Melee=1;
+Goals=MELE=1;Goal_Melee=1;
 Rules=Rule_KillLogs=1;Rule_Gravestones=1;
 
 [Definitions]

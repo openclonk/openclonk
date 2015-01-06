@@ -30,27 +30,27 @@ func InitializeObjects()
 	CreateObject(Trunk, 983, 593);
 	CreateObject(Trunk, 1050, 574);
 
-	var Rank0024 = CreateObject(Rank, 1105, 503);
-	Rank0024->SetR(-140);
-	Rank0024->SetPosition(1105, 503);
-	var Rank0025 = CreateObject(Rank, 1415, 280);
-	Rank0025->SetR(176);
-	Rank0025->SetPosition(1415, 280);
-	var Rank0026 = CreateObject(Rank, 1509, 289);
-	Rank0026->SetR(-165);
-	Rank0026->SetPosition(1509, 289);
-	var Rank0027 = CreateObject(Rank, 1557, 314);
-	Rank0027->SetR(-159);
-	Rank0027->SetPosition(1557, 314);
-	var Rank0028 = CreateObject(Rank, 1315, 293);
-	Rank0028->SetR(-173);
-	Rank0028->SetPosition(1315, 293);
-	var Rank0029 = CreateObject(Rank, 1583, 452);
-	Rank0029->SetR(-8);
-	Rank0029->SetPosition(1583, 449);
-	var Rank0030 = CreateObject(Rank, 1491, 479);
-	Rank0030->SetR(-26);
-	Rank0030->SetPosition(1491, 476);
+	var Branch0024 = CreateObject(Branch, 1105, 503);
+	Branch0024->SetR(-140);
+	Branch0024->SetPosition(1105, 503);
+	var Branch0025 = CreateObject(Branch, 1415, 280);
+	Branch0025->SetR(176);
+	Branch0025->SetPosition(1415, 280);
+	var Branch0026 = CreateObject(Branch, 1509, 289);
+	Branch0026->SetR(-165);
+	Branch0026->SetPosition(1509, 289);
+	var Branch0027 = CreateObject(Branch, 1557, 314);
+	Branch0027->SetR(-159);
+	Branch0027->SetPosition(1557, 314);
+	var Branch0028 = CreateObject(Branch, 1315, 293);
+	Branch0028->SetR(-173);
+	Branch0028->SetPosition(1315, 293);
+	var Branch0029 = CreateObject(Branch, 1583, 452);
+	Branch0029->SetR(-8);
+	Branch0029->SetPosition(1583, 449);
+	var Branch0030 = CreateObject(Branch, 1491, 479);
+	Branch0030->SetR(-26);
+	Branch0030->SetPosition(1491, 476);
 
 	var Trunk0031 = CreateObject(Trunk, 1388, 302);
 	Trunk0031->SetCon(55);
@@ -103,9 +103,9 @@ func InitializeObjects()
 	var Tree_Coniferous0144 = CreateObject(Tree_Coniferous, 624, 612);
 	Tree_Coniferous0144->SetCon(24);
 
-	var Rank0148 = CreateObject(Rank, 1634, 363);
-	Rank0148->SetR(-158);
-	Rank0148->SetPosition(1634, 363);
+	var Branch0148 = CreateObject(Branch, 1634, 363);
+	Branch0148->SetR(-158);
+	Branch0148->SetPosition(1634, 363);
 
 	var Trunk0149 = CreateObject(Trunk, 1457, 528);
 	Trunk0149->SetCon(30);
