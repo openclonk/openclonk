@@ -126,6 +126,9 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 
 void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rect& update)
 {
+	// Nothing to do?
+	if(update.Wdt == 0 || update.Hgt == 0) return;
+
 	assert(Tex != 0);
 
 	// Factor to go from zoomed to landscape coordinates

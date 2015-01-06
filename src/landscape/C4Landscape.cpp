@@ -3316,6 +3316,8 @@ void C4Landscape::PrepareChange(C4Rect BoundingBox)
 
 void C4Landscape::FinishChange(C4Rect BoundingBox)
 {
+	// Intersect bounding box with landscape
+	BoundingBox.Intersect(C4Rect(0, 0, Width, Height));
 	// update render
 	if(pLandscapeRender)
 		pLandscapeRender->Update(BoundingBox, this);
