@@ -184,6 +184,10 @@ bool C4DefGraphics::LoadSkeleton(C4Group &hGroup, const char* szFileName, StdMes
 	{
 		if (!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
 
+		// delete skeleton from the map for reloading, or else if you delete or rename
+		// a skeleton file in the folder the old skeleton will still exist in the map
+		loader.RemoveSkeleton(hGroup.GetName(), szFileName);
+
 		if (SEqualNoCase(GetExtension(szFileName), "xml"))
 		{
 			loader.LoadSkeletonXml(hGroup.GetName(), szFileName, buf, size);

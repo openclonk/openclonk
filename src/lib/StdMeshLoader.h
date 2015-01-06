@@ -43,6 +43,9 @@ public:
 	virtual ~StdMeshSkeletonLoader() {}
 
 	void StoreSkeleton(const char* groupname, const char* filename, std::shared_ptr<StdMeshSkeleton> skeleton);
+	void RemoveSkeleton(const StdCopyStrBuf& filepath);
+	void RemoveSkeleton(const char* groupname, const char* filename);
+	void RemoveSkeletonsInGroup(const char* groupname);
 
 	virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const = 0;
 	std::shared_ptr<StdMeshSkeleton> GetSkeletonByName(const StdStrBuf& name) const;
@@ -74,13 +77,19 @@ public:
 	skeleton_iterator skeletons_end() const { return Skeletons.end(); }
 
 private:
+	void AddSkeleton(const StdCopyStrBuf& filepath, std::shared_ptr<StdMeshSkeleton> skeleton);
 	void DoResetSkeletons();
 	void DoAppendSkeletons();
 	void DoIncludeSkeletons();
 
 	SkeletonMap Skeletons;
-	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf> AppendtoSkeletons; // skeleton pointer is unique, id to append to is not
-	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf> IncludeSkeletons;  // skeleton pointer is unique, id to include is not
+
+	// was a map <pointer to skeleton, id> first, but that lead to problems with reloading:
+	// the old skeleton was still in the map, because the new skeleton was a different object of course
+	// so instead of finding the old skeleton it seemed simpler to just save a key that can be overloaded
+
+	std::map<StdCopyStrBuf, StdCopyStrBuf> AppendtoSkeletons; // key is the filepath, value is the id to append to
+	std::map<StdCopyStrBuf, StdCopyStrBuf> IncludeSkeletons;  // key is the filepath, value is the definition to include
 };
 
 #define DEFINE_EXCEPTION(_cls, _text) class _cls : public StdMeshLoader::LoaderException { public: _cls(const char *msg = _text) : LoaderException(msg) {} }

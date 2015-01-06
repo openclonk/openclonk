@@ -198,7 +198,8 @@ void StdMeshSkeletonLoader::StoreSkeleton(const char* groupname, const char* fil
 	// save in map
 	StdCopyStrBuf filepath;
 	MakeFullSkeletonPath(filepath, groupname, filename);
-	Skeletons.insert(std::make_pair(filepath, skeleton));
+	
+	AddSkeleton(filepath, skeleton);
 
 	// memorize which skeletons can be appended
 	// skins get broken down to their original definition, which is a little messy at the moment.
@@ -218,11 +219,82 @@ void StdMeshSkeletonLoader::StoreSkeleton(const char* groupname, const char* fil
 	// check where to store
 	if (command == appendto)
 	{
-		AppendtoSkeletons.insert(std::make_pair(skeleton, definition));
+		AppendtoSkeletons.insert(std::make_pair(filepath, definition));
 	}
 	else if (command == include)
 	{
-		IncludeSkeletons.insert(std::make_pair(skeleton, definition));
+		IncludeSkeletons.insert(std::make_pair(filepath, definition));
+	}
+}
+
+void StdMeshSkeletonLoader::RemoveSkeletonsInGroup(const char* groupname)
+{
+	// DebugLogF("Removing skeletons in group: %s", groupname);
+
+	std::vector<StdCopyStrBuf> delete_skeletons;
+
+	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::iterator it;
+	for (it = Skeletons.begin(); it != Skeletons.end(); it++)
+	{
+		StdCopyStrBuf skeletonpath(it->first.getData());
+		StdCopyStrBuf group(groupname);
+		group.ToLowerCase();
+
+		StdCopyStrBuf skeletongroup;
+		GetParentPath(skeletonpath.getData(), &skeletongroup);
+		
+		if (skeletongroup == group)
+		{
+			// DebugLogF("Found skeleton in group: %s", it->first.getData());
+
+			delete_skeletons.push_back(skeletonpath);
+		}
+	}
+
+	for (unsigned i = 0; i < delete_skeletons.size(); i++)
+	{
+		RemoveSkeleton(delete_skeletons[i]);
+	}
+}
+
+void StdMeshSkeletonLoader::RemoveSkeleton(const char* groupname, const char* filename)
+{
+	StdCopyStrBuf filepath;
+	MakeFullSkeletonPath(filepath, groupname, filename);
+	RemoveSkeleton(filepath);
+}
+
+void StdMeshSkeletonLoader::RemoveSkeleton(const StdCopyStrBuf &filepath)
+{
+	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::iterator existing_skeleton = Skeletons.find(filepath);
+	if (existing_skeleton != Skeletons.end())
+	{
+		Skeletons.erase(existing_skeleton);
+	}
+
+	std::map<StdCopyStrBuf, StdCopyStrBuf>::iterator appendto_skeleton = AppendtoSkeletons.find(filepath);
+	if (appendto_skeleton != AppendtoSkeletons.end())
+	{
+		AppendtoSkeletons.erase(appendto_skeleton);
+	}
+
+	std::map<StdCopyStrBuf, StdCopyStrBuf>::iterator include_skeleton = IncludeSkeletons.find(filepath);
+	if (include_skeleton != IncludeSkeletons.end())
+	{
+		IncludeSkeletons.erase(include_skeleton);
+	}
+}
+
+void StdMeshSkeletonLoader::AddSkeleton(const StdCopyStrBuf& filepath, std::shared_ptr<StdMeshSkeleton> skeleton)
+{
+	std::pair<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>> key_and_value = std::make_pair(filepath, skeleton);
+	std::pair<std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::iterator, bool> insert = Skeletons.insert(key_and_value);
+
+	if (insert.second == false)
+	{
+		LogF("WARNING: Overloading skeleton %s", filepath.getData());
+		
+		Skeletons[filepath] = skeleton;
 	}
 }
 
@@ -492,9 +564,8 @@ void StdMeshSkeletonLoader::DoResetSkeletons()
 		{
 			if (animations->second.OriginSkeleton != &(*(skeleton)))
 			{
-				DebugLogF("Erasing animation %s from %s", animations->first.getData(), it->first.getData());
+				//DebugLogF("Erasing animation %s from %s", animations->first.getData(), it->first.getData());
 				animations = skeleton->Animations.erase(animations);
-				//skeleton->Animations.erase(animations++);
 			}
 			else
 			{
@@ -508,7 +579,7 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 {
 	// handle the "appendto.<C4ID>.skeleton" files.
 
-	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf>::iterator it;
+	std::map<StdCopyStrBuf, StdCopyStrBuf>::iterator it;
 	for (it = AppendtoSkeletons.begin(); it != AppendtoSkeletons.end(); it++)
 	{
 		StdCopyStrBuf id(it->second);
@@ -518,11 +589,11 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 		// append animations, if the definition has a mesh
 		if (&destination == NULL)
 		{
-			DebugLogF("WARNING: Appending skeleton to definition '%s' failed, because the definition has no skeleton.", id.getData());
+			LogF("WARNING: Appending skeleton to definition '%s' failed, because the definition has no skeleton.", id.getData());
 		}
 		else
 		{
-			std::shared_ptr<StdMeshSkeleton> source = it->first;
+			std::shared_ptr<StdMeshSkeleton> source = GetSkeletonByName(it->first);
 
 			std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator animations;
 			
@@ -531,11 +602,11 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 			{
 				if (destination->Animations.find(animations->first) != destination->Animations.end())
 				{
-					DebugLogF("WARNING: Overloading animation '%s' is not allowed. This animation already exists in '%s'.", animations->first.getData(), id.getData());
+					LogF("WARNING: Overloading animation '%s' is not allowed. This animation already exists in '%s'.", animations->first.getData(), id.getData());
 				}
 				else
 				{
-					DebugLogF("Appending animation %s to definition %s", animations->second.Name.getData(), id.getData());
+					//DebugLogF("Appending animation %s to definition %s", animations->second.Name.getData(), id.getData());
 					destination->InsertAnimation(*source, animations->second);
 				}
 			}
@@ -547,7 +618,7 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 {
 	// handle the "include.<C4ID>.skeleton" files.
 
-	std::map<std::shared_ptr<StdMeshSkeleton>, StdCopyStrBuf>::iterator it;
+	std::map<StdCopyStrBuf, StdCopyStrBuf>::iterator it;
 	for (it = IncludeSkeletons.begin(); it != IncludeSkeletons.end(); it++)
 	{
 		StdCopyStrBuf id(it->second);
@@ -557,11 +628,11 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 		// append animations, if the definition has a mesh
 		if (&source == NULL)
 		{
-			DebugLogF("WARNING: Including skeleton of definition '%s' failed, because the definition has no skeleton.", id.getData());
+			LogF("WARNING: Including skeleton of definition '%s' failed, because the definition has no skeleton.", id.getData());
 		}
 		else
 		{
-			std::shared_ptr<StdMeshSkeleton> destination = it->first;
+			std::shared_ptr<StdMeshSkeleton> destination = GetSkeletonByName(it->first);
 
 			std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator animations;
 
@@ -570,7 +641,7 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 			{
 				if (destination->Animations.find(animations->first) != destination->Animations.end())
 				{
-					DebugLogF("WARNING: Animation '%s' from %s is not included. A newer version of the animation exists in the destination file.", animations->first.getData(), id.getData());
+					LogF("WARNING: Animation '%s' from %s is not included. A newer version of the animation exists in the destination file.", animations->first.getData(), id.getData());
 				}
 				else
 				{

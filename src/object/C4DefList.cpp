@@ -387,6 +387,9 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// Reload def
 	C4Group hGroup;
 	if (!hGroup.Open(pDef->Filename)) return false;
+	// clear all skeletons in that group, so that deleted skeletons are also deleted in the engine
+	SkeletonLoader->RemoveSkeletonsInGroup(hGroup.GetName());
+	// load the definition
 	if (!pDef->Load( hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem)) return false;
 	hGroup.Close();
 	// rebuild quick access table
