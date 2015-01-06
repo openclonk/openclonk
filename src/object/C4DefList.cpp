@@ -41,7 +41,11 @@ namespace
 
 			// find the definition
 			C4Def* def = ::Definitions.ID2Def(C4ID(definition));
-			assert(def != NULL);
+			if (!def)
+			{
+				DebugLogF("WARNING: Looking up skeleton from definition '%s' failed, because there is no such definition with that ID", definition);
+				return NULL;
+			}
 
 			// append animations, if the definition has a mesh
 			if (!def->Graphics.IsMesh())

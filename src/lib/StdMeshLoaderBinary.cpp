@@ -587,9 +587,11 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 		StdMeshSkeleton* destination = GetSkeletonByDefinition(id.getData());
 
 		// append animations, if the definition has a mesh
-		if (&destination == NULL)
+		if (destination == NULL)
 		{
-			LogF("WARNING: Appending skeleton to definition '%s' failed, because the definition has no skeleton.", id.getData());
+			// Note that GetSkeletonByDefinition logs already why
+			// the skeleton does not exist.
+			LogF("WARNING: Appending skeleton '%s' failed", it->first.getData());
 		}
 		else
 		{
@@ -626,9 +628,11 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 		StdMeshSkeleton* source = GetSkeletonByDefinition(id.getData());
 
 		// append animations, if the definition has a mesh
-		if (&source == NULL)
+		if (source == NULL)
 		{
-			LogF("WARNING: Including skeleton of definition '%s' failed, because the definition has no skeleton.", id.getData());
+			// Note that GetSkeletonByDefinition logs already why
+			// the skeleton does not exist.
+			LogF("WARNING: Including skeleton '%s' failed", it->first.getData());
 		}
 		else
 		{
