@@ -18,7 +18,7 @@ protected func Initialize()
 	chest->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 36, nil, nil, chest);
 
-	// Objects fade after 5 seconds.
+	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	
 	// Some decoration trunks ranks and a waterfall.
@@ -57,7 +57,28 @@ protected func Initialize()
 		CreateObject(Rank, 114, 10 + Random(140))->SetR(RandomX(60, 120));
 	for (var i = 0; i < 2 + Random(6); i++) 
 		CreateObject(Rank, 190, 10 + Random(140))->SetR(-RandomX(60, 120));
+	
+	// Some lights to have the well visible at all times.
+	CreateLight(152, 40, 80, Fx_Light.LGT_Constant);
+	CreateLight(152, 120, 80, Fx_Light.LGT_Constant);
+	CreateLight(152, 200, 80, Fx_Light.LGT_Constant);
+	CreateLight(152, 340, 80, Fx_Light.LGT_Constant);
+	var torch1 = CreateObject(Torch, 60, 256);
+	torch1->AttachToWall(true);
+	var torch2 = CreateObject(Torch, 224, 256);
+	torch2->AttachToWall(true);
+	return;
+}
 
+protected func InitializePlayer(int plr)
+{
+	// Set player zoom to maximally the landscape height.
+	SetPlayerZoomByViewRange(plr, nil, LandscapeHeight(), PLRZOOM_LimitMax);
+	// Set player zoom to minimally the half the landscape width.
+	SetPlayerZoomByViewRange(plr, LandscapeWidth() / 2, nil, PLRZOOM_LimitMin);
+	// Set player zoom to be standard the landscape width.
+	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	SetPlayerViewLock(plr, true);
 	return;
 }
 
@@ -67,7 +88,6 @@ protected func OnPlayerRelaunch(int plr)
 	var clonk = GetCrew(plr);
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
-	SetFoW(false,plr);
 	return;
 }
 
