@@ -118,7 +118,7 @@ public:
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
 
 	// TODO: This code should maybe better be placed in StdMeshLoader...
-	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
+	void MirrorAnimation(const StdMeshAnimation& animation);
 	void InsertAnimation(const StdMeshAnimation& animation);
 	void InsertAnimation(const StdMeshSkeleton& source, const StdMeshAnimation& animation);
 	void PostInit();

@@ -393,13 +393,19 @@ const StdMeshAnimation* StdMeshSkeleton::GetAnimationByName(const StdStrBuf& nam
 	return &iter->second;
 }
 
-void StdMeshSkeleton::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation)
+void StdMeshSkeleton::MirrorAnimation(const StdMeshAnimation& animation)
 {
-	StdCopyStrBuf name2(name);
-	assert(Animations.find(name2) == Animations.end());
+	StdCopyStrBuf name(animation.Name);
 
-	StdMeshAnimation& new_anim = Animations.insert(std::make_pair(name2, animation)).first->second;
-	new_anim.Name = name2;
+	// do nothing if the name cannot be switched from *.L to *.R or vice versa
+	// or if the animation already exists
+	if (!MirrorName(name) || Animations.find(name) != Animations.end())
+	{
+		return;
+	}
+
+	StdMeshAnimation& new_anim = Animations.insert(std::make_pair(name, animation)).first->second;
+	new_anim.Name = name;
 
 	// Go through all bones
 	for (unsigned int i = 0; i < GetNumBones(); ++i)
@@ -488,12 +494,8 @@ void StdMeshSkeleton::PostInit()
 		//		if(iter->second.Name == "Jump")
 		//			MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
 
-		StdCopyStrBuf buf = iter->second.Name;
-		if (MirrorName(buf))
-		{
-			if (Animations.find(buf) == Animations.end())
-				MirrorAnimation(buf, iter->second);
-		}
+		// mirrors only if necessary
+		MirrorAnimation(iter->second);
 	}
 }
 
