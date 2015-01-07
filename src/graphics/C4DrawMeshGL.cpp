@@ -439,7 +439,7 @@ namespace
 			glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
 			call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
 			float ambientTransform[6];
-			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getRegion(), clipRect, outRect, ambientTransform);
+			pFoW->getFoW()->Ambient.GetFragTransform(pFoW->getViewportRegion(), clipRect, outRect, ambientTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 		}
 	}

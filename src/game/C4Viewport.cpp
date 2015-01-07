@@ -185,7 +185,6 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 
 void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 {
-
 #ifdef USE_CONSOLE
 	// No drawing in console mode
 	return;
@@ -198,19 +197,22 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	if (fDrawOverlay)
 	{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
-		if (BorderLeft)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
-		if (BorderTop)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
-		if (BorderRight) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
-		if (BorderBottom)pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
+		if (BorderLeft > 0.0f)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
+		if (BorderTop > 0.0f)    pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
+		if (BorderRight > 0.0f)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
+		if (BorderBottom > 0.0f) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 	}
 
-	// Set clippers
-	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
+	// Compute non-bordered viewport area
+	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= (BorderLeft+BorderRight)/cgo.Zoom; cgo.Hgt -= (BorderTop+BorderBottom)/cgo.Zoom;
 	GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
 	cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
 	// Apply Zoom
 	pDraw->SetZoom(GameZoom);
-	pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
+	// Set clipper to integer bounds around floating point viewport region
+	const FLOAT_RECT clipRect = { DrawX + BorderLeft, DrawX + ViewWdt - BorderRight, DrawY + BorderTop, DrawY + ViewHgt - BorderBottom };
+	const C4Rect& clipRectInt(clipRect);
+	pDraw->SetPrimaryClipper(clipRectInt.x, clipRectInt.y, clipRectInt.x + clipRectInt.Wdt - 1, clipRectInt.y + clipRectInt.Hgt - 1);
 
 	last_game_draw_cgo = cgo;
 
@@ -229,9 +231,12 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	// Update FoW
 	if (pFoW)
 	{
-		pFoW->Update(C4Rect(
-			int32_t(cgo.TargetX), int32_t(cgo.TargetY),
-			cgo.Wdt + 1, cgo.Hgt + 1));
+		// Viewport region in landscape coordinates
+		const FLOAT_RECT vpRect = { cgo.TargetX, cgo.TargetX + cgo.Wdt, cgo.TargetY, cgo.TargetY + cgo.Hgt };
+		// Region in which the light is calculated
+		// At the moment, just choose integer coordinates to surround the viewport
+		const C4Rect lightRect(vpRect);
+		pFoW->Update(lightRect, vpRect);
 
 		pFoW->Render();
 	}
@@ -341,7 +346,7 @@ void C4Viewport::Execute()
 	C4TargetFacet cgo;
 	C4Window * w = pWindow;
 	if (!w) w = &FullScreen;
-	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),GetViewX(),GetViewY(),Zoom);
+	cgo.Set(w->pSurface,DrawX,DrawY,float(ViewWdt)/Zoom,float(ViewHgt)/Zoom,GetViewX(),GetViewY(),Zoom);
 	pDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);
@@ -554,14 +559,14 @@ void C4Viewport::CenterPosition()
 
 void C4Viewport::UpdateBordersX()
 {
-	BorderLeft = int32_t(Max(-GetViewX() * Zoom, 0.0f));
-	BorderRight = int32_t(Max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f));
+	BorderLeft = Max(-GetViewX() * Zoom, 0.0f);
+	BorderRight = Max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f);
 }
 
 void C4Viewport::UpdateBordersY()
 {
-	BorderTop = int32_t(Max(-GetViewY() * Zoom, 0.0f));
-	BorderBottom = int32_t(Max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f));
+	BorderTop = Max(-GetViewY() * Zoom, 0.0f);
+	BorderBottom = Max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f);
 }
 
 void C4Viewport::Default()

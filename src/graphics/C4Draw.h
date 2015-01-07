@@ -153,7 +153,7 @@ public:
 struct ZoomData
 {
 	float Zoom;
-	int X, Y;
+	float X, Y;
 };
 
 class C4FoWRegion;
@@ -186,7 +186,7 @@ protected:
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
 	const C4FoWRegion* pFoW;     // new-style FoW
-	int ZoomX; int ZoomY;
+	float ZoomX; float ZoomY;
 	const StdMeshMatrix* MeshTransform; // Transformation to apply to mesh before rendering
 	bool fUsePerspective;
 public:
@@ -241,8 +241,8 @@ public:
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                bool fTransparency=true);
 	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
-	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
-	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
+	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0, bool fSrcColKey=false);
+	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0, bool fSrcColKey=false);
 	virtual void FillBG(DWORD dwClr=0) = 0;
 	// Text
 	enum { DEFAULT_MESSAGE_COLOR = 0xffffffff };
@@ -275,7 +275,7 @@ public:
 	void ResetBlitMode() { dwBlitMode=0; }
 	void SetFoW(const C4FoWRegion* fow) { pFoW = fow; }
 	const C4FoWRegion* GetFoW() const { return pFoW; }
-	void SetZoom(int X, int Y, float Zoom);
+	void SetZoom(float X, float Y, float Zoom);
 	void SetZoom(const ZoomData &zoom) { SetZoom(zoom.X, zoom.Y, zoom.Zoom); }
 	void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 	void ApplyZoom(float & X, float & Y);
@@ -308,7 +308,7 @@ protected:
 struct ZoomDataStackItem: public ZoomData
 {
 	ZoomDataStackItem(float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
-	ZoomDataStackItem(int X, int Y, float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
+	ZoomDataStackItem(float X, float Y, float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
 	~ZoomDataStackItem() { pDraw->SetZoom(*this); }
 };
 

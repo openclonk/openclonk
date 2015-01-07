@@ -81,10 +81,11 @@ void C4FoWRegion::Clear()
 	delete pBackSurface; pBackSurface = NULL;
 }
 
-void C4FoWRegion::Update(C4Rect r)
+void C4FoWRegion::Update(C4Rect r, const FLOAT_RECT& vp)
 {
 	// Set the new region
 	Region = r;
+	ViewportRegion = vp;
 }
 
 void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
@@ -185,6 +186,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const
 {
 	const C4Rect& lightRect = getRegion();
+	const FLOAT_RECT& vpRect = ViewportRegion;
 
 	C4FragTransform trans;
 	// Clip offset
@@ -192,11 +194,14 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 	trans.Translate(-clipRect.x, -(outRect.Hgt - clipRect.y - clipRect.Hgt));
 	// Clip normalization (0,0 -> 1,1)
 	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
+	// Viewport/Landscape normalization
+	trans.Scale(vpRect.right - vpRect.left, vpRect.bottom - vpRect.top);
+	// Offset between viewport and light texture
+	trans.Translate(vpRect.left - lightRect.x, vpRect.top - lightRect.y);
 	// Light surface normalization
-	trans.Scale(lightRect.Wdt - 1, lightRect.Hgt - 1);
 	trans.Scale(1.0f / getSurface()->Wdt, 1.0f / getSurface()->Hgt);
 	// Light surface Y offset
-	trans.Translate(0.0f, 1.0f - (float)(lightRect.Hgt - 1) / (float)getSurface()->Hgt);
+	trans.Translate(0.0f, 1.0f - (float)(lightRect.Hgt) / (float)getSurface()->Hgt);
 
 	// Extract matrix
 	trans.Get2x3(lightTransform);
@@ -209,4 +214,5 @@ C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
 	, pSurface(NULL), pBackSurface(NULL)
 {
+	ViewportRegion.left = ViewportRegion.right = ViewportRegion.top = ViewportRegion.bottom = 0.0f;
 }

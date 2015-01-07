@@ -17,18 +17,20 @@ private:
 	C4FoW *pFoW;
 	C4Player *pPlayer;
 	C4Rect Region, OldRegion;
+	FLOAT_RECT ViewportRegion; // Region covered by visible viewport
 	C4Surface *pSurface, *pBackSurface;
 	GLuint hFrameBufDraw, hFrameBufRead;
 
 public:
 	const C4FoW* getFoW() const { return pFoW; }
 	const C4Rect &getRegion() const { return Region; }
+	const FLOAT_RECT &getViewportRegion() const { return ViewportRegion; }
 	const C4Surface *getSurface() const { return pSurface; }
 	const C4Surface *getBackSurface() const { return pBackSurface; }
 
 	void Clear();
 
-	void Update(C4Rect r);
+	void Update(C4Rect r, const FLOAT_RECT& vp);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
 
 	// Fills a 2x3 matrix to transform fragment coordinates to light texture coordinates

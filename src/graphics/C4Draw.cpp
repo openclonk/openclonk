@@ -660,67 +660,68 @@ bool C4Draw::BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, 
 	}
 }
 
-bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
+bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
 {
-	int iSourceWdt,iSourceHgt,iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
+	int iSourceWdt,iSourceHgt;
+	float iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// Get source surface size
 	if (!GetSurfaceSize(sfcSurface,iSourceWdt,iSourceHgt)) return false;
 	// reduce offset to needed size
-	iOffsetX %= iSourceWdt;
-	iOffsetY %= iSourceHgt;
+	iOffsetX = fmod(iOffsetX, iSourceWdt);
+	iOffsetY = fmod(iOffsetY, iSourceHgt);
 	// Vertical blits
 	for (iY=iToY+iOffsetY; iY<iToY+iToHgt; iY+=iSourceHgt)
 	{
 		// Vertical blit size
-		iBlitY=Max(iToY-iY,0); iBlitHgt=Min(iSourceHgt,iToY+iToHgt-iY)-iBlitY;
+		iBlitY=Max(iToY-iY,0.0f); iBlitHgt=Min<float>(iSourceHgt,iToY+iToHgt-iY)-iBlitY;
 		// Horizontal blits
 		for (iX=iToX+iOffsetX; iX<iToX+iToWdt; iX+=iSourceWdt)
 		{
 			// Horizontal blit size
-			iBlitX=Max(iToX-iX,0); iBlitWdt=Min(iSourceWdt,iToX+iToWdt-iX)-iBlitX;
+			iBlitX=Max(iToX-iX,0.0f); iBlitWdt=Min<float>(iSourceWdt,iToX+iToWdt-iX)-iBlitX;
 			// Blit
-			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(iX+iBlitX),float(iY+iBlitY),float(iBlitWdt),float(iBlitHgt),fSrcColKey)) return false;
+			if (!Blit(sfcSurface, iBlitX, iBlitY, iBlitWdt, iBlitHgt, sfcTarget, iX+iBlitX, iY+iBlitY, iBlitWdt, iBlitHgt, fSrcColKey)) return false;
 		}
 	}
 	return true;
 }
 
-bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
+bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
 {
 	// if it's a render target, simply blit with repeating texture
 	// repeating textures, however, aren't currently supported
 	/*if (sfcTarget->IsRenderTarget())
 	  return Blit(sfcSurface, iOffsetX, iOffsetY, iToWdt, iToHgt, sfcTarget, iToX, iToY, iToWdt, iToHgt, false);*/
-	int tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
+	float tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// get tile size
 	int iTileWdt=sfcSurface->Wdt;
 	int iTileHgt=sfcSurface->Hgt;
 	// adjust size of offsets
-	iOffsetX%=iTileWdt;
-	iOffsetY%=iTileHgt;
+	iOffsetX = fmod(iOffsetX, iTileWdt);
+	iOffsetY = fmod(iOffsetY, iTileHgt);
 	if (iOffsetX<0) iOffsetX+=iTileWdt;
 	if (iOffsetY<0) iOffsetY+=iTileHgt;
 	// get start pos for blitting
-	int iStartX=iToX-iOffsetX;
-	int iStartY=iToY-iOffsetY;
+	float iStartX=iToX-iOffsetX;
+	float iStartY=iToY-iOffsetY;
 	ty=0;
 	// blit vertical
-	for (int iY=iStartY; ty<iToHgt; iY+=iTileHgt)
+	for (float iY=iStartY; fabs(ty - iToHgt) > 1e-3; iY+=iTileHgt)
 	{
 		// get vertical blit bounds
 		iBlitY=0; iBlitHgt=iTileHgt;
 		if (iY<iToY) { iBlitY=iToY-iY; iBlitHgt+=iY-iToY; }
-		int iOver=ty+iBlitHgt-iToHgt; if (iOver>0) iBlitHgt-=iOver;
+		float iOver=ty+iBlitHgt-iToHgt; if (iOver>0) iBlitHgt-=iOver;
 		// blit horizontal
 		tx=0;
-		for (int iX=iStartX; tx<iToWdt; iX+=iTileWdt)
+		for (float iX=iStartX; fabs(tx - iToWdt) > 1e-3; iX+=iTileWdt)
 		{
 			// get horizontal blit bounds
 			iBlitX=0; iBlitWdt=iTileWdt;
 			if (iX<iToX) { iBlitX=iToX-iX; iBlitWdt+=iX-iToX; }
 			iOver=tx+iBlitWdt-iToWdt; if (iOver>0) iBlitWdt-=iOver;
 			// blit
-			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey))
+			if (!Blit(sfcSurface,iBlitX,iBlitY,iBlitWdt,iBlitHgt,sfcTarget,tx+iToX,ty+iToY,iBlitWdt,iBlitHgt,fSrcColKey))
 			{
 				// Ignore blit errors. This is usually due to blit border lying outside surface and shouldn't cause remaining blits to fail.
 			}
@@ -961,7 +962,7 @@ DWORD C4Draw::ApplyGammaTo(DWORD dwClr)
 	return Gamma.ApplyTo(dwClr);
 }
 
-void C4Draw::SetZoom(int X, int Y, float Zoom)
+void C4Draw::SetZoom(float X, float Y, float Zoom)
 {
 	this->ZoomX = X; this->ZoomY = Y; this->Zoom = Zoom;
 }

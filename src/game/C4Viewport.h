@@ -31,7 +31,7 @@ public:
 	// "display" coordinates
 	int32_t ViewWdt,ViewHgt;
 	// position of landscape border (left,top,right, bottom) in viewport. 0 if there is not border
-	int32_t BorderLeft, BorderTop, BorderRight, BorderBottom;
+	float BorderLeft, BorderTop, BorderRight, BorderBottom;
 	int32_t DrawX,DrawY;
 	// facets used for last drawing operations
 	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;

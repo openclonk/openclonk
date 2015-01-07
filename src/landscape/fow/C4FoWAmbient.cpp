@@ -179,7 +179,7 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	delete[] ambient;
 }
 
-void C4FoWAmbient::GetFragTransform(const C4Rect& lightRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const
+void C4FoWAmbient::GetFragTransform(const FLOAT_RECT& vpRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const
 {
 	C4FragTransform trans;
 	// Invert Y coordinate
@@ -190,9 +190,9 @@ void C4FoWAmbient::GetFragTransform(const C4Rect& lightRect, const C4Rect& clipR
 	// Clip normalization (0,0 -> 1,1)
 	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
 	// Viewport normalization
-	trans.Scale(lightRect.Wdt - 1, lightRect.Hgt - 1);
+	trans.Scale(vpRect.right - vpRect.left, vpRect.bottom - vpRect.top);
 	// Viewport offset
-	trans.Translate(lightRect.x, lightRect.y);
+	trans.Translate(vpRect.left, vpRect.top);
 	// Landscape normalization
 	trans.Scale(1.0f / LandscapeX, 1.0f / LandscapeY);
 

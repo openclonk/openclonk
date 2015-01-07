@@ -885,11 +885,11 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 
 	if (Light)
 	{
-		const C4Rect LightRect = Light->getRegion();
+		const FLOAT_RECT ViewportRect = Light->getViewportRegion();
 		const C4Rect ClipRect = pDraw->GetClipRect();
 		const C4Rect OutRect = pDraw->GetOutRect();
 		float ambientTransform[6];
-		Light->getFoW()->Ambient.GetFragTransform(LightRect, ClipRect, OutRect, ambientTransform);
+		Light->getFoW()->Ambient.GetFragTransform(ViewportRect, ClipRect, OutRect, ambientTransform);
 		ShaderCall.SetUniformMatrix2x3fv(C4LRU_AmbientTransform, 1, ambientTransform);
 		ShaderCall.SetUniform1f(C4LRU_AmbientBrightness, Light->getFoW()->Ambient.GetBrightness());
 	}
