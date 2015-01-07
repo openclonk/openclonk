@@ -71,10 +71,13 @@ private func Place(object clonk, int x, int y, bool box)
 
 public func Fuse()
 {
-	if(GetAction() != "Fuse")
+	if (GetAction() != "Fuse")
 	{
-		if(!FindObject(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this))) Sound("Fuse");
+		if (!FindObject(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this))) 
+			Sound("Fuse");
 		SetAction("Fuse");
+		// Object can't be collected anymore when it fuses.
+		this.Collectible = false;	
 	}
 }
 
@@ -101,7 +104,7 @@ protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
-	return GetAction() == "Fuse" || GetAction() == "Ready";
+	return GetAction() == "Ready";
 }
 
 // Controle of the Dynamite box
@@ -113,11 +116,15 @@ public func SetReady()
 public func SetFuse()
 {
 	SetAction("Fuse");
+	// Object can't be collected anymore when it fuses.
+	this.Collectible = false;
 }
 
 public func Reset()
 {
 	SetAction("Idle");
+	// Object can be collected again.
+	this.Collectible = true;
 }
 
 private func Fusing()
