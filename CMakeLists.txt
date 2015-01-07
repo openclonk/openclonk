@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2014, The OpenClonk Team and contributors
+# Copyright (c) 2009-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -62,6 +62,8 @@ option(USE_SYSTEM_TINYXML "Use system tinyxml library" OFF)
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
 unset(USE_APPLE_CLANG CACHE)
+
+unset(HAVE_NATUPNP_H CACHE)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -774,11 +776,6 @@ if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
 endif()
-CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
-if(WIN32 AND NOT HAVE_NATUPNP_H)
-	include_directories(thirdparty/natupnp)
-	set(HAVE_NATUPNP_H TRUE CACHE BOOL "natupnp.h available" FORCE)
-endif()
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 
@@ -844,22 +841,19 @@ if(HAVE_EXECINFO_H)
 	endif()
 endif()
 
-if(HAVE_NATUPNP_H)
+find_package(Upnp)
+if(NOT UPNP_FOUND)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPDummy.cpp
+	)
+elseif(UPNP_STYLE STREQUAL "Win32")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPWin32.cpp
 	)
-else()
-	FIND_PACKAGE(Upnp)
-	SET(HAVE_UPNP ${UPNP_FOUND})
-	if(UPNP_FOUND)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPLinux.cpp
-		)
-	else()
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPDummy.cpp
-		)
-	endif()
+elseif(UPNP_STYLE STREQUAL "libupnp")
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPLinux.cpp
+	)
 endif()
 
 if(USE_CONSOLE)
@@ -1369,7 +1363,7 @@ if (WIN32)
 	endif()
 endif()
 
-if(HAVE_UPNP)
+if(UPNP_FOUND)
 	include_directories(${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
