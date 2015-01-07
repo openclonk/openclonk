@@ -24,9 +24,13 @@ protected func Initialize()
 	PushFront(cave_list, nil);
 	
 	// Initialize different parts of the scenario.
-	InitVegetation();
-	InitMaterials();
-	InitEnvironment();
+	// Amount of things depends on the map size.
+	var plr_cnt = GetStartupPlayerCount();
+	var map_size = BoundBy(120 + plr_cnt * 10, 140, 240);
+	InitVegetation(map_size);
+	InitMaterials(map_size);
+	InitEnvironment(map_size);
+	InitLorries();
 	return;
 }
 
@@ -50,7 +54,6 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct);
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);
-	SetFoW(false, plr);
 	return;
 }
 
@@ -97,34 +100,62 @@ private func FindStartCave()
 	return found_cave;
 }
 
+
 /*-- Scenario Initiliaztion --*/
 
-private func InitVegetation()
+private func InitVegetation(int map_size)
 {
-	// Cave mushrooms provide wood, extra place them in the large caves.
-	LargeCaveMushroom->Place(100 + Random(30), nil, { terraform = false });
+	// Place some cave mushrooms for cover.
+	LargeCaveMushroom->Place(map_size - 20, nil, { terraform = false });
 	
 	// Some mushrooms to regain health.
-	Mushroom->Place(80);
-	Fern->Place(60);
-	
-	// Some objects in the earth.	
-	PlaceObjects(Loam, 50 + Random(30), "Earth");
-	PlaceObjects(Firestone, 50 + Random(30), "Earth");
-	PlaceObjects(Dynamite, 20 + Random(10), "Earth");
-	PlaceObjects(DynamiteBox, 10 + Random(5), "Rock");
+	Mushroom->Place(map_size / 2);
+	Fern->Place(map_size / 3);
 	
 	// Place some branches and trunks around the map.
-	Branch->Place(100);
-	
+	Branch->Place(map_size / 2);
+	Trunk->Place(map_size / 4, nil, { size = [60, 80] });
 	return;
 }
 
-private func InitMaterials()
+private func InitMaterials(int map_size)
+{
+	// Some objects in the earth or rock material.	
+	PlaceObjects(Loam, map_size / 3, "Earth");
+	PlaceObjects(Firestone, map_size / 3, "Earth");
+	PlaceObjects(Dynamite, map_size / 5, "Earth");
+	PlaceObjects(DynamiteBox, map_size / 6, "Rock");
+	PlaceObjects(PowderKeg, map_size / 10, "Rock");
+	
+	// Some pickaxes, shovels in the tunnels.
+	for (var i = 0; i < map_size / 6; i++)
+	{
+		var loc = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom));
+		if (!loc)
+			continue;
+		CreateObject([Shovel, Pickaxe][Random(2)], loc.x, loc.y)->SetR(Random(360));	
+	}
+	return;
+}
+
+private func InitEnvironment(int map_size)
 {
 	var wdt = LandscapeWidth();
 	var hgt = LandscapeHeight();
-	
+	// Some lights in the main cave as a strategic element.
+	for (var side = -1; side <= 1; side += 2)
+	{
+		// Both sides of the cave are lighted for all players.
+		var torch = CreateObject(Torch, wdt / 2 + side * 50, hgt / 2 + 32);
+		torch->AttachToWall(true);
+	}
+	return;
+}
+
+private func InitLorries()
+{
+	var wdt = LandscapeWidth();
+	var hgt = LandscapeHeight();
 	// Create lorries at random small caves, but only for half of them.
 	for (var index = GetLength(cave_list) - 1; index >= GetLength(cave_list) / 2; index--)
 	{
@@ -171,13 +202,9 @@ private func InitMaterials()
 			lorry->CreateContents(LeadShot);
 		}
 	}
-	
 	// Create two lorries at the main cave.
 	for (var side = -1; side <= 1; side += 2)
 	{
-		// Both sides of the cave are lighted for all players.
-		var torch = CreateObject(Torch, wdt / 2 + side * 50, hgt / 2 + 32);
-		torch->AttachToWall(true);
 		// Create lorry with useful tools and weapons.
 		var lorry = CreateObject(Lorry, wdt / 2 + side * 50, hgt / 2 + 44);
 		lorry->CreateContents(Bow, 2);
@@ -186,15 +213,8 @@ private func InitMaterials()
 		lorry->CreateContents(PowderKeg, 2);
 		lorry->CreateContents(TeleGlove, 1);
 		lorry->CreateContents(WindBag, 1);
+		lorry->CreateContents(GrenadeLauncher);
+		lorry->CreateContents(IronBomb, 4);
 	}
-
 	return;
 }
-
-private func InitEnvironment()
-{
-
-	return;
-}
-
-
