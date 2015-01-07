@@ -11,7 +11,8 @@ protected func Initialize()
 {
 	// Environment.
 	PlaceGrass(85);
-	
+	CreateObject(Torch, 545, 465)->AttachToWall(true);
+	CreateObject(Torch, 232, 489)->AttachToWall(true);
 	return;
 }
 
