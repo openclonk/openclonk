@@ -193,10 +193,10 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 	// Clip normalization (0,0 -> 1,1)
 	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
 	// Light surface normalization
-	trans.Scale(lightRect.Wdt, lightRect.Hgt);
+	trans.Scale(lightRect.Wdt - 1, lightRect.Hgt - 1);
 	trans.Scale(1.0f / getSurface()->Wdt, 1.0f / getSurface()->Hgt);
 	// Light surface Y offset
-	trans.Translate(0.0f, 1.0f - (float)lightRect.Hgt / (float)getSurface()->Hgt);
+	trans.Translate(0.0f, 1.0f - (float)(lightRect.Hgt - 1) / (float)getSurface()->Hgt);
 
 	// Extract matrix
 	trans.Get2x3(lightTransform);

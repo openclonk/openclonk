@@ -190,7 +190,7 @@ void C4FoWAmbient::GetFragTransform(const C4Rect& lightRect, const C4Rect& clipR
 	// Clip normalization (0,0 -> 1,1)
 	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
 	// Viewport normalization
-	trans.Scale(lightRect.Wdt, lightRect.Hgt);
+	trans.Scale(lightRect.Wdt - 1, lightRect.Hgt - 1);
 	// Viewport offset
 	trans.Translate(lightRect.x, lightRect.y);
 	// Landscape normalization
