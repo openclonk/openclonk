@@ -43,6 +43,12 @@ bool HasAlgoScript(C4MCNode* node)
   return false;
 }
 
+class FakeSkeletonLoader: public StdMeshSkeletonLoader
+{
+public:
+	virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const { return NULL; }
+};
+
 }
 
 extern "C" {
@@ -76,7 +82,8 @@ void c4_mapgen_handle_set_map_library(C4GroupHandle* group_handle)
 	libmap->id = C4ID(std::string("Library_Map"));
 	libmap->SetName(libmap->id.ToString());
 	libmap->Category = C4D_StaticBack;
-	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), C4D_Load_Script, NULL, NULL))
+	FakeSkeletonLoader loader;
+	if(!libmap->Load(*HANDLE_TO_GROUP(group_handle), loader, C4D_Load_Script, NULL, NULL))
 	{
 		fprintf(stderr, "Failed to load Library_Map script\n");
 		delete libmap;
