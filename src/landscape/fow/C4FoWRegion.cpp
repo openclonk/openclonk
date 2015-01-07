@@ -188,7 +188,8 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 
 	C4FragTransform trans;
 	// Clip offset
-	trans.Translate(-clipRect.x, -clipRect.y);
+	assert(outRect.Hgt >= clipRect.y + clipRect.Hgt);
+	trans.Translate(-clipRect.x, -(outRect.Hgt - clipRect.y - clipRect.Hgt));
 	// Clip normalization (0,0 -> 1,1)
 	trans.Scale(1.0f / clipRect.Wdt, 1.0f / clipRect.Hgt);
 	// Light surface normalization
