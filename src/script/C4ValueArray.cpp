@@ -347,7 +347,10 @@ void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value 
 			}
 
 			// Copy the data
-			for(i = startIndex, j = 0; i < iNewEnd; ++i, ++j)
+			// Since pnData and pData can be the same, we can not copy with
+			//for(i = startIndex, j = 0; i < iNewEnd; ++i, ++j)
+			// but have to start from the end of the copied sequence. That works, since j <= i
+			for(i = iNewEnd - 1, j = iNewEnd - startIndex - 1; i >= startIndex; --i, --j)
 			{
 				assert(j < iOtherSize);
 				pnData[i] = Other.pData[j];
