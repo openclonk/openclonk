@@ -87,16 +87,18 @@ protected func Entrance()
 // Callback from the hitcheck effect: incinerate target on impact.
 public func HitObject(object obj)
 {
-	// Incinerate object just to the amount where a clonk (ContactIncinerate = 10) won't fully burn.
-	// Hitting the same clonk twice with a fire arrow means it while burn indefinitely.
+	// Incinerate object to the amount where a clonk (ContactIncinerate = 10) won't fully burn.
+	// ContactIncinerate = 1 implies 100% incinaration.
+	// ContactIncinerate = 10 implies 37-43% incinaration.
+	// Hitting the same clonk twice with a fire arrow usually means it while burn indefinitely.
 	if (obj.ContactIncinerate)
-		obj->Incinerate(BoundBy(140 - 10 * obj.ContactIncinerate + Random(10), 0, 100), GetController());
-	// Additional damage from normal arrow hit.
+		obj->Incinerate(BoundBy(100 - 7 * (obj.ContactIncinerate - 1) + Random(7), 0, 100), GetController());
+	// Additional damage from normal arrow hit, however, reduced.
 	return _inherited(obj, ...);
 }
 
-// Determines the arrow strength: only 70% that of the normal arrow.
-public func ArrowStrength() { return 7; }
+// Determines the arrow strength: only 30% that of the normal arrow.
+public func ArrowStrength() { return 3; }
 
 
 /*-- Properties --*/

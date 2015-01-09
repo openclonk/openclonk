@@ -12,10 +12,10 @@
 // Callback from the hitcheck effect: explode on impact with target.
 public func HitObject(object obj)
 {
-	// First let the normal arrow hit take place, then explode for additonal damage.
+	// First let the normal arrow hit with reduced damage take place, then explode for additonal damage.
 	_inherited(obj, ...);	
 	// Explosion strength a little random with only a small radius.
-	return Explode(12 + Random(3));
+	return Explode(14 + Random(3));
 }
 
 // Callback on hit: explode on impact with landscape.
@@ -28,8 +28,8 @@ public func Hit()
 	return;
 }
 
-// Determines the arrow strength: only 40% that of the normal arrow.
-public func ArrowStrength() { return 4; }
+// Determines the arrow strength: only 30% that of the normal arrow.
+public func ArrowStrength() { return 3; }
 
 
 /*-- Properties --*/
