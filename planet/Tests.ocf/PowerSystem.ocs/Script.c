@@ -24,6 +24,9 @@ protected func InitializePlayer(int plr)
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
+	// No FoW to see everything happening.
+	SetFoW(false, plr);
+	
 	// Move player to the start of the scenario.
 	GetCrew(plr)->SetPosition(120, 150);
 	

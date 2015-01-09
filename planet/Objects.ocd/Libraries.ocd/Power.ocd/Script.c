@@ -19,10 +19,10 @@
 	 * GetActualPowerConsumer()
 	 
 	The network object keeps track of the producers and consumers in lists.
-	 * lib_idle_producers (currently not producing power)
-	 * lib_active_producers (currently producing power)
-	 * lib_waiting_consumers (waiting for power)
-	 * lib_active_consumers (supplied consumers)
+	 * lib_power.idle_producers (currently not producing power)
+	 * lib_power.active_producers (currently producing power)
+	 * lib_power.waiting_consumers (waiting for power)
+	 * lib_power.active_consumers (supplied consumers)
 	Producers are stored according to {obj, prod_amount, priority} and consumers
 	according to {obj, cons_amount, priority}.
 	
@@ -32,6 +32,9 @@
 	 * Fix the visualization of power on the nodes.
 	 * Check the flag library for network merging.
 	 * Check the power balance, also with merging.
+	 * Fix the compensator.
+	 * Fix the elevator.
+	 * Fix the pump.
 
 	@author Zapper, Maikel
 */
@@ -41,30 +44,28 @@
 // This variable is also accessed by the flag library.
 static LIB_POWR_Networks;
 
-// Lists to keep track of the producers and consumers.
-local lib_idle_producers;
-local lib_active_producers;
-local lib_waiting_consumers;
-local lib_active_consumers;
-
-// Main variable which keeps track of the power balance in the network.
-local lib_power_balance;
-
-// Whether the network is neutral.
-local lib_neutral_network;
+// All power related local variables are stored in a single proplist.
+// This reduces the chances of clashing local variables. See 
+// Initialize for which variables are being used.
+local lib_power;
 
 // Initialize the local variables needed to keep track of each power network.
 protected func Initialize()
 {
+	// Initialize the single proplist for the power library.
+	lib_power = {};
 	// Initialize producer and consumer lists.
-	lib_idle_producers = [];
-	lib_active_producers = [];
-	lib_waiting_consumers = [];
-	lib_active_consumers = [];
-	// Set power balance to zero.
-	lib_power_balance = 0;
+	// Lists to keep track of the producers and consumers.
+	lib_power.idle_producers = [];
+	lib_power.active_producers = [];
+	lib_power.waiting_consumers = [];
+	lib_power.active_consumers = [];
+	// Main variable which keeps track of the power balance in the network.
+	// Init power balance to zero.
+	lib_power.power_balance = 0;
+	// Whether the network is neutral.
 	// Network is not neutral by default.
-	lib_neutral_network = false;
+	lib_power.neutral_network = false;
 	return;
 }
 
@@ -145,7 +146,7 @@ public func GetPowerNetwork(object for_obj)
 	{
 		for (var network in LIB_POWR_Networks)
 		{
-			if (!network || !network.lib_neutral_network) 
+			if (!network || !network.lib_power.neutral_network) 
 				continue;
 			helper = network;
 			break;
@@ -154,7 +155,7 @@ public func GetPowerNetwork(object for_obj)
 		if (helper == nil) // not yet created?
 		{
 			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
-			helper.lib_neutral_network = true;
+			helper.lib_power.neutral_network = true;
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 		}		
 	} 
@@ -201,15 +202,15 @@ public func AddPowerProducer(object producer, int amount, int prio)
 	// Debugging logs.
 	Log("POWR - AddPowerProducer(): network = %v, frame = %d, producer = %v, amount = %d, priority = %d", this, FrameCounter(), producer, amount, prio);
 	// Check if it is not already in the list of idle producers.
-	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_idle_producers[index];
+		var link = lib_power.idle_producers[index];
 		if (!link || link.obj != producer) 
 			continue;
 		// If it is in the list update the values if they have changed.
 		if (link.prod_amount != amount || link.priority != prio)
 		{
-			lib_idle_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
+			lib_power.idle_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
@@ -217,17 +218,17 @@ public func AddPowerProducer(object producer, int amount, int prio)
 		return;
 	}
 	// Check if it is not already in the list of active producers.
-	for (var index = GetLength(lib_active_producers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_active_producers[index];
+		var link = lib_power.active_producers[index];
 		if (!link || link.obj != producer) 
 			continue;
 		// If it is in the list update the values if they have changed.
 		if (link.prod_amount != amount || link.priority != prio)
 		{
 			// Adjust the power balance accordingly.
-			lib_power_balance += amount - link.prod_amount;
-			lib_active_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
+			lib_power.power_balance += amount - link.prod_amount;
+			lib_power.active_producers[index] = {obj = producer, prod_amount = amount, priority = prio};
 			VisualizePowerChange(producer, link.prod_amount, amount, false);
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
@@ -240,13 +241,13 @@ public func AddPowerProducer(object producer, int amount, int prio)
 	if (producer->IsSteadyPowerProducer())
 	{
 		// Adjust the power balance accordingly.
-		lib_power_balance += amount;
-		PushBack(lib_active_producers, {obj = producer, prod_amount = amount, priority = prio});
+		lib_power.power_balance += amount;
+		PushBack(lib_power.active_producers, {obj = producer, prod_amount = amount, priority = prio});
 		VisualizePowerChange(producer, 0, amount, false);
 	}
 	else
 	{
-		PushBack(lib_idle_producers, {obj = producer, prod_amount = amount, priority = prio});
+		PushBack(lib_power.idle_producers, {obj = producer, prod_amount = amount, priority = prio});
 	}
 	// Check the power balance of this network, since a change has been made.
 	CheckPowerBalance();
@@ -258,24 +259,24 @@ public func RemovePowerProducer(object producer)
 	// Debugging logs.
 	Log("POWR - RemovePowerProducer(): network = %v, frame = %d, producer = %v", this, FrameCounter(), producer);
 	// Remove producer from the list of idle producers if it is in there.
-	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_idle_producers[index];
+		var link = lib_power.idle_producers[index];
 		if (!link || link.obj != producer) 
 			continue;
 		// Remove the producer from the list.
-		RemoveArrayIndex(lib_idle_producers, index);
+		RemoveArrayIndex(lib_power.idle_producers, index);
 		return;
 	}
 	// Otherwise, remove producer from the list of active producers if it is in there.
-	for (var index = GetLength(lib_active_producers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_active_producers[index];
+		var link = lib_power.active_producers[index];
 		if (!link || link.obj != producer) 
 			continue;
 		// Reduce the power balance and remove the producer from the list.
-		lib_power_balance -= link.prod_amount;
-		RemoveArrayIndex(lib_active_producers, index);
+		lib_power.power_balance -= link.prod_amount;
+		RemoveArrayIndex(lib_power.active_producers, index);
 		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 		// Notify the active power producer that it should stop producing power.
 		producer->OnPowerProductionStop();
@@ -292,15 +293,15 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 	// Debugging logs.
 	Log("POWR - AddPowerConsumer(): network = %v, frame = %d, consumer = %v, amount = %d, priority = %d", this, FrameCounter(), consumer, amount, prio);
 	// Check if it is not already in the list of waiting consumers.
-	for (var index = GetLength(lib_waiting_consumers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.waiting_consumers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_waiting_consumers[index];
+		var link = lib_power.waiting_consumers[index];
 		if (!link || link.obj != consumer) 
 			continue;
 		// If it is in the list update the values if they have changed.
 		if (link.cons_amount != amount || link.priority != prio)
 		{
-			lib_waiting_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
+			lib_power.waiting_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
@@ -308,17 +309,17 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 		return;
 	}
 	// Check if it is not already in the list of active consumers.
-	for (var index = GetLength(lib_active_consumers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_active_consumers[index];
+		var link = lib_power.active_consumers[index];
 		if (!link || link.obj != consumer) 
 			continue;
 		// If it is in the list update the values if they have changed.
 		if (link.cons_amount != amount || link.priority != prio)
 		{
 			// Adjust the power balance accordingly.
-			lib_power_balance -= amount - link.cons_amount;
-			lib_active_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
+			lib_power.power_balance -= amount - link.cons_amount;
+			lib_power.active_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
 			VisualizePowerChange(link.obj, link.cons_amount, amount, false);
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
@@ -327,7 +328,7 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 		return;
 	}
 	// Consumer was in neither list, so add it to the list of waiting consumers.
-	PushBack(lib_waiting_consumers, {obj = consumer, cons_amount = amount, priority = prio});
+	PushBack(lib_power.waiting_consumers, {obj = consumer, cons_amount = amount, priority = prio});
 	// Check the power balance of this network, since a change has been made.
 	CheckPowerBalance();
 	return;
@@ -338,24 +339,24 @@ public func RemovePowerConsumer(object consumer)
 	// Debugging logs.
 	Log("POWR - RemovePowerConsumer(): network = %v, frame = %d, consumer = %v", this, FrameCounter(), consumer);
 	// Remove consumer from the list of waiting consumers if it is in there.
-	for (var index = GetLength(lib_waiting_consumers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.waiting_consumers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_waiting_consumers[index];
+		var link = lib_power.waiting_consumers[index];
 		if (!link || link.obj != consumer) 
 			continue;
 		// Remove the consumer from the list.
-		RemoveArrayIndex(lib_waiting_consumers, index);
+		RemoveArrayIndex(lib_power.waiting_consumers, index);
 		return;
 	}
 	// Otherwise, remove consumer from the list of active consumers if it is in there.
-	for (var index = GetLength(lib_active_consumers) - 1; index >= 0; index--)
+	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{ 
-		var link = lib_active_consumers[index];
+		var link = lib_power.active_consumers[index];
 		if (!link || link.obj != consumer) 
 			continue;
 		// Increase the power balance and remove the consumer from the list.
-		lib_power_balance += link.cons_amount;
-		RemoveArrayIndex(lib_active_consumers, index);
+		lib_power.power_balance += link.cons_amount;
+		RemoveArrayIndex(lib_power.active_consumers, index);
 		// Check the power balance of this network, since a change has been made.
 		CheckPowerBalance();
 		VisualizePowerChange(link.obj, link.cons_amount, 0, true);
@@ -375,12 +376,12 @@ private func CheckPowerBalance()
 	
 	// If the surplus is non-positive it implies that first all possible idle producers
 	// need to be activated and then some consumers need to be deactivated.
-	if (surplus <= 0 && lib_power_balance < 0)
+	if (surplus <= 0 && lib_power.power_balance < 0)
 	{
 		// Activate all idle producers.
-		ActivateProducers(surplus - lib_power_balance);
+		ActivateProducers(surplus - lib_power.power_balance);
 		// The power balance may have changed but can't be positive, so disable sufficient consumers.
-		DeactivateConsumers(-lib_power_balance);
+		DeactivateConsumers(-lib_power.power_balance);
 		// All producers are running and the maximum amount of consumers as well.
 		LogState("balance_end s < 0");
 		return;
@@ -393,10 +394,10 @@ private func CheckPowerBalance()
 		// These newly activated consumers and the already maybe negative power balance must then 
 		// finally be counteracted by activating idle producers according to the new balance.
 		// It is also possible that some producers may be deactivated.
-		if (lib_power_balance > 0)
-			DeactivateProducers(lib_power_balance);	
-		else if (lib_power_balance < 0)
-			ActivateProducers(-lib_power_balance);
+		if (lib_power.power_balance > 0)
+			DeactivateProducers(lib_power.power_balance);	
+		else if (lib_power.power_balance < 0)
+			ActivateProducers(-lib_power.power_balance);
 		LogState("balance_end s > 0");
 		return;
 	}
@@ -410,10 +411,10 @@ private func CheckPowerBalance()
 private func GetPowerSurplus()
 {
 	// This is just the sum of the balance and possible power from all idle producers.
-	var surplus = lib_power_balance;
-	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
+	var surplus = lib_power.power_balance;
+	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{
-		var link = lib_idle_producers[index];
+		var link = lib_power.idle_producers[index];
 		if (!link)
 			continue;
 		surplus += link.prod_amount;
@@ -428,16 +429,17 @@ private func ActivateProducers(int power_need)
 	Log("POWR - ActivateProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
 	var power_found = 0;
 	// Sort the idle producers according to priority and then activate producers until balance is restored.
-	if (GetLength(lib_idle_producers) > 1) SortArrayByProperty(lib_idle_producers, "priority");
-	for (var index = GetLength(lib_idle_producers) - 1; index >= 0; index--)
+	if (GetLength(lib_power.idle_producers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(lib_power.idle_producers, "priority");
+	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{
-		var link = lib_idle_producers[index];
+		var link = lib_power.idle_producers[index];
 		if (!link)
 			continue;
 		power_found += link.prod_amount;
-		PushBack(lib_active_producers, link);
-		lib_power_balance += link.prod_amount;
-		RemoveArrayIndex(lib_idle_producers, index);
+		PushBack(lib_power.active_producers, link);
+		lib_power.power_balance += link.prod_amount;
+		RemoveArrayIndex(lib_power.idle_producers, index);
 		// On production start callback to the activated producer.
 		link.obj->OnPowerProductionStart(link.prod_amount);
 		VisualizePowerChange(link.obj, 0, link.prod_amount, false);
@@ -455,10 +457,11 @@ private func DeactivateProducers(int power_surplus)
 	Log("POWR - DeactivateProducers(): network = %v, frame = %d, power_surplus = %d", this, FrameCounter(), power_surplus);
 	var power_killed = 0;
 	// Sort the active producers according to priority and deactivate them until balance is restored.
-	if (GetLength(lib_active_producers) > 1) SortArrayByProperty(lib_active_producers, "priority", true);
-	for (var index = GetLength(lib_active_producers) - 1; index >= 0; index--)
+	if (GetLength(lib_power.active_producers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(lib_power.active_producers, "priority", true);
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
 	{
-		var link = lib_active_producers[index];
+		var link = lib_power.active_producers[index];
 		if (!link)
 			continue;
 		// It is not possible to deactivate a steady power producer.
@@ -469,9 +472,9 @@ private func DeactivateProducers(int power_surplus)
 		if (power_killed > power_surplus)
 			break;
 		// Move active producer to idle producers.
-		PushBack(lib_idle_producers, link);
-		lib_power_balance -= link.prod_amount;
-		RemoveArrayIndex(lib_active_producers, index);
+		PushBack(lib_power.idle_producers, link);
+		lib_power.power_balance -= link.prod_amount;
+		RemoveArrayIndex(lib_power.active_producers, index);
 		// On production stop callback to the deactivated producer.
 		link.obj->OnPowerProductionStop();
 		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
@@ -486,19 +489,20 @@ private func ActivateConsumers(int power_available)
 	Log("POWR - ActivateConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
 	var power_used = 0;
 	// Sort the waiting consumers according to priority and then activate consumers until available power is used.
-	if (GetLength(lib_waiting_consumers) > 1) SortArrayByProperty(lib_waiting_consumers, "priority");
-	for (var index = GetLength(lib_waiting_consumers) - 1; index >= 0; index--)
+	if (GetLength(lib_power.waiting_consumers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(lib_power.waiting_consumers, "priority");
+	for (var index = GetLength(lib_power.waiting_consumers) - 1; index >= 0; index--)
 	{
-		var link = lib_waiting_consumers[index];
+		var link = lib_power.waiting_consumers[index];
 		if (!link)
 			continue;
 		// If this consumer requires to much power try one of lower priority.
 		if (power_used + link.cons_amount > power_available)
 			continue;
 		power_used += link.cons_amount;
-		PushBack(lib_active_consumers, link);
-		lib_power_balance -= link.cons_amount;
-		RemoveArrayIndex(lib_waiting_consumers, index);
+		PushBack(lib_power.active_consumers, link);
+		lib_power.power_balance -= link.cons_amount;
+		RemoveArrayIndex(lib_power.waiting_consumers, index);
 		// On enough power callback to the activated consumer.
 		link.obj->OnEnoughPower(link.cons_amount);
 		VisualizePowerChange(link.obj, 0, link.cons_amount, false);
@@ -513,16 +517,17 @@ private func DeactivateConsumers(int power_need)
 	Log("POWR - DeactivateConsumers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
 	var power_restored = 0;
 	// Sort the active consumers according to priority and then deactivate consumers until balance is restored.
-	if (GetLength(lib_active_consumers) > 1) SortArrayByProperty(lib_active_consumers, "priority", true);
-	for (var index = GetLength(lib_active_consumers) - 1; index >= 0; index--)
+	if (GetLength(lib_power.active_consumers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(lib_power.active_consumers, "priority", true);
+	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{
-		var link = lib_active_consumers[index];
+		var link = lib_power.active_consumers[index];
 		if (!link)
 			continue;
 		power_restored += link.cons_amount;
-		PushBack(lib_waiting_consumers, link);
-		lib_power_balance += link.cons_amount;
-		RemoveArrayIndex(lib_active_consumers, index);
+		PushBack(lib_power.waiting_consumers, link);
+		lib_power.power_balance += link.cons_amount;
+		RemoveArrayIndex(lib_power.active_consumers, index);
 		// On not enough power callback to the deactivated consumer.
 		link.obj->OnNotEnoughPower(link.cons_amount);
 		VisualizePowerChange(link.obj, link.cons_amount, 0, true);
@@ -541,10 +546,10 @@ private func DeactivateConsumers(int power_need)
 // Returns whether the network does not control any power nodes.
 public func IsEmpty()
 {
-	return GetLength(lib_idle_producers) == 0
-		&& GetLength(lib_active_producers) == 0
-		&& GetLength(lib_waiting_consumers) == 0
-		&& GetLength(lib_active_consumers) == 0;
+	return GetLength(lib_power.idle_producers) == 0
+		&& GetLength(lib_power.active_producers) == 0
+		&& GetLength(lib_power.waiting_consumers) == 0
+		&& GetLength(lib_power.active_consumers) == 0;
 }
 
 
@@ -555,12 +560,12 @@ private func LogState(string tag)
 	Log("==========================================================================");
 	Log("POWR - State for network %v in frame %d with tag %s", this, FrameCounter(), tag);
 	Log("==========================================================================");
-	Log("POWR - lib_neutral_network: %v", lib_neutral_network);
-	Log("POWR - lib_idle_producers: %v", lib_idle_producers);
-	Log("POWR - lib_active_producers: %v", lib_active_producers);
-	Log("POWR - lib_waiting_consumers: %v", lib_waiting_consumers);
-	Log("POWR - lib_active_consumers: %v", lib_active_consumers);
-	Log("POWR - lib_power_balance = %d", lib_power_balance);
+	Log("POWR - lib_power.neutral_network: %v", lib_power.neutral_network);
+	Log("POWR - lib_power.idle_producers: %v", lib_power.idle_producers);
+	Log("POWR - lib_power.active_producers: %v", lib_power.active_producers);
+	Log("POWR - lib_power.waiting_consumers: %v", lib_power.waiting_consumers);
+	Log("POWR - lib_power.active_consumers: %v", lib_power.active_consumers);
+	Log("POWR - lib_power.power_balance = %d", lib_power.power_balance);
 	Log("POWR - surplus: %d", GetPowerSurplus());
 	Log("==========================================================================");
 	return;

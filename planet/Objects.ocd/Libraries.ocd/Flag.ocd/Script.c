@@ -40,7 +40,7 @@ func RefreshAllPowerHelpers()
 	// Special handling for neutral networks of which there should be at most one.
 	for (var network in LIB_POWR_Networks)
 	{
-		if (!network || !network.lib_neutral_network) 
+		if (!network || !network.lib_power.neutral_network) 
 			continue;
 		RefreshPowerHelper(network);
 		break;
@@ -362,7 +362,7 @@ func RefreshLinkedFlags()
 func RefreshPowerHelper(object network)
 {
 	// Merge all the producers and consumers into their actual networks.
-	for (var link in Concatenate(network.lib_idle_producers, network.lib_active_producers))
+	for (var link in Concatenate(network.lib_power.idle_producers, network.lib_power.active_producers))
 	{
 		if (!link)
 			continue;
@@ -373,7 +373,7 @@ func RefreshPowerHelper(object network)
 		network->RemovePowerProducer(link.obj);
 		actual_network->AddPowerProducer(link.obj, link.prod_amount, link.priority);
 	}
-	for (var link in Concatenate(network.lib_waiting_consumers, network.lib_active_consumers))
+	for (var link in Concatenate(network.lib_power.waiting_consumers, network.lib_power.active_consumers))
 	{
 		if (!link)
 			continue;
