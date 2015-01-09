@@ -92,10 +92,7 @@ private func FindStartCave()
 	// Move the found cave in front of the separator.
 	var found_cave = cave_list[best_index];
 	RemoveArrayIndex(cave_list, best_index);
-	for (var i = GetLength(cave_list); i >= 1; i--)
-		cave_list[i] = cave_list[i - 1];
-	cave_list[0] = found_cave;
-	// PushFront(cave_list, found_cave);
+	PushFront(cave_list, found_cave);
 	// Return the location of the found cave.
 	return found_cave;
 }
