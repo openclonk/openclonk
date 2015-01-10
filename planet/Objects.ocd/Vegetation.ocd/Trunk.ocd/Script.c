@@ -106,7 +106,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
 		if (!loc)
 			continue;
-		var trunk = CreateObject(Trunk);
+		var trunk = CreateObjectAbove(Trunk);
 		trunk->SetPosition(loc.x, loc.y);
 		trunk->SetCon(size);
 		if (!Random(3))

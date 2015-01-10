@@ -43,7 +43,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
 		if (!loc)
 			continue;
-		var branch = CreateObject(Branch);
+		var branch = CreateObjectAbove(Branch);
 		branch->SetPosition(loc.x, loc.y);
 		branch->SetCon(size);
 		if (!Random(3))

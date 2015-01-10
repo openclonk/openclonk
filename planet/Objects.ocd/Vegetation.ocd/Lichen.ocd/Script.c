@@ -23,7 +23,7 @@ protected func Grow()
 
 public func Harvest(object clonk)
 {
-	var moss = CreateObject(Moss, 0, GetObjHeight()/2, NO_OWNER);
+	var moss = CreateObjectAbove(Moss, 0, GetObjHeight()/2, NO_OWNER);
 	clonk->Collect(moss);
 	var particles = 
 	{

@@ -2,157 +2,157 @@
 
 func InitializeObjects()
 {
-	CreateObject(Grass, 555, 551);
-	CreateObject(Grass, 533, 550);
-	CreateObject(Grass, 1306, 706);
+	CreateObjectAbove(Grass, 555, 551);
+	CreateObjectAbove(Grass, 533, 550);
+	CreateObjectAbove(Grass, 1306, 706);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn001 = CreateObjectAbove(Rule_BaseRespawn, 0, 0);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
-	CreateObject(Tree_Coniferous, 380, 877);
-	CreateObject(Tree_Coniferous, 210, 875);
-	CreateObject(Tree_Coniferous, 207, 871);
-	CreateObject(Tree_Coniferous, 252, 872);
-	CreateObject(Tree_Coniferous, 367, 874);
-	CreateObject(Tree_Coniferous, 309, 871);
-	CreateObject(Tree_Coniferous, 179, 874);
-	CreateObject(Tree_Coniferous, 271, 874);
-	CreateObject(Tree_Coniferous, 423, 547);
-	CreateObject(Tree_Coniferous, 496, 560);
-	CreateObject(Tree_Coniferous, 322, 554);
-	CreateObject(Tree_Coniferous, 1339, 367);
-	CreateObject(Tree_Coniferous, 1357, 360);
-	CreateObject(Tree_Coniferous, 1393, 314);
-	CreateObject(Tree_Coniferous, 1304, 387);
+	CreateObjectAbove(Tree_Coniferous, 380, 877);
+	CreateObjectAbove(Tree_Coniferous, 210, 875);
+	CreateObjectAbove(Tree_Coniferous, 207, 871);
+	CreateObjectAbove(Tree_Coniferous, 252, 872);
+	CreateObjectAbove(Tree_Coniferous, 367, 874);
+	CreateObjectAbove(Tree_Coniferous, 309, 871);
+	CreateObjectAbove(Tree_Coniferous, 179, 874);
+	CreateObjectAbove(Tree_Coniferous, 271, 874);
+	CreateObjectAbove(Tree_Coniferous, 423, 547);
+	CreateObjectAbove(Tree_Coniferous, 496, 560);
+	CreateObjectAbove(Tree_Coniferous, 322, 554);
+	CreateObjectAbove(Tree_Coniferous, 1339, 367);
+	CreateObjectAbove(Tree_Coniferous, 1357, 360);
+	CreateObjectAbove(Tree_Coniferous, 1393, 314);
+	CreateObjectAbove(Tree_Coniferous, 1304, 387);
 
-	CreateObject(Fern, 1331, 704);
-	CreateObject(Fern, 1468, 664);
-	CreateObject(Fern, 1583, 696);
+	CreateObjectAbove(Fern, 1331, 704);
+	CreateObjectAbove(Fern, 1468, 664);
+	CreateObjectAbove(Fern, 1583, 696);
 
-	var Lichen001 = CreateObject(Lichen, 1377, 696);
+	var Lichen001 = CreateObjectAbove(Lichen, 1377, 696);
 	Lichen001->SetAction("Grow");
 	Lichen001->SetPhase(3);
-	var Lichen002 = CreateObject(Lichen, 1514, 696);
+	var Lichen002 = CreateObjectAbove(Lichen, 1514, 696);
 	Lichen002->SetAction("Grow");
 	Lichen002->SetPhase(3);
 
-	var Branch001 = CreateObject(Branch, 1352, 447);
+	var Branch001 = CreateObjectAbove(Branch, 1352, 447);
 	Branch001->SetR(170);
 	Branch001->SetPosition(1352, 435);
-	var Branch002 = CreateObject(Branch, 1427, 453);
+	var Branch002 = CreateObjectAbove(Branch, 1427, 453);
 	Branch002->SetR(160);
 	Branch002->SetPosition(1427, 442);
-	var Branch003 = CreateObject(Branch, 1430, 460);
+	var Branch003 = CreateObjectAbove(Branch, 1430, 460);
 	Branch003->SetR(150);
 	Branch003->SetPosition(1430, 450);
-	var Branch004 = CreateObject(Branch, 552, 596);
+	var Branch004 = CreateObjectAbove(Branch, 552, 596);
 	Branch004->SetR(150);
 	Branch004->SetPosition(552, 586);
-	var Branch005 = CreateObject(Branch, 524, 611);
+	var Branch005 = CreateObjectAbove(Branch, 524, 611);
 	Branch005->SetR(160);
 	Branch005->SetPosition(524, 600);
-	var Branch006 = CreateObject(Branch, 317, 623);
+	var Branch006 = CreateObjectAbove(Branch, 317, 623);
 	Branch006->SetR(-170);
 	Branch006->SetPosition(317, 611);
-	var Branch007 = CreateObject(Branch, 398, 774);
+	var Branch007 = CreateObjectAbove(Branch, 398, 774);
 	Branch007->SetR(-110);
 	Branch007->SetPosition(398, 770);
 
-	CreateObject(Trunk, 1447, 682);
+	CreateObjectAbove(Trunk, 1447, 682);
 
-	CreateObject(SproutBerryBush, 1286, 734);
+	CreateObjectAbove(SproutBerryBush, 1286, 734);
 
-	CreateObject(Tree_Coniferous, 1297, 388);
+	CreateObjectAbove(Tree_Coniferous, 1297, 388);
 
-	CreateObject(SproutBerryBush, 565, 861);
+	CreateObjectAbove(SproutBerryBush, 565, 861);
 
-	CreateObject(Wheat, 1345, 696);
+	CreateObjectAbove(Wheat, 1345, 696);
 
-	var Tree_Coniferous001 = CreateObject(Tree_Coniferous, 231, 878);
+	var Tree_Coniferous001 = CreateObjectAbove(Tree_Coniferous, 231, 878);
 	Tree_Coniferous001->SetCon(47);
 
-	var Chest001 = CreateObject(Chest, 264, 1287);
+	var Chest001 = CreateObjectAbove(Chest, 264, 1287);
 
-	var WoodenCabin001 = CreateObject(WoodenCabin, 62, 870);
+	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 870);
 
-	CreateObject(Idol, 102, 871);
+	CreateObjectAbove(Idol, 102, 871);
 
-	var Flagpole001 = CreateObject(Flagpole, 119, 872);
+	var Flagpole001 = CreateObjectAbove(Flagpole, 119, 872);
 	Flagpole001->SetNeutral(true);
 
-	var Lorry001 = CreateObject(Lorry, 76, 1299);
+	var Lorry001 = CreateObjectAbove(Lorry, 76, 1299);
 	Lorry001->SetR(-14);
 	Lorry001->SetPosition(76, 1290);
 
-	var Catapult001 = CreateObject(Catapult, 445, 547);
+	var Catapult001 = CreateObjectAbove(Catapult, 445, 547);
 	Catapult001->SetCon(80);
 	Catapult001->SetRDir(1);
 	Catapult001->SetClrModulation(0xff686868);
 
-	CreateObject(Rock, 279, 965);
-	CreateObject(Rock, 469, 1214);
-	CreateObject(Rock, 225, 1335);
-	CreateObject(Rock, 69, 1125);
-	CreateObject(Rock, 45, 915);
-	CreateObject(Rock, 547, 1015);
-	CreateObject(Rock, 1117, 1178);
-	CreateObject(Rock, 1176, 1308);
-	CreateObject(Rock, 1414, 1075);
-	CreateObject(Rock, 1485, 893);
+	CreateObjectAbove(Rock, 279, 965);
+	CreateObjectAbove(Rock, 469, 1214);
+	CreateObjectAbove(Rock, 225, 1335);
+	CreateObjectAbove(Rock, 69, 1125);
+	CreateObjectAbove(Rock, 45, 915);
+	CreateObjectAbove(Rock, 547, 1015);
+	CreateObjectAbove(Rock, 1117, 1178);
+	CreateObjectAbove(Rock, 1176, 1308);
+	CreateObjectAbove(Rock, 1414, 1075);
+	CreateObjectAbove(Rock, 1485, 893);
 
-	CreateObject(Coal, 218, 1010);
-	CreateObject(Coal, 94, 1046);
-	CreateObject(Coal, 98, 1010);
+	CreateObjectAbove(Coal, 218, 1010);
+	CreateObjectAbove(Coal, 94, 1046);
+	CreateObjectAbove(Coal, 98, 1010);
 
-	CreateObject(Ore, 269, 1105);
+	CreateObjectAbove(Ore, 269, 1105);
 
-	CreateObject(Nugget, 40, 1210);
-	CreateObject(Nugget, 18, 1216);
-	CreateObject(Nugget, 49, 1267);
-	CreateObject(Nugget, 439, 1259);
-	CreateObject(Nugget, 485, 1154);
-	CreateObject(Nugget, 1580, 1139);
-	CreateObject(Nugget, 1470, 1080);
-	CreateObject(Nugget, 33, 1311);
-	CreateObject(Nugget, 134, 1347);
-	CreateObject(Nugget, 253, 1317);
-	CreateObject(Nugget, 369, 1283);
-	CreateObject(Nugget, 373, 1243);
+	CreateObjectAbove(Nugget, 40, 1210);
+	CreateObjectAbove(Nugget, 18, 1216);
+	CreateObjectAbove(Nugget, 49, 1267);
+	CreateObjectAbove(Nugget, 439, 1259);
+	CreateObjectAbove(Nugget, 485, 1154);
+	CreateObjectAbove(Nugget, 1580, 1139);
+	CreateObjectAbove(Nugget, 1470, 1080);
+	CreateObjectAbove(Nugget, 33, 1311);
+	CreateObjectAbove(Nugget, 134, 1347);
+	CreateObjectAbove(Nugget, 253, 1317);
+	CreateObjectAbove(Nugget, 369, 1283);
+	CreateObjectAbove(Nugget, 373, 1243);
 
-	CreateObject(Metal, 124, 1302);
+	CreateObjectAbove(Metal, 124, 1302);
 
-	CreateObject(Loam, 520, 950);
-	CreateObject(Loam, 403, 1010);
-	CreateObject(Loam, 339, 1252);
-	CreateObject(Loam, 178, 1312);
-	CreateObject(Loam, 727, 1274);
-	CreateObject(Loam, 884, 1333);
-	CreateObject(Loam, 1195, 1300);
-	CreateObject(Loam, 1568, 1109);
-	CreateObject(Loam, 1565, 880);
-	CreateObject(Loam, 1360, 784);
-	CreateObject(Loam, 1519, 724);
-	CreateObject(Loam, 1348, 721);
-	CreateObject(Loam, 1379, 352);
+	CreateObjectAbove(Loam, 520, 950);
+	CreateObjectAbove(Loam, 403, 1010);
+	CreateObjectAbove(Loam, 339, 1252);
+	CreateObjectAbove(Loam, 178, 1312);
+	CreateObjectAbove(Loam, 727, 1274);
+	CreateObjectAbove(Loam, 884, 1333);
+	CreateObjectAbove(Loam, 1195, 1300);
+	CreateObjectAbove(Loam, 1568, 1109);
+	CreateObjectAbove(Loam, 1565, 880);
+	CreateObjectAbove(Loam, 1360, 784);
+	CreateObjectAbove(Loam, 1519, 724);
+	CreateObjectAbove(Loam, 1348, 721);
+	CreateObjectAbove(Loam, 1379, 352);
 
-	var Wood001 = CreateObject(Wood, 518, 1081);
+	var Wood001 = CreateObjectAbove(Wood, 518, 1081);
 	Wood001->SetR(35);
 	Wood001->SetPosition(518, 1078);
-	CreateObject(Wood, 1302, 904);
-	var Wood002 = CreateObject(Wood, 1335, 904);
+	CreateObjectAbove(Wood, 1302, 904);
+	var Wood002 = CreateObjectAbove(Wood, 1335, 904);
 	Wood002->SetClrModulation(0xff302020);
 
-	CreateObject(Moss, 1357, 695);
-	CreateObject(Moss, 1269, 905);
-	CreateObject(Moss, 336, 558);
-	CreateObject(Moss, 479, 554);
-	CreateObject(Moss, 523, 847);
+	CreateObjectAbove(Moss, 1357, 695);
+	CreateObjectAbove(Moss, 1269, 905);
+	CreateObjectAbove(Moss, 336, 558);
+	CreateObjectAbove(Moss, 479, 554);
+	CreateObjectAbove(Moss, 523, 847);
 
-	CreateObject(Crate, 155, 1302);
-	CreateObject(Crate, 139, 1302);
+	CreateObjectAbove(Crate, 155, 1302);
+	CreateObjectAbove(Crate, 139, 1302);
 
-	CreateObject(Bread, 171, 1302);
+	CreateObjectAbove(Bread, 171, 1302);
 	Chest001->CreateContents(Bread);
 	Chest001->CreateContents(Bread);
 	Chest001->CreateContents(Bread);
@@ -167,39 +167,39 @@ func InitializeObjects()
 
 	WoodenCabin001->CreateContents(Sproutberry);
 
-	var Seaweed001 = CreateObject(Seaweed, 1343, 991);
+	var Seaweed001 = CreateObjectAbove(Seaweed, 1343, 991);
 	Seaweed001->SetPhase(3);
-	var Seaweed002 = CreateObject(Seaweed, 1430, 918);
+	var Seaweed002 = CreateObjectAbove(Seaweed, 1430, 918);
 	Seaweed002->SetPhase(22);
-	var Seaweed003 = CreateObject(Seaweed, 1530, 921);
+	var Seaweed003 = CreateObjectAbove(Seaweed, 1530, 921);
 	Seaweed003->SetPhase(40);
 
-	CreateObject(Firestone, 49, 1316);
-	CreateObject(Firestone, 36, 1282);
+	CreateObjectAbove(Firestone, 49, 1316);
+	CreateObjectAbove(Firestone, 36, 1282);
 	Lorry001->CreateContents(Firestone);
-	CreateObject(Firestone, 452, 920);
-	CreateObject(Firestone, 50, 949);
-	CreateObject(Firestone, 374, 894);
-	CreateObject(Firestone, 301, 927);
-	CreateObject(Firestone, 38, 1072);
-	CreateObject(Firestone, 216, 1085);
-	CreateObject(Firestone, 502, 985);
-	CreateObject(Firestone, 229, 925);
-	CreateObject(Firestone, 413, 1133);
-	CreateObject(Firestone, 757, 1233);
-	CreateObject(Firestone, 374, 1296);
-	CreateObject(Firestone, 345, 1073);
-	CreateObject(Firestone, 586, 1250);
-	CreateObject(Firestone, 154, 1350);
-	CreateObject(Firestone, 381, 1079);
-	CreateObject(Firestone, 714, 1253);
-	CreateObject(Firestone, 1267, 956);
-	CreateObject(Firestone, 1346, 820);
-	CreateObject(Firestone, 1393, 916);
-	CreateObject(Firestone, 1464, 720);
-	CreateObject(Firestone, 1308, 1168);
-	CreateObject(Firestone, 80, 1102);
-	CreateObject(Firestone, 351, 1230);
-	CreateObject(Firestone, 112, 1128);
+	CreateObjectAbove(Firestone, 452, 920);
+	CreateObjectAbove(Firestone, 50, 949);
+	CreateObjectAbove(Firestone, 374, 894);
+	CreateObjectAbove(Firestone, 301, 927);
+	CreateObjectAbove(Firestone, 38, 1072);
+	CreateObjectAbove(Firestone, 216, 1085);
+	CreateObjectAbove(Firestone, 502, 985);
+	CreateObjectAbove(Firestone, 229, 925);
+	CreateObjectAbove(Firestone, 413, 1133);
+	CreateObjectAbove(Firestone, 757, 1233);
+	CreateObjectAbove(Firestone, 374, 1296);
+	CreateObjectAbove(Firestone, 345, 1073);
+	CreateObjectAbove(Firestone, 586, 1250);
+	CreateObjectAbove(Firestone, 154, 1350);
+	CreateObjectAbove(Firestone, 381, 1079);
+	CreateObjectAbove(Firestone, 714, 1253);
+	CreateObjectAbove(Firestone, 1267, 956);
+	CreateObjectAbove(Firestone, 1346, 820);
+	CreateObjectAbove(Firestone, 1393, 916);
+	CreateObjectAbove(Firestone, 1464, 720);
+	CreateObjectAbove(Firestone, 1308, 1168);
+	CreateObjectAbove(Firestone, 80, 1102);
+	CreateObjectAbove(Firestone, 351, 1230);
+	CreateObjectAbove(Firestone, 112, 1128);
 	return true;
 }

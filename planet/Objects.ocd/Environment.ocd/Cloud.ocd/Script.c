@@ -79,7 +79,7 @@ public func Place(int count)
 		var pos;
 		if ((pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight())) && MaterialDepthCheck(pos[0], pos[1], "Sky", 200))
 		{
-			CreateObject(Cloud, pos[0], pos[1], NO_OWNER);
+			CreateObjectAbove(Cloud, pos[0], pos[1], NO_OWNER);
 			count--;
 		}
 	}

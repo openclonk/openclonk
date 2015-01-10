@@ -233,7 +233,7 @@ func LoadScenarioSection(name, ...)
 	{
 		plr = GetPlayerByIndex(iplr, C4PT_User);
 		var HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (!HUDcontroller) HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
+		if (!HUDcontroller) HUDcontroller = CreateObjectAbove(GUI_Controller, 10, 10, plr);
 	}
 	return result;
 }
@@ -255,7 +255,7 @@ func AddSectSaveObj(obj)
 
 global func StartSequence(string name, int progress, ...)
 {
-	var seq = CreateObject(Sequence, 0,0, NO_OWNER);
+	var seq = CreateObjectAbove(Sequence, 0,0, NO_OWNER);
 	seq->Start(name, progress, ...);
 	return seq;
 }

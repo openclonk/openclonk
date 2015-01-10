@@ -85,7 +85,7 @@ func JoinPlayer(plr)
 	}
 	else
 	{
-		clonk = CreateObject(Clonk, x,y+10, plr);
+		clonk = CreateObjectAbove(Clonk, x,y+10, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
@@ -94,11 +94,11 @@ func JoinPlayer(plr)
 	//clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
 	//clonk.MaxContentsCountVal = 2;
 	clonk->CreateContents(Bow);
-	var arrow = CreateObject(Arrow);
+	var arrow = CreateObjectAbove(Arrow);
 	clonk->Collect(arrow);
 	arrow->SetInfiniteStackCount();
 	//clonk->CreateContents(Musket);
-	//clonk->Collect(CreateObject(LeadShot));
+	//clonk->Collect(CreateObjectAbove(LeadShot));
 	clonk->~CrewSelection(); // force update HUD
 	return;
 }

@@ -71,12 +71,12 @@ global func FxGemShieldCreationTimer(object target, effect, int time)
 	var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 	if(e)clr=RGB(190+Random(10),0,20+Random(20));
 	
-	var shield=CreateObject(CrystalShield,x+Sin(time*7,35),y+Cos(time*7,35));
+	var shield=CreateObjectAbove(CrystalShield,x+Sin(time*7,35),y+Cos(time*7,35));
 	shield->SetR(-time*7);
 	shield->SetClrModulation(clr);
 	CreateParticle("MagicSpark", x+Sin(time*7,39),y+Cos(time*7,39), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 20), effect.particles, 10);
 	
-	var shield=CreateObject(CrystalShield,x-Sin(-7+time*7,35),y+Cos(-7+time*7,35));
+	var shield=CreateObjectAbove(CrystalShield,x-Sin(-7+time*7,35),y+Cos(-7+time*7,35));
 	shield->SetR(-7 + time*7);
 	shield->SetClrModulation(clr);
 	CreateParticle("MagicSpark", x-Sin(-7+time*7,39),y+Cos(-7+time*7,39), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 20), effect.particles, 10);

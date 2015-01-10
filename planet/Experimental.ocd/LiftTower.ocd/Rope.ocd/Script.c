@@ -37,7 +37,7 @@ private func CreateSegment(int index, object previous)
 {
 	if(index == 0) return;
 	var segment;
-	segment = CreateObject(LiftTower_Rope);
+	segment = CreateObjectAbove(LiftTower_Rope);
 	return segment;
 }
 

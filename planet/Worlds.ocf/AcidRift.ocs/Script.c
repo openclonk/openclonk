@@ -17,11 +17,11 @@ static g_start_x, g_start_y;
 protected func Initialize()
 {
 	// Goal: Ruby mine
-	var goal = CreateObject(Goal_SellGems);
+	var goal = CreateObjectAbove(Goal_SellGems);
 	goal->SetTargetAmount(BoundBy(SCENPAR_Difficulty*10, 10, 20));
 	// Rules: team account and buying at flagpole.
-	CreateObject(Rule_TeamAccount);
-	CreateObject(Rule_BuyAtFlagpole);
+	CreateObjectAbove(Rule_TeamAccount);
+	CreateObjectAbove(Rule_BuyAtFlagpole);
 	
 	// Start position from map generation
 	var map_zoom = 6;
@@ -170,7 +170,7 @@ private func InitAnimals(int difficulty)
 private func InitMaterial(int amount)
 {
 	// Always material for a starting flagpole
-	var lorry = CreateObject(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
+	var lorry = CreateObjectAbove(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
 	lorry->CreateContents(Wood, 3);
 	lorry->CreateContents(Metal, 1);
 	

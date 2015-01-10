@@ -4,9 +4,9 @@
 
 func Intro_Init()
 {
-	this.plane = CreateObject(Plane, 0, 400);
+	this.plane = CreateObjectAbove(Plane, 0, 400);
 	this.plane->SetColor(0xa04000);
-	this.pilot = npc_pyrit = CreateObject(Clonk, 100, 100, NO_OWNER);
+	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();
 	this.pilot->SetSkin(2);
@@ -47,7 +47,7 @@ func Intro_JoinPlayer(int plr)
 
 func Intro_CreateBoompack(int x, int y, int fuel)
 {
-	var boompack = CreateObject(Boompack, x, y, NO_OWNER);
+	var boompack = CreateObjectAbove(Boompack, x, y, NO_OWNER);
 	boompack->SetFuel(fuel);
 	boompack->SetDirectionDeviation(8); // make sure direction of boompack is roughly kept
 	boompack->SetControllable(false);

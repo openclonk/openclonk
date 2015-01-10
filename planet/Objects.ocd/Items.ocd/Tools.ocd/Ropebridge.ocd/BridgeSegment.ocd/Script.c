@@ -19,7 +19,7 @@ protected func Damage(iAmount)
 
 func LoosePlank()
 {
-  var loosePlank = CreateObject(BridgePlank);
+  var loosePlank = CreateObjectAbove(BridgePlank);
   loosePlank->SetR(GetR());
   loosePlank->SetPosition(GetX(100)+Cos(GetR(), -400)+Sin(GetR(), 200), GetY(100)+Sin(GetR(), -400)+Cos(GetR(), 200), 0, 100);
   Plank = 0;
@@ -54,7 +54,7 @@ func CreateDouble()
 {
   if(!Double)
   {
-    Double = CreateObject(GetID());
+    Double = CreateObjectAbove(GetID());
     Double.Plane = 600;
     //Double->SetAction("Attach", this);
   }

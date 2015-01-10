@@ -41,7 +41,7 @@ public func GetStatusSymbolHelper(to)
 {
 	var obj = FindObject(Find_ID(StatusSymbol), Find_ActionTarget(to));
 	if(obj) return obj;
-	obj = CreateObject(StatusSymbol, 0, 0, to->GetOwner());
+	obj = CreateObjectAbove(StatusSymbol, 0, 0, to->GetOwner());
 	obj->Init(to);
 	return obj;
 }

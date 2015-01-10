@@ -90,7 +90,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	
 	for(var i = 1; i < number_of_bars; ++i)
 	{
-		bars[i] = CreateObject(GetID(), 0, 0, GetOwner());
+		bars[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 	}
 		
 	var cnt = 0;

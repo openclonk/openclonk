@@ -41,8 +41,8 @@ func Initialize()
 	
 	partner_was_synced = false;
 	
-	front = CreateObject(Elevator_Case_Front, 0,13, GetOwner());
-	back = CreateObject(Elevator_Case_Back, 0,13, GetOwner());
+	front = CreateObjectAbove(Elevator_Case_Front, 0,13, GetOwner());
+	back = CreateObjectAbove(Elevator_Case_Back, 0,13, GetOwner());
 	
 	front->SetAction("Attach", this);
 	back->SetAction("Attach", this);
@@ -65,7 +65,7 @@ func Destruction()
 		
 	for(var i = 0; i < 3; ++i)
 	{
-		var wood = CreateObject(Wood, 0, 0, NO_OWNER);
+		var wood = CreateObjectAbove(Wood, 0, 0, NO_OWNER);
 		wood->Incinerate();
 		wood->SetXDir(RandomX(-10, 10));
 		wood->SetYDir(RandomX(-2, 0));

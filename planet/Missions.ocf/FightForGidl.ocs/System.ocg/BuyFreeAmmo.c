@@ -10,7 +10,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 	else if (idobj == GrenadeLauncher) idammo = IronBomb;
 	if (idammo)
 	{
-		var ammo = CreateObject(idammo,0,0,iForPlr);
+		var ammo = CreateObjectAbove(idammo,0,0,iForPlr);
 		if (ammo)
 		{
 			ammo->~SetInfiniteStackCount();

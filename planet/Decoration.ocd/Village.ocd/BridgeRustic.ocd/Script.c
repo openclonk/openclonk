@@ -6,11 +6,11 @@ local graphicFront, graphicBack;
 
 protected func Construction()
 {
-	graphicBack = CreateObject(EnvPack_BridgeRustic_Back,-20,0,nil);
+	graphicBack = CreateObjectAbove(EnvPack_BridgeRustic_Back,-20,0,nil);
 	graphicBack->SetAction("Attach", this);
 
 
-	graphicFront = CreateObject(EnvPack_BridgeRustic_Front,0,0,nil);
+	graphicFront = CreateObjectAbove(EnvPack_BridgeRustic_Front,0,0,nil);
 	graphicFront->SetAction("Attach", this);
 	
 	

@@ -169,7 +169,7 @@ private func InitMaterials(int map_size)
 		var loc = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom));
 		if (!loc)
 			continue;
-		CreateObject([Shovel, Pickaxe][Random(2)], loc.x, loc.y)->SetR(Random(360));	
+		CreateObjectAbove([Shovel, Pickaxe][Random(2)], loc.x, loc.y)->SetR(Random(360));	
 	}
 	return;
 }
@@ -182,7 +182,7 @@ private func InitEnvironment(int map_size)
 	for (var side = -1; side <= 1; side += 2)
 	{
 		// Both sides of the cave are lighted for all players.
-		var torch = CreateObject(Torch, wdt / 2 + side * 50, hgt / 2 + 32);
+		var torch = CreateObjectAbove(Torch, wdt / 2 + side * 50, hgt / 2 + 32);
 		torch->AttachToWall(true);
 	}
 	return;
@@ -196,7 +196,7 @@ private func InitLorries()
 	for (var index = GetLength(cave_list) - 1; index >= GetLength(cave_list) / 2; index--)
 	{
 		var cave = cave_list[index];
-		var lorry = CreateObject(Lorry, cave[0], cave[1]);
+		var lorry = CreateObjectAbove(Lorry, cave[0], cave[1]);
 		// Basic objects which are in every lorry.
 		lorry->CreateContents(Dynamite, RandomX(2, 4));
 		lorry->CreateContents(Loam, RandomX(2, 4));
@@ -242,7 +242,7 @@ private func InitLorries()
 	for (var side = -1; side <= 1; side += 2)
 	{
 		// Create lorry with useful tools and weapons.
-		var lorry = CreateObject(Lorry, wdt / 2 + side * 50, hgt / 2 + 44);
+		var lorry = CreateObjectAbove(Lorry, wdt / 2 + side * 50, hgt / 2 + 44);
 		lorry->CreateContents(Bow, 2);
 		lorry->CreateContents(BombArrow, 4);
 		lorry->CreateContents(Boompack, 2);

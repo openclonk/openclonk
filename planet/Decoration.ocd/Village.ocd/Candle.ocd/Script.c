@@ -14,7 +14,7 @@ protected func Initialize()
 
 protected func Construction() {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-35,35),0,10), Trans_Scale(30)));
-	objShine = CreateObject(EnvPack_Candle_Shine, x, y + 10, -1);
+	objShine = CreateObjectAbove(EnvPack_Candle_Shine, x, y + 10, -1);
 }
 
 private func Shining()
@@ -49,7 +49,7 @@ public func SetOn(fOn)
 	if (fOn)
 	{
 		if (!FindObject(Find_ID(objShine)))
-			objShine = CreateObject(EnvPack_Candle_Shine, 0, -5, -1);
+			objShine = CreateObjectAbove(EnvPack_Candle_Shine, 0, -5, -1);
 		SetAction("Shine");
 		SetClrModulation(RGB(255, 255, 255));
 		fShine = true;

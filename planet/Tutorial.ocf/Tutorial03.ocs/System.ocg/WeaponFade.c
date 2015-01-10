@@ -38,7 +38,7 @@ protected func FxFadeTimer(object target, effect, int time)
 	if (time >= 330)
 	{
 		target->SetObjAlpha(255);
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -61,10 +61,10 @@ protected func Destruction()
 {
 	if (Inside(GetX(), 0, LandscapeWidth()) && Inside(GetY(), 0, LandscapeHeight())) return;
 
-	var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+	var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 	var x = BoundBy(GetX(), 0, LandscapeWidth());
 	var y = BoundBy(GetY(), 0, LandscapeHeight());
-	var duplicate = CreateObject(GetID(), x, y, GetOwner());
+	var duplicate = CreateObjectAbove(GetID(), x, y, GetOwner());
 	var cnt = this->~GetStackCount();
 	duplicate->~SetStackCount(cnt);
 	if (GetID() == Bow) duplicate->CreateContents(Arrow)->SetStackCount(FindContents(Arrow)->GetStackCount());

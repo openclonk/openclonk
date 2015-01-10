@@ -38,7 +38,7 @@ protected func InitializePlayer(int plr)
 protected func RelaunchPlayer(int plr, int killer)
 {
 	_inherited(plr, killer, ...);
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);

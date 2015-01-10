@@ -48,7 +48,7 @@ public func ControlUse(object clonk, int x, int y)
 /*	else
 		AddEffect("IntLength", this, 1, 10, this);*/
 
-	pWire = CreateObject(Fuse);
+	pWire = CreateObjectAbove(Fuse);
 	pWire->Connect(pDyna, this);
 	Sound("Connect");
 	aWires[iCount-1] = pWire;

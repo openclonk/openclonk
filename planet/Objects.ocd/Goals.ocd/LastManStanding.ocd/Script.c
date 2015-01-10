@@ -27,7 +27,7 @@ protected func Initialize()
 {
 	// Create melee goal if there isn't any.
 	//if (!ObjectCount(Find_ID(Goal_Melee)))
-	//	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
+	//	CreateObjectAbove(Goal_Melee, 0, 0, NO_OWNER);
 	return _inherited(...);
 }
 
@@ -82,7 +82,7 @@ protected func RelaunchPlayer(int plr, int killer)
 				Log("$MsgRelaunchGained$", GetPlayerName(killer));
 			}
 				
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);

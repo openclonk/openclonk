@@ -142,7 +142,7 @@ private func AdjustSolidMaskHelper()
 	{
 		if(!solid_mask_helper)
 		{
-			solid_mask_helper=CreateObject(Shield_SolidMask, 0, 0, NO_OWNER);
+			solid_mask_helper=CreateObjectAbove(Shield_SolidMask, 0, 0, NO_OWNER);
 			solid_mask_helper->SetAction("Attach", Contained());
 		}
 	}

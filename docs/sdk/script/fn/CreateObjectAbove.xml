@@ -4,10 +4,10 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>CreateObject</title>
+    <title>CreateObjectAbove</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>5.1 OC</version>
+    <version>6.0 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -34,20 +34,19 @@
         </param>
       </params>
     </syntax>
-    <desc>Creates an object of the specified type at the specified position. The position will be the center of the new object, so that the object is exactly at the specified coordinates if it is created in global context. xoffset and yoffset are relative to the calling object in local calls, otherwise global.</desc>
+    <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwise global.</desc>
     <examples>
       <example>
         <code>CreateObject(Wipf, 100,100, <funclink>NO_OWNER</funclink>);</code>
-        <text>Creates a wipf at coordinates 100/100 with no owner.</text>
+		<text>Creates a wipf at coordinates 100/100 with no owner. If the landscape begins at y-coordinate 100, then the wipf will be stuck.</text>
+        <code>CreateObjectAbove(Wipf, 150,100, <funclink>NO_OWNER</funclink>);</code>
+        <text>Creates a wipf above coordinates 100/100 with no owner. This time the wipf should be standing on the landscape.</text>
       </example>
     </examples>
-	<remark>
-	The function behaviour has changed since version 6.0 OC: The offset of the object is now created at the specified position, not the bottom center. The old behaviour is used in <code><funclink>CreateObjectAbove</funclink></code>.
-	</remark>
     <related>
       <funclink>CreateConstruction</funclink>
       <funclink>CreateContents</funclink>
-      <funclink>CreateObjectAbove</funclink>
+      <funclink>CreateObject</funclink>
       <funclink>RemoveObject</funclink>
     </related>
   </func>

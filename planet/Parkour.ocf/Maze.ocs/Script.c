@@ -41,7 +41,7 @@ func LaunchPlayer(int plr)
 
 func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk,0,0,plr);
+	var clonk = CreateObjectAbove(Clonk,0,0,plr);
 	if (!clonk) return false;
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
@@ -53,7 +53,7 @@ func CreateBonus(int x, int y, int value, bool is_cooperative)
 	var obj;
 	if (Random(value) > 50)
 	{
-		obj = CreateObject(Signpost, x,y);
+		obj = CreateObjectAbove(Signpost, x,y);
 		if (obj)
 		{
 			if (Random(value) > 5)
@@ -68,7 +68,7 @@ func CreateBonus(int x, int y, int value, bool is_cooperative)
 	}
 	else
 	{
-		obj = CreateObject(Chest, x,y);
+		obj = CreateObjectAbove(Chest, x,y);
 		if (obj)
 		{
 			if (Random(value) > 90) obj->CreateContents(Shovel);
@@ -92,7 +92,7 @@ protected func Initialize()
 	var is_cooperative = (SCENPAR_Goal == 1);
 	var starting_cave = g_caves[0];
 	var goal = FindObject(Find_ID(Goal_RubyHunt));
-	if (!goal) goal = CreateObject(Goal_RubyHunt);
+	if (!goal) goal = CreateObjectAbove(Goal_RubyHunt);
 	goal->SetPosition();
 	goal->SetGoalRect(Rectangle(0, starting_cave.Y-40, starting_cave.X-20, 40));
 	goal->SetCooperative(is_cooperative);
@@ -109,7 +109,7 @@ protected func Initialize()
 			if (cave.dirs == 8)
 			{
 				// Facing downwards. Hard to reach, but cannot place a chest here :(
-				CreateObject(Trunk, cave.X, cave.Y)->SetR(160+Random(41));
+				CreateObjectAbove(Trunk, cave.X, cave.Y)->SetR(160+Random(41));
 			}
 			else
 			{

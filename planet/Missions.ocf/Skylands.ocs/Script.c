@@ -11,7 +11,7 @@ static g_intro_initialized;
 func DoInit(int first_player)
 {
 	// Test
-	//CreateObject(LiftTower, 178,405, first_player);
+	//CreateObjectAbove(LiftTower, 178,405, first_player);
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(15);
 	EnsureObject(Environment_Celestial,0,0,-1);
@@ -24,7 +24,7 @@ func DoInit(int first_player)
 	time->SetTime(600);
 	time->SetCycleSpeed(20);
 	// Goal
-	CreateObject(Goal_Plane);
+	CreateObjectAbove(Goal_Plane);
 	// Plane part restore
 	for (var part in FindObjects(Find_Func("IsPlanePart"))) part->AddRestoreMode();
 	return true;
@@ -33,7 +33,7 @@ func DoInit(int first_player)
 func EnsureObject(id def, int x, int y, int owner)
 {
 	var obj = FindObject(Find_ID(def));
-	if (!obj) obj = CreateObject(def,x,y,owner);
+	if (!obj) obj = CreateObjectAbove(def,x,y,owner);
 	return obj;
 }
 
@@ -69,7 +69,7 @@ func InitializePlayer(int plr)
 func OnPlaneFinished(object plane)
 {
   // todo: outro
-  plane->CreateObject(Plane, 0,0, NO_OWNER);
+  plane->CreateObjectAbove(Plane, 0,0, NO_OWNER);
   plane->RemoveObject();
 }
 

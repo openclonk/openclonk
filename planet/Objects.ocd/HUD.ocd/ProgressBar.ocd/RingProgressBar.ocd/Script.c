@@ -50,7 +50,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	ring[0] = this;
 	
 	for(var i = 1; i < amount; ++i)
-		ring[i] = CreateObject(GetID(), 0, 0, GetOwner());
+		ring[i] = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		
 	var cnt = 0;
 	for(var obj in ring)

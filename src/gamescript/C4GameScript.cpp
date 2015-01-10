@@ -119,7 +119,7 @@ static Nillable<long> FnGetY(C4PropList * _this, long iPrec)
 	return fixtoi(Object(_this)->fix_y, iPrec);
 }
 
-static C4Object *FnCreateObject(C4PropList * _this,
+static C4Object *FnCreateObjectAbove(C4PropList * _this,
                                 C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner)
 {
 	if (Object(_this)) // Local object calls override
@@ -141,6 +141,24 @@ static C4Object *FnCreateObject(C4PropList * _this,
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (pNewObj && Object(_this) && Object(_this)->Controller > NO_OWNER) pNewObj->Controller = Object(_this)->Controller;
+
+	return pNewObj;
+}
+
+static C4Object *FnCreateObject(C4PropList * _this,
+	C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner)
+{
+	C4Object *pNewObj = FnCreateObjectAbove(_this, PropList, iXOffset, iYOffset, owner);
+
+	// would have called FnSetPosition(), but maybe including that header is not desired here
+	// maybe a totally different approach would be even better? Think of a parameter in C4Game::CreateObject?
+	// the problem here is, that the object may flatten the landscape and then get teleported somewhere else
+	// this is usually just a few pixels, but it is still not desirable
+	long iPrec = 1;
+	C4Real i_x = itofix(iXOffset, iPrec), i_y = itofix(iYOffset, iPrec);
+	pNewObj->ForcePosition(i_x, i_y);
+	// update liquid
+	pNewObj->UpdateInLiquid();
 
 	return pNewObj;
 }
@@ -2549,6 +2567,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerColor", FnGetPlayerColor);
 	AddFunc(pEngine, "GetPlrClonkSkin", FnGetPlrClonkSkin);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
+	AddFunc(pEngine, "CreateObjectAbove", FnCreateObjectAbove);
 	AddFunc(pEngine, "CreateConstruction", FnCreateConstruction);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
 	AddFunc(pEngine, "CheckConstructionSite", FnCheckConstructionSite);

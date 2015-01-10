@@ -19,7 +19,7 @@ func Entrance(container)
 func DoSellEffect(container)
 {
 	var value = 0;
-	var fm = CreateObject(FloatingMessage, 0,0, NO_OWNER);
+	var fm = CreateObjectAbove(FloatingMessage, 0,0, NO_OWNER);
 	fm->SetColor(250, 200, 50);
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);

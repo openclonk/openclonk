@@ -329,7 +329,7 @@ public func SetObject(object obj, int type, int pos, int hot, int number, propli
 		{
 			if(!subselector)
 			{
-				subselector = CreateObject(GUI_ExtraSlot,0,0,GetOwner());
+				subselector = CreateObjectAbove(GUI_ExtraSlot,0,0,GetOwner());
 				subselector->SetPosition(GetX()+24,GetY()+24);
 			}
 			subselector->SetContainer(myobject);

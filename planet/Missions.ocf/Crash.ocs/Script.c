@@ -9,12 +9,12 @@ static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
 func DoInit(int first_player)
 {
-	CreateObject(Windmill, 152, 825+48, 0);
+	CreateObjectAbove(Windmill, 152, 825+48, 0);
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
-	CreateObject(Environment_Celestial);
-	var time = CreateObject(Environment_Time);
+	CreateObjectAbove(Environment_Celestial);
+	var time = CreateObjectAbove(Environment_Time);
 	time->SetTime(600);
 	time->SetCycleSpeed(20);
 	// Waterfall
@@ -24,13 +24,13 @@ func DoInit(int first_player)
 	if (windmill) windmill->SetOwner(first_player);
 	
 	// Goal
-	CreateObject(Goal_Plane);
+	CreateObjectAbove(Goal_Plane);
 	
 	// Rules
-	CreateObject(Rule_TeamAccount, 50, 50);
+	CreateObjectAbove(Rule_TeamAccount, 50, 50);
 	
 	// NPC: Merchant.
-	var merchant = CreateObject(Clonk, 76, 870);
+	var merchant = CreateObjectAbove(Clonk, 76, 870);
 	merchant->MakeInvincible();
 	merchant->MakeNonFlammable();
 	merchant->SetSkin(1);

@@ -108,7 +108,7 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 	effect.structure = structure_id;
 	effect.flipable = !structure_id->~NoConstructionFlip();
 	effect.preview = structure_id->~CreateConstructionPreview(clonk);
-	if (!effect.preview) effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
+	if (!effect.preview) effect.preview = CreateObjectAbove(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
 	effect.preview->Set(structure_id, clonk);
 }
 
@@ -184,7 +184,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool bl
 	SetOwner(clonk->GetOwner());
 	// Create construction site
 	var site;
-	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
+	site = CreateObjectAbove(ConstructionSite, x, y, Contained()->GetOwner());
 	/* note: this is necessary to have the site at the exact position x,y. Otherwise, for reasons I don't know, the
 	   ConstructionSite seems to move 2 pixels downwards (on ConstructionSite::Construction() it is still the
 	   original position) which leads to that the CheckConstructionSite function gets different parameters later

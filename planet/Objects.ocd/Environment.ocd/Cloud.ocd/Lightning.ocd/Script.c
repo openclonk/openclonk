@@ -17,7 +17,7 @@ local strength;
 /// \returns \c true if the lightning could be launched, \c false otherwise.
 global func LaunchLightning(int x, int y, int to_strength, int xdir, int ydir, int xdev, int ydev, bool do_gamma)
 {
-	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
+	var lightning = CreateObjectAbove(Lightning, x - GetX(), y - GetY());
 	return lightning && lightning->Launch(x, y, to_strength, xdir, ydir, xdev, ydev, do_gamma);
 }
 
@@ -79,7 +79,7 @@ protected func FxLightningMoveTimer()
 		if (Random(strength) > 5)
 		{
 			var branch_strength = (strength + Random(strength)) / 3;
-			var lightning = CreateObject(Lightning, newx, newy);
+			var lightning = CreateObjectAbove(Lightning, newx, newy);
 			if (lightning)
 				lightning->Launch(newx + GetX(), newy + GetY(), branch_strength, xDir, yDir, xDev, yDev, false);
 			strength -= branch_strength / 4;

@@ -13,8 +13,8 @@ public func Intro_Init(int difficulty)
 		lava_y++;
 	
 	// Create an airplane with pilot and fly it towards the peak.
-	this.airplane = CreateObject(Plane, LandscapeWidth() / 2 - 564, lava_y - 176);
-	this.pilot = CreateObject(Clonk, LandscapeWidth() / 2 - 564, lava_y - 176);
+	this.airplane = CreateObjectAbove(Plane, LandscapeWidth() / 2 - 564, lava_y - 176);
+	this.pilot = CreateObjectAbove(Clonk, LandscapeWidth() / 2 - 564, lava_y - 176);
 	this.pilot->SetName("$PilotName$");
 	this.pilot->SetSkin(2);
 	this.pilot->Enter(this.airplane);
@@ -98,7 +98,7 @@ public func Intro_4()
 	while (!GBackLiquid(LandscapeWidth() / 2, lava_y) && lava_y < LandscapeHeight())
 		lava_y++;
 	// Launch the killing chunk.
-	this.chunk = CreateObject(LavaChunk, LandscapeWidth() / 2, lava_y);
+	this.chunk = CreateObjectAbove(LavaChunk, LandscapeWidth() / 2, lava_y);
 	this.chunk->SetSpeed(36, -100);
 	return ScheduleNext(28);
 }
@@ -127,7 +127,7 @@ public func Intro_6()
 {
 	// Let pilot get away in boompack.
 	this.pilot->Exit();
-	var boompack = this.pilot->CreateObject(Boompack);
+	var boompack = this.pilot->CreateObjectAbove(Boompack);
 	boompack->SetFuel(1000);
 	boompack->SetDirectionDeviation(8);
 	boompack->SetControllable(false);

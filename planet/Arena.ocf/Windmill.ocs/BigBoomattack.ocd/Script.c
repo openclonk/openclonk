@@ -54,7 +54,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 
 public func OnProjectileHit(object shot)
 {
-	shot->CreateObject(Rock,0,0)->Explode(10);
+	shot->CreateObjectAbove(Rock,0,0)->Explode(10);
 	
 	if(hits > 10 * GetPlayerCount())
 	{
@@ -83,7 +83,7 @@ func DoDrill(int angle)
 {
 	var x = Sin(angle+GetR(), 40);
 	var y = -Cos(angle+GetR(), 40);
-	CreateObject(Rock,x,y,GetOwner())->Explode(30);
+	CreateObjectAbove(Rock,x,y,GetOwner())->Explode(30);
 	SetXDir(Sin(GetR(),50), 100);
 	SetYDir(-Cos(GetR(),50), 100);
 }

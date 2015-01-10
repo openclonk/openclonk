@@ -12,15 +12,15 @@ static intro_init;
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
-	CreateObject(Rule_TeamAccount);
-	CreateObject(Rule_BuyAtFlagpole);
+	CreateObjectAbove(Rule_TeamAccount);
+	CreateObjectAbove(Rule_BuyAtFlagpole);
 	
 	// Goal: transport the cannon to the top of the chine.
-	var cannon = CreateObject(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
+	var cannon = CreateObjectAbove(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
 	var keg = cannon->CreateContents(PowderKeg);
 	// Infinite ammo for this cannon.
 	keg->SetPowderCount(nil);
-	var cannon_goal = CreateObject(Goal_Script);
+	var cannon_goal = CreateObjectAbove(Goal_Script);
 	cannon_goal.Name = "$GoalName$";
 	cannon_goal.Description = "$GoalDesc$";
 	// Add an effect to check whether the goal is fulfilled.
@@ -132,7 +132,7 @@ private func InitEnvironment(int map_size, int difficulty)
 		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
-	var trunk = CreateObject(Trunk, waterfall_x + 2, 20);
+	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);
 	trunk->SetR(-30); trunk.Plane = 550;
 	
 	// Cast some additional PXS at the start at random locations.
@@ -217,7 +217,7 @@ private func InitMaterial(int amount)
 	// For medium amount of materials provide a lorry with resources.	
 	if (amount >= 2)
 	{
-		var lorry = CreateObject(Lorry, 72 + RandomX(-12, 12), LandscapeHeight() - 92);
+		var lorry = CreateObjectAbove(Lorry, 72 + RandomX(-12, 12), LandscapeHeight() - 92);
 		lorry->CreateContents(Wood, 6);
 		lorry->CreateContents(Metal, 4);
 		lorry->CreateContents(Rock, 4);

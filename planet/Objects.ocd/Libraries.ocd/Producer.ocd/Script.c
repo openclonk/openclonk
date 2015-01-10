@@ -595,7 +595,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
-	var product = CreateObject(effect.Product);
+	var product = CreateObjectAbove(effect.Product);
 	OnProductEjection(product);
 	
 	return 1;

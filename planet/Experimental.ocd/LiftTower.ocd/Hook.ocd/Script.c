@@ -115,7 +115,7 @@ func Initialize()
 
 func SetRope(bool no_connect)
 {
-	rope = CreateObject(LiftTower_Rope,0,0,NO_OWNER);
+	rope = CreateObjectAbove(LiftTower_Rope,0,0,NO_OWNER);
 	if (!no_connect) rope->Connect(tower, this);
 	tower->SetRope(rope);
 	return rope;

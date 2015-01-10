@@ -71,7 +71,7 @@ global func MakeEdgeFunction(bool fExact)
 	if(fExact) Log("	var d=%v;",d);
 	Log("	for (var i = 0; i < GetLength(x); i++)");
 	Log("	{");
-	Log("		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);");
+	Log("		var edge=CreateObjectAbove(BrickEdge, x[i], y[i], NO_OWNER);");
 	Log("		edge->Initialize();"); //additional initialize for anti self blocking
 	if(fExact)
 	{

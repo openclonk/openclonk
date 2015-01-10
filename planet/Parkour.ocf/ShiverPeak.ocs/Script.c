@@ -9,7 +9,7 @@
 protected func Initialize()
 {
 	// Parkour goal: from bottom to top.
-	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
 	// Start at bottom of the map.
 	var sx = LandscapeWidth() / 2, sy = LandscapeHeight() - 120;
 	goal->SetStartpoint(sx, sy);
@@ -48,7 +48,7 @@ protected func Initialize()
 	/* --Environmental Effects-- */
 
 	// Time
-	var time = CreateObject(Environment_Time);
+	var time = CreateObjectAbove(Environment_Time);
 	time->SetCycleSpeed(0);
 	time->SetTime(900);
 
@@ -67,7 +67,7 @@ protected func Initialize()
 private func PlaceChest()
 {
 	var pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom));
-	var chest = CreateObject(Chest, pos.x, pos.y);
+	var chest = CreateObjectAbove(Chest, pos.x, pos.y);
 
 	var spawnlist = [PowderKeg, DynamiteBox, Dynamite, Loam, Pickaxe, Ropeladder, Torch];
 	for (var i = 0; i < 5; i++)

@@ -1721,7 +1721,7 @@ private func VirtualCursor()
 	}
 	if (!virtual_cursor)
 	{
-		virtual_cursor = CreateObject(GUI_Crosshair,0,0,GetOwner());
+		virtual_cursor = CreateObjectAbove(GUI_Crosshair,0,0,GetOwner());
 	}
 	
 	return virtual_cursor;

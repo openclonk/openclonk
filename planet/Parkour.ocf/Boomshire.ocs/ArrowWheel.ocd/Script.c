@@ -17,7 +17,7 @@ public func ControlUp(object clonk)
 	{	
 		SetAction("SpinLeft");
 		Sound("Chain");
-		var arrw= CreateObject(Arrow,x,y,-1);
+		var arrw= CreateObjectAbove(Arrow,x,y,-1);
 		arrw->Launch(30,80, clonk);
 		arrw->SetGraphics("1");
 		CreateParticle("Straw", 0, 0, PV_Random(-20, 20), PV_Random(-20,20), PV_Random(30, 120), Particles_Straw(), 20);

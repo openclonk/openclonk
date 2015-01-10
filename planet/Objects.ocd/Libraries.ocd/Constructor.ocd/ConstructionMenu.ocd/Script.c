@@ -22,7 +22,7 @@ global func CreateConstructionMenu(object constructor, bool create_at_mouse_pos)
 	if (!(this->~HasMenuControl())) return;
 
 	// Create the menu controller.
-	var controller = CreateObject(Library_ConstructionMenu);
+	var controller = CreateObjectAbove(Library_ConstructionMenu);
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	controller->SetCommander(constructor);
@@ -54,7 +54,7 @@ public func AddMenuStructures(object constructor, object clonk)
 {
 	for (var structure in constructor->GetConstructionPlans(clonk->GetOwner()))
 	{
-		var item = CreateObject(GUI_MenuItem);
+		var item = CreateObjectAbove(GUI_MenuItem);
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(structure);

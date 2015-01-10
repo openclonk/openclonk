@@ -11,7 +11,7 @@ local range, ltype, t;
 global func CreateLight(int x, int y, int range, int light_type, player)
 {
 	// create light object. player may be nil
-	var light = CreateObject(Fx_Light, x, y, player);
+	var light = CreateObjectAbove(Fx_Light, x, y, player);
 	if (light) light->Init(range, light_type);
 	return light;
 }

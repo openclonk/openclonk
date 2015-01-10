@@ -9,7 +9,7 @@ global func Bubble(int amount, int x, int y)
 
 	for (var i = 0; i < amount; i++)
 	{
-		var bubble = CreateObject(Fx_Bubble, x, y, NO_OWNER);
+		var bubble = CreateObjectAbove(Fx_Bubble, x, y, NO_OWNER);
 		if (bubble) bubble.creator = this;
 	}
 	return;
@@ -37,7 +37,7 @@ public func FxMoveTimer(object target, effect, int time)
 	{
 		for (var i = 0; i < 2; i++)
 		{
-			var bubble = CreateObject(Fx_Bubble);
+			var bubble = CreateObjectAbove(Fx_Bubble);
 			bubble->SetCon(2 * target->GetCon() / 3);
 			bubble->SetYDir(target->GetYDir());
 		}

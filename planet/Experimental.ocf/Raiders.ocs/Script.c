@@ -12,7 +12,7 @@ static is_initialized;
 func Initialize()
 {
 	// Goal: Script goal.
-	var goal = CreateObject(Goal_Script);
+	var goal = CreateObjectAbove(Goal_Script);
 	goal.Description = "$GoalDesc1$";
 
 	// Vegetation
@@ -20,7 +20,7 @@ func Initialize()
 	PlaceGrass(20, 0,106);
 
 	// The castle
-	CreateObject(Raiders_CastleBack, 1068, 256, NO_OWNER);
+	CreateObjectAbove(Raiders_CastleBack, 1068, 256, NO_OWNER);
 }
 
 // Player related supplies and structures
@@ -30,11 +30,11 @@ func DoInit(int plr)
 	if (is_initialized) return;
 
 	// Supplies
-	var crate = CreateObject(Crate, 30, FindHeight(30), plr);
+	var crate = CreateObjectAbove(Crate, 30, FindHeight(30), plr);
 	crate->CreateContents(Shovel);
 	crate->CreateContents(Hammer);
 	crate->CreateContents(Axe);
-	crate = CreateObject(Crate, 45, FindHeight(30), plr);
+	crate = CreateObjectAbove(Crate, 45, FindHeight(30), plr);
 	crate->CreateContents(Bread, 3);
 
 	// A flag

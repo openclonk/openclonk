@@ -34,7 +34,7 @@ public func Seed()
 	{
 		// Place the plant but check if it is not close to another one.	
 //		var plant = PlaceVegetation(GetID(), offset, offset, size, size, 3);
-		var seed = CreateObject(Coconut, 0, -35);
+		var seed = CreateObjectAbove(Coconut, 0, -35);
 		seed->SetXDir(-5 + Random(11));
 		seed->SetR(Random(360));
 		seed->SetRDir(RandomX(-5,5));

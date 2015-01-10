@@ -117,7 +117,7 @@ func FxVisualJumpStrikeStart(target, effect, temp)
 	if(temp) return;
 	effect.x_add = 20;
 	if(target->GetXDir() < 0) effect.x_add *= -1;
-	effect.visual = CreateObject(Sword_JumpEffect, 0, 0, nil);
+	effect.visual = CreateObjectAbove(Sword_JumpEffect, 0, 0, nil);
 	effect.visual->Point({x = target->GetX() + effect.x_add, y = target->GetY() + 10}, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
 }
 

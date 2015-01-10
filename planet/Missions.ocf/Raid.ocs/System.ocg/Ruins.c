@@ -35,7 +35,7 @@ global func FxIntRuinOnDamageDamage(object target, fx, int dmg, int cause)
 		else
 		{
 			// other ruins have a separate ID
-			ruin = CreateObject(fx.ruin_id, 0, GetDefBottom()-GetY(), GetOwner());
+			ruin = CreateObjectAbove(fx.ruin_id, 0, GetDefBottom()-GetY(), GetOwner());
 		}
 		// lots of smoke!
 		var particles = Particles_Smoke(true);
@@ -52,7 +52,7 @@ global func FxIntRuinOnDamageDamage(object target, fx, int dmg, int cause)
 			// cast burning wood
 			for (i=-20; i<=20; i+= 20)
 			{
-				var item = CreateObject(Wood, fire.x, fire.y, GetOwner());
+				var item = CreateObjectAbove(Wood, fire.x, fire.y, GetOwner());
 				if (item)
 				{
 					item->SetR(Random(360));
@@ -81,7 +81,7 @@ global func FxIntRuinOnDamageDamage(object target, fx, int dmg, int cause)
 
 global func AddScorch(int x, int y, int r, int strength, int duration)
 {
-	var scorch = CreateObject(Wood, x,y, NO_OWNER);
+	var scorch = CreateObjectAbove(Wood, x,y, NO_OWNER);
 	if (!scorch) return nil;
 	scorch->SetObjectLayer(scorch);
 	scorch->SetR(r);

@@ -28,7 +28,7 @@ global func CreateContentsMenus()
 	if (!(this->~HasMenuControl())) return;
 
 	// Create the menu controller.
-	var controller = CreateObject(GUI_Contents_Controller);
+	var controller = CreateObjectAbove(GUI_Contents_Controller);
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	
@@ -119,7 +119,7 @@ func Hide()
 
 func AddContentMenu(object container, int pos, bool isCrew)
 {
-	var menu = CreateObject(GUI_CircleMenu, 0, 0, GetOwner());
+	var menu = CreateObjectAbove(GUI_CircleMenu, 0, 0, GetOwner());
 
 	menu->SetSymbol(container);
 	menu->SetMenuObject(menu_object);
@@ -246,7 +246,7 @@ private func PutContentsIntoMenu(object menu, object container)
 private func AddContentsMenuItem(object obj, object menu, array stack)
 {
 	// Into the menu item, all the objects of the stack are saved as an array into it's extradata.
-	var item = CreateObject(GUI_MenuItem);
+	var item = CreateObjectAbove(GUI_MenuItem);
 	if (!menu->AddItem(item))
 	{
 		item->RemoveObject();

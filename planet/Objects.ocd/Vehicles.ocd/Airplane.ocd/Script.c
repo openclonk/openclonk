@@ -45,7 +45,7 @@ public func ContainedUseStart(object clonk, int ix, int iy)
 	}
 	else
 	{
-		reticle = CreateObject(GUI_Reticle);
+		reticle = CreateObjectAbove(GUI_Reticle);
 		reticle->SetOwner(clonk->GetController());
 		reticle->SetAction("Show", this);
 	}

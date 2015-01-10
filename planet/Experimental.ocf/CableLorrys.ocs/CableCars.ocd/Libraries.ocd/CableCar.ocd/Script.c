@@ -66,7 +66,7 @@ public func SelectDestination(object select_clonk, object station)
 	effect.select_clonk = select_clonk;
 	effect.station = station;
 	// Helping object
-	effect.cablecar_sel = CreateObject(CableCar_Selector, 0,0, select_clonk->GetOwner());
+	effect.cablecar_sel = CreateObjectAbove(CableCar_Selector, 0,0, select_clonk->GetOwner());
 	effect.cablecar_sel->FixTo(station);
 
 	effect.engaging_station = station;

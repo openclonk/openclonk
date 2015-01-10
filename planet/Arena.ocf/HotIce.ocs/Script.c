@@ -8,7 +8,7 @@ func Initialize()
 	for (i=0; i<6; ++i)
 		if (pos=FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt/2-100), Loc_Wall(CNAT_Bottom))) // Loc_Wall adds us 100 pixels...
 		{
-			var chest = CreateObject(Chest,pos.x,pos.y);
+			var chest = CreateObjectAbove(Chest,pos.x,pos.y);
 			if (chest)
 			{
 				chest->CreateContents(Firestone,5);
@@ -25,12 +25,12 @@ func Initialize()
 	for (i=0; i<30; ++i)
 		if (pos=FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt/2), Loc_Solid()))
 			if (GBackSolid(pos.x,pos.y-1))
-				CreateObject(Firestone,pos.x,pos.y-1);
+				CreateObjectAbove(Firestone,pos.x,pos.y-1);
 	// Some firestones in lower half
 	for (i=0; i<30; ++i)
 		if (pos=FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid()))
 			if (GBackSolid(pos.x,pos.y-1))
-				CreateObject(Firestone,pos.x,pos.y-1);
+				CreateObjectAbove(Firestone,pos.x,pos.y-1);
 	return true;
 }
 

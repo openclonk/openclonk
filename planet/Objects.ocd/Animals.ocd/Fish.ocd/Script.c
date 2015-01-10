@@ -28,7 +28,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 		var spot = FindLocation(Loc_Material("Water"), Loc_Space(50, false), loc_area);
 		if (!spot) continue;
 		
-		f = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		f = CreateObjectAbove(this, spot.x, spot.y, NO_OWNER);
 		if (!f) continue;
 		// Randomly add some large/slim fish
 		if (Random(3))
@@ -360,7 +360,7 @@ func FxPlaceRoeTimer(target, effect, timer)
 	if (!effect.placed)
 	{
 		if (Random(4)) return FX_OK;
-		CreateObject(FishRoe, 0, 0, GetOwner());
+		CreateObjectAbove(FishRoe, 0, 0, GetOwner());
 		effect.placed = true;
 		return FX_OK;
 	}

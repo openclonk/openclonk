@@ -15,7 +15,7 @@ static intro_init;
 protected func Initialize()
 {
 	// Goal: construct an airplane and fill it with gold bars.
-	var goal = CreateObject(Goal_Script);
+	var goal = CreateObjectAbove(Goal_Script);
 	// Add an effect to check whether the goal is fulfilled.
 	var effect = AddEffect("GoalCheck", nil, 100, 2, nil);
 	effect.goal = goal;
@@ -25,9 +25,9 @@ protected func Initialize()
 	goal.Description = Format("$GoalDesc$", effect.barcnt);
 
 	// Some rules.
-	CreateObject(Rule_TeamAccount);
-	CreateObject(Rule_BuyAtFlagpole);
-	CreateObject(Rule_StructureHPBars);
+	CreateObjectAbove(Rule_TeamAccount);
+	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObjectAbove(Rule_StructureHPBars);
 	
 	// Rescale chasm exits.
 	var map_zoom = GetScenarioVal("MapZoom", "Landscape");
@@ -113,8 +113,8 @@ private func InitEnvironment(int difficulty)
 	SetGamma(RGB(0, 0, 0), RGB(128 - dark, 128 - dark, 128 - dark), RGB(255 - 2 * dark, 255 - 2 * dark, 255 - 2 * dark));
 	
 	// Time of days and celestials.
-	CreateObject(Environment_Celestial);
-	var time = CreateObject(Environment_Time);
+	CreateObjectAbove(Environment_Celestial);
+	var time = CreateObjectAbove(Environment_Time);
 	time->SetTime(60 * 20);
 	time->SetCycleSpeed(20);
 		
@@ -299,7 +299,7 @@ global func FxBigEruptionTimer(object target, proplist effect, int time)
 	if (!Random(6))
 	{
 		var angw = 40, lev = 120;
-		var obj = CreateObject(LavaChunk, effect.X + RandomX(-5, 5), effect.Y, NO_OWNER);
+		var obj = CreateObjectAbove(LavaChunk, effect.X + RandomX(-5, 5), effect.Y, NO_OWNER);
 		var ang = - 90 + RandomX(-angw / 2, angw / 2);
 		var xdir = Cos(ang, lev) + RandomX(-3, 3);
 		obj->SetR(Random(360));
@@ -330,7 +330,7 @@ global func TestGoldCount()
 	var pos;
 	while (pos = FindLocation(Loc_Material("Gold")))
 	{
-		var pos = CreateObject(Rock, pos.x, pos.y)->Explode(100);
+		var pos = CreateObjectAbove(Rock, pos.x, pos.y)->Explode(100);
 	}
 	var gold_count = ObjectCount(Find_ID(Nugget));
 	return gold_count;

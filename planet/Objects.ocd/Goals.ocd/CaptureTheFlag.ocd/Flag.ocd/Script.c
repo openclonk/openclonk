@@ -179,7 +179,7 @@ protected func Destruction()
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", GetTeam()));
 	if (base)
 	{
-		var flag = CreateObject(Goal_Flag, 0, 0, GetOwner());
+		var flag = CreateObjectAbove(Goal_Flag, 0, 0, GetOwner());
 		flag->SetTeam(GetTeam());
 		SetAction("AttachBase", base);
 		Log("$MsgFlagRestored$", GetTaggedTeamName(team));

@@ -50,7 +50,7 @@ protected func ControlUse(object clonk, int x, int y)
 	}
 	else // A new power line needs to be created.
 	{
-		line = CreateObject(CableLine, 0, 0, NO_OWNER);
+		line = CreateObjectAbove(CableLine, 0, 0, NO_OWNER);
 		line->SetActionTargets(this, obj);
 		Sound("Connect");
 		clonk->Message("$TxtConnect$", obj->GetName());

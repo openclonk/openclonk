@@ -43,7 +43,7 @@ func Destruction()
 
 func PostInitialize()
 {
-	marker=CreateObject(KingOfTheHill_Marker, 0, -5, NO_OWNER);
+	marker=CreateObjectAbove(KingOfTheHill_Marker, 0, -5, NO_OWNER);
 	marker->SetOrigin(this);
 	CreateStarCircle();
 	AddEffect("Timer", this, 10, 10, this);
@@ -149,7 +149,7 @@ func CreateStarCircle()
 	var cnt=0;
 	for(var i=0;i<360;i+=360/amount)
 	{
-		var star=CreateObject(KingOfTheHill_Star, Sin(i, radius), -Cos(i, radius) + 15);
+		var star=CreateObjectAbove(KingOfTheHill_Star, Sin(i, radius), -Cos(i, radius) + 15);
 		star->Init(this, cnt++);
 		stars[GetLength(stars)]=star;
 	}

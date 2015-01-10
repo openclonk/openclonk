@@ -52,7 +52,7 @@ protected func Construction()
 	
 	
 	// wealth display
-	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
+	wealth = CreateObjectAbove(GUI_Wealth,0,0,GetOwner());
 	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
 	
@@ -118,7 +118,7 @@ private func MakeInventory()
 	var y = 200;
 
 	// and the carry heavy slot
-	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+	var bt = CreateObjectAbove(GUI_Backpack_Slot_Icon,0,0,GetOwner());
 	bt->SetHUDController(this);
 	bt->SetPosition(40+d, y);
 	bt->SetSlotId(-1);
@@ -151,7 +151,7 @@ public func OnGoalUpdate(object goal)
 	{
 		if (!HUDgoal)
 		{
-			HUDgoal = CreateObject(GUI_Goal, 0, 0, GetOwner());
+			HUDgoal = CreateObjectAbove(GUI_Goal, 0, 0, GetOwner());
 			HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
 		}
 		HUDgoal->SetGoal(goal);
@@ -177,7 +177,7 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	var padding = GUI_Marker->GetDefHeight()+5;
 	var hud = FindObject(Find_ID(GUI_Controller),Find_Owner(player));
 	number = hud->GetFreeMarkerPosition();
-	hud.markers[number] = CreateObject(GUI_Marker,0,0,player);
+	hud.markers[number] = CreateObjectAbove(GUI_Marker,0,0,player);
 	hud.markers[number] -> SetPosition(5+(GUI_Marker->GetDefWidth()/2),-240-(GUI_Marker->GetDefHeight()/2) - number*padding);
 	hud.markers[number] -> SetVisual(picture, altpicture);
 	if(inform) hud.markers[number].toInform = inform;
@@ -556,7 +556,7 @@ private func InventoryButton()
 	var i = GetLength(inventory);
 	
 	// create inventory slots
-	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+	var bt = CreateObjectAbove(GUI_Backpack_Slot_Icon,0,0,GetOwner());
 	bt->SetHUDController(this);
 	bt->SetPosition(40, y + d*i);
 	bt->SetSlotId(i);
@@ -602,7 +602,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	// no object yet... create it
 	if(!bt)
 	{
-		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
+		bt = CreateObjectAbove(GUI_ObjectSelector,0,0,GetOwner());
 	}
 
 	bt->SetPosition(401 + pos * spacing, -45);
@@ -651,7 +651,7 @@ private func ClearButtonMessages()
 */
 private func CreateSelectorFor(object clonk)
 {
-	var selector = CreateObject(GUI_CrewSelector,10,10,-1);
+	var selector = CreateObjectAbove(GUI_CrewSelector,10,10,-1);
 	selector->SetCrew(clonk);
 	clonk->SetSelector(selector);
 	return selector;

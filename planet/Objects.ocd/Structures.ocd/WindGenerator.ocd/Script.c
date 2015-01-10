@@ -25,7 +25,7 @@ protected func Construction()
 protected func Initialize()
 {
 	// create wheel
-	(this.wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER))->Set(this);
+	(this.wheel = CreateObjectAbove(WindGenerator_Wheel, 0, 0, NO_OWNER))->Set(this);
 
 	// Start animation
 	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(0, GetAnimationLength(TurnAnimation())), Anim_Const(1000));

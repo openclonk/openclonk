@@ -49,7 +49,7 @@ public func SetHook(object new_hook)
 private func EnsureHook()
 {
 	// Create hook if it went missing
-	if(!hook) hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	if(!hook) hook = CreateObjectAbove(GrappleHook, 0, 0, NO_OWNER);
 	return hook;
 }
 

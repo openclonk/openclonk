@@ -43,7 +43,7 @@ func InitializePlayer(int plr)
 private func InitPowerCrystals(int owner)
 {
 	var positions = [[1013, 59], [1030, 320], [1050, 500], [1000, 660]];
-	for (var pos in positions) CreateObject(PowerCrystals, pos[0], pos[1]+16, owner);
+	for (var pos in positions) CreateObjectAbove(PowerCrystals, pos[0], pos[1]+16, owner);
 	return true;
 }
 
@@ -51,7 +51,7 @@ private func InitBase(int owner)
 {
 	// Create standard base owned by player
 	var y=232;
-	var lorry = CreateObject(Lorry, 2040,y-2, owner);
+	var lorry = CreateObjectAbove(Lorry, 2040,y-2, owner);
 	if (lorry)
 	{
 		lorry->CreateContents(Loam, 6);
@@ -64,16 +64,16 @@ private func InitBase(int owner)
 		lorry->CreateContents(Dynamite, 2);
 		lorry->CreateContents(Pipe, 2);
 	}
-	CreateObject(Pump, 2062,y, owner);
-	CreateObject(Flagpole, 2085,y, owner);
-	CreateObject(WindGenerator, 2110, y, owner);
-	CreateObject(ToolsWorkshop, 2150, y, owner);
-	CreateObject(WindGenerator, 2200, y, owner);
-	CreateObject(WoodenCabin, 2250, y, owner);
+	CreateObjectAbove(Pump, 2062,y, owner);
+	CreateObjectAbove(Flagpole, 2085,y, owner);
+	CreateObjectAbove(WindGenerator, 2110, y, owner);
+	CreateObjectAbove(ToolsWorkshop, 2150, y, owner);
+	CreateObjectAbove(WindGenerator, 2200, y, owner);
+	CreateObjectAbove(WoodenCabin, 2250, y, owner);
 	
-	CreateObject(Foundry, 1793, y, owner);
-	CreateObject(Flagpole, 1819, y, owner);
-	CreateObject(Sawmill, 1845, y, owner);
+	CreateObjectAbove(Foundry, 1793, y, owner);
+	CreateObjectAbove(Flagpole, 1819, y, owner);
+	CreateObjectAbove(Sawmill, 1845, y, owner);
 	return true;
 }
 

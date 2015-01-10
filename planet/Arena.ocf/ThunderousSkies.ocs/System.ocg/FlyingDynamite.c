@@ -16,7 +16,7 @@ func Fall(int from)
 {
 	for(var i=0; i < 7 + Random(2); i++) 
 	{
-		var dyn=CreateObject(Dynamite,0,0,from);
+		var dyn=CreateObjectAbove(Dynamite,0,0,from);
 		dyn->SetController(from);
 		dyn->SetXDir(RandomX(-9,9));
 		dyn->SetYDir(RandomX(-5,8));

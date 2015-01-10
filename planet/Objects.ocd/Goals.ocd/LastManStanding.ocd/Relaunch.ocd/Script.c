@@ -127,7 +127,7 @@ private func RelaunchClonk()
 
 private func GiveWeapon(id weapon_id, bool alt)
 {
-	var newobj = CreateObject(weapon_id);
+	var newobj = CreateObjectAbove(weapon_id);
 	if (weapon_id == Bow)
 		newobj->CreateContents(Arrow);
 	if (weapon_id == Musket)

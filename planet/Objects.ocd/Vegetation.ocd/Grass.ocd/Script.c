@@ -54,7 +54,7 @@ global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky"))
 				if (GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
 					if (Random(100) < amount)
-						CreateObject(Grass, AbsX(x), AbsY(y + 1), NO_OWNER);
+						CreateObjectAbove(Grass, AbsX(x), AbsY(y + 1), NO_OWNER);
 			y += 3;
 		}
 		x += 9;
@@ -80,7 +80,7 @@ global func MakeGrasFunction()
 
 	Log("	for (var i = 0; i < GetLength(x); i++)");
 	Log("	{");
-	Log("		var grass=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);");
+	Log("		var grass=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);");
 	Log("		grass->SetR(r[i]); ");
 	Log("	}");
 	Log("	return;");

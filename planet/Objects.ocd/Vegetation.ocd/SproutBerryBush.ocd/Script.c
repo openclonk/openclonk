@@ -88,7 +88,7 @@ func QuickSprout()
 {
 	for(var i = 0; i < 3; ++i)
 	{
-		var sprout = CreateObject(SproutBerryBush_Sprout, 0, 15, GetOwner());
+		var sprout = CreateObjectAbove(SproutBerryBush_Sprout, 0, 15, GetOwner());
 		++sprout_count;
 		sprout->InitGrown(this);
 	}	
@@ -153,7 +153,7 @@ func Sprout()
 	}
 	
 	// create new sprout
-	var sprout = CreateObject(SproutBerryBush_Sprout, 0, 15, GetOwner());
+	var sprout = CreateObjectAbove(SproutBerryBush_Sprout, 0, 15, GetOwner());
 	++sprout_count;
 	sprout->Init(this);
 	saved_water -= SproutBerryBush_water_per_sprout;

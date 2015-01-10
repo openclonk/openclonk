@@ -14,17 +14,17 @@ static intro_init;
 protected func Initialize()
 {
 	// Goal: Expand your area of influence to secure the ore.
-	var goal = CreateObject(Goal_Expansion);
+	var goal = CreateObjectAbove(Goal_Expansion);
 	goal->SetExpansionGoal(300 + 100 * SCENPAR_Difficulty);
 	
 	// Second goal: Construct metal.
 	var metal_cnt = 10 + 10 * SCENPAR_Difficulty;
-	goal = CreateObject(Goal_Construction);
+	goal = CreateObjectAbove(Goal_Construction);
 	goal->AddConstruction(Metal, metal_cnt);
 	
 	// Rules: team account and buying at flagpole.
-	CreateObject(Rule_TeamAccount);
-	CreateObject(Rule_BuyAtFlagpole);
+	CreateObjectAbove(Rule_TeamAccount);
+	CreateObjectAbove(Rule_BuyAtFlagpole);
 	
 	// Initialize different parts of the scenario.
 	InitEnvironment(SCENPAR_Difficulty);
@@ -108,8 +108,8 @@ private func InitEnvironment(int difficulty)
 	Cloud->Place(20);
 	Cloud->SetPrecipitation("Snow", 20 + 5 * difficulty);
 
-	CreateObject(Environment_Celestial);
-	var time = CreateObject(Environment_Time);
+	CreateObjectAbove(Environment_Celestial);
+	var time = CreateObjectAbove(Environment_Time);
 	time->SetTime(60 * 22);
 	time->SetCycleSpeed(0);
 	
@@ -148,7 +148,7 @@ private func InitAnimals()
 private func InitMaterial(int amount)
 {
 	// An abandoned lorry somewhere close to the highest point of the peak.
-	var lorry = CreateObject(Lorry, LandscapeWidth() / 2, FindHeight(LandscapeWidth() / 2));
+	var lorry = CreateObjectAbove(Lorry, LandscapeWidth() / 2, FindHeight(LandscapeWidth() / 2));
 	lorry->CreateContents(Pickaxe, 2);
 	lorry->CreateContents(Shovel, 2);
 	lorry->CreateContents(Bread, 2 * amount);

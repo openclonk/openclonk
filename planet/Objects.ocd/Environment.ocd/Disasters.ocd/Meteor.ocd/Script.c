@@ -34,7 +34,7 @@ protected func FxIntMeteorControlTimer(object target, proplist effect, int time)
 	if (Random(100) < effect.chance && !Random(10))
 	{
 		// Launch a meteor.
-		var meteor = CreateObject(Meteor);
+		var meteor = CreateObjectAbove(Meteor);
 		var x = Random(LandscapeWidth());
 		var y = 0;
 		var size = RandomX(60, 90);
@@ -54,7 +54,7 @@ func FxIntMeteorControlSaveScen(obj, fx, props)
 
 global func LaunchMeteor(int x, int y, int size, int xdir, int ydir)
 {
-	var meteor = CreateObject(Meteor);
+	var meteor = CreateObjectAbove(Meteor);
 	return meteor->Launch(x, y, size, xdir, ydir);
 }
 

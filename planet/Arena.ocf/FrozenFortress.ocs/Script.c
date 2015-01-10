@@ -9,9 +9,9 @@
 protected func Initialize()
 {
 	// Environment 
-	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	CreateObject(Environment_Celestial);
-	var time=CreateObject(Environment_Time);
+	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(10 * 36);
+	CreateObjectAbove(Environment_Celestial);
+	var time=CreateObjectAbove(Environment_Time);
 	time->SetTime();
 	time->SetCycleSpeed();
 	FindObject(Find_ID(Moon))->SetMoonPhase(3);
@@ -19,35 +19,35 @@ protected func Initialize()
 	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2,150);
 
 	// Goal: Capture the flag, with bases in both hideouts.
-	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
+	var goal = CreateObjectAbove(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
 	goal->SetFlagBase(1, 135, 266);
 	goal->SetFlagBase(2, LandscapeWidth() - 135, 266);
-	CreateObject(Rule_KillLogs);	
+	CreateObjectAbove(Rule_KillLogs);	
 	
-	var gate = CreateObject(StoneDoor, 345, 272, NO_OWNER);
+	var gate = CreateObjectAbove(StoneDoor, 345, 272, NO_OWNER);
 	gate->SetClrModulation(RGB(140,185,255));
 	gate->SetAutoControl(1);
-	var gate = CreateObject(StoneDoor, LandscapeWidth()-344, 272, NO_OWNER);
+	var gate = CreateObjectAbove(StoneDoor, LandscapeWidth()-344, 272, NO_OWNER);
 	gate->SetClrModulation(RGB(140,185,255));
 	gate->SetAutoControl(2);
 
 	// Chests with weapons.
 	var chest;
-	chest = CreateObject(Chest, 60, 220, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 60, 220, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
-	chest = CreateObject(Chest, 150, 370, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 150, 370, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
-	chest = CreateObject(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
+	chest = CreateObjectAbove(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
-	chest = CreateObject(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
+	chest = CreateObjectAbove(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
 
 	
-	chest = CreateObject(Chest, LandscapeWidth()/2, 320, NO_OWNER);
+	chest = CreateObjectAbove(Chest, LandscapeWidth()/2, 320, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 5 * 36);
 	
@@ -141,13 +141,13 @@ global func PlaceEdges()
 	var o=[1,0,3,2];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		var edge=CreateObjectAbove(BrickEdge, x[i], y[i] + 5, NO_OWNER);
 		edge->Initialize();
 		edge->SetP(d[i]);
 		edge->SetPosition(x[i],y[i]);
 		edge->PermaEdge();
 		
-		edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		edge=CreateObjectAbove(BrickEdge, x[i], y[i] + 5, NO_OWNER);
 		edge->Initialize();
 		edge->SetP(o[d[i]]);
 		edge->SetPosition(LandscapeWidth()-x[i],y[i]);
@@ -166,7 +166,7 @@ protected func InitializePlayer(int plr)
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	relaunch->SetRelaunchTime(8, true);
 	return;
@@ -260,7 +260,7 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)

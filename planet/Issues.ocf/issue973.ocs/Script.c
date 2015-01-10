@@ -18,11 +18,11 @@
 func Initialize()
 {
 	// Setup testing environment: one object for context, a second object at the context object, one object at 0,0
-	var ctx = CreateObject(Dummy, 100, 100, NO_OWNER);
+	var ctx = CreateObjectAbove(Dummy, 100, 100, NO_OWNER);
 	ctx->SetName("ctx");
-	var at_origin = CreateObject(Dummy, 0, 0, NO_OWNER);
+	var at_origin = CreateObjectAbove(Dummy, 0, 0, NO_OWNER);
 	at_origin->SetName("at_origin");
-	var at_object = CreateObject(Dummy, ctx->GetX(), ctx->GetY(), NO_OWNER);
+	var at_object = CreateObjectAbove(Dummy, ctx->GetX(), ctx->GetY(), NO_OWNER);
 	at_object->SetName("at_object");
 
 	TEST("object context Find_Distance");

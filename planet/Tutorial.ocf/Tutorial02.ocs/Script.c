@@ -11,91 +11,91 @@ static guide; // guide object.
 protected func Initialize()
 {
 	// Create goal, all crew members should reach the flag on the far right side.
-	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
+	var goal = CreateObjectAbove(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2950, 280);
 		
 	// Create all objects, vehicles, chests used by the player.
 	var effect, firestone, chest, grapple, dynamite;
 	
 	// Dynamite box to blast through mine.
-	var dyn1 = CreateObject(Dynamite, 242, 665, NO_OWNER);
-	var dyn2 = CreateObject(Dynamite, 272, 665, NO_OWNER);
-	var dyn3 = CreateObject(Dynamite, 272, 685, NO_OWNER);
-	var dyn4 = CreateObject(Dynamite, 242, 685, NO_OWNER);
-	var dyn5 = CreateObject(Dynamite, 257, 675, NO_OWNER);
-	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn1, dyn2);
-	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn2, dyn3);
-	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn3, dyn4);
-	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn4, dyn5);
-	var igniter = CreateObject(Igniter, 110, 710, NO_OWNER);
-	CreateObject(Fuse, 240, 685, NO_OWNER)->Connect(dyn5, igniter);
+	var dyn1 = CreateObjectAbove(Dynamite, 242, 665, NO_OWNER);
+	var dyn2 = CreateObjectAbove(Dynamite, 272, 665, NO_OWNER);
+	var dyn3 = CreateObjectAbove(Dynamite, 272, 685, NO_OWNER);
+	var dyn4 = CreateObjectAbove(Dynamite, 242, 685, NO_OWNER);
+	var dyn5 = CreateObjectAbove(Dynamite, 257, 675, NO_OWNER);
+	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn1, dyn2);
+	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn2, dyn3);
+	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn3, dyn4);
+	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn4, dyn5);
+	var igniter = CreateObjectAbove(Igniter, 110, 710, NO_OWNER);
+	CreateObjectAbove(Fuse, 240, 685, NO_OWNER)->Connect(dyn5, igniter);
 	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with catapult stuff.
-	//var hut = CreateObject(WoodenCabin, 570, 740, NO_OWNER);
+	//var hut = CreateObjectAbove(WoodenCabin, 570, 740, NO_OWNER);
 	//hut->SetObjectLayer(hut);
-	chest = CreateObject(Chest, 510, 740, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 510, 740, NO_OWNER);
 	for (var i = 0; i < 3; i++)
 	{
-		firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
+		firestone = CreateObjectAbove(Firestone, 0, 0, NO_OWNER);
 		firestone->Enter(chest);
 		firestone->AddRestoreMode(chest);
 	}
 
 	// Cannon to blast through rock & chest with powderkeg and firestones.
-/*	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER);
+/*	var cannon = CreateObjectAbove(Cannon, 700, 420, NO_OWNER);
 	effect = AddEffect("CannonRestore", cannon, 100, 10);
 	effect.to_x = 700;
 	effect.to_y = 420;*/
 
 	// Catapult to blast through rock & chest with firestones.
-	var catapult = CreateObject(Catapult, 700, 420, NO_OWNER);
+	var catapult = CreateObjectAbove(Catapult, 700, 420, NO_OWNER);
 	effect = AddEffect("CatapultRestore", catapult, 100, 10);
 	effect.to_x = 700;
 	effect.to_y = 420;
 
 	// Chest with flints and dynamite to blast underwater rocks.
-	chest = CreateObject(Chest, 870, 680, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 870, 680, NO_OWNER);
 	for (var i = 0; i < 2; i++)
 	{
-		firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
+		firestone = CreateObjectAbove(Firestone, 0, 0, NO_OWNER);
 		firestone->Enter(chest);
 		firestone->AddRestoreMode(chest);
 	}
-	dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
+	dynamite = CreateObjectAbove(DynamiteBox, 0, 0, NO_OWNER);
 	dynamite->Enter(chest);
 	effect = AddEffect("DynamiteRestore", dynamite, 100, 10);
 	effect.to_container = chest;
 	
 	// Another chest with flints and dynamite to blast underwater rocks.
-	chest = CreateObject(Chest, 950, 600, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 950, 600, NO_OWNER);
 	for (var i = 0; i < 2; i++)
 	{
-		dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
+		dynamite = CreateObjectAbove(DynamiteBox, 0, 0, NO_OWNER);
 		dynamite->Enter(chest);
 		effect = AddEffect("DynamiteRestore", dynamite, 100, 10);
 		effect.to_container = chest;
 	}
-	firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
+	firestone = CreateObjectAbove(Firestone, 0, 0, NO_OWNER);
 	firestone->Enter(chest);
 	firestone->AddRestoreMode(chest);
 	
 	// Chest with Grapplebows for the final leap.
-	chest = CreateObject(Chest, 1520, 700, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 1520, 700, NO_OWNER);
 	for (var i = 0; i < 3; i++)
 	{
-		grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
+		grapple = CreateObjectAbove(GrappleBow, 0, 0, NO_OWNER);
 		grapple->Enter(chest);
 		effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
 		effect.to_container = chest;
 	}
-	var shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
+	var shovel = CreateObjectAbove(Shovel, 0, 0, NO_OWNER);
 	shovel->Enter(chest);
 	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
 	effect.to_container = chest;
 	
 	// Chest with boompack for fast players.
-	chest = CreateObject(Chest, 1800, 660, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 1800, 660, NO_OWNER);
 	chest->CreateContents(Boompack, 2);
 	
 	// Set the mood.
@@ -133,13 +133,13 @@ protected func InitializePlayer(int plr)
 	effect = AddEffect("ClonkOneRestore", clonk, 100, 10);
 	effect.to_x = 200;
 	effect.to_y = 440;
-	grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
+	grapple = CreateObjectAbove(GrappleBow, 0, 0, NO_OWNER);
 	grapple->Enter(clonk);
 	effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
 	effect.to_container = clonk;
 	effect = AddEffect("EquipmentRestore", grapple, 100, 10);
 	effect.to_container = clonk;
-	ropeladder = CreateObject(Ropeladder, 0, 0, NO_OWNER);
+	ropeladder = CreateObjectAbove(Ropeladder, 0, 0, NO_OWNER);
 	ropeladder->Enter(clonk);
 	effect = AddEffect("ClonkContentRestore", ropeladder, 100, 10);
 	effect.to_container = clonk;
@@ -396,7 +396,7 @@ global func FxClonkOneRestoreTimer(object target, effect, int time)
 	// Restore clonk to its original location if there is no hanging rope ladder and clonk has fallen down in first sector.
 	if (target->GetY() > 360 && Inside(target->GetX(), 360, 720) && !FindObject(Find_InRect(340, 310, 30, 80), Find_Func("IsLadder")))
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -443,7 +443,7 @@ global func FxClonkOneRestoreStop(object target, effect, int reason, bool  tempo
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -451,7 +451,7 @@ global func FxClonkOneRestoreStop(object target, effect, int reason, bool  tempo
 		var to_y = effect.to_y;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObject(Clonk, 0, 0, plr);
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		if (GetCursor(plr) == target)
 			SetCursor(plr, clonk);
@@ -459,7 +459,7 @@ global func FxClonkOneRestoreStop(object target, effect, int reason, bool  tempo
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
 		{
-			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
+			var obj = CreateObjectAbove(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
 			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
 			new_effect.to_container = clonk;
@@ -503,7 +503,7 @@ global func FxClonkTwoRestoreStop(object target, effect, int reason, bool  tempo
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -511,7 +511,7 @@ global func FxClonkTwoRestoreStop(object target, effect, int reason, bool  tempo
 		var to_y = effect.to_y;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObject(Clonk, 0, 0, plr);
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		if (GetCursor(plr) == target)
 			SetCursor(plr, clonk);
@@ -519,7 +519,7 @@ global func FxClonkTwoRestoreStop(object target, effect, int reason, bool  tempo
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
 		{
-			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
+			var obj = CreateObjectAbove(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
 			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
 			new_effect.to_container = clonk;
@@ -542,12 +542,12 @@ global func FxDynamiteRestoreStop(object target, effect, int reason, bool  tempo
 {
 	if (reason == 3)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
-		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
+		var restored = CreateObjectAbove(DynamiteBox, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, nil, "DynamiteRestore");
 	}
 	return 1;
@@ -564,7 +564,7 @@ global func FxCatapultRestoreTimer(object target, effect, int time)
 {
 	if ((target->GetX() < 595 && target->GetY() > 415) && !target->Contained())
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -581,7 +581,7 @@ global func FxEquipmentRestoreTimer(object target, effect, int time)
 {
 	if (target->GetX() < 680 && target->GetY() > 340 && !target->Contained())
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -597,12 +597,12 @@ global func FxRopeladderRestoreStop(object target, effect, int reason, bool  tem
 {
 	if (reason == 3)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
-		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
+		var restored = CreateObjectAbove(Ropeladder, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, 0, "RopeladderRestore");
 	}
 	return 1;
@@ -623,12 +623,12 @@ global func FxClonkContentRestoreStop(object target, effect, int reason, bool  t
 {
 	if (reason == 3)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
-		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
+		var restored = CreateObjectAbove(target->GetID(), 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, 0, "ClonkContentRestore");
 	}
 	return 1;

@@ -56,13 +56,13 @@ func Initialize()
 
 func CreateCase()
 {
-	case = CreateObject(ElevatorCase, -19 * GetCalcDir(), 33, GetOwner());
+	case = CreateObjectAbove(ElevatorCase, -19 * GetCalcDir(), 33, GetOwner());
 	case->Connect(this);
 }
 
 func CreateRope()
 {
-	rope = CreateObject(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
+	rope = CreateObjectAbove(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
 	rope->SetAction("Be", case.back);
 }
 

@@ -65,7 +65,7 @@ func FxIntVolcanoControlSaveScen(obj, fx, props)
 
 global func LaunchVolcano(int x, int y, int strength, string material, int angle)
 {
-	var volcano = CreateObject(Volcano);
+	var volcano = CreateObjectAbove(Volcano);
 	return volcano->Launch(x, y, strength, material, angle);
 }
 
@@ -187,7 +187,7 @@ private func Branch()
 	var y = side * Sin(angle, str / 4 - new_str / 4);
 	var new_mat = MaterialName(mat);
 	var new_angle = angle + side * RandomX(5, 15);
-	var volcano = CreateObject(Volcano, x, y, NO_OWNER);
+	var volcano = CreateObjectAbove(Volcano, x, y, NO_OWNER);
 	volcano->Launch(GetX() + x, GetY() + y, new_str, new_mat, new_angle);
 	// Reset volcano.
 	str -= new_str;

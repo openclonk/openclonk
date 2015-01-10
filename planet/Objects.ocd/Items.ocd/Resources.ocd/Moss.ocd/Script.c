@@ -34,7 +34,7 @@ public func ControlUse(object clonk, int x, int y, bool box)
 	{
 		// Plant!
 		clonk->DoKneel();
-		CreateObject(Lichen, x, y, clonk->GetOwner());
+		CreateObjectAbove(Lichen, x, y, clonk->GetOwner());
 		RemoveObject();
 	}
 	else
@@ -92,7 +92,7 @@ protected func TryToLichen()
 	if (!GetMaterialVal("Soil", "Material", GetMaterial(0,y))) return false;
 	if (FindObject(Find_ID(Lichen), Find_Distance(MOSS_MAXDIST))) return false;
 
-	CreateObject(Lichen, 0, y, NO_OWNER);
+	CreateObjectAbove(Lichen, 0, y, NO_OWNER);
 	RemoveObject();
 	return true;
 }

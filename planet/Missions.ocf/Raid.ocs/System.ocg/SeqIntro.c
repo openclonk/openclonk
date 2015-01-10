@@ -106,7 +106,7 @@ func Intro_9()
 func Intro_Stop()
 {
 	npc_newton.has_sequence = false; // continue hammering
-	g_goal = CreateObject(Goal_Raid);
+	g_goal = CreateObjectAbove(Goal_Raid);
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set | PLRZOOM_LimitMax);
 	return true;
 }

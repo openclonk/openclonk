@@ -33,7 +33,7 @@ public func GetDescription(int plr)
 
 public func CreateGoalFlag(int x, int y)
 {
-	flag = CreateObject(TutorialFlag, 0, 0, NO_OWNER);
+	flag = CreateObjectAbove(TutorialFlag, 0, 0, NO_OWNER);
 	flag->SetPosition(x, y);
 }
 

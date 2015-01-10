@@ -316,7 +316,7 @@ public func GetPowerHelperForObject(object who)
 		
 		if (helper == nil) // not yet created?
 		{
-			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+			helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
 			helper.neutral = true;
 			Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = helper;
 		}		
@@ -327,7 +327,7 @@ public func GetPowerHelperForObject(object who)
 		
 		if (helper == nil)
 		{
-			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+			helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
 			Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = helper;
 			
 			// Add to all linked flags.

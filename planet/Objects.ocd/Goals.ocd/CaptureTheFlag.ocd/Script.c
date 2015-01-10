@@ -41,9 +41,9 @@ private func GetScoreGoal()
 
 public func SetFlagBase(int team, int x, int y)
 {
-	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
+	var base = CreateObjectAbove(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
-	var flag = CreateObject(Goal_Flag, x, y, NO_OWNER);
+	var flag = CreateObjectAbove(Goal_Flag, x, y, NO_OWNER);
 	flag->SetAction("AttachBase", base);
 	flag->SetTeam(team);
 	return;
@@ -88,7 +88,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 protected func RelaunchPlayer(int plr)
 {
 	// New clonk.
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	// Join new clonk.
