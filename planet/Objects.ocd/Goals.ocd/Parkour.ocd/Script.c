@@ -42,7 +42,7 @@ protected func Initialize()
 	AddEffect("IntBestTime", this, 100, 1, this);
 	// Activate restart rule, if there isn't any.
 	if (!ObjectCount(Find_ID(Rule_Restart)))
-		CreateObjectAbove(Rule_Restart, 0, 0, NO_OWNER);
+		CreateObject(Rule_Restart, 0, 0, NO_OWNER);
 	// Scoreboard.
 	InitScoreboard();
 	return _inherited(...);

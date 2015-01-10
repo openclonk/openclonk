@@ -4,7 +4,7 @@ static npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
 
 func InitializeObjects()
 {
-	var Rule_BaseRespawn001 = CreateObjectAbove(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
@@ -25,9 +25,9 @@ func InitializeObjects()
 	var Chest0009 = CreateObjectAbove(Chest, 1002, 313);
 	Chest0009.Plane = 50;
 
-	CreateObjectAbove(Rule_TeamAccount, 0, 0);
+	CreateObject(Rule_TeamAccount, 0, 0);
 
-	CreateObjectAbove(Rule_NoPowerNeed, 0, 0);
+	CreateObject(Rule_NoPowerNeed, 0, 0);
 
 	var LargeCaveMushroom0013 = CreateObjectAbove(LargeCaveMushroom, 1308, 1038);
 	LargeCaveMushroom0013->SetClrModulation(0xffe4effc);

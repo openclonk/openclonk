@@ -27,7 +27,7 @@ protected func Initialize()
 {
 	// Create melee goal if there isn't any.
 	//if (!ObjectCount(Find_ID(Goal_Melee)))
-	//	CreateObjectAbove(Goal_Melee, 0, 0, NO_OWNER);
+	//	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	return _inherited(...);
 }
 

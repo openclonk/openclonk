@@ -13,15 +13,15 @@ protected func Initialize()
 	PlaceGrass(185);
 	
 	// Goal: Capture the flag, with bases in both hideouts.
-	var goal = CreateObjectAbove(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
 	goal->SetFlagBase(1, 120, 506);
 	goal->SetFlagBase(2, LandscapeWidth() - 120, 506);
 	
 	// Rules
-	CreateObjectAbove(Rule_Restart);
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(5 * 36);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Rule_Restart);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	var lwidth = LandscapeWidth();
 	

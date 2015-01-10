@@ -24,7 +24,7 @@ func Initialize()
 	CreateObjectAbove(WindGenerator, 1081, 873+offs)->SetR(18);
 	CreateObjectAbove(WindGenerator, 858, 930+offs)->SetR(-10);
 	
-	CreateObjectAbove(Goal_SaveTheWindmills,10,10);
+	CreateObject(Goal_SaveTheWindmills,10,10);
 	PlaceGrass(100, 800, 1400);
 	SetSkyParallax(0,25,25,0,0,0,50);
 	AddEffect("BoomAttack", nil, 100, 35);

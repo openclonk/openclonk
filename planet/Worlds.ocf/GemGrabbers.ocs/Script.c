@@ -16,14 +16,14 @@
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
-	CreateObjectAbove(Rule_TeamAccount);
-	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Goal: Sell Gems, amount depends on difficulty and initial availability.
 	var gems = (4 * GetMaterialCount(Material("Ruby"))) / (5 * GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby")));
 	gems += (4 * GetMaterialCount(Material("Amethyst"))) / (5 * GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst")));
 	var percentage = 55 + 15 * SCENPAR_Difficulty;
-	var goal = CreateObjectAbove(Goal_SellGems);
+	var goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount((gems * percentage) / 100);
 	
 	// Initialize different parts of the scenario.
@@ -91,8 +91,8 @@ protected func InitializePlayer(int plr)
 private func InitEnvironment(int difficulty)
 {
 	// Set time to almost night and have stars.	
-	CreateObjectAbove(Environment_Celestial);
-	var time = CreateObjectAbove(Environment_Time);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
 	time->SetTime(20 * 60 + 15);
 	time->SetCycleSpeed(0);
 	

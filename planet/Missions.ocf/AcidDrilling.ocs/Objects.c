@@ -15,11 +15,11 @@ func InitializeObjects()
 
 	CreateObjectAbove(Trunk, 1924, 272);
 
-	CreateObjectAbove(Rule_TeamAccount, 50, 40);
+	CreateObject(Rule_TeamAccount, 50, 40);
 
-	CreateObjectAbove(Rule_BuyAtFlagpole, 50, 40);
+	CreateObject(Rule_BuyAtFlagpole, 50, 40);
 
-	var Goal_AcidDrilling0036 = CreateObjectAbove(Goal_AcidDrilling, 0, -10);
+	var Goal_AcidDrilling0036 = CreateObject(Goal_AcidDrilling, 0, -10);
 	Goal_AcidDrilling0036->SetBasinPosition(2338, 250);
 
 	var Chest0040 = CreateObjectAbove(Chest, 71, 222);

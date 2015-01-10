@@ -8,7 +8,7 @@ static g_is_initialized;
 
 func DoInit(int first_player)
 {
-	var goal = CreateObjectAbove(Goal_ElevatorEnergy);
+	var goal = CreateObject(Goal_ElevatorEnergy);
 	var elevator = FindObject(Find_ID(Elevator));
 	goal->SetTarget(elevator.case);
 

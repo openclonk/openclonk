@@ -11,7 +11,7 @@ func Initialize()
 	Cloud->Place(40);
 	
 	// Create the parkour goal.
-	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	var mode = PARKOUR_CP_Respawn | PARKOUR_CP_Ordered | PARKOUR_CP_Team;
 	goal->SetStartpoint(20, 1000);
 	goal->AddCheckpoint(760, 950, mode);	

@@ -2,9 +2,9 @@
 
 func InitializeObjects()
 {
-	CreateObjectAbove(Rule_TeamAccount, 50, 50);
+	CreateObject(Rule_TeamAccount, 50, 50);
 
-	CreateObjectAbove(Rule_BuyAtFlagpole, 50, 50);
+	CreateObject(Rule_BuyAtFlagpole, 50, 50);
 
 	CreateObjectAbove(Tree_Coniferous, 962, 839);
 	CreateObjectAbove(Tree_Coniferous, 774, 951);

@@ -41,9 +41,9 @@ private func GetScoreGoal()
 
 public func SetFlagBase(int team, int x, int y)
 {
-	var base = CreateObjectAbove(Goal_FlagBase, x, y, NO_OWNER);
+	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
-	var flag = CreateObjectAbove(Goal_Flag, x, y, NO_OWNER);
+	var flag = CreateObject(Goal_Flag, x, y, NO_OWNER);
 	flag->SetAction("AttachBase", base);
 	flag->SetTeam(team);
 	return;

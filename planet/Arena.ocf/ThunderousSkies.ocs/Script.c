@@ -11,13 +11,13 @@ static ThunderousSkies_air_particles, ThunderousSkies_air_particles_red;
 protected func Initialize()
 {
 	// Goal.
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(8 * 36);
-	var goal = CreateObjectAbove(Goal_KingOfTheHill, 450, 380, NO_OWNER);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(8 * 36);
+	var goal = CreateObject(Goal_KingOfTheHill, 450, 380, NO_OWNER);
 	goal->SetRadius(90);
 	goal->SetPointLimit(5);
 	AddEffect("BlessTheKing",goal,100,1,nil);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));

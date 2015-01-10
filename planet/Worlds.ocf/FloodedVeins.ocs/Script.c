@@ -16,11 +16,11 @@ static first_plr_init;
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
-	CreateObjectAbove(Rule_TeamAccount);
-	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Goal: Sell a certain amount of gems dependent on difficulty.
-	var goal = CreateObjectAbove(Goal_SellGems);
+	var goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(10 * SCENPAR_Difficulty);
 
 	// Initialize different parts of the scenario.

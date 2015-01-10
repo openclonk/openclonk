@@ -8,7 +8,7 @@
 protected func Initialize()
 {
 	// Create parkour goal & checkpoints.
-	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	var mode = PARKOUR_CP_Respawn | PARKOUR_CP_Check | PARKOUR_CP_Ordered;
 	goal->SetStartpoint(90, 820);
 	goal->AddCheckpoint(660, 580, mode);

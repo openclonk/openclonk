@@ -12,7 +12,7 @@ protected func Initialize()
 {
 	// Create the parkour goal.
 	var goal = FindObject(Find_ID(Goal_Parkour));
-	if (!goal) goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	if (!goal) goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	if (!LavaParkour_AllowRespawn) goal->DisableRespawnHandling();
 	// Set start point.
 	goal->SetStartpoint(LandscapeWidth()*2/5, LandscapeHeight()*97/100);

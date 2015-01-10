@@ -4,14 +4,14 @@ func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_RepairStatue));
-	if (!goal) goal = CreateObjectAbove(Goal_RepairStatue);
+	if (!goal) goal = CreateObject(Goal_RepairStatue);
 	var statue = CreateObjectAbove(MinersStatue, 600,736);
 	statue->SetBroken();
 	var statue_head = CreateObjectAbove(MinersStatue_Head, 2200,560);
 	goal->SetStatue(statue);
 	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObjectAbove(Rule_TeamAccount);
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObjectAbove(Rule_BuyAtFlagpole);
+	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
+	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
 	// Mushrooms before any earth materials, because they create their own caves
 	LargeCaveMushroom->Place(15, Rectangle(100,0,600,300));
 	// Create earth materials

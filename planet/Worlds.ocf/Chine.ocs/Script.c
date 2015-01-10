@@ -12,15 +12,15 @@ static intro_init;
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
-	CreateObjectAbove(Rule_TeamAccount);
-	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Goal: transport the cannon to the top of the chine.
 	var cannon = CreateObjectAbove(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
 	var keg = cannon->CreateContents(PowderKeg);
 	// Infinite ammo for this cannon.
 	keg->SetPowderCount(nil);
-	var cannon_goal = CreateObjectAbove(Goal_Script);
+	var cannon_goal = CreateObject(Goal_Script);
 	cannon_goal.Name = "$GoalName$";
 	cannon_goal.Description = "$GoalDesc$";
 	// Add an effect to check whether the goal is fulfilled.

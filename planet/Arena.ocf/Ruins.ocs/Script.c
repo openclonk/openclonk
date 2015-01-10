@@ -10,9 +10,9 @@ static const RUINS_RAIN_PERIOD_TIME=3200;
 protected func Initialize()
 {
 	// Goal.
-	CreateObjectAbove(Goal_LastManStanding, 0, 0, NO_OWNER);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	// Mood.
 	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));
@@ -31,7 +31,7 @@ protected func Initialize()
 	CreateObjectAbove(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
 	
 	// Objects fade after 5 seconds.
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(5 * 36);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
 	// Smooth brick edges.
 	var x=[188, 205, 261, 244, 308, 325];

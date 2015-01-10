@@ -6,7 +6,7 @@ func InitializeObjects()
 	CreateObjectAbove(Grass, 533, 550);
 	CreateObjectAbove(Grass, 1306, 706);
 
-	var Rule_BaseRespawn001 = CreateObjectAbove(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 

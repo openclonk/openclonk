@@ -11,7 +11,7 @@ func InitializeObjects()
 	var Grass003 = CreateObjectAbove(Grass, 228, 1180);
 	Grass003->SetClrModulation(0xffa08060);
 
-	var Rule_BaseRespawn001 = CreateObjectAbove(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
@@ -121,12 +121,12 @@ func InitializeObjects()
 	S2AI->SetEncounterCB(g_king, "EncounterKing");
 	g_king->SetDir(DIR_Left);
 
-	var Goal_Assassination001 = CreateObjectAbove(Goal_Assassination, 0, 0);
+	var Goal_Assassination001 = CreateObject(Goal_Assassination, 0, 0);
 	Goal_Assassination001->SetVictim(g_king);
 
-	CreateObjectAbove(Rule_TeamAccount, 0, 0);
+	CreateObject(Rule_TeamAccount, 0, 0);
 
-	CreateObjectAbove(Rule_NoPowerNeed, 0, 0);
+	CreateObject(Rule_NoPowerNeed, 0, 0);
 
 	var LargeCaveMushroom005 = CreateObjectAbove(LargeCaveMushroom, 1334, 1459);
 	LargeCaveMushroom005->SetClrModulation(0xffd0dbdf);

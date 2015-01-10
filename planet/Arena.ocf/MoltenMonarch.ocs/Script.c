@@ -10,14 +10,14 @@
 protected func Initialize()
 {
 	// Goal.
-	var goal = CreateObjectAbove(Goal_KingOfTheHill, 555, 250, NO_OWNER);
+	var goal = CreateObject(Goal_KingOfTheHill, 555, 250, NO_OWNER);
 	goal->SetRadius(80);
 	goal->SetPointLimit(6);
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	// Objects fade after 7 seconds.
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(7 * 36);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//make lava collapse
 	CreateObjectAbove(Firestone,625,480);

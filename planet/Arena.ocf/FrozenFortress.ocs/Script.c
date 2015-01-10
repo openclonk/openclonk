@@ -9,9 +9,9 @@
 protected func Initialize()
 {
 	// Environment 
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	CreateObjectAbove(Environment_Celestial);
-	var time=CreateObjectAbove(Environment_Time);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
+	CreateObject(Environment_Celestial);
+	var time=CreateObject(Environment_Time);
 	time->SetTime();
 	time->SetCycleSpeed();
 	FindObject(Find_ID(Moon))->SetMoonPhase(3);
@@ -19,10 +19,10 @@ protected func Initialize()
 	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2,150);
 
 	// Goal: Capture the flag, with bases in both hideouts.
-	var goal = CreateObjectAbove(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
 	goal->SetFlagBase(1, 135, 266);
 	goal->SetFlagBase(2, LandscapeWidth() - 135, 266);
-	CreateObjectAbove(Rule_KillLogs);	
+	CreateObject(Rule_KillLogs);	
 	
 	var gate = CreateObjectAbove(StoneDoor, 345, 272, NO_OWNER);
 	gate->SetClrModulation(RGB(140,185,255));

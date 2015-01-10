@@ -11,7 +11,7 @@
 protected func Initialize()
 {
 	// Parkour goal: direction bottom left to upper right.
-	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Start at bottom left corner of the map.
 	var sx = 80, sy = LandscapeHeight() - 350;
 	goal->SetStartpoint(sx, sy);

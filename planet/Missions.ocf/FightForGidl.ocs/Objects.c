@@ -4,13 +4,13 @@ static g_goal, g_object_fade, g_statue, g_doorleft, g_doorright;
 
 func InitializeObjects()
 {
-	CreateObjectAbove(Rule_BuyAtFlagpole, 0, 0);
-	CreateObjectAbove(Rule_TeamAccount, 0, 0);
+	CreateObject(Rule_BuyAtFlagpole, 0, 0);
+	CreateObject(Rule_TeamAccount, 0, 0);
 
-	g_goal = CreateObjectAbove(Goal_ProtectTheStatue, 0, 0);
+	g_goal = CreateObject(Goal_ProtectTheStatue, 0, 0);
 	g_goal.StaticSaveVar = "g_goal";
 
-	g_object_fade = CreateObjectAbove(Rule_ObjectFade, 0, 0);
+	g_object_fade = CreateObject(Rule_ObjectFade, 0, 0);
 	g_object_fade.StaticSaveVar = "g_object_fade";
 
 	g_statue = CreateObjectAbove(Idol, 632, 445);

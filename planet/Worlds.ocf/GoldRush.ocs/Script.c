@@ -12,19 +12,19 @@ static intro_init;
 protected func Initialize()
 {
 	// Rules: team account and buying at flagpole.
-	CreateObjectAbove(Rule_TeamAccount);
-	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Goal: Gain Wealth, amount depends on difficulty, though bounded by availability.
 	var gold = GetMaterialCount(Material("Gold")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Gold"));
 	var percentage = 70 + 10 * SCENPAR_Difficulty;
 	var wealth_goal = Min(200 + 200 * SCENPAR_Difficulty, gold * 5 * percentage / 100);
-	var goal = CreateObjectAbove(Goal_Wealth);
+	var goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(wealth_goal);
 	
 	// Second goal: Construct golden statue, amount depends on difficulty.
 	var statue_cnt = SCENPAR_Difficulty;
-	goal = CreateObjectAbove(Goal_Construction);
+	goal = CreateObject(Goal_Construction);
 	goal->AddConstruction(Idol, statue_cnt);
 	
 	// Initialize different parts of the scenario.
@@ -96,8 +96,8 @@ private func InitEnvironment()
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Water", 8);
-	CreateObjectAbove(Environment_Celestial);
-	var time = CreateObjectAbove(Environment_Time);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
 	time->SetTime(60 * 12);
 	time->SetCycleSpeed(20);
 	return;

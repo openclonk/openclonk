@@ -175,6 +175,6 @@ func Intro_Stop()
 	this.dialogue->AddAttention();
 	this.dialogue->Dlg_Pyrit_StartHammering(npc_pyrit);
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
-	g_goal = CreateObjectAbove(Goal_TreasureHunt, 0, 0);
+	g_goal = CreateObject(Goal_TreasureHunt, 0, 0);
 	return true;
 }

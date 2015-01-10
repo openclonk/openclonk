@@ -12,12 +12,12 @@ protected func Initialize()
 	SetMatAdjust(RGB(255,150,128));
 
 	// Goal.
-	CreateObjectAbove(Goal_DeathMatch, 0, 0, NO_OWNER);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Goal_DeathMatch, 0, 0, NO_OWNER);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(10 * 36);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
 	SetSkyAdjust(RGB(255,128,0));
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	CreateObjectAbove(Column,160,304)->SetClrModulation(RGB(255,100,80));

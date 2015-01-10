@@ -4,16 +4,16 @@ static g_chemical, g_cabin, g_sawmill, g_workshop, g_flagpole, g_windmill, npc_n
 
 func InitializeObjects()
 {
-	var Rule_BaseRespawn01 = CreateObjectAbove(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn01 = CreateObject(Rule_BaseRespawn, 0, 0);
 	Rule_BaseRespawn01->SetInventoryTransfer(true);
 	Rule_BaseRespawn01->SetFreeCrew(true);
 	
 	CreateObjectAbove(Grass, 1121, 429);
 	CreateObjectAbove(Grass, 1185, 444);
 
-	CreateObjectAbove(Rule_NoPowerNeed, 0, 0);
+	CreateObject(Rule_NoPowerNeed, 0, 0);
 
-	CreateObjectAbove(Rule_TeamAccount, 0, 0);
+	CreateObject(Rule_TeamAccount, 0, 0);
 
 	CreateObjectAbove(EnvPack_Scarecrow, 1218, 440);
 

@@ -8,7 +8,7 @@
 protected func Initialize()
 {
 	// Create the parkour goal.
-	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.
 	var x, y, pos;
 	var d = 100;

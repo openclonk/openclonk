@@ -12,7 +12,7 @@ static is_initialized;
 func Initialize()
 {
 	// Goal: Script goal.
-	var goal = CreateObjectAbove(Goal_Script);
+	var goal = CreateObject(Goal_Script);
 	goal.Description = "$GoalDesc1$";
 
 	// Vegetation

@@ -4,10 +4,10 @@ func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_SellGems));
-	if (!goal) goal = CreateObjectAbove(Goal_SellGems);
+	if (!goal) goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(1);
 	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObjectAbove(Rule_TeamAccount);
+	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	// Environment
 	var loc;
 	for (var i=0; i<5; ++i)

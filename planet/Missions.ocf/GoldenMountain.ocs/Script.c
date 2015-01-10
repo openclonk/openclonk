@@ -4,11 +4,11 @@ func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_SellGems));
-	if (!goal) goal = CreateObjectAbove(Goal_SellGems);
+	if (!goal) goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(30);
 	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObjectAbove(Rule_TeamAccount);
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObjectAbove(Rule_BuyAtFlagpole);
+	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
+	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
 	// Environment
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	return true;

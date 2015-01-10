@@ -9,9 +9,9 @@
 protected func Initialize()
 {
 	// Goal and rules.
-	CreateObjectAbove(Goal_LastManStanding, 0, 0, NO_OWNER);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	// Chests with weapons.
 	var chest = CreateObjectAbove(Chest, 108, 248);
@@ -19,7 +19,7 @@ protected func Initialize()
 	AddEffect("IntFillChests", nil, 100, 36, nil, nil, chest);
 
 	// Objects fade after 7 seconds.
-	CreateObjectAbove(Rule_ObjectFade)->DoFadeTime(7 * 36);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	
 	// Some decoration trunks ranks and a waterfall.
 	var trunk = CreateObjectAbove(Trunk, 76, 324);

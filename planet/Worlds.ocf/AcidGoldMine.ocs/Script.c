@@ -10,10 +10,10 @@ protected func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_Wealth));
-	if (!goal) goal = CreateObjectAbove(Goal_Wealth);
+	if (!goal) goal = CreateObject(Goal_Wealth);
 	goal->SetWealthGoal(200); // updated in InitializePlayer
 	// Rules
-	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObjectAbove(Rule_TeamAccount);
+	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	// Acid rain!
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Acid", 100);
@@ -25,8 +25,8 @@ protected func Initialize()
 	Volcano->SetMaterial("DuroLava");
 	Meteor->SetChance(22);
 	// We aren't doing much outside anyway; celestials are a bit of a waste
-	/*CreateObjectAbove(Environment_Celestial);
-	var time = CreateObjectAbove(Environment_Time);
+	/*CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
 	time->SetTime(60*12);
 	time->SetCycleSpeed(20);*/
 	// Starting materials in lorry

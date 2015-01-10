@@ -13,14 +13,14 @@ protected func Initialize()
 	// Environment 
 	PlaceGrass(85);
 	Cloud->Place(15);
-	CreateObjectAbove(Environment_Celestial);
-	var time = CreateObjectAbove(Environment_Time);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
 	time->SetTime(22*60);
 	time->SetCycleSpeed(0);
 	Sound("WindLoop", true, 40, nil, 1);
 	
 	// Goal: Melee, all opponents must be killed.
-	CreateObjectAbove(Goal_Melee, 0, 0, NO_OWNER);
+	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	
 	// First section: Some straw targets to be struck with the sword.
 	CreateObjectAbove(SwordTarget, 190, 673, NO_OWNER)->SetR(RandomX(-10, 10));

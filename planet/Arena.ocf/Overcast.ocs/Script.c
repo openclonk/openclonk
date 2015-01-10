@@ -11,9 +11,9 @@ static Overcast_air_particles;
 protected func Initialize()
 {
 	// Goal.
-	CreateObjectAbove(Goal_LastManStanding);
-	CreateObjectAbove(Rule_KillLogs);
-	CreateObjectAbove(Rule_Gravestones);
+	CreateObject(Goal_LastManStanding);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
 	Cloud->Place(25);

@@ -112,7 +112,7 @@ func InitializeObjects()
 
 	CreateObjectAbove(Fern, 75, 1102);
 
-	CreateObjectAbove(Rule_NoPowerNeed, 0, 0);
+	CreateObject(Rule_NoPowerNeed, 0, 0);
 
 	var Chest0156 = CreateObjectAbove(Chest, 55, 1308);
 	CreateObjectAbove(Chest, 1381, 534);

@@ -12,7 +12,7 @@ static flint_chest; // chest containing flints
 protected func Initialize()
 {
 	// Tutorial goal.
-	var goal = CreateObjectAbove(Goal_ReachFlag, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2330, 1040);
 	
 	// Environment.

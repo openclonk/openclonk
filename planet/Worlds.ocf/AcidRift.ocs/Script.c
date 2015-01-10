@@ -17,11 +17,11 @@ static g_start_x, g_start_y;
 protected func Initialize()
 {
 	// Goal: Ruby mine
-	var goal = CreateObjectAbove(Goal_SellGems);
+	var goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(BoundBy(SCENPAR_Difficulty*10, 10, 20));
 	// Rules: team account and buying at flagpole.
-	CreateObjectAbove(Rule_TeamAccount);
-	CreateObjectAbove(Rule_BuyAtFlagpole);
+	CreateObject(Rule_TeamAccount);
+	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Start position from map generation
 	var map_zoom = 6;

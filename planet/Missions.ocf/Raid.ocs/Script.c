@@ -33,7 +33,7 @@ func Initialize()
 func DoInit(int first_player)
 {
 	StartSequence("Intro", 0, GetCrew(first_player));
-	//g_goal = CreateObjectAbove(Goal_Raid);
+	//g_goal = CreateObject(Goal_Raid);
 	// Prepare trigger for attack sequence
 	for (var tree in FindObjects(Find_Func("IsTree")))
 	{

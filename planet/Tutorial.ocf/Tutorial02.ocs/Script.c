@@ -11,7 +11,7 @@ static guide; // guide object.
 protected func Initialize()
 {
 	// Create goal, all crew members should reach the flag on the far right side.
-	var goal = CreateObjectAbove(Goal_ReachFlag, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2950, 280);
 		
 	// Create all objects, vehicles, chests used by the player.

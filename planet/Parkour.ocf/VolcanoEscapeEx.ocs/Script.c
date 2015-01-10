@@ -12,7 +12,7 @@ protected func Initialize()
 	var w = LandscapeWidth(), h = LandscapeHeight();
 	// Create the parkour goal.
 	var goal = FindObject(Find_ID(Goal_Parkour));
-	if (!goal) goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	if (!goal) goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	goal->DisableRespawnHandling();
 	// Set start and finish point.
 	goal->SetStartpoint(w*2/5, h*93/100);

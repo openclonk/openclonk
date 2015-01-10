@@ -9,7 +9,7 @@
 protected func Initialize()
 {
 	// Parkour goal: from bottom to top.
-	var goal = CreateObjectAbove(Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Start at bottom of the map.
 	var sx = LandscapeWidth() / 2, sy = LandscapeHeight() - 120;
 	goal->SetStartpoint(sx, sy);
@@ -48,7 +48,7 @@ protected func Initialize()
 	/* --Environmental Effects-- */
 
 	// Time
-	var time = CreateObjectAbove(Environment_Time);
+	var time = CreateObject(Environment_Time);
 	time->SetCycleSpeed(0);
 	time->SetTime(900);
 

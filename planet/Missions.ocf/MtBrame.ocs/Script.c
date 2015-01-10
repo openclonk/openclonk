@@ -9,15 +9,15 @@ static g_is_initialized;
 
 func Initialize()
 {
-	if(!ObjectCount(Find_ID(Rule_NoPowerNeed))) CreateObjectAbove(Rule_NoPowerNeed, 0, 0, NO_OWNER);
+	if(!ObjectCount(Find_ID(Rule_NoPowerNeed))) CreateObject(Rule_NoPowerNeed, 0, 0, NO_OWNER);
 }
 
 func DoInit(int first_player)
 {
 	// Set time of day to morning and create some clouds and celestials.
 	Cloud->Place(20);
-	CreateObjectAbove(Environment_Celestial);
-	var time = CreateObjectAbove(Environment_Time);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
 	time->SetTime(400);
 	time->SetCycleSpeed(6);
 	
@@ -26,7 +26,7 @@ func DoInit(int first_player)
 	if (workshop) workshop->SetOwner(first_player);
 
 	// Goal
-	CreateObjectAbove(Goal_GetBack);
+	CreateObject(Goal_GetBack);
 	
 	return true;
 }

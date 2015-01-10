@@ -14,7 +14,7 @@ protected func Initialize()
 	PlaceGrass(85);
 	
 	// Goal: flag goal also checks if all targets are destroyed.
-	var goal = CreateObjectAbove(Goal_ReachFlag, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2230, 292);
 
 	// A chest with javelins.
