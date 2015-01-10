@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Folder.txt</title>
+  <h>Folder.txt</h>
+  <part>
+    <text>Scenario folders can contain a file with certain properties, like ordering of the folders in the front end.</text>
+    <text>
+      <table>
+        <caption id="SektionHead">Section [Head]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>Index</col>
+          <col>Integer</col>
+          <col>Determines the ordering of this folder, folders with low index appear first in the folder list.</col>
+        </row>
+      </table>
+    </text>
+  </part>
+  <author>Maikel</author><date>2015-01</date>
+</doc>

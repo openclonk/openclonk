@@ -37,6 +37,10 @@
         <code>DE:Meine Rundensammlung
 US:My scenario collection</code>        <text>Important: No quotation marks and special characters should be used.</text>
       </dd>
+      <dt id="Foldertxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="folder/folder.html">Folder.txt</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain a file with some properties for the folder.</text>
+      </dd>
       <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
       <dd>
         <text>Scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
