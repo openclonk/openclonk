@@ -12,6 +12,11 @@ static cave_list;
 
 protected func Initialize()
 {
+	// Goals and rules.
+	CreateObject(Goal_LastManStanding);
+	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
+	
 	// Rescale cave coordinates with map zoom and shuffle them.
 	var mapzoom = GetScenarioVal("MapZoom", "Landscape");
 	for (var cave in cave_list)
@@ -34,20 +39,41 @@ protected func Initialize()
 	return;
 }
 
-protected func InitializePlayer(int plr)
+// Callback from the last man standing goal.
+protected func RelaunchCount() 
+{ 
+	// Relaunch count depends on scenario setting.
+	return BoundBy(SCENPAR_NrRelaunches, 0, 3); 
+}
+
+// Callback from the last man standing goal.
+protected func KillsToRelaunch() 
 {
+	// No relaunches awarded for kills.
+	return 0; 
+}
+
+// Callback from the last man standing goal.
+// Takes over the role of initializing the player.
+protected func OnPlayerRelaunch(int plr, int relaunch_cnt)
+{
+	var is_relaunch = relaunch_cnt != RelaunchCount();
 	// Get the only clonk of the player.
 	var clonk = GetCrew(plr);
 	
-	// Players start in a random small cave.
-	var cave = FindStartCave();
+	// Players start in a random small cave, the cave depends on whether it is a relaunch.
+	var cave = FindStartCave(plr, is_relaunch);
 	clonk->SetPosition(cave[0], cave[1]);
 
 	// Players start with a shovel, a pickaxe and two firestones.
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Pickaxe);
 	clonk->CreateContents(Torch);
-	clonk->CreateContents(Firestone, 2);
+	// Better weapons after relaunching.
+	if (!is_relaunch)
+		clonk->CreateContents(Firestone, 2);
+	else
+		clonk->CreateContents(Bow)->CreateContents(BombArrow);
 	
 	// Set the zoom range to be standard low, but allow for zooming out
 	// such that light sources a bit further away can be spotted.
@@ -58,7 +84,7 @@ protected func InitializePlayer(int plr)
 }
 
 // Finds a start cave which is furthest away from the center and from other already used start caves.
-private func FindStartCave()
+private func FindStartCave(int plr, bool is_relaunch)
 {
 	var wdt = LandscapeWidth() / 2;
 	var hgt = LandscapeHeight() / 2;
@@ -77,9 +103,19 @@ private func FindStartCave()
 	for (var index = index_av + 1; index < GetLength(cave_list); index++)
 	{
 		var cave = cave_list[index];
+		// Also furthest away from center cave.
 		var dist = Distance(cave[0], cave[1], wdt, hgt);
-		for (var comp_cave in used_caves)
-			dist = Min(dist, Distance(cave[0], cave[1], comp_cave[0], comp_cave[1]));
+		// For a normal cave take distance to used caves, for a relaunch to alive clonks.
+		if (!is_relaunch)
+		{
+			for (var comp_cave in used_caves)
+				dist = Min(dist, Distance(cave[0], cave[1], comp_cave[0], comp_cave[1]));
+		}
+		else
+		{
+			for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Not(Find_Owner(plr))))
+				dist = Min(dist, Distance(cave[0], cave[1], clonk->GetX(), clonk->GetY()));
+		}
 		if (dist > max_dist)
 		{
 			best_index = index;
@@ -89,10 +125,13 @@ private func FindStartCave()
 	// If no cave has found, spawn in the large cave.
 	if (best_index == nil)
 		return [wdt, hgt];
-	// Move the found cave in front of the separator.
+	// Determine found cave and move it in front of the separator if it is not a relaunch.
 	var found_cave = cave_list[best_index];
-	RemoveArrayIndex(cave_list, best_index);
-	PushFront(cave_list, found_cave);
+	if (!is_relaunch)
+	{
+		RemoveArrayIndex(cave_list, best_index);
+		PushFront(cave_list, found_cave);
+	}
 	// Return the location of the found cave.
 	return found_cave;
 }

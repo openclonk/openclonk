@@ -5,15 +5,14 @@ MinPlayer=2
 Icon=15
 
 [Game]
-Goals=MELE=1;Goal_Melee=1;
-Rules=Rule_KillLogs=1;Rule_Gravestones=1;
+Goals=MELE=1
 
 [Definitions]
 Definition1=Objects.ocd
 
 [Landscape]
-MapWidth=160
-MapHeight=160
+MapWidth=140
+MapHeight=140
 TopOpen=0
 BottomOpen=0
 

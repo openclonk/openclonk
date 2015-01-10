@@ -1,0 +1,11 @@
+# Scenario parameters: number of relaunches
+NrRelaunches=Number of Relaunches
+DescNrRelaunches=Number of additional relaunches, however, the scenario is intended for playing without any additional relaunches.
+RelaunchesZero=Zero
+DescDiffRelaunchesZero=Players have no additional relaunch.
+RelaunchesOne=One
+DescRelaunchesOne=Players have one additional relaunch.
+RelaunchesTwo=Two
+DescRelaunchesTwo=Players have two additional relaunchse.
+RelaunchesThree=Three
+DescRelaunchesThree=Players have three additional relaunches.

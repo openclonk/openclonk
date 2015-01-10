@@ -1,0 +1,11 @@
+# Scenario parameters: number of relaunches
+NrRelaunches=Anzahl der Relaunches
+DescNrRelaunches=Anzahl der zusätzliche Relaunches, aber das Szenario ist optimiert für Runden ohne Relaunches.
+RelaunchesZero=Null
+DescDiffRelaunchesZero=Spieler haben keine zusätzliche Relaunches.
+RelaunchesOne=Eins
+DescRelaunchesOne=Spieler haben ein zusätzlicher Relaunch.
+RelaunchesTwo=Zwei
+DescRelaunchesTwo=Spieler haben zwei zusätzliche Relaunches.
+RelaunchesThree=Drei
+DescRelaunchesThree=Spieler haben drei zusätzliche Relaunches.
