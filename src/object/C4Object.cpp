@@ -1250,7 +1250,7 @@ void C4Object::DoBreath(int32_t iChange)
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
 }
 
-void C4Object::DoCon(int32_t iChange)
+void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 {
 	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	bool fWasFull = (Con>=FullCon);
@@ -1270,7 +1270,10 @@ void C4Object::DoCon(int32_t iChange)
 	// shape and position
 	UpdateShape();
 	// make the bottom-most vertex stay in place
-	fix_y = strgt_con_b - Shape.GetBottom();
+	if (!grow_from_center)
+	{
+		fix_y = strgt_con_b - Shape.GetBottom();
+	}
 	// Face (except for the shape)
 	UpdateFace(false);
 

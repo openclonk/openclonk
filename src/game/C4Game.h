@@ -178,10 +178,10 @@ public:
 	// Object functions
 	void ClearPointers(C4Object *cobj);
 	C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
-	                       int32_t x=50, int32_t y=50, int32_t r=0,
+	                       int32_t x=50, int32_t y=50, int32_t r=0, bool grow_from_center=false,
 	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
 	C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
-	                       int32_t x=50, int32_t y=50, int32_t r=0,
+	                       int32_t x=50, int32_t y=50, int32_t r=0, bool grow_from_center=false,
 	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
 	C4Object *CreateObjectConstruction(C4PropList * type,
 	                                   C4Object *pCreator,
@@ -276,7 +276,7 @@ protected:
 	                     int32_t owner, C4ObjectInfo *info,
 	                     int32_t tx, int32_t ty, int32_t tr,
 	                     C4Real xdir, C4Real ydir, C4Real rdir,
-	                     int32_t con, int32_t iController);
+						 int32_t con, int32_t iController, bool grow_from_center);
 	void ClearObjectPtrs(C4Object *tptr);
 	void ObjectRemovalCheck();
 

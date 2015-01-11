@@ -33,9 +33,9 @@ global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 }
 
 // Sets the completion of this to new_con.
-global func SetCon(int new_con)
+global func SetCon(int new_con, int precision, bool grow_from_center)
 {
-	return DoCon(new_con - GetCon());
+	return DoCon(new_con - GetCon(), precision, grow_from_center);
 }
 
 global func GetObjAlpha()

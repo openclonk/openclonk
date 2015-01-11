@@ -155,10 +155,10 @@ static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, 
 	return C4Void();
 }
 
-static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec)
+static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
 {
 	if (!iPrec) iPrec = 100;
-	Obj->DoCon(FullCon*iChange/iPrec);
+	Obj->DoCon(FullCon*iChange / iPrec, bGrowFromCenter);
 	return C4Void();
 }
 
