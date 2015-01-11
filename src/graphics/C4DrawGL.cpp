@@ -690,13 +690,6 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 
 CStdGL *pGL=NULL;
 
-#ifdef USE_WIN32_WINDOWS
-void CStdGL::TaskOut()
-{
-	if (pCurrCtx) pCurrCtx->Deselect();
-}
-#endif
-
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// Re-create primary clipper to adapt to new size.

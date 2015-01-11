@@ -169,7 +169,6 @@ public:
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef USE_WIN32_WINDOWS
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
-	void TaskOut();
 #endif
 	// Blit
 	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr);

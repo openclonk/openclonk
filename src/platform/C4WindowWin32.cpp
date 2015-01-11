@@ -118,8 +118,6 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			{
 				if (pTexMgr)
 					pTexMgr->IntLock();
-				if (pGL)
-					pGL->TaskOut();
 				if (Application.FullScreenMode())
 				{
 					::ChangeDisplaySettings(NULL, 0);
