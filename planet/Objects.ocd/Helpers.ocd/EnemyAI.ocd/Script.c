@@ -130,7 +130,7 @@ protected func FxS2AIDamage(clonk, fx, int dmg, int cause)
 	// AI takes damage: Make sure we're alert so evasion and healing scripts are executed!
 	// It might also be feasible to execute encounter callbacks here (in case an AI is shot from a position it cannot see).
 	// However, the attacking Clonk is not known and the callback might be triggered e.g. by an unfortunate meteorite or lightning blast.
-	// So let's just keep it at alert state for now.
+	// So let's just keep it at alert state for now
 	if (dmg<0) fx.alert=fx.time;
 	return dmg;
 }
@@ -237,6 +237,7 @@ private func ExecuteProtection(fx)
 	}
 	//Log("OK");
 	// stay alert if there's a target. Otherwise alert state may wear off
+	if (!fx.target) fx.target = FindEmergencyTarget(fx);
 	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > S2AI_AlertTime) fx.alert=nil;
 	// nothing to do
 	return false;
@@ -246,8 +247,9 @@ private func CheckTargetInGuardRange(fx)
 {
 	// if target is not in guard range, reset it and return false
 	if (!Inside(fx.target->GetX()-fx.guard_range.x, -10, fx.guard_range.wdt+9)
-		||!Inside(fx.target->GetY()-fx.guard_range.y, -10, fx.guard_range.hgt+9))
-		{ fx.target=nil; return false; }
+		||!Inside(fx.target->GetY()-fx.guard_range.y, -10, fx.guard_range.hgt+9)) 
+		if (ObjectDistance(fx.target) > 250)
+			{ fx.target=nil; return false; }
 	return true;
 }
 
@@ -584,7 +586,18 @@ private func ExecuteIdle(fx)
 private func FindTarget(fx)
 {
 	// could search for hostile...for now, just search for all other players
-	for (var target in FindObjects(Find_AtRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Find_NoContainer(), Sort_Random()))
+	for (var target in FindObjects(Find_InRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Find_NoContainer(), Sort_Random()))
+		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
+			return target;
+	// nothing found
+	return nil;
+}
+
+private func FindEmergencyTarget(fx)
+{
+	// search nearest enemy clonk in area even if not in guard range
+	// used e.g. when outside guard range (AI fell down) and being attacked
+	for (var target in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Find_NoContainer(), Sort_Distance()))
 		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
 			return target;
 	// nothing found
