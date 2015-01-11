@@ -57,6 +57,14 @@ func Damage()
 	}
 }
 
+/*-- Properties --*/
+
+// This is gives buggy results for the mesh.
+//protected func Definition(def) 
+//{
+//	SetProperty("PictureTransformation", Trans_Translate(0, 0, 20000), def);
+//}
+
 local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 2;
