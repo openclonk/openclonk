@@ -1315,13 +1315,15 @@ if(NOT USE_CONSOLE)
 	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
-	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
+		SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
+		SET(WITH_GLIB ${GTK3_FOUND})
 		target_link_libraries(openclonk
 			${GTK3_LIBRARIES}
 		)
 	else()
+		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
+		SET(WITH_GLIB ${GTK_FOUND})
 		target_link_libraries(openclonk
 			${GTK_LIBRARIES}
 		)
