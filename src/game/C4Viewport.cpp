@@ -630,8 +630,9 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		// Owned viewport: clear any flash message explaining observer menu
 		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	}
-	// Initialize FoW
-	assert(pFoW == NULL);
+	// Initialize FoW -- note that Init() can be called multiple times to
+	// change the player this viewport is showing.
+	if (pFoW == NULL) { delete pFoW; pFoW = NULL; }
 	if (::Landscape.pFoW && Player != NO_OWNER)
 		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(iPlayer));
 	return true;
