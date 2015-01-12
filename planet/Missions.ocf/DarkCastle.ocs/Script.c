@@ -5,8 +5,6 @@
 	@authors Sven2
 */
 
-static const S2DD_InitialRelaunchs = 0;
-
 static g_is_initialized;
 
 static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
