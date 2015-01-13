@@ -13,7 +13,7 @@
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player which receives the construction plan.</desc>
+          <desc>Player which receives or loses the construction plan. If nil, the function is executed for all players.</desc>
         </param>
         <param>
           <type>id</type>
@@ -31,8 +31,8 @@
     <desc>Gives a player a construction plan resp. removes the plan if remove is given.</desc>
     <examples>
       <example>
-        <code>var i, id; <funclink>while</funclink> (id = <funclink>GetDefinition</funclink>(i++)) SetPlrKnowledge(0, id);</code>
-        <text>The first player is given plans to all loaded objects.</text>
+        <code>var i, id; <funclink>while</funclink> (id = <funclink>GetDefinition</funclink>(i++)) SetPlrKnowledge(nil, id);</code>
+        <text>All players are given plans to all loaded objects.</text>
       </example>
     </examples>
     <related>

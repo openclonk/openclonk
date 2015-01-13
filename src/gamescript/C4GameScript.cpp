@@ -842,21 +842,39 @@ static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iCha
 	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id,iLastcount+iChange,true);
 }
 
-static bool FnSetPlrKnowledge(C4PropList * _this, long iPlr, C4ID id, bool fRemove)
+bool FnSetPlrKnowledge(C4Player *player, C4ID id, bool fRemove)
 {
-	C4Player *pPlr=::Players.Get(iPlr);
-	if (!pPlr) return false;
 	if (fRemove)
 	{
-		long iIndex=pPlr->Knowledge.GetIndex(id);
+		long iIndex = player->Knowledge.GetIndex(id);
 		if (iIndex<0) return false;
-		return pPlr->Knowledge.DeleteItem(iIndex);
+		return player->Knowledge.DeleteItem(iIndex);
 	}
 	else
 	{
 		if (!C4Id2Def(id)) return false;
-		return pPlr->Knowledge.SetIDCount(id,1,true);
+		return player->Knowledge.SetIDCount(id, 1, true);
 	}
+}
+
+static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> iPlr, C4ID id, bool fRemove)
+{
+	
+	bool success = false;
+	// iPlr == nil: Call for all players
+	if (iPlr.IsNil())
+	{
+		for (C4Player *player = ::Players.First; player; player = player->Next)
+			if (FnSetPlrKnowledge(player, id, fRemove))
+				success = true;
+	}
+	else
+	{
+		// Otherwise call for requested player
+		C4Player *player = ::Players.Get(iPlr);
+		if (player) success = FnSetPlrKnowledge(player, id, fRemove);
+	}
+	return success;
 }
 
 static C4Value FnGetPlrKnowledge(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
