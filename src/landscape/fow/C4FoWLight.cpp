@@ -344,32 +344,6 @@ void C4FoWLight::DrawIntermediateFadeTriangles(C4FoWDrawStrategy* pen, TriangleL
 	}
 }
 
-bool find_cross(float ax, float ay, float bx, float by,
-                float px, float py, float qx, float qy,
-				float *ix, float *iy, float *abParameter)
-{
-	float denominator = (bx - ax) * (qy - py) - (by - ay) * (qx - px);
-
-	//  if the denominator is zero, the lines are parallel. If the numerator
-	//  is zero, too, the lines are on the same line.
-	if (denominator == 0)
-	{
-		// return false in any of these cases because we are searching for
-		// where the lines *cross*, not where they intersect
-		return false;
-	}
-
-	float numerator =   (ay - py) * (qx - px) - (qy - py) * (ax - px);
-	float abParam = numerator / denominator;
-
-	*ix = ax + abParam * (bx - ax);
-	*iy = ay + abParam * (by - ay);
-
-	if(abParameter) *abParameter = abParam;
-
-	return true;
-}
-
 bool C4FoWLight::IsVisibleForPlayer(C4Player *player) const
 {
 	// check if attached to an object that is not hostile to the given player

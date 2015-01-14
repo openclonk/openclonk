@@ -9,6 +9,8 @@
 
 #include "float.h"
 
+#include <iterator>
+
 C4FoWLightSection::C4FoWLightSection(C4FoWLight *pLight, int r) : pLight(pLight), iRot(r)
 {
 	// Rotation matrices
@@ -387,6 +389,32 @@ int32_t C4FoWLightSection::FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firs
 	return beamCount;
 }
 
+
+// Gives the unique point where the line through (x1,y1) and (x2,y2) crosses
+// through the line through (x3,y3) and (x4,y4). Returns false if the point does
+// not exist or the two lines are parallel.
+static inline bool find_cross(float x1, float y1, float x2, float y2,
+                              float x3, float y3, float x4, float y4,
+                              float *px, float *py, float *pb = NULL)
+{
+	// We are looking for a, b so that
+	//  px = a*x1 + (1-a)*x2 = b*x3 + (1-b)*x4
+	//  py = a*y1 + (1-a)*y2 = b*y3 + (1-b)*y4
+
+	// Cross product
+	float d = (x3-x4)*(y1-y2) - (y3-y4)*(x1-x2);
+	if (d == 0) return false; // parallel - or vector(s) 0
+
+	// We actually just need b - the unique solution
+	// to above equation. A refreshing piece of elementary math
+	// that I got wrong two times.
+	float b = ((y4-y2)*(x1-x2) - (x4-x2)*(y1-y2)) / d;
+	*px = b*x3 + (1-b)*x4;
+	*py = b*y3 + (1-b)*y4;
+	if (pb) *pb = b;
+	return true;
+}
+
 std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *region) const
 {
 	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
@@ -440,7 +468,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			break;
 		scanLevel = bestLevel;
 
-		for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); ++it)
+		for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); it = nextIt)
 		{
 			nextIt = it; ++nextIt;
 			C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt;
@@ -529,14 +557,16 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				// Did we eliminate the surface with this step?
 				if (eliminate && it != result.begin())
 				{
-					// Remove it then (increment iterator so it doesn't get invalidated)
-					result.erase(it++);
-
 					// With the elimination, we need to re-process the last
 					// beam, as it might be more shadowed than we realized.
-					// Note that the last point might have been projected already - 
+					// Note that the last point might have been projected already -
 					// but that's okay
-					--it;
+					nextIt = it; nextIt--;
+
+					// Remove it (note that this invalidates "it". The iterator,
+					// that is.)
+					result.erase(it);
+					continue;
 				}
 
 			// Descending - same, but mirrored. And without comments.
@@ -580,8 +610,11 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				assert(tri.fanRY < nextTri.fanLY);
 				if (eliminate && nextIt != --result.end())
 				{
-					result.erase(it++);
-					if(it != result.begin()) --it;
+					// We remove the next triangle, so re-process this one.
+					nextIt = it;
+					it++;
+					result.erase(it);
+					continue;
 				}
 			}
 
@@ -610,14 +643,14 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				newTriangle.fanRX = crossX;
 				newTriangle.fanRY = crossY;
 
-				result.insert(nextIt, newTriangle);
+				nextIt = result.insert(nextIt, newTriangle);
 
 				// Jump over surface. Note that our right beam might get
 				// eliminated later on, causing us to back-track into this
 				// zero-length pseudo-surface. This will cause find_cross
 				// above to eliminate the pseudo-surface and back-track
 				// further to the left, which is exactly how it should work.
-				++it;
+				++nextIt;
 			}
 
 		} // end for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt = it; it != --result.end(); ++it) loop

@@ -79,13 +79,4 @@ private:
 
 };
 
-/** Finds the point where the line through (ax,ay) and (bx,by) crosses through the line
-    through (px,py) and (qx,qy). Returns false if the lines are parallel, even if they
-	are on the same line. The intersection point it put into (ix,iy). Optionally, if 
-	specified, the abParameter is the parameter torecalculate the point on the line between
-	a and b: a + abParameter * (b-a) = (ix,iy). */
-bool find_cross(float ax, float ay, float bx, float by,
-                float px, float py, float qx, float qy,
-				float *ix, float *iy, float *abParameter = NULL);
-
 #endif
