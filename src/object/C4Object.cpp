@@ -376,20 +376,26 @@ void C4Object::AssignRemoval(bool fExitContents)
 	Status=0;
 	// count decrease
 	Def->Count--;
-	// Kill contents
+
+	// get container for next actions
+	C4Object *pCont = Contained;
+	// remove or exit contents 
 	for (C4Object *cobj : Contents)
 	{
 		if (fExitContents)
-			cobj->Exit(GetX(), GetY());
+		{
+			// move objects to parent container or exit them completely
+			if (!pCont || !cobj->Enter(pCont, false))
+				cobj->Exit(GetX(), GetY());
+		}
 		else
 		{
 			Contents.Remove(cobj);
 			cobj->AssignRemoval();
 		}
 	}
-	// remove from container *after* contents have been removed!
-	C4Object *pCont;
-	if ((pCont=Contained))
+	// remove this object from container *after* its contents have been removed!
+	if (pCont)
 	{
 		pCont->Contents.Remove(this);
 		pCont->UpdateMass();
