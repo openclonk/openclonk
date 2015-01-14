@@ -149,16 +149,29 @@ global func Explode(int level, bool silent)
 
 global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
 {
-	// Container to ContainBlast
+	// If the object is contained, loop through all parent containers until the blast is contained or no container is found.
+	// Blast the containers it passes through and the objects inside them.
 	var container = inobj;
+	var prev_container = nil;
 	while (container)
 	{
-		if (container.ContainBlast)
+		// Determine first whether the container has a parent and if it contains the blast.
+		// This is needed because the container might be exploded 
+		var contains_blast = container.ContainBlast;
+		var parent_container = container->Contained();
+		// Blast the current container, but not the previous container.
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
+		// Break the blasting if this container contains the blast.
+		if (contains_blast)
 			break;
-		else
-			container = container->Contained();
+		// Move one container up if possible.
+		prev_container = container;
+		container = parent_container;
 	}
-
+	// Blast objects outside if there was no final container containing the blast.
+	if (!container)
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
+	
 	// Explosion outside: Explosion effects.
 	if (!container)
 	{
@@ -170,10 +183,6 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 		// Graphic effects.
 		ExplosionEffect(level, x, y);
 	}
-	// Damage in the objects, and outside.
-	BlastObjects(x + GetX(), y + GetY(), level, inobj, cause_plr, layer);
-	if (inobj != container)
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer);
 	
 	// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
 	if (!container)
@@ -246,7 +255,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 /*-- Blast objects & shockwaves --*/
 
 // Damage and hurl objects away.
-global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer)
+global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer, object no_blast)
 {
 	var obj;
 	
@@ -266,7 +275,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 			container->BlastObject(level, cause_plr);
 			if (!container)
 				return true; // Container could be removed in the meanwhile.
-			for (obj in FindObjects(Find_Container(container), Find_Layer(layer)))
+			for (obj in FindObjects(Find_Container(container), Find_Layer(layer), Find_Exclude(no_blast)))
 				if (obj)
 					obj->BlastObject(level, cause_plr);
 		}
@@ -275,7 +284,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	{
 		// Object is outside.
 		// Damage objects at point of explosion.
-		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10,10), Find_NoContainer(), Find_Layer(layer)))
+		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10,10), Find_NoContainer(), Find_Layer(layer), Find_Exclude(no_blast)))
 			if (obj) obj->BlastObject(level, cause_plr);
 
 		// TODO: -> Shockwave in own global func(?)
