@@ -351,6 +351,7 @@ enum C4PropertyName
 	P_SolidMaskPlane,
 	P_Tooltip,
 	P_Placement,
+	P_ContainBlast,
 	P_BlastIncinerate,
 	P_ContactIncinerate,
 	P_Global,

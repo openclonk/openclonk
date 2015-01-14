@@ -208,5 +208,6 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local SpinStep = 30;
+local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;

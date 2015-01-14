@@ -32,7 +32,7 @@ global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr
 	var container = inobj;
 	while (container)
 	{
-		if (container->GetID()->GetDefContainBlast())
+		if (container.ContainBlast)
 			break;
 		else
 			container = container->Contained();
@@ -54,7 +54,7 @@ global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr
 	if (inobj != container)
 		BlastObjectsBlue(x + GetX(), y + GetY(), level, container, cause_plr, layer);
 	
-	// Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
+	// Landschaft zerstï¿½ren. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
 	if (!container)
 		BlastFree(x, y, level, cause_plr);
 

@@ -116,7 +116,6 @@ void C4Def::DefaultDefCore()
 	BorderBound=0;
 	LiftTop=0;
 	GrabPutGet=0;
-	ContainBlast=0;
 	UprightAttach=0;
 	ContactFunctionCalls=0;
 	Line=0;
@@ -254,7 +253,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Rotateable,                    "Rotate",             0                 ));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,               "RotatedEntrance",    0                 ));
 	pComp->Value(mkNamingAdapt(Float,                         "Float",              0                 ));
-	pComp->Value(mkNamingAdapt(ContainBlast,                  "ContainBlast",       0                 ));
 	pComp->Value(mkNamingAdapt(ColorByOwner,                  "ColorByOwner",       0                 ));
 	pComp->Value(mkNamingAdapt(NoHorizontalMove,              "HorizontalFix",      0                 ));
 	pComp->Value(mkNamingAdapt(BorderBound,                   "BorderBound",        0                 ));

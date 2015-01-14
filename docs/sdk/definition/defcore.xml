@@ -166,11 +166,6 @@
           <col>Floatation in liquids: 0 no floatation, otherwise floatation height above the object center.</col>
         </row>
         <row>
-          <literal_col>ContainBlast</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether explosions in the object's contents affect other objects outside.</col>
-        </row>
-        <row>
           <literal_col>ColorByOwner</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the specified sections of the object's graphcis are colored by the player color.</col>

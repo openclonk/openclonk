@@ -156,6 +156,7 @@ local ActMap = {
 func Definition(def) {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(25,0,1,0), Trans_Scale(625)), def);
 }
+local ContainBlast = true;
 local BlastIncinerate = 130;
 local HitPoints = 100;
 local Name = "$Name$";

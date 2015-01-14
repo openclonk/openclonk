@@ -80,4 +80,5 @@ protected func Definition(def)
 }
 
 local Name = "$Name$";
+local ContainBlast = true;
 local HitPoints = 50;

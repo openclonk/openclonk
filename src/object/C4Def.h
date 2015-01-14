@@ -127,7 +127,6 @@ public:
 	int32_t BorderBound;
 	int32_t LiftTop;
 	int32_t GrabPutGet;
-	int32_t ContainBlast;
 	int32_t UprightAttach;
 	int32_t ContactFunctionCalls;
 	int32_t Line;

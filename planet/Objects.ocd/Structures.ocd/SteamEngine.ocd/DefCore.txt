@@ -14,5 +14,4 @@ Components=Rock=6;Metal=3
 Collection=-33,7,12,12
 Exclusive=1
 Construction=1
-ContainBlast=1
 IncompleteActivity=1

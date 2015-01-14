@@ -15,5 +15,4 @@ Entrance=-12,0,13,20
 Exclusive=1
 Construction=1
 Rotate=1
-ContainBlast=1
 RotatedEntrance=1

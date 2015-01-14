@@ -153,7 +153,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	var container = inobj;
 	while (container)
 	{
-		if (container->GetID()->GetDefContainBlast())
+		if (container.ContainBlast)
 			break;
 		else
 			container = container->Contained();

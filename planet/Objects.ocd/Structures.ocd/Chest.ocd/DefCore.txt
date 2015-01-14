@@ -13,4 +13,3 @@ VertexFriction=50,50,100,100
 Components=Wood=2;
 Construction=1
 Mass=10
-ContainBlast=1
