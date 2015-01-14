@@ -4685,6 +4685,7 @@ bool C4Object::StatusActivate()
 	UpdateGraphics(false);
 	UpdateFace(true);
 	UpdatePos();
+	UpdateLight();
 	Call(PSF_OnSynchronized);
 	// done, success
 	return true;
@@ -4698,6 +4699,7 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	// put into inactive list
 	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
+	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
 	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)

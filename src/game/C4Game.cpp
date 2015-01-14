@@ -3397,11 +3397,15 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// set new Objects.c source
 	Game.pScenarioObjectsScript = pLoadSect->pObjectScripts;
+	// remove reference to FoW from viewports, so that we can safely
+	// reload the landscape and its FoW.
+	Viewports.DisableFoW();
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
 	{
 		DebugLog("LoadScenarioSection: Error reiniting game");
+		::Viewports.EnableFoW();
 		return false;
 	}
 	// restore shelved proplists in case loading failed
@@ -3409,8 +3413,9 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// set new current section
 	pCurrentScenarioSection = pLoadSect;
 	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);
-	// resize viewports
+	// resize viewports, and enable lighting again
 	::Viewports.RecalculateViewports();
+	::Viewports.EnableFoW();
 	// done, success
 	return true;
 }

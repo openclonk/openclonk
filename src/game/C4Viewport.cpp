@@ -87,7 +87,7 @@ C4Viewport::~C4Viewport()
 
 void C4Viewport::Clear()
 {
-	if (pFoW) { delete pFoW; pFoW = NULL; }
+	DisableFoW();
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
 	viewX=viewY=0;
@@ -630,12 +630,23 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		// Owned viewport: clear any flash message explaining observer menu
 		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	}
-	// Initialize FoW -- note that Init() can be called multiple times to
-	// change the player this viewport is showing.
-	if (pFoW != NULL) { delete pFoW; pFoW = NULL; }
-	if (::Landscape.pFoW && Player != NO_OWNER)
-		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(iPlayer));
+
+	EnableFoW();
 	return true;
+}
+
+void C4Viewport::DisableFoW()
+{
+	delete pFoW;
+	pFoW = NULL;
+}
+
+void C4Viewport::EnableFoW()
+{
+	DisableFoW();
+
+	if (::Landscape.pFoW && Player != NO_OWNER)
+		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(Player));
 }
 
 extern int32_t DrawMessageOffset;
@@ -883,6 +894,18 @@ bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
 	if (GetViewportCount()!=iLastCount) if (!fSilent)
 			StartSoundEffect("CloseViewport");
 	return true;
+}
+
+void C4ViewportList::DisableFoW()
+{
+	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
+		cvp->DisableFoW();
+}
+
+void C4ViewportList::EnableFoW()
+{
+	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
+		cvp->EnableFoW();
 }
 
 void C4ViewportList::ClearPointers(C4Object *pObj)
