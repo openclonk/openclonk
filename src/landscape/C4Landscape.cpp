@@ -2968,11 +2968,6 @@ bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32
 	return true;
 }
 
-bool C4Landscape::FindMatPathPull(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid)
-{
-	// TODO
-	return true;
-}
 int32_t C4Landscape::AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t hgt)
 {
 	int32_t cx,cy,ascnt=0;
