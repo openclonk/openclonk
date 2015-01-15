@@ -1,0 +1,2 @@
+Name=Lorry Fragment
+Description=Fragment of the lorry created on explosion.

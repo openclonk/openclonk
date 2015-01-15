@@ -122,6 +122,52 @@ func TurnWheels()
 	}
 }
 
+protected func Damage(int change, int cause, int by_player)
+{
+	// Only explode the lorry on blast damage.
+	if (cause != FX_Call_DmgBlast)
+		return _inherited(change, cause, by_player, ...);
+	// Explode the lorry when it has taken to much damage.
+	if (GetDamage() > 100)
+	{
+		// Only exit objects and parts if this lorry is not contained.
+		if (!Contained())
+		{
+			// First eject the contents in different directions.
+			for (obj in FindObjects(Find_Container(this)))
+			{
+				var speed = RandomX(3, 5);
+				var angle = Random(360);
+				var dx = Cos(angle, speed);
+				var dy = Sin(angle, speed);
+				obj->Exit(RandomX(-4, 4), RandomX(-4, 4), Random(360), dx, dy, RandomX(-20, 20));		
+			}
+	
+			// Toss around some fragments with particles attached.
+			for (var i = 0; i < 6; i++)
+			{
+				var fragment = CreateObject(LorryFragment, RandomX(-4, 4), RandomX(-4, 4), GetOwner());
+				var speed = RandomX(40, 60);
+				var angle = Random(360);
+				var dx = Cos(angle, speed);
+				var dy = Sin(angle, speed);
+				fragment->SetXDir(dx, 10);
+				fragment->SetYDir(dy, 10);
+				fragment->SetR(360);
+				fragment->SetRDir(RandomX(-20, 20));
+				// Set the controller of the fragments to the one causing the blast for kill tracing.
+				fragment->SetController(by_player);
+				// Incinerate the fragments.
+				fragment->Incinerate();
+			}		
+		}
+		// Remove the lorry itself, eject possible contents as they might have entered again.
+		// Or let the engine eject the contents if it is inside a container.
+		return RemoveObject(true);	
+	}
+	return _inherited(change, cause, by_player, ...);
+}
+
 local ActMap = {
 		Drive = {
 			Prototype = Action,
