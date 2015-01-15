@@ -5,7 +5,6 @@
 #include "C4FoWRegion.h"
 #include "C4DrawGL.h"
 
-const float C4FoWDrawLightTextureStrategy::C4FoWSmooth = 8.0;
 
 void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 {
@@ -41,7 +40,7 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadeLight
 		float normX = BoundBy(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
 		float normY = BoundBy(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
 		if(shadeLight)  glColor3f(0.5f, normX, normY);
-		else            glColor3f(0.0f, normX, normY);
+		else            glColor3f(0.0f, 0.5f/1.5f, 0.5f/1.5f);
 	}
 	else
 	{
