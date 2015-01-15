@@ -910,7 +910,7 @@ namespace C4GUI
 		void SetScrollPos(int32_t iToPos) { iScrollPos = iToPos * GetMaxScroll() / (iCBMaxRange-1); }
 
 		friend class ScrollWindow;
-		friend class C4ScriptGuiWindow;
+		friend class ::C4ScriptGuiWindow;
 	};
 
 	// a window that can be scrolled
