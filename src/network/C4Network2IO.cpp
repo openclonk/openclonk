@@ -499,7 +499,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 			return false;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnConn: %s %s",
+	Application.InteractiveThread.ThreadLogS("OnConn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
@@ -553,7 +553,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 			return;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnDisconn: %s %s",
+	Application.InteractiveThread.ThreadLogS("OnDisconn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
@@ -581,8 +581,11 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 
 void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
+#if C4NET2IO_DUMP_LEVEL > 0
+	auto tTime = C4TimeMilliseconds::Now();
+#endif
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnPacket: %s status %02x %s",
+	Application.InteractiveThread.ThreadLogS("OnPacket: %s status %02x %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
@@ -593,7 +596,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 #if(C4NET2IO_DUMP_LEVEL > 2)
 	uint32_t iFindConnectionBlocked = C4TimeMilliseconds::Now() - tTime;
 	if (iFindConnectionBlocked > 100)
-		ThreadLogS("OnPacket: ... blocked %d ms for finding the connection!", iFindConnectionBlocked);
+		Application.InteractiveThread.ThreadLogS("OnPacket: ... blocked %d ms for finding the connection!", iFindConnectionBlocked);
 #endif
 	// notify
 	pConn->OnPacketReceived(rPacket.getStatus());
@@ -603,7 +606,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	uint32_t iHandlingBlocked = C4TimeMilliseconds::Now() - tTime;
 	if (iHandlingBlocked > 100)
-		ThreadLogS("OnPacket: ... blocked %d ms for handling!", iHandlingBlocked);
+		Application.InteractiveThread.ThreadLogS("OnPacket: ... blocked %d ms for handling!", iHandlingBlocked);
 #endif
 }
 
@@ -871,7 +874,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 					uint32_t iBlockedTime = C4TimeMilliseconds::Now() - tStart;
 					if (fThread && iBlockedTime > 100)
 					{
-						ThreadLogS("HandlePacket: ... blocked for %u ms!", iBlockedTime);
+						Application.InteractiveThread.ThreadLogS("HandlePacket: ... blocked for %u ms!", iBlockedTime);
 					}
 #endif
 
