@@ -28,6 +28,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <tlhelp32.h>
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#else
+
+#endif
 
 static bool FirstCrash = true;
 
@@ -59,7 +64,9 @@ namespace {
 #define LOG_DYNAMIC_TEXT(...) write(fd, DumpBuffer, LOG_SNPRINTF(DumpBuffer, DumpBufferSize-1, __VA_ARGS__))
 
 // Figure out which kind of format string will output a pointer in hex
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(PRIdPTR)
+#	define POINTER_FORMAT_SUFFIX PRIdPTR
+#elif defined(_MSC_VER)
 #	define POINTER_FORMAT_SUFFIX "Ix"
 #elif defined(__GNUC__)
 #	define POINTER_FORMAT_SUFFIX "zx"
