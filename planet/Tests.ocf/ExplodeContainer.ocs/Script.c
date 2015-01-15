@@ -22,6 +22,7 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	SetFoW(false, plr);
 	GetCrew(plr)->SetPosition(120, 190);
+	GetCrew(plr)->MakeInvincible();
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
@@ -218,7 +219,11 @@ global func Test4_OnStart(int plr)
 
 global func Test4_Completed()
 {
-	if (ObjectCount(Find_ID(Lorry)) == 1)
+	if (ObjectCount(Find_ID(Lorry), Find_Damage(78)) == 1 &&
+	    ObjectCount(Find_ID(Lorry), Find_Damage(52)) == 1 &&
+	    ObjectCount(Find_ID(Lorry), Find_Damage(26)) == 1 &&
+	    ObjectCount(Find_ID(Rock), Find_Damage(52)) == 1 &&
+	    ObjectCount(Find_ID(Rock), Find_Damage(26)) == 2)
 		return true;
 	return false;
 }
@@ -230,4 +235,72 @@ global func Test4_OnFinished()
 	return;
 }
 
+global func Test5_OnStart(int plr)
+{
+	var lorry1 = CreateObject(Lorry, 200, 200);
+	lorry1.ContainBlast = true;
+	lorry1->CreateContents(Rock);
+	lorry1->CreateContents(Dynamite, 2)->Fuse();
+	lorry1->CreateContents(Dynamite)->Fuse();
+	lorry1->CreateContents(Dynamite)->Fuse();
+	Log("Test handling of the destruction of a contained blast container.");
+	return true;
+}
 
+global func Test5_Completed()
+{
+	if (ObjectCount(Find_ID(Rock), Find_Damage(4 * 26)) == 1 && ObjectCount(Find_ID(LorryFragment)) == 0)
+		return true;
+	return false;
+}
+
+global func Test5_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Lorry), Find_ID(Rock)));
+	DrawMaterialQuad("Earth", 0, LandscapeHeight() / 2, LandscapeWidth(), LandscapeHeight() / 2, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight(), true); 
+	return;
+}
+
+global func Test6_OnStart(int plr)
+{
+	var lorry1 = CreateObject(Lorry, 200, 200);
+	var lorry2 = CreateObject(Lorry, 200, 200);
+	var lorry3 = CreateObject(Lorry, 200, 200);
+	lorry1->Enter(lorry2);
+	lorry2->Enter(lorry3);
+	lorry2.ContainBlast = true;
+	lorry1->CreateContents(Rock);
+	lorry2->CreateContents(Rock);
+	lorry3->CreateContents(Rock);
+	lorry1->CreateContents(Dynamite)->Fuse();
+	lorry2->CreateContents(Dynamite)->Fuse();
+	lorry2->CreateContents(Dynamite);
+	lorry3->CreateContents(Dynamite)->Fuse();
+	Log("Tests damage done to nested containers and objects inside, when one in the middle explodes.");
+	return true;
+}
+
+global func Test6_Completed()
+{
+	// Open question on expected behaviour.
+	return false;
+}
+
+global func Test6_OnFinished()
+{
+	RemoveAll(Find_Or(Find_ID(Lorry), Find_ID(Rock)));
+	DrawMaterialQuad("Earth", 0, LandscapeHeight() / 2, LandscapeWidth(), LandscapeHeight() / 2, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight(), true); 
+	return;
+}
+
+/*-- Helper Functions --*/
+
+global func Find_Damage(int amount)
+{
+	return [C4FO_Func, "Find_DamageCheck", amount];
+}
+
+global func Find_DamageCheck(int amount)
+{
+	return GetDamage() == amount;
+}
