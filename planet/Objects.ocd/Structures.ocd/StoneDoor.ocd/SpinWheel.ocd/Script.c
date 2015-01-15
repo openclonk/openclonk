@@ -10,7 +10,7 @@ public func Initialize()
 public func SetStoneDoor(object door)
 {
 	targetdoor = door;
-	return;
+	return true;
 }
 
 public func ControlUp(object clonk)
@@ -40,6 +40,14 @@ public func SaveScenarioObject(props)
 	if (!inherited(props, ...)) return false;
 	if (targetdoor) props->AddCall("Target", this, "SetStoneDoor", targetdoor);
 	return true;
+}
+
+func ConnectNearestDoor()
+{
+	// EditCursor helper command: Connect to nearest door. Return connected door.
+	var door = FindObject(Find_ID(StoneDoor), Sort_Distance());
+	if (door) SetStoneDoor(door);
+	return door;
 }
 
 local ActMap = {
@@ -73,9 +81,12 @@ local ActMap = {
 };
 local Name = "$Name$";
 local Touchable = 2;
+local EditCursorCommands = ["ControlUp()", "ControlDown()", "ConnectNearestDoor()"];
 
 func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Scale(800), Trans_Translate(0,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(-30,0,1,0)), def);
 	SetProperty("MeshTransformation", Trans_Rotate(-13,0,1,0), def);
 }
+
+

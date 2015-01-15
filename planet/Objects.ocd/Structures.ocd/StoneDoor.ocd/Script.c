@@ -146,3 +146,4 @@ local ActMap = {
 	},
 };
 local Name = "$Name$";
+local EditCursorCommands = ["OpenDoor()", "CloseDoor()"];
