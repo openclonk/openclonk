@@ -3618,6 +3618,9 @@ bool C4Game::ToggleChat()
 
 void C4Game::SetDefaultGamma()
 {
+	// Skip this if graphics haven't been initialized yet (happens when
+	// we bail during initialization)
+	if (!pDraw) return;
 	// Default gamma ramps
 	for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
 	{
