@@ -10,9 +10,9 @@ func Intro_Start()
 	SetWind(-100);
 	SetSkyParallax(0, 20, 20, -10, 0);
 	
-	this.plane = CreateObject(Plane, 500, 200);
+	this.plane = CreateObjectAbove(Plane, 500, 200);
 	this.plane->SetColor(0xa04000);
-	this.pilot = CreateObject(Clonk, 100, 100, NO_OWNER);
+	this.pilot = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();
 	this.pilot->SetSkin(2);

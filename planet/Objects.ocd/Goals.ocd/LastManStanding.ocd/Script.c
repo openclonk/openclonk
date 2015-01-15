@@ -53,11 +53,13 @@ private func KillsToRelaunch()
 
 protected func InitializePlayer(int plr)
 {
+	// First process relaunches, etc.
+	_inherited(plr, ...);
 	// Join plr.
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRelaunch", plr);
-	return _inherited(plr, ...);
+	GameCall("OnPlayerRelaunch", plr, GetRelaunchCount(plr));
+	return;
 }
 
 protected func RelaunchPlayer(int plr, int killer)
@@ -80,12 +82,12 @@ protected func RelaunchPlayer(int plr, int killer)
 				Log("$MsgRelaunchGained$", GetPlayerName(killer));
 			}
 				
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRelaunch", plr);
+	GameCall("OnPlayerRelaunch", plr, GetRelaunchCount(plr));
 	// Show scoreboard for a while.
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);

@@ -29,7 +29,41 @@
 
 #include <C4Record.h>
 
-C4DefList::C4DefList()
+#include <StdMeshLoader.h>
+
+namespace
+{
+	class C4SkeletonManager : public StdMeshSkeletonLoader
+	{
+		virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const
+		{
+			//DebugLogF("GetSkeletonByDefinition %s", definition);
+
+			// find the definition
+			C4Def* def = ::Definitions.ID2Def(C4ID(definition));
+			if (!def)
+			{
+				DebugLogF("WARNING: Looking up skeleton from definition '%s' failed, because there is no such definition with that ID", definition);
+				return NULL;
+			}
+
+			// append animations, if the definition has a mesh
+			if (!def->Graphics.IsMesh())
+			{
+				DebugLogF("WARNING: Looking up skeleton from definition '%s' failed, because the definition has no mesh", definition);
+				return NULL;
+			}
+			else
+			{
+				StdMesh* mesh = def->Graphics.Mesh;
+
+				return &(mesh->GetSkeleton());
+			}
+		}
+	};
+}
+
+C4DefList::C4DefList() : SkeletonLoader(new C4SkeletonManager)
 {
 	Default();
 }
@@ -67,7 +101,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	// Load primary definition
 	if ((nDef=new C4Def))
 	{
-		if ( nDef->Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem) && Add(nDef,fOverload) )
+		if (nDef->Load(hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem) && Add(nDef, fOverload))
 			{ iResult++; fPrimaryDef=true; }
 		else
 			{ delete nDef; }
@@ -189,6 +223,8 @@ void C4DefList::Clear()
 	FirstDef=NULL;
 	// clear quick access table
 	table.clear();
+	// clear loaded skeletons
+	SkeletonLoader->Clear();
 }
 
 C4Def* C4DefList::ID2Def(C4ID id)
@@ -348,20 +384,26 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	if (!pDef) return false;
 	// backup graphics names and pointers
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
-	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
+	C4DefGraphicsPtrBackup GfxBackup;
+	GfxBackup.Add(&pDef->Graphics);
 	// Clear def
 	pDef->Clear(); // Assume filename is being kept
 	// Reload def
 	C4Group hGroup;
 	if (!hGroup.Open(pDef->Filename)) return false;
-	if (!pDef->Load( hGroup, dwLoadWhat, szLanguage, pSoundSystem )) return false;
+	// clear all skeletons in that group, so that deleted skeletons are also deleted in the engine
+	SkeletonLoader->RemoveSkeletonsInGroup(hGroup.GetName());
+	// load the definition
+	if (!pDef->Load( hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem)) return false;
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();
+	// handle skeleton appends and includes
+	AppendAndIncludeSkeletons();
 	// update script engine - this will also do include callbacks and Freeze() this
 	::ScriptEngine.ReLink(this);
 	// restore graphics
-	GfxBackup.AssignUpdate(&pDef->Graphics);
+	GfxBackup.AssignUpdate();
 	// Success
 	return true;
 }
@@ -410,4 +452,14 @@ void C4DefList::BuildTable()
 	table.clear();
 	for (C4Def *def = FirstDef; def; def = def->Next)
 		table.insert(std::make_pair(def->id, def));
+}
+
+void C4DefList::AppendAndIncludeSkeletons()
+{
+	SkeletonLoader->ResolveIncompleteSkeletons();
+}
+
+StdMeshSkeletonLoader& C4DefList::GetSkeletonLoader()
+{
+	return *SkeletonLoader;
 }

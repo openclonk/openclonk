@@ -103,7 +103,7 @@ private func FxAlignRotationStart(object target, proplist effect)
 	//(due to the solid mask flipping and such); so they keep a solid footing.
 	if(target->GetCategory() & C4D_Living){
 //	if(target->GetY() == 0){
-		effect.floorHelper = this->CreateObject(Vehicle_FloorHelper, effect.originalX / 100, (effect.originalY / 100) + (effect.floorYOff / 100) + 1);
+		effect.floorHelper = this->CreateObjectAbove(Vehicle_FloorHelper, effect.originalX / 100, (effect.originalY / 100) + (effect.floorYOff / 100) + 1);
 		
 		//adjust floor helper size
 		var width = BoundBy(target->GetDefCoreVal("Width", "DefCore"),6,64);

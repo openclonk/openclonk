@@ -11,7 +11,8 @@ protected func Initialize()
 {
 	// Environment.
 	PlaceGrass(85);
-	
+	CreateObjectAbove(Torch, 545, 465)->AttachToWall(true);
+	CreateObjectAbove(Torch, 232, 489)->AttachToWall(true);
 	return;
 }
 
@@ -261,7 +262,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -269,7 +270,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObject(Clonk, 0, 0, plr);
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);

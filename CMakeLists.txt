@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2014, The OpenClonk Team and contributors
+# Copyright (c) 2009-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -62,6 +62,8 @@ option(USE_SYSTEM_TINYXML "Use system tinyxml library" OFF)
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
 unset(USE_APPLE_CLANG CACHE)
+
+unset(HAVE_NATUPNP_H CACHE)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -216,6 +218,8 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4FontLoader.h
 	src/graphics/C4GraphicsResource.cpp
 	src/graphics/C4GraphicsResource.h
+	src/graphics/C4Shader.cpp
+	src/graphics/C4Shader.h
 	src/graphics/C4Surface.cpp
 	src/graphics/C4Surface.h
 	src/graphics/C4SurfaceLoaders.cpp
@@ -291,6 +295,21 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupScenSelDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
+	src/landscape/fow/C4FoW.cpp
+	src/landscape/fow/C4FoW.h
+	src/landscape/fow/C4FoWAmbient.cpp
+	src/landscape/fow/C4FoWAmbient.h
+	src/landscape/fow/C4FoWBeam.cpp
+	src/landscape/fow/C4FoWBeam.h
+	src/landscape/fow/C4FoWLight.cpp
+	src/landscape/fow/C4FoWLight.h
+	src/landscape/fow/C4FoWLightSection.cpp
+	src/landscape/fow/C4FoWLightSection.h
+	src/landscape/fow/C4FoWRegion.cpp
+	src/landscape/fow/C4FoWRegion.h
+	src/landscape/fow/C4FoWDrawStrategy.cpp
+	src/landscape/fow/C4FoWDrawStrategy.h
+	src/landscape/fow/C4FoWBeamTriangle.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
 	src/landscape/C4LandscapeRenderClassic.cpp
@@ -722,6 +741,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/graphics
 	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
 	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape
+	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape/fow
 	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
 	${CMAKE_CURRENT_SOURCE_DIR}/src/network
 	${CMAKE_CURRENT_SOURCE_DIR}/src/object
@@ -757,11 +777,6 @@ CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
 if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
-endif()
-CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
-if(WIN32 AND NOT HAVE_NATUPNP_H)
-	include_directories(thirdparty/natupnp)
-	set(HAVE_NATUPNP_H TRUE CACHE BOOL "natupnp.h available" FORCE)
 endif()
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
@@ -828,22 +843,19 @@ if(HAVE_EXECINFO_H)
 	endif()
 endif()
 
-if(HAVE_NATUPNP_H)
+find_package(Upnp)
+if(NOT UPNP_FOUND)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPDummy.cpp
+	)
+elseif(UPNP_STYLE STREQUAL "Win32")
 	list(APPEND OC_SYSTEM_SOURCES
 		src/network/C4Network2UPnPWin32.cpp
 	)
-else()
-	FIND_PACKAGE(Upnp)
-	SET(HAVE_UPNP ${UPNP_FOUND})
-	if(UPNP_FOUND)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPLinux.cpp
-		)
-	else()
-		list(APPEND OC_SYSTEM_SOURCES
-			src/network/C4Network2UPnPDummy.cpp
-		)
-	endif()
+elseif(UPNP_STYLE STREQUAL "libupnp")
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPLinux.cpp
+	)
 endif()
 
 if(USE_CONSOLE)
@@ -1305,13 +1317,15 @@ if(NOT USE_CONSOLE)
 	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
-	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
+		SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
+		SET(WITH_GLIB ${GTK3_FOUND})
 		target_link_libraries(openclonk
 			${GTK3_LIBRARIES}
 		)
 	else()
+		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
+		SET(WITH_GLIB ${GTK_FOUND})
 		target_link_libraries(openclonk
 			${GTK_LIBRARIES}
 		)
@@ -1353,7 +1367,7 @@ if (WIN32)
 	endif()
 endif()
 
-if(HAVE_UPNP)
+if(UPNP_FOUND)
 	include_directories(${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
@@ -1496,6 +1510,8 @@ if (NOT APPLE)
 	
 	# Install new files
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
+	# Update the MIME cache -- this makes the clonk:// protocol handler actually work
+	install(CODE "execute_process(COMMAND update-desktop-database)")
 
 	# Install binaries
 	install(TARGETS openclonk DESTINATION games)

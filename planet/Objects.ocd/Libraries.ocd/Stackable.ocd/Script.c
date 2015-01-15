@@ -113,7 +113,7 @@ public func TakeObject()
 	else if (count > 1)
 	{
 		if (!count_is_infinite) SetStackCount(count - 1);
-		var take = CreateObject(GetID(), 0, 0, GetOwner());
+		var take = CreateObjectAbove(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
 		if (!count_is_infinite) UpdateStackDisplay();
 		return take;

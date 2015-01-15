@@ -32,7 +32,7 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 		angle = 135;
 	if (dist == nil) 
 		dist = 16;
-	var arrow = CreateObject(TutorialArrow, x, y, NO_OWNER);
+	var arrow = CreateObjectAbove(TutorialArrow, x, y, NO_OWNER);
 	if (!arrow) 
 		return;
 	// Display bouncing arrow, corrected for arrow size.
@@ -65,7 +65,7 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 		angle = 135;
 	if (dist == nil) 
 		dist = 16;
-	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
+	var arrow = CreateObjectAbove(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
 	if (!arrow) 
 		return;
 	// Display spinning arrow, corrected for arrow size.
@@ -89,7 +89,7 @@ global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 		angle = 135;
 	if (dist == nil) 
 		dist = 16;
-	var arrow = CreateObject(TutorialArrow, x, y, NO_OWNER);
+	var arrow = CreateObjectAbove(TutorialArrow, x, y, NO_OWNER);
 	if (!arrow) 
 		return;
 	// Change arrow category to C4D_Gui.
@@ -116,7 +116,7 @@ global func TutArrowShowGUITarget(object target, int angle, int dist)
 		angle = 135;
 	if (dist == nil) 
 		dist = 16;
-	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
+	var arrow = CreateObjectAbove(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
 	if (!arrow) 
 		return;
 	// Change arrow category to C4D_Gui.

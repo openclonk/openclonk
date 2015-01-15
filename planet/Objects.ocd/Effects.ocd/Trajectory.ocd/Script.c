@@ -25,7 +25,7 @@ global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int
 	// Delete old trajectory
 	RemoveTrajectory(pObj);
 	// Create new helper object
-	var pTrajectory = CreateObject(Trajectory, pObj->GetX() - GetX(), pObj->GetY() - GetY(), pObj->GetOwner());
+	var pTrajectory = CreateObjectAbove(Trajectory, pObj->GetX() - GetX(), pObj->GetY() - GetY(), pObj->GetOwner());
 	pTrajectory->SetAction("Attach", pObj);
 	// Set starting values
 	var i = -1, iXOld, iYOld;

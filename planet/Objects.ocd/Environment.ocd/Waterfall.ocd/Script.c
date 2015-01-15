@@ -16,7 +16,7 @@ protected func Initialize()
 
 global func CreateWaterfall(int x, int y, int strength, string mat)
 {
-	var fall = CreateObject(Waterfall, x, y, NO_OWNER);
+	var fall = CreateObjectAbove(Waterfall, x, y, NO_OWNER);
 	if (!mat) mat = "Water";
 	AddEffect("IntWaterfall", fall, 100, 1, fall, nil, x, y, strength, mat);
 	return fall;
@@ -116,7 +116,7 @@ func SaveScenarioObject(props)
 
 global func CreateLiquidDrain(int x, int y, int strength)
 {
-	var drain = CreateObject(Waterfall, x, y, NO_OWNER);
+	var drain = CreateObjectAbove(Waterfall, x, y, NO_OWNER);
 	AddEffect("IntLiquidDrain", drain, 100, 1, drain, nil, x, y, strength);
 	return drain;
 }

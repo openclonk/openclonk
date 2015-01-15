@@ -42,7 +42,7 @@ protected func ControlUse(object clonk, int x, int y)
 	}
 	
 	// Create and connect pipe.
-	var pipe = CreateObject(PipeLine, 0, 0, NO_OWNER);
+	var pipe = CreateObjectAbove(PipeLine, 0, 0, NO_OWNER);
 	pipe->SetActionTargets(this, liquid_pump);
 	Sound("Connect");
 	

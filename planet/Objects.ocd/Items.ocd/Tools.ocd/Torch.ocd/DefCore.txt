@@ -1,0 +1,15 @@
+[DefCore]
+id=Torch
+Version=6,0
+Category=C4D_Object
+Width=3
+Height=16
+Offset=-1,-8
+Vertices=2
+VertexX=0,0
+VertexY=-7,7
+VertexFriction=50,50
+Value=10
+Mass=20
+Components=Wood=1;Coal=1
+Rotate=1

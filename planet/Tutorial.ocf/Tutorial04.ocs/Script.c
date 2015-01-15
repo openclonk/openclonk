@@ -23,12 +23,12 @@ protected func Initialize()
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	
 	// First section: Some straw targets to be struck with the sword.
-	CreateObject(SwordTarget, 190, 673, NO_OWNER)->SetR(RandomX(-10, 10));
-	CreateObject(SwordTarget, 280, 619, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
-	CreateObject(SwordTarget, 340, 649, NO_OWNER)->SetR(RandomX(-10, 10));
-	CreateObject(SwordTarget, 430, 603, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObjectAbove(SwordTarget, 190, 673, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObjectAbove(SwordTarget, 280, 619, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObjectAbove(SwordTarget, 340, 649, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObjectAbove(SwordTarget, 430, 603, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(StoneDoor, 556, 640, NO_OWNER);
+	var gate = CreateObjectAbove(StoneDoor, 556, 640, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 552, 638, 552, 640, 560, 640, 560, 638);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
@@ -37,19 +37,19 @@ protected func Initialize()
 	CreateScriptPlayer("$NameOpponent$", RGB(40,30,20), nil, CSPF_FixedAttributes);
 	
 	// Second section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1220, 552, NO_OWNER);
+	var gate = CreateObjectAbove(StoneDoor, 1220, 552, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 1216, 550, 1216, 552, 1224, 552, 1224, 550);
-	var wheel = CreateObject(SpinWheel, 1140, 568, NO_OWNER);
+	var wheel = CreateObjectAbove(SpinWheel, 1140, 568, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Third section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1852, 504, NO_OWNER);
+	var gate = CreateObjectAbove(StoneDoor, 1852, 504, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 1848, 502, 1848, 504, 1856, 504, 1856, 502);
-	var wheel = CreateObject(SpinWheel, 1782, 352, NO_OWNER);
+	var wheel = CreateObjectAbove(SpinWheel, 1782, 352, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chest with some extra weapons.
-	var chest = CreateObject(Chest, 2260, 632, NO_OWNER);
+	var chest = CreateObjectAbove(Chest, 2260, 632, NO_OWNER);
 	chest->CreateContents(Club);
 	
 	// Dialogue options -> repeat round.
@@ -107,7 +107,7 @@ private func InitializeScriptPlayer(int plr)
 	}
 
 	// Second section: Weak opponent with javelins.
-	var spearman1 = CreateObject(Clonk, 1050, 592, plr);
+	var spearman1 = CreateObjectAbove(Clonk, 1050, 592, plr);
 	spearman1->MakeCrewMember(plr);
 	spearman1->SetMaxEnergy(40);
 	spearman1->CreateContents(Javelin);
@@ -117,7 +117,7 @@ private func InitializeScriptPlayer(int plr)
 	
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
-	var spearman2 = CreateObject(Clonk, 1756, 432, plr);
+	var spearman2 = CreateObjectAbove(Clonk, 1756, 432, plr);
 	spearman2->MakeCrewMember(plr);
 	spearman2->SetMaxEnergy(40);
 	spearman2->CreateContents(Javelin);
@@ -125,7 +125,7 @@ private func InitializeScriptPlayer(int plr)
 	AddEffect("IntContentRemoval", spearman2, 100, 0);
 	spearman2->AddEnergyBar();
 	// Upper part: a normal bowman.
-	var bowman = CreateObject(Clonk, 1732, 352, plr);
+	var bowman = CreateObjectAbove(Clonk, 1732, 352, plr);
 	bowman->MakeCrewMember(plr);
 	bowman->SetMaxEnergy(45);
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
@@ -134,7 +134,7 @@ private func InitializeScriptPlayer(int plr)
 	bowman->AddEnergyBar();
 	
 	// Fourth section: Opponent with sword and shield.
-	var swordman = CreateObject(Clonk, 2250, 360, plr);
+	var swordman = CreateObjectAbove(Clonk, 2250, 360, plr);
 	swordman->MakeCrewMember(plr);
 	swordman->SetMaxEnergy(60);
 	swordman->CreateContents(Shield);
@@ -320,7 +320,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -328,7 +328,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObject(Clonk, 0, 0, plr);
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);

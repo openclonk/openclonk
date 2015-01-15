@@ -34,18 +34,23 @@
         </param>
       </params>
     </syntax>
-    <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwiese global.</desc>
+    <desc>Creates an object of the specified type at the specified position. The position will be the center of the new object, so that the object is exactly at the specified coordinates if it is created in global context. xoffset and yoffset are relative to the calling object in local calls, otherwise global.</desc>
     <examples>
       <example>
         <code>CreateObject(Wipf, 100,100, <funclink>NO_OWNER</funclink>);</code>
         <text>Creates a wipf at coordinates 100/100 with no owner.</text>
       </example>
     </examples>
+	<remark>
+	The function behaviour has changed since version 6.0 OC: The offset of the object is now created at the specified position, not the bottom center. The old behaviour is used in <code><funclink>CreateObjectAbove</funclink></code>.
+	</remark>
     <related>
       <funclink>CreateConstruction</funclink>
       <funclink>CreateContents</funclink>
+      <funclink>CreateObjectAbove</funclink>
       <funclink>RemoveObject</funclink>
     </related>
   </func>
   <author>springer</author><date>2002-04</date>
+  <author>Marky</author><date>2015-01</date>
 </funcs>

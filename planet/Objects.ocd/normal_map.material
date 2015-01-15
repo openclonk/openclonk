@@ -32,13 +32,8 @@ material NormalMap
 
             fragment_program_ref normal_map_fragment
             {
-                param_named_auto oc_Mod2 oc_mod2
-                param_named_auto oc_ColorModulation oc_color_modulation
-                param_named_auto oc_UseClrModMap oc_use_clrmodmap
-                param_named_auto oc_ClrModMap oc_clrmodmap
-
                 param_named basemap int 0
-                param_named normalmap int 1
+                param_named normalTex int 1
             }
         }
     }

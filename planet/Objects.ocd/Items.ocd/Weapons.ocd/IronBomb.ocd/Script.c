@@ -48,11 +48,11 @@ func DoExplode()
 	var i = 23;
 	while(i != 0)
 	{
-		var shrapnel = CreateObject(Shrapnel);
+		var shrapnel = CreateObjectAbove(Shrapnel);
 		shrapnel->SetVelocity(Random(359), RandomX(100,140));
 		shrapnel->SetRDir(-30+ Random(61));
 		shrapnel->Launch(GetController());
-		CreateObject(BulletTrail)->Set(2,30,shrapnel);
+		CreateObjectAbove(BulletTrail)->Set(2,30,shrapnel);
 		i--;
 	}
 	if(GBackLiquid())

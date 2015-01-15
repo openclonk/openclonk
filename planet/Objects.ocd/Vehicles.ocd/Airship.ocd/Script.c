@@ -30,7 +30,7 @@ protected func Initialize()
 	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
 
 	//Create Hitbox
-	var hitbox = CreateObject(Airship_Hitbox);
+	var hitbox = CreateObjectAbove(Airship_Hitbox);
 	hitbox->SetAction("Attach", this);
 
 	// The airship starts facing left; so default to that value
@@ -301,7 +301,7 @@ private func AirshipPilot()
 func AirshipDeath()
 {
 	//First let's create the burnt airship
-	var burntairship = CreateObject(Airship_Burnt,0,27); //27 pixels down to align ruin with original
+	var burntairship = CreateObjectAbove(Airship_Burnt,0,27); //27 pixels down to align ruin with original
 
 	//Now let's copy it's animation, and hold it there
 	var animspot;

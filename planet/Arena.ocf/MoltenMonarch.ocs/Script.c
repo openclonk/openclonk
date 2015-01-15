@@ -20,32 +20,32 @@ protected func Initialize()
 	CreateObject(Rule_Gravestones);
 	
 	//make lava collapse
-	CreateObject(Firestone,625,480);
+	CreateObjectAbove(Firestone,625,480);
 
 	// Chests with weapons.
-	CreateObject(Chest, 320, 80, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 720, 192, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 668, 336, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 320, 440, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 48, 256, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 320, 80, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 720, 192, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 668, 336, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 320, 440, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 48, 256, NO_OWNER)->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 5 * 36);
 	
 	// Moving bricks.
 	var brick;
-	brick = CreateObject(MovingBrick, 542, 176);
+	brick = CreateObjectAbove(MovingBrick, 542, 176);
 	brick->SetSize(3);
 	brick->MoveVertical(168, 472, 8);
-	brick = CreateObject(MovingBrick, 588, 192);
+	brick = CreateObjectAbove(MovingBrick, 588, 192);
 	brick->SetSize(3);
 	brick->MoveVertical(160, 464, 8);
 	
-	brick = CreateObject(MovingBrick, 77, 0);
+	brick = CreateObjectAbove(MovingBrick, 77, 0);
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
-	brick = CreateObject(MovingBrick, 77, LandscapeHeight() / 3);
+	brick = CreateObjectAbove(MovingBrick, 77, LandscapeHeight() / 3);
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
-	brick = CreateObject(MovingBrick, 77, 2 * LandscapeHeight() / 3);
+	brick = CreateObjectAbove(MovingBrick, 77, 2 * LandscapeHeight() / 3);
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
 	
@@ -128,7 +128,7 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
@@ -145,7 +145,7 @@ protected func InitializePlayer(int plr)
 // GameCall from RelaunchContainer.
 protected func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
@@ -159,7 +159,7 @@ protected func JoinPlayer(int plr)
 	var position = [[420,200],[300,440],[130,176],[140,368],[700,192],[670,336],[750,440],[440,392],[45,256]];
 	var r=Random(GetLength(position));
 	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObject(RelaunchContainer, x, y, clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	return;
 }

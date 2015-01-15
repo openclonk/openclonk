@@ -155,10 +155,10 @@ static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, 
 	return C4Void();
 }
 
-static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec)
+static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
 {
 	if (!iPrec) iPrec = 100;
-	Obj->DoCon(FullCon*iChange/iPrec);
+	Obj->DoCon(FullCon*iChange / iPrec, bGrowFromCenter);
 	return C4Void();
 }
 
@@ -1336,10 +1336,17 @@ static C4Void FnSetColor(C4Object *Obj, long iValue)
 	return C4Void();
 }
 
-static C4Void FnSetPlrViewRange(C4Object *Obj, long iRange)
+static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeoutRange)
 {
+	if (iFadeoutRange.IsNil())
+	{
+		if(iRange == 0)
+			iFadeoutRange = 0;
+		else
+			iFadeoutRange = C4FOW_DefLightFadeoutRangeX;
+	}
 	// set range
-	Obj->SetPlrViewRange(iRange);
+	Obj->SetLightRange(iRange, iFadeoutRange);
 	// success
 	return C4Void();
 }
@@ -2610,7 +2617,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetMass", FnSetMass);
 	AddFunc(pEngine, "GetColor", FnGetColor);
 	AddFunc(pEngine, "SetColor", FnSetColor);
-	AddFunc(pEngine, "SetPlrViewRange", FnSetPlrViewRange);
+	AddFunc(pEngine, "SetLightRange", FnSetLightRange);
 	AddFunc(pEngine, "SetPicture", FnSetPicture);
 	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
 	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);

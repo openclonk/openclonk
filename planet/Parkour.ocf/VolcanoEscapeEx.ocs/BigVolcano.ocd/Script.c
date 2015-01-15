@@ -8,7 +8,8 @@
 static const BigVolcanoBehaviour_Fill = 0,
              BigVolcanoBehaviour_Advance = 1,
              BigVolcanoBehaviour_AdvanceLava = 2,
-             BigVolcanoBehaviour_Stop = 3;
+             BigVolcanoBehaviour_Stop = 3,
+             BigVolcanoBehaviour_Underground = false;
              
 static const BigVolcano_XRes = 25; // step size of segments of lava_y array
 
@@ -128,7 +129,7 @@ func Execute()
 					while (GetMaterial(x1,y1+1) != lavamat && --limit) ++y1;
 					limit=50;
 					while (GetMaterial(x1,y2+1) != lavamat && --limit) ++y2;
-					DrawMaterialQuad("DuroLava-lava_red", x1,lava_y[i-1], x2,lava_y[i], x2,y2, x1,y1, true);
+					DrawMaterialQuad("DuroLava-lava_red", x1,lava_y[i-1], x2,lava_y[i], x2,y2, x1,y1, BigVolcanoBehaviour_Underground);
 				}
 				last_move = this_move;
 			}
@@ -300,9 +301,9 @@ func DrawVerticalBranch(int x1, int y1, int x2, int y2, int half_wdt)
 	// Draw branch from x1/y1 to x2/y2 with width half_wdt*2
 	//Log("BRANCH %d,%d,%d,%d, %d",x1,y1,x2,y2,half_wdt);
 	if (Abs(x2-x1)>Abs(y2-y1))
-		return DrawMaterialQuad("DuroLava-lava_red",x1,y1-half_wdt, x1,y1+half_wdt, x2,y2+half_wdt, x2,y2-half_wdt, true);
+		return DrawMaterialQuad("DuroLava-lava_red",x1,y1-half_wdt, x1,y1+half_wdt, x2,y2+half_wdt, x2,y2-half_wdt, BigVolcanoBehaviour_Underground);
 	else
-		return DrawMaterialQuad("DuroLava-lava_red",x1-half_wdt,y1, x1+half_wdt,y1, x2+half_wdt,y2, x2-half_wdt,y2, true);
+		return DrawMaterialQuad("DuroLava-lava_red",x1-half_wdt,y1, x1+half_wdt,y1, x2+half_wdt,y2, x2-half_wdt,y2, BigVolcanoBehaviour_Underground);
 }
 
 func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int to_half_wdt)
@@ -313,20 +314,20 @@ func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int
 	if (from_half_wdt <= 2) return DrawVerticalBranch(x1,y1,x2,y2,to_half_wdt);
 	if (Abs(x2-x1)>Abs(y2-y1))
 	{
-		DrawMaterialQuad("DuroLava-lava_red",x1,y1-to_half_wdt, x1,y1-from_half_wdt, x2,y2-from_half_wdt, x2,y2-to_half_wdt, true);
-		DrawMaterialQuad("DuroLava-lava_red",x1,y1+to_half_wdt, x1,y1+from_half_wdt, x2,y2+from_half_wdt, x2,y2+to_half_wdt, true);
+		DrawMaterialQuad("DuroLava-lava_red",x1,y1-to_half_wdt, x1,y1-from_half_wdt, x2,y2-from_half_wdt, x2,y2-to_half_wdt, BigVolcanoBehaviour_Underground);
+		DrawMaterialQuad("DuroLava-lava_red",x1,y1+to_half_wdt, x1,y1+from_half_wdt, x2,y2+from_half_wdt, x2,y2+to_half_wdt, BigVolcanoBehaviour_Underground);
 	}
 	else
 	{
-		DrawMaterialQuad("DuroLava-lava_red",x1-to_half_wdt,y1, x1-from_half_wdt,y1, x2-from_half_wdt,y2, x2-to_half_wdt,y2, true);
-		DrawMaterialQuad("DuroLava-lava_red",x1+to_half_wdt,y1, x1+from_half_wdt,y1, x2+from_half_wdt,y2, x2+to_half_wdt,y2, true);
+		DrawMaterialQuad("DuroLava-lava_red",x1-to_half_wdt,y1, x1-from_half_wdt,y1, x2-from_half_wdt,y2, x2-to_half_wdt,y2, BigVolcanoBehaviour_Underground);
+		DrawMaterialQuad("DuroLava-lava_red",x1+to_half_wdt,y1, x1+from_half_wdt,y1, x2+from_half_wdt,y2, x2+to_half_wdt,y2, BigVolcanoBehaviour_Underground);
 	}
 	return true;
 }
 
 func SoundAt(string sound_name, int x, int y, int vol)
 {
-	var sound_host = CreateObject(BigVolcano,x,y), r;
+	var sound_host = CreateObjectAbove(BigVolcano,x,y), r;
 	if (sound_host)
 	{
 		r = sound_host->Sound(sound_name, false, vol);

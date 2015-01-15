@@ -59,7 +59,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	
 	// assert: at least one object in to_remove
 	var value = 0;
-	var fm = CreateObject(FloatingMessage, comp->GetX() - GetX(), comp->GetY() - GetY(), NO_OWNER);
+	var fm = CreateObjectAbove(FloatingMessage, comp->GetX() - GetX(), comp->GetY() - GetY(), NO_OWNER);
 	fm->SetColor(250, 200, 50);
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);

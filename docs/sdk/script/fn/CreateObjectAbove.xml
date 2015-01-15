@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateObjectAbove</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>6.0 OC</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xoffset</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yoffset</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>owner</name>
+          <desc>Owner of the new object. Either a valid player number or <code><funclink>NO_OWNER</funclink></code> for no owner. If not specified the owner is the controller (see <funclink>GetController</funclink>) of the calling object or <code>NO_OWNER</code> if the call is made without object context.</desc>
+		  <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwise global.</desc>
+    <examples>
+      <example>
+        <code>CreateObject(Wipf, 100,100, <funclink>NO_OWNER</funclink>);</code>
+		<text>Creates a wipf at coordinates 100/100 with no owner. If the landscape begins at y-coordinate 100, then the wipf will be stuck.</text>
+        <code>CreateObjectAbove(Wipf, 150,100, <funclink>NO_OWNER</funclink>);</code>
+        <text>Creates a wipf above coordinates 100/100 with no owner. This time the wipf should be standing on the landscape.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+      <funclink>CreateContents</funclink>
+      <funclink>CreateObject</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
+  <author>Marky</author><date>2015-01</date>
+</funcs>

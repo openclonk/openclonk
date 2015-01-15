@@ -111,9 +111,9 @@
         <col>List of definitions for which the values should be overridden. The amount will be the new value.</col>
       </row>
       <row>
-        <col>FoWColor</col>
-        <col>DWORD</col>
-        <col>Color of the fog of war</col>
+        <col>FoWEnabled</col>
+        <col>Integer</col>
+        <col>0 or 1. If 0, FoW is disabled, and the whole landscape is visible. Default 1.</col>
       </row>
     </table>
   </text>

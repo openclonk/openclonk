@@ -137,7 +137,7 @@ private func InitMaterial(int amount)
 	if (amount >= 2)
 	{
 		var x = 160 + Random(40);
-		var lorry = CreateObject(Lorry, x, FindHeight(x) - 20);
+		var lorry = CreateObjectAbove(Lorry, x, FindHeight(x) - 20);
 		lorry->CreateContents(Wood, 6);
 		lorry->CreateContents(Metal, 4);
 		lorry->CreateContents(Rock, 4);
@@ -164,7 +164,7 @@ global func TestGoldCount()
 	var pos;
 	while (pos = FindLocation(Loc_Material("Gold")))
 	{
-		var pos = CreateObject(Rock, pos.x, pos.y)->Explode(100);
+		var pos = CreateObjectAbove(Rock, pos.x, pos.y)->Explode(100);
 	}
 	var gold_count = ObjectCount(Find_ID(Nugget));
 	return gold_count;

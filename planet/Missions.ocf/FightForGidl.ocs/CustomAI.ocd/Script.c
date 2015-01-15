@@ -169,7 +169,7 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int x, int y)
 {
 	// Create enemy (usually a Clonk)
-	var obj = CreateObject(enemy.Type ?? Clonk, x,y), clonk;
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y), clonk;
 	// Enemy visuals
 	if (enemy.Skin)
 	{
@@ -208,7 +208,7 @@ func LaunchEnemy(proplist enemy, int x, int y)
 	var vehicle;
 	if (enemy.Vehicle)
 	{
-		vehicle = CreateObject(enemy.Vehicle, x,y);
+		vehicle = CreateObjectAbove(enemy.Vehicle, x,y);
 		obj->SetAction("Push", vehicle);
 	}
 	// Enemy inventory

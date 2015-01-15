@@ -38,7 +38,7 @@
     </examples>
     <related>
       <funclink>SetPlrView</funclink>
-      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetLightRange</funclink>
       <funclink>SetFoW</funclink>
       <funclink>SetPlayerZoomByViewRange</funclink>
     </related>

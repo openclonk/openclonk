@@ -31,7 +31,7 @@ protected func Initialize()
 	time->SetCycleSpeed(20);*/
 	// Starting materials in lorry
 	var pos = FindTopSpot();
-	var lorry = CreateObject(Lorry, pos.x, pos.y);
+	var lorry = CreateObjectAbove(Lorry, pos.x, pos.y);
 	if (lorry)
 	{
 		lorry->CreateContents(WallKit,5);
@@ -53,12 +53,12 @@ protected func Initialize()
 	var chest_sets = [[[DynamiteBox,2], [Dynamite,5], [Bread,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,10],[Firestone,5],[Wood,8]]];
 	for (var i=0; i<3; ++i)
 		if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
-			if (chest = CreateObject(Chest, chest_pos.x, chest_pos.y))
+			if (chest = CreateObjectAbove(Chest, chest_pos.x, chest_pos.y))
 				for (var chest_fill in chest_sets[i])
 					chest->CreateContents(chest_fill[0],chest_fill[1]);
 	// A barrel
 	if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
-		CreateObject(Barrel, chest_pos.x, chest_pos.y);
+		CreateObjectAbove(Barrel, chest_pos.x, chest_pos.y);
 	// Misc vegetation
 	SproutBerryBush->Place(5, Rectangle(0,LandscapeHeight()/4,LandscapeWidth(),LandscapeHeight()*3/4));
 	Mushroom->Place(5, Rectangle(0,LandscapeHeight()/4,LandscapeWidth(),LandscapeHeight()*3/4));
@@ -141,7 +141,7 @@ private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int
 		if (loc = FindLocation(Loc_Material("Earth")))
 			for (var j=0; j<n_per_batch; ++j)
 				if (loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material("Earth")))
-					if (obj=CreateObject(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
+					if (obj=CreateObjectAbove(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
 					{
 						obj->SetPosition(loc2.x,loc2.y);
 						++n_created;

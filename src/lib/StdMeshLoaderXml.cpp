@@ -368,14 +368,14 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	return mesh.release();
 }
 
-void StdMeshSkeletonLoader::LoadSkeletonXml(const StdCopyStrBuf &filename, const char *sourcefile, size_t size)
+void StdMeshSkeletonLoader::LoadSkeletonXml(const char* groupname, const char* filename, const char *sourcefile, size_t size)
 {
 	if (sourcefile == NULL)
 	{
-		throw Ogre::InsufficientData(FormatString("Failed to load '%s'", filename.getData()).getData());
+		throw Ogre::InsufficientData(FormatString("Failed to load '%s/%s'", groupname, filename).getData());
 	}
 
-	std::shared_ptr<StdMeshLoader::StdMeshXML> skeleton(new StdMeshLoader::StdMeshXML(filename.getData(), sourcefile));
+	std::shared_ptr<StdMeshLoader::StdMeshXML> skeleton(new StdMeshLoader::StdMeshXML(filename, sourcefile));
 
 	TiXmlElement* skeleton_elem = skeleton->RequireFirstChild(NULL, "skeleton");
 	TiXmlElement* bones_elem = skeleton->RequireFirstChild(skeleton_elem, "bones");
@@ -463,6 +463,7 @@ void StdMeshSkeletonLoader::LoadSkeletonXml(const StdCopyStrBuf &filename, const
 			animation.Name = name;
 			animation.Length = skeleton->RequireFloatAttribute(animation_elem, "length");
 			animation.Tracks.resize(Skeleton->GetNumBones());
+			animation.OriginSkeleton = &(*Skeleton);
 
 			TiXmlElement* tracks_elem = skeleton->RequireFirstChild(animation_elem, "tracks");
 			for (TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
@@ -543,5 +544,5 @@ void StdMeshSkeletonLoader::LoadSkeletonXml(const StdCopyStrBuf &filename, const
 		}
 	}
 
-	StoreSkeleton(StdCopyStrBuf(filename), Skeleton);
+	StoreSkeleton(groupname, filename, Skeleton);
 }

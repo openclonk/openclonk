@@ -20,7 +20,7 @@ protected func Damage()
 		for (var i = 0, compid; compid = GetComponent(nil, i); ++i)
 			for (var j = 0; j < GetComponent(compid); ++j)
 			{
-				var comp = CreateObject(compid, nil, -Random(50), GetOwner());
+				var comp = CreateObjectAbove(compid, nil, -Random(50), GetOwner());
 				if (OnFire()) comp->Incinerate();
 				if (!ctr || !comp->Enter(ctr))
 				{

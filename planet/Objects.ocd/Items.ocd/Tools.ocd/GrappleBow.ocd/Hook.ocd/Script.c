@@ -32,7 +32,7 @@ public func Launch(int angle, int str, object shooter, object bow)
 	pull = 0;
 		
 	// Create rope
-	rope = CreateObject(GrappleRope, 0, 0, NO_OWNER);
+	rope = CreateObjectAbove(GrappleRope, 0, 0, NO_OWNER);
 
 	rope->Connect(this, bow);
 	rope->ConnectLoose();

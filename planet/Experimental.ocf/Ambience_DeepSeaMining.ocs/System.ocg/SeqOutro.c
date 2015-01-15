@@ -34,9 +34,9 @@ func Outro_4()
 {
 	this.communicator->StopCommunication();
 	MessageBoxAll("$Outro3$", this.hero, true); // i wonder if anyone has heard us
-	this.plane = CreateObject(Plane, 100, main_island_y-100);
+	this.plane = CreateObjectAbove(Plane, 100, main_island_y-100);
 	this.plane->SetContactDensity(85); // only collision with brick for proper landing
-	this.pilot = CreateObject(Clonk, 100, 100);
+	this.pilot = CreateObjectAbove(Clonk, 100, 100);
 	this.pilot->MakeInvincible();
 	this.pilot->SetSkin(2);
 	this.pilot->Enter(this.plane);

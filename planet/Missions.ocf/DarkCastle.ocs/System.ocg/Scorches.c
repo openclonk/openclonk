@@ -1,6 +1,6 @@
 global func AddScorch(int x, int y, int r, int strength, int duration)
 {
-	var scorch = CreateObject(Wood, x,y, NO_OWNER);
+	var scorch = CreateObjectAbove(Wood, x,y, NO_OWNER);
 	if (!scorch) return nil;
 	scorch->SetObjectLayer(scorch);
 	scorch->SetR(r);

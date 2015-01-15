@@ -32,9 +32,9 @@ func Construction(object creator)
 
 func Initialize()
 {
-	leftcharge = CreateObject(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);
+	leftcharge = CreateObjectAbove(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);
 	leftcharge->Init(this);
-	rightcharge = CreateObject(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
+	rightcharge = CreateObjectAbove(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
 	rightcharge->Init(this);
 	AddTimer("EnergyCheck", 100);
 	return _inherited(...);
@@ -183,7 +183,7 @@ func Incineration()
 	for(var i = 0; i < 2; ++i)
 	{
 		var x = -7 + 14 * i;
-		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER);
+		var b = CreateObjectAbove(Compensator_BurningBattery, x, 6, NO_OWNER);
 		b->SetController(GetController()); // killtracing
 
 		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));

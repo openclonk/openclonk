@@ -152,6 +152,9 @@ bool C4Game::InitDefs()
 	// build quick access table
 	::Definitions.BuildTable();
 
+	// handle skeleton appends and includes
+	::Definitions.AppendAndIncludeSkeletons();
+
 	// Done
 	return true;
 }
@@ -296,10 +299,6 @@ bool C4Game::PreInit()
 	// this loads font definitions in this group as well
 	// the function may return false, if no extra group is present - that is OK
 	Extra.InitGroup();
-
-	Log(LoadResStr("IDS_PRC_GFXRES"));
-	if (!GraphicsResource.Init()) return false;
-	Game.SetInitProgress(30.0f);
 
 	RandomSeed = time(NULL);
 	// Randomize
@@ -784,6 +783,12 @@ bool C4Game::Execute() // Returns true if the game is over
 
 void C4Game::InitFullscreenComponents(bool fRunning)
 {
+	// It can happen that this is called before graphics are loaded due to
+	// an early OnResolutionChanged() call. Ignore it, the message board,
+	// upper board and viewports will be initialized within the regular
+	// startup sequence then.
+	if(!GraphicsResource.IsInitialized()) return;
+
 	// fullscreen message board
 	C4Facet cgo;
 	cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
@@ -999,7 +1004,7 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
                              int32_t iOwner, C4ObjectInfo *pInfo,
                              int32_t iX, int32_t iY, int32_t iR,
                              C4Real xdir, C4Real ydir, C4Real rdir,
-                             int32_t iCon, int32_t iController)
+                             int32_t iCon, int32_t iController, bool grow_from_center)
 {
 	// Safety
 	if (!pDef) return NULL;
@@ -1025,8 +1030,8 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 	pObj->Call(PSF_Construction, &pars);
 	// AssignRemoval called? (Con 0)
 	if (!pObj->Status) { return NULL; }
-	// Do initial con
-	pObj->DoCon(iCon);
+	// Do initial con (grow)
+	pObj->DoCon(iCon, grow_from_center);
 	// AssignRemoval called? (Con 0)
 	if (!pObj->Status) { return NULL; }
 	// Success
@@ -1042,7 +1047,7 @@ void C4Game::DeleteObjects(bool fDeleteInactive)
 }
 
 C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
-                               int32_t x, int32_t y, int32_t r,
+                               int32_t x, int32_t y, int32_t r, bool grow_from_center,
                                C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
 {
 	C4Def *pDef;
@@ -1053,12 +1058,12 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
 	                 iOwner,NULL,
 	                 x,y,r,
 	                 xdir,ydir,rdir,
-	                 FullCon, iController);
+	                 FullCon, iController, grow_from_center);
 }
 
 C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_t iOwner,
-                               int32_t x, int32_t y, int32_t r,
-                               C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
+                               int32_t x, int32_t y, int32_t r, bool grow_from_center, 
+							   C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
 {
 	// check Definition
 	if (!PropList || !PropList->GetDef()) return NULL;
@@ -1067,7 +1072,7 @@ C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_
 	                 iOwner,NULL,
 	                 x,y,r,
 	                 xdir,ydir,rdir,
-	                 FullCon, iController);
+					 FullCon, iController, grow_from_center);
 }
 
 C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
@@ -1083,7 +1088,7 @@ C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
 	                  iOwner,cinf,
 	                  tx,ty,0,
 	                  Fix0,Fix0,Fix0,
-	                  FullCon, NO_OWNER );
+	                  FullCon, NO_OWNER, false);
 }
 
 C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
@@ -1120,7 +1125,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 	                     iOwner,NULL,
 	                     iX,iBY,0,
 	                     Fix0,Fix0,Fix0,
-	                     iCon, pCreator ? pCreator->Controller : NO_OWNER))) return NULL;
+	                     iCon, pCreator ? pCreator->Controller : NO_OWNER, false))) return NULL;
 
 	return pObj;
 }
@@ -1412,6 +1417,7 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 		C4Real rdir = itofix(Random(3)+1);
 		C4Object *obj = CreateObject(id,pCreator,iOwner,
 		             tx,ty,angle,
+					 false,
 		             xdir,
 		             ydir,
 		             rdir, iController);
@@ -2253,11 +2259,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 	// Weather
 	if (fLandscapeLoaded) Weather.Init(!C4S.Head.SaveGame);
-	SetInitProgress(95);
-
-	// FoW-color
-	FoWColor = C4S.Game.FoWColor;
-
 	SetInitProgress(96);
 
 	// close any gfx groups, because they are no longer needed (after sky is initialized)
@@ -2287,7 +2288,7 @@ bool C4Game::InitGameFinal()
 	// Validate object owners & assign loaded info objects
 	Objects.ValidateOwners();
 	Objects.AssignInfo();
-	Objects.AssignPlrViewRange(); // update FoW-repellers
+	Objects.AssignLightRange(); // update FoW-repellers
 
 	// Script constructor call
 	int32_t iObjCount = Objects.ObjectCount();

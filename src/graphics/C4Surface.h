@@ -85,7 +85,8 @@ public:
 #endif
 	C4TexRef **ppTex;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
-	C4Surface *pMainSfc;           // main surface for simple ColorByOwner-surfaces
+	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
+	C4Surface *pNormalSfc;        // normal map; can be NULL
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
 
 	void MoveFrom(C4Surface *psfcFrom); // grab data from other surface - invalidates other surface

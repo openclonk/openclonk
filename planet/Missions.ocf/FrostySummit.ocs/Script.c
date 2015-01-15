@@ -12,7 +12,7 @@ func Initialize()
 	var loc;
 	for (var i=0; i<5; ++i)
 		if (loc = FindLocation(Loc_InRect(0,80*8,40*8,20*8), Loc_Material("Earth")))
-			CreateObject(Rock, loc.x, loc.y+3);
+			CreateObjectAbove(Rock, loc.x, loc.y+3);
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 }
 
@@ -35,20 +35,20 @@ private func InitBase(int owner)
 {
 	// Create standard base owned by player
 	var y=90*8, x=40*8;
-	var flag = CreateObject(Flagpole, x+85,y, owner);
-	var hut = CreateObject(ToolsWorkshop, x+45,y, owner);
+	var flag = CreateObjectAbove(Flagpole, x+85,y, owner);
+	var hut = CreateObjectAbove(ToolsWorkshop, x+45,y, owner);
 	if (hut)
 	{
 		hut->CreateContents(Shovel, 1);
 		hut->CreateContents(Loam, 1);
 	}
-	for (var i=0; i<3; ++i) CreateObject(Boompack, x+20+i*5+Random(4),y, owner);
+	for (var i=0; i<3; ++i) CreateObjectAbove(Boompack, x+20+i*5+Random(4),y, owner);
 	return true;
 }
 
 func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, 50, 1000, plr);
+	var clonk = CreateObjectAbove(Clonk, 50, 1000, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);

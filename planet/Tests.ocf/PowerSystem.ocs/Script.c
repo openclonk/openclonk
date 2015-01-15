@@ -121,16 +121,16 @@ global func Test1_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(50);
-	CreateObject(WindGenerator, 88, 160, plr);
+	CreateObjectAbove(WindGenerator, 88, 160, plr);
 	
 	// Power consumer: one pump.
-	var pump = CreateObject(Pump, 124, 160, plr);
-	var source = CreateObject(Pipe, 176, 292, plr);
-	var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+	var pump = CreateObjectAbove(Pump, 124, 160, plr);
+	var source = CreateObjectAbove(Pipe, 176, 292, plr);
+	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 	source_pipe->SetActionTargets(source, pump);
 	pump->SetSource(source_pipe);
-	var drain = CreateObject(Pipe, 248, 100, plr);
-	var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
+	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
 	drain_pipe->AddVertex(208, 48);
 	drain_pipe->SetActionTargets(drain, pump);
 	pump->SetDrain(drain_pipe);
@@ -164,19 +164,19 @@ global func Test1_OnFinished()
 global func Test2_OnStart(int plr)
 {
 	// Power source: one steam engine.
-	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
 	engine->CreateContents(Coal, 1);
 	
 	// Power consumer: three pumps.
 	for (var i = 0; i < 3; i++)
 	{
-		var pump = CreateObject(Pump, 80 + i * 20, 160, plr);
-		var source = CreateObject(Pipe, 176, 292, plr);
-		var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+		var pump = CreateObjectAbove(Pump, 80 + i * 20, 160, plr);
+		var source = CreateObjectAbove(Pipe, 176, 292, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 		source_pipe->SetActionTargets(source, pump);
 		pump->SetSource(source_pipe);
-		var drain = CreateObject(Pipe, 248, 100, plr);
-		var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
 		drain_pipe->AddVertex(208, 48);
 		drain_pipe->SetActionTargets(drain, pump);
 		pump->SetDrain(drain_pipe);
@@ -212,25 +212,25 @@ global func Test3_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
-	CreateObject(WindGenerator, 40, 160, plr);
+	CreateObjectAbove(WindGenerator, 40, 160, plr);
 	
 	// Power consumer: one pump.
-	var pump = CreateObject(Pump, 124, 160, plr);
-	var source = CreateObject(Pipe, 176, 292, plr);
-	var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+	var pump = CreateObjectAbove(Pump, 124, 160, plr);
+	var source = CreateObjectAbove(Pipe, 176, 292, plr);
+	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 	source_pipe->SetActionTargets(source, pump);
 	pump->SetSource(source_pipe);
-	var drain = CreateObject(Pipe, 248, 100, plr);
-	var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+	var drain = CreateObjectAbove(Pipe, 248, 100, plr);
+	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
 	drain_pipe->AddVertex(208, 48);
 	drain_pipe->SetActionTargets(drain, pump);
 	pump->SetDrain(drain_pipe);
 	
 	// Power connection: flagpole.
-	CreateObject(Flagpole, 304, 140, plr);	 
+	CreateObjectAbove(Flagpole, 304, 140, plr);	 
 	
 	// Power consumer: one elevator.
-	var elevator = CreateObject(Elevator, 372, 104, plr);
+	var elevator = CreateObjectAbove(Elevator, 372, 104, plr);
 	ScheduleCall(elevator.case, "SetMoveDirection", 4 * 36, 0, ElevatorCase_down, true);
 	
 	// Log what the test is about.
@@ -265,13 +265,13 @@ global func Test4_OnStart(int plr)
 {
 	// Power source: one wind generator.
 	SetWindFixed(25);
-	CreateObject(WindGenerator, 40, 160, plr);
+	CreateObjectAbove(WindGenerator, 40, 160, plr);
 	
 	// Power storage: one compensator
-	CreateObject(Compensator, 70, 160, plr);
+	CreateObjectAbove(Compensator, 70, 160, plr);
 	
 	// Power consumer: one workshop.
-	var workshop = CreateObject(ToolsWorkshop, 110, 160, plr);
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
 	workshop->CreateContents(Wood, 2);
 	workshop->CreateContents(Metal, 2);
 	workshop->AddToQueue(Shovel, 2);
@@ -299,18 +299,18 @@ global func Test4_OnFinished()
 global func Test5_OnStart(int plr)
 {
 	// Power source: one steam engine.
-	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
 	var coal = engine->CreateContents(Coal, 1);
 	coal->SetCon(50);
 	
 	// Power storage: four compensators.
-	CreateObject(Compensator, 20, 224, plr);
-	CreateObject(Compensator, 45, 224, plr);
-	CreateObject(Compensator, 70, 224, plr);
-	CreateObject(Compensator, 95, 224, plr);
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
 	
 	// Power consumer: one workshop.
-	var workshop = CreateObject(ToolsWorkshop, 110, 160, plr);
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
 	workshop->CreateContents(Wood, 16);
 	workshop->CreateContents(Metal, 16);
 	workshop->AddToQueue(Shovel, 16);

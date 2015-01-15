@@ -57,7 +57,7 @@ public func SetStartpoint(int x, int y)
 	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
 	if (!cp)	
-		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
+		cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(PARKOUR_CP_Start);
 	cp->SetCPController(this);
@@ -72,7 +72,7 @@ public func SetFinishpoint(int x, int y, bool team)
 	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
 	if (!cp)	
-		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
+		cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	var mode = PARKOUR_CP_Finish;
 	if (team)
@@ -90,7 +90,7 @@ public func AddCheckpoint(int x, int y, int mode)
 	// Safety, x and y inside landscape bounds.
 	x = BoundBy(x, 0, LandscapeWidth());
 	y = BoundBy(y, 0, LandscapeHeight());
-	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
+	var cp = CreateObjectAbove(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
 	cp->SetCPController(this);
@@ -390,7 +390,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 protected func RelaunchPlayer(int plr)
 {
 	if (no_respawn_handling) return;
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
@@ -470,7 +470,7 @@ private func UpdateScoreboard(int plr)
 // Effect for direction indication for the clonk.
 protected func FxIntDirNextCPStart(object target, effect)
 {
-	var arrow = CreateObject(GUI_GoalArrow, 0, 0, target->GetOwner());
+	var arrow = CreateObjectAbove(GUI_GoalArrow, 0, 0, target->GetOwner());
 	arrow->SetAction("Show", target);
 	effect.arrow = arrow;
 	return FX_OK;

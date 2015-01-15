@@ -8,30 +8,36 @@ func Initialize()
 	for (i=0; i<6; ++i)
 		if (pos=FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt/2-100), Loc_Wall(CNAT_Bottom))) // Loc_Wall adds us 100 pixels...
 		{
-			var chest = CreateObject(Chest,pos.x,pos.y);
+			var chest = CreateObjectAbove(Chest,pos.x,pos.y);
 			if (chest)
 			{
 				chest->CreateContents(Firestone,5);
-				chest->CreateContents(Bread,2);
-				var bonus = [[Bow,Arrow],[Shield,Sword]][Random(2)];
-				for (var obj in bonus) chest->CreateContents(obj);
+				chest->CreateContents(Bread,1);
+				chest->CreateContents(Bow,1);
+				//chest->CreateContents(Arrow,1); - avoid extra layer in ring menu
+				chest->CreateContents(FireArrow,1);
+				chest->CreateContents(BombArrow,1)->SetStackCount(5);
+				chest->CreateContents(Shield,1);
+				chest->CreateContents(Sword,1);
 			}
 		}
 	// Materials: Firestones
 	for (i=0; i<30; ++i)
 		if (pos=FindLocation(Loc_InRect(0,0,ls_wdt,ls_hgt/2), Loc_Solid()))
 			if (GBackSolid(pos.x,pos.y-1))
-				CreateObject(Firestone,pos.x,pos.y-1);
+				CreateObjectAbove(Firestone,pos.x,pos.y-1);
 	// Some firestones in lower half
 	for (i=0; i<30; ++i)
 		if (pos=FindLocation(Loc_InRect(0,ls_hgt/2,ls_wdt,ls_hgt/3), Loc_Solid()))
 			if (GBackSolid(pos.x,pos.y-1))
-				CreateObject(Firestone,pos.x,pos.y-1);
+				CreateObjectAbove(Firestone,pos.x,pos.y-1);
 	return true;
 }
 
 func InitializePlayer(int plr)
 {
+	// everything visible
+	SetFoW(false, plr);
 	// player positioning
 	var ls_wdt = LandscapeWidth(), ls_hgt = LandscapeHeight();
 	var crew = GetCrew(plr);
@@ -41,7 +47,8 @@ func InitializePlayer(int plr)
 	// initial material
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Club);
-	crew->CreateContents(Firestone);
+	crew->CreateContents(WindBag);
+	crew->CreateContents(Firestone,3);
 	crew.MaxEnergy = 120000;
 	crew->DoEnergy(1000);
 	return true;

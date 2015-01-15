@@ -11,7 +11,7 @@ public func FxMoveTimer(object target, effect, int time)
 	{
 		for (var i = 0; i < 3; i++)
 		{
-			var bubble = CreateObject(Fx_Bubble);
+			var bubble = CreateObjectAbove(Fx_Bubble);
 			bubble->SetCon(10 * target->GetCon() / 15);
 			bubble->SetYDir(target->GetYDir());
 		}

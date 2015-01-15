@@ -35,7 +35,7 @@ public func DoConstructionEffects(object site)
 	// Site is done immediately
 	SetCon(100);
 	// Create TopFace overlay
-	top_face = CreateObject(GetID(),0,35,GetOwner());
+	top_face = CreateObjectAbove(GetID(),0,35,GetOwner());
 	top_face.Plane = this.Plane + 10;
 	top_face->SetGraphics("TopFace");
 	top_face->SetAction("Attach", this);

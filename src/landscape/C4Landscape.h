@@ -22,7 +22,6 @@
 
 #include "C4Sky.h"
 #include "C4Shape.h"
-#include "C4LandscapeRender.h"
 
 #include <CSurface8.h>
 #include <C4Material.h>
@@ -64,10 +63,11 @@ public:
 	C4MapCreatorS2 *pMapCreator; // map creator for script-generated maps
 	bool fMapChanged;
 	BYTE *pInitial; // Initial landscape after creation - used for diff
+	class C4FoW *pFoW;
 protected:
 	CSurface8 * Surface8;
+	class C4LandscapeRender *pLandscapeRender;
 	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
-	C4LandscapeRender *pLandscapeRender;
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
 	uint8_t *PixCnt;
@@ -77,7 +77,7 @@ public:
 	void Clear(bool fClearMapCreator=true, bool fClearSky=true, bool fClearRenderer=true);
 	void Execute();
 	void Synchronize();
-	void Draw(C4TargetFacet &cgo, int32_t iPlayer=-1);
+	void Draw(C4TargetFacet &cgo, class C4FoWRegion *pLight = NULL);
 	void ScenarioInit();
 
 	void ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt, int32_t iOfDensity);
@@ -116,14 +116,14 @@ public:
 	bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT, bool fDrawBridge);
 	bool DrawPolygon(int *vtcs, int length, const char *szMaterial, bool bIFT, bool fDrawBridge);
 	CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
-	inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
+	inline BYTE _GetPix(int32_t x, int32_t y) const // get landscape pixel (bounds not checked)
 	{
 #ifdef _DEBUG
 		if (x<0 || y<0 || x>=Width || y>=Height) { BREAKPOINT_HERE; }
 #endif
 		return Surface8->_GetPix(x,y);
 	}
-	inline BYTE GetPix(int32_t x, int32_t y) // get landscape pixel (bounds checked)
+	inline BYTE GetPix(int32_t x, int32_t y) const // get landscape pixel (bounds checked)
 	{
 		extern BYTE MCVehic;
 		// Border checks
@@ -171,6 +171,14 @@ public:
 	{
 		return Pix2Place[GetPix(x, y)];
 	}
+	inline bool _FastSolidCheck(int32_t x, int32_t y) // checks whether there *might* be something solid at the point
+	{
+		return PixCnt[(x / 17) * PixCntPitch + (y / 15)] > 0;
+	}
+	inline int32_t FastSolidCheckNextX(int32_t x)
+	{
+		return (x / 17) * 17 + 17;
+	}
 	inline int32_t GetPixMat(BYTE byPix) { return Pix2Mat[byPix]; }
 	inline int32_t GetPixDensity(BYTE byPix) { return Pix2Dens[byPix]; }
 	bool _PathFree(int32_t x, int32_t y, int32_t x2, int32_t y2); // quickly checks wether there *might* be pixel in the path.
@@ -210,8 +218,6 @@ protected:
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes
 	CSurface8 * CreateMapS2(C4Group &ScenFile); // create map by def file
-	bool Relight(C4Rect To);
-	bool ApplyLighting(C4Rect To);
 	bool Mat2Pal(); // assign material colors to landscape palette
 	void UpdatePixCnt(const class C4Rect &Rect, bool fCheck = false);
 	void UpdateMatCnt(C4Rect Rect, bool fPlus);

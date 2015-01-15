@@ -16,16 +16,16 @@ static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos
 protected func PostIntroInitialize()
 {
 	// Construction site on goal platform
-	var goal_site = CreateObject(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
+	var goal_site = CreateObjectAbove(ConstructionSite, goal_platform_x+10, goal_platform_y+3);
 	goal_site->Set(CrystalCommunicator);
 	goal_site->MakeUncancellable();
 	if (SCEN_TEST)
 	{
 		for (var i=0; i<6; ++i)
 		{
-			goal_site->CreateObject(Metal,-20);
-			goal_site->CreateObject(Ruby,0);
-			goal_site->CreateObject(Amethyst,20);
+			goal_site->CreateObjectAbove(Metal,-20);
+			goal_site->CreateObjectAbove(Ruby,0);
+			goal_site->CreateObjectAbove(Amethyst,20);
 		}
 		goal_site->CreateContents(Metal,6);
 		goal_site->CreateContents(Ruby,6);
@@ -40,7 +40,7 @@ protected func PostIntroInitialize()
 	
 	// NPC
 	g_tuesday_pos = FindMainIslandPosition(0, 100, true);
-	npc_tuesday = CreateObject(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-10);
+	npc_tuesday = CreateObjectAbove(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-10);
 	npc_tuesday->SetDir(DIR_Left);
 	npc_tuesday->SetColor(0x804000);
 	npc_tuesday->SetName("$Tuesday$");
@@ -107,7 +107,7 @@ private func InitEnvironment()
 	SetSkyParallax(0, 20, 20);
 	
 	// Ambience sounds
-	CreateObject(Ambience);
+	CreateObjectAbove(Ambience);
 	
 	// No disasters for now
 	//Meteor->SetChance(5); Cloud->SetLightning(16);
@@ -200,7 +200,7 @@ private func InitMainIsland()
 	
 	// Always start with a lorry filled with: hammer(x2), axe(x2), wood(x6) and metal(x4).
 	var lorry_pos = FindMainIslandPosition(0, 80);
-	var lorry = CreateObject(Lorry, lorry_pos[0], lorry_pos[1] - 8);
+	var lorry = CreateObjectAbove(Lorry, lorry_pos[0], lorry_pos[1] - 8);
 	lorry->CreateContents(Hammer, 2);
 	lorry->CreateContents(Axe, 2);
 	lorry->CreateContents(Wood, 6);
@@ -211,13 +211,13 @@ private func InitMainIsland()
 	if (amount >= 2)
 	{
 		pos = FindMainIslandPosition(-120, 20);
-		CreateObject(Flagpole, pos[0]-7, pos[1]);
-		var rfp = CreateObject(Flagpole, pos[0]+7, pos[1]);
+		CreateObjectAbove(Flagpole, pos[0]-7, pos[1]);
+		var rfp = CreateObjectAbove(Flagpole, pos[0]+7, pos[1]);
 		rfp->SetNeutral(true);
 		pos = FindMainIslandPosition(120, 20);
-		CreateObject(Flagpole, pos[0], pos[1]);
+		CreateObjectAbove(Flagpole, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(WindGenerator, pos[0], pos[1]);
+		CreateObjectAbove(WindGenerator, pos[0], pos[1]);
 		lorry->CreateContents(Wood, 4);
 		lorry->CreateContents(Metal, 2);
 		lorry->CreateContents(Pickaxe, 1);
@@ -229,11 +229,11 @@ private func InitMainIsland()
 	if (amount >= 3)
 	{
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(Sawmill, pos[0], pos[1]);
+		CreateObjectAbove(Sawmill, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(ChemicalLab, pos[0], pos[1]);
+		CreateObjectAbove(ChemicalLab, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(ToolsWorkshop, pos[0], pos[1]);
+		CreateObjectAbove(ToolsWorkshop, pos[0], pos[1]);
 	
 		lorry->CreateContents(Barrel, 1);
 		lorry->CreateContents(Bucket, 1);

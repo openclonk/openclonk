@@ -68,7 +68,7 @@ protected func Initialize()
 	if (FindObject(Find_ID(Environment_Celestial)))
 	{
 		PlaceStars();
-		CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
+		CreateObjectAbove(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 	}
 	
 	// Set the time to midday (12:00).
@@ -113,7 +113,7 @@ private func PlaceStars()
 		var pos = [Random(lw), Random(lh)];
 		if(!FindObject(Find_ID(Stars),Find_AtPoint(pos[0],pos[1])))
 		{
-			CreateObject(Stars, pos[0], pos[1]); 
+			CreateObjectAbove(Stars, pos[0], pos[1]); 
 			continue;
 		}
 		failed++;

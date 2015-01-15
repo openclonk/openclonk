@@ -1,0 +1,16 @@
+[DefCore]
+id=Branch
+Version=6,0
+Category=C4D_StaticBack
+Width=10
+Height=28
+Offset=-5,-14
+Vertices=3
+VertexX=0,0,0
+VertexY=-12,0,12
+VertexCNAT=3,4
+Mass=1
+StretchGrowth=1
+Oversize=1
+Float=1
+Rotate=1

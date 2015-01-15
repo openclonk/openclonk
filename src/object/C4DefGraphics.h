@@ -51,7 +51,7 @@ public:
 	{
 		struct
 		{
-			C4Surface *Bitmap, *BitmapClr;
+			C4Surface *Bitmap, *BitmapClr, *BitmapNormal;
 		} Bmp;
 		StdMesh *Mesh;
 	};
@@ -63,17 +63,16 @@ public:
 	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor
 
-	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
+	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, const char *szNormal, bool fColorByOwner); // load specified graphics from group
 	bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	bool LoadMesh(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
 	bool LoadSkeleton(C4Group &hGroup, const char* szFilename, StdMeshSkeletonLoader& loader);
-	bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group
+	bool Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fColorByOwner); // load graphics from group
 	C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 	void Clear(); // clear fields; delete additional graphics
 	bool IsMesh() const { return Type == TYPE_Mesh; }
 	bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
-	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
 	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
 
@@ -100,26 +99,50 @@ public:
 };
 
 // backup class holding dead graphics pointers and names
-class C4DefGraphicsPtrBackup
+class C4DefGraphicsPtrBackupEntry
 {
 protected:
 	C4DefGraphics *pGraphicsPtr; // dead graphics ptr
 	C4Def *pDef;                 // definition of dead graphics
 	char Name[C4MaxName+1];        // name of graphics
-	C4DefGraphicsPtrBackup *pNext; // next member of linked list
-	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
 	StdMeshUpdate* pMeshUpdate;    // Dead mesh
 
 public:
-	C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics); // ctor
-	~C4DefGraphicsPtrBackup();                              // dtor
+	C4DefGraphicsPtrBackupEntry(C4DefGraphics *pSourceGraphics); // ctor
+	~C4DefGraphicsPtrBackupEntry();                              // dtor
 
-	void AssignUpdate(C4DefGraphics *pNewGraphics); // update all game objects with new graphics pointers
-	void AssignRemoval();                           // remove graphics of this def from all game objects
+	void AssignUpdate();   // update all game objects with new graphics pointers
+	void AssignRemoval();  // remove graphics of this def from all game objects
 
 private:
-	void UpdateMeshes();
+	void UpdateAttachedMeshes();
+	void UpdateAttachedMesh(StdMeshInstance* instance);
+};
+
+// On definition reload, all graphics updates need to be performed in one
+// batch using this class.
+class C4DefGraphicsPtrBackup
+{
+public:
+	C4DefGraphicsPtrBackup();
+	~C4DefGraphicsPtrBackup();
+
+	// Add a def graphics to the list of graphics to be updated.
+	// Also adds additional graphics linked from pGraphics.
+	void Add(C4DefGraphics *pGraphics);
+
+	void AssignUpdate();   // update all game objects with new graphics pointers
+	void AssignRemoval();  // remove graphics of all defs from all game objects
+
+private:
 	void UpdateMesh(StdMeshInstance* instance);
+
+	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
+	StdMeshAnimationUpdate MeshAnimationUpdate; // Backup of animation names in the animation tree
+
+	std::list<C4DefGraphicsPtrBackupEntry*> Entries;
+
+	bool fApplied;
 };
 
 // Helper to compile C4DefGraphics-Pointer
@@ -139,6 +162,7 @@ public:
 // graphics overlay used to attach additional graphics to objects
 class C4GraphicsOverlay
 {
+	friend class C4DefGraphicsPtrBackupEntry;
 	friend class C4DefGraphicsPtrBackup;
 public:
 	enum Mode

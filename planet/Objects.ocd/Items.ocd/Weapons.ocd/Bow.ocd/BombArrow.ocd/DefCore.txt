@@ -1,0 +1,16 @@
+[DefCore]
+id=BombArrow
+Version=6,0
+Category=C4D_Object
+Width=4
+Height=15
+Offset=-2,-7
+Vertices=3
+VertexY=-6,6,0
+VertexFriction=120,120,120
+Value=35
+Mass=12
+Components=Wood=3;Metal=1;Firestone=2;
+Picture=12,0,64,64
+Rotate=1
+Float=1

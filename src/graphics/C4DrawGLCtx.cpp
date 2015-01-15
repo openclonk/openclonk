@@ -32,7 +32,6 @@ void CStdGLCtx::SelectCommon()
 	// set some default states
 	glDisable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glShadeModel(GL_FLAT);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);

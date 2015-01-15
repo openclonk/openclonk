@@ -44,6 +44,7 @@ protected:
 	struct ObjselItemDt {
 		C4EditCursor* EditCursor;
 		C4Object* Object;
+		StdCopyStrBuf Command;
 #if defined(USE_WIN32_WINDOWS)
 		UINT_PTR ItemId;
 #elif defined(WITH_DEVELOPER_MODE)
@@ -107,6 +108,7 @@ protected:
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 	void DoContextObjsel(C4Object *, bool clear);
+	void DoContextObjCommand(C4Object *, const char *cmd);
 	void ObjselectDelItems();
 
 	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().

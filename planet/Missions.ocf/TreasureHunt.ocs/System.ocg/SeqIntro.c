@@ -7,7 +7,7 @@ static npc_pyrit, g_goal;
 func Intro_Init(object flagpole)
 {
 	// Fix plane outside landscape for now
-	this.plane = CreateObject(Plane, 100,-20);
+	this.plane = CreateObjectAbove(Plane, 100,-20);
 	this.plane->FaceRight();
 	this.plane->SetR(80);
 	this.plane->SetColor(0xa04000);
@@ -19,7 +19,7 @@ func Intro_Init(object flagpole)
 	this.plane->MakeInvincible();
 	
 	// Pyrit the pilot
-	this.pilot = npc_pyrit = CreateObject(Clonk, 100, 100, NO_OWNER);
+	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
 	this.pilot->MakeNonFlammable();
 	this.pilot->SetSkin(2);

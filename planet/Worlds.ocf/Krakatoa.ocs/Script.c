@@ -160,13 +160,8 @@ private func InitVegetation(int map_size)
 	// Some ferns, to be burned soon.
 	for (var i = 0; i < 25 + Random(5); i++)
 		PlaceVegetation(Fern, 0, 0, wdt, hgt);
-	// Ranks as a nice additional source of wood.
-	for (var i = 0; i < 16 + Random(4); i++)
-	{
-		veg = PlaceVegetation(Rank, 0, 0, wdt, hgt);
-		if (veg)
-			veg->SetR(RandomX(-20, 20));
-	}
+	// Branches as a nice additional source of wood.
+	Branch->Place(30 + Random(8));
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 30 + 15 * map_size + Random(10),"Earth");
 	PlaceObjects(Firestone, 40 + 15 * map_size + Random(5), "Earth");
@@ -277,7 +272,7 @@ global func FxBigEruptionStart(object target, proplist effect, int temporary, in
 	// Use earthquake sound for this eruption.
 	Sound("Earthquake", true, 100, nil, 1);
 	// Shake also the viewport a bit on a big eruption.
-	ShakeViewPort(3200, x, y);
+	ShakeViewport(3200, x, y);
 	return FX_OK;
 }
 
@@ -304,7 +299,7 @@ global func FxBigEruptionTimer(object target, proplist effect, int time)
 	if (!Random(6))
 	{
 		var angw = 40, lev = 120;
-		var obj = CreateObject(LavaChunk, effect.X + RandomX(-5, 5), effect.Y, NO_OWNER);
+		var obj = CreateObjectAbove(LavaChunk, effect.X + RandomX(-5, 5), effect.Y, NO_OWNER);
 		var ang = - 90 + RandomX(-angw / 2, angw / 2);
 		var xdir = Cos(ang, lev) + RandomX(-3, 3);
 		obj->SetR(Random(360));
@@ -335,7 +330,7 @@ global func TestGoldCount()
 	var pos;
 	while (pos = FindLocation(Loc_Material("Gold")))
 	{
-		var pos = CreateObject(Rock, pos.x, pos.y)->Explode(100);
+		var pos = CreateObjectAbove(Rock, pos.x, pos.y)->Explode(100);
 	}
 	var gold_count = ObjectCount(Find_ID(Nugget));
 	return gold_count;

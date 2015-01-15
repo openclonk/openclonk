@@ -37,7 +37,7 @@ global func GivePlayerBasicKnowledge(int plr)
 		// Basic structures for a settlement and production of tools and explosives.
 		Flagpole, Basement, WindGenerator, SteamEngine, Compensator, Sawmill, Foundry, Elevator, ToolsWorkshop, ChemicalLab, Chest,
 		// Basic tools for mining and tree chopping and loam production.
-		Shovel, Hammer, Axe, Pickaxe, Barrel, Bucket,
+		Shovel, Hammer, Axe, Pickaxe, Barrel, Bucket, Torch,
 		// The basic resources.
 		Metal, Loam, GoldBar,
 		// Some of the basic explosives.

@@ -41,7 +41,7 @@ private func CreateSegment(int index, object previous)
 {
 	if(index == 0) return;
 	var segment;
-	segment = CreateObject(GrappleRope);
+	segment = CreateObjectAbove(GrappleRope);
 	return segment;
 }
 
@@ -75,7 +75,7 @@ public func HockAnchored(bool pull)
 
 public func HookRemoved()
 {
-	var new_hook = CreateObject(GrappleHook);
+	var new_hook = CreateObjectAbove(GrappleHook);
 	new_hook->New(objects[1][0]->Contained(), this);
 	objects[1][0]->SetHook(new_hook);
 	objects[0][0] = new_hook;

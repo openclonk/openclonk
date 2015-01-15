@@ -14,43 +14,8 @@
     <text>Material scripts can also be crafted or edited by hand. The format is described in the <a href="http://www.ogre3d.org/docs/manual/manual_14.html">OGRE manual</a>. However not all of the features described there are supported (yet): Especially usage of LOD (Level of Detail) is not yet possible. The usage of pixel, vertex and geometry shaders has some restrictions, as discussed in the section below. For the source1 and source2 fields in the colour_op_ex field in texture units the additional value src_player_colour can be specified to refer to the player color of the object's owner. This can be used to colorize objects (partly) by the player color.</text>
     <text>At runtime the material script can be changed using the C4Script function <funclink>SetMeshMaterial</funclink>.</text>
     <h id="Shaders">Shaders</h>
-    <text>Pixel, vertex and geometry Shaders can be used to customize the appearance of an object beyond what is possible by the declaratinos in OGRE passes and texture units. The <a href="http://www.ogre3d.org/docs/manual/manual_14.html">OGRE manual</a> should be consulted to learn how shaders can be used, however, there are some restrictions in OpenClonk.</text>
-    <text>First and foremost, only shaders written in the GLSL are supported at the moment. None of the <a href="http://www.ogre3d.org/docs/manual/manual_23.html#param_005findexed_005fauto">automatic parameters</a> are available for shaders, however, some of these are implicitly available as GLSL variables. Instead, the following <em>additional</em> automatic parameters are available:</text>
-    <text>
-      <table>
-        <caption id="OCAutoParameters">Additional automatic shader parameters</caption>
-        <rowh>
-          <col>Parameter name</col>
-          <col>Type</col>
-          <col>Description</col>
-        </rowh>
-        <row>
-          <literal_col>oc_player_color</literal_col>
-          <literal_col>float3</literal_col>
-          <col>The player color of the object being rendered</col>
-        </row>
-        <row>
-          <literal_col>oc_color_modulation</literal_col>
-          <literal_col>float4</literal_col>
-          <col>The color modulation of the object being rendered</col>
-        </row>
-        <row>
-          <literal_col>oc_mod2</literal_col>
-          <literal_col>int</literal_col>
-          <col>1 if the Mod2 drawing mode is activated, see <emlink href="script/fn/SetObjectBlitMode.html">SetObjectBlitMode</emlink>. 0 otherwise.</col>
-        </row>
-        <row>
-          <literal_col>oc_use_clrmodmap</literal_col>
-          <literal_col>int</literal_col>
-          <col>1 if the object drawing should be modulated with the global color modulation map (FoW).</col>
-        </row>
-        <row>
-          <literal_col>oc_clrmodmap</literal_col>
-          <literal_col>sampler2D</literal_col>
-          <col>Texture containing the clrmodmap, for lookup of the global modulation value. The corresponding texture transformation matrix is set up such that the fragment coordinate should be used for sampling the texture (gl_FragCoord.xy).</col>
-        </row>
-      </table>
-    </text>
+    <text>Pixel, vertex and geometry Shaders can be used to customize the appearance of an object beyond what is possible by the declarations in OGRE passes and texture units. The <a href="http://www.ogre3d.org/docs/manual/manual_14.html">OGRE manual</a> should be consulted to learn how shaders can be used, however, there are some restrictions in OpenClonk.</text>
+    <text>First and foremost, only shaders written in the GLSL are supported at the moment. None of the <a href="http://www.ogre3d.org/docs/manual/manual_23.html#param_005findexed_005fauto">automatic parameters</a> are available for shaders, however, some of these are implicitly available as GLSL variables.</text>
     <text>When a custom fragment shader is used, then that shader is responsible for applying the player color and color modulation to the object, since in that case the engine cannot take care of that. The additional parameters mentioned above can be used for that purpose. Also, when a custom fragment shader is used, the colour_op, colour_op_ex, alpha_op and alpha_op_ex directives in all texture units are ignored.</text>
     <text>When a fragment shader or a vertex shader (or both) are not specified, then standard shaders are generated. The standard shaders expect certain GLSL varying variables to be propagated from the vertex shader to the fragment shader, so if you implement a vertex shader but not a fragment shader, make sure to create the following varying variables:</text>
     <text>
@@ -62,9 +27,9 @@
           <col>Description</col>
         </rowh>
         <row>
-          <literal_col>diffuse</literal_col>
-          <literal_col>vec4</literal_col>
-          <col>The interpolated diffuse color of the surface from lighting calculations.</col>
+          <literal_col>normalDir</literal_col>
+          <literal_col>vec3</literal_col>
+          <col>The interpolated normal vector for lighting calculations.</col>
         </row>
         <row>
           <literal_col>texcoord</literal_col>
@@ -73,24 +38,116 @@
         </row>
       </table>
     </text>
-    <text>The standard fragment shader uses these values and possibly processes them with what is specified in the texture units declarations. The standard vertex shader creates these values from the GL state, and is independent of the texture units or other declarations. If no custom vertex shader is provided, the following shader is used:</text>
-    <code>varying vec4 diffuse;
+    <text>The standard fragment shader uses these values and possibly processes them with what is specified in the texture unit declarations. The standard vertex shader creates these values from the GL state, and is independent of the texture units or other declarations. If no custom vertex shader is provided, the following shader is used:</text>
+    <code>varying vec3 normalDir;
 varying vec2 texcoord;
 
 void main()
 {
-  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
-  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);
-  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);
+  normalDir = normalize(gl_NormalMatrix * gl_Normal);
   texcoord = gl_MultiTexCoord0.xy;
   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }</code>
+    <text>Shaders for OpenClonk are composed of various shader slices. This allows to add openclonk-specific code to
+    the shaders, such as applying color modulation for objects, or lighting.
+    A slice is specified by <code>slice(position) { ... }</code> in the shader code, and the code within the slice
+    is then used for composing the whole shader code. Uniform variables should be declared outside of any slices. The
+    following position values for slices are defined, and slices are inserted from lower to higher values:</text>
+    <text>
+      <table>
+        <caption id="OCMeshShaderSlices">Defined shader slice positions</caption>
+        <rowh>
+          <col>Slice position</col>
+          <col>Value</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <literal_col>texcoord</literal_col>
+          <literal_col>50</literal_col>
+          <col>Vertex shader: Should be used to set the <code>texcoord</code> varying variable.</col>
+        </row>
+        <row>
+          <literal_col>normal</literal_col>
+          <literal_col>60</literal_col>
+          <col>Vertex shader: Should be used to set the <code>normalDir</code> varying variable.</col>
+        </row>
+        <row>
+          <literal_col>position</literal_col>
+          <literal_col>80</literal_col>
+          <col>Vertex shader: Should be used to set the <code>gl_Position</code> variable.</col>
+        </row>
+        <row>
+          <literal_col>init</literal_col>
+          <literal_col>0</literal_col>
+          <col>Fragment shader: Should be used for initializing required variables. The standard slices set the initial color value from
+          the mesh material properties here.</col>
+        </row>
+        <row>
+          <literal_col>coordinate</literal_col>
+          <literal_col>20</literal_col>
+          <col>Fragment shader: Should be used for calculating custom texture coordinates.</col>
+        </row>
+        <row>
+          <literal_col>texture</literal_col>
+          <literal_col>40</literal_col>
+          <col>Fragment shader: Should be used for texture lookups.</col>
+        </row>
+        <row>
+          <literal_col>material</literal_col>
+          <literal_col>60</literal_col>
+          <col>Fragment shader: Used by the landscape shader to query the material pixel.</col>
+        </row>
+        <row>
+          <literal_col>normal</literal_col>
+          <literal_col>80</literal_col>
+          <col>Fragment shader: Should be used to compute the normal vector.</col>
+        </row>
+        <row>
+          <literal_col>light</literal_col>
+          <literal_col>100</literal_col>
+          <col>Fragment shader: Should be used for lighting calculations.</col>
+        </row>
+        <row>
+          <literal_col>color</literal_col>
+          <literal_col>120</literal_col>
+          <col>Fragment shader: Should be used for setting the output color value.</col>
+        </row>
+        <row>
+          <literal_col>finish</literal_col>
+          <literal_col>140</literal_col>
+          <col>Fragment shader: Final slice position, can be used for debug code overwriting any previous output, for example.</col>
+        </row>
+      </table>
+    </text>
+    <text>A slice position can also have a relative constant offset with a plus or minus sign, such as <code>texture+1</code>. The fragment shader slices should modify the implicitly defined value <code>color</code> of type <code>vec4</code>.</text>
+    <text>In order to make sure that other OGRE mesh viewers can still display the mesh, it is suggested to wrap the slice
+    definitions into corresponding <code>#ifdef</code> blocks. This also allows to, for example, set default light
+    conditions when the mesh is shown in a standalone OGRE mesh viewer. An example is given here:</text>
+    <code>#ifndef OPENCLONK
+#define slice(x)
+#define color gl_FragColor
+varying vec2 texcoord;
+void main()
+{
+  color = vec4(1.0, 1.0, 1.0, 1.0); // or gl_FrontMaterial.ambient;
+#endif
+
+// Shader slices go here.
+slice(XXX) { ... }
+
+#ifndef OPENCLONK
+  // Custom lighting code for standalone mesh viewers can go here
+}
+#endif</code>
+    <text>If the uniform variable <code>oc_PlayerColor</code> is defined with type <code>vec3</code>, it is automatically
+    set by OpenClonk to the player color of ColorByOwner objects.</text>
     <h id="Animations">Animations</h>
     <text>As for bitmap based graphics an object can play an animation while executing an action. To do so first a rig for the model and then an animation needs to be created. When exporting it is saved in the *.skeleton (or *.skeleton.xml for the OGRE XML format) file. To play it during an action the Animation field of the action needs to be set in the <emlink href="definition/actmap.html">ActMap</emlink>. The Facet fields are ignored for mesh graphics.</text>
     <text>It is also possible, via script, to play multiple animations at the same time or to specify transitions between animations. To learn more about this possibility see <emlink href="definition/animations.html">Animations</emlink>.</text>
+    <text>Just as scripts, animations can be appended or included to certain definitions. For this purpose the *.skeleton file has to match a certain pattern: appendto.<i>Definition</i>.skeleton adds the animations in that skeleton to the skeleton that was loaded by <i>Definition</i>. Existing animations will not be overloaded. Similarly, include.<i>Definition</i>.skeleton includes animations. Make sure to name your skeleton accordingly when rigging the mesh, if you want to include animations. Obviously, animations from only one definition can be included, but skeletons from multiple animations can be appended.</text>
     <h id="Attachment">Attachment of meshes</h>
     <text>Meshes can be attached to each other so that they always move together. This allows the clonk to carry objects or to aim with the bow. To attach two meshes the C4Script function <funclink>AttachMesh</funclink> can be used, or <funclink>DetachMesh</funclink> to detach them again. When attaching a bone of both meshes needs to be specified. The attached mesh is then aligned so that its bone has always the same position and orientation as the one to which it is attached.</text>
-    <text>However it needs to be taken care of the fact that only the meshes, that is the graphics of the objects, are attached. The real position of the attached object (so what is returned by the functions <funclink>GetX</funclink> and <funclink>GetY</funclink> or the area in which the object is found by the functions <funclink>Find_AtPoint</funclink>, <funclink>Find_InRect</funclink> oder <funclink>Find_AtRect</funclink>) is <em>not</em> affected.</text>
+    <text>However it needs to be taken care of the fact that only the meshes, that is the graphics of the objects, are attached. The real position of the attached object (so what is returned by the functions <funclink>GetX</funclink> and <funclink>GetY</funclink> or the area in which the object is found by the functions <funclink>Find_AtPoint</funclink>, <funclink>Find_InRect</funclink> or <funclink>Find_AtRect</funclink>) is <em>not</em> affected.</text>
     <h id="Picture">Picture graphics.</h>
     <text>If an object uses a mesh then the Picture entry of the <emlink href="definition/defcore.html">DefCore.txt</emlink> remains without effect. Instead a perspective projection of the mesh will be used. The camera will be placed in the front of the object at a distance so that the mesh is totally covered.</text>
     <text>The position and orientation of the mesh with respect to the camera can be changed by making use of the "PictureTransformation" property. This way it can be shown displaced, rotated or scaled. The property should be assigned an array with 12 integer entries which make up a 3x4 matrix. The first four values specify the first row, the next four values specify the second row and the last four entries specify the third one. Those matrices can be conveniently created using the script functions <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink>, <funclink>Trans_Scale</funclink> and <funclink>Trans_Mul</funclink>.</text>
@@ -107,4 +164,5 @@ void main()
     </ul>
   </part>
   <author>Clonk-Karl</author><date>2010-04</date>
+  <author>Marky</author><date>2015-01/<date>
 </doc>

@@ -35,13 +35,13 @@ func InitializeScriptPlayer(int plr)
 
 func CreateEnemy(id clonktype, int x,int y, int plr, array contents, int life)
 {
-	var enemy = CreateObject(clonktype, x, y, plr);
+	var enemy = CreateObjectAbove(clonktype, x, y, plr);
 	if (!enemy) return nil;
 	enemy->SetDir(DIR_Right);
 	enemy->MakeCrewMember(plr);
 	enemy->SetMaxEnergy(life);
 	if (contents) for (var c in contents) enemy->CreateContents(c);
 	S2AI->AddAI(enemy);
-	//CreateObject(EnergyBar)->SetTarget(enemy);
+	//CreateObjectAbove(EnergyBar)->SetTarget(enemy);
 	return enemy;
 }

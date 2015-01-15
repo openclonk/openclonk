@@ -23,7 +23,7 @@ global func CreateProductionMenu(object producer)
 	if (!(this->~HasMenuControl())) return;
 
 	// Create the menu controller.
-	var controller = CreateObject(Library_ProductionMenu);
+	var controller = CreateObjectAbove(Library_ProductionMenu);
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	controller->SetCommander(producer);
@@ -53,7 +53,7 @@ public func AddMenuProducts(object producer)
 {
 	for (var product in producer->GetProducts(GetMenuObject()))
 	{
-		var item = CreateObject(GUI_MenuItem);
+		var item = CreateObjectAbove(GUI_MenuItem);
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(product);
@@ -66,7 +66,7 @@ public func AddMenuQueue(object producer)
 {
 	for (var qitem in producer->GetQueue())
 	{
-		var item = CreateObject(GUI_MenuItem);
+		var item = CreateObjectAbove(GUI_MenuItem);
 		if (!AddQueueItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(qitem.Product);

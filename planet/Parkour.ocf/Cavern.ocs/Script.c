@@ -47,11 +47,11 @@ protected func Initialize()
 		if (!pos)
 			continue;
 		x = pos[0]; y = pos[1];
-		CreateObject(Chest, x, y + 8, NO_OWNER);
+		CreateObjectAbove(Chest, x, y + 8, NO_OWNER);
 		d += RandomX(250, 300);
 	}
 	// Fill chests.
-	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam];
+	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam, Torch];
 	for (var chest in FindObjects(Find_ID(Chest)))
 		for (var i = 0; i < 4; i++)
 			chest->CreateContents(content_list[Random(GetLength(content_list))]);

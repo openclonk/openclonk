@@ -6,7 +6,7 @@ func Initialize()
 	num_to_collect = SCENPAR_Difficulty;
 	for (var i=0; i<num_to_collect; ++i)
 	{
-		var ng = CreateObject(Nugget, Random(LandscapeWidth()-100) + 50, LandscapeHeight()/2 + Random(LandscapeHeight()/2-40));
+		var ng = CreateObjectAbove(Nugget, Random(LandscapeWidth()-100) + 50, LandscapeHeight()/2 + Random(LandscapeHeight()/2-40));
 		ng.Entrance = Scenario.GotNugget;
 	}
 	return true;

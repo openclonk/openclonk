@@ -12,7 +12,7 @@ private func FireWeapon(object clonk, int angle)
 	
 	if(king_size)
 	{
-		var box = CreateObject(LeadShot,0,0,this->GetOwner());
+		var box = CreateObjectAbove(LeadShot,0,0,this->GetOwner());
 		shot->LessDamage();
 		shot->Launch(clonk,angle,iBarrel,260+Random(40));
 		shot=box->TakeObject();

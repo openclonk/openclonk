@@ -8,7 +8,7 @@ func Initialize()
     return; // I am just a double!
   if(!Double)
   {
-    Double = CreateObject(GetID());
+    Double = CreateObjectAbove(GetID());
     Double.Plane = 600;
     Double->SetAction("Attach", this);
     Double->SetGraphics("Foreground", GetID());

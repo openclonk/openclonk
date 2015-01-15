@@ -43,6 +43,7 @@
 #include <C4GameObjects.h>
 #include <C4Record.h>
 #include <C4MeshAnimation.h>
+#include <C4FoW.h>
 
 namespace
 {
@@ -180,7 +181,8 @@ void C4Object::Default()
 	Breath=0;
 	InMat=MNone;
 	Color=0;
-	PlrViewRange=0;
+	lightRange=0;
+	lightFadeoutRange=0;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
@@ -394,6 +396,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pCont->SetOCF();
 		Contained=NULL;
 	}
+	// Light system
+	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
 	// Object info
 	if (Info) Info->Retire();
 	Info = NULL;
@@ -1122,9 +1126,8 @@ void C4Object::AssignDeath(bool fForced)
 	// Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->ClearPointers(this, true);
-	// ensure objects that won't be affected by dead-plrview-decay are handled properly
-	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
-		SetPlrViewRange(0);
+	// Remove from light sources
+	SetLightRange(0,0);
 	// Engine script call
 	C4AulParSet pars(C4VInt(iDeathCausingPlayer));
 	Call(PSF_Death, &pars);
@@ -1247,7 +1250,7 @@ void C4Object::DoBreath(int32_t iChange)
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
 }
 
-void C4Object::DoCon(int32_t iChange)
+void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 {
 	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	bool fWasFull = (Con>=FullCon);
@@ -1267,7 +1270,10 @@ void C4Object::DoCon(int32_t iChange)
 	// shape and position
 	UpdateShape();
 	// make the bottom-most vertex stay in place
-	fix_y = strgt_con_b - Shape.GetBottom();
+	if (!grow_from_center)
+	{
+		fix_y = strgt_con_b - Shape.GetBottom();
+	}
 	// Face (except for the shape)
 	UpdateFace(false);
 
@@ -1644,8 +1650,8 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		Menu->SetPermanent(true);
 		Menu->SetAlignment(C4MN_Align_Free);
 		C4Viewport *pViewport = ::Viewports.GetViewport(Controller); // Hackhackhack!!!
-		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->GetZoom(),
-			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->GetZoom());
+		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->GetViewX()) * pViewport->GetZoom(),
+			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->GetViewY()) * pViewport->GetZoom());
 		// Add info item
 		fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, false, pTarget->Color, pTarget);
 		Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, NULL, pTarget->GetInfoString().getData());
@@ -1883,7 +1889,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (BackParticles) BackParticles->Draw(cgo, this);
 
 	// Object output position
-	float newzoom;
+	float newzoom = cgo.Zoom;
 	if (eDrawMode!=ODM_Overlay)
 	{
 		if (!GetDrawPosition(cgo, offX, offY, newzoom)) return;
@@ -2021,12 +2027,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (Contained && !eDrawMode) return;
 
 	// Visibility inside FoW
-	bool fOldClrModEnabled = !!(Category & C4D_IgnoreFoW);
-	if (fOldClrModEnabled)
-	{
-		fOldClrModEnabled = pDraw->GetClrModMapEnabled();
-		pDraw->SetClrModMapEnabled(false);
-	}
+	const C4FoWRegion* pOldFoW = pDraw->GetFoW();
+	if(pOldFoW && (Category & C4D_IgnoreFoW))
+		pDraw->SetFoW(NULL);
 
 	// Fire facet - always draw, even if particles are drawn as well
 	if (OnFire && eDrawMode!=ODM_BaseOnly)
@@ -2144,7 +2147,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Debug Display ///////////////////////////////////////////////////////////////////////
 
 	// Restore visibility inside FoW
-	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
+	if (pOldFoW) pDraw->SetFoW(pOldFoW);
 #endif
 }
 
@@ -2156,7 +2159,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// visible?
 	if (!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
-	float newzoom;
+	float newzoom = cgo.Zoom;
 	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, offX, offY, newzoom);
 	ZoomDataStackItem zdsi(newzoom);
 	// Clonk name
@@ -2354,7 +2357,8 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
-	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
+	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
+	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
@@ -2556,13 +2560,11 @@ bool C4Object::AssignInfo()
 	return false;
 }
 
-bool C4Object::AssignPlrViewRange()
+bool C4Object::AssignLightRange()
 {
-	// no range?
-	if (!PlrViewRange) return true;
-	// add to FoW-repellers
-	PlrFoWActualize();
-	// success
+	if (!lightRange && !lightFadeoutRange) return true;
+
+	UpdateLight();
 	return true;
 }
 
@@ -4157,7 +4159,6 @@ void C4Object::ExecAction()
 
 bool C4Object::SetOwner(int32_t iOwner)
 {
-	C4Player *pPlr;
 	// Check valid owner
 	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
 	// always set color, even if no owner-change is done
@@ -4169,21 +4170,9 @@ bool C4Object::SetOwner(int32_t iOwner)
 		}
 	// no change?
 	if (Owner == iOwner) return true;
-	// remove old owner view
-	if (ValidPlr(Owner))
-	{
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-	}
-	else
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
 	Owner=iOwner;
-	if (Owner != NO_OWNER)
-		// add to plr view
-		PlrFoWActualize();
 	// this automatically updates controller
 	Controller = Owner;
 	// script callback
@@ -4193,38 +4182,21 @@ bool C4Object::SetOwner(int32_t iOwner)
 }
 
 
-bool C4Object::SetPlrViewRange(int32_t iToRange)
+bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 {
 	// set new range
-	PlrViewRange = iToRange;
+	lightRange = iToRange;
+	lightFadeoutRange = iToFadeoutRange;
 	// resort into player's FoW-repeller-list
-	PlrFoWActualize();
+	UpdateLight();
 	// success
 	return true;
 }
 
 
-void C4Object::PlrFoWActualize()
+void C4Object::UpdateLight()
 {
-	C4Player *pPlr;
-	// single owner?
-	if (ValidPlr(Owner))
-	{
-		// single player's FoW-list
-		pPlr = ::Players.Get(Owner);
-		while (pPlr->FoWViewObjs.Remove(this)) {}
-		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-	}
-	// no owner?
-	else
-	{
-		// all players!
-		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
-		{
-			while (pPlr->FoWViewObjs.Remove(this)) {}
-			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
-		}
-	}
+	if (Landscape.pFoW) Landscape.pFoW->Add(this);
 }
 
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)

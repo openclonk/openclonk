@@ -80,7 +80,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 		{
 			if(t->GetID() == TargetBalloon)
 			{
-				var arw=CreateObject(Arrow,0,0,owner);
+				var arw=CreateObjectAbove(Arrow,0,0,owner);
 				t->OnProjectileHit(arw);
 				arw->RemoveObject();
 			}

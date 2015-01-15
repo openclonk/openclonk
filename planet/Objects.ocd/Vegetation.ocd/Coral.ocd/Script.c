@@ -28,7 +28,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 		var spot = FindLocation(Loc_Material("Water"), Loc_Wall(CNAT_Bottom | CNAT_Top | CNAT_Left | CNAT_Right), loc_area);
 		if (!spot) continue;
 		
-		CreateObject(this, spot.x, spot.y + 5, NO_OWNER);
+		CreateObjectAbove(this, spot.x, spot.y + 5, NO_OWNER);
 		--amount;
 	}
 	return true;
@@ -115,7 +115,7 @@ func FxSeedingTimer()
 {
 	if (!Random(20)) return -1;
 	if (!Random(2)) return;
-	var seed = CreateObject(CoralSeed, 0, 0, GetOwner());
+	var seed = CreateObjectAbove(CoralSeed, 0, 0, GetOwner());
 	seed->SetClrModulation(GetClrModulation());
 }
 

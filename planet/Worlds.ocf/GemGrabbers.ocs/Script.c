@@ -261,7 +261,7 @@ private func InitMainIsland(int amount)
 	// The boompack is also always there to have the opportunity to get one clonk on another
 	// sky island and start exploring.
 	var lorry_pos = FindMainIslandPosition(0, 80);
-	var lorry = CreateObject(Lorry, lorry_pos[0], lorry_pos[1] - 8);
+	var lorry = CreateObjectAbove(Lorry, lorry_pos[0], lorry_pos[1] - 8);
 	lorry->CreateContents(Hammer, 2);
 	lorry->CreateContents(Axe, 2);
 	lorry->CreateContents(Wood, 6);
@@ -273,11 +273,11 @@ private func InitMainIsland(int amount)
 	if (amount >= 2)
 	{
 		pos = FindMainIslandPosition(-120, 20);
-		CreateObject(Flagpole, pos[0], pos[1]);
+		CreateObjectAbove(Flagpole, pos[0], pos[1]);
 		pos = FindMainIslandPosition(120, 20);
-		CreateObject(Flagpole, pos[0], pos[1]);
+		CreateObjectAbove(Flagpole, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(WindGenerator, pos[0], pos[1]);
+		CreateObjectAbove(WindGenerator, pos[0], pos[1]);
 		lorry->CreateContents(Wood, 4);
 		lorry->CreateContents(Metal, 2);
 		lorry->CreateContents(Pickaxe, 1);
@@ -289,11 +289,11 @@ private func InitMainIsland(int amount)
 	if (amount >= 3)
 	{
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(Sawmill, pos[0], pos[1]);
+		CreateObjectAbove(Sawmill, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(ChemicalLab, pos[0], pos[1]);
+		CreateObjectAbove(ChemicalLab, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObject(ToolsWorkshop, pos[0], pos[1]);
+		CreateObjectAbove(ToolsWorkshop, pos[0], pos[1]);
 	
 		lorry->CreateContents(Barrel, 1);
 		lorry->CreateContents(Bucket, 1);
@@ -420,7 +420,7 @@ private func ProvideIsland(array island, int number, int amount)
 	// materials for Boompack, balloon, windbag and teleglove dependent on material settings.
 	if (number == 1)
 	{
-		var lab = CreateObject(InventorsLab, spot.x, spot.y);
+		var lab = CreateObjectAbove(InventorsLab, spot.x, spot.y);
 		lab->CreateContents(Wood, 2 * amount);	
 		lab->CreateContents(Metal, 2 * amount);	
 		lab->CreateContents(Cloth, amount);	
@@ -433,7 +433,7 @@ private func ProvideIsland(array island, int number, int amount)
 	// If the player finds this island and manages to construct a windmill he can escape.
 	if (number == 2)
 	{
-		var shipyard = CreateObject(Shipyard, spot.x, spot.y);
+		var shipyard = CreateObjectAbove(Shipyard, spot.x, spot.y);
 		shipyard->CreateContents(Wood, 4);
 		shipyard->CreateContents(Metal, 2 * amount);
 		shipyard->MakeInvincible();
@@ -442,7 +442,7 @@ private func ProvideIsland(array island, int number, int amount)
 	// A cannon with a powder keg for the third island and place some metal & wood.
 	if (number == 3)
 	{
-		var cannon = CreateObject(Cannon, spot.x, spot.y);
+		var cannon = CreateObjectAbove(Cannon, spot.x, spot.y);
 		cannon->CreateContents(PowderKeg);
 		PlaceObjects(Wood, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
 		PlaceObjects(Metal, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
@@ -452,7 +452,7 @@ private func ProvideIsland(array island, int number, int amount)
 	if (number == 4)
 	{
 		SproutBerryBush->Place(Random(amount + 1), Rectangle(island[0], island[1] - 80, island[2], island[3] / 2));
-		CreateObject(Catapult, spot.x, spot.y);
+		CreateObjectAbove(Catapult, spot.x, spot.y);
 		PlaceObjects(Wood, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
 		PlaceObjects(Metal, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
 	}
@@ -461,7 +461,7 @@ private func ProvideIsland(array island, int number, int amount)
 	// Place some sproutberries as well.
 	if (number >= 5)
 	{
-		var lorry = CreateObject(Lorry, spot.x, spot.y);
+		var lorry = CreateObjectAbove(Lorry, spot.x, spot.y);
 		lorry->CreateContents(Loam, 2 + amount);
 		lorry->CreateContents(DynamiteBox, amount);
 		lorry->CreateContents(Dynamite, 4);
@@ -474,7 +474,7 @@ private func ProvideIsland(array island, int number, int amount)
 	{
 		var spot = FindLocation(Loc_InRect(island[0], island[1], island[2], island[3] / 2), Loc_Wall(CNAT_Bottom), Loc_Space(20), Loc_Sky());
 		if (spot)
-			CreateObject(Column, spot.x, spot.y);
+			CreateObjectAbove(Column, spot.x, spot.y);
 	}	
 
 	return 1;
@@ -488,7 +488,7 @@ global func TestGemCount()
 	var pos;
 	while (pos = FindLocation(Loc_Or(Loc_Material("Ruby"), Loc_Material("Amethyst"))))
 	{
-		var pos = CreateObject(Rock, pos.x, pos.y)->Explode(100);
+		var pos = CreateObjectAbove(Rock, pos.x, pos.y)->Explode(100);
 	}
 	var gem_count = ObjectCount(Find_Or(Find_ID(Ruby), Find_ID(Amethyst)));
 	return gem_count;

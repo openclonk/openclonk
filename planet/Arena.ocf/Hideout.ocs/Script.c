@@ -27,53 +27,53 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(StoneDoor, 364, 448, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, 364, 448, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 360, 446, 360, 448, 368, 448, 368, 446);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
 	gate->SetAutoControl(1);
-	gate = CreateObject(StoneDoor, 340, 584, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, 340, 584, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 336, 582, 336, 584, 344, 584, 344, 582);
 	gate->SetAutoControl(1);
-	gate = CreateObject(StoneDoor, 692, 544, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, 692, 544, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", 688, 542, 688, 544, 696, 544, 696, 542);
 	gate->DoDamage(80);		// Middle doors even easier
-	wheel = CreateObject(SpinWheel, 660, 552, NO_OWNER);
+	wheel = CreateObjectAbove(SpinWheel, 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
-	gate = CreateObject(StoneDoor, lwidth - 364, 448, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, lwidth - 364, 448, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 361, 446, lwidth - 361, 448, lwidth - 365, 448, lwidth - 365, 446);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
 	gate->SetAutoControl(2);
-	gate = CreateObject(StoneDoor, lwidth - 340, 584, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, lwidth - 340, 584, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 337, 582, lwidth - 337, 584, lwidth - 345, 584, lwidth - 345, 582);
 	gate->SetAutoControl(2);
-	gate = CreateObject(StoneDoor, lwidth - 692, 544, NO_OWNER);
+	gate = CreateObjectAbove(StoneDoor, lwidth - 692, 544, NO_OWNER);
 	DrawMaterialQuad("Tunnel-brickback", lwidth - 689, 542, lwidth - 689, 544, lwidth - 697, 544, lwidth - 697, 542);
 	gate->DoDamage(80);		// Middle doors even easier
-	wheel = CreateObject(SpinWheel, lwidth - 660, 552, NO_OWNER);
+	wheel = CreateObjectAbove(SpinWheel, lwidth - 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
 	var chest;
-	chest = CreateObject(Chest, 110, 592, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 110, 592, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	chest = CreateObject(Chest, 25, 464, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 25, 464, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, 730, 408, NO_OWNER);
+	chest = CreateObjectAbove(Chest, 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
-	chest = CreateObject(Chest, lwidth - 110, 592, NO_OWNER);
+	chest = CreateObjectAbove(Chest, lwidth - 110, 592, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	chest = CreateObject(Chest, lwidth - 25, 464, NO_OWNER);
+	chest = CreateObjectAbove(Chest, lwidth - 25, 464, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, lwidth - 730, 408, NO_OWNER);
+	chest = CreateObjectAbove(Chest, lwidth - 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
-	chest = CreateObject(Chest, lwidth/2, 512, NO_OWNER);
+	chest = CreateObjectAbove(Chest, lwidth/2, 512, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
 	
@@ -81,11 +81,11 @@ protected func Initialize()
 	// No Cannons
 	// Cannons loaded with 12 shots.
 	var cannon;
-	cannon = CreateObject(Cannon, 429, 444, NO_OWNER);
+	cannon = CreateObjectAbove(Cannon, 429, 444, NO_OWNER);
 	cannon->SetDir(DIR_Right);
 	cannon->SetR(15);
 	cannon->CreateContents(PowderKeg);
-	cannon = CreateObject(Cannon, lwidth - 429, 444, NO_OWNER);
+	cannon = CreateObjectAbove(Cannon, lwidth - 429, 444, NO_OWNER);
 	cannon->SetDir(DIR_Left);
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
@@ -104,7 +104,7 @@ protected func InitializePlayer(int plr)
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, clonk->GetX(), clonk->GetY(), clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	relaunch->SetRelaunchTime(8, true);
 	return;
@@ -212,7 +212,7 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	var obj = CreateObjectAbove(obj_id);
 		
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
@@ -240,7 +240,7 @@ func OnClonkDeath(object clonk, int killed_by)
 	// create a magic healing gem on Clonk death
 	if(Hostile(clonk->GetOwner(), killed_by))
 	{
-		var gem=clonk->CreateObject(LifeGem, 0, 0, killed_by);
+		var gem=clonk->CreateObjectAbove(LifeGem, 0, 0, killed_by);
 		if(GetPlayerTeam(killed_by) == 1)
 			gem->SetGraphics("E");
 	}

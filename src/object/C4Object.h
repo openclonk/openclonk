@@ -138,7 +138,8 @@ public:
 	int32_t InMat; // SyncClearance-NoSave //
 	uint32_t Color;
 	int32_t Audible, AudiblePan; // NoSave //
-	int32_t PlrViewRange;
+	int32_t lightRange;
+	int32_t lightFadeoutRange;
 	C4Real fix_x,fix_y,fix_r; // SyncClearance-Fix //
 	C4Real xdir,ydir,rdir;
 	int32_t iLastAttachMovementFrame; // last frame in which Attach-movement by a SolidMask was done
@@ -221,7 +222,7 @@ public:
 	void ClearInfo(C4ObjectInfo *pInfo);
 	bool AssignInfo();
 	bool ValidateOwner();
-	bool AssignPlrViewRange();
+	bool AssignLightRange();
 	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4DrawTransform* transform=NULL);
 	void Picture2Facet(C4FacetSurface &cgo); // set picture to facet, or create facet in current size and draw if specific states are being needed
 	void Default();
@@ -292,7 +293,7 @@ public:
 	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
-	void DoCon(int32_t iChange);
+	void DoCon(int32_t iChange, bool grow_from_center);
 	int32_t GetCon() const { return Con; }
 	void DoExperience(int32_t change);
 	bool Promote(int32_t torank, bool exception, bool fForceRankName);
@@ -320,12 +321,12 @@ public:
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
-	bool SetPlrViewRange(int32_t iToRange);
+	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
 	void SetOnFire(bool OnFire) { this->OnFire = OnFire; SetOCF(); }
 	bool GetOnFire() const { return OnFire; }
 	void SetAlive(bool Alive) { this->Alive = Alive; SetOCF(); }
 	bool GetAlive() const { return Alive; }
-	void PlrFoWActualize();
+	void UpdateLight();
 	void SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY);
 	bool IsVisible(int32_t iForPlr, bool fAsOverlay) const;  // return whether an object is visible for the given player
 	void SetRotation(int32_t nr);

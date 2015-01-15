@@ -2,39 +2,39 @@
 
 func InitializeObjects()
 {
-	CreateObject(Grass, 443, 199);
-	CreateObject(Grass, 468, 197);
-	CreateObject(Grass, 441, 202);
+	CreateObjectAbove(Grass, 443, 199);
+	CreateObjectAbove(Grass, 468, 197);
+	CreateObjectAbove(Grass, 441, 202);
 
-	CreateObject(Tree_Coniferous, 452, 200);
-	CreateObject(Tree_Coniferous, 391, 200);
-	CreateObject(Tree_Coniferous, 336, 202);
-	CreateObject(Tree_Coniferous, 427, 199);
-	CreateObject(Tree_Coniferous, 367, 201);
+	CreateObjectAbove(Tree_Coniferous, 452, 200);
+	CreateObjectAbove(Tree_Coniferous, 391, 200);
+	CreateObjectAbove(Tree_Coniferous, 336, 202);
+	CreateObjectAbove(Tree_Coniferous, 427, 199);
+	CreateObjectAbove(Tree_Coniferous, 367, 201);
 
-	CreateObject(SproutBerryBush, 59, 214);
+	CreateObjectAbove(SproutBerryBush, 59, 214);
 
-	CreateObject(Trunk, 301, 202);
+	CreateObjectAbove(Trunk, 301, 202);
 
-	var Rank0029 = CreateObject(Rank, 41, 169);
-	Rank0029->SetR(18);
-	Rank0029->SetPosition(41, 166);
-	var Rank0030 = CreateObject(Rank, 322, 201);
-	Rank0030->SetR(6);
-	Rank0030->SetPosition(322, 198);
+	var Branch0029 = CreateObjectAbove(Branch, 41, 169);
+	Branch0029->SetR(188);
+	Branch0029->SetPosition(41, 166);
+	var Branch0030 = CreateObjectAbove(Branch, 322, 195);
+	Branch0030->SetR(6);
+	Branch0030->SetPosition(322, 192);
 
-	CreateObject(SproutBerryBush, 350, 206);
+	CreateObjectAbove(SproutBerryBush, 350, 206);
 
-	var Chest0039 = CreateObject(Chest, 200, 469);
-	var Chest0040 = CreateObject(Chest, 1192, 701);
-	var Chest0041 = CreateObject(Chest, 1807, 515);
-	var Chest0042 = CreateObject(Chest, 2360, 484);
+	var Chest0039 = CreateObjectAbove(Chest, 200, 469);
+	var Chest0040 = CreateObjectAbove(Chest, 1192, 701);
+	var Chest0041 = CreateObjectAbove(Chest, 1807, 515);
+	var Chest0042 = CreateObjectAbove(Chest, 2360, 484);
 
-	CreateObject(Rock, 335, 362);
-	CreateObject(Rock, 283, 376);
-	CreateObject(Rock, 464, 226);
-	CreateObject(Rock, 31, 103);
-	CreateObject(Rock, 481, 239);
+	CreateObjectAbove(Rock, 335, 362);
+	CreateObjectAbove(Rock, 283, 376);
+	CreateObjectAbove(Rock, 464, 226);
+	CreateObjectAbove(Rock, 31, 103);
+	CreateObjectAbove(Rock, 481, 239);
 
 	Chest0039->CreateContents(Wood);
 	Chest0039->CreateContents(Wood);
@@ -65,23 +65,23 @@ func InitializeObjects()
 	Chest0041->CreateContents(WallKit);
 	Chest0042->CreateContents(WallKit);
 
-	var Barrel0071 = CreateObject(Barrel, 34, 206);
+	var Barrel0071 = CreateObjectAbove(Barrel, 34, 206);
 	Barrel0071->SetR(-86);
 	Barrel0071->SetPosition(34, 203);
 
-	var Seaweed0073 = CreateObject(Seaweed, 53, 503);
+	var Seaweed0073 = CreateObjectAbove(Seaweed, 53, 503);
 	Seaweed0073->SetPhase(15);
-	var Seaweed0076 = CreateObject(Seaweed, 123, 495);
+	var Seaweed0076 = CreateObjectAbove(Seaweed, 123, 495);
 	Seaweed0076->SetPhase(38);
 
-	CreateObject(Mushroom, 74, 201);
-	CreateObject(Mushroom, 14, 199);
-	CreateObject(Mushroom, 351, 201);
-	CreateObject(Mushroom, 388, 199);
-	CreateObject(Mushroom, 419, 199);
-	CreateObject(Mushroom, 400, 199);
-	CreateObject(Mushroom, 291, 199);
-	CreateObject(Mushroom, 376, 198);
+	CreateObjectAbove(Mushroom, 74, 201);
+	CreateObjectAbove(Mushroom, 14, 199);
+	CreateObjectAbove(Mushroom, 351, 201);
+	CreateObjectAbove(Mushroom, 388, 199);
+	CreateObjectAbove(Mushroom, 419, 199);
+	CreateObjectAbove(Mushroom, 400, 199);
+	CreateObjectAbove(Mushroom, 291, 199);
+	CreateObjectAbove(Mushroom, 376, 198);
 
 	Chest0039->CreateContents(Bread);
 	Chest0039->CreateContents(Bread);
@@ -92,20 +92,20 @@ func InitializeObjects()
 	Chest0042->CreateContents(Bread);
 	Chest0042->CreateContents(Bread);
 
-	CreateObject(Firestone, 51, 85);
-	CreateObject(Firestone, 168, 146);
-	CreateObject(Firestone, 17, 261);
-	CreateObject(Firestone, 394, 253);
-	CreateObject(Firestone, 278, 240);
-	CreateObject(Firestone, 143, 439);
-	CreateObject(Firestone, 618, 225);
-	CreateObject(Firestone, 653, 231);
-	CreateObject(Firestone, 500, 245);
-	CreateObject(Firestone, 633, 236);
-	CreateObject(Firestone, 32, 277);
-	CreateObject(Firestone, 32, 266);
-	CreateObject(Firestone, 17, 238);
-	CreateObject(Firestone, 153, 149);
-	CreateObject(Firestone, 585, 241);
+	CreateObjectAbove(Firestone, 51, 85);
+	CreateObjectAbove(Firestone, 168, 146);
+	CreateObjectAbove(Firestone, 17, 261);
+	CreateObjectAbove(Firestone, 394, 253);
+	CreateObjectAbove(Firestone, 278, 240);
+	CreateObjectAbove(Firestone, 143, 439);
+	CreateObjectAbove(Firestone, 618, 225);
+	CreateObjectAbove(Firestone, 653, 231);
+	CreateObjectAbove(Firestone, 500, 245);
+	CreateObjectAbove(Firestone, 633, 236);
+	CreateObjectAbove(Firestone, 32, 277);
+	CreateObjectAbove(Firestone, 32, 266);
+	CreateObjectAbove(Firestone, 17, 238);
+	CreateObjectAbove(Firestone, 153, 149);
+	CreateObjectAbove(Firestone, 585, 241);
 	return true;
 }

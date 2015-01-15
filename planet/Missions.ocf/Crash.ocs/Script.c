@@ -9,7 +9,7 @@ static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
 func DoInit(int first_player)
 {
-	CreateObject(Windmill, 152, 825+48, 0);
+	CreateObjectAbove(Windmill, 152, 825+48, 0);
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
@@ -30,7 +30,7 @@ func DoInit(int first_player)
 	CreateObject(Rule_TeamAccount, 50, 50);
 	
 	// NPC: Merchant.
-	var merchant = CreateObject(Clonk, 76, 870);
+	var merchant = CreateObjectAbove(Clonk, 76, 870);
 	merchant->MakeInvincible();
 	merchant->MakeNonFlammable();
 	merchant->SetSkin(1);

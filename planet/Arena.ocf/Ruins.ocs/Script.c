@@ -19,16 +19,16 @@ protected func Initialize()
 	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
 	
 	// Chests with weapons.
-	CreateObject(Chest, 230, 224, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 500, 64, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 124, 128, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 340, 440, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 230, 224, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 500, 64, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 124, 128, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 340, 440, NO_OWNER)->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 2 * 36);
 	
 	// Ropeladders to get to the upper part.
 
-	CreateObject(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
-	CreateObject(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
+	CreateObjectAbove(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
+	CreateObjectAbove(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
 	
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
@@ -39,7 +39,7 @@ protected func Initialize()
 	var d=[3, 2, 2, 3, 3, 2];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
+		var edge=CreateObjectAbove(BrickEdge, x[i], y[i], NO_OWNER);
 		edge->Initialize();
 		edge->SetP(d[i]);
 		edge->SetPosition(x[i],y[i]);
@@ -54,7 +54,7 @@ protected func Initialize()
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	return;
 }
@@ -124,7 +124,7 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)

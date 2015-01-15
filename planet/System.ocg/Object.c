@@ -33,9 +33,9 @@ global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 }
 
 // Sets the completion of this to new_con.
-global func SetCon(int new_con)
+global func SetCon(int new_con, int precision, bool grow_from_center)
 {
-	return DoCon(new_con - GetCon());
+	return DoCon(new_con - GetCon(), precision, grow_from_center);
 }
 
 global func GetObjAlpha()
@@ -255,7 +255,7 @@ global func Split2Components()
 	for (var i = 0, compid; compid = GetComponent(nil, i); ++i)
 		for (var j = 0; j < GetComponent(compid); ++j)
 		{
-			var comp = CreateObject(compid, nil, nil, GetOwner());
+			var comp = CreateObjectAbove(compid, nil, nil, GetOwner());
 			if (OnFire()) comp->Incinerate();
 			if (!ctr || !comp->Enter(ctr))
 			{

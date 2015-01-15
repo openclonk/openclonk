@@ -28,7 +28,7 @@ global func SetDialogue(string name, bool attention)
 {
 	if (!this)
 		return;
-	var dialogue = CreateObject(Dialogue);
+	var dialogue = CreateObjectAbove(Dialogue);
 	dialogue->InitDialogue(name, this, attention);
 	
 	dialogue->SetObjectLayer(nil);

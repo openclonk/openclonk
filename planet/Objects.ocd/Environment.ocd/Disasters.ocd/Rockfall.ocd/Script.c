@@ -88,7 +88,7 @@ global func LaunchRockfall(int x, int y, int size, int xdir, int ydir, bool expl
 		return false;	
 	
 	// Create rock and adjust its size.
-	var rock = CreateObject(Rockfall, x, y);
+	var rock = CreateObjectAbove(Rockfall, x, y);
 	rock->SetCon(size);
 	
 	// Remove rock if stuck.
@@ -223,13 +223,13 @@ private func SplitRock()
 {
 	var con = GetCon(), erock;
 	// Explosive rocks do some damage
-	if (is_explosive) if (erock = CreateObject(Rock,0,4,GetController())) erock->Explode(Max(15 * con / 100,3));
+	if (is_explosive) if (erock = CreateObjectAbove(Rock,0,4,GetController())) erock->Explode(Max(15 * con / 100,3));
 	// Split the rock into smaller ones if it is big enough.
 	if (con > 40)
 	{
 		while (con > 0)
 		{
-			var rock = CreateObject(Rockfall);
+			var rock = CreateObjectAbove(Rockfall);
 			var rock_con = Max(30, GetCon() / 2 + RandomX(-20, 20));
 			rock->SetCon(rock_con);
 			con -= 2 * rock_con / 3;

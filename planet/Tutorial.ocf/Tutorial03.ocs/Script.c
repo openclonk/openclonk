@@ -18,14 +18,14 @@ protected func Initialize()
 	goal->CreateGoalFlag(2230, 292);
 
 	// A chest with javelins.
-	var chest = CreateObject(Chest, 240, 656, NO_OWNER);
-	var javelin = CreateObject(Javelin, 0, 0, NO_OWNER);
+	var chest = CreateObjectAbove(Chest, 240, 656, NO_OWNER);
+	var javelin = CreateObjectAbove(Javelin, 0, 0, NO_OWNER);
 	javelin->Enter(chest);
 	//javelin->AddRestoreMode(chest);
 	
 	// A chest with bow & arrows.
-	var chest = CreateObject(Chest, 785, 560, NO_OWNER);
-	var bow = CreateObject(Bow, 0, 0, NO_OWNER);
+	var chest = CreateObjectAbove(Chest, 785, 560, NO_OWNER);
+	var bow = CreateObjectAbove(Bow, 0, 0, NO_OWNER);
 	bow->CreateContents(Arrow);
 	bow->Enter(chest);
 	//bow->AddRestoreMode(chest);
@@ -174,10 +174,10 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 private func MakeTarget(int x, int y, bool flying)
 {
-	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);
+	var target = CreateObjectAbove(PracticeTarget, x, y, NO_OWNER);
 	if (flying)
 	{
-		var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
+		var balloon = CreateObjectAbove(TargetBalloon, x, y-30, NO_OWNER);
 		target->SetAction("Attach", balloon);
 		CreateParticle("Flash", x, y - 50, 0, 0, 8, Particles_Flash());
 	}
@@ -192,14 +192,14 @@ private func MakeTarget(int x, int y, bool flying)
 // Blasts the first sand barrier on destruction.
 global func FxBlastStop(object target, effect, int reason, bool temporary)
 {
-	CreateObject(Rock, AbsX(430), AbsY(618), NO_OWNER)->Explode(25);
+	CreateObjectAbove(Rock, AbsX(430), AbsY(618), NO_OWNER)->Explode(25);
 	return 1;
 }
 
 // Creates a ropeladder on destruction to reach the final edge.
 global func FxRopeladderStop(object target, effect, int reason, bool temporary)
 {
-	CreateObject(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(-1);
+	CreateObjectAbove(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(-1);
 	return 1;
 }
 
@@ -213,7 +213,7 @@ global func FxHorizontalMovingTimer(object target, effect, int time)
 // Drops a firestone on destruction.
 global func FxFlintDropStop(object target, effect, int reason, bool temporary)
 {
-	CreateObject(Firestone, 0, 0, NO_OWNER);
+	CreateObjectAbove(Firestone, 0, 0, NO_OWNER);
 	return 1;
 }
 
@@ -241,7 +241,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -249,7 +249,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObject(Clonk, 0, 0, plr);
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);

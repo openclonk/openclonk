@@ -21,8 +21,8 @@ func Attack_1()
 	this.planes = CreateArray(n_planes);
 	for (var i=0; i<n_planes; ++i)
 	{
-		var plane = CreateObject(Plane, plane_x[i], plane_y[i]);
-		var pilot = CreateObject(Clonk, plane_x[i], plane_y[i]);
+		var plane = CreateObjectAbove(Plane, plane_x[i], plane_y[i]);
+		var pilot = CreateObjectAbove(Clonk, plane_x[i], plane_y[i]);
 		pilot->SetSkin(2);
 		pilot->Enter(plane);
 		pilot->SetAction("Walk"); // prevents falling out
@@ -138,7 +138,7 @@ func Attack_DropBomb(int plane_idx, int delay)
 	if (!plane) return;
 	for (var i=0; i<3; ++i)
 	{
-		var bomb = plane->CreateObject(IronBomb, 0, 12);
+		var bomb = plane->CreateObjectAbove(IronBomb, 0, 12);
 		if (!bomb) return;
 		bomb->SetXDir(plane->GetXDir() + (i-2) * 10);
 		bomb->Fuse(true); // fuse and explode on hit

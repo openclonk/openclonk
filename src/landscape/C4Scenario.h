@@ -41,9 +41,6 @@ public:
 	}
 };
 
-#define C4SGFXMODE_NEWGFX 1
-#define C4SGFXMODE_OLDGFX 2
-
 #define C4S_SECTIONLOAD 1 /* parts of the C4S that are modifyable for different landcape sections */
 
 // flags for section reloading
@@ -121,7 +118,7 @@ public:
 	C4IDList Goals;
 	C4IDList Rules;
 
-	uint32_t FoWColor;    // color of FoW; may contain transparency
+	bool FoWEnabled;
 
 	C4SRealism Realism;
 
@@ -181,7 +178,6 @@ public:
 	char Liquid[C4M_MaxDefName+1];
 	bool KeepMapCreator; // set if the mapcreator will be needed in the scenario (for DrawDefMap)
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
-	int32_t FoWRes; // chunk size of FoGOfWar
 	int32_t MaterialZoom;
 	bool FlatChunkShapes; // if true, all material chunks are drawn flat
 public:

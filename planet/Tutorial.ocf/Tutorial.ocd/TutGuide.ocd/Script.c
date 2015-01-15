@@ -27,7 +27,7 @@ protected func Initialize()
 */
 global func CreateTutorialGuide(int plr)
 {
-	var guide = CreateObject(TutorialGuide, 0, 0 , plr);
+	var guide = CreateObjectAbove(TutorialGuide, 0, 0 , plr);
 	guide->SetPosition(- 128 - 32 - TutorialGuide->GetDefWidth() / 2, 8 + TutorialGuide->GetDefHeight() / 2);
 	return guide;
 }

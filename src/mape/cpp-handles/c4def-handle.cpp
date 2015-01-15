@@ -102,7 +102,7 @@ bool C4DefList::Add(C4Def* def, bool fOverload)
 	return true;
 }
 
-bool C4Def::Load(C4Group& hGroup, DWORD dwLoadWhat, const char* szLanguage, C4SoundSystem* pSoundSystem)
+bool C4Def::Load(C4Group& hGroup, StdMeshSkeletonLoader& loader, DWORD dwLoadWhat, const char* szLanguage, C4SoundSystem* pSoundSystem)
 {
 	// Assume ID has been set already!
 

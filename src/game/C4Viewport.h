@@ -28,12 +28,10 @@ class C4Viewport
 public:
 	C4Viewport();
 	~C4Viewport();
-	// "landscape" coordinates
-	float ViewX,ViewY;
-	int32_t ViewOffsX, ViewOffsY;
 	// "display" coordinates
 	int32_t ViewWdt,ViewHgt;
-	int32_t BorderLeft, BorderTop, BorderRight, BorderBottom;
+	// position of landscape border (left,top,right, bottom) in viewport. 0 if there is not border
+	float BorderLeft, BorderTop, BorderRight, BorderBottom;
 	int32_t DrawX,DrawY;
 	// facets used for last drawing operations
 	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;
@@ -48,7 +46,6 @@ public:
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
-	void UpdateViewPosition(); // update view position: Clip properly; update border variables
 	void CalculateZoom();
 	void ChangeZoom(float by_factor);
 	void SetZoom(float to_zoom, bool direct=false);
@@ -67,6 +64,31 @@ public:
 	C4Viewport *GetNext() { return Next; }
 	int32_t GetPlayer() { return Player; }
 	void CenterPosition();
+public: 
+	/** Return x-position of upper left corner of viewport in landscape coordinates */
+	float GetViewX() { return viewX; }
+	/** Return y-position of upper left corner of viewport in landscape coordinates */
+	float GetViewY() { return viewY; }
+	/** Return x-position of the center of viewport in landscape coordinates */
+	float GetViewCenterX() { return viewX + ViewWdt/Zoom/2; }
+	/** Return y-position of the center of viewport in landscape coordinates */
+	float GetViewCenterY() { return viewY + ViewHgt/Zoom/2; }
+
+	/** Scroll the viewport by x,y */
+	void ScrollView(float byX, float byY);
+	/** Set the view position. */
+	void SetViewX(float x);
+	void SetViewY(float y);
+	/** Set the view offset of the normal viewport center. Used by C4Script function SetViewOffset. */
+	void SetViewOffset(int32_t x, int32_t y) { viewOffsX = x; viewOffsY = y; }
+
+private:
+	float viewX,viewY;	// current view position in landscape coordinates (upper left corner)
+	float targetViewX, targetViewY; // target view position for smooth scrolling
+	int32_t viewOffsX, viewOffsY;	// desired view offset in landscape coordinates
+
+	void UpdateBordersX();
+	void UpdateBordersY();
 protected:
 	float Zoom;
 	float ZoomTarget;
@@ -78,7 +100,7 @@ protected:
 	bool ResetMenuPositions;
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
-	C4FogOfWar ClrModMap; // color modulation map for viewport drawing
+	class C4FoWRegion *pFoW;
 	void DrawPlayerStartup(C4TargetFacet &cgo);
 	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);

@@ -20,8 +20,8 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
 	SetSkyAdjust(RGB(255,128,0));
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
-	CreateObject(Column,160,304)->SetClrModulation(RGB(255,100,80));
-	CreateObject(Column,448,272)->SetClrModulation(RGB(255,100,80));
+	CreateObjectAbove(Column,160,304)->SetClrModulation(RGB(255,100,80));
+	CreateObjectAbove(Column,448,272)->SetClrModulation(RGB(255,100,80));
 	
 	AddEffect("RandomMeteor", nil, 100, 36-Min(GetPlayerCount()*3,20));
 	AddEffect("DangerousLava", nil, 100, 1);
@@ -55,7 +55,7 @@ private func PlaceEdges()
 	var d=[3, 1, 3, 2, 0, 0, 1, 3, 2, 1, 3, 1, 1, 3, 1, 1, 1, 0, 3, 2, 0, 0, 1, 1, 3, 3, 2, 3];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 4, NO_OWNER);
+		var edge=CreateObjectAbove(BrickEdge, x[i], y[i] + 4, NO_OWNER);
 		edge->Initialize();
 		edge->SetP(d[i]);
 		edge->SetPosition(x[i],y[i]);
@@ -72,7 +72,7 @@ global func PlaceGras()
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		while(GBackSolid(x[i],y[i])) y[i]--;
-		var edge=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);
+		var edge=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
 		edge->SetCategory(C4D_StaticBack);
 		edge->SetR(r[i]); 
 		edge->Initialize();
@@ -90,7 +90,7 @@ protected func OnPlayerRelaunch(int plr)
 	var y=100;
 	while(!GBackSolid(x,y)) y+=1;
 	y-=30;
-	var relaunch = CreateObject(RelaunchContainer, x, y, clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	relaunch->SetRelaunchTime(3);
 	clonk->CreateContents(TeleGlove);

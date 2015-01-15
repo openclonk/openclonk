@@ -106,7 +106,7 @@ public func SaveScenarioObject(props)
 private func CreateSegment(int index, object previous)
 {
 	var segment;
-	segment = CreateObject(Ropebridge_Segment);
+	segment = CreateObjectAbove(Ropebridge_Segment);
   segment->SetMaster(this);
 	return segment;
 }

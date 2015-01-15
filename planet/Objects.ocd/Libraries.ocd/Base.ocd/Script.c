@@ -108,7 +108,7 @@ public func MakeBase(bool fRemoveBase)
 		fIsBase = 1;
 		AddEffect("IntBase", this, 1, 10, this);
 		if(!FindObject(Find_ID(BaseMaterial), Find_Owner(GetOwner())))
-			CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
+			CreateObjectAbove(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
 	}
 }
 

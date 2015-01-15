@@ -360,7 +360,7 @@ public:
 	// removes all particles
 	void Clear();
 	bool Exec(C4Object *obj, float timeDelta);
-	void Draw(C4TargetFacet cgo, C4Object *obj);
+	void Draw(C4TargetFacet cgo, C4Object *obj, int texUnit);
 	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
 	bool IsEmpty() const { return !particleCount; }
 

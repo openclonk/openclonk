@@ -8,7 +8,7 @@ local graphic;
 protected func Initialize()
 {
 	SetAction("Hatch");
-	graphic = CreateObject(Hatch_Graphic);
+	graphic = CreateObjectAbove(Hatch_Graphic);
 	graphic->SetAction("Attach", this);
 	graphic->SetHatchParent(this);
 	return 1;

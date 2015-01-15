@@ -1,0 +1,4 @@
+Name=Fackel
+Description=Kann in der Werkstatt hergestellt werden. Erhellt auch die dunkelsten Minen.
+MsgTorchAttach=Fackel kann nur an die Wand angebracht werden.
+MsgTorchDetach=Nimm die Fackel von der Wand ab.

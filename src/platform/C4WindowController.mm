@@ -247,16 +247,16 @@ bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	[scrollView.horizontalScroller setToLandscapeCoordinate:ViewX size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
-	[scrollView.verticalScroller setToLandscapeCoordinate:ViewY size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
+	[scrollView.horizontalScroller setToLandscapeCoordinate:GetViewX() size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
+	[scrollView.verticalScroller setToLandscapeCoordinate:GetViewY() size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
 	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
-	ViewX = [scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
-	ViewY = [scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
+	SetViewX([scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()]);
+	SetViewY([scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()]);
 	return true;
 }
 

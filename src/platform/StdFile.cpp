@@ -143,7 +143,7 @@ const char *GetExtension(const char *szFilename)
 	for (end=0; szFilename[end]; end++) {}
 	pos = end;
 	while ((pos>0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) pos--;
-	if (szFilename[pos-1] == '.') return szFilename+pos;
+	if ((pos > 0) && szFilename[pos-1] == '.') return szFilename+pos;
 	return szFilename+end;
 }
 

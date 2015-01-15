@@ -29,7 +29,7 @@ public func FxAddGravestoneTimer(object target, proplist effect, int timer)
 
 public func FxIntGravestoneStart(object clonk, proplist effect)
 {
-	effect.grave = clonk->CreateObject(Clonk_Grave, 0, 0, clonk->GetController());
+	effect.grave = clonk->CreateObjectAbove(Clonk_Grave, 0, 0, clonk->GetController());
 	effect.grave->SetInscription(clonk);
 	clonk->RemoveObject();
 	//smoke effect

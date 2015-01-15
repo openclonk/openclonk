@@ -163,7 +163,7 @@ func Dlg_Dagobert_Gem1(object clonk)
 func Dlg_Dagobert_Gem2(object clonk)
 {
 	MessageBox("$DagobertGem2$", clonk, dlg_target); // take oil
-	var barrel = CreateObject(MetalBarrel);
+	var barrel = CreateObjectAbove(MetalBarrel);
 	if (barrel)
 	{
 		barrel->SetXDir(-15);

@@ -15,14 +15,14 @@ static const Boomattack_attack_growth = 90;
 func Initialize()
 {
 	var offs = 45;
-	CreateObject(WindGenerator, 1147, 938+offs)->SetR(7);
-	CreateObject(WindGenerator, 985, 1105+offs)->SetR(-170);
-	CreateObject(WindGenerator, 1055, 1085+offs)->SetR(140);
-	CreateObject(WindGenerator, 971, 857+offs)->SetR(-20);
-	CreateObject(WindGenerator, 1147, 1035+offs)->SetR(160);
-	CreateObject(WindGenerator, 1036, 870+offs)->SetR(-10);
-	CreateObject(WindGenerator, 1081, 873+offs)->SetR(18);
-	CreateObject(WindGenerator, 858, 930+offs)->SetR(-10);
+	CreateObjectAbove(WindGenerator, 1147, 938+offs)->SetR(7);
+	CreateObjectAbove(WindGenerator, 985, 1105+offs)->SetR(-170);
+	CreateObjectAbove(WindGenerator, 1055, 1085+offs)->SetR(140);
+	CreateObjectAbove(WindGenerator, 971, 857+offs)->SetR(-20);
+	CreateObjectAbove(WindGenerator, 1147, 1035+offs)->SetR(160);
+	CreateObjectAbove(WindGenerator, 1036, 870+offs)->SetR(-10);
+	CreateObjectAbove(WindGenerator, 1081, 873+offs)->SetR(18);
+	CreateObjectAbove(WindGenerator, 858, 930+offs)->SetR(-10);
 	
 	CreateObject(Goal_SaveTheWindmills,10,10);
 	PlaceGrass(100, 800, 1400);
@@ -75,7 +75,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 		var x =  Sin(rocket_angle, rocket_radius)+LandscapeWidth()/2;
 		var y = -Cos(rocket_angle, rocket_radius)+LandscapeHeight()/2;
 
-		CreateObject(rocket_id, x, y)->Launch(rocket_angle + 180);
+		CreateObjectAbove(rocket_id, x, y)->Launch(rocket_angle + 180);
 	}
 	
 	for(var i=0; i<GetPlayerCount(); ++i)
@@ -84,7 +84,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 		var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(owner));
 		if(!gui_arrow)
 		{
-			gui_arrow = CreateObject(GUI_GoalArrow,0,0,owner);
+			gui_arrow = CreateObjectAbove(GUI_GoalArrow,0,0,owner);
 			gui_arrow->SetAction("Show", GetCursor(owner));
 			gui_arrow->SetClrModulation(RGB(255,0,0));
 			gui_arrow->SetObjectBlitMode(GFX_BLIT_Mod2);
@@ -113,7 +113,7 @@ func RemovePlayer(int iPlr)
 
 func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, LandscapeWidth()/2, 600, plr);
+	var clonk = CreateObjectAbove(Clonk, LandscapeWidth()/2, 600, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
@@ -127,8 +127,8 @@ func JoinPlayer(int iPlr)
 	clonk->DoEnergy(1000);
 
 	clonk->CreateContents(Bow);
-	clonk->Collect(CreateObject(Arrow));
+	clonk->Collect(CreateObjectAbove(Arrow));
 	clonk->CreateContents(Musket);
-	clonk->Collect(CreateObject(LeadShot));
+	clonk->Collect(CreateObjectAbove(LeadShot));
 	return;
 }

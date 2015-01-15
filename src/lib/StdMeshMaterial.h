@@ -19,6 +19,7 @@
 
 #include <StdBuf.h>
 #include <C4Surface.h>
+#include <C4Shader.h>
 
 #include <vector>
 #include <map>
@@ -55,13 +56,8 @@ public:
 	};
 
 	enum Auto {
-		AUTO_OC_PLAYER_COLOR,
-		AUTO_OC_COLOR_MODULATION,
-		AUTO_OC_MOD2,
-		AUTO_OC_USE_CLRMODMAP,
-		AUTO_OC_CLRMODMAP,
-
-		// TODO: Other ogre auto values
+		// TODO: OGRE auto values
+		AUTO_DUMMY
 	};
 
 	StdMeshMaterialShaderParameter(); // type=FLOAT, value uninitialized
@@ -119,25 +115,10 @@ private:
 	StdMeshMaterialShaderParameter LoadAutoParameter(StdMeshMaterialParserCtx& ctx);
 };
 
-// An abstract shader class. This is supposed to be implemented by the
-// GFX implementation, such as C4DrawGL.
-class StdMeshMaterialShader
-{
-public:
-	enum Type {
-		FRAGMENT,
-		VERTEX,
-		GEOMETRY
-	};
-
-	virtual ~StdMeshMaterialShader() {}
-	virtual Type GetType() const = 0;
-};
-
-class StdMeshMaterialProgram
-{
-public:
-	virtual ~StdMeshMaterialProgram() {}
+enum StdMeshMaterialShaderType {
+	SMMS_FRAGMENT,
+	SMMS_VERTEX,
+	SMMS_GEOMETRY
 };
 
 // Interface to load additional resources.
@@ -150,7 +131,64 @@ class StdMeshMaterialLoader
 public:
 	virtual C4Surface* LoadTexture(const char* filename) = 0;
 	virtual StdStrBuf LoadShaderCode(const char* filename) = 0;
+	virtual void AddShaderSlices(C4Shader& shader, int ssc) = 0; // add default shader slices
 	virtual ~StdMeshMaterialLoader() {}
+};
+
+// This is just a container class to hold the shader code; the C4Shader
+// objects are later created from that code by mixing them with the default
+// slices.
+class StdMeshMaterialShader
+{
+public:
+	StdMeshMaterialShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* code):
+		Filename(filename), Name(name), Language(language), Type(type), Code(code) {}
+
+	const char* GetFilename() const { return Filename.getData(); }
+	const char* GetCode() const { return Code.getData(); }
+
+private:
+	StdCopyStrBuf Filename;
+	StdCopyStrBuf Name;
+	StdCopyStrBuf Language;
+	StdMeshMaterialShaderType Type;
+	StdCopyStrBuf Code;
+};
+
+class StdMeshMaterialProgram
+{
+public:
+	StdMeshMaterialProgram(const char* name, const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader);
+	bool AddParameterNames(const StdMeshMaterialShaderParameters& parameters); // returns true if some parameter names were not yet registered.
+
+	bool IsCompiled() const { return Shader.Initialised(); }
+	bool Compile(StdMeshMaterialLoader& loader);
+
+	const C4Shader* GetShader(int ssc) const;
+	int GetParameterIndex(const char* name) const;
+
+	const StdMeshMaterialShader* GetFragmentShader() const { return FragmentShader; }
+	const StdMeshMaterialShader* GetVertexShader() const { return VertexShader; }
+	const StdMeshMaterialShader* GetGeometryShader() const { return GeometryShader; }
+private:
+	bool CompileShader(StdMeshMaterialLoader& loader, C4Shader& shader, int ssc);
+
+	// Human-readable program name
+	const StdCopyStrBuf Name;
+
+	// Program components
+	const StdMeshMaterialShader* FragmentShader;
+	const StdMeshMaterialShader* VertexShader;
+	const StdMeshMaterialShader* GeometryShader;
+
+	// Compiled shaders
+	C4Shader Shader;
+	C4Shader ShaderMod2;
+	C4Shader ShaderLight;
+	C4Shader ShaderLightMod2;
+
+	// Filled as program references are encountered;
+	std::vector<StdCopyStrBuf> ParameterNames;
 };
 
 class StdMeshMaterialTextureUnit
@@ -387,17 +425,27 @@ public:
 	class ProgramInstance
 	{
 	public:
-		ProgramInstance(const StdMeshMaterialProgram* program):
-			Program(program) {}
-		virtual ~ProgramInstance() {}
+		ProgramInstance(const StdMeshMaterialProgram* program, const ShaderInstance* fragment_instance, const ShaderInstance* vertex_instance, const ShaderInstance* geometry_instance);
 
 		// This points into the StdMeshMatManager map
 		const StdMeshMaterialProgram* const Program;
+
+		// Parameters for this instance
+		struct ParameterRef {
+			const StdMeshMaterialShaderParameter* Parameter;
+			int UniformIndex; // Index into parameter table for this program
+		};
+
+		std::vector<ParameterRef> Parameters;
+
+	private:
+		void LoadParameterRefs(const ShaderInstance* instance);
 	};
 
 	ShaderInstance FragmentShader;
 	ShaderInstance VertexShader;
 	ShaderInstance GeometryShader;
+
 	// This is a shared_ptr and not a unique_ptr so that this class is
 	// copyable, so it can be inherited. However, when the inherited
 	// material is prepared, the ProgramInstance will be overwritten
@@ -406,8 +454,9 @@ public:
 	// provide inheritance by copying all other fields, and letting
 	// PrepareMaterial fill the program instance.
 	std::shared_ptr<ProgramInstance> Program;
+
 private:
-	void LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShader::Type type);
+	void LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMaterialShaderType type);
 };
 
 class StdMeshMaterialTechnique
@@ -495,8 +544,8 @@ public:
 	Iterator End() { return Iterator(Materials.end()); }
 	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
 
-	const StdMeshMaterialShader* AddShader(const char* name, const char* language, StdMeshMaterialShader::Type type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
-	const StdMeshMaterialProgram& AddProgram(const StdMeshMaterialShader* fragment_shader, const StdMeshMaterialShader* vertex_shader, const StdMeshMaterialShader* geometry_shader, std::unique_ptr<StdMeshMaterialProgram> RREF program);
+	const StdMeshMaterialShader* AddShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* text, bool success_if_exists); // if pass_if_exists is TRUE, the function returns the existing shader, otherwise returns NULL.
+	const StdMeshMaterialProgram* AddProgram(const char* name, StdMeshMaterialLoader& loader, const StdMeshMaterialPass::ShaderInstance& fragment_shader, const StdMeshMaterialPass::ShaderInstance& vertex_shader, const StdMeshMaterialPass::ShaderInstance& geometry_shader); // returns NULL if shader code cannot be compiled
 
 	const StdMeshMaterialShader* GetFragmentShader(const char* name) const;
 	const StdMeshMaterialShader* GetVertexShader(const char* name) const;
@@ -504,10 +553,8 @@ public:
 private:
 	MaterialMap Materials;
 
-	// Compiled shaders
-	// TODO: Some sort of post-init should delete compiled shaders after all programs have been linked
-	// c.f. http://stackoverflow.com/questions/9113154/proper-way-to-delete-glsl-shader
-	typedef std::map<StdCopyStrBuf, std::unique_ptr<StdMeshMaterialShader> > ShaderMap;
+	// Shader code for custom shaders.
+	typedef std::map<StdCopyStrBuf, std::unique_ptr<StdMeshMaterialShader>> ShaderMap;
 	ShaderMap FragmentShaders;
 	ShaderMap VertexShaders;
 	ShaderMap GeometryShaders;

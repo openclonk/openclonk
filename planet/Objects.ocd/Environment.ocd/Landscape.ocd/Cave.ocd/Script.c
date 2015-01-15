@@ -66,7 +66,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		if (!spot) continue;
 		
 		DrawMap(spot.x - width, spot.y - height, 2 * width, 2 * height, Format("map Cave { %s };", map));
-		var cave = CreateObject(Landscape_Cave, spot.x, spot.y, NO_OWNER);
+		var cave = CreateObjectAbove(Landscape_Cave, spot.x, spot.y, NO_OWNER);
 		PushBack(caves, cave);
 		
 		// project free objects down to the ground

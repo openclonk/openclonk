@@ -41,7 +41,7 @@ func DoInit(int first_player)
 		tree.ChopDown = Scenario.Tree_Chopdown;
 		//tree->ChopDown();
 	}
-	//g_attack_done = true; GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); GetCrew()->CreateObject(Plane); GetCrew()->CreateObject(MetalBarrel);
+	//g_attack_done = true; GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); GetCrew()->CreateObjectAbove(Plane); GetCrew()->CreateObjectAbove(MetalBarrel);
 	//GetCrew()->CreateContents(Shovel);
 	return true;
 }

@@ -21,6 +21,7 @@
 
 #include <C4Surface.h>
 #include <C4Window.h>
+#include <C4FoWRegion.h>
 #include "C4Rect.h"
 #include "C4Config.h"
 #include "C4Application.h"
@@ -35,110 +36,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
-
-C4DrawGLShader::C4DrawGLShader(Type shader_type)
-{
-	GLint gl_type;
-	switch(shader_type)
-	{
-	case FRAGMENT: gl_type = GL_FRAGMENT_SHADER_ARB; break;
-	case VERTEX: gl_type = GL_VERTEX_SHADER_ARB; break;
-	case GEOMETRY: gl_type = GL_GEOMETRY_SHADER_ARB; break;
-	default: assert(false); break;
-	}
-
-	Shader = glCreateShaderObjectARB(gl_type);
-	if(!Shader) throw C4DrawGLError(FormatString("Failed to create shader")); // TODO: custom error class?
-}
-
-C4DrawGLShader::~C4DrawGLShader()
-{
-	glDeleteObjectARB(Shader);
-}
-
-void C4DrawGLShader::Load(const char* code)
-{
-	glShaderSourceARB(Shader, 1, &code, NULL);
-	glCompileShaderARB(Shader);
-
-	GLint compile_status;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
-	if(compile_status != GL_TRUE)
-	{
-		const char* shader_type_str;
-		switch(GetType())
-		{
-		case VERTEX: shader_type_str = "vertex"; break;
-		case FRAGMENT: shader_type_str = "fragment"; break;
-		case GEOMETRY: shader_type_str = "geometry"; break;
-		default: assert(false); break;
-		}
-
-		GLint length;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
-			throw C4DrawGLError(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
-		}
-		else
-		{
-			throw C4DrawGLError(FormatString("Failed to compile %s shader", shader_type_str));
-		}
-	}
-}
-
-StdMeshMaterialShader::Type C4DrawGLShader::GetType() const
-{
-	GLint shader_type;
-	glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
-
-	switch(shader_type)
-	{
-	case GL_FRAGMENT_SHADER_ARB: return FRAGMENT;
-	case GL_VERTEX_SHADER_ARB: return VERTEX;
-	case GL_GEOMETRY_SHADER_ARB: return GEOMETRY;
-	default: assert(false); return static_cast<StdMeshMaterialShader::Type>(-1);
-	}
-}
-
-C4DrawGLProgram::C4DrawGLProgram(const C4DrawGLShader* fragment_shader, const C4DrawGLShader* vertex_shader, const C4DrawGLShader* geometry_shader)
-{
-	Program = glCreateProgramObjectARB();
-	if(fragment_shader != NULL)
-		glAttachObjectARB(Program, fragment_shader->Shader);
-	if(vertex_shader != NULL)
-		glAttachObjectARB(Program, vertex_shader->Shader);
-	if(geometry_shader != NULL)
-		glAttachObjectARB(Program, geometry_shader->Shader);
-	glLinkProgramARB(Program);
-
-	GLint link_status;
-	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
-	if(link_status != GL_TRUE)
-	{
-		GLint length;
-		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
-		if(length > 0)
-		{
-			std::vector<char> error_message(length);
-			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
-			glDeleteObjectARB(Program);
-			throw C4DrawGLError(FormatString("Failed to link program: %s", &error_message[0]));
-		}
-		else
-		{
-			glDeleteObjectARB(Program);
-			throw C4DrawGLError(StdStrBuf("Failed to link program"));
-		}
-	}
-}
-
-C4DrawGLProgram::~C4DrawGLProgram()
-{
-	glDeleteObjectARB(Program);
-}
 
 CStdGL::CStdGL():
 		pMainCtx(0)
@@ -163,6 +60,23 @@ void CStdGL::Clear()
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
 	RenderTarget = NULL;
+	// Clear all shaders
+	SpriteShader.Clear();
+	SpriteShaderMod2.Clear();
+	SpriteShaderBase.Clear();
+	SpriteShaderBaseMod2.Clear();
+	SpriteShaderBaseOverlay.Clear();
+	SpriteShaderBaseOverlayMod2.Clear();
+	SpriteShaderLight.Clear();
+	SpriteShaderLightMod2.Clear();
+	SpriteShaderLightBase.Clear();
+	SpriteShaderLightBaseMod2.Clear();
+	SpriteShaderLightBaseOverlay.Clear();
+	SpriteShaderLightBaseOverlayMod2.Clear();
+	SpriteShaderLightBaseNormal.Clear();
+	SpriteShaderLightBaseNormalMod2.Clear();
+	SpriteShaderLightBaseNormalOverlay.Clear();
+	SpriteShaderLightBaseNormalOverlayMod2.Clear();
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
 	pMainCtx=0;
@@ -181,26 +95,22 @@ bool CStdGL::UpdateClipper()
 	// no render target? do nothing
 	if (!RenderTarget || !Active) return true;
 	// negative/zero?
-	int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
-	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
-	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
-	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
-
-	if (iWdt<=0 || iHgt<=0)
+	C4Rect clipRect = GetClipRect();
+	if (clipRect.Wdt<=0 || clipRect.Hgt<=0)
 	{
 		ClipAll=true;
 		return true;
 	}
 	ClipAll=false;
 	// set it
-	glViewport(iX, RenderTarget->Hgt-iY-iHgt, iWdt, iHgt);
+	glViewport(clipRect.x, RenderTarget->Hgt-clipRect.y-clipRect.Hgt, clipRect.Wdt, clipRect.Hgt);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
 	// Set clipping plane to -1000 and 1000 so that large meshes are not
 	// clipped away.
 	//glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
-	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
+	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 }
@@ -298,103 +208,99 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 	return RestoreDeviceObjects();
 }
 
-void CStdGL::SetupMultiBlt(const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, DWORD dwOverlayModClr)
+void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr)
 {
 	// Initialize multi blit shader.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
-	// TODO: The locations could be cached
-	GLint fMod2Location = glGetUniformLocationARB(multi_blt_program->Program, "fMod2");
-	GLint fUseClrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseClrModMap");
-	GLint fUseTextureLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseTexture");
-	GLint fUseOverlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "fUseOverlay");
-	GLint clrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "clrMod");
-	GLint overlayClrModLocation = glGetUniformLocationARB(multi_blt_program->Program, "overlayClrMod");
-	GLint clrModMapLocation = glGetUniformLocationARB(multi_blt_program->Program, "ClrModMap");
-	GLint textureLocation = glGetUniformLocationARB(multi_blt_program->Program, "Texture");
-	GLint overlayLocation = glGetUniformLocationARB(multi_blt_program->Program, "Overlay");
+	call.Start();
 
-	const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-	const int fUseClrModMap = this->fUseClrModMap;
-	const int fUseTexture = (baseTex != 0);
-	const int fUseOverlay = (overlayTex != 0);
+	// Upload uniforms
 	const DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
-	const float dwMod[4] = {
+	const float fMod[4] = {
 		((dwModClr >> 16) & 0xff) / 255.0f,
 		((dwModClr >>  8) & 0xff) / 255.0f,
 		((dwModClr      ) & 0xff) / 255.0f,
 		((dwModClr >> 24) & 0xff) / 255.0f
 	};
-	const float dwOverlayMod[4] = {
-		((dwOverlayModClr >> 16) & 0xff) / 255.0f,
-		((dwOverlayModClr >>  8) & 0xff) / 255.0f,
-		((dwOverlayModClr      ) & 0xff) / 255.0f,
-		((dwOverlayModClr >> 24) & 0xff) / 255.0f
-	};
 
-	glUseProgramObjectARB(multi_blt_program->Program);
-	glUniform1iARB(fMod2Location, fMod2);
-	glUniform1iARB(fUseClrModMapLocation, fUseClrModMap);
-	glUniform1iARB(fUseTextureLocation, fUseTexture);
-	glUniform1iARB(fUseOverlayLocation, fUseOverlay);
-	glUniform4fvARB(clrModLocation, 1, dwMod);
+	call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
 
-	if(fUseClrModMap)
+	if(baseTex != 0)
 	{
-		glActiveTexture(GL_TEXTURE2);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, pClrModMap->GetSurface()->ppTex[0]->texName);
-		glUniform1iARB(clrModMapLocation, 2);
-
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
-		C4Surface * pSurface = pClrModMap->GetSurface();
-		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
-		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
-		// Zoom and transform are applied in the modelview matrix, which
-		// is applied in the vertex shader before passing the viewport
-		// position to the fragment shader for clrmodmap lookup
-		glMatrixMode(GL_MODELVIEW);
+		call.AllocTexUnit(C4SSU_BaseTex, GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, baseTex);
 	}
 
 	if(overlayTex != 0)
 	{
-		glActiveTexture(GL_TEXTURE1);
+		call.AllocTexUnit(C4SSU_OverlayTex, GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, overlayTex);
-		glUniform1iARB(overlayLocation, 1);
-		glUniform4fvARB(overlayClrModLocation, 1, dwOverlayMod);
+
+		const float fOverlayModClr[4] = {
+			((dwOverlayModClr >> 16) & 0xff) / 255.0f,
+			((dwOverlayModClr >>  8) & 0xff) / 255.0f,
+			((dwOverlayModClr      ) & 0xff) / 255.0f,
+			((dwOverlayModClr >> 24) & 0xff) / 255.0f
+		};
+
+		call.SetUniform4fv(C4SSU_OverlayClr, 1, fOverlayModClr);
 	}
 
-	glActiveTexture(GL_TEXTURE0);
-	if(baseTex != 0)
+	if(pFoW != NULL && normalTex != 0)
 	{
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, baseTex);
-		glUniform1iARB(textureLocation, 0);
+		call.AllocTexUnit(C4SSU_NormalTex, GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, normalTex);
+	}
+
+	if(pFoW != NULL)
+	{
+		const C4Rect OutRect = GetOutRect();
+		const C4Rect ClipRect = GetClipRect();
+		const FLOAT_RECT vpRect = pFoW->getViewportRegion();
+
+		// Dynamic Light
+		call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
+
+		float lightTransform[6];
+		pFoW->GetFragTransform(ClipRect, OutRect, lightTransform);
+		call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
+
+		// Ambient Light
+		call.AllocTexUnit(C4SSU_AmbientTex, GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
+		call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
+
+		float ambientTransform[6];
+		pFoW->getFoW()->Ambient.GetFragTransform(vpRect, ClipRect, OutRect, ambientTransform);
+		call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 	}
 
 	// Apply zoom and transform
 	glPushMatrix();
 	glTranslatef(ZoomX, ZoomY, 0.0f);
-	glScalef(Zoom, Zoom, 1.0f);
+	// Scale Z as well so that we don't distort normals.
+	glScalef(Zoom, Zoom, Zoom);
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
 	if(pTransform)
 	{
-		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+		// Decompose scale factors and scale Z accordingly to X and Y, again to avoid distorting normals
+		// We could instead work around this by using the projection matrix, but then for object rotations (SetR)
+		// the normals would not be correct.
+		const float sx = sqrt(pTransform->mat[0]*pTransform->mat[0] + pTransform->mat[1]*pTransform->mat[1]);
+		const float sy = sqrt(pTransform->mat[3]*pTransform->mat[3] + pTransform->mat[4]*pTransform->mat[4]);
+		const float sz = sqrt(sx * sy);
+		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, sz, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
 		glMultMatrixf(transform);
 	}
 }
 
-void CStdGL::ResetMultiBlt(GLuint baseTex, GLuint overlayTex)
+void CStdGL::ResetMultiBlt()
 {
 	glPopMatrix();
-	if(fUseClrModMap) { glActiveTexture(GL_TEXTURE2); glDisable(GL_TEXTURE_2D); }
-	if(overlayTex != 0) { glActiveTexture(GL_TEXTURE1); glDisable(GL_TEXTURE_2D); }
-	glActiveTexture(GL_TEXTURE0);
-	if(baseTex != 0) glDisable(GL_TEXTURE_2D);
-	glUseProgramObjectARB(0);
 }
 
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
@@ -408,7 +314,8 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glTranslatef(0.5f, 0.5f, 0.0f);
 
 	// Feed the vertices to the GL
-	SetupMultiBlt(NULL, 0, 0, 0);
+	C4ShaderCall call(GetSpriteShader(false, false, false));
+	SetupMultiBlt(call, NULL, 0, 0, 0, 0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -429,7 +336,7 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glPopMatrix();
 
-	ResetMultiBlt(0, 0);
+	ResetMultiBlt();
 }
 
 void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
@@ -481,11 +388,12 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	}
 
 	// Then, feed the vertices to the GL
-	SetupMultiBlt(NULL, lines_tex, 0, 0);
+	C4ShaderCall call(GetSpriteShader(true, false, false));
+	SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glClientActiveTexture(GL_TEXTURE0); // lines_tex was loaded in tex0 by SetupMultiBlt
+	glClientActiveTexture(GL_TEXTURE0);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].tx);
@@ -497,17 +405,18 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	ResetMultiBlt(lines_tex, 0);
+	ResetMultiBlt();
 }
 
-void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, DWORD dwOverlayModClr)
+void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayModClr)
 {
 	// Only direct rendering
 	assert(sfcTarget->IsRenderTarget());
 	if(!PrepareRendering(sfcTarget)) return;
 
 	// Feed the vertices to the GL
-	SetupMultiBlt(pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, dwOverlayModClr);
+	C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
+	SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -515,8 +424,8 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	if(pTex)
 	{
 		// We use the texture coordinate array in texture0 for
-		// both the base and the overlay texture
-		glClientActiveTexture(GL_TEXTURE0); // pTex was loaded in tex0 by SetupMultiBlt
+		// the base, overlay and normal textures
+		glClientActiveTexture(GL_TEXTURE0);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].tx);
 	}
@@ -528,7 +437,155 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	if(pTex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	ResetMultiBlt(pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0);
+
+	ResetMultiBlt();
+}
+
+bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups)
+{
+	static const char vertexSlice[] = 
+		"  gl_FrontColor = gl_Color;"
+		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;";
+
+	const char* uniformNames[C4SSU_Count + 1];
+	uniformNames[C4SSU_ClrMod] = "clrMod";
+	uniformNames[C4SSU_BaseTex] = "baseTex";
+	uniformNames[C4SSU_OverlayTex] = "overlayTex";
+	uniformNames[C4SSU_OverlayClr] = "overlayClr";
+	uniformNames[C4SSU_LightTex] = "lightTex";
+	uniformNames[C4SSU_LightTransform] = "lightTransform";
+	uniformNames[C4SSU_NormalTex] = "normalTex";
+	uniformNames[C4SSU_AmbientTex] = "ambientTex";
+	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
+	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_Count] = NULL;
+
+	// Clear previous content
+	shader.Clear();
+	shader.ClearSlices();
+
+	shader.AddVertexSlice(C4Shader_Vertex_PositionPos, vertexSlice);
+
+	// Add texture coordinate if we have base texture, overlay, or normal map
+	if ( (ssc & (C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL)) != 0)
+		shader.AddTexCoord("texcoord");
+
+	// Then load slices for fragment shader
+	shader.AddFragmentSlice(-1, "#define OPENCLONK");
+	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
+	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
+	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+	shader.LoadSlices(pGroups, "UtilShader.glsl");
+	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
+
+	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
+	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
+
+	// In case light is disabled, these shaders use a default light source
+	// (typically ambient light everywhere).
+	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
+	shader.LoadSlices(pGroups, "LightShader.glsl");
+	shader.LoadSlices(pGroups, "AmbientShader.glsl");
+
+	if (!shader.Init(name, uniformNames))
+	{
+		shader.ClearSlices();
+		return false;
+	}
+
+	return true;
+}
+
+C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal)
+{
+	int ssc = 0;
+	if(dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
+	if(haveBase) ssc |= C4SSC_BASE;
+	if(haveBase && haveOverlay) ssc |= C4SSC_OVERLAY;
+	if(pFoW != NULL) ssc |= C4SSC_LIGHT;
+	if(pFoW != NULL && haveBase && haveNormal) ssc |= C4SSC_NORMAL;
+	return GetSpriteShader(ssc);
+}
+
+C4Shader* CStdGL::GetSpriteShader(int ssc)
+{
+	C4Shader* shaders[16] = {
+		&SpriteShader,
+		&SpriteShaderMod2,
+		&SpriteShaderBase,
+		&SpriteShaderBaseMod2,
+		&SpriteShaderBaseOverlay,
+		&SpriteShaderBaseOverlayMod2,
+
+		&SpriteShaderLight,
+		&SpriteShaderLightMod2,
+		&SpriteShaderLightBase,
+		&SpriteShaderLightBaseMod2,
+		&SpriteShaderLightBaseOverlay,
+		&SpriteShaderLightBaseOverlayMod2,
+		&SpriteShaderLightBaseNormal,
+		&SpriteShaderLightBaseNormalMod2,
+		&SpriteShaderLightBaseNormalOverlay,
+		&SpriteShaderLightBaseNormalOverlayMod2,
+	};
+
+	int index = 0;
+	if(ssc & C4SSC_LIGHT) index += 6;
+
+	if(ssc & C4SSC_BASE)
+	{
+		index += 2;
+		if(ssc & C4SSC_OVERLAY)
+			index += 2;
+		if( (ssc & C4SSC_NORMAL) && (ssc & C4SSC_LIGHT))
+			index += 4;
+	}
+
+	if(ssc & C4SSC_MOD2)
+		index += 1;
+
+	assert(index < 16);
+	return shaders[index];
+}
+
+bool CStdGL::InitShaders(C4GroupSet* pGroups)
+{
+	// Create sprite blitting shaders
+	if(!CreateSpriteShader(SpriteShader, "sprite", 0, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderMod2, "spriteMod2", C4SSC_MOD2, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderBase, "spriteBase", C4SSC_BASE, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderBaseMod2, "spriteBaseMod2", C4SSC_MOD2 | C4SSC_BASE, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderBaseOverlay, "spriteBaseOverlay", C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderBaseOverlayMod2, "spriteBaseOverlayMod2", C4SSC_MOD2 | C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+		return false;
+
+	if(!CreateSpriteShader(SpriteShaderLight, "spriteLight", C4SSC_LIGHT, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightMod2, "spriteLightMod2", C4SSC_LIGHT | C4SSC_MOD2, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBase, "spriteLightBase", C4SSC_LIGHT | C4SSC_BASE, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseMod2, "spriteLightBaseMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_MOD2, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseOverlay, "spriteLightBaseOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseOverlayMod2, "spriteLightBaseOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_MOD2, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseNormal, "spriteLightBaseNormal", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseNormalMod2, "spriteLightBaseNormalMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL | C4SSC_MOD2, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseNormalOverlay, "spriteLightBaseNormalOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL, pGroups))
+		return false;
+	if(!CreateSpriteShader(SpriteShaderLightBaseNormalOverlayMod2, "spriteLightBaseNormalOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL | C4SSC_MOD2, pGroups))
+		return false;
+
+	return true;
 }
 
 bool CStdGL::RestoreDeviceObjects()
@@ -541,7 +598,7 @@ bool CStdGL::RestoreDeviceObjects()
 	Active = pMainCtx->Select();
 	RenderTarget = pApp->pWindow->pSurface;
 
-	// TODO: I think this should be updated. We need at least GLSL shaders now, which I think is OpenGL 2.0(?)
+	// TODO: I think this should be updated. We need at least GLSL 1.20 now, which is OpenGL 2.1
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	// Check for GL 1.2 and two functions from 1.3 we need.
 	if( !GLEW_VERSION_1_2 ||
@@ -562,7 +619,6 @@ bool CStdGL::RestoreDeviceObjects()
 	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 
-
 	MaxTexSize = 64;
 	GLint s = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
@@ -573,69 +629,6 @@ bool CStdGL::RestoreDeviceObjects()
 		EnableGamma();
 	// reset blit states
 	dwBlitMode = 0;
-
-	// The following shaders are used for drawing primitives such as points, lines and sprites.
-	// They are used in PerformMultiPix, PerformMultiLines and PerformMultiTris.
-	// The fragment shader applies the color modulation, mod2 drawing and the color modulation map
-	// on top of the original fragment color.
-	// The vertex shader does not do anything special, but it delegates input values to the
-	// fragment shader.
-	// TODO: It might be more efficient to use separate shaders for pixels, lines and tris.
-	const char* vertex_shader_text =
-		"varying vec2 texcoord;"
-		"varying vec2 pos;"
-		"void main()"
-		"{"
-		"  texcoord = gl_MultiTexCoord0.xy;"
-		"  pos = (gl_ModelViewMatrix * gl_Vertex).xy;"
-		"  gl_FrontColor = gl_Color;"
-		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
-		"}";
-	const char* fragment_shader_text =
-		"uniform int fMod2;"
-		"uniform int fUseClrModMap;"
-		"uniform int fUseTexture;"
-		"uniform int fUseOverlay;"
-		"uniform vec4 clrMod;"
-		"uniform vec4 overlayClrMod;"
-		"uniform sampler2D Texture;"
-		"uniform sampler2D Overlay;"
-		"uniform sampler2D ClrModMap;"
-		"varying vec2 texcoord;"
-		"varying vec2 pos;"
-		"void main()"
-		"{"
-                // Start with the base color
-                "  vec4 primaryColor = gl_Color;"
-                // Get texture
-		"  if(fUseTexture != 0)"
-		"    primaryColor = primaryColor * texture2D(Texture, texcoord);"
-                // Get overlay, if any
-                "  vec4 overlayColor = vec4(1.0, 1.0, 1.0, 0.0);"
-                "  if(fUseOverlay != 0)"
-                "    overlayColor = gl_Color * texture2D(Overlay, texcoord);"
-                // Mix base with overlay, and apply clrmod (separately for base and overlay)
-                "  primaryColor.rgb = overlayColor.a * overlayClrMod.rgb * overlayColor.rgb + (1.0 - overlayColor.a) * clrMod.rgb * primaryColor.rgb;"
-		// Add alpha for base and overlay, and use weighted mean of clrmod alpha
-                "  primaryColor.a = clamp(primaryColor.a + overlayColor.a, 0.0, 1.0) * (primaryColor.a * clrMod.a + overlayColor.a * overlayClrMod.a) / (primaryColor.a + overlayColor.a);"
-                // Add fog of war
-		"  vec4 clrModMapClr = vec4(1.0, 1.0, 1.0, 1.0);"
-		"  if(fUseClrModMap != 0)"
-		"    clrModMapClr = texture2D(ClrModMap, pos);"
-                // Final output, depending on blit mode
-		"  if(fMod2 != 0)"
-		"    gl_FragColor = clamp(2.0 * primaryColor * clrModMapClr - 0.5, 0.0, 1.0);"
-		"  else"
-		"    gl_FragColor = primaryColor * clrModMapClr;"
-		"}";
-
-	C4DrawGLShader vertex_shader(StdMeshMaterialShader::VERTEX);
-	vertex_shader.Load(vertex_shader_text);
-
-	C4DrawGLShader fragment_shader(StdMeshMaterialShader::FRAGMENT);
-	fragment_shader.Load(fragment_shader_text);
-
-	multi_blt_program.reset(new C4DrawGLProgram(&fragment_shader, &vertex_shader, NULL));
 
 	// done
 	return Active;
@@ -650,7 +643,6 @@ bool CStdGL::InvalidateDeviceObjects()
 #endif
 	// deactivate
 	Active=false;
-	multi_blt_program.reset(NULL);
 	// invalidate font objects
 	// invalidate primary surfaces
 	if (lines_tex)
@@ -659,14 +651,6 @@ bool CStdGL::InvalidateDeviceObjects()
 		lines_tex = 0;
 	}
 	return fSuccess;
-}
-
-bool CStdGL::EnsureAnyContext()
-{
-	// Make sure some context is selected
-	if (pCurrCtx) return true;
-	if (!pMainCtx) return false;
-	return pMainCtx->Select();
 }
 
 bool CStdGL::Error(const char *szMsg)
@@ -700,28 +684,11 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 {
 	GLenum err = glGetError();
 	if (!err) return true;
-	Log(szAtOp);
-	switch (err)
-	{
-	case GL_INVALID_ENUM:       Log("GL_INVALID_ENUM"); break;
-	case GL_INVALID_VALUE:      Log("GL_INVALID_VALUE"); break;
-	case GL_INVALID_OPERATION:  Log("GL_INVALID_OPERATION"); break;
-	case GL_STACK_OVERFLOW:     Log("GL_STACK_OVERFLOW"); break;
-	case GL_STACK_UNDERFLOW:    Log("GL_STACK_UNDERFLOW"); break;
-	case GL_OUT_OF_MEMORY:      Log("GL_OUT_OF_MEMORY"); break;
-	default: Log("unknown error"); break;
-	}
+	LogF("GL error with %s: %d - %s", szAtOp, err, gluErrorString(err));
 	return false;
 }
 
 CStdGL *pGL=NULL;
-
-#ifdef USE_WIN32_WINDOWS
-void CStdGL::TaskOut()
-{
-	if (pCurrCtx) pCurrCtx->Deselect();
-}
-#endif
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {

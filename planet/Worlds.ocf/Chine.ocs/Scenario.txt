@@ -27,7 +27,7 @@ Sky=Clouds2
 MapWidth=40
 MapHeight=240
 TopOpen=1
-BottomOpen=1
+BottomOpen=2
 
 [Weather]
 Climate=0

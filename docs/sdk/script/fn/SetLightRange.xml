@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLightRange</title>
+    <category>Objects</category>
+    <version>6.0 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>range</name>
+          <desc>Light reach in pixels. In this range, the light has 100% intensity.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>fadeout</name>
+          <desc>Light fadeout reach in pixels. Default is 80. If the range is set to 0 and this parameter is not defined, the fadeout will also be 0.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the light reach of the object. When a clonk is added to the crew via <funclink>MakeCrewMember</funclink>, a light is added automatically with the default range of 300 and a fadeout of 80.</desc>
+    <examples>
+      <example>
+        <code>func ControlUse(object clonk)
+{
+	clonk-&gt;SetLightRange(0);
+	<funclink>Sound</funclink>(&quot;Scream&quot;);
+	return true;
+}</code>
+        <text>Confused the acid phile with the eye drops, did ya?</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlrView</funclink>
+      <funclink>SetFoW</funclink>
+    </related>
+  </func>
+</funcs>

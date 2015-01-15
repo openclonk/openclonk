@@ -24,18 +24,18 @@ protected func Initialize()
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	Sound("BirdsLoop",true,100,nil,+1);
 		
-	CreateObject(Column,650,379);
-	CreateObject(Column,350,409);
-	CreateObject(Column,160,229);
-	CreateObject(Column,448,269);
-	CreateObject(Column,810,179);
+	CreateObjectAbove(Column,650,379);
+	CreateObjectAbove(Column,350,409);
+	CreateObjectAbove(Column,160,229);
+	CreateObjectAbove(Column,448,269);
+	CreateObjectAbove(Column,810,179);
 
 	// Chests with weapons.
-	CreateObject(Chest, 175, 200, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 800, 150, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 430, 240, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 610, 340, NO_OWNER)->MakeInvincible();
-	CreateObject(Chest, 355, 390, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 175, 200, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 800, 150, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 430, 240, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 610, 340, NO_OWNER)->MakeInvincible();
+	CreateObjectAbove(Chest, 355, 390, NO_OWNER)->MakeInvincible();
 	
 	AddEffect("IntFillChests", nil, 100, 2 * 36, nil);
 	// Smooth brick edges.
@@ -44,12 +44,12 @@ protected func Initialize()
 	
 	// Moving bricks.
 	var brick;
-	brick = CreateObject(MovingBrick,370,424);
+	brick = CreateObjectAbove(MovingBrick,370,424);
 	brick->MoveHorizontal(344, 544);
-	brick = CreateObject(MovingBrick,550,250);
+	brick = CreateObjectAbove(MovingBrick,550,250);
 	brick->MoveVertical(240, 296);
 
-	CreateObject(BrickEdge, 380, 416)->PermaEdge();
+	CreateObjectAbove(BrickEdge, 380, 416)->PermaEdge();
 	
 	PlaceGras();
 	
@@ -152,12 +152,12 @@ global func FxBalloonsTimer()
 	var target;
 	
 	var r = Random(3);
-	if (r == 0) { target = CreateObject(Boompack, x, y, NO_OWNER); target->SetR(180); }
-	if (r == 1) { target = CreateObject(DynamiteBox, x, y, NO_OWNER); target->SetR(180); }
-	if (r == 2) { target = CreateObject(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000,0,0,0,1000,-7500); }
+	if (r == 0) { target = CreateObjectAbove(Boompack, x, y, NO_OWNER); target->SetR(180); }
+	if (r == 1) { target = CreateObjectAbove(DynamiteBox, x, y, NO_OWNER); target->SetR(180); }
+	if (r == 2) { target = CreateObjectAbove(Arrow, x, y, NO_OWNER); target->SetObjDrawTransform(1000,0,0,0,1000,-7500); }
 		
 		
-	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
+	var balloon = CreateObjectAbove(TargetBalloon, x, y-30, NO_OWNER);
 	balloon->SetProperty("load",target);
 	target->SetAction("Attach", balloon);
 	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
@@ -172,7 +172,7 @@ global func PlaceGras()
 	var r=[-91, -93, -93, 89, 93, 93, 88, 89, -92, -92, 88, 93, 93, -88, -87, -93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 43, 46, 44, 48, -43, -48, -48, -45, -43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48, -44, -45, 48, 46, 48, 45, 0, 0, 0, 0, 0, 0, 0, 44, 0];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);
+		var edge=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);
 		edge->SetR(r[i]); 
 		edge->Initialize();
 	}
@@ -229,7 +229,7 @@ global func CreateChestContents(id obj_id)
 {
 if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	var obj = CreateObjectAbove(obj_id);
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
@@ -246,7 +246,7 @@ protected func InitializePlayer(int plr)
 // GameCall from RelaunchContainer.
 protected func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
@@ -260,7 +260,7 @@ protected func JoinPlayer(int plr)
 	var position = [[180,150],[310,320],[600,290],[650,180],[790,110],[440,190]];
 	var r=Random(GetLength(position));
 	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObject(RelaunchContainer, x, y + 49, clonk->GetOwner());
+	var relaunch = CreateObjectAbove(RelaunchContainer, x, y + 49, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	return;
 }

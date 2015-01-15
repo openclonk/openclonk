@@ -28,7 +28,7 @@ protected func Initialize()
 func OnRopeBreak()
 {
 	if (!hook)
-		hook = CreateObject(LiftTower_Hook, 0,0, NO_OWNER);
+		hook = CreateObjectAbove(LiftTower_Hook, 0,0, NO_OWNER);
 	hook->Enter(this);
 }
 

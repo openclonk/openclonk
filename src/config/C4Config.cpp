@@ -161,6 +161,8 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
 #endif
 	pComp->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
+	pComp->Value(mkNamingAdapt(PacketLogging,           "PacketLogging",        0             ));
+	
 
 	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "clonk.de:11115")); // maybe store default for this one?
 	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
@@ -238,7 +240,7 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 {
 #ifndef USE_CONSOLE
 	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
-	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
+	pComp->Value(mkNamingAdapt(MouseAutoScroll,      "MouseAutoScroll",      0 /* change default 33 to enable */ ));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
 #endif
 }

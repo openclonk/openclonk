@@ -1,0 +1,27 @@
+[ParameterDef]
+Name=$NrRelaunches$
+Description=$DescNrRelaunches$
+ID=NrRelaunches
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$RelaunchesZero$
+		Description=$DescDiffRelaunchesZero$
+		Value=0
+		
+		[Option]
+		Name=$RelaunchesOne$
+		Description=$DescRelaunchesOne$
+		Value=1
+		
+		[Option]
+		Name=$RelaunchesTwo$
+		Description=$DescRelaunchesTwo$
+		Value=2
+
+		[Option]
+		Name=$RelaunchesThree$
+		Description=$DescRelaunchesThree$
+		Value=3

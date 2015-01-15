@@ -5,9 +5,9 @@ func Initialize()
 	// Goal
 	var goal = FindObject(Find_ID(Goal_RepairStatue));
 	if (!goal) goal = CreateObject(Goal_RepairStatue);
-	var statue = CreateObject(MinersStatue, 600,736);
+	var statue = CreateObjectAbove(MinersStatue, 600,736);
 	statue->SetBroken();
-	var statue_head = CreateObject(MinersStatue_Head, 2200,560);
+	var statue_head = CreateObjectAbove(MinersStatue_Head, 2200,560);
 	goal->SetStatue(statue);
 	// Rules
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
@@ -54,8 +54,8 @@ private func InitBase(int owner)
 {
 	// Create standard base owned by player
 	var y=736;
-	var flag = CreateObject(Flagpole, 670,y, owner);
-	var lorry = CreateObject(Lorry, 650,y-2, owner);
+	var flag = CreateObjectAbove(Flagpole, 670,y, owner);
+	var lorry = CreateObjectAbove(Lorry, 650,y-2, owner);
 	if (lorry)
 	{
 		lorry->CreateContents(Loam, 6);
@@ -80,7 +80,7 @@ private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int
 		if (loc = FindLocation(Loc_Material("Earth")))
 			for (var j=0; j<n_per_batch; ++j)
 				if (loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material("Earth")))
-					if (obj=CreateObject(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
+					if (obj=CreateObjectAbove(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
 					{
 						obj->SetPosition(loc2.x,loc2.y);
 						++n_created;

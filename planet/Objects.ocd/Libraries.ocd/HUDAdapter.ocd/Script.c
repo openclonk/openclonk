@@ -45,7 +45,7 @@ protected func Recruitment(int plr)
 {
 	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
 	if (!HUDcontroller)
-		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
+		HUDcontroller = CreateObjectAbove(GUI_Controller, 10, 10, plr);
 	
 	HUDcontroller->OnCrewRecruitment(this, plr, ...);
 	HUDcontroller->ScheduleUpdateInventory();

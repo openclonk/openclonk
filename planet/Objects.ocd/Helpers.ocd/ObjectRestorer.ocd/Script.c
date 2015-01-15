@@ -181,7 +181,7 @@ global func FxRestoreModeStop(object target, effect, int reason, bool  temporary
 {
 	if (reason == 3)
 	{
-		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -189,7 +189,7 @@ global func FxRestoreModeStop(object target, effect, int reason, bool  temporary
 		var to_x = effect.to_x;
 		var to_y = effect.to_y;
 		var to_r = effect.to_r;
-		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
+		var restored = CreateObjectAbove(target->GetID(), 0, 0, target->GetOwner());
 		if (restored)
 		{
 			restorer->SetRestoreObject(restored, to_container, to_x, to_y, to_r);

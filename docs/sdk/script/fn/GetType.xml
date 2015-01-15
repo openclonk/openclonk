@@ -26,6 +26,7 @@
       <funclink>C4V_Array</funclink>
       <funclink>C4V_PropList</funclink>
       <funclink>C4V_C4Object</funclink>
+	  <funclink>C4V_Def</funclink>
     </related>
   </func>
   <author>PeterW</author><date>2003-06</date>

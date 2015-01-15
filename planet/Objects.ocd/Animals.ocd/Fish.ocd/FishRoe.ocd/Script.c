@@ -45,7 +45,7 @@ func Hatch(id fish_id)
 {
 	for (var i = 0; i < 5; ++i)
 		Bubble(1, RandomX(-5, 5), RandomX(-5, 5));
-	var fish = CreateObject(fish_id, 0, 0, GetOwner());
+	var fish = CreateObjectAbove(fish_id, 0, 0, GetOwner());
 	fish->SetCon(1);
 	AddEffect("FastGrow", fish, 1, 1, nil, GetID());
 	RemoveObject();

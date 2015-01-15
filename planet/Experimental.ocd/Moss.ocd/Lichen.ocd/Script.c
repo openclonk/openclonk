@@ -44,7 +44,7 @@ public func Damage()
 
 private func Destroy()
 {
-	if(Random(maxsize+35)<size) CreateObject(Moss,0,0,-1);
+	if(Random(maxsize+35)<size) CreateObjectAbove(Moss,0,0,-1);
 	var particles = 
 	{
 		Size = PV_Random(3, 7),
@@ -92,7 +92,7 @@ protected func Replicate()
 	if(!good) return ;
 	for(var i=2+Random(5); i>0; i--)
 	if(ExtractLiquid(waterpos[0],waterpos[1]) != Material("Water")) return -1;
-	CreateObject(Moss_Lichen,x,y,-1);
+	CreateObjectAbove(Moss_Lichen,x,y,-1);
 	buriedtime = -Random(MOSS_MINBURIED);
  	
 }

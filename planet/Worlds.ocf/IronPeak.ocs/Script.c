@@ -148,7 +148,7 @@ private func InitAnimals()
 private func InitMaterial(int amount)
 {
 	// An abandoned lorry somewhere close to the highest point of the peak.
-	var lorry = CreateObject(Lorry, LandscapeWidth() / 2, FindHeight(LandscapeWidth() / 2));
+	var lorry = CreateObjectAbove(Lorry, LandscapeWidth() / 2, FindHeight(LandscapeWidth() / 2));
 	lorry->CreateContents(Pickaxe, 2);
 	lorry->CreateContents(Shovel, 2);
 	lorry->CreateContents(Bread, 2 * amount);

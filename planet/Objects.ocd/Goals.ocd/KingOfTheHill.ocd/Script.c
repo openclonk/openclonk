@@ -54,7 +54,7 @@ func PostInitialize()
 
 func Init()
 {
-	location=CreateObject(KingOfTheHill_Location, 0, 5, NO_OWNER);
+	location=CreateObjectAbove(KingOfTheHill_Location, 0, 5, NO_OWNER);
 	location->SetKotH(this);
 }
 

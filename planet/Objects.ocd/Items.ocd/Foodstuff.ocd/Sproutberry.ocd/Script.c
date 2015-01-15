@@ -74,7 +74,7 @@ func FxSproutCheckTimer(target, effect, time)
 	}
 	
 	// create a bush!
-	var bush = CreateObject(SproutBerryBush, 0, y + 8, NO_OWNER);
+	var bush = CreateObjectAbove(SproutBerryBush, 0, y + 8, NO_OWNER);
 	
 	// no insta-bush please..
 	bush->GrowNormally();

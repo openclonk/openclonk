@@ -733,32 +733,74 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
 
-	ObjselectDelItems();
+	// Add selection and custom command entries for any objects at the cursor
+	ObjselectDelItems(); // clear previous entries
 	C4FindObjectAtPoint pFO(X,Y);
 	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing (single object ptr)
 	int itemcount = atcursor->GetSize();
 	if(itemcount > 0)
 	{
-		const int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
-		if(itemcount > maxitems) itemcount = maxitems+1;
-		itemsObjselect.resize(itemcount+1); // +1 for a separator
+		// Count required entries for all objects and their custom commands
+		int entrycount = itemcount;
+		for (int i_item = 0; i_item < itemcount; ++i_item)
+		{
+			C4Object *pObj = (*atcursor)[i_item].getObj(); assert(pObj);
+			C4ValueArray *custom_commands = pObj->GetPropertyArray(P_EditCursorCommands);
+			if (custom_commands) entrycount += custom_commands->GetSize();
+		}
+		// If too many entries would be shown, add a "..." in the end
+		const int maxentries = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
+		bool has_too_many_entries = (entrycount > maxentries);
+		if (has_too_many_entries) entrycount = maxentries + 1;
+		itemsObjselect.resize(entrycount + 1); // +1 for a separator
+		// Add a separator bar
 		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
 		itemsObjselect[0].Object = NULL;
+		itemsObjselect[0].Command.Clear();
 		AppendMenu(hContext, MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
-		int i = 1;
-		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		// Add all objects
+		int i_entry = 0;
+		for (int i_item = 0; i_item < itemcount; ++i_item)
 		{
-			C4Object * obj = (*atcursor)[i-1].getObj();
-			assert(obj);
-			it->ItemId = IDM_VPORTDYN_FIRST+i;
-			it->Object = obj;
-			AppendMenu(hContext, MF_STRING, it->ItemId, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+			++i_entry; if (i_entry >= maxentries) break;
+			// Add selection entry
+			C4Object *obj = (*atcursor)[i_item].getObj();
+			itemsObjselect[i_entry].ItemId = IDM_VPORTDYN_FIRST + i_entry;
+			itemsObjselect[i_entry].Object = obj;
+			itemsObjselect[i_entry].Command.Clear();
+			AppendMenu(hContext, MF_STRING, IDM_VPORTDYN_FIRST + i_entry, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+			// Add custom command entries
+			C4ValueArray *custom_commands = obj->GetPropertyArray(P_EditCursorCommands);
+			if (custom_commands) for (int i_cmd = 0; i_cmd < custom_commands->GetSize(); ++i_cmd)
+			{
+				++i_entry; if (i_entry >= maxentries) break;
+				const C4Value &cmd = custom_commands->GetItem(i_cmd);
+				StdStrBuf custom_command_szstr; C4AulFunc *custom_command; C4String *custom_command_string;
+				// Custom command either by string or by function pointer
+				if ((custom_command = cmd.getFunction()))
+					custom_command_szstr.Format("%s()", custom_command->GetName());
+				else if ((custom_command_string = cmd.getStr()))
+					custom_command_szstr.Copy(custom_command_string->GetData()); // copy just in case script get reloaded inbetween
+				if (custom_command_szstr.getLength())
+				{
+					itemsObjselect[i_entry].ItemId = IDM_VPORTDYN_FIRST + i_entry;
+					itemsObjselect[i_entry].Object = obj;
+					itemsObjselect[i_entry].Command.Take(custom_command_szstr); 
+					AppendMenu(hContext, MF_STRING, IDM_VPORTDYN_FIRST + i_entry, FormatString("%s->%s", obj->GetName(), custom_command_szstr.getData()).GetWideChar());
+				}
+				else
+				{
+					// invalid entry in commands list. do not create a menu item.
+					itemsObjselect[i_entry].ItemId = 0;
+				}
+			}
 		}
-		if(atcursor->GetSize() > maxitems)
+		if (has_too_many_entries)
 		{
-			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST+maxitems+1, L"...");
-			itemsObjselect[maxitems+1].ItemId = IDM_VPORTDYN_FIRST+maxitems+1;
-			itemsObjselect[maxitems+1].Object = NULL;
+			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST + maxentries + 1, L"...");
+			itemsObjselect[maxentries + 1].ItemId = IDM_VPORTDYN_FIRST + maxentries + 1;
+			itemsObjselect[maxentries + 1].Object = NULL;
+			itemsObjselect[maxentries + 1].Command.Clear();
 		}
 	}
 	delete atcursor;
@@ -779,7 +821,10 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it)
 			if(it->ItemId == iItem)
 			{
-				DoContextObjsel(it->Object, (dwKeyState & MK_SHIFT) == 0);
+				if (it->Command.getLength())
+					DoContextObjCommand(it->Object, it->Command.getData());
+				else
+					DoContextObjsel(it->Object, (dwKeyState & MK_SHIFT) == 0);
 				break;
 			}
 		break;
@@ -1035,4 +1080,11 @@ void C4EditCursor::DoContextObjsel(C4Object * obj, bool clear)
 
 	Selection.Add(obj, C4ObjectList::stNone);
 	OnSelectionChanged();
+}
+
+void C4EditCursor::DoContextObjCommand(C4Object * obj, const char *cmd)
+{
+	// Command going through queue for sync
+	if (!obj || !cmd) return;
+	In(FormatString("Object(%d)->%s", obj->Number, cmd).getData());
 }

@@ -31,7 +31,7 @@ func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 		var arrow = neighbour_flag_arrows[i];
 		if (!arrow)
 		{
-			neighbour_flag_arrows[i] = arrow = CreateObject(Library_Flag_ConstructionPreviewer_Arrow, 0,0, GetOwner());
+			neighbour_flag_arrows[i] = arrow = CreateObjectAbove(Library_Flag_ConstructionPreviewer_Arrow, 0,0, GetOwner());
 			if (!arrow) { ++i; continue; }
 			arrow->SetAction("Show", this);
 		}

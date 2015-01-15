@@ -7,7 +7,7 @@
     <title>DoCon</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>5.1 OC</version>
+    <version>6.0 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -16,7 +16,17 @@
           <name>change</name>
           <desc>Change of completion in percentage point (positive or negative).</desc>
         </param>
-      </params>
+	    <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>If specified, the con value will be divided by this value. No value or 0 uses the default precision of 100.</desc>
+        </param>
+	    <param>
+          <type>bool</type>
+          <name>grow_from_center</name>
+          <desc>If specified, this parameter determines whether the object should grow from the bottommost vertex or from its center. The default value is false, which makes the object grow from the bottommost vertex.</desc>
+        </param>
+	  </params>
     </syntax>
     <desc>Adjusts the completion value of an object. This affects the completion of construction sites or the growth of trees and living beings. If completion drops below 0, the object is removed.</desc>
     <examples>
@@ -36,4 +46,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>
+  <author>Marky</author><date>2015-01</date>
 </funcs>

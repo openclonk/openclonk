@@ -51,7 +51,7 @@ protected func Initialize()
 	PlaceBatches([Dynamite, Dynamite, Dynamite, DynamiteBox], 3, 50, 6);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
 	// Starting chest
-	var start_chest = CreateObject(Chest, LandscapeWidth()*2/5, LandscapeHeight()*97/100);
+	var start_chest = CreateObjectAbove(Chest, LandscapeWidth()*2/5, LandscapeHeight()*97/100);
 	if (start_chest)
 	{
 		start_chest->CreateContents(Loam,4);
@@ -84,7 +84,7 @@ private func PlaceBatches(array item_ids, int n_per_batch, int batch_radius, int
 		if (loc = FindLocation(Loc_Material("Earth")))
 			for (var j=0; j<n_per_batch; ++j)
 				if (loc2 = FindLocation(Loc_InRect(loc.x-batch_radius,loc.y-batch_radius,batch_radius*2,batch_radius*2), Loc_Material("Earth")))
-					if (obj=CreateObject(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
+					if (obj=CreateObjectAbove(item_ids[Random(n_item_ids)],loc2.x,loc2.y))
 					{
 						obj->SetPosition(loc2.x,loc2.y);
 						++n_created;

@@ -197,7 +197,7 @@ private func UseAnyStop(object clonk, int ix, int iy, int item)
 			if(powderkeg->GetPowderCount() == 0)
 			{
 				powderkeg->RemoveObject();
-				CreateObject(Barrel);
+				CreateObjectAbove(Barrel);
 			}
 		}
 	}

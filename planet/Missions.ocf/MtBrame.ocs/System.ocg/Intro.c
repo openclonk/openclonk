@@ -54,7 +54,7 @@ global func IntroAddPlayer(int plr)
 
 global func IntroCreateBoompack(int x, int y, int fuel)
 {
-	var boompack = CreateObject(Boompack, x, y, NO_OWNER);
+	var boompack = CreateObjectAbove(Boompack, x, y, NO_OWNER);
 	boompack->SetFuel(fuel);
 	boompack->SetDirectionDeviation(8); // make sure direction of boompack is roughly kept
 	boompack->SetControllable(false);
@@ -66,7 +66,7 @@ global func FxIntIntroStart(object target, proplist effect)
 	effect.Cabin = FindObject(Find_ID(WoodenCabin));
 	if(!effect.Cabin) return -1;
 
-	effect.Sister = CreateObject(Clonk, 174, 532, NO_OWNER);
+	effect.Sister = CreateObjectAbove(Clonk, 174, 532, NO_OWNER);
 	effect.Sister->MakeInvincible();
 	effect.Sister->MakeNonFlammable();
 	effect.Sister->SetSkin(1);

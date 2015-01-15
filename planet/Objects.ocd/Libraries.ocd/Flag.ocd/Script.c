@@ -125,7 +125,7 @@ func RedrawFlagRadius()
 		var marker = lflag.range_markers[marker_index];
 		if(!marker)
 		{
-			marker = CreateObject(GetFlagMarkerID(), 0, 0, GetOwner());
+			marker = CreateObjectAbove(GetFlagMarkerID(), 0, 0, GetOwner());
 			marker->SetR(Angle(0, 0, x, y));
 		}
 		marker->FadeIn();
@@ -334,7 +334,7 @@ func RefreshLinkedFlags()
 	// since we don't know whether flag links have been lost we will create a new power helper and possibly remove old ones
 	Library_Power->Init(); // make sure the power system is set up
 	var old = lflag.power_helper;
-	lflag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+	lflag.power_helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
 	Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = lflag.power_helper;
 	
 	// list of helpers yet to merge
@@ -437,7 +437,7 @@ func OnOwnerChanged(int new_owner, int old_owner)
 // callback from construction library: Create a special preview that gives extra info about affected buildings / flags
 func CreateConstructionPreview(object constructing_clonk)
 {
-	return CreateObject(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
+	return CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
 }
 
 public func GetFlagRadius(){if (lflag) return lflag.radius; else return DefaultFlagRadius;}

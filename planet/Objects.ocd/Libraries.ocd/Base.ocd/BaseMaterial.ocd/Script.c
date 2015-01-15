@@ -36,7 +36,7 @@ global func GetBaseMaterial(int plr, id def, int index, int category)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base) 
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
 		return base->GetBaseMat(def, index, category);
 }
@@ -45,7 +45,7 @@ global func SetBaseMaterial(int plr, id def, int cnt)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base) 
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
 		return base->SetBaseMat(def, cnt);
 }
@@ -54,7 +54,7 @@ global func DoBaseMaterial(int plr, id def, int change)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base) 
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
 		return base->DoBaseMat(def, change);
 }
@@ -63,7 +63,7 @@ global func GetBaseProduction(int plr, id def, int index, int category)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base)
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
 		return base->GetBaseProd(def, index, category);
 }
@@ -72,7 +72,7 @@ global func SetBaseProduction(int plr, id def, int cnt)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base) 
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base)
 		return base->SetBaseProd(def, cnt);
 }
@@ -81,7 +81,7 @@ global func DoBaseProduction(int plr, id def, int change)
 {
 	var base = FindObject(Find_ID(BaseMaterial), Find_Owner(plr));
 	if (!base) 
-		base = CreateObject(BaseMaterial, AbsX(10), AbsY(10), plr);
+		base = CreateObjectAbove(BaseMaterial, AbsX(10), AbsY(10), plr);
 	if (base) 
 		return base->DoBaseProd(def, change);
 }

@@ -44,7 +44,7 @@ func Damage()
 
 	if (GetDamage() > MaxDamage() && OnFire())
 	{
-		var burned = CreateObject(Tree_Coniferous_Burned, 0, 0, GetOwner());
+		var burned = CreateObjectAbove(Tree_Coniferous_Burned, 0, 0, GetOwner());
 		burned->SetCategory(GetCategory());
 		burned.Touchable = this.Touchable;
 		burned->SetCon(GetCon());
@@ -56,6 +56,14 @@ func Damage()
 		return;
 	}
 }
+
+/*-- Properties --*/
+
+// This is gives buggy results for the mesh.
+//protected func Definition(def) 
+//{
+//	SetProperty("PictureTransformation", Trans_Translate(0, 0, 20000), def);
+//}
 
 local Name = "$Name$";
 local Touchable = 0;

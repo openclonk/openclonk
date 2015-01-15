@@ -165,6 +165,7 @@ public:
 	int32_t LastUpdateTime;
 #endif
 	int32_t AsyncMaxWait;
+	int32_t PacketLogging;
 public:
 	void CompileFunc(StdCompiler *pComp);
 	const char *GetLeagueServerAddress();
@@ -226,7 +227,7 @@ class C4ConfigControls
 {
 public:
 	int32_t GamepadGuiControl;
-	int32_t MouseAScroll; // auto scroll strength
+	int32_t MouseAutoScroll; // auto scroll strength
 	C4PlayerControlAssignmentSets UserSets;
 
 	void CompileFunc(StdCompiler *pComp);

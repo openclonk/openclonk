@@ -31,6 +31,7 @@
 #include <C4Config.h>
 #include <C4Components.h>
 #include <C4Window.h>
+#include <C4Shader.h>
 
 #ifdef HAVE_SYS_FILE_H
 #include <sys/file.h>
@@ -41,6 +42,7 @@
 #endif
 
 FILE *C4LogFile=NULL;
+FILE *C4ShaderLogFile = NULL;
 time_t C4LogStartTime;
 StdStrBuf sLogFileName;
 
@@ -71,9 +73,33 @@ bool OpenLog()
 	return true;
 }
 
+bool OpenExtraLogs()
+{
+	// shader log in editor mode (only one file)
+	bool success = true;
+	if (C4Shader::IsLogging())
+	{
+#ifdef _WIN32
+		C4ShaderLogFile = _fsopen(Config.AtUserDataPath(C4CFN_LogShader), "wt", _SH_DENYWR);
+#elif HAVE_SYS_FILE_H
+		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
+		if (C4ShaderLogFile) if (!flock(fileno(C4ShaderLogFile), LOCK_EX | LOCK_NB))
+		{
+			fclose(C4ShaderLogFile);
+			C4ShaderLogFile = NULL;
+		}
+#else
+		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
+#endif
+		if (!C4ShaderLogFile) success = false;
+	}
+	return success;
+}
+
 bool CloseLog()
 {
 	// close
+	if (C4ShaderLogFile) fclose(C4ShaderLogFile); C4ShaderLogFile = NULL;
 	if (C4LogFile) fclose(C4LogFile); C4LogFile = NULL;
 	// ok
 	return true;
@@ -303,4 +329,30 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 	rsOut.Copy(szBuf, szPosWrite - szBuf);
 	// done, success
 	return true;
+}
+
+bool ShaderLog(const char *szMessage)
+{
+	// security
+	if (!C4ShaderLogFile) return false;
+	if (!Application.AssertMainThread()) return false;
+	if (!szMessage) return false;
+	// output into shader log file
+#ifdef HAVE_ICONV
+	StdStrBuf Line = Languages.IconvSystem(szMessage);
+#else
+	StdStrBuf Line; Line.Ref(szMessage);
+#endif
+	fputs(Line.getData(), C4ShaderLogFile);
+	fputs("\n", C4ShaderLogFile);
+	fflush(C4ShaderLogFile);
+	return true;
+}
+
+bool ShaderLogF(const char *strMessage ...)
+{
+	va_list args; va_start(args, strMessage);
+	StdStrBuf Buf;
+	Buf.FormatV(strMessage, args);
+	return ShaderLog(Buf.getData());
 }

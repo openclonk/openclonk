@@ -16,7 +16,7 @@ protected func Initialize()
 	CreateObject(Rule_BuyAtFlagpole);
 	
 	// Goal: transport the cannon to the top of the chine.
-	var cannon = CreateObject(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
+	var cannon = CreateObjectAbove(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
 	var keg = cannon->CreateContents(PowderKeg);
 	// Infinite ammo for this cannon.
 	keg->SetPowderCount(nil);
@@ -132,7 +132,7 @@ private func InitEnvironment(int map_size, int difficulty)
 		fall->SetDirection(RandomX(10, 12), 8, 8, 8);
 		fall->SetSoundLocation(LandscapeWidth() / 2, Random(LandscapeHeight()));
 	}
-	var trunk = CreateObject(Trunk, waterfall_x + 2, 20);
+	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);
 	trunk->SetR(-30); trunk.Plane = 550;
 	
 	// Cast some additional PXS at the start at random locations.
@@ -180,12 +180,10 @@ private func InitVegetation(int map_size, int difficulty)
 	Mushroom->Place(14, middle);
 	Mushroom->Place(14, bottom);
 	
-	// Some ranks and trunks.
+	// Some branches and trunks.
+	Branch->Place(30 + Random(16));
 	for (var i = 0; i < 4 + Random(3); i++)
 	{
-		PlaceVegetation(Rank, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Rank, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Rank, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
@@ -219,7 +217,7 @@ private func InitMaterial(int amount)
 	// For medium amount of materials provide a lorry with resources.	
 	if (amount >= 2)
 	{
-		var lorry = CreateObject(Lorry, 72 + RandomX(-12, 12), LandscapeHeight() - 92);
+		var lorry = CreateObjectAbove(Lorry, 72 + RandomX(-12, 12), LandscapeHeight() - 92);
 		lorry->CreateContents(Wood, 6);
 		lorry->CreateContents(Metal, 4);
 		lorry->CreateContents(Rock, 4);

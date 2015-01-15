@@ -83,7 +83,7 @@ protected func TryToLichen()
 	}
 	if(!good) return ;
 	
-	CreateObject(Moss_Lichen,x,y,-1);
+	CreateObjectAbove(Moss_Lichen,x,y,-1);
 	still = -MOSS_LICHENDELAY-Random(MOSS_LICHENDELAY);
  	
 }

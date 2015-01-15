@@ -235,9 +235,14 @@ func DrawEnd()
 
 protected func InitializeMap(map)
 {
-	map->Resize(270,270);
+	var s = SCENPAR_MapSize-1;
+	//var d = SCENPAR_Difficulty-1;
+	var map_size = [[120,120], [200,200], [330,330]][s];
+	var find_cave_iterations = [100,150,300][s];
 
-	FindCaves(200);
+	Resize(map_size[0],map_size[1]);
+
+	FindCaves(find_cave_iterations);
 	FindCaveConnections();
 	FindStart();
 	MakeMaze();

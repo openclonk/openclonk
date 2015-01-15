@@ -141,12 +141,10 @@ private func InitVegetation(int map_size, int difficulty)
 	Mushroom->Place(14, middle);
 	Mushroom->Place(14, bottom);
 	
-	// Some ranks and trunks.
+	// Some branches and trunks.
+	Branch->Place(24 + Random(12));
 	for (var i = 0; i < 4 + Random(3); i++)
 	{
-		PlaceVegetation(Rank, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Rank, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Rank, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Trunk, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
@@ -172,7 +170,7 @@ private func InitAnimals(int difficulty)
 private func InitMaterial(int amount)
 {
 	// Always material for a starting flagpole
-	var lorry = CreateObject(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
+	var lorry = CreateObjectAbove(Lorry, g_start_x + RandomX(-12, 12), g_start_y);
 	lorry->CreateContents(Wood, 3);
 	lorry->CreateContents(Metal, 1);
 	

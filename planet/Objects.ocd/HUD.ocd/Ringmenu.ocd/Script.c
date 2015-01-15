@@ -30,7 +30,7 @@ global func CreateRingMenu(id symbol, object commander)
 {
 	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
 	if(!(this->~HasMenuControl())) return nil;
-	var menu = CreateObject(GUI_RingMenu,0,0,this->GetOwner());
+	var menu = CreateObjectAbove(GUI_RingMenu,0,0,this->GetOwner());
 	
 	// minimum padding:
 	var paddingy = GUI_Ringmenu_Radius + 175;
@@ -99,7 +99,7 @@ func GetSymbol()
 public func AddItem(new_item, int amount, extra)
 {
 	var index = GetLength(menu_icons);
-	menu_icons[index] = CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
+	menu_icons[index] = CreateObjectAbove(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
 	menu_icons[index]->SetSymbol(new_item);
 	menu_icons[index]->SetExtraData(extra);
 	menu_icons[index]->SetAmount(amount);

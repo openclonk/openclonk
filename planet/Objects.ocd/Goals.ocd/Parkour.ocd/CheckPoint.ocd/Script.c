@@ -94,7 +94,8 @@ protected func Initialize()
 	{
 		Size = PV_KeyFrames(0, 0, 0, 250, 10, 500, 0, 750, 10),
 		Alpha = PV_KeyFrames(0, 0, 255, 500, 0, 501, 255, 1000, 0),
-		BlitMode = GFX_BLIT_Additive
+		BlitMode = GFX_BLIT_Additive,
+		Attach = ATTACH_Front
 	};
 	cleared_by_plr = [];
 	cp_mode = PARKOUR_CP_Check;

@@ -218,7 +218,7 @@ global func SaveScen_ResolveDepends(array objs, array obj_data)
 global func SaveScen_SetContainers(array obj_data)
 {
 	// Ensure that objects are in proper container
-	// Replace calls to CreateObject with CreateContents.
+	// Replace calls to CreateObjectAbove with CreateContents.
 	for (var obj in obj_data) if (obj.o->Contained())
 	{
 		// ignore if container object was not saved
@@ -293,8 +293,8 @@ global func SaveScenarioObject(props)
 	// Overwrite and call inherited for objects that add/remove/alter default creation/properties
 	var owner_string = "", i;
 	if (GetOwner() != NO_OWNER) owner_string = Format(", %d", GetOwner());
-	props->Add(SAVEOBJ_Creation, "CreateObject(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
-	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
+	props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
+	// Contained creation is added alongside regular creation because it is not yet known if CreateObjectAbove+Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
 	if (Contained()) props->Add(SAVEOBJ_ContentsCreation, "%s->CreateContents(%i)", Contained()->MakeScenarioSaveName(), GetID());
 	// Write some default props every object should save

@@ -119,8 +119,8 @@ global func Explode(int level, bool silent)
 	if(!this) FatalError("Function Explode must be called from object context");
 
 	// Shake the viewport.
-	ShakeViewPort(level, GetX(), GetY());
-
+	ShakeViewport(level);
+	
 	// Sound must be created before object removal, for it to be played at the right position.
 	if(!silent) //Does object use it's own explosion sound effect?
 	{
@@ -236,6 +236,9 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 		CreateSmokeTrail(lvl, angle, x + smokex, y + smokey);
 		smoke_trail_count--;
 	}
+	
+	// Temporary light effect
+	if (level>5) CreateLight(x, y, level, Fx_Light.LGT_Blast);
 
 	return;
 }
@@ -378,84 +381,95 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 }
 
 
-/*-- Shake view port --*/
+/** Shake the player viewports near the given position. This disorienting effect is used for earthquakes, explosions
+and other rumbling effects. The further away the player is from the source, the less his viewport is shaken. The 
+strength falls off linearly by distance from 100% to 0% when the player is 700 pixels away.
 
-global func ShakeViewPort(int level, int x_off, int y_off)
+@param level strength of the shake in pixels. As a point of reference, for explosions, the shake strength is the same
+             as the explosion level.
+@param x_off x offset in relative coordinates from the calling object
+@param y_off y offset in relative coordinates from the calling object
+*/
+global func ShakeViewport(int level, int x_off, int y_off)
 {
 	if (level <= 0)
 		return false;
+		
+	x_off += GetX();
+	y_off += GetY();
 
-	var eff = GetEffect("ShakeEffect", this);
-
-	if (eff)
-	{
-		eff.level += level;
-		return true;
-	}
-
-	eff = AddEffect("ShakeEffect", this, 200, 1);
-	if (!eff)
-		return false;
-
-	eff.level = level;
-
-	if (x_off || y_off)
-	{
-		eff.x = x_off;
-		eff.y = y_off;
-	}
-	else
-	{
-		eff.x = GetX();
-		eff.y = GetY();
-	}
-	return true;
+	AddEffect("ShakeViewport", nil, 300, 1, nil, nil, level, x_off, y_off);
 }
 
-// Duration of the effect: as soon as strength==0
-// Strength of the effect: strength=level/(1.5*fxtime+3)-fxtime^2/400
-
-global func FxShakeEffectTimer(object target, effect, int fxtime)
+global func FxShakeViewportEffect(string new_name)
 {
-	var strength;
+	// there is only one global ShakeViewport effect which manages all the shake positions and strengths
+	if (new_name == "ShakeViewport")
+		return -2;
+	return;
+}
 
-	var str = effect.level;
-	var xpos = effect.x;
-	var ypos = effect.y;
+global func FxShakeViewportStart(object target, effect e, int temporary, level, xpos, ypos)
+{
+	if(temporary != 0) return;
+	
+	e.shakers = CreateArray();
+	e.shakers[0] = { x = xpos, y = ypos, strength = level, time = 0 };
+}
 
+global func FxShakeViewportAdd(object target, effect e, string new_name, int new_timer, level, xpos, ypos)
+{
+	e.shakers[GetLength(e.shakers)] = { x = xpos, y = ypos, strength = level, time = e.Time};
+}
 
+global func FxShakeViewportTimer(object target, effect e, int time)
+{
+	// shake for all players
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
 		var cursor = GetCursor(plr);
 		if (!cursor)
 			continue;
-		var distance = Distance(cursor->GetX(), cursor->GetY(), xpos, ypos);
 
-		// Shake effect lowers as a function of the distance.
-		var level = (300 * str) / Max(300, distance);
+		var totalShakeStrength = 0;
+		for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+		{
+			var shaker = e.shakers[shakerIndex];
+			var shakerTime = time - shaker.time;
 
-		if ((strength = level / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400) <= 0)
-			continue;
+			// shake strength lowers as a function of the distance
+			var distance = Distance(cursor->GetX(), cursor->GetY(), shaker.x, shaker.y);
+			var maxDistance = 700;
+			var level = shaker.strength * BoundBy(100-100*distance/maxDistance,0,100)/100;
 
-		// FixME: Use GetViewOffset, make this relative, not absolute
-		SetViewOffset(plr, Sin(fxtime * 100, strength), Cos(fxtime * 100, strength));
+			// calculate total shake strength by adding up all shake positions in the player's vicinity
+			totalShakeStrength += level / Max(1,shakerTime*2/3) - shakerTime**2 / 400;
+		}
+		SetViewOffset(plr, Sin(time * 100, totalShakeStrength), Cos(time * 100, totalShakeStrength));
 	}
 
-	if (str / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400 <= 0)
+	// remove shakers that are done shaking
+	for(var shakerIndex = 0; shakerIndex < GetLength(e.shakers); ++shakerIndex)
+	{
+		var shaker = e.shakers[shakerIndex];
+		var shakerTime = time - shaker.time;
+		if (shaker.strength / Max(1,shakerTime*2/3) - shakerTime**2 / 400 <= 0)
+			e.shakers[shakerIndex] = nil;
+	}
+	RemoveHoles(e.shakers);
+	
+	// no shakers left: remove this effect
+	if(GetLength(e.shakers) == 0)
+	{
 		return -1;
+	}
 }
 
-global func FxShakeEffectStart(object target, effect)
-{
-	FxShakeEffectTimer(target, effect, effect.Time);
-}
-
-global func FxShakeEffectStop()
+global func FxShakeViewportStop()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		// FxME: Return the offset to the previous value, not zero
 		SetViewOffset(GetPlayerByIndex(i), 0, 0);
 	}
 }
@@ -464,101 +478,85 @@ global func FxShakeEffectStop()
 
 global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, bool noblast)
 {
-	x += GetX();
-	y += GetY();
-	if (angle % 90 == 1) angle = 1;
-	
-	var effect = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, color);
-	EffectCall(nil, effect, "SetAdditionalParameters", x, y, angle, strength, noblast);
-	return;
+	var e = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, color);
+	e.x = 100*(GetX() + x);
+	e.y = 100*(GetY() + y);
+	e.strength = strength;
+	e.curr_strength = strength;
+	e.noblast = noblast;
+	e.angle = angle;
 }
 
-global func FxSmokeTrailSetAdditionalParameters(object target, proplist effect, int x, int y, int angle, int strength, bool noblast)
-{
-	effect.x = x;
-	effect.y = y;
-	effect.strength = strength;
-	effect.curr_strength = strength;
-	effect.xdir = Sin(angle, strength * 40);
-	effect.ydir = -Cos(angle, strength * 40);
-	effect.noblast = noblast;
-}
-
-global func FxSmokeTrailStart(object target, proplist effect, int temp, color)
+global func FxSmokeTrailStart(object target, proplist e, int temp, int color)
 {
 	if (temp)
 		return;
 
-	effect.color = color ?? RGBa(255, 128, 0, 200);
-	var alpha = (effect.color >> 24) & 0xff;
-	effect.particles_smoke =
+	e.color = color ?? RGBa(255, 128, 0, 200);
+	var alpha = (e.color >> 24) & 0xff;
+	e.particles_smoke =
 	{
-		R = PV_KeyFrames(0, 0, 250, 400, 200, 1000, 100),
-		G = PV_KeyFrames(0, 0, 250, 400, 200, 1000, 100),
-		B = PV_KeyFrames(0, 0, 250, 400, 200, 1000, 100),
-		Alpha = PV_KeyFrames(0, 0, 0, 300, alpha, 600, (alpha * 4) / 5, 1000, 0),
-		Rotation = PV_Random(0, 360),
+		R = PV_Linear(255, 64),
+		G = PV_Linear(255, 64),
+		B = PV_Linear(255, 64),
+		Alpha = PV_KeyFrames(0, 0, alpha/4, 200, alpha, 1000, 0),
+		Rotation = PV_Random(-45,45),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(-10),
 	};
 	
-	effect.particles_blast =
+	e.particles_blast =
 	{
-		R = PV_Linear((effect.color >> 16) & 0xff, 0),
-		G = PV_Linear((effect.color >>  8) & 0xff, 0),
-		B = PV_Linear((effect.color >>  0) & 0xff, 0),
-		Alpha = PV_KeyFrames(0, 0, alpha, 600, (alpha * 4) / 5, 1000, 0),
+		R = PV_Linear((e.color >> 16) & 0xff, 0),
+		G = PV_Linear((e.color >>  8) & 0xff, 0),
+		B = PV_Linear((e.color >>  0) & 0xff, 0),
+		Alpha = PV_KeyFrames(0, 0, alpha, 500, 3*alpha/4, 1000, 0),
 		Rotation = PV_Direction(),
 		BlitMode = GFX_BLIT_Additive,
 		Stretch = PV_Speed(1500, 1000)
 	};
 }
 
-global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
+global func FxSmokeTrailTimer(object target, effect e, int fxtime)
 {
-	var strength = effect.strength;
-	effect.curr_strength = (effect.curr_strength * 5) / 6;
-	if (effect.curr_strength < 5) return -1;
+	var strength = e.strength;
+	e.curr_strength = e.curr_strength * 94 / 100;
 	
-	var str = effect.curr_strength;
-	var x = effect.x;
-	var y = effect.y;
+	var str = e.curr_strength;
 	
-	var x_dir = effect.xdir;
-	var y_dir = effect.ydir;
-
-	y_dir += GetGravity() * 10 / 3;
-
-	var x_dir = x_dir * str / strength;
-	var y_dir = y_dir * str / strength;
-
-	// new: random
-	x += RandomX(-3,3);
-	y += RandomX(-3,3);
+	var initial_speed = 100 * (strength+20)/6;
+	var speed = initial_speed * str / strength;
+	var angle = e.angle + RandomX(-20,20);
+	var x_dir = Sin(angle, speed);
+	var y_dir = -Cos(angle , speed);
+	
+	if (speed < 2*100) return -1;
+	
+	// gravity
+	y_dir += GetGravity() * 15;
 	
 	// draw
-	effect.particles_smoke.Size = PV_KeyFrames(0, 0, 0, 250, str / 2, 1000, str);
-	effect.particles_blast.Size = PV_KeyFrames(0, 0, 0, 100, str / 3, 1000, 0);
-	if (!effect.noblast)
+	e.particles_smoke.Size = PV_KeyFrames(0, 0, str / 2, 1000, str);
+	e.particles_blast.Size = PV_KeyFrames(0, 0, 0, 200, str / 3, 1000, 0);
+
+	CreateParticle("SmokeThick", e.x/100, e.y/100, RandomX(-1,1), RandomX(-1,1), 50, e.particles_smoke,1);
+		
+	// then calc next position
+	e.x += x_dir;
+	e.y += y_dir;
+	
+	if (!e.noblast)
 	{
 		var x_dir_blast = x_dir / 200;
 		var y_dir_blast = y_dir / 200;
-		CreateParticle("SmokeDirty", x, y, PV_Random(x_dir_blast - 2, x_dir_blast + 2), PV_Random(y_dir_blast - 2, y_dir_blast + 2), 18, effect.particles_blast, 2);
+		CreateParticle("SmokeDirty", e.x/100, e.y/100, PV_Random(x_dir_blast - 2, x_dir_blast + 2), PV_Random(y_dir_blast - 2, y_dir_blast + 2), 10, e.particles_blast, 1);
 	}
-	CreateParticle("Smoke", x, y, PV_Random(-2, 2), PV_Random(-2, 2), 50, effect.particles_smoke, 2);
-
-		
-	// then calc next position
-	x += x_dir / 100;
-	y += y_dir / 100;
 	
-	if (GBackSemiSolid(x, y))
+	
+	if (GBackSemiSolid(e.x/100, e.y/100))
 		return -1;
 	
-	effect.curr_strength = str;
-	effect.x = x;
-	effect.y = y;
-	effect.ydir = y_dir;
+	e.curr_strength = str;
 }
 
 /*-- Fireworks --*/
@@ -566,31 +564,7 @@ global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 global func Fireworks(int color, int x, int y)
 {
 	if (!color)
-		color = HSL(Random(8) * 32, 255, 127);
-	
-	var glimmer = 
-	{
-		Prototype = Particles_Glimmer(),
-		R = (color >> 16) & 0xff,
-		G = (color >>  8) & 0xff,
-		B = (color >>  0) & 0xff,
-	};
-	CreateParticle("MagicFire", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(20, 200), glimmer, 100);
-	
-	Smoke(x, y, 30);
-	
-	var sparks =
-	{
-		Prototype = Particles_Spark(),
-		R = (color >> 16) & 0xff,
-		G = (color >>  8) & 0xff,
-		B = (color >>  0) & 0xff,
-		DampingX = 900, DampingY = 900,
-		ForceY = PV_Random(-10, 10),
-		ForceX = PV_Random(-10, 10),
-		Stretch = PV_Speed(500, 1000)
-	};
-	CreateParticle("Spark", x, y, PV_Random(-200, 200), PV_Random(-200, 200), PV_Random(20, 60), sparks, 100);
+		color = HSL(Random(8) * 32, 255, 160);
 	
 	var flash =
 	{
@@ -598,8 +572,44 @@ global func Fireworks(int color, int x, int y)
 		R = (color >> 16) & 0xff,
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
+		Size = PV_KeyFrames(0, 0, 0, 100, 200, 1000, 0),
 	};
-	CreateParticle("Flash", x, y, 0, 0, 8, flash);
-	return;
+	
+	var glimmer = 
+	{
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		DampingY = PV_Linear(950,800),
+		DampingX = PV_Linear(950,800),
+		Stretch = PV_Speed(3000, 500),
+		Size = PV_Linear(2, 1),
+		ForceY = PV_Gravity(50),
+		Rotation = PV_Direction(),
+		OnCollision = PC_Die(),
+		CollisionVertex = 500,
+		Alpha = PV_Random(255,0,3),
+		BlitMode = GFX_BLIT_Additive,
+	};
+	
+	var start_angle = Random(360);
+	
+	var num = 25;
+	for(var i=0; i<num; ++i)
+	{
+		for(var j=0; j<num; ++j)
+		{
+			var speed = 1000;
+			var angle = start_angle + i*360/num + Random(15) + j*15;
+			var speed3d = Cos(j*90/num - Random(15),speed);
+			var xdir = Sin(angle, speed3d/10);
+			var ydir = -Cos(angle,speed3d/10);
+		
+			CreateParticle("MagicFire", x, y, xdir, ydir, PV_Random(50, 200), glimmer, 1);
+		}
+	}
+	
+	CreateParticle("Flash", x, y, 0, 0, 20, flash);
 }
+
 

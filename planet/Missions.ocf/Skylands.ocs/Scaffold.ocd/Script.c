@@ -43,7 +43,7 @@ func ControlUp()
 	if (wall_top)
 		wall_top->RemoveObject();
 	else
-		(wall_top = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetTop(this);
+		(wall_top = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetTop(this);
 	Sound("DullWoodHit1");
 	return true;
 }
@@ -53,7 +53,7 @@ func ControlLeft()
 	if (wall_left)
 		wall_left->RemoveObject();
 	else
-		(wall_left = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetLeft(this);
+		(wall_left = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetLeft(this);
 	Sound("DullWoodHit1");
 	return true;
 }
@@ -67,9 +67,9 @@ func ControlRight()
 			wall_right2->RemoveObject();
 		}
 		else
-			(wall_right2 = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetRight2(this);
+			(wall_right2 = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetRight2(this);
 	else
-		(wall_right = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetRight(this);
+		(wall_right = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetRight(this);
 	Sound("DullWoodHit1");
 	return true;
 }
@@ -83,9 +83,9 @@ func ControlDown()
 			wall_bottom2->RemoveObject();
 		}
 		else
-			(wall_bottom2 = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetBottom2(this);
+			(wall_bottom2 = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetBottom2(this);
 	else
-		(wall_bottom = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetBottom(this);
+		(wall_bottom = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetBottom(this);
 	Sound("DullWoodHit1");
 	return true;
 }
