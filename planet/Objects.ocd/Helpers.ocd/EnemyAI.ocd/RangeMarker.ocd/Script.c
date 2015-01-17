@@ -30,6 +30,7 @@ func Init(int r, proplist callback_obj, callback_function, callback_param)
 func OnMoved()
 {
 	lx = GetX(); ly = GetY();
+	if (!cb_obj) return RemoveObject();
 	return cb_obj->Call(cb_fn, cb_par, lx, ly);
 }
 

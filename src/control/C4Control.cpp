@@ -1259,19 +1259,29 @@ void C4ControlEMMoveObject::Execute() const
 	case EMMO_Duplicate:
 	{
 		if (!pObjects) break;
-		// local call? adjust selection then
-		if (fLocalCall) Console.EditCursor.GetSelection().Clear();
 		// perform duplication
-		C4Object *pObj;
+		C4Object *pOldObj, *pObj;
 		for (int i=0; i<iObjectNum; ++i)
-			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
+			if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
 			{
-				pObj = Game.CreateObject(pObj->GetPrototype(), pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
-				if (pObj && fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
+				pObj = Game.CreateObject(pOldObj->GetPrototype(), pOldObj, pOldObj->Owner, pOldObj->GetX(), pOldObj->GetY());
+				if (pObj && pObj->Status)
+				{
+					// local call? adjust selection then
+					// do callbacks for all clients for sync reasons
+					if (fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
+					C4AulParSet pars(C4VObj(pObj));
+					if (pOldObj->Status) pOldObj->Call(PSF_EditCursorDeselection, &pars);
+					if (pObj->Status) pObj->Call(PSF_EditCursorSelection);
+				}
 			}
 		// update status
 		if (fLocalCall)
 		{
+			if (fLocalCall)
+				for (int i = 0; i<iObjectNum; ++i)
+					if ((pOldObj = ::Objects.SafeObjectPointer(pObjects[i])))
+						Console.EditCursor.GetSelection().Remove(pOldObj);
 			Console.EditCursor.SetHold(true);
 			Console.EditCursor.OnSelectionChanged();
 		}
@@ -1316,8 +1326,9 @@ void C4ControlEMMoveObject::Execute() const
 		// callback to script
 		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj);
 		if (!target) return;
-		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection);
+		target->Call(PSF_EditCursorSelection);
 	}
+	break;
 	case EMMO_Deselect:
 	{
 		// callback to script
@@ -1326,7 +1337,7 @@ void C4ControlEMMoveObject::Execute() const
 		// next selection may be passed to EditCursorSelection
 		if (iObjectNum) next_selection = ::Objects.SafeObjectPointer(pObjects[0]);
 		C4AulParSet pars(C4VObj(next_selection));
-		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection, &pars);
+		target->Call(PSF_EditCursorDeselection, &pars);
 	}
 	break;
 	case EMMO_Create:
