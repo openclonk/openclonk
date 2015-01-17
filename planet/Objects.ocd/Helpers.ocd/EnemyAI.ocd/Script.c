@@ -69,6 +69,11 @@ func AI_SetHome() { return this.ai.ai->SetHome(this); }
 func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
 	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
+	// clip to landscape size
+	if (x<0) { wdt+=x; x=0; }
+	if (y<0) { wdt+=x; x=0; }
+	wdt = Min(wdt, LandscapeWidth() - x);
+	hgt = Min(hgt, LandscapeHeight() - y);
 	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
