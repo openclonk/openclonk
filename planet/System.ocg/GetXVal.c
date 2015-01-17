@@ -27,6 +27,7 @@ global func GetDefValue()       { return GetDefCoreVal("Value", "DefCore"); }
 global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
+global func GetDefColorByOwner(){ return GetDefCoreVal("ColorByOwner", "DefCore"); }
 global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }

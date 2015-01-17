@@ -23,6 +23,8 @@ func Place(int amount, proplist rectangle, proplist settings)
 private func Initialize()
 {
 	SetAction("Sway");
+	SetPhase(this.Action.Length); // ensure that not all seaweed are synced on scenario load
+	return true;
 }
 
 private func Check()
@@ -33,7 +35,6 @@ private func Check()
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	if (GetPhase()) props->AddCall("Phase", this, "SetPhase", GetPhase()); // ensure that not all seaweed are synced on scenario load
 	return true;
 }
 

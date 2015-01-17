@@ -68,24 +68,25 @@ global func SaveScenarioObjects(f)
 	any_written = false;
 	for (obj in obj_data)
 	{
+		var spacing = "	";
 		if (obj_type != obj.o->GetID())
 		{
-			if (any_written) FileWrite(f, "\n"); // Extra spacing between different object types
+			if (any_written) spacing = "\n	"; // Extra spacing between different object types
 			obj_type = obj.o->GetID();
 			any_written = false;
 		}
 		if (obj.o.StaticSaveVar)
 		{
-			if (obj.props->HasCreation()) FileWrite(f, Format("	%s = ", obj.o.StaticSaveVar));
+			if (obj.props->HasCreation()) FileWrite(f, Format("%s%s = ", spacing, obj.o.StaticSaveVar));
 		}
 		else if (obj.write_label)
 		{
-			FileWrite(f, Format("	var %s", obj.o->MakeScenarioSaveName()));
+			FileWrite(f, Format("%svar %s", spacing, obj.o->MakeScenarioSaveName()));
 			if (obj.props->HasCreation()) FileWrite(f, " = "); else FileWrite(f, ";\n");
 		}
 		else if (obj.props->HasCreation())
 		{
-			FileWrite(f, "	");
+			FileWrite(f, spacing);
 		}
 		if (obj.props->~Buffer2File(f)) do_write_file = any_written = true;
 	}
@@ -293,7 +294,19 @@ global func SaveScenarioObject(props)
 	// Overwrite and call inherited for objects that add/remove/alter default creation/properties
 	var owner_string = "", i;
 	if (GetOwner() != NO_OWNER) owner_string = Format(", %d", GetOwner());
-	props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
+	// Object creation: Default is to create above bottom center point
+	// This usually works well with stuff like buildings that may change size in updated versions
+	// The center point is usually what's of interest for rotated objects, contained objects and InEarth material as well as some objects that explicitely state different creation
+	var is_centered_creation = (!this.SaveScenarioCreateFromBottom) && (GetR() || Contained() || GBackSolid() || (GetCategory() & (C4D_Rule | C4D_Goal | C4D_Environment)) || this.SaveScenarioCreateCentered);
+	if (is_centered_creation)
+	{
+		if (!GetX() && !GetY() && (owner_string == ""))
+			props->Add(SAVEOBJ_Creation, "CreateObject(%i)", GetID()); // super-short version for e.g. goals/rules at position 0/0
+		else
+			props->Add(SAVEOBJ_Creation, "CreateObject(%i, %d, %d%s)", GetID(), GetX(), GetY(), owner_string);
+	}
+	else
+		props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
 	// Contained creation is added alongside regular creation because it is not yet known if CreateObjectAbove+Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
 	if (Contained()) props->Add(SAVEOBJ_ContentsCreation, "%s->CreateContents(%i)", Contained()->MakeScenarioSaveName(), GetID());
@@ -304,12 +317,14 @@ global func SaveScenarioObject(props)
 	v = GetComDir();        if (v)                                props->AddCall("ComDir",        this, "SetComDir", GetConstantNameByValueSafe(v,"COMD_"));
 	v = GetCon();           if (v != 100)                         props->AddCall("Con",           this, "SetCon", Max(v,1));
 	v = GetCategory();      if (v != def->GetCategory())          props->AddCall("Category",      this, "SetCategory", GetBitmaskNameByValue(v, "C4D_"));
-	v = GetR();             if (v)                                props->AddCall("R",             this, "SetR", v);
+	v = GetR();             if (v && !Contained())                props->AddCall("R",             this, "SetR", v);
 	v = GetXDir();          if (v && !is_static)                  props->AddCall("XDir",          this, "SetXDir", v);
 	v = GetYDir();          if (v && !is_static) if (!Inside(v, 1,12) || !GetContact(-1, CNAT_Bottom))
 	                                                              props->AddCall("YDir",          this, "SetYDir", v); // consolidate small YDir for standing objects
 	v = GetRDir();          if (v && !is_static)                  props->AddCall("RDir",          this, "SetRDir", v);
-	v = GetColor();         if (v && v != 0xffffffff)             props->AddCall("Color",         this, "SetColor", Format("0x%x", v));
+	var default_color = 0xffffffff;
+	if (GetDefColorByOwner()) if (GetOwner() == NO_OWNER) default_color = 0xff; else default_color = GetPlayerColor(GetOwner());
+	v = GetColor();         if (v && v != default_color)          props->AddCall("Color",         this, "SetColor", Format("0x%x", v));
 	v = GetClrModulation(); if (v && v != 0xffffffff)             props->AddCall("ClrModulation", this, "SetClrModulation", Format("0x%08x", v));
 	v = GetObjectBlitMode();if (v)                                props->AddCall("BlitMode",      this, "SetObjectBlitMode", GetBitmaskNameByValue(v & ~GFX_BLIT_Custom, "GFX_BLIT_"));
 	for (i=0; v=def->GetMeshMaterial(i); ++i)
@@ -322,8 +337,6 @@ global func SaveScenarioObject(props)
 	v = GetObjectLayer(); var def_layer=nil; if (Contained()) def_layer = Contained()->GetObjectLayer();
 	                        if (v != def_layer)                   props->AddCall("Layer",         this, "SetObjectLayer", v);
 	v = this.StaticSaveVar; if (v)                                props->AddSet ("StaticSaveVar", this, "StaticSaveVar", Format("%v", v));
-	// update position on objects that had a shape change through rotation because creation at def bottom would incur a vertical offset
-	if (GetR() && !Contained())                                   props->AddCall("SetPosition",   this, "SetPosition", GetX(), GetY());
 	// Commands: Could store the whole command stack using AppendCommand.
 	// However, usually there is one base command and the rest is derived
 	// (e.g.: A Get command may lead to multiple MoveTo commands to the
