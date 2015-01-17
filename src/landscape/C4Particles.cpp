@@ -988,6 +988,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 		glTranslatef((float)obj->GetX(), (float)obj->GetY(), 0.0f);
 	}
 
+	// enable additive blending for particles with that blit mode
+	glBlendFunc(GL_SRC_ALPHA, (blitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
 	glActiveTexture(texUnit);
 	glBindTexture(GL_TEXTURE_2D, textureRef->texName);
 
