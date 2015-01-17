@@ -469,6 +469,8 @@ protected:
 	int32_t iObjectNum;   // number of objects moved
 	int32_t *pObjects;    // pointer on array of objects moved
 	StdStrBuf StringParam; // script to execute, or ID of object to create
+private:
+	void MoveObject(C4Object *moved_object) const;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
