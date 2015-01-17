@@ -44,7 +44,7 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	// store def
 	pDef = pOwnDef;
 	// zero fields
-	Type = TYPE_Bitmap;
+	Type = TYPE_None;
 	Bmp.Bitmap = Bmp.BitmapClr = Bmp.BitmapNormal = NULL;
 	pNext = NULL;
 	fColorBitmapAutoCreated = false;
@@ -71,6 +71,7 @@ void C4DefGraphics::Clear()
 		if (Mesh) { delete Mesh; Mesh = NULL; }
 		break;
 	}
+	Type = TYPE_None;
 
 	// delete additonal graphics
 	C4AdditionalDefGraphics *pGrp2N = pNext, *pGrp2;
@@ -82,7 +83,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 {
 	if (!szFilename) return false;
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilename)) return false;
+	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true)) return false;
 
 	// Create owner color bitmaps
 	if (fColorByOwner)
@@ -708,7 +709,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	case MODE_Base: // def base graphics
 		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 		break;
 
@@ -739,7 +740,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			            action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
 			// FIXME: fctBlit.TargetX has to be set here
 		}
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 		{
 			C4String* AnimationName = action->GetPropertyStr(P_Animation);
 			if (!AnimationName) return;
@@ -810,8 +811,9 @@ bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 			return true;
 		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			return !!fctBlit.Surface;
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 			return !!pMeshInstance;
+		return false;
 	}
 	else
 	{

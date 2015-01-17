@@ -482,11 +482,9 @@ bool C4Def::LoadSolidMask(C4Group &hGroup)
 
 bool C4Def::LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader)
 {
-	if (!Graphics.Load(hGroup, loader, !!ColorByOwner))
-	{
-		DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
-		return false;
-	}
+	// Try to load graphics
+	// No fail on error - just have an object without graphics.
+	Graphics.Load(hGroup, loader, !!ColorByOwner);
 
 	if (Graphics.Type == C4DefGraphics::TYPE_Bitmap)
 	{

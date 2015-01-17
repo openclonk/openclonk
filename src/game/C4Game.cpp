@@ -3541,7 +3541,7 @@ float C4Game::GetTextSpecImageAspect(const char* szSpec)
 		{
 			return static_cast<float>(pDef->PictureRect.Wdt) / static_cast<float>(pDef->PictureRect.Hgt);
 		}
-		else
+		else if (pGfx->Type == C4DefGraphics::TYPE_Mesh)
 		{
 			const StdMesh& mesh = *pGfx->Mesh;
 			const StdMeshBox& box = mesh.GetBoundingBox();

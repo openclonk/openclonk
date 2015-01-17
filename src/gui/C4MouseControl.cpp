@@ -397,11 +397,15 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				ImageWdt = Def->PictureRect.Wdt;
 				ImageHgt = Def->PictureRect.Hgt;
 			}
-			else
+			else if (pGfx->Type == C4DefGraphics::TYPE_Mesh)
 			{
 				// Note bounding box is in OGRE coordinate system
 				ImageWdt = pGfx->Mesh->GetBoundingBox().y2 - pGfx->Mesh->GetBoundingBox().y1;
 				ImageHgt = pGfx->Mesh->GetBoundingBox().z2 - pGfx->Mesh->GetBoundingBox().z1;
+			}
+			else
+			{
+				ImageWdt = ImageHgt = 1.0f;
 			}
 
 			// zoom mode: Drag in GUI or Game depending on source object
