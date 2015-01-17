@@ -13,21 +13,34 @@ func AddAI(object clonk)
 	if (!fx || !clonk) return nil;
 	fx.ai = S2AI;
 	clonk.ExecuteS2AI = S2AI.Execute;
+	clonk.ai = fx;
 	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
 	BindInventory(clonk);
 	SetHome(clonk);
 	SetGuardRange(clonk, fx.home_x-S2AI_DefGuardRangeX, fx.home_y-S2AI_DefGuardRangeY, S2AI_DefGuardRangeX*2, S2AI_DefGuardRangeY*2);
 	SetMaxAggroDistance(clonk, S2AI_DefMaxAggroDistance);
+	// AI editor commands
+	if (!clonk.EditCursorCommands)
+		clonk.EditCursorCommands = [];
+	else if (clonk.EditCursorCommands == clonk.Prototype.EditCursorCommands)
+		clonk.EditCursorCommands = clonk.EditCursorCommands[:];
+	var idx;
+	if ((idx=GetIndexOf(clonk.EditCursorCommands, "AI_Add()"))>=0) clonk.EditCursorCommands[idx] = nil;
+	if (GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome)<0)
+	{
+		var l = GetLength(clonk.EditCursorCommands);
+		clonk.EditCursorCommands[l++] = clonk.AI_SetHome = S2AI.AI_SetHome;
+		clonk.EditCursorCommands[l++] = clonk.AI_BindInventory = S2AI.AI_BindInventory;
+	}
 	return fx;
 }
 
-func GetAI(object clonk) { return GetEffect("S2AI", clonk); }
+func GetAI(object clonk) { return clonk.ai; }
 
 // Set the current inventory to be removed when the clonk dies. Only works if clonk has an AI.
 func BindInventory(object clonk)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	var cnt = clonk->ContentsCount();
 	fx.bound_weapons = CreateArray(cnt);
 	for (var i=0; i<cnt; ++i) fx.bound_weapons[i] = clonk->Contents(i);
@@ -38,8 +51,7 @@ func BindInventory(object clonk)
 // Set the home position the Clonk returns to if he has no target
 func SetHome(object clonk, int x, int y, int dir)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	// nil/nil defaults to current position
 	if (!GetType(x)) x=clonk->GetX();
 	if (!GetType(y)) y=clonk->GetY();
@@ -49,11 +61,14 @@ func SetHome(object clonk, int x, int y, int dir)
 	return true;
 }
 
+// Put into clonk proplist
+func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
+func AI_SetHome() { return this.ai.ai->SetHome(this); }
+
 // Set the guard range to the provided rectangle
 func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -62,8 +77,7 @@ func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 // Set the maximum distance the enemy will follow an attacking Clonk
 func SetMaxAggroDistance(object clonk, int max_dist)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.max_aggro_distance = max_dist;
 	return true;
 }
@@ -71,8 +85,7 @@ func SetMaxAggroDistance(object clonk, int max_dist)
 // Set range in which, on first encounter, allied AI Clonks get the same aggro target set
 func SetAllyAlertRange(object clonk, int new_range)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.ally_alert_range = new_range;
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -83,8 +96,7 @@ func SetAllyAlertRange(object clonk, int new_range)
 // The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
 func SetEncounterCB(object clonk, string cb_fn)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.encounter_cb = cb_fn;
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -121,6 +133,15 @@ protected func FxS2AIStop(clonk, fx, int reason)
 	if (reason == FX_Call_RemoveDeath)
 	{
 		if (fx.bound_weapons) for (var obj in fx.bound_weapons) if (obj && obj->Contained()==clonk) obj->RemoveObject();
+	}
+	// remove AI reference
+	if (clonk && clonk.ai == fx) clonk.ai = nil;
+	// remove edit cursor commands
+	if (clonk && clonk.EditCursorCommands)
+	{
+		var idx;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome))>=0) clonk.EditCursorCommands[idx] = nil;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_BindInventory))>=0) clonk.EditCursorCommands[idx] = nil;
 	}
 	return FX_OK;
 }
@@ -694,7 +715,7 @@ func CreateDebugDisplay(fx, int ignore_range_marker)
 
 func ChangeGuardRange(int corner_idx, int x, int y)
 {
-	var fx = GetEffect("S2AI", this);
+	var fx = this.ai;
 	if (!fx) return false;
 	if (corner_idx == 0 || corner_idx == 3)
 		{ fx.guard_range.wdt += fx.guard_range.x - x; fx.guard_range.x = x; }
