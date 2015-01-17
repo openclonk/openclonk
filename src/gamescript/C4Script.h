@@ -109,7 +109,8 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
 #define PSF_OnInIncendiaryMaterial "OnInIncendiaryMaterial"
 #define PSF_EditCursorSelection   "~EditCursorSelection"
-#define PSF_EditCursorDeselection "~EditCursorDeselection"
+#define PSF_EditCursorDeselection "~EditCursorDeselection" // new_selection
+#define PSF_EditCursorMoved     "~EditCursorMoved" // int old_x, int old_y
 #define PSF_DigOutObject        "~DigOutObject" // C4Object *obj
 #define PSF_OnDugOut            "~DugOut" //C4Object *by_obj
 #define PSF_SaveScenarioObjects "~SaveScenarioObjects" // int file_handle

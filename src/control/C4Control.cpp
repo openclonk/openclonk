@@ -1215,11 +1215,15 @@ void C4ControlEMMoveObject::Execute() const
 		// move all given objects
 		C4Object *pObj;
 		for (int i=0; i<iObjectNum; ++i)
-			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i]))) if (pObj->Status)
+			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
+				if (pObj->Status)
 				{
+					int32_t old_x = pObj->GetX(), old_y = pObj->GetY();
 					pObj->ForcePosition(pObj->fix_x+tx,pObj->fix_y+ty);
 					pObj->xdir=pObj->ydir=0;
 					pObj->Mobile = false;
+					C4AulParSet pars(C4VInt(old_x), C4VInt(old_y));
+					pObj->Call(PSF_EditCursorMoved, &pars);
 				}
 	}
 	break;
