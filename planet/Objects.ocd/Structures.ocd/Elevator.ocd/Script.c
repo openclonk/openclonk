@@ -196,6 +196,17 @@ func SetNoPowerNeed(bool to_val)
 	return false;
 }
 
+// return default horizontal offset of case to elevator
+func GetCaseXOff() { return -19 * GetCalcDir(); }
+
+func EditCursorMoved()
+{
+	// Move case and rope along with elevator in editor mode
+	if (case) case->SetPosition(GetX() + GetCaseXOff(), case->GetY());
+	if (rope) rope->SetPosition(GetX() + GetCaseXOff(), GetY() - 13);
+	return true;
+}
+
 local ActMap = {
 		Default = {
 			Prototype = Action,
