@@ -632,17 +632,31 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 /* Editor display */
 
 // called in clonk context
-func UpdateDebugDisplay(fx)
+func UpdateDebugDisplay(fx, int ignore_range_marker)
 {
-	if (fx.debug) { EditCursorDeselection(fx); EditCursorSelection(fx); }
+	if (fx.debug) CreateDebugDisplay(fx, ignore_range_marker);
 	return true;
 }
 
-// called in clonk context
 func EditCursorSelection(fx)
 {
+	// Object selected in editor. Show markers!
+	return CreateDebugDisplay(fx);
+}
+
+func EditCursorDeselection(fx, object next_target)
+{
+	// Is the user manipulating markers? Then don't remove them!
+	if (next_target && next_target->GetID() == RangeMarker) return true;
+	// Otherwise, clear markers
+	return RemoveDebugDisplay(fx);
+}
+
+// called in clonk context
+func CreateDebugDisplay(fx, int ignore_range_marker)
+{
 	// clear previous
-	if (fx.debug) EditCursorDeselection(fx);
+	if (fx.debug) RemoveDebugDisplay(fx, ignore_range_marker);
 	// encounter message
 	var msg = "";
 	if (fx.encounter_cb) msg = Format("%s%v", msg, fx.encounter_cb);
@@ -651,7 +665,7 @@ func EditCursorSelection(fx)
 		msg = Format("%s{{%i}}", msg, Contents(i)->GetID());
 	Message("@AI %s", msg);
 	// draw ally alert range. draw as square, although a circle would be more appropriate
-	fx.debug = {};
+	if (!fx.debug) fx.debug = {};
 	var clr;
 	var x=GetX(), y=GetY();
 	if (fx.ally_alert_range)
@@ -670,25 +684,50 @@ func EditCursorSelection(fx)
 		fx.debug.r2 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r3 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r4 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y,clr);
+		if (!fx.debug.rm1) fx.debug.rm1 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y                   ,  0, this, S2AI.ChangeGuardRange, 0);
+		if (!fx.debug.rm2) fx.debug.rm2 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y                   , 90, this, S2AI.ChangeGuardRange, 1);
+		if (!fx.debug.rm3) fx.debug.rm3 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y+fx.guard_range.hgt,180, this, S2AI.ChangeGuardRange, 2);
+		if (!fx.debug.rm4) fx.debug.rm4 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y+fx.guard_range.hgt,270, this, S2AI.ChangeGuardRange, 3);
 	}
 	return true;
 }
 
-// called in clonk context
-func EditCursorDeselection(fx)
+func ChangeGuardRange(int corner_idx, int x, int y)
 {
+	var fx = GetEffect("S2AI", this);
+	if (!fx) return false;
+	if (corner_idx == 0 || corner_idx == 3)
+		{ fx.guard_range.wdt += fx.guard_range.x - x; fx.guard_range.x = x; }
+	else
+		{ fx.guard_range.wdt = x - fx.guard_range.x; }
+	if (corner_idx < 2)
+		{ fx.guard_range.hgt += fx.guard_range.y - y; fx.guard_range.y = y; }
+	else
+		{ fx.guard_range.hgt = y - fx.guard_range.y; }
+	Call(fx.ai.UpdateDebugDisplay, fx, corner_idx+1);
+	return true;
+}
+
+// called in clonk context
+func RemoveDebugDisplay(fx, int ignore_range_marker)
+{
+	// Remove any marker objects
 	if (fx.debug)
 	{
 		if (fx.debug.r1) fx.debug.r1->RemoveObject();
 		if (fx.debug.r2) fx.debug.r2->RemoveObject();
 		if (fx.debug.r3) fx.debug.r3->RemoveObject();
 		if (fx.debug.r4) fx.debug.r4->RemoveObject();
+		if (ignore_range_marker != 1 && fx.debug.rm1) fx.debug.rm1->RemoveObject();
+		if (ignore_range_marker != 2 && fx.debug.rm2) fx.debug.rm2->RemoveObject();
+		if (ignore_range_marker != 3 && fx.debug.rm3) fx.debug.rm3->RemoveObject();
+		if (ignore_range_marker != 4 && fx.debug.rm4) fx.debug.rm4->RemoveObject();
 		if (fx.debug.a1) fx.debug.a1->RemoveObject();
 		if (fx.debug.a2) fx.debug.a2->RemoveObject();
 		if (fx.debug.a3) fx.debug.a3->RemoveObject();
 		if (fx.debug.a4) fx.debug.a4->RemoveObject();
 		Message("");
 	}
-	fx.debug = nil;
+	if (!ignore_range_marker) fx.debug = nil;
 	return true;
 }

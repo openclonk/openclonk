@@ -3,7 +3,7 @@
 // definition call: create line
 func Create(int x1,int y1,int x2,int y2,int clr)
 {
-	var obj = CreateObjectAbove(DebugLine);
+	var obj = CreateObject(DebugLine);
 	obj->Set(x1,y1,x2,y2,clr);
 	return obj;
 }
