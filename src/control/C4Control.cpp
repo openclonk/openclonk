@@ -1290,12 +1290,21 @@ void C4ControlEMMoveObject::Execute() const
 	}
 	break;
 	case EMMO_Select:
-	case EMMO_Deselect:
 	{
 		// callback to script
 		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj);
 		if (!target) return;
 		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection);
+	}
+	case EMMO_Deselect:
+	{
+		// callback to script
+		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj), *next_selection = NULL;
+		if (!target) return;
+		// next selection may be passed to EditCursorSelection
+		if (iObjectNum) next_selection = ::Objects.SafeObjectPointer(pObjects[0]);
+		C4AulParSet pars(C4VObj(next_selection));
+		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection, &pars);
 	}
 	break;
 	case EMMO_Create:

@@ -223,7 +223,7 @@ bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
 	return true;
 }
 
-void C4EditCursor::ClearSelection()
+void C4EditCursor::ClearSelection(C4Object *next_selection)
 {
 	// remove all objects from selection and do script callbacks
 	// iterate safely because callback might delete selected objects!
@@ -232,7 +232,17 @@ void C4EditCursor::ClearSelection()
 	{
 		Selection.Remove(obj);
 		if (obj->Status)
-			::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, obj), CDT_Decide);
+		{
+			int32_t next_selection_count = 0, *next_selection_nums = NULL;
+			if (next_selection && next_selection->Status)
+			{
+				// Pass next selection. Always create new array becase the pointer is freed by C4ControlEMMoveObject dtor
+				++next_selection_count;
+				next_selection_nums = new int32_t[1];
+				*next_selection_nums = next_selection->Number;
+			}
+			::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, obj, next_selection_count, next_selection_nums), CDT_Decide);
+		}
 	}
 	Selection.Clear();
 }
@@ -270,7 +280,7 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 				}
 				if(!found) // means loop didn't break
 				{
-					ClearSelection();
+					ClearSelection(Target);
 					AddToSelection(Target);
 				}
 			}
@@ -326,7 +336,7 @@ bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 				// Click on unselected
 				if (Target && !Selection.GetLink(Target))
 				{
-					ClearSelection(); AddToSelection(Target);
+					ClearSelection(Target); AddToSelection(Target);
 				}
 				// Click on nothing
 				if (!Target) ClearSelection();
