@@ -81,6 +81,10 @@ namespace {
 #	define POINTER_FORMAT "0x%" POINTER_FORMAT_SUFFIX
 #endif
 
+#ifndef STATUS_ASSERTION_FAILURE
+#	define STATUS_ASSERTION_FAILURE ((DWORD)0xC0000420L)
+#endif
+
 		LOG_STATIC_TEXT("**********************************************************************\n");
 		LOG_STATIC_TEXT("* UNHANDLED EXCEPTION\n");
 		if (OC_BUILD_ID[0] != '\0')
@@ -108,9 +112,6 @@ namespace {
 		LOG_EXCEPTION(EXCEPTION_PRIV_INSTRUCTION,         "The thread tried to execute an instruction whose operation is not allowed in the current machine mode.");
 		LOG_EXCEPTION(EXCEPTION_STACK_OVERFLOW,           "The thread used up its stack.");
 		LOG_EXCEPTION(EXCEPTION_GUARD_PAGE,               "The thread accessed memory allocated with the PAGE_GUARD modifier.");
-#ifndef STATUS_ASSERTION_FAILURE
-#	define STATUS_ASSERTION_FAILURE ((DWORD)0xC0000420L)
-#endif
 		LOG_EXCEPTION(STATUS_ASSERTION_FAILURE,           "The thread specified a pre- or postcondition that did not hold.");
 #undef LOG_EXCEPTION
 		default:
