@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.8.4)
+cmake_minimum_required (VERSION 2.8.9)
 project (openclonk CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
