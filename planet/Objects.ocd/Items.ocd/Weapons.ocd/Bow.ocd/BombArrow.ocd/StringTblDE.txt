@@ -1,2 +1,2 @@
-Name=Feuerpfeile
+Name=Explosivpfeile
 Description=Explosive Munition f�r den Bogen.

@@ -1,2 +1,2 @@
-Name=Fire Arrows
+Name=Bomb Arrows
 Description=Explosive ammunition for the bow.
