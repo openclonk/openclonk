@@ -1,6 +1,6 @@
 /* Automatically created objects file */
 
-static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_cannon, g_king, g_farmer, g_cannoneer;
+static g_ruin1, g_ruin2, g_ruin3, g_elev2, g_elev1, g_cannon, g_king, g_farmer, g_cannoneer;
 
 func InitializeObjects()
 {
@@ -11,46 +11,39 @@ func InitializeObjects()
 	var Grass003 = CreateObjectAbove(Grass, 228, 1180);
 	Grass003->SetClrModulation(0xffa08060);
 
-	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn, 0, 0);
+	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
-	var Tree_Coniferous_Burned001 = CreateObjectAbove(Tree_Coniferous_Burned, 17, 1141);
+	var Tree_Coniferous_Burned001 = CreateObject(Tree_Coniferous_Burned, 17, 1097);
 	Tree_Coniferous_Burned001->SetR(10);
-	Tree_Coniferous_Burned001->SetPosition(17, 1097);
-	var Tree_Coniferous_Burned002 = CreateObjectAbove(Tree_Coniferous_Burned, 43, 1156);
+	var Tree_Coniferous_Burned002 = CreateObject(Tree_Coniferous_Burned, 43, 1246);
 	Tree_Coniferous_Burned002->SetCon(75);
 	Tree_Coniferous_Burned002->SetR(100);
-	Tree_Coniferous_Burned002->SetPosition(43, 1150);
 
-	var Tree_Coniferous001 = CreateObjectAbove(Tree_Coniferous, 415, 1161);
+	var Tree_Coniferous001 = CreateObject(Tree_Coniferous, 415, 1117);
 	Tree_Coniferous001->SetR(10);
 	Tree_Coniferous001->SetClrModulation(0xffc08060);
-	Tree_Coniferous001->SetPosition(415, 1117);
 
-	var Branch001 = CreateObjectAbove(Branch, 241, 1179);
+	var Branch001 = CreateObject(Branch, 241, 1176);
 	Branch001->SetR(17);
-	Branch001->SetPosition(241, 1176);
 
 	var Fern001 = CreateObjectAbove(Fern, 312, 1432);
 	Fern001->SetClrModulation(0xffa08060);
 
 	var LargeCaveMushroom001 = CreateObjectAbove(LargeCaveMushroom, 1355, 1451);
 	LargeCaveMushroom001->SetClrModulation(0xffcddfdf);
-	var LargeCaveMushroom002 = CreateObjectAbove(LargeCaveMushroom, 1308, 1409);
+	var LargeCaveMushroom002 = CreateObject(LargeCaveMushroom, 1308, 1384);
 	LargeCaveMushroom002->SetR(180);
 	LargeCaveMushroom002->SetClrModulation(0xffdae7dc);
-	LargeCaveMushroom002->SetPosition(1308, 1384);
 	var LargeCaveMushroom003 = CreateObjectAbove(LargeCaveMushroom, 1411, 1447);
 	LargeCaveMushroom003->SetClrModulation(0xffe9d5dd);
-	var LargeCaveMushroom004 = CreateObjectAbove(LargeCaveMushroom, 1420, 1397);
+	var LargeCaveMushroom004 = CreateObject(LargeCaveMushroom, 1420, 1374);
 	LargeCaveMushroom004->SetR(160);
 	LargeCaveMushroom004->SetClrModulation(0xffeaedfb);
-	LargeCaveMushroom004->SetPosition(1420, 1374);
 
-	var Branch002 = CreateObjectAbove(Branch, 1430, 1420);
+	var Branch002 = CreateObject(Branch, 1430, 1417);
 	Branch002->SetR(-25);
-	Branch002->SetPosition(1430, 1417);
 
 	var Lichen001 = CreateObjectAbove(Lichen, 1387, 1440);
 	Lichen001->SetAction("Grown");
@@ -59,9 +52,8 @@ func InitializeObjects()
 	var Lichen003 = CreateObjectAbove(Lichen, 1466, 1415);
 	Lichen003->SetAction("Grown");
 
-	var Trunk001 = CreateObjectAbove(Trunk, 217, 1184);
+	var Trunk001 = CreateObject(Trunk, 217, 1159);
 	Trunk001->SetR(-10);
-	Trunk001->SetPosition(217, 1159);
 
 	var EnvPack_Bag001 = CreateObjectAbove(EnvPack_Bag, 846, 885);
 	EnvPack_Bag001->SetClrModulation(0xffa0a0a0);
@@ -69,19 +61,12 @@ func InitializeObjects()
 	CreateObjectAbove(EnvPack_Bag, 844, 888);
 
 	CreateObjectAbove(EnvPack_BridgeRustic, 1096, 673);
-
 	CreateObjectAbove(EnvPack_Candle, 1054, 672);
-
 	CreateObjectAbove(EnvPack_Candle, 1054, 575);
-
 	CreateObjectAbove(EnvPack_Candle, 1185, 616);
-
 	CreateObjectAbove(EnvPack_Candle, 1531, 448);
-
 	CreateObjectAbove(EnvPack_Candle, 1362, 432);
-
 	CreateObjectAbove(EnvPack_CandleSmall, 1556, 432);
-
 	CreateObjectAbove(EnvPack_Crate, 1017, 576);
 
 	CreateObjectAbove(EnvPack_FenceRustic, 1111, 728);
@@ -90,43 +75,38 @@ func InitializeObjects()
 	CreateObjectAbove(EnvPack_Guidepost, 315, 1167);
 
 	CreateObjectAbove(EnvPack_Lantern, 894, 488);
-
 	CreateObjectAbove(EnvPack_Lantern, 1291, 472);
-
 	CreateObjectAbove(EnvPack_Painting, 1235, 537);
 
 	CreateObjectAbove(EnvPack_Rail, 1121, 672);
 
 	CreateObjectAbove(EnvPack_Scarecrow, 204, 1185);
 
-	CreateObjectAbove(EnvPack_TreeTrunks, 788, 888);
+	CreateObject(EnvPack_TreeTrunks, 788, 888);
 
 	CreateObjectAbove(EnvPack_WineBarrel, 1438, 552);
 	CreateObjectAbove(EnvPack_WineBarrel, 1455, 553);
 
 	CreateObjectAbove(EnvPack_Candle, 1471, 552);
-
-	g_king = CreateObjectAbove(Clonk, 1569, 430);
+	g_king = CreateObjectAbove(Clonk, 1568, 431);
+	g_king->SetDir(DIR_Right);
 	g_king->SetCon(200);
-	g_king->SetColor(0xff);
 	g_king->SetClrModulation(0xffff8000);
 	g_king->SetObjectBlitMode(GFX_BLIT_Additive);
-	g_king->SetName("$NameHorax$");
+	g_king->SetName("Hörx");
 	g_king.MaxEnergy = 200000;
 	g_king->DoEnergy(150);
 	g_king.StaticSaveVar = "g_king";
 	S2AI->AddAI(g_king);
-	S2AI->SetHome(g_king, 1568, 413, DIR_Left);
-	S2AI->SetGuardRange(g_king, 1268, 263, 600, 300);
+	S2AI->SetGuardRange(g_king, 1185, 342, 415, 136);
 	S2AI->SetEncounterCB(g_king, "EncounterKing");
-	g_king->SetDir(DIR_Left);
 
-	var Goal_Assassination001 = CreateObject(Goal_Assassination, 0, 0);
+	var Goal_Assassination001 = CreateObject(Goal_Assassination);
 	Goal_Assassination001->SetVictim(g_king);
 
-	CreateObject(Rule_TeamAccount, 0, 0);
+	CreateObject(Rule_TeamAccount);
 
-	CreateObject(Rule_NoPowerNeed, 0, 0);
+	CreateObject(Rule_NoPowerNeed);
 
 	var LargeCaveMushroom005 = CreateObjectAbove(LargeCaveMushroom, 1334, 1459);
 	LargeCaveMushroom005->SetClrModulation(0xffd0dbdf);
@@ -135,10 +115,22 @@ func InitializeObjects()
 	var LargeCaveMushroom007 = CreateObjectAbove(LargeCaveMushroom, 1426, 1437);
 	LargeCaveMushroom007->SetClrModulation(0xffcfcbe5);
 
-	g_ruin1 = CreateObjectAbove(Ruin_WoodenCabin, 97, 1179);
+	var Fern002 = CreateObject(Fern, 276, 1442);
+	Fern002->SetCon(22);
+
+	CreateObjectAbove(Tree_Coniferous, 408, 1167);
+	var Tree_Coniferous002 = CreateObject(Tree_Coniferous, 408, 1191);
+	Tree_Coniferous002->SetCon(47);
+	var Tree_Coniferous003 = CreateObjectAbove(Tree_Coniferous, 217, 1191);
+	Tree_Coniferous003->SetCon(39);
+	var Tree_Coniferous004 = CreateObject(Tree_Coniferous, 392, 1148);
+	Tree_Coniferous004->SetCon(27);
+	var Tree_Coniferous005 = CreateObject(Tree_Coniferous, 410, 1168);
+	Tree_Coniferous005->SetCon(3);
+
+	g_ruin1 = CreateObject(Ruin_WoodenCabin, 97, 1150);
 	g_ruin1->SetR(16);
 	g_ruin1.StaticSaveVar = "g_ruin1";
-	g_ruin1->SetPosition(97, 1150);
 
 	g_ruin2 = CreateObjectAbove(Ruin_Windmill, 353, 1145);
 	g_ruin2.StaticSaveVar = "g_ruin2";
@@ -148,19 +140,18 @@ func InitializeObjects()
 
 	CreateObjectAbove(Foundry, 238, 1287);
 
-	var Chest001 = CreateObjectAbove(Chest, 1474, 1414);
-	Chest001->SetXDir(3);
+	var Chest002 = CreateObjectAbove(Chest, 1475, 1415);
 	var Chest006 = CreateObjectAbove(Chest, 1574, 583);
 	var Chest005 = CreateObjectAbove(Chest, 823, 887);
-	var Chest002 = CreateObjectAbove(Chest, 856, 887);
+	var Chest001 = CreateObjectAbove(Chest, 856, 887);
 	var Chest003 = CreateObjectAbove(Chest, 1032, 575);
 	var Chest004 = CreateObjectAbove(Chest, 136, 103);
 
-	var StoneDoor001 = CreateObjectAbove(StoneDoor, 940, 671);
+	var StoneDoor001 = CreateObject(StoneDoor, 940, 652);
 	StoneDoor001->SetComDir(COMD_Down);
-	var StoneDoor002 = CreateObjectAbove(StoneDoor, 1348, 527);
+	var StoneDoor002 = CreateObject(StoneDoor, 1348, 508);
 	StoneDoor002->SetComDir(COMD_Down);
-	var StoneDoor003 = CreateObjectAbove(StoneDoor, 1347, 431);
+	var StoneDoor003 = CreateObject(StoneDoor, 1347, 412);
 	StoneDoor003->SetComDir(COMD_Down);
 
 	var SpinWheel001 = CreateObjectAbove(SpinWheel, 961, 672);
@@ -170,47 +161,42 @@ func InitializeObjects()
 	var SpinWheel003 = CreateObjectAbove(SpinWheel, 1384, 471);
 	SpinWheel003->SetStoneDoor(StoneDoor003);
 
-	CreateObjectAbove(Column, 1197, 551);
-	CreateObjectAbove(Column, 1218, 463);
+	CreateObject(Column, 1197, 551);
+	CreateObject(Column, 1218, 463);
 
 	CreateObjectAbove(Idol, 1080, 575);
+
+	var SteamEngine001 = CreateObjectAbove(SteamEngine, 1529, 585);
 
 	var Flagpole001 = CreateObjectAbove(Flagpole, 135, 1182);
 	Flagpole001->SetNeutral(true);
 
-	var SteamEngine001 = CreateObjectAbove(SteamEngine, 1529, 585);
-
+	g_elev2 = CreateObjectAbove(Elevator, 1366, 614);
+	g_elev2.StaticSaveVar = "g_elev2";
+	g_elev2->CreateShaft(477);
+	g_elev2->SetCasePosition(1079);
 	g_elev1 = CreateObjectAbove(Elevator, 167, 1184);
 	g_elev1.StaticSaveVar = "g_elev1";
 	g_elev1->SetClrModulation(0xffa08060);
 	g_elev1->CreateShaft(95);
 	g_elev1->SetCasePosition(1267);
-	g_elev2 = CreateObjectAbove(Elevator, 1366, 615);
-	g_elev2.StaticSaveVar = "g_elev2";
-	g_elev2->CreateShaft(481);
-	g_elev2->SetCasePosition(1084);
-
 	var Catapult001 = CreateObjectAbove(Catapult, 697, 887);
-	Catapult001->SetRDir(4);
+	Catapult001->SetRDir(-7);
 
-	var Lorry001 = CreateObjectAbove(Lorry, 149, 1323);
+	var Lorry001 = CreateObject(Lorry, 149, 1314);
 	Lorry001->SetR(24);
-	Lorry001->SetPosition(149, 1314);
-	var Lorry002 = CreateObjectAbove(Lorry, 1425, 1254);
-	Lorry002->SetR(-35);
-	Lorry002->SetPosition(1425, 1244);
+	var Lorry002 = CreateObject(Lorry, 1425, 1244);
+	Lorry002->SetR(-36);
 
 	CreateObjectAbove(Airship_Burnt, 38, 1152);
 
-	var Cannon001 = CreateObjectAbove(Cannon, 788, 679);
+	var Cannon001 = CreateObject(Cannon, 788, 669);
 	Cannon001->SetR(30);
-	Cannon001->SetPosition(788, 669);
 	g_cannon = CreateObjectAbove(Cannon, 994, 471);
 	g_cannon.StaticSaveVar = "g_cannon";
 	CreateObjectAbove(Cannon, 1336, 336);
 
 	var Clonk001 = CreateObjectAbove(Clonk, 673, 887);
-	Clonk001->SetColor(0xff);
 	Clonk001->SetName("Horst");
 	S2AI->AddAI(Clonk001);
 	S2AI->SetHome(Clonk001, 670, 878, DIR_Left);
@@ -219,35 +205,31 @@ func InitializeObjects()
 	S2AI->SetEncounterCB(Clonk001, "EncounterOutpost");
 	Clonk001->SetDir(DIR_Left);
 	var Clonk002 = CreateObjectAbove(Clonk, 710, 886);
-	Clonk002->SetColor(0xff);
 	Clonk002->SetName("Hanniball");
 	S2AI->AddAI(Clonk002);
 	S2AI->SetHome(Clonk002, 709, 877, DIR_Left);
-	S2AI->SetGuardRange(Clonk002, 300, 700, 500, 250);
+	S2AI->SetGuardRange(Clonk002, 634, 809, 233, 104);
 	S2AI->SetAllyAlertRange(Clonk002, 60);
 	Clonk002->SetDir(DIR_Left);
 	var Clonk003 = CreateObjectAbove(Clonk, 781, 670);
 	Clonk003->SetDir(DIR_Right);
-	Clonk003->SetColor(0xff);
 	Clonk003->SetName("Twonky");
 	S2AI->AddAI(Clonk003);
 	S2AI->SetHome(Clonk003, 781, 663, DIR_Right);
 	S2AI->SetGuardRange(Clonk003, 481, 511, 600, 300);
 	var Clonk004 = CreateObjectAbove(Clonk, 1010, 670);
 	Clonk004->SetDir(DIR_Right);
-	Clonk004->SetColor(0xff);
 	Clonk004->SetName("Sven");
 	S2AI->AddAI(Clonk004);
 	S2AI->SetHome(Clonk004, 1010, 663, DIR_Right);
-	S2AI->SetGuardRange(Clonk004, 710, 511, 600, 300);
-	var Clonk005 = CreateObjectAbove(Clonk, 985, 670);
+	S2AI->SetGuardRange(Clonk004, 773, 619, 501, 78);
+	var Clonk005 = CreateObjectAbove(Clonk, 984, 671);
 	Clonk005->SetDir(DIR_Right);
-	Clonk005->SetColor(0xff);
 	Clonk005->SetName("Luki");
 	S2AI->AddAI(Clonk005);
 	S2AI->SetHome(Clonk005, 985, 663, DIR_Right);
-	S2AI->SetGuardRange(Clonk005, 685, 511, 600, 300);
-	var Clonk006 = CreateObjectAbove(Clonk, 1373, 1245);
+	S2AI->SetGuardRange(Clonk005, 773, 621, 596, 146);
+	var Clonk006 = CreateObjectAbove(Clonk, 1372, 1244);
 	Clonk006->SetColor(0xffff0000);
 	Clonk006->SetName("Anna");
 	S2AI->AddAI(Clonk006);
@@ -255,11 +237,10 @@ func InitializeObjects()
 	S2AI->SetGuardRange(Clonk006, 1150, 1140, 320, 150);
 	S2AI->SetAllyAlertRange(Clonk006, 170);
 	Clonk006->SetDir(DIR_Left);
-	var Clonk007 = CreateObjectAbove(Clonk, 1449, 1246);
+	var Clonk007 = CreateObjectAbove(Clonk, 1448, 1246);
 	Clonk007->SetColor(0xffff0000);
 	Clonk007->SetName("Cindy");
 	S2AI->AddAI(Clonk007);
-	S2AI->SetHome(Clonk007, 1448, 1237, DIR_Left);
 	S2AI->SetGuardRange(Clonk007, 1150, 1140, 320, 150);
 	S2AI->SetAllyAlertRange(Clonk007, 170);
 	S2AI->SetEncounterCB(Clonk007, "EncounterCave");
@@ -272,45 +253,39 @@ func InitializeObjects()
 	g_farmer->SetDir(DIR_Left);
 	var Clonk008 = CreateObjectAbove(Clonk, 1197, 550);
 	Clonk008->SetDir(DIR_Right);
-	Clonk008->SetColor(0xff);
 	Clonk008->SetName("Sabrina");
 	S2AI->AddAI(Clonk008);
 	S2AI->SetHome(Clonk008, 1196, 542, DIR_Right);
-	S2AI->SetGuardRange(Clonk008, 896, 392, 600, 300);
-	var Clonk009 = CreateObjectAbove(Clonk, 1266, 551);
-	Clonk009->SetColor(0xff);
+	S2AI->SetGuardRange(Clonk008, 955, 472, 415, 299);
+	var Clonk009 = CreateObjectAbove(Clonk, 1265, 551);
 	Clonk009->SetName("Laura");
 	S2AI->AddAI(Clonk009);
 	S2AI->SetHome(Clonk009, 1266, 541, DIR_Left);
-	S2AI->SetGuardRange(Clonk009, 966, 391, 600, 300);
+	S2AI->SetGuardRange(Clonk009, 966, 391, 383, 283);
 	Clonk009->SetDir(DIR_Left);
-	var Clonk010 = CreateObjectAbove(Clonk, 1287, 471);
+	var Clonk010 = CreateObjectAbove(Clonk, 1286, 470);
 	Clonk010->SetDir(DIR_Right);
-	Clonk010->SetColor(0xff);
 	S2AI->AddAI(Clonk010);
 	S2AI->SetHome(Clonk010, 1287, 464, DIR_Right);
-	S2AI->SetGuardRange(Clonk010, 987, 312, 600, 300);
+	S2AI->SetGuardRange(Clonk010, 987, 312, 367, 313);
 	var Clonk011 = CreateObjectAbove(Clonk, 1092, 574);
 	Clonk011->SetDir(DIR_Right);
-	Clonk011->SetColor(0xff);
 	Clonk011->SetName("Wolfgang");
 	S2AI->AddAI(Clonk011);
 	S2AI->SetHome(Clonk011, 1092, 567, DIR_Right);
 	S2AI->SetGuardRange(Clonk011, 792, 416, 600, 300);
-	var Clonk012 = CreateObjectAbove(Clonk, 1070, 574);
-	Clonk012->SetColor(0xff);
+	var Clonk012 = CreateObjectAbove(Clonk, 1069, 574);
+	Clonk012->SetDir(DIR_Right);
 	Clonk012->SetName("Hans");
 	S2AI->AddAI(Clonk012);
-	S2AI->SetHome(Clonk012, 1069, 566, DIR_Left);
+	S2AI->SetHome(Clonk012, 1069, 566, DIR_Right);
 	S2AI->SetGuardRange(Clonk012, 769, 416, 600, 300);
-	Clonk012->SetDir(DIR_Left);
 	var Clonk013 = CreateObjectAbove(Clonk, 1018, 470);
 	Clonk013->SetDir(DIR_Right);
-	Clonk013->SetColor(0xff);
 	Clonk013->SetName("Joki");
 	S2AI->AddAI(Clonk013);
 	S2AI->SetHome(Clonk013, 1019, 462, DIR_Right);
-	S2AI->SetGuardRange(Clonk013, 719, 312, 600, 300);
+	S2AI->SetGuardRange(Clonk013, 848, 293, 498, 319);
 	var Clonk014 = CreateObjectAbove(Clonk, 285, 1182);
 	Clonk014->Kill(Clonk014, true);
 	Clonk014->SetDir(DIR_Right);
@@ -319,120 +294,74 @@ func InitializeObjects()
 	Clonk015->Kill(Clonk015, true);
 	Clonk015->SetDir(DIR_Right);
 	Clonk015->SetColor(0xffff0000);
-	g_cannoneer = CreateObjectAbove(Clonk, 995, 471);
-	g_cannoneer->SetColor(0xff);
+	g_cannoneer = CreateObjectAbove(Clonk, 1000, 471);
 	g_cannoneer.StaticSaveVar = "g_cannoneer";
+	S2AI->AddAI(g_cannoneer);
+	S2AI->SetHome(g_cannoneer, 1000, 460, DIR_Left);
+	S2AI->SetGuardRange(g_cannoneer, 891, 324, 441, 180);
 	g_cannoneer->SetDir(DIR_Left);
-
-	CreateObjectAbove(Rock, 879, 1003);
+	var Clonk016 = CreateObjectAbove(Clonk, 1317, 334);
+	S2AI->AddAI(Clonk016);
+	S2AI->SetGuardRange(Clonk016, 978, 231, 391, 244);
+	Clonk016->SetDir(DIR_Left);
+	CreateObject(Rock, 879, 1002);
 	CreateObjectAbove(Rock, 262, 1182);
 	CreateObjectAbove(Rock, 140, 1183);
 	CreateObjectAbove(Rock, 48, 1151);
-	CreateObjectAbove(Rock, 154, 1206);
-	CreateObjectAbove(Rock, 154, 1206);
+	CreateObject(Rock, 154, 1205);
+	CreateObject(Rock, 154, 1205);
 	CreateObjectAbove(Rock, 241, 1287);
-	CreateObjectAbove(Rock, 338, 1257);
-	CreateObjectAbove(Rock, 661, 1393);
+	CreateObject(Rock, 338, 1256);
+	CreateObject(Rock, 661, 1392);
 	CreateObjectAbove(Rock, 813, 887);
-	CreateObjectAbove(Rock, 893, 1291);
-	CreateObjectAbove(Rock, 1248, 1088);
-	CreateObjectAbove(Rock, 1334, 1012);
-	CreateObjectAbove(Rock, 1268, 933);
-	CreateObjectAbove(Rock, 1296, 795);
-	CreateObjectAbove(Rock, 1501, 933);
-	CreateObjectAbove(Rock, 1473, 676);
-	CreateObjectAbove(Rock, 1367, 655);
-	CreateObjectAbove(Rock, 1505, 1163);
-	CreateObjectAbove(Rock, 1482, 1050);
-	CreateObjectAbove(Rock, 1402, 1448);
-	CreateObjectAbove(Rock, 1025, 1393);
-	CreateObjectAbove(Rock, 742, 1522);
-	CreateObjectAbove(Rock, 712, 1351);
-	CreateObjectAbove(Rock, 1047, 1207);
-	Clonk006->CreateContents(Rock);
-	Clonk006->CreateContents(Rock);
-	Clonk006->CreateContents(Rock);
+	CreateObject(Rock, 893, 1290);
+	CreateObject(Rock, 1248, 1087);
+	CreateObject(Rock, 1334, 1011);
+	CreateObject(Rock, 1268, 932);
+	CreateObject(Rock, 1298, 795);
+	CreateObject(Rock, 1501, 932);
+	CreateObject(Rock, 1473, 675);
+	CreateObject(Rock, 1367, 654);
+	CreateObject(Rock, 1505, 1162);
+	CreateObject(Rock, 1482, 1049);
+	CreateObject(Rock, 1402, 1447);
+	CreateObject(Rock, 1025, 1392);
+	CreateObject(Rock, 742, 1521);
+	CreateObject(Rock, 712, 1350);
+	CreateObject(Rock, 1047, 1206);
+	Clonk006->CreateContents(Rock, 3);
 
-	CreateObjectAbove(Coal, 59, 1346);
-	CreateObjectAbove(Coal, 156, 1370);
-	CreateObjectAbove(Coal, 243, 1555);
-	CreateObjectAbove(Coal, 61, 1495);
-	CreateObjectAbove(Coal, 140, 1380);
-	SteamEngine001->CreateContents(Coal);
-	SteamEngine001->CreateContents(Coal);
-	SteamEngine001->CreateContents(Coal);
+	CreateObject(Coal, 59, 1345);
+	CreateObject(Coal, 156, 1369);
+	CreateObject(Coal, 243, 1554);
+	CreateObject(Coal, 61, 1494);
+	CreateObject(Coal, 140, 1379);
+	SteamEngine001->CreateContents(Coal, 3);
 
-	CreateObjectAbove(Ore, 227, 1366);
+	CreateObject(Ore, 227, 1365);
 	CreateObjectAbove(Ore, 64, 1421);
-	CreateObjectAbove(Ore, 264, 1454);
-	CreateObjectAbove(Ore, 462, 1479);
-	CreateObjectAbove(Ore, 77, 1486);
-	CreateObjectAbove(Ore, 1481, 1449);
-	CreateObjectAbove(Ore, 1438, 1464);
-	CreateObjectAbove(Ore, 1566, 1562);
+	CreateObject(Ore, 264, 1453);
+	CreateObject(Ore, 462, 1478);
+	CreateObject(Ore, 77, 1485);
+	CreateObject(Ore, 1481, 1448);
+	CreateObject(Ore, 1438, 1463);
+	CreateObject(Ore, 1566, 1561);
 
-	CreateObjectAbove(Nugget, 1079, 1217);
-	CreateObjectAbove(Nugget, 1244, 1139);
-	CreateObjectAbove(Nugget, 1156, 1164);
-	CreateObjectAbove(Nugget, 1127, 1166);
+	CreateObject(Nugget, 1079, 1216);
+	CreateObject(Nugget, 1244, 1138);
+	CreateObject(Nugget, 1156, 1163);
+	CreateObject(Nugget, 1127, 1165);
 
 	CreateObjectAbove(Wood, 19, 1135);
 	CreateObjectAbove(Wood, 749, 1056);
 	CreateObjectAbove(Wood, 168, 1512);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Lorry001->CreateContents(Wood);
-	Chest002->CreateContents(Wood);
-	Chest002->CreateContents(Wood);
-	Chest002->CreateContents(Wood);
-	Chest002->CreateContents(Wood);
-	Chest002->CreateContents(Wood);
+	Lorry001->CreateContents(Wood, 30);
+	Chest001->CreateContents(Wood, 5);
 	CreateObjectAbove(Wood, 346, 1456);
 	CreateObjectAbove(Wood, 336, 1456);
-	Lorry002->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Chest001->CreateContents(Wood);
-	Lorry002->CreateContents(Wood);
-	Lorry002->CreateContents(Wood);
-	Lorry002->CreateContents(Wood);
-	Lorry002->CreateContents(Wood);
-	Chest003->CreateContents(Wood);
-	Chest003->CreateContents(Wood);
-	Chest003->CreateContents(Wood);
-	Chest003->CreateContents(Wood);
-	Chest003->CreateContents(Wood);
+	Lorry002->CreateContents(Wood, 5);
+	Chest002->CreateContents(Wood, 7);
+	Chest003->CreateContents(Wood, 5);
 	CreateObjectAbove(Wood, 167, 1512);
 	CreateObjectAbove(Wood, 177, 1512);
 	CreateObjectAbove(Wood, 511, 1497);
@@ -444,35 +373,27 @@ func InitializeObjects()
 	CreateObjectAbove(Loam, 415, 1431);
 	CreateObjectAbove(Loam, 484, 1487);
 	CreateObjectAbove(Loam, 511, 1502);
-	CreateObjectAbove(Loam, 37, 1274);
+	CreateObject(Loam, 37, 1271);
 	CreateObjectAbove(Loam, 200, 1583);
 	CreateObjectAbove(Loam, 356, 1559);
-	CreateObjectAbove(Loam, 314, 1231);
-	CreateObjectAbove(Loam, 921, 1287);
-	CreateObjectAbove(Loam, 1042, 1392);
-	CreateObjectAbove(Loam, 1180, 1578);
+	CreateObject(Loam, 314, 1228);
+	CreateObject(Loam, 921, 1284);
+	CreateObject(Loam, 1042, 1389);
+	CreateObject(Loam, 1180, 1575);
 	CreateObjectAbove(Loam, 1481, 1415);
 	CreateObjectAbove(Loam, 1527, 1406);
-	CreateObjectAbove(Loam, 958, 983);
-	CreateObjectAbove(Loam, 1267, 896);
-	CreateObjectAbove(Loam, 892, 828);
+	CreateObject(Loam, 958, 980);
+	CreateObject(Loam, 1267, 893);
+	CreateObject(Loam, 892, 825);
 	CreateObjectAbove(Loam, 1393, 1103);
-	CreateObjectAbove(Loam, 1462, 1079);
+	CreateObject(Loam, 1462, 1076);
 	CreateObjectAbove(Loam, 1501, 1415);
-	Chest002->CreateContents(Loam);
-	Chest002->CreateContents(Loam);
-	Chest002->CreateContents(Loam);
-	Chest004->CreateContents(Loam);
-	Chest004->CreateContents(Loam);
-	Chest004->CreateContents(Loam);
-	Chest004->CreateContents(Loam);
-	Chest004->CreateContents(Loam);
+	Chest001->CreateContents(Loam, 3);
+	Chest004->CreateContents(Loam, 5);
 
-	var GoldBar001 = CreateObjectAbove(GoldBar, 1293, 1236);
+	var GoldBar001 = CreateObject(GoldBar, 1293, 1235);
 	GoldBar001->SetR(22);
-	GoldBar001->SetPosition(1293, 1235);
-	Lorry002->CreateContents(GoldBar);
-	Lorry002->CreateContents(GoldBar);
+	Lorry002->CreateContents(GoldBar, 2);
 
 	CreateObjectAbove(Airship, 931, 495);
 
@@ -484,25 +405,13 @@ func InitializeObjects()
 	Clonk010->CreateContents(Sword);
 	g_king->CreateContents(Sword);
 	Clonk002->CreateContents(Sword);
+	g_cannoneer->CreateContents(Sword);
 
-	var Arrow001 = Clonk001->CreateContents(Arrow);
-	Arrow001->SetR(90);
-	var Arrow002 = Clonk001->CreateContents(Arrow);
-	Arrow002->SetR(90);
-	var Arrow003 = Chest005->CreateContents(Arrow);
-	Arrow003->SetR(90);
-	var Arrow004 = Clonk003->CreateContents(Arrow);
-	Arrow004->SetR(90);
-	var Arrow005 = Clonk003->CreateContents(Arrow);
-	Arrow005->SetR(90);
-	var Arrow006 = Clonk013->CreateContents(Arrow);
-	Arrow006->SetR(90);
-	var Arrow007 = Clonk013->CreateContents(Arrow);
-	Arrow007->SetR(90);
-	var Arrow008 = g_king->CreateContents(Arrow);
-	Arrow008->SetR(90);
-	var Arrow009 = g_king->CreateContents(Arrow);
-	Arrow009->SetR(90);
+	Clonk001->CreateContents(Arrow, 2);
+	Chest005->CreateContents(Arrow);
+	Clonk013->CreateContents(Arrow, 2);
+	var Arrow006 = Clonk003->CreateContents(Arrow);
+	Arrow006->SetInfiniteStackCount();
 
 	Clonk001->CreateContents(Bow);
 	Chest005->CreateContents(Bow);
@@ -510,25 +419,18 @@ func InitializeObjects()
 	Clonk013->CreateContents(Bow);
 	g_king->CreateContents(Bow);
 
-	var Boompack001 = CreateObjectAbove(Boompack, 135, 1324);
-	Boompack001->SetColor(0xff);
-	var Boompack002 = CreateObjectAbove(Boompack, 1498, 1414);
-	Boompack002->SetColor(0xff);
-	var Boompack003 = CreateObjectAbove(Boompack, 1483, 1414);
-	Boompack003->SetColor(0xff);
-	var Boompack004 = CreateObjectAbove(Boompack, 1491, 1415);
-	Boompack004->SetColor(0xff);
-	var Boompack005 = Chest001->CreateContents(Boompack);
-	Boompack005->AddRestoreMode(Chest001, 1473, 1403);
-	Boompack005->SetColor(0xff);
-	var Boompack006 = Chest001->CreateContents(Boompack);
-	Boompack006->AddRestoreMode(Chest001, 1473, 1403);
-	Boompack006->SetColor(0xff);
+	CreateObjectAbove(Boompack, 135, 1324);
+	CreateObjectAbove(Boompack, 1498, 1414);
+	CreateObjectAbove(Boompack, 1483, 1414);
+	CreateObjectAbove(Boompack, 1491, 1415);
+	var Boompack001 = Chest002->CreateContents(Boompack);
+	Boompack001->AddRestoreMode(Chest002, 1473, 1403);
+	var Boompack002 = Chest002->CreateContents(Boompack);
+	Boompack002->AddRestoreMode(Chest002, 1473, 1403);
 
 	Lorry001->CreateContents(DynamiteBox);
 	Lorry002->CreateContents(DynamiteBox);
-	Chest001->CreateContents(DynamiteBox);
-	Chest001->CreateContents(DynamiteBox);
+	Chest002->CreateContents(DynamiteBox, 2);
 	Chest004->CreateContents(DynamiteBox);
 
 	CreateObjectAbove(Dynamite, 1334, 1224);
@@ -539,135 +441,113 @@ func InitializeObjects()
 
 	Lorry001->CreateContents(Shovel);
 
-	var Barrel001 = CreateObjectAbove(Barrel, 167, 1333);
+	var Barrel001 = CreateObject(Barrel, 167, 1327);
 	Barrel001->SetR(-13);
 	Barrel001->SetColor(0xff000000);
-	Barrel001->SetPosition(167, 1327);
+	var Barrel002 = Chest002->CreateContents(Barrel);
+	Barrel002->SetColor(0xff000000);
 
-	var Seaweed001 = CreateObjectAbove(Seaweed, 169, 1543);
-	Seaweed001->SetPhase(5);
-	var Seaweed002 = CreateObjectAbove(Seaweed, 815, 1342);
-	Seaweed002->SetPhase(5);
-	var Seaweed003 = CreateObjectAbove(Seaweed, 719, 1078);
-	Seaweed003->SetPhase(24);
-	var Seaweed004 = CreateObjectAbove(Seaweed, 772, 1087);
-	Seaweed004->SetPhase(42);
-	var Seaweed005 = CreateObjectAbove(Seaweed, 1258, 1279);
-	Seaweed005->SetPhase(31);
-	var Seaweed006 = CreateObjectAbove(Seaweed, 847, 1367);
+	CreateObjectAbove(Seaweed, 169, 1543);
+	CreateObjectAbove(Seaweed, 815, 1342);
+	CreateObjectAbove(Seaweed, 719, 1078);
+	CreateObjectAbove(Seaweed, 772, 1087);
+	CreateObjectAbove(Seaweed, 1258, 1279);
+	var Seaweed001 = CreateObject(Seaweed, 592, 1425);
+	Seaweed001->SetCon(1);
+	var Seaweed002 = CreateObject(Seaweed, 652, 1304);
+	Seaweed002->SetCon(1);
+	var Seaweed003 = CreateObject(Seaweed, 182, 1575);
+	Seaweed003->SetCon(1);
+	var Seaweed004 = CreateObjectAbove(Seaweed, 353, 1558);
+	Seaweed004->SetCon(1);
+	var Seaweed005 = CreateObject(Seaweed, 435, 1239);
+	Seaweed005->SetCon(1);
+	var Seaweed006 = CreateObject(Seaweed, 461, 1252);
 	Seaweed006->SetCon(1);
-	var Seaweed007 = CreateObjectAbove(Seaweed, 793, 1080);
+	var Seaweed007 = CreateObject(Seaweed, 490, 1303);
 	Seaweed007->SetCon(1);
-	var Seaweed008 = CreateObjectAbove(Seaweed, 568, 1463);
+	var Seaweed008 = CreateObject(Seaweed, 515, 1365);
 	Seaweed008->SetCon(1);
-	var Seaweed009 = CreateObjectAbove(Seaweed, 361, 1558);
-	Seaweed009->SetCon(1);
-	var Seaweed010 = CreateObjectAbove(Seaweed, 438, 1238);
-	Seaweed010->SetCon(1);
-	var Seaweed011 = CreateObjectAbove(Seaweed, 733, 1087);
-	Seaweed011->SetCon(1);
-	var Seaweed012 = CreateObjectAbove(Seaweed, 503, 1325);
-	Seaweed012->SetCon(1);
-	var Seaweed013 = CreateObjectAbove(Seaweed, 568, 1463);
-	Seaweed013->SetCon(1);
-	var Seaweed014 = CreateObjectAbove(Seaweed, 564, 1461);
-	Seaweed014->SetCon(1);
-	var Seaweed015 = CreateObjectAbove(Seaweed, 461, 1247);
-	Seaweed015->SetCon(1);
-	var Seaweed016 = CreateObjectAbove(Seaweed, 568, 1463);
-	Seaweed016->SetCon(1);
-	var Seaweed017 = CreateObjectAbove(Seaweed, 563, 1461);
-	Seaweed017->SetCon(1);
-	Seaweed017->SetXDir(-37);
 
 	CreateObjectAbove(Mushroom, 126, 1320);
 	CreateObjectAbove(Mushroom, 212, 1288);
 	CreateObjectAbove(Mushroom, 367, 1392);
 	CreateObjectAbove(Mushroom, 268, 1432);
-	var Mushroom001 = CreateObjectAbove(Mushroom, 247, 1292);
-	Mushroom001->SetCon(22);
-	var Mushroom002 = CreateObjectAbove(Mushroom, 384, 1400);
-	Mushroom002->SetCon(9);
-	var Mushroom003 = CreateObjectAbove(Mushroom, 184, 1294);
-	Mushroom003->SetCon(8);
-	var Mushroom004 = CreateObjectAbove(Mushroom, 195, 1293);
-	Mushroom004->SetCon(4);
-	var Mushroom005 = CreateObjectAbove(Mushroom, 215, 1294);
-	Mushroom005->SetCon(1);
+	CreateObject(Mushroom, 247, 1303);
+	CreateObject(Mushroom, 384, 1419);
+	var Mushroom001 = CreateObject(Mushroom, 184, 1314);
+	Mushroom001->SetCon(98);
+	var Mushroom002 = CreateObject(Mushroom, 195, 1314);
+	Mushroom002->SetCon(95);
+	var Mushroom003 = CreateObject(Mushroom, 215, 1315);
+	Mushroom003->SetCon(92);
+	var Mushroom004 = CreateObject(Mushroom, 205, 1296);
+	Mushroom004->SetCon(46);
+	var Mushroom005 = CreateObject(Mushroom, 409, 1436);
+	Mushroom005->SetCon(33);
+	var Mushroom006 = CreateObject(Mushroom, 396, 1410);
+	Mushroom006->SetCon(13);
 
 	Chest006->CreateContents(Musket);
 
-	Chest006->CreateContents(LeadShot);
-	Chest006->CreateContents(LeadShot);
-	Chest006->CreateContents(LeadShot);
+	Chest006->CreateContents(LeadShot, 3);
 
-	Clonk009->CreateContents(Javelin);
-	Clonk008->CreateContents(Javelin);
-	Clonk009->CreateContents(Javelin);
-	Clonk008->CreateContents(Javelin);
-	Clonk009->CreateContents(Javelin);
-	Clonk008->CreateContents(Javelin);
+	Clonk009->CreateContents(Javelin, 3);
+	Clonk008->CreateContents(Javelin, 3);
 
 	Clonk012->CreateContents(Shield);
 	Clonk010->CreateContents(Shield);
 	g_king->CreateContents(Shield);
+	Clonk016->CreateContents(Shield);
+	Chest006->CreateContents(Shield);
 
-	Chest003->CreateContents(Bread);
-	Chest003->CreateContents(Bread);
-	Chest003->CreateContents(Bread);
-	Chest004->CreateContents(Bread);
-	Chest004->CreateContents(Bread);
-	Chest004->CreateContents(Bread);
+	Chest003->CreateContents(Bread, 3);
+	Chest004->CreateContents(Bread, 3);
+	Chest006->CreateContents(Bread, 2);
 
 	CreateObjectAbove(EnvPack_ManaAltar, 1052, 471);
 
-	Chest001->CreateContents(Ropeladder);
-	Chest001->CreateContents(Ropeladder);
+	Chest002->CreateContents(Ropeladder, 2);
 
-	Catapult001->CreateContents(Firestone);
-	Catapult001->CreateContents(Firestone);
-	Catapult001->CreateContents(Firestone);
-	Catapult001->CreateContents(Firestone);
-	Catapult001->CreateContents(Firestone);
-	CreateObjectAbove(Firestone, 38, 1190);
-	CreateObjectAbove(Firestone, 101, 1215);
-	CreateObjectAbove(Firestone, 369, 1282);
-	CreateObjectAbove(Firestone, 22, 1254);
-	CreateObjectAbove(Firestone, 376, 1217);
-	CreateObjectAbove(Firestone, 139, 1347);
-	CreateObjectAbove(Firestone, 280, 1464);
-	CreateObjectAbove(Firestone, 451, 1439);
-	CreateObjectAbove(Firestone, 678, 1365);
-	CreateObjectAbove(Firestone, 838, 1101);
-	CreateObjectAbove(Firestone, 880, 1090);
-	CreateObjectAbove(Firestone, 1022, 1226);
-	CreateObjectAbove(Firestone, 1338, 1262);
-	CreateObjectAbove(Firestone, 1144, 1408);
-	CreateObjectAbove(Firestone, 1051, 1366);
-	CreateObjectAbove(Firestone, 1328, 1487);
-	CreateObjectAbove(Firestone, 1467, 1461);
-	CreateObjectAbove(Firestone, 911, 981);
-	CreateObjectAbove(Firestone, 1118, 766);
-	CreateObjectAbove(Firestone, 948, 788);
-	CreateObjectAbove(Firestone, 781, 911);
-	CreateObjectAbove(Firestone, 1356, 806);
-	CreateObjectAbove(Firestone, 1287, 852);
-	Clonk006->CreateContents(Firestone);
-	Clonk006->CreateContents(Firestone);
+	g_king->CreateContents(BombArrow);
+
+	Chest002->CreateContents(WallKit, 2);
+
+	Chest002->CreateContents(Bucket, 2);
+
+	Clonk016->CreateContents(GrenadeLauncher);
+
+	Clonk016->CreateContents(IronBomb, 20);
+	Catapult001->CreateContents(Firestone, 5);
+	CreateObject(Firestone, 38, 1189);
+	CreateObject(Firestone, 101, 1214);
+	CreateObject(Firestone, 369, 1281);
+	CreateObject(Firestone, 22, 1253);
+	CreateObject(Firestone, 376, 1216);
+	CreateObject(Firestone, 139, 1346);
+	CreateObject(Firestone, 280, 1463);
+	CreateObject(Firestone, 451, 1438);
+	CreateObject(Firestone, 678, 1364);
+	CreateObject(Firestone, 838, 1100);
+	CreateObject(Firestone, 880, 1089);
+	CreateObject(Firestone, 1022, 1225);
+	CreateObject(Firestone, 1338, 1261);
+	CreateObject(Firestone, 1144, 1407);
+	CreateObject(Firestone, 1051, 1365);
+	CreateObject(Firestone, 1328, 1486);
+	CreateObject(Firestone, 1467, 1460);
+	CreateObject(Firestone, 911, 980);
+	CreateObject(Firestone, 1118, 765);
+	CreateObject(Firestone, 948, 787);
+	CreateObject(Firestone, 781, 910);
+	CreateObject(Firestone, 1356, 805);
+	CreateObject(Firestone, 1287, 851);
+	Clonk006->CreateContents(Firestone, 2);
 	Clonk007->CreateContents(Firestone);
-	Chest002->CreateContents(Firestone);
-	Chest002->CreateContents(Firestone);
-	Chest002->CreateContents(Firestone);
-	Clonk011->CreateContents(Firestone);
-	Clonk011->CreateContents(Firestone);
-	Clonk011->CreateContents(Firestone);
-	Clonk011->CreateContents(Firestone);
-	Chest003->CreateContents(Firestone);
-	Chest003->CreateContents(Firestone);
-	Chest003->CreateContents(Firestone);
-	g_king->CreateContents(Firestone);
-	g_king->CreateContents(Firestone);
-	g_king->CreateContents(Firestone);
-
+	Chest001->CreateContents(Firestone, 3);
+	Clonk011->CreateContents(Firestone, 4);
+	Chest003->CreateContents(Firestone, 3);
+	g_king->CreateContents(Firestone, 3);
+	g_cannoneer->CreateContents(Firestone);
 	return true;
 }
