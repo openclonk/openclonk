@@ -810,6 +810,10 @@ include(FindPNG)
 include(FindZLIB)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
+set(Boost_ADDITIONAL_VERSIONS
+	# FindBoost.cmake goes up to 1.56.0
+	"1.57.0" "1.57"
+	)
 find_package("Boost" 1.40.0 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
