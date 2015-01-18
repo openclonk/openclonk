@@ -10,6 +10,8 @@ local mat;
 protected func Initialize() 
 {
 	AddEffect("IntEvaporate", this, 100, 1, this);
+	// Add light to the chunk.
+	SetLightRange(60, 40);
 	// Lava chunk is on fire.
 	//Incinerate(); // TODO: Wait for decent graphics
 	return;
@@ -19,7 +21,7 @@ protected func Hit()
 {
 	if (!mat)
 		mat="DuroLava";
-  	CastPXS(mat, GetCon()/2, 35);
+  	CastPXS(mat, GetCon() / 2, 35);
   	return RemoveObject();
 }
 
