@@ -395,7 +395,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
 	// texture present?
-	if (!sfcSource->ppTex)
+	if (sfcSource->textures.empty())
 	{
 		// primary surface?
 		if (sfcSource->fPrimary)
@@ -407,7 +407,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	}
 	// blit with basesfc?
 	bool fBaseSfc=false;
-	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
+	if (sfcSource->pMainSfc) if (!sfcSource->pMainSfc->textures.empty()) fBaseSfc = true;
 	// get involved texture offsets
 	int iTexSizeX=sfcSource->iTexSize;
 	int iTexSizeY=sfcSource->iTexSize;
@@ -423,7 +423,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
 		{
-			C4TexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
+			C4TexRef *pTex = &sfcSource->textures[iY * sfcSource->iTexX + iX];
 			// get current blitting offset in texture
 			int iBlitX=sfcSource->iTexSize*iX;
 			int iBlitY=sfcSource->iTexSize*iY;
@@ -512,12 +512,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 				// then get this surface as same offset as from other surface
 				// assuming this is only valid as long as there's no texture management,
 				// organizing partially used textures together!
-				pBaseTex = *(sfcSource->pMainSfc->ppTex + iY * sfcSource->iTexX + iX);
+				pBaseTex = &sfcSource->pMainSfc->textures[iY * sfcSource->iTexX + iX];
 			}
 
 			C4TexRef* pNormalTex = NULL;
 			if (sfcSource->pNormalSfc)
-				pNormalTex = *(sfcSource->pNormalSfc->ppTex + iY * sfcSource->iTexX + iX);
+				pNormalTex = &sfcSource->pNormalSfc->textures[iY * sfcSource->iTexX + iX];
 
 			// ClrByOwner is always fully opaque
 			const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;

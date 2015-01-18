@@ -353,7 +353,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	for(std::map<int, std::vector<C4BltVertex> >::const_iterator iter = bltVtx.begin(); iter != bltVtx.end(); ++iter)
 	{
 		C4Material *pMat = &::MaterialMap.Map[iter->first];
-		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, pMat->PXSFace.Surface->ppTex[0], NULL, NULL, 0);
+		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, &pMat->PXSFace.Surface->textures[0], NULL, NULL, 0);
 	}
 }
 

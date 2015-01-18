@@ -76,6 +76,8 @@ bool C4Surface::Lock() { return false; }
 bool C4Surface::Unlock() { return false; }
 DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation) { return 0; }
 
+C4TexRef::~C4TexRef() {}
+
 C4Pattern::C4Pattern() {}
 void C4Pattern::Clear() {}
 bool C4Pattern::Set(C4Surface *, int) { return false; }

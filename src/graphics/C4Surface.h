@@ -83,7 +83,7 @@ public:
 			GLenum Format;                // used color format in textures
 			CStdGLCtx * pCtx;
 #endif
-	C4TexRef **ppTex;              // textures
+	std::vector<C4TexRef> textures;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
 	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
 	C4Surface *pNormalSfc;        // normal map; can be NULL

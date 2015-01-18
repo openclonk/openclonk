@@ -919,10 +919,10 @@ double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 	}
 }
 
-StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface):
-		RefCount(1), Surf(Surface), Texture(*Surface->ppTex[0])
+StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface)
+	: RefCount(1), Surf(Surface), Texture(Surface->textures[0])
 {
-	assert(Surface->ppTex != NULL);
+	assert(!Surface->textures.empty());
 }
 
 StdMeshMaterialTextureUnit::Tex::~Tex()

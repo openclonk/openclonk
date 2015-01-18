@@ -976,7 +976,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
 	assert(sourceDefinition && "No source definition assigned to particle chunk.");
-	C4TexRef *textureRef = (*sourceDefinition->Gfx.GetFace().ppTex);
+	C4TexRef *textureRef = &sourceDefinition->Gfx.GetFace().textures[0];
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
 	// use a relative offset?
