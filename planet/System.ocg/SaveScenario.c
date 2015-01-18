@@ -11,6 +11,7 @@ static save_scenario_def_indices;
 // Propert identifier of object creation
 static const SAVEOBJ_Creation = "Creation";
 static const SAVEOBJ_ContentsCreation = "ContentsCreation";
+static const SAVEOBJ_ContentsCreationEx = "ContentsCreationEx";
 
 global func SaveScenarioObjects(f)
 {
@@ -238,6 +239,7 @@ global func SaveScen_SetContainers(array obj_data)
 				// props detached from creation. Use Enter() call to enter container
 				// the label must have been written because something depended on the object.
 				obj.props.origin->Remove(SAVEOBJ_ContentsCreation);
+				obj.props.origin->Remove(SAVEOBJ_ContentsCreationEx);
 				obj.props->AddCall("Container", obj.o, "Enter", obj.o->Contained());
 				// Ensure layer is written for detached contents if it is the same as the container
 				var o_layer = obj.o->GetObjectLayer();
@@ -248,7 +250,30 @@ global func SaveScen_SetContainers(array obj_data)
 		{
 			// unsaved container - just create object outside
 			obj.props->Remove(SAVEOBJ_ContentsCreation);
+			obj.props->Remove(SAVEOBJ_ContentsCreationEx);
 		}
+	}
+	// Concatenate multiple contents creations
+	var cont;
+	for (var obj in obj_data) if ((cont = obj.o->Contained())) if (obj.props->HasProp(SAVEOBJ_ContentsCreationEx))
+	{
+		var num_contents_concat = 1;
+		if (!obj.o.StaticSaveVar && !obj.write_label)
+		{
+			for (var obj2 in obj_data) if (obj2 != obj && obj2.o->Contained() == cont && obj.o->GetID() == obj2.o->GetID() && obj2.props->HasProp(SAVEOBJ_ContentsCreationEx))
+			{
+				++num_contents_concat;
+				obj2.props->Clear();
+			}
+		}
+		if (num_contents_concat > 1)
+		{
+			obj.props->Remove(SAVEOBJ_ContentsCreation);
+			var creation_prop = obj.props->HasProp(SAVEOBJ_ContentsCreationEx);
+			creation_prop.s = Format(creation_prop.s, num_contents_concat);
+		}
+		else
+			obj.props->Remove(SAVEOBJ_ContentsCreationEx);
 	}
 	return obj_data;
 }
@@ -307,9 +332,13 @@ global func SaveScenarioObject(props)
 	}
 	else
 		props->Add(SAVEOBJ_Creation, "CreateObjectAbove(%i, %d, %d%s)", GetID(), GetX(), GetDefBottom(), owner_string);
-	// Contained creation is added alongside regular creation because it is not yet known if CreateObjectAbove+Enter or CreateContents can be used due to dependencies.
+	// Contained creation is added alongside regular creation because it is not yet known if CreateObject+Enter or CreateContents can be used due to dependencies.
 	// func SaveScen_SetContainers will take care of removing one of the two creation strings after dependencies have been resolved.
-	if (Contained()) props->Add(SAVEOBJ_ContentsCreation, "%s->CreateContents(%i)", Contained()->MakeScenarioSaveName(), GetID());
+	if (Contained())
+	{
+		props->Add(SAVEOBJ_ContentsCreation, "%s->CreateContents(%i)", Contained()->MakeScenarioSaveName(), GetID());
+		props->Add(SAVEOBJ_ContentsCreationEx, "%s->CreateContents(%i, %%d)", Contained()->MakeScenarioSaveName(), GetID());
+	}
 	// Write some default props every object should save
 	var v, is_static = (GetCategory() & C4D_StaticBack) || Contained(), def = GetID();
 	v = GetAlive();         if (!v && (GetCategory()&C4D_Living)) props->AddCall("Alive",         this, "Kill", this, true);
@@ -469,7 +498,7 @@ global func SaveScenP_Remove(string name)
 global func SaveScenP_RemoveCreation()
 {
 	// Remove any creation strings
-	return this->Remove(SAVEOBJ_ContentsCreation) + this->Remove(SAVEOBJ_Creation);
+	return this->Remove(SAVEOBJ_ContentsCreation) + this->Remove(SAVEOBJ_ContentsCreationEx) + this->Remove(SAVEOBJ_Creation);
 }
 
 global func SaveScenP_Clear()
@@ -524,7 +553,7 @@ global func SaveScenP_Buffer2File(f)
 	{
 		for (var v in this.data)
 		{
-			var v_is_creation = ((v.name == SAVEOBJ_Creation) || (v.name == SAVEOBJ_ContentsCreation));
+			var v_is_creation = ((v.name == SAVEOBJ_Creation) || (v.name == SAVEOBJ_ContentsCreation) || (v.name == SAVEOBJ_ContentsCreationEx));
 			if (v_is_creation != creation) continue;
 			if (i || !creation) indent = "	";
 			FileWrite(f, Format("%s%s;\n", indent, v.s));
@@ -544,7 +573,7 @@ global func SaveScenP_HasCreation()
 {
 	// Functions to test whether any creation data has been added
 	if (!this.data) return false;
-	for (var v in this.data) if ((v.name == SAVEOBJ_Creation) || (v.name == SAVEOBJ_ContentsCreation)) return true;
+	for (var v in this.data) if ((v.name == SAVEOBJ_Creation) || (v.name == SAVEOBJ_ContentsCreation) || (v.name == SAVEOBJ_ContentsCreationEx)) return true;
 	return false;
 }
 
@@ -552,16 +581,16 @@ global func SaveScenP_HasProps()
 {
 	// Functions to test whether any property data has been added
 	if (!this.data) return false;
-	for (var v in this.data) if ((v.name != SAVEOBJ_Creation) && (v.name != SAVEOBJ_ContentsCreation)) return true;
+	for (var v in this.data) if ((v.name != SAVEOBJ_Creation) && (v.name != SAVEOBJ_ContentsCreation) && (v.name != SAVEOBJ_ContentsCreationEx)) return true;
 	return false;
 }
 
 global func SaveScenP_HasProp(string prop)
 {
 	// Test if specific prop is present
-	if (!this.data) return false;
-	for (var v in this.data) if (v.name == prop) return true;
-	return false;
+	if (!this.data) return nil;
+	for (var v in this.data) if (v.name == prop) return v;
+	return nil;
 }
 
 global func SaveScenP_TakeProps()
@@ -572,7 +601,7 @@ global func SaveScenP_TakeProps()
 	{
 		var creation = nil, props = nil;
 		for (var v in this.data)
-			if ((v.name != SAVEOBJ_Creation) && (v.name != SAVEOBJ_ContentsCreation))
+			if ((v.name != SAVEOBJ_Creation) && (v.name != SAVEOBJ_ContentsCreation) && (v.name != SAVEOBJ_ContentsCreationEx))
 				if (!props) props = [v]; else props[GetLength(props)] = v;
 			else
 				if (!creation) creation = [v]; else creation[GetLength(creation)] = v;
