@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2014, The OpenClonk Team and contributors
+# Copyright (c) 2014-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -38,5 +38,9 @@ if(PKG_CONFIG_FOUND)
 endif()
 
 if(NOT FREETYPE_FOUND)
-	include(LegacyFindFreetype)
+	# Fallback to system FindFreetype
+	set(_ft_module_path "${CMAKE_MODULE_PATH}")
+	unset(CMAKE_MODULE_PATH)
+	include(FindFreetype)
+	set(CMAKE_MODULE_PATH "${_ft_module_path}")
 endif()
