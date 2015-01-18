@@ -565,6 +565,11 @@ private func FindInventoryWeapon(fx)
 			{ fx.strategy = fx.ai.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = fx.ai.CheckVehicleAmmo; return true; }
 		else
 			fx.weapon = nil;
+	if (fx.weapon = FindContents(GrenadeLauncher))
+		if (HasBombs(fx, fx.weapon))
+			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 75; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasBombs; fx.ranged=true; return true; }
+		else
+			fx.weapon = nil;
 	if (fx.weapon = FindContents(Bow))
 		if (HasArrows(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
@@ -583,6 +588,13 @@ private func HasArrows(fx, object weapon)
 {
 	if (weapon->Contents(0)) return true;
 	if (FindObject(Find_Container(this), Find_Func("IsArrow"))) return true;
+	return false;
+}
+
+private func HasBombs(fx, object weapon)
+{
+	if (weapon->Contents(0)) return true;
+	if (FindObject(Find_Container(this), Find_Func("IsGrenadeLauncherAmmo"))) return true;
 	return false;
 }
 
