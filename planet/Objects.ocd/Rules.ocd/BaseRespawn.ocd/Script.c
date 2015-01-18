@@ -84,8 +84,10 @@ protected func OnClonkDeath(object clonk)
 			break;
 		}
 		// Try to buy a crewmember at the base.
-		var crew = base->~DoBuy(Clonk, plr, base->GetOwner(), clonk);
-		if (crew && GetType(crew) == C4V_C4Object)
+		var pay_plr = base->GetOwner();
+		if (pay_plr == NO_OWNER) pay_plr = plr; // payment in neutral bases
+		var crew = base->~DoBuy(Clonk, plr, pay_plr, clonk);
+		if (crew)
 		{
 			crew->Exit(0, base->GetDefHeight() / 2);
 			SetCursor(plr, crew);
