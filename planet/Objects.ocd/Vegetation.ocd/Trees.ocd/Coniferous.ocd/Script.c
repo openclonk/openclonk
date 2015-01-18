@@ -48,10 +48,13 @@ func Damage()
 		burned->SetCategory(GetCategory());
 		burned.Touchable = this.Touchable;
 		burned->SetCon(GetCon());
-		burned->SetR(GetR());
-		burned->Incinerate(OnFire());
-		burned->SetPosition(GetX(), GetY());
-		Sound("TreeCrack", false);
+		if (burned)
+		{
+			burned->SetR(GetR());
+			burned->Incinerate(OnFire());
+			burned->SetPosition(GetX(), GetY());
+			Sound("TreeCrack", false);
+		}
 		RemoveObject();
 		return;
 	}
