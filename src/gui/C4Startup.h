@@ -40,11 +40,6 @@ private:
 
 public:
 	// backgrounds
-#if 0
-	C4FacetID fctScenSelBG; // for scenario selection screen
-	C4FacetID fctPlrSelBG;  // for player selection screen
-	C4FacetID fctNetBG;     // for network screen
-#endif
 	C4FacetID fctPlrPropBG; // for player property subpage
 	C4FacetID fctAboutBG;   // for about screen
 	C4FacetID fctDlgPaper;

@@ -560,9 +560,6 @@ void C4StartupPlrSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
-#if 0
-	DrawBackground(cgo, C4Startup::Get()->Graphics.fctPlrSelBG);
-#endif
 }
 
 void C4StartupPlrSelDlg::UpdateBottomButtons()

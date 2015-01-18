@@ -451,41 +451,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			tTexBlt.top   = (fTexBlt.top   + iBlitY - fy) * scaleY + ty;
 			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * scaleX + tx;
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * scaleY + ty;
-			// prepare blit data texture matrix
-			// translate back to texture 0/0 regarding indent and blit offset
-			/*BltData.TexPos.SetMoveScale(-tTexBlt.left, -tTexBlt.top, 1, 1);
-			// apply back scaling and texture-indent - simply scale matrix down
-			int i;
-			for (i=0; i<3; ++i) BltData.TexPos.mat[i] /= scaleX2;
-			for (i=3; i<6; ++i) BltData.TexPos.mat[i] /= scaleY2;
-			// now, finally, move in texture - this must be done last, so no stupid zoom is applied...
-			BltData.TexPos.MoveScale(((float) fTexBlt.left) / iTexSize,
-			  ((float) fTexBlt.top) / iTexSize, 1, 1);*/
-			// Set resulting matrix directly
-			/*BltData.TexPos.SetMoveScale(
-			  fTexBlt.left / iTexSizeX - tTexBlt.left / scaleX2,
-			  fTexBlt.top / iTexSizeY - tTexBlt.top / scaleY2,
-			  1 / scaleX2,
-			  1 / scaleY2);*/
-
-			// get tex bounds
-			// The code below is commented out since the problem
-			// in question is currently fixed by using non-power-of-two
-			// and non-square textures.
-#if 0
-			// Size of this texture actually containing image data
-			const int iImgSizeX = (iX == sfcSource->iTexX-1) ? ((sfcSource->Wdt - 1) % iTexSizeX + 1) : (iTexSizeX);
-			const int iImgSizeY = (iY == sfcSource->iTexY-1) ? ((sfcSource->Hgt - 1) % iTexSizeY + 1) : (iTexSizeY);			
-			// Make sure we don't access border pixels. Normally this is prevented
-			// by GL_CLAMP_TO_EDGE anyway but for the bottom and rightmost textures
-			// this does not work as the textures might only be partially filled.
-			// This is the case if iImgSizeX != iTexSize or iImgSizeY != iTexSize.
-			// See bug #396.
-			fTexBlt.left  = Max<float>(fTexBlt.left, 0.5);
-			fTexBlt.top   = Max<float>(fTexBlt.top, 0.5);
-			fTexBlt.right = Min<float>(fTexBlt.right, iImgSizeX - 0.5);
-			fTexBlt.bottom= Min<float>(fTexBlt.bottom, iImgSizeY - 0.5);
-#endif
 
 			// set up blit data as rect
 			C4BltVertex vertices[6];

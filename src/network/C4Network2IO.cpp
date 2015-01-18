@@ -124,19 +124,6 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		else
 			LogSilentF("Network: UDP initialized on port %d", iPortUDP);
 
-		// broadcast deactivated for now, it will possibly cause problems with connection recovery
-#if 0
-		if (pNetIO_UDP && fBroadcast)
-		{
-			// init broadcast
-			C4NetIO::addr_t BCAddr; ZeroMem(&BCAddr, sizeof BCAddr);
-			if (!pNetIO_UDP->InitBroadcast(&BCAddr))
-				LogF("Network: could not init UDP broadcast (%s)", pNetIO_UDP->GetError() ? pNetIO_UDP->GetError() : "");
-			else
-				LogSilentF("Network: UDP broadcast using %s:%d", inet_ntoa(BCAddr.sin_addr), htons(BCAddr.sin_port));
-		}
-#endif
-
 		// add to thread, set callback
 		if (pNetIO_UDP)
 		{
@@ -426,12 +413,6 @@ bool C4Network2IO::Broadcast(const C4NetIOPacket &rPkt)
 	if(!fSuccess)
 		Log("Network: Warning! Broadcast failed.");
 	return fSuccess;
-#if 0
-	// broadcast using all available i/o classes
-	if (pNetIO_TCP) fSuccess &= pNetIO_TCP->Broadcast(rPkt);
-	if (pNetIO_UDP) fSuccess &= pNetIO_UDP->Broadcast(rPkt);
-	return fSuccess;
-#endif
 }
 
 bool C4Network2IO::SendMsgToClient(C4NetIOPacket &rPkt, int iClient) // by both
@@ -1151,26 +1132,6 @@ bool C4Network2IO::Ping()
 			pConn->OnPing();
 		}
 	return fSuccess;
-#if 0
-	// begin broadcast
-	BeginBroadcast(true);
-	// make packet
-	C4NetIOPacket Pkt = MkC4NetIOPacket(PID_Ping, C4PacketPing());
-	// ping everyone
-	if (pNetIO_TCP)
-		if (!pNetIO_TCP->Broadcast(Pkt))
-			{ fSuccess = false; ThreadLog("Network: failed to broadcast TCP ping! (%s)", pNetIO_TCP->GetError()); pNetIO_TCP->ResetError(); }
-	if (pNetIO_UDP)
-		if (!pNetIO_UDP->Broadcast(Pkt))
-			{ fSuccess = false; ThreadLog("Network: failed to broadcast UDP ping! (%s)", pNetIO_TCP->GetError()); pNetIO_TCP->ResetError(); }
-	// end broadcast
-	EndBroadcast();
-	// notify connections
-	for (C4Network2IOConnection *pConn = pConnList; pConn; pConn = pConn->pNext)
-		pConn->OnPing();
-	// return
-	return fSuccess;
-#endif
 }
 
 void C4Network2IO::CheckTimeout()

@@ -228,21 +228,6 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
 	return fSuccess;
 }
 
-/*bool C4Surface::Save(C4Group &hGroup, const char *szFilename)
-  {
-  // Using temporary file at C4Group temp path
-  char szTemp[_MAX_PATH+1];
-  SCopy(C4Group_GetTempPath(),szTemp);
-  SAppend(GetFilename(szFilename),szTemp);
-  MakeTempFilename(szTemp);
-  // Save to temporary file
-  if (!C4Surface::Save(szTemp)) return false;
-  // Move temp file to group
-  if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
-  // Success
-  return true;
-  }*/
-
 bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
 {
 	// Using temporary file at C4Group temp path

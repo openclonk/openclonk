@@ -686,22 +686,6 @@ namespace
 		glMultMatrixf(attach_trans_gl);
 		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, outRect, parity);
 		glPopMatrix();
-
-#if 0
-			const StdMeshMatrix& own_trans = attach->Parent->GetBoneTransform(attach->ParentBone)
-			                                 * StdMeshMatrix::Transform(attach->Parent->GetMesh().GetBone(attach->ParentBone).Transformation);
-
-			// Draw attached bone
-			glDisable(GL_DEPTH_TEST);
-			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-			GLUquadric* quad = gluNewQuadric();
-			glPushMatrix();
-			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
-			gluSphere(quad, 1.0f, 4, 4);
-			glPopMatrix();
-			gluDeleteQuadric(quad);
-			glEnable(GL_DEPTH_TEST);
-#endif
 	}
 
 	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect, bool parity)
@@ -733,25 +717,6 @@ namespace
 			glPolygonMode(GL_FRONT, modes[0]);
 			glPolygonMode(GL_BACK, modes[1]);
 		}
-
-#if 0
-		// Draw attached bone
-		if (instance.GetAttachParent())
-		{
-			const StdMeshInstance::AttachedMesh* attached = instance.GetAttachParent();
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.GetMesh().GetBone(attached->ChildBone).Transformation);
-
-			glDisable(GL_DEPTH_TEST);
-			glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
-			GLUquadric* quad = gluNewQuadric();
-			glPushMatrix();
-			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
-			gluSphere(quad, 1.0f, 4, 4);
-			glPopMatrix();
-			gluDeleteQuadric(quad);
-			glEnable(GL_DEPTH_TEST);
-		}
-#endif
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)

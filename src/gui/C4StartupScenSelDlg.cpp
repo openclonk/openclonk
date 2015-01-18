@@ -1420,15 +1420,6 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);
 	C4Rect rcMap = caMain.GetCentered(caMain.GetWidth(), caMain.GetHeight());
-#if 0
-	// Was used for the custom map scenario selection style
-	int iYOversize = caMain.GetHeight()/10; // overlap of map to top
-	rcMap.y -= iYOversize; rcMap.Hgt += iYOversize;
-#endif
-	C4GUI::ComponentAligner caMap(rcMap, caMain.GetWidth()/10,0, true);
-#if 0
-	caMap.ExpandTop(-iYOversize);
-#endif
 
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
@@ -1536,10 +1527,6 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	if (pfctBackground)
 		DrawBackground(cgo, *pfctBackground);
-#if 0
-	else
-		DrawBackground(cgo, C4Startup::Get()->Graphics.fctScenSelBG);
-#endif
 }
 
 void C4StartupScenSelDlg::OnShown()

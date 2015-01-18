@@ -669,14 +669,6 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 		if (Map[cnt].sAboveTempConvertTo.getLength())
 			Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, true, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 	}
-#if 0
-	int32_t i=0;
-	while (ReactionFuncMap[i].szRFName) {printf("%s: %p\n", ReactionFuncMap[i].szRFName, ReactionFuncMap[i].pFunc); ++i;}
-	for (int32_t cnt=-1; cnt<Num; cnt++)
-		for (int32_t cnt2=-1; cnt2<Num; cnt2++)
-			if (ppReactionMap[(cnt2+1)*(Num+1) + cnt+1])
-				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
-#endif
 
 	// Get hardcoded system material indices
 	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(szEarthMaterial));

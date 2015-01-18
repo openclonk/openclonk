@@ -736,16 +736,6 @@ public:
 
 };
 
-#if 0
-// const char* + StdStrBuf
-inline StdStrBuf operator + (const char* szString, const StdStrBuf& Buf2)
-{
-	StdStrBuf Buf(szString);
-	Buf.Append(Buf2);
-	return Buf;
-}
-#endif
-
 // Wrappers
 extern StdStrBuf FormatString(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE;
 extern StdStrBuf FormatStringV(const char *szFmt, va_list args);

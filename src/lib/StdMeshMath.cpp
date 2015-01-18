@@ -379,15 +379,6 @@ StdMeshTransformation StdMeshMatrix::Decompose() const
 	trans.translate.y = a[1][3];
 	trans.translate.z = a[2][3];
 
-#if 0
-	// Double check that the result is correct. This check will fail if
-	// the original matrix has skew components.
-	StdMeshMatrix mat2 = StdMeshMatrix::Transform(trans);
-	for(unsigned int i = 0; i < 3; ++i)
-		for(unsigned int j = 0; j < 4; ++j)
-			assert( fabs(mat2.a[i][j] - a[i][j]) < 1e-3);
-#endif
-
 	return trans;
 }
 

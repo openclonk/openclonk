@@ -205,8 +205,6 @@ public:
 			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
 	~C4GraphicsOverlay(); // dtor
 
-	void Read(const char **ppInput);
-	void Write(char *ppOutput);
 	void CompileFunc(StdCompiler *pComp);
 
 	// object pointer management

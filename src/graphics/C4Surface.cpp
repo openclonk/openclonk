@@ -275,23 +275,6 @@ void C4Surface::FreeTextures()
 	textures.clear();
 }
 
-/*bool ClrByOwner(DWORD &rClr) old style...
-  {
-  // red value must be approx. same to green
-  BYTE byR=GetBValue(rClr), byG=GetGValue(rClr);
-  int diff=Abs(byR-byG);
-  if (diff>byR/8) return false;
-  // get blue value; mustn't be 0 or equal to R/G (grey)
-  BYTE byB=GetRValue(rClr); if (!byB || Inside(byB, Min(byR, byG), Max(byR, byG))) return false;
-  // medium r/g and blue is very close (additional gray shade check)
-  if ((byR > 50) && (Abs(byB - byR) < 20)) return false;
-  // if blue is not fully lit, red and green should be very low
-  if (byB<240 && byR>15) return false;
-  // so, the color seems to be truly blue-ish
-  rClr=RGB(byB, byB, byB) | (rClr&0xff000000);
-  return true;
-  }*/
-
 #define  RANGE    255
 #define  HLSMAX   RANGE
 #define  RGBMAX   255
@@ -474,73 +457,6 @@ bool C4Surface::ReadBMP(CStdStream &hGroup)
 	return true;
 }
 
-/*bool C4Surface::Save(const char *szFilename)
-  {
-  C4BMPInfo BitmapInfo2;
-  C4BMP256Info BitmapInfo;
-  // Set bitmap info
-  if (fPrimary)
-    {
-    if (byBytesPP==4)
-      BitmapInfo2.Set(Wdt,Hgt,32);
-    else
-      BitmapInfo2.Set(Wdt,Hgt,16);
-    }
-  else
-    BitmapInfo.Set(Wdt,Hgt,pPal->Colors);
-
-  // Lock - WARNING - maybe locking primary surface here...
-  if (!Lock()) return false;
-
-  // Create file & write info
-  CStdFile hFile;
-
-  if(fPrimary)
-    {
-    if ( !hFile.Create(szFilename)
-    || !hFile.Write(&BitmapInfo2,sizeof(BitmapInfo2)) )
-      { Unlock(); return false; }
-
-    // write lines
-    char bpEmpty[4]; int iEmpty = DWordAligned(Wdt*byBytesPP)-Wdt*byBytesPP;
-    for (int cnt=Hgt-1; cnt>=0; cnt--)
-      {
-      if (!hFile.Write(Bits+(Pitch*cnt),Wdt*byBytesPP))
-        { Unlock(); return false; }
-      if (iEmpty)
-        if (!hFile.Write(bpEmpty,iEmpty))
-          { Unlock(); return false; }
-      }
-
-    }
-  else
-    {
-    if ( !hFile.Create(szFilename)
-    || !hFile.Write(&BitmapInfo,sizeof(BitmapInfo)) )
-      { Unlock(); return false; }
-
-    // Write lines
-    char bpEmpty[4]; int iEmpty = DWordAligned(Wdt)-Wdt;
-    for (int cnt=Hgt-1; cnt>=0; cnt--)
-      {
-      if (!hFile.Write(Bits+(Pitch*cnt),Wdt))
-        { Unlock(); return false; }
-      if (iEmpty)
-        if (!hFile.Write(bpEmpty,iEmpty))
-          { Unlock(); return false; }
-      }
-    }
-
-  // Close file
-  hFile.Close();
-
-  // Unlock
-  Unlock();
-
-  // Success
-  return true;
-  }
-*/
 bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
 {
 	// Lock - WARNING - maybe locking primary surface here...
@@ -702,17 +618,6 @@ DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation)
 			PrimarySurfaceLockPitch = Wdt*3;
 		}
 		return * (DWORD *) (PrimarySurfaceLockBits+(Hgt-iY-1)*PrimarySurfaceLockPitch+iX*3);
-
-			// copy content into textures
-			/*if (!ppTex) if (!CreatePrimaryGLTextures()) return 0;
-			// get+lock affected texture - inverse Y as primary is locked upside down!
-			iY = Hgt-iY-1;
-			C4TexRef *pTexRef;
-			if (!GetLockTexAt(&pTexRef, iX, iY)) return 0;
-			pBuf=(BYTE *) pTexRef->texLock.pBits;
-			iPitch=pTexRef->texLock.Pitch;
-			// get pixel
-			return *(DWORD *)(pBuf+iY*iPitch+iX*4);*/
 #endif
 	}
 	else
@@ -791,27 +696,6 @@ bool C4Surface::IsPixTransparent(int iX, int iY)
 	// get alpha value
 	return (dwPix>>24) < 128;
 }
-
-/*bool C4Surface::SetPixEx(int iX, int iY, BYTE byCol, DWORD dwClr)
-  {
-  // clip
-  if ((iX<ClipX) || (iX>ClipX2) || (iY<ClipY) || (iY>ClipY2)) return true;
-  // primary?
-  if (fPrimary)
-#ifndef USE_CONSOLE
-      pGL->DrawPixInt(this, iX, iY, dwClr);
-    else
-#endif
-      {
-      }
-    return true;
-    }
-  else
-    {
-    SetPixDw(iX, iY, dwClr);
-    }
-  return true;
-  }*/
 
 bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 {

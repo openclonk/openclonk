@@ -61,16 +61,6 @@ bool C4Folder::Load(C4Group &hGroup)
 	return true;
 }
 
-/*bool C4Folder::Save(C4Group &hGroup)
-  {
-  char *Buffer; int32_t BufferSize;
-  if (!Decompile(&Buffer,&BufferSize))
-    return false;
-  if (!hGroup.Add(C4Folder, Buffer, BufferSize, false, true))
-    { StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
-  return true;
-  }*/
-
 void C4Folder::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Head, "Head"));
