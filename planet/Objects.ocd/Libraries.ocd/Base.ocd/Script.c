@@ -228,32 +228,37 @@ func BuyDummy(id idDef, object pClonk, bool bRight, int iValue)
 
 func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool fShowErrors)
 {
-	if(!GetBaseMaterial(iPayPlr, idDef)) return; //TODO
-	var iValue = GetBuyValue(idDef);
-	// Has the clonk enought money?
-	if(iValue > GetWealth(iPayPlr))
+	// Tries to buy an object or all available objects for bRight == true
+	// Returns the last bought object
+	var num_available = GetBaseMaterial(iPayPlr, idDef);
+	if(!num_available) return; //TODO
+	var num_buy = 1, pObj = nil;
+	if (bRight) num_buy = num_available;
+	while (num_buy--)
 	{
-		// TODO: get an errorsound
-		if(fShowErrors)
+		var iValue = GetBuyValue(idDef);
+		// Has the clonk enought money?
+		if(iValue > GetWealth(iPayPlr))
 		{
-			Sound("Error", 0, 100, iForPlr+1);
-			PlayerMessage(iForPlr, "$TxtNotEnoughtMoney$");
+			// TODO: get an errorsound
+			if(fShowErrors)
+			{
+				Sound("Error", 0, 100, iForPlr+1);
+				PlayerMessage(iForPlr, "$TxtNotEnoughtMoney$");
+			}
+			break;
 		}
-		return -1;
+		// Take the cash
+		DoWealth(iPayPlr, -iValue);
+		Sound("UnCash", 0, 100, iForPlr+1); // TODO: get sound
+		// Decrease the Basematerial
+		ChangeBaseMaterial(idDef, -1);
+		// Deliver the object
+		var pObj = CreateContents(idDef);
+		pObj->SetOwner(iForPlr);
+		if(pObj->GetOCF() & OCF_CrewMember) pObj->MakeCrewMember(iForPlr);
+		if(pObj->GetOCF() & OCF_Collectible) pClonk->Collect(pObj);
 	}
-	// Take the cash
-	DoWealth(iPayPlr, -iValue);
-	Sound("UnCash", 0, 100, iForPlr+1); // TODO: get sound
-	// Decrease the Basematerial
-	ChangeBaseMaterial(idDef, -1);
-	// Deliver the object
-	var pObj = CreateContents(idDef);
-	pObj->SetOwner(iForPlr);
-	if(pObj->GetOCF() & OCF_CrewMember) pObj->MakeCrewMember(iForPlr);
-	if(pObj->GetOCF() & OCF_Collectible) pClonk->Collect(pObj);
-	// is right clicked? then buy another object
-	if(bRight)
-		DoBuy(idDef, iForPlr, iPayPlr, pClonk, bRight, false);
 	return pObj;
 }
 
