@@ -1,0 +1,26 @@
+language: cpp
+compiler: gcc
+
+# Build both GTK2 and GTK3 versions
+env:
+    - USE_GTK_VERSION=2
+    - USE_GTK_VERSION=3
+
+install:
+    - sudo apt-get -qq update
+    - >
+      sudo apt-get -qq install
+      build-essential cmake imagemagick
+      libboost-dev libboost-regex-dev
+      libfreetype6-dev
+      $([ "${USE_GTK_VERSION}" == 2 ] && echo 'libgtk2.0-dev libgtksourceview2.0-dev')
+      $([ "${USE_GTK_VERSION}" == 3 ] && echo 'libgtk-3-dev libgtksourceview-3.0-dev')
+      libjpeg-dev libpng-dev
+      libupnp-dev
+      libalut-dev libopenal-dev libogg-dev libvorbis-dev
+      libgl1-mesa-dev libglew-dev libxrandr-dev x11proto-core-dev
+      zlib1g-dev
+
+script:
+    - cmake $([ "${USE_GTK_VERSION}" == 3 ] && echo '-DUSE_GTK3:BOOL=TRUE') .
+    - make
