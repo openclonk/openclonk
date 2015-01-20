@@ -17,6 +17,30 @@ func Initialize()
 	GuiOpen(starter_menu);
 }
 
+func MarginTest()
+{
+	var menu = 
+	{
+		Style = GUI_GridLayout,
+		BackgroundColor = RGB(255, 0, 0),
+	};
+	
+	for (var i = 0; i < 10; ++i)
+	{
+		var sizes = ["8em", "8em", "16em", "16em"];
+		ShuffleArray(sizes);
+		var entry = 
+		{
+			BackgroundColor = RGB(0, 255, 0),
+			Left = 0, Top = 0,
+			Right = sizes[0], Bottom = sizes[1],
+			Margin = ["1em"],//["1em", "1em", "1em", "1em"]
+		};
+		GuiAddSubwindow(entry, menu);
+	}
+	active_menu = GuiOpen(menu);
+}
+
 func CloseCurrentMenu()
 {
 	GuiClose(active_menu);

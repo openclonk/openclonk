@@ -283,6 +283,9 @@ public:
 	void Close();
 	void ClearPointers(C4Object *pObj);
 
+	// calculate the width/height based on a certain property (f.e. leftMargin and relLeftMargin) and the parent's width/height
+	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty);
+
 	// this updates the window's layout and also propagates to all children
 	bool UpdateLayout(C4TargetFacet &cgo);
 	bool UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);

@@ -1338,6 +1338,14 @@ void C4ScriptGuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 }
 
 
+float C4ScriptGuiWindow::CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty)
+{
+	const float widthOrHeight = Em2Pix(props[absoluteProperty].GetFloat())
+		+ float(parentWidthOrHeight) * props[relativeProperty].GetFloat();
+	return widthOrHeight;
+}
+
+
 void C4ScriptGuiWindow::UpdateLayoutGrid()
 {
 	const int32_t &width = rcBounds.Wdt;
@@ -1353,12 +1361,14 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		// calculate the space the child needs, correctly respecting the margins
-		const float childWdtF = float(child->rcBounds.Wdt)
-			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::leftMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::rightMargin].GetFloat())
-			+ float(width) * (child->props[C4ScriptGuiWindowPropertyName::relLeftMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relRightMargin].GetFloat());
-		const float childHgtF = float(child->rcBounds.Hgt)
-			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat())
-			+ float(height) * (child->props[C4ScriptGuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relBottomMargin].GetFloat());
+		const float childLeftMargin = child->CalculateRelativeSize(width, leftMargin, relLeftMargin);
+		const float childTopMargin = child->CalculateRelativeSize(height, topMargin, relTopMargin);
+		const float childRightMargin = child->CalculateRelativeSize(width, rightMargin, relRightMargin);
+		const float childBottomMargin = child->CalculateRelativeSize(height, bottomMargin, relBottomMargin);
+
+		const float childWdtF = float(child->rcBounds.Wdt) + childLeftMargin + childRightMargin;
+		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
+
 		// do all the rounding after the calculations
 		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
 		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
@@ -1368,8 +1378,8 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 			maxChildHeight = childHgt;
 			lowestChildRelY = currentY + childHgt;
 		}
-		child->rcBounds.x = currentX;
-		child->rcBounds.y = currentY;
+		child->rcBounds.x = currentX + static_cast<int32_t>(childLeftMargin);
+		child->rcBounds.y = currentY + static_cast<int32_t>(childTopMargin);
 
 		currentX += childWdt + borderX;
 		if (currentX + childWdt >= width)
@@ -1395,12 +1405,13 @@ void C4ScriptGuiWindow::UpdateLayoutVertical()
 
 		// Do the calculations in floats first to not lose accuracy.
 		// Take the height of the child and then add the margins.
-		const float childHgtF = float(child->rcBounds.Hgt)
-			+ Em2Pix(child->props[C4ScriptGuiWindowPropertyName::topMargin].GetFloat()) + Em2Pix(child->props[C4ScriptGuiWindowPropertyName::bottomMargin].GetFloat())
-			+ float(rcBounds.Hgt) * (child->props[C4ScriptGuiWindowPropertyName::relTopMargin].GetFloat() + child->props[C4ScriptGuiWindowPropertyName::relBottomMargin].GetFloat());
+		const float childTopMargin = child->CalculateRelativeSize(rcBounds.Hgt, topMargin, relTopMargin);
+		const float childBottomMargin = child->CalculateRelativeSize(rcBounds.Hgt, bottomMargin, relBottomMargin);
+
+		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
 		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
 
-		child->rcBounds.y = currentY;
+		child->rcBounds.y = currentY + childTopMargin;
 		currentY += childHgt + borderY;
 	}
 
