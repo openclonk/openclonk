@@ -163,6 +163,13 @@ protected func Initialize()
 	return;
 }
 
+protected func InitializePlayer(int plr)
+{
+	// This scenario does not have shadows.
+	SetFoW(false, plr);
+	return;
+}
+
 /*-- Wind channel --*/
 
 global func FxWindChannelStart(object target, proplist effect, int temporary)
