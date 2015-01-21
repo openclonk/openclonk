@@ -1695,7 +1695,7 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, 
 		    GameText.GetDataBuf(), C4CFN_Game))
 			return false;
 		// Objects
-		int32_t iObjects=Objects.PostLoad(fLoadSection, numbers);
+		int32_t iObjects = Objects.ObjectCount();
 		if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
 	}
 	// Music System: Set play list
@@ -2195,6 +2195,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
 	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	numbers->Denumerate();
+	// Object.PostLoad must happen after number->Denumerate(), becuase UpdateFace() will access Action proplist,
+	// which might have a non-denumerated prototype otherwise
+	Objects.PostLoad(fLoadSection, numbers);
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
