@@ -296,9 +296,6 @@ func InitializeObjects()
 	Clonk015->SetColor(0xffff0000);
 	g_cannoneer = CreateObjectAbove(Clonk, 1000, 471);
 	g_cannoneer.StaticSaveVar = "g_cannoneer";
-	S2AI->AddAI(g_cannoneer);
-	S2AI->SetHome(g_cannoneer, 1000, 460, DIR_Left);
-	S2AI->SetGuardRange(g_cannoneer, 891, 324, 441, 180);
 	g_cannoneer->SetDir(DIR_Left);
 	var Clonk016 = CreateObjectAbove(Clonk, 1317, 334);
 	S2AI->AddAI(Clonk016);
@@ -405,7 +402,6 @@ func InitializeObjects()
 	Clonk010->CreateContents(Sword);
 	g_king->CreateContents(Sword);
 	Clonk002->CreateContents(Sword);
-	g_cannoneer->CreateContents(Sword);
 
 	Clonk001->CreateContents(Arrow, 2);
 	Chest005->CreateContents(Arrow);
@@ -548,6 +544,5 @@ func InitializeObjects()
 	Clonk011->CreateContents(Firestone, 4);
 	Chest003->CreateContents(Firestone, 3);
 	g_king->CreateContents(Firestone, 3);
-	g_cannoneer->CreateContents(Firestone);
 	return true;
 }
