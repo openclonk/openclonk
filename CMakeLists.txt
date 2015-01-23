@@ -1237,10 +1237,10 @@ endforeach()
 ############################################################################
 
 if (APPLE)
-	
 	# for good measure - seems to be part of default OSX installation
 	# linking with static freetype library requires it
-	target_link_libraries(openclonk "/usr/lib/libbz2.dylib")
+	find_package("BZip2" REQUIRED)
+	target_link_libraries(openclonk ${BZIP2_LIBRARIES})
 
 	set(HAVE_RVALUE_REF ON)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x -g -Wall -fobjc-arc")
