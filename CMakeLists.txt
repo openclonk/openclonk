@@ -1421,7 +1421,6 @@ ELSE()
    SET(native_c4group c4group)
 ENDIF()
 
-
 ############################################################################
 # installation
 ############################################################################
@@ -1492,7 +1491,7 @@ foreach(group ${OC_C4GROUPS})
 	if (APPLE)
 		if (CMAKE_GENERATOR STREQUAL Xcode)
 			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
 				"$<TARGET_FILE:${native_c4group}>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				# leave out third parameter here so the script can figure out Xcode-ish paths as usual
@@ -1500,7 +1499,7 @@ foreach(group ${OC_C4GROUPS})
 			)
 		else()
 			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
 				"$<TARGET_FILE:${native_c4group}>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
