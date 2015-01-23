@@ -21,7 +21,7 @@
 #include <C4Rect.h>
 #include <C4FullScreen.h>
 
-#import <Appkit/AppKit.h>
+#import <AppKit/AppKit.h>
 #import <C4WindowController.h>
 #import <C4DrawGLMac.h>
 

@@ -1348,7 +1348,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to

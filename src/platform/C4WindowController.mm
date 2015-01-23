@@ -14,7 +14,7 @@
  */
 
 #include <C4Include.h>
-#include <C4Fullscreen.h>
+#include <C4FullScreen.h>
 #include <C4GraphicsSystem.h>
 #include <C4Viewport.h>
 #include <C4ViewportWindow.h>
