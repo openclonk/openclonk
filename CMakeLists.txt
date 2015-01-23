@@ -825,13 +825,8 @@ else()
 endif()
 
 if(NOT USE_CONSOLE)
-	if(APPLE)
-		include(LegacyFindFreetype)
-		include_directories(${FREETYPE_INCLUDE_DIRS})
-	else()
-		find_package(Freetype REQUIRED)
-		include_directories(${FREETYPE_INCLUDE_DIRS})
-	endif()
+	find_package(Freetype REQUIRED)
+	include_directories(${FREETYPE_INCLUDE_DIRS})
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
