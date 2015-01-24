@@ -1241,9 +1241,6 @@ if (APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x -g -Wall -fobjc-arc")
 
 	if(CMAKE_GENERATOR STREQUAL Xcode)
-		add_custom_command(TARGET openclonk
-			POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
-		)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
@@ -1263,6 +1260,12 @@ if (APPLE)
 		set_target_properties(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 	endif()
+
+	add_custom_command(TARGET openclonk
+		POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		"$<TARGET_FILE:openclonk>"
+	)
+
 endif()
 
 ############################################################################
