@@ -896,6 +896,14 @@ endif()
 # Select an audio library
 find_package("Audio")
 
+# SDL
+if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
+	include(FindSDL)
+	SET(HAVE_SDL ${SDL_FOUND})
+	include_directories(${SDL_INCLUDE_DIR})
+	target_link_libraries(openclonk ${SDL_LIBRARY})
+endif()
+
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
 ############################################################################
