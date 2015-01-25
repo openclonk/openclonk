@@ -22,10 +22,7 @@
 
 #include <C4Random.h>
 #include <C4Texture.h>
-#include <C4Group.h>
-
 #include <CSurface8.h>
-#include <Bitmap256.h>
 
 C4MapCreator::C4MapCreator()
 {

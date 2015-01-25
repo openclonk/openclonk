@@ -18,6 +18,8 @@
 #include <C4Include.h>
 #include <C4StartupScenSelDlg.h>
 
+#include <C4Application.h>
+#include <C4GameOptions.h>
 #include <C4Network2Dialogs.h>
 #include <C4StartupMainDlg.h>
 #include <C4StartupNetDlg.h>
@@ -31,8 +33,6 @@
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4GameOptions.h>
-
 #include <set>
 
 // singleton
@@ -467,7 +467,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		char *szBuf = sName.GrabPointer();
 		RemoveExtension(szBuf);
 		sName.Take(szBuf);
-		sName.Take(C4Language::IconvClonk(sName.getData()));
 		// load entry specific stuff that's in the front of the group
 		if (!LoadCustomPre(Group))
 			return false;

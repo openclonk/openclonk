@@ -19,7 +19,6 @@
 #define INC_C4GameControl
 
 #include "C4Control.h"
-#include "C4Network2Client.h"
 #include "C4Record.h"
 
 enum C4ControlMode

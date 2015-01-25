@@ -25,6 +25,7 @@
 #include <C4Extra.h>
 #include "C4Scoreboard.h"
 #include <C4PlayerControl.h>
+#include <C4TransferZone.h>
 
 class C4Game
 {

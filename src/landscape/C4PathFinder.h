@@ -20,8 +20,6 @@
 #ifndef INC_C4PathFinder
 #define INC_C4PathFinder
 
-#include <C4TransferZone.h>
-
 class C4PathFinder;
 
 class C4PathFinderRay

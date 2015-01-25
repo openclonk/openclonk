@@ -22,16 +22,12 @@
 
 #include <C4DefList.h>
 #include <C4Object.h>
-#include <C4FullScreen.h>
-#include <C4ObjectCom.h>
 #include <C4Viewport.h>
 #include <C4Player.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
-#include <C4GameObjects.h>
 #include <C4GameControl.h>
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows

@@ -20,15 +20,9 @@
 #include <C4Include.h>
 #include <C4ToolsDlg.h>
 #include <C4Console.h>
-#include <C4Application.h>
 #include <C4Texture.h>
 #include <C4Landscape.h>
-#include <C4Game.h>
 #include <C4GameControl.h>
-#include <StdRegistry.h>
-#ifndef USE_CONSOLE
-#include <C4DrawGL.h>
-#endif
 
 bool C4ToolsDlg::Open()
 {

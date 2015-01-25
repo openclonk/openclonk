@@ -18,13 +18,13 @@
 #include <C4Include.h>
 #include <C4LoaderScreen.h>
 
+#include <C4Components.h>
 #include <C4LogBuf.h>
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Random.h>
 #include <C4GroupSet.h>
 #include <C4Game.h>
-#include <C4FullScreen.h>
 
 C4LoaderScreen::C4LoaderScreen()
 {

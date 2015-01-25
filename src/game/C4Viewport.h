@@ -20,7 +20,7 @@
 #ifndef INC_C4Viewport
 #define INC_C4Viewport
 
-#include <C4Shape.h>
+#include <C4FacetEx.h>
 
 class C4Viewport
 {

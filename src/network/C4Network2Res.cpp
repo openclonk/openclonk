@@ -16,6 +16,7 @@
 #include <C4Include.h>
 #include <C4Network2Res.h>
 
+#include <C4Application.h>
 #include <C4Random.h>
 #include <C4Config.h>
 #include <C4Log.h>

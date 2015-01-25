@@ -156,7 +156,7 @@ C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 
 #define MAKE_AND_RETURN_ARRAY(values) do { \
 	C4ValueArray *matrix = new C4ValueArray(sizeof(values) / sizeof(*values)); \
-	for (long i = 0; i < sizeof(values) / sizeof(*values); ++i) \
+	for (size_t i = 0; i < sizeof(values) / sizeof(*values); ++i) \
 		(*matrix)[i] = C4VInt(values[i]); \
 	return matrix; \
 } while (0)
@@ -273,7 +273,7 @@ static C4Value FnTrans_Mul(C4PropList * _this, C4Value *pars)
 
 	// unlike in the other Trans_*-functions, we have to put the array into a C4Value manually here
 	C4ValueArray *matrix = new C4ValueArray(sizeof(values) / sizeof(*values));
-	for (long i = 0; i < sizeof(values) / sizeof(*values); ++i)
+	for (size_t i = 0; i < sizeof(values) / sizeof(*values); ++i)
 		(*matrix)[i] = C4VInt(values[i]);
 	return C4VArray(matrix);
 }

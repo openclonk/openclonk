@@ -18,8 +18,6 @@
 #ifndef INC_C4Scoreboard
 #define INC_C4Scoreboard
 
-#include <utility>
-
 class C4Scoreboard
 {
 public:

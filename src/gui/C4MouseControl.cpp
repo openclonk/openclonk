@@ -20,10 +20,8 @@
 #include <C4Include.h>
 #include <C4MouseControl.h>
 
-#include <C4DefList.h>
 #include <C4Viewport.h>
 #include <C4Object.h>
-#include <C4Command.h>
 #include <C4Application.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
@@ -32,9 +30,7 @@
 #include <C4Player.h>
 #include "C4ChatDlg.h"
 #include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
-#include <C4GameObjects.h>
 #include <C4GameControl.h>
 
 const int32_t C4MC_Drag_None            = 0,

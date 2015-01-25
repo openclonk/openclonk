@@ -25,7 +25,6 @@
 #include <C4Physics.h>
 #include <C4Random.h>
 #include <C4Weather.h>
-#include <C4Game.h>
 #include <C4Record.h>
 
 static const C4Real WindDrift_Factor = itofix(1, 800);

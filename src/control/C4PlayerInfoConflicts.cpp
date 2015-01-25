@@ -19,10 +19,9 @@
 
 #include <C4Include.h>
 #include <C4PlayerInfo.h>
-#include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4Teams.h>
-
+#include <StdColors.h>
 #include <C4Random.h>
 
 // number of times trying new player colors

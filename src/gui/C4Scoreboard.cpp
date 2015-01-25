@@ -16,11 +16,9 @@
 // script-controlled InGame dialog to show player infos
 
 #include "C4Include.h"
-#include <utility>
-
 #include "C4Scoreboard.h"
-#include "C4Gui.h"
 
+#include "C4Gui.h"
 #include "C4GameOverDlg.h"
 #include <C4GraphicsResource.h>
 

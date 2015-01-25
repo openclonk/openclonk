@@ -18,12 +18,12 @@
 #include <C4Include.h>
 #include <C4GameOverDlg.h>
 
+#include <C4Application.h>
 #include <C4Def.h>
 #include <C4DefList.h>
 #include <C4Game.h>
 #include <C4FullScreen.h>
 #include <C4Player.h>
-#include <C4PlayerInfo.h>
 #include <C4PlayerInfoListBox.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>

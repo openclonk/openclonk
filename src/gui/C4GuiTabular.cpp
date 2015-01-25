@@ -20,10 +20,6 @@
 #include <C4Gui.h>
 
 #include <C4FacetEx.h>
-#include <C4Game.h>
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 

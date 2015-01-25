@@ -33,7 +33,6 @@
 #include <C4Log.h>
 #include <C4MessageInput.h>
 #include <C4MouseControl.h>
-#include <C4ObjectInfoList.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4PXS.h>

@@ -808,7 +808,7 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 		return false;
 	}
 	// generate valid filename
-	Filename.Take(C4Language::IconvSystem(Playername.getData()));
+	Filename.Copy(Playername);
 	// Slashes in Filenames are no good
 	SReplaceChar(Filename.getMData(), '\\', '_');
 	SReplaceChar(Filename.getMData(), '/', '_');

@@ -21,9 +21,7 @@
 #include <C4GameMessage.h>
 
 #include <C4Object.h>
-#include <C4Application.h>
 #include <C4GraphicsResource.h>
-#include <C4Game.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 

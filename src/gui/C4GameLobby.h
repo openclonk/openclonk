@@ -22,13 +22,10 @@
 #define INC_C4GameLobby
 
 #include "C4Gui.h"
-#include "C4Client.h"
-#include "C4PlayerInfo.h"
+#include <C4PacketBase.h>
 
 namespace C4GameLobby
 {
-	class MainDlg;
-
 	// countdown time from which the elevator sound starts and team selection becomes unavailable
 	const int32_t AlmostStartCountdownTime = 10; // seconds
 

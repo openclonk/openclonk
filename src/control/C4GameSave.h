@@ -27,7 +27,6 @@
 #define INC_C4GameSave
 
 #include <C4Scenario.h>
-#include <C4Group.h>
 #include <C4Components.h>
 
 class C4GameSave

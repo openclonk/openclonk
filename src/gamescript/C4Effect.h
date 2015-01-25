@@ -24,7 +24,6 @@
 #ifndef INC_C4Effects
 #define INC_C4Effects
 
-#include <C4Constants.h>
 #include <C4ObjectPtr.h>
 #include <C4PropList.h>
 

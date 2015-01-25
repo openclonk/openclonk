@@ -21,15 +21,10 @@
 #include <C4Gui.h>
 
 #include <C4DefList.h>
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
-#include <C4Console.h>
 #include <C4Def.h>
-#include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4Game.h>
 #include <C4Application.h>
 
 #include <C4DrawGL.h>
@@ -1193,6 +1188,10 @@ bool MessageDialog::KeyCopy()
 		}
 		pTextWin->UpdateHeight();
 		//pTextWin->ScrollToBottom();
+	}
+	InfoDialog::~InfoDialog()
+	{
+		Application.Remove(this);
 	}
 
 	void InfoDialog::CreateSubComponents()

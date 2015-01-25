@@ -32,6 +32,7 @@
 
 #include <C4Console.h>
 #include <C4ViewportWindow.h>
+#include <C4Viewport.h>
 #include "C4MouseControl.h"
 
 #include <gdk/gdk.h>

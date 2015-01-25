@@ -20,8 +20,6 @@
 #ifndef INC_C4Map
 #define INC_C4Map
 
-#include <C4Scenario.h>
-
 class C4MapCreator
 {
 public:

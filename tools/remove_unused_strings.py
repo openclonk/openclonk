@@ -38,8 +38,8 @@ for language_file in language_files:
 			key = keyvalue[0].strip()
 			findkey = key.rstrip("0123456789")
 			
-			if not search_all_files_in_directory_for_phrase(os.path.normpath("../src"),findkey,language_files) \
-			and not search_all_files_in_directory_for_phrase(os.path.normpath("../planet"),findkey,language_files):
+			if not search_all_files_in_directory_for_phrase(os.path.normpath("../src"),findkey,language_files):
+			#and not search_all_files_in_directory_for_phrase(os.path.normpath("../planet"),findkey,language_files):
 				unused.append(key)
 			else:
 				fout.write(line)

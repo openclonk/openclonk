@@ -18,13 +18,10 @@
 
 #include "C4Include.h"
 #include <CSurface8.h>
-#include <Bitmap256.h>
-#include <StdPNG.h>
-#include <C4Draw.h>
-#include <CStdFile.h>
-#include <Bitmap256.h>
 
-#include "limits.h"
+#include <Bitmap256.h>
+#include <CStdFile.h>
+#include <StdColors.h>
 
 CSurface8::CSurface8()
 {

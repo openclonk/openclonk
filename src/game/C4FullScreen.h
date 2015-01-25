@@ -20,7 +20,6 @@
 #ifndef INC_C4FullScreen
 #define INC_C4FullScreen
 
-#include "C4MainMenu.h"
 #include <C4Window.h>
 
 bool IsKeyDown(int iKey);

@@ -20,7 +20,6 @@
 
 #include "C4IDList.h"
 #include "C4PlayerInfo.h"
-#include "C4LangStringTable.h"
 #include "C4Teams.h"
 #include "C4InfoCore.h"
 

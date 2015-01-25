@@ -31,6 +31,8 @@ class C4AulScript;
 class C4AulScriptEngine;
 class C4AulScriptFunc;
 class C4BltTransform;
+class C4Client;
+class C4ClientCore;
 class C4ClientList;
 class C4ClientPlayerInfos;
 class C4Command;
@@ -67,6 +69,7 @@ class C4League;
 class C4LoaderScreen;
 class C4LSector;
 class C4LSectors;
+class C4MainMenu;
 class C4MapCreatorS2;
 class C4Markup;
 class C4MassMover;
@@ -78,10 +81,10 @@ class C4Menu;
 class C4MenuItem;
 class C4MouseControl;
 class C4NameList;
-class C4Network;
-class C4NetworkClient;
-class C4NetworkClientList;
+class C4Network2Client;
+class C4Network2IOConnection;
 class C4Network2IRCClient;
+class C4Network2RefClient;
 class C4Network2Reference;
 class C4Network2ResDlg;
 class C4Network2Stats;
@@ -90,7 +93,7 @@ class C4ObjectInfo;
 class C4ObjectInfoCore;
 class C4ObjectLink;
 class C4ObjectList;
-class C4Packet;
+class C4PacketJoinData;
 class C4PathFinder;
 class C4Pattern;
 class C4Playback;
@@ -124,6 +127,8 @@ class C4TexMapEntry;
 class C4TexMgr;
 class C4TexRef;
 class C4TextureMap;
+class C4TransferZone;
+class C4TransferZones;
 class C4Value;
 class C4ValueArray;
 class C4ValueNumbers;
@@ -146,10 +151,16 @@ class StdMeshMatManager;
 class StdMeshMatrix;
 class StdMeshSkeletonLoader;
 
+namespace C4GameLobby
+{
+	class Countdown;
+	class MainDlg;
+}
 namespace C4GUI
 {
 	class ComboBox_FillCB;
 	class Dialog;
+	class FrameDecoration;
 	class Screen;
 }
 typedef C4GUI::Screen C4GUIScreen;

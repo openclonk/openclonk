@@ -20,7 +20,6 @@
 #include <C4Include.h>
 #include <C4TransferZone.h>
 
-#include <C4Game.h>
 #include <C4FacetEx.h>
 #include <C4Landscape.h>
 #include <C4GameObjects.h>

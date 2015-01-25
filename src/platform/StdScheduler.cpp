@@ -260,10 +260,20 @@ void __cdecl StdSchedulerThread::_ThreadFunc(void *pPar)
 	StdSchedulerThread *pThread = reinterpret_cast<StdSchedulerThread *>(pPar);
 	_endthreadex(pThread->ThreadFunc());
 }
+void __cdecl StdThread::_ThreadFunc(void *pPar)
+{
+	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
+	_endthreadex(pThread->ThreadFunc());
+}
 #elif defined(HAVE_PTHREAD)
 void *StdSchedulerThread::_ThreadFunc(void *pPar)
 {
 	StdSchedulerThread *pThread = reinterpret_cast<StdSchedulerThread *>(pPar);
+	return reinterpret_cast<void *>(pThread->ThreadFunc());
+}
+void *StdThread::_ThreadFunc(void *pPar)
+{
+	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
 	return reinterpret_cast<void *>(pThread->ThreadFunc());
 }
 #endif

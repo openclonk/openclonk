@@ -25,10 +25,6 @@
 #include "C4Gui.h"
 #include "C4GameParameters.h"
 
-// lobby predef - no need to include lobby in header just for the class ptr
-namespace C4GameLobby { class MainDlg; class Countdown; }
-class C4PacketJoinData;
-
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,
               C4NetStdPortUDP = 11113,

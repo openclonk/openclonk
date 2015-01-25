@@ -26,7 +26,6 @@
 #include <cstring>
 #include <cassert>
 #include <cstdarg>
-#include <utility>
 #include <algorithm>
 
 // debug memory management

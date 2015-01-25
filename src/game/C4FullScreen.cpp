@@ -23,17 +23,15 @@
 #include <C4Game.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
-#include <C4League.h>
 #include <C4Language.h>
 #include <C4Gui.h>
-#include <C4Network2.h>
 #include <C4GameDialogs.h>
-#include <C4GamePadCon.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
 #include <C4PlayerList.h>
+#include <C4Version.h>
 
 void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 

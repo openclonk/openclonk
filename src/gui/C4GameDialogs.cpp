@@ -18,10 +18,7 @@
 #include <C4Include.h>
 #include <C4GameDialogs.h>
 
-#include <C4Viewport.h>
-#include <C4Network2Dialogs.h>
 #include <C4Game.h>
-#include <C4Player.h>
 #include <C4Network2.h>
 
 bool C4AbortGameDialog::is_shown = false;

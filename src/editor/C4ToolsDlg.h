@@ -25,7 +25,6 @@
 #endif
 
 #include "C4Constants.h"
-#include "C4ConsoleGUI.h"
 
 const int32_t
 	C4TLS_Brush  = 0,

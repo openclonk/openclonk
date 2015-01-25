@@ -18,17 +18,13 @@
 #include <C4Include.h>
 #include <C4StartupNetDlg.h>
 
+#include <C4Application.h>
 #include <C4UpdateDlg.h>
 #include <C4StartupScenSelDlg.h>
-#include <C4StartupMainDlg.h>
 #include <C4Game.h>
-#include <C4Log.h>
 #include "C4ChatDlg.h"
 #include <C4GraphicsResource.h>
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
+#include <C4Network2Reference.h>
 
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------
 
