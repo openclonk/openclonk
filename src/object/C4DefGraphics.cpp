@@ -84,8 +84,13 @@ void C4DefGraphics::Clear()
 bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, const char *szNormal, bool fColorByOwner)
 {
 	if (!szFilename) return false;
+	Type = TYPE_Bitmap; // will be reset to TYPE_None in Clear() if loading fails
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true)) return false;
+	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true))
+	{
+		Clear();
+		return false;
+	}
 
 	// Create owner color bitmaps
 	if (fColorByOwner)
@@ -101,14 +106,18 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
 				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
 				          szOverlay, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
-				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
+				Clear();
 				return false;
 			}
 		}
 		else
 		{
 			// otherwise, create by all blue shades
-			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap)) return false;
+			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap))
+			{
+				Clear();
+				return false;
+			}
 		}
 		fColorBitmapAutoCreated = true;
 	}
@@ -125,7 +134,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match normal %s (%d x %d) - invalid file or size mismatch",
 				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
 				          szNormal, Bmp.BitmapNormal->Wdt, Bmp.BitmapNormal->Hgt);
-				delete Bmp.BitmapNormal; Bmp.BitmapNormal = NULL;
+				Clear();
 				return false;
 			}
 
