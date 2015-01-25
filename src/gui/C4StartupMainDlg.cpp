@@ -136,7 +136,7 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextAdd(C4GUI::Element *pBtn
 		if (*GetFilename(szFn) == '.') continue;
 		if (!WildcardMatch(C4CFN_PlayerFiles, GetFilename(szFn))) continue;
 		if (!SIsModule(Config.General.Participants, szFn, NULL, false))
-			pCtx->AddItem(C4Language::IconvClonk(GetFilenameOnly(szFn)).getData(), "Let this player join in next game", C4GUI::Ico_Player,
+			pCtx->AddItem(GetFilenameOnly(szFn), "Let this player join in next game", C4GUI::Ico_Player,
 			              new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, StdCopyStrBuf>(this, &C4StartupMainDlg::OnPlayerSelContextAddPlr, StdCopyStrBuf(szFn)), NULL);
 	}
 	return pCtx;
@@ -192,7 +192,7 @@ void C4StartupMainDlg::UpdateParticipants()
 		for (int i = 0; SCopySegment(Config.General.Participants, i, &strPlayer[0], ';', 1024, true); i++)
 		{
 			if (i > 0) strPlayers.append(", ");
-			strPlayers.append(C4Language::IconvClonk(GetFilenameOnly(&strPlayer[0])).getData());
+			strPlayers.append(GetFilenameOnly(&strPlayer[0]));
 		}
 	pParticipantsLbl->SetText(strPlayers.c_str());
 }

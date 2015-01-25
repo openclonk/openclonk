@@ -1194,6 +1194,10 @@ bool MessageDialog::KeyCopy()
 		pTextWin->UpdateHeight();
 		//pTextWin->ScrollToBottom();
 	}
+	InfoDialog::~InfoDialog()
+	{
+		Application.Remove(this);
+	}
 
 	void InfoDialog::CreateSubComponents()
 	{

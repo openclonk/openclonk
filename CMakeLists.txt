@@ -82,14 +82,8 @@ include(RequireCXXSourceCompiles)
 CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
 if(USE_GCC_STD_0X)
 	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
 endif()
-
-# Convert the OC_CXX_FLAGS list to a CMAKE_CXX_FLAGS string
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
-endforeach()
-
-set(CMAKE_CXX_FLAGS ${OC_REQUIRED_FLAGS})
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
@@ -1135,7 +1129,7 @@ if(UNIX AND NOT APPLE)
 	endif()
 endif()
 set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
-#set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
@@ -1162,12 +1156,6 @@ if(MSVC)
 	# so we add it to the resource file ourselves and tell
 	# MSVC not to create its own.
 	set_property(TARGET openclonk APPEND PROPERTY LINK_FLAGS "/MANIFEST:NO")
-endif()
-
-# Suppress the console window for mape even though only a main() and not
-# a WinMain() entry point is provided.
-if(MINGW)
-	set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
 endif()
 
 ############################################################################
@@ -1286,15 +1274,6 @@ endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
-find_package(ICONV)
-if(ICONV_FOUND)
-	set(HAVE_ICONV true)
-	target_link_libraries(openclonk ${ICONV_LIBRARIES})
-	if(ICONV_IS_CONST)
-		set(ICONV_CONST "const")
-	endif()
-endif()
-
 # TinyXML
 if(WITH_SYSTEM_TINYXML)
 	pkg_search_module(TINYXML REQUIRED tinyxml)
@@ -1372,6 +1351,11 @@ if (WIN32)
 	target_link_libraries(c4script ws2_32 winmm)
 	if(MAPE_GTK_FOUND)
 		target_link_libraries(mape winmm)
+		# Suppress the console window for mape even though only a main() and not
+		# a WinMain() entry point is provided.
+		if(MINGW)
+			set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
+		endif()
 	endif()
 endif()
 

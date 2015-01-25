@@ -420,6 +420,11 @@ C4Network2ClientListBox::C4Network2ClientListBox(C4Rect &rcBounds, bool fStartup
 	Update();
 }
 
+C4Network2ClientListBox::~C4Network2ClientListBox()
+{
+	Application.Remove(this);
+}
+
 void C4Network2ClientListBox::Update()
 {
 	// sync with client list
@@ -522,6 +527,11 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 	Application.Add(this);
 	// initial update
 	Update();
+}
+
+C4Network2ClientListDlg::~C4Network2ClientListDlg()
+{
+	if (this==pInstance) pInstance=NULL; Application.Remove(this);
 }
 
 void C4Network2ClientListDlg::Update()
