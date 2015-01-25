@@ -31,7 +31,6 @@ const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 // TODO: Remove these eventually, since they are deprecated.
-const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
 const C4ID C4ID::Flame(std::string("FLAM"));

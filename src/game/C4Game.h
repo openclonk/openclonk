@@ -118,7 +118,6 @@ public:
 	int32_t StartTime;
 	int32_t InitProgress; int32_t LastInitProgress; int32_t LastInitProgressShowTime;
 	int32_t RandomSeed;
-	int32_t Rules;
 	bool GameGo;
 	bool FullSpeed;
 	int32_t FrameSkip; bool DoSkipFrame;
@@ -235,7 +234,6 @@ protected:
 	void InitRules();
 	void InitValueOverloads();
 	void InitEnvironment();
-	void UpdateRules();
 	void CloseScenario();
 	void DeleteObjects(bool fDeleteInactive);
 	void ExecObjects();
@@ -287,10 +285,6 @@ public:
 	bool ToggleChart(); // chart dlg on/off
 	void SetMusicLevel(int32_t iToLvl); // change game music volume; multiplied by config volume for real volume
 };
-
-
-const int32_t
-	C4RULE_ConstructionNeedsMaterial = 1;
 
 extern C4Game         Game;
 

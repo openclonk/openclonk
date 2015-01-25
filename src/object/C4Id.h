@@ -42,8 +42,7 @@ private:
 	explicit C4ID(const char (&s)[N]) { assign(s); }
 public:
 	static const C4ID None; // Invalid ID
-	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material
-	DEPRECATED static const C4ID Flag;
+		DEPRECATED static const C4ID Flag;
 	DEPRECATED static const C4ID Conkit; // Construction kit
 	static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;

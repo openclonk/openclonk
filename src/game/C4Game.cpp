@@ -750,8 +750,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
-	EXEC_DR(    UpdateRules();
-	            GameOverCheck();                                        , "Misc\0")
+	EXEC_DR(    GameOverCheck();                                        , "Misc\0")
 
 	Control.DoSyncCheck();
 
@@ -1603,7 +1602,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
 		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));
-		pComp->Value(mkNamingAdapt(Rules,                 "Rules",                 0));
 		pComp->Value(mkNamingAdapt(PlayList,              "PlayList",""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
 		pComp->Value(mkNamingAdapt(fResortAnyObject,      "ResortAnyObj",          false));
@@ -3210,8 +3208,6 @@ void C4Game::InitRules()
 	for (cnt=0; (idType=Parameters.Rules.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<Max<int32_t>(iCount,1); cnt2++)
 			CreateObject(idType,NULL);
-	// Update rule flags
-	UpdateRules();
 }
 
 void C4Game::InitGoals()
@@ -3222,13 +3218,6 @@ void C4Game::InitGoals()
 	for (cnt=0; (idType=Parameters.Goals.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
 			CreateObject(idType,NULL);
-}
-
-void C4Game::UpdateRules()
-{
-	if (::Game.iTick255) return;
-	Rules=0;
-	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
 }
 
 void C4Game::SetInitProgress(float fToProgress)
