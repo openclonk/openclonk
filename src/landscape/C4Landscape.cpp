@@ -562,8 +562,15 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 				if (::MaterialMap.Map[mat].Dig2ObjectRatio != 0)
 					while (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
 					{
+						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
-						if (pObj && pObj->Status) pObj->Call(PSF_OnDugOut, &pars);
+						if (!pObj || !pObj->Status) continue;
+						// Do callbacks to dug object and digger
+						pObj->Call(PSF_OnDugOut, &pars);
+						if (!pObj->Status || !pCollect || !pCollect->Status || pObj->Contained) continue;
+						C4AulParSet pars(C4VObj(pObj));
+						pCollect->Call(PSF_DigOutObject, &pars);
+						if (!pObj->Status || !pCollect->Status || pObj->Contained) continue;
 						// Try to collect object
 						if(::MaterialMap.Map[mat].Dig2ObjectCollect)
 							if(pCollect && pCollect->Status && pObj && pObj->Status)
@@ -572,11 +579,10 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 									if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
 									{
 										pObj->AssignRemoval();
-										// Cap so we never have more than one object ´worth of material in the store
+										// Cap so we never have more than one object worth of material in the store
 										mat_list->Amount[mat] = ::MaterialMap.Map[mat].Dig2ObjectRatio;
 										break;
 									}
-						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 					}
 		}
 	}
