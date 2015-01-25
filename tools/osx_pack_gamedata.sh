@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 C4GROUP=$1
 SRC_GROUP=$2

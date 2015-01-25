@@ -825,13 +825,8 @@ else()
 endif()
 
 if(NOT USE_CONSOLE)
-	if(APPLE)
-		include(LegacyFindFreetype)
-		include_directories(${FREETYPE_INCLUDE_DIRS})
-	else()
-		find_package(Freetype REQUIRED)
-		include_directories(${FREETYPE_INCLUDE_DIRS})
-	endif()
+	find_package(Freetype REQUIRED)
+	include_directories(${FREETYPE_INCLUDE_DIRS})
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
@@ -1237,18 +1232,15 @@ endforeach()
 ############################################################################
 
 if (APPLE)
-	
 	# for good measure - seems to be part of default OSX installation
 	# linking with static freetype library requires it
-	target_link_libraries(openclonk "/usr/lib/libbz2.dylib")
+	find_package("BZip2" REQUIRED)
+	target_link_libraries(openclonk ${BZIP2_LIBRARIES})
 
 	set(HAVE_RVALUE_REF ON)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x -g -Wall -fobjc-arc")
 
 	if(CMAKE_GENERATOR STREQUAL Xcode)
-		add_custom_command(TARGET openclonk
-			POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
-		)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
@@ -1268,6 +1260,12 @@ if (APPLE)
 		set_target_properties(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 	endif()
+
+	add_custom_command(TARGET openclonk
+		POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+		"$<TARGET_FILE:openclonk>"
+	)
+
 endif()
 
 ############################################################################
@@ -1353,7 +1351,7 @@ if(USE_X11)
 	)
 endif()
 if(USE_COCOA)
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
@@ -1416,6 +1414,15 @@ if(USE_GCC_PCH)
 	add_precompiled_header(libc4script src/C4Include.h)
 	add_precompiled_header(openclonk src/C4Include.h)
 endif()
+
+# When cross-compiling, import c4group from a native build
+IF(CMAKE_CROSSCOMPILING)
+	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
+	INCLUDE(${IMPORT_NATIVE_TOOLS})
+	SET(native_c4group native-c4group)
+ELSE()
+   SET(native_c4group c4group)
+ENDIF()
 
 ############################################################################
 # installation
@@ -1487,27 +1494,27 @@ foreach(group ${OC_C4GROUPS})
 	if (APPLE)
 		if (CMAKE_GENERATOR STREQUAL Xcode)
 			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"$<TARGET_FILE:c4group>"
+				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+				"$<TARGET_FILE:${native_c4group}>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				# leave out third parameter here so the script can figure out Xcode-ish paths as usual
-				DEPENDS c4group
+				DEPENDS "${native_c4group}"
 			)
 		else()
 			add_custom_command(TARGET openclonk
-				POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
-				"$<TARGET_FILE:c4group>"
+				POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+				"$<TARGET_FILE:${native_c4group}>"
 				"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
 				"${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources"
-				DEPENDS c4group
+				DEPENDS "${native_c4group}"
 			)
 		endif()
 	else()
 		add_custom_command(
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+			COMMAND "${native_c4group}" ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
 			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-			DEPENDS c4group
+			DEPENDS "${native_c4group}"
 			VERBATIM
 		)
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
@@ -1534,6 +1541,11 @@ else()
 		RUNTIME DESTINATION .
 	)
 endif()
+
+# Export native tools for later use in cross-compile builds
+IF(NOT CMAKE_CROSSCOMPILING) 
+  EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
+ENDIF() 
 
 ############################################################################
 # setup_openclonk.exe
