@@ -280,7 +280,7 @@ bool CStdAVIFile::OpenAudioStream()
 		return false;
 	// get audio stream format
 	if (AVIStreamReadFormat(pAudioStream, AVIStreamStart(pAudioStream), NULL, &iAudioInfoLength)) return false;
-	if (iAudioInfoLength<sizeof(WAVEFORMAT)) return false;
+	if (iAudioInfoLength<static_cast<LONG>(sizeof(WAVEFORMAT))) return false;
 	pAudioInfo = (WAVEFORMAT *) new BYTE[iAudioInfoLength];
 	if (AVIStreamReadFormat(pAudioStream, AVIStreamStart(pAudioStream), pAudioInfo, &iAudioInfoLength))
 		{ delete [] pAudioInfo; pAudioInfo=NULL; return false; }

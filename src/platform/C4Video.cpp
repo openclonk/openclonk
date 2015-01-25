@@ -256,11 +256,11 @@ bool C4Video::RecordFrame()
 	// No buffer
 	if (!Buffer) return false;
 	// Lock source
-	int iPitch,iWidth,iHeight;
+	int iPitch,iHeight;
 	if (!Surface->Lock()) { Log("Video: lock surface failure"); Stop(); return false; }
 	iPitch = Surface->PrimarySurfaceLockPitch;
 	BYTE *bypBits = Surface->PrimarySurfaceLockBits;
-	iWidth = Surface->Wdt; iHeight = Surface->Hgt;
+	iHeight = Surface->Hgt;
 	// Adjust source position
 	if (!AdjustPosition()) { Log("Video: player/viewport failure"); Stop(); return false; }
 	// Blit screen to buffer

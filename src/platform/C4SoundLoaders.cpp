@@ -131,10 +131,10 @@ int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 	switch (whence)
 	{
 	case SEEK_SET:
-		data->data_pos = offset < data->data_length ? offset : data->data_length;
+		data->data_pos = static_cast<size_t>(offset) < data->data_length ? static_cast<size_t>(offset) : data->data_length;
 		break;
 	case SEEK_CUR:
-		data->data_pos += offset < data->data_length - data->data_pos ? offset : data->data_length - data->data_pos;
+		data->data_pos += static_cast<size_t>(offset) < data->data_length - data->data_pos ? static_cast<size_t>(offset) : data->data_length - data->data_pos;
 		break;
 	case SEEK_END:
 		data->data_pos = data->data_length+1;

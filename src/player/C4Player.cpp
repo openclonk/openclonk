@@ -178,7 +178,6 @@ void C4Player::Execute()
 	}
 
 	// Tick1
-	UpdateCounts();
 	UpdateView();
 	ExecuteControl();
 	Menu.Execute();
@@ -1142,19 +1141,10 @@ void C4Player::ExecBaseProduction()
 	}
 }
 
-void C4Player::UpdateCounts()
-{
-	CrewCnt = 0;
-	for (C4Object *crew : Crew)
-	{
-		++CrewCnt;
-	}
-}
-
 void C4Player::CheckElimination()
 {
 	// Standard elimination: no crew
-	if (CrewCnt<=0)
+	if (!Crew.GetFirstObject())
 		// Already eliminated safety
 		if (!Eliminated)
 			// No automatic elimination desired?
@@ -1206,7 +1196,6 @@ void C4Player::DefaultRuntimeData()
 	ViewX=ViewY=0;
 	ViewTarget=NULL;
 	ShowStartup=true;
-	CrewCnt=0;
 	Wealth=0;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
@@ -1874,10 +1863,12 @@ bool C4Player::GainScenarioAchievement(const char *achievement_id, int32_t value
 {
 	// Determine full ID of achievement
 	if (!scen_name_override)
+	{
 		if (::Game.C4S.Head.Origin.getLength())
 			scen_name_override = ::Game.C4S.Head.Origin.getData();
 		else
 			scen_name_override = ::Game.ScenarioFilename;
+	}
 	StdStrBuf sAchvID = C4ScenarioParameters::AddFilename2ID(scen_name_override, achievement_id);
 	// Gain achievement iff it's an improvement
 	Achievements.SetValue(sAchvID.getData(), value, true);

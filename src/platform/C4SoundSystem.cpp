@@ -70,7 +70,7 @@ bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
 	StdBuf WaveBuffer;
 	if (!hGroup.LoadEntry(szFileName, &WaveBuffer)) return false;
 	// load it from mem
-	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize())) return false;
+	if (!Load((BYTE*)WaveBuffer.getMData(), WaveBuffer.getSize())) return false;
 	// Set name
 	SCopy(szFileName,Name,C4MaxSoundName);
 	return true;
