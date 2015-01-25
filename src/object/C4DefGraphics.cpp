@@ -62,6 +62,8 @@ void C4DefGraphics::Clear()
 	// zero own fields
 	switch (Type)
 	{
+	case TYPE_None:
+		break;
 	case TYPE_Bitmap:
 		if (Bmp.BitmapNormal) { delete Bmp.BitmapNormal; Bmp.BitmapNormal=NULL; }
 		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
@@ -314,6 +316,9 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 
 	switch(Type)
 	{
+	case C4DefGraphics::TYPE_None:
+		// Def has no graphics
+		break;
 	case C4DefGraphics::TYPE_Bitmap:
 		fctPicture.Set(GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
 		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);

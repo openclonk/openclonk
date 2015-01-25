@@ -1233,6 +1233,9 @@ void StdMeshMaterialPass::LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMa
 		shader = ctx.Manager.GetGeometryShader(program_name.getData());
 		shader_type_name = "geometry";
 		break;
+	default: // can't happen
+		assert(0);
+		return;
 	}
 
 	if(cur_shader->Shader != NULL)

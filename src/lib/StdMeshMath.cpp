@@ -368,8 +368,6 @@ StdMeshTransformation StdMeshMatrix::Decompose() const
 	const float ry = (rot.a[0][2] - rot.a[2][0]) / det;
 	const float rz = (rot.a[1][0] - rot.a[0][1]) / det;
 
-	const float angle = acos(cos_angle);
-
 	StdMeshTransformation trans;
 	trans.scale.x = sx;
 	trans.scale.y = sy;

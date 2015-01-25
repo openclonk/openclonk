@@ -560,6 +560,9 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 	C4Surface* sfc;
 	switch (GetGraphics()->Type)
 	{
+	case C4DefGraphics::TYPE_None:
+		// no graphics.
+		break;
 	case C4DefGraphics::TYPE_Bitmap:
 		sfc = action ? Action.Facet.Surface : GetGraphics()->GetBitmap(Color);
 
@@ -2280,6 +2283,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	// Draw line segments
 	C4Value colorsV; GetProperty(P_LineColors, &colorsV);
 	C4ValueArray *colors = colorsV.getArray();
+	// TODO: Edge color (color1) is currently ignored.
 	int32_t color0 = 0xFFFF00FF, color1 = 0xFFFF00FF; // use bright colors so author notices
 	if (colors)
 	{
@@ -4624,8 +4628,8 @@ bool C4Object::SetGraphics(C4DefGraphics *pNewGfx, bool fTemp)
 C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID) const
 {
 	// search in list until ID is found or passed
-	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = NULL;
-	while (pOverlay && pOverlay->GetID() < iForID) { pPrevOverlay = pOverlay; pOverlay = pOverlay->GetNext(); }
+	C4GraphicsOverlay *pOverlay = pGfxOverlay;
+	while (pOverlay && pOverlay->GetID() < iForID) pOverlay = pOverlay->GetNext();
 	// exact match found?
 	if (pOverlay && pOverlay->GetID() == iForID) return pOverlay;
 	// none found
@@ -4948,9 +4952,6 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber) const
 	// and crew objects
 	if (fAnyPlr || Owner == iPlayerNumber)
 	{
-		// flags are player objects
-		if (id == C4ID::Flag) return true;
-
 		C4Player *pOwner = ::Players.Get(Owner);
 		if (pOwner)
 		{

@@ -1079,7 +1079,6 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		C4PropList *gfx_proplist = XPar.getPropList();
 		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		uint32_t dwClr = XPar.getInt();
 		if (!Game.DrawPropListSpecImage(fctSymbol, gfx_proplist))
 			return false;
 	}

@@ -133,7 +133,7 @@ public:
 			if (y<LeftOpen) return 0;
 			else return MCVehic;
 		}
-		if (x>=Width)
+		if (static_cast<uint32_t>(x) >= static_cast<uint32_t>(Width))
 		{
 			if (y<RightOpen) return 0;
 			else return MCVehic;
@@ -142,7 +142,7 @@ public:
 		{
 			return TopRowPix[x];
 		}
-		if (y>=Height)
+		if (static_cast<uint32_t>(y) >= static_cast<uint32_t>(Height))
 		{
 			return BottomRowPix[x];
 		}

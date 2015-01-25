@@ -27,7 +27,7 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
-static const C4ObjectLink NULL_LINK = {};
+static const C4ObjectLink NULL_LINK = { NULL, NULL, NULL };
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
 {
