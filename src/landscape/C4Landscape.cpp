@@ -3319,6 +3319,7 @@ void C4Landscape::FinishChange(C4Rect BoundingBox)
 {
 	// Intersect bounding box with landscape
 	BoundingBox.Intersect(C4Rect(0, 0, Width, Height));
+	if (!BoundingBox.Wdt || !BoundingBox.Hgt) return;
 	// update render
 	if(pLandscapeRender)
 		pLandscapeRender->Update(BoundingBox, this);
