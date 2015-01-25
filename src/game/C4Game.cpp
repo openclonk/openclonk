@@ -72,6 +72,7 @@
 #include <StdFile.h>
 #include <C4MapScript.h>
 #include <C4SolidMask.h>
+#include <C4FoW.h>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
@@ -924,6 +925,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
+	if (::Landscape.pFoW) ::Landscape.pFoW->Remove(pObj);
 }
 
 bool C4Game::TogglePause()

@@ -402,8 +402,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pCont->SetOCF();
 		Contained=NULL;
 	}
-	// Light system
-	if (Landscape.pFoW) Landscape.pFoW->Remove(this);
 	// Object info
 	if (Info) Info->Retire();
 	Info = NULL;
