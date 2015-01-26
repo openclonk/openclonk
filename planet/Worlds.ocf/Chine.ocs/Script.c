@@ -77,6 +77,8 @@ protected func InitializePlayer(int plr)
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
+	// Additional explosives: dynamite boxes.
+	GivePlayerSpecificBaseMaterial(plr, [[DynamiteBox, 4, 2]]);
 	
 	// Set player wealth.
 	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
@@ -134,6 +136,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	}
 	var trunk = CreateObjectAbove(Trunk, waterfall_x + 2, 20);
 	trunk->SetR(-30); trunk.Plane = 550;
+	trunk->MakeInvincible();
 	
 	// Cast some additional PXS at the start at random locations.
 	for (var i = 0; i < 20000 + 10000 * map_size; i++)
@@ -144,7 +147,11 @@ private func InitEnvironment(int map_size, int difficulty)
 	if (difficulty >= 2)
 		Rockfall->SetChance(20);
 	if (difficulty >= 3)
+	{
 		Rockfall->SetChance(80);
+		Rockfall->SetExplosiveness(15);
+	}
+	Rockfall->SetSpawnDistance(250);
 	Rockfall->SetArea(Rectangle(128, 0, 128, LandscapeHeight() - 300));
 	return;
 }
@@ -160,14 +167,14 @@ private func InitVegetation(int map_size, int difficulty)
 	PlaceGrass(100);
 	
 	// Place some cocont trees and cave mushrooms for wood.
-	for (var i = 0; i < 16 + Random(4); i++)
+	for (var i = 0; i < 16 + Random(6); i++)
 	{
 		PlaceVegetation(Tree_Coconut, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Tree_Coconut, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
 		PlaceVegetation(Tree_Coconut, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
 	}
-	LargeCaveMushroom->Place(4, middle, { terraform = false });
-	LargeCaveMushroom->Place(4, bottom, { terraform = false });
+	LargeCaveMushroom->Place(6, middle, { terraform = false });
+	LargeCaveMushroom->Place(6, bottom, { terraform = false });
 		
 	// Place some bushes, ferns and mushrooms.
 	SproutBerryBush->Place(2, top);
@@ -181,17 +188,12 @@ private func InitVegetation(int map_size, int difficulty)
 	Mushroom->Place(14, bottom);
 	
 	// Some branches and trunks.
-	Branch->Place(30 + Random(16));
-	for (var i = 0; i < 4 + Random(3); i++)
-	{
-		PlaceVegetation(Trunk, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Trunk, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Trunk, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
-	}
+	Branch->Place(30 + 12 * map_size + Random(16));
+	Trunk->Place(6 + 2 * map_size + Random(5));
 	
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");
-	PlaceObjects(Firestone, 20 + 10 * map_size + Random(5), "Earth");
+	PlaceObjects(Firestone, 25 + 10 * map_size + Random(10), "Earth");
 	PlaceObjects(Loam, (6 + 2 * map_size) * (4 - difficulty) + Random(5), "Earth");
 	if (difficulty == 1)
 		PlaceObjects(Loam, 12, "Earth");

@@ -5,6 +5,18 @@
 	@author Maikel
 */
 
+// Gives the player specific base materials as given in the materials array.
+global func GivePlayerSpecificBaseMaterial(int plr, array materials)
+{
+	for (var mat in materials)
+	{
+		SetBaseMaterial(plr, mat[0], mat[1]);
+		SetBaseProduction(plr, mat[0], mat[2]);
+	}
+	return;
+}
+
+// Gives the player elementary base materials.
 global func GivePlayerElementaryBaseMaterial(int plr)
 {
 	// Production of material of clonk.
@@ -17,6 +29,7 @@ global func GivePlayerElementaryBaseMaterial(int plr)
 	return;
 }
 
+// Gives the player some basic tools.
 global func GivePlayerToolsBaseMaterial(int plr)
 {
 	// List of tools with [id, mat, prod] entries.
@@ -32,7 +45,6 @@ global func GivePlayerToolsBaseMaterial(int plr)
 	{
 		SetBaseMaterial(plr, mat[0], mat[1]);
 		SetBaseProduction(plr, mat[0], mat[2]);
-	
 	}
 	return;
 }
