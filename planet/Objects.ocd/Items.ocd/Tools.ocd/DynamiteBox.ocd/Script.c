@@ -167,3 +167,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local BlastIncinerate = 1;
+local ContactIncinerate = 2;
