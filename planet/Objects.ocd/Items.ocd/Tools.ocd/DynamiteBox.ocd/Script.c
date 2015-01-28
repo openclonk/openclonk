@@ -145,9 +145,13 @@ public func DoExplode()
 	Explode(Sqrt(18**2*iCount));
 }
 
-protected func Incineration() { DoExplode(); }
+protected func Incineration() { Damage(); }
 
-protected func Damage() { DoExplode(); }
+protected func Damage()
+{
+	// Explode with 1 frame delay to prevent deep script call recursion if lots of dynamite boxes in the same place explode
+	if (!this.exploding) this.exploding = ScheduleCall(this, this.DoExplode, 1, 1);
+}
 
 func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 {
