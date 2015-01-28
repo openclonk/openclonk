@@ -131,6 +131,11 @@
           <col>Plants grow on this material.</col>
         </row>
         <row>
+          <col>Light</col>
+          <col>Integer</col>
+          <col>0 or 1. If greater than zero, ambient light is emitted from this material even if drawn unterground.</col>
+        </row>
+        <row>
           <col>TempConvStrength</col>
           <col>Integer</col>
           <col>Strength of temperature conversion.</col>
