@@ -69,6 +69,7 @@ private:
 	class C4LandscapeRender *pLandscapeRender;
 	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
+	bool Pix2Light[256];
 	int32_t PixCntPitch;
 	uint8_t *PixCnt;
 	C4Rect Relights[C4LS_MaxRelights];
@@ -182,6 +183,7 @@ public:
 	}
 	inline int32_t GetPixMat(BYTE byPix) const { return Pix2Mat[byPix]; }
 	inline int32_t GetPixDensity(BYTE byPix) const { return Pix2Dens[byPix]; }
+	inline bool GetPixLight(BYTE byPix) const { return Pix2Light[byPix];  }
 	bool _PathFree(int32_t x, int32_t y, int32_t x2, int32_t y2) const; // quickly checks wether there *might* be pixel in the path.
 	int32_t GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t iMat, int32_t iMax) const;
 

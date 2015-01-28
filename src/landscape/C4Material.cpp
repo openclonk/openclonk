@@ -253,6 +253,7 @@ void C4MaterialCore::Clear()
 	Corrode = 0;
 	Soil = 0;
 	Placement = 0;
+	Light = 0;
 	OverlayType = 0;
 	PXSGfxRt.Default();
 	PXSGfxSize = 0;
@@ -340,6 +341,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Extinguisher,        "Extinguisher",        0));
 	pComp->Value(mkNamingAdapt(Soil,                "Soil",                0));
 	pComp->Value(mkNamingAdapt(Placement,           "Placement",           0));
+	pComp->Value(mkNamingAdapt(Light,               "Light",               0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sTextureOverlay, StdCompiler::RCT_IdtfAllowEmpty),
 	                                                "TextureOverlay",      ""));
 	pComp->Value(mkNamingAdapt(OverlayType,         "OverlayType",         0));
