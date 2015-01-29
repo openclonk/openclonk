@@ -266,7 +266,7 @@ private func DoSkyShade()
 	gamma[1] = BoundBy(skyshade[1], min_gamma[1], 128);
 	gamma[2] = BoundBy(skyshade[2], min_gamma[2], 128);
 	
-	SetGamma(0, RGB(gamma[0], gamma[1], gamma[2]), RGB(127+gamma[0], 127+gamma[1], 127+gamma[2]), 3);
+	//SetGamma(0, RGB(gamma[0], gamma[1], gamma[2]), RGB(127+gamma[0], 127+gamma[1], 127+gamma[2]), 3);
 	
 	if(!day && !night)
 	{
