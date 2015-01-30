@@ -828,7 +828,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		pContext = pCurCtx->Obj;
 	}
 
-	pFunc->CheckParTypes(pPars);
+	pFunc->CheckParTypes(pPars, true);
 
 	// Script function?
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();

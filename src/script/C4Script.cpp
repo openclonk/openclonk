@@ -349,7 +349,6 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	}
 	if (!fn)
 		throw C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
-	fn->CheckParTypes(ParSet.Par);
 	return fn->Exec(_this, &ParSet, true);
 }
 
