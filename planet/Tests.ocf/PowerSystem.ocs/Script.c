@@ -168,11 +168,11 @@ global func Test2_OnStart(int plr)
 	coal->SetCon(10);
 	
 	// Power consumer: sawmill.
-	CreateObject(Sawmill, 40, 160, plr);
-	CreateObject(Tree_Coconut, 40, 160)->ChopDown();
+	CreateObjectAbove(Sawmill, 40, 160, plr);
+	CreateObjectAbove(Tree_Coconut, 40, 160)->ChopDown();
 	
 	// Power consumer: armory.
-	var armory = CreateObject(Armory, 280, 160, plr);
+	var armory = CreateObjectAbove(Armory, 280, 160, plr);
 	armory->CreateContents(Firestone, 5);
 	armory->CreateContents(Metal, 5);
 	armory->AddToQueue(IronBomb, 5);
@@ -375,28 +375,28 @@ global func Test6_OnFinished()
 global func Test7_OnStart(int plr)
 {
 	// Power source: one steam engine.
-	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
 	engine->CreateContents(Coal, 1);
 	
 	// Power source: wind generators which are turned on and off again due to wind.
-	CreateObject(WindGenerator, 356, 104, plr);
+	CreateObjectAbove(WindGenerator, 356, 104, plr);
 	SetWindFixed(80);
 	Schedule(nil, "SetWindFixed(0)", 5 * 36);
 	Schedule(nil, "SetWindFixed(80)", 8 * 36);
 	
 	// Power connection: flagpole.
-	CreateObject(Flagpole, 328, 132, plr);
+	CreateObjectAbove(Flagpole, 328, 120, plr);
 	
 	// Power consumer: two pumps.
 	for (var i = 0; i < 2; i++)
 	{
-		var pump = CreateObject(Pump, 92 + i * 20, 160, plr);
-		var source = CreateObject(Pipe, 176, 292, plr);
-		var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+		var pump = CreateObjectAbove(Pump, 92 + i * 20, 160, plr);
+		var source = CreateObjectAbove(Pipe, 176, 292, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 		source_pipe->SetActionTargets(source, pump);
 		pump->SetSource(source_pipe);
-		var drain = CreateObject(Pipe, 248, 100, plr);
-		var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+		var drain = CreateObjectAbove(Pipe, 248, 100, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
 		drain_pipe->AddVertex(208, 48);
 		drain_pipe->SetActionTargets(drain, pump);
 		pump->SetDrain(drain_pipe);
@@ -431,7 +431,7 @@ global func Test7_OnFinished()
 global func Test8_OnStart(int plr)
 {
 	// Power source: one steam engine.
-	var engine = CreateObject(SteamEngine, 40, 160, plr);
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
 	engine->CreateContents(Coal, 1);
 	
 	// Change the windlevels so that the engine is needed from time to time.
@@ -442,7 +442,7 @@ global func Test8_OnStart(int plr)
 	Schedule(nil, "SetWindFixed(0)", 20 * 36);
 	
 	// Power consumer: one wind mill.
-	var windmill = CreateObject(Windmill, 116, 160, plr);
+	var windmill = CreateObjectAbove(Windmill, 116, 160, plr);
 	windmill->CreateContents(Seeds, 3);
 	windmill->AddToQueue(Flour, 3);
 
@@ -470,18 +470,18 @@ global func Test9_OnStart(int plr)
 {
 	// Power source (network 1): one wind generator.
 	SetWindFixed(100);
-	CreateObject(WindGenerator, 40, 160, plr);
+	CreateObjectAbove(WindGenerator, 40, 160, plr);
 	
 	// Power consumer (network 1): five pumps.
 	for (var i = 0; i < 5; i++)
 	{
-		var pump = CreateObject(Pump, 80 + i * 10, 160, plr);
-		var source = CreateObject(Pipe, 168, 292, plr);
-		var source_pipe = CreateObject(PipeLine, 144, 160, plr);
+		var pump = CreateObjectAbove(Pump, 80 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 168, 292, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 		source_pipe->SetActionTargets(source, pump);
 		pump->SetSource(source_pipe);
-		var drain = CreateObject(Pipe, 240, 100, plr);
-		var drain_pipe = CreateObject(PipeLine, 224, 48, plr);
+		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
 		drain_pipe->AddVertex(208, 48);
 		drain_pipe->SetActionTargets(drain, pump);
 		pump->SetDrain(drain_pipe);
@@ -490,27 +490,27 @@ global func Test9_OnStart(int plr)
 	// Power source (network 2): five pumps.
 	for (var i = 0; i < 5; i++)
 	{
-		var pump = CreateObject(Pump, 228 + i * 10, 160, plr);
-		var source = CreateObject(Pipe, 256, 100, plr);
-		var source_pipe = CreateObject(PipeLine, 272, 24, plr);
+		var pump = CreateObjectAbove(Pump, 228 + i * 10, 160, plr);
+		var source = CreateObjectAbove(Pipe, 256, 100, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
 		source_pipe->AddVertex(288, 24);
 		source_pipe->AddVertex(288, 114);
 		source_pipe->AddVertex(282, 120);
 		source_pipe->SetActionTargets(source, pump);
 		pump->SetSource(source_pipe);
-		var drain = CreateObject(Pipe, 184, 292, plr);
-		var drain_pipe = CreateObject(PipeLine, 208, 160, plr);
+		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
 		drain_pipe->SetActionTargets(drain, pump);
 		pump->SetDrain(drain_pipe);
 	}
 	
 	// Power connection (network 2): flagpole.
-	CreateObject(Flagpole, 364, 104, plr);
+	CreateObjectAbove(Flagpole, 364, 104, plr);
 	
 	// Power consumer (network 2): one sawmill.
-	CreateObject(Sawmill, 400, 248, plr);
+	CreateObjectAbove(Sawmill, 400, 248, plr);
 	for (var i = 0; i < 2; i++)
-		CreateObject(Tree_Coconut, 400, 248 - 30)->ChopDown();
+		CreateObjectAbove(Tree_Coconut, 400, 248 - 30)->ChopDown();
 	
 	// Log what the test is about.
 	Log("Network 1 (steady producer (wind generator) supplying steady consumers (pumps) connected to network 2 where steady producers (pumps) supply an on-demand consumer (sawmill).");
