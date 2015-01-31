@@ -3,10 +3,6 @@
 #include Library_Structure
 #include Library_PowerConsumer
 
-static const ElevatorCase_move_speed = 20;
-static const ElevatorCase_up = -1;
-static const ElevatorCase_down = 1;
-
 // if you change the vertices in the defcore make sure to adjust this
 static const ElevatorCase_additional_vertex_index_begin = 4;
 static const ElevatorCase_normal_vertex_index_begin = 0;
@@ -18,31 +14,25 @@ local front, back;
 local elevator;
 local partner, partner_was_synced, is_master;
 
-// can be changed from outside
-// standard: ElevatorCase_move_speed, 2 * ElevatorCase_move_speed
-local case_speed; // when user controls case
-local case_speed_automatic; // when case goes to user
 
-/* Callbacks */
+/*-- Callbacks --*/
 
-func GetDrillSpeed()
-{
-	return ElevatorCase_move_speed / 2;
-}
+// Elevator speeds.
+private func GetCaseSpeed() { return 20; }
+private func GetAutoSpeed() { return GetCaseSpeed() * 2; }
+private func GetDrillSpeed() { return GetCaseSpeed() / 2; }
 
-func Initialize()
+
+protected func Initialize()
 {
 	AddEffect("CheckAutoMoveTo", this, 1, 30, this);
 	AddEffect("ElevatorUpperLimitCheck", this, 1, 1, this);
 	AddEffect("FetchVehicles", this, 1, 10, this);
 	
-	case_speed = ElevatorCase_move_speed;
-	case_speed_automatic = 2 * case_speed;
-	
 	partner_was_synced = false;
 	
-	front = CreateObjectAbove(Elevator_Case_Front, 0,13, GetOwner());
-	back = CreateObjectAbove(Elevator_Case_Back, 0,13, GetOwner());
+	front = CreateObject(Elevator_Case_Front);
+	back = CreateObjectAbove(Elevator_Case_Back, 0, 13, GetOwner());
 	
 	front->SetAction("Attach", this);
 	back->SetAction("Attach", this);
@@ -117,18 +107,19 @@ func AttachTargetLost()
 	LoseConnection();
 }
 
-func ExecuteSync()
+public func ExecuteSync()
 {
-	if(!is_master) FatalError("ExecuteSync() called on slave elevator case!");
+	if (!is_master) 
+		FatalError("ExecuteSync() called on slave elevator case!");
 	partner_was_synced = true;
 	partner.partner_was_synced = true;
 	ForceSync();
 	
 	SetPartnerVertices(partner->GetX() - GetX(), partner->GetY() - GetY());
 	
-	// reset power usage
-	//UnmakePowerConsumer();
-	//partner->UnmakePowerConsumer();
+	// Reset power usage.
+	ResetPowerUsage();
+	partner->ResetPowerUsage();
 	
 	// can now attach partner on one of the new vertices
 	partner->SetAction("Attach", this);
@@ -194,14 +185,17 @@ func FxCheckAutoMoveToTimer(object target, effect, int time)
 		if (clonk->GetY() > GetY() + 7)
 			if (!PathFree(GetX(), GetY() + 16, GetX(), clonk->GetY()))
 				continue;
-		if ((clonk->GetY() > GetY()) && GetContact(-1, CNAT_Bottom)) continue;
+		if ((clonk->GetY() > GetY()) && GetContact(-1, CNAT_Bottom)) 
+			continue;
 		
-		// do not move to very close Clonks
-		if(Abs(GetY() - clonk->GetY()) < 5) continue;
+		// Do not move to very close Clonks.
+		if (Abs(GetY() - clonk->GetY()) < 5) 
+			continue;
 		
 		// Priority rules: Cursor is better than no cursor, nearer is better than farer (Sort_Distance() & Sort_Reverse() do this)
 		// So unlike in CR's elevator, no distance check has to be done because later cycles are always nearer clonks
-		if (!best) best = clonk;
+		if (!best) 
+			best = clonk;
 		else if (GetCursor(clonk->GetController()) == clonk)
 			best = clonk;
 		else if (GetCursor(best->GetController()) != best)
@@ -214,23 +208,22 @@ func FxCheckAutoMoveToTimer(object target, effect, int time)
 
 func FxElevatorUpperLimitCheckTimer(target, effect, time)
 {
-	if(!elevator) return -1;
-	if(IsSlave()) return -1;
-	
+	if (!elevator || IsSlave()) 
+		return -1;
+		
 	var d = GetY() - (elevator->GetY() + 20);
 	
 	// HOW COULD THIS HAPPEN :C
-	if(d <= 0)
+	if (d <= 0)
 	{
-		if(GetYDir() < 0)
+		if (GetYDir() < 0)
 		{
 			SetPosition(GetX(), GetY() - d);
 			ForceSync();
 			ContactTop();
 		}
-		else
-			if(GetYDir() == 0)
-				SetPosition(GetX(), GetY() - d);
+		else if (GetYDir() == 0)
+			SetPosition(GetX(), GetY() - d);
 		
 		effect.Interval = 1;
 		return 1;
@@ -302,7 +295,6 @@ private func GetNeededPower()
 	return Elevator_needed_power;
 }
 
-
 // The elevator is the actual power consumer.
 public func GetActualPowerConsumer()
 {
@@ -312,157 +304,166 @@ public func GetActualPowerConsumer()
 // Elevator has a high priority.
 public func GetConsumerPriority() { return 100; }
 
+// Public wrapper for resetting the usage of the slave elevator.
+public func ResetPowerUsage()
+{
+	UnregisterPowerRequest();
+	return;
+}
+
 public func OnNotEnoughPower()
 {
-	_inherited(...); // on purpose before the rest
-	
 	if (GetYDir())
 		StoreMovementData();
-	else; // already has data stored
 	
 	if (GetAction() != "DriveIdle")
 		Halt(false, true);
+	return _inherited(...);
 }
 
 public func OnEnoughPower()
 {
-	_inherited(...); // on purpose before the rest
 	RestoreMovementData();
+	return _inherited(...);
 }
 
-func StoreMovementData(int y_dir, string action, bool user_requested)
+private func StoreMovementData(int y_dir, string action, bool user_requested)
 {
-	y_dir = y_dir ?? GetYDir();
+	if (y_dir == nil)
+	{
+		if (GetYDir() < 0)
+			y_dir = COMD_Up;
+		if (GetYDir() > 0)
+			y_dir = COMD_Down;
+		else
+			y_dir = COMD_Stop;
+	}
 	action = action ?? GetAction();
 	user_requested = user_requested ?? !CheckIdle();
-	var e = GetEffect("StoredMovementData", this);
-	if(!e) e = AddEffect("StoredMovementData", this, 1, 0, this);
-	e.y_dir = y_dir;
-	e.action = action;
-	e.user_requested = user_requested;
+	var effect = GetEffect("StoredMovementData", this);
+	if (!effect) 
+		effect = AddEffect("StoredMovementData", this, 1, 0, this);
+	effect.y_dir = y_dir;
+	effect.action = action;
+	effect.user_requested = user_requested;
+	return;
 }
 
-func RestoreMovementData()
+private func RestoreMovementData()
 {
-	var e = GetEffect("StoredMovementData", this);
-	if(!e) return;
+	var effect = GetEffect("StoredMovementData", this);
+	if (!effect) 
+		return;
 	var drill = false;
-	if(e.action == "Drill")
+	if (effect.action == "Drill")
 		drill = true;
-	SetMoveDirection(BoundBy(e.y_dir, -1, 1), e.user_requested, drill);
-	RemoveEffect(nil, this, e);
+	// This function is only called when enough power is available, so then call
+	// the movement function with has_power equal to true.
+	SetMoveDirection(effect.y_dir, effect.user_requested, drill, true);
+	RemoveEffect(nil, this, effect);
+	return;
 }
 
-func SetMoveDirection(int dir, bool user_requested, bool drill)
+private func SetMoveDirection(int dir, bool user_requested, bool drill, bool has_power)
 {
-	if(IsSlave()) 
-		return partner->SetMoveSpeed(dir, user_requested, drill);
+	if (IsSlave()) 
+		return partner->SetMoveDirection(dir, user_requested, drill, has_power);
 	
-	if(user_requested) StopAutomaticMovement();
-	
-	var e;
-	if(e = GetEffect("StopPowerConsumption", this))
-		RemoveEffect(nil, this, e);
+	if (user_requested) 
+		StopAutomaticMovement();
 	
 	// no change?
-	if((dir < 0) && (GetYDir() < 0)) return;
-	if((dir > 0) && (GetYDir() > 0)) return;
+	if (dir == COMD_Up && (GetYDir() < 0)) return;
+	if (dir == COMD_Down && (GetYDir() > 0)) return;
 	
 	// already reached top/bottom?
-	if(GetContact(-1, CNAT_Bottom) && (dir > 0) && !drill)
+	if (GetContact(-1, CNAT_Bottom) && dir == COMD_Down && !drill)
 		return;
-	if(GetContact(-1, CNAT_Top) && (dir < 0))
+	if (GetContact(-1, CNAT_Top) && dir == COMD_Up)
 		return;
-	if(dir == 0) return Halt();
+	if (dir == COMD_Stop) 
+		return Halt();
 	
-	var speed = case_speed;
-	// note: can not move down with full speed because of solidmask problem
-	// todo..
-	if(!user_requested && dir < 0) speed = case_speed_automatic;
+	var speed = GetCaseSpeed();
+	// Note: can not move down with full speed because of solidmask problem.
+	if (!user_requested && dir == COMD_Up) 
+		speed = GetAutoSpeed();
 	
 	var action = "Drive";
-	if(drill)
+	if (drill)
 	{
 		action = "Drill";
 		speed = GetDrillSpeed();
 	}
 	
-	//if(CurrentlyHasPower())
+	if (has_power)
 	{
-		SetYDir(dir * speed);
+		if (dir == COMD_Down)
+			SetYDir(speed);
+		else if (dir == COMD_Up)
+			SetYDir(-speed);
 		SetAction(action);
 		SetComDir(COMD_None);
 		ForceSync();
-
 		elevator->StartEngine();
 	}
-	//else
+	else
 	{
-		StoreMovementData(dir * speed, action);
-	//	MakePowerConsumer(GetNeededPower());
+		StoreMovementData(dir, action, user_requested);
+		RegisterPowerRequest(GetNeededPower());
 	}
+	return;
 }
 
-func Halt(bool user_requested, bool power_out)
+private func Halt(bool user_requested, bool power_out)
 {
-	if(IsSlave()) return;
+	if (IsSlave())
+		return;
 	
-	StopAutomaticMovement();
+	StopAutomaticMovement(true);
 	
-	if(GetYDir())
-	{
+	if (GetYDir())
 		if(elevator)
 			elevator->StopEngine();
-	}
-	
-	// clear speed
+
+	// Clear speed.
 	SetAction("DriveIdle");
 	SetYDir();
 	ForceSync();
 	
-	if(user_requested)
-	{		
-		//UnmakePowerConsumer();
-	}
-	else
-	{
-		// if not stopped because of lack of power, stop consuming power
-		if(!power_out)
-			AddEffect("StopPowerConsumption", this, 1, 40, this);
-	}
+	// Unregister the power request.
+	if (user_requested || !power_out)
+		UnregisterPowerRequest();
+	return;
 }
 
-func FxStopPowerConsumptionTimer(object target, effect, int time)
+public func ForceSync()
 {
-	//UnmakePowerConsumer();
-	return -1;
-}
-
-func ForceSync()
-{
-	if(!IsMaster()) return;
-	// clear rounding errors
+	if (!IsMaster()) 
+		return;
+	// Clear rounding errors.
 	SetPosition(GetX(), GetY());
-	// adjust partner
+	// Adjust partner.
 	partner->SetPosition(partner->GetX(), GetY());
 	partner->SetYDir(0);
 }
 
-func ContactTop()
+protected func ContactTop()
 {
 	Halt();
 	Sound("WoodHit*");
+	return;
 }
 
-func ContactBottom()
+protected func ContactBottom()
 {
 	// try to dig free
-	if(GetAction() == "Drill")
+	if (GetAction() == "Drill")
 	{
 		Drilling();
 		
 		// wee!
-		if(!GetContact(-1, CNAT_Bottom))
+		if (!GetContact(-1, CNAT_Bottom))
 		{
 			SetYDir(GetDrillSpeed());
 			return;
@@ -470,14 +471,15 @@ func ContactBottom()
 	}
 	Halt();
 	Sound("WoodHit*");
+	return;
 }
 
 // Checks whether the elevator should not move because someone's holding it
 // Returns true if idle
-func CheckIdle()
+private func CheckIdle()
 {
 	// I have no mind of my own
-	if(IsSlave()) return;
+	if (IsSlave()) return;
 
 	var in_rect = Find_InRect(-13, -13, 26, 26);
 	if (IsMaster())
@@ -501,86 +503,78 @@ func CheckIdle()
 	return true;
 }
 
-func StopAutomaticMovement()
+private func StopAutomaticMovement(bool forced)
 {
-	var done = false;
-	if(GetEffect("MoveTo", this))
+	var effect = GetEffect("MoveTo", this);
+	if (effect && (!effect.user_requested || forced))
 	{
 		RemoveEffect("MoveTo", this);
-		done = true;
+		Halt();
 	}
-	
-	// todo: check if sensible
-	if(done) Halt();
+	return;
 }
 
 // Moves the case to the specific y-coordinate
 // delay in frames, so the elevator does not freak out
 // target will be checked again for COMD_Stop and distance after delay run out
-func MoveTo(int y, int delay, object target, bool user_requested)
+public func MoveTo(int y, int delay, object target, bool user_requested)
 {
 	// Not idle?
-	if (!CheckIdle() && !user_requested) return false;
+	if (!CheckIdle() && !user_requested) 
+		return;
 	Halt();
-	var e = AddEffect("MoveTo", this, 1, 2, this);
-	e.delay = delay;
-	e.move_to_y = y;
-	e.target = target;
-	e.user_requested = user_requested;
-	return true;
+	var effect = AddEffect("MoveTo", this, 1, 2, this);
+	effect.delay = delay;
+	effect.move_to_y = y;
+	effect.target = target;
+	effect.user_requested = user_requested;
+	return;
 }
 
-func FxMoveToTimer(target, effect, time)
+protected func FxMoveToTimer(object target, proplist effect, int time)
 {
-	if(time < effect.delay) return 1;
+	if (time < effect.delay) return 1;
 	// what would take more than 10 seconds?
-	if((time - effect.delay) / 36 > 10) return -1;
+	if ((time - effect.delay) / 36 > 10) return -1;
 	
 	var y = effect.move_to_y;
-	if(effect.target) y = effect.target->GetY();
+	if (effect.target) 
+		y = effect.target->GetY();
 	
-	// target dead?
-	if(y == nil)
+	// Target dead? Don't move and remove effect.
+	if (y == nil)
 	{
 		Halt();
 		return -1;
 	}
 	
-	// target moves away from elevator shaft, finish movement but stop following
-	if(effect.target)
-	if(Abs(GetX() - effect.target->GetX()) > 100)
-	{
-		effect.move_to_y = effect.target->GetY();
-		effect.target = nil;
-	}
+	// Target moves away from elevator shaft, finish movement but stop following
+	if (effect.target)
+		if(Abs(GetX() - effect.target->GetX()) > 100)
+		{
+			effect.move_to_y = effect.target->GetY();
+			effect.target = nil;
+		}
 	
-	// destination reached
-	if(Abs(GetY() - y) < 5)
+	// Destination reached? Stop effect and movement.
+	if (Abs(GetY() - y) < 5)
 	{
 		Halt();
 		return -1;
 	}
-	var dir = ElevatorCase_up;
-	if(y > GetY()) dir = ElevatorCase_down;
+	
+	var dir = COMD_Up;
+	if (y > GetY()) 
+		dir = COMD_Down;
 	SetMoveDirection(dir, effect.user_requested, false);
 	return 1;
 }
 
-func StartDrilling()
-{
-	SetAction("Drill");
-}
-
-func StopDrilling()
-{
-	SetAction("Drive");
-}
-
-func Drilling()
+protected func Drilling()
 {
 	var additional_y = 1;
 	var rect = Rectangle(GetX() - 12, GetY() - 13 - additional_y, GetX() + 12, GetY() + 13 + additional_y);
-	if(IsMaster())
+	if (IsMaster())
 	{
 		rect.x = Min(rect.x, partner->GetX() - 12);
 		rect.y = Min(rect.y, partner->GetY() - 13 - additional_y);
@@ -588,64 +582,78 @@ func Drilling()
 		rect.h = Max(rect.h, partner->GetY() + 13 + additional_y);
 	}
 	DigFreeRect(rect.x, rect.y, rect.w - rect.x, rect.h - rect.y);
+	return;
 }
 
-/* Controls */
 
-func ControlUseStart(object clonk, int x, int y) // send elevator to position
+/*-- Controls --*/
+
+// Send elevator to the clicked position.
+public func ControlUseStart(object clonk, int x, int y)
 {
-	if (IsSlave()) return Control2Master("ControlUseStart", clonk, x, y);
-	MoveTo(GetY() + y, 60, nil, true);
+	if (IsSlave()) 
+		return Control2Master("ControlUseStart", clonk, x, y);
+	MoveTo(GetY() + y, 0, nil, true);
 	Sound("Click", nil, nil, clonk->GetOwner());
-	// does not want UseStop-callback
+	// Do not trigger a UseStop-callback.
 	return false;
 }
 
-
-func ControlDown(object clonk)
+public func ControlDown(object clonk)
 {
-	if (IsSlave()) return Control2Master("ControlDown", clonk);
+	if (IsSlave()) 
+		return Control2Master("ControlDown", clonk);
 	
-	// pressing down when already on ground results in drilling
+	// Pressing down when already on ground results in drilling.
 	var drill = !!GetContact(-1, CNAT_Bottom);
 	
-	SetMoveDirection(ElevatorCase_down, true, drill);
+	SetMoveDirection(COMD_Down, true, drill);
 	return true;
 }
-func ControlUp(object clonk)
+
+public func ControlUp(object clonk)
 {
-	if (IsSlave()) return Control2Master("ControlUp", clonk);
+	if (IsSlave()) 
+		return Control2Master("ControlUp", clonk);
 	
 	// what is that player even doing
-	if(GetY() <= elevator->GetY() + 20)
+	if (GetY() <= elevator->GetY() + 20)
 	{
 		Sound("Click", nil, nil, clonk->GetOwner());
 		return true;
 	}
 	
-	SetMoveDirection(ElevatorCase_up, true, false);
+	SetMoveDirection(COMD_Up, true, false);
 	return true;
 }
 
-func ControlStop(object clonk, int control)
+public func ControlStop(object clonk, int control)
 {
-	if (IsSlave()) return Control2Master("ControlStop", clonk, control);
+	if (IsSlave()) 
+		return Control2Master("ControlStop", clonk, control);
 	
-	if(control == CON_Up && GetYDir() <= 0)
+	if (control == CON_Up && GetYDir() <= 0)
 		Halt(true);
-	else if(control == CON_Down && GetYDir() >= 0)
+	else if (control == CON_Down && GetYDir() >= 0)
 		Halt(true);
 	
 	return true;
 }
 
-func Control2Master(string call, object clonk)
+public func Control2Master(string call, object clonk)
 {
-	if (!IsSlave()) return false;
+	if (!IsSlave()) 
+		return false;
 	return partner->Call(call, clonk, ...);
 }
 
+
+/*-- Scenario saving --*/
+
 func SaveScenarioObject() { return false; }
+
+
+/*-- Properties --*/
 
 local ActMap = {
 		Drive = {
