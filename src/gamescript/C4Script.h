@@ -22,22 +22,6 @@
 
 #include <C4Value.h>
 
-const int C4SCR_Access_Public     = 0,
-          C4SCR_Access_Protected  = 1,
-          C4SCR_Access_Private    = 2;
-
-#define C4SCR_Public    "public"
-#define C4SCR_Protected "protected"
-#define C4SCR_Private   "private"
-
-// ** a definition of a script constant
-struct C4ScriptConstDef
-{
-	const char *Identifier; // constant name
-	C4V_Type ValType;       // type value
-	long Data;               // raw data
-};
-
 // add functions to engine
 void InitGameFunctionMap(C4AulScriptEngine *pEngine);
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine);

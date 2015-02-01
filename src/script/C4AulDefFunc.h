@@ -344,11 +344,18 @@ TEMPLATE(10)
 #undef CONV_FROM_C4V
 #undef TEMPLATE
 
+// a definition of a script constant
+struct C4ScriptConstDef
+{
+	const char * Identifier; // constant name
+	C4V_Type ValType;       // type value
+	long Data;               // raw data
+};
 
 // a definition of a function exported to script
 struct C4ScriptFnDef
 {
-	const char* Identifier; // the name of the func in the script
+	const char * Identifier; // the name of the func in the script
 	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
