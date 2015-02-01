@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4AulExec.h>
 #include <C4DefList.h>
 #include <C4Effect.h>
 #include <C4ObjectInfo.h>
@@ -2564,7 +2565,7 @@ bool C4Object::MenuCommand(const char *szCommand)
 {
 	// Native script execution
 	if (!Def || !Status) return false;
-	return !! Def->Script.DirectExec(this, szCommand, "MenuCommand");
+	return !! ::AulExec.DirectExec(this, szCommand, "MenuCommand");
 }
 
 C4Object *C4Object::ComposeContents(C4ID id)

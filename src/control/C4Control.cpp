@@ -234,18 +234,16 @@ void C4ControlScript::Execute() const
 	if (!Game.Parameters.AllowDebug) return;
 
 	// execute
-	C4Object *pObj = NULL;
+	C4PropList *pPropList = NULL;
 	C4AulScript *pScript;
 	if (iTargetObj == SCOPE_Console)
-		pScript = &::GameScript;
+		pPropList = ::GameScript.GetPropList();
 	else if (iTargetObj == SCOPE_Global)
-		pScript = &::ScriptEngine;
-	else if ((pObj = ::Objects.SafeObjectPointer(iTargetObj)))
-		pScript = &(pObj->Def->Script);
-	else
+		pPropList = ::ScriptEngine.GetPropList();
+	else if (!(pPropList = ::Objects.SafeObjectPointer(iTargetObj)))
 		// default: Fallback to global context
-		pScript = &::ScriptEngine;
-	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
+		pPropList = ::ScriptEngine.GetPropList();
+	C4Value rVal(AulExec.DirectExec(pPropList, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if ( (pDebug = C4AulDebug::GetDebugger()) )
@@ -255,10 +253,7 @@ void C4ControlScript::Execute() const
 #endif
 	// show messages
 	// print script
-	if (pObj)
-		LogF("-> %s::%s", pObj->Def->GetName(), szScript);
-	else
-		LogF("-> %s", szScript);
+	LogF("-> %s::%s", pPropList->GetName(), szScript);
 	// print result
 	if (!LocalControl())
 	{
@@ -331,7 +326,7 @@ void C4ControlMsgBoardCmd::Execute() const
 	}
 
 	// Run script
-	C4Value rv(::ScriptEngine.DirectExec(nullptr, script.getData(), "message board command"));
+	C4Value rv(::AulExec.DirectExec(::ScriptEngine.GetPropList(), script.getData(), "message board command"));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug = C4AulDebug::GetDebugger();
 	if (pDebug)

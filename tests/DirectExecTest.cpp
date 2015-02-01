@@ -15,16 +15,14 @@
 
 #include <C4Include.h>
 #include "script/C4Aul.h"
+#include "script/C4AulExec.h"
 
 #include <gtest/gtest.h>
 
 TEST(DirectExecTest, SanityTests)
 {
-	C4AulScript * pScript = new C4AulScript();
-	ASSERT_TRUE(pScript);
-	C4Value rVal(pScript->DirectExec(nullptr, "5*8", "unit test script", false, nullptr));
+	C4Value rVal(AulExec.DirectExec(nullptr, "5*8", "unit test script", false, nullptr));
 	EXPECT_EQ(rVal, C4Value(5*8));
-	delete pScript;
 }
 
 template<typename T>

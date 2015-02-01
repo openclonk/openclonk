@@ -76,6 +76,7 @@ private:
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
+	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL);
 
 	void StartTrace();
 	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times

@@ -148,7 +148,6 @@ public:
 	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
-	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
 	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
 	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 

@@ -121,4 +121,6 @@ TEST_F(AulTest, Locals)
 TEST_F(AulTest, Eval)
 {
 	EXPECT_EQ(C4VInt(42), RunExpr("eval(\"42\")"));
+	EXPECT_EQ(C4VInt(42), RunCode("local i = 42; func Main() { return eval(\"this.i\"); }", false));
+	EXPECT_EQ(C4VInt(42), RunCode("local i; func Main() { eval(\"this.i = 42\"); return i; }", false));
 }

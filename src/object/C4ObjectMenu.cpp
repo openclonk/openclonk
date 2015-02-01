@@ -29,7 +29,7 @@
 #include "C4Game.h"
 #include "C4PlayerList.h"
 #include "C4GameObjects.h"
-
+#include "C4AulExec.h"
 
 // -----------------------------------------------------------
 // C4ObjectMenu
@@ -304,7 +304,7 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 
 	case CB_Scenario:
 		// Object menu with scenario script callback
-		::GameScript.DirectExec(NULL, szCommand, "MenuCommand");
+		::AulExec.DirectExec(NULL, szCommand, "MenuCommand");
 		break;
 
 	case CB_None:

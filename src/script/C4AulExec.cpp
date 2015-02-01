@@ -1025,28 +1025,33 @@ void C4AulProfiler::Show()
 	// done!
 }
 
-C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
+C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
 {
 #ifdef DEBUGREC_SCRIPT
 	if (Config.General.DebugRec)
 	{
 		AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
-		int32_t iObjNumber = pObj ? pObj->Number : -1;
+		int32_t iObjNumber = p && p->GetPropListNumbered() ? p->GetPropListNumbered()->Number : -1;
 		AddDbgRec(RCT_DirectExec, &iObjNumber, sizeof(int32_t));
 	}
 #endif
 	// profiler
-	AulExec.StartDirectExec();
+	StartDirectExec();
+	C4AulScript * script = &::GameScript;
+	if (p == ::ScriptEngine.GetPropList())
+		script = &::ScriptEngine;
+	else if (p && p->GetDef())
+		script = &p->GetDef()->Script;
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(GetPropList(), GetScriptHost(), 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(script->GetPropList(), script->GetScriptHost(), 0, szScript);
 	// Parse function
 	try
 	{
 		pFunc->ParseFn(context);
-		C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors));
+		C4Value vRetVal(Exec(pFunc, p, NULL, fPassErrors));
 		delete pFunc; pFunc = 0;
 		// profiler
-		AulExec.StopDirectExec();
+		StopDirectExec();
 		return vRetVal;
 	}
 	catch (C4AulError &ex)
