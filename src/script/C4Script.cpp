@@ -107,34 +107,6 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 	return StringBuf;
 }
 
-bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
-{
-	const C4ValueArray* array = value.getArray();
-	if (!array) return false;
-	return C4ValueToMatrix(*array, matrix);
-}
-
-bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
-{
-	if (array.GetSize() != 12) return false;
-
-	StdMeshMatrix& trans = *matrix;
-	trans(0,0) = array[0].getInt()/1000.0f;
-	trans(0,1) = array[1].getInt()/1000.0f;
-	trans(0,2) = array[2].getInt()/1000.0f;
-	trans(0,3) = array[3].getInt()/1000.0f;
-	trans(1,0) = array[4].getInt()/1000.0f;
-	trans(1,1) = array[5].getInt()/1000.0f;
-	trans(1,2) = array[6].getInt()/1000.0f;
-	trans(1,3) = array[7].getInt()/1000.0f;
-	trans(2,0) = array[8].getInt()/1000.0f;
-	trans(2,1) = array[9].getInt()/1000.0f;
-	trans(2,2) = array[10].getInt()/1000.0f;
-	trans(2,3) = array[11].getInt()/1000.0f;
-
-	return true;
-}
-
 C4AulDefFunc::C4AulDefFunc(C4PropListStatic * Parent, C4ScriptFnDef* pDef):
 		C4AulFunc(Parent, pDef->Identifier), Def(pDef)
 {
