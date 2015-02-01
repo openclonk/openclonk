@@ -69,7 +69,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime(id toProduce) { return 100; }
-private func PowerNeed() { return 50; }
+private func PowerNeed() { return 20; }
 
 public func NeedRawMaterial(id rawmat_id)
 {

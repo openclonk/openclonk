@@ -540,6 +540,7 @@ private func LogState(string tag)
 	return;
 }
 
+
 /*-- Power Visualization --*/
 
 // Visualizes the power change on an object from before to to.
@@ -602,7 +603,7 @@ protected func FxVisualPowerChangeRefresh(object target, proplist effect)
 	var off_y = target->GetDefCoreVal("Height", "DefCore") / 2 - 10;
 	var bar_properties = {
 		size = 1000, 
-		bars = effect.max / 25, 
+		bars = effect.max / 10, 
 		graphics_name = effect.graphics_name, 
 		back_graphics_name = effect.back_graphics_name, 
 		image = Icon_Lightbulb, 

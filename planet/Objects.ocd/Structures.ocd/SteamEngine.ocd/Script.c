@@ -1,7 +1,7 @@
 /**
  	Steam Engine 
  	Burns fuels like coal, wood and oil to produce power. The steam engine
- 	produces 300 units of power independent of the fuel. However, the fuel 
+ 	produces 120 units of power independent of the fuel. However, the fuel 
  	determines the amount of fuel and thereby the burn time.
  	
  	@author Maikel
@@ -14,7 +14,7 @@
 
 local DefaultFlagRadius = 200;
 
-static const SteamEngine_produced_power = 300;
+static const SteamEngine_produced_power = 120;
 
 // Variable to store the fuel amount currently held in the engine.
 local fuel_amount;

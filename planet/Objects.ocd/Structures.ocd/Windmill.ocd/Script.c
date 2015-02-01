@@ -82,11 +82,9 @@ public func Wind2Turn()
 	var power = 0;
 	if (!wheel->Stuck() && !wheel->HasStopped())
 	{
+		// Produced power ranges from 0 to 80 in steps of 10.
 		power = Abs(wheel->GetRDir(MinRevolutionTime() / 90));
-		if (power < 5) 
-			power = 0;
-		else 
-			power = Max((power + 5) / 25, 1) * 50;
+		power = BoundBy((10 * power + 60) / 125 * 10, 0, 80);	
 	}
 	// Update the power consumption if the produced power has changed.
 	if (last_power != power)
@@ -108,7 +106,7 @@ public func Wind2Turn()
 // Power need for the production library.
 private func PowerNeed() 
 {
-	return Max(0, 75 - last_power); 
+	return Max(0, 30 - last_power); 
 }
 
 

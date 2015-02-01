@@ -43,8 +43,6 @@ public func IsContainer() { return true; }
 
 public func IsInteractable() { return GetCon() >= 100; }
 
-public func GetConsumerPriority() { return 50; }
-
 public func GetInteractionMetaInfo(object clonk)
 {
 	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
@@ -343,7 +341,9 @@ private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
 private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
-private func PowerNeed() { return 200; }
+private func PowerNeed() { return 80; }
+
+public func GetConsumerPriority() { return 50; }
 
 private func Produce(id product)
 {

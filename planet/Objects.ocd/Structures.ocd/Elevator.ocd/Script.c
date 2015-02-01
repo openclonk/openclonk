@@ -4,7 +4,7 @@
 #include Library_Ownable
 
 // used in the elevator case
-static const Elevator_needed_power = 50;
+static const Elevator_needed_power = 20;
 
 local case, rope;
 local partner, slave;

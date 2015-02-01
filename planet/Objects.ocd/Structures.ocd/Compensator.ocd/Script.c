@@ -15,8 +15,8 @@ local DefaultFlagRadius = 90;
 
 // Power storage variables.
 local stored_power;
-static const POWR_COMP_PowerUsage = 50;
-static const POWR_COMP_MaxStorage = 27000; // 15 * 36 * 50
+static const POWR_COMP_PowerUsage = 20;
+static const POWR_COMP_MaxStorage = 10800; // 15 * 36 * 20
 
 // Variables for displaying the charge.
 local leftcharge, rightcharge, anim;
@@ -71,35 +71,14 @@ private func PowerCheck()
 	if (GetCon() < 100 || GetOwner() == NO_OWNER)
 		return;
 		
-	// Register as producer while still consuming if power level is above 2/3.	
-	if (GetEffect("ConsumePower", this))
-	{
-		if (stored_power >= 2 * POWR_COMP_MaxStorage / 3)
-			RegisterPowerProduction(POWR_COMP_PowerUsage);
-		return;
-	}
-	
-	// Register as consumer while still producing if power level is below 1/3.	
-	if (GetEffect("ProducePower", this))
-	{
-		if (stored_power <= 1 * POWR_COMP_MaxStorage / 3)
-			RegisterPowerRequest(POWR_COMP_PowerUsage);
-		return;
-	}
-		
-	// Register as consumer if stored power is zero.
-	if (stored_power == 0)
-	{
-		RegisterPowerRequest(POWR_COMP_PowerUsage);
-		return; 
-	}
-	
-	// Register as producer if storage is full.
-	if (stored_power >= POWR_COMP_MaxStorage)
-	{
+	// Always register as a producer when power is bigger than zero.
+	if (stored_power > 0)
 		RegisterPowerProduction(POWR_COMP_PowerUsage);
-		return;	
-	}
+		
+	// Always register as a consumer if power is below max.
+	if (stored_power < POWR_COMP_MaxStorage)
+		RegisterPowerRequest(POWR_COMP_PowerUsage);
+	
 	return;
 }
 

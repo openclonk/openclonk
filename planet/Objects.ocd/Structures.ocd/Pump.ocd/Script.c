@@ -116,16 +116,16 @@ public func IsSteadyPowerProducer() { return true; }
 
 public func OnNotEnoughPower()
 {
-	_inherited(...);
 	powered = false;
 	CheckState();
+	return _inherited(...);
 }
 
 public func OnEnoughPower()
 {
-	_inherited(...);
 	powered = true;
 	CheckState();
+	return _inherited(...);
 }
 
 /** Returns object to which the liquid is pumped */
@@ -138,7 +138,8 @@ private func GetDrainObject()
 /** Returns object from which the liquid is pumped */
 private func GetSourceObject()
 {
-	if (source_pipe) return source_pipe->GetConnectedObject(this) ?? this;
+	if (source_pipe) 
+		return source_pipe->GetConnectedObject(this) ?? this;
 	return this;
 }
 
@@ -155,22 +156,22 @@ protected func Pumping()
 	
 	// something went wrong in the meantime?
 	// let the central function handle that on next check
-	if (!source_pipe) return;
+	if (!source_pipe) 
+		return;
 	
 	var pump_ok = true;
 	
 	// is empty? -> try to get liquid
 	if (!stored_material_amount)
 	{
-
 		// get new materials
-		var mat = GetSourceObject()->ExtractLiquidAmount(0, 0, GetPumpSpeed()/10);
+		var mat = GetSourceObject()->ExtractLiquidAmount(0, 0, GetPumpSpeed() / 10);
 	
 		// no material to pump?
 		if (mat)
 		{
-		stored_material_index = mat[0];
-		stored_material_amount = mat[1];
+			stored_material_index = mat[0];
+			stored_material_amount = mat[1];
 		}
 		else
 		{
@@ -251,13 +252,13 @@ private func GetPumpHeight()
 	if (GetSourceObject()->GBackLiquid())
 	{
 		var src_mat = GetSourceObject()->GetMaterial();
-		while (src_mat == GetSourceObject()->GetMaterial(0, source_y-1))
+		while (src_mat == GetSourceObject()->GetMaterial(0, source_y - 1))
 			--source_y;
 	}
 	// same for target (use same function as if inserting)
-	var target_pos = {X=0, Y=0};
-	GetDrainObject()->CanInsertMaterial(Material("Water"),0,0,target_pos);
-	return (GetSourceObject()->GetY() + source_y) - target_pos.Y;
+	var target_pos = {X = 0, Y = 0};
+	GetDrainObject()->CanInsertMaterial(Material("Water"), 0, 0, target_pos);
+	return GetSourceObject()->GetY() + source_y - target_pos.Y;
 }
 
 /** Recheck power usage/production for current pump height
@@ -301,23 +302,32 @@ private func UpdatePowerUsage()
 	}
 	
 	power_used = new_power;
+	return;
 }
 
-/** Return whether the pump should be using power in the current state */
+// Return whether the pump should be using power in the current state.
 private func IsUsingPower()
 {
 	return switched_on && (GetAction() == "Pump" || GetAction() == "WaitForPower");
 }
 
-/** Transform pump height (input.y - output.y) to required power */
+// Transform pump height (input.y - output.y) into required power.
 private func PumpHeight2Power(int pump_height)
 {
-	// pumping downwards will only produce energy after an offset
-	var power_offset = 40;
-	// max power consumed/produced
-	var max_power = 150;
-	
-	return BoundBy((pump_height + power_offset) / 15 * 5, -max_power, max_power + power_offset);
+	// Pumping upwards will always cost the minimum energy.
+	// Pumping downwards will only produce energy after an offset.
+	var power_offset = 10;
+	// Max power consumed / produced.
+	var max_power = 60;
+	// Calculate the used power in steps of ten, every 60 pixels represents ten units.
+	var used_power = pump_height / 60 * 10;
+	// If the power is positive then add the minimum energy.
+	if (used_power > 0)
+		used_power = Min(used_power + 10, max_power);
+	// Pumping power downwards never costs energy, but only brings something if offset is overcome.
+	else
+		used_power = Min(used_power + power_offset - 10, 0);
+	return used_power;
 }
 
 /** Returns whether there is liquid at the source pipe to pump */
@@ -337,11 +347,13 @@ private func HasLiquidToPump()
 	return true;
 }
 
-/** Set the state of the pump, retaining the animation position and updating the power usage */
-func SetState(string act)
+// Set the state of the pump, retaining the animation position and updating the power usage.
+private func SetState(string act)
 {
-	if(act == GetAction()) return;
+	if (act == GetAction()) 
+		return;
 
+	// Set animation depending on the current action.
 	var start = 0;
 	var end = GetAnimationLength("pump");
 	var anim_pos = GetAnimationPosition(animation);
@@ -358,7 +370,7 @@ func SetState(string act)
 		SetAnimationPosition(animation, Anim_Const(anim_pos));
 	}
 	
-	// deactivate power usage when not pumping
+	// Deactivate power usage when not pumping.
 	if (powered && (act == "Wait" || act == "WaitForLiquid"))
 	{
 		if (power_used < 0) 
@@ -369,7 +381,7 @@ func SetState(string act)
 		power_used = 0;
 		powered = false;
 	}
-	// finally, set the action
+	// Finally, set the action.
 	SetAction(act);
 	return;
 }
@@ -391,7 +403,6 @@ protected func Definition(def)
 	"WaitForPower":		turned on but no power (does consume power)
 	"WaitForLiquid":	turned on but no liquid (does not consume power)
 	"Pump":				currently working and consuming/producing power
-
 */
 local ActMap = {
 	Pump = {
