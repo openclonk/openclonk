@@ -14,6 +14,9 @@
 	this can be used to change the appearance of the storage. This callback 
 	is OnStoredPowerChange().
 	
+	If the storage needs be charged from script this is possible via the 
+	function SetStoredPower(int to_power).
+	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
 	   Initialize and Destruction callback if overloaded.
@@ -72,6 +75,9 @@ public func SetStoredPower(int to_power)
 	lib_power.stored_power = BoundBy(to_power, 0, GetStorageCapacity());
 	// Callback to this object that the power has changed.
 	OnStoredPowerChange();
+	// Register as consumer and or producer if needed.
+	if (!GetEffect("CoolDown", this))
+		UpdateNetworkStatus();
 	return;
 }
 
@@ -118,10 +124,7 @@ protected func FxCoolDownTimer(object target, proplist effect, int time)
 	if (time >= GetStorageCoolDown())
 	{
 		// After the cool down register the storage as both a producer and consumer if either makes sense.
-		if (lib_power.stored_power > 0)
-			RegisterPowerProduction(GetStoragePower());
-		if (lib_power.stored_power < GetStorageCapacity())
-			RegisterPowerRequest(GetStoragePower());
+		UpdateNetworkStatus();
 		return -1;
 	}
 	return 1;
@@ -133,6 +136,16 @@ protected func FxCoolDownStop(object target, proplist effect, int reason, bool t
 	if (temp) 
 		return 1;
 	return 1;
+}
+
+// Updates the network status: registers as consumer and/or producer.
+private func UpdateNetworkStatus()
+{
+	if (lib_power.stored_power > 0)
+		RegisterPowerProduction(GetStoragePower());
+	if (lib_power.stored_power < GetStorageCapacity())
+		RegisterPowerRequest(GetStoragePower());
+	return;
 }
 
 
