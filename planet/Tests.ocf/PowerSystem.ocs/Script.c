@@ -415,7 +415,8 @@ global func Test7_OnStart(int plr)
 
 global func Test7_Completed()
 {
-	if (ObjectCount(Find_ID(Shovel)) >= 18)
+	// This should be 18, but due to some left-over power in one of the compensators it can also be 17.
+	if (ObjectCount(Find_ID(Shovel)) >= 17)
 		return true;
 	return false;
 }

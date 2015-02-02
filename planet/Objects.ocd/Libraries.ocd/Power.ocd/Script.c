@@ -32,8 +32,8 @@
 	 * Fix the visualization of power on the nodes.
 	 * Check the flag library for network merging.
 	 * Check the power balance, also with merging.
-	 * Fix the compensator.
-	 * Fix the pump.
+	 * Always get the actual priority.
+	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
 
 	@author Zapper, Maikel
 */
@@ -370,17 +370,21 @@ public func RemovePowerConsumer(object consumer)
 // the ones with highest priority will be active.
 private func CheckPowerBalance()
 {
-	// First refresh the consumers based on the total power capacity of the network.
-	var available_power = GetPowerAvailable();
+	// First determine whether the storage links in this network need to be producers
+	// or may be consumers. Get the power needed by all non-storage consumers and the 
+	// power available by all non-storage producers.
+	var needed_power = GetPowerConsumptionNeed();
+	var available_power = GetBarePowerAvailable();
 	// Debugging logs.
-	LogState(Format("balance_start av_power = %d", available_power));
-	RefreshConsumers(available_power);
-	
-	// Then calculate the need for power production and refresh the producers.	
-	var power_production_need = GetPowerProductionNeed();
-	RefreshProducers(power_production_need);	
+	LogState(Format("balance_start nd_power = %d, av_power = %d", needed_power, available_power));
+	// First activate the producers to create the requested power.
+	RefreshProducers(needed_power);
+	// Then active the consumers according to the freed up power, it might be that
+	// power storage was preferred over on-demand producers, which means that no
+	// consuming storage will be activated.
+	RefreshConsumers(GetActivePowerAvailable());	
 	// Debugging logs.
-	LogState(Format("balance_end needed_power = %d", power_production_need));
+	LogState(Format("balance_end nd_power = %d, av_power = %d", needed_power, GetActivePowerAvailable()));
 	return;
 }
 
@@ -392,6 +396,36 @@ private func GetPowerAvailable()
 	for (var index = GetLength(all_producers) - 1; index >= 0; index--)
 	{
 		var link = all_producers[index];
+		if (!link)
+			continue;
+		total += link.prod_amount;
+	}
+	return total;
+}
+
+// Returns the total bare power available in the network: that is the idle
+// + active producers which are not power storages.
+private func GetBarePowerAvailable()
+{
+	var total = 0;
+	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
+	for (var index = GetLength(all_producers) - 1; index >= 0; index--)
+	{
+		var link = all_producers[index];
+		if (!link || link.obj->~IsPowerStorage())
+			continue;
+		total += link.prod_amount;
+	}
+	return total;
+}
+
+// Returns the total active power available in the network.
+private func GetActivePowerAvailable()
+{
+	var total = 0;
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
+	{
+		var link = lib_power.active_producers[index];
 		if (!link)
 			continue;
 		total += link.prod_amount;
@@ -431,6 +465,9 @@ private func RefreshConsumers(int power_available)
 		// In the other case see if consumer is not yet active, if so activate.
 		else
 		{
+			// However, only activate storage when there is no other storage producing.
+			if (link.obj->~IsPowerStorage() && HasProducingStorage())
+				continue;			
 			power_used += link.cons_amount;
 			var idx = GetIndexOf(lib_power.waiting_consumers, link);
 			if (idx != -1)
@@ -448,13 +485,28 @@ private func RefreshConsumers(int power_available)
 }
 
 // Returns the amount of power the currently active power consumers need.
-private func GetPowerProductionNeed()
+private func GetPowerConsumption()
 {
 	var total = 0;
 	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{
 		var link = lib_power.active_consumers[index];
 		if (!link)
+			continue;
+		total += link.cons_amount;
+	}
+	return total;	
+}
+
+// Returns the bare amount of power needed by all consumer requests which are not power storages.
+private func GetPowerConsumptionNeed()
+{
+	var total = 0;
+	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
+	for (var index = GetLength(all_consumers) - 1; index >= 0; index--)
+	{
+		var link = all_consumers[index];
+		if (!link || link.obj->~IsPowerStorage())
 			continue;
 		total += link.cons_amount;
 	}
@@ -508,6 +560,34 @@ private func RefreshProducers(int power_need)
 		}
 	}
 	return;
+}
+
+// Returns whether network has power storage which is producing power for the network.
+private func HasProducingStorage()
+{
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
+	{ 
+		var link = lib_power.active_producers[index];
+		if (!link) 
+			continue;
+		if (link.obj->~IsPowerStorage())
+			return true;
+	}
+	return false;
+}
+
+// Returns whether network has power storage which is consuming power from the network.
+private func HasConsumingStorage()
+{
+	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
+	{ 
+		var link = lib_power.active_consumers[index];
+		if (!link) 
+			continue;
+		if (link.obj->~IsPowerStorage())
+			return true;
+	}
+	return false;
 }
 
 

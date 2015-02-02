@@ -96,7 +96,7 @@ public func GetProducerPriority() { return 0; }
 
 // Destruction callback by the engine: let power network know this object is not a producer 
 // anymore. A power producer must always be unregistered from the network.
-public func Destruction()
+protected func Destruction()
 {
 	UnregisterPowerProduction();
 	return _inherited(...);

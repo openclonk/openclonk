@@ -102,7 +102,7 @@ public func GetActualPowerConsumer()
 
 // Destruction callback by the engine: let power network know this object is not
 // a consumer anymore, it must always be unregistered from the power network.
-public func Destruction()
+protected func Destruction()
 {
 	UnregisterPowerRequest();
 	return _inherited(...);
