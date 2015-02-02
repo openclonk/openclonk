@@ -34,6 +34,7 @@
 	 * Check the power balance, also with merging.
 	 * Always get the actual priority.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
+	 * Remove .power_balance once this is the final version.
 
 	@author Zapper, Maikel
 */
@@ -440,6 +441,8 @@ private func RefreshConsumers(int power_available)
 	// Debugging logs.
 	Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
 	var power_used = 0;
+	UpdatePriorities(lib_power.waiting_consumers, true);
+	UpdatePriorities(lib_power.active_consumers, true);
 	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
 	if (GetLength(all_consumers) > 1) // TODO: this check should not be necessary.
 		SortArrayByProperty(all_consumers, "priority");
@@ -520,6 +523,8 @@ private func RefreshProducers(int power_need)
 	// Debugging logs.
 	Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
 	var power_found = 0;
+	UpdatePriorities(lib_power.idle_producers);
+	UpdatePriorities(lib_power.active_producers);
 	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
 	if (GetLength(all_producers) > 1) // TODO: this check should not be necessary.
 		SortArrayByProperty(all_producers, "priority");
@@ -590,6 +595,19 @@ private func HasConsumingStorage()
 	return false;
 }
 
+// Updates the priorities of either a list of consumers or producers.
+private func UpdatePriorities(array link_list, bool for_consumers)
+{
+	for (var link in link_list)
+	{
+		if (for_consumers)
+			link.priority = link.obj->~GetConsumerPriority();
+		else
+			link.priority = link.obj->~GetProducerPriority();
+	}
+	return;
+}
+
 
 /*-- Network State --*/
 
@@ -615,7 +633,12 @@ private func LogState(string tag)
 	Log("POWR - lib_power.active_producers: %v", lib_power.active_producers);
 	Log("POWR - lib_power.waiting_consumers: %v", lib_power.waiting_consumers);
 	Log("POWR - lib_power.active_consumers: %v", lib_power.active_consumers);
-	Log("POWR - lib_power.power_balance = %d", lib_power.power_balance);
+	Log("POWR - GetPowerConsumptionNeed() = %d", GetPowerConsumptionNeed());
+	Log("POWR - GetBarePowerAvailable() = %d", GetBarePowerAvailable());
+	Log("POWR - GetPowerAvailable() = %d", GetPowerAvailable());
+	Log("POWR - GetActivePowerAvailable() = %d", GetActivePowerAvailable());
+	Log("POWR - GetPowerConsumption() = %d", GetPowerConsumption());
+	//Log("POWR - lib_power.power_balance = %d", lib_power.power_balance);
 	Log("==========================================================================");
 	return;
 }

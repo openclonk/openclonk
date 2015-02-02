@@ -5,6 +5,15 @@
 	overloaded and others can be used to implement the storage of power in
 	a uniform way consistent with the network, see text below.
 	
+	The power storage has several properties which can be overloaded using the
+	following functions:
+	 * GetStoragePower() amount of power it consumes or produces.
+	 * GetStorageCapacity() its capacity.
+	 * GetStorageCoolDown() cool down time between consumption and production.
+	Moreover there is a callback for when the stored amount of power changes,
+	this can be used to change the appearance of the storage. This callback 
+	is OnStoredPowerChange().
+	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
 	   Initialize and Destruction callback if overloaded.
@@ -24,21 +33,8 @@ public func IsPowerStorage() { return true; }
 
 /*-- Interface --*/
 
-// Call this function in the power storage structure to indicate to the network
-// the availability to store power of the specified amount.
-//private func RegisterPowerStorage()
-//{
-//	Library_Power->RegisterPowerStorage(this);
-//	return;
-//}
-
-// Call this function in the power storage structure to indicate to the network
-// a the end of the availability to store power.
-//private func UnregisterPowerStorage()
-//{
-//	Library_Power->UnregisterPowerStorage(this);
-//	return;
-//}
+// This library uses the consumer and producer library interface to the power 
+// library. See those scripts for details.
 
 
 /*-- Callbacks --*/
@@ -223,6 +219,7 @@ public func OnEnoughPower()
 // Callback from the power library saying there is not enough power.
 public func OnNotEnoughPower()
 {
+	// Stop the consumption of power.
 	if (GetEffect("ConsumePower", this))
 		RemoveEffect("ConsumePower", this);
 	return _inherited(...);
