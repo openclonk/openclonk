@@ -74,7 +74,7 @@ public func OnPowerProductionStart(int amount)
 
 // Callback by the power network. Overload this function and stop the production
 // of power in this structure if possible.
-public func OnPowerProductionStop()
+public func OnPowerProductionStop(int amount)
 {
 	// A return value of false indicates to the network that stopping the current production
 	// was not possible, this should in principle never happen. However, if so the network

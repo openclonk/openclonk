@@ -67,7 +67,7 @@ private func UnregisterPowerRequest()
 // functionality, since enough power is available. return inherited(amount, ...)
 // to remove the no-power symbol. It is not allowed to (un)register a power request
 // in this callback.
-public func OnEnoughPower()
+public func OnEnoughPower(int amount)
 {
 	// Remove the no-power symbol.
 	RemoveStatusSymbol(Library_PowerConsumer);
@@ -78,7 +78,7 @@ public func OnEnoughPower()
 // functionality, since not enough power is available. return inherited(amount, ...)
 // to add the no-power symbol. It is not allowed to (un)register a power request
 // in this callback.
-public func OnNotEnoughPower()
+public func OnNotEnoughPower(int amount)
 {
 	// Show the no-power symbol.
 	AddStatusSymbol(Library_PowerConsumer);

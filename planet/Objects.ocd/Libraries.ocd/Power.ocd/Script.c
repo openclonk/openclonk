@@ -8,13 +8,13 @@
 	
 	Callbacks to the power producers (see producer library for details):
 	 * OnPowerProductionStart(int amount)
-	 * OnPowerProductionStop()
+	 * OnPowerProductionStop(int amount)
 	 * GetProducerPriority()
 	 * IsSteadyPowerProducer()
 	 
 	Callbacks to the power consumers (see consumer library for details):
 	 * OnEnoughPower(int amount)
-	 * OnNotEnoughPower()
+	 * OnNotEnoughPower(int amount)
 	 * GetConsumerPriority()
 	 * GetActualPowerConsumer()
 	 
@@ -279,7 +279,7 @@ public func RemovePowerProducer(object producer)
 		RemoveArrayIndex(lib_power.active_producers, index);
 		VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 		// Notify the active power producer that it should stop producing power.
-		producer->OnPowerProductionStop();
+		producer->OnPowerProductionStop(link.prod_amount);
 		// Check the power balance of this network, since a change has been made.
 		CheckPowerBalance();
 		return;
@@ -329,6 +329,8 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 	}
 	// Consumer was in neither list, so add it to the list of waiting consumers.
 	PushBack(lib_power.waiting_consumers, {obj = consumer, cons_amount = amount, priority = prio});
+	// On not enough power callback to not yet active consumer.
+	consumer->OnNotEnoughPower(amount);
 	// Check the power balance of this network, since a change has been made.
 	CheckPowerBalance();
 	return;
@@ -559,7 +561,7 @@ private func RefreshProducers(int power_need)
 				lib_power.power_balance -= link.prod_amount;
 				RemoveArrayIndex(lib_power.active_producers, idx);
 				// On production stop callback to the deactivated producer.
-				link.obj->OnPowerProductionStop();
+				link.obj->OnPowerProductionStop(link.prod_amount);
 				VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 			}
 		}

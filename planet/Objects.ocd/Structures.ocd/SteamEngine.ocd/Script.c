@@ -96,7 +96,7 @@ public func OnPowerProductionStart(int amount)
 }
 
 // Callback from the power library requesting to stop power production.
-public func OnPowerProductionStop()
+public func OnPowerProductionStop(int amount)
 {
 	// Set action to idle when it was working.
 	if (GetAction() == "Work")

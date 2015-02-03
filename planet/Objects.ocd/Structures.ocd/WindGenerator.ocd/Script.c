@@ -61,7 +61,7 @@ public func OnPowerProductionStart(int amount)
 }
 
 // Callback from the power library requesting to stop power production.
-public func OnPowerProductionStop()
+public func OnPowerProductionStop(int amount)
 {
 	// This is a steady producer, so don't stop anything.
 	return true;

@@ -536,8 +536,6 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Always register the power request even if power need is zero. The
 	// power network handles this correctly and a producer may decide to
 	// change its power need during production.
-	this->~OnProductionHold(effect.Product, effect.Duration);
-	effect.Active = false;
 	RegisterPowerRequest(PowerNeed());
 	
 	return 1;

@@ -80,7 +80,7 @@ public func OnPowerProductionStart(int amount)
 	return _inherited(amount, ...);
 }
 
-public func OnPowerProductionStop()
+public func OnPowerProductionStop(int amount)
 {
 	if (GetEffect("Sparkle", this))
 		RemoveEffect("Sparkle", this);

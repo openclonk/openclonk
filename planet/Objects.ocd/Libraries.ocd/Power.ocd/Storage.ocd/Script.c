@@ -170,7 +170,7 @@ public func OnPowerProductionStart(int amount)
 }
 
 // Callback from the power library requesting to stop power production.
-public func OnPowerProductionStop()
+public func OnPowerProductionStop(int amount)
 {
 	// Stop the production of power.
 	if (GetEffect("ProducePower", this))
@@ -218,7 +218,7 @@ protected func FxProducePowerStop(object target, proplist effect, int reason, bo
 public func GetConsumerPriority() { return 0; }
 
 // Callback from the power library saying there is enough power.
-public func OnEnoughPower()
+public func OnEnoughPower(int amount)
 {
 	// Start the consumption of power.
 	if (!GetEffect("ConsumePower", this))
@@ -231,7 +231,7 @@ public func OnEnoughPower()
 }
 
 // Callback from the power library saying there is not enough power.
-public func OnNotEnoughPower()
+public func OnNotEnoughPower(int amount)
 {
 	// Stop the consumption of power.
 	if (GetEffect("ConsumePower", this))
