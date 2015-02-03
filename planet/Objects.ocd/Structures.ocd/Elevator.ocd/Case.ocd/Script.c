@@ -288,6 +288,9 @@ func FxFetchVehiclesTimer(target, effect, time)
 
 /*-- Power Consumption --*/
 
+// Keeps track of whether the elevator is currently powered.
+local has_power;
+
 private func GetNeededPower()
 {
 	if (partner_was_synced)
@@ -308,11 +311,14 @@ public func GetConsumerPriority() { return 100; }
 public func ResetPowerUsage()
 {
 	UnregisterPowerRequest();
+	has_power = false;
 	return;
 }
 
 public func OnNotEnoughPower()
 {
+	has_power = false;
+	
 	if (GetYDir())
 		StoreMovementData();
 	
@@ -323,8 +329,15 @@ public func OnNotEnoughPower()
 
 public func OnEnoughPower()
 {
+	has_power = true;
+	
 	RestoreMovementData();
 	return _inherited(...);
+}
+
+protected func FxHasPowerStart()
+{
+	return 1;
 }
 
 private func StoreMovementData(int y_dir, string action, bool user_requested)
@@ -359,19 +372,16 @@ private func RestoreMovementData()
 		drill = true;
 	// This function is only called when enough power is available, so then call
 	// the movement function with has_power equal to true.
-	SetMoveDirection(effect.y_dir, effect.user_requested, drill, true);
+	SetMoveDirection(effect.y_dir, effect.user_requested, drill);
 	RemoveEffect(nil, this, effect);
 	return;
 }
 
-private func SetMoveDirection(int dir, bool user_requested, bool drill, bool has_power)
+private func SetMoveDirection(int dir, bool user_requested, bool drill)
 {
 	if (IsSlave()) 
 		return partner->SetMoveDirection(dir, user_requested, drill, has_power);
-	
-	if (user_requested) 
-		StopAutomaticMovement();
-	
+		
 	// no change?
 	if (dir == COMD_Up && (GetYDir() < 0)) return;
 	if (dir == COMD_Down && (GetYDir() > 0)) return;
@@ -420,7 +430,7 @@ private func Halt(bool user_requested, bool power_out)
 	if (IsSlave())
 		return;
 	
-	StopAutomaticMovement(true);
+	StopAutomaticMovement();
 	
 	if (GetYDir())
 		if(elevator)
@@ -433,7 +443,10 @@ private func Halt(bool user_requested, bool power_out)
 	
 	// Unregister the power request.
 	if (user_requested || !power_out)
+	{
 		UnregisterPowerRequest();
+		has_power = false;
+	}
 	return;
 }
 
@@ -503,10 +516,9 @@ private func CheckIdle()
 	return true;
 }
 
-private func StopAutomaticMovement(bool forced)
+private func StopAutomaticMovement()
 {
-	var effect = GetEffect("MoveTo", this);
-	if (effect && (!effect.user_requested || forced))
+	if (GetEffect("MoveTo", this))
 	{
 		RemoveEffect("MoveTo", this);
 		Halt();
@@ -607,6 +619,7 @@ public func ControlDown(object clonk)
 	// Pressing down when already on ground results in drilling.
 	var drill = !!GetContact(-1, CNAT_Bottom);
 	
+	StopAutomaticMovement();
 	SetMoveDirection(COMD_Down, true, drill);
 	return true;
 }
@@ -623,6 +636,7 @@ public func ControlUp(object clonk)
 		return true;
 	}
 	
+	StopAutomaticMovement();
 	SetMoveDirection(COMD_Up, true, false);
 	return true;
 }
