@@ -2962,6 +2962,9 @@ bool C4Game::DoGameOver()
 	for (C4Player *pPlayer = Players.First; pPlayer; pPlayer = pPlayer->Next)
 		if (!pPlayer->Eliminated)
 			pPlayer->EvaluateLeague(false, true);
+	// Immediately save config so mission access gained by this round is stored if the game crashes during shutdown
+	// or in a following round
+	Config.Save();
 	return true;
 }
 
