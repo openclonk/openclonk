@@ -184,9 +184,11 @@ public func Construction()
 
 public func Destruction()
 {
+	// Important: first process other libraries like the power library which removes links
+	// from the network and then handle ownership removal.
+	_inherited(...);
 	RemoveOwnership();
-	
-	return _inherited(...);
+	return;
 }
 
 private func AddOwnership()
