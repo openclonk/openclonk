@@ -81,7 +81,7 @@ public func OnEnoughPower(int amount)
 public func OnNotEnoughPower(int amount)
 {
 	// Show the no-power symbol.
-	AddStatusSymbol(Library_PowerConsumer);
+	ShowStatusSymbol(Library_PowerConsumer);
 	return;
 }
 
