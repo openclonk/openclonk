@@ -14,13 +14,29 @@
 */
 
 
+static script_plr;
+
 protected func Initialize()
 {
+	// Create a script player for some tests.
+	script_plr = nil;
+	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 	return;
 }
 
 protected func InitializePlayer(int plr)
 {
+	// Initialize script player.
+	if (GetPlayerType(plr) == C4PT_Script)
+	{
+		// Store the player number.
+		if (script_plr == nil)
+			script_plr = plr;
+		// No crew needed.
+		GetCrew(plr)->RemoveObject();
+		return;
+	}	
+	
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
 	
@@ -35,6 +51,18 @@ protected func InitializePlayer(int plr)
 	effect.testnr = 1;
 	effect.launched = false;
 	effect.plr = plr;
+	return;
+}
+
+protected func RemovePlayer(int plr)
+{
+	// Remove script player.
+	if (GetPlayerType(plr) == C4PT_Script)
+	{
+		if (plr == script_plr)
+			script_plr = nil;
+		return;	
+	}
 	return;
 }
 
@@ -528,10 +556,10 @@ global func Test10_OnStart(int plr)
 	SetWindFixed(100);
 	CreateObjectAbove(WindGenerator, 40, 160, plr);
 	
-	// Power consumer (network 1): five pumps.
-	for (var i = 0; i < 5; i++)
+	// Power consumer (network 1): four pumps.
+	for (var i = 0; i < 4; i++)
 	{
-		var pump = CreateObjectAbove(Pump, 80 + i * 10, 160, plr);
+		var pump = CreateObjectAbove(Pump, 80 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 168, 292, plr);
 		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
 		source_pipe->SetActionTargets(source, pump);
@@ -543,10 +571,10 @@ global func Test10_OnStart(int plr)
 		pump->SetDrain(drain_pipe);
 	}
 	
-	// Power source (network 2): five pumps.
-	for (var i = 0; i < 5; i++)
+	// Power source (network 2): four pumps.
+	for (var i = 0; i < 4; i++)
 	{
-		var pump = CreateObjectAbove(Pump, 228 + i * 10, 160, plr);
+		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
 		var source = CreateObjectAbove(Pipe, 256, 100, plr);
 		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
 		source_pipe->AddVertex(288, 24);
@@ -593,8 +621,51 @@ global func Test10_OnFinished()
 	return;
 }
 
-// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+// Test connecting two networks by different allied players and then elimination of one player.
 global func Test11_OnStart(int plr)
+{
+	// First network is owned by the player.
+	var steam_engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
+	steam_engine->CreateContents(Coal, 4);
+	
+	// Second network is owned by the script player.
+	SetWindFixed(50);
+	CreateObjectAbove(WindGenerator, 410, 248, script_plr);
+	var shipyard = CreateObjectAbove(Shipyard, 450, 248, script_plr);
+	shipyard->CreateContents(Wood, 8);
+	shipyard->CreateContents(Metal, 8);
+	shipyard->AddToQueue(Airship, 2);
+	
+	// Networks are disconnected so let the script player bridge the gap.
+	ScheduleCall(nil, "CreateObjectAbove", 3 * 36, 0, Compensator, 272, 160, script_plr);
+	
+	// Eliminate the script player and see if the normal player takes over the network correctly.
+	ScheduleCall(nil, "EliminatePlayer", 6 * 36, 0, script_plr);
+	
+	// Rejoin the script player for other tests.
+	ScheduleCall(nil, "CreateScriptPlayer", 9 * 36, 0, "Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
+
+	// Log what the test is about.
+	Log("Test connecting two networks by different allied players and then elimination of one player.");
+	return true;
+}
+
+global func Test11_Completed()
+{
+	if (ObjectCount(Find_ID(Airship)) >= 2)
+		return true;
+	return false;
+}
+
+global func Test11_OnFinished()
+{
+	// Remove wind generator, steam engine, flagpole, shipyard, airship.
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(SteamEngine), Find_ID(Compensator), Find_ID(Shipyard), Find_ID(Airship)));
+	return;
+}
+
+// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+global func Test12_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -623,14 +694,14 @@ global func Test11_OnStart(int plr)
 	return true;
 }
 
-global func Test11_Completed()
+global func Test12_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test11_OnFinished()
+global func Test12_OnFinished()
 {
 	// Restore water levels.
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
