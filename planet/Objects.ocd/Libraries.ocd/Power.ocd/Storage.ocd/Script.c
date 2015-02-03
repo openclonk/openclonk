@@ -226,7 +226,8 @@ public func OnEnoughPower()
 	// Add a cooldown effect to not become producer at the same time.
 	if (!GetEffect("CoolDown", this))
 		AddEffect("CoolDown", this, 1, 6, this);
-	return _inherited(...);
+	// Do not return inherited since the no power symbol should not be shown.
+	return;
 }
 
 // Callback from the power library saying there is not enough power.
@@ -235,7 +236,8 @@ public func OnNotEnoughPower()
 	// Stop the consumption of power.
 	if (GetEffect("ConsumePower", this))
 		RemoveEffect("ConsumePower", this);
-	return _inherited(...);
+	// Do not return inherited since the no power symbol should not be shown.
+	return;
 }
 
 protected func FxConsumePowerStart(object target, proplist effect, int temp)
