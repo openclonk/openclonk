@@ -37,7 +37,7 @@ MerchantACatapult1=Ein Katapult hat viele Anwendungen. Man kann Dinge wie Leitun
 MerchantACatapult2=Das...klingt gefährlich. Das gefällt mir!
 MerchantQDone=Tschüss.
 
-# Gyro Gearloose
+# Gyro
 Gyro1=Du hast dir ja einen seltsamen Ort zum Rumstehen ausgesucht.
 Gyro2=Ja, ich weiß! Ich bin hier weil eines meiner Experimente furchtbar fehlgeschlagen ist...
 Gyro3=Was ist passiert?

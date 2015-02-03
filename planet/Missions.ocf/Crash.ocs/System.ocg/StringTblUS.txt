@@ -37,7 +37,7 @@ MerchantACatapult1=A catapult has many uses. You can fling things like pipe ends
 MerchantACatapult2=That...sounds scary. I like it!
 MerchantQDone=Goodbye.
 
-# Gyro Gearloose
+# Gyro
 Gyro1=That's a weird spot for a clonk to stand in.
 Gyro2=Yeah, I know! I'm here at this weird place because one of my experiments went horribly wrong...
 Gyro3=What happend?
