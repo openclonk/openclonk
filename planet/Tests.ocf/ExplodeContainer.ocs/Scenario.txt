@@ -1,5 +1,5 @@
 [Head]
-Title=Power System
+Title=Explode Container
 
 [Landscape]
 NoScan=1
