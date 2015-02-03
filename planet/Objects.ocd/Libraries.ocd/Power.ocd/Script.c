@@ -161,7 +161,6 @@ public func GetPowerNetwork(object for_obj)
 		{
 			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
-			
 			// Add to all linked flags.
 			flag->SetPowerHelper(helper);
 			for (var f in flag->GetLinkedFlags())
@@ -438,8 +437,9 @@ private func RefreshConsumers(int power_available)
 		var link = all_consumers[index];
 		if (!link)
 			continue;
-		// Too much power has been used, check if this link was active, if so remove from active.	
-		if (power_used + link.cons_amount > power_available)
+		// Too much power has been used, check if this link was active, if so remove from active.
+		// Or if the links is a power storage and there is other storage actively producing remove as well.
+		if (power_used + link.cons_amount > power_available || (link.obj->~IsPowerStorage() && HasProducingStorage()))
 		{
 			var idx = GetIndexOf(lib_power.active_consumers, link);
 			if (idx != -1)
@@ -454,9 +454,6 @@ private func RefreshConsumers(int power_available)
 		// In the other case see if consumer is not yet active, if so activate.
 		else
 		{
-			// However, only activate storage when there is no other storage producing.
-			if (link.obj->~IsPowerStorage() && HasProducingStorage())
-				continue;			
 			power_used += link.cons_amount;
 			var idx = GetIndexOf(lib_power.waiting_consumers, link);
 			if (idx != -1)
