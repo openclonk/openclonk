@@ -81,6 +81,15 @@ func InitializeObjects()
 	Catapult001->SetCon(80);
 	Catapult001->SetRDir(1);
 	Catapult001->SetClrModulation(0xff686868);
+
+	var Clonk001 = CreateObjectAbove(Clonk, 556, 546);
+	Clonk001->SetDir(DIR_Right);
+	Clonk001->SetObjectLayer(Clonk001);
+	Clonk001->SetName("Gyro Gearloose");
+	Clonk001->SetSkin(2);
+	Clonk001->SetDialogue("Gyro", true);
+	Clonk001->SetColor(0xa05000);
+
 	CreateObject(Rock, 279, 964);
 	CreateObject(Rock, 469, 1213);
 	CreateObject(Rock, 225, 1334);
