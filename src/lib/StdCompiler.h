@@ -686,9 +686,10 @@ protected:
 		// Name number in parent map
 		const char *Pos;
 		// Constructor
-		NameNode(NameNode *pParent = NULL)
-				: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
-				Indent(-1), Pos(NULL), Section(false)
+		NameNode(NameNode *pParent = NULL) :
+			Section(false), Parent(pParent),
+			FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
+			Indent(-1), Pos(NULL)
 		{ }
 	};
 	NameNode *pNameRoot, *pName;

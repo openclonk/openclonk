@@ -27,8 +27,9 @@
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 
-C4GameOptionsList::Option::Option(C4GameOptionsList *pForDlg)
-		: BaseClass(C4Rect(0,0,0,0)), pPrimarySubcomponent(NULL), pForDlg(pForDlg) { }
+C4GameOptionsList::Option::Option(C4GameOptionsList *pForDlg) :
+	BaseClass(C4Rect(0, 0, 0, 0)), pForDlg(pForDlg), pPrimarySubcomponent(NULL)
+{}
 
 void C4GameOptionsList::Option::InitOption(C4GameOptionsList *pForDlg)
 {

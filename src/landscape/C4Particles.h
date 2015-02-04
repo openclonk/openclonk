@@ -152,7 +152,9 @@ public:
 
 	bool IsConstant() const { return isConstant; }
 	bool IsRandom() const { return valueFunction == &C4ParticleValueProvider::Random; }
-	C4ParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), keyFrameCount(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
+	C4ParticleValueProvider() :
+		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT)
+	{ }
 	~C4ParticleValueProvider()
 	{
 		for (std::vector<C4ParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)

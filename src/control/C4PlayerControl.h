@@ -36,23 +36,9 @@ public:
 		COS_Game = 0,     // game (landscape) coordinates 
 		COS_Viewport = 1  // viewport (GUI) coordinates
 	};
-
-private:
-	StdCopyStrBuf sIdentifier; // name as seen in script and config
-	StdCopyStrBuf sGUIName;    // name as displayed to player
-	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog
-	bool fGlobal;             // if true, control can be bound to the global player only
-	bool fIsHoldKey;          // if true, the control can be in down and up state
-	int32_t iRepeatDelay;     // if >0, the key will generate successive events when held down
-	int32_t iInitialRepeatDelay; // delay after which KeyRepeat will be enabled
-	bool fDefaultDisabled;    // if true, the control is disabled by default and needs to be enabled by script
-	C4ID idControlExtraData;  // extra data to be passed to script function
-	CoordinateSpace eCoordSpace; // coordinate space to be used for mouse coordinates when control is triggered by mouse
-	bool fSendCursorPos;      // if true, x/y parameters will be set by current GUI mouse cursor pos (or GetCursor()-GUI coordinate pos for gamepad)
-public:
 	enum Actions //action to be performed when control is triggered
 	{
-		CDA_None=0,          // do nothing
+		CDA_None = 0,          // do nothing
 		CDA_Script,          // default: Script callback
 		CDA_Menu,            // open player menu (async)
 		CDA_MenuOK, CDA_MenuCancel, CDA_MenuLeft, CDA_MenuUp, CDA_MenuRight, CDA_MenuDown, // player menu controls (async)
@@ -60,11 +46,26 @@ public:
 		CDA_ObjectMenuOK, CDA_ObjectMenuOKAll, CDA_ObjectMenuSelect, CDA_ObjectMenuCancel, CDA_ObjectMenuLeft, CDA_ObjectMenuUp, CDA_ObjectMenuRight, CDA_ObjectMenuDown, // object menu controls (sync)
 		CDA_ZoomIn, CDA_ZoomOut // player viewport control (async)
 	};
+
 private:
+	StdCopyStrBuf sIdentifier; // name as seen in script and config
+	StdCopyStrBuf sGUIName;    // name as displayed to player
+	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog
+	bool fGlobal;             // if true, control can be bound to the global player only
+	bool fIsHoldKey;          // if true, the control can be in down and up state
+	bool fDefaultDisabled;    // if true, the control is disabled by default and needs to be enabled by script
+	bool fSendCursorPos;      // if true, x/y parameters will be set by current GUI mouse cursor pos (or GetCursor()-GUI coordinate pos for gamepad)
+	int32_t iRepeatDelay;     // if >0, the key will generate successive events when held down
+	int32_t iInitialRepeatDelay; // delay after which KeyRepeat will be enabled
+	C4ID idControlExtraData;  // extra data to be passed to script function
+	CoordinateSpace eCoordSpace; // coordinate space to be used for mouse coordinates when control is triggered by mouse
 	Actions eAction;
 
 public:
-	C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), fSendCursorPos(false), eAction(CDA_Script), eCoordSpace(COS_Game) {}
+	C4PlayerControlDef() :
+		fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), fSendCursorPos(false),
+		idControlExtraData(C4ID::None), eCoordSpace(COS_Game), eAction(CDA_Script)
+	{}
 	~C4PlayerControlDef() {};
 
 	void CompileFunc(StdCompiler *pComp);
@@ -144,6 +145,18 @@ typedef std::vector<C4KeyCodeEx> C4KeyCodeExVec;
 // a key/mouse/gamepad assignment to a PlayerControlDef
 class C4PlayerControlAssignment
 {
+public:
+	// action to be performed on the control upon this key
+	enum TriggerModes
+	{
+		CTM_Default = 0,              // standard behaviour: The control will be triggered
+		CTM_Hold = 1 << 0,        // the control will be put into "down"-mode
+		CTM_Release = 1 << 1,        // the hold mode of the control will be released
+		CTM_AlwaysUnhandled = 1 << 2,  // the key will not block handling of other keys even if it got handled
+		CTM_HandleDownStatesOnly = 1 << 3, // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_ClearRecentKeys = 1 << 4  // if this assignment is triggered, RecentKeys are reset so no more combos can be generated
+	};
+
 private:
 	// KeyCombo list:
 	// if size()>1, the control is triggered only if this combo is fulfilled
@@ -167,33 +180,22 @@ private:
 	StdCopyStrBuf sGUIName;    // name as displayed to player. If empty, name stored in control def should be used.
 	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog. If empty, name stored in control def should be used.
 	bool fGUIDisabled;   // whether this key can't be reassigned through the GUI dialogue
+	bool fOverrideAssignments;  // override all other assignments to the same key?
+	bool is_inherited; // set for assignments that were copied from a parent set without modification
+	bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 	int32_t iGUIGroup;  // in which this control is grouped in the gui
 	int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 	int32_t iPriority;          // higher priority assignments get handled first
-	bool fOverrideAssignments;  // override all other assignments to the same key?
-
-	const C4PlayerControlAssignment *inherited_assignment; // valid for assignments that were copied from a parent: source assignment
-	bool is_inherited; // set for assignments that were copied from a parent set without modification
-
-public:
-	// action to be performed on the control upon this key
-	enum TriggerModes
-	{
-		CTM_Default=0,              // standard behaviour: The control will be triggered
-		CTM_Hold=      1<<0,        // the control will be put into "down"-mode
-		CTM_Release=   1<<1,        // the hold mode of the control will be released
-		CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
-		CTM_HandleDownStatesOnly = 1<<3, // used when an already handled release key is processed to reset down states of overridden keys only
-		CTM_ClearRecentKeys = 1<<4  // if this assignment is triggered, RecentKeys are reset so no more combos can be generated
-	};
-
-private:
 	int32_t iTriggerMode;
 
-	bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
+	const C4PlayerControlAssignment *inherited_assignment; // valid for assignments that were copied from a parent: source assignment
 
 public:
-	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), iGUIGroup(0) {}
+	C4PlayerControlAssignment() :
+		TriggerKey(), fOverrideAssignments(false), is_inherited(false), fRefsResolved(false),
+		iGUIGroup(0), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default),
+		inherited_assignment(NULL)
+	{}
 	~C4PlayerControlAssignment() {}
 
 	void CompileFunc(StdCompiler *pComp);

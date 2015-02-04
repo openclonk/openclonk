@@ -240,7 +240,7 @@ public:
 			throw std::runtime_error(std::string("Cannot load ") + FontFaceName + ": " + FormatString("%d",e).getData());
 #endif
 	}
-	CStdVectorFont(StdBuf & Data): RefCnt(1), Data(Data)
+	CStdVectorFont(StdBuf & Data) : Data(Data), RefCnt(1)
 	{
 		// Initialize Freetype
 		if (FT_Init_FreeType(&library))

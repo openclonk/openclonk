@@ -120,7 +120,7 @@ public:
 		int32_t iMinPlrCount;
 
 	public:
-		Scenario(class C4ScenarioListLoader *pLoader, class Folder *pParent) : Entry(pLoader, pParent), fNoMissionAccess(false), iMinPlrCount(0), nAchievements(0) {}
+		Scenario(class C4ScenarioListLoader *pLoader, class Folder *pParent) : Entry(pLoader, pParent), fNoMissionAccess(false), nAchievements(0), iMinPlrCount(0) {}
 		virtual ~Scenario() {}
 
 		virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // do fallbacks for title and icon; check whether scenario is valid
