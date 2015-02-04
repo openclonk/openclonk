@@ -99,7 +99,6 @@ protected func Initialize()
 	chest->CreateContents(Boompack, 2);
 	
 	// Set the mood.
-	SetGamma(RGB(30, 25, 20), RGB(135, 130, 125), RGB(255, 250, 245));
 	SetSkyParallax(0, 20, 20);
 	PlaceGrass(85);
 	
