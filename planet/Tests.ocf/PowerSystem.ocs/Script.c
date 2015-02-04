@@ -646,7 +646,7 @@ global func Test11_OnStart(int plr)
 	ScheduleCall(nil, "CreateScriptPlayer", 9 * 36, 0, "PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
 
 	// Log what the test is about.
-	Log("Test connecting two networks by different allied players and then elimination of one player.");
+	Log("Two connected networks by different allied players with the elimination of one of the two players.");
 	return true;
 }
 
@@ -664,7 +664,7 @@ global func Test11_OnFinished()
 	return;
 }
 
-// Test for the no power need rule.
+// Test for the no power need rule and functionality.
 global func Test12_OnStart(int plr)
 {
 	// Power source: one steam engine.
@@ -694,7 +694,7 @@ global func Test12_OnStart(int plr)
 	Schedule(nil, "RemoveAll(Find_ID(Rule_NoPowerNeed))", 9 * 36, 0);
 
 	// Log what the test is about.
-	Log("Test for the no power need rule.");
+	Log("No power need rule and no power need script functionality tested for a simple network.");
 	return true;
 }
 
@@ -738,7 +738,7 @@ global func Test13_OnStart(int plr)
 	CastPXS("Water", 200, 40, 248, 80);
 	
 	// Log what the test is about.
-	Log("An supported (wind generator) infinite pump loop.");
+	Log("A supported (wind generator) infinite pump loop, with two pumps pumping in opposite directions.");
 	return true;
 }
 

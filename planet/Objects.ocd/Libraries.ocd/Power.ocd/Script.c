@@ -27,11 +27,10 @@
 	according to {obj, cons_amount, priority}.
 	
 	OPEN TODOS:
-	 * Figure out where the nil's and the errors come from.
-	 * Remove all the if (!link) checks, they are not needed in principle but cause errors.
-	 * Check the flag library for network merging.
-	 * Check the power balance, also with merging.
+	 * Remove all the if (!link) checks, they are not needed in principle but 
+	   errors arise when they are removed.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
+	 * Implement network separation on hostility changes.
 
 	@author Zapper, Maikel
 */
@@ -132,7 +131,6 @@ public func UpdateForPowerLink(object link)
 }
 
 // Definition call: gives the power helper object.
-// TODO: Clean up this code!
 public func GetPowerNetwork(object for_obj)
 {
 	// Definition call safety checks.
@@ -212,7 +210,7 @@ public func Init()
 public func AddPowerProducer(object producer, int amount, int prio)
 {
 	// Debugging logs.
-	Log("POWR - AddPowerProducer(): network = %v, frame = %d, producer = %v, amount = %d, priority = %d", this, FrameCounter(), producer, amount, prio);
+	//Log("POWR - AddPowerProducer(): network = %v, frame = %d, producer = %v, amount = %d, priority = %d", this, FrameCounter(), producer, amount, prio);
 	// Check if it is not already in the list of idle producers.
 	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -265,7 +263,7 @@ public func AddPowerProducer(object producer, int amount, int prio)
 public func RemovePowerProducer(object producer)
 {
 	// Debugging logs.
-	Log("POWR - RemovePowerProducer(): network = %v, frame = %d, producer = %v", this, FrameCounter(), producer);
+	//Log("POWR - RemovePowerProducer(): network = %v, frame = %d, producer = %v", this, FrameCounter(), producer);
 	// Remove producer from the list of idle producers if it is in there.
 	for (var index = GetLength(lib_power.idle_producers) - 1; index >= 0; index--)
 	{ 
@@ -297,7 +295,7 @@ public func RemovePowerProducer(object producer)
 public func AddPowerConsumer(object consumer, int amount, int prio)
 {
 	// Debugging logs.
-	Log("POWR - AddPowerConsumer(): network = %v, frame = %d, consumer = %v, amount = %d, priority = %d", this, FrameCounter(), consumer, amount, prio);
+	//Log("POWR - AddPowerConsumer(): network = %v, frame = %d, consumer = %v, amount = %d, priority = %d", this, FrameCounter(), consumer, amount, prio);
 	// Check if it is not already in the list of waiting consumers.
 	for (var index = GetLength(lib_power.waiting_consumers) - 1; index >= 0; index--)
 	{ 
@@ -345,7 +343,7 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 public func RemovePowerConsumer(object consumer)
 {
 	// Debugging logs.
-	Log("POWR - RemovePowerConsumer(): network = %v, frame = %d, consumer = %v", this, FrameCounter(), consumer);
+	//Log("POWR - RemovePowerConsumer(): network = %v, frame = %d, consumer = %v", this, FrameCounter(), consumer);
 	// Remove consumer from the list of waiting consumers if it is in there.
 	for (var index = GetLength(lib_power.waiting_consumers) - 1; index >= 0; index--)
 	{ 
@@ -386,7 +384,7 @@ public func CheckPowerBalance()
 	var needed_power = GetPowerConsumptionNeed();
 	var available_power = GetBarePowerAvailable();
 	// Debugging logs.
-	LogState(Format("balance_start nd_power = %d, av_power = %d", needed_power, available_power));
+	//LogState(Format("balance_start nd_power = %d, av_power = %d", needed_power, available_power));
 	// First activate the producers to create the requested power.
 	RefreshProducers(needed_power);
 	// Then active the consumers according to the freed up power, it might be that
@@ -394,7 +392,7 @@ public func CheckPowerBalance()
 	// consuming storage will be activated.
 	RefreshConsumers(GetActivePowerAvailable());	
 	// Debugging logs.
-	LogState(Format("balance_end nd_power = %d, av_power = %d", needed_power, GetActivePowerAvailable()));
+	//LogState(Format("balance_end nd_power = %d, av_power = %d", needed_power, GetActivePowerAvailable()));
 	return;
 }
 
@@ -448,7 +446,7 @@ private func GetActivePowerAvailable()
 private func RefreshConsumers(int power_available)
 {
 	// Debugging logs.
-	Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
+	//Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
 	var power_used = 0;
 	UpdatePriorities(lib_power.waiting_consumers, true);
 	UpdatePriorities(lib_power.active_consumers, true);
@@ -532,7 +530,7 @@ private func GetPowerConsumptionNeed()
 private func RefreshProducers(int power_need)
 {
 	// Debugging logs.
-	Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
+	//Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
 	var power_found = 0;
 	UpdatePriorities(lib_power.idle_producers);
 	UpdatePriorities(lib_power.active_producers);
