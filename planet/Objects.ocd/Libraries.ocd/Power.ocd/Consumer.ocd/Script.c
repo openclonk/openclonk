@@ -9,6 +9,7 @@
 	with the network by using the functions:
 	 * RegisterPowerRequest(int amount)
 	 * UnregisterPowerRequest()
+	 * UpdatePowerRequest() - used internally only.
 	The network will then continously search for available power to deliver to
 	this consumer and will notify it via the callbacks
 	 * OnEnoughPower(int amount)
@@ -30,9 +31,13 @@
 	Using the callback GetActualPowerConsumer() the power consumption of an object
 	can be passed to its main structure.
 	
+	The consumer does not consume power if the Rule_NoPowerNeed is active, to set 
+	the need for power on a per consumer basis you can use the function 
+	SetNoPowerNeed(bool no_need).
+	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
-	   Destruction callback if overloaded.
+	   Initialize and Destruction callback if overloaded.
 	
 	@author Zapper, Maikel
 */
@@ -57,6 +62,14 @@ private func RegisterPowerRequest(int amount)
 private func UnregisterPowerRequest()
 {
 	Library_Power->UnregisterPowerConsumer(this);
+	return;
+}
+
+// Call this function in the power consuming structure to request and update from
+// the power network of this consumer.
+private func UpdatePowerRequest()
+{
+	Library_Power->UpdateForPowerLink(this);
 	return;
 }
 
@@ -100,10 +113,44 @@ public func GetActualPowerConsumer()
 
 /*-- Library Code --*/
 
+// All power related local variables are stored in a single proplist.
+// This reduces the chances of clashing local variables. See 
+// Initialize for which variables are being used.
+local lib_power;
+
+// Initialize callback by the engine: check whether the no power need rule is active.
+protected func Initialize()
+{
+	// Initialize the single proplist for the power consumer library.
+	if (lib_power == nil)
+		lib_power = {};
+	// A single variable to keep track whether power is needed.
+	// Power is not needed when the no power need rule is active.
+	lib_power.power_need = ObjectCount(Find_ID(Rule_NoPowerNeed)) == 0;
+	return _inherited(...);
+}
+
 // Destruction callback by the engine: let power network know this object is not
 // a consumer anymore, it must always be unregistered from the power network.
 protected func Destruction()
 {
 	UnregisterPowerRequest();
 	return _inherited(...);
+}
+
+// By calling this function you can make this consumer ignore the power need.  This is 
+// used by the power need rule and can be used by scripters to temporarily turn off the
+// need for power in a certain consumer.
+public func SetNoPowerNeed(bool no_need)
+{
+	lib_power.power_need = !no_need;
+	// Make sure the power balance of the network is updated.
+	UpdatePowerRequest();	
+	return;
+}
+
+// Returns whether this consumer has a power need or not.
+public func HasPowerNeed()
+{
+	return lib_power.power_need;
 }

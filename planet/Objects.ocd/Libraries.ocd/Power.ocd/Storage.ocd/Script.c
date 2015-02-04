@@ -92,12 +92,17 @@ public func GetStoredPower()
 protected func Initialize()
 {
 	// Initialize the single proplist for the power storage library.
-	lib_power = {};
+	if (lib_power == nil)
+		lib_power = {};
 	// A single variable to keep track of the stored power in the storage.
 	lib_power.stored_power = 0;
 	// Register as a power consumer since it has zero stored energy.
 	RegisterPowerRequest(GetStoragePower());
-	return _inherited(...);
+	// Now perform the consumer library's initialization.
+	_inherited(...);
+	// Then set the power need for power storages always to true.
+	lib_power.power_need = true;
+	return;
 }
 
 // Destruction callback by the engine: let power network know this object is not
@@ -106,6 +111,18 @@ protected func Destruction()
 {
 	// Is automatically done by the consumer and producer library.
 	return _inherited(...);
+}
+
+// Overload the consumer library's no power need function to do nothing.
+public func SetNoPowerNeed(bool no_need)
+{
+	return;
+}
+
+// Returns that a storage always has a power need.
+public func HasPowerNeed()
+{
+	return true;
 }
 
 // Cooldown effect to prevent continuous switching between consumption and production.

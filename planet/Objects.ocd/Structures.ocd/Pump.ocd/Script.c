@@ -42,6 +42,7 @@ func Initialize()
 	var end = GetAnimationLength("pump");
 	animation = PlayAnimation("pump", 5, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop), Anim_Const(1000));
 	SetState("Wait");
+	return _inherited(...);
 }
 
 

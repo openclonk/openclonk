@@ -50,7 +50,8 @@ local lib_power;
 protected func Initialize()
 {
 	// Initialize the single proplist for the power library.
-	lib_power = {};
+	if (lib_power == nil)
+		lib_power = {};
 	// Initialize producer and consumer lists.
 	// Lists to keep track of the producers and consumers.
 	lib_power.idle_producers = [];
@@ -118,6 +119,18 @@ public func UnregisterPowerConsumer(object consumer)
 	return;
 }
 
+// Definition call: updates the network for this power link.
+public func UpdateForPowerLink(object link)
+{
+	// Definition call safety checks.
+	if (this != Library_Power || !link)
+		return FatalError("UpdateForPowerLink() either not called from definition context or no link specified.");
+	// Find the network for this link and update it.
+	var network = GetPowerNetwork(link);
+	network->CheckPowerBalance();
+	return;
+}
+
 // Definition call: gives the power helper object.
 // TODO: Clean up this code!
 public func GetPowerNetwork(object for_obj)
@@ -126,17 +139,22 @@ public func GetPowerNetwork(object for_obj)
 	if (this != Library_Power || !for_obj)
 		return FatalError("GetPowerNetwork() either not called from definition context or no object specified.");
 	
-	var w;
-	while (w = for_obj->~GetActualPowerConsumer())
+	// Get the actual power consumer for this object. This can for example be the elevator for the case.
+	var actual;
+	while (actual = for_obj->~GetActualPowerConsumer())
 	{
-		if (w == for_obj) 
-			break; // nope
-		for_obj = w;
+		// Stop a possible infinite loop.
+		if (actual == for_obj) 
+			break;
+		for_obj = actual;
 	}
+	// Get the flag corresponding to the object.	
 	var flag = GetFlagpoleForPosition(for_obj->GetX() - GetX(), for_obj->GetY() - GetY());
 	
+	// Find the network helper object for this flag.
 	var helper = nil;
-	if (!flag) // neutral - needs neutral helper
+	// If no flag was available the object is neutral and needs a neutral helper.
+	if (!flag)
 	{
 		for (var network in LIB_POWR_Networks)
 		{
@@ -145,18 +163,19 @@ public func GetPowerNetwork(object for_obj)
 			helper = network;
 			break;
 		}
-		
-		if (helper == nil) // not yet created?
+		// Create the helper if it does not exist yet.
+		if (helper == nil) 
 		{
 			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
 			helper.lib_power.neutral_network = true;
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 		}		
-	} 
+	}
+	// Otherwise just get the helper from the flag.
 	else
 	{
 		helper=flag->GetPowerHelper();
-		
+		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
 			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
@@ -165,9 +184,9 @@ public func GetPowerNetwork(object for_obj)
 			flag->SetPowerHelper(helper);
 			for (var f in flag->GetLinkedFlags())
 			{
-				// Assert different power helpers for same compound.
+				// Assert different power helpers for the same network.
 				if (f->GetPowerHelper() != nil) 
-					FatalError("Flags in compound have different power helper!");
+					FatalError("Flags in the same network have different power helpers.");
 				f->SetPowerHelper(helper);
 			}
 		}
@@ -305,7 +324,9 @@ public func AddPowerConsumer(object consumer, int amount, int prio)
 		if (link.cons_amount != amount || link.priority != prio)
 		{
 			lib_power.active_consumers[index] = {obj = consumer, cons_amount = amount, priority = prio};
-			VisualizePowerChange(link.obj, link.cons_amount, amount, false);
+			// Only visualize the power change if the consumer had a real power need.
+			if (link.obj->HasPowerNeed())
+				VisualizePowerChange(link.obj, link.cons_amount, amount, false);
 			// Check the power balance of this network, since a change has been made.
 			CheckPowerBalance();
 		}
@@ -345,7 +366,9 @@ public func RemovePowerConsumer(object consumer)
 		RemoveArrayIndex(lib_power.active_consumers, index);
 		// Check the power balance of this network, since a change has been made.
 		CheckPowerBalance();
-		VisualizePowerChange(link.obj, link.cons_amount, 0, true);
+		// Only visualize the power change if the consumer had a real power need.
+		if (link.obj->HasPowerNeed())
+			VisualizePowerChange(link.obj, link.cons_amount, 0, true);
 		return;
 	}
 	// If found in neither lists just return without doing anything.
@@ -355,7 +378,7 @@ public func RemovePowerConsumer(object consumer)
 // Checks the power balance after a change to this network: i.e. removal or addition
 // of a consumer or producer. The producers and consumers will be refreshed such that 
 // the ones with highest priority will be active.
-private func CheckPowerBalance()
+public func CheckPowerBalance()
 {
 	// First determine whether the storage links in this network need to be producers
 	// or may be consumers. Get the power needed by all non-storage consumers and the 
@@ -437,9 +460,13 @@ private func RefreshConsumers(int power_available)
 		var link = all_consumers[index];
 		if (!link)
 			continue;
+		// Determine the consumption of this consumer, taking into account the power need.
+		var consumption = link.cons_amount;
+		if (!link.obj->HasPowerNeed())
+			consumption = 0;			
 		// Too much power has been used, check if this link was active, if so remove from active.
 		// Or if the links is a power storage and there is other storage actively producing remove as well.
-		if (power_used + link.cons_amount > power_available || (link.obj->~IsPowerStorage() && HasProducingStorage()))
+		if (power_used + consumption > power_available || (link.obj->~IsPowerStorage() && HasProducingStorage()))
 		{
 			var idx = GetIndexOf(lib_power.active_consumers, link);
 			if (idx != -1)
@@ -447,22 +474,22 @@ private func RefreshConsumers(int power_available)
 				PushBack(lib_power.waiting_consumers, link);
 				RemoveArrayIndex(lib_power.active_consumers, idx);
 				// On not enough power callback to the deactivated consumer.
-				link.obj->OnNotEnoughPower(link.cons_amount);
-				VisualizePowerChange(link.obj, link.cons_amount, 0, true);
+				link.obj->OnNotEnoughPower(consumption);
+				VisualizePowerChange(link.obj, consumption, 0, true);
 			}
 		}
 		// In the other case see if consumer is not yet active, if so activate.
 		else
 		{
-			power_used += link.cons_amount;
+			power_used += consumption;
 			var idx = GetIndexOf(lib_power.waiting_consumers, link);
 			if (idx != -1)
 			{
 				PushBack(lib_power.active_consumers, link);
 				RemoveArrayIndex(lib_power.waiting_consumers, idx);
 				// On enough power callback to the activated consumer.
-				link.obj->OnEnoughPower(link.cons_amount);
-				VisualizePowerChange(link.obj, 0, link.cons_amount, false);
+				link.obj->OnEnoughPower(consumption);
+				VisualizePowerChange(link.obj, 0, consumption, false);
 			}		
 		}	
 	}
@@ -476,7 +503,8 @@ private func GetPowerConsumption()
 	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
 	{
 		var link = lib_power.active_consumers[index];
-		if (!link)
+		// If the link does not exist or has no power need, just continue.
+		if (!link || !link.obj->HasPowerNeed())
 			continue;
 		total += link.cons_amount;
 	}
@@ -491,7 +519,8 @@ private func GetPowerConsumptionNeed()
 	for (var index = GetLength(all_consumers) - 1; index >= 0; index--)
 	{
 		var link = all_consumers[index];
-		if (!link || link.obj->~IsPowerStorage())
+		// If the link does not exist, is a power storage or has no power need, just continue.
+		if (!link || link.obj->~IsPowerStorage() || !link.obj->HasPowerNeed())
 			continue;
 		total += link.cons_amount;
 	}

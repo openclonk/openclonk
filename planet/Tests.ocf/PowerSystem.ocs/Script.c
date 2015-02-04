@@ -20,7 +20,7 @@ protected func Initialize()
 {
 	// Create a script player for some tests.
 	script_plr = nil;
-	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
+	CreateScriptPlayer("PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 	return;
 }
 
@@ -643,7 +643,7 @@ global func Test11_OnStart(int plr)
 	ScheduleCall(nil, "EliminatePlayer", 6 * 36, 0, script_plr);
 	
 	// Rejoin the script player for other tests.
-	ScheduleCall(nil, "CreateScriptPlayer", 9 * 36, 0, "Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
+	ScheduleCall(nil, "CreateScriptPlayer", 9 * 36, 0, "PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
 
 	// Log what the test is about.
 	Log("Test connecting two networks by different allied players and then elimination of one player.");
@@ -664,8 +664,56 @@ global func Test11_OnFinished()
 	return;
 }
 
-// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+// Test for the no power need rule.
 global func Test12_OnStart(int plr)
+{
+	// Power source: one steam engine.
+	var steam_engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
+	steam_engine->CreateContents(Coal, 4);
+	
+	// Power consumers: one workshop, one inventor's lab.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
+	workshop->CreateContents(Wood, 4);
+	workshop->CreateContents(Metal, 4);
+	workshop->AddToQueue(Shovel, 4);
+	var lab = CreateObjectAbove(InventorsLab, 450, 248, plr);
+	lab->CreateContents(Metal, 8);
+	lab->AddToQueue(TeleGlove, 4);
+	lab->SetNoPowerNeed(true);
+	
+	// Power connection: flagpole.
+	CreateObjectAbove(Flagpole, 304, 140, plr);	 
+	
+	// Create the no power need rule.
+	ScheduleCall(nil, "CreateObject", 3 * 36, 0, Rule_NoPowerNeed);
+	
+	// Let the lab consumer power again.
+	ScheduleCall(lab, "SetNoPowerNeed", 6 * 36, 0, false);
+	
+	// Remove the no power need rule.
+	Schedule(nil, "RemoveAll(Find_ID(Rule_NoPowerNeed))", 9 * 36, 0);
+
+	// Log what the test is about.
+	Log("Test for the no power need rule.");
+	return true;
+}
+
+global func Test12_Completed()
+{
+	if (ObjectCount(Find_ID(Shovel)) >= 4 && ObjectCount(Find_ID(TeleGlove)) >= 4)
+		return true;
+	return false;
+}
+
+global func Test12_OnFinished()
+{
+	// Remove wind generator, steam engine, flagpole, shipyard, airship.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(InventorsLab)));
+	return;
+}
+
+// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+global func Test13_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -694,14 +742,14 @@ global func Test12_OnStart(int plr)
 	return true;
 }
 
-global func Test12_Completed()
+global func Test13_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test12_OnFinished()
+global func Test13_OnFinished()
 {
 	// Restore water levels.
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);

@@ -36,6 +36,7 @@ protected func Initialize()
 	
 	front->SetAction("Attach", this);
 	back->SetAction("Attach", this);
+	return _inherited(...);
 }
 
 // Called by the elevator
