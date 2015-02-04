@@ -40,6 +40,8 @@
 #include <locale.h>
 #endif
 
+#include <C4Application.h>
+
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {
 	// For those without the ability to intuitively guess what the falses and trues mean:

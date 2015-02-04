@@ -20,6 +20,11 @@
     Feel free to customize this file to suit your needs
 */
 
+#include <vector>
+
+#include <C4Include.h>
+#include <C4KeyboardInput.h>
+
 #import <Cocoa/Cocoa.h>
 #ifdef USE_COCOA
 #import "C4EditorWindowController.h"

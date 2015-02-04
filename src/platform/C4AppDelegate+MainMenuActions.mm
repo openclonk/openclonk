@@ -14,13 +14,9 @@
  */
 
 #include <C4Include.h>
-#include <C4FullScreen.h>
-#include <C4GraphicsSystem.h>
-#include <C4Viewport.h>
 #include <C4Console.h>
-#include <C4Game.h>
-
-#import <C4DrawGL.h>
+#include <C4Viewport.h>
+#include <C4GraphicsSystem.h>
 
 #import "C4AppDelegate+MainMenuActions.h"
 #import "C4DrawGLMac.h"
