@@ -24,7 +24,7 @@ public func Damage(int change, int cause, int cause_plr)
 			// Destruction callback is made by the engine.
 			return RemoveObject();
 		}
-	return _inherited(change, cause, cause_plr);
+	return _inherited(change, cause, cause_plr, ...);
 }
 
 // This object is a structure.
