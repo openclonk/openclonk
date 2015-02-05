@@ -22,7 +22,7 @@ func Dlg_Gyro_3(object clonk)
 
 func Dlg_Gyro_4(object clonk)
 {
-	MessageBox("$Gyro4$", clonk); // You see, fuel has gotten pretty rare and expensive in the last days. To save me some money, I tried to reach remote places by launching myself off with a catapult!
+	MessageBox("$Gyro4$", clonk); // You see, fuel has gotten pretty rare and expensive recently. To save money, I tried to reach remote places by launching myself with a catapult!
 	return true;
 }
 
@@ -34,7 +34,7 @@ func Dlg_Gyro_5(object clonk)
 
 func Dlg_Gyro_6(object clonk)
 {
-	MessageBox("$Gyro6$", clonk); // Bah, if your aim is good, you can just hop into a catapult and and off you go! It's a really good way to quickly reach distant locations. Only few people seem to know this secret! And even less actually do it!
+	MessageBox("$Gyro6$", clonk); // Bah, if your aim is good, you can just hop into a catapult and off you go! It's a really good way to reach distant locations quickly. Only a few people seem to know this secret! And even fewer actually do it!
 	return true;
 }
 
