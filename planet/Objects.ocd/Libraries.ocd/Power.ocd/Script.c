@@ -397,7 +397,7 @@ public func CheckPowerBalance()
 }
 
 // Returns the total power available in the network: idle + active producers.
-private func GetPowerAvailable()
+public func GetPowerAvailable()
 {
 	var total = 0;
 	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
@@ -413,7 +413,7 @@ private func GetPowerAvailable()
 
 // Returns the total bare power available in the network: that is the idle
 // + active producers which are not power storages.
-private func GetBarePowerAvailable()
+public func GetBarePowerAvailable()
 {
 	var total = 0;
 	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
@@ -428,7 +428,7 @@ private func GetBarePowerAvailable()
 }
 
 // Returns the total active power available in the network.
-private func GetActivePowerAvailable()
+public func GetActivePowerAvailable()
 {
 	var total = 0;
 	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
@@ -441,61 +441,8 @@ private func GetActivePowerAvailable()
 	return total;
 }
 
-// Activates consumers according to priotrity from all consumers in the network until available power is used.
-// This function automatically deactivates consumer which had a lower priority over newly activated ones.
-private func RefreshConsumers(int power_available)
-{
-	// Debugging logs.
-	//Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
-	var power_used = 0;
-	UpdatePriorities(lib_power.waiting_consumers, true);
-	UpdatePriorities(lib_power.active_consumers, true);
-	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
-	if (GetLength(all_consumers) > 1) // TODO: this check should not be necessary.
-		SortArrayByProperty(all_consumers, "priority");
-	for (var index = GetLength(all_consumers) - 1; index >= 0; index--)
-	{
-		var link = all_consumers[index];
-		if (!link)
-			continue;
-		// Determine the consumption of this consumer, taking into account the power need.
-		var consumption = link.cons_amount;
-		if (!link.obj->HasPowerNeed())
-			consumption = 0;			
-		// Too much power has been used, check if this link was active, if so remove from active.
-		// Or if the links is a power storage and there is other storage actively producing remove as well.
-		if (power_used + consumption > power_available || (link.obj->~IsPowerStorage() && HasProducingStorage()))
-		{
-			var idx = GetIndexOf(lib_power.active_consumers, link);
-			if (idx != -1)
-			{
-				PushBack(lib_power.waiting_consumers, link);
-				RemoveArrayIndex(lib_power.active_consumers, idx);
-				// On not enough power callback to the deactivated consumer.
-				link.obj->OnNotEnoughPower(consumption);
-				VisualizePowerChange(link.obj, consumption, 0, true);
-			}
-		}
-		// In the other case see if consumer is not yet active, if so activate.
-		else
-		{
-			power_used += consumption;
-			var idx = GetIndexOf(lib_power.waiting_consumers, link);
-			if (idx != -1)
-			{
-				PushBack(lib_power.active_consumers, link);
-				RemoveArrayIndex(lib_power.waiting_consumers, idx);
-				// On enough power callback to the activated consumer.
-				link.obj->OnEnoughPower(consumption);
-				VisualizePowerChange(link.obj, 0, consumption, false);
-			}		
-		}	
-	}
-	return;
-}
-
 // Returns the amount of power the currently active power consumers need.
-private func GetPowerConsumption()
+public func GetPowerConsumption()
 {
 	var total = 0;
 	for (var index = GetLength(lib_power.active_consumers) - 1; index >= 0; index--)
@@ -510,7 +457,7 @@ private func GetPowerConsumption()
 }
 
 // Returns the bare amount of power needed by all consumer requests which are not power storages.
-private func GetPowerConsumptionNeed()
+public func GetPowerConsumptionNeed()
 {
 	var total = 0;
 	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
@@ -570,6 +517,59 @@ private func RefreshProducers(int power_need)
 				VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 			}
 		}
+	}
+	return;
+}
+
+// Activates consumers according to priotrity from all consumers in the network until available power is used.
+// This function automatically deactivates consumer which had a lower priority over newly activated ones.
+private func RefreshConsumers(int power_available)
+{
+	// Debugging logs.
+	//Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
+	var power_used = 0;
+	UpdatePriorities(lib_power.waiting_consumers, true);
+	UpdatePriorities(lib_power.active_consumers, true);
+	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
+	if (GetLength(all_consumers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(all_consumers, "priority");
+	for (var index = GetLength(all_consumers) - 1; index >= 0; index--)
+	{
+		var link = all_consumers[index];
+		if (!link)
+			continue;
+		// Determine the consumption of this consumer, taking into account the power need.
+		var consumption = link.cons_amount;
+		if (!link.obj->HasPowerNeed())
+			consumption = 0;			
+		// Too much power has been used, check if this link was active, if so remove from active.
+		// Or if the links is a power storage and there is other storage actively producing remove as well.
+		if (power_used + consumption > power_available || (link.obj->~IsPowerStorage() && HasProducingStorage()))
+		{
+			var idx = GetIndexOf(lib_power.active_consumers, link);
+			if (idx != -1)
+			{
+				PushBack(lib_power.waiting_consumers, link);
+				RemoveArrayIndex(lib_power.active_consumers, idx);
+				// On not enough power callback to the deactivated consumer.
+				link.obj->OnNotEnoughPower(consumption);
+				VisualizePowerChange(link.obj, consumption, 0, true);
+			}
+		}
+		// In the other case see if consumer is not yet active, if so activate.
+		else
+		{
+			power_used += consumption;
+			var idx = GetIndexOf(lib_power.waiting_consumers, link);
+			if (idx != -1)
+			{
+				PushBack(lib_power.active_consumers, link);
+				RemoveArrayIndex(lib_power.waiting_consumers, idx);
+				// On enough power callback to the activated consumer.
+				link.obj->OnEnoughPower(consumption);
+				VisualizePowerChange(link.obj, 0, consumption, false);
+			}		
+		}	
 	}
 	return;
 }
