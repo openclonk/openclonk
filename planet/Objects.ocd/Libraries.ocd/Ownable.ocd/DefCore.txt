@@ -1,7 +1,4 @@
 [DefCore]
 id=Library_Ownable
 Version=6,0
-Category=C4D_Object
-Width=8
-Height=8
-Offset=-4,-4
+Category=C4D_StaticBack
