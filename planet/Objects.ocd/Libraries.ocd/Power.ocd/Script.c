@@ -477,8 +477,11 @@ public func GetPowerConsumptionNeed()
 private func RefreshProducers(int power_need)
 {
 	// Debugging logs.
-	//Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
+	//Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);ch
+	// Keep track of the power found and which was the last link to satisfy the need. 
 	var power_found = 0;
+	var satisfy_need_link = nil;
+	// First update the priorities of the producers and then sort them according to priority.
 	UpdatePriorities(lib_power.idle_producers);
 	UpdatePriorities(lib_power.active_producers);
 	var all_producers = Concatenate(lib_power.idle_producers, lib_power.active_producers);
@@ -492,7 +495,9 @@ private func RefreshProducers(int power_need)
 		// Still need for a new producer, check is the link was not already active, if so activate.
 		if (power_found < power_need)
 		{
+			// Update the power found and the last link.
 			power_found += link.prod_amount;
+			satisfy_need_link = index;
 			var idx = GetIndexOf(lib_power.idle_producers, link);
 			if (idx != -1)
 			{
@@ -518,6 +523,29 @@ private func RefreshProducers(int power_need)
 			}
 		}
 	}
+	// This procedure might actually have activated too much power and a power producer
+	// With high priority but low production might not be necessary, deactivate these.
+	for (var index = satisfy_need_link + 1; index < GetLength(all_producers); index++)
+	{
+		var link = all_producers[index];
+		if (!link)
+			continue;
+		// Power producer is not needed so it can be deactivated.
+		if (power_found - link.prod_amount >= power_need)
+		{
+			var idx = GetIndexOf(lib_power.active_producers, link);
+			// It is not possible to deactivate a steady power producer.
+			if (idx != -1 && !link.obj->IsSteadyPowerProducer())
+			{
+				power_found -= link.prod_amount;
+				PushBack(lib_power.idle_producers, link);
+				RemoveArrayIndex(lib_power.active_producers, idx);
+				// On production stop callback to the deactivated producer.
+				link.obj->OnPowerProductionStop(link.prod_amount);
+				VisualizePowerChange(link.obj, link.prod_amount, 0, false);
+			}		
+		}	
+	}
 	return;
 }
 
@@ -527,7 +555,9 @@ private func RefreshConsumers(int power_available)
 {
 	// Debugging logs.
 	//Log("POWR - RefreshConsumers(): network = %v, frame = %d, power_available = %d", this, FrameCounter(), power_available);
+	// Keep track of the power used.
 	var power_used = 0;
+	// First update the priorities of the consumers and then sort them according to priority.
 	UpdatePriorities(lib_power.waiting_consumers, true);
 	UpdatePriorities(lib_power.active_consumers, true);
 	var all_consumers = Concatenate(lib_power.waiting_consumers, lib_power.active_consumers);
