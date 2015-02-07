@@ -2088,9 +2088,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(25);
 
-		// Sound (first part, some are loaded with the definitions, the (section) local file goes later)
-		Application.SoundSystem.Init();
-
 		// Definitions
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
