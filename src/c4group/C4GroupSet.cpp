@@ -373,3 +373,13 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 	}
 	return pParentGroup;
 }
+
+int32_t C4GroupSet::PreCacheEntries(const char *szEntryMask)
+{
+	// pre-cache all entries matching mask for packed files in all groups
+	// note this does not catch overloads.
+	int32_t result = 0;
+	for (C4GroupSetNode *pNode = pFirst; pNode; pNode = pNode->pNext)
+		if (pNode->pGroup) result += pNode->pGroup->PreCacheEntries(szEntryMask);
+	return result;
+}

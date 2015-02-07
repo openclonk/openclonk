@@ -99,6 +99,7 @@ public:
 	bool LoadEntryString(const char *szEntryName, StdStrBuf * rBuf);
 	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	C4Group *RegisterParentFolders(const char *szScenFilename); // register all parent .ocf groups to the given scenario filename and return an open group file of the innermost parent ocf
+	int32_t PreCacheEntries(const char *szEntryMask); // pre-cache all entries matching mask for packed files in all groups.
 
 	static int32_t CheckGroupContents(C4Group &rGroup, int32_t Contents);
 	int32_t GetLastID() { return iIndex; } // return ID assigned to the last added group

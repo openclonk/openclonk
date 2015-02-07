@@ -40,12 +40,13 @@ const char *C4CFN_FLS[] =
 	C4CFN_ScenarioFiles,    C4FLS_Scenario,
 	C4CFN_FolderFiles,      C4FLS_Folder,
 	C4CFN_ScenarioSections, C4FLS_Section,
+	C4CFN_Sound,            C4FLS_Sound,
 	C4CFN_Music,            C4FLS_Music,
 	NULL, NULL
 };
 
 #ifdef _DEBUG
-char *szCurrAccessedEntry=NULL;
+const char *szCurrAccessedEntry = NULL;
 int iC4GroupRewindFilePtrNoWarn=0;
 #endif
 
@@ -477,6 +478,7 @@ void C4Group::Init()
 	Head.Init();
 	FirstEntry=NULL;
 	SearchPtr=NULL;
+	pInMemEntry=NULL; iInMemEntrySize=0u;
 	// Folder only
 	//hFdt=-1;
 	FolderSearch.Clear();
@@ -1111,6 +1113,16 @@ bool C4Group::SetFilePtr(int iOffset)
 
 bool C4Group::Advance(int iOffset)
 {
+	assert(iOffset >= 0);
+	// cached advance
+	if (pInMemEntry)
+	{
+		if (iInMemEntrySize < size_t(iOffset)) return false;
+		iInMemEntrySize -= iOffset;
+		pInMemEntry += iOffset;
+		return true;
+	}
+	// uncached advance
 	if (Status == GRPF_Folder) return !!StdFile.Advance(iOffset);
 	// FIXME: reading the file one byte at a time sounds just slow.
 	BYTE buf;
@@ -1121,7 +1133,16 @@ bool C4Group::Advance(int iOffset)
 
 bool C4Group::Read(void *pBuffer, size_t iSize)
 {
-
+	// Access cached entry from memory?
+	if (pInMemEntry)
+	{
+		if (iInMemEntrySize < iSize) return Error("ReadCached:");
+		memcpy(pBuffer, pInMemEntry, iSize);
+		iInMemEntrySize -= iSize;
+		pInMemEntry += iSize;
+		return true;
+	}
+	// Not cached. Read from file.
 	switch (Status)
 	{
 	case GRPF_File:
@@ -1186,7 +1207,7 @@ bool C4Group::RewindFilePtr()
 #ifdef _DEBUG
 	if (szCurrAccessedEntry && !iC4GroupRewindFilePtrNoWarn)
 	{
-		LogF ("C4Group::RewindFilePtr() for %s (%s)", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName);
+		LogF("C4Group::RewindFilePtr() for %s (%s) after %s", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName, sPrevAccessedEntry.getLength() ? sPrevAccessedEntry.getData() : "???");
 		szCurrAccessedEntry=NULL;
 	}
 #endif
@@ -1733,6 +1754,7 @@ bool C4Group::AccessEntry(const char *szWildCard,
 #endif
 	bool fResult = SetFilePtr2Entry(fname.getData(), NeedsToBeAGroup);
 #ifdef _DEBUG
+	sPrevAccessedEntry.Copy(szCurrAccessedEntry);
 	szCurrAccessedEntry = NULL;
 #endif
 	if (!fResult) return false;
@@ -1762,13 +1784,25 @@ bool C4Group::AccessNextEntry(const char *szWildCard,
 
 bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 {
+	C4GroupEntry *centry = GetEntry(szName);
+	// Read cached entries directly from memory (except child groups. that is not supported.)
+	if (centry && centry->bpMemBuf && !NeedsToBeAGroup)
+	{
+		pInMemEntry = centry->bpMemBuf;
+		iInMemEntrySize = centry->Size;
+		return true;
+	}
+	else
+	{
+		pInMemEntry = NULL;
+	}
+
+	// Not cached. Access from disk.
 	switch (Status)
 	{
 
 	case GRPF_File:
-		C4GroupEntry *centry;
-		if (!(centry=GetEntry(szName))) return false;
-		if (centry->Status!=C4GRES_InGroup) return false;
+		if ((!centry) || (centry->Status!=C4GRES_InGroup)) return false;
 		return SetFilePtr(centry->Offset);
 
 	case GRPF_Folder:
@@ -2254,4 +2288,26 @@ void C4Group::PrintInternals(const char *szIndent)
 				hChildGroup.PrintInternals(FormatString("%s%s", szIndent, "    ").getData());
 		}
 	}
+}
+
+int C4Group::PreCacheEntries(const char *szSearchPattern)
+{
+	assert(szSearchPattern);
+	int result = 0;
+	// pre-load entries to memory. return number of loaded entries.
+	for (C4GroupEntry * p = FirstEntry; p; p = p->Next)
+	{
+		// skip some stuff that can not be cached
+		if (p->ChildGroup || p->bpMemBuf || !p->Size) continue;
+		// is this to be cached?
+		if (!WildcardListMatch(szSearchPattern, p->FileName)) continue;
+		// then load it!
+		StdBuf buf;
+		if (!this->LoadEntry(p->FileName, &buf)) continue;
+		p->HoldBuffer = true;
+		p->BufferIsStdbuf = true;
+		p->Size = buf.getSize(); // update size in case group changed on disk between calls
+		p->bpMemBuf = static_cast<BYTE *>(buf.GrabPointer());
+	}
+	return result;
 }

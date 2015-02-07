@@ -186,6 +186,8 @@ bool C4GraphicsResource::Init()
 		return false;
 	}
 
+	// Pre-load all shader files
+	Files.PreCacheEntries(C4CFN_ShaderFiles);
 	if (!pGL->InitShaders(&Files))
 	{
 		LogFatal(LoadResStr("IDS_ERR_GFX_INITSHADERS"));

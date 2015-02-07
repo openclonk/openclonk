@@ -162,6 +162,10 @@ protected:
 	bool Modified;
 	C4GroupHeader Head;
 	C4GroupEntry *FirstEntry;
+	BYTE *pInMemEntry; size_t iInMemEntrySize; // for reading from entries prefetched into memory
+#ifdef _DEBUG
+	StdStrBuf sPrevAccessedEntry;
+#endif
 	// Folder only
 	//struct _finddata_t Fdt;
 	//long hFdt;
@@ -251,6 +255,7 @@ public:
 	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
 	void PrintInternals(const char *szIndent=NULL);
+	int PreCacheEntries(const char *szSearchPattern); // pre-load entries to memory. return number of loaded entries.
 
 protected:
 	void Init();

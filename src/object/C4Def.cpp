@@ -365,6 +365,10 @@ bool C4Def::Load(C4Group &hGroup,
 
 	if (AddFileMonitoring) Game.pFileMonitor->AddDirectory(Filename);
 
+	// Pre-read all images and shader stuff because they ar eaccessed in unpredictable order during loading
+	hGroup.PreCacheEntries(C4CFN_ShaderFiles);
+	hGroup.PreCacheEntries(C4CFN_ImageFiles);
+
 	LoadMeshMaterials(hGroup);
 	bool fSuccess = LoadParticleDef(hGroup);
 
