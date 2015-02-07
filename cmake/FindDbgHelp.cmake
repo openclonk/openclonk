@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2011-2013, The OpenClonk Team and contributors
+# Copyright (c) 2011-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -18,7 +18,7 @@
 #  DBGHELP_LIBRARIES, the libraries needed to use DbgHelp.
 #  DBGHELP_FOUND, If false, do not try to use DbgHelp.
 
-find_path(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
+find_path(DBGHELP_INCLUDE_DIR NAMES dbghelp.h PATH_SUFFIXES include)
 set(DBGHELP_NAMES ${DBGHELP_NAMES} dbghelp)
 find_library(DBGHELP_LIBRARY NAMES ${DBGHELP_NAMES})
 
