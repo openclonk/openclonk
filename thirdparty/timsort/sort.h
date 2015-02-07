@@ -80,7 +80,7 @@ void HEAP_SORT(SORT_TYPE *dst, const size_t size);
 void QUICK_SORT(SORT_TYPE *dst, const size_t size);
 void MERGE_SORT(SORT_TYPE *dst, const size_t size);
 void BUBBLE_SORT(SORT_TYPE *dst, const size_t size);
-void TIM_SORT(SORT_TYPE *dst, const size_t size);
+void TIM_SORT(SORT_TYPE *dst, const int64_t size);
 
 
 /* From http://oeis.org/classic/A102549 */
@@ -546,7 +546,7 @@ static inline int tim_sort_collapse(SORT_TYPE *dst, TIM_SORT_RUN_T *stack, int s
   return stack_curr;
 }
 
-void TIM_SORT(SORT_TYPE *dst, const size_t size)
+void TIM_SORT(SORT_TYPE *dst, const int64_t size)
 {
   if (size < 64)
   {
