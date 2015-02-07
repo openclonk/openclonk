@@ -138,7 +138,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Get timeout
 	C4TimeMilliseconds tProcTick;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
-	for (auto i = 0; i < procs.size(); i++)
+	for (auto i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
 		tProcTick = proc->GetNextTick(tNow);

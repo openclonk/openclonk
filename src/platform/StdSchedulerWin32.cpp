@@ -22,11 +22,11 @@ bool CStdNotifyProc::CheckAndReset()
 
 bool StdScheduler::DoScheduleProcs(int iTimeout)
 {
-	int i;
+	size_t i;
 	// Collect event handles
 	int iEventCnt = 0; HANDLE hEvent;
 	StdSchedulerProc *pMessageProc = NULL;
-	for (i = 0; i < procs.size(); i++)
+	for (i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
 		if ( (hEvent = procs[i]->GetEvent()) )
