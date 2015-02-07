@@ -26,6 +26,12 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
+	// Set zoom to full map size.
+	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
+	
+	// No FoW to see everything happening.
+	SetFoW(false, plr);
+	
 	// Initialize script player.
 	if (GetPlayerType(plr) == C4PT_Script)
 	{
@@ -36,12 +42,6 @@ protected func InitializePlayer(int plr)
 		GetCrew(plr)->RemoveObject();
 		return;
 	}	
-	
-	// Set zoom to full map size.
-	SetPlayerZoomByViewRange(plr, LandscapeWidth(), nil, PLRZOOM_Direct);
-	
-	// No FoW to see everything happening.
-	SetFoW(false, plr);
 	
 	// Move player to the start of the scenario.
 	GetCrew(plr)->SetPosition(120, 150);
@@ -221,7 +221,7 @@ global func Test2_Completed()
 global func Test2_OnFinished()
 {
 	// Remove steam engine, sawmill (possibly with wood), armory.
-	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Armory)));
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Armory), Find_ID(Tree_Coconut)));
 	return;
 }
 
@@ -501,11 +501,7 @@ global func Test8_Completed()
 global func Test8_OnFinished()
 {
 	// Restore water levels.
-	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
-	for (var x = 216; x <= 280; x++)
-		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
+	RestoreWaterLevels();
 	// Remove steam engine, wind generator, flagpole, pump and the pipes.
 	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe)));
 	return;
@@ -611,13 +607,9 @@ global func Test10_Completed()
 global func Test10_OnFinished()
 {
 	// Restore water levels.
-	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
-	for (var x = 216; x <= 280; x++)
-		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
+	RestoreWaterLevels();
 	// Remove wind generator, sawmill, wood flagpole, pump and the pipes.
-	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe)));
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Sawmill), Find_ID(Wood), Find_ID(Flagpole), Find_ID(Pump), Find_ID(Pipe), Find_ID(Tree_Coconut)));
 	return;
 }
 
@@ -708,12 +700,174 @@ global func Test12_Completed()
 global func Test12_OnFinished()
 {
 	// Remove wind generator, steam engine, flagpole, shipyard, airship.
-	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(InventorsLab)));
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(InventorsLab), Find_ID(Flagpole)));
+	return;
+}
+
+// A network which is split up in the middle by removing a flagpol.
+// TODO: this test should actually reproduce the network error.
+global func Test13_OnStart(int plr)
+{	
+	// Power source: one steam engine.
+	var steam_engine = CreateObjectAbove(SteamEngine, 36, 160, plr);
+	steam_engine->CreateContents(Coal, 4);
+
+	// Power consumer: one workshop.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 340, 248, plr);
+	workshop->CreateContents(Wood, 2);
+	workshop->CreateContents(Metal, 2);
+	workshop->AddToQueue(Shovel, 2);
+	
+	// Power connection: one flagpole.
+	CreateObjectAbove(Flagpole, 248, 280, plr);
+	Schedule(nil, "RemoveAll(Find_ID(Flagpole))", 3 * 36, 0);
+	ScheduleCall(nil, "CreateObjectAbove", 6 * 36, 0, Flagpole, 248, 280, plr);
+	
+	// Log what the test is about.
+	Log("Flagpole which connects two networks is removed and created again to test network merging.");
+	return true;
+}
+
+global func Test13_Completed()
+{
+	if (ObjectCount(Find_ID(Shovel)) >= 2)
+		return true;
+	return false;
+}
+
+global func Test13_OnFinished()
+{
+	// Remove all the structures.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(Flagpole)));
+	return;
+}
+
+// Massive test which tests a lot of power structures and the performance of the system.
+global func Test14_OnStart(int plr)
+{
+	// Start the script profiler for this test.
+	StartScriptProfiler();
+	
+	// Power source: one steam engine.
+	var steam_engine1 = CreateObjectAbove(SteamEngine, 36, 160, plr);
+	steam_engine1->CreateContents(Coal, 12);
+
+	// Power source: one steam engine.
+	var steam_engine2 = CreateObjectAbove(SteamEngine, 472, 312, plr);
+	
+	// Power source: three wind generators.
+	SetWindFixed(75);
+	CreateObjectAbove(WindGenerator, 480, 104, plr);
+	CreateObjectAbove(WindGenerator, 344, 104, plr);
+	CreateObjectAbove(WindGenerator, 480, 248, plr);
+
+	// Power connection: one flagpole.
+	CreateObjectAbove(Flagpole, 248, 280, plr);
+
+	// Power consumer: four pumps.
+	for (var i = 0; i < 4; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 84 + i * 12, 160, plr);
+		var source = CreateObjectAbove(Pipe, 168, 292, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
+		source_pipe->SetActionTargets(source, pump);
+		pump->SetSource(source_pipe);
+		var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
+		drain_pipe->AddVertex(208, 48);
+		drain_pipe->SetActionTargets(drain, pump);
+		pump->SetDrain(drain_pipe);
+	}
+	
+	// Power source: four pumps.
+	for (var i = 0; i < 4; i++)
+	{
+		var pump = CreateObjectAbove(Pump, 228 + i * 12, 160, plr);
+		var source = CreateObjectAbove(Pipe, 256, 100, plr);
+		var source_pipe = CreateObjectAbove(PipeLine, 272, 24, plr);
+		source_pipe->AddVertex(288, 24);
+		source_pipe->AddVertex(288, 114);
+		source_pipe->AddVertex(282, 120);
+		source_pipe->SetActionTargets(source, pump);
+		pump->SetSource(source_pipe);
+		var drain = CreateObjectAbove(Pipe, 184, 292, plr);
+		var drain_pipe = CreateObjectAbove(PipeLine, 208, 160, plr);
+		drain_pipe->SetActionTargets(drain, pump);
+		pump->SetDrain(drain_pipe);
+	}
+
+	// Power storage: four compensators.
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
+	CreateObjectAbove(Compensator, 70, 312, plr);
+	CreateObjectAbove(Compensator, 95, 312, plr);
+	
+	// Power consumer: double elevator.
+	var elevator1 = CreateObjectAbove(Elevator, 372, 104, plr);
+	var elevator2 = CreateObjectAbove(Elevator, 434, 104, plr);
+	elevator2->SetDir(DIR_Right);
+	elevator2->LetsBecomeFriends(elevator1);
+	ScheduleCall(elevator1.case, "SetMoveDirection", 3 * 36, 1000, COMD_Down, true);
+	ScheduleCall(elevator1.case, "SetMoveDirection", 4 * 36, 1000, COMD_Up, true);
+
+	// Power consumer: one workshop.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 340, 248, plr);
+	workshop->CreateContents(Wood, 12);
+	workshop->CreateContents(Metal, 12);
+	workshop->AddToQueue(Shovel, 12);
+	
+	// Power consumer: one chemical lab.
+	var chemical_lab = CreateObjectAbove(ChemicalLab, 28, 312, plr);
+	chemical_lab->CreateContents(Firestone, 12);
+	chemical_lab->CreateContents(Coal, 12);
+	chemical_lab->AddToQueue(Dynamite, 12);
+	
+	// Power consumer: sawmill.
+	CreateObjectAbove(Sawmill, 408, 312, plr);
+	CreateObjectAbove(Tree_Coconut, 408, 312)->ChopDown();
+	CreateObjectAbove(Tree_Coconut, 408, 312)->ChopDown();
+
+	// Power consumer: one armory.
+	var armory = CreateObjectAbove(Armory, 340, 312, plr);
+	armory->CreateContents(Metal, 24);
+	armory->CreateContents(Wood, 8);
+	armory->AddToQueue(GrenadeLauncher, 8);
+
+	// Power consumer: inventor's lab.
+	var lab = CreateObjectAbove(InventorsLab, 430, 248, plr);
+	lab->CreateContents(Metal, 40);
+	lab->AddToQueue(TeleGlove, 20);
+
+	// Log what the test is about.
+	Log("Massive amount of power structures to test the performance of the power system.");
+	return true;
+}
+
+global func Test14_Completed()
+{
+	if (ObjectCount(Find_ID(Shovel)) >= 12 && ObjectCount(Find_ID(Dynamite)) >= 12 && ObjectCount(Find_ID(GrenadeLauncher)) >= 8 && ObjectCount(Find_ID(TeleGlove)) >= 20)
+		return true;
+	return false;
+}
+
+global func Test14_OnFinished()
+{
+	// Stop the script profiler for this test.
+	StopScriptProfiler();	
+	// Restore water levels.
+	RestoreWaterLevels();	
+	// Remove all the structures.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(WindGenerator), Find_ID(ToolsWorkshop), Find_ID(ChemicalLab), Find_ID(Armory), Find_ID(Sawmill), Find_ID(Wood)));
+	RemoveAll(Find_Or(Find_ID(Pump), Find_ID(Pipe), Find_ID(Compensator), Find_ID(Elevator), Find_ID(InventorsLab), Find_ID(Flagpole), Find_ID(Tree_Coconut)));
+	// Remove burning wood which is created when the elevator case is removed.
+	Schedule(nil, "RemoveAll(Find_ID(Wood))", 1);
 	return;
 }
 
 // Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
-global func Test13_OnStart(int plr)
+global func Test15_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -742,21 +896,17 @@ global func Test13_OnStart(int plr)
 	return true;
 }
 
-global func Test13_Completed()
+global func Test15_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test13_OnFinished()
+global func Test15_OnFinished()
 {
 	// Restore water levels.
-	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
-	for (var x = 216; x <= 280; x++)
-		for (var y = 24; y <= 120; y++)
-			if (GetMaterial(x, y) == Material("Water"))
-				ClearFreeRect(x, y, 1, 1);
+	RestoreWaterLevels();
 	// Remove steam engine, pump and the pipes.
 	RemoveAll(Find_Or(Find_ID(Compensator), Find_ID(WindGenerator), Find_ID(Pump), Find_ID(Pipe)));
 	return;
@@ -772,6 +922,17 @@ global func SetWindFixed(int strength)
 	if (!effect)
 		effect = AddEffect("IntFixedWind", nil, 100, 1);
 	effect.strength = strength;
+	return;
+}
+
+global func RestoreWaterLevels()
+{
+	// Restore water levels.
+	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
+	for (var x = 216; x <= 280; x++)
+		for (var y = 24; y <= 120; y++)
+			if (GetMaterial(x, y) == Material("Water"))
+				ClearFreeRect(x, y, 1, 1);
 	return;
 }
 
