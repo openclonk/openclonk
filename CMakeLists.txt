@@ -748,6 +748,10 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/player
 	${CMAKE_CURRENT_SOURCE_DIR}/src/res
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
+)
+
+# Mark thirdparty as system headers so we don't get warnings from them
+include_directories(SYSTEM
 	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
 
