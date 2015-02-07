@@ -1379,7 +1379,7 @@ if (WIN32)
 endif()
 
 if(UPNP_FOUND)
-	include_directories(${UPNP_INCLUDE_DIR})
+	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
 
