@@ -54,7 +54,7 @@ bool OpenLog()
 	sLogFileName = C4CFN_Log; int iLog = 2;
 #ifdef _WIN32
 	while (!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
-#elif HAVE_SYS_FILE_H
+#elif defined(HAVE_SYS_FILE_H)
 	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")) || flock(fileno(C4LogFile),LOCK_EX|LOCK_NB))
 #else
 	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
@@ -81,7 +81,7 @@ bool OpenExtraLogs()
 	{
 #ifdef _WIN32
 		C4ShaderLogFile = _fsopen(Config.AtUserDataPath(C4CFN_LogShader), "wt", _SH_DENYWR);
-#elif HAVE_SYS_FILE_H
+#elif defined(HAVE_SYS_FILE_H)
 		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
 		if (C4ShaderLogFile && flock(fileno(C4ShaderLogFile), LOCK_EX | LOCK_NB) != 0)
 		{

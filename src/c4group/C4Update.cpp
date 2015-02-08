@@ -511,7 +511,7 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 	{
 #ifdef _WIN32
 		OutputDebugString(FormatString("updating %s\\%s\n", pGrpTo->GetFullName().getData(), strFileName).GetWideChar());
-#elif _DEBUG
+#elif defined(_DEBUG)
 		printf("updating %s\\%s\n", pGrpTo->GetFullName().getData(), strFileName);
 #endif
 		if (!C4Group_CopyEntry(pGrpFrom, pGrpTo, strFileName))
