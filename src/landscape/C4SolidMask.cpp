@@ -478,7 +478,7 @@ CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFi
 	CPNGFile png;
 	StdBuf png_buf;
 	if (!hGroup.LoadEntry(szFilename, &png_buf)) return NULL; // error messages done by caller
-	if (!png.Load((BYTE*)png_buf.getData(), png_buf.getSize())) return NULL;
+	if (!png.Load((BYTE*)png_buf.getMData(), png_buf.getSize())) return NULL;
 	CSurface8 *result = new CSurface8(png.iWdt, png.iHgt);
 	for (size_t y=0u; y<png.iHgt; ++y)
 		for (size_t x=0u; x<png.iWdt; ++x)

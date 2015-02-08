@@ -98,7 +98,7 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 			const C4TexMapEntry *pTex = pTexs->GetEntry(PixCol2Tex(pix));
 			assert(pTex);
 			// get texture contents
-			DWORD dwBackClr;
+			DWORD dwBackClr = 0u;
 			if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
 			// get density of surrounding materials
 			int iCompareDens = AboveDensity / 8;

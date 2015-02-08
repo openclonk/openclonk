@@ -2283,11 +2283,11 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	C4Value colorsV; GetProperty(P_LineColors, &colorsV);
 	C4ValueArray *colors = colorsV.getArray();
 	// TODO: Edge color (color1) is currently ignored.
-	int32_t color0 = 0xFFFF00FF, color1 = 0xFFFF00FF; // use bright colors so author notices
+	int32_t color0 = 0xFFFF00FF;// , color1 = 0xFFFF00FF; // use bright colors so author notices
 	if (colors)
 	{
 		color0 = colors->GetItem(0).getInt();
-		color1 = colors->GetItem(1).getInt();
+		//color1 = colors->GetItem(1).getInt();
 	}
 
 	std::vector<C4BltVertex> vertices;

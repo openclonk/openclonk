@@ -163,11 +163,11 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	int32_t iNormalDepth = iMaterialTextureDepth / 2;
 
 	// Find the largest texture
-	C4Texture *pTex, *pRefTex; C4Surface *pRefSfc = NULL;
+	C4Texture *pTex; C4Surface *pRefSfc = NULL;
 	for(int iTexIx = 0; (pTex = pTexs->GetTexture(pTexs->GetTexture(iTexIx))); iTexIx++)
 		if(C4Surface *pSfc = pTex->Surface32)
 			if (!pRefSfc || pRefSfc->Wdt < pSfc->Wdt || pRefSfc->Hgt < pSfc->Hgt)
-				{ pRefTex = pTex; pRefSfc = pSfc; }
+				pRefSfc = pSfc;
 	if(!pRefSfc)
 		return false;
 
@@ -957,19 +957,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	fTexBlt.right = (fx + float(cgo.Wdt)) / Surfaces[0]->Wdt;
 	fTexBlt.bottom= (fy + float(cgo.Hgt)) / Surfaces[0]->Hgt;
 
-	// Calculate coordinates into light texture
-	FLOAT_RECT lTexBlt;
-	if (Light)
-	{
-		const C4Rect LightRect = Light->getRegion();
-		int32_t iLightWdt = Light->getSurface()->Wdt,
-			    iLightHgt = Light->getSurface()->Hgt;
-		lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;
-		lTexBlt.top   = 1.0 - (fy - LightRect.y) / iLightHgt;
-		lTexBlt.right =       (fx + cgo.Wdt - LightRect.x) / iLightWdt;
-		lTexBlt.bottom= 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
-	}
-
 	// Calculate coordinates on screen (zoomed!)
 	FLOAT_RECT tTexBlt;
 	float tx = float(cgo.X), ty = float(cgo.Y);
@@ -986,17 +973,48 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_QUADS);
 
-	#define VERTEX(x, y) \
-		glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
-		if (Light) glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
-		glVertex2f(tTexBlt.x, tTexBlt.y);
+	if (Light)
+	{
+		// Calculate coordinates into light texture
+		FLOAT_RECT lTexBlt;
+		if (Light)
+		{
+			const C4Rect LightRect = Light->getRegion();
+			int32_t iLightWdt = Light->getSurface()->Wdt,
+				iLightHgt = Light->getSurface()->Hgt;
+			lTexBlt.left = (fx - LightRect.x) / iLightWdt;
+			lTexBlt.top = 1.0 - (fy - LightRect.y) / iLightHgt;
+			lTexBlt.right = (fx + cgo.Wdt - LightRect.x) / iLightWdt;
+			lTexBlt.bottom = 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+		}
 
-	VERTEX(left, top);
-	VERTEX(right, top);
-	VERTEX(right, bottom);
-	VERTEX(left, bottom);
+		#define LVERTEX(x, y) \
+			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
+			glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
+			glVertex2f(tTexBlt.x, tTexBlt.y);
 
-	#undef VERTEX
+		LVERTEX(left, top);
+		LVERTEX(right, top);
+		LVERTEX(right, bottom);
+		LVERTEX(left, bottom);
+
+		#undef LVERTEX
+	}
+	else
+	{
+		#define VERTEX(x, y) \
+			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
+			glVertex2f(tTexBlt.x, tTexBlt.y);
+
+		VERTEX(left, top);
+		VERTEX(right, top);
+		VERTEX(right, bottom);
+		VERTEX(left, bottom);
+
+		#undef VERTEX
+	}
+
+	
 
 	glEnd();
 

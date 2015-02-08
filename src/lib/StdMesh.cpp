@@ -308,7 +308,9 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 
 	float dt = iter->first - prev_iter->first;
 	float weight1 = (time - prev_iter->first) / dt;
+
 	float weight2 = (iter->first - time) / dt;
+	(void)weight2; // used in assertion only
 
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
 	assert(fabs(weight1 + weight2 - 1) < 1e-6);

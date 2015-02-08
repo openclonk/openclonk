@@ -420,6 +420,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
 	std::list<C4FoWBeamTriangle> result;
+	float crossX=0.0f, crossY=0.0f;
 
 	// no beams inside the rectangle? Good, nothing to render 
 	if(!beamCount) return result;
@@ -483,7 +484,6 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			LightBallRightMostPoint(nextTri.fanLX, nextTri.fanLY, lightRX, lightRY);
 
 			// Ascending
-			float crossX, crossY;
 			bool descendCollision = false;
 			if (tri.fanRY > nextTri.fanLY)
 			{
@@ -522,7 +522,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			
 				// The self-shadow-check should have made sure that the two are
 				// never parallel.
-				assert(f);
+				assert(f); (void)f;
 
 				// Cross point to left of surface? Then the surface itself is
 				// shadowed, and we don't need to draw it.
