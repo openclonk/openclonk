@@ -436,6 +436,7 @@ namespace Ogre
 				assert(chunk->GetType() == CID_Animation_BaseInfo);
 				// TODO: Handle it
 				LogF("StdMeshLoader: CID_Animation_BaseInfo not implemented. Skeleton might not be imported properly.");
+				delete chunk;
 			}
 
 			while (!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_Track)
