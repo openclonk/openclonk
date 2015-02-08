@@ -1277,6 +1277,7 @@ private func GetUseCallString(string action) {
 private func StartUseControl(int ctrl, int x, int y, object obj)
 {
 	using = obj;
+	obj->SetController(GetController());
 	using_type = DetermineUsageType(obj);
 	alt = ctrl != CON_Use;
 	

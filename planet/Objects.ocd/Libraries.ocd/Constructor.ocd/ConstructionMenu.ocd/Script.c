@@ -29,7 +29,7 @@ global func CreateConstructionMenu(object constructor, bool create_at_mouse_pos)
 	
 	if(create_at_mouse_pos)
 	{
-		var xy = GetPlayerCursorPos(constructor->GetOwner());
+		var xy = GetPlayerCursorPos(constructor->GetController());
 		if(xy)
 			controller->SetPosition(xy[0],xy[1],true);
 	}
