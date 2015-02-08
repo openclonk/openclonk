@@ -194,7 +194,7 @@ global func FxTutorialFlagpoleBuildStop(object target, effect, int timer)
 
 global func FxTutorialEnergyTimer(object tg, e, tm) {
 	for (var wg in FindObjects(Find_ID(Flagpole)))
-		if (wg.lflag && wg.lflag.power_helper && (wg.lflag.power_helper->GetPowerAvailable() > 0))
+		if (wg.lib_flag && wg.lib_flag.power_helper && (wg.lib_flag.power_helper->GetPowerAvailable() > 0))
 			return -1;
 }
 

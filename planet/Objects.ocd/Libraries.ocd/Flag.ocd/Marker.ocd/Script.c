@@ -1,126 +1,148 @@
-local Name = "$Name$";
-local Description = "$Description$";
+/**
+	Flag Marker
+	A small marker object which indicates the ownership area of a flag. This is part of the flag library.
+	
+	@author Zapper, Maikel
+*/
 
+
+// Keep track of the fade.
 local fade;
-local color;
 
-local ActMap = {
-Fly = {
-	Prototype = Action,
-	Name = "Fly",
-	Procedure = DFA_FLOAT,
-	Directions = 1,
-	Length = 1,
-	Delay = 0,
-	FacetBase=1,
-}
-};
+// The marker should not be affect by wind and other forces.
+public func IsEnvironment() { return true; }
 
-func IsEnvironment() { return true; } // shouldn't be affected by wind, etc.
-
-public func Initialize()
+protected func Initialize()
 {
-	this.Plane=1545;
 	fade = 0;
-	SetAction("Fly");
+	// Make the marker float.
+	SetAction("Float");
 	SetComDir(COMD_None);
+	// Reset the color.
 	ResetColor();
-	return true;
+	return;
 }
 
-func ResetColor()
+public func ResetColor()
 {
-	color = GetPlayerColor(GetOwner());
-	SetClrModulation(color|RGBa(0,0,0,fade));
+	// Set color and alpha.
+	SetClrModulation(GetPlayerColor(GetOwner()));
+	SetObjAlpha(fade);
+	return;
 }
 
-func MoveTo(int x, int y, int r)
+
+/*-- Movement --*/
+
+public func MoveTo(int x, int y, int r)
 {
-	if(GetEffect("MoveTo", this)) RemoveEffect("MoveTo", this);
+	if (GetEffect("MoveTo", this)) 
+		RemoveEffect("MoveTo", this);
 	AddEffect("MoveTo", this, 1, 1, this, 0, x, y, r);
+	return;
 }
 
-func FxMoveToStart(target, effect, temp, x, y, r)
+protected func FxMoveToStart(object target, proplist effect, int temp, int x, int y, int r)
 {
+	if (temp)
+		return FX_OK;
+	
 	effect.x = x;
 	effect.y = y;
 	effect.r = r;
+	
+	// Determine distance and x and y stepping.
 	effect.distance = Distance(GetX(), GetY(), x, y);
-	var r_diff = GetTurnDirection(GetR(), r);
-	if(r_diff)
-	{
-		effect.r_step = Max(1, Abs(effect.distance / r_diff));
-		effect.r_step *= BoundBy(r_diff, -1, 1);
-	} else effect.r_step = 0;
 	effect.x_step = (effect.x - GetX());
 	effect.y_step = (effect.y - GetY());
-	
 	SetXDir(effect.x_step, 100);
 	SetYDir(effect.y_step, 100);
 	
-	effect.x_cnt = 0;
-	effect.y_cnt = 0;
+	// Determine rotational distance and r stepping.	
+	var r_diff = GetTurnDirection(GetR(), r);
+	if (r_diff)
+	{
+		effect.r_step = Max(1, Abs(effect.distance / r_diff));
+		effect.r_step *= BoundBy(r_diff, -1, 1);
+	} 
+	else 
+		effect.r_step = 0;
+
+	return FX_OK;
 }
 
-func FxMoveToTimer(target, effect, time)
+protected func FxMoveToTimer(object target, proplist effect, int time)
 {
-	if((Abs(GetX() - effect.x) < 2) && (Abs(GetY() - effect.y) < 2))
+	if ((Abs(GetX() - effect.x) < 2) && (Abs(GetY() - effect.y) < 2))
 	{
 		SetPosition(effect.x, effect.y);
 		SetR(effect.r);
 		SetSpeed(0, 0);
 		return -1;
 	} 
-	if(Abs(GetR() - effect.r) >= 2) SetR(GetR() + effect.r_step);
-	/*
-	effect.x_cnt += 10;
-	effect.y_cnt += 10;
-	
-	if(effect.x_step)
-	while(effect.x_cnt >= Abs(effect.x_step))
-	{
-		effect.x_cnt -= Abs(effect.x_step);
-		SetPosition(GetX() + BoundBy(effect.x_step, -1, 1), GetY());
-	}
-	
-	if(effect.y_step)
-	while(effect.y_cnt >= Abs(effect.y_step))
-	{
-		effect.y_cnt -= Abs(effect.y_step);
-		SetPosition(GetX(), GetY() + BoundBy(effect.y_step, -1, 1));
-	}
-	*/
-		
-	
+	if (Abs(GetR() - effect.r) >= 2) 
+		SetR(GetR() + effect.r_step);	
+	return FX_OK;
 }
 
-func FadeIn()
+
+/*-- Fading --*/
+
+public func FadeIn()
 {
-	if(GetEffect("Fade*", this)) RemoveEffect("Fade*", this);
+	if (GetEffect("Fade*", this)) 
+		RemoveEffect("Fade*", this);
 	AddEffect("FadeIn", this, 1, 1, this);
+	return;
 }
 
-func FadeOut()
+public func FadeOut()
 {
-	if(GetEffect("Fade*", this)) RemoveEffect("Fade*", this);
+	if (GetEffect("Fade*", this))
+		RemoveEffect("Fade*", this);
 	AddEffect("FadeOut", this, 1, 1, this);
+	return;
 }
 
-func FxFadeInTimer(target, effect, time)
+protected func FxFadeInTimer(object target, proplist effect, int time)
 {
-	if(fade == 255) return -1;
-	fade = BoundBy(fade+3, 0, 255);
-	//SetClrModulation(color|RGBa(0,0,0,fade));
+	if (fade == 255) 
+		return -1;
+	fade = BoundBy(fade + 3, 0, 255);
 	SetObjAlpha(fade);
+	return FX_OK;
 }
 
-func FxFadeOutTimer(target, effect, time)
+protected func FxFadeOutTimer(object target, proplist effect, int time)
 {
-	if(fade == 0) return -1;
-	fade = BoundBy(fade-3, 0, 255);
-	//SetClrModulation(color|RGBa(0,0,0,fade));
+	if (fade == 0) 
+		return -1;
+	fade = BoundBy(fade - 3, 0, 255);
 	SetObjAlpha(fade);
+	return FX_OK;
 }
 
-// UI not saved.
+
+/*-- Saving --*/
+
+// The UI is not saved.
 func SaveScenarioObject() { return false; }
+
+
+/*-- Properties --*/
+
+local ActMap = {
+	Float = {
+		Prototype = Action,
+		Name = "Float",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		Length = 1,
+		Delay = 0,
+		FacetBase=1,
+	}
+};
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Plane = 1545;

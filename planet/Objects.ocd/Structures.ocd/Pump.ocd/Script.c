@@ -33,6 +33,7 @@ func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
 	this.MeshTransformation = Trans_Rotate(50 + RandomX(-10, 10), 0, 1, 0);
+	return _inherited(...);
 }
 
 func Initialize()
