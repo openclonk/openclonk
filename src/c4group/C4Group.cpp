@@ -669,7 +669,11 @@ bool C4Group::AddEntry(int status,
 		{
 
 		case C4GRES_OnDisk: // Copy/move file to folder
-			return ( CopyItem(fname,tfname) && (!fDeleteOnDisk || EraseItem(fname)) );
+			if (!CopyItem(fname, tfname))
+				return false;
+			if (fDeleteOnDisk && !EraseItem(fname))
+				return false;
+			return true;
 
 		case C4GRES_InMemory: // Save buffer to file in folder
 			CStdFile hFile;
