@@ -99,9 +99,6 @@
 /* compile with debug options */
 #cmakedefine _DEBUG 1
 
-/* Define to 1 if you have support for precompiled headers */
-#cmakedefine HAVE_PRECOMPILED_HEADERS 1
-
 #ifndef USE_CONSOLE
 /* The widgets for the windows and the editor GUI */
 #cmakedefine USE_SDL_MAINLOOP 1
