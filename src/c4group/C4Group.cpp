@@ -671,6 +671,8 @@ bool C4Group::AddEntry(int status,
 		case C4GRES_OnDisk: // Copy/move file to folder
 			if (!CopyItem(fname, tfname))
 				return false;
+			// Reset directory iterator to reflect new file
+			ResetSearch(true);
 			if (fDeleteOnDisk && !EraseItem(fname))
 				return false;
 			return true;
@@ -681,6 +683,7 @@ bool C4Group::AddEntry(int status,
 			if (hFile.Create(tfname, !!childgroup))
 				fOkay = !!hFile.Write(membuf,size);
 			hFile.Close();
+			ResetSearch(true);
 
 			if (fHoldBuffer) { if (fBufferIsStdbuf) StdBuf::DeletePointer(membuf); else delete [] membuf; }
 
