@@ -46,6 +46,10 @@ protected func InitializePlayer(int plr)
 	// Move player to the start of the scenario.
 	GetCrew(plr)->SetPosition(120, 150);
 	
+	// Some knowledge to construct a flagpole.
+	GetCrew(plr)->CreateContents(Hammer);
+	SetPlrKnowledge(plr, Flagpole);
+	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
 	effect.testnr = 1;

@@ -22,7 +22,7 @@ protected func Construction()
 	// Initialize the flag list if not done already.
 	if (GetType(LIB_FLAG_FlagList) != C4V_Array)
 		LIB_FLAG_FlagList = [];
-	// Initialize the single proplist for the power library.
+	// Initialize the single proplist for the flag library.
 	if (lib_flag == nil)
 		lib_flag = {};
 	// Set some variables corresponding to this flag.
@@ -278,15 +278,21 @@ protected func FxRefreshLinkedFlagsTimer()
 }
 
 // Returns all flags allied to owner of which the radius intersects the given circle
-func FindFlagsInRadius(object center_object, int radius, int owner)
+public func FindFlagsInRadius(object center_object, int radius, int owner)
 {
 	var flag_list = [];
-	if (LIB_FLAG_FlagList) for(var flag in LIB_FLAG_FlagList)
+	if (LIB_FLAG_FlagList)
 	{
-		if(!IsAllied(flag->GetOwner(), owner)) continue;
-		if(flag == center_object) continue;
-		if(ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) continue;
-		flag_list[GetLength(flag_list)] = flag;
+		for (var flag in LIB_FLAG_FlagList)
+		{
+			if (!IsAllied(flag->GetOwner(), owner)) 
+				continue;
+			if (flag == center_object) 
+				continue;
+			if (ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) 
+				continue;
+			flag_list[GetLength(flag_list)] = flag;
+		}
 	}
 	return flag_list;
 }
@@ -389,8 +395,8 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 // Callback from construction library: create a special preview that gives extra info about affected buildings / flags.
 public func CreateConstructionPreview(object constructing_clonk)
 {
-	CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
-	return;
+	// Return the specific previewer for the flag.
+	return CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX() - GetX(), constructing_clonk->GetY() - GetY(), constructing_clonk->GetOwner());
 }
 
 /*-- Flag properties --*/

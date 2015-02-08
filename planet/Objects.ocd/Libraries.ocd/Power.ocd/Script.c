@@ -31,6 +31,7 @@
 	   errors arise when they are removed.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
 	 * Implement network separation on hostility changes.
+	 * Fix a bug which sometimes appears on deletion of a complicated network. (First reproduce reliably).
 
 	@author Zapper, Maikel
 */
@@ -477,7 +478,7 @@ public func GetPowerConsumptionNeed()
 private func RefreshProducers(int power_need)
 {
 	// Debugging logs.
-	//Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);ch
+	//Log("POWR - RefreshProducers(): network = %v, frame = %d, power_need = %d", this, FrameCounter(), power_need);
 	// Keep track of the power found and which was the last link to satisfy the need. 
 	var power_found = 0;
 	var satisfy_need_link = nil;

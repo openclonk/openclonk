@@ -36,7 +36,7 @@ func Set(id to_construct, object constructing_clonk)
 }
 
 // Positions the preview according to the landscape, coloring it green, yellow or red
-func AdjustPreview(bool below_surface, bool look_up, bool no_call)
+public func AdjustPreview(bool below_surface, bool look_up, bool no_call)
 {
 	var half_y = dimension_y / 2;
 	blocked = false;

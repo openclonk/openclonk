@@ -126,7 +126,7 @@ protected func FxFadeOutTimer(object target, proplist effect, int time)
 /*-- Saving --*/
 
 // The UI is not saved.
-func SaveScenarioObject() { return false; }
+public func SaveScenarioObject() { return false; }
 
 
 /*-- Properties --*/
