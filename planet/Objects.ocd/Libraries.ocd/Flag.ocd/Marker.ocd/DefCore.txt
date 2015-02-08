@@ -1,5 +1,5 @@
 [DefCore]
-id=LibraryFlag_Marker
+id=Library_Flag_Marker
 Version=6,0
 Category=C4D_Vehicle
 Width=8

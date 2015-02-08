@@ -416,7 +416,7 @@ public func GetFlagRadius()
 
 public func GetFlagConstructionTime() { return lib_flag.construction_time; }
 
-public func GetFlagMarkerID() { return LibraryFlag_Marker; }
+public func GetFlagMarkerID() { return Library_Flag_Marker; }
 
 public func GetLinkedFlags() {return lib_flag.linked_flags; }
 
