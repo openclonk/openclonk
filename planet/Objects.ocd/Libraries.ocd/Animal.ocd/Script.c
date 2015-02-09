@@ -1,87 +1,101 @@
-/*-- Animal reproduction --*/
+/**
+	Animal Library
+	Handles reproduction for animals.
+	
+	@author Maikel
+*/
 
-// Status
+
+// This object is an animal.
 public func IsAnimal() { return true; }
 
-// Population control
-private func ReproductionAreaSize() { return 800; }   // The area, in which new animals of this kind can appear
-private func ReproductionRate()     { return 4000; }  // The chane that reproduction takes place in one timer intervall
-private func MaxAnimalCount()       { return 10; }    // The maximal animalcount in the area
-
-// Special reproduction (e.g. with egg)
-private func SpecialRepr()
+protected func Construction()
 {
+	// Add a reproduction timer.
+	AddTimer("Reproduction", 72);
+	_inherited(...);
 }
 
-// Special Conditions (e.g. a fish should have Swim action)
-private func SpecialReprodCond()
+
+/*-- Reproduction --*/
+
+// Population control is handled through these variables.
+// The area, in which new animals of this kind can appear.
+private func ReproductionAreaSize() { return 800; }
+// The chane that reproduction takes place in one timer interval.
+private func ReproductionRate() { return 150; }
+// The maximal animal count in the area.
+private func MaxAnimalCount() { return 10; }
+
+// Special reproduction method (e.g. with egg).
+private func SpecialReproduction()
 {
-	return 1;
+	// You can have a special kind of reproduction implemented here.
+	// If you do so return true in this function.
+	return false;
 }
 
-// Count animals
-private func CountMe()
+// Special conditions which needs to be fulfilled (e.g. a fish should have the swim action).
+private func SpecialReproductionCondition()
 {
-	var ReprodSize = ReproductionAreaSize();
-	var ReprodSizeHalb = ReprodSize	/ -2;
-	return ObjectCount(Find_ID(GetID()), Find_InRect(ReprodSizeHalb, ReprodSizeHalb, ReprodSize , ReprodSize), Find_OCF(OCF_Alive));
+	// You can implement a special condition for reproduction here.
+	// Return false if this condition is not satisfied.
+	return true;
 }
 
-/* Reproduction */
-
-public func Reproduction(bool fRepr)
+// Count animals in the reproduction area.
+private func CountAnimalsInArea()
 {
-	// Already dead
-	if (!GetAlive()) return 0;
-	// Not full grown up
-	if (GetCon() < 100) return 0;
-	// Special conditions not fulfilled
-	if (!SpecialReprodCond()) return 0;
-	// Already to much animals of this kind
-	//if(!FindObject(REPR)) { if (CountMe() >= MaxAnimalCount()) return 0; }
-	//else if(ObjectCount(Find_ID(GetID()))+1 >= GetComponent(GetID(), 0, FindObject(Find_ID(REPR)))) return 0;
-	// Reproduction
-	if (!SpecialRepr())
+	var reprod_size = ReproductionAreaSize();
+	var reprod_size_half = reprod_size / -2;
+	return ObjectCount(Find_ID(GetID()), Find_InRect(reprod_size_half, reprod_size_half, reprod_size , reprod_size), Find_OCF(OCF_Alive));
+}
+
+public func Reproduction()
+{
+	// Already dead or not full grown? Don't do anything.
+	if (!GetAlive() || GetCon() < 100) 
+		return;
+	// Special conditions not fulfilled? Don't do anything either.
+	if (!SpecialReproductionCondition()) 
+		return;
+	// Check whether there are already enough animals of this kind.
+	if (CountAnimalsInArea() > MaxAnimalCount())
+		return;
+	// Then apply the reproduction rate.
+	if (Random(ReproductionRate()))
+		return;
+	// Reproduction: first try special reproduction, otherwise normal.
+	if (!SpecialReproduction())
 	{
 		// Normal reproduction
-		var pChild = CreateConstruction(GetID(), 0, 0, -1, 40);
-		pChild->~Birth();
+		var child = CreateConstruction(GetID(), 0, 0, -1, 40);
+		child->~Birth();
 	}
-	// Success
-	return 1;
+	return;
 }
-
-/* Birth */
 
 public func Birth()
 {
 	SetAction("Walk");
-	if (Random(2)) SetComDir(COMD_Left);
-	else SetComDir(COMD_Right);
-	return 1;
+	if (Random(2)) 
+		SetComDir(COMD_Left);
+	else
+		SetComDir(COMD_Right);
+	return;
 }
 
-/* Collection of animals */
 
-local fForceEnter;
+/*-- Collection --*/
 
-// Force collection
-public func ForceEnter(object pContainer)
+protected func RejectEntrance(object container)
 {
-	fForceEnter = 1;
-	Enter(pContainer);
-	fForceEnter = 0;
-	return 1;
-}
-
-protected func RejectEntrance(object pContainer)
-	{
-	// Handing over (z.B. Clonk->Lore) is always ok
-	if (Contained()) return;
-	// Dead? OK too
-	if (!GetAlive()) return;
-	// Forced? Well ok.
-	if (fForceEnter) return;
-	// All other cases depend on the global settings (game rule)
-	return 1;// !Library_Animal_IsCollectible(pContainer); TODO create this rule :-)
+	// From one container to another is not blocked by this library.
+	if (Contained()) 
+		return _inherited(container, ...);
+	// Neither are dead animals.
+	if (!GetAlive()) 
+		return _inherited(container, ...);
+	// For all other cases the entrance is blocked.
+	return true;
 }
