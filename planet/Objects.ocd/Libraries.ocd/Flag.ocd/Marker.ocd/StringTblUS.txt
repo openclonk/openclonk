@@ -1,2 +1,0 @@
-Name=Marker
-Description=Marks your reign.

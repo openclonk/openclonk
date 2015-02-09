@@ -1,6 +1,7 @@
 /**
-	Flag Marker
-	A small marker object which indicates the ownership area of a flag. This is part of the flag library.
+	Flag Library: Marker
+	A small marker object which indicates the ownership area of a flag. 
+	This is part of the flag library.
 	
 	@author Zapper, Maikel
 */
@@ -143,6 +144,4 @@ local ActMap = {
 	}
 };
 
-local Name = "$Name$";
-local Description = "$Description$";
 local Plane = 1545;

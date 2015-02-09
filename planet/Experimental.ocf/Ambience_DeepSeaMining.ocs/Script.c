@@ -84,10 +84,7 @@ protected func InitializePlayer(int plr)
 	
 	// Claim ownership of unowned structures
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole")), Find_Owner(NO_OWNER)))
-	{
 		structure->SetOwner(plr);
-		structure->~RefreshOwnershipOfSurrounding();
-	}
 		
 	// Should be done in OnOwnerChanged? It doesn't happen ATM.
 	RedrawAllFlagRadiuses();

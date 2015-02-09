@@ -1,15 +1,8 @@
 /**
-	Flag Construction Preview Helper Arrow
+	Flag Library: Construction Preview Arrow
 
 	@author Sven
 */
-
-
-protected func Initialize()
-{
-	this.Visibility = VIS_Owner;
-	return;
-}
 
 
 /*-- Saving --*/
@@ -19,6 +12,8 @@ public func SaveScenarioObject() { return false; }
 
 
 /*-- Properties --*/
+
+local Visibility = VIS_Owner;
 
 local ActMap = {
 	Show = {
@@ -34,5 +29,3 @@ local ActMap = {
 		NextAction = "Show",
 	},
 };
-
-local Name = "$Name$";
