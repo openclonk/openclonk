@@ -11,7 +11,8 @@ slice(texture+4)
 {
 #ifdef HAVE_LIGHT
 	// prepare texture coordinate for light lookup in LightShader.c
-	vec2 lightCoord = lightTransform * vec3(gl_FragCoord.xy, 1.0);
+	// Extra .xy since some old intel drivers return a vec3
+	vec2 lightCoord = (lightTransform * vec3(gl_FragCoord.xy, 1.0)).xy;
 #endif
 }
 
