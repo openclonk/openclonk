@@ -32,6 +32,10 @@ protected func InitializePlayer(int plr)
 	// No FoW to see everything happening.
 	SetFoW(false, plr);
 	
+	// All players belong to the first team.
+	// The second team only exists for testing.
+	SetPlayerTeam(plr, 1);
+		
 	// Initialize script player.
 	if (GetPlayerType(plr) == C4PT_Script)
 	{
@@ -617,7 +621,7 @@ global func Test10_OnFinished()
 	return;
 }
 
-// Test connecting two networks by different allied players and then elimination of one player.
+// Test connecting two networks by different allied players and then hostility change, team switch and elimination of one players.
 global func Test11_OnStart(int plr)
 {
 	// First network is owned by the player.
@@ -635,14 +639,31 @@ global func Test11_OnStart(int plr)
 	// Networks are disconnected so let the script player bridge the gap.
 	ScheduleCall(nil, "CreateObjectAbove", 3 * 36, 0, Compensator, 272, 160, script_plr);
 	
-	// Eliminate the script player and see if the normal player takes over the network correctly.
-	ScheduleCall(nil, "EliminatePlayer", 6 * 36, 0, script_plr);
+	// Make the players hostile for a short time.
+	ScheduleCall(nil, "SetHostility", 6 * 36, 0, plr, script_plr, true);
+	ScheduleCall(nil, "SetHostility", 6 * 36, 0, script_plr, plr, true);
 	
-	// Rejoin the script player for other tests.
-	ScheduleCall(nil, "CreateScriptPlayer", 9 * 36, 0, "PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
+	// Make the players allies again.
+	ScheduleCall(nil, "SetHostility", 9 * 36, 0, plr, script_plr, false);
+	ScheduleCall(nil, "SetHostility", 9 * 36, 0, script_plr, plr, false);
+	
+	// Switch the team of the script player.
+	var team = GetPlayerTeam(script_plr);
+	ScheduleCall(nil, "SetPlayerTeam", 12 * 36, 0, script_plr, team + 1);
 
+	// And switch the team of the script player back again.
+	ScheduleCall(nil, "SetPlayerTeam", 15 * 36, 0, script_plr, team);
+	
+	// Eliminate the script player and see if the normal player takes over the network correctly.
+	if (script_plr != nil)
+	{
+		ScheduleCall(nil, "EliminatePlayer", 18 * 36, 0, script_plr);
+		// Rejoin the script player for other tests.
+		ScheduleCall(nil, "CreateScriptPlayer", 21 * 36, 0, "PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
+	}
+	
 	// Log what the test is about.
-	Log("Two connected networks by different allied players with the elimination of one of the two players.");
+	Log("Two connected networks by different allied players with hostility change, team switch and elimination of one players.");
 	return true;
 }
 

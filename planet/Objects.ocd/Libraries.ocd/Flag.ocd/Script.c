@@ -22,6 +22,8 @@ protected func Construction()
 	// Initialize the flag list if not done already.
 	if (GetType(LIB_FLAG_FlagList) != C4V_Array)
 		LIB_FLAG_FlagList = [];
+	// Make this object also a C4D_Environment for hostility change callbacks.
+	SetCategory(GetCategory() | C4D_Environment);
 	// Initialize the single proplist for the flag library.
 	if (lib_flag == nil)
 		lib_flag = {};
@@ -286,6 +288,10 @@ public func FindFlagsInRadius(object center_object, int radius, int owner)
 
 public func RefreshLinkedFlags()
 {
+	// Debugging logs.
+	//Log("FLAG - RefreshLinkedFlags(): flag = %v", this);
+	//LogFlags();
+	
 	// Safety check: the global flag list should exist.
 	if (GetType(LIB_FLAG_FlagList) != C4V_Array) 
 		return;
@@ -340,7 +346,7 @@ public func RefreshLinkedFlags()
 	var old_network = lib_flag.power_helper;
 	// Create a new power network for ths flag since we don't know whether flag links have been lost.
 	// We then just possibly remove the old ones if they exist.
-	lib_flag.power_hhelper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+	lib_flag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
 	PushBack(LIB_POWR_Networks, lib_flag.power_helper);
 	// Make a list of the power networks which need to be merged into the new one.
 	var to_merge = [old_network];
@@ -358,6 +364,8 @@ public func RefreshLinkedFlags()
 			continue;
 		RefreshPowerNetwork(network);
 	}
+	// Debugging logs.
+	//LogFlags();
 	return;
 }
 
@@ -391,9 +399,40 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 		marker->ResetColor();
 	}
 	// Also change the ownership of the surrounding buildings.
-	RefreshOwnershipOfSurrounding();	
+	RefreshOwnershipOfSurrounding();
 	return _inherited(new_owner, old_owner, ...);
 }
+
+// Engine callback: a player has changed its hostility.
+protected func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
+{
+	// Debugging logs.
+	//Log("FLAG - OnHostilityChange(): player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", player1, player2, hostile, old_hostility);
+	// Redraw radiuses of all flags.
+	RedrawFlagRadius();
+	// Refresh the ownership of the flag's surroundings.
+	RefreshOwnershipOfSurrounding();
+	// Linked flags - optimization for the power system.
+	ScheduleRefreshLinkedFlags();
+	return _inherited(player1, player2, hostile, old_hostility);
+}
+
+// Engine callback: a player has switched its team.
+protected func OnTeamSwitch(int player, int new_team, int old_team)
+{
+	// Debugging logs.
+	//Log("FLAG - OnTeamSwitch(): player = %d, new_team = %d, old_team = %d", player, new_team, old_team);
+	// Redraw radiuses of all flags.
+	RedrawFlagRadius();
+	// Refresh the ownership of the flag's surroundings.
+	RefreshOwnershipOfSurrounding();
+	// Linked flags - optimization for the power system.
+	ScheduleRefreshLinkedFlags();		
+	return _inherited(player, new_team, old_team, ...);
+}
+
+
+/*-- Construction --*/
 
 // Callback from construction library: create a special preview that gives extra info about affected buildings / flags.
 public func CreateConstructionPreview(object constructing_clonk)
@@ -498,6 +537,19 @@ private func RefreshPowerNetwork(object network)
 		// Remove from old network and add to new network.
 		network->RemovePowerConsumer(link.obj);
 		actual_network->AddPowerConsumer(link.obj, link.cons_amount, link.priority);
+	}
+	return;
+}
+
+
+/*-- Logging --*/
+
+private func LogFlags()
+{
+	for (var flag in LIB_FLAG_FlagList)
+	{
+		Log("FLAG - Flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag.lib_flag.construction_time, flag.lib_flag.radius, flag.lib_flag.power_helper);
+		Log("\tlinked flags = %v", flag.lib_flag.linked_flags);
 	}
 	return;
 }
