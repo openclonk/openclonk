@@ -1240,9 +1240,9 @@ void C4Network2IO::SendConnPackets()
 void C4Network2IO::OnPunch(C4NetIO::addr_t addr)
 {
 	// Sanity check
-	if (addr.sin_family != AF_INET && addr.sin_family != htons(AF_INET))
+	assert (addr.sin_family == AF_INET);
+	if (addr.sin_family != AF_INET)
 		return;
-	addr.sin_family = AF_INET;
 	ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));
 	// Add for local client
 	C4Network2Client *pLocal = ::Network.Clients.GetLocal();
