@@ -141,8 +141,9 @@ public:
 class StdMeshMaterialShader
 {
 public:
-	StdMeshMaterialShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType type, const char* code):
-		Filename(filename), Name(name), Language(language), Type(type), Code(code) {}
+	StdMeshMaterialShader(const char* filename, const char* name, const char* language, StdMeshMaterialShaderType /* type */, const char* code):
+		Filename(filename), Name(name), Language(language), Code(code)
+	{}
 
 	const char* GetFilename() const { return Filename.getData(); }
 	const char* GetCode() const { return Code.getData(); }
@@ -151,7 +152,6 @@ private:
 	StdCopyStrBuf Filename;
 	StdCopyStrBuf Name;
 	StdCopyStrBuf Language;
-	StdMeshMaterialShaderType Type;
 	StdCopyStrBuf Code;
 };
 
