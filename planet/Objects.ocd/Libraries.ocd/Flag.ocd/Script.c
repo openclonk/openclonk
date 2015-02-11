@@ -58,26 +58,7 @@ public func IsFlagpole() { return true; }
 
 /*-- Library Code --*/
 
-private func RefreshAllFlagLinks()
-{
-	// Schedule a refresh for all flags.
-	for (var flag in LIB_FLAG_FlagList) 
-		if (flag)
-			flag->ScheduleRefreshLinkedFlags();
-	
-	// Update power balance for power helpers after refreshing the linked flags.
-	// TODO: find out why this is called twice in the same frame in different ways.
-	Schedule(nil, "Library_Flag->RefreshAllPowerNetworks()", 2, 0);
-	AddEffect("ScheduleRefreshAllPowerNetworks", nil, 1, 2, nil, Library_Flag);
-	
-}
-
-protected func FxScheduleRefreshAllPowerNetworksTimer()
-{
-	Library_Flag->RefreshAllPowerNetworks();
-	return -1;
-}
-
+// Redraws the ownership markers of this flag according to the current circumstances.
 public func RedrawFlagRadius()
 {
 	// A flag with no radius is not drawn.
@@ -189,8 +170,9 @@ private func AddOwnership()
 	RedrawAllFlagRadiuses();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	// Linked flags - optimization for the power system.
-	RefreshAllFlagLinks();
+	// Linked flags - refresh links for this flag and update the power system.
+	RefreshLinkedFlags();
+	RefreshAllPowerNetworks();
 	return;
 }
 
@@ -204,8 +186,9 @@ private func RemoveOwnership()
 	RedrawAllFlagRadiuses();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	// Linked flags - optimization for the power system.
-	RefreshAllFlagLinks();
+	// Linked flags - refresh links for this flag and update the power system.
+	RefreshLinkedFlags();
+	RefreshAllPowerNetworks();
 	return;
 }
 
@@ -246,26 +229,6 @@ protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
 	return FX_OK;
 }
 
-public func ScheduleRefreshLinkedFlags()
-{
-	if (!GetEffect("RefreshLinkedFlags", this)) 
-		AddEffect("RefreshLinkedFlags", this, 1, 1, this);
-	return;
-}
-
-public func StopRefreshLinkedFlags()
-{
-	if (GetEffect("RefreshLinkedFlags", this))
-		RemoveEffect("RefreshLinkedFlags", this);
-	return;
-}
-
-protected func FxRefreshLinkedFlagsTimer()
-{
-	this->RefreshLinkedFlags();
-	return -1;
-}
-
 // Returns all flags allied to owner of which the radius intersects the given circle.
 public func FindFlagsInRadius(object center_object, int radius, int owner)
 {
@@ -286,6 +249,8 @@ public func FindFlagsInRadius(object center_object, int radius, int owner)
 	return flag_list;
 }
 
+// Refreshes the linked flags for this flags and also updates the linked flags of the flages linked to this flag.
+// TODO: Maybe there is a need to update the links of the flags which were linked before but are not now.
 public func RefreshLinkedFlags()
 {
 	// Debugging logs.
@@ -376,7 +341,6 @@ public func CopyLinkedFlags(object from, array flaglist)
 	for (var i = GetLength(lib_flag.linked_flags) - 1; i >= 0; --i)
 		if (lib_flag.linked_flags[i] == this)
 			lib_flag.linked_flags[i] = from;
-	StopRefreshLinkedFlags();
 	return;
 }
 
@@ -412,8 +376,8 @@ protected func OnHostilityChange(int player1, int player2, bool hostile, bool ol
 	RedrawFlagRadius();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	// Linked flags - optimization for the power system.
-	ScheduleRefreshLinkedFlags();
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();
 	return _inherited(player1, player2, hostile, old_hostility);
 }
 
@@ -426,8 +390,8 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 	RedrawFlagRadius();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	// Linked flags - optimization for the power system.
-	ScheduleRefreshLinkedFlags();		
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();		
 	return _inherited(player, new_team, old_team, ...);
 }
 
@@ -440,6 +404,7 @@ public func CreateConstructionPreview(object constructing_clonk)
 	// Return the specific previewer for the flag.
 	return CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX() - GetX(), constructing_clonk->GetY() - GetY(), constructing_clonk->GetOwner());
 }
+
 
 /*-- Flag properties --*/
 
@@ -548,8 +513,8 @@ private func LogFlags()
 {
 	for (var flag in LIB_FLAG_FlagList)
 	{
-		Log("FLAG - Flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag.lib_flag.construction_time, flag.lib_flag.radius, flag.lib_flag.power_helper);
-		Log("\tlinked flags = %v", flag.lib_flag.linked_flags);
+		Log("FLAG - Flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag->GetFlagConstructionTime(), flag->GetFlagRadius(), flag->GetPowerHelper());
+		Log("\tlinked flags = %v", flag->GetLinkedFlags());
 	}
 	return;
 }

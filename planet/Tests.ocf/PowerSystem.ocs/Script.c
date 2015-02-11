@@ -676,6 +676,11 @@ global func Test11_Completed()
 
 global func Test11_OnFinished()
 {
+	// Ensure the script player exists or is created.
+	ClearScheduleCall(nil, "EliminatePlayer");
+	ClearScheduleCall(nil, "CreateScriptPlayer");	
+	if (script_plr == nil)
+		CreateScriptPlayer("PowerBuddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);	
 	// Remove wind generator, steam engine, flagpole, shipyard, airship.
 	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(SteamEngine), Find_ID(Compensator), Find_ID(Shipyard), Find_ID(Airship)));
 	return;
@@ -697,18 +702,22 @@ global func Test12_OnStart(int plr)
 	lab->CreateContents(Metal, 8);
 	lab->AddToQueue(TeleGlove, 4);
 	lab->SetNoPowerNeed(true);
+	ScheduleCall(nil, "Log", 1, 0, "Lab has no power need (per script).");
 	
 	// Power connection: flagpole.
-	CreateObjectAbove(Flagpole, 304, 140, plr);	 
+	CreateObjectAbove(Flagpole, 304, 140, plr);
+
+	// Let the lab have a power need per script.
+	ScheduleCall(lab, "SetNoPowerNeed", 3 * 36, 0, false);
+	ScheduleCall(nil, "Log", 3 * 36, 0, "Lab has a power need (per script).");
 	
 	// Create the no power need rule.
-	ScheduleCall(nil, "CreateObject", 3 * 36, 0, Rule_NoPowerNeed);
-	
-	// Let the lab consumer power again.
-	ScheduleCall(lab, "SetNoPowerNeed", 6 * 36, 0, false);
+	ScheduleCall(nil, "CreateObject", 6 * 36, 0, Rule_NoPowerNeed);
+	ScheduleCall(nil, "Log", 6 * 36, 0, "No power need rule activated.");
 	
 	// Remove the no power need rule.
 	Schedule(nil, "RemoveAll(Find_ID(Rule_NoPowerNeed))", 9 * 36, 0);
+	ScheduleCall(nil, "Log", 9 * 36, 0, "No power need rule removed.");
 
 	// Log what the test is about.
 	Log("No power need rule and no power need script functionality tested for a simple network.");
@@ -725,7 +734,7 @@ global func Test12_Completed()
 global func Test12_OnFinished()
 {
 	// Remove wind generator, steam engine, flagpole, shipyard, airship.
-	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(InventorsLab), Find_ID(Flagpole)));
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(ToolsWorkshop), Find_ID(InventorsLab), Find_ID(Flagpole), Find_ID(Rule_NoPowerNeed)));
 	return;
 }
 
@@ -767,11 +776,14 @@ global func Test13_OnFinished()
 	return;
 }
 
+static POWER_SYSTEM_Test14_Time;
+
 // Massive test which tests a lot of power structures and the performance of the system.
 global func Test14_OnStart(int plr)
 {
 	// Start the script profiler for this test.
 	StartScriptProfiler();
+	POWER_SYSTEM_Test14_Time = GetTime();
 	
 	// Power source: one steam engine.
 	var steam_engine1 = CreateObjectAbove(SteamEngine, 36, 160, plr);
@@ -879,8 +891,10 @@ global func Test14_Completed()
 
 global func Test14_OnFinished()
 {
-	// Stop the script profiler for this test.
-	StopScriptProfiler();	
+	// Stop the script profiler for this test and log the total time.
+	var time = GetTime() - POWER_SYSTEM_Test14_Time;
+	Log("The test ran for %d ms and these functions have been consuming an amount of time:", time);
+	StopScriptProfiler();
 	// Restore water levels.
 	RestoreWaterLevels();	
 	// Remove all the structures.
