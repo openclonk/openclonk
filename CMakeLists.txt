@@ -803,10 +803,10 @@ endif()
 
 if(NOT USE_CONSOLE)
 	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
-	include(FindJPEG)
+	find_package(JPEG REQUIRED)
 endif()
-include(FindPNG)
-include(FindZLIB)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 set(Boost_ADDITIONAL_VERSIONS
@@ -871,7 +871,7 @@ endif()
 # Set GTK link directory. This needs to be done before add_executable,
 # otherwise the path is not used for linking clonk
 if(USE_GTK)
-	include(FindPkgConfig)
+	find_package(PkgConfig)
 	if (USE_GTK3)
 		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
 		include_directories(${GTK3_INCLUDE_DIRS})
@@ -884,7 +884,7 @@ if(USE_GTK)
 endif()
 
 # Try to find GTK for mape
-include(FindPkgConfig)
+find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
 	if (USE_GTK3)
 		pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
@@ -903,7 +903,7 @@ find_package("Audio")
 
 # SDL
 if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
-	include(FindSDL)
+	find_package(SDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	include_directories(${SDL_INCLUDE_DIR})
 	target_link_libraries(openclonk ${SDL_LIBRARY})
@@ -1314,7 +1314,7 @@ if(WIN32)
 endif()
 
 if(NOT USE_CONSOLE)
-	include(FindOpenGL)
+	find_package(OpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
 	target_link_libraries(openclonk
