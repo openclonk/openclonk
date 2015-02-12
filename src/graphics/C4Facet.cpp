@@ -403,7 +403,7 @@ void C4Facet::DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &g
 	// draw energy level using graphics
 	if (!pDraw || !gfx.Surface) return;
 	int32_t h=gfx.Hgt;
-	int32_t yBar = Hgt - BoundBy<int32_t>(iLevel,0,iRange) * Hgt / Max<int32_t>(iRange,1);
+	int32_t yBar = Hgt - Clamp<int32_t>(iLevel,0,iRange) * Hgt / Max<int32_t>(iRange,1);
 	int32_t iY = 0, vidx=0;
 	C4Facet gfx_draw = gfx;
 	bool filled = false;

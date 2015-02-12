@@ -234,7 +234,7 @@ bool StdMeshAnimationUpdate::UpdateAnimationNode(StdMeshInstance* instance, StdM
 			StdMeshInstance::ValueProvider* provider = node->GetPositionProvider();
 			C4Real min = Fix0;
 			C4Real max = ftofix(node->GetAnimation()->Length);
-			provider->Value = BoundBy(provider->Value, min, max);
+			provider->Value = Clamp(provider->Value, min, max);
 			return true;
 		}
 	case StdMeshInstance::AnimationNode::CustomNode:

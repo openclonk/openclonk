@@ -186,7 +186,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 		//if (iMsgY < cgo.Y)
 		//{
 			float fade = Max(ScreenFader, 0.0f) + ((iMsg + 2.0f + float(Fader) / iLineHgt) / Min(2-iMsgFader, -1));
-			dwFade = (0xff - BoundBy(int(fade * 0xff), 0, 0xff)) << 24;
+			dwFade = (0xff - Clamp(int(fade * 0xff), 0, 0xff)) << 24;
 		//}
 		//else
 		//	dwFade = 0xff000000;

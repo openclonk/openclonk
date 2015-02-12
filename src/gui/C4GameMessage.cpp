@@ -124,16 +124,16 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			// Word wrap to cgo width
 			if (PictureDef)
 			{
-				if (!wdt) wdt = BoundBy<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
+				if (!wdt) wdt = Clamp<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
 				int32_t iUnbrokenTextWidth = ::GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
 				wdt = Min<int32_t>(wdt, iUnbrokenTextWidth+10);
 			}
 			else
 			{
 				if (!wdt)
-					wdt = BoundBy<int32_t>(cgo.Wdt-50, 50, 500);
+					wdt = Clamp<int32_t>(cgo.Wdt-50, 50, 500);
 				else
-					wdt = BoundBy<int32_t>(wdt, 10, cgo.Wdt-10);
+					wdt = Clamp<int32_t>(wdt, 10, cgo.Wdt-10);
 			}
 			iTextWdt = wdt * cgo.Zoom;
 			iTextHgt = ::GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
@@ -226,7 +226,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				// Word wrap to cgo width
 				StdStrBuf sText;
 				if (~dwFlags & C4GM_NoBreak)
-					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), BoundBy<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200), &sText, true);
+					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), Clamp<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200), &sText, true);
 				else
 					sText.Ref(Text);
 				// Adjust position by output boundaries
@@ -234,8 +234,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				int iTWdt,iTHgt;
 				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
 				// +0.5f for proper rounding; avoids oscillations near pixel border:
-				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
-				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
+				iTX = Clamp<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
+				iTY = Clamp<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
 				// Draw
 				pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 				                           cgo.Surface,

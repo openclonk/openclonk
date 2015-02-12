@@ -1324,7 +1324,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	NoScan=Game.C4S.Landscape.NoScan!=0;
 
 	// Scan settings
-	ScanSpeed=BoundBy(Width/500,2,15);
+	ScanSpeed=Clamp(Width/500,2,15);
 
 	// map to big surface and sectionize it
 	// (not for shaders though - they require continous textures)
@@ -1895,10 +1895,10 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	int iMapWidth, iMapHeight;
 	sfcMap->GetSurfaceSize(iMapWidth, iMapHeight);
 	// Clip desired map segment to map size
-	iMapX = BoundBy<int32_t>(iMapX, 0, iMapWidth - 1);
-	iMapY = BoundBy<int32_t>(iMapY, 0, iMapHeight - 1);
-	iMapWdt = BoundBy<int32_t>(iMapWdt, 0, iMapWidth - iMapX);
-	iMapHgt = BoundBy<int32_t>(iMapHgt, 0, iMapHeight - iMapY);
+	iMapX = Clamp<int32_t>(iMapX, 0, iMapWidth - 1);
+	iMapY = Clamp<int32_t>(iMapY, 0, iMapHeight - 1);
+	iMapWdt = Clamp<int32_t>(iMapWdt, 0, iMapWidth - iMapX);
+	iMapHgt = Clamp<int32_t>(iMapHgt, 0, iMapHeight - iMapY);
 	// get chunk size
 	int iChunkWidth = MapZoom, iChunkHeight = MapZoom;
 	// Scan map lines
@@ -1987,8 +1987,8 @@ bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, 
 	// No good parameters
 	if (!sfcMap || !dwpTextureUsage) return false;
 	// Clip desired map segment to map size
-	iMapX=BoundBy<int32_t>(iMapX,0,sfcMap->Wdt-1); iMapY=BoundBy<int32_t>(iMapY,0,sfcMap->Hgt-1);
-	iMapWdt=BoundBy<int32_t>(iMapWdt,0,sfcMap->Wdt-iMapX); iMapHgt=BoundBy<int32_t>(iMapHgt,0,sfcMap->Hgt-iMapY);
+	iMapX=Clamp<int32_t>(iMapX,0,sfcMap->Wdt-1); iMapY=Clamp<int32_t>(iMapY,0,sfcMap->Hgt-1);
+	iMapWdt=Clamp<int32_t>(iMapWdt,0,sfcMap->Wdt-iMapX); iMapHgt=Clamp<int32_t>(iMapHgt,0,sfcMap->Hgt-iMapY);
 	// Zero texture usage list
 	for (int32_t cnt=0; cnt<C4M_MaxTexIndex; cnt++) dwpTextureUsage[cnt]=0;
 	// Scan map pixels
@@ -2060,8 +2060,8 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	sfcMap->GetSurfaceSize(iMapWidth,iMapHeight);
 	Surface8->GetSurfaceSize(iLandscapeWidth,iLandscapeHeight);
 	// Clip map segment to map size
-	iMapX = BoundBy<int32_t>(iMapX, 0, iMapWidth - 1); iMapY = BoundBy<int32_t>(iMapY, 0, iMapHeight - 1);
-	iMapWdt = BoundBy<int32_t>(iMapWdt, 0, iMapWidth - iMapX); iMapHgt = BoundBy<int32_t>(iMapHgt, 0, iMapHeight - iMapY);
+	iMapX = Clamp<int32_t>(iMapX, 0, iMapWidth - 1); iMapY = Clamp<int32_t>(iMapY, 0, iMapHeight - 1);
+	iMapWdt = Clamp<int32_t>(iMapWdt, 0, iMapWidth - iMapX); iMapHgt = Clamp<int32_t>(iMapHgt, 0, iMapHeight - iMapY);
 	// No segment
 	if (!iMapWdt || !iMapHgt) return true;
 
@@ -2854,8 +2854,8 @@ bool C4Landscape::FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t m
 bool C4Landscape::FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid) const
 {
 	// Startpoint must be inside landscape
-	fx = BoundBy<int32_t>(fx, 0, Width - 1);
-	fy = BoundBy<int32_t>(fy, 0, Height - 1);
+	fx = Clamp<int32_t>(fx, 0, Width - 1);
+	fy = Clamp<int32_t>(fy, 0, Height - 1);
 	// Range to search, calculate bounds
 	const int32_t iPushRange = 500;
 	int32_t left = Max<int32_t>(0, fx - iPushRange), right = Min<int32_t>(Width - 1, fx + iPushRange),

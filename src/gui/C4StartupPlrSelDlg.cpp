@@ -1253,9 +1253,9 @@ bool C4StartupPlrColorPickerDlg::Picker::HandleMouseDown(int32_t x, int32_t y)
 	// Check if a drag starts or was originally started over a picker
 	else if (state == PS_DragHS || (state == PS_Idle && hsPickerRect.Contains(x, y)))
 	{
-		int h = BoundBy(x - hsPickerRect.x, 0, hsPickerRect.Wdt - 1);
+		int h = Clamp(x - hsPickerRect.x, 0, hsPickerRect.Wdt - 1);
 		assert(Inside(h, 0, 255));
-		int s = 255 - BoundBy(y - hsPickerRect.y, 0, hsPickerRect.Hgt - 1);
+		int s = 255 - Clamp(y - hsPickerRect.y, 0, hsPickerRect.Hgt - 1);
 		assert(Inside(s, 0, 255));
 		hsv = C4RGB(h, s, GetBlueValue(hsv));
 		UpdateVFacet(h, s);
@@ -1265,7 +1265,7 @@ bool C4StartupPlrColorPickerDlg::Picker::HandleMouseDown(int32_t x, int32_t y)
 	}
 	else if (state == PS_DragV || (state == PS_Idle && vPickerRect.Contains(x, y)))
 	{
-		int v = 255 - BoundBy(y - vPickerRect.y, 0, vPickerRect.Hgt - 1);
+		int v = 255 - Clamp(y - vPickerRect.y, 0, vPickerRect.Hgt - 1);
 		assert(Inside(v, 0, 255));
 		hsv = (hsv & 0xFFFFFF00) | v;
 		UpdatePreview();
@@ -1413,7 +1413,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeRight));
 	pBtn->SetToolTip(szTip);
 	caControl.ExpandLeft(-10);
-	C4P.OldPrefControl = BoundBy<int32_t>(C4P.OldPrefControl, 0, C4MaxControlSet-1);
+	C4P.OldPrefControl = Clamp<int32_t>(C4P.OldPrefControl, 0, C4MaxControlSet-1);
 	ctrl_name_lbl = new C4GUI::Label("CtrlName", ctrl_name_rect, ALeft, C4StartupFontClr, pSmallFont, false, false, true);
 	AddElement(ctrl_name_lbl);
 	UpdatePlayerControl();

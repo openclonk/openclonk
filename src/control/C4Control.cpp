@@ -159,7 +159,7 @@ void C4ControlSet::Execute() const
 		if (iByClient != C4ClientIDHost) break;
 		// adjust control rate
 		::Control.ControlRate += iData;
-		::Control.ControlRate = BoundBy<int32_t>(::Control.ControlRate, 1, C4MaxControlRate);
+		::Control.ControlRate = Clamp<int32_t>(::Control.ControlRate, 1, C4MaxControlRate);
 		Game.Parameters.ControlRate = ::Control.ControlRate;
 		// write back adjusted control rate to network settings
 		if (::Control.isCtrlHost() && !::Control.isReplay() && ::Control.isNetwork())

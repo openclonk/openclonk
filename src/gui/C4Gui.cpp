@@ -1012,7 +1012,7 @@ namespace C4GUI
 			tWdt+=6; tHgt+=4;
 			int32_t tX, tY;
 			if (y < cgo.Y+cgo.TargetY+tHgt+5) tY = Min<int32_t>(y+5, cgo.TargetY+cgo.Hgt-tHgt); else tY = y-tHgt-5;
-			tX = BoundBy<int32_t>(x-tWdt/2, cgo.TargetX+cgo.X, cgo.TargetX+cgo.Wdt-tWdt);
+			tX = Clamp<int32_t>(x-tWdt/2, cgo.TargetX+cgo.X, cgo.TargetX+cgo.Wdt-tWdt);
 			// draw tooltip box
 			pDraw->DrawBoxDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-2, C4GUI_ToolTipBGColor);
 			pDraw->DrawFrameDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-1, C4GUI_ToolTipFrameColor);

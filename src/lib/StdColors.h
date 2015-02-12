@@ -75,9 +75,9 @@ inline void ModulateClrA(DWORD &dwDst, DWORD dwMod) // modulate two color values
 inline void ModulateClrMOD2(DWORD &dwDst, DWORD dwMod) // clr1+clr2-0.5
 {
 	// signed color addition
-	dwDst = (BoundBy<int>(((int)(dwDst&0xff)+(dwMod&0xff)-0x7f)<<1,0,0xff)&0xff) |  // B
-	        (BoundBy<int>(((int)(dwDst&0xff00)+(dwMod&0xff00)-0x7f00)<<1,0,0xff00)&0xff00) | // G
-	        (BoundBy<int>(((int)(dwDst&0xff0000)+(dwMod&0xff0000)-0x7f0000)<<1,0,0xff0000)&0xff0000) | // R
+	dwDst = (Clamp<int>(((int)(dwDst&0xff)+(dwMod&0xff)-0x7f)<<1,0,0xff)&0xff) |  // B
+	        (Clamp<int>(((int)(dwDst&0xff00)+(dwMod&0xff00)-0x7f00)<<1,0,0xff00)&0xff00) | // G
+	        (Clamp<int>(((int)(dwDst&0xff0000)+(dwMod&0xff0000)-0x7f0000)<<1,0,0xff0000)&0xff0000) | // R
 	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
 }
 

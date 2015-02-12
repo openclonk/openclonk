@@ -433,7 +433,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateScoreLabel(C4PlayerInfo *pInfo)
 			iSym = pInfo->getLeagueRankSymbol();
 		if (iSym && !fShownCollapsed)
 		{
-			C4GUI::Icons eRankIcon = (C4GUI::Icons) (C4GUI::Ico_Rank1 + BoundBy<int32_t>(iSym-1, 0, C4GUI::Ico_Rank9-C4GUI::Ico_Rank1));
+			C4GUI::Icons eRankIcon = (C4GUI::Icons) (C4GUI::Ico_Rank1 + Clamp<int32_t>(iSym-1, 0, C4GUI::Ico_Rank9-C4GUI::Ico_Rank1));
 			pRankIcon->SetVisibility(true);
 			pRankIcon->SetIcon(eRankIcon);
 		}

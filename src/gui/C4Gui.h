@@ -837,7 +837,7 @@ namespace C4GUI
 		}
 		int32_t GetScrollByPos(int32_t iX, int32_t iY)
 		{
-			return BoundBy<int32_t>((fHorizontal ? iX-C4GUI_ScrollArrowWdt : iY-C4GUI_ScrollArrowHgt)-iScrollThumbSize/2, 0, GetMaxScroll());
+			return Clamp<int32_t>((fHorizontal ? iX-C4GUI_ScrollArrowWdt : iY-C4GUI_ScrollArrowHgt)-iScrollThumbSize/2, 0, GetMaxScroll());
 		}
 		bool IsScrolling() { return fScrolling; }
 

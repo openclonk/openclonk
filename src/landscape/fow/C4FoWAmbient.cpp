@@ -56,8 +56,8 @@ struct LightMapZoom {
 	bool operator()(int x, int y) const
 	{
 		// Landscape coordinates
-		const int lx = BoundBy(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
-		const int ly = BoundBy(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
+		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
+		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
 		// LightMap check
 		return ::Landscape.GetPixLight(::Landscape._GetPix(lx, ly));
 	}

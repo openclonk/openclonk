@@ -577,7 +577,7 @@ void C4PathFinder::EnableTransferZones(bool fEnabled)
 
 void C4PathFinder::SetLevel(int iLevel)
 {
-	Level = BoundBy(iLevel, 1, 10);
+	Level = Clamp(iLevel, 1, 10);
 }
 
 void C4PathFinder::Draw(C4TargetFacet &cgo)

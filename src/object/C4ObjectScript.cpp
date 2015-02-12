@@ -1538,7 +1538,7 @@ static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
 	// get menu
 	C4Menu *pMnu=Obj->Menu;
 	if (!pMnu || !pMnu->IsActive()) return false;
-	pMnu->SetSize(BoundBy<long>(iCols, 0, 50), BoundBy<long>(iRows, 0, 50));
+	pMnu->SetSize(Clamp<long>(iCols, 0, 50), Clamp<long>(iRows, 0, 50));
 	return true;
 }
 

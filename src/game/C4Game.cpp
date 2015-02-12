@@ -3583,7 +3583,7 @@ bool C4Game::SpeedUp()
 {
 	// As these functions work stepwise, there's the old maximum speed of 50.
 	// Use /fast to set to even higher speeds.
-	FrameSkip = BoundBy<int32_t>(FrameSkip + 1, 1, 50);
+	FrameSkip = Clamp<int32_t>(FrameSkip + 1, 1, 50);
 	FullSpeed = true;
 	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
 	return true;
@@ -3591,7 +3591,7 @@ bool C4Game::SpeedUp()
 
 bool C4Game::SlowDown()
 {
-	FrameSkip = BoundBy<int32_t>(FrameSkip - 1, 1, 50);
+	FrameSkip = Clamp<int32_t>(FrameSkip - 1, 1, 50);
 	if (FrameSkip == 1)
 		FullSpeed = false;
 	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
@@ -3601,7 +3601,7 @@ bool C4Game::SlowDown()
 void C4Game::SetMusicLevel(int32_t iToLvl)
 {
 	// change game music volume; multiplied by config volume for real volume
-	iMusicLevel = BoundBy<int32_t>(iToLvl, 0, 100);
+	iMusicLevel = Clamp<int32_t>(iToLvl, 0, 100);
 	Application.MusicSystem.SetVolume(Config.Sound.MusicVolume * iMusicLevel / 100);
 }
 

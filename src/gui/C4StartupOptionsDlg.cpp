@@ -43,7 +43,7 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	// draw frame
 	uint32_t dwClrHigh = C4StartupBtnBorderColor1, dwClrLow = C4StartupBtnBorderColor2;
 	if (fDown) Swap<uint32_t>(dwClrHigh, dwClrLow);
-	int32_t iIndent = BoundBy<int32_t>((rcBounds.Hgt-iTextHgt)/3, 2, 5);
+	int32_t iIndent = Clamp<int32_t>((rcBounds.Hgt-iTextHgt)/3, 2, 5);
 	float iDrawQuadTop[8] = { x0,y0, x1,y0, x1-iIndent,y0+iIndent, x0,y0+iIndent };
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
@@ -388,7 +388,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	C4Facet fctCtrlDefPic = ::GraphicsResource.fctKeyboard; // 
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
-	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlDefPic.Wdt);
+	int32_t iCtrlSetBtnWdt = Clamp<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlDefPic.Wdt);
 	int32_t iCtrlSetBtnHgt = fctCtrlDefPic.GetHeightByWidth(iCtrlSetBtnWdt);
 	iCtrlSetHMargin = (iCtrlSetWdt - iCtrlSetBtnWdt*iMaxControlSets) / (iMaxControlSets*2);
 	C4GUI::ComponentAligner caKeyboardSetSel(caArea.GetFromTop(2*iCtrlSetVMargin+iCtrlSetBtnHgt), iCtrlSetHMargin, iCtrlSetVMargin);

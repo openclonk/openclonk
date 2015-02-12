@@ -699,7 +699,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		int32_t iFS;
 		if ((iFS=atoi(pCmdPar)) == 0) return false;
 		// set frameskip and fullspeed flag
-		Game.FrameSkip=BoundBy<int32_t>(iFS,1,500);
+		Game.FrameSkip=Clamp<int32_t>(iFS,1,500);
 		Game.FullSpeed=true;
 		// start calculation immediatly
 		Application.NextTick();

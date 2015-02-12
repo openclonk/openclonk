@@ -477,7 +477,7 @@ static long FnDistance(C4PropList * _this, long iX1, long iY1, long iX2, long iY
 
 static long FnBoundBy(C4PropList * _this, long iVal, long iRange1, long iRange2)
 {
-	return BoundBy(iVal,iRange1,iRange2);
+	return Clamp(iVal,iRange1,iRange2);
 }
 
 static bool FnInside(C4PropList * _this, long iVal, long iRange1, long iRange2)

@@ -37,8 +37,8 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadeLight
 		float dy = y - light->getY();
 		float dist = sqrt(dx*dx+dy*dy);
 		float mult = Min(0.5f / light->getNormalSize(), 0.5f / dist);
-		float normX = BoundBy(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
-		float normY = BoundBy(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
+		float normX = Clamp(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
+		float normY = Clamp(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
 		if(shadeLight)  glColor3f(0.5f, normX, normY);
 		else            glColor3f(0.0f, 0.5f/1.5f, 0.5f/1.5f);
 	}

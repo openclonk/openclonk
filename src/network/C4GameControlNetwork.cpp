@@ -439,7 +439,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 	{
 		iAvgControlSendTime = (iAvgControlSendTime * 149 + iControlSendTime * 1000) / 150;
 		// now calculate the all-time optimum PreSend there is
-		int32_t iBestPreSend = BoundBy((iTargetFPS * iAvgControlSendTime) / 1000000 + 1, 1, 15);
+		int32_t iBestPreSend = Clamp((iTargetFPS * iAvgControlSendTime) / 1000000 + 1, 1, 15);
 		// fixed PreSend?
 		if (iTargetFPS <= 0) iBestPreSend = -iTargetFPS;
 		// Ha! Set it!

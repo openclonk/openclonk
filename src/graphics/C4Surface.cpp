@@ -168,8 +168,8 @@ void C4Surface::NoClip()
 
 void C4Surface::Clip(int iX, int iY, int iX2, int iY2)
 {
-	ClipX=BoundBy(iX,0,Wdt-1); ClipY=BoundBy(iY,0,Hgt-1);
-	ClipX2=BoundBy(iX2,0,Wdt-1); ClipY2=BoundBy(iY2,0,Hgt-1);
+	ClipX=Clamp(iX,0,Wdt-1); ClipY=Clamp(iY,0,Hgt-1);
+	ClipX2=Clamp(iX2,0,Wdt-1); ClipY2=Clamp(iY2,0,Hgt-1);
 }
 
 bool C4Surface::Create(int iWdt, int iHgt, bool, bool fIsRenderTarget, int MaxTextureSize)

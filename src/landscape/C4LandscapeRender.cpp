@@ -405,8 +405,8 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			// Maximum placement differences that make a difference in the result,  after which we are at the limits of
 			// what can be packed into a byte
 			const int maximumPlacementDifference = 40;
-			int horizontalBiasScaled = BoundBy(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
-			int verticalBiasScaled = BoundBy(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
+			int horizontalBiasScaled = Clamp(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
+			int verticalBiasScaled = Clamp(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
 
 			// Collect data to save per pixel
 			unsigned char data[C4LR_SurfaceCount * 4];

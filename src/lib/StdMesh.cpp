@@ -585,7 +585,7 @@ void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const
 
 		// Third: Only use the first few ones
 		assert(submesh.GetNumFaces() >= 1);
-		Faces.resize(BoundBy<unsigned int>(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5), 1, submesh.GetNumFaces()));
+		Faces.resize(Clamp<unsigned int>(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5), 1, submesh.GetNumFaces()));
 	}
 }
 
@@ -1044,7 +1044,7 @@ StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& 
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
-	position->Value = BoundBy(position->Value, Fix0, ftofix(animation.Length));
+	position->Value = Clamp(position->Value, Fix0, ftofix(animation.Length));
 	AnimationNode* child = new AnimationNode(&animation, position);
 	InsertAnimationNode(child, slot, sibling, weight);
 	return child;
@@ -1133,7 +1133,7 @@ void StdMeshInstance::SetAnimationPosition(AnimationNode* node, ValueProvider* p
 	delete node->Leaf.Position;
 	node->Leaf.Position = position;
 
-	position->Value = BoundBy(position->Value, Fix0, ftofix(node->Leaf.Animation->Length));
+	position->Value = Clamp(position->Value, Fix0, ftofix(node->Leaf.Animation->Length));
 
 	SetBoneTransformsDirty(true);
 }
@@ -1150,7 +1150,7 @@ void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* wei
 	assert(node->GetType() == AnimationNode::LinearInterpolationNode);
 	delete node->LinearInterpolation.Weight; node->LinearInterpolation.Weight = weight;
 
-	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
+	weight->Value = Clamp(weight->Value, Fix0, itofix(1));
 
 	SetBoneTransformsDirty(true);
 }
@@ -1570,7 +1570,7 @@ void StdMeshInstance::InsertAnimationNode(AnimationNode* node, int slot, Animati
 	      break;*/
 	Number2 = Number1 + 1;
 
-	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
+	weight->Value = Clamp(weight->Value, Fix0, itofix(1));
 
 	if (Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
 	if (sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
@@ -1672,7 +1672,7 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 	{
 		if (provider->Value != old_value)
 		{
-			provider->Value = BoundBy(provider->Value, min, max);
+			provider->Value = Clamp(provider->Value, min, max);
 			SetBoneTransformsDirty(true);
 		}
 

@@ -181,9 +181,9 @@ void C4Network2ClientListBox::ClientListItem::Update()
 		int iWait = ::Control.Network.ClientPerfStat(iClientID);
 		pPing->SetText(FormatString("%d ms", iWait).getData());
 		pPing->SetColor(C4RGB(
-		                  BoundBy(255-Abs(iWait)*5, 0, 255),
-		                  BoundBy(255-iWait*5, 0, 255),
-		                  BoundBy(255+iWait*5, 0, 255)));
+		                  Clamp(255-Abs(iWait)*5, 0, 255),
+		                  Clamp(255-iWait*5, 0, 255),
+		                  Clamp(255+iWait*5, 0, 255)));
 	}
 	// update activation status
 	const C4Client *pClient = GetClient(); if (!pClient) return;

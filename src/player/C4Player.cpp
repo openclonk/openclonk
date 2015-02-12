@@ -572,8 +572,8 @@ bool C4Player::ScenarioInit()
 	pty = Game.C4S.PlrStart[PlrStartIndex].Position[1];
 
 	// Zoomed position
-	if (ptx>-1) ptx = BoundBy<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackWdt-1 );
-	if (pty>-1) pty = BoundBy<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackHgt-1 );
+	if (ptx>-1) ptx = Clamp<int32_t>( ptx * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackWdt-1 );
+	if (pty>-1) pty = Clamp<int32_t>( pty * Game.C4S.Landscape.MapZoom.Evaluate(), 0, GBackHgt-1 );
 
 	// Standard position (PrefPosition)
 	if (ptx<0)
@@ -581,7 +581,7 @@ bool C4Player::ScenarioInit()
 		{
 			int32_t iMaxPos=Game.StartupPlayerCount;
 			// Map preferred position to available positions
-			int32_t iStartPos=BoundBy(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
+			int32_t iStartPos=Clamp(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
 			int32_t iPosition=iStartPos;
 			// Distribute according to availability
 			while (::Players.PositionTaken(iPosition))
@@ -593,7 +593,7 @@ bool C4Player::ScenarioInit()
 			}
 			Position=iPosition;
 			// Set x position
-			ptx=BoundBy(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);
+			ptx=Clamp(16+Position*(GBackWdt-32)/(iMaxPos-1),0,GBackWdt-16);
 		}
 
 	// All-random position
@@ -675,7 +675,7 @@ bool C4Player::SetWealth(int32_t iVal)
 {
 	if (iVal == Wealth) return true;
 
-	Wealth=BoundBy<int32_t>(iVal,0,10000);
+	Wealth=Clamp<int32_t>(iVal,0,10000);
 
 	::GameScript.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
@@ -1135,7 +1135,7 @@ void C4Player::ExecBaseProduction()
 		ProductionDelay=0; ProductionUnit++;
 		for (int32_t cnt=0; BaseProduction.GetID(cnt); cnt++)
 			if (BaseProduction.GetCount(cnt)>0)
-				if (ProductionUnit % BoundBy<int32_t>(11-BaseProduction.GetCount(cnt),1,10) ==0)
+				if (ProductionUnit % Clamp<int32_t>(11-BaseProduction.GetCount(cnt),1,10) ==0)
 					if (BaseMaterial.GetIDCount(BaseProduction.GetID(cnt)) < MaxBaseProduction)
 						BaseMaterial.IncreaseIDCount(BaseProduction.GetID(cnt));
 	}
@@ -1317,7 +1317,7 @@ void C4Player::NotifyOwnedObjects()
 
 bool C4Player::DoScore(int32_t iChange)
 {
-	CurrentScore = BoundBy<int32_t>( CurrentScore+iChange, -100000, 100000 );
+	CurrentScore = Clamp<int32_t>( CurrentScore+iChange, -100000, 100000 );
 	return true;
 }
 
@@ -1342,8 +1342,8 @@ void C4Player::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
 	float ViewportScrollBorder = Application.isEditor ? 0 : C4ViewportScrollBorder;
-	ViewX = BoundBy<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
-	ViewY = BoundBy<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
+	ViewX = Clamp<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
+	ViewY = Clamp<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
 }
 
 void C4Player::ClearControl()

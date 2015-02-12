@@ -177,8 +177,8 @@ bool C4TransferZone::GetEntryPoint(int32_t &rX, int32_t &rY, int32_t iToX, int32
 		else iToX=X+Wdt;
 	}
 	// Get closest adjacent point
-	rX=BoundBy<int32_t>(iToX,X-1,X+Wdt);
-	rY=BoundBy<int32_t>(iToY,Y-1,Y+Hgt);
+	rX=Clamp<int32_t>(iToX,X-1,X+Wdt);
+	rY=Clamp<int32_t>(iToY,Y-1,Y+Hgt);
 	// Search around zone for free
 	int32_t iX1=rX,iY1=rY,iX2=rX,iY2=rY;
 	int32_t iXIncr1=0,iYIncr1=-1,iXIncr2=0,iYIncr2=+1;

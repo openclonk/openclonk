@@ -92,14 +92,14 @@ void C4ToolsDlg::SetColorPattern(const char *szMaterial, const char *szTexture)
 
 bool C4ToolsDlg::SetGrade(int32_t iGrade)
 {
-	Grade = BoundBy(iGrade,C4TLS_GradeMin,C4TLS_GradeMax);
+	Grade = Clamp(iGrade,C4TLS_GradeMin,C4TLS_GradeMax);
 	NeedPreviewUpdate();
 	return true;
 }
 
 bool C4ToolsDlg::ChangeGrade(int32_t iChange)
 {
-	Grade = BoundBy(Grade+iChange,C4TLS_GradeMin,C4TLS_GradeMax);
+	Grade = Clamp(Grade+iChange,C4TLS_GradeMin,C4TLS_GradeMax);
 	NeedPreviewUpdate();
 	InitGradeCtrl();
 	return true;

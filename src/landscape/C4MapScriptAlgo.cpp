@@ -68,7 +68,7 @@ C4MapScriptAlgoRndChecker::C4MapScriptAlgoRndChecker(const C4PropList *props)
 	// Get MAPALGO_RndChecker properties
 	seed = props->GetPropertyInt(P_Seed);
 	if (!seed) seed = Random(65536);
-	set_percentage = BoundBy(props->GetPropertyInt(P_Ratio), 0, 100);
+	set_percentage = Clamp(props->GetPropertyInt(P_Ratio), 0, 100);
 	if (!set_percentage) set_percentage = 50;
 	checker_wdt = Abs(props->GetPropertyInt(P_Wdt));
 	if (!checker_wdt) checker_wdt = 10;

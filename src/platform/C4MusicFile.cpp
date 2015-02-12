@@ -112,7 +112,7 @@ void C4MusicFileMID::CheckIfPlaying()
 
 void C4MusicFileMID::SetVolume(int iLevel)
 {
-	FMUSIC_SetMasterVolume(mod, BoundBy((iLevel * 256) / 100, 0, 255));
+	FMUSIC_SetMasterVolume(mod, Clamp((iLevel * 256) / 100, 0, 255));
 }
 
 /* MOD */

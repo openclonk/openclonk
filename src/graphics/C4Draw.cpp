@@ -189,9 +189,9 @@ void C4GammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
 	{
 		int i2=128-i;
 		// interpolate linear ramps with the rises r1 and r
-		*pBuf ++=BoundBy(((c1+r1*i/128) *i2  +  (c2-r*i2/128) *i) <<1, MinGamma, 0xffff);
+		*pBuf ++=Clamp(((c1+r1*i/128) *i2  +  (c2-r*i2/128) *i) <<1, MinGamma, 0xffff);
 		// interpolate linear ramps with the rises r and r2
-		*pBuf2++=BoundBy(((c2+r*i/128) *i2  +  (c3-r2*i2/128) *i) <<1, MinGamma, 0xffff);
+		*pBuf2++=Clamp(((c2+r*i/128) *i2  +  (c3-r2*i2/128) *i) <<1, MinGamma, 0xffff);
 	}
 }
 
@@ -831,7 +831,7 @@ void C4Draw::Grayscale(C4Surface * sfcSfc, int32_t iOffset)
 		{
 			DWORD dwColor = sfcSfc->GetPixDw(xcnt,ycnt,false);
 			uint32_t r = GetRedValue(dwColor), g = GetGreenValue(dwColor), b = GetBlueValue(dwColor), a = dwColor >> 24;
-			int32_t gray = BoundBy<int32_t>((r + g + b) / 3 + iOffset, 0, 255);
+			int32_t gray = Clamp<int32_t>((r + g + b) / 3 + iOffset, 0, 255);
 			sfcSfc->SetPixDw(xcnt, ycnt, RGBA(gray, gray, gray, a));
 		}
 	}
@@ -901,7 +901,7 @@ void C4Draw::ApplyGamma()
 				// add offset
 				ChanOff[iChan]+=(int32_t) BYTE(dwGamma[iRamp*3+iCurve]>>(16-iChan*8)) - DefChanVal[iCurve];
 		// calc curve point
-		tGamma[iCurve]=C4RGB(BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
+		tGamma[iCurve]=C4RGB(Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
 	}
 	// calc ramp
 	Gamma.Set(tGamma[0], tGamma[1], tGamma[2]);

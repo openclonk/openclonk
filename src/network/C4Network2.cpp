@@ -1323,7 +1323,7 @@ void C4Network2::HandleActivateReq(int32_t iTick, C4Network2Client *pByClient)
 	if (isRunning())
 	{
 		// make a guess how much the client lags.
-		int32_t iLagFrames = BoundBy(pByClient->getMsgConn()->getPingTime() * Game.FPS / 500, 0, 100);
+		int32_t iLagFrames = Clamp(pByClient->getMsgConn()->getPingTime() * Game.FPS / 500, 0, 100);
 		if (iTick < Game.FrameCounter - iLagFrames - C4NetMaxBehind4Activation)
 			return;
 	}

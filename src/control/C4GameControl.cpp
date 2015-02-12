@@ -219,7 +219,7 @@ void C4GameControl::Default()
 	pRecord = NULL;
 	pPlayback = NULL;
 	SyncChecks.Clear();
-	ControlRate = BoundBy<int>(Config.Network.ControlRate, 1, C4MaxControlRate);
+	ControlRate = Clamp<int>(Config.Network.ControlRate, 1, C4MaxControlRate);
 	ControlTick = 0;
 	SyncRate = C4SyncCheckRate;
 	DoSync = false;

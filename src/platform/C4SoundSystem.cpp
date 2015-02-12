@@ -404,7 +404,7 @@ void C4SoundInstance::Execute()
 		// apply custom falloff distance
 		if (iFalloffDistance)
 		{
-			iAudibility = BoundBy<int32_t>(100 + (iAudibility - 100) * C4AudibilityRadius / iFalloffDistance, 0,100);
+			iAudibility = Clamp<int32_t>(100 + (iAudibility - 100) * C4AudibilityRadius / iFalloffDistance, 0,100);
 		}
 		iVol = iVol * iAudibility / 100;
 		iPan += pObj->AudiblePan;
@@ -433,12 +433,12 @@ void C4SoundInstance::Execute()
 				return;
 		// set volume & panning
 #if AUDIO_TK == AUDIO_TK_FMOD
-		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
-		FSOUND_SetPan(iChannel, BoundBy(256*(iPan+100)/200,0,255));
+		FSOUND_SetVolume(iChannel, Clamp(iVol / 100, 0, 255));
+		FSOUND_SetPan(iChannel, Clamp(256*(iPan+100)/200,0,255));
 #elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
 		//Mix_SetPanning(iChannel, ((100 + iPan) * 256) / 200, ((100 - iPan) * 256) / 200);
-		Mix_SetPanning(iChannel, BoundBy((100 - iPan) * 256 / 100, 0, 255), BoundBy((100 + iPan) * 256 / 100, 0, 255));
+		Mix_SetPanning(iChannel, Clamp((100 - iPan) * 256 / 100, 0, 255), Clamp((100 + iPan) * 256 / 100, 0, 255));
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
 		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));

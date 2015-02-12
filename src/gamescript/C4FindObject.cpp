@@ -191,7 +191,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		int index = 0;
 		if (Data.GetSize() >= 3)
-			index = BoundBy(Data[2].getInt(), 0, 1);
+			index = Clamp(Data[2].getInt(), 0, 1);
 		return new C4FindObjectActionTarget(Data[1].getObj(), index);
 	}
 

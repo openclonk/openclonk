@@ -51,7 +51,7 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
 
 static C4Void FnSetGravity(C4PropList * _this, long iGravity)
 {
-	::Landscape.Gravity = C4REAL100(BoundBy<long>(iGravity,-1000,1000));
+	::Landscape.Gravity = C4REAL100(Clamp<long>(iGravity,-1000,1000));
 	return C4Void();
 }
 
@@ -2383,7 +2383,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 
 /*static long FnSetSaturation(C4AulContext *ctx, long s)
   {
-  return pDraw->SetSaturation(BoundBy(s,0l,255l));
+  return pDraw->SetSaturation(Clamp(s,0l,255l));
   }*/
 
 // undocumented!

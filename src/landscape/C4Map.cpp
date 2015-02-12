@@ -86,7 +86,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
 	// Safeties
 	if (!sfcMap) return;
-	iPlayerNum=BoundBy<int32_t>(iPlayerNum,1,C4S_MaxPlayer);
+	iPlayerNum=Clamp<int32_t>(iPlayerNum,1,C4S_MaxPlayer);
 
 	// Set creator variables
 	MapBuf = sfcMap;
@@ -124,7 +124,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 		cy_curve=sin(fullperiod*period/100.0*(float)cx/(float)MapWdt
 		             +2.0*M_PI*phase/100.0) * amplitude/100.0;
 
-		cy=level0+BoundBy((int32_t)((float)maxrange*(cy_curve+cy_natural)),
+		cy=level0+Clamp((int32_t)((float)maxrange*(cy_curve+cy_natural)),
 		                  -maxrange,+maxrange);
 
 

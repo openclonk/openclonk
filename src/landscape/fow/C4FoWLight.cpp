@@ -102,9 +102,9 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	// Normals are obviously meant to be though of as signed, though,
 	// so the equation we want would be something like
 	//
-	//  R_new = BoundBy(R_old + R,       0.0, 1.0)
-	//  G_new = BoundBy(G_old + G - 0.5, 0.0, 1.0)
-	//  B_new = BoundBy(B_old + B - 0.5, 0.0, 1.0)
+	//  R_new = Clamp(R_old + R,       0.0, 1.0)
+	//  G_new = Clamp(G_old + G - 0.5, 0.0, 1.0)
+	//  B_new = Clamp(B_old + B - 0.5, 0.0, 1.0)
 	//
 	// It seems we can't get that directly though - glBlendFunc only talks
 	// about two operands. Even if we make two passes, we have to take
@@ -114,8 +114,8 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	// but allowing us to formulate the following approximation without
 	// overflows:
 	//
-	//  G_new = BoundBy(BoundBy(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
-	//  B_new = BoundBy(BoundBy(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
+	//  G_new = Clamp(Clamp(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
+	//  B_new = Clamp(Clamp(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
 
 	C4FoWDrawStrategy* pen;
 	if (onScreen) pen = new C4FoWDrawWireframeStrategy(this, onScreen);

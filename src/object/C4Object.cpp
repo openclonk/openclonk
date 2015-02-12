@@ -142,7 +142,7 @@ void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, i
 	// validity
 	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, ::MaterialMap.Num-1);
 	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
-	iBridgeTime = BoundBy<int32_t>(iBridgeTime, 0, 0xffff);
+	iBridgeTime = Clamp<int32_t>(iBridgeTime, 0, 0xffff);
 	// mask in this->Data
 	Data = (uint32_t(iBridgeTime) << 16) + (uint32_t(fMoveClonk) << 8) + (uint32_t(fWall) << 9) + iBridgeMaterial;
 }
@@ -1230,7 +1230,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	if (pEffects && Alive)
 		pEffects->DoDamage(this, iChange, iCause, iCausedByPlr);
 	// Do change
-	iChange = BoundBy<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
+	iChange = Clamp<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
 	// call to object
 	Call(PSF_EnergyChange,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedByPlr)));
@@ -1252,7 +1252,7 @@ void C4Object::UpdatLastEnergyLossCause(int32_t iNewCausePlr)
 void C4Object::DoBreath(int32_t iChange)
 {
 	// Do change
-	iChange = BoundBy<int32_t>(iChange, -Breath, GetPropertyInt(P_MaxBreath) - Breath);
+	iChange = Clamp<int32_t>(iChange, -Breath, GetPropertyInt(P_MaxBreath) - Breath);
 	Breath += iChange;
 	// call to object
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
@@ -1267,7 +1267,7 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 	if (Def->Oversize)
 		Con=Max<int32_t>(Con+iChange,0);
 	else
-		Con=BoundBy<int32_t>(Con+iChange,0,FullCon);
+		Con=Clamp<int32_t>(Con+iChange,0,FullCon);
 
 	// Update OCF
 	SetOCF();
@@ -1325,7 +1325,7 @@ void C4Object::DoExperience(int32_t change)
 
 	if (!Info) return;
 
-	Info->Experience=BoundBy<int32_t>(Info->Experience+change,0,MaxExperience);
+	Info->Experience=Clamp<int32_t>(Info->Experience+change,0,MaxExperience);
 
 	// Promotion check
 	if (Info->Experience<MaxExperience)
@@ -1874,7 +1874,7 @@ bool C4Object::SetPhase(int32_t iPhase)
 	C4PropList* pActionDef = GetAction();
 	if (!pActionDef) return false;
 	const int32_t length = pActionDef->GetPropertyInt(P_Length);
-	Action.Phase=BoundBy<int32_t>(iPhase,0,length);
+	Action.Phase=Clamp<int32_t>(iPhase,0,length);
 	Action.PhaseDelay = 0;
 	return true;
 }
@@ -2203,8 +2203,8 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 								float iTX,iTY;
 								int iTWdt,iTHgt;
 								::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
-								iTX = BoundBy<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
-								iTY = BoundBy<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
+								iTX = Clamp<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
+								iTY = Clamp<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
 								// Draw
 								pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
 								                           pOwner->ColorDw|0x7f000000,ACenter);
@@ -3820,7 +3820,7 @@ void C4Object::ExecAction()
 		// Vertical follow: If object moves out at top, assume it's being pushed upwards and the Clonk must run after it
 		if (GetY()-iPushDistance > say+sahgt && iTXDir) { if (iTXDir>0) sax+=sawdt/2; sawdt/=2; }
 		// Horizontal follow
-		iTargetX=BoundBy(GetX(),sax-iPushDistance,sax+sawdt-1+iPushDistance);
+		iTargetX=Clamp(GetX(),sax-iPushDistance,sax+sawdt-1+iPushDistance);
 		if (GetX()==iTargetX) xdir=0;
 		else { if (GetX()<iTargetX) xdir=+limit; if (GetX()>iTargetX) xdir=-limit; }
 		// Phase by XDir
@@ -3858,7 +3858,7 @@ void C4Object::ExecAction()
 		if (Action.ComDir==COMD_Right) fMove = +fWalk;
 		if (Action.ComDir==COMD_Left) fMove = -fWalk;
 
-		iTXDir = fMove + fWalk * BoundBy<int32_t>(iPullX-Action.Target->GetX(),-10,+10) / 10;
+		iTXDir = fMove + fWalk * Clamp<int32_t>(iPullX-Action.Target->GetX(),-10,+10) / 10;
 
 		// Push object
 		if (!Action.Target->Push(iTXDir,accel,false))
@@ -3894,7 +3894,7 @@ void C4Object::ExecAction()
 		}
 
 		// Move to pulling position
-		xdir = fMove + fWalk * BoundBy<int32_t>(iTargetX-GetX(),-10,+10) / 10;
+		xdir = fMove + fWalk * Clamp<int32_t>(iTargetX-GetX(),-10,+10) / 10;
 
 		// Phase by XDir
 		iPhaseAdvance=0;
@@ -4213,8 +4213,8 @@ void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 	// target pos (parallax)
 	float offX, offY, newzoom;
 	GetDrawPosition(cgo, iX, iY, cgo.Zoom, offX, offY, newzoom);
-	Audible = Max<int>(Audible, BoundBy(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100));
-	AudiblePan = BoundBy<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
+	Audible = Max<int>(Audible, Clamp(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100));
+	AudiblePan = Clamp<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
 }
 
 bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const
@@ -4790,7 +4790,7 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 	// move to destination angle
 	if (Abs(iDestAngle-GetR())>2)
 	{
-		rdir = itofix(BoundBy<int32_t>(iDestAngle-GetR(), -15,+15));
+		rdir = itofix(Clamp<int32_t>(iDestAngle-GetR(), -15,+15));
 		rdir/=(10000/iSpeed);
 	}
 	else rdir=0;

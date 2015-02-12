@@ -577,7 +577,7 @@ void StdCompilerINIRead::Word(int16_t &rShort)
 	int iNum = ReadNum();
 	if (iNum < MIN || iNum > MAX)
 		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-	rShort = BoundBy(iNum, MIN, MAX);
+	rShort = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Word(uint16_t &rShort)
 {
@@ -585,7 +585,7 @@ void StdCompilerINIRead::Word(uint16_t &rShort)
 	unsigned int iNum = ReadUNum();
 	if (iNum > MAX)
 		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-	rShort = BoundBy(iNum, MIN, MAX);
+	rShort = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(int8_t &rByte)
 {
@@ -593,7 +593,7 @@ void StdCompilerINIRead::Byte(int8_t &rByte)
 	int iNum = ReadNum();
 	if (iNum < MIN || iNum > MAX)
 		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-	rByte = BoundBy(iNum, MIN, MAX);
+	rByte = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(uint8_t &rByte)
 {
@@ -601,7 +601,7 @@ void StdCompilerINIRead::Byte(uint8_t &rByte)
 	unsigned int iNum = ReadUNum();
 	if (iNum > MAX)
 		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-	rByte = BoundBy(iNum, MIN, MAX);
+	rByte = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Boolean(bool &rBool)
 {

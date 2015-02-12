@@ -419,7 +419,7 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 				break;
 			case C4MCV_Zoom:
 				// store calculated zoom
-				Target.As<int32_t>()=BoundBy<int32_t>(C4MC_ZoomRes-IntPar,1,C4MC_ZoomRes*2);
+				Target.As<int32_t>()=Clamp<int32_t>(C4MC_ZoomRes-IntPar,1,C4MC_ZoomRes*2);
 				break;
 			case C4MCV_ScriptFunc:
 			{

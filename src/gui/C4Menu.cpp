@@ -737,7 +737,7 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 	if (Alignment & C4MN_Align_Right) X=cgoArea.Wdt-2*C4SymbolSize-rcBounds.Wdt;
 	if (Alignment & C4MN_Align_Top) Y=C4SymbolSize;
 	if (Alignment & C4MN_Align_Bottom) Y=cgoArea.Hgt-C4SymbolSize-rcBounds.Hgt;
-	if (Alignment & C4MN_Align_Free) { X=BoundBy<int32_t>(X,0,cgoArea.Wdt-rcBounds.Wdt); Y=BoundBy<int32_t>(Y,0,cgoArea.Hgt-rcBounds.Hgt); }
+	if (Alignment & C4MN_Align_Free) { X=Clamp<int32_t>(X,0,cgoArea.Wdt-rcBounds.Wdt); Y=Clamp<int32_t>(Y,0,cgoArea.Hgt-rcBounds.Hgt); }
 	// Centered (due to small viewport size)
 	if (rcBounds.Wdt>cgoArea.Wdt-2*C4SymbolSize) X=(cgoArea.Wdt-rcBounds.Wdt)/2;
 	if (rcBounds.Hgt>cgoArea.Hgt-2*C4SymbolSize) Y=(cgoArea.Hgt-rcBounds.Hgt)/2;

@@ -524,16 +524,16 @@ void C4Viewport::AdjustPosition()
 		}
 		
 		// scroll range
-		targetCenterViewX = BoundBy(targetCenterViewX, targetCenterViewX - scrollRange, targetCenterViewX + scrollRange);
-		targetCenterViewY = BoundBy(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
+		targetCenterViewX = Clamp(targetCenterViewX, targetCenterViewX - scrollRange, targetCenterViewX + scrollRange);
+		targetCenterViewY = Clamp(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
 		// bounds
-		targetCenterViewX = BoundBy(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, GBackWdt - ViewWdt/Zoom/2 + extraBoundsX);
-		targetCenterViewY = BoundBy(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, GBackHgt - ViewHgt/Zoom/2 + extraBoundsY);
+		targetCenterViewX = Clamp(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, GBackWdt - ViewWdt/Zoom/2 + extraBoundsX);
+		targetCenterViewY = Clamp(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, GBackHgt - ViewHgt/Zoom/2 + extraBoundsY);
 
 		targetViewX = targetCenterViewX - ViewWdt/Zoom/2 + viewOffsX;
 		targetViewY = targetCenterViewY - ViewHgt/Zoom/2 + viewOffsY;
 		// smooth
-		int32_t smooth = BoundBy<int32_t>(Config.General.ScrollSmooth, 1, 50);
+		int32_t smooth = Clamp<int32_t>(Config.General.ScrollSmooth, 1, 50);
 		ScrollView((targetViewX - viewX) / smooth, (targetViewY - viewY) / smooth);
 	}
 
@@ -692,7 +692,7 @@ void C4Viewport::SetViewX(float x)
 		}
 		else
 		{
-			viewX = BoundBy(x, 0.0f, GBackWdt - ViewWdt / Zoom);
+			viewX = Clamp(x, 0.0f, GBackWdt - ViewWdt / Zoom);
 		}
 	}
 
@@ -711,7 +711,7 @@ void C4Viewport::SetViewY(float y)
 		}
 		else
 		{
-			viewY = BoundBy(y, 0.0f, GBackHgt - ViewHgt / Zoom);
+			viewY = Clamp(y, 0.0f, GBackHgt - ViewHgt / Zoom);
 		}
 	}
 
@@ -1035,10 +1035,10 @@ int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int
 	{
 		float distanceToCenterOfViewport = Distance(cvp->GetViewCenterX(),cvp->GetViewCenterY(),iX,iY);
 		iAudible = Max( iAudible,
-		                BoundBy<int32_t>(100-100*distanceToCenterOfViewport/C4AudibilityRadius,0,100) );
+		                Clamp<int32_t>(100-100*distanceToCenterOfViewport/C4AudibilityRadius,0,100) );
 		*iPan += (iX-(cvp->GetViewCenterX())) / 5;
 	}
-	*iPan = BoundBy<int32_t>(*iPan, -100, 100);
+	*iPan = Clamp<int32_t>(*iPan, -100, 100);
 	return iAudible;
 }
 
@@ -1123,7 +1123,7 @@ void C4ViewportList::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 		if (::MouseControl.IsViewport(cvp))
 			::MouseControl.Move( iButton,
-			                     BoundBy<int32_t>(iX-cvp->OutX,0,cvp->ViewWdt-1),
-			                     BoundBy<int32_t>(iY-cvp->OutY,0,cvp->ViewHgt-1),
+			                     Clamp<int32_t>(iX-cvp->OutX,0,cvp->ViewWdt-1),
+			                     Clamp<int32_t>(iY-cvp->OutY,0,cvp->ViewHgt-1),
 			                     dwKeyParam );
 }

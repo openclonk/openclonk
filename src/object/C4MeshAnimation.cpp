@@ -506,7 +506,7 @@ bool C4ValueProviderRDir::Execute()
 
 	C4Real val = (Object->rdir - MinRDir) / (MaxRDir - MinRDir);
 
-	Value = Begin + (End - Begin) * BoundBy<C4Real>(val, itofix(0), itofix(1));
+	Value = Begin + (End - Begin) * Clamp<C4Real>(val, itofix(0), itofix(1));
 	return true;
 }
 
@@ -536,7 +536,7 @@ bool C4ValueProviderAbsRDir::Execute()
 
 	C4Real val = (Abs(Object->rdir) - MinRDir) / (MaxRDir - MinRDir);
 
-	Value = Begin + (End - Begin) * BoundBy<C4Real>(val, itofix(0), itofix(1));
+	Value = Begin + (End - Begin) * Clamp<C4Real>(val, itofix(0), itofix(1));
 	return true;
 }
 

@@ -99,7 +99,7 @@ CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
 		TIMECAPS tc;
 		timeGetDevCaps(&tc, sizeof(tc));
 		// Establish minimum resolution
-		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
+		uCriticalTimerResolution = Clamp(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
 		timeBeginPeriod(uCriticalTimerResolution);
 	}
 	iTimePeriod++;

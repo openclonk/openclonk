@@ -358,7 +358,7 @@ namespace C4GUI
 		// change scrolling within max range
 		int32_t iAvailableTabSpace = rcBounds.Wdt;
 		int32_t iScrollPinSize = GetTopSize();
-		iCaptionScrollPos = BoundBy<int32_t>(iCaptionScrollPos + iDir*iAvailableTabSpace/2, 0, iCaptionLengthTotal - iAvailableTabSpace + iScrollPinSize);
+		iCaptionScrollPos = Clamp<int32_t>(iCaptionScrollPos + iDir*iAvailableTabSpace/2, 0, iCaptionLengthTotal - iAvailableTabSpace + iScrollPinSize);
 		UpdateScrolling();
 	}
 
