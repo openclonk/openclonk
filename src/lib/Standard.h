@@ -167,7 +167,9 @@ inline int ssprintf(char(&str)[N], const char *fmt, ...)
 {
 	va_list args; va_start(args, fmt);
 	int m = vsnprintf(str, N, fmt, args);
-	if (m >= N) { m = N-1; str[m] = 0; }
+	// Quick exit if vsnprintf failed
+	if (m < 0) return m;
+	if (static_cast<size_t>(m) >= N) { m = N-1; str[m] = 0; }
 	return m;
 }
 
