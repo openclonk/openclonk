@@ -161,8 +161,9 @@ inline int osprintf(char *str, const char *fmt, ...)
 
 // secure sprintf
 #define sprintf ssprintf
+template <size_t N> inline int ssprintf(char(&str)[N], const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
 template <size_t N>
-inline int ssprintf(char(&str)[N], const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O
+inline int ssprintf(char(&str)[N], const char *fmt, ...)
 {
 	va_list args; va_start(args, fmt);
 	int m = vsnprintf(str, N, fmt, args);
