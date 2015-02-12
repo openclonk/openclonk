@@ -159,22 +159,14 @@ inline int osprintf(char *str, const char *fmt, ...)
 	return vsprintf(str, fmt, args);
 }
 
-// wrapper to detect "char *"
-template <typename T> struct NoPointer { static void noPointer() { } };
-template <>  struct NoPointer<char *> { };
-
 // secure sprintf
 #define sprintf ssprintf
-template <typename T>
-inline int ssprintf(T &str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
-template <typename T>
-inline int ssprintf(T &str, const char *fmt, ...)
+template <size_t N>
+inline int ssprintf(char(&str)[N], const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O
 {
-	NoPointer<T>::noPointer();
-	int n = sizeof(str);
 	va_list args; va_start(args, fmt);
-	int m = vsnprintf(str, n, fmt, args);
-	if (m >= n) { m = n-1; str[m] = 0; }
+	int m = vsnprintf(str, N, fmt, args);
+	if (m >= N) { m = N-1; str[m] = 0; }
 	return m;
 }
 
