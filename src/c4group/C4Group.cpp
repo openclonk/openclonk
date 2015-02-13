@@ -551,9 +551,7 @@ bool C4Group::Open(const char *szGroupName, bool fCreate)
 	while (!FileExists(szRealGroup));
 
 	// Open mother and child in exclusive mode
-	C4Group *pMother;
-	if (!(pMother=new C4Group))
-		return Error("Open: mem");
+	C4Group *pMother = new C4Group;
 	pMother->SetStdOutput(StdOutput);
 	if (!pMother->Open(szRealGroup))
 		{ Clear(); Error(pMother->ErrorString); delete pMother; return false; }
@@ -705,7 +703,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 	if (centry) { centry->Status = C4GroupEntry::C4GRES_Deleted; Head.Entries--; }
 
 	// Allocate memory for new entry
-	if (!(nentry=new C4GroupEntry)) return false; //...theoretically, delete Hold buffer here
+	nentry = new C4GroupEntry;
 
 	// Find end of list
 	for (lentry=FirstEntry; lentry && lentry->Next; lentry=lentry->Next) {}
@@ -1903,7 +1901,7 @@ bool C4Group::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize,
 	// Access entry, allocate buffer, read data
 	(*lpbpBuf)=NULL; if (ipSize) *ipSize=0;
 	if (!AccessEntry(szEntryName,&size)) return Error("LoadEntry: Not found");
-	if (! ((*lpbpBuf)=new char[size+iAppendZeros]) ) return Error("LoadEntry: Insufficient memory");
+	*lpbpBuf = new char[size+iAppendZeros];
 	if (!Read(*lpbpBuf,size))
 	{
 		delete [] (*lpbpBuf); *lpbpBuf = NULL;
