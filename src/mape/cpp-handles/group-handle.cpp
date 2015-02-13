@@ -91,16 +91,10 @@ gboolean c4_group_handle_read(C4GroupHandle* handle, gpointer buffer, gsize size
   return HANDLE_TO_GROUP(handle)->Read(buffer, size);
 }
 
-C4GroupHandleStatus c4_group_handle_get_status(C4GroupHandle* handle)
+gboolean c4_group_handle_is_folder(C4GroupHandle* handle)
 {
-  int status = HANDLE_TO_GROUP(handle)->GetStatus();
-  switch(status)
-  {
-  case GRPF_Inactive: return C4_GROUP_HANDLE_INACTIVE;
-  case GRPF_File: return C4_GROUP_HANDLE_FILE;
-  case GRPF_Folder: return C4_GROUP_HANDLE_FOLDER;
-  default: g_assert_not_reached(); return C4_GROUP_HANDLE_INACTIVE;
-  }
+	C4Group *group = HANDLE_TO_GROUP(handle);
+	return group->IsOpen() && !group->IsPacked();
 }
 
 } /* extern "C" */
