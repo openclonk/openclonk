@@ -2012,12 +2012,6 @@ C4Group* C4Group::GetMother()
 	return Mother;
 }
 
-
-int C4Group::GetStatus()
-{
-	return Status;
-}
-
 bool C4Group::CloseExclusiveMother()
 {
 	if (Mother && ExclusiveChild)

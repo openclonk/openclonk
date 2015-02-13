@@ -247,7 +247,6 @@ public:
 	size_t EntrySize(const char *szWildCard=NULL);
 	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
 	unsigned int EntryCRC32(const char *szWildCard=NULL);
-	int GetStatus();
 	inline bool IsOpen() { return Status != GRPF_Inactive; }
 	C4Group *GetMother();
 	inline bool IsPacked() { return Status == GRPF_File; }
