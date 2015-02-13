@@ -2231,30 +2231,6 @@ bool C4Group::OpenMother()
 	return true;
 }
 
-void C4Group::PrintInternals(const char *szIndent)
-{
-	if (!szIndent) szIndent = "";
-	printf("%sHead.id: '%s'\n", szIndent, Head.id);
-	printf("%sHead.Ver1: %d\n", szIndent, Head.Ver1);
-	printf("%sHead.Ver2: %d\n", szIndent, Head.Ver2);
-	printf("%sHead.Entries: %d\n", szIndent, Head.Entries);
-	for (C4GroupEntry * p = FirstEntry; p; p = p->Next)
-	{
-		printf("%sEntry '%s':\n", szIndent, p->FileName);
-		printf("%s  Packed: %d\n", szIndent, p->Packed);
-		printf("%s  ChildGroup: %d\n", szIndent, p->ChildGroup);
-		printf("%s  Size: %d\n", szIndent, p->Size);
-		printf("%s  Offset: %d\n", szIndent, p->Offset);
-		printf("%s  Executable: %d\n", szIndent, p->Executable);
-		if (p->ChildGroup)
-		{
-			C4Group hChildGroup;
-			if (hChildGroup.OpenAsChild(this, p->FileName))
-				hChildGroup.PrintInternals(FormatString("%s%s", szIndent, "    ").getData());
-		}
-	}
-}
-
 int C4Group::PreCacheEntries(const char *szSearchPattern)
 {
 	assert(szSearchPattern);

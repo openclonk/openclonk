@@ -253,7 +253,6 @@ public:
 	inline bool IsPacked() { return Status == GRPF_File; }
 	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
-	void PrintInternals(const char *szIndent=NULL);
 	int PreCacheEntries(const char *szSearchPattern); // pre-load entries to memory. return number of loaded entries.
 
 	const C4GroupHeader &GetHeader() const { return Head; }

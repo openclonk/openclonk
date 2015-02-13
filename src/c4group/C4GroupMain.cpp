@@ -88,6 +88,33 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 	printf("%d Entries, %d Bytes\n", file_count, byte_count);
 }
 
+void PrintGroupInternals(C4Group &grp, int indent_level = 0)
+{
+	const C4GroupHeader &head = grp.GetHeader();
+	int indent = indent_level * 4;
+
+	printf("%*sHead.id: '%s'\n", indent, "", head.id);
+	printf("%*sHead.Ver1: %d\n", indent, "", head.Ver1);
+	printf("%*sHead.Ver2: %d\n", indent, "", head.Ver2);
+	printf("%*sHead.Entries: %d\n", indent, "", head.Entries);
+	for (const C4GroupEntry * p = grp.GetFirstEntry(); p; p = p->Next)
+	{
+		printf("%*sEntry '%s':\n", indent, "", p->FileName);
+		printf("%*s  Packed: %d\n", indent, "", p->Packed);
+		printf("%*s  ChildGroup: %d\n", indent, "", p->ChildGroup);
+		printf("%*s  Size: %d\n", indent, "", p->Size);
+		printf("%*s  Offset: %d\n", indent, "", p->Offset);
+		printf("%*s  Executable: %d\n", indent, "", p->Executable);
+		if (p->ChildGroup != 0)
+		{
+			C4Group hChildGroup;
+			if (hChildGroup.OpenAsChild(&grp, p->FileName))
+				PrintGroupInternals(hChildGroup, indent_level + 1);
+		}
+	}
+}
+
+
 bool ProcessGroup(const char *FilenamePar)
 {
 	C4Group hGroup;
@@ -297,7 +324,7 @@ bool ProcessGroup(const char *FilenamePar)
 						}
 						break;
 					case 'z':
-						hGroup.PrintInternals();
+						PrintGroupInternals(hGroup);
 						break;
 						// Undefined
 					default:
