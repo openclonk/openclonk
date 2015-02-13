@@ -199,7 +199,6 @@ public:
 	bool Rename(const char *szFile, const char *szNewName);
 	bool Sort(const char *szSortList);
 	bool SortByList(const char **ppSortList, const char *szFilename=NULL);
-	bool View(const char *szFiles);
 	bool AccessEntry(const char *szWildCard,
 	                 size_t *iSize=NULL, char *sFileName=NULL,
 	                 bool NeedsToBeAGroup = false);
@@ -256,6 +255,9 @@ public:
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
 	void PrintInternals(const char *szIndent=NULL);
 	int PreCacheEntries(const char *szSearchPattern); // pre-load entries to memory. return number of loaded entries.
+
+	const C4GroupHeader &GetHeader() const { return Head; }
+	const C4GroupEntry *GetFirstEntry() const { return FirstEntry; }
 
 protected:
 	void Init();

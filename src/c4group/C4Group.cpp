@@ -1241,48 +1241,6 @@ bool C4Group::RewindFilePtr()
 	return true;
 }
 
-bool C4Group::View(const char *szFiles)
-{
-	C4GroupEntry *centry;
-	int fcount=0,bcount=0; // Virtual counts
-	int maxfnlen=0;
-
-	if (!StdOutput) return false;
-
-	// Calculate group file crc
-	uint32_t crc = 0;
-	GetFileCRC(GetFullName().getData(), &crc);
-
-	// Display list
-	ResetSearch();
-	while ((centry=SearchNextEntry(szFiles)))
-	{
-		fcount++;
-		bcount+=centry->Size;
-		maxfnlen=Max<int>(maxfnlen, static_cast<int>(SLen(centry->FileName)));
-	}
-	printf("Version: %d.%d  CRC: %u (%X)\n",
-	       Head.Ver1,Head.Ver2,
-	       crc, crc);
-	ResetSearch();
-	while ((centry=SearchNextEntry(szFiles)))
-	{
-		printf("%*s %8d Bytes",
-		       maxfnlen,
-		       centry->FileName,
-		       centry->Size);
-
-		if (centry->ChildGroup)
-			printf(" (Group)");
-		if (centry->Executable)
-			printf(" (Executable)");
-		printf("\n");
-	}
-	printf("%d Entries, %d Bytes\n",fcount,bcount);
-
-	return true;
-}
-
 bool C4Group::Merge(const char *szFolders)
 {
 	bool fMove = true;

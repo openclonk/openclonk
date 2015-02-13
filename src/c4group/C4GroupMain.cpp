@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -61,9 +61,53 @@ bool EraseItemSafe(const char *szFilename)
 	return false;
 }
 
+void DisplayGroup(const C4Group &grp, const char *filter = NULL)
+{
+	const C4GroupHeader &head = grp.GetHeader();
+	
+	printf("Version: %d.%d  ", head.Ver1, head.Ver2);
+
+	uint32_t crc = 0;
+	bool crc_valid = GetFileCRC(grp.GetFullName().getData(), &crc);
+	if (crc_valid)
+		printf("CRC: %u (%X)\n", crc, crc);
+	else
+		printf("CRC: <error accessing file>\n");
+
+	// Find maximum file name length (matching filter)
+	size_t max_fn_len = 0;
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	{
+		if (filter == NULL || WildcardMatch(filter, entry->FileName))
+			max_fn_len = std::max(max_fn_len, strlen(entry->FileName));
+	}
+
+	// List files
+	size_t file_count = 0;
+	size_t byte_count = 0;
+	for (const C4GroupEntry *entry = grp.GetFirstEntry(); entry != NULL; entry = entry->Next)
+	{
+		if (filter != NULL && !WildcardMatch(filter, entry->FileName))
+			continue;
+
+		printf("%*s %8d Bytes",
+			max_fn_len,
+			entry->FileName,
+			entry->Size);
+		if (entry->ChildGroup != 0)
+			printf(" (Group)");
+		if (entry->Executable != 0)
+			printf(" (Executable)");
+		printf("\n");
+
+		++file_count;
+		byte_count += entry->Size;
+	}
+	printf("%d Entries, %d Bytes\n", file_count, byte_count);
+}
+
 bool ProcessGroup(const char *FilenamePar)
 {
-
 	C4Group hGroup;
 	hGroup.SetStdOutput(!fQuiet);
 	bool fDeleteGroup = false;
@@ -84,9 +128,7 @@ bool ProcessGroup(const char *FilenamePar)
 		// No commands: display contents
 		if (iFirstCommand >= argc)
 		{
-			hGroup.SetStdOutput(true);
-			hGroup.View("*");
-			hGroup.SetStdOutput(!fQuiet);
+			DisplayGroup(hGroup);
 		}
 		// Process commands
 		else
@@ -117,17 +159,15 @@ bool ProcessGroup(const char *FilenamePar)
 						break;
 						// View
 					case 'l':
-						hGroup.SetStdOutput(true);
 						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
 						{
-							hGroup.View("*");
+							DisplayGroup(hGroup);
 						}
 						else
 						{
-							hGroup.View(argv[iArg + 1]);
+							DisplayGroup(hGroup, argv[iArg + 1]);
 							iArg++;
 						}
-						hGroup.SetStdOutput(!fQuiet);
 						break;
 						// Pack
 					case 'p':
