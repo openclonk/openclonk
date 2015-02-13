@@ -22,11 +22,13 @@ public func NoConstructionFlip() { return true; }
 /*-- Interaction --*/
 
 public func IsInteractable(object clonk)
-	{
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) return false;
-	if (GetCon() < 100) return false;
-	return !Hostile(GetOwner(), clonk->GetOwner());
-	}
+{
+	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) 
+		return false;
+	if (GetCon() < 100) 
+		return false;
+	return !Hostile(GetOwner(), clonk->GetOwner());	
+}
 
 public func GetInteractionMetaInfo(object clonk)
 {

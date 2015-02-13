@@ -27,11 +27,12 @@
 	according to {obj, cons_amount, priority}.
 	
 	OPEN TODOS:
-	 * Remove all the if (!link) checks, they are not needed in principle but 
-	   errors arise when they are removed.
+	 * Remove all the if (!link) checks, they are not needed in principle but errors arise when they are removed.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
-	 * Implement network separation on hostility changes.
-	 * Fix a bug which sometimes appears on deletion of a complicated network. (First reproduce reliably).
+	 * Flag library documentation.
+	 * Flag markers sometimes not updated (e.g. Gem Grabbers).
+	 * Move network merging from flag to power library.
+	 * Power visuals of elevator show need while power is available.
 
 	@author Zapper, Maikel
 */

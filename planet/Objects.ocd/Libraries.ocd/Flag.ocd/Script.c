@@ -2,6 +2,11 @@
 	Flag Library
 	The flagpoles mark the area a player owns. It also serves as an energy transmitter.
 	
+	
+	Important notes when including this library:
+	 * The object including this library should return _inherited(...) in the
+	   Construction, Initialize and Destruction callback if overloaded.
+	
 	@author Zapper, Maikel
 */
 
@@ -354,6 +359,8 @@ private func ClearFlagMarkers()
 // Engine callback: owner of the flag has changed.
 protected func OnOwnerChanged(int new_owner, int old_owner)
 {
+	// Debugging logs.
+	//Log("FLAG - OnOwnerChanged(): flag = %v, new_owner = %d, old_owner = %d", this, new_owner, old_owner);
 	// Reassign owner of flag markers for correct color.
 	for (var marker in lib_flag.range_markers)
 	{
@@ -371,7 +378,7 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 protected func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
 {
 	// Debugging logs.
-	//Log("FLAG - OnHostilityChange(): player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", player1, player2, hostile, old_hostility);
+	//Log("FLAG - OnHostilityChange(): flag = %v, player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", this, player1, player2, hostile, old_hostility);
 	// Redraw radiuses of all flags.
 	RedrawFlagRadius();
 	// Refresh the ownership of the flag's surroundings.
@@ -385,7 +392,7 @@ protected func OnHostilityChange(int player1, int player2, bool hostile, bool ol
 protected func OnTeamSwitch(int player, int new_team, int old_team)
 {
 	// Debugging logs.
-	//Log("FLAG - OnTeamSwitch(): player = %d, new_team = %d, old_team = %d", player, new_team, old_team);
+	//Log("FLAG - OnTeamSwitch(): flag = %v, player = %d, new_team = %d, old_team = %d", this, player, new_team, old_team);
 	// Redraw radiuses of all flags.
 	RedrawFlagRadius();
 	// Refresh the ownership of the flag's surroundings.

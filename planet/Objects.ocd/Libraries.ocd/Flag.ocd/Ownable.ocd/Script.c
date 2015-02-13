@@ -15,7 +15,13 @@ protected func Initialize()
 }
 
 // This object is affected by ownership radiuses.
-public func CanBeOwned() { return true; }
+public func CanBeOwned() 
+{ 
+	// Flagpoles should not affect the ownership of other flagpoles, so
+	// return false for objects which include both the flag and ownable
+	// library. Return true otherwise.
+	return !this->~IsFlagpole();
+}
 
 // Callback from the engine: 
 public func OnOwnerChanged(int new_owner, int old_owner)
