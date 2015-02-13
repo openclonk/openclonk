@@ -112,19 +112,23 @@ public:
 
 #pragma pack (pop)
 
-const int C4GRES_InGroup  = 0,
-          C4GRES_OnDisk   = 1,
-          C4GRES_InMemory = 2,
-          C4GRES_Deleted  = 3;
-
 class C4GroupEntry: public C4GroupEntryCore
 {
 public:
 	C4GroupEntry();
 	~C4GroupEntry();
+
+	enum EntryStatus
+	{
+		C4GRES_InGroup,
+		C4GRES_OnDisk,
+		C4GRES_InMemory,
+		C4GRES_Deleted
+	};
+
 public:
 	char DiskPath[_MAX_PATH + 1];
-	int Status;
+	EntryStatus Status;
 	bool DeleteOnDisk;
 	bool HoldBuffer;
 	bool BufferIsStdbuf;
@@ -135,18 +139,21 @@ public:
 	void Set(const DirectoryIterator & iter, const char * szPath);
 };
 
-const int GRPF_Inactive=0,
-          GRPF_File=1,
-          GRPF_Folder=2;
-
-class C4Group: public CStdStream
+class C4Group : public CStdStream
 {
 public:
 	C4Group();
 	~C4Group();
 
 protected:
-	int Status;
+	enum Status
+	{
+		GRPF_Inactive,
+		GRPF_File,
+		GRPF_Folder
+	};
+
+	Status Status;
 	char FileName[_MAX_PATH+1];
 	// Parent status
 	C4Group *Mother;
@@ -270,7 +277,7 @@ protected:
 	bool SetFilePtr(int iOffset);
 	bool RewindFilePtr();
 	bool AdvanceFilePtr(int iOffset, C4Group *pByChild=NULL);
-	bool AddEntry(int status,
+	bool AddEntry(C4GroupEntry::EntryStatus status,
 	              bool childgroup,
 	              const char *fname,
 	              long size,
