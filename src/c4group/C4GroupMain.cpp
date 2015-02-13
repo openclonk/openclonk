@@ -16,24 +16,6 @@
 
 /* C4Group command line executable */
 
-// Version    1.0 November 1997
-//            1.1 November 1997
-//            1.2 February 1998
-//            1.3 March    1998
-//            1.4 April    1998
-//            1.5 May      1998
-//            1.6 November 1998
-//            1.7 December 1998
-//            1.8 February 1999
-//            1.9 May      1999
-//            2.0 June     1999
-//            2.6 March    2001
-//            2.7 June     2001
-//            2.8 June           2002
-//         4.95.0 November 2003
-//         4.95.4 July     2005 PORT/HEAD mixmax
-//         4.95.4 September 2005 Unix-flavour
-
 #include <C4Include.h>
 
 #include <C4Group.h>
