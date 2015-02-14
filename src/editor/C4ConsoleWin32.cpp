@@ -1016,8 +1016,13 @@ void C4ToolsDlg::UpdateTextures()
 		{
 			if (!::TextureMap.GetIndex(Material, szTexture, false))
 			{
-				fAnyEntry = true;
-				SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,GetWideLPARAM(szTexture));
+				// hide normal maps from texture selection
+				// theoretically, they could be used for drawing but they clutter the list and they don't look good
+				if (!WildcardMatch("*_NRM", szTexture))
+				{
+					fAnyEntry = true;
+					SendDlgItemMessage(state->hDialog, IDC_COMBOTEXTURE, CB_INSERTSTRING, 0, GetWideLPARAM(szTexture));
+				}
 			}
 		}
 	// separator
