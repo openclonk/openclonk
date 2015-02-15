@@ -2273,6 +2273,9 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 
 void C4Object::DrawLine(C4TargetFacet &cgo)
 {
+	// Nothing to draw if the object has less than two vertices
+	if (Shape.VtxNum < 2)
+		return;
 #ifndef USE_CONSOLE
 	// Audibility
 	SetAudibilityAt(cgo, Shape.VtxX[0],Shape.VtxY[0]);
