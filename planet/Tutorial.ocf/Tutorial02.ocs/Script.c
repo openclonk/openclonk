@@ -29,7 +29,7 @@ protected func Initialize()
 	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn4, dyn5);
 	var igniter = CreateObjectAbove(Igniter, 110, 710, NO_OWNER);
 	CreateObjectAbove(Fuse, 240, 685, NO_OWNER)->Connect(dyn5, igniter);
-	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
+	igniter->SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with catapult stuff.
 	//var hut = CreateObjectAbove(WoodenCabin, 570, 740, NO_OWNER);

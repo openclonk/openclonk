@@ -63,7 +63,7 @@ public func ControlUse(object clonk, int x, int y)
 	{
 		var pos = clonk->GetItemPos(this);
 		ChangeDef(Igniter);
-		SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
+		SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
 		clonk->UpdateAttach();
 		clonk->OnSlotFull(pos);
 	}
@@ -80,7 +80,7 @@ private func UpdatePicture()
 	SetGraphics(Format("%d", iCount), Icon_Number, 12, GFXOV_MODE_Picture);
 	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
 
-	SetGraphics(Format("%d", iCount), Fuse, 1, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", 6 - iCount), DynamiteBox, 1, GFXOV_MODE_Picture);
 }
 
 local fWarning;

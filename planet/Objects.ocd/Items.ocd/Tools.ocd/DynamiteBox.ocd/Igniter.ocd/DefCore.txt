@@ -10,6 +10,6 @@ VertexY=1,5
 VertexFriction=120,120,120
 Value=15
 Mass=15
-Picture=4,0,21,21
+Picture=0,0,64,64
 Rotate=1
 Float=1
