@@ -32,7 +32,6 @@
 	 * Flag library documentation.
 	 * Flag markers sometimes not updated (e.g. Gem Grabbers).
 	 * Move network merging from flag to power library.
-	 * Power visuals of elevator show need while power is available.
 
 	@author Zapper, Maikel
 */

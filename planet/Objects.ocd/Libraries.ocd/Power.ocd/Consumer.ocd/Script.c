@@ -62,6 +62,8 @@ private func RegisterPowerRequest(int amount)
 private func UnregisterPowerRequest()
 {
 	Library_Power->UnregisterPowerConsumer(this);
+	// Also ensure that the no-power symbol is not shown any more.
+	RemoveStatusSymbol(Library_PowerConsumer);
 	return;
 }
 

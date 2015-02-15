@@ -8,9 +8,7 @@
 
 local symbol;
 
-func AttachTargetLost(){return RemoveObject();}
-
-func Init(object to)
+public func Init(object to)
 {
 	SetAction("Be", to);
 	
@@ -57,13 +55,13 @@ global func RemoveStatusSymbol(id symbol)
 	return true;
 }
 
-func AddSymbol(id symbol_id)
+public func AddSymbol(id symbol_id)
 {
 	symbol = symbol_id;
 	Update();
 }
 
-func RemoveSymbol(id symbol_id)
+public func RemoveSymbol(id symbol_id)
 {
 	if (symbol != symbol_id)
 		return;
@@ -71,7 +69,7 @@ func RemoveSymbol(id symbol_id)
 	Update();
 }
 
-func Update()
+public func Update()
 {
 	if (!symbol)
 	{
@@ -85,33 +83,48 @@ func Update()
 	return;
 }
 
-func Blink()
+public func Blink()
 {
 	if (GetEffect("Blinking", this))
 		RemoveEffect("Blinking", this);
-	AddEffect("Blinking", this, 1, 24, this);
+	AddEffect("Blinking", this, 1, 16, this);
+	return;
 }
 
-func FxBlinkingStart(target, effect, temp)
+protected func FxBlinkingStart(object target, proplist effect, int temp)
 {
 	if (temp) 
-		return;
-	effect.cycle = 1;
+		return FX_OK;
+	// Set interval to a fixed number of frames.
+	effect.Interval = 16;
+	// Set initial visibility to visible.
+	this.Visibility = this->GetActionTarget().Visibility;
+	effect.visible = true;	
+	return FX_OK;
 }
 
-func FxBlinkingTimer(target, effect)
+protected func FxBlinkingTimer(object target, proplist effect)
 {
-	effect.cycle++;
-	if ((effect.cycle % 2) == 0)
+	if (effect.visible)
 	{
+		effect.visible = false;	
 		this.Visibility = VIS_None;
-		return 1;
 	}
-	this.Visibility = this->GetActionTarget().Visibility;
-	return 1;
+	else
+	{
+		effect.visible = true;	
+		this.Visibility = this->GetActionTarget().Visibility;
+	}
+	return FX_OK;
+}
+
+// Callback from the engine: this symbol has lost its parent.
+protected func AttachTargetLost()
+{
+	return RemoveObject();
 }
 	
-func SaveScenarioObject() { return false; }
+public func SaveScenarioObject() { return false; }
 
 
 /*-- Properties --*/

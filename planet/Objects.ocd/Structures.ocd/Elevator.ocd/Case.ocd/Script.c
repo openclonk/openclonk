@@ -256,10 +256,12 @@ func OutOfRange(object vehicle)
 	return false;
 }
 
-func FxFetchVehiclesTimer(target, effect, time)
+protected func FxFetchVehiclesTimer(object target, proplist effect, int time)
 {
-	if(!elevator) return -1;
-	if(IsSlave()) return 1;
+	if (!elevator) 
+		return -1;
+	if (IsSlave()) 
+		return 1;
 	
 	// look for vehicles
 	var additional = -5;
@@ -268,7 +270,7 @@ func FxFetchVehiclesTimer(target, effect, time)
 	var y = GetY() - 12;
 	var h = GetY() + 15;
 	
-	if(IsMaster())
+	if (IsMaster())
 	{
 		x = Min(x, partner->GetX() - 12 - additional);
 		w = Max(w, partner->GetX() + 12 + additional);
@@ -430,9 +432,8 @@ private func Halt(bool user_requested, bool power_out)
 {
 	if (IsSlave())
 		return;
-	
-	StopAutomaticMovement();
-	
+
+	// Stop the engine if it was still moving.	
 	if (GetYDir())
 		if(elevator)
 			elevator->StopEngine();
@@ -442,9 +443,10 @@ private func Halt(bool user_requested, bool power_out)
 	SetYDir();
 	ForceSync();
 	
-	// Unregister the power request.
+	// Unregister the power request and stop automatic movement.
 	if (user_requested || !power_out)
 	{
+		StopAutomaticMovement();
 		UnregisterPowerRequest();
 		has_power = false;
 	}
@@ -488,12 +490,12 @@ protected func ContactBottom()
 	return;
 }
 
-// Checks whether the elevator should not move because someone's holding it
-// Returns true if idle
+// Checks whether the elevator should not move because someone's holding it, returns true if idle.
 private func CheckIdle()
 {
 	// I have no mind of my own
-	if (IsSlave()) return;
+	if (IsSlave()) 
+		return false;
 
 	var in_rect = Find_InRect(-13, -13, 26, 26);
 	if (IsMaster())
@@ -505,13 +507,17 @@ private func CheckIdle()
 	}
 	for (var pusher in FindObjects(in_rect, Find_Action("Push")))
 	{
-		if (pusher->GetActionTarget() == this) return false;
-		if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == this) return false;
+		if (pusher->GetActionTarget() == this) 
+			return false;
+		if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == this) 
+			return false;
 		
 		if (IsMaster())
 		{
-			if (pusher->GetActionTarget() == partner) return false;
-			if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == partner) return false;
+			if (pusher->GetActionTarget() == partner) 
+				return false;
+			if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == partner) 
+				return false;
 		}
 	}
 	return true;
