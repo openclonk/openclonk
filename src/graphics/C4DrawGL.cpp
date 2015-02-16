@@ -688,7 +688,10 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 	StdStrBuf err_buf(gluErrorUnicodeStringEXT(err));
 #else
 	// gluErrorString returns latin-1 strings. Our code expects UTF-8, so convert
-	StdStrBuf err_buf(gluErrorString(err));
+	// Also for some reason gluErrorString returns const GLubyte* instead of a more
+	// reasonable const char *, so cast it - C-style cast required here to match
+	// both unsigned and signed char
+	StdStrBuf err_buf((const char*)gluErrorString(err));
 	err_buf.EnsureUnicode();
 #endif
 
