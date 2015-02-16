@@ -18,7 +18,11 @@ public func Failure_1()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgWhoDroppedCannon$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		var crew0 = GetCrew(plr, 0);
+		if (!crew0)
+			continue;
+		var crew1 = GetCrew(plr, 1) ?? GetCrew(plr, 0);
+		MessageBox(Format("$MsgWhoDroppedCannon$", crew1->GetName()), crew0, crew0, plr, true);
 	}
 	return ScheduleNext(4 * 36);
 }
@@ -28,7 +32,11 @@ public func Failure_2()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgItWasMe$", GetCrew(plr, 0)->GetName()), GetCrew(plr, 0), GetCrew(plr, 1), plr, true);
+		var crew0 = GetCrew(plr, 0);
+		if (!crew0)
+			continue;
+		var crew1 = GetCrew(plr, 1) ?? GetCrew(plr, 0);
+		MessageBox(Format("$MsgItWasMe$", crew0->GetName()), crew0, crew1, plr, true);
 	}
 	return ScheduleNext(3 * 36);
 }
@@ -38,7 +46,11 @@ public func Failure_3()
 	for (var i = 0; i < GetPlayerCount(C4PT_User); ++i)
 	{
 		var plr = GetPlayerByIndex(i, C4PT_User);
-		MessageBox(Format("$MsgShame$", GetCrew(plr, 1)->GetName()), GetCrew(plr, 0), GetCrew(plr, 0), plr, true);
+		var crew0 = GetCrew(plr, 0);
+		if (!crew0)
+			continue;
+		var crew1 = GetCrew(plr, 1) ?? GetCrew(plr, 0);
+		MessageBox(Format("$MsgShame$", crew1->GetName()), crew0, crew0, plr, true);
 	}
 	return ScheduleNext(4 * 36);
 }
