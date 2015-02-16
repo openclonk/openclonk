@@ -2,4 +2,4 @@
 
 #appendto Library_Flag
 
-func RedrawAllFlagRadiuses() {}
+local DefaultFlagRadius = 0;

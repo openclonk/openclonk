@@ -33,8 +33,7 @@
 	OPEN TODOS:
 	 * Remove all the if (!link) checks, they are not needed in principle but errors arise when they are removed.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
-	 * Flag library documentation.
-	 * Flag markers sometimes not updated (e.g. Gem Grabbers).
+	 * Think about the necessity of global func RedrawAllFlagRadiuses().
 	 * Move network merging from flag to power library.
 
 	@author Zapper, Maikel

@@ -25,7 +25,7 @@
 static LIB_FLAG_FlagList;
 
 // Radius of new flag of this type, unless overwritten by SetFlagRadius().
-local DefaultFlagRadius = 200; 
+local DefaultFlagRadius = 200;
 
 // All flag related local variables are stored in a single proplist.
 // This reduces the chances of clashing local variables. See 
@@ -76,6 +76,8 @@ public func IsFlagpole() { return true; }
 // Redraws the ownership markers of this flag according to the current circumstances.
 public func RedrawFlagRadius()
 {
+	// Debugging logs.
+	//Log("FLAG - RedrawFlagRadius(): flag = %v", this);
 	// A flag with no radius is not drawn.
 	if (!lib_flag.radius)
 	{
@@ -160,6 +162,16 @@ public func RedrawFlagRadius()
 		}
 		SetLength(lib_flag.range_markers, old + 1);
 	}
+	return;
+}
+
+// Removes all the ownership markers for this flag.
+private func ClearFlagMarkers()
+{
+	for (var marker in lib_flag.range_markers)
+		if (marker) 
+			marker->RemoveObject();
+	lib_flag.range_markers = [];
 	return;
 }
 
@@ -363,13 +375,6 @@ public func CopyLinkedFlags(object from, array flaglist)
 	return;
 }
 
-private func ClearFlagMarkers()
-{
-	for(var obj in lib_flag.range_markers)
-		if (obj) obj->RemoveObject();
-	lib_flag.range_markers = [];
-}
-
 // Engine callback: owner of the flag has changed.
 protected func OnOwnerChanged(int new_owner, int old_owner)
 {
@@ -383,8 +388,12 @@ protected func OnOwnerChanged(int new_owner, int old_owner)
 		marker->SetOwner(new_owner);
 		marker->ResetColor();
 	}
+	// Redraw radiuses of all flags.
+	RedrawAllFlagRadiuses();
 	// Also change the ownership of the surrounding buildings.
 	RefreshOwnershipOfSurrounding();
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();
 	return _inherited(new_owner, old_owner, ...);
 }
 
@@ -394,7 +403,7 @@ protected func OnHostilityChange(int player1, int player2, bool hostile, bool ol
 	// Debugging logs.
 	//Log("FLAG - OnHostilityChange(): flag = %v, player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", this, player1, player2, hostile, old_hostility);
 	// Redraw radiuses of all flags.
-	RedrawFlagRadius();
+	RedrawAllFlagRadiuses();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag.
@@ -408,7 +417,7 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 	// Debugging logs.
 	//Log("FLAG - OnTeamSwitch(): flag = %v, player = %d, new_team = %d, old_team = %d", this, player, new_team, old_team);
 	// Redraw radiuses of all flags.
-	RedrawFlagRadius();
+	RedrawAllFlagRadiuses();
 	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
 	// Linked flags - refresh links for this flag.
@@ -534,7 +543,7 @@ private func LogFlags()
 {
 	for (var flag in LIB_FLAG_FlagList)
 	{
-		Log("FLAG - Flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag->GetFlagConstructionTime(), flag->GetFlagRadius(), flag->GetPowerHelper());
+		Log("FLAG - State for flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag->GetFlagConstructionTime(), flag->GetFlagRadius(), flag->GetPowerHelper());
 		Log("\tlinked flags = %v", flag->GetLinkedFlags());
 	}
 	return;
