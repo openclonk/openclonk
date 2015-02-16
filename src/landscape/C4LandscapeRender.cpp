@@ -121,7 +121,9 @@ void C4LandscapeRenderGL::Clear()
 	}
 	for (i = 0; i < C4LR_MipMapCount; i++)
 	{
-		glDeleteObjectARB(hMaterialTexture[i]);
+		// Unlike delete, glDeleteObject doesn't like a 0 parameter
+		if (hMaterialTexture[i] != 0)
+			glDeleteObjectARB(hMaterialTexture[i]);
 		hMaterialTexture[i] = 0;
 	}
 }
