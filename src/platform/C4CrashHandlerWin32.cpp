@@ -429,7 +429,8 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	}
 
 	// Write dump (human readable format)
-	SafeTextDump(pExceptionPointers, GetLogFD(), filename);
+	if (GetLogFD() != -1)
+		SafeTextDump(pExceptionPointers, GetLogFD(), filename);
 
 	if (file != INVALID_HANDLE_VALUE)
 	{
@@ -569,7 +570,8 @@ namespace {
 		eptr.ExceptionRecord = &erec;
 
 		// Log
-		SafeTextDump(&eptr, GetLogFD(), nullptr);
+		if (GetLogFD() != -1)
+			SafeTextDump(&eptr, GetLogFD(), nullptr);
 
 		// Continue caller
 		if (ResumeThread(data->thread) == -1)
