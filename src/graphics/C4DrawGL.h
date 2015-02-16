@@ -197,6 +197,7 @@ protected:
 	friend class C4StartupOptionsDlg;
 	friend class C4FullScreen;
 	friend class C4Window;
+	friend class C4ShaderCall;
 };
 
 // Global access pointer

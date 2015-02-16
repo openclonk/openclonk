@@ -683,7 +683,16 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 {
 	GLenum err = glGetError();
 	if (!err) return true;
-	LogF("GL error with %s: %d - %s", szAtOp, err, gluErrorString(err));
+
+#ifdef USE_WIN32_WINDOWS
+	StdStrBuf err_buf(gluErrorUnicodeStringEXT(err));
+#else
+	// gluErrorString returns latin-1 strings. Our code expects UTF-8, so convert
+	StdStrBuf err_buf(gluErrorString(err));
+	err_buf.EnsureUnicode();
+#endif
+
+	LogF("GL error with %s: %d - %s", szAtOp, err, err_buf.getData());
 	return false;
 }
 

@@ -2,6 +2,7 @@
 #include "C4Include.h"
 #include "C4Shader.h"
 #include "C4Application.h"
+#include "graphics/C4DrawGL.h"
 
 struct C4ShaderPosName {
 	int Position; const char *Name;
@@ -549,8 +550,5 @@ void C4ShaderCall::Finish()
 	fStarted = false;
 
 	// Got an error?
-	if(int err = glGetError())
-	{
-		LogF("GL error: %d - %s", err, gluErrorString(err));
-	}
+	pGL->CheckGLError("C4ShaderCall::Finish()");
 }
