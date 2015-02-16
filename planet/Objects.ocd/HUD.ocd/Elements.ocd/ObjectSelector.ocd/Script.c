@@ -402,7 +402,7 @@ public func Selected()
 public func UpdateSelectionStatus()
 {
 	if(!crew) return;
-	
+
 	// determine...
 	var sel = 0;
 
@@ -434,11 +434,15 @@ public func UpdateSelectionStatus()
 		return;
 	}
 	else if(actiontype == ACTIONTYPE_VEHICLE)
+	{
 		if(crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == myobject)
 			sel = 1;
+	}
 	else if(actiontype == ACTIONTYPE_STRUCTURE)
+	{
 		if(crew->Contained() == myobject)
 			sel = 1;
+	}
 	else if(actiontype == ACTIONTYPE_INVENTORY)
 	{
 		if(0 == position)
