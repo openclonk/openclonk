@@ -12,6 +12,8 @@
 #include "C4DrawGL.h"
 #include "StdColors.h"
 
+#include <algorithm>
+
 #ifndef USE_CONSOLE
 
 // Automatically reload shaders when changed at runtime?
@@ -119,13 +121,8 @@ void C4LandscapeRenderGL::Clear()
 		delete Surfaces[i];
 		Surfaces[i] = NULL;
 	}
-	for (i = 0; i < C4LR_MipMapCount; i++)
-	{
-		// Unlike delete, glDeleteObject doesn't like a 0 parameter
-		if (hMaterialTexture[i] != 0)
-			glDeleteObjectARB(hMaterialTexture[i]);
-		hMaterialTexture[i] = 0;
-	}
+	glDeleteTextures(C4LR_MipMapCount, hMaterialTexture);
+	std::fill_n(hMaterialTexture, C4LR_MipMapCount, 0);
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
