@@ -77,7 +77,13 @@ namespace
 		}
 	}
 
-	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+#ifdef GLDEBUGPROCARB_USERPARAM_IS_CONST
+#define USERPARAM_CONST const
+#else
+#define USERPARAM_CONST
+#endif
+
+	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, USERPARAM_CONST void* userParam)
 	{
 		const char *msg_source = MsgSourceToStr(source);
 		const char *msg_type = MsgTypeToStr(type);
@@ -90,6 +96,8 @@ namespace
 #endif
 	}
 }
+
+#undef USERPARAM_CONST
 
 CStdGL::CStdGL():
 		pMainCtx(0)

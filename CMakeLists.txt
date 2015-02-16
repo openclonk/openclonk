@@ -1326,6 +1326,11 @@ if(NOT USE_CONSOLE)
 		${OPENGL_LIBRARIES}
 	)
 	include_directories(${GLEW_INCLUDE_DIR})
+	# On some platforms, GLEW declares the userParam parameter of
+	# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
+	# Test which one works here.
+	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIR}")
+	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 endif()
 if(USE_GTK)
 	if(USE_GTK3)
