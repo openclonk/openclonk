@@ -1,11 +1,21 @@
 /**
 	Flag Library
 	The flagpoles mark the area a player owns. It also serves as an energy transmitter.
+	A structure that serves as a flagpole, which is an object which defines an ownership
+	radius, should include this library.
 	
+	The ownership radius can be changed via the function SetFlagRadius(int to_radius).
+	The power system uses the flag library to determine which structures belong to the
+	same network, which is given by a number of connected flags.
 	
 	Important notes when including this library:
 	 * The object including this library should return _inherited(...) in the
 	   Construction, Initialize and Destruction callback if overloaded.
+	   
+	The flag library and its components Library_Flag_Marker, Library_Ownable, 
+	Library_Flag_ConstructionPreviewer and Library_Flag_ConstructionPreviewer_Arrow
+	depend on the following other definitions:
+	 * ConstructionPreviewer
 	
 	@author Zapper, Maikel
 */
@@ -168,6 +178,8 @@ private func RefreshOwnershipOfSurrounding()
 
 private func AddOwnership()
 {
+	// Debugging logs.
+	//Log("FLAG - AddOwnership(): flag = %v", this);
 	// Add this flag to the global list of flags.
 	if (GetIndexOf(LIB_FLAG_FlagList, this) == -1)
 		PushBack(LIB_FLAG_FlagList, this);
@@ -183,6 +195,8 @@ private func AddOwnership()
 
 private func RemoveOwnership()
 {
+	// Debugging logs.
+	//Log("FLAG - RemoveOwnership(): flag = %v", this);
 	// Remove all the flag markers.
 	ClearFlagMarkers();
 	// Remove the flag from the global flag list.

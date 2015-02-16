@@ -170,7 +170,7 @@ func InitializeObjects()
 	WindGenerator0190->SetR(92);
 	WindGenerator0190->SetClrModulation(0xff503c28);
 	WindGenerator0190->SetPosition(177, 134);
-	WindGenerator0190->~Destruction(); // shouldn't have a power radius
+	WindGenerator0190->SetFlagRadius(0); // shouldn't have a power radius
 
 	var Elevator0228 = CreateObjectAbove(Elevator, 69, 159);
 	Elevator0228->CreateShaft(5);

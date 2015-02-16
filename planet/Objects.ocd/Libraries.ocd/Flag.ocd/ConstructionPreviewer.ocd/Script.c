@@ -1,9 +1,8 @@
 /**
 	Flag Library: Construction Previewer
 	Construction preview object for objects implementing flagpole behavior.
-	This object is used in the flag library
-	Shows helper arrows around the preview to tell the player which 
-	neighbouring flags will be connected.
+	This object is used in the flag library and shows helper arrows around 
+	the preview to tell the player which neighbouring flags will be connected.
 
 	@author Sven2
 */

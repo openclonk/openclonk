@@ -26,6 +26,10 @@
 	Producers are stored according to {obj, prod_amount, priority} and consumers
 	according to {obj, cons_amount, priority}.
 	
+	The power library and its components Library_Producer, Library_Consumer and
+	Library_Storage depend on the following other definitions:
+	 * StatusSymbol
+	
 	OPEN TODOS:
 	 * Remove all the if (!link) checks, they are not needed in principle but errors arise when they are removed.
 	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
