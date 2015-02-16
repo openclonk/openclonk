@@ -36,6 +36,61 @@
 #include <stdio.h>
 #include <math.h>
 
+namespace
+{
+	const char *MsgSourceToStr(GLenum source)
+	{
+		switch (source)
+		{
+		case GL_DEBUG_SOURCE_API_ARB: return "API";
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB: return "window system";
+		case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB: return "shader compiler";
+		case GL_DEBUG_SOURCE_THIRD_PARTY_ARB: return "third party";
+		case GL_DEBUG_SOURCE_APPLICATION_ARB: return "application";
+		case GL_DEBUG_SOURCE_OTHER_ARB: return "other";
+		default: return "<unknown>";
+		}
+	}
+
+	const char *MsgTypeToStr(GLenum type)
+	{
+		switch (type)
+		{
+		case GL_DEBUG_TYPE_ERROR_ARB: return "error";
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: return "deprecation warning";
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: return "undefined behavior warning";
+		case GL_DEBUG_TYPE_PORTABILITY_ARB: return "portability warning";
+		case GL_DEBUG_TYPE_PERFORMANCE_ARB: return "performance warning";
+		case GL_DEBUG_TYPE_OTHER_ARB: return "other message";
+		default: return "unknown message";
+		}
+	}
+
+	const char *MsgSeverityToStr(GLenum severity)
+	{
+		switch (severity)
+		{
+		case GL_DEBUG_SEVERITY_HIGH_ARB: return "high";
+		case GL_DEBUG_SEVERITY_MEDIUM_ARB: return "medium";
+		case GL_DEBUG_SEVERITY_LOW_ARB: return "low";
+		default: return "<unknown>";
+		}
+	}
+
+	void APIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+	{
+		const char *msg_source = MsgSourceToStr(source);
+		const char *msg_type = MsgTypeToStr(type);
+		const char *msg_severity = MsgSeverityToStr(severity);
+
+		DebugLogF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
+#ifdef USE_WIN32_WINDOWS
+		if (IsDebuggerPresent() && severity == GL_DEBUG_SEVERITY_HIGH_ARB)
+			BREAKPOINT_HERE;
+#endif
+	}
+}
+
 CStdGL::CStdGL():
 		pMainCtx(0)
 {
@@ -153,6 +208,11 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	bool first_ctx = !pMainCtx;
 	if (first_ctx) pMainCtx = pCtx;
 	bool success = pCtx->Init(pWindow, pApp);
+	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
+	{
+		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	}
 	// First context: Log some information about hardware/drivers
 	// Must log after context creation to get valid results
 	if (first_ctx)
@@ -185,6 +245,11 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 	if (!pCtx->Init(NULL, pApp, hWindow))
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
+	}
+	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
+	{
+		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 	}
 	if (!pMainCtx)
 	{

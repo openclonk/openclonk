@@ -306,7 +306,20 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			else
 			{
 				// create context
-				hrc = wglCreateContext(hDC);
+				if (Config.Graphics.DebugOpenGL && wglCreateContextAttribsARB)
+				{
+					const int attribs[] = {
+						WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+						0
+					};
+					DebugLog("  gl: Creating debug context.");
+					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+				}
+				else
+				{
+					hrc = wglCreateContext(hDC);
+				}
+
 				if(!hrc)
 				{
 					pGL->Error("  gl: Error creating gl context");

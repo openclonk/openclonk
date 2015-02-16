@@ -259,6 +259,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"record", no_argument, 0, 'r'},
 
 			{"lobby", required_argument, 0, 'l'},
+
+			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
