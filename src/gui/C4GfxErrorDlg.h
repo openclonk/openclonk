@@ -4,8 +4,11 @@
  * This file is ineligible for copyright and therefore in the public domain,
  * because it does not reach the required threshold of originality.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license text
+ * for the above reference.
  */
 
 void ShowGfxErrorDialog();
