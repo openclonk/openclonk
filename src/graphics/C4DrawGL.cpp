@@ -77,7 +77,7 @@ namespace
 		}
 	}
 
-	void APIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam)
 	{
 		const char *msg_source = MsgSourceToStr(source);
 		const char *msg_type = MsgTypeToStr(type);
