@@ -55,6 +55,7 @@ public:
 	bool isDirty() const { return fDirty; }
 	bool isClean() const { return !fDirty; }
 	C4FoWBeam *getNext() const { return pNext; }
+	void setNext(C4FoWBeam *next) { pNext=next; }
 
 	// Get a point on the beam boundary.
 	inline int32_t getLeftX(int32_t y) const { return iLeftX * y / iLeftY; }

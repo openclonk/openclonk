@@ -512,7 +512,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					if (tri.fanRY > tri.fanLY && !logged_bug_asc)
 					{
 						// Bug finding helper
-						C4Rect rc;
+						C4Rect rc = region->getRegion();
 						LogF("tri.fanRY(%d) > tri.fanLY(%d) while updating rectangle (%d,%d,%d,%d)", (int)tri.fanRY, (int)tri.fanLY, (int)rc.x, (int)rc.y, (int)rc.Wdt, (int)rc.Hgt);
 						if (pLight) LogF("Light at %d/%d, r=%d   f=%d   s=%d   obj=%s", (int)pLight->getX(), (int)pLight->getY(), (int)pLight->getReach(), (int)pLight->getFadeout(), (int)pLight->getSize(), pLight->getObj() ? pLight->getObj()->GetName() : "NULL");
 						Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*const_cast<C4FoWLightSection *>(this), "LightSection")).getData());
@@ -604,7 +604,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					if (nextTri.fanLY > nextTri.fanRY && !logged_bug_desc)
 					{
 						// Bug finding helper
-						C4Rect rc;
+						C4Rect rc = region->getRegion();
 						LogF("nextTri.fanLY(%d) > nextTri.fanRY(%d) while updating rectangle (%d,%d,%d,%d)", (int)nextTri.fanLY, (int)nextTri.fanRY, (int)rc.x, (int)rc.y, (int)rc.Wdt, (int)rc.Hgt);
 						if (pLight) LogF("Light at %d/%d, r=%d   f=%d   s=%d   obj=%s", (int)pLight->getX(), (int)pLight->getY(), (int)pLight->getReach(), (int)pLight->getFadeout(), (int)pLight->getSize(), pLight->getObj() ? pLight->getObj()->GetName() : "NULL");
 						Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*const_cast<C4FoWLightSection *>(this), "LightSection")).getData());
@@ -760,8 +760,6 @@ void C4FoWLightSection::transTriangles(std::list<C4FoWBeamTriangle> &triangles) 
 
 void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 {
-	// only writing implemented for now
-	assert(pComp->isDecompiler());
 	pComp->Value(mkNamingAdapt(iRot, "iRot"));
 	pComp->Value(mkNamingAdapt(a, "a"));
 	pComp->Value(mkNamingAdapt(b, "b"));
@@ -771,6 +769,27 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(rb, "rb"));
 	pComp->Value(mkNamingAdapt(rc, "rc"));
 	pComp->Value(mkNamingAdapt(rd, "rd"));
-	for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
-		pComp->Value(mkNamingAdapt(*beam, "Beam"));
+	if (pComp->isDecompiler())
+	{
+		for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
+			pComp->Value(mkNamingAdapt(*beam, "Beam"));
+	}
+	else
+	{
+		ClearBeams();
+		int32_t beam_count = 0;
+		pComp->Value(mkNamingCountAdapt<int32_t>(beam_count, "Beam"));
+		C4FoWBeam *last_beam = NULL;
+		for (int32_t i = 0; i < beam_count; ++i)
+		{
+			std::auto_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));
+			pComp->Value(mkNamingAdapt(*beam, "Beam"));
+			C4FoWBeam *new_beam = beam.release();
+			if (!last_beam)
+				pBeams = new_beam;
+			else
+				last_beam->setNext(new_beam);
+			last_beam = new_beam;
+		}
+	}
 }
