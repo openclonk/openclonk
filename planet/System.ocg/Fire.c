@@ -161,9 +161,9 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	{
 		// set default fire modes
 		var cat = target->GetCategory();
-		if (cat & (C4D_Living | C4D_StaticBack)) // Tiere, Bäume
+		if (cat & (C4D_Living | C4D_StaticBack)) // Tiere, BÃ¤ume
 			fire_mode = C4Fx_FireMode_LivingVeg;
-		else if (cat & (C4D_Structure | C4D_Vehicle)) // Gebäude und Fahrzeuge sind unten meist kantig
+		else if (cat & (C4D_Structure | C4D_Vehicle)) // GebÃ¤ude und Fahrzeuge sind unten meist kantig
 			fire_mode = C4Fx_FireMode_StructVeh;
 		else
 			fire_mode = C4Fx_FireMode_Object;
@@ -247,6 +247,10 @@ global func FxFireTimer(object target, proplist effect, int time)
 			// Loop through the selected set of objects and check contact incinerate.
 			for (var obj in inc_objs)
 			{
+				// Check if the obj still exists, an object could be have been removed in this loop.
+				if (!obj)
+					continue;				
+				
 				if (obj->GetCategory() & C4D_Living)
 					if (!obj->GetAlive()) 
 						continue;
