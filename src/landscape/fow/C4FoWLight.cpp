@@ -18,6 +18,7 @@
 #include "C4FoWLightSection.h"
 #include "C4FoWBeamTriangle.h"
 #include "C4FoWDrawStrategy.h"
+#include "C4FoWRegion.h"
 #include "C4PlayerList.h"
 #include "C4Player.h"
 
@@ -94,6 +95,17 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	TriangleList triangles;
 
 	bool clip = false;
+
+	iX = 199; iY = 579;
+	iReach = 300;
+	iFadeout = 80;
+	iSize = 20;
+	StdStrBuf test;
+	assert(FileExists("light_section_assertion.txt"));
+	test.LoadFromFile("light_section_assertion.txt");
+	CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(*sections[0], "LightSection"), test);
+	region->Update(C4Rect(0, 0, 1000, 1000), FLOAT_RECT());
+	sections[0]->CalculateTriangles(region);
 	
 	for(size_t i = 0; i < sections.size(); ++i )
 	{

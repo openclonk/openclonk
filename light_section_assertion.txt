@@ -1,0 +1,260 @@
+[LightSection]
+iRot=90
+a=0
+b=1
+c=-1
+d=0
+ra=0
+rb=-1
+rc=1
+rd=0
+
+ [Beam]
+ iLeftX=-1
+ iLeftY=1
+ iRightX=-55
+ iRightY=61
+ iLeftEndY=61
+ iRightEndY=61
+ iError=9
+ fDirty=false
+
+ [Beam]
+ iLeftX=-55
+ iLeftY=61
+ iRightX=-55
+ iRightY=61
+ iLeftEndY=62
+ iRightEndY=62
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-55
+ iLeftY=61
+ iRightX=-52
+ iRightY=61
+ iLeftEndY=61
+ iRightEndY=61
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-52
+ iLeftY=61
+ iRightX=-64
+ iRightY=80
+ iLeftEndY=142
+ iRightEndY=142
+ iError=0
+ fDirty=true
+
+ [Beam]
+ iLeftX=-64
+ iLeftY=80
+ iRightX=-57
+ iRightY=80
+ iLeftEndY=80
+ iRightEndY=80
+ iError=8
+ fDirty=false
+
+ [Beam]
+ iLeftX=-57
+ iLeftY=80
+ iRightX=-57
+ iRightY=80
+ iLeftEndY=81
+ iRightEndY=81
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-57
+ iLeftY=80
+ iRightX=-50
+ iRightY=81
+ iLeftEndY=80
+ iRightEndY=81
+ iError=6
+ fDirty=false
+
+ [Beam]
+ iLeftX=-50
+ iLeftY=81
+ iRightX=-48
+ iRightY=78
+ iLeftEndY=81
+ iRightEndY=81
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-48
+ iLeftY=78
+ iRightX=-45
+ iRightY=77
+ iLeftEndY=78
+ iRightEndY=77
+ iError=2
+ fDirty=false
+
+ [Beam]
+ iLeftX=-45
+ iLeftY=77
+ iRightX=-44
+ iRightY=76
+ iLeftEndY=77
+ iRightEndY=77
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-44
+ iLeftY=76
+ iRightX=-35
+ iRightY=75
+ iLeftEndY=76
+ iRightEndY=75
+ iError=10
+ fDirty=false
+
+ [Beam]
+ iLeftX=-35
+ iLeftY=75
+ iRightX=-34
+ iRightY=82
+ iLeftEndY=76
+ iRightEndY=82
+ iError=6
+ fDirty=false
+
+ [Beam]
+ iLeftX=-34
+ iLeftY=82
+ iRightX=-32
+ iRightY=84
+ iLeftEndY=82
+ iRightEndY=84
+ iError=2
+ fDirty=false
+
+ [Beam]
+ iLeftX=-32
+ iLeftY=84
+ iRightX=-33
+ iRightY=93
+ iLeftEndY=90
+ iRightEndY=93
+ iError=3
+ fDirty=false
+
+ [Beam]
+ iLeftX=-33
+ iLeftY=93
+ iRightX=-38
+ iRightY=111
+ iLeftEndY=111
+ iRightEndY=111
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-38
+ iLeftY=111
+ iRightX=-43
+ iRightY=139
+ iLeftEndY=142
+ iRightEndY=142
+ iError=0
+ fDirty=true
+
+ [Beam]
+ iLeftX=-43
+ iLeftY=139
+ iRightX=-40
+ iRightY=130
+ iLeftEndY=139
+ iRightEndY=139
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-40
+ iLeftY=130
+ iRightX=-35
+ iRightY=125
+ iLeftEndY=130
+ iRightEndY=127
+ iError=3
+ fDirty=false
+
+ [Beam]
+ iLeftX=-35
+ iLeftY=125
+ iRightX=-15
+ iRightY=65
+ iLeftEndY=125
+ iRightEndY=123
+ iError=9
+ fDirty=false
+
+ [Beam]
+ iLeftX=-15
+ iLeftY=65
+ iRightX=-9
+ iRightY=52
+ iLeftEndY=65
+ iRightEndY=61
+ iError=5
+ fDirty=false
+
+ [Beam]
+ iLeftX=-9
+ iLeftY=52
+ iRightX=-4
+ iRightY=28
+ iLeftEndY=52
+ iRightEndY=52
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=-4
+ iLeftY=28
+ iRightX=0
+ iRightY=27
+ iLeftEndY=28
+ iRightEndY=27
+ iError=2
+ fDirty=false
+
+ [Beam]
+ iLeftX=0
+ iLeftY=27
+ iRightX=0
+ iRightY=26
+ iLeftEndY=27
+ iRightEndY=27
+ iError=0
+ fDirty=false
+
+ [Beam]
+ iLeftX=0
+ iLeftY=26
+ iRightX=5
+ iRightY=15
+ iLeftEndY=26
+ iRightEndY=18
+ iError=10
+ fDirty=false
+
+ [Beam]
+ iLeftX=5
+ iLeftY=15
+ iRightX=1
+ iRightY=1
+ iLeftEndY=15
+ iRightEndY=6
+ iError=9
+ fDirty=false

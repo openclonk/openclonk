@@ -39,6 +39,8 @@
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
 #include <C4Particles.h>
+#include <C4FoWLight.h>
+#include <C4FoWRegion.h>
 
 #include <getopt.h>
 
@@ -54,6 +56,9 @@ C4Application::C4Application():
 		AppState(C4AS_None),
 		pGameTimer(NULL)
 {
+	C4Object o;
+	C4FoWLight l(&o); C4FoWRegion r(NULL, NULL);
+	l.Render(&r, NULL);
 }
 
 C4Application::~C4Application()
