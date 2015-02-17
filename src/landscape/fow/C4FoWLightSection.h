@@ -128,6 +128,10 @@ private:
 		no beams were clipped at the end. */
 	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam) const;
 
+public:
+	// Serialization for debugging purposes
+	void CompileFunc(StdCompiler *pComp);
+
 };
 
 #endif

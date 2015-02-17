@@ -181,3 +181,15 @@ void C4FoWBeam::Prune(int32_t y)
 	if (fRight)
 		iRightEndY = y;
 }
+
+void C4FoWBeam::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(iLeftX, "iLeftX"));
+	pComp->Value(mkNamingAdapt(iLeftY, "iLeftY"));
+	pComp->Value(mkNamingAdapt(iRightX, "iRightX"));
+	pComp->Value(mkNamingAdapt(iRightY, "iRightY"));
+	pComp->Value(mkNamingAdapt(iLeftEndY, "iLeftEndY"));
+	pComp->Value(mkNamingAdapt(iRightEndY, "iRightEndY"));
+	pComp->Value(mkNamingAdapt(iError, "iError"));
+	pComp->Value(mkNamingAdapt(fDirty, "fDirty"));
+}

@@ -127,6 +127,9 @@ public:
 	    Called when the size of the light has been decreased to the given value. */
 	void Prune(int32_t y);
 
+	// Serialization for debugging
+	void CompileFunc(StdCompiler *pComp);
+
 };
 
 #endif // C4FOWBEAM
