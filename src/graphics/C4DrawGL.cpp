@@ -73,6 +73,9 @@ namespace
 		case GL_DEBUG_SEVERITY_HIGH_ARB: return "high";
 		case GL_DEBUG_SEVERITY_MEDIUM_ARB: return "medium";
 		case GL_DEBUG_SEVERITY_LOW_ARB: return "low";
+#ifdef GL_DEBUG_SEVERITY_NOTIFICATION
+		case GL_DEBUG_SEVERITY_NOTIFICATION: return "notification";
+#endif
 		default: return "<unknown>";
 		}
 	}
