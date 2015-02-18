@@ -218,8 +218,8 @@ global func FxFireTimer(object target, proplist effect, int time)
 			effect.strength = Min(effect.strength + 1, 100);
 	}
 	
-	var width = target->GetDefCoreVal("Width", "DefCore") / 2;
-	var height = target->GetDefCoreVal("Height", "DefCore") / 2;
+	var width = target->GetObjWidth() / 2;
+	var height = target->GetObjHeight() / 2;
 	
 	// target is in liquid?
 	if (time % 24 == 0)
