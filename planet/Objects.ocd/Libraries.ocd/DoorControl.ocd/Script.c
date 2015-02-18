@@ -5,59 +5,67 @@
 	The buildings have to have OpenDoor, DoorOpen and CloseDoor in their act map
 */
 
-protected func ActivateEntrance(pObj)
+protected func ActivateEntrance(object obj)
 {
-	if(this->~IsBase() && this->~CanBlockEnemies())
-		if(Hostile(GetOwner(), pObj->GetOwner()))
+	if (this->~IsBase() && this->~CanBlockEnemies())
+	{
+		var for_plr = obj->GetOwner();
+		if (Hostile(GetOwner(), for_plr))
 		{
-			Sound("Error", 0, 100, pObj->GetOwner()+1);
-			PlayerMessage(pObj->GetOwner(), "$TxtNoEntryEnemy$", GetPlayerName(GetOwner()));
-			return 1;
+			Sound("Error", false, 100, for_plr);
+			PlayerMessage(for_plr, "$TxtNoEntryEnemy$", GetPlayerName(GetOwner()));
+			return false;
 		}
-	if (ActIdle()) SetAction("OpenDoor");
-	return 1;
+	}
+	if (ActIdle()) 
+		SetAction("OpenDoor");
+	return true;
 }
 	
 private func OpenEntrance()
 {
-	SetEntrance(1);
+	SetEntrance(true);
+	return;
 }
 
 private func CloseEntrance()
 {
-	SetEntrance(0);
+	SetEntrance(false);
+	return;
 }
 
 private func SoundOpenDoor()
 {
-	Sound("DoorOpen"); // TODO: Get sound
+	// TODO: Get sound
+	Sound("DoorOpen");
+	return;
 }
 
 private func SoundCloseDoor()
 {
-	Sound("DoorClose"); // TODO: get sound
+	// TODO: get sound
+	Sound("DoorClose");
+	return;
 }
 	
-private func DoorClosed()
-{
-	return 1;
-}
-
 protected func Initialize()
 {
-	SetEntrance(0);
+	SetEntrance(false);
 	return _inherited(...);
 }
 
-func Ejection(obj)
+protected func Ejection(object obj)
 {
-	if (GetAction () == "DoorOpen") SetAction ("DoorOpen");
-	return _inherited (obj);
+	// Let the door stay open longer on ejection.
+	if (GetAction () == "DoorOpen") 
+		SetAction ("DoorOpen");
+	return _inherited(obj, ...);
 }
 
-func Collection2(obj)
+protected func Collection2(object obj)
 {
-	if (GetAction () == "DoorOpen") SetAction ("DoorOpen");
-	return _inherited (obj);
+	// Let the door stay open longer on collection.
+	if (GetAction () == "DoorOpen") 
+		SetAction ("DoorOpen");
+	return _inherited(obj, ...);
 }
-
