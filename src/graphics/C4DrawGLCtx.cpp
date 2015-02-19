@@ -330,7 +330,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 
 					// share textures
 					bool success = false;
-					wglMakeCurrent(NULL, NULL); pGL->pCurrCtx=NULL;
+					wglMakeCurrent(hDC, NULL); pGL->pCurrCtx=NULL;
 					if (this != pGL->pMainCtx)
 					{
 						if(!wglShareLists(pGL->pMainCtx->hrc, hrc))
