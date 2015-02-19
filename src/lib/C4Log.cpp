@@ -165,12 +165,14 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		// Write to console
 		if (fConsole)
 		{
-#if defined(_DEBUG) && defined(_WIN32)
+#if defined(_WIN32)
 			// debug: output to VC console
 			OutputDebugString(TimeMessage.GetWideChar());
 #endif
+#if !defined(_WIN32) || defined(USE_CONSOLE)
 			fputs(TimeMessage.getData(),stdout);
 			fflush(stdout);
+#endif
 		}
 
 	}
