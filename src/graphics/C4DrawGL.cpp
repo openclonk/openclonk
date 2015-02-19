@@ -214,6 +214,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
+
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
 	bool first_ctx = !pMainCtx;
@@ -280,7 +281,18 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, unsigned int)
 {
 	// store options
-	return RestoreDeviceObjects();
+	bool ok = RestoreDeviceObjects();
+
+	// - AMD GPUs have supported OpenGL 2.1 since 2007
+	// - nVidia GPUs have supported OpenGL 2.1 since 2005
+	// - Intel integrated GPUs have supported OpenGL 2.1 since Clarkdale (maybe earlier).
+	// And we've already been using features from OpenGL 2.1. Nobody has complained yet.
+	// So checking for 2.1 support should be fine.
+	if (!GLEW_VERSION_2_1)
+	{
+		return Error("  gl: OpenGL Version 2.1 or higher required. A better graphics driver will probably help.");
+	}
+	return ok;
 }
 
 void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr)
@@ -672,16 +684,6 @@ bool CStdGL::RestoreDeviceObjects()
 	// set states
 	Active = pMainCtx->Select();
 	RenderTarget = pApp->pWindow->pSurface;
-
-	// TODO: I think this should be updated. We need at least GLSL 1.20 now, which is OpenGL 2.1
-	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	// Check for GL 1.2 and two functions from 1.3 we need.
-	if( !GLEW_VERSION_1_2 ||
-		glActiveTexture == NULL ||
-		glClientActiveTexture == NULL
-	) {
-		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
-	}
 
 	// lines texture
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
