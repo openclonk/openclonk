@@ -1148,11 +1148,15 @@ endif()
 set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 if(NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.10")
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
 else()
 	# CMake started supporting generator expressions in 2.8.10. Earlier
 	# versions pass most of this through unmodified, which confuses make.
 	# Once we stop supporting old versions of CMake, this case can be removed.
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELEASE NDEBUG)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELWITHDEBINFO NDEBUG)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_MINSIZEREL NDEBUG)
 endif()
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
