@@ -637,8 +637,9 @@ void InstallCrashHandler()
 	SetUnhandledExceptionFilter(GenerateDump);
 
 #ifndef NDEBUG
-	// Hook _wassert/_assert
-	HookAssert(&assertion_handler);
+	// Hook _wassert/_assert, unless we're running under a debugger
+	if (!IsDebuggerPresent())
+		HookAssert(&assertion_handler);
 #endif
 }
 
