@@ -492,6 +492,19 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			if(level != bestLevel)
 				continue;
 
+			// Debugging
+            //#define FAN_STEP_DEBUG
+#ifdef FAN_STEP_DEBUG
+			LogSilentF("Fan step %d (i=%d)", step, std::distance(result.begin(),it));
+			for (std::list<C4FoWBeamTriangle>::iterator it2 = result.begin(); it2 != result.end(); it2++) {
+				const char *marker = "";
+				if (it2 == it) marker = " (it)";
+				if (it2 == nextIt) marker = " (nextIt)";
+				LogSilentF(" %.010f %.010f%s", it2->fanLX, it2->fanLY, marker);
+				LogSilentF(" %.010f %.010f%s", it2->fanRX, it2->fanRY, marker);
+			}
+#endif
+
 			// Calculate light bounds. We assume a "smaller" light for closer beams
 			float lightLX, lightLY, lightRX, lightRY;
 			LightBallLeftMostPoint(tri.fanRX, tri.fanRY, lightLX, lightLY);
@@ -552,6 +565,9 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 									tri.fanLX, tri.fanLY, fanRXp, tri.fanRY,
 									&crossX, &crossY, &b);
 			
+#ifdef FAN_STEP_DEBUG
+				LogSilentF("Ascend, b=%.010f, cross=%.010f/%.010f", b, crossX, crossY);
+#endif
 				// The self-shadow-check should have made sure that the two are
 				// never parallel.
 				assert(f); (void)f;
@@ -634,6 +650,9 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				bool f = find_cross(lightLX, lightLY, tri.fanRX, tri.fanRY,
 									nextTri.fanLX, nextTri.fanLY, fanRXp, nextTri.fanRY,
 									&crossX, &crossY, &b);
+#ifdef FAN_STEP_DEBUG
+				LogSilentF("Descend, b=%.010f, cross=%.010f/%.010f", b, crossX, crossY);
+#endif
 				assert(f);
 				if (b <= threshold)
 				{
