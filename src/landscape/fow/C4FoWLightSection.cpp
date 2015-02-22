@@ -499,6 +499,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 
 			// Ascending
 			bool descendCollision = false;
+			const float ascendDescendDelta = 0.1f;
 			if (tri.fanRY > nextTri.fanLY)
 			{
 				// Left beam surface self-shadowing? We test whether the scalar product
@@ -523,9 +524,16 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					tri.fanLY = tri.fanRY;
 				}
 
+				// The threshold decides at what point we are going to eliminate
+				// (see below). Our goal is to not reduce the ray width below
+				// a certain eta. We are using Manhattan distance, which is a
+				// preliminary optimisation, but we *like* being evil here.
+				float threshold = 1.0f;
+				float fanWidth = fabs(tri.fanRX - tri.fanLX) + fabs(tri.fanRY - tri.fanLY);
+				threshold -= ascendDescendDelta / fanWidth;
+
 				// Left beam reduced?
 				float fanRXp = tri.fanRX;
-				float threshold = 1.0;
 				if (tri.fanRX == tri.fanLX && tri.fanRY == tri.fanLY)
 				{
 					// Move point to the right for the purpose of finding the cross
@@ -615,12 +623,11 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					nextTri.fanRY = nextTri.fanLY;
 				}
 				float fanRXp = nextTri.fanRX;
-				float threshold = 0.0;
+				float threshold = 0.0f;
+				float fanWidth = fabs(nextTri.fanRX - nextTri.fanLX) + fabs(nextTri.fanRY - nextTri.fanLY);
+				threshold += ascendDescendDelta / fanWidth;
 				if (nextTri.fanRX == nextTri.fanLX && nextTri.fanRY == nextTri.fanLY)
-				{
 					fanRXp += 1.0;
-					threshold = 1.0;
-				}
 
 				bool eliminate = false;
 				float b;
