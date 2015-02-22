@@ -782,7 +782,7 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 		C4FoWBeam *last_beam = NULL;
 		for (int32_t i = 0; i < beam_count; ++i)
 		{
-			std::auto_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));
+			std::unique_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));
 			pComp->Value(mkNamingAdapt(*beam, "Beam"));
 			C4FoWBeam *new_beam = beam.release();
 			if (!last_beam)
