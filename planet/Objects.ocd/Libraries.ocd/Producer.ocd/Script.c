@@ -610,8 +610,8 @@ public func OnProductEjection(object product)
 	// Safety for the product removing itself on construction.
 	if (!product)
 		return;	
-	// Vehicles in front fo buildings.
-	if (product->GetCategory() & C4D_Vehicle)
+	// Vehicles in front of buildings, and objects with special needs as well.
+	if (product->GetCategory() & C4D_Vehicle || product->~OnCompletionEjectProduct())
 	{
 		var x = GetX();
 		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;
