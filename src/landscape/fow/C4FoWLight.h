@@ -40,6 +40,7 @@ private:
 	int32_t iReach; // maximum length of beams
 	int32_t iFadeout; // number of pixels over which beams fade out
 	int32_t iSize; // size of the light source. Decides smoothness of shadows
+	float gBright; // brigtness of the light source. 1.0 is maximum.
 	C4FoWLight *pNext;
 	C4Object *pObj; // Associated object
 
@@ -53,6 +54,7 @@ public:
 	int32_t getTotalReach() const { return iReach + iFadeout; }
 	int32_t getSize() const { return iSize; }
 	int32_t getNormalSize() const { return iSize * 2; }
+	float getBrightness() const { return gBright; }
 	C4FoWLight *getNext() const { return pNext; }
 	C4Object *getObj() const { return pObj; }
 

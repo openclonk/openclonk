@@ -114,6 +114,11 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		return;
 	}
 
+	// Set up shader. If this one doesn't work, we're really in trouble.
+	C4Shader *pShader = pFoW->GetFramebufShader();
+	assert(pShader);
+	if (!pShader) return;
+
 	// Create & bind the frame buffer
 	pDraw->StorePrimaryClipper();
 	if(!BindFramebuf())
@@ -133,7 +138,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	gluOrtho2D(0, getSurface()->Wdt, getSurface()->Hgt, 0);
 
 	// Clear texture contents
-	glClearColor(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f);
+	glClearColor(0.0f, 0.5f/1.5f, 0.5f/1.5f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Render FoW to frame buffer object
@@ -142,10 +147,6 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Copy over the old state
 	if (OldRegion.Wdt > 0) {
-
-		// Set up shader. If this one doesn't work, we're really in trouble.
-		C4Shader *pShader = pFoW->GetFramebufShader();
-		assert(pShader);
 
 		// How much the borders have moved
 		int dx0 = Region.x - OldRegion.x,
@@ -175,7 +176,8 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		Call.Start();
 		if (Call.AllocTexUnit(0, GL_TEXTURE_2D))
 			glBindTexture(GL_TEXTURE_2D, getBackSurface()->textures[0].texName);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA);
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 		glBegin(GL_QUADS);
 		for (int i = 0; i < 4; i++)
 		{
@@ -184,6 +186,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		}
 		glEnd();
 		Call.Finish();
+		glBlendEquation(GL_FUNC_ADD);
     }
 
 	// Done!

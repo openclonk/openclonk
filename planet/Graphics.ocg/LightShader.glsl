@@ -11,16 +11,16 @@ uniform sampler2D lightTex;
 //#define LIGHT_DEBUG
 
 // At what point of light intensity we set the "darkness" point. This
-// is to compensate for the fact that the engien "smoothes" the light
+// is to compensate for the fact that the engine "smoothes" the light
 // and therefore will often never arrive at 0 light intensity.
-const float lightDarknessLevel = 8.0 / 256.0;
+const float lightDarknessLevel = 2.0 / 256.0;
 
 slice(texture+5)
 {
 #ifdef HAVE_LIGHT
 	// Query light texture
 	vec4 lightPx = texture2D(lightTex, lightCoord.st);
-	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
+	float lightBright = max(0.0, lightPx.a-lightDarknessLevel);
 	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
 #else
 	// When lighting is disabled, put a light source coming from the camera.
