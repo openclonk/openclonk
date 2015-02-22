@@ -232,9 +232,34 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 		const char *gl_vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
 		const char *gl_renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 		const char *gl_version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-		const char *gl_extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
 		LogF("GL %s on %s (%s)", gl_version ? gl_version : "", gl_renderer ? gl_renderer : "", gl_vendor ? gl_vendor : "");
-		// LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : ""); // uncomment to flood the log with extension list
+		if (Config.Graphics.DebugOpenGL)
+		{
+			// Dump extension list
+			if (glGetStringi)
+			{
+				GLint gl_extension_count = 0;
+				glGetIntegerv(GL_NUM_EXTENSIONS, &gl_extension_count);
+				if (gl_extension_count == 0)
+				{
+					LogSilentF("No available extensions.");
+				}
+				else
+				{
+					LogSilentF("%d available extensions:", gl_extension_count);
+					for (GLint i = 0; i < gl_extension_count; ++i)
+					{
+						const char *gl_extension = (const char*)glGetStringi(GL_EXTENSIONS, i);
+						LogSilentF("  %4d: %s", i, gl_extension);
+					}
+				}
+			}
+			else
+			{
+				const char *gl_extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
+				LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : "");
+			}
+		}
 	}
 	if (!success)
 	{
