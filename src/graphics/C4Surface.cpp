@@ -563,15 +563,11 @@ bool C4Surface::Unlock()
 	return true;
 }
 
-bool C4Surface::GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY)
+bool C4Surface::GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY)
 {
-	// texture present?
-	if (textures.empty()) return false;
 	// get pos
 	int iX=rX/iTexSize;
 	int iY=rY/iTexSize;
-	// clip
-	if (iX<0 || iY<0 || iX>=iTexX || iY>=iTexY) return false;
 	// get texture by pos
 	*ppTexRef = &textures[iY*iTexX + iX];
 	// adjust pos
