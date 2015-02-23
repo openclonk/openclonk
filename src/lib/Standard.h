@@ -55,10 +55,6 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 	std::memmove(lpMem2,lpMem1,dwSize);
 }
 
-bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-             bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
-             int32_t *lastx=NULL, int32_t *lasty=NULL);
-
 #include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);

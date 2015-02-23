@@ -62,58 +62,6 @@ int Pow(int base, int exponent)
 	return result;
 }
 
-bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-             bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar,
-             int32_t *lastx, int32_t *lasty)
-{
-	int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
-	if (Abs(x2-x1)<Abs(y2-y1))
-	{
-		if (y1>y2) { Swap(x1,x2); Swap(y1,y2); }
-		xincr=(x2>x1) ? 1 : -1;
-		dy=y2-y1; dx=Abs(x2-x1);
-		d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=x1; y=y1;
-		if (!fnCallback(x,y,iPar))
-		{
-			if (lastx) *lastx=x; if (lasty) *lasty=y;
-			return false;
-		}
-		for (y=y1+1; y<=y2; ++y)
-		{
-			if (d>=0) { x+=xincr; d+=aincr; }
-			else d+=bincr;
-			if (!fnCallback(x,y,iPar))
-			{
-				if (lastx) *lastx=x; if (lasty) *lasty=y;
-				return false;
-			}
-		}
-	}
-	else
-	{
-		if (x1>x2) { Swap(x1,x2); Swap(y1,y2); }
-		yincr=(y2>y1) ? 1 : -1;
-		dx=x2-x1; dy=Abs(y2-y1);
-		d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=x1; y=y1;
-		if (!fnCallback(x,y,iPar))
-		{
-			if (lastx) *lastx=x; if (lasty) *lasty=y;
-			return false;
-		}
-		for (x=x1+1; x<=x2; ++x)
-		{
-			if (d>=0) { y+=yincr; d+=aincr; }
-			else d+=bincr;
-			if (!fnCallback(x,y,iPar))
-			{
-				if (lastx) *lastx=x; if (lasty) *lasty=y;
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
 //--------------------------------- Characters ------------------------------------------
 
 bool IsIdentifier(char cChar)
