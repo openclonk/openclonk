@@ -48,7 +48,7 @@ bundle_dependencies() {
 			echo "Cannot find ${_library_name}." >&2
 			exit 1
 		fi
-		
+
 		_base="$(basename "${_library_name}")"
 		_bundle_path="${_frameworks_folder_path}/${_base}"
 
@@ -70,7 +70,7 @@ bundle_dependencies() {
 		echo "Bundling '${_library_path}' as '${_base}'..."
 		cp "${_library_path}" "${_bundle_path}"
 		chmod u+w "${_bundle_path}"
-		
+
 		# Set a new install name for this dylib
 		"${_install_name_tool}" -id "${_id}" "${_bundle_path}"
 

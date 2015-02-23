@@ -1,3 +1,6 @@
 .git_archival	export-subst
 .gitattributes	export-ignore
 .gitignore	export-ignore
+
+*.sh text eol=lf
+tools/osx_bundle_libs text eol=lf
