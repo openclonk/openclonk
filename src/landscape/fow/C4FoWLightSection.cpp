@@ -212,6 +212,13 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	int32_t y;
 	for(y = Max(0, startY); y < endY; y++) {
 
+		// We ignore all material up to a certain distance. This is the X
+		// range for that in this scan line
+		int32_t ignoreX = 0;
+		if (y < pLight->getSize()) {
+			ignoreX = int(sqrt(pLight->getSize() * pLight->getSize() - y * y));
+		}
+
 		// Scan all pBeams
 		C4FoWBeam *lastBeam = startBeam;
 		int32_t dirty = 0;
@@ -239,6 +246,10 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 			        xr = Min(beam->getRightX(y), Bounds.x+Bounds.Wdt-1);
 			for(int32_t x = xl; x <= xr; x++)
 			{
+				// Ignore material up to a certain distance (see above)
+				if (abs(x) < ignoreX)
+					continue;
+
 				// Fast free?
 				if (!Landscape._FastSolidCheck(transX(x,y), transY(x,y)))
 				{
