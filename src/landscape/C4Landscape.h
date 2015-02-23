@@ -233,10 +233,10 @@ private:
 	bool SaveInternal(C4Group &hGroup) const;
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const;
 
-public:
 	int32_t ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
 	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
 
+public:
 	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
 	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
 
