@@ -28,7 +28,7 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 	  iY(fixtoi(pObj->fix_y)),
 	  iReach(pObj->lightRange),
 	  iFadeout(pObj->lightFadeoutRange),
-	  iSize(20),
+	  iSize(20), gBright(0.5),
 	  pNext(NULL),
 	  pObj(pObj),
 	  sections(4)
@@ -110,26 +110,6 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 
 	CalculateFanMaxed(triangles);
 	CalculateIntermediateFadeTriangles(triangles);
-
-	// Here's the master plan for updating the lights texture. We
-	// want to add intensity (R channel) as well as the normal (GB channels).
-	// Normals are obviously meant to be though of as signed, though,
-	// so the equation we want would be something like
-	//
-	//  R_new = Clamp(R_old + R,       0.0, 1.0)
-	//  G_new = Clamp(G_old + G - 0.5, 0.0, 1.0)
-	//  B_new = Clamp(B_old + B - 0.5, 0.0, 1.0)
-	//
-	// It seems we can't get that directly though - glBlendFunc only talks
-	// about two operands. Even if we make two passes, we have to take
-	// care that that we don't over- or underflow in the intermediate pass.
-	//
-	// Therefore, we store G/1.5 instead of G, losing a bit of accuracy,
-	// but allowing us to formulate the following approximation without
-	// overflows:
-	//
-	//  G_new = Clamp(Clamp(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
-	//  B_new = Clamp(Clamp(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
 
 	C4FoWDrawStrategy* pen;
 	if (onScreen) pen = new C4FoWDrawWireframeStrategy(this, onScreen);

@@ -114,6 +114,11 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		return;
 	}
 
+	// Set up shader. If this one doesn't work, we're really in trouble.
+	C4Shader *pShader = pFoW->GetFramebufShader();
+	assert(pShader);
+	if (!pShader) return;
+
 	// Create & bind the frame buffer
 	pDraw->StorePrimaryClipper();
 	if(!BindFramebuf())

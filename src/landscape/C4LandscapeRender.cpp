@@ -873,6 +873,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	// Choose the right shader depending on whether we have dynamic lighting or not
 	const C4Shader* shader = &Shader;
 	if (Light) shader = &ShaderLight;
+	if (!shader->Initialised()) return;
 
 	// Activate shader
 	C4ShaderCall ShaderCall(shader);
