@@ -57,7 +57,7 @@
 namespace
 {
 	bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-		bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar = 0,
+		std::function<bool(int32_t, int32_t)> fnCallback,
 		int32_t *lastx = 0, int32_t *lasty = 0)
 	{
 		int d, dx, dy, aincr, bincr, xincr, yincr, x, y;
@@ -67,7 +67,7 @@ namespace
 			xincr = (x2>x1) ? 1 : -1;
 			dy = y2 - y1; dx = Abs(x2 - x1);
 			d = 2 * dx - dy; aincr = 2 * (dx - dy); bincr = 2 * dx; x = x1; y = y1;
-			if (!fnCallback(x, y, iPar))
+			if (!fnCallback(x, y))
 			{
 				if (lastx) *lastx = x; if (lasty) *lasty = y;
 				return false;
@@ -76,7 +76,7 @@ namespace
 			{
 				if (d >= 0) { x += xincr; d += aincr; }
 				else d += bincr;
-				if (!fnCallback(x, y, iPar))
+				if (!fnCallback(x, y))
 				{
 					if (lastx) *lastx = x; if (lasty) *lasty = y;
 					return false;
@@ -89,7 +89,7 @@ namespace
 			yincr = (y2>y1) ? 1 : -1;
 			dx = x2 - x1; dy = Abs(y2 - y1);
 			d = 2 * dy - dx; aincr = 2 * (dy - dx); bincr = 2 * dy; x = x1; y = y1;
-			if (!fnCallback(x, y, iPar))
+			if (!fnCallback(x, y))
 			{
 				if (lastx) *lastx = x; if (lasty) *lasty = y;
 				return false;
@@ -98,7 +98,7 @@ namespace
 			{
 				if (d >= 0) { y += yincr; d += aincr; }
 				else d += bincr;
-				if (!fnCallback(x, y, iPar))
+				if (!fnCallback(x, y))
 				{
 					if (lastx) *lastx = x; if (lasty) *lasty = y;
 					return false;
@@ -2609,14 +2609,14 @@ bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt,
 }
 
 // Returns false on any solid pix in path.
-bool PathFreePix(int32_t x, int32_t y, int32_t par)
+bool PathFreePix(int32_t x, int32_t y)
 {
 	return !GBackSolid(x,y);
 }
 
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
-	return ForLine(x1,y1,x2,y2,&PathFreePix,0,0,0);
+	return ForLine(x1,y1,x2,y2,&PathFreePix);
 }
 
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
@@ -2714,7 +2714,7 @@ bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32
 	return true;
 }
 
-bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
+bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y)
 {
 	BYTE byPix=GBackPix(x,y);
 	return !byPix || !DensitySolid(::Landscape.GetPixMat(byPix)) || ::Landscape.GetPixMat(byPix) == MVehic;
@@ -2722,7 +2722,7 @@ bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
 
 bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
 {
-	return ForLine(x1,y1,x2,y2,&PathFreeIgnoreVehiclePix,0,ix,iy);
+	return ForLine(x1,y1,x2,y2,&PathFreeIgnoreVehiclePix,ix,iy);
 }
 
 int32_t TrajectoryDistance(int32_t iFx, int32_t iFy, C4Real iXDir, C4Real iYDir, int32_t iTx, int32_t iTy)
@@ -3147,27 +3147,29 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 	return true;
 }
 
-BYTE DrawLineCol;
-
-bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade)
+bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color)
 {
-	::Landscape.Surface8->Circle(iX,iY,iGrade, DrawLineCol);
+	Surface8->Circle(iX, iY, iGrade, line_color);
 	return true;
 }
 
-bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius)
+bool C4Landscape::DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color)
 {
-	if (iRadius==1) { if (::Landscape.Map) ::Landscape.Map->SetPix(iX,iY,DrawLineCol); }
-	else ::Landscape.Map->Circle(iX,iY,iRadius,DrawLineCol);
+	if (!Map) return false;
+	if (iRadius == 1)
+		Map->SetPix(iX, iY, line_color);
+	else
+		Map->Circle(iX, iY, iRadius, line_color);
 	return true;
 }
 
 bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
 {
 	// Get map color index by material-texture
-	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,DrawLineCol)) return false;
+	uint8_t line_color;
+	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,line_color)) return false;
 	// Get material shape size
-	int32_t mat = PixCol2Mat(DrawLineCol);
+	int32_t mat = PixCol2Mat(line_color);
 	int32_t shape_wdt=0, shape_hgt=0;
 	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
 	{
@@ -3185,7 +3187,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
-		ForLine(iX1,iY1,iX2,iY2,&DrawLineMap,iRadius);
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, iRadius](int32_t x, int32_t y) { return DrawLineMap(x, y, iRadius, line_color); });
 		// Update landscape
 		int32_t iUpX,iUpY,iUpWdt,iUpHgt;
 		iUpX=Min(iX1,iX2)-iRadius-1; iUpY=Min(iY1,iY2)-iRadius-1;
@@ -3200,7 +3202,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		BoundingBox.Add(C4Rect(iX2 - iGrade, iY2 - iGrade, iGrade*2+1, iGrade*2+1));
 		// Draw to landscape
 		PrepareChange(BoundingBox);
-		ForLine(iX1,iY1,iX2,iY2,&DrawLineLandscape,iGrade);
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, iGrade](int32_t x, int32_t y) { return DrawLineLandscape(x, y, iGrade, line_color); });
 		FinishChange(BoundingBox);
 		break;
 	}

@@ -227,7 +227,8 @@ private:
 	void UpdateMatCnt(C4Rect Rect, bool fPlus);
 	void PrepareChange(C4Rect BoundingBox);
 	void FinishChange(C4Rect BoundingBox);
-	static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
+	bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color);
+	bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color);
 	uint8_t *GetBridgeMatConversion(int32_t for_material_col) const;
 	bool SaveInternal(C4Group &hGroup) const;
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const;
