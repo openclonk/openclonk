@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -456,7 +456,10 @@ namespace
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
-		const StdMeshVertex* vertices = instance.GetVertices().empty() ? &mesh_instance.GetSharedVertices()[0] : &instance.GetVertices()[0];
+
+		bool using_shared_vertices = instance.GetVertices().empty();
+		GLuint vbo = mesh_instance.GetVBO();
+		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetOffsetInBuffer();
 
 		// Render each pass
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -525,11 +528,12 @@ namespace
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
-			// TODO: Use vbo if available.
-
-			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
-			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), &vertices->x);
-			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), &vertices->nx);
+#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
+			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
+			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+#undef VERTEX_OFFSET
 
 			glMatrixMode(GL_TEXTURE);
 
@@ -649,6 +653,7 @@ namespace
 			glMatrixMode(GL_MODELVIEW);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 			call.Finish();
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);

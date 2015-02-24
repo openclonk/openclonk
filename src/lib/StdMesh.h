@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -116,6 +116,7 @@ public:
 	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
+	bool IsAnimated() const { return !Animations.empty(); }
 
 	// TODO: This code should maybe better be placed in StdMeshLoader...
 	void MirrorAnimation(const StdMeshAnimation& animation);
@@ -233,6 +234,8 @@ public:
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }
 	size_t GetNumVertices() const { return Vertices.size(); }
+	// Return the offset into the backing vertex buffer where this SubMesh's data starts
+	size_t GetOffsetInBuffer() const { return buffer_offset; }
 
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
@@ -258,6 +261,7 @@ protected:
 	// b) compute them on the GPU
 	std::vector<StdMeshVertex> Vertices;
 	std::vector<StdMeshFace> Faces; // TODO: Indices could also be stored on GPU in a vbo (element index array). Should be done in a next step if at all.
+	size_t buffer_offset;
 
 	const StdMeshMaterial* Material;
 
@@ -281,7 +285,6 @@ protected:
 	FaceOrdering CurrentFaceOrdering; // NoSave
 
 	// TODO: GLuint texenv_list; // NoSave, texture environment setup could be stored in a display list (w/ and w/o ClrMod). What about PlayerColor?
-	// TODO: GLuint vbo; // NoSave, replacing vertices list -- can be mapped into memory for writing. Should be moved to StdMesh once we apply skeletal transformation on the GPU.
 
 private:
 	StdSubMeshInstance(const StdSubMeshInstance& other); // noncopyable
@@ -592,6 +595,8 @@ public:
 
 	const StdMesh& GetMesh() const { assert(Mesh != NULL); return *Mesh; }
 
+	GLuint GetVBO() const { return vbo; }
+
 protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
@@ -606,6 +611,8 @@ protected:
 	float Completion; // NoSave
 
 	std::vector<StdMeshVertex> SharedVertices;
+	GLuint vbo;
+	void UpdateVBO();
 
 	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number

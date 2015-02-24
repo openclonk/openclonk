@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -552,8 +552,8 @@ void StdMesh::PostInit()
 }
 
 StdSubMeshInstance::StdSubMeshInstance(StdMeshInstance& instance, const StdSubMesh& submesh, float completion):
-		Vertices(submesh.GetNumVertices()),
-		Material(NULL), CurrentFaceOrdering(FO_Fixed)
+	Vertices(submesh.GetNumVertices()),
+	Material(NULL), CurrentFaceOrdering(FO_Fixed)
 {
 	// Copy initial Vertices/Faces
 	for (unsigned int i = 0; i < submesh.GetNumVertices(); ++i)
@@ -961,7 +961,7 @@ void StdMeshInstance::AttachedMesh::MapBonesOfChildToParent(const StdMeshSkeleto
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
-		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()), Completion(completion),
+		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()), vbo(0), Completion(completion),
 		BoneTransforms(Mesh->GetSkeleton().GetNumBones(), StdMeshMatrix::Identity()),
 		SubMeshInstances(Mesh->GetNumSubMeshes()), AttachParent(NULL),
 		BoneTransformsDirty(false)
@@ -979,6 +979,9 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
 
 	// copy, order is fine at the moment since only default materials are used.
 	SubMeshInstancesOrdered = SubMeshInstances;
+	
+	// Initialize VBOs for non-animated mesh instances
+	UpdateVBO();
 }
 
 StdMeshInstance::~StdMeshInstance()
@@ -997,7 +1000,12 @@ StdMeshInstance::~StdMeshInstance()
 
 	// Delete submeshes
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
+	{
 		delete SubMeshInstances[i];
+	}
+
+	if (vbo)
+		glDeleteBuffers(1, &vbo);
 }
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
@@ -1350,6 +1358,9 @@ bool StdMeshInstance::UpdateBoneTransforms()
 			if(!submesh.GetVertices().empty())
 				ApplyBoneTransformToVertices(submesh.GetVertices(), SubMeshInstances[i]->Vertices);
 		}
+
+		// Vertexes have moved, update VBO
+		UpdateVBO();
 	}
 
 	// Update attachment's attach transformations. Note this is done recursively.
@@ -1386,6 +1397,58 @@ bool StdMeshInstance::UpdateBoneTransforms()
 
 	SetBoneTransformsDirty(false);
 	return was_dirty;
+}
+
+void StdMeshInstance::UpdateVBO()
+{
+	bool has_animation = Mesh->GetSkeleton().IsAnimated();
+
+	// Create VBO on demand
+	if (vbo == 0)
+	{
+		glGenBuffers(1, &vbo);
+	}
+
+	// Calculate total number of vertices
+	size_t total_vertices = GetNumSharedVertices();
+	for (auto &submesh : SubMeshInstances)
+	{
+		total_vertices += submesh->GetNumVertices();
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// Unmapping the buffer may fail for certain reasons, in which case we need to try again.
+	do
+	{
+		// Allocate VBO backing memory. If this mesh's skeleton has no animations
+		// defined, we assume that the VBO will not change frequently.
+		glBufferData(GL_ARRAY_BUFFER, total_vertices * sizeof(StdMeshVertex), NULL, has_animation ? GL_STREAM_DRAW : GL_STATIC_DRAW);
+		void *map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		uint8_t *buffer = static_cast<uint8_t*>(map);
+		uint8_t *cursor = buffer;
+
+		// Add shared vertices to buffer
+		if (!SharedVertices.empty())
+		{
+			size_t shared_vertices_size = GetNumSharedVertices() * sizeof(SharedVertices[0]);
+			std::memcpy(cursor, &SharedVertices[0], shared_vertices_size);
+			cursor += shared_vertices_size;
+		}
+
+		// Add all submeshes to buffer
+		for (auto &submesh : SubMeshInstances)
+		{
+			// Store the offset, so the render code can use it later
+			submesh->buffer_offset = cursor - buffer;
+
+			if (submesh->Vertices.empty()) continue;
+			size_t vertices_size = sizeof(submesh->Vertices[0]) * submesh->Vertices.size();
+			std::memcpy(cursor, &submesh->Vertices[0], vertices_size);
+			cursor += vertices_size;
+		}
+	} while (glUnmapBuffer(GL_ARRAY_BUFFER) == GL_FALSE);
+	// Unbind the buffer so following rendering calls do not use it
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
