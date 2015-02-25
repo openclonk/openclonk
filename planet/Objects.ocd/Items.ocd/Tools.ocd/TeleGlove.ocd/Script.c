@@ -197,10 +197,11 @@ public func ControlUseHolding(object clonk, ix, iy)
 
 public func GainedTargetObject(object target)
 {
-	if(!GetEffect("TeleGloveWeight", target))
+	if (!GetEffect("TeleGloveWeight", target))
 	{
 		//Who holds the object? For killtracing
 		target->SetController(Contained()->GetController());
+		target->~OnTeleGloveControl(this);
 		AddEffect("TeleGloveWeight", target, 1, 0, target);
 		return 1;
 	}
