@@ -25,6 +25,9 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
+/* Define to 1 if your stdlib has std::make_unique */
+#cmakedefine HAVE_MAKE_UNIQUE 1
+
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
@@ -99,6 +102,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
+
+/* Define to 1 if your compiler supports variadic templates */
+#cmakedefine HAVE_VARIADIC_TEMPLATES 1
 
 /* Define to 1 if you have the `vasprintf' function. */
 #cmakedefine HAVE_VASPRINTF 1

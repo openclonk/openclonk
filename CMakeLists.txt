@@ -89,6 +89,8 @@ REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
+CHECK_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
 
 # g++'s libstdc++ doesn't properly support <regex> until 4.9.
 # They ship a header that declares functions, but they don't ship an
@@ -1031,6 +1033,7 @@ src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
 src/platform/C4TimeMilliseconds.cpp 
 src/platform/C4TimeMilliseconds.h	
+src/platform/make_unique.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
