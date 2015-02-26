@@ -23,6 +23,7 @@
 #include <SHA1.h>
 
 #include "StdMesh.h"
+#include "graphics/C4GraphicsResource.h"
 
 #ifndef USE_CONSOLE
 
@@ -104,25 +105,28 @@ namespace
 	{
 		StdStrBuf buf;
 
-		buf.Copy(
-			"varying vec3 normalDir;\n"
-			"\n"
-			"slice(position)\n"
-			"{\n"
-			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-			"}\n"
-			"\n"
-			"slice(texcoord)\n"
-			"{\n"
-			"  texcoord = gl_MultiTexCoord0.xy;\n"
-			"}\n"
-			"\n"
-			"slice(normal)\n"
-			"{\n"
-			"  normalDir = normalize(gl_NormalMatrix * gl_Normal);\n"
-			"}\n"
-		);
-
+		if (!::GraphicsResource.Files.LoadEntryString("ObjectDefaultVS.glsl", &buf))
+		{
+			// Fall back just in case
+			buf.Copy(
+				"varying vec3 normalDir;\n"
+				"\n"
+				"slice(position)\n"
+				"{\n"
+				"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+				"}\n"
+				"\n"
+				"slice(texcoord)\n"
+				"{\n"
+				"  texcoord = gl_MultiTexCoord0.xy;\n"
+				"}\n"
+				"\n"
+				"slice(normal)\n"
+				"{\n"
+				"  normalDir = normalize(gl_NormalMatrix * gl_Normal);\n"
+				"}\n"
+			);
+		}
 		return buf;
 	}
 
