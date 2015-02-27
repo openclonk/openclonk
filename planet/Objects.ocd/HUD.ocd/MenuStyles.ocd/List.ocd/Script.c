@@ -67,13 +67,7 @@ func MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop)
 	custom_entry.desc.Text = text;
 	custom_entry.desc.Style = GUI_TextVCenter;
 	custom_entry.Style = GUI_FitChildren;
-	custom_entry.ID = ID;
-	custom_entry.Target = this;
-	custom_entry.Priority = ID;
 	custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};
-	custom_entry.OnClick = GuiAction_Call(this, "OnClick");
-	custom_entry.OnMouseIn = on_hover;
-	custom_entry.OnMouseOut = on_hover_stop;
 	return custom_entry;
 }
 
@@ -106,7 +100,18 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	
 	if (!custom_entry)
 		custom_entry = MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop);
-		
+	
+	// Always add some properties later. This is done so that real custom entries do not need to care about target etc.
+	custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.
+	custom_entry.Target = this; // Same as above.
+	
+	// These properties can in theory be set/customized by the user without breaking functionality. But they are (probably) required anway.
+	custom_entry.Priority = custom_entry.Priority ?? ID;
+	custom_entry.OnClick = custom_entry.OnClick ?? GuiAction_Call(this, "OnClick");
+	custom_entry.OnMouseIn = custom_entry.OnMouseIn ?? on_hover;
+	custom_entry.OnMouseOut = custom_entry.OnMouseOut ?? on_hover_stop;
+	
+	// Save entry to list and prepare call information.
 	entries[ID - 1] = [target, command, parameter, user_ID];
 	this[Format("_menuChild%d", ID)] = custom_entry;
 	

@@ -38,6 +38,7 @@ local current_objects;
 				symbol:
 				extra_data: custom user data
 				text: text shown on the object
+				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
 */
 local current_menus;
@@ -117,6 +118,8 @@ func UpdateObjects(array new_objects)
 	// need to close a menu?
 	for (var i = 0; i < GetLength(current_menus); ++i)
 	{
+		if (!current_menus[i]) continue; // todo: I don't actually know why this can happen.
+		
 		var target = current_menus[i].target;
 		var found = false;
 		for (var obj in new_objects)
@@ -145,6 +148,7 @@ func UpdateObjects(array new_objects)
 			var is_already_open = false;
 			for (var menu in current_menus)
 			{
+				if (!menu) continue; // todo: I don't actually know why that can happen.
 				if (menu.target != obj) continue;
 				is_already_open = true;
 				break;
@@ -357,9 +361,6 @@ func CreateMainMenu(object obj, int slot)
 	current_menus[slot].menus = menus;
 	
 	// now generate the actual menus from the information-list
-	var submenu_height = 100;
-	if (GetLength(menus))
-		submenu_height = Max(25, 100 / GetLength(menus));
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		var menu = menus[i];
@@ -377,7 +378,8 @@ func CreateMainMenu(object obj, int slot)
 		{
 			var entry = menu.entries[e];
 			entry.unique_index = ++menu.entry_index_count;
-			menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i });
+			// This also allows the interaction-menu user to supply a custom entry with custom layout f.e.
+			menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
 		}
 		
 		var all = // menu with title bar

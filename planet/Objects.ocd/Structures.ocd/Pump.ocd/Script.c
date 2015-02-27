@@ -103,51 +103,92 @@ func Initialize()
 
 /*-- Interaction --*/
 
-public func IsInteractable() { return GetCon() >= 100; }
-
-public func GetInteractionCount() 
+public func GetInteractionMenus(object clonk)
 {
-	var cnt = 1;
-	if (source_pipe)
-		cnt++;
-	if (drain_pipe)
-		cnt++;
-	return cnt;
-}
-
-public func GetInteractionMetaInfo(object clonk, int num)
-{
-	// Turning on/off.
-	if (num == 0)
+	var menus = _inherited() ?? [];
+	// only open the menus if ready
+	if (GetCon() >= 100)
 	{
-		if (switched_on)
-			return { Description = "$MsgTurnOff$", IconName = nil, IconID = Icon_Stop };
+		var menu_entries = [];
+		var custom_entry = 
+		{
+			Right = "12em", Bottom = "4em",
+			BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+			image = {Right = "4em"},
+			text = {Left = "4em"}
+		};
+
+		
+		if (!switched_on)
+			PushBack(menu_entries, {symbol = Icon_Play, extra_data = "on", 
+				custom =
+				{
+					Prototype = custom_entry,
+					text = {Prototype = custom_entry.text, Text = "$MsgTurnOn$"},
+					image = {Prototype = custom_entry.image, Symbol = Icon_Play}
+				}});
 		else
-			return { Description = "$MsgTurnOn$", IconName = nil, IconID = Icon_Play };
+			PushBack(menu_entries, {symbol = Icon_Stop, extra_data = "off", 
+				custom =
+				{
+					Prototype = custom_entry,
+					text = {Prototype = custom_entry.text, Text = "$MsgTurnOff$"},
+					image = {Prototype = custom_entry.image, Symbol = Icon_Stop}
+				}});
+		if (source_pipe)
+			PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutsource", 
+				custom =
+				{
+					Prototype = custom_entry,
+					text = {Prototype = custom_entry.text, Text = "$MsgCutSource$"},
+					image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
+				}});
+		if (drain_pipe)
+			PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutdrain", 
+				custom =
+				{
+					Prototype = custom_entry,
+					text = {Prototype = custom_entry.text, Text = "$MsgCutDrain$"},
+					image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
+				}});
+
+			
+		var prod_menu =
+		{
+			title = "$Control$",
+			entries = menu_entries,
+			callback = "OnPumpControl",
+			callback_hover = "OnPumpControlHover",
+			callback_target = this,
+			BackgroundColor = RGB(0, 50, 50),
+			Priority = 20
+		};
+		PushBack(menus, prod_menu);
 	}
-	// Cutting the source pipe.
-	if (num == 1 && source_pipe)
-		return { Description = "$MsgCutSource$", IconName = nil, IconID = Icon_Cancel };
-	// Cutting the drain pipe.
-	if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
-		return { Description = "$MsgCutDrain$", IconName = nil, IconID = Icon_Cancel };
+	return menus;
 }
 
-public func Interact(object clonk, int num)
+public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_id)
 {
-	// Turning on/off.
-	if (num == 0)
+	var text = "";
+	if (action == "on") text = "$DescTurnOn$";
+	else if (action == "off") text = "$DescTurnOff$";
+	else if (action == "cutdrain") text = "$DescCutDrain$";
+	else if (action == "cutsource") text = "$DescCutSource$";
+	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}
+
+public func OnPumpControl(id symbol, string action, bool alt)
+{
+	if (action == "on" || action == "off")
 	{
 		switched_on = !switched_on;
 		CheckState();
 	}
-	// Cutting the source pipe.
-	else if (num == 1 && source_pipe)
+	else if (action == "cutsource" && source_pipe)
 		source_pipe->RemoveObject();
-	// Cutting the drain pipe.
-	else if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
+	else if (action == "cutdrain" && drain_pipe)
 		drain_pipe->RemoveObject();
-	return true;
 }
 
 /*-- Pipe connection --*/
