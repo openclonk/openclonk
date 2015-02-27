@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -228,11 +228,22 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 		//	bone_lookup[mesh->GetSkeleton().GetBone(i).ID] = i;
 		//}
 
+		// Find first bone assignment with a zero weight (i.e. is unused)
 		StdSubMesh::Vertex& vertex = vertices[VertexIndex];
-		vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
-		StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
-		assignment.BoneIndex = bone->Index;
-		assignment.Weight = weight;
+		// Check quickly if all weight slots are used
+		if (vertex.bone_weight[StdMeshVertex::MaxBoneWeightCount - 1] != 0)
+		{
+			Error(FormatString("Vertex %d is influenced by more than %d bones", VertexIndex, StdMeshVertex::MaxBoneWeightCount), vertexboneassignment_elem);
+		}
+		for (size_t weight_index = 0; weight_index < StdMeshVertex::MaxBoneWeightCount; ++weight_index)
+		{
+			if (vertex.bone_weight[weight_index] == 0)
+			{
+				vertex.bone_weight[weight_index] = weight;
+				vertex.bone_index[weight_index] = bone->Index;
+				break;
+			}
+		}
 	}
 
 	// Normalize vertex bone assignment weights (this is not guaranteed in the
@@ -240,11 +251,12 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 	for (unsigned int i = 0; i < vertices.size(); ++i)
 	{
 		StdSubMesh::Vertex& vertex = vertices[i];
-		float sum = 0.0f;
-		for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-			sum += vertex.BoneAssignments[j].Weight;
-		for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-			vertex.BoneAssignments[j].Weight /= sum;
+		float sum = 0.0;
+		for (float weight : vertex.bone_weight)
+			sum += weight;
+		if (sum != 0)
+			for (float &weight : vertex.bone_weight)
+				weight /= sum;
 	}
 }
 

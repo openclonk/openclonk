@@ -529,12 +529,12 @@ std::vector<int> StdMeshSkeleton::GetMatchingBones(const StdMeshSkeleton& child_
 	return MatchedBoneInParentSkeleton;
 }
 
-StdSubMesh::StdSubMesh():
-		Material(NULL)
+StdSubMesh::StdSubMesh() :
+	Material(NULL), buffer_offset(0)
 {
 }
 
-StdMesh::StdMesh() : Skeleton(new StdMeshSkeleton)
+StdMesh::StdMesh() : Skeleton(new StdMeshSkeleton), vbo(0)
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
 	BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
@@ -543,21 +543,71 @@ StdMesh::StdMesh() : Skeleton(new StdMeshSkeleton)
 
 StdMesh::~StdMesh()
 {
+	if (vbo)
+		glDeleteBuffers(1, &vbo);
 }
 
 void StdMesh::PostInit()
 {
 	// Order submeshes so that opaque submeshes come before non-opaque ones
 	std::sort(SubMeshes.begin(), SubMeshes.end(), StdMeshSubMeshVisibilityCmpPred());
+	UpdateVBO();
 }
 
-StdSubMeshInstance::StdSubMeshInstance(StdMeshInstance& instance, const StdSubMesh& submesh, float completion):
-	Vertices(submesh.GetNumVertices()),
-	Material(NULL), CurrentFaceOrdering(FO_Fixed)
+void StdMesh::UpdateVBO()
 {
-	// Copy initial Vertices/Faces
-	for (unsigned int i = 0; i < submesh.GetNumVertices(); ++i)
-		Vertices[i] = submesh.GetVertex(i);
+	// We're only uploading vertices once, so there shouldn't be a VBO so far
+	assert(vbo == 0);
+	if (vbo != 0)
+		glDeleteBuffers(1, &vbo);
+	glGenBuffers(1, &vbo);
+
+	// Calculate total number of vertices
+	size_t total_vertices = SharedVertices.size();
+	for (auto &submesh : SubMeshes)
+	{
+		total_vertices += submesh.GetNumVertices();
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// Unmapping the buffer may fail for certain reasons, in which case we need to try again.
+	do
+	{
+		// Allocate VBO backing memory. If this mesh's skeleton has no animations
+		// defined, we assume that the VBO will not change frequently.
+		glBufferData(GL_ARRAY_BUFFER, total_vertices * sizeof(StdMeshVertex), NULL, GL_STATIC_DRAW);
+		void *map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		uint8_t *buffer = static_cast<uint8_t*>(map);
+		uint8_t *cursor = buffer;
+
+		// Add shared vertices to buffer
+		if (!SharedVertices.empty())
+		{
+			size_t shared_vertices_size = SharedVertices.size() * sizeof(SharedVertices[0]);
+			std::memcpy(cursor, &SharedVertices[0], shared_vertices_size);
+			cursor += shared_vertices_size;
+		}
+
+		// Add all submeshes to buffer
+		for (auto &submesh : SubMeshes)
+		{
+			// Store the offset, so the render code can use it later
+			submesh.buffer_offset = cursor - buffer;
+
+			if (submesh.Vertices.empty()) continue;
+			size_t vertices_size = sizeof(submesh.Vertices[0]) * submesh.Vertices.size();
+			std::memcpy(cursor, &submesh.Vertices[0], vertices_size);
+			cursor += vertices_size;
+		}
+	} while (glUnmapBuffer(GL_ARRAY_BUFFER) == GL_FALSE);
+	// Unbind the buffer so following rendering calls do not use it
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
+StdSubMeshInstance::StdSubMeshInstance(StdMeshInstance& instance, const StdSubMesh& submesh, float completion):
+	base(&submesh), Material(NULL), CurrentFaceOrdering(FO_Fixed)
+{
 	LoadFacesForCompletion(instance, submesh, completion);
 
 	SetMaterial(submesh.GetMaterial());
@@ -577,8 +627,8 @@ void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const
 		// At this point, all vertices are in the OGRE coordinate frame, and Z in OGRE equals
 		// Y in Clonk, so we are fine without additional transformation.
 		const StdMeshVertex* vertices;
-		if(GetNumVertices() > 0)
-			vertices = &GetVertices()[0];
+		if(submesh.GetNumVertices() > 0)
+			vertices = &submesh.GetVertices()[0];
 		else
 			vertices = &instance.GetSharedVertices()[0];
 		SortFacesArray(vertices, Faces, FO_FarthestToNearest, StdMeshMatrix::Identity());
@@ -753,7 +803,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	}
 }
 
-void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh* Mesh)
+void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh *Mesh)
 {
 	static const StdEnumEntry<NodeType> NodeTypes[] =
 	{
@@ -961,15 +1011,11 @@ void StdMeshInstance::AttachedMesh::MapBonesOfChildToParent(const StdMeshSkeleto
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
-		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()), vbo(0), Completion(completion),
+		Mesh(&mesh), Completion(completion),
 		BoneTransforms(Mesh->GetSkeleton().GetNumBones(), StdMeshMatrix::Identity()),
 		SubMeshInstances(Mesh->GetNumSubMeshes()), AttachParent(NULL),
 		BoneTransformsDirty(false)
 {
-	// Copy initial shared vertices
-	for (unsigned int i = 0; i < SharedVertices.size(); ++i)
-		SharedVertices[i] = mesh.GetSharedVertices()[i];
-
 	// Create submesh instances
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 	{
@@ -979,9 +1025,6 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
 
 	// copy, order is fine at the moment since only default materials are used.
 	SubMeshInstancesOrdered = SubMeshInstances;
-	
-	// Initialize VBOs for non-animated mesh instances
-	UpdateVBO();
 }
 
 StdMeshInstance::~StdMeshInstance()
@@ -1003,9 +1046,6 @@ StdMeshInstance::~StdMeshInstance()
 	{
 		delete SubMeshInstances[i];
 	}
-
-	if (vbo)
-		glDeleteBuffers(1, &vbo);
 }
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
@@ -1301,6 +1341,14 @@ const StdMeshMatrix& StdMeshInstance::GetBoneTransform(size_t i) const
 	return BoneTransforms[i];
 }
 
+size_t StdMeshInstance::GetBoneCount() const
+{
+	if ((AttachParent != NULL) && (AttachParent->GetFlags() & AM_MatchSkeleton))
+		return AttachParent->MatchedBoneInParentSkeleton.size();
+	else
+		return BoneTransforms.size();
+}
+
 bool StdMeshInstance::UpdateBoneTransforms()
 {
 	bool was_dirty = BoneTransformsDirty;
@@ -1345,22 +1393,6 @@ bool StdMeshInstance::UpdateBoneTransforms()
 				if (parent) BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
 			}
 		}
-
-		// Compute transformation for each vertex. We could later think about
-		// doing this on the GPU using a vertex shader. This would then probably
-		// need to go to CStdGL::PerformMesh.
-		// But first, we need to move vertex data to the GPU.
-		if(!Mesh->GetSharedVertices().empty())
-			ApplyBoneTransformToVertices(Mesh->GetSharedVertices(), SharedVertices);
-		for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
-		{
-			const StdSubMesh& submesh = Mesh->GetSubMesh(i);
-			if(!submesh.GetVertices().empty())
-				ApplyBoneTransformToVertices(submesh.GetVertices(), SubMeshInstances[i]->Vertices);
-		}
-
-		// Vertexes have moved, update VBO
-		UpdateVBO();
 	}
 
 	// Update attachment's attach transformations. Note this is done recursively.
@@ -1399,58 +1431,6 @@ bool StdMeshInstance::UpdateBoneTransforms()
 	return was_dirty;
 }
 
-void StdMeshInstance::UpdateVBO()
-{
-	bool has_animation = Mesh->GetSkeleton().IsAnimated();
-
-	// Create VBO on demand
-	if (vbo == 0)
-	{
-		glGenBuffers(1, &vbo);
-	}
-
-	// Calculate total number of vertices
-	size_t total_vertices = GetNumSharedVertices();
-	for (auto &submesh : SubMeshInstances)
-	{
-		total_vertices += submesh->GetNumVertices();
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	// Unmapping the buffer may fail for certain reasons, in which case we need to try again.
-	do
-	{
-		// Allocate VBO backing memory. If this mesh's skeleton has no animations
-		// defined, we assume that the VBO will not change frequently.
-		glBufferData(GL_ARRAY_BUFFER, total_vertices * sizeof(StdMeshVertex), NULL, has_animation ? GL_STREAM_DRAW : GL_STATIC_DRAW);
-		void *map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		uint8_t *buffer = static_cast<uint8_t*>(map);
-		uint8_t *cursor = buffer;
-
-		// Add shared vertices to buffer
-		if (!SharedVertices.empty())
-		{
-			size_t shared_vertices_size = GetNumSharedVertices() * sizeof(SharedVertices[0]);
-			std::memcpy(cursor, &SharedVertices[0], shared_vertices_size);
-			cursor += shared_vertices_size;
-		}
-
-		// Add all submeshes to buffer
-		for (auto &submesh : SubMeshInstances)
-		{
-			// Store the offset, so the render code can use it later
-			submesh->buffer_offset = cursor - buffer;
-
-			if (submesh->Vertices.empty()) continue;
-			size_t vertices_size = sizeof(submesh->Vertices[0]) * submesh->Vertices.size();
-			std::memcpy(cursor, &submesh->Vertices[0], vertices_size);
-			cursor += vertices_size;
-		}
-	} while (glUnmapBuffer(GL_ARRAY_BUFFER) == GL_FALSE);
-	// Unbind the buffer so following rendering calls do not use it
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 {
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
@@ -1461,8 +1441,8 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 		if(inst.Faces.size() > 0 && inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
 			const StdMeshVertex* vertices;
-			if(inst.GetNumVertices() > 0)
-				vertices = &inst.GetVertices()[0];
+			if(inst.GetSubMesh().GetNumVertices() > 0)
+				vertices = &inst.GetSubMesh().GetVertices()[0];
 			else
 				vertices = &GetSharedVertices()[0];
 			SortFacesArray(vertices, inst.Faces, inst.CurrentFaceOrdering, global_trans ? *global_trans : StdMeshMatrix::Identity());
@@ -1757,32 +1737,6 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 	}
 
 	return true;
-}
-
-void StdMeshInstance::ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices)
-{
-	assert(mesh_vertices.size() == instance_vertices.size());
-	for (unsigned int j = 0; j < instance_vertices.size(); ++j)
-	{
-		const StdSubMesh::Vertex& vertex = mesh_vertices[j];
-		StdMeshVertex& instance_vertex = instance_vertices[j];
-		if (!vertex.BoneAssignments.empty())
-		{
-			instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
-			instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
-			instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
-
-			for (unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
-			{
-				const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
-				instance_vertex += assignment.Weight * (GetBoneTransform(assignment.BoneIndex) * vertex);
-			}
-		}
-		else
-		{
-			instance_vertex = vertex;
-		}
-	}
 }
 
 void StdMeshInstance::SetBoneTransformsDirty(bool value)

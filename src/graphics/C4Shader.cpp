@@ -336,6 +336,12 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	hProg = glCreateProgramObjectARB();
 	glAttachObjectARB(hProg, hVert);
 	glAttachObjectARB(hProg, hFrag);
+	// Bind all input variables
+	for (int i = 0; i <= VAI_BoneWeightsMax - VAI_BoneWeights; ++i)
+	{
+		glBindAttribLocation(hProg, VAI_BoneWeights + i, FormatString("oc_BoneWeights%d", i).getData());
+		glBindAttribLocation(hProg, VAI_BoneIndices + i, FormatString("oc_BoneIndices%d", i).getData());
+	}
 	glLinkProgramARB(hProg);
 
 	// Link successful?

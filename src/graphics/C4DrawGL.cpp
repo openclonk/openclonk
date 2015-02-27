@@ -570,6 +570,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_Bones] = "bones";
 	uniformNames[C4SSU_Count] = NULL;
 
 	// Clear previous content
