@@ -485,8 +485,8 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
       <text>Creates a new layer with the same size and surface contents as this layer. If a rect is given, the new layer is smaller and contains only the portion included in rect. If mask_spec is given, only pixels passing the mask are set and all other pixels in the new layer are zero.</text>
       <text><code>int GetPixel(int x, int y);</code></text>
       <text>Gets the pixel color at the given position in this layer. If x,y is outside the layer, zero is returned.</text>
-      <text><code>bool SetPixel(int x, int y, int new_color);</code></text>
-      <text>Sets the pixel at position x,y in this layer to new_color. Returns true on success.</text>
+      <text><code>bool SetPixel(int x, int y, any new_color);</code></text>
+      <text>Sets the pixel at position x,y in this layer to new_color. Color may be given as string (mattex) or palette index. Returns true on success.</text>
       <text><code>int GetPixelCount(any mask_spec, array rect);</code></text>
       <text>Returns number of pixels on this layer or map within rect that fulfill mask_spec.</text>
       <text><code>bool FindPosition(proplist out_pos, mask_spec, array rect, int max_tries);</code></text>
