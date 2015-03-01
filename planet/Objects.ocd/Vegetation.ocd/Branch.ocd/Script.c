@@ -22,6 +22,12 @@ protected func Damage()
 	return;
 }
 
+
+/*-- Placement --*/
+
+// Place an amount of branches in the specified rectangle. Settings:
+// size = [min, max]: Random size (con) between min and max.
+// underground = true/false: whether to place only underground.
 public func Place(int amount, proplist rectangle, proplist settings)
 {
 	// Only allow definition call.
@@ -35,12 +41,15 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	var loc_area = nil;
 	if (rectangle) 
 		loc_area = Loc_InRect(rectangle);
-		
+	var loc_background = Loc_Or(Loc_Sky(), Loc_Tunnel());
+	if (settings.underground)
+		loc_background = Loc_Tunnel();
+				
 	var branches = [];	
 	for (var i = 0; i < amount; i++)
 	{
 		var size = RandomX(settings.size[0], settings.size[1]);
-		var loc = FindLocation(Loc_Or(Loc_Sky(), Loc_Tunnel()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
+		var loc = FindLocation(loc_background, Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
 		if (!loc)
 			continue;
 		var branch = CreateObjectAbove(Branch);
