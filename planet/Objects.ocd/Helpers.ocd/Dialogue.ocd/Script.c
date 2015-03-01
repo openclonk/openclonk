@@ -1,7 +1,8 @@
 /**
 	Dialogue
-	
 	Attach to a non player charachter to provide a message interface.
+	
+	@author Sven
 */
 
 
