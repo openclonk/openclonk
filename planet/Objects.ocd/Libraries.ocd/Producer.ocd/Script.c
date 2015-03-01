@@ -26,6 +26,7 @@
 #include Library_PowerConsumer
 
 // Production queue, a list of items to be produced.
+// Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>}. /Infinite/ == true -> infinite production.
 local queue;
 
 
@@ -46,20 +47,89 @@ public func IsInteractable() { return false; }
 
 public func GetConsumerPriority() { return 50; }
 
+public func GetProductionMenuEntries()
+{
+	var products = GetProducts();
+	
+	// default design of a control menu item
+	var control_prototype =
+	{
+		BackgroundColor = {Std = 0, Selected = RGBa(200, 0, 0, 200)},
+		OnMouseIn = GuiAction_SetTag("Selected"),
+		OnMouseOut = GuiAction_SetTag("Std")
+	};
+
+	var custom_entry = 
+	{
+		Right = "8em%", Bottom = "4em",
+		// BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		image = {Prototype = control_prototype, Right = "4em", Style = GUI_TextBottom | GUI_TextRight},
+		controls = 
+		{
+			Left = "4em",
+			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Exit, Tooltip = "$QueueRemove$"},
+			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Play, Tooltip = "$QueueInf$"}
+		}
+	};
+	
+	var menu_entries = [];
+	var index = 0;
+	for (var product in products)
+	{
+		++index;
+		// Check if entry is already in queue.
+		var info;
+		for (info in queue)
+		{
+			if (info.Product == product) break;
+			info = nil;
+		}
+		// Prepare menu entry.
+		var entry = 
+		{
+			Prototype = custom_entry, 
+			image = {Prototype = custom_entry.image}, 
+			controls = 
+			{
+				Prototype = custom_entry.controls,
+				remove = {Prototype = custom_entry.controls.remove},
+				endless = {Prototype = custom_entry.controls.endless}
+			}
+		};
+		entry.image.Symbol = product;
+		if (info) // Currently in queue?
+		{
+			if (info.Infinite)
+				entry.image.Text = "$infinite$";
+			else // normal amount
+				entry.image.Text = Format("%dx", info.Amount);
+			entry.controls.remove.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = -1});
+			entry.BackgroundColor = RGB(50, 50, 50);
+		}
+		else
+			entry.controls.remove = nil;
+			
+		entry.Priority = index;
+		entry.Tooltip = product->GetName();
+		entry.image.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = +1});
+		entry.controls.endless.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Infinite = true}); 
+		PushBack(menu_entries, {symbol = product, extra_data = nil, custom = entry});
+	}
+	return menu_entries;
+}
+
+
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
 	// only open the menus if ready
 	if (GetCon() >= 100)
 	{
-		var products = GetProducts(clonk);
-		var menu_entries = [];
-		for (var product in products)
-			PushBack(menu_entries, {symbol = product, /*text = product.Name,*/ extra_data = nil});
+		
 		var prod_menu =
 		{
 			title = "$Production$",
-			entries = menu_entries,
+			entries_callback = this.GetProductionMenuEntries,
 			callback = "OnProductSelection",
 			callback_hover = "OnProductHover",
 			callback_target = this,
@@ -206,120 +276,123 @@ public func ProductionCosts(id item_id)
 
 /*-- Production queue --*/
 
+/** Returns the queue index corresponding to a product id or nil.
+*/
+public func GetQueueIndex(id product_id)
+{
+	var i = 0, l = GetLength(queue);
+	for (;i < l; ++i)
+	{
+		if (queue[i].Product == product_id) return i;
+	}
+	return nil;
+}
+
+/** Modifies an item in the queue. The index can be retrieved via GetQueueIndex.
+	@param position index in the queue
+	@param amount change of amount or nil
+	@param infinite_production Sets the state of infinite production for the item. Can also be nil to not modify anything.
+	@return False if the item was in the queue and has now been removed. True otherwise. 
+*/
+public func ModifyQueueIndex(int position, int amount, bool infinite_production)
+{
+	// safety
+	var queue_length = GetLength(queue);
+	if (position >= queue_length) return true;
+	
+	var item = queue[position];
+	
+	if (infinite_production != nil)
+		item.Infinite = infinite_production;
+	item.Amount += amount;
+	
+	// It might be necessary to remove the item from the queue.
+	if (!item.Infinite && item.Amount <= 0)
+	{
+		// Move all things on the right one slot to the left.
+		var index = position;
+		while (++index < queue_length)
+			queue[index - 1] = queue[index];
+		SetLength(queue, queue_length - 1);
+		return false;
+	}
+	return true;
+}
 /** Adds an item to the production queue.
 	@param product_id id of the item.
-	@param amount the amount of items of \c item_id which should be produced.
-	@return current position of the item in the production queue.
+	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
+	@paramt infinite whether to enable infinite production.
 */
-public func AddToQueue(id product_id, int amount)
+public func AddToQueue(id product_id, int amount, bool infinite)
 {
 	// Check if this producer can produce the requested item.
 	if (!IsProduct(product_id))
 		return nil;
-	var pos = GetLength(queue);
+	if (amount < 0) FatalError("Producer::AddToQueue called with negative amount.");
 	
-	// Check if the same product is in the position before, cause of possible redundancy.
-	if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
-		queue[pos-1].Amount += amount;
+	// if the product is already in the queue, just modify the amount
+	var found = false;
+	for (var info in queue)
+	{
+		if (info.Product != product_id) continue;
+		info.Amount += amount;
+		if (infinite != nil) info.Infinite = infinite;
+		found = true;
+		break;
+	}
+
 	// Otherwise create a new entry in the queue.
-	else	
-		queue[pos] = { Product = product_id, Amount = amount };
+	if (!found)
+		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite});
 	// Notify all production menus open for this producer.
-	UpdateInteractionMenus();
-	return pos;
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
-/** Inserts an item into the production queue at the specified position.
-	@param product_id id of the item.
-	@param amount the amount of items of \c item_id which should be inserted.
-	@param pos the position at which the object should be inserted, the rest of the queue is shifted downwards.
-	@return current position of the item in the production queue.
-*/
-public func InsertIntoQueue(id product_id, int amount, int pos)
-{
-	// Check if this producer can produce the requested item.
-	if (!IsProduct(product_id))
-		return nil;
-	
-	// Make sure the position is valid.
-	BoundBy(pos, 0, GetLength(queue) - 1);
 
-	// Check if there is the same product at that position, for a possible merge.
-	if (amount != nil && queue[pos].Product == product_id)
-		queue[pos].Amount += amount;
-	// Check if there is the same product at the position before, for a possible merge.
-	else if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
-		queue[pos-1].Amount += amount;
-	// Otherwise insert a new item into the queue.
-	else
-	{
-		// First shift all queue items from that position up by one.
-		var length = GetLength(queue);
-		for (var i = length; i > pos; i--)
-			queue[i] = queue[i-1];
-		// Then create new item.
-		queue[pos] = { Product = product_id, Amount = amount };
-	}
-	// Notify all production menus open for this producer.
-	UpdateInteractionMenus();	
-	return pos;
-}
-
-/** Removes a item or some of it from from the production queue.
-	@param pos position of the item in the queue.
-	@param amount the amount of this item which should be removed.
-	@return \c nil.
+/** Shifts the queue one space to the left. The first item will be put in the very right slot.
 */
-public func RemoveFromQueue(int pos, int amount)
+public func CycleQueue()
 {
-	var length = GetLength(queue);
-	// Safety, pos out of reach.
-	if (pos > length - 1)
-		return;
-	// Reduce and check amount.
-	queue[pos].Amount -= amount;
-	// If amount <= 0, remove item from queue.
-	// From pos onwards queue items should be shift downwards.
-	if (queue[pos].Amount <= 0)
-	{
-		for (var i = pos; i < GetLength(queue); i++)
-			queue[i] = queue[i+1];
-		// Reduce queue size by one.
-		SetLength(queue, length - 1);
-		// Check if the removed product was in between equal products, cause of a new possible redundancy.
-		if (pos > 0 && pos <= length - 2)
-		{
-			if (queue[pos-1].Product == queue[pos].Product)
-			{
-				queue[pos-1].Amount += queue[pos].Amount;
-				for (var i = pos; i < GetLength(queue); i++)
-					queue[i] = queue[i+1];
-				// Reduce queue size by one.
-				SetLength(queue, length - 2);				
-			}
-		}		
-	}
-	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);
-	return;
+	if (GetLength(queue) <= 1) return;
+	var first = queue[0];
+	var queue_length = GetLength(queue);
+	for (var i = 1; i < queue_length; ++i)
+		queue[i - 1] = queue[i];
+	queue[-1] = first;
 }
 
 /** Clears the complete production queue.
-	@param abort determines whether to abort the current production process.
-	@return \c nil.
 */
 public func ClearQueue(bool abort)
 {
-	if (abort)
-	{
-		queue = [];
-		return;
-	}
-	//
-	
-	
+	queue = [];
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return;
+}
+
+/** Modifies a certain production item arbitrarily. This is mainly used by the interaction menu.
+	This also creates a new production order if none exists yet.
+	@param info
+		proplist with Product, Amount, Infinite. If Infinite is set to true, it acts as a toggle. 
+*/
+public func ModifyProduction(proplist info)
+{
+	var index = GetQueueIndex(info.Product);
+	if (index == nil && (info.Amount > 0 || info.Infinite))
+	{
+		AddToQueue(info.Product, info.Amount, info.Infinite);
+	}
+	else
+	{
+		// Toggle infinity?
+		if (queue[index].Infinite)
+		{
+			if (info.Infinite || info.Amount < 0)
+				info.Infinite = false;
+		}
+		ModifyQueueIndex(index, info.Amount, info.Infinite);
+	}
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
 /** Returns the current queue.
@@ -348,25 +421,26 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
-	var amount = queue[0].Amount;
 	// Check raw material need.
 	if (!CheckMaterial(product_id))
 	{
 		// No material available? request from cable network.
 		RequestMaterial(product_id);
+		// In the meanwhile, just cycle the queue and try the next one.
+		CycleQueue();
 		return 1;
 	}
 	// Start the item production.
 	if (!Produce(product_id))
 		return 1;
-
-	// Update amount and or queue.
-	if (amount == nil)
-		return 1;
 		
 	// Update queue, reduce amount.
-	RemoveFromQueue(0, 1);
-	
+	var is_still_there = ModifyQueueIndex(0, -1);
+	// And cycle to enable rotational production of (infinite) objects.
+	if (is_still_there)
+		CycleQueue();
+	// We changed something. Update menus.
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	// Done with production checks.
 	return 1;
 }
@@ -631,7 +705,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
-	var product = CreateObjectAbove(effect.Product);
+	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
 	
 	return 1;

@@ -34,12 +34,14 @@ local current_objects;
 			callback_target: object to which the callback is made, ususally the target object (except for contents menus)
 			menu_object: MenuStyle_Grid object, used to add/remove entries later
 			entry_index_count: used to generate unique IDs for the entries
-			entries: array of entries shown in the menu, the entries are proplists with the following attributes
-				symbol:
+			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later)
+				This callback should return an array of entries shown in the menu, the entries are proplists with the following attributes:
+				symbol: icon of the item
 				extra_data: custom user data
-				text: text shown on the object
+				text: text shown on the object (f.e. count in inventory)
 				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
+			entries: last result of the callback function described above
 */
 local current_menus;
 /*
@@ -197,7 +199,6 @@ func OpenMenuForObject(object obj, int slot)
 	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
 	var part_menu = 
 	{
-		//Style = GUI_NoCrop,
 		Left = "0%", Right = "50%-2em",
 		Bottom = "100%-14em",
 		sidebar = sidebar, main = main,
@@ -225,11 +226,12 @@ func OpenMenuForObject(object obj, int slot)
 		{
 			one_part = part_menu,
 			Target = this,
+			Decoration = GUI_MenuDeco,
 			description_box = 
 			{
-				Decoration = GUI_MenuDeco,
 				Top = "100%-10em",
 				Margin = [sidebar_size_em, "0em"],
+				BackgroundColor = RGB(25, 25, 25),
 				symbol_part = 
 				{
 					Right = "10em",
@@ -330,10 +332,9 @@ func CreateMainMenu(object obj, int slot)
 	{
 		Target = CreateDummy(),
 		Priority = 5,
-		Decoration = GUI_MenuDeco,
 		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
 		Style = GUI_VerticalLayout,
-		BackgroundColor = RGB(50, 25, 0)
+		BackgroundColor = RGB(25, 25, 25)
 	};
 	if (slot == 0)
 	{
@@ -350,6 +351,7 @@ func CreateMainMenu(object obj, int slot)
 			flag = InteractionMenu_Contents,
 			title = "$Contents$",
 			entries = [],
+			entries_callback = nil,
 			callback = "OnContentsSelection",
 			callback_target = this,
 			decoration = GUI_MenuDecoInventoryHeader,
@@ -366,6 +368,13 @@ func CreateMainMenu(object obj, int slot)
 		var menu = menus[i];
 		if (!menu.flag)
 			menu.flag = InteractionMenu_Custom;
+		if (menu.entries_callback)
+			menu.entries = obj->Call(menu.entries_callback, obj);
+		if (menu.entries == nil)
+		{
+			FatalError(Format("An interaction menu did not return valid entries. %s -> %v() (object %v)", obj->GetName(), menu.entries_callback, obj));
+			continue;
+		}
 		menu.menu_object = CreateObject(MenuStyle_Grid);
 		
 		menu.menu_object.Top = "+2em";
@@ -547,7 +556,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 	return 1;
 }
 
-// this function is supposed to be called when the menu already exists (is open) and some sub-menu needs an update
+// This function is supposed to be called when the menu already exists (is open) and some sub-menu needs an update.
+// Note that the parameter "new_entries" is optional. If not supplied, the /entries_callback/ for the specified menu will be used to fill the menu.
 func DoMenuRefresh(int slot, int menu_index, array new_entries)
 {
 	// go through new_entries and look for differences to currently open menu
@@ -555,8 +565,10 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 	// the assumption is that ususally only few entries change
 	var menu = current_menus[slot].menus[menu_index];
 	var current_entries = menu.entries;
+	if (!new_entries && menu.entries_callback)
+		new_entries = current_menus[slot].target->Call(menu.entries_callback, this.cursor);
 	
-	// step 0.1: update all items where the symbol did not change but other things (f.e. the text)
+	// step 0.1: update all items where the symbol and extra_data did not change but other things (f.e. the text)
 	// this is done to maintain a consistent order that would be shuffled constantly if the entry was removed and re-added at the end
 	for (var c = 0; c < GetLength(current_entries); ++c)
 	{
@@ -568,7 +580,7 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 			var new_entry = new_entries[ni];
 			if (!EntriesEqual(new_entry, old_entry))
 			{
-				if (new_entry.symbol == old_entry.symbol)
+				if ((new_entry.symbol == old_entry.symbol) && (new_entry.extra_data == old_entry.extra_data))
 					symbol_equal_index = ni;
 				continue;
 			}
@@ -580,7 +592,7 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 		if (found || symbol_equal_index == -1) continue;
 		// now we can just update the symbol with the new data
 		var new_entry = new_entries[symbol_equal_index];
-		menu.menu_object->UpdateItem(new_entry.symbol, new_entry.text, old_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, nil, current_main_menu_id);
+		menu.menu_object->UpdateItem(new_entry.symbol, new_entry.text, old_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, new_entry["custom"], current_main_menu_id);
 		new_entry.unique_index = old_entry.unique_index;
 		// make sure it's not manipulated later on
 		current_entries[c] = nil;
@@ -628,7 +640,7 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 		if (existing) continue;
 		
 		new_entry.unique_index = ++menu.entry_index_count;
-		menu.menu_object->AddItem(new_entry.symbol, new_entry.text, new_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, nil, current_main_menu_id);
+		menu.menu_object->AddItem(new_entry.symbol, new_entry.text, new_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, new_entry["custom"], current_main_menu_id);
 		
 	}
 	menu.entries = new_entries;
@@ -638,7 +650,8 @@ func EntriesEqual(proplist entry_a, proplist entry_b)
 {
 	return entry_a.symbol == entry_b.symbol
 	&& entry_a.text == entry_b.text
-	&& entry_a.extra_data == entry_b.extra_data;
+	&& entry_a.extra_data == entry_b.extra_data
+	&& entry_a.custom == entry_b.custom;
 }
 
 func CreateDummy()
@@ -656,23 +669,38 @@ func RemoveDummy(object dummy, int player, int ID, int subwindowID, object targe
 }
 
 // updates the interaction menu for an object iff it is currently shown
-func UpdateInteractionMenuFor(object target)
+func UpdateInteractionMenuFor(object target, callbacks)
 {
 	for (var slot = 0; slot < GetLength(current_menus); ++slot)
 	{
 		var current_menu = current_menus[slot];
 		if (current_menu.target != target) continue;
-		OpenMenuForObject(target, slot);
+		if (!callbacks) // do a full refresh
+			OpenMenuForObject(target, slot);
+		else // otherwise selectively update the menus for the callbacks
+		{
+			for (var callback in callbacks)
+			{
+				for (var menu_index = 0; menu_index < GetLength(current_menu.menus); ++menu_index)
+				{
+					var menu = current_menu.menus[menu_index];
+					if (menu.entries_callback != callback) continue;
+					DoMenuRefresh(slot, menu_index);
+				}
+			}
+		}
 	}
 }
 
 /*
 	Updates all interaction menus that are currently attached to an object.
 	This function can be called at all times, not only when a menu is open, making it more convenient for users, because there is no need to track open menus.
+	If the /callbacks/ parameter is supplied, only menus that use those callbacks are updated. That way, a producer can f.e. only update its "queue" menu.
 */
-global func UpdateInteractionMenus()
+global func UpdateInteractionMenus(callbacks)
 {
 	if (!this) return;
+	if (callbacks && GetType(callbacks) != C4V_Array) callbacks = [callbacks];
 	for (var interaction_menu in FindObjects(Find_ID(GUI_ObjectInteractionMenu)))
-		interaction_menu->UpdateInteractionMenuFor(this);
+		interaction_menu->UpdateInteractionMenuFor(this, callbacks);
 }
