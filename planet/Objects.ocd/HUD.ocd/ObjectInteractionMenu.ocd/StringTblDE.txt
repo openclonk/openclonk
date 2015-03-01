@@ -2,3 +2,6 @@ Name=Objektinteraktionsmenü
 Description=Kümmert sich um die Spielerinteraktion mit Gebäuden, Fahrzeugen etc.
 
 Contents=Inventar
+
+MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen möglich.
+MsgHostile=%s gehört deinem Feind %s.|Es sind keine Interaktionen möglich.

@@ -122,22 +122,18 @@ public func GetProductionMenuEntries()
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
-	// only open the menus if ready
-	if (GetCon() >= 100)
+	var prod_menu =
 	{
-		
-		var prod_menu =
-		{
-			title = "$Production$",
-			entries_callback = this.GetProductionMenuEntries,
-			callback = "OnProductSelection",
-			callback_hover = "OnProductHover",
-			callback_target = this,
-			BackgroundColor = RGB(0, 0, 50),
-			Priority = 20
-		};
-		PushBack(menus, prod_menu);
-	}
+		title = "$Production$",
+		entries_callback = this.GetProductionMenuEntries,
+		callback = "OnProductSelection",
+		callback_hover = "OnProductHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 0, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
+	
 	return menus;
 }
 

@@ -156,22 +156,18 @@ public func GetPumpControlMenuEntries(object clonk)
 
 public func GetInteractionMenus(object clonk)
 {
-	var menus = _inherited() ?? [];
-	// only open the menus if ready
-	if (GetCon() >= 100)
-	{			
-		var prod_menu =
-		{
-			title = "$Control$",
-			entries_callback = this.GetPumpControlMenuEntries,
-			callback = "OnPumpControl",
-			callback_hover = "OnPumpControlHover",
-			callback_target = this,
-			BackgroundColor = RGB(0, 50, 50),
-			Priority = 20
-		};
-		PushBack(menus, prod_menu);
-	}
+	var menus = _inherited() ?? [];		
+	var prod_menu =
+	{
+		title = "$Control$",
+		entries_callback = this.GetPumpControlMenuEntries,
+		callback = "OnPumpControl",
+		callback_hover = "OnPumpControlHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 50, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
 	return menus;
 }
 

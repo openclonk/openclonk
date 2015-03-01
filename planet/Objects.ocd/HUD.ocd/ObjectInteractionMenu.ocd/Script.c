@@ -341,6 +341,19 @@ func CreateMainMenu(object obj, int slot)
 		container.Left = ToEmString(InteractionMenu_SideBarSize);
 		container.Right = "100%";
 	}
+	
+	// Do virtually nothing if the building is not ready to be interacted with. This can be caused by several things.
+	var error_message = nil;
+	if (obj->GetCon() < 100) error_message = Format("$MsgNotFullyConstructed$", obj->GetName());
+	else if (Hostile(cursor->GetOwner(), obj->GetOwner())) error_message = Format("$MsgHostile$", obj->GetName(), GetTaggedPlayerName(obj->GetOwner()));
+	
+	if (error_message)
+	{
+		container.Style = GUI_TextVCenter | GUI_TextHCenter;
+		container.Text = error_message;
+		return container;
+	}
+	
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
@@ -470,7 +483,7 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 	
 	var callback_target;
 	if (!(callback_target = info.menu.callback_target)) return;
-	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data);
+	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data, cursor);
 	
 	// todo: trigger refresh for special value of result
 }
