@@ -109,7 +109,7 @@ public func GetProductionMenuEntries()
 		else
 			entry.controls.remove = nil;
 			
-		entry.Priority = index;
+		entry.Priority = 1000 * product->GetValue() + index; // Sort by (estimated) value and then by index.
 		entry.Tooltip = product->GetName();
 		entry.image.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = +1});
 		entry.controls.endless.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Infinite = true}); 
@@ -126,7 +126,7 @@ public func GetInteractionMenus(object clonk)
 	{
 		title = "$Production$",
 		entries_callback = this.GetProductionMenuEntries,
-		callback = "OnProductSelection",
+		callback = nil, // The callback is handled internally. See GetProductionMenuEntries.
 		callback_hover = "OnProductHover",
 		callback_target = this,
 		BackgroundColor = RGB(0, 0, 50),
@@ -173,20 +173,6 @@ private func GetCostString(int amount, bool available)
 	if (available) return Format("%dx", amount);
 	return Format("<c ff0000>%dx</c>", amount);
 }
-
-protected func OnProductSelection(id product, int par, bool alt)
-{
-	if (!product)
-		return;
-	
-	var amount = nil;
-	if (!alt)
-		amount = 1;
-		
-	AddToQueue(product, amount);
-	return;
-}
-
 
 /*-- Production  properties --*/
 

@@ -483,9 +483,10 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 	
 	var callback_target;
 	if (!(callback_target = info.menu.callback_target)) return;
+	if (!info.menu.callback) return; // The menu can actually decide to handle user interaction itself and not provide a callback.
 	var result = callback_target->Call(info.menu.callback, info.entry.symbol, info.entry.extra_data, cursor);
 	
-	// todo: trigger refresh for special value of result
+	// todo: trigger refresh for special value of result?
 }
 
 func OnContentsSelection(symbol, extra_data)
