@@ -24,8 +24,6 @@
 // ladder climbing
 #include Library_CanClimbLadder
 
-local pInventory;
-
 /* Initialization */
 
 protected func Construction()
