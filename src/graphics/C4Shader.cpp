@@ -562,7 +562,4 @@ void C4ShaderCall::Finish()
 	}
 	iUnits = 0;
 	fStarted = false;
-
-	// Got an error?
-	pGL->CheckGLError("C4ShaderCall::Finish()");
 }
