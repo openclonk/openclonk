@@ -22,6 +22,7 @@ public func Initialize()
 {
 	this.Plane=1545;
 	fade = 0;
+	SetCategory(0); // Must not be vehicle.
 	SetAction("Fly");
 	SetComDir(COMD_None);
 	ResetColor();
