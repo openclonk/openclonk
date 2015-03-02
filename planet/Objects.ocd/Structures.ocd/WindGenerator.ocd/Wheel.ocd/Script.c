@@ -1,6 +1,7 @@
 /**
 	Wheel
-	Invisible helper object. Takes care of collisions.
+	Invisible helper object, which takes care of collisions. Always immediately
+	call SetParent after creating this helper object.
 */
 
 
@@ -45,3 +46,6 @@ local ActMap = {
 		NextAction = "Hold",
 	}
 };
+
+// Plane must be set because of C4D_None category.
+local Plane = 0;
