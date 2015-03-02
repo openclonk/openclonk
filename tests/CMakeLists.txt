@@ -107,6 +107,7 @@ if (GTEST_FOUND AND GMOCK_FOUND)
         "../src/lib/StdMeshMath.cpp"
         "../src/lib/StdMeshMath.h"
         "math/StdMeshVectorTest.cpp"
+        "math/StdMeshQuaternionTest.cpp"
         )
 
     AUX_SOURCE_DIRECTORY("${CMAKE_CURRENT_LIST_DIR}" TESTS_SOURCES)
