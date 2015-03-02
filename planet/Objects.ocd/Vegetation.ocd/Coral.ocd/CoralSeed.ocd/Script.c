@@ -22,7 +22,7 @@ Swim = {
 
 func Initialize()
 {
-	SetCategory(0);
+	SetCategory(C4D_None);
 	
 	AddTimer("SwimAround", 15);
 	SetAction("Swim");
