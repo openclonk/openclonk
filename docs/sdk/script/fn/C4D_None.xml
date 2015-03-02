@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <const>
+    <title>C4D_None</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>6.0 OC</version>
+    <syntax><rtype>int </rtype></syntax>
+    <desc>No category, can be used for GUI and HUD objects. Only set this category for an object if you are aware of the consequences.</desc>
+    <related>
+      <funclink>GetCategory</funclink>
+      <funclink>SetCategory</funclink>
+    </related>
+  </const>
+  <author>Maikel</author><date>2015</date>
+</funcs>

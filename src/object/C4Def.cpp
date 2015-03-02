@@ -197,6 +197,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	const StdBitfieldEntry<int32_t> Categories[] =
 	{
 
+		{ "C4D_None",                     C4D_None                },
 		{ "C4D_StaticBack",               C4D_StaticBack          },
 		{ "C4D_Structure",                C4D_Structure           },
 		{ "C4D_Vehicle",                  C4D_Vehicle             },

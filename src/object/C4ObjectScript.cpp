@@ -2343,6 +2343,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 
 C4ScriptConstDef C4ScriptObjectConstMap[]=
 {
+	{ "C4D_None"               ,C4V_Int,          C4D_None},
 	{ "C4D_All"                ,C4V_Int,          C4D_All},
 	{ "C4D_StaticBack"         ,C4V_Int,          C4D_StaticBack},
 	{ "C4D_Structure"          ,C4V_Int,          C4D_Structure},
