@@ -149,12 +149,7 @@ class StdSubMesh
 	friend class StdMeshLoader;
 	friend class StdMeshMaterialUpdate;
 public:
-	// Remember bone assignments for vertices
-	class Vertex: public StdMeshVertex
-	{
-	public:
-		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
-	};
+	typedef StdMeshVertex Vertex;
 
 	const std::vector<Vertex>& GetVertices() const { return Vertices; }
 	const Vertex& GetVertex(size_t i) const { return Vertices[i]; }
@@ -165,11 +160,15 @@ public:
 
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
+	// Return the offset into the backing vertex buffer where this SubMesh's data starts
+	size_t GetOffsetInBuffer() const { return buffer_offset; }
+
 private:
 	StdSubMesh();
 
 	std::vector<Vertex> Vertices; // Empty if we use shared vertices
 	std::vector<StdMeshFace> Faces;
+	size_t buffer_offset;
 
 	const StdMeshMaterial* Material;
 };
@@ -198,7 +197,11 @@ public:
 
 	void PostInit();
 
+	const GLuint GetVBO() const { return vbo; }
+
 private:
+	GLuint vbo;
+	void UpdateVBO();
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable
@@ -230,18 +233,12 @@ public:
 
 	void CompileFunc(StdCompiler* pComp);
 
-	// Get vertex of instance, with current animation applied. This needs to
-	// go elsewhere if/when we want to calculate this on the hardware.
-	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }
-	size_t GetNumVertices() const { return Vertices.size(); }
-	// Return the offset into the backing vertex buffer where this SubMesh's data starts
-	size_t GetOffsetInBuffer() const { return buffer_offset; }
-
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
 	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : 0; }
 	size_t GetNumFaces() const { return Faces.size(); }
+	const StdSubMesh &GetSubMesh() const { return *base; }
 
 	unsigned int GetTexturePhase(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
 	double GetTexturePosition(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Position; }
@@ -254,14 +251,9 @@ protected:
 	void SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod);
 
-	// Vertices transformed according to current animation
+	const StdSubMesh *base;
 	// Faces sorted according to current face ordering
-	// TODO: We can skip these if we decide to either
-	// a) recompute Vertex positions each frame or
-	// b) compute them on the GPU
-	std::vector<StdMeshVertex> Vertices;
 	std::vector<StdMeshFace> Faces; // TODO: Indices could also be stored on GPU in a vbo (element index array). Should be done in a next step if at all.
-	size_t buffer_offset;
 
 	const StdMeshMaterial* Material;
 
@@ -424,7 +416,7 @@ public:
 		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
 		C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
 
-		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
+		void CompileFunc(StdCompiler* pComp, const StdMesh *Mesh);
 		void DenumeratePointers();
 		void ClearPointers(class C4Object* pObj);
 
@@ -499,6 +491,9 @@ public:
 		void DenumeratePointers();
 		bool ClearPointers(class C4Object* pObj);
 
+		unsigned int GetParentBone() const { return ParentBone; }
+		unsigned int GetChildBone() const { return ChildBone; }
+
 	private:
 		unsigned int ParentBone;
 		unsigned int ChildBone;
@@ -521,8 +516,8 @@ public:
 	void SetFaceOrdering(FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(uint32_t clrmod);
 
-	const std::vector<StdMeshVertex>& GetSharedVertices() const { return SharedVertices; }
-	size_t GetNumSharedVertices() const { return SharedVertices.size(); }
+	const std::vector<StdMeshVertex>& GetSharedVertices() const { return Mesh->GetSharedVertices(); }
+	size_t GetNumSharedVertices() const { return GetSharedVertices().size(); }
 
 	// Set completion of the mesh. For incompleted meshes not all faces will be available.
 	void SetCompletion(float completion);
@@ -569,6 +564,7 @@ public:
 	void SetMaterial(size_t i, const StdMeshMaterial& material);
 
 	const StdMeshMatrix& GetBoneTransform(size_t i) const;
+	size_t GetBoneCount() const;
 
 	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
 	// This is called recursively for attached children, so there is no need to call it on attached children only
@@ -593,9 +589,7 @@ public:
 	void DenumeratePointers();
 	void ClearPointers(class C4Object* pObj);
 
-	const StdMesh& GetMesh() const { assert(Mesh != NULL); return *Mesh; }
-
-	GLuint GetVBO() const { return vbo; }
+	const StdMesh& GetMesh() const { return *Mesh; }
 
 protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
@@ -606,13 +600,9 @@ protected:
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 	void SetBoneTransformsDirty(bool value);
 
-	const StdMesh* Mesh;
+	const StdMesh *Mesh;
 
 	float Completion; // NoSave
-
-	std::vector<StdMeshVertex> SharedVertices;
-	GLuint vbo;
-	void UpdateVBO();
 
 	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number

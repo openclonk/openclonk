@@ -75,6 +75,23 @@ private:
 	GLint *pUniforms;
 
 public:
+	enum VertexAttribIndex
+	{
+		// These correspond to the locations nVidia uses for the
+		// respective gl_* attributes, so make sure whatever you
+		// use for custom ones doesn't conflict with these UNLESS
+		// you're not using the pre-defined ones in your shader
+		VAI_Vertex = 0,
+		VAI_Normal = 2,
+		VAI_Color = 3,
+		VAI_TexCoord0 = 8, // and upwards through TexCoord7 = 15
+
+		// Make sure you move these if we implement multitexturing
+		VAI_BoneWeights,
+		VAI_BoneWeightsMax = VAI_BoneWeights + 1,
+		VAI_BoneIndices,
+		VAI_BoneIndicesMax = VAI_BoneIndices + VAI_BoneWeightsMax - VAI_BoneWeights
+	};
 
 	bool Initialised() const { return hVert != 0; }
 

@@ -461,9 +461,29 @@ namespace
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
 
-		bool using_shared_vertices = instance.GetVertices().empty();
-		GLuint vbo = mesh_instance.GetVBO();
-		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetOffsetInBuffer();
+		bool using_shared_vertices = instance.GetSubMesh().GetVertices().empty();
+		GLuint vbo = mesh_instance.GetMesh().GetVBO();
+		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInBuffer();
+
+		// Cook the bone transform matrixes into something that OpenGL can use. This could be moved into RenderMeshImpl.
+		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
+		struct BoneTransform
+		{
+			float m[4][4];
+		};
+		std::vector<BoneTransform> bones;
+		bones.reserve(mesh_instance.GetBoneCount());
+		for (size_t bone_index = 0; bone_index < mesh_instance.GetBoneCount(); ++bone_index)
+		{
+			const StdMeshMatrix &bone = mesh_instance.GetBoneTransform(bone_index);
+			BoneTransform cooked_bone = {
+				bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
+				bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
+				bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
+				0, 0, 0, 1
+			};
+			bones.push_back(cooked_bone);
+		}
 
 		// Render each pass
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -532,13 +552,6 @@ namespace
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
-#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
-			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
-			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
-#undef VERTEX_OFFSET
-
 			glMatrixMode(GL_TEXTURE);
 
 			assert(pass.Program.get() != NULL);
@@ -550,6 +563,27 @@ namespace
 			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
 			C4ShaderCall call(shader);
 			call.Start();
+
+			// Upload the current bone transformation matrixes (if there are any)
+			if (!bones.empty())
+				call.SetUniformMatrix4x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
+			
+			// Bind the vertex data of the mesh
+#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
+			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
+			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+			for (int attrib_index = 0; attrib_index <= C4Shader::VAI_BoneIndicesMax - C4Shader::VAI_BoneIndices; ++attrib_index)
+			{
+				glVertexAttribPointer(C4Shader::VAI_BoneWeights + attrib_index, 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex),
+					buffer_offset + VERTEX_OFFSET(bone_weight) + sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type) * 4 * attrib_index);
+				glEnableVertexAttribArray(C4Shader::VAI_BoneWeights + attrib_index);
+				glVertexAttribPointer(C4Shader::VAI_BoneIndices + attrib_index, 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex),
+					buffer_offset + VERTEX_OFFSET(bone_index) + sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type) * 4 * attrib_index);
+				glEnableVertexAttribArray(C4Shader::VAI_BoneIndices + attrib_index);
+			}
+#undef VERTEX_OFFSET
 
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
@@ -655,9 +689,15 @@ namespace
 			}
 
 			glMatrixMode(GL_MODELVIEW);
-			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
-			call.Finish();
+			size_t vertex_count = 3 * instance.GetNumFaces();
+			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			for (int attrib_index = 0; attrib_index <= C4Shader::VAI_BoneIndicesMax - C4Shader::VAI_BoneIndices; ++attrib_index)
+			{
+				glDisableVertexAttribArray(C4Shader::VAI_BoneIndices + attrib_index);
+				glDisableVertexAttribArray(C4Shader::VAI_BoneWeights + attrib_index);
+			}
+			call.Finish();
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);

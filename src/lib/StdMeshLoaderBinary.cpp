@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2010-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -518,26 +518,39 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 		// Read bone assignments
 		std::vector<Ogre::Mesh::BoneAssignment> &boneAssignments = (csm.hasSharedVertices ? cmesh.boneAssignments : csm.boneAssignments);
 		assert(!csm.hasSharedVertices || csm.boneAssignments.empty());
-		BOOST_FOREACH(const Ogre::Mesh::BoneAssignment &ba, boneAssignments)
+		for(const auto &ba : boneAssignments)
 		{
 			if (ba.vertex >= sm.GetNumVertices())
 				throw Ogre::Mesh::VertexNotFound();
 			if (bone_lookup.find(ba.bone) == bone_lookup.end())
 				throw Ogre::Skeleton::BoneNotFound();
-			StdMeshVertexBoneAssignment assignment;
-			assignment.BoneIndex = bone_lookup[ba.bone];
-			assignment.Weight = ba.weight;
-			sm.Vertices[ba.vertex].BoneAssignments.push_back(assignment);
+			size_t bone_index = bone_lookup[ba.bone];
+			// Check quickly if all weight slots are used
+			StdSubMesh::Vertex &vertex = sm.Vertices[ba.vertex];
+			if (vertex.bone_weight[StdMeshVertex::MaxBoneWeightCount - 1] != 0)
+			{
+				throw Ogre::Mesh::NotImplemented("Vertex is influenced by too many bones");
+			}
+			for (size_t weight_index = 0; weight_index < StdMeshVertex::MaxBoneWeightCount; ++weight_index)
+			{
+				if (vertex.bone_weight[weight_index] == 0)
+				{
+					vertex.bone_weight[weight_index] = ba.weight;
+					vertex.bone_index[weight_index] = bone_index;
+					break;
+				}
+			}
 		}
 
 		// Normalize bone assignments
-		BOOST_FOREACH(StdSubMesh::Vertex &vertex, sm.Vertices)
+		for(StdSubMesh::Vertex &vertex : sm.Vertices)
 		{
 			float sum = 0;
-			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
-			sum += ba.Weight;
-			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
-			ba.Weight /= sum;
+			for (float weight : vertex.bone_weight)
+				sum += weight;
+			if (sum != 0)
+				for (float &weight : vertex.bone_weight)
+					weight /= sum;
 		}
 	}
 	return mesh.release();
