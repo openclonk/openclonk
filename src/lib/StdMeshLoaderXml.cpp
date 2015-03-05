@@ -257,6 +257,8 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 		if (sum != 0)
 			for (float &weight : vertex.bone_weight)
 				weight /= sum;
+		else
+			vertex.bone_weight[0] = 1.0f;
 	}
 }
 

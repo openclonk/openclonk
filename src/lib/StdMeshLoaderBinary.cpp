@@ -551,6 +551,8 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 			if (sum != 0)
 				for (float &weight : vertex.bone_weight)
 					weight /= sum;
+			else
+				vertex.bone_weight[0] = 1.0f;
 		}
 	}
 	return mesh.release();

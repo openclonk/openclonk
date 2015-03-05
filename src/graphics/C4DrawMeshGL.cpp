@@ -472,17 +472,31 @@ namespace
 			float m[4][4];
 		};
 		std::vector<BoneTransform> bones;
-		bones.reserve(mesh_instance.GetBoneCount());
-		for (size_t bone_index = 0; bone_index < mesh_instance.GetBoneCount(); ++bone_index)
+		if (mesh_instance.GetBoneCount() == 0)
 		{
-			const StdMeshMatrix &bone = mesh_instance.GetBoneTransform(bone_index);
-			BoneTransform cooked_bone = {
-				bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
-				bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
-				bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
-				0, 0, 0, 1
+			// Upload dummy bone so we don't have to do branching in the vertex shader
+			static const BoneTransform dummy_bone = {
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
 			};
-			bones.push_back(cooked_bone);
+			bones.push_back(dummy_bone);
+		}
+		else
+		{
+			bones.reserve(mesh_instance.GetBoneCount());
+			for (size_t bone_index = 0; bone_index < mesh_instance.GetBoneCount(); ++bone_index)
+			{
+				const StdMeshMatrix &bone = mesh_instance.GetBoneTransform(bone_index);
+				BoneTransform cooked_bone = {
+					bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
+					bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
+					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
+					0, 0, 0, 1
+				};
+				bones.push_back(cooked_bone);
+			}
 		}
 
 		// Render each pass
