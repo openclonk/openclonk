@@ -19,10 +19,8 @@ local current_objects;
 	current_menus is an array with two fields
 	each field contain a proplist with the attributes:
 		target: the target object, needs to be in current_objects
-		menu_object: target of the menu (usually a dummy object)
+		menu_object: target of the menu (usually a dummy object) (the ID is always 1; the menu's sidebar has the ID 2)
 		menu_id
-		sidebar: proplist with the following attributes
-			menu_object
 		menus: array with more proplists with the following attributes:
 			type: flag (needed for content-menus f.e.)
 			title
@@ -96,7 +94,12 @@ func CreateFor(object cursor)
 func Init(object cursor)
 {
 	this.cursor = cursor;
-	AddEffect("IntCheckObjects", cursor, 1, 10, this);
+	var checking_effect = AddEffect("IntCheckObjects", cursor, 1, 10, this);
+	// Notify the Clonk. This can be used to create custom entries in the objects list via helper objects. For example the "Your Environment" tab.
+	// Note that the cursor is NOT informed when the menu is closed again. Helper objects can be attached to the livetime of this menu by, f.e., effects.
+	cursor->~OnInteractionMenuOpen(this);
+	// And then quickly refresh for the very first time. Successive refreshs will be only every 10 frames.
+	EffectCall(cursor, checking_effect, "Timer");
 }
 
 func FxIntCheckObjectsStart(target, effect, temp)
@@ -107,10 +110,20 @@ func FxIntCheckObjectsStart(target, effect, temp)
 
 func FxIntCheckObjectsTimer(target, effect, timer)
 {
-	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk")));
-	if (new_objects == current_objects) return;
+	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk"), Find_ActionTarget(target)));
+	var equal = GetLength(new_objects) == GetLength(current_objects);
 	
-	UpdateObjects(new_objects);
+	if (equal)
+	{
+		for (var i = GetLength(new_objects) - 1; i >= 0; --i)
+		{
+			if (new_objects[i] == current_objects[i]) continue;
+			equal = false;
+			break;
+		}
+	}
+	if (!equal)
+		UpdateObjects(new_objects);
 }
 
 // updates the objects shown in the side bar
@@ -142,7 +155,12 @@ func UpdateObjects(array new_objects)
 	// need to fill an empty menu slot?
 	for (var i = 0; i < 2; ++i)
 	{
-		if (current_menus[i] != nil) continue;
+		// If the menu already exists, just update the sidebar.
+		if (current_menus[i] != nil)
+		{
+			RefreshSidebar(i);
+			continue;
+		}
 		// look for next object to fill slot
 		for (var obj in current_objects)
 		{
@@ -189,12 +207,13 @@ func OpenMenuForObject(object obj, int slot)
 		else
 			 ++effect_index;
 	}
-	// create a menu with all interaction possibilities for an object
-	// always recreate the side bar
-	var sidebar = CreateSideBar(slot);
+	// Create a menu with all interaction possibilities for an object.
+	// Always create the side bar AFTER the main menu, so that the target can be copied.
 	var main = CreateMainMenu(obj, slot);
-	// to close the part_menu automatically when the main menu is closed
+	// To close the part_menu automatically when the main menu is closed. The sidebar will use this target, too.
 	current_menus[slot].menu_object = main.Target;
+	// Now, the sidebar.
+	var sidebar = CreateSideBar(slot);
 	
 	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
 	var part_menu = 
@@ -202,7 +221,8 @@ func OpenMenuForObject(object obj, int slot)
 		Left = "0%", Right = "50%-2em",
 		Bottom = "100%-14em",
 		sidebar = sidebar, main = main,
-		Target = current_menus[slot].menu_object
+		Target = current_menus[slot].menu_object,
+		ID = 1
 	};
 	
 	if (slot == 1)
@@ -224,7 +244,7 @@ func OpenMenuForObject(object obj, int slot)
 			
 		var root_menu = 
 		{
-			one_part = part_menu,
+			_one_part = part_menu,
 			Target = this,
 			Decoration = GUI_MenuDeco,
 			description_box = 
@@ -258,7 +278,7 @@ func OpenMenuForObject(object obj, int slot)
 	}
 	else // menu already exists and only one part has to be added
 	{
-		GuiUpdate({update = part_menu}, current_main_menu_id, nil, nil);
+		GuiUpdate({_update = part_menu}, current_main_menu_id, nil, nil);
 	}
 	
 }
@@ -268,14 +288,13 @@ func OpenMenuForObject(object obj, int slot)
 func CreateSideBar(int slot)
 {
 	var em_size = ToEmString(InteractionMenu_SideBarSize);
-	var dummy = CreateDummy();
 	var sidebar =
 	{
 		Priority = 10,
 		Right = em_size,
 		Style = GUI_VerticalLayout,
-		Target = dummy,
-		OnClose = GuiAction_Call(this, "RemoveDummy", dummy),
+		Target = current_menus[slot].menu_object,
+		ID = 2
 	};
 	if (slot == 1)
 	{
@@ -314,6 +333,17 @@ func CreateSideBar(int slot)
 		GuiAddSubwindow(entry, sidebar);
 	}
 	return sidebar;
+}
+
+// Updates the sidebar with the current objects (and closes the old one).
+func RefreshSidebar(int slot)
+{
+	if (!current_menus[slot]) return;
+	// Close old sidebar? This call will just do nothing if there is no sidebar present.
+	GuiClose(current_main_menu_id, 2, current_menus[slot].menu_object);
+	
+	var sidebar = CreateSideBar(slot);
+	GuiUpdate({sidebar = sidebar}, current_main_menu_id, 1, current_menus[slot].menu_object);
 }
 
 func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object target)
@@ -435,7 +465,7 @@ func CreateMainMenu(object obj, int slot)
 	for (var i = 0; i < GetLength(menus); ++i)
 	{
 		if (!(menus[i].flag & InteractionMenu_Contents)) continue;
-		AddEffect("IntRefreshContentsMenu", this, 1, 5, this, nil, obj, slot, i);
+		AddEffect("IntRefreshContentsMenu", this, 1, 1, this, nil, obj, slot, i);
 	}
 	
 	return container;
@@ -525,7 +555,9 @@ func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object 
 func FxIntRefreshContentsMenuTimer(target, effect, time)
 {
 	if (!effect.obj) return -1;
-	
+	// The fast interval is only used for the very first check to ensure a fast startup.
+	// It can't be just called instantly though, because the menu might not have been opened yet.
+	if (effect.Interval == 1) effect.Interval = 5;
 	var inventory = [];
 	var obj, i = 0;
 	while (obj = effect.obj->Contents(i++))

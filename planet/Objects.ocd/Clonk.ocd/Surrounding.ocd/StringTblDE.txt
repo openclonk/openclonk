@@ -1,0 +1,3 @@
+Name=Umgebung
+Description=Erlaubt das Aufnehmen von Objekten aus der Umgebung.
+ObjectsAroundYou=Objekte in der Umgebung

@@ -462,6 +462,15 @@ public func GetHandAction()
 	return false;
 }
 
+/* Enable the Clonk to pick up stuff from its surrounding in the interaction menu */
+public func OnInteractionMenuOpen(object menu)
+{
+	_inherited(menu, ...);
+	
+	var surrounding = CreateObject(Helper_Surrounding);
+	surrounding->InitFor(this, menu);
+}
+
 /* Mesh transformations */
 
 local mesh_transformation_list;

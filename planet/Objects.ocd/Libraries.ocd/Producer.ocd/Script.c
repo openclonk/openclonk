@@ -85,17 +85,16 @@ public func GetProductionMenuEntries()
 			info = nil;
 		}
 		// Prepare menu entry.
-		var entry = 
+		var entry = new custom_entry 
 		{
-			Prototype = custom_entry, 
-			image = {Prototype = custom_entry.image}, 
-			controls = 
+			image = new custom_entry.image{}, 
+			controls = new custom_entry.controls
 			{
-				Prototype = custom_entry.controls,
-				remove = {Prototype = custom_entry.controls.remove},
-				endless = {Prototype = custom_entry.controls.endless}
+				remove = new custom_entry.controls.remove{},
+				endless = new custom_entry.controls.endless{},
 			}
 		};
+		
 		entry.image.Symbol = product;
 		if (info) // Currently in queue?
 		{
