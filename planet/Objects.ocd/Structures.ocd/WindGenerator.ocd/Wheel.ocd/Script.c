@@ -48,4 +48,4 @@ local ActMap = {
 };
 
 // Plane must be set because of C4D_None category.
-local Plane = 0;
+local Plane = 1;
