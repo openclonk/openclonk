@@ -905,8 +905,60 @@ global func Test14_OnFinished()
 	return;
 }
 
-// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+// Test for a pump which is continuously powered but does not always have liquid to pump.
 global func Test15_OnStart(int plr)
+{
+	// Power source: wind generator producing the power difference between the two pumps.
+	SetWindFixed(100);
+	CreateObjectAbove(WindGenerator, 50, 160, plr);
+	
+	// Power storage: four compensators.
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
+		
+	// Power consumer: a single pump.	
+	var pump = CreateObjectAbove(Pump, 84, 160, plr);
+	var source = CreateObjectAbove(Pipe, 168, 292, plr);
+	var source_pipe = CreateObjectAbove(PipeLine, 144, 160, plr);
+	source_pipe->SetActionTargets(source, pump);
+	pump->SetSource(source_pipe);
+	var drain = CreateObjectAbove(Pipe, 240, 100, plr);
+	var drain_pipe = CreateObjectAbove(PipeLine, 224, 48, plr);
+	drain_pipe->AddVertex(208, 48);
+	drain_pipe->SetActionTargets(drain, pump);
+	pump->SetDrain(drain_pipe);
+	
+	// Change the water levels.
+	Schedule(nil, "RemoveWater()", 2 * 36, 0);
+	Schedule(nil, "RestoreWaterLevels()", 4 * 36, 0);
+	Schedule(nil, "RemoveWater()", 6 * 36, 0);
+	Schedule(nil, "RestoreWaterLevels()", 8 * 36, 0);
+	
+	// Log what the test is about.
+	Log("A pump which is continuously powered but does not always have liquid to pump.");
+	return true;
+}
+
+global func Test15_Completed()
+{
+	if (GetMaterial(248, 48) == Material("Water"))
+		return true;
+	return false;
+}
+
+global func Test15_OnFinished()
+{
+	// Restore water levels.
+	RestoreWaterLevels();
+	// Remove steam engine, pump and the pipes.
+	RemoveAll(Find_Or(Find_ID(Compensator), Find_ID(WindGenerator), Find_ID(Pump), Find_ID(Pipe)));
+	return;
+}
+
+// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+global func Test16_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -935,14 +987,14 @@ global func Test15_OnStart(int plr)
 	return true;
 }
 
-global func Test15_Completed()
+global func Test16_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test15_OnFinished()
+global func Test16_OnFinished()
 {
 	// Restore water levels.
 	RestoreWaterLevels();
@@ -970,6 +1022,15 @@ global func RestoreWaterLevels()
 	DrawMaterialQuad("Water", 144, 168, 208 + 1, 168, 208 + 1, 304, 144, 304, true);
 	for (var x = 216; x <= 280; x++)
 		for (var y = 24; y <= 120; y++)
+			if (GetMaterial(x, y) == Material("Water"))
+				ClearFreeRect(x, y, 1, 1);
+	return;
+}
+
+global func RemoveWater()
+{
+	for (var x = 144; x <= 208 + 1; x++)
+		for (var y = 168; y <= 304; y++)
 			if (GetMaterial(x, y) == Material("Water"))
 				ClearFreeRect(x, y, 1, 1);
 	return;

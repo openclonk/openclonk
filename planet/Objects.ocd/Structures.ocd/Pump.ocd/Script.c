@@ -275,7 +275,12 @@ private func UpdatePowerUsage()
 	
 	// do nothing if not necessary
 	if (new_power == power_used)
+	{
+		// But still set powered to true if power_used was not positive.
+		if (power_used <= 0)
+			powered = true;
 		return;
+	}
 	
 	// and update energy system
 	if (new_power > 0)
