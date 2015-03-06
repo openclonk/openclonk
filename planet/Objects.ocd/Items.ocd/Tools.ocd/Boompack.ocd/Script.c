@@ -82,19 +82,19 @@ func ControlJump(object clonk)
 	return true;
 }
 
-func ControlUseStart(object clonk, int x, int y)
+public func RejectUse(object clonk)
 {
-	// forward control to item
-	if(clonk->GetProcedure()=="ATTACH") return false;
+	// If the Clonk is on the boompack, we won't stop the command here, but forward it later.
+	if (clonk->GetProcedure() == "ATTACH") return false;
+	// Only allow during walking or jumping.
+	return clonk->GetProcedure() != "WALK" && clonk->GetProcedure() != "FLIGHT";
 }
+
 
 func ControlUse(object clonk, int x, int y)
 {
 	// forward control to item
 	if(clonk->GetProcedure()=="ATTACH") return false;
-
-	// only use during walk or jump
-	if(clonk->GetProcedure()!="WALK" && clonk->GetProcedure()!="FLIGHT") return true;
 
 	var angle=Angle(0,0,x,y);
 	Launch(angle,clonk);

@@ -35,11 +35,13 @@ public func IsToolProduct() { return true; }
 
 /*-- Usage --*/
 
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction();
+}
+
 public func ControlUse(object clonk)
 {
-	// Only do something if the clonk can do an action.
-	if (!clonk->HasHandAction())
-		return true;
 	// Attach the torch if the clonk stands in front of tunnel material.
 	if (GetMaterial() == Material("Tunnel"))	
 	{

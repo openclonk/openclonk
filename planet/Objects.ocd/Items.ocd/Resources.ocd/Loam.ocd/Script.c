@@ -15,6 +15,13 @@ func Hit()
 	Sound("GeneralHit?");
 }
 
+public func RejectUse(object clonk)
+{
+	// Duplicate check from Clonk::Bridge. This was done instead of an additional CanBridge callback in the Clonk because that would most likely stay the only usecase of that callback.
+	var proc = clonk->GetProcedure();
+	return (proc != "WALK") && (proc != "SCALE");
+}
+
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {

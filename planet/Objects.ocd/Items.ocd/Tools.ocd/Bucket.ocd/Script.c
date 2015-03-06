@@ -18,6 +18,11 @@ public func GetCarryTransform()
 	return Trans_Mul(Trans_Rotate(-90, 0, 0, 1), Trans_Translate(-4000,3500));
 }
 
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction();
+}
+
 public func ControlUse(object clonk, int iX, int iY)
 {
 	var angle = Angle(0,0,iX,iY);
@@ -37,17 +42,14 @@ public func ControlUse(object clonk, int iX, int iY)
 	// otherwise try to fill bucket
 	if(GBackSolid(x2,y2))
 	{
-		if (clonk->HasHandAction())
-		{
-			var mat = GetMaterial(x2,y2);
+		var mat = GetMaterial(x2,y2);
 
-			if(GetMaterialVal("DigFree","Material",mat))
-			{
-				Sound("SoftTouch2");
-				var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
-				FillBucket(mat, amount);
-				PlayAnimation(clonk);
-			}
+		if(GetMaterialVal("DigFree","Material",mat))
+		{
+			Sound("SoftTouch2");
+			var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
+			FillBucket(mat, amount);
+			PlayAnimation(clonk);
 		}
 	}
 	return true;
