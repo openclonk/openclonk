@@ -2075,6 +2075,8 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4Object 
 	if (!pEffect)
 	{
 		pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
+		// the object has no effects attached, nothing to look for
+		if (!pEffect) return 0;
 		// name/wildcard given: find effect by name
 		if (szEffect && *szEffect)
 			pEffect = pEffect->Get(szEffect, 0);
