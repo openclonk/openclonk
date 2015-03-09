@@ -313,7 +313,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var contents = this->GetHandItem(0);	
 	
 	// usage
-	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
+	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed);
 	if (use)
 	{
 		if (house)
@@ -362,25 +362,33 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 	}
 	
+	// A click on throw can also just abort usage without having any other effects.
+	// todo: figure out if wise.
+	var currently_in_use = this.control.current_object != nil;
+	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed) && currently_in_use && !release)
+	{
+		CancelUse();
+		return true;
+	}
+	
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	// only act on press, not release
 	if (!house && (!vehicle || proc == "ATTACH") && !release)
-	{
+	{		
 		if (contents && !contents->~QueryRejectDeparture(this))
-		{
-			// special treatmant so that we know it's a forced throw
-			if(ctrl == CON_ForcedThrow)
-			{
-				ctrl = CON_Throw;
-			}
-			
+		{		
+			// just drop in certain situations
+			var only_drop = proc == "SCALE" || proc == "HANGLE" || proc == "SWIM";
+			// also drop if no throw would be possible anyway
+			if (only_drop || Distance(0, 0, x, y) < 10 || (Abs(x) < 10 && y > 10))
+				only_drop = true;
 			// throw
 			if (ctrl == CON_Throw)
 			{
 				CancelUse();
 				
-				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
+				if (only_drop)
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
@@ -393,7 +401,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				{
 					VirtualCursor()->StopAim();
 				
-					if (proc == "SCALE" || proc == "HANGLE")
+					if (only_drop)
 						return ObjectCommand("Drop", contents);
 					else
 						return ObjectCommand("Throw", contents, this.control.mlastx, this.control.mlasty);
@@ -500,7 +508,12 @@ func FxShelvedCommandStop(target, effect, reason, temp)
 
 public func CancelUse()
 {
-	if (!this.control.current_object) return;
+	if (!this.control.current_object)
+	{
+		// just forget any possibly stored actions
+		StopShelvedCommand();
+		return;
+	}
 
 	// use the saved x,y coordinates for canceling
 	CancelUseControl(this.control.mlastx, this.control.mlasty);
@@ -806,16 +819,7 @@ func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool tem
 
 // Control use redirected to script
 func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
-{
-	// click on UseAlt cancels Use
-	if ((ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed) && !release)
-	{
-		if (this.control.current_object)
-			CancelUseControl(x, y);
-		StopShelvedCommand();
-		return true;
-	}
-	
+{	
 	// standard use
 	if (ctrl == CON_Use)
 	{

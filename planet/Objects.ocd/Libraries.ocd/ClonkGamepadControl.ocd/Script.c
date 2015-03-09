@@ -43,8 +43,8 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool releas
 	if (release)
 	{
 		// select
-		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->~OnMouseClick(mex,mey, ctrl == CON_UseAltDelayed);
+		if (ctrl == CON_UseDelayed)
+			this->GetMenu()->~OnMouseClick(mex,mey);
 	}
 	
 	return true;

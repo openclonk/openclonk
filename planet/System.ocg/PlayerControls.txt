@@ -144,10 +144,7 @@
 	GUIName=$CON_Throw$
 	GUIDesc=$CON_Throw_Desc$
 	Hold=1
-	
-	[ControlDef]
-	Identifier=ForcedThrow
-	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=ThrowDelayed
@@ -255,20 +252,6 @@
 	[ControlDef]
 	Identifier=CancelMenu
 	GUIName=$CON_MenuCancel$
-	
-	[ControlDef]
-	Identifier=UseAlt
-	GUIName=$CON_UseAlt$
-	GUIDesc=$CON_UseAlt_Desc$
-	Hold=1
-	SendCursorPos=1
-	
-	[ControlDef]
-	Identifier=UseAltDelayed
-	GUIName=$CON_UseAlt$
-	GUIDesc=$CON_UseAlt_Desc$
-	Hold=1
-	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Contents
@@ -673,16 +656,16 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=Use
-  
+		
 		[Assignment]
-		Key=Shift+Mouse1ButtonLeft
+		Key=Mouse1ButtonRight
 		Priority=100
-		GUIName=$KEY_MouseUseAlt$
-		GUIDesc=$KEY_MouseUseAlt_Desc$
+		GUIName=$KEY_MouseThrow$
+		GUIDesc=$KEY_MouseThrow_Desc$
 		GUIDisabled=1
 		GUIGroup=20
-		Control=UseAlt
-
+		Control=Throw
+		
 		# Zoom
 		
 		[Assignment]
@@ -836,14 +819,6 @@
 		GUIGroup=20
 		Priority=100
 		Control=UseDelayed
-  
-		[Assignment]
-		Key=Joy1D
-		GUIName=$KEY_GamepadUseAlt$
-		GUIDesc=$KEY_GamepadUseAlt_Desc$
-		GUIGroup=20
-		Priority=100
-		Control=UseAltDelayed
 
 		# Zoom
 		
@@ -951,23 +926,6 @@
 		Key=Mouse1Move
 		Control=GUICursor
 		Priority=100
-		
-		# Forced Throw (also calls standard throw, if forced throw is not treated)
-		
-		[Assignment]
-		Key=Mouse1ButtonRight
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=151
-		Control=ForcedThrow
-				
-		# Standard throw
-
-		[Assignment]
-		Key=CON_Use
-		GUIName=None
-		Priority=50
-		Control=Throw
 		
 	# ======================================================================= #
 	#                          Default hotkey controls                        #

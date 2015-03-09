@@ -97,43 +97,6 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 	}
 	
-	// Control not handled yet - possibly open info dialogue?
-	if (ctrl == CON_UseAlt)
-	{
-		// possibly close old dialogue?
-		var effect_name = Format("CurrentPlayerObjectInfoDialogue%d", plr);
-		var effect = GetEffect(effect_name, nil);
-		var old_target;
-		if (effect && effect.dialogue)
-		{
-			old_target = effect.dialogue.target;
-			effect.dialogue->Close();
-		}
-		var target = nil;
-		for (var o in FindObjects(Find_AtPoint(x, y), Find_Func("HasObjectInformationDialogue"), Sort_Distance(x, y)))
-		{
-			target = o;
-			break;
-		}
-		
-		if (target && (target != old_target))
-		{
-			var d = target->~GetObjectInformationDialogue();
-			if (!d) d = CreateObject(HUD_ObjectInfoDisplay, target->GetX(), target->GetY(), plr);
-			d->SetTarget(target);
-			
-			if (!target->~OnObjectInformationDialogueOpen(d))
-				d->StandardDisplay();
-			
-			if (!effect)
-				effect = AddEffect(effect_name, nil, 1, 0, nil);
-			effect.dialogue = d;
-		}
-		else
-			if (effect)
-				RemoveEffect(nil, nil, effect);
-	}
-	
 	// Nothing to handle control then
 	return false;
 }

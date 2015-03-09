@@ -23,7 +23,6 @@ global func IsThrowControl(int ctrl)
 {
 	// left mouse button
 	if(ctrl == CON_Throw
-	|| ctrl == CON_ForcedThrow
 	|| ctrl == CON_ThrowDelayed)
 		return true;
 	
@@ -98,9 +97,6 @@ global func IsCrewControl(int ctrl)
 /** Control uses selected item */
 global func IsUseControl(int ctrl)
 {
-	if(ctrl == CON_Use
-	|| ctrl == CON_UseAlt)
-		return true;
-	
+	if (ctrl == CON_Use) return true;
 	return false;
 }
