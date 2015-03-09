@@ -32,9 +32,10 @@
 	
 	OPEN TODOS:
 	 * Remove all the if (!link) checks, they are not needed in principle but errors arise when they are removed.
-	 * Fix overproduction if a request is not met, e.g. compensator trying to supply a workshop alone.
+	 * Fix overproduction flowing into power storage (producers can be deactivated).
 	 * Think about the necessity of global func RedrawAllFlagRadiuses().
 	 * Move network merging from flag to power library.
+	 * Optimize network and flag removal.
 
 	@author Zapper, Maikel
 */
@@ -386,15 +387,17 @@ public func CheckPowerBalance()
 	// or may be consumers. Get the power needed by all non-storage consumers and the 
 	// power available by all non-storage producers.
 	var needed_power = GetPowerConsumptionNeed();
-	var available_power = GetBarePowerAvailable();
 	// Debugging logs.
-	//LogState(Format("balance_start nd_power = %d, av_power = %d", needed_power, available_power));
+	//LogState(Format("balance_start nd_power = %d, av_power = %d", needed_power, GetBarePowerAvailable()));
 	// First activate the producers to create the requested power.
 	RefreshProducers(needed_power);
 	// Then active the consumers according to the freed up power, it might be that
 	// power storage was preferred over on-demand producers, which means that no
 	// consuming storage will be activated.
-	RefreshConsumers(GetActivePowerAvailable());	
+	RefreshConsumers(GetActivePowerAvailable());
+	// The producers may be underproducing, however, still producing too much for the 
+	// active consumer need. Deactivate producers to correct for this.
+	PostRefreshProducers(GetActivePowerAvailable() - GetPowerConsumption());
 	// Debugging logs.
 	//LogState(Format("balance_end nd_power = %d, av_power = %d", needed_power, GetActivePowerAvailable()));
 	return;
@@ -528,7 +531,7 @@ private func RefreshProducers(int power_need)
 		}
 	}
 	// This procedure might actually have activated too much power and a power producer
-	// With high priority but low production might not be necessary, deactivate these.
+	// with high priority but low production might not be necessary, deactivate these.
 	for (var index = satisfy_need_link + 1; index < GetLength(all_producers); index++)
 	{
 		var link = all_producers[index];
@@ -602,6 +605,43 @@ private func RefreshConsumers(int power_available)
 				// On enough power callback to the activated consumer.
 				link.obj->OnEnoughPower(consumption);
 				VisualizePowerChange(link.obj, 0, consumption, false);
+			}		
+		}	
+	}
+	return;
+}
+
+// Deactivate superfluous producers which were not needed to match the current consumption.
+private func PostRefreshProducers(int free_power)
+{
+	// Debugging logs.
+	//Log("POWR - PostRefreshProducers(): network = %v, frame = %d, free_power = %d", this, FrameCounter(), free_power);
+	if (free_power <= 0)
+		return;
+	var power_freed = 0;
+	// First update the priorities of the active producers and then sort them according to priority.
+	UpdatePriorities(lib_power.active_producers);
+	if (GetLength(lib_power.active_producers) > 1) // TODO: this check should not be necessary.
+		SortArrayByProperty(lib_power.active_producers, "priority", true);
+	// Loop over all active power producers and free up according to priority.
+	for (var index = GetLength(lib_power.active_producers) - 1; index >= 0; index--)
+	{
+		var link = lib_power.active_producers[index];
+		if (!link)
+			continue;
+		// Check if power producer is not needed and if so deactivate it.
+		if (power_freed + link.prod_amount <= free_power)
+		{
+			var idx = GetIndexOf(lib_power.active_producers, link);
+			// It is not possible to deactivate a steady power producer.
+			if (idx != -1 && !link.obj->IsSteadyPowerProducer())
+			{
+				power_freed += link.prod_amount;
+				PushBack(lib_power.idle_producers, link);
+				RemoveArrayIndex(lib_power.active_producers, idx);
+				// On production stop callback to the deactivated producer.
+				link.obj->OnPowerProductionStop(link.prod_amount);
+				VisualizePowerChange(link.obj, link.prod_amount, 0, false);
 			}		
 		}	
 	}

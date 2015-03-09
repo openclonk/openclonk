@@ -994,9 +994,9 @@ global func Test16_Completed()
 	var engine = FindObject(Find_ID(SteamEngine));
 	if (!engine)
 		return false;
-	// Completed if the engine still has its fuel after 5 seconds.
-	if (FrameCounter() > 5 * 36 + POWER_SYSTEM_Test16_Start)
-		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 1800)
+	// Completed if the engine still has its fuel after 20 seconds.
+	if (FrameCounter() > 20 * 36 + POWER_SYSTEM_Test16_Start)
+		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 1800 / 2)
 			return true;
 	return false;
 }
