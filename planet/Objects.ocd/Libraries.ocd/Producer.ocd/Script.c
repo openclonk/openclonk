@@ -341,7 +341,7 @@ private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
 private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
-private func PowerNeed() { return 80; }
+public func PowerNeed() { return 80; }
 
 public func GetConsumerPriority() { return 50; }
 
@@ -536,7 +536,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Always register the power request even if power need is zero. The
 	// power network handles this correctly and a producer may decide to
 	// change its power need during production.
-	RegisterPowerRequest(PowerNeed());
+	RegisterPowerRequest(this->PowerNeed());
 	
 	return 1;
 }

@@ -10,7 +10,7 @@
 #include Library_Producer
 
 // does not need power
-func PowerNeed() { return 0; }
+public func PowerNeed() { return 0; }
 
 public func Construction(object creator)
 {

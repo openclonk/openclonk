@@ -92,7 +92,7 @@ public func Wind2Turn()
 		last_power = power;
 		// If in production update the power consumption.
 		if (GetEffect("InProduction", this))
-			RegisterPowerRequest(PowerNeed());
+			RegisterPowerRequest(this->PowerNeed());
 	}
 	// Adjust the wheel speed.
 	var current_wind = GetWeightedWind();
@@ -104,7 +104,7 @@ public func Wind2Turn()
 }
 
 // Power need for the production library.
-private func PowerNeed() 
+public func PowerNeed() 
 {
 	return Max(0, 30 - last_power); 
 }

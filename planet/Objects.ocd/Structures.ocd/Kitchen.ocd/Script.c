@@ -20,7 +20,7 @@ func IsProduct(id product_id)
 }
 
 private func ProductionTime(id toProduce) { return 500; }
-private func PowerNeed() { return 0; }
+public func PowerNeed() { return 0; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
