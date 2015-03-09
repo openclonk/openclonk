@@ -957,8 +957,59 @@ global func Test15_OnFinished()
 	return;
 }
 
-// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+static POWER_SYSTEM_Test16_Start;
+
+// Test for ndproduction of power not meeting a single demand, which should not lead to producing any power at all.
 global func Test16_OnStart(int plr)
+{
+	// Store the current frame.
+	POWER_SYSTEM_Test16_Start = FrameCounter();
+	
+	// Power source: one steam engine.
+	var engine = CreateObjectAbove(SteamEngine, 40, 160, plr);
+	var coal = engine->CreateContents(Coal, 1);
+	
+	// Power storage: four compensators.
+	CreateObjectAbove(Compensator, 20, 224, plr);
+	CreateObjectAbove(Compensator, 45, 224, plr);
+	CreateObjectAbove(Compensator, 70, 224, plr);
+	CreateObjectAbove(Compensator, 95, 224, plr);
+	
+	// Power consumer: one workshop.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
+	workshop.PowerNeed = Scenario.Test16_PowerNeed;
+	workshop->CreateContents(Wood, 1);
+	workshop->CreateContents(Metal, 1);
+	workshop->AddToQueue(Shovel, 1);
+	
+	// Log what the test is about.
+	Log("Undproduction of power not meeting a single demand, which should not lead to producing any power at all.");
+	return true;
+}
+
+public func Test16_PowerNeed(...) { return 320; }
+
+global func Test16_Completed()
+{
+	var engine = FindObject(Find_ID(SteamEngine));
+	if (!engine)
+		return false;
+	// Completed if the engine still has its fuel after 5 seconds.
+	if (FrameCounter() > 5 * 36 + POWER_SYSTEM_Test16_Start)
+		if (FindObject(Find_Container(engine), Find_ID(Coal)) || engine->GetFuelAmount() >= 1800)
+			return true;
+	return false;
+}
+
+global func Test16_OnFinished()
+{
+	// Remove steam engine, compensators and workshop.
+	RemoveAll(Find_Or(Find_ID(SteamEngine), Find_ID(Compensator), Find_ID(ToolsWorkshop)));
+	return;
+}
+
+// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+global func Test17_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -987,14 +1038,14 @@ global func Test16_OnStart(int plr)
 	return true;
 }
 
-global func Test16_Completed()
+global func Test17_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test16_OnFinished()
+global func Test17_OnFinished()
 {
 	// Restore water levels.
 	RestoreWaterLevels();

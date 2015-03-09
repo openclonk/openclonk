@@ -66,6 +66,11 @@ public func ContentsCheck()
 	return;
 }
 
+public func GetFuelAmount()
+{
+	return fuel_amount;
+}
+
 
 /*-- Power Production --*/
 
