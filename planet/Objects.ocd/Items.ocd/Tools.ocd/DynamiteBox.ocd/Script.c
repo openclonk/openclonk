@@ -1,21 +1,32 @@
-/*-- Dynamite box --*/
+/**
+	Dynamite box
+	Contains five dynamite sticks which can be placed and detonated from a distance. 
+	
+	@author Newton
+*/
 
 static const DYNA_MaxLength = 500;
 static const DYNA_MaxCount  = 5;
 
+local count;
+local dynamite_sticks;
+local wires;
+local wire;
+
 public func Initialize()
 {
-	iCount = DYNA_MaxCount;
-	aDynamites = CreateArray(iCount);
-	aWires = CreateArray(iCount);
-	for(var i = 0; i < iCount; i++)
+	count = DYNA_MaxCount;
+	dynamite_sticks = [];
+	wires = [];
+	for (var i = 0; i < count; i++)
 	{
-		aDynamites[i] = nil;
-		aWires[i] = nil;
+		dynamite_sticks[i] = nil;
+		wires[i] = nil;
 	}
 
 	this.PictureTransformation = Trans_Scale(); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 	UpdatePicture();
+	return;
 }
 
 private func Hit()
@@ -28,38 +39,27 @@ public func HoldingEnabled() { return true; }
 public func GetCarryMode() { return CARRY_BothHands; }
 public func GetCarryPhase() { return 450; }
 
-local iCount;
-local aDynamites;
-local aWires;
-
-local pWire;
-
 public func ControlUse(object clonk, int x, int y)
 {
-	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
-	if(!pDyna->ControlUse(clonk, x, y, 1))
+	var dynamite = dynamite_sticks[count - 1] = CreateContents(Dynamite);
+	if (!dynamite->ControlUse(clonk, x, y, 1))
 	{
-		pDyna->RemoveObject();
+		dynamite->RemoveObject();
 		return true;
 	}
-	if(pWire)
-		pWire->Connect(aDynamites[iCount], pDyna);
-	// First? then add Timer
-/*	else
-		AddEffect("IntLength", this, 1, 10, this);*/
+	if(wire)
+		wire->Connect(dynamite_sticks[count], dynamite);
 
-	pWire = CreateObjectAbove(Fuse);
-	pWire->Connect(pDyna, this);
+	wire = CreateObject(Fuse);
+	wire->Connect(dynamite, this);
 	Sound("Connect");
-	aWires[iCount-1] = pWire;
+	wires[count - 1] = wire;
 	
-	iCount--;
+	count--;
 
 	UpdatePicture();
 	
-//	Message("%d left", iCount);
-
-	if(iCount == 0)
+	if (count == 0)
 	{
 		var pos = clonk->GetItemPos(this);
 		ChangeDef(Igniter);
@@ -76,58 +76,10 @@ private func UpdatePicture()
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
-
-	SetGraphics(Format("%d", iCount), Icon_Number, 12, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", count), Icon_Number, 12, GFXOV_MODE_Picture);
 	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
-
-	SetGraphics(Format("%d", 6 - iCount), DynamiteBox, 1, GFXOV_MODE_Picture);
-}
-
-local fWarning;
-local fWarningColor;
-
-func FxIntLengthTimer(pTarget, effect, iTime)
-{
-	var iLength = 0;
-	var i = GetLength(aWires)-1;
-	while(i >= 0 && aWires[i])
-	{
-		iLength += aWires[i]->GetLineLength();
-		i--;
-	}
-	if(iLength > DYNA_MaxLength*4/5)
-	{
-		fWarning = 1;
-//		Message("Line too long! %d%%", iLength*100/DYNA_MaxLength);
-		if( (iTime % 5) == 0)
-		{
-			var fOn = 1;
-			if( fWarningColor == 1) fOn = 0;
-			fWarningColor = fOn;
-//			for(var i = 0; i < GetLength(aWires); i++)
-//				if(aWires[i]) aWires[i]->SetColorWarning(fOn);
-		}
-	}
-	else if(fWarning)
-	{
-		fWarning = 0;
-//		for(var i = 0; i < GetLength(aWires); i++)
-//			if(aWires[i]) aWires[i]->SetColorWarning(0);
-	}
-	if(iLength > DYNA_MaxLength)
-	{
-		var iMax = GetLength(aWires)-1;
-		aWires[iMax]->RemoveObject();
-		aDynamites[iMax]->Reset();
-		SetLength(aWires, iMax);
-		SetLength(aDynamites, iMax);
-//		Message("Line too long,|lost dynamite!|%d left.", iMax);
-		if(iMax == 0)
-		{
-			Contained()->Message("Line broken.");
-			RemoveObject();
-		}
-	}
+	SetGraphics(Format("%d", 6 - count), DynamiteBox, 1, GFXOV_MODE_Picture);
+	return;
 }
 
 public func OnFuseFinished()
@@ -137,30 +89,39 @@ public func OnFuseFinished()
 
 public func DoExplode()
 {
-	// Activate all fuses
-	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
+	// Activate all fuses.
+	for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 		obj->~StartFusing(this);
 	// Explode, calc the radius out of the area of a explosion of a single dynamite times the amount of dynamite
 	// This results to 18, 25, 31, 36, and 40
-	Explode(Sqrt(18**2*iCount));
+	Explode(Sqrt(18**2*count));
 }
 
-protected func Incineration() { Damage(); }
+protected func Incineration() 
+{
+	AddEffect("Fuse", this, 100, 1, this);
+	Sound("Fuse");
+	return;
+}
 
 protected func Damage()
 {
-	// Explode with 1 frame delay to prevent deep script call recursion if lots of dynamite boxes in the same place explode
-	if (!this.exploding) this.exploding = ScheduleCall(this, this.DoExplode, 1, 1);
+	Incinerate();
 }
 
-func FxIntLengthStop(pTarget, effect, iReason, fTmp)
+public func FxFuseTimer(object target, effect, int timer)
 {
-	for(var i = 0; i < GetLength(aWires); i++)
-			if(aWires[i]) aWires[i]->SetColorWarning(0);
+	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
+	if (timer > 90)
+		DoExplode();
+	return FX_OK;
 }
 
 public func IsTool() { return true; }
 public func IsChemicalProduct() { return true; }
+
+
+/*-- Properties --*/
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);

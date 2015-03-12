@@ -1,9 +1,9 @@
-/*
+/**
 	Dynamite
-	Author: Newton
+	A volatile tool that can be pressed into wallsfor accurate 
+	mining, burning a short fuse before exploding.
 
-	A volatile tool that can be pressed into walls
-	for accurate mining, burning a short fuse before exploding.
+	@author Newton
 */
 
 // time in frames until explosion
@@ -83,17 +83,15 @@ public func Fuse()
 
 // returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func GetWall(angle)
+private func GetWall(int angle)
 {
 	var dist = 12;
-	for(var dist = 12; dist < 18; dist++)
+	for (var dist = 12; dist < 18; dist++)
 	{
 		var x = Sin(angle, dist);
 		var y = -Cos(angle, dist);
-		if(GBackSolid(x, y))
-		{
+		if (GBackSolid(x, y))
 			return [Sin(angle, dist-5), -Cos(angle, dist-5)];
-		}
 	}
 	return false;
 }
@@ -132,18 +130,19 @@ private func Fusing()
 	var x = Sin(GetR(), 5);
 	var y = -Cos(GetR(), 5);
 
-	if(Contained()!=nil)
+	if (Contained()!=nil)
 	{
 		//If the dynamite is held, sparks come from clonk's center.
 		x = y = 0;
 	}
 
-	// Effekt
-	if(GetActTime() < FuseTime() - 20)
+	// Effect: fire particles.
+	if (GetActTime() < FuseTime() - 20)
 		CreateParticle("Fire", x, y, PV_Random(x - 5, x + 5), PV_Random(y - 15, y + 5), PV_Random(10, 40), Particles_Glimmer(), 3);
-	// Explosion
-	else if(GetActTime() > FuseTime())
+	// Explosion: after fusetime is over.
+	else if (GetActTime() > FuseTime())
 		DoExplode();
+	return;
 }
 
 public func OnFuseFinished()
@@ -153,14 +152,17 @@ public func OnFuseFinished()
 
 public func DoExplode()
 {
-	// Activate all fuses
-	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
+	// Activate all fuses.
+	for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 		obj->~StartFusing(this);
 	Explode(26);
 }
 
 public func IsChemicalProduct() { return true; }
 public func IsGrenadeLauncherAmmo() { return true; }
+
+
+/*-- Properties --*/
 
 local ActMap = {
 	Fuse = {
