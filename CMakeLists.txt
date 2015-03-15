@@ -912,7 +912,6 @@ if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
 	find_package(SDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	include_directories(${SDL_INCLUDE_DIR})
-	target_link_libraries(openclonk ${SDL_LIBRARY})
 endif()
 
 ############################################################################
@@ -1093,6 +1092,10 @@ target_link_libraries(openclonk
 	libc4script
 	libmisc
 )
+
+if (SDL_FOUND)
+	target_link_libraries(openclonk ${SDL_LIBRARY})
+endif()
 
 if(Audio_FOUND)
 	target_link_libraries(openclonk ${Audio_LIBRARIES})
