@@ -781,8 +781,9 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		tri.fadeRY = tri.fanRY + d * dy;
 
 		// Do the fades cross?
+		const double fadeCrossEta = 0.01
 		if ((tri.fadeRX - lightRX) / (tri.fadeRY - lightRY)
-			< (tri.fadeLX - lightRX) / (tri.fadeLY - lightRY))
+			< (tri.fadeLX - lightRX) / (tri.fadeLY - lightRY) + fadeCrossEta)
 		{
 			// Average it
 			tri.fadeLX = tri.fadeRX = (tri.fadeLX + tri.fadeRX) / 2;
