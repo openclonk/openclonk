@@ -541,16 +541,6 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				{
 					// Reduce to upper point (Yep, we know that the upper point
 					// must be the right one. Try to figure out why!)
-					static bool logged_bug_asc = false;
-					if (tri.fanRY > tri.fanLY && !logged_bug_asc)
-					{
-						// Bug finding helper
-						C4Rect rc = region->getRegion();
-						LogF("tri.fanRY(%d) > tri.fanLY(%d) while updating rectangle (%d,%d,%d,%d)", (int)tri.fanRY, (int)tri.fanLY, (int)rc.x, (int)rc.y, (int)rc.Wdt, (int)rc.Hgt);
-						if (pLight) LogF("Light at %d/%d, r=%d   f=%d   s=%d   obj=%s", (int)pLight->getX(), (int)pLight->getY(), (int)pLight->getReach(), (int)pLight->getFadeout(), (int)pLight->getSize(), pLight->getObj() ? pLight->getObj()->GetName() : "NULL");
-						Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*const_cast<C4FoWLightSection *>(this), "LightSection")).getData());
-						logged_bug_asc = true;
-					}
 					assert(tri.fanRY <= tri.fanLY);
 					tri.fanLX = tri.fanRX;
 					tri.fanLY = tri.fanRY;
@@ -654,16 +644,6 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				if (  (nextTri.fanRY - nextTri.fanLY) * (tri.fanRX - lightLX) >=
 					  (nextTri.fanRX - nextTri.fanLX) * (tri.fanRY - lightLY))
 				{
-					static bool logged_bug_desc = false;
-					if (nextTri.fanLY > nextTri.fanRY && !logged_bug_desc)
-					{
-						// Bug finding helper
-						C4Rect rc = region->getRegion();
-						LogF("nextTri.fanLY(%d) > nextTri.fanRY(%d) while updating rectangle (%d,%d,%d,%d)", (int)nextTri.fanLY, (int)nextTri.fanRY, (int)rc.x, (int)rc.y, (int)rc.Wdt, (int)rc.Hgt);
-						if (pLight) LogF("Light at %d/%d, r=%d   f=%d   s=%d   obj=%s", (int)pLight->getX(), (int)pLight->getY(), (int)pLight->getReach(), (int)pLight->getFadeout(), (int)pLight->getSize(), pLight->getObj() ? pLight->getObj()->GetName() : "NULL");
-						Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*const_cast<C4FoWLightSection *>(this), "LightSection")).getData());
-						logged_bug_desc = true;
-					}
 					assert(nextTri.fanLY <= nextTri.fanRY);
 					nextTri.fanRX = nextTri.fanLX;
 					nextTri.fanRY = nextTri.fanLY;
