@@ -1164,6 +1164,15 @@ endif()
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
+if (APPLE AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
+	# If cross-compiling for OS X, EXECUTABLE_NAME needs to be set so it's
+	# expanded inside the Info.plist file. Otherwise you cannot rename the app
+	# bundle later.
+	# XXX: Make sure to fix this once we have more than one app bundle. No, I
+	# have no idea how.
+	set(EXECUTABLE_NAME openclonk)
+endif()
+
 set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
 if(MSVC)
