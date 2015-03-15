@@ -49,7 +49,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	for (var i = 0; i < amount; i++)
 	{
 		var size = RandomX(settings.size[0], settings.size[1]);
-		var loc = FindLocation(loc_background, Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
+		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
 		if (!loc)
 			continue;
 		var branch = CreateObjectAbove(Branch);
