@@ -59,6 +59,32 @@ public func ChopDown()
 	_inherited(...);
 }
 
+protected func Damage(int change, int cause)
+{
+	_inherited(change, cause, ...);
+
+	if (cause == FX_Call_DmgChop && IsStanding())
+		ShakeTree();
+	return;
+}
+
+private func ShakeTree()
+{
+	var effect = AddEffect("IntShakeTree", this, 100, 1, this);
+	effect.current_trans = this.MeshTransformation;
+	return;
+}
+
+protected func FxIntShakeTreeTimer(object target, proplist effect, int time)
+{
+	if (time > 24)
+		return FX_Execute_Kill;
+	var angle = Sin(time * 45, 2);
+	var r = Trans_Rotate(angle, 0, 0, 1);
+	target.MeshTransformation = Trans_Mul(r, effect.current_trans);
+	return FX_OK;
+}
+
 /*-- Properties --*/
 
 protected func Definition(def) 
