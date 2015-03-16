@@ -50,7 +50,7 @@ slice(normal)
 	normalDir = normalize(gl_NormalMatrix * gl_Normal);
 #else
 	vec4 base_normal = vec4(gl_Normal, 0.0);
-	vec4 normal = base_normal;
+	vec4 normal = vec4(0, 0, 0, 0);
 	normal = merge_bone(normal, base_normal, bones[int(oc_BoneIndices0.x)], oc_BoneWeights0.x);
 	normal = merge_bone(normal, base_normal, bones[int(oc_BoneIndices0.y)], oc_BoneWeights0.y);
 	normal = merge_bone(normal, base_normal, bones[int(oc_BoneIndices0.z)], oc_BoneWeights0.z);
