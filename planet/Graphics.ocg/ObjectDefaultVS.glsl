@@ -1,5 +1,5 @@
 varying vec3 normalDir;
-uniform mat4 bones[128];
+uniform mat4x3 bones[80];
 
 // For more performance, this should be set by the engine, and this shader
 // should be compiled three times: with BONE_COUNT set to 0, 4, and 8,
@@ -14,9 +14,9 @@ attribute vec4 oc_BoneIndices1;
 attribute vec4 oc_BoneWeights1;
 #endif
 
-vec4 merge_bone(vec4 vertex, vec4 original, mat4 bone, float weight)
+vec4 merge_bone(vec4 vertex, vec4 original, mat4x3 bone, float weight)
 {
-	return (bone * original) * weight + vertex;
+	return (mat4(bone) * original) * weight + vertex;
 }
 
 slice(position)

@@ -469,7 +469,7 @@ namespace
 		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
 		struct BoneTransform
 		{
-			float m[4][4];
+			float m[3][4];
 		};
 		std::vector<BoneTransform> bones;
 		if (mesh_instance.GetBoneCount() == 0)
@@ -478,8 +478,7 @@ namespace
 			static const BoneTransform dummy_bone = {
 				1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
+				0.0f, 0.0f, 1.0f, 0.0f
 			};
 			bones.push_back(dummy_bone);
 		}
@@ -492,8 +491,7 @@ namespace
 				BoneTransform cooked_bone = {
 					bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
 					bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
-					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
-					0, 0, 0, 1
+					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3)
 				};
 				bones.push_back(cooked_bone);
 			}
@@ -580,7 +578,7 @@ namespace
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
-				call.SetUniformMatrix4x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
+				call.SetUniformMatrix3x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
 			
 			// Bind the vertex data of the mesh
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
