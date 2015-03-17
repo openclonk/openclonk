@@ -184,6 +184,11 @@ public:
 	C4Shader* GetSpriteShader(int ssc);
 	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);
 
+	struct
+	{
+		bool LowMaxVertexUniformCount;
+	} Workarounds;
+
 protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 

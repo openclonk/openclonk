@@ -196,6 +196,12 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix3x2fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
+
+	void SetUniformMatrix3x4fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix4x3fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+	}
+
 	void SetUniformMatrix4x4fv(int iUniform, int iLength, const float* pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
