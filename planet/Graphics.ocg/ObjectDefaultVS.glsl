@@ -1,3 +1,37 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
+
+// Default Vertex Shader for mesh-based objects.
+
+// Input uniforms:
+//   bones: array of 4x3 bone transformation matrices.
+
+
+// Input vertex attributes:
+//   oc_BoneWeights0 and oc_BoneWeight1: vectors of bone influence weights.
+//     The sum of weights must be 1. Each component of these vectors will be
+//     matched up with its corresponding component of the oc_BoneIndices0 or
+//     oc_BoneIndices1 vectors to specify a vertex bone assignment.
+//  oc_BoneIndices0 and oc_BoneIndices1: vectors of bone influence indices.
+//    The integer part of every component of these vectors selects one of the
+//    bones from the bone matrix array to influence the current vertex.
+
+// If the vertex is not influenced by any bones, it must use a dummy entry
+// inside the bone matrix array that contains the identity matrix, with a bone
+// weight of 1.0.
+
 varying vec3 normalDir;
 uniform mat4x3 bones[80];
 
