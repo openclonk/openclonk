@@ -1318,9 +1318,9 @@ endif()
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
 # TinyXML
-if(WITH_SYSTEM_TINYXML)
-	pkg_search_module(TINYXML REQUIRED tinyxml)
-	target_link_libraries(openclonk ${TINYXML_LIBRARIES})
+if(USE_SYSTEM_TINYXML)
+	find_package(TinyXML REQUIRED)
+	target_link_libraries(openclonk ${TinyXML_LIBRARIES})
 else()
 	add_subdirectory(thirdparty/tinyxml)
 	include_directories(SYSTEM thirdparty/tinyxml)
