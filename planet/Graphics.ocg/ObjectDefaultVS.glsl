@@ -15,9 +15,11 @@
 
 // Default Vertex Shader for mesh-based objects.
 
-// Input uniforms:
+// Input uniforms, if OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS is NOT defined:
 //   bones: array of 4x3 bone transformation matrices.
 
+// Input uniforms, if OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS is defined:
+//   bones: array of 3x4 transposed bone transformation matrices.
 
 // Input vertex attributes:
 //   oc_BoneWeights0 and oc_BoneWeight1: vectors of bone influence weights.
@@ -32,8 +34,15 @@
 // inside the bone matrix array that contains the identity matrix, with a bone
 // weight of 1.0.
 
+#define MAX_BONE_COUNT 80
+
 varying vec3 normalDir;
-uniform mat4x3 bones[80];
+
+#ifndef OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS
+uniform mat4x3 bones[MAX_BONE_COUNT];
+#else
+uniform mat3x4 bones[MAX_BONE_COUNT];
+#endif
 
 // For more performance, this should be set by the engine, and this shader
 // should be compiled three times: with BONE_COUNT set to 0, 4, and 8,
@@ -48,10 +57,17 @@ attribute vec4 oc_BoneIndices1;
 attribute vec4 oc_BoneWeights1;
 #endif
 
+#ifndef OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS
 vec4 merge_bone(vec4 vertex, vec4 original, mat4x3 bone, float weight)
 {
 	return (mat4(bone) * original) * weight + vertex;
 }
+#else
+vec4 merge_bone(vec4 vertex, vec4 original, mat3x4 bone, float weight)
+{
+	return (mat4(transpose(bone)) * original) * weight + vertex;
+}
+#endif
 
 slice(position)
 {

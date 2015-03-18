@@ -127,7 +127,11 @@ namespace
 				"}\n"
 			);
 		}
-		return buf;
+
+		if (pGL->Workarounds.LowMaxVertexUniformCount)
+			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
+		else
+			return buf;
 	}
 
 	// Note this only gets the code which inserts the slices specific for the pass
@@ -578,8 +582,11 @@ namespace
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
-				call.SetUniformMatrix3x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
-			
+				if (pGL->Workarounds.LowMaxVertexUniformCount)
+					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
+				else
+					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+
 			// Bind the vertex data of the mesh
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
