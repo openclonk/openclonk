@@ -143,6 +143,8 @@ func FxKeepAliveStop(object target, proplist effect, int reason, int temp)
 	RemoveObject();
 }
 
+public func HasInteractionMenu() { return true; }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local Plane = 1;

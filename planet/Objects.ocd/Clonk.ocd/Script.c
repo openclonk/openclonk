@@ -1003,6 +1003,7 @@ Eat = {
 	Attach=CNAT_Bottom,
 },
 };
+
 local Name = "Clonk";
 local MaxEnergy = 50000;
 local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
@@ -1010,6 +1011,9 @@ local JumpSpeed = 400;
 local ThrowSpeed = 294;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
+
+// Clonks are always shown in the interaction menu.
+public func HasInteractionMenu() { return true; }
 
 func Definition(def) {
 	// Set perspective

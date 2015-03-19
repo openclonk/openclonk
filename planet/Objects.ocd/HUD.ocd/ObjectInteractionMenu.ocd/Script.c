@@ -21,8 +21,10 @@ local current_objects;
 		target: the target object, needs to be in current_objects
 		menu_object: target of the menu (usually a dummy object) (the ID is always 1; the menu's sidebar has the ID 2)
 		menu_id
+		forced: (boolean) Whether the menu was forced-open (f.e. by an extra-slot object) and is not necessarily attached to an outside-world object.
+			Such an object might be removed from the list when the menu is closed.
 		menus: array with more proplists with the following attributes:
-			type: flag (needed for content-menus f.e.)
+			flag: bitwise flag (needed for content-menus f.e.)
 			title
 			decoration: ID of a menu decoration definition
 			Priority: priority of the menu (Y position)
@@ -35,7 +37,7 @@ local current_objects;
 			entries_callback: (callback) function that can be used to retrieve a list of entries for that menu (at any point - it might also be called later)
 				This callback should return an array of entries shown in the menu, the entries are proplists with the following attributes:
 				symbol: icon of the item
-				extra_data: custom user data
+				extra_data: custom user data (internal: in case of inventory menus this is a proplist containing some extra data (f.e. the one object for unstackable objects))
 				text: text shown on the object (f.e. count in inventory)
 				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
@@ -110,7 +112,11 @@ func FxIntCheckObjectsStart(target, effect, temp)
 
 func FxIntCheckObjectsTimer(target, effect, timer)
 {
-	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_Func("IsContainer"), Find_Func("IsClonk"), Find_ActionTarget(target)));
+	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(),
+		// Find only vehicles and structures (plus Clonks ("livings") and helper objects). This makes sure that no C4D_Object-containers (extra slot) are shown.
+		Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_OCF(OCF_Alive), Find_ActionTarget(target)),
+		// But these objects still need to either be a container or provide an own interaction menu.
+		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")));
 	var equal = GetLength(new_objects) == GetLength(current_objects);
 	
 	if (equal)
@@ -134,6 +140,7 @@ func UpdateObjects(array new_objects)
 	for (var i = 0; i < GetLength(current_menus); ++i)
 	{
 		if (!current_menus[i]) continue; // todo: I don't actually know why this can happen.
+		if (current_menus[i].forced) continue;
 		
 		var target = current_menus[i].target;
 		var found = false;
@@ -189,15 +196,16 @@ func FxIntCheckObjectsStop(target, effect, reason, temp)
 }
 
 // obj has to be in current_objects
-func OpenMenuForObject(object obj, int slot)
+func OpenMenuForObject(object obj, int slot, bool forced)
 {
+	forced = forced ?? false;
 	// clean up old menu
 	var old_menu = current_menus[slot];
 	if (old_menu)
 		old_menu.menu_object->RemoveObject();
 	current_menus[slot] = nil;
 	// before creating the sidebar, we have to create a new entry in current_menus, even if it contains not all information
-	current_menus[slot] = {target = obj};
+	current_menus[slot] = {target = obj, forced = forced};
 	// clean up old inventory-check effects that are not needed anymore
 	var effect_index = 0, inv_effect = nil;
 	while (inv_effect = GetEffect("IntRefreshContentsMenu", this, effect_index))
@@ -302,8 +310,18 @@ func CreateSideBar(int slot)
 		sidebar.Right = "100%";
 	}
 	
-	// now show the current_objects list as entries
-	for (var obj in current_objects)
+	// Now show the current_objects list as entries.
+	// If there is a forced-open menu, also add it to bottom of sidebar..
+	var sidebar_items = nil;
+	if (current_menus[slot].forced)
+	{
+		sidebar_items = current_objects[:];
+		PushBack(sidebar_items, current_menus[slot].target);
+	}
+	else
+		sidebar_items = current_objects;
+		
+	for (var obj in sidebar_items)
 	{
 		var background_color = nil;
 		var symbol = {Std = Icon_Menu_RectangleRounded, OnHover = Icon_Menu_RectangleBrightRounded};
@@ -499,7 +517,34 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	GuiUpdate({new_subwindow = {Target = current_description_box.desc_target, ID = 1}}, current_main_menu_id, 1, current_description_box.target);
 	// default to description of object
 	if (!info.menu.callback_target || !info.menu.callback_hover)
-		GuiUpdateText(Format("%s:|%s", info.entry.symbol.Name, info.entry.symbol.Description), current_main_menu_id, 1, current_description_box.desc_target);
+	{
+		var text = Format("%s:|%s", info.entry.symbol.Name, info.entry.symbol.Description);
+		var obj = nil;
+		if (info.entry.extra_data)
+			obj = info.entry.extra_data.one_object;
+		// For contents menus, we can sometimes present additional information about objects.
+		if (info.menu.flag == InteractionMenu_Contents && obj)
+		{
+			var additional = nil;
+			if (obj->Contents())
+			{
+				additional = "$Contains$ ";
+				var i = 0, count = obj->ContentsCount();
+				// This currently justs lists contents one after the other.
+				// Items are not stacked, which should be enough for everything we have ingame right now. If this is filed into the bugtracker at some point, fix here.
+				for (;i < count;++i)
+				{
+					if (i > 0)
+						additional = Format("%s, ", additional);
+					additional = Format("%s%s", additional, obj->Contents(i)->GetName());
+				}
+			}
+			if (additional != nil)
+				text = Format("%s||%s", text, additional);
+		}
+		
+		GuiUpdateText(text, current_main_menu_id, 1, current_description_box.desc_target);
+	}
 	else
 	{
 		info.menu.callback_target->Call(info.menu.callback_hover, info.entry.symbol, info.entry.extra_data, current_description_box.desc_target, current_main_menu_id);
@@ -555,6 +600,8 @@ func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object 
 func FxIntRefreshContentsMenuTimer(target, effect, time)
 {
 	if (!effect.obj) return -1;
+	// Helper object used to track extra-slot objects. When this object is removed, the tracking stops.
+	var extra_slot_keep_alive = current_menus[effect.slot].menu_object;
 	// The fast interval is only used for the very first check to ensure a fast startup.
 	// It can't be just called instantly though, because the menu might not have been opened yet.
 	if (effect.Interval == 1) effect.Interval = 5;
@@ -563,22 +610,105 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 	while (obj = effect.obj->Contents(i++))
 	{
 		var symbol = obj->GetID();
-		var extra_data = {slot = effect.slot, menu_index = effect.menu_index};
+		var extra_data = {slot = effect.slot, menu_index = effect.menu_index, one_object = nil /* for unstackable containers */};
 		
 		// check if already exists (and then stack!)
 		var found = false;
-		for (var inv in inventory)
+		// Never stack containers with (different) contents, though.
+		var is_container = obj->~IsContainer();
+		var has_contents = obj->ContentsCount() != 0;
+		// For extra-slot objects, we should attach a tracking effect to update the UI on changes.
+		if (obj->~HasExtraSlot())
 		{
-			if (inv.symbol != symbol) continue;
-			if (inv.count) ++inv.count;
-			else inv.count = 2;
-			inv.text = Format("%dx", inv.count);
-			found = true;
-			break;
+			var j = 0, e = nil;
+			var found_tracker = false;
+			while (e = GetEffect(nil, obj, j++))
+			{
+				if (e.keep_alive != extra_slot_keep_alive) continue;
+				found_tracker = true;
+				break;
+			}
+			if (!found_tracker)
+			{
+				var e = AddEffect("ExtraSlotTracker", obj, 1, 30 + Random(60), this);
+				e.keep_alive = extra_slot_keep_alive;
+				e.callback_effect = effect;
+			}
 		}
+		// Empty containers can be stacked.
+		if (!(is_container && has_contents))
+		{
+			for (var inv in inventory)
+			{
+				if (inv.symbol != symbol) continue;
+				if (inv.has_contents) continue;
+				if (inv.count) ++inv.count;
+				else inv.count = 2;
+				inv.text = Format("%dx", inv.count);
+				found = true;
+				break;
+			}
+		}
+		// Add new!
 		if (!found)
 		{
-			PushBack(inventory, {symbol = symbol, extra_data = extra_data});
+			// Do we need a custom entry when the object has contents?
+			var custom = nil;
+			if (is_container)
+			{
+				// Use a default grid-menu entry as the base.
+				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
+				// Pack it into a larger frame to allow for another button below.
+				// The entries with contents are sorted to the back of the inventory menu. This makes for a nicer layout.
+				custom = {Right = custom.Right, Bottom = "8em", top = custom, Priority = 10000 + obj->GetValue()};
+				// Then add a little container-symbol (that can be clicked).
+				custom.bottom = 
+				{
+					Top = "4em",
+					BackgroundColor = {Std = 0, Selected = RGBa(255, 100, 100, 100)},
+					OnMouseIn = GuiAction_SetTag("Selected"),
+					OnMouseOut = GuiAction_SetTag("Std"),
+					OnClick = GuiAction_Call(this, "OnExtraSlotClicked", {slot = effect.slot, one_object = obj, ID = obj->GetID()}),
+					container = 
+					{
+						Symbol = Chest,
+						Priority = 1
+					}
+				};
+
+				// And if the object has contents, show the first one, too.
+				if (has_contents)
+				{
+					// This icon won't ever be stacked. Remember it for a description.
+					extra_data.one_object = obj;
+					// Add to GUI.
+					custom.bottom.contents = 
+					{
+						Symbol = obj->Contents(0)->GetID(),
+						Margin = "0.25em",
+						Priority = 2
+					};
+					// Possibly add text for stackable items - this is an special exception for the Library_Stackable.
+					var count = obj->Contents(0)->~GetStackCount();
+					count = count ?? obj->ContentsCount(obj->Contents(0)->GetID());
+					if (count > 1)
+					{
+						custom.bottom.contents.Text = Format("%dx", count);
+						custom.bottom.contents.Style = GUI_TextBottom | GUI_TextRight;
+					}
+					// Also make the chest smaller, so that the contents symbol is not obstructed.
+					custom.bottom.container.Bottom = "2em";
+					custom.bottom.container.Left = "2em";
+				}
+			}
+			// Add to menu!
+			PushBack(inventory,
+				{
+					symbol = symbol, 
+					extra_data = extra_data, 
+					has_contents = (is_container && has_contents),
+					custom = custom
+				});
 		}
 	}
 	
@@ -596,10 +726,44 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		if (same) return 1;
 	}
 	
-
 	effect.last_inventory = inventory[:];
 	DoMenuRefresh(effect.slot, effect.menu_index, inventory);
 	return 1;
+}
+
+func FxExtraSlotTrackerTimer(object target, proplist effect, int time)
+{
+	if (!effect.keep_alive) return -1;
+	return 1;
+}
+
+// This is called by the extra-slot library.
+func FxExtraSlotTrackerUpdate(object target, proplist effect)
+{
+	// Simply overwrite the inventory cache of the IntRefreshContentsMenu effect.
+	// This will lead to the inventory being upated asap.
+	if (effect.callback_effect)
+		effect.callback_effect.last_inventory = [];
+}
+
+func OnExtraSlotClicked(proplist extra_data)
+{
+	var menu = current_menus[extra_data.slot];
+	if (!menu) return;
+	var obj = extra_data.one_object; 
+	if (!obj || obj->Contained() != menu.target)
+	{
+		// Maybe find a similar object? (case: stack of empty bows and one was removed -> user doesn't care which one is displayed)
+		for (var o in FindObjects(Find_Container(menu.target), Find_ID(extra_data.ID)))
+		{
+			obj = o;
+			if (!obj->Contents())
+				break;
+		}
+		if (!obj) return;
+	}
+	
+	OpenMenuForObject(obj, 1 - extra_data.slot, true);
 }
 
 // This function is supposed to be called when the menu already exists (is open) and some sub-menu needs an update.

@@ -60,7 +60,7 @@ func SetMouseOutCallback(proplist target, callback)
 }
 
 // can be overloaded for custom menu styles
-func MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop)
+func MakeEntryProplist(symbol, text)
 {
 	var custom_entry = {Bottom = "+4em", sym = {Right = "+4em", Bottom = "+4em"}, desc = {Left = "+4em"}};
 	custom_entry.sym.Symbol = symbol;
@@ -99,7 +99,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	}
 	
 	if (!custom_entry)
-		custom_entry = MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop);
+		custom_entry = MakeEntryProplist(symbol, text);
 	
 	// Always add some properties later. This is done so that real custom entries do not need to care about target etc.
 	custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.

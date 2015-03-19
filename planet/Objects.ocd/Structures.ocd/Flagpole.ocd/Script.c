@@ -178,6 +178,8 @@ public func SaveScenarioObject(props)
 
 
 /*-- Properties --*/
+// Provides an interaction menu for buying things.
+public func HasInteractionMenu() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

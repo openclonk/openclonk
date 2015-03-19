@@ -41,9 +41,8 @@ protected func Initialize()
 
 // All producers are accessible. 
 public func IsContainer() { return true; }
-
-// not per-se interactable via [Space]; interaction happens via the interaction menu
-public func IsInteractable() { return false; }
+// Provides an own interaction menu, even if it wouldn't be a container.
+public func HasInteractionMenu() { return true; }
 
 public func GetConsumerPriority() { return 50; }
 

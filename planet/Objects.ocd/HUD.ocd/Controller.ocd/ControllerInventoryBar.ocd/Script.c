@@ -155,10 +155,67 @@ func UpdateInventory()
 	{
 		var item = clonk->GetItem(slot_info.slot);
 		var needs_selection = hand_item_pos == slot_info.slot;
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand))
+		var has_extra_slot = item && item->~HasExtraSlot();
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot)
 		{
-			var update = { Symbol = item };
-			GuiUpdate(update, GetInventoryGuiID(), 1000 + slot_info.ID, GetInventoryGuiTarget());
+			// Hide or show extra-slot display?
+			var extra_slot_player = NO_OWNER;
+			var extra_symbol = nil;
+			var contents = nil;
+			var extra_slot_background_symbol = nil;
+			if (has_extra_slot)
+			{
+				// Show!
+				contents = item->Contents(0);
+				if (contents)
+					extra_symbol = contents->GetID();
+				extra_slot_player = nil;
+				extra_slot_background_symbol = Icon_Menu_Circle;
+				// And attach tracker..
+				var i = 0, e = nil;
+				var found = false;
+				while (e = GetEffect("ExtraSlotUpdater", item, i++))
+				{
+					if (e.CommandTarget != this) continue;
+					found = true;
+					break;
+				}
+				if (!found) AddEffect("ExtraSlotUpdater", item, 1, 30 + Random(60), this);
+			}
+			// What to display in the extra slot?
+			var extra_text = nil;
+			if (extra_symbol && contents->~GetStackCount())
+			{
+				extra_text = Format("%dx", contents->GetStackCount());
+			}
+			// If stackable itself, add count.
+			/*
+				Disabled for now, as the stackable objects add the number to their picture as an image.
+				Reenable as soon as we can use different (bigger) font-sizes and the stackable objects do not need to hack their picture.
+			var count = nil;
+			if (item) count = item->~GetStackCount();
+			var count_text = nil;
+			if (count > 1)
+			{
+				count_text = Format("%dx", count);
+			}*/
+
+			// Compose the update!
+			var update = 
+			{
+				icon = { Symbol = item/*, Text = count_text*/},
+				extra_slot =
+				{
+					Player = extra_slot_player,
+					text = {Text = extra_text},
+					circle =
+					{
+						Symbol = extra_slot_background_symbol,
+						symbol = {Symbol = extra_symbol}
+					}
+				}
+			};
+			GuiUpdate(update, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
 			var tag = "Std";
 			if (needs_selection) tag = "Selected";
 			GuiUpdateTag(tag, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
@@ -177,6 +234,18 @@ func UpdateInventory()
 		}
 	}
 }	
+
+func FxExtraSlotUpdaterTimer(object target, proplist effect)
+{
+	if (!this) return -1;
+	if (target->Contained() != GetCursor(GetOwner())) return -1;
+	return 1;
+}
+
+func FxExtraSlotUpdaterUpdate(object target, proplist effect)
+{
+	ScheduleUpdateInventory();
+}
 
 // sets the link of the progress bar for a certain slot
 // the link is an effect that has the properties "max" and "current"
@@ -230,7 +299,27 @@ func CreateNewInventoryButton(int max_slots)
 		icon = 
 		{
 			Target = GetInventoryGuiTarget(),
-			ID = 1000 + slot_info.ID
+			ID = 1000 + slot_info.ID,
+			Style = GUI_TextRight | GUI_TextBottom,
+			Text = nil
+		},
+		// Prepare (invisible) extra-slot display circle.
+		extra_slot = 
+		{
+			Top = ToEmString(-GUI_Controller_InventoryBar_IconSize/2),
+			Bottom = "0em",
+			text =
+			{
+				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				Style = GUI_TextRight,
+				Text = nil,
+			},
+			circle = 
+			{
+				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
+				Symbol = nil,
+				symbol = {}
+			}
 		}
 	};
 	GuiUpdate({_new_icon = icon}, GetInventoryGuiID(), 0);	

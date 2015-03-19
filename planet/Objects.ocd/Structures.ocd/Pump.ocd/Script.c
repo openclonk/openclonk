@@ -19,6 +19,9 @@ local Description = "$Description$";
 local BlastIncinerate = 50;
 local HitPoints = 70;
 
+// The pump control happens through the interaction menu.
+public func HasInteractionMenu() { return true; }
+
 /*
 	States
 	"Wait":				turned off or source pipe not connected

@@ -13,7 +13,7 @@ func Construction()
 	this.Style = GUI_GridLayout;
 }
 
-func MakeEntryProplist(symbol, text, ID, on_hover, on_hover_stop)
+func MakeEntryProplist(symbol, text)
 {
 	var custom_entry = {Bottom = "+4em", Right = "+4em", desc = {Style = GUI_TextRight | GUI_TextBottom}};
 	custom_entry.Symbol = symbol;

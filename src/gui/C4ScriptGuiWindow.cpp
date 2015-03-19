@@ -1665,6 +1665,9 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	pScrollBar->rcBounds.Hgt = rcBounds.Hgt;
 	pScrollBar->Update();
 
+	// never show scrollbar on non-cropping windows
+	if ((style & C4ScriptGuiWindowStyleFlag::NoCrop) || !C4GUI::ScrollWindow::IsScrollingNecessary())
+		pScrollBar->SetVisibility(false);
 	return true;
 }
 
