@@ -1,4 +1,0 @@
-[DefCore]
-id=GUI_Contents_Controller
-Version=6,0
-Category=C4D_StaticBack

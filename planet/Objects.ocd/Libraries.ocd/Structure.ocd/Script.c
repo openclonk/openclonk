@@ -38,31 +38,5 @@ public func Damage(int change, int cause, int cause_plr)
 	return _inherited(change, cause, cause_plr);
 }
 
-// provide information dialogue, see HUD.ocd/ObjectInfoDisplay.ocd and PlayerControl.c
-public func HasObjectInformationDialogue()
-{
-	return true;
-}
-
-public func GetObjectInformationDialogue() { return nil; } // use custom dialogue
-
-public func OnObjectInformationDialogueOpen(object dialogue)
-{
-	dialogue->SetDisplayData(
-	[
-		{type = HUD_OBJECTINFODISPLAY_CUSTOM, width = 200},
-		{type = HUD_OBJECTINFODISPLAY_NAME, owner = true, lines = 1},
-	]
-	);
-	
-	if (this.HitPoints)
-		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_BAR, name = "$HitPoints$", cur = this.GetRemainingHitPoints, max = this.GetHitPoints, color = RGB(255, 1, 1)});
-	else dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_TEXT, name = "$Indestructible$"});
-	
-	if (GetOwner() == NO_OWNER)
-		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_STATUS, name = "$NoFlag$", priority = 0});
-	return true;
-}
-
 // This object is a structure.
 public func IsStructure() { return true; }
