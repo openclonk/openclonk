@@ -2170,46 +2170,6 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	float newzoom = cgo.Zoom;
 	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, offX, offY, newzoom);
 	ZoomDataStackItem zdsi(newzoom);
-	// Clonk name
-	// Name of Owner/Clonk (only when Crew Member; never in films)
-	if (OCF & OCF_CrewMember)
-		if ((Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) && (!Game.C4S.Head.Film || !Game.C4S.Head.Replay))
-			if (!eDrawMode)
-				if (Owner != iByPlayer && !Contained)
-				{
-					// inside screen range?
-					if (!Inside<int>(offX + Shape.GetX(), cgo.X - Shape.Wdt, cgo.X + cgo.Wdt)
-					    || !Inside<int>(offY + Shape.GetY(), cgo.Y - Shape.Hgt, cgo.Y + cgo.Hgt)) return;
-					// get player
-					C4Player* pOwner = ::Players.Get(Owner);
-					if (pOwner)
-						if (!Hostile(Owner, iByPlayer))
-							if (!pOwner->IsInvisible())
-							{
-								// compose string
-								char szText[C4GM_MaxText+1];
-								if (Config.Graphics.ShowCrewNames)
-									if (Config.Graphics.ShowCrewCNames)
-										sprintf(szText, "%s (%s)", GetName(), pOwner->GetName());
-									else
-										SCopy(pOwner->GetName(),szText);
-								else
-									SCopy(GetName(),szText);
-								// Word wrap to cgo width
-								int32_t iCharWdt, dummy; ::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
-								int32_t iMaxLine = Max<int32_t>( cgo.Wdt / iCharWdt, 20 );
-								SWordWrap(szText,' ','|',iMaxLine);
-								// Adjust position by output boundaries
-								float iTX,iTY;
-								int iTWdt,iTHgt;
-								::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
-								iTX = Clamp<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
-								iTY = Clamp<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
-								// Draw
-								pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
-								                           pOwner->ColorDw|0x7f000000,ACenter);
-							}
-				}
 	// TopFace
 	if (!(TopFace.Surface || (OCF & OCF_Construct))) return;
 	// Output bounds check

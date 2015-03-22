@@ -312,8 +312,8 @@ bool C4GraphicsResource::LoadCursorGfx()
 		return false;
 	// adjust dependant faces
 	int32_t iCursorSize = fctMouseCursor.Hgt;
-	fctCursor.Set(fctMouseCursor.Surface, 35*iCursorSize, 0, iCursorSize, iCursorSize);
-	fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
+	fctCursor.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
+	fctDropTarget.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
 	return true;
 }
 

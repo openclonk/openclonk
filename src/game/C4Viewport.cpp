@@ -274,7 +274,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
 	// Draw overlay
-	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
+	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCrewOverheadText(cgo, Player);
 
 	// Lights overlay
 	if (::GraphicsSystem.ShowLights && pFoW) pFoW->Render(&cgo);
