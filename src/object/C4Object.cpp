@@ -2039,29 +2039,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if(pOldFoW && (Category & C4D_IgnoreFoW))
 		pDraw->SetFoW(NULL);
 
-	// Fire facet - always draw, even if particles are drawn as well
-	if (OnFire && eDrawMode!=ODM_BaseOnly)
-		{
-			C4Facet fgo;
-			// Straight: Full Shape.Rect on fire
-			if (fix_r == Fix0)
-			{
-				fgo.Set(cgo.Surface,offX + Shape.GetX(),offY + Shape.GetY(),
-				        Shape.Wdt,Shape.Hgt-Shape.FireTop);
-			}
-			// Rotated: Reduced fire rect
-			else
-			{
-				C4Rect fr;
-				Shape.GetVertexOutline(fr);
-				fgo.Set(cgo.Surface,
-				        offX + fr.x,
-				        offY + fr.y,
-				        fr.Wdt, fr.Hgt);
-			}
-			::GraphicsResource.fctFire.Draw(fgo,false,(Number + Game.FrameCounter) % MaxFirePhase);
-		}
-
 	// color modulation (including construction sign...)
 	if (ColorMod != 0xffffffff || BlitMode) if (!eDrawMode) PrepareDrawing();
 
