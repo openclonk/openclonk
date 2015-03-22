@@ -23,6 +23,7 @@
 
 #ifndef USE_CONSOLE
 // headers for particle excution
+#include <C4Application.h>
 #include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
@@ -30,7 +31,7 @@
 #include <C4DrawGL.h>
 #include <C4Random.h>
 #include <C4Landscape.h>
-#include <C4Weather.h>
+#include <C4Weather.h>	
 #endif
 
 
@@ -1290,6 +1291,12 @@ void C4ParticleSystem::DoInit()
 
 	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
 	useBufferObjectWorkaround = false;
+
+	// Every window in developers' mode has an own OpenGL context at the moment. Certain objects are not shared between contexts.
+	// In that case we can just use the slower workaround without VBAs and VBOs to allow the developer to view particles in every viewport.
+	// The best solution would obviously be to make all windows use a single OpenGL context. This has to be considered as a workaround.
+	if (Application.isEditor)
+		useBufferObjectWorkaround = true;
 }
 
 void C4ParticleSystem::ExecuteCalculation()
