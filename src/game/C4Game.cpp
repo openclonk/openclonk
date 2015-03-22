@@ -1519,44 +1519,108 @@ void C4Game::Evaluate()
 
 }
 
-void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
+void C4Game::DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer)
 {
+	
+	// All drawing in this function must not be affected by zoom; but remember zoom and reset later.
+	ZoomData r;
+	pDraw->GetZoom(&r);
+	const float zoom = r.Zoom;
+	r.Zoom = 1.0;
+	pDraw->SetZoom(r);
+	// Offset for all text/objects
+	const float fixedOffsetX = -cgo.X * cgo.Zoom + cgo.X;
+	const float fixedOffsetY = (-cgo.Y - 10.0f) * cgo.Zoom + cgo.Y;
 	// Draw cursor mark arrow & cursor object name
-	float cox,coy;
-	int32_t cphase;
-	C4Object *cursor;
-	C4Facet &fctCursor = GraphicsResource.fctCursor;
-	for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->Number == iPlayer || iPlayer==NO_OWNER)
-			if (pPlr->CursorFlash)
-				if (pPlr->Cursor)
+	C4Facet &fctCursor = GraphicsResource.fctMouseCursor;
+	for (C4Player *pPlr = Players.First; pPlr; pPlr = pPlr->Next)
+	{
+		// Draw a small selector & name above the cursor? F.e. after switching crew.
+		const bool drawCursorInfo = (pPlr->Number == iPlayer || iPlayer == NO_OWNER) // only for the viewport's player..
+			&& (pPlr->CursorFlash && pPlr->Cursor); // ..and if the player wants to show their cursor.
+		// Otherwise, for allied players we might want to draw player & crew names.
+		// Note that these two conditions are generally mutually-exclusive.
+		const bool drawPlayerAndCursorNames = (pPlr->Number != iPlayer) // Never for own player..
+			&& (Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) // ..and if the settings allow it..
+			&& !Hostile(iPlayer, pPlr->Number) && !pPlr->IsInvisible(); // ..and of course only if applicable.
+		
+		if (!drawPlayerAndCursorNames && !drawCursorInfo) continue;
+
+		// Lambda to calculate correct drawing position of object, (re-)adjusted by zoom.
+		float drawX, drawY, drawZoom;
+		auto calculateObjectTextPosition = [&](C4Object *obj)
+		{
+			obj->GetDrawPosition(cgo, fixtof(obj->fix_x), fixtof(obj->fix_y), 1.0, drawX, drawY, drawZoom);
+			drawX = drawX * cgo.Zoom + fixedOffsetX;
+			drawY = drawY * cgo.Zoom - static_cast<float>(obj->Def->Shape.Hgt) / 2.0 + fixedOffsetY;
+		};
+
+		// Actual text output!
+		if (drawPlayerAndCursorNames)
+		{
+			// We need to show crew names for that player, we do so for every crew-member.
+			for (C4Object * const & crew : pPlr->Crew)
+			{
+				if (!crew->Status || !crew->Def) continue;
+				if (crew->Contained) continue;
+				if ((crew->OCF & OCF_CrewMember) == 0) continue;
+				if (!crew->IsVisible(iPlayer, false)) continue;
+
+				calculateObjectTextPosition(crew);
+				drawY -= 5.0f; // aesthetical offset
+
+				// compose string
+				char szText[C4GM_MaxText + 1];
+				if (Config.Graphics.ShowCrewNames)
+				if (Config.Graphics.ShowCrewCNames)
+					sprintf(szText, "%s (%s)", crew->GetName(), pPlr->GetName());
+				else
+					SCopy(pPlr->GetName(), szText);
+				else
+					SCopy(crew->GetName(), szText);
+				// Word wrap to cgo width
+				int32_t iCharWdt, dummy;
+				::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
+				int32_t iMaxLine = Max<int32_t>(cgo.Wdt / iCharWdt, 20);
+				SWordWrap(szText, ' ', '|', iMaxLine);
+				// Center text vertically, too
+				int textWidth, textHeight;
+				::GraphicsResource.FontRegular.GetTextExtent(szText, textWidth, textHeight, true);
+				// Draw
+				pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, drawX, drawY - static_cast<float>(textHeight) / 2.0,
+					pPlr->ColorDw | 0x7f000000, ACenter);
+			}
+		}
+		else if (drawCursorInfo)
+		{
+			C4Object * const cursor = pPlr->Cursor;
+			calculateObjectTextPosition(cursor);
+			// Draw a down-arrow above the Clonk's head
+			drawY += -fctCursor.Hgt;
+			fctCursor.Draw(cgo.Surface, drawX - static_cast<float>(fctCursor.Wdt) / 2.0, drawY, 4);
+			// And possibly draw some info text, too
+			if (cursor->Info)
+			{
+				int32_t texthgt = ::GraphicsResource.FontRegular.GetLineHeight();
+				StdStrBuf str;
+				if (cursor->Info->Rank > 0)
 				{
-					cursor=pPlr->Cursor;
-					cox=cursor->GetX()-fctCursor.Wdt/2-cgo.TargetX;
-					coy=cursor->GetY()-cursor->Def->Shape.Hgt/2-fctCursor.Hgt-cgo.TargetY;
-					if (Inside<int32_t>(int32_t(cox),1-fctCursor.Wdt,cgo.Wdt) && Inside<int32_t>(int32_t(coy),1-fctCursor.Hgt,cgo.Hgt))
-					{
-						cphase=0; if (cursor->Contained) cphase=1;
-						fctCursor.Draw(cgo.Surface,cgo.X+cox,cgo.Y+coy,cphase);
-						if (cursor->Info)
-						{
-							int32_t texthgt = ::GraphicsResource.FontRegular.GetLineHeight();
-							StdStrBuf str;
-							if (cursor->Info->Rank>0)
-							{
-								str.Format("%s|%s",cursor->Info->sRankName.getData(),cursor->GetName ());
-								texthgt += texthgt;
-							}
-							else str = cursor->GetName();
-
-							pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-							                           cgo.X + cox + fctCursor.Wdt / 2,
-							                           cgo.Y + coy - 2 - texthgt,
-							                           0xffff0000, ACenter);
-
-						}
-					}
+					str.Format("%s|%s", cursor->Info->sRankName.getData(), cursor->GetName());
+					texthgt += texthgt;
 				}
+				else str = cursor->GetName();
+
+				pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+					drawX,
+					drawY - static_cast<float>(texthgt) / 2.0,
+					0xffff0000, ACenter);
+
+			}
+		}
+	}
+	// Reset zoom
+	r.Zoom = zoom;
+	pDraw->SetZoom(r);
 }
 
 void C4Game::Ticks()
