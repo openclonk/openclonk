@@ -104,9 +104,65 @@
                 <col>MSG_Multiple</col>
                 <col>If set previous messages of the same type will not be removed.</col>
               </row>
+			  <row>
+                <col>3</col>
+                <col>MSG_Top</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the top of the viewport.</col>
+              </row>
+			  <row>
+                <col>4</col>
+                <col>MSG_Left</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the left of the viewport.</col>
+              </row>
+			  <row>
+                <col>5</col>
+                <col>MSG_Right</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the right of the viewport and the text is aligned to the right.</col>
+              </row>
+			  <row>
+                <col>6</col>
+                <col>MSG_HCenter</col>
+                <col>Similar to MSG_Bottom. The x-offset is relative to the center of the viewport.</col>
+              </row>
+			  <row>
+                <col>7</col>
+                <col>MSG_VCenter</col>
+                <col>Similar to MSG_Bottom. The y-offset is relative to the center of the viewport.</col>
+              </row>
+			  <row>
+                <col>8</col>
+                <col>MSG_DropSpeech</col>
+                <col>Currently not supported.</col>
+              </row>
+			  <row>
+                <col>9</col>
+                <col>MSG_WidthRel</col>
+                <col>The message width is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>10</col>
+                <col>MSG_XRel</col>
+                <col>The x-offset is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>11</col>
+                <col>MSG_YRel</col>
+                <col>The y-offset is a percentage of the viewport (0-100).</col>
+              </row>
+			  <row>
+                <col>12</col>
+                <col>MSG_Zoom</col>
+                <col>The message will be affected by ingame zoom.</col>
+              </row>
             </table>
 
           </desc>
+          <optional />
+        </param>
+		<param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the message. The unit is pixels if MSG_WidthRel is not set as a flag.</desc>
           <optional />
         </param>
       </params>
