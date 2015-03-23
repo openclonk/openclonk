@@ -37,6 +37,6 @@ public func DoThrow(object clonk, int angle)
 	
 	Sound("ThrowJavelin?");
 	
-	fAiming = -1;
+	aiming = -1;
 	clonk->UpdateAttach();
 }
