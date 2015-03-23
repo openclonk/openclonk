@@ -69,6 +69,12 @@ Every window can be defined by the following properties, which can additionally 
 <col>A symbol that will be drawn in the window.</col>
 </row>
 <row>
+<col>GraphicsName</col>
+<col>string</col>
+<col>"Infinite"</col>
+<col>Only if Symbol is a definition: the name of the graphics to use.</col>
+</row>
+<row>
 <col>Decoration</col>
 <col>definition</col>
 <col>GUI_MenuDeco</col>

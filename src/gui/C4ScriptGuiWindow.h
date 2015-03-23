@@ -53,6 +53,7 @@ enum C4ScriptGuiWindowPropertyName
 	frameDecoration,
 	symbolObject,
 	symbolDef,
+	symbolGraphicsName,
 	text,
 	onClickAction,
 	onMouseInAction,

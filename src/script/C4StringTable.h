@@ -362,6 +362,7 @@ enum C4PropertyName
 	P_Target,
 	P_Std,
 	P_Text,
+	P_GraphicsName,
 	P_ID,
 	P_OnClick,
 	P_OnMouseIn,

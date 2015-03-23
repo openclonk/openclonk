@@ -156,6 +156,7 @@ C4StringTable::C4StringTable()
 	P[P_Target] = "Target";
 	P[P_Std] = "Std";
 	P[P_Text] = "Text";
+	P[P_GraphicsName] = "GraphicsName";
 	P[P_OnClick] = "OnClick";
 	P[P_OnMouseIn] = "OnMouseIn";
 	P[P_OnMouseOut] = "OnMouseOut";

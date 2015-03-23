@@ -305,6 +305,8 @@ void C4ScriptGuiWindowProperty::CleanUp(Prop &prop)
 		if (prop.action) delete prop.action;
 		break;
 	case C4ScriptGuiWindowPropertyName::text:
+	case C4ScriptGuiWindowPropertyName::tooltip:
+	case C4ScriptGuiWindowPropertyName::symbolGraphicsName:
 		if (prop.strBuf) delete prop.strBuf;
 		break;
 	default:
@@ -382,6 +384,7 @@ const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 			break;
 
 		case C4ScriptGuiWindowPropertyName::text:
+		case C4ScriptGuiWindowPropertyName::symbolGraphicsName:
 		case C4ScriptGuiWindowPropertyName::tooltip:
 		{
 			if (prop.strBuf)
@@ -514,6 +517,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 		break;
 	}
 	case C4ScriptGuiWindowPropertyName::text:
+	case C4ScriptGuiWindowPropertyName::symbolGraphicsName:
 	case C4ScriptGuiWindowPropertyName::tooltip:
 	{
 		C4String *string = value.getStr();
@@ -649,6 +653,7 @@ void C4ScriptGuiWindow::Init()
 	props[C4ScriptGuiWindowPropertyName::symbolObject].SetNull();
 	props[C4ScriptGuiWindowPropertyName::symbolDef].SetNull();
 	props[C4ScriptGuiWindowPropertyName::text].SetNull();
+	props[C4ScriptGuiWindowPropertyName::symbolGraphicsName].SetNull();
 	props[C4ScriptGuiWindowPropertyName::tooltip].SetNull();
 	props[C4ScriptGuiWindowPropertyName::onClickAction].SetNull();
 	props[C4ScriptGuiWindowPropertyName::onMouseInAction].SetNull();
@@ -920,6 +925,7 @@ const C4Value C4ScriptGuiWindow::ToC4Value()
 			break;
 		case P_Target: val = C4Value(target); break;
 		case P_Text: val = props[C4ScriptGuiWindowPropertyName::text].ToC4Value(); break;
+		case P_GraphicsName: val = props[C4ScriptGuiWindowPropertyName::symbolGraphicsName].ToC4Value(); break;
 		case P_Tooltip: val = props[C4ScriptGuiWindowPropertyName::tooltip].ToC4Value(); break;
 		case P_ID: val = C4Value(id); break;
 		case P_OnClick: val = props[C4ScriptGuiWindowPropertyName::onClickAction].ToC4Value(); break;
@@ -1024,6 +1030,10 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 		{
 			props[C4ScriptGuiWindowPropertyName::text].Set(property, stdTag);
 			layoutUpdateRequired = true;
+		}
+		else if (&Strings.P[P_GraphicsName] == key)
+		{
+			props[C4ScriptGuiWindowPropertyName::symbolGraphicsName].Set(property, stdTag);
 		}
 		else if (&Strings.P[P_Tooltip] == key)
 		{
@@ -1749,9 +1759,10 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	else
 	{
 		C4Def *symbolDef = props[C4ScriptGuiWindowPropertyName::symbolDef].GetDef();
+		StdCopyStrBuf *graphicsName = props[C4ScriptGuiWindowPropertyName::symbolGraphicsName].GetStrBuf();
 		if (symbolDef)
 		{
-			symbolDef->Draw(cgoOut);
+			symbolDef->Draw(cgoOut, false, 0UL, nullptr, 0, 0, nullptr, graphicsName ? graphicsName->getData() : nullptr);
 		}
 	}
 
