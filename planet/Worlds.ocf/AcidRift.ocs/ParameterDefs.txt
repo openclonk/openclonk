@@ -3,7 +3,7 @@ Name=$Difficulty$
 Description=$DescDifficulty$
 ID=Difficulty
 Default=1
-LeagueValue=3
+LeagueValue=2
 
 	[Options]
 		
@@ -27,7 +27,7 @@ Name=$MapSize$
 Description=$DescMapSize$
 ID=MapSize
 Default=1
-LeagueValue=2
+LeagueValue=1
 
 	[Options]
 
