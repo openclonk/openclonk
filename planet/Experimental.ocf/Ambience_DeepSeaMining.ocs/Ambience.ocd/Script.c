@@ -95,7 +95,6 @@ private func Execute()
 	var i=GetPlayerCount(C4PT_User);
 	exec_counter += !(i%3);
 	while (i--) if (!(++exec_counter % 3)) ExecutePlayer(GetPlayerByIndex(i, C4PT_User));
-	}
 	return true;
 }
 
