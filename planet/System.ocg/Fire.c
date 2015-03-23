@@ -427,7 +427,8 @@ global func FxFireTimer(object target, proplist effect, int time)
 			if (target && !Random(2) && !effect.no_burn_decay)
 			{
 				target->DoCon(-1);
-				EffectCall(target, effect, "UpdateEffectProperties");
+				if (target)
+					EffectCall(target, effect, "UpdateEffectProperties");
 			}
 		} 
 	}
