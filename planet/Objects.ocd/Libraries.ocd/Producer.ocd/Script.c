@@ -411,7 +411,7 @@ public func CheckFuel(id product, bool remove)
 		var fuel_amount = 0;
 		// Find fuel in this producer.
 		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
-			fuel_amount += fuel->~GetFuelAmount();
+			fuel_amount += fuel->~GetFuelAmount(false);
 		if (fuel_amount < FuelNeed(product))
 			return false;
 		else if (remove)
@@ -420,7 +420,7 @@ public func CheckFuel(id product, bool remove)
 			fuel_amount = 0;
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
-				fuel_amount += fuel->~GetFuelAmount();
+				fuel_amount += fuel->~GetFuelAmount(false);
 				fuel->RemoveObject();
 				if (fuel_amount >= FuelNeed(product))
 					break;

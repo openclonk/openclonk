@@ -91,7 +91,7 @@ public func OnPowerProductionStart(int amount)
 		if (!fuel)
 			return false;
 		// Extract the fuel amount from the new piece of fuel.	
-		fuel_amount += fuel->~GetFuelAmount() * 18;
+		fuel_amount += fuel->~GetFuelAmount(true) * 18;
 		fuel->RemoveObject();
 	}
 	// There is enough fuel so start producing power and notify network of this.
@@ -134,7 +134,7 @@ protected func Working()
 			return;
 		}
 		// Extract the fuel amount from the new piece of fuel.	
-		fuel_amount += fuel->~GetFuelAmount() * 18;
+		fuel_amount += fuel->~GetFuelAmount(true) * 18;
 		fuel->RemoveObject();
 	}
 	// Smoke from the exhaust shaft.
