@@ -8,7 +8,6 @@ Offset=-7,-10
 Vertices=3
 VertexX=0,5,-5
 VertexY=10,8,8
-VertexFriction=60, 60, 60
+VertexFriction=60,60,60
 NoGet=1
 StretchGrowth=1
-
