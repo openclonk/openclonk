@@ -131,7 +131,7 @@ private func InitVegetation(int map_size)
 	LargeCaveMushroom->Place(5 + 2 * map_size + Random(5), nil, { terraform = false });
 
 	// Some mushrooms as source of food.
-	Mushroom->Place(30 + Random(10));
+	Mushroom->Place(22 + Random(8));
 	
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 10 + 10 * map_size + Random(10),"Earth");

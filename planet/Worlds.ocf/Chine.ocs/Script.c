@@ -183,9 +183,9 @@ private func InitVegetation(int map_size, int difficulty)
 	Fern->Place(20, top);
 	Fern->Place(20, middle);
 	Fern->Place(20, bottom);
-	Mushroom->Place(14, top);
-	Mushroom->Place(14, middle);
-	Mushroom->Place(14, bottom);
+	Mushroom->Place(10, top);
+	Mushroom->Place(10, middle);
+	Mushroom->Place(10, bottom);
 	
 	// Some branches and trunks.
 	Branch->Place(30 + 12 * map_size + Random(16));
