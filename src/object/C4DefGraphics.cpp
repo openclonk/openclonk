@@ -173,6 +173,8 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 		}
 		delete[] buf;
 
+		Mesh->SetLabel(pDef->id.ToString());
+
 		// order submeshes
 		Mesh->PostInit();
 	}

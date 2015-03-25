@@ -20,6 +20,8 @@
 #include <StdMeshMath.h>
 #include <StdMeshMaterial.h>
 
+#include <string>
+
 class StdMeshBone
 {
 	friend class StdMeshSkeleton;
@@ -199,6 +201,8 @@ public:
 
 	const GLuint GetVBO() const { return vbo; }
 
+	void SetLabel(const std::string &label) { Label = label; }
+
 private:
 	GLuint vbo;
 	void UpdateVBO();
@@ -210,6 +214,8 @@ private:
 
 	std::vector<StdSubMesh> SubMeshes;
 	std::shared_ptr<StdMeshSkeleton> Skeleton; // Skeleton
+
+	std::string Label;
 
 	StdMeshBox BoundingBox;
 	float BoundingRadius;

@@ -333,6 +333,8 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 
 	// Link program
 	hProg = glCreateProgramObjectARB();
+	if (glObjectLabel)
+		glObjectLabel(GL_PROGRAM, hProg, -1, szWhat);
 	glAttachObjectARB(hProg, hVert);
 	glAttachObjectARB(hProg, hFrag);
 	// Bind all input variables
@@ -471,6 +473,8 @@ GLhandleARB C4Shader::Create(GLenum iShaderType, const char *szWhat, const char 
 {
 	// Create shader
 	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
+	if (glObjectLabel)
+		glObjectLabel(GL_SHADER, hShader, -1, szWhat);
 
 	// Compile
 	glShaderSourceARB(hShader, 1, &szShader, 0);
