@@ -166,7 +166,7 @@ private func InitVegetation(int map_size)
 	// Cave entrance covered with mushrooms and bushes.
 	SproutBerryBush->Place(4, Rectangle(0, 120, 100, 40));
 	Fern->Place(4, Rectangle(0, 120, 100, 40));
-	Mushroom->Place(8, Rectangle(0, 120, 100, 40));
+	Mushroom->Place(6, Rectangle(0, 120, 100, 40));
 	
 	// The cavern has some grass wherever possible.
 	PlaceGrass(100);
@@ -179,7 +179,7 @@ private func InitVegetation(int map_size)
 	
 	// Some ferns and mushrooms scattered around the top and middle sections.
 	Fern->Place(12, Rectangle(0, 0, wdt, 3 * hgt / 8));
-	Mushroom->Place(20, Rectangle(0, 0, wdt, 3 * hgt / 8));
+	Mushroom->Place(14, Rectangle(0, 0, wdt, 3 * hgt / 8));
 	
 	// Create earth materials in big clusters so the whole object arrangement looks a bit less uniform and more interesting.
 	PlaceBatches([Firestone], 3, 100, 5);
