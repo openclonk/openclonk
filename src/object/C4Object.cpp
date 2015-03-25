@@ -696,10 +696,6 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*pDraw->Blit(Action.Facet.Surface,
-		  fx, fy, fwdt, fhgt,
-		  cgo.Surface, tx, ty, twdt, thgt,
-		  true, NULL);*/
 	}
 	// Rotated or transformed
 	else
@@ -1584,7 +1580,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	C4FacetSurface fctSymbol;
 	C4IDList ListItems;
 	// Close any other menu
-	//CloseMenu(true);
 	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return false;
 	// Create menu
 	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems();
@@ -1612,7 +1607,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		if (!pTarget) if (!(pTarget=Contained)) break;
 		// Create symbol
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		//pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 		DrawMenuSymbol(C4MN_Buy, fctSymbol, pTarget->Owner);
 		// Init menu
 		Menu->Init(fctSymbol,LoadResStr("IDS_PLR_NOBUY"),this,C4MN_Extra_Value,0,iMenu);
@@ -1626,7 +1620,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		if (!pTarget) if (!(pTarget=Contained)) break;
 		// Create symbol & init
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		//pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 		DrawMenuSymbol(C4MN_Sell, fctSymbol, pTarget->Owner);
 		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_Value,0,iMenu);
 		Menu->SetPermanent(true);
@@ -1968,7 +1961,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
 				// Message
 				iMoveTos++; szCommand[0]=0;
-				//sprintf(szCommand,"%s %d/%d",CommandName(pCom->Command),pCom->Tx,pCom->Ty,iAngle);
 				break;
 			case C4CMD_Put:
 				sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? pCom->Data.GetDataString().getData() : "Content",pCom->Target ? pCom->Target->GetName() : "");
@@ -2227,7 +2219,6 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	if (colors)
 	{
 		color0 = colors->GetItem(0).getInt();
-		//color1 = colors->GetItem(1).getInt();
 	}
 
 	std::vector<C4BltVertex> vertices;
@@ -2726,7 +2717,6 @@ bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 		Command=pCom;
 	}
 	// Success
-	//sprintf(OSTR,"%s command %s added: %i/%i %s %s (%i)",GetName(),CommandName(iCommand),iTx,iTy,pTarget ? pTarget->GetName() : "O",pTarget2 ? pTarget2->GetName() : "O",iUpdateInterval); Log(OSTR);
 	return true;
 }
 
@@ -3546,10 +3536,6 @@ void C4Object::ExecAction()
 		}
 		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
 		{
-			/*if (ydir > 0)
-				ComDir = COMD_Down;
-			else
-				ComDir = COMD_Up;*/
 			ComDir = COMD_Up;
 		}
 		switch (ComDir)
@@ -4544,8 +4530,6 @@ bool C4Object::SetGraphics(const char *szGraphicsName, C4Def *pSourceDef)
 	// get graphics
 	C4DefGraphics *pGrp = pSourceDef->Graphics.Get(szGraphicsName);
 	if (!pGrp) return false;
-	// no change? (no updates need to be done, then)
-	//if (pGraphics == pGrp) return true; // that's not exactly true because the graphics itself might have changed, for example on def reload
 	// set new graphics
 	pGraphics = pGrp;
 	// update Color, etc.
@@ -4762,8 +4746,6 @@ StdStrBuf C4Object::GetInfoString()
 	StdStrBuf sResult;
 	// no info for invalid objects
 	if (!Status) return sResult;
-	// first part always description
-	//sResult.Copy(Def->GetDesc());
 	// go through all effects and add their desc
 	for (C4Effect *pEff = pEffects; pEff; pEff = pEff->pNext)
 	{
@@ -4864,7 +4846,6 @@ StdStrBuf C4Object::GetNeededMatStr() const
 			ncnt = NeededComponents.GetCount(cnt) - Component.GetIDCount(idComponent);
 			if (ncnt > 0)
 			{
-				//if(!NeededMats) NeededMats.Append(", "); what was this for...?
 				NeededMats.AppendFormat("|%dx ", ncnt);
 				if ((pComponent = C4Id2Def(idComponent)))
 					NeededMats.Append(pComponent->GetName());

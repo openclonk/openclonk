@@ -109,7 +109,6 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 
 bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix)
 {
-	//if(value.GetType() != C4V_Array) return false;
 	const C4ValueArray* array = value.getArray();
 	if (!array) return false;
 	return C4ValueToMatrix(*array, matrix);

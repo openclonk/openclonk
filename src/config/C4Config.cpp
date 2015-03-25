@@ -376,8 +376,6 @@ bool C4Config::Load(const char *szConfigFile)
 	}
 	// Empty nick already defaults to GetRegistrationData("Nick") or
 	// Network.LocalName at relevant places.
-	/*if (!Network.Nick.getLength())
-	  Network.Nick.Copy(Network.LocalName); // assuming that LocalName will always contain some useful value*/
 	fConfigLoaded = true;
 	if (szConfigFile) ConfigFilename.Copy(szConfigFile); else ConfigFilename.Clear();
 	return true;

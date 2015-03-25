@@ -546,9 +546,7 @@ bool C4Surface::Unlock()
 	{
 		if (fPrimary)
 		{
-			// if tex refs exist, free them
-			/*FreeTextures();*/
-			// otherwise, emulated primary locks in OpenGL
+			// emulated primary locks in OpenGL
 			delete[] PrimarySurfaceLockBits;
 			PrimarySurfaceLockBits = 0;
 			return true;

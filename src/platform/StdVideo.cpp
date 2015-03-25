@@ -235,7 +235,7 @@ bool CStdAVIFile::OpenFile(const char *szFilename, HWND hWnd, int32_t iOutBitDep
 	if (!hBitmap) return false;
 	SelectObject(hDC, hBitmap);
 	// create a GetFrame-object
-	pGetFrame=AVIStreamGetFrameOpen(pStream, NULL /*&(pbmi->bmiHeader)*/);
+	pGetFrame=AVIStreamGetFrameOpen(pStream, NULL);
 	if (!pGetFrame) return false;
 	// done, success!
 	return true;

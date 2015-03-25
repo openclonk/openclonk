@@ -276,13 +276,11 @@ bool C4Draw::SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 
 bool C4Draw::ApplyPrimaryClipper(C4Surface * sfcSurface)
 {
-	//sfcSurface->SetClipper(lpClipper);
 	return true;
 }
 
 bool C4Draw::DetachPrimaryClipper(C4Surface * sfcSurface)
 {
-	//sfcSurface->SetClipper(NULL);
 	return true;
 }
 
@@ -415,9 +413,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	int iTexY=Max(int(fy/iTexSizeY), 0);
 	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
 	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
-	// calc stretch regarding texture size and indent
-/*	float scaleX2 = scaleX * iTexSizeX;
-	float scaleY2 = scaleY * iTexSizeY;*/
 	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 	{
@@ -431,12 +426,10 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			if (iTexSizeX != pTex->iSizeX)
 			{
 				iTexSizeX = pTex->iSizeX;
-				/*scaleX2 = scaleX * iTexSizeX;*/
 			}
 			if (iTexSizeY != pTex->iSizeY)
 			{
 				iTexSizeY = pTex->iSizeY;
-				/*scaleY2 = scaleY * iTexSizeY;*/
 			}
 
 			// get new texture source bounds
@@ -653,10 +646,6 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 
 bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
 {
-	// if it's a render target, simply blit with repeating texture
-	// repeating textures, however, aren't currently supported
-	/*if (sfcTarget->IsRenderTarget())
-	  return Blit(sfcSurface, iOffsetX, iOffsetY, iToWdt, iToHgt, sfcTarget, iToX, iToY, iToWdt, iToHgt, false);*/
 	float tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// get tile size
 	int iTileWdt=sfcSurface->Wdt;

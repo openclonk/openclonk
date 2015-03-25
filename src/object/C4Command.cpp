@@ -136,8 +136,6 @@ bool FreeMoveTo(C4Object *cObj)
 {
 	// Floating: we accept any move-to target
 	if (cObj->GetProcedure()==DFA_FLOAT) return true;
-	// Can fly: we accept any move-to target
-	//if (cObj->GetPhysical()->CanFly) return true; - needs to be adjusted once we have dragons
 	// Assume we're walking: move-to targets are adjusted
 	return false;
 }
@@ -244,7 +242,6 @@ static bool ObjectAddWaypoint(int32_t iX, int32_t iY, intptr_t iTransferTarget, 
 	// Waypoints before transfer zones are not updated (enforce move to that waypoint)
 	if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
 	// Add waypoint
-	//AddCommand(iCommand,pTarget,iTx,iTy,iUpdateInterval,pTarget2,fInitEvaluation,iData,fAppend,iRetries,szText,iBaseMode)
 	assert(cObj->Command);
 	if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
 
@@ -1516,7 +1513,6 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 				// Path free from side move target to jump target
 				if (PathFree(iSideX,iSideY,Tx._getInt(),Ty))
 				{
-					//sprintf(OSTR,"High side move %d (%d,%d)",iAngle,iSideX-cx,iSideY-cy); GameMsgObject(OSTR,cObj);
 					cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty);
 					cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,iSideY,50);
 					return true;

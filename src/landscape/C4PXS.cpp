@@ -330,7 +330,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						else
 						{
 							// single pixels for slow stuff
-							//pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
 							C4BltVertex vtx;
 							vtx.ftx = fixtof(pxp->x) + cgox;
 							vtx.fty = fixtof(pxp->y) + cgoy;
@@ -375,8 +374,6 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
 bool C4PXSSystem::Save(C4Group &hGroup)
 {
 	unsigned int cnt;
-
-	//Log("Save PXS");
 
 	// Check used chunk count
 	int32_t iChunks=0;

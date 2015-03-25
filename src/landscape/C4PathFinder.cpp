@@ -254,7 +254,6 @@ void C4PathFinderRay::Draw(C4TargetFacet &cgo)
 		                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
 		                  cgo.X+X2-cgo.TargetX+7*iX,cgo.Y+Y2-cgo.TargetY+7*iY,
 		                  C4RGB(0xff, 0, 0));
-		//sprintf(OSTR,"%d",Depth); pDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
 	}
 
 	// Ray line
@@ -327,39 +326,6 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
 
 	return true;
 }
-
-/*void C4PathFinderRay::DrawLine(C4Surface * sfcSurface, int32_t rX, int32_t rY, int32_t iToX, int32_t iToY, BYTE byCol)
-  {
-  int32_t d,dx,dy,aincr,bincr,xincr,yincr,x,y;
-  // Y based
-  if (Abs(iToX-rX)<Abs(iToY-rY))
-    {
-    xincr=(iToX>rX) ? +1 : -1;
-    yincr=(iToY>rY) ? +1 : -1;
-    dy=Abs(iToY-rY); dx=Abs(iToX-rX);
-    d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=rX; y=rY;
-    for (y=rY; y!=iToY; y+=yincr)
-      {
-      pDraw->SetPixel(sfcSurface,x,y,byCol);
-      if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
-      }
-    }
-  // X based
-  else
-    {
-    yincr=(iToY>rY) ? +1 : -1;
-    xincr=(iToX>rX) ? +1 : -1;
-    dx=Abs(iToX-rX); dy=Abs(iToY-rY);
-    d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=rX; y=rY;
-    for (x=rX; x!=iToX; x+=xincr)
-      {
-      pDraw->SetPixel(sfcSurface,x,y,byCol);
-      if (d>=0) { y+=yincr; d+=aincr; } else d+=bincr;
-      }
-    }
-
-  }*/
-
 
 bool C4PathFinderRay::Crawl()
 {

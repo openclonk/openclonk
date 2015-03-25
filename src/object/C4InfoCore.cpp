@@ -75,7 +75,6 @@ DWORD C4PlayerInfoCore::GetPrefColorValue(int32_t iPrefColor)
 	                   };
 	if (Inside<int32_t>(iPrefColor, 0, 11))
 		return valRGB[iPrefColor];
-	//return RGB(valRGB[iPrefColor] >> 16, valRGB[iPrefColor] >> 8, valRGB[iPrefColor] >> 0);
 	return 0xFFAAAAAA;
 }
 
@@ -142,7 +141,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(toC4CStr(PrefName),"Name",                 "Neuling"));
 	pComp->Value(mkNamingAdapt(toC4CStr(Comment), "Comment",              ""));
 	pComp->Value(mkNamingAdapt(Rank,              "Rank",                 0));
-	pComp->Value(mkNamingAdapt(toC4CStr(RankName),"RankName",             /*pRanks ? pRanks->Name(Rank,false) :*/ LoadResStr("IDS_MSG_RANK"))); // TODO: check if this would be desirable
+	pComp->Value(mkNamingAdapt(toC4CStr(RankName),"RankName",            LoadResStr("IDS_MSG_RANK"))); // TODO: check if this would be desirable
 	pComp->Value(mkNamingAdapt(TotalScore,        "Score",                0));
 	pComp->Value(mkNamingAdapt(Rounds,            "Rounds",               0));
 	pComp->Value(mkNamingAdapt(RoundsWon,         "RoundsWon",            0));

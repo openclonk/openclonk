@@ -512,7 +512,6 @@ public:
 	typedef std::vector<AttachedMesh*> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
-	//FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 	void SetFaceOrdering(FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(uint32_t clrmod);
 

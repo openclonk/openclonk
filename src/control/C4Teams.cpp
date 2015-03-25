@@ -464,8 +464,6 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	// only if enabled
 	assert(IsMultiTeams());
 	if (!IsMultiTeams()) return false;
-	// local/single call only
-	//assert(::Control.isCtrlHost()); -- bla, control is not initialized at this point.
 	// check whether a new team is to be assigned first
 	C4Team *pCurrentTeam = GetTeamByPlayerID(rNewJoin.GetID());
 	int32_t idCurrentTeam = pCurrentTeam ? pCurrentTeam->GetID() : 0;
@@ -844,7 +842,7 @@ void C4TeamList::SetTeamColors(bool fEnabled)
 void C4TeamList::EnforceLeagueRules()
 {
 	// enforce some league settings
-	//fAllowHostilitySwitch = false; - temp hostility is OK; often used e.g. to unstick friendly Clonks
+	// allow temp hostility switching; often used e.g. to unstick friendly Clonks, but:
 	fAllowTeamSwitch = false; // switching teams in league games? Yeah, sure...
 }
 

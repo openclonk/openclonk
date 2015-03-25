@@ -74,7 +74,7 @@ public:
 
 public:
 	// constructors
-	inline C4Fixed () { /*val=0;*/ } // why initialize?
+	inline C4Fixed () { }
 	inline C4Fixed (const C4Fixed &rCpy): val(rCpy.val) { }
 
 	// Conversion must be done by the conversion routines itofix, fixtoi, ftofix and fixtof
@@ -281,7 +281,6 @@ inline C4Fixed itofix(int32_t x, int32_t prec) { return C4Fixed(x, prec); }
 inline C4Real Sin(const C4Real &fAngle) { return fAngle.sin_deg(); }
 inline C4Real Cos(const C4Real &fAngle) { return fAngle.cos_deg(); }
 inline C4Real C4REAL100(int x) { return itofix(x, 100); }
-//inline C4Real C4REAL256(int x) { return itofix(x, 256); }
 inline C4Real C4REAL256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
 inline C4Real C4REAL10(int x) { return itofix(x, 10); }
 

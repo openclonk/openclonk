@@ -222,22 +222,6 @@ bool C4Game::OpenScenario()
 		else Log(LoadResStr("IDS_PRC_LOCALONLY"));
 	}
 
-	// add all .ocf-modules to the group set
-	// (for savegames, network games, etc.)
-	/*  char szModule[_MAX_PATH+1]; C4Group *pGrp=NULL; int32_t iDefGrpPrio=C4GSPrio_Definition;
-	  for (int32_t cseg=0; SCopySegment(DefinitionFilenames,cseg,szModule,';',_MAX_PATH); cseg++)
-	    if (SEqualNoCase(GetExtension(szModule), "ocf"))
-	      {
-	      if (!pGrp) pGrp = new C4Group();
-	      if (!pGrp->Open(szModule)) continue;
-	      int32_t iContent = GroupSet.CheckGroupContents(*pGrp, C4GSCnt_Folder);
-	      if (!iContent) { pGrp->Close(); continue; }
-	      GroupSet.RegisterGroup(*pGrp, true, Min(iDefGrpPrio++, C4GSPrio_Definition2), iContent, false);
-	      // group owned by groupset now
-	      pGrp = NULL;
-	      }
-	  if (pGrp) delete pGrp;*/
-
 	// Check mission access
 #ifndef USE_CONSOLE
 	if (C4S.Head.MissionAccess[0])
@@ -597,7 +581,6 @@ void C4Game::Clear()
 	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
-	//::GraphicsResource.Clear();
 	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();
@@ -663,10 +646,6 @@ void C4Game::Clear()
 bool C4Game::GameOverCheck()
 {
 	bool fDoGameOver = false;
-
-#ifdef _DEBUG
-	//return false;
-#endif
 
 	// Only every 35 ticks
 	if (::Game.iTick35) return false;
@@ -1470,8 +1449,6 @@ void C4Game::Default()
 	C4S.Default();
 	::Messages.Default();
 	MessageInput.Default();
-	//GraphicsResource.Default();
-	//Control.Default();
 	MouseControl.Default();
 	PathFinder.Default();
 	TransferZones.Default();
@@ -1681,7 +1658,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
 		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
 		// as keys might be released between a savegame save and its resume
-		//pComp->Value(GlobalPlayerControl);
 	}
 
 	if (comp.fExact)
@@ -3007,7 +2983,6 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 
 void C4Game::FixRandom(int32_t iSeed)
 {
-	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
 }
 
@@ -3431,7 +3406,6 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		{
 			DebugLogF("LoadScenarioSection: WARNING: Object %d created in destruction process!", (int) obj->Number);
 			ClearPointers(obj);
-			//clnk->Obj->AssignRemoval(); - this could create additional objects in endless recursion...
 		}
 	DeleteObjects(false);
 	// remove global effects
@@ -3440,7 +3414,6 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
 			// scenario section call might have been done from a global effect
 			// rely on dead effect removal for actually removing the effects; do not clear the array here!
-			//delete pGlobalEffects; pGlobalEffects=NULL;
 		}
 	// del particles as well
 	Particles.ClearAllParticles();

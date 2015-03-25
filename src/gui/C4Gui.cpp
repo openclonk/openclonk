@@ -275,7 +275,6 @@ namespace C4GUI
 			pDragTarget->rcBounds.x += iX-iDragX;
 			pDragTarget->rcBounds.y += iY-iDragY;
 			// drag X/Y is up-to-date if this is a child element of the drag target
-			//iDragX = iX; iDragY = iY;
 			pDragTarget->UpdatePos();
 		}
 	}
@@ -487,8 +486,6 @@ namespace C4GUI
 	{
 		// only if owned
 		if (!fActive) return;
-		// dbg: some cursor...
-		//pDraw->DrawFrame(pDraw->lpBack, x-5,y-5,x+5,y+5,2);
 
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
@@ -503,8 +500,6 @@ namespace C4GUI
 				Screen::DrawToolTip(szTip, cgoTip, x, y);
 			}
 		}
-		// drag line
-		//if (LDown) pDraw->DrawLine(cgo.Surface, LDownX, LDownY, x,y, 4);
 	}
 
 	void CMouse::ReleaseElements()

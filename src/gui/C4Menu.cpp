@@ -426,7 +426,6 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
 bool C4Menu::Control(BYTE byCom, int32_t iData)
 {
 	if (!IsActive()) return false;
-	//bool fSingleColumn = IsContextMenu();
 
 	switch (byCom)
 	{
@@ -436,30 +435,18 @@ bool C4Menu::Control(BYTE byCom, int32_t iData)
 
 		// organize with nicer subfunction...
 	case COM_MenuLeft:
-		/*// Single column: left => begin
-		if (fSingleColumn)
-		  MoveSelection(-Selection, true, true);
-		else
-		{*/
 		// Top wrap-around
 		if (Selection-1 < 0)
 			MoveSelection(ItemCount - 1 - Selection, true, true);
 		else
 			MoveSelection(-1, true, true);
-		/*}*/
 		break;
 	case COM_MenuRight:
-		/*// Single column: right => end
-		if (fSingleColumn)
-		  MoveSelection(ItemCount - 1 - Selection, true, true);
-		else
-		{*/
 		// Bottom wrap-around
 		if (Selection+1 >= ItemCount)
 			MoveSelection(-Selection, true, true);
 		else
 			MoveSelection(+1, true, true);
-		/*}*/
 		break;
 	case COM_MenuUp:
 		iData = -Columns;
@@ -869,9 +856,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	}
 	break;
 	}
-
-	// Restore global clipper
-	//pDraw->SetPrimaryClipper(iX1,iY1,iX2,iY2);
 }
 
 void C4Menu::DrawFrame(C4Surface * sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
@@ -933,7 +917,7 @@ void C4Menu::Execute()
 		if (!RefillInternal())
 			Close(false);
 	// text progress
-	if (fTextProgressing /*&& !Game.iTick2*/)
+	if (fTextProgressing)
 		SetTextProgress(+1, true);
 }
 

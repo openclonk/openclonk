@@ -132,7 +132,6 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		// New slice? We need a newline followed by "slice". Don't do
 		// the depth check, so that we also recognize slices inside
 		// an ifdefed-out "void main() {" block.
-		//if (iDepth < 0 && *pPos == '\n') {
 		if (*pPos == '\n') {
 			if (SEqual2(pPos+1, "slice") && !isalnum(*(pPos+6))) {
 				const char *pSliceEnd = pPos; pPos += 6;

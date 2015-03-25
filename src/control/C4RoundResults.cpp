@@ -77,10 +77,6 @@ void C4RoundResultsPlayer::EvaluatePlayer(C4Player *pPlr)
 		{
 		sLeagueProgressData.Copy(pInfo->GetLeagueProgressData());
 		}
-	// BigIcon from info: Doesn't work for some cases when player files got deleted already
-	/*C4PlayerInfo *pInfo = pPlr->GetInfo();
-	assert(pInfo);
-	if (pInfo) pInfo->LoadBigIcon(fctBigIcon);*/
 }
 
 void C4RoundResultsPlayer::EvaluateLeague(C4RoundResultsPlayer *pLeaguePlayerInfo)

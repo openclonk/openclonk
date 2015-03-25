@@ -121,7 +121,7 @@ CStdGL::~CStdGL()
 void CStdGL::Clear()
 {
 	NoPrimaryClipper();
-	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
+	// cannot unlock TexMgr here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
 	RenderTarget = NULL;
@@ -172,11 +172,7 @@ bool CStdGL::UpdateClipper()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	// Set clipping plane to -1000 and 1000 so that large meshes are not
-	// clipped away.
-	//glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
 	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
-	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 }
 
@@ -186,7 +182,6 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// not ready?
 	if (!Active)
-		//if (!RestoreDeviceObjects())
 		return false;
 	// target?
 	if (!sfcToSurface) return false;

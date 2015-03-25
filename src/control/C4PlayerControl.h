@@ -83,7 +83,6 @@ public:
 	CoordinateSpace GetCoordinateSpace() const { return eCoordSpace; }
 	bool IsSendCursorPos() const { return fSendCursorPos; }
 
-	//C4PlayerControlDef &operator =(const C4PlayerControlDef &src);
 	bool operator ==(const C4PlayerControlDef &cmp) const;
 
 	bool Execute(bool fUp, const C4KeyEventData &rKeyExtraData); // key was triggered - execute and return if handled

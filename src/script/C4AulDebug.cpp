@@ -390,7 +390,6 @@ void C4AulDebug::DebugStep(C4AulBCC *pCPos, C4Value* stackTop)
 	
 	// Get current script context
 	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
-	//bool isReturn = pCPos[1].bccType = AB_RETURN;
 
 	if (!fConnected)
 	{

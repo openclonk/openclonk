@@ -36,13 +36,10 @@ public:
 	C4FolderHead Head;
 public:
 	void Default();
-	//void Clear();
 	bool Load(C4Group &hGroup);
-	//bool Save(C4Group &hGroup);
 	void CompileFunc(StdCompiler *pComp);
 protected:
 	bool Compile(const char *szSource);
-	//bool Decompile(char **ppOutput, int32_t *ipSize);
 };
 
 #endif // INC_C4Folder

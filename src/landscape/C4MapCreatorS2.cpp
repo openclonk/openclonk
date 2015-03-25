@@ -470,7 +470,6 @@ void C4MCOverlay::Evaluate()
 		C4MCOverlay *pOwnrOvrl;
 		if ((pOwnrOvrl=OwnerOverlay()))
 		{
-			//int32_t iOwnerX=pOwnrOvrl->X; int32_t iOwnerY=pOwnrOvrl->Y;
 			int32_t iOwnerWdt=pOwnrOvrl->Wdt; int32_t iOwnerHgt=pOwnrOvrl->Hgt;
 			X = RX.Evaluate(iOwnerWdt) + pOwnrOvrl->X;
 			Y = RY.Evaluate(iOwnerHgt) + pOwnrOvrl->Y;
@@ -538,11 +537,6 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 	// apply rotation
 	if (Rotate)
 	{
-		/*double dRot=Rotate*pi/180;
-		double l=sqrt((dX*dX)+(dY*dY));
-		double o=atan(dY/dX);
-		dX=cos(o+dRot)*l;
-		dY=sin(o+dRot)*l;*/
 		C4Real dXo(dX), dYo(dY);
 		dX = dXo*Cos(itofix(Rotate)) - dYo*Sin(itofix(Rotate));
 		dY = dYo*Cos(itofix(Rotate)) + dXo*Sin(itofix(Rotate));
@@ -1685,7 +1679,6 @@ bool AlgoPolygon(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 			else
 			{
 				//If point C lays on ray
-//        if (cY == iY && cX >= iX)
 				if (cY == iY)
 				{
 					//are I and C the same points?

@@ -698,7 +698,6 @@ bool C4FindObjectProcedure::Check(C4Object *pObj)
 
 bool C4FindObjectProcedure::IsImpossible()
 {
-	//return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
 	return false;
 }
 

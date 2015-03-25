@@ -302,8 +302,6 @@ std::shared_ptr<StdMeshSkeleton> StdMeshSkeletonLoader::GetSkeletonByName(const 
 {
 	StdCopyStrBuf filename(name);
 
-	//DebugLogF("Loading skeleton %s\n", filename.getData());
-
 	std::map<StdCopyStrBuf, std::shared_ptr<StdMeshSkeleton>>::const_iterator iter = Skeletons.find(filename);
 	if (iter == Skeletons.end()) return NULL;
 	return iter->second;
@@ -579,7 +577,6 @@ void StdMeshSkeletonLoader::DoResetSkeletons()
 		{
 			if (animations->second.OriginSkeleton != &(*(skeleton)))
 			{
-				//DebugLogF("Erasing animation %s from %s", animations->first.getData(), it->first.getData());
 				animations = skeleton->Animations.erase(animations);
 			}
 			else
@@ -623,7 +620,6 @@ void StdMeshSkeletonLoader::DoAppendSkeletons()
 				}
 				else
 				{
-					//DebugLogF("Appending animation %s to definition %s", animations->second.Name.getData(), id.getData());
 					destination->InsertAnimation(*source, animations->second);
 				}
 			}
@@ -664,7 +660,6 @@ void StdMeshSkeletonLoader::DoIncludeSkeletons()
 				}
 				else
 				{
-					//DebugLogF("Including animation %s from skeleton %s", animations->second.Name.getData(), id.getData());
 					destination->InsertAnimation(*source, animations->second);
 				}
 			}

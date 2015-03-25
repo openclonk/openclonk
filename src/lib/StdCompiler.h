@@ -343,7 +343,6 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
 	//    behaviour is to construct the object from compiler data
 	std::unique_ptr<T> temp(new T); // exception-safety
 	// Compile
-	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }
@@ -374,7 +373,6 @@ void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx, co
 	//    and context
 	std::unique_ptr<T> temp(new T(rCtx));  // exception-safety
 	// Compile
-	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }

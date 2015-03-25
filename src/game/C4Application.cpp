@@ -614,7 +614,7 @@ void C4Application::Clear()
 void C4Application::Quit()
 {
 	// Participants should not be cleared for usual startup dialog
-	//Config.General.Participants[0] = 0;
+
 	// Save config if there was no loading error
 	if (Config.fConfigLoaded) Config.Save();
 	// make sure startup data is unloaded

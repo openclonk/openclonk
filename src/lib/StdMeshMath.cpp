@@ -126,7 +126,6 @@ StdMeshTransformation StdMeshTransformation::Inverse(const StdMeshTransformation
 	StdMeshTransformation t;
 	t.scale = 1.0f/transform.scale;
 	t.rotate.w = transform.rotate.w;
-	//t.rotate.v = -transform.rotate.v; // Someone set us up the union!?!??
 	t.rotate.x = -transform.rotate.x;
 	t.rotate.y = -transform.rotate.y;
 	t.rotate.z = -transform.rotate.z;

@@ -33,9 +33,6 @@ void CStdGLCtx::SelectCommon()
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
 }
 
 #ifdef USE_WIN32_WINDOWS
@@ -149,22 +146,11 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	static bool glewInitialized = false;
 	if(glewInitialized) return true;
 
-	/*WNDCLASSEXW WndClass = {0};
-	WndClass.cbSize        = sizeof(WNDCLASSEX);
-	WndClass.style         = CS_DBLCLKS;
-	WndClass.lpfnWndProc   = DefWindowProcW;
-	WndClass.hInstance     = pApp->hInstance;
-	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-	WndClass.lpszClassName = L"C4OCTest";
-	WndClass.hIcon         = NULL;
-	WndClass.hIconSm       = NULL;
-	if(!RegisterClassExW(&WndClass)) return !!pGL->Error("  gl: Error registered class for temp wnd");
-*/
 	// Create window
 	HWND hWnd = CreateWindowExW  (
 	            0,
-	            L"STATIC", //C4FullScreenClassName,
-	            NULL, //L"C4OCTest", //ADDL(C4ENGINENAME),
+	            L"STATIC",
+	            NULL,
 	            WS_OVERLAPPEDWINDOW,
 	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
 	            NULL,NULL,hInst,NULL);
@@ -183,7 +169,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
 		pfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
 		pfd.nVersion   = 1 ;
-		pfd.dwFlags    = PFD_DOUBLEBUFFER | /*(pGL->fFullscreen ? PFD_SWAP_EXCHANGE : 0) |*/
+		pfd.dwFlags    = PFD_DOUBLEBUFFER |
 			              PFD_SUPPORT_OPENGL |
 			              PFD_DRAW_TO_WINDOW ;
 		pfd.iPixelType = PFD_TYPE_RGBA;
@@ -326,8 +312,6 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 				}
 				else
 				{
-					//if (this != &pGL->MainCtx) wglCopyContext(pGL->MainCtx.hrc, hrc, GL_ALL_ATTRIB_BITS);
-
 					// share textures
 					bool success = false;
 					wglMakeCurrent(hDC, NULL); pGL->pCurrCtx=NULL;

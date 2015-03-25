@@ -315,11 +315,6 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
 	assert(fabs(weight1 + weight2 - 1) < 1e-6);
 
-	/*StdMeshTransformation transformation;
-	transformation.scale = weight1 * iter->second.Transformation.scale + weight2 * prev_iter->second.Transformation.scale;
-	transformation.rotate = weight1 * iter->second.Transformation.rotate + weight2 * prev_iter->second.Transformation.rotate; // TODO: slerp or renormalize
-	transformation.translate = weight1 * iter->second.Transformation.translate + weight2 * prev_iter->second.Transformation.translate;
-	return transformation;*/
 	return StdMeshTransformation::Nlerp(prev_iter->second.Transformation, iter->second.Transformation, weight1);
 }
 
@@ -778,7 +773,6 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	switch (Type)
 	{
 	case LeafNode:
-		//if(!Leaf.Animation) return false;
 		track = Leaf.Animation->Tracks[bone];
 		if (!track) return false;
 		transformation = track->GetTransformAt(fixtof(Leaf.Position->Value));

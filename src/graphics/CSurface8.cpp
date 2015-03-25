@@ -114,9 +114,6 @@ bool CSurface8::Read(CStdStream &hGroup)
 		if (BitmapInfo.Info.biBitCount != 24) return false;
 		if (!hGroup.Advance(((C4BMPInfo) BitmapInfo).FileBitsOffset())) return false;
 	}
-	// no 8bpp-surface in newgfx!
-	// needs to be kept for some special surfaces
-	//f8BitSfc=false;
 
 	// Create and lock surface
 	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight)) return false;

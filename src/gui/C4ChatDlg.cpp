@@ -93,7 +93,6 @@ C4ChatControl::ChatSheet::ChatSheet(C4ChatControl *pChatControl, const char *szT
 	// create elements - positioned later
 	C4Rect rcDefault(0,0,10,10);
 	pChatBox = new C4GUI::TextWindow(rcDefault,0,0,0,100,4096,"  ",false,0,0,true);
-	//pChatBox->SetToolTip(LoadResStr("IDS_DLGTIP_CHATWIN")); tooltip doesn't really help, only makes things cluttered
 	pChatBox->SetDecoration(false, false, NULL, false);
 	AddElement(pChatBox);
 	if (eType == CS_Channel)
@@ -954,9 +953,6 @@ C4ChatDlg::C4ChatDlg() : C4GUI::Dialog(100, 100, "IRC", false)
 	pChatCtrl = new C4ChatControl(&Application.IRCClient);
 	pChatCtrl->SetTitleChangeCB(new C4GUI::InputCallback<C4ChatDlg>(this, &C4ChatDlg::OnChatTitleChange));
 	AddElement(pChatCtrl);
-	C4Rect rcDefault(0,0,10,10);
-	//pBtnClose = new C4GUI::CallbackButton<C4ChatDlg>(LoadResStr("IDS_DLG_EXIT"), rcDefault, &C4ChatDlg::OnExitBtn);
-	//AddElement(pBtnClose);
 	// del dlg when closed
 	SetDelOnClose();
 	// set initial element positions
@@ -1050,9 +1046,7 @@ void C4ChatDlg::UpdateSize()
 	ParentClass::UpdateSize();
 	// position child elements
 	C4GUI::ComponentAligner caMain(GetContainedClientRect(), 0,0);
-	//C4GUI::ComponentAligner caBottom(caMain.GetFromBottom(C4GUI_ButtonHgt+C4GUI_DefDlgIndent*2), C4GUI_DefDlgIndent,C4GUI_DefDlgIndent);
 	pChatCtrl->SetBounds(caMain.GetAll());
-	//pBtnClose->SetBounds(caBottom.GetFromLeft(100));
 }
 
 void C4ChatDlg::OnExitBtn(C4GUI::Control *btn)

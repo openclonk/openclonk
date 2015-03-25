@@ -1381,7 +1381,6 @@ void C4AulParse::Parse_Function()
 		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Owner == owner)
 		{
 			if (Fn)
-				//throw new C4AulParseError(this, "Duplicate function ", Idtf);
 				Warn("Duplicate function %s", Idtf);
 			Fn = f->SFunc();
 		}
@@ -1621,7 +1620,7 @@ void C4AulParse::Parse_Statement()
 			if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_VarNamed))
 				Shift();
 			// variable and "in"
-			if (TokenType == ATT_IDTF /*&& (iVarID = Fn->VarNamed.GetItemNr(Idtf)) != -1*/
+			if (TokenType == ATT_IDTF
 			    && GetNextToken() == ATT_IDTF
 			    && SEqual(Idtf, C4AUL_In))
 			{
@@ -2861,7 +2860,6 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 				C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
 				if (sf)
 				{
-					//assert(sf->pOrgScript == *s);
 					C4AulScriptFunc *sfc;
 					if (sf->pOrgScript != this)
 						sfc = new C4AulScriptFunc(this, *sf);

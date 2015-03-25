@@ -115,12 +115,6 @@ int32_t StrToI32(const char *s, int base, const char **scan_end)
 		result += value;
 	}
 	if (scan_end != 0L) *scan_end = s;
-	if (result < 0)
-	{
-		//overflow
-		// we need 2147483648 (2^31) to be -2147483648 in order for -2147483648 to work
-		//result = INT_MAX;
-	}
 	result *= sign;
 	return result;
 }

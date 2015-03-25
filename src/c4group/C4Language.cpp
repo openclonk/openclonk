@@ -33,8 +33,6 @@
 
 C4Language Languages;
 
-//char strLog[2048 + 1];
-
 C4Language::C4Language()
 {
 	Infos = NULL;
@@ -50,26 +48,6 @@ bool C4Language::Init()
 {
 	// Clear (to allow clean re-init)
 	Clear();
-
-	// Look for available language packs in Language.ocg          Opening Language.ocg as a group and
-	/*C4Group *pPack;                                             the packs as children is no good -
-	char strPackFilename[_MAX_FNAME + 1];                         C4Group simply cannot handle it. So
-	Log("Registering languages...");                              we need to open the pack group files
-	if (PackDirectory.Open(C4CFN_Languages))                      directly...
-	  while (PackDirectory.FindNextEntry("*.ocg", strPackFilename))
-	  {
-	    pPack = new C4Group();
-	    if (pPack->OpenAsChild(&PackDirectory, strPackFilename))
-	    {
-	      sprintf(strLog, "  %s...", strPackFilename); Log(strLog);
-	      Packs.RegisterGroup(*pPack, true, C4GSCnt_Language, false);
-	    }
-	    else
-	    {
-	      sprintf(strLog, "Could not open language pack %s...", strPackFilename); Log(strLog);
-	      delete pPack;
-	    }
-	  }*/
 
 	// Make sure Language.ocg is unpacked (TODO: This won't work properly if Language.ocg is in system data path)
 	// Assume for now that Language.ocg is either at a writable location or unpacked already.
@@ -95,7 +73,6 @@ bool C4Language::Init()
 		// Look for available language packs in Language.ocg
 		C4Group *pPack;
 		char strPackFilename[_MAX_FNAME + 1], strEntry[_MAX_FNAME + 1];
-		//Log("Registering languages...");
 		if (PackDirectory.Open(langPath.getData()))
 		{
 			while (PackDirectory.FindNextEntry("*.ocg", strEntry))
@@ -104,19 +81,14 @@ bool C4Language::Init()
 				pPack = new C4Group();
 				if (pPack->Open(strPackFilename))
 				{
-					//sprintf(strLog, "  %s...", strPackFilename); Log(strLog);
 					Packs.RegisterGroup(*pPack, true, C4GSCnt_Language, false);
 				}
 				else
 				{
-					//sprintf(strLog, "Could not open language pack %s...", strPackFilename); Log(strLog);
 					delete pPack;
 				}
 			}
 		}
-
-		// Log
-		//sprintf(strLog, "%d external language packs registered.", GetPackCount()); Log(strLog);
 
 		// Now create a pack group for each language pack (these pack groups are child groups
 		// that browse along each pack to access requested data)
@@ -199,9 +171,6 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 		}
 	}
 
-	//if (SEqualNoCase(strTargetLocation, PackGroupLocation))
-		//LogF("Reloading for %s", strTargetLocation);
-
 	// Process all language packs (and their respective pack groups)
 	C4Group *pPack, *pPackGroup;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)) && (pPackGroup = PackGroups.GetGroup(iPack)); iPack++)
@@ -221,21 +190,13 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 		{
 			// Update pack group location
 			GetRelativePath(pPackGroup->GetFullName().getData(), strPackPath, strPackGroupLocation);
-			// Log
-			//sprintf(strLog, "%s < %s", pPack->GetName(), strPackGroupLocation); Log(strLog);
-			//sprintf(strLog, "Backtracking to child group %s in %s", strPackGroupLocation, pPack->GetName()); Log(strLog);
 		}
 
 		// We can reach the target location as a relative child
 		if (strPackGroupLocation[0] && GetRelativePath(strTargetLocation, strPackGroupLocation, strAdvance))
 		{
 			// Advance pack group to relative child
-			if (pPackGroup->OpenChild(strAdvance))
-			{
-				// Log
-				//sprintf(strLog, "%s > %s", pPack->GetName(), strTargetLocation); Log(strLog);
-				//sprintf(strLog, "Advancing to child group %s in %s", strTargetLocation, pPack->GetName()); Log(strLog);
-			}
+			pPackGroup->OpenChild(strAdvance);
 		}
 
 		// Cannot reach by advancing: need to close and reopen (rewinding group file)
@@ -245,14 +206,6 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 			pPackGroup->Close();
 			// Reopen pack group to relative position in language pack if possible
 			pPackGroup->OpenAsChild(pPack, strTargetLocation);
-			/*if (pPackGroup->OpenAsChild(pPack, strTargetLocation)) // Slow one...
-			{
-			  sprintf(strLog, "%s - %s", pPack->GetName(), strTargetLocation); Log(strLog);
-			}
-			else
-			{
-			  sprintf(strLog, "%s ! %s", pPack->GetName(), strTargetLocation); Log(strLog);
-			}*/
 		}
 
 	}
@@ -376,8 +329,6 @@ void C4Language::LoadInfos(C4Group &hGroup)
 				// Add info to list
 				pInfo->Next = Infos;
 				Infos = pInfo;
-				// Log
-				//sprintf(strLog, "Language info loaded from %s", strEntry); Log(strLog);
 			}
 }
 

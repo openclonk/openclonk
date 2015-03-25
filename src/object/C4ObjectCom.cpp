@@ -173,7 +173,6 @@ bool ObjectActionCornerScale(C4Object *cObj)
 	if (!cObj->SetActionByName("KneelUp"))
 		cObj->SetActionByName("Walk");
 	cObj->xdir=cObj->ydir=0;
-	//if (cObj->Action.Dir==DIR_Left) cObj->Action.ComDir=COMD_Left; else cObj->Action.ComDir=COMD_Right;
 	if (cObj->Action.Dir==DIR_Left) cObj->fix_x-=itofix(iRangeX);
 	else cObj->fix_x+=itofix(iRangeX);
 	cObj->fix_y-=itofix(iRangeY);
@@ -334,10 +333,6 @@ bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
 	if (pTarget!=cObj->Contained)
 		if (!(pTarget->Def->GrabPutGet & C4D_Grab_Put))
 		{
-			// Was meant to be a drop anyway - probably obsolete as controls are being revised
-			//if (ValidPlr(cObj->Owner))
-			//  if (Game.Players.Get(cObj->Owner)->LastComDownDouble)
-			//    return ObjectComDrop(cObj, pThing);
 			// No grab put: fail
 			return false;
 		}
@@ -507,24 +502,6 @@ bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t t
 	int32_t iAddMode = C4P_Command_Set;
 	// Adjust for old-style keyboard throw/drop control: add & in range
 	if (cmdf==C4CMD_Throw || cmdf==C4CMD_Drop) iAddMode = C4P_Command_Add | C4P_Command_Range;
-	if (cmdf==C4CMD_Throw)
-	{
-		bool fConvertToDrop = false;
-		// Drop on down-down-throw (classic) - obsolete?
-		/*if (pPlr->LastComDownDouble)
-		  {
-		  fConvertToDrop = true;
-		  // Dropping one object automatically reenables LastComDownDouble to
-		  // allow easy dropping of multiple objects. Also set LastCom for
-		  // script compatibility (custom scripted dropping) and to prevent
-		  // unwanted ThrowDouble for mass dropping
-		  pPlr->LastCom = COM_Down | COM_Double;
-		  pPlr->LastComDownDouble = C4DoubleClick;
-		  }
-		// Jump'n'Run: Drop on combined Down/Left/Right+Throw
-		if (pPlr->PrefControlStyle && (pPlr->PressedComs & (1 << COM_Down))) fConvertToDrop = true;*/
-		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,C4VNull,iAddMode);
-	}
 	// Route to player
 	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 }

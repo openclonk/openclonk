@@ -152,11 +152,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 			return false;
 		Source.Clear();
 
-		// Let's be bold: Rewrite, with current version
-		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2;
-		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
-		Save(hGroup);*/
-
 		// Check mass
 		if (Mass < 0)
 		{

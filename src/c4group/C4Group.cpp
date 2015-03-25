@@ -446,10 +446,9 @@ void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 	SCopy(GetFilename(*iter),FileName,_MAX_FNAME);
 	SCopy(*iter, DiskPath, _MAX_PATH-1);
 	Size = FileSize(*iter);
-	//SCopy(path,DiskPath,_MAX_PATH-1); AppendBackslash(DiskPath); SAppend(FileName,DiskPath,_MAX_PATH);
 	Status=C4GRES_OnDisk;
 	Packed=false;
-	ChildGroup=false; //FileGroupCheck(DiskPath);
+	ChildGroup=false;
 	// Notice folder entries are not checked for ChildGroup status.
 	// This would cause extreme performance loss and be good for
 	// use in entry list display only.
@@ -480,7 +479,6 @@ void C4Group::Init()
 	SearchPtr=NULL;
 	pInMemEntry=NULL; iInMemEntrySize=0u;
 	// Folder only
-	//hFdt=-1;
 	FolderSearch.Clear();
 	// Error status
 	SCopy("No Error",ErrorString,C4GroupMaxError);
@@ -568,7 +566,6 @@ bool C4Group::OpenReal(const char *szFilename)
 	// Get original filename
 	if (!szFilename) return false;
 	SCopy(szFilename,FileName,_MAX_FNAME);
-	//MakeOriginalFilename(FileName);
 
 	// Folder
 	if (DirectoryExists(FileName))
@@ -764,7 +761,6 @@ bool C4Group::Close()
 		if (centry->Status != C4GroupEntry::C4GRES_InGroup)
 			fRewrite=true;
 	if (Modified) fRewrite=true;
-	//if (Head.Entries==0) fRewrite=true;
 
 	// No rewrite: just close
 	if (!fRewrite)
@@ -898,7 +894,6 @@ void C4Group::Default()
 	StdFile.Default();
 	Mother = NULL;
 	ExclusiveChild = 0;
-	//hFdt = -1;
 	Init();
 }
 
@@ -920,8 +915,6 @@ void C4Group::Clear()
 		delete Mother;
 		Mother=NULL;
 	}
-	// done in init
-	//FolderSearch.Reset();
 	// Reset
 	Init();
 }
@@ -955,15 +948,6 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 		// Disk item is a directory
 		if (DirectoryExists(centry->DiskPath))
 			return Error("AE2S: Cannot add directory to group file");
-		/*{
-		if (StdOutput) printf("Adding directory %s to group file...\n",centry->FileName);
-		// Temporary file name
-		MakeTempFilename(szFileSource);
-		// Create temporary copy of directory
-		if (!CopyItem(centry->DiskPath,szFileSource)) return Error("Cannot create temporary directory");
-		// Convert directory to temporary group file
-		if (!Folder2Group(szFileSource)) return Error("Cannot convert directory to group file");
-		}*/
 
 		// Resort group if neccessary
 		// (The group might be renamed by adding, forcing a resort)
@@ -1010,7 +994,6 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 	}
 
 	case C4GroupEntry::C4GRES_InMemory: // Copy from mem to std file
-		//if (StdOutput) printf("Saving InMem entry %d...\n",centry->Size);
 		if (!centry->bpMemBuf) return Error("AE2S: no buffer");
 		if (!hTarget.Write(centry->bpMemBuf,centry->Size)) return Error("AE2S: writing error");
 		break;

@@ -198,12 +198,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	if (endBeam->isRight(rx, ry)) {
 		rx = endBeam->getRightEndX() + 1;
 		ry = endBeam->getRightEndY();
-		// We want endBeam itself to get scanned
-		//assert(!endBeam->isLeft(rx, ry));
 	}
-#ifdef LIGHT_DEBUG
-	//LogSilentF("Right limit at %d, start line %d", 1000 * (iRX - iX) / (iRY - iY), iStartY);
-#endif
 
 	// Bottom of scan - either bound by rectangle or by light's reach
 	int32_t endY = Min(Rect.GetBottom(), pLight->getReach());

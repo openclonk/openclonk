@@ -33,7 +33,6 @@ public:
 	char Name[C4MaxLanguageInfo + 1];
 	char Info[C4MaxLanguageInfo + 1];
 	char Fallback[C4MaxLanguageInfo + 1];
-	//char Location[C4MaxLanguageInfo + 1]; ...store group name here
 private:
 	C4LanguageInfo* Next;
 };

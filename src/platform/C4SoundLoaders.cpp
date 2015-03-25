@@ -212,8 +212,6 @@ bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint
 	ALuint wav = alutCreateBufferFromFileImage((const ALvoid *)data, data_length);
 	if (wav == AL_NONE)
 	{
-		// wouldn't want an error on any .ogg file
-		//LogF("load wav error: %s", alutGetErrorString(alutGetError()));
 		return false;
 	}
 

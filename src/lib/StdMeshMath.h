@@ -50,18 +50,12 @@ struct StdMeshVertex
 		std::uninitialized_fill(std::begin(bone_index), std::end(bone_index), 0);
 		std::uninitialized_fill(std::begin(_padding), std::end(_padding), 0);
 	}
-	//void Normalize();
 };
 static_assert((sizeof(StdMeshVertex) & 31) == 0, "StdMeshVertex should be a multiple of 32 bytes");
 
 struct StdMeshQuaternion
 {
 	float w;
-	// union
-	// {
-	//   struct { float x, y, z; };
-	//   StdMeshVector v;
-	// };
 	float x, y, z;
 
 	static StdMeshQuaternion Zero();
@@ -71,7 +65,6 @@ struct StdMeshQuaternion
 	void Normalize();
 
 	static StdMeshQuaternion Nlerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
-	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
 };
 
 struct StdMeshTransformation
@@ -89,7 +82,6 @@ struct StdMeshTransformation
 
 	// TODO: Might add path parameter if necessary
 	static StdMeshTransformation Nlerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
-	//static  StdMeshQuaternion Slerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
 };
 
 class StdMeshMatrix

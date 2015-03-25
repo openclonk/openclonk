@@ -73,8 +73,8 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 	case C4FT_Log:     iDefFontSize = iSize*12/14; break;
 	case C4FT_MainSmall:iDefFontSize = iSize*13/14; break;
 	case C4FT_Main:    iDefFontSize = iSize; break;
-	case C4FT_Caption: iDefFontSize = iSize*16/14; /*dwDefWeight = FW_MEDIUM;*/ break;
-	case C4FT_Title:   iDefFontSize = iSize*22/14; /*dwDefWeight = FW_MEDIUM;*/ break;
+	case C4FT_Caption: iDefFontSize = iSize*16/14; break;
+	case C4FT_Title:   iDefFontSize = iSize*22/14; break;
 	default: assert(false); LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
 	}
 	// regular font name: let WinGDI or Freetype draw a font with the given parameters
@@ -351,7 +351,6 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 		iBoldness = (1<<16) + (iBoldness<<16)/400;
 		FT_Matrix mat;
 		mat.xx = iBoldness; mat.xy = mat.yx = 0; mat.yy = 1<<16;
-		//.*(100 + iBoldness/3)/100
 		FT_Set_Transform(*pVectorFont, &mat, NULL);
 	}
 	else
@@ -486,13 +485,6 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	sfcCurrent->Unlock();
 	// adjust line height
 	iLineHgt /= iFontZoom;
-	// font successfully created; set name
-	//SCopy(szFontName2, this->szFontName, 80);
-	if (0) for (int i = 0; i < iNumFontSfcs; ++i)
-		{
-			StdStrBuf pngfilename = FormatString("%s%u%s_%d.png",szFontName,static_cast<unsigned int>(dwHeight),fDoShadow ? "_shadow" : "",i);
-			psfcFontData[i]->SavePNG(pngfilename.getData(), true, false, false);
-		}
 #endif
 }
 

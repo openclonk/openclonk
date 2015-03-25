@@ -16,7 +16,6 @@
 #ifndef C4FOWAMBIENT_H
 #define C4FOWAMBIENT_H
 
-//#include <GL/gl.h>
 #include <C4Landscape.h>
 
 /**

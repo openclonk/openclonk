@@ -65,7 +65,7 @@ bool CPNGFile::DoLoad()
 	if (iBPC == 16) png_set_strip_16(png_ptr);
 	if (iBPC < 8) png_set_packing(png_ptr);
 	if (iClrType == PNG_COLOR_TYPE_GRAY || iClrType == PNG_COLOR_TYPE_GRAY_ALPHA) png_set_gray_to_rgb(png_ptr);
-	/*if (iClrType == PNG_COLOR_TYPE_RGB || iClrType == PNG_COLOR_TYPE_RGB_ALPHA)*/ png_set_bgr(png_ptr);
+	png_set_bgr(png_ptr);
 	// update info
 	png_read_update_info(png_ptr, info_ptr);
 	png_get_IHDR(png_ptr, info_ptr, &uWdt, &uHgt, &iBPC, &iClrType, &iIntrlcType, &iCmprType, &iFltrType);

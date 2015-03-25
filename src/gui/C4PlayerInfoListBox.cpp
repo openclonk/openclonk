@@ -149,8 +149,6 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 	if (pTeamCombo) AddElement(pTeamCombo);
 	if (pRankIcon) AddElement(pRankIcon);
 	if (pExtraLabel) AddElement(pExtraLabel);
-	// tooltip? (same for all components for now. separate tooltip for status icon later?)
-	//SetToolTip(FormatString("%s %s", LoadResStr("IDS_CTL_PLAYER"), sPlayerName.getData()).getData()); hat so keine nennenswerte Aussage...
 	// add to listbox (will get resized horizontally and moved)
 	pForListBox->InsertElement(this, pInsertBeforeElement, PlayerListBoxIndent);
 	// league score update
@@ -540,9 +538,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContextTakeOver(C4GUI
 				}
 	}
 	// add option to use a new one... TODO
-	//pMenu->AddItem("[.!]From &File...", "Select another player file", C4GUI::Ico_Player, new C4GUI::CBMenuHandler<PlayerListItem>(this, OnCtxTest2));
 	// add option to take over from savegame player TODO
-	//pMenu->AddItem("[.!]From &Savegame", "Use savegame player file", C4GUI::Ico_Player, new C4GUI::CBMenuHandler<PlayerListItem>(this, OnCtxTest2));
 	// open it
 	return pMenu;
 }
@@ -1073,12 +1069,10 @@ void C4PlayerInfoListBox::TeamListItem::Update()
 		if (pTeam && pTeam->HasWon())
 		{
 			pNameLabel->SetColor(C4GUI_WinningTextColor, false);
-			//dwBackground = C4GUI_WinningBackgroundColor;
 		}
 		else
 		{
 			pNameLabel->SetColor(C4GUI_LosingTextColor, false);
-			//dwBackground = C4GUI_LosingBackgroundColor;
 		}
 	}
 }

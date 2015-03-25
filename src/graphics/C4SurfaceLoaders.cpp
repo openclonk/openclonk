@@ -187,7 +187,6 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
 				if (byBytesPP == 4 && png.iClrType == PNG_COLOR_TYPE_RGB_ALPHA)
 				{
 					// Optimize the easy case of a png in the same format as the display
-					//assert (png.iPixSize == 4);
 					// 32 bit
 					DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch);
 					memcpy (pPix, png.GetRow(rY) + tX * iTexSize, maxX * 4);

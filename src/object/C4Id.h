@@ -25,9 +25,7 @@
 #include <string>
 #include <vector>
 
-//#include <boost/operators.hpp>
-
-class C4ID //: boost::totally_ordered<C4ID, boost::equivalent<C4ID> >
+class C4ID
 {
 public:
 	typedef size_t Handle;

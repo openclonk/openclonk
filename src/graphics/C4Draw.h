@@ -27,7 +27,6 @@ extern C4Draw *pDraw;
 
 inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
 {
-	//unsigned char r[4];
 	r[0] = (unsigned char)( (dwClr >> 16) & 0xff);
 	r[1] = (unsigned char)( (dwClr >>  8) & 0xff);
 	r[2] = (unsigned char)( (dwClr      ) & 0xff);

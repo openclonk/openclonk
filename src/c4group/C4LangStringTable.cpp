@@ -112,9 +112,6 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 		SCopyUntil(pPos, szStringName, '$', C4MaxName); pPos += SLen(szStringName) + 1;
 		if (*(pPos-1) != '$') continue;
 		// valid?
-		//for(const char *pPos2 = szStringName; *pPos2; pPos2++)
-		//  if(!IsIdentifier(*pPos2))
-		//    break;
 		const char *pPos2 = szStringName;
 		while (*pPos2)
 			if (!IsIdentifier(*(pPos2++)))

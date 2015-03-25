@@ -295,7 +295,6 @@ void C4FileSelDlg::UpdateSelection()
 	pSelection = static_cast<ListItem *>(pFileListBox->GetSelectedItem());
 	// OK button only available if selection
 	// SetEnabled would look a lot better here, but it doesn't exist yet :(
-	//btnOK->SetEnabled(!!pSelection || IsMultiSelection());
 	// selection preview, if enabled
 	if (pSelectionInfoBox)
 	{

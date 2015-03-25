@@ -437,7 +437,6 @@ void C4SoundInstance::Execute()
 		FSOUND_SetPan(iChannel, Clamp(256*(iPan+100)/200,0,255));
 #elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
-		//Mix_SetPanning(iChannel, ((100 + iPan) * 256) / 200, ((100 - iPan) * 256) / 200);
 		Mix_SetPanning(iChannel, Clamp((100 - iPan) * 256 / 100, 0, 255), Clamp((100 + iPan) * 256 / 100, 0, 255));
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME

@@ -393,7 +393,6 @@ namespace C4GUI
 		// scrolling in captions
 		int32_t iScrollSize = GetTopSize();
 		if (fScrollingLeft) d -= iCaptionScrollPos + iScrollSize;
-		//DrawBar(cgo, ::GraphicsResource.fctCaptionLeft, ::GraphicsResource.fctCaptionBar, ::GraphicsResource.fctCaptionRight);
 		// tabs
 		for (Sheet *pSheet = (Sheet *) GetFirst(); pSheet; pSheet = (Sheet *) pSheet->GetNext())
 		{

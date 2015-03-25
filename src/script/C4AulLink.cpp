@@ -152,8 +152,6 @@ void C4AulScriptEngine::UnLink()
 	// Do not clear global variables and constants, because they are registered by the
 	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
 	// variable or constant at runtime by removing it from the script.
-	//GlobalNamedNames.Reset();
-	//GlobalConstNames.Reset();
 }
 
 bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)

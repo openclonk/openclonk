@@ -174,8 +174,6 @@ protected:
 	StdStrBuf sPrevAccessedEntry;
 #endif
 	// Folder only
-	//struct _finddata_t Fdt;
-	//long hFdt;
 	DirectoryIterator FolderSearch;
 	C4GroupEntry FolderSearchEntry;
 	C4GroupEntry LastFolderSearchEntry;

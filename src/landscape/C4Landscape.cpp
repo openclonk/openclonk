@@ -130,31 +130,7 @@ void C4Landscape::Execute()
 		ExecuteScan();
 	// move sky
 	Sky.Execute();
-	// Side open scan
-	/*if (!::Game.iTick255)
-	  if (Game.C4S.LScape.AutoScanSideOpen)
-	    ScanSideOpen(); */
-#ifdef _DEBUG
-	/*if(!::Game.iTick255)
-	  UpdatePixCnt(C4Rect(0, 0, Width, Height), true);
-	if(!::Game.iTick255)
-	  {
-	  DWORD MatCountCheck[C4MaxMaterial], EffectiveMatCountCheck[C4MaxMaterial];
-	  int32_t iMat;
-	  for(iMat = 0; iMat < ::MaterialMap.Num; iMat++)
-	    {
-	    MatCountCheck[iMat] = MatCount[iMat];
-	    EffectiveMatCountCheck[iMat] = EffectiveMatCount[iMat];
-	    }
-	  ClearMatCount();
-	  UpdateMatCnt(C4Rect(0,0,Width,Height), true);
-	  for(iMat = 0; iMat < ::MaterialMap.Num; iMat++)
-	    {
-	    assert(MatCount[iMat] == MatCountCheck[iMat]);
-	    assert(EffectiveMatCount[iMat] == EffectiveMatCountCheck[iMat]);
-	    }
-	  }*/
-#endif
+
 	// Queued Relights -- note that normally we process them before drawing every frame;
 	// this just makes sure relights don't accumulate over a long period of time if no
 	// viewport is open (developer mode).

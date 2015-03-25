@@ -43,7 +43,6 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	int iButtonHeight = C4GUI_BigButtonHgt;
 	C4GUI::ComponentAligner caMain(rcBounds, 0,0,true);
 	C4GUI::ComponentAligner caRightPanel(caMain.GetFromLeft(rcBounds.Wdt*2/5), rcBounds.Wdt/26, 40+rcBounds.Hgt/5);
-	//C4GUI::ComponentAligner caButtons(caRightPanel.GetCentered(caRightPanel.GetWidth(), (iButtonHeight+iButtonPadding) * iButtonCount - iButtonPadding), 0, iButtonPadding);
 	C4GUI::ComponentAligner caButtons(caRightPanel.GetAll(), 0, iButtonPadding);
 	// main menu buttons
 	C4GUI::CallbackButton<C4StartupMainDlg> *btn;
@@ -72,7 +71,6 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	// player selection shortcut - to be made optional
 	UpdateParticipants();
 	pParticipantsLbl->SetContextHandler(new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContext));
-	/*new C4GUI::ContextButton(pParticipantsLbl, true, 0,0);*/
 	// key bindings
 	C4CustomKey::CodeList keys;
 	keys.push_back(C4KeyCodeEx(K_DOWN)); keys.push_back(C4KeyCodeEx(K_RIGHT));
@@ -208,15 +206,6 @@ void C4StartupMainDlg::OnClosed(bool fOK)
 
 void C4StartupMainDlg::OnStartBtn(C4GUI::Control *btn)
 {
-	// no regular game start if no players were selected
-	/*if (!*Config.General.Participants)
-	  {
-	  StdStrBuf buf(LoadResStrNoAmp("IDS_DLG_STARTGAME"), true);
-	  GetScreen()->ShowMessageModal(LoadResStr("IDS_MSG_NOPLAYERSELECTED"), buf.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
-	  // let's go to the player selection dlg then instead
-	  OnPlayerSelectionBtn(NULL);
-	  return;
-	  }*/
 	// advance to scenario selection screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_ScenSel);
 }
@@ -229,8 +218,6 @@ void C4StartupMainDlg::OnPlayerSelectionBtn(C4GUI::Control *btn)
 
 void C4StartupMainDlg::OnNetJoinBtn(C4GUI::Control *btn)
 {
-	// simple net join dlg
-	//GetScreen()->ShowDialog(new C4GUI::InputDialog("Enter host IP", "Direct join", C4GUI::Ico_Host, new C4GUI::InputCallback<C4StartupMainDlg>(this, &C4StartupMainDlg::OnNetJoin)), false);
 	// advanced net join and host dlg!
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_NetJoin);
 }

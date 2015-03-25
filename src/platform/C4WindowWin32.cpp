@@ -493,7 +493,6 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_PAINT:
 		// 2do: only draw specific dlg?
-		//::GraphicsSystem.Execute();
 		break;
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
@@ -510,7 +509,6 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble, p.x, p.y, wParam, pDlg, NULL);  break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEMOVE:
-		//SetCursor(NULL);
 		::pGUI->MouseInput(C4MC_Button_None, p.x, p.y, wParam, pDlg, NULL);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------

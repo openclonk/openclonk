@@ -232,12 +232,6 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (!Application.isEditor)
-		{
-			//int32_t iMidX = Viewport->OutX + iX;
-			//int32_t iMidY = Viewport->OutY + iY;
-			//FIXMESetCursorPos(iMidX, iMidY);
-		}
 		InitCentered = true;
 	}
 #endif
@@ -706,21 +700,6 @@ void C4MouseControl::RightUp()
 
 void C4MouseControl::Wheel(DWORD dwFlags)
 {
-	//short iDelta = (short)(dwFlags >> 16);
-
-	// Normal wheel: control zoom
-	if (!ControlDown)
-	{
-		//if(iDelta > 0) Viewport->ChangeZoom(C4GFX_ZoomStep);
-		//if(iDelta < 0) Viewport->ChangeZoom(1.0f/C4GFX_ZoomStep);
-	}
-	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
-	else
-	{
-		// TODO
-		//if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
-		//if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
-	}
 }
 
 bool C4MouseControl::IsValidMenu(C4Menu *pMenu)

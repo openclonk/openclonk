@@ -504,8 +504,6 @@ inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const 
 template <class T>
 struct StdBasicPtrAdapt
 {
-	//typedef T TargetType;
-
 	StdBasicPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
 		: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming) {}
 	T *&rpObj; bool fAllowNull; const char *szNaming;

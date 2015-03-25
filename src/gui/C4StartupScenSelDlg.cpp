@@ -371,8 +371,6 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 			if (!pBtnFirst) pBtnFirst = pBtn;
 		}
 	}
-	// focus first available button? Hm, better not.
-	//if (pBtnFirst) pMainDlg->SetFocus(pBtnFirst, false);
 	// create scenario info listbox
 	pSelectionInfoBox = new C4GUI::TextWindow(rcScenInfoArea,
 	    C4StartupScenSel_TitlePictureWdt+2*C4StartupScenSel_TitleOverlayMargin, C4StartupScenSel_TitlePictureHgt+2*C4StartupScenSel_TitleOverlayMargin,
@@ -525,7 +523,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		// load version
 		Group.LoadEntryString(C4CFN_Version, &sVersion);
 	}
-	//LogF("dbg: Loaded \"%s\" as \"%s\". (%s)", (const char *) sFilename, (const char *) sName, GetIsFolder() ? "Folder" : "Scenario");
 	// done, success
 	return true;
 }
@@ -939,7 +936,6 @@ bool C4ScenarioListLoader::Folder::LoadContents(C4ScenarioListLoader *pLoader, C
 	// if filename is not given, assume it's been loaded in this entry
 	if (!psFilename) psFilename = &this->sFilename; else this->sFilename = *psFilename;
 	// nothing loaded: Load now
-	//LogF("DoLoadContents in folder \"%s\"", (const char *) this->sFilename);
 	if (!DoLoadContents(pLoader, pFromGrp, *psFilename, fLoadEx)) return false;
 	// sort loaded stuff by name
 	Sort();
@@ -1036,13 +1032,11 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 	char ChildFilename[_MAX_FNAME+1]; StdStrBuf sChildFilename; int32_t iLoadCount=0;
 	for (szSearchMask = szC4CFN_ScenarioFiles; szSearchMask;)
 	{
-		//LogF("SubFolder \"%s\" loading mask \"%s\"", (const char *) Group.GetFullName(), (const char *) szSearchMask);
 		Group.ResetSearch();
 		while (Group.FindNextEntry(szSearchMask, ChildFilename))
 		{
 			sChildFilename.Ref(ChildFilename);
 			// okay; create this item
-			//LogF("SubFolder \"%s\" loading \"%s\"", (const char *) sFilename, (const char *) sChildFilename);
 			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
@@ -1350,11 +1344,6 @@ void C4StartupScenSelDlg::ScenListItem::UpdateOwnPos()
 void C4StartupScenSelDlg::ScenListItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	// double-click opens/starts item - currently processed by ListBox already!
-	/*if (iButton == C4MC_Button_LeftDouble && pScenListEntry)
-	  {
-	  if (pScenListEntry->Start()) return;
-	  return; // better always return, because this might get deleted
-	  }*/
 	// inherited processing
 	typedef C4GUI::Window BaseClass;
 	BaseClass::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
@@ -1423,7 +1412,6 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
 	pScenSelStyleTabular->SetSheetMargin(0);
-	//pScenSelStyleTabular->SetDrawDecoration(false);
 	pScenSelStyleTabular->SetGfx(&C4Startup::Get()->Graphics.fctDlgPaper, &C4Startup::Get()->Graphics.fctOptionsTabClip, &C4Startup::Get()->Graphics.fctOptionsIcons, &C4Startup::Get()->Graphics.BookSmallFont, false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
@@ -1479,7 +1467,6 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupScenSelDlg>(LoadResStr("IDS_BTN_BACK"), caButtonArea.GetFromLeft(iButtonWidth, iButtonHeight), &C4StartupScenSelDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
 	AddElement(btn);
-	//LogF("BackBtn bounds: (%d,%d)+(%d,%d)", btn->GetBounds().x, btn->GetBounds().y, btn->GetBounds().Wdt, btn->GetBounds().Hgt);
 	// next button
 	pOpenBtn = new C4GUI::CallbackButton<C4StartupScenSelDlg>(LoadResStr("IDS_BTN_OPEN"), caButtonArea.GetFromRight(iButtonWidth, iButtonHeight), &C4StartupScenSelDlg::OnNextBtn);
 	pOpenBtn->SetToolTip(LoadResStr("IDS_DLGTIP_SCENSELNEXT"));
@@ -1536,7 +1523,7 @@ void C4StartupScenSelDlg::OnShown()
 	// init file list
 	fIsInitialLoading = true;
 	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader(Achievements);
-	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
+	pScenLoader->Load(StdStrBuf());
 	UpdateList();
 	UpdateSelection();
 	fIsInitialLoading = false;

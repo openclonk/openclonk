@@ -220,14 +220,6 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 
 		if (!bone) Error(FormatString("There is no such bone with ID %d", BoneID), vertexboneassignment_elem);
 
-		// TODO: Maybe implement a table as in the binary version?
-		// Build bone handle->index quick access table
-		//std::map<uint16_t, size_t> bone_lookup;
-		//for (size_t i = 0; i < mesh->GetSkeleton().GetNumBones(); ++i)
-		//{
-		//	bone_lookup[mesh->GetSkeleton().GetBone(i).ID] = i;
-		//}
-
 		// Find first bone assignment with a zero weight (i.e. is unused)
 		StdSubMesh::Vertex& vertex = vertices[VertexIndex];
 		// Check quickly if all weight slots are used

@@ -185,8 +185,6 @@ private:
 
 		void UpdateInfo();                                  // update for changed player info
 
-		//const char *GetName() const { return GetCore().getName(); }
-		//JoinedPlayer *JoinPlayer(const char *szLocalPlayerFilename); // join
 		DWORD GetColor() const { return dwClientClr; } // client chat color
 		C4Client *GetClient() const; // get client associated with this list item
 		bool IsLocalClientPlayer() const; // whether this player is going to join locally

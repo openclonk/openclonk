@@ -452,8 +452,6 @@ int main(int argc, char *argv[])
 			case 'v':
 				fQuiet = false;
 				break;
-				// Silent mode
-				//case 's': fSilent=true; break;
 				// Recursive mode
 			case 'r':
 				fRecursive = true;

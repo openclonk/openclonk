@@ -32,7 +32,7 @@ struct C4GameVersion
 	StdStrBuf GetString() const
 	{ return FormatString("%s %d.%d", sEngineName.getData(), (int)iVer[0], (int)iVer[1]); }
 	bool operator == (const C4GameVersion &rCmp) const
-	{ return /*sEngineName==rCmp.sEngineName &&*/ iVer[0]==rCmp.iVer[0] && iVer[1]==rCmp.iVer[1]; }
+	{ return iVer[0]==rCmp.iVer[0] && iVer[1]==rCmp.iVer[1]; }
 
 	void CompileFunc(StdCompiler *pComp, bool fEngineName)
 	{

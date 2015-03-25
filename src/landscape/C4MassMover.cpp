@@ -95,9 +95,6 @@ bool C4MassMoverSet::Create(int32_t x, int32_t y, bool fExecute)
 
 void C4MassMoverSet::Draw()
 {
-	/*int32_t cnt;
-	for (cnt=0; cnt<C4MassMoverChunk; cnt++)
-	  if (Set[cnt].Mat!=MNone)*/
 }
 
 bool C4MassMover::Init(int32_t tx, int32_t ty)

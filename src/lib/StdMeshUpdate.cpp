@@ -52,7 +52,7 @@ void StdMeshMaterialUpdate::Update(StdMesh* mesh) const
 
 void StdMeshMaterialUpdate::Update(StdMeshInstance* instance) const
 {
-	for(unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i) //std::vector<StdSubMeshInstance*>::iterator iter = instance->SubMeshInstances->begin(); iter != instance->SubMeshInstances->end(); ++iter)
+	for(unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
 	{
 		StdSubMeshInstance* sub_instance = instance->SubMeshInstances[i];
 		std::map<const StdMeshMaterial*, StdMeshMaterial>::const_iterator mat_iter = Materials.find(sub_instance->Material);

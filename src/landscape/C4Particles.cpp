@@ -365,7 +365,6 @@ void C4ParticleValueProvider::Floatify(float denominator)
 		{
 			FloatifyParameterValue(0, 1000.f, 2 * i); // even numbers are the time values
 			FloatifyParameterValue(0, denominator, 2 * i + 1); // odd numbers are the actual values
-			//LogF("KF is %f @ %f", keyFrames[2 * i + 1], keyFrames[2 * i]);
 		}
 	}
 	else if (valueFunction == &C4ParticleValueProvider::Speed || valueFunction == &C4ParticleValueProvider::Wind || valueFunction == &C4ParticleValueProvider::Gravity)
@@ -610,8 +609,6 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			keyFrames[2 * keyFrameCount - 2] = 1500.f;
 			keyFrames[2 * keyFrameCount - 1] = keyFrames[keyFrameCount - 1 - 2];
 
-			//for (int i = 0; i < keyFrameCount; ++i)
-			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
 		}
 		break;
 	case C4PV_Sin:
@@ -1131,9 +1128,6 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 {
 	if (particleChunks.empty()) return;
 
-	//glDisable(GL_DEPTH_TEST);
-	//if (additiveBlit)
-	//	pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
 	

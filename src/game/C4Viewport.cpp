@@ -542,9 +542,6 @@ void C4Viewport::AdjustPosition()
 
 	// NO_OWNER can't scroll
 	if (fIsNoOwnerViewport) { viewOffsX=0; viewOffsY=0; }
-#ifdef WITH_DEVELOPER_MODE
-	//ScrollBarsByViewPosition();
-#endif
 }
 
 void C4Viewport::CenterPosition()
@@ -617,11 +614,9 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		UpdateOutputSize();
 		// Disable player lock on unowned viewports
 		if (!ValidPlr(Player)) TogglePlayerLock();
-		// Draw
 		// Don't call Execute right away since it is not yet guaranteed that
 		// the Player has set this as its Viewport, and the drawing routines rely
 		// on that.
-		//Execute();
 	}
 	else
 	{
@@ -829,20 +824,6 @@ void C4ViewportList::DrawFullscreenBackground()
 bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 {
 	if (!cvp) return false;
-	/*C4Viewport *next,*prev=NULL;
-	for (C4Viewport *cvp2=FirstViewport; cvp2; cvp2=next)
-	  {
-	  next=cvp2->Next;
-	  if (cvp2 == cvp)
-	    {
-	    delete cvp;
-	    StartSoundEffect("CloseViewport");
-	    if (prev) prev->Next=next;
-	    else FirstViewport=next;
-	    }
-	  else
-	    prev=cvp2;
-	  }*/
 	// Chop the start of the chain off
 	if (FirstViewport == cvp)
 	{

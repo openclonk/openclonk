@@ -278,8 +278,6 @@ bool C4StartupNetListEntry::OnReference()
 
 C4GUI::Element* C4StartupNetListEntry::GetNextLower(int32_t sortOrder)
 {
-	// already have a next element? use this.
-	//if (GetNext()) return GetNext();
 	// search list for the next element of a lower sort order
 	for (C4GUI::Element *pElem = pList->GetFirst(); pElem; pElem = pElem->GetNext())
 	{
@@ -583,8 +581,6 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	                            new C4GUI::DlgKeyCB<C4StartupNetDlg>(*this, &C4StartupNetDlg::KeyBack), C4CustomKey::PRIO_Dlg);
 	pKeyRefresh = new C4KeyBinding(C4KeyCodeEx(K_F5), "StartupNetReload", KEYSCOPE_Gui,
 	                               new C4GUI::DlgKeyCB<C4StartupNetDlg>(*this, &C4StartupNetDlg::KeyRefresh), C4CustomKey::PRIO_CtrlOverride);
-	//pKeyForward = new C4KeyBinding(C4KeyCodeEx(K_RIGHT), "StartupNetNext", KEYSCOPE_Gui, - blocks editbox
-	//< new C4GUI::DlgKeyCB<C4StartupNetDlg>(*this, &C4StartupNetDlg::KeyForward), C4CustomKey::PRIO_CtrlOverride);
 
 	// screen calculations
 	UpdateSize();
@@ -640,11 +636,8 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	pSearchFieldEdt = new C4GUI::CallbackEdit<C4StartupNetDlg>(caSearch.GetAll(), this, &C4StartupNetDlg::OnSearchFieldEnter);
 	pSearchFieldEdt->SetToolTip(szSearchTip);
 	pSheetGameList->AddElement(pSearchFieldEdt);
-	//const char *szGameSelListTip = LoadResStr("IDS_NET_GAMELIST_INFO"); disabled this tooltip, it's mainly disturbing when browsing the list
-	//pGameListLbl->SetToolTip(szGameSelListTip);
 	pSheetGameList->AddElement(pGameListLbl);
 	pGameSelList = new C4GUI::ListBox(caGameList.GetFromTop(caGameList.GetHeight() - iCaptHgt));
-	//pGameSelList->SetToolTip(szGameSelListTip);
 	pGameSelList->SetDecoration(true, NULL, true, true);
 	pGameSelList->UpdateElementPositions();
 	pGameSelList->SetSelectionDblClickFn(new C4GUI::CallbackHandler<C4StartupNetDlg>(this, &C4StartupNetDlg::OnSelDblClick));
@@ -737,7 +730,6 @@ C4StartupNetDlg::~C4StartupNetDlg()
 	Application.Remove(this);
 	if (pMasterserverClient) delete pMasterserverClient;
 	// dtor
-	//delete pKeyForward;
 	delete pKeyBack;
 	delete pKeyRefresh;
 }
@@ -946,9 +938,6 @@ void C4StartupNetDlg::UpdateSelection(bool fUpdateCollapsed)
 	if (fUpdatingList) return;
 	// in collapsed view, updating the selection may uncollapse something
 	if (fIsCollapsed && fUpdateCollapsed) UpdateCollapsed();
-	// 2do
-	// no selection: join button disabled
-	//pJoinBtn->SetEnabled(false);
 }
 
 void C4StartupNetDlg::UpdateDlgMode()

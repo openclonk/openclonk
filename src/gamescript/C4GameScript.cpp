@@ -2310,7 +2310,7 @@ static bool FnDoScoreboardShow(C4PropList * _this, long iChange, long iForPlr)
 		if (!pPlr->LocalControl) return true;
 	}
 	Game.Scoreboard.DoDlgShow(iChange, false);
-	return true; //Game.Scoreboard.ShouldBeShown();
+	return true;
 }
 
 static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
@@ -2381,11 +2381,6 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
 }
 
-/*static long FnSetSaturation(C4AulContext *ctx, long s)
-  {
-  return pDraw->SetSaturation(Clamp(s,0l,255l));
-  }*/
-
 // undocumented!
 static bool FnPauseGame(C4PropList * _this, bool fToggle)
 {
@@ -2436,11 +2431,7 @@ static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl
 {
 	// get control set to check
 	C4PlayerControl *pCheckCtrl = NULL;
-	if (iPlr == NO_OWNER)
-	{
-		//pCheckCtrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iPlr != NO_OWNER)
 	{
 		C4Player *pPlr = ::Players.Get(iPlr);
 		if (pPlr)
@@ -2463,11 +2454,7 @@ static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, 
 {
 	// get control set to check
 	C4PlayerControl *plrctrl = NULL;
-	if (iplr == NO_OWNER)
-	{
-		//plrctrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iplr != NO_OWNER)
 	{
 		C4Player *plr = ::Players.Get(iplr);
 		if (plr)
@@ -2488,11 +2475,7 @@ static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
 {
 	// get control set to check
 	C4PlayerControl *plrctrl = NULL;
-	if (iplr == NO_OWNER)
-	{
-		//plrctrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iplr != NO_OWNER)
 	{
 		C4Player *plr = ::Players.Get(iplr);
 		if (plr)
@@ -2583,7 +2566,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	for (C4ScriptFnDef *pDef = &C4ScriptGameFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(pEngine, pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
-//  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);

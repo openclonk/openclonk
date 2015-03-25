@@ -534,7 +534,6 @@ public:
 	// Append string
 	void Append(const char *pnData, size_t iChars)
 	{
-		//assert(iChars <= std::strlen(pnData));
 		Grow(iChars);
 		Write(pnData, iChars, iSize - iChars - 1);
 	}

@@ -376,12 +376,6 @@ void CPathFinder::Init(bool (*fnPointFree)(int, int, int), int iPointFreeParamet
 	Threshold=iThreshold;
 }
 
-/*void CPathFinder::Draw(C4TargetFacet &cgo)
-  {
-  for (CPathFinderRay *pRay=FirstRay; pRay; pRay=pRay->Next)
-    pRay->Draw(cgo);
-  }*/
-
 void CPathFinder::Run()
 {
 	Success=false;
