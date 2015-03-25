@@ -23,6 +23,7 @@
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
+
 #include <GL/glew.h>
 
 #ifdef USE_COCOA

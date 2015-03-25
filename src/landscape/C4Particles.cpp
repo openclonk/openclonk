@@ -1009,12 +1009,15 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 			
 			// set up the vertex array structure once
 			glBindVertexArray(drawingDataVertexArraysObject);
-			if (glObjectLabel)
-				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
-			
 			glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+
+#ifdef GL_KHR_debug
 			if (glObjectLabel)
+			{
+				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
 				glObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
+			}
+#endif
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_COLOR_ARRAY);

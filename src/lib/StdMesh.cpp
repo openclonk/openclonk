@@ -565,8 +565,10 @@ void StdMesh::UpdateVBO()
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+#ifdef GL_KHR_debug
 	if (glObjectLabel)
 		glObjectLabel(GL_BUFFER, vbo, -1, (Label + "/VBO").c_str());
+#endif
 
 	// Unmapping the buffer may fail for certain reasons, in which case we need to try again.
 	do
