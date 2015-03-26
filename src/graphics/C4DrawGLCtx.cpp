@@ -35,9 +35,22 @@ void CStdGLCtx::SelectCommon()
 	glEnable(GL_BLEND);
 }
 
+void CStdGLCtx::Reinitialize()
+{
+	assert(!pGL->pCurrCtx);
+#ifdef USE_WIN32_WINDOWS
+	if (hrc)
+		wglDeleteContext(hrc);
+	hrc = 0;
+#endif
+}
+
+
 #ifdef USE_WIN32_WINDOWS
 
 #include <GL/wglew.h>
+
+decltype(CStdGLCtx::hrc) CStdGLCtx::hrc = 0;
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -227,15 +240,11 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	return glewInitialized;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hrc(0), hDC(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0) { }
 
 void CStdGLCtx::Clear()
 {
-	if (hrc)
-	{
-		Deselect();
-		wglDeleteContext(hrc); hrc=0;
-	}
+	Deselect();
 	if (hDC)
 	{
 		ReleaseDC(pWindow ? pWindow->hRenderWindow : hWindow, hDC);
@@ -265,6 +274,11 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 	if(!hDC)
 	{
 		pGL->Error("  gl: Error getting DC");
+		return false;
+	}
+	if (hrc)
+	{
+		SetPixelFormat(hDC, pGL->iPixelFormat, &pApp->GetPFD());
 	}
 	else
 	{
@@ -274,13 +288,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			if((pixel_format = GetPixelFormatForMS(hDC, 0)) != 0)
 				Config.Graphics.MultiSampling = 0;
 
-		if(!pixel_format)
+		PIXELFORMATDESCRIPTOR pfd;
+		if (!pixel_format)
 		{
 			pGL->Error("  gl: Error choosing pixel format");
 		}
 		else
 		{
-			PIXELFORMATDESCRIPTOR pfd;
 			if(!DescribePixelFormat(hDC, pixel_format, sizeof(pfd), &pfd))
 			{
 				pGL->Error("  gl: Error describing chosen pixel format");
@@ -310,43 +324,19 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 				{
 					pGL->Error("  gl: Error creating gl context");
 				}
-				else
-				{
-					// share textures
-					bool success = false;
-					wglMakeCurrent(hDC, NULL); pGL->pCurrCtx=NULL;
-					if (this != pGL->pMainCtx)
-					{
-						if(!wglShareLists(pGL->pMainCtx->hrc, hrc))
-							pGL->Error("  gl: Textures for secondary context not available");
-						else
-							success = true;
-					}
-					else
-					{
-						// select main context
-						if (!Select())
-							pGL->Error("  gl: Unable to select context");
-						else
-							success = true;
-					}
-					
-					if(success)
-					{
-						pGL->iPixelFormat = pixel_format;
-						PIXELFORMATDESCRIPTOR &rPfd = pApp->GetPFD();
-						rPfd = pfd;
-						return true;
-					}
-				}
 
-				wglDeleteContext(hrc); hrc = NULL;
+				pGL->iPixelFormat = pixel_format;
+				pApp->GetPFD() = pfd;
 			}
 		}
-
-		ReleaseDC(hWindow, hDC); hDC = NULL;
+	}
+	if (hrc)
+	{
+		Select();
+		return true;
 	}
 
+	ReleaseDC(hWindow, hDC); hDC = NULL;
 	return false;
 }
 
@@ -372,7 +362,11 @@ bool CStdGLCtx::Select(bool verbose)
 	// safety
 	if (!pGL || !hrc) return false;
 	// make context current
-	if (!wglMakeCurrent (hDC, hrc)) return false;
+	if (!wglMakeCurrent (hDC, hrc))
+	{
+		pGL->Error("Unable to select context.");
+		return false;
+	}
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed

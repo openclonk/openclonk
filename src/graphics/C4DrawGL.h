@@ -98,12 +98,14 @@ public:
 
 	bool PageFlip();            // present scene
 
+	static void Reinitialize();
+
 protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
 #ifdef USE_WIN32_WINDOWS
-	HGLRC hrc;                  // rendering context
+	static HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
 	static bool InitGlew(HINSTANCE hInst);

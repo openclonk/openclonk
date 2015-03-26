@@ -670,6 +670,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	                                        hWindow, NULL, pApp->hInstance, NULL);
 	if(!hNewRenderWindow) return false;
 
+	CStdGLCtx::Reinitialize();
 	ShowWindow(hNewRenderWindow, SW_SHOW);
 	DestroyWindow(hRenderWindow);
 	hRenderWindow = hNewRenderWindow;
