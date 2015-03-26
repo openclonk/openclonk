@@ -1295,11 +1295,13 @@ void C4ParticleSystem::DoInit()
 	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
 	useBufferObjectWorkaround = false;
 
+#ifndef USE_WIN32_WINDOWS
 	// Every window in developers' mode has an own OpenGL context at the moment. Certain objects are not shared between contexts.
 	// In that case we can just use the slower workaround without VBAs and VBOs to allow the developer to view particles in every viewport.
 	// The best solution would obviously be to make all windows use a single OpenGL context. This has to be considered as a workaround.
 	if (Application.isEditor)
 		useBufferObjectWorkaround = true;
+#endif
 }
 
 void C4ParticleSystem::ExecuteCalculation()
