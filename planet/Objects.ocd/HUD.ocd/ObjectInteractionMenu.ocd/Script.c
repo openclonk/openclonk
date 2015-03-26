@@ -573,10 +573,12 @@ func OnContentsSelection(symbol, extra_data)
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
 	
-	var obj = FindObject(Find_Container(target), Find_ID(symbol));
+	var obj = extra_data.one_object ?? FindObject(Find_Container(target), Find_ID(symbol));
 	if (!obj) return;
 	
-	if (other_target->Collect(obj, true))
+	// special handling for Stackable items..
+	var handled = obj->~TryPutInto(other_target);
+	if (handled || other_target->Collect(obj, true))
 	{
 		Sound("SoftTouch*", true, nil, GetOwner());
 		return true;
@@ -635,6 +637,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				e.callback_effect = effect;
 			}
 		}
+		// How many objects are this object?!
+		var object_amount = obj->~GetStackCount() ?? 1;
 		// Empty containers can be stacked.
 		if (!(is_container && has_contents))
 		{
@@ -642,13 +646,14 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 			{
 				if (inv.symbol != symbol) continue;
 				if (inv.has_contents) continue;
-				if (inv.count) ++inv.count;
-				else inv.count = 2;
+				inv.count += object_amount;
 				inv.text = Format("%dx", inv.count);
 				found = true;
 				break;
 			}
 		}
+		else // Can't stack? Remember object..
+			extra_data.one_object = obj;
 		// Add new!
 		if (!found)
 		{
@@ -702,12 +707,17 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				}
 			}
 			// Add to menu!
+			var text = nil;
+			if (object_amount > 1)
+				text = Format("%dx", object_amount);
 			PushBack(inventory,
 				{
 					symbol = symbol, 
 					extra_data = extra_data, 
 					has_contents = (is_container && has_contents),
-					custom = custom
+					custom = custom,
+					count = object_amount,
+					text = text
 				});
 		}
 	}
@@ -763,7 +773,7 @@ func OnExtraSlotClicked(proplist extra_data)
 		if (!obj) return;
 	}
 	
-	OpenMenuForObject(obj, 1 - extra_data.slot, true);
+	OpenMenuForObject(obj, extra_data.slot, true);
 }
 
 // This function is supposed to be called when the menu already exists (is open) and some sub-menu needs an update.

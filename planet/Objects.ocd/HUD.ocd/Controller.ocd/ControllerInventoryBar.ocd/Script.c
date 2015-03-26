@@ -183,10 +183,12 @@ func UpdateInventory()
 				if (!found) AddEffect("ExtraSlotUpdater", item, 1, 30 + Random(60), this);
 			}
 			// What to display in the extra slot?
-			var extra_text = nil;
+			var extra_text = nil, number_symbol = nil;
 			if (extra_symbol && contents->~GetStackCount())
 			{
-				extra_text = Format("%dx", contents->GetStackCount());
+				if (contents->IsInfiniteStackCount())
+					number_symbol = Icon_Number;
+				else extra_text = Format("%dx", contents->GetStackCount());
 			}
 			// If stackable itself, add count.
 			/*
@@ -207,7 +209,7 @@ func UpdateInventory()
 				extra_slot =
 				{
 					Player = extra_slot_player,
-					text = {Text = extra_text},
+					text = {Text = extra_text, Symbol = number_symbol},
 					circle =
 					{
 						Symbol = extra_slot_background_symbol,
@@ -312,6 +314,7 @@ func CreateNewInventoryButton(int max_slots)
 			{
 				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
 				Style = GUI_TextRight,
+				GraphicsName = "Inf", // sometimes used with Icon_Number
 				Text = nil,
 			},
 			circle = 

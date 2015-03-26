@@ -62,6 +62,18 @@ protected func Construction()
 	return _inherited(...);
 }
 
+func Destruction()
+{
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+			container->~NotifyHUD();
+	}
+	return _inherited(...);
+}
+
 public func Stack(object obj)
 {
 	if (obj->GetID() != GetID())
@@ -91,6 +103,13 @@ public func SetStackCount(int amount)
 	count_is_infinite = false;
 	UpdateStackDisplay();
 	return true;
+}
+
+public func DoStackCount(int change)
+{
+	count += change;
+	if (count <= 0) RemoveObject();
+	else UpdateStackDisplay();
 }
 
 public func IsInfiniteStackCount() { return count_is_infinite; }
@@ -198,6 +217,11 @@ private func UpdateMass()
 	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / MaxStackCount());
 }
 
+/*
+	Try to merge packs BEFORE entering the container.
+	That means that a container can not prevent objects stacking into it.
+	However, the other way round (after the object has entered) presents more issues.
+*/
 protected func RejectEntrance(object into)
 {
 	if (TryPutInto(into))
