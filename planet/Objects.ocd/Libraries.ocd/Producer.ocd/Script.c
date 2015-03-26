@@ -11,7 +11,6 @@
 /*
 	Properties of producers:
 	* Storage of producers:
-	  * Producers can store sufficient amounts of raw material they need to produce their products.
 	  * Producers can store the products they can produce.
 	  * Nothing more, nothing less.
 	* Production queue:
@@ -67,7 +66,7 @@ public func GetProductionMenuEntries()
 		{
 			Left = "4em",
 			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Exit, Tooltip = "$QueueRemove$"},
-			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Play, Tooltip = "$QueueInf$"}
+			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
 		}
 	};
 	
@@ -150,15 +149,13 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 	var product_id = symbol;
 	var costs = ProductionCosts(product_id);
 	var cost_msg = "";
-	var liquid, material;
+	var liquid;
 	for (var comp in costs)
 		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
 	if (this->~FuelNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
 	if (liquid = this->~LiquidNeed(product_id))
 		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
-	if (material = this->~MaterialNeed(product_id))
-		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(material[1], CheckMaterials(product_id)), product_id->~GetMaterialIcon(material[0]));
 	if (this->~PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 	new_box.requirements.Text = cost_msg;
@@ -224,15 +221,6 @@ public func GetProducts(object for_clonk)
 		}
 	}
 	return products;
-}
-
-/** Determines whether the raw material specified is needed for production. Should be overloaded by the producer.
-	@param rawmat_id id of raw material for which to determine if it is needed for production.
-	@return \c true if the raw material is needed, \c false otherwise.
-*/
-public func NeedRawMaterial(id rawmat_id)
-{
-	return false; // Obsolete for now.
 }
 
 /**
@@ -402,10 +390,10 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
 	// Check raw material need.
-	if (!CheckMaterial(product_id))
+	if (!CheckAllComponentsForProduct(product_id))
 	{
 		// No material available? request from cable network.
-		RequestMaterial(product_id);
+		RequestAllMissingComponents(product_id);
 		// In the meanwhile, just cycle the queue and try the next one.
 		CycleQueue();
 		return 1;
@@ -431,7 +419,6 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
-private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
 private func PowerNeed() { return 200; }
 
@@ -450,9 +437,6 @@ private func Produce(id product)
 	// Check need for liquids.
 	if (!CheckLiquids(product))
 		return false;
-	// Check need for materials.
-	if (!CheckMaterials(product))
-		return false;
 	// Check need for power.
 	if (!CheckForPower())
 		return false;
@@ -463,7 +447,6 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
-	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -482,16 +465,42 @@ private func CheckComponents(id product, bool remove)
 		else if (remove)
 		{
 			for (var i = 0; i < mat_cost; i++)
-				 FindObject(Find_Container(this), Find_ID(mat_id))->RemoveObject();
+			{
+				var obj = FindObject(Find_Container(this), Find_ID(mat_id));
+				// First try to remove some objects from the stack.
+				if (obj->~IsStackable())
+				{
+					var num = obj->GetStackCount();
+					obj->DoStackCount(-(mat_cost - i));
+					i += num - 1; // -1 to offset loop advancement
+				}
+				else
+					obj->RemoveObject();
+			}
 		}
 	}
 	return true;
 }
 
+public func GetAvailableComponentAmount(id material)
+{
+	// Normal object?
+	if (!material->~IsStackable())
+		return ContentsCount(material);
+	// If not, we need to check stacked objects.
+	var real_amount = 0;
+	var contents = FindObjects(Find_Container(this), Find_ID(material));
+	for (var obj in contents)
+	{
+		var count = obj->~GetStackCount() ?? 1;
+		real_amount += count;
+	}
+	return real_amount;
+}
+
 public func CheckComponent(id component, int amount)
 {
-	// check if at least the given amount of the given component is available to be used for production
-	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+	return GetAvailableComponentAmount(component) >= amount;
 }
 
 public func CheckFuel(id product, bool remove)
@@ -558,36 +567,6 @@ public func CheckLiquids(id product, bool remove)
 					break;
 			}
 		}		
-	}
-	return true;
-}
-
-public func CheckMaterials(id product, bool remove)
-{
-	var mat_need = MaterialNeed(product);
-	if (mat_need)
-	{
-		var material_amount = 0;
-		var material = mat_need[0];
-		var need = mat_need[1];
-		// Find liquid containers in this producer.
-		for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
-			if (mat_container->~GetContainedMaterial() == material)
-				material_amount += mat_container->~GetFillLevel();
-		if (material_amount < need)
-			return false;
-		else if (remove)
-		{
-			// Remove the material needed.
-			var extracted = 0;
-			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
-			{
-				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
-				extracted += val;
-				if (extracted >= need)
-					break;
-			}
-		}
 	}
 	return true;
 }
@@ -720,15 +699,14 @@ public func OnProductEjection(object product)
 /**
 	Determines whether there is sufficient material to produce an item.
 */
-private func CheckMaterial(id item_id)
+private func CheckAllComponentsForProduct(id product_id)
 {
-	for (var item in ProductionCosts(item_id))
+	for (var item in ProductionCosts(product_id))
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
-			return false;
+		var available = GetAvailableComponentAmount(mat_id);
+		if (available < mat_cost) return false;
 	}
 	return true;
 }
@@ -736,15 +714,15 @@ private func CheckMaterial(id item_id)
 /**
 	Requests the necessary material from the cable network if available.
 */
-private func RequestMaterial(id item_id)
+private func RequestAllMissingComponents(id item_id)
 {
 	for (var item in ProductionCosts(item_id))
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
-			RequestObject(mat_id, mat_cost - mat_av);
+		var available = GetAvailableComponentAmount(mat_id);
+		if (available < mat_cost)
+			RequestObject(mat_id, mat_cost - available);
 	}
 	return true;
 }
@@ -757,20 +735,12 @@ public func RequestObject(id obj_id, int amount)
 }
 
 /*-- Storage --*/
-
-protected func RejectCollect(id item, object obj)
-{
-	// Just return RejectEntrance for this object.
-	return RejectEntrance(obj);
-}
-
-protected func RejectEntrance(object obj)
+// Whether an object could enter this storage.
+func IsCollectionAllowed(object obj)
 {
 	var obj_id = obj->GetID();
 	// Products itself may be collected.
-	if (IsProduct(obj_id))
-		return false;
-		
+	if (IsProduct(obj_id)) return true;
 	// Components of products may be collected.
 	for (var product in GetProducts())
 	{
@@ -778,7 +748,7 @@ protected func RejectEntrance(object obj)
 		while (comp_id = GetComponent(nil, i, nil, product))
 		{
 			if (comp_id == obj_id)
-				return false;
+				return true;
 			i++;
 		}
 	}
@@ -787,7 +757,7 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in GetProducts())
 			if (FuelNeed(product) > 0)
-				return false;
+				return true;
 	}
 	// Liquid objects may be collected if a product needs them.
 	if (obj->~IsLiquid())
@@ -795,7 +765,7 @@ protected func RejectEntrance(object obj)
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
 				if (LiquidNeed(product)[0] == obj->~IsLiquid())
-					return false;
+					return true;
 	}
 	// Liquid containers may be collected if a product needs them.
 	if (obj->~IsLiquidContainer())
@@ -804,12 +774,17 @@ protected func RejectEntrance(object obj)
 			if (LiquidNeed(product))
 				return false;
 	}
-	// Material containers may be collected if a product needs them.
-	if (obj->~IsMaterialContainer())
+}
+func RejectCollect(id obj_id, object obj)
+{
+	// Is the object a container? If so, try to empty it.
+	if (obj->~IsContainer())
 	{
-		for (var product in GetProducts())
-			if (MaterialNeed(product))
-				return false;
+		var count = obj->ContentsCount();
+		while (--count >= 0)
+			obj->Contents(count)->Enter(this);
 	}
+	// Can we collect the object itself?
+	if (IsCollectionAllowed(obj)) return false;
 	return true;
 }

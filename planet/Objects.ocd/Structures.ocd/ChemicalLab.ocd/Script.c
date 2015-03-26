@@ -22,11 +22,6 @@ public func IsProduct(id product_id)
 private func ProductionTime(id toProduce) { return 100; }
 private func PowerNeed() { return 100; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	return true;
-}
-
 public func OnProductionStart(id product)
 {
 	AddEffect("Working", this, 100, 1, this);
