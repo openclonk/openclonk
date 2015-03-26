@@ -84,7 +84,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 		}
 	}
 	// No overloaded command
-	return 0;
+	return _inherited(szCommand, pTarget, iTx, iTy, pTarget2, Data, ...);
 }
 
 
@@ -197,8 +197,30 @@ public func Eat(object food)
 	}
 }
 
+// Called when an object was dug free.
 func DigOutObject(object obj)
 {
+	// Some materials can only be transported/collected with a bucket.
+	if (obj->~IsBucketMaterial())
+	{
+		// Assume we might already be carrying a filled bucket and the object is stackable, try it!
+		var handled = obj->~TryPutInto(this);
+		if (!handled)
+		{
+			// Otherwise, force into empty buckets!
+			var empty_bucket = FindObject(Find_Container(this), Find_Func("IsBucket"), Find_Func("IsBucketEmpty"));
+			if (empty_bucket)
+			{
+				obj->Enter(empty_bucket);
+				handled = true;
+			}
+		}
+		// Those objects can only be carried with a bucket, sadly...
+		if (!handled)
+			obj->RemoveObject();
+		// Object might have been removed now.
+		return;
+	}
 	// Collect fragile objects when dug out
 	if (obj->GetDefFragile())
 		return Collect(obj,nil,nil,true);

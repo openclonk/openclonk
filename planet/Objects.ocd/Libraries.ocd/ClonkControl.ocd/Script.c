@@ -462,6 +462,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	return _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
+// A wrapper to SetCommand to catch special behaviour for some actions.
 public func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
 	// special control for throw and jump
@@ -469,10 +470,33 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
 	else if (command == "Jump") return this->~ControlJump();
 	// else standard command
-	else return SetCommand(command,target,tx,ty,target2);
-	
+	else 
+	{
+		// Make sure to not recollect the item immediately on drops.
+		if (command == "Drop")
+		{
+			// Disable collection for a moment.
+			if (target) this->OnDropped(target);
+		}
+		return SetCommand(command,target,tx,ty,target2);
+	}
 	// this function might be obsolete: a normal SetCommand does make a callback to
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
+}
+
+/*
+	Called by the engine before a command is executed.
+	Beware that this is NOT called when SetCommand was called by a script.
+	At this point I am not sure whether we need this callback at all.
+*/
+public func ControlCommand(string command, object target, int tx, int ty)
+{
+	if (command == "Drop")
+	{
+		// Disable collection for a moment.
+		if (target) this->OnDropped(target);
+	}
+	return _inherited(command, target, tx, ty, ...);
 }
 
 public func ShelveCommand(object condition_obj, string condition, object callback_obj, string callback, proplist data)

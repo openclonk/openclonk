@@ -23,16 +23,52 @@ func Construction()
 	return _inherited(...);
 }
 
+// Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object. Collection will be disabled for some time.
+func OnDropped(object obj)
+{
+	// An object has just left this one. Make sure we don't immediately collect it again.
+	// Note that this can also happen for objects which were not originally contained in this one but in a subcontainer (f.e. items in HasExtraSlot objects).
+	AddEffect("NoCollectDelay", this, 1, 36 * 1, this, nil, obj, GetX(), GetY());
+	return _inherited(obj, ...);
+}
+
+func FxNoCollectDelayStart(object target, proplist effect, temp, object item, int x, int y)
+{
+	if (temp) return;
+	effect.x = x;
+	effect.y = y;
+	effect.item = item;
+}
+
+func FxNoCollectDelayTimer(object target, proplist effect, int time)
+{
+	if (!effect.item) return -1;
+	if (ObjectDistance(this, effect.item) > 20) return -1;
+	return 1;
+}
+
+// Checks if we just dropped the object and thus can not collect it again.
+func HadJustDroppedObject(object obj)
+{
+	var current_x = GetX(), current_y = GetY();
+	var i = 0, e = nil;
+	while (e = GetEffect("NoCollectDelay", this, i++))
+	{
+		if (e.item == obj) return true;
+	}
+	return false;
+}
+
 func RejectCollect(id objid, object obj)
 {
 	var rejected = _inherited(objid,obj,...);
 	if(rejected) return rejected;
-	
+
 	// check if the hand slot is full.
 	// If the overloaded Collect() is called, this check will be skipped.
 	// Also handle collection of contained objects (chests, other Clonks) more relaxed.
 	if (!this.inventory.force_collection && !obj->Contained())
-		if (this->GetHandItem(0))
+		if (this->GetHandItem(0) || HadJustDroppedObject(obj))
 			return true;
 	
 	return false;

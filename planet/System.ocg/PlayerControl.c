@@ -87,7 +87,6 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		{
 			if (cursor && !release && !repeat)
 			{
-				cursor->DoNoCollectDelay(-1);
 				// non-mouse controls reset view
 				if (!x && !y) ResetCursorView(plr);
 			}

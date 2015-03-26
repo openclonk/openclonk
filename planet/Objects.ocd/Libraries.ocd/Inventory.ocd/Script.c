@@ -188,7 +188,9 @@ public func DropInventoryItem(int slot)
 	var obj = GetItem(slot);
 	if(!obj || obj->~QueryRejectDeparture(this))
 		return nil;
-	
+	// Notify other libraries of deliberate drop.
+	this->~OnDropped(obj);
+	// And make the engine drop the object.
 	this->SetCommand("Drop",obj);
 }
 
@@ -442,20 +444,25 @@ protected func RejectCollect(id objid, object obj)
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
 	
-	// try to stuff obj into an object with an extra slot
-	for(var i=0; Contents(i); ++i)
-		if (Contents(i)->~HasExtraSlot())
-			if (!(Contents(i)->Contents(0)))
-				if (Contents(i)->Collect(obj,true))
-					return true;
-					
-	// try to stuff an object in clonk into obj if it has an extra slot
-	if (obj->~HasExtraSlot())
-		if (!(obj->Contents(0)))
-			for(var i=0; Contents(i); ++i)
-				if (obj->Collect(Contents(i),true))
-					return false;
-
+	// Only handle extra-slot objects if the object was not dropped on purpose.
+	if (this.inventory.force_collection || !this->HadJustDroppedObject(obj))
+	{
+		// try to stuff obj into an object with an extra slot
+		for(var i=0; Contents(i); ++i)
+			if (Contents(i)->~HasExtraSlot())
+				if (!(Contents(i)->Contents(0)))
+					if (Contents(i)->Collect(obj,true))
+						return true;
+						
+		// try to stuff an object in clonk into obj if it has an extra slot
+		if (obj->~HasExtraSlot())
+			if (!(obj->Contents(0)))
+				for(var i=0; Contents(i); ++i)
+					if (obj->Collect(Contents(i),true))
+						return false;
+	}
+	// Can't carry bucket material with bare hands.
+	if (obj->~IsBucketMaterial()) return true;
 	// check max contents
 	if (ContentsCount() >= MaxContentsCount()) return true;
 	

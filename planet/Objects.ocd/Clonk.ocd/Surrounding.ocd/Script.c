@@ -104,11 +104,18 @@ func FxCheckRefreshTimer(object target, proplist effect)
 	Refresh();
 }
 
+func OnDropped(object clonk, object obj)
+{
+	// Make the Clonk not directly re-collect the object;
+	clonk->~OnDropped(obj);
+}
+
 // You can transfer items to the environment, which will then be placed on the ground.
 func Collection2(object obj)
 {
 	var clonk = GetActionTarget();
 	obj->Exit(0, clonk->GetDefBottom() - clonk->GetY());
+	OnDropped(clonk, obj);
 }
 
 // When the item is moved into this object via script, we don't even have to collect it in the first place.
@@ -122,11 +129,17 @@ func Collect(object obj)
 		if (container->~IsClonk())
 			container->DropInventoryItem(container->GetItemPos(obj));
 		else
+		{
 			// Otherwise, just force-drop it at the Clonk's feet.
 			obj->Exit(0, clonk->GetDefBottom() - clonk->GetY());
+			OnDropped(clonk, obj);
+		}
 	}
 	else
+	{
 		obj->SetPosition(clonk->GetX(), clonk->GetDefBottom());
+		OnDropped(clonk, obj);
+	}
 	return true;
 }
 
