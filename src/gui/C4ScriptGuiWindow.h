@@ -179,9 +179,9 @@ class C4ScriptGuiWindow : public C4GUI::ScrollWindow
 	friend class C4ScriptGuiWindowAction;
 	friend class C4ScriptGuiWindowScrollBar;
 public:
-	// the margins around the centered "main menus"
-	static const float standardVerticalMargin;
-	static const float standardHorizontalMargin;
+	// the size of the screen that is covered by a centered "main menu"
+	static const float standardWidth;
+	static const float standardHeight;
 
 	private:
 	// the "main" menu ID is always unique, however the sub-menu IDs do NOT have to be unique
@@ -250,7 +250,6 @@ public:
 	void SetTag(C4String *tag);
 
 	C4ScriptGuiWindow();
-	C4ScriptGuiWindow(float stdBorderX, float stdBorderY);
 	virtual ~C4ScriptGuiWindow();
 
 	int32_t GetID() { return id; }

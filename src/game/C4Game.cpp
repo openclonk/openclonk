@@ -2161,7 +2161,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// prepare script menus
 		assert(!ScriptGuiRoot);
-		ScriptGuiRoot = new C4ScriptGuiWindow(C4ScriptGuiWindow::standardHorizontalMargin, C4ScriptGuiWindow::standardVerticalMargin);
+		ScriptGuiRoot = new C4ScriptGuiWindow();
 	}
 
 	// Load section sounds

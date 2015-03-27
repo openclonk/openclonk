@@ -45,8 +45,9 @@
 
 #include <cmath>
 
-const float C4ScriptGuiWindow::standardVerticalMargin = 100.0f;
-const float C4ScriptGuiWindow::standardHorizontalMargin = 100.0f;
+// This in in EM! Also, golden ratio
+const float C4ScriptGuiWindow::standardWidth = 100.0f;
+const float C4ScriptGuiWindow::standardHeight = 61.8f;
 
 C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()
 {
@@ -600,18 +601,6 @@ std::list<C4ScriptGuiWindowAction*> C4ScriptGuiWindowProperty::GetAllActions()
 C4ScriptGuiWindow::C4ScriptGuiWindow() : C4GUI::ScrollWindow(this)
 {
 	Init();
-}
-
-C4ScriptGuiWindow::C4ScriptGuiWindow(float stdBorderX, float stdBorderY) : C4GUI::ScrollWindow(this)
-{
-	Init();
-
-	// set border values for std tag
-	// relative offsets are standard, only need to set exact offset
-	props[C4ScriptGuiWindowPropertyName::left].SetFloat(Pix2Em(stdBorderX));
-	props[C4ScriptGuiWindowPropertyName::right].SetFloat(Pix2Em(-stdBorderX));
-	props[C4ScriptGuiWindowPropertyName::top].SetFloat(Pix2Em(stdBorderY));
-	props[C4ScriptGuiWindowPropertyName::bottom].SetFloat(Pix2Em(-stdBorderY));
 }
 
 void C4ScriptGuiWindow::Init()
@@ -1539,17 +1528,32 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo)
 {
 	assert(IsRoot()); // we are root
 
-	// assume I am the root and use the whole viewport for drawing - minus some standard border
-	const float &left = props[C4ScriptGuiWindowPropertyName::left].GetFloat();
-	const float &right = props[C4ScriptGuiWindowPropertyName::right].GetFloat();
-	const float &top = props[C4ScriptGuiWindowPropertyName::top].GetFloat();
-	const float &bottom = props[C4ScriptGuiWindowPropertyName::bottom].GetFloat();
+	// assume I am the root and use the a special rectangle in the viewport for drawing
+	const float fullWidth = cgo.Wdt * cgo.Zoom;
+	const float fullHeight = cgo.Hgt * cgo.Zoom;
 
-	float fullWidth = cgo.Wdt * cgo.Zoom;
-	float fullHeight = cgo.Hgt * cgo.Zoom;
+	// golden ratio defined default size!
+	const float &targetWidthEm = C4ScriptGuiWindow::standardWidth;
+	const float &targetHeightEm = C4ScriptGuiWindow::standardHeight;
+	
+	// adjust by viewport size
+	const float minMarginPx = 50.0f;
+	const float targetWidthPx = std::min(Em2Pix(targetWidthEm), fullWidth - 2.0f * minMarginPx);
+	const float targetHeightPx = std::min(Em2Pix(targetHeightEm), fullHeight - 2.0f * minMarginPx);
 
-	float wdt = fullWidth - Em2Pix(left) + Em2Pix(right);
-	float hgt = fullHeight - Em2Pix(top) + Em2Pix(bottom);
+	// calculate margins to center the window
+	const float marginLeftRight = (fullWidth - targetWidthPx) / 2.0f;
+	const float marginTopBottom = (fullHeight- targetHeightPx) / 2.0f;
+
+	// we can only position the window by adjusting left/right/top/bottom
+	const float &left = marginLeftRight;
+	const float right = -marginLeftRight;
+	const float &top = marginTopBottom;
+	const float bottom = -marginTopBottom;
+
+	// actual size, calculated from borders
+	const float wdt = fullWidth - left + right;
+	const float hgt = fullHeight - top + bottom;
 
 	const bool needUpdate = mainWindowNeedsLayoutUpdate || (rcBounds.Wdt != int32_t(wdt)) || (rcBounds.Hgt != int32_t(hgt));
 
@@ -1558,8 +1562,8 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo)
 		mainWindowNeedsLayoutUpdate = false;
 
 		// these are the coordinates for the centered non-multiple windows
-		rcBounds.x = static_cast<int>(Em2Pix(left));
-		rcBounds.y = static_cast<int>(Em2Pix(top));
+		rcBounds.x = static_cast<int>(left);
+		rcBounds.y = static_cast<int>(top);
 		rcBounds.Wdt = wdt;
 		rcBounds.Hgt = hgt;
 
