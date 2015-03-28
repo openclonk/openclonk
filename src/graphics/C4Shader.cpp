@@ -505,7 +505,7 @@ void C4Shader::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
 	// Terminate, log
 	pBuf[iActualLength] = '\0';
 	ShaderLogF("  gl: Compiling %s:", szWhat);
-	ShaderLogF(pBuf);
+	ShaderLog(pBuf);
 	delete[] pBuf;
 }
 
