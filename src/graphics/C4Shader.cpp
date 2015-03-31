@@ -523,7 +523,7 @@ int C4Shader::GetObjectStatus(GLhandleARB hObj, GLenum type)
 	return iStatus;
 }
 
-bool C4Shader::IsLogging() { return !!Application.isEditor; }
+bool C4Shader::IsLogging() { return Config.Graphics.DebugOpenGL != 0 || !!Application.isEditor; }
 
 GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
 {
