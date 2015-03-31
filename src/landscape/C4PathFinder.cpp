@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -378,12 +378,10 @@ void C4PathFinderRay::SetCompletePath()
 	{
 		// Transfer waypoint
 		if (pRay->UseZone)
-			pPathFinder->SetWaypoint(pRay->X2,pRay->Y2,(intptr_t)pRay->UseZone->Object,
-			                         pPathFinder->WaypointParameter);
+			pPathFinder->SetWaypoint(pRay->X2,pRay->Y2,pRay->UseZone->Object);
 		// MoveTo waypoint
 		else
-			pPathFinder->SetWaypoint(pRay->From->X2,pRay->From->Y2,0,
-			                         pPathFinder->WaypointParameter);
+			pPathFinder->SetWaypoint(pRay->From->X2,pRay->From->Y2,nullptr);
 	}
 }
 
@@ -515,7 +513,6 @@ void C4PathFinder::Default()
 	PointFree=NULL;
 	SetWaypoint=NULL;
 	FirstRay=NULL;
-	WaypointParameter=0;
 	Success=false;
 	TransferZones=NULL;
 	TransferZonesEnabled=true;
@@ -529,7 +526,7 @@ void C4PathFinder::Clear()
 	FirstRay=NULL;
 }
 
-void C4PathFinder::Init(bool (*fnPointFree)(int32_t, int32_t), C4TransferZones* pTransferZones)
+void C4PathFinder::Init(PointFreeFn fnPointFree, C4TransferZones* pTransferZones)
 {
 	// Set data
 	PointFree = fnPointFree;
@@ -587,7 +584,7 @@ bool C4PathFinder::Execute()
 	return fContinue;
 }
 
-bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, bool (*fnSetWaypoint)(int32_t, int32_t, intptr_t, intptr_t), intptr_t iWaypointParameter)
+bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, SetWaypointFn fnSetWaypoint)
 {
 
 	// Prepare
@@ -596,7 +593,6 @@ bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iT
 	// Parameter safety
 	if (!fnSetWaypoint) return false;
 	SetWaypoint=fnSetWaypoint;
-	WaypointParameter=iWaypointParameter;
 
 	// Start & target coordinates must be free
 	if (!PointFree(iFromX,iFromY) || !PointFree(iToX,iToY)) return false;

@@ -226,27 +226,34 @@ void C4Command::Default()
 	BaseMode=C4CMD_Mode_SilentSub;
 }
 
-static bool ObjectAddWaypoint(int32_t iX, int32_t iY, intptr_t iTransferTarget, intptr_t ipObject)
+struct ObjectAddWaypoint
 {
-	C4Object *cObj = (C4Object*) ipObject; if (!cObj) return false;
+	explicit ObjectAddWaypoint(C4Object *obj) : cObj(obj) {}
+	bool operator()(int32_t iX, int32_t iY, C4Object *TransferTarget)
+	{
+		if (!cObj) return false;
 
-	// Transfer waypoint
-	if (iTransferTarget)
-		return cObj->AddCommand(C4CMD_Transfer,(C4Object*)iTransferTarget,iX,iY,0,NULL,false);
+		// Transfer waypoint
+		if (TransferTarget)
+			return cObj->AddCommand(C4CMD_Transfer,TransferTarget,iX,iY,0,NULL,false);
 
-	// Solid offset
-	AdjustSolidOffset(iX,iY,cObj->Shape.Wdt/2,cObj->Shape.Hgt/2);
+		// Solid offset
+		AdjustSolidOffset(iX,iY,cObj->Shape.Wdt/2,cObj->Shape.Hgt/2);
 
-	// Standard movement waypoint update interval
-	int32_t iUpdate = 25;
-	// Waypoints before transfer zones are not updated (enforce move to that waypoint)
-	if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
-	// Add waypoint
-	assert(cObj->Command);
-	if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
+		// Standard movement waypoint update interval
+		int32_t iUpdate = 25;
+		// Waypoints before transfer zones are not updated (enforce move to that waypoint)
+		if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
+		// Add waypoint
+		assert(cObj->Command);
+		if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
 
-	return true;
-}
+		return true;
+	}
+
+private:
+	C4Object *cObj;
+};
 
 void C4Command::MoveTo()
 {
@@ -278,8 +285,7 @@ void C4Command::MoveTo()
 						Game.PathFinder.SetLevel(cObj->Def->Pathfinder);
 						if (!Game.PathFinder.Find( cObj->GetX(),cObj->GetY(),
 						                           Tx._getInt(),Ty,
-						                           &ObjectAddWaypoint,
-						                           (intptr_t)cObj)) // intptr for 64bit?
+												   ObjectAddWaypoint(cObj)))
 							{ /* Path not found: react? */ PathChecked=true; /* recheck delay */ }
 						return;
 					}
