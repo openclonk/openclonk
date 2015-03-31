@@ -69,6 +69,40 @@ const int32_t C4PF_MaxDepth        = 35,
               C4PF_Draw_Rate       = 10;
 
 //------------------------------- C4PathFinderRay ---------------------------------------------
+class C4PathFinderRay
+{
+	friend class C4PathFinder;
+public:
+	C4PathFinderRay();
+	~C4PathFinderRay();
+public:
+	void Clear();
+	void Default();
+protected:
+	int32_t Status;
+	int32_t X, Y, X2, Y2, TargetX, TargetY;
+	int32_t CrawlStartX, CrawlStartY, CrawlAttach, CrawlLength, CrawlStartAttach;
+	int32_t Direction, Depth;
+	C4TransferZone *UseZone;
+	C4PathFinderRay *From;
+	C4PathFinderRay *Next;
+	C4PathFinder *pPathFinder;
+protected:
+	void SetCompletePath();
+	void TurnAttach(int32_t &rAttach, int32_t iDirection);
+	void CrawlToAttach(int32_t &rX, int32_t &rY, int32_t iAttach);
+	void CrawlByAttach(int32_t &rX, int32_t &rY, int32_t iAttach, int32_t iDirection);
+	void Draw(C4TargetFacet &cgo);
+	int32_t FindCrawlAttachDiagonal(int32_t iX, int32_t iY, int32_t iDirection);
+	int32_t FindCrawlAttach(int32_t iX, int32_t iY);
+	bool IsCrawlAttach(int32_t iX, int32_t iY, int32_t iAttach);
+	bool CheckBackRayShorten();
+	bool Execute();
+	bool CrawlTargetFree(int32_t iX, int32_t iY, int32_t iAttach, int32_t iDirection);
+	bool PointFree(int32_t iX, int32_t iY);
+	bool Crawl();
+	bool PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY, C4TransferZone **ppZone = NULL);
+};
 
 C4PathFinderRay::C4PathFinderRay()
 {
