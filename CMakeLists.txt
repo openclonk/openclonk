@@ -362,8 +362,6 @@ set(OC_CLONK_SOURCES
 	src/lib/C4RTF.h
 	src/lib/C4Stat.cpp
 	src/lib/C4Stat.h
-	src/lib/PathFinder.cpp
-	src/lib/PathFinder.h
 	src/lib/StdAdaptors.h
 	src/lib/StdColors.h
 	src/lib/StdMesh.cpp
