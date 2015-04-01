@@ -40,7 +40,7 @@ func FxIntBridgeStart(object clonk, proplist effect, int temp, int x, int y)
 	effect.Last = 0;
 	// Last bridge coordinates.
 	effect.LastX = GetX();
-	effect.LastY = clonk->GetDefBottom() + 3;
+	effect.LastY = clonk->GetDefBottom() + 4;
 	// Target coordinates.
 	effect.TargetX = x;
 	effect.TargetY = y;
@@ -83,7 +83,7 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 	var last_x = effect.LastX;
 	var last_y = effect.LastY;
 	var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);	
-	// Quantize angle as a multiple of 45 degrees.
+	// Quantize angle as a multiple of 30 degrees.
 	var quant = 30;
 	var angle = Angle(0, 0, dx, dy);
 	angle = angle + quant/2 - Sign(angle-quant/2)*((angle-quant/2) % quant);
