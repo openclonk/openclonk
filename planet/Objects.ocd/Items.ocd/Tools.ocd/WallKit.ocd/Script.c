@@ -43,8 +43,9 @@ public func ControlUseCancel(object clonk, int x, int y)
 private func CreateBridge(object clonk, int x, int y)
 {
 	var c = Offset2BridgeCoords(clonk, x, y);
-	x=clonk->GetX(); y=clonk->GetY();
-	DrawMaterialQuad("Granite-granite", x+c.x1-c.dx,y+c.y1-c.dy, x+c.x1+c.dx,y+c.y1+c.dy, x+c.x2+c.dx,y+c.y2+c.dy, x+c.x2-c.dx,y+c.y2-c.dy, DMQ_Bridge);
+	x = clonk->GetX(); 
+	y = clonk->GetY();
+	DrawMaterialQuad("Granite-granite", x + c.x1 - c.dxm, y + c.y1 - c.dym, x + c.x1 + c.dxp, y + c.y1 + c.dyp, x + c.x2 + c.dxp, y + c.y2 + c.dyp, x + c.x2 - c.dxm, y + c.y2 - c.dym, DMQ_Bridge);
 	clonk->Sound("WallKitLock");
 	return true;
 }
@@ -55,16 +56,21 @@ private func CreateBridge(object clonk, int x, int y)
 private func Offset2BridgeCoords(object clonk, int x, int y)
 {
 	// Returns starting and end point offset of bridge to be built as player points to offset x/y
-	var dx=clonk->GetDefWidth(), dy=clonk->GetDefHeight(), ox,oy,rx,ry,l=BridgeLength;
-	ox=x*2/Abs(y+!y); oy=y*2/Abs(x+!x);
-	ry=ox/=Abs(ox)+!ox;
-	rx=oy/=Abs(oy)+!oy;
-	ox*=dx/2+2*!oy;
-	oy*=dy/2+2*!ox;
-	l-=l*3*Abs(rx*ry)/10;
-	return { dx=ry*BridgeThickness, dy=rx*BridgeThickness, x1=ox+(rx*=l), y1=oy-(ry*=l), x2=ox-rx, y2=oy+ry };
+	var dx = clonk->GetDefWidth(), dy = clonk->GetDefHeight(), ox, oy, rx, ry;
+	var l = BridgeLength;
+	var d = BridgeThickness;
+	ox = x * 2 / Abs(y + !y); 
+	oy = y * 2 / Abs(x + !x);
+	ry = ox /= Abs(ox) + !ox;
+	rx = oy /= Abs(oy) + !oy;
+	// Offset of the bridge: more for vertical and horizontal bridges.
+	ox *= dx / 2 + 3 * !oy;
+	oy *= dy / 2 + 3 * !ox;
+	// Reduce thickness and length for diagonal bridges.
+	l -= l * 3 * Abs(rx * ry) / 10;
+	d -= d * 3 * Abs(rx * ry) / 10;
+	return { dxp = ry * d / 2, dyp = rx * d / 2, dxm = ry * (d + 1) / 2, dym = rx * (d + 1) / 2, x1 = ox + rx * l, y1 = oy - ry * l, x2 = ox - rx * l, y2 = oy + ry * l };
 }
-
 
 
 /* Preview */
@@ -115,4 +121,4 @@ local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
 local BridgeLength = 20;
-local BridgeThickness = 1;
+local BridgeThickness = 5;
