@@ -110,8 +110,8 @@ public func Seed()
 	// the chance of seeding is improved, if there are much the chance is reduced.
 	var chance = SeedChance();
 	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
-	// Place a plant if we are lucky, in principle there can be more than seed amount.
-	if (!Random(chance))
+	// Place a plant if we are lucky, but no more than seed amount.
+	if (plant_cnt < amount && !Random(chance))
 	{
 		// Place the plant but check if it is not close to another one.	
 		var plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3);
