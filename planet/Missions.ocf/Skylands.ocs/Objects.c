@@ -6,8 +6,8 @@ func InitializeObjects()
 
 	CreateObject(Rule_BuyAtFlagpole, 50, 50);
 
-	CreateObjectAbove(Tree_Coniferous, 962, 839);
-	CreateObjectAbove(Tree_Coniferous, 774, 951);
+	CreateObjectAbove(Tree_SmallConiferous, 962, 839);
+	CreateObjectAbove(Tree_SmallConiferous, 774, 951);
 
 	CreateObjectAbove(Tree_SmallConiferous, 46, 441);
 	var Tree_SmallConiferous0015 = CreateObjectAbove(Tree_SmallConiferous, 320, 312);
