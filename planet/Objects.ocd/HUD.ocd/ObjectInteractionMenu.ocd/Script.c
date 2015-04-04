@@ -565,7 +565,7 @@ func OnMenuEntrySelected(proplist menu_info, int entry_index, int player)
 	// todo: trigger refresh for special value of result?
 }
 
-func OnContentsSelection(symbol, extra_data)
+private func OnContentsSelection(symbol, extra_data)
 {
 	var target = current_menus[extra_data.slot].target;
 	if (!target) return;
@@ -577,7 +577,19 @@ func OnContentsSelection(symbol, extra_data)
 	var obj = extra_data.one_object ?? FindObject(Find_Container(target), Find_ID(symbol));
 	if (!obj) return;
 	
-	// special handling for Stackable items..
+	// If stackable, always try to grab a full stack.
+	// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+	if (obj->~IsStackable())
+	{
+		var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+		for (var other in others)
+		{
+			if (obj->IsFullStack()) break;
+			other->TryAddToStack(obj);
+		}
+	}
+	
+	// More special handling for Stackable items..
 	var handled = obj->~TryPutInto(other_target);
 	if (handled || other_target->Collect(obj, true))
 	{
