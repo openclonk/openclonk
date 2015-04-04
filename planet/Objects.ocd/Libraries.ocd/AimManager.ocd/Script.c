@@ -158,39 +158,6 @@ public func StartLoad(object weapon)
 		aim_schedule_timer2 = aim_set["LoadTime2"];
 		aim_schedule_call2  = "DuringLoad";
 	}
-	
-	var e = GetEffect("IntLoadingBar", this);
-	if(e)
-	{
-		RemoveEffect(nil, this, e);
-	}
-	
-	AddEffect("IntLoadingBar", this, 1, BoundBy(aim_schedule_timer / 20, 3, 20), this, nil, aim_schedule_timer);
-}
-
-private func FxIntLoadingBarStart(object target, proplist effect, temp, int max)
-{
-	if (temp) return;
-	effect.bar = CreateProgressBar(GUI_HUDProgressBar, max, 0, nil, GetController(), nil, VIS_Owner, {color = RGBa(200, 150, 10, 100), text = "$Reloading$"});
-	effect.max = max;
-} 
-
-private func FxIntLoadingBarTimer(target, effect, time)
-{
-	if (effect.bar)
-		effect.bar->SetValue(time);
-	if(time > effect.max + 40)
-	{
-		return -1;
-	}
-	return 1;
-}
-
-private func FxIntLoadingBarStop(int target, proplist effect, int reason, temp)
-{
-	if (temp) return;
-	if (effect.bar)
-		effect.bar->Close();
 }
 
 public func DuringLoad() { aim_weapon->~DuringLoad(this); }
@@ -408,7 +375,6 @@ public func ResetHands()
 	SetBackwardsSpeed(nil);
 	
 	RemoveEffect("IntAim", this);
-	RemoveEffect("IntLoadingBar", this);
 
 	SetTurnForced(-1);
 
