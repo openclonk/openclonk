@@ -21,8 +21,6 @@ local inventory_slots;
 local inventory_gui_target;
 local inventory_gui_id;
 
-local progress_bar_links;
-
 func GetInventoryGuiID()
 {
 	if (inventory_gui_id) return inventory_gui_id;
@@ -58,7 +56,6 @@ func GetInventoryGuiTarget()
 func Construction()
 {
 	inventory_gui_target = nil;
-	progress_bar_links = [];
 	inventory_slots = [];
 	return _inherited(...);
 }
@@ -134,19 +131,6 @@ func UpdateInventory()
 	}
 	GetInventoryGuiTarget().Visibility = VIS_Owner;
 	UpdateInventoryButtons(clonk);
-
-	// sort out old progress bars
-	if(GetLength(progress_bar_links))
-	{
-		var old_progress_bar_links = progress_bar_links[:];
-		progress_bar_links = [];
-		
-		for(var bar in old_progress_bar_links)
-		{
-			if(!bar.effect) continue;
-			PushBack(progress_bar_links, bar);
-		}
-	}
 	
 	// update inventory-slots
 	var hand_item_pos = clonk->GetHandItemPos(0);
@@ -225,15 +209,6 @@ func UpdateInventory()
 			slot_info.obj = item;
 			slot_info.empty = !item;
 		}
-		
-		//inventory[i]->ClearProgressBarLink();
-		// re-add progress bar if possible
-		for(var bar in progress_bar_links)
-		{
-			if(bar.obj != item) continue;
-			//inventory[i]->SetProgressBarLink(bar.effect);
-			break;
-		}
 	}
 }	
 
@@ -249,16 +224,8 @@ func FxExtraSlotUpdaterUpdate(object target, proplist effect)
 	ScheduleUpdateInventory();
 }
 
-// sets the link of the progress bar for a certain slot
-// the link is an effect that has the properties "max" and "current"
-func SetProgressBarLinkForObject(object what, proplist e)
-{
-	PushBack(progress_bar_links, {obj = what, effect = e});
-	ScheduleUpdateInventory();
-}
-
-
-func CalculateButtonPosition(int slot_number, int max_slots)
+// Calculates the position of a specific button and returns a proplist.
+public func CalculateButtonPosition(int slot_number, int max_slots)
 {
 	var pos_x_offset = -((GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * max_slots - GUI_Controller_InventoryBar_IconMargin) / 2;
 	var pos_x = pos_x_offset + (GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * slot_number;
@@ -303,7 +270,8 @@ func CreateNewInventoryButton(int max_slots)
 			Target = GetInventoryGuiTarget(),
 			ID = 1000 + slot_info.ID,
 			Style = GUI_TextRight | GUI_TextBottom,
-			Text = nil
+			Text = nil,
+			Priority = 2
 		},
 		// Prepare (invisible) extra-slot display circle.
 		extra_slot = 

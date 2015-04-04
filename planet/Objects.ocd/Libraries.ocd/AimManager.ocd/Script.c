@@ -165,22 +165,32 @@ public func StartLoad(object weapon)
 		RemoveEffect(nil, this, e);
 	}
 	
-	e = AddEffect("IntLoadingBar", this, 1, BoundBy(aim_schedule_timer / 20, 3, 20), this);
-	e.max = aim_schedule_timer;
-	e.current = 0;
-	// handled by HUDAdapter to add a progress bar
-	this->~SetProgressBarLinkForObject(weapon, e);
+	AddEffect("IntLoadingBar", this, 1, BoundBy(aim_schedule_timer / 20, 3, 20), this, nil, aim_schedule_timer);
 }
 
-func FxIntLoadingBarTimer(target, effect, time)
+private func FxIntLoadingBarStart(object target, proplist effect, temp, int max)
 {
-	effect.current = time;
-	
-	if(time > effect.max + 40) // the progress bar int he HUD should have updated by then
+	if (temp) return;
+	effect.bar = CreateProgressBar(GUI_HUDProgressBar, max, 0, nil, GetController(), nil, VIS_Owner, {color = RGBa(200, 150, 10, 100), text = "$Reloading$"});
+	effect.max = max;
+} 
+
+private func FxIntLoadingBarTimer(target, effect, time)
+{
+	if (effect.bar)
+		effect.bar->SetValue(time);
+	if(time > effect.max + 40)
 	{
 		return -1;
 	}
 	return 1;
+}
+
+private func FxIntLoadingBarStop(int target, proplist effect, int reason, temp)
+{
+	if (temp) return;
+	if (effect.bar)
+		effect.bar->Close();
 }
 
 public func DuringLoad() { aim_weapon->~DuringLoad(this); }

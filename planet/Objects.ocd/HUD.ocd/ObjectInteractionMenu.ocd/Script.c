@@ -255,6 +255,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			_one_part = part_menu,
 			Target = this,
 			Decoration = GUI_MenuDeco,
+			BackgroundColor = RGB(0, 0, 0),
 			description_box = 
 			{
 				Top = "100%-10em",
