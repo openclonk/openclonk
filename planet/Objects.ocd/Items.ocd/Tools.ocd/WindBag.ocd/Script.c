@@ -102,7 +102,7 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 			Prototype = Particles_Air(), 
 			Size = PV_KeyFrames(0, 0, 0, 250, 3, 1000, 0)
 		};
-		CreateParticle("Air", x, y, -x / 2, -y / 2, 18, air);
+		CreateParticle("Air", x, y, -2 * x / 3, -2 * y / 3, 15, air);
 		
 		// Increase the fill amount proportional to the number of frames.
 		fill_amount += effect.Interval; 
@@ -160,12 +160,15 @@ public func FxIntBurstWindStart(object target, proplist effect, int temp, object
 		if (!GBackSolid(sx, sy))
 			CreateParticle("Air", sx, sy, vx, vy, 36, Particles_Air());
 	}
+	// Make a timer call for the instant movement effect.
+	FxIntBurstWindTimer(target, effect, 0);
 	return FX_OK;
 }
 
 public func FxIntBurstWindTimer(object target, proplist effect, int time)
 {
-	if (time > 12)
+	var real_time = time + 1;
+	if (real_time > 8)
 		return FX_Execute_Kill;
 		
 	// Determine blast strength.	
@@ -177,19 +180,20 @@ public func FxIntBurstWindTimer(object target, proplist effect, int time)
 	{									
 		var cx = effect.clonk->GetXDir(100);
 		var cy = effect.clonk->GetYDir(100);
-		effect.clonk->SetXDir(cx - vx / (8 * time), 100);
-		effect.clonk->SetYDir(cy - vy / (8 * time), 100);
+		effect.clonk->SetXDir(cx - vx / (8 * real_time), 100);
+		effect.clonk->SetYDir(cy - vy / (8 * real_time), 100);
 	}
 	
 	// Move other objects in a cone around the burst direction.
 	var criteria = Find_And(Find_Not(Find_Category(C4D_Structure)), Find_Not(Find_Func("IsEnvironment")), Find_Not(Find_Func("NoWindbagForce")),
 	                        Find_Layer(GetObjectLayer()), Find_NoContainer(), Find_Exclude(effect.clonk), Find_PathFree(effect.clonk));
-	var dist = 14 + 5 * time / 2;
-	var rad = 8 + 5 * time / 3;
+	var dist = 14 + 9 * real_time / 2;
+	var rad = 8 + 8 * real_time / 3;
 	var cone_x = Sin(effect.angle, dist);
 	var cone_y = -Cos(effect.angle, dist);
-	var vx_cone = vx / (2 * time);
-	var vy_cone = vy / (2 * time);
+	var vx_cone = vx / 6;
+	var vy_cone = vy / 6;
+	//DrawParticleRing(rad, cone_x + AbsX(effect.x), cone_y + AbsY(effect.y));
 	for (var obj in FindObjects(Find_Distance(rad, cone_x + AbsX(effect.x), cone_y + AbsY(effect.y)), criteria))
 	{
 		var ox = obj->GetXDir(100);
@@ -210,6 +214,13 @@ public func FxIntBurstWindStop(object target, proplist effect, int reason, bool 
 	fill_amount = 0;
 	AddEffect("IntReload", target, 100, 1, target);
 	return FX_OK;
+}
+
+public func DrawParticleRing(int r, int x, int y)
+{
+	for (var angle = 0; angle < 360; angle += 15)
+		CreateParticle("SphereSpark", x + Cos(angle, r), y + Sin(angle, r), 0, 0, 36, { Size = 2 });
+	return;
 }
 
 
