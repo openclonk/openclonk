@@ -71,9 +71,14 @@ protected func OnPlayerRelaunch(int plr, int relaunch_cnt)
 	clonk->CreateContents(Torch);
 	// Better weapons after relaunching.
 	if (!is_relaunch)
+	{
 		clonk->CreateContents(Firestone, 2);
+	}
 	else
-		clonk->CreateContents(Bow)->CreateContents(BombArrow);
+	{
+		clonk->CreateContents(Javelin);
+		clonk->CreateContents(BombArrow);
+	}
 	
 	// Set the zoom range to be standard low, but allow for zooming out
 	// such that light sources a bit further away can be spotted.
@@ -164,12 +169,12 @@ private func InitMaterials(int map_size)
 	PlaceObjects(PowderKeg, map_size / 10, "Rock");
 	
 	// Some pickaxes, shovels in the tunnels.
-	for (var i = 0; i < map_size / 6; i++)
+	for (var i = 0; i < map_size / 5; i++)
 	{
 		var loc = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom));
 		if (!loc)
 			continue;
-		CreateObjectAbove([Shovel, Pickaxe][Random(2)], loc.x, loc.y)->SetR(Random(360));	
+		CreateObjectAbove([Shovel, Pickaxe, GoldBar][Random(3)], loc.x, loc.y)->SetR(Random(360));	
 	}
 	return;
 }
