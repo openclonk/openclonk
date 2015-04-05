@@ -1,1 +1,2 @@
 Name=Goldene Statue
+Description=Ein wertvolles Kunststück

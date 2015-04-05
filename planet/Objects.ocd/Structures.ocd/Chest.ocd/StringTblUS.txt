@@ -1,1 +1,2 @@
 Name=Chest
+Description=Storage location for all kinds of items.

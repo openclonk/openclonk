@@ -1,1 +1,2 @@
 Name=Truhe
+Description=Speicherplatz für allerhand Objekte.
