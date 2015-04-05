@@ -2,8 +2,4 @@
 id=Environment_Time
 Version=6,0
 Category=C4D_StaticBack|C4D_Environment
-Width=1
-Height=1
-Vertices=1
-VertexY=0
-Mass=1
+Picture=0,0,128,128
