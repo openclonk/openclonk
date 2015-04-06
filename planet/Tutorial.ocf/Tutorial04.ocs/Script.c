@@ -13,7 +13,6 @@ protected func Initialize()
 	// Environment 
 	PlaceGrass(85);
 	Cloud->Place(15);
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(22*60);
 	time->SetCycleSpeed(0);

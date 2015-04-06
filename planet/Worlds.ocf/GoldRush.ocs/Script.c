@@ -96,7 +96,6 @@ private func InitEnvironment()
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Water", 8);
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(60 * 12);
 	time->SetCycleSpeed(20);

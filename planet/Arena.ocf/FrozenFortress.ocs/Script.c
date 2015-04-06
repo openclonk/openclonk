@@ -10,7 +10,6 @@ protected func Initialize()
 {
 	// Environment 
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	CreateObject(Environment_Celestial);
 	var time=CreateObject(Environment_Time);
 	time->SetTime();
 	time->SetCycleSpeed();
