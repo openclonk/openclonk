@@ -1,5 +1,0 @@
-[DefCore]
-id=Environment_Celestial
-Version=6,0
-Category=C4D_Environment|C4D_StaticBack
-Picture=0,0,128,128

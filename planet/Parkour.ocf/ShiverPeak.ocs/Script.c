@@ -108,3 +108,7 @@ global func FxSnowfallTimer(object target, effect, int timer)
 	CastPXS("Snow", 5, 1, RandomX(0, LandscapeWidth()), 1);
 	return 1;
 }
+
+// This scenario has day and night but no celestial objects.
+public func HasNoCelestials() { return true; }
+

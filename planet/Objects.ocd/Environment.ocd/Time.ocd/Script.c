@@ -58,16 +58,17 @@ protected func Initialize()
 	// Only one time control object.
 	if (ObjectCount(Find_ID(Environment_Time)) > 1) 
 		return RemoveObject();
-		
+	
+	// Determine the frame times for day and night events.
 	time_set = {
-		sunrise_start = 10800, // 3:00
-		sunrise_end = 32400,   // 9:00
-		sunset_start = 54000,  // 15:00
-		sunset_end = 75600,    // 21:00
+		sunrise_start =  3 * 60 * 60, //  3:00
+		sunrise_end   =  9 * 60 * 60, //  9:00
+		sunset_start  = 15 * 60 * 60, // 15:00
+		sunset_end    = 21 * 60 * 60, // 21:00
 	};
 
-	// Create moon and stars.
-	if (FindObject(Find_ID(Environment_Celestial)))
+	// Create moon and stars if celestial objects are not blocked by the scenario.
+	if (!GameCall("HasNoCelestials"))
 	{
 		PlaceStars();
 		CreateObjectAbove(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
@@ -102,12 +103,12 @@ public func IsNight()
 
 private func PlaceStars()
 {
-	// since stars are almost completely parallax (=in screen coordinates), we only need
-	// to place stars for max. a reasonable maximum resolution. Lets say 1600x1200
-	var lw = Min(LandscapeWidth(), 1600);
+	// Since stars are almost completely parallax (=in screen coordinates), we only need
+	// to place stars for max. a reasonable maximum resolution, let's say 1920x1200.
+	var lw = Min(LandscapeWidth(), 1920);
 	var lh = Min(LandscapeHeight(), 1200);
 	
-	//Star Creation
+	// Star Creation.
 	var maxfailedtries = lw * lh / 40000;
 	var failed = 0;
 
@@ -120,8 +121,7 @@ private func PlaceStars()
 			continue;
 		}
 		failed++;
-	}
-	
+	}	
 	return;
 }
 
@@ -285,11 +285,6 @@ public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) 
 		return false;
-	// Initialize function depends on this object implicitely.
-	// So make sure it's created before this.
-	var celestial_env = FindObject(Find_ID(Environment_Celestial));
-	if (celestial_env) 
-		celestial_env->MakeScenarioSaveName();
 	// Save time props.
 	if (GetTime() != 43200) 
 		props->AddCall("Time", this, "SetTime", GetTime());

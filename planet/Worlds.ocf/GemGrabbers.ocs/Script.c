@@ -91,7 +91,6 @@ protected func InitializePlayer(int plr)
 private func InitEnvironment(int difficulty)
 {
 	// Set time to almost night and have stars.	
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(20 * 60 + 15);
 	time->SetCycleSpeed(0);

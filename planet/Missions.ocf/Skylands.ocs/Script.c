@@ -14,7 +14,6 @@ func DoInit(int first_player)
 	//CreateObjectAbove(LiftTower, 178,405, first_player);
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(15);
-	EnsureObject(Environment_Celestial,0,0,-1);
 	EnsureObject(Rule_BuyAtFlagpole,0,0,-1);
 	SetSkyAdjust(0xff000000);
 	var storm = EnsureObject(Storm,0,0,NO_OWNER);
