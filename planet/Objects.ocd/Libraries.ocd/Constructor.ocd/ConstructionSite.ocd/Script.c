@@ -51,9 +51,17 @@ public func Set(id def, int dir, object stick)
 	// Draw the building with a wired frame and large alpha unless site graphics is overloaded by definition
 	if (!def->~SetConstructionSiteOverlay(this, direction, stick_to))
 	{
+		SetGraphics(nil, nil, 0);
 		SetGraphics(nil, def, 1, GFXOV_MODE_Base);
-		SetClrModulation(RGBa(255,255,255,50), 1);
-		SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
+		SetClrModulation(RGBa(255, 255, 255, 128), 1);
+		// If the structure is a mesh, use wire frame mode to show the site.
+		// TODO: use def->IsMesh() once this becomes available.
+		if (def->GetMeshMaterial())
+		{
+			SetClrModulation(RGBa(255, 255, 255, 50), 1);
+			SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
+		}
+		SetGraphics("", GetID(), 3, GFXOV_MODE_ExtraGraphics);
 	}
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,1);
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,2);
