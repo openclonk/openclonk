@@ -98,15 +98,18 @@ func Reposition(int x, int y)
 	var found = false;
 	if (structure->~ConstructionCombineWith())
 	{
+		var stick_dir = structure->~ConstructionCombineDirection();
+		var find_rect = Find_InRect(AbsX(clonk->GetX() + x - dimension_x/2 - 10), AbsY(clonk->GetY() + y - dimension_y/2 - 10), dimension_x + 20, dimension_y + 20);
+		if ((stick_dir & CONSTRUCTION_STICK_Bottom))
+			find_rect = Find_AtPoint(AbsX(clonk->GetX() + x), AbsY(clonk->GetY() + y));
 		var other = FindObject(Find_Func(structure->ConstructionCombineWith(), this),
-		                              Find_InRect(AbsX(clonk->GetX() + x - dimension_x/2 - 10), AbsY(clonk->GetY() + y - dimension_y/2 - 10), dimension_x + 20, dimension_y + 20),
+		                              find_rect,
 		                              Find_OCF(OCF_Fullcon),
 		                              Find_Layer(clonk->GetObjectLayer()),
 		                              Find_Allied(clonk->GetOwner()),
 		                              Find_NoContainer());
 		if (other)
 		{
-			var stick_dir = structure->~ConstructionCombineDirection();
 			x = other->GetX();
 			y = other->GetY();
 			// Combine to different directions.
