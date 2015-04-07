@@ -22,6 +22,8 @@ private func GetCaseSpeed() { return 20; }
 private func GetAutoSpeed() { return GetCaseSpeed() * 2; }
 private func GetDrillSpeed() { return GetCaseSpeed() / 2; }
 
+// Case is not a structure, but uses the library.
+public func IsStructure() { return false; }
 
 protected func Initialize()
 {
