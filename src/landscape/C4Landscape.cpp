@@ -1227,6 +1227,21 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           DefaultGravAccel));
 	pComp->Value(mkNamingAdapt(Modulation,          "MatModulation",         0U));
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
+
+	if(pComp->isCompiler())
+	{
+		int32_t ambient_brightness;
+		pComp->Value(mkNamingAdapt(ambient_brightness,       "AmbientBrightness", 1.0));
+		if(pFoW) pFoW->Ambient.SetBrightness(ambient_brightness / static_cast<double>(255));
+	}
+	else
+	{
+		if(pFoW)
+		{
+			int32_t ambient_brightness = static_cast<int32_t>(pFoW->Ambient.GetBrightness() * 255 + 0.5);
+			pComp->Value(mkNamingAdapt(ambient_brightness,       "AmbientBrightness", 255));
+		}
+	}
 }
 
 static CSurface8 *GroupReadSurface8(C4Group &hGroup, const char *szWildCard)
