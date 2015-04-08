@@ -71,18 +71,18 @@ private func MoveOutOfBasement()
 	// Find all objects inside the basement which are stuck.
 	var wdt = GetObjWidth();
 	var hgt = GetObjHeight();
-	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)), Find_InRect(-wdt / 2, -hgt / 2 - 2, wdt, hgt + 4));
+	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)), Find_InRect(-wdt / 2 - 1, -hgt / 2 - 2, wdt + 2, hgt + 4));
 	// Move up these objects.
 	for (var obj in lying_around)
 	{
 		var x = obj->GetX();
 		var y = obj->GetY();
 		var dif = 0;
-		// 
+		// Move up object until it is not stuck any more.
 		while (obj->Stuck() || obj->GetContact(-1, CNAT_Bottom))
 		{
-			// Only up to 20 pixels.
-			if (dif > 20)
+			// Only up to 32 pixels.
+			if (dif > 32)
 			{
 				obj->SetPosition(x, y);
 				break;
