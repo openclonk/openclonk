@@ -895,16 +895,20 @@ void C4Command::Drop()
 
 void C4Command::Jump()
 {
-	// Tx not default 0: adjust jump direction
-	if (Tx._getInt())
+	// Already in air and target position given
+	if (cObj->GetProcedure()==DFA_FLIGHT && Tx._getInt())
 	{
-		if (Tx._getInt()<cObj->GetX()) cObj->SetDir(DIR_Left);
-		if (Tx._getInt()>cObj->GetX()) cObj->SetDir(DIR_Right);
+		if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
+		else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
+		else cObj->Action.ComDir=COMD_Stop;
 	}
-	// Jump
-	ObjectComJump(cObj);
-	// Done
-	Finish(true);
+	else
+	{
+		cObj->Action.ComDir=COMD_Stop;
+		// Done
+		Finish(true);
+		return;
+	}
 }
 
 void C4Command::Wait()
@@ -1400,7 +1404,7 @@ bool C4Command::InitEvaluation()
 		Tx.SetInt(iTx);
 		return true;
 	}
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_PushTo:
 	{
 		// Adjust coordinates
@@ -1409,11 +1413,22 @@ bool C4Command::InitEvaluation()
 		Tx.SetInt(iTx);
 		return true;
 	}
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_Exit:
 		// Cancel attach
 		ObjectComCancelAttach(cObj);
 		return true;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CMD_Jump:
+	{
+		if (Tx._getInt())
+		{
+			if (Tx._getInt()<cObj->GetX()) cObj->SetDir(DIR_Left);
+			if (Tx._getInt()>cObj->GetX()) cObj->SetDir(DIR_Right);
+		}
+		ObjectComJump(cObj);
+		return true;
+	}
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_Wait:
 		// Update interval by Data

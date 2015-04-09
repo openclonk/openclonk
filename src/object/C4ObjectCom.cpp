@@ -252,11 +252,6 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 
 	if (cObj->Action.ComDir==COMD_Left || cObj->Action.ComDir==COMD_UpLeft)  TXDir=-iPhysicalWalk;
 	else if (cObj->Action.ComDir==COMD_Right || cObj->Action.ComDir==COMD_UpRight) TXDir=+iPhysicalWalk;
-	else
-	{
-		if (cObj->Action.Dir==DIR_Left)  TXDir=-iPhysicalWalk;
-		if (cObj->Action.Dir==DIR_Right) TXDir=+iPhysicalWalk;
-	}
 	C4Real x = cObj->fix_x, y = cObj->fix_y;
 	// find bottom-most vertex, correct starting position for simulation
 	int32_t iBtmVtx = cObj->Shape.GetBottomVertex();
