@@ -65,7 +65,7 @@ public func GetProductionMenuEntries()
 		controls = 
 		{
 			Left = "4em",
-			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Exit, Tooltip = "$QueueRemove$"},
+			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Number, GraphicsName = "Minus", Tooltip = "$QueueRemove$"},
 			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
 		}
 	};
