@@ -53,7 +53,9 @@ local current_menus;
 local current_description_box;
 // this is the ID of the root window that contains the other subwindows (i.e. the menus which contain the sidebars and the interaction-menu)
 local current_main_menu_id;
-
+// This holds the dummy object that is the target of the center column ("move all left/right").
+local current_center_column_target;
+// The Clonk who the menu was opened for.
 local cursor;
 
 public func Close() { return RemoveObject(); }
@@ -195,7 +197,10 @@ func FxIntCheckObjectsStop(target, effect, reason, temp)
 		this->RemoveObject();
 }
 
-// obj has to be in current_objects
+/*
+	This is the entry point.
+	Create a menu for an object (usually from current_objects) and also create everything around it if it's the first time a menu is opened.
+*/
 func OpenMenuForObject(object obj, int slot, bool forced)
 {
 	forced = forced ?? false;
@@ -213,7 +218,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		if (inv_effect.obj != current_menus[0].target && inv_effect.obj != current_menus[1].target)
 			RemoveEffect(nil, nil, inv_effect);
 		else
-			 ++effect_index;
+			++effect_index;
 	}
 	// Create a menu with all interaction possibilities for an object.
 	// Always create the side bar AFTER the main menu, so that the target can be copied.
@@ -224,7 +229,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	var sidebar = CreateSideBar(slot);
 	
 	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
-	var part_menu = 
+	var part_menu =
 	{
 		Left = "0%", Right = "50%-2em",
 		Bottom = "100%-14em",
@@ -239,7 +244,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		part_menu.Right = "100%";
 	}
 	
-	
+
 	// need to open a completely new menu?
 	if (!current_main_menu_id)
 	{
@@ -249,19 +254,55 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			current_description_box.symbol_target = CreateDummy();
 			current_description_box.desc_target = CreateDummy();
 		}
-			
-		var root_menu = 
+		if (!current_center_column_target)
+			current_center_column_target = CreateDummy();
+		
+		var root_menu =
 		{
 			_one_part = part_menu,
 			Target = this,
 			Decoration = GUI_MenuDeco,
 			BackgroundColor = RGB(0, 0, 0),
-			description_box = 
+			center_column =
+			{
+				Left = "50%-2em",
+				Right = "50%+2em",
+				Top = "1.75em",
+				Bottom = "100%-14em",
+				Style = GUI_VerticalLayout,
+				move_all_left =
+				{
+					Target = current_center_column_target,
+					ID = 10 + 0,
+					Right = "4em", Bottom = "6em",
+					Style = GUI_TextHCenter | GUI_TextVCenter,
+					Symbol = Icon_MoveItems, GraphicsName = "Left",
+					Tooltip = "",
+					BackgroundColor ={Std = 0, Hover = RGBa(255, 0, 0, 100)},
+					OnMouseIn = GuiAction_SetTag("Hover"),
+					OnMouseOut = GuiAction_SetTag("Std"),
+					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 0)
+				},
+				move_all_right =
+				{
+					Target = current_center_column_target,
+					ID = 10 + 1,
+					Right = "4em", Bottom = "6em",
+					Style = GUI_TextHCenter | GUI_TextVCenter,
+					Symbol = Icon_MoveItems,
+					Tooltip = "",
+					BackgroundColor ={Std = 0, Hover = RGBa(255, 0, 0, 100)},
+					OnMouseIn = GuiAction_SetTag("Hover"),
+					OnMouseOut = GuiAction_SetTag("Std"),
+					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 1)
+				}
+			},
+			description_box =
 			{
 				Top = "100%-10em",
 				Margin = [sidebar_size_em, "0em"],
 				BackgroundColor = RGB(25, 25, 25),
-				symbol_part = 
+				symbol_part =
 				{
 					Right = "10em",
 					Symbol = nil,
@@ -287,9 +328,62 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	}
 	else // menu already exists and only one part has to be added
 	{
-		GuiUpdate({_update = part_menu}, current_main_menu_id, nil, nil);
+		GuiUpdate({_update: part_menu}, current_main_menu_id, nil, nil);
 	}
 	
+	// Show "put/take all items" buttons if applicable. Also update tooltip.
+	var show_grab_all = current_menus[0] && current_menus[1];
+	show_grab_all = show_grab_all 
+					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk())
+					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk());
+	if (show_grab_all)
+	{
+		current_center_column_target.Visibility = VIS_Owner;
+		for (var i = 0; i < 2; ++i)
+			GuiUpdate({Tooltip: Format("$MoveAllTo$", current_menus[i].target->GetName())}, current_main_menu_id, 10 + i, current_center_column_target);
+	}
+	else
+	{
+		current_center_column_target.Visibility = VIS_None;
+	}
+}
+
+// Tries to put all items from the other menu's target into the target of menu menu_id. Returns nil.
+public func OnMoveAllToClicked(int menu_id)
+{
+	// Sanity checks..
+	for (var i = 0; i < 2; ++i)
+	{
+		if (!current_menus[i] || !current_menus[i].target)
+			return;
+		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk())
+			return;
+	}
+	// Take all from the other object and try to put into the target.
+	var other = current_menus[1 - menu_id].target;
+	var target = current_menus[menu_id].target;
+	var contents = FindObjects(Find_Container(other));
+	var transfered = 0;
+	for (var obj in contents) 
+	{
+		// Sanity, can actually happen if an item merges with others during the transfer etc.
+		if (!obj) continue;
+		
+		var collected = target->Collect(obj, true);
+		if (collected)
+			++transfered;
+	}
+	
+	if (transfered > 0)
+	{
+		Sound("SoftTouch*", true, nil, GetOwner());
+		return;
+	}
+	else
+	{
+		Sound("BalloonPop", true, nil, GetOwner());
+		return;
+	}
 }
 
 // generates a proplist that defines a custom GUI that represents a side bar where objects 
@@ -375,9 +469,13 @@ func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object ta
 	OpenMenuForObject(data.obj, data.slot);
 }
 
+/*
+	Generates and creates one side of the menu.
+	Returns the proplist that will be put into the main menu on the left or right side.
+*/
 func CreateMainMenu(object obj, int slot)
 {
-	var container = 
+	var container =
 	{
 		Target = CreateDummy(),
 		Priority = 5,
@@ -408,7 +506,7 @@ func CreateMainMenu(object obj, int slot)
 	// contents first
 	if (obj->~IsContainer() || obj->~IsClonk())
 	{
-		var info = 
+		var info =
 		{
 			flag = InteractionMenu_Contents,
 			title = "$Contents$",
@@ -453,7 +551,7 @@ func CreateMainMenu(object obj, int slot)
 			menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
 		}
 		
-		var all = // menu with title bar
+		var all =
 		{
 			Priority = menu.Priority ?? i,
 			Style = GUI_FitChildren,
@@ -582,7 +680,7 @@ private func OnContentsSelection(symbol, extra_data)
 	if (obj->~IsStackable())
 	{
 		var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
-		for (var other in others)
+		for (var other in others) 
 		{
 			if (obj->IsFullStack()) break;
 			other->TryAddToStack(obj);
@@ -680,7 +778,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				// The entries with contents are sorted to the back of the inventory menu. This makes for a nicer layout.
 				custom = {Right = custom.Right, Bottom = "8em", top = custom, Priority = 10000 + obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
-				custom.bottom = 
+				custom.bottom =
 				{
 					Top = "4em",
 					BackgroundColor = {Std = 0, Selected = RGBa(255, 100, 100, 100)},
@@ -739,7 +837,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 	if (GetLength(inventory) == GetLength(effect.last_inventory))
 	{
 		var same = true;
-		for (var i = GetLength(inventory)-1; i >= 0; --i)
+		for (var i = GetLength(inventory) - 1; i >= 0; --i)
 		{
 			if (inventory[i].symbol == effect.last_inventory[i].symbol
 				&& inventory[i].text == effect.last_inventory[i].text) continue;
@@ -907,7 +1005,7 @@ func UpdateInteractionMenuFor(object target, callbacks)
 	for (var slot = 0; slot < GetLength(current_menus); ++slot)
 	{
 		var current_menu = current_menus[slot];
-		if (current_menu.target != target) continue;
+		if (!current_menu || current_menu.target != target) continue;
 		if (!callbacks) // do a full refresh
 			OpenMenuForObject(target, slot);
 		else // otherwise selectively update the menus for the callbacks
