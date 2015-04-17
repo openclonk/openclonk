@@ -1,0 +1,6 @@
+MapType=Karte
+DescMapType=Definiert die Landschaftsform.
+MapTypeBigIsland=Groﬂe Insel
+DescMapTypeBigIsland=Eine zentrale Hauptinsel mit einigen Eisflecken in der Luft.
+MapTypeSpots=Kleine inseln
+DescMapTypeSpots=Viele kleine Eisflecken in der Luft.

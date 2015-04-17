@@ -10,8 +10,8 @@ Goals=Goal_Melee=1;
 Rules=Rule_KillLogs=1;Rule_Gravestones=1;
 
 [Landscape]
-MapWidth=20
-MapHeight=20
+MapWidth=64
+MapHeight=40
 TopOpen=1
 BottomOpen=1
 MapZoom=18,0,0,18
