@@ -1,0 +1,17 @@
+[ParameterDef]
+Name=$MapType$
+Description=$DescMapType$
+ID=MapType
+Default=0
+
+	[Options]
+		
+		[Option]
+		Name=$MapTypeBigIsland$
+		Description=$DescMapTypeBigIsland$
+		Value=0
+		
+		[Option]
+		Name=$MapTypeSpots$
+		Description=$DescMapTypeSpots$
+		Value=1
