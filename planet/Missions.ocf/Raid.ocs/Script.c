@@ -68,7 +68,7 @@ func InitializePlayer(int plr)
 	// Late join stuff
 	if (g_pyrit_spoken) SetPlrKnowledge(plr, Plane);
 	// Join intro listening or regular scenario
-	SetPlayerViewLock(true);
+	SetPlayerViewLock(plr, true);
 	JoinPlayer(plr);
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
