@@ -111,7 +111,7 @@
     <examples>
       <example>
         <code>
-  var obj = <funclink>FindObject</funclink>(<funclink>Find_Rect</funclink>(-20, -40, 40, 40), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>));
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_InRect</funclink>(-20, -40, 40, 40), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>));
   if(obj)
     if(obj-&gt;<funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>)
       obj-&gt;<funclink>AddCommand</funclink>(&quot;Jump&quot;);

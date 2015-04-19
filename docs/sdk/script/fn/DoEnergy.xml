@@ -39,7 +39,7 @@
     <desc>Adjusts the energy value of an object. Energy signifies life energy in living beings.</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(1000);</code>
+        <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(1);</code>
         <text>Gives 1 more energy to the selected clonk.</text>
       </example>
     </examples>
