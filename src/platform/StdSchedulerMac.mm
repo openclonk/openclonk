@@ -218,8 +218,6 @@ static NSMutableDictionary* additionsDictionary;
 	[super registerAt:_additions];
 	auto loop = _additions.runLoop;
 	timer = [NSTimer timerWithTimeInterval:proc->TimerInterval()/1000.0 target:self selector:@selector(run:) userInfo:nil repeats:YES];
-	if ([timer respondsToSelector:@selector(setTolerance:)])
-		[timer setTolerance:0.0];
 	[loop addTimer:timer forMode:NSDefaultRunLoopMode];
 }
 - (void) unregisterFrom:(SCHAdditions*) _additions
