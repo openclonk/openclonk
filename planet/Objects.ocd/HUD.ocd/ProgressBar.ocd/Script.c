@@ -18,7 +18,6 @@ global func CreateProgressBar(
 	, proplist data /* proplist with extra data that is passed to the progress bar */
 	)
 {
-	if(!this) return;
 	owner = owner ?? NO_OWNER;
 	visibility = visibility ?? VIS_All;
 	offset = offset ?? {x = 0, y = 0};
@@ -29,7 +28,7 @@ global func CreateProgressBar(
 	if(!ID)
 		FatalError("CreateProgressBar called without valid ID");
 		
-	var obj = CreateObjectAbove(ID, 0, 0, owner);
+	var obj = CreateObject(ID, AbsX(0), AbsY(0), owner);
 	obj->Init(this, max, current, time_out, offset, visibility, data);
 	
 	return obj;
