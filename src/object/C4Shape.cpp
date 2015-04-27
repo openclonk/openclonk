@@ -528,6 +528,21 @@ void C4Shape::CreateOwnOriginalCopy(C4Shape &rFrom)
 
 void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 {
+	const StdBitfieldEntry<int32_t> ContactDirections[] =
+	{
+
+		{ "CNAT_None", CNAT_None },
+		{ "CNAT_Left", CNAT_Left },
+		{ "CNAT_Right", CNAT_Right },
+		{ "CNAT_Top", CNAT_Top },
+		{ "CNAT_Bottom", CNAT_Bottom },
+		{ "CNAT_Center", CNAT_Center },
+		{ "CNAT_MultiAttach", CNAT_MultiAttach },
+		{ "CNAT_NoCollision", CNAT_NoCollision },
+
+		{ NULL, 0 }
+	};
+
 	// a default shape is given in object compilation context only
 	bool fRuntime = !!default_shape;
 	C4Shape default_def_shape;
@@ -540,7 +555,7 @@ void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 	pComp->Value(mkNamingAdapt( VtxNum,                                                   "Vertices",           default_shape->VtxNum));
 	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxX, default_shape->VtxX),               "VertexX",            default_shape->VtxX));
 	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxY, default_shape->VtxY),               "VertexY",            default_shape->VtxY));
-	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxCNAT, default_shape->VtxCNAT),         "VertexCNAT",         default_shape->VtxCNAT));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMAM(VtxCNAT, default_shape->VtxCNAT, [&](decltype(*VtxCNAT) &elem){ return mkBitfieldAdapt<int32_t>(elem, ContactDirections); }), "VertexCNAT", default_shape->VtxCNAT));
 	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxFriction, default_shape->VtxFriction), "VertexFriction",     default_shape->VtxFriction));
 	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     default_shape->ContactDensity));
 	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            default_shape->FireTop));

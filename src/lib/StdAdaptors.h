@@ -426,6 +426,9 @@ struct StdArrayDefaultArrayAdapt
 template <class T, class D>
 inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDefArr(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(pArray, iSize, rDefault); }
 #define mkArrayAdaptDMA(A, D) mkArrayAdaptDefArr(A, sizeof(A) / sizeof(*(A)), D)
+template <class T, class D, class M>
+inline StdArrayDefaultArrayAdapt<T, D, M> mkArrayAdaptDefArrMap(T *pArray, size_t iSize, const D &rDefault, const M &map) { return StdArrayDefaultArrayAdapt<T, D, M>(pArray, iSize, rDefault, map); }
+#define mkArrayAdaptDMAM(A, D, M) mkArrayAdaptDefArrMap(A, sizeof(A) / sizeof(*(A)), D, M)
 
 // * Insertion Adaptor
 // Compile a value before / after another
@@ -934,12 +937,14 @@ struct StdBitfieldAdapt
 		// writing?
 		if (!pComp->isCompiler())
 		{
-			T val = rVal;
+			T val = rVal, orig_val = rVal;
 			// Write until value is comsumed
 			bool fFirst = true;
-			for (const Entry *pName = pNames; val && pName->Name; pName++)
+			for (const Entry *pName = pNames; pName->Name; pName++)
 				if ((pName->Val & val) == pName->Val)
 				{
+					// Avoid writing meaningless none-values (e.g. Category=C4D_None|C4D_Object)
+					if (orig_val && !pName->Val) continue;
 					// Put "|"
 					if (!fFirst) pComp->Separator(StdCompiler::SEP_VLINE);
 					// Put name
