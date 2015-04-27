@@ -116,6 +116,7 @@
 	if (Application.fQuitMsgReceived)
 		return;
 
+#ifdef __MAC_10_9
 	// don't draw if tab-switched away from fullscreen
 	if ([NSApp respondsToSelector:@selector(occlusionState)])
 	{
@@ -123,13 +124,12 @@
 		if (([NSApp occlusionState] & NSApplicationOcclusionStateVisible) == 0)
 			return;
 	}
-	else
-	{
-		if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
-			return;
-		if ([self.window isMiniaturized] || ![self.window isVisible])
-			return;
-	}
+#endif
+	
+	if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
+		return;
+	if ([self.window isMiniaturized] || ![self.window isVisible])
+		return;
 
 	C4Window* stdWindow = self.controller.stdWindow;
 	
