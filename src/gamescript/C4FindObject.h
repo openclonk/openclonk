@@ -25,39 +25,39 @@ enum C4FindObjectCondID
 	C4FO_Not           = 1,
 	C4FO_And           = 2,
 	C4FO_Or            = 3,
-	C4FO_Exclude       = 5,
-	C4FO_InRect        = 10,
-	C4FO_AtPoint       = 11,
-	C4FO_AtRect        = 12,
-	C4FO_OnLine        = 13,
-	C4FO_Distance      = 14,
-	C4FO_ID            = 20,
-	C4FO_OCF           = 21,
-	C4FO_Category      = 22,
-	C4FO_Action        = 30,
-	C4FO_ActionTarget  = 31,
-	C4FO_Procedure     = 32,
-	C4FO_Container     = 40,
-	C4FO_AnyContainer  = 41,
-	C4FO_Owner         = 50,
-	C4FO_Controller    = 51,
-	C4FO_Func          = 60,
-	C4FO_Layer         = 70
+	C4FO_Exclude       = 4,
+	C4FO_InRect        = 5,
+	C4FO_AtPoint       = 6,
+	C4FO_AtRect        = 7,
+	C4FO_OnLine        = 8,
+	C4FO_Distance      = 9,
+	C4FO_ID            = 10,
+	C4FO_OCF           = 11,
+	C4FO_Category      = 12,
+	C4FO_Action        = 13,
+	C4FO_ActionTarget  = 14,
+	C4FO_Procedure     = 15,
+	C4FO_Container     = 16,
+	C4FO_AnyContainer  = 17,
+	C4FO_Owner         = 18,
+	C4FO_Controller    = 19,
+	C4FO_Func          = 20,
+	C4FO_Layer         = 21 // last C4FO must be smaller than C4SO_First.
 };
 
 // Sort map - using same values as C4FindObjectCondID!
 enum C4SortObjectCondID
 {
-	C4SO_First        = 100, // no sort condition smaller than this
-	C4SO_Reverse      = 101, // reverse sort order
-	C4SO_Multiple     = 102, // multiple sorts; high priority first; lower priorities if higher prio returned equal
-	C4SO_Distance     = 110, // nearest first
-	C4SO_Random       = 120, // random first
-	C4SO_Speed        = 130, // slowest first
-	C4SO_Mass         = 140, // lightest first
-	C4SO_Value        = 150, // cheapest first
-	C4SO_Func         = 160, // least return values first
-	C4SO_Last         = 200  // no sort condition larger than this
+	C4SO_First        = 30, // no sort condition smaller than this
+	C4SO_Reverse      = 31, // reverse sort order
+	C4SO_Multiple     = 32, // multiple sorts; high priority first; lower priorities if higher prio returned equal
+	C4SO_Distance     = 33, // nearest first
+	C4SO_Random       = 34, // random first
+	C4SO_Speed        = 35, // slowest first
+	C4SO_Mass         = 36, // lightest first
+	C4SO_Value        = 37, // cheapest first
+	C4SO_Func         = 38, // least return values first
+	C4SO_Last         = 50  // no sort condition larger than this
 };
 
 // Base class
