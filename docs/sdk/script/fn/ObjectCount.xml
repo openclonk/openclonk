@@ -46,6 +46,7 @@
       <funclink>Find_Func</funclink>
       <funclink>Find_Hostile</funclink>
       <funclink>Find_ID</funclink>
+      <funclink>Find_InArray</funclink>
       <funclink>Find_InRect</funclink>
       <funclink>Find_NoContainer</funclink>
       <funclink>Find_Not</funclink>
