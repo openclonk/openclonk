@@ -45,6 +45,11 @@ public:
 			return C4VNull;
 	}
 
+	const C4Value &_GetItem(int32_t iElem) const // unchecked access; not auto-increasing array
+	{
+		return pData[iElem];
+	}
+
 	C4Value operator[](int32_t iElem) const { return GetItem(iElem); }
 	C4Value &operator[](int32_t iElem); // interface for the engine, asserts that 0 <= index < MaxSize
 

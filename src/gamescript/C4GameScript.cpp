@@ -2833,6 +2833,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "C4FO_Controller"           ,C4V_Int,     C4FO_Controller     },
 	{ "C4FO_Func"                 ,C4V_Int,     C4FO_Func           },
 	{ "C4FO_Layer"                ,C4V_Int,     C4FO_Layer          },
+	{ "C4FO_InArray"              ,C4V_Int,     C4FO_InArray        },
 
 	{ "MD_DragSource"             ,C4V_Int,     C4MC_MD_DragSource  },
 	{ "MD_DropTarget"             ,C4V_Int,     C4MC_MD_DropTarget  },

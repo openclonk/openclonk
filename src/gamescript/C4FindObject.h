@@ -42,7 +42,9 @@ enum C4FindObjectCondID
 	C4FO_Owner         = 18,
 	C4FO_Controller    = 19,
 	C4FO_Func          = 20,
-	C4FO_Layer         = 21 // last C4FO must be smaller than C4SO_First.
+	C4FO_Layer         = 21,
+	C4FO_InArray       = 22,
+	// last C4FO must be smaller than C4SO_First.
 };
 
 // Sort map - using same values as C4FindObjectCondID!
@@ -366,6 +368,17 @@ public:
 	C4FindObjectLayer(C4Object *pLayer) : pLayer(pLayer) {}
 private:
 	C4Object *pLayer;
+protected:
+	virtual bool Check(C4Object *pObj);
+	virtual bool IsImpossible();
+};
+
+class C4FindObjectInArray : public C4FindObject
+{
+public:
+	C4FindObjectInArray(C4ValueArray *pArray) : pArray(pArray) {}
+private:
+	C4ValueArray *pArray;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();
