@@ -213,6 +213,9 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_Layer:
 		return new C4FindObjectLayer(Data[1].getObj());
 
+	case C4FO_InArray:
+		return new C4FindObjectInArray(Data[1].getArray());
+
 	}
 	return NULL;
 }
@@ -764,6 +767,24 @@ bool C4FindObjectLayer::Check(C4Object *pObj)
 bool C4FindObjectLayer::IsImpossible()
 {
 	return false;
+}
+
+// *** C4FindObjectInArray
+
+bool C4FindObjectInArray::Check(C4Object *pObj)
+{
+	// O(n) array look-up
+	if (!pArray) return false;
+	int32_t sz = pArray->GetSize();
+	for (int i=0; i<sz; ++i)
+		if (pArray->_GetItem(i).getObj() == pObj)
+			return true;
+	return false;
+}
+
+bool C4FindObjectInArray::IsImpossible()
+{
+	return !pArray || !pArray->GetSize();
 }
 
 // *** C4SortObject
