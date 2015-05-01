@@ -885,7 +885,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 	{
 	case meeMassMove: // MassMover-movement
 	case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
-		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
 		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
@@ -897,7 +897,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 				// either splash or slide prevented interaction
 				return false;
 		// Always kill both landscape and PXS mat
-		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
 		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;

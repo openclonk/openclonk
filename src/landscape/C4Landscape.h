@@ -90,7 +90,7 @@ public:
 	void DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
 
 	void RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt);
-	void FindMatTop(int32_t mat, int32_t &x, int32_t &y) const;
+	void FindMatTop(int32_t mat, int32_t &x, int32_t &y, bool distant_first) const;
 	BYTE GetMapIndex(int32_t iX, int32_t iY) const;
 	bool Load(C4Group &hGroup, bool fLoadSky, bool fSavegame);
 	bool Save(C4Group &hGroup) const;
@@ -188,7 +188,7 @@ public:
 	int32_t GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t iMat, int32_t iMax) const;
 
 	int32_t AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t hgt) const;
-	int32_t ExtractMaterial(int32_t fx, int32_t fy);
+	int32_t ExtractMaterial(int32_t fx, int32_t fy, bool distant_first);
 	bool DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky = false); // creates and draws a map section using MapCreatorS2
 	bool ClipRect(int32_t &rX, int32_t &rY, int32_t &rWdt, int32_t &rHgt) const; // clip given rect by landscape size; return whether anything is left unclipped
 	bool DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky = false); // creates and draws a map section using MapCreatorS2 and a map from the loaded Landscape.txt
