@@ -140,7 +140,7 @@ bool C4MassMover::Execute()
 		if (Corrosion(+0,+1) || Corrosion(-1,+0) || Corrosion(+1,+0))
 		{
 			// material has been used up
-			::Landscape.ExtractMaterial(x,y);
+			::Landscape.ExtractMaterial(x,y,false);
 			return true;
 		}
 
@@ -157,7 +157,7 @@ bool C4MassMover::Execute()
 	    }*/
 
 	// Transfer mass
-	int32_t mat = ::Landscape.ExtractMaterial(x,y);
+	int32_t mat = ::Landscape.ExtractMaterial(x,y,false);
 	if (Random(10))
 		::Landscape.InsertDeadMaterial(mat, tx, ty);
 	else

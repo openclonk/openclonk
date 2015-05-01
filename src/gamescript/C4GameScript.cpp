@@ -445,13 +445,13 @@ static bool FnGBackSky(C4PropList * _this, long x, long y)
 	return !GBackIFT(x, y);
 }
 
-static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount)
+static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount, bool distant_first)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	long extracted=0; for (; extracted<amount; extracted++)
 	{
 		if (GBackMat(x,y)!=mat) return extracted;
-		if (::Landscape.ExtractMaterial(x,y)!=mat) return extracted;
+		if (::Landscape.ExtractMaterial(x,y,distant_first)!=mat) return extracted;
 	}
 	return extracted;
 }

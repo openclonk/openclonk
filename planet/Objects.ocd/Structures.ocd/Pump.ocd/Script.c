@@ -167,7 +167,8 @@ protected func Pumping()
 	if (!stored_material_amount)
 	{
 		// get new materials
-		var mat = GetSourceObject()->ExtractLiquidAmount(0, 0, GetPumpSpeed() / 10);
+		var source_obj = GetSourceObject();
+		var mat = source_obj->ExtractLiquidAmount(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY, GetPumpSpeed() / 10, true);
 	
 		// no material to pump?
 		if (mat)
@@ -185,7 +186,8 @@ protected func Pumping()
 		var i = stored_material_amount;
 		while (i > 0)
 		{
-			if (GetDrainObject()->InsertMaterial(stored_material_index))
+			var drain_obj = GetDrainObject();
+			if (GetDrainObject()->InsertMaterial(stored_material_index, drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
 			{
 				i--;
 			}
@@ -250,17 +252,20 @@ private func GetPumpHeight()
 	// compare each the surfaces of the bodies of liquid pumped
 	
 	// find Y position of surface of liquid that is pumped to target
-	var source_y = 0;
-	if (GetSourceObject()->GBackLiquid())
+	var source_obj = GetSourceObject();
+	var source_x = source_obj.ApertureOffsetX;
+	var source_y = source_obj.ApertureOffsetY;
+	if (source_obj->GBackLiquid(source_x, source_y))
 	{
-		var src_mat = GetSourceObject()->GetMaterial();
-		while (src_mat == GetSourceObject()->GetMaterial(0, source_y - 1))
+		var src_mat = source_obj->GetMaterial(source_x, source_y);
+		while (src_mat == source_obj->GetMaterial(source_x, source_y - 1))
 			--source_y;
 	}
 	// same for target (use same function as if inserting)
 	var target_pos = {X = 0, Y = 0};
-	GetDrainObject()->CanInsertMaterial(Material("Water"), 0, 0, target_pos);
-	return GetSourceObject()->GetY() + source_y - target_pos.Y;
+	var drain_obj = GetDrainObject();
+	drain_obj->CanInsertMaterial(Material("Water"), drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY, target_pos);
+	return source_obj->GetY() + source_y - target_pos.Y;
 }
 
 /** Recheck power usage/production for current pump height
@@ -340,15 +345,14 @@ private func PumpHeight2Power(int pump_height)
 /** Returns whether there is liquid at the source pipe to pump */
 private func HasLiquidToPump()
 {
-	if (!source_pipe)
-		return false;
-		
 	// source
-	if(!GetSourceObject()->GBackLiquid())
+	var source_obj = GetSourceObject();
+	if(!source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY))
 		return false;
 	
 	// target (test with the very popular liquid "water")
-	if(!GetDrainObject()->CanInsertMaterial(Material("Water"),0,0))
+	var drain_obj = GetDrainObject();
+	if(!drain_obj->CanInsertMaterial(Material("Water"),drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
 		return false;
 	
 	return true;

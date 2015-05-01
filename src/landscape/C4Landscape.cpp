@@ -885,11 +885,11 @@ void C4Landscape::RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt)
 }
 
 
-int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
+int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy, bool distant_first)
 {
 	int32_t mat=GetMat(fx,fy);
 	if (mat==MNone) return MNone;
-	FindMatTop(mat,fx,fy);
+	FindMatTop(mat,fx,fy,distant_first);
 	ClearPix(fx,fy);
 	CheckInstabilityRange(fx,fy);
 	return mat;
@@ -3039,9 +3039,9 @@ int32_t C4Landscape::AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t h
 	return ascnt;
 }
 
-void C4Landscape::FindMatTop(int32_t mat, int32_t &x, int32_t &y) const
+void C4Landscape::FindMatTop(int32_t mat, int32_t &x, int32_t &y, bool distant_first) const
 {
-	int32_t mslide,cslide,tslide; // tslide 0 none 1 left 2 right
+	int32_t mslide,cslide,tslide,distant_x=0;
 	bool fLeft,fRight;
 
 	if (!MatValid(mat)) return;
@@ -3049,32 +3049,43 @@ void C4Landscape::FindMatTop(int32_t mat, int32_t &x, int32_t &y) const
 
 	do
 	{
+		// Catch most common case: Walk upwards until material changes
+		while (GetMat(x,y-1)==mat) --y;
 
 		// Find upwards slide
-		fLeft=true; fRight=true; tslide=0;
-		for (cslide=0; (cslide<=mslide) && (fLeft || fRight); cslide++)
+		fLeft=true; fRight=true; tslide=0; distant_x=x;
+		for (cslide=1; (cslide<=mslide) && (fLeft || fRight); cslide++)
 		{
 			// Left
 			if (fLeft)
 			{
 				if (GetMat(x-cslide,y)!=mat) fLeft=false;
-				else if (GetMat(x-cslide,y-1)==mat) { tslide=1; break; }
+				else
+				{
+					distant_x = x-cslide;
+					if (GetMat(distant_x,y-1)==mat) { tslide=-cslide; break; }
+				}
 			}
 			// Right
 			if (fRight)
 			{
 				if (GetMat(x+cslide,y)!=mat) fRight=false;
-				else if (GetMat(x+cslide,y-1)==mat) { tslide=2; break; }
+				else
+				{
+					distant_x = x+cslide;
+					if (GetMat(distant_x,y-1)==mat) { tslide=+cslide; break; }
+				}
 			}
 		}
 
 		// Slide
-		if (tslide==1) { x-=cslide; y--; }
-		if (tslide==2) { x+=cslide; y--; }
-
+		if (tslide) { x+=tslide; y--; }
 
 	}
 	while (tslide);
+
+	// return top pixel max slide away from center if desired
+	if (distant_first) x = distant_x;
 
 }
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

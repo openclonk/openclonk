@@ -607,7 +607,7 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 				{
 					C4Real xdir = C4REAL100(Random(151)-75);
 					C4Real ydir = C4REAL100(-Random(200));
-					::PXS.Create(::Landscape.ExtractMaterial(tx,ty),
+					::PXS.Create(::Landscape.ExtractMaterial(tx,ty,false),
 					             itofix(tx),itofix(sy),
 					             xdir,
 					             ydir);
