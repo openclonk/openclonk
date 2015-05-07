@@ -128,6 +128,15 @@ private func DoGraphics()
 	return;
 }
 
+public func GetFloorOffset()
+{
+	// Searches downwards from the lowest vertex to the floor
+	var y_off;
+	for (y_off=0; !GBackSolid(0, 20+y_off); ++y_off)
+		if (y_off > 20) break; // max range
+	return y_off;
+}
+
 local ActMap = {
 	Door = {
 		Prototype = Action,
