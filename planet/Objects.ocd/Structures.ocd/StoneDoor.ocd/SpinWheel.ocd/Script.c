@@ -1,6 +1,6 @@
 /*-- Spin Wheel --*/
 
-local targetdoor;
+local targetdoor, temp_light;
 
 public func Initialize()
 {
@@ -17,7 +17,13 @@ public func ControlUp(object clonk)
 {
 	if (GetAction() == "Still" && targetdoor)
 	{
-		if (clonk) SetPlrView(clonk->GetController(), targetdoor);
+		if (clonk)
+		{
+			SetPlrView(clonk->GetController(), targetdoor);
+			if (temp_light) temp_light->RemoveObject();
+			var y_off = targetdoor->~GetFloorOffset();
+			temp_light = Global->CreateLight(targetdoor->GetX(), targetdoor->GetY() + y_off, 30, Fx_Light.LGT_Temp, clonk->GetController(), 30, 50);
+		}
 		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
 		Sound("Chain");
@@ -28,7 +34,13 @@ public func ControlDown(object clonk)
 {
 	if (GetAction() == "Still" && targetdoor)
 	{
-		if (clonk) SetPlrView(clonk->GetController(), targetdoor);
+		if (clonk)
+		{
+			SetPlrView(clonk->GetController(), targetdoor);
+			if (temp_light) temp_light->RemoveObject();
+			var y_off = targetdoor->~GetFloorOffset();
+			temp_light = Global->CreateLight(targetdoor->GetX(), targetdoor->GetY() + y_off, 30, Fx_Light.LGT_Temp, clonk->GetController(), 30, 50);
+		}
 		targetdoor->CloseDoor();
 		SetAction("SpinRight");
 		Sound("Chain");
