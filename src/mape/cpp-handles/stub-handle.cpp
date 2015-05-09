@@ -111,7 +111,7 @@ float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
 C4Landscape::C4Landscape() {}
 C4Landscape::~C4Landscape() {}
 bool C4Landscape::FindMatSlide(int&, int&, int, int, int) const { return false; }
-int32_t C4Landscape::ExtractMaterial(int32_t, int32_t) { return 0; }
+int32_t C4Landscape::ExtractMaterial(int32_t, int32_t, bool) { return 0; }
 bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t, bool) { return false; }
 bool C4Landscape::Incinerate(int32_t, int32_t) { return false; }
 bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
