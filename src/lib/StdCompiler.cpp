@@ -647,14 +647,46 @@ void StdCompilerINIRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 	MemCopy(Buf.getData(), pData, iSize);
 }
 
+uint32_t StdCompilerINIRead::getLineNumberOfPos(const char *pos) const
+{
+	// Figure out quickly whether we already know which line this is
+	auto entry = std::lower_bound(lineBreaks.begin(), lineBreaks.end(), pos);
+	if (entry != lineBreaks.end())
+	{
+		return std::distance(lineBreaks.begin(), entry) + 1;
+	}
+	// Otherwise search through the buffer until we find out, filling the
+	// cache in the process
+	const char *cursor = Buf.getData();
+	if (!lineBreaks.empty())
+		cursor = *(lineBreaks.end() - 1) + 1;
+	for (;;)
+	{
+		if (*cursor == '\0' || *cursor == '\n')
+		{
+			lineBreaks.push_back(cursor);
+
+			// If we're at the end of the file or have found the line break
+			// past the requested position, we're done for now
+			if (*cursor == '\0' || pos < cursor)
+			{
+				break;
+			}
+		}
+		++cursor;
+	}
+	return std::distance(lineBreaks.begin(),
+		std::lower_bound(lineBreaks.begin(), lineBreaks.end(), pos)) + 1;
+}
+
 StdStrBuf StdCompilerINIRead::getPosition() const
 {
 	if (pPos)
-		return FormatString("line %d", SGetLine(Buf.getData(), pPos));
+		return FormatString("line %d", getLineNumberOfPos(pPos));
 	else if (iDepth == iRealDepth)
-		return FormatString(pName->Section ? "section \"%s\", after line %d" : "value \"%s\", line %d", pName->Name.getData(), SGetLine(Buf.getData(), pName->Pos));
+		return FormatString(pName->Section ? "section \"%s\", after line %d" : "value \"%s\", line %d", pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else if (iRealDepth)
-		return FormatString("missing value/section \"%s\" inside section \"%s\" (line %d)", NotFoundName.getData(), pName->Name.getData(), SGetLine(Buf.getData(), pName->Pos));
+		return FormatString("missing value/section \"%s\" inside section \"%s\" (line %d)", NotFoundName.getData(), pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else
 		return FormatString("missing value/section \"%s\"", NotFoundName.getData());
 }
