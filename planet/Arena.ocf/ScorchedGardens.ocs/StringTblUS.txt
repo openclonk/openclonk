@@ -1,0 +1,6 @@
+GoalType=Goal
+DescGoalType=Defines the goal of this round.
+GoalTypeLMS=Last Man Standing
+DescGoalTypeLMS=Be the last one alive to win.
+GoalTypeDM=Deathmatch
+DescGoalTypeDM=Score a given amount of kills to win.
