@@ -628,7 +628,7 @@ public:
 
 	// Input
 	typedef StdStrBuf InT;
-	void setInput(const InT &In) { Buf.Ref(In); }
+	void setInput(const InT &In) { Buf.Ref(In); lineBreaks.clear(); }
 
 	// Properties
 	virtual bool isCompiler() { return true; }
@@ -728,6 +728,9 @@ protected:
 
 	void notFound(const char *szWhat);
 
+private:
+	uint32_t getLineNumberOfPos(const char *pos) const;
+	mutable std::vector<const char *> lineBreaks;
 };
 
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);
