@@ -112,7 +112,6 @@ public:
 	C4TargetRect TopFace;
 	C4IDList Component;
 	C4ID BurnTurnTo;
-	C4ID BuildTurnTo;
 	int32_t GrowthType;
 	int32_t CrewMember;
 	int32_t NativeCrew;
