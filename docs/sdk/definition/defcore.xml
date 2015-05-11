@@ -146,11 +146,6 @@
           <col>0 or 1. Determines whether the object can be built.</col>
         </row>
         <row>
-          <literal_col>ConstructTo</literal_col>
-          <col>C4ID</col>
-          <col>Definition change upon building.</col>
-        </row>
-        <row>
           <literal_col>GrabPutGet</literal_col>
           <col>Integer</col>
           <col>Bit mask: bit 0 (value 1) putting possible, bit 1 (value 2) getting possible.</col>

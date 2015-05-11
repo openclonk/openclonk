@@ -18634,9 +18634,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Fragile"
 #~ msgstr "Fragile"
 
-#~ msgid "ConstructTo"
-#~ msgstr "ConstructTo"
-
 #~ msgid "CheckSlide"
 #~ msgstr "CheckSlide"
 
