@@ -333,16 +333,16 @@ private func PumpHeight2Power(int pump_height)
 	var max_power = 60;
 	// Calculate the used power in steps of ten, every 60 pixels represents ten units.
 	var used_power = pump_height / 60 * 10;
-	// If the power is positive then add the minimum energy.
-	if (used_power > 0)
+	// If the pump height is positive then add the minimum energy.
+	if (pump_height >= 0)
 		used_power = Min(used_power + 10, max_power);
 	// Pumping power downwards never costs energy, but only brings something if offset is overcome.
 	else
-		used_power = Min(used_power + power_offset - 10, 0);
+		used_power = BoundBy(used_power + power_offset - 10, -max_power, 0);
 	return used_power;
 }
 
-/** Returns whether there is liquid at the source pipe to pump */
+// Returns whether there is liquid at the source pipe to pump.
 private func HasLiquidToPump()
 {
 	// source
