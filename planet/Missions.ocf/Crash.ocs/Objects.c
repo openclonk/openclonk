@@ -68,6 +68,7 @@ func InitializeObjects()
 	var Chest001 = CreateObjectAbove(Chest, 264, 1287);
 
 	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 870);
+	WoodenCabin001->MakeInvincible();
 
 	CreateObjectAbove(Idol, 102, 871);
 
