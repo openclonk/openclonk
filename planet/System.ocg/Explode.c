@@ -302,7 +302,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 				if (obj) // Test obj, cause OnShockwaveHit could have removed objects.
 				{
 					// Object has special reaction on shockwave?
-					if (obj->~OnShockwaveHit(level, x, y))
+					if (obj->~OnShockwaveHit(level, x, y, cause_plr))
 						continue;
 					// Living beings are hurt more.
 					var cat = obj->GetCategory();
