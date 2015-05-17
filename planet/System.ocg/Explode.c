@@ -137,6 +137,7 @@ global func Explode(int level, bool silent)
 	var container = Contained();
 	var exploding_id = GetID();
 	var layer = GetObjectLayer();
+	Log("%d", cause_plr);
 
 	// Explosion parameters saved: Remove object now, since it should not be involved in the explosion.
 	RemoveObject();
@@ -346,21 +347,22 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	return true;
 }
 
-global func BlastObject(int Level, CausedBy)
+global func BlastObject(int level, int caused_by)
 {
 	var self = this;
-	if (CausedBy == nil)
-		CausedBy = GetController();
+	if (caused_by == nil)
+		caused_by = GetController();
 
-	DoDamage(Level, FX_Call_DmgBlast, CausedBy);
+	DoDamage(level, FX_Call_DmgBlast, caused_by);
 	if (!self) return;
 
 	if (GetAlive())
-		DoEnergy(-Level/3, false, FX_Call_EngBlast, CausedBy);
+		DoEnergy(-level/3, false, FX_Call_EngBlast, caused_by);
 	if (!self) return;
 
 	if (this.BlastIncinerate && GetDamage() >= this.BlastIncinerate)
-		Incinerate(Level, CausedBy);
+		Incinerate(level, caused_by);
+	return;
 }
 
 global func BlastObjectsShockwaveCheck(int x, int y)

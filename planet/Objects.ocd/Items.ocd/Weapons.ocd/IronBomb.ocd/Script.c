@@ -7,7 +7,7 @@
 
 local armed; // If true, explodes on contact
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, int x, int y)
 {
 	// if already activated, nothing (so, throw)
 	if(GetEffect("FuseBurn", this))
@@ -63,13 +63,18 @@ func DoExplode()
 	Explode(30);
 }
 
-protected func Hit(x, y)
+protected func Hit(int x, int y)
 {
 	if (armed) return DoExplode();
 	StonyObjectHit(x,y);
 }
 
-protected func Incineration() { Extinguish(); Fuse(); }
+protected func Incineration(int caused_by)
+{
+	Extinguish(); 
+	Fuse();
+	SetController(caused_by);
+}
 
 protected func RejectEntrance()
 {

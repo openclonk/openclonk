@@ -97,16 +97,18 @@ public func DoExplode()
 	Explode(Sqrt(18**2*count));
 }
 
-protected func Incineration() 
+protected func Incineration(int caused_by) 
 {
 	AddEffect("Fuse", this, 100, 1, this);
 	Sound("Fuse");
+	SetController(caused_by);
 	return;
 }
 
-protected func Damage()
+protected func Damage(int change, int type, int by_player)
 {
-	Incinerate();
+	Incinerate(nil, by_player);
+	return;
 }
 
 public func FxFuseTimer(object target, effect, int timer)

@@ -98,7 +98,12 @@ private func GetWall(int angle)
 
 protected func Hit() { Sound("GeneralHit?"); }
 
-protected func Incineration() { Extinguish(); Fuse(); }
+protected func Incineration(int caused_by)
+{
+	Extinguish(); 
+	Fuse();
+	SetController(caused_by);
+}
 
 protected func RejectEntrance()
 {
