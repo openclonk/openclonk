@@ -137,7 +137,6 @@ global func Explode(int level, bool silent)
 	var container = Contained();
 	var exploding_id = GetID();
 	var layer = GetObjectLayer();
-	Log("%d", cause_plr);
 
 	// Explosion parameters saved: Remove object now, since it should not be involved in the explosion.
 	RemoveObject();
