@@ -125,7 +125,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 {
 	holding = false;
 	clonk->StopAim();
-	return -1;
+	return true;
 }
 
 // Callback from the clonk, when he actually has stopped aiming
