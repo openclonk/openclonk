@@ -383,7 +383,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	DoScoreboardShow(1, plr + 1);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRespawn", plr, respawn_list[plr]);
+	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	return;
 }
 
@@ -395,7 +395,7 @@ protected func RelaunchPlayer(int plr)
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRespawn", plr, respawn_list[plr]);
+	GameCall("OnPlayerRespawn", plr, FindRespawnCP(plr));
 	// Log message.
 	Log(RndRespawnMsg(), GetPlayerName(plr));
 	return;
@@ -416,9 +416,30 @@ protected func JoinPlayer(int plr)
 	return;
 }
 
+private func FindRespawnCP(int plr)
+{
+	var best_cp = respawn_list[plr];
+	var team = GetPlayerTeam(plr);
+	if (!team)
+		return best_cp;
+	// Loop over team members to find a better checkpoint.
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var test_plr = GetPlayerByIndex(i);
+		if (GetPlayerTeam(test_plr) == team)
+		{
+			var test_cp = respawn_list[test_plr];
+			if (test_cp->GetCPNumber() && test_cp->GetCPNumber() > best_cp->GetCPNumber())
+				best_cp = test_cp;
+		}
+	}
+	return best_cp;
+}
+
 private func FindRespawnPos(int plr)
 {
-	return [respawn_list[plr]->GetX(), respawn_list[plr]->GetY()];
+	var cp = FindRespawnCP(plr);
+	return [cp->GetX(), cp->GetY()];
 }
 
 protected func RemovePlayer(int plr)
