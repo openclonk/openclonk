@@ -491,6 +491,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
 	thirdparty/timsort/sort.h
+	${CMAKE_CURRENT_BINARY_DIR}/C4Version.h
 )
 
 set(MAPE_BASE_SOURCES
@@ -995,6 +996,7 @@ endif()
 
 add_executable(c4group
 	src/c4group/C4GroupMain.cpp
+	${CMAKE_CURRENT_BINARY_DIR}/C4Version.h
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
