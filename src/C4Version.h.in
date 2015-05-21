@@ -32,8 +32,6 @@
 
 #define C4XVER1               @C4XVER1@
 #define C4XVER2               @C4XVER2@
-#define C4VERSIONBUILDNAME    "@C4VERSIONBUILDNAME@"
-#define C4VERSIONEXTRA        "@C4VERSIONEXTRA@"
 #define C4REVISION            "@C4REVISION@"
 
 // Build Options
@@ -44,19 +42,10 @@
 #endif
 #define C4BUILDOPT C4BUILDDEBUG
 
-// These need to be one string because MSVC doesn't like L"a" "b"
-#define C4ENGINEINFOLONG      "@C4ENGINENAME@@C4VERSIONBUILDNAME@@C4VERSIONEXTRA@"
-#define C4ENGINECAPTION       "@C4ENGINENAME@@C4VERSIONBUILDNAME@"
+#define C4ENGINEINFOLONG "@C4ENGINEINFO@"
+#define C4ENGINECAPTION "@C4ENGINECAPTION@"
 
-#define C4XVERTOC4XVERS(s) C4XVERTOC4XVERS2(s)
-#define C4XVERTOC4XVERS2(s) #s
-
-// if C4XVER2 >= 90, this is a pre-release version; add VCS revision
-#if C4XVER2 >= 90
-#define C4VERSION            C4XVERTOC4XVERS(C4XVER1) "." C4XVERTOC4XVERS(C4XVER2) " [" C4REVISION "]" C4VERSIONEXTRA C4BUILDOPT
-#else
-#define C4VERSION            C4XVERTOC4XVERS(C4XVER1) "." C4XVERTOC4XVERS(C4XVER2) C4VERSIONEXTRA C4BUILDOPT
-#endif
+#define C4VERSION "@C4VERSION@" C4BUILDOPT
 
 // if this is set, add a build identifier to the logs and crash dumps
 #define OC_BUILD_ID "@OC_BUILD_ID@"
