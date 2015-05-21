@@ -418,6 +418,7 @@ public func UpdateSelectionStatus()
 	// script...
 	else if(actiontype == ACTIONTYPE_SCRIPT)
 	{
+		this.Tooltip = nil;
 		var metainfo = myobject->~GetInteractionMetaInfo(crew, modus);
 		if(metainfo)
 		{
@@ -425,7 +426,8 @@ public func UpdateSelectionStatus()
 			SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
 			
 			var desc = metainfo["Description"];
-			if(desc) this.Tooltip = desc;
+			if(desc) 
+				this.Tooltip = desc;				
 			
 			if(metainfo["Selected"])
 				SetObjDrawTransform(1200,0,0,0,1200,0,1);
@@ -449,8 +451,7 @@ public func UpdateSelectionStatus()
 			sel += 1;
 		if(1 == position)
 			sel += 2;
-	}
-			
+	}	
 	selected = sel;
 
 	// and set the icon...
