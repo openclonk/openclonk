@@ -28,6 +28,12 @@ private func MaxContentsCount()
 	return 50;
 }
 
+public func GetInteractionMetaInfo(object clonk, int num)
+{
+	if (!is_open) 
+		return { Description = "$MsgOpen$" };
+	return { Description = "$MsgClose$" };
+}
 
 // Open contentsmenu via interaction
 public func Interact(object clonk, int mode)
