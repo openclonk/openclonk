@@ -14,11 +14,14 @@ SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 SET(C4XVER1             6)
 SET(C4XVER2             0)
 
+# Set this variable to any string for pre-release versions, like "alpha" or
+# "rc1". Don't supply a value for release versions.
+SET(C4VERSIONEXTRA)
+
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
 # for alpha and beta releases, and meaningful and stable for stable releases.
-# Both variables need to start with a space if they aren't empty.
+# This variable needs to start with a space if it isn't empty.
 SET(C4VERSIONBUILDNAME  "")
-SET(C4VERSIONEXTRA      "")
 
 ############################################################################
 # Get revision from Git
@@ -47,11 +50,8 @@ set(C4ENGINEINFO        "${C4ENGINENAME}")
 
 set(C4VERSION           "${C4XVER1}.${C4XVER2}")
 
-endif()
-
-if(NOT ${C4VERSIONEXTRA} STREQUAL "")
-	set(C4ENGINEINFO    "${C4ENGINENAME} ${C4VERSIONEXTRA}")
-	set(C4VERSION       "${C4VERSION} ${C4VERSIONEXTRA}")
+if(C4VERSIONEXTRA)
+	set(C4VERSION "${C4VERSION}-${C4VERSIONEXTRA}")
 endif()
 
 if(WIN32)
