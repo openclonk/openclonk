@@ -1492,7 +1492,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyRename), C4CustomKey::PRIO_CtrlOverride);
 	pKeyDelete = new C4KeyBinding(C4KeyCodeEx(K_DELETE), "StartupScenSelDelete", KEYSCOPE_Gui,
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyDelete), C4CustomKey::PRIO_CtrlOverride);
-	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
+	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Control), "StartupScenSelCheat", KEYSCOPE_Gui,
 	                             new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyCheat), C4CustomKey::PRIO_CtrlOverride);
 }
 
