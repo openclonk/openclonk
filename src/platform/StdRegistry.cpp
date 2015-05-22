@@ -498,6 +498,8 @@ bool StdCompilerConfigRead::FollowName(const char *szName)
 
 bool StdCompilerConfigRead::Separator(Sep eSep)
 {
+	// ensure string is loaded in case value begins with a separator
+	if (!LastString.getData()) LastString.Take(ReadString());
 	if (LastString.getData())
 	{
 		// separator within string: check if it is there
