@@ -1349,7 +1349,6 @@ static bool FnGetMissionAccess(C4PropList * _this, C4String *strMissionAccess)
 	if (::Control.SyncMode())
 		Log("Warning: using GetMissionAccess may cause desyncs when playing records!");
 
-	if (!Config.General.MissionAccess) return false;
 	return SIsModule(Config.General.MissionAccess, FnStringPar(strMissionAccess));
 }
 
