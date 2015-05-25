@@ -199,7 +199,7 @@ public:
 
 	void PostInit();
 
-	const GLuint GetVBO() const { return vbo; }
+	GLuint GetVBO() const { return vbo; }
 
 	void SetLabel(const std::string &label) { Label = label; }
 
