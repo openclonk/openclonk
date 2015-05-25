@@ -404,9 +404,19 @@ bool CStdGLCtx::PageFlip()
 }
 
 #elif defined(USE_X11)
+#include <GL/glxew.h>
 #include <GL/glx.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+
+namespace {
+void InitGLXPointers()
+{
+	glXGetVisualFromFBConfig = (PFNGLXGETVISUALFROMFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXGetVisualFromFBConfig"));
+	glXChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXChooseFBConfig"));
+	glXCreateNewContext = (PFNGLXCREATENEWCONTEXTPROC)(glXGetProcAddress((const GLubyte*)"glXCreateNewContext"));
+}
+}
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
@@ -429,13 +439,46 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// store window
 	this->pWindow = pWindow;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	InitGLXPointers();
+	if (!glXGetVisualFromFBConfig || !glXChooseFBConfig || !glXCreateNewContext)
+	{
+		return pGL->Error("  gl: Unable to retrieve GLX 1.4 entry points");
+	}
+	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, pWindow->Info);
+	// Create base context so we can initialize GLEW
+	GLXContext dummy_ctx = glXCreateContext(dpy, vis_info, 0, True);
+	XFree(vis_info);
+	glXMakeCurrent(dpy, pWindow->renderwnd, dummy_ctx);
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		return pGL->Error((const char*)glewGetErrorString(err));
+	}
+
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
-	ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, (pGL->pMainCtx != this) ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
+	const int attribs[] = {
+		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
+		None
+	};
+	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
+
+	if (glXCreateContextAttribsARB)
+	{
+		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
+	}
+	else
+	{
+		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
+	}
+
+	glXMakeCurrent(dpy, None, NULL);
+	glXDestroyContext(dpy, dummy_ctx);
+
 	// No luck?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
-	GLenum err = glewInit();
+	err = glewInit();
 	if (GLEW_OK != err)
 	{
 		// Problem: glewInit failed, something is seriously wrong.
