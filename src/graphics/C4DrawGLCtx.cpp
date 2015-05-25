@@ -430,12 +430,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	this->pWindow = pWindow;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
-	// try direct rendering first
 	ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, (pGL->pMainCtx != this) ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
-	// without, rendering will be unacceptable slow, but that's better than nothing at all
-	if (!ctx)
-		ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, False);
-	// No luck at all?
+	// No luck?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
