@@ -37,7 +37,7 @@
 #include <alut.h>
 #undef _XBOX
 #endif
-#define alErrorCheck(X) X; { ALenum err = alGetError(); if (err) LogF("al error: %s (%x)", #X, err); }
+#define alErrorCheck(X) do { X; { ALenum err = alGetError(); if (err) LogF("al error: %s (%x)", #X, err); } } while (0)
 #endif
 
 /* helpers */
