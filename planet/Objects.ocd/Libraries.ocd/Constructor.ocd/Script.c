@@ -8,27 +8,14 @@
 
 public func IsConstructor() { return true; }
 
-
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// Is the clonk able to construct?
-	if(clonk->GetProcedure() != "WALK")
+	if (clonk->GetProcedure() != "WALK")
 	{
 		clonk->CancelUse();
 		return true;
 	}
-	// Is the clonk at an construction site?
-	// TODO: check for multiple objects
-	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
-	if (structure)
-	{
-		if (structure->GetDamage() > 0)
-		{
-			Repair(clonk, structure);
-			return true;
-		}
-	}
-	
 	// Otherwise create a menu with possible structures to build.
 	clonk->CreateConstructionMenu(this, true);
 	clonk->CancelUse();
@@ -39,22 +26,6 @@ public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	// Is the clonk still able to construct?
-	if (clonk->GetProcedure() != "WALK")
-	{
-		clonk->CancelUse();
-		return true;
-	}
-	// Is the clonk still at an construction site?
-	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
-	if (structure)
-	{	
-		if (structure->GetDamage() > 0)
-		{
-			Repair(clonk, structure);
-			return true;
-		}
-	}	
 	clonk->CancelUse();
 	return true;
 }
@@ -75,14 +46,7 @@ private func ShowConstructionMaterial(object clonk, object structure)
 	return;
 }
 
-
-private func Repair(object clonk, object structure)
-{
-
-}
-
-/** Gives a list of ids of the players knowledge.
-*/
+// Gives a list of ids of the players knowledge.
 public func GetConstructionPlans(int plr)
 {
 	var construction_plans = [];
@@ -92,16 +56,17 @@ public func GetConstructionPlans(int plr)
 	return construction_plans;
 }
 
-/* Construction preview */
 
-func ShowConstructionPreview(object clonk, id structure_id)
+/*-- Construction preview --*/
+
+public func ShowConstructionPreview(object clonk, id structure_id)
 {
 	AddEffect("ControlConstructionPreview", clonk, 1, 0, this, nil, structure_id, clonk);
 	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, true);
 	return true;
 }
 
-func FxControlConstructionPreviewStart(object clonk, effect, int temp, id structure_id, object clonk)
+public func FxControlConstructionPreviewStart(object clonk, effect, int temp, id structure_id, object clonk)
 {
 	if (temp) return;
 
@@ -113,13 +78,16 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 }
 
 // Called by Control2Effect
-func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
 	if (ctrl != CON_Aim)
 	{
-		// CON_Use is accept
-		if (ctrl == CON_Use)
+		// CON_Use is accept, but don't remove the preview, this is done on releasing the button.
+		if (ctrl == CON_Use && !release)
+		{
 			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.blocked, effect.preview.direction, effect.preview.stick_to);
+			return true;	
+		}
 		// movement is allowed
 		else if (IsMovementControl(ctrl))
 			return false;
@@ -142,17 +110,17 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	return true;
 }
 
-func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool temp)
+public func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool temp)
 {
 	if (temp) return;
-
 	effect.preview->RemoveObject();
 	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
 }
 
-/* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool blocked, int dir, object stick_to)
+/*-- Construction --*/
+
+public func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool blocked, int dir, object stick_to)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
@@ -168,14 +136,14 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool bl
 		return false;
 	}
 	// intersection-check with all other construction sites... bah
-	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	for (var other_site in FindObjects(Find_ID(ConstructionSite)))
 	{
-		if(!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		if (!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
 		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
 		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
-			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0));
+			CustomMessage(Format("$TxtBlocked$", other_site->GetName()), this, clonk->GetOwner(), nil, nil, RGB(255, 0, 0));
 			return false;
 		}
 	}
@@ -204,8 +172,8 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool bl
 	// check for material
 	var comp, index = 0;
 	var mat;
-	var w = structure_id->GetDefWidth()+10;
-	var h = structure_id->GetDefHeight()+10;
+	var w = structure_id->GetDefWidth() + 10;
+	var h = structure_id->GetDefHeight() + 10;
 
 	while (comp = GetComponent(nil, index, nil, structure_id))
 	{
@@ -235,7 +203,6 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, bool bl
 			}
 		}
 	}
-
 	
 	// Message
 	clonk->Message("$TxtConstructions$", structure_id->GetName());
