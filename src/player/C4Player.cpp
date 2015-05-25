@@ -1307,7 +1307,7 @@ void C4Player::NotifyOwnedObjects()
 						continue;
 					// Regular objects: Try to find a new, suitable owner from the same team
 					// Ignore StaticBack, because this would not be compatible with many internal objects such as team account
-					if ((~cobj->Category & C4D_StaticBack))
+					if ((cobj->Category & C4D_StaticBack) == 0)
 						cobj->SetOwner(iNewOwner);
 				}
 			}
