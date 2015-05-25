@@ -333,6 +333,16 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 	if (hrc)
 	{
 		Select();
+		// After selecting the new context, we have to reinitialize GLEW to
+		// update its function pointers - the driver may elect to expose
+		// different extensions depending on the context attributes
+		GLenum err = glewInit();
+		if (err != GLEW_OK)
+		{
+			// Uh. This is a problem.
+			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+			return false;
+		}
 		return true;
 	}
 
