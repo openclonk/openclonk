@@ -42,6 +42,7 @@ CPackSourceConfig.cmake
 *.rule
 editor-icons.h
 oc-icon.h
+NativeToolsExport.cmake
 
 # Documentation
 *.pyc
