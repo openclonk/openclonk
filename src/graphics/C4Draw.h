@@ -287,12 +287,6 @@ protected:
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 	virtual bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
-	void DebugLog(const char *szMsg)
-	{
-#ifdef _DEBUG
-		Log(szMsg);
-#endif
-	}
 
 	friend class C4Surface;
 	friend class C4TexRef;
