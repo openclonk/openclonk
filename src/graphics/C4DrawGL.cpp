@@ -92,7 +92,7 @@ namespace
 		const char *msg_type = MsgTypeToStr(type);
 		const char *msg_severity = MsgSeverityToStr(severity);
 
-		DebugLogF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
+		LogSilentF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
 #ifdef USE_WIN32_WINDOWS
 		if (IsDebuggerPresent() && severity == GL_DEBUG_SEVERITY_HIGH_ARB)
 			BREAKPOINT_HERE;
