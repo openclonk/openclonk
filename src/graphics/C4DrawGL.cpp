@@ -220,7 +220,10 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 		DebugLog("  gl: Setting OpenGLDebugProc callback");
 		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-		glEnable(GL_DEBUG_OUTPUT);
+#ifdef GL_KHR_debug
+		if (GLEW_KHR_debug)
+			glEnable(GL_DEBUG_OUTPUT);
+#endif
 	}
 	// First context: Log some information about hardware/drivers
 	// Must log after context creation to get valid results
