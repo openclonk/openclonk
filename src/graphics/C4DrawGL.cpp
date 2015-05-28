@@ -92,7 +92,7 @@ namespace
 		const char *msg_type = MsgTypeToStr(type);
 		const char *msg_severity = MsgSeverityToStr(severity);
 
-		DebugLogF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
+		LogSilentF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
 #ifdef USE_WIN32_WINDOWS
 		if (IsDebuggerPresent() && severity == GL_DEBUG_SEVERITY_HIGH_ARB)
 			BREAKPOINT_HERE;
@@ -217,8 +217,13 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	bool success = pCtx->Init(pWindow, pApp);
 	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
 	{
+		DebugLog("  gl: Setting OpenGLDebugProc callback");
 		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+#ifdef GL_KHR_debug
+		if (GLEW_KHR_debug)
+			glEnable(GL_DEBUG_OUTPUT);
+#endif
 	}
 	// First context: Log some information about hardware/drivers
 	// Must log after context creation to get valid results

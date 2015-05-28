@@ -274,6 +274,7 @@ extern C4KeyCode K_A;
 // Forward declarations because xlib.h is evil
 typedef union _XEvent XEvent;
 typedef struct _XDisplay Display;
+typedef struct __GLXFBConfigRec *GLXFBConfig;
 #endif
 
 class C4Window
@@ -336,12 +337,12 @@ public:
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
 protected:
-	bool FindInfo(int samples, void** info);
+	bool FindFBConfig(int samples, GLXFBConfig *info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
-	// The XVisualInfo the window was created with
-	void * Info;
+	// The GLXFBConfig the window was created with
+	GLXFBConfig Info;
 	unsigned long handlerDestroy;
 
 	friend class C4X11AppImpl;
