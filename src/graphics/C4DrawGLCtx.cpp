@@ -464,10 +464,12 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	if (glXCreateContextAttribsARB)
 	{
+		DebugLogF("  gl: Creating %s context", Config.Graphics.DebugOpenGL ? "debug" : "standard");
 		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
 	}
 	else
 	{
+		DebugLog("  gl: glXCreateContextAttribsARB not supported; falling back to attribute-less context creation");
 		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
 	}
 

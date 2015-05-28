@@ -217,6 +217,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	bool success = pCtx->Init(pWindow, pApp);
 	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
 	{
+		DebugLog("  gl: Setting OpenGLDebugProc callback");
 		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 		glEnable(GL_DEBUG_OUTPUT);
