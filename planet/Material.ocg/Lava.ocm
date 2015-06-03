@@ -11,6 +11,7 @@ TempConvStrength=12
 BelowTempConvert=100
 BelowTempConvertTo=Rock
 Placement=10
+Light=1
 TextureOverlay=lava_red
 PXSGfxSize=6
 PXSGfx=Lava

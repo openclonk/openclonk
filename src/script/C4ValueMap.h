@@ -13,11 +13,9 @@
  * To redistribute this file separately, substitute the full license texts
  * for the above references.
  */
+
 #ifndef INC_C4ValueMap2
-
 #define INC_C4ValueMap2
-
-#include <C4Value.h>
 
 // implements a list of C4Values associated with a name list.
 // the list is split in the two components (data/names) to make it possible

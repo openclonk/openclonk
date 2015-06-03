@@ -796,7 +796,7 @@ void C4Network2::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Netwo
 
 #define GETPKT(type, name) \
     assert(pPacket); const type &name = \
-      /*dynamic_cast*/ static_cast<const type &>(*pPacket);
+     static_cast<const type &>(*pPacket);
 
 	switch (cStatus)
 	{
@@ -1323,7 +1323,7 @@ void C4Network2::HandleActivateReq(int32_t iTick, C4Network2Client *pByClient)
 	if (isRunning())
 	{
 		// make a guess how much the client lags.
-		int32_t iLagFrames = BoundBy(pByClient->getMsgConn()->getPingTime() * Game.FPS / 500, 0, 100);
+		int32_t iLagFrames = Clamp(pByClient->getMsgConn()->getPingTime() * Game.FPS / 500, 0, 100);
 		if (iTick < Game.FrameCounter - iLagFrames - C4NetMaxBehind4Activation)
 			return;
 	}
@@ -2872,5 +2872,3 @@ bool C4Network2::isStreaming() const
 	// Streaming must be active and there must still be anything to stream
 	return fStreaming;
 }
-
-//C4Network2 Network;

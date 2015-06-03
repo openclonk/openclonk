@@ -343,7 +343,6 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
 	//    behaviour is to construct the object from compiler data
 	std::unique_ptr<T> temp(new T); // exception-safety
 	// Compile
-	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }
@@ -374,7 +373,6 @@ void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx, co
 	//    and context
 	std::unique_ptr<T> temp(new T(rCtx));  // exception-safety
 	// Compile
-	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }
@@ -628,7 +626,7 @@ public:
 
 	// Input
 	typedef StdStrBuf InT;
-	void setInput(const InT &In) { Buf.Ref(In); }
+	void setInput(const InT &In) { Buf.Ref(In); lineBreaks.clear(); }
 
 	// Properties
 	virtual bool isCompiler() { return true; }
@@ -686,9 +684,10 @@ protected:
 		// Name number in parent map
 		const char *Pos;
 		// Constructor
-		NameNode(NameNode *pParent = NULL)
-				: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
-				Indent(-1), Pos(NULL), Section(false)
+		NameNode(NameNode *pParent = NULL) :
+			Section(false), Parent(pParent),
+			FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
+			Indent(-1), Pos(NULL)
 		{ }
 	};
 	NameNode *pNameRoot, *pName;
@@ -727,6 +726,9 @@ protected:
 
 	void notFound(const char *szWhat);
 
+private:
+	uint32_t getLineNumberOfPos(const char *pos) const;
+	mutable std::vector<const char *> lineBreaks;
 };
 
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);

@@ -246,8 +246,6 @@ bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 		if (!pPlr->Evaluated) Game.RoundResults.EvaluatePlayer(pPlr);
 	}
 
-	//for (C4Player *pPrev=First; pPrev; pPrev=pPrev->Next)
-	//  if (pPrev->Next==pPlr) break;
 	C4Player *pPrev=First;
 	while (pPrev && pPrev->Next!=pPlr) pPrev=pPrev->Next;
 	if (pPrev) pPrev->Next=pPlr->Next;

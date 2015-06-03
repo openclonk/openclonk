@@ -27,16 +27,15 @@ global func GetDefValue()       { return GetDefCoreVal("Value", "DefCore"); }
 global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
+global func GetDefColorByOwner(){ return GetDefCoreVal("ColorByOwner", "DefCore"); }
 global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
-global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }
 global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }
 global func GetDefGrabPutGet()  { return GetDefCoreVal("GrabPutGet", "DefCore"); }
 global func GetDefRotate()      { return GetDefCoreVal("Rotate", "DefCore"); }
 global func GetDefFloat()       { return GetDefCoreVal("Float", "DefCore"); }
-global func GetDefContainBlast(){ return GetDefCoreVal("ContainBlast", "DefCore"); }
 global func GetDefHorizontalFix() { return GetDefCoreVal("HorizontalFix", "DefCore"); }
 global func GetDefBorderBound() { return GetDefCoreVal("BorderBound", "DefCore"); }
 global func GetDefLiftTop()     { return GetDefCoreVal("LiftTop", "DefCore"); }

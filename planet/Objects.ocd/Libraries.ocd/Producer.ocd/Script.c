@@ -43,8 +43,6 @@ public func IsContainer() { return true; }
 // Provides an own interaction menu, even if it wouldn't be a container.
 public func HasInteractionMenu() { return true; }
 
-public func GetConsumerPriority() { return 50; }
-
 public func GetProductionMenuEntries()
 {
 	var products = GetProducts();
@@ -420,7 +418,9 @@ private func ProductionTime(id product) { return product->~GetProductionTime(); 
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
 
-private func PowerNeed() { return 200; }
+public func PowerNeed() { return 80; }
+
+public func GetConsumerPriority() { return 50; }
 
 private func Produce(id product)
 {
@@ -510,7 +510,7 @@ public func CheckFuel(id product, bool remove)
 		var fuel_amount = 0;
 		// Find fuel in this producer.
 		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
-			fuel_amount += fuel->~GetFuelAmount();
+			fuel_amount += fuel->~GetFuelAmount(false);
 		if (fuel_amount < FuelNeed(product))
 			return false;
 		else if (remove)
@@ -519,7 +519,7 @@ public func CheckFuel(id product, bool remove)
 			fuel_amount = 0;
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
-				fuel_amount += fuel->~GetFuelAmount();
+				fuel_amount += fuel->~GetFuelAmount(false);
 				fuel->RemoveObject();
 				if (fuel_amount >= FuelNeed(product))
 					break;
@@ -600,9 +600,12 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Callback to the producer.
 	this->~OnProductionStart(effect.Product);
 	
-	// consume power
-	if(PowerNeed() > 0)
-		MakePowerConsumer(PowerNeed());
+	// Consume power by registering as a consumer for the needed amount.
+	// But first hold the production until the power system gives it ok.
+	// Always register the power request even if power need is zero. The
+	// power network handles this correctly and a producer may decide to
+	// change its power need during production.
+	RegisterPowerRequest(this->PowerNeed());
 	
 	return 1;
 }
@@ -610,7 +613,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 public func OnNotEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
-	if(effect)
+	if (effect)
 	{
 		effect.Active = false;
 		this->~OnProductionHold(effect.Product, effect.Duration);
@@ -623,7 +626,7 @@ public func OnNotEnoughPower()
 public func OnEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
-	if(effect)
+	if (effect)
 	{
 		effect.Active = true;
 		this->~OnProductionContinued(effect.Product, effect.Duration);
@@ -655,7 +658,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if(temp) return;
 	
 	// no need to consume power anymore
-	UnmakePowerConsumer();
+	UnregisterPowerRequest();
 		
 	if (reason != 0)
 		return 1;
@@ -676,8 +679,8 @@ public func OnProductEjection(object product)
 	// Safety for the product removing itself on construction.
 	if (!product)
 		return;	
-	// Vehicles in front fo buildings.
-	if (product->GetCategory() & C4D_Vehicle)
+	// Vehicles in front of buildings, and objects with special needs as well.
+	if (product->GetCategory() & C4D_Vehicle || product->~OnCompletionEjectProduct())
 	{
 		var x = GetX();
 		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;

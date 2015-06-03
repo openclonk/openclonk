@@ -6,7 +6,7 @@
   <title>Object Definitions</title>
   <h>Object Definitions</h>
   <part>
-    <text>Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:</text>
+    <text>Object definitions are used for all game objects in clonk: the wooden hut, goal objects and the clonk himself. An object definition is a group file composed from the following components:</text>
     <h id="Properties">Object properties</h>
     <dl>
       <dt><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="definition/defcore.html">DefCore.txt</emlink></dt>

@@ -1,7 +1,23 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
+
 // Events are Windows-specific
 #include <C4Include.h>
 #include <StdScheduler.h>
-#ifdef USE_WIN32_WINDOWS
+#ifdef STDSCHEDULER_USE_EVENTS
 
 #include <mmsystem.h>
 #include <process.h>
@@ -22,11 +38,11 @@ bool CStdNotifyProc::CheckAndReset()
 
 bool StdScheduler::DoScheduleProcs(int iTimeout)
 {
-	int i;
+	size_t i;
 	// Collect event handles
 	int iEventCnt = 0; HANDLE hEvent;
 	StdSchedulerProc *pMessageProc = NULL;
-	for (i = 0; i < procs.size(); i++)
+	for (i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
 		if ( (hEvent = procs[i]->GetEvent()) )
@@ -99,7 +115,7 @@ CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
 		TIMECAPS tc;
 		timeGetDevCaps(&tc, sizeof(tc));
 		// Establish minimum resolution
-		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
+		uCriticalTimerResolution = Clamp(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
 		timeBeginPeriod(uCriticalTimerResolution);
 	}
 	iTimePeriod++;
@@ -167,11 +183,4 @@ bool CStdMultimediaTimerProc::CheckAndReset()
 	Event.Reset();
 	return true;
 }
-
-void __cdecl StdThread::_ThreadFunc(void *pPar)
-{
-	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
-	_endthreadex(pThread->ThreadFunc());
-}
-
 #endif

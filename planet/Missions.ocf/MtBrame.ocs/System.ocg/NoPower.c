@@ -1,3 +1,3 @@
 #appendto ToolsWorkshop
 
-private func PowerNeed() { return 0; }
+public func PowerNeed() { return 0; }

@@ -76,6 +76,8 @@ bool C4Surface::Lock() { return false; }
 bool C4Surface::Unlock() { return false; }
 DWORD C4Surface::GetPixDw(int iX, int iY, bool fApplyModulation) { return 0; }
 
+C4TexRef::~C4TexRef() {}
+
 C4Pattern::C4Pattern() {}
 void C4Pattern::Clear() {}
 bool C4Pattern::Set(C4Surface *, int) { return false; }
@@ -108,8 +110,8 @@ float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
 
 C4Landscape::C4Landscape() {}
 C4Landscape::~C4Landscape() {}
-bool C4Landscape::FindMatSlide(int&, int&, int, int, int) { return false; }
-int32_t C4Landscape::ExtractMaterial(int32_t, int32_t) { return 0; }
+bool C4Landscape::FindMatSlide(int&, int&, int, int, int) const { return false; }
+int32_t C4Landscape::ExtractMaterial(int32_t, int32_t, bool) { return 0; }
 bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t, bool) { return false; }
 bool C4Landscape::Incinerate(int32_t, int32_t) { return false; }
 bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }

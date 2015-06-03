@@ -24,8 +24,11 @@ public func SetTarget(object target_)
 // The goal is fulfilled if the target has been supplied with energy.
 public func IsFulfilled()
 {
-	//return target->CurrentlyHasPower();
-	return target->IsPowerAvailable(target->GetNeededPower());
+	// Get the power network for the target.
+	var network = Library_Power->GetPowerNetwork(target);
+	if (!network)
+		return false;
+	return network->GetBarePowerAvailable() > 0;
 }
 
 public func GetDescription(int plr)

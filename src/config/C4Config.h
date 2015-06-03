@@ -83,6 +83,8 @@ class C4ConfigDeveloper
 public:
 	int32_t AutoFileReload;
 	int32_t ExtraWarnings;
+	char TodoFilename[CFG_MaxString + 1];
+	char AltTodoFilename[CFG_MaxString + 1];
 	void CompileFunc(StdCompiler *pComp);
 };
 
@@ -116,6 +118,7 @@ public:
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 	int32_t MultiSampling; // multisampling samples
 	int32_t AutoFrameSkip; // if true, gfx frames are skipped when they would slow down the game
+	int32_t DebugOpenGL; // if true, enables OpenGL debugging
 
 	void CompileFunc(StdCompiler *pComp);
 };

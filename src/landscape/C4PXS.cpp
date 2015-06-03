@@ -25,7 +25,6 @@
 #include <C4Physics.h>
 #include <C4Random.h>
 #include <C4Weather.h>
-#include <C4Game.h>
 #include <C4Record.h>
 
 static const C4Real WindDrift_Factor = itofix(1, 800);
@@ -331,7 +330,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						else
 						{
 							// single pixels for slow stuff
-							//pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
 							C4BltVertex vtx;
 							vtx.ftx = fixtof(pxp->x) + cgox;
 							vtx.fty = fixtof(pxp->y) + cgoy;
@@ -353,7 +351,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	for(std::map<int, std::vector<C4BltVertex> >::const_iterator iter = bltVtx.begin(); iter != bltVtx.end(); ++iter)
 	{
 		C4Material *pMat = &::MaterialMap.Map[iter->first];
-		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, pMat->PXSFace.Surface->ppTex[0], NULL, NULL, 0);
+		pDraw->PerformMultiTris(cgo.Surface, &iter->second[0], iter->second.size(), NULL, &pMat->PXSFace.Surface->textures[0], NULL, NULL, 0);
 	}
 }
 
@@ -376,8 +374,6 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
 bool C4PXSSystem::Save(C4Group &hGroup)
 {
 	unsigned int cnt;
-
-	//Log("Save PXS");
 
 	// Check used chunk count
 	int32_t iChunks=0;

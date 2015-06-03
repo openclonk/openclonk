@@ -20,10 +20,8 @@
 #include <C4Include.h>
 #include <C4MouseControl.h>
 
-#include <C4DefList.h>
 #include <C4Viewport.h>
 #include <C4Object.h>
-#include <C4Command.h>
 #include <C4Application.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
@@ -32,9 +30,7 @@
 #include <C4Player.h>
 #include "C4ChatDlg.h"
 #include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
-#include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4ScriptGuiWindow.h>
 
@@ -236,12 +232,6 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (!Application.isEditor)
-		{
-			//int32_t iMidX = Viewport->OutX + iX;
-			//int32_t iMidY = Viewport->OutY + iY;
-			//FIXMESetCursorPos(iMidX, iMidY);
-		}
 		InitCentered = true;
 	}
 #endif
@@ -408,11 +398,15 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				ImageWdt = Def->PictureRect.Wdt;
 				ImageHgt = Def->PictureRect.Hgt;
 			}
-			else
+			else if (pGfx->Type == C4DefGraphics::TYPE_Mesh)
 			{
 				// Note bounding box is in OGRE coordinate system
 				ImageWdt = pGfx->Mesh->GetBoundingBox().y2 - pGfx->Mesh->GetBoundingBox().y1;
 				ImageHgt = pGfx->Mesh->GetBoundingBox().z2 - pGfx->Mesh->GetBoundingBox().z1;
+			}
+			else
+			{
+				ImageWdt = ImageHgt = 1.0f;
 			}
 
 			// zoom mode: Drag in GUI or Game depending on source object
@@ -733,21 +727,6 @@ void C4MouseControl::RightUp()
 
 void C4MouseControl::Wheel(DWORD dwFlags)
 {
-	//short iDelta = (short)(dwFlags >> 16);
-
-	// Normal wheel: control zoom
-	if (!ControlDown)
-	{
-		//if(iDelta > 0) Viewport->ChangeZoom(C4GFX_ZoomStep);
-		//if(iDelta < 0) Viewport->ChangeZoom(1.0f/C4GFX_ZoomStep);
-	}
-	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
-	else
-	{
-		// TODO
-		//if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
-		//if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
-	}
 }
 
 bool C4MouseControl::IsValidMenu(C4Menu *pMenu)

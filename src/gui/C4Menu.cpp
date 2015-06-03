@@ -22,16 +22,12 @@
 
 #include <C4DefList.h>
 #include <C4Object.h>
-#include <C4FullScreen.h>
-#include <C4ObjectCom.h>
 #include <C4Viewport.h>
 #include <C4Player.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
-#include <C4GameObjects.h>
 #include <C4GameControl.h>
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
@@ -430,7 +426,6 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
 bool C4Menu::Control(BYTE byCom, int32_t iData)
 {
 	if (!IsActive()) return false;
-	//bool fSingleColumn = IsContextMenu();
 
 	switch (byCom)
 	{
@@ -440,30 +435,18 @@ bool C4Menu::Control(BYTE byCom, int32_t iData)
 
 		// organize with nicer subfunction...
 	case COM_MenuLeft:
-		/*// Single column: left => begin
-		if (fSingleColumn)
-		  MoveSelection(-Selection, true, true);
-		else
-		{*/
 		// Top wrap-around
 		if (Selection-1 < 0)
 			MoveSelection(ItemCount - 1 - Selection, true, true);
 		else
 			MoveSelection(-1, true, true);
-		/*}*/
 		break;
 	case COM_MenuRight:
-		/*// Single column: right => end
-		if (fSingleColumn)
-		  MoveSelection(ItemCount - 1 - Selection, true, true);
-		else
-		{*/
 		// Bottom wrap-around
 		if (Selection+1 >= ItemCount)
 			MoveSelection(-Selection, true, true);
 		else
 			MoveSelection(+1, true, true);
-		/*}*/
 		break;
 	case COM_MenuUp:
 		iData = -Columns;
@@ -741,7 +724,7 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 	if (Alignment & C4MN_Align_Right) X=cgoArea.Wdt-2*C4SymbolSize-rcBounds.Wdt;
 	if (Alignment & C4MN_Align_Top) Y=C4SymbolSize;
 	if (Alignment & C4MN_Align_Bottom) Y=cgoArea.Hgt-C4SymbolSize-rcBounds.Hgt;
-	if (Alignment & C4MN_Align_Free) { X=BoundBy<int32_t>(X,0,cgoArea.Wdt-rcBounds.Wdt); Y=BoundBy<int32_t>(Y,0,cgoArea.Hgt-rcBounds.Hgt); }
+	if (Alignment & C4MN_Align_Free) { X=Clamp<int32_t>(X,0,cgoArea.Wdt-rcBounds.Wdt); Y=Clamp<int32_t>(Y,0,cgoArea.Hgt-rcBounds.Hgt); }
 	// Centered (due to small viewport size)
 	if (rcBounds.Wdt>cgoArea.Wdt-2*C4SymbolSize) X=(cgoArea.Wdt-rcBounds.Wdt)/2;
 	if (rcBounds.Hgt>cgoArea.Hgt-2*C4SymbolSize) Y=(cgoArea.Hgt-rcBounds.Hgt)/2;
@@ -873,9 +856,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	}
 	break;
 	}
-
-	// Restore global clipper
-	//pDraw->SetPrimaryClipper(iX1,iY1,iX2,iY2);
 }
 
 void C4Menu::DrawFrame(C4Surface * sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
@@ -937,7 +917,7 @@ void C4Menu::Execute()
 		if (!RefillInternal())
 			Close(false);
 	// text progress
-	if (fTextProgressing /*&& !Game.iTick2*/)
+	if (fTextProgressing)
 		SetTextProgress(+1, true);
 }
 

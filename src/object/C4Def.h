@@ -38,26 +38,27 @@
 #include <set>
 
 const int32_t
-C4D_All            =      ~0,
-C4D_StaticBack     =    1<<0,
-C4D_Structure      =    1<<1,
-C4D_Vehicle        =    1<<2,
-C4D_Living         =    1<<3,
-C4D_Object         =    1<<4,
+C4D_None           =     0,
+C4D_All            =    ~0,
+C4D_StaticBack     =  1<<0,
+C4D_Structure      =  1<<1,
+C4D_Vehicle        =  1<<2,
+C4D_Living         =  1<<3,
+C4D_Object         =  1<<4,
 
-C4D_Goal             =  1<<5,
-C4D_Rule             =  1<<6,
-C4D_Environment      =  1<<7,
+C4D_Goal           =  1<<5,
+C4D_Rule           =  1<<6,
+C4D_Environment    =  1<<7,
 
-C4D_Background       =  1<<12,
-C4D_Parallax         =  1<<13,
-C4D_MouseSelect      =  1<<14,
-C4D_Foreground       =  1<<15,
-C4D_MouseIgnore      =  1<<16,
-C4D_IgnoreFoW        =  1<<17,
+C4D_Background     = 1<<12,
+C4D_Parallax       = 1<<13,
+C4D_MouseSelect    = 1<<14,
+C4D_Foreground     = 1<<15,
+C4D_MouseIgnore    = 1<<16,
+C4D_IgnoreFoW      = 1<<17,
 
-C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object
-              | C4D_Background | C4D_Foreground;
+C4D_SortLimit      = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object
+                   | C4D_Background | C4D_Foreground;
 
 const int32_t C4Plane_Structure = 200;
 
@@ -111,7 +112,6 @@ public:
 	C4TargetRect TopFace;
 	C4IDList Component;
 	C4ID BurnTurnTo;
-	C4ID BuildTurnTo;
 	int32_t GrowthType;
 	int32_t CrewMember;
 	int32_t NativeCrew;
@@ -127,7 +127,6 @@ public:
 	int32_t BorderBound;
 	int32_t LiftTop;
 	int32_t GrabPutGet;
-	int32_t ContainBlast;
 	int32_t UprightAttach;
 	int32_t ContactFunctionCalls;
 	int32_t Line;

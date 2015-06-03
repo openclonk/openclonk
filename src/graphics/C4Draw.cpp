@@ -28,9 +28,9 @@
 #include "C4Rect.h"
 #include <C4Config.h>
 #include "StdMesh.h"
+#include <CSurface8.h>
 
 #include <stdio.h>
-#include <limits.h>
 
 // Instruct Optimus laptops to use nVidia GPU instead of integrated GPU
 #if defined(_WIN32) && !defined(USE_CONSOLE)
@@ -189,9 +189,9 @@ void C4GammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
 	{
 		int i2=128-i;
 		// interpolate linear ramps with the rises r1 and r
-		*pBuf ++=BoundBy(((c1+r1*i/128) *i2  +  (c2-r*i2/128) *i) <<1, MinGamma, 0xffff);
+		*pBuf ++=Clamp(((c1+r1*i/128) *i2  +  (c2-r*i2/128) *i) <<1, MinGamma, 0xffff);
 		// interpolate linear ramps with the rises r and r2
-		*pBuf2++=BoundBy(((c2+r*i/128) *i2  +  (c3-r2*i2/128) *i) <<1, MinGamma, 0xffff);
+		*pBuf2++=Clamp(((c2+r*i/128) *i2  +  (c3-r2*i2/128) *i) <<1, MinGamma, 0xffff);
 	}
 }
 
@@ -276,13 +276,11 @@ bool C4Draw::SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 
 bool C4Draw::ApplyPrimaryClipper(C4Surface * sfcSurface)
 {
-	//sfcSurface->SetClipper(lpClipper);
 	return true;
 }
 
 bool C4Draw::DetachPrimaryClipper(C4Surface * sfcSurface)
 {
-	//sfcSurface->SetClipper(NULL);
 	return true;
 }
 
@@ -395,7 +393,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
 	// texture present?
-	if (!sfcSource->ppTex)
+	if (sfcSource->textures.empty())
 	{
 		// primary surface?
 		if (sfcSource->fPrimary)
@@ -407,7 +405,7 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	}
 	// blit with basesfc?
 	bool fBaseSfc=false;
-	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
+	if (sfcSource->pMainSfc) if (!sfcSource->pMainSfc->textures.empty()) fBaseSfc = true;
 	// get involved texture offsets
 	int iTexSizeX=sfcSource->iTexSize;
 	int iTexSizeY=sfcSource->iTexSize;
@@ -415,15 +413,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	int iTexY=Max(int(fy/iTexSizeY), 0);
 	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
 	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
-	// calc stretch regarding texture size and indent
-/*	float scaleX2 = scaleX * iTexSizeX;
-	float scaleY2 = scaleY * iTexSizeY;*/
 	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 	{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
 		{
-			C4TexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
+			C4TexRef *pTex = &sfcSource->textures[iY * sfcSource->iTexX + iX];
 			// get current blitting offset in texture
 			int iBlitX=sfcSource->iTexSize*iX;
 			int iBlitY=sfcSource->iTexSize*iY;
@@ -431,12 +426,10 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			if (iTexSizeX != pTex->iSizeX)
 			{
 				iTexSizeX = pTex->iSizeX;
-				/*scaleX2 = scaleX * iTexSizeX;*/
 			}
 			if (iTexSizeY != pTex->iSizeY)
 			{
 				iTexSizeY = pTex->iSizeY;
-				/*scaleY2 = scaleY * iTexSizeY;*/
 			}
 
 			// get new texture source bounds
@@ -451,41 +444,6 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			tTexBlt.top   = (fTexBlt.top   + iBlitY - fy) * scaleY + ty;
 			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * scaleX + tx;
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * scaleY + ty;
-			// prepare blit data texture matrix
-			// translate back to texture 0/0 regarding indent and blit offset
-			/*BltData.TexPos.SetMoveScale(-tTexBlt.left, -tTexBlt.top, 1, 1);
-			// apply back scaling and texture-indent - simply scale matrix down
-			int i;
-			for (i=0; i<3; ++i) BltData.TexPos.mat[i] /= scaleX2;
-			for (i=3; i<6; ++i) BltData.TexPos.mat[i] /= scaleY2;
-			// now, finally, move in texture - this must be done last, so no stupid zoom is applied...
-			BltData.TexPos.MoveScale(((float) fTexBlt.left) / iTexSize,
-			  ((float) fTexBlt.top) / iTexSize, 1, 1);*/
-			// Set resulting matrix directly
-			/*BltData.TexPos.SetMoveScale(
-			  fTexBlt.left / iTexSizeX - tTexBlt.left / scaleX2,
-			  fTexBlt.top / iTexSizeY - tTexBlt.top / scaleY2,
-			  1 / scaleX2,
-			  1 / scaleY2);*/
-
-			// get tex bounds
-			// The code below is commented out since the problem
-			// in question is currently fixed by using non-power-of-two
-			// and non-square textures.
-#if 0
-			// Size of this texture actually containing image data
-			const int iImgSizeX = (iX == sfcSource->iTexX-1) ? ((sfcSource->Wdt - 1) % iTexSizeX + 1) : (iTexSizeX);
-			const int iImgSizeY = (iY == sfcSource->iTexY-1) ? ((sfcSource->Hgt - 1) % iTexSizeY + 1) : (iTexSizeY);			
-			// Make sure we don't access border pixels. Normally this is prevented
-			// by GL_CLAMP_TO_EDGE anyway but for the bottom and rightmost textures
-			// this does not work as the textures might only be partially filled.
-			// This is the case if iImgSizeX != iTexSize or iImgSizeY != iTexSize.
-			// See bug #396.
-			fTexBlt.left  = Max<float>(fTexBlt.left, 0.5);
-			fTexBlt.top   = Max<float>(fTexBlt.top, 0.5);
-			fTexBlt.right = Min<float>(fTexBlt.right, iImgSizeX - 0.5);
-			fTexBlt.bottom= Min<float>(fTexBlt.bottom, iImgSizeY - 0.5);
-#endif
 
 			// set up blit data as rect
 			C4BltVertex vertices[6];
@@ -512,12 +470,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 				// then get this surface as same offset as from other surface
 				// assuming this is only valid as long as there's no texture management,
 				// organizing partially used textures together!
-				pBaseTex = *(sfcSource->pMainSfc->ppTex + iY * sfcSource->iTexX + iX);
+				pBaseTex = &sfcSource->pMainSfc->textures[iY * sfcSource->iTexX + iX];
 			}
 
 			C4TexRef* pNormalTex = NULL;
 			if (sfcSource->pNormalSfc)
-				pNormalTex = *(sfcSource->pNormalSfc->ppTex + iY * sfcSource->iTexX + iX);
+				pNormalTex = &sfcSource->pNormalSfc->textures[iY * sfcSource->iTexX + iX];
 
 			// ClrByOwner is always fully opaque
 			const DWORD dwOverlayClrMod = 0xff000000 | sfcSource->ClrByOwnerClr;
@@ -688,10 +646,6 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 
 bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
 {
-	// if it's a render target, simply blit with repeating texture
-	// repeating textures, however, aren't currently supported
-	/*if (sfcTarget->IsRenderTarget())
-	  return Blit(sfcSurface, iOffsetX, iOffsetY, iToWdt, iToHgt, sfcTarget, iToX, iToY, iToWdt, iToHgt, false);*/
 	float tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// get tile size
 	int iTileWdt=sfcSurface->Wdt;
@@ -866,7 +820,7 @@ void C4Draw::Grayscale(C4Surface * sfcSfc, int32_t iOffset)
 		{
 			DWORD dwColor = sfcSfc->GetPixDw(xcnt,ycnt,false);
 			uint32_t r = GetRedValue(dwColor), g = GetGreenValue(dwColor), b = GetBlueValue(dwColor), a = dwColor >> 24;
-			int32_t gray = BoundBy<int32_t>((r + g + b) / 3 + iOffset, 0, 255);
+			int32_t gray = Clamp<int32_t>((r + g + b) / 3 + iOffset, 0, 255);
 			sfcSfc->SetPixDw(xcnt, ycnt, RGBA(gray, gray, gray, a));
 		}
 	}
@@ -936,7 +890,7 @@ void C4Draw::ApplyGamma()
 				// add offset
 				ChanOff[iChan]+=(int32_t) BYTE(dwGamma[iRamp*3+iCurve]>>(16-iChan*8)) - DefChanVal[iCurve];
 		// calc curve point
-		tGamma[iCurve]=C4RGB(BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
+		tGamma[iCurve]=C4RGB(Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
 	}
 	// calc ramp
 	Gamma.Set(tGamma[0], tGamma[1], tGamma[2]);

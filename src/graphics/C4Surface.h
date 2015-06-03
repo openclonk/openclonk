@@ -83,7 +83,7 @@ public:
 			GLenum Format;                // used color format in textures
 			CStdGLCtx * pCtx;
 #endif
-	C4TexRef **ppTex;              // textures
+	std::vector<C4TexRef> textures;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
 	C4Surface *pMainSfc;          // main surface for simple ColorByOwner-surfaces
 	C4Surface *pNormalSfc;        // normal map; can be NULL
@@ -97,7 +97,7 @@ protected:
 	bool Attached;
 	bool fPrimary;
 
-	bool IsSingleSurface() { return iTexX*iTexY==1; } // return whether surface is not split
+	bool IsSingleSurface() const { return iTexX*iTexY==1; } // return whether surface is not split
 
 public:
 	void SetBackground() { fIsBackground = true; }
@@ -106,7 +106,17 @@ public:
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 	bool Unlock();
 	bool Lock();
-	bool GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
+	bool GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY) // get texture and adjust x/y
+	{
+		if (textures.empty()) return false;
+		if (rX < 0 || rY < 0 || rX >= Wdt || rY >= Hgt) return false;
+		if (IsSingleSurface())
+		{
+			*ppTexRef = &textures[0];
+			return true;
+		}
+		return GetTexAtImpl(ppTexRef, rX, rY);
+	}
 	bool GetLockTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
@@ -146,12 +156,13 @@ public:
 	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
 	bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
-protected:
+private:
 	void MapBytes(BYTE *bpMap);
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
 	bool CreateTextures(int MaxTextureSize = 0);    // create ppTex-array
 	void FreeTextures();      // free ppTex-array if existant
-//	C4Surface *Duplicate(); // create identical copy
+	
+	bool GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY);
 
 	friend class C4Draw;
 	friend class C4Pattern;

@@ -27,7 +27,7 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
-static const C4ObjectLink NULL_LINK = {};
+static const C4ObjectLink NULL_LINK = { NULL, NULL, NULL };
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
 {
@@ -763,6 +763,7 @@ void C4ObjectList::DeleteObjects()
 	while (First)
 	{
 		C4Object *pObj = First->Obj;
+		if (pObj->Status) Game.ClearPointers(pObj); // clear pointers to removed objects that weren't deleted (game end or section change)
 		Remove(pObj);
 		delete pObj;
 	}

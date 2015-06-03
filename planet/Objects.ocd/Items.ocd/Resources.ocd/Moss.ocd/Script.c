@@ -113,7 +113,7 @@ private func FindNearWater()
 /*-- Status --*/
 
 public func IsFuel() { return !wetness; }
-public func GetFuelAmount() { return 100; }
+public func GetFuelAmount(bool get_partial) { return 100; }
 
 local Collectible = 1;
 local Name = "$Name$";

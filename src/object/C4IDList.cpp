@@ -397,7 +397,7 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 
 	int32_t sections = cgo.GetSectionCount();
 	int32_t idnum = GetNumberOfIDs(rDefs,dwCategory);
-	int32_t firstid = BoundBy<int32_t>(iSelection-sections/2,0,Max<int32_t>(idnum-sections,0));
+	int32_t firstid = Clamp<int32_t>(iSelection-sections/2,0,Max<int32_t>(idnum-sections,0));
 	int32_t idcount;
 	C4ID c_id;
 	C4Facet cgo2;

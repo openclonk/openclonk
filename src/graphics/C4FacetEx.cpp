@@ -20,7 +20,6 @@
 #include <C4Include.h>
 #include <C4FacetEx.h>
 
-#include <C4Random.h>
 #include <C4Rect.h>
 #include <C4Group.h>
 
@@ -92,27 +91,6 @@ bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
 	// done
 	return fSuccess;
 }
-
-/*bool C4FacetSurface::Save(C4Group &hGroup, const char *szName)
-  {
-  // Empty
-  if (!Wdt || !Hgt) return false;
-  // Full surface
-  if ((Wdt==Face.Wdt) && (Hgt==Face.Hgt))
-    {
-    if (!Face.Save(hGroup,szName)) return false;
-    }
-  // Surface section
-  else
-    {
-    C4Surface sfcFacet;
-    if (!sfcFacet.Create(Wdt,Hgt)) return false;
-    Draw(&sfcFacet,0,0);
-    if (!sfcFacet.Save(hGroup,szName)) return false;
-    }
-  // Success
-  return true;
-  }*/
 
 bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHgt, bool fOwnPal, bool fNoErrIfNotFound)
 {

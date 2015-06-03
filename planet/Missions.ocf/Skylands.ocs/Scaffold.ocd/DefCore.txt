@@ -13,5 +13,4 @@ Mass=1000
 Components=Wood=1
 Exclusive=1
 Construction=1
-ContainBlast=1
 IncompleteActivity=1

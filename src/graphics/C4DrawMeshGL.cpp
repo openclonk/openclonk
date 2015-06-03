@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2013, The OpenClonk Team and contributors
+ * Copyright (c) 2013-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -23,6 +23,7 @@
 #include <SHA1.h>
 
 #include "StdMesh.h"
+#include "graphics/C4GraphicsResource.h"
 
 #ifndef USE_CONSOLE
 
@@ -104,26 +105,33 @@ namespace
 	{
 		StdStrBuf buf;
 
-		buf.Copy(
-			"varying vec3 normalDir;\n"
-			"\n"
-			"slice(position)\n"
-			"{\n"
-			"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-			"}\n"
-			"\n"
-			"slice(texcoord)\n"
-			"{\n"
-			"  texcoord = gl_MultiTexCoord0.xy;\n"
-			"}\n"
-			"\n"
-			"slice(normal)\n"
-			"{\n"
-			"  normalDir = normalize(gl_NormalMatrix * gl_Normal);\n"
-			"}\n"
-		);
+		if (!::GraphicsResource.Files.LoadEntryString("ObjectDefaultVS.glsl", &buf))
+		{
+			// Fall back just in case
+			buf.Copy(
+				"varying vec3 normalDir;\n"
+				"\n"
+				"slice(position)\n"
+				"{\n"
+				"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+				"}\n"
+				"\n"
+				"slice(texcoord)\n"
+				"{\n"
+				"  texcoord = gl_MultiTexCoord0.xy;\n"
+				"}\n"
+				"\n"
+				"slice(normal)\n"
+				"{\n"
+				"  normalDir = normalize(gl_NormalMatrix * gl_Normal);\n"
+				"}\n"
+			);
+		}
 
-		return buf;
+		if (pGL->Workarounds.LowMaxVertexUniformCount)
+			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
+		else
+			return buf;
 	}
 
 	// Note this only gets the code which inserts the slices specific for the pass
@@ -430,7 +438,7 @@ namespace
 		if(pFoW != NULL)
 		{
 			call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
+			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
 			float lightTransform[6];
 			pFoW->GetFragTransform(clipRect, outRect, lightTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
@@ -456,7 +464,42 @@ namespace
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
-		const StdMeshVertex* vertices = instance.GetVertices().empty() ? &mesh_instance.GetSharedVertices()[0] : &instance.GetVertices()[0];
+
+		bool using_shared_vertices = instance.GetSubMesh().GetVertices().empty();
+		GLuint vbo = mesh_instance.GetMesh().GetVBO();
+		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInBuffer();
+
+		// Cook the bone transform matrixes into something that OpenGL can use. This could be moved into RenderMeshImpl.
+		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
+		struct BoneTransform
+		{
+			float m[3][4];
+		};
+		std::vector<BoneTransform> bones;
+		if (mesh_instance.GetBoneCount() == 0)
+		{
+			// Upload dummy bone so we don't have to do branching in the vertex shader
+			static const BoneTransform dummy_bone = {
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f
+			};
+			bones.push_back(dummy_bone);
+		}
+		else
+		{
+			bones.reserve(mesh_instance.GetBoneCount());
+			for (size_t bone_index = 0; bone_index < mesh_instance.GetBoneCount(); ++bone_index)
+			{
+				const StdMeshMatrix &bone = mesh_instance.GetBoneTransform(bone_index);
+				BoneTransform cooked_bone = {
+					bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
+					bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
+					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3)
+				};
+				bones.push_back(cooked_bone);
+			}
+		}
 
 		// Render each pass
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -525,12 +568,6 @@ namespace
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
-			// TODO: Use vbo if available.
-
-			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
-			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), &vertices->x);
-			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), &vertices->nx);
-
 			glMatrixMode(GL_TEXTURE);
 
 			assert(pass.Program.get() != NULL);
@@ -542,6 +579,30 @@ namespace
 			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
 			C4ShaderCall call(shader);
 			call.Start();
+
+			// Upload the current bone transformation matrixes (if there are any)
+			if (!bones.empty())
+				if (pGL->Workarounds.LowMaxVertexUniformCount)
+					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
+				else
+					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+
+			// Bind the vertex data of the mesh
+#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
+			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
+			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+			for (int attrib_index = 0; attrib_index <= C4Shader::VAI_BoneIndicesMax - C4Shader::VAI_BoneIndices; ++attrib_index)
+			{
+				glVertexAttribPointer(C4Shader::VAI_BoneWeights + attrib_index, 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex),
+					buffer_offset + VERTEX_OFFSET(bone_weight) + sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type) * 4 * attrib_index);
+				glEnableVertexAttribArray(C4Shader::VAI_BoneWeights + attrib_index);
+				glVertexAttribPointer(C4Shader::VAI_BoneIndices + attrib_index, 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex),
+					buffer_offset + VERTEX_OFFSET(bone_index) + sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type) * 4 * attrib_index);
+				glEnableVertexAttribArray(C4Shader::VAI_BoneIndices + attrib_index);
+			}
+#undef VERTEX_OFFSET
 
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
@@ -647,7 +708,14 @@ namespace
 			}
 
 			glMatrixMode(GL_MODELVIEW);
-			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
+			size_t vertex_count = 3 * instance.GetNumFaces();
+			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			for (int attrib_index = 0; attrib_index <= C4Shader::VAI_BoneIndicesMax - C4Shader::VAI_BoneIndices; ++attrib_index)
+			{
+				glDisableVertexAttribArray(C4Shader::VAI_BoneIndices + attrib_index);
+				glDisableVertexAttribArray(C4Shader::VAI_BoneWeights + attrib_index);
+			}
 			call.Finish();
 
 			if(!pass.DepthCheck)
@@ -686,22 +754,6 @@ namespace
 		glMultMatrixf(attach_trans_gl);
 		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, outRect, parity);
 		glPopMatrix();
-
-#if 0
-			const StdMeshMatrix& own_trans = attach->Parent->GetBoneTransform(attach->ParentBone)
-			                                 * StdMeshMatrix::Transform(attach->Parent->GetMesh().GetBone(attach->ParentBone).Transformation);
-
-			// Draw attached bone
-			glDisable(GL_DEPTH_TEST);
-			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-			GLUquadric* quad = gluNewQuadric();
-			glPushMatrix();
-			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
-			gluSphere(quad, 1.0f, 4, 4);
-			glPopMatrix();
-			gluDeleteQuadric(quad);
-			glEnable(GL_DEPTH_TEST);
-#endif
 	}
 
 	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect, bool parity)
@@ -733,25 +785,6 @@ namespace
 			glPolygonMode(GL_FRONT, modes[0]);
 			glPolygonMode(GL_BACK, modes[1]);
 		}
-
-#if 0
-		// Draw attached bone
-		if (instance.GetAttachParent())
-		{
-			const StdMeshInstance::AttachedMesh* attached = instance.GetAttachParent();
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.GetMesh().GetBone(attached->ChildBone).Transformation);
-
-			glDisable(GL_DEPTH_TEST);
-			glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
-			GLUquadric* quad = gluNewQuadric();
-			glPushMatrix();
-			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
-			gluSphere(quad, 1.0f, 4, 4);
-			glPopMatrix();
-			gluDeleteQuadric(quad);
-			glEnable(GL_DEPTH_TEST);
-		}
-#endif
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
@@ -989,7 +1022,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-	//glDisable(GL_BLEND);
 
 	// TODO: glScissor, so that we only clear the area the mesh covered.
 	glClear(GL_DEPTH_BUFFER_BIT);

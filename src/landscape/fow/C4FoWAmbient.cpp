@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4FoWAmbient.h"
@@ -6,8 +20,8 @@
 namespace
 {
 
-template<typename IFT>
-double AmbientForPix(int x0, int y0, double R, const IFT& ift)
+template<typename LightMap>
+double AmbientForPix(int x0, int y0, double R, const LightMap& light_map)
 {
 	double d = 0.;
 
@@ -21,45 +35,45 @@ double AmbientForPix(int x0, int y0, double R, const IFT& ift)
 			const double l = sqrt(x*x + y*y);
 			assert(l <= R);
 
-			if(!ift(x0 + x, y0 + y)) d += 1. / l;
-			if(!ift(x0 + x, y0 - y)) d += 1. / l;
-			if(!ift(x0 - x, y0 - y)) d += 1. / l;
-			if(!ift(x0 - x, y0 + y)) d += 1. / l;
+			if(light_map(x0 + x, y0 + y)) d += 1. / l;
+			if(light_map(x0 + x, y0 - y)) d += 1. / l;
+			if(light_map(x0 - x, y0 - y)) d += 1. / l;
+			if(light_map(x0 - x, y0 + y)) d += 1. / l;
 		}
 
 		// Vertical/Horizontal lines
 		const double l = static_cast<double>(y);
-		if(!ift(x0 + y, y0)) d += 1. / l;
-		if(!ift(x0 - y, y0)) d += 1. / l;
-		if(!ift(x0, y0 + y)) d += 1. / l;
-		if(!ift(x0, y0 - y)) d += 1. / l;
+		if(light_map(x0 + y, y0)) d += 1. / l;
+		if(light_map(x0 - y, y0)) d += 1. / l;
+		if(light_map(x0, y0 + y)) d += 1. / l;
+		if(light_map(x0, y0 - y)) d += 1. / l;
 	}
 
 	// Central pix
-	if(!ift(x0, y0)) d += 2 * sqrt(M_PI); // int_0^2pi int_0^1/sqrt(pi) 1/r dr r dphi
+	if(light_map(x0, y0)) d += 2 * sqrt(M_PI); // int_0^2pi int_0^1/sqrt(pi) 1/r dr r dphi
 
 	return d;
 }
 
-// Everything is sky, independent of the landscape
+// Everything is illuminated, independent of the landscape
 // This is used to obtain the normalization factor
-struct IFTFull {
-	IFTFull() {}
-	bool operator()(int x, int y) const { return false; }
+struct LightMapFull {
+	LightMapFull() {}
+	bool operator()(int x, int y) const { return true; }
 };
 
-struct IFTZoom {
-	IFTZoom(const C4Landscape& landscape, double sx, double sy):
+struct LightMapZoom {
+	LightMapZoom(const C4Landscape& landscape, double sx, double sy):
 		Landscape(landscape), sx(sx), sy(sy) {}
 
-	// Returns whether zoomed coordinate is IFT or not
+	// Returns whether zoomed coordinate is LightMap or not
 	bool operator()(int x, int y) const
 	{
 		// Landscape coordinates
-		const int lx = BoundBy(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
-		const int ly = BoundBy(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
-		// IFT check
-		return (Landscape._GetPix(lx, ly) & IFT) != 0;
+		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
+		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
+		// LightMap check
+		return ::Landscape.GetPixLight(::Landscape._GetPix(lx, ly));
 	}
 
 	const C4Landscape& Landscape;
@@ -69,10 +83,10 @@ struct IFTZoom {
 
 } // anonymous namespace
 
-C4FoWAmbient::C4FoWAmbient()
-	: Tex(0), Resolution(0.), Radius(0.), FullCoverage(0.),
-	  SizeX(0), SizeY(0), LandscapeX(0), LandscapeY(0),
-	  Brightness(1.)
+C4FoWAmbient::C4FoWAmbient() :
+	Tex(0), Resolution(0.), Radius(0.), FullCoverage(0.),
+	SizeX(0), LandscapeX(0), SizeY(0), LandscapeY(0),
+	Brightness(1.)
 {
 }
 
@@ -145,15 +159,15 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	const double R = Radius / sqrt(zoom_x * zoom_y);
 	// Normalization factor with the full circle
 	// The analytic result is 2*R*M_PI, and this number is typically close to it
-	const double norm = AmbientForPix(0, 0, R, IFTFull()) * FullCoverage;
+	const double norm = AmbientForPix(0, 0, R, LightMapFull()) * FullCoverage;
 	// Create the ambient map
-	IFTZoom iftZoom(landscape, zoom_x, zoom_y);
+	LightMapZoom light_mapZoom(landscape, zoom_x, zoom_y);
 	float* ambient = new float[(right - left) * (bottom - top)];
 	for(unsigned int y = top; y < bottom; ++y)
 	{
 		for(unsigned int x = left; x < right; ++x)
 		{
-			ambient[(y - top) * (right - left) + (x - left)] = Min(AmbientForPix(x, y, R, iftZoom) / norm, 1.0);
+			ambient[(y - top) * (right - left) + (x - left)] = Min(AmbientForPix(x, y, R, light_mapZoom) / norm, 1.0);
 		}
 	}
 

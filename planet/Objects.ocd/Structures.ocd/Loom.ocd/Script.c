@@ -27,7 +27,7 @@ public func IsProduct(id product_id)
 }
 
 private func ProductionTime(id toProduce) { return 140; }
-private func PowerNeed() { return 100; }
+public func PowerNeed() { return 40; }
 
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
@@ -94,5 +94,6 @@ local ActMap = {
 
 local Name = "$Name$";
 local Description ="$Description$";
+local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;

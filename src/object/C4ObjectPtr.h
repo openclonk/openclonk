@@ -37,16 +37,6 @@ public:
 		data.ptr = pObj;
 	}
 
-#if 0
-	C4ObjectPtr(const C4ObjectPtr& other)
-#ifndef NDEBUG
-			: fDenumerated(other.fDenumerated)
-#endif
-	{
-		data = other.data;
-	}
-#endif
-
 	void CompileFunc(StdCompiler* pComp);
 	void DenumeratePointers();
 

@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 #ifndef C4FOWLIGHT_H
 #define C4FOWLIGHT_H
 
@@ -26,6 +40,7 @@ private:
 	int32_t iReach; // maximum length of beams
 	int32_t iFadeout; // number of pixels over which beams fade out
 	int32_t iSize; // size of the light source. Decides smoothness of shadows
+	float gBright; // brigtness of the light source. 1.0 is maximum.
 	C4FoWLight *pNext;
 	C4Object *pObj; // Associated object
 
@@ -39,6 +54,7 @@ public:
 	int32_t getTotalReach() const { return iReach + iFadeout; }
 	int32_t getSize() const { return iSize; }
 	int32_t getNormalSize() const { return iSize * 2; }
+	float getBrightness() const { return gBright; }
 	C4FoWLight *getNext() const { return pNext; }
 	C4Object *getObj() const { return pObj; }
 

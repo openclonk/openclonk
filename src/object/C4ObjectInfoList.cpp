@@ -70,13 +70,6 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup)
 			else delete ninf;
 		}
 
-	// Search all c4o files
-	/*hGroup.ResetSearch();
-	while (hGroup.FindNextEntry("*.c4o",entryname))
-	  if (ninf=new C4ObjectInfo)
-	    if (ninf->Load(hGroup,entryname)) { Add(ninf); infn++; }
-	    else delete ninf;*/
-
 	// Search subfolders
 	hGroup.ResetSearch();
 	while (hGroup.FindNextEntry("*", entryname))

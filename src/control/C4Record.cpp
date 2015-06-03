@@ -729,7 +729,6 @@ void C4Playback::Strip()
 	const bool fStripDebugRec = true;
 	const bool fCheckCheat = false;
 	const bool fStripMessages = true;
-	//const bool fCheckEMControl = true;
 	const int32_t iEndFrame = -1;
 	// Iterate over chunk list
 	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); )

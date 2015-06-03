@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2014, The OpenClonk Team and contributors
+# Copyright (c) 2014-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -19,7 +19,7 @@
 
 # Use pkg-config if possible instead of doing guesswork like the default CMake module does
 find_package(PkgConfig QUIET)
-if(PKG_CONFIG_FOUND)
+if(PKG_CONFIG_FOUND AND NOT APPLE)
 	set(_ft_pkgconfig_args "")
 	if(FREETYPE_FIND_REQUIRED)
 		set(_ft_pkgconfig_args "${_ft_pkgconfig_args}REQUIRED ")
@@ -38,5 +38,9 @@ if(PKG_CONFIG_FOUND)
 endif()
 
 if(NOT FREETYPE_FOUND)
-	include(LegacyFindFreetype)
+	# Fallback to system FindFreetype
+	set(_ft_module_path "${CMAKE_MODULE_PATH}")
+	unset(CMAKE_MODULE_PATH)
+	include(FindFreetype)
+	set(CMAKE_MODULE_PATH "${_ft_module_path}")
 endif()

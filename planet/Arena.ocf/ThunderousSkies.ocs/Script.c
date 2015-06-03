@@ -240,6 +240,8 @@ if (!this)
 
 protected func InitializePlayer(int plr)
 {
+	// This scenario does not have shadows.
+	SetFoW(false, plr);
 	return JoinPlayer(plr);
 }
 

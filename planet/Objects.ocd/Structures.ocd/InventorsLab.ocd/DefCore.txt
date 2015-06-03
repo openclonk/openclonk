@@ -13,5 +13,4 @@ Mass=4500
 Components=Wood=4;Metal=3
 Exclusive=1
 Construction=1
-ContainBlast=1
 IncompleteActivity=1

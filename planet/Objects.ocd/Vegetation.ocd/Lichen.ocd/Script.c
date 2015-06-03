@@ -11,6 +11,14 @@ private func SeedOffset() { return 10; }
 private func IsCrop() { return true; }
 private func SickleHarvesting() { return false; }
 
+protected func Construction()
+{
+	var graphic = Random(6);
+	if(graphic)
+		SetGraphics(Format("%d",graphic));
+	_inherited();
+}
+
 protected func Initialize()
 {
 	SetAction("Grow");

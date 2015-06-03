@@ -113,7 +113,6 @@ private func InitEnvironment(int difficulty)
 	SetGamma(RGB(0, 0, 0), RGB(128 - dark, 128 - dark, 128 - dark), RGB(255 - 2 * dark, 255 - 2 * dark, 255 - 2 * dark));
 	
 	// Time of days and celestials.
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(60 * 20);
 	time->SetCycleSpeed(20);
@@ -155,11 +154,9 @@ private func InitVegetation(int map_size)
 			veg->SetR(RandomX(-20, 20));
 	}
 	// Some mushrooms as source of food.
-	for (var i = 0; i < 30 + Random(5); i++)
-		PlaceVegetation(Mushroom, 0, 0, wdt, hgt);
+	Mushroom->Place(22 + Random(8));
 	// Some ferns, to be burned soon.
-	for (var i = 0; i < 25 + Random(5); i++)
-		PlaceVegetation(Fern, 0, 0, wdt, hgt);
+	Fern->Place(25 + Random(5));
 	// Branches as a nice additional source of wood.
 	Branch->Place(30 + Random(8));
 	// Some objects in the earth.	

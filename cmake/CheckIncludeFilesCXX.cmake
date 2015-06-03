@@ -45,7 +45,7 @@
 #=============================================================================
 
 macro(CHECK_INCLUDE_FILES_CXX INCLUDE VARIABLE)
-  if("${VARIABLE}" MATCHES "^${VARIABLE}$")
+  if(NOT DEFINED "${VARIABLE}")
     set(CMAKE_CONFIGURABLE_FILE_CONTENT "/* */\n")
     if(CMAKE_REQUIRED_INCLUDES)
       set(CHECK_INCLUDE_FILES_INCLUDE_DIRS "-DINCLUDE_DIRECTORIES=${CMAKE_REQUIRED_INCLUDES}")

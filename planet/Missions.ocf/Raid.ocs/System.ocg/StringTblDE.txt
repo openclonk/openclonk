@@ -209,5 +209,5 @@ Dora201=Oh, Pyrit der Schmied? Er ist oberhalb dieser Höhle in Wipfstadt.
 
 Outro1=Gut! Das Flugzeug hat Treibstoff. Aber wie fliegt man so ein Ding?
 Outro2=Wie ich sehe, hast du deine Königsmordmission gut vorbereitet.
-Outro3=Aber keine Angst. Ich hasse Hörx genau ebenso wie du. Ich werde das Flugzeug fliegen.
+Outro3=Aber keine Angst. Ich hasse Hörx ebenso wie du. Ich werde das Flugzeug fliegen.
 Outro4=Worauf warten wir dann noch? Los gehts!

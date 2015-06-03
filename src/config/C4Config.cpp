@@ -40,6 +40,8 @@
 #include <locale.h>
 #endif
 
+#include <C4Application.h>
+
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {
 	// For those without the ability to intuitively guess what the falses and trues mean:
@@ -78,8 +80,10 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1              ,false, true));
-	pComp->Value(mkNamingAdapt(ExtraWarnings,      "ExtraWarnings",     0              ,false, true));
+	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1                   , false, true));
+	pComp->Value(mkNamingAdapt(ExtraWarnings,      "ExtraWarnings",       0                   , false, true));
+	pComp->Value(mkNamingAdapt(s(TodoFilename),    "TodoFilename",       "{SCENARIO}/TODO.txt", false, true));
+	pComp->Value(mkNamingAdapt(s(AltTodoFilename), "AltTodoFilename",    "TODO.txt"           , false, true));
 }
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
@@ -99,7 +103,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(UpperBoard,            "UpperBoard",           1             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowClock,             "ShowClock",            0             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowCrewNames,         "ShowCrewNames",        1             ,false, true));
-	pComp->Value(mkNamingAdapt(ShowCrewCNames,        "ShowCrewCNames",       1             ,false, true));
+	pComp->Value(mkNamingAdapt(ShowCrewCNames,        "ShowCrewCNames",       0             ,false, true));
 	pComp->Value(mkNamingAdapt(BitDepth,              "BitDepth",             32            ,false, true));
 	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
@@ -372,8 +376,6 @@ bool C4Config::Load(const char *szConfigFile)
 	}
 	// Empty nick already defaults to GetRegistrationData("Nick") or
 	// Network.LocalName at relevant places.
-	/*if (!Network.Nick.getLength())
-	  Network.Nick.Copy(Network.LocalName); // assuming that LocalName will always contain some useful value*/
 	fConfigLoaded = true;
 	if (szConfigFile) ConfigFilename.Copy(szConfigFile); else ConfigFilename.Clear();
 	return true;

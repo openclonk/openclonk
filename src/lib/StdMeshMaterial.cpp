@@ -860,6 +860,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_Bones] = "bones";
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
@@ -919,10 +920,10 @@ double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 	}
 }
 
-StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface):
-		RefCount(1), Surf(Surface), Texture(*Surface->ppTex[0])
+StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface)
+	: RefCount(1), Surf(Surface), Texture(Surface->textures[0])
 {
-	assert(Surface->ppTex != NULL);
+	assert(!Surface->textures.empty());
 }
 
 StdMeshMaterialTextureUnit::Tex::~Tex()
@@ -1233,6 +1234,9 @@ void StdMeshMaterialPass::LoadShaderRef(StdMeshMaterialParserCtx& ctx, StdMeshMa
 		shader = ctx.Manager.GetGeometryShader(program_name.getData());
 		shader_type_name = "geometry";
 		break;
+	default: // can't happen
+		assert(0);
+		return;
 	}
 
 	if(cur_shader->Shader != NULL)

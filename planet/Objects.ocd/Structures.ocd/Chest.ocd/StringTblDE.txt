@@ -1,1 +1,4 @@
 Name=Truhe
+Description=Speicherplatz für allerhand Objekte.
+MsgOpen=Truhe öffnen
+MsgClose=Truhe schließen

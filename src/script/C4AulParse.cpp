@@ -1337,12 +1337,16 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 
 void C4AulParse::Parse_Function()
 {
-	C4AulAccess Acc = AA_PUBLIC;
-	// Access?
-	if (SEqual(Idtf, C4AUL_Private)) { Acc = AA_PRIVATE; Shift(); }
-	else if (SEqual(Idtf, C4AUL_Protected)) { Acc = AA_PROTECTED; Shift(); }
-	else if (SEqual(Idtf, C4AUL_Public)) { Acc = AA_PUBLIC; Shift(); }
-	else if (SEqual(Idtf, C4AUL_Global)) { Acc = AA_GLOBAL; Shift(); }
+	bool is_global = SEqual(Idtf, C4AUL_Global);
+	// skip access modifier
+	if (SEqual(Idtf, C4AUL_Private) ||
+		SEqual(Idtf, C4AUL_Protected) ||
+		SEqual(Idtf, C4AUL_Public) ||
+		SEqual(Idtf, C4AUL_Global))
+	{
+		Shift();
+	}
+
 	// check for func declaration
 	if (!SEqual(Idtf, C4AUL_Func))
 		throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
@@ -1350,17 +1354,13 @@ void C4AulParse::Parse_Function()
 	// get next token, must be func name
 	Check(ATT_IDTF, "function name");
 	// check: symbol already in use?
-	switch (Acc)
+	if (!is_global)
 	{
-	case AA_PRIVATE:
-	case AA_PROTECTED:
-	case AA_PUBLIC:
 		if (Host->LocalNamed.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (local variable)");
-		if (Host->GetPropList())
-			break;
-		// func in global context: fallthru
-	case AA_GLOBAL:
+	}
+	if (is_global || !Host->GetPropList())
+	{
 		if (Host != pOrgScript)
 			throw new C4AulParseError(this, "global func in appendto/included script: ", Idtf);
 		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
@@ -1370,7 +1370,7 @@ void C4AulParse::Parse_Function()
 	}
 	// get script fn
 	C4AulScript * owner;
-	if (Acc == AA_GLOBAL)
+	if (is_global)
 		owner = Engine;
 	else
 		owner = Host;
@@ -1381,7 +1381,6 @@ void C4AulParse::Parse_Function()
 		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Owner == owner)
 		{
 			if (Fn)
-				//throw new C4AulParseError(this, "Duplicate function ", Idtf);
 				Warn("Duplicate function %s", Idtf);
 			Fn = f->SFunc();
 		}
@@ -1621,7 +1620,7 @@ void C4AulParse::Parse_Statement()
 			if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_VarNamed))
 				Shift();
 			// variable and "in"
-			if (TokenType == ATT_IDTF /*&& (iVarID = Fn->VarNamed.GetItemNr(Idtf)) != -1*/
+			if (TokenType == ATT_IDTF
 			    && GetNextToken() == ATT_IDTF
 			    && SEqual(Idtf, C4AUL_In))
 			{
@@ -2861,7 +2860,6 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 				C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
 				if (sf)
 				{
-					//assert(sf->pOrgScript == *s);
 					C4AulScriptFunc *sfc;
 					if (sf->pOrgScript != this)
 						sfc = new C4AulScriptFunc(this, *sf);

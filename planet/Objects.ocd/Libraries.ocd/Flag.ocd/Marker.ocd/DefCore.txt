@@ -1,11 +1,8 @@
 [DefCore]
-id=LibraryFlag_Marker
+id=Library_Flag_Marker
 Version=6,0
-Category=C4D_Vehicle
+Category=C4D_None
 Width=8
 Height=8
 Offset=-4,-4
 Rotate=1
-
-[Physical]
-Float=1000

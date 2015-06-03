@@ -145,23 +145,17 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		}
 		*pDest++='\n'; *pDest = '\0';
 
-#ifdef HAVE_ICONV
-		StdStrBuf Line = Languages.IconvSystem(TimeMessage.getData());
-#else
-		const StdStrBuf &Line = TimeMessage;
-#endif
-
 		// Save into log file
 		if (C4LogFile)
 		{
-			fputs(Line.getData(),C4LogFile);
+			fputs(TimeMessage.getData(),C4LogFile);
 			fflush(C4LogFile);
 		}
 
 		// Save into record log file, if available
 		if(Control.GetRecord())
 		{
-			Control.GetRecord()->GetLogFile()->Write(Line.getData(), strlen(Line.getData()));
+			Control.GetRecord()->GetLogFile()->Write(TimeMessage.getData(), TimeMessage.getLength());
 			#ifdef IMMEDIATEREC
 				Control.GetRecord()->GetLogFile()->Flush();
 			#endif
@@ -171,12 +165,14 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		// Write to console
 		if (fConsole)
 		{
-#if defined(_DEBUG) && defined(_WIN32)
+#if defined(_WIN32)
 			// debug: output to VC console
-			OutputDebugString(Line.GetWideChar());
+			OutputDebugString(TimeMessage.GetWideChar());
 #endif
-			fputs(Line.getData(),stdout);
+#if !defined(_WIN32) || defined(USE_CONSOLE)
+			fputs(TimeMessage.getData(),stdout);
 			fflush(stdout);
+#endif
 		}
 
 	}
@@ -338,12 +334,7 @@ bool ShaderLog(const char *szMessage)
 	if (!Application.AssertMainThread()) return false;
 	if (!szMessage) return false;
 	// output into shader log file
-#ifdef HAVE_ICONV
-	StdStrBuf Line = Languages.IconvSystem(szMessage);
-#else
-	StdStrBuf Line; Line.Ref(szMessage);
-#endif
-	fputs(Line.getData(), C4ShaderLogFile);
+	fputs(szMessage, C4ShaderLogFile);
 	fputs("\n", C4ShaderLogFile);
 	fflush(C4ShaderLogFile);
 	return true;

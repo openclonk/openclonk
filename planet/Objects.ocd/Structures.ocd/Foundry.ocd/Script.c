@@ -10,7 +10,7 @@
 #include Library_Producer
 
 // does not need power
-func PowerNeed() { return 0; }
+public func PowerNeed() { return 0; }
 
 public func Construction(object creator)
 {
@@ -128,5 +128,6 @@ func Definition(def) {
 }
 local Name = "$Name$";
 local Description = "$Description$";
+local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 100;

@@ -18,9 +18,7 @@
 
 #include <C4Include.h>
 #include <C4Gui.h>
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
+
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 
@@ -308,7 +306,6 @@ namespace C4GUI
 		// calc progress width
 		int32_t iProgressWdt = (rcBounds.Wdt-4) * iProgress / iMax;
 		// draw progress
-		//pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, cgo.TargetX+rcBounds.x+iProgressWdt, cgo.TargetY+rcBounds.y+rcBounds.Hgt-2, C4GUI_ProgressBarColor);
 		::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, iProgressWdt, rcBounds.Hgt-2);
 		// print out progress text
 		char szPrg[32+1];
@@ -445,15 +442,10 @@ namespace C4GUI
 
 	void PaintBox::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
-		// only if a valid surface is present
-		// C4Surface::Surface was always != 0
-		//if (!fctPaint.GetFace().Surface) return;
 	}
 
 	void PaintBox::DrawElement(C4TargetFacet &cgo)
 	{
-		// only if a valid surface is present
-		//if (!fctPaint.GetFace().Surface) return;
 		// draw it
 		fctPaint.Draw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY);
 	}

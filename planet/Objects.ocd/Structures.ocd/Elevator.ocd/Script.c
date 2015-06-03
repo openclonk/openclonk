@@ -4,7 +4,7 @@
 #include Library_Ownable
 
 // used in the elevator case
-static const Elevator_needed_power = 50;
+static const Elevator_needed_power = 20;
 
 local case, rope;
 local partner, slave;
@@ -194,6 +194,17 @@ func SetNoPowerNeed(bool to_val)
 {
 	if (case) return case->SetNoPowerNeed(to_val);
 	return false;
+}
+
+// return default horizontal offset of case to elevator
+func GetCaseXOff() { return -19 * GetCalcDir(); }
+
+func EditCursorMoved()
+{
+	// Move case and rope along with elevator in editor mode
+	if (case) case->SetPosition(GetX() + GetCaseXOff(), case->GetY());
+	if (rope) rope->SetPosition(GetX() + GetCaseXOff(), GetY() - 13);
+	return true;
 }
 
 local ActMap = {

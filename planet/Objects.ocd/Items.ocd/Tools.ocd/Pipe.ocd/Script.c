@@ -8,6 +8,7 @@ local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
+local ApertureOffsetY = 3; // pump from bottom vertex
 
 protected func Hit()
 {

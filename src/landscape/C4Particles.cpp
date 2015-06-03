@@ -23,6 +23,7 @@
 
 #ifndef USE_CONSOLE
 // headers for particle excution
+#include <C4Application.h>
 #include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
@@ -30,7 +31,7 @@
 #include <C4DrawGL.h>
 #include <C4Random.h>
 #include <C4Landscape.h>
-#include <C4Weather.h>
+#include <C4Weather.h>	
 #endif
 
 
@@ -364,7 +365,6 @@ void C4ParticleValueProvider::Floatify(float denominator)
 		{
 			FloatifyParameterValue(0, 1000.f, 2 * i); // even numbers are the time values
 			FloatifyParameterValue(0, denominator, 2 * i + 1); // odd numbers are the actual values
-			//LogF("KF is %f @ %f", keyFrames[2 * i + 1], keyFrames[2 * i]);
 		}
 	}
 	else if (valueFunction == &C4ParticleValueProvider::Speed || valueFunction == &C4ParticleValueProvider::Wind || valueFunction == &C4ParticleValueProvider::Gravity)
@@ -609,8 +609,6 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 			keyFrames[2 * keyFrameCount - 2] = 1500.f;
 			keyFrames[2 * keyFrameCount - 1] = keyFrames[keyFrameCount - 1 - 2];
 
-			//for (int i = 0; i < keyFrameCount; ++i)
-			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
 		}
 		break;
 	case C4PV_Sin:
@@ -976,7 +974,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
 	assert(sourceDefinition && "No source definition assigned to particle chunk.");
-	C4TexRef *textureRef = (*sourceDefinition->Gfx.GetFace().ppTex);
+	C4TexRef *textureRef = &sourceDefinition->Gfx.GetFace().textures[0];
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
 	// use a relative offset?
@@ -987,6 +985,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 		glPushMatrix();
 		glTranslatef((float)obj->GetX(), (float)obj->GetY(), 0.0f);
 	}
+
+	// enable additive blending for particles with that blit mode
+	glBlendFunc(GL_SRC_ALPHA, (blitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
 	glActiveTexture(texUnit);
 	glBindTexture(GL_TEXTURE_2D, textureRef->texName);
@@ -1009,6 +1010,15 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 			// set up the vertex array structure once
 			glBindVertexArray(drawingDataVertexArraysObject);
 			glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+
+#ifdef GL_KHR_debug
+			if (glObjectLabel)
+			{
+				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
+				glObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
+			}
+#endif
+
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_COLOR_ARRAY);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1127,9 +1137,6 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 {
 	if (particleChunks.empty()) return;
 
-	//glDisable(GL_DEPTH_TEST);
-	//if (additiveBlit)
-	//	pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
 	
@@ -1287,6 +1294,14 @@ void C4ParticleSystem::DoInit()
 
 	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
 	useBufferObjectWorkaround = false;
+
+#ifndef USE_WIN32_WINDOWS
+	// Every window in developers' mode has an own OpenGL context at the moment. Certain objects are not shared between contexts.
+	// In that case we can just use the slower workaround without VBAs and VBOs to allow the developer to view particles in every viewport.
+	// The best solution would obviously be to make all windows use a single OpenGL context. This has to be considered as a workaround.
+	if (Application.isEditor)
+		useBufferObjectWorkaround = true;
+#endif
 }
 
 void C4ParticleSystem::ExecuteCalculation()

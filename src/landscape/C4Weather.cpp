@@ -81,7 +81,7 @@ void C4Weather::Execute()
 	if (!::Game.iTick1000)
 		TargetWind=Game.C4S.Weather.Wind.Evaluate();
 	if (!::Game.iTick10)
-		Wind=BoundBy<int32_t>(Wind+Sign(TargetWind-Wind),
+		Wind=Clamp<int32_t>(Wind+Sign(TargetWind-Wind),
 		                      Game.C4S.Weather.Wind.Min,
 		                      Game.C4S.Weather.Wind.Max);
 	if (!::Game.iTick10)
@@ -115,19 +115,19 @@ void C4Weather::Default()
 
 void C4Weather::SetWind(int32_t iWind)
 {
-	Wind=BoundBy<int32_t>(iWind,-100,+100);
-	TargetWind=BoundBy<int32_t>(iWind,-100,+100);
+	Wind=Clamp<int32_t>(iWind,-100,+100);
+	TargetWind=Clamp<int32_t>(iWind,-100,+100);
 }
 
 void C4Weather::SetTemperature(int32_t iTemperature)
 {
-	Temperature = BoundBy<int32_t>(iTemperature,-100,100);
+	Temperature = Clamp<int32_t>(iTemperature,-100,100);
 	SetSeasonGamma();
 }
 
 void C4Weather::SetSeason(int32_t iSeason)
 {
-	Season = BoundBy<int32_t>(iSeason,0,100);
+	Season = Clamp<int32_t>(iSeason,0,100);
 	SetSeasonGamma();
 }
 
@@ -138,7 +138,7 @@ int32_t C4Weather::GetSeason()
 
 void C4Weather::SetClimate(int32_t iClimate)
 {
-	Climate = BoundBy<int32_t>(iClimate,-50,+50);
+	Climate = Clamp<int32_t>(iClimate,-50,+50);
 	SetSeasonGamma();
 }
 
@@ -160,7 +160,7 @@ void C4Weather::SetSeasonGamma()
 	if (NoGamma) return;
 	// get season num and offset
 	int32_t iSeason1=(Season/25)%4; int32_t iSeason2=(iSeason1+1)%4;
-	int32_t iSeasonOff1=BoundBy(Season%25, 5, 19)-5; int32_t iSeasonOff2=15-iSeasonOff1;
+	int32_t iSeasonOff1=Clamp(Season%25, 5, 19)-5; int32_t iSeasonOff2=15-iSeasonOff1;
 	DWORD dwClr[3]; memset(dwClr, 0, sizeof(DWORD)*3);
 	// interpolate between season colors
 	for (int32_t i=0; i<3; ++i)
@@ -179,7 +179,7 @@ void C4Weather::SetSeasonGamma()
 					iChanVal-=Temperature/2;
 			}
 			// set channel
-			dwClr[i] |= BoundBy<int32_t>(iChanVal,0,255)<<iChan;
+			dwClr[i] |= Clamp<int32_t>(iChanVal,0,255)<<iChan;
 		}
 	// apply gamma ramp
 	pDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);

@@ -18,13 +18,13 @@
 #include <C4Include.h>
 #include <C4LoaderScreen.h>
 
+#include <C4Components.h>
 #include <C4LogBuf.h>
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Random.h>
 #include <C4GroupSet.h>
 #include <C4Game.h>
-#include <C4FullScreen.h>
 
 C4LoaderScreen::C4LoaderScreen()
 {
@@ -156,9 +156,6 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	fctBackground.DrawFullScreen(cgo);
 	// draw scenario title
 	pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.GetLineHeight(), 0xdddddddd, ARight, false);
-	// draw info
-	/*if (szInfo)
-	  pDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
 	//
 	// draw progress bar
 	pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);

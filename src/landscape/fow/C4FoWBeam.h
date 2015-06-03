@@ -1,3 +1,18 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
+
 #ifndef C4FOWBEAM_H
 #define C4FOWBEAM_H
 
@@ -40,6 +55,7 @@ public:
 	bool isDirty() const { return fDirty; }
 	bool isClean() const { return !fDirty; }
 	C4FoWBeam *getNext() const { return pNext; }
+	void setNext(C4FoWBeam *next) { pNext=next; }
 
 	// Get a point on the beam boundary.
 	inline int32_t getLeftX(int32_t y) const { return iLeftX * y / iLeftY; }
@@ -111,6 +127,9 @@ public:
 	/** Prune this beam to a new maximum length.
 	    Called when the size of the light has been decreased to the given value. */
 	void Prune(int32_t y);
+
+	// Serialization for debugging
+	void CompileFunc(StdCompiler *pComp);
 
 };
 

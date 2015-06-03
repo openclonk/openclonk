@@ -139,8 +139,7 @@ void C4MainStat::Show()
 		if (pAkt->iCount)
 			LogSilentF("%s: n = %u, t = %u, td = %.2f",
 			           pAkt->strName, pAkt->iCount, pAkt->tTimeSum,
-			           double(pAkt->tTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
-
+			           double(pAkt->tTimeSum) / pAkt->iCount * 1000);
 	}
 
 	// delete...

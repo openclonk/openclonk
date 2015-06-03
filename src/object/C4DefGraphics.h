@@ -41,6 +41,7 @@ protected:
 public:
 	enum GraphicsType
 	{
+		TYPE_None,
 		TYPE_Bitmap,
 		TYPE_Mesh
 	};
@@ -72,7 +73,7 @@ public:
 	void Clear(); // clear fields; delete additional graphics
 	bool IsMesh() const { return Type == TYPE_Mesh; }
 	bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
-	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
+	{ return Type == TYPE_Mesh || (Type == TYPE_Bitmap && !!Bmp.BitmapClr); } // Mesh can always apply PlayerColor (if used in its material)
 
 	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
 
@@ -204,8 +205,6 @@ public:
 			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
 	~C4GraphicsOverlay(); // dtor
 
-	void Read(const char **ppInput);
-	void Write(char *ppOutput);
 	void CompileFunc(StdCompiler *pComp);
 
 	// object pointer management

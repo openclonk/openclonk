@@ -123,7 +123,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 {
 	holding = false;
 	clonk->StopAim();
-	return -1;
+	return true;
 }
 
 // Callback from the clonk, when he actually has stopped aiming
@@ -158,6 +158,7 @@ private func FireWeapon(object clonk, int angle)
 
 	shot->LaunchProjectile(angle, 0, 75, IX, IY);
 	shot->~Fuse(true);
+	shot->SetController(clonk->GetController());
 
 	loaded = false;
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));

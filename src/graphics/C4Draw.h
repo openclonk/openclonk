@@ -20,19 +20,13 @@
 #define INC_STDDDRAW2
 
 #include <C4Surface.h>
-#include <CSurface8.h>
-#include <StdBuf.h>
 #include <StdMeshMaterial.h>
-#ifdef _WIN32
-#include <C4windowswrapper.h>
-#endif
 
 // Global Draw access pointer
 extern C4Draw *pDraw;
 
 inline void DwTo4UB(DWORD dwClr, unsigned char (&r)[4])
 {
-	//unsigned char r[4];
 	r[0] = (unsigned char)( (dwClr >> 16) & 0xff);
 	r[1] = (unsigned char)( (dwClr >>  8) & 0xff);
 	r[2] = (unsigned char)( (dwClr      ) & 0xff);
@@ -293,12 +287,6 @@ protected:
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 	virtual bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
-	void DebugLog(const char *szMsg)
-	{
-#ifdef _DEBUG
-		Log(szMsg);
-#endif
-	}
 
 	friend class C4Surface;
 	friend class C4TexRef;

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -47,7 +47,6 @@
 #include <C4PathFinder.h>
 
 #include <C4FacetEx.h>
-#include <C4Game.h>
 #include <C4GraphicsSystem.h>
 
 const int32_t C4PF_MaxDepth        = 35,
@@ -70,6 +69,40 @@ const int32_t C4PF_MaxDepth        = 35,
               C4PF_Draw_Rate       = 10;
 
 //------------------------------- C4PathFinderRay ---------------------------------------------
+class C4PathFinderRay
+{
+	friend class C4PathFinder;
+public:
+	C4PathFinderRay();
+	~C4PathFinderRay();
+public:
+	void Clear();
+	void Default();
+protected:
+	int32_t Status;
+	int32_t X, Y, X2, Y2, TargetX, TargetY;
+	int32_t CrawlStartX, CrawlStartY, CrawlAttach, CrawlLength, CrawlStartAttach;
+	int32_t Direction, Depth;
+	C4TransferZone *UseZone;
+	C4PathFinderRay *From;
+	C4PathFinderRay *Next;
+	C4PathFinder *pPathFinder;
+protected:
+	void SetCompletePath();
+	void TurnAttach(int32_t &rAttach, int32_t iDirection);
+	void CrawlToAttach(int32_t &rX, int32_t &rY, int32_t iAttach);
+	void CrawlByAttach(int32_t &rX, int32_t &rY, int32_t iAttach, int32_t iDirection);
+	void Draw(C4TargetFacet &cgo);
+	int32_t FindCrawlAttachDiagonal(int32_t iX, int32_t iY, int32_t iDirection);
+	int32_t FindCrawlAttach(int32_t iX, int32_t iY);
+	bool IsCrawlAttach(int32_t iX, int32_t iY, int32_t iAttach);
+	bool CheckBackRayShorten();
+	bool Execute();
+	bool CrawlTargetFree(int32_t iX, int32_t iY, int32_t iAttach, int32_t iDirection);
+	bool PointFree(int32_t iX, int32_t iY);
+	bool Crawl();
+	bool PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY, C4TransferZone **ppZone = NULL);
+};
 
 C4PathFinderRay::C4PathFinderRay()
 {
@@ -255,7 +288,6 @@ void C4PathFinderRay::Draw(C4TargetFacet &cgo)
 		                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
 		                  cgo.X+X2-cgo.TargetX+7*iX,cgo.Y+Y2-cgo.TargetY+7*iY,
 		                  C4RGB(0xff, 0, 0));
-		//sprintf(OSTR,"%d",Depth); pDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
 	}
 
 	// Ray line
@@ -329,39 +361,6 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
 	return true;
 }
 
-/*void C4PathFinderRay::DrawLine(C4Surface * sfcSurface, int32_t rX, int32_t rY, int32_t iToX, int32_t iToY, BYTE byCol)
-  {
-  int32_t d,dx,dy,aincr,bincr,xincr,yincr,x,y;
-  // Y based
-  if (Abs(iToX-rX)<Abs(iToY-rY))
-    {
-    xincr=(iToX>rX) ? +1 : -1;
-    yincr=(iToY>rY) ? +1 : -1;
-    dy=Abs(iToY-rY); dx=Abs(iToX-rX);
-    d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=rX; y=rY;
-    for (y=rY; y!=iToY; y+=yincr)
-      {
-      pDraw->SetPixel(sfcSurface,x,y,byCol);
-      if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
-      }
-    }
-  // X based
-  else
-    {
-    yincr=(iToY>rY) ? +1 : -1;
-    xincr=(iToX>rX) ? +1 : -1;
-    dx=Abs(iToX-rX); dy=Abs(iToY-rY);
-    d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=rX; y=rY;
-    for (x=rX; x!=iToX; x+=xincr)
-      {
-      pDraw->SetPixel(sfcSurface,x,y,byCol);
-      if (d>=0) { y+=yincr; d+=aincr; } else d+=bincr;
-      }
-    }
-
-  }*/
-
-
 bool C4PathFinderRay::Crawl()
 {
 
@@ -413,12 +412,10 @@ void C4PathFinderRay::SetCompletePath()
 	{
 		// Transfer waypoint
 		if (pRay->UseZone)
-			pPathFinder->SetWaypoint(pRay->X2,pRay->Y2,(intptr_t)pRay->UseZone->Object,
-			                         pPathFinder->WaypointParameter);
+			pPathFinder->SetWaypoint(pRay->X2,pRay->Y2,pRay->UseZone->Object);
 		// MoveTo waypoint
 		else
-			pPathFinder->SetWaypoint(pRay->From->X2,pRay->From->Y2,0,
-			                         pPathFinder->WaypointParameter);
+			pPathFinder->SetWaypoint(pRay->From->X2,pRay->From->Y2,nullptr);
 	}
 }
 
@@ -550,7 +547,6 @@ void C4PathFinder::Default()
 	PointFree=NULL;
 	SetWaypoint=NULL;
 	FirstRay=NULL;
-	WaypointParameter=0;
 	Success=false;
 	TransferZones=NULL;
 	TransferZonesEnabled=true;
@@ -564,7 +560,7 @@ void C4PathFinder::Clear()
 	FirstRay=NULL;
 }
 
-void C4PathFinder::Init(bool (*fnPointFree)(int32_t, int32_t), C4TransferZones* pTransferZones)
+void C4PathFinder::Init(PointFreeFn fnPointFree, C4TransferZones* pTransferZones)
 {
 	// Set data
 	PointFree = fnPointFree;
@@ -578,7 +574,7 @@ void C4PathFinder::EnableTransferZones(bool fEnabled)
 
 void C4PathFinder::SetLevel(int iLevel)
 {
-	Level = BoundBy(iLevel, 1, 10);
+	Level = Clamp(iLevel, 1, 10);
 }
 
 void C4PathFinder::Draw(C4TargetFacet &cgo)
@@ -622,7 +618,7 @@ bool C4PathFinder::Execute()
 	return fContinue;
 }
 
-bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, bool (*fnSetWaypoint)(int32_t, int32_t, intptr_t, intptr_t), intptr_t iWaypointParameter)
+bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iToY, SetWaypointFn fnSetWaypoint)
 {
 
 	// Prepare
@@ -631,7 +627,6 @@ bool C4PathFinder::Find(int32_t iFromX, int32_t iFromY, int32_t iToX, int32_t iT
 	// Parameter safety
 	if (!fnSetWaypoint) return false;
 	SetWaypoint=fnSetWaypoint;
-	WaypointParameter=iWaypointParameter;
 
 	// Start & target coordinates must be free
 	if (!PointFree(iFromX,iFromY) || !PointFree(iToX,iToY)) return false;

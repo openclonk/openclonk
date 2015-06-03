@@ -1,140 +1,147 @@
 /**
-	StatusSymbol.ocd
+	Status Symbol
 	Shows a certain state of an object.
+	
+	@author Zapper, Maikel
 */
 
-local Name = "$Name$";
-local Description = "$Description$";
 
-local symbols;
-local message;
+local symbol;
 
-local ActMap=
+public func Init(object to)
 {
-	Be = 
-	{
-		Prototype = Action,
-		Name="Be",
-		Procedure=DFA_ATTACH,
-		NextAction="Be",
-		Length=1,
-		FacetBase=1,
-		AbortCall = "AttachTargetLost"
-	}
-};
-
-func AttachTargetLost(){return RemoveObject();}
-
-func Init(to)
-{
-	symbols=[];
 	SetAction("Be", to);
 	
-	// above the object
+	// Above the object.
 	var hgt = to->GetDefCoreVal("Height", "DefCore") / 2;
 	SetVertex(0, VTX_Y, hgt);
 	var x = to->GetVertex(0, VTX_X);
 	SetVertex(0, VTX_X, x);
+	// Set plane to be high.
+	this.Plane = Max(to.Plane + 1, 1000);	
+	return;
 }
 
-public func GetStatusSymbolHelper(to)
+public func GetStatusSymbolHelper(object to)
 {
 	var obj = FindObject(Find_ID(StatusSymbol), Find_ActionTarget(to));
-	if(obj) return obj;
-	obj = CreateObjectAbove(StatusSymbol, 0, 0, to->GetOwner());
+	if (obj) 
+		return obj;
+	obj = CreateObject(StatusSymbol, 0, 0, to->GetOwner());
 	obj->Init(to);
 	return obj;
 }
 
-global func AddStatusSymbol(ID)
+global func ShowStatusSymbol(id symbol)
 {
-	if(!this) return false;
+	if (!this) 
+		return false;
 	var h = StatusSymbol->GetStatusSymbolHelper(this);
-	if(!h) return false;
+	if(!h) 
+		return false;
 	
-	h->Add(ID);
+	h->AddSymbol(symbol);
 	return true;
 }
 
-global func RemoveStatusSymbol(ID)
+global func RemoveStatusSymbol(id symbol)
 {
-	if(!this) return false;
+	if (!this) 
+		return false;
 	var h = StatusSymbol->GetStatusSymbolHelper(this);
-	if(!h) return false;
-	h->Remove(ID);
+	if (!h) 
+		return false;
+	h->RemoveSymbol(symbol);
 	return true;
 }
 
-func Add(what)
+public func AddSymbol(id symbol_id)
 {
-	Blink();
-	var e = -1;
-	for(var i=0;i<GetLength(symbols);++i)
+	symbol = symbol_id;
+	Update();
+}
+
+public func RemoveSymbol(id symbol_id)
+{
+	if (symbol != symbol_id)
+		return;
+	symbol = nil;
+	Update();
+}
+
+public func Update()
+{
+	if (!symbol)
 	{
-		if(symbols[i] == nil) {e = i; continue;}
-		if(symbols[i].ID != what) continue;
-		++symbols[i].cnt;
-		Update();
+		SetGraphics();
+		this.Visibility = VIS_None;
 		return;
 	}
-	
-	if(e == -1)
-		e = GetLength(symbols);
-		
-	symbols[e] = {ID=what, cnt=1};
-	Update();
-}
-
-func Remove(what)
-{
+	SetShape(symbol->GetDefOffset(0), symbol->GetDefOffset(1), symbol->GetDefWidth(), symbol->GetDefHeight());
+	SetGraphics(nil, symbol);
 	Blink();
-	for(var i=0;i<GetLength(symbols);++i)
-	{
-		if(symbols[i] == nil) continue;
-		if(symbols[i].ID != what) continue;
-		--symbols[i].cnt;
-		
-		if(symbols[i].cnt <= 0)
-			symbols[i] = nil;
-	}
-	Update();
+	return;
 }
 
-func Update()
+public func Blink()
 {
-	message = "@";
-	for(var i=0;i<GetLength(symbols);++i)
-	{
-		if(symbols[i] == nil) continue;
-		message = Format("%s{{%i}}", message, symbols[i].ID);
-	}
-	this->Message(message);
-}
-
-func Blink()
-{
-	if(GetEffect("Blinking", this))
+	if (GetEffect("Blinking", this))
 		RemoveEffect("Blinking", this);
-	AddEffect("Blinking", this, 1, 36, this);
+	AddEffect("Blinking", this, 1, 16, this);
+	return;
 }
 
-func FxBlinkingStart(target, effect, temp)
+protected func FxBlinkingStart(object target, proplist effect, int temp)
 {
-	if(temp) return;
-	effect.cycle = 1;
-}
-
-func FxBlinkingTimer(target, effect)
-{
+	if (temp) 
+		return FX_OK;
+	// Set interval to a fixed number of frames.
+	effect.Interval = 16;
+	// Set initial visibility to visible.
 	this.Visibility = this->GetActionTarget().Visibility;
-	
-	if(((++effect.cycle) % 2) == 0)
+	effect.visible = true;	
+	return FX_OK;
+}
+
+protected func FxBlinkingTimer(object target, proplist effect)
+{
+	if (effect.visible)
 	{
-		this->Message("");
-		return 1;
+		effect.visible = false;	
+		this.Visibility = VIS_None;
 	}
-	this->Message(message);
-	return 1;
+	else
+	{
+		effect.visible = true;	
+		this.Visibility = this->GetActionTarget().Visibility;
+	}
+	return FX_OK;
+}
+
+// Callback from the engine: this symbol has lost its parent.
+protected func AttachTargetLost()
+{
+	return RemoveObject();
 }
 	
-func SaveScenarioObject() { return false; }
+public func SaveScenarioObject() { return false; }
+
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+
+local ActMap =
+{
+	Be = 
+	{
+		Prototype = Action,
+		Name = "Be",
+		Procedure = DFA_ATTACH,
+		NextAction = "Be",
+		Length = 1,
+		FacetBase = 1,
+		AbortCall = "AttachTargetLost"
+	}
+};

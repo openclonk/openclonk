@@ -1,25 +1,25 @@
-/*--
+/**
 	Sawmill
-	Authors: Ringwaul, Clonkonaut
-
 	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
---*/
+	
+	@authors Ringwaul, Clonkonaut
+*/
 
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 
-public func Construction(object creator)
+public func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(-20,0,1,0));
+	SetProperty("MeshTransformation", Trans_Rotate(-20, 0, 1, 0));
 	SetAction("Default");
-	return _inherited(creator, ...);
+	return _inherited(...);
 }
 
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0), Anim_Const(1000));
-	AddTimer("CollectionZone", 1);
+	AddTimer("CollectTrees", 4);
 	return _inherited(...);
 }
 
@@ -31,20 +31,23 @@ public func IsContainer() { return false; }
 // Sawmill can't be interacted with.
 public func IsInteractable() { return false; }
 
-// Automatically search for trees in front of sawmill
-// Temporary solution?
+// Automatically search for trees in front of sawmill. Temporary solution?
 protected func FindTrees()
 {
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
-	if (!tree) return;
+	if (!tree)
+		return;
 	
-	Saw(tree);
+	return Saw(tree);
 }
 
+// Returns whether the object is made purely out of wood.
 private func CheckWoodObject(object target)
 {
-	if (target->GetComponent(nil, 0) != Wood) return false;
-	if (target->GetComponent(nil, 1)) return false;
+	if (target->GetComponent(nil, 0) != Wood) 
+		return false;
+	if (target->GetComponent(nil, 1)) 
+		return false;
 	return true;
 }
 
@@ -66,7 +69,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime(id toProduce) { return 100; }
-private func PowerNeed() { return 50; }
+public func PowerNeed() { return 20; }
 
 public func OnProductionStart(id product)
 {
@@ -102,14 +105,14 @@ public func OnProductionFinish(id product)
 }	
 
 // Timer, check for objects to collect in the designated collection zone
-func CollectionZone()
+public func CollectTrees()
 {
-	if (GetCon() < 100) return;
-	
+	if (GetCon() < 100) 
+		return;
 	// Only take one tree at a time
-	if (!(FrameCounter() % 35)) 
-		if (GetLength(queue) == 0)
-			FindTrees();
+	if (GetLength(queue) == 0)
+		FindTrees();
+	return;
 }
 
 protected func Collection()
@@ -181,6 +184,8 @@ private func SpinOff(int call, int animation_no)
 	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
 }
 
+/*-- Properties --*/
+
 local ActMap = {
 		Default = {
 			Prototype = Action,
@@ -195,11 +200,13 @@ local ActMap = {
 		},
 };
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+func Definition(def) 
+{
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000, 0, 7000), Trans_Rotate(-20, 1, 0, 0),Trans_Rotate(30, 0, 1, 0)), def);
 }
 local Name = "$Name$";
 local Description = "$Description$";
 local SpinStep = 30;
+local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;

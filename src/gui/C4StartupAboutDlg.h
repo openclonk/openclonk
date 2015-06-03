@@ -40,10 +40,6 @@ protected:
 public:
 
 	void DoBack(); // back to main menu
-
-	//public:
-	//  void RecreateDialog(bool fFade);
-
 };
 
 

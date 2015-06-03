@@ -262,7 +262,6 @@ bool C4PropList::operator==(const C4PropList &b) const
 	if (IsNumbered() || b.IsNumbered()) return false;
 	if (Properties.GetSize() != b.Properties.GetSize()) return false;
 	if (GetDef() != b.GetDef()) return false;
-	//if (GetObject() != b.GetObject()) return false;
 	const C4Property * p = Properties.First();
 	while (p)
 	{
@@ -491,7 +490,6 @@ unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * const & e)
 	hash ^= hash << 25;
 	hash += hash >> 6;
 	return hash;
-	//return e->Hash;
 }
 
 template<> template<>
@@ -678,7 +676,6 @@ C4String * C4PropList::EnumerateOwnFuncs(C4String * prev) const
 void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);
-	/*assert(Strings.Set.Has(k));*/
 	if (k == &Strings.P[P_Prototype])
 	{
 		C4PropList * newpt = to.getPropList();
@@ -693,16 +690,6 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	}
 	else
 	{
-		//C4Property p(k, to);
-		//Properties.Add(p);
-#ifdef DEBUGREC_SCRIPT
-		if (Config.General.DebugRec)
-		{
-			// deactivate this debugrec for now, because property orders seem to be out of sync
-			// after loading at the moment. might need to invastigate the cause later...
-			//if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
-		}
-#endif
 		Properties.Add(C4Property(k, to));
 	}
 }

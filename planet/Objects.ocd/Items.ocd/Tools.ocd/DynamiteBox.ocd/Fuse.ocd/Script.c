@@ -1,51 +1,36 @@
-/*--- Fuse ---*/
+/** 
+	Dynamite Fuse 
+	Line object that connects the dynamite sticks with the igniter.
+	
+	@author Newton, Maikel
+*/
 
-local fHasMessage;
 
-protected func Initialize ()
+protected func Initialize()
 {
-	SetProperty("LineColors", [RGB(100,50,0), RGB(1,1,1)]);
-	// Put the first to vertices on the actual position
-	SetVertex(0,0,GetX()); SetVertex(0,1,GetY());
-	SetVertex(1,0,GetX()); SetVertex(1,1,GetY());
-	fuse_dir = 0;
+	SetProperty("LineColors", [RGB(100, 50, 0), RGB(1, 1, 1)]);
+	// Put the first to vertices on the actual position.
+	SetVertex(0, 0, GetX()); SetVertex(0, 1, GetY());
+	SetVertex(1, 0, GetX()); SetVertex(1, 1, GetY());
+	return;
 }
 
-public func SetColorWarning(fOn)
-{
-	if(!fOn)
-		SetProperty("LineColors", [RGB(100,50,0), RGB(1,1,1)]);
-	else
-		SetProperty("LineColors", [RGB(200,100,0), RGB(1,1,1)]);
-}
+public func IsFuse() { return true; }
 
-public func Connect(pTarget1, pTarget2)
+public func Connect(object target1, object target2)
 {
-	SetAction("Connect", pTarget1, pTarget2);
+	SetAction("Connect", target1, target2);
 }
-
-private func GetLineLength()
-{
-	var i = GetVertexNum()-1;
-	var iDist = 0;
-	while(i--)
-	{
-		// Calculate the length between the vertices
-		iDist += Distance(GetVertex(i,0),GetVertex(i,1),GetVertex(i+1,0),GetVertex(i+1,1));
-	}
-	return iDist;
-}
-
-local fuse_vertex;
-local fuse_x;
-local fuse_y;
-local fuse_call;
-local fuse_dir;
 
 public func StartFusing(object controler)
 {
-	if(fuse_dir != 0) return RemoveObject();
-	if(GetActionTarget(0) == controler)
+	if (GetEffect("IntFusing", this)) 
+		return RemoveObject();
+		
+	var fuse_dir;	
+	var fuse_call;
+	var fuse_vertex;
+	if (GetActionTarget(0) == controler)
 	{
 		fuse_dir = +1;
 		fuse_call = GetActionTarget(1);
@@ -57,68 +42,88 @@ public func StartFusing(object controler)
 		fuse_call = GetActionTarget(0);
 		fuse_vertex = GetVertexNum()-1;
 	}
-	fuse_x = GetVertex(fuse_vertex, 0)*10;
-	fuse_y = GetVertex(fuse_vertex, 1)*10;
-	AddEffect("IntFusing", this, 1, 1, this);
-	SetAction("Fusing");
-	Sound("FuseLoop",false,75,nil,1);
+	var effect = AddEffect("IntFusing", this, 100, 1, this);
+	effect.fuse_dir = fuse_dir;
+	effect.fuse_call = fuse_call;
+	effect.fuse_vertex = fuse_vertex;
+	effect.fuse_x = GetVertex(fuse_vertex, VTX_X) * 10;
+	effect.fuse_y = GetVertex(fuse_vertex, VTX_Y) * 10;
+	return;
 }
 
-func FxIntFusingTimer()
+protected func FxIntFusingStart(object target, proplist effect, int temporary)
 {
-	var target_x = GetVertex(fuse_vertex+fuse_dir, 0)*10, target_y = GetVertex(fuse_vertex+fuse_dir, 1)*10;
+	if (temporary)
+		return FX_OK;
+	SetAction("Fusing");
+	Sound("FuseLoop", false, 75, nil, 1);
+	return FX_OK;
+}
+
+protected func FxIntFusingTimer(object target, proplist effect, int time)
+{
+	var target_x = GetVertex(effect.fuse_vertex + effect.fuse_dir, VTX_X) * 10;
+	var target_y = GetVertex(effect.fuse_vertex + effect.fuse_dir, VTX_Y)*10;
 
 	var speed = 20;
-	if(Distance(fuse_x, fuse_y, target_x, target_y) < speed)
+	if (Distance(effect.fuse_x, effect.fuse_y, target_x, target_y) < speed)
 	{
-		RemoveVertex(fuse_vertex);
-		if(fuse_dir == -1) fuse_vertex--;
-		speed -= Distance(fuse_x, fuse_y, target_x, target_y);
-		if( (fuse_vertex == 0 && fuse_dir == -1) || (fuse_vertex == GetVertexNum()-1 && fuse_dir == +1))
+		RemoveVertex(effect.fuse_vertex);
+		if (effect.fuse_dir == -1) 
+			effect.fuse_vertex--;
+		speed -= Distance(effect.fuse_x, effect.fuse_y, target_x, target_y);
+		if ((effect.fuse_vertex == 0 && effect.fuse_dir == -1) || (effect.fuse_vertex == GetVertexNum() - 1 && effect.fuse_dir == +1))
 		{
-			fuse_call->~OnFuseFinished(this);
-			if (fuse_call) RemoveObject();
-			return -1;
+			if (effect.fuse_call)
+				effect.fuse_call->~OnFuseFinished(this);
+			if (effect.fuse_call) 
+				RemoveObject();
+			return FX_Execute_Kill;
 		}
-		fuse_x = GetVertex(fuse_vertex, 0)*10;
-		fuse_y = GetVertex(fuse_vertex, 1)*10;
-		target_x = GetVertex(fuse_vertex+fuse_dir, 0)*10;
-		target_y = GetVertex(fuse_vertex+fuse_dir, 1)*10;
+		effect.fuse_x = GetVertex(effect.fuse_vertex, VTX_X) * 10;
+		effect.fuse_y = GetVertex(effect.fuse_vertex, VTX_Y) * 10;
+		target_x = GetVertex(effect.fuse_vertex + effect.fuse_dir, VTX_X) * 10;
+		target_y = GetVertex(effect.fuse_vertex + effect.fuse_dir, VTX_Y) * 10;
 	}
 	// Move spark position
-	var iAngle = Angle(fuse_x, fuse_y, target_x, target_y);
-	fuse_x += Sin(iAngle, speed);
-	fuse_y +=-Cos(iAngle, speed);
+	var angle = Angle(effect.fuse_x, effect.fuse_y, target_x, target_y);
+	effect.fuse_x += Sin(angle, speed);
+	effect.fuse_y +=-Cos(angle, speed);
 
-	CreateParticle("Fire", fuse_x/10-GetX(), fuse_y/10-GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 40), Particles_Glimmer(), 3);
-	SetVertexXY(fuse_vertex, fuse_x/10, fuse_y/10);
+	CreateParticle("Fire", effect.fuse_x / 10 - GetX(), effect.fuse_y / 10 - GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 40), Particles_Glimmer(), 3);
+	SetVertexXY(effect.fuse_vertex, effect.fuse_x / 10, effect.fuse_y / 10);
+	return FX_OK;
 }
 
-func FxIntFusingStop()
+protected func FxIntFusingStop(object target, proplist effect, int reason, bool temporary)
 {
-	Sound("FuseLoop",false,75,nil,-1);
+	if (temporary)
+		return FX_OK;
+	Sound("FuseLoop", false, 75, nil, -1);
+	return FX_OK;
 }
 
 // Only the main dynamite pack is stored.
 public func SaveScenarioObject() { return false;}
 
-public func IsFuse() { return true; }
+
+/*-- Properties --*/
 
 local ActMap = {
-		Connect = {
+	Connect = {
 		Prototype = Action,
 		Name = "Connect",
 		Length = 0,
 		Delay = 0,
 		Procedure = DFA_CONNECT,
 		NextAction = "Connect",
-		},
-		Fusing = {
+	},
+	Fusing = {
 		Prototype = Action,
 		Name = "Fusing",
 		Length = 0,
 		Delay = 0,
-		Procedure = DFA_NONE,//CONNECT,
+		Procedure = DFA_NONE,
 		NextAction = "Fusing",
 	},
 };

@@ -18,13 +18,10 @@
 
 #include "C4Include.h"
 #include <CSurface8.h>
-#include <Bitmap256.h>
-#include <StdPNG.h>
-#include <C4Draw.h>
-#include <CStdFile.h>
-#include <Bitmap256.h>
 
-#include "limits.h"
+#include <Bitmap256.h>
+#include <CStdFile.h>
+#include <StdColors.h>
 
 CSurface8::CSurface8()
 {
@@ -69,8 +66,8 @@ void CSurface8::NoClip()
 
 void CSurface8::Clip(int iX, int iY, int iX2, int iY2)
 {
-	ClipX=BoundBy(iX,0,Wdt-1); ClipY=BoundBy(iY,0,Hgt-1);
-	ClipX2=BoundBy(iX2,0,Wdt-1); ClipY2=BoundBy(iY2,0,Hgt-1);
+	ClipX=Clamp(iX,0,Wdt-1); ClipY=Clamp(iY,0,Hgt-1);
+	ClipX2=Clamp(iX2,0,Wdt-1); ClipY2=Clamp(iY2,0,Hgt-1);
 }
 
 void CSurface8::HLine(int iX, int iX2, int iY, int iCol)
@@ -117,9 +114,6 @@ bool CSurface8::Read(CStdStream &hGroup)
 		if (BitmapInfo.Info.biBitCount != 24) return false;
 		if (!hGroup.Advance(((C4BMPInfo) BitmapInfo).FileBitsOffset())) return false;
 	}
-	// no 8bpp-surface in newgfx!
-	// needs to be kept for some special surfaces
-	//f8BitSfc=false;
 
 	// Create and lock surface
 	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight)) return false;

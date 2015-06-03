@@ -72,10 +72,10 @@ public func DrawChine(proplist map, int nr_hurdles, int difficulty)
 	var sides2 = {Algo = MAPALGO_And, Op = [chine, {Algo = MAPALGO_Rect, X = 0, Y = hgt / 4, Wdt = wdt, Hgt = hgt / 4}]};
 	var sides3 = {Algo = MAPALGO_And, Op = [chine, {Algo = MAPALGO_Rect, X = 0, Y = hgt / 2, Wdt = wdt, Hgt = hgt / 4}]};
 	var sides4 = {Algo = MAPALGO_And, Op = [chine, {Algo = MAPALGO_Rect, X = 0, Y = 3 * hgt / 4, Wdt = wdt, Hgt = hgt / 4}]};
-	map->DrawMaterial("Gold", sides1, 3, 3);
-	map->DrawMaterial("Gold", sides2, 3, 2);
-	map->DrawMaterial("Gold", sides3, 2, 2);
-	map->DrawMaterial("Gold", sides4, 2, 1);
+	map->DrawMaterial("Gold", sides1, 3, 6);
+	map->DrawMaterial("Gold", sides2, 3, 4);
+	map->DrawMaterial("Gold", sides3, 2, 3);
+	map->DrawMaterial("Gold", sides4, 2, 2);
 	
 	// Construct an inside border.
 	var border = {Algo = MAPALGO_Border, Left = 1, Right = 1, Op = chine};

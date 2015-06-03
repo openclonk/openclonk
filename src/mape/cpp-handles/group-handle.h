@@ -22,12 +22,6 @@ G_BEGIN_DECLS
 
 typedef struct _C4GroupHandle C4GroupHandle;
 
-typedef enum _C4GroupHandleStatus {
-  C4_GROUP_HANDLE_INACTIVE,
-  C4_GROUP_HANDLE_FILE,
-  C4_GROUP_HANDLE_FOLDER
-} C4GroupHandleStatus;
-
 C4GroupHandle* c4_group_handle_new(void);
 void c4_group_handle_free(C4GroupHandle* handle);
 
@@ -46,8 +40,7 @@ gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* w
 gboolean c4_group_handle_access_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean needs_to_be_a_group);
 gsize c4_group_handle_accessed_entry_size(C4GroupHandle* handle);
 gboolean c4_group_handle_read(C4GroupHandle* handle, gpointer buffer, gsize size);
-
-C4GroupHandleStatus c4_group_handle_get_status(C4GroupHandle* handle);
+gboolean c4_group_handle_is_folder(C4GroupHandle* handle);
 
 G_END_DECLS
 

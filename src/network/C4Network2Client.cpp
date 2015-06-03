@@ -560,7 +560,7 @@ void C4Network2ClientList::HandlePacket(char cStatus, const C4PacketBase *pBaseP
 
 #define GETPKT(type, name) \
     assert(pBasePkt); const type &name = \
-      /*dynamic_cast*/ static_cast<const type &>(*pBasePkt);
+     static_cast<const type &>(*pBasePkt);
 
 	switch (cStatus)
 	{

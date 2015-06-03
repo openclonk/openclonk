@@ -12,7 +12,7 @@ protected func ControlUse(object clonk, int iX, int iY)
 	clonk->Eat(this);
 }
 
-public func NutritionalValue() { return 15; }
+public func NutritionalValue() { return 25; }
 
 public func IsKitchenProduct() { return true; }
 public func GetFuelNeed() { return 50; }

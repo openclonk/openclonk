@@ -259,6 +259,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"record", no_argument, 0, 'r'},
 
 			{"lobby", required_argument, 0, 'l'},
+
+			{"debug-opengl", no_argument, &Config.Graphics.DebugOpenGL, 1},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
@@ -612,7 +614,7 @@ void C4Application::Clear()
 void C4Application::Quit()
 {
 	// Participants should not be cleared for usual startup dialog
-	//Config.General.Participants[0] = 0;
+
 	// Save config if there was no loading error
 	if (Config.fConfigLoaded) Config.Save();
 	// make sure startup data is unloaded

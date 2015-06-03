@@ -28,7 +28,7 @@ template <class T> inline T Max(T val1, T val2) { return val1 > val2 ? val1 : va
 template <class T> inline T Min(T val1, T val2) { return val1 < val2 ? val1 : val2; }
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }
 template <class T, class U, class V> inline bool Inside(T ival, U lbound, V rbound) { return ival >= lbound && ival <= rbound; }
-template <class T> inline T BoundBy(T bval, T lbound, T rbound) { return bval < lbound ? lbound : bval > rbound ? rbound : bval; }
+template <class T> inline T Clamp(T bval, T lbound, T rbound) { return bval < lbound ? lbound : bval > rbound ? rbound : bval; }
 template <class T> inline int Sign(T val) { return val < 0 ? -1 : val > 0 ? 1 : 0; }
 template <class T> inline void Swap(T &v1, T &v2) { T t = v1; v1 = v2; v2 = t; }
 template <class T> inline void Toggle(T &v) { v = !v; }
@@ -54,10 +54,6 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 {
 	std::memmove(lpMem2,lpMem1,dwSize);
 }
-
-bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-             bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
-             int32_t *lastx=NULL, int32_t *lasty=NULL);
 
 #include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
@@ -159,22 +155,17 @@ inline int osprintf(char *str, const char *fmt, ...)
 	return vsprintf(str, fmt, args);
 }
 
-// wrapper to detect "char *"
-template <typename T> struct NoPointer { static void noPointer() { } };
-template <>  struct NoPointer<char *> { };
-
 // secure sprintf
 #define sprintf ssprintf
-template <typename T>
-inline int ssprintf(T &str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
-template <typename T>
-inline int ssprintf(T &str, const char *fmt, ...)
+template <size_t N> inline int ssprintf(char(&str)[N], const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
+template <size_t N>
+inline int ssprintf(char(&str)[N], const char *fmt, ...)
 {
-	NoPointer<T>::noPointer();
-	int n = sizeof(str);
 	va_list args; va_start(args, fmt);
-	int m = vsnprintf(str, n, fmt, args);
-	if (m >= n) { m = n-1; str[m] = 0; }
+	int m = vsnprintf(str, N, fmt, args);
+	// Quick exit if vsnprintf failed
+	if (m < 0) return m;
+	if (static_cast<size_t>(m) >= N) { m = N-1; str[m] = 0; }
 	return m;
 }
 

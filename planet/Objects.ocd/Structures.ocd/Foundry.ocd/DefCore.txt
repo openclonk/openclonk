@@ -13,5 +13,4 @@ Mass=4500
 Components=Rock=4;Wood=2;
 Exclusive=1
 Construction=1
-ContainBlast=1
 IncompleteActivity=1

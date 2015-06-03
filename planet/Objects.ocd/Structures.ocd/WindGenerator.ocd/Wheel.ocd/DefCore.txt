@@ -1,14 +1,14 @@
 [DefCore]
 id=WindGenerator_Wheel
 Version=6,0
-Category=C4D_Vehicle | C4D_MouseIgnore
+Category=C4D_None | C4D_MouseIgnore
 Width=50
 Height=50
 Offset=-25,-25
 Vertices=6
-VertexX=0,4,25,13,-20, -25
-VertexY=0,-24,-3,25,21, -10
-VertexFriction=100, 100, 100, 100, 100
+VertexX=0,4,25,13,-20,-25
+VertexY=0,-24,-3,25,21,-10
+VertexFriction=100,100,100,100,100
 Rotate=1
 NoStabilize=1
 IncompleteActivity=1

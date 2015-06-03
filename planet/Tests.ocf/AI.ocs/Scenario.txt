@@ -3,8 +3,5 @@ Title=AIBattle
 Version=6,0
 MaxPlayer=2
 
-[Definitions]
-Definition2=Experimental.ocd\EnemyAI.ocd
-
 [Landscape]
 MapWidth=20

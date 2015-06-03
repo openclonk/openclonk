@@ -1,1 +1,0 @@
-Name=Neighboured flag in radius

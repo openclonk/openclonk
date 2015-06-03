@@ -1,7 +1,8 @@
 /**
 	Dialogue
-	
 	Attach to a non player charachter to provide a message interface.
+	
+	@author Sven
 */
 
 
@@ -86,11 +87,21 @@ public func InitDialogue(string name, object target, bool attention)
 	// Update dialogue to target.
 	UpdateDialogue();
 	
+	// Effect on targets to remove the dialogue when target dies or is removed
+	AddEffect("IntDialogue", target, 1, 0, this);
+	
 	// Custom dialogue initialization
 	if (!Call(Format("~Dlg_%s_Init", dlg_name), dlg_target))
 		GameCall(Format("~Dlg_%s_Init", dlg_name), this, dlg_target);
 	
-	return;
+	return true;
+}
+
+private func FxIntDialogueStop(object target, proplist fx, int reason, bool temp)
+{
+	// Target removed or died: Remove dialogue
+	if (!temp) RemoveObject();
+	return FX_OK;
 }
 
 public func AddAttention()

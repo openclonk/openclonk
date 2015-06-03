@@ -1,33 +1,88 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-# Bundle all the libraries, no matter their potential existence on pristine OSX installations
-$libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|iconv|alut)\.[^ ]+\.dylib"
-$executable_path = ENV['EXECUTABLE_PATH']
-$frameworks_folder_path = ENV['FRAMEWORKS_FOLDER_PATH']
+set -e
 
-Dir.chdir ENV['TARGET_BUILD_DIR'] if ENV['TARGET_BUILD_DIR']
-puts "Bundling libraries..."
+# Grab information about the bundle from the environment (if XCode) or make
+# assumptions about the bundle layout (everywhere else)
+_executable_path="${EXECUTABLE_PATH:-$1}"
+if [ -n "${WRAPPER_NAME}" ]; then
+	_wrapper_name="${WRAPPER_NAME}"
+else
+	_wrapper_name="${_executable_path%.app/*}"
+	if [ "${_wrapper_name}" == "${_executable_path}" ]; then
+		echo "Unable to derive bundle location from '${_wrapper_name}'!" >&2
+		exit 1
+	fi
+	_wrapper_name="${_wrapper_name}.app"
+fi
+_contents_folder="${CONTENTS_FOLDER_PATH:-${_wrapper_name}/Contents}"
+_frameworks_folder_path="${FRAMEWORKS_FOLDER_PATH:-${_contents_folder}/Frameworks}"
 
-def bundle_dependencies(executable_path)
-	`otool -L #{executable_path} | grep -Eo "#{$libs_to_bundle}" | grep -v "@executable_path.*"`.each_line do |lib|
-		lib.strip!
-		break if not File.exists? lib
-		puts "Bundling #{lib}"
-		base = `basename #{lib}`.strip
-		bundle_path = "#{$frameworks_folder_path}/#{base}"
-		already_bundled = File.exists? bundle_path
-		id = "@executable_path/../Frameworks/#{base}"
-		if not already_bundled then
-			puts "Bundling #{base}..."
-			`cp #{lib} #{bundle_path}`
-			`chmod u+w #{bundle_path}`
-		end
-		`install_name_tool -id #{id} #{bundle_path}`
-		`install_name_tool -change #{lib} #{id} #{$executable_path}`
-		`install_name_tool -change #{lib} #{id} #{executable_path}` if $executable_path != executable_path
-		bundle_dependencies bundle_path if not already_bundled
-	end
-end
+# Get tool names/paths from the environment in case we're cross compiling
+_otool="${OTOOL:-otool}"
+_install_name_tool="${INSTALL_NAME_TOOL:-install_name_tool}"
 
-`mkdir -p #{$frameworks_folder_path}`
-bundle_dependencies $executable_path
+# This regexp should match every lib we want to bundle.
+_libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|alut)\.[^ ]+\.dylib"
+
+if [ -n "${TARGET_BUILD_DIR}" ]; then
+	cd "${TARGET_BUILD_DIR}"
+fi
+
+echo "Bundling libraries..."
+
+bundle_dependencies() {
+	_object_path="$1"
+	"${_otool}" -L "${_object_path}" | \
+	grep -Eo -- "${_libs_to_bundle}" | \
+	grep -v '@executable_path.*' | \
+	while read _library_name; do
+		_library_path="${_library_name}"
+		# If the library isn't available at the stored path, it may be
+		# stored inside the sysroot (when cross-compiling for example)
+		if [ ! -e "${_library_path}" -a -n "${SYSROOT}" ]; then
+			_library_path="${SYSROOT}${_library_path}"
+		fi
+		# Stop bundling if a lib doesn't exist
+		if [ ! -e "${_library_path}" ]; then
+			echo "Cannot find ${_library_name}." >&2
+			exit 1
+		fi
+
+		_base="$(basename "${_library_name}")"
+		_bundle_path="${_frameworks_folder_path}/${_base}"
+
+		_id="@executable_path/../Frameworks/${_base}"
+
+		# Skip if it's a library stub (because we can't change the install name
+		# of those anyway)
+		if file -b "${_library_path}" | grep -q 'shared library stub'; then
+			continue
+		fi
+
+		# Change the depender reference unconditionally
+		"${_install_name_tool}" -change "${_library_name}" "${_id}" "${_object_path}"
+
+		# Don't fixup this lib if it is already bundled - no point in doing the
+		# same work multiple times
+		[ -e "${_bundle_path}" ] && continue
+
+		echo "Bundling '${_library_path}' as '${_base}'..."
+		cp "${_library_path}" "${_bundle_path}"
+		chmod u+w "${_bundle_path}"
+
+		# Set a new install name for this dylib
+		"${_install_name_tool}" -id "${_id}" "${_bundle_path}"
+
+		# Also change the reference inside the application itself
+		if [ "${_executable_path}" != "${_object_path}" ]; then
+			"${_install_name_tool}" -change "${_library_name}" "${_id}" "${_executable_path}"
+		fi
+
+		# And also recursively bundle the dependencies of this dependency.
+		bundle_dependencies "${_bundle_path}"
+	done
+}
+
+mkdir -p "${_frameworks_folder_path}"
+bundle_dependencies "${_executable_path}"

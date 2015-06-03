@@ -20,11 +20,9 @@
 
 #include <C4Game.h>
 #include <C4Object.h>
-#include <C4Script.h>
 #include <C4Gui.h>
 #include <C4Console.h>
 #include <C4Application.h>
-#include <C4Network2Dialogs.h>
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GameLobby.h>
@@ -32,8 +30,6 @@
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 #include <C4GraphicsResource.h>
-
-#include <cctype>
 
 // --------------------------------------------------
 // C4ChatInputDialog
@@ -587,6 +583,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 		LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
 		LogF("/set maxplayer [number] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
+		LogF("/todo [text] - %s", LoadResStr("IDS_TEXT_ADDTODO"));
 		LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
 		return true;
 	}
@@ -703,7 +700,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		int32_t iFS;
 		if ((iFS=atoi(pCmdPar)) == 0) return false;
 		// set frameskip and fullspeed flag
-		Game.FrameSkip=BoundBy<int32_t>(iFS,1,500);
+		Game.FrameSkip=Clamp<int32_t>(iFS,1,500);
 		Game.FullSpeed=true;
 		// start calculation immediatly
 		Application.NextTick();
@@ -773,6 +770,32 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		double zoom = atof(pCmdPar);
 		if (zoom<=0) return false;
 		::GraphicsSystem.SaveScreenshot(true, zoom);
+		return true;
+	}
+
+	// add to TODO list
+	if (SEqual(szCmdName, "todo"))
+	{
+		// must add something
+		if (!pCmdPar || !*pCmdPar) return false;
+		// try writing main file (usually {SCENARIO}/TODO.txt); if access is not possible, e.g. because scenario is packed, write to alternate file
+		const char *todo_filenames[] = { ::Config.Developer.TodoFilename, ::Config.Developer.AltTodoFilename };
+		bool success = false;
+		for (int i = 0; i < std::extent<decltype(todo_filenames)>::value; ++i)
+		{
+			StdCopyStrBuf todo_filename(todo_filenames[i]);
+			int replacements = todo_filename.Replace("{SCENARIO}", Game.ScenarioFile.GetFullName().getData());
+			// sanity check if entered in editor with no file open
+			if (replacements && !Game.ScenarioFile.IsOpen()) continue;
+			// try to append. May fail e.g. on packed scenario file, name getting too long, etc. Then fallback to alternate location.
+			CStdFile todo_file;
+			if (!todo_file.Append(todo_filename.getData())) continue;
+			if (!todo_file.WriteString(pCmdPar)) continue;
+			success = true;
+			break;
+		}
+		// no message on success to avoid cluttering the chat during debug sessions
+		if (!success) Log(LoadResStr("IDS_ERR_TODO"));
 		return true;
 	}
 

@@ -21,15 +21,10 @@
 #include <C4Gui.h>
 
 #include <C4DefList.h>
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
-#include <C4Console.h>
 #include <C4Def.h>
-#include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4Game.h>
 #include <C4Application.h>
 
 #include <C4DrawGL.h>
@@ -237,8 +232,6 @@ namespace C4GUI
 	void DialogWindow::Close()
 	{
 		// FIXME: Close the dialog of this window
-		//Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hWindow) : NULL;
-		//if (pDlg) pDlg->Close();
 	}
 
 	bool Dialog::CreateConsoleWindow()
@@ -887,7 +880,7 @@ namespace C4GUI
 			if (dwButtons & btnOK)
 			{
 				Button *pBtnOK = new OKButton(rcBtn);
-				AddElement(pBtnOK); //pBtnOK->SetToolTip((dwButtons & btnAbort) ? LoadResStr("IDS_DLGTIP_OK2") : LoadResStr("IDS_DLGTIP_OK"));
+				AddElement(pBtnOK);
 				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!fDefaultNo) btnFocus = pBtnOK;
 			}
@@ -895,7 +888,7 @@ namespace C4GUI
 			if (dwButtons & btnRetry)
 			{
 				Button *pBtnRetry = new RetryButton(rcBtn);
-				AddElement(pBtnRetry); //pBtnAbort->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+				AddElement(pBtnRetry);
 				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus) btnFocus = pBtnRetry;
 
@@ -904,7 +897,7 @@ namespace C4GUI
 			if (dwButtons & btnAbort)
 			{
 				Button *pBtnAbort = new CancelButton(rcBtn);
-				AddElement(pBtnAbort); //pBtnAbort->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+				AddElement(pBtnAbort);
 				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus) btnFocus = pBtnAbort;
 			}
@@ -912,7 +905,7 @@ namespace C4GUI
 			if (dwButtons & btnYes)
 			{
 				Button *pBtnYes = new YesButton(rcBtn);
-				AddElement(pBtnYes); //pBtnYes->SetToolTip(LoadResStr("IDS_DLGTIP_OK2"));
+				AddElement(pBtnYes);
 				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus && !fDefaultNo) btnFocus = pBtnYes;
 			}
@@ -920,15 +913,14 @@ namespace C4GUI
 			if (dwButtons & btnNo)
 			{
 				Button *pBtnNo = new NoButton(rcBtn);
-				AddElement(pBtnNo); //pBtnNo->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
-				//rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
+				AddElement(pBtnNo);
 				if (!btnFocus) btnFocus = pBtnNo;
 			}
 			// Reset
 			if (dwButtons & btnReset)
 			{
 				Button *pBtnReset = new ResetButton(rcBtn);
-				AddElement(pBtnReset); //pBtnAbort->SetToolTip("[!]Reset to default");
+				AddElement(pBtnReset);
 				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus) btnFocus = pBtnReset;
 
@@ -1011,7 +1003,7 @@ bool MessageDialog::KeyCopy()
 		AddElement(pBar);
 		// place abort button
 		Button *pBtnAbort = new CancelButton(caButtonArea.GetCentered(C4GUI_DefButtonWdt, C4GUI_ButtonHgt));
-		AddElement(pBtnAbort); //pBtnAbort->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+		AddElement(pBtnAbort);
 	}
 
 
@@ -1134,11 +1126,11 @@ bool MessageDialog::KeyCopy()
 			rcBtn.Wdt = C4GUI_DefButton2Wdt;
 			// OK
 			Button *pBtnOK = new OKButton(rcBtn);
-			AddElement(pBtnOK); //pBtnOK->SetToolTip(LoadResStr("IDS_DLGTIP_OK"));
+			AddElement(pBtnOK);
 			rcBtn.x += rcBtn.Wdt + C4GUI_DefButton2HSpace;
 			// Cancel
 			Button *pBtnAbort = new CancelButton(rcBtn);
-			AddElement(pBtnAbort); //pBtnAbort->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+			AddElement(pBtnAbort);
 			rcBtn.x += rcBtn.Wdt + C4GUI_DefButton2HSpace;
 		}
 		// input dlg always closed in the end
@@ -1197,7 +1189,10 @@ bool MessageDialog::KeyCopy()
 			pTextWin->AddTextLine(sLine.getData(), &::GraphicsResource.TextFont, C4GUI_MessageFontClr, false, true);
 		}
 		pTextWin->UpdateHeight();
-		//pTextWin->ScrollToBottom();
+	}
+	InfoDialog::~InfoDialog()
+	{
+		Application.Remove(this);
 	}
 
 	void InfoDialog::CreateSubComponents()

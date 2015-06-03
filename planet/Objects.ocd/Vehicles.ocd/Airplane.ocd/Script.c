@@ -290,6 +290,12 @@ public func FaceRight()
 	RollPlane(1,true);
 }
 
+public func FaceLeft()
+{
+	SetR(-90);
+	RollPlane(0,true);
+}
+
 public func IsProjectileTarget(target,shooter) { return true; }
 
 public func Damage()

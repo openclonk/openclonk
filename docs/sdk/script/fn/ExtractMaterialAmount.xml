@@ -31,6 +31,12 @@
           <name>amount</name>
           <desc>Maximum amount to be extracted.</desc>
         </param>
+        <param>
+          <type>bool</type>
+          <name>distant_x</name>
+          <desc>If true, material will be extracted at the most distant horizontal position of the top row of the material body, to a maximum of the material's MaxSlide parameter. If used on liquids, this mode ensures that level pools of 1px height can be extracted by extracting from anywhere horizontally.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Extracts a certain amount of material at the specified position. The return value is the amount actually extracted.</desc>

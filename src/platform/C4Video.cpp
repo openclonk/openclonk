@@ -176,8 +176,8 @@ void C4Video::Resize(int iChange)
 	// Not while recording
 	if (Recording) return;
 	// Resize
-	Width = BoundBy( Width+iChange, 56, 800 );
-	Height = BoundBy( (int) ((double)Width/AspectRatio), 40, 600 );
+	Width = Clamp( Width+iChange, 56, 800 );
+	Height = Clamp( (int) ((double)Width/AspectRatio), 40, 600 );
 	// Adjust position
 	AdjustPosition();
 	// Show flash
@@ -210,9 +210,9 @@ bool C4Video::AdjustPosition()
 	if (!pPlr) return false;
 	// Set camera position
 	X = int32_t(fixtof(pPlr->ViewX) - pViewport->GetViewX() + pViewport->DrawX - Width/2);
-	X = BoundBy( X, 0, pViewport->ViewWdt - Width );
+	X = Clamp( X, 0, pViewport->ViewWdt - Width );
 	Y = int32_t(fixtof(pPlr->ViewY) - pViewport->GetViewY() + pViewport->DrawY - Height/2);
-	Y = BoundBy( Y, 0, pViewport->ViewHgt - Height );
+	Y = Clamp( Y, 0, pViewport->ViewHgt - Height );
 	// Success
 	return true;
 }
@@ -256,11 +256,11 @@ bool C4Video::RecordFrame()
 	// No buffer
 	if (!Buffer) return false;
 	// Lock source
-	int iPitch,iWidth,iHeight;
+	int iPitch,iHeight;
 	if (!Surface->Lock()) { Log("Video: lock surface failure"); Stop(); return false; }
 	iPitch = Surface->PrimarySurfaceLockPitch;
 	BYTE *bypBits = Surface->PrimarySurfaceLockBits;
-	iWidth = Surface->Wdt; iHeight = Surface->Hgt;
+	iHeight = Surface->Hgt;
 	// Adjust source position
 	if (!AdjustPosition()) { Log("Video: player/viewport failure"); Stop(); return false; }
 	// Blit screen to buffer

@@ -19,15 +19,6 @@ public func SetChance(int chance)
 	return;
 }
 
-public func SetExplosiveness(int explosiveness)
-{
-	if (this != Rockfall) return false;
-	var effect = GetEffect("IntRockfallControl");
-	if (!effect) return false;
-	effect.explosiveness = explosiveness;
-	return true;
-}
-
 public func GetChance()
 {
 	if (this != Rockfall)
@@ -48,20 +39,55 @@ public func SetArea(proplist rect)
 	return;
 }
 
+public func SetExplosiveness(int explosiveness)
+{
+	if (this != Rockfall) 
+		return;
+	var effect = GetEffect("IntRockfallControl");
+	if (!effect) 
+		return;
+	effect.explosiveness = explosiveness;
+	return;
+}
+
+// Sets the spawn distance from crew members.
+public func SetSpawnDistance(int dist)
+{
+	if (this != Rockfall) 
+		return;
+	var effect = GetEffect("IntRockfallControl");
+	if (!effect) 
+		return;
+	effect.spawn_distance = dist;
+	return;
+}
+
 protected func FxIntRockfallControlTimer(object target, proplist effect, int time)
 {
 	if (Random(100) < effect.chance && !Random(6))
 	{
-		var x = Random(LandscapeWidth());
-		var y = 0;
-		if (effect.area)
+		// Attempt to find a suitable location for the rock to be created.
+		var x, y;
+		var max_tries = 500;
+		for (var i = 0; i < max_tries; i++)
 		{
-			x = effect.area.x + Random(effect.area.w);
-			y = effect.area.y + Random(effect.area.h);		
+			var x = Random(LandscapeWidth());
+			var y = 0;
+			if (effect.area)
+			{
+				x = effect.area.x + Random(effect.area.w);
+				y = effect.area.y + Random(effect.area.h);		
+			}
+			if (effect.spawn_distance)
+			{
+				var dist = (max_tries - i) * effect.spawn_distance / max_tries;
+				if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(dist, x, y)))
+					continue;			
+			}
+			break;			
 		}
 		// Explosive rocks demanded?
-		var explosive = false;
-		if (effect.explosiveness && Random(100)<effect.explosiveness) explosive = true;
+		var explosive = effect.explosiveness && Random(100) < effect.explosiveness;
 		// Launch rockfall of varying sizes between 40 and 120.
 		LaunchRockfall(x, y, 80 + Random(41), RandomX(-2, 2), RandomX(4, 8), explosive);		
 	}
@@ -73,7 +99,10 @@ public func FxIntRockfallControlSaveScen(obj, fx, props)
 {
 	props->Add("Rockfall", "Rockfall->SetChance(%d)", fx.chance);
 	props->Add("Rockfall", "Rockfall->SetArea(%v)", fx.area);
-	if (fx.explosiveness) props->Add("Rockfall", "Rockfall->SetExplosiveness(%d)", fx.explosiveness);
+	if (fx.explosiveness) 
+		props->Add("Rockfall", "Rockfall->SetExplosiveness(%d)", fx.explosiveness);
+	if (fx.spawn_distance) 
+		props->Add("Rockfall", "Rockfall->SetSpawnDistance(%d)", fx.spawn_distance);
 	return true;
 }
 
@@ -88,7 +117,7 @@ global func LaunchRockfall(int x, int y, int size, int xdir, int ydir, bool expl
 		return false;	
 	
 	// Create rock and adjust its size.
-	var rock = CreateObjectAbove(Rockfall, x, y);
+	var rock = CreateObject(Rockfall, x, y);
 	rock->SetCon(size);
 	
 	// Remove rock if stuck.
@@ -102,7 +131,8 @@ global func LaunchRockfall(int x, int y, int size, int xdir, int ydir, bool expl
 	rock->SetRDir(RandomX(-6, 6));
 	
 	// Make explosive
-	if (explosive) rock->MakeExplosive();
+	if (explosive) 
+		rock->MakeExplosive();
 	
 	return true;
 }
@@ -223,7 +253,9 @@ private func SplitRock()
 {
 	var con = GetCon(), erock;
 	// Explosive rocks do some damage
-	if (is_explosive) if (erock = CreateObjectAbove(Rock,0,4,GetController())) erock->Explode(Max(15 * con / 100,3));
+	if (is_explosive) 
+		if (erock = CreateObjectAbove(Rock, 0, 4, GetController())) 
+			erock->Explode(Max(15 * con / 100, 3));
 	// Split the rock into smaller ones if it is big enough.
 	if (con > 40)
 	{
@@ -233,12 +265,11 @@ private func SplitRock()
 			var rock_con = Max(30, GetCon() / 2 + RandomX(-20, 20));
 			rock->SetCon(rock_con);
 			con -= 2 * rock_con / 3;
-		
 			rock->SetXDir(RandomX(-100, 100), 100);
 			rock->SetYDir(RandomX(-200, -100), 100);
 			rock->SetRDir(RandomX(-6, 6));		
-			
-			if (is_explosive) rock->MakeExplosive();
+			if (is_explosive) 
+				rock->MakeExplosive();
 		}
 	}
 	// Some particles.

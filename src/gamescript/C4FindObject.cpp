@@ -191,7 +191,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		int index = 0;
 		if (Data.GetSize() >= 3)
-			index = BoundBy(Data[2].getInt(), 0, 1);
+			index = Clamp(Data[2].getInt(), 0, 1);
 		return new C4FindObjectActionTarget(Data[1].getObj(), index);
 	}
 
@@ -212,6 +212,9 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 
 	case C4FO_Layer:
 		return new C4FindObjectLayer(Data[1].getObj());
+
+	case C4FO_InArray:
+		return new C4FindObjectInArray(Data[1].getArray());
 
 	}
 	return NULL;
@@ -698,7 +701,6 @@ bool C4FindObjectProcedure::Check(C4Object *pObj)
 
 bool C4FindObjectProcedure::IsImpossible()
 {
-	//return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
 	return false;
 }
 
@@ -764,6 +766,24 @@ bool C4FindObjectLayer::Check(C4Object *pObj)
 bool C4FindObjectLayer::IsImpossible()
 {
 	return false;
+}
+
+// *** C4FindObjectInArray
+
+bool C4FindObjectInArray::Check(C4Object *pObj)
+{
+	// O(n) array look-up
+	if (!pArray) return false;
+	int32_t sz = pArray->GetSize();
+	for (int i=0; i<sz; ++i)
+		if (pArray->_GetItem(i).getObj() == pObj)
+			return true;
+	return false;
+}
+
+bool C4FindObjectInArray::IsImpossible()
+{
+	return !pArray || !pArray->GetSize();
 }
 
 // *** C4SortObject

@@ -131,10 +131,10 @@ int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 	switch (whence)
 	{
 	case SEEK_SET:
-		data->data_pos = offset < data->data_length ? offset : data->data_length;
+		data->data_pos = static_cast<size_t>(offset) < data->data_length ? static_cast<size_t>(offset) : data->data_length;
 		break;
 	case SEEK_CUR:
-		data->data_pos += offset < data->data_length - data->data_pos ? offset : data->data_length - data->data_pos;
+		data->data_pos += static_cast<size_t>(offset) < data->data_length - data->data_pos ? static_cast<size_t>(offset) : data->data_length - data->data_pos;
 		break;
 	case SEEK_END:
 		data->data_pos = data->data_length+1;
@@ -212,8 +212,6 @@ bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint
 	ALuint wav = alutCreateBufferFromFileImage((const ALvoid *)data, data_length);
 	if (wav == AL_NONE)
 	{
-		// wouldn't want an error on any .ogg file
-		//LogF("load wav error: %s", alutGetErrorString(alutGetError()));
 		return false;
 	}
 

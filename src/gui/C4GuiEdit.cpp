@@ -19,8 +19,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
@@ -201,7 +199,7 @@ namespace C4GUI
 		{
 			int32_t w, h; char strMask[2] = { cPasswordMask, 0 };
 			pFont->GetTextExtent(strMask, w, h, false);
-			return BoundBy<int32_t>((iControlXPos + w/2) / w, 0, SLen(Text));
+			return Clamp<int32_t>((iControlXPos + w/2) / w, 0, SLen(Text));
 		}
 		int32_t i = 0;
 		for (int32_t iLastW = 0, w,h; Text[i]; ++i)

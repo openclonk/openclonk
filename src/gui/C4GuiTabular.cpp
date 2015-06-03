@@ -20,10 +20,6 @@
 #include <C4Gui.h>
 
 #include <C4FacetEx.h>
-#include <C4Game.h>
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 
@@ -362,7 +358,7 @@ namespace C4GUI
 		// change scrolling within max range
 		int32_t iAvailableTabSpace = rcBounds.Wdt;
 		int32_t iScrollPinSize = GetTopSize();
-		iCaptionScrollPos = BoundBy<int32_t>(iCaptionScrollPos + iDir*iAvailableTabSpace/2, 0, iCaptionLengthTotal - iAvailableTabSpace + iScrollPinSize);
+		iCaptionScrollPos = Clamp<int32_t>(iCaptionScrollPos + iDir*iAvailableTabSpace/2, 0, iCaptionLengthTotal - iAvailableTabSpace + iScrollPinSize);
 		UpdateScrolling();
 	}
 
@@ -397,7 +393,6 @@ namespace C4GUI
 		// scrolling in captions
 		int32_t iScrollSize = GetTopSize();
 		if (fScrollingLeft) d -= iCaptionScrollPos + iScrollSize;
-		//DrawBar(cgo, ::GraphicsResource.fctCaptionLeft, ::GraphicsResource.fctCaptionBar, ::GraphicsResource.fctCaptionRight);
 		// tabs
 		for (Sheet *pSheet = (Sheet *) GetFirst(); pSheet; pSheet = (Sheet *) pSheet->GetNext())
 		{

@@ -19,9 +19,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 
-#include <C4FullScreen.h>
-#include <C4LoaderScreen.h>
-#include <C4Application.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Draw.h>
@@ -110,8 +107,6 @@ namespace C4GUI
 		    ::GraphicsResource.CaptionFont) :
 				   ::GraphicsResource.TitleFont);
 		iTextHgt = rUseFont.GetLineHeight();
-		//CStdFont &rShadowFont = GetRes()->MiniFont;
-		//pDraw->TextOut(Text, rShadowFont, (float) iTextHgt/rShadowFont.GetLineHeight(), cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontShadowClr, ACenter, true);
 		pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontClr, ACenter, true);
 	}
 

@@ -18,6 +18,8 @@
 #include <C4Include.h>
 #include <C4StartupScenSelDlg.h>
 
+#include <C4Application.h>
+#include <C4GameOptions.h>
 #include <C4Network2Dialogs.h>
 #include <C4StartupMainDlg.h>
 #include <C4StartupNetDlg.h>
@@ -31,8 +33,6 @@
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <C4GameOptions.h>
-
 #include <set>
 
 // singleton
@@ -371,8 +371,6 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 			if (!pBtnFirst) pBtnFirst = pBtn;
 		}
 	}
-	// focus first available button? Hm, better not.
-	//if (pBtnFirst) pMainDlg->SetFocus(pBtnFirst, false);
 	// create scenario info listbox
 	pSelectionInfoBox = new C4GUI::TextWindow(rcScenInfoArea,
 	    C4StartupScenSel_TitlePictureWdt+2*C4StartupScenSel_TitleOverlayMargin, C4StartupScenSel_TitlePictureHgt+2*C4StartupScenSel_TitleOverlayMargin,
@@ -467,7 +465,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		char *szBuf = sName.GrabPointer();
 		RemoveExtension(szBuf);
 		sName.Take(szBuf);
-		sName.Take(C4Language::IconvClonk(sName.getData()));
 		// load entry specific stuff that's in the front of the group
 		if (!LoadCustomPre(Group))
 			return false;
@@ -526,7 +523,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		// load version
 		Group.LoadEntryString(C4CFN_Version, &sVersion);
 	}
-	//LogF("dbg: Loaded \"%s\" as \"%s\". (%s)", (const char *) sFilename, (const char *) sName, GetIsFolder() ? "Folder" : "Scenario");
 	// done, success
 	return true;
 }
@@ -940,7 +936,6 @@ bool C4ScenarioListLoader::Folder::LoadContents(C4ScenarioListLoader *pLoader, C
 	// if filename is not given, assume it's been loaded in this entry
 	if (!psFilename) psFilename = &this->sFilename; else this->sFilename = *psFilename;
 	// nothing loaded: Load now
-	//LogF("DoLoadContents in folder \"%s\"", (const char *) this->sFilename);
 	if (!DoLoadContents(pLoader, pFromGrp, *psFilename, fLoadEx)) return false;
 	// sort loaded stuff by name
 	Sort();
@@ -1037,13 +1032,11 @@ bool C4ScenarioListLoader::SubFolder::DoLoadContents(C4ScenarioListLoader *pLoad
 	char ChildFilename[_MAX_FNAME+1]; StdStrBuf sChildFilename; int32_t iLoadCount=0;
 	for (szSearchMask = szC4CFN_ScenarioFiles; szSearchMask;)
 	{
-		//LogF("SubFolder \"%s\" loading mask \"%s\"", (const char *) Group.GetFullName(), (const char *) szSearchMask);
 		Group.ResetSearch();
 		while (Group.FindNextEntry(szSearchMask, ChildFilename))
 		{
 			sChildFilename.Ref(ChildFilename);
 			// okay; create this item
-			//LogF("SubFolder \"%s\" loading \"%s\"", (const char *) sFilename, (const char *) sChildFilename);
 			Entry *pNewEntry = Entry::CreateEntryForFile(sChildFilename, pLoader, this);
 			if (pNewEntry)
 			{
@@ -1351,11 +1344,6 @@ void C4StartupScenSelDlg::ScenListItem::UpdateOwnPos()
 void C4StartupScenSelDlg::ScenListItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	// double-click opens/starts item - currently processed by ListBox already!
-	/*if (iButton == C4MC_Button_LeftDouble && pScenListEntry)
-	  {
-	  if (pScenListEntry->Start()) return;
-	  return; // better always return, because this might get deleted
-	  }*/
 	// inherited processing
 	typedef C4GUI::Window BaseClass;
 	BaseClass::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
@@ -1420,20 +1408,10 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);
 	C4Rect rcMap = caMain.GetCentered(caMain.GetWidth(), caMain.GetHeight());
-#if 0
-	// Was used for the custom map scenario selection style
-	int iYOversize = caMain.GetHeight()/10; // overlap of map to top
-	rcMap.y -= iYOversize; rcMap.Hgt += iYOversize;
-#endif
-	C4GUI::ComponentAligner caMap(rcMap, caMain.GetWidth()/10,0, true);
-#if 0
-	caMap.ExpandTop(-iYOversize);
-#endif
 
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
 	pScenSelStyleTabular->SetSheetMargin(0);
-	//pScenSelStyleTabular->SetDrawDecoration(false);
 	pScenSelStyleTabular->SetGfx(&C4Startup::Get()->Graphics.fctDlgPaper, &C4Startup::Get()->Graphics.fctOptionsTabClip, &C4Startup::Get()->Graphics.fctOptionsIcons, &C4Startup::Get()->Graphics.BookSmallFont, false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
@@ -1489,7 +1467,6 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupScenSelDlg>(LoadResStr("IDS_BTN_BACK"), caButtonArea.GetFromLeft(iButtonWidth, iButtonHeight), &C4StartupScenSelDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
 	AddElement(btn);
-	//LogF("BackBtn bounds: (%d,%d)+(%d,%d)", btn->GetBounds().x, btn->GetBounds().y, btn->GetBounds().Wdt, btn->GetBounds().Hgt);
 	// next button
 	pOpenBtn = new C4GUI::CallbackButton<C4StartupScenSelDlg>(LoadResStr("IDS_BTN_OPEN"), caButtonArea.GetFromRight(iButtonWidth, iButtonHeight), &C4StartupScenSelDlg::OnNextBtn);
 	pOpenBtn->SetToolTip(LoadResStr("IDS_DLGTIP_SCENSELNEXT"));
@@ -1515,7 +1492,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyRename), C4CustomKey::PRIO_CtrlOverride);
 	pKeyDelete = new C4KeyBinding(C4KeyCodeEx(K_DELETE), "StartupScenSelDelete", KEYSCOPE_Gui,
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyDelete), C4CustomKey::PRIO_CtrlOverride);
-	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
+	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Control), "StartupScenSelCheat", KEYSCOPE_Gui,
 	                             new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyCheat), C4CustomKey::PRIO_CtrlOverride);
 }
 
@@ -1536,10 +1513,6 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	if (pfctBackground)
 		DrawBackground(cgo, *pfctBackground);
-#if 0
-	else
-		DrawBackground(cgo, C4Startup::Get()->Graphics.fctScenSelBG);
-#endif
 }
 
 void C4StartupScenSelDlg::OnShown()
@@ -1550,7 +1523,7 @@ void C4StartupScenSelDlg::OnShown()
 	// init file list
 	fIsInitialLoading = true;
 	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader(Achievements);
-	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
+	pScenLoader->Load(StdStrBuf());
 	UpdateList();
 	UpdateSelection();
 	fIsInitialLoading = false;

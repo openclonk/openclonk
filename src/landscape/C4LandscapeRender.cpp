@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2011-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4LandscapeRender.h"
@@ -11,6 +25,8 @@
 
 #include "C4DrawGL.h"
 #include "StdColors.h"
+
+#include <algorithm>
 
 #ifndef USE_CONSOLE
 
@@ -119,11 +135,8 @@ void C4LandscapeRenderGL::Clear()
 		delete Surfaces[i];
 		Surfaces[i] = NULL;
 	}
-	for (i = 0; i < C4LR_MipMapCount; i++)
-	{
-		glDeleteObjectARB(hMaterialTexture[i]);
-		hMaterialTexture[i] = 0;
-	}
+	glDeleteTextures(C4LR_MipMapCount, hMaterialTexture);
+	std::fill_n(hMaterialTexture, C4LR_MipMapCount, 0);
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -163,11 +176,11 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	int32_t iNormalDepth = iMaterialTextureDepth / 2;
 
 	// Find the largest texture
-	C4Texture *pTex, *pRefTex; C4Surface *pRefSfc = NULL;
+	C4Texture *pTex; C4Surface *pRefSfc = NULL;
 	for(int iTexIx = 0; (pTex = pTexs->GetTexture(pTexs->GetTexture(iTexIx))); iTexIx++)
 		if(C4Surface *pSfc = pTex->Surface32)
 			if (!pRefSfc || pRefSfc->Wdt < pSfc->Wdt || pRefSfc->Hgt < pSfc->Hgt)
-				{ pRefTex = pTex; pRefSfc = pSfc; }
+				pRefSfc = pSfc;
 	if(!pRefSfc)
 		return false;
 
@@ -405,8 +418,8 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			// Maximum placement differences that make a difference in the result,  after which we are at the limits of
 			// what can be packed into a byte
 			const int maximumPlacementDifference = 40;
-			int horizontalBiasScaled = BoundBy(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
-			int verticalBiasScaled = BoundBy(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
+			int horizontalBiasScaled = Clamp(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
+			int verticalBiasScaled = Clamp(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
 
 			// Collect data to save per pixel
 			unsigned char data[C4LR_SurfaceCount * 4];
@@ -860,6 +873,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	// Choose the right shader depending on whether we have dynamic lighting or not
 	const C4Shader* shader = &Shader;
 	if (Light) shader = &ShaderLight;
+	if (!shader->Initialised()) return;
 
 	// Activate shader
 	C4ShaderCall ShaderCall(shader);
@@ -901,7 +915,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
 		{
 			iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1, GL_TEXTURE_2D) - GL_TEXTURE0;
-			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->ppTex[0]->texName);
+			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->textures[0].texName);
 			if (pGL->Zoom != 1.0)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -917,7 +931,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(Light && ShaderCall.AllocTexUnit(C4LRU_LightTex, GL_TEXTURE_2D))
 	{
-		glBindTexture(GL_TEXTURE_2D, Light->getSurface()->ppTex[0]->texName);
+		glBindTexture(GL_TEXTURE_2D, Light->getSurface()->textures[0].texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
@@ -927,7 +941,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_ScalerTex, GL_TEXTURE_2D))
 	{
-		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
+		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->textures[0].texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
@@ -957,19 +971,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	fTexBlt.right = (fx + float(cgo.Wdt)) / Surfaces[0]->Wdt;
 	fTexBlt.bottom= (fy + float(cgo.Hgt)) / Surfaces[0]->Hgt;
 
-	// Calculate coordinates into light texture
-	FLOAT_RECT lTexBlt;
-	if (Light)
-	{
-		const C4Rect LightRect = Light->getRegion();
-		int32_t iLightWdt = Light->getSurface()->Wdt,
-			    iLightHgt = Light->getSurface()->Hgt;
-		lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;
-		lTexBlt.top   = 1.0 - (fy - LightRect.y) / iLightHgt;
-		lTexBlt.right =       (fx + cgo.Wdt - LightRect.x) / iLightWdt;
-		lTexBlt.bottom= 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
-	}
-
 	// Calculate coordinates on screen (zoomed!)
 	FLOAT_RECT tTexBlt;
 	float tx = float(cgo.X), ty = float(cgo.Y);
@@ -986,17 +987,48 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_QUADS);
 
-	#define VERTEX(x, y) \
-		glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
-		if (Light) glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
-		glVertex2f(tTexBlt.x, tTexBlt.y);
+	if (Light)
+	{
+		// Calculate coordinates into light texture
+		FLOAT_RECT lTexBlt;
+		if (Light)
+		{
+			const C4Rect LightRect = Light->getRegion();
+			int32_t iLightWdt = Light->getSurface()->Wdt,
+				iLightHgt = Light->getSurface()->Hgt;
+			lTexBlt.left = (fx - LightRect.x) / iLightWdt;
+			lTexBlt.top = 1.0 - (fy - LightRect.y) / iLightHgt;
+			lTexBlt.right = (fx + cgo.Wdt - LightRect.x) / iLightWdt;
+			lTexBlt.bottom = 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+		}
 
-	VERTEX(left, top);
-	VERTEX(right, top);
-	VERTEX(right, bottom);
-	VERTEX(left, bottom);
+		#define LVERTEX(x, y) \
+			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
+			glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
+			glVertex2f(tTexBlt.x, tTexBlt.y);
 
-	#undef VERTEX
+		LVERTEX(left, top);
+		LVERTEX(right, top);
+		LVERTEX(right, bottom);
+		LVERTEX(left, bottom);
+
+		#undef LVERTEX
+	}
+	else
+	{
+		#define VERTEX(x, y) \
+			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
+			glVertex2f(tTexBlt.x, tTexBlt.y);
+
+		VERTEX(left, top);
+		VERTEX(right, top);
+		VERTEX(right, bottom);
+		VERTEX(left, bottom);
+
+		#undef VERTEX
+	}
+
+	
 
 	glEnd();
 

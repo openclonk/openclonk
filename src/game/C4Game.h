@@ -25,6 +25,7 @@
 #include <C4Extra.h>
 #include "C4Scoreboard.h"
 #include <C4PlayerControl.h>
+#include <C4TransferZone.h>
 
 class C4ScriptGuiWindow;
 
@@ -120,7 +121,6 @@ public:
 	int32_t StartTime;
 	int32_t InitProgress; int32_t LastInitProgress; int32_t LastInitProgressShowTime;
 	int32_t RandomSeed;
-	int32_t Rules;
 	bool GameGo;
 	bool FullSpeed;
 	int32_t FrameSkip; bool DoSkipFrame;
@@ -144,7 +144,7 @@ public:
 	void Evaluate();
 	void ShowGameOverDlg();
 	bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
-	void DrawCursors(C4TargetFacet &cgo, int32_t iPlayer);
+	void DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer);
 	void FixRandom(int32_t iSeed);
 	bool Init();
 	bool PreInit();
@@ -238,7 +238,6 @@ protected:
 	void InitRules();
 	void InitValueOverloads();
 	void InitEnvironment();
-	void UpdateRules();
 	void CloseScenario();
 	void DeleteObjects(bool fDeleteInactive);
 	void ExecObjects();
@@ -290,10 +289,6 @@ public:
 	bool ToggleChart(); // chart dlg on/off
 	void SetMusicLevel(int32_t iToLvl); // change game music volume; multiplied by config volume for real volume
 };
-
-
-const int32_t
-	C4RULE_ConstructionNeedsMaterial = 1;
 
 extern C4Game         Game;
 

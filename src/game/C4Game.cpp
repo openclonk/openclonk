@@ -73,6 +73,7 @@
 #include <StdFile.h>
 #include <C4MapScript.h>
 #include <C4SolidMask.h>
+#include <C4FoW.h>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
@@ -222,22 +223,6 @@ bool C4Game::OpenScenario()
 		if (DefinitionFilenames[0]) Log(LoadResStr("IDS_PRC_SCEOWNDEFS"));
 		else Log(LoadResStr("IDS_PRC_LOCALONLY"));
 	}
-
-	// add all .ocf-modules to the group set
-	// (for savegames, network games, etc.)
-	/*  char szModule[_MAX_PATH+1]; C4Group *pGrp=NULL; int32_t iDefGrpPrio=C4GSPrio_Definition;
-	  for (int32_t cseg=0; SCopySegment(DefinitionFilenames,cseg,szModule,';',_MAX_PATH); cseg++)
-	    if (SEqualNoCase(GetExtension(szModule), "ocf"))
-	      {
-	      if (!pGrp) pGrp = new C4Group();
-	      if (!pGrp->Open(szModule)) continue;
-	      int32_t iContent = GroupSet.CheckGroupContents(*pGrp, C4GSCnt_Folder);
-	      if (!iContent) { pGrp->Close(); continue; }
-	      GroupSet.RegisterGroup(*pGrp, true, Min(iDefGrpPrio++, C4GSPrio_Definition2), iContent, false);
-	      // group owned by groupset now
-	      pGrp = NULL;
-	      }
-	  if (pGrp) delete pGrp;*/
 
 	// Check mission access
 #ifndef USE_CONSOLE
@@ -599,7 +584,6 @@ void C4Game::Clear()
 	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
-	//::GraphicsResource.Clear();
 	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();
@@ -665,10 +649,6 @@ void C4Game::Clear()
 bool C4Game::GameOverCheck()
 {
 	bool fDoGameOver = false;
-
-#ifdef _DEBUG
-	//return false;
-#endif
 
 	// Only every 35 ticks
 	if (::Game.iTick35) return false;
@@ -753,8 +733,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
-	EXEC_DR(    UpdateRules();
-	            GameOverCheck();                                        , "Misc\0")
+	EXEC_DR(    GameOverCheck();                                        , "Misc\0")
 
 	Control.DoSyncCheck();
 
@@ -929,6 +908,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
+	if (::Landscape.pFoW) ::Landscape.pFoW->Remove(pObj);
 }
 
 bool C4Game::TogglePause()
@@ -1473,8 +1453,6 @@ void C4Game::Default()
 	C4S.Default();
 	::Messages.Default();
 	MessageInput.Default();
-	//GraphicsResource.Default();
-	//Control.Default();
 	MouseControl.Default();
 	PathFinder.Default();
 	TransferZones.Default();
@@ -1524,44 +1502,108 @@ void C4Game::Evaluate()
 
 }
 
-void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
+void C4Game::DrawCrewOverheadText(C4TargetFacet &cgo, int32_t iPlayer)
 {
+	
+	// All drawing in this function must not be affected by zoom; but remember zoom and reset later.
+	ZoomData r;
+	pDraw->GetZoom(&r);
+	const float zoom = r.Zoom;
+	r.Zoom = 1.0;
+	pDraw->SetZoom(r);
+	// Offset for all text/objects
+	const float fixedOffsetX = -cgo.X * cgo.Zoom + cgo.X;
+	const float fixedOffsetY = (-cgo.Y - 10.0f) * cgo.Zoom + cgo.Y;
 	// Draw cursor mark arrow & cursor object name
-	float cox,coy;
-	int32_t cphase;
-	C4Object *cursor;
-	C4Facet &fctCursor = GraphicsResource.fctCursor;
-	for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->Number == iPlayer || iPlayer==NO_OWNER)
-			if (pPlr->CursorFlash)
-				if (pPlr->Cursor)
+	C4Facet &fctCursor = GraphicsResource.fctMouseCursor;
+	for (C4Player *pPlr = Players.First; pPlr; pPlr = pPlr->Next)
+	{
+		// Draw a small selector & name above the cursor? F.e. after switching crew.
+		const bool drawCursorInfo = (pPlr->Number == iPlayer || iPlayer == NO_OWNER) // only for the viewport's player..
+			&& (pPlr->CursorFlash && pPlr->Cursor); // ..and if the player wants to show their cursor.
+		// Otherwise, for allied players we might want to draw player & crew names.
+		// Note that these two conditions are generally mutually-exclusive.
+		const bool drawPlayerAndCursorNames = (pPlr->Number != iPlayer) // Never for own player..
+			&& (Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) // ..and if the settings allow it..
+			&& !Hostile(iPlayer, pPlr->Number) && !pPlr->IsInvisible(); // ..and of course only if applicable.
+		
+		if (!drawPlayerAndCursorNames && !drawCursorInfo) continue;
+
+		// Lambda to calculate correct drawing position of object, (re-)adjusted by zoom.
+		float drawX, drawY, drawZoom;
+		auto calculateObjectTextPosition = [&](C4Object *obj)
+		{
+			obj->GetDrawPosition(cgo, fixtof(obj->fix_x), fixtof(obj->fix_y), 1.0, drawX, drawY, drawZoom);
+			drawX = drawX * cgo.Zoom + fixedOffsetX;
+			drawY = drawY * cgo.Zoom - static_cast<float>(obj->Def->Shape.Hgt) / 2.0 + fixedOffsetY;
+		};
+
+		// Actual text output!
+		if (drawPlayerAndCursorNames)
+		{
+			// We need to show crew names for that player, we do so for every crew-member.
+			for (C4Object * const & crew : pPlr->Crew)
+			{
+				if (!crew->Status || !crew->Def) continue;
+				if (crew->Contained) continue;
+				if ((crew->OCF & OCF_CrewMember) == 0) continue;
+				if (!crew->IsVisible(iPlayer, false)) continue;
+
+				calculateObjectTextPosition(crew);
+				drawY -= 5.0f; // aesthetical offset
+
+				// compose string
+				char szText[C4GM_MaxText + 1];
+				if (Config.Graphics.ShowCrewNames)
+				if (Config.Graphics.ShowCrewCNames)
+					sprintf(szText, "%s (%s)", crew->GetName(), pPlr->GetName());
+				else
+					SCopy(pPlr->GetName(), szText);
+				else
+					SCopy(crew->GetName(), szText);
+				// Word wrap to cgo width
+				int32_t iCharWdt, dummy;
+				::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
+				int32_t iMaxLine = Max<int32_t>(cgo.Wdt / iCharWdt, 20);
+				SWordWrap(szText, ' ', '|', iMaxLine);
+				// Center text vertically, too
+				int textWidth, textHeight;
+				::GraphicsResource.FontRegular.GetTextExtent(szText, textWidth, textHeight, true);
+				// Draw
+				pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, drawX, drawY - static_cast<float>(textHeight) / 2.0,
+					pPlr->ColorDw | 0x7f000000, ACenter);
+			}
+		}
+		else if (drawCursorInfo)
+		{
+			C4Object * const cursor = pPlr->Cursor;
+			calculateObjectTextPosition(cursor);
+			// Draw a down-arrow above the Clonk's head
+			drawY += -fctCursor.Hgt;
+			fctCursor.Draw(cgo.Surface, drawX - static_cast<float>(fctCursor.Wdt) / 2.0, drawY, 4);
+			// And possibly draw some info text, too
+			if (cursor->Info)
+			{
+				int32_t texthgt = ::GraphicsResource.FontRegular.GetLineHeight();
+				StdStrBuf str;
+				if (cursor->Info->Rank > 0)
 				{
-					cursor=pPlr->Cursor;
-					cox=cursor->GetX()-fctCursor.Wdt/2-cgo.TargetX;
-					coy=cursor->GetY()-cursor->Def->Shape.Hgt/2-fctCursor.Hgt-cgo.TargetY;
-					if (Inside<int32_t>(int32_t(cox),1-fctCursor.Wdt,cgo.Wdt) && Inside<int32_t>(int32_t(coy),1-fctCursor.Hgt,cgo.Hgt))
-					{
-						cphase=0; if (cursor->Contained) cphase=1;
-						fctCursor.Draw(cgo.Surface,cgo.X+cox,cgo.Y+coy,cphase);
-						if (cursor->Info)
-						{
-							int32_t texthgt = ::GraphicsResource.FontRegular.GetLineHeight();
-							StdStrBuf str;
-							if (cursor->Info->Rank>0)
-							{
-								str.Format("%s|%s",cursor->Info->sRankName.getData(),cursor->GetName ());
-								texthgt += texthgt;
-							}
-							else str = cursor->GetName();
-
-							pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-							                           cgo.X + cox + fctCursor.Wdt / 2,
-							                           cgo.Y + coy - 2 - texthgt,
-							                           0xffff0000, ACenter);
-
-						}
-					}
+					str.Format("%s|%s", cursor->Info->sRankName.getData(), cursor->GetName());
+					texthgt += texthgt;
 				}
+				else str = cursor->GetName();
+
+				pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+					drawX,
+					drawY - static_cast<float>(texthgt) / 2.0,
+					0xffff0000, ACenter);
+
+			}
+		}
+	}
+	// Reset zoom
+	r.Zoom = zoom;
+	pDraw->SetZoom(r);
 }
 
 void C4Game::Ticks()
@@ -1609,7 +1651,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
 		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));
-		pComp->Value(mkNamingAdapt(Rules,                 "Rules",                 0));
 		pComp->Value(mkNamingAdapt(PlayList,              "PlayList",""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
 		pComp->Value(mkNamingAdapt(fResortAnyObject,      "ResortAnyObj",          false));
@@ -1623,7 +1664,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
 		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
 		// as keys might be released between a savegame save and its resume
-		//pComp->Value(GlobalPlayerControl);
 	}
 
 	if (comp.fExact)
@@ -1727,7 +1767,7 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, 
 		    GameText.GetDataBuf(), C4CFN_Game))
 			return false;
 		// Objects
-		int32_t iObjects=Objects.PostLoad(fLoadSection, numbers);
+		int32_t iObjects = Objects.ObjectCount();
 		if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
 	}
 	// Music System: Set play list
@@ -2120,9 +2160,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(25);
 
-		// Sound (first part, some are loaded with the definitions, the (section) local file goes later)
-		Application.SoundSystem.Init();
-
 		// Definitions
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
@@ -2232,6 +2269,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	numbers->Denumerate();
 	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
+	// Object.PostLoad must happen after number->Denumerate(), becuase UpdateFace() will access Action proplist,
+	// which might have a non-denumerated prototype otherwise
+	Objects.PostLoad(fLoadSection, numbers);
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
@@ -2981,7 +3021,6 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 
 void C4Game::FixRandom(int32_t iSeed)
 {
-	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
 }
 
@@ -2997,6 +3036,9 @@ bool C4Game::DoGameOver()
 	for (C4Player *pPlayer = Players.First; pPlayer; pPlayer = pPlayer->Next)
 		if (!pPlayer->Eliminated)
 			pPlayer->EvaluateLeague(false, true);
+	// Immediately save config so mission access gained by this round is stored if the game crashes during shutdown
+	// or in a following round
+	Config.Save();
 	return true;
 }
 
@@ -3245,8 +3287,6 @@ void C4Game::InitRules()
 	for (cnt=0; (idType=Parameters.Rules.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<Max<int32_t>(iCount,1); cnt2++)
 			CreateObject(idType,NULL);
-	// Update rule flags
-	UpdateRules();
 }
 
 void C4Game::InitGoals()
@@ -3257,13 +3297,6 @@ void C4Game::InitGoals()
 	for (cnt=0; (idType=Parameters.Goals.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
 			CreateObject(idType,NULL);
-}
-
-void C4Game::UpdateRules()
-{
-	if (::Game.iTick255) return;
-	Rules=0;
-	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
 }
 
 void C4Game::SetInitProgress(float fToProgress)
@@ -3411,7 +3444,6 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		{
 			DebugLogF("LoadScenarioSection: WARNING: Object %d created in destruction process!", (int) obj->Number);
 			ClearPointers(obj);
-			//clnk->Obj->AssignRemoval(); - this could create additional objects in endless recursion...
 		}
 	DeleteObjects(false);
 	// remove global effects
@@ -3420,7 +3452,6 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
 			// scenario section call might have been done from a global effect
 			// rely on dead effect removal for actually removing the effects; do not clear the array here!
-			//delete pGlobalEffects; pGlobalEffects=NULL;
 		}
 	// del particles as well
 	Particles.ClearAllParticles();
@@ -3435,11 +3466,15 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// set new Objects.c source
 	Game.pScenarioObjectsScript = pLoadSect->pObjectScripts;
+	// remove reference to FoW from viewports, so that we can safely
+	// reload the landscape and its FoW.
+	Viewports.DisableFoW();
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
 	{
 		DebugLog("LoadScenarioSection: Error reiniting game");
+		::Viewports.EnableFoW();
 		return false;
 	}
 	// restore shelved proplists in case loading failed
@@ -3447,8 +3482,9 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// set new current section
 	pCurrentScenarioSection = pLoadSect;
 	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);
-	// resize viewports
+	// resize viewports, and enable lighting again
 	::Viewports.RecalculateViewports();
+	::Viewports.EnableFoW();
 	// done, success
 	return true;
 }
@@ -3574,7 +3610,7 @@ float C4Game::GetTextSpecImageAspect(const char* szSpec)
 		{
 			return static_cast<float>(pDef->PictureRect.Wdt) / static_cast<float>(pDef->PictureRect.Hgt);
 		}
-		else
+		else if (pGfx->Type == C4DefGraphics::TYPE_Mesh)
 		{
 			const StdMesh& mesh = *pGfx->Mesh;
 			const StdMeshBox& box = mesh.GetBoundingBox();
@@ -3622,7 +3658,7 @@ bool C4Game::SpeedUp()
 {
 	// As these functions work stepwise, there's the old maximum speed of 50.
 	// Use /fast to set to even higher speeds.
-	FrameSkip = BoundBy<int32_t>(FrameSkip + 1, 1, 50);
+	FrameSkip = Clamp<int32_t>(FrameSkip + 1, 1, 50);
 	FullSpeed = true;
 	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
 	return true;
@@ -3630,7 +3666,7 @@ bool C4Game::SpeedUp()
 
 bool C4Game::SlowDown()
 {
-	FrameSkip = BoundBy<int32_t>(FrameSkip - 1, 1, 50);
+	FrameSkip = Clamp<int32_t>(FrameSkip - 1, 1, 50);
 	if (FrameSkip == 1)
 		FullSpeed = false;
 	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
@@ -3640,7 +3676,7 @@ bool C4Game::SlowDown()
 void C4Game::SetMusicLevel(int32_t iToLvl)
 {
 	// change game music volume; multiplied by config volume for real volume
-	iMusicLevel = BoundBy<int32_t>(iToLvl, 0, 100);
+	iMusicLevel = Clamp<int32_t>(iToLvl, 0, 100);
 	Application.MusicSystem.SetVolume(Config.Sound.MusicVolume * iMusicLevel / 100);
 }
 
@@ -3651,6 +3687,9 @@ bool C4Game::ToggleChat()
 
 void C4Game::SetDefaultGamma()
 {
+	// Skip this if graphics haven't been initialized yet (happens when
+	// we bail during initialization)
+	if (!pDraw) return;
 	// Default gamma ramps
 	for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
 	{

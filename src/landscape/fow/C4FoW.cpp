@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4FoW.h"
@@ -15,17 +29,21 @@ C4Shader *C4FoW::GetFramebufShader()
 	// Not created yet?
 	if (!FramebufShader.Initialised())
 	{
+
+		// Create the frame buffer shader. The details are in C4FoWRegion, but
+		// this is about how to utilise old frame buffer data in the lights texture.
+		// Or put in other words: This shader is responsible for fading lights out.
 		FramebufShader.AddVertexDefaults();
 		FramebufShader.AddTexCoord("texCoord");
 		FramebufShader.AddFragmentSlice(-1, "uniform sampler2D tex;");
-		const char *szShader =
-			"gl_FragColor = vec4(texture2D(tex, texCoord.st).rgb, 15.0/16.0);";
-		FramebufShader.AddFragmentSlice(0, szShader);
+		FramebufShader.AddFragmentSlice(0,
+			"gl_FragColor = vec4(texture2D(tex, texCoord.st).rgb, 3.0f/4.0f);");
 		const char *szUniforms[] = { "tex", NULL };
 		if (!FramebufShader.Init("framebuf", szUniforms)) {
 			FramebufShader.ClearSlices();
 			return NULL;
 		}
+
 	}
 	return &FramebufShader;
 }

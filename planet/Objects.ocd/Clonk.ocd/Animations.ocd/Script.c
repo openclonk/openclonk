@@ -890,34 +890,71 @@ func FxIntHangleTimer(pTarget, effect, iTime)
 
 func StartSwim()
 {
-/*	if(Clonk_SwimStates == nil)
-		Clonk_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
-	if(!InLiquid()) return;
-	if(!GetEffect("IntSwim", this))
+	if (!InLiquid()) 
+		return;
+	if (!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
-	
-	return SetSwimmingVertices(true);
+	SetSwimmingVertices(true);
+	return;
 }
 
 func StopSwim()
 {
-	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
-	
-	return SetSwimmingVertices(false);
+	if (GetAction() != "Swim") 
+		RemoveEffect("IntSwim", this);
+	SetSwimmingVertices(false);
+	return;
 }
 
 func SetSwimmingVertices(bool is_swimming)
 {
-	var vtx_list = [[0,2,0], [0,-7,4], [0,9,11], [-2,-3,1], [2,-3,2], [-4,2,1], [4,2,2], [-2,6,1], [2,6,2]];
+	var vtx_list = [[0,2,0,300], [0,-7,4,300], [0,9,11,300], [-2,-3,1,300], [2,-3,2,300], [-4,2,1,300], [4,2,2,300], [-2,6,1,300], [2,6,2,300]];
 	if (is_swimming)
-		vtx_list = [[0,3,0], [0,-2,4], [0,7,11], [-4,0,1], [4,0,2], [-5,3,1], [5,3,2], [-4,4,1], [4,4,2]];
+		vtx_list = [[0,2,0,50], [0,-2,4,50], [0,7,11,50], [-4,-1,1,50], [4,-1,2,50], [-4,2,1,50], [4,2,2,50], [-4,4,1,50], [4,4,2,50]];
 	for (var i = 0; i < GetVertexNum(); i++)
 	{
+		var x = GetVertex(i, VTX_X);
+		var y = GetVertex(i, VTX_Y);
+		var cnat = GetVertex(i, VTX_CNAT);
+		var friction = GetVertex(i, VTX_Friction);
 		SetVertex(i, VTX_X, vtx_list[i][0], 2);
 		SetVertex(i, VTX_Y, vtx_list[i][1], 2);
 		SetVertex(i, VTX_CNAT, vtx_list[i][2], 2);
+		SetVertex(i, VTX_Friction, vtx_list[i][3], 2);
+		// Don't do the update if that would stuck the clonk.
+		if (Stuck())
+		{
+			SetVertex(i, VTX_X, x, 2);
+			SetVertex(i, VTX_Y, y, 2);
+			SetVertex(i, VTX_CNAT, cnat, 2);
+			SetVertex(i, VTX_Friction, friction, 2);
+			// But add an effect which does this delayed.
+			var effect = AddEffect("IntDelayedVertex", this, 100, 1, this);
+			effect.vertex = i;
+			effect.old_vertex = [x, y, cnat, friction];
+			effect.new_vertex = vtx_list[i];
+		}
 	}
 	return;
+}
+
+protected func FxIntDelayedVertexTimer(object target, proplist effect, int time)
+{
+	if (time > 8)
+		return FX_Execute_Kill;
+	
+	SetVertex(effect.vertex, VTX_X, effect.new_vertex[0], 2);
+	SetVertex(effect.vertex, VTX_Y, effect.new_vertex[1], 2);
+	SetVertex(effect.vertex, VTX_CNAT, effect.new_vertex[2], 2);
+	SetVertex(effect.vertex, VTX_Friction, effect.new_vertex[3], 2);
+	if (!Stuck())
+		return FX_Execute_Kill;
+		
+	SetVertex(effect.vertex, VTX_X, effect.old_vertex[0], 2);
+	SetVertex(effect.vertex, VTX_Y, effect.old_vertex[1], 2);
+	SetVertex(effect.vertex, VTX_CNAT, effect.old_vertex[2], 2);
+	SetVertex(effect.vertex, VTX_Friction, effect.old_vertex[3], 2);
+	return FX_OK;
 }
 
 func FxIntSwimStart(pTarget, effect, fTmp)

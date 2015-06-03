@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4FoWRegion.h"
@@ -49,11 +63,11 @@ bool C4FoWRegion::BindFramebuf()
 	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, hFrameBufRead);
 	glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER_EXT,
 		GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-		pSurface->ppTex[0]->texName, 0);
+		pSurface->textures[0].texName, 0);
 	if (pBackSurface)
 		glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT,
 			GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-			pBackSurface->ppTex[0]->texName, 0);
+			pBackSurface->textures[0].texName, 0);
 
 	// Check status, unbind if something was amiss
 	GLenum status1 = glCheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER_EXT),
@@ -99,6 +113,11 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		pFoW->Render(this, pOnScreen, pPlayer);
 		return;
 	}
+
+	// Set up shader. If this one doesn't work, we're really in trouble.
+	C4Shader *pShader = pFoW->GetFramebufShader();
+	assert(pShader);
+	if (!pShader) return;
 
 	// Create & bind the frame buffer
 	pDraw->StorePrimaryClipper();
@@ -160,7 +179,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		C4ShaderCall Call(pShader);
 		Call.Start();
 		if (Call.AllocTexUnit(0, GL_TEXTURE_2D))
-			glBindTexture(GL_TEXTURE_2D, getBackSurface()->ppTex[0]->texName);
+			glBindTexture(GL_TEXTURE_2D, getBackSurface()->textures[0].texName);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBegin(GL_QUADS);
 		for (int i = 0; i < 4; i++)

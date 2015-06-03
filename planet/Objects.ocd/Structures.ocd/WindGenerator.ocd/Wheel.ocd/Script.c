@@ -1,8 +1,39 @@
 /**
 	Wheel
-	Invisible helper object. Takes care of collisions.
-
+	Invisible helper object, which takes care of collisions. Always immediately
+	call SetParent after creating this helper object.
 */
+
+
+protected func Initialize()
+{
+	return;
+}
+
+public func AttachTargetLost()
+{
+	// Remove this helper object when the generator is lost.
+	return RemoveObject();
+}
+
+public func HasStopped()
+{
+	return !GetRDir(1000);
+}
+
+public func SetParent(object parent, int con)
+{
+	con = con ?? 100;
+	SetCon(con);
+	SetAction("Turn", parent);
+	return;
+}
+
+// Don't duplicate on scenario load.
+public func SaveScenarioObject() { return false; }
+
+
+/*-- Proplist --*/
 
 local ActMap = {
 	Turn = {
@@ -16,27 +47,5 @@ local ActMap = {
 	}
 };
 
-func Initialize()
-{
-	
-}
-
-func AttachTargetLost()
-{
-	return RemoveObject();
-}
-
-func HasStopped()
-{
-	return !GetRDir(1000);
-}
-
-func Set(to, con)
-{
-	con = con ?? 100;
-	SetCon(con);
-	SetAction("Turn", to);
-}
-
-// Don't duplicate on scenario load
-func SaveScenarioObject() { return false; }
+// Plane must be set because of C4D_None category.
+local Plane = 1;

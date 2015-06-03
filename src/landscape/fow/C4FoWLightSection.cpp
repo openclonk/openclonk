@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4FoWLightSection.h"
@@ -184,12 +198,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	if (endBeam->isRight(rx, ry)) {
 		rx = endBeam->getRightEndX() + 1;
 		ry = endBeam->getRightEndY();
-		// We want endBeam itself to get scanned
-		//assert(!endBeam->isLeft(rx, ry));
 	}
-#ifdef LIGHT_DEBUG
-	//LogSilentF("Right limit at %d, start line %d", 1000 * (iRX - iX) / (iRY - iY), iStartY);
-#endif
 
 	// Bottom of scan - either bound by rectangle or by light's reach
 	int32_t endY = Min(Rect.GetBottom(), pLight->getReach());
@@ -197,6 +206,13 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	// Scan lines
 	int32_t y;
 	for(y = Max(0, startY); y < endY; y++) {
+
+		// We ignore all material up to a certain distance. This is the X
+		// range for that in this scan line
+		int32_t ignoreX = 0;
+		if (y < pLight->getSize()) {
+			ignoreX = int(sqrt(pLight->getSize() * pLight->getSize() - y * y));
+		}
 
 		// Scan all pBeams
 		C4FoWBeam *lastBeam = startBeam;
@@ -225,6 +241,10 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 			        xr = Min(beam->getRightX(y), Bounds.x+Bounds.Wdt-1);
 			for(int32_t x = xl; x <= xr; x++)
 			{
+				// Ignore material up to a certain distance (see above)
+				if (abs(x) < ignoreX)
+					continue;
+
 				// Fast free?
 				if (!Landscape._FastSolidCheck(transX(x,y), transY(x,y)))
 				{
@@ -420,6 +440,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 	C4FoWBeam *startBeam = NULL, *endBeam = NULL;
 	int32_t beamCount = FindBeamsClipped(rtransRect(region->getRegion()), startBeam, endBeam);
 	std::list<C4FoWBeamTriangle> result;
+	float crossX=0.0f, crossY=0.0f;
 
 	// no beams inside the rectangle? Good, nothing to render 
 	if(!beamCount) return result;
@@ -453,8 +474,11 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 	float scanLevel = 0;
 	for (int step = 0; step < 100000; step++)
 	{
-		// Find the beam to project. This makes this whole algorithm O(n²),
-		// but I see no other way to make the whole thing robust :/
+		// Find the beam to project. The whole idea here is that we reduce the
+		// beams starting with the closest ones. Reason for this is that they
+		// generally shadow the most, and this makes it easy to make the
+		// algorithm robust against light size depending on distance. Sadly
+		// makes the whole algorithm O(n^2)...
 		float bestLevel = FLT_MAX;
 		for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); ++it)
 		{
@@ -468,14 +492,32 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			break;
 		scanLevel = bestLevel;
 
+		// Now look for all beams at this length. Will propably be only one
+		// most of the time, but can't be too careful. Especially note that
+		// we will make extra loops after removing rays, so we can check the
+		// new neighbouring relation for consistency.
 		for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); it = nextIt)
 		{
 			nextIt = it; ++nextIt;
-			C4FoWBeamTriangle &tri = *it, &nextTri = *nextIt;
+			C4FoWBeamTriangle tri = *it, nextTri = *nextIt;
 
+			// Skip ray pairs that do not match the current level (see above)
 			float level = Min(tri.fanRY, nextTri.fanLY);
 			if(level != bestLevel)
 				continue;
+
+			// Debugging
+            //#define FAN_STEP_DEBUG
+#ifdef FAN_STEP_DEBUG
+			LogSilentF("Fan step %d (i=%d)", step, std::distance(result.begin(),it));
+			for (std::list<C4FoWBeamTriangle>::iterator it2 = result.begin(); it2 != result.end(); it2++) {
+				const char *marker = "";
+				if (it2 == it) marker = " (it)";
+				if (it2 == nextIt) marker = " (nextIt)";
+				LogSilentF(" %.010f %.010f%s", it2->fanLX, it2->fanLY, marker);
+				LogSilentF(" %.010f %.010f%s", it2->fanRX, it2->fanRY, marker);
+			}
+#endif
 
 			// Calculate light bounds. We assume a "smaller" light for closer beams
 			float lightLX, lightLY, lightRX, lightRY;
@@ -483,8 +525,8 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			LightBallRightMostPoint(nextTri.fanLX, nextTri.fanLY, lightRX, lightRY);
 
 			// Ascending
-			float crossX, crossY;
 			bool descendCollision = false;
+			const float ascendDescendDelta = 0.1f;
 			if (tri.fanRY > nextTri.fanLY)
 			{
 				// Left beam surface self-shadowing? We test whether the scalar product
@@ -497,11 +539,19 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					assert(tri.fanRY <= tri.fanLY);
 					tri.fanLX = tri.fanRX;
 					tri.fanLY = tri.fanRY;
+					*it = tri;
 				}
+
+				// The threshold decides at what point we are going to eliminate
+				// (see below). Our goal is to not reduce the ray width below
+				// a certain eta. We are using Manhattan distance, which is a
+				// preliminary optimisation, but we *like* being evil here.
+				float threshold = 1.0f;
+				float fanWidth = fabs(tri.fanRX - tri.fanLX) + fabs(tri.fanRY - tri.fanLY);
+				threshold -= ascendDescendDelta / fanWidth;
 
 				// Left beam reduced?
 				float fanRXp = tri.fanRX;
-				float threshold = 1.0;
 				if (tri.fanRX == tri.fanLX && tri.fanRY == tri.fanLY)
 				{
 					// Move point to the right for the purpose of finding the cross
@@ -514,21 +564,47 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				}
 
 				// Move right point of left beam to the left (the original point is partly shadowed)
-				bool eliminate = false;
 				float b;
 				bool f = find_cross(lightRX, lightRY, nextTri.fanLX, nextTri.fanLY,
 									tri.fanLX, tri.fanLY, fanRXp, tri.fanRY,
 									&crossX, &crossY, &b);
 			
+#ifdef FAN_STEP_DEBUG
+				LogSilentF("Ascend, b=%.010f, cross=%.010f/%.010f", b, crossX, crossY);
+#endif
 				// The self-shadow-check should have made sure that the two are
 				// never parallel.
-				assert(f);
+				assert(f); (void)f;
 
 				// Cross point to left of surface? Then the surface itself is
 				// shadowed, and we don't need to draw it.
 				if (b >= threshold)
 				{
-					eliminate = true;
+					// Can't eliminate it?
+					if (it == result.begin())
+						continue;
+
+					// Remove the beam.
+					it = nextIt = result.erase(it);
+					tri = *--it;
+					// Now decide how to proceed: If the new previous ray (it)
+					// is farther away, we have to repeat this whole check
+					// because this one (nextIt) might shadow it as well.
+					if (tri.fanRY > nextTri.fanLY)
+					{
+						nextIt = it;
+						continue;
+					}
+
+					// However if the previous one is *closer*, this means we
+					// cannot possible shadow it. Furthermore, we know that
+					// it cannot shadow this one either. The fact that there was
+					// a beam between the two means that there is now a "hole"
+					// that needs to be filled. Hence we have a descend
+					// collision. We could get there by looping like above,
+					// but this is more elegant.
+					descendCollision = true;
+					LightBallLeftMostPoint(tri.fanLX, tri.fanLY, lightLX, lightLY);
 
 				// Cross point actually right of surface? This can happen when
 				// we eliminated surfaces. It means that the light doesn't reach
@@ -549,23 +625,10 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					// Set cross point
 					tri.fanRX = crossX;
 					tri.fanRY = crossY;
-				}
-
-				// This shouldn't change the case we are in (uh, I think)
-				assert(tri.fanRY > nextTri.fanLY);
-
-				// Did we eliminate the surface with this step?
-				if (eliminate && it != result.begin())
-				{
-					// With the elimination, we need to re-process the last
-					// beam, as it might be more shadowed than we realized.
-					// Note that the last point might have been projected already -
-					// but that's okay
-					nextIt = it; nextIt--;
-
-					// Remove it (note that this invalidates "it". The iterator,
-					// that is.)
-					result.erase(it);
+					// This shouldn't change the case we are in (uh, I think)
+					assert(tri.fanRY > nextTri.fanLY);
+					// Write back
+					*it = tri;
 					continue;
 				}
 
@@ -579,24 +642,36 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 					assert(nextTri.fanLY <= nextTri.fanRY);
 					nextTri.fanRX = nextTri.fanLX;
 					nextTri.fanRY = nextTri.fanLY;
+					*nextIt = nextTri;
 				}
 				float fanRXp = nextTri.fanRX;
-				float threshold = 0.0;
+				float threshold = 0.0f;
+				float fanWidth = fabs(nextTri.fanRX - nextTri.fanLX) + fabs(nextTri.fanRY - nextTri.fanLY);
+				threshold += ascendDescendDelta / fanWidth;
 				if (nextTri.fanRX == nextTri.fanLX && nextTri.fanRY == nextTri.fanLY)
-				{
 					fanRXp += 1.0;
-					threshold = 1.0;
-				}
 
-				bool eliminate = false;
 				float b;
 				bool f = find_cross(lightLX, lightLY, tri.fanRX, tri.fanRY,
 									nextTri.fanLX, nextTri.fanLY, fanRXp, nextTri.fanRY,
 									&crossX, &crossY, &b);
+#ifdef FAN_STEP_DEBUG
+				LogSilentF("Descend, b=%.010f, cross=%.010f/%.010f", b, crossX, crossY);
+#endif
 				assert(f);
 				if (b <= threshold)
 				{
-					eliminate = true;
+					if (nextIt == --result.end())
+						continue;
+					nextIt = result.erase(nextIt);
+					nextTri = *nextIt;
+					if (nextTri.fanLY > tri.fanRY)
+					{
+						nextIt = it;
+						continue;
+					}
+					descendCollision = true;
+					LightBallRightMostPoint(nextTri.fanLX, nextTri.fanLY, lightRX, lightRY);
 				}
 				else if (b > 1.0)
 				{
@@ -606,55 +681,71 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 				{
 					nextTri.fanLX = crossX;
 					nextTri.fanLY = crossY;
-				}
-				assert(tri.fanRY < nextTri.fanLY);
-				if (eliminate && nextIt != --result.end())
-				{
-					// We remove the next triangle, so re-process this one.
-					nextIt = it;
-					it++;
-					result.erase(it);
+					assert(tri.fanRY < nextTri.fanLY);
+					*nextIt = nextTri;
 					continue;
 				}
+
+			} else { // tri.fanRY == nextTri.fanLY
+
+				// Check whether we have a significant gap
+				if (nextTri.fanLX - tri.fanRX > 0.5) {
+					descendCollision = true;
+				} else {
+					// Nothing to do
+					continue;
+				}
+
 			}
 
-			if (descendCollision)
-			{
-				// Should never be parallel -- otherwise we wouldn't be here
-				// in the first place.
-				bool f = find_cross(lightRX, lightRY, tri.fanRX, tri.fanRY,
-									lightLX, lightLY, nextTri.fanLX, nextTri.fanLY,
-									&crossX, &crossY);
-				assert(f);
+			// We should only reach this place with a descend collision
+			assert(descendCollision);
 
-				// Ensure some minimum distance to existing points - don't
-				// bother with too small bumps. This also catches some floating
-				// point inacurracies.
-				const float descendEta = 0.5;
-				if (crossY <= tri.fanRY + descendEta ||	crossY <= nextTri.fanLY + descendEta)
-				  continue;
+			// Should never be parallel -- otherwise we wouldn't be here
+			// in the first place.
+			bool f = find_cross(lightLX, lightLY, tri.fanRX, tri.fanRY,
+								lightRX, lightRY, nextTri.fanLX, nextTri.fanLY,
+								&crossX, &crossY);
+			assert(f);
+#ifdef FAN_STEP_DEBUG
+			LogSilentF("Collision, cross=%.02f/%.02f", crossX, crossY);
+#endif
 
-				// This should always follow an elimination, but better check
-				assert(beamCount > result.size());
+			// Ensure some minimum distance to existing points - don't
+			// bother with too small bumps. This also catches some floating
+			// point inacurracies.
+			const float descendEta = 3;
+			if (crossY <= tri.fanRY + descendEta ||	crossY <= nextTri.fanLY + descendEta)
+			  continue;
 
-				C4FoWBeamTriangle newTriangle;
-				newTriangle.fanLX = crossX;
-				newTriangle.fanLY = crossY;
-				newTriangle.fanRX = crossX;
-				newTriangle.fanRY = crossY;
+			// This should always follow an elimination, but better check
+			assert(beamCount > result.size());
 
-				nextIt = result.insert(nextIt, newTriangle);
+			C4FoWBeamTriangle newTriangle;
+			newTriangle.fanLX = crossX;
+			newTriangle.fanLY = crossY;
+			newTriangle.fanRX = crossX;
+			newTriangle.fanRY = crossY;
 
-				// Jump over surface. Note that our right beam might get
-				// eliminated later on, causing us to back-track into this
-				// zero-length pseudo-surface. This will cause find_cross
-				// above to eliminate the pseudo-surface and back-track
-				// further to the left, which is exactly how it should work.
-				++nextIt;
-			}
+			nextIt = result.insert(nextIt, newTriangle);
+
+			// Jump over surface. Note that our right beam might get
+			// eliminated later on, causing us to back-track into this
+			// zero-length pseudo-surface. This will cause find_cross
+			// above to eliminate the pseudo-surface and back-track
+			// further to the left, which is exactly how it should work.
+			++nextIt;
 
 		} // end for(std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt = it; it != --result.end(); ++it) loop
 	} // end for (int step = 0; step < 100000; step++) loop
+
+#ifdef FAN_STEP_DEBUG
+	LogSilentF("Fan output");
+	for (std::list<C4FoWBeamTriangle>::iterator it2 = result.begin(); it2 != result.end(); it2++) {
+		LogSilentF(" %.010f %.010f", it2->fanLX, it2->fanLY);
+		LogSilentF(" %.010f %.010f", it2->fanRX, it2->fanRY);
+	}
+#endif
 
 	// Phase 2: Calculate fade points
 	for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(); it != result.end(); ++it)
@@ -685,8 +776,9 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		tri.fadeRY = tri.fanRY + d * dy;
 
 		// Do the fades cross?
+		const double fadeCrossEta = 0.01;
 		if ((tri.fadeRX - lightRX) / (tri.fadeRY - lightRY)
-			< (tri.fadeLX - lightRX) / (tri.fadeLY - lightRY))
+			< (tri.fadeLX - lightRX) / (tri.fadeLY - lightRY) + fadeCrossEta)
 		{
 			// Average it
 			tri.fadeLX = tri.fadeRX = (tri.fadeLX + tri.fadeRX) / 2;
@@ -721,5 +813,41 @@ void C4FoWLightSection::transTriangles(std::list<C4FoWBeamTriangle> &triangles) 
 		x = tri.fadeLX, y = tri.fadeLY;
 		tri.fadeLX = transX(x,y);
 		tri.fadeLY = transY(x,y);
+	}
+}
+
+void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(iRot, "iRot"));
+	pComp->Value(mkNamingAdapt(a, "a"));
+	pComp->Value(mkNamingAdapt(b, "b"));
+	pComp->Value(mkNamingAdapt(c, "c"));
+	pComp->Value(mkNamingAdapt(d, "d"));
+	pComp->Value(mkNamingAdapt(ra, "ra"));
+	pComp->Value(mkNamingAdapt(rb, "rb"));
+	pComp->Value(mkNamingAdapt(rc, "rc"));
+	pComp->Value(mkNamingAdapt(rd, "rd"));
+	if (pComp->isDecompiler())
+	{
+		for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
+			pComp->Value(mkNamingAdapt(*beam, "Beam"));
+	}
+	else
+	{
+		ClearBeams();
+		int32_t beam_count = 0;
+		pComp->Value(mkNamingCountAdapt<int32_t>(beam_count, "Beam"));
+		C4FoWBeam *last_beam = NULL;
+		for (int32_t i = 0; i < beam_count; ++i)
+		{
+			std::unique_ptr<C4FoWBeam> beam(new C4FoWBeam(0, 0, 0, 0));
+			pComp->Value(mkNamingAdapt(*beam, "Beam"));
+			C4FoWBeam *new_beam = beam.release();
+			if (!last_beam)
+				pBeams = new_beam;
+			else
+				last_beam->setNext(new_beam);
+			last_beam = new_beam;
+		}
 	}
 }

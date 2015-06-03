@@ -21,7 +21,6 @@
 #include "C4Def.h"
 #include <C4DefList.h>
 #include <C4Game.h>
-#include <C4GameObjects.h>
 #include <C4Network2.h>
 
 // *** C4GameRes
@@ -365,7 +364,7 @@ void C4GameResList::CompileFunc(StdCompiler *pComp)
 	// Compile list
 	pComp->Value(
 	  mkNamingAdapt(
-	    mkArrayAdaptMap(pResList, iResCount, /*(C4GameRes *)NULL, */ mkPtrAdaptNoNull<C4GameRes>),
+	    mkArrayAdaptMap(pResList, iResCount, mkPtrAdaptNoNull<C4GameRes>),
 	    "Resource"));
 	mkPtrAdaptNoNull<C4GameRes>(*pResList);
 }

@@ -10,9 +10,6 @@
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
 
-/* Define if you have the iconv() function. */
-#cmakedefine HAVE_ICONV 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H 1
 
@@ -27,6 +24,9 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
+
+/* Define to 1 if your stdlib has std::make_unique */
+#cmakedefine HAVE_MAKE_UNIQUE 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
@@ -103,6 +103,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
 
+/* Define to 1 if your compiler supports variadic templates */
+#cmakedefine HAVE_VARIADIC_TEMPLATES 1
+
 /* Define to 1 if you have the `vasprintf' function. */
 #cmakedefine HAVE_VASPRINTF 1
 
@@ -116,9 +119,6 @@
 
 /* Define to 1 if you have the <X11/keysym.h> header file. */
 #cmakedefine HAVE_X11_KEYSYM_H 1
-
-/* Define as const if the declaration of iconv() needs const. */
-#define ICONV_CONST @ICONV_CONST@
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1
@@ -168,6 +168,10 @@
 
 /* Define to 1 if you want to use Boost.Regex instead of <regex>. */
 #cmakedefine USE_BOOST_REGEX 1
+
+/* Define to 1 if the userParam parameter to GLDEBUGPROCARB is const, as the
+   spec requires. */
+#cmakedefine GLDEBUGPROCARB_USERPARAM_IS_CONST 1
 
 /* Glib */
 #cmakedefine WITH_GLIB 1

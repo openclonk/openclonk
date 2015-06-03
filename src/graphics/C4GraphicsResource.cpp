@@ -24,9 +24,7 @@
 #include <C4FontLoader.h>
 #include <C4Log.h>
 #include <C4Game.h>
-#include <C4GraphicsSystem.h>
-#include <C4Def.h>
-
+#include <C4Components.h>
 #include <C4DrawGL.h>
 
 /* C4GraphicsResource */
@@ -188,6 +186,8 @@ bool C4GraphicsResource::Init()
 		return false;
 	}
 
+	// Pre-load all shader files
+	Files.PreCacheEntries(C4CFN_ShaderFiles);
 	if (!pGL->InitShaders(&Files))
 	{
 		LogFatal(LoadResStr("IDS_ERR_GFX_INITSHADERS"));
@@ -312,8 +312,8 @@ bool C4GraphicsResource::LoadCursorGfx()
 		return false;
 	// adjust dependant faces
 	int32_t iCursorSize = fctMouseCursor.Hgt;
-	fctCursor.Set(fctMouseCursor.Surface, 35*iCursorSize, 0, iCursorSize, iCursorSize);
-	fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
+	fctCursor.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
+	fctDropTarget.Set(fctMouseCursor.Surface, 11*iCursorSize, 0, iCursorSize, iCursorSize);
 	return true;
 }
 

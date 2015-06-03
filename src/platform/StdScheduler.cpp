@@ -138,7 +138,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Get timeout
 	C4TimeMilliseconds tProcTick;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
-	for (auto i = 0; i < procs.size(); i++)
+	for (auto i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
 		tProcTick = proc->GetNextTick(tNow);
@@ -260,10 +260,20 @@ void __cdecl StdSchedulerThread::_ThreadFunc(void *pPar)
 	StdSchedulerThread *pThread = reinterpret_cast<StdSchedulerThread *>(pPar);
 	_endthreadex(pThread->ThreadFunc());
 }
+void __cdecl StdThread::_ThreadFunc(void *pPar)
+{
+	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
+	_endthreadex(pThread->ThreadFunc());
+}
 #elif defined(HAVE_PTHREAD)
 void *StdSchedulerThread::_ThreadFunc(void *pPar)
 {
 	StdSchedulerThread *pThread = reinterpret_cast<StdSchedulerThread *>(pPar);
+	return reinterpret_cast<void *>(pThread->ThreadFunc());
+}
+void *StdThread::_ThreadFunc(void *pPar)
+{
+	StdThread *pThread = reinterpret_cast<StdThread *>(pPar);
 	return reinterpret_cast<void *>(pThread->ThreadFunc());
 }
 #endif

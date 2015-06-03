@@ -74,6 +74,7 @@ func Intro_3()
 func Intro_4()
 {
 	MessageBoxAll("$MsgIntro2$", g_cannoneer, true); // alert! intruders!
+	g_cannoneer->SetCommand("Grab", g_cannon);
 	return ScheduleNext(5);
 }
 

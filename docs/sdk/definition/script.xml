@@ -340,9 +340,15 @@
         </row>
         <row id="EditCursorDeselection">
           <literal_col>EditCursorDeselection</literal_col>
-          <col></col>
-          <col>When object is deselected in editor. Use this callback to hide any information previously shown in EditCursorSelection.</col>
+          <col>object next_selection</col>
+          <col>When object is deselected in editor. Use this callback to hide any information previously shown in EditCursorSelection. If deselection happens due to another object being selected, that object is passed in next_selection.</col>
         </row>
+        <row id="EditCursorMoved">
+          <literal_col>EditCursorMoved</literal_col>
+          <col>int old_x, int old_y</col>
+          <col>When object is moved in editor. Callback is also done when moved in non-network pause mode. old_x, old_y contains object position before movement.</col>
+        </row>
+
         <row id="SaveScenarioObject">
           <literal_col>SaveScenarioObject</literal_col>
           <col>proplist props</col>

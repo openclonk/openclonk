@@ -19,10 +19,8 @@
 #include "C4Include.h"
 #include <C4DrawGL.h>
 
-#include <C4App.h>
-#include <C4Surface.h>
 #include <C4Window.h>
-#include <C4Config.h>
+#include <C4App.h>
 
 #ifndef USE_CONSOLE
 
@@ -35,14 +33,24 @@ void CStdGLCtx::SelectCommon()
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
 }
+
+void CStdGLCtx::Reinitialize()
+{
+	assert(!pGL->pCurrCtx);
+#ifdef USE_WIN32_WINDOWS
+	if (hrc)
+		wglDeleteContext(hrc);
+	hrc = 0;
+#endif
+}
+
 
 #ifdef USE_WIN32_WINDOWS
 
 #include <GL/wglew.h>
+
+decltype(CStdGLCtx::hrc) CStdGLCtx::hrc = 0;
 
 // Enumerate available pixel formats. Choose the best pixel format in
 // terms of color and depth buffer bits and then return all formats with
@@ -151,22 +159,11 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	static bool glewInitialized = false;
 	if(glewInitialized) return true;
 
-	/*WNDCLASSEXW WndClass = {0};
-	WndClass.cbSize        = sizeof(WNDCLASSEX);
-	WndClass.style         = CS_DBLCLKS;
-	WndClass.lpfnWndProc   = DefWindowProcW;
-	WndClass.hInstance     = pApp->hInstance;
-	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-	WndClass.lpszClassName = L"C4OCTest";
-	WndClass.hIcon         = NULL;
-	WndClass.hIconSm       = NULL;
-	if(!RegisterClassExW(&WndClass)) return !!pGL->Error("  gl: Error registered class for temp wnd");
-*/
 	// Create window
 	HWND hWnd = CreateWindowExW  (
 	            0,
-	            L"STATIC", //C4FullScreenClassName,
-	            NULL, //L"C4OCTest", //ADDL(C4ENGINENAME),
+	            L"STATIC",
+	            NULL,
 	            WS_OVERLAPPEDWINDOW,
 	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
 	            NULL,NULL,hInst,NULL);
@@ -185,7 +182,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
 		pfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
 		pfd.nVersion   = 1 ;
-		pfd.dwFlags    = PFD_DOUBLEBUFFER | /*(pGL->fFullscreen ? PFD_SWAP_EXCHANGE : 0) |*/
+		pfd.dwFlags    = PFD_DOUBLEBUFFER |
 			              PFD_SUPPORT_OPENGL |
 			              PFD_DRAW_TO_WINDOW ;
 		pfd.iPixelType = PFD_TYPE_RGBA;
@@ -243,15 +240,11 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	return glewInitialized;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hrc(0), hDC(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0) { }
 
 void CStdGLCtx::Clear()
 {
-	if (hrc)
-	{
-		Deselect();
-		wglDeleteContext(hrc); hrc=0;
-	}
+	Deselect();
 	if (hDC)
 	{
 		ReleaseDC(pWindow ? pWindow->hRenderWindow : hWindow, hDC);
@@ -281,6 +274,11 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 	if(!hDC)
 	{
 		pGL->Error("  gl: Error getting DC");
+		return false;
+	}
+	if (hrc)
+	{
+		SetPixelFormat(hDC, pGL->iPixelFormat, &pApp->GetPFD());
 	}
 	else
 	{
@@ -290,13 +288,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			if((pixel_format = GetPixelFormatForMS(hDC, 0)) != 0)
 				Config.Graphics.MultiSampling = 0;
 
-		if(!pixel_format)
+		PIXELFORMATDESCRIPTOR pfd;
+		if (!pixel_format)
 		{
 			pGL->Error("  gl: Error choosing pixel format");
 		}
 		else
 		{
-			PIXELFORMATDESCRIPTOR pfd;
 			if(!DescribePixelFormat(hDC, pixel_format, sizeof(pfd), &pfd))
 			{
 				pGL->Error("  gl: Error describing chosen pixel format");
@@ -308,50 +306,47 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			else
 			{
 				// create context
-				hrc = wglCreateContext(hDC);
+				if (Config.Graphics.DebugOpenGL && wglCreateContextAttribsARB)
+				{
+					const int attribs[] = {
+						WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+						0
+					};
+					DebugLog("  gl: Creating debug context.");
+					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
+				}
+				else
+				{
+					hrc = wglCreateContext(hDC);
+				}
+
 				if(!hrc)
 				{
 					pGL->Error("  gl: Error creating gl context");
 				}
-				else
-				{
-					//if (this != &pGL->MainCtx) wglCopyContext(pGL->MainCtx.hrc, hrc, GL_ALL_ATTRIB_BITS);
 
-					// share textures
-					bool success = false;
-					wglMakeCurrent(NULL, NULL); pGL->pCurrCtx=NULL;
-					if (this != pGL->pMainCtx)
-					{
-						if(!wglShareLists(pGL->pMainCtx->hrc, hrc))
-							pGL->Error("  gl: Textures for secondary context not available");
-						else
-							success = true;
-					}
-					else
-					{
-						// select main context
-						if (!Select())
-							pGL->Error("  gl: Unable to select context");
-						else
-							success = true;
-					}
-					
-					if(success)
-					{
-						pGL->iPixelFormat = pixel_format;
-						PIXELFORMATDESCRIPTOR &rPfd = pApp->GetPFD();
-						rPfd = pfd;
-						return true;
-					}
-				}
-
-				wglDeleteContext(hrc); hrc = NULL;
+				pGL->iPixelFormat = pixel_format;
+				pApp->GetPFD() = pfd;
 			}
 		}
-
-		ReleaseDC(hWindow, hDC); hDC = NULL;
+	}
+	if (hrc)
+	{
+		Select();
+		// After selecting the new context, we have to reinitialize GLEW to
+		// update its function pointers - the driver may elect to expose
+		// different extensions depending on the context attributes
+		GLenum err = glewInit();
+		if (err != GLEW_OK)
+		{
+			// Uh. This is a problem.
+			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+			return false;
+		}
+		return true;
 	}
 
+	ReleaseDC(hWindow, hDC); hDC = NULL;
 	return false;
 }
 
@@ -377,7 +372,11 @@ bool CStdGLCtx::Select(bool verbose)
 	// safety
 	if (!pGL || !hrc) return false;
 	// make context current
-	if (!wglMakeCurrent (hDC, hrc)) return false;
+	if (!wglMakeCurrent (hDC, hrc))
+	{
+		pGL->Error("Unable to select context.");
+		return false;
+	}
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
@@ -405,9 +404,19 @@ bool CStdGLCtx::PageFlip()
 }
 
 #elif defined(USE_X11)
+#include <GL/glxew.h>
 #include <GL/glx.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+
+namespace {
+void InitGLXPointers()
+{
+	glXGetVisualFromFBConfig = (PFNGLXGETVISUALFROMFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXGetVisualFromFBConfig"));
+	glXChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)(glXGetProcAddress((const GLubyte*)"glXChooseFBConfig"));
+	glXCreateNewContext = (PFNGLXCREATENEWCONTEXTPROC)(glXGetProcAddress((const GLubyte*)"glXCreateNewContext"));
+}
+}
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
@@ -430,17 +439,48 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// store window
 	this->pWindow = pWindow;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	InitGLXPointers();
+	if (!glXGetVisualFromFBConfig || !glXChooseFBConfig || !glXCreateNewContext)
+	{
+		return pGL->Error("  gl: Unable to retrieve GLX 1.4 entry points");
+	}
+	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, pWindow->Info);
+	// Create base context so we can initialize GLEW
+	GLXContext dummy_ctx = glXCreateContext(dpy, vis_info, 0, True);
+	XFree(vis_info);
+	glXMakeCurrent(dpy, pWindow->renderwnd, dummy_ctx);
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		return pGL->Error((const char*)glewGetErrorString(err));
+	}
+
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
-	// try direct rendering first
-	ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, (pGL->pMainCtx != this) ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
-	// without, rendering will be unacceptable slow, but that's better than nothing at all
-	if (!ctx)
-		ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, False);
-	// No luck at all?
+	const int attribs[] = {
+		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
+		None
+	};
+	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
+
+	if (glXCreateContextAttribsARB)
+	{
+		DebugLogF("  gl: Creating %s context", Config.Graphics.DebugOpenGL ? "debug" : "standard");
+		ctx = glXCreateContextAttribsARB(dpy, pWindow->Info, share_context, True, attribs);
+	}
+	else
+	{
+		DebugLog("  gl: glXCreateContextAttribsARB not supported; falling back to attribute-less context creation");
+		ctx = glXCreateNewContext(dpy, pWindow->Info, GLX_RGBA_TYPE, share_context, True);
+	}
+
+	glXMakeCurrent(dpy, None, NULL);
+	glXDestroyContext(dpy, dummy_ctx);
+
+	// No luck?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
-	GLenum err = glewInit();
+	err = glewInit();
 	if (GLEW_OK != err)
 	{
 		// Problem: glewInit failed, something is seriously wrong.

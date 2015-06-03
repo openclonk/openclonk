@@ -159,6 +159,7 @@ public:
 	int32_t  Corrode;
 	int32_t  Soil;
 	int32_t  Placement; // placement order for landscape shading
+	int32_t  Light; // ambient light range for underground materials. currently only 1/0 for ambient light on/off
 	StdCopyStrBuf sTextureOverlay; // overlayed texture for this material
 	int32_t  OverlayType; // defines the way in which the overlay texture is applied
 	StdCopyStrBuf sPXSGfx;      // newgfx: picture used for loose pxs

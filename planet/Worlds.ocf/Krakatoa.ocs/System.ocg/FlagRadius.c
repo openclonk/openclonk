@@ -5,6 +5,6 @@
 public func Construction()
 {
 	_inherited(...);
-	lflag.radius = 140;
+	lib_flag.radius = 140;
 	return;
 }

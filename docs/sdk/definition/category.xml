@@ -16,6 +16,11 @@
 		  <col>Default plane</col>
         </rowh>
         <row>
+          <col>C4D_None</col>
+          <col>No category.</col>
+          <col></col>
+        </row>
+        <row>
           <col>C4D_StaticBack</col>
           <col>Immovable object.</col>
           <col>100</col>

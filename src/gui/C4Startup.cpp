@@ -42,11 +42,6 @@ bool C4StartupGraphics::Init()
 	::GraphicsResource.ProgressIncrement = 8;
 	// load startup specific graphics from gfxsys groupset
 	Game.SetInitProgress(38.0f);
-#if 0
-	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
-	if (!LoadFile(fctPlrSelBG, "StartupPlrSelBG")) return false;
-	if (!LoadFile(fctNetBG, "StartupNetworkBG")) return false;
-#endif
 	if (!LoadFile(fctDlgPaper, "StartupDlgPaper")) return false;
 	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
 	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;

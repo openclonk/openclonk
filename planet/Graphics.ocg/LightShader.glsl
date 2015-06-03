@@ -61,6 +61,8 @@ slice(finish+5)
 	                            1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),
 	                            1.0-1.5*max(0.0, -lightYDir)),
 	       1.0);
+#else
+    color = vec4(0.0, 0.0, 0.0, 0.0); // invisible
 #endif
 #endif
 

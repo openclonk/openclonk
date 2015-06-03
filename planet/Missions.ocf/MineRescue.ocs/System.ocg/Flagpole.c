@@ -1,6 +1,5 @@
-/* Flagpole */
-// Changes default flag radius
+// Change the default flag radius.
 
 #appendto Flagpole
 
-public func GetFlagRadius(){ return 130; }
+local DefaultFlagRadius = 130; 

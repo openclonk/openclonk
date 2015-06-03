@@ -28,6 +28,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <tlhelp32.h>
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#else
+
+#endif
 
 static bool FirstCrash = true;
 
@@ -59,7 +64,9 @@ namespace {
 #define LOG_DYNAMIC_TEXT(...) write(fd, DumpBuffer, LOG_SNPRINTF(DumpBuffer, DumpBufferSize-1, __VA_ARGS__))
 
 // Figure out which kind of format string will output a pointer in hex
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(PRIdPTR)
+#	define POINTER_FORMAT_SUFFIX PRIdPTR
+#elif defined(_MSC_VER)
 #	define POINTER_FORMAT_SUFFIX "Ix"
 #elif defined(__GNUC__)
 #	define POINTER_FORMAT_SUFFIX "zx"
@@ -72,6 +79,10 @@ namespace {
 #	define POINTER_FORMAT "0x%08" POINTER_FORMAT_SUFFIX
 #else
 #	define POINTER_FORMAT "0x%" POINTER_FORMAT_SUFFIX
+#endif
+
+#ifndef STATUS_ASSERTION_FAILURE
+#	define STATUS_ASSERTION_FAILURE ((DWORD)0xC0000420L)
 #endif
 
 		LOG_STATIC_TEXT("**********************************************************************\n");
@@ -101,9 +112,6 @@ namespace {
 		LOG_EXCEPTION(EXCEPTION_PRIV_INSTRUCTION,         "The thread tried to execute an instruction whose operation is not allowed in the current machine mode.");
 		LOG_EXCEPTION(EXCEPTION_STACK_OVERFLOW,           "The thread used up its stack.");
 		LOG_EXCEPTION(EXCEPTION_GUARD_PAGE,               "The thread accessed memory allocated with the PAGE_GUARD modifier.");
-#ifndef STATUS_ASSERTION_FAILURE
-#	define STATUS_ASSERTION_FAILURE ((DWORD)0xC0000420L)
-#endif
 		LOG_EXCEPTION(STATUS_ASSERTION_FAILURE,           "The thread specified a pre- or postcondition that did not hold.");
 #undef LOG_EXCEPTION
 		default:
@@ -421,7 +429,8 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	}
 
 	// Write dump (human readable format)
-	SafeTextDump(pExceptionPointers, GetLogFD(), filename);
+	if (GetLogFD() != -1)
+		SafeTextDump(pExceptionPointers, GetLogFD(), filename);
 
 	if (file != INVALID_HANDLE_VALUE)
 	{
@@ -561,7 +570,8 @@ namespace {
 		eptr.ExceptionRecord = &erec;
 
 		// Log
-		SafeTextDump(&eptr, GetLogFD(), nullptr);
+		if (GetLogFD() != -1)
+			SafeTextDump(&eptr, GetLogFD(), nullptr);
 
 		// Continue caller
 		if (ResumeThread(data->thread) == -1)
@@ -627,8 +637,9 @@ void InstallCrashHandler()
 	SetUnhandledExceptionFilter(GenerateDump);
 
 #ifndef NDEBUG
-	// Hook _wassert/_assert
-	HookAssert(&assertion_handler);
+	// Hook _wassert/_assert, unless we're running under a debugger
+	if (!IsDebuggerPresent())
+		HookAssert(&assertion_handler);
 #endif
 }
 

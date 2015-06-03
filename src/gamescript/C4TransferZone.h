@@ -20,8 +20,6 @@
 #ifndef INC_C4TransferZone
 #define INC_C4TransferZone
 
-class C4TransferZones;
-
 class C4TransferZone
 {
 	friend class C4TransferZones;

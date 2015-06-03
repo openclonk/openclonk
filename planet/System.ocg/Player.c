@@ -79,6 +79,29 @@ global func MakeColorReadable(int color)
 	return color;
 }
 
+// Returns the number of players in the specified team.
+global func GetPlayerInTeamCount(int team)
+{
+	var count = 0;
+	for (var index = 0; index < GetPlayerCount(); index++)
+		if (GetPlayerTeam(GetPlayerByIndex(index)) == team)
+			count++;
+	return count;
+}
+
+// Returns an array of player numbers in the specified team.
+global func GetPlayersInTeam(int team)
+{
+	var plr_list = [];
+	for (var index = 0; index < GetPlayerCount(); index++)
+	{
+		var plr = GetPlayerByIndex(index);
+		if (GetPlayerTeam(plr) == team)
+			PushBack(plr_list, plr);
+	}
+	return plr_list;
+}
+
 // Adds value to the account of iPlayer.
 global func DoWealth(int plr, int value)
 {

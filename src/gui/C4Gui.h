@@ -25,16 +25,11 @@
 
 #include <C4FontLoader.h>
 #include "C4Rect.h"
-#include "C4Shape.h"
 #include "C4FacetEx.h"
 #include "C4LogBuf.h"
 #include "C4KeyboardInput.h"
-#include "C4Id.h"
-
-#include "C4Application.h"
-
+#include <StdScheduler.h>
 #include <C4Id.h>
-
 #include <C4Window.h>
 
 // consts (load those from a def file some time)
@@ -889,7 +884,7 @@ namespace C4GUI
 		}
 		int32_t GetScrollByPos(int32_t iX, int32_t iY)
 		{
-			return BoundBy<int32_t>((fHorizontal ? iX-C4GUI_ScrollArrowWdt : iY-C4GUI_ScrollArrowHgt)-iScrollThumbSize/2, 0, GetMaxScroll());
+			return Clamp<int32_t>((fHorizontal ? iX-C4GUI_ScrollArrowWdt : iY-C4GUI_ScrollArrowHgt)-iScrollThumbSize/2, 0, GetMaxScroll());
 		}
 		bool IsScrolling() { return fScrolling; }
 
@@ -2410,7 +2405,7 @@ namespace C4GUI
 	public:
 		InfoDialog(const char *szCaption, int32_t iLineCount); // ctor
 		InfoDialog(const char *szCaption, int iLineCount, const StdStrBuf &sText); // ctor - init w/o timer
-		~InfoDialog() { Application.Remove(this); }
+		~InfoDialog();
 	};
 
 	// a keyboard event that's only executed if the dialog is activated

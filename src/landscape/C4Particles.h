@@ -101,7 +101,7 @@ typedef bool (C4ParticleProperties::*C4ParticleCollisionCallback) (C4Particle*);
 // the value providers are used to change the attributes of a particle over the lifetime
 class C4ParticleValueProvider
 {
-protected:
+private:
 	float startValue, endValue;
 
 	// used by Random
@@ -145,14 +145,11 @@ protected:
 	int typeOfValueToChange;
 
 public:
-	void UpdatePointerValue(C4Particle *particle, C4ParticleValueProvider *parent);
-	void UpdateChildren(C4Particle *particle);
-	void FloatifyParameterValue(float C4ParticleValueProvider::*value, float denominator, size_t keyFrameIndex = 0);
-	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
-
 	bool IsConstant() const { return isConstant; }
 	bool IsRandom() const { return valueFunction == &C4ParticleValueProvider::Random; }
-	C4ParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), keyFrameCount(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
+	C4ParticleValueProvider() :
+		startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrameCount(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT)
+	{ }
 	~C4ParticleValueProvider()
 	{
 		for (std::vector<C4ParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
@@ -165,12 +162,18 @@ public:
 	// divides by denominator
 	void Floatify(float denominator);
 
-	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	void Set(const C4Value &value);
 	void Set(const C4ValueArray &fromArray);
 	void Set(float to); // constant
 	float GetValue(C4Particle *forParticle);
 
+private:
+	void UpdatePointerValue(C4Particle *particle, C4ParticleValueProvider *parent);
+	void UpdateChildren(C4Particle *particle);
+	void FloatifyParameterValue(float C4ParticleValueProvider::*value, float denominator, size_t keyFrameIndex = 0);
+	void SetParameterValue(int type, const C4Value &value, float C4ParticleValueProvider::*floatVal, int C4ParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
+
+	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	float Linear(C4Particle *forParticle);
 	float Const(C4Particle *forParticle);
 	float Random(C4Particle *forParticle);

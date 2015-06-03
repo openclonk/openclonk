@@ -18,10 +18,6 @@
 #ifndef INC_C4MapCreatorS2
 #define INC_C4MapCreatorS2
 
-#include <C4Group.h>
-#include <C4Scenario.h>
-#include <C4Surface.h>
-
 #define C4MC_SizeRes        100         // positions in percent
 #define C4MC_ZoomRes        100         // zoom resolution (-100 to +99)
 

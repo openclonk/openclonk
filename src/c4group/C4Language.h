@@ -23,10 +23,6 @@
 #include "c4group/C4GroupSet.h"
 #include "c4group/C4LangStringTable.h"
 
-#ifdef HAVE_ICONV
-#include <iconv.h>
-#endif
-
 const int C4MaxLanguageInfo = 1024;
 
 class C4LanguageInfo
@@ -37,7 +33,6 @@ public:
 	char Name[C4MaxLanguageInfo + 1];
 	char Info[C4MaxLanguageInfo + 1];
 	char Fallback[C4MaxLanguageInfo + 1];
-	//char Location[C4MaxLanguageInfo + 1]; ...store group name here
 private:
 	C4LanguageInfo* Next;
 };
@@ -71,9 +66,6 @@ public:
 	C4LanguageInfo *FindInfo(const char *strCode);
 	// Loading of actual resource string table
 	bool LoadLanguage(const char *strLanguages);
-	// Encoding conversion functions
-	static StdStrBuf IconvClonk(const char * string);
-	static StdStrBuf IconvSystem(const char * string);
 
 	inline bool HasStringTable() const { return !C4LangStringTable::GetSystemStringTable().GetDataBuf().isNull(); }
 
@@ -84,11 +76,6 @@ private:
 	// Loading of actual resource string table
 	bool InitStringTable(const char *strCode);
 	bool LoadStringTable(C4Group &hGroup, const char *strCode);
-#ifdef HAVE_ICONV
-	static iconv_t local_to_host;
-	static iconv_t host_to_local;
-	static StdStrBuf Iconv(const char * string, iconv_t cd);
-#endif
 };
 
 extern C4Language Languages;

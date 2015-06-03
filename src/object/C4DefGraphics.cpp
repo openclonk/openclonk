@@ -44,7 +44,7 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	// store def
 	pDef = pOwnDef;
 	// zero fields
-	Type = TYPE_Bitmap;
+	Type = TYPE_None;
 	Bmp.Bitmap = Bmp.BitmapClr = Bmp.BitmapNormal = NULL;
 	pNext = NULL;
 	fColorBitmapAutoCreated = false;
@@ -62,6 +62,8 @@ void C4DefGraphics::Clear()
 	// zero own fields
 	switch (Type)
 	{
+	case TYPE_None:
+		break;
 	case TYPE_Bitmap:
 		if (Bmp.BitmapNormal) { delete Bmp.BitmapNormal; Bmp.BitmapNormal=NULL; }
 		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
@@ -71,6 +73,7 @@ void C4DefGraphics::Clear()
 		if (Mesh) { delete Mesh; Mesh = NULL; }
 		break;
 	}
+	Type = TYPE_None;
 
 	// delete additonal graphics
 	C4AdditionalDefGraphics *pGrp2N = pNext, *pGrp2;
@@ -81,8 +84,13 @@ void C4DefGraphics::Clear()
 bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, const char *szNormal, bool fColorByOwner)
 {
 	if (!szFilename) return false;
+	Type = TYPE_Bitmap; // will be reset to TYPE_None in Clear() if loading fails
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilename)) return false;
+	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true))
+	{
+		Clear();
+		return false;
+	}
 
 	// Create owner color bitmaps
 	if (fColorByOwner)
@@ -98,14 +106,18 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
 				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
 				          szOverlay, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
-				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
+				Clear();
 				return false;
 			}
 		}
 		else
 		{
 			// otherwise, create by all blue shades
-			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap)) return false;
+			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap))
+			{
+				Clear();
+				return false;
+			}
 		}
 		fColorBitmapAutoCreated = true;
 	}
@@ -122,7 +134,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match normal %s (%d x %d) - invalid file or size mismatch",
 				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
 				          szNormal, Bmp.BitmapNormal->Wdt, Bmp.BitmapNormal->Hgt);
-				delete Bmp.BitmapNormal; Bmp.BitmapNormal = NULL;
+				Clear();
 				return false;
 			}
 
@@ -160,6 +172,8 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		}
 		delete[] buf;
+
+		Mesh->SetLabel(pDef->id.ToString());
 
 		// order submeshes
 		Mesh->PostInit();
@@ -313,6 +327,9 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 
 	switch(Type)
 	{
+	case C4DefGraphics::TYPE_None:
+		// Def has no graphics
+		break;
 	case C4DefGraphics::TYPE_Bitmap:
 		fctPicture.Set(GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
 		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);
@@ -708,7 +725,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	case MODE_Base: // def base graphics
 		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 		break;
 
@@ -739,7 +756,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			            action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
 			// FIXME: fctBlit.TargetX has to be set here
 		}
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 		{
 			C4String* AnimationName = action->GetPropertyStr(P_Animation);
 			if (!AnimationName) return;
@@ -810,117 +827,14 @@ bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 			return true;
 		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			return !!fctBlit.Surface;
-		else
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Mesh)
 			return !!pMeshInstance;
+		return false;
 	}
 	else
 	{
 		return false;
 	}
-}
-
-void C4GraphicsOverlay::Read(const char **ppInput)
-{
-	// deprecated
-	assert(false && "C4GraphicsOverlay::Read: deprecated");
-#if 0
-	const char *szReadFrom = *ppInput;
-	// defaults
-	eMode = MODE_None; pSourceGfx = NULL; *Action=0; dwBlitMode = 0; iPhase = 0; iID=0;
-	// read ID
-	SCopyUntil(szReadFrom, OSTR, ',', C4MaxName);
-	szReadFrom += strlen(OSTR); if (*szReadFrom) ++szReadFrom;
-	sscanf(OSTR, "%i", &iID);
-	// read C4ID::Gfxname
-	int32_t iLineLength = SLen(szReadFrom);
-	// not C4ID::Name?
-	if (iLineLength < 6 || szReadFrom[4]!=':' || szReadFrom[5]!=':')
-	{
-		DebugLog("C4Compiler error: Malformed graphics overlay definition!");
-		return;
-	}
-	// get ID
-	char id[5]; SCopy(szReadFrom, id, 4); szReadFrom += 6;
-	C4Def *pSrcDef = ::Definitions.ID2Def(C4Id(id)); // defaults to NULL for unloaded def
-	if (pSrcDef)
-	{
-		char GfxName[C4MaxName+1];
-		SCopyUntil(szReadFrom, GfxName, ',', C4MaxName);
-		szReadFrom += strlen(GfxName); if (*szReadFrom) ++szReadFrom;
-		// get graphics - "C4ID::" leads to *szLine == NULL, and thus the default graphic of pSrcDef!
-		pSourceGfx = pSrcDef->Graphics.Get(GfxName);
-	}
-	// read mode
-	DWORD dwRead;
-	SCopyUntil(szReadFrom, OSTR, ',', C4MaxName);
-	szReadFrom += strlen(OSTR); if (*szReadFrom) ++szReadFrom;
-	sscanf(OSTR, "%i", &dwRead); eMode = (Mode) dwRead;
-	// read action
-	SCopyUntil(szReadFrom, Action, ',', C4MaxName);
-	szReadFrom += strlen(Action); if (*szReadFrom) ++szReadFrom;
-	// read blit mode
-	SCopyUntil(szReadFrom, OSTR, ',', C4MaxName);
-	szReadFrom += strlen(OSTR); if (*szReadFrom) ++szReadFrom;
-	sscanf(OSTR, "%i", &dwBlitMode);
-	// read phase
-	SCopyUntil(szReadFrom, OSTR, ',', C4MaxName);
-	szReadFrom += strlen(OSTR); if (*szReadFrom) ++szReadFrom;
-	sscanf(OSTR, "%i", &iPhase);
-	// read transform
-	if (*szReadFrom) ++szReadFrom; // '('
-	int32_t iScanCnt = sscanf(szReadFrom, "%f,%f,%f,%f,%f,%f,%d",
-	                          &Transform.mat[0], &Transform.mat[1], &Transform.mat[2],
-	                          &Transform.mat[3], &Transform.mat[4], &Transform.mat[5], &Transform.FlipDir);
-	if (iScanCnt != 7) { DebugLog("C4Compiler: malformed C4CV_Transform"); }
-	iScanCnt = SCharPos(')', szReadFrom); if (iScanCnt>=0) szReadFrom += iScanCnt+1;
-	// assign ptr immediately after read overlay
-	*ppInput = szReadFrom;
-	// update used facet according to read data
-	UpdateFacet();
-#endif
-}
-
-void C4GraphicsOverlay::Write(char *szOutput)
-{
-	// deprecated
-	assert(false && "C4GraphicsOverlay::Write: deprecated");
-#if 0
-	// safety: Don't save invalid
-	if (!pSourceGfx) return;
-	C4Def *pDef = pSourceGfx->pDef;
-	assert(pDef);
-	// get to end of buffer
-	szOutput += strlen(szOutput);
-	// store ID
-	sprintf(OSTR, "%i", iID); SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
-	*szOutput = ','; ++szOutput;
-	// append C4ID::Graphicsname (or C4ID:: for def graphics)
-	SCopy(pDef->id.ToString(), szOutput); szOutput += strlen(szOutput);
-	SCopy("::", szOutput); szOutput += strlen(szOutput);
-	const char *szGrpName = pSourceGfx->GetName();
-	if (szGrpName) { SCopy(szGrpName, szOutput); szOutput += strlen(szOutput); }
-	*szOutput = ','; ++szOutput;
-	// store mode
-	DWORD dwMode = eMode;
-	sprintf(OSTR, "%i", dwMode); SCopy(OSTR, szOutput); szOutput += strlen(OSTR);
-	// store action
-	*szOutput = ','; ++szOutput;
-	SCopy(Action, szOutput); szOutput += strlen(szOutput);
-	// store blit mode
-	*szOutput = ','; ++szOutput;
-	sprintf(OSTR, "%i", dwBlitMode); SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
-	// store phase
-	*szOutput = ','; ++szOutput;
-	sprintf(OSTR, "%i", iPhase); SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
-	// store transform
-	*szOutput = ','; ++szOutput;
-	sprintf(OSTR, "(%f,%f,%f,%f,%f,%f,%d)",
-	        Transform.mat[0], Transform.mat[1], Transform.mat[2],
-	        Transform.mat[3], Transform.mat[4], Transform.mat[5], Transform.FlipDir);
-	SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
-	// terminate string
-	*szOutput=0;
-#endif
 }
 
 void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)

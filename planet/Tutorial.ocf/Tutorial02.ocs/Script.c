@@ -29,7 +29,7 @@ protected func Initialize()
 	CreateObjectAbove(Fuse, 255, 675, NO_OWNER)->Connect(dyn4, dyn5);
 	var igniter = CreateObjectAbove(Igniter, 110, 710, NO_OWNER);
 	CreateObjectAbove(Fuse, 240, 685, NO_OWNER)->Connect(dyn5, igniter);
-	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
+	igniter->SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with catapult stuff.
 	//var hut = CreateObjectAbove(WoodenCabin, 570, 740, NO_OWNER);
@@ -99,7 +99,6 @@ protected func Initialize()
 	chest->CreateContents(Boompack, 2);
 	
 	// Set the mood.
-	SetGamma(RGB(30, 25, 20), RGB(135, 130, 125), RGB(255, 250, 245));
 	SetSkyParallax(0, 20, 20);
 	PlaceGrass(85);
 	

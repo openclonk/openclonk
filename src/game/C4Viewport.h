@@ -20,7 +20,7 @@
 #ifndef INC_C4Viewport
 #define INC_C4Viewport
 
-#include <C4Shape.h>
+#include <C4FacetEx.h>
 
 class C4Viewport
 {
@@ -40,7 +40,7 @@ public:
 
 	float GetZoom() { return Zoom; }
 	void SetZoom(float zoomValue);
-	float GetGUIZoom() const { return BoundBy<float>(float(ViewWdt)/1280,0.5f,1.0f); }
+	float GetGUIZoom() const { return Clamp<float>(float(ViewWdt)/1280,0.5f,1.0f); }
 	void Default();
 	void Clear();
 	void Execute();
@@ -64,6 +64,8 @@ public:
 	C4Viewport *GetNext() { return Next; }
 	int32_t GetPlayer() { return Player; }
 	void CenterPosition();
+	void DisableFoW();
+	void EnableFoW();
 public: 
 	/** Return x-position of upper left corner of viewport in landscape coordinates */
 	float GetViewX() { return viewX; }
@@ -132,6 +134,8 @@ public:
 	void Execute(bool DrawBackground);
 	void SortViewportsByPlayerControl();
 	void RecalculateViewports();
+	void DisableFoW();
+	void EnableFoW();
 	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetViewportCount();

@@ -1,7 +1,22 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4Shader.h"
 #include "C4Application.h"
+#include "graphics/C4DrawGL.h"
 
 struct C4ShaderPosName {
 	int Position; const char *Name;
@@ -117,7 +132,6 @@ void C4Shader::AddSlices(ShaderSliceList& slices, const char *szWhat, const char
 		// New slice? We need a newline followed by "slice". Don't do
 		// the depth check, so that we also recognize slices inside
 		// an ifdefed-out "void main() {" block.
-		//if (iDepth < 0 && *pPos == '\n') {
 		if (*pPos == '\n') {
 			if (SEqual2(pPos+1, "slice") && !isalnum(*(pPos+6))) {
 				const char *pSliceEnd = pPos; pPos += 6;
@@ -319,8 +333,18 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 
 	// Link program
 	hProg = glCreateProgramObjectARB();
+#ifdef GL_KHR_debug
+	if (glObjectLabel)
+		glObjectLabel(GL_PROGRAM, hProg, -1, szWhat);
+#endif
 	glAttachObjectARB(hProg, hVert);
 	glAttachObjectARB(hProg, hFrag);
+	// Bind all input variables
+	for (int i = 0; i <= VAI_BoneWeightsMax - VAI_BoneWeights; ++i)
+	{
+		glBindAttribLocation(hProg, VAI_BoneWeights + i, FormatString("oc_BoneWeights%d", i).getData());
+		glBindAttribLocation(hProg, VAI_BoneIndices + i, FormatString("oc_BoneIndices%d", i).getData());
+	}
 	glLinkProgramARB(hProg);
 
 	// Link successful?
@@ -451,6 +475,10 @@ GLhandleARB C4Shader::Create(GLenum iShaderType, const char *szWhat, const char 
 {
 	// Create shader
 	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
+#ifdef GL_KHR_debug
+	if (glObjectLabel)
+		glObjectLabel(GL_SHADER, hShader, -1, szWhat);
+#endif
 
 	// Compile
 	glShaderSourceARB(hShader, 1, &szShader, 0);
@@ -484,7 +512,7 @@ void C4Shader::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
 	// Terminate, log
 	pBuf[iActualLength] = '\0';
 	ShaderLogF("  gl: Compiling %s:", szWhat);
-	ShaderLogF(pBuf);
+	ShaderLog(pBuf);
 	delete[] pBuf;
 }
 
@@ -495,7 +523,7 @@ int C4Shader::GetObjectStatus(GLhandleARB hObj, GLenum type)
 	return iStatus;
 }
 
-bool C4Shader::IsLogging() { return !!Application.isEditor; }
+bool C4Shader::IsLogging() { return Config.Graphics.DebugOpenGL != 0 || !!Application.isEditor; }
 
 GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
 {
@@ -547,10 +575,4 @@ void C4ShaderCall::Finish()
 	}
 	iUnits = 0;
 	fStarted = false;
-
-	// Got an error?
-	if(int err = glGetError())
-	{
-		LogF("GL error: %d - %s", err, gluErrorString(err));
-	}
 }

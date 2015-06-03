@@ -26,12 +26,70 @@
 #include <C4Config.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
+#include <C4SoundIncludes.h>
 #include <C4SoundLoaders.h>
 
-#if AUDIO_TK == AUDIO_TK_SDL_MIXER
-#define USE_RWOPS
-#include <SDL_mixer.h>
-#endif
+class C4SoundEffect
+{
+	friend class C4SoundInstance;
+public:
+	C4SoundEffect();
+	~C4SoundEffect();
+public:
+	char Name[C4MaxSoundName+1];
+	int32_t Instances;
+	int32_t SampleRate, Length;
+	C4SoundHandle pSample;
+	C4SoundInstance *FirstInst;
+	C4SoundEffect *Next;
+public:
+	void Clear();
+	bool Load(const char *szFileName, C4Group &hGroup);
+	bool Load(BYTE *pData, size_t iDataLen, bool fRaw=false); // load directly from memory
+	void Execute();
+	C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
+	C4SoundInstance *GetInstance(C4Object *pObj);
+	void ClearPointers(C4Object *pObj);
+	int32_t GetStartedInstanceCount(int32_t iX, int32_t iY, int32_t iRad); // local
+	int32_t GetStartedInstanceCount(); // global
+protected:
+	void AddInst(C4SoundInstance *pInst);
+	void RemoveInst(C4SoundInstance *pInst);
+};
+
+class C4SoundInstance
+{
+	friend class C4SoundEffect;
+protected:
+	C4SoundInstance();
+public:
+	~C4SoundInstance();
+protected:
+	C4SoundEffect *pEffect;
+	int32_t iVolume, iPan, iChannel;
+	C4TimeMilliseconds tStarted;
+	int32_t iNearInstanceMax;
+	bool fLooping;
+	C4Object *pObj;
+	int32_t iFalloffDistance;
+	C4SoundInstance *pNext;
+public:
+	C4Object *getObj() const { return pObj; }
+	bool isStarted() const { return iChannel != -1; }
+	void Clear();
+	bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0);
+	bool CheckStart();
+	bool Start();
+	bool Stop();
+	bool Playing();
+	void Execute();
+	void SetVolume(int32_t inVolume) { iVolume = inVolume; }
+	void SetPan(int32_t inPan) { iPan = inPan; }
+	void SetVolumeByPos(int32_t x, int32_t y);
+	void SetObj(C4Object *pnObj) { pObj = pnObj; }
+	void ClearPointers(C4Object *pObj);
+	bool Inside(int32_t iX, int32_t iY, int32_t iRad);
+};
 
 using namespace C4SoundLoaders;
 
@@ -70,7 +128,7 @@ bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
 	StdBuf WaveBuffer;
 	if (!hGroup.LoadEntry(szFileName, &WaveBuffer)) return false;
 	// load it from mem
-	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize())) return false;
+	if (!Load((BYTE*)WaveBuffer.getMData(), WaveBuffer.getSize())) return false;
 	// Set name
 	SCopy(szFileName,Name,C4MaxSoundName);
 	return true;
@@ -346,7 +404,7 @@ void C4SoundInstance::Execute()
 		// apply custom falloff distance
 		if (iFalloffDistance)
 		{
-			iAudibility = BoundBy<int32_t>(100 + (iAudibility - 100) * C4AudibilityRadius / iFalloffDistance, 0,100);
+			iAudibility = Clamp<int32_t>(100 + (iAudibility - 100) * C4AudibilityRadius / iFalloffDistance, 0,100);
 		}
 		iVol = iVol * iAudibility / 100;
 		iPan += pObj->AudiblePan;
@@ -375,12 +433,11 @@ void C4SoundInstance::Execute()
 				return;
 		// set volume & panning
 #if AUDIO_TK == AUDIO_TK_FMOD
-		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
-		FSOUND_SetPan(iChannel, BoundBy(256*(iPan+100)/200,0,255));
+		FSOUND_SetVolume(iChannel, Clamp(iVol / 100, 0, 255));
+		FSOUND_SetPan(iChannel, Clamp(256*(iPan+100)/200,0,255));
 #elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
-		//Mix_SetPanning(iChannel, ((100 + iPan) * 256) / 200, ((100 - iPan) * 256) / 200);
-		Mix_SetPanning(iChannel, BoundBy((100 - iPan) * 256 / 100, 0, 255), BoundBy((100 + iPan) * 256 / 100, 0, 255));
+		Mix_SetPanning(iChannel, Clamp((100 - iPan) * 256 / 100, 0, 255), Clamp((100 + iPan) * 256 / 100, 0, 255));
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
 		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));

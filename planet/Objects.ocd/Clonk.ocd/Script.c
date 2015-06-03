@@ -25,8 +25,6 @@
 // ladder climbing
 #include Library_CanClimbLadder
 
-local pInventory;
-
 /* Initialization */
 
 protected func Construction()
@@ -672,20 +670,38 @@ func SaveScenarioObject(props)
 
 /* AI editor helper */
 
-func EditCursorSelection()
+func EditCursorSelection(...)
 {
 	var ai = S2AI->GetAI(this);
-	if (ai) Call(S2AI.EditCursorSelection, ai);
+	if (ai) Call(S2AI.EditCursorSelection, ai, ...);
 	return _inherited(...);
 }
 
-func EditCursorDeselection()
+func EditCursorDeselection(...)
 {
 	var ai = S2AI->GetAI(this);
-	if (ai) Call(S2AI.EditCursorDeselection, ai);
+	if (ai) Call(S2AI.EditCursorDeselection, ai, ...);
 	return _inherited(...);
 }
 
+func AI_Add()
+{
+	// Create AI and re-select
+	S2AI->AddAI(this);
+	EditCursorDeselection();
+	EditCursorSelection();
+	return true;
+}
+
+func FlipDir()
+{
+	// Look the other way. If an AI is attached, also update its home position.
+	var new_dir = 1-GetDir();
+	if (this.ai) this.ai.home_dir = new_dir;
+	return SetDir(new_dir);
+}
+
+local EditCursorCommands = ["AI_Add()", "FlipDir()"];
 
 /* Act Map */
 

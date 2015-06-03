@@ -30,6 +30,7 @@
 #include <C4RankSystem.h>
 #include <C4SoundSystem.h>
 #include <C4SolidMask.h>
+#include <CSurface8.h>
 
 // Helper class to load additional resources required for meshes from
 // a C4Group.
@@ -99,7 +100,6 @@ void C4Def::DefaultDefCore()
 	TopFace.Default();
 	Component.Default();
 	BurnTurnTo=C4ID::None;
-	BuildTurnTo=C4ID::None;
 	GrowthType=0;
 	CrewMember=0;
 	NativeCrew=0;
@@ -116,7 +116,6 @@ void C4Def::DefaultDefCore()
 	BorderBound=0;
 	LiftTop=0;
 	GrabPutGet=0;
-	ContainBlast=0;
 	UprightAttach=0;
 	ContactFunctionCalls=0;
 	Line=0;
@@ -151,11 +150,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		if (!Compile(Source.getData(), Name.getData()))
 			return false;
 		Source.Clear();
-
-		// Let's be bold: Rewrite, with current version
-		/*rC4XVer[0] = C4XVER1; rC4XVer[1] = C4XVER2;
-		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
-		Save(hGroup);*/
 
 		// Check mass
 		if (Mass < 0)
@@ -197,6 +191,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	const StdBitfieldEntry<int32_t> Categories[] =
 	{
 
+		{ "C4D_None",                     C4D_None                },
 		{ "C4D_StaticBack",               C4D_StaticBack          },
 		{ "C4D_Structure",                C4D_Structure           },
 		{ "C4D_Vehicle",                  C4D_Vehicle             },
@@ -237,7 +232,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
-	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));
 
 	const StdBitfieldEntry<int32_t> GrabPutGetTypes[] =
 	{
@@ -254,7 +248,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Rotateable,                    "Rotate",             0                 ));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,               "RotatedEntrance",    0                 ));
 	pComp->Value(mkNamingAdapt(Float,                         "Float",              0                 ));
-	pComp->Value(mkNamingAdapt(ContainBlast,                  "ContainBlast",       0                 ));
 	pComp->Value(mkNamingAdapt(ColorByOwner,                  "ColorByOwner",       0                 ));
 	pComp->Value(mkNamingAdapt(NoHorizontalMove,              "HorizontalFix",      0                 ));
 	pComp->Value(mkNamingAdapt(BorderBound,                   "BorderBound",        0                 ));
@@ -365,6 +358,10 @@ bool C4Def::Load(C4Group &hGroup,
 		Log(hGroup.GetFullName().getData());
 
 	if (AddFileMonitoring) Game.pFileMonitor->AddDirectory(Filename);
+
+	// Pre-read all images and shader stuff because they ar eaccessed in unpredictable order during loading
+	hGroup.PreCacheEntries(C4CFN_ShaderFiles);
+	hGroup.PreCacheEntries(C4CFN_ImageFiles);
 
 	LoadMeshMaterials(hGroup);
 	bool fSuccess = LoadParticleDef(hGroup);
@@ -484,11 +481,9 @@ bool C4Def::LoadSolidMask(C4Group &hGroup)
 
 bool C4Def::LoadGraphics(C4Group &hGroup, StdMeshSkeletonLoader &loader)
 {
-	if (!Graphics.Load(hGroup, loader, !!ColorByOwner))
-	{
-		DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
-		return false;
-	}
+	// Try to load graphics
+	// No fail on error - just have an object without graphics.
+	Graphics.Load(hGroup, loader, !!ColorByOwner);
 
 	if (Graphics.Type == C4DefGraphics::TYPE_Bitmap)
 	{

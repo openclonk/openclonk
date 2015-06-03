@@ -18,6 +18,7 @@
 #include <C4Include.h>
 #include <C4StartupOptionsDlg.h>
 
+#include <C4Application.h>
 #include <C4StartupMainDlg.h>
 #include <C4Language.h>
 #include <C4GamePadCon.h>
@@ -42,7 +43,7 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	// draw frame
 	uint32_t dwClrHigh = C4StartupBtnBorderColor1, dwClrLow = C4StartupBtnBorderColor2;
 	if (fDown) Swap<uint32_t>(dwClrHigh, dwClrLow);
-	int32_t iIndent = BoundBy<int32_t>((rcBounds.Hgt-iTextHgt)/3, 2, 5);
+	int32_t iIndent = Clamp<int32_t>((rcBounds.Hgt-iTextHgt)/3, 2, 5);
 	float iDrawQuadTop[8] = { x0,y0, x1,y0, x1-iIndent,y0+iIndent, x0,y0+iIndent };
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
@@ -51,7 +52,6 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
 	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
 	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	//pDraw->DrawFrameDw(cgo.Surface, x0+1, y0+1, x1-1, y1-1, aC4StartupBtnBorderColor2);
 	// draw selection highlight
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
@@ -109,11 +109,11 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	rcBtn.Wdt = C4GUI_DefButton2Wdt;
 	// Yes
 	C4GUI::Button *pBtnYes = new C4GUI::YesButton(rcBtn);
-	AddElement(pBtnYes); //pBtnYes->SetToolTip(LoadResStr("IDS_DLGTIP_OK2"));
+	AddElement(pBtnYes);
 	rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 	// No
 	C4GUI::Button *pBtnNo = new C4GUI::NoButton(rcBtn);
-	AddElement(pBtnNo); //pBtnNo->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+	AddElement(pBtnNo);
 	// initial focus on abort button, to prevent accidental acceptance of setting by "blind" users
 	SetFocus(pBtnNo, false);
 	// resize to actually needed size
@@ -387,7 +387,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	C4Facet fctCtrlDefPic = ::GraphicsResource.fctKeyboard; // 
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
-	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlDefPic.Wdt);
+	int32_t iCtrlSetBtnWdt = Clamp<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlDefPic.Wdt);
 	int32_t iCtrlSetBtnHgt = fctCtrlDefPic.GetHeightByWidth(iCtrlSetBtnWdt);
 	iCtrlSetHMargin = (iCtrlSetWdt - iCtrlSetBtnWdt*iMaxControlSets) / (iMaxControlSets*2);
 	C4GUI::ComponentAligner caKeyboardSetSel(caArea.GetFromTop(2*iCtrlSetVMargin+iCtrlSetBtnHgt), iCtrlSetHMargin, iCtrlSetVMargin);
@@ -444,21 +444,6 @@ void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
 		ppKeyControlSetBtns[i]->SetHighlight(i == iSelectedCtrlSet);
 	// update list
 	control_list->SetAssignmentSet(Game.PlayerControlUserAssignmentSets.GetSetByIndex(iSelectedCtrlSet));
-	// update keys by config
-	/*if (fGamepad)
-	{
-		for (i = 0; i < C4MaxKey; ++i)
-			KeyControlBtns[i]->SetKey(Config.Gamepads[iSelectedCtrlSet].Button[i]);
-	}
-	// open gamepad
-	if (fGamepad && Config.General.GamepadEnabled)
-	{
-		if (!pGamepadOpener) pGamepadOpener = new C4GamePadOpener(iSelectedCtrlSet);
-		else pGamepadOpener->SetGamePad(iSelectedCtrlSet);
-	}
-	// show/hide gamepad-gui-control checkbox
-	if (fGamepad && pGUICtrl)
-		pGUICtrl->SetVisibility(iSelectedCtrlSet == 0);*/
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn(C4GUI::Control *btn)
@@ -508,7 +493,6 @@ C4StartupOptionsDlg::NetworkPortConfig::NetworkPortConfig(const C4Rect &rcBounds
 	pPortEdit->InsertText(FormatString("%d", fEnabled ? ((int) *pConfigValue) : (int) iDefault).getData(), false);
 	pPortEdit->SetMaxText(10); // 65535 is five characters long - but allow some more for easier editing
 	pPortEdit->SetVisibility(fEnabled);
-	//pPortEdit->SetEnabled(fEnabled);
 	AddElement(pPortEdit);
 }
 
@@ -1356,17 +1340,12 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
 	// 2do: enumerate possible font sizes by the font here
 	// 2do: Hide font sizes that would be too large for the selected resolution
-	//pFiller->AddEntry("8", 8);
 	pFiller->AddEntry("10", 10);
 	pFiller->AddEntry("12", 12);
 	pFiller->AddEntry("14", 14);
 	pFiller->AddEntry("16", 16);
 	pFiller->AddEntry("18", 18);
 	pFiller->AddEntry("20", 20);
-	//pFiller->AddEntry("24", 24);
-	//pFiller->AddEntry("28", 28);
-	//pFiller->AddEntry("32", 32);
-	//pFiller->AddEntry("48", 48);
 }
 
 bool C4StartupOptionsDlg::OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)

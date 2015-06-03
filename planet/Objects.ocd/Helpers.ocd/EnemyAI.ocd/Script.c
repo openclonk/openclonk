@@ -13,21 +13,34 @@ func AddAI(object clonk)
 	if (!fx || !clonk) return nil;
 	fx.ai = S2AI;
 	clonk.ExecuteS2AI = S2AI.Execute;
+	clonk.ai = fx;
 	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
 	BindInventory(clonk);
 	SetHome(clonk);
 	SetGuardRange(clonk, fx.home_x-S2AI_DefGuardRangeX, fx.home_y-S2AI_DefGuardRangeY, S2AI_DefGuardRangeX*2, S2AI_DefGuardRangeY*2);
 	SetMaxAggroDistance(clonk, S2AI_DefMaxAggroDistance);
+	// AI editor commands
+	if (!clonk.EditCursorCommands)
+		clonk.EditCursorCommands = [];
+	else if (clonk.EditCursorCommands == clonk.Prototype.EditCursorCommands)
+		clonk.EditCursorCommands = clonk.EditCursorCommands[:];
+	var idx;
+	if ((idx=GetIndexOf(clonk.EditCursorCommands, "AI_Add()"))>=0) clonk.EditCursorCommands[idx] = nil;
+	if (GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome)<0)
+	{
+		var l = GetLength(clonk.EditCursorCommands);
+		clonk.EditCursorCommands[l++] = clonk.AI_SetHome = S2AI.AI_SetHome;
+		clonk.EditCursorCommands[l++] = clonk.AI_BindInventory = S2AI.AI_BindInventory;
+	}
 	return fx;
 }
 
-func GetAI(object clonk) { return GetEffect("S2AI", clonk); }
+func GetAI(object clonk) { return clonk.ai; }
 
 // Set the current inventory to be removed when the clonk dies. Only works if clonk has an AI.
 func BindInventory(object clonk)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	var cnt = clonk->ContentsCount();
 	fx.bound_weapons = CreateArray(cnt);
 	for (var i=0; i<cnt; ++i) fx.bound_weapons[i] = clonk->Contents(i);
@@ -38,8 +51,7 @@ func BindInventory(object clonk)
 // Set the home position the Clonk returns to if he has no target
 func SetHome(object clonk, int x, int y, int dir)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	// nil/nil defaults to current position
 	if (!GetType(x)) x=clonk->GetX();
 	if (!GetType(y)) y=clonk->GetY();
@@ -49,11 +61,19 @@ func SetHome(object clonk, int x, int y, int dir)
 	return true;
 }
 
+// Put into clonk proplist
+func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
+func AI_SetHome() { return this.ai.ai->SetHome(this); }
+
 // Set the guard range to the provided rectangle
 func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
+	// clip to landscape size
+	if (x<0) { wdt+=x; x=0; }
+	if (y<0) { wdt+=x; x=0; }
+	wdt = Min(wdt, LandscapeWidth() - x);
+	hgt = Min(hgt, LandscapeHeight() - y);
 	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -62,8 +82,7 @@ func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 // Set the maximum distance the enemy will follow an attacking Clonk
 func SetMaxAggroDistance(object clonk, int max_dist)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.max_aggro_distance = max_dist;
 	return true;
 }
@@ -71,8 +90,7 @@ func SetMaxAggroDistance(object clonk, int max_dist)
 // Set range in which, on first encounter, allied AI Clonks get the same aggro target set
 func SetAllyAlertRange(object clonk, int new_range)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.ally_alert_range = new_range;
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -83,8 +101,7 @@ func SetAllyAlertRange(object clonk, int new_range)
 // The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
 func SetEncounterCB(object clonk, string cb_fn)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx || !clonk) return false;
+	if (!clonk) return false; var fx = clonk.ai; if (!fx) return false;
 	fx.encounter_cb = cb_fn;
 	clonk->Call(fx.ai.UpdateDebugDisplay, fx);
 	return true;
@@ -121,6 +138,15 @@ protected func FxS2AIStop(clonk, fx, int reason)
 	if (reason == FX_Call_RemoveDeath)
 	{
 		if (fx.bound_weapons) for (var obj in fx.bound_weapons) if (obj && obj->Contained()==clonk) obj->RemoveObject();
+	}
+	// remove AI reference
+	if (clonk && clonk.ai == fx) clonk.ai = nil;
+	// remove edit cursor commands
+	if (clonk && clonk.EditCursorCommands)
+	{
+		var idx;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome))>=0) clonk.EditCursorCommands[idx] = nil;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_BindInventory))>=0) clonk.EditCursorCommands[idx] = nil;
 	}
 	return FX_OK;
 }
@@ -539,6 +565,11 @@ private func FindInventoryWeapon(fx)
 			{ fx.strategy = fx.ai.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = fx.ai.CheckVehicleAmmo; return true; }
 		else
 			fx.weapon = nil;
+	if (fx.weapon = FindContents(GrenadeLauncher))
+		if (HasBombs(fx, fx.weapon))
+			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 75; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasBombs; fx.ranged=true; return true; }
+		else
+			fx.weapon = nil;
 	if (fx.weapon = FindContents(Bow))
 		if (HasArrows(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
@@ -557,6 +588,13 @@ private func HasArrows(fx, object weapon)
 {
 	if (weapon->Contents(0)) return true;
 	if (FindObject(Find_Container(this), Find_Func("IsArrow"))) return true;
+	return false;
+}
+
+private func HasBombs(fx, object weapon)
+{
+	if (weapon->Contents(0)) return true;
+	if (FindObject(Find_Container(this), Find_Func("IsGrenadeLauncherAmmo"))) return true;
 	return false;
 }
 
@@ -632,17 +670,31 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 /* Editor display */
 
 // called in clonk context
-func UpdateDebugDisplay(fx)
+func UpdateDebugDisplay(fx, int ignore_range_marker)
 {
-	if (fx.debug) { EditCursorDeselection(fx); EditCursorSelection(fx); }
+	if (fx.debug) CreateDebugDisplay(fx, ignore_range_marker);
 	return true;
 }
 
-// called in clonk context
 func EditCursorSelection(fx)
 {
+	// Object selected in editor. Show markers!
+	return CreateDebugDisplay(fx);
+}
+
+func EditCursorDeselection(fx, object next_target)
+{
+	// Is the user manipulating markers? Then don't remove them!
+	if (next_target && next_target->GetID() == RangeMarker) return true;
+	// Otherwise, clear markers
+	return RemoveDebugDisplay(fx);
+}
+
+// called in clonk context
+func CreateDebugDisplay(fx, int ignore_range_marker)
+{
 	// clear previous
-	if (fx.debug) EditCursorDeselection(fx);
+	if (fx.debug) RemoveDebugDisplay(fx, ignore_range_marker);
 	// encounter message
 	var msg = "";
 	if (fx.encounter_cb) msg = Format("%s%v", msg, fx.encounter_cb);
@@ -651,7 +703,7 @@ func EditCursorSelection(fx)
 		msg = Format("%s{{%i}}", msg, Contents(i)->GetID());
 	Message("@AI %s", msg);
 	// draw ally alert range. draw as square, although a circle would be more appropriate
-	fx.debug = {};
+	if (!fx.debug) fx.debug = {};
 	var clr;
 	var x=GetX(), y=GetY();
 	if (fx.ally_alert_range)
@@ -670,25 +722,50 @@ func EditCursorSelection(fx)
 		fx.debug.r2 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r3 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r4 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y,clr);
+		if (!fx.debug.rm1) fx.debug.rm1 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y                   ,  0, this, S2AI.ChangeGuardRange, 0);
+		if (!fx.debug.rm2) fx.debug.rm2 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y                   , 90, this, S2AI.ChangeGuardRange, 1);
+		if (!fx.debug.rm3) fx.debug.rm3 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y+fx.guard_range.hgt,180, this, S2AI.ChangeGuardRange, 2);
+		if (!fx.debug.rm4) fx.debug.rm4 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y+fx.guard_range.hgt,270, this, S2AI.ChangeGuardRange, 3);
 	}
 	return true;
 }
 
-// called in clonk context
-func EditCursorDeselection(fx)
+func ChangeGuardRange(int corner_idx, int x, int y)
 {
+	var fx = this.ai;
+	if (!fx) return false;
+	if (corner_idx == 0 || corner_idx == 3)
+		{ fx.guard_range.wdt += fx.guard_range.x - x; fx.guard_range.x = x; }
+	else
+		{ fx.guard_range.wdt = x - fx.guard_range.x; }
+	if (corner_idx < 2)
+		{ fx.guard_range.hgt += fx.guard_range.y - y; fx.guard_range.y = y; }
+	else
+		{ fx.guard_range.hgt = y - fx.guard_range.y; }
+	Call(fx.ai.UpdateDebugDisplay, fx, corner_idx+1);
+	return true;
+}
+
+// called in clonk context
+func RemoveDebugDisplay(fx, int ignore_range_marker)
+{
+	// Remove any marker objects
 	if (fx.debug)
 	{
 		if (fx.debug.r1) fx.debug.r1->RemoveObject();
 		if (fx.debug.r2) fx.debug.r2->RemoveObject();
 		if (fx.debug.r3) fx.debug.r3->RemoveObject();
 		if (fx.debug.r4) fx.debug.r4->RemoveObject();
+		if (ignore_range_marker != 1 && fx.debug.rm1) fx.debug.rm1->RemoveObject();
+		if (ignore_range_marker != 2 && fx.debug.rm2) fx.debug.rm2->RemoveObject();
+		if (ignore_range_marker != 3 && fx.debug.rm3) fx.debug.rm3->RemoveObject();
+		if (ignore_range_marker != 4 && fx.debug.rm4) fx.debug.rm4->RemoveObject();
 		if (fx.debug.a1) fx.debug.a1->RemoveObject();
 		if (fx.debug.a2) fx.debug.a2->RemoveObject();
 		if (fx.debug.a3) fx.debug.a3->RemoveObject();
 		if (fx.debug.a4) fx.debug.a4->RemoveObject();
 		Message("");
 	}
-	fx.debug = nil;
+	if (!ignore_range_marker) fx.debug = nil;
 	return true;
 }

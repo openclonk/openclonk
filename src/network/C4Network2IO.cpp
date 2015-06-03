@@ -124,19 +124,6 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		else
 			LogSilentF("Network: UDP initialized on port %d", iPortUDP);
 
-		// broadcast deactivated for now, it will possibly cause problems with connection recovery
-#if 0
-		if (pNetIO_UDP && fBroadcast)
-		{
-			// init broadcast
-			C4NetIO::addr_t BCAddr; ZeroMem(&BCAddr, sizeof BCAddr);
-			if (!pNetIO_UDP->InitBroadcast(&BCAddr))
-				LogF("Network: could not init UDP broadcast (%s)", pNetIO_UDP->GetError() ? pNetIO_UDP->GetError() : "");
-			else
-				LogSilentF("Network: UDP broadcast using %s:%d", inet_ntoa(BCAddr.sin_addr), htons(BCAddr.sin_port));
-		}
-#endif
-
 		// add to thread, set callback
 		if (pNetIO_UDP)
 		{
@@ -426,12 +413,6 @@ bool C4Network2IO::Broadcast(const C4NetIOPacket &rPkt)
 	if(!fSuccess)
 		Log("Network: Warning! Broadcast failed.");
 	return fSuccess;
-#if 0
-	// broadcast using all available i/o classes
-	if (pNetIO_TCP) fSuccess &= pNetIO_TCP->Broadcast(rPkt);
-	if (pNetIO_UDP) fSuccess &= pNetIO_UDP->Broadcast(rPkt);
-	return fSuccess;
-#endif
 }
 
 bool C4Network2IO::SendMsgToClient(C4NetIOPacket &rPkt, int iClient) // by both
@@ -499,7 +480,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 			return false;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnConn: %s %s",
+	Application.InteractiveThread.ThreadLogS("OnConn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
@@ -553,7 +534,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 			return;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnDisconn: %s %s",
+	Application.InteractiveThread.ThreadLogS("OnDisconn: %s %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
@@ -581,8 +562,11 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 
 void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
+#if C4NET2IO_DUMP_LEVEL > 0
+	auto tTime = C4TimeMilliseconds::Now();
+#endif
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	ThreadLogS("OnPacket: %s status %02x %s",
+	Application.InteractiveThread.ThreadLogS("OnPacket: %s status %02x %s",
 	           C4TimeMilliseconds::Now().AsString().getData(),
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
@@ -593,7 +577,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 #if(C4NET2IO_DUMP_LEVEL > 2)
 	uint32_t iFindConnectionBlocked = C4TimeMilliseconds::Now() - tTime;
 	if (iFindConnectionBlocked > 100)
-		ThreadLogS("OnPacket: ... blocked %d ms for finding the connection!", iFindConnectionBlocked);
+		Application.InteractiveThread.ThreadLogS("OnPacket: ... blocked %d ms for finding the connection!", iFindConnectionBlocked);
 #endif
 	// notify
 	pConn->OnPacketReceived(rPacket.getStatus());
@@ -603,7 +587,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	uint32_t iHandlingBlocked = C4TimeMilliseconds::Now() - tTime;
 	if (iHandlingBlocked > 100)
-		ThreadLogS("OnPacket: ... blocked %d ms for handling!", iHandlingBlocked);
+		Application.InteractiveThread.ThreadLogS("OnPacket: ... blocked %d ms for handling!", iHandlingBlocked);
 #endif
 }
 
@@ -871,7 +855,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 					uint32_t iBlockedTime = C4TimeMilliseconds::Now() - tStart;
 					if (fThread && iBlockedTime > 100)
 					{
-						ThreadLogS("HandlePacket: ... blocked for %u ms!", iBlockedTime);
+						Application.InteractiveThread.ThreadLogS("HandlePacket: ... blocked for %u ms!", iBlockedTime);
 					}
 #endif
 
@@ -961,7 +945,7 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 
 #define GETPKT(type, name) \
     assert(pPacket); const type &name = \
-      /*dynamic_cast*/ static_cast<const type &>(*pPacket);
+     static_cast<const type &>(*pPacket);
 
 	switch (cStatus)
 	{
@@ -1148,26 +1132,6 @@ bool C4Network2IO::Ping()
 			pConn->OnPing();
 		}
 	return fSuccess;
-#if 0
-	// begin broadcast
-	BeginBroadcast(true);
-	// make packet
-	C4NetIOPacket Pkt = MkC4NetIOPacket(PID_Ping, C4PacketPing());
-	// ping everyone
-	if (pNetIO_TCP)
-		if (!pNetIO_TCP->Broadcast(Pkt))
-			{ fSuccess = false; ThreadLog("Network: failed to broadcast TCP ping! (%s)", pNetIO_TCP->GetError()); pNetIO_TCP->ResetError(); }
-	if (pNetIO_UDP)
-		if (!pNetIO_UDP->Broadcast(Pkt))
-			{ fSuccess = false; ThreadLog("Network: failed to broadcast UDP ping! (%s)", pNetIO_TCP->GetError()); pNetIO_TCP->ResetError(); }
-	// end broadcast
-	EndBroadcast();
-	// notify connections
-	for (C4Network2IOConnection *pConn = pConnList; pConn; pConn = pConn->pNext)
-		pConn->OnPing();
-	// return
-	return fSuccess;
-#endif
 }
 
 void C4Network2IO::CheckTimeout()
@@ -1276,9 +1240,9 @@ void C4Network2IO::SendConnPackets()
 void C4Network2IO::OnPunch(C4NetIO::addr_t addr)
 {
 	// Sanity check
-	if (addr.sin_family != AF_INET && addr.sin_family != htons(AF_INET))
+	assert (addr.sin_family == AF_INET);
+	if (addr.sin_family != AF_INET)
 		return;
-	addr.sin_family = AF_INET;
 	ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));
 	// Add for local client
 	C4Network2Client *pLocal = ::Network.Clients.GetLocal();

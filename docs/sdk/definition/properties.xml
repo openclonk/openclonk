@@ -146,6 +146,11 @@ Stand = {
           <col>Placement: 0 land surface, 1 in liquid, 2 in mid-air, 3 underground, 4 land surface and underground.</col>
         </row>
 		<row>
+          <literal_col>ContainBlast</literal_col>
+          <col>bool</col>
+          <col>True or false. Determines whether explosions in the object's contents affect other objects outside.</col>
+        </row>
+		<row>
           <literal_col>BlastIncinerate</literal_col>
           <col>Integer</col>
           <col>Incineration by explosion: 0 none, otherwise the damage level that has to be reached until the object is incinerated. </col>

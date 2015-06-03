@@ -22,10 +22,7 @@
 
 #include <C4Random.h>
 #include <C4Texture.h>
-#include <C4Group.h>
-
 #include <CSurface8.h>
-#include <Bitmap256.h>
 
 C4MapCreator::C4MapCreator()
 {
@@ -89,7 +86,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
 	// Safeties
 	if (!sfcMap) return;
-	iPlayerNum=BoundBy<int32_t>(iPlayerNum,1,C4S_MaxPlayer);
+	iPlayerNum=Clamp<int32_t>(iPlayerNum,1,C4S_MaxPlayer);
 
 	// Set creator variables
 	MapBuf = sfcMap;
@@ -127,7 +124,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 		cy_curve=sin(fullperiod*period/100.0*(float)cx/(float)MapWdt
 		             +2.0*M_PI*phase/100.0) * amplitude/100.0;
 
-		cy=level0+BoundBy((int32_t)((float)maxrange*(cy_curve+cy_natural)),
+		cy=level0+Clamp((int32_t)((float)maxrange*(cy_curve+cy_natural)),
 		                  -maxrange,+maxrange);
 
 
@@ -180,53 +177,6 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 	}
 
 }
-
-/*bool C4MapCreator::Load(
-        BYTE **pbypBuffer,
-        int32_t &rBufWdt, int32_t &rMapWdt, int32_t &rMapHgt,
-        C4Group &hGroup, const char *szEntryName,
-        C4TextureMap &rTexMap)
-  {
-  bool fOwnBuf=false;
-
-  C4BMP256Info Bmp;
-
-  // Access entry in group, read bitmap info
-  if (!hGroup.AccessEntry(szEntryName)) return false;
-  if (!hGroup.Read(&Bmp,sizeof(Bmp))) return false;
-  if (!Bmp.Valid()) return false;
-  if (!hGroup.Advance(Bmp.FileBitsOffset())) return false;
-
-  // If buffer is present, check for sufficient size
-  if (*pbypBuffer)
-    {
-    if ((Bmp.Info.biWidth>rMapWdt)
-     || (Bmp.Info.biHeight>rMapHgt) ) return false;
-    }
-  // Else, allocate buffer, set sizes
-  else
-    {
-    rMapWdt = Bmp.Info.biWidth;
-    rMapHgt = Bmp.Info.biHeight;
-    rBufWdt = rMapWdt; int dwBufWdt = rBufWdt; DWordAlign(dwBufWdt); rBufWdt = dwBufWdt;
-    if (!(*pbypBuffer = new BYTE [rBufWdt*rMapHgt]))
-      return false;
-    fOwnBuf=true;
-    }
-
-  // Read bits to buffer
-  for (int32_t cline=Bmp.Info.biHeight-1; cline>=0; cline--)
-    if (!hGroup.Read(*pbypBuffer+rBufWdt*cline,rBufWdt))
-      { if (fOwnBuf) delete [] *pbypBuffer; return false; }
-
-  // Validate texture indices
-  MapBuf=*pbypBuffer;
-  MapBufWdt=rBufWdt;
-  MapWdt=rMapWdt; MapHgt=rMapHgt;
-  ValidateTextureIndices(rTexMap);
-
-  return true;
-  }*/
 
 void C4MapCreator::ValidateTextureIndices(C4TextureMap &rTextureMap)
 {

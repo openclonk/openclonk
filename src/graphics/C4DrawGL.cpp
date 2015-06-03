@@ -24,7 +24,7 @@
 #include <C4FoWRegion.h>
 #include "C4Rect.h"
 #include "C4Config.h"
-#include "C4Application.h"
+#include <C4App.h>
 
 #ifndef USE_CONSOLE
 
@@ -35,7 +35,72 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <limits.h>
+
+namespace
+{
+	const char *MsgSourceToStr(GLenum source)
+	{
+		switch (source)
+		{
+		case GL_DEBUG_SOURCE_API_ARB: return "API";
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB: return "window system";
+		case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB: return "shader compiler";
+		case GL_DEBUG_SOURCE_THIRD_PARTY_ARB: return "third party";
+		case GL_DEBUG_SOURCE_APPLICATION_ARB: return "application";
+		case GL_DEBUG_SOURCE_OTHER_ARB: return "other";
+		default: return "<unknown>";
+		}
+	}
+
+	const char *MsgTypeToStr(GLenum type)
+	{
+		switch (type)
+		{
+		case GL_DEBUG_TYPE_ERROR_ARB: return "error";
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: return "deprecation warning";
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: return "undefined behavior warning";
+		case GL_DEBUG_TYPE_PORTABILITY_ARB: return "portability warning";
+		case GL_DEBUG_TYPE_PERFORMANCE_ARB: return "performance warning";
+		case GL_DEBUG_TYPE_OTHER_ARB: return "other message";
+		default: return "unknown message";
+		}
+	}
+
+	const char *MsgSeverityToStr(GLenum severity)
+	{
+		switch (severity)
+		{
+		case GL_DEBUG_SEVERITY_HIGH_ARB: return "high";
+		case GL_DEBUG_SEVERITY_MEDIUM_ARB: return "medium";
+		case GL_DEBUG_SEVERITY_LOW_ARB: return "low";
+#ifdef GL_DEBUG_SEVERITY_NOTIFICATION
+		case GL_DEBUG_SEVERITY_NOTIFICATION: return "notification";
+#endif
+		default: return "<unknown>";
+		}
+	}
+
+#ifdef GLDEBUGPROCARB_USERPARAM_IS_CONST
+#define USERPARAM_CONST const
+#else
+#define USERPARAM_CONST
+#endif
+
+	void GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, USERPARAM_CONST void* userParam)
+	{
+		const char *msg_source = MsgSourceToStr(source);
+		const char *msg_type = MsgTypeToStr(type);
+		const char *msg_severity = MsgSeverityToStr(severity);
+
+		LogSilentF("  gl: %s severity %s %s: %s", msg_severity, msg_source, msg_type, message);
+#ifdef USE_WIN32_WINDOWS
+		if (IsDebuggerPresent() && severity == GL_DEBUG_SEVERITY_HIGH_ARB)
+			BREAKPOINT_HERE;
+#endif
+	}
+}
+
+#undef USERPARAM_CONST
 
 CStdGL::CStdGL():
 		pMainCtx(0)
@@ -56,7 +121,7 @@ CStdGL::~CStdGL()
 void CStdGL::Clear()
 {
 	NoPrimaryClipper();
-	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
+	// cannot unlock TexMgr here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
 	RenderTarget = NULL;
@@ -107,11 +172,7 @@ bool CStdGL::UpdateClipper()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	// Set clipping plane to -1000 and 1000 so that large meshes are not
-	// clipped away.
-	//glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
 	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
-	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 }
 
@@ -121,7 +182,6 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// not ready?
 	if (!Active)
-		//if (!RestoreDeviceObjects())
 		return false;
 	// target?
 	if (!sfcToSurface) return false;
@@ -149,11 +209,22 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
+
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
 	bool first_ctx = !pMainCtx;
 	if (first_ctx) pMainCtx = pCtx;
 	bool success = pCtx->Init(pWindow, pApp);
+	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
+	{
+		DebugLog("  gl: Setting OpenGLDebugProc callback");
+		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+#ifdef GL_KHR_debug
+		if (GLEW_KHR_debug)
+			glEnable(GL_DEBUG_OUTPUT);
+#endif
+	}
 	// First context: Log some information about hardware/drivers
 	// Must log after context creation to get valid results
 	if (first_ctx)
@@ -161,9 +232,43 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 		const char *gl_vendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
 		const char *gl_renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 		const char *gl_version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-		const char *gl_extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
 		LogF("GL %s on %s (%s)", gl_version ? gl_version : "", gl_renderer ? gl_renderer : "", gl_vendor ? gl_vendor : "");
-		// LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : ""); // uncomment to flood the log with extension list
+		if (Config.Graphics.DebugOpenGL)
+		{
+			// Dump extension list
+			if (glGetStringi)
+			{
+				GLint gl_extension_count = 0;
+				glGetIntegerv(GL_NUM_EXTENSIONS, &gl_extension_count);
+				if (gl_extension_count == 0)
+				{
+					LogSilentF("No available extensions.");
+				}
+				else
+				{
+					LogSilentF("%d available extensions:", gl_extension_count);
+					for (GLint i = 0; i < gl_extension_count; ++i)
+					{
+						const char *gl_extension = (const char*)glGetStringi(GL_EXTENSIONS, i);
+						LogSilentF("  %4d: %s", i, gl_extension);
+					}
+				}
+			}
+			else
+			{
+				const char *gl_extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
+				LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : "");
+			}
+		}
+
+		// Check which workarounds we have to apply
+		{
+			// If we have less than 2048 uniform components available, we
+			// need to upload bone matrices in a different way
+			GLint count;
+			glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &count);
+			Workarounds.LowMaxVertexUniformCount = count < 2048;
+		}
 	}
 	if (!success)
 	{
@@ -187,6 +292,11 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
+	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
+	{
+		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+	}
 	if (!pMainCtx)
 	{
 		pMainCtx = pCtx;
@@ -205,7 +315,18 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, unsigned int)
 {
 	// store options
-	return RestoreDeviceObjects();
+	bool ok = RestoreDeviceObjects();
+
+	// - AMD GPUs have supported OpenGL 2.1 since 2007
+	// - nVidia GPUs have supported OpenGL 2.1 since 2005
+	// - Intel integrated GPUs have supported OpenGL 2.1 since Clarkdale (maybe earlier).
+	// And we've already been using features from OpenGL 2.1. Nobody has complained yet.
+	// So checking for 2.1 support should be fine.
+	if (!GLEW_VERSION_2_1)
+	{
+		return Error("  gl: OpenGL Version 2.1 or higher required. A better graphics driver will probably help.");
+	}
+	return ok;
 }
 
 void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr)
@@ -262,7 +383,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 		// Dynamic Light
 		call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->ppTex[0]->texName);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
 
 		float lightTransform[6];
 		pFoW->GetFragTransform(ClipRect, OutRect, lightTransform);
@@ -458,6 +579,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_Bones] = "bones";
 	uniformNames[C4SSU_Count] = NULL;
 
 	// Clear previous content
@@ -598,16 +720,6 @@ bool CStdGL::RestoreDeviceObjects()
 	Active = pMainCtx->Select();
 	RenderTarget = pApp->pWindow->pSurface;
 
-	// TODO: I think this should be updated. We need at least GLSL 1.20 now, which is OpenGL 2.1
-	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	// Check for GL 1.2 and two functions from 1.3 we need.
-	if( !GLEW_VERSION_1_2 ||
-		glActiveTexture == NULL ||
-		glClientActiveTexture == NULL
-	) {
-		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
-	}
-
 	// lines texture
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenTextures(1, &lines_tex);
@@ -684,7 +796,19 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 {
 	GLenum err = glGetError();
 	if (!err) return true;
-	LogF("GL error with %s: %d - %s", szAtOp, err, gluErrorString(err));
+
+#ifdef USE_WIN32_WINDOWS
+	StdStrBuf err_buf(gluErrorUnicodeStringEXT(err));
+#else
+	// gluErrorString returns latin-1 strings. Our code expects UTF-8, so convert
+	// Also for some reason gluErrorString returns const GLubyte* instead of a more
+	// reasonable const char *, so cast it - C-style cast required here to match
+	// both unsigned and signed char
+	StdStrBuf err_buf((const char*)gluErrorString(err));
+	err_buf.EnsureUnicode();
+#endif
+
+	LogF("GL error with %s: %d - %s", szAtOp, err, err_buf.getData());
 	return false;
 }
 
@@ -705,6 +829,7 @@ void CStdGL::Default()
 	iPixelFormat=0;
 	sfcFmt=0;
 	iClrDpt=0;
+	Workarounds.LowMaxVertexUniformCount = false;
 }
 
 #endif // USE_CONSOLE

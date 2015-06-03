@@ -15,20 +15,14 @@
  */
 // the ingame-lobby
 
-// Tab: NickCompletion (2do TODO) - and can't do this here, because tab is used to cycle controls!
-//if (dwKey == VK_TAB) { /*CompleteNick();*/ return true; }
-
 #ifndef INC_C4GameLobby
 #define INC_C4GameLobby
 
 #include "C4Gui.h"
-#include "C4Client.h"
-#include "C4PlayerInfo.h"
+#include <C4PacketBase.h>
 
 namespace C4GameLobby
 {
-	class MainDlg;
-
 	// countdown time from which the elevator sound starts and team selection becomes unavailable
 	const int32_t AlmostStartCountdownTime = 10; // seconds
 
@@ -111,7 +105,6 @@ namespace C4GameLobby
 
 	protected:
 		void OnRunBtn(C4GUI::Control *btn); // callback: run button pressed
-		void OnTestBtn(C4GUI::Control *btn); // callback: test button pressed
 		void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
 		bool KeyHistoryUpDown(bool fUp); // key callback
 		C4GUI::Edit::InputResult OnChatInput(C4GUI::Edit *edt, bool fPasting, bool fPastingMore); // callback: chat input performed

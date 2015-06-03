@@ -18,12 +18,12 @@
 #include <C4Include.h>
 #include <C4GameOverDlg.h>
 
+#include <C4Application.h>
 #include <C4Def.h>
 #include <C4DefList.h>
 #include <C4Game.h>
 #include <C4FullScreen.h>
 #include <C4Player.h>
-#include <C4PlayerInfo.h>
 #include <C4PlayerInfoListBox.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
@@ -208,11 +208,6 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	for (int32_t i=0; i<iPlrListCount; ++i)
 	{
 		ppPlayerLists[i] = new C4PlayerInfoListBox(caPlayerArea.GetGridCell(i,iPlrListCount,0,1), C4PlayerInfoListBox::PILBM_Evaluation, fSepTeamLists ? Game.Teams.GetTeamByIndex(i)->GetID() : 0);
-		/*if (fSepTeamLists) not necessary and popping up on too much area
-		  ppPlayerLists[i]->SetToolTip(FormatString(LoadResStr("IDS_DESC_TEAM"), Game.Teams.GetTeamByIndex(i)->GetName()).getData());
-		else
-		  ppPlayerLists[i]->SetToolTip(LoadResStr("IDS_DESC_LISTOFPLAYERSWHOPARTICIPA"));*/
-		//ppPlayerLists[i]->SetCustomFont(&::GraphicsResource.FontTooltip, 0xff000000); - display black on white?
 		ppPlayerLists[i]->SetSelectionDiabled(true);
 		ppPlayerLists[i]->SetDecoration(false, NULL, true, false);
 		AddElement(ppPlayerLists[i]);

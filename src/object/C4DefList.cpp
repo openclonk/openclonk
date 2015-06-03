@@ -37,8 +37,6 @@ namespace
 	{
 		virtual StdMeshSkeleton* GetSkeletonByDefinition(const char* definition) const
 		{
-			//DebugLogF("GetSkeletonByDefinition %s", definition);
-
 			// find the definition
 			C4Def* def = ::Definitions.ID2Def(C4ID(definition));
 			if (!def)

@@ -1,3 +1,18 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 #include "C4Include.h"
 #include "C4LandscapeRender.h"
@@ -98,7 +113,7 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 			const C4TexMapEntry *pTex = pTexs->GetEntry(PixCol2Tex(pix));
 			assert(pTex);
 			// get texture contents
-			DWORD dwBackClr;
+			DWORD dwBackClr = 0u;
 			if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
 			// get density of surrounding materials
 			int iCompareDens = AboveDensity / 8;

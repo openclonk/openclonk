@@ -107,8 +107,6 @@ private func InitEnvironment(int difficulty)
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
 	Cloud->SetPrecipitation("Snow", 20 + 5 * difficulty);
-
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(60 * 22);
 	time->SetCycleSpeed(0);
@@ -131,7 +129,7 @@ private func InitVegetation(int map_size)
 	LargeCaveMushroom->Place(5 + 2 * map_size + Random(5), nil, { terraform = false });
 
 	// Some mushrooms as source of food.
-	Mushroom->Place(30 + Random(10));
+	Mushroom->Place(22 + Random(8));
 	
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 10 + 10 * map_size + Random(10),"Earth");

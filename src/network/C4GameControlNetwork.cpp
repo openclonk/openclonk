@@ -169,9 +169,12 @@ void C4GameControlNetwork::DoInput(const C4Control &Input) // by main thread
 				Application.InteractiveThread.ThreadLog("Failed to send control to host!");
 	}
 	// decentral mode: always broadcast to everybody
-	else /*if(eMode == CNM_Decentral)*/
+	else
+	{
+		assert (eMode == CNM_Decentral);
 		if (!pNetwork->Clients.BroadcastMsgToClients(CtrlPkt))
 			Application.InteractiveThread.ThreadLog("Failed to broadcast control!");
+	}
 	// add to list
 	AddCtrl(pCtrl);
 	// ok, control is sent for this control tick
@@ -439,7 +442,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 	{
 		iAvgControlSendTime = (iAvgControlSendTime * 149 + iControlSendTime * 1000) / 150;
 		// now calculate the all-time optimum PreSend there is
-		int32_t iBestPreSend = BoundBy((iTargetFPS * iAvgControlSendTime) / 1000000 + 1, 1, 15);
+		int32_t iBestPreSend = Clamp((iTargetFPS * iAvgControlSendTime) / 1000000 + 1, 1, 15);
 		// fixed PreSend?
 		if (iTargetFPS <= 0) iBestPreSend = -iTargetFPS;
 		// Ha! Set it!
@@ -459,7 +462,7 @@ void C4GameControlNetwork::HandlePacket(char cStatus, const C4PacketBase *pPacke
 
 #define GETPKT(type, name) \
     assert(pPacket); const type &name = \
-      /*dynamic_cast*/ static_cast<const type &>(*pPacket);
+      static_cast<const type &>(*pPacket);
 
 	switch (cStatus)
 	{

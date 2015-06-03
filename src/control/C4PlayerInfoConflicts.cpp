@@ -19,10 +19,9 @@
 
 #include <C4Include.h>
 #include <C4PlayerInfo.h>
-#include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4Teams.h>
-
+#include <StdColors.h>
 #include <C4Random.h>
 
 // number of times trying new player colors
@@ -40,39 +39,7 @@ DWORD GenerateRandomPlayerColor(int32_t iTry) // generate a random player color 
 
 bool IsColorConflict(DWORD dwClr1, DWORD dwClr2) // return whether dwClr1 and dwClr2 are closely together
 {
-#if 0 // OLD COLOR CONFLICT MEHOD: HSB diff
-	double r1 = (double)(0xff & (dwClr1 >> 16)) / 256.0;
-	double g1 = (double)(0xff & (dwClr1 >>  8)) / 256.0;
-	double b1 = (double)(0xff & (dwClr1      )) / 256.0;
-	double r2 = (double)(0xff & (dwClr2 >> 16)) / 256.0;
-	double g2 = (double)(0xff & (dwClr2 >>  8)) / 256.0;
-	double b2 = (double)(0xff & (dwClr2      )) / 256.0;
-	double max1 = Max(r1, Max(g1, b1));
-	double max2 = Max(r2, Max(g2, b2));
-	double min1 = Min(r1, Min(g1, b1));
-	double min2 = Min(r2, Min(g2, b2));
-	double h1, h2;
-	if (max1 == r1)
-		h1 = (g1 - b1) / (Max(0.00005, max1 - min1) * 6);
-	else if (max1 == g1)
-		h1 = 1.0/3 + (b1 - r1) / (Max(0.00005, max1 - min1) * 6);
-	else
-		h1 = 2.0/3 + (r1 - b1) / (Max(0.00005, max1 - min1) * 6);
-	if (h1 < 0) h1 += 1;
-	double s1 = (max1 - min1) / Max(0.00005, max1);
-	if (max2 == r2)
-		h2 = (g2 - b2) / (Max(0.00005, max2 - min2) * 6);
-	else if (max2 == g2)
-		h2 = 1.0/3 + (b2 - r2) / (Max(0.00005, max2 - min2) * 6);
-	else
-		h2 = 2.0/3 + (r2 - b2) / (Max(0.00005, max2 - min2) * 6);
-	if (h2 < 0) h2 += 1;
-	double s2 = (max2 - min2) / Max(0.00005, max2);
-	// hues 0.01 and 0.99 must collide, also hues 0.25 and 0.75 when the saturation is very low
-	return Min (1.0 - Abs(h1 - h2), Abs(h1 - h2)) * (s1 + s2) * 5
-	       + Abs(s1 - s2)
-	       + Abs(max1 - max2) < 0.4;
-#else // NEW COLOR CONFLICT METHOD: u'v'-distance
+	// NEW COLOR CONFLICT METHOD: u'v'-distance
 	int R1 = 0xff & (dwClr1 >> 16);
 	int G1 = 0xff & (dwClr1 >>  8);
 	int B1 = 0xff & (dwClr1      );
@@ -90,7 +57,6 @@ bool IsColorConflict(DWORD dwClr1, DWORD dwClr2) // return whether dwClr1 and dw
 	double clrdiff = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1)) * Y*Y * 150;
 	double lumdiff = (Abs<double>(Y2-Y1) / Max<double>(Y*Y*5, 0.5)) / 0.10;
 	return clrdiff + lumdiff < 1.0;
-#endif
 }
 
 
@@ -422,17 +388,3 @@ void C4PlayerInfoListAttributeConflictResolver::Resolve()
 		ResolveInPacket();
 	}
 }
-
-
-/*C4Group g; g.Open("test.ocg");
-C4PlayerInfoList l1, l2, l3;
-l1.Load(g, "in1.txt");
-l2.Load(g, "in2.txt");
-l3.Load(g, "in3.txt");
-C4PlayerInfoListAttributeConflictResolver r(l1, l2, l3.GetIndexedInfo(0));
-r.Resolve();
-l1.Save(g, "out1.txt");
-l2.Save(g, "out2.txt");
-l3.Save(g, "out3.txt");
-g.Close();
-return true;*/

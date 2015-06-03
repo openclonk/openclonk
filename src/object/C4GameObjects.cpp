@@ -321,8 +321,6 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// make sure list is sorted by category - after sorting out inactives, because inactives aren't sorted into the main list
 	FixObjectOrder();
 
-	//Sectors.Dump();
-
 	// misc updates
 	for (C4Object *pObj : *this)
 		if (pObj->Status)

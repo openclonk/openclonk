@@ -71,7 +71,7 @@ namespace C4InVal
 			if (rsString.ReplaceChar(';', '_')) fValid = false;
 			if (rsString.ReplaceChar('|', '_')) fValid = false;
 			// the colon is generally prohibited except at pos 2 (C:\...), because it could lead to creation of (invisible) streams on NTFS
-			if (rsString.ReplaceChar(':', '_'/*, 2*/)) fValid = false;
+			if (rsString.ReplaceChar(':', '_')) fValid = false;
 			if (*rsString.getData() == ':') { *rsString.getMData() = '_'; fValid = false; }
 			// validate drive letter
 			if (rsString.getLength()>=2 && *rsString.getPtr(1) == ':')

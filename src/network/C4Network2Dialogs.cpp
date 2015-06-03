@@ -181,9 +181,9 @@ void C4Network2ClientListBox::ClientListItem::Update()
 		int iWait = ::Control.Network.ClientPerfStat(iClientID);
 		pPing->SetText(FormatString("%d ms", iWait).getData());
 		pPing->SetColor(C4RGB(
-		                  BoundBy(255-Abs(iWait)*5, 0, 255),
-		                  BoundBy(255-iWait*5, 0, 255),
-		                  BoundBy(255+iWait*5, 0, 255)));
+		                  Clamp(255-Abs(iWait)*5, 0, 255),
+		                  Clamp(255-iWait*5, 0, 255),
+		                  Clamp(255+iWait*5, 0, 255)));
 	}
 	// update activation status
 	const C4Client *pClient = GetClient(); if (!pClient) return;
@@ -325,7 +325,6 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 	ca.ExpandLeft(-iIconSize*2);
 	// create subcomponents
 	// reconnect/disconnect buttons
-	//pReconnectBtn = new C4GUI::CallbackButtonEx<C4Network2ClientListBox::ConnectionListItem, C4GUI::IconButton>(C4GUI::Ico_Notify, ca.GetFromRight(iIconSize, iIconSize), 0, this, &ConnectionListItem::OnButtonReconnect);
 	if (!Game.Parameters.isLeague())
 	{
 		pDisconnectBtn = new  C4GUI::CallbackButtonEx<C4Network2ClientListBox::ConnectionListItem, C4GUI::IconButton>(C4GUI::Ico_Disconnect, ca.GetFromRight(iIconSize, iIconSize), 0, this, &ConnectionListItem::OnButtonDisconnect);
@@ -343,7 +342,6 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 	// add components
 	AddElement(pDesc);
 	AddElement(pPing);
-	//AddElement(pReconnectBtn);
 	if (pDisconnectBtn) AddElement(pDisconnectBtn);
 	// add to listbox (will eventually get moved)
 	pForDlg->AddElement(this);
@@ -418,6 +416,11 @@ C4Network2ClientListBox::C4Network2ClientListBox(C4Rect &rcBounds, bool fStartup
 	Application.Add(this);
 	// initial update
 	Update();
+}
+
+C4Network2ClientListBox::~C4Network2ClientListBox()
+{
+	Application.Remove(this);
 }
 
 void C4Network2ClientListBox::Update()
@@ -524,6 +527,11 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 	Update();
 }
 
+C4Network2ClientListDlg::~C4Network2ClientListDlg()
+{
+	if (this==pInstance) pInstance=NULL; Application.Remove(this);
+}
+
 void C4Network2ClientListDlg::Update()
 {
 	// Compose status text
@@ -565,7 +573,7 @@ C4Network2StartWaitDlg::C4Network2StartWaitDlg()
 	AddElement(pClientListBox = new C4Network2ClientListBox(caAll.GetAll(), true));
 	// place abort button
 	C4GUI::Button *pBtnAbort = new C4GUI::CancelButton(caButtonArea.GetCentered(C4GUI_DefButtonWdt, C4GUI_ButtonHgt));
-	AddElement(pBtnAbort); //pBtnAbort->SetToolTip(LoadResStr("IDS_DLGTIP_CANCEL"));
+	AddElement(pBtnAbort);
 }
 
 
@@ -682,8 +690,9 @@ void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 
 void C4GameOptionButtons::OnBtnRecord(C4GUI::Control *btn)
 {
-	bool fCheck = Config.General.DefRec = Game.Record = !Game.Record;
-	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
+	Game.Record = !Game.Record;
+	Config.General.DefRec = Game.Record;
+	btnRecord->SetIcon(Game.Record ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 
 void C4GameOptionButtons::OnBtnPassword(C4GUI::Control *btn)
@@ -727,7 +736,6 @@ void C4GameOptionButtons::UpdatePasswordBtn()
 	// update icon to reflect if a password is set
 	const char *szPass = ::Network.GetPassword();
 	bool fHasPassword = szPass && *szPass;
-//btnPassword->SetHighlight(fHasPassword);
 	btnPassword->SetIcon(fHasPassword ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked);
 }
 

@@ -1,0 +1,6 @@
+MapType=Map
+DescMapType=Defines the shape of the landscape.
+MapTypeBigIsland=Big island
+DescMapTypeBigIsland=One central main island with small spots of ice in the air above.
+MapTypeSpots=Small islands
+DescMapTypeSpots=Many small spots of ice in the air.

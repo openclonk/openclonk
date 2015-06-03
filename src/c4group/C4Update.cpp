@@ -16,7 +16,6 @@
 #include <C4Include.h>
 #include "C4Update.h"
 #include "C4Version.h"
-#include "C4Config.h"
 #include "C4Components.h"
 #include "C4Group.h"
 #include "C4Log.h"
@@ -348,9 +347,6 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 	// check if the update is allowed
 	if (GrpUpdate)
 	{
-		// maker must match
-		/*if(!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker())) - now allowing updates from different makers
-		  return false;*/
 		// check checksum
 		uint32_t iCRC32;
 		if (!GetFileCRC(TargetGrp.GetFullName().getData(), &iCRC32))

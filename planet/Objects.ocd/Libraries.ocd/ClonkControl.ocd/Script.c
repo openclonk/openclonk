@@ -626,6 +626,7 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 		return true;
 	}
 	
+	obj->SetController(GetController());
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
 	

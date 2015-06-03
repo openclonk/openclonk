@@ -13,7 +13,6 @@ func DoInit(int first_player)
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
-	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);
 	time->SetCycleSpeed(20);

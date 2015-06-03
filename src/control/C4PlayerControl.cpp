@@ -1130,8 +1130,9 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 				fUp = true;
 				fRepeated = false;
 			}
-			else //if (iTriggerMode & C4PlayerControlAssignment::CTM_Hold) - must be true
+			else
 			{
+				assert(iTriggerMode & C4PlayerControlAssignment::CTM_Hold);
 				// control is down but trigger key is pressed again: Refresh down state
 				// (this will restart the KeyRepeat time)
 				Sync.SetControlDownState(iControl, KeyExtraData, Game.FrameCounter, false);

@@ -34,7 +34,6 @@
 #include <C4MessageInput.h>
 #include <C4ScriptGuiWindow.h>
 #include <C4MouseControl.h>
-#include <C4ObjectInfoList.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4PXS.h>
@@ -53,7 +52,7 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
 
 static C4Void FnSetGravity(C4PropList * _this, long iGravity)
 {
-	::Landscape.Gravity = C4REAL100(BoundBy<long>(iGravity,-1000,1000));
+	::Landscape.Gravity = C4REAL100(Clamp<long>(iGravity,-1000,1000));
 	return C4Void();
 }
 
@@ -447,13 +446,13 @@ static bool FnGBackSky(C4PropList * _this, long x, long y)
 	return !GBackIFT(x, y);
 }
 
-static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount)
+static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount, bool distant_first)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	long extracted=0; for (; extracted<amount; extracted++)
 	{
 		if (GBackMat(x,y)!=mat) return extracted;
-		if (::Landscape.ExtractMaterial(x,y)!=mat) return extracted;
+		if (::Landscape.ExtractMaterial(x,y,distant_first)!=mat) return extracted;
 	}
 	return extracted;
 }
@@ -1351,7 +1350,6 @@ static bool FnGetMissionAccess(C4PropList * _this, C4String *strMissionAccess)
 	if (::Control.SyncMode())
 		Log("Warning: using GetMissionAccess may cause desyncs when playing records!");
 
-	if (!Config.General.MissionAccess) return false;
 	return SIsModule(Config.General.MissionAccess, FnStringPar(strMissionAccess));
 }
 
@@ -1916,14 +1914,20 @@ struct PathInfo
 	long ilen;
 };
 
-static bool SumPathLength(int32_t iX, int32_t iY, intptr_t iTransferTarget, intptr_t ipPathInfo)
+struct SumPathLength
 {
-	PathInfo *pPathInfo = (PathInfo*) ipPathInfo;
-	pPathInfo->ilen += Distance(pPathInfo->ilx, pPathInfo->ily, iX, iY);
-	pPathInfo->ilx = iX;
-	pPathInfo->ily = iY;
-	return true;
-}
+	explicit SumPathLength(PathInfo *info) : pPathInfo(info) {}
+	bool operator()(int32_t iX, int32_t iY, C4Object *TransferTarget)
+	{
+		pPathInfo->ilen += Distance(pPathInfo->ilx, pPathInfo->ily, iX, iY);
+		pPathInfo->ilx = iX;
+		pPathInfo->ily = iY;
+		return true;
+	}
+
+private:
+	PathInfo *pPathInfo;
+};
 
 static Nillable<long> FnGetPathLength(C4PropList * _this, long iFromX, long iFromY, long iToX, long iToY)
 {
@@ -1931,7 +1935,7 @@ static Nillable<long> FnGetPathLength(C4PropList * _this, long iFromX, long iFro
 	PathInfo.ilx = iFromX;
 	PathInfo.ily = iFromY;
 	PathInfo.ilen = 0;
-	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, &SumPathLength, (intptr_t) &PathInfo))
+	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, SumPathLength(&PathInfo)))
 		return C4Void();
 	return PathInfo.ilen + Distance(PathInfo.ilx, PathInfo.ily, iToX, iToY);
 }
@@ -2318,7 +2322,7 @@ static bool FnDoScoreboardShow(C4PropList * _this, long iChange, long iForPlr)
 		if (!pPlr->LocalControl) return true;
 	}
 	Game.Scoreboard.DoDlgShow(iChange, false);
-	return true; //Game.Scoreboard.ShouldBeShown();
+	return true;
 }
 
 static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
@@ -2450,11 +2454,6 @@ static bool FnGuiUpdate(C4PropList *_this, C4PropList *update, int32_t guiID, in
 	return true;
 }
 
-/*static long FnSetSaturation(C4AulContext *ctx, long s)
-  {
-  return pDraw->SetSaturation(BoundBy(s,0l,255l));
-  }*/
-
 // undocumented!
 static bool FnPauseGame(C4PropList * _this, bool fToggle)
 {
@@ -2505,11 +2504,7 @@ static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl
 {
 	// get control set to check
 	C4PlayerControl *pCheckCtrl = NULL;
-	if (iPlr == NO_OWNER)
-	{
-		//pCheckCtrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iPlr != NO_OWNER)
 	{
 		C4Player *pPlr = ::Players.Get(iPlr);
 		if (pPlr)
@@ -2532,11 +2527,7 @@ static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, 
 {
 	// get control set to check
 	C4PlayerControl *plrctrl = NULL;
-	if (iplr == NO_OWNER)
-	{
-		//plrctrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iplr != NO_OWNER)
 	{
 		C4Player *plr = ::Players.Get(iplr);
 		if (plr)
@@ -2557,11 +2548,7 @@ static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
 {
 	// get control set to check
 	C4PlayerControl *plrctrl = NULL;
-	if (iplr == NO_OWNER)
-	{
-		//plrctrl = Game.GlobalPlayerControls;
-	}
-	else
+	if (iplr != NO_OWNER)
 	{
 		C4Player *plr = ::Players.Get(iplr);
 		if (plr)
@@ -2652,7 +2639,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	for (C4ScriptFnDef *pDef = &C4ScriptGameFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(pEngine, pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
-//  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);
@@ -2918,6 +2904,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "C4FO_Controller"           ,C4V_Int,     C4FO_Controller     },
 	{ "C4FO_Func"                 ,C4V_Int,     C4FO_Func           },
 	{ "C4FO_Layer"                ,C4V_Int,     C4FO_Layer          },
+	{ "C4FO_InArray"              ,C4V_Int,     C4FO_InArray        },
 
 	{ "MD_DragSource"             ,C4V_Int,     C4MC_MD_DragSource  },
 	{ "MD_DropTarget"             ,C4V_Int,     C4MC_MD_DropTarget  },

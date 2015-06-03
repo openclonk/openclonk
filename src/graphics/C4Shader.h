@@ -1,3 +1,17 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 
 // Shader implementation somewhere in the middle between easy and extensible.
 
@@ -61,6 +75,23 @@ private:
 	GLint *pUniforms;
 
 public:
+	enum VertexAttribIndex
+	{
+		// These correspond to the locations nVidia uses for the
+		// respective gl_* attributes, so make sure whatever you
+		// use for custom ones doesn't conflict with these UNLESS
+		// you're not using the pre-defined ones in your shader
+		VAI_Vertex = 0,
+		VAI_Normal = 2,
+		VAI_Color = 3,
+		VAI_TexCoord0 = 8, // and upwards through TexCoord7 = 15
+
+		// Make sure you move these if we implement multitexturing
+		VAI_BoneWeights,
+		VAI_BoneWeightsMax = VAI_BoneWeights + 1,
+		VAI_BoneIndices,
+		VAI_BoneIndicesMax = VAI_BoneIndices + VAI_BoneWeightsMax - VAI_BoneWeights
+	};
 
 	bool Initialised() const { return hVert != 0; }
 
@@ -165,6 +196,12 @@ public:
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix3x2fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
+
+	void SetUniformMatrix3x4fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix4x3fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+	}
+
 	void SetUniformMatrix4x4fv(int iUniform, int iLength, const float* pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);

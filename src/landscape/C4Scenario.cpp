@@ -20,12 +20,10 @@
 #include <C4Include.h>
 #include <C4Scenario.h>
 
-#include <C4Config.h>
 #include <C4InputValidation.h>
 #include <C4Random.h>
 #include <C4Group.h>
 #include <C4Components.h>
-#include <C4Game.h>
 #include <StdColors.h>
 
 //==================================== C4SVal ==============================================
@@ -42,7 +40,7 @@ void C4SVal::Set(int32_t std, int32_t rnd, int32_t min, int32_t max)
 
 int32_t C4SVal::Evaluate()
 {
-	return BoundBy(Std+Random(2*Rnd+1)-Rnd,Min,Max);
+	return Clamp(Std+Random(2*Rnd+1)-Rnd,Min,Max);
 }
 
 void C4SVal::Default()
@@ -383,23 +381,8 @@ void C4Scenario::Clear()
 void C4Scenario::SetExactLandscape()
 {
 	if (Landscape.ExactLandscape) return;
-	//int32_t iMapZoom = Landscape.MapZoom.Std;
 	// Set landscape
 	Landscape.ExactLandscape = 1;
-	/*FIXME: warum ist das auskommentiert?
-	// - because Map and Landscape are handled differently in NET2 (Map.bmp vs Landscape.bmp), and the zoomed Map.bmp may be used
-	//   to reconstruct the textures on the Landscape.bmp in case of e.g. runtime joins. In this sense, C4S.Landscape.ExactLandscape
-	//   only marks that the landscape.bmp is an exact one, and there may or may not be an accompanying Map.bmp
-	Landscape.MapZoom.Set(1,0,1,1);
-	// Zoom player starting positions
-	for (int32_t cnt=0; cnt<C4S_MaxPlayer; cnt++)
-	  {
-	  if (PlrStart[cnt].PositionX >= -1)
-	    PlrStart[cnt].PositionX = PlrStart[cnt].PositionX * iMapZoom;
-	  if (PlrStart[cnt].PositionY >= -1)
-	    PlrStart[cnt].PositionY = PlrStart[cnt].PositionY * iMapZoom;
-	  }
-	  */
 }
 
 bool C4SDefinitions::GetModules(StdStrBuf *psOutModules) const

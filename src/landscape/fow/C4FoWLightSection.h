@@ -1,3 +1,18 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2014-2015, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
+
 #ifndef C4FOWLIGHTSECTION_H
 #define C4FOWLIGHTSECTION_H
 
@@ -112,6 +127,10 @@ private:
 	    firstBeam point to the first and endBeam point to the beam after the last of these. Thus, endBeam is NULL if 
 		no beams were clipped at the end. */
 	int32_t FindBeamsClipped(const C4Rect &rect, C4FoWBeam *&firstBeam, C4FoWBeam *&endBeam) const;
+
+public:
+	// Serialization for debugging purposes
+	void CompileFunc(StdCompiler *pComp);
 
 };
 

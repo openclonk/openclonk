@@ -25,8 +25,7 @@ protected func Initialize()
 	Volcano->SetMaterial("DuroLava");
 	Meteor->SetChance(22);
 	// We aren't doing much outside anyway; celestials are a bit of a waste
-	/*CreateObject(Environment_Celestial);
-	var time = CreateObject(Environment_Time);
+	/*var time = CreateObject(Environment_Time);
 	time->SetTime(60*12);
 	time->SetCycleSpeed(20);*/
 	// Starting materials in lorry

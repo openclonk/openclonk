@@ -95,7 +95,6 @@ public:
 	C4Action();
 	~C4Action();
 public:
-	//C4PropList * pActionDef;
 	int32_t Dir;
 	int32_t DrawDir; // NoSave // - needs to be calculated for old-style objects.txt anyway
 	int32_t ComDir;
@@ -382,7 +381,6 @@ public:
 
 	bool IsMoveableBySolidMask(int ComparisonPlane) const
 	{
-		//C4PropList* pActionDef = GetAction();
 		return (Status == C4OS_NORMAL)
 		       && !(Category & C4D_StaticBack)
 		       && (ComparisonPlane < GetPlane())

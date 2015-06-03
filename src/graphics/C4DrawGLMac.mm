@@ -1,27 +1,27 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 2009-2015, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
-#include <C4GUI.h>
+#include <C4Gui.h>
 #include <C4Game.h>
 #include <C4Viewport.h>
 #include <C4ViewportWindow.h>
 #include <C4Console.h>
-#include <C4Fullscreen.h>
+#include <C4FullScreen.h>
 #include <C4PlayerList.h>
 #include <C4Gui.h>
 #include <C4Landscape.h>
@@ -116,6 +116,7 @@
 	if (Application.fQuitMsgReceived)
 		return;
 
+#ifdef __MAC_10_9
 	// don't draw if tab-switched away from fullscreen
 	if ([NSApp respondsToSelector:@selector(occlusionState)])
 	{
@@ -123,13 +124,12 @@
 		if (([NSApp occlusionState] & NSApplicationOcclusionStateVisible) == 0)
 			return;
 	}
-	else
-	{
-		if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
-			return;
-		if ([self.window isMiniaturized] || ![self.window isVisible])
-			return;
-	}
+#endif
+	
+	if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
+		return;
+	if ([self.window isMiniaturized] || ![self.window isVisible])
+		return;
 
 	C4Window* stdWindow = self.controller.stdWindow;
 	

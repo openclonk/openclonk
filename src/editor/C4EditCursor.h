@@ -113,7 +113,7 @@ protected:
 
 	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
 	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
-	void ClearSelection();                          // remove all objects from selection and do script callback. Doesn't do OnSelectionChanged().
+	void ClearSelection(C4Object *next_selection=NULL);  // remove all objects from selection and do script callback. if next_selection is non-null, passes that to the deselection callbacks. Doesn't do OnSelectionChanged().
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);

@@ -137,18 +137,13 @@ private func InitVegetation(int map_size, int difficulty)
 	Fern->Place(20, top);
 	Fern->Place(20, middle);
 	Fern->Place(20, bottom);
-	Mushroom->Place(14, top);
-	Mushroom->Place(14, middle);
-	Mushroom->Place(14, bottom);
+	Mushroom->Place(10, top);
+	Mushroom->Place(10, middle);
+	Mushroom->Place(10, bottom);
 	
 	// Some branches and trunks.
 	Branch->Place(24 + Random(12));
-	for (var i = 0; i < 4 + Random(3); i++)
-	{
-		PlaceVegetation(Trunk, top.x, top.y, top.w, top.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Trunk, middle.x, middle.y, middle.w, middle.h, 1000 * (61 + Random(40)));
-		PlaceVegetation(Trunk, bottom.x, bottom.y, bottom.w, bottom.h, 1000 * (61 + Random(40)));
-	}
+	Trunk->Place(12 + Random(8));
 	
 	// Some objects in the earth.	
 	PlaceObjects(Rock, 25 + 10 * map_size + Random(10),"Earth");

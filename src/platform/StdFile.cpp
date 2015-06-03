@@ -741,7 +741,6 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	    || SEqual(GetFilename(szSource),".."))
 		return true;
 	// Overwrite target
-	//if (ItemExists(szTarget))
 	if (!EraseItem(szTarget)) return false;
 	// Create target directory
 	bool status=true;
@@ -814,7 +813,6 @@ bool EraseDirectory(const char *szDirName)
 		}
 	}
 	// Remove directory
-	//chmod(szDirName,200);
 #ifdef _WIN32
 	return !!RemoveDirectoryW(GetWideChar(szDirName));
 #else
@@ -823,12 +821,6 @@ bool EraseDirectory(const char *szDirName)
 }
 
 /* Items */
-
-/*int ItemAttributes(const char *szItemName)
-  {
-  return FileAttributes(szItemName);
-  }*/
-
 bool RenameItem(const char *szItemName, const char *szNewItemName)
 {
 	// FIXME: What if the directory would have to be copied?

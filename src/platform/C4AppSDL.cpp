@@ -101,7 +101,7 @@ C4AbstractApp::C4AbstractApp():
 	MainThread (pthread_self()),
 #endif
 #ifdef _WIN32
-	hMainThread(NULL),
+	idMainThread(0),
 #endif
 	fDspModeSet(false)
 {

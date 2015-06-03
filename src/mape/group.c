@@ -588,35 +588,6 @@ mape_group_load_entry(MapeGroup* group,
   return res;
 }
 
-/**
- * mape_group_is_folder:
- * @group: An open #MapeGroup.
- *
- * Returns whether this group is a directory or a packed file.
- *
- * Returns: %TRUE if the group is a directory or %FALSE if it is a file.
- */
-gboolean
-mape_group_is_folder(MapeGroup* group)
-{
-  MapeGroupPrivate* priv;
-  C4GroupHandleStatus status;
-
-  g_return_val_if_fail(MAPE_IS_GROUP(group), FALSE);
-  g_return_val_if_fail(mape_group_is_open(group), FALSE);
-
-  priv = MAPE_GROUP_PRIVATE(group);
-
-#ifdef G_OS_WIN32
-  if(priv->handle == NULL)
-    return TRUE;
-#endif
-
-  status = c4_group_handle_get_status(priv->handle);
-  if(status == C4_GROUP_HANDLE_FOLDER) return TRUE;
-  return FALSE;
-}
-
 /*
  * mape_group_is_drive_container:
  * @group: An open #MapeGroup.
@@ -692,7 +663,7 @@ mape_group_is_child_folder(MapeGroup* group,
   }
 
   /* Otherwise assume it's not a subgroup */
-  if(c4_group_handle_get_status(priv->handle) != C4_GROUP_HANDLE_FOLDER)
+  if(!c4_group_handle_is_folder(priv->handle))
     return FALSE;
 
   /* It is an open directory - check for regular directory */

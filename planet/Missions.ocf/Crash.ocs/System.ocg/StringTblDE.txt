@@ -1,11 +1,11 @@
 # Intro
-MsgIntro1=Wow, ganz schön turbulent hier...
-MsgIntro2=Schau, der schöne Lavasee!
+MsgIntro1=Wow, ganz schÃ¶n turbulent hier...
+MsgIntro2=Schau, der schÃ¶ne Lavasee!
 MsgIntro3=Komm schon, Baby...
 MsgIntro4=Oh oh...
 MsgIntro5=Schnell! Der Schleudersitz!
 MsgIntro6=Puh, das war knapp.
-MsgIntro7=Was können wir nun tun?
+MsgIntro7=Was kÃ¶nnen wir nun tun?
 MsgIntro8=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans im Schnee gelandet ist.
 MsgIntro9=Schnee ist weich. Wenn du dorthin gelangst, kannst du das Flugzeug vielleicht retten.
 MsgIntro10=Ich werde es versuchen.
@@ -15,30 +15,40 @@ MsgCrashedPlane=Und, habt ihr das Flugzeug schon gefunden?
 AnsCrashedPlane=Nein, wir suchen noch.
 PyritQPlane=Wo ist das Flugzeug?
 PyritAPlane=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans im Schnee gelandet ist.
-PyritQLake=Wie überquere ich den See?
+PyritQLake=Wie Ã¼berquere ich den See?
 PyritALake=Du braucht vermutlich ein paar fortgeschrittene Werkzeuge. Vielleicht geben uns die Dorfbewohner etwas.
 PyritQDone=Nichts weiter.
 
 # NPC Merchant
-Merchant1=Seid gegrüßt, Fremde aus dem Himmel. Wie kann ich euch helfen?
+Merchant1=Seid gegrÃ¼ÃŸt, Fremde aus dem Himmel. Wie kann ich euch helfen?
 MerchantQPlane=Hast du unser Flugzeug gesehen?
-MerchantAPlane1=Der seltame Vogel? Er trudelte über den Vulkan und landere auf der anderen Seite im Schnee.
+MerchantAPlane1=Der seltame Vogel? Er trudelte Ã¼ber den Vulkan und landere auf der anderen Seite im Schnee.
 MerchantAPlane2=Dorthin zu gelangen wird nicht einfach sein.
-MerchantQLake=Kannst du uns helfen, den See zu überqueren?
-MerchantSellPlans=Ich habe hier ein paar interessante Baupläne! Für 150 Clunker würde ich sie dir überlassen.
-MerchantNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme später wieder.
+MerchantQLake=Kannst du uns helfen, den See zu Ã¼berqueren?
+MerchantSellPlans=Ich habe hier ein paar interessante BauplÃ¤ne! FÃ¼r 150 Clunker wÃ¼rde ich sie dir Ã¼berlassen.
+MerchantNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme spÃ¤ter wieder.
 MerchantBuyPlans=Das ist ein guter Deal; hier sind deine Clunker.
-MerchantGivePlans=Danke! Hier hast du Pläne fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}.
+MerchantGivePlans=Danke! Hier hast du PlÃ¤ne fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}.
 MerchantQPump=Wie benutze ich die Pumpe?
-MerchantAPump1=Baue zwei Leitungen und benutze sie, während du vor der Pumpe stehst. Die erste Leitung wird das Zuflussrohr und die zweite Leitung das Abflussrohr.
-MerchantAPump2=Wirf dann einfach das andere Ende des zuflussrohrs ins Wasser und platziere das Abflussrohr dort, wo die Flüssigkeit hingepumpt werden soll.
+MerchantAPump1=Baue zwei Leitungen und benutze sie, wÃ¤hrend du vor der Pumpe stehst. Die erste Leitung wird das Zuflussrohr und die zweite Leitung das Abflussrohr.
+MerchantAPump2=Wirf dann einfach das andere Ende des zuflussrohrs ins Wasser und platziere das Abflussrohr dort, wo die FlÃ¼ssigkeit hingepumpt werden soll.
 MerchantQCatapult=Wozu brauche ich ein Katapult?
-MerchantACatapult1=Ein Katapult hat viele Anwendungen. Man kann Dinge wie Leitungsenden durch die Gegend werfen. Und wenn du mutig bist, kannst du selbst ins Katapult steigen und dich über den Lavasee schleudern.
-MerchantACatapult2=Das...klingt gefährlich. Das gefällt mir!
-MerchantQDone=Tschüss.
+MerchantACatapult1=Ein Katapult hat viele Anwendungen. Man kann Dinge wie Leitungsenden durch die Gegend werfen. Und wenn du mutig bist, kannst du selbst ins Katapult steigen und dich Ã¼ber den Lavasee schleudern.
+MerchantACatapult2=Das...klingt gefÃ¤hrlich. Das gefÃ¤llt mir!
+MerchantQDone=TschÃ¼ss.
+
+# Gyro
+Gyro1=Du hast dir ja einen seltsamen Ort zum Rumstehen ausgesucht.
+Gyro2=Ja, ich weiÃŸ! Ich bin hier weil eines meiner Experimente furchtbar fehlgeschlagen ist...
+Gyro3=Was ist passiert?
+Gyro4=Nun, Treibstoff ist in letzter Zeit ziemlich teuer und knapp geworden. Um Geld zu sparen reise ich daher, indem ich mich selbst mit dem Katapult wegschleudere.
+Gyro5=Das klingt ziemlich gefÃ¤hrlich!
+Gyro6=Ach was. Ich steige ins Katapult, ziele und ab geht's! Man kommt echt schnell an sonst schwer erreichbare Orte. Nur wenige Clonks scheinen dieses Geheimnis zu kennen! Und noch weniger nutzen es.
+Gyro7=Warum nur...
+Gyro8=Nun, um ehrlich zu sein...ist es schon etwas gefÃ¤hrlich. Ich wÃ¤re fast in den Lavasee geschleudert, weil ich zum Zielen meine Brille nicht finden konnte. Zum GlÃ¼ck habe ich es doch knapp verpasst und bin nun hier gelandet. Habe mir nur den Zeh gestoÃŸen. HÃ¤tte ich doch meine Sicherheitssandalen getragen...
 
 # Outro
-Outro1=Es ist vollbracht! Das Flugzeug ist zurück.
+Outro1=Es ist vollbracht! Das Flugzeug ist zurÃ¼ck.
 Outro2=Gut gemacht. Dann lasst uns die Reise fortsetzen. Wir haben noch einen weiten Weg vor uns.
-Outro3=Aber diesmal fliegen wir etwas höher, ok?
+Outro3=Aber diesmal fliegen wir etwas hÃ¶her, ok?
 Outro4=Mal sehen, was ich tun kann.

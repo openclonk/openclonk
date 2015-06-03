@@ -19,9 +19,6 @@
 
 #include <C4Include.h>
 #include <C4ComponentHost.h>
-#include <C4Language.h>
-
-#include <StdRegistry.h>
 
 bool C4ComponentHost::Load(C4Group &hGroup,
                            const char *fname,

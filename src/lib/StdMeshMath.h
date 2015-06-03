@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -29,24 +29,33 @@ struct StdMeshVector
 	static StdMeshVector Cross(const StdMeshVector& lhs, const StdMeshVector& rhs);
 };
 
+
 struct StdMeshVertex
 {
+	static const size_t MaxBoneWeightCount = 8;
+
 	// Match GL_T2F_N3F_V3F
 	float u, v;
 	float nx, ny, nz;
 	float x, y, z;
 
-	//void Normalize();
+	float bone_weight[MaxBoneWeightCount];
+	uint16_t bone_index[MaxBoneWeightCount];
+
+	char _padding[16];
+
+	StdMeshVertex() : u(0), v(0), nx(0), ny(0), nz(0), x(0), y(0), z(0) 
+	{
+		std::uninitialized_fill(std::begin(bone_weight), std::end(bone_weight), 0);
+		std::uninitialized_fill(std::begin(bone_index), std::end(bone_index), 0);
+		std::uninitialized_fill(std::begin(_padding), std::end(_padding), 0);
+	}
 };
+static_assert((sizeof(StdMeshVertex) & 31) == 0, "StdMeshVertex should be a multiple of 32 bytes");
 
 struct StdMeshQuaternion
 {
 	float w;
-	// union
-	// {
-	//   struct { float x, y, z; };
-	//   StdMeshVector v;
-	// };
 	float x, y, z;
 
 	static StdMeshQuaternion Zero();
@@ -56,7 +65,6 @@ struct StdMeshQuaternion
 	void Normalize();
 
 	static StdMeshQuaternion Nlerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
-	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
 };
 
 struct StdMeshTransformation
@@ -74,7 +82,6 @@ struct StdMeshTransformation
 
 	// TODO: Might add path parameter if necessary
 	static StdMeshTransformation Nlerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
-	//static  StdMeshQuaternion Slerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
 };
 
 class StdMeshMatrix

@@ -201,9 +201,6 @@ bool StdCompilerINIWrite::Name(const char *szName)
 
 void StdCompilerINIWrite::NameEnd(bool fBreak)
 {
-	// Nothing written? Do not put name.
-	//if(fPutName) PutName(false);
-
 	// Append newline
 	if (!fPutName && !fInSection)
 		Buf.Append("\r\n");
@@ -577,7 +574,7 @@ void StdCompilerINIRead::Word(int16_t &rShort)
 	int iNum = ReadNum();
 	if (iNum < MIN || iNum > MAX)
 		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-	rShort = BoundBy(iNum, MIN, MAX);
+	rShort = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Word(uint16_t &rShort)
 {
@@ -585,7 +582,7 @@ void StdCompilerINIRead::Word(uint16_t &rShort)
 	unsigned int iNum = ReadUNum();
 	if (iNum > MAX)
 		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-	rShort = BoundBy(iNum, MIN, MAX);
+	rShort = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(int8_t &rByte)
 {
@@ -593,7 +590,7 @@ void StdCompilerINIRead::Byte(int8_t &rByte)
 	int iNum = ReadNum();
 	if (iNum < MIN || iNum > MAX)
 		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-	rByte = BoundBy(iNum, MIN, MAX);
+	rByte = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(uint8_t &rByte)
 {
@@ -601,7 +598,7 @@ void StdCompilerINIRead::Byte(uint8_t &rByte)
 	unsigned int iNum = ReadUNum();
 	if (iNum > MAX)
 		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-	rByte = BoundBy(iNum, MIN, MAX);
+	rByte = Clamp(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Boolean(bool &rBool)
 {
@@ -650,14 +647,46 @@ void StdCompilerINIRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 	MemCopy(Buf.getData(), pData, iSize);
 }
 
+uint32_t StdCompilerINIRead::getLineNumberOfPos(const char *pos) const
+{
+	// Figure out quickly whether we already know which line this is
+	auto entry = std::lower_bound(lineBreaks.begin(), lineBreaks.end(), pos);
+	if (entry != lineBreaks.end())
+	{
+		return std::distance(lineBreaks.begin(), entry) + 1;
+	}
+	// Otherwise search through the buffer until we find out, filling the
+	// cache in the process
+	const char *cursor = Buf.getData();
+	if (!lineBreaks.empty())
+		cursor = *(lineBreaks.end() - 1) + 1;
+	for (;;)
+	{
+		if (*cursor == '\0' || *cursor == '\n')
+		{
+			lineBreaks.push_back(cursor);
+
+			// If we're at the end of the file or have found the line break
+			// past the requested position, we're done for now
+			if (*cursor == '\0' || pos < cursor)
+			{
+				break;
+			}
+		}
+		++cursor;
+	}
+	return std::distance(lineBreaks.begin(),
+		std::lower_bound(lineBreaks.begin(), lineBreaks.end(), pos)) + 1;
+}
+
 StdStrBuf StdCompilerINIRead::getPosition() const
 {
 	if (pPos)
-		return FormatString("line %d", SGetLine(Buf.getData(), pPos));
+		return FormatString("line %d", getLineNumberOfPos(pPos));
 	else if (iDepth == iRealDepth)
-		return FormatString(pName->Section ? "section \"%s\", after line %d" : "value \"%s\", line %d", pName->Name.getData(), SGetLine(Buf.getData(), pName->Pos));
+		return FormatString(pName->Section ? "section \"%s\", after line %d" : "value \"%s\", line %d", pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else if (iRealDepth)
-		return FormatString("missing value/section \"%s\" inside section \"%s\" (line %d)", NotFoundName.getData(), pName->Name.getData(), SGetLine(Buf.getData(), pName->Pos));
+		return FormatString("missing value/section \"%s\" inside section \"%s\" (line %d)", NotFoundName.getData(), pName->Name.getData(), getLineNumberOfPos(pName->Pos));
 	else
 		return FormatString("missing value/section \"%s\"", NotFoundName.getData());
 }

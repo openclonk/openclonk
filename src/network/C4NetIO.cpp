@@ -2198,7 +2198,7 @@ void C4NetIOUDP::OnPacket(const C4NetIOPacket &Packet, C4NetIO *pNetIO)
 		}
 		// ignore all other packets
 	}
-	else /*if(pPeer)*/
+	else
 	{
 		// address add?
 		if (Packet.getStatus() == IPID_AddAddr)

@@ -195,14 +195,4 @@ public func GetShortDescription(int plr)
 	return "$MsgShortSteal$";
 }
 
-// Returns the number of players in a specific team.
-private func GetPlayerInTeamCount(int team)
-{
-	var cnt = 0;
-	for (var i = 0; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-			cnt++;
-	return cnt;
-}
-
 local Name = "$Name$";

@@ -169,6 +169,7 @@
 #define C4CFN_ScriptFiles     "*.c"
 #define C4CFN_ImageFiles      "*.png|*.bmp|*.jpeg|*.jpg"
 #define C4CFN_FontFiles       "*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf"
+#define C4CFN_ShaderFiles     "*.glsl"
 
 //================================= File Load Sequences ================================================
 
@@ -178,17 +179,18 @@
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
-#define C4FLS_Def       "*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|SolidMask.png|*.skeleton|Graphics.mesh|Graphics.png|Overlay.png|Normal.png|Graphics*.png|Overlay*.png|Normal*.png|*.png|*.jpg|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.ocd"
+#define C4FLS_Def       "*.glsl|*.png|*.bmp|*.jpeg|*.jpg|*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|*.skeleton|Graphics.mesh|*.mesh|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Desc*.txt|Author.txt|Version.txt|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|StringTbl*.txt|ParameterDefs.txt|Achv*.png|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
 #define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.ocm"
-#define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Font*.png"\
-            "|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Captain.png|Cursor.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Achv*.png"\
+#define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|*.glsl|Font*.png"\
             "|GUIProgress.png|Endeavour.ttf|GUICaption.png|GUIButton.png|GUIButtonDown.png|GUIButtonHighlight.png|GUIButtonHighlightRound.png|GUIIcons.png|GUIIcons2.png|GUIScroll.png|GUIContext.png|GUISubmenu.png|GUICheckBox.png|GUIBigArrows.png"\
+            "|Control.png|ClonkSkins.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Captain.png|Cursor.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Achv*.png"\
             "|StartupMainMenuBG.*|StartupScenSelBG.*|StartupPlrSelBG.*|StartupPlrPropBG.*|StartupNetworkBG.*|StartupAboutBG.*|StartupBigButton.png|StartupBigButtonDown.png|StartupBookScroll.png|StartupContext.png|StartupScenSelIcons.png|StartupScenSelTitleOv.png|StartupDlgPaper.png|StartupOptionIcons.png|StartupTabClip.png|StartupNetGetRef.png|StartupLogo.png"
 #define C4FLS_Objects   "Names*.txt|Desc*.txt|*.ocd"
-#define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|*.c|Names.txt"
+#define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|PlayerControls.txt|*.c|Names.txt"
+#define C4FLS_Sound     C4CFN_SoundFiles
 #define C4FLS_Music     "Frontend.*|Credits.*"
 
 #endif

@@ -21,9 +21,7 @@
 #include <C4GameMessage.h>
 
 #include <C4Object.h>
-#include <C4Application.h>
 #include <C4GraphicsResource.h>
-#include <C4Game.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
 
@@ -110,10 +108,6 @@ void C4GameMessage::Append(const char *szText, bool fNoDuplicates)
 
 bool C4GameMessage::Execute()
 {
-	// Position by target
-	// currently done in C4GameMessage::Draw for parallaxity
-	/*if (Target)
-	  { X=Target->x; Y=Target->y-Target->Def->Shape.Hgt/2-5; }*/
 	// Delay / removal
 	if (Delay>0) Delay--;
 	if (Delay==0) return false;
@@ -141,16 +135,16 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			// Word wrap to cgo width
 			if (PictureDef)
 			{
-				if (!wdt) wdt = BoundBy<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
+				if (!wdt) wdt = Clamp<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
 				int32_t iUnbrokenTextWidth = ::GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
 				wdt = Min<int32_t>(wdt, iUnbrokenTextWidth+10);
 			}
 			else
 			{
 				if (!wdt)
-					wdt = BoundBy<int32_t>(cgo.Wdt-50, 50, 500);
+					wdt = Clamp<int32_t>(cgo.Wdt-50, 50, 500);
 				else
-					wdt = BoundBy<int32_t>(wdt, 10, cgo.Wdt-10);
+					wdt = Clamp<int32_t>(wdt, 10, cgo.Wdt-10);
 			}
 			iTextWdt = wdt * cgo.Zoom;
 			iTextHgt = ::GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
@@ -227,26 +221,12 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				if (Type == C4GM_Target)
 					if (!Target->IsVisible(iPlayer, false))
 						return;
-				// check fog of war
-				C4Player *pPlr = ::Players.Get(iPlayer);
-				if (pPlr && pPlr->fFogOfWar)
-				{
-					// TODO: Should we render the message with a shader to apply lighting to it?
-					// Otherwise use pDraw->GetFoW() to check for visibility...
-					//if (!pPlr->FoWIsVisible(iMsgX + cgo.TargetX - cgo.X, iMsgY + cgo.TargetY - cgo.Y))
-					if(false)
-					{
-						// special: Target objects that ignore FoW should display the message even if within FoW
-						if (Type != C4GM_Target && Type != C4GM_TargetPlayer) return;
-						if (~Target->Category & C4D_IgnoreFoW) return;
-					}
-				}
 				// Word wrap to cgo width
 				StdStrBuf sText;
 				if (~dwFlags & C4GM_NoBreak)
 				{
 					// standard break width
-					int breakWdt = BoundBy<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200);
+					int breakWdt = Clamp<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200);
 
 					// user supplied width?
 					if (Wdt)
@@ -302,8 +282,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 
 				// adjustment for objects at border of screen?
 				// +0.5f for proper rounding; avoids oscillations near pixel border:
-				if (~dwFlags & C4GM_XRel) iTX = BoundBy<float>(iTX, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
-				if (~dwFlags & C4GM_YRel) iTY = BoundBy<float>(iTY, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
+				if (~dwFlags & C4GM_XRel) iTX = Clamp<float>(iTX, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
+				if (~dwFlags & C4GM_YRel) iTY = Clamp<float>(iTY, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
 
 				// Draw
 				pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, zoom,

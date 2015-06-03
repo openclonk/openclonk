@@ -27,12 +27,12 @@ func Initialize()
 
 public func GetAnimationSet() { return animation_set; }
 
-local fAiming;
+local aiming;
 
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_HandBack; }
+public func GetCarryMode(clonk) { if(aiming >= 0) return CARRY_HandBack; }
 public func GetCarryBone() { return "Javelin"; }
-public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
-public func GetCarryTransform() { if(fAiming == 1) return Trans_Rotate(180, 1, 0, 0); }
+public func GetCarrySpecial(clonk) { if(aiming > 0) return "pos_hand2"; }
+public func GetCarryTransform() { if(aiming == 1) return Trans_Rotate(180, 1, 0, 0); }
 
 public func RejectUse(object clonk)
 {
@@ -41,7 +41,7 @@ public func RejectUse(object clonk)
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	fAiming = true;
+	aiming = 1;
 
 	clonk->StartAim(this);
 
@@ -65,7 +65,7 @@ func ControlUseHolding(object clonk, ix, iy)
 
 protected func ControlUseStop(object clonk, ix, iy)
 {
-	if(fAiming)
+	if(aiming)
 		clonk->StopAim();
 	return true;
 }
@@ -85,7 +85,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 public func Reset(clonk)
 {
-	fAiming = 0;
+	aiming = 0;
 }
 
 // Called in the half of the shoot animation (when ShootTime2 is over)
@@ -115,7 +115,7 @@ public func DoThrow(object clonk, int angle)
 	
 	Sound("ThrowJavelin?");
 	
-	fAiming = -1;
+	aiming = -1;
 	clonk->UpdateAttach();
 }
 

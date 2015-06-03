@@ -1,6 +1,6 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2009-2014, The OpenClonk Team and contributors
+# Copyright (c) 2009-2015, The OpenClonk Team and contributors
 #
 # Distributed under the terms of the ISC license; see accompanying file
 # "COPYING" for details.
@@ -16,9 +16,25 @@
 macro(__FINDAUDIO_FINDOPENAL)
 	find_package(PkgConfig QUIET)
 	if(PKG_CONFIG_FOUND AND NOT(APPLE))
-		pkg_check_modules(OpenAL "openal>=1.15.1")
+		pkg_check_modules(OpenAL "openal>=1.13")
+		# OpenAL pkg-config data before 1.15 doesn't have .../AL in the include
+		# path. But we don't want to have to specify <AL/al.h> because some
+		# systems use <OpenAL/al.h>. So let's see if we find al.h in the list
+		# of directories that pkg_check_modules returned, and if not, add it to
+		# the include path.
+		if (OpenAL_FOUND)
+			find_path(__findaudio_al_h NAMES al.h PATHS ${OpenAL_INCLUDE_DIRS})
+			if (NOT __findaudio_al_h)
+				find_path(__findaudio_al_h NAMES al.h PATHS ${OpenAL_INCLUDE_DIRS} PATH_SUFFIXES OpenAL AL)
+				if (__findaudio_al_h)
+					list(APPEND __findaudio_al_h ${OpenAL_INCLUDE_DIRS})
+					set(OpenAL_INCLUDE_DIRS "${__findaudio_al_h}" CACHE INTERNAL "")
+				endif()
+			endif()
+		endif()
+
 		pkg_check_modules(Alut "freealut>=1.1.0")
-		pkg_check_modules(OggVorbis "vorbisfile>=1.3.2" "vorbis>=1.3.2" "ogg>=1.3.0")
+		pkg_check_modules(OggVorbis "vorbisfile>=1.3.2" "vorbis>=1.3.2" "ogg>=1.2.2")
 	else()
 		if(MSVC OR APPLE)
 			find_path(OpenAL_INCLUDE_DIRS al.h PATH_SUFFIXES include/AL include/OpenAL include OpenAL)
@@ -57,7 +73,7 @@ endmacro()
 macro(__FINDAUDIO_FINDSDLMIXER)
 	find_package(PkgConfig QUIET)
 	if(PKG_CONFIG_FOUND)
-		pkg_check_modules(SDLMixer "SDL_mixer>=1.2.12")
+		pkg_check_modules(SDLMixer "SDL_mixer>=1.2.11")
 	endif()
 endmacro()
 

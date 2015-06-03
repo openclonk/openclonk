@@ -108,9 +108,9 @@ std::string C4AulScript::Translate(const std::string &text) const
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
 		C4AulFunc(pOwner, pName),
-		Script(Script),
 		OwnerOverloaded(NULL),
 		ParCount(0),
+		Script(Script),
 		pOrgScript(pOrgScript),
 		tProfileTime(0)
 {
@@ -120,11 +120,11 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, 
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
 		C4AulFunc(pOwner, FromFunc.GetName()),
+		OwnerOverloaded(NULL),
+		ParCount(FromFunc.ParCount),
 		Script(FromFunc.Script),
 		VarNamed(FromFunc.VarNamed),
 		ParNamed(FromFunc.ParNamed),
-		OwnerOverloaded(NULL),
-		ParCount(FromFunc.ParCount),
 		pOrgScript(FromFunc.pOrgScript),
 		tProfileTime(0)
 {

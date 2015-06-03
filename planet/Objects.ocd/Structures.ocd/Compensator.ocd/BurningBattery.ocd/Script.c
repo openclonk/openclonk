@@ -1,11 +1,10 @@
 /**
-	BurningBattery
+	Burning Battery
 	A part of a compensator!
+	
+	@author Zapper
 */
 
-local Name = "$Name$";
-local Description = "$Description$";
-local Collectible = 0;
 local time;
 
 func Initialize()
@@ -24,3 +23,10 @@ func DoSmoke()
 	++time;
 	Smoke(RandomX(-5, 5), RandomX(-5, 5), 2);
 }
+
+
+/*-- Properties --*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Collectible = 0;

@@ -2,9 +2,8 @@
 id=StatusSymbol
 Version=6,0
 Category=C4D_Vehicle | C4D_MouseIgnore
-Width=1
-Height=1
-Offset=-1,-1
+Width=13
+Height=19
+Offset=-6,-19
 Vertices=1
 VertexY=14
-NoGet=1

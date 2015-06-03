@@ -21,9 +21,7 @@ Additionally, OpenClonk depends on a number of third-party libraries:
 
 OS X Specific
 =============
-OpenClonk supports OS X versions 10.6 "Snow Leopard" and later. You can build
-universal binaries by setting CMAKE_OSX_ARCHITECTURES to "x86_64 i386", but
-you will of course need universal versions of the dependencies in that case.
+OpenClonk supports OS X versions 10.8 "Mountain Lion" and later.
 If you are using brew (https://github.com/mxcl/homebrew) or MacPorts
 (http://www.macports.org/), the packages you'll have to install are:
     libjpeg, libpng, freetype, glew, libogg, libvorbis, boost

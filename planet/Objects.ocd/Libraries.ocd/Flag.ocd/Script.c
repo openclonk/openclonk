@@ -1,231 +1,226 @@
-/*
-	The flagpoles mark the area a player owns.
-	It also serves as an energy transmitter.
+/**
+	Flag Library
+	The flagpoles mark the area a player owns. It also serves as an energy transmitter.
+	A structure that serves as a flagpole, which is an object which defines an ownership
+	radius, should include this library.
+	
+	The ownership radius can be changed via the function SetFlagRadius(int to_radius).
+	The power system uses the flag library to determine which structures belong to the
+	same network, which is given by a number of connected flags.
+	
+	Important notes when including this library:
+	 * The object including this library should return _inherited(...) in the
+	   Construction, Initialize and Destruction callback if overloaded.
+	   
+	The flag library and its components Library_Flag_Marker, Library_Ownable, 
+	Library_Flag_ConstructionPreviewer and Library_Flag_ConstructionPreviewer_Arrow
+	depend on the following other definitions:
+	 * ConstructionPreviewer
+	
+	@author Zapper, Maikel
 */
 
-static LibraryFlag_flag_list;
 
-local DefaultFlagRadius = 200; // Radius of new flag of this type, unless overwritten by SetFlagRadius().
-local lflag;
+// A static variable is used to keep track of all flags.
+static LIB_FLAG_FlagList;
 
-public func IsFlagpole(){return true;}
+// Radius of new flag of this type, unless overwritten by SetFlagRadius().
+local DefaultFlagRadius = 200;
 
-func RefreshAllFlagLinks()
+// All flag related local variables are stored in a single proplist.
+// This reduces the chances of clashing local variables. See 
+// Construction for which variables are being used.
+local lib_flag;
+
+protected func Construction()
 {
-	for(var f in LibraryFlag_flag_list) if (f)
-	{
-		f->ScheduleRefreshLinkedFlags();
-	}
-	
-	// update power balance for power helpers after refreshing the linked flags
-	Schedule(nil, "Library_Flag->RefreshAllPowerHelpers()", 2, 0);
-	AddEffect("ScheduleRefreshAllPowerHelpers", nil, 1, 2, nil, Library_Flag);
+	// Initialize the flag list if not done already.
+	if (GetType(LIB_FLAG_FlagList) != C4V_Array)
+		LIB_FLAG_FlagList = [];
+	// Make this object also a C4D_Environment for hostility change callbacks.
+	SetCategory(GetCategory() | C4D_Environment);
+	// Initialize the single proplist for the flag library.
+	if (lib_flag == nil)
+		lib_flag = {};
+	// Set some variables corresponding to this flag.
+	lib_flag.construction_time = FrameCounter();
+	lib_flag.radius = GetID()->GetFlagRadius();
+	lib_flag.range_markers = [];
+	lib_flag.linked_flags = [];
+	lib_flag.power_helper = nil;
+	return _inherited(...);
 }
 
-func FxScheduleRefreshAllPowerHelpersTimer()
-{
-	Library_Flag->RefreshAllPowerHelpers();
-	return -1;
-}
-
-func RefreshAllPowerHelpers()
-{
-	// no power helpers created yet
-	if(GetType(Library_Power_power_compounds) != C4V_Array)
-		return;
-	
-	// special handling for neutral
-	var neutral = nil;
-	for(var obj in Library_Power_power_compounds)
-	{
-		if(!obj || !obj.neutral) continue;
-		neutral = obj;
-		break;
-	}
-	
-	if(neutral)
-	{
-		RefreshPowerHelper(neutral);
-	}
-	
-	// same for all helpers - delete / refresh
-	for(var i = GetLength(Library_Power_power_compounds); --i >= 0;)
-	{
-		var obj = Library_Power_power_compounds[i];
-		if (!obj) continue;
-		if(GetLength(obj.power_links) == 0 && GetLength(obj.sleeping_links) == 0)
-		{
-			obj->RemoveObject();
-			Library_Power_power_compounds[i] = Library_Power_power_compounds[GetLength(Library_Power_power_compounds) - 1];
-			SetLength(Library_Power_power_compounds, GetLength(Library_Power_power_compounds) - 1);
-			continue;
-		}
-		
-		obj->CheckPowerBalance();
-	}
-}
-
-func RedrawFlagRadius()
-{
-	// Flag deactivated by setting empty radius
-	if (!lflag.radius)
-	{
-		ClearFlagMarkers();
-		return true;
-	}
-	
-	//var flags = FindObjects(Find_ID(FlagPole),Find_Exclude(target), Find_Not(Find_Owner(GetOwner())), /*Find_Distance(FLAG_DISTANCE*2 + 10,0,0)*/Sort_Func("GetLifeTime"));
-	var other_flags = [];
-	var i = 0;
-	for(var f in LibraryFlag_flag_list) if (f)
-	{
-		//if(f->GetOwner() == GetOwner()) continue;
-		if(f == this) continue;
-		other_flags[i++] = f;
-	}
-	// inner border
-	var count = Max(5, lflag.radius / 10);
-	var marker_index = -1;
-	for(var i=0; i<360; i+= 360 / count)
-	{
-		++marker_index;
-		var draw=true;
-		var f=nil;
-		var x= Sin(i, lflag.radius);
-		var y=-Cos(i, lflag.radius);	
-		//var inEnemy = false;
-		
-		for(var f in other_flags) if (f)
-		{
-			if(Distance(GetX()+x,GetY()+y,f->GetX(),f->GetY()) <= f->GetFlagRadius())
-			{
-				if(f->GetFlagConstructionTime() == GetFlagConstructionTime())
-					lflag.construction_time += 1;
-					
-				if(f->GetFlagConstructionTime() < GetFlagConstructionTime())
-				{	
-					draw=false;
-				}
-				//else inEnemy=true;
-				if(IsAllied(GetOwner(), f->GetOwner()))
-					draw = false;
-			}
-		}
-		
-		if(!draw)
-		{
-			if(marker_index < GetLength(lflag.range_markers))
-				if(lflag.range_markers[marker_index])
-				{
-					lflag.range_markers[marker_index]->FadeOut();
-					lflag.range_markers[marker_index]->MoveTo(GetX(), GetY(), -lflag.range_markers[marker_index]->GetR());
-				}
-			continue;
-		}
-		var marker = lflag.range_markers[marker_index];
-		if(!marker)
-		{
-			marker = CreateObjectAbove(GetFlagMarkerID(), 0, 0, GetOwner());
-			marker->SetR(Angle(0, 0, x, y));
-		}
-		marker->FadeIn();
-		marker->MoveTo(GetX() + x, GetY() + y, Angle(0, 0, x, y));
-		lflag.range_markers[marker_index] = marker;
-	}
-	
-	// there were unnecessary markers?
-	if(marker_index < GetLength(lflag.range_markers) - 1)
-	{
-		var old = marker_index;
-		while(++marker_index < GetLength(lflag.range_markers))
-		{
-			var marker = lflag.range_markers[marker_index];
-			marker->RemoveObject();
-			lflag.range_markers[marker_index] = nil;
-		}
-		SetLength(lflag.range_markers, old + 1);
-	}
-	
-	return true;
-}
-
-func RefreshOwnershipOfSurrounding()
-{
-	for(var obj in FindObjects(Find_Distance(lflag.radius), Find_Func("CanBeOwned")))
-	{
-		var o = GetOwnerOfPosition(AbsX(obj->GetX()), AbsY(obj->GetY()));
-		if(obj->GetOwner() == o) continue;
-		var old = obj->GetOwner();
-		obj->SetOwner(o);
-	}
-}
-public func Initialize()
+protected func Initialize()
 {
 	AddOwnership();
 	AddEffect("IntFlagMovementCheck", this, 100, 12, this);
 	return _inherited(...);
 }
 
-public func Construction()
+protected func Destruction()
 {
-	if(GetType(LibraryFlag_flag_list) != C4V_Array)
-		LibraryFlag_flag_list = [];
-	
-	lflag =
-	{
-		construction_time = FrameCounter(),
-		radius = GetID()->GetFlagRadius(),
-		range_markers = [],
-		linked_flags = [],
-		power_helper = nil
-	};
-		
-	return _inherited(...);
+	// Important: first process other libraries like the power library which removes links
+	// from the network and then handle ownership removal.
+	_inherited(...);
+	RemoveOwnership();
+	return;
 }
 
-public func Destruction()
+// This object is a flagpole.
+public func IsFlagpole() { return true; }
+
+
+/*-- Library Code --*/
+
+// Redraws the ownership markers of this flag according to the current circumstances.
+public func RedrawFlagRadius()
 {
-	RemoveOwnership();
+	// Debugging logs.
+	//Log("FLAG - RedrawFlagRadius(): flag = %v", this);
+	// A flag with no radius is not drawn.
+	if (!lib_flag.radius)
+	{
+		ClearFlagMarkers();
+		return;
+	}
 	
-	return _inherited(...);
+	// Make a list of all other flags.
+	var other_flags = [];
+	for (var flag in LIB_FLAG_FlagList) 
+	{
+		if (!flag || flag == this) 
+			continue;
+		PushBack(other_flags, flag);
+	}
+		
+	// Draw the flag border.
+	var count = Max(5, lib_flag.radius / 10);
+	var marker_index = -1;
+	for (var i = 0; i < 360; i += 360 / count)
+	{
+		++marker_index;
+
+		// Determine the position of the flag marker.
+		var x = Sin(i, lib_flag.radius);
+		var y = -Cos(i, lib_flag.radius);	
+		
+		// Check for other flags which were constructed earlier and determine whether to draw the marker.
+		var draw = true;
+		for (var other_flag in other_flags)
+		{
+			if (other_flag)
+			{
+				if (Distance(GetX() + x, GetY() + y, other_flag->GetX(), other_flag->GetY()) <= other_flag->GetFlagRadius())
+				{
+					// For equal construction times, increase this construction time.
+					// TODO: this feels rather hacky?!
+					if (other_flag->GetFlagConstructionTime() == GetFlagConstructionTime())
+						lib_flag.construction_time += 1;
+					
+					// Do not draw the marker if the construction time is too large or flags are allied.
+					if (other_flag->GetFlagConstructionTime() < GetFlagConstructionTime())
+						draw = false;
+					if (IsAllied(GetOwner(), other_flag->GetOwner()))
+						draw = false;
+				}
+			}
+		}
+		// If the marker should not be drawn: move to center and fade out.
+		var marker = lib_flag.range_markers[marker_index];
+		if (!draw)
+		{
+			if (marker_index < GetLength(lib_flag.range_markers))
+			{
+				if (marker)
+				{
+					marker->FadeOut();
+					marker->MoveTo(GetX(), GetY(), -marker->GetR());
+				}
+			}
+			continue;
+		}
+		if (!marker)
+		{
+			marker = CreateObject(GetFlagMarkerID(), 0, 0, GetOwner());
+			lib_flag.range_markers[marker_index] = marker;
+			marker->SetR(Angle(0, 0, x, y));
+		}
+		marker->FadeIn();
+		marker->MoveTo(GetX() + x, GetY() + y, Angle(0, 0, x, y));
+	}
+	
+	// Check whether there were any unnecessary markers.
+	if (marker_index < GetLength(lib_flag.range_markers) - 1)
+	{
+		var old = marker_index;
+		while (++marker_index < GetLength(lib_flag.range_markers))
+		{
+			var marker = lib_flag.range_markers[marker_index];
+			marker->RemoveObject();
+			lib_flag.range_markers[marker_index] = nil;
+		}
+		SetLength(lib_flag.range_markers, old + 1);
+	}
+	return;
+}
+
+// Removes all the ownership markers for this flag.
+private func ClearFlagMarkers()
+{
+	for (var marker in lib_flag.range_markers)
+		if (marker) 
+			marker->RemoveObject();
+	lib_flag.range_markers = [];
+	return;
+}
+
+// Changes the ownership of the structures within this flag's radius.
+private func RefreshOwnershipOfSurrounding()
+{
+	for (var obj in FindObjects(Find_Distance(lib_flag.radius), Find_Func("CanBeOwned")))
+	{
+		var owner = GetOwnerOfPosition(AbsX(obj->GetX()), AbsY(obj->GetY()));
+		if (obj->GetOwner() == owner)
+			continue;
+		obj->SetOwner(owner);
+	}
+	return;
 }
 
 private func AddOwnership()
 {
-	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
-		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
-
-	// redraw
+	// Debugging logs.
+	//Log("FLAG - AddOwnership(): flag = %v", this);
+	// Add this flag to the global list of flags.
+	if (GetIndexOf(LIB_FLAG_FlagList, this) == -1)
+		PushBack(LIB_FLAG_FlagList, this);
+	// Redraw radiuses of all flags.
 	RedrawAllFlagRadiuses();
-	
-	// ownership
+	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	
-	// linked flags - optimization for power system
-	RefreshAllFlagLinks();
+	// Linked flags - refresh links for this flag and update the power system.
+	RefreshLinkedFlags();
+	RefreshAllPowerNetworks();
+	return;
 }
 
 private func RemoveOwnership()
 {
+	// Debugging logs.
+	//Log("FLAG - RemoveOwnership(): flag = %v", this);
+	// Remove all the flag markers.
 	ClearFlagMarkers();
-	
-	// remove from global array
-	for(var i = 0; i < GetLength(LibraryFlag_flag_list); ++i)
-	{
-		if(LibraryFlag_flag_list[i] != this) continue;
-		LibraryFlag_flag_list[i] = LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)-1];
-		SetLength(LibraryFlag_flag_list, GetLength(LibraryFlag_flag_list)-1);
-		break;
-	}
-	
-	// redraw
+	// Remove the flag from the global flag list.
+	RemoveArrayValue(LIB_FLAG_FlagList, this);
+	// Redraw radiuses of all flags.
 	RedrawAllFlagRadiuses();
-	
-	// ownership
+	// Refresh the ownership of the flag's surroundings.
 	RefreshOwnershipOfSurrounding();
-	
-	// refresh all flag links
-	RefreshAllFlagLinks();
+	// Linked flags - refresh links for this flag and update the power system.
+	RefreshLinkedFlags();
+	RefreshAllPowerNetworks();
+	return;
 }
 
 protected func FxIntFlagMovementCheckStart(object target, proplist effect, int temp)
@@ -234,8 +229,8 @@ protected func FxIntFlagMovementCheckStart(object target, proplist effect, int t
 		return FX_OK;
 	effect.moving = false;
 	effect.Interval = 12;
-	effect.X = target->GetX();
-	effect.Y = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	return FX_OK;
 }
 
@@ -244,7 +239,7 @@ protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
 	// Check if flag started moving.
 	if (!effect.moving)
 	{
-		if (effect.X != target->GetX() || effect.Y != target->GetY())
+		if (effect.x != target->GetX() || effect.y != target->GetY())
 		{
 			effect.moving = true;
 			RemoveOwnership();
@@ -253,201 +248,318 @@ protected func FxIntFlagMovementCheckTimer(object target, proplist effect)
 	// Check if flag stopped moving.
 	else
 	{
-		if (effect.X == target->GetX() && effect.Y == target->GetY())
+		if (effect.x == target->GetX() && effect.y == target->GetY())
 		{
 			effect.moving = false;
 			AddOwnership();
 		}	
 	}
 	// Update coordinates.
-	effect.X = target->GetX();
-	effect.Y = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	return FX_OK;
 }
 
-func ScheduleRefreshLinkedFlags()
-{
-	if(GetEffect("RefreshLinkedFlags", this)) return;
-	AddEffect("RefreshLinkedFlags", this, 1, 1, this);
-}
-
-func StopRefreshLinkedFlags()
-{
-	if(!GetEffect("RefreshLinkedFlags", this)) return;
-	RemoveEffect("RefreshLinkedFlags", this);
-}
-
-func FxRefreshLinkedFlagsTimer()
-{
-	this->RefreshLinkedFlags();
-	return -1;
-}
-
-// Returns all flags allied to owner of which the radius intersects the given circle
-func FindFlagsInRadius(object center_object, int radius, int owner)
+// Returns all flags allied to owner of which the radius intersects the given circle.
+public func FindFlagsInRadius(object center_object, int radius, int owner)
 {
 	var flag_list = [];
-	if (LibraryFlag_flag_list) for(var flag in LibraryFlag_flag_list)
+	if (LIB_FLAG_FlagList)
 	{
-		if(!IsAllied(flag->GetOwner(), owner)) continue;
-		if(flag == center_object) continue;
-		if(ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) continue;
-		flag_list[GetLength(flag_list)] = flag;
+		for (var flag in LIB_FLAG_FlagList)
+		{
+			if (!IsAllied(flag->GetOwner(), owner)) 
+				continue;
+			if (flag == center_object) 
+				continue;
+			if (ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) 
+				continue;
+			PushBack(flag_list, flag);
+		}
 	}
 	return flag_list;
 }
 
-func RefreshLinkedFlags()
+// Refreshes the linked flags for this flags and also updates the linked flags of the flages linked to this flag.
+// TODO: Maybe there is a need to update the links of the flags which were linked before but are not now.
+public func RefreshLinkedFlags()
 {
-	// failsafe - the array should exist
-	if(GetType(LibraryFlag_flag_list) != C4V_Array) return;
+	// Debugging logs.
+	//Log("FLAG - RefreshLinkedFlags(): flag = %v", this);
+	//LogFlags();
 	
-	var current = [];
-	var new = [this];
-	
-	var owner = GetOwner();
-	
-	while(GetLength(new))
-	{
-		for(var f in new) if(f != this) current[GetLength(current)] = f;
-		var old = new;
-		new = [];
+	// Safety check: the global flag list should exist.
+	if (GetType(LIB_FLAG_FlagList) != C4V_Array) 
+		return;
 		
-		for(var oldflag in old)
-		for(var flag in LibraryFlag_flag_list)
+	// Construct a list fo currently linked flags (to this flag).
+	var current_linked_flags = [];
+	var owner = GetOwner();
+	// Do this by iterating over all directly linked flags and go outward from this flag.
+	var iterate_flags = [this];
+	// Once the list of iterated flags is empty we are done.
+	while (GetLength(iterate_flags))
+	{
+		// Store all the flags found in the last iteration which are not this flag.
+		for (var flag in iterate_flags) 
+			if (flag != this)
+				PushBack(current_linked_flags, flag);
+		// Find the new iteration of flags which are connected to the flags in the previous iteration.
+		var previous_iterate_flags = iterate_flags;
+		iterate_flags = [];
+		for (var prev_flag in previous_iterate_flags)
 		{
-			if(!IsAllied(flag->GetOwner(), owner)) continue;
-			if(GetIndexOf(current, flag) != -1) continue;
-			if(GetIndexOf(new, flag) != -1) continue;
-			if(flag == this) continue;
-			
-			if(ObjectDistance(oldflag, flag) > oldflag->GetFlagRadius() + flag->GetFlagRadius()) continue;
-			
-			new[GetLength(new)] = flag;
+			for (var flag in LIB_FLAG_FlagList)
+			{
+				// A new connected flag must be allied.
+				if (!IsAllied(flag->GetOwner(), owner)) 
+					continue;
+				// And must not be an already found flag or this flag.
+				if (GetIndexOf(current_linked_flags, flag) != -1 || flag == this) 
+					continue;
+				// Neither may it be an already found flag in this loop.	
+				if (GetIndexOf(iterate_flags, flag) != -1) 
+					continue;
+				// Last, check whether the new flag is really connected to the previous flag.
+				if (ObjectDistance(prev_flag, flag) > prev_flag->GetFlagRadius() + flag->GetFlagRadius()) 
+					continue;
+				PushBack(iterate_flags, flag);
+			}
 		}
 	}
 	
-	lflag.linked_flags = current;
+	// Update the linked flags of this flag.
+	lib_flag.linked_flags = current_linked_flags;
 	
-	// update flag links for all linked flags - no need for every flag to do that
-	// meanwhile, adjust power helper. Merge if necessary
-	// since we don't know whether flag links have been lost we will create a new power helper and possibly remove old ones
-	Library_Power->Init(); // make sure the power system is set up
-	var old = lflag.power_helper;
-	lflag.power_helper = CreateObjectAbove(Library_Power, 0, 0, NO_OWNER);
-	Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = lflag.power_helper;
+	// Update the linked flags for all other linked flags as well.
+	for (var other in lib_flag.linked_flags)
+		other->CopyLinkedFlags(this, lib_flag.linked_flags);
 	
-	// list of helpers yet to merge
-	var to_merge = [old];
-	
-	// copy from me
-	
-	lflag.linked_flags = current;
-	for(var other in lflag.linked_flags)
+	// Since the connected flags have been updated it is necessary to update the power helper as well.
+	// First make sure the power system is initialized.
+	Library_Power->Init();
+	// Get the old power network for this flag.
+	var old_network = lib_flag.power_helper;
+	// Create a new power network for ths flag since we don't know whether flag links have been lost.
+	// We then just possibly remove the old ones if they exist.
+	lib_flag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
+	PushBack(LIB_POWR_Networks, lib_flag.power_helper);
+	// Make a list of the power networks which need to be merged into the new one.
+	var to_merge = [old_network];
+	for (var linked_flag in lib_flag.linked_flags)
 	{
-		other->CopyLinkedFlags(this, lflag.linked_flags);
-		
-		if(GetIndexOf(to_merge, other.lflag.power_helper) == -1)
-			to_merge[GetLength(to_merge)] = other.lflag.power_helper;
-		other.lflag.power_helper = lflag.power_helper;
+		// Add old network of this flag to merge list and reset to new network.
+		if (GetIndexOf(to_merge, linked_flag.lib_flag.power_helper) == -1)
+			PushBack(to_merge, linked_flag.lib_flag.power_helper);
+		linked_flag->SetPowerHelper(lib_flag.power_helper);
 	}
-	
-	// for every object in to_merge check if it actually (still) belongs to the group
-	for(var h in to_merge)
+	// Now merge all networks into the newly created network.
+	for (var network in to_merge)
 	{
-		if(h == nil)
+		if (network == nil)
 			continue;
-		RefreshPowerHelper(h);
+		RefreshPowerNetwork(network);
 	}
+	// Debugging logs.
+	//LogFlags();
+	return;
 }
 
-func RefreshPowerHelper(h)
-{
-	// merge both power_links and sleeping_links
-	for(var o in h.power_links)
-	{
-		if(o == nil) continue; // possible
-		
-		var actual = Library_Power->GetPowerHelperForObject(o.obj);
-		if (!actual) continue;
-		if(actual == h) continue; // right one already
-		// remove from old and add to new
-		h->RemovePowerLink(o.obj, true);
-		actual->AddPowerLink(o.obj, o.amount, true);
-	}
-		
-	for(var i = GetLength(h.sleeping_links); --i >= 0;)
-	{
-		var o = h.sleeping_links[i];
-		var actual = Library_Power->GetPowerHelperForObject(o.obj);
-		if(actual == h) continue; // right one already
-		// remove from old one and add to new
-		actual.sleeping_links[GetLength(actual.sleeping_links)] = o;
-			
-		h.sleeping_links[i] = h.sleeping_links[GetLength(h.sleeping_links) - 1];
-		SetLength(h.sleeping_links, GetLength(h.sleeping_links) - 1);
-	}
-}
-
+// Copy the linked flags from another flag (from) and its flaglist.
 public func CopyLinkedFlags(object from, array flaglist)
 {
-	lflag.linked_flags = flaglist[:];
-	for(var i = GetLength(lflag.linked_flags)-1; i >= 0; --i)
-		if(lflag.linked_flags[i] == this)
-			lflag.linked_flags[i] = from;
-	StopRefreshLinkedFlags();
+	lib_flag.linked_flags = flaglist[:];
+	for (var i = GetLength(lib_flag.linked_flags) - 1; i >= 0; --i)
+		if (lib_flag.linked_flags[i] == this)
+			lib_flag.linked_flags[i] = from;
+	return;
 }
 
-public func GetPowerHelper(){return lflag.power_helper;}
-public func SetPowerHelper(object to){lflag.power_helper = to;}
-
-public func GetLinkedFlags(){return lflag.linked_flags;}
-
-private func ClearFlagMarkers()
+// Engine callback: owner of the flag has changed.
+protected func OnOwnerChanged(int new_owner, int old_owner)
 {
-	for(var obj in lflag.range_markers)
-		if (obj) obj->RemoveObject();
-	lflag.range_markers = [];
-}
-
-public func SetFlagRadius(int to)
-{
-	lflag.radius = to;
-	
-	// redraw
-	RedrawAllFlagRadiuses();
-	
-	// ownership
-	RefreshOwnershipOfSurrounding();
-	
-	return true;
-}
-
-// reassign owner of flag markers for correct color
-func OnOwnerChanged(int new_owner, int old_owner)
-{
-	for(var marker in lflag.range_markers)
+	// Debugging logs.
+	//Log("FLAG - OnOwnerChanged(): flag = %v, new_owner = %d, old_owner = %d", this, new_owner, old_owner);
+	// Reassign owner of flag markers for correct color.
+	for (var marker in lib_flag.range_markers)
 	{
-		if(!marker) continue;
+		if (!marker) 
+			continue;
 		marker->SetOwner(new_owner);
 		marker->ResetColor();
 	}
+	// Redraw radiuses of all flags.
+	RedrawAllFlagRadiuses();
+	// Also change the ownership of the surrounding buildings.
+	RefreshOwnershipOfSurrounding();
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();
+	return _inherited(new_owner, old_owner, ...);
 }
 
-// callback from construction library: Create a special preview that gives extra info about affected buildings / flags
-func CreateConstructionPreview(object constructing_clonk)
+// Engine callback: a player has changed its hostility.
+protected func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
 {
-	return CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
+	// Debugging logs.
+	//Log("FLAG - OnHostilityChange(): flag = %v, player1 = %d, player2 = %d, hostile = %v, old_hostility = %v", this, player1, player2, hostile, old_hostility);
+	// Redraw radiuses of all flags.
+	RedrawAllFlagRadiuses();
+	// Refresh the ownership of the flag's surroundings.
+	RefreshOwnershipOfSurrounding();
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();
+	return _inherited(player1, player2, hostile, old_hostility);
 }
 
-public func GetFlagRadius(){if (lflag) return lflag.radius; else return DefaultFlagRadius;}
-public func GetFlagConstructionTime() {return lflag.construction_time;}
-public func GetFlagMarkerID(){return LibraryFlag_Marker;}
+// Engine callback: a player has switched its team.
+protected func OnTeamSwitch(int player, int new_team, int old_team)
+{
+	// Debugging logs.
+	//Log("FLAG - OnTeamSwitch(): flag = %v, player = %d, new_team = %d, old_team = %d", this, player, new_team, old_team);
+	// Redraw radiuses of all flags.
+	RedrawAllFlagRadiuses();
+	// Refresh the ownership of the flag's surroundings.
+	RefreshOwnershipOfSurrounding();
+	// Linked flags - refresh links for this flag.
+	RefreshLinkedFlags();		
+	return _inherited(player, new_team, old_team, ...);
+}
+
+
+/*-- Construction --*/
+
+// Callback from construction library: create a special preview that gives extra info about affected buildings / flags.
+public func CreateConstructionPreview(object constructing_clonk)
+{
+	// Return the specific previewer for the flag.
+	return CreateObjectAbove(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX() - GetX(), constructing_clonk->GetY() - GetY(), constructing_clonk->GetOwner());
+}
+
+
+/*-- Flag properties --*/
+
+public func SetFlagRadius(int to_radius)
+{
+	lib_flag.radius = to_radius;
+	
+	// Redraw the flag markers.
+	RedrawAllFlagRadiuses();
+	
+	// Refresh the ownership in the new area.
+	RefreshOwnershipOfSurrounding();	
+	return;
+}
+
+public func GetFlagRadius()
+{
+	if (lib_flag)
+		return lib_flag.radius;
+ 	return DefaultFlagRadius;
+}
+
+public func GetFlagConstructionTime() { return lib_flag.construction_time; }
+
+public func GetFlagMarkerID() { return Library_Flag_Marker; }
+
+public func GetLinkedFlags() {return lib_flag.linked_flags; }
+
+
+/*-- Power System --*/
+
+public func GetPowerHelper() { return lib_flag.power_helper; }
+
+public func SetPowerHelper(object to) 
+{
+	lib_flag.power_helper = to; 
+	return;
+}
+
+// Refreshes all power networks (Library_Power objects).
+public func RefreshAllPowerNetworks()
+{
+	// Don't do anything if there are no power helpers created yet.
+	if (GetType(LIB_POWR_Networks) != C4V_Array)
+		return;
+	
+	// Special handling for neutral networks of which there should be at most one.
+	for (var network in LIB_POWR_Networks)
+	{
+		if (!network || !network.lib_power.neutral_network) 
+			continue;
+		RefreshPowerNetwork(network);
+		break;
+	}
+	
+	// Do the same for all other helpers: delete / refresh.
+	for (var index = GetLength(LIB_POWR_Networks) - 1; index >= 0; index--)
+	{
+		var network = LIB_POWR_Networks[index];
+		if (!network) 
+			continue;
+		
+		if (network->IsEmpty())
+		{
+			network->RemoveObject();
+			RemoveArrayIndex(LIB_POWR_Networks, index);
+			continue;
+		}
+		//network->CheckPowerBalance();
+	}
+	return;
+}
+
+private func RefreshPowerNetwork(object network)
+{
+	// Merge all the producers and consumers into their actual networks.
+	for (var link in Concatenate(network.lib_power.idle_producers, network.lib_power.active_producers))
+	{
+		if (!link)
+			continue;
+		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		if (!actual_network || actual_network == network)
+			continue;
+		// Remove from old network and add to new network.
+		network->RemovePowerProducer(link.obj);
+		actual_network->AddPowerProducer(link.obj, link.prod_amount, link.priority);
+	}
+	for (var link in Concatenate(network.lib_power.waiting_consumers, network.lib_power.active_consumers))
+	{
+		if (!link)
+			continue;
+		var actual_network = Library_Power->GetPowerNetwork(link.obj);
+		if (!actual_network || actual_network == network)
+			continue;
+		// Remove from old network and add to new network.
+		network->RemovePowerConsumer(link.obj);
+		actual_network->AddPowerConsumer(link.obj, link.cons_amount, link.priority);
+	}
+	return;
+}
+
+
+/*-- Logging --*/
+
+private func LogFlags()
+{
+	for (var flag in LIB_FLAG_FlagList)
+	{
+		Log("FLAG - State for flag (%v): owner = %d, con_time = %d, radius = %d, power_network = %v", flag, flag->GetOwner(), flag->GetFlagConstructionTime(), flag->GetFlagRadius(), flag->GetPowerHelper());
+		Log("\tlinked flags = %v", flag->GetLinkedFlags());
+	}
+	return;
+}
+
+
+/*-- Saving --*/
 
 public func SaveScenarioObject(props)
 {
-	if (!inherited(props, ...)) return false;
-	props->Remove("Category"); // category is always set to StaticBack...
-	if (lflag && lflag.radius != DefaultFlagRadius) props->AddCall("Radius", this, "SetFlagRadius", lflag.radius);
+	if (!inherited(props, ...)) 
+		return false;
+	// Category is always set to StaticBack.
+	props->Remove("Category");
+	// Store the flag radius correctly.
+	if (lib_flag && lib_flag.radius != DefaultFlagRadius) 
+		props->AddCall("Radius", this, "SetFlagRadius", lib_flag.radius);
 	return true;
 }

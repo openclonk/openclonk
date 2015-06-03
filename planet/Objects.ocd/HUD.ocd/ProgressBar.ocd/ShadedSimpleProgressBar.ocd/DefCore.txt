@@ -1,7 +1,7 @@
 [DefCore]
 id=GUI_ShadedSimpleProgressBar
 Version=6,0
-Category=C4D_Vehicle
+Category=C4D_StaticBack
 Width=110
 Height=19
 Offset=-55,-10

@@ -282,9 +282,6 @@ static C4Void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long
 {
 	if (iEngType.IsNil()) iEngType = C4FxCall_EngScript;
 	if (iCausedBy.IsNil())
-		//if (cthr->Caller && cthr->Caller->Obj)
-		//  iCausedBy = cthr->Caller->Obj->Controller;
-		//else
 		iCausedBy = NO_OWNER;
 	Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
 	return C4Void();
@@ -300,9 +297,6 @@ static C4Void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, N
 {
 	if (iDmgType.IsNil()) iDmgType = C4FxCall_DmgScript;
 	if (iCausedBy.IsNil())
-		//if (cthr->Caller && cthr->Caller->Obj)
-		//  iCausedBy = cthr->Caller->Obj->Controller;
-		//else
 		iCausedBy = NO_OWNER;
 	Obj->DoDamage(iChange, iCausedBy, iDmgType);
 	return C4Void();
@@ -321,8 +315,6 @@ static C4Void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update xdir
 	Obj->xdir=itofix(nxdir, iPrec);
-	// special: negative dirs must be rounded
-	//if (nxdir<0) pObj->xdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
 	// success
 	return C4Void();
@@ -334,8 +326,6 @@ static C4Void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update rdir
 	Obj->rdir=itofix(nrdir, iPrec);
-	// special: negative dirs must be rounded
-	//if (nrdir<0) pObj->rdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
 	// success
 	return C4Void();
@@ -347,8 +337,6 @@ static C4Void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
 	if (!iPrec) iPrec=10;
 	// update ydir
 	Obj->ydir=itofix(nydir, iPrec);
-	// special: negative dirs must be rounded
-	//if (nydir<0) pObj->ydir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
 	return C4Void();
 }
@@ -962,8 +950,6 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 
 	// Info caption
 	SCopy(FnStringPar(szInfoCaption),infocaption,C4MaxTitle);
-	// Default info caption by def desc
-	//if (pDef && !infocaption[0] && !(iExtra & C4MN_Add_ForceNoDesc)) SCopy(pDef->GetDesc(),infocaption,C4MaxTitle);
 
 	// Create symbol
 	C4FacetSurface fctSymbol;
@@ -1052,8 +1038,6 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		pGfxObj = XPar.getObj();
-		//fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
-		//pGfxObj->Picture2Facet(fctSymbol);
 	}
 	break;
 
@@ -1079,7 +1063,6 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		C4PropList *gfx_proplist = XPar.getPropList();
 		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		uint32_t dwClr = XPar.getInt();
 		if (!Game.DrawPropListSpecImage(fctSymbol, gfx_proplist))
 			return false;
 	}
@@ -1539,7 +1522,7 @@ static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
 	// get menu
 	C4Menu *pMnu=Obj->Menu;
 	if (!pMnu || !pMnu->IsActive()) return false;
-	pMnu->SetSize(BoundBy<long>(iCols, 0, 50), BoundBy<long>(iRows, 0, 50));
+	pMnu->SetSize(Clamp<long>(iCols, 0, 50), Clamp<long>(iRows, 0, 50));
 	return true;
 }
 
@@ -2338,6 +2321,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 
 C4ScriptConstDef C4ScriptObjectConstMap[]=
 {
+	{ "C4D_None"               ,C4V_Int,          C4D_None},
 	{ "C4D_All"                ,C4V_Int,          C4D_All},
 	{ "C4D_StaticBack"         ,C4V_Int,          C4D_StaticBack},
 	{ "C4D_Structure"          ,C4V_Int,          C4D_Structure},
@@ -2522,7 +2506,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
 
-//  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 	AddFunc(pEngine, "DoCon", FnDoCon);
 	AddFunc(pEngine, "GetCon", FnGetCon);
 	AddFunc(pEngine, "DoDamage", FnDoDamage);

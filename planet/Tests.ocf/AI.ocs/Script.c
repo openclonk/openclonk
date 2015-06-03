@@ -29,7 +29,7 @@ func InitializeScriptPlayer(int plr)
 		index++;
 	}
 	// Create enemies
-	CreateEnemy(Clonk, 40,200, plr, [Rock, Rock, Sword, Shield], 40);
+	CreateEnemy(Clonk, 40,200, plr, [GrenadeLauncher, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb, IronBomb], 40);
 	return;
 }
 

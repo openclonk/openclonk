@@ -28,6 +28,7 @@
 #include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
+#include <C4SoundSystem.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
@@ -135,8 +136,6 @@ bool FreeMoveTo(C4Object *cObj)
 {
 	// Floating: we accept any move-to target
 	if (cObj->GetProcedure()==DFA_FLOAT) return true;
-	// Can fly: we accept any move-to target
-	//if (cObj->GetPhysical()->CanFly) return true; - needs to be adjusted once we have dragons
 	// Assume we're walking: move-to targets are adjusted
 	return false;
 }
@@ -227,28 +226,34 @@ void C4Command::Default()
 	BaseMode=C4CMD_Mode_SilentSub;
 }
 
-static bool ObjectAddWaypoint(int32_t iX, int32_t iY, intptr_t iTransferTarget, intptr_t ipObject)
+struct ObjectAddWaypoint
 {
-	C4Object *cObj = (C4Object*) ipObject; if (!cObj) return false;
+	explicit ObjectAddWaypoint(C4Object *obj) : cObj(obj) {}
+	bool operator()(int32_t iX, int32_t iY, C4Object *TransferTarget)
+	{
+		if (!cObj) return false;
 
-	// Transfer waypoint
-	if (iTransferTarget)
-		return cObj->AddCommand(C4CMD_Transfer,(C4Object*)iTransferTarget,iX,iY,0,NULL,false);
+		// Transfer waypoint
+		if (TransferTarget)
+			return cObj->AddCommand(C4CMD_Transfer,TransferTarget,iX,iY,0,NULL,false);
 
-	// Solid offset
-	AdjustSolidOffset(iX,iY,cObj->Shape.Wdt/2,cObj->Shape.Hgt/2);
+		// Solid offset
+		AdjustSolidOffset(iX,iY,cObj->Shape.Wdt/2,cObj->Shape.Hgt/2);
 
-	// Standard movement waypoint update interval
-	int32_t iUpdate = 25;
-	// Waypoints before transfer zones are not updated (enforce move to that waypoint)
-	if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
-	// Add waypoint
-	//AddCommand(iCommand,pTarget,iTx,iTy,iUpdateInterval,pTarget2,fInitEvaluation,iData,fAppend,iRetries,szText,iBaseMode)
-	assert(cObj->Command);
-	if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
+		// Standard movement waypoint update interval
+		int32_t iUpdate = 25;
+		// Waypoints before transfer zones are not updated (enforce move to that waypoint)
+		if (cObj->Command && (cObj->Command->Command==C4CMD_Transfer)) iUpdate=0;
+		// Add waypoint
+		assert(cObj->Command);
+		if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
 
-	return true;
-}
+		return true;
+	}
+
+private:
+	C4Object *cObj;
+};
 
 void C4Command::MoveTo()
 {
@@ -280,8 +285,7 @@ void C4Command::MoveTo()
 						Game.PathFinder.SetLevel(cObj->Def->Pathfinder);
 						if (!Game.PathFinder.Find( cObj->GetX(),cObj->GetY(),
 						                           Tx._getInt(),Ty,
-						                           &ObjectAddWaypoint,
-						                           (intptr_t)cObj)) // intptr for 64bit?
+												   ObjectAddWaypoint(cObj)))
 							{ /* Path not found: react? */ PathChecked=true; /* recheck delay */ }
 						return;
 					}
@@ -891,16 +895,20 @@ void C4Command::Drop()
 
 void C4Command::Jump()
 {
-	// Tx not default 0: adjust jump direction
-	if (Tx._getInt())
+	// Already in air and target position given
+	if (cObj->GetProcedure()==DFA_FLIGHT && Tx._getInt())
 	{
-		if (Tx._getInt()<cObj->GetX()) cObj->SetDir(DIR_Left);
-		if (Tx._getInt()>cObj->GetX()) cObj->SetDir(DIR_Right);
+		if (cObj->GetX()<Tx._getInt()) cObj->Action.ComDir=COMD_Right;
+		else if (cObj->GetX()>Tx._getInt()) cObj->Action.ComDir=COMD_Left;
+		else cObj->Action.ComDir=COMD_Stop;
 	}
-	// Jump
-	ObjectComJump(cObj);
-	// Done
-	Finish(true);
+	else
+	{
+		cObj->Action.ComDir=COMD_Stop;
+		// Done
+		Finish(true);
+		return;
+	}
 }
 
 void C4Command::Wait()
@@ -1395,7 +1403,7 @@ bool C4Command::InitEvaluation()
 		Tx.SetInt(iTx);
 		return true;
 	}
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_PushTo:
 	{
 		// Adjust coordinates
@@ -1404,11 +1412,22 @@ bool C4Command::InitEvaluation()
 		Tx.SetInt(iTx);
 		return true;
 	}
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_Exit:
 		// Cancel attach
 		ObjectComCancelAttach(cObj);
 		return true;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CMD_Jump:
+	{
+		if (Tx._getInt())
+		{
+			if (Tx._getInt()<cObj->GetX()) cObj->SetDir(DIR_Left);
+			if (Tx._getInt()>cObj->GetX()) cObj->SetDir(DIR_Right);
+		}
+		ObjectComJump(cObj);
+		return true;
+	}
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_Wait:
 		// Update interval by Data
@@ -1514,7 +1533,6 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 				// Path free from side move target to jump target
 				if (PathFree(iSideX,iSideY,Tx._getInt(),Ty))
 				{
-					//sprintf(OSTR,"High side move %d (%d,%d)",iAngle,iSideX-cx,iSideY-cy); GameMsgObject(OSTR,cObj);
 					cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty);
 					cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,iSideY,50);
 					return true;

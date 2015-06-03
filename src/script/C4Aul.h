@@ -56,15 +56,6 @@ public:
 	C4AulExecError(const char *szError);
 };
 
-// function access
-enum C4AulAccess
-{
-	AA_PRIVATE,
-	AA_PROTECTED,
-	AA_PUBLIC,
-	AA_GLOBAL
-};
-
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context
 enum C4AulBCCType

@@ -23,15 +23,11 @@
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
+
 #include <GL/glew.h>
 
-#if defined(__APPLE__)
 #ifdef USE_COCOA
 #import "ObjectiveCAssociated.h"
-#endif
-#include <OpenGL/glu.h>
-#else
-#include <GL/glu.h>
 #endif
 #include <C4Draw.h>
 #include <C4Shader.h>
@@ -73,6 +69,8 @@ enum C4SS_Uniforms
 	C4SSU_AmbientTransform, // C4SSC_LIGHT
 	C4SSU_AmbientBrightness, // C4SSC_LIGHT
 
+	C4SSU_Bones, // for meshes
+
 	C4SSU_Count
 };
 
@@ -100,12 +98,14 @@ public:
 
 	bool PageFlip();            // present scene
 
+	static void Reinitialize();
+
 protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
 #ifdef USE_WIN32_WINDOWS
-	HGLRC hrc;                  // rendering context
+	static HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
 	static bool InitGlew(HINSTANCE hInst);
@@ -187,6 +187,11 @@ public:
 	C4Shader* GetSpriteShader(int ssc);
 	C4Shader* GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal);
 
+	struct
+	{
+		bool LowMaxVertexUniformCount;
+	} Workarounds;
+
 protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
@@ -202,6 +207,7 @@ protected:
 	friend class C4StartupOptionsDlg;
 	friend class C4FullScreen;
 	friend class C4Window;
+	friend class C4ShaderCall;
 };
 
 // Global access pointer

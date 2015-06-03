@@ -156,6 +156,11 @@ global func Find_Layer(object layer)
 	return [C4FO_Layer, layer];
 }
 
+global func Find_InArray(array a)
+{
+	return [C4FO_InArray, a];
+}
+
 global func Find_PathFree(object to_obj)
 {
 	if (!to_obj)

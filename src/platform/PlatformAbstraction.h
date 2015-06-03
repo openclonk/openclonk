@@ -98,7 +98,8 @@ typedef ptrdiff_t ssize_t;
 #endif
 #endif
 
-
+// std::make_unique
+#include "platform/make_unique.h"
 
 #if defined(__GNUC__)
 // Allow checks for correct printf-usage

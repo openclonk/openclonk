@@ -15,4 +15,3 @@ Construction=1
 Value=6
 Mass=12
 Float=1
-ContainBlast=1

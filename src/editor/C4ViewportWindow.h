@@ -21,7 +21,6 @@
 #define INC_C4ViewportWindow
 
 #include <C4Window.h>
-#include <C4Viewport.h>
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>

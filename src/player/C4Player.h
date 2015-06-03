@@ -26,7 +26,7 @@
 #include "C4ObjectList.h"
 #include "C4ObjectPtr.h"
 #include "C4PlayerControl.h"
-
+#include <C4Value.h>
 #include <set>
 
 const int32_t C4PVM_Cursor    = 0,
@@ -124,7 +124,6 @@ public:
 	// Crew
 	C4ObjectInfoList CrewInfoList; // No Save //
 	C4ObjectList Crew; // Save new in 4.95.2 (for sync reasons)
-	int32_t CrewCnt; // No Save //
 	// Knowledge
 	C4IDList Knowledge;
 	// Control
@@ -212,7 +211,6 @@ protected:
 	void InitControl();
 	void UpdateView();
 	void CheckElimination();
-	void UpdateCounts();
 	void ExecBaseProduction();
 	void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
 	void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);

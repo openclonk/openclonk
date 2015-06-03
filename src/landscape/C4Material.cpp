@@ -253,6 +253,7 @@ void C4MaterialCore::Clear()
 	Corrode = 0;
 	Soil = 0;
 	Placement = 0;
+	Light = 0;
 	OverlayType = 0;
 	PXSGfxRt.Default();
 	PXSGfxSize = 0;
@@ -340,6 +341,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Extinguisher,        "Extinguisher",        0));
 	pComp->Value(mkNamingAdapt(Soil,                "Soil",                0));
 	pComp->Value(mkNamingAdapt(Placement,           "Placement",           0));
+	pComp->Value(mkNamingAdapt(Light,               "Light",               0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sTextureOverlay, StdCompiler::RCT_IdtfAllowEmpty),
 	                                                "TextureOverlay",      ""));
 	pComp->Value(mkNamingAdapt(OverlayType,         "OverlayType",         0));
@@ -669,14 +671,6 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 		if (Map[cnt].sAboveTempConvertTo.getLength())
 			Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, true, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 	}
-#if 0
-	int32_t i=0;
-	while (ReactionFuncMap[i].szRFName) {printf("%s: %p\n", ReactionFuncMap[i].szRFName, ReactionFuncMap[i].pFunc); ++i;}
-	for (int32_t cnt=-1; cnt<Num; cnt++)
-		for (int32_t cnt2=-1; cnt2<Num; cnt2++)
-			if (ppReactionMap[(cnt2+1)*(Num+1) + cnt+1])
-				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
-#endif
 
 	// Get hardcoded system material indices
 	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(szEarthMaterial));
@@ -891,7 +885,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 	{
 	case meeMassMove: // MassMover-movement
 	case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
-		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
 		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
@@ -903,7 +897,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 				// either splash or slide prevented interaction
 				return false;
 		// Always kill both landscape and PXS mat
-		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
 		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;

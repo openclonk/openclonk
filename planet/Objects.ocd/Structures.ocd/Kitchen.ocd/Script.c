@@ -20,7 +20,7 @@ func IsProduct(id product_id)
 }
 
 private func ProductionTime(id toProduce) { return 500; }
-private func PowerNeed() { return 0; }
+public func PowerNeed() { return 0; }
 
 public func OnProductionStart(id product)
 {
@@ -74,5 +74,6 @@ local ActMap = {
 
 local Name = "$Name$";
 local Description ="$Description$";
+local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 70;

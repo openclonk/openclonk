@@ -19,10 +19,8 @@
 #include <C4Include.h>
 #include <C4Folder.h>
 
-#include <C4Random.h>
 #include <C4Group.h>
 #include <C4Components.h>
-#include <C4Game.h>
 
 
 //================= C4FolderHead ====================
@@ -60,16 +58,6 @@ bool C4Folder::Load(C4Group &hGroup)
 	// Success
 	return true;
 }
-
-/*bool C4Folder::Save(C4Group &hGroup)
-  {
-  char *Buffer; int32_t BufferSize;
-  if (!Decompile(&Buffer,&BufferSize))
-    return false;
-  if (!hGroup.Add(C4Folder, Buffer, BufferSize, false, true))
-    { StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
-  return true;
-  }*/
 
 void C4Folder::CompileFunc(StdCompiler *pComp)
 {

@@ -162,7 +162,7 @@ private:
 
 public:
 	C4Network2ClientListBox(C4Rect &rcBounds, bool fStartup);
-	~C4Network2ClientListBox() { Application.Remove(this); }
+	~C4Network2ClientListBox();
 
 	// update by client list
 	void OnSec1Timer() { Update(); }
@@ -186,7 +186,7 @@ private:
 	virtual const char *GetID() { return "ClientListDialog"; }
 public:
 	C4Network2ClientListDlg();
-	~C4Network2ClientListDlg() { if (this==pInstance) pInstance=NULL; Application.Remove(this); }
+	~C4Network2ClientListDlg();
 
 	void OnSec1Timer() { Update(); }
 	void Update();

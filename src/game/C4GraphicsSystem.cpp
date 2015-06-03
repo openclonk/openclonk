@@ -21,21 +21,15 @@
 #include <C4GraphicsSystem.h>
 
 #include <C4Viewport.h>
-#include <C4ViewportWindow.h>
 #include <C4Application.h>
 #include <C4Console.h>
-#include <C4Random.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
 #include <C4LoaderScreen.h>
-#include <C4Player.h>
-#include <C4SoundSystem.h>
-#include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Landscape.h>
 #include <C4Network2.h>
 #include <C4Game.h>
-#include <C4PlayerList.h>
 #include <C4GameObjects.h>
 
 #include <StdPNG.h>
@@ -256,9 +250,14 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		C4TargetFacet bkFct;
 		// mark background to be redrawn
 		InvalidateBg();
+		// draw on one big viewport
+		pVP->SetOutputSize(0,0,0,0, bkWdt, bkHgt);
 		// backup and clear sky parallaxity
 		int32_t iParX=::Landscape.Sky.ParX; ::Landscape.Sky.ParX=10;
 		int32_t iParY=::Landscape.Sky.ParY; ::Landscape.Sky.ParY=10;
+		// backup and clear viewport borders
+		FLOAT_RECT vp_borders = { pVP->BorderLeft, pVP->BorderRight, pVP->BorderTop, pVP->BorderBottom };
+		pVP->BorderLeft = pVP->BorderRight = pVP->BorderTop = pVP->BorderBottom = 0.0f;
 		// temporarily change viewport player
 		int32_t iVpPlr=pVP->Player; pVP->Player=NO_OWNER;
 		// blit all tiles needed
@@ -287,9 +286,16 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 			}
 		// restore viewport player
 		pVP->Player=iVpPlr;
+		// restore viewport borders
+		pVP->BorderLeft = vp_borders.left;
+		pVP->BorderTop = vp_borders.top;
+		pVP->BorderRight = vp_borders.right;
+		pVP->BorderBottom = vp_borders.bottom;
 		// restore parallaxity
 		::Landscape.Sky.ParX=iParX;
 		::Landscape.Sky.ParY=iParY;
+		// restore viewport size
+		::Viewports.RecalculateViewports();
 		// save!
 		return png.Save(szFilename);
 	}

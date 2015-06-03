@@ -1,196 +1,103 @@
-/*-- compensator --*/
+/**
+	Compensator
+	A small structure which stores surplus energy available in a network.
+	
+	@author Zapper, Maikel
+*/
 
 #include Library_Structure
 #include Library_Ownable
-#include Library_PowerProducer
-#include Library_PowerConsumer
+#include Library_PowerStorage
 #include Library_Flag
 
 local DefaultFlagRadius = 90;
 
-static const Compensator_max_seconds = 15;
-static const Compensator_power_usage = 50;
+// Storage power: the amount of power the storage can store or deliver when it
+// operatores. 
+public func GetStoragePower() { return 20; }
 
-local power_seconds;
+// Storage capacity: the amount of energy a power storage can store. The amount 
+// is expressed in power frames.
+public func GetStorageCapacity() { return 10800; } // 15 * 36 * 20
 
+// Variables for displaying the charge.
+local leftcharge, rightcharge, anim;
 
-local Name = "$Name$";
-local Description = "$Description$";
-local leftcharge, rightcharge, lastcharge;
-local anim;
-
-func Construction(object creator)
+protected func Construction(object creator)
 {
-	power_seconds = 0;
-	lastcharge = 0;
-	
 	anim = PlayAnimation("Charge", 1, Anim_Const(GetAnimationLength("Charge")), Anim_Const(1000));
-
 	SetAction("Default");
 	return _inherited(creator, ...);
 }
 
-func Initialize()
+protected func Initialize()
 {
 	leftcharge = CreateObjectAbove(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);
 	leftcharge->Init(this);
 	rightcharge = CreateObjectAbove(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
 	rightcharge->Init(this);
-	AddTimer("EnergyCheck", 100);
 	return _inherited(...);
 }
 
-public func GetProducerPriority() { return 50 * (power_seconds - Compensator_max_seconds) / Compensator_max_seconds; }
-public func GetConsumerPriority() { return 0; }
-
-func OnNotEnoughPower()
+protected func Incineration()
 {
-	// not enough power to sustain a battery - turn off
-	if(GetEffect("ConsumePower", this))
-		RemoveEffect("ConsumePower", this);
+	if (GetStoredPower() == 0)
+		return Extinguish();
 	
-	ScheduleCall(this, "UnmakePowerConsumer", 1, 0);
-	return _inherited(...);
+	for (var i = 0; i < 2; ++i)
+	{
+		var x = -7 + 14 * i;
+		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER);
+		// Set controller for correct kill tracing.
+		b->SetController(GetController()); 
+		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
+	}
+	return Explode(30);
 }
 
-// devour energy
-func OnEnoughPower()
-{
-	if(!GetEffect("ConsumePower", this))
-		AddEffect("ConsumePower", this, 1, 36, this);
-	return _inherited(...);
-}
+/*-- Animations & Effects --*/
 
-func SetCharge(int to)
+private func OnStoredPowerChange()
 {
-	power_seconds = BoundBy(to, 0, Compensator_max_seconds);
 	RefreshAnimationPosition();
 }
 
-func RefreshAnimationPosition()
+private func RefreshAnimationPosition()
 {
-	var charge = (power_seconds * 100) / Compensator_max_seconds;
+	var charge = (GetStoredPower() * 100) / GetStorageCapacity();
 	/*var current = GetAnimationPosition(anim);
 	var len = GetAnimationLength("Charge");
 	SetAnimationPosition(anim, Anim_Linear(current, current, len - (charge * len) / 100, 35, ANIM_Hold));*/
 	leftcharge->To(Min(charge, 50)*2);
 	rightcharge->To(Max(0, charge-50)*2);
-}	
-
-func FxConsumePowerTimer(target, effect, time)
-{
-	++power_seconds;
-	RefreshAnimationPosition();
-	// fully charged?
-	if(power_seconds >= Compensator_max_seconds)
-	{
-		UnmakePowerConsumer();
-		return -1;
-	}	
-	return 1;
 }
 
-func EnergyCheck()
-{
-	if(GetCon() < 100) return;
-	
-	// consuming - everything is alright
-	if(GetEffect("ConsumePower", this))
-		return true;
-	// producing - nothing to change either
-	if(GetEffect("ProducePower", this))
-		return true;
-	
-	// neutral compensators don't do anything
-	if(GetOwner() == NO_OWNER) return false;
-	
-	// are we needed?
-	if(power_seconds > 0)
-	{
-		var s = GetPendingPowerAmount();
-		if(s > 0)
-		{
-			// turn on, start the machines!
-			AddEffect("ProducePower", this, 1, 36, this);
-			return true;
-		}
-	}
-	
-	// fully charged
-	if(power_seconds >= Compensator_max_seconds)
-		return false;
-	
-	// can we leech power?
-	var p = GetCurrentPowerBalance();
-	
-	// we have some play here?
-	if(p >= Compensator_power_usage)
-	{
-		MakePowerConsumer(Compensator_power_usage);
-		return true;
-	}
-	
-	return false;
+public func OnPowerProductionStart(int amount) 
+{ 
+	// Sparkle effect when releasing power.
+	if (!GetEffect("Sparkle", this))
+		AddEffect("Sparkle", this, 1, 1, this);
+	return _inherited(amount, ...);
 }
 
-func FxProducePowerStart(target, effect, temp)
+public func OnPowerProductionStop(int amount)
 {
-	if(temp) return;
-	MakePowerProducer(Compensator_power_usage);
-	
-	// todo: effects
-	AddEffect("Sparkle", this, 1, 1, this);
+	if (GetEffect("Sparkle", this))
+		RemoveEffect("Sparkle", this);
+	return _inherited(...);
 }
 
-func FxSparkleTimer(target, effect, time)
+protected func FxSparkleTimer(object target, proplist effect, int time)
 {
 	effect.Interval *= 2;
-	if(effect.Interval > 35*3) return -1;
+	if (effect.Interval > 36 * 3) 
+		return -1;
 	CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
-}
-
-func FxProducePowerTimer(target, effect, time)
-{
-	--power_seconds;
-	RefreshAnimationPosition();
-	if(power_seconds <= 0)
-	{
-		return -1;
-	}
-	
-	// stop when not needed
-	if((GetCurrentPowerBalance() >= Compensator_power_usage) && GetPendingPowerAmount() == 0)
-		return -1;
-		
 	return 1;
 }
 
-func FxProducePowerStop(target, effect, reason, temp)
-{
-	if(temp) return;
-	MakePowerProducer(0);
-	
-	if(GetEffect("Sparkle", this))
-		RemoveEffect("Sparkle", this);
-}
 
-func Incineration()
-{
-	if(power_seconds == 0)
-		return Extinguish();
-	
-	
-	for(var i = 0; i < 2; ++i)
-	{
-		var x = -7 + 14 * i;
-		var b = CreateObjectAbove(Compensator_BurningBattery, x, 6, NO_OWNER);
-		b->SetController(GetController()); // killtracing
-
-		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
-	}
-	
-	Explode(30);
-}
+/*-- Properties --*/
 
 local ActMap = {
 		Default = {
@@ -205,6 +112,9 @@ local ActMap = {
 			NextAction = "Default",
 		},
 };
+
+local Name = "$Name$";
+local Description = "$Description$";
 local BlastIncinerate = 1;
 local HitPoints = 25;
 local ContactIncinerate = 1;

@@ -18,6 +18,7 @@
 #include "C4Include.h"
 #include "C4Network2Dialogs.h"
 
+#include <C4Application.h>
 #include "C4GameLobby.h"
 #include "C4FullScreen.h"
 #include "C4Network2.h"

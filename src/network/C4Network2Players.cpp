@@ -370,7 +370,7 @@ void C4Network2Players::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 
 #define GETPKT(type, name) \
     assert(pPacket); const type &name = \
-      /*dynamic_cast*/ static_cast<const type &>(*pPacket);
+     static_cast<const type &>(*pPacket);
 
 	// player join request?
 	if (cStatus == PID_PlayerInfoUpdReq)

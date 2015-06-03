@@ -1,9 +1,9 @@
 /*--
 	Powder Keg
-	Author: Ringwaul
-
 	A barrel filled with black powder.
---*/
+	
+	@author Ringwaul
+*/
 
 #include Library_CarryHeavy
 
@@ -108,9 +108,9 @@ public func FxFuseTimer(object target, effect, int timer)
 	}
 }
 
-public func IsProjectileTarget(target,shooter)
+public func IsProjectileTarget()
 {
-	return 1;
+	return true;
 }
 
 public func Damage()
@@ -138,6 +138,9 @@ public func SaveScenarioObject(props)
 
 func IsChemicalProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
+
+
+/*-- Properties --*/
 
 local Collectible = false;
 local Touchable = 2;
