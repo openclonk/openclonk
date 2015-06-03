@@ -82,7 +82,7 @@ public func GetBuyMenuEntries(object clonk)
 		entry.image.Symbol = item;
 		entry.image.Text = Format("%dx", amount);
 		var value = GetBuyValue(item);
-		entry.price.Text = Format("<c ffff00>%d{{GUI_Wealth}}</c>", value);
+		entry.price.Text = Format("<c ffff00>%d{{Icon_Wealth}}</c>", value);
 		entry.Priority = 1000 * value + i; // Order by value and then by BaseMaterial index.
 		if (value > wealth) // If the player can't afford it, the item (except for the price) is overlayed by a greyish color.
 		{

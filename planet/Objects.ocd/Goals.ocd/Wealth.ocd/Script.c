@@ -100,7 +100,7 @@ public func GetShortDescription(int plr)
 	var clr = RGB(255, 0, 0);
 	if (wealth >= goal)
 		clr = RGB(0, 255, 0);
-	var msg = Format("<c %x>%d</c>{{%i}}", clr, goal, GUI_Wealth);
+	var msg = Format("<c %x>%d</c>{{%i}}", clr, goal, Icon_Wealth);
 	return msg;
 }
 

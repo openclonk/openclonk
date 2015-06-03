@@ -1,27 +1,28 @@
 /**
 	HUD Controller
-
 	Controls the player HUD and all its subsystems, which are:
-		* Inventory (=)
+		* Inventory
 		* Actionbar
 		* Crew selectors
 		* Goal
 		* Wealth
-		
+	All of the subsystems are handled by different included definitions
+	and use overloaded functions.
+	
 	Creates and removes the crew selectors as well as reorders them and
 	manages when a crew changes it's controller. Responsible for taking
 	care of the action bar.
 		
-	@authors Newton, Mimmo_O
+	@authors Newton, Mimmo_O, Zapper, Maikel
 */
 
+
+// Include the different subsystems of the HUD. They all handle their part
+// themselves via overloading of callbacks.
 #include GUI_Controller_InventoryBar
 #include GUI_Controller_ActionBar
-
-// Local variables containing the GUI-Elements
-local wealth;		// Object, displays wealth of the player
-
-
+#include GUI_Controller_Wealth
+#include GUI_Controller_Goal
 
 
 protected func Construction()
@@ -43,12 +44,6 @@ protected func Construction()
 	// reorder the crew selectors
 	ReorderCrewSelectors();
 	
-	
-	// wealth display
-	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
-	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
-	wealth->Update();
-	
 	return _inherited();
 }
 
@@ -57,55 +52,12 @@ protected func Construction()
 // Remove all HUD-Objects
 protected func Destruction()
 {
-	// remove all hud objects that are managed by this object
-	if(wealth)
-		wealth->RemoveObject();
-	
-	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
-	if(HUDgoal)
-		HUDgoal->RemoveObject();
-		
 	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
 	for(var o in crew)
 		o->RemoveObject();
 		
 	return _inherited();
 }
-
-
-/*-- Wealth --*/
-
-protected func OnWealthChanged(int plr)
-{
-	if (plr != GetOwner()) 
-		return;
-	if (wealth) 
-		wealth->Update();
-	return;
-}
-
-/*-- Goal --*/
-
-public func OnGoalUpdate(object goal)
-{
-	var HUDgoal = FindObject(Find_ID(GUI_Goal), Find_Owner(GetOwner()));
-	if (!goal)
-	{
-		if (HUDgoal) HUDgoal->RemoveObject();
-	}
-	else
-	{
-		if (!HUDgoal)
-		{
-			HUDgoal = CreateObject(GUI_Goal, 0, 0, GetOwner());
-			HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
-		}
-		HUDgoal->SetGoal(goal);
-	}
-}
-
-
-
 
 
 global func AddHUDMarker(int player, picture, string altpicture, string text, int duration, bool urgent, object inform)
