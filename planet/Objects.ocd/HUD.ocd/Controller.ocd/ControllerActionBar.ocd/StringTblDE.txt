@@ -1,5 +1,5 @@
-TxtSlot=Slot %d ausw‰hlen
-TxtSelect=%s ausw‰hlen
+TxtSlot=Slot %d ausw√§hlen
+TxtSelect=%s ausw√§hlen
 TxtGrab=%s anfassen
 TxtUnGrab=%s loslassen
 TxtEnter=%s betreten
