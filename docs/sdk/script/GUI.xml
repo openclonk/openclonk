@@ -68,7 +68,7 @@
 				<col>Symbol</col>
 				<col>object/definition</col>
 				<col>Clonk</col>
-				<col>A symbol that will be drawn in the window.</col>
+				<col>A symbol that will be drawn in the window. The symbol can be an object as well, in this case the current graphics and animations of that object will be drawn.</col>
 			</row>
 			<row>
 				<col>GraphicsName</col>
