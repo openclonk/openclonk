@@ -49,9 +49,60 @@ global func GuiAddSubwindow(proplist submenu, proplist menu)
 	} while (true);
 }
 
-// converts an integer into a "em"-value string that can be used as a position for a GUI. The value will be divided by "factor" which is 10 by default
+// Converts an integer into a floating "em"-value, as the given value is divided by the given factor (10 by default).
 global func ToEmString(int value, int factor)
 {
+	// Make sure factor is a power of ten.
 	factor = factor ?? 10;
-	return Format("%+d.%dem", value / factor, Abs(value % factor));
+	var power_of_ten = 0;
+	while (10**power_of_ten != factor)
+	{
+		if (10**power_of_ten > factor)
+		{
+			Log("WARNING: factor in ToEmString(%d, %d) is not a multiple of ten, falling back to default", value, factor);
+			factor = 10;
+			power_of_ten = 1;
+			break;
+		}
+		power_of_ten++;	
+	}
+	// Construct the string using sign, value and decimal notation.
+	var em_sign = "+";
+	if (value < 0)
+		em_sign = "-";
+	var em_value = Format("%d", Abs(value / factor));
+	var em_decimal = Format("%011dem", Abs(value % factor));
+	em_decimal = TakeString(em_decimal, GetLength(em_decimal) - power_of_ten - 2);
+	if (power_of_ten == 0)
+		em_decimal = "0";
+	return Format("%s%s.%s", em_sign, em_value, em_decimal);
+}
+
+// Converts an integer into a floating percent value, as the given value is divided by the given factor (10 by default).
+global func ToPercentString(int value, int factor)
+{
+	// Make sure factor is a power of ten.
+	factor = factor ?? 10;
+	var power_of_ten = 0;
+	while (10**power_of_ten != factor)
+	{
+		if (10**power_of_ten > factor)
+		{
+			Log("WARNING: factor in ToPercentString(%d, %d) is not a multiple of ten, falling back to default", value, factor);
+			factor = 10;
+			power_of_ten = 1;
+			break;
+		}
+		power_of_ten++;	
+	}
+	// Construct the string using sign, value and decimal notation.
+	var percent_sign = "+";
+	if (value < 0)
+		percent_sign = "-";
+	var percent_value = Format("%d", Abs(value / factor));
+	var percent_decimal = Format("%011d%%", Abs(value % factor));
+	percent_decimal = TakeString(percent_decimal, GetLength(percent_decimal) - power_of_ten - 1);
+	if (power_of_ten == 0)
+		percent_decimal = "0";
+	return Format("%s%s.%s", percent_sign, percent_value, percent_decimal);
 }
