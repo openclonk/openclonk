@@ -420,7 +420,7 @@ global func ShiftCursor(int plr, bool back)
 	var current_cursor = GetCursor(plr);
 	var new_cursor = GetCrew(plr, index);
 	if (current_cursor == new_cursor) return false;
-	if (current_cursor->~GetMenu() && !current_cursor->~TryCancelMenu()) return false;
+	if (current_cursor && current_cursor->~GetMenu() && !current_cursor->~TryCancelMenu()) return false;
 	
 	return SetCursor(plr, new_cursor);
 }
