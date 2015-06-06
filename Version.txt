@@ -27,7 +27,7 @@ SET(C4XVER2             1)
 
 # Set this variable to any string for pre-release versions, like "alpha" or
 # "rc1". Don't supply a value for release versions.
-SET(C4VERSIONEXTRA      "rc2")
+SET(C4VERSIONEXTRA)
 
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
 # for alpha and beta releases, and meaningful and stable for stable releases.
