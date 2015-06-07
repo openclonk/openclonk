@@ -133,8 +133,8 @@ public func RejectCollect(id def, object obj)
 {
 	if (obj->~IsValuable())
 		if (!obj->~QueryOnSell(obj->GetController()))
-	 		return false;
-	return _inherited(def, obj, ...);
+	 		return _inherited(def, obj, ...);
+	return true;
 }
 
 public func Collection(object obj)
