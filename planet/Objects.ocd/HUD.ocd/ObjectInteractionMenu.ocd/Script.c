@@ -116,7 +116,7 @@ func FxIntCheckObjectsTimer(target, effect, timer)
 {
 	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(),
 		// Find only vehicles and structures (plus Clonks ("livings") and helper objects). This makes sure that no C4D_Object-containers (extra slot) are shown.
-		Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_OCF(OCF_Alive), Find_ActionTarget(target)),
+		Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_OCF(OCF_Alive), Find_ActionTarget(target), Find_Func("IsContainerEx")),
 		// But these objects still need to either be a container or provide an own interaction menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")));
 	var equal = GetLength(new_objects) == GetLength(current_objects);

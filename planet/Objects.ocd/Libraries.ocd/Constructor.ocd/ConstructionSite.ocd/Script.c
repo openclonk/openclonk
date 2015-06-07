@@ -12,7 +12,9 @@ local full_material; // true when all needed material is in the site
 local no_cancel; // if true, site cannot be cancelled
 local is_constructing;
 
-public func IsContainer()		{ return !full_material; }
+// This should be recongnized as a container by the interaction menu independent of its category.
+public func IsContainer() { return !full_material; }
+public func IsContainerEx() { return !full_material; }
 // disallow taking stuff out
 public func RefuseTransfer(object toMove) { return true; }
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
