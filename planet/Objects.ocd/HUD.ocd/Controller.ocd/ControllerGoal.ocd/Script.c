@@ -18,7 +18,6 @@ local goal_gui_id;
 public func Construction()
 {
 	var plr = GetOwner();
-	var wealth = GetWealth(plr);
 	// Create a menu target.
 	goal_gui_target = CreateObject(Dummy, AbsX(0), AbsY(0), plr);
 	goal_gui_target.Visibility = VIS_Owner;
@@ -63,6 +62,9 @@ public func Destruction()
 // Callback from the goal library: display this goal.
 public func OnGoalUpdate(object goal)
 {
+	// Also notify the open info menu.
+	OnGoalWindowUpdate(goal);
+	// If there is no goal then remove the hover interface and hide the menu.
 	if (!goal)
 	{
 		goal_gui_target.Visibility = VIS_None;
@@ -140,7 +142,7 @@ private func OpenGoalWindow(int plr)
 	GuiAddCloseButton(goal_info_menu, this, "OnCloseButtonClick");
 	
 	// Text submenu
-	var prop_text =
+	goal_info_menu.text =
 	{
 		Target = goal_info_target,
 		ID = 1,
@@ -151,13 +153,12 @@ private func OpenGoalWindow(int plr)
 		Text = "",
 		BackgroundColor = {Std = 0},	
 	};
-	goal_info_menu.TextMenu = prop_text;
 	
 	// Goal icons: maximum number of 10 goals for now
 	var prop_goals = [];
 	for (var i = 0; i < Min(10, nr_goals); i++)
 	{
-		var prop_goal = Format("GoalMenu%d", i + 2);
+		var prop_goal = Format("goal%d", i);
 		prop_goals[i] = GoalSubMenu(goals[i], i);	
 		goal_info_menu[prop_goal] = prop_goals[i];
 	}
@@ -203,6 +204,7 @@ private func GoalSubMenu(object goal, int nr, int size)
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnGoalGUIHover", goal)],
 		OnMouseOut = GuiAction_SetTag("Std"),
+		goal_object = goal, 
 	};
 	// Indicate whether the goal is already fulfilled with a star.
 	if (goal->~IsFulfilled())
@@ -230,9 +232,29 @@ public func OnCloseButtonClick()
 public func OnGoalGUIHover(object goal)
 {
 	// change text to the current goal.
-	var prop_text = goal_info_menu.TextMenu;
+	var prop_text = goal_info_menu.text;
 	prop_text.Text = goal->~GetDescription(GetOwner());
 	var id_text = prop_text.ID;
 	GuiUpdate(prop_text, goal_info_id, id_text, goal_info_target);
+	return;
+}
+
+private func OnGoalWindowUpdate(object goal)
+{
+	if (!goal_info_menu)
+		return;
+	
+	var index = 0, goal_menu;
+	while ((goal_menu = goal_info_menu[Format("goal%d", index)]))
+	{
+		if (goal_menu.goal_object == goal)
+			break;
+		index++;
+	}
+	if (!goal_menu)
+		return;
+	var prop_goal = Format("goal%d", index);
+	goal_info_menu[prop_goal] = GoalSubMenu(goal, index);	
+	GuiUpdate(goal_info_menu[prop_goal], goal_info_id, goal_info_menu[prop_goal].ID, goal_info_menu[prop_goal].Target);
 	return;
 }
