@@ -31,12 +31,22 @@ public func Construction()
 	goal_gui_menu = 
 	{
 		Target = goal_gui_target,
-		Style = GUI_Multiple | GUI_TextHCenter | GUI_TextBottom,
+		ID = 1,
+		Style = GUI_Multiple,
 		Left = Format("100%%%s", ToEmString(-x_end)),
 		Right = Format("100%%%s", ToEmString(-x_margin)),
 		Top = ToEmString(y_margin),
 		Bottom = ToEmString(y_end),
-		OnClick = GuiAction_Call(this, "OnGoalClick", plr),
+		Priority = 1,
+		// hover part of the menu is created by a goal update.
+		text = 
+		{
+			Target = goal_gui_target,
+			ID = 3,
+			Style = GUI_TextHCenter | GUI_TextBottom,
+			Text = nil,
+			Priority = 3,
+		},
 	};
 	goal_gui_id = GuiOpen(goal_gui_menu);
 	return _inherited(...);
@@ -56,13 +66,29 @@ public func OnGoalUpdate(object goal)
 	if (!goal)
 	{
 		goal_gui_target.Visibility = VIS_None;
+		GuiClose(goal_gui_id, goal_gui_menu.hover.ID, goal_gui_menu.Target);
 		return _inherited(goal, ...);
 	}
-	goal_gui_target.Visibility = VIS_Owner;
-	goal_gui_menu.Text = goal->~GetShortDescription(GetOwner());
-	goal_gui_menu.Symbol = goal->GetID();
-	goal_gui_menu.GraphicsName = goal->GetGraphics();
-	GuiUpdate(goal_gui_menu, goal_gui_id);
+	// Only update if something has changed.
+	if (goal_gui_menu.Symbol != goal->GetID() || goal_gui_menu.GraphicsName != goal->GetGraphics() || goal_gui_menu.text.Text != goal->~GetShortDescription(GetOwner()))
+	{
+		goal_gui_target.Visibility = VIS_Owner;
+		goal_gui_menu.text.Text = goal->~GetShortDescription(GetOwner());
+		goal_gui_menu.Symbol = goal->GetID();
+		goal_gui_menu.GraphicsName = goal->GetGraphics();
+		// Also add an hover and mouse click element.
+		goal_gui_menu.hover = 
+		{
+			Target = goal_gui_target,
+			ID = 2,
+			Symbol = { Std = nil, OnHover = GUI_Controller_Goal},
+			OnClick = GuiAction_Call(this, "OnGoalClick", GetOwner()),
+			OnMouseIn = GuiAction_SetTag("OnHover"),
+			OnMouseOut = GuiAction_SetTag("Std"),
+			Priority = 2,
+		};		
+		GuiUpdate(goal_gui_menu, goal_gui_id);
+	}
 	return _inherited(goal, ...);
 }
 
@@ -173,6 +199,7 @@ private func GoalSubMenu(object goal, int nr, int size)
 		Top = "0%",
 		Bottom = Format("0%%+%dem", size),
 		Symbol = goal->GetID(),
+		GraphicsName = goal->GetGraphics(),
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnGoalGUIHover", goal)],
 		OnMouseOut = GuiAction_SetTag("Std"),
