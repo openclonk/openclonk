@@ -738,8 +738,10 @@ public func RequestObject(id obj_id, int amount)
 }
 
 /*-- Storage --*/
+
+
 // Whether an object could enter this storage.
-func IsCollectionAllowed(object obj)
+public func IsCollectionAllowed(object obj)
 {
 	var obj_id = obj->GetID();
 	// Products itself may be collected.
@@ -775,10 +777,12 @@ func IsCollectionAllowed(object obj)
 	{
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
-				return false;
+				return true;
 	}
+	return false;
 }
-func RejectCollect(id obj_id, object obj)
+
+public func RejectCollect(id obj_id, object obj)
 {
 	// Is the object a container? If so, try to empty it.
 	if (obj->~IsContainer())
@@ -788,6 +792,7 @@ func RejectCollect(id obj_id, object obj)
 			obj->Contents(count)->Enter(this);
 	}
 	// Can we collect the object itself?
-	if (IsCollectionAllowed(obj)) return false;
+	if (IsCollectionAllowed(obj)) 
+		return false;
 	return true;
 }
