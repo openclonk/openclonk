@@ -129,6 +129,25 @@ func BuyItem_Entrance()
 	if (overloaded_fn) return Call(overloaded_fn, ...);
 }
 
+public func RejectCollect(id def, object obj)
+{
+	if (obj->~IsValuable())
+		if (!obj->~QueryOnSell(obj->GetController()))
+	 		return false;
+	return _inherited(def, obj, ...);
+}
+
+public func Collection(object obj)
+{
+	if (obj->~IsValuable() && !obj->~QueryOnSell(obj->GetController()))
+	{
+		DoWealth(obj->GetController(), obj->GetValue());
+		obj->RemoveObject();
+		Sound("Cash");
+	}
+	return _inherited(obj, ...);
+}
+
 func OnOwnerRemoved(int new_owner)
 {
 	// Our owner is dead :(
@@ -136,7 +155,6 @@ func OnOwnerRemoved(int new_owner)
 	SetOwner(new_owner);
 	return true;
 }
-
 
 /* Neutral banners - used as respawn points only */
 
