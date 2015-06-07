@@ -7,7 +7,6 @@
 
 // TODO: static const for bar margins.
 // TODO: Use old bars.
-// TODO: Show the selected clonk in some way.
 
 // HUD margin and size in tenths of em.
 static const GUI_Controller_CrewBar_IconSize = 80;
@@ -80,6 +79,12 @@ public func OnCrewEnabled(object clonk)
 	RemoveCrewHUDMenu();
 	CreateCrewHUDMenu(clonk->GetOwner());
 	return _inherited(clonk, ...);
+}
+
+public func OnCrewSelection(object clonk, bool unselect)
+{
+	CrewHUDMenuUpdateSelection(clonk, unselect);
+	return _inherited(clonk, unselect, ...);
 }
 
 public func OnCrewNameChange(object clonk)
@@ -213,6 +218,11 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 	damage_dummy->SetGraphics("Hurt", GUI_Controller_CrewBar, GFX_Overlay, GFXOV_MODE_Picture);
 	damage_dummy->SetClrModulation(0x0, GFX_Overlay);
 	
+	// Selection.
+	var selected = nil;
+	if (GetCursor(GetOwner()) == crew)
+		selected = "Selected";
+		
 	var crew_menu = 
 	{
 		// This part of the crew menu contains the background.
@@ -237,7 +247,7 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 			Target = crew_gui_target,
 			ID = 100 * (index + 1) + 2,
 			Symbol = GUI_Controller_CrewBar,
-			GraphicsName = { Std = nil, OnHover = "Focussed" },
+			GraphicsName = { Std = selected, OnHover = "Focussed" },
 			OnMouseIn = GuiAction_SetTag("OnHover"),
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "CrewHUDMenuOnSelection", crew),
@@ -407,6 +417,28 @@ private func CrewHUDMenuUpdateRank(object clonk)
 	var name_menu = crew_menu[0].crew;
 	name_menu.Tooltip = Format("$TxtSelect$", Format("%s %s", clonk->GetObjCoreRankName(), clonk->GetName()));
 	GuiUpdate(name_menu, crew_gui_id, name_menu.ID, name_menu.Target);	
+	return;
+}
+
+private func CrewHUDMenuUpdateSelection(object clonk, bool unselect)
+{
+	// Disable all previous selections.
+	/*var index = 0, crew_menu;
+	while ((crew_menu = crew_gui_menu[Format("crew%d", index)]))
+	{
+		crew_menu.frame.GraphicsName = nil;
+		GuiUpdate(crew_menu.frame, crew_gui_id, crew_menu.frame.ID, crew_menu.frame.Target);
+		index++;
+	}*/
+	// Update the selection of the given clonk.	
+	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
+	if (!crew_menu)
+		return;
+	var frame_menu = crew_menu[0].frame;
+	frame_menu.GraphicsName = "Selected";
+	if (unselect)
+		frame_menu.GraphicsName = nil;
+	GuiUpdate(frame_menu, crew_gui_id, frame_menu.ID, frame_menu.Target);
 	return;
 }
 
