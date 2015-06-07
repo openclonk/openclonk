@@ -130,14 +130,15 @@ func Collect(object obj)
 			container->DropInventoryItem(container->GetItemPos(obj));
 		else
 		{
-			// Otherwise, just force-drop it at the Clonk's feet.
-			obj->Exit(0, clonk->GetDefBottom() - clonk->GetY());
+			// Otherwise, just force-drop it at the clonks's bottom.
+			obj->Exit();
+			obj->SetPosition(clonk->GetX(), clonk->GetDefBottom() - obj->GetDefHeight() - obj->GetDefOffset(1));
 			OnDropped(clonk, obj);
 		}
 	}
 	else
 	{
-		obj->SetPosition(clonk->GetX(), clonk->GetDefBottom());
+		obj->SetPosition(clonk->GetX(), clonk->GetDefBottom() - obj->GetDefHeight() - obj->GetDefOffset(1));
 		OnDropped(clonk, obj);
 	}
 	return true;
@@ -157,6 +158,14 @@ func FxKeepAliveStop(object target, proplist effect, int reason, int temp)
 }
 
 public func HasInteractionMenu() { return true; }
+
+public func AllowsGrabAll() { return true; }
+
+public func GetGrabAllObjects()
+{
+	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Category(C4D_Object));	
+}
+
 
 local Name = "$Name$";
 local Description = "$Description$";

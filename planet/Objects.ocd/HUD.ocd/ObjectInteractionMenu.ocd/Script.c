@@ -334,8 +334,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	// Show "put/take all items" buttons if applicable. Also update tooltip.
 	var show_grab_all = current_menus[0] && current_menus[1];
 	show_grab_all = show_grab_all 
-					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk())
-					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk());
+					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk() || current_menus[0].target->~AllowsGrabAll())
+					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk() || current_menus[1].target->~AllowsGrabAll());
 	if (show_grab_all)
 	{
 		current_center_column_target.Visibility = VIS_Owner;
@@ -356,13 +356,17 @@ public func OnMoveAllToClicked(int menu_id)
 	{
 		if (!current_menus[i] || !current_menus[i].target)
 			return;
-		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk())
+		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk() && !current_menus[i].target->~AllowsGrabAll())
 			return;
 	}
 	// Take all from the other object and try to put into the target.
 	var other = current_menus[1 - menu_id].target;
 	var target = current_menus[menu_id].target;
-	var contents = FindObjects(Find_Container(other));
+	var contents = [];
+	if (other->~AllowsGrabAll())
+		contents = other->GetGrabAllObjects();
+	else	
+		contents = FindObjects(Find_Container(other));
 	var transfered = 0;
 	for (var obj in contents) 
 	{
