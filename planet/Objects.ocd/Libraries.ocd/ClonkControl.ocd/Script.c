@@ -1316,7 +1316,7 @@ func ExecuteInteraction(proplist action_info)
 	{
 		if(action_info.interaction_object->~IsInteractable(this))
 		{
-			action_info.interaction_object->Interact(this, action_info.interaction_number);
+			action_info.interaction_object->Interact(this, action_info.interaction_index);
 			return true;
 		}
 	}

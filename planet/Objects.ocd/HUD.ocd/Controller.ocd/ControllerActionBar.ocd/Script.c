@@ -230,7 +230,7 @@ func UpdateActionBarDisplay()
 		}
 		else if (action_info.actiontype == ACTIONTYPE_SCRIPT)
 		{
-			var metainfo = action_info.interaction_object->~GetInteractionMetaInfo(crew, action_info.interaction_number);
+			var metainfo = action_info.interaction_object->~GetInteractionMetaInfo(crew, action_info.interaction_index);
 			if(metainfo)
 			{
 				graphics_name = metainfo.IconName;
