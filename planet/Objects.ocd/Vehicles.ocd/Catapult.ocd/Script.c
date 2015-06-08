@@ -5,6 +5,8 @@
 	Tosses objects farther than a clonk can. Requires no fuel.
 --*/
 
+#include Library_ElevatorControl
+
 local aim_anim;
 local turn_anim;
 local olddir;
