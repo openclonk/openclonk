@@ -41,7 +41,7 @@ public func OnPickUpObject(id symbol)
 	var found = nil;
 	for (var obj in FindObjects(Find_Distance(Radius), Find_ID(symbol), Find_NoContainer(), Sort_Distance()))
 	{
-		if (obj->GBackSolid()) continue;
+		if (obj->GBackSolid() && obj->Stuck()) continue;
 		found = obj;
 		break;
 	}
@@ -78,9 +78,9 @@ func Refresh()
 	for (var obj in objects)
 	{
 		if (!obj.Collectible) continue;
-		// Use GBackSolid instead of Stuck, because items dropped by the Clonk are regularly in earth with their bottom vertex (shovel f.e.).
-		// So be satisfied with free center.
-		if (obj->GBackSolid()) continue;
+		// Use GBackSolid and Stuck, because items dropped by the Clonk are regularly in earth with their bottom vertex (shovel e.g.).
+		// So use only don't collect when both the center is not free and the object is stuck.
+		if (obj->GBackSolid() && obj->Stuck()) continue;
 		// Already in the list? Just increase the amount.
 		var found = false;
 		for (var old_data in new_object_info)
@@ -163,7 +163,14 @@ public func AllowsGrabAll() { return true; }
 
 public func GetGrabAllObjects()
 {
-	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Category(C4D_Object));	
+	var objects = FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Category(C4D_Object));
+	for (var index = GetLength(objects) - 1; index >= 0; index--)
+	{
+		var obj = objects[index];
+		if (!obj.Collectible || (obj->GBackSolid() && obj->Stuck()))
+			RemoveArrayIndex(objects, index);
+	}
+	return objects;
 }
 
 
