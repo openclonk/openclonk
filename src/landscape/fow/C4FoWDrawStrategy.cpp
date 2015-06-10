@@ -108,12 +108,12 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
 			{
 				float dx = x - light->getX();
 				float dy = y - light->getY();
-				float dist = sqrt(dx*dx + dy*dy);
+				float dist = sqrt(dx*dx+dy*dy);
 				float bright = light->getBrightness();
 				float mult = Min(0.5f / light->getNormalSize(), 0.5f / dist);
 				float normX = Clamp(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
 				float normY = Clamp(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
-				glColor4f(bright, normX, normY, 0.0f);
+				glColor4f(0.0f, normX,     normY,     bright);
 			}
 			else
 			{
@@ -121,7 +121,7 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
 			}
 			break;
 		case C4DP_Second:
-			glColor4f(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.5f);
+			glColor4f(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.0f);
 			break;
 		case C4DP_Color: // has a block so that alpha is scoped to this block only
 		{

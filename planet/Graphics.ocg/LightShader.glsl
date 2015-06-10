@@ -19,7 +19,7 @@ uniform float cullMode; // 0 if backface culling is enabled, 1 if it is disabled
 //#define LIGHT_DEBUG_PINK
 
 // At what point of light intensity we set the "darkness" point. This
-// is to compensate for the fact that the engine "smooths" the light
+// is to compensate for the fact that the engine "smoothes" the light
 // and therefore will often never arrive at 0 light intensity.
 const float lightDarknessLevel = 8.0 / 256.0;
 
@@ -31,14 +31,14 @@ slice(texture+5)
 	vec2 lightDirCoord = lightCoord.st;
 
 	vec4  lightPx = texture2D(lightTex, lightDirCoord);
-	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
+	float lightBright = max(0.0, lightPx.a-lightDarknessLevel);
 	vec3  lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
-	
+
 	// Query light color texture (part of the light texture)
 	vec2 lightColorCoord = lightCoord.st - vec2(0.0, 0.5); // subtract offset for the color texture
-	
+
 	vec4 lightColor = texture2D(lightTex, lightColorCoord.st);
-	
+
 	#ifdef LIGHT_DEBUG_COLOR
 		lightBright = 0.5;
 		lightDir = vec3(0.0, 0.0, 1.0);
@@ -85,7 +85,7 @@ slice(finish+5)
 #ifdef HAVE_LIGHT
 	float lightYDir = lightPx.b - 1.0/3.0;
 	float lightXDir = lightPx.g - 1.0/3.0;
-	float lightStrength = lightPx.r;
+	float lightStrength = lightPx.a;
 	color =
 	  vec4(lightStrength * vec3(1.0-1.5*(max(0.0, lightYDir) + max(0.0,lightXDir)),
 	                            1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),

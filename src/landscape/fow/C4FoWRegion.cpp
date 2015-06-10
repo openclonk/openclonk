@@ -154,7 +154,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	// Clear texture contents
 	assert(getSurface()->Hgt % 2 == 0);
 	glScissor(0, getSurface()->Hgt / 2, getSurface()->Wdt, getSurface()->Hgt / 2);
-	glClearColor(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 1.0f);
+	glClearColor(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.0f);
 	glEnable(GL_SCISSOR_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -171,9 +171,6 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	// Copy over the old state
 	if (OldRegion.Wdt > 0)
 	{
-		// Set up shader. If this one doesn't work, we're really in trouble.
-		C4Shader *pShader = pFoW->GetFramebufShader();
-		assert(pShader);
 
 		// How much the borders have moved
 		int dx0 = Region.x - OldRegion.x,
@@ -204,7 +201,10 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		Call.Start();
 		if (Call.AllocTexUnit(0, GL_TEXTURE_2D))
 			glBindTexture(GL_TEXTURE_2D, getBackSurface()->textures[0].texName);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
+		float normalBlend = 1.0f / 4.0f, // Normals change quickly
+		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
+		glBlendColor(0.0f,normalBlend,normalBlend,brightBlend);
 		glBegin(GL_QUADS);
 		for (int i = 0; i < 4; i++)
 		{
@@ -213,7 +213,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		}
 		glEnd();
 		Call.Finish();
-    }
+	}
 
 	// Done!
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
