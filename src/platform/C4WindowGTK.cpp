@@ -589,7 +589,7 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 	}
 
 	XFree(configs);
-	std::copy(multisamples.cbegin(), multisamples.cend(), samples.begin());
+	samples.assign(multisamples.cbegin(), multisamples.cend());
 #endif
 }
 
