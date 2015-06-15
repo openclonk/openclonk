@@ -5,6 +5,7 @@
 	* Info dialogue
 	* Energy bar if rule active
 	* Basements
+	* Value
 	
 	@author Maikel
 */
@@ -64,3 +65,19 @@ public func SetBasement(object to_basement)
 public func GetBasement() { return lib_structure.basement; }
 
 public func IsStructureWithoutBasement() { return IsStructure() && !lib_structure.basement; }
+
+
+/*-- Value --*/
+
+public func CalcDefValue()
+{
+	var value = 0;
+	var comp, index = 0;
+	while (comp = GetComponent(nil, index++, nil, this))
+	{
+		var comp_value = comp->GetValue();
+		var comp_amount = GetComponent(comp, nil, nil, this);
+		value += comp_value * comp_amount;
+	}
+	return value;
+}

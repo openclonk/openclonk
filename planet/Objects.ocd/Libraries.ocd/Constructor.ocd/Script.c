@@ -17,7 +17,6 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	// Otherwise create a menu with possible structures to build.
 	OpenConstructionMenu(clonk);
-	//clonk->CreateConstructionMenu(this, true);
 	clonk->CancelUse();
 	return true;
 }
@@ -225,31 +224,23 @@ public func OpenConstructionMenu(object clonk)
 	menu_target.Visibility = VIS_Owner;
 	menu_controller = clonk;
 	
-	// Number of items, square shape.
-	var grid_size = 5; 
 	// Size of the grid items in em.
-	var item_size = 10; 
-	// Calculate menu size.
-	var menu_width = grid_size * item_size * 2 + 2; 
-	var menu_height = grid_size * item_size;
+	var item_size = 8; 
 	
 	// Construction menu proplist.
 	menu =
 	{
 		Target = menu_target,
-		Style = 0,
 		Decoration = GUI_MenuDeco,
 		BackgroundColor = 0xee403020
 	};
 	
-	menu.structures = CreateStructureGrid(clonk, grid_size, item_size);
-	menu.struct_info = CreateStructureInfo(grid_size * item_size);
+	menu.structures = CreateStructureGrid(clonk, item_size);
+	menu.struct_info = CreateStructureInfo();
 	menu.separator =
 	{
-		Left = "49%",
-		Right = "51%",
-		Top = "0%",
-		Bottom = "100%",
+		Left = "60%",
+		Right = "60%+1em",
 		BackgroundColor = {Std = 0x50888888}	
 	};
 
@@ -259,98 +250,89 @@ public func OpenConstructionMenu(object clonk)
 	return;
 }
 
-public func CreateStructureGrid(object clonk, int grid_size, int item_size)
+public func CreateStructureGrid(object clonk, int item_size)
 {
 	var structures = 
 	{
 		Target = menu_target,
 		ID = 1,
-		Right = "49%",
+		Right = "60%",
 		Style = GUI_GridLayout
 	};
 	structures = MenuAddStructures(structures, clonk, item_size);
 	return structures;
 }
 
-public func CreateStructureInfo(int size)
+public func CreateStructureInfo()
 {
 	var structinfo = 
 	{
 		Target = menu_target,
 		ID = 2,
-		Left = "51%"
+		Left = "60%+1em"
 	};
-	// Bottom 20% for description and other written information.
+	// Bottom part for material costs, description and other written information.
 	structinfo.description = 
 	{
 		Target = menu_target,
 		Priority = 0x0fffff,
-		Left = "0%",
-		Right = "100%",
-		Top = "80%",
+		Left = "0.5em",
+		Right = "100%-0.5em",
+		Top = "100%-6em",
 		Bottom = "100%",	
 		Text = nil // will be updated
 	};
-	// Upright 80% is for the picture, though only 60% used.
-	structinfo.picture = 
-	{
-		Target = menu_target,
-		Left = "10%",
-		Right = "70%",
-		Top = "10%",
-		Bottom = "70%",	
-		Symbol = nil // will be updated
-	};
-	structinfo.power_consumer =
-	{
-		Target = menu_target,
-		Left = "10%",
-		Right = "20%",
-		Top = "10%",
-		Bottom = "20%",	
-		Symbol = nil // will be updated
-	};
-	structinfo.power_producer = 
-	{
-		Target = menu_target,
-		Left = "60%",
-		Right = "70%",
-		Top = "10%",
-		Bottom = "20%",	
-		Symbol = nil // will be updated
-	};
-	// Materials and exit button are shown on left 20%.
 	structinfo.materials = 
 	{
 		Target = menu_target,
-		Left = "80%",
-		Right = "100%",
-		Top = "0%",
-		Bottom = "80%"
+		Priority = 0x0fffff,
+		Left = "0.5em",
+		Right = "100%-0.5em",
+		Top = "100%-10em",
+		Bottom = "100%-6em",	
+		Text = nil // will be updated
+	};
+	// Upper part is for the picture and power display.
+	structinfo.picture = 
+	{
+		Target = menu_target,
+		Bottom = "100%-10em",
+		Margin = ["10%+1em"],
+		Symbol = nil, // will be updated
+		power_consumer =
+		{
+			Target = menu_target,
+			Right = "3em",
+			Bottom = "3em",	
+			Symbol = nil // will be updated
+		},
+		power_producer = 
+		{
+			Target = menu_target,
+			Left = "3em",
+			Right = "6em",
+			Bottom = "3em",	
+			Symbol = nil // will be updated
+		}	
 	};
 	structinfo.close_button = 
 	{
 		Target = menu_target,
-		Left = "90%", 
-		Right = "100%", 
-		Top = "0%",
-		Bottom = "10%",
+		Left = "100%-4em", 
+		Bottom = "4em",
 		Symbol = Icon_Cancel,
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
 		OnMouseIn = GuiAction_SetTag("Hover"),
 		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(this, "CloseConstructionMenu")
 	};
-	structinfo = MenuMaterialCosts(structinfo, nil);
 	return structinfo;
 }
 
 public func MenuAddStructures(proplist struct, object clonk, int item_size)
 {
 	var plans = GetConstructionPlans(clonk->GetOwner());
-	var nr_plans = GetLength(plans);
-
-	for (var structure in GetConstructionPlans(clonk->GetOwner()))
+	for (var structure in plans)
 	{
 		var str =
 		{
@@ -360,7 +342,8 @@ public func MenuAddStructures(proplist struct, object clonk, int item_size)
 			BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 			OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnConstructionHover", structure)],
 			OnMouseOut = GuiAction_SetTag("Std"), 
-			OnClick = GuiAction_Call(this, "OnConstructionSelection", {Struct = structure, Constructor = clonk}),
+			OnClick = GuiAction_Call(this, "OnConstructionSelection", {struct = structure, constructor = clonk}),
+			Priority = structure->GetValue(),
 			picture = 
 			{
 				Left = "8%",
@@ -375,58 +358,9 @@ public func MenuAddStructures(proplist struct, object clonk, int item_size)
 	return struct;
 }
 
-public func MenuMaterialCosts(proplist info, id structure)
-{
-	// Show text "costs:" as a submenu.
-	info.material_costs = { 
-		Target = menu_target,
-		Left = "100% - 4em",
-		Right = "100%",
-		Top = "20%",
-		Style = GUI_VerticalLayout | GUI_FitChildren,
-		headline = 
-		{
-			Priority = 1,
-			Bottom = "1em",
-			Style = GUI_TextHCenter | GUI_NoCrop,
-			Text = "Costs:"
-		}
-	};	
-	
-	// Get the different components of the structure.
-	var comp, index = 0;
-	var components = [];
-	if (structure)
-		while (comp = GetComponent(nil, index++, nil, structure))
-			components[GetLength(components)] = [comp, GetComponent(comp, nil, nil, structure)];
-					
-	// Add those components to the submenus of the info menu.
-	var priority = 1;
-	for (var component in components)
-	{
-		++priority;
-		var amount = Format("%dx", component[1]);
-		var symbol = component[0];
-		
-		var new_symbol = 
-		{
-			Target = menu_target,
-			Priority = priority,
-			Bottom = "4em",
-			Right = "4em",
-			Symbol = symbol,
-			Style = GUI_TextRight | GUI_TextBottom,
-			Text = amount,
-			Tooltip = symbol->GetName()
-		};
-		GuiAddSubwindow(new_symbol, info.material_costs);
-	}
-	return info;
-}
-
 public func OnConstructionSelection(proplist par)
 {
-	ShowConstructionPreview(par.Constructor, par.Struct);
+	ShowConstructionPreview(par.constructor, par.struct);
 	CloseConstructionMenu();
 	return;
 }
@@ -435,31 +369,42 @@ public func OnConstructionHover(id structure)
 {
 	var struct_info = menu.struct_info;
 	
-	// Update the description to this part of the menu.
-	struct_info.description.Text = structure.Description;
+	// Update the description and costs of this part of the menu.
+	struct_info.description.Text = Format("%s: %s", structure->GetName(), structure.Description);
+	struct_info.materials.Text = GetStructureMaterialsString(structure);
 	
 	// Update the picture of the structure.
 	struct_info.picture.Symbol = structure;
 	
 	// Update also power consumption/production.
 	if (structure->~IsPowerConsumer())
-		struct_info.power_consumer.Symbol = Library_PowerConsumer;
+		struct_info.picture.power_consumer.Symbol = Library_PowerConsumer;
 	else
-		struct_info.power_consumer.Symbol = nil;
+		struct_info.picture.power_consumer.Symbol = nil;
 		
 	if (structure->~IsPowerProducer())
-		struct_info.power_producer.Symbol = Library_PowerProducer;
+		struct_info.picture.power_producer.Symbol = Library_PowerProducer;
 	else
-		struct_info.power_producer.Symbol = nil;
-	
-	// Update the material costs of the structure.
-	struct_info = MenuMaterialCosts(struct_info, structure);
+		struct_info.picture.power_producer.Symbol = nil;
 	
 	// update everything - close the old info first to clean up possible remainers and then re-open it
 	menu.struct_info = struct_info;
 	GuiClose(menu_id, menu.struct_info.ID, menu.struct_info.Target);
 	GuiUpdate({struct_info = menu.struct_info}, menu_id);
 	return;
+}
+
+private func GetStructureMaterialsString(id structure) 
+{
+	var comp, index = 0;
+	var components = [];
+	while (comp = GetComponent(nil, index++, nil, structure))
+		components[GetLength(components)] = [comp, GetComponent(comp, nil, nil, structure)];
+
+	var materials_string = "Costs: ";
+	for (comp in components)
+		materials_string = Format("%s %dx {{%i}}", materials_string, comp[1], comp[0]);
+	return materials_string;
 }
 
 public func CloseConstructionMenu()
