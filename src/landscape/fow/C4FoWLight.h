@@ -15,6 +15,8 @@
 #ifndef C4FOWLIGHT_H
 #define C4FOWLIGHT_H
 
+#ifndef USE_CONSOLE
+
 #include "C4Object.h"
 #include "C4Surface.h"
 #include "C4FacetEx.h"
@@ -94,5 +96,7 @@ private:
 	float GetSquaredDistanceTo(int32_t x, int32_t y) const { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
 
 };
+
+#endif
 
 #endif

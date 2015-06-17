@@ -16,6 +16,8 @@
 #ifndef C4FOWDRAWSTRATEGY_H
 #define C4FOWDRAWSTRATEGY_H
 
+#ifndef USE_CONSOLE
+
 #include "C4DrawGL.h"
 #include <list>
 
@@ -120,5 +122,7 @@ private:
 	const C4FoWLight* light;
 	const C4TargetFacet* screen;
 };
+
+#endif
 
 #endif

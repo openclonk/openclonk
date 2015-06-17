@@ -28,7 +28,9 @@ public:
 	C4FoWAmbient();
 	~C4FoWAmbient();
 
+#ifndef USE_CONSOLE
 	GLuint Tex;
+#endif
 
 private:
 	// Parameters

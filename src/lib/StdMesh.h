@@ -197,11 +197,15 @@ public:
 
 	void PostInit();
 
-	const GLuint GetVBO() const { return vbo; }
+#ifndef USE_CONSOLE
+	GLuint GetVBO() const { return vbo; }
+#endif
 
 private:
+#ifndef USE_CONSOLE
 	GLuint vbo;
 	void UpdateVBO();
+#endif
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable

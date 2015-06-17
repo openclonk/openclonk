@@ -14,6 +14,9 @@
  */
 
 #include "C4Include.h"
+
+#ifndef USE_CONSOLE
+
 #include "C4FoWLight.h"
 #include "C4FoWLightSection.h"
 #include "C4FoWBeamTriangle.h"
@@ -344,3 +347,5 @@ bool C4FoWLight::IsVisibleForPlayer(C4Player *player) const
 	if (!pObj || !player) return true;
 	return !::Hostile(pObj->Owner,player->Number);
 }
+
+#endif

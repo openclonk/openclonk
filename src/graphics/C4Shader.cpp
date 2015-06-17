@@ -39,8 +39,10 @@ C4ShaderPosName C4SH_PosNames[] = {
 
 C4Shader::C4Shader()
 	: iTexCoords(0)
+#ifndef USE_CONSOLE
 	, hVert(0), hFrag(0), hProg(0)
 	, pUniforms(NULL)
+#endif
 {
 
 }
@@ -260,6 +262,7 @@ void C4Shader::AddVertexDefaults()
 	AddVertexSlice(C4Shader_Vertex_PositionPos, "gl_Position = ftransform();\n");
 }
 
+#ifndef USE_CONSOLE
 GLenum C4Shader::AddTexCoord(const char *szName)
 {
 	// Make sure we have enough space
@@ -275,6 +278,7 @@ GLenum C4Shader::AddTexCoord(const char *szName)
 
 	return GL_TEXTURE0 + iTexCoords++;
 }
+#endif
 
 void C4Shader::ClearSlices()
 {
@@ -285,6 +289,7 @@ void C4Shader::ClearSlices()
 
 void C4Shader::Clear()
 {
+#ifndef USE_CONSOLE
 	if (!hProg) return;
 	// Need to be detached, then deleted
 	glDetachObjectARB(hProg, hFrag);
@@ -296,11 +301,12 @@ void C4Shader::Clear()
 	// Clear uniform data
 	delete[] pUniforms; pUniforms = NULL;
 	iUniformCount = 0;
+#endif
 }
 
 bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 {
-
+#ifndef USE_CONSOLE
 	// No support?
 	if(!GLEW_ARB_fragment_program)
 	{
@@ -310,6 +316,7 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 
 	// Clear old shader first
 	if (hProg) Clear();
+#endif
 
 	// Dump
 	if (C4Shader::IsLogging())
@@ -320,6 +327,7 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 		ShaderLog(Build(FragmentSlices, true).getData());
 	}
 
+#ifndef USE_CONSOLE
 	// Attempt to create shaders
 	StdStrBuf VertexShader = Build(VertexSlices),
 			  FragmentShader = Build(FragmentSlices);
@@ -363,6 +371,7 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	// because the respective uniforms got optimized out!
 	for (int i = 0; i < iUniformCount; i++)
 		pUniforms[i] = glGetUniformLocationARB(hProg, szUniforms[i]);
+#endif
 
 	return true;
 }
@@ -420,9 +429,13 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 	// At the start of the shader set the #version and number of
 	// available uniforms
 	StdStrBuf Buf;
+#ifndef USE_CONSOLE
 	GLint iMaxFrags = 0, iMaxVerts = 0;
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &iMaxFrags);
 	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &iMaxVerts);
+#else
+	int iMaxFrags = INT_MAX, iMaxVerts = INT_MAX;
+#endif
 	Buf.Format("#version %d\n"
 			   "#define MAX_FRAGMENT_UNIFORM_COMPONENTS %d\n"
 			   "#define MAX_VERTEX_UNIFORM_COMPONENTS %d\n",
@@ -468,6 +481,7 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 	return Buf;
 }
 
+#ifndef USE_CONSOLE
 GLhandleARB C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szShader)
 {
 	// Create shader
@@ -515,9 +529,11 @@ int C4Shader::GetObjectStatus(GLhandleARB hObj, GLenum type)
 	glGetObjectParameterivARB(hObj, type, &iStatus);
 	return iStatus;
 }
+#endif
 
 bool C4Shader::IsLogging() { return !!Application.isEditor; }
 
+#ifndef USE_CONSOLE
 GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
 {
 	// Want to bind uniform automatically? If not, the caller will take
@@ -550,7 +566,6 @@ void C4ShaderCall::Start()
 	// Activate shader
 	glUseProgramObjectARB(pShader->hProg);
 	fStarted = true;
-
 }
 
 void C4ShaderCall::Finish()
@@ -569,3 +584,5 @@ void C4ShaderCall::Finish()
 	iUnits = 0;
 	fStarted = false;
 }
+
+#endif

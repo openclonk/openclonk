@@ -849,7 +849,9 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	shader.AddVertexSlices(VertexShader->GetFilename(), VertexShader->GetCode(), VertexShader->GetFilename());
 	shader.AddFragmentSlices(FragmentShader->GetFilename(), FragmentShader->GetCode(), FragmentShader->GetFilename());
 	// Construct the list of uniforms
-	std::vector<const char*> uniformNames(C4SSU_Count + ParameterNames.size() + 1);
+	std::vector<const char*> uniformNames;
+#ifndef USE_CONSOLE
+	uniformNames.resize(C4SSU_Count + ParameterNames.size() + 1);
 	uniformNames[C4SSU_ClrMod] = "clrMod";
 	uniformNames[C4SSU_BaseTex] = "baseTex"; // unused
 	uniformNames[C4SSU_OverlayTex] = "overlayTex"; // unused
@@ -864,25 +866,31 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
+#endif
 	// Compile the shader
 	StdCopyStrBuf name(Name);
+#ifndef USE_CONSOLE
 	if (ssc != 0) name.Append(":");
 	if (ssc & C4SSC_LIGHT) name.Append("Light");
 	if (ssc & C4SSC_MOD2) name.Append("Mod2");
+#endif
 	return shader.Init(name.getData(), &uniformNames[0]);
 }
 
 bool StdMeshMaterialProgram::Compile(StdMeshMaterialLoader& loader)
 {
+#ifndef USE_CONSOLE
 	if (!CompileShader(loader, Shader, 0)) return false;
 	if (!CompileShader(loader, ShaderMod2, C4SSC_MOD2)) return false;
 	if (!CompileShader(loader, ShaderLight, C4SSC_LIGHT)) return false;
 	if (!CompileShader(loader, ShaderLightMod2, C4SSC_LIGHT | C4SSC_MOD2)) return false;
+#endif
 	return true;
 }
 
 const C4Shader* StdMeshMaterialProgram::GetShader(int ssc) const
 {
+#ifndef USE_CONSOLE
 	const C4Shader* shaders[4] = {
 		&Shader,
 		&ShaderMod2,
@@ -896,13 +904,20 @@ const C4Shader* StdMeshMaterialProgram::GetShader(int ssc) const
 
 	assert(index < 4);
 	return shaders[index];
+#else
+	return NULL;
+#endif
 }
 
 int StdMeshMaterialProgram::GetParameterIndex(const char* name) const
 {
+#ifndef USE_CONSOLE
 	std::vector<StdCopyStrBuf>::const_iterator iter = std::find(ParameterNames.begin(), ParameterNames.end(), name);
 	if(iter == ParameterNames.end()) return -1;
 	return C4SSU_Count + std::distance(ParameterNames.begin(), iter);
+#else
+	return -1;
+#endif
 }
 
 double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
@@ -1515,12 +1530,14 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 			Materials[material_name] = mat;
 
+#ifndef USE_CONSOLE
 			// To Gfxspecific setup of the material; choose working techniques
 			if (!pDraw->PrepareMaterial(*this, loader, Materials[material_name]))
 			{
 				Materials.erase(material_name);
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
 			}
+#endif
 		}
 		else if (token_name == "vertex_program")
 		{

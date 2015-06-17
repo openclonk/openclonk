@@ -26,6 +26,7 @@ C4FoW::C4FoW()
 
 C4Shader *C4FoW::GetFramebufShader()
 {
+#ifndef USE_CONSOLE
 	// Not created yet?
 	if (!FramebufShader.Initialised())
 	{
@@ -46,10 +47,14 @@ C4Shader *C4FoW::GetFramebufShader()
 
 	}
 	return &FramebufShader;
+#else
+	return NULL;
+#endif
 }
 
 void C4FoW::Add(C4Object *pObj)
 {
+#ifndef USE_CONSOLE
 	// No view range? Probably want to remove instead
 	if(!pObj->lightRange && !pObj->lightFadeoutRange)
 	{
@@ -77,10 +82,12 @@ void C4FoW::Add(C4Object *pObj)
 		pLight->pNext = pLights;
 		pLights = pLight;
 	}
+#endif
 }
 
 void C4FoW::Remove(C4Object *pObj)
 {
+#ifndef USE_CONSOLE
 	// Look for matching light
 	C4FoWLight *pPrev = NULL, *pLight;
 	for (pLight = pLights; pLight; pPrev = pLight, pLight = pLight->getNext())
@@ -92,24 +99,31 @@ void C4FoW::Remove(C4Object *pObj)
 	// Remove
 	(pPrev ? pPrev->pNext : pLights) = pLight->getNext();
 	delete pLight;
+#endif
 }
 
 void C4FoW::Invalidate(C4Rect r)
 {
+#ifndef USE_CONSOLE
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		pLight->Invalidate(r);
+#endif
 }
 
 void C4FoW::Update(C4Rect r, C4Player *pPlr)
 {
+#ifndef USE_CONSOLE
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
 			pLight->Update(r);
+#endif
 }
 
 void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr)
 {
+#ifndef USE_CONSOLE
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
 			pLight->Render(pRegion, pOnScreen);
+#endif
 }
