@@ -28,8 +28,6 @@
 
 const uint8_t IFT = 0x80;
 
-const uint8_t CSkyDef1=104,CSkyDef2=123;
-
 const int32_t C4MaxMaterial = 125;
 
 const int32_t C4LSC_Undefined = 0,
@@ -269,7 +267,6 @@ private:
 
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
-	bool DebugSave(const char *szFilename) const;
 };
 
 extern C4Landscape Landscape;
