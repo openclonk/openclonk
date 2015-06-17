@@ -684,28 +684,25 @@ bool C4Landscape::ShakeFreePix(int32_t tx, int32_t ty)
 
 bool C4Landscape::ClearPix(int32_t tx, int32_t ty)
 {
-	BYTE bcol;
-	if (GBackIFT(tx,ty))
-		bcol=Mat2PixColDefault(MTunnel)+IFT;
-	else
-		bcol=0;
-	return SetPix(tx,ty,bcol);
+	// Replace pixel with background pixel
+	BYTE bkgPix = Surface8Bkg->GetPix(tx, ty);
+	return SetPix2(tx, ty, bkgPix, bkgPix);
 }
+
 bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 {
-	if (Config.General.DebugRec)
-	{
-		C4RCSetPix rc;
-		rc.x=x; rc.y=y; rc.clr=npix;
-		AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
-	}
+	return SetPix2(x, y, npix, DefaultBkgMat(npix));
+}
+
+bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
+{
 	// check bounds
 	if (x < 0 || y < 0 || x >= Width || y >= Height)
 		return false;
 	// no change?
-	if (npix == _GetPix(x, y))
+	if (fgPix == _GetPix(x, y) && bgPix == Surface8Bkg->_GetPix(x, y))
 		return true;
-	// note for relight
+	// note for relight (TODO: Why is this not in _SetPix2?)
 	if(pLandscapeRender)
 	{
 		C4Rect CheckRect = pLandscapeRender->GetAffectedRect(C4Rect(x, y, 1, 1));
@@ -720,35 +717,40 @@ bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 			pFoW->Invalidate(CheckRect);
 	}
 	// set pixel
-	return _SetPix(x, y, npix);
+	return _SetPix2(x, y, fgPix, bgPix);
 }
 
 bool C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
 {
+	return _SetPix2(x, y, npix, DefaultBkgMat(npix));
+}
+
+bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
+{
 	if (Config.General.DebugRec)
 	{
 		C4RCSetPix rc;
-		rc.x=x; rc.y=y; rc.clr=npix;
+		rc.x=x; rc.y=y; rc.clr=fgPix; rc.bgClr=fgPix;
 		AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
 	}
 	assert(x >= 0 && y >= 0 && x < Width && y < Height);
 	// get and check pixel
 	BYTE opix = _GetPix(x, y);
-	if (npix == opix) return true;
+	if (fgPix == opix && bgPix == Surface8Bkg->_GetPix(x, y)) return true;
 	// count pixels
-	if (Pix2Dens[npix])
+	if (Pix2Dens[fgPix])
 		{ if (!Pix2Dens[opix]) PixCnt[(y / 15) + (x / 17) * PixCntPitch]++; }
 	else
 		{ if (Pix2Dens[opix]) PixCnt[(y / 15) + (x / 17) * PixCntPitch]--; }
 	// count material
-	assert(!npix || MatValid(Pix2Mat[npix]));
-	int32_t omat = Pix2Mat[opix], nmat = Pix2Mat[npix];
+	assert(!fgPix || MatValid(Pix2Mat[fgPix]));
+	int32_t omat = Pix2Mat[opix], nmat = Pix2Mat[fgPix];
 	if (opix) MatCount[omat]--;
-	if (npix) MatCount[nmat]++;
+	if (fgPix) MatCount[nmat]++;
 	// count effective material
 	if (omat != nmat)
 	{
-		if (npix && ::MaterialMap.Map[nmat].MinHeightCount)
+		if (fgPix && ::MaterialMap.Map[nmat].MinHeightCount)
 		{
 			// Check for material above & below
 			int iMinHeight = ::MaterialMap.Map[nmat].MinHeightCount,
@@ -784,7 +786,8 @@ bool C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
 		}
 	}
 	// set 8bpp-surface only!
-	Surface8->SetPix(x,y,npix);
+	Surface8->SetPix(x, y, fgPix);
+	Surface8Bkg->SetPix(x, y, bgPix);
 	// success
 	return true;
 }
@@ -988,6 +991,33 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 	return false;
 }
 
+BYTE C4Landscape::DefaultBkgMat(BYTE fg) const
+{
+	// For the given foreground index, find the default background index
+	// If fg is semisolid, this is tunnel, or sky if IFT is set.
+	// Otherwise it is fg itself, so that tunnel and background bricks
+	// stay the way they are.
+	int32_t iTex = PixCol2Tex(fg);
+	if (!iTex) return fg; // sky
+
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
+	// Texmap entry does not exist
+	if(!pTex || !pTex->GetMaterial()) return fg;
+
+	if(DensitySemiSolid(pTex->GetMaterial()->Density))
+	{
+		// TODO: Remove IFT check once we get rid of IFT
+		if(fg & IFT)
+			return Mat2PixColDefault(MTunnel) + IFT;
+		else
+			return 0;
+	}
+
+	return fg;
+
+}
+
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* ++++ Polygon drawing code extracted from ALLEGRO by Shawn Hargreaves ++++ */
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1133,9 +1163,18 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 				}
 			}
 			else if (conversion_table)
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
+				{
+					const uint8_t pix = conversion_table[uint8_t(GetPix(x1+xcnt, y))];
+					Surface8->SetPix(x1+xcnt, y, pix);
+					Surface8Bkg->SetPix(x1+xcnt, y, DefaultBkgMat(pix));
+				}
 			else
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
+				{
+					Surface8->SetPix(x1+xcnt, y, col);
+					Surface8Bkg->SetPix(x1+xcnt, y, DefaultBkgMat(col));
+				}
 			edge = edge->next->next;
 		}
 
@@ -1199,9 +1238,11 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete [] TopRowPix; TopRowPix=NULL;
 	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
+	delete Surface8Bkg; Surface8Bkg=NULL;
 	delete Map; Map=NULL;
 	// clear initial landscape
 	delete [] pInitial; pInitial = NULL;
+	delete [] pInitialBkg; pInitialBkg = NULL;
 	delete pFoW; pFoW = NULL;
 	// clear scan
 	ScanX=0;
@@ -1376,11 +1417,22 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// (not for shaders though - they require continous textures)
 	if (!Game.C4S.Landscape.ExactLandscape)
 	{
+		assert(Surface8 == NULL);
+		assert(Surface8Bkg == NULL);
+
 		// Create landscape surface
 		Surface8 = new CSurface8();
-		if (!Surface8->Create(Width, Height) || !Mat2Pal())
+		if (!Surface8->Create(Width, Height))
 		{
-			delete Surface8; Surface8 = 0;
+			delete Surface8; Surface8 = NULL;
+			return false;
+		}
+
+		Surface8Bkg = new CSurface8();
+		if (!Surface8Bkg->Create(Width, Height) || !Mat2Pal())
+		{
+			delete Surface8Bkg; Surface8Bkg = NULL;
+			delete Surface8; Surface8 = NULL;
 			return false;
 		}
 
@@ -1402,6 +1454,9 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	{
 		AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
 		AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
+
+		AddDbgRec(RCT_Block, "|---LANDSCAPE BKG---|", 22);
+		AddDbgRec(RCT_Map, Surface8Bkg->Bits, Surface8Bkg->Pitch*Surface8Bkg->Hgt);
 	}
 
 	// Create FoW
@@ -1488,6 +1543,14 @@ bool C4Landscape::SaveInternal(C4Group &hGroup) const
 	if (!hGroup.Move( szTempLandscape, C4CFN_Landscape ))
 		return false;
 
+	// Same for background surface
+	SCopy(Config.AtTempPath(C4CFN_TempLandscapeBkg), szTempLandscape);
+	MakeTempFilename(szTempLandscape);
+	if (!Surface8Bkg->Save(szTempLandscape))
+		return false;
+	if (!hGroup.Move(szTempLandscape, C4CFN_LandscapeBkg))
+		return false;
+
 	// Save map
 	if (fMapChanged && Map)
 		if (!SaveMap(hGroup))
@@ -1510,18 +1573,24 @@ bool C4Landscape::SaveDiff(C4Group &hGroup, bool fSyncSave) const
 
 bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const
 {
-	assert(pInitial);
-	if (!pInitial) return false;
+	assert(pInitial && pInitialBkg);
+	if (!pInitial || !pInitialBkg) return false;
 
 	// If it shouldn't be sync-save: Clear all bytes that have not changed
-	bool fChanged = false;
+	bool fChanged = false, fChangedBkg = false;;
 	if (!fSyncSave)
 		for (int y = 0; y < Height; y++)
-			for (int x = 0; x < Width; x++) {
-				if (pInitial[y * Width + x] == _GetPix(x, y))
+			for (int x = 0; x < Width; x++)
+			{
+				if (pInitial[y * Width + x] == Surface8->_GetPix(x, y))
 					Surface8->SetPix(x,y,0xff);
 				else
 					fChanged = true;
+
+				if (pInitialBkg[y * Width + x] == Surface8Bkg->_GetPix(x, y))
+					Surface8Bkg->SetPix(x,y,0xff);
+				else
+					fChangedBkg = true;
 			}
 
 	if (fSyncSave || fChanged)
@@ -1536,13 +1605,28 @@ bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const
 			return false;
 	}
 
+	if (fSyncSave || fChangedBkg)
+	{
+		// Save landscape surface
+		if (!Surface8Bkg->Save(Config.AtTempPath(C4CFN_TempLandscapeBkg)))
+			return false;
+
+		// Move temp file to group
+		if (!hGroup.Move( Config.AtTempPath(C4CFN_TempLandscapeBkg),
+		                  C4CFN_DiffLandscapeBkg ))
+			return false;
+	}
+
 	// Restore landscape pixels
 	if (!fSyncSave)
-		if (pInitial)
-			for (int y = 0; y < Height; y++)
-				for (int x = 0; x < Width; x++)
-					if (_GetPix(x, y) == 0xff)
-						Surface8->SetPix(x,y,pInitial[y * Width + x]);
+		for (int y = 0; y < Height; y++)
+			for (int x = 0; x < Width; x++)
+			{
+				if (Surface8->_GetPix(x, y) == 0xff)
+					Surface8->SetPix(x,y,pInitial[y * Width + x]);
+				if (Surface8Bkg->_GetPix(x, y) == 0xff)
+					Surface8Bkg->SetPix(x,y,pInitialBkg[y * Width + x]);
+			}
 
 	// Save changed map, too
 	if (fMapChanged && Map)
@@ -1559,37 +1643,76 @@ bool C4Landscape::SaveInitial()
 
 	// Create array
 	delete [] pInitial;
+	delete [] pInitialBkg;
 	pInitial = new BYTE [Width * Height];
+	pInitialBkg = new BYTE [Width * Height];
 
 	// Save material data
 	for (int y = 0; y < Height; y++)
 		for (int x = 0; x < Width; x++)
-			pInitial[y * Width + x] = _GetPix(x, y);
+		{
+			pInitial[y * Width + x] = Surface8->_GetPix(x, y);
+			pInitialBkg[y * Width + x] = Surface8Bkg->_GetPix(x, y);
+		}
 
 	return true;
 }
 
 bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 {
+	assert(!Surface8 && !Surface8Bkg);
+
 	// Load exact landscape from group
 	if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_Landscape))) return false;
 	int iWidth, iHeight;
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
+
+	// Load background surface; it's not fatal if it does not exist
+	Surface8Bkg = GroupReadSurface8(hGroup, C4CFN_LandscapeBkg);
+	if (Surface8Bkg && (Width != Surface8Bkg->Wdt || Height != Surface8Bkg->Hgt))
+	{
+		LogFatal(FormatString("Landscape has different dimensions than background landscape (%dx%d vs. %dx%d)", iWidth, iHeight, Surface8Bkg->Wdt, Surface8Bkg->Hgt).getData());
+		return false;
+	}
 	// adjust pal
 	if (!Mat2Pal()) return false;
 	// Landscape should be in correct format: Make sure it is!
 	for (int32_t y=0; y<Height; ++y)
 		for (int32_t x=0; x<Width; ++x)
 		{
-			BYTE byPix = Surface8->GetPix(x, y);
+			BYTE byPix = Surface8->_GetPix(x, y);
 			int32_t iMat = PixCol2Mat(byPix);
+
 			if (byPix && !MatValid(iMat))
 			{
 				LogFatal(FormatString("Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPix).getData());
 				return false;
 			}
+
+			if (Surface8Bkg)
+			{
+				BYTE byPixBkg = Surface8Bkg->_GetPix(x, y);
+				int32_t iMatBkg = PixCol2Mat(byPixBkg);
+
+				if (byPixBkg && !MatValid(iMatBkg))
+				{
+					LogFatal(FormatString("Background Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPixBkg).getData());
+					return false;
+				}
+			}
 		}
+
+	// Create default background map if not available
+	if (!Surface8Bkg)
+	{
+		Surface8Bkg = new CSurface8();
+		Surface8Bkg->Create(iWidth, iHeight);
+		for (int32_t y=0; y<Height; ++y)
+			for (int32_t x=0; x<Width; ++x)
+				Surface8Bkg->_SetPix(x, y, DefaultBkgMat(Surface8->_GetPix(x, y)));
+	}
+
 	// Init sky
 	if (fLoadSky)
 	{
@@ -1602,17 +1725,27 @@ bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 bool C4Landscape::ApplyDiff(C4Group &hGroup)
 {
 	CSurface8 *pDiff;
+	CSurface8 *pDiffBkg;
 	// Load diff landscape from group
 	if (!(pDiff=GroupReadSurface8(hGroup, C4CFN_DiffLandscape))) return false;
+	if (!(pDiffBkg=GroupReadSurface8(hGroup, C4CFN_DiffLandscapeBkg))) { delete pDiff; return false; }
+
 	// convert all pixels: keep if same material; re-set if different material
 	BYTE byPix;
 	for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-			if (pDiff->GetPix(x, y) != 0xff)
-				if (Surface8->GetPix(x,y) != (byPix=pDiff->GetPix(x,y)))
-					// material has changed here: readjust with new texture
-					SetPix(x,y, byPix);
+	{
+		if (pDiff->GetPix(x, y) != 0xff)
+			if (Surface8->_GetPix(x,y) != (byPix=pDiff->_GetPix(x,y)))
+				// material has changed here: readjust with new texture
+				SetPix(x,y, byPix);
+		if (pDiffBkg->GetPix(x, y) != 0xff)
+			if (Surface8Bkg->_GetPix(x, y) != (byPix=pDiffBkg->_GetPix(x, y)))
+				Surface8Bkg->_SetPix(x, y, byPix);
+	}
+
 	// done; clear diff
 	delete pDiff;
+	delete pDiffBkg;
 	return true;
 }
 
@@ -1620,6 +1753,9 @@ void C4Landscape::Default()
 {
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
+	Surface8Bkg=NULL;
+	pInitial=NULL;
+	pInitialBkg=NULL;
 	TopRowPix=NULL;
 	BottomRowPix=NULL;
 	pLandscapeRender=NULL;
@@ -1802,6 +1938,7 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, in
 	{
 	case C4M_Flat: case C4M_Octagon:
 		Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
+		Surface8Bkg->Box(tx, ty, tx + wdt, ty + hgt, DefaultBkgMat(mcol));
 		return;
 	case C4M_TopFlat:
 		top_rough = 0; side_rough = 2; bottom_rough = 4;
@@ -2059,6 +2196,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
+	Surface8Bkg->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	pDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
@@ -2075,6 +2213,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 	// remove clipper
 	Surface8->NoClip();
+	Surface8Bkg->NoClip();
 
 	// success
 	return true;
@@ -2082,7 +2221,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY, bool noClear)
 {
-	assert(Surface8);
+	assert(Surface8 && Surface8Bkg);
 	// Clip to map/landscape segment
 	int iMapWidth,iMapHeight,iLandscapeWidth,iLandscapeHeight;
 	// Get map & landscape size
@@ -2105,7 +2244,10 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 
 	// clear the old landscape if not surpressed
 	if(!noClear)
+	{
 		Surface8->ClearBox8Only(To.x, To.y, To.Wdt, To.Hgt);
+		Surface8Bkg->ClearBox8Only(To.x, To.y, To.Wdt, To.Hgt);
+	}
 
 	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
@@ -3126,6 +3268,7 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Circle(iX,iY,iGrade, byCol);
+		Surface8Bkg->Circle(iX,iY,iGrade, DefaultBkgMat(byCol));
 		FinishChange(BoundingBox);
 		break;
 	}
@@ -3135,6 +3278,7 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color)
 {
 	Surface8->Circle(iX, iY, iGrade, line_color);
+	Surface8Bkg->Circle(iX, iY, iGrade, DefaultBkgMat(line_color));
 	return true;
 }
 
@@ -3231,6 +3375,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Box(iX1,iY1,iX2,iY2,byCol);
+		Surface8Bkg->Box(iX1,iY1,iX2,iY2,DefaultBkgMat(byCol));
 		FinishChange(BoundingBox);
 		break;
 	}
@@ -3250,6 +3395,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 	// assign clipper
 	Surface8->Clip(BoundingBox.x,BoundingBox.y,BoundingBox.x+BoundingBox.Wdt,BoundingBox.y+BoundingBox.Hgt);
+	Surface8Bkg->Clip(BoundingBox.x,BoundingBox.y,BoundingBox.x+BoundingBox.Wdt,BoundingBox.y+BoundingBox.Hgt);
 	pDraw->NoPrimaryClipper();
 
 	// draw all chunks
@@ -3260,6 +3406,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 	// remove clipper
 	Surface8->NoClip();
+	Surface8Bkg->NoClip();
 
 	FinishChange(BoundingBox);
 
@@ -3563,7 +3710,11 @@ void C4Landscape::RemoveUnusedTexMapEntries()
 	for (iMatTex = 0; iMatTex < 128; ++iMatTex) fTexUsage[iMatTex] = false;
 	for (int32_t y=0; y<Height; ++y)
 		for (int32_t x=0; x<Width; ++x)
+		{
 			fTexUsage[Surface8->GetPix(x,y) & 0x7f] = true;
+			fTexUsage[Surface8Bkg->GetPix(x,y) & 0x7f] = true;
+		}
+
 	// check usage by materials
 	for (int32_t iMat = 0; iMat < ::MaterialMap.Num; ++iMat)
 	{
@@ -3611,7 +3762,7 @@ void C4Landscape::UpdatePixMaps()
 
 bool C4Landscape::Mat2Pal()
 {
-	if (!Surface8) return false;
+	if (!Surface8 || !Surface8Bkg) return false;
 	// set landscape pal
 	int32_t tex;
 	for (tex=0; tex<C4M_MaxTexIndex; tex++)
@@ -3623,6 +3774,8 @@ bool C4Landscape::Mat2Pal()
 		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
 		Surface8->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
 		Surface8->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
+		Surface8Bkg->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
+		Surface8Bkg->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 	}
 	// success
 	return true;

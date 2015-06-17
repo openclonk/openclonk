@@ -54,8 +54,9 @@
 
 #define C4CFN_Map             "Map.bmp"
 #define C4CFN_Landscape       "Landscape.bmp"
-#define C4CFN_LandscapePNG    "Landscape.png"
+#define C4CFN_LandscapeBkg    "LandscapeBkg.bmp"
 #define C4CFN_DiffLandscape   "DiffLandscape.bmp"
+#define C4CFN_DiffLandscapeBkg "DiffLandscapeBkg.bmp"
 #define C4CFN_Sky             "Sky"
 #define C4CFN_Script          "Script.c|Script%s.c|C4Script%s.c"
 #define C4CFN_MapScript       "Map.c"
@@ -144,7 +145,7 @@
 #define C4CFN_TempSky         "~Sky.tmp"
 #define C4CFN_TempMap         "~Map.tmp"
 #define C4CFN_TempLandscape   "~Landscape.tmp"
-#define C4CFN_TempLandscapePNG "~Landscape2.tmp"
+#define C4CFN_TempLandscapeBkg "~LandscapeBkg.tmp"
 #define C4CFN_TempPXS         "~PXS.tmp"
 #define C4CFN_TempTitle       "~Title.tmp"
 #define C4CFN_TempCtrlRec     "~CtrlRec.tmp"
@@ -175,7 +176,7 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Achv*.png|Game.txt|StringTbl*.txt|ParameterDefs.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Achv*.png|Game.txt|StringTbl*.txt|ParameterDefs.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|LandscapeBkg.bmp|Landscape.png|" C4CFN_DiffLandscape "|" C4CFN_DiffLandscapeBkg "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"

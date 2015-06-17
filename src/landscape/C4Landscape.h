@@ -60,10 +60,12 @@ public:
 	C4MapCreatorS2 *pMapCreator; // map creator for script-generated maps
 	bool fMapChanged;
 	BYTE *pInitial; // Initial landscape after creation - used for diff
+	BYTE *pInitialBkg; // Initial bkg landscape after creation - used for diff
 	class C4FoW *pFoW;
 
 private:
 	CSurface8 * Surface8;
+	CSurface8 * Surface8Bkg; // Background material
 	class C4LandscapeRender *pLandscapeRender;
 	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
@@ -101,7 +103,9 @@ public:
 	bool ApplyDiff(C4Group &hGroup);
 	bool SetMode(int32_t iMode);
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
+	bool SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix); // set landscape pixel (bounds checked)
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
+	bool _SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
 	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0, bool query_only=false); // modifies tx/ty to actual insertion position
 	bool InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty);
@@ -254,6 +258,7 @@ private:
 	std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const;
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
+	BYTE DefaultBkgMat(BYTE fg) const;
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
 
