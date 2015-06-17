@@ -14,6 +14,9 @@
  */
 
 #include "C4Include.h"
+
+#ifndef USE_CONSOLE
+
 #include "C4FoWLightSection.h"
 #include "C4FoWBeamTriangle.h"
 #include "C4FoWBeam.h"
@@ -851,3 +854,5 @@ void C4FoWLightSection::CompileFunc(StdCompiler *pComp)
 		}
 	}
 }
+
+#endif

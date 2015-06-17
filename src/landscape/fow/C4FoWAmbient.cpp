@@ -84,7 +84,10 @@ struct LightMapZoom {
 } // anonymous namespace
 
 C4FoWAmbient::C4FoWAmbient() :
-	Tex(0), Resolution(0.), Radius(0.), FullCoverage(0.),
+#ifndef USE_CONSOLE
+	Tex(0),
+#endif
+	Resolution(0.), Radius(0.), FullCoverage(0.),
 	SizeX(0), LandscapeX(0), SizeY(0), LandscapeY(0),
 	Brightness(1.)
 {
@@ -97,8 +100,10 @@ C4FoWAmbient::~C4FoWAmbient()
 
 void C4FoWAmbient::Clear()
 {
+#ifndef USE_CONSOLE
 	if(Tex != 0) glDeleteTextures(1, &Tex);
 	Tex = 0;
+#endif
 	Resolution = Radius = FullCoverage = 0.;
 	SizeX = SizeY = 0;
 	LandscapeX = LandscapeY = 0;
@@ -112,7 +117,7 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	assert(full_coverage > 0 && full_coverage <= 1.);
 
 	// Clear old map
-	if(Tex != 0) Clear();
+	Clear();
 
 	Resolution = resolution;
 	Radius = radius;
@@ -124,6 +129,7 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	SizeX = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
 	SizeY = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
 
+#ifndef USE_CONSOLE
 	glGenTextures(1, &Tex);
 	glBindTexture(GL_TEXTURE_2D, Tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -136,10 +142,12 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	UpdateFromLandscape(landscape, C4Rect(0, 0, landscape.Width, landscape.Height));
 	uint32_t dt = C4TimeMilliseconds::Now() - begin;
 	LogF("Created %ux%u ambient map in %g secs", SizeX, SizeY, dt / 1000.);
+#endif
 }
 
 void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rect& update)
 {
+#ifndef USE_CONSOLE
 	// Nothing to do?
 	if(update.Wdt == 0 || update.Hgt == 0) return;
 
@@ -191,6 +199,7 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	glBindTexture(GL_TEXTURE_2D, Tex);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, left, top, (right - left), (bottom - top), GL_RED, GL_FLOAT, ambient);
 	delete[] ambient;
+#endif
 }
 
 void C4FoWAmbient::GetFragTransform(const FLOAT_RECT& vpRect, const C4Rect& clipRect, const C4Rect& outRect, float ambientTransform[6]) const

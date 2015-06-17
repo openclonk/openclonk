@@ -59,6 +59,7 @@ public:
 
 	virtual void AddShaderSlices(C4Shader& shader, int ssc)
 	{
+#ifndef USE_CONSOLE
 		// Add mesh-independent slices
 		shader.AddFragmentSlice(-1, "#define OPENCLONK");
 		shader.AddVertexSlice(-1, "#define OPENCLONK");
@@ -80,6 +81,7 @@ public:
 
 		if (ssc & C4SSC_BASE) shader.LoadSlices(&::GraphicsResource.Files, "SpriteTextureShader.glsl");
 		if (ssc & C4SSC_OVERLAY) shader.LoadSlices(&::GraphicsResource.Files, "SpriteOverlayShader.glsl");
+#endif
 	}
 
 private:

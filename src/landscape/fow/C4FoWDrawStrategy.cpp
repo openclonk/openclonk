@@ -14,6 +14,9 @@
  */
 
 #include "C4Include.h"
+
+#ifndef USE_CONSOLE
+
 #include "C4FoWDrawStrategy.h"
 #include "C4FoWLight.h"
 #include "C4FoWRegion.h"
@@ -151,3 +154,4 @@ void C4FoWDrawWireframeStrategy::DrawLightVertex(float x, float y)
 	DrawVertex(x, y);
 }
 
+#endif

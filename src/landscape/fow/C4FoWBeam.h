@@ -16,6 +16,7 @@
 #ifndef C4FOWBEAM_H
 #define C4FOWBEAM_H
 
+#ifndef USE_CONSOLE
 #include "StdBuf.h"
 
 /** This class represents one beam. A beam is a triangle spanned by two rays: one going from the origin to the
@@ -132,5 +133,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 };
+
+#endif
 
 #endif // C4FOWBEAM

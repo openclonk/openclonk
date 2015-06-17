@@ -16,6 +16,7 @@
 #include "C4Include.h"
 #include "C4FoWRegion.h"
 
+#ifndef USE_CONSOLE
 bool glCheck() {
 	if (int err = glGetError()) {
 		LogF("GL error %d: %s", err, gluErrorString(err));
@@ -23,6 +24,7 @@ bool glCheck() {
 	}
 	return true;
 }
+#endif
 
 C4FoWRegion::~C4FoWRegion()
 {
@@ -31,7 +33,7 @@ C4FoWRegion::~C4FoWRegion()
 
 bool C4FoWRegion::BindFramebuf()
 {
-
+#ifndef USE_CONSOLE
 	// Flip texture
 	C4Surface *pSfc = pSurface;
 	pSurface = pBackSurface;
@@ -79,6 +81,7 @@ bool C4FoWRegion::BindFramebuf()
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 		return false;
 	}
+#endif
 
 	// Worked!
 	return true;
@@ -86,11 +89,13 @@ bool C4FoWRegion::BindFramebuf()
 
 void C4FoWRegion::Clear()
 {
+#ifndef USE_CONSOLE
 	if (hFrameBufDraw) {
 		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
 		glDeleteFramebuffersEXT(1, &hFrameBufRead);
 	}
 	hFrameBufDraw = hFrameBufRead = 0;
+#endif
 	delete pSurface; pSurface = NULL;
 	delete pBackSurface; pBackSurface = NULL;
 }
@@ -104,6 +109,7 @@ void C4FoWRegion::Update(C4Rect r, const FLOAT_RECT& vp)
 
 void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 {
+#ifndef USE_CONSOLE
 	// Update FoW at interesting location
 	pFoW->Update(Region, pPlayer);
 
@@ -199,7 +205,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	glCheck();
 
 	OldRegion = Region;
-
+#endif
 }
 
 void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const
@@ -229,7 +235,9 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
 	, pPlayer(pPlayer)
+#ifndef USE_CONSOLE
 	, hFrameBufDraw(0), hFrameBufRead(0)
+#endif
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
 	, pSurface(NULL), pBackSurface(NULL)
 {

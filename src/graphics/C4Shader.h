@@ -68,11 +68,13 @@ private:
 	// Used texture coordinates
 	int iTexCoords;
 
+#ifndef USE_CONSOLE
 	// shaders
 	GLhandleARB hVert, hFrag, hProg;
 	// shader variables
 	int iUniformCount;
 	GLint *pUniforms;
+#endif
 
 public:
 	enum VertexAttribIndex
@@ -93,15 +95,35 @@ public:
 		VAI_BoneIndicesMax = VAI_BoneIndices + VAI_BoneWeightsMax - VAI_BoneWeights
 	};
 
-	bool Initialised() const { return hVert != 0; }
+	bool Initialised() const
+	{
+#ifndef USE_CONSOLE
+		return hVert != 0;
+#else
+		return true;
+#endif
+	}
 
 	// Uniform getters
-	GLint GetUniform(int iUniform) const {
+#ifndef USE_CONSOLE
+	GLint GetUniform(int iUniform) const
+	{
 		return iUniform >= 0 && iUniform < iUniformCount ? pUniforms[iUniform] : -1;
 	}
-	bool HaveUniform(int iUniform) const {
+	bool HaveUniform(int iUniform) const
+	{
 		return GetUniform(iUniform) != GLint(-1);
 	}
+#else
+	int GetUniform(int iUniform) const
+	{
+		return -1;
+	}
+	bool HaveUniform(int iUniform) const
+	{
+		return false;
+	}
+#endif
 
 	// Shader is composed from various slices
 	void AddVertexSlice(int iPos, const char *szText);
@@ -113,10 +135,12 @@ public:
 	// Add default vertex code (2D - no transformation)
 	void AddVertexDefaults();
 
+#ifndef USE_CONSOLE
 	// Allocate a texture coordinate, returning its ID to be used with glMultiTexCoord.
 	// The texture coordinate will be visible to both shaders under the given name.
 	// Note that in contrast to uniforms, these will not disappear if not used!
 	GLenum AddTexCoord(const char *szName);
+#endif
 
 	// Assemble and link the shader. Should be called again after new slices are added.
 	bool Init(const char *szWhat, const char **szUniforms);
@@ -131,18 +155,22 @@ private:
 	int ParsePosition(const char *szWhat, const char **ppPos);
 
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
+
+#ifndef USE_CONSOLE
 	GLhandleARB Create(GLenum iShaderType, const char *szWhat, const char *szShader);
 	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
 	int GetObjectStatus(GLhandleARB hObj, GLenum type);
+#endif
 
 public:
 	static bool IsLogging();
 };
 
+#ifndef USE_CONSOLE
 class C4ShaderCall
 {
 public:
-	C4ShaderCall(const C4Shader *pShader) 
+	C4ShaderCall(const C4Shader *pShader)
 		: fStarted(false), pShader(pShader), iUnits(0)
 	{ }
 	~C4ShaderCall() { Finish(); }
@@ -210,5 +238,6 @@ public:
 	void Start();
 	void Finish();
 };
+#endif
 
 #endif // INC_C4Shader

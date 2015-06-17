@@ -186,6 +186,7 @@ bool C4GraphicsResource::Init()
 		return false;
 	}
 
+#ifndef USE_CONSOLE
 	// Pre-load all shader files
 	Files.PreCacheEntries(C4CFN_ShaderFiles);
 	if (!pGL->InitShaders(&Files))
@@ -193,6 +194,7 @@ bool C4GraphicsResource::Init()
 		LogFatal(LoadResStr("IDS_ERR_GFX_INITSHADERS"));
 		return false;
 	}
+#endif
 
 	Game.SetInitProgress(11.0f);
 	ProgressStart = 12.0f; ProgressIncrement = 0.35f; // TODO: This should be changed so that it stops at 25%, no matter how many graphics we load.

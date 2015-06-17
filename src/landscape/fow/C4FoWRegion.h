@@ -31,10 +31,13 @@ public:
 private:
 	C4FoW *pFoW;
 	C4Player *pPlayer;
+	C4Surface *pSurface, *pBackSurface;
 	C4Rect Region, OldRegion;
 	FLOAT_RECT ViewportRegion; // Region covered by visible viewport
-	C4Surface *pSurface, *pBackSurface;
+
+#ifndef USE_CONSOLE
 	GLuint hFrameBufDraw, hFrameBufRead;
+#endif
 
 public:
 	const C4FoW* getFoW() const { return pFoW; }
