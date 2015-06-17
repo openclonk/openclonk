@@ -146,6 +146,15 @@ global func Find_Allied(int plr)
 	return p;
 }
 
+global func Find_Team(int team)
+{
+	var p = [C4FO_Or];
+	for (var i = -1; i < GetPlayerCount(); i++)
+		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+			p[GetLength(p)] = Find_Owner(GetPlayerByIndex(i));
+	return p;
+}
+
 global func Find_Func(string f, p1, p2, p3, p4, p5, p6, p7, p8, p9)
 {
 	return [C4FO_Func, f, p1, p2, p3, p4, p5, p6, p7, p8, p9];
