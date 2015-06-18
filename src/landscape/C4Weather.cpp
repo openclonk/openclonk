@@ -95,7 +95,7 @@ void C4Weather::Clear()
 
 int32_t C4Weather::GetWind(int32_t x, int32_t y)
 {
-	if (GBackIFT(x,y)) return 0;
+	if (Landscape.GetBackPix(x,y) != 0) return 0;
 	return Wind;
 }
 

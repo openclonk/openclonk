@@ -660,7 +660,7 @@ bool C4Landscape::BlastFreePix(int32_t tx, int32_t ty)
 		}
 		else
 			if (::MaterialMap.Map[mat].BlastShiftTo)
-				SetPix(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
+				SetPix2(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo), Surface8Bkg->GetPix(tx, ty));
 	}
 	return false;
 }
@@ -844,7 +844,7 @@ void C4Landscape::DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t 
 	for (cy=ty; cy<ty+hgt; cy++)
 		for (cx=tx; cx<tx+wdt; cx++)
 			if ( (MatDensity(mat)>=GetDensity(cx,cy)))
-				SetPix(cx,cy,Mat2PixColDefault(mat)+GBackIFT(cx,cy));
+				SetPix2(cx,cy,Mat2PixColDefault(mat), Surface8Bkg->GetPix(cx, cy));
 }
 
 void C4Landscape::RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt)
@@ -2463,14 +2463,14 @@ bool FindTunnelHeight(int32_t cx, int32_t &ry, int32_t hgt)
 		// Check upwards
 		if (cy1>=0)
 		{
-			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < C4M_Liquid)
+			if (Landscape.GetBackPix(cx, cy1) != 0 && MatDensity(GBackMat(cx,cy1)) < C4M_Liquid)
 				{ rl1++; if (rl1>=hgt) { ry=cy1+hgt/2; return true; } }
 			else rl1=0;
 		}
 		// Check downwards
 		if (cy2+1<GBackHgt)
 		{
-			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < C4M_Liquid)
+			if (Landscape.GetBackPix(cx, cy2) != 0 && MatDensity(GBackMat(cx,cy2)) < C4M_Liquid)
 				{ rl2++; if (rl2>=hgt) { ry=cy2-hgt/2; return true; } }
 			else rl2=0;
 		}

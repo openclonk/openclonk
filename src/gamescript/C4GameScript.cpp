@@ -442,7 +442,7 @@ static bool FnGBackLiquid(C4PropList * _this, long x, long y)
 static bool FnGBackSky(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return !GBackIFT(x, y);
+	return Landscape.GetBackPix(x, y) == 0;
 }
 
 static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount, bool distant_first)

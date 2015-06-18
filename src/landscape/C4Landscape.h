@@ -391,11 +391,6 @@ inline int32_t PixCol2Tex(BYTE pixc)
 	return iTex;
 }
 
-inline BYTE GBackIFT(int32_t x, int32_t y)
-{
-	return PixColIFT(GBackPix(x,y));
-}
-
 inline int32_t GBackMat(int32_t x, int32_t y)
 {
 	return ::Landscape.GetMat(x, y);
