@@ -967,7 +967,7 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 		pix = Mat2PixColDefault(mat);
 
 	// Insert dead material
-	SetPix(tx,ty,pix+GBackIFT(tx,ty));
+	SetPix2(tx,ty,pix,Surface8->_GetPix(tx, ty));
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
