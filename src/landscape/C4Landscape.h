@@ -175,6 +175,63 @@ public:
 	{
 		return Pix2Place[GetPix(x, y)];
 	}
+
+	inline BYTE _GetBackPix(int32_t x, int32_t y) const // get landscape pixel (bounds not checked)
+	{
+#ifdef _DEBUG
+		if (x<0 || y<0 || x>=Width || y>=Height) { BREAKPOINT_HERE; }
+#endif
+		return Surface8Bkg->_GetPix(x,y);
+	}
+	inline BYTE GetBackPix(int32_t x, int32_t y) const // get landscape pixel (bounds checked)
+	{
+		// Border checks
+		if (x<0)
+		{
+			if (y<LeftOpen) return 0;
+			else return Mat2PixColDefault(MTunnel);
+		}
+		if (static_cast<uint32_t>(x) >= static_cast<uint32_t>(Width))
+		{
+			if (y<RightOpen) return 0;
+			else return Mat2PixColDefault(MTunnel);
+		}
+		if (y<0)
+		{
+			return DefaultBkgMat(TopRowPix[x]);
+		}
+		if (static_cast<uint32_t>(y) >= static_cast<uint32_t>(Height))
+		{
+			return DefaultBkgMat(BottomRowPix[x]);
+		}
+
+		return Surface8Bkg->_GetPix(x,y);
+	}
+	inline int32_t _GetBackMat(int32_t x, int32_t y) const // get landscape material (bounds not checked)
+	{
+		return Pix2Mat[_GetBackPix(x, y)];
+	}
+	inline int32_t _GetBackDensity(int32_t x, int32_t y) const // get landscape density (bounds not checked)
+	{
+		return Pix2Dens[_GetBackPix(x, y)];
+	}
+	inline int32_t _GetBackPlacement(int32_t x, int32_t y) const // get landscape material placement (bounds not checked)
+	{
+		return Pix2Place[_GetBackPix(x, y)];
+	}
+	inline int32_t GetBackMat(int32_t x, int32_t y) const // get landscape material (bounds checked)
+	{
+		return Pix2Mat[GetBackPix(x, y)];
+	}
+	inline int32_t GetBackDensity(int32_t x, int32_t y) const // get landscape density (bounds checked)
+	{
+		return Pix2Dens[GetBackPix(x, y)];
+	}
+	inline int32_t GetBackPlacement(int32_t x, int32_t y) const // get landscape material placement (bounds checked)
+	{
+		return Pix2Place[GetBackPix(x, y)];
+	}
+
 	inline bool _FastSolidCheck(int32_t x, int32_t y) const // checks whether there *might* be something solid at the point
 	{
 		return PixCnt[(x / 17) * PixCntPitch + (y / 15)] > 0;
