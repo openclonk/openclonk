@@ -37,8 +37,17 @@ protected func ContactRight()
 	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
 }
 
-//Only one object fits in barrel
-private func MaxContentsCount() { return 1; }
+protected func RejectCollect(id def, object obj)
+{
+	// Only accept powder kegs.
+	if (def != PowderKeg)
+		return true;
+	// Only one powder keg at a time.
+	if (ContentsCount() >= 1)
+		return true;
+	return false;
+}
+
 
 /*-- Control --*/
 
