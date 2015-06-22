@@ -390,6 +390,15 @@ const StdMeshAnimation* StdMeshSkeleton::GetAnimationByName(const StdStrBuf& nam
 	return &iter->second;
 }
 
+std::vector<const StdMeshAnimation*> StdMeshSkeleton::GetAnimations() const
+{
+	std::vector<const StdMeshAnimation*> result;
+	result.reserve(Animations.size());
+	for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
+		result.push_back(&iter->second);
+	return result;
+}
+
 void StdMeshSkeleton::MirrorAnimation(const StdMeshAnimation& animation)
 {
 	StdCopyStrBuf name(animation.Name);

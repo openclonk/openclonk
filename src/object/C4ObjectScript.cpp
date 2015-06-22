@@ -1923,6 +1923,43 @@ static Nillable<int> FnGetRootAnimation(C4Object *Obj, int iSlot, Nillable<int> 
 	return node->GetNumber();
 }
 
+static Nillable<C4ValueArray*> FnGetAnimationList(C4PropList* _this, Nillable<int> iAttachNumber)
+{
+	C4Object *Obj = Object(_this);
+	const StdMeshSkeleton* skeleton;
+	if (!Obj)
+	{
+		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetAnimationList");
+		C4Def *def = _this->GetDef();
+		if (!def->Graphics.IsMesh()) return C4Void();
+
+		skeleton = &def->Graphics.Mesh->GetSkeleton();
+	}
+	else
+	{
+		if (!Obj) return C4Void();
+		if (!Obj->pMeshInstance) return C4Void();
+
+		StdMeshInstance* Instance = Obj->pMeshInstance;
+		if (!iAttachNumber.IsNil())
+		{
+			const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+			// OwnChild is set if an object's instance is attached. In that case the animation list should be obtained directly on that object.
+			if (!Attached || !Attached->OwnChild) return C4Void();
+			Instance = Attached->Child;
+		}
+
+		skeleton = &Instance->GetMesh().GetSkeleton();
+	}
+
+	const std::vector<const StdMeshAnimation*> animations = skeleton->GetAnimations();
+
+	C4ValueArray* retval = new C4ValueArray(animations.size());
+	for(unsigned int i = 0; i < animations.size(); ++i)
+		(*retval)[i] = C4VString(animations[i]->Name);
+	return retval;
+}
+
 static Nillable<int> FnGetAnimationLength(C4Object *Obj, C4String *szAnimation, Nillable<int> iAttachNumber)
 {
 	if (!Obj) return C4Void();
@@ -2636,6 +2673,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "TransformBone", FnTransformBone);
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
 	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
+	AddFunc(pEngine, "GetAnimationList", FnGetAnimationList);
 	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
 	AddFunc(pEngine, "GetAnimationName", FnGetAnimationName);
 	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);

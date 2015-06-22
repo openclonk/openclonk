@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAnimationList</title>
+    <category>Animations</category>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+	<param>
+	  <type>int</type>
+	  <name>attach_number</name>
+	  <desc>If given, refers to the number of the attached mesh whose animations to list.</desc>
+	  <optional />
+	</param>
+      </params>
+    </syntax>
+    <desc>Returns an array with the names of all available animations in the skeleton of the mesh of the calling object or definition, or <code>nil</code> if the object does not have a mesh.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <related>
+      <funclink>PlayAnimation</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2015-06</date>
+</funcs>

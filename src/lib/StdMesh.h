@@ -128,6 +128,8 @@ public:
 
 	std::vector<int> GetMatchingBones(const StdMeshSkeleton& skeleton) const;
 
+	std::vector<const StdMeshAnimation*> GetAnimations() const;
+
 private:
 	void AddMasterBone(StdMeshBone* bone);
 
