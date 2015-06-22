@@ -25,8 +25,8 @@ class C4MapCreator
 public:
 	C4MapCreator();
 protected:
-	int32_t MapIFT;
 	CSurface8 *MapBuf;
+	CSurface8 *MapBkgBuf;
 	int32_t MapWdt,MapHgt;
 	int32_t Exclusive;
 public:

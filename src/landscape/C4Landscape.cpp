@@ -517,10 +517,10 @@ void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int
 	// Remember any collectible objects in area
 	std::unique_ptr<C4ValueArray> dig_objects(PrepareFreeShape(BoundingBox, by_object));
 
-	uint8_t *pblast_tbl = NULL, blast_tbl[256];
+	uint8_t *pblast_tbl = NULL, blast_tbl[C4M_MaxTexIndex];
 	if (iMaxDensity < C4M_Vehicle)
 	{
-		for (int32_t i=0; i<256; ++i) blast_tbl[i] = (GetPixDensity(i)<=iMaxDensity);
+		for (int32_t i=0; i < C4M_MaxTexIndex; ++i) blast_tbl[i] = (GetPixDensity(i)<=iMaxDensity);
 		pblast_tbl = blast_tbl;
 	}
 
@@ -528,7 +528,7 @@ void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int
 	{
 		if(!by_object->MaterialContents)
 			by_object->MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents, 0, pblast_tbl);
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents, 0, 0, pblast_tbl);
 	}
 	else
 	{
@@ -660,7 +660,7 @@ bool C4Landscape::BlastFreePix(int32_t tx, int32_t ty)
 		}
 		else
 			if (::MaterialMap.Map[mat].BlastShiftTo)
-				SetPix2(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo), Surface8Bkg->GetPix(tx, ty));
+				SetPix2(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo), TRANSPARENT);
 	}
 	return false;
 }
@@ -700,7 +700,7 @@ bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	if (x < 0 || y < 0 || x >= Width || y >= Height)
 		return false;
 	// no change?
-	if (fgPix == _GetPix(x, y) && bgPix == Surface8Bkg->_GetPix(x, y))
+	if ((fgPix == TRANSPARENT || fgPix == _GetPix(x, y)) && (bgPix == TRANSPARENT || bgPix == Surface8Bkg->_GetPix(x, y)))
 		return true;
 	// note for relight (TODO: Why is this not in _SetPix2?)
 	if(pLandscapeRender)
@@ -734,8 +734,11 @@ bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 		AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
 	}
 	assert(x >= 0 && y >= 0 && x < Width && y < Height);
-	// get and check pixel
+	// get pixel and resolve transparency to already existing pixel
 	BYTE opix = _GetPix(x, y);
+	if (fgPix == TRANSPARENT) fgPix = opix;
+	if (bgPix == TRANSPARENT) bgPix = Surface8Bkg->_GetPix(x, y);
+	// check pixel
 	if (fgPix == opix && bgPix == Surface8Bkg->_GetPix(x, y)) return true;
 	// count pixels
 	if (Pix2Dens[fgPix])
@@ -956,18 +959,18 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 	// Check surroundings for inspiration for texture to use
 	int n = 0; int pix = -1;
 	if(tx > 0 && _GetMat(tx-1, ty) == mat)
-		if(!Random(++n)) pix = _GetPix(tx-1, ty) % IFT;
+		if(!Random(++n)) pix = _GetPix(tx-1, ty);
 	if(ty > 0 && _GetMat(tx, ty-1) == mat)
-		if(!Random(++n)) pix = _GetPix(tx, ty-1) % IFT;
+		if(!Random(++n)) pix = _GetPix(tx, ty-1);
 	if(tx+1 < Width && _GetMat(tx+1, ty) == mat)
-		if(!Random(++n)) pix = _GetPix(tx+1, ty) % IFT;
+		if(!Random(++n)) pix = _GetPix(tx+1, ty);
 	if(ty+1 < Height && _GetMat(tx, ty+1) == mat)
-		if(!Random(++n)) pix = _GetPix(tx, ty+1) % IFT;
+		if(!Random(++n)) pix = _GetPix(tx, ty+1);
 	if(pix < 0)
 		pix = Mat2PixColDefault(mat);
 
 	// Insert dead material
-	SetPix2(tx,ty,pix,Surface8->_GetPix(tx, ty));
+	SetPix2(tx,ty,pix, TRANSPARENT);
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
@@ -1006,16 +1009,23 @@ BYTE C4Landscape::DefaultBkgMat(BYTE fg) const
 	if(!pTex || !pTex->GetMaterial()) return fg;
 
 	if(DensitySemiSolid(pTex->GetMaterial()->Density))
-	{
-		// TODO: Remove IFT check once we get rid of IFT
-		if(fg & IFT)
-			return Mat2PixColDefault(MTunnel) + IFT;
-		else
-			return 0;
-	}
+		return Mat2PixColDefault(MTunnel);
 
 	return fg;
 
+}
+
+CSurface8* C4Landscape::CreateDefaultBkgSurface(const CSurface8& sfcFg) const
+{
+	CSurface8* sfcBg = new CSurface8();
+	if (!sfcBg->Create(sfcFg.Wdt, sfcFg.Hgt))
+		{ delete sfcBg; return NULL; }
+
+	for (int32_t y=0; y<sfcFg.Hgt; ++y)
+		for (int32_t x=0; x<sfcFg.Wdt; ++x)
+			sfcBg->_SetPix(x, y, DefaultBkgMat(sfcFg._GetPix(x, y)));
+
+	return sfcBg;
 }
 
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -1083,7 +1093,7 @@ const int QuickPolyBufSize = 20;
 CPolyEdge QuickPolyBuf[QuickPolyBufSize];
 
 int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
-														 C4MaterialList *mats_count, int col, uint8_t *conversion_table)
+														 C4MaterialList *mats_count, uint8_t col, uint8_t colBkg, uint8_t *conversion_table)
 {
 	// Variables for polygon drawer
 	int c,x1,x2,y;
@@ -1167,13 +1177,13 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 				{
 					const uint8_t pix = conversion_table[uint8_t(GetPix(x1+xcnt, y))];
 					Surface8->SetPix(x1+xcnt, y, pix);
-					Surface8Bkg->SetPix(x1+xcnt, y, DefaultBkgMat(pix));
+					if (colBkg != TRANSPARENT) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
 				}
 			else
 				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
 				{
-					Surface8->SetPix(x1+xcnt, y, col);
-					Surface8Bkg->SetPix(x1+xcnt, y, DefaultBkgMat(col));
+					if (col != TRANSPARENT) Surface8->SetPix(x1+xcnt, y, col);
+					if (colBkg != TRANSPARENT) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
 				}
 			edge = edge->next->next;
 		}
@@ -1240,6 +1250,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete Surface8; Surface8=NULL;
 	delete Surface8Bkg; Surface8Bkg=NULL;
 	delete Map; Map=NULL;
+	delete MapBkg; MapBkg=NULL;
 	// clear initial landscape
 	delete [] pInitial; pInitial = NULL;
 	delete [] pInitialBkg; pInitialBkg = NULL;
@@ -1251,7 +1262,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete [] PixCnt; PixCnt = NULL;
 	PixCntPitch = 0;
 	// clear bridge material conversion temp buffers
-	for (int32_t i = 0; i<128; ++i)
+	for (int32_t i = 0; i < C4M_MaxTexIndex; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
@@ -1331,22 +1342,27 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	if (!Game.C4S.Landscape.ExactLandscape)
 	{
 		CSurface8 * sfcMap=NULL;
+		CSurface8 * sfcMapBkg=NULL;
+
 		// Static map from scenario
 		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
+		{
 			if (!fLandscapeModeSet) Mode=C4LSC_Static;
+			sfcMapBkg = GroupReadSurface8(hGroup, C4CFN_MapBkg);
+		}
 
 		// dynamic map from Landscape.txt
 		if (!sfcMap)
-			if ((sfcMap=CreateMapS2(hGroup)))
+			if (CreateMapS2(hGroup, sfcMap, sfcMapBkg))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// script may create or edit map
-		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap))
+		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap)) // TODO: Add sfcMapBkg parameter
 			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
 		if (!sfcMap && !fOverloadCurrent)
-			if ((sfcMap=CreateMap()))
+			if ((!CreateMap(sfcMap, sfcMapBkg)))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// No map failure
@@ -1356,6 +1372,13 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			if (!fOverloadCurrent) return false;
 			if (fLoadSky) if (!Sky.Init(fSavegame)) return false;
 			return true;
+		}
+
+		// If no background map is loaded, create default from foreground map
+		if (!sfcMapBkg)
+		{
+			sfcMapBkg = CreateDefaultBkgSurface(*sfcMap);
+			if (!sfcMapBkg) return false;
 		}
 
 		if (Config.General.DebugRec)
@@ -1382,7 +1405,10 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky, false);
 
 		// assign new map
+		assert(Map == NULL);
+		assert(MapBkg == NULL);
 		Map = sfcMap;
+		MapBkg = sfcMapBkg;
 
 		// Sky (might need to know landscape height)
 		if (fLoadSky)
@@ -1576,19 +1602,20 @@ bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const
 	assert(pInitial && pInitialBkg);
 	if (!pInitial || !pInitialBkg) return false;
 
-	// If it shouldn't be sync-save: Clear all bytes that have not changed
+	// If it shouldn't be sync-save: Clear all bytes that have not changed, i.e.
+	// set them to C4M_MaxTexIndex
 	bool fChanged = false, fChangedBkg = false;;
 	if (!fSyncSave)
 		for (int y = 0; y < Height; y++)
 			for (int x = 0; x < Width; x++)
 			{
 				if (pInitial[y * Width + x] == Surface8->_GetPix(x, y))
-					Surface8->SetPix(x,y,0xff);
+					Surface8->SetPix(x,y,C4M_MaxTexIndex);
 				else
 					fChanged = true;
 
 				if (pInitialBkg[y * Width + x] == Surface8Bkg->_GetPix(x, y))
-					Surface8Bkg->SetPix(x,y,0xff);
+					Surface8Bkg->SetPix(x,y,C4M_MaxTexIndex);
 				else
 					fChangedBkg = true;
 			}
@@ -1622,9 +1649,9 @@ bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave) const
 		for (int y = 0; y < Height; y++)
 			for (int x = 0; x < Width; x++)
 			{
-				if (Surface8->_GetPix(x, y) == 0xff)
+				if (Surface8->_GetPix(x, y) == C4M_MaxTexIndex)
 					Surface8->SetPix(x,y,pInitial[y * Width + x]);
-				if (Surface8Bkg->_GetPix(x, y) == 0xff)
+				if (Surface8Bkg->_GetPix(x, y) == C4M_MaxTexIndex)
 					Surface8Bkg->SetPix(x,y,pInitialBkg[y * Width + x]);
 			}
 
@@ -1703,14 +1730,12 @@ bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 			}
 		}
 
-	// Create default background map if not available
+	// Create default background landscape if not available
 	if (!Surface8Bkg)
 	{
-		Surface8Bkg = new CSurface8();
-		Surface8Bkg->Create(iWidth, iHeight);
-		for (int32_t y=0; y<Height; ++y)
-			for (int32_t x=0; x<Width; ++x)
-				Surface8Bkg->_SetPix(x, y, DefaultBkgMat(Surface8->_GetPix(x, y)));
+		Surface8Bkg = CreateDefaultBkgSurface(*Surface8);
+		if (!Surface8Bkg)
+			return false;
 	}
 
 	// Init sky
@@ -1734,11 +1759,11 @@ bool C4Landscape::ApplyDiff(C4Group &hGroup)
 	BYTE byPix;
 	for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
 	{
-		if (pDiff->GetPix(x, y) != 0xff)
+		if (pDiff->GetPix(x, y) != C4M_MaxTexIndex)
 			if (Surface8->_GetPix(x,y) != (byPix=pDiff->_GetPix(x,y)))
 				// material has changed here: readjust with new texture
 				SetPix(x,y, byPix);
-		if (pDiffBkg->GetPix(x, y) != 0xff)
+		if (pDiffBkg->GetPix(x, y) != C4M_MaxTexIndex)
 			if (Surface8Bkg->_GetPix(x, y) != (byPix=pDiffBkg->_GetPix(x, y)))
 				Surface8Bkg->_SetPix(x, y, byPix);
 	}
@@ -1760,6 +1785,7 @@ void C4Landscape::Default()
 	BottomRowPix=NULL;
 	pLandscapeRender=NULL;
 	Map=NULL;
+	MapBkg=NULL;
 	Width=Height=0;
 	MapWidth=MapHeight=MapZoom=0;
 	ClearMatCount();
@@ -1771,11 +1797,8 @@ void C4Landscape::Default()
 	pMapCreator=NULL;
 	Modulation=0;
 	fMapChanged = false;
-	for (int32_t i = 0; i<128; ++i)
-	{
-		delete [] BridgeMatConversion[i];
+	for (int32_t i = 0; i < C4M_MaxTexIndex; ++i)
 		BridgeMatConversion[i] = NULL;
-	}
 	pFoW = NULL;
 }
 
@@ -1809,6 +1832,7 @@ bool C4Landscape::SaveMap(C4Group &hGroup) const
 {
 	// No map
 	if (!Map) return false;
+	assert(MapBkg != NULL);
 
 	// Create map palette
 	CStdPalette Palette;
@@ -1823,6 +1847,15 @@ bool C4Landscape::SaveMap(C4Group &hGroup) const
 	                 C4CFN_Map ))
 		return false;
 
+	// Save background map surface
+	if (!MapBkg->Save(Config.AtTempPath(C4CFN_TempMapBkg), &Palette))
+		return false;
+
+	// Move temp file to group
+	if (!hGroup.Move(Config.AtTempPath(C4CFN_TempMapBkg),
+	                 C4CFN_MapBkg ))
+		return false;
+	
 	// Success
 	return true;
 }
@@ -1889,8 +1922,8 @@ bool C4Landscape::InitTopAndBottomRowPix()
 	case 2:
 		for (int32_t x=0; x<Width; ++x)
 		{
-			uint8_t map_pix = Map->GetPix(x/MapZoom,0);
-			TopRowPix[x] = ((map_pix & IFT) ? MCVehic : 0);
+			uint8_t map_pix = MapBkg->GetPix(x/MapZoom,0);
+			TopRowPix[x] = ((map_pix != 0) ? MCVehic : 0);
 		}
 		break;
 	// TopOpen=1: Top is open
@@ -1906,8 +1939,8 @@ bool C4Landscape::InitTopAndBottomRowPix()
 	case 2:
 		for (int32_t x=0; x<Width; ++x)
 		{
-			uint8_t map_pix = Map->GetPix(x/MapZoom,Map->Hgt-1);
-			BottomRowPix[x] = ((map_pix & IFT) ? MCVehic : 0);
+			uint8_t map_pix = MapBkg->GetPix(x/MapZoom,Map->Hgt-1);
+			BottomRowPix[x] = ((map_pix != 0) ? MCVehic : 0);
 		}
 		break;
 	// BottomOpen=1: Bottom is open
@@ -1919,7 +1952,7 @@ bool C4Landscape::InitTopAndBottomRowPix()
 bool C4Landscape::MapToLandscape()
 {
 	// zoom map to landscape
-	return MapToLandscape(Map,0,0,MapWidth,MapHeight);
+	return MapToLandscape(Map,MapBkg,0,0,MapWidth,MapHeight);
 }
 
 
@@ -1930,15 +1963,15 @@ uint32_t C4Landscape::ChunkyRandom(uint32_t & iOffset, uint32_t iRange) const
 	return (iOffset ^ MapSeed) % iRange;
 }
 
-void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, C4MaterialCoreShape Shape, uint32_t cro)
+void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, uint8_t mcol, uint8_t mcolBkg, C4MaterialCoreShape Shape, uint32_t cro)
 {
 	unsigned int top_rough = 0, side_rough = 0, bottom_rough = 0;
 	// what to do?
 	switch (Shape)
 	{
 	case C4M_Flat: case C4M_Octagon:
-		Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
-		Surface8Bkg->Box(tx, ty, tx + wdt, ty + hgt, DefaultBkgMat(mcol));
+		if (mcol != TRANSPARENT) Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
+		if (mcolBkg != TRANSPARENT) Surface8Bkg->Box(tx, ty, tx + wdt, ty + hgt, mcolBkg);
 		return;
 	case C4M_TopFlat:
 		top_rough = 0; side_rough = 2; bottom_rough = 4;
@@ -1965,10 +1998,10 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, in
 	vtcs[12] = tx + wdt + ChunkyRandom(cro, rx * side_rough / 4); vtcs[13] = ty - ChunkyRandom(cro, rx * top_rough / 4);
 	vtcs[14] = tx + wdt / 2;                                      vtcs[15] = ty - ChunkyRandom(cro, rx * top_rough / 2);
 
-	ForPolygon(vtcs, 8, NULL, NULL, mcol);
+	ForPolygon(vtcs, 8, NULL, NULL, mcol, mcolBkg);
 }
 
-void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, int flip, uint32_t cro)
+void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, uint8_t mcol, uint8_t mcolBkg, int flip, uint32_t cro)
 {
 	int vtcs[8];
 	unsigned int rx = Max(wdt / 2, 1);
@@ -1990,10 +2023,10 @@ void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t 
 	case 7: vtcs[6] = tx + wdt / 2; vtcs[7] += hgt / 2; break;
 	}
 
-	ForPolygon(vtcs, 4, NULL, NULL, mcol);
+	ForPolygon(vtcs, 4, NULL, NULL, mcol, mcolBkg);
 }
 
-void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t off_x, int32_t off_y, int32_t mcol)
+void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t off_x, int32_t off_y, uint8_t mcol, uint8_t mcolBkg)
 {
 	// put poly into plain int array format; add offset and send to polygon drawing proc
 	size_t n = poly.size(), i = 0;
@@ -2003,17 +2036,17 @@ void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t
 		vtcs[i++] = j->x + off_x;
 		vtcs[i++] = j->y + off_y;
 	}
-	ForPolygon(vtcs,n,NULL,NULL,mcol);
+	ForPolygon(vtcs, n, NULL, NULL, mcol, mcolBkg);
 	// done
 	delete [] vtcs;
 }
 
-void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, C4MaterialShape *shape, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture, int32_t mcol, int32_t iOffX, int32_t iOffY)
+void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, CSurface8* sfcMapBkg, C4MaterialShape *shape, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY)
 {
 	// Prepare shape for map zoom
 	if (!shape->PrepareForZoom(MapZoom))
 	{
-		DebugLogF("ERROR: Cannot apply texture index %d: Material shape size not a multiple of map zoom!", (int)mcol);
+		DebugLogF("ERROR: Cannot apply texture index %d: Material shape size not a multiple of map zoom!", (int)iTexture);
 		return;
 	}
 	// Get affected range of shapes
@@ -2025,7 +2058,6 @@ void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, C4MaterialShape *shape, in
 	y0 = (y0-shape->overlap_bottom+shape->hgt) / shape->hgt - 1;
 	x1 = (x1+shape->overlap_left  +shape->wdt) / shape->wdt - 1;
 	y1 = (y1+shape->overlap_top   +shape->hgt) / shape->hgt - 1;
-	BYTE iIFT = 0;
 	// paint from all affected shape blocks
 	for (int32_t y=y0; y<=y1; ++y)
 		for (int32_t x=x0; x<=x1; ++x)
@@ -2037,13 +2069,13 @@ void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, C4MaterialShape *shape, in
 				// does this shape block overlap any map pixels of our material
 				for (C4MaterialShape::PtVec::const_iterator j=p.overlaps.begin(); j!=p.overlaps.end(); ++j)
 				{
-					BYTE pix;
-					if (((pix=sfcMap->GetPix(x_map+j->x, y_map+j->y)) & 127) == iTexture)
+					const BYTE pix = sfcMap->GetPix(x_map + j->x, y_map + j->y);
+					if (pix == iTexture)
 					{
-						// first pixel in overlap list determines IFT
-						iIFT = pix & IFT;
+						// First pixel in overlap list defines IFT
+						const BYTE pixBkg = sfcMapBkg->GetPix(x_map + j->x, y_map + j->y);
 						// draw this poly!
-						DrawCustomShapePoly(p, x_map*MapZoom+iOffX, y_map*MapZoom+iOffY, iIFT + mcol);
+						DrawCustomShapePoly(p, x_map*MapZoom+iOffX, y_map*MapZoom+iOffY, pix, pixBkg);
 						break;
 					}
 				}
@@ -2051,12 +2083,11 @@ void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, C4MaterialShape *shape, in
 		}
 }
 
-void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture, int32_t iOffX, int32_t iOffY)
+void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY)
 {
 	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
 	if (!pMaterial) return;
 	C4MaterialCoreShape iChunkType = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : pMaterial->MapChunkType;
-	BYTE byColor = MatTex2PixCol(iTexture);
 	// Get map & landscape size
 	int iMapWidth, iMapHeight;
 	sfcMap->GetSurfaceSize(iMapWidth, iMapHeight);
@@ -2075,27 +2106,29 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 		// Scan map line
 		for (int iX = iMapX; iX < iMapX + iMapWdt; iX++)
 		{
-			int32_t iIFT;
 			// Map scan line start
 			uint8_t MapPixel=sfcMap->_GetPix(iX, iY);
+			uint8_t MapPixelBkg=sfcMapBkg->_GetPix(iX, iY);
 			// Landscape target coordinate horizontal
 			int iToX = iX * iChunkWidth + iOffX;
 			// Here's a chunk of the texture-material to zoom
-			if ((MapPixel & 127) == iTexture)
+			if (MapPixel == iTexture)
 			{
-				// Determine IFT
-				iIFT = 0; if (MapPixel >= 128) iIFT = IFT;
 				// Draw chunk
-				DrawChunk(iToX, iToY, iChunkWidth, iChunkHeight, byColor + iIFT, iChunkType, (iX<<16)+iY);
+				DrawChunk(iToX, iToY, iChunkWidth, iChunkHeight, MapPixel, MapPixelBkg, iChunkType, (iX<<16)+iY);
 			}
 			// Other chunk, check for slope smoothers
 			else if (iChunkType == C4M_Smooth || iChunkType == C4M_Smoother || iChunkType == C4M_Octagon)
 			{
 				// Map scan line pixel below
-				uint8_t below = sfcMap->GetPix(iX, iY + 1) & 127;
-				uint8_t above = sfcMap->GetPix(iX, iY - 1) & 127;
-				uint8_t left  = sfcMap->GetPix(iX - 1, iY) & 127;
-				uint8_t right = sfcMap->GetPix(iX + 1, iY) & 127;
+				uint8_t below = sfcMap->GetPix(iX, iY + 1);
+				uint8_t above = sfcMap->GetPix(iX, iY - 1);
+				uint8_t left  = sfcMap->GetPix(iX - 1, iY);
+				uint8_t right = sfcMap->GetPix(iX + 1, iY);
+				/*uint8_t belowBkg = sfcMapBkg->GetPix(iX, iY + 1);
+				uint8_t aboveBkg = sfcMapBkg->GetPix(iX, iY - 1);*/
+				uint8_t leftBkg  = sfcMapBkg->GetPix(iX - 1, iY);
+				uint8_t rightBkg = sfcMapBkg->GetPix(iX + 1, iY);
 				// do not fill a tiny hole
 				if (below == iTexture && above == iTexture && left == iTexture && right == iTexture)
 					continue;
@@ -2106,18 +2139,14 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 					// Same texture-material on left
 					if (iX > 0 && left == iTexture)
 					{
-						// Determine IFT
-						iIFT = 0; if (sfcMap->GetPix(iX-1, iY) >= 128) iIFT = IFT;
 						// Draw smoother
-						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, byColor + iIFT, 3 + flat, (iX<<16) + iY);
+						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, left, leftBkg, 3 + flat, (iX<<16) + iY);
 					}
 					// Same texture-material on right
 					if (iX < iMapWidth - 1 && right == iTexture)
 					{
-						// Determine IFT
-						iIFT = 0; if (sfcMap->GetPix(iX+1, iY) >= 128) iIFT = IFT;
 						// Draw smoother
-						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, byColor + iIFT, 0 + flat, (iX<<16)+iY);
+						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, right, rightBkg, 0 + flat, (iX<<16)+iY);
 					}
 				}
 				// Smooth chunk & same texture-material above
@@ -2126,32 +2155,28 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 					// Same texture-material on left
 					if (iX > 0 && left == iTexture)
 					{
-						// Determine IFT
-						iIFT = 0; if (sfcMap->GetPix(iX - 1, iY) >= 128) iIFT = IFT;
 						// Draw smoother
-						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, byColor + iIFT, 2 + flat, (iX<<16)+iY);
+						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, left, leftBkg, 2 + flat, (iX<<16)+iY);
 					}
 					// Same texture-material on right
 					if (iX < iMapWidth - 1 && right == iTexture)
 					{
-						// Determine IFT
-						iIFT = 0; if (sfcMap->GetPix(iX + 1, iY) >= 128) iIFT = IFT;
 						// Draw smoother
-						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, byColor + iIFT, 1 + flat, (iX<<16)+iY);
+						DrawSmoothOChunk(iToX, iToY, iChunkWidth, iChunkHeight, right, rightBkg, 1 + flat, (iX<<16)+iY);
 					}
 				}
 			}
 		}
 	}
 	// Draw custom shapes on top of regular materials
-	if (pMaterial->CustomShape) DrawCustomShape(sfcMap, pMaterial->CustomShape, iMapX, iMapY, iMapWdt, iMapHgt, iTexture, byColor, iOffX, iOffY);
+	if (pMaterial->CustomShape) DrawCustomShape(sfcMap, sfcMapBkg, pMaterial->CustomShape, iMapX, iMapY, iMapWdt, iMapHgt, iTexture, iOffX, iOffY);
 }
 
-bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage) const
+bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage) const
 {
 	int iX,iY;
 	// No good parameters
-	if (!sfcMap || !dwpTextureUsage) return false;
+	if (!sfcMap || !sfcMapBkg || !dwpTextureUsage) return false;
 	// Clip desired map segment to map size
 	iMapX=Clamp<int32_t>(iMapX,0,sfcMap->Wdt-1); iMapY=Clamp<int32_t>(iMapY,0,sfcMap->Hgt-1);
 	iMapWdt=Clamp<int32_t>(iMapWdt,0,sfcMap->Wdt-iMapX); iMapHgt=Clamp<int32_t>(iMapHgt,0,sfcMap->Hgt-iMapY);
@@ -2161,21 +2186,39 @@ bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, 
 	for (iY = iMapY; iY < iMapY+iMapHgt; iY++)
 		for (iX = iMapX; iX < iMapX + iMapWdt; iX++)
 		{
-			int32_t tex = sfcMap->GetPix(iX, iY) & (IFT - 1);
-			// Count texture map index only (no IFT)
+			// Count texture map index
+			const int32_t tex = sfcMap->GetPix(iX, iY);
+			assert(tex < C4M_MaxTexIndex);
+
 			if (!dwpTextureUsage[tex]++) if (tex)
 			{
 				// Check if texture actually exists
 				if (!::TextureMap.GetEntry(tex)->GetMaterial())
-					LogF("Map2Landscape error: Texture index %d at (%d/%d) not defined in texture map!", (int) tex, (int) iX, (int) iY);
+					LogF("Map2Landscape error: Texture index %d at (%d/%d) in map not defined in texture map!", (int) tex, (int) iX, (int) iY);
 				// No error. Landscape is usually fine but might contain some holes where material should be
 			}
+
+			// Ignore background texture for now -- this is only used for ChunkOZoom,
+			// for which only the foreground texture is relevant.
+
+			/*
+			// Count texture map index
+			const int32_t texBkg = sfcMapBkg->GetPix(iX, iY);
+			if (!dwpTextureUsage[texBkg]++) if (texBkg)
+			{
+				// Check if texture actually exists
+				if (!::TextureMap.GetEntry(texBkg)->GetMaterial())
+					LogF("Map2Landscape error: Texture index %d at (%d/%d) in background map not defined in texture map!", (int) texBkg, (int) iX, (int) iY);
+				// No error. Landscape is usually fine but might contain some holes where material should be
+			}
+			*/
+			
 		}
 	// Done
 	return true;
 }
 
-bool C4Landscape::TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX, int32_t iToY)
+bool C4Landscape::TexOZoom(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX, int32_t iToY)
 {
 	int32_t iIndex;
 
@@ -2184,14 +2227,14 @@ bool C4Landscape::TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int
 		if (dwpTextureUsage[iIndex]>0)
 		{
 			// ChunkOZoom map to landscape
-			ChunkOZoom(sfcMap,iMapX,iMapY,iMapWdt,iMapHgt,iIndex,iToX,iToY);
+			ChunkOZoom(sfcMap,sfcMapBkg,iMapX,iMapY,iMapWdt,iMapHgt,iIndex,iToX,iToY);
 		}
 
 	// Done
 	return true;
 }
 
-bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
+bool C4Landscape::MapToSurface(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
 {
 
 	// assign clipper
@@ -2207,9 +2250,9 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 	// Determine texture usage in map segment
 	DWORD dwTexUsage[C4M_MaxTexIndex];
-	if (!GetTexUsage(sfcMap,iMapX,iMapY,iMapWdt,iMapHgt,dwTexUsage)) return false;
+	if (!GetTexUsage(sfcMap,sfcMapBkg,iMapX,iMapY,iMapWdt,iMapHgt,dwTexUsage)) return false;
 	// Texture zoom map to landscape
-	if (!TexOZoom(sfcMap,iMapX,iMapY,iMapWdt,iMapHgt,dwTexUsage,iOffX,iOffY)) return false;
+	if (!TexOZoom(sfcMap,sfcMapBkg,iMapX,iMapY,iMapWdt,iMapHgt,dwTexUsage,iOffX,iOffY)) return false;
 
 	// remove clipper
 	Surface8->NoClip();
@@ -2219,7 +2262,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	return true;
 }
 
-bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY, bool noClear)
+bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY, bool noClear)
 {
 	assert(Surface8 && Surface8Bkg);
 	// Clip to map/landscape segment
@@ -2242,27 +2285,26 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 
 	PrepareChange(To);
 
-	// clear the old landscape if not surpressed
+	// clear the old landscape if not supressed
 	if(!noClear)
 	{
 		Surface8->ClearBox8Only(To.x, To.y, To.Wdt, To.Hgt);
 		Surface8Bkg->ClearBox8Only(To.x, To.y, To.Wdt, To.Hgt);
 	}
 
-	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
+	MapToSurface(sfcMap, sfcMapBkg, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
 	return true;
 }
 
-CSurface8 * C4Landscape::CreateMap()
+bool C4Landscape::CreateMap(CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 {
-	CSurface8 * sfcMap;
 	int32_t iWidth=0,iHeight=0;
 
 	// Create map surface
 	Game.C4S.Landscape.GetMapSize(iWidth,iHeight,Game.StartupPlayerCount);
 	if (!(sfcMap=new CSurface8(iWidth,iHeight)))
-		return NULL;
+		return false;
 
 	// Fill sfcMap
 	C4MapCreator MapCreator;
@@ -2270,13 +2312,15 @@ CSurface8 * C4Landscape::CreateMap()
 	                  Game.C4S.Landscape, ::TextureMap,
 	                  true,Game.StartupPlayerCount);
 
-	return sfcMap;
+	sfcMapBkg = CreateDefaultBkgSurface(*sfcMap);
+	if (!sfcMapBkg) { delete sfcMap; sfcMap = NULL; return false; }
+	return true;
 }
 
-CSurface8 * C4Landscape::CreateMapS2(C4Group &ScenFile)
+bool C4Landscape::CreateMapS2(C4Group &ScenFile, CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 {
 	// file present?
-	if (!ScenFile.AccessEntry(C4CFN_DynLandscape)) return NULL;
+	if (!ScenFile.AccessEntry(C4CFN_DynLandscape)) return false;
 
 	// create map creator
 	if (!pMapCreator)
@@ -2288,7 +2332,9 @@ CSurface8 * C4Landscape::CreateMapS2(C4Group &ScenFile)
 	CSurface8 * sfc = pMapCreator->Render(NULL);
 
 	// keep map creator until script callbacks have been done
-	return sfc;
+	sfcMap = sfc;
+	sfcMapBkg = CreateDefaultBkgSurface(*sfcMap); // TODO: Replace this by what was actually generated!
+	return true;
 }
 
 bool C4Landscape::PostInitMap()
@@ -3218,7 +3264,7 @@ bool C4Landscape::SetMode(int32_t iMode)
 	return true;
 }
 
-bool C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE & rbyCol) const
+bool C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture, BYTE & rbyCol) const
 {
 	// Sky
 	if (SEqual(szMaterial,C4TLS_MatSky))
@@ -3227,7 +3273,6 @@ bool C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture
 	else
 	{
 		if (!(rbyCol=::TextureMap.GetIndex(szMaterial,szTexture))) return false;
-		if (fIFT) rbyCol+=IFT;
 	}
 	// Found
 	return true;
@@ -3237,7 +3282,7 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 {
 	BYTE byCol;
 	// Get map color index by material-texture
-	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
+	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(byCol);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3256,10 +3301,10 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 	case C4LSC_Static:
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
-		if (iRadius==1) { if (Map) Map->SetPix(iX/MapZoom,iY/MapZoom,byCol); }
-		else Map->Circle(iX/MapZoom,iY/MapZoom,iRadius,byCol);
+		if (iRadius==1) { Map->SetPix(iX/MapZoom,iY/MapZoom,byCol); MapBkg->SetPix(iX/MapZoom, iY/MapZoom, fIFT ? DefaultBkgMat(byCol) : 0); }
+		else { Map->Circle(iX/MapZoom,iY/MapZoom,iRadius,byCol); MapBkg->Circle(iX/MapZoom, iY/MapZoom, iRadius, fIFT ? DefaultBkgMat(byCol) : 0); }
 		// Update landscape
-		MapToLandscape(Map,iX/MapZoom-iRadius-1-shape_wdt,iY/MapZoom-iRadius-1-shape_hgt,2*iRadius+2+shape_wdt*2,2*iRadius+2+shape_hgt*2);
+		MapToLandscape(Map,MapBkg,iX/MapZoom-iRadius-1-shape_wdt,iY/MapZoom-iRadius-1-shape_hgt,2*iRadius+2+shape_wdt*2,2*iRadius+2+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
@@ -3268,27 +3313,27 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Circle(iX,iY,iGrade, byCol);
-		Surface8Bkg->Circle(iX,iY,iGrade, DefaultBkgMat(byCol));
+		Surface8Bkg->Circle(iX,iY,iGrade, fIFT ? DefaultBkgMat(byCol) : 0);
 		FinishChange(BoundingBox);
 		break;
 	}
 	return true;
 }
 
-bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color)
+bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade, uint8_t line_color, uint8_t line_color_bkg)
 {
 	Surface8->Circle(iX, iY, iGrade, line_color);
-	Surface8Bkg->Circle(iX, iY, iGrade, DefaultBkgMat(line_color));
+	Surface8Bkg->Circle(iX, iY, iGrade, line_color_bkg);
 	return true;
 }
 
-bool C4Landscape::DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color)
+bool C4Landscape::DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t line_color, uint8_t line_color_bkg)
 {
 	if (!Map) return false;
 	if (iRadius == 1)
-		Map->SetPix(iX, iY, line_color);
+		{ Map->SetPix(iX, iY, line_color); MapBkg->SetPix(iX, iY, line_color_bkg); }
 	else
-		Map->Circle(iX, iY, iRadius, line_color);
+		{ Map->Circle(iX, iY, iRadius, line_color); MapBkg->Circle(iX, iY, iRadius, line_color_bkg); }
 	return true;
 }
 
@@ -3296,7 +3341,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 {
 	// Get map color index by material-texture
 	uint8_t line_color;
-	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,line_color)) return false;
+	if (!GetMapColorIndex(szMaterial,szTexture,line_color)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(line_color);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3316,12 +3361,12 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
-		ForLine(iX1, iY1, iX2, iY2, [this, line_color, iRadius](int32_t x, int32_t y) { return DrawLineMap(x, y, iRadius, line_color); });
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, fIFT, iRadius](int32_t x, int32_t y) { return DrawLineMap(x, y, iRadius, line_color, fIFT ? DefaultBkgMat(line_color) : 0); });
 		// Update landscape
 		int32_t iUpX,iUpY,iUpWdt,iUpHgt;
 		iUpX=Min(iX1,iX2)-iRadius-1; iUpY=Min(iY1,iY2)-iRadius-1;
 		iUpWdt=Abs(iX2-iX1)+2*iRadius+2; iUpHgt=Abs(iY2-iY1)+2*iRadius+2;
-		MapToLandscape(Map,iUpX-shape_wdt,iUpY-shape_hgt,iUpWdt+shape_wdt*2,iUpHgt+shape_hgt*2);
+		MapToLandscape(Map,MapBkg,iUpX-shape_wdt,iUpY-shape_hgt,iUpWdt+shape_wdt*2,iUpHgt+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
@@ -3331,7 +3376,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		BoundingBox.Add(C4Rect(iX2 - iGrade, iY2 - iGrade, iGrade*2+1, iGrade*2+1));
 		// Draw to landscape
 		PrepareChange(BoundingBox);
-		ForLine(iX1, iY1, iX2, iY2, [this, line_color, iGrade](int32_t x, int32_t y) { return DrawLineLandscape(x, y, iGrade, line_color); });
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, fIFT, iGrade](int32_t x, int32_t y) { return DrawLineLandscape(x, y, iGrade, line_color, fIFT ? DefaultBkgMat(line_color) : 0); });
 		FinishChange(BoundingBox);
 		break;
 	}
@@ -3345,7 +3390,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 	iX2=Max(iX1, iX2); iY2=Max(iY1, iY2); iX1=iX0; iY1=iY0;
 	BYTE byCol;
 	// Get map color index by material-texture
-	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
+	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(byCol);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3365,8 +3410,9 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		// Draw to map
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
 		Map->Box(iX1,iY1,iX2,iY2,byCol);
+		MapBkg->Box(iX1, iY1, iX2, iY2, fIFT ? DefaultBkgMat(byCol) : 0);
 		// Update landscape
-		MapToLandscape(Map,iX1-1-shape_wdt,iY1-1-shape_hgt,iX2-iX1+3+shape_wdt*2,iY2-iY1+3+shape_hgt*2);
+		MapToLandscape(Map,MapBkg,iX1-1-shape_wdt,iY1-1-shape_hgt,iX2-iX1+3+shape_wdt*2,iY2-iY1+3+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
@@ -3375,7 +3421,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Box(iX1,iY1,iX2,iY2,byCol);
-		Surface8Bkg->Box(iX1,iY1,iX2,iY2,DefaultBkgMat(byCol));
+		Surface8Bkg->Box(iX1,iY1,iX2,iY2,fIFT ? DefaultBkgMat(byCol) : 0);
 		FinishChange(BoundingBox);
 		break;
 	}
@@ -3385,7 +3431,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT)
 {
 	BYTE byColor;
-	if (!GetMapColorIndex(szMaterial, szTexture, bIFT, byColor)) return false;
+	if (!GetMapColorIndex(szMaterial, szTexture, byColor)) return false;
 
 	int32_t iMaterial = ::MaterialMap.Get(szMaterial); if (!MatValid(iMaterial)) return false;
 	C4MaterialCoreShape shape = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : ::MaterialMap.Map[iMaterial].MapChunkType;
@@ -3402,7 +3448,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	int32_t x, y;
 	for (x = 0; x < icntx; x++)
 		for (y = 0; y < icnty; y++)
-			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,shape,Random(1000));
+			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,bIFT ? DefaultBkgMat(byColor) : 0, shape,Random(1000));
 
 	// remove clipper
 	Surface8->NoClip();
@@ -3431,17 +3477,21 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	// get texture
 	int32_t iMatTex = ::TextureMap.GetIndexMatTex(szMaterial);
 	if (!iMatTex) return false;
+	uint8_t mcol = MatTex2PixCol(iMatTex);
+	uint8_t mcolBkg = fIFT ? DefaultBkgMat(mcol) : 0;
 	// do bridging?
 	uint8_t *conversion_map = NULL;
 	if (fDrawBridge)
 	{
 		conversion_map = GetBridgeMatConversion(MatTex2PixCol(iMatTex));
+		// TODO: Keep IFT if bridging
+		mcolBkg = TRANSPARENT;
 	}
 	// prepare pixel count update
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 	// draw polygon
 	PrepareChange(BoundingBox);
-	ForPolygon(vtcs,length/2,NULL,NULL,MatTex2PixCol(iMatTex) + (fIFT ? IFT : 0), conversion_map);
+	ForPolygon(vtcs,length/2,NULL,NULL, mcol, mcolBkg, conversion_map);
 	FinishChange(BoundingBox);
 	return true;
 }
@@ -3455,13 +3505,13 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int32_t for_material_col) const
 	uint8_t *conv_map = BridgeMatConversion[for_material_col];
 	if (!conv_map)
 	{
-		conv_map = new uint8_t[256];
-		for (int32_t i=0; i<256; ++i)
+		conv_map = new uint8_t[C4M_MaxTexIndex];
+		for (int32_t i=0; i < C4M_MaxTexIndex; ++i)
 		{
 			if ( (MatDensity(for_material)>=GetPixDensity(i)))
 			{
-				// bridge pixel OK here. change pixel; keep IFT.
-				conv_map[i] = (i & IFT) + for_material_col;
+				// bridge pixel OK here. change pixel.
+				conv_map[i] = for_material_col;
 			}
 			else
 			{
@@ -3615,8 +3665,8 @@ bool C4Landscape::ReplaceMapColor(BYTE iOldIndex, BYTE iNewIndex)
 	{
 		for (int32_t x=0; x<iMapWdt; ++x)
 		{
-			if ((*pMap & 0x7f) == iOldIndex)
-				*pMap = (*pMap & 0x80) + iNewIndex;
+			if (*pMap == iOldIndex)
+				*pMap = iNewIndex;
 			++pMap;
 		}
 		pMap += iPitch - iMapWdt;
@@ -3626,7 +3676,7 @@ bool C4Landscape::ReplaceMapColor(BYTE iOldIndex, BYTE iNewIndex)
 
 bool C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fInsert)
 {
-	if (((!szMatTex || !*szMatTex) && !fInsert) || !Inside<int>(iNewIndex, 0x01, 0x7f))
+	if (((!szMatTex || !*szMatTex) && !fInsert) || !Inside<int>(iNewIndex, 1, C4M_MaxTexIndex - 1))
 	{
 		DebugLogF("Cannot insert new texture %s to index %d: Invalid parameters.", (const char *) szMatTex, (int) iNewIndex);
 		return false;
@@ -3705,24 +3755,30 @@ bool C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 void C4Landscape::RemoveUnusedTexMapEntries()
 {
 	// check usage in landscape
-	bool fTexUsage[128];
+	bool fTexUsage[C4M_MaxTexIndex];
 	int32_t iMatTex;
-	for (iMatTex = 0; iMatTex < 128; ++iMatTex) fTexUsage[iMatTex] = false;
+	for (iMatTex = 0; iMatTex < C4M_MaxTexIndex; ++iMatTex)
+		fTexUsage[iMatTex] = false;
 	for (int32_t y=0; y<Height; ++y)
 		for (int32_t x=0; x<Width; ++x)
 		{
-			fTexUsage[Surface8->GetPix(x,y) & 0x7f] = true;
-			fTexUsage[Surface8Bkg->GetPix(x,y) & 0x7f] = true;
+			const BYTE pix = Surface8->GetPix(x, y);
+			const BYTE backPix = Surface8Bkg->GetPix(x, y);
+			assert(pix < C4M_MaxTexIndex);
+			assert(backPix < C4M_MaxTexIndex);
+
+			fTexUsage[pix] = true;
+			fTexUsage[backPix] = true;
 		}
 
 	// check usage by materials
 	for (int32_t iMat = 0; iMat < ::MaterialMap.Num; ++iMat)
 	{
 		C4Material *pMat = ::MaterialMap.Map + iMat;
-		if (pMat->BlastShiftTo >= 0) fTexUsage[pMat->BlastShiftTo & 0x7f] = true;
-		if (pMat->BelowTempConvertTo >= 0) fTexUsage[pMat->BelowTempConvertTo & 0x7f] = true;
-		if (pMat->AboveTempConvertTo >= 0) fTexUsage[pMat->AboveTempConvertTo & 0x7f] = true;
-		if (pMat->DefaultMatTex >= 0) fTexUsage[pMat->DefaultMatTex & 0x7f] = true;
+		if (pMat->BlastShiftTo >= 0) fTexUsage[pMat->BlastShiftTo] = true;
+		if (pMat->BelowTempConvertTo >= 0) fTexUsage[pMat->BelowTempConvertTo] = true;
+		if (pMat->AboveTempConvertTo >= 0) fTexUsage[pMat->AboveTempConvertTo] = true;
+		if (pMat->DefaultMatTex >= 0) fTexUsage[pMat->DefaultMatTex] = true;
 	}
 	// remove unused
 	for (iMatTex = 1; iMatTex < C4M_MaxTexIndex; ++iMatTex)
@@ -3747,13 +3803,13 @@ void C4Landscape::HandleTexMapUpdate()
 void C4Landscape::UpdatePixMaps()
 {
 	int32_t i;
-	for (i = 0; i < 256; i++) Pix2Mat[i] = PixCol2Mat(i);
-	for (i = 0; i < 256; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]);
-	for (i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
-	for (i = 0; i < 256; i++) Pix2Light[i] = (!(i & IFT)) || (MatValid(Pix2Mat[i]) && (::MaterialMap.Map[Pix2Mat[i]].Light>0));
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Mat[i] = PixCol2Mat(i);
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]);
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Light[i] = MatValid(Pix2Mat[i]) && (::MaterialMap.Map[Pix2Mat[i]].Light>0);
 	Pix2Place[0] = 0;
 	// clear bridge mat conversion buffers
-	for (int32_t i = 0; i<128; ++i)
+	for (int32_t i = 0; i < C4M_MaxTexIndex; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;

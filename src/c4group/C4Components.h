@@ -53,6 +53,7 @@
 #define C4CFN_UpdateProgramLibs "*.dll"
 
 #define C4CFN_Map             "Map.bmp"
+#define C4CFN_MapBkg          "MapBkg.bmp"
 #define C4CFN_Landscape       "Landscape.bmp"
 #define C4CFN_LandscapeBkg    "LandscapeBkg.bmp"
 #define C4CFN_DiffLandscape   "DiffLandscape.bmp"
@@ -144,6 +145,7 @@
 #define C4CFN_TempMusic2      "~Music2.tmp"
 #define C4CFN_TempSky         "~Sky.tmp"
 #define C4CFN_TempMap         "~Map.tmp"
+#define C4CFN_TempMapBkg      "~MapBkg.tmp"
 #define C4CFN_TempLandscape   "~Landscape.tmp"
 #define C4CFN_TempLandscapeBkg "~LandscapeBkg.tmp"
 #define C4CFN_TempPXS         "~PXS.tmp"
