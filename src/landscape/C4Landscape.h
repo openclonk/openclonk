@@ -46,7 +46,6 @@ public:
 	int32_t Mode;
 	int32_t Width,Height;
 	int32_t MapWidth,MapHeight,MapZoom;
-	CSurface8 * Map;
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
 
@@ -66,6 +65,7 @@ public:
 private:
 	CSurface8 * Surface8;
 	CSurface8 * Surface8Bkg; // Background material
+	CSurface8 * Map;
 	class C4LandscapeRender *pLandscapeRender;
 	uint8_t *TopRowPix, *BottomRowPix; // array size of landscape width: Filled with 0s for border pixels that are open and MCVehic for pixels that are closed
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
@@ -99,6 +99,7 @@ public:
 	bool SaveInitial();
 	bool SaveTextures(C4Group &hGroup) const;
 	bool Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame);
+	bool HasMap() const { return Map != NULL; }
 	bool MapToLandscape();
 	bool ApplyDiff(C4Group &hGroup);
 	bool SetMode(int32_t iMode);

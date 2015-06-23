@@ -1146,7 +1146,7 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEDYNAMIC));
 	// Static: enable only if map available
 	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODESTATIC,BM_SETSTATE,(iMode==C4LSC_Static),0);
-	EnableWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODESTATIC),(::Landscape.Map!=NULL));
+	EnableWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODESTATIC),(::Landscape.HasMap()));
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODESTATIC));
 	// Exact: enable always
 	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEEXACT,BM_SETSTATE,(iMode==C4LSC_Exact),0);

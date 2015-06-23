@@ -1326,7 +1326,7 @@ void C4ToolsDlg::State::UpdateLandscapeModeCtrls()
 	gtk_widget_set_sensitive(landscape_dynamic, iMode==C4LSC_Dynamic);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_static), iMode==C4LSC_Static);
-	gtk_widget_set_sensitive(landscape_static, ::Landscape.Map!=NULL);
+	gtk_widget_set_sensitive(landscape_static, ::Landscape.HasMap());
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_exact), iMode==C4LSC_Exact);
 
