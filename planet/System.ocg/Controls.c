@@ -97,6 +97,6 @@ global func IsCrewControl(int ctrl)
 /** Control uses selected item */
 global func IsUseControl(int ctrl)
 {
-	if (ctrl == CON_Use) return true;
+	if (ctrl == CON_Use || ctrl == CON_UseAlt) return true;
 	return false;
 }

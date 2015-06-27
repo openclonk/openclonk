@@ -247,6 +247,20 @@
 	SendCursorPos=1
 	
 	[ControlDef]
+	Identifier=UseAlt
+	GUIName=$CON_UseAlt$
+	GUIDesc=$CON_UseAlt_Desc$
+	Hold=1
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=UseAltDelayed
+	GUIName=$CON_UseAlt$
+	GUIDesc=$CON_UseAlt_Desc$
+	Hold=1
+	SendCursorPos=1
+	
+	[ControlDef]
 	Identifier=CancelUse
 	
 	[ControlDef]
@@ -516,8 +530,7 @@
 	# Use						        Left mouse button
 	# Drop								S+Left mouse button
 	# Throw								Right mouse button
-	#
-	# UseAlt							Shift + Left mouse button
+	# UseAlt							Right mouse button (low priority)
 	#
 	# Interact							Space
 	#
@@ -665,6 +678,15 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=Throw
+		
+		[Assignment]
+		Key=Mouse1ButtonRight
+		Priority=80
+		GUIName=$KEY_MouseUseAlt$
+		GUIDesc=$KEY_MouseUseAlt_Desc$
+		GUIDisabled=1
+		GUIGroup=20
+		Control=UseAlt
 		
 		# Zoom
 		

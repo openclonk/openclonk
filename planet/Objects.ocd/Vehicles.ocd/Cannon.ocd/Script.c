@@ -53,16 +53,6 @@ protected func RejectCollect(id def, object obj)
 
 public func ControlUseStart(object clonk, int ix, int iy)
 {
-	return UseAnyStart(clonk,ix,iy,0);
-}
-
-public func ControlUseAltStart(object clonk, int ix, int iy)
-{
-	return UseAnyStart(clonk,ix,iy,1);
-}
-
-private func UseAnyStart(object clonk, int ix, int iy, int item)
-{
 	var result = CheckForKeg(clonk);
 	if (!result)
 	{
@@ -70,7 +60,7 @@ private func UseAnyStart(object clonk, int ix, int iy, int item)
 		return true;
 	}
 		
-	if (!clonk->GetHandItem(item))
+	if (!clonk->GetHandItem(0))
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
 		clonk->CancelUse();
@@ -108,11 +98,6 @@ private func CheckForKeg(object clonk)
 }
 
 public func HoldingEnabled() { return true; }
-
-public func ControlUseAltHolding(object clonk, int ix, int iy)
-{
-	return ControlUseHolding(clonk, ix, iy);
-}
 
 local angPrec = 1000;
 
@@ -165,23 +150,12 @@ private func ConvertAngle(int angle)
 
 public func ControlUseStop(object clonk, int ix, int iy)
 {
-	return UseAnyStop(clonk,ix,iy,0);
-}
-
-public func ControlUseAltStop(object clonk, int ix, int iy)
-{
-	return UseAnyStop(clonk,ix,iy,1);
-}
-
-private func UseAnyStop(object clonk, int ix, int iy, int item)
-{
-
 	RemoveTrajectory(this);
 
 	if (!CheckForKeg(clonk))
 		return true;
 
-	var projectile = clonk->GetHandItem(item);
+	var projectile = clonk->GetHandItem(0);
 	if (!projectile) // Needs a projectile
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
@@ -217,11 +191,6 @@ public func ControlUseCancel()
 {
 	RemoveTrajectory(this);
 	return true;
-}
-
-public func ControlUseAltCancel()
-{
-	return ControlUseCancel();
 }
 
 //Stops the player from shooting for the defined amount of frames

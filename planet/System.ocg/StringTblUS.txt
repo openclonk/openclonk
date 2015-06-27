@@ -25,6 +25,8 @@ CON_Use=Use
 CON_Use_Desc=Use the item in the hand.
 CON_Throw=Throw
 CON_Throw_Desc=Throw the item in the hand into the aimed direction.
+CON_UseAlt=Use
+CON_UseAlt_Desc=Use the item in the hand alternatively.
 
 CON_Hotkey1=Hotkey 1
 CON_Hotkey2=Hotkey 2
@@ -68,6 +70,9 @@ KEY_MouseUse_Desc=Use the item in the hand.
 
 KEY_MouseThrow=Throw 
 KEY_MouseThrow_Desc=Throw the item in the hand.
+
+KEY_MouseUseAlt=Use Alt
+KEY_MouseUseAlt_Desc=Secondary use.
 
 KEY_GamepadUse=Use / Throw
 KEY_GamepadUse_Desc=Use the item in the hand. If the item cannot be used, it is thrown into the direction in which you aim with the analog stick on release.

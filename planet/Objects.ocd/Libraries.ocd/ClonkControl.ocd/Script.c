@@ -50,6 +50,7 @@ static const ACTIONTYPE_EXTRA = 4;
 	
 	this.control.current_object: object that is being used at the moment
 	this.control.using_type: way of usage
+	this.control.alt: alternate usage by right mouse button
 	this.control.mlastx: last x position of the cursor
 	this.control.mlasty: last y position of the cursor
 	this.control.noholdingcallbacks: whether to do HoldingUseControl callbacks
@@ -74,6 +75,7 @@ protected func Construction()
 	
 	menu = nil;
 
+	this.control.alt = false;
 	this.control.current_object = nil;
 	this.control.using_type = nil;
 	this.control.shelved_command = nil;
@@ -256,7 +258,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	  */
 	if (this.control.current_object && ctrl == CON_Aim)
 	{
-		ctrl = CON_Use;
+		if (this.control.alt) ctrl = CON_UseAlt;
+		else     ctrl = CON_Use;
 				
 		repeat = true;
 		release = false;
@@ -287,7 +290,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// save last mouse position:
 	// if the using has to be canceled, no information about the current x,y
 	// is available. Thus, the last x,y position needs to be saved
-	if (ctrl == CON_Use)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		this.control.mlastx = x;
 		this.control.mlasty = y;
@@ -313,7 +316,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var contents = this->GetHandItem(0);	
 	
 	// usage
-	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed);
+	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
 	if (use)
 	{
 		if (house)
@@ -588,12 +591,17 @@ func DetermineUsageType(object obj)
 func GetUseCallString(string action)
 {
 	// Control... or Contained...
-	var control = "Control";
-	if (this.control.using_type == C4D_Structure) control = "Contained";
+	var control_string = "Control";
+	if (this.control.using_type == C4D_Structure) 
+		control_string = "Contained";
+	// ..Use.. or ..UseAlt...
+	var estr = "";
+	if (this.control.alt && this.control.using_type != C4D_Object) 
+		estr = "Alt";
 	// Action
-	if (!action) action = "";
-	
-	return Format("~%sUse%s",control,action);
+	if (!action) 
+		action = "";
+	return Format("~%sUse%s%s", control_string, estr, action);
 }
 
 func CanReIssueCommand(proplist data)
@@ -629,6 +637,7 @@ func StartUseControl(int ctrl, int x, int y, object obj)
 	obj->SetController(GetController());
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
+	this.control.alt = ctrl != CON_Use;
 	
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
@@ -675,6 +684,7 @@ func StartUseDelayedControl(int ctrl, object obj)
 	
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
+	this.control.alt = ctrl != CON_UseDelayed;
 				
 	VirtualCursor()->StartAim(this);
 			
@@ -706,7 +716,7 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 	var stop = "Stop";
 	if (cancel) stop = "Cancel";
 	
-	// ControlUseStop, ContainedUseCancel, etc...
+	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
 	var handled = obj->Call(GetUseCallString(stop),this,x,y);
 	if (obj == this.control.current_object)
 	{
@@ -728,6 +738,7 @@ func StopUseControl(int x, int y, object obj, bool cancel)
 			
 			this.control.current_object = nil;
 			this.control.using_type = nil;
+			this.control.alt = false;
 			
 			if (removal_helper)
 			{
@@ -749,7 +760,7 @@ func HoldingUseControl(int ctrl, int x, int y, object obj)
 {
 	var mex = x;
 	var mey = y;
-	if (ctrl == CON_UseDelayed)
+	if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
 		mex = this.control.mlastx;
 		mey = this.control.mlasty;
@@ -798,11 +809,10 @@ func HoldingUseControl(int ctrl, int x, int y, object obj)
 
 func StopUseDelayedControl(object obj)
 {
-	// ControlUseStop, etc...
-	
-	var handled = obj->Call(GetUseCallString("Stop"),this,this.control.mlastx,this.control.mlasty);
+	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
+	var handled = obj->Call(GetUseCallString("Stop"), this, this.control.mlastx, this.control.mlasty);
 	if (!handled)
-		handled = obj->Call(GetUseCallString(),this,this.control.mlastx,this.control.mlasty);
+		handled = obj->Call(GetUseCallString(), this, this.control.mlastx, this.control.mlasty);
 	
 	if (obj == this.control.current_object)
 	{
@@ -812,6 +822,7 @@ func StopUseDelayedControl(object obj)
 		{
 			this.control.current_object = nil;
 			this.control.using_type = nil;
+			this.control.alt = false;
 		}
 		this.control.noholdingcallbacks = false;
 	}
@@ -846,7 +857,7 @@ func FxItemRemovalCheckStop(object target, proplist effect, int reason, bool tem
 func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {	
 	// standard use
-	if (ctrl == CON_Use)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		if (!release && !repeat)
 		{
@@ -858,7 +869,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 		}
 	}
 	// gamepad use
-	else if (ctrl == CON_UseDelayed)
+	else if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
 		if (!release && !repeat)
 		{
@@ -871,7 +882,7 @@ func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool r
 	}
 	
 	// more use (holding)
-	if (ctrl == CON_Use || ctrl == CON_UseDelayed)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt || ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
 		if (release)
 		{
@@ -894,13 +905,15 @@ func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// overloads of movement commandos
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
 	{
-		var control = "Control";
-		if (Contained() == obj) control = "Contained";
+		var control_string = "Control";
+		if (Contained() == obj) 
+			control_string = "Contained";
 	
 		if (release)
 		{
 			// if any movement key has been released, ControlStop is called
-			if (obj->Call(Format("~%sStop",control),this,ctrl))  return true;
+			if (obj->Call(Format("~%sStop", control_string), this, ctrl))
+				return true;
 		}
 		else
 		{
@@ -909,10 +922,10 @@ func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, b
 				return true;
 			
 			// Control*
-			if (ctrl == CON_Left)  if (obj->Call(Format("~%sLeft",control),this))  return true;
-			if (ctrl == CON_Right) if (obj->Call(Format("~%sRight",control),this)) return true;
-			if (ctrl == CON_Up)    if (obj->Call(Format("~%sUp",control),this))    return true;
-			if (ctrl == CON_Down)  if (obj->Call(Format("~%sDown",control),this))  return true;
+			if (ctrl == CON_Left)  if (obj->Call(Format("~%sLeft",control_string),this))  return true;
+			if (ctrl == CON_Right) if (obj->Call(Format("~%sRight",control_string),this)) return true;
+			if (ctrl == CON_Up)    if (obj->Call(Format("~%sUp",control_string),this))    return true;
+			if (ctrl == CON_Down)  if (obj->Call(Format("~%sDown",control_string),this))  return true;
 			
 			// for attached (e.g. horse: also Jump command
 			if (GetProcedure() == "ATTACH")
