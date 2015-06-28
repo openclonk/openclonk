@@ -14,3 +14,4 @@ Mass=20
 Components=PowderKeg=1;Firestone=1;Wood=1;
 Rotate=1
 ColorByOwner=1
+NoStabilize=1
