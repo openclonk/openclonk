@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetLightColor</title>
+    <category>Objects</category>
+    <version>7.0 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Gets the RGB color value of the light that the object emits. The color can be changed with <funclink>SetLightColor</funclink>.</desc>
+    <related>
+      <funclink>SetLightColor</funclink>
+      <funclink>SetLightRange</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2015-06</date>
+</funcs>

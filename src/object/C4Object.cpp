@@ -4129,6 +4129,17 @@ bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 }
 
 
+bool C4Object::SetLightColor(long iValue)
+{
+	// set new color value
+	lightColor = iValue;
+	// resort into player's FoW-repeller-list
+	UpdateLight();
+	// success
+	return true;
+}
+
+
 void C4Object::UpdateLight()
 {
 	if (Landscape.pFoW) Landscape.pFoW->Add(this);

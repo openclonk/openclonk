@@ -10,24 +10,46 @@ uniform sampler2D lightTex;
 // brightness: light strength
 //#define LIGHT_DEBUG
 
+// uncomment the following lines for debugging light color:
+// the light will always come from the front and have a uniform brightness.
+//#define LIGHT_DEBUG_COLOR
+
+// uncomment the following lines to set the light color to pink for all lights for debugging:
+//#define LIGHT_DEBUG_PINK
+
 // At what point of light intensity we set the "darkness" point. This
-// is to compensate for the fact that the engien "smoothes" the light
+// is to compensate for the fact that the engine "smooths" the light
 // and therefore will often never arrive at 0 light intensity.
 const float lightDarknessLevel = 8.0 / 256.0;
 
 slice(texture+5)
 {
 #ifdef HAVE_LIGHT
+
 	// Query light texture
-	vec4 lightPx = texture2D(lightTex, lightCoord.st);
+	vec2 lightDirCoord = lightCoord.st;
+
+	vec4  lightPx = texture2D(lightTex, lightDirCoord);
 	float lightBright = max(0.0, lightPx.x-lightDarknessLevel);
-	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
+	vec3  lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
+	
+	// Query light color texture (part of the light texture)
+	vec2 lightColorCoord = lightCoord.st - vec2(0.0, 0.5); // subtract offset for the color texture
+	
+	vec4 lightColor = texture2D(lightTex, lightColorCoord.st);
+	
+	#ifdef LIGHT_DEBUG_COLOR
+		lightBright = 0.5;
+		lightDir = vec3(0.0, 0.0, 1.0);
+	#endif
 #else
 	// When lighting is disabled, put a light source coming from the camera.
 	// Note that in most cases this does not actually matter, since in the
 	// case with lighting disabled, ambient lighting takes fully over.
 	float lightBright = 0.5;
-	vec3 lightDir = vec3(0.0, 0.0, 1.0);
+	vec3  lightDir = vec3(0.0, 0.0, 1.0);
+
+	vec4  lightColor = vec4(1.0, 1.0, 1.0, 1.0);
 #endif
 }
 
@@ -41,10 +63,17 @@ slice(light)
 
 slice(color+5)
 {
+	// pink shade for debugging!
+	#ifdef LIGHT_DEBUG_PINK
+		lightColor = vec4(1.0, 0.0, 1.0, 1.0);
+	#endif
+
+	lightColor.rgb = sqrt(3.0) * normalize(lightColor.rgb);
+
 	// Add light
-	color = vec4(light * color.rgb, color.a);
+	color = vec4(light * color.rgb * lightColor.rgb, color.a);
 #ifdef HAVE_2PX
-	color2 = vec4(light2 * color2.rgb, color2.a);
+	color2 = vec4(light2 * color2.rgb * lightColor.rgb, color2.a);
 #endif
 }
 

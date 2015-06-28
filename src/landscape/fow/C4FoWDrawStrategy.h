@@ -85,7 +85,7 @@ class C4FoWDrawLightTextureStrategy : public C4FoWDrawStrategy
 public:
 	C4FoWDrawLightTextureStrategy(const C4FoWLight* light, const C4FoWRegion* region) : light(light), region(region) {};
 
-	virtual int32_t GetRequestedPasses() { return 2; };
+	virtual int32_t GetRequestedPasses() { return 3; };
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
 	virtual void Begin(int32_t pass);

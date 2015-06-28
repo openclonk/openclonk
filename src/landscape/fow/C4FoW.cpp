@@ -71,9 +71,9 @@ void C4FoW::Add(C4Object *pObj)
 	if (pLight)
 	{
 
-		// Update reach
+		// Update reach and light color
 		pLight->SetReach(pObj->lightRange, pObj->lightFadeoutRange);
-
+		pLight->SetColor(pObj->lightColor);
 	}
 	else
 	{
