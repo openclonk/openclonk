@@ -1,0 +1,15 @@
+[DefCore]
+id=Lantern
+Version=6,0
+Category=C4D_Object
+Width=5
+Height=8
+Offset=-2,-4
+Vertices=2
+VertexX=0,0
+VertexY=3,-3
+VertexFriction=75,100
+Value=1
+Mass=2
+Rotate=1
+Components=Metal=1

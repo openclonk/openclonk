@@ -1,0 +1,75 @@
+material Lantern
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass
+        {
+            ambient 0.610274612903595 0.8000000715255737 0.6549119353294373 1.0
+            diffuse 0.4882196975979163 0.640000066757203 0.5239295560707085 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture Lantern.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}
+
+material LanternGlass
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass glass
+        {
+            ambient 0.29154813289642334 0.5634318590164185 0.8000000715255737 0.0
+            diffuse 0.23323850979266325 0.45074549392976593 0.640000066757203 0.0
+            specular 0.5 0.5 0.5 0.0 12.5
+            emissive 0.0 0.0 0.0 0.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+        }
+    }
+}
+
+material LanternLit
+{
+    receive_shadows on
+
+    technique
+    {
+        pass glass
+        {
+            ambient 0.956 0.886 0.475 0.0
+            diffuse 0.9 0.8 0.4 0.0
+            specular 0.5 0.5 0.5 0.0 12.5
+            emissive 0.0 0.0 0.0 0.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+        }
+    }
+}

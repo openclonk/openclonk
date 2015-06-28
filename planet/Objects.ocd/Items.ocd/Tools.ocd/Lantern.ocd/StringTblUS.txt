@@ -1,0 +1,3 @@
+Name=Lantern
+Description=Simple light source. Careful, fire hazard when breaking!
+UsageHelp=Press [Use] to turn the lantern on or off
