@@ -679,6 +679,9 @@ protected func RejectCollect(id item, object obj)
 
 protected func RejectEntrance(object obj)
 {
+	// Some objects might just bypass this check
+	if (obj->~ForceEntry(this))
+		return false;
 	var obj_id = obj->GetID();
 	// Products itself may be collected.
 	if (IsProduct(obj_id))
