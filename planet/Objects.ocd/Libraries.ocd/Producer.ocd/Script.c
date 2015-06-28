@@ -130,7 +130,7 @@ public func GetProducts(object for_clonk)
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
-			index++;	
+			index++;
 		}
 	}
 	return products;
@@ -683,9 +683,9 @@ protected func RejectEntrance(object obj)
 	// Products itself may be collected.
 	if (IsProduct(obj_id))
 		return false;
-		
+	var products = GetProducts();
 	// Components of products may be collected.
-	for (var product in GetProducts())
+	for (var product in products)
 	{
 		var i = 0, comp_id;
 		while (comp_id = GetComponent(nil, i, nil, product))
@@ -698,14 +698,14 @@ protected func RejectEntrance(object obj)
 	// Fuel for products may be collected.
 	if (obj->~IsFuel())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (FuelNeed(product) > 0)
 				return false;
 	}
 	// Liquid objects may be collected if a product needs them.
 	if (obj->~IsLiquid())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (LiquidNeed(product))
 				if (LiquidNeed(product)[0] == obj->~IsLiquid())
 					return false;
@@ -713,14 +713,14 @@ protected func RejectEntrance(object obj)
 	// Liquid containers may be collected if a product needs them.
 	if (obj->~IsLiquidContainer())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (LiquidNeed(product))
 				return false;
 	}
 	// Material containers may be collected if a product needs them.
 	if (obj->~IsMaterialContainer())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (MaterialNeed(product))
 				return false;
 	}
