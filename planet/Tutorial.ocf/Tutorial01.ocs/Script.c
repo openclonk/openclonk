@@ -198,7 +198,7 @@ protected func OnGuideMessageShown(int plr, int index)
 		TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 24);
 	// Show where the goal is located in the HUD.
 	if (index == 2)
-		TutArrowShowGUIPos(- 64 - 16 - GUI_Goal->GetDefHeight() / 2, 8 + GUI_Goal->GetDefHeight() / 2, 0, 40);
+		// TODO: adapt to new controls.
 	// Show where the guide is located in the HUD.
 	if (index == 3)	
 		TutArrowShowGUIPos(- 128 - 32 - TutorialGuide->GetDefWidth() / 2, 8 + TutorialGuide->GetDefHeight() / 2, 0, 40);
@@ -214,8 +214,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show inventory slots.
 	if (index == 9)
 	{
-		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 153 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
-		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 225 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
+		// TODO: adapt to new controls.
 	}
 	return;
 }

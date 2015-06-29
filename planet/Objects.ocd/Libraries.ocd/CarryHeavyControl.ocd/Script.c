@@ -89,7 +89,7 @@ public func GetExtraInteractions()
 	if(IsCarryingHeavy() && GetAction() == "Walk")
 	{
 		var ch = GetCarryHeavy();
-		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, Priority=1});
+		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="", IconID=Icon_LetGo, Priority=1});
 	}
 	return functions;
 }
