@@ -53,9 +53,11 @@
 #define C4CFN_UpdateProgramLibs "*.dll"
 
 #define C4CFN_Map             "Map.bmp"
-#define C4CFN_MapBkg          "MapBkg.bmp"
+#define C4CFN_MapFg           "MapFg.bmp"
+#define C4CFN_MapBg           "MapBg.bmp"
 #define C4CFN_Landscape       "Landscape.bmp"
-#define C4CFN_LandscapeBkg    "LandscapeBkg.bmp"
+#define C4CFN_LandscapeFg     "LandscapeFg.bmp"
+#define C4CFN_LandscapeBg     "LandscapeBg.bmp"
 #define C4CFN_DiffLandscape   "DiffLandscape.bmp"
 #define C4CFN_DiffLandscapeBkg "DiffLandscapeBkg.bmp"
 #define C4CFN_Sky             "Sky"
@@ -144,8 +146,8 @@
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"
 #define C4CFN_TempSky         "~Sky.tmp"
-#define C4CFN_TempMap         "~Map.tmp"
-#define C4CFN_TempMapBkg      "~MapBkg.tmp"
+#define C4CFN_TempMapFg       "~MapFg.tmp"
+#define C4CFN_TempMapBg       "~MapBg.tmp"
 #define C4CFN_TempLandscape   "~Landscape.tmp"
 #define C4CFN_TempLandscapeBkg "~LandscapeBkg.tmp"
 #define C4CFN_TempPXS         "~PXS.tmp"
@@ -178,9 +180,9 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Achv*.png|Game.txt|StringTbl*.txt|ParameterDefs.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|LandscapeBkg.bmp|Landscape.png|" C4CFN_DiffLandscape "|" C4CFN_DiffLandscapeBkg "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
-#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
-#define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Achv*.png|Game.txt|StringTbl*.txt|ParameterDefs.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Map.bmp|MapFg.bmp|MapBg.bmp|Landscape.bmp|LandscapeFg.bmp|LandscapeBg.bmp|" C4CFN_DiffLandscape "|" C4CFN_DiffLandscapeBkg "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
+#define C4FLS_Section   "Scenario.txt|Game.txt|Map.bmp|MapFg.bmp|MapBg.bmp|Landscape.bmp|LandscapeFg.bmp|LandscapeBg.bmp|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
+#define C4FLS_SectionLandscape "Scenario.txt|Map.bmp|MapFg.bmp|MapBg.bmp|Landscape.bmp|LandscapeFg.bmp|LandscapeBg.bmp|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_Def       "*.glsl|*.png|*.bmp|*.jpeg|*.jpg|*.material|Particle.txt|DefCore.txt|*.wav|*.ogg|*.skeleton|Graphics.mesh|*.mesh|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Desc*.txt|Author.txt|Version.txt|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"

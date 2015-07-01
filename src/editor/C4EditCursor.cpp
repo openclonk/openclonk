@@ -953,15 +953,18 @@ void C4EditCursor::ApplyToolPicker()
 	case C4LSC_Static:
 		{
 			bool material_set = false;
+			int32_t x = X/::Landscape.MapZoom;
+			int32_t y = Y/::Landscape.MapZoom;
 			// Material-texture from map
-			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
+			if ((byIndex = ::Landscape.GetMapIndex(x, y)))
 			{
-				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex);
 				if (pTex && pTex->GetMaterialName() && *pTex->GetMaterialName())
 				{
+					const BYTE byIndexBkg = Landscape.GetBackMapIndex(x, y);
 					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
 					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-					Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+					Console.ToolsDlg.SetIFT(byIndexBkg != 0);
 					material_set = true;
 				}
 			}

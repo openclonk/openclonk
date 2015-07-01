@@ -286,8 +286,8 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 		// left pixel not converted? break
 		if (lmat == mat) break;
 #endif
-		// set mat
-		SBackPix(cx,cy2,MatTex2PixCol(conv_to_tex)+PixColIFT(pix));
+		// set mat (and keep background material)
+		SetPix2(cx, cy2, MatTex2PixCol(conv_to_tex), TRANSPARENT);
 		if (!conv_to_is_solid) CheckInstabilityRange(cx,cy2);
 	}
 	// return pixel converted
@@ -997,7 +997,7 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 BYTE C4Landscape::DefaultBkgMat(BYTE fg) const
 {
 	// For the given foreground index, find the default background index
-	// If fg is semisolid, this is tunnel, or sky if IFT is set.
+	// If fg is semisolid, this is tunnel.
 	// Otherwise it is fg itself, so that tunnel and background bricks
 	// stay the way they are.
 	int32_t iTex = PixCol2Tex(fg);
@@ -1015,15 +1015,45 @@ BYTE C4Landscape::DefaultBkgMat(BYTE fg) const
 
 }
 
-CSurface8* C4Landscape::CreateDefaultBkgSurface(const CSurface8& sfcFg) const
+CSurface8* C4Landscape::CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const
 {
 	CSurface8* sfcBg = new CSurface8();
 	if (!sfcBg->Create(sfcFg.Wdt, sfcFg.Hgt))
 		{ delete sfcBg; return NULL; }
 
 	for (int32_t y=0; y<sfcFg.Hgt; ++y)
+	{
 		for (int32_t x=0; x<sfcFg.Wdt; ++x)
-			sfcBg->_SetPix(x, y, DefaultBkgMat(sfcFg._GetPix(x, y)));
+		{
+			BYTE fgPix = sfcFg._GetPix(x, y);
+			BYTE bgPix;
+
+			// If we treat the most significant bit as the IFT flag
+			// (compatibility option for pre-7.0 maps), then set
+			// the background pixel to 0 if the foreground does not
+			// have IFT set, and remove the IFT flag from the
+			// foreground pixel.
+			if (msbAsIft)
+			{
+				if (fgPix & 0x80)
+				{
+					fgPix &= ~0x80;
+					sfcFg._SetPix(x, y, fgPix);
+				 	bgPix = DefaultBkgMat(fgPix);
+				}
+				else
+				{
+					bgPix = 0;
+				}
+			}
+			else
+			{
+				 bgPix = DefaultBkgMat(fgPix);
+			}
+
+			sfcBg->_SetPix(x, y, bgPix);
+		}
+	}
 
 	return sfcBg;
 }
@@ -1344,11 +1374,27 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		CSurface8 * sfcMap=NULL;
 		CSurface8 * sfcMapBkg=NULL;
 
-		// Static map from scenario
+		// Static map from scenario: Old-style Map.bmp with highest bit IFT
 		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
 		{
 			if (!fLandscapeModeSet) Mode=C4LSC_Static;
-			sfcMapBkg = GroupReadSurface8(hGroup, C4CFN_MapBkg);
+			sfcMapBkg = CreateDefaultBkgSurface(*sfcMap, true);
+			if (!sfcMapBkg) return false;
+		}
+
+		// Static map from scenaruo: New-style MapFg.bmp and MapBg.bmp with
+		// full 255 mat-tex combinations. Background map is optional, if not
+		// given default will be created with tunnel background for all
+		// semisolid pixels.
+		if (!sfcMap)
+		{
+			if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_MapFg)))
+			{
+				if (!fLandscapeModeSet) Mode=C4LSC_Static;
+				sfcMapBkg = GroupReadSurface8(hGroup, C4CFN_MapBg);
+				if (!sfcMapBkg) sfcMapBkg = CreateDefaultBkgSurface(*sfcMap, false);
+				if (!sfcMapBkg) return false;
+			}
 		}
 
 		// dynamic map from Landscape.txt
@@ -1372,13 +1418,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			if (!fOverloadCurrent) return false;
 			if (fLoadSky) if (!Sky.Init(fSavegame)) return false;
 			return true;
-		}
-
-		// If no background map is loaded, create default from foreground map
-		if (!sfcMapBkg)
-		{
-			sfcMapBkg = CreateDefaultBkgSurface(*sfcMap);
-			if (!sfcMapBkg) return false;
 		}
 
 		if (Config.General.DebugRec)
@@ -1566,7 +1605,7 @@ bool C4Landscape::SaveInternal(C4Group &hGroup) const
 		return false;
 
 	// Move temp file to group
-	if (!hGroup.Move( szTempLandscape, C4CFN_Landscape ))
+	if (!hGroup.Move( szTempLandscape, C4CFN_LandscapeFg ))
 		return false;
 
 	// Same for background surface
@@ -1574,7 +1613,7 @@ bool C4Landscape::SaveInternal(C4Group &hGroup) const
 	MakeTempFilename(szTempLandscape);
 	if (!Surface8Bkg->Save(szTempLandscape))
 		return false;
-	if (!hGroup.Move(szTempLandscape, C4CFN_LandscapeBkg))
+	if (!hGroup.Move(szTempLandscape, C4CFN_LandscapeBg))
 		return false;
 
 	// Save map
@@ -1690,18 +1729,37 @@ bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 	assert(!Surface8 && !Surface8Bkg);
 
 	// Load exact landscape from group
-	if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_Landscape))) return false;
+	if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_Landscape)))
+	{
+		if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_LandscapeFg))) return false;
+		Surface8Bkg = GroupReadSurface8(hGroup, C4CFN_LandscapeBg);
+
+		if (Surface8Bkg)
+		{
+			if ( (Surface8->Wdt != Surface8Bkg->Wdt || Surface8->Hgt != Surface8Bkg->Hgt))
+			{
+				LogFatal(FormatString("Landscape has different dimensions than background landscape (%dx%d vs. %dx%d)", Surface8->Wdt, Surface8->Hgt, Surface8Bkg->Wdt, Surface8Bkg->Hgt).getData());
+				return false;
+			}
+		}
+		else
+		{
+			// LandscapeFg.bmp loaded: Assume full 8bit mat-tex values
+			// when creating background surface.
+			Surface8Bkg = CreateDefaultBkgSurface(*Surface8, false);
+		}
+	}
+	else
+	{
+		// Landscape.bmp loaded: Assume msb is IFT flag when creating
+		// background surface.
+		Surface8Bkg = CreateDefaultBkgSurface(*Surface8, true);
+	}
+
 	int iWidth, iHeight;
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
 
-	// Load background surface; it's not fatal if it does not exist
-	Surface8Bkg = GroupReadSurface8(hGroup, C4CFN_LandscapeBkg);
-	if (Surface8Bkg && (Width != Surface8Bkg->Wdt || Height != Surface8Bkg->Hgt))
-	{
-		LogFatal(FormatString("Landscape has different dimensions than background landscape (%dx%d vs. %dx%d)", iWidth, iHeight, Surface8Bkg->Wdt, Surface8Bkg->Hgt).getData());
-		return false;
-	}
 	// adjust pal
 	if (!Mat2Pal()) return false;
 	// Landscape should be in correct format: Make sure it is!
@@ -1717,26 +1775,15 @@ bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 				return false;
 			}
 
-			if (Surface8Bkg)
-			{
-				BYTE byPixBkg = Surface8Bkg->_GetPix(x, y);
-				int32_t iMatBkg = PixCol2Mat(byPixBkg);
+			BYTE byPixBkg = Surface8Bkg->_GetPix(x, y);
+			int32_t iMatBkg = PixCol2Mat(byPixBkg);
 
-				if (byPixBkg && !MatValid(iMatBkg))
-				{
-					LogFatal(FormatString("Background Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPixBkg).getData());
-					return false;
-				}
+			if (byPixBkg && !MatValid(iMatBkg))
+			{
+				LogFatal(FormatString("Background Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPixBkg).getData());
+				return false;
 			}
 		}
-
-	// Create default background landscape if not available
-	if (!Surface8Bkg)
-	{
-		Surface8Bkg = CreateDefaultBkgSurface(*Surface8);
-		if (!Surface8Bkg)
-			return false;
-	}
 
 	// Init sky
 	if (fLoadSky)
@@ -1839,21 +1886,21 @@ bool C4Landscape::SaveMap(C4Group &hGroup) const
 	::TextureMap.StoreMapPalette(&Palette,::MaterialMap);
 
 	// Save map surface
-	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), &Palette))
+	if (!Map->Save(Config.AtTempPath(C4CFN_TempMapFg), &Palette))
 		return false;
 
 	// Move temp file to group
-	if (!hGroup.Move(Config.AtTempPath(C4CFN_TempMap),
-	                 C4CFN_Map ))
+	if (!hGroup.Move(Config.AtTempPath(C4CFN_TempMapFg),
+	                 C4CFN_MapFg ))
 		return false;
 
 	// Save background map surface
-	if (!MapBkg->Save(Config.AtTempPath(C4CFN_TempMapBkg), &Palette))
+	if (!MapBkg->Save(Config.AtTempPath(C4CFN_TempMapBg), &Palette))
 		return false;
 
 	// Move temp file to group
-	if (!hGroup.Move(Config.AtTempPath(C4CFN_TempMapBkg),
-	                 C4CFN_MapBkg ))
+	if (!hGroup.Move(Config.AtTempPath(C4CFN_TempMapBg),
+	                 C4CFN_MapBg ))
 		return false;
 	
 	// Success
@@ -2312,7 +2359,7 @@ bool C4Landscape::CreateMap(CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 	                  Game.C4S.Landscape, ::TextureMap,
 	                  true,Game.StartupPlayerCount);
 
-	sfcMapBkg = CreateDefaultBkgSurface(*sfcMap);
+	sfcMapBkg = CreateDefaultBkgSurface(*sfcMap, false);
 	if (!sfcMapBkg) { delete sfcMap; sfcMap = NULL; return false; }
 	return true;
 }
@@ -3483,7 +3530,6 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	if (fDrawBridge)
 	{
 		conversion_map = GetBridgeMatConversion(MatTex2PixCol(iMatTex));
-		// TODO: Keep IFT if bridging
 		mcolBkg = TRANSPARENT;
 	}
 	// prepare pixel count update
@@ -3538,6 +3584,12 @@ BYTE C4Landscape::GetMapIndex(int32_t iX, int32_t iY) const
 {
 	if (!Map) return 0;
 	return Map->GetPix(iX,iY);
+}
+
+BYTE C4Landscape::GetBackMapIndex(int32_t iX, int32_t iY) const
+{
+	if (!MapBkg) return 0;
+	return MapBkg->GetPix(iX,iY);
 }
 
 void C4Landscape::PrepareChange(C4Rect BoundingBox)
@@ -3833,9 +3885,7 @@ bool C4Landscape::Mat2Pal()
 		// colors
 		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
 		Surface8->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
-		Surface8->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 		Surface8Bkg->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
-		Surface8Bkg->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 	}
 	// success
 	return true;

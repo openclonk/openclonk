@@ -99,6 +99,7 @@ public:
 	void RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt);
 	void FindMatTop(int32_t mat, int32_t &x, int32_t &y, bool distant_first) const;
 	BYTE GetMapIndex(int32_t iX, int32_t iY) const;
+	BYTE GetBackMapIndex(int32_t iX, int32_t iY) const;
 	bool Load(C4Group &hGroup, bool fLoadSky, bool fSavegame);
 	bool Save(C4Group &hGroup) const;
 	bool SaveDiff(C4Group &hGroup, bool fSyncSave) const;
@@ -332,7 +333,7 @@ private:
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
 	BYTE DefaultBkgMat(BYTE fg) const;
-	CSurface8* CreateDefaultBkgSurface(const CSurface8& sfcFg) const;
+	CSurface8* CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const;
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
 
@@ -393,19 +394,12 @@ inline bool DensityLiquid(int32_t dens)
 	return ((dens>=C4M_Liquid) && (dens<C4M_Solid));
 }
 
-inline BYTE PixColIFT(BYTE pixc)
-{
-	return pixc & IFT;
-}
-
 inline int32_t PixCol2Tex(BYTE pixc)
 {
-	// Remove IFT
-	int32_t iTex = int32_t(pixc & (IFT - 1));
 	// Validate
-	if (iTex >= C4M_MaxTexIndex) return 0;
+	if (pixc >= C4M_MaxTexIndex) return 0;
 	// Done
-	return iTex;
+	return pixc;
 }
 
 inline int32_t GBackMat(int32_t x, int32_t y)

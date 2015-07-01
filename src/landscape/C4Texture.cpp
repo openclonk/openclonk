@@ -480,7 +480,7 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 	// Sky color
 	Palette->Colors[0] = C4RGB(192, 196, 252);
 	// Material colors by texture map entries
-	bool fSet[256];
+	bool fSet[C4M_MaxTexIndex];
 	ZeroMem(&fSet, sizeof (fSet));
 	int32_t i;
 	for (i = 0; i < C4M_MaxTexIndex; i++)
@@ -488,11 +488,10 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 		// Find material
 		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
 		Palette->Colors[i] = dwPix;
-		Palette->Colors[i + IFT] = dwPix | 0x0F; // IFT arbitrarily gets more blue
-		fSet[i] = fSet[i + IFT] = true;
+		fSet[i] = true;
 	}
 	// Crosscheck colors, change equal palette entries
-	for (i = 0; i < 256; i++) if (fSet[i])
+	for (i = 0; i < C4M_MaxTexIndex; i++) if (fSet[i])
 			for (;;)
 			{
 				// search equal entry
