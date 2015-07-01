@@ -38,8 +38,6 @@
     </examples>
     <related>
       <funclink>CreateConstruction</funclink>
-      <funclink>Var</funclink>
-      <funclink>SetVar</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>

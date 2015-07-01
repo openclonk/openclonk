@@ -32,7 +32,6 @@
     <related>
       <funclink>GetSkyAdjust</funclink>
       <funclink>SetMatAdjust</funclink>
-      <funclink>SetSkyFade</funclink>
       <funclink>SetGamma</funclink>
       <funclink>RGB</funclink>
       <funclink>RGBa</funclink>

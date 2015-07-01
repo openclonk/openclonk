@@ -30,8 +30,6 @@
     <desc>Returns value if it is within the given boundaries (value &gt;= lower_bound and value &lt;= upper_bound). Otherwise returns the applicable limit.</desc>
     <related>
       <funclink>Inside</funclink>
-      <funclink>LessThan</funclink>
-      <funclink>GreaterThan</funclink>
     </related>
   </func>
   <author>jwk</author><date>2002-04</date>
