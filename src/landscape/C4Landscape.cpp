@@ -2329,11 +2329,10 @@ bool C4Landscape::CreateMapS2(C4Group &ScenFile, CSurface8*& sfcMap, CSurface8*&
 	// read file
 	pMapCreator->ReadFile(C4CFN_DynLandscape, &ScenFile);
 	// render landscape
-	CSurface8 * sfc = pMapCreator->Render(NULL);
+	if(!pMapCreator->Render(NULL, sfcMap, sfcMapBkg))
+		return false;
 
 	// keep map creator until script callbacks have been done
-	sfcMap = sfc;
-	sfcMapBkg = CreateDefaultBkgSurface(*sfcMap); // TODO: Replace this by what was actually generated!
 	return true;
 }
 
@@ -3603,12 +3602,15 @@ bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, co
 	// read file
 	MapCreator.ReadScript(szMapDef);
 	// render map
-	CSurface8 * sfcMap=MapCreator.Render(NULL);
-	if (!sfcMap) return false;
+	CSurface8* sfcMap = NULL;
+	CSurface8* sfcMapBkg = NULL;
+	if (!MapCreator.Render(NULL, sfcMap, sfcMapBkg))
+		return false;
 	// map it to the landscape
-	bool fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
+	bool fSuccess=MapToLandscape(sfcMap, sfcMapBkg, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
 	// cleanup
 	delete sfcMap;
+	delete sfcMapBkg;
 	// return whether successful
 	return fSuccess;
 }
@@ -3627,13 +3629,15 @@ bool C4Landscape::DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt,
 	C4MCMap *pMap=pMapCreator->GetMap(szMapDef);
 	if (!pMap) return false;
 	pMap->SetSize(iMapWdt, iMapHgt);
-	CSurface8 * sfcMap = pMapCreator->Render(szMapDef);
-	if (sfcMap)
+	CSurface8* sfcMap = NULL;
+	CSurface8* sfcMapBkg = NULL;
+	if(pMapCreator->Render(szMapDef, sfcMap, sfcMapBkg))
 	{
 		// map to landscape
-		fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
+		fSuccess = MapToLandscape(sfcMap, sfcMapBkg, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
 		// cleanup
 		delete sfcMap;
+		delete sfcMapBkg;
 	}
 	// done
 	return fSuccess;
