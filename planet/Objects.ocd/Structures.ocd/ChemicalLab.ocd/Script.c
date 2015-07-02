@@ -6,6 +6,8 @@
 
 local hold_production;
 
+public func LanternPosition() { return [GetCalcDir()*24,2]; }
+
 func Construction(object creator)
 {
 	SetAction("Default");

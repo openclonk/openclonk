@@ -11,8 +11,6 @@
 #include Library_Ownable
 #include Library_Producer
 
-/*-- Initialization --*/
-
 local last_power;
 local wheel;
 
@@ -22,7 +20,7 @@ func MinRevolutionTime() { return 18000; } // in frames
 protected func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-30, 0, 1, 0));
-	SetAction("Default");	
+	SetAction("Default");
 	return _inherited(...);
 }
 

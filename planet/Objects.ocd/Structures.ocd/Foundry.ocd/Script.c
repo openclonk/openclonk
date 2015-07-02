@@ -12,12 +12,14 @@
 // does not need power
 public func PowerNeed() { return 0; }
 
+public func LanternPosition() { return [GetCalcDir()*-11,2]; }
+
 public func Construction(object creator)
 {
 	
 	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
 	SetAction("Default");
-	AddTimer("CollectionZone", 1);	
+	AddTimer("CollectionZone", 1);
 	return _inherited(creator, ...);
 }
 
@@ -38,7 +40,6 @@ public func NeedRawMaterial(id rawmat_id)
 	return false;
 }
 
-
 public func OnProductionStart(id product)
 {
 	AddEffect("Smelting", this, 100, 1, this);
@@ -55,7 +56,7 @@ public func OnProductionFinish(id product)
 {
 	RemoveEffect("Smelting", this);
 	return;
-}	
+}
 
 // Timer, check for objects to collect in the designated collection zone
 func CollectionZone()

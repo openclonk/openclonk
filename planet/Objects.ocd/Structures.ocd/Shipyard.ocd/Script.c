@@ -7,6 +7,8 @@
 local animWork;
 local meshAttach;
 
+public func LanternPosition() { return [GetCalcDir()*-6,30]; }
+
 func Initialize()
 {
 	animWork = PlayAnimation("Work", 1, Anim_Const(0), Anim_Const(1000));

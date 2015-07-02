@@ -4,8 +4,9 @@
 #include Library_Ownable
 #include Library_Producer
 
-
 local hold_production;
+
+public func LanternPosition() { return [GetCalcDir()*14,-6]; }
 
 public func Construction(object creator)
 {
