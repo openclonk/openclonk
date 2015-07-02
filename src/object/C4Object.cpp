@@ -4129,7 +4129,7 @@ bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 }
 
 
-bool C4Object::SetLightColor(long iValue)
+bool C4Object::SetLightColor(uint32_t iValue)
 {
 	// set new color value
 	lightColor = iValue;

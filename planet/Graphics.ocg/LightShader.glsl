@@ -71,9 +71,9 @@ slice(color+5)
 	lightColor.rgb = sqrt(3.0) * normalize(lightColor.rgb);
 
 	// Add light
-	color = vec4(light * color.rgb * lightColor.rgb, color.a);
+	color.rgb = light * color.rgb * lightColor.rgb;
 #ifdef HAVE_2PX
-	color2 = vec4(light2 * color2.rgb * lightColor.rgb, color2.a);
+	color2.rgb = light2 * color2.rgb * lightColor.rgb;
 #endif
 }
 

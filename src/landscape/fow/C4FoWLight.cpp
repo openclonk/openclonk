@@ -80,9 +80,9 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 
 void C4FoWLight::SetColor(uint32_t iValue)
 {
-	colorR = (GetRedValue(iValue) & 255) / 255.0f;
-	colorG = (GetGreenValue(iValue) & 255) / 255.0f;
-	colorB = (GetBlueValue(iValue) & 255) / 255.0f;
+	colorR = GetRedValue(iValue) / 255.0f;
+	colorG = GetGreenValue(iValue) / 255.0f;
+	colorB = GetBlueValue(iValue) / 255.0f;
 
 	float min = Min(colorR, Min(colorG, colorB));
 	colorV = Max(Max(colorR, Max(colorG, colorB)), 1e-3f); // prevent division by 0
@@ -210,7 +210,7 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 				
 		// an extra intermediate fade point is only necessary on cliffs
 		tri.descending = distFanR > distNextFanL;
-		if (tri.descending)	{
+		if (tri.descending) {
 			if (distFanR < distNextFadeL)
 			{
 				tri.fadeIX = nextTri.fadeLX;

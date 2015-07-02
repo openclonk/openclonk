@@ -1341,13 +1341,8 @@ static long FnGetLightColor(C4Object *Obj)
 }
 
 
-static C4Void FnSetLightColor(C4Object *Obj, Nillable<long> iValue)
+static C4Void FnSetLightColor(C4Object *Obj, long iValue)
 {
-	if (iValue.IsNil())
-	{
-		iValue = 0;
-	}
-
 	Obj->SetLightColor(iValue);
 	return C4Void();
 }

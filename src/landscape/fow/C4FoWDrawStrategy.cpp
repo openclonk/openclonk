@@ -59,7 +59,7 @@ void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 			glScissor(0, 0, width, height);
 			break;
 		default:
-			assert(false);
+			assert(!"Unexpected value for light drawing pass");
 			break;
 	}
 

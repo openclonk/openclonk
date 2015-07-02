@@ -152,13 +152,14 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	gluOrtho2D(0, getSurface()->Wdt, getSurface()->Hgt, 0);
 
 	// Clear texture contents
-	glScissor(0, getSurface()->Hgt / 2.0, getSurface()->Wdt, getSurface()->Hgt / 2.0);
+	assert(getSurface()->Hgt % 2 == 0);
+	glScissor(0, getSurface()->Hgt / 2, getSurface()->Wdt, getSurface()->Hgt / 2);
 	glClearColor(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 1.0f);
 	glEnable(GL_SCISSOR_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// clear lower half of texture
-	glScissor(0, 0, getSurface()->Wdt, getSurface()->Hgt / 2.0);
+	glScissor(0, 0, getSurface()->Wdt, getSurface()->Hgt / 2);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_SCISSOR_TEST);
