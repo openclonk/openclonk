@@ -27,6 +27,12 @@
           <desc>Only applies to objects using the BorderBound flag. Ensures that the position is always within the limits specified by the object.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>prec</name>
+          <desc>Precision. Coordinates are divided by this value to enable fractional positions. Defaults to 1.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Moves the object to the specified position. This will set the exact pixel position and any internal sub-pixel offsets will be reset.</desc>
