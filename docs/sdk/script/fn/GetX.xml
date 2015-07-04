@@ -8,7 +8,17 @@
     <category>Objects</category>
     <subcat>Position</subcat>
     <version>5.1 OC</version>
-    <syntax><rtype>int</rtype></syntax>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>prec</name>
+          <desc>Precision. Coordinates are divided by this value to enable retrieval of fractional positions. Defaults to 1.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
     <desc>Returns the x position of the calling object.</desc>
     <related>
       <funclink>GetXDir</funclink>

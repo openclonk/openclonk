@@ -30,7 +30,7 @@
         <param>
           <type>int</type>
           <name>prec</name>
-          <desc>Precision. Coordinates are divided by this value to enable fractional positions. Defaults to 1.</desc>
+          <desc>Precision. Coordinates are divided by this value to enable movement to fractional positions. Defaults to 1.</desc>
           <optional />
         </param>
       </params>
