@@ -170,7 +170,7 @@ global func FindHeight(int x)
 */
 global func GetSurfaceVector(int x, int y)
 {
-	var normal = {x = 0, y = 0};
+	var normal = [0, 0];
 	
 	var fac = 1;
 	for(var fac = 1; fac <= 4; fac *= 2)

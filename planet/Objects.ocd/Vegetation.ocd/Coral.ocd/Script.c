@@ -52,7 +52,7 @@ func Construction()
 func AdjustPosition()
 {
 	var vec = GetSurfaceVector();
-	var r = Angle(0, 0, vec.x, vec.y);
+	var r = Angle(0, 0, vec[0], vec[1]);
 	SetR(r);
 	
 	// project a bit out of the ground
