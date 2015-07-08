@@ -39,15 +39,16 @@ void C4Landscape::HandleTexMapUpdate()
 
 void C4Landscape::UpdatePixMaps() // Copied from C4Landscape.cpp
 {
-        int32_t i;
-        for (i = 0; i < 256; i++) Pix2Mat[i] = PixCol2Mat(i);
-        for (i = 0; i < 256; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]); 
-        for (i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
-        Pix2Place[0] = 0;
-        // clear bridge mat conversion buffers
-        for (int32_t i = 0; i<128; ++i)
-        {
-                delete [] BridgeMatConversion[i];
-                BridgeMatConversion[i] = NULL;
-        }
+	int32_t i;
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Mat[i] = PixCol2Mat(i);
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]);
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
+	for (i = 0; i < C4M_MaxTexIndex; i++) Pix2Light[i] = MatValid(Pix2Mat[i]) && (::MaterialMap.Map[Pix2Mat[i]].Light>0);
+	Pix2Place[0] = 0;
+	// clear bridge mat conversion buffers
+	for (int32_t i = 0; i < C4M_MaxTexIndex; ++i)
+	{
+		delete [] BridgeMatConversion[i];
+		BridgeMatConversion[i] = NULL;
+	}
 }
