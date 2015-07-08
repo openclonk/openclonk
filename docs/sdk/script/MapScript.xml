@@ -421,7 +421,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
           <row>
             <col>Sky</col>
             <col>Sky</col>
-            <col>True for explicit sky material (0x80) only. Not true for transaprent (0) pixels.</col>
+            <col>True for explicit sky material (0xff) only. Not true for transaprent (0) pixels.</col>
           </row>
           <row>
             <col>Transparent</col>
@@ -446,7 +446,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
           <row>
             <col>*</col>
             <col>*</col>
-            <col>True for all materials.</col>
+            <col>True for all materials, including sky.</col>
           </row>
           <row>
             <col>^Definition</col>

@@ -57,10 +57,13 @@ C4MapScriptAlgoLayer::C4MapScriptAlgoLayer(const C4PropList *props)
 		throw new C4AulExecError("C4MapScriptAlgoLayer: Expected layer in \"Layer\" property.");
 }
 
-uint8_t C4MapScriptAlgoLayer::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoLayer::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
+	fg = layer->GetPix(x,y,0);
+	bg = layer->GetBackPix(x,y,0);
+
 	// Evaluate MAPALGO_Layer at x,y: Just query pixel in layer. Pixels outside the layer range are zero.
-	return layer->GetPix(x,y,0);
+	return fg != 0 || bg != 0;
 }
 
 C4MapScriptAlgoRndChecker::C4MapScriptAlgoRndChecker(const C4PropList *props)
@@ -93,7 +96,7 @@ int32_t QuerySeededRandomField(int32_t seed, int32_t x, int32_t y, int32_t scale
 	return modD((((seed ^ (x*214013))*214013) ^ (y*214013)), scale);
 }
 
-uint8_t C4MapScriptAlgoRndChecker::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoRndChecker::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_RndChecker at x,y: Query a seeded random field scaled by checker_wdt,checker_hgt
 	if (!is_fixed_offset) { x+=seed%checker_wdt; y+=((seed*214013)%checker_hgt); }
@@ -107,7 +110,7 @@ C4MapScriptAlgoRect::C4MapScriptAlgoRect(const C4PropList *props)
 	rect = C4Rect(props->GetPropertyInt(P_X), props->GetPropertyInt(P_Y), props->GetPropertyInt(P_Wdt), props->GetPropertyInt(P_Hgt));
 }
 
-uint8_t C4MapScriptAlgoRect::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoRect::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Rect at x,y: Return 1 for pixels contained in rect, 0 otherwise
 	return rect.Contains(x, y);
@@ -124,7 +127,7 @@ C4MapScriptAlgoEllipsis::C4MapScriptAlgoEllipsis(const C4PropList *props)
 	if (!hgt) hgt = wdt;
 }
 
-uint8_t C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Ellipsis at x,y: Return 1 for pixels within ellipsis, 0 otherwise
 	// warning: overflows for large values (wdt or hgt >=256)
@@ -154,7 +157,7 @@ C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
 	if (open && !empty) throw new C4AulExecError("C4MapScriptAlgoPolygon: Only empty polygons may be open.");
 }
 
-uint8_t C4MapScriptAlgoPolygon::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoPolygon::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Polygon at x,y: Return 1 for pixels within the polygon or its borders, 0 otherwise
 	int32_t crossings = 0;
@@ -205,7 +208,7 @@ C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
 	dl = int64_t(distance) * l;
 }
 
-uint8_t C4MapScriptAlgoLines::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoLines::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Lines at x,y: Return 1 for pixels contained in lines, 0 for pixels between lines
 	int64_t ax = int64_t(x)-ox;
@@ -264,42 +267,50 @@ void C4MapScriptAlgoModifier::Clear()
 	operands.clear();
 }
 
-uint8_t C4MapScriptAlgoAnd::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoAnd::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_And at x,y: 
 	// Return 0 if any of the operands is 0. Otherwise, returns value of last operand.
-	uint8_t val=0;
+	bool val=0;
 	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if (!(val=(**i)(x,y))) return false;
+		if (!(val=(**i)(x, y, fg, bg)))
+			return false;
 	return val;
 }
 
-uint8_t C4MapScriptAlgoOr::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoOr::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Or at x,y: 
 	// Return first nonzero operand
-	uint8_t val;
+	bool val;
 	for (std::vector<C4MapScriptAlgo *>::const_iterator i=operands.begin(); i != operands.end(); ++i)
-		if ((val=(**i)(x,y))) return val;
+		if ((val=(**i)(x, y, fg, bg)))
+			return val;
 	// If all operands are zero, return zero.
-	return 0;
+	return false;
 }
 
-uint8_t C4MapScriptAlgoNot::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoNot::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Not at x,y: 
 	assert(operands.size()==1);
 	// Return zero if operand is set and one otherwise
-	return !(*operands[0])(x,y);
+	return !(*operands[0])(x, y, fg, bg);
 }
 
-uint8_t C4MapScriptAlgoXor::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoXor::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Xor at x,y: 
 	assert(operands.size()==2);
 	// If exactly one of the two operands is nonzero, return it. Otherwise, return zero.
-	uint8_t v1=(*operands[0])(x,y), v2=(*operands[1])(x,y);
-	return v1?v2 ?0: v1:v2;
+	uint8_t fg1, bg1, fg2, bg2;
+	bool v1=(*operands[0])(x,y,fg1,bg1);
+	bool v2=(*operands[1])(x,y,fg2,bg2);
+	if ((v1 && v2) || (!v1 && !v2))
+		return false;
+	if (v1) { fg = fg1; bg = bg1; return true; }
+	fg = fg2; bg = bg2;
+	return true;
 }
 
 C4MapScriptAlgoOffset::C4MapScriptAlgoOffset(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -309,12 +320,12 @@ C4MapScriptAlgoOffset::C4MapScriptAlgoOffset(const C4PropList *props) : C4MapScr
 	oy = props->GetPropertyInt(P_OffY);
 }
 
-uint8_t C4MapScriptAlgoOffset::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoOffset::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Offset at x,y: 
 	assert(operands.size()==1);
 	// Return base layer shifted by ox,oy
-	return (*operands[0])(x-ox,y-oy);
+	return (*operands[0])(x-ox,y-oy, fg, bg);
 }
 
 C4MapScriptAlgoScale::C4MapScriptAlgoScale(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -328,12 +339,12 @@ C4MapScriptAlgoScale::C4MapScriptAlgoScale(const C4PropList *props) : C4MapScrip
 	cy = props->GetPropertyInt(P_OffY);
 }
 
-uint8_t C4MapScriptAlgoScale::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoScale::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Scale at x,y: 
 	assert(operands.size()==1);
 	// Return base layer scaled by sx,sy percent from fixed point cx,cy
-	return (*operands[0])((x-cx)*100/sx+cx,(y-cy)*100/sy+cy);
+	return (*operands[0])((x-cx)*100/sx+cx,(y-cy)*100/sy+cy, fg, bg);
 }
 
 C4MapScriptAlgoRotate::C4MapScriptAlgoRotate(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -346,13 +357,13 @@ C4MapScriptAlgoRotate::C4MapScriptAlgoRotate(const C4PropList *props) : C4MapScr
 	oy = props->GetPropertyInt(P_OffY);
 }
 
-uint8_t C4MapScriptAlgoRotate::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoRotate::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Rotate at x,y: 
 	assert(operands.size()==1);
 	// Return base layer rotated by angle r around point ox,oy
 	x-=ox; y-=oy;
-	return (*operands[0])(x*cr/Precision-y*sr/Precision+ox,x*sr/Precision+y*cr/Precision+oy);
+	return (*operands[0])(x*cr/Precision-y*sr/Precision+ox,x*sr/Precision+y*cr/Precision+oy, fg, bg);
 }
 
 C4MapScriptAlgoTurbulence::C4MapScriptAlgoTurbulence(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -368,7 +379,7 @@ C4MapScriptAlgoTurbulence::C4MapScriptAlgoTurbulence(const C4PropList *props) : 
 	if (!iterations) iterations = 2;
 }
 
-uint8_t C4MapScriptAlgoTurbulence::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoTurbulence::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Turbulence at x,y: 
 	// move by a random offset iterations times
@@ -395,7 +406,7 @@ uint8_t C4MapScriptAlgoTurbulence::operator () (int32_t x, int32_t y) const
 			xy[dim] += a_interp / (scale[0]*scale[1]);
 		}
 	}
-	return (*operands[0])(xy[0],xy[1]);
+	return (*operands[0])(xy[0],xy[1], fg, bg);
 }
 
 void C4MapScriptAlgoBorder::ResolveBorderProps(int32_t *p)
@@ -432,31 +443,30 @@ C4MapScriptAlgoBorder::C4MapScriptAlgoBorder(const C4PropList *props) : C4MapScr
 	}
 }
 
-uint8_t C4MapScriptAlgoBorder::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoBorder::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Border at x,y: Check if position is at a border of operand layer
 	// For borders inside operand layer, return the operand material. For outside borders, just return 1. For non-borders, return 0.
 	// Are we inside or outside?
 	const C4MapScriptAlgo &l = *operands[0];
-	uint8_t mat = l(x,y);
-	bool inside = !!mat;
-	if (!mat) mat=1; // return 1 for outside borders
+	bool inside = l(x,y,fg,bg);
 	// Check four sideways directions
 	const int32_t *ymove[] = { top, bottom }, *xmove [] ={ left, right };
 	const int32_t d[] = { -1, +1 };
 	for (int32_t dir=0; dir<2; ++dir)
 	{
+		uint8_t fake_fg, fake_bg;
 		int32_t hgt = ymove[inside!=!dir][!inside];
 		for (int32_t dy=0; dy<hgt; ++dy)
-			if (inside==!l(x,y+d[dir]*(dy+1)))
-				return mat;
+			if (inside==!l(x,y+d[dir]*(dy+1), fake_fg, fake_bg))
+				return true;
 		int32_t wdt = xmove[inside!=!dir][!inside];
 		for (int32_t dx=0; dx<wdt; ++dx)
-			if (inside==!l(x+d[dir]*(dx+1),y))
-				return mat;
+			if (inside==!l(x+d[dir]*(dx+1),y, fake_fg, fake_bg))
+				return true;
 	}
 	// Not on border
-	return 0;
+	return false;
 }
 
 C4MapScriptAlgoFilter::C4MapScriptAlgoFilter(const C4PropList *props) : C4MapScriptAlgoModifier(props,1,1)
@@ -468,12 +478,13 @@ C4MapScriptAlgoFilter::C4MapScriptAlgoFilter(const C4PropList *props) : C4MapScr
 	filter.Init(spec);
 }
 
-uint8_t C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y) const
+bool C4MapScriptAlgoFilter::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
 {
 	// Evaluate MAPALGO_Filter at x,y:
 	// Return original color if it's marked to go through filter
-	uint8_t col = (*operands[0])(x,y);
-	return filter(col) ? col : 0;
+	bool col = (*operands[0])(x,y, fg, bg);
+	if (!col) fg = bg = 0;
+	return filter(fg, bg);
 }
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)

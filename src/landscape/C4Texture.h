@@ -96,6 +96,7 @@ public:
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
 	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 	int32_t GetTextureIndex(const char *pTexName);
+	BYTE DefaultBkgMatTex(BYTE fg) const;
 protected:
 };
 

@@ -996,23 +996,7 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 
 BYTE C4Landscape::DefaultBkgMat(BYTE fg) const
 {
-	// For the given foreground index, find the default background index
-	// If fg is semisolid, this is tunnel.
-	// Otherwise it is fg itself, so that tunnel and background bricks
-	// stay the way they are.
-	int32_t iTex = PixCol2Tex(fg);
-	if (!iTex) return fg; // sky
-
-	// Get material-texture mapping
-	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
-	// Texmap entry does not exist
-	if(!pTex || !pTex->GetMaterial()) return fg;
-
-	if(DensitySemiSolid(pTex->GetMaterial()->Density))
-		return Mat2PixColDefault(MTunnel);
-
-	return fg;
-
+	return ::TextureMap.DefaultBkgMatTex(fg);
 }
 
 CSurface8* C4Landscape::CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const
@@ -1403,7 +1387,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// script may create or edit map
-		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap)) // TODO: Add sfcMapBkg parameter
+		if (MapScript.InitializeMap(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount, &sfcMap, &sfcMapBkg))
 			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
@@ -1419,6 +1403,8 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			if (fLoadSky) if (!Sky.Init(fSavegame)) return false;
 			return true;
 		}
+
+		assert(sfcMapBkg != NULL);
 
 		if (Config.General.DebugRec)
 		{

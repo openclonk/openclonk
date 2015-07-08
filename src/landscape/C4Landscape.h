@@ -26,8 +26,6 @@
 #include <CSurface8.h>
 #include <C4Material.h>
 
-const uint8_t IFT = 0x80;
-
 const int32_t C4MaxMaterial = 125;
 
 const int32_t C4LSC_Undefined = 0,
@@ -332,7 +330,6 @@ private:
 	std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const;
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
-	BYTE DefaultBkgMat(BYTE fg) const;
 	CSurface8* CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const;
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
@@ -344,6 +341,7 @@ private:
 
 	C4ValueArray *PrepareFreeShape(C4Rect &BoundingBox, C4Object *by_object);
 	void PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object);
+	BYTE DefaultBkgMat(BYTE fg) const;
 
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky

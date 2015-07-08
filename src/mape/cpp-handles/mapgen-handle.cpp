@@ -135,14 +135,16 @@ C4MapgenHandle* c4_mapgen_handle_new_script(const char* filename, const char* so
 
 		// Generate map, fail if return error occurs
 		c4_log_handle_clear();
-		CSurface8* out_ptr = NULL;
+		CSurface8* out_ptr_fg = NULL;
+		CSurface8* out_ptr_bg = NULL;
 		const bool result = ::MapScript.InitializeMap(
 			&landscape,
 			HANDLE_TO_TEXTURE_MAP(texture_map),
 			HANDLE_TO_MATERIAL_MAP(material_map),
 			1,
-			&out_ptr);
-		std::auto_ptr<CSurface8> out(out_ptr);
+			&out_ptr_fg, &out_ptr_bg);
+		std::auto_ptr<CSurface8> out(out_ptr_fg);
+		delete out_ptr_bg; // We don't show the background map... maybe should include a toggle to switch between fg and bg...
 
 		// Don't show any map if there was a script runtime error
 		const char* runtime_error = c4_log_handle_get_first_log_message();
