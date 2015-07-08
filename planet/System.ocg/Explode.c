@@ -181,7 +181,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 				if (!IncinerateLandscape(x - 5, y - 5))
 					IncinerateLandscape(x + 5, y - 5);
 		// Graphic effects.
-		ExplosionEffect(level, x, y);
+		this->ExplosionEffect(level, x, y);
 	}
 	
 	// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
