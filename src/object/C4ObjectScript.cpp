@@ -1835,7 +1835,10 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 		if (!s_node || s_node->GetSlot() != iSlot) return C4Void();
 	}
 
-	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider);
+	const StdMeshAnimation* animation = Instance->GetMesh().GetSkeleton().GetAnimationByName(szAnimation->GetData());
+	if (!animation) return C4Void();
+
+	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider, animation);
 	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
 	if (!p_provider || !w_provider)
 	{
@@ -1844,7 +1847,7 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 		return C4Void();
 	}
 
-	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(*animation, iSlot, s_node, p_provider, w_provider);
 	if (!n_node) return C4Void();
 
 	return n_node->GetNumber();
