@@ -49,7 +49,7 @@ const int
 const int 
 	C4M_MaxName = 15,
 	C4M_MaxDefName = 2*C4M_MaxName+1,
-	C4M_MaxTexIndex = 127; // last texture map index is reserved for diff
+	C4M_MaxTexIndex = 255; // last texture map index is reserved for diff
 
 const int C4S_MaxPlayer = 4;
 
