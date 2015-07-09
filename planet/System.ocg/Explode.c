@@ -121,16 +121,6 @@ global func Explode(int level, bool silent)
 	// Shake the viewport.
 	ShakeViewport(level);
 	
-	// Sound must be created before object removal, for it to be played at the right position.
-	if(!silent) //Does object use it's own explosion sound effect?
-	{
-		var grade = BoundBy(level / 10 - 1, 1, 3);
-		if(GBackLiquid())
-			Sound(Format("BlastLiquid%d",grade));
-		else
-			Sound(Format("Blast%d", grade));
-	}
-
 	// Explosion parameters.
 	var x = GetX(), y = GetY();
 	var cause_plr = GetController();
@@ -144,10 +134,10 @@ global func Explode(int level, bool silent)
 	// Execute the explosion in global context.
 	// There is no possibility to interact with the global context, apart from GameCall.
 	// So at least remove the object context.
-	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer);
+	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer, silent);
 }
 
-global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
+global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer, bool silent)
 {
 	// If the object is contained, loop through all parent containers until the blast is contained or no container is found.
 	// Blast the containers it passes through and the objects inside them.
@@ -181,7 +171,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 				if (!IncinerateLandscape(x - 5, y - 5))
 					IncinerateLandscape(x + 5, y - 5);
 		// Graphic effects.
-		this->ExplosionEffect(level, x, y);
+		Call("ExplosionEffect", level, x, y, 0, silent);
 	}
 	
 	// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
@@ -195,8 +185,17 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 Creates a visual explosion effect at a position.
 smoothness (in percent) determines how round the effect will look like
 */
-global func ExplosionEffect(int level, int x, int y, int smoothness)
+global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent)
 {
+	if(!silent) //Does object use it's own explosion sound effect?
+	{
+		var grade = BoundBy(level / 10 - 1, 1, 3);
+		if(GBackLiquid(x, y))
+			SoundAt(Format("BlastLiquid%d",grade), x, y);
+		else
+			SoundAt(Format("Blast%d", grade), x, y);
+	}
+	
 	// possibly init particle definitions?
 	if (!ExplosionParticles_Blast)
 		ExplosionParticles_Init();
