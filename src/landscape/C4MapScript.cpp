@@ -32,25 +32,55 @@ static const char *DrawFn_Background_Name  = "Background";
 static const char *DrawFn_Liquid_Name      = "Liquid";
 static const char *DrawFn_Solid_Name       = "Solid";
 
+bool TexColSingle(const char *mattex, uint8_t& col)
+{
+	if (SEqual(mattex, DrawFn_Transparent_Name)) { col = 0; return true; }
+	if (SEqual(mattex, DrawFn_Sky_Name)) { col = C4M_MaxTexIndex; return true; }
+
+	col = ::MapScript.pTexMap->GetIndexMatTex(mattex);
+	if (col == 0) return false;
+
+	return true;
+}
+
 bool FnParTexCol(C4String *mattex, uint8_t& fg, uint8_t& bg)
 {
 	// Return index of material-texture definition for a single color
-	// Defaults to underground (tunnel background) color. Prefix material with ^ to get overground (sky background) color.
+	// Defaults to underground (tunnel background) color. Prefix material with ^ to get overground (sky background) color,
+	// or specify as mattex1:mattex2 for foreground-background pair.
 	if (!mattex || !mattex->GetCStr()) return false;
-	if (mattex->GetData() == DrawFn_Transparent_Name) { fg = bg = 0; return true; }
-	if (mattex->GetData() == DrawFn_Sky_Name) {fg = bg = C4M_MaxTexIndex; return true; }
-	const char *cmattex = mattex->GetCStr();
-	bool ift = true;
-	if (*cmattex == '^') { ift=false; ++cmattex; }
-	uint8_t col = ::MapScript.pTexMap->GetIndexMatTex(cmattex);
-	if (col == 0) return false;
 
-	fg = col;
-	if (ift)
-		bg = ::MapScript.pTexMap->DefaultBkgMatTex(fg);
+	int sep_pos = SCharPos(':', mattex->GetCStr());
+	if (sep_pos == -1)
+	{
+		const char *cmattex = mattex->GetCStr();
+		bool ift = true;
+		if (*cmattex == '^') { ift=false; ++cmattex; }
+		
+		uint8_t col;
+		if (!TexColSingle(cmattex, col)) return false;
+
+		fg = col;
+		if (ift)
+			bg = ::MapScript.pTexMap->DefaultBkgMatTex(fg);
+		else
+			bg = C4M_MaxTexIndex; // sky
+
+		return true;
+	}
 	else
-		bg = C4M_MaxTexIndex; // sky
-	return true;
+	{
+		const char *cmattex = mattex->GetCStr();
+		std::string fg_mattex(cmattex, cmattex + sep_pos);
+		std::string bg_mattex(cmattex + sep_pos + 1);
+
+		uint8_t fg_col, bg_col;
+		if (!TexColSingle(fg_mattex.c_str(), fg_col)) return false;
+		if (!TexColSingle(bg_mattex.c_str(), bg_col)) return false;
+
+		fg = fg_col; bg = bg_col;
+		return true;
+	}
 }
 
 void C4MapScriptMatTexMask::UnmaskSpec(C4String *spec)

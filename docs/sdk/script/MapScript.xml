@@ -390,13 +390,18 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
           <row>
             <col>Sky</col>
             <col>Sky</col>
-            <col>Draws a sky material. Within the map generator, explicit sky is drawn as IFT (0x80), which is converted to index zero on map drawing. That way, sky can be blitted to other layers without being transparent.</col>
+            <col>Draws a sky material. Within the map generator, explicit sky is drawn as index 0xff, which is converted to index zero on map drawing. That way, sky can be blitted to other layers without being transparent.</col>
           </row>
           <row>
             <col>Transparent</col>
             <col>Transparent</col>
             <col>Draws with index 0.</col>
           </row>
+          <row>
+            <col>FgMatTex:BgMatTex</col>
+            <col>Water:Tunnel-brickback</col>
+            <col>Draws with a specified background material. In the example, draws water which, when drained, exposes bricks instead of tunnel behind it. FgMatTex and BgMatTex can be any of the other specifications in this table, except the ones prefixed with ^. However, the specification FgMatTex:Sky is equivalent to ^FgMatTex.</col> 
+          <row>
         </table>
       </text>
     <h>Material-texture masks (string mask_spec)</h>
