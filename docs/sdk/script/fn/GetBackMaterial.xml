@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetBackMaterial</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate at which to check the background material. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate at which to check the background material. Offset in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the background material type at the specified position in the landscape. Returns a material index which can be used for comparison e.g. with <funclink>Material</funclink>. For sky background the function returns -1. The background material is the material that a pixel is replaced with when it is digged away or blasted free.</desc>
+    <remark>This functions only processes static materials - moving material pixels such as rain or snow are not evaluated.</remark>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(GetMaterial(0, 0) == <funclink>Material</funclink>(&quot;Water&quot;) &amp;&amp; <funclink>GetBackMaterial</funclink>(0, 0) == <funclink>Material</funclink>(&quot;Water&quot;)) <funclink>Message</funclink>(&quot;I am in a neverending stream of water!&quot;);</code>
+        <text>Part of a clonk script: if the clonk is swimming in water that is replaced with water when it flows away, a message is displayed.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetMaterial</funclink>
+      <funclink>Material</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GBackLiquid</funclink>
+      <funclink>InsertMaterial</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2015-07</date>
+</funcs>

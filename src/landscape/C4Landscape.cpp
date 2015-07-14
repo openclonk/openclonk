@@ -3483,7 +3483,7 @@ C4Rect C4Landscape::getBoundingBox(int *vtcs, int length) const
 	return BoundingBox;
 }
 
-bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, bool fIFT, bool fDrawBridge)
+bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, const char* szBackMaterial, bool fDrawBridge)
 {
 	if(length < 6) return false;
 	if(length % 2 == 1) return false;
@@ -3491,7 +3491,14 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	int32_t iMatTex = ::TextureMap.GetIndexMatTex(szMaterial);
 	if (!iMatTex) return false;
 	uint8_t mcol = MatTex2PixCol(iMatTex);
-	uint8_t mcolBkg = fIFT ? DefaultBkgMat(mcol) : 0;
+	// get background texture
+	uint8_t mcolBkg = 0;
+	if (szBackMaterial != NULL)
+	{
+		const int32_t iBackMatTex = ::TextureMap.GetIndexMatTex(szBackMaterial);
+		if (!iBackMatTex) return false;
+		mcolBkg = MatTex2PixCol(iBackMatTex);
+	}
 	// do bridging?
 	uint8_t *conversion_map = NULL;
 	if (fDrawBridge)
@@ -3536,7 +3543,7 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int32_t for_material_col) const
 	return conv_map;
 }
 
-bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool fIFT, bool fDrawBridge)
+bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, const char *szBackMaterial, bool fDrawBridge)
 {
 	// set vertices
 	int32_t vtcs[8];
@@ -3544,7 +3551,7 @@ bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 	vtcs[2] = iX2; vtcs[3] = iY2;
 	vtcs[4] = iX3; vtcs[5] = iY3;
 	vtcs[6] = iX4; vtcs[7] = iY4;
-	return DrawPolygon(vtcs, 8, szMaterial, fIFT, fDrawBridge);
+	return DrawPolygon(vtcs, 8, szMaterial, szBackMaterial, fDrawBridge);
 }
 
 BYTE C4Landscape::GetMapIndex(int32_t iX, int32_t iY) const

@@ -56,14 +56,14 @@
           <desc>Y coordinate of the fourth corner. Always global.</desc>
         </param>
         <param>
-          <type>bool</type>
-          <name>sub</name>
-          <desc>If <code>true</code>, the material will be drawn as 'underground'.</desc>
+          <type>any</type>
+          <name>szBkgMat</name>
+          <desc>One of the symbolic constants <code>DMQ_Sky</code>, <code>DMQ_Sub</code> or <code>DMQ_Bridge</code>, or a material texture combination. Specifies the background material of the chunk drawn. If <code>DMQ_Sky</code>, the material will be drawn with sky background. If <code>DMQ_Sub</code>, the material will be drawn with the default underground material as background. If <code>DMQ_Bridge</code>, the material will be drawn only over layers of equal or lower density, and the background material remains unchanged. If this is a string, the specified material-texture combination is used as background material. The background material is the material that a pixel is replaced with when it is digged away or blasted free.</desc>
         </param>
       </params>
     </syntax>
     <desc>Draws a four-cornered polygon of the specified material and texture into the landscape.</desc>
-    <remark>The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you make multiple calls to this function.</remark>
+    <remark>The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you can make multiple calls to this function.</remark>
     <examples>
       <example>
         <code>DrawMaterialQuad(&quot;Gold-gold&quot;, 0,0, <funclink>LandscapeWidth</funclink>()-1,0, <funclink>LandscapeWidth</funclink>()-1,<funclink>LandscapeHeight</funclink>()-1, 0,<funclink>LandscapeHeight</funclink>()-1);</code>
@@ -75,4 +75,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2002-05</date>
+  <author>Clonk-Karl</author><date>2015-07</date>
 </funcs>

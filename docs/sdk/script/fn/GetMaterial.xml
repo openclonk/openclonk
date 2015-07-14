@@ -33,6 +33,7 @@
     </examples>
     <related>
       <funclink>Material</funclink>
+      <funclink>GetBackMaterial</funclink>
       <funclink>GBackSolid</funclink>
       <funclink>GBackLiquid</funclink>
       <funclink>InsertMaterial</funclink>

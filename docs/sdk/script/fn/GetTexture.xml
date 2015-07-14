@@ -37,6 +37,7 @@
       </example>
     </examples>
     <related>
+      <funclink>GetBackTexture</funclink>
       <funclink>GetAverageTextureColor</funclink>
     </related>
   </func>

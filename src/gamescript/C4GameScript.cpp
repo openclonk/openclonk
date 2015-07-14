@@ -387,12 +387,32 @@ static long FnGetMaterial(C4PropList * _this, long x, long y)
 	return GBackMat(x,y);
 }
 
+static long FnGetBackMaterial(C4PropList * _this, long x, long y)
+{
+	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	return ::Landscape.GetBackMat(x, y);
+}
+
 static C4String *FnGetTexture(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 
 	// Get texture
 	int32_t iTex = PixCol2Tex(GBackPix(x, y));
+	if (!iTex) return NULL;
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
+	if (!pTex) return NULL;
+	// Return tex name
+	return String(pTex->GetTextureName());
+}
+
+static C4String *FnGetBackTexture(C4PropList * _this, long x, long y)
+{
+	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+
+	// Get texture
+	int32_t iTex = PixCol2Tex(::Landscape.GetBackPix(x, y));
 	if (!iTex) return NULL;
 	// Get material-texture mapping
 	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
@@ -1968,10 +1988,29 @@ static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
                      DMQ_Sub = 1, // draw w/ tunnel IFT
                      DMQ_Bridge = 2; // draw only over materials you can bridge over
 
-static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, int draw_mode)
+static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, const C4Value& draw_mode)
 {
 	const char *szMat = FnStringPar(szMaterial);
-	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
+
+	const char *szBackMat = NULL;
+	bool fBridge = false;
+	if (draw_mode.GetType() == C4V_Int)
+	{
+		// Default behaviour: Default background material
+		const int draw_mode_value = draw_mode.getInt();
+		switch(draw_mode_value)
+		{
+		case DMQ_Sky: break;
+		case DMQ_Sub: szBackMat = "Tunnel"; break; // TODO: Go via DefaultBkgMat
+		case DMQ_Bridge: fBridge = true; break;
+		}
+	}
+	else if (draw_mode.GetType() == C4V_String)
+	{
+		szBackMat = FnStringPar(draw_mode.getStr());
+	}
+
+	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, szBackMat, fBridge);
 }
 
 static bool FnSetFilmView(C4PropList * _this, long iToPlr)
@@ -2640,7 +2679,9 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
+	AddFunc(pEngine, "GetBackMaterial", FnGetBackMaterial);
 	AddFunc(pEngine, "GetTexture", FnGetTexture);
+	AddFunc(pEngine, "GetBackTexture", FnGetBackTexture);
 	AddFunc(pEngine, "GetAverageTextureColor", FnGetAverageTextureColor);
 	AddFunc(pEngine, "GetMaterialCount", FnGetMaterialCount);
 	AddFunc(pEngine, "GBackSolid", FnGBackSolid);

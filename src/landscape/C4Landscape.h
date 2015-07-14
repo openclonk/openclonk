@@ -121,8 +121,8 @@ public:
 	bool DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
 	bool DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
 	bool DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT);
-	bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT, bool fDrawBridge);
-	bool DrawPolygon(int *vtcs, int length, const char *szMaterial, bool bIFT, bool fDrawBridge);
+	bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, const char *szBackMaterial, bool fDrawBridge);
+	bool DrawPolygon(int *vtcs, int length, const char *szMaterial, const char *szBackMaterial, bool fDrawBridge);
 	CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
 	inline BYTE _GetPix(int32_t x, int32_t y) const // get landscape pixel (bounds not checked)
 	{
