@@ -25,3 +25,22 @@ var rect = Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
 	}
 	return {x = x2, y = y2, w = w2, h = h2};
 }
+
+// Checks whether or not a given point (x,y) is inside a rectangle.
+// set global_coordinates TRUE to indicate that the given coordinates are from a global context
+// (e.g. object->GetX()) but the rectangle has a local one. If so, the calling object's position
+// will be subtracted
+global func Rectangle_IsInside(proplist rect, int x, int y, bool global_coordinates)
+{
+	if (global_coordinates)
+	{
+		if (this)
+		{
+			x -= GetX();
+			y -= GetY();
+		}
+	}
+	if (Inside(x, rect.x, rect.x + rect.w) && Inside(y, rect.y, rect.y + rect.h))
+		return true;
+	return false;
+}
