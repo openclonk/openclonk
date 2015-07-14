@@ -109,11 +109,8 @@ public:
 	bool MapToLandscape();
 	bool ApplyDiff(C4Group &hGroup);
 	bool SetMode(int32_t iMode);
-	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
 	bool SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix); // set landscape pixel (bounds checked)
-	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix); // set landsape pixel (bounds not checked)
-	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
 	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0, bool query_only=false); // modifies tx/ty to actual insertion position
 	bool InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty);
 	bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide) const;
@@ -371,11 +368,8 @@ int32_t PixCol2Mat(BYTE pixc);
 #define GBackWdt ::Landscape.Width
 #define GBackHgt ::Landscape.Height
 #define GBackPix ::Landscape.GetPix
-#define SBackPix ::Landscape.SetPix
 #define ClearBackPix ::Landscape.ClearPix
 #define _GBackPix ::Landscape._GetPix
-#define _SBackPix ::Landscape._SetPix
-#define _SBackPixIfMask ::Landscape._SetPixIfMask
 
 inline bool DensitySolid(int32_t dens)
 {

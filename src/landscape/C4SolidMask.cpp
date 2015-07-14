@@ -100,7 +100,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 							pSolidMaskMatBuff[(ycnt+pClipRect->ty)*MatBuffPitch+xcnt+pClipRect->tx]=byPixel;
 					}
 					// and set mask
-					_SBackPix(iTx,iTy,MCVehic);
+					::Landscape.SetPix2(iTx,iTy,MCVehic,::Landscape.TRANSPARENT);
 				}
 				else
 					// no SolidMask: mark buffer as unused here
@@ -166,7 +166,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 							pSolidMaskMatBuff[i + xcnt] = byPixel;
 					}
 					// set mask pix
-					_SBackPix(iTx, iTy, MCVehic);
+					::Landscape.SetPix2(iTx, iTy, MCVehic, ::Landscape.TRANSPARENT);
 				}
 				else if (!MaskPut)
 					// mark pix as unused in buf
@@ -260,7 +260,8 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 				// Non-SolidMask-pixels should not happen here, because all relevant landscape change routines should
 				// temp remove SolidMasks before
 				assert(_GBackPix(iTx,iTy) == MCVehic);
-				_SBackPixIfMask(iTx,iTy,*pPix,MCVehic);
+				if (::Landscape._GetPix(iTx, iTy) == MCVehic)
+					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.TRANSPARENT);
 				// Instability
 				::Landscape.CheckInstabilityRange(iTx,iTy);
 			}
@@ -343,7 +344,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 			{
 				// restore
 				assert(GBackPix(x,y)==MCVehic);
-				_SBackPix(x, y, *pPix);
+				::Landscape.SetPix2(x, y, *pPix, ::Landscape.TRANSPARENT);
 			}
 		}
 	}
@@ -364,7 +365,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 			{
 				// put
 				assert(GBackPix(x,y)==*pPix);
-				_SBackPix(x,y,MCVehic);
+				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.TRANSPARENT);
 			}
 		}
 	}
@@ -386,7 +387,7 @@ void C4SolidMask::Repair(C4Rect where)
 				// record changed landscape in MatBuff
 				*pPix = GBackPix(x,y);
 				// put
-				_SBackPix(x,y,MCVehic);
+				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.TRANSPARENT);
 			}
 		}
 	}

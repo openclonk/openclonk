@@ -689,11 +689,6 @@ bool C4Landscape::ClearPix(int32_t tx, int32_t ty)
 	return SetPix2(tx, ty, bkgPix, bkgPix);
 }
 
-bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
-{
-	return SetPix2(x, y, npix, DefaultBkgMat(npix));
-}
-
 bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 {
 	// check bounds
@@ -718,11 +713,6 @@ bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	}
 	// set pixel
 	return _SetPix2(x, y, fgPix, bgPix);
-}
-
-bool C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
-{
-	return _SetPix2(x, y, npix, DefaultBkgMat(npix));
 }
 
 bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
@@ -795,15 +785,6 @@ bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	return true;
 }
 
-bool C4Landscape::_SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask)
-{
-	// set 8bpp-surface only!
-	if (_GetPix(x, y) == nMask)
-		_SetPix(x, y, npix);
-	// success
-	return true;
-}
-
 bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
 {
 	int32_t mat=GetMat(tx,ty);
@@ -859,9 +840,9 @@ void C4Landscape::RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt)
 		for (cy=ty; (cy+1<GBackHgt) && !GBackSolid(cx,cy+1); cy++) {}
 		if (cy+1<GBackHgt) if (cy-ty<20)
 			{
-				cpix=GBackPix(cx,cy+1);
+				cpix=GetPix(cx,cy+1);
 				if (!MatVehicle(PixCol2Mat(cpix)))
-					while (cy>=ty) { SetPix(cx,cy,cpix); cy--; }
+					while (cy>=ty) { SetPix2(cx,cy,cpix,GetBackPix(cx,cy+1)); cy--; }
 			}
 	}
 }
@@ -1795,7 +1776,7 @@ bool C4Landscape::ApplyDiff(C4Group &hGroup)
 		if (pDiff->GetPix(x, y) != C4M_MaxTexIndex)
 			if (Surface8->_GetPix(x,y) != (byPix=pDiff->_GetPix(x,y)))
 				// material has changed here: readjust with new texture
-				SetPix(x,y, byPix);
+				Surface8->SetPix(x,y, byPix);
 		if (pDiffBkg->GetPix(x, y) != C4M_MaxTexIndex)
 			if (Surface8Bkg->_GetPix(x, y) != (byPix=pDiffBkg->_GetPix(x, y)))
 				Surface8Bkg->_SetPix(x, y, byPix);
