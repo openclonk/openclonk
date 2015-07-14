@@ -908,6 +908,10 @@ func StopSwim()
 
 func SetSwimmingVertices(bool is_swimming)
 {
+	// Remove old delayed vertex effects.
+	while (GetEffect("IntDelayedVertex", this))
+		RemoveEffect("IntDelayedVertex", this);
+	
 	var vtx_list = [[0,2,0,300], [0,-7,4,300], [0,9,11,300], [-2,-3,1,300], [2,-3,2,300], [-4,2,1,300], [4,2,2,300], [-2,6,1,300], [2,6,2,300]];
 	if (is_swimming)
 		vtx_list = [[0,2,0,50], [0,-2,4,50], [0,7,11,50], [-4,-1,1,50], [4,-1,2,50], [-4,2,1,50], [4,2,2,50], [-4,4,1,50], [4,4,2,50]];
@@ -931,8 +935,7 @@ func SetSwimmingVertices(bool is_swimming)
 			// But add an effect which does this delayed.
 			var effect = AddEffect("IntDelayedVertex", this, 100, 1, this);
 			effect.vertex = i;
-			effect.old_vertex = [x, y, cnat, friction];
-			effect.new_vertex = vtx_list[i];
+			effect.to_vertex = vtx_list[i];
 		}
 	}
 	return;
@@ -940,21 +943,13 @@ func SetSwimmingVertices(bool is_swimming)
 
 protected func FxIntDelayedVertexTimer(object target, proplist effect, int time)
 {
-	if (time > 8)
-		return FX_Execute_Kill;
-	
-	SetVertex(effect.vertex, VTX_X, effect.new_vertex[0], 2);
-	SetVertex(effect.vertex, VTX_Y, effect.new_vertex[1], 2);
-	SetVertex(effect.vertex, VTX_CNAT, effect.new_vertex[2], 2);
-	SetVertex(effect.vertex, VTX_Friction, effect.new_vertex[3], 2);
-	if (!Stuck())
-		return FX_Execute_Kill;
-		
-	SetVertex(effect.vertex, VTX_X, effect.old_vertex[0], 2);
-	SetVertex(effect.vertex, VTX_Y, effect.old_vertex[1], 2);
-	SetVertex(effect.vertex, VTX_CNAT, effect.old_vertex[2], 2);
-	SetVertex(effect.vertex, VTX_Friction, effect.old_vertex[3], 2);
-	return FX_OK;
+	if (Stuck())
+		return FX_OK;
+	SetVertex(effect.vertex, VTX_X, effect.to_vertex[0], 2);
+	SetVertex(effect.vertex, VTX_Y, effect.to_vertex[1], 2);
+	SetVertex(effect.vertex, VTX_CNAT, effect.to_vertex[2], 2);
+	SetVertex(effect.vertex, VTX_Friction, effect.to_vertex[3], 2);
+	return FX_Execute_Kill;
 }
 
 func FxIntSwimStart(pTarget, effect, fTmp)
