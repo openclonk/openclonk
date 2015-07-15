@@ -39,7 +39,7 @@ public:
 	bool ShowEntrance;
 	bool ShowPathfinder;
 	bool ShowNetstatus;
-	bool ShowSolidMask;
+	int Show8BitSurface; // 0 normal, 1 foreground mats, 2 background mats
 	bool ShowLights;
 	C4Video Video;
 	C4LoaderScreen *pLoaderScreen;
@@ -69,7 +69,7 @@ protected:
 	int32_t SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int32_t iLoaderCount, char *szDstName, C4Group **ppDestGrp);
 
 public:
-	bool ToggleShowSolidMask();
+	bool ToggleShow8BitSurface();
 	bool ToggleShowNetStatus();
 	bool ToggleShowVertices();
 	bool ToggleShowAction();

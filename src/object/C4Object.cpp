@@ -2017,7 +2017,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Debug Display ///////////////////////////////////////////////////////////////////////////////
 
 	// Don't draw (show solidmask)
-	if (::GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.Show8BitSurface != 0)
 		if (SolidMask.Wdt)
 		{
 			// DrawSolidMask(cgo); - no need to draw it, because the 8bit-surface will be shown
@@ -2147,7 +2147,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	    || !Inside<float>(offY, cgo.Y - Shape.Hgt, cgo.Y + cgo.Hgt))
 		return;
 	// Don't draw (show solidmask)
-	if (::GraphicsSystem.ShowSolidMask && SolidMask.Wdt) return;
+	if (::GraphicsSystem.Show8BitSurface != 0 && SolidMask.Wdt) return;
 	// Contained
 	if (Contained) if (eDrawMode!=ODM_Overlay) return;
 	// Construction sign

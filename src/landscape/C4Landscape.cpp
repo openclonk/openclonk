@@ -309,8 +309,10 @@ void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 {
 	if (Modulation) pDraw->ActivateBlitModulation(Modulation);
 	// blit landscape
-	if (::GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.Show8BitSurface == 1)
 		pDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
+	else if (::GraphicsSystem.Show8BitSurface == 2)
+		pDraw->Blit8Fast(Surface8Bkg, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else if(pLandscapeRender)
 	{
 		DoRelights();
