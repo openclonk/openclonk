@@ -3293,11 +3293,12 @@ bool C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture
 	return true;
 }
 
-bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
+bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 {
-	BYTE byCol;
+	BYTE byCol, byColBkg;
 	// Get map color index by material-texture
 	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
+	if (!GetMapColorIndex(szBackMaterial,szBackTexture,byColBkg)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(byCol);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3316,8 +3317,8 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 	case C4LSC_Static:
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
-		if (iRadius==1) { Map->SetPix(iX/MapZoom,iY/MapZoom,byCol); MapBkg->SetPix(iX/MapZoom, iY/MapZoom, fIFT ? DefaultBkgMat(byCol) : 0); }
-		else { Map->Circle(iX/MapZoom,iY/MapZoom,iRadius,byCol); MapBkg->Circle(iX/MapZoom, iY/MapZoom, iRadius, fIFT ? DefaultBkgMat(byCol) : 0); }
+		if (iRadius==1) { Map->SetPix(iX/MapZoom,iY/MapZoom,byCol); MapBkg->SetPix(iX/MapZoom, iY/MapZoom, byColBkg); }
+		else { Map->Circle(iX/MapZoom,iY/MapZoom,iRadius,byCol); MapBkg->Circle(iX/MapZoom, iY/MapZoom, iRadius, byColBkg); }
 		// Update landscape
 		MapToLandscape(Map,MapBkg,iX/MapZoom-iRadius-1-shape_wdt,iY/MapZoom-iRadius-1-shape_hgt,2*iRadius+2+shape_wdt*2,2*iRadius+2+shape_hgt*2);
 		SetMapChanged();
@@ -3328,7 +3329,7 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Circle(iX,iY,iGrade, byCol);
-		Surface8Bkg->Circle(iX,iY,iGrade, fIFT ? DefaultBkgMat(byCol) : 0);
+		Surface8Bkg->Circle(iX,iY,iGrade, byColBkg);
 		FinishChange(BoundingBox);
 		break;
 	}
@@ -3352,11 +3353,12 @@ bool C4Landscape::DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius, uint8_t l
 	return true;
 }
 
-bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
+bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 {
 	// Get map color index by material-texture
-	uint8_t line_color;
+	uint8_t line_color, line_color_bkg;
 	if (!GetMapColorIndex(szMaterial,szTexture,line_color)) return false;
+	if (!GetMapColorIndex(szBackMaterial,szBackTexture,line_color_bkg)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(line_color);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3376,7 +3378,7 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
-		ForLine(iX1, iY1, iX2, iY2, [this, line_color, fIFT, iRadius](int32_t x, int32_t y) { return DrawLineMap(x, y, iRadius, line_color, fIFT ? DefaultBkgMat(line_color) : 0); });
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, line_color_bkg, iRadius](int32_t x, int32_t y) { return DrawLineMap(x, y, iRadius, line_color, line_color_bkg); });
 		// Update landscape
 		int32_t iUpX,iUpY,iUpWdt,iUpHgt;
 		iUpX=Min(iX1,iX2)-iRadius-1; iUpY=Min(iY1,iY2)-iRadius-1;
@@ -3391,21 +3393,22 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		BoundingBox.Add(C4Rect(iX2 - iGrade, iY2 - iGrade, iGrade*2+1, iGrade*2+1));
 		// Draw to landscape
 		PrepareChange(BoundingBox);
-		ForLine(iX1, iY1, iX2, iY2, [this, line_color, fIFT, iGrade](int32_t x, int32_t y) { return DrawLineLandscape(x, y, iGrade, line_color, fIFT ? DefaultBkgMat(line_color) : 0); });
+		ForLine(iX1, iY1, iX2, iY2, [this, line_color, line_color_bkg, iGrade](int32_t x, int32_t y) { return DrawLineLandscape(x, y, iGrade, line_color, line_color_bkg); });
 		FinishChange(BoundingBox);
 		break;
 	}
 	return true;
 }
 
-bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
+bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 {
 	// get upper-left/lower-right - corners
 	int32_t iX0=Min(iX1, iX2); int32_t iY0=Min(iY1, iY2);
 	iX2=Max(iX1, iX2); iY2=Max(iY1, iY2); iX1=iX0; iY1=iY0;
-	BYTE byCol;
+	BYTE byCol, byColBkg;
 	// Get map color index by material-texture
 	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
+	if (!GetMapColorIndex(szBackMaterial,szBackTexture,byColBkg)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(byCol);
 	int32_t shape_wdt=0, shape_hgt=0;
@@ -3425,7 +3428,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		// Draw to map
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
 		Map->Box(iX1,iY1,iX2,iY2,byCol);
-		MapBkg->Box(iX1, iY1, iX2, iY2, fIFT ? DefaultBkgMat(byCol) : 0);
+		MapBkg->Box(iX1, iY1, iX2, iY2, byColBkg);
 		// Update landscape
 		MapToLandscape(Map,MapBkg,iX1-1-shape_wdt,iY1-1-shape_hgt,iX2-iX1+3+shape_wdt*2,iY2-iY1+3+shape_hgt*2);
 		SetMapChanged();
@@ -3436,7 +3439,7 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		// Draw to landscape
 		PrepareChange(BoundingBox);
 		Surface8->Box(iX1,iY1,iX2,iY2,byCol);
-		Surface8Bkg->Box(iX1,iY1,iX2,iY2,fIFT ? DefaultBkgMat(byCol) : 0);
+		Surface8Bkg->Box(iX1,iY1,iX2,iY2,byColBkg);
 		FinishChange(BoundingBox);
 		break;
 	}

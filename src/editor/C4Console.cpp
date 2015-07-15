@@ -567,9 +567,10 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*>&) {}
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}
+void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg*, char const*) {}
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg*, char const*) {}
-void C4ConsoleGUI::ToolsDlgSetMaterial(C4ToolsDlg*, char const*) {}
-void C4ConsoleGUI::ToolsDlgSetTexture(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg*, char const*) {}
 bool C4ConsoleGUI::UpdateModeCtrls(int) {return 0;}
 void C4ToolsDlg::EnableControls() {}
 void C4ToolsDlg::InitGradeCtrl() {}

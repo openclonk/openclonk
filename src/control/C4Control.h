@@ -487,17 +487,19 @@ enum C4ControlEMDrawAction
 class C4ControlEMDrawTool : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMDrawTool() : eAction(EMDT_SetMode), iX(0), iY(0), iX2(0), iY2(0), iGrade(0), fIFT(false) { }
+	C4ControlEMDrawTool() : eAction(EMDT_SetMode), iX(0), iY(0), iX2(0), iY2(0), iGrade(0) { }
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
 	                    int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
-	                    bool fIFT=true, const char *szMaterial=NULL, const char *szTexture=NULL);
+	                    const char *szMaterial=NULL, const char *szTexture=NULL,
+	                    const char *szBackMaterial=NULL, const char *szBackTexture=NULL);
 protected:
 	C4ControlEMDrawAction eAction;  // action to be performed
 	int32_t iMode;        // new mode, or mode action was performed in (action will fail if changed)
 	int32_t iX,iY,iX2,iY2,iGrade; // drawing parameters
-	bool fIFT;        // sky/tunnel-background
 	StdStrBuf Material; // used material
 	StdStrBuf Texture;  // used texture
+	StdStrBuf BackMaterial; // used background material
+	StdStrBuf BackTexture;  // used background texture
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };

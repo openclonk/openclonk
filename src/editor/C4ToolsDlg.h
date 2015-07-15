@@ -56,6 +56,9 @@ public:
 	bool ModeIFT;
 	char Material[C4M_MaxName+1];
 	char Texture[C4M_MaxName+1];
+	bool ModeBack; // If true, IFT is ignored and background material/texture is always used
+	char BackMaterial[C4M_MaxName+1];
+	char BackTexture[C4M_MaxName+1];
 public:
 	void Default();
 	void Clear();
@@ -72,10 +75,13 @@ public:
 	bool ToggleIFT() { return !!SetIFT(!ModeIFT); }
 	bool SelectTexture(const char *szTexture);
 	bool SelectMaterial(const char *szMaterial);
+	bool SelectBackTexture(const char *szTexture);
+	bool SelectBackMaterial(const char *szMaterial);
 	void SetAlternateTool();
 	void ResetAlternateTool();
 protected:
 	void AssertValidTexture();
+	void AssertValidBackTexture();
 	void LoadBitmaps();
 	void EnableControls();
 	void UpdateIFTControls();
@@ -88,6 +94,8 @@ public:
 	void UpdateLandscapeModeCtrls();
 	void SetTexture(const char *szTexture);
 	void SetMaterial(const char *szMaterial);
+	void SetBackTexture(const char *szTexture);
+	void SetBackMaterial(const char *szMaterial);
 };
 
 #endif //INC_C4ToolsDlg

@@ -1371,9 +1371,10 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 
 C4ControlEMDrawTool::C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
     int32_t iX, int32_t iY, int32_t iX2, int32_t iY2, int32_t iGrade,
-    bool fIFT, const char *szMaterial, const char *szTexture)
+    const char *szMaterial, const char *szTexture, const char *szBackMaterial, const char *szBackTexture)
 		: eAction(eAction), iMode(iMode), iX(iX), iY(iY), iX2(iX2), iY2(iY2), iGrade(iGrade),
-		fIFT(fIFT), Material(szMaterial, true), Texture(szTexture, true)
+		Material(szMaterial, true), Texture(szTexture, true),
+		BackMaterial(szBackMaterial, true), BackTexture(szBackTexture, true)
 {
 
 }
@@ -1392,21 +1393,23 @@ void C4ControlEMDrawTool::Execute() const
 	// assert validity of parameters
 	if (!Material.getSize()) return;
 	const char *szMaterial = Material.getData(),
-	                         *szTexture = Texture.getData();
+	           *szTexture = Texture.getData();
+	const char *szBackMaterial = BackMaterial.getData(),
+	           *szBackTexture = BackTexture.getData();
 	// perform action
 	switch (eAction)
 	{
 	case EMDT_Brush: // brush tool
 		if (!Texture.getSize()) break;
-		::Landscape.DrawBrush(iX, iY, iGrade, szMaterial, szTexture, fIFT);
+		::Landscape.DrawBrush(iX, iY, iGrade, szMaterial, szTexture, szBackMaterial, szBackTexture);
 		break;
 	case EMDT_Line: // line tool
 		if (!Texture.getSize()) break;
-		::Landscape.DrawLine(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
+		::Landscape.DrawLine(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, szBackMaterial, szBackTexture);
 		break;
 	case EMDT_Rect: // rect tool
 		if (!Texture.getSize()) break;
-		::Landscape.DrawBox(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
+		::Landscape.DrawBox(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, szBackMaterial, szBackTexture);
 		break;
 	case EMDT_Fill: // fill tool
 	{
@@ -1435,9 +1438,10 @@ void C4ControlEMDrawTool::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iX2, "X2", 0));
 	pComp->Value(mkNamingAdapt(iY2, "Y2", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iGrade),  "Grade", 0));
-	pComp->Value(mkNamingAdapt(fIFT, "IFT", false));
 	pComp->Value(mkNamingAdapt(Material, "Material", ""));
 	pComp->Value(mkNamingAdapt(Texture, "Texture", ""));
+	pComp->Value(mkNamingAdapt(BackMaterial, "BackMaterial", ""));
+	pComp->Value(mkNamingAdapt(BackTexture, "BackTexture", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
