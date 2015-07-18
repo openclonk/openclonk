@@ -8,11 +8,12 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
+#include Library_LampPost
 
 // does not need power
 public func PowerNeed() { return 0; }
 
-public func LanternPosition() { return [GetCalcDir()*-11,2]; }
+public func LampPosition(id def) { return [GetCalcDir()*-11,2]; }
 
 public func Construction(object creator)
 {

@@ -1,0 +1,84 @@
+/**
+	Lamp Library
+	Include this by all lamps that should hang outside buildings.
+	
+	@author Clonkonaut
+*/
+
+/** Must define a dummy definition (i.e. the object which is shown outside the building)
+*/
+public func DummyDefinition() {}
+
+/** Whether or not the lamp is on (true then).
+*/
+local lib_lamp_lit;
+
+/** This is a lamp.
+*/
+public func IsLamp() { return true; }
+
+/** Overload as needed to define a custom offset by the lamp.
+*/
+public func LampOffset() {}
+
+/*-- Convenient calls --*/
+
+/** Standard turning on procedure. Overload as needed.
+	Default behaviour: lib_lamp_lit to true, light range 80,60, inherited
+*/
+public func TurnOn()
+{
+	if (lib_lamp_lit) return false;
+	_inherited();
+	SetLightRange(80, 60);
+	lib_lamp_lit = true;
+	return true;
+}
+
+/** Standard turning off procedure. Overload as needed.
+	Default behaviour: lib_lamp_lit to false, light range 0,0, inherited
+*/
+public func TurnOff()
+{
+	if (!lib_lamp_lit) return false;
+	_inherited();
+	SetLightRange(0, 0);
+	lib_lamp_lit = false;
+	return true;
+}
+
+/*-- Usage --*/
+
+/** Standard control procedure. Overload as needed.
+	Default behaviour: If clonk is ready, either turn on or off.
+*/
+public func ControlUse(object clonk)
+{
+	// Only do something if the clonk can do an action.
+	if (!clonk->HasHandAction())
+		return true;
+	// Turn on or off
+	if (lib_lamp_lit) {
+		TurnOff();
+	} else {
+		TurnOn();
+	}
+	Sound("Click2");
+	return true;
+}
+
+/*-- Further stuff --*/
+
+/** Calls LampDeparture() in the departed object.
+*/
+public func Departure(object container)
+{
+	container->~LampDeparture(this);
+}
+
+/** Calls LampDestruction() in a container if contained.
+*/
+public func Destruction()
+{
+	if (Contained()) Contained()->~LampDestruction(this);
+}
