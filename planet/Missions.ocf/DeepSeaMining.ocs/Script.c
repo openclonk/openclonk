@@ -50,7 +50,13 @@ protected func PostIntroInitialize()
 
 func DoInit(int first_player)
 {
-	StartSequence("Intro", 0, GetCrew(first_player));
+	if (!SCEN_TEST)
+		StartSequence("Intro", 0, GetCrew(first_player));
+	else
+	{
+		PostIntroInitialize();
+		g_intro_done = true;
+	}
 	return true;
 }
 
