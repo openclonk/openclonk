@@ -4,6 +4,7 @@
 #ifdef HAVE_LIGHT
 uniform sampler2D lightTex;
 #endif
+uniform float cullMode; // 0 if backface culling is enabled, 1 if it is disabled
 
 // uncomment the following lines for debugging light directions:
 // yellow: light up, blue: light down, turqoise: light right, pink: light left
@@ -55,9 +56,9 @@ slice(texture+5)
 
 slice(light)
 {
-	float light = 2.0 * lightBright * max(dot(normal, lightDir), 0.0);
+	float light = 2.0 * lightBright * max(max(dot(normal, lightDir), 0.0), cullMode * max(dot(vec3(-normal.xy, normal.z), lightDir), 0.0));
 #ifdef HAVE_2PX
-	float light2 = 2.0 * lightBright * max(dot(normal2, lightDir), 0.0);
+	float light2 = 2.0 * lightBright * max(max(dot(normal2, lightDir), 0.0), cullMode * max(dot(vec3(-normal2.xy, normal2.z), lightDir), 0.0));
 #endif
 }
 

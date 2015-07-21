@@ -70,6 +70,7 @@ enum C4SS_Uniforms
 	C4SSU_AmbientBrightness, // C4SSC_LIGHT
 
 	C4SSU_Bones, // for meshes
+	C4SSU_CullMode, // for meshes
 
 	C4SSU_Count
 };

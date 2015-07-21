@@ -415,7 +415,7 @@ namespace
 		return true;
 	}
 
-	void SetStandardUniforms(C4ShaderCall& call, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect)
+	void SetStandardUniforms(C4ShaderCall& call, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool cullFace, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect)
 	{
 		// Draw transform
 		const float fMod[4] = {
@@ -433,6 +433,9 @@ namespace
 			((dwPlayerColor      ) & 0xff) / 255.0f,
 		};
 		call.SetUniform3fv(C4SSU_OverlayClr, 1, fPlrClr);
+
+		// Backface culling flag
+		call.SetUniform1f(C4SSU_CullMode, cullFace ? 0.0f : 1.0f);
 
 		// Dynamic light
 		if(pFoW != NULL)
@@ -582,10 +585,12 @@ namespace
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
+			{
 				if (pGL->Workarounds.LowMaxVertexUniformCount)
 					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
 				else
 					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+			}
 
 			// Bind the vertex data of the mesh
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
@@ -665,7 +670,7 @@ namespace
 			}
 
 			// Set uniforms and instance parameters
-			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect, outRect);
+			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pass.CullHardware != StdMeshMaterialPass::CH_None, pFoW, clipRect, outRect);
 			for(unsigned int i = 0; i < pass.Program->Parameters.size(); ++i)
 			{
 				const int uniform = pass.Program->Parameters[i].UniformIndex;

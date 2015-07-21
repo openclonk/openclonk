@@ -863,6 +863,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
 	uniformNames[C4SSU_Bones] = "bones";
+	uniformNames[C4SSU_CullMode] = "cullMode";
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;

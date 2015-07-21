@@ -399,6 +399,8 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		call.SetUniformMatrix2x3fv(C4SSU_AmbientTransform, 1, ambientTransform);
 	}
 
+	call.SetUniform1f(C4SSU_CullMode, 0.0f);
+
 	// Apply zoom and transform
 	glPushMatrix();
 	glTranslatef(ZoomX, ZoomY, 0.0f);
@@ -580,6 +582,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
 	uniformNames[C4SSU_Bones] = "bones";
+	uniformNames[C4SSU_CullMode] = "cullMode";
 	uniformNames[C4SSU_Count] = NULL;
 
 	// Clear previous content
