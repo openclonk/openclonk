@@ -1,1 +1,1 @@
-Name=Burned cone tree
+Name=Burned fir

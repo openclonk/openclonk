@@ -3,7 +3,9 @@
 #include Library_Plant
 #include Library_Tree
 
-func Place(int amount, proplist rectangle, proplist settings)
+/*-- Placement --*/
+
+public func Place(int amount, proplist rectangle, proplist settings)
 {
 	if (settings == nil) settings = {};
 	// Default behaviour
@@ -71,45 +73,41 @@ func GoodSpot(int x, int y)
 	return ObjectCount(Find_Distance(100, x, y), Find_ID(LargeCaveMushroom)) < 5;
 }
 
+/* Plant / Tree libraries */
+
 private func SeedChance() {	return 200; }
 private func SeedArea() { return 200; }
 private func SeedAmount() { return 5; }
 
-func Construction()
+private func Construction()
 {
 	AddTimer("Growing", 80);
-	// set random rotation so trees don't look alike too much
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(-90,90),0,1,0));
-	
+
 	// every mushroom is unique!
 	var len = GetAnimationLength("Rotate1"); // length of all animations is the same
 	PlayAnimation("Pitch1", 1, Anim_Const(RandomX(0, len)), Anim_Const(500));
 	PlayAnimation("Pitch2", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
 	PlayAnimation("Rotate1", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
-	
+
 	PlayAnimation("Head1", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
 	PlayAnimation("Head2", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
 	PlayAnimation("Head3", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
 	PlayAnimation("Head4", 2, Anim_Const(RandomX(0, len)), Anim_Const(500));
-	
-	
-		
+
 	var brightness = Random(25);
 	SetClrModulation(RGB(200 + brightness + Random(30), 200 + brightness + Random(30), 200 + brightness + Random(30)));
-	
+
 	inherited(...);
+	StopGrowth();
 }
 
-func Growing()
+private func Growing()
 {
 	if(GetCon() >= Min(RandomX(80, 500), 100))
-	{
-		RemoveTimer("Growing");
-		return;
-	}
-	
+		return RemoveTimer("Growing");
+
 	if(!Random(4)) return;
-	
+
 	var top = ((-36) * GetCon()) / 100;
 	if(GBackSolid(0, Min(-5, top))) return;
 	DoCon(1);
@@ -117,62 +115,36 @@ func Growing()
 
 public func ChopDown()
 {
-	// Use Special Vertex Mode 1 (see documentation) so the removed vertex won't come back when rotating the tree.
-	SetVertex(0, VTX_Y, 0, 1);
-	// Remove the bottom vertex
-	RemoveVertex(0);
 	// Stop growing
 	RemoveTimer("Growing");
 
 	_inherited(...);
 }
 
-func Damage()
-{
-	_inherited();
+local burned;
 
-	if (GetDamage() > MaxDamage() && OnFire())
+private func Damage(int change, int cause)
+{
+	_inherited(change, cause);
+
+	if (!burned && GetDamage() > MaxDamage()/3 && OnFire())
 	{
 		SetClrModulation(RGB(100, 100, 100));
 		RemoveTimer("Growing");
-		if (GetDamage() > 3 * MaxDamage())
-			 BurstIntoAshes();
-		return;
+		burned = true;
 	}
 }
 
-func BurstIntoAshes()
+private func MaxDamage()
 {
-	var particles =
-	{
-		Prototype = Particles_Dust(),
-		R = 50, G = 50, B = 50,
-		Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(2, 10), 1000, 0),
-	};
-	
-	var r = GetR();
-	var size = GetCon() * 110 / 100;
-	
-	for(var cnt = 0; cnt < 10; ++cnt)
-	{
-		var distance = Random(size/2);
-		var x = Sin(r, distance);
-		var y = -Cos(r, distance);
-		
-		for(var mirror = -1; mirror <= 1; mirror += 2)
-		{
-			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
-			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
-		}
-	}
-	RemoveObject();
+	return 150;
 }
 
 // called from the plant library
-func Seed()
+private func Seed()
 {
 	if(GetCon() < 20) return;
-	
+
 	var size = SeedArea();
 	var amount = SeedAmount();
 	var chance = SeedChance();
@@ -213,21 +185,21 @@ func Seed()
 			{
 				if (!IsPointInRectangle({x = x, y = y}, this.Confinement)) continue;
 			}
-			
+
 			okay = true;
 			break;
 		}
 		if (!okay) return;
 		// Place the plant but check if it is not close to another one.	
 		var plant = CreateConstruction(GetID(), x, y, GetOwner(), 3, false, false);
-		
+
 		if (plant)
 		{
 			if (this.Confinement)
 				plant->KeepArea(this.Confinement);
 		}
 	}
-	return;
+	return plant;
 }
 
 local Name = "$Name$";
