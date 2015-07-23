@@ -82,7 +82,7 @@ public func OnProductionFinish(id product)
 }
 
 func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(70, 0,1,0), def);
+	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
 	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
 }
 
