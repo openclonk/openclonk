@@ -106,6 +106,13 @@ private func GetRestingPlace(proplist coordinates)
 	return false;
 }
 
+private func Death()
+{
+	_inherited();
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly")/2, 10, ANIM_Hold), Anim_Const(1000));
+	SetAction("Dead");
+}
+
 /* Movement */
 
 private func CheckTurn()
@@ -192,6 +199,15 @@ local ActMap = {
 		Length = 1,
 		Delay = 1,
 		NextAction = "SlowFly",
+	},
+	Dead = {
+		Prototype = Action,
+		Name = "Dead",
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 1,
+		NoOtherAction = 1,
 	},
 };
 

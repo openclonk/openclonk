@@ -6,6 +6,30 @@
 	@author Clonkonaut
 --*/
 
+public func Place(int amount, proplist rectangle)
+{
+	// No calls to objects, only definitions
+	if (GetType(this) == C4V_C4Object) return;
+
+	if (!rectangle)
+		rectangle = Rectangle(0,0, LandscapeWidth(), LandscapeHeight());
+
+	var insects = CreateArray(), insect, position;
+	for (var i = 0 ; i < amount ; i++)
+	{
+		position = FindLocation(Loc_InRect(rectangle), Loc_Wall(CNAT_Bottom), Loc_Sky());
+		if (position)
+		{
+			insect = CreateObjectAbove(this, position.x, position.y, NO_OWNER);
+			if (insect->Stuck()) insect->RemoveObject();
+			if (insect) insects[GetLength(insects)] = insect;
+		}
+		insect = nil;
+		position = nil;
+	}
+	return insects;
+}
+
 /** Maximum travelling distance for one 'mission' (random target point).
 	0 = a random point of the whole landscape
 */
@@ -150,6 +174,19 @@ private func Initialize()
 	AddTimer("Activity");
 	SetComDir(COMD_None);
 	MoveToTarget();
+}
+
+private func Death()
+{
+	RemoveTimer("Activity");
+	SetCommand("None");
+	SetComDir(COMD_None);
+}
+
+// Insects are to tiny to be thrown at!
+private func QueryCatchBlow()
+{
+	return true;
 }
 
 private func Activity()
