@@ -10,6 +10,7 @@ material Butterfly
 			specular 0.000000 0.000000 0.000000 1.000000 0.250000
 			emissive 0.000000 0.000000 0.000000 1.000000
 			scene_blend alpha_blend
+			cull_hardware none
 			texture_unit
 			{
 				texture Butterfly_Wing.png

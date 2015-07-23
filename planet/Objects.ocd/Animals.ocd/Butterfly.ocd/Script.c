@@ -1,120 +1,161 @@
 /*
 	Butterfly
-	Author: Randrian/Ringwaul
+	Author: Randrian, Ringwaul, Clonkonaut
 
 	A small fluttering being.
 */
+
+#include Library_Insect
 
 func Construction()
 {
 	StartGrowth(15);
 }
 
-local flightanim;
-local rotanim;
+local fly_anim;
 
 protected func Initialize()
 {
-	flightanim = PlayAnimation("Fly", 5, Anim_Linear(0,0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
-	rotanim = PlayAnimation("Rotate", 5, Anim_Const(1), Anim_Const(1000));
-	AddEffect("ButterflyTurn", this, 1, 1, this);
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(0,0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	this.MeshTransformation = Trans_Rotate(270,1,1,1);
 	SetAction("Fly");
-	SetComDir(COMD_None);
-	MoveToTarget();
-	AddTimer("Activity");
-	
+
 	// Make butterflies a bit more colorful.
 	SetClrModulation(HSL(Random(256), 255, 100 + Random(60)));
-	
-	return 1;
+
+	lib_insect_max_dist = 300;
+	lib_insect_shy = true;
+	_inherited();
 }
 
-func FxButterflyTurnTimer(object target, int num, int timer)
+/* Insect library */
+
+local attraction;
+
+private func GetAttraction(proplist coordinates)
 {
-	TurnButterfly();
+	// Sometimes I don't want to fly to a plant
+	if (!Random(7)) return false;
+	for (var plant in FindObjects(Find_Distance(150), Find_Or(Find_Func("IsPlant"), Find_ID(Grass)), Sort_Distance()))
+	{
+		if (!Random(4))
+			continue;
+		if (ObjectDistance(plant) < 20) // Too close
+			continue;
+		if (plant->GetCon() < 30) // Too small
+			continue;
+		var width = plant->GetObjWidth();
+		var height = plant->GetObjHeight();
+		coordinates.x = plant->GetX() + Random(width) - width / 2;
+		// The butterfly assumes that the main part of a plant is in the upper half (below could just be the trunk)
+		coordinates.y = plant->GetY() - Random(height)/2;
+		attraction = plant;
+		return true;
+	}
+	return false;
 }
-	
-private func Activity()
+
+private func MissionComplete()
 {
-	// Underwater
-	if (InLiquid()) return SetComDir(COMD_Up);
-	// Sitting? wait
-	if (GetAction() == "Sit") return 1;
-	// New target
-	if (!GetCommand() || !Random(5)) MoveToTarget();
-	return 1;
+	if (!attraction) return _inherited();
+	var wait = 20 + Random(80);
+	// Slow animation speed
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 20, ANIM_Loop), Anim_Const(1000));
+	ScheduleCall(this, "RegularSpeed", wait);
+	SetCommand("Wait", nil,nil,nil,nil, wait);
+}
+
+private func MissionCompleteFailed()
+{
+	attraction = nil;
+}
+
+private func RegularSpeed()
+{
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+}
+
+// Hold the animation
+private func SleepComplete()
+{
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly")/2, 10, ANIM_Hold), Anim_Const(1000));
+	_inherited();
+}
+
+// Restart the animation
+private func WakeUp()
+{
+	fly_anim = PlayAnimation("Fly", 1, Anim_Linear(GetAnimationPosition(fly_anim), 0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	_inherited();
+}
+
+private func GetRestingPlace(proplist coordinates)
+{
+	// Try to rest in nearby grass
+	for (var grass in FindObjects(Find_Distance(150), Find_ID(Grass), Sort_Distance()))
+	{
+		if (!Random(2)) continue;
+		break;
+	}
+	if (grass)
+	{
+		coordinates.x = grass->GetX() + Random(4) - 2;
+		coordinates.y = grass->GetY() + 2;
+		return true;
+	}
+	return false;
 }
 
 /* Movement */
 
-func TurnButterfly()
+private func CheckTurn()
 {
-	var angle = Normalize(Angle(0,0,GetXDir(), GetYDir()));
-	SetAnimationPosition(rotanim, Anim_Const(angle * 10));
-	return;
+	if (GetEffect("Turning", this)) return;
+	if (GetDir() == DIR_Left && GetXDir() > 0)
+		AddEffect("Turning", this, 100, 1, this);
+	if (GetDir() == DIR_Right && GetXDir() < 0)
+		AddEffect("Turning", this, 100, 1, this);
 }
 
-private func FlyingStart()
+private func FxTurningStart(object target, proplist effect, int temp)
 {
-	TurnButterfly();
-	if (!Random(3))
+	if (temp) return;
+	effect.turn = 15;
+	effect.step = 0;
+	if (GetDir() == DIR_Right)
 	{
-		SetAction("Flutter");
-		SetComDir(COMD_None);
+		effect.turn = -15;
+		effect.step = 360;
 	}
-	return 1;
+	SetAction("SlowFly");
 }
-	
-private func Fluttering()
+
+private func FxTurningTimer(object target, proplist effect)
 {
-	if (!Random(7))
+	effect.step += effect.turn;
+	if (effect.step == 0 || effect.step == 360) return FX_Execute_Kill;
+	if (effect.step == 90)
 	{
-		SetAction("Fly");
-		SetComDir(COMD_None);
+		effect.step = 285;
+		SetDir(DIR_Right);
 	}
-	return 1;
+	if (effect.step == 270)
+	{
+		effect.step = 75;
+		SetDir(DIR_Left);
+	}
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(270,1,1,1), Trans_Rotate(effect.step,0,0,1));
+	return FX_OK;
 }
 
-/* Contact */
-	
-protected func ContactBottom()
+private func FxTurningStop(object target, proplist effect, int reason, bool temp)
 {
-	SetCommand("None");
-	SetComDir(COMD_Up);
-	return 1;
+	if (temp) return;
+	this.MeshTransformation = Trans_Rotate(270,1,1,1);
+	SetAction("Fly");
 }
 
-protected func SitDown()
-{
-	SetXDir(0);
-	SetYDir(0);
-	SetComDir(COMD_Stop);
-	SetAction("Sit");
-	SetCommand("None");
-	return 1;
-}
-
-protected func TakeOff()
-{
-	SetComDir(COMD_Up);
-	return 1;
-}
-
-private func MoveToTarget()
-{
-	var x = Random(LandscapeWidth());
-	var y = Random(GetHorizonHeight(x)-60)+30;
-	SetCommand("MoveTo",nil,x,y);
-	return 1;
-}
-
-private func GetHorizonHeight(int x)
-{
-	var height;
-	while ( height < LandscapeHeight() && !GBackSemiSolid(x,height))
-		height += 10;
-	return height;
-}
+/* Definition */
 
 func SaveScenarioObject(props)
 {
@@ -125,45 +166,35 @@ func SaveScenarioObject(props)
 }
 
 local ActMap = {
-
-Fly = {
-	Prototype = Action,
-	Name = "Fly",
-	Procedure = DFA_FLOAT,
-	Speed = 200,
-	Accel = 16,
-	Decel = 16,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 1,
-	Delay = 10,
-	X = 0,
-	Y = 0,
-	Wdt = 24,
-	Hgt = 24,
-	NextAction = "Fly",
-	StartCall = "FlyingStart",
-},
-Flutter = {
-	Prototype = Action,
-	Name = "Flutter",
-	Procedure = DFA_FLOAT,
-	Speed = 200,
-	Accel = 16,
-	Decel = 16,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 11,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 24,
-	Hgt = 24,
-	NextAction = "Flutter",
-	StartCall = "Fluttering",
-	Animation = "Wait",
-},
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_FLOAT,
+		Speed = 100,
+		Accel = 16,
+		Decel = 16,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 1,
+		NextAction = "Fly",
+		StartCall = "CheckTurn",
+	},
+	SlowFly = {
+		Prototype = Action,
+		Name = "SlowFly",
+		Procedure = DFA_FLOAT,
+		Speed = 30,
+		Accel = 6,
+		Decel = 6,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 1,
+		NextAction = "SlowFly",
+	},
 };
+
 local Name = "Butterfly";
 local MaxEnergy = 40000;
 local MaxBreath = 125;
