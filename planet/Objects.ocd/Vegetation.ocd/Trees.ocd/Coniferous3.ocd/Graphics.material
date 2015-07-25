@@ -1,0 +1,24 @@
+material Fir2
+{
+	receive_shadows off
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			scene_blend alpha_blend
+			depth_check on
+		
+			ambient 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0
+			emissive 1.0 1.0 1.0
+			
+			texture_unit
+			{
+				texture coniferous3.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
