@@ -1,22 +1,21 @@
-material Coniferous
+material Tree_Coniferous
 {
-	receive_shadows on
+	receive_shadows off
 	technique
 	{
 		pass
 		{
 			cull_hardware none
 			scene_blend alpha_blend
-			depth_check off
+			depth_check on
 		
-			ambient 1.000000 1.000000 1.000000 1.000000
-			diffuse 1.000000 1.000000 1.000000 1.000000
-			specular 0.000000 0.000000 0.000000 1.000000 12.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
+			ambient 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0
+			emissive 1.0 1.0 1.0
 			
 			texture_unit
 			{
-				texture coniferous2.png
+				texture coniferous.png
 				tex_address_mode wrap
 				filtering trilinear
 			}
