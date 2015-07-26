@@ -9,16 +9,18 @@
 
 private func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(3500), Trans_Rotate(280,0,1,0)));
+	//SetProperty("MeshTransformation", Trans_Mul(Trans_Scale(3500), Trans_Rotate(280,0,1,0)));
 }
 
 public func TurnOn()
 {
+	_inherited();
 	SetMeshMaterial("LanternLit", 1);
 }
 
 public func TurnOff()
 {
+	_inherited();
 	SetMeshMaterial("LanternGlass", 1);
 }
 
@@ -53,7 +55,7 @@ public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
 {
-	return Trans_Mul(Trans_Scale(3500), Trans_Rotate(280,0,1,0));
+	return Trans_Rotate(-90,0,0,1);
 }
 private func Definition(def)
 {
