@@ -1,0 +1,2 @@
+Name=Boiling Laval
+Description=Causes Lava on the map to boil

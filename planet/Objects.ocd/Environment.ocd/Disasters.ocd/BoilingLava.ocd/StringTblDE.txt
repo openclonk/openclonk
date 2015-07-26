@@ -1,0 +1,2 @@
+Name=Kochende Lava
+Description=Lässt die Lava auf der Karte brodeln
