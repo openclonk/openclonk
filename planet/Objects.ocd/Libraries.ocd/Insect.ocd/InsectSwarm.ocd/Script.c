@@ -133,3 +133,12 @@ private func MoveToTarget()
 	SetCommand("MoveTo", nil, coordinates.x, coordinates.y, nil, true);
 	AppendCommand("Call", this, nil,nil,nil,nil, "MissionComplete");
 }
+
+/* Saving */
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...)) return false;
+	// Do not save swarms - this will be done by the swarm helper instad
+	return !lib_swarm_helper;
+}

@@ -45,4 +45,25 @@ public func GetSwarmCenter(proplist coordinates)
 	coordinates.y = swarm_master->GetY();
 }
 
+/* Saving */
+
+// Place(int amount, int swarm_members, proplist rectangle)
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...)) return false;
+	if (!swarm_master) return false;
+	// Save as a swarm
+	props->RemoveCreation();
+	// Could use current swarm spread for area.
+	// Seems like overkill. Rectangle is just to ensure placement finds a good location.
+	var swarm_range = 50;
+	props->Add(SAVEOBJ_Creation, "%v->Place(1, %d, Rectangle(%d, %d, 50, 50))",
+		swarm_master->GetID(),
+		swarm_count + 1,
+		BoundBy(swarm_master->GetX()-swarm_range, 0, LandscapeWidth()-swarm_range),
+		BoundBy(swarm_master->GetY()-swarm_range, 0, LandscapeHeight()-swarm_range));
+	return true;
+}
+
+
 local Name = "$Name$";

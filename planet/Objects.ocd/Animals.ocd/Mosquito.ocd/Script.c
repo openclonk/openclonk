@@ -196,6 +196,18 @@ private func CheckTurn()
 		SetDir(DIR_Right);
 }
 
+/*-- Saving --*/
+
+public func SaveScenarioObject(proplist props)
+{
+	if (!inherited(props, ...)) return false;
+	// Ignore some fast-changing stuff
+	props->Remove("XDir");
+	props->Remove("YDir");
+	props->Remove("Command");
+	return true;
+}
+
 /* Definition */
 
 local ActMap = {
