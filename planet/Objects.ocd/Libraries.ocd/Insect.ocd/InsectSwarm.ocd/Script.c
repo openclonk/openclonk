@@ -98,7 +98,7 @@ private func Death()
 private func Destruction()
 {
 	// Destruction of the master
-	if (lib_swarm_helper->GetMaster() == this)
+	if (lib_swarm_helper) if (lib_swarm_helper->GetMaster() == this)
 		lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Destruction of a slave
 	if(lib_swarm_previnline && lib_swarm_nextinline)
@@ -116,7 +116,7 @@ private func PurgeLine()
 
 private func MoveToTarget()
 {
-	if (lib_swarm_helper->GetMaster() == this)
+	if (!lib_swarm_helper || (lib_swarm_helper->GetMaster() == this))
 		return _inherited();
 
 	var coordinates = { x=0, y=0 };
