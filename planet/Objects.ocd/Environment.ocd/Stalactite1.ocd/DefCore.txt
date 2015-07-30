@@ -1,0 +1,8 @@
+[DefCore]
+id=Stalactite1
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=15
+Height=60
+Offset=-4,-4
+
