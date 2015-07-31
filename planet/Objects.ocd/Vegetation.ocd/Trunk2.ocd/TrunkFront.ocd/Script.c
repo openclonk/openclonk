@@ -23,4 +23,6 @@ private func CheckPosition()
 		SetPosition(back->GetX(), back->GetY());
 }
 
+func SaveScenarioObject() { return false; }
+
 local Plane = 505;
