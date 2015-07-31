@@ -132,11 +132,11 @@ global func Loc_Wall(int direction)
 
 /*
 	returns a spot with enough space either vertically or horizontally.
-	For example Loc_Space(20, true) would only return points where a Clonk could stand.
+	For example Loc_Space(20, CNAT_Top) would only return points where a Clonk could stand.
 */
-global func Loc_Space(int space, bool vertical)
+global func Loc_Space(int space, int direction)
 {
-	return [LOC_SPACE, space, vertical];
+	return [LOC_SPACE, space, direction ?? 0x0f];
 }
 
 global func FindLocation(condition1, ...)
@@ -277,17 +277,16 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 	// has some space?
 	if (flag[0] == LOC_SPACE)
 	{
-		var xd = 0, yd = 0;
-		if (flag[2]) yd = flag[1];
-		else xd = flag[1];
-				
-		var d1 = PathFree2(x, y, x + xd, y + yd);
-		var d2 = PathFree2(x, y, x - xd, y - yd);
-		var d = 0;
-		if (d1) d += Distance(x, y, d1[0], d1[1]);
-		if (d2) d += Distance(x, y, d2[0], d2[1]);
-		if (d >= flag[1]) return true;
-		return false;
+		var dist = flag[1], dirs = flag[2];
+		// if only one direction is given in one dimension, the other dimension is tested from a center point halfway off in that dimension
+		var cy = y + dist * ((dirs&CNAT_Bottom)/CNAT_Bottom - (dirs&CNAT_Top)/CNAT_Top) / 2;
+		var cx = x + dist * ((dirs&CNAT_Right)/CNAT_Right - (dirs&CNAT_Left)/CNAT_Left) / 2;
+		// check all desired directions
+		if (dirs & CNAT_Top) if (!PathFree(cx,y,cx,y-dist)) return false;
+		if (dirs & CNAT_Bottom) if (!PathFree(cx,y,cx,y+dist)) return false;
+		if (dirs & CNAT_Left) if (!PathFree(x,cy,x-dist,cy)) return false;
+		if (dirs & CNAT_Right) if (!PathFree(x,cy,x+dist,cy)) return false;
+		return true;
 	}
 	
 	// invalid flag? always fulfilled

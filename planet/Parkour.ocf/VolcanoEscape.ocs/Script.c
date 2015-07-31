@@ -21,7 +21,7 @@ protected func Initialize()
 	for (var i=0; i<10; ++i)
 	{
 		// Find a good cave
-		cave_loc = FindLocation(Loc_InRect(50,LandscapeHeight()/6,LandscapeWidth()-100,LandscapeHeight()*17/25), Loc_Material("Tunnel"), Loc_Space(20), Loc_Space(20,true));
+		cave_loc = FindLocation(Loc_InRect(50,LandscapeHeight()/6,LandscapeWidth()-100,LandscapeHeight()*17/25), Loc_Material("Tunnel"), Loc_Space(10));
 		if (cave_loc)
 		{
 			// No other check point nearby?

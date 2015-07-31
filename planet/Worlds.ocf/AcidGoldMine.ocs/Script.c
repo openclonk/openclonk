@@ -118,7 +118,7 @@ protected func InitializePlayer(int plr)
 
 private func FindTopSpot()
 {
-	return FindLocation(Loc_InRect(LandscapeWidth()/4,0,LandscapeWidth()/2,LandscapeHeight()/9), Loc_Wall(CNAT_Bottom), Loc_Space(10)) ?? {x=LandscapeWidth()/3+Random(30), y=LandscapeHeight()/12  };
+	return FindLocation(Loc_InRect(LandscapeWidth()/4,0,LandscapeWidth()/2,LandscapeHeight()/9), Loc_Wall(CNAT_Bottom), Loc_Space(10, CNAT_Top)) ?? {x=LandscapeWidth()/3+Random(30), y=LandscapeHeight()/12  };
 }
 
 
