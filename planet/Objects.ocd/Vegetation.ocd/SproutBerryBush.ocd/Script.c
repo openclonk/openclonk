@@ -19,7 +19,7 @@ static const SproutBerryBush_max_sprouts = 8;
 static const SproutBerryBush_evolve_steps_per_new_sprout = 2;
 
 // static function
-func Place(int amount, proplist rectangle, proplist settings)
+func Place(int amount, proplist area, proplist settings)
 {
 	// No calls to objects, only definitions
 	if (GetType(this) == C4V_C4Object) return;
@@ -27,13 +27,12 @@ func Place(int amount, proplist rectangle, proplist settings)
 	amount = amount ?? (LandscapeWidth() / 150);
 	settings = settings ?? { growth = 100000, keep_area = false };
 	settings.growth = settings.growth ?? 100000;
-	rectangle = rectangle ?? Rectangle(0,0, LandscapeWidth(), LandscapeHeight());
 		
 	var plants = [];
 	while(amount > 0)
 	{
 		// place some sprout berries
-		var bush = PlaceVegetation(SproutBerryBush, rectangle.x, rectangle.y, rectangle.w, rectangle.h, 100000);
+		var bush = PlaceVegetation(SproutBerryBush, 0, 0, LandscapeWidth(), LandscapeHeight(), 100000, area);
 		if(!bush) break;
 		--amount;
 		PushBack(plants, bush);

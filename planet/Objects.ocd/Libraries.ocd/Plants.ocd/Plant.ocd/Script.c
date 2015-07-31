@@ -34,25 +34,24 @@ protected func Construction()
 	@param settings A proplist defining further setttings: { growth = 100000, keep_area = false }. Growth will get passed over to PlaceVegetation, keep_area will confine the plants and their offspring to rectangle.
 	@return Returns an array of all objects created.
 */
-public func Place(int amount, proplist rectangle, proplist settings)
+public func Place(int amount, proplist area, proplist settings)
 {
 	// No calls to objects, only definitions
 	if (GetType(this) == C4V_C4Object) return;
 	// Default parameters
 	if (!settings) settings = { growth = 100000, keep_area = false };
 	if (!settings.growth) settings.growth = 100000;
-	if (!rectangle)
-		rectangle = Rectangle(0,0, LandscapeWidth(), LandscapeHeight());
+	var rectangle = area->GetBoundingRectangle();
 
 	var plants = CreateArray(), plant;
 	for (var i = 0 ; i < amount ; i++)
 	{
-		plant = PlaceVegetation(this, rectangle.x, rectangle.y, rectangle.w, rectangle.h, settings.growth);
+		plant = PlaceVegetation(this, rectangle.x, rectangle.y, rectangle.w, rectangle.h, settings.growth, area);
 		if (plant)
 		{
 			plants[GetLength(plants)] = plant;
-			if (settings.keep_area)
-				plant->KeepArea(rectangle);
+			if (settings.keep_area && area)
+				plant->KeepArea(area);
 		}
 		plant = nil;
 	}
@@ -62,11 +61,11 @@ public func Place(int amount, proplist rectangle, proplist settings)
 /* Reproduction */
 
 /** Will confine the the plant and its offspring to a certain area.
-	@params rectangle The confinement area.
+	@params area The confinement area.
 */
-func KeepArea(proplist rectangle)
+func KeepArea(proplist area)
 {
-	this.Confinement = rectangle;
+	this.Confinement = area;
 }
 
 /** Chance to reproduce plant. Chances are one out of return value. Default is 500.
@@ -101,31 +100,55 @@ private func SeedOffset()
 	return 20;
 }
 
+/** Evaluates parameters for this definition to determine if seeding should occur.
+ @par offx X offset added to context position for check.
+ @par offy Y offset added to context position for check.
+ @return true iff seeding should occur
+*/
+public func CheckSeedChance(int offx, int offy)
+{
+	// Find number of plants in seed area.
+	// Ignored confinement - that's only used for actual placement
+	var size = SeedArea();
+	var amount = SeedAmount();
+	var plant_id;
+	if (this.Prototype == Global) plant_id = this; else plant_id = GetID(); // allow definition and object call
+	var plant_cnt = ObjectCount(Find_ID(plant_id), Find_InRect(offx - size / 2, offy - size / 2, size, size));
+	// If there are not much plants in the seed area compared to seed amount
+	// the chance of seeding is improved, if there are much the chance is reduced.
+	var chance = SeedChance();
+	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
+	// Place a plant if we are lucky, but no more than seed amount.
+	return (plant_cnt < amount && !Random(chance));
+}
+
 /** Reproduction of plants: Called every 2 seconds by a timer.
 */
 private func Seed()
 {
 	if (OnFire()) return;
 
-	// Find number of plants in seed area.
-	var size = SeedArea();
-	var amount = SeedAmount();
-	var area = Rectangle(size / -2, size / -2, size, size);
-	if (this.Confinement)
-		area = RectangleEnsureWithin(area, this.Confinement);
-	var plant_cnt = ObjectCount(Find_ID(GetID()), Find_InRect(area.x, area.y, area.w, area.h));
-	// If there are not much plants in the seed area compared to seed amount
-	// the chance of seeding is improved, if there are much the chance is reduced.
-	var chance = SeedChance();
-	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
 	// Place a plant if we are lucky, but no more than seed amount.
 	var plant;
-	if (plant_cnt < amount && !Random(chance))
+	if (CheckSeedChance())
 	{
-		// Place the plant but check if it is not close to another one.	
-		plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3);
+		// Apply confinement for plant placement
+		var size = SeedArea();
+		var area = Shape->Rectangle(GetX() - size / 2, GetY() - size / 2, size, size);
+		var confined_area = nil;
+		if (this.Confinement)
+		{
+			confined_area = Shape->Intersect(this.Confinement, area);
+			// Quick-check if intersection to confinement yields an empty area
+			// to avoid unnecessery search by PlaceVegetation
+			area = confined_area->GetBoundingRectangle();
+			if (area.w <= 0 || area.h <= 0) return;
+		}
+		// Place the plant...
+		plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3, confined_area);
 		if (plant)
 		{
+			// ...but check if it is not close to another one.
 			var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
 			var distance = ObjectDistance(plant, neighbour);
 			// Closeness check

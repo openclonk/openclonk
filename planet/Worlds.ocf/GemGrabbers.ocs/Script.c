@@ -450,7 +450,7 @@ private func ProvideIsland(array island, int number, int amount)
 	// A catapult for the fourth island and place some metal & wood.
 	if (number == 4)
 	{
-		SproutBerryBush->Place(Random(amount + 1), Rectangle(island[0], island[1] - 80, island[2], island[3] / 2));
+		SproutBerryBush->Place(Random(amount + 1), Shape->Rectangle(island[0], island[1] - 80, island[2], island[3] / 2));
 		CreateObjectAbove(Catapult, spot.x, spot.y);
 		PlaceObjects(Wood, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
 		PlaceObjects(Metal, amount + Random(2), "Earth", island[0], island[1], island[2], island[3]);
@@ -465,7 +465,7 @@ private func ProvideIsland(array island, int number, int amount)
 		lorry->CreateContents(DynamiteBox, amount);
 		lorry->CreateContents(Dynamite, 4);
 		lorry->CreateContents(GoldBar, Random(amount + 1));
-		SproutBerryBush->Place(amount + Random(2), Rectangle(island[0], island[1] - 80, island[2], island[3] / 2));
+		SproutBerryBush->Place(amount + Random(2), Shape->Rectangle(island[0], island[1] - 80, island[2], island[3] / 2));
 	}
 	
 	// For all the islands some decoration.

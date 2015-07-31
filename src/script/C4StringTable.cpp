@@ -99,6 +99,8 @@ C4StringTable::C4StringTable()
 	P[P_Delay] = "Delay";
 	P[P_X] = "X";
 	P[P_Y] = "Y";
+	P[P_x] = "x";
+	P[P_y] = "y";
 	P[P_Wdt] = "Wdt";
 	P[P_Hgt] = "Hgt";
 	P[P_OffX] = "OffX";
@@ -187,6 +189,8 @@ C4StringTable::C4StringTable()
 	P[P_Source] = "Source";
 	P[P_Color] = "Color";
 	P[P_EditCursorCommands] = "EditCursorCommands";
+	P[P_IsPointContained] = "IsPointContained";
+	P[P_GetRandomPoint] = "GetRandomPoint";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

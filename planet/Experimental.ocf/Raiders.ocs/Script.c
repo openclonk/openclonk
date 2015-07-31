@@ -16,7 +16,7 @@ func Initialize()
 	goal.Description = "$GoalDesc1$";
 
 	// Vegetation
-	Tree_Coniferous->Place(20, Rectangle(106,121, 826,335), { keep_area = true });
+	Tree_Coniferous->Place(20, Shape->Rectangle(106, 121, 826, 335), { keep_area = true });
 	PlaceGrass(20, 0,106);
 
 	// The castle

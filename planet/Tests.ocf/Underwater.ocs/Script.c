@@ -1,8 +1,8 @@
 
 func Initialize()
 {
-	Fish->Place(20, Rectangle(0, 0, LandscapeWidth() / 2 - 50, LandscapeHeight()));
-	Piranha->Place(20, Rectangle(LandscapeWidth() / 2 + 50, 0, LandscapeWidth(), LandscapeHeight()));
+	Fish->Place(20, Shape->Rectangle(0, 0, LandscapeWidth() / 2 - 50, LandscapeHeight()));
+	Piranha->Place(20, Shape->Rectangle(LandscapeWidth() / 2 + 50, 0, LandscapeWidth(), LandscapeHeight()));
 	Seaweed->Place(20);
 	Coral->Place(30);
 	

@@ -25,10 +25,10 @@ protected func Damage()
 
 /*-- Placement --*/
 
-// Place an amount of branches in the specified rectangle. Settings:
+// Place an amount of branches in the specified area. Settings:
 // size = [min, max]: Random size (con) between min and max.
 // underground = true/false: whether to place only underground.
-public func Place(int amount, proplist rectangle, proplist settings)
+public func Place(int amount, proplist area, proplist settings)
 {
 	// Only allow definition call.
 	if (this != Branch) 
@@ -39,8 +39,8 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	if (!settings.size) 
 		settings.size = [80, 120];
 	var loc_area = nil;
-	if (rectangle) 
-		loc_area = Loc_InRect(rectangle);
+	if (area) 
+		loc_area = Loc_InArea(area);
 	var loc_background = Loc_Or(Loc_Sky(), Loc_Tunnel());
 	if (settings.underground)
 		loc_background = Loc_Tunnel();

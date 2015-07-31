@@ -109,7 +109,7 @@ private func InitEnvironment(int map_size, int difficulty)
 	// Disasters
 	Meteor->SetChance((difficulty * 11) * map_size_factor / 120);
 	if (difficulty >= 2) Rockfall->SetChance((difficulty * 50 - 80) * map_size_factor / 120);
-	Rockfall->SetArea(Rectangle(200, 0, LandscapeWidth()-400, 1));
+	Rockfall->SetArea(Shape->Rectangle(200, 0, LandscapeWidth() - 400, 1));
 	if (difficulty >= 2) Rockfall->SetExplosiveness(BoundBy(difficulty * 25, 50, 60));
 	
 	// Acid rain!
@@ -122,9 +122,9 @@ private func InitEnvironment(int map_size, int difficulty)
 private func InitVegetation(int map_size, int difficulty)
 {
 	// Define parts of the map for even distribution.
-	var top = Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 3);
-	var middle = Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
-	var bottom = Rectangle(0, 2 * LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
+	var top = Shape->Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 3);
+	var middle = Shape->Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
+	var bottom = Shape->Rectangle(0, 2 * LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
 	
 	// Place some cave mushrooms for wood.
 	LargeCaveMushroom->Place(8, middle, { terraform = false });

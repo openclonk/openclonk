@@ -16,10 +16,10 @@ public func IsBurnedTree()
 /* Placement */
 
 // Overload Place to add the foreground parameter, foreground = true will roughly make every 3rd tree foreground (not the offspring though)
-public func Place(int amount, proplist rectangle, proplist settings, bool foreground)
+public func Place(int amount, proplist area, proplist settings, bool foreground)
 {
 	// Default behaviour
-	var trees = _inherited(amount, rectangle, settings);
+	var trees = _inherited(amount, area, settings);
 	if (GetLength(trees) < 1) return trees;
 
 	for (var tree in trees)

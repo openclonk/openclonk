@@ -6,7 +6,7 @@ local back;
 
 private func Initialize()
 {
-	this.cover_area = Rectangle(-118, -31, 236, 62);
+	this.cover_area = Shape->Rectangle(-118, -31, 236, 62);
 	_inherited();
 }
 

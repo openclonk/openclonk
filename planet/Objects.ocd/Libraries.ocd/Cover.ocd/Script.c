@@ -25,7 +25,7 @@ private func CheckCoverage()
 		this.Visibility[GetPlayerByIndex(i) + 1] = true;
 		var cursor = GetCursor(GetPlayerByIndex(i));
 		if (cursor)
-			if (Rectangle_IsInside(cover_area, cursor->GetX(), cursor->GetY(), true))
+			if (cover_area->IsPointContained(cursor->GetX()-GetX(), cursor->GetY()-GetY()))
 				// Except when the cursor is inside the cover area
 				this.Visibility[GetPlayerByIndex(i) + 1] = false;
 	}

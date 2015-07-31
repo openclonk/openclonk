@@ -20,7 +20,7 @@
 		texture of the border, f.e. "rock_cracked"
 	
 */
-public func Place(int amount, proplist rectangle, proplist settings)
+public func Place(int amount, proplist area, proplist settings)
 {
 /*
 	var caves = Landscape_Cave->Place(1, nil, {width = 100, height = 50, borderheight = 5, bordermat = "Earth", bordertex = "earth_topSoil" } );
@@ -62,7 +62,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	
 	while((--failsafe > 0) && amount > 0)
 	{
-		var spot = FindLocation(Loc_Solid(), Loc_Func(Landscape_Cave.IsGoodCaveSpot), Loc_InRect(rectangle));
+		var spot = FindLocation(Loc_Solid(), Loc_Func(Landscape_Cave.IsGoodCaveSpot), Loc_InArea(area));
 		if (!spot) continue;
 		
 		DrawMap(spot.x - width, spot.y - height, 2 * width, 2 * height, Format("map Cave { %s };", map));

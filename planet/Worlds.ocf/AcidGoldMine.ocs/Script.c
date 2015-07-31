@@ -42,7 +42,7 @@ protected func Initialize()
 		lorry->CreateContents(DynamiteBox,2);
 	}
 	// Mushrooms before any earth materials, because they create their own caves
-	LargeCaveMushroom->Place(15, Rectangle(LandscapeWidth()/4,172*6,LandscapeWidth()/2,60*6));
+	LargeCaveMushroom->Place(15, Shape->Rectangle(LandscapeWidth() / 4, 172 * 6, LandscapeWidth() / 2, 60 * 6));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting
 	PlaceBatches([Firestone], 3, 100, 5);
@@ -59,9 +59,9 @@ protected func Initialize()
 	if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
 		CreateObjectAbove(Barrel, chest_pos.x, chest_pos.y);
 	// Misc vegetation
-	SproutBerryBush->Place(5, Rectangle(0,LandscapeHeight()/4,LandscapeWidth(),LandscapeHeight()*3/4));
-	Mushroom->Place(5, Rectangle(0,LandscapeHeight()/4,LandscapeWidth(),LandscapeHeight()*3/4));
-	Tree_Coniferous_Burned->Place(2, Rectangle(0,0,LandscapeWidth(),LandscapeHeight()/4));
+	SproutBerryBush->Place(5, Shape->Rectangle(0, LandscapeHeight() / 4, LandscapeWidth(), LandscapeHeight() * 3 / 4));
+	Mushroom->Place(5, Shape->Rectangle(0, LandscapeHeight() / 4, LandscapeWidth(), LandscapeHeight() * 3 / 4));
+	Tree_Coniferous_Burned->Place(2, Shape->Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 4));
 	// Bottom item killer
 	var fx = AddEffect("KeepAreaClear", nil, 1, 5);
 	fx.search_criterion=Find_And(Find_AtRect(0,LandscapeHeight()-10,LandscapeWidth(),10), Find_Not(Find_Category(C4D_StaticBack)));

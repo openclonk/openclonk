@@ -7,14 +7,14 @@
 --*/
 
 // Places amount swarms with swarm_members individuals each
-public func Place(int amount, int swarm_members, proplist rectangle)
+public func Place(int amount, int swarm_members, proplist area)
 {
 	// No calls to objects, only definitions
 	if (GetType(this) == C4V_C4Object) return;
 	if (!swarm_members)
 		swarm_members = lib_swarm_standard;
 
-	for (var insect in _inherited(amount, rectangle))
+	for (var insect in _inherited(amount, area))
 		insect->CreateSwarm(swarm_members - 1); // -1 because one insect already exists
 }
 

@@ -170,7 +170,7 @@ private func InitAnimals()
 	return true;
 }
 
-private func GetFishArea() { return Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight()/2 - main_island_y); }
+private func GetFishArea() { return Shape->Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight() / 2 - main_island_y); }
 
 private func EnsureAnimals()
 {

@@ -646,12 +646,23 @@ static long FnMaterial(C4PropList * _this, C4String *mat_name)
 	return ::MaterialMap.Get(FnStringPar(mat_name));
 }
 
-C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long iX, long iY, long iWdt, long iHgt, long iGrowth)
+C4Object* FnPlaceVegetation(C4PropList * _this, C4PropList * Def, long iX, long iY, long iWdt, long iHgt, long iGrowth, C4PropList * shape)
 {
-	// Local call: relative coordinates
-	if (Object(_this)) { iX+=Object(_this)->GetX(); iY+=Object(_this)->GetY(); }
-	// Place vegetation
-	return Game.PlaceVegetation(Def,iX,iY,iWdt,iHgt,iGrowth);
+	if (shape)
+	{
+		// New-style call with scripted shape
+		C4PropList *out_pos = C4PropList::New(NULL);
+		C4Value vout_pos = C4VPropList(out_pos);
+		return Game.PlaceVegetation(Def, iX, iY, iWdt, iHgt, iGrowth, shape, out_pos);
+	}
+	else
+	{
+		// Call in old-style shape
+		// Local call: relative coordinates
+		if (Object(_this)) { iX += Object(_this)->GetX(); iY += Object(_this)->GetY(); }
+		// Place vegetation
+		return Game.PlaceVegetation(Def, iX, iY, iWdt, iHgt, iGrowth, NULL, NULL);
+	}
 }
 
 C4Object* FnPlaceAnimal(C4PropList * _this, C4PropList * Def)

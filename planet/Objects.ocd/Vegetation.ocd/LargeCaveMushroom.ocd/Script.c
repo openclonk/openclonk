@@ -5,7 +5,7 @@
 
 /*-- Placement --*/
 
-public func Place(int amount, proplist rectangle, proplist settings)
+public func Place(int amount, proplist area, proplist settings)
 {
 	if (settings == nil) settings = {};
 	// Default behaviour
@@ -14,7 +14,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	
 	var max_tries = 2 * amount;
 	var loc_area = nil;
-	if (rectangle) loc_area = Loc_InRect(rectangle);
+	if (area) loc_area = Loc_InArea(area);
 	
 	// look for free underground spot to place groups of three or so..
 	while ((amount > 0) && (--max_tries > 0))
@@ -26,7 +26,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		if (!spot)
 		{
 			// note that the border is temporarily off until the bug with a turbulent-parent-overlay is fixed
-			var cave = Landscape_Cave->Place(1, rectangle, {width = 200 + Random(50), height = 100 + Random(50), borderheight = 0, bordermat = "Earth", bordertex = "earth_topSoil" });
+			var cave = Landscape_Cave->Place(1, area, {width = 200 + Random(50), height = 100 + Random(50), borderheight = 0, bordermat = "Earth", bordertex = "earth_topSoil" });
 			if (GetLength(cave) == 0) return plants; // can't place more
 			cave = cave[0];
 			spot = { x = cave->GetX(), y = cave->GetY() };
@@ -183,7 +183,7 @@ private func Seed()
 			
 			if (this.Confinement)
 			{
-				if (!IsPointInRectangle({x = x, y = y}, this.Confinement)) continue;
+				if (!this.Confinement->IsPointContained(x, y)) continue;
 			}
 
 			okay = true;
