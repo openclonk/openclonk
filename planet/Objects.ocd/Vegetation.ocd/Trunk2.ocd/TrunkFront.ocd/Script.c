@@ -23,6 +23,13 @@ private func CheckPosition()
 		SetPosition(back->GetX(), back->GetY());
 }
 
+func EditCursorMoved()
+{
+	// Move main trunk along with front in editor mode
+	if (back) back->SetPosition(GetX(), GetY());
+	return true;
+}
+
 func SaveScenarioObject() { return false; }
 
 local Plane = 505;
