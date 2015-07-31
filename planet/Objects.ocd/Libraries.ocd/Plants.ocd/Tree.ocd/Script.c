@@ -39,6 +39,75 @@ private func Construction()
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 	if (!GetGrowthValue() && !IsBurnedTree()) StartGrowth(5);
 	if (IsBurnedTree()) RemoveTimer("Seed");
+
+	lib_tree_attach = CreateArray();
+}
+
+/* Placement of fruit or other objects in the tree top */
+
+/** An array containing any objects attached in the treetop.
+*/
+local lib_tree_attach;
+
+/** Returns a random point somewhere in treetop. Should be overloaded.
+	pos is proplist with x and y
+*/
+public func GetTreetopPosition(proplist pos)
+{
+}
+
+/** Creates a new object of type to_create in the treetop.
+	If no_overlap_check is true, it is not guaranteed that the object won't overlap with existing (already in the treetop) ones. tries will be ignored.
+	If no_overlap_check is false, it is not guaranteed that the object will be created! Only tries (default 20) random positions are checked.
+*/
+public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check)
+{
+	if (!to_create) return FatalError("to_create can't be nil");
+	if (!IsStanding()) return nil;
+	if (!tries) tries = 20;
+
+	var pos = { x=0, y=0 }, overlap, width, height, area;
+	do {
+		GetTreetopPosition(pos);
+		overlap = false;
+
+		if (no_overlap_check) break;
+
+		for (var object in lib_tree_attach)
+		{
+			if (!object) continue;
+
+			width = object->GetObjWidth();
+			height = object->GetObjHeight();
+			area = Shape->Rectangle(object->GetX()-GetX()-width/2, object->GetY()-GetY()-height/2, width, height);
+			if (area->IsPointContained(pos.x, pos.y))
+			{
+				overlap = true;
+				break;
+			}
+			if (overlap) continue;
+			break;
+		}
+	} while(--tries);
+	if (overlap) return nil;
+
+	var attach = CreateObject(to_create, pos.x, pos.y, GetOwner());
+	RemoveHoles(lib_tree_attach);
+	lib_tree_attach[GetLength(lib_tree_attach)] = attach;
+	// The object probably wants to do stuff now
+	attach->~AttachToTree(this);
+	attach.Plane = this.Plane + Random(2)*2-1;
+	return attach;
+}
+
+// Whenever something happens to the tree (e.g. axe hit or fire). Afterwards all fruit/objects are considered "dropped" and no longer saved.
+private func DeattachObjects()
+{
+	if (!GetLength(lib_tree_attach)) return;
+
+	for (var object in lib_tree_attach)
+		object->~DeattachFromTree();
+	lib_tree_attach = CreateArray();
 }
 
 /* Chopping */
@@ -86,6 +155,7 @@ private func Damage(int change, int cause)
 		// Burn
 		if (OnFire())
 		{
+			DeattachObjects();
 			if (!lib_tree_burned) return BurstIntoAshes();
 			var burned = CreateObject(lib_tree_burned, 0, 0, GetOwner());
 			burned->SetCategory(GetCategory());
@@ -123,6 +193,7 @@ private func ShakeTree()
 {
 	var effect = AddEffect("IntShakeTree", this, 100, 1, this);
 	effect.current_trans = this.MeshTransformation;
+	DeattachObjects();
 }
 
 private func FxIntShakeTreeTimer(object target, proplist effect, int time)
@@ -172,6 +243,7 @@ public func ChopDown()
 	StopGrowth();
 	// stop reproduction
 	RemoveTimer("Seed");
+	DeattachObjects();
 
 	this.Touchable = 1;
 	this.Plane = 300;

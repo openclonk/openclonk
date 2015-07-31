@@ -7,11 +7,15 @@ private func SeedChance() {	return 100; }
 private func SeedArea() { return 400; }
 private func SeedAmount() { return 12; }
 
+// Saved for GetTreetopPosition
+local mesh_rotation;
+
 private func Construction()
 {
 	inherited(...);
+	mesh_rotation = RandomX(0,359);
 	// -12000 offset to fix model origin which is aligned to geometry centre on export instead of blender's given origin :(
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-12000), Trans_Rotate(RandomX(0,359),0,1,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-12000), Trans_Rotate(mesh_rotation,0,1,0)));
 }
 
 private func Seed()
@@ -29,6 +33,12 @@ private func Seed()
 		seed->SetRDir(RandomX(-5,5));
 		seed->SetConfinement(this.Confinement);
 	}
+}
+
+public func GetTreetopPosition(pos)
+{
+	var offset = Sin(mesh_rotation/2, 20);
+	return Shape->Rectangle(-45+offset,-25, 50,10)->GetRandomPoint(pos);
 }
 
 /*-- Properties --*/

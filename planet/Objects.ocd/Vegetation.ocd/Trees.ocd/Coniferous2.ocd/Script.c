@@ -9,6 +9,11 @@ private func SeedAmount() { return 10; }
 
 local lib_tree_burned = Tree_Coniferous2_Burned;
 
+public func GetTreetopPosition(pos)
+{
+	return Shape->Rectangle(-25,-15, 20,30)->GetRandomPoint(pos);
+}
+
 local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 2;
