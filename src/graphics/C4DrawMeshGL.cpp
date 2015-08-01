@@ -519,6 +519,42 @@ namespace
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
+			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
+			{
+				glEnable(GL_ALPHA_TEST);
+
+				switch (pass.AlphaRejectionFunction)
+				{
+				case StdMeshMaterialPass::DF_AlwaysPass:
+					glAlphaFunc(GL_ALWAYS, 0.0f);
+					break;
+				case StdMeshMaterialPass::DF_AlwaysFail:
+					glAlphaFunc(GL_NEVER, 0.0f);
+					break;
+				case StdMeshMaterialPass::DF_Less:
+					glAlphaFunc(GL_LESS, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_LessEqual:
+					glAlphaFunc(GL_LEQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_Equal:
+					glAlphaFunc(GL_EQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_NotEqual:
+					glAlphaFunc(GL_NOTEQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_Greater:
+					glAlphaFunc(GL_GREATER, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_GreaterEqual:
+					glAlphaFunc(GL_GEQUAL, pass.AlphaRejectionValue);
+					break;
+				default:
+					assert(false);
+					break;
+				}
+			}
+
 			// Set material properties
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
@@ -725,6 +761,8 @@ namespace
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);
+			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
+				glDisable(GL_ALPHA_TEST);
 		}
 	}
 

@@ -393,6 +393,18 @@ public:
 		SB_OneMinusSrcAlpha
 	};
 
+	enum DepthFunctionType
+	{
+		DF_AlwaysFail,
+		DF_AlwaysPass,
+		DF_Less,
+		DF_LessEqual,
+		DF_Equal,
+		DF_NotEqual,
+		DF_GreaterEqual,
+		DF_Greater
+	};
+
 	StdMeshMaterialPass();
 	void Load(StdMeshMaterialParserCtx& ctx);
 
@@ -412,6 +424,8 @@ public:
 
 	CullHardwareType CullHardware;
 	SceneBlendType SceneBlendFactors[2];
+	DepthFunctionType AlphaRejectionFunction;
+	float AlphaRejectionValue;
 	bool AlphaToCoverage;
 
 	struct ShaderInstance

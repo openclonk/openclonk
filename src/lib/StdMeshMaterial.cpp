@@ -176,6 +176,19 @@ namespace
 		{ "alpha_blend", { StdMeshMaterialPass::SB_SrcAlpha, StdMeshMaterialPass::SB_OneMinusSrcAlpha } },
 		{ NULL, { static_cast<StdMeshMaterialPass::SceneBlendType>(0), static_cast<StdMeshMaterialPass::SceneBlendType>(0) } }
 	};
+
+	const Enumerator<StdMeshMaterialPass::DepthFunctionType> DepthFunctionEnumerators[] =
+	{
+		{ "always_fail", StdMeshMaterialPass::DF_AlwaysFail },
+		{ "always_pass", StdMeshMaterialPass::DF_AlwaysPass },
+		{ "less", StdMeshMaterialPass::DF_Less },
+		{ "less_equal", StdMeshMaterialPass::DF_LessEqual },
+		{ "equal", StdMeshMaterialPass::DF_Equal },
+		{ "not_equal", StdMeshMaterialPass::DF_NotEqual },
+		{ "greater_equal", StdMeshMaterialPass::DF_GreaterEqual },
+		{ "greater", StdMeshMaterialPass::DF_Greater },
+		{ NULL, static_cast<StdMeshMaterialPass::DepthFunctionType>(0) }
+	};
 }
 
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
@@ -1220,6 +1233,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
 	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
+	AlphaRejectionFunction = DF_AlwaysPass; AlphaRejectionValue = 0.0f;
 	AlphaToCoverage = false;
 	VertexShader.Shader = FragmentShader.Shader = GeometryShader.Shader = NULL;
 }
@@ -1328,6 +1342,12 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 			StdStrBuf op;
 			ctx.AdvanceRequired(op, TOKEN_IDTF);
 			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "alpha_rejection")
+		{
+			AlphaRejectionFunction = ctx.AdvanceEnum(DepthFunctionEnumerators);
+			if (AlphaRejectionFunction != DF_AlwaysFail && AlphaRejectionFunction != DF_AlwaysPass)
+				AlphaRejectionValue = ctx.AdvanceFloat() / 255.0f;
 		}
 		else if (token_name == "alpha_to_coverage")
 		{
