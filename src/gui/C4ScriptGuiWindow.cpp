@@ -1515,16 +1515,29 @@ bool C4ScriptGuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, int32_t
 
 void C4ScriptGuiWindow::RequestLayoutUpdate()
 {
+	// directly requested on the root window?
+	// That usually comes from another part of the engine (f.e. C4Viewport::RecalculateViewports) or from a multiple-window child
+	if (!GetParent())
+	{
+		mainWindowNeedsLayoutUpdate = true;
+		return;
+	}
+
+	// are we a direct child of the root?
 	if (isMainWindow)
 	{
 		const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 		
 		if (!(style & C4ScriptGuiWindowStyleFlag::Multiple)) // are we a simple centered window?
+		{
 			mainWindowNeedsLayoutUpdate = true;
+			return;
+		}
 		else // we are one of the multiple windows.. the root better do a full refresh
-			static_cast<C4ScriptGuiWindow*>(GetParent())->mainWindowNeedsLayoutUpdate = true;
+			;
 	}
-	else static_cast<C4ScriptGuiWindow*>(GetParent())->RequestLayoutUpdate();
+	// propagate to parent window
+	static_cast<C4ScriptGuiWindow*>(GetParent())->RequestLayoutUpdate();
 }
 
 bool C4ScriptGuiWindow::UpdateChildLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight)
@@ -1542,8 +1555,8 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo)
 	assert(IsRoot()); // we are root
 
 	// assume I am the root and use the a special rectangle in the viewport for drawing
-	const float fullWidth = cgo.Wdt * cgo.Zoom;
-	const float fullHeight = cgo.Hgt * cgo.Zoom;
+	const float fullWidth = cgo.Wdt * cgo.Zoom - cgo.X;
+	const float fullHeight = cgo.Hgt * cgo.Zoom - cgo.Y;
 
 	// golden ratio defined default size!
 	const float &targetWidthEm = C4ScriptGuiWindow::standardWidth;
@@ -1702,6 +1715,11 @@ bool C4ScriptGuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
 {
 	assert(IsRoot()); // we are root
 	if (!IsVisible()) return false;
+	// if the viewport shows an upper-board, apply an offset to everything
+	const int oldTargetX = cgo.TargetX;
+	const int oldTargetY = cgo.TargetY;
+	cgo.TargetX += cgo.X;
+	cgo.TargetY += cgo.Y;
 	// this will check whether the viewport resized and we need an update
 	UpdateLayout(cgo);
 	// step one: draw all multiple-tagged windows
@@ -1709,6 +1727,9 @@ bool C4ScriptGuiWindow::DrawAll(C4TargetFacet &cgo, int32_t player)
 	// TODO: adjust rectangle for main menu if multiple windows exist
 	// step two: draw one "main" menu
 	DrawChildren(cgo, player, 0);
+	// ..and restore the offset
+	cgo.TargetX = oldTargetX;
+	cgo.TargetY = oldTargetY;
 	return true;
 }
 
@@ -1734,16 +1755,8 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 
 	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 
-	float childOffsetY = 0.0f; // for scrolling
-
-	// check whether we are scrolling
-	//float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
-
-	//if (scrollBar)
-	//	childOffsetY = -1.0f * (scrollBar->offset * (childHgt - rcBounds.Hgt));
-
-	const int32_t outDrawX = cgo.TargetX + rcBounds.x;
-	const int32_t outDrawY = cgo.TargetY + rcBounds.y;
+	const int32_t outDrawX = cgo.X + cgo.TargetX + rcBounds.x;
+	const int32_t outDrawY = cgo.Y + cgo.TargetY + rcBounds.y;
 	const int32_t outDrawWdt = rcBounds.Wdt;
 	const int32_t outDrawHgt = rcBounds.Hgt;
 	const int32_t outDrawRight = outDrawX + rcBounds.Wdt;

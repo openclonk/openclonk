@@ -995,6 +995,9 @@ void C4ViewportList::RecalculateViewports()
 			BackgroundAreas.ClipByRect(rcOut);
 		}
 	}
+	// and finally recalculate script menus
+	if (::Game.ScriptGuiRoot)
+		::Game.ScriptGuiRoot->RequestLayoutUpdate();
 }
 
 int32_t C4ViewportList::GetViewportCount()

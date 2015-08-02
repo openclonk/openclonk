@@ -199,7 +199,6 @@ public:
 	// whether this menu is the root of all script-created menus (aka of the isMainWindow windows)
 	bool IsRoot();
 	bool mainWindowNeedsLayoutUpdate;
-	void RequestLayoutUpdate();
 
 	bool wasRemoved; // to notify the window that it should not inform its parent on Close() a second time
 	bool closeActionWasExecuted; // to prevent a window from calling the close-callback twice even if f.e. closed in the close-callback..
@@ -286,6 +285,8 @@ public:
 	// calculate the width/height based on a certain property (f.e. leftMargin and relLeftMargin) and the parent's width/height
 	float CalculateRelativeSize(float parentWidthOrHeight, C4ScriptGuiWindowPropertyName absoluteProperty, C4ScriptGuiWindowPropertyName relativeProperty);
 
+	// schedules a layout update for the next drawing step
+	void RequestLayoutUpdate();
 	// this updates the window's layout and also propagates to all children
 	bool UpdateLayout(C4TargetFacet &cgo);
 	bool UpdateLayout(C4TargetFacet &cgo, float parentWidth, float parentHeight);
