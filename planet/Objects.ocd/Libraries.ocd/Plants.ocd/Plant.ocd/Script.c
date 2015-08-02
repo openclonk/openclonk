@@ -41,7 +41,8 @@ public func Place(int amount, proplist area, proplist settings)
 	// Default parameters
 	if (!settings) settings = { growth = 100000, keep_area = false };
 	if (!settings.growth) settings.growth = 100000;
-	var rectangle = area->GetBoundingRectangle();
+	var rectangle;
+	if (area) rectangle = area->GetBoundingRectangle(); else rectangle = Shape->LandscapeRectangle();
 
 	var plants = CreateArray(), plant;
 	for (var i = 0 ; i < amount ; i++)
