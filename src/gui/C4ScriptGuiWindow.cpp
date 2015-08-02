@@ -45,6 +45,10 @@
 
 #include <cmath>
 
+// Adds some helpful logs for hunting control & menu based desyncs.
+//#define MenuDebugLogF(...) DebugLogF(__VA_ARGS__)
+#define MenuDebugLogF (void)
+
 // This in in EM! Also, golden ratio
 const float C4ScriptGuiWindow::standardWidth = 100.0f;
 const float C4ScriptGuiWindow::standardHeight = 61.8f;
@@ -164,7 +168,10 @@ bool C4ScriptGuiWindowAction::Init(C4ValueArray *array, int32_t index)
 
 		// important! needed to identify actions later!
 		if (!id)
+		{
 			id = ::Game.ScriptGuiRoot->GenerateActionID();
+			MenuDebugLogF("assigning action ID %d\t\taction:%d, text:%s", id, newAction, text->GetCStr());
+		}
 
 		break;
 
@@ -188,7 +195,7 @@ bool C4ScriptGuiWindowAction::Init(C4ValueArray *array, int32_t index)
 void C4ScriptGuiWindowAction::Execute(C4ScriptGuiWindow *parent, int32_t player, int32_t actionType)
 {
 	assert(parent && "C4ScriptGuiWindow::Execute must always be called with parent");
-	//LogF("Excuting action (nextAction: %x, subwID: %d, target: %x, text: %s, type: %d)", nextAction, subwindowID, target, text->GetCStr(), actionType);
+	MenuDebugLogF("Excuting action (nextAction: %x, subwID: %d, target: %x, text: %s, type: %d)", nextAction, subwindowID, target, text->GetCStr(), actionType);
 
 	// invalid ID? can be set by removal of target object
 	if (action)
@@ -208,6 +215,7 @@ void C4ScriptGuiWindowAction::Execute(C4ScriptGuiWindow *parent, int32_t player,
 		{
 			if (!target) // ohject removed in the meantime?
 				break;
+			MenuDebugLogF("[ACTION REQUEST] action /call/");
 			// the action needs to be synchronized! Assemble command and put it into control queue!
 			Game.Input.Add(CID_MenuCommand, new C4ControlMenuCommand(id, player, main->GetID(), parent->GetID(), parent->target, actionType));
 			break;
@@ -242,6 +250,7 @@ void C4ScriptGuiWindowAction::Execute(C4ScriptGuiWindow *parent, int32_t player,
 
 bool C4ScriptGuiWindowAction::ExecuteCommand(int32_t actionID, C4ScriptGuiWindow *parent, int32_t player)
 {
+	MenuDebugLogF("checking action %d (==%d?)\t\tmy action: %d", id, actionID, action);
 	// target has already been checked for validity
 	if (id == actionID && action)
 	{
@@ -255,7 +264,7 @@ bool C4ScriptGuiWindowAction::ExecuteCommand(int32_t actionID, C4ScriptGuiWindow
 			main = from;
 			from = static_cast<C4ScriptGuiWindow*>(from->GetParent());
 		}
-		//LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
+		MenuDebugLogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
 		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target));
 		target->Call(text->GetCStr(), &Pars);
 		return true;
@@ -429,7 +438,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 	if (isTaggedPropList)
 	{
 		C4ValueArray *properties = proplist->GetProperties();
-
+		properties->SortStrings();
 		for (int32_t i = 0; i < properties->GetSize(); ++i)
 		{
 			const C4Value &entry = properties->GetItem(i);
@@ -965,13 +974,14 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 	bool layoutUpdateRequired = false; // needed for position changes etc
 	// get properties from proplist and check for those, that match an allowed property to set them
 	C4ValueArray *properties = proplist->GetProperties();
+	properties->SortStrings();
 	C4String *stdTag = &Strings.P[P_Std];
 	for (int32_t i = 0; i < properties->GetSize(); ++i)
 	{
 		const C4Value &entry = properties->GetItem(i);
 		C4String *key = entry.getStr();
 		assert(key && "PropList returns non-string as key");
-
+		MenuDebugLogF("--%s\t\t(I am %d)", key->GetCStr(), id);
 		C4Value property;
 		proplist->GetPropertyByS(key, &property);
 
@@ -1050,8 +1060,11 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 				if (isLoading)
 					id = property.getInt();
 		}
-		else if(&Strings.P[P_OnClick] == key)
+		else if (&Strings.P[P_OnClick] == key)
+		{
+			MenuDebugLogF("Adding new action, I am window %d with parent %d", id, static_cast<C4ScriptGuiWindow*>(parent)->id);
 			props[C4ScriptGuiWindowPropertyName::onClickAction].Set(property, stdTag);
+		}
 		else if(&Strings.P[P_OnMouseIn] == key)
 			props[C4ScriptGuiWindowPropertyName::onMouseInAction].Set(property, stdTag);
 		else if(&Strings.P[P_OnMouseOut] == key)
@@ -1194,7 +1207,7 @@ void C4ScriptGuiWindow::ChildWithIDRemoved(C4ScriptGuiWindow *child)
 	{
 		if (iter->second != child) continue;
 		childrenIDMap.erase(iter);
-		//LogF("child-map-size: %d, remov %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
+		MenuDebugLogF("child-map-size: %d, remove %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 		return;
 	}
 }
@@ -1205,7 +1218,7 @@ void C4ScriptGuiWindow::ChildGotID(C4ScriptGuiWindow *child)
 	if (!isMainWindow)
 		return static_cast<C4ScriptGuiWindow*>(GetParent())->ChildGotID(child);
 	childrenIDMap.insert(std::make_pair(child->GetID(), child));
-	//LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
+	MenuDebugLogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
 C4ScriptGuiWindow *C4ScriptGuiWindow::GetChildByID(int32_t childID)
@@ -1956,7 +1969,7 @@ bool C4ScriptGuiWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouse
 			int32_t childRight = child->rcBounds.x + child->rcBounds.Wdt;
 			int32_t childTop = child->rcBounds.y;
 			int32_t childBottom = child->rcBounds.y + child->rcBounds.Hgt;
-			//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
+			
 			bool inArea = true;
 			if ((adjustedMouseX < childLeft) || (adjustedMouseX > childRight)) inArea = false;
 			else if ((adjustedMouseY < childTop) || (adjustedMouseY > childBottom)) inArea = false;
@@ -2092,7 +2105,10 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 {
 	if (isMainWindow && subwindowID) // we are a main window! try a shortcut through the ID?
 	{
-		//LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
+		MenuDebugLogF("passing command... instance:%d, plr:%d, subwin:%d, type:%d [I am %d, MW]", actionID, player, subwindowID, actionType, id);
+		MenuDebugLogF("stats:");
+		MenuDebugLogF("active menus:\t%d", GetElementCount());
+		MenuDebugLogF("children ID map:\t%d", childrenIDMap.size());
 		// the reasoning for that shortcut is that I assume that usually windows with actions will also have an ID assigned
 		// this obviously doesn't have to be the case, but I believe it's worth the try
 		std::pair<std::multimap<int32_t, C4ScriptGuiWindow*>::iterator, std::multimap<int32_t, C4ScriptGuiWindow*>::iterator> range;
@@ -2101,15 +2117,21 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 		for (std::multimap<int32_t, C4ScriptGuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 		{
 			if (iter->second->ExecuteCommand(actionID, player, subwindowID, actionType, target))
+			{
+				MenuDebugLogF("shortcutting command sucessful!");
 				return true;
+			}
 		}
 		// it is not possible that another window would match the criteria. Abort later after self-check
+		MenuDebugLogF("shortcutting command failed.. no appropriate window");
 	}
 
 	// are we elligible?
 	if ((id == subwindowID) && (this->target == target))
 	{
-
+		MenuDebugLogF("stats: (I am %d)", id);
+		MenuDebugLogF("children:\t%d", GetElementCount());
+		MenuDebugLogF("all actions:\t%d", props[actionType].GetAllActions().size());
 		std::list<C4ScriptGuiWindowAction*> allActions = props[actionType].GetAllActions();
 		for (std::list<C4ScriptGuiWindowAction*>::iterator iter = allActions.begin(); iter != allActions.end(); ++iter)
 		{
@@ -2117,7 +2139,10 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 			assert(action && "C4ScriptGuiWindowProperty::GetAllActions returned list with null-pointer");
 
 			if (action->ExecuteCommand(actionID, this, player))
+			{
+				MenuDebugLogF("executing command sucessful!");
 				return true;
+			}
 		}
 
 		// note that we should not simply return false here
@@ -2126,14 +2151,21 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 
 	// not caught, forward to children!
 	// abort if main window, though. See above
-	if (isMainWindow && subwindowID) return false;
+	if (isMainWindow && subwindowID)
+	{
+		MenuDebugLogF("executing command failed!");
+		return false;
+	}
 
-	//for (std::list<C4ScriptGuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	// otherwise, just pass to children..
 	for (C4GUI::Element *element : *this)
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
 		if (child->ExecuteCommand(actionID, player, subwindowID, actionType, target))
+		{
+			MenuDebugLogF("passing command sucessful! (I am %d - &p)", id, this->target);
 			return true;
+		}
 	}
 	return false;
 }

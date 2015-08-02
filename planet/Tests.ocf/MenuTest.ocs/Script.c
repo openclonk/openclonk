@@ -15,6 +15,37 @@ func Initialize()
 		OnClick = GuiAction_Call(Scenario, "StartMenu")
 	};
 	GuiOpen(starter_menu);
+	
+	//Schedule(nil, "Scenario->TestDesync()", 2);
+}
+
+static desync_menu;
+func TestDesync()
+{
+	var rock = CreateObject(Rock);
+	Random(100);
+	var menu =
+	{
+		Prototype = rock,
+		BackgroundColor = RGB(255, 100, 0),
+		OnClick = GuiAction_Call(Scenario, "Desync"),
+		OnClose = GuiAction_Call(Scenario, "DesyncClose")
+	};
+	Log("DESYNC TEST - OPENING MENU*~");
+	desync_menu = GuiOpen(menu);
+	Log("DESYNC TEST - OPENING MENU DONE*~*");
+}
+
+func Desync()
+{
+	Random(100);
+	GuiClose(desync_menu);
+}
+
+func DesyncClose()
+{
+	Random(100);
+	Log("Desync Close");
 }
 
 func MarginTest()
@@ -58,7 +89,7 @@ func StartMenu(plr)
 	{
 		if (GuiClose(active_menu)) return;
 	}
-	
+
 	var main_menu = 
 	{
 		Decoration = GUI_MenuDeco,
