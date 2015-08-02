@@ -16,7 +16,7 @@ material Coniferous
 			
 			texture_unit
 			{
-				texture coniferous.png
+				texture coniferous2.png
 				tex_address_mode wrap
 				filtering trilinear
 			}

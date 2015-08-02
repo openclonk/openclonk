@@ -144,8 +144,8 @@ private func InitVegetation(int map_size)
 	// Create an effect to make sure there will always grow some new trees.	
 	AddEffect("EnsureTrees", nil, 100, 20, nil);
 	// Some large cave mushrooms, equals amounts on both sides.
-	LargeCaveMushroom->Place(12 + 4 * map_size, Rectangle(0, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
-	LargeCaveMushroom->Place(12 + 4 * map_size, Rectangle(wdt / 2, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
+	LargeCaveMushroom->Place(12 + 4 * map_size, Shape->Rectangle(0, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
+	LargeCaveMushroom->Place(12 + 4 * map_size, Shape->Rectangle(wdt / 2, hgt / 2, wdt / 2, hgt / 2), { terraform = false });
 	// Some dead tree trunks.
 	for (var i = 0; i < 16 + Random(4); i++)
 	{

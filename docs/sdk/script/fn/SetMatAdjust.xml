@@ -25,7 +25,6 @@
       </example>
     </examples>
     <related>
-      <funclink>SetMaterialColor</funclink>
       <funclink>SetSkyAdjust</funclink>
       <funclink>SetGamma</funclink>
       <funclink>RGB</funclink>

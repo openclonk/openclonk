@@ -349,6 +349,6 @@ private:
 	C4Real Scale;
 };
 
-StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data);
+StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data, const StdMeshAnimation* pos_for_animation = NULL);
 
 #endif

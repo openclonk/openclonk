@@ -415,7 +415,7 @@ namespace
 		return true;
 	}
 
-	void SetStandardUniforms(C4ShaderCall& call, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect)
+	void SetStandardUniforms(C4ShaderCall& call, DWORD dwModClr, DWORD dwPlayerColor, DWORD dwBlitMode, bool cullFace, const C4FoWRegion* pFoW, const C4Rect& clipRect, const C4Rect& outRect)
 	{
 		// Draw transform
 		const float fMod[4] = {
@@ -433,6 +433,9 @@ namespace
 			((dwPlayerColor      ) & 0xff) / 255.0f,
 		};
 		call.SetUniform3fv(C4SSU_OverlayClr, 1, fPlrClr);
+
+		// Backface culling flag
+		call.SetUniform1f(C4SSU_CullMode, cullFace ? 0.0f : 1.0f);
 
 		// Dynamic light
 		if(pFoW != NULL)
@@ -516,6 +519,42 @@ namespace
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
+			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
+			{
+				glEnable(GL_ALPHA_TEST);
+
+				switch (pass.AlphaRejectionFunction)
+				{
+				case StdMeshMaterialPass::DF_AlwaysPass:
+					glAlphaFunc(GL_ALWAYS, 0.0f);
+					break;
+				case StdMeshMaterialPass::DF_AlwaysFail:
+					glAlphaFunc(GL_NEVER, 0.0f);
+					break;
+				case StdMeshMaterialPass::DF_Less:
+					glAlphaFunc(GL_LESS, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_LessEqual:
+					glAlphaFunc(GL_LEQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_Equal:
+					glAlphaFunc(GL_EQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_NotEqual:
+					glAlphaFunc(GL_NOTEQUAL, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_Greater:
+					glAlphaFunc(GL_GREATER, pass.AlphaRejectionValue);
+					break;
+				case StdMeshMaterialPass::DF_GreaterEqual:
+					glAlphaFunc(GL_GEQUAL, pass.AlphaRejectionValue);
+					break;
+				default:
+					assert(false);
+					break;
+				}
+			}
+
 			// Set material properties
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
@@ -582,10 +621,12 @@ namespace
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
+			{
 				if (pGL->Workarounds.LowMaxVertexUniformCount)
 					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
 				else
 					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+			}
 
 			// Bind the vertex data of the mesh
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
@@ -665,7 +706,7 @@ namespace
 			}
 
 			// Set uniforms and instance parameters
-			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pFoW, clipRect, outRect);
+			SetStandardUniforms(call, dwModClr, dwPlayerColor, dwBlitMode, pass.CullHardware != StdMeshMaterialPass::CH_None, pFoW, clipRect, outRect);
 			for(unsigned int i = 0; i < pass.Program->Parameters.size(); ++i)
 			{
 				const int uniform = pass.Program->Parameters[i].UniformIndex;
@@ -720,6 +761,8 @@ namespace
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);
+			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
+				glDisable(GL_ALPHA_TEST);
 		}
 	}
 

@@ -9,7 +9,7 @@
 static main_island_x, main_island_y;
 static goal_platform_x, goal_platform_y;
 
-static const SCEN_TEST = false;
+static const SCEN_TEST = true;
 
 static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos;
 
@@ -50,7 +50,13 @@ protected func PostIntroInitialize()
 
 func DoInit(int first_player)
 {
-	StartSequence("Intro", 0, GetCrew(first_player));
+	if (!SCEN_TEST)
+		StartSequence("Intro", 0, GetCrew(first_player));
+	else
+	{
+		PostIntroInitialize();
+		g_intro_done = true;
+	}
 	return true;
 }
 
@@ -167,7 +173,7 @@ private func InitAnimals()
 	return true;
 }
 
-private func GetFishArea() { return Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight()/2 - main_island_y); }
+private func GetFishArea() { return Shape->Rectangle(50, main_island_y, LandscapeWidth() - 100, LandscapeHeight()/2 - main_island_y); }
 
 private func EnsureAnimals()
 {

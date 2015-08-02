@@ -78,8 +78,6 @@ global func RemoveDuplicates(array arr)
 	return cnt;
 }
 
-
-
 // Tests whether a value is in an array.
 global func IsValueInArray(array arr, /*any*/ value)
 {
@@ -96,7 +94,6 @@ global func RemoveArrayValue(array arr, /*any*/ value, bool unstable)
 		return RemoveArrayIndexUnstable(arr, i);
 	return RemoveArrayIndex(arr, i);
 }
-
 
 // Randomly shuffles an array.
 global func ShuffleArray(array arr)
@@ -184,4 +181,10 @@ global func PopFront(array arr)
 	var o = arr[0];
 	arr[:] = arr[1:];
 	return o;
+}
+
+// Returns a random element from an array.
+global func RandomElement(array arr)
+{
+	return arr[Random(GetLength(arr))];
 }

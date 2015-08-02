@@ -191,11 +191,6 @@
           <col>Direction of temperature conversion: 0 bottom up, 1 top down</col>
         </row>
         <row>
-          <col>Alpha</col>
-          <col>6 integers</col>
-          <col>Transparency of the three material colors.</col>
-        </row>
-        <row>
           <col>Placement</col>
           <col>Integer</col>
           <col>0-100. This Value is used for lighting of the landscape and is usually determined automatically from the other material values.</col>

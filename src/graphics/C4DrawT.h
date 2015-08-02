@@ -41,8 +41,12 @@ public:
 	virtual bool InvalidateDeviceObjects() { return true; }
 	virtual bool DeleteDeviceObjects() { return true; }
 	virtual bool DeviceReady() { return true; }
-	virtual bool CreatePrimarySurfaces(bool, unsigned int, unsigned int, int, unsigned int);
+	virtual bool CreatePrimarySurfaces(unsigned int, unsigned int, int, unsigned int);
 	virtual bool SetOutputAdapter(unsigned int) { return true; }
+
+	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int) {}
+	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float) {}
+	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD) {}
 };
 
 #endif

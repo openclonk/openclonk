@@ -10,6 +10,14 @@ protected func Initialize()
 	return;
 }
 
+/** Destroy coconut instead of seeding if it tries to seed outside given area
+*/
+public func SetConfinement(conf)
+{
+	this.Confinement = conf;
+	return true;
+}
+
 public func FxIntSeedTimer(object coconut, proplist effect, int timer)
 {
 	// Start germination timer if in the environment
@@ -20,11 +28,18 @@ public func FxIntSeedTimer(object coconut, proplist effect, int timer)
 	var has_soil = !!GetMaterialVal("Soil", "Material", GetMaterial(0, 3));
 	if (effect.SeedTime <= 0 && !Contained() && has_soil && GetCon() >= 100)
  	{
-		// Are there any trees too close? Is the coconut underwater?
-		if (!FindObject(Find_Func("IsTree"), Find_Distance(40)) && !GBackLiquid())
+		// Do we want to seed here?
+		if (Tree_Coconut->CheckSeedChance(GetX(), GetY()))
 		{
-			if (Germinate())
-				return -1;
+			// Are there any trees too close? Is the coconut underwater?
+			if (!FindObject(Find_Func("IsTree"), Find_Distance(40)) && !GBackLiquid())
+			{
+				if (!this.Confinement || this.Confinement->IsPointContained(GetX(), GetY()))
+				{
+					if (Germinate())
+						return -1;
+				}
+			}
 		}
 	}
 	
@@ -40,9 +55,10 @@ public func FxIntSeedTimer(object coconut, proplist effect, int timer)
 public func Germinate() 
 {
 	// Try to sprout a coconut tree.
-	var d = 8;
-	if (PlaceVegetation(Tree_Coconut, -d/2, -d/2, d, d, 100))
+	var d = 8, tree;
+	if (tree = PlaceVegetation(Tree_Coconut, -d/2, -d/2, d, d, 100))
 	{
+		if (this.Confinement) tree->KeepArea(this.Confinement);
 		this.Collectible = 0;	
 		AddEffect("IntGerminate", this, 100, 1, this); 
 		return true;
@@ -92,3 +108,4 @@ local Description = "$Description$";
 local Rebuy = true;
 local BlastIncinerate = 8;
 local ContactIncinerate = 2;
+local Confinement;

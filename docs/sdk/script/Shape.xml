@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Shape library</title>
+  <h>Shape library</h>
+  <part>
+     <text>The shape library, defined in Objects.ocd/Libraries.ocd/Shape.ocd and available under the definition name Shape, provides functionality for defining 2D shapes typically used to address landscape areas e.g. for plant seed ranges, or search areas. For example, the <funclink>PlaceVegetation</funclink> engine function accepts a shape as an optional way to define the area in which vegetation should be placed. Shape coordinates are defined as-is and do not perform any coordinate transformation between global and object-local contexts.</text>
+    <h>Shape creation</h>
+    <text>Shape creation functions are public functions in the Shape definition. They return proplists with a common <a href="#interface">interface</a>. The following shapes can be created:</text>
+    <text></text>
+    <code>proplist Shape->Rectangle(int x, int y, int w, int h);</code>
+    <text>Represents a rectangular shape starting at point (x,y) with width w and height h. By definition, point (x,y) is included in the area while point (x+w,x+h) is not.</text>
+    <text></text>
+    <code>proplist Shape->Circle(int cx, int cy, int r);</code>
+    <text>Returns a circular shape around the center point (cx,cy) with radius r.</text>
+    <text></text>
+    <code>proplist Shape->Combine(proplist s1, proplist s2, ...);</code>
+    <text>Returns the shape that is a combination of the two or more sub-shapes passed as parameters s1 through sn. That is, a point is contained in the result shape iff it is contained in any of the sub-shapes.</text>
+    <text></text>
+    <code>proplist Shape->Intersect(proplist s1, proplist s2, ...);</code>
+    <text>Returns the shape that is an intersection of the two or more sub-shapes passed as parameters s1 through sn. That is, a point is contained in the result shape iff it is contained in all of the sub-shapes.</text>
+    <text></text>
+    <code>proplist Shape->Subtract(proplist in, proplist ex);</code>
+    <text>Returns the shape that is contains the sub-shape in but does not contain the sub-shape ex.</text>
+    <text></text>
+    <code>proplist Shape->LandscapeRectangle();</code>
+    <text>Returns a rectangle encompassing the whole landscape.</text>
+  </part><part>
+    <h>Shape interface</h>
+    <text>Each shape type implements a common set of interface functions to be called in the context of the shape proplist:</text>
+    <text></text>
+    <code>bool IsPointContained(int x, int y);</code>
+    <text>Returns true iff the the point at (x,y) is contained in the shape.</text>
+    <text></text>
+    <code>bool GetRandomPoint(proplist out, optional int max_tries = 200);</code>
+    <text>Finds a random position in the shape and returns it as properties x and y in the supplied proplist. The return value indivates whether a point could be found.</text>
+    <text>The parameter max_tries indicates how many times the algorithm tries to find a point within the shape. The function is guaranteed to succeed for non-empty base shapes (i.e. rectangle and circle) as well as combined shapes on a single try. However a stochastic approach is used for intersection and subtraction shapes where random points are queried from one of the sub-shapes and subsequently checked against the other sub-shapes.</text>
+    <text></text>
+    <code>proplist GetBoundingRectangle();</code>
+    <text>Returns a rectangular shape that includes at least the whole shape used as calling context.</text>
+    <text></text>
+    <part>
+      <h>Rectangle interface</h>
+      <text>If the shape is a rectangle, the following two helper functions for the <funclink>FindObjects</funclink>-family of functions:</text>
+<code>array Find_In(object context);
+array Find_At(object context);</code>
+      <text>These functions return <funclink>Find_InRect</funclink> and <funclink>Find_AtRect</funclink> search criterions for the defined rectangle areas respectively. Optionally, a context object may be supplied, in which case the areas are interpreted in local object coordinates.</text>
+    </part>
+  </part><part>
+    <h>Examples</h>
+<code>func Initialize()
+{
+	PlaceObjectsInShape(Rock, 20, Shape->Circle(LandscapeWidth()/2, LandscapeHeight()/2, 300));
+	PlaceObjectsInShape(Nugget, 50, Shape->LandscapeRectangle());
+	PlaceObjectsInShape(Coal, 30, Shape->Subtract(Shape->LandscapeRectangle(), Shape->Circle(LandscapeWidth()/2, LandscapeHeight()/2, 300)));
+	return true;
+}
+
+private func PlaceObjectsInShape(def item_id, int count, proplist area)
+{
+	var pos = {};
+	while (count--)
+		if (area->GetRandomPoint(pos))
+			if (GBackSolid(pos.x, pos.y))
+				CreateObject(item_id, pos.x, pos.y);
+	return true;
+}</code>
+    <text>Example scenario script that places some underground materials. Up to 20 pieces of rock are placed in a circular area of radius 300 from the center of the landscape. Up to 50 pieces of gold are placed spread all over the map. Up to 30 pieces of coal are placed anywhere in the landscape outside a central, circular area.</text>
+    <text></text>
+<code>func Initialize()
+{
+	// Create message trigger for central landscape position
+	CreateMessageTrigger("You've reached the landscape center.", Shape->Rectangle(LandscapeWidth()/2-50, LandscapeHeight()/2-50, 100, 100));
+	// Create message trigger for border position
+	CreateMessageTrigger("You've reached the left or right landscape border.",
+		Shape->Combine(
+			Shape->Rectangle(0, 0, 50, LandscapeHeight()),
+			Shape->Rectangle(LandscapeWidth()-50, 0, 50, LandscapeHeight())
+		));
+	return true;
+}
+
+// Creates a trigger that displays the message to any living objects entering the area
+func CreateMessageTrigger(string message, proplist area)
+{
+	area.find_condition = area->GetBoundingRectangle()->Find_In();
+	return ScheduleCall(nil, Scenario.TestMessageTrigger, 3, 0x7fffffff, message, area);
+}
+
+// Periodically called for each message trigger
+func TestMessageTrigger(message, area)
+{
+	// Look for any objects in the bounding region
+	for (var obj in FindObjects(area.find_condition, Find_OCF(OCF_Alive)))
+		// Check the exact shape of the trigger region
+		if (area->IsPointContained(obj->GetX(), obj->GetY()))
+			// OK, show message!
+			obj->Message(message);
+	return true;
+}</code>
+    <text>Example scenario script that Generates two trigger regions in which messages are displayed above the heads of clonks or other animals entering them.</text>
+  
+  </part>
+  <author>Sven2</author><date>2015-07</date>
+</doc>

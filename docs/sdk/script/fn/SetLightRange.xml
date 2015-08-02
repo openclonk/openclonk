@@ -38,6 +38,7 @@
     <related>
       <funclink>SetPlrView</funclink>
       <funclink>SetFoW</funclink>
+      <funclink>SetLightColor</funclink>
     </related>
   </func>
 </funcs>

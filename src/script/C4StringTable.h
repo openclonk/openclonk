@@ -308,6 +308,8 @@ enum C4PropertyName
 	P_Delay,
 	P_X,
 	P_Y,
+	P_x,
+	P_y,
 	P_Wdt,
 	P_Hgt,
 	P_OffX,
@@ -404,6 +406,8 @@ enum C4PropertyName
 	P_Source,
 	P_Color,
 	P_EditCursorCommands,
+	P_IsPointContained,
+	P_GetRandomPoint,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

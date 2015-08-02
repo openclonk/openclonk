@@ -1,0 +1,14 @@
+[DefCore]
+id=Trunk2
+Version=6,0
+Category=C4D_StaticBack
+Width=264
+Height=73
+Offset=-132,-36
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=100
+Components=Wood=30
+Mass=150
+SolidMask=0,0,264,73,0,0

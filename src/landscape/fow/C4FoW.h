@@ -99,8 +99,10 @@ public:
 	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr);
 
 private:
+#ifndef USE_CONSOLE
 	// Shader for updating the frame buffer
 	C4Shader FramebufShader;
+#endif
 };
 
 #endif // C4FOW_H

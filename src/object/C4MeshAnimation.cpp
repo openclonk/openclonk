@@ -42,7 +42,7 @@ namespace
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAction> C4ValueProviderActionID("action");
 }
 
-StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data)
+StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data, const StdMeshAnimation* pos_for_animation)
 {
 	int32_t type = Data[0].getInt();
 	switch (type)
@@ -50,9 +50,19 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 	case C4AVP_Const:
 		return new C4ValueProviderConst(itofix(Data[1].getInt(), 1000));
 	case C4AVP_Linear:
-		if (Data[4].getInt() == 0)
+	{
+		int32_t end = Data[3].getInt(), len = Data[4].getInt();
+		if (len == 0)
 			throw new C4AulExecError("Length cannot be zero");
-		return new C4ValueProviderLinear(itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt(), static_cast<C4AnimationEnding>(Data[5].getInt()));
+		// Sanity check for linear animations that are too long and could cause excessive animation stacks
+		if (pos_for_animation)
+		{
+			int32_t max_end = fixtoi(ftofix(pos_for_animation->Length), 1000);
+			if (end < 0 || end > max_end)
+				throw new C4AulExecError(FormatString("End (%d) not in range of animation '%s' (0-%d).", (int)end, pos_for_animation->Name.getData(), (int)max_end).getData());
+		}
+		return new C4ValueProviderLinear(itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(end, 1000), len, static_cast<C4AnimationEnding>(Data[5].getInt()));
+	}
 	case C4AVP_X:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)

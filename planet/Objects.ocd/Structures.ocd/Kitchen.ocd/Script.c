@@ -3,8 +3,11 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
+#include Library_LampPost
 
 local hold_production;
+
+public func LanternPosition(id def) { return [GetCalcDir()*19,-1]; }
 
 func Construction(object creator)
 {

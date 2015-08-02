@@ -128,6 +128,8 @@ public:
 
 	std::vector<int> GetMatchingBones(const StdMeshSkeleton& skeleton) const;
 
+	std::vector<const StdMeshAnimation*> GetAnimations() const;
+
 private:
 	void AddMasterBone(StdMeshBone* bone);
 
@@ -199,13 +201,17 @@ public:
 
 	void PostInit();
 
+#ifndef USE_CONSOLE
 	GLuint GetVBO() const { return vbo; }
+#endif
 
 	void SetLabel(const std::string &label) { Label = label; }
 
 private:
+#ifndef USE_CONSOLE
 	GLuint vbo;
 	void UpdateVBO();
+#endif
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable

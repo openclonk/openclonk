@@ -19,7 +19,7 @@ static g_intro_done;
 // Called be the engine: draw the complete map here.
 public func InitializeMap(proplist map)
 {
-	if (!g_intro_done) return true;
+	if (!g_intro_done && !SCEN_TEST) return true;
 	Resize(300,400);
 	this.sea_y = 50;
 	this.ground_y = 350;

@@ -124,7 +124,7 @@ private func InitEnvironment(int difficulty)
 private func InitVegetation(int map_size)
 {
 	// Place some coniferous trees, but only up to 2/3 of the mountain.
-	Tree_Coniferous->Place(16 + Random(5), Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), 2 * LandscapeHeight() / 3));
+	Tree_Coniferous->Place(16 + Random(5), Shape->Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), 2 * LandscapeHeight() / 3));
 	// Also some cave mushrooms as a source of wood.
 	LargeCaveMushroom->Place(5 + 2 * map_size + Random(5), nil, { terraform = false });
 

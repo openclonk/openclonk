@@ -14,11 +14,21 @@
  */
 
 #include "C4Include.h"
+
+#ifndef USE_CONSOLE
+
 #include "C4FoWDrawStrategy.h"
 #include "C4FoWLight.h"
 #include "C4FoWRegion.h"
 #include "C4DrawGL.h"
 
+enum C4DrawPass
+{
+	C4DP_First = 0,
+	C4DP_Second = 1,
+	C4DP_Color = 2,
+	C4DP_Last
+};
 
 void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 {
@@ -26,24 +36,40 @@ void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
+	float width = region->getSurface()->Wdt;
+	float height = region->getSurface()->Hgt / 2.0;
+
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
 	// for details.
-	if(pass == 0)
+	switch (pass)
 	{
-		glBlendFunc(GL_ONE, GL_ONE);
-		glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-	}
-	else if(pass == 1)
-	{
-		glBlendFunc(GL_ONE, GL_ONE);
-		glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+		case C4DP_First:
+			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+			glScissor(0, height, width, height);
+			break;
+		case C4DP_Second:
+			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			glScissor(0, height, width, height);
+			break;
+		case C4DP_Color:
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
+			glScissor(0, 0, width, height);
+			break;
+		default:
+			assert(!"Unexpected value for light drawing pass");
+			break;
 	}
 
+	glEnable(GL_SCISSOR_TEST);
 }
 
 void C4FoWDrawLightTextureStrategy::End(int32_t pass)
 {
 	glBlendEquation( GL_FUNC_ADD );
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
@@ -73,27 +99,58 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
 	//  G_new = BoundBy(BoundBy(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
 	//  B_new = BoundBy(BoundBy(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
 
-	if (pass > 0)
-		glColor3f(0.0f,   0.5f/1.5f, 0.5f/1.5f);
-	else if (shadow)
+	float y_offset = 0.0f;
+
+	switch (pass)
 	{
-		float dx = x - light->getX();
-		float dy = y - light->getY();
-		float dist = sqrt(dx*dx+dy*dy);
-		float bright = light->getBrightness();
-		float mult = Min(0.5f / light->getNormalSize(), 0.5f / dist);
-		float normX = Clamp(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
-		float normY = Clamp(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
-		glColor3f(bright, normX,     normY);
+		case C4DP_First:
+			if (shadow)
+			{
+				float dx = x - light->getX();
+				float dy = y - light->getY();
+				float dist = sqrt(dx*dx + dy*dy);
+				float bright = light->getBrightness();
+				float mult = Min(0.5f / light->getNormalSize(), 0.5f / dist);
+				float normX = Clamp(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
+				float normY = Clamp(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
+				glColor4f(bright, normX, normY, 0.0f);
+			}
+			else
+			{
+				glColor4f(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.0f);
+			}
+			break;
+		case C4DP_Second:
+			glColor4f(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.5f);
+			break;
+		case C4DP_Color: // has a block so that alpha is scoped to this block only
+		{
+			y_offset = region->getSurface()->Hgt / 2;
+
+			float alpha; // 0.0 == fully transparent (takes old color), 1.0 == solid color (takes new color)
+
+			if (shadow) // draw the center of the light
+			{
+				alpha = 0.3 + 0.6 * light->getValue() * light->getLightness();
+			}
+			else // draw the edge of the light
+			{
+				alpha = 0.0;
+			}
+
+			glColor4f(light->getR(), light->getG(), light->getB(), alpha);
+			break;
+		}
+		default:
+			glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+			break;
 	}
-	else
-		glColor3f(0.0f,   0.5f/1.5f, 0.5f/1.5f);
 
 	// global coords -> region coords
 	x += -region->getRegion().x;
-	y += -region->getRegion().y;
+	y += -region->getRegion().y + y_offset;
 
-	glVertex2f(x,y);
+	glVertex2f(x, y);
 }
 
 void C4FoWDrawLightTextureStrategy::DrawDarkVertex(float x, float y)
@@ -151,3 +208,4 @@ void C4FoWDrawWireframeStrategy::DrawLightVertex(float x, float y)
 	DrawVertex(x, y);
 }
 
+#endif

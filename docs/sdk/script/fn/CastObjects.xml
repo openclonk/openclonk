@@ -52,7 +52,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object.</desc>
+    <desc>Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object. The objects that were created are returned in an array.</desc>
     <examples>
       <example>
         <code>var num=<funclink>GetVertexNum</funclink>()-1;
@@ -65,4 +65,5 @@ CastObjects(MagicSpark,1,20,<funclink>GetVertex</funclink>(num, 0)-<funclink>Get
   </func>
   <author>Günther</author><date>2002-02</date>
   <author>Newton</author><date>2009-07</date>
+  <author>Marky</author><date>2015-07</date>
 </funcs>

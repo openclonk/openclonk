@@ -96,7 +96,7 @@ public func IsNight()
 {
 	var night_start = (time_set.sunset_start + time_set.sunset_end) / 2;
 	var night_end = (time_set.sunrise_start + time_set.sunrise_end) / 2;
-	if (Inside(time, night_start, night_end))
+	if (!Inside(time, night_end, night_start))
 		return true;
 	return false;
 }

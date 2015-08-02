@@ -159,14 +159,14 @@ private func InitVegetation(int map_size)
 	var hgt = LandscapeHeight();
 	
 	// Cave mushrooms scattered around the top and middle sections.
-	LargeCaveMushroom->Place(10, Rectangle(0, 0, wdt, hgt / 8), { terraform = false });
-	LargeCaveMushroom->Place(15, Rectangle(0, hgt / 8, wdt, hgt / 8), { terraform = false });
-	LargeCaveMushroom->Place(15, Rectangle(0, 2 * hgt / 8, wdt, hgt / 8), { terraform = false });
+	LargeCaveMushroom->Place(10, Shape->Rectangle(0, 0, wdt, hgt / 8), { terraform = false });
+	LargeCaveMushroom->Place(15, Shape->Rectangle(0, hgt / 8, wdt, hgt / 8), { terraform = false });
+	LargeCaveMushroom->Place(15, Shape->Rectangle(0, 2 * hgt / 8, wdt, hgt / 8), { terraform = false });
 	
 	// Cave entrance covered with mushrooms and bushes.
-	SproutBerryBush->Place(4, Rectangle(0, 120, 100, 40));
-	Fern->Place(4, Rectangle(0, 120, 100, 40));
-	Mushroom->Place(6, Rectangle(0, 120, 100, 40));
+	SproutBerryBush->Place(4, Shape->Rectangle(0, 120, 100, 40));
+	Fern->Place(4, Shape->Rectangle(0, 120, 100, 40));
+	Mushroom->Place(6, Shape->Rectangle(0, 120, 100, 40));
 	
 	// The cavern has some grass wherever possible.
 	PlaceGrass(100);
@@ -178,15 +178,15 @@ private func InitVegetation(int map_size)
 	CreateObjectAbove(Column, 112, 160)->SetObjDrawTransform(400, 0, 0, 0, 400, 0);
 	
 	// Some ferns and mushrooms scattered around the top and middle sections.
-	Fern->Place(12, Rectangle(0, 0, wdt, 3 * hgt / 8));
-	Mushroom->Place(14, Rectangle(0, 0, wdt, 3 * hgt / 8));
+	Fern->Place(12, Shape->Rectangle(0, 0, wdt, 3 * hgt / 8));
+	Mushroom->Place(14, Shape->Rectangle(0, 0, wdt, 3 * hgt / 8));
 	
 	// Create earth materials in big clusters so the whole object arrangement looks a bit less uniform and more interesting.
 	PlaceBatches([Firestone], 3, 100, 5);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
 	
 	// Place some underwater vegetation in the flooded caves.
-	var place_rect = Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
+	var place_rect = Shape->Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
 	Seaweed->Place(16 + 4 * map_size, place_rect);
 	Coral->Place(16 + 8 * map_size, place_rect);
 	return;
@@ -198,7 +198,7 @@ private func InitAnimals(int map_size, int difficulty)
 	var hgt = LandscapeHeight();
 	
 	// Place some fishes and piranhas as difficulty prescribes it.
-	var place_rect = Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
+	var place_rect = Shape->Rectangle(50, hgt / 2, wdt - 100, hgt / 2);
 	var fish_count = 10 + 10 * map_size;
 	Fish->Place(fish_count * (3 - difficulty), place_rect);
 	Piranha->Place(fish_count * (difficulty - 1), place_rect);

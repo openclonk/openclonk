@@ -390,6 +390,15 @@ const StdMeshAnimation* StdMeshSkeleton::GetAnimationByName(const StdStrBuf& nam
 	return &iter->second;
 }
 
+std::vector<const StdMeshAnimation*> StdMeshSkeleton::GetAnimations() const
+{
+	std::vector<const StdMeshAnimation*> result;
+	result.reserve(Animations.size());
+	for (std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
+		result.push_back(&iter->second);
+	return result;
+}
+
 void StdMeshSkeleton::MirrorAnimation(const StdMeshAnimation& animation)
 {
 	StdCopyStrBuf name(animation.Name);
@@ -529,7 +538,11 @@ StdSubMesh::StdSubMesh() :
 {
 }
 
-StdMesh::StdMesh() : Skeleton(new StdMeshSkeleton), vbo(0)
+StdMesh::StdMesh() :
+	Skeleton(new StdMeshSkeleton)
+#ifndef USE_CONSOLE
+	, vbo(0)
+#endif
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
 	BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
@@ -538,17 +551,22 @@ StdMesh::StdMesh() : Skeleton(new StdMeshSkeleton), vbo(0)
 
 StdMesh::~StdMesh()
 {
+#ifndef USE_CONSOLE
 	if (vbo)
 		glDeleteBuffers(1, &vbo);
+#endif
 }
 
 void StdMesh::PostInit()
 {
+#ifndef USE_CONSOLE
 	// Order submeshes so that opaque submeshes come before non-opaque ones
 	std::sort(SubMeshes.begin(), SubMeshes.end(), StdMeshSubMeshVisibilityCmpPred());
 	UpdateVBO();
+#endif
 }
 
+#ifndef USE_CONSOLE
 void StdMesh::UpdateVBO()
 {
 	// We're only uploading vertices once, so there shouldn't be a VBO so far
@@ -603,18 +621,21 @@ void StdMesh::UpdateVBO()
 	// Unbind the buffer so following rendering calls do not use it
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-
+#endif
 
 StdSubMeshInstance::StdSubMeshInstance(StdMeshInstance& instance, const StdSubMesh& submesh, float completion):
 	base(&submesh), Material(NULL), CurrentFaceOrdering(FO_Fixed)
 {
+#ifndef USE_CONSOLE
 	LoadFacesForCompletion(instance, submesh, completion);
+#endif
 
 	SetMaterial(submesh.GetMaterial());
 }
 
 void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const StdSubMesh& submesh, float completion)
 {
+#ifndef USE_CONSOLE
 	// First: Copy all faces
 	Faces.resize(submesh.GetNumFaces());
 	for (unsigned int i = 0; i < submesh.GetNumFaces(); ++i)
@@ -637,12 +658,14 @@ void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const
 		assert(submesh.GetNumFaces() >= 1);
 		Faces.resize(Clamp<unsigned int>(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5), 1, submesh.GetNumFaces()));
 	}
+#endif
 }
 
 void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 {
 	Material = &material;
 
+#ifndef USE_CONSOLE
 	// Setup initial texture animation data
 	assert(Material->BestTechniqueIndex >= 0);
 	const StdMeshMaterialTechnique& technique = Material->Techniques[Material->BestTechniqueIndex];
@@ -664,10 +687,12 @@ void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 	}
 
 	// TODO: Reset face ordering
+#endif
 }
 
 void StdSubMeshInstance::SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering)
 {
+#ifndef USE_CONSOLE
 	if (CurrentFaceOrdering != ordering)
 	{
 		CurrentFaceOrdering = ordering;
@@ -677,10 +702,12 @@ void StdSubMeshInstance::SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering
 				Faces[i] = submesh.GetFace(i);
 		}
 	}
+#endif
 }
 
 void StdSubMeshInstance::SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod)
 {
+#ifndef USE_CONSOLE
 	bool opaque = Material->IsOpaque();
 
 	if(!opaque)
@@ -689,6 +716,7 @@ void StdSubMeshInstance::SetFaceOrderingForClrModulation(const StdSubMesh& subme
 		SetFaceOrdering(submesh, FO_NearestToFarthest);
 	else
 		SetFaceOrdering(submesh, FO_Fixed);
+#endif
 }
 
 void StdSubMeshInstance::CompileFunc(StdCompiler* pComp)
@@ -1049,6 +1077,7 @@ StdMeshInstance::~StdMeshInstance()
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 {
+#ifndef USE_CONSOLE
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 		SubMeshInstances[i]->SetFaceOrdering(Mesh->GetSubMesh(i), ordering);
 
@@ -1057,10 +1086,12 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 	for (AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 		if ((*iter)->OwnChild)
 			(*iter)->Child->SetFaceOrdering(ordering);
+#endif
 }
 
 void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
 {
+#ifndef USE_CONSOLE
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 		SubMeshInstances[i]->SetFaceOrderingForClrModulation(Mesh->GetSubMesh(i), clrmod);
 
@@ -1069,16 +1100,19 @@ void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
 	for (AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 		if ((*iter)->OwnChild)
 			(*iter)->Child->SetFaceOrderingForClrModulation(clrmod);
+#endif
 }
 
 void StdMeshInstance::SetCompletion(float completion)
 {
 	Completion = completion;
 
+#ifndef USE_CONSOLE
 	// TODO: Load all submesh faces and then determine the ones to use from the
 	// full pool.
 	for(unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 		SubMeshInstances[i]->LoadFacesForCompletion(*this, Mesh->GetSubMesh(i), completion);
+#endif
 }
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
@@ -1209,6 +1243,7 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 		if(!ExecuteAnimationNode(AnimationStack[i-1]))
 			StopAnimation(AnimationStack[i-1]);
 
+#ifndef USE_CONSOLE
 	// Update animated textures
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 	{
@@ -1239,6 +1274,7 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 			}
 		}
 	}
+#endif
 
 	// Update animation for attached meshes
 	for (AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
@@ -1320,7 +1356,9 @@ void StdMeshInstance::SetMaterial(size_t i, const StdMeshMaterial& material)
 {
 	assert(i < SubMeshInstances.size());
 	SubMeshInstances[i]->SetMaterial(material);
+#ifndef USE_CONSOLE
 	std::stable_sort(SubMeshInstancesOrdered.begin(), SubMeshInstancesOrdered.end(), StdMeshSubMeshInstanceVisibilityCmpPred());
+#endif
 }
 
 const StdMeshMatrix& StdMeshInstance::GetBoneTransform(size_t i) const
@@ -1432,6 +1470,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 
 void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 {
+#ifndef USE_CONSOLE
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 	{
 		StdSubMeshInstance& inst = *SubMeshInstances[i];
@@ -1449,6 +1488,7 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 	}
 
 	// TODO: Also reorder submeshes, attached meshes and include AttachTransformation for attached meshes...
+#endif
 }
 
 void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory)

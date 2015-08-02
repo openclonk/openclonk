@@ -183,6 +183,7 @@ void C4Object::Default()
 	Color=0;
 	lightRange=0;
 	lightFadeoutRange=0;
+	lightColor=0xffffffff;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
@@ -2295,6 +2296,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( lightRange,                       "LightRange",         0                 ));
 	pComp->Value(mkNamingAdapt( lightFadeoutRange,                "LightFadeoutRange",  0                 ));
+	pComp->Value(mkNamingAdapt( lightColor,                       "lightColor",         0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
@@ -4116,6 +4118,17 @@ bool C4Object::SetLightRange(int32_t iToRange, int32_t iToFadeoutRange)
 	// set new range
 	lightRange = iToRange;
 	lightFadeoutRange = iToFadeoutRange;
+	// resort into player's FoW-repeller-list
+	UpdateLight();
+	// success
+	return true;
+}
+
+
+bool C4Object::SetLightColor(uint32_t iValue)
+{
+	// set new color value
+	lightColor = iValue;
 	// resort into player's FoW-repeller-list
 	UpdateLight();
 	// success

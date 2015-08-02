@@ -215,7 +215,7 @@ public func GetProducts(object for_clonk)
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
-			index++;	
+			index++;
 		}
 	}
 	return products;
@@ -743,11 +743,15 @@ public func RequestObject(id obj_id, int amount)
 // Whether an object could enter this storage.
 public func IsCollectionAllowed(object obj)
 {
+	// Some objects might just bypass this check
+	if (obj->~ForceEntry(this))
+		return false;
 	var obj_id = obj->GetID();
 	// Products itself may be collected.
 	if (IsProduct(obj_id)) return true;
+	var products = GetProducts();
 	// Components of products may be collected.
-	for (var product in GetProducts())
+	for (var product in products)
 	{
 		var i = 0, comp_id;
 		while (comp_id = GetComponent(nil, i, nil, product))
@@ -760,14 +764,14 @@ public func IsCollectionAllowed(object obj)
 	// Fuel for products may be collected.
 	if (obj->~IsFuel())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (FuelNeed(product) > 0)
 				return true;
 	}
 	// Liquid objects may be collected if a product needs them.
 	if (obj->~IsLiquid())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (LiquidNeed(product))
 				if (LiquidNeed(product)[0] == obj->~IsLiquid())
 					return true;
@@ -775,7 +779,7 @@ public func IsCollectionAllowed(object obj)
 	// Liquid containers may be collected if a product needs them.
 	if (obj->~IsLiquidContainer())
 	{
-		for (var product in GetProducts())
+		for (var product in products)
 			if (LiquidNeed(product))
 				return true;
 	}

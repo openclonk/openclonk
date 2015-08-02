@@ -15,6 +15,8 @@
 #ifndef C4FOWLIGHT_H
 #define C4FOWLIGHT_H
 
+#ifndef USE_CONSOLE
+
 #include "C4Object.h"
 #include "C4Surface.h"
 #include "C4FacetEx.h"
@@ -40,7 +42,12 @@ private:
 	int32_t iReach; // maximum length of beams
 	int32_t iFadeout; // number of pixels over which beams fade out
 	int32_t iSize; // size of the light source. Decides smoothness of shadows
-	float gBright; // brigtness of the light source. 1.0 is maximum.
+	float gBright; // brightness of the light source. 1.0 is maximum.
+	float colorR; // red color component of the light source. 1.0 is maximum.
+	float colorG; // green color component of the light source. 1.0 is maximum.
+	float colorB; // blue color component of the light source. 1.0 is maximum.
+	float colorV; // color value. 1.0 is maximum.
+	float colorL; // color lightness. 1.0 is maximum.
 	C4FoWLight *pNext;
 	C4Object *pObj; // Associated object
 
@@ -54,13 +61,21 @@ public:
 	int32_t getTotalReach() const { return iReach + iFadeout; }
 	int32_t getSize() const { return iSize; }
 	int32_t getNormalSize() const { return iSize * 2; }
-	float getBrightness() const { return gBright; }
+	float getBrightness() const { return colorV * gBright; }
+	float getR() const { return colorR; }
+	float getG() const { return colorG; }
+	float getB() const { return colorB; }
+	float getValue() const { return colorV; }
+	float getLightness() const { return colorL; }
 	C4FoWLight *getNext() const { return pNext; }
 	C4Object *getObj() const { return pObj; }
 
 	/** Sets the light's size in pixels. The reach is the total radius of the light while the fadeout is the number of 
 	    pixels after which the light should dim down */
 	void SetReach(int32_t iReach, int32_t iFadeout);
+
+	/** Sets the light's color in rgba format. */
+	void SetColor(uint32_t iValue);
 	
 	/** Triggers the recalculation of all light beams within the given rectangle for this light because the landscape changed. */
 	void Invalidate(C4Rect r);
@@ -94,5 +109,7 @@ private:
 	float GetSquaredDistanceTo(int32_t x, int32_t y) const { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
 
 };
+
+#endif
 
 #endif

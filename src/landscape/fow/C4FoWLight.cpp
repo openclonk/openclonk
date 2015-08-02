@@ -14,6 +14,9 @@
  */
 
 #include "C4Include.h"
+
+#ifndef USE_CONSOLE
+
 #include "C4FoWLight.h"
 #include "C4FoWLightSection.h"
 #include "C4FoWBeamTriangle.h"
@@ -28,7 +31,8 @@ C4FoWLight::C4FoWLight(C4Object *pObj)
 	  iY(fixtoi(pObj->fix_y)),
 	  iReach(pObj->lightRange),
 	  iFadeout(pObj->lightFadeoutRange),
-	  iSize(20), gBright(0.5),
+	  iSize(20), gBright(0.5), colorR(1.0), colorG(1.0), colorB(1.0),
+	  colorV(1.0), colorL(1.0),
 	  pNext(NULL),
 	  pObj(pObj),
 	  sections(4)
@@ -74,6 +78,22 @@ void C4FoWLight::SetReach(int32_t iReach2, int32_t iFadeout2)
 	}
 }
 
+void C4FoWLight::SetColor(uint32_t iValue)
+{
+	colorR = GetRedValue(iValue) / 255.0f;
+	colorG = GetGreenValue(iValue) / 255.0f;
+	colorB = GetBlueValue(iValue) / 255.0f;
+
+	float min = Min(colorR, Min(colorG, colorB));
+	colorV = Max(Max(colorR, Max(colorG, colorB)), 1e-3f); // prevent division by 0
+	colorL = (min + colorV) / 2.0f;
+
+	// maximize color, so that dark colors will not be desaturated after normalization
+	colorR = Min(colorR / colorV, 1.0f);
+	colorG = Min(colorG / colorV, 1.0f);
+	colorB = Min(colorB / colorV, 1.0f);
+}
+
 void C4FoWLight::Update(C4Rect Rec)
 {
 	// Update position from object. Clear if we moved in any way
@@ -116,7 +136,7 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	else          pen = new C4FoWDrawLightTextureStrategy(this, region);
 
 	for(int pass = 0; pass < pen->GetRequestedPasses(); pass++)
-	{  
+	{
 		pen->Begin(pass);
 
 		DrawFan(pen, triangles);
@@ -217,7 +237,6 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 				ProjectPointOutward(tri.fadeIX, tri.fadeIY, sqrt(distNextFadeL));
 			}
 		}
-		
 	}
 }
 
@@ -344,3 +363,5 @@ bool C4FoWLight::IsVisibleForPlayer(C4Player *player) const
 	if (!pObj || !player) return true;
 	return !::Hostile(pObj->Owner,player->Number);
 }
+
+#endif

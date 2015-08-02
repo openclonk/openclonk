@@ -56,7 +56,7 @@ CreateEnvironmentObjects(["Desert", "BackgroundBirds"], Rectangle(0, 0, Landscap
 CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, LandscapeWidth()/2, LandscapeHeight()));
 */
 	what = what ?? "All";
-	area = area ?? Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
+	area = area ?? Shape->LandscapeRectangle();
 	amount_percentage = amount_percentage ?? 100;
 	
 	// might be a string to allow CreateEnvironmentObjects("All")

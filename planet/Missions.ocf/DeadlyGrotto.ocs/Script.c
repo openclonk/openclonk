@@ -13,14 +13,14 @@ func Initialize()
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
 	// Mushrooms before any earth materials, because they create their own caves
-	LargeCaveMushroom->Place(15, Rectangle(100,0,600,300));
+	LargeCaveMushroom->Place(15, Shape->Rectangle(100, 0, 600, 300));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting
 	PlaceBatches([Firestone], 5, 100, 10);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
 	// Misc vegetation
-	SproutBerryBush->Place(5, Rectangle(100,0,600,300));
-	Mushroom->Place(5, Rectangle(100,0,600,300));
+	SproutBerryBush->Place(5, Shape->Rectangle(100, 0, 600, 300));
+	Mushroom->Place(5, Shape->Rectangle(100,0,600,300));
 	// Sky
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	return true;

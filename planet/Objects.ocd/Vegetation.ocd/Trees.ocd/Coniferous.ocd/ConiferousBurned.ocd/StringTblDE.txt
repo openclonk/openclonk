@@ -1,1 +1,1 @@
-Name=Verbrannter Nadelbaum
+Name=Verbrannte Tanne

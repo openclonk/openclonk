@@ -1437,12 +1437,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
 		Game.SetInitProgress(87);
 	}
-	if (Config.General.DebugRec)
-	{
-		AddDbgRec(RCT_Block, "|---LS---|", 11);
-		AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
-	}
-
 
 	// Create pixel count array
 	// We will use 15x17 blocks so the pixel count can't get over 255.
@@ -1479,17 +1473,6 @@ bool C4Landscape::Save(C4Group &hGroup) const
 	bool r = SaveInternal(hGroup);
 	C4SolidMask::PutSolidMasks();
 	return r;
-}
-
-bool C4Landscape::DebugSave(const char *szFilename) const
-{
-	// debug: Save 8 bit data landscape only, without doing any SolidMask-removal-stuff
-	bool fSuccess = false;
-	if (Surface8)
-	{
-		fSuccess = Surface8->Save(szFilename);
-	}
-	return fSuccess;
 }
 
 bool C4Landscape::SaveInternal(C4Group &hGroup) const

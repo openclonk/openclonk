@@ -3,9 +3,12 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
+#include Library_LampPost
 
 local animWork;
 local meshAttach;
+
+public func LampPosition(id def) { return [GetCalcDir()*-6,30]; }
 
 func Initialize()
 {

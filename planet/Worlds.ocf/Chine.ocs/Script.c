@@ -152,16 +152,16 @@ private func InitEnvironment(int map_size, int difficulty)
 		Rockfall->SetExplosiveness(15);
 	}
 	Rockfall->SetSpawnDistance(250);
-	Rockfall->SetArea(Rectangle(128, 0, 128, LandscapeHeight() - 300));
+	Rockfall->SetArea(Shape->Rectangle(128, 0, 128, LandscapeHeight() - 300));
 	return;
 }
 
 private func InitVegetation(int map_size, int difficulty)
 {
 	// Define parts of the map for even distribution.
-	var top = Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 3);
-	var middle = Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
-	var bottom = Rectangle(0, 2 * LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
+	var top = Shape->Rectangle(0, 0, LandscapeWidth(), LandscapeHeight() / 3);
+	var middle = Shape->Rectangle(0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
+	var bottom = Shape->Rectangle(0, 2 * LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight() / 3);
 	
 	// Place gras wherever possible.
 	PlaceGrass(100);

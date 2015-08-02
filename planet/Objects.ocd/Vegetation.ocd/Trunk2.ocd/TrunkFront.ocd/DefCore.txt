@@ -1,0 +1,11 @@
+[DefCore]
+id=Trunk2_Front
+Version=6,0
+Category=C4D_StaticBack
+Width=264
+Height=73
+Offset=-132,-36
+Vertices=1
+VertexX=-11
+VertexY=-2
+VertexFriction=100

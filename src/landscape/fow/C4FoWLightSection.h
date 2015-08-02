@@ -16,6 +16,8 @@
 #ifndef C4FOWLIGHTSECTION_H
 #define C4FOWLIGHTSECTION_H
 
+#ifndef USE_CONSOLE
+
 #include "C4Rect.h"
 #include <list>
 
@@ -133,5 +135,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 };
+
+#endif
 
 #endif

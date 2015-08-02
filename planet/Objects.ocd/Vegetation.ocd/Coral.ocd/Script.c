@@ -17,11 +17,11 @@ local ActMap = {
 	}
 };
 
-func Place(int amount, proplist rectangle, proplist settings)
+func Place(int amount, proplist area, proplist settings)
 {
 	var max_tries = 2 * amount;
 	var loc_area = nil;
-	if (rectangle) loc_area = Loc_InRect(rectangle);
+	if (area) loc_area = Loc_InArea(area);
 	
 	while ((amount > 0) && (--max_tries > 0))
 	{
@@ -52,7 +52,7 @@ func Construction()
 func AdjustPosition()
 {
 	var vec = GetSurfaceVector();
-	var r = Angle(0, 0, vec.x, vec.y);
+	var r = Angle(0, 0, vec[0], vec[1]);
 	SetR(r);
 	
 	// project a bit out of the ground

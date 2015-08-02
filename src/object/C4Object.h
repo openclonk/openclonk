@@ -138,6 +138,7 @@ public:
 	int32_t Audible, AudiblePan; // NoSave //
 	int32_t lightRange;
 	int32_t lightFadeoutRange;
+	uint32_t lightColor;
 	C4Real fix_x,fix_y,fix_r; // SyncClearance-Fix //
 	C4Real xdir,ydir,rdir;
 	int32_t iLastAttachMovementFrame; // last frame in which Attach-movement by a SolidMask was done
@@ -320,6 +321,8 @@ public:
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
 	bool SetLightRange(int32_t iToRange, int32_t iToFadeoutRange);
+	uint32_t GetLightColor() const { return lightColor; }
+	bool SetLightColor(uint32_t iValue);
 	void SetOnFire(bool OnFire) { this->OnFire = OnFire; SetOCF(); }
 	bool GetOnFire() const { return OnFire; }
 	void SetAlive(bool Alive) { this->Alive = Alive; SetOCF(); }

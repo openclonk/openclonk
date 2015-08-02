@@ -12,7 +12,7 @@
 
 static const LOC_INVALID = 0;
 static const LOC_SOLID = 1;
-static const LOC_INRECT = 2;
+static const LOC_INAREA = 2;
 static const LOC_MATERIAL = 3;
 static const LOC_MATERIALVAL = 4;
 static const LOC_FUNC = 5;
@@ -68,8 +68,16 @@ global func Loc_And(...)
 global func Loc_InRect(x, int y, int w, int h)
 {
 	if (x == nil) return [LOC_INVALID];
-	if (GetType(x) == C4V_PropList) return [LOC_INRECT, x];
-	return [LOC_INRECT, Rectangle(x, y, w, h)];
+	if (GetType(x) == C4V_PropList) return [LOC_INAREA, x];
+	return [LOC_INAREA, Rectangle(x, y, w, h)];
+}
+
+/*
+only returns results in area defined by a proplist
+*/
+global func Loc_InArea(a)
+{
+	return[LOC_INAREA, a];
 }
 
 /*
@@ -139,16 +147,16 @@ global func Loc_Wall(int direction, wall_condition1, ...)
 
 /*
 	returns a spot with enough space either vertically or horizontally.
-	For example Loc_Space(20, true) would only return points where a Clonk could stand.
+	For example Loc_Space(20, CNAT_Top) would only return points where a Clonk could stand.
 */
-global func Loc_Space(int space, bool vertical)
+global func Loc_Space(int space, int direction)
 {
-	return [LOC_SPACE, space, vertical];
+	return [LOC_SPACE, space, direction ?? 0x0f];
 }
 
 global func FindLocation(condition1, ...)
 {
-	var rect = nil;
+	var area = nil;
 	var xdir = 0, ydir = 0, xmod = nil, ymod = nil, wall_conditions = [];
 	var flags = [];
 	// maximum number of tries
@@ -160,9 +168,10 @@ global func FindLocation(condition1, ...)
 		var f = Par(i);
 		if (!f) continue;
 		
-		if (f[0] == LOC_INRECT)
+		if (f[0] == LOC_INAREA)
 		{
-			rect = f[1];
+			area = f[1];
+			PushBack(flags, f); // re-check area afterwards to account for wall attachments, etc. pushing position out of range
 		}
 		else if (f[0] == LOC_WALL)
 		{
@@ -181,25 +190,27 @@ global func FindLocation(condition1, ...)
 			PushBack(flags, f);
 		}
 	}
-	rect = rect ?? Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
+	area = area ?? Shape->LandscapeRectangle();
 	
 	// repeat until a spot is found or max. number of tries exceeded
+	var outpos = {};
 	while (repeat-- > 0)
 	{
-		var x = RandomX(rect.x, rect.x + rect.w);
-		var y = RandomX(rect.y, rect.y + rect.h);
+		if (!area->GetRandomPoint(outpos)) return nil; // invalid shape or nothing found
+		var x = outpos.x, y = outpos.y;
+		var valid = true;
 		
 		// find wall-spot
 		// this part just moves the random point to left/right/up/down until a wall is hit
 		if (xdir || ydir)
 		{
+			if (GBackSolid(x, y)) continue;
 			var lx = xdir;
 			var ly = ydir;
 			if (xmod) if (Random(2)) lx *= -1;
 			if (ymod) if (Random(2)) ly *= -1;
-			
-			if (GBackSolid(x, y)) continue;
-			var valid = false;
+
+			valid = false;
 			var failsafe = 0;
 			do
 			{
@@ -221,7 +232,6 @@ global func FindLocation(condition1, ...)
 		}
 		
 		// check every flag
-		var valid = true;
 		for (var flag in flags)
 		{
 			if (Global->FindLocationConditionCheckIsValid(flag, x, y)) continue;
@@ -230,7 +240,10 @@ global func FindLocation(condition1, ...)
 		}
 		if (valid)
 		{
-			return {x = x, y = y};
+			// Store back position as LOC_WALL etc. may have modified it.
+			outpos.x = x;
+			outpos.y = y;
+			return outpos;
 		}
 	}
 	
@@ -258,10 +271,10 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 		return true;
 	}
 	
-	if (flag[0] == LOC_INRECT)
+	if (flag[0] == LOC_INAREA)
 	{
-		var rect = flag[1];
-		return Inside(x, rect.x, rect.x + rect.w) && Inside(y, rect.y, rect.y + rect.h);
+		var area = flag[1];
+		return area->IsPointContained(x, y);
 	}
 	
 	if (flag[0] == LOC_SOLID)
@@ -297,17 +310,16 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 	// has some space?
 	if (flag[0] == LOC_SPACE)
 	{
-		var xd = 0, yd = 0;
-		if (flag[2]) yd = flag[1];
-		else xd = flag[1];
-				
-		var d1 = PathFree2(x, y, x + xd, y + yd);
-		var d2 = PathFree2(x, y, x - xd, y - yd);
-		var d = 0;
-		if (d1) d += Distance(x, y, d1[0], d1[1]);
-		if (d2) d += Distance(x, y, d2[0], d2[1]);
-		if (d >= flag[1]) return true;
-		return false;
+		var dist = flag[1], dirs = flag[2];
+		// if only one direction is given in one dimension, the other dimension is tested from a center point halfway off in that dimension
+		var cy = y + dist * ((dirs&CNAT_Bottom)/CNAT_Bottom - (dirs&CNAT_Top)/CNAT_Top) / 2;
+		var cx = x + dist * ((dirs&CNAT_Right)/CNAT_Right - (dirs&CNAT_Left)/CNAT_Left) / 2;
+		// check all desired directions
+		if (dirs & CNAT_Top) if (!PathFree(cx,y,cx,y-dist)) return false;
+		if (dirs & CNAT_Bottom) if (!PathFree(cx,y,cx,y+dist)) return false;
+		if (dirs & CNAT_Left) if (!PathFree(x,cy,x-dist,cy)) return false;
+		if (dirs & CNAT_Right) if (!PathFree(x,cy,x+dist,cy)) return false;
+		return true;
 	}
 	
 	// invalid flag? always fulfilled

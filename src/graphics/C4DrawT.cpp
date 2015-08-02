@@ -22,7 +22,7 @@ CStdNoGfx::CStdNoGfx()
 	Default();
 }
 
-bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdNoGfx::CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
 	Log("Graphics disabled.");
 	// Save back color depth

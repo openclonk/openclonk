@@ -122,29 +122,6 @@ global func GetCalcDir()
 	return GetDir() * 2 - 1;
 }
 
-// Ensure that the first rectangle is fully with the second one and returns an adjusted rectangle. Both rectangles can be created with Rectangle()
-global func RectangleEnsureWithin(proplist first, proplist second)
-{
-	if (GetType(first) != C4V_PropList) return {};
-	if (GetType(second) != C4V_PropList) return {};
-
-	var adjusted = { x = first.x, y = first.y, w = first.w, h = first.h };
-	if (first.x < second.x) adjusted.x = second.x;
-	if (first.w > second.w) adjusted.w = second.w - (adjusted.x - second.x);
-	if (adjusted.x + adjusted.w > second.x + second.w) adjusted.w = second.w - (adjusted.x - second.x);
-	if (first.y < second.y) adjusted.y = second.y;
-	if (first.h > second.h) adjusted.h = second.h - (adjusted.y - second.y);
-	if (adjusted.y + adjusted.h > second.y + second.h) adjusted.h = second.h - (adjusted.y - second.y);
-
-	return adjusted;
-}
-
-// checks whether a point {x, y} is in a normalized rectangle {x, y, w, h}
-global func IsPointInRectangle(proplist point, proplist rectangle)
-{
-	return (point.x >= rectangle.x && point.x <= rectangle.x + rectangle.w) && (point.y >= rectangle.y && point.y <= rectangle.w + rectangle.h);
-}
-
 //Moves param 'a' towards param 'b' by 'max' amount per frame
 global func MoveTowards(int a, int b, int max)
 {
@@ -170,16 +147,16 @@ global func FindHeight(int x)
 */
 global func GetSurfaceVector(int x, int y)
 {
-	var normal = {x = 0, y = 0};
+	var normal = [0, 0];
 	
 	var fac = 1;
 	for(var fac = 1; fac <= 4; fac *= 2)
 	{
-		if(GBackSolid(x + fac, y)) {--normal.x;}
-		if(GBackSolid(x - fac, y)) {++normal.x;}
-	
-		if(GBackSolid(x, y + fac)) {--normal.y;}
-		if(GBackSolid(x, y - fac)) {++normal.y;}
+		if(GBackSolid(x + fac, y)) --normal[0];
+		if(GBackSolid(x - fac, y)) ++normal[0];
+			
+		if(GBackSolid(x, y + fac)) --normal[1];
+		if(GBackSolid(x, y - fac)) ++normal[1];
 	}
 	
 	return normal;

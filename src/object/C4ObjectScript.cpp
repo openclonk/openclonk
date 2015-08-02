@@ -1334,6 +1334,19 @@ static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeou
 	return C4Void();
 }
 
+static long FnGetLightColor(C4Object *Obj)
+{
+	// get it
+	return Obj->GetLightColor();
+}
+
+
+static C4Void FnSetLightColor(C4Object *Obj, long iValue)
+{
+	Obj->SetLightColor(iValue);
+	return C4Void();
+}
+
 static C4Void FnSetPicture(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 {
 	// set new picture rect
@@ -1811,7 +1824,10 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 		if (!s_node || s_node->GetSlot() != iSlot) return C4Void();
 	}
 
-	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider);
+	const StdMeshAnimation* animation = Instance->GetMesh().GetSkeleton().GetAnimationByName(szAnimation->GetData());
+	if (!animation) return C4Void();
+
+	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider, animation);
 	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
 	if (!p_provider || !w_provider)
 	{
@@ -1820,7 +1836,7 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 		return C4Void();
 	}
 
-	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(*animation, iSlot, s_node, p_provider, w_provider);
 	if (!n_node) return C4Void();
 
 	return n_node->GetNumber();
@@ -1915,6 +1931,43 @@ static Nillable<int> FnGetRootAnimation(C4Object *Obj, int iSlot, Nillable<int> 
 	StdMeshInstance::AnimationNode* node = Instance->GetRootAnimationForSlot(iSlot);
 	if (!node) return C4Void();
 	return node->GetNumber();
+}
+
+static Nillable<C4ValueArray*> FnGetAnimationList(C4PropList* _this, Nillable<int> iAttachNumber)
+{
+	C4Object *Obj = Object(_this);
+	const StdMeshSkeleton* skeleton;
+	if (!Obj)
+	{
+		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetAnimationList");
+		C4Def *def = _this->GetDef();
+		if (!def->Graphics.IsMesh()) return C4Void();
+
+		skeleton = &def->Graphics.Mesh->GetSkeleton();
+	}
+	else
+	{
+		if (!Obj) return C4Void();
+		if (!Obj->pMeshInstance) return C4Void();
+
+		StdMeshInstance* Instance = Obj->pMeshInstance;
+		if (!iAttachNumber.IsNil())
+		{
+			const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+			// OwnChild is set if an object's instance is attached. In that case the animation list should be obtained directly on that object.
+			if (!Attached || !Attached->OwnChild) return C4Void();
+			Instance = Attached->Child;
+		}
+
+		skeleton = &Instance->GetMesh().GetSkeleton();
+	}
+
+	const std::vector<const StdMeshAnimation*> animations = skeleton->GetAnimations();
+
+	C4ValueArray* retval = new C4ValueArray(animations.size());
+	for(unsigned int i = 0; i < animations.size(); ++i)
+		(*retval)[i] = C4VString(animations[i]->Name);
+	return retval;
 }
 
 static Nillable<int> FnGetAnimationLength(C4Object *Obj, C4String *szAnimation, Nillable<int> iAttachNumber)
@@ -2595,6 +2648,8 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetColor", FnGetColor);
 	AddFunc(pEngine, "SetColor", FnSetColor);
 	AddFunc(pEngine, "SetLightRange", FnSetLightRange);
+	AddFunc(pEngine, "GetLightColor", FnGetLightColor);
+	AddFunc(pEngine, "SetLightColor", FnSetLightColor);
 	AddFunc(pEngine, "SetPicture", FnSetPicture);
 	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
 	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);
@@ -2630,6 +2685,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "TransformBone", FnTransformBone);
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
 	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
+	AddFunc(pEngine, "GetAnimationList", FnGetAnimationList);
 	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
 	AddFunc(pEngine, "GetAnimationName", FnGetAnimationName);
 	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);

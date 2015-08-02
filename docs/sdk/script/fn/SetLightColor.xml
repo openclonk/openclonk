@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLightColor</title>
+    <category>Objects</category>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>New color for the light. The color value (V in HSV notation of the color) determines the intensity of the light. A light color of <code><funclink>RGB</funclink>(128, 0, 0)</code> has a value/intensity of 50%. This means that it will be weaker than a light with<code><funclink>RGB</funclink>(255, 0, 0)</code>, but it will cover the same area as that light.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the color of the light that is emitted from this object. By default the object emits white light, if it has a light range. See <funclink>SetLightRange</funclink> for further details.</desc>
+    <examples>
+      <example>
+		<code>
+		var candle_shine=<funclink>CreateObject</funclink>(EnvPack_Candle_Shine);
+	  	candle_shine-&gt;<funclink>SetLightRange</funclink>(30, 20);
+		candle_shine-&gt;SetLightColor(RGB(255,163,58));
+        </code>
+        <text>Gives a warm shine to a candle shine object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetLightColor</funclink>
+      <funclink>SetLightRange</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2015-06</date>
+</funcs>

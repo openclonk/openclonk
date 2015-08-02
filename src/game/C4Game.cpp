@@ -226,9 +226,11 @@ bool C4Game::OpenScenario()
 
 	// Check mission access
 #ifndef USE_CONSOLE
+#ifndef _DEBUG
 	if (C4S.Head.MissionAccess[0])
 		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
 			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+#endif
 #endif
 
 	// Title
@@ -2585,7 +2587,41 @@ bool C4Game::PlaceInEarth(C4ID id)
 	return false;
 }
 
-C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth)
+static bool PlaceVegetation_GetRandomPoint(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4PropList * shape_proplist, C4PropList * out_pos_proplist, int32_t *piTx, int32_t *piTy)
+{
+	// Helper for C4Game::PlaceVegetation: return random position in rectangle. Use shape_proplist if provided.
+	if (shape_proplist && out_pos_proplist)
+	{
+		C4AulParSet pars(C4VPropList(out_pos_proplist));
+		if (!shape_proplist->Call(P_GetRandomPoint, &pars)) return false;
+		*piTx = out_pos_proplist->GetPropertyInt(P_x);
+		*piTy = out_pos_proplist->GetPropertyInt(P_y);
+	}
+	else
+	{
+		*piTx = iX + Random(iWdt);
+		*piTy = iY + Random(iHgt);
+	}
+	return true;
+}
+
+static bool PlaceVegetation_IsPosInBounds(int32_t iTx, int32_t iTy, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4PropList * shape_proplist)
+{
+	if (shape_proplist)
+	{
+		// check using shape proplist
+		C4AulParSet pars(C4VInt(iTx), C4VInt(iTy));
+		if (!shape_proplist->Call(P_IsPointContained, &pars)) return false;
+	}
+	else
+	{
+		// check using bounds rect
+		if (iTy < iY) return false;
+	}
+	return true;
+}
+
+C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth, C4PropList * shape_proplist, C4PropList * out_pos_proplist)
 {
 	int32_t cnt,iTx,iTy,iMaterial;
 
@@ -2608,15 +2644,14 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		for (cnt=0; cnt<20; cnt++)
 		{
 			// Random hit within target area
-			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above IFT
 			while ((iTy>0) && GBackIFT(iTx,iTy)) iTy--;
-			// Still inside bounds
-			if (iTy < iY)
-				continue;
 			// Above semi solid
 			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
 				continue;
+			// Still inside bounds?
+			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist)) continue;
 			// Free above
 			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
 				continue;
@@ -2637,7 +2672,7 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		// Underwater
 	case C4D_Place_Liquid:
 		// Random range
-		iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+		if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) return NULL;
 		// Find liquid
 		if (!FindSurfaceLiquid(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
 			if (!FindLiquid(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
@@ -2645,6 +2680,8 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		// Liquid bottom
 		if (!SemiAboveSolid(iTx,iTy)) return NULL;
 		iTy+=3;
+		// Still inside bounds?
+		if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist)) return NULL;
 		// Create object
 		return CreateObjectConstruction(PropList,NULL,NO_OWNER,iTx,iTy,iGrowth);
 		break;
@@ -2654,12 +2691,14 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		for (cnt=0; cnt<5; cnt++)
 		{
 			// Random range
-			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Find tunnel
 			if (!FindTunnel(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
 				continue;
 			// Tunnel bottom
 			if (!AboveSemiSolid(iTx,iTy)) continue;
+			// Still inside bounds?
+			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist)) continue;
 			// Soil check
 			iTy+=3; // two pix into ground
 			iMaterial = GBackMat(iTx,iTy);
@@ -2676,12 +2715,15 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		for (cnt=0; cnt<20; cnt++)
 		{
 			// Random hit within target area
-			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
 			// Above semi solid
 			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
 				continue;
 			// Free above
 			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
+				continue;
+			// Still inside bounds?
+			if (!PlaceVegetation_IsPosInBounds(iTx, iTy, iX, iY, iWdt, iHgt, shape_proplist))
 				continue;
 			// Free upleft and upright
 			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3))
@@ -2765,7 +2807,7 @@ void C4Game::InitVegetation()
 	// Place vegetation
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
-			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,GBackWdt,GBackHgt,-1);
+			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,GBackWdt,GBackHgt,-1,NULL,NULL);
 }
 
 void C4Game::InitAnimals()

@@ -8,7 +8,7 @@ local Description = "$Description$";
 
 func Place(int amount_percentage, proplist area)
 {
-	area = area ?? Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
+	area = area ?? Shape->LandscapeRectangle();
 	amount_percentage = amount_percentage ?? 100;
 	
 	// calculate amount that has to be placed

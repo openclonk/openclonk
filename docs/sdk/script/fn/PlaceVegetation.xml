@@ -40,9 +40,15 @@
           <name>growth</name>
           <desc>Growth phase of the target object. Value -1 places vegetation at random growth, otherwise the valid range is 1-100000 (1-100%).</desc>
         </param>
+        <param>
+          <type>proplist</type>
+          <name>area</name>
+          <desc>If supplied, this may be a <emlink href="script/Shape.html">Shape</emlink>-proplist, which overrides the area given by (x,y,width.height) and places the object within the given shape only.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Places vegetation in the specified target rectangle. In local calls, the specified coordinates are an offset to the position of the calling object. Returns a pointer to the newly created plant.</desc>
+    <desc>Places vegetation in the specified target rectangle. In local calls, the specified coordinates are an offset to the position of the calling object. Note that if an area-proplist is given, that shape is always assumed in global coordinates. Returns a pointer to the newly created plant.</desc>
     <related><funclink>PlaceAnimal</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

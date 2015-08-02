@@ -3,9 +3,12 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
+#include Library_LampPost
 
 local animWork;
 local meshAttach;
+
+public func LampPosition(id def) { return [GetCalcDir()*11,2]; }
 
 func Initialize()
 {
@@ -74,7 +77,7 @@ public func OnProductionFinish(id product)
 }
 
 func Definition(def){
-	SetProperty("MeshTransformation", Trans_Rotate(70, 0,1,0), def);
+	SetProperty("MeshTransformation", Trans_Rotate(25, 0,1,0), def);
 	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
 }
 

@@ -83,8 +83,9 @@ bool OpenExtraLogs()
 		C4ShaderLogFile = _fsopen(Config.AtUserDataPath(C4CFN_LogShader), "wt", _SH_DENYWR);
 #elif HAVE_SYS_FILE_H
 		C4ShaderLogFile = fopen(Config.AtUserDataPath(C4CFN_LogShader), "wb");
-		if (C4ShaderLogFile) if (!flock(fileno(C4ShaderLogFile), LOCK_EX | LOCK_NB))
+		if (C4ShaderLogFile && flock(fileno(C4ShaderLogFile), LOCK_EX | LOCK_NB) != 0)
 		{
+			DebugLog("Couldn't lock shader log file, closing.");
 			fclose(C4ShaderLogFile);
 			C4ShaderLogFile = NULL;
 		}
