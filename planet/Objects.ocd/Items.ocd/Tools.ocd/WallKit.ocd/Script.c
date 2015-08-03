@@ -45,7 +45,7 @@ private func CreateBridge(object clonk, int x, int y)
 	var c = Offset2BridgeCoords(clonk, x, y);
 	x = clonk->GetX(); 
 	y = clonk->GetY();
-	DrawMaterialQuad("Granite-granite", x + c.x1 - c.dxm, y + c.y1 - c.dym, x + c.x1 + c.dxp, y + c.y1 + c.dyp, x + c.x2 + c.dxp, y + c.y2 + c.dyp, x + c.x2 - c.dxm, y + c.y2 - c.dym, DMQ_Bridge);
+	DrawMaterialQuad(BridgeMaterial, x + c.x1 - c.dxm, y + c.y1 - c.dym, x + c.x1 + c.dxp, y + c.y1 + c.dyp, x + c.x2 + c.dxp, y + c.y2 + c.dyp, x + c.x2 - c.dxm, y + c.y2 - c.dym, DMQ_Bridge);
 	clonk->Sound("WallKitLock");
 	return true;
 }
@@ -122,3 +122,4 @@ local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
 local BridgeLength = 20;
 local BridgeThickness = 5;
+local BridgeMaterial = "Granite-granite";
