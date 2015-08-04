@@ -56,9 +56,9 @@ slice(texture+5)
 
 slice(light)
 {
-	float light = 2.0 * lightBright * max(max(dot(normal, lightDir), 0.0), cullMode * max(dot(vec3(-normal.xy, normal.z), lightDir), 0.0));
+	float light = 2.0 * lightBright * max(max(dot(normal, lightDir), 0.0), cullMode * max(dot(-normal, lightDir), 0.0));
 #ifdef HAVE_2PX
-	float light2 = 2.0 * lightBright * max(max(dot(normal2, lightDir), 0.0), cullMode * max(dot(vec3(-normal2.xy, normal2.z), lightDir), 0.0));
+	float light2 = 2.0 * lightBright * max(max(dot(normal2, lightDir), 0.0), cullMode * max(dot(-normal2, lightDir), 0.0));
 #endif
 }
 
