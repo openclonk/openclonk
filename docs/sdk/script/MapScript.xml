@@ -401,7 +401,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>FgMatTex:BgMatTex</col>
             <col>Water:Tunnel-brickback</col>
             <col>Draws with a specified background material. In the example, draws water which, when drained, exposes bricks instead of tunnel behind it. FgMatTex and BgMatTex can be any of the other specifications in this table, except the ones prefixed with ^. However, the specification FgMatTex:Sky is equivalent to ^FgMatTex.</col> 
-          <row>
+          </row>
         </table>
       </text>
     <h>Material-texture masks (string mask_spec)</h>
