@@ -28,9 +28,9 @@ public func GetCarryTransform()
 {
 	var act = Contained()->GetAction();
 	if(act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Translate(0,4500,0), Trans_Rotate(-90,0,1,0), Trans_Rotate(180,0,0,1) );
+		return Trans_Mul(Trans_Translate(4500,0,0), Trans_Rotate(90,1,0,0), Trans_Rotate(180,0,1,0) );
 
-	return Trans_Rotate(90, 0, 1, 0);
+	return Trans_Rotate(-90, 1, 0, 0);
 }
 public func GetCarrySpecial(clonk)
 {

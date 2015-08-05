@@ -196,7 +196,7 @@ public func ActivateEntrance(object clonk)
 		SetAnimationPosition(aim_anim, Anim_Const(150));
 		clonk->Enter(this);
 		SetOwner(clonk->GetController());
-		clonkmesh = AttachMesh(clonk,"shot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)),AM_DrawBefore);
+		clonkmesh = AttachMesh(clonk,"shot","skeleton_body",Trans_Mul(Trans_Rotate(180, 1, 0, 0), Trans_Translate(-3000, 1000, 0)),AM_DrawBefore);
 		clonk->PlayAnimation("CatapultSit", 5, Anim_Const(0), Anim_Const(1000));
 	}
 }

@@ -81,7 +81,7 @@ func AddLeaves(bool fullyGrown)
 	// add two leaves
 	for(var i = 1; i <= 2; ++i)
 	{
-		var rtrans = Trans_Rotate(Random(360), 0, 1, 0);
+		var rtrans = Trans_Rotate(Random(360), 1, 0, 0);
 		var matrix = Trans_Mul(Trans_Scale(1, 1, 1), rtrans);
 		if(fullyGrown)
 			matrix = rtrans;

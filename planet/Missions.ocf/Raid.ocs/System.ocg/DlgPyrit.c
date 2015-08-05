@@ -193,7 +193,7 @@ static const Pyrit_Hammer_SwingTime = 40;
 func Dlg_Pyrit_Init(object clonk)
 {
 	// Pyit has a red hat!
-	clonk->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(0,5500));
+	clonk->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
 	// Clonk moves slowly.
 	clonk.ActMap = { Prototype = Clonk.ActMap, Walk = { Prototype = Clonk.ActMap.Walk } };
 	clonk.ActMap.Walk.Speed /= 3;

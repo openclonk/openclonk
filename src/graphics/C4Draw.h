@@ -156,8 +156,6 @@ class C4FoWRegion;
 class C4Draw
 {
 public:
-	static const StdMeshMatrix OgreToClonk;
-
 	C4Draw(): MaxTexSize(0) { }
 	virtual ~C4Draw() { pDraw=NULL; }
 public:

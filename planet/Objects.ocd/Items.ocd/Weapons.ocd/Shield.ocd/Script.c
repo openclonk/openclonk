@@ -280,18 +280,18 @@ public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform(clonk, sec, back)
 {
-	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,0,1),Trans_Rotate(90,0,0,1));
-	if(aim_anim && sec) return Trans_Mul(Trans_Rotate(180,1,0,0), Trans_Rotate(90,0,0,1));
+	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,1,0),Trans_Rotate(90,0,1,0));
+	if(aim_anim && sec) return Trans_Mul(Trans_Rotate(180,0,0,1), Trans_Rotate(90,0,1,1));
 
 	if(mTrans != nil) return mTrans;
 	if(!sec)
 	{
-		if(back) return Trans_Mul(Trans_Rotate(-90, 0, 0, 1),Trans_Translate(0,0,400));
+		if(back) return Trans_Mul(Trans_Rotate(-90, 0, 1, 0),Trans_Translate(0,-400,0));
 		return nil;
 	}
 	
-	if(back) return Trans_Mul(Trans_Mul(Trans_Rotate(90, 0, 0, 1),Trans_Rotate(180, 0, 1)),Trans_Translate(0,0,400));
-	return Trans_Rotate(180,1,0,0);
+	if(back) return Trans_Mul(Trans_Mul(Trans_Rotate(90, 0, 1, 0),Trans_Rotate(180, 1, 0, 0)),Trans_Translate(0,-400,0));
+	return Trans_Rotate(180,0,0,1);
 }
 
 public func IsWeapon() { return true; }

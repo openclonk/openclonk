@@ -841,32 +841,16 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	static const float FOV = 60.0f;
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
 
-	// Convert OgreToClonk matrix to column-major order
-	// TODO: This must be executed after C4Draw::OgreToClonk was
-	// initialized - is this guaranteed at this position?
-	static const float OgreToClonkGL[16] =
-	{
-		C4Draw::OgreToClonk(0,0), C4Draw::OgreToClonk(1,0), C4Draw::OgreToClonk(2,0), 0,
-		C4Draw::OgreToClonk(0,1), C4Draw::OgreToClonk(1,1), C4Draw::OgreToClonk(2,1), 0,
-		C4Draw::OgreToClonk(0,2), C4Draw::OgreToClonk(1,2), C4Draw::OgreToClonk(2,2), 0,
-		C4Draw::OgreToClonk(0,3), C4Draw::OgreToClonk(1,3), C4Draw::OgreToClonk(2,3), 1
-	};
-
-	static const bool OgreToClonkParity = C4Draw::OgreToClonk.Determinant() > 0.0f;
-
 	const StdMesh& mesh = instance.GetMesh();
 
-	bool parity = OgreToClonkParity;
+	bool parity = false;
 
 	// Convert bounding box to clonk coordinate system
 	// (TODO: We should cache this, not sure where though)
-	// TODO: Note that this does not generally work with an arbitrary transformation this way
 	const StdMeshBox& box = mesh.GetBoundingBox();
 	StdMeshVector v1, v2;
 	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
 	v2.x = box.x2; v2.y = box.y2; v2.z = box.z2;
-	v1 = OgreToClonk * v1; // TODO: Include translation
-	v2 = OgreToClonk * v2; // TODO: Include translation
 
 	// Vector from origin of mesh to center of mesh
 	const StdMeshVector MeshCenter = (v1 + v2)/2.0f;
@@ -1038,9 +1022,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// Apply MeshTransformation (in the Mesh's coordinate system)
 		glMultMatrixf(Matrix);
 	}
-
-	// Convert from Ogre to Clonk coordinate system
-	glMultMatrixf(OgreToClonkGL);
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 

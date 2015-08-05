@@ -26,9 +26,9 @@ public func GetCarryPhase() { return 700; }
 public func GetCarryTransform(clonk)
 {
 	if(GetCarrySpecial(clonk))
-		return Trans_Translate(0, 0, -6500);
+		return Trans_Translate(0, 6500, 0);
 	
-	return Trans_Translate(-1500, 0, 0);
+	return Trans_Translate(0, 0, -1500);
 }
 
 protected func Construction()
@@ -174,7 +174,7 @@ public func OnMount(clonk)
 	var iDir = 1;
 	if(clonk->GetDir() == 1) iDir = -1;
 	clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
-	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
+	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000), Trans_Rotate(-90*iDir,1,0,0)));
 	
 	//Modify picture transform to fit icon on clonk mount
 	//clean pic transform rotations

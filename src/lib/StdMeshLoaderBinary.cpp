@@ -27,9 +27,6 @@
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include <C4DefList.h>
-#include <C4Def.h>
-
 namespace
 {
 	bool VertexDeclarationIsSane(const boost::ptr_vector<Ogre::Mesh::ChunkGeometryVertexDeclElement> &decl, const char *filename)
@@ -174,7 +171,7 @@ namespace
 					break;
 				}
 			}
-			vertices.push_back(vertex);
+			vertices.push_back(OgreToClonk::TransformVertex(vertex));
 			// Advance vertex buffer cursors
 			BOOST_FOREACH(const Ogre::Mesh::ChunkGeometryVertexBuffer &buf, geo.vertexBuffers)
 			cursors[buf.index] += buf.vertexSize;
@@ -419,6 +416,7 @@ void StdMeshSkeletonLoader::LoadSkeletonBinary(const char* groupname, const char
 				kf.Transformation.rotate = catkf.rotation;
 				kf.Transformation.scale = catkf.scale;
 				kf.Transformation.translate = bone.InverseTransformation.rotate * (bone.InverseTransformation.scale * catkf.translation);
+				kf.Transformation = OgreToClonk::TransformTransformation(kf.Transformation);
 			}
 		}
 	}
@@ -427,10 +425,11 @@ void StdMeshSkeletonLoader::LoadSkeletonBinary(const char* groupname, const char
 	BOOST_FOREACH(StdMeshBone *bone, Skeleton->Bones)
 	{
 		if (bone->Parent)
-		{
-			bone->Transformation = bone->Parent->Transformation * bone->Transformation;
-			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
-		}
+			bone->Transformation = bone->Parent->Transformation * OgreToClonk::TransformTransformation(bone->Transformation);
+		else
+			bone->Transformation = OgreToClonk::TransformTransformation(bone->Transformation);
+
+		bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
 	}
 
 	StoreSkeleton(groupname, filename, Skeleton);
@@ -454,13 +453,6 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 	// Generate mesh from data
 	Ogre::Mesh::ChunkMesh &cmesh = *static_cast<Ogre::Mesh::ChunkMesh*>(root.get());
 	std::unique_ptr<StdMesh> mesh(new StdMesh);
-	mesh->BoundingBox = cmesh.bounds;
-	mesh->BoundingRadius = cmesh.radius;
-
-	// We allow bounding box to be empty if it's only due to X direction since
-	// this is what goes inside the screen in Clonk.
-	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
-		throw Ogre::Mesh::EmptyBoundingBox();
 
 	// if the mesh has a skeleton, then try loading
 	// it from the loader by the definition name
@@ -553,6 +545,56 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 				vertex.bone_weight[0] = 1.0f;
 		}
 	}
+
+	// Construct bounding box. Don't use bounds and radius from cmesh
+	// because they are in a different coordinate frame.
+	//mesh->BoundingBox = cmesh.bounds;
+	//mesh->BoundingRadius = cmesh.radius;
+
+	bool first = true;
+	for (unsigned int i = 0; i < mesh->SubMeshes.size() + 1; ++i)
+	{
+		const std::vector<StdSubMesh::Vertex>* vertices = NULL;
+		if (i < mesh->SubMeshes.size())
+			vertices = &mesh->SubMeshes[i].Vertices;
+		else
+			vertices = &mesh->SharedVertices;
+
+		for (unsigned int j = 0; j < vertices->size(); ++j)
+		{
+			const StdMeshVertex& vertex = (*vertices)[j];
+
+			const float d = std::sqrt(vertex.x*vertex.x
+		 	                        + vertex.y*vertex.y
+			                        + vertex.z*vertex.z);
+
+			// First vertex
+			if (first)
+			{
+				mesh->BoundingBox.x1 = mesh->BoundingBox.x2 = vertex.x;
+				mesh->BoundingBox.y1 = mesh->BoundingBox.y2 = vertex.y;
+				mesh->BoundingBox.z1 = mesh->BoundingBox.z2 = vertex.z;
+				mesh->BoundingRadius = d;
+				first = false;
+			}
+			else
+			{
+				mesh->BoundingBox.x1 = Min(vertex.x, mesh->BoundingBox.x1);
+				mesh->BoundingBox.x2 = Max(vertex.x, mesh->BoundingBox.x2);
+				mesh->BoundingBox.y1 = Min(vertex.y, mesh->BoundingBox.y1);
+				mesh->BoundingBox.y2 = Max(vertex.y, mesh->BoundingBox.y2);
+				mesh->BoundingBox.z1 = Min(vertex.z, mesh->BoundingBox.z1);
+				mesh->BoundingBox.z2 = Max(vertex.z, mesh->BoundingBox.z2);
+				mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
+			}
+		}
+	}
+
+	// We allow bounding box to be empty if it's only due to Z direction since
+	// this is what goes inside the screen in Clonk.
+	if(mesh->BoundingBox.x1 == mesh->BoundingBox.x2 || mesh->BoundingBox.y1 == mesh->BoundingBox.y2)
+		throw Ogre::Mesh::EmptyBoundingBox();
+
 	return mesh.release();
 }
 

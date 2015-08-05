@@ -2280,17 +2280,15 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	}
 	else { dir.x = dir.y = dir.z = 0.0f; }
 	// Apply the bone transformation to them, to go from bone coordinates
-	// to mesh coordinates (note that bone coordinates use the OGRE
-	// coordinate system, so they need to be transformed to Clonk coordinates).
-	const StdMeshMatrix ClonkToOgre = StdMeshMatrix::Inverse(C4Draw::OgreToClonk);
+	// to mesh coordinates.
 	// This is a good example why we should have different types for
 	// position vectors and displacement vectors. TODO.
-	StdMeshVector transformed_x = transform * (ClonkToOgre * x);
+	StdMeshVector transformed_x = transform * x;
 	transformed_x.x += transform(0,3);
 	transformed_x.y += transform(1,3);
 	transformed_x.z += transform(2,3);
-	x = C4Draw::OgreToClonk * transformed_x;
-	dir = C4Draw::OgreToClonk * (transform * (ClonkToOgre * dir));
+	x = transformed_x;
+	dir = transform * dir;
 	// Apply MeshTransformation in the mesh reference frame
 	C4Value value;
 	Obj->GetProperty(P_MeshTransformation, &value);
@@ -2310,8 +2308,6 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	StdMeshVector v1, v2;
 	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
 	v2.x = box.x2; v2.y = box.y2; v2.z = box.z2;
-	v1 = C4Draw::OgreToClonk * v1; // TODO: Include translation
-	v2 = C4Draw::OgreToClonk * v2; // TODO: Include translation
 	const float tx = fixtof(Obj->fix_x) + Obj->Def->Shape.GetX();
 	const float ty = fixtof(Obj->fix_y) + Obj->Def->Shape.GetY();
 	const float twdt = Obj->Def->Shape.Wdt;

@@ -370,6 +370,7 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshLoaderBinaryChunks.h
 	src/lib/StdMeshLoaderBinary.cpp
 	src/lib/StdMeshLoaderDataStream.h
+	src/lib/StdMeshLoader.cpp
 	src/lib/StdMeshLoader.h
 	src/lib/StdMeshLoaderXml.cpp
 	src/lib/StdMeshMaterial.cpp

@@ -20,6 +20,16 @@
 #define INC_StdMeshLoader
 #include <stdexcept>
 
+namespace OgreToClonk
+{
+	StdMeshVector TransformVector(const StdMeshVector& vector);
+	StdMeshVector TransformPseudoVector(const StdMeshVector& vector);
+	StdMeshVector TransformNormalVector(const StdMeshVector& vector);
+	StdMeshVector TransformScaleVector(const StdMeshVector& vector);
+	StdMeshQuaternion TransformQuaternion(const StdMeshQuaternion& quaternion);
+	StdSubMesh::Vertex TransformVertex(const StdSubMesh::Vertex& vertex);
+	StdMeshTransformation TransformTransformation(const StdMeshTransformation& transformation);
+}
 
 class StdMeshLoader
 {

@@ -15,7 +15,7 @@ public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
 {
-	return Trans_Mul(Trans_Rotate(-90, 0, 0, 1), Trans_Translate(-4000,3500));
+	return Trans_Mul(Trans_Rotate(90, 0, 1, 0), Trans_Translate(3500, 0, -4000));
 }
 
 public func ControlUse(object clonk, int iX, int iY)

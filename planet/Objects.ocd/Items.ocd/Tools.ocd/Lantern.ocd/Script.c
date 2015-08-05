@@ -55,7 +55,7 @@ public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
 {
-	return Trans_Rotate(-90,0,0,1);
+	return Trans_Rotate(-90,0,1,0);
 }
 private func Definition(def)
 {
