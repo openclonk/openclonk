@@ -100,7 +100,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 							pSolidMaskMatBuff[(ycnt+pClipRect->ty)*MatBuffPitch+xcnt+pClipRect->tx]=byPixel;
 					}
 					// and set mask
-					::Landscape.SetPix2(iTx,iTy,MCVehic,::Landscape.TRANSPARENT);
+					::Landscape.SetPix2(iTx,iTy,MCVehic,::Landscape.Transparent);
 				}
 				else
 					// no SolidMask: mark buffer as unused here
@@ -166,7 +166,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 							pSolidMaskMatBuff[i + xcnt] = byPixel;
 					}
 					// set mask pix
-					::Landscape.SetPix2(iTx, iTy, MCVehic, ::Landscape.TRANSPARENT);
+					::Landscape.SetPix2(iTx, iTy, MCVehic, ::Landscape.Transparent);
 				}
 				else if (!MaskPut)
 					// mark pix as unused in buf
@@ -261,7 +261,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 				// temp remove SolidMasks before
 				assert(_GBackPix(iTx,iTy) == MCVehic);
 				if (::Landscape._GetPix(iTx, iTy) == MCVehic)
-					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.TRANSPARENT);
+					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.Transparent);
 				// Instability
 				::Landscape.CheckInstabilityRange(iTx,iTy);
 			}
@@ -344,7 +344,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 			{
 				// restore
 				assert(GBackPix(x,y)==MCVehic);
-				::Landscape.SetPix2(x, y, *pPix, ::Landscape.TRANSPARENT);
+				::Landscape.SetPix2(x, y, *pPix, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -365,7 +365,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 			{
 				// put
 				assert(GBackPix(x,y)==*pPix);
-				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.TRANSPARENT);
+				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -387,7 +387,7 @@ void C4SolidMask::Repair(C4Rect where)
 				// record changed landscape in MatBuff
 				*pPix = GBackPix(x,y);
 				// put
-				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.TRANSPARENT);
+				::Landscape.SetPix2(x, y, MCVehic, ::Landscape.Transparent);
 			}
 		}
 	}

@@ -287,7 +287,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 		if (lmat == mat) break;
 #endif
 		// set mat (and keep background material)
-		SetPix2(cx, cy2, MatTex2PixCol(conv_to_tex), TRANSPARENT);
+		SetPix2(cx, cy2, MatTex2PixCol(conv_to_tex), Transparent);
 		if (!conv_to_is_solid) CheckInstabilityRange(cx,cy2);
 	}
 	// return pixel converted
@@ -662,7 +662,7 @@ bool C4Landscape::BlastFreePix(int32_t tx, int32_t ty)
 		}
 		else
 			if (::MaterialMap.Map[mat].BlastShiftTo)
-				SetPix2(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo), TRANSPARENT);
+				SetPix2(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo), Transparent);
 	}
 	return false;
 }
@@ -697,7 +697,7 @@ bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	if (x < 0 || y < 0 || x >= Width || y >= Height)
 		return false;
 	// no change?
-	if ((fgPix == TRANSPARENT || fgPix == _GetPix(x, y)) && (bgPix == TRANSPARENT || bgPix == Surface8Bkg->_GetPix(x, y)))
+	if ((fgPix == Transparent || fgPix == _GetPix(x, y)) && (bgPix == Transparent || bgPix == Surface8Bkg->_GetPix(x, y)))
 		return true;
 	// note for relight (TODO: Why is this not in _SetPix2?)
 	if(pLandscapeRender)
@@ -728,8 +728,8 @@ bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	assert(x >= 0 && y >= 0 && x < Width && y < Height);
 	// get pixel and resolve transparency to already existing pixel
 	BYTE opix = _GetPix(x, y);
-	if (fgPix == TRANSPARENT) fgPix = opix;
-	if (bgPix == TRANSPARENT) bgPix = Surface8Bkg->_GetPix(x, y);
+	if (fgPix == Transparent) fgPix = opix;
+	if (bgPix == Transparent) bgPix = Surface8Bkg->_GetPix(x, y);
 	// check pixel
 	if (fgPix == opix && bgPix == Surface8Bkg->_GetPix(x, y)) return true;
 	// count pixels
@@ -953,7 +953,7 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 		pix = Mat2PixColDefault(mat);
 
 	// Insert dead material
-	SetPix2(tx,ty,pix, TRANSPARENT);
+	SetPix2(tx,ty,pix, Transparent);
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
@@ -1174,13 +1174,13 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 				{
 					const uint8_t pix = conversion_table[uint8_t(GetPix(x1+xcnt, y))];
 					Surface8->SetPix(x1+xcnt, y, pix);
-					if (colBkg != TRANSPARENT) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
+					if (colBkg != Transparent) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
 				}
 			else
 				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
 				{
-					if (col != TRANSPARENT) Surface8->SetPix(x1+xcnt, y, col);
-					if (colBkg != TRANSPARENT) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
+					if (col != Transparent) Surface8->SetPix(x1+xcnt, y, col);
+					if (colBkg != Transparent) Surface8Bkg->SetPix(x1+xcnt, y, colBkg);
 				}
 			edge = edge->next->next;
 		}
@@ -1986,8 +1986,8 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, ui
 	switch (Shape)
 	{
 	case C4M_Flat: case C4M_Octagon:
-		if (mcol != TRANSPARENT) Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
-		if (mcolBkg != TRANSPARENT) Surface8Bkg->Box(tx, ty, tx + wdt, ty + hgt, mcolBkg);
+		if (mcol != Transparent) Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
+		if (mcolBkg != Transparent) Surface8Bkg->Box(tx, ty, tx + wdt, ty + hgt, mcolBkg);
 		return;
 	case C4M_TopFlat:
 		top_rough = 0; side_rough = 2; bottom_rough = 4;
@@ -3509,7 +3509,7 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, con
 	if (fDrawBridge)
 	{
 		conversion_map = GetBridgeMatConversion(MatTex2PixCol(iMatTex));
-		mcolBkg = TRANSPARENT;
+		mcolBkg = Transparent;
 	}
 	// prepare pixel count update
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
