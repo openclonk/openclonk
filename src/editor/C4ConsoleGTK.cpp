@@ -1116,8 +1116,9 @@ bool C4ToolsDlg::State::Open()
 		bg_textures = gtk_combo_box_new_text();
 #endif
 
+		// Link the material combo boxes together, but not the texture combo boxes,
+		// so that we can sort the texture combo box differently.
 		gtk_combo_box_set_model(GTK_COMBO_BOX(bg_materials), gtk_combo_box_get_model(GTK_COMBO_BOX(fg_materials)));
-		gtk_combo_box_set_model(GTK_COMBO_BOX(bg_textures), gtk_combo_box_get_model(GTK_COMBO_BOX(fg_textures)));
 
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(fg_materials), RowSeparatorFunc, NULL, NULL);
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(fg_textures), RowSeparatorFunc, NULL, NULL);
@@ -1228,35 +1229,52 @@ void C4ToolsDlg::State::UpdateToolCtrls()
 
 void C4ToolsDlg::UpdateTextures()
 {
-	// Refill dlg
-	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(state->fg_textures)));
-	gtk_list_store_clear(list);
-	// bottom-most: any invalid textures
-	bool fAnyEntry = false; int32_t cnt; const char *szTexture;
-	if (::Landscape.Mode!=C4LSC_Exact)
+	GtkComboBox* boxes[2] = {
+		GTK_COMBO_BOX(state->fg_textures),
+		GTK_COMBO_BOX(state->bg_textures)
+	};
+
+	const char* materials[2] = {
+		Material, BackMaterial
+	};
+
+	for (int i = 0; i < 2; ++i)
+	{
+		// Refill dlg
+		GtkComboBox* box = boxes[i];
+		const char* material = materials[i];
+
+		GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(box));
+		gtk_list_store_clear(list);
+
+		// bottom-most: any invalid textures
+		bool fAnyEntry = false; int32_t cnt; const char *szTexture;
+		if (::Landscape.Mode!=C4LSC_Exact)
+			for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
+			{
+				if (!::TextureMap.GetIndex(material, szTexture, false))
+				{
+					fAnyEntry = true;
+					gtk_combo_box_prepend_text(box, szTexture);
+				}
+			}
+		// separator
+		if (fAnyEntry)
+		{
+			gtk_combo_box_prepend_text(box, "-------");
+		}
+
+		// atop: valid textures
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
-			if (!::TextureMap.GetIndex(Material, szTexture, false))
+			// Current material-texture valid? Always valid for exact mode
+			if (::TextureMap.GetIndex(material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
 			{
-				fAnyEntry = true;
-				gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->fg_textures), szTexture);
+				gtk_combo_box_prepend_text(box, szTexture);
 			}
 		}
-	// separator
-	if (fAnyEntry)
-	{
-		gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->fg_textures), "-------");
 	}
 
-	// atop: valid textures
-	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
-	{
-		// Current material-texture valid? Always valid for exact mode
-		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
-		{
-			gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->fg_textures), szTexture);
-		}
-	}
 	// reselect current
 	g_signal_handler_block(state->fg_textures, state->handlerFgTextures);
 	SelectComboBoxText(GTK_COMBO_BOX(state->fg_textures), Texture);
