@@ -79,7 +79,7 @@ public:
 	// either foreground or background map. We can use C4M_MaxTexIndex as a value
 	// here because this value is reserved anyway for the differential landscape
 	// encoding.
-	const uint8_t Transparent = C4M_MaxTexIndex;
+	static const uint8_t Transparent = C4M_MaxTexIndex;
 
 	void Default();
 	void Clear(bool fClearMapCreator=true, bool fClearSky=true, bool fClearRenderer=true);
