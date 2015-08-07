@@ -206,8 +206,17 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	forced = forced ?? false;
 	// clean up old menu
 	var old_menu = current_menus[slot];
+	var other_menu = current_menus[1 - slot];
 	if (old_menu)
+	{
+		// Re-enable entry in (other!) sidebar.
+		if (other_menu)
+		{
+			GuiUpdate({Symbol = nil}, current_main_menu_id, 1 + 1 - slot, old_menu.target);
+		}
+		// ..and close old menu.
 		old_menu.menu_object->RemoveObject();
+	}
 	current_menus[slot] = nil;
 	// before creating the sidebar, we have to create a new entry in current_menus, even if it contains not all information
 	current_menus[slot] = {target = obj, forced = forced};
@@ -346,6 +355,12 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	{
 		current_center_column_target.Visibility = VIS_None;
 	}
+	
+	// Finally disable object for selection in other sidebar, if available.
+	if (other_menu)
+	{
+		GuiUpdate({Symbol = Icon_Cancel}, current_main_menu_id, 1 + 1 - slot, obj);
+	}
 }
 
 // Tries to put all items from the other menu's target into the target of menu menu_id. Returns nil.
@@ -394,6 +409,8 @@ public func OnMoveAllToClicked(int menu_id)
 // to interact with can be selected
 func CreateSideBar(int slot)
 {
+	var other_menu = current_menus[1 - slot];
+	
 	var em_size = ToEmString(InteractionMenu_SideBarSize);
 	var sidebar =
 	{
@@ -432,9 +449,17 @@ func CreateSideBar(int slot)
 			symbol = Icon_Menu_RectangleBrightRounded;
 		}
 		var priority = 10000 - obj.Plane;
+		// Cross-out the entry?
+		var deactivation_symbol = nil;
+		if (other_menu && other_menu.target == obj)
+			deactivation_symbol = Icon_Cancel;
+		// Always show Clonk at top.
 		if (obj == cursor) priority = 1;
 		var entry = 
 		{
+			// The object is added as the target of the entry, so it can easily be identified later.
+			// For example, to apply show the grey haze to indicate that it cannot be clicked.
+			Target = obj,
 			Right = em_size, Bottom = em_size,
 			Symbol = symbol,
 			Priority = priority,
@@ -444,7 +469,8 @@ func CreateSideBar(int slot)
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
 			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, Margin = "0.5em"}
+			obj_symbol = {Symbol = obj, Margin = "0.5em", Priority = 1},
+			obj_symbol_deactivated = {Symbol = deactivation_symbol, Margin = "1.0em", Priority = 2, Target = obj, ID = 1 + slot}
 		};
 		
 		GuiAddSubwindow(entry, sidebar);
