@@ -122,6 +122,11 @@
 	GUIName=$CON_Jump$
 	GUIDesc=$CON_Jump_Desc$
 	
+	[ControlDef]
+	Identifier=Roll
+	GUIName=$CON_Roll$
+	GUIDesc=$CON_Roll_Desc$
+	
 	# Inventory
 	
 	[ControlDef]
@@ -622,7 +627,13 @@
 		GUIDesc=$KEY_Down_Desc$
 		GUIGroup=10
 		Control=Down
-
+		
+		[Assignment]
+		Key=S
+		Priority=10
+		GUIGroup=10
+		Control=Roll
+		
 		[Assignment]
 		Key=W
 		Priority=50

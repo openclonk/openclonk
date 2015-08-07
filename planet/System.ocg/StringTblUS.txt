@@ -1,6 +1,9 @@
 SET_WASD_QWERTZ=Keyboard and mouse
 SET_Gamepad=Gamepad
 
+CON_Roll=Roll
+CON_Roll_Desc=Do an ordinary roll forward.
+
 CON_Jump=Jump
 CON_Jump_Desc=Jump while running, jump out of the water or leap from a wall.
 

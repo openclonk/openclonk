@@ -440,6 +440,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return ObjectControlMovement(plr, ctrl, strength, release);
 	}
 	
+	// Do a roll on landing or when standing. This means that the CON_Down was not handled previously.
+	if (ctrl == CON_Roll)
+	{
+		if (this->IsWalking())
+		{
+			this->DoRoll();
+			return true;
+		}
+		else if (this->IsJumping())
+		{
+			AddEffect("ScheduleRollOnLanding", this, 1, 30, this);
+			return true;
+		}
+	}
+	
 	// hotkeys action bar hotkeys
 	var hot = 0;
 	if (ctrl == CON_InteractionHotkey0) hot = 10;
