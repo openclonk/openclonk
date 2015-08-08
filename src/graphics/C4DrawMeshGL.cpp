@@ -128,10 +128,7 @@ namespace
 			);
 		}
 
-		if (pGL->Workarounds.LowMaxVertexUniformCount)
-			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
-		else
-			return buf;
+		return buf;
 	}
 
 	// Note this only gets the code which inserts the slices specific for the pass
@@ -477,7 +474,7 @@ namespace
 		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
 		struct BoneTransform
 		{
-			float m[3][4];
+			float m[4][4];
 		};
 		std::vector<BoneTransform> bones;
 		if (mesh_instance.GetBoneCount() == 0)
@@ -486,7 +483,7 @@ namespace
 			static const BoneTransform dummy_bone = {
 				1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f
+				0.0f, 0.0f, 1.0f, 1.0f
 			};
 			bones.push_back(dummy_bone);
 		}
@@ -499,7 +496,8 @@ namespace
 				BoneTransform cooked_bone = {
 					bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
 					bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
-					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3)
+					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
+					0, 0, 0, 1
 				};
 				bones.push_back(cooked_bone);
 			}
@@ -624,10 +622,7 @@ namespace
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
 			{
-				if (pGL->Workarounds.LowMaxVertexUniformCount)
-					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
-				else
-					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+				call.SetUniformMatrix4x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
 			}
 
 			// Bind the vertex data of the mesh
