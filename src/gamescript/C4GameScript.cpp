@@ -485,7 +485,7 @@ static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nil
 	return C4Void();
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -510,12 +510,12 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 		iX += pObj->GetX();
 		iY += pObj->GetY();
 	}
-	StartSoundEffectAt(FnStringPar(szSound),iX,iY,iLevel,iCustomFalloffDistance);
+	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch);
 	// always return true (network safety!)
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance)
+static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance, long iPitch)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -536,14 +536,26 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 	// target object
 	C4Object *pObj = NULL;
 	if (!fGlobal) pObj = Object(_this);
-	// already playing?
-	if (iLoop >= 0 && GetSoundInstance(FnStringPar(szSound), pObj))
-		return false;
-	// try to play effect
+	// play/stop?
 	if (iLoop >= 0)
-		StartSoundEffect(FnStringPar(szSound),!!iLoop,iLevel,pObj, iCustomFalloffDistance);
+	{
+		// already playing?
+		C4SoundInstance *inst = GetSoundInstance(FnStringPar(szSound), pObj);
+		if (inst)
+		{
+			// then just update parameters
+			SoundUpdate(inst, iLevel, iPitch);
+		}
+		else
+		{
+			// try to play effect
+			StartSoundEffect(FnStringPar(szSound), !!iLoop, iLevel, pObj, iCustomFalloffDistance, iPitch);
+		}
+	}
 	else
-		StopSoundEffect(FnStringPar(szSound),pObj);
+	{
+		StopSoundEffect(FnStringPar(szSound), pObj);
+	}
 	// always return true (network safety!)
 	return true;
 }

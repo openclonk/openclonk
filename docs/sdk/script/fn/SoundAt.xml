@@ -43,6 +43,12 @@
           <desc>The further away the sound effect from the player, the more quiet it is played. By default, the sound will not be hearable anymore in a distance of 700 pixels. A custom distance can be specified here.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>pitch</name>
+          <desc>Pitch modification between -90 and 1000. Values larger than zero let the sound play the faster and at a higher pitch. The resulting speed multiplication factor is (pitch + 100) / 100.</desc>
+          <optional />
+        </param>
 	</params>
     </syntax>
     <desc>Plays a sound at the specified position. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition.</desc>
