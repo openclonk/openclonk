@@ -150,7 +150,8 @@ public func StartFlight(int new_throttle)
 
 public func StartInstantFlight(int angle, int new_throttle)
 {
-	angle -= 10;
+	if (angle < 0) angle += 360;
+	if (angle < 180) angle -= 10; else angle += 10;
 	SetPropellerSpeed(100);
 	SetAction("Fly");
 	throttle = new_throttle;
