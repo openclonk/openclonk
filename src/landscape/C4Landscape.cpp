@@ -2239,12 +2239,15 @@ bool C4Landscape::TexOZoom(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iM
 	int32_t iIndex;
 
 	// ChunkOZoom all used textures
-	for (iIndex=1; iIndex<C4M_MaxTexIndex; iIndex++)
-		if (dwpTextureUsage[iIndex]>0)
+	for (auto i = ::TextureMap.Order.begin(); i != ::TextureMap.Order.end(); ++i)
+	{
+		iIndex = *i;
+		if (dwpTextureUsage[iIndex] > 0)
 		{
 			// ChunkOZoom map to landscape
-			ChunkOZoom(sfcMap,sfcMapBkg,iMapX,iMapY,iMapWdt,iMapHgt,iIndex,iToX,iToY);
+			ChunkOZoom(sfcMap, sfcMapBkg, iMapX, iMapY, iMapWdt, iMapHgt, iIndex, iToX, iToY);
 		}
+	}
 
 	// Done
 	return true;

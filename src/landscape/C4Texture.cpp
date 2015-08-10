@@ -123,6 +123,8 @@ bool C4TextureMap::AddEntry(BYTE byIndex, const char *szMaterial, const char *sz
 		// Landscape must be notified (new valid pixel clr)
 		::Landscape.HandleTexMapUpdate();
 	}
+	// Add last in order list
+	Order.push_back(byIndex);
 	return true;
 }
 
@@ -180,6 +182,8 @@ void C4TextureMap::Clear()
 	}
 	FirstTexture=NULL;
 	fInitialized = false;
+	Order.clear();
+	Order.reserve(C4M_MaxTexIndex);
 }
 
 bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures)
@@ -316,12 +320,15 @@ bool C4TextureMap::SaveMap(C4Group &hGroup, const char *szEntryName)
 	if (fOverloadTextures) sTexMapFile.Append("# Import textures from global file as well" LineFeed "OverloadTextures" LineFeed);
 	sTexMapFile.Append(LineFeed);
 	// add entries
-	for (int32_t i = 0; i < C4M_MaxTexIndex; i++)
+	for (auto iter = Order.begin(); iter != Order.end(); ++iter)
+	{
+		int32_t i = *iter;
 		if (!Entry[i].isNull())
 		{
 			// compose line
 			sTexMapFile.AppendFormat("%d=%s-%s" LineFeed, i, Entry[i].GetMaterialName(), Entry[i].GetTextureName());
 		}
+	}
 	// create new buffer allocated with new [], because C4Group cannot handle StdStrBuf-buffers
 	size_t iBufSize = sTexMapFile.getLength();
 	BYTE *pBuf = new BYTE[iBufSize];
@@ -372,7 +379,12 @@ bool C4TextureMap::HasTextures(C4Group &hGroup)
 
 void C4TextureMap::MoveIndex(BYTE byOldIndex, BYTE byNewIndex)
 {
+	if (byNewIndex == byOldIndex) return;
 	Entry[byNewIndex] = Entry[byOldIndex];
+	Entry[byOldIndex].Clear();
+	auto old_entry = std::find_if(Order.begin(), Order.end(),
+		[byOldIndex](const int32_t &entry) { return entry == byOldIndex; });
+	if (old_entry != Order.end()) *old_entry = byNewIndex;
 	fEntriesAdded = true;
 }
 
@@ -494,6 +506,20 @@ void C4TextureMap::Default()
 	fOverloadMaterials=false;
 	fOverloadTextures=false;
 	fInitialized = false;
+	Order.clear();
+	Order.reserve(C4M_MaxTexIndex);
+}
+
+void C4TextureMap::RemoveEntry(int32_t iIndex)
+{
+	// remove entry from table and order vector
+	if (Inside<int32_t>(iIndex, 1, C4M_MaxTexIndex - 1))
+	{
+		Entry[iIndex].Clear();
+		auto last_entry = std::remove_if(Order.begin(), Order.end(),
+			[iIndex](const int32_t &entry) { return entry == iIndex; });
+		Order.erase(last_entry, Order.end());
+	}
 }
 
 void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMaterial)
