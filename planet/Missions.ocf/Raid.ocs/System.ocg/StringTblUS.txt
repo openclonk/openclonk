@@ -28,9 +28,9 @@ Newton100=Hey %s! Did you survive the attacks?
 Newton101=Yes. As you can see. I was able to watch the disaster from the forest.
 Newton102=It will take us months to rebuild everything. In the meantime, we'll be defenseless against their attacks.
 Newton103=Who are the attackers?
-Newton104=It's the henchmen of \"king\" Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
-Newton105=Why \"king\"?
-Newton106=He's got a crown on his head. So what? We haven't voted for him. We will never acknowledge a monarch that has no democratic legitimation!
+Newton104=It's the henchmen of king Harx. We've refused to pay unfair tributes to him. Now they want to set an example on us.
+Newton105=But he is our king, isn't he?
+Newton106=He's got a crown on his head. So what? We haven't voted for him. We will never acknowledge a monarch who only oppresses us!
 Newton107=Okay. What will you do now?
 Newton108=Nothing. It's hopeless. We will all die. Except if...
 Newton109=...?
@@ -49,9 +49,9 @@ Newton121=Good luck! You will need it.
 
 Newton200=Newton, I've built a plane for the counter-attack on Harx. But I don't have any fuel yet.
 Newton200a=Newton, I've got plans for a plane for the counter-attack on Harx. But I don't have any fuel yet.
-Newton201=Very good, %s. So you need oil? That is a problem indeed. Harx has outlawed private possession of oil.
+Newton201=Very good, %s. So you need oil? That is a problem indeed. Harx has outlawed possession of oil.
 Newton202=We don't care for his silly rules of course. But we needed to sell our oil to fund the defense and construction of the castle.
-Newton203=We've got nothing left here in the village. But you could ask Mave down in the cave. He likes to have spare stockings of things.
+Newton203=We've got nothing left here in the village. But we have oil a hidden chamber in the cave below this village. You could ask Mave down in the cave beside the foundry for the key.
 
 
 Lara1=We need more wood, so we can at least finish the scaffolds before nightfall.
@@ -115,24 +115,28 @@ Mave8=You could use my foundry to build some loam.
 Mave9=How do I build loam?
 Mave10=Oh, that is easy: Fill a bucket{{Bucket}} with earth and fill a barrel{{Barrel}} with water. Then put both into the foundry and produce loam.
 Mave11=You can find the necessary tools in my foundry.
+Mave12=Where does this elevator shaft lead?
+Mave13=This elevator leads to the chamber with our oil reserves. Unfortunately, the path got flooded by the volcano. Maybe water from the lake can be used to extinguish the lava?
+MaveBye=Bye.
 
 Mave100=Hi Mave. Do you have an idea where to find oil?
-Mave101=Oh, oil. You know we're not supposed to own private reserves, right?
+Mave101=Oh, oil. You know we're not supposed to own reserves, right?
 Mave102=It's very important! I'm trying to kill the king.
 Mave103=That sounds like a noble plan. Maybe I could help you...
 Mave104=Yes, please!
-Mave105=Not so hasty. I've got a secret chamber. It's buried below these lava lakes but the walls are of solid granite so I think it should still be intact.
-Mave106=To enter it, you need a key.
-Mave107=Okay. Give key please.
-Mave108=I'll sell it to you for one gold bar.
-Mave109=Where can I find gold?
-Mave110=If I knew that, I would mine it myself. Typically it's somewhere underground.
-Mave111=When you have found gold nuggets, you can use my foundry to melt them to a shiny bar.
+Mave105=Not so hasty. Down this elevator shaft there's a path that leads to a chamber. It's buried below these lava lakes now.
+Mave106=But the walls are of solid granite so I think it should still be intact.
+Mave107=To enter it, you need a key.
+Mave108=Okay. Give key please.
+Mave109=I'll sell it to you for one gold bar.
+Mave110=Where can I find gold?
+Mave111=If I knew that, I would mine it myself. Typically it's somewhere underground.
+Mave112=When you have found gold nuggets, you can use my foundry to melt them to a shiny bar.
 
 Mave200=Here is your gold bar.
 Mave201=Glad to make business with you. Here is your key.
-Mave202=Where can I find the hidden chamber?
-Mave203=It's buried below the lava lakes. Maybe you can use water to cool the lava?
+Mave202=Where can I find the oil chamber?
+Mave203=It's down this elevator, buried below the lava lakes. Maybe you can use water to cool the lava?
 
 
 Pyrit1=Hi, are you Pyrit?

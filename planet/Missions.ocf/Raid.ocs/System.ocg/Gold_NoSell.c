@@ -1,3 +1,6 @@
 #appendto Nugget
 #appendto GoldBar
-func IsValuable(){}
+
+static g_allow_gold_sale;
+
+func IsValuable() { return g_allow_gold_sale; }

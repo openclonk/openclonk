@@ -29,7 +29,7 @@ func Attack_1()
 		pilot->SetColor(0xff101010);
 		pilot->SetDir(DIR_Left);
 		//plane->FaceLeft();
-		plane->StartInstantFlight(270, 15);
+		plane->StartInstantFlight(260, 15);
 		plane->SetXDir(-15);
 		plane->MakeInvincible();
 		this.planes[i] = plane;
@@ -64,8 +64,9 @@ func Attack_5()
 	MessageBoxAll("$Attack3$", npc_lara, true); // oh god!
 	for (var i=0; i<3; ++i)
 	{
-		this.planes[i]->StartInstantFlight(280, 15);
+		this.planes[i]->StartInstantFlight(270, 15);
 		this.planes[i]->SetXDir(-15);
+		this.planes[i]->SetYDir(0);
 	}
 	SetViewTarget(g_flagpole);
 	// NPCs go nuts
