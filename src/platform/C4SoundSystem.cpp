@@ -383,8 +383,8 @@ bool C4SoundInstance::Stop()
 bool C4SoundInstance::Playing()
 {
 	if (!pEffect) return false;
-#if AUDIO_TK == AUDIO_TK_FMOD
 	if (fLooping) return true;
+#if AUDIO_TK == AUDIO_TK_FMOD
 	return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
 	       : C4TimeMilliseconds::Now() < tStarted + pEffect->Length;
 #elif AUDIO_TK == AUDIO_TK_SDL_MIXER
