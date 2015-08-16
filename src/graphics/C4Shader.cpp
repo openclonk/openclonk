@@ -317,19 +317,20 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	if (hProg) Clear();
 #endif
 
+	StdStrBuf VertexShader = Build(VertexSlices, true),
+		FragmentShader = Build(FragmentSlices, true);
+
 	// Dump
 	if (C4Shader::IsLogging())
 	{
 		ShaderLogF("******** Vertex shader for %s:", szWhat);
-		ShaderLog(Build(VertexSlices, true).getData());
+		ShaderLog(VertexShader.getData());
 		ShaderLogF("******** Fragment shader for %s:", szWhat);
-		ShaderLog(Build(FragmentSlices, true).getData());
+		ShaderLog(FragmentShader.getData());
 	}
 
 #ifndef USE_CONSOLE
 	// Attempt to create shaders
-	StdStrBuf VertexShader = Build(VertexSlices),
-			  FragmentShader = Build(FragmentSlices);
 	hVert = Create(GL_VERTEX_SHADER_ARB,
 				   FormatString("%s vertex shader", szWhat).getData(),
 				   VertexShader.getData());
