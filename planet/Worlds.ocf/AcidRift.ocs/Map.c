@@ -1,3 +1,13 @@
+/**
+	Acid Rift
+	Mine the rubies before it's too late
+	
+	@author Sven2
+*/
+
+
+#include Library_Map
+
 //static const SCENPAR_MapSize = 2;
 //static const SCENPAR_Difficulty = 2;
 
@@ -151,21 +161,6 @@ func InitializeMap(proplist map)
 
 
 /*-- Helper Functions --*/
-
-// Draws some material inside an existing mask.
-private func DrawMaterial(string mat, proplist onto_mask, speck_size, int ratio)
-{
-	if (!speck_size)
-		speck_size = [4,4];
-	if (!ratio)
-		ratio = 15;
-	if (GetType(speck_size) != C4V_Array) speck_size = [speck_size, speck_size];
-	// Use random checker algorithm to draw patches of the material. 
-	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size[0], Hgt = speck_size[1]};
-	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
-	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	return Draw(mat, algo);
-}
 
 // Find places matching mask and draw spots of material on it
 private func DrawPatches(int num, ...)

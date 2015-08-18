@@ -66,6 +66,25 @@ func DrawOre(int num, array rect) { return DrawSpots("Ore", num, [8,12], [14,20]
 func DrawGold(int num, array rect) { return DrawSpots("Gold", num, [10,14], [10,14], rect, nil); }
 func DrawRock(int num, array rect) { return DrawSpots("Rock-rock", num, [20,80], [6,8], rect, nil, [["Rock-rock_cracked", 3,10], ["Granite", 6,2]]); }
 
+// Draws the given material onto an existing mask with given size and ratio.
+public func DrawMaterial(string mat, proplist onto_mask, speck_size, int ratio)
+{
+	// Defaults and check whether speck size is an array.
+	if (!speck_size)
+		speck_size = 4;
+	if (!ratio)
+		ratio = 15;
+	if (GetType(speck_size) != C4V_Array) 
+		speck_size = [speck_size, speck_size];
+	// Use random checker algorithm to draw patches of the material. 
+	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size[0], Hgt = speck_size[1]};
+	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
+	var material_mask = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
+	// Draw the material onto the calling map object.
+	this->Draw(mat, material_mask);
+	return;
+}
+
 func DrawWaterVeins(int num, array rect)
 {
 	while (num--) DrawLiquidVein("Water", 3, 5, rect);

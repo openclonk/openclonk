@@ -185,7 +185,19 @@ public func DrawGemVeins(proplist map, int size, int difficulty)
 	var tunnels = Duplicate("Tunnel");
 	var tunnels_algo = {Algo = MAPALGO_Layer, Layer = tunnels};
 	tunnels_algo = {Algo = MAPALGO_And, Op = [tunnels_algo, {Algo = MAPALGO_Rect, X = 0, Y = hgt - water_level, Wdt = wdt, Hgt = water_level}]}; 
-	map->Draw("Water", tunnels_algo);	
+	map->Draw("Water", tunnels_algo);
+	
+	// On insane the background material of the bottom part is water.    
+    if (difficulty == 3)
+    {
+    	for (var x = 0; x < wdt; x++)
+    	{
+    		for (var y = water_level; y < hgt; y++)
+    		{
+    			// TODO: wait for background pixel setting.
+    		}   
+    	}
+    }
     return;
 }
 
@@ -306,18 +318,4 @@ public func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4
 	if (!c) 
 		return !a && Inside(x3, x1, x2) && Inside(y3, y1, y2); // lines are parallel
 	return a * c >= 0 && !(a * a / (c * c + 1)) && b * c >= 0 && !(b * b/(c * c + 1));
-}
-
-// Draws some material inside an existing mask.
-public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
-{
-	if (!speck_size)
-		speck_size = 4;
-	if (!ratio)
-		ratio = 15;
-	// Use random checker algorithm to draw patches of the material. 
-	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size, Hgt = speck_size};
-	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
-	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	return Draw(mat, algo);
 }
