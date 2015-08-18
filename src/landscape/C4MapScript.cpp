@@ -292,6 +292,37 @@ static C4PropList *FnLayerDuplicate(C4PropList * _this, const C4Value &mask_spec
 	return new_layer;
 }
 
+static int32_t FnLayerGetMaterialTextureIndex(C4PropList * _this, C4String* mattex)
+{
+	if (!mattex) return -1;
+
+	uint8_t col;
+	if (!TexColSingle(mattex->GetCStr(), col))
+		return -1;
+
+	return col;
+}
+
+static int32_t FnLayerGetDefaultBackgroundIndex(C4PropList * _this, const C4Value &value)
+{
+	uint8_t fg;
+	C4String* str;
+
+	if ((str = value.getStr()))
+	{
+		if (!TexColSingle(str->GetCStr(), fg))
+			return -1;
+	}
+	else
+	{
+		if (!Inside(value.getInt(), 0, 255))
+			return -1;
+		fg = value.getInt();
+	}
+
+	return ::MapScript.pTexMap->DefaultBkgMatTex(fg);
+}
+
 static int32_t FnLayerGetPixel(C4PropList * _this, int32_t x, int32_t y)
 {
 	// Layer script function: Query pixel at position x,y from _this layer
@@ -300,31 +331,63 @@ static int32_t FnLayerGetPixel(C4PropList * _this, int32_t x, int32_t y)
 	return layer->GetPix(x,y,0);
 }
 
-// TODO: Add function to get background pixel
+static int32_t FnLayerGetBackPixel(C4PropList * _this, int32_t x, int32_t y)
+{
+	// Layer script function: Query pixel at position x,y from _this layer
+	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
+	if (!layer) return 0;
+	return layer->GetBackPix(x,y,0);
+}
 
-static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Value &to_value_c4v)
+static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Value& fg_value_c4v, const C4Value& bg_value_c4v)
 {
 	// Layer script function: Set pixel at position x,y to to_value in _this layer
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
 	if (!layer) return false;
-	C4String *to_value_s;
 	uint8_t fg, bg;
 
-	// TODO: Allow to set custom background material
-	if ((to_value_s = to_value_c4v.getStr()))
+	if (fg_value_c4v.GetType() == C4V_Nil)
 	{
-		if (!FnParTexCol(to_value_s, fg, bg))
-			throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+		fg = layer->GetPix(x,y,0);
 	}
 	else
 	{
-		int32_t val = to_value_c4v.getInt();
-		if (!Inside(val, 0, 255))
-			throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
-
-		fg = val;
-		bg = ::MapScript.pTexMap->DefaultBkgMatTex(fg);
+		const C4Value& val = fg_value_c4v;
+		C4String *str = val.getStr();
+		if (str != NULL)
+		{
+			if (!TexColSingle(str->GetCStr(), fg))
+				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+		}
+		else
+		{
+			if (!Inside(val.getInt(), 0, 255))
+				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+			fg = val.getInt();
+		}
 	}
+
+	if (bg_value_c4v.GetType() == C4V_Nil)
+	{
+		bg = layer->GetBackPix(x,y,0);
+	}
+	else
+	{
+		const C4Value& val = bg_value_c4v;
+		C4String *str = val.getStr();
+		if (str != NULL)
+		{
+			if (!TexColSingle(str->GetCStr(), bg))
+				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+		}
+		else
+		{
+			if (!Inside(val.getInt(), 0, 255))
+				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+			bg = val.getInt();
+		}
+	}
+			
 	return layer->SetPix(x,y,fg,bg);
 }
 
@@ -617,7 +680,10 @@ void C4MapScriptHost::AddEngineFunctions()
 	::AddFunc(this, "Blit", FnLayerBlit);
 	::AddFunc(this, "CreateLayer", FnCreateLayer);
 	::AddFunc(this, "Duplicate", FnLayerDuplicate);
+	::AddFunc(this, "GetMaterialTextureIndex", FnLayerGetMaterialTextureIndex);
+	::AddFunc(this, "GetDefaultBackgroundIndex", FnLayerGetDefaultBackgroundIndex);
 	::AddFunc(this, "GetPixel", FnLayerGetPixel);
+	::AddFunc(this, "GetBackPixel", FnLayerGetBackPixel);
 	::AddFunc(this, "SetPixel", FnLayerSetPixel);
 	::AddFunc(this, "GetPixelCount", FnLayerGetPixelCount);
 	::AddFunc(this, "Resize", FnLayerResize);
