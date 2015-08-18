@@ -244,7 +244,7 @@ mape_mapgen_render(const gchar* filename,
   guint out_rowstride;
   unsigned int in_rowstride;
   guint datawidth;
-  guint8 matclrs[128 * 4];
+  guint8 matclrs[256 * 4];
   unsigned int x, y;
   unsigned int matnum;
 
@@ -329,7 +329,8 @@ mape_mapgen_render(const gchar* filename,
   {
     for(x = 0; x < out_width; ++x)
     {
-      matnum = *in_p & 0x7f;
+      matnum = *in_p;
+
       if(matclrs[matnum * 4] == 0)
       {
         mape_mapgen_read_color(
