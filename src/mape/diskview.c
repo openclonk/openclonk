@@ -275,11 +275,6 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 	g_object_unref(texture_map);
 	mape_mapgen_set_root_group(parent_group);
 
-	/* Load the texture map again, because now that we have materials
-	 * and textures loaded, we can actually assign the indices in the
-	 * texture map. */
-	mape_texture_map_load_map(texture_map, group, error);
-
 #if 0
 	if(overloaded_group != NULL)
 		mape_group_destroy(overloaded_group);
