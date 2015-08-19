@@ -1,7 +1,6 @@
 [Head]
-Title=AIBattle
+Title=AITest
 Version=6,0
-MaxPlayer=2
 
 [Landscape]
 MapWidth=20
