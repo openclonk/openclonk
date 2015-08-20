@@ -2827,14 +2827,14 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
 	{
-		C4LangStringTable SysGroupString;
-		C4Language::LoadComponentHost(&SysGroupString, SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		C4LangStringTable *pSysGroupString = new C4LangStringTable();
+		C4Language::LoadComponentHost(pSysGroupString, SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
 			Log("[!]Loading local scenario player control definitions...");
 			C4PlayerControlFile PlayerControlFile;
-			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, &SysGroupString))
+			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, pSysGroupString))
 			{
 				// non-fatal error here
 				Log("[!]Error loading scenario defined player controls");
@@ -2854,12 +2854,14 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ExtraScriptHost();
 			scr->Reg2List(&ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, pSysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)
 			Game.pFileMonitor->AddDirectory(SysGroup.GetFullName().getData());
 		SysGroup.Close();
+		// release string table if no longer used
+		pSysGroupString->DelRef();
 	}
 	return true;
 }

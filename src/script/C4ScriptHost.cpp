@@ -51,6 +51,11 @@ void C4ScriptHost::Clear()
 	LocalValues.Clear();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
+	if (stringTable)
+	{
+		stringTable->DelRef();
+		stringTable = NULL;
+	}
 	// remove includes
 	Includes.clear();
 	Appends.clear();
@@ -62,7 +67,12 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 	// Base load
 	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
 	// String Table
-	stringTable = pLocalTable;
+	if (stringTable != pLocalTable)
+	{
+		if (stringTable) stringTable->DelRef();
+		stringTable = pLocalTable;
+		if (stringTable) stringTable->AddRef();
+	}
 	// set name
 	ScriptName.Ref(ComponentHost.GetFilePath());
 	// preparse script
@@ -73,7 +83,13 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 
 bool C4ScriptHost::LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable)
 {
-	stringTable = pLocalTable;
+	// String Table
+	if (stringTable != pLocalTable)
+	{
+		if (stringTable) stringTable->DelRef();
+		stringTable = pLocalTable;
+		if (stringTable) stringTable->AddRef();
+	}
 	ScriptName.Copy(szFilename);
 
 	StdStrBuf tempScript;

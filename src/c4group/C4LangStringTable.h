@@ -30,6 +30,7 @@ class C4LangStringTable : public C4ComponentHost
 	typedef std::map<std::string, std::string> Table;
 	mutable Table strings;
 	void PopulateStringTable() const;
+	int32_t ref_count; // ref counter initialized to 1 on ctor; delete when zero is reached
 public:
 	C4LangStringTable();
 	const std::string &Translate(const std::string &text) const;
@@ -38,6 +39,9 @@ public:
 	// if any replacement is done, the buffer will be realloced
 	void ReplaceStrings(StdStrBuf &rBuf);
 	void ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget);
+
+	void AddRef() { ++ref_count;  }
+	void DelRef() { if (!--ref_count) delete this; }
 
 	class NoSuchTranslation : public std::runtime_error
 	{
