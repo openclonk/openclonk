@@ -308,7 +308,9 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 					if (cat & C4D_Living)
 					{
 						obj->DoEnergy(level / -2, false, FX_Call_EngBlast, cause_plr);
+						if (!obj) continue;
 						obj->DoDamage(level / 2, FX_Call_DmgBlast, cause_plr);
+						if (!obj) continue;
 					}
 					// Killtracing for projectiles.
 					if (cat & C4D_Object)
