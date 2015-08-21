@@ -842,5 +842,6 @@ unsigned int C4Set<C4PropListScript *>::Hash<C4PropListScript *>(C4PropListScrip
 {
 	// since script prop lists are only put in the set for reference keeping, just hash by pointer
 	// but use only some of the more significant bits because 
-	return reinterpret_cast<unsigned int>(e) / 63;
+	uintptr_t hash = reinterpret_cast<uintptr_t>(e);
+	return (unsigned int)(hash / 63);
 }
