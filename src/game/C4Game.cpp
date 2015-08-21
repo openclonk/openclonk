@@ -603,6 +603,9 @@ void C4Game::Clear()
 
 	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
 	ScriptEngine.Clear();
+	// delete any remaining prop lists from circular chains
+	C4PropListNumbered::ClearNumberedPropLists(); 
+	C4PropListScript::ClearScriptPropLists();
 	MainSysLangStringTable.Clear();
 	ScenarioLangStringTable.Clear();
 	CloseScenario();

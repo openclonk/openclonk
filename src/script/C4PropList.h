@@ -113,7 +113,7 @@ public:
 	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
-	int32_t GetPropertyInt(C4PropertyName k) const;
+	int32_t GetPropertyInt(C4PropertyName k, int32_t default_val = 0) const;
 	C4PropList *GetPropertyPropList(C4PropertyName k) const;
 	bool HasProperty(C4String * k) const { return Properties.Has(k); }
 	// not allowed on frozen proplists
@@ -216,6 +216,7 @@ public:
 	static void ShelveNumberedPropLists(); // unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
 	static void UnshelveNumberedPropLists(); // re-insert shelved proplists into main list
 	static void ClearShelve();
+	static void ClearNumberedPropLists(); // empty all properties in numbered prop lists. Used on game clear to ensure prop lists with circular references get cleared.
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
 	void AcquireNumber(); // acquire a number and add to internal list
@@ -232,8 +233,14 @@ protected:
 class C4PropListScript: public C4PropList
 {
 public:
-	C4PropListScript(C4PropList * prototype = 0): C4PropList(prototype) { }
+	C4PropListScript(C4PropList * prototype = 0) : C4PropList(prototype) { PropLists.Add(this);  }
+	virtual ~C4PropListScript() { PropLists.Remove(this); }
 	bool Delete() { return true; }
+
+	static void ClearScriptPropLists(); // empty all properties in script-created prop lists. Used on game clear to ensure prop lists with circular references get cleared.
+
+protected:
+	static C4Set<C4PropListScript *> PropLists;
 };
 
 // PropLists declared in the game data

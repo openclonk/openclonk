@@ -134,6 +134,20 @@ void C4PropListNumbered::ClearShelve()
 	ShelvedPropLists.clear();
 }
 
+void C4PropListNumbered::ClearNumberedPropLists()
+{
+	// empty all proplists to ensure safe deletion of proplists with circular references
+	// note that this the call to Clear() might delete some prop lists. So it is assumed that
+	// PropLists does not shrink its table as the number of values goes down
+	C4PropListNumbered *const* p_next = PropLists.First(), *const* p;
+	while ((p = p_next))
+	{
+		p_next = PropLists.Next(p);
+		// check *p since it might have been deleted by clearing the previous prop list
+		if (*p) (*p)->Clear();
+	}
+}
+
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
@@ -188,6 +202,28 @@ C4PropListNumbered::~C4PropListNumbered()
 		PropLists.Remove(this);
 	else
 		Log("removing numbered proplist without number");
+}
+
+void C4PropListScript::ClearScriptPropLists()
+{
+	// empty all proplists to ensure safe deletion of proplists with circular references
+	// note that this the call to Clear() might delete some prop lists. So it is assumed that
+	// PropLists does not shrink its table as the number of values goes down
+	// However, some values may be skipped due to table consolidation. Just fix it by iterating over the table until it's empty.
+	C4PropListScript *const* p_next, *const* p;
+	while ((p_next = PropLists.First()))
+	{
+		while ((p = p_next))
+		{
+			p_next = PropLists.Next(p);
+			// check *p since it might have been deleted by clearing the previous prop list
+			if (*p)
+			{
+				C4Value ref(C4VPropList(*p)); // keep a reference because prop list might delete itself within clearing method otherwise
+				(*p)->Clear();
+			}
+		}
+	}
 }
 
 void C4PropListStatic::RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const
@@ -609,7 +645,7 @@ C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 	return P_LAST;
 }
 
-int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
+int32_t C4PropList::GetPropertyInt(C4PropertyName n, int32_t default_val) const
 {
 	C4String * k = &Strings.P[n];
 	if (Properties.Has(k))
@@ -618,9 +654,9 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	}
 	if (GetPrototype())
 	{
-		return GetPrototype()->GetPropertyInt(n);
+		return GetPrototype()->GetPropertyInt(n, default_val);
 	}
-	return 0;
+	return default_val;
 }
 
 C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
@@ -799,4 +835,12 @@ template<> template<>
 unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * const & e)
 {
 	return C4Set<C4PropListNumbered *>::Hash(static_cast<int>(reinterpret_cast<intptr_t>(e)));
+}
+
+template<> template<>
+unsigned int C4Set<C4PropListScript *>::Hash<C4PropListScript *>(C4PropListScript * const & e)
+{
+	// since script prop lists are only put in the set for reference keeping, just hash by pointer
+	// but use only some of the more significant bits because 
+	return reinterpret_cast<unsigned int>(e) / 63;
 }
