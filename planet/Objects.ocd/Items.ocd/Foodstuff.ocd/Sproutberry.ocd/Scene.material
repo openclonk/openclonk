@@ -1,10 +1,10 @@
-material Sproutberry
+material Sproutberry: NormalMap
 {
 	receive_shadows off
 	
-	technique
+	technique 0
 	{
-		pass
+		pass 0
 		{
 			cull_hardware none
 
@@ -14,13 +14,20 @@ material Sproutberry
 			emissive 0.000000 0.000000 0.000000 1.000000
 			scene_blend alpha_blend
 			depth_write off
-			texture_unit
+			
+			texture_unit base
 			{
 				texture SproutBerries.png
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex source1 src_texture src_texture
 			}
+			
+			texture_unit normal
+            {
+                texture SproutBerriesNormals.png
+                tex_address_mode wrap
+            }
 		}
 	}
 }
