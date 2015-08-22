@@ -1,0 +1,15 @@
+[DefCore]
+id=Flower
+Version=6,0
+Category=C4D_StaticBack
+Width=14
+Height=10
+Offset=-7,-5
+Vertices=2
+VertexX=0,0
+VertexY=0,11
+VertexCNAT=16,8
+Mass=1
+StretchGrowth=1
+Oversize=1
+Float=1

@@ -1,0 +1,65 @@
+material flower
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+			cull_hardware none
+		
+			ambient 1.0 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0 1.0
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture flower.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material flower1: flower
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				texture flower1.png
+			}
+		}
+	}
+}
+
+material flower2: flower
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				texture flower2.png
+			}
+		}
+	}
+}
+
+material flower3: flower
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				texture flower3.png
+			}
+		}
+	}
+}
