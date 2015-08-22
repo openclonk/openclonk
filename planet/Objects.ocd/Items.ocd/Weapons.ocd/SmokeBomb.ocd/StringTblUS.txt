@@ -1,0 +1,3 @@
+Name=Smoke bomb
+Description=Spreads smoke.
+UsageHelp=Ignite to start spreading smoke.
