@@ -31,7 +31,7 @@ public func DummyDefinition()
 
 /*-- Ground Hitting --*/
 
-private func Hit2()
+private func Hit()
 {
 	Sound("GlassHit?");
 }
@@ -44,7 +44,7 @@ private func Hit2()
 	// Cast some particles.
 		// TODO?
 	// Sound effects.
-	Sound("GlassHit?");
+	Sound("GlassBreak");
 	Sound("Inflame");
 	Explode(10, true);
 }
