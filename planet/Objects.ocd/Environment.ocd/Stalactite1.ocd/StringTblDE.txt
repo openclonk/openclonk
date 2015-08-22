@@ -1,2 +1,2 @@
-Name=Stalactite1
-Description=Hangs from the ceiling
+Name=Stalactite
+Description=Hängt von Decken.
