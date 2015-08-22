@@ -236,6 +236,10 @@ private func InitLorries()
 		if (!Random(8))
 			lorry->CreateContents(IronBomb, RandomX(1, 2));
 		if (!Random(8))
+			lorry->CreateContents(Lantern, RandomX(1, 2));
+		if (!Random(8))
+			lorry->CreateContents(SmokeBomb, RandomX(1, 2));
+		if (!Random(8))
 			lorry->CreateContents(WallKit, 1);
 		if (!Random(8))
 		{
@@ -256,6 +260,8 @@ private func InitLorries()
 		lorry->CreateContents(WindBag, 1);
 		lorry->CreateContents(GrenadeLauncher);
 		lorry->CreateContents(IronBomb, 4);
+		lorry->CreateContents(Lantern, 2);
+		lorry->CreateContents(SmokeBomb, 2);
 	}
 	return;
 }

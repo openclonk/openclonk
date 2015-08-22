@@ -31,7 +31,7 @@ public func Fuse()
 
 protected func Hit()
 {
-	Sound("WoodHit?");
+	Sound("MetalHit?");
 	return;
 }
 
