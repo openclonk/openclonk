@@ -7,10 +7,18 @@
 
 local swarm_master;
 local swarm_count;
+local swarm;
 
 private func Initialize()
 {
 	SetPosition(0,0);
+}
+
+public func SwarmCall(string func, par1, par2, par3, par4, par5, par6, par7, par8, par9)
+{
+	for (var insect in swarm)
+		if (insect)
+			insect->Call(func, par1, par2, par3, par4, par5, par6, par7, par8, par9);
 }
 
 public func SetMaster(object new_master)
@@ -45,6 +53,12 @@ public func GetSwarmCenter(proplist coordinates)
 	coordinates.y = swarm_master->GetY();
 }
 
+public func AddSwarmMember(object insect)
+{
+	if (!swarm) swarm = CreateArray();
+	swarm[GetLength(swarm)] = insect;
+}
+
 /* Saving */
 
 public func SaveScenarioObject(proplist props)
@@ -63,6 +77,5 @@ public func SaveScenarioObject(proplist props)
 		BoundBy(swarm_master->GetY()-swarm_range, 0, LandscapeHeight()-swarm_range));
 	return true;
 }
-
 
 local Name = "$Name$";

@@ -5,14 +5,13 @@
 	A small annoying being.
 */
 
-#include Library_Insect
 #include Library_InsectSwarm
 
 local lib_swarm_standard = 20;
 local lib_insect_max_dist = 50;
 local lib_insect_nocturnal = true;
 
-protected func Initialize()
+private func Initialize()
 {
 	SetAction("Fly");
 	SetPhase(Random(3));

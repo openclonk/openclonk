@@ -226,6 +226,9 @@ private func MoveToTarget()
 	// Priority is always to move to an interesting spot
 	if (!GetAttraction(coordinates))
 	{
+		// Insect may have died
+		if (!this || !GetAlive()) return;
+
 		if (!lib_insect_max_dist)
 			coordinates.x = Random(LandscapeWidth());
 		else
@@ -239,6 +242,9 @@ private func MoveToTarget()
 		}
 		coordinates.y = GetHorizonHeight(coordinates.x)- 30 - Random(60);
 	}
+	// Insect may have died
+	if (!this || !GetAlive()) return;
+
 	SetCommand("MoveTo", nil, coordinates.x, coordinates.y, nil, true);
 	AppendCommand("Call", this, nil,nil,nil,nil, "MissionComplete");
 }

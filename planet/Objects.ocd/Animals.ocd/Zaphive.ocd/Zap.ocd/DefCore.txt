@@ -1,0 +1,16 @@
+[DefCore]
+id=Zap
+Version=6,1
+Category=C4D_Living
+ContactCalls=1
+Width=2
+Height=2
+Offset=-1,-1
+Mass=1
+Vertices=4
+VertexX=0,0,-1,1
+VertexY=-1,1,0,0
+VertexCNAT=4,8,1,2
+VertexFriction=100,100,100,100
+Float=1
+BorderBound=7
