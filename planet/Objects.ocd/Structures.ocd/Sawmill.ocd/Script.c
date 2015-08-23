@@ -166,7 +166,7 @@ private func SpinOn(int call)
 	if (call == 2) spin = 50;
 	if (call == 3) { spin = 30; SetMeshMaterial("SawmillBlade.Spin", 2); }
 
-	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), GetAnimationLength("work"), 0, spin, ANIM_Loop));
+	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
 
 	if (call < 3) ScheduleCall(this, "SpinOn", this.SpinStep, nil, call+1);
 	else Sound("SawmillRipcut", nil, nil, nil, +1);
@@ -186,7 +186,7 @@ private func SpinOff(int call, int animation_no)
 		return;
 	}
 
-	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), GetAnimationLength("work"), 0, spin, ANIM_Loop));
+	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
 
 	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
 }
