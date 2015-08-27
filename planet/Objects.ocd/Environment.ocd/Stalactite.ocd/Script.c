@@ -2,7 +2,7 @@
 	Stalactite
 	Hangs from the ceiling
 
-	@author Armin, Win
+	@author Armin, Win, Zapper
 */
 
 public func Construction()
@@ -44,6 +44,18 @@ private func Hit()
 	
 	CreateParticle("SmokeDirty", PV_Random(-width, width), PV_Random(0, height), PV_Random(-5, 5), PV_Random(-5, 15), PV_Random(10, 60), particles, 200);
 	Sound("Rockfall*");
+
+	for (var i = 0; i < 4; i++)
+	{
+		var fragment = CreateObject(Rock, 0, height / 2, NO_OWNER);
+		fragment.Collectible = false;
+		fragment->SetController(GetController());
+		fragment->SetCon(50);
+		fragment->SetSpeed(RandomX(-15, 15), RandomX(-25, 10));
+		fragment->SetRDir(RandomX(-10, 10));
+		fragment->FadeOut(390, true);
+		fragment->SetClrModulation(this->GetClrModulation());
+	}
 	RemoveObject();
 	return true;
 }
