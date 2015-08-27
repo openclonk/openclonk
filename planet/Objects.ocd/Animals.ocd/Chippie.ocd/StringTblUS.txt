@@ -1,0 +1,2 @@
+Name=Chippie
+Description=Small, lovely creatures.

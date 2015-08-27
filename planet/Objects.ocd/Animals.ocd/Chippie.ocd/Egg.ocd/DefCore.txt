@@ -1,0 +1,20 @@
+[DefCore]
+id=Chippie_Egg
+Version=6,1
+Category=C4D_Object
+Width=6
+Height=6
+Offset=-3,-3
+Vertices=4
+VertexX=0, 0, 2, -2
+VertexY=0, 2, -2, -2
+VertexFriction=20, 20, 20, 20
+VertexCNAT=0, 15, 15, 15
+Value=1
+Mass=10
+Components=Chippie_Egg=1
+Projectile=1
+Rotate=1
+IncompleteActivity=1
+StretchGrowth=1
+
