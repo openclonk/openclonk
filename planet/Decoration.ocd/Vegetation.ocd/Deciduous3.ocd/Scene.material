@@ -1,0 +1,40 @@
+material deciduous3_leaves_1
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			cull_hardware none
+			alpha_rejection greater_equal 128
+
+            diffuse 1.0 1.0 1.0
+
+            texture_unit 
+            {
+                texture leaves.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
+
+material deciduous3_trunk_1
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			diffuse 1.0 1.0 1.0
+
+            texture_unit
+            {
+                texture trunk.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
