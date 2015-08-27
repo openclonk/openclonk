@@ -1,2 +1,0 @@
-Name=TinyStalactite
-Description=Covers up the base of stalactites
