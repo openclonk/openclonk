@@ -113,6 +113,12 @@
 		<li><emlink href="script/Effects.html">Effects</emlink></li>
 		<li><emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
 		<li><emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
+		<li><emlink href="script/SoundModifiers.html">Sound Modifiers</emlink></li>
+		<li>Libraries
+			<ul>
+				<text><emlink href="script/Shape.html">Shape</emlink></text>
+			</ul>
+		</li>
 <!-- Insert Functions here -->
 	</ul>
 	</li>

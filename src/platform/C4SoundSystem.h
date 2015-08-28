@@ -21,6 +21,7 @@
 #define INC_C4SoundSystem
 
 #include <C4Group.h>
+#include <C4SoundModifiers.h>
 
 const int32_t
 	C4MaxSoundName=100,
@@ -32,6 +33,7 @@ const int32_t SoundUnloadTime=60, SoundMaxUnloadSize=100000;
 
 class C4SoundInstance;
 class C4SoundEffect;
+class C4SoundModifier;
 
 class C4SoundSystem
 {
@@ -41,26 +43,29 @@ public:
 	void Clear();
 	void Execute();
 	int32_t LoadEffects(C4Group &hGroup);
-	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0);
+	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
 	C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
+	C4SoundInstance *GetFirstInstance() const;
+	C4SoundInstance *GetNextInstance(C4SoundInstance *prev) const;
 	bool Init();
 	void ClearPointers(C4Object *pObj);
+
+	C4SoundModifierList Modifiers;
 protected:
 	C4Group SoundFile;
-	C4SoundEffect *FirstSound;
+	C4SoundEffect *FirstSound; // TODO: Add a hash map for sound lookup. Also add a global list for all running sound instances.
 	void ClearEffects();
 	C4SoundEffect* GetEffect(const char *szSound);
 	int32_t RemoveEffect(const char *szFilename);
 };
 
-C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0);
-C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0);
+C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume = 100, int32_t iCustomFallofDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
 C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj);
 void StopSoundEffect(const char *szSndName, C4Object *pObj);
 void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel);
 void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan);
 void SoundPitch(const char *szSndName, C4Object *pObj, int32_t iPitch);
 void SoundUpdate(C4SoundInstance *inst, int32_t iLevel, int32_t iPitch);
-
 
 #endif

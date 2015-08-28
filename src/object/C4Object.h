@@ -136,7 +136,7 @@ public:
 	int32_t Breath;
 	int32_t InMat; // SyncClearance-NoSave //
 	uint32_t Color;
-	int32_t Audible, AudiblePan; // NoSave //
+	int32_t Audible, AudiblePan, AudiblePlayer; // NoSave //
 	int32_t lightRange;
 	int32_t lightFadeoutRange;
 	uint32_t lightColor;
@@ -232,7 +232,7 @@ public:
 	          C4Real nxdir, C4Real nydir, C4Real nrdir, int32_t iController);
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	virtual void Denumerate(C4ValueNumbers *);
-	void DrawLine(C4TargetFacet &cgo);
+	void DrawLine(C4TargetFacet &cgo, int32_t at_player);
 	bool SetPhase(int32_t iPhase);
 	void AssignRemoval(bool fExitContents=false);
 	enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2 };
@@ -329,7 +329,7 @@ public:
 	void SetAlive(bool Alive) { this->Alive = Alive; SetOCF(); }
 	bool GetAlive() const { return Alive; }
 	void UpdateLight();
-	void SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY);
+	void SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player);
 	bool IsVisible(int32_t iForPlr, bool fAsOverlay) const;  // return whether an object is visible for the given player
 	void SetRotation(int32_t nr);
 	void PrepareDrawing() const;  // set blit modulation and/or additive blitting

@@ -31,8 +31,13 @@
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 #	ifdef __APPLE__
 #		include <OpenAL/al.h>
+#		include <OpenAL/alc.h>
+#		include <OpenAL/alext.h>
+#		include <OpenAL/efx-presets.h>
 #	else
 #		include <al.h>
+#		include <alc.h>
+#		include <alext.h>
 #	endif
  	typedef ALuint C4SoundHandle;
 #	ifdef _WIN32

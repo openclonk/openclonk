@@ -86,6 +86,7 @@ static C4GameParameters GameParameters;
 static C4ScenarioParameterDefs GameScenarioParameterDefs;
 static C4ScenarioParameters GameStartupScenarioParameters;
 static C4RoundResults GameRoundResults;
+static C4Value GameGlobalSoundModifier;
 
 C4Game::C4Game():
 		ScenarioParameterDefs(GameScenarioParameterDefs),
@@ -101,7 +102,8 @@ C4Game::C4Game():
 		pFileMonitor(NULL),
 		pSec1Timer(new C4GameSec1Timer()),
 		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
-		fQuitWithError(false)
+		fQuitWithError(false),
+		GlobalSoundModifier(GameGlobalSoundModifier)
 {
 	Default();
 }
@@ -480,6 +482,9 @@ bool C4Game::Init()
 	// Gamma
 	pDraw->ApplyGamma();
 
+	// Sound modifier from savegames
+	if (GlobalSoundModifier) SetGlobalSoundModifier(GlobalSoundModifier._getPropList());
+
 	// Message board and upper board
 	if (!Application.isEditor)
 	{
@@ -617,6 +622,7 @@ void C4Game::Clear()
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
+	SetGlobalSoundModifier(NULL);
 	Application.SoundSystem.Init(); // clear it up and re-init it for startup menu use
 
 	// global fullscreen class is not cleared, because it holds the carrier window
@@ -1654,6 +1660,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
 		pComp->Value(mkNamingAdapt(fResortAnyObject,      "ResortAnyObj",          false));
 		pComp->Value(mkNamingAdapt(iMusicLevel,           "MusicLevel",            100));
+		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalSoundModifier, numbers),   "GlobalSoundModifier", C4Value()));
 		pComp->Value(mkNamingAdapt(NextMission,           "NextMission",           StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionText,       "NextMissionText",       StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
@@ -3707,4 +3714,21 @@ void C4Game::SetDefaultGamma()
 		else
 			pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRamp);
 	}
+}
+
+void C4Game::SetGlobalSoundModifier(C4PropList *new_modifier)
+{
+	// set in prop list (for savegames) and in sound system::
+	C4SoundModifier *mod;
+	if (new_modifier)
+	{
+		GlobalSoundModifier.SetPropList(new_modifier);
+		mod = ::Application.SoundSystem.Modifiers.Get(new_modifier, true);
+	}
+	else
+	{
+		GlobalSoundModifier.Set0();
+		mod = NULL;
+	}
+	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, NO_OWNER);
 }

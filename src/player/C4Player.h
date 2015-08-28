@@ -137,6 +137,8 @@ public:
 	class C4MessageBoardQuery *pMsgBoardQuery;
 	// BigIcon
 	C4FacetSurface BigIcon;
+	// Sound
+	C4Value SoundModifier;
 	// Dynamic list
 	C4Player *Next;
 
@@ -205,6 +207,7 @@ public:
 	bool IsInvisible() const;
 	bool IsViewLocked() const { return ViewLock; } // return if view is fixed to cursor, so scrolling is not allowed
 	void SetViewLocked(bool to_val); // lock or unlock free scrolling for player
+	void SetSoundModifier(C4PropList *new_modifier); // set modifier to be applied to all new sounds being played in a player's viewport
 
 protected:
 	void ClearControl();

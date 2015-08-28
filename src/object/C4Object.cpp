@@ -193,7 +193,8 @@ void C4Object::Default()
 	OnFire=0;
 	InLiquid=0;
 	EntranceStatus=0;
-	Audible=0;
+	Audible=AudiblePan=0;
+	AudiblePlayer = NO_OWNER;
 	t_contact=0;
 	OCF=0;
 	Action.Default();
@@ -302,7 +303,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	UpdateFace(true);
 
 	// Initial audibility
-	Audible=::Viewports.GetAudibility(GetX(), GetY(), &AudiblePan);
+	Audible=::Viewports.GetAudibility(GetX(), GetY(), &AudiblePan, 0, &AudiblePlayer);
 
 	// Initial OCF
 	SetOCF();
@@ -1885,7 +1886,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (!IsVisible(iByPlayer, !!eDrawMode)) return;
 
 	// Line
-	if (Def->Line) { DrawLine(cgo); return; }
+	if (Def->Line) { DrawLine(cgo, iByPlayer); return; }
 
 	// background particles (bounds not checked)
 	if (BackParticles) BackParticles->Draw(cgo, this);
@@ -1905,7 +1906,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			fYStretchObject=true;
 
 	// Set audibility
-	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY());
+	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY(), iByPlayer);
 
 	// Output boundary
 	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
@@ -2201,15 +2202,15 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 #endif
 }
 
-void C4Object::DrawLine(C4TargetFacet &cgo)
+void C4Object::DrawLine(C4TargetFacet &cgo, int32_t at_player)
 {
 	// Nothing to draw if the object has less than two vertices
 	if (Shape.VtxNum < 2)
 		return;
 #ifndef USE_CONSOLE
 	// Audibility
-	SetAudibilityAt(cgo, Shape.VtxX[0],Shape.VtxY[0]);
-	SetAudibilityAt(cgo, Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1]);
+	SetAudibilityAt(cgo, Shape.VtxX[0], Shape.VtxY[0], at_player);
+	SetAudibilityAt(cgo, Shape.VtxX[Shape.VtxNum - 1], Shape.VtxY[Shape.VtxNum - 1], at_player);
 	// additive mode?
 	PrepareDrawing();
 	// Draw line segments
@@ -4147,13 +4148,18 @@ void C4Object::UpdateLight()
 	if (Landscape.pFoW) Landscape.pFoW->Add(this);
 }
 
-void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
+void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY, int32_t player)
 {
 	// target pos (parallax)
 	float offX, offY, newzoom;
 	GetDrawPosition(cgo, iX, iY, cgo.Zoom, offX, offY, newzoom);
-	Audible = Max<int>(Audible, Clamp(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100));
-	AudiblePan = Clamp<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
+	int32_t audible_at_pos = Clamp(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100);
+	if (audible_at_pos > Audible)
+	{
+		Audible = audible_at_pos;
+		AudiblePan = Clamp<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
+		AudiblePlayer = player;
+	}
 }
 
 bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const

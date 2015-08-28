@@ -51,6 +51,12 @@
           <desc>Pitch modification between -90 and 1000. Values larger than zero let the sound play the faster and at a higher pitch. The resulting speed multiplication factor is (pitch + 100) / 100.</desc>
           <optional />
         </param>
+        <param>
+          <type>proplist</type>
+          <name>modifier</name>
+          <desc>Sound modifier for special effects such as reverb or echo. See <emlink href="script/SoundModifiers.html">Sound modifiers</emlink>.</desc>
+          <optional />
+        </param>
 	</params>
     </syntax>
     <desc>Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
@@ -63,6 +69,7 @@
     </examples>
     <related><funclink>SoundAt</funclink></related>
     <related><funclink>Music</funclink></related>
+    <related><emlink href="script/SoundModifiers.html">Sound modifiers</emlink></related>
   </func>
   <author>Sven2</author><date>2002-08</date>
 </funcs>

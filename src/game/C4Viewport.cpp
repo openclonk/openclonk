@@ -1006,7 +1006,7 @@ C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer, C4Viewport* pPrev)
 	return NULL;
 }
 
-int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius)
+int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius, int32_t *outPlayer)
 {
 	// default audibility radius
 	if (!iAudibilityRadius) iAudibilityRadius = C4AudibilityRadius;
@@ -1015,8 +1015,12 @@ int32_t C4ViewportList::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 	{
 		float distanceToCenterOfViewport = Distance(cvp->GetViewCenterX(),cvp->GetViewCenterY(),iX,iY);
-		iAudible = Max( iAudible,
-		                Clamp<int32_t>(100-100*distanceToCenterOfViewport/C4AudibilityRadius,0,100) );
+		int32_t audibility = Clamp<int32_t>(100 - 100 * distanceToCenterOfViewport / C4AudibilityRadius, 0, 100);
+		if (audibility > iAudible)
+		{
+			iAudible = audibility;
+			if (outPlayer) *outPlayer = cvp->Player;
+		}
 		*iPan += (iX-(cvp->GetViewCenterX())) / 5;
 	}
 	*iPan = Clamp<int32_t>(*iPan, -100, 100);

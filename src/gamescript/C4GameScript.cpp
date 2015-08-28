@@ -485,7 +485,7 @@ static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nil
 	return C4Void();
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -503,6 +503,12 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 	// default sound level
 	if (iLevel.IsNil() || iLevel>100)
 		iLevel=100;
+	// modifier from prop list
+	C4SoundModifier *modifier;
+	if (modifier_props)
+		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	else
+		modifier = NULL;
 	// target object
 	C4Object *pObj = Object(_this);
 	if (pObj)
@@ -515,7 +521,7 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance, long iPitch)
+static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -533,6 +539,12 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 	// default sound level
 	if (iLevel.IsNil() || iLevel>100)
 		iLevel=100;
+	// modifier from prop list
+	C4SoundModifier *modifier;
+	if (modifier_props)
+		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	else
+		modifier = NULL;
 	// target object
 	C4Object *pObj = NULL;
 	if (!fGlobal) pObj = Object(_this);
@@ -549,7 +561,7 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 		else
 		{
 			// try to play effect
-			StartSoundEffect(FnStringPar(szSound), !!iLoop, iLevel, pObj, iCustomFalloffDistance, iPitch);
+			StartSoundEffect(FnStringPar(szSound), !!iLoop, iLevel, pObj, iCustomFalloffDistance, iPitch, modifier);
 		}
 	}
 	else
@@ -557,6 +569,40 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 		StopSoundEffect(FnStringPar(szSound), pObj);
 	}
 	// always return true (network safety!)
+	return true;
+}
+
+static bool FnChangeSoundModifier(C4PropList * _this, C4PropList *modifier_props, bool release)
+{
+	// internal function to be used by sound library: Updates sound modifier
+	C4SoundModifier *modifier = Application.SoundSystem.Modifiers.Get(modifier_props, false);
+	// modifier not found. May be due to savegame resume.
+	// In that case, creation/updates will happen automatically next time Sound() is called
+	// always return true for sync safety because the internal C4SoundModifierList is not synchronized
+	if (!modifier) return true;
+	if (release)
+		modifier->Release();
+	else
+		modifier->Update();
+	return true;
+}
+
+static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, Nillable<long> at_player)
+{
+	// set modifier to be applied to all future sounds
+	if (at_player.IsNil())
+	{
+		// no player given: Global modifier for all players.
+		Game.SetGlobalSoundModifier(modifier_props);
+	}
+	else
+	{
+		// modifier for all viewports of a player
+		C4Player *plr = ::Players.Get(at_player);
+		if (!plr) return false;
+		plr->SetSoundModifier(modifier_props);
+	}
+	// always true on valid params for sync safety
 	return true;
 }
 
@@ -2648,6 +2694,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CheckConstructionSite", FnCheckConstructionSite);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "SoundAt", FnSoundAt);
+	AddFunc(pEngine, "ChangeSoundModifier", FnChangeSoundModifier);
+	AddFunc(pEngine, "SetGlobalSoundModifier", FnSetGlobalSoundModifier);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
 	AddFunc(pEngine, "SetPlayList", FnSetPlayList);
@@ -2952,6 +3000,11 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "ATTACH_Front"              ,C4V_Int,      C4ATTACH_Front },
 	{ "ATTACH_Back"               ,C4V_Int,      C4ATTACH_Back },
 	{ "ATTACH_MoveRelative"       ,C4V_Int,      C4ATTACH_MoveRelative },
+
+	// sound modifier type
+	{ "C4SMT_Reverb"              ,C4V_Int,      C4SoundModifier::C4SMT_Reverb },
+	{ "C4SMT_Echo"                ,C4V_Int,      C4SoundModifier::C4SMT_Echo },
+	{ "C4SMT_Equalizer"           ,C4V_Int,      C4SoundModifier::C4SMT_Equalizer },
 
 	{ NULL, C4V_Nil, 0}
 };

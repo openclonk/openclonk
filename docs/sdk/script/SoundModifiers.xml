@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Sound modifiers</title>
+  <h>Sound modifiers</h>
+  <part>
+    <h>Usage</h>
+    <text>A number of different sound modifiers can be attached to sounds. Sound modifiers are accessed via script by passing a prop list defining them to the <funclink>Sound</funclink> script functions. Sample prop lists are already defined in the Ambience definition in Objects.ocd. If Objects.ocd is loaded, you can for example play the "Ding" sound with a reverb-effect:</text>
+    <code>Sound("Ding",,,,,,,Ambience.CaveModifier);</code>
+    <text>Custom modifiers may also be created using the prototype classes provided in the ambience object:</text>
+     
+<code>// Play "Ding" sound with an extra-long reverb modifier
+long_reverb_modifier = new Ambience.SoundModifier {
+	Type = C4SMT_Reverb,
+	Reverb_Decay_Time = 10000,
+};
+Sound("Ding",,,,,,,long_reverb_modifier);
+modifier->Release();</code>
+
+    <text>Sound modifiers are lazy-initialized, that is the filters are computed when the first sound with that effect is played. The engine also holds filters of any used modifiers attached to the used prop list in memory until released by the Release()-call provided by the ambience library, which wraps <funclink>ChangeSoundModifier</funclink> with appropriate parameters.</text>
+    <text>Since filter creation may cost some performance, it is recommended to create filter prop lists at round start and keep them for any effects. Please note that modifier lookup happens by prop list pointer only, not by its contents. Recreating and failing to release sound modifier prop lists therefore constitutes a memory-leak.</text>
+    <text>If sound modifiers are released, they are kept active until the last sound using them finishes. Note that for modifiers such as echo, this could still cut off sounds because the modifier outlasts the original sound (potentially forever for echo without decay).</text>
+    <text>Some existing modifiers may also be updated and updates reflected to the sounds played, even with those currently playing, by using the Update()-call such as in this example scenario script:</text>
+
+<code>static reverb_modifier;
+
+func Initialize()
+{
+	// Play "Ding" sound repeatedly and modify reverb
+	reverb_modifier = new Ambience.SoundModifier {
+		Type = C4SMT_Echo,
+		Echo_Feedback = 1000,
+	};
+	Sound("Ding",,,,1,,,reverb_modifier);
+	ScheduleCall(nil, this.Timer, 30, 99999);
+	return true;
+}
+
+func Timer()
+{
+	// Update effect every 30 frames
+	reverb_modifier.Echo_Feedback = Random(2) * 500;
+	reverb_modifier->Update();
+	return true;
+}</code>
+    <text>Note that runtime updating does not work for the reverb modifier in the openal-soft library.</text>
+  <part>
+  <h>Global modifiers</h>
+  <text>Global modifiers can be set using the <funclink>SetGlobalSoundModifier</funclink> (see function documentation for example). These modifiers are applied to all sounds played in the viewport of a player or all players that do not have a modifier yet. Please note that it is not possible to combine multiple modifiers on a single sound.</text>
+  </part>
+  </part>
+  <part>
+  <h>Property reference</h>
+  <text>The effect is selected from the Type-property, which may have the following values:</text>
+    <table>
+      <rowh>
+        <col>Constant</col>
+        <col>Effect</col>
+      </rowh>
+      <row>
+        <col>C4SMT_Reverb</col>
+        <col>Reverb effect caused by sound bouncing off walls in enclosed spaces.</col>
+      </row>
+      <row>
+        <col>C4SMT_Echo</col>
+        <col>Sound repeat as caused by loud sounds reflected in very large spaces.</col>
+      </row>
+      <row>
+        <col>C4SMT_Equalizer</col>
+        <col>Custom amplification of up to four definable frequency bands. Note: When running with OpenAL soft, only supported with version 1.16 or above (not shipped by default).</col>
+      </row>
+    </table>
+  <text>Each modifier has a number of parameters. These consult to standard parameters for the OpenAL EFX library by dividing all given integer values by 1000 to yield float values.</text>
+  <part><h>Reverb modifier</h>
+    <table>
+      <rowh>
+        <col>Property</col>
+        <col>Type</col>
+        <col>Default</col>
+        <col>Minmum</col>
+        <col>Maximum</col>
+        <col>Remarks</col>
+      </rowh>
+      <row>
+        <col>Reverb_Density</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>0</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Diffusion</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>0</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Gain</col>
+        <col>int</col>
+        <col>316</col>
+        <col>0</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_GainHF</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>0</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Decay_Time</col>
+        <col>int</col>
+        <col>2910</col>
+        <col>100</col>
+        <col>20000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Decay_HFRatio</col>
+        <col>int</col>
+        <col>1300</col>
+        <col>100</col>
+        <col>20000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Reflections_Gain</col>
+        <col>int</col>
+        <col>500</col>
+        <col>0</col>
+        <col>3160</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Reflections_Delay</col>
+        <col>int</col>
+        <col>15</col>
+        <col>0</col>
+        <col>300</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Late_Reverb_Gain</col>
+        <col>int</col>
+        <col>706</col>
+        <col>0</col>
+        <col>10000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Late_Reverb_Delay</col>
+        <col>int</col>
+        <col>22</col>
+        <col>0</col>
+        <col>100</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Air_Absorption_GainHF</col>
+        <col>int</col>
+        <col>994</col>
+        <col>892</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Room_Rolloff_Factor</col>
+        <col>int</col>
+        <col>0</col>
+        <col>0</col>
+        <col>10000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Reverb_Decay_HFLimit</col>
+        <col>bool</col>
+        <col>true</col>
+        <col></col>
+        <col></col>
+        <col></col>
+      </row>
+    </table>
+    </part>
+  <part><h>Echo modifier</h>
+    <table>
+      <rowh>
+        <col>Property</col>
+        <col>Type</col>
+        <col>Default</col>
+        <col>Minmum</col>
+        <col>Maximum</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>Echo_Delay</col>
+        <col>int</col>
+        <col>100</col>
+        <col>0</col>
+        <col>207</col>
+        <col>Time delay for first, centered echo.</col>
+      </row>
+      <row>
+        <col>Echo_LRDelay</col>
+        <col>int</col>
+        <col>100</col>
+        <col>0</col>
+        <col>404</col>
+        <col>Time delay for secondary, panning echo.</col>
+      </row>
+      <row>
+        <col>Echo_Damping</col>
+        <col>int</col>
+        <col>500</col>
+        <col>0</col>
+        <col>990</col>
+        <col>Amount of high-frequency damping.</col>
+      </row>
+      <row>
+        <col>Echo_Feedback</col>
+        <col>int</col>
+        <col>500</col>
+        <col>0</col>
+        <col>1000</col>
+        <col>Amount of original signal fed into the echo. A value of 1000 would lead to an infinite echo.</col>
+      </row>
+      <row>
+        <col>Echo_Spread</col>
+        <col>int</col>
+        <col>-1000</col>
+        <col>-1000</col>
+        <col>+1000</col>
+        <col>Controls the amount of panning left and right, with the sign determining if the first jump is left or right. A value of zero means no echo panning.</col>
+      </row>
+    </table>
+    </part>
+  <part><h>Equalizer modifier</h>
+    <table>
+      <rowh>
+        <col>Property</col>
+        <col>Type</col>
+        <col>Default</col>
+        <col>Minmum</col>
+        <col>Maximum</col>
+        <col>Remarks</col>
+      </rowh>
+      <row>
+        <col>Equalizer_Low_Gain</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>126</col>
+        <col>7943</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Low_Cutoff</col>
+        <col>int</col>
+        <col>200000</col>
+        <col>50000</col>
+        <col>800000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid1_Gain</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>126</col>
+        <col>7943</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid1_Center</col>
+        <col>int</col>
+        <col>500000</col>
+        <col>200000</col>
+        <col>3000000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid1_Width</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>10</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid2_Gain</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>126</col>
+        <col>7943</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid2_Center</col>
+        <col>int</col>
+        <col>3000000</col>
+        <col>1000000</col>
+        <col>8000000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_Mid2_Width</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>10</col>
+        <col>1000</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_High_Gain</col>
+        <col>int</col>
+        <col>1000</col>
+        <col>126</col>
+        <col>7943</col>
+        <col></col>
+      </row>
+      <row>
+        <col>Equalizer_High_Cutoff</col>
+        <col>int</col>
+        <col>6000000</col>
+        <col>4000000</col>
+        <col>16000000</col>
+        <col></col>
+      </row>
+    </table>
+    </part>
+  </part>
+  <author>Sven2</author><date>2015-07</date>
+</doc>

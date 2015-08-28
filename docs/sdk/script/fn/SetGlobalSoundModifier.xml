@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetGlobalSoundModifier</title>
+    <category>Effects</category>
+    <subcat>Sound</subcat>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>name</name>
+          <desc>Modifier to be applied to all sounds.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>If non-nil: Modifier is applied to sounds played in viewports owned by this player.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets a <emlink href="script/SoundModifiers.html">sound modifier</emlink> to be applied to all sounds played that do not have a modifier already set.</desc>
+    <remark>Modifier precendence from highest to lowest is:
+       <ul><li>Modifier given as parameter to <funclink>Sound</funclink> or <funclink>SoundAt</funclink></li>
+      <li>Modifier assigned to the player owning the viewport which has its center closest to the sound source</li>
+      <li>Global modifier (as set by SetGlobalSoundModifier(modifier, nil);)</li></ul>
+      Only one modifier is applied at the time. It is not possible to combine multiple modifiers.</remark>
+    <examples>
+      <example>
+        <code>func Timer()
+{
+  // Is there a player?
+  var player = <funclink>GetPlayerByIndex</funclink>(0, C4PT_User);
+  if (player >= 0)
+  {
+    // Is the player controlling a clonk in a cave?
+    var mod = nil;
+    var clonk = <funclink>GetCursor</funclink>(player);
+    if (clonk) if (clonk-><funclink>GetMaterial</funclink>() == <funclink>Material</funclink>("Tunnel"))
+    {
+      // Controlled clonk is in a cave - do some cave sounds!
+      mod = Ambience.CaveModifier;
+    }
+    SetGlobalSoundModifier(mod, player);
+  }
+}</code>
+        <text>Scenario timer script: When this function is called, it sets a cave reverb sound modifier whenever the clonk of the first player is in front of tunnel background.</text>
+      </example>
+    </examples>
+    <related><funclink>Sound</funclink>
+    <funclink>SoundAt</funclink>
+    <emlink href="script/SoundModifiers.html">Sound modifiers</emlink></related>
+  </func>
+  <author>Sven2</author><date>2015-08</date>
+</funcs>
