@@ -7,7 +7,7 @@ Author        Work(s)
 Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
 Clonkonaut      - Confirm*, FDie
 Checkmaty       - ProjectileHitLiving*
-ala             - Zap1-4, GlassBreak, Rockfall1-2, Waterdrop1-2
+ala             - Zap1-4, GlassBreak, Rockfall1-2, Waterdrop1-2, OrganicHit1-2
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
