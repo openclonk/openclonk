@@ -56,6 +56,8 @@ public func InitializeScriptPlayer(plr, team)
 	{
 		for(var obj in CreatureControl_yet_to_set)
 		{
+			if (!obj) continue;
+			
 			// Overwritten by the scripter?
 			if (obj->GetOwner() != NO_OWNER) continue;
 			obj->SetOwner(CreatureControl_animal_player);

@@ -12,15 +12,18 @@ local transform;
 
 local age;
 
-public func Place(int amount)
+public func Place(int amount, proplist area)
 {
+	var location = nil;
+	if (area) location = Loc_InArea(area->GetBoundingRectangle());
+
 	var owner = GetCreaturePlayer();
 	while(amount > 0)
 	{
 		var p = nil;
-		if(Random(2)) p = GetInEarthPosition(nil, Material("Tunnel"));
+		if(Random(2)) p = FindLocation(Loc_Tunnel(), location);
 		if(p == nil)
-			p = GetInEarthPosition();
+			p = FindLocation(Loc_Solid(), location);
 		if(p == nil)
 		{
 			--amount;

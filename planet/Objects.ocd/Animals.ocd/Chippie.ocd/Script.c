@@ -15,7 +15,8 @@ public func Construction()
 {
 	AddEffect("Activity", this, 1, 10, this);
 	SetAction("Walk");
-	SetCreatureControlled();
+	if (GetOwner() == NO_OWNER)
+		SetCreatureControlled();
 	energy_sucked = 0;
 	return true;
 }
