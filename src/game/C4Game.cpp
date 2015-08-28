@@ -228,8 +228,9 @@ bool C4Game::OpenScenario()
 #ifndef USE_CONSOLE
 #ifndef _DEBUG
 	if (C4S.Head.MissionAccess[0])
-		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
-			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+		if (!Application.isEditor)
+			if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
+				{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
 #endif
 #endif
 
