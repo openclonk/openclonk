@@ -36,7 +36,7 @@ public:
 	};
 
 	C4SoundModifier(C4PropList *in_props);
-	~C4SoundModifier();
+	virtual ~C4SoundModifier();
 
 private:
 	// associated prop list for script interface
