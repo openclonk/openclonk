@@ -1,4 +1,4 @@
-material Soniferous
+material Coniferous_AltMat
 {
 	receive_shadows on
 	technique
@@ -7,6 +7,7 @@ material Soniferous
 		{
 			cull_hardware none
 			scene_blend alpha_blend
+			depth_check off
 		
 			ambient 1.000000 1.000000 1.000000 1.000000
 			diffuse 1.000000 1.000000 1.000000 1.000000
@@ -15,7 +16,7 @@ material Soniferous
 			
 			texture_unit
 			{
-				texture Soniferous.png
+				texture coniferous2.png
 				tex_address_mode wrap
 				filtering trilinear
 			}
