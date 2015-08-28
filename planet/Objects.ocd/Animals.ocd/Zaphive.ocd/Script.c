@@ -69,6 +69,8 @@ private func Hit2()
 	// Could be instantly dead
 	if (zap)
 		zap->SetEnraged();
+	Sound("OrganicHit?");
+	CreateParticle("WoodChip", 0,0, PV_Random(-2,2), -4, PV_Random(36 * 3, 36 * 10), Particles_Straw(), 5);
 	RemoveObject();
 }
 
