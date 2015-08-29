@@ -63,7 +63,9 @@ public:
 	virtual void Update();
 
 	// effect is deleted when marked for release and no instances are running
-	void Release() { if (!instance_count) delete this; else released = true; }
+	void Release() {
+		if (!instance_count) delete this; else { released = true; props.Set0(); }
+	}
 	void AddRef() { ++instance_count; }
 	void DelRef() { if (!--instance_count && released) delete this; }
 	int32_t GetRefCount() const { return instance_count; }

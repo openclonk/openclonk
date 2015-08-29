@@ -600,6 +600,8 @@ void C4Game::Clear()
 	GameText.Clear();
 	RecordDumpFile.Clear();
 	RecordStream.Clear();
+	SetGlobalSoundModifier(NULL); // must be called before script engine clear
+	Application.SoundSystem.Modifiers.Clear(); // free some prop list pointers
 
 	PathFinder.Clear();
 	TransferZones.Clear();
@@ -623,7 +625,6 @@ void C4Game::Clear()
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
-	SetGlobalSoundModifier(NULL);
 	Application.SoundSystem.Init(); // clear it up and re-init it for startup menu use
 
 	// global fullscreen class is not cleared, because it holds the carrier window
