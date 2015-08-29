@@ -471,7 +471,7 @@ void C4SoundInstance::SetModifier(C4SoundModifier *new_modifier, bool is_global)
 			}
 			else
 			{
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 				alSource3i(iChannel, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 #endif
 			}

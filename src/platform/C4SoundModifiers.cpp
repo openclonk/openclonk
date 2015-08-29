@@ -25,7 +25,7 @@
 #include <C4Application.h>
 #include <C4Value.h>
 
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 static LPALGENEFFECTS alGenEffects;
 static LPALDELETEEFFECTS alDeleteEffects;
 static LPALISEFFECT alIsEffect;
@@ -51,13 +51,13 @@ static LPALGETAUXILIARYEFFECTSLOTFV alGetAuxiliaryEffectSlotfv;
 #endif
 
 C4SoundModifier::C4SoundModifier(C4PropList *in_props) : instance_count(0)
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	, effect(0u), slot(0u)
 #endif
 {
 	props.SetPropList(in_props);
 	Application.SoundSystem.Modifiers.Add(this);
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	Application.MusicSystem.SelectContext();
 	alGenEffects(1, &effect);
 	alGenAuxiliaryEffectSlots(1, &slot);
@@ -66,7 +66,7 @@ C4SoundModifier::C4SoundModifier(C4PropList *in_props) : instance_count(0)
 
 C4SoundModifier::~C4SoundModifier()
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	// failsafe effect removal
 	if (alIsEffect(effect))
 		alDeleteEffects(1, &effect);
@@ -78,7 +78,7 @@ C4SoundModifier::~C4SoundModifier()
 
 void C4SoundModifier::Update()
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	// update AL effect slot
 	if (slot)
 	{
@@ -92,7 +92,9 @@ void C4SoundModifier::Update()
 void C4SoundModifier::ApplyTo(ALuint source)
 {
 	// apply slot to source if valid
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	if (slot) alSource3i(source, AL_AUXILIARY_SEND_FILTER, slot, 0, AL_FILTER_NULL);
+#endif
 }
 
 float C4SoundModifier::GetFloatProp(C4PropertyName key, float ratio, float default_value)
@@ -112,14 +114,14 @@ bool C4SoundModifier::GetBoolProp(C4PropertyName key, bool default_value)
 C4SoundModifierReverb::C4SoundModifierReverb(C4PropList *in_props)
 	: C4SoundModifier(in_props)
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
 #endif
 }
 
 void C4SoundModifierReverb::Update()
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	// use the cave preset as default for the reverb modifier
 	Application.MusicSystem.SelectContext();
 	alEffectf(effect, AL_REVERB_DENSITY, GetFloatProp(P_Reverb_Density, 1000, 1.0f));
@@ -142,14 +144,14 @@ void C4SoundModifierReverb::Update()
 C4SoundModifierEcho::C4SoundModifierEcho(C4PropList *in_props)
 	: C4SoundModifier(in_props)
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_ECHO);
 #endif
 }
 
 void C4SoundModifierEcho::Update()
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	// use default OpenAL echo preset
 	Application.MusicSystem.SelectContext();
 	alEffectf(effect, AL_ECHO_DELAY, GetFloatProp(P_Echo_Delay, 1000, 0.1f));
@@ -164,14 +166,14 @@ void C4SoundModifierEcho::Update()
 C4SoundModifierEqualizer::C4SoundModifierEqualizer(C4PropList *in_props)
 	: C4SoundModifier(in_props)
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	alEffecti(effect, AL_EFFECT_TYPE, AL_EFFECT_EQUALIZER);
 #endif
 }
 
 void C4SoundModifierEqualizer::Update()
 {
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 	// use default OpenAL equalizer preset
 	Application.MusicSystem.SelectContext();
 	alEffectf(effect, AL_EQUALIZER_LOW_GAIN, GetFloatProp(P_Equalizer_Low_Gain, 1000, 1.0f));
@@ -197,7 +199,7 @@ C4SoundModifierList::C4SoundModifierList()
 void C4SoundModifierList::Init()
 {
 	is_initialized = false;
-#if AUDIO_TK == AUDIO_TK_OPENAL
+#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
 #define LOAD_ALPROC(x)  ((void *&)(x) = alGetProcAddress(#x))
 	Application.MusicSystem.SelectContext();
 	if (!alcIsExtensionPresent(Application.MusicSystem.GetDevice(), "ALC_EXT_EFX"))
