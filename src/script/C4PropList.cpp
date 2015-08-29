@@ -213,6 +213,7 @@ void C4PropListScript::ClearScriptPropLists()
 	C4PropListScript *const* p_next, *const* p;
 	while ((p_next = PropLists.First()))
 	{
+		size_t prev_size = PropLists.GetSize();
 		while ((p = p_next))
 		{
 			p_next = PropLists.Next(p);
@@ -222,6 +223,16 @@ void C4PropListScript::ClearScriptPropLists()
 				C4Value ref(C4VPropList(*p)); // keep a reference because prop list might delete itself within clearing method otherwise
 				(*p)->Clear();
 			}
+		}
+		if (PropLists.GetSize() >= prev_size)
+		{
+			// Looks like there's a rogue C4Value pointer somewhere.
+			// Could just delete the prop list and let ref counting do the job
+			// However, it might be better to keep the dead pointer to find the leak in debug mode
+#ifdef _DEBUG
+			assert(0);
+#endif
+			break;
 		}
 	}
 }
