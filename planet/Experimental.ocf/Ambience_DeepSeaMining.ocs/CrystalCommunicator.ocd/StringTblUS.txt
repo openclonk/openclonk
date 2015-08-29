@@ -1,2 +1,0 @@
-Name=Crystal communicator
-Description=Device for long range communication.

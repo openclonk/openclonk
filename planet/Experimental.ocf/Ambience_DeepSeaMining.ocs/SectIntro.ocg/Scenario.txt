@@ -1,5 +1,0 @@
-[Landscape]
-BottomOpen=0
-TopOpen=1
-MapZoom=20,0,5,20
-Sky=Clouds2

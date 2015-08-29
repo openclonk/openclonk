@@ -4,6 +4,8 @@ static g_chemical, g_cabin, g_sawmill, g_workshop, g_windmill, g_flagpole, npc_n
 
 func InitializeObjects()
 {
+	CreateObject(Ambience);
+	
 	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);

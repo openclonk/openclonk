@@ -33,6 +33,7 @@ protected func PostIntroInitialize()
 	}
 	
 	// Initialize different parts of the scenario.
+	CreateObject(Ambience);
 	InitEnvironment();
 	InitVegetation();
 	InitAnimals();

@@ -1,2 +1,0 @@
-Name=Kristallkommunikator
-Description=Gerät zur Langstreckenkommunikation

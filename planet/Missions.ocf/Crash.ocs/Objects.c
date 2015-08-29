@@ -2,6 +2,8 @@
 
 func InitializeObjects()
 {
+	CreateObject(Ambience);
+
 	CreateObject(Grass, 555, 550);
 	CreateObjectAbove(Grass, 533, 550);
 	CreateObjectAbove(Grass, 1306, 706);
