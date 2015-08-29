@@ -164,3 +164,9 @@ private func Hatch()
 	RemoveObject();
 	return true;
 }
+
+// If spawned via a meteor, use a cool green skin.
+public func GetMeteorSkin()
+{
+	return Meteor_Alien;
+}
