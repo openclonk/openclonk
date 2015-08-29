@@ -779,7 +779,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// try writing main file (usually {SCENARIO}/TODO.txt); if access is not possible, e.g. because scenario is packed, write to alternate file
 		const char *todo_filenames[] = { ::Config.Developer.TodoFilename, ::Config.Developer.AltTodoFilename };
 		bool success = false;
-		for (int i = 0; i < std::extent<decltype(todo_filenames)>::value; ++i)
+		for (int i = 0; i < static_cast<int>(std::extent<decltype(todo_filenames)>::value); ++i)
 		{
 			StdCopyStrBuf todo_filename(todo_filenames[i]);
 			int replacements = todo_filename.Replace("{SCENARIO}", Game.ScenarioFile.GetFullName().getData());

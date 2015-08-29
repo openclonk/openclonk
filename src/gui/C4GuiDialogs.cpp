@@ -814,8 +814,6 @@ namespace C4GUI
 	void FullscreenDialog::DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct)
 	{
 		// draw across fullscreen bounds - zoom 1px border to prevent flashing borders by blit offsets
-		Screen *pScr = GetScreen();
-		C4Rect &rcScreenBounds = pScr ? pScr->GetBounds() : GetBounds();
 		rFromFct.DrawFullScreen(cgo);
 	}
 

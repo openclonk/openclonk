@@ -1365,6 +1365,7 @@ void C4PlayerInfoListBox::UpdateSavegamePlayers(ListItem **ppCurrInList)
 				new PlayerListItem(this, -1, iInfoID, true, *ppCurrInList);
 		}
 		// 2do: none-label
+		(void) fAnyPlayers;
 	}
 
 }
@@ -1375,14 +1376,11 @@ void C4PlayerInfoListBox::UpdateReplayPlayers(ListItem **ppCurrInList)
 	if (!PlrListItemUpdate(ListItem::ID::PLI_REPLAY, 0, ppCurrInList))
 		new ReplayPlayersListItem(this, *ppCurrInList);
 	// players
-	bool fAnyPlayers = false;
 	C4PlayerInfo *pInfo; int32_t iInfoID=0;
 	while ((pInfo = Game.PlayerInfos.GetNextPlayerInfoByID(iInfoID)))
 	{
 		if (pInfo->IsInvisible()) continue;
 		iInfoID = pInfo->GetID();
-		// players are in the list
-		fAnyPlayers = true;
 		// show them
 		if (!PlrListItemUpdate(ListItem::ID::PLI_PLAYER, iInfoID, ppCurrInList))
 			new PlayerListItem(this, -1, iInfoID, false, *ppCurrInList);

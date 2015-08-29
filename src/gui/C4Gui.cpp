@@ -702,7 +702,7 @@ namespace C4GUI
 		// get dialog with matching handle
 		Dialog *pDlg;
 		for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
-			if (pDlg = pEl->GetDlg())
+			if ((pDlg = pEl->GetDlg()))
 				if (pDlg->pWindow && pDlg->pWindow->hWindow == hWindow)
 					return pDlg;
 		return NULL;

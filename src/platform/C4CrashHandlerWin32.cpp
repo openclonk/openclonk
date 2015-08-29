@@ -164,11 +164,15 @@ namespace {
 			}
 #ifdef __CRT_WIDE
 #	define ASSERTION_INFO_FORMAT "%ls"
+#	define ASSERTION_INFO_TYPE wchar_t *
 #else
 #	define ASSERTION_INFO_FORMAT "%s"
+#	define ASSERTION_INFO_TYPE char *
 #endif
 			LOG_DYNAMIC_TEXT("Additional information for the exception:\n    Assertion that failed: " ASSERTION_INFO_FORMAT "\n    File: " ASSERTION_INFO_FORMAT "\n    Line: %d\n",
-				exc->ExceptionRecord->ExceptionInformation[0], exc->ExceptionRecord->ExceptionInformation[1], exc->ExceptionRecord->ExceptionInformation[2]);
+				reinterpret_cast<ASSERTION_INFO_TYPE>(exc->ExceptionRecord->ExceptionInformation[0]),
+				reinterpret_cast<ASSERTION_INFO_TYPE>(exc->ExceptionRecord->ExceptionInformation[1]),
+				exc->ExceptionRecord->ExceptionInformation[2]);
 			break;
 		}
 
@@ -267,7 +271,8 @@ namespace {
 		if (SymInitialize(process, 0, true))
 		{
 			LOG_STATIC_TEXT("\nStack trace:\n");
-			STACKFRAME64 frame = {0};
+			STACKFRAME64 frame;
+			memset(&frame, 0, sizeof(STACKFRAME64));
 			DWORD image_type;
 			CONTEXT context = *exc->ContextRecord;
 			// Setup frame info

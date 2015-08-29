@@ -40,7 +40,7 @@ macro(__FINDAUDIO_FINDOPENAL)
 		pkg_check_modules(OggVorbis "vorbisfile>=1.3.2" "vorbis>=1.3.2" "ogg>=1.2.2")
 	else()
 		if(MSVC OR APPLE)
-			# We need OpenAL preferrably with alext.h.
+			# We need OpenAL preferably with alext.h.
 			find_path(OpenALExt_INCLUDE_DIRS alext.h PATH_SUFFIXES include/AL include/OpenAL include OpenAL)
 			if(OpenALExt_INCLUDE_DIRS)
 				set(HAVE_ALEXT TRUE)

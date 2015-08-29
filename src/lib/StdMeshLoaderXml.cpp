@@ -230,7 +230,7 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 		// Check quickly if all weight slots are used
 		if (vertex.bone_weight[StdMeshVertex::MaxBoneWeightCount - 1] != 0)
 		{
-			Error(FormatString("Vertex %d is influenced by more than %d bones", VertexIndex, StdMeshVertex::MaxBoneWeightCount), vertexboneassignment_elem);
+			Error(FormatString("Vertex %d is influenced by more than %d bones", VertexIndex, static_cast<int>(StdMeshVertex::MaxBoneWeightCount)), vertexboneassignment_elem);
 		}
 		for (size_t weight_index = 0; weight_index < StdMeshVertex::MaxBoneWeightCount; ++weight_index)
 		{

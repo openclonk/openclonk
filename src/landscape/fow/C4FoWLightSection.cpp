@@ -661,7 +661,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 #ifdef FAN_STEP_DEBUG
 				LogSilentF("Descend, b=%.010f, cross=%.010f/%.010f", b, crossX, crossY);
 #endif
-				assert(f);
+				assert(f); (void) f;
 				if (b <= threshold)
 				{
 					if (nextIt == --result.end())
@@ -702,14 +702,14 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			}
 
 			// We should only reach this place with a descend collision
-			assert(descendCollision);
+			assert(descendCollision); (void) descendCollision;
 
 			// Should never be parallel -- otherwise we wouldn't be here
 			// in the first place.
 			bool f = find_cross(lightLX, lightLY, tri.fanRX, tri.fanRY,
 								lightRX, lightRY, nextTri.fanLX, nextTri.fanLY,
 								&crossX, &crossY);
-			assert(f);
+			assert(f); (void) f;
 #ifdef FAN_STEP_DEBUG
 			LogSilentF("Collision, cross=%.02f/%.02f", crossX, crossY);
 #endif
@@ -722,7 +722,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			  continue;
 
 			// This should always follow an elimination, but better check
-			assert(beamCount > result.size());
+			assert(beamCount > static_cast<int>(result.size()));
 
 			C4FoWBeamTriangle newTriangle;
 			newTriangle.fanLX = crossX;

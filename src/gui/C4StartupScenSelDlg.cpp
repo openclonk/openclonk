@@ -682,7 +682,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 			const C4ScenarioParameterDefs *deflist = deflists[def_list_idx];
 			if (!deflist) continue;
 			const C4ScenarioParameterDef *def; size_t idx=0;
-			while (def = deflist->GetParameterDefByIndex(idx++))
+			while ((def = deflist->GetParameterDefByIndex(idx++)))
 			{
 				if (def->IsAchievement())
 				{
@@ -1402,7 +1402,6 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	int iButtonHeight = C4GUI_ButtonHgt;
 	int iBookPageWidth;
 	int iExtraHPadding = rcBounds.Wdt >= 700 ? rcBounds.Wdt/50 : 0;
-	int iExtraVPadding = rcBounds.Hgt >= 540 ? rcBounds.Hgt/20 : 0;
 	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
