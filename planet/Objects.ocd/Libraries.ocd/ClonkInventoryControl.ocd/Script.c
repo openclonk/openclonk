@@ -155,7 +155,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
-private func FxIntHighlightItemStart(object target, effect fx, temp, object item)
+private func FxIntHighlightItemStart(object target, proplist fx, temp, object item)
 {
 	if (temp) return;
 	fx.item = item;
@@ -202,17 +202,17 @@ private func FxIntHighlightItemStart(object target, effect fx, temp, object item
 	fx.height /= 2;
 }
 
-private func FxIntHighlightItemTimer(object target, effect fx, int time)
+private func FxIntHighlightItemTimer(object target, proplist fx, int time)
 {
 	if (!fx.dummy) return -1;
 	if (!fx.item) return -1;
 	if (ObjectDistance(this, fx.item) > 20) return -1;
-	if (Contained(fx.item)) return -1;
+	if (fx.item->Contained()) return -1;
 	
 	fx.dummy->CreateParticle("StarSpark", PV_Random(-fx.width, fx.width), PV_Random(-fx.height, fx.height), 0, 0, 10, fx.particles, 2);
 }
 
-private func FxIntHighlightItemStop(object target, effect fx, int reason, temp)
+private func FxIntHighlightItemStop(object target, proplist fx, int reason, temp)
 {
 	if (temp) return;
 	if (fx.dummy) fx.dummy->RemoveObject();
