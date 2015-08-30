@@ -212,6 +212,7 @@ public:
 	void UpdateActionFace();
 	void SyncClearance();
 	void SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
+	void SetHalfVehicleSolidMask(bool set);
 	bool CheckSolidMaskRect(); // clip bounds of SolidMask in graphics - return whether the solidmask still exists
 	C4Object *ComposeContents(C4ID id);
 	bool MenuCommand(const char *szCommand);
@@ -269,7 +270,7 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
-	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0);
+	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };

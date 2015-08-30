@@ -46,6 +46,12 @@ static C4Void FnSetSolidMask(C4Object *Obj, long iX, long iY, long iWdt, long iH
 	return C4Void();
 }
 
+static C4Void FnSetHalfVehicleSolidMask(C4Object *Obj, bool set)
+{
+	Obj->SetHalfVehicleSolidMask(set);
+	return C4Void();
+}
+
 static C4Void FnDeathAnnounce(C4Object *Obj)
 {
 	const long MaxDeathMsg=7;
@@ -2498,6 +2504,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "CNAT_Center"               ,C4V_Int,      CNAT_Center                },
 	{ "CNAT_MultiAttach"          ,C4V_Int,      CNAT_MultiAttach           },
 	{ "CNAT_NoCollision"          ,C4V_Int,      CNAT_NoCollision           },
+	{ "CNAT_CollideHalfVehicle"   ,C4V_Int,      CNAT_CollideHalfVehicle    },
 
 	// vertex data
 	{ "VTX_X"                     ,C4V_Int,      VTX_X                      },
@@ -2711,6 +2718,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Enter", FnEnter);
 	AddFunc(pEngine, "DeathAnnounce", FnDeathAnnounce);
 	AddFunc(pEngine, "SetSolidMask", FnSetSolidMask);
+	AddFunc(pEngine, "SetHalfVehicleSolidMask", FnSetHalfVehicleSolidMask);
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);

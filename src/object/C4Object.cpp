@@ -2602,6 +2602,12 @@ void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, 
 	if (CheckSolidMaskRect()) UpdateSolidMask(false);
 }
 
+void C4Object::SetHalfVehicleSolidMask(bool set)
+{
+	if (!pSolidMaskData) return;
+	pSolidMaskData->SetHalfVehicle(set);
+}
+
 bool C4Object::CheckSolidMaskRect()
 {
 	// Ensure SolidMask rect lies within bounds of SolidMask bitmap in definition
