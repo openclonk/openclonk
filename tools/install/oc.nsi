@@ -56,9 +56,16 @@ FunctionEnd
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install\header.bmp"
 
+; Music pack installation routines
+!include musicpack.nsh
+
 ; Installer pages
 ;!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
+
+; Ask user to download music pack.
+!insertmacro MusicPackChoice
+
 !insertmacro MUI_PAGE_INSTFILES
 
 ; Uninstaller pages
@@ -92,6 +99,9 @@ Section
   File /oname=c4group.exe "${C4GROUP}"
 
   File "*.dll"
+  
+  ; Delete any previously unpacked Music.ocg, which would block creation of the file.
+  RMDir /r "$INSTDIR\Music.ocg"
 
   File "*.oc?"
   
@@ -219,6 +229,11 @@ Section
 
   ; Add a Firewall exception
   firewall::AddAuthorizedApplication "$INSTDIR\${PRODUCT_FILENAME}" "$(^Name)"
+  
+  ; Download and Install extra music pack
+  ; Do this after the other installation tasks so everything is in order if the user cancels during downloading.
+  Call MusicPackDownload
+  Call MusicPackInstall
 
 SectionEnd
 
@@ -236,6 +251,8 @@ Section Uninstall
 
   Delete "$INSTDIR\*.dll"
 
+  ; Music may or may not be unpacked.
+  RMDir /r "$INSTDIR\Music.ocg"
   Delete "$INSTDIR\*.oc?"
 
   Delete "$INSTDIR\AUTHORS"
