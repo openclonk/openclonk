@@ -234,6 +234,10 @@ Section
   ; Do this after the other installation tasks so everything is in order if the user cancels during downloading.
   Call MusicPackDownload
   Call MusicPackInstall
+  
+  ; Unpack Music.ocg for faster music switching (regardless if it's the regular or the extended pack)
+  DetailPrint "Unpacking Music file..."
+  ExecShell "open" "$INSTDIR\c4group.exe" "Music.ocg -u" SW_HIDE
 
 SectionEnd
 
