@@ -27,6 +27,7 @@
 #include <C4Config.h>
 
 #define DEBUG_BYTECODE_DUMP 0
+#include <iomanip>
 
 #define C4AUL_Include       "#include"
 #define C4AUL_Append        "#appendto"
@@ -1512,7 +1513,40 @@ void C4AulParse::Parse_Function()
 			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
 			case AB_STRING:
-				fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
+			{
+				const StdStrBuf &s = pBCC->Par.s->GetData();
+				std::string es;
+				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
+					if (std::isgraph((unsigned char)c))
+					{
+						es += c;
+					}
+					else
+					{
+						switch (c)
+						{
+						case '\'': es.append("\\'"); break;
+						case '\"': es.append("\\\""); break;
+						case '\\': es.append("\\\\"); break;
+						case '\a': es.append("\\a"); break;
+						case '\b': es.append("\\b"); break;
+						case '\f': es.append("\\f"); break;
+						case '\n': es.append("\\n"); break;
+						case '\r': es.append("\\r"); break;
+						case '\t': es.append("\\t"); break;
+						case '\v': es.append("\\v"); break;
+						default:
+						{
+							std::stringstream hex;
+							hex << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>((unsigned char)c);
+							es.append(hex.str());
+							break;
+						}
+						}
+					}
+				});
+				fprintf(stderr, "\t\"%s\"\n", es.c_str()); break;
+			}
 			case AB_DEBUG: case AB_NIL: case AB_RETURN:
 			case AB_PAR: case AB_THIS:
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
