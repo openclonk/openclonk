@@ -31,6 +31,9 @@ CON_Throw_Desc=Throw the item in the hand into the aimed direction.
 CON_UseAlt=Use
 CON_UseAlt_Desc=Use the item in the hand alternatively.
 
+CON_PickUp=Pick Up
+CON_PickUp_Desc=Pick up an object near you.
+
 CON_Hotkey1=Hotkey 1
 CON_Hotkey2=Hotkey 2
 CON_Hotkey3=Hotkey 3

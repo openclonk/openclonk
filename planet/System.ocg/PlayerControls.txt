@@ -162,7 +162,26 @@
 	GUIName=$CON_Drop$
 	GUIDesc=$CON_Drop_Desc$
 	Hold=1
-
+	
+	# Picking up objects on the ground.
+	[ControlDef]
+	Identifier=PickUp
+	GUIName=$CON_PickUp$
+	GUIDesc=$CON_PickUp_Desc$
+	Hold=1
+	
+	[ControlDef]
+	Identifier=PickUpNext_Left
+	GUIName=None
+	
+	[ControlDef]
+	Identifier=PickUpNext_Right
+	GUIName=None
+	
+	[ControlDef]
+	Identifier=PickUpNext_Stop
+	GUIName=None
+	
 	# Hotkeys (Inventory)
 	
 	[ControlDef]
@@ -566,12 +585,33 @@
 		[Assignment]
 		Key=E
 		Control=Contents
-		Group=1
+		GUIGroup=1
 	
 		[Assignment]
 		Key=Q
 		Control=QuickSwitch
 		GUIGroup=50
+		
+		[Assignment]
+		Key=Ctrl+LeftControl
+		Control=PickUp
+		GUIGroup=50
+		
+		[Assignment]
+		Key=Ctrl+CON_Left
+		Control=PickUpNext_Left
+		
+		[Assignment]
+		Key=Ctrl+CON_Right
+		Control=PickUpNext_Right
+		
+		[Assignment]
+		Key=Ctrl+CON_Up
+		Control=PickUpNext_Stop
+		
+		[Assignment]
+		Key=Ctrl+CON_Down
+		Control=PickUpNext_Stop
 		
 		[Assignment]
 		Key=Mouse1Wheel1Up

@@ -23,54 +23,20 @@ func Construction()
 	return _inherited(...);
 }
 
-// Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object. Collection will be disabled for some time.
+// Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object.
 func OnDropped(object obj)
 {
-	// An object has just left this one. Make sure we don't immediately collect it again.
-	// Note that this can also happen for objects which were not originally contained in this one but in a subcontainer (f.e. items in HasExtraSlot objects).
-	AddEffect("NoCollectDelay", this, 1, 36 * 1, this, nil, obj, GetX(), GetY());
 	return _inherited(obj, ...);
-}
-
-func FxNoCollectDelayStart(object target, proplist effect, temp, object item, int x, int y)
-{
-	if (temp) return;
-	effect.x = x;
-	effect.y = y;
-	effect.item = item;
-}
-
-func FxNoCollectDelayTimer(object target, proplist effect, int time)
-{
-	if (!effect.item) return -1;
-	if (ObjectDistance(this, effect.item) > 20) return -1;
-	return 1;
-}
-
-// Checks if we just dropped the object and thus can not collect it again.
-func HadJustDroppedObject(object obj)
-{
-	var current_x = GetX(), current_y = GetY();
-	var i = 0, e = nil;
-	while (e = GetEffect("NoCollectDelay", this, i++))
-	{
-		if (e.item == obj) return true;
-	}
-	return false;
 }
 
 func RejectCollect(id objid, object obj)
 {
-	var rejected = _inherited(objid,obj,...);
+	var rejected = _inherited(objid, obj, ...);
 	if(rejected) return rejected;
-
-	// check if the hand slot is full.
-	// If the overloaded Collect() is called, this check will be skipped.
-	// Also handle collection of contained objects (chests, other Clonks) more relaxed.
-	if (!this.inventory.force_collection && !obj->Contained())
-		if (this->GetHandItem(0) || HadJustDroppedObject(obj))
-			return true;
 	
+	// Allow collection only if called via clonk->Collect, to prevent picking up stuff on the ground.
+	// Make an exception for containers, though.
+	if (!this.inventory.force_collection && !obj->Contained()) return true;
 	return false;
 }
 
@@ -90,6 +56,46 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
 		return true;
 	}
+	
+	// Begin picking up objects.
+	if (ctrl == CON_PickUp && !release)
+	{
+		BeginPickingUp();
+		return true;
+	}
+	
+	// Switching pickup object or finish pickup?
+	if (this.inventory.is_picking_up)
+	{
+		// Stop picking up.
+		if (ctrl == CON_PickUpNext_Stop)
+		{
+			this.inventory.pickup_item = nil;
+			EndPickingUp();
+			return true;
+		}
+		
+		// Finish picking up (aka "collect").
+		if (ctrl == CON_PickUp && release)
+		{
+			EndPickingUp();
+			return true;
+		}
+		
+		// Switch left/right through objects.
+		var dir = nil;
+		if (ctrl == CON_PickUpNext_Left) dir = -1;
+		else if (ctrl == CON_PickUpNext_Right) dir = 1;
+		
+		if (dir != nil)
+		{
+			var item = FindNextPickupObject(this.inventory.pickup_item, dir);
+			if (item)
+				SetNextPickupItem(item);
+			return true;
+		}
+	}
+	
 	
 	// shift inventory
 	var inventory_shift = 0;
@@ -147,6 +153,151 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
+}
+
+private func FxIntHighlightItemStart(object target, effect fx, temp, object item)
+{
+	if (temp) return;
+	fx.item = item;
+	
+	fx.dummy = CreateObject(Dummy, item->GetX() - GetX(), item->GetY() - GetY(), GetOwner());
+	fx.dummy.ActMap = 
+	{
+		Attach = 
+		{
+			Name = "Attach",
+			Procedure = DFA_ATTACH,
+			FaceBase = 1
+		}
+	};
+	fx.dummy.Visibility = VIS_Owner;
+	fx.dummy.Plane = item.Plane + 1;
+	fx.dummy->Message("@%s", item->GetName());
+	
+	// Center dummy!
+	fx.dummy->SetVertexXY(0, item->GetVertex(0, VTX_X), item->GetVertex(0, VTX_Y));
+	fx.dummy->SetAction("Attach", item);
+	
+	fx.width  = item->GetDefWidth();
+	fx.height = item->GetDefHeight();
+	
+	var particle =
+	{
+		Prototype = Particles_Flash(),
+		Size = Max(fx.width, fx.height),
+		Attach = ATTACH_Front
+	};
+	fx.dummy->CreateParticle("SphereSpark", 0, 0, 0, 0, 20, particle, 1);
+	
+	// And smaller sparks during the effect.
+	fx.particles = 
+	{
+		Prototype = particle,
+		Size = PV_Linear(2, 0),
+		Rotation = PV_Random(360),
+		Stretch = PV_Linear(0, 4000),
+	};
+	
+	fx.width /= 2;
+	fx.height /= 2;
+}
+
+private func FxIntHighlightItemTimer(object target, effect fx, int time)
+{
+	if (!fx.dummy) return -1;
+	if (!fx.item) return -1;
+	if (ObjectDistance(this, fx.item) > 20) return -1;
+	if (Contained(fx.item)) return -1;
+	
+	fx.dummy->CreateParticle("StarSpark", PV_Random(-fx.width, fx.width), PV_Random(-fx.height, fx.height), 0, 0, 10, fx.particles, 2);
+}
+
+private func FxIntHighlightItemStop(object target, effect fx, int reason, temp)
+{
+	if (temp) return;
+	if (fx.dummy) fx.dummy->RemoveObject();
+	if (!this) return;
+	if (fx.item == this.inventory.pickup_item)
+		this.inventory.pickup_item = nil;
+} 
+
+private func SetNextPickupItem(object to)
+{
+	// Clear all old markers.
+	var e = nil;
+	while (e = GetEffect("IntHighlightItem", this))
+		RemoveEffect(nil, this, e);
+	// And set & mark new one.
+	this.inventory.pickup_item = to;
+	if (to)
+		AddEffect("IntHighlightItem", this, 1, 2, this, nil, to);
+}
+
+private func FindNextPickupObject(object start_from, int x_dir)
+{
+	if (!start_from) start_from = this;
+	var sort = Sort_Func("Library_ClonkInventoryControl_Sort_Priority", start_from->GetX()); 
+	var objects = FindObjects(Find_Distance(20), Find_Category(C4D_Object), Find_NoContainer(), Find_Func("GetProperty", "Collectible"), sort);
+	var len = GetLength(objects);
+	// Find object next to the current one.
+	var index = GetIndexOf(objects, start_from);
+	if (index != nil)
+	{
+		index = index + x_dir;
+		if (index < 0) index += len;
+		index = index % len;
+	}
+	else index = 0;
+	
+	if (index >= len) return nil;
+	var next = objects[index];
+	if (next == start_from) return nil;
+	return next;
+}
+
+private func BeginPickingUp()
+{
+	this.inventory.is_picking_up = true;
+	
+	var dir = -1;
+	if (GetDir() == DIR_Right) dir = 1;
+	var obj = FindNextPickupObject(this, dir);
+	if (obj)
+		SetNextPickupItem(obj);
+}
+
+private func EndPickingUp()
+{
+	this.inventory.is_picking_up = false;
+
+	if (this.inventory.pickup_item)
+	{
+		// Remember stuff for a possible message - the item might have removed itself later.
+		var item = this.inventory.pickup_item;
+		var x = item->GetX();
+		var y = item->GetY();
+		var name = item->GetName();
+		// Try to collect the item.
+		Collect(item);
+		
+		// If anything happened, assume collection.
+		if (!item || item->Contained())
+		{
+			var message = CreateObject(FloatingMessage, AbsX(x), AbsY(y), GetOwner());
+			message.Visibility = VIS_Owner;
+			message->SetMessage(name);
+			message->SetYDir(-10);
+			message->FadeOut(1, 20);
+		}
+	}
+	
+	var e = nil;
+	while (e = GetEffect("IntHighlightItem", this))
+	{
+		RemoveEffect(nil, this, e);
+	}
+	
+	this.inventory.pickup_item = nil;
 }
 
 // used in Inventory.ocd

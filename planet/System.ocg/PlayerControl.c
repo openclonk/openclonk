@@ -519,3 +519,15 @@ global func MouseDragDrop(int plr, object source, object target)
 	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
 	return r;
 }*/
+
+/*
+This is used by Library_ClonkInventoryControl and needs to be a global function (in a non-appendto).
+This function returns the priority of an object when selecting an object to pick up.
+*/
+global func Library_ClonkInventoryControl_Sort_Priority(int x_position)
+{
+	// Objects are sorted by position, preferring the direction of the key press.
+	var priority_x = GetX() - x_position;
+	if (priority_x < 0) priority_x += 1000;
+	return priority_x; 
+}

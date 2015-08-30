@@ -445,7 +445,7 @@ protected func RejectCollect(id objid, object obj)
 	if(GetEffect("NoCollection", obj)) return true;
 	
 	// Only handle extra-slot objects if the object was not dropped on purpose.
-	if (this.inventory.force_collection || !this->HadJustDroppedObject(obj))
+	if (this.inventory.force_collection)
 	{
 		// try to stuff obj into an object with an extra slot
 		for(var i=0; Contents(i); ++i)
