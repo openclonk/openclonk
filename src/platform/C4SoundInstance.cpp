@@ -467,7 +467,9 @@ void C4SoundInstance::SetModifier(C4SoundModifier *new_modifier, bool is_global)
 		{
 			if (modifier)
 			{
+#if AUDIO_TK == AUDIO_TK_OPENAL
 				modifier->ApplyTo(iChannel);
+#endif
 			}
 			else
 			{

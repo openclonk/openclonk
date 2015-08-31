@@ -89,13 +89,15 @@ void C4SoundModifier::Update()
 	released = false;
 }
 
+#if AUDIO_TK == AUDIO_TK_OPENAL
 void C4SoundModifier::ApplyTo(ALuint source)
 {
 	// apply slot to source if valid
-#if (AUDIO_TK == AUDIO_TK_OPENAL) && defined(HAVE_ALEXT)
+#if defined(HAVE_ALEXT)
 	if (slot) alSource3i(source, AL_AUXILIARY_SEND_FILTER, slot, 0, AL_FILTER_NULL);
 #endif
 }
+#endif
 
 float C4SoundModifier::GetFloatProp(C4PropertyName key, float ratio, float default_value)
 {
