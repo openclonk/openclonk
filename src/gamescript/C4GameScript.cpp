@@ -1981,15 +1981,18 @@ static long FnReloadParticle(C4PropList * _this, C4String *szParticleName)
 	return Game.ReloadParticle(FnStringPar(szParticleName));
 }
 
-static bool FnSetGamma(C4PropList * _this, long dwClr1, long dwClr2, long dwClr3, long iRampIndex)
+static bool FnSetGamma(C4PropList * _this, long iRed, long iGreen, long iBlue, long iRampIndex)
 {
-	pDraw->SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
+	pDraw->SetGamma(float(iRed) / 100,
+	                float(iGreen) / 100,
+	                float(iBlue) / 100,
+	                iRampIndex);
 	return true;
 }
 
 static bool FnResetGamma(C4PropList * _this, long iRampIndex)
 {
-	pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
+	::Game.SetDefaultGamma();
 	return true;
 }
 

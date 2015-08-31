@@ -114,35 +114,6 @@ struct C4BltVertex
 	float ftx,fty,ftz; // blit positions
 };
 
-// This structure is used by StdGL, too
-typedef struct _GAMMARAMP
-{
-	WORD                red  [256];
-	WORD                green[256];
-	WORD                blue [256];
-} GAMMARAMP;
-
-// gamma ramp control
-class C4GammaControl
-{
-private:
-	void SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3); // set color channel ramp
-
-protected:
-	GAMMARAMP ramp;
-
-public:
-	C4GammaControl() { Default(); } // ctor
-	void Default() { Set(0x000000, 0x808080, 0xffffff); } // set default ramp
-
-	void Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3); // set color ramp
-
-	DWORD ApplyTo(DWORD dwClr);   // apply gamma to color value
-
-	friend class C4Draw;
-	friend class CStdGL;
-};
-
 // helper struct
 struct ZoomData
 {
@@ -161,12 +132,10 @@ public:
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
-	C4GammaControl Gamma;            // gamma
-	C4GammaControl DefRamp;            // default gamma ramp
-	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
+	float gamma[C4MaxGammaRamps][3]; // input gammas
+	float gammaOut[3]; // combined gamma
 	int MaxTexSize;
 protected:
-	bool fSetGamma;     // must gamma ramp be reassigned?
 	BYTE                byByteCnt;    // bytes per pixel (2 or 4)
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 	float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates
@@ -253,12 +222,9 @@ public:
 	void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
 	void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
 	// gamma
-	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
-	void ResetGamma();                                        // reset all gamma ramps to default
-	void ApplyGamma();                                        // apply gamma ramp to ddraw
-	void DisableGamma();                                      // temporarily reset app gamma to default
-	void EnableGamma();                                       // set current gamma ramp in app
-	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
+	void SetGamma(float r, float g, float b, int32_t iRampIndex);  // set gamma
+	void ResetGamma(); // reset gamma to default
+	DWORD ApplyGammaTo(DWORD dwClr); // apply gamma to given color
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
 	void DeactivateBlitModulation() { BlitModulated=false; }  // stop color modulation of blits

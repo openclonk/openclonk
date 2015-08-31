@@ -170,43 +170,6 @@ DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
 	return CachedPattern[iY * Wdt + iX];
 }
 
-void C4GammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
-{
-	// Using this minimum value, gamma ramp errors on some cards can be avoided
-	int MinGamma = 0x100;
-	// adjust clr3-value
-	++c3;
-	// get rises
-	int r1=c2-c1,r2=c3-c2,r=(c3-c1)/2;
-	// calc beginning and end rise
-	r1=2*r1-r; r2=2*r2-r;
-	// calc ramp
-	WORD *pBuf2=pBuf+128;
-	for (int i=0; i<128; ++i)
-	{
-		int i2=128-i;
-		// interpolate linear ramps with the rises r1 and r
-		*pBuf ++=Clamp(((c1+r1*i/128) *i2  +  (c2-r*i2/128) *i) <<1, MinGamma, 0xffff);
-		// interpolate linear ramps with the rises r and r2
-		*pBuf2++=Clamp(((c2+r*i/128) *i2  +  (c3-r2*i2/128) *i) <<1, MinGamma, 0xffff);
-	}
-}
-
-void C4GammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
-{
-	// set red, green and blue channel
-	SetClrChannel(ramp.red  , GetRedValue(dwClr1), GetRedValue(dwClr2), GetRedValue(dwClr3));
-	SetClrChannel(ramp.green, GetGreenValue(dwClr1), GetGreenValue(dwClr2), GetGreenValue(dwClr3));
-	SetClrChannel(ramp.blue , GetBlueValue(dwClr1), GetBlueValue(dwClr2), GetBlueValue(dwClr3));
-}
-
-DWORD C4GammaControl::ApplyTo(DWORD dwClr)
-{
-	// apply to red, green and blue color component
-	return RGBA(ramp.red[GetRedValue(dwClr)]>>8, ramp.green[GetGreenValue(dwClr)]>>8, ramp.blue[GetBlueValue(dwClr)]>>8, dwClr>>24);
-}
-
-
 //--------------------------------------------------------------------
 
 void C4Draw::Default()
@@ -216,21 +179,16 @@ void C4Draw::Default()
 	Active=false;
 	BlitModulated=false;
 	dwBlitMode = 0;
-	Gamma.Default();
-	DefRamp.Default();
+	ResetGamma();
 	pFoW = NULL;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
 	MeshTransform = NULL;
 	fUsePerspective = false;
-	for (int32_t iRamp=0; iRamp<3*C4MaxGammaRamps; iRamp+=3)
-		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
-	fSetGamma=false;
 }
 
 void C4Draw::Clear()
 {
 	ResetGamma();
-	DisableGamma();
 	Active=BlitModulated=false;
 	dwBlitMode = 0;
 }
@@ -846,71 +804,39 @@ C4Rect C4Draw::GetOutRect() const
 	return C4Rect(0, 0, RenderTarget->Wdt, RenderTarget->Hgt);
 }
 
-void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
+void C4Draw::SetGamma(float r, float g, float b, int32_t iRampIndex)
 {
-	// No gamma effects
-	if (Config.Graphics.DisableGamma) return;
-	if (iRampIndex < 0 || iRampIndex >= C4MaxGammaRamps) return;
-	// turn ramp index into array offset
-	iRampIndex*=3;
-	// set array members
-	dwGamma[iRampIndex+0]=dwClr1;
-	dwGamma[iRampIndex+1]=dwClr2;
-	dwGamma[iRampIndex+2]=dwClr3;
-	// mark gamma ramp to be recalculated
-	fSetGamma=true;
+	// Set
+	gamma[iRampIndex][0] = r;
+	gamma[iRampIndex][1] = g;
+	gamma[iRampIndex][2] = b;
+	// Recalculate resulting gamma. Note that we flip gamma direction here,
+	// because higher gammaOut means darker.
+	gammaOut[0] = gammaOut[1] = gammaOut[2] = 1.0f;
+	for (int i = 0; i < C4MaxGammaRamps; i++) {
+		gammaOut[0] /= gamma[i][0];
+		gammaOut[1] /= gamma[i][1];
+		gammaOut[2] /= gamma[i][2];
+	}
 }
 
 void C4Draw::ResetGamma()
 {
-	pApp->ApplyGammaRamp(DefRamp.ramp, false);
-}
-
-void C4Draw::ApplyGamma()
-{
-	// No gamma effects
-	if (Config.Graphics.DisableGamma) return;
-	if (!fSetGamma) return;
-
-	//  calculate color channels by adding the difference between the gamma ramps to their normals
-	int32_t ChanOff[3];
-	DWORD tGamma[3];
-	const int32_t DefChanVal[3] = { 0x00, 0x80, 0xff };
-	// calc offset for curve points
-	for (int32_t iCurve=0; iCurve<3; ++iCurve)
-	{
-		memset(ChanOff, 0, sizeof(int32_t)*3);
-		// ...channels...
-		for (int32_t iChan=0; iChan<3; ++iChan)
-			// ...ramps...
-			for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
-				// add offset
-				ChanOff[iChan]+=(int32_t) BYTE(dwGamma[iRamp*3+iCurve]>>(16-iChan*8)) - DefChanVal[iCurve];
-		// calc curve point
-		tGamma[iCurve]=C4RGB(Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), Clamp<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
+	for (int i = 0; i < C4MaxGammaRamps; i++) {
+		gamma[i][0] = 1.0f;
+		gamma[i][1] = 1.0f;
+		gamma[i][2] = 1.0f;
 	}
-	// calc ramp
-	Gamma.Set(tGamma[0], tGamma[1], tGamma[2]);
-	// set gamma
-	pApp->ApplyGammaRamp(Gamma.ramp, false);
-	fSetGamma=false;
-}
-
-void C4Draw::DisableGamma()
-{
-	// set it
-	pApp->ApplyGammaRamp(DefRamp.ramp, true);
-}
-
-void C4Draw::EnableGamma()
-{
-	// set it
-	pApp->ApplyGammaRamp(Gamma.ramp, false);
+	gammaOut[0] = 1.0f;
+	gammaOut[1] = 1.0f;
+	gammaOut[2] = 1.0f;
 }
 
 DWORD C4Draw::ApplyGammaTo(DWORD dwClr)
 {
-	return Gamma.ApplyTo(dwClr);
+	return C4RGB(int(pow(float(GetRedValue(dwClr)) / 255.0f, gammaOut[0]) * 255.0),
+				 int(pow(float(GetGreenValue(dwClr)) / 255.0f, gammaOut[1]) * 255.0),
+				 int(pow(float(GetBlueValue(dwClr)) / 255.0f, gammaOut[2]) * 255.0));
 }
 
 void C4Draw::SetZoom(float X, float Y, float Zoom)
@@ -952,10 +878,6 @@ bool DDrawInit(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int
 bool C4Draw::Init(C4AbstractApp * pApp, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	this->pApp = pApp;
-
-	// store default gamma
-	if (!pApp->SaveDefaultGammaRamp(DefRamp.ramp))
-		DefRamp.Default();
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 

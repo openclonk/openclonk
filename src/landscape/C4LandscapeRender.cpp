@@ -545,6 +545,7 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	shader.LoadSlices(pGroups, "LightShader.glsl");
 	shader.LoadSlices(pGroups, "AmbientShader.glsl");
 	shader.LoadSlices(pGroups, "ScalerShader.glsl");
+	shader.LoadSlices(pGroups, "GammaShader.glsl");
 
 	// Initialise!
 	if (!shader.Init(name, UniformNames)) {
@@ -574,6 +575,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_MaterialTex]       = "materialTex";
 	UniformNames[C4LRU_LightTex]          = "lightTex";
 	UniformNames[C4LRU_AmbientTex]        = "ambientTex";
+	UniformNames[C4LRU_Gamma]             = "gamma";
 	UniformNames[C4LRU_Resolution]        = "resolution";
 	UniformNames[C4LRU_Center]            = "center";
 	UniformNames[C4LRU_MatMap]            = "matMap";
@@ -880,6 +882,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	ShaderCall.Start();
 
 	// Bind data
+	ShaderCall.SetUniform3fv(C4LRU_Gamma, 1, pGL->gammaOut);
 	ShaderCall.SetUniform2f(C4LRU_Resolution, Surfaces[0]->Wdt, Surfaces[0]->Hgt);
 	float centerX = float(cgo.TargetX)+float(cgo.Wdt)/2,
 		  centerY = float(cgo.TargetY)+float(cgo.Hgt)/2;

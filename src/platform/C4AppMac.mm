@@ -190,37 +190,6 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	return true;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce)
-{
-	CGGammaValue r[256];
-	CGGammaValue g[256];
-	CGGammaValue b[256];
-	for (int i = 0; i < 256; i++)
-	{
-		r[i] = static_cast<float>(ramp.red[i])/65535.0;
-		g[i] = static_cast<float>(ramp.green[i])/65535.0;
-		b[i] = static_cast<float>(ramp.blue[i])/65535.0;
-	}
-	CGSetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b);
-	return true;
-}
-
-bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP &ramp)
-{
-	CGGammaValue r[256];
-	CGGammaValue g[256];
-	CGGammaValue b[256];
-	uint32_t count;
-	CGGetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b, &count);
-	for (int i = 0; i < 256; i++)
-	{
-		ramp.red[i]   = r[i]*65535;
-		ramp.green[i] = g[i]*65535;
-		ramp.blue[i]  = b[i]*65535;
-	}
-	return true;
-}
-
 #endif
 
 bool IsGermanSystem()

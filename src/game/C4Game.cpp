@@ -293,8 +293,6 @@ bool C4Game::PreInit()
 	FixRandom(RandomSeed);
 	// Timer flags
 	GameGo=false;
-	// set gamma
-	SetDefaultGamma();
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -480,9 +478,6 @@ bool C4Game::Init()
 	if (!InitGameFinal()) return false;
 	SetInitProgress(99);
 
-	// Gamma
-	pDraw->ApplyGamma();
-
 	// Sound modifier from savegames
 	if (GlobalSoundModifier) SetGlobalSoundModifier(GlobalSoundModifier._getPropList());
 
@@ -541,8 +536,6 @@ void C4Game::Clear()
 	delete pFileMonitor; pFileMonitor = NULL;
 	// fade out music
 	Application.MusicSystem.FadeOut(2000);
-	// Reset colors
-	SetDefaultGamma();
 	// game no longer running
 	IsRunning = false;
 	PointersDenumerated = false;
@@ -570,7 +563,6 @@ void C4Game::Clear()
 	Control.Clear();
 
 	// Clear
-	if (pDraw) { pDraw->ResetGamma(); pDraw->ApplyGamma(); }
 	Scoreboard.Clear();
 	MouseControl.Clear();
 	Players.Clear();
@@ -3708,14 +3700,12 @@ void C4Game::SetDefaultGamma()
 	// Skip this if graphics haven't been initialized yet (happens when
 	// we bail during initialization)
 	if (!pDraw) return;
-	// Default gamma ramps
-	for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
-	{
-		if (iRamp == C4GRI_USER)
-			pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, iRamp);
-		else
-			pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRamp);
-	}
+	// Default gamma
+	pDraw->ResetGamma();
+	pDraw->SetGamma(float(Config.Graphics.Gamma) / 100.0,
+					float(Config.Graphics.Gamma) / 100.0,
+					float(Config.Graphics.Gamma) / 100.0,
+					C4MaxGammaUserRamps);
 }
 
 void C4Game::SetGlobalSoundModifier(C4PropList *new_modifier)

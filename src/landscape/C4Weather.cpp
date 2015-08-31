@@ -147,12 +147,12 @@ int32_t C4Weather::GetClimate()
 	return Climate;
 }
 
-static DWORD SeasonColors[4][3] =
+static float SeasonColors[4][3] =
 {
-	{ 0x000000, 0x7f7f90, 0xefefff }, // winter: slightly blue; blued out by temperature
-	{ 0x070f00, 0x90a07f, 0xffffdf }, // spring: green to yellow
-	{ 0x000000, 0x808080, 0xffffff }, // summer: regular ramp
-	{ 0x0f0700, 0xa08067, 0xffffdf }  // fall:   dark, brown ramp
+	{ 0.90, 0.90, 1.00 }, // winter: slightly blue; blued out by temperature
+	{ 1.00, 1.05, 0.90 }, // spring: green to yellow
+	{ 1.00, 1.00, 1.00 }, // summer: regular ramp
+	{ 1.00, 0.95, 0.90 }  // fall:   dark, brown ramp
 };
 
 void C4Weather::SetSeasonGamma()
@@ -161,28 +161,16 @@ void C4Weather::SetSeasonGamma()
 	// get season num and offset
 	int32_t iSeason1=(Season/25)%4; int32_t iSeason2=(iSeason1+1)%4;
 	int32_t iSeasonOff1=Clamp(Season%25, 5, 19)-5; int32_t iSeasonOff2=15-iSeasonOff1;
-	DWORD dwClr[3]; memset(dwClr, 0, sizeof(DWORD)*3);
+	float gamma[3] = { 0.0f, 0.0f, 0.0f };
 	// interpolate between season colors
-	for (int32_t i=0; i<3; ++i)
-		for (int32_t iChan=0; iChan<24; iChan+=8)
-		{
-			BYTE byC1=BYTE(SeasonColors[iSeason1][i]>>iChan);
-			BYTE byC2=BYTE(SeasonColors[iSeason2][i]>>iChan);
-			int32_t iChanVal=(byC1*iSeasonOff2 + byC2*iSeasonOff1) / 15;
-			// red+green: reduce in winter
-			if (Temperature<0)
-			{
-				if (iChan)
-					iChanVal+=Temperature/2;
-				else
-					// blue channel: emphasize in winter
-					iChanVal-=Temperature/2;
-			}
-			// set channel
-			dwClr[i] |= Clamp<int32_t>(iChanVal,0,255)<<iChan;
-		}
+	for (int32_t iChan=0; iChan<3; iChan+=8)
+	{
+		float c1 = SeasonColors[iSeason1][iChan],
+		      c2 = SeasonColors[iSeason2][iChan];
+		gamma[iChan] = (c1*iSeasonOff2 + c2*iSeasonOff1) / 15;
+	}
 	// apply gamma ramp
-	pDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
+	pDraw->SetGamma(gamma[0], gamma[1], gamma[2], C4GRI_SEASON);
 }
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
@@ -196,14 +184,25 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(TemperatureRange, "TemperatureRange",      30));
 	pComp->Value(mkNamingAdapt(Climate,          "Climate",               0));
 	pComp->Value(mkNamingAdapt(NoGamma,          "NoGamma",               0));
-	uint32_t dwGammaDefaults[C4MaxGammaRamps*3];
+
+	int32_t gamma[C4MaxGammaRamps*3],
+	        gammaDefaults[C4MaxGammaRamps*3];
 	for (int32_t i=0; i<C4MaxGammaRamps; ++i)
 	{
-		dwGammaDefaults[i*3+0] = 0x000000;
-		dwGammaDefaults[i*3+1] = 0x808080;
-		dwGammaDefaults[i*3+2] = 0xffffff;
+		gammaDefaults[i*3+0] = 100;
+		gammaDefaults[i*3+1] = 100;
+		gammaDefaults[i*3+2] = 100;
+		gamma[i*3+0] = int(pDraw->gamma[i][0] * 100.0f);
+		gamma[i*3+1] = int(pDraw->gamma[i][1] * 100.0f);
+		gamma[i*3+2] = int(pDraw->gamma[i][2] * 100.0f);
 	}
-	pComp->Value(mkNamingAdapt(mkArrayAdaptM(pDraw->dwGamma), "Gamma", dwGammaDefaults));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptM(gamma), "Gamma", gammaDefaults));
+	for (int32_t i=0; i<C4MaxGammaRamps; ++i)
+	{
+		pDraw->gamma[i][0] = float(gamma[i*3+0]) / 100.0f;
+		pDraw->gamma[i][1] = float(gamma[i*3+1]) / 100.0f;
+		pDraw->gamma[i][2] = float(gamma[i*3+2]) / 100.0f;
+	}
 }
 
 C4Weather Weather;

@@ -70,6 +70,7 @@ public:
 		shader.LoadSlices(&::GraphicsResource.Files, "UtilShader.glsl");
 		shader.LoadSlices(&::GraphicsResource.Files, "ObjectBaseShader.glsl");
 		shader.LoadSlices(&::GraphicsResource.Files, "MeshShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "GammaShader.glsl");
 
 		// Note that these shader slices are always loaded, even if lighting
 		// is disabled. The shaders then assume a default light if HAVE_LIGHT

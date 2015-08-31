@@ -42,6 +42,7 @@ enum C4LR_Uniforms
 	C4LRU_LightTex,
 	C4LRU_AmbientTex,
 
+	C4LRU_Gamma,
 	C4LRU_Resolution,
 	C4LRU_Center,
 	C4LRU_MatMap,

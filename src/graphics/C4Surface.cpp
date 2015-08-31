@@ -485,7 +485,7 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamm
 			for (int x=0; x<Wdt; ++x)
 			{
 				DWORD dwClr = GetPixDw(x, y, false);
-				if (fApplyGamma) dwClr = pDraw->Gamma.ApplyTo(dwClr);
+				if (fApplyGamma) dwClr = pDraw->ApplyGammaTo(dwClr);
 				png.SetPix(x, y, dwClr);
 			}
 	}

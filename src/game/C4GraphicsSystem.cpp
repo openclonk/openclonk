@@ -149,9 +149,6 @@ void C4GraphicsSystem::Execute()
 		::pGUI->Render(false);
 	}
 
-	// gamma update
-	pDraw->ApplyGamma();
-
 	// Video record & status (fullsrceen)
 	if (!Application.isEditor)
 		Video.Execute();
@@ -194,8 +191,6 @@ bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec)
 	if (!pNewLoader->Init(szLoaderSpec)) { delete pNewLoader; return false; }
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;
-	// apply user gamma for loader
-	pDraw->ApplyGamma();
 	// done, success
 	return true;
 }

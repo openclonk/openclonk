@@ -57,6 +57,8 @@ static const int C4SSC_NORMAL = 16; // extract normals from normal map instead o
 enum C4SS_Uniforms
 {
 	C4SSU_ClrMod, // always
+	C4SSU_Gamma, // always
+
 	C4SSU_BaseTex, // C4SSC_BASE
 	C4SSU_OverlayTex, // C4SSC_OVERLAY
 	C4SSU_OverlayClr, // C4SSC_OVERLAY

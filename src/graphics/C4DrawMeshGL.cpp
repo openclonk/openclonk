@@ -425,6 +425,7 @@ namespace
 			((dwModClr >> 24) & 0xff) / 255.0f
 		};
 		call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
+		call.SetUniform3fv(C4SSU_Gamma, 1, pDraw->gammaOut);
 
 		// Player color
 		const float fPlrClr[3] = {
@@ -616,6 +617,7 @@ namespace
 			if(dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
 			if(pFoW != NULL) ssc |= C4SSC_LIGHT;
 			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
+			if (!shader) return;
 			C4ShaderCall call(shader);
 			call.Start();
 

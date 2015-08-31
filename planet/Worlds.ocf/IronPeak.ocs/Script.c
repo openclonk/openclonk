@@ -113,7 +113,7 @@ private func InitEnvironment(int difficulty)
 	
 	// A light blue hue, to indicate the cold climate.
 	var blue = 4;
-	SetGamma(RGB(0, 0, blue), RGB(128 - blue, 128 - blue, 128 + blue), RGB(255 - blue, 255 - blue, 255));
+	SetGamma(100-blue,100-blue,100+blue);
 	
 	// Some natural disasters. 
 	Earthquake->SetChance(5 + 5 * difficulty);

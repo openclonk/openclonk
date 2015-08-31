@@ -347,6 +347,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 	};
 
 	call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
+	call.SetUniform3fv(C4SSU_Gamma, 1, gammaOut);
 
 	if(baseTex != 0)
 	{
@@ -572,6 +573,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 
 	const char* uniformNames[C4SSU_Count + 1];
 	uniformNames[C4SSU_ClrMod] = "clrMod";
+	uniformNames[C4SSU_Gamma] = "gamma";
 	uniformNames[C4SSU_BaseTex] = "baseTex";
 	uniformNames[C4SSU_OverlayTex] = "overlayTex";
 	uniformNames[C4SSU_OverlayClr] = "overlayClr";
@@ -611,6 +613,7 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
 	shader.LoadSlices(pGroups, "LightShader.glsl");
 	shader.LoadSlices(pGroups, "AmbientShader.glsl");
+	shader.LoadSlices(pGroups, "GammaShader.glsl");
 
 	if (!shader.Init(name, uniformNames))
 	{
@@ -739,9 +742,6 @@ bool CStdGL::RestoreDeviceObjects()
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
 	if (s>0) MaxTexSize = s;
 
-	// restore gamma if active
-	if (Active)
-		EnableGamma();
 	// reset blit states
 	dwBlitMode = 0;
 
@@ -752,10 +752,6 @@ bool CStdGL::RestoreDeviceObjects()
 bool CStdGL::InvalidateDeviceObjects()
 {
 	bool fSuccess=true;
-	// clear gamma
-#ifndef USE_SDL_MAINLOOP
-	DisableGamma();
-#endif
 	// deactivate
 	Active=false;
 	// invalidate font objects
