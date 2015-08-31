@@ -72,8 +72,8 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 		if (filter != NULL && !WildcardMatch(filter, entry->FileName))
 			continue;
 
-		printf("%*s %8d Bytes",
-			max_fn_len,
+		printf("%*s %8u Bytes",
+			int(max_fn_len),
 			entry->FileName,
 			entry->Size);
 		if (entry->ChildGroup != 0)
@@ -85,7 +85,7 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 		++file_count;
 		byte_count += entry->Size;
 	}
-	printf("%d Entries, %d Bytes\n", file_count, byte_count);
+	printf("%lu Entries, %lu Bytes\n", file_count, byte_count);
 }
 
 void PrintGroupInternals(C4Group &grp, int indent_level = 0)

@@ -57,11 +57,15 @@ C4String::C4String()
 C4String::~C4String()
 {
 	// unreg
+#ifdef _DEBUG
 	static bool remove = false;
 	assert(!remove); (void)remove;
 	remove = true;
+#endif
 	Strings.Set.Remove(this);
+#ifdef _DEBUG
 	remove = false;
+#endif
 }
 
 void C4String::operator=(const char * s)

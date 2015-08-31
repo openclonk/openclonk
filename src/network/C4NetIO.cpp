@@ -1886,8 +1886,8 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 		for (int iRetries = 1000; iRetries; iRetries--)
 		{
 			// create new - random - address
-			MCAddr.sin_addr.s_addr = MCAddr.sin_addr.s_addr =
-			                           0x000000ef | ((rand() & 0xff) << 24) | ((rand() & 0xff) << 16) | ((rand() & 0xff) << 8);
+			MCAddr.sin_addr.s_addr =
+			   0x000000ef | ((rand() & 0xff) << 24) | ((rand() & 0xff) << 16) | ((rand() & 0xff) << 8);
 			// init broadcast
 			if (!C4NetIOSimpleUDP::InitBroadcast(&MCAddr))
 				return false;
@@ -2634,7 +2634,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		}
 		// set packet counter
 		if (fBroadcasted)
-			iRIMCPacketCounter = iRIMCPacketCounter = pPkt->Nr;
+			iRIMCPacketCounter = iIMCPacketCounter = pPkt->Nr;
 		else
 			iRIPacketCounter = iIPacketCounter = pPkt->Nr;
 		// clear incoming packets

@@ -74,13 +74,13 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 		uint32_t mask = event->mask;
 		C4InteractiveThread &Thread = Application.InteractiveThread;
 		if (mask & IN_CREATE)
-			Thread.PushEvent(Ev_FileChange, (void*)file);
+			Thread.PushEvent(Ev_FileChange, const_cast<char*>(file));
 		if (mask & IN_MODIFY)
-			Thread.PushEvent(Ev_FileChange, (void*)file);
+			Thread.PushEvent(Ev_FileChange, const_cast<char*>(file));
 		if (mask & IN_MOVED_TO)
-			Thread.PushEvent(Ev_FileChange, (void*)file);
+			Thread.PushEvent(Ev_FileChange, const_cast<char*>(file));
 		if (mask & IN_MOVE_SELF)
-			Thread.PushEvent(Ev_FileChange, (void*)file);
+			Thread.PushEvent(Ev_FileChange, const_cast<char*>(file));
 		// FIXME: (*(inotify_event*)buf).name);
 	}
 	else
