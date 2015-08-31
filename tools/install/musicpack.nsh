@@ -6,7 +6,7 @@
 !include nsDialogs.nsh
 !include LogicLib.nsh
 
-!define MUSICPACK_URL "http://download.openclonk.org/OpenClonkOST.ocg"
+!define MUSICPACK_URL "http://www.openclonk.org/download/Music.ocg"
 ; !define MUSICPACK_URL "http://www.cognium.de/misc/test.ocg"
 
 Var Dialog
