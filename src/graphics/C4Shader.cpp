@@ -198,7 +198,7 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 
 	// Lookup name
 	int iPosition = -1;
-	for (int i = 0; i < sizeof(C4SH_PosNames) / sizeof(*C4SH_PosNames); i++) {
+	for (unsigned int i = 0; i < sizeof(C4SH_PosNames) / sizeof(*C4SH_PosNames); i++) {
 		if (SEqual(Name.getData(), C4SH_PosNames[i].Name)) {
 			iPosition = C4SH_PosNames[i].Position;
 			break;

@@ -516,7 +516,7 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 		iX += pObj->GetX();
 		iY += pObj->GetY();
 	}
-	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch);
+	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch, modifier);
 	// always return true (network safety!)
 	return true;
 }
@@ -2632,18 +2632,16 @@ static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_
 	// default parameter
 	long value = avalue.IsNil() ? 1 : (long)avalue;
 	// gain achievement
-	bool result = true;
 	if (!player.IsNil() && player != NO_OWNER)
 	{
 		C4Player *plr = ::Players.Get(player);
 		if (!plr) return false;
-		result = plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL);
+		plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL);
 	}
 	else
 	{
 		for (C4Player *plr = ::Players.First; plr; plr = plr->Next)
-			if (!plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL))
-				result = false;
+			plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL);
 	}
 	return true;
 }

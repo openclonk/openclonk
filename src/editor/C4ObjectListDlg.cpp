@@ -699,6 +699,7 @@ static void name_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 
 enum { ICON_SIZE = 24 };
 
+#ifdef _UNUSED_
 static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* model, GtkTreeIter* iter, gpointer data)
 {
 	C4Object* object = c4_list_iter_get_C4Object(model, iter);
@@ -755,6 +756,7 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 
 	g_object_set(G_OBJECT(renderer), "pixbuf", pixbuf, NULL);
 }
+#endif // _UNUSED_
 
 void C4ObjectListDlg::Open()
 {

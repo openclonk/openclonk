@@ -107,7 +107,7 @@ void C4GameOptionsList::OptionScenarioParameter::DoDropdownFill(C4GUI::ComboBox_
 {
 	// Fill dropdown menuy with known possible options for this parameter
 	size_t idx=0; const C4ScenarioParameterDef::Option *option;
-	while (option = ParameterDef->GetOptionByIndex(idx++))
+	while ((option = ParameterDef->GetOptionByIndex(idx++)))
 	{
 		pFiller->AddEntry(option->Name.getData(), option->Value);
 	}
@@ -333,7 +333,7 @@ void C4GameOptionsList::InitOptions()
 	if (param_defs)
 	{
 		size_t idx = 0; const C4ScenarioParameterDef *def;
-		while (def = param_defs->GetParameterDefByIndex(idx++))
+		while ((def = param_defs->GetParameterDefByIndex(idx++)))
 			if (!def->IsAchievement()) // achievements are displayed in scenario selection. no need to repeat them here
 				new OptionScenarioParameter(this, def);
 	}
@@ -354,7 +354,7 @@ void C4GameOptionsList::InitOptions()
 void C4GameOptionsList::ClearOptions()
 {
 	C4GUI::Element *pFirst;
-	while (pFirst = GetFirst()) delete pFirst;
+	while ((pFirst = GetFirst())) delete pFirst;
 }
 
 void C4GameOptionsList::Update()

@@ -521,7 +521,6 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
 
-			StdMeshInstance::FaceOrdering old_fo = StdSubMeshInstance::FO_Fixed;
 			if(cobj->pMeshInstance)
 				cobj->pMeshInstance->SetFaceOrdering(StdSubMeshInstance::FO_NearestToFarthest);
 

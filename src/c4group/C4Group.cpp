@@ -672,7 +672,7 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 				return false;
 			return true;
 
-		case C4GroupEntry::C4GRES_InMemory: // Save buffer to file in folder
+		case C4GroupEntry::C4GRES_InMemory: { // Save buffer to file in folder
 			CStdFile hFile;
 			bool fOkay = false;
 			if (hFile.Create(tfname, !!childgroup))
@@ -683,8 +683,9 @@ bool C4Group::AddEntry(C4GroupEntry::EntryStatus status,
 			if (fHoldBuffer) { if (fBufferIsStdbuf) StdBuf::DeletePointer(membuf); else delete [] membuf; }
 
 			return fOkay;
+		}
 
-			// InGrp & Deleted ignored
+		default: break; // InGrp & Deleted ignored
 		}
 
 		return Error("Add to folder: Invalid request");
@@ -1025,6 +1026,7 @@ void C4Group::ResetSearch(bool reload_contents)
 	case GRPF_File:
 		SearchPtr=FirstEntry;
 		break;
+	default: break; // InGrp & Deleted ignored
 	}
 }
 
@@ -1073,6 +1075,7 @@ C4GroupEntry* C4Group::SearchNextEntry(const char *szName)
 				}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	default: break; // InGrp & Deleted ignored
 	}
 	// No entry found: reset search pointer
 	SearchPtr=NULL;
@@ -1151,6 +1154,7 @@ bool C4Group::Read(void *pBuffer, size_t iSize)
 	case GRPF_Folder:
 		if (!StdFile.Read(pBuffer,iSize)) return Error("Read: Error reading from folder contents");
 		break;
+	default: break; // InGrp & Deleted ignored
 	}
 
 	return true;
@@ -1412,6 +1416,7 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 		break;
 		// refresh file list
 		ResetSearch(true);
+	default: break; // InGrp & Deleted ignored
 	}
 	return true;
 }
@@ -1443,6 +1448,7 @@ bool C4Group::Rename(const char *szFile, const char *szNewName)
 		// refresh file list
 		ResetSearch(true);
 		break;
+	default: break; // InGrp & Deleted ignored
 	}
 
 	return true;
@@ -1570,6 +1576,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 		if (!CopyItem(szPath,szTargetFName))
 			return Error("ExtractEntry: Cannot copy item");
 		break;
+	default: break; // InGrp & Deleted ignored
 	}
 	return true;
 }
@@ -1751,13 +1758,15 @@ bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 		if ((!centry) || (centry->Status != C4GroupEntry::C4GRES_InGroup)) return false;
 		return SetFilePtr(centry->Offset);
 
-	case GRPF_Folder:
+	case GRPF_Folder: {
 		StdFile.Close();
 		char path[_MAX_FNAME+1]; SCopy(FileName,path,_MAX_FNAME);
 		AppendBackslash(path); SAppend(szName,path);
 		bool fSuccess = StdFile.Open(path, NeedsToBeAGroup);
 		return fSuccess;
+	}
 
+	default: break; // InGrp & Deleted ignored
 	}
 	return false;
 }
@@ -1805,7 +1814,7 @@ bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool fHoldBu
 	              szName,
 	              pBuffer.getSize(),
 	              szName,
-	              (BYTE*) pBuffer.getData(),
+	              (BYTE*) pBuffer.getMData(),
 	              false,
 	              fHoldBuffer,
 	              fExecutable,
@@ -1822,7 +1831,7 @@ bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool fHol
 	              szName,
 	              pBuffer.getLength(),
 	              szName,
-	              (BYTE*) pBuffer.getData(),
+	              (BYTE*) pBuffer.getMData(),
 	              false,
 	              fHoldBuffer,
 	              fExecutable,

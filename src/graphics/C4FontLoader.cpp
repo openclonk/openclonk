@@ -380,9 +380,9 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 	int at_x = iCurrentSfcX + Max(slot->bitmap_left,0);
 	// Copy to the surface
 	if (!sfcCurrent->Lock()) return false;
-	for (int y = 0; y < slot->bitmap.rows + fDoShadow; ++y)
+	for (unsigned int y = 0; y < slot->bitmap.rows + fDoShadow; ++y)
 	{
-		for (int x = 0; x < slot->bitmap.width + fDoShadow; ++x)
+		for (unsigned int x = 0; x < slot->bitmap.width + fDoShadow; ++x)
 		{
 			unsigned char bAlpha, bAlphaShadow;
 			if (x < slot->bitmap.width && y < slot->bitmap.rows)

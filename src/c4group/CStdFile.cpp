@@ -247,7 +247,7 @@ bool CStdFile::Write(const void *pBuffer, int iSize)
 	int transfer;
 	if (!pBuffer) return false;
 	if (!ModeWrite) return false;
-	BYTE *bypBuffer= (BYTE*) pBuffer;
+	const BYTE *bypBuffer= (const BYTE*) pBuffer;
 	while (iSize>0)
 	{
 		// Space in buffer: Transfer as much as possible
@@ -268,10 +268,10 @@ bool CStdFile::Write(const void *pBuffer, int iSize)
 bool CStdFile::WriteString(const char *szStr)
 {
 	thread_check.Check();
-	BYTE nl[2]={0x0D,0x0A};	
+	BYTE nl[2]={0x0D,0x0A};
 	if (!szStr) return false;
 	int size=SLen(szStr);
-	if (!Write((void*)szStr,size)) return false;
+	if (!Write((const void*)szStr,size)) return false;
 	if (!Write(nl,2)) return false;
 	return true;
 }

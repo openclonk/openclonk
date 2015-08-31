@@ -154,7 +154,7 @@ static void crash_handler(int signo, siginfo_t * si, void *)
 			case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
 			}
 			char hex[sizeof(void *) * 2];
-			int i; intptr_t x = reinterpret_cast<intptr_t>(si->si_addr);
+			intptr_t x = reinterpret_cast<intptr_t>(si->si_addr);
 			switch (signo)
 			{
 			case SIGILL: case SIGFPE: case SIGSEGV: case SIGBUS: case SIGTRAP:

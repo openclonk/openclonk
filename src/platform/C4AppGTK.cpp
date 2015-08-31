@@ -138,12 +138,12 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	if (!fFullScreen)
 	{
 		RestoreVideoMode();
-		if (iXRes != -1)
+		if (iXRes != -1u)
 			pWindow->SetSize(iXRes, iYRes);
 		return true;
 	}
 
-	if (Priv->xrandr_major_version >= 0 && !(iXRes == -1 && iYRes == -1))
+	if (Priv->xrandr_major_version >= 0 && !(iXRes == -1u && iYRes == -1u))
 	{
 		// randr spec says to always get fresh info, so don't cache.
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
@@ -153,7 +153,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		XRRScreenSize * sizes = XRRConfigSizes(conf, &n);
 		for (int i = 0; i < n; ++i)
 		{
-			if (sizes[i].width == iXRes && sizes[i].height == iYRes)
+			if (unsigned(sizes[i].width) == iXRes && unsigned(sizes[i].height) == iYRes)
 			{
 #ifdef _DEBUG
 				LogF("XRRSetScreenConfig %d", i);
@@ -165,7 +165,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		XRRFreeScreenConfigInfo(conf);
 	}
 	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
-	return fDspModeSet || (iXRes == -1 && iYRes == -1);
+	return fDspModeSet || (iXRes == -1u && iYRes == -1u);
 }
 
 void C4AbstractApp::RestoreVideoMode()
@@ -202,46 +202,6 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 		return true;
 	}
 	return false;
-}
-
-static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
-{
-	XRRScreenResources * r = XRRGetScreenResources(dpy, w);
-	if (!r) return NULL;
-
-	XRROutputInfo * info = NULL;
-	RROutput output = XRRGetOutputPrimary(dpy, w);
-	if(output != 0)
-	{
-		info = XRRGetOutputInfo(dpy, r, output);
-		if (!info)
-		{
-			XRRFreeScreenResources(r);
-			return NULL;
-		}
-	}
-
-	if(!info || info->connection == RR_Disconnected || info->crtc == 0)
-	{
-		// The default "primary" output does not seem to be connected
-		// to a piece of actual hardware. As a fallback, go through
-		// all outputs and choose the first active one.
-		XRRFreeOutputInfo(info);
-		info = NULL;
-		for(int i = 0; i < r->noutput; ++i)
-		{
-			info = XRRGetOutputInfo(dpy, r, r->outputs[i]);
-			if(info->connection != RR_Disconnected && info->crtc != 0)
-				break;
-
-			XRRFreeOutputInfo(info);
-			info = NULL;
-		}
-	}
-	XRRFreeScreenResources(r);
-	if(!info) return NULL;
-
-	return info;
 }
 
 // Copy the text to the clipboard or the primary selection

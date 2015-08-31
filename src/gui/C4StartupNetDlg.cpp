@@ -129,7 +129,8 @@ void C4StartupNetListEntry::SetRefQuery(const char *szAddress, enum QueryType eQ
 	// safety: clear previous
 	ClearRef();
 	// setup layout
-	((C4Facet &) pIcon->GetFacet()) = (const C4Facet &) C4Startup::Get()->Graphics.fctNetGetRef;
+	const_cast<C4Facet &>(reinterpret_cast<const C4Facet &>(pIcon->GetFacet()))
+	  = (const C4Facet &) C4Startup::Get()->Graphics.fctNetGetRef;
 	pIcon->SetAnimated(true, 1);
 	pIcon->SetBounds(rctIconLarge);
 	// init a new ref client to query
