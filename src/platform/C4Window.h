@@ -225,6 +225,8 @@
 const int CocoaKeycodeOffset = 300;
 extern C4KeyCode K_SHIFT_L;
 extern C4KeyCode K_SHIFT_R;
+extern C4KeyCode K_CONTROL_L;
+extern C4KeyCode K_CONTROL_R;
 extern C4KeyCode K_ALT_L;
 extern C4KeyCode K_ALT_R;
 extern C4KeyCode K_F1;
