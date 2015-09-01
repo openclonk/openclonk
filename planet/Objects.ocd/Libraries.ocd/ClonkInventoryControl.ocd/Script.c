@@ -171,7 +171,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 		}
 	};
 	fx.dummy.Visibility = VIS_Owner;
-	fx.dummy.Plane = item.Plane + 1;
+	fx.dummy.Plane = 1000;
 	fx.dummy->Message("@%s", item->GetName());
 	
 	// Center dummy!
@@ -181,38 +181,28 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 	fx.width  = item->GetDefWidth();
 	fx.height = item->GetDefHeight();
 	
-	var particle =
-	{
-		Prototype = Particles_Flash(),
-		Size = Max(fx.width, fx.height),
-		Attach = ATTACH_Front
-	};
-	fx.dummy->CreateParticle("SphereSpark", 0, 0, 0, 0, 20, particle, 1);
+	// Draw the item's graphics in front of it again to achieve a highlighting effect.
+	fx.dummy->SetGraphics(nil, nil, 1, GFXOV_MODE_Object, nil, GFX_BLIT_Additive, item);
 	
-	// And smaller sparks during the effect.
-	fx.particles = 
+	// Draw a nice selector particle on item change.
+	var selector =
 	{
-		Prototype = particle,
-		Size = PV_Linear(2, 0),
-		Rotation = PV_Random(360),
-		Stretch = PV_Linear(0, 4000),
+		Size = PV_Step(3, 2, 1, Max(fx.width, fx.height)),
+		Attach = ATTACH_Front,
+		Rotation = PV_Step(1, PV_Random(0, 360), 1),
+		Alpha = 200
 	};
 	
-	fx.width /= 2;
-	fx.height /= 2;
+	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1); 
 }
 
-private func FxIntHighlightItemTimer(object target, proplist fx, int time)
 {
 	if (!fx.dummy) return -1;
 	if (!fx.item) return -1;
 	if (ObjectDistance(this, fx.item) > 20) return -1;
 	if (fx.item->Contained()) return -1;
-	
-	fx.dummy->CreateParticle("StarSpark", PV_Random(-fx.width, fx.width), PV_Random(-fx.height, fx.height), 0, 0, 10, fx.particles, 2);
 }
 
-private func FxIntHighlightItemStop(object target, proplist fx, int reason, temp)
 {
 	if (temp) return;
 	if (fx.dummy) fx.dummy->RemoveObject();
