@@ -213,6 +213,13 @@ const C4KeyCodeMapEntry KeyCodeMap[] = {
 #include "CocoaKeycodeMap.h"
 #endif
 
+void C4KeyCodeEx::FixShiftKeys()
+{
+	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
+	if ((dwShift & KEYS_Control) && (Key == K_CONTROL_L || Key == K_CONTROL_R)) dwShift &= ~KEYS_Control;
+	if ((dwShift & KEYS_Shift) && (Key == K_SHIFT_L || Key == K_SHIFT_R)) dwShift &= ~KEYS_Shift;
+}
+
 C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 {
 	// scan code is in hex format

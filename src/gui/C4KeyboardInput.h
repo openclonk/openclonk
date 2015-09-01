@@ -216,6 +216,8 @@ struct C4KeyCodeEx
 			: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}
 
 	bool IsRepeated() const { return fRepeated; }
+
+	void FixShiftKeys(); // reduce stuff like Ctrl+RightCtrl to simply RightCtrl
 private:
 	static C4KeyCode GetKeyByScanCode(const char *scan_code);
 };
