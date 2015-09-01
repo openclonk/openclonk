@@ -413,6 +413,11 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	}
 #if defined(_WIN32)
 
+	// Query map
+	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
+	while (pCheck->szName)
+		if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
+
 //  TODO: Works?
 //  StdStrBuf Name; Name.SetLength(1000);
 //  int res = GetKeyNameText(wCode, Name.getMData(), Name.getSize());

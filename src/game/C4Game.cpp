@@ -1862,6 +1862,9 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 		PressedKeys[vk_code] = false;
 	}
 #endif
+	// reduce stuff like Ctrl+RightCtrl to simply RightCtrl
+	if (fCtrl && (vk_code == K_CONTROL_L || vk_code == K_CONTROL_R)) fCtrl = false;
+	if (fShift && (vk_code == K_SHIFT_L || vk_code == K_SHIFT_R)) fShift = false;
 	// compose key
 	C4KeyCodeEx Key(vk_code, C4KeyShiftState(fAlt*KEYS_Alt + fCtrl*KEYS_Control + fShift*KEYS_Shift), fRepeated);
 	// compose keyboard scope

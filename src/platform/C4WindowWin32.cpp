@@ -45,7 +45,7 @@
 #define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
 /** Convert certain keys to unix scancodes (those that differ from unix scancodes) */
-static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode)
+static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode, bool extended)
 {
 	C4KeyCode &s = *scancode;
 
@@ -68,6 +68,7 @@ static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode)
 	case VK_PAUSE:		s = K_PAUSE; break;
 	case VK_PRINT:		s = K_PRINT; break;
 	case VK_RCONTROL:	s = K_CONTROL_R; break;
+	case VK_CONTROL:	s = (extended ? K_CONTROL_R : K_CONTROL_L); break;
 	case VK_NUMLOCK:	s = K_NUM; break;
 	case VK_NUMPAD1:	s = K_NUM1; break;
 	case VK_NUMPAD2:	s = K_NUM2; break;
@@ -92,7 +93,8 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
-	ConvertToUnixScancode(wParam, &scancode);
+	bool extended = ((lParam & 0x01000000) != 0);
+	ConvertToUnixScancode(wParam, &scancode, extended);
 
 	// Process message
 	switch (uMsg)
@@ -238,7 +240,8 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
-	ConvertToUnixScancode(wParam, &scancode);
+	bool extended = ((lParam & 0x01000000) != 0);
+	ConvertToUnixScancode(wParam, &scancode, extended);
 
 	// Process message
 	switch (uMsg)
@@ -456,7 +459,8 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
-	ConvertToUnixScancode(wParam, &scancode);
+	bool extended = ((lParam & 0x01000000) != 0);
+	ConvertToUnixScancode(wParam, &scancode, extended);
 
 	// Process message
 	switch (uMsg)
