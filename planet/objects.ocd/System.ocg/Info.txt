@@ -1,0 +1,2 @@
+This folder contains general functions that would otherwise go into the global System.ocg but depend on definitions in Objects.ocd.
+That way, the game can also be used without errors when Objects.ocd is not loaded.
