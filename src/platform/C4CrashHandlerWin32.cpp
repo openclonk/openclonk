@@ -172,7 +172,7 @@ namespace {
 			LOG_DYNAMIC_TEXT("Additional information for the exception:\n    Assertion that failed: " ASSERTION_INFO_FORMAT "\n    File: " ASSERTION_INFO_FORMAT "\n    Line: %d\n",
 				reinterpret_cast<ASSERTION_INFO_TYPE>(exc->ExceptionRecord->ExceptionInformation[0]),
 				reinterpret_cast<ASSERTION_INFO_TYPE>(exc->ExceptionRecord->ExceptionInformation[1]),
-				exc->ExceptionRecord->ExceptionInformation[2]);
+				(int) exc->ExceptionRecord->ExceptionInformation[2]);
 			break;
 		}
 
@@ -317,11 +317,11 @@ namespace {
 				}
 				else if (image_base > 0)
 				{
-					LOG_DYNAMIC_TEXT("+%#lx", static_cast<size_t>(frame.AddrPC.Offset - image_base));
+					LOG_DYNAMIC_TEXT("+%#lx", static_cast<long>(frame.AddrPC.Offset - image_base));
 				}
 				else
 				{
-					LOG_DYNAMIC_TEXT("%#lx", static_cast<size_t>(frame.AddrPC.Offset));
+					LOG_DYNAMIC_TEXT("%#lx", static_cast<long>(frame.AddrPC.Offset));
 				}
 				DWORD disp;
 				line->SizeOfStruct = sizeof(*line);

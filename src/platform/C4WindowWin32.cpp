@@ -708,7 +708,7 @@ bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, b
 
 void C4Window::SetTitle(const char *szToTitle)
 {
-	if (hWindow) SetWindowTextW(hWindow, szToTitle ? GetWideChar(szToTitle) : L"");
+	if (hWindow) SetWindowTextW(hWindow, (!szToTitle) ? L"" : GetWideChar(szToTitle));
 }
 
 bool C4Window::GetSize(C4Rect * pRect)
@@ -727,7 +727,7 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 	if (hWindow)
 	{
 		// If bordered, add border size
-		RECT rect = {0, 0, cx, cy};
+		RECT rect = { 0, 0, static_cast<LONG>(cx), static_cast<LONG>(cy) };
 		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
 		cx = rect.right - rect.left;
 		cy = rect.bottom - rect.top;
@@ -828,7 +828,7 @@ bool C4AbstractApp::FlushMessages()
 void C4AbstractApp::SetLastErrorFromOS()
 {
 	LPWSTR buffer = 0;
-	DWORD rv = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
 		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
 	sLastError.Take(StdStrBuf(buffer));
 	LocalFree(buffer);
@@ -925,7 +925,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 			SetLastErrorFromOS();
 			return false;
 		}
-		int orientation = dmode.dmDisplayOrientation;
+		unsigned long orientation = dmode.dmDisplayOrientation;
 		if (iXRes == -1 && iYRes == -1)
 		{
 			dspMode=dmode;

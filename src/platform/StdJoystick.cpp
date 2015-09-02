@@ -20,14 +20,6 @@
 #include "C4Include.h"
 #include <StdJoystick.h>
 
-static uint32_t dwStdGamepadAxis1 = 0;
-static uint32_t dwStdGamepadAxis2 = 1;
-
-static uint32_t dwStdGamepadMaxX = 0;
-static uint32_t dwStdGamepadMinX = 0;
-static uint32_t dwStdGamepadMaxY = 0;
-static uint32_t dwStdGamepadMinY = 0;
-
 #include <C4windowswrapper.h>
 #include <windowsx.h>
 

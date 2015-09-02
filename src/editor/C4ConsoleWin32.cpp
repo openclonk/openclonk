@@ -715,6 +715,7 @@ void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& t
 		break;
 	default:
 		assert(false);
+		return;
 	}
 	SetDlgItemTextW(hWindow,dialog_item,text.GetWideChar());
 	UpdateWindow(GetDlgItem(hWindow,dialog_item));
