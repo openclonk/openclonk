@@ -132,7 +132,7 @@ bool C4AbstractApp::FlushMessages()
 	return true;
 }
 
-bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (!fFullScreen)

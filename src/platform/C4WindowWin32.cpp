@@ -873,7 +873,7 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 #ifndef USE_CONSOLE
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
@@ -935,7 +935,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		int i=0;
 		if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
 				// compare enumerated mode with requested settings
-				if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
+				if (static_cast<int>(dmode.dmPelsWidth) == iXRes && static_cast<int>(dmode.dmPelsHeight) == iYRes && dmode.dmBitsPerPel == iColorDepth && dmode.dmDisplayOrientation == orientation
 				        && (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
 				{
 					fFound=true;
