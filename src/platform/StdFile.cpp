@@ -458,7 +458,7 @@ bool FileExists(const char *szFilename)
 size_t FileSize(const char *szFilename)
 {
 #if defined(_WIN32) || defined(_WIN64)
-	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	auto attributes = WIN32_FILE_ATTRIBUTE_DATA();
 	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
 		return 0;
 #ifdef _WIN64
@@ -488,7 +488,7 @@ size_t FileSize(int fdes)
 int FileTime(const char *szFilename)
 {
 #ifdef _WIN32
-	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	auto attributes = WIN32_FILE_ATTRIBUTE_DATA();
 	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
 		return 0;
 	int64_t ft = (static_cast<int64_t>(attributes.ftLastWriteTime.dwHighDateTime) << (sizeof(attributes.ftLastWriteTime.dwLowDateTime) * 8)) | attributes.ftLastWriteTime.dwLowDateTime;
@@ -968,7 +968,7 @@ void DirectoryIterator::Read(const char *dirname)
 	std::string search_path(dirname);
 	search_path.push_back(DirectorySeparator);
 #ifdef WIN32
-	WIN32_FIND_DATAW file = {0};
+	auto file = WIN32_FIND_DATAW();
 	HANDLE fh = FindFirstFileW(GetWideChar((search_path + '*').c_str()), &file);
 	if (fh == INVALID_HANDLE_VALUE)
 	{

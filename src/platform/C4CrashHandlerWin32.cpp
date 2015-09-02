@@ -271,8 +271,7 @@ namespace {
 		if (SymInitialize(process, 0, true))
 		{
 			LOG_STATIC_TEXT("\nStack trace:\n");
-			STACKFRAME64 frame;
-			memset(&frame, 0, sizeof(STACKFRAME64));
+			auto frame = STACKFRAME64();
 			DWORD image_type;
 			CONTEXT context = *exc->ContextRecord;
 			// Setup frame info
@@ -439,8 +438,8 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 	if (file != INVALID_HANDLE_VALUE)
 	{
-		MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
-		MINIDUMP_USER_STREAM user_stream = {0};
+		auto user_stream_info = MINIDUMP_USER_STREAM_INFORMATION();
+		auto user_stream = MINIDUMP_USER_STREAM();
 		char build_id[] = OC_BUILD_ID;
 		if (OC_BUILD_ID[0] != '\0')
 		{
@@ -544,7 +543,7 @@ namespace {
 			return FALSE;
 
 		// Get thread info
-		CONTEXT ctx = {0};
+		auto ctx = CONTEXT();
 #ifndef CONTEXT_ALL
 #define CONTEXT_ALL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS | \
 	CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
@@ -553,7 +552,7 @@ namespace {
 		BOOL result = GetThreadContext(data->thread, &ctx);
 
 		// Setup a fake exception to log
-		EXCEPTION_RECORD erec = {0};
+		auto erec = EXCEPTION_RECORD();
 		erec.ExceptionCode = STATUS_ASSERTION_FAILURE;
 		erec.ExceptionFlags = 0L;
 		erec.ExceptionInformation[0] = (ULONG_PTR)data->expression;

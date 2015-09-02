@@ -167,7 +167,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_CHAR:
 	{
 		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
-		char c[5] = {0};
+		char c[5] = {0,0,0,0,0};
 		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
 			return 0;
 		// GUI: forward
@@ -574,7 +574,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	else if (windowKind == W_Fullscreen)
 	{
 		// Register window class
-		WNDCLASSEXW WndClass = {0};
+		auto WndClass = WNDCLASSEXW();
 		WndClass.cbSize        = sizeof(WNDCLASSEX);
 		WndClass.style         = CS_DBLCLKS;
 		WndClass.lpfnWndProc   = FullScreenWinProc;
