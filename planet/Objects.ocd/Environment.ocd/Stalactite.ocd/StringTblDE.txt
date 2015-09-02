@@ -1,0 +1,2 @@
+Name=Stalactite
+Description=Hängt von Decken.

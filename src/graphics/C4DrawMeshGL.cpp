@@ -128,10 +128,7 @@ namespace
 			);
 		}
 
-		if (pGL->Workarounds.LowMaxVertexUniformCount)
-			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
-		else
-			return buf;
+		return buf;
 	}
 
 	// Note this only gets the code which inserts the slices specific for the pass
@@ -425,6 +422,7 @@ namespace
 			((dwModClr >> 24) & 0xff) / 255.0f
 		};
 		call.SetUniform4fv(C4SSU_ClrMod, 1, fMod);
+		call.SetUniform3fv(C4SSU_Gamma, 1, pDraw->gammaOut);
 
 		// Player color
 		const float fPlrClr[3] = {
@@ -476,7 +474,7 @@ namespace
 		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
 		struct BoneTransform
 		{
-			float m[3][4];
+			float m[4][4];
 		};
 		std::vector<BoneTransform> bones;
 		if (mesh_instance.GetBoneCount() == 0)
@@ -485,7 +483,7 @@ namespace
 			static const BoneTransform dummy_bone = {
 				1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f
+				0.0f, 0.0f, 1.0f, 1.0f
 			};
 			bones.push_back(dummy_bone);
 		}
@@ -498,7 +496,8 @@ namespace
 				BoneTransform cooked_bone = {
 					bone(0, 0), bone(0, 1), bone(0, 2), bone(0, 3),
 					bone(1, 0), bone(1, 1), bone(1, 2), bone(1, 3),
-					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3)
+					bone(2, 0), bone(2, 1), bone(2, 2), bone(2, 3),
+					0, 0, 0, 1
 				};
 				bones.push_back(cooked_bone);
 			}
@@ -616,16 +615,14 @@ namespace
 			if(dwBlitMode & C4GFXBLIT_MOD2) ssc |= C4SSC_MOD2;
 			if(pFoW != NULL) ssc |= C4SSC_LIGHT;
 			const C4Shader* shader = pass.Program->Program->GetShader(ssc);
+			if (!shader) return;
 			C4ShaderCall call(shader);
 			call.Start();
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
 			{
-				if (pGL->Workarounds.LowMaxVertexUniformCount)
-					glUniformMatrix3x4fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_FALSE, &bones[0].m[0][0]);
-				else
-					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
+				call.SetUniformMatrix4x4fv(C4SSU_Bones, bones.size(), &bones[0].m[0][0]);
 			}
 
 			// Bind the vertex data of the mesh
@@ -841,32 +838,16 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	static const float FOV = 60.0f;
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
 
-	// Convert OgreToClonk matrix to column-major order
-	// TODO: This must be executed after C4Draw::OgreToClonk was
-	// initialized - is this guaranteed at this position?
-	static const float OgreToClonkGL[16] =
-	{
-		C4Draw::OgreToClonk(0,0), C4Draw::OgreToClonk(1,0), C4Draw::OgreToClonk(2,0), 0,
-		C4Draw::OgreToClonk(0,1), C4Draw::OgreToClonk(1,1), C4Draw::OgreToClonk(2,1), 0,
-		C4Draw::OgreToClonk(0,2), C4Draw::OgreToClonk(1,2), C4Draw::OgreToClonk(2,2), 0,
-		C4Draw::OgreToClonk(0,3), C4Draw::OgreToClonk(1,3), C4Draw::OgreToClonk(2,3), 1
-	};
-
-	static const bool OgreToClonkParity = C4Draw::OgreToClonk.Determinant() > 0.0f;
-
 	const StdMesh& mesh = instance.GetMesh();
 
-	bool parity = OgreToClonkParity;
+	bool parity = false;
 
 	// Convert bounding box to clonk coordinate system
 	// (TODO: We should cache this, not sure where though)
-	// TODO: Note that this does not generally work with an arbitrary transformation this way
 	const StdMeshBox& box = mesh.GetBoundingBox();
 	StdMeshVector v1, v2;
 	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
 	v2.x = box.x2; v2.y = box.y2; v2.z = box.z2;
-	v1 = OgreToClonk * v1; // TODO: Include translation
-	v2 = OgreToClonk * v2; // TODO: Include translation
 
 	// Vector from origin of mesh to center of mesh
 	const StdMeshVector MeshCenter = (v1 + v2)/2.0f;
@@ -1038,9 +1019,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// Apply MeshTransformation (in the Mesh's coordinate system)
 		glMultMatrixf(Matrix);
 	}
-
-	// Convert from Ogre to Clonk coordinate system
-	glMultMatrixf(OgreToClonkGL);
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 

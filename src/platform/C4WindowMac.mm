@@ -147,6 +147,8 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 C4KeyCode K_SHIFT_L = 56 + CocoaKeycodeOffset;
 C4KeyCode K_SHIFT_R = 60 + CocoaKeycodeOffset;
+C4KeyCode K_CONTROL_L = 0x3b + CocoaKeycodeOffset;
+C4KeyCode K_CONTROL_R = 0x3e + CocoaKeycodeOffset;
 C4KeyCode K_ALT_L = 58 + CocoaKeycodeOffset;
 C4KeyCode K_ALT_R = 61 + CocoaKeycodeOffset;
 C4KeyCode K_F1 = 122 + CocoaKeycodeOffset;

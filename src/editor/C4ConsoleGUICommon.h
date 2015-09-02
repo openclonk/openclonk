@@ -54,4 +54,7 @@ void C4ToolsDlg::Default()
 	ModeIFT = true;
 	SCopy("Earth",Material);
 	SCopy("earth",Texture);
+	ModeBack = false;
+	SCopy("Tunnel", BackMaterial);
+	SCopy("tunnel", BackTexture);
 }

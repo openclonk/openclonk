@@ -22,6 +22,10 @@
       <dd>
         <text>Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Map.bmp correspond to materials and textures as defined in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink>.</text>
       </dd>
+      <dt id="MapFgBg"><img height="16" src="../../images/icon_image.png" width="16"/>MapFg.bmp / MapBg.bmp</dt>
+      <dd>
+        <text>Same as Map.bmp as defined above, except that foreground and background materials can be drawn separately. In Map.bmp, color indices greater than 127 will result in underground materials. In MapFg.bmp and MapBg.bmp, all color indices up to 255 can be used, and undergroup materials are simply specified by tunnel material in the background map.</text>
+      </dd>
       <dt id="Landscapetxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="scenario/MapCreatorS2.html">Landscape.txt</emlink></dt>
       <dd>
         <text>Advanced scenario designers can use this component to define highly complex, fully random generated dynamic landscapes. This does require certain mathematical skill and some patience, however.</text>
@@ -103,11 +107,6 @@ US:Attack of the Killer Wipfs</code>
 	
     <h id="SaveGames">Additional files created for saved games or scenarios</h>
     <dl>
-      <dt id="Landscapepng"><img height="16" src="../../images/icon_image.png" width="16"/>Landscape.png</dt>
-      <dd>
-        <text>Full size map for exact landscapes. This is mainly used in savegames to store the exact terrain including transparent materials and their texture. Exact landscapes consume an extreme amount of memory and should not be used for regularly distributed scenarios.</text>
-      </dd>
-
       <dt id="MatMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/>MatMap.txt</dt>
       <dd>
         <text>Stores the material table used in this scenario. The materials listed here are used by the exact landscape and have to be available in the loaded Material.ocg group.</text>

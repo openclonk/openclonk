@@ -43,11 +43,24 @@
           <desc>The further away the sound effect from the player, the more quiet it is played. By default, the sound will not be hearable anymore in a distance of 700 pixels. A custom distance can be specified here.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>pitch</name>
+          <desc>Pitch modification between -90 and 1000. Values larger than zero let the sound play the faster and at a higher pitch. The resulting speed multiplication factor is (pitch + 100) / 100.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>modifier</name>
+          <desc>Sound modifier for special effects such as reverb or echo. See <emlink href="script/SoundModifiers.html">Sound modifiers</emlink>.</desc>
+          <optional />
+        </param>
 	</params>
     </syntax>
     <desc>Plays a sound at the specified position. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition.</desc>
     <related><funclink>Sound</funclink></related>
     <related><funclink>Music</funclink></related>
+    <related><emlink href="script/SoundModifiers.html">Sound modifiers</emlink></related>
 	</func>
   <author>Sven2</author><date>2002-08</date>
 </funcs>

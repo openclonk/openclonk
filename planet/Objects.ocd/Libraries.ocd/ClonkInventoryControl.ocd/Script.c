@@ -196,6 +196,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1); 
 }
 
+private func FxIntHighlightItemTimer(object target, proplist fx, int time)
 {
 	if (!fx.dummy) return -1;
 	if (!fx.item) return -1;
@@ -203,6 +204,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 	if (fx.item->Contained()) return -1;
 }
 
+private func FxIntHighlightItemStop(object target, proplist fx, int reason, temp)
 {
 	if (temp) return;
 	if (fx.dummy) fx.dummy->RemoveObject();

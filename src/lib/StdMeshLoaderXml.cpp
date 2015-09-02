@@ -142,10 +142,33 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 				vertices[i].x = RequireFloatAttribute(position_elem, "x");
 				vertices[i].y = RequireFloatAttribute(position_elem, "y");
 				vertices[i].z = RequireFloatAttribute(position_elem, "z");
+			}
 
+			if(attributes & NORMALS)
+			{
+				TiXmlElement* normal_elem = RequireFirstChild(vertex_elem, "normal");
+
+				vertices[i].nx = RequireFloatAttribute(normal_elem, "x");
+				vertices[i].ny = RequireFloatAttribute(normal_elem, "y");
+				vertices[i].nz = RequireFloatAttribute(normal_elem, "z");
+			}
+
+			if(attributes & TEXCOORDS)
+			{
+				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
+				// currently only the first set is read, any additional ones are ignored
+				TiXmlElement* texcoord_elem = RequireFirstChild(vertex_elem, "texcoord");
+				vertices[i].u = RequireFloatAttribute(texcoord_elem, "u");
+				vertices[i].v = RequireFloatAttribute(texcoord_elem, "v");
+			}
+
+			vertices[i] = OgreToClonk::TransformVertex(vertices[i]);
+
+			if (attributes & POSITIONS)
+			{
 				const float d = std::sqrt(vertices[i].x*vertices[i].x
-						                      + vertices[i].y*vertices[i].y
-						                      + vertices[i].z*vertices[i].z);
+				                        + vertices[i].y*vertices[i].y
+				                        + vertices[i].z*vertices[i].z);
 
 				// Construct BoundingBox
 				StdMeshBox& BoundingBox = mesh.BoundingBox;
@@ -167,24 +190,6 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 					BoundingBox.z2 = Max(vertices[i].z, BoundingBox.z2);
 					mesh.BoundingRadius = Max(mesh.BoundingRadius, d);
 				}
-			}
-
-			if(attributes & NORMALS)
-			{
-				TiXmlElement* normal_elem = RequireFirstChild(vertex_elem, "normal");
-
-				vertices[i].nx = RequireFloatAttribute(normal_elem, "x");
-				vertices[i].ny = RequireFloatAttribute(normal_elem, "y");
-				vertices[i].nz = RequireFloatAttribute(normal_elem, "z");
-			}
-
-			if(attributes & TEXCOORDS)
-			{
-				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
-				// currently only the first set is read, any additional ones are ignored
-				TiXmlElement* texcoord_elem = RequireFirstChild(vertex_elem, "texcoord");
-				vertices[i].u = RequireFloatAttribute(texcoord_elem, "u");
-				vertices[i].v = RequireFloatAttribute(texcoord_elem, "v");
 			}
 		}
 
@@ -225,7 +230,7 @@ void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<S
 		// Check quickly if all weight slots are used
 		if (vertex.bone_weight[StdMeshVertex::MaxBoneWeightCount - 1] != 0)
 		{
-			Error(FormatString("Vertex %d is influenced by more than %d bones", VertexIndex, StdMeshVertex::MaxBoneWeightCount), vertexboneassignment_elem);
+			Error(FormatString("Vertex %d is influenced by more than %d bones", VertexIndex, static_cast<int>(StdMeshVertex::MaxBoneWeightCount)), vertexboneassignment_elem);
 		}
 		for (size_t weight_index = 0; weight_index < StdMeshVertex::MaxBoneWeightCount; ++weight_index)
 		{
@@ -317,9 +322,9 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		}
 	}
 
-	// We allow bounding box to be empty if it's only due to X direction since
+	// We allow bounding box to be empty if it's only due to Z direction since
 	// this is what goes inside the screen in Clonk.
-	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
+	if(mesh->BoundingBox.x1 == mesh->BoundingBox.x2 || mesh->BoundingBox.y1 == mesh->BoundingBox.y2)
 		xml.Error(StdCopyStrBuf("Bounding box is empty"), mesh_elem);
 
 	// Read skeleton, if any
@@ -528,6 +533,7 @@ void StdMeshSkeletonLoader::LoadSkeletonXml(const char* groupname, const char* f
 					frame.Transformation.scale = s;
 					frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
 					frame.Transformation.translate = bone->InverseTransformation.rotate * (bone->InverseTransformation.scale * d);
+					frame.Transformation = OgreToClonk::TransformTransformation(frame.Transformation);
 				}
 			}
 		}
@@ -541,13 +547,14 @@ void StdMeshSkeletonLoader::LoadSkeletonXml(const char* groupname, const char* f
 	// transformations, not bone+parent.
 	for (unsigned int i = 0; i < Skeleton->GetNumBones(); ++i)
 	{
+		// Apply parent transformation
 		if (Skeleton->Bones[i]->Parent)
-		{
-			// Apply parent transformation
-			Skeleton->Bones[i]->Transformation = Skeleton->Bones[i]->Parent->Transformation * Skeleton->Bones[i]->Transformation;
-			// Update inverse
-			Skeleton->Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(Skeleton->Bones[i]->Transformation);
-		}
+			Skeleton->Bones[i]->Transformation = Skeleton->Bones[i]->Parent->Transformation * OgreToClonk::TransformTransformation(Skeleton->Bones[i]->Transformation);
+		else
+			Skeleton->Bones[i]->Transformation = OgreToClonk::TransformTransformation(Skeleton->Bones[i]->Transformation);
+
+		// Update inverse
+		Skeleton->Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(Skeleton->Bones[i]->Transformation);
 	}
 
 	StoreSkeleton(groupname, filename, Skeleton);

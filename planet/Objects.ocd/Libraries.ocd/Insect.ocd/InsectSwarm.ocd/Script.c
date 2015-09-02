@@ -1,10 +1,11 @@
 /**
 	Insect Swarm Library
 	Superimpose to any (flying) insect to create an insect swarm.
-	Always include after Library_Insect!
 
 	@author Clonkonaut
 --*/
+
+#include Library_Insect
 
 // Places amount swarms with swarm_members individuals each
 public func Place(int amount, int swarm_members, proplist area)
@@ -16,6 +17,14 @@ public func Place(int amount, int swarm_members, proplist area)
 
 	for (var insect in _inherited(amount, area))
 		insect->CreateSwarm(swarm_members - 1); // -1 because one insect already exists
+}
+
+/** Call something for every swarm member
+*/
+public func SwarmCall(string func, par1, par2, par3, par4, par5, par6, par7, par8, par9)
+{
+	if(!lib_swarm_helper) return;
+	lib_swarm_helper->SwarmCall(func, par1, par2, par3, par4, par5, par6, par7, par8, par9);
 }
 
 /** Standard swarm size (utilised in Place()). Default 10.
@@ -40,7 +49,7 @@ public func CreateSwarm(int amount)
 	if (!amount) return;
 
 	// Create a swarm helper
-	lib_swarm_helper = CreateObject(Library_Swarm_Helper,0,0,NO_OWNER);
+	lib_swarm_helper = CreateObject(Library_Swarm_Helper, AbsX(0), AbsY(0), NO_OWNER);
 	lib_swarm_helper->SetMaster(this);
 	lib_swarm_helper->SetSwarmCount(amount);
 
@@ -55,6 +64,8 @@ public func CreateSwarm(int amount)
 		last_created = insect;
 		amount--;
 	}
+
+	return lib_swarm_helper;
 }
 
 public func SetNextInLine(object next)
@@ -70,6 +81,7 @@ public func SetPreviousInLine(object next)
 public func SetSwarmHelper(object helper)
 {
 	lib_swarm_helper = helper;
+	lib_swarm_helper->AddSwarmMember(this);
 }
 
 // Swarm insect need randomized activities to not look odd
@@ -83,8 +95,9 @@ private func Initialize()
 private func Death()
 {
 	// Death of the master
-	if (lib_swarm_helper->GetMaster() == this)
-		lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
+	if (lib_swarm_helper)
+		if (lib_swarm_helper->GetMaster() == this)
+			lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Death of a slave
 	if(lib_swarm_previnline && lib_swarm_nextinline)
 	{
@@ -98,8 +111,9 @@ private func Death()
 private func Destruction()
 {
 	// Destruction of the master
-	if (lib_swarm_helper) if (lib_swarm_helper->GetMaster() == this)
-		lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
+	if (lib_swarm_helper)
+		if (lib_swarm_helper->GetMaster() == this)
+			lib_swarm_helper->MakeNewMaster(lib_swarm_nextinline);
 	// Destruction of a slave
 	if(lib_swarm_previnline && lib_swarm_nextinline)
 	{

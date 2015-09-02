@@ -11,13 +11,14 @@
     <dl>
       <dt id="TexMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/>TexMap.txt</dt>
       <dd>
-        <text>Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'.</text>
-        <text>The engine will draw materials with a higher index above those with a lower index so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. This is also the reason why there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials.</text>
+        <text>Lookup table for color indices in static and dynamic landscapes. Colors 0-255 are matched to a material-texture-reference, except in Map.bmp static landscapes, where colors 0-127 are matched to a material-texture reference, and 128-255 are matched to the same list of references, except they are marked 'underground'.</text>
+        <text>Each line may contain one material-texture-entry in the format Index=Material-Texture. For example, 12=Earth-earth-topsoil would define color index 12 as earth material with the texture taken from a file called earth-topsoil.png.</text>
+        <text>The engine will draw materials in the order they are defined in the TexMap file, irrespective of assigned palette indices. Materials drawn late overwrite materials drawn early so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. For this reason, there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials.</text>
         <text>If a custom map fails with the message 'texture n undefined' you should define the specified texture in the TexMap. You should always use a paint program capable of editing indexed color palettes without modifying the palette (MS Paint is not suited for this).</text>
       </dd>
       <dt id="ocm"><img height="16" src="../../images/icon_material.png" width="16"/><emlink href="material/ocm.html">*.ocm</emlink></dt>
       <dd>
-        <text>The engine will accept up to 125 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
+        <text>The engine will accept up to 252 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
       </dd>
       <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/>*.png</dt>
       <dd>

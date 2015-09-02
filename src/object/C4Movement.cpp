@@ -152,10 +152,10 @@ void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, i
 	}
 }
 
-int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts)
+int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts, bool collide_halfvehic)
 {
 	// Check shape contact at given position
-	Shape.ContactCheck(iAtX,iAtY,border_hack_contacts);
+	Shape.ContactCheck(iAtX,iAtY,border_hack_contacts,collide_halfvehic);
 
 	// Store shape contact values in object t_contact
 	t_contact=Shape.ContactCNAT;
@@ -281,7 +281,7 @@ void C4Object::DoMovement()
 		{
 			// Next step
 			int step = Sign(new_y - fix_y);
-			if ((iContact=ContactCheck(GetX(), GetY() + step)))
+			if ((iContact=ContactCheck(GetX(), GetY() + step, nullptr, ydir > 0)))
 			{
 				fAnyContact=true; iContacts |= t_contact;
 				new_y = fix_y;

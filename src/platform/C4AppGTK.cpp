@@ -132,7 +132,7 @@ bool C4AbstractApp::FlushMessages()
 	return true;
 }
 
-bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (!fFullScreen)
@@ -242,58 +242,6 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	if(!info) return NULL;
 
 	return info;
-}
-
-bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP& ramp, bool fForce)
-{
-	if (!Active && !fForce) return false;
-	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
-	if (Priv->gammasize != 256) return false;
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	XRRCrtcGamma g = { Priv->gammasize, ramp.red, ramp.green, ramp.blue };
-
-	XRROutputInfo* i = GetXRROutputInfoForWindow(dpy, pWindow->wnd);
-	if (!i)
-	{
-		Log("  Error setting gamma ramp: No XRROutputInfo available");
-		return false;
-	}
-	XRRSetCrtcGamma(dpy, i->crtc, &g);
-	XRRFreeOutputInfo(i);
-	return true;
-}
-
-bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP& ramp)
-{
-	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
-	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	XRROutputInfo* i = GetXRROutputInfoForWindow(dpy, pWindow->wnd);
-	if (!i)
-	{
-		Log("  Error getting default gamma ramp: No XRROutputInfo available");
-		return false;
-	}
-
-	XRRCrtcGamma * g = XRRGetCrtcGamma(dpy, i->crtc);
-	XRRFreeOutputInfo(i);
-	if (!g)
-	{
-		Log("  Error getting default gamma ramp: XRRGetCrtcGamma");
-		return false;
-	}
-	Priv->gammasize = g->size;
-	if (Priv->gammasize != 256)
-	{
-		LogF("  Size of GammaRamp is %d, not 256", Priv->gammasize);
-	}
-	else
-	{
-		memcpy(ramp.red, g->red, sizeof(ramp.red));
-		memcpy(ramp.green, g->green, sizeof(ramp.green));
-		memcpy(ramp.blue, g->blue, sizeof(ramp.blue));
-	}
-	XRRFreeGamma(g);
-	return true;
 }
 
 // Copy the text to the clipboard or the primary selection

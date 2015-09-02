@@ -82,7 +82,7 @@ protected func FxFlagCarriedStart(object target, effect, int temp)
 	
 	effect.x=target->GetX();
 	effect.y=target->GetY();
-	var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
+	var trans = Trans_Mul(Trans_Translate(-17000, 0, 0), Trans_Rotate(90, 1, 0, 0));
 	effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
 	this.Visibility = VIS_None;
 	

@@ -38,7 +38,7 @@ C4Shader *C4FoW::GetFramebufShader()
 		FramebufShader.AddTexCoord("texCoord");
 		FramebufShader.AddFragmentSlice(-1, "uniform sampler2D tex;");
 		FramebufShader.AddFragmentSlice(0,
-			"gl_FragColor = vec4(texture2D(tex, texCoord.st).rgb, 3.0f/4.0f);");
+			"gl_FragColor = texture2D(tex, texCoord.st);");
 		const char *szUniforms[] = { "tex", NULL };
 		if (!FramebufShader.Init("framebuf", szUniforms)) {
 			FramebufShader.ClearSlices();

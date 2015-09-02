@@ -1,0 +1,18 @@
+// Materials for Graphics
+
+material Bee_Hive
+{
+	technique
+	{
+		pass
+		{
+			diffuse 1.0 1.0 1.0
+			
+			texture_unit
+			{
+				texture BeeHive.png
+			}
+		}
+	}
+}
+

@@ -169,7 +169,7 @@ global func GetMaxBreath()
 global func StartGrowth(int value /* the value the object grows approx. every second, in tenths of percent */)
 {
 	var effect;
-	effect = AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+	effect = AddEffect("IntGrowth", this, 1, 35, this, nil, value);
 	effect.Time = Random(35);
 	return effect;
 }

@@ -68,7 +68,7 @@ public:
 	int32_t GetY() const { return y; }
 	bool AddVertex(int32_t iX, int32_t iY);
 	bool CheckContact(int32_t cx, int32_t cy);
-	bool ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts=0);
+	bool ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
 	bool Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos);
 	bool LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy);
 	bool InsertVertex(int32_t iPos, int32_t tx, int32_t ty);
@@ -80,6 +80,8 @@ public:
 	bool CheckScaleToWalk(int x, int y);
 	void CreateOwnOriginalCopy(C4Shape &rFrom); // create copy of all vertex members in back area of own buffers
 	void CompileFunc(StdCompiler *pComp, const C4Shape *default_shape);
+private:
+	bool CheckTouchableMaterial(int32_t x, int32_t y, int32_t vtx_i, int32_t y_dir = 0, const C4DensityProvider &rDensityProvider = DefaultDensityProvider);
 };
 
 #endif // INC_C4Shape

@@ -2,7 +2,7 @@ PlaneNoOil=Das Flugzeug braucht noch Treibstoff. Ich muss irgendwo Öl auftreiben
 
 Intro1=Autsch. Pyrit!
 Intro2=Wie kann der Treibstoff leer sein? Du sagtest doch, ein Fass Öl bringt uns locker an unser Ziel und zurück!
-Intro3=Dachte ich auch. Aber da wusste ich noch nicht, dass ich drei Tage über dem Ozean kreisen und auf einer einsamen Insel suchen müsste.
+Intro3=Dachte ich auch. Aber da wusste ich noch nicht, dass ich drei Tage über dem Ozean kreisen und nach einer einsamen Insel suchen müsste.
 Intro4=Das ist alles deine Schuld. Ich sags ja nur.
 Intro5=Was können wir nun tun?
 Intro6=Ich schlage vor du suchst neues Öl und ich repariere derweil das Flugzeug.

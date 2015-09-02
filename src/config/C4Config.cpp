@@ -107,12 +107,9 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BitDepth,              "BitDepth",             32            ,false, true));
 	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
-	pComp->Value(mkNamingAdapt(Gamma1,                "Gamma1"  ,             0             ));
-	pComp->Value(mkNamingAdapt(Gamma2,                "Gamma2"  ,             0x808080      ));
-	pComp->Value(mkNamingAdapt(Gamma3,                "Gamma3"  ,             0xffffff      ));
+	pComp->Value(mkNamingAdapt(Gamma,                 "Gamma"  ,              100           ));
 	pComp->Value(mkNamingAdapt(Currency,              "Currency"  ,           0             ));
 	pComp->Value(mkNamingAdapt(RenderInactiveEM,      "RenderInactiveEM",     1             ));
-	pComp->Value(mkNamingAdapt(DisableGamma,          "DisableGamma",         0             ,false, true));
 	pComp->Value(mkNamingAdapt(Monitor,               "Monitor",              0             )); // 0 = D3DADAPTER_DEFAULT
 	pComp->Value(mkNamingAdapt(FireParticles,         "FireParticles",        1         ));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,       "MaxRefreshDelay",      30            ));

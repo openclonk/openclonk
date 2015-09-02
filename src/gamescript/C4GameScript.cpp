@@ -388,12 +388,32 @@ static long FnGetMaterial(C4PropList * _this, long x, long y)
 	return GBackMat(x,y);
 }
 
+static long FnGetBackMaterial(C4PropList * _this, long x, long y)
+{
+	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+	return ::Landscape.GetBackMat(x, y);
+}
+
 static C4String *FnGetTexture(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 
 	// Get texture
 	int32_t iTex = PixCol2Tex(GBackPix(x, y));
+	if (!iTex) return NULL;
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
+	if (!pTex) return NULL;
+	// Return tex name
+	return String(pTex->GetTextureName());
+}
+
+static C4String *FnGetBackTexture(C4PropList * _this, long x, long y)
+{
+	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
+
+	// Get texture
+	int32_t iTex = PixCol2Tex(::Landscape.GetBackPix(x, y));
 	if (!iTex) return NULL;
 	// Get material-texture mapping
 	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
@@ -443,7 +463,7 @@ static bool FnGBackLiquid(C4PropList * _this, long x, long y)
 static bool FnGBackSky(C4PropList * _this, long x, long y)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return !GBackIFT(x, y);
+	return Landscape.GetBackPix(x, y) == 0;
 }
 
 static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat, long amount, bool distant_first)
@@ -466,7 +486,7 @@ static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nil
 	return C4Void();
 }
 
-static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -484,6 +504,12 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 	// default sound level
 	if (iLevel.IsNil() || iLevel>100)
 		iLevel=100;
+	// modifier from prop list
+	C4SoundModifier *modifier;
+	if (modifier_props)
+		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	else
+		modifier = NULL;
 	// target object
 	C4Object *pObj = Object(_this);
 	if (pObj)
@@ -491,12 +517,12 @@ static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, N
 		iX += pObj->GetX();
 		iY += pObj->GetY();
 	}
-	StartSoundEffectAt(FnStringPar(szSound),iX,iY,iLevel,iCustomFalloffDistance);
+	StartSoundEffectAt(FnStringPar(szSound), iX, iY, iLevel, iCustomFalloffDistance, iPitch);
 	// always return true (network safety!)
 	return true;
 }
 
-static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance)
+static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -514,18 +540,70 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 	// default sound level
 	if (iLevel.IsNil() || iLevel>100)
 		iLevel=100;
+	// modifier from prop list
+	C4SoundModifier *modifier;
+	if (modifier_props)
+		modifier = Application.SoundSystem.Modifiers.Get(modifier_props, true);
+	else
+		modifier = NULL;
 	// target object
 	C4Object *pObj = NULL;
 	if (!fGlobal) pObj = Object(_this);
-	// already playing?
-	if (iLoop >= 0 && GetSoundInstance(FnStringPar(szSound), pObj))
-		return false;
-	// try to play effect
+	// play/stop?
 	if (iLoop >= 0)
-		StartSoundEffect(FnStringPar(szSound),!!iLoop,iLevel,pObj, iCustomFalloffDistance);
+	{
+		// already playing?
+		C4SoundInstance *inst = GetSoundInstance(FnStringPar(szSound), pObj);
+		if (inst)
+		{
+			// then just update parameters
+			SoundUpdate(inst, iLevel, iPitch);
+		}
+		else
+		{
+			// try to play effect
+			StartSoundEffect(FnStringPar(szSound), !!iLoop, iLevel, pObj, iCustomFalloffDistance, iPitch, modifier);
+		}
+	}
 	else
-		StopSoundEffect(FnStringPar(szSound),pObj);
+	{
+		StopSoundEffect(FnStringPar(szSound), pObj);
+	}
 	// always return true (network safety!)
+	return true;
+}
+
+static bool FnChangeSoundModifier(C4PropList * _this, C4PropList *modifier_props, bool release)
+{
+	// internal function to be used by sound library: Updates sound modifier
+	C4SoundModifier *modifier = Application.SoundSystem.Modifiers.Get(modifier_props, false);
+	// modifier not found. May be due to savegame resume.
+	// In that case, creation/updates will happen automatically next time Sound() is called
+	// always return true for sync safety because the internal C4SoundModifierList is not synchronized
+	if (!modifier) return true;
+	if (release)
+		modifier->Release();
+	else
+		modifier->Update();
+	return true;
+}
+
+static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_props, Nillable<long> at_player)
+{
+	// set modifier to be applied to all future sounds
+	if (at_player.IsNil())
+	{
+		// no player given: Global modifier for all players.
+		Game.SetGlobalSoundModifier(modifier_props);
+	}
+	else
+	{
+		// modifier for all viewports of a player
+		C4Player *plr = ::Players.Get(at_player);
+		if (!plr) return false;
+		plr->SetSoundModifier(modifier_props);
+	}
+	// always true on valid params for sync safety
 	return true;
 }
 
@@ -1904,15 +1982,18 @@ static long FnReloadParticle(C4PropList * _this, C4String *szParticleName)
 	return Game.ReloadParticle(FnStringPar(szParticleName));
 }
 
-static bool FnSetGamma(C4PropList * _this, long dwClr1, long dwClr2, long dwClr3, long iRampIndex)
+static bool FnSetGamma(C4PropList * _this, long iRed, long iGreen, long iBlue, long iRampIndex)
 {
-	pDraw->SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
+	pDraw->SetGamma(float(iRed) / 100,
+	                float(iGreen) / 100,
+	                float(iBlue) / 100,
+	                iRampIndex);
 	return true;
 }
 
 static bool FnResetGamma(C4PropList * _this, long iRampIndex)
 {
-	pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
+	::Game.SetDefaultGamma();
 	return true;
 }
 
@@ -1969,10 +2050,29 @@ static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
                      DMQ_Sub = 1, // draw w/ tunnel IFT
                      DMQ_Bridge = 2; // draw only over materials you can bridge over
 
-static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, int draw_mode)
+static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, const C4Value& draw_mode)
 {
 	const char *szMat = FnStringPar(szMaterial);
-	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
+
+	const char *szBackMat = NULL;
+	bool fBridge = false;
+	if (draw_mode.GetType() == C4V_Int)
+	{
+		// Default behaviour: Default background material
+		const int draw_mode_value = draw_mode.getInt();
+		switch(draw_mode_value)
+		{
+		case DMQ_Sky: break;
+		case DMQ_Sub: szBackMat = "Tunnel"; break; // TODO: Go via DefaultBkgMat
+		case DMQ_Bridge: fBridge = true; break;
+		}
+	}
+	else if (draw_mode.GetType() == C4V_String)
+	{
+		szBackMat = FnStringPar(draw_mode.getStr());
+	}
+
+	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, szBackMat, fBridge);
 }
 
 static bool FnSetFilmView(C4PropList * _this, long iToPlr)
@@ -2665,6 +2765,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CheckConstructionSite", FnCheckConstructionSite);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "SoundAt", FnSoundAt);
+	AddFunc(pEngine, "ChangeSoundModifier", FnChangeSoundModifier);
+	AddFunc(pEngine, "SetGlobalSoundModifier", FnSetGlobalSoundModifier);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
 	AddFunc(pEngine, "SetPlayList", FnSetPlayList);
@@ -2708,7 +2810,9 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
+	AddFunc(pEngine, "GetBackMaterial", FnGetBackMaterial);
 	AddFunc(pEngine, "GetTexture", FnGetTexture);
+	AddFunc(pEngine, "GetBackTexture", FnGetBackTexture);
 	AddFunc(pEngine, "GetAverageTextureColor", FnGetAverageTextureColor);
 	AddFunc(pEngine, "GetMaterialCount", FnGetMaterialCount);
 	AddFunc(pEngine, "GBackSolid", FnGBackSolid);
@@ -2972,6 +3076,11 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "ATTACH_Front"              ,C4V_Int,      C4ATTACH_Front },
 	{ "ATTACH_Back"               ,C4V_Int,      C4ATTACH_Back },
 	{ "ATTACH_MoveRelative"       ,C4V_Int,      C4ATTACH_MoveRelative },
+
+	// sound modifier type
+	{ "C4SMT_Reverb"              ,C4V_Int,      C4SoundModifier::C4SMT_Reverb },
+	{ "C4SMT_Echo"                ,C4V_Int,      C4SoundModifier::C4SMT_Echo },
+	{ "C4SMT_Equalizer"           ,C4V_Int,      C4SoundModifier::C4SMT_Equalizer },
 
 	{ "GUI_SetTag"               ,C4V_Int,      C4ScriptGuiWindowActionID::SetTag },
 	{ "GUI_Call"                 ,C4V_Int,      C4ScriptGuiWindowActionID::Call },

@@ -592,8 +592,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
 		if (!Game.IsRunning) return false;
 		if (!Game.DebugMode) return false;
-		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
-		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
 		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console), CDT_Decide);
 		return true;
@@ -781,7 +779,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// try writing main file (usually {SCENARIO}/TODO.txt); if access is not possible, e.g. because scenario is packed, write to alternate file
 		const char *todo_filenames[] = { ::Config.Developer.TodoFilename, ::Config.Developer.AltTodoFilename };
 		bool success = false;
-		for (int i = 0; i < std::extent<decltype(todo_filenames)>::value; ++i)
+		for (int i = 0; i < static_cast<int>(std::extent<decltype(todo_filenames)>::value); ++i)
 		{
 			StdCopyStrBuf todo_filename(todo_filenames[i]);
 			int replacements = todo_filename.Replace("{SCENARIO}", Game.ScenarioFile.GetFullName().getData());

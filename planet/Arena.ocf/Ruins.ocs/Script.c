@@ -16,7 +16,7 @@ protected func Initialize()
 	
 	// Mood.
 	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));
-	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
+	SetGamma(109, 105, 101);
 	
 	// Chests with weapons.
 	CreateObjectAbove(Chest, 230, 224, NO_OWNER)->MakeInvincible();

@@ -123,6 +123,8 @@ bool C4TextureMap::AddEntry(BYTE byIndex, const char *szMaterial, const char *sz
 		// Landscape must be notified (new valid pixel clr)
 		::Landscape.HandleTexMapUpdate();
 	}
+	// Add last in order list
+	Order.push_back(byIndex);
 	return true;
 }
 
@@ -180,6 +182,8 @@ void C4TextureMap::Clear()
 	}
 	FirstTexture=NULL;
 	fInitialized = false;
+	Order.clear();
+	Order.reserve(C4M_MaxTexIndex);
 }
 
 bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures)
@@ -316,12 +320,15 @@ bool C4TextureMap::SaveMap(C4Group &hGroup, const char *szEntryName)
 	if (fOverloadTextures) sTexMapFile.Append("# Import textures from global file as well" LineFeed "OverloadTextures" LineFeed);
 	sTexMapFile.Append(LineFeed);
 	// add entries
-	for (int32_t i = 0; i < C4M_MaxTexIndex; i++)
+	for (auto iter = Order.begin(); iter != Order.end(); ++iter)
+	{
+		int32_t i = *iter;
 		if (!Entry[i].isNull())
 		{
 			// compose line
 			sTexMapFile.AppendFormat("%d=%s-%s" LineFeed, i, Entry[i].GetMaterialName(), Entry[i].GetTextureName());
 		}
+	}
 	// create new buffer allocated with new [], because C4Group cannot handle StdStrBuf-buffers
 	size_t iBufSize = sTexMapFile.getLength();
 	BYTE *pBuf = new BYTE[iBufSize];
@@ -372,7 +379,12 @@ bool C4TextureMap::HasTextures(C4Group &hGroup)
 
 void C4TextureMap::MoveIndex(BYTE byOldIndex, BYTE byNewIndex)
 {
+	if (byNewIndex == byOldIndex) return;
 	Entry[byNewIndex] = Entry[byOldIndex];
+	Entry[byOldIndex].Clear();
+	auto old_entry = std::find_if(Order.begin(), Order.end(),
+		[byOldIndex](const int32_t &entry) { return entry == byOldIndex; });
+	if (old_entry != Order.end()) *old_entry = byNewIndex;
 	fEntriesAdded = true;
 }
 
@@ -466,6 +478,27 @@ const char* C4TextureMap::GetTexture(int32_t iIndex)
 	return NULL;
 }
 
+BYTE C4TextureMap::DefaultBkgMatTex(BYTE fg) const
+{
+	// For the given foreground index, find the default background index
+	// If fg is semisolid, this is tunnel.
+	// Otherwise it is fg itself, so that tunnel and background bricks
+	// stay the way they are.
+	int32_t iTex = PixCol2Tex(fg);
+	if (!iTex) return fg; // sky
+
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = GetEntry(iTex);
+	// Texmap entry does not exist
+	if(!pTex || !pTex->GetMaterial()) return fg;
+
+	if(DensitySemiSolid(pTex->GetMaterial()->Density))
+		return Mat2PixColDefault(MTunnel);
+
+	return fg;
+
+}
+
 void C4TextureMap::Default()
 {
 	FirstTexture=NULL;
@@ -473,6 +506,20 @@ void C4TextureMap::Default()
 	fOverloadMaterials=false;
 	fOverloadTextures=false;
 	fInitialized = false;
+	Order.clear();
+	Order.reserve(C4M_MaxTexIndex);
+}
+
+void C4TextureMap::RemoveEntry(int32_t iIndex)
+{
+	// remove entry from table and order vector
+	if (Inside<int32_t>(iIndex, 1, C4M_MaxTexIndex - 1))
+	{
+		Entry[iIndex].Clear();
+		auto last_entry = std::remove_if(Order.begin(), Order.end(),
+			[iIndex](const int32_t &entry) { return entry == iIndex; });
+		Order.erase(last_entry, Order.end());
+	}
 }
 
 void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMaterial)
@@ -480,7 +527,7 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 	// Sky color
 	Palette->Colors[0] = C4RGB(192, 196, 252);
 	// Material colors by texture map entries
-	bool fSet[256];
+	bool fSet[C4M_MaxTexIndex];
 	ZeroMem(&fSet, sizeof (fSet));
 	int32_t i;
 	for (i = 0; i < C4M_MaxTexIndex; i++)
@@ -488,11 +535,10 @@ void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMateria
 		// Find material
 		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
 		Palette->Colors[i] = dwPix;
-		Palette->Colors[i + IFT] = dwPix | 0x0F; // IFT arbitrarily gets more blue
-		fSet[i] = fSet[i + IFT] = true;
+		fSet[i] = true;
 	}
 	// Crosscheck colors, change equal palette entries
-	for (i = 0; i < 256; i++) if (fSet[i])
+	for (i = 0; i < C4M_MaxTexIndex; i++) if (fSet[i])
 			for (;;)
 			{
 				// search equal entry

@@ -193,7 +193,9 @@ void C4EditCursor::UpdateStatusBar()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
-		str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? ::MaterialMap.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
+		str.Format("%i/%i (fg: %s, bg: %s)",X,Y,
+                           MatValid(::Landscape.GetMat(X,Y)) ? ::MaterialMap.Map[::Landscape.GetMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING"),
+                           MatValid(::Landscape.GetBackMat(X,Y)) ? ::MaterialMap.Map[::Landscape.GetBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
@@ -703,7 +705,7 @@ void C4EditCursor::ApplyToolBrush()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolLine()
@@ -711,7 +713,7 @@ void C4EditCursor::ApplyToolLine()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material,pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolRect()
@@ -719,7 +721,7 @@ void C4EditCursor::ApplyToolRect()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, pTools->Material, pTools->Texture, pTools->BackMaterial, pTools->BackTexture));
 }
 
 void C4EditCursor::ApplyToolFill()
@@ -727,7 +729,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
 }
 
 bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
@@ -953,15 +955,37 @@ void C4EditCursor::ApplyToolPicker()
 	case C4LSC_Static:
 		{
 			bool material_set = false;
+			int32_t x = X/::Landscape.MapZoom;
+			int32_t y = Y/::Landscape.MapZoom;
 			// Material-texture from map
-			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
+			if ((byIndex = ::Landscape.GetMapIndex(x, y)))
 			{
-				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex);
 				if (pTex && pTex->GetMaterialName() && *pTex->GetMaterialName())
 				{
+					const BYTE byIndexBkg = Landscape.GetBackMapIndex(x, y);
 					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
 					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-					Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+
+					// Set background index if GUI backend supports it
+					if (Console.ToolsDlg.ModeBack)
+					{
+						const C4TexMapEntry *pBgTex = ::TextureMap.GetEntry(byIndexBkg);
+						if (pBgTex)
+						{
+							Console.ToolsDlg.SelectBackMaterial(pBgTex->GetMaterialName());
+							Console.ToolsDlg.SelectBackTexture(pBgTex->GetTextureName());
+						}
+						else
+						{
+							Console.ToolsDlg.SelectBackMaterial(C4TLS_MatSky);
+						}
+					}
+					else
+					{
+						Console.ToolsDlg.SetIFT(byIndexBkg != 0);
+					}
+
 					material_set = true;
 				}
 			}
@@ -974,7 +998,7 @@ void C4EditCursor::ApplyToolPicker()
 		if (MatValid(iMaterial=GBackMat(X,Y)))
 		{
 			Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
-			Console.ToolsDlg.SetIFT(!!GBackIFT(X,Y));
+			Console.ToolsDlg.SetIFT(Landscape.GetBackPix(X, Y) != 0);
 		}
 		else
 			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);

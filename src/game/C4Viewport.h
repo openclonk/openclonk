@@ -145,7 +145,7 @@ public:
 #ifdef USE_WIN32_WINDOWS
 	C4Viewport* GetViewport(HWND hwnd);
 #endif
-	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);
+	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius = 0, int32_t *outPlayer = NULL);
 	bool ViewportNextPlayer();
 
 	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset

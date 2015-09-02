@@ -1,0 +1,40 @@
+material Stalactite 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.25 0.25 0.25 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+			
+			scene_blend alpha_blend
+			
+            texture_unit base
+            {
+                texture Stalactite_UV.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+            
+//            texture_unit normal
+//            {
+//                texture Stalactite_Normal.png
+//                tex_address_mode wrap
+//                filtering trilinear
+//            }
+//            
+//            vertex_program_ref normal_map_vertex
+//            {
+//            }
+//
+//            fragment_program_ref normal_map_fragment
+//            {
+//                param_named basemap int 0
+//                param_named normalTex int 1
+//            }
+        }
+    }
+}

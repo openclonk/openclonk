@@ -78,6 +78,8 @@ private:
 	ALCcontext* alcContext;
 public:
 	void SelectContext();
+	ALCcontext *GetContext() const { return alcContext; }
+	ALCdevice *GetDevice() const { return alcDevice; }
 #endif
 public:
 	inline bool IsMODInitialized() {return MODInitialized;}

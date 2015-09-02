@@ -348,6 +348,9 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	// init graphs
 	if (Game.pNetworkStatistics) CreateGraphs();
 
+	// init sound mod
+	SetSoundModifier(SoundModifier._getPropList());
+
 	return true;
 }
 
@@ -852,6 +855,7 @@ void C4Player::Clear()
 	CrewInfoList.Clear();
 	Menu.Clear();
 	BigIcon.Clear();
+	SetSoundModifier(NULL);
 	fFogOfWar=true;
 	while (pMsgBoardQuery)
 	{
@@ -892,6 +896,7 @@ void C4Player::Default()
 	ZoomLimitMinWdt=ZoomLimitMinHgt=ZoomLimitMaxWdt=ZoomLimitMaxHgt=ZoomWdt=ZoomHgt=0;
 	ZoomLimitMinVal=ZoomLimitMaxVal=ZoomVal=Fix0;
 	ViewLock = true;
+	SoundModifier.Set0();
 }
 
 bool C4Player::Load(const char *szFilename, bool fSavegame)
@@ -1100,6 +1105,8 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(SoundModifier, numbers), "SoundModifier", C4Value()));
+	
 
 	// Keys held down
 	pComp->Value(Control);
@@ -1873,4 +1880,23 @@ bool C4Player::GainScenarioAchievement(const char *achievement_id, int32_t value
 	// Gain achievement iff it's an improvement
 	Achievements.SetValue(sAchvID.getData(), value, true);
 	return true;
+}
+
+void C4Player::SetSoundModifier(C4PropList *new_modifier)
+{
+	// set modifier to be applied to all new sounds being played in a player's viewport
+	// update prop list parameter
+	C4SoundModifier *mod;
+	if (new_modifier)
+	{
+		SoundModifier.SetPropList(new_modifier);
+		mod = ::Application.SoundSystem.Modifiers.Get(new_modifier, true);
+	}
+	else
+	{
+		SoundModifier.Set0();
+		mod = NULL;
+	}
+	// update in sound system
+	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, Number);
 }

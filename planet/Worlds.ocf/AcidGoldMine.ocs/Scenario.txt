@@ -7,10 +7,6 @@ Difficulty=100
 [Definitions]
 Definition1=Objects.ocd
 
-[Game]
-Goals=Goal_Wealth=1;
-Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
-
 [Player1]
 Crew=Clonk=2
 
@@ -25,11 +21,8 @@ Crew=Clonk=2
 
 [Landscape]
 Sky=Clouds1
-TopOpen=1
-BottomOpen=0
-MapWidth=120
-MapHeight=315
-MapZoom=6
+MapWidth=90
+MapHeight=240
 
 [Weather]
 Climate=00,0,0,00

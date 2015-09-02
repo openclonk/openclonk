@@ -10,7 +10,7 @@ private func Hit(int x, int y)
 
 public func GetCarryMode()	{	return CARRY_HandBack;	}
 public func GetCarryBone()	{	return "main";	}
-public func GetCarryTransform()	{	return Trans_Rotate(90,0,1,0);	}
+public func GetCarryTransform()	{	return Trans_Rotate(-90,1,0,0);	}
 
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }

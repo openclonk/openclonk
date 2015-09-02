@@ -510,7 +510,10 @@ void C4GameObjects::ResetAudibility()
 {
 	for (C4Object *obj : *this)
 		if (obj)
+		{
 			obj->Audible = obj->AudiblePan = 0;
+			obj->AudiblePlayer = NO_OWNER;
+		}
 }
 
 void C4GameObjects::SetOCF()

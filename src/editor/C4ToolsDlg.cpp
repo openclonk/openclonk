@@ -63,6 +63,8 @@ void C4ToolsDlg::SetMaterial(const char *szMaterial)
 	EnableControls();
 	if (::Landscape.Mode==C4LSC_Static) UpdateTextures();
 	NeedPreviewUpdate();
+	if (ModeBack && SEqual(szMaterial, C4TLS_MatSky))
+		SelectBackMaterial(C4TLS_MatSky);
 }
 
 void C4ToolsDlg::SetTexture(const char *szTexture)
@@ -71,16 +73,63 @@ void C4ToolsDlg::SetTexture(const char *szTexture)
 	if (!::TextureMap.GetTexture(szTexture))
 	{
 		// ensure correct texture is in dlg
-		Console.ToolsDlgSetTexture(this, szTexture);
+		Console.ToolsDlgSelectTexture(this, szTexture);
 		return;
 	}
 	SCopy(szTexture,Texture,C4M_MaxName);
 	NeedPreviewUpdate();
 }
 
+void C4ToolsDlg::SetBackMaterial(const char *szMaterial)
+{
+	ModeBack = true;
+
+	SCopy(szMaterial,BackMaterial,C4M_MaxName);
+	AssertValidBackTexture();
+	EnableControls();
+	if (::Landscape.Mode==C4LSC_Static) UpdateTextures();
+}
+
+void C4ToolsDlg::SetBackTexture(const char *szTexture)
+{
+	ModeBack = true;
+
+	// assert valid (for separator selection)
+	if (!::TextureMap.GetTexture(szTexture))
+	{
+		// ensure correct texture is in dlg
+		Console.ToolsDlgSelectBackTexture(this, szTexture);
+		return;
+	}
+	SCopy(szTexture,BackTexture,C4M_MaxName);
+}
+
 bool C4ToolsDlg::SetIFT(bool fIFT)
 {
+	ModeBack = false;
 	if (fIFT) ModeIFT = 1; else ModeIFT=0;
+
+	// Keep sensible default values in BackMaterial / BackTexture
+	if (ModeIFT == 0)
+	{
+		SCopy(C4TLS_MatSky, BackMaterial, C4M_MaxName);
+	}
+	else
+	{
+		SCopy(C4TLS_MatSky, BackMaterial, C4M_MaxName);
+		int32_t index = ::TextureMap.GetIndexMatTex(Material);
+		if (index != -1)
+		{
+			BYTE bg_index = ::TextureMap.DefaultBkgMatTex(index);
+			const C4TexMapEntry* entry = ::TextureMap.GetEntry(bg_index);
+			if (entry != NULL)
+			{
+				SCopy(entry->GetMaterialName(), BackMaterial, C4M_MaxName);
+				SCopy(entry->GetTextureName(), BackTexture, C4M_MaxName);
+			}
+		}
+	}
+
 	UpdateIFTControls();
 	NeedPreviewUpdate();
 	return true;
@@ -156,6 +205,26 @@ void C4ToolsDlg::AssertValidTexture()
 	// No valid texture found
 }
 
+void C4ToolsDlg::AssertValidBackTexture()
+{
+	// Static map mode only
+	if (::Landscape.Mode!=C4LSC_Static) return;
+	// Ignore if not enabled
+	if (!ModeBack) return;
+	// Ignore if sky
+	if (SEqual(BackMaterial,C4TLS_MatSky)) return;
+	// Current material-texture valid
+	if (::TextureMap.GetIndex(BackMaterial,BackTexture,false)) return;
+	// Find valid material-texture
+	const char *szTexture;
+	for (int32_t iTexture=0; (szTexture=::TextureMap.GetTexture(iTexture)); iTexture++)
+	{
+		if (::TextureMap.GetIndex(BackMaterial,szTexture,false))
+			{ SelectBackTexture(szTexture); return; }
+	}
+	// No valid texture found
+}
+
 bool C4ToolsDlg::SelectTexture(const char *szTexture)
 {
 	Console.ToolsDlgSelectTexture(this, szTexture);
@@ -165,8 +234,22 @@ bool C4ToolsDlg::SelectTexture(const char *szTexture)
 
 bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
 {
-	Console.ToolsDlgSetMaterial(this, szMaterial);
+	Console.ToolsDlgSelectMaterial(this, szMaterial);
 	SetMaterial(szMaterial);
+	return true;
+}
+
+bool C4ToolsDlg::SelectBackTexture(const char *szTexture)
+{
+	Console.ToolsDlgSelectBackTexture(this, szTexture);
+	SetBackTexture(szTexture);
+	return true;
+}
+
+bool C4ToolsDlg::SelectBackMaterial(const char *szMaterial)
+{
+	Console.ToolsDlgSelectBackMaterial(this, szMaterial);
+	SetBackMaterial(szMaterial);
 	return true;
 }
 

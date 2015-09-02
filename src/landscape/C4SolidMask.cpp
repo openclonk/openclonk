@@ -96,11 +96,11 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 						byPixel=GBackPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
-						if (byPixel != MCVehic || RegularPut)
+						if (!IsSomeVehicle(byPixel) || RegularPut)
 							pSolidMaskMatBuff[(ycnt+pClipRect->ty)*MatBuffPitch+xcnt+pClipRect->tx]=byPixel;
 					}
 					// and set mask
-					_SBackPix(iTx,iTy,MCVehic);
+					::Landscape.SetPix2(iTx,iTy,MaskMaterial,::Landscape.Transparent);
 				}
 				else
 					// no SolidMask: mark buffer as unused here
@@ -162,11 +162,11 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 						byPixel=_GBackPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
-						if (byPixel != MCVehic || RegularPut)
+						if (IsSomeVehicle(byPixel) || RegularPut)
 							pSolidMaskMatBuff[i + xcnt] = byPixel;
 					}
 					// set mask pix
-					_SBackPix(iTx, iTy, MCVehic);
+					::Landscape.SetPix2(iTx, iTy, MaskMaterial, ::Landscape.Transparent);
 				}
 				else if (!MaskPut)
 					// mark pix as unused in buf
@@ -229,7 +229,7 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 		// Using put-buffer for rotated masks
 		// for SolidMask-pixels not put because there was another SolidMask already, this will not return solid
 		pix=*(rSolidMaskData.pSolidMaskMatBuff+(y+rSolidMaskData.MaskPutRect.ty)*rSolidMaskData.MatBuffPitch+rSolidMaskData.MaskPutRect.tx+x);
-		if (pix == MCVehic)
+		if (IsSomeVehicle(pix))
 			return 0;
 		else
 			return C4M_Solid;
@@ -259,8 +259,9 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 				// The pPix-check ensures that only pixels that hads been overwritten by this SolidMask are restored
 				// Non-SolidMask-pixels should not happen here, because all relevant landscape change routines should
 				// temp remove SolidMasks before
-				assert(_GBackPix(iTx,iTy) == MCVehic);
-				_SBackPixIfMask(iTx,iTy,*pPix,MCVehic);
+				assert(IsSomeVehicle(_GBackPix(iTx,iTy)));
+				if (IsSomeVehicle(::Landscape._GetPix(iTx, iTy)))
+					::Landscape._SetPix2(iTx, iTy, *pPix, ::Landscape.Transparent);
 				// Instability
 				::Landscape.CheckInstabilityRange(iTx,iTy);
 			}
@@ -339,11 +340,11 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 		{
 			BYTE *pPix = pSolidMaskMatBuff + (y - MaskPutRect.y + MaskPutRect.ty) * MatBuffPitch + x - MaskPutRect.x + MaskPutRect.tx;
 			// only if mask was used here
-			if (*pPix != MCVehic)
+			if (*pPix != MCVehic) //
 			{
 				// restore
-				assert(GBackPix(x,y)==MCVehic);
-				_SBackPix(x, y, *pPix);
+				assert(IsSomeVehicle(GBackPix(x,y)));
+				::Landscape.SetPix2(x, y, *pPix, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -364,7 +365,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 			{
 				// put
 				assert(GBackPix(x,y)==*pPix);
-				_SBackPix(x,y,MCVehic);
+				::Landscape.SetPix2(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -386,7 +387,7 @@ void C4SolidMask::Repair(C4Rect where)
 				// record changed landscape in MatBuff
 				*pPix = GBackPix(x,y);
 				// put
-				_SBackPix(x,y,MCVehic);
+				::Landscape.SetPix2(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -400,6 +401,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	MaskRemovalX=MaskRemovalY=Fix0;
 	ppAttachingObjects=NULL;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
+	MaskMaterial=MCVehic;
 	// Update linked list
 	Next = 0;
 	Prev = Last;
@@ -454,6 +456,7 @@ C4SolidMask * C4SolidMask::Last = 0;
 
 bool C4SolidMask::CheckConsistency()
 {
+	assert(IsSomeVehicle(MaskMaterial));
 	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
 	C4SolidMask *pSolid;
 	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
@@ -486,3 +489,8 @@ CSurface8 *C4SolidMask::LoadMaskFromFile(class C4Group &hGroup, const char *szFi
 	return result;
 }
 
+void C4SolidMask::SetHalfVehicle(bool set)
+{
+	MaskMaterial = set ? MCHalfVehic : MCVehic;
+	// TODO: Redraw
+}

@@ -63,7 +63,7 @@ void C4PXS::Execute()
 	if (GBackDensity(iX, iY + 1) < ::MaterialMap.Map[Mat].Density)
 	{
 		// Air speed: Wind plus some random
-		int32_t iWind = GBackWind(iX, iY);
+		int32_t iWind = Weather.GetWind(iX, iY);
 		C4Real txdir = itofix(iWind, 15) + C4REAL256(Random(1200) - 600);
 		C4Real tydir = C4REAL256(Random(1200) - 600);
 

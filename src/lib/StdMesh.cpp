@@ -261,15 +261,15 @@ namespace
 		}
 	}
 
-	// Mirror is wrt X axis
+	// Mirror is wrt Z axis
 	void MirrorKeyFrame(StdMeshKeyFrame& frame, const StdMeshTransformation& old_bone_transformation, const StdMeshTransformation& new_inverse_bone_transformation)
 	{
 		// frame was a keyframe of a track for old_bone and was now transplanted to new_bone.
+		frame.Transformation.rotate.x = -frame.Transformation.rotate.x;
 		frame.Transformation.rotate.y = -frame.Transformation.rotate.y;
-		frame.Transformation.rotate.z = -frame.Transformation.rotate.z;
 
 		StdMeshVector d = old_bone_transformation.scale * (old_bone_transformation.rotate * frame.Transformation.translate);
-		d.x = -d.x;
+		d.z = -d.z;
 		frame.Transformation.translate = new_inverse_bone_transformation.rotate * (new_inverse_bone_transformation.scale * d);
 
 		// TODO: scale

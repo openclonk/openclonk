@@ -263,6 +263,7 @@ const int32_t MNone = -1;
 
 extern int32_t MVehic,MTunnel,MWater,MEarth; // presearched materials
 extern BYTE MCVehic; // precalculated material color
+extern BYTE MCHalfVehic; // precalculated material color
 
 inline bool MatValid(int32_t mat)
 {
@@ -272,6 +273,16 @@ inline bool MatValid(int32_t mat)
 inline bool MatVehicle(int32_t iMat)
 {
 	return iMat == MVehic;
+}
+
+inline bool IsMCVehicle(BYTE mat) {
+	return mat == MCVehic;
+}
+inline bool IsMCHalfVehicle(BYTE mat) {
+	return mat == MCHalfVehic;
+}
+inline bool IsSomeVehicle(BYTE mat) {
+	return IsMCVehicle(mat) || IsMCHalfVehicle(mat);
 }
 
 inline BYTE MatTex2PixCol(int32_t tex)

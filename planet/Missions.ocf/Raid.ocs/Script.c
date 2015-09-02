@@ -21,7 +21,8 @@ static g_is_initialized,      // intro started
         g_mave_oil_spoken,     // got the key offer from Mave
         g_got_maves_key,       // got the key from Mave
         g_dora_spoken,         // got rumour about oil lake from Clonko
-        g_clonko_spoken;       // got rumour about oil lake from Dora
+        g_clonko_spoken,       // got rumour about oil lake from Dora
+        g_oil_delivered;       // oil delivered, all done!
 
 func Initialize()
 {
@@ -94,7 +95,8 @@ func JoinPlayer(int plr, object crew, bool no_placement)
 
 func StartAttackSequence(object chopping_clonk)
 {
-	return StartSequence("AttackSequence", 0, chopping_clonk);
+	if (!chopping_clonk) chopping_clonk = GetCursor(GetPlayerByIndex());
+	return StartSequence("Attack", 0, chopping_clonk);
 }
 
 
@@ -102,7 +104,8 @@ func StartAttackSequence(object chopping_clonk)
 
 func OnPlaneLoaded(object plane, object oil)
 {
-	if (!plane || !oil) return false; // disappeared in that one frame?
+	if (!plane || !oil || g_oil_delivered) return false; // disappeared in that one frame?
+	g_oil_delivered = true;
 	oil->Enter(plane);
 	g_goal->SetStageDone();
 	g_goal->SetFulfilled();

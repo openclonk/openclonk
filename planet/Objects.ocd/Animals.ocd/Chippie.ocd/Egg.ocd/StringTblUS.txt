@@ -1,0 +1,2 @@
+Name=Egg
+Description=New chippies hatch from here.

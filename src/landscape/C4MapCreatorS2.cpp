@@ -310,6 +310,7 @@ C4MCOverlay::C4MCOverlay(C4MCNode *pOwner) : C4MCNode(pOwner)
 	*Texture=0;
 	Op=MCT_NONE;
 	MatClr=0;
+	MatClrBkg=0;
 	Algorithm=NULL;
 	Sub=false;
 	ZoomX=ZoomY=0;
@@ -332,6 +333,7 @@ C4MCOverlay::C4MCOverlay(C4MCParser* pParser, C4MCNode *pOwner, C4MCOverlay &rTe
 	Sub=rTemplate.Sub;
 	ZoomX=rTemplate.ZoomX; ZoomY=rTemplate.ZoomY;
 	MatClr=rTemplate.MatClr;
+	MatClrBkg=rTemplate.MatClrBkg;
 	Seed=rTemplate.Seed;
 	Alpha=rTemplate.Alpha; Beta=rTemplate.Beta; Turbulence=rTemplate.Turbulence; Lambda=rTemplate.Lambda;
 	Rotate=rTemplate.Rotate;
@@ -460,10 +462,17 @@ void C4MCOverlay::Evaluate()
 	if (Inside<int32_t>(Material,0,MapCreator->MatMap->Num-1))
 	{
 		MatClr=MapCreator->TexMap->GetIndexMatTex(MapCreator->MatMap->Map[Material].Name, *Texture ? Texture : NULL);
-		if (Sub) MatClr+=128;
+		if(MatClr == 0 || !Sub)
+			MatClrBkg = 0;
+		else
+			MatClrBkg = Mat2PixColDefault(MTunnel);
 	}
 	else
+	{
 		MatClr=0;
+		MatClrBkg=0;
+	}
+
 	// calc size
 	if (Owner)
 	{
@@ -559,7 +568,7 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 	return (Algorithm->Function) (this, iX, iY)^Invert;
 }
 
-bool C4MCOverlay::RenderPix(int32_t iX, int32_t iY, BYTE &rPix, C4MCTokenType eLastOp, bool fLastSet, bool fDraw, C4MCOverlay **ppPixelSetOverlay)
+bool C4MCOverlay::RenderPix(int32_t iX, int32_t iY, BYTE &rPix, BYTE &rPixBkg, C4MCTokenType eLastOp, bool fLastSet, bool fDraw, C4MCOverlay **ppPixelSetOverlay)
 {
 	// algo match?
 	bool SetThis=CheckMask(iX, iY);
@@ -589,6 +598,7 @@ bool C4MCOverlay::RenderPix(int32_t iX, int32_t iY, BYTE &rPix, C4MCTokenType eL
 		if (fDraw && DoSet && !Mask)
 		{
 			rPix=MatClr;
+			rPixBkg=MatClrBkg;
 			if (ppPixelSetOverlay) *ppPixelSetOverlay = this;
 		}
 		bool fLastSetC=false; eLastOp=MCT_NONE;
@@ -596,7 +606,7 @@ bool C4MCOverlay::RenderPix(int32_t iX, int32_t iY, BYTE &rPix, C4MCTokenType eL
 		for (C4MCNode *pChild=Child0; pChild; pChild=pChild->Next)
 			if (C4MCOverlay *pOvrl=pChild->Overlay())
 			{
-				fLastSetC=pOvrl->RenderPix(iX, iY, rPix, eLastOp, fLastSetC, fDraw, ppPixelSetOverlay);
+				fLastSetC=pOvrl->RenderPix(iX, iY, rPix, rPixBkg, eLastOp, fLastSetC, fDraw, ppPixelSetOverlay);
 				if (Group && (pOvrl->Op == MCT_NONE))
 					DoSet |= fLastSetC;
 				eLastOp=pOvrl->Op;
@@ -615,7 +625,7 @@ bool C4MCOverlay::PeekPix(int32_t iX, int32_t iY)
 	// loop through op chain
 	while (1)
 	{
-		fLastSetC=pOvrl->RenderPix(iX, iY, Crap, eLastOp, fLastSetC, false);
+		fLastSetC=pOvrl->RenderPix(iX, iY, Crap, Crap, eLastOp, fLastSetC, false);
 		eLastOp=pOvrl->Op;
 		if (!pOvrl->Op) break;
 		// must be another overlay, since there's an operator
@@ -700,7 +710,7 @@ void C4MCMap::Default()
 	MapCreator->Landscape->GetMapSize(Wdt, Hgt, MapCreator->PlayerCount);
 }
 
-bool C4MCMap::RenderTo(BYTE *pToBuf, int32_t iPitch)
+bool C4MCMap::RenderTo(BYTE *pToBuf, BYTE *pToBufBkg, int32_t iPitch)
 {
 	// set current render target
 	if (MapCreator) MapCreator->pCurrentMap=this;
@@ -710,19 +720,23 @@ bool C4MCMap::RenderTo(BYTE *pToBuf, int32_t iPitch)
 		for (int32_t iX=0; iX<Wdt; iX++)
 		{
 			// default to sky
+			BYTE dummyPix;
 			*pToBuf=0;
+			if (pToBufBkg) *pToBufBkg=0;
 			// render pixel value
 			C4MCOverlay *pRenderedOverlay = NULL;
-			RenderPix(iX, iY, *pToBuf, MCT_NONE, false, true, &pRenderedOverlay);
+			RenderPix(iX, iY, *pToBuf, pToBufBkg ? *pToBufBkg : dummyPix, MCT_NONE, false, true, &pRenderedOverlay);
 			// add draw-callback for rendered overlay
 			if (pRenderedOverlay)
 				if (pRenderedOverlay->pDrawFunc)
 					pRenderedOverlay->pDrawFunc->EnablePixel(iX, iY);
 			// next pixel
 			pToBuf++;
+			if (pToBufBkg) pToBufBkg++;
 		}
 		// next line
 		pToBuf+=iPitch-Wdt;
+		if (pToBufBkg) pToBufBkg+=iPitch-Wdt;
 	}
 	// reset render target
 	if (MapCreator) MapCreator->pCurrentMap=NULL;
@@ -837,25 +851,30 @@ C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
 	return pMap;
 }
 
-CSurface8 * C4MapCreatorS2::Render(const char *szMapName)
+bool C4MapCreatorS2::Render(const char *szMapName, CSurface8*& sfcMap, CSurface8*& sfcMapBkg)
 {
+	assert(sfcMap == NULL);
+	assert(sfcMapBkg == NULL);
+
 	// get map
 	C4MCMap *pMap=GetMap(szMapName);
-	if (!pMap) return NULL;
+	if (!pMap) return false;
 
 	// get size
 	int32_t sfcWdt, sfcHgt;
 	sfcWdt=pMap->Wdt; sfcHgt=pMap->Hgt;
-	if (!sfcWdt || !sfcHgt) return NULL;
+	if (!sfcWdt || !sfcHgt) return false;
 
-	// create surface
-	CSurface8 * sfc = new CSurface8(sfcWdt, sfcHgt);
+	// create surfaces
+	sfcMap = new CSurface8(sfcWdt, sfcHgt);
+	sfcMapBkg = new CSurface8(sfcWdt, sfcHgt);
+	assert(sfcMap->Pitch == sfcMapBkg->Pitch);
 
 	// render map to surface
-	pMap->RenderTo(sfc->Bits, sfc->Pitch);
+	pMap->RenderTo(sfcMap->Bits, sfcMapBkg->Bits, sfcMap->Pitch);
 
 	// success
-	return sfc;
+	return true;
 }
 
 static inline void DWordAlign(int &val)
@@ -880,7 +899,7 @@ BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t 
 	BYTE *buf=new BYTE[sfcWdt*sfcHgt];
 
 	// render and return it
-	pMap->RenderTo(buf, sfcWdt);
+	pMap->RenderTo(buf, NULL, sfcWdt);
 	return buf;
 }
 

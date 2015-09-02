@@ -38,6 +38,7 @@
 C4Set<C4PropList *> C4PropList::PropLists;
 #endif
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+C4Set<C4PropListScript *> C4PropListScript::PropLists;
 std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
@@ -54,7 +55,7 @@ class C4Draw *pDraw = NULL;
 
 bool EraseItemSafe(const char *szFilename) {return false;}
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr) {}
-class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t) { return NULL; }
+class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t, int32_t, class C4SoundModifier *) { return NULL; }
 
 C4Config::C4Config() {}
 C4Config::~C4Config() {}

@@ -242,16 +242,16 @@ public func ContainedStop(object clonk)
 
 public func StartFlight(int new_throttle)
 {
-	AddEffect("IntSoundDelay",this,1,1,this);
+	SetPropellerSpeedTarget(100);
 	SetAction("Fly");
 	throttle = new_throttle;
 }
 
 public func StartInstantFlight(int angle, int new_throttle)
 {
-	angle -= 10;
-	var effect = AddEffect("IntSoundDelay",this,1,1,this);
-	effect.Immediate = true;
+	if (angle < 0) angle += 360;
+	if (angle < 180) angle -= 10; else angle += 10;
+	SetPropellerSpeed(100);
 	SetAction("Fly");
 	throttle = new_throttle;
 	thrust = new_throttle;
@@ -263,20 +263,10 @@ public func StartInstantFlight(int angle, int new_throttle)
 
 public func CancelFlight()
 {
-	RemoveEffect("IntSoundDelay",this);
-	Sound("PropellerLoop",0,100,nil,-1);
+	SetPropellerSpeedTarget(0);
 	SetAction("Land");
 	rdir = 0;
 	throttle = 0;
-}
-
-private func FxIntSoundDelayTimer(object target, effect, int timer)
-{
-	if(timer >= 78 || (effect.Immediate && timer >= 5))
-	{
-		Sound("PropellerLoop",0,100,nil,1);
-		return -1;
-	}
 }
 
 private func FxIntPlaneTimer(object target, effect, int timer)
@@ -446,7 +436,7 @@ public func PlaneMount(object clonk)
 {
 	SetOwner(clonk->GetController());
 	clonk->PlayAnimation("Stand", 15, nil, Anim_Const(1000));
-	clonkmesh = AttachMesh(clonk,"pilot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)),AM_DrawBefore);
+	clonkmesh = AttachMesh(clonk,"pilot","skeleton_body",Trans_Mul(Trans_Rotate(180, 1, 0, 0), Trans_Translate(-3000, 1000, 0)),AM_DrawBefore);
 	return true;
 }
 
@@ -457,6 +447,53 @@ public func PlaneDismount(object clonk)
 	clonkmesh = nil;
 	return true;
 }
+
+
+/* Propeller sound */
+
+local prop_speed, prop_speed_target, prop_speed_timer; // current and target propeller speed [0, 100]
+
+// Instantly set new propeller speed
+private func SetPropellerSpeed(int new_speed)
+{
+	if (prop_speed_timer)
+	{
+		RemoveTimer(this.PropellerSpeedTimer);
+		prop_speed_timer = false;
+	}
+	return SetPropellerSound(prop_speed = prop_speed_target = new_speed);
+}
+
+// Schedule fading to new propeller speed
+private func SetPropellerSpeedTarget(int new_speed_target)
+{
+	prop_speed_target = new_speed_target;
+	if (!prop_speed_timer) prop_speed_timer = AddTimer(this.PropellerSpeedTimer, 10);
+	return true;
+}
+
+// Execute fading to new propeller speed
+private func PropellerSpeedTimer()
+{
+	prop_speed = BoundBy(prop_speed_target, prop_speed - 10, prop_speed + 4);
+	if (prop_speed == prop_speed_target)
+	{
+		RemoveTimer(this.PropellerSpeedTimer);
+		prop_speed_timer = false;
+	}
+	return SetPropellerSound(prop_speed);
+}
+
+// Set propeller speed sound. 0 = off, 100 = max speed.
+private func SetPropellerSound(int speed)
+{
+	if (speed <= 0)
+		return Sound("PropellerLoop",0,100,nil,-1);
+	else
+		return Sound("PropellerLoop",0,100,nil,1,0,(speed-100)*2/3);
+}
+
+/* Properties */
 
 public func IsContainer() { return true; }
 

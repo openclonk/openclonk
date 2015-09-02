@@ -14,6 +14,7 @@
 # This module chooses an audio provider for use in OpenClonk.
 
 macro(__FINDAUDIO_FINDOPENAL)
+	set(HAVE_ALEXT FALSE)
 	find_package(PkgConfig QUIET)
 	if(PKG_CONFIG_FOUND AND NOT(APPLE))
 		pkg_check_modules(OpenAL "openal>=1.13")
@@ -23,6 +24,8 @@ macro(__FINDAUDIO_FINDOPENAL)
 		# of directories that pkg_check_modules returned, and if not, add it to
 		# the include path.
 		if (OpenAL_FOUND)
+			# OpenAL pkg-config data always includes alext.h
+			set(HAVE_ALEXT TRUE)
 			find_path(__findaudio_al_h NAMES al.h PATHS ${OpenAL_INCLUDE_DIRS})
 			if (NOT __findaudio_al_h)
 				find_path(__findaudio_al_h NAMES al.h PATHS ${OpenAL_INCLUDE_DIRS} PATH_SUFFIXES OpenAL AL)
@@ -37,7 +40,16 @@ macro(__FINDAUDIO_FINDOPENAL)
 		pkg_check_modules(OggVorbis "vorbisfile>=1.3.2" "vorbis>=1.3.2" "ogg>=1.2.2")
 	else()
 		if(MSVC OR APPLE)
-			find_path(OpenAL_INCLUDE_DIRS al.h PATH_SUFFIXES include/AL include/OpenAL include OpenAL)
+			# We need OpenAL preferably with alext.h.
+			find_path(OpenALExt_INCLUDE_DIRS alext.h PATH_SUFFIXES include/AL include/OpenAL include OpenAL)
+			if(OpenALExt_INCLUDE_DIRS)
+				set(HAVE_ALEXT TRUE)
+				set(OpenAL_INCLUDE_DIRS ${OpenALExt_INCLUDE_DIRS})
+			else()
+				set(HAVE_ALEXT FALSE)
+				# Maybe only al.h can be found without alext.h?
+				find_path(OpenAL_INCLUDE_DIRS al.h PATH_SUFFIXES include/AL include/OpenAL include OpenAL)
+			endif()
 			find_path(Vorbis_INCLUDE_DIRS vorbis/codec.h vorbis/vorbisfile.h PATH_SUFFIXES include)
 			find_library(Ogg_LIBRARY NAMES libogg_static libogg ogg)
 			find_library(Vorbis_LIBRARY NAMES libvorbis_static libvorbis vorbis)
@@ -92,6 +104,9 @@ else()
 	if(OpenAL_FOUND AND Alut_FOUND AND OggVorbis_FOUND)
 		# Prefer OpenAL
 		set(Audio_TK "OpenAL")
+		if (NOT HAVE_ALEXT)
+			message(STATUS "Warning: Found OpenAL but no extensions (alext.h). Sound modifiers will be disabled.")
+		endif()
 	elseif(SDLMixer_FOUND)
 		set(Audio_TK "SDL_Mixer")
 	elseif(FMOD_FOUND)

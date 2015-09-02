@@ -73,7 +73,7 @@ struct LightMapZoom {
 		const int lx = Clamp(static_cast<int>((x + 0.5) * sx), 0, Landscape.Width - 1);
 		const int ly = Clamp(static_cast<int>((y + 0.5) * sy), 0, Landscape.Height - 1);
 		// LightMap check
-		return ::Landscape.GetPixLight(::Landscape._GetPix(lx, ly));
+		return ::Landscape._GetLight(lx, ly);
 	}
 
 	const C4Landscape& Landscape;

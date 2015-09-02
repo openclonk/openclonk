@@ -34,9 +34,9 @@
 #include <C4Physics.h> // For GravAccel
 
 
-int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;
+int32_t MVehic=MNone,MHalfVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;
 BYTE MCVehic=0;
-
+BYTE MCHalfVehic=0;
 // -------------------------------------- C4MaterialReaction
 
 
@@ -677,10 +677,11 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 	if(!earth_entry)
 		{ LogFatal(FormatString("Earth material \"%s\" not found!", szEarthMaterial).getData()); return false; }
 
-	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
-	MTunnel  = Get("Tunnel");
-	MWater   = Get("Water");
-	MEarth   = Get(earth_entry->GetMaterialName());
+	MVehic     = Get("Vehicle");     MCVehic     = Mat2PixColDefault(MVehic);
+	MHalfVehic = Get("HalfVehicle"); MCHalfVehic = Mat2PixColDefault(MHalfVehic);
+	MTunnel    = Get("Tunnel");
+	MWater     = Get("Water");
+	MEarth     = Get(earth_entry->GetMaterialName());
 
 	if ((MVehic==MNone) || (MTunnel==MNone))
 		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }

@@ -249,11 +249,6 @@ void C4ToolsDlg::UpdateTextures()
 	[texturesPopup selectItemWithTitle:[NSString stringWithUTF8String:Texture]];
 }
 
-void C4ConsoleGUI::ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture)
-{
-	[ctrler(this).texturesPopup selectItemWithTitle:[NSString stringWithUTF8String:texture]];
-}
-
 void C4ToolsDlg::NeedPreviewUpdate()
 {
 	CGImageRef image = state->CreatePreviewImage();
@@ -342,11 +337,6 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 	return image;
 }
 
-void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material)
-{
-	[ctrler(this).texturesPopup selectItemWithTitle:[NSString stringWithUTF8String:material]];
-}
-
 void C4ToolsDlg::InitGradeCtrl()
 {
 }
@@ -370,6 +360,16 @@ void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture)
 void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 {
 	[ctrler(this).materialsPopup selectItemWithTitle:[NSString stringWithUTF8String:material]];
+}
+
+void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg *dlg, const char *texture)
+{
+	// TODO
+}
+
+void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg *dlg, const char *material)
+{
+	// TODO
 }
 
 void C4ToolsDlg::UpdateIFTControls()

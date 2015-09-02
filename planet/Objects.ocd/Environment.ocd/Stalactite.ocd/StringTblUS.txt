@@ -1,0 +1,2 @@
+Name=Stalactite
+Description=Hangs from the ceiling.

@@ -1,3 +1,14 @@
+/**
+	Enemy AI
+	Controls enemy behaviour.
+
+	@author Sven2
+*/
+
+
+#include AI_HelperFunctions
+
+
 static const S2AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
              S2AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
              S2AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
@@ -309,8 +320,8 @@ private func ExecuteVehicle(fx)
 	var dx = tx-x, dy=ty-y+20;
 	var power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
 	var dt = dx * 10 / power;
-	dx += fx.target->GetXDir(dt);
-	dy += fx.target->GetYDir(dt);
+	tx += GetTargetXDir(fx.target, dt);
+	ty += GetTargetYDir(fx.target, dt);
 	if (!fx.target->GetContact(-1)) dy += GetGravity()*dt*dt/200;
 	power = Sqrt((GetGravity()*dx*dx) / Max(Abs(dx)+dy,1));
 	power = power + Random(11)-5; // some variation
@@ -358,20 +369,24 @@ private func ExecuteRanged(fx)
 		return;
 	}
 	// Stuck in aim procedure check?
-	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) return ExecuteStand(fx);
+	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) 
+		return ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account
 	// Also aim for the head (y-4) so it's harder to evade by jumping
 	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
 	var d = Distance(x,y,tx,ty);
 	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
-	tx += fx.target->GetXDir(dt);
-	ty += fx.target->GetYDir(dt);
+	tx += GetTargetXDir(fx.target, dt);
+	ty += GetTargetYDir(fx.target, dt);
 	if (!fx.target->GetContact(-1)) ty += GetGravity()*dt*dt/200;
 	// Path to target free?
 	if (PathFree(x,y,tx,ty))
 	{
 		// Get shooting angle
 		var shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
+		if (fx.ranged_direct)
+			shooting_angle = Angle(x, y, tx, ty, 10);
+		//Log("AI: Ranged attack calculated angle %d from coordinates (%d, %d) and (%d, %d)", shooting_angle, x, y, tx, ty); 
 		if (GetType(shooting_angle) != C4V_Nil)
 		{
 			// No ally on path?
@@ -385,8 +400,8 @@ private func ExecuteRanged(fx)
 			{
 				//Message("Bow @ %d!!!", shooting_angle);
 				// Aim/Shoot there
-				x = Sin(shooting_angle,100);
-				y = -Cos(shooting_angle,100);
+				x = Sin(shooting_angle, 1000, 10);
+				y = -Cos(shooting_angle, 1000, 10);
 				fx.aim_weapon->ControlUseHolding(this, x,y);
 				if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
 				{
@@ -561,24 +576,43 @@ private func FindInventoryWeapon(fx)
 	fx.ammo_check = nil; fx.ranged = false;
 	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
 	if (fx.weapon = fx.vehicle)
+	{
 		if (CheckVehicleAmmo(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = fx.ai.CheckVehicleAmmo; return true; }
 		else
 			fx.weapon = nil;
+	}
 	if (fx.weapon = FindContents(GrenadeLauncher))
+	{
 		if (HasBombs(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 75; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasBombs; fx.ranged=true; return true; }
 		else
 			fx.weapon = nil;
+	}
 	if (fx.weapon = FindContents(Bow))
+	{
 		if (HasArrows(fx, fx.weapon))
 			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = fx.ai.HasArrows; fx.ranged=true; return true; }
 		else
 			fx.weapon = nil;
-	if (fx.weapon = FindContents(Javelin)) { fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
-	if (fx.weapon = FindContents(Firestone)) { fx.strategy = fx.ai.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Rock)) { fx.strategy = fx.ai.ExecuteThrow; return true; }
-	if (fx.weapon = FindContents(Sword)) { fx.strategy = fx.ai.ExecuteMelee; return true; }
+	}
+	if (fx.weapon = FindContents(Musket))
+	{
+		if (HasAmmo(fx, fx.weapon))
+			{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = 200; fx.aim_wait = 85; fx.ammo_check = fx.ai.HasAmmo; fx.ranged=true; fx.ranged_direct = true; return true; }
+		else
+			fx.weapon = nil;
+	}
+	if (fx.weapon = FindContents(Javelin)) 
+		{ fx.strategy = fx.ai.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
+	if (fx.weapon = FindContents(Firestone)) 
+		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Rock)) 
+		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Lantern)) 
+		{ fx.strategy = fx.ai.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Sword)) 
+		{ fx.strategy = fx.ai.ExecuteMelee; return true; }
 	//if (fx.weapon = Contents(0)) { fx.strategy = fx.ai.ExecuteThrow; return true; } - don't throw empty bow, etc.
 	// no weapon :(
 	return false;
@@ -588,6 +622,13 @@ private func HasArrows(fx, object weapon)
 {
 	if (weapon->Contents(0)) return true;
 	if (FindObject(Find_Container(this), Find_Func("IsArrow"))) return true;
+	return false;
+}
+
+private func HasAmmo(fx, object weapon)
+{
+	if (weapon->Contents(0)) return true;
+	if (FindObject(Find_Container(this), Find_Func("IsMusketAmmo"))) return true;
 	return false;
 }
 
@@ -660,9 +701,9 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 	// q is in 1/10000 (pix/frame)^4
 	var q = v**4 - g*(g*dx*dx-2*dy*v*v); // dy is negative up
 	if (q<0) return nil; // out of range
-	var a = (Angle(0,0,g*dx,Sqrt(q)-v*v)+180)%360-180;
+	var a = (Angle(0, 0, g * dx, Sqrt(q) - v * v, 10) + 1800) % 3600 - 1800;
 	// Check bounds
-	if(!Inside(a, -max_angle, max_angle)) return nil;
+	if(!Inside(a, -10 * max_angle, 10 * max_angle)) return nil;
 	return a;
 }
 

@@ -1,0 +1,14 @@
+[DefCore]
+id=Meteor_Alien
+Version=6,0
+Category=C4D_Object|C4D_Environment
+Width=27
+Height=41
+Offset=-13,-20
+Vertices=4
+VertexX=-7,-7,7,7
+VertexY=-7,7,-7,7
+VertexFriction=50,50,50,50
+Rotate=1
+NoStabilize=1
+StretchGrowth=1

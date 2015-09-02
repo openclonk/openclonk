@@ -1,0 +1,27 @@
+material AlienMeteoriteMat: NormalMap
+{
+    receive_shadows off
+    technique
+    {
+        pass
+        {
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.25 0.25 0.25 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit base
+            {
+                texture meteorite.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+            
+            texture_unit normal
+            {
+                texture meteorite_normals.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}

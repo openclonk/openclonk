@@ -49,7 +49,7 @@ const int
 const int 
 	C4M_MaxName = 15,
 	C4M_MaxDefName = 2*C4M_MaxName+1,
-	C4M_MaxTexIndex = 127; // last texture map index is reserved for diff
+	C4M_MaxTexIndex = 255; // last texture map index is reserved for diff
 
 const int C4S_MaxPlayer = 4;
 
@@ -129,9 +129,10 @@ const BYTE // Directional
 	CNAT_Center = 16,
 	// Additional flags
 	CNAT_MultiAttach = 32, // new attachment behaviour; see C4Shape::Attach
-	CNAT_NoCollision = 64; // turn off collision for this vertex
+	CNAT_NoCollision = 64, // turn off collision for this vertex
+	CNAT_CollideHalfVehicle = 128;
 
-const BYTE CNAT_Flags = CNAT_MultiAttach | CNAT_NoCollision; // all attchment flags that can be combined with regular attachment
+const BYTE CNAT_Flags = CNAT_MultiAttach | CNAT_NoCollision | CNAT_CollideHalfVehicle; // all attchment flags that can be combined with regular attachment
 
 //=============================== Keyboard Input Controls =====================================================
 

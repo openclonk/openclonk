@@ -866,6 +866,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 #ifndef USE_CONSOLE
 	uniformNames.resize(C4SSU_Count + ParameterNames.size() + 1);
 	uniformNames[C4SSU_ClrMod] = "clrMod";
+	uniformNames[C4SSU_Gamma] = "gamma";
 	uniformNames[C4SSU_BaseTex] = "baseTex"; // unused
 	uniformNames[C4SSU_OverlayTex] = "overlayTex"; // unused
 	uniformNames[C4SSU_OverlayClr] = "oc_PlayerColor";

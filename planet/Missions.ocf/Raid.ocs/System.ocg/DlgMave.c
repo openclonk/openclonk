@@ -40,13 +40,15 @@ func Dlg_Mave_6(object clonk)
 
 func Dlg_Mave_7(object clonk)
 {
-	MessageBox("$Mave7$", clonk, clonk); // how?
+var options = [["$Mave7$", "Dlg_Mave_Loam"], ["$Mave12$", "Dlg_Mave_Elev"], ["$MaveBye$", "StopDialogue()"]];
+	MessageBox("", clonk, clonk, nil, false, options); // how cross lake? where elevator?
 	return true;
 }
 
-func Dlg_Mave_8(object clonk)
+func Dlg_Mave_Loam(object clonk)
 {
 	MessageBox("$Mave8$", clonk, dlg_target); // build loam
+	SetDialogueProgress(9);
 	return true;
 }
 
@@ -66,7 +68,15 @@ func Dlg_Mave_11(object clonk)
 {
 	MessageBox("$Mave11$", clonk, dlg_target); // tools in foundry
 	StopDialogue();
-	SetDialogueProgress(9);
+	SetDialogueProgress(7);
+	return true;
+}
+
+func Dlg_Mave_Elev(object clonk)
+{
+	MessageBox("$Mave13$", clonk, dlg_target); // the elevator leads to the oil chamber
+	StopDialogue();
+	SetDialogueProgress(7);
 	return true;
 }
 
@@ -112,43 +122,49 @@ func Dlg_Mave_105(object clonk)
 
 func Dlg_Mave_106(object clonk)
 {
-	MessageBox("$Mave106$", clonk, dlg_target); // u need key
+	MessageBox("$Mave106$", clonk, dlg_target); // chamber is down the shaft
 	return true;
 }
 
 func Dlg_Mave_107(object clonk)
 {
-	MessageBox("$Mave107$", clonk, clonk); // k key plz
+	MessageBox("$Mave107$", clonk, dlg_target); // u need key
 	return true;
 }
 
 func Dlg_Mave_108(object clonk)
 {
-	MessageBox("$Mave108$", clonk, dlg_target); // i give key 4 gold bar
-	g_mave_oil_spoken = true; // this updates Pyrit's dialogue - but not enough to warrant a new attention marker
+	MessageBox("$Mave108$", clonk, clonk); // k key plz
 	return true;
 }
 
 func Dlg_Mave_109(object clonk)
+{
+	MessageBox("$Mave109$", clonk, dlg_target); // i give key 4 gold bar
+	g_mave_oil_spoken = true; // this updates Pyrit's dialogue - but not enough to warrant a new attention marker
+	return true;
+}
+
+func Dlg_Mave_110(object clonk)
 {
 	// gold bar found?
 	var gold_bar = clonk->FindContents(GoldBar);
 	if (!gold_bar) gold_bar = FindObject(Find_AtRect(-30,-30,60,60), Find_ID(GoldBar));
 	if (gold_bar) return Dlg_Mave_200(clonk, gold_bar);
 	// not found yet
-	MessageBox("$Mave109$", clonk, clonk); // where is gold?
-	return true;
-}
-
-func Dlg_Mave_110(object clonk)
-{
-	MessageBox("$Mave110$", clonk, dlg_target); // no idea
+	MessageBox("$Mave110$", clonk, clonk); // where is gold?
 	return true;
 }
 
 func Dlg_Mave_111(object clonk)
 {
-	MessageBox("$Mave111$", clonk, dlg_target); // bring nuggets 2 foundry 4 gold bar
+	MessageBox("$Mave111$", clonk, dlg_target); // no idea
+	return true;
+}
+
+func Dlg_Mave_112(object clonk)
+{
+	MessageBox("$Mave112$", clonk, dlg_target); // bring nuggets 2 foundry 4 gold bar
 	SetBroadcast(false);
 	StopDialogue();
 	SetDialogueProgress(109);
@@ -161,6 +177,7 @@ func Dlg_Mave_111(object clonk)
 func Dlg_Mave_200(object clonk, object gold_bar)
 {
 	gold_bar->RemoveObject();
+	g_allow_gold_sale = true;
 	SetBroadcast(true);
 	MessageBox("$Mave200$", clonk, clonk); // here is gold bar
 	SetDialogueProgress(201);

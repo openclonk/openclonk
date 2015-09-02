@@ -48,6 +48,9 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg(LoadResStr("IDS_DLG_ABOUT"
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_CHECKFORUPDATES"), caButtons.GetGridCell(2,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnUpdateBtn));
 	btn->SetToolTip(LoadResStr("IDS_DESC_CHECKONLINEFORNEWVERSIONS"));
 #endif
+
+	AddElement(new C4GUI::Label("'Clonk' is a registered trademark of Matthes Bender.",
+		caButtons.GetFromBottom(rUseFont.GetLineHeight())));
 }
 
 C4StartupAboutDlg::~C4StartupAboutDlg()

@@ -240,21 +240,6 @@ public func DrawConnections(connections)
 
 /*-- Helper Functions --*/
 
-// Draws some material inside an island.
-public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
-{
-	if (!speck_size)
-		speck_size = 4;
-	if (!ratio)
-		ratio = 15;
-	// Use random checker algorithm to draw patches of the material. 
-	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size, Hgt = speck_size};
-	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
-	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	Draw(mat, algo);	
-	return;
-}
-
 public func DrawVariations(string mat, int ratio, int sx, int sy)
 {
 	var rand_algo = {Algo=MAPALGO_RndChecker, Ratio = ratio, Wdt = sx, Hgt = sy};

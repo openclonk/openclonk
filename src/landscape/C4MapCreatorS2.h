@@ -211,6 +211,7 @@ public:
 	bool Sub; // tunnel bg?
 	char Texture[C4M_MaxName+1]; // texture name
 	BYTE MatClr; // resolved mat-tex color
+	BYTE MatClrBkg; // resolved mat-tex color
 	C4MCTokenType Op; // following operator
 	C4MCAlgorithm *Algorithm; // algorithm to calc whether filled or not
 	int32_t Turbulence, Lambda, Rotate; // turbulence factors; rotation angle
@@ -232,7 +233,7 @@ public:
 	C4MCOverlay *FirstOfChain(); // go backwards in op chain until first overlay of chain
 
 	bool CheckMask(int32_t iX, int32_t iY); // check whether algorithms succeeds at iX/iY
-	bool RenderPix(int32_t iX, int32_t iY, BYTE &rPix, C4MCTokenType eLastOp=MCT_NONE, bool fLastSet=false, bool fDraw=true, C4MCOverlay **ppPixelSetOverlay=NULL); // render this pixel
+	bool RenderPix(int32_t iX, int32_t iY, BYTE &rPix, BYTE &rPixBkg, C4MCTokenType eLastOp=MCT_NONE, bool fLastSet=false, bool fDraw=true, C4MCOverlay **ppPixelSetOverlay=NULL); // render this pixel
 	bool PeekPix(int32_t iX, int32_t iY); // check mask; regard operator chain
 	bool InBounds(int32_t iX, int32_t iY) { return iX>=X && iY>=Y && iX<X+Wdt && iY<Y+Hgt; } // return whether point iX/iY is inside bounds
 
@@ -282,7 +283,7 @@ protected:
 	void Default(); // set default values for default presets
 
 public:
-	bool RenderTo(BYTE *pToBuf, int32_t iPitch); // render to buffer
+	bool RenderTo(BYTE *pToBuf, BYTE *pToBufBkg, int32_t iPitch); // render to buffer
 	void SetSize(int32_t iWdt, int32_t iHgt);
 
 public:
@@ -308,7 +309,7 @@ public:
 	C4MCMap *GetMap(const char *szMapName); // get map by name
 
 public:
-	CSurface8 * Render(const char *szMapName); // create map surface
+	bool Render(const char *szMapName, CSurface8*& sfcMap, CSurface8*& sfcMapBkg); // create map surface
 	BYTE *RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t &sfcHgt); // create buffer and render it
 
 	void SetC4SLandscape(C4SLandscape *pLandscape) // update source for map size

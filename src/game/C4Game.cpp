@@ -87,6 +87,7 @@ static C4GameParameters GameParameters;
 static C4ScenarioParameterDefs GameScenarioParameterDefs;
 static C4ScenarioParameters GameStartupScenarioParameters;
 static C4RoundResults GameRoundResults;
+static C4Value GameGlobalSoundModifier;
 
 C4Game::C4Game():
 		ScenarioParameterDefs(GameScenarioParameterDefs),
@@ -103,6 +104,7 @@ C4Game::C4Game():
 		pSec1Timer(new C4GameSec1Timer()),
 		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
 		fQuitWithError(false),
+		GlobalSoundModifier(GameGlobalSoundModifier),
 		ScriptGuiRoot(0)
 {
 	Default();
@@ -228,8 +230,9 @@ bool C4Game::OpenScenario()
 #ifndef USE_CONSOLE
 #ifndef _DEBUG
 	if (C4S.Head.MissionAccess[0])
-		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
-			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+		if (!Application.isEditor)
+			if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
+				{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
 #endif
 #endif
 
@@ -292,8 +295,6 @@ bool C4Game::PreInit()
 	FixRandom(RandomSeed);
 	// Timer flags
 	GameGo=false;
-	// set gamma
-	SetDefaultGamma();
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -479,8 +480,8 @@ bool C4Game::Init()
 	if (!InitGameFinal()) return false;
 	SetInitProgress(99);
 
-	// Gamma
-	pDraw->ApplyGamma();
+	// Sound modifier from savegames
+	if (GlobalSoundModifier) SetGlobalSoundModifier(GlobalSoundModifier._getPropList());
 
 	// Message board and upper board
 	if (!Application.isEditor)
@@ -537,8 +538,6 @@ void C4Game::Clear()
 	delete pFileMonitor; pFileMonitor = NULL;
 	// fade out music
 	Application.MusicSystem.FadeOut(2000);
-	// Reset colors
-	SetDefaultGamma();
 	// game no longer running
 	IsRunning = false;
 	PointersDenumerated = false;
@@ -566,7 +565,6 @@ void C4Game::Clear()
 	Control.Clear();
 
 	// Clear
-	if (pDraw) { pDraw->ResetGamma(); pDraw->ApplyGamma(); }
 	Scoreboard.Clear();
 	MouseControl.Clear();
 	Players.Clear();
@@ -597,6 +595,8 @@ void C4Game::Clear()
 	GameText.Clear();
 	RecordDumpFile.Clear();
 	RecordStream.Clear();
+	SetGlobalSoundModifier(NULL); // must be called before script engine clear
+	Application.SoundSystem.Modifiers.Clear(); // free some prop list pointers
 
 	PathFinder.Clear();
 	TransferZones.Clear();
@@ -606,6 +606,9 @@ void C4Game::Clear()
 
 	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
 	ScriptEngine.Clear();
+	// delete any remaining prop lists from circular chains
+	C4PropListNumbered::ClearNumberedPropLists(); 
+	C4PropListScript::ClearScriptPropLists();
 	MainSysLangStringTable.Clear();
 	ScenarioLangStringTable.Clear();
 	CloseScenario();
@@ -1657,6 +1660,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
 		pComp->Value(mkNamingAdapt(fResortAnyObject,      "ResortAnyObj",          false));
 		pComp->Value(mkNamingAdapt(iMusicLevel,           "MusicLevel",            100));
+		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalSoundModifier, numbers),   "GlobalSoundModifier", C4Value()));
 		pComp->Value(mkNamingAdapt(NextMission,           "NextMission",           StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionText,       "NextMissionText",       StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
@@ -1892,6 +1896,7 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 #endif
 	// compose key
 	C4KeyCodeEx Key(vk_code, C4KeyShiftState(fAlt*KEYS_Alt + fCtrl*KEYS_Control + fShift*KEYS_Shift), fRepeated);
+	Key.FixShiftKeys();
 	// compose keyboard scope
 	DWORD InScope = 0;
 	if (fPlrCtrlOnly)
@@ -2645,8 +2650,8 @@ C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY,
 		{
 			// Random hit within target area
 			if (!PlaceVegetation_GetRandomPoint(iX, iY, iWdt, iHgt, shape_proplist, out_pos_proplist, &iTx, &iTy)) break;
-			// Above IFT
-			while ((iTy>0) && GBackIFT(iTx,iTy)) iTy--;
+			// Above tunnel
+			while ((iTy>0) && Landscape.GetBackPix(iTx,iTy) == 0) iTy--;
 			// Above semi solid
 			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
 				continue;
@@ -2865,14 +2870,14 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
 	{
-		C4LangStringTable SysGroupString;
-		C4Language::LoadComponentHost(&SysGroupString, SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		C4LangStringTable *pSysGroupString = new C4LangStringTable();
+		C4Language::LoadComponentHost(pSysGroupString, SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
 			Log("[!]Loading local scenario player control definitions...");
 			C4PlayerControlFile PlayerControlFile;
-			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, &SysGroupString))
+			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, pSysGroupString))
 			{
 				// non-fatal error here
 				Log("[!]Error loading scenario defined player controls");
@@ -2892,12 +2897,14 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ExtraScriptHost();
 			scr->Reg2List(&ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, pSysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)
 			Game.pFileMonitor->AddDirectory(SysGroup.GetFullName().getData());
 		SysGroup.Close();
+		// release string table if no longer used
+		pSysGroupString->DelRef();
 	}
 	return true;
 }
@@ -2929,7 +2936,7 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F5,   KEYS_Control), "DbgModeToggle",          KEYSCOPE_Generic,    new C4KeyCB  <C4Game>          (*this, &C4Game::ToggleDebugMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F6,   KEYS_Control), "DbgShowVtxToggle",       KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowVertices)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F7,   KEYS_Control), "DbgShowActionToggle",    KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowAction)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F8,   KEYS_Control), "DbgShowSolidMaskToggle", KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowSolidMask)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F8,   KEYS_Control), "DbgShow8BitSurface", KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShow8BitSurface)));
 
 	// video recording - improve...
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_ADD,      KEYS_Alt), "VideoEnlarge",           KEYSCOPE_Generic,    new C4KeyCB  <C4Video>         (GraphicsSystem.Video, &C4Video::Enlarge)));
@@ -3732,12 +3739,27 @@ void C4Game::SetDefaultGamma()
 	// Skip this if graphics haven't been initialized yet (happens when
 	// we bail during initialization)
 	if (!pDraw) return;
-	// Default gamma ramps
-	for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
+	// Default gamma
+	pDraw->ResetGamma();
+	pDraw->SetGamma(float(Config.Graphics.Gamma) / 100.0,
+					float(Config.Graphics.Gamma) / 100.0,
+					float(Config.Graphics.Gamma) / 100.0,
+					C4MaxGammaUserRamps);
+}
+
+void C4Game::SetGlobalSoundModifier(C4PropList *new_modifier)
+{
+	// set in prop list (for savegames) and in sound system::
+	C4SoundModifier *mod;
+	if (new_modifier)
 	{
-		if (iRamp == C4GRI_USER)
-			pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, iRamp);
-		else
-			pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRamp);
+		GlobalSoundModifier.SetPropList(new_modifier);
+		mod = ::Application.SoundSystem.Modifiers.Get(new_modifier, true);
 	}
+	else
+	{
+		GlobalSoundModifier.Set0();
+		mod = NULL;
+	}
+	::Application.SoundSystem.Modifiers.SetGlobalModifier(mod, NO_OWNER);
 }

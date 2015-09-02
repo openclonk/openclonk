@@ -46,6 +46,7 @@
     <text><emlink href="script/Effects.html">Effects</emlink></text>
     <text><emlink href="script/GetXXVal.html">Querying Game Data</emlink></text>
     <text><emlink href="script/ScriptPlayers.html">Script Player (i.e. AI player)</emlink></text>
+    <text><emlink href="script/SoundModifiers.html">Sound modifiers</emlink></text>
     <h id="Infos">Libraries</h>
     <text><emlink href="script/Shape.html">Shape</emlink></text>
   </part>

@@ -1,0 +1,5 @@
+[Material]
+Name=HalfVehicle
+Density=100
+Friction=100
+KeepSinglePixels=1

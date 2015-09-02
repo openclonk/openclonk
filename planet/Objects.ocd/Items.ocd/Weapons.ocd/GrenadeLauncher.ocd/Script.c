@@ -21,7 +21,7 @@ public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
 public func GetCarryTransform()
 {
-	return Trans_Mul(Trans_Rotate(-90,0,1,0), Trans_Rotate(10,1,0,0));
+	return Trans_Mul(Trans_Rotate(90,1,0,0), Trans_Rotate(-10,0,0,1));
 }
 
 local animation_set;

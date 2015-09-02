@@ -31,8 +31,8 @@ public func GetCarryBone()	{	return "main";	}
 public func GetCarryTransform()
 {
 	//Left hand's bone is different? I don't know, but this is a work-around.
-	if(carry_bone == "pos_hand1") return Trans_Rotate(180,0,0,1);
-	return Trans_Rotate(-90,0,0,1);
+	if(carry_bone == "pos_hand1") return Trans_Rotate(180,0,1,0);
+	return Trans_Rotate(-90,0,1,0);
 }
 
 protected func HoldingEnabled() { return true; }

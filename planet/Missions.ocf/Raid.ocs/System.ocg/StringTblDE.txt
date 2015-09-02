@@ -28,9 +28,9 @@ Newton100=Hey %s! Hast du den Angriff überstanden?
 Newton101=Bestens. Ich konnte das Spektakel in aller Ruhe aus dem Wald beobachten.
 Newton102=Wir werden Monate brauchen, um alles wieder aufzubauen. Und in der Zeit sind wir ihren Angriffen schutzlos ausgesetzt.
 Newton103=Wer sind denn die Angreifer?
-Newton104=Das sind die Schergen von \"König\" Hörx. Wir haben uns geweigert, unfaire Tribute abzuführen und nun wollen sie an uns ein Exempel statuieren.
-Newton105=Wieso \"König\"?
-Newton106=Er hat eine Krone auf dem Kopf. Na und? Wir haben ihn nicht gewählt. Wir werden niemals einen Herrscher anerkennen, der keine demokratische Legitimation hat!
+Newton104=Das sind die Schergen von König Hörx. Wir haben uns geweigert, unfaire Tribute abzuführen und nun wollen sie an uns ein Exempel statuieren.
+Newton105=Aber er ist unser König, oder?
+Newton106=Er hat eine Krone auf dem Kopf. Na und? Wir haben ihn nicht gewählt. Wir werden niemals einen Herrscher anerkennen, der uns nur tyrannisiert!
 Newton107=Okay. Aber was wollt ihr nun tun?
 Newton108=Nichts. Es ist hoffnungslos. Wir werden alle sterben. Es sei denn...
 Newton109=...?
@@ -49,9 +49,9 @@ Newton121=Viel Glück! Du wirst es brauchen.
 
 Newton200=Newton, ich habe ein Flugzeug für den Gegenschlag auf Hörx. Aber leider keinen Treibstoff.
 Newton200a=Newton, ich habe die Pläne für ein Flugzeug für den Gegenschlag auf Hörx. Aber leider keinen Treibstoff.
-Newton201=Sehr gut, %s. Du brauchst Öl? Das ist in der Tat ein Problem. Hörx hat den Privatbesitz von Öl unter Strafe gestellt.
+Newton201=Sehr gut, %s. Du brauchst Öl? Das ist in der Tat ein Problem. Hörx hat den Besitz von Öl unter Strafe gestellt.
 Newton202=Natürlich haben wir uns nicht daran gehalten. Aber für unsere Verteidigung und den Burgenbau mussten wir alles verkaufen.
-Newton203=Hier im Dorf ist nichts mehr. Frag mal Mave in der Höhle. Der hamstert vielleicht noch etwas.	
+Newton203=Hier im Dorf ist nichts mehr. Aber wir haben noch Öl in der Höhle unter diesem Dorf. Frag mal Mave, neben dem Hochofen. Der passt auf den Schlüssel auf.
 
 
 Lara1=Wir brauchen mehr Holz. Dann schaffen wir heute vor der Dunkelheit noch das äußere Gerüst.
@@ -115,24 +115,28 @@ Mave8=Du könntest meinen Hochofen nutzen, um Lehm zu bauen.
 Mave9=Wie funktioniert das mit dem Lehm?
 Mave10=Oh, das ist ganz einfach: Fülle einen Eimer{{Bucket}} mit Erde und ein Fass{{Barrel}} mit Wasser, lege beides in den Hochofen und starte die Lehmproduktion.
 Mave11=Die Werkzeuge im Hochofen kannst du benutzen.
+Mave12=Wohin führt der Fahrstuhlschacht?
+Mave13=Das ist der Fahrstuhl zur Kammer mit unseren Ölreserven. Leider ist der Weg von einem Vulkan geflutet. Hm. Vielleicht könnte man das Wasser aus dem See benutzen, um die Lava abzukühlen.
+MaveBye=Tschüss.
 
 Mave100=Hi Mave. Weißt du, wo ich Öl finden könnte?
-Mave101=Oh, Öl. Du weißt, dass wir auf Dekret des Königs keine privaten Vorräte haben dürfen?
+Mave101=Oh, Öl. Du weißt, dass wir auf Dekret des Königs keine Vorräte haben dürfen?
 Mave102=Es ist wichtig. Ich will den König töten.
 Mave103=Das klingt nach einem noblen Plan. Vielleicht kann ich dir helfen...
 Mave104=Ja, bitte!
-Mave105=Nicht so hastig. Es gibt da eine geheime Kammer. Sie ist inzwischen tief unter diesen Lavaseen begraben. Aber die Wände sind aus purem Granit. Also denke ich, dass die Höhle noch intakt ist.
-Mave106=Um die Kammer zu betreten, brauchst du einen Schlüssel.
-Mave107=Okay. Gib Schlüssel bitte.
-Mave108=Ich verkaufe ihn dir für einen Goldbarren.
-Mave109=Wo finde ich Gold?
-Mave110=Wenn ich das wüsste, wäre ich selber mit der Spitzhacke losgezogen. Normalerweise liegen die Goldadern irgendwo im Untergrund.
-Mave111=Wenn du Nuggets gefunden hast, kannst du sie bei mir im Hochofen zu einem Barren schmelzen.
+Mave105=Nicht so hastig. Es gibt am unteren Ende dieses Fahrstuhlschachtes einen Weg, der zu einer Kammer führt. Sie ist inzwischen tief unter diesen Lavaseen begraben.
+Mave106=Aber die Wände sind aus purem Granit. Also denke ich, dass die Höhle noch intakt ist.
+Mave107=Um die Kammer zu betreten, brauchst du einen Schlüssel.
+Mave108=Okay. Gib Schlüssel bitte.
+Mave109=Ich verkaufe ihn dir für einen Goldbarren.
+Mave110=Wo finde ich Gold?
+Mave111=Wenn ich das wüsste, wäre ich selber mit der Spitzhacke losgezogen. Normalerweise liegen die Goldadern irgendwo im Untergrund.
+Mave112=Wenn du Nuggets gefunden hast, kannst du sie bei mir im Hochofen zu einem Barren schmelzen.
 
 Mave200=Hier ist dein Goldbarren.
 Mave201=Es war mir eine Ehre, mit dir Geschäfte zu machen. Hier ist dein Schlüssel.
-Mave202=Wo finde ich die versteckte Kammer?
-Mave203=Sie ist tief unter den Lavaseen begraben. Vielleicht kannst du das Wasser aus dem See benutzen, um die Lava abzukühlen?
+Mave202=Wo finde ich die Kammer?
+Mave203=Sie ist am unteren Ende dieses Fahrstuhles, tief unter den Lavaseen begraben. Vielleicht kannst du das Wasser aus dem See benutzen, um die Lava abzukühlen?
 
 
 Pyrit1=Hi, bist du Pyrit?

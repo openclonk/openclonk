@@ -222,11 +222,10 @@ public:
 	GtkWidget* preview;
 	GtkWidget* scale;
 
-	GtkWidget* ift;
-	GtkWidget* no_ift;
-
-	GtkWidget* materials;
-	GtkWidget* textures;
+	GtkWidget* fg_materials;
+	GtkWidget* fg_textures;
+	GtkWidget* bg_materials;
+	GtkWidget* bg_textures;
 
 	gulong handlerBrush;
 	gulong handlerLine;
@@ -241,8 +240,10 @@ public:
 	gulong handlerIft;
 	gulong handlerNoIft;
 
-	gulong handlerMaterials;
-	gulong handlerTextures;
+	gulong handlerFgMaterials;
+	gulong handlerFgTextures;
+	gulong handlerBgMaterials;
+	gulong handlerBgTextures;
 	gulong handlerScale;
 
 	gulong handlerHide;
@@ -260,10 +261,12 @@ public:
 	static void OnButtonNoIft(GtkWidget* widget, gpointer data);
 	static void OnComboMaterial(GtkWidget* widget, gpointer data);
 	static void OnComboTexture(GtkWidget* widget, gpointer data);
+	static void OnComboBgMaterial(GtkWidget* widget, gpointer data);
+	static void OnComboBgTexture(GtkWidget* widget, gpointer data);
 	static void OnGrade(GtkWidget* widget, gpointer data);
 	static void OnWindowHide(GtkWidget* widget, gpointer data);
 	
-	State(C4ToolsDlg* dlg): Super(dlg), hbox(NULL) {}
+	State(C4ToolsDlg* dlg): Super(dlg), hbox(NULL) { dlg->ModeBack = true; }
 	bool Open();
 	void UpdateToolCtrls();
 	void InitMaterialCtrls();
@@ -337,7 +340,9 @@ void C4ConsoleGUI::State::InitGUI()
 
 	lblCursor = gtk_label_new("");
 	gtk_misc_set_padding(GTK_MISC(lblCursor), 3, 0);
+	gtk_label_set_ellipsize(GTK_LABEL(lblCursor), PANGO_ELLIPSIZE_END);
 	GtkToolItem * itmCursor = gtk_tool_item_new();
+	gtk_tool_item_set_expand(itmCursor, TRUE);
 	gtk_container_add(GTK_CONTAINER(itmCursor), lblCursor);
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itmCursor, -1);
 
@@ -880,17 +885,33 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture)
 {
 	C4ToolsDlg::State* state = dlg->state;
-	g_signal_handler_block(state->textures, state->handlerTextures);
-	SelectComboBoxText(GTK_COMBO_BOX(state->textures), texture);
-	g_signal_handler_unblock(state->textures, state->handlerTextures);
+	g_signal_handler_block(state->fg_textures, state->handlerFgTextures);
+	SelectComboBoxText(GTK_COMBO_BOX(state->fg_textures), texture);
+	g_signal_handler_unblock(state->fg_textures, state->handlerFgTextures);
 }
 
 void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 {
 	C4ToolsDlg::State* state = dlg->state;
-	g_signal_handler_block(state->materials, state->handlerMaterials);
-	SelectComboBoxText(GTK_COMBO_BOX(state->materials), material);
-	g_signal_handler_unblock(state->materials, state->handlerMaterials);
+	g_signal_handler_block(state->fg_materials, state->handlerFgMaterials);
+	SelectComboBoxText(GTK_COMBO_BOX(state->fg_materials), material);
+	g_signal_handler_unblock(state->fg_materials, state->handlerFgMaterials);
+}
+
+void C4ConsoleGUI::ToolsDlgSelectBackTexture(C4ToolsDlg *dlg, const char *texture)
+{
+	C4ToolsDlg::State* state = dlg->state;
+	g_signal_handler_block(state->bg_textures, state->handlerBgTextures);
+	SelectComboBoxText(GTK_COMBO_BOX(state->bg_textures), texture);
+	g_signal_handler_unblock(state->bg_textures, state->handlerBgTextures);
+}
+
+void C4ConsoleGUI::ToolsDlgSelectBackMaterial(C4ToolsDlg *dlg, const char *material)
+{
+	C4ToolsDlg::State* state = dlg->state;
+	g_signal_handler_block(state->bg_materials, state->handlerBgMaterials);
+	SelectComboBoxText(GTK_COMBO_BOX(state->bg_materials), material);
+	g_signal_handler_unblock(state->bg_materials, state->handlerBgMaterials);
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
@@ -1037,9 +1058,6 @@ bool C4ToolsDlg::State::Open()
 		GtkWidget* image_static = CreateImageFromInlinedPixbuf(static_pixbuf_data);
 		GtkWidget* image_exact = CreateImageFromInlinedPixbuf(exact_pixbuf_data);
 
-		GtkWidget* image_ift = CreateImageFromInlinedPixbuf(ift_pixbuf_data);
-		GtkWidget* image_no_ift = CreateImageFromInlinedPixbuf(no_ift_pixbuf_data);
-
 		landscape_dynamic = gtk_toggle_button_new();
 		landscape_static = gtk_toggle_button_new();
 		landscape_exact = gtk_toggle_button_new();
@@ -1086,32 +1104,42 @@ bool C4ToolsDlg::State::Open()
 		gtk_box_pack_start(GTK_BOX(local_hbox), scale, false, false, 0);
 
 		vbox = gtk_vbox_new(false, 6);
-
-		ift = gtk_toggle_button_new();
-		no_ift = gtk_toggle_button_new();
-
-		gtk_container_add(GTK_CONTAINER(ift), image_ift);
-		gtk_container_add(GTK_CONTAINER(no_ift), image_no_ift);
-
-		gtk_box_pack_start(GTK_BOX(vbox), ift, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), no_ift, false, false, 0);
-
-		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, false, false, 0);
-
-		vbox = gtk_vbox_new(false, 6);
 #if GTK_CHECK_VERSION(2,23,0)
-		materials = gtk_combo_box_text_new();
-		textures = gtk_combo_box_text_new();		
+		fg_materials = gtk_combo_box_text_new();
+		fg_textures = gtk_combo_box_text_new();		
+		bg_materials = gtk_combo_box_text_new();
+		bg_textures = gtk_combo_box_text_new();	
 #else
-		materials = gtk_combo_box_new_text();
-		textures = gtk_combo_box_new_text();
+		fg_materials = gtk_combo_box_new_text();
+		fg_textures = gtk_combo_box_new_text();
+		bg_materials = gtk_combo_box_new_text();
+		bg_textures = gtk_combo_box_new_text();
 #endif
 
-		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(materials), RowSeparatorFunc, NULL, NULL);
-		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(textures), RowSeparatorFunc, NULL, NULL);
+		// Link the material combo boxes together, but not the texture combo boxes,
+		// so that we can sort the texture combo box differently.
+		gtk_combo_box_set_model(GTK_COMBO_BOX(bg_materials), gtk_combo_box_get_model(GTK_COMBO_BOX(fg_materials)));
 
-		gtk_box_pack_start(GTK_BOX(vbox), materials, true, false, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), textures, true, false, 0);
+		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(fg_materials), RowSeparatorFunc, NULL, NULL);
+		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(fg_textures), RowSeparatorFunc, NULL, NULL);
+		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(bg_materials), RowSeparatorFunc, NULL, NULL);
+		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(bg_textures), RowSeparatorFunc, NULL, NULL);
+
+		GtkWidget* fg_box = gtk_hbox_new(false, 6);
+		GtkWidget* fg_lbl = gtk_label_new("Foreground:");
+		gtk_box_pack_start(GTK_BOX(fg_box), fg_lbl, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(fg_box), fg_materials, true, false, 0);
+		gtk_box_pack_start(GTK_BOX(fg_box), fg_textures, true, false, 0);
+
+
+		GtkWidget* bg_box = gtk_hbox_new(false, 6);
+		GtkWidget* bg_lbl = gtk_label_new("Background:");
+		gtk_box_pack_start(GTK_BOX(bg_box), bg_lbl, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(bg_box), bg_materials, true, false, 0);
+		gtk_box_pack_start(GTK_BOX(bg_box), bg_textures, true, false, 0);
+
+		gtk_box_pack_start(GTK_BOX(vbox), fg_box, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), bg_box, false, false, 0);
 
 		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, true, true, 0); // ???
 		gtk_widget_show_all(hbox);
@@ -1127,10 +1155,10 @@ bool C4ToolsDlg::State::Open()
 		handlerRect = g_signal_connect(G_OBJECT(rect), "toggled", G_CALLBACK(OnButtonRect), this);
 		handlerFill = g_signal_connect(G_OBJECT(fill), "toggled", G_CALLBACK(OnButtonFill), this);
 		handlerPicker = g_signal_connect(G_OBJECT(picker), "toggled", G_CALLBACK(OnButtonPicker), this);
-		handlerIft = g_signal_connect(G_OBJECT(ift), "toggled", G_CALLBACK(OnButtonIft), this);
-		handlerNoIft = g_signal_connect(G_OBJECT(no_ift), "toggled", G_CALLBACK(OnButtonNoIft), this);
-		handlerMaterials = g_signal_connect(G_OBJECT(materials), "changed", G_CALLBACK(OnComboMaterial), this);
-		handlerTextures = g_signal_connect(G_OBJECT(textures), "changed", G_CALLBACK(OnComboTexture), this);
+		handlerFgMaterials = g_signal_connect(G_OBJECT(fg_materials), "changed", G_CALLBACK(OnComboMaterial), this);
+		handlerFgTextures = g_signal_connect(G_OBJECT(fg_textures), "changed", G_CALLBACK(OnComboTexture), this);
+		handlerBgMaterials = g_signal_connect(G_OBJECT(bg_materials), "changed", G_CALLBACK(OnComboBgMaterial), this);
+		handlerBgTextures = g_signal_connect(G_OBJECT(bg_textures), "changed", G_CALLBACK(OnComboBgTexture), this);
 		handlerScale = g_signal_connect(G_OBJECT(scale), "value-changed", G_CALLBACK(OnGrade), this);
 
 		handlerHide = g_signal_connect(G_OBJECT(C4DevmodeDlg::GetWindow()), "hide", G_CALLBACK(OnWindowHide), this);
@@ -1152,19 +1180,24 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg *dlg)
 #endif
 void C4ToolsDlg::State::InitMaterialCtrls()
 {
-	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(materials)));
+	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(fg_materials)));
 
-	g_signal_handler_block(materials, handlerMaterials);
+	g_signal_handler_block(fg_materials, handlerFgMaterials);
+	g_signal_handler_block(bg_materials, handlerBgMaterials);
 	gtk_list_store_clear(list);
 
-	gtk_combo_box_append_text(GTK_COMBO_BOX(materials), C4TLS_MatSky);
+	gtk_combo_box_append_text(GTK_COMBO_BOX(fg_materials), C4TLS_MatSky);
 
 	for (int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), ::MaterialMap.Map[cnt].Name);
+		gtk_combo_box_append_text(GTK_COMBO_BOX(fg_materials), ::MaterialMap.Map[cnt].Name);
 	}
-	g_signal_handler_unblock(materials, handlerMaterials);
-	SelectComboBoxText(GTK_COMBO_BOX(materials), GetOwner()->Material);
+
+	g_signal_handler_unblock(fg_materials, handlerFgMaterials);
+	g_signal_handler_unblock(bg_materials, handlerBgMaterials);
+
+	SelectComboBoxText(GTK_COMBO_BOX(fg_materials), GetOwner()->Material);
+	SelectComboBoxText(GTK_COMBO_BOX(bg_materials), GetOwner()->BackMaterial);
 }
 
 void C4ToolsDlg::UpdateToolCtrls()
@@ -1196,47 +1229,60 @@ void C4ToolsDlg::State::UpdateToolCtrls()
 
 void C4ToolsDlg::UpdateTextures()
 {
-	// Refill dlg
-	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(state->textures)));
-	gtk_list_store_clear(list);
-	// bottom-most: any invalid textures
-	bool fAnyEntry = false; int32_t cnt; const char *szTexture;
-	if (::Landscape.Mode!=C4LSC_Exact)
+	GtkComboBox* boxes[2] = {
+		GTK_COMBO_BOX(state->fg_textures),
+		GTK_COMBO_BOX(state->bg_textures)
+	};
+
+	const char* materials[2] = {
+		Material, BackMaterial
+	};
+
+	for (int i = 0; i < 2; ++i)
+	{
+		// Refill dlg
+		GtkComboBox* box = boxes[i];
+		const char* material = materials[i];
+
+		GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(box));
+		gtk_list_store_clear(list);
+
+		// bottom-most: any invalid textures
+		bool fAnyEntry = false; int32_t cnt; const char *szTexture;
+		if (::Landscape.Mode!=C4LSC_Exact)
+			for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
+			{
+				if (!::TextureMap.GetIndex(material, szTexture, false))
+				{
+					fAnyEntry = true;
+					gtk_combo_box_prepend_text(box, szTexture);
+				}
+			}
+		// separator
+		if (fAnyEntry)
+		{
+			gtk_combo_box_prepend_text(box, "-------");
+		}
+
+		// atop: valid textures
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
-			if (!::TextureMap.GetIndex(Material, szTexture, false))
+			// Current material-texture valid? Always valid for exact mode
+			if (::TextureMap.GetIndex(material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
 			{
-				fAnyEntry = true;
-				gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->textures), szTexture);
+				gtk_combo_box_prepend_text(box, szTexture);
 			}
 		}
-	// separator
-	if (fAnyEntry)
-	{
-		gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->textures), "-------");
 	}
 
-	// atop: valid textures
-	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
-	{
-		// Current material-texture valid? Always valid for exact mode
-		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
-		{
-			gtk_combo_box_prepend_text(GTK_COMBO_BOX(state->textures), szTexture);
-		}
-	}
 	// reselect current
-	g_signal_handler_block(state->textures, state->handlerTextures);
-	SelectComboBoxText(GTK_COMBO_BOX(state->textures), Texture);
-	g_signal_handler_unblock(state->textures, state->handlerTextures);
-}
+	g_signal_handler_block(state->fg_textures, state->handlerFgTextures);
+	SelectComboBoxText(GTK_COMBO_BOX(state->fg_textures), Texture);
+	g_signal_handler_unblock(state->fg_textures, state->handlerFgTextures);
 
-void C4ConsoleGUI::ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture)
-{
-	C4ToolsDlg::State* state = dlg->state;
-	g_signal_handler_block(state->textures, state->handlerTextures);
-	SelectComboBoxText(GTK_COMBO_BOX(state->textures), texture);
-	g_signal_handler_unblock(state->textures, state->handlerTextures);
+	g_signal_handler_block(state->bg_textures, state->handlerBgTextures);
+	SelectComboBoxText(GTK_COMBO_BOX(state->bg_textures), BackTexture);
+	g_signal_handler_unblock(state->bg_textures, state->handlerBgTextures);
 }
 
 void C4ToolsDlg::NeedPreviewUpdate()
@@ -1326,7 +1372,7 @@ void C4ToolsDlg::State::UpdateLandscapeModeCtrls()
 	gtk_widget_set_sensitive(landscape_dynamic, iMode==C4LSC_Dynamic);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_static), iMode==C4LSC_Static);
-	gtk_widget_set_sensitive(landscape_static, ::Landscape.Map!=NULL);
+	gtk_widget_set_sensitive(landscape_static, ::Landscape.HasMap());
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_exact), iMode==C4LSC_Exact);
 
@@ -1344,23 +1390,7 @@ void C4ToolsDlg::UpdateIFTControls()
 
 void C4ToolsDlg::State::UpdateIFTControls()
 {
-	if (!hbox) return;
-	g_signal_handler_block(no_ift, handlerNoIft);
-	g_signal_handler_block(ift, handlerIft);
-
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(no_ift), GetOwner()->ModeIFT==0);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ift), GetOwner()->ModeIFT==1);
-
-	g_signal_handler_unblock(no_ift, handlerNoIft);
-	g_signal_handler_unblock(ift, handlerIft);
-}
-
-void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material)
-{
-	C4ToolsDlg::State* state = dlg->state;
-	g_signal_handler_block(state->materials, state->handlerMaterials);
-	SelectComboBoxText(GTK_COMBO_BOX(state->materials), material);
-	g_signal_handler_unblock(state->materials, state->handlerMaterials);
+	// No-op since we have background material controls
 }
 
 void C4ToolsDlg::InitGradeCtrl()
@@ -1377,16 +1407,16 @@ void C4ToolsDlg::InitGradeCtrl()
 bool C4ToolsDlg::PopMaterial()
 {
 	if (!state->hbox) return false;
-	gtk_widget_grab_focus(state->materials);
-	gtk_combo_box_popup(GTK_COMBO_BOX(state->materials));
+	gtk_widget_grab_focus(state->fg_materials);
+	gtk_combo_box_popup(GTK_COMBO_BOX(state->fg_materials));
 	return true;
 }
 
 bool C4ToolsDlg::PopTextures()
 {
 	if (!state->hbox) return false;
-	gtk_widget_grab_focus(state->textures);
-	gtk_combo_box_popup(GTK_COMBO_BOX(state->textures));
+	gtk_widget_grab_focus(state->fg_textures);
+	gtk_combo_box_popup(GTK_COMBO_BOX(state->fg_textures));
 	return true;
 }
 
@@ -1407,10 +1437,10 @@ void C4ToolsDlg::EnableControls()
 	gtk_widget_set_sensitive(state->rect, iLandscapeMode>=C4LSC_Static);
 	gtk_widget_set_sensitive(state->fill, iLandscapeMode>=C4LSC_Exact);
 	gtk_widget_set_sensitive(state->picker, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->ift, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->no_ift, iLandscapeMode>=C4LSC_Static);
-	gtk_widget_set_sensitive(state->materials, (iLandscapeMode>=C4LSC_Static));
-	gtk_widget_set_sensitive(state->textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->fg_materials, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->fg_textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->bg_materials, iLandscapeMode>=C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->bg_textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky) && !SEqual(BackMaterial, C4TLS_MatSky));
 	gtk_widget_set_sensitive(state->scale, iLandscapeMode>=C4LSC_Static);
 	gtk_widget_set_sensitive(state->preview, iLandscapeMode>=C4LSC_Static);
 	NeedPreviewUpdate();
@@ -1604,6 +1634,20 @@ void C4ToolsDlg::State::OnComboTexture(GtkWidget* widget, gpointer data)
 {
 	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetTexture(text);
+	g_free(text);
+}
+
+void C4ToolsDlg::State::OnComboBgMaterial(GtkWidget* widget, gpointer data)
+{
+	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetBackMaterial(text);
+	g_free(text);
+}
+
+void C4ToolsDlg::State::OnComboBgTexture(GtkWidget* widget, gpointer data)
+{
+	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetBackTexture(text);
 	g_free(text);
 }
 

@@ -35,7 +35,9 @@ protected:
 
 	C4TargetRect MaskPutRect; // absolute bounding screen rect at which the mask is put - tx and ty are offsets within pSolidMask (for rects outside the landscape)
 
-	BYTE *pSolidMaskMatBuff; // material replaced by this solidmask. MCVehic if no solid mask data at this position OR another solidmask was already present during put
+	BYTE *pSolidMaskMatBuff; // material replaced by this solidmask. MCVehic if no solid mask data at this position OR another solidmask was already present during put (independent of MaskMaterial)
+
+	BYTE MaskMaterial; // Either MCVehicle or MCHalfVehicle
 
 	C4Object *pForObject;
 
@@ -86,6 +88,8 @@ public:
 	static void PutSolidMasks();
 
 	static CSurface8 *LoadMaskFromFile(class C4Group &hGroup, const char *szFilename);
+
+	void SetHalfVehicle(bool set);
 };
 
 #endif

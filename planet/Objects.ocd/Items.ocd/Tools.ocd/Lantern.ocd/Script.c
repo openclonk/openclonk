@@ -31,7 +31,7 @@ public func DummyDefinition()
 
 /*-- Ground Hitting --*/
 
-private func Hit2()
+private func Hit()
 {
 	Sound("GlassHit?");
 }
@@ -44,7 +44,7 @@ private func Hit2()
 	// Cast some particles.
 		// TODO?
 	// Sound effects.
-	Sound("GlassHit?");
+	Sound("GlassBreak");
 	Sound("Inflame");
 	Explode(10, true);
 }
@@ -55,7 +55,7 @@ public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
 {
-	return Trans_Rotate(-90,0,0,1);
+	return Trans_Rotate(-90,0,1,0);
 }
 private func Definition(def)
 {

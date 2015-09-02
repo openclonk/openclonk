@@ -96,23 +96,5 @@ public func DrawMaterials(proplist rect, proplist surface)
 	var rnd_border = {Algo = MAPALGO_And, Op = [border, rnd_checker]};
 	Draw("Sand", rnd_border);
 	Draw("Earth-earth_topsoil", rnd_border);
-
 	return;
-}
-
-
-/*-- Helper Functions --*/ 
-
-// Draws some material inside an existing mask.
-public func DrawMaterial(string mat, proplist onto_mask, int speck_size, int ratio)
-{
-	if (!speck_size)
-		speck_size = 4;
-	if (!ratio)
-		ratio = 15;
-	// Use random checker algorithm to draw patches of the material. 
-	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = ratio, Wdt = speck_size, Hgt = speck_size};
-	rnd_checker = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = rnd_checker};
-	var algo = {Algo = MAPALGO_And, Op = [onto_mask, rnd_checker]};
-	return Draw(mat, algo);
 }

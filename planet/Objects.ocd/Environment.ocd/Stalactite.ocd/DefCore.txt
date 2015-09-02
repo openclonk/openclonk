@@ -1,0 +1,16 @@
+[DefCore]
+id=Stalactite
+Version=5,2,0,1
+Category=C4D_Object
+Width=15
+Height=60
+Offset=-7, 0
+Vertices=2
+VertexX=0, 0
+VertexY=0, 60
+VertexCNAT=4, 8
+VertexFriction=300,300
+Mass=35
+StretchGrowth=1
+Oversize=1
+Rotate=1

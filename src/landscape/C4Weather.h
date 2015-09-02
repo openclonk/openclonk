@@ -49,9 +49,4 @@ public:
 };
 extern C4Weather Weather;
 
-inline int32_t GBackWind(int32_t x, int32_t y)
-{
-	return GBackIFT(x, y) ? 0: ::Weather.Wind;
-}
-
 #endif

@@ -1,0 +1,3 @@
+[Particle]
+Name=BlueFireTrail
+Face=0,0,256,256,-128,-218

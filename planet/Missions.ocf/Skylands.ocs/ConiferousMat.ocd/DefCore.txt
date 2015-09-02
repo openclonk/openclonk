@@ -1,0 +1,4 @@
+[DefCore]
+id=AltMat_Coniferous
+Version=7,0
+Category=1

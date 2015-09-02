@@ -134,6 +134,15 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 		}
 	}
 
+	/* Load the texture map again, because now that we have materials
+	 * and textures loaded, we can actually assign the indices in the
+	 * texture map. */
+	if (!mape_texture_map_load_map(new_tex_map, base_group, error))
+	{
+		g_object_unref(new_mat_map);
+		return FALSE;
+	}
+
 	mape_material_map_set_default_textures(new_mat_map, new_tex_map);
 
 	if(view->mat_map != NULL) g_object_unref(view->mat_map);

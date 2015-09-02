@@ -375,7 +375,6 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControl
 C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg)
 		: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
 {
-	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	CStdFont *pUseFontSmall = &(C4Startup::Get()->Graphics.BookSmallFont);
 	SetBounds(rcArea);
 	C4GUI::ComponentAligner caArea(rcArea, iHMargin, iVMargin, true);

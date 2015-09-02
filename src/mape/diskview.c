@@ -185,6 +185,11 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		);
 	}
 
+	/* Load texture map. Note that this effectively only reads the
+	 * OverloadMaterials and OverloadTextures flags, because the indices
+	 * cannot be assigned yet, because materials and textures have not
+	 * been loaded. However, materials and textures can only be loaded
+	 * once we know whether we are overloading or not. */
 	texture_map = mape_texture_map_new();
 	if(mape_texture_map_load_map(texture_map, group, error) == FALSE)
 	{

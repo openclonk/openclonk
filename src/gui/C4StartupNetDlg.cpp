@@ -184,7 +184,7 @@ bool C4StartupNetListEntry::Execute()
 			{
 				fError = false;
 				sError.Clear();
-				((C4Facet &) pIcon->GetFacet()) = (const C4Facet &) C4Startup::Get()->Graphics.fctNetGetRef;
+				pIcon->SetFacet(C4Startup::Get()->Graphics.fctNetGetRef);
 				pIcon->SetAnimated(true, 1);
 				pIcon->SetBounds(rctIconLarge);
 				sInfoText[1].Copy(LoadResStr("IDS_NET_INFOQUERY"));
@@ -820,7 +820,9 @@ void C4StartupNetDlg::OnBtnInternet(C4GUI::Control *btn)
 void C4StartupNetDlg::OnBtnRecord(C4GUI::Control *btn)
 {
 	// toggle league signup flag
-	bool fCheck = Config.General.DefRec = Game.Record = !Game.Record;
+	bool fCheck = !Game.Record;
+	Game.Record = fCheck;
+	Config.General.DefRec = fCheck;
 	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 

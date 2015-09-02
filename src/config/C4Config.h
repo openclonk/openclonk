@@ -108,10 +108,9 @@ public:
 	int32_t ShowCrewCNames; // show clonk names above clonks?
 	int32_t BitDepth; // used bit depth for newgfx
 	int32_t PXSGfx;     // show PXS-graphics (instead of sole pixels)
-	int32_t Gamma1, Gamma2, Gamma3; // gamma ramps
+	int32_t Gamma; // gamma value
 	int32_t Currency;   // default wealth symbolseb
 	int32_t RenderInactiveEM; // draw vieports even if inactive in CPEM
-	int32_t DisableGamma;
 	int32_t Monitor;    // monitor index to play on
 	int32_t FireParticles; // draw extended fire particles if enabled (default on)
 	int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)

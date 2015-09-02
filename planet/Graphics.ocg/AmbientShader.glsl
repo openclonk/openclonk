@@ -7,6 +7,8 @@ uniform sampler2D ambientTex;
 uniform mat3x2 ambientTransform;
 uniform float ambientBrightness;
 #endif
+//uniform float cullMode; // 0 if backface culling is enabled, 1 if it is disabled
+// Already declared in LightShader.glsl
 
 slice(texture+6)
 {
@@ -33,6 +35,6 @@ slice(light+1)
 #else
 	// For objects, ambient brightness is coming from the front
 	vec3 ambientDir = vec3(0.0, 0.0, 1.0);
-	light = mix(light, max(dot(normal, ambientDir), 0.0), ambient);
+	light = mix(light, max(max(dot(normal, ambientDir), 0.0), cullMode * max(dot(-normal, ambientDir), 0.0)), ambient);
 #endif
 }
