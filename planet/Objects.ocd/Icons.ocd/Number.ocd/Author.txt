@@ -1,0 +1,5 @@
+The original number graphics were created by Foaly (http://forum.openclonk.org/topic_show.pl?pid=28670#pid28670).
+
+The fonts used are:
+- The Blender BFont
+- Webly Sleek (from http://www.dafont.com/de/weblysleek-ui.font, licensed GPL/OFL)

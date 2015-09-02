@@ -12,21 +12,32 @@ local full_material; // true when all needed material is in the site
 local no_cancel; // if true, site cannot be cancelled
 local is_constructing;
 
-public func IsContainer()		{ return !full_material; }
+// This should be recongnized as a container by the interaction menu independent of its category.
+public func IsContainer() { return !full_material; }
+public func IsContainerEx() { return !full_material; }
 // disallow taking stuff out
 public func RefuseTransfer(object toMove) { return true; }
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 
 // we have 2 interaction modes
-public func IsInteractable(object obj)	{ return definition != nil && !full_material; }
-public func GetInteractionCount() { return 1 + !no_cancel; }
+public func IsInteractable(object obj)	{ return definition != nil && !full_material && !no_cancel; }
 public func GetInteractionMetaInfo(object obj, int num)
 {
-	if(num == 0)
-		return {IconName=nil, IconID=Hammer, Description="$TxtTransfer$"};
-	if(num == 1 && !no_cancel)
-		return {IconName=nil, IconID=Icon_Cancel, Description="$TxtAbort$"};
+	return {IconName=nil, IconID=Icon_Cancel, Description="$TxtAbort$"};
+}
+
+// Interacting removes the Construction site
+public func Interact(object clonk, int num)
+{
+	// Remove Site
+	if(!no_cancel)
+	{
+		for(var obj in FindObjects(Find_Container(this)))
+			obj->Exit();
+		RemoveObject();
+	}
+	return;
 }
 
 public func Construction()
@@ -124,25 +135,6 @@ public func Collection2(object obj)
 // Make sure lists are updated
 public func ContentsDestruction(object obj) { return Collection2(nil); }
 public func Ejection(object obj) { return Collection2(nil); }
-
-// Interacting removes the Construction site
-public func Interact(object clonk, int num)
-{
-	// Open Contents-Menu
-	if(num == 0)
-	{
-		clonk->CreateContentsMenus();
-	}
-	// Remove Site
-	if(num == 1 && !no_cancel)
-	{
-		// test
-		for(var obj in FindObjects(Find_Container(this)))
-			obj->Exit();
-	
-		RemoveObject();
-	}
-}
 
 private func ShowMissingComponents()
 {

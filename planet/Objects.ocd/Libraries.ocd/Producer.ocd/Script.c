@@ -11,7 +11,6 @@
 /*
 	Properties of producers:
 	* Storage of producers:
-	  * Producers can store sufficient amounts of raw material they need to produce their products.
 	  * Producers can store the products they can produce.
 	  * Nothing more, nothing less.
 	* Production queue:
@@ -26,6 +25,7 @@
 #include Library_PowerConsumer
 
 // Production queue, a list of items to be produced.
+// Contains proplists of format {Product = <objid>, Amount = <int>, Infinite = (optional)<bool>}. /Infinite/ == true -> infinite production.
 local queue;
 
 
@@ -40,47 +40,132 @@ protected func Initialize()
 
 // All producers are accessible. 
 public func IsContainer() { return true; }
+// Provides an own interaction menu, even if it wouldn't be a container.
+public func HasInteractionMenu() { return true; }
 
-public func IsInteractable() { return GetCon() >= 100; }
-
-public func GetInteractionMetaInfo(object clonk)
+public func GetProductionMenuEntries()
 {
-	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
-}
-
-// On interaction the production menu should be opened.
-public func Interact(object clonk)
-{
-	var open_menu = clonk->GetMenu();
-	// First try to close any other menu, which is open in the clonk.
-	if (open_menu)
-	{
-		var is_prod_menu = open_menu->~IsProductionMenu();
-		// Remove the open menu.
-		open_menu->RemoveObject();
-		clonk->SetMenu(nil);
-		// If open_menu is production menu, return and don't open a new one.
-		if (is_prod_menu)
-			return true;	
-	}
-	// Open production menu for the caller.
-	clonk->CreateProductionMenu(this);
-	return true;
-}
-
-protected func OnProductSelection(id product, int par, bool alt)
-{
-	if (!product)
-		return;
+	var products = GetProducts();
 	
-	var amount = nil;
-	if (!alt)
-		amount = 1;
+	// default design of a control menu item
+	var control_prototype =
+	{
+		BackgroundColor = {Std = 0, Selected = RGBa(200, 0, 0, 200)},
+		OnMouseIn = GuiAction_SetTag("Selected"),
+		OnMouseOut = GuiAction_SetTag("Std")
+	};
+
+	var custom_entry = 
+	{
+		Right = "8em%", Bottom = "4em",
+		// BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		image = {Prototype = control_prototype, Right = "4em", Style = GUI_TextBottom | GUI_TextRight},
+		controls = 
+		{
+			Left = "4em",
+			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Number, GraphicsName = "Minus", Tooltip = "$QueueRemove$"},
+			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
+		}
+	};
+	
+	var menu_entries = [];
+	var index = 0;
+	for (var product in products)
+	{
+		++index;
+		// Check if entry is already in queue.
+		var info;
+		for (info in queue)
+		{
+			if (info.Product == product) break;
+			info = nil;
+		}
+		// Prepare menu entry.
+		var entry = new custom_entry 
+		{
+			image = new custom_entry.image{}, 
+			controls = new custom_entry.controls
+			{
+				remove = new custom_entry.controls.remove{},
+				endless = new custom_entry.controls.endless{},
+			}
+		};
 		
-	AddToQueue(product, amount);
-	return;
+		entry.image.Symbol = product;
+		if (info) // Currently in queue?
+		{
+			if (info.Infinite)
+				entry.image.Text = "$infinite$";
+			else // normal amount
+				entry.image.Text = Format("%dx", info.Amount);
+			entry.controls.remove.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = -1});
+			entry.BackgroundColor = RGB(50, 50, 50);
+		}
+		else
+			entry.controls.remove = nil;
+			
+		entry.Priority = 1000 * product->GetValue() + index; // Sort by (estimated) value and then by index.
+		entry.Tooltip = product->GetName();
+		entry.image.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = +1});
+		entry.controls.endless.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Infinite = true}); 
+		PushBack(menu_entries, {symbol = product, extra_data = nil, custom = entry});
+	}
+	return menu_entries;
 }
 
+
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited() ?? [];
+	var prod_menu =
+	{
+		title = "$Production$",
+		entries_callback = this.GetProductionMenuEntries,
+		callback = nil, // The callback is handled internally. See GetProductionMenuEntries.
+		callback_hover = "OnProductHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 0, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
+	
+	return menus;
+}
+
+public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
+{
+	var new_box =
+	{
+		Text = Format("%s:|%s", symbol.Name, symbol.Description,),
+		requirements = 
+		{
+			Top = "100% - 2em",
+			Style = GUI_TextBottom
+		}
+	};
+	
+	var product_id = symbol;
+	var costs = ProductionCosts(product_id);
+	var cost_msg = "";
+	var liquid;
+	for (var comp in costs)
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], CheckComponent(comp[0], comp[1])), comp[0]);
+	if (this->~FuelNeed(product_id))
+		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, CheckFuel(product_id)));
+	if (liquid = this->~LiquidNeed(product_id))
+		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], CheckLiquids(product_id)), liquid[0]);
+	if (this->~PowerNeed(product_id))
+		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
+	new_box.requirements.Text = cost_msg;
+	GuiUpdate(new_box, menu_id, 1, desc_menu_target);
+}
+
+private func GetCostString(int amount, bool available)
+{
+	// Format amount to colored string; make it red if it's not available
+	if (available) return Format("%dx", amount);
+	return Format("<c ff0000>%dx</c>", amount);
+}
 
 /*-- Production  properties --*/
 
@@ -136,15 +221,6 @@ public func GetProducts(object for_clonk)
 	return products;
 }
 
-/** Determines whether the raw material specified is needed for production. Should be overloaded by the producer.
-	@param rawmat_id id of raw material for which to determine if it is needed for production.
-	@return \c true if the raw material is needed, \c false otherwise.
-*/
-public func NeedRawMaterial(id rawmat_id)
-{
-	return false; // Obsolete for now.
-}
-
 /**
 	Determines the production costs for an item.
 	@param item_id id of the item under consideration.
@@ -166,122 +242,123 @@ public func ProductionCosts(id item_id)
 
 /*-- Production queue --*/
 
+/** Returns the queue index corresponding to a product id or nil.
+*/
+public func GetQueueIndex(id product_id)
+{
+	var i = 0, l = GetLength(queue);
+	for (;i < l; ++i)
+	{
+		if (queue[i].Product == product_id) return i;
+	}
+	return nil;
+}
+
+/** Modifies an item in the queue. The index can be retrieved via GetQueueIndex.
+	@param position index in the queue
+	@param amount change of amount or nil
+	@param infinite_production Sets the state of infinite production for the item. Can also be nil to not modify anything.
+	@return False if the item was in the queue and has now been removed. True otherwise. 
+*/
+public func ModifyQueueIndex(int position, int amount, bool infinite_production)
+{
+	// safety
+	var queue_length = GetLength(queue);
+	if (position >= queue_length) return true;
+	
+	var item = queue[position];
+	
+	if (infinite_production != nil)
+		item.Infinite = infinite_production;
+	item.Amount += amount;
+	
+	// It might be necessary to remove the item from the queue.
+	if (!item.Infinite && item.Amount <= 0)
+	{
+		// Move all things on the right one slot to the left.
+		var index = position;
+		while (++index < queue_length)
+			queue[index - 1] = queue[index];
+		SetLength(queue, queue_length - 1);
+		return false;
+	}
+	return true;
+}
 /** Adds an item to the production queue.
 	@param product_id id of the item.
-	@param amount the amount of items of \c item_id which should be produced.
-	@return current position of the item in the production queue.
+	@param amount the amount of items of \c item_id which should be produced. Amount must not be negative.
+	@paramt infinite whether to enable infinite production.
 */
-public func AddToQueue(id product_id, int amount)
+public func AddToQueue(id product_id, int amount, bool infinite)
 {
 	// Check if this producer can produce the requested item.
 	if (!IsProduct(product_id))
 		return nil;
-	var pos = GetLength(queue);
+	if (amount < 0) FatalError("Producer::AddToQueue called with negative amount.");
 	
-	// Check if the same product is in the position before, cause of possible redundancy.
-	if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
-		queue[pos-1].Amount += amount;
+	// if the product is already in the queue, just modify the amount
+	var found = false;
+	for (var info in queue)
+	{
+		if (info.Product != product_id) continue;
+		info.Amount += amount;
+		if (infinite != nil) info.Infinite = infinite;
+		found = true;
+		break;
+	}
+
 	// Otherwise create a new entry in the queue.
-	else	
-		queue[pos] = { Product = product_id, Amount = amount };
+	if (!found)
+		PushBack(queue, { Product = product_id, Amount = amount, Infinite = infinite});
 	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);		
-	return pos;
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
-/** Inserts an item into the production queue at the specified position.
-	@param product_id id of the item.
-	@param amount the amount of items of \c item_id which should be inserted.
-	@param pos the position at which the object should be inserted, the rest of the queue is shifted downwards.
-	@return current position of the item in the production queue.
-*/
-public func InsertIntoQueue(id product_id, int amount, int pos)
-{
-	// Check if this producer can produce the requested item.
-	if (!IsProduct(product_id))
-		return nil;
-	
-	// Make sure the position is valid.
-	BoundBy(pos, 0, GetLength(queue) - 1);
 
-	// Check if there is the same product at that position, for a possible merge.
-	if (amount != nil && queue[pos].Product == product_id)
-		queue[pos].Amount += amount;
-	// Check if there is the same product at the position before, for a possible merge.
-	else if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
-		queue[pos-1].Amount += amount;
-	// Otherwise insert a new item into the queue.
-	else
-	{
-		// First shift all queue items from that position up by one.
-		var length = GetLength(queue);
-		for (var i = length; i > pos; i--)
-			queue[i] = queue[i-1];
-		// Then create new item.
-		queue[pos] = { Product = product_id, Amount = amount };
-	}
-	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);		
-	return pos;
-}
-
-/** Removes a item or some of it from from the production queue.
-	@param pos position of the item in the queue.
-	@param amount the amount of this item which should be removed.
-	@return \c nil.
+/** Shifts the queue one space to the left. The first item will be put in the very right slot.
 */
-public func RemoveFromQueue(int pos, int amount)
+public func CycleQueue()
 {
-	var length = GetLength(queue);
-	// Safety, pos out of reach.
-	if (pos > length - 1)
-		return;
-	// Reduce and check amount.
-	queue[pos].Amount -= amount;
-	// If amount <= 0, remove item from queue.
-	// From pos onwards queue items should be shift downwards.
-	if (queue[pos].Amount <= 0)
-	{
-		for (var i = pos; i < GetLength(queue); i++)
-			queue[i] = queue[i+1];
-		// Reduce queue size by one.
-		SetLength(queue, length - 1);
-		// Check if the removed product was in between equal products, cause of a new possible redundancy.
-		if (pos > 0 && pos <= length - 2)
-		{
-			if (queue[pos-1].Product == queue[pos].Product)
-			{
-				queue[pos-1].Amount += queue[pos].Amount;
-				for (var i = pos; i < GetLength(queue); i++)
-					queue[i] = queue[i+1];
-				// Reduce queue size by one.
-				SetLength(queue, length - 2);				
-			}
-		}		
-	}
-	// Notify all production menus open for this producer.
-	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
-		menu->UpdateMenuQueue(this);
-	return;
+	if (GetLength(queue) <= 1) return;
+	var first = queue[0];
+	var queue_length = GetLength(queue);
+	for (var i = 1; i < queue_length; ++i)
+		queue[i - 1] = queue[i];
+	queue[-1] = first;
 }
 
 /** Clears the complete production queue.
-	@param abort determines whether to abort the current production process.
-	@return \c nil.
 */
 public func ClearQueue(bool abort)
 {
-	if (abort)
-	{
-		queue = [];
-		return;
-	}
-	//
-	
-	
+	queue = [];
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return;
+}
+
+/** Modifies a certain production item arbitrarily. This is mainly used by the interaction menu.
+	This also creates a new production order if none exists yet.
+	@param info
+		proplist with Product, Amount, Infinite. If Infinite is set to true, it acts as a toggle. 
+*/
+public func ModifyProduction(proplist info)
+{
+	var index = GetQueueIndex(info.Product);
+	if (index == nil && (info.Amount > 0 || info.Infinite))
+	{
+		AddToQueue(info.Product, info.Amount, info.Infinite);
+	}
+	else
+	{
+		// Toggle infinity?
+		if (queue[index].Infinite)
+		{
+			if (info.Infinite || info.Amount < 0)
+				info.Infinite = false;
+		}
+		ModifyQueueIndex(index, info.Amount, info.Infinite);
+	}
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
 
 /** Returns the current queue.
@@ -310,25 +387,26 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
-	var amount = queue[0].Amount;
 	// Check raw material need.
-	if (!CheckMaterial(product_id))
+	if (!CheckAllComponentsForProduct(product_id))
 	{
 		// No material available? request from cable network.
-		RequestMaterial(product_id);
+		RequestAllMissingComponents(product_id);
+		// In the meanwhile, just cycle the queue and try the next one.
+		CycleQueue();
 		return 1;
 	}
 	// Start the item production.
 	if (!Produce(product_id))
 		return 1;
-
-	// Update amount and or queue.
-	if (amount == nil)
-		return 1;
 		
 	// Update queue, reduce amount.
-	RemoveFromQueue(0, 1);
-	
+	var is_still_there = ModifyQueueIndex(0, -1);
+	// And cycle to enable rotational production of (infinite) objects.
+	if (is_still_there)
+		CycleQueue();
+	// We changed something. Update menus.
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	// Done with production checks.
 	return 1;
 }
@@ -339,7 +417,6 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
-private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
 public func PowerNeed() { return 80; }
 
@@ -360,9 +437,6 @@ private func Produce(id product)
 	// Check need for liquids.
 	if (!CheckLiquids(product))
 		return false;
-	// Check need for materials.
-	if (!CheckMaterials(product))
-		return false;
 	// Check need for power.
 	if (!CheckForPower())
 		return false;
@@ -373,7 +447,6 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
-	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -392,16 +465,42 @@ private func CheckComponents(id product, bool remove)
 		else if (remove)
 		{
 			for (var i = 0; i < mat_cost; i++)
-				 FindObject(Find_Container(this), Find_ID(mat_id))->RemoveObject();
+			{
+				var obj = FindObject(Find_Container(this), Find_ID(mat_id));
+				// First try to remove some objects from the stack.
+				if (obj->~IsStackable())
+				{
+					var num = obj->GetStackCount();
+					obj->DoStackCount(-(mat_cost - i));
+					i += num - 1; // -1 to offset loop advancement
+				}
+				else
+					obj->RemoveObject();
+			}
 		}
 	}
 	return true;
 }
 
+public func GetAvailableComponentAmount(id material)
+{
+	// Normal object?
+	if (!material->~IsStackable())
+		return ContentsCount(material);
+	// If not, we need to check stacked objects.
+	var real_amount = 0;
+	var contents = FindObjects(Find_Container(this), Find_ID(material));
+	for (var obj in contents)
+	{
+		var count = obj->~GetStackCount() ?? 1;
+		real_amount += count;
+	}
+	return real_amount;
+}
+
 public func CheckComponent(id component, int amount)
 {
-	// check if at least the given amount of the given component is available to be used for production
-	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+	return GetAvailableComponentAmount(component) >= amount;
 }
 
 public func CheckFuel(id product, bool remove)
@@ -468,36 +567,6 @@ public func CheckLiquids(id product, bool remove)
 					break;
 			}
 		}		
-	}
-	return true;
-}
-
-public func CheckMaterials(id product, bool remove)
-{
-	var mat_need = MaterialNeed(product);
-	if (mat_need)
-	{
-		var material_amount = 0;
-		var material = mat_need[0];
-		var need = mat_need[1];
-		// Find liquid containers in this producer.
-		for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
-			if (mat_container->~GetContainedMaterial() == material)
-				material_amount += mat_container->~GetFillLevel();
-		if (material_amount < need)
-			return false;
-		else if (remove)
-		{
-			// Remove the material needed.
-			var extracted = 0;
-			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
-			{
-				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
-				extracted += val;
-				if (extracted >= need)
-					break;
-			}
-		}
 	}
 	return true;
 }
@@ -598,7 +667,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
-	var product = CreateObjectAbove(effect.Product);
+	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
 	
 	return 1;
@@ -633,15 +702,14 @@ public func OnProductEjection(object product)
 /**
 	Determines whether there is sufficient material to produce an item.
 */
-private func CheckMaterial(id item_id)
+private func CheckAllComponentsForProduct(id product_id)
 {
-	for (var item in ProductionCosts(item_id))
+	for (var item in ProductionCosts(product_id))
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
-			return false;
+		var available = GetAvailableComponentAmount(mat_id);
+		if (available < mat_cost) return false;
 	}
 	return true;
 }
@@ -649,15 +717,15 @@ private func CheckMaterial(id item_id)
 /**
 	Requests the necessary material from the cable network if available.
 */
-private func RequestMaterial(id item_id)
+private func RequestAllMissingComponents(id item_id)
 {
 	for (var item in ProductionCosts(item_id))
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
-			RequestObject(mat_id, mat_cost - mat_av);
+		var available = GetAvailableComponentAmount(mat_id);
+		if (available < mat_cost)
+			RequestObject(mat_id, mat_cost - available);
 	}
 	return true;
 }
@@ -671,21 +739,16 @@ public func RequestObject(id obj_id, int amount)
 
 /*-- Storage --*/
 
-protected func RejectCollect(id item, object obj)
-{
-	// Just return RejectEntrance for this object.
-	return RejectEntrance(obj);
-}
 
-protected func RejectEntrance(object obj)
+// Whether an object could enter this storage.
+public func IsCollectionAllowed(object obj)
 {
 	// Some objects might just bypass this check
 	if (obj->~ForceEntry(this))
 		return false;
 	var obj_id = obj->GetID();
 	// Products itself may be collected.
-	if (IsProduct(obj_id))
-		return false;
+	if (IsProduct(obj_id)) return true;
 	var products = GetProducts();
 	// Components of products may be collected.
 	for (var product in products)
@@ -694,7 +757,7 @@ protected func RejectEntrance(object obj)
 		while (comp_id = GetComponent(nil, i, nil, product))
 		{
 			if (comp_id == obj_id)
-				return false;
+				return true;
 			i++;
 		}
 	}
@@ -703,7 +766,7 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in products)
 			if (FuelNeed(product) > 0)
-				return false;
+				return true;
 	}
 	// Liquid objects may be collected if a product needs them.
 	if (obj->~IsLiquid())
@@ -711,21 +774,29 @@ protected func RejectEntrance(object obj)
 		for (var product in products)
 			if (LiquidNeed(product))
 				if (LiquidNeed(product)[0] == obj->~IsLiquid())
-					return false;
+					return true;
 	}
 	// Liquid containers may be collected if a product needs them.
 	if (obj->~IsLiquidContainer())
 	{
 		for (var product in products)
 			if (LiquidNeed(product))
-				return false;
+				return true;
 	}
-	// Material containers may be collected if a product needs them.
-	if (obj->~IsMaterialContainer())
+	return false;
+}
+
+public func RejectCollect(id obj_id, object obj)
+{
+	// Is the object a container? If so, try to empty it.
+	if (obj->~IsContainer())
 	{
-		for (var product in products)
-			if (MaterialNeed(product))
-				return false;
+		var count = obj->ContentsCount();
+		while (--count >= 0)
+			obj->Contents(count)->Enter(this);
 	}
+	// Can we collect the object itself?
+	if (IsCollectionAllowed(obj)) 
+		return false;
 	return true;
 }

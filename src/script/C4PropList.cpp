@@ -702,7 +702,9 @@ C4ValueArray * C4PropList::GetProperties() const
 	const C4Property * p = Properties.First();
 	while (p)
 	{
+		assert(p->Key != nullptr && "Proplist key is nullpointer");
 		(*a)[i++] = C4VString(p->Key);
+		assert(((*a)[i - 1].GetType() == C4V_String) && "Proplist key is non-string");
 		p = Properties.Next(p);
 	}
 	return a;

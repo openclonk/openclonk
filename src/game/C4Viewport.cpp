@@ -30,6 +30,7 @@
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
+#include <C4ScriptGuiWindow.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
@@ -303,13 +304,19 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		if (Application.isEditor) Console.EditCursor.Draw(cgo);
 
-		DrawOverlay(gui_cgo, GameZoom);
-
 		// Game messages
 		C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
 		pDraw->SetZoom(0, 0, 1.0);
 		::Messages.Draw(gui_cgo, cgo, Player);
 		C4ST_STOP(MsgStat)
+
+		// ingame menus
+		C4ST_STARTNEW(GuiWindowStat, "C4Viewport::DrawOverlay: Menus")
+		pDraw->SetZoom(0, 0, 1.0);
+		::Game.ScriptGuiRoot->DrawAll(gui_cgo, Player);
+		C4ST_STOP(GuiWindowStat)
+
+		DrawOverlay(gui_cgo, GameZoom);
 
 		// Netstats
 		if (::GraphicsSystem.ShowNetstatus)
@@ -592,7 +599,6 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 {
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
-	
 	// Controls
 	DrawPlayerStartup(cgo);
 }
@@ -989,6 +995,9 @@ void C4ViewportList::RecalculateViewports()
 			BackgroundAreas.ClipByRect(rcOut);
 		}
 	}
+	// and finally recalculate script menus
+	if (::Game.ScriptGuiRoot)
+		::Game.ScriptGuiRoot->RequestLayoutUpdate();
 }
 
 int32_t C4ViewportList::GetViewportCount()

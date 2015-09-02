@@ -1,0 +1,2 @@
+Name=Default
+Description=Shows a standalone list menu with a description.

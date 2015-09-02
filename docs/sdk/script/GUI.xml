@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+	<title>Script GUIs</title>
+	<h>Script GUIs</h>
+	<part>
+		<text>Scripted GUIs can be used to create menus, HUD elements and scoreboards.</text>
+		<h>Properties</h>
+		<text>(For a detailed explanation and examples, see below.) Every window can be defined by the following properties, which can additionally be <emlink href="#tagsforproperties">tagged</emlink>:</text>
+		<table>
+			<rowh>
+				<col>Name</col>
+				<col>Data type</col>
+				<col>Example</col>
+				<col>Description</col>
+			</rowh>
+			<row>
+				<col>ID</col>
+				<col>int</col>
+				<col>2</col>
+				<col>The ID of the window. See <emlink href="#windowid">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Target</col>
+				<col>object</col>
+				<col><funclink>GetCursor</funclink>(0)</col>
+				<col>The target of the window. See <emlink href="#windowid">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Left</col>
+				<col>string</col>
+				<col>"0%" (default)</col>
+				<col>The left corner of the window. See <emlink href="#coordinates">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Top</col>
+				<col>string</col>
+				<col>"0%" (default)</col>
+				<col>The top corner of the window. See <emlink href="#coordinates">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Right</col>
+				<col>string</col>
+				<col>"100%" (default)</col>
+				<col>The right corner of the window. See <emlink href="#coordinates">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Bottom</col>
+				<col>string</col>
+				<col>"100%" (default)</col>
+				<col>The bottom corner of the window. See <emlink href="#coordinates">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Margin</col>
+				<col>array</col>
+				<col><em>["1em", "1em"]</em></col>
+				<col>Margin around the window; used for layouts. The order is [<em>left</em>, <em>top</em>, <em>right</em>, <em>bottom</em> and will wrap around. You can specify all margins by giving only one item (f.e. <em>["1em"]</em>) or the X and Y margins by giving two items (f.e. <em>["1em, "0em"]</em>).</col>
+			</row>
+			<row>
+				<col>BackgroundColor</col>
+				<col>int</col>
+				<col><funclink>RGBa</funclink>(255, 0, 0, 128)</col>
+				<col>Solid background color of the window. The value 0 means no background color.</col>
+			</row>
+			<row>
+				<col>Symbol</col>
+				<col>object/definition</col>
+				<col>Clonk</col>
+				<col>A symbol that will be drawn in the window. The symbol can be an object as well, in this case the current graphics and animations of that object will be drawn.</col>
+			</row>
+			<row>
+				<col>GraphicsName</col>
+				<col>string</col>
+				<col>"Infinite"</col>
+				<col>Only if Symbol is a definition: the name of the graphics to use.</col>
+			</row>
+			<row>
+				<col>Decoration</col>
+				<col>definition</col>
+				<col>GUI_MenuDeco</col>
+				<col>Menu decoration of the window. The menu decoration can be defined as for <funclink>CustomMessage</funclink>().</col>
+			</row>
+			<row>
+				<col>Text</col>
+				<col>string</col>
+				<col>"Hi there!"</col>
+				<col>Text that will be drawn in the window. The window's height will be adjusted to fit all the text</col>
+			</row>
+			<row>
+				<col>Tooltip</col>
+				<col>string</col>
+				<col>"Buy Loam"</col>
+				<col>Tooltip of the window.</col>
+			</row>
+			<row>
+				<col>Style</col>
+				<col>int</col>
+				<col>GUI_TextVCenter</col>
+				<col>Combination of style-flags. For possible values, see <emlink href="#styleflags">below</emlink>.</col>
+			</row>
+			<row>
+				<col>OnClick</col>
+				<col>array</col>
+				<col><funclink>GuiAction_Call</funclink>("GameOver")</col>
+				<col>Action that will be executed when the window is clicked, see <emlink href="#actions">below</emlink>.</col>
+			</row>
+			<row>
+				<col>OnMouseIn</col>
+				<col>array</col>
+				<col><funclink>GuiAction_SetTag</funclink>("Hover")</col>
+				<col>Action that will be executed when the cursor enters the window, see <emlink href="#actions">below</emlink>.</col>
+			</row>
+			<row>
+				<col>OnMouseOut</col>
+				<col>array</col>
+				<col><funclink>GuiAction_SetTag</funclink>("Std")</col>
+				<col>Action that will be executed when the cursor leaves the window, see <emlink href="#actions">below</emlink>.</col>
+			</row>
+			<row>
+				<col>OnClose</col>
+				<col>array</col>
+				<col><funclink>GuiAction_Call</funclink>("RemoveHelper")</col>
+				<col>Action that will be executed when the window is closed, see <emlink href="#actions">below</emlink>.</col>
+			</row>
+			<row>
+				<col>Priority</col>
+				<col>int</col>
+				<col>1000</col>
+				<col>Priority of the window that is used for layouts and for the drawing order. Higher number means higher priority.</col>
+			</row>
+			<row>
+				<col>Player</col>
+				<col>player number</col>
+				<col><funclink>GetOwner</funclink>()</col>
+				<col>If given, the window is only visible to this player. Note that the target object also restricts visibility.</col>
+			</row>
+		</table>
+		<text>All other properties are proplists that define sub-windows. You should use non-capital names (i.e. <em>header</em>, not <em>Header</em>) for your sub-windows.</text>
+		<h id="styleflags">Style Flags</h>
+		Every window can have a combination of style flags as the <em>Style</em> property.
+		<table>
+			<rowh>
+				<col>Name</col>
+				<col>Description</col>
+			</rowh>
+			<row>
+				<col>GUI_Multiple</col>
+				<col>Only one window without this flag will be shown at a time, can be used to show multiple HUD elements using the GUI.</col>
+			</row>
+			<row>
+				<col>GUI_TextVCenter</col>
+				<col>The text will be centered vertically.</col>
+			</row>
+			<row>
+				<col>GUI_TextHCenter</col>
+				<col>The text will be centered horizontally.</col>
+			</row>
+			<row>
+				<col>GUI_TextRight</col>
+				<col>The text will be aligned to the right.</col>
+			</row>
+			<row>
+				<col>GUI_TextLeft</col>
+				<col>Default. The text will be aligned to the left.</col>
+			</row>
+			<row>
+				<col>GUI_TextTop</col>
+				<col>Default. The text will be at the top.</col>
+			</row>
+			<row>
+				<col>GUI_TextBottom</col>
+				<col>The text will be at the bottom.</col>
+			</row>
+			<row>
+				<col>GUI_GridLayout</col>
+				<col>The sub-windows of this window will automatically be arranged in a grid.</col>
+			</row>
+			<row>
+				<col>GUI_VerticalLayout</col>
+				<col>The sub-windows of this window will automatically be arranged vertically in a list.</col>
+			</row>
+			<row>
+				<col>GUI_FitChildren</col>
+				<col>The window will adjust its height to fit the sub-windows. No scroll-bar will be shown.</col>
+			</row>
+			<row>
+				<col>GUI_IgnoreMouse</col>
+				<col>No mouse-input will be used for this window. The window will not block mouse clicks to the landscape behind.</col>
+			</row>
+			<row>
+				<col>GUI_NoCrop</col>
+				<col>Children of this window may be drawn outside the window's bounds.</col>
+			</row>
+		</table>
+		<text>For example multiple Style elements can be combined as: <em>Style = GUI_Multiple | GUI_TextVCenter | GUI_TextHCenter</em></text>
+		<h>The Window Concept</h>
+		<text>The whole menu system is basically just a way to display rectangles on the screen and react to events (clicks, mouse-over) that affect those rectangles. Every rectangle (now called <em>windows</em>) is defined by a proplist. Every property is either one of the attribute-properties which always start with a capital letter or defines a sub-window.</text>
+		<h id="windowid">A Window ID</h>
+		<text>For certain features, the scripter needs to be able to identify windows. This may be important to either react to events affecting certain windows or to update windows after the initial creation. Window IDs can be assigned using the property <strong>ID</strong>, but only <em>together</em> with the property <strong>Target</strong> (which stands for an ingame object) does an <strong>ID</strong> identify a window! This is important to allow the easy creation of menu libraries and pluggable-submenus which do not have to care for unique IDs that way. All callbacks coming from a window or updating a window will always take both a target and an ID. Aditionally, a window inherits the visibility of the target object and is destroyed when the target object is removed. Note that <em>nil</em> is a valid <strong>Target</strong> for all interactions. But if you are writing a library or a menu interface, you should consider giving your menus proper targets if they need to interact.</text>
+		<text>When you open your menu via <funclink>GuiOpen</funclink>() you get another ID, which is the ID of your root window that you cannot set yourself. You use that ID when you interact with the already opened GUI - for example when you want to close it, for an example see <funclink>GuiClose</funclink>().</text> 
+		<h id="coordinates">Coordinates</h>
+		<text>A window can have four properties to define its position: <strong>Left</strong>, <strong>Top</strong>, <strong>Right</strong>, <strong>Bottom</strong>. The coordinates are given as strings in percent of the parent window. The properties Right and Bottom define the position of the right and bottom border of the window and not the width and height. The definition to have a window cover the right half of its parent would look as follows:</text>
+<code>
+func MakeMyMenu()
+{
+	var menu = {
+		Left = "50%",
+		Top = "0%",
+		Right = "100%",
+		Bottom = "100%",
+		...
+		};
+	var menu_id = <funclink>GuiOpen</funclink>(menu);
+	
+	// I made  up my mind, I'd rather not have a menu.
+	GuiClose(menu_id);
+}
+</code>
+		<text>While the relative positioning is prefered, windows can also have an absolute position that is added to the relative position. Imagine you would want to add fixed-size images below and on the left of the previous menu:</text>
+<code>
+func MakeMyMenu()
+{
+	var menu = {
+		Left = "50% + 3.5em",
+		Top = "0%",
+		Right = "100%",
+		Bottom = "100% - 3.5em",
+		...
+		};
+	GuiOpen(menu);
+}
+</code>
+		<text>The unit of the absolute values is in <em>em</em> - 1em is exactly the height of the font, so a text box of 2em height can always contain two lines of text. For both the relative and the absolute values, you can provide decimal numbers (f.e. <em>Left = "10.5321% - 1.3333em"</em>).</text>
+		<text>Especially if you need to do some math with the positions, there are some interesting helper functions defined for you in <strong>System.ocg/GUIs.c</strong>.</text>
+		<h>Positioning Example</h>
+		<text>Here is an example with a screenshot that details in what margins the given positions will result.</text>
+<code>
+func MakeMyMenu()
+{
+	menu =
+	{
+		Text = "I am the container!",
+		BackgroundColor = <funclink>RGB</funclink>(255, 255, 100),
+		rightbottom =
+		{
+			Text = "I am at the bottom right",
+			BackgroundColor = <funclink>RGB</funclink>(100, 255, 255),
+			Left = "25% + 6em",
+			Top = "25%", Bottom = "90%",
+			centerbottom =
+			{
+				Text = "I might be a text box",
+				BackgroundColor = <funclink>RGB</funclink>(255, 100, 255),
+				Left = "10%", Right = "90%",
+				Top = "100% - 5em", Bottom = "100%"
+			}
+		}
+	};
+	GuiOpen(menu);
+}
+</code>
+		![Example Image](GuiPositioning.jpg "The result of the example code above.")
+		<text>In the screenshot the GUI debugging info is activated, too. You can reach it via hitting CTRL+F7 multiple times.</text>
+		<h id="tagsforproperties">Tags for Properties</h>
+		<text>Nearly all properties can be tagged - that means they can be assigned different values for different <em>tags</em>. The default tag for every window is <em>Std</em>. To assign multiple values for different tags, just assign a proplist instead of the original property value, such as:</text>
+<code>
+BackgroundColor = 
+{
+	Std = <funclink>RGB</funclink>(255, 0, 0),
+	Hover = <funclink>RGB</funclink>(0, 255, 0)
+}
+</code>
+		<text>instead of <em>BackgroundColor = <funclink>RGB</funclink>(255, 0, 0)</em></text>
+		<text>To change the tag of a window use <funclink>GuiUpdateTag</funclink>() or <funclink>GuiAction_SetTag</funclink>(). When you change a tag, the change usually also affects the children of the window. Note that the window <strong>ID</strong> and <strong>Target</strong> can not be tagged.</text>
+		<h id="actions">Actions</h>
+		<text>To make the player able to interact with the windows, actions can be defined that are executed on a certain event. Possible events are for example <em>OnClick</em>, <em>OnMouseIn</em>, <em>OnMouseOut</em>. Possible actions are <funclink>GuiAction_Call</funclink>() and <funclink>GuiAction_SetTag</funclink>(). An example:</text>
+<code>
+func Initialize()
+{
+	var menu =
+	{
+		BackgroundColor = 
+		{
+			Std = 0,
+			Hover = <funclink>RGBa</funclink>(255, 0, 0, 200)
+		},
+		OnMouseIn = [<funclink>GuiAction_SetTag</funclink>("Hover"), <funclink>GuiAction_Call</funclink>("Hovering", this, "I am a parameter")],
+		OnMouseOut = <funclink>GuiAction_SetTag</funclink>("Std"),
+		OnMouseClick = <funclink>GuiAction_Call</funclink>("ClickedMyMenu", this)
+	};
+	GuiOpen(menu);
+}
+
+func Hovering(data, int player, int ID, int subwindow_ID, object target)
+{
+	Log("Player %d is hovering on my menu.", player);
+	Log("The custom parameter was: %s", data);
+	// output "The custom parameter was: I am a parameter"
+}
+
+func ClickedMyMenu(data, int player, int ID, int subwindow_ID, object target)
+{
+	Log("Player %s clicked on my menu! Blowing up something..", <funclink>GetPlayerName</funclink>(player));
+	var clonk = <funclink>FindObject</funclink>(Find_OCF(OCF_Alive), <funclink>Find_Not</funclink>(Find_Owner(player)));
+	if (clonk) clonk-&gt;<funclink>Explode</funclink>(20);
+}
+</code>
+	</part>
+	<author>Zapper</author><date>2014-10</date>
+</doc>

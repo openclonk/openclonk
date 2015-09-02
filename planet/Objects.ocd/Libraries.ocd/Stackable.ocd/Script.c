@@ -55,10 +55,24 @@ static const Stackable_Infinite_Count = 50;
 public func IsStackable() { return true; }
 public func GetStackCount() { return Max(1, count); }
 public func MaxStackCount() { return 20; }
+public func IsFullStack() { return IsInfiniteStackCount() || (GetStackCount() >= MaxStackCount()); }
+public func IsInfiniteStackCount() { return count_is_infinite; }
 
 protected func Construction()
 {
 	count = MaxStackCount();
+	return _inherited(...);
+}
+
+func Destruction()
+{
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+			container->~NotifyHUD();
+	}
 	return _inherited(...);
 }
 
@@ -77,7 +91,7 @@ public func Stack(object obj)
 	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
-	if (count + howmany > Stackable_Max_Count)
+	if (howmany <= 0 || count + howmany > Stackable_Max_Count)
 		return 0;
 	
 	SetStackCount(count + howmany);
@@ -93,7 +107,12 @@ public func SetStackCount(int amount)
 	return true;
 }
 
-public func IsInfiniteStackCount() { return count_is_infinite; }
+public func DoStackCount(int change)
+{
+	count += change;
+	if (count <= 0) RemoveObject();
+	else UpdateStackDisplay();
+}
 
 public func SetInfiniteStackCount()
 {
@@ -198,6 +217,11 @@ private func UpdateMass()
 	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / MaxStackCount());
 }
 
+/*
+	Try to merge packs BEFORE entering the container.
+	That means that a container can not prevent objects stacking into it.
+	However, the other way round (after the object has entered) presents more issues.
+*/
 protected func RejectEntrance(object into)
 {
 	if (TryPutInto(into))
@@ -212,40 +236,61 @@ public func CalcValue(object in_base, int for_plr)
 	return GetID()->GetValue() * Max(GetStackCount(), 1) / MaxStackCount();
 }
 
-private func TryPutInto(object into)
+/* Tries to add this object to another stack. Returns true if successful.
+	This call might remove this item. */
+public func TryAddToStack(object other)
 {
+	if (other == this) return false;
+	
+	// Is a stack possible in theory?
+	if (other->~IsStackable() && other->GetID() == GetID())
+	{
+			var howmany = other->Stack(this);
+			if (howmany > 0)
+			{
+				count -= howmany;
+				if(count <= 0) RemoveObject();
+				// Stack succesful! No matter how many items were transfered.
+				return true;
+			}
+		}
+	return false;
+}
+
+/* Attempts to add this stack either to existing stacks in an object or
+	if only_add_to_existing_stacks is not set, also recursively into HasExtraSlot containers in that object.*/
+public func TryPutInto(object into, bool only_add_to_existing_stacks)
+{
+	only_add_to_existing_stacks = only_add_to_existing_stacks ?? false;
+	var before = count;
 	var contents = FindObjects(Find_Container(into));
 
-	// first check if stackable can be put into object with extra slot
-	for (var content in contents)
+	if (!only_add_to_existing_stacks)
 	{
-		if (!content)
-			continue;
-		if (content->~HasExtraSlot())
-			if (TryPutInto(content))
-				return true;
+		// first check if stackable can be put into object with extra slot
+		for (var content in contents)
+		{
+			if (!content)
+				continue;
+			if (content->~HasExtraSlot())
+				if (TryPutInto(content))
+					return true;
+		}
 	}
-
+	
 	// then check this object
 	for (var content in contents)
 	{
 		var howmany = 0;
 		if (!content)
 			continue;
-		if (content->~IsStackable())
-			if (content->GetID() == GetID())
-				if (howmany = content->Stack(this))
-				{
-					count -= howmany;
-					if(count <= 0)
-					{
-						RemoveObject();
-						return true;
-					}
-				}
+		TryAddToStack(content);
+		if (!this) return true;
 	}
 	
-	UpdateStackDisplay();
+	// IFF anything changed, we need to update the display.
+	if (before != count)
+		UpdateStackDisplay();
 	return false;
 }
 

@@ -44,7 +44,7 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	// Set data
 	Text.Copy(sText);
 	Target=pTarget;
-	X=iX; Y=iY; Wdt=width;
+	X=iX; Y=iY; Wdt=width; Hgt=0;
 	Player=iPlayer;
 	ColorDw=dwClr;
 	Type=iType;
@@ -54,11 +54,26 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	PictureDef=NULL;
 	PictureDefVal.Set0();
 	if (pSrc)
-		if (pSrc->GetDef() || pSrc->GetObject() || pSrc->GetPropertyPropList(P_Source))
+	{
+		// retain special width/height properties when using a message box on an object-local message
+		if (Target)
+		{
+			C4Value val;
+			if (pSrc->GetProperty(P_Wdt, &val))
+				Wdt = val.getInt();
+			if (pSrc->GetProperty(P_Hgt, &val))
+				Hgt = val.getInt();
+		}
+
+		// retain object or definition from the proplist
+		PictureDef = pSrc->GetObject();
+		if (!PictureDef) PictureDef = pSrc->GetDef();
+		if (!PictureDef && pSrc->GetPropertyPropList(P_Source))
 		{
 			PictureDef = pSrc;
 			PictureDefVal.SetPropList(pSrc);
 		}
+	}
 	// Permanent message
 	if ('@' == Text[0])
 	{
@@ -167,7 +182,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				iDrawY -= iTextHgt;
 			// draw picture
 			// can only be def or object because has been checked on assignment
-			
+
 			C4Facet facet(cgo.Surface, iDrawX, iDrawY, PictureWidth, PictureWidth);
 			if(PictureDef->GetObject())
 				PictureDef->GetObject()->DrawPicture(facet);
@@ -194,11 +209,12 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		// adjust position by object; care about parallaxity
 		float iMsgX, iMsgY, newzoom;
 		Target->GetDrawPosition(cgo, iMsgX, iMsgY, newzoom);
-		iMsgY -= Target->Def->Shape.Hgt/2+5;
+		if(~dwFlags & C4GM_YRel)
+			iMsgY -= Target->Def->Shape.Hgt/2+5;
 		iMsgX+=X; iMsgY+=Y;
 		// check output bounds
-		if (Inside<float>((iMsgX - cgo.X) * newzoom, 0, cgo.Wdt * cgo.Zoom - 1))
-			if (Inside<float>((iMsgY - cgo.Y) * newzoom, 0, cgo.Hgt * cgo.Zoom - 1))
+		if (Inside<float>((iMsgX - cgo.X) * newzoom, 0, cgo.Wdt * cgo.Zoom - 1) || (dwFlags & C4GM_XRel))
+			if (Inside<float>((iMsgY - cgo.Y) * newzoom, 0, cgo.Hgt * cgo.Zoom - 1) || (dwFlags & C4GM_YRel))
 			{
 				// if the message is attached to an object and the object
 				// is invisible for that player, the message won't be drawn
@@ -208,22 +224,73 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				// Word wrap to cgo width
 				StdStrBuf sText;
 				if (~dwFlags & C4GM_NoBreak)
-					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), Clamp<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200), &sText, true);
+				{
+					// standard break width
+					int breakWdt = Clamp<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200);
+
+					// user supplied width?
+					if (Wdt)
+						breakWdt = Wdt;
+
+					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), breakWdt, &sText, true);
+				}
 				else
 					sText.Ref(Text);
-				// Adjust position by output boundaries
-				float iTX,iTY;
-				int iTWdt,iTHgt;
+
+				// vertical placement
+				if (dwFlags & C4GM_Bottom)
+					iMsgY += Hgt; // iTHgt will be substracted below
+				else if (dwFlags & C4GM_Top)
+					;
+				else if (dwFlags & C4GM_VCenter)
+					iMsgY += Hgt / 2;
+
+				// horizontal placement
+				int alignment = ACenter;
+
+				if (dwFlags & C4GM_Left)
+					alignment = ALeft;
+				else if (dwFlags & C4GM_Right)
+				{
+					alignment = ARight;
+					iMsgX += Wdt;
+				}
+				else if (dwFlags & C4GM_HCenter)
+					iMsgX += Wdt / 2;
+
+				// calculate display position and adjust position by output boundaries
+				float iTX, iTY;
+				iTX = (iMsgX - cgo.X) * newzoom;
+				iTY = (iMsgY - cgo.Y) * newzoom;
+				int iTWdt, iTHgt;
 				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
+
+				// adjust zoom if needed
+				float zoom = 1.0;
+				if(dwFlags & C4GM_Zoom)
+					zoom = cgo.Zoom;
+
+				if (dwFlags & C4GM_Bottom)
+					iTY -= zoom * float(iTHgt);
+				else if (dwFlags & C4GM_VCenter)
+					iTY -= zoom * float(iTHgt/2);
+				else if (~dwFlags & C4GM_Top)
+					iTY -= zoom * float(iTHgt); // above object is standard
+
+				if (dwFlags & C4GM_Right)
+					iTX += 0.25f * float(iTWdt) * (1.0f - zoom);
+
+				// adjustment for objects at border of screen?
 				// +0.5f for proper rounding; avoids oscillations near pixel border:
-				iTX = Clamp<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
-				iTY = Clamp<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
+				if (~dwFlags & C4GM_XRel) iTX = Clamp<float>(iTX, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
+				if (~dwFlags & C4GM_YRel) iTY = Clamp<float>(iTY, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
+
 				// Draw
-				pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
+				pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, zoom,
 				                           cgo.Surface,
 				                           cgo.X + iTX,
 				                           cgo.Y + iTY,
-				                           ColorDw,ACenter);
+				                           ColorDw, alignment);
 				return;
 			}
 	}

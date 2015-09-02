@@ -14,15 +14,16 @@ static const LOC_INVALID = 0;
 static const LOC_SOLID = 1;
 static const LOC_INAREA = 2;
 static const LOC_MATERIAL = 3;
-static const LOC_FUNC = 4;
-static const LOC_WALL = 5;
-static const LOC_SPACE = 6;
-static const LOC_NOT = 7;
-static const LOC_SKY = 8;
-static const LOC_LIQUID = 9;
-static const LOC_OR = 10;
-static const LOC_AND = 11;
-static const LOC_MAXTRIES = 12;
+static const LOC_MATERIALVAL = 4;
+static const LOC_FUNC = 5;
+static const LOC_WALL = 6;
+static const LOC_SPACE = 7;
+static const LOC_NOT = 8;
+static const LOC_SKY = 9;
+static const LOC_LIQUID = 10;
+static const LOC_OR = 11;
+static const LOC_AND = 12;
+static const LOC_MAXTRIES = 13;
 
 /*
 	Returns a spot where a custom function returned "true".
@@ -91,6 +92,11 @@ global func Loc_Material(string material, string texture)
 		return [LOC_MATERIAL, Material(material)];
 }
 
+global func Loc_MaterialVal(string entry, string section, int entry_nr, compare)
+{
+	return [LOC_MATERIALVAL, entry, section, entry_nr, compare];
+}
+
 global func Loc_Tunnel()
 {
 	return Loc_Material("Tunnel");
@@ -113,7 +119,7 @@ global func Loc_Liquid() { return [LOC_LIQUID]; }
 	returns a point on a wall. /direction/ can be either CNAT_Bottom, CNAT_Top, CNAT_Left, CNAT_Right.
 	Note that this implies that you are looking for a non-solid spot.
 */
-global func Loc_Wall(int direction)
+global func Loc_Wall(int direction, wall_condition1, ...)
 {
 	var x = 0, y = 0;
 	if(direction & CNAT_Left) x = -1;
@@ -127,7 +133,16 @@ global func Loc_Wall(int direction)
 	var both_left_right = !!((direction & CNAT_Left) && (direction & CNAT_Right));
 	var both_top_bottom = !!((direction & CNAT_Top) && (direction & CNAT_Bottom));
 	
-	return [LOC_WALL, x, y, both_left_right, both_top_bottom];
+	var wall_conditions = [];
+	for (var i = 1; i < 10; ++i)
+	{
+		var condition = Par(i);
+		if (!condition) 
+			continue;
+		PushBack(wall_conditions, condition);
+	}
+	
+	return [LOC_WALL, x, y, both_left_right, both_top_bottom, wall_conditions];
 }
 
 /*
@@ -142,7 +157,7 @@ global func Loc_Space(int space, int direction)
 global func FindLocation(condition1, ...)
 {
 	var area = nil;
-	var xdir = 0, ydir = 0, xmod = nil, ymod = nil;
+	var xdir = 0, ydir = 0, xmod = nil, ymod = nil, wall_conditions = [];
 	var flags = [];
 	// maximum number of tries
 	var repeat = 5000;
@@ -164,6 +179,7 @@ global func FindLocation(condition1, ...)
 			ydir = f[2];
 			xmod = f[3];
 			ymod = f[4];
+			wall_conditions = f[5];
 		}
 		else if (f[0] == LOC_MAXTRIES)
 		{
@@ -198,7 +214,17 @@ global func FindLocation(condition1, ...)
 			var failsafe = 0;
 			do
 			{
-				if (GBackSolid(x + lx, y + ly)) {valid = true; break;}
+				if (GBackSolid(x + lx, y + ly)) 
+				{
+					valid = true;
+					for (var flag in wall_conditions)
+					{
+						if (Global->FindLocationConditionCheckIsValid(flag, x + lx, y + ly)) continue;
+						valid = false;
+						break;
+					}
+					break;
+				}
 				x += lx;
 				y += ly;
 			} while (++failsafe < 100);
@@ -266,6 +292,13 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 		if (GetLength(flag) > 2)
 			if (GetTexture(x, y) != flag[2]) return false;
 		return true;
+	}
+	
+	if (flag[0] == LOC_MATERIALVAL)
+	{
+		var mat = GetMaterial(x, y);
+		var mat_val = GetMaterialVal(flag[1], flag[2], mat, flag[3]);
+		return mat_val == flag[4];
 	}
 		
 	// custom condition call

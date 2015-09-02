@@ -1058,39 +1058,39 @@ func GetSwimRotation()
 /*--
 	Roll and kneel
 	
-	When the clonk hits the ground a kneel animation of are roll are performed.
+	When the clonk hits the ground a kneel animation or are roll are performed.
 --*/
 
 func Hit(int iXSpeed, int iYSpeed)
 {
-	if(iYSpeed < 450) return;
-	if(GetAction() != "Walk") return;
-
-	//Roll :D
-	if(GetComDir() == COMD_Right && GetDir() == 1 || GetComDir() == COMD_Left && GetDir() == 0)
+	if (this->IsWalking())
 	{
-		if(Abs(iXSpeed) > 130 && iYSpeed <= 80 * 10)
-			SetAction("Roll");
-		else
+		// roll :D
+		var e;
+		if (e = GetEffect("ScheduleRollOnLanding", this))
 		{
-			DoKneel();
-			if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
-			{
-				var clr = GetAverageTextureColor(GetTexture(0,10));
-				var particles =
-				{
-					Prototype = Particles_Dust(),
-					R = (clr >> 16) & 0xff,
-					G = (clr >> 8) & 0xff,
-					B = clr & 0xff,
-				};
-				CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
-			}
+			DoRoll();
+			RemoveEffect(nil, this, e);
 		}
+		else if (iYSpeed > 450) // Force kneel-down when hitting the ground at high velocity.
+			DoKneel(true);
 	}
-	else
+	return _inherited(iXSpeed, iYSpeed, ...);
+}
+
+func DoKneel(bool create_dust)
+{
+	var iKneelDownSpeed = 18;
+
+	SetXDir(0);
+	SetAction("Kneel");
+	Sound("RustleLand");
+	PlayAnimation("KneelDown", 5, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
+	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
+	
+	if (create_dust)
 	{
-		DoKneel();
 		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 		{
 			var clr = GetAverageTextureColor(GetTexture(0,10));
@@ -1104,18 +1104,7 @@ func Hit(int iXSpeed, int iYSpeed)
 			CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 		}
 	}
-}
-
-func DoKneel()
-{
-	var iKneelDownSpeed = 18;
-
-	SetXDir(0);
-	SetAction("Kneel");
-	Sound("RustleLand");
-	PlayAnimation("KneelDown", 5, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-
-	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
+	
 	return 1;
 }
 
@@ -1124,8 +1113,25 @@ func EndKneel()
 	if(GetAction() != "Roll") SetAction("Walk");
 }
 
-//rollp
-func StartRoll()
+
+// Start a roll into the current direction.
+func DoRoll()
+{
+	// make sure the Clonk does not roll in place..
+	var comd = GetComDir();
+	if (comd != COMD_Left && comd != COMD_Right)
+	{
+		var dir = GetDir();
+		if (dir == DIR_Left) SetComDir(COMD_Left);
+		else SetComDir(COMD_Right);
+	}
+	
+	SetAction("Roll");
+}
+
+
+// Called when the roll action is started.
+func OnStartRoll()
 {	
 	SetTurnForced(GetDir());
 	Sound("Roll");
@@ -1136,6 +1142,14 @@ func StartRoll()
 	lAnim.rollLength = 22;
 	PlayAnimation("KneelRoll", 5, Anim_Linear(0, 0, 1500, lAnim.rollLength, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	AddEffect("Rolling", this, 1, 1, this);
+}
+
+// Called when the roll action is interrupted.
+func OnAbortRoll()
+{
+	var e = GetEffect("Rolling", this);
+	if (e)
+		RemoveEffect(nil, this, e);
 }
 
 func FxRollingTimer(object target, int num, int timer)
@@ -1152,9 +1166,6 @@ func FxRollingTimer(object target, int num, int timer)
 
 	if(timer > lAnim.rollLength)
 	{
-		SetAction("Walk");
-		SetTurnForced(-1);
-		lAnim.rollDir = nil;
 		return -1;
 	}
 
@@ -1172,6 +1183,16 @@ func FxRollingTimer(object target, int num, int timer)
 		};
 		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
 	}
+}
+
+func FxRollingStop(object target, proplist effect, int reason, temp)
+{
+	if (temp && !this) return;
+	
+	if (GetAction() == "Roll")
+		SetAction("Walk");
+	SetTurnForced(-1);
+	lAnim.rollDir = nil;
 }
 
 /*--
@@ -1243,7 +1264,7 @@ public func ControlThrow(object target, int x, int y)
 	var throwAngle = Angle(0,0,x,y);
 
 	// walking (later with animation: flight, scale, hangle?) and hands free
-	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" || GetAction() == "Dive")
+	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" ||  GetAction() == "WallJump" || GetAction() == "Dive")
 		&& this->~HasHandAction())
 	{
 		if (throwAngle < 180) SetDir(DIR_Right);

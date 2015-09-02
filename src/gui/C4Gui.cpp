@@ -832,6 +832,7 @@ namespace C4GUI
 		float fY = float(iPxY) / fZoom;
 		// forward to mouse
 		Mouse.Input(iButton, fX, fY, dwKeyParam);
+
 		// dragging
 		if (Mouse.pDragElement)
 		{

@@ -27,6 +27,8 @@
 #include <C4PlayerControl.h>
 #include <C4TransferZone.h>
 
+class C4ScriptGuiWindow;
+
 class C4Game
 {
 private:
@@ -227,6 +229,7 @@ public:
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
 	void SetDefaultGamma();
 
+	C4ScriptGuiWindow *ScriptGuiRoot;
 protected:
 	void Default();
 	void InitInEarth();

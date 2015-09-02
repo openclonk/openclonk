@@ -1,2 +1,2 @@
 Name=Chunk of earth
-Description=Can be dug out of the ground. Will crumble to powder on impact.
+Description=Can only be transported with a bucket.|Can be dug out of the ground. Will crumble to powder on impact.

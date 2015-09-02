@@ -1,0 +1,14 @@
+HitPoints=Lebenspunkte
+NoFlag=Kein Flaggenmast in Reichweite
+Indestructible=Unzerstörbar
+
+Invincible=Das Gebäude ist unzerstörbar.
+Damage=Schaden
+NotDamaged=Kein Schaden.
+SlightlyDamaged=Leicht beschädigt.
+HeavilyDamaged=Schwer beschädigt.
+Repair=Reparieren
+RepairRequires=Reparieren benötigt einen Hammer und folgende Materialien:|
+NoRepairNecessary=Das Gebäude ist aktuell nicht beschädigt.|Bei Schaden findet sich hier eine Liste von benötigten Materialien.
+YouNeedAHammer=Es wird ein Hammer benötigt.
+YouNeedMaterials=Es werden Materialien benötigt.

@@ -34,13 +34,6 @@ private func IsProduct(id product_id)
 }
 private func ProductionTime(id toProduce) { return 290; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	if (rawmat_id->~IsFuel() || rawmat_id == Ore || rawmat_id == Nugget)
-		return true;
-	return false;
-}
-
 public func OnProductionStart(id product)
 {
 	AddEffect("Smelting", this, 100, 1, this);

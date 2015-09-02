@@ -29,7 +29,7 @@ protected func Initialize()
 {
 	AddEffect("CheckAutoMoveTo", this, 1, 30, this);
 	AddEffect("ElevatorUpperLimitCheck", this, 1, 1, this);
-	AddEffect("FetchVehicles", this, 1, 10, this);
+	AddEffect("FetchVehicles", this, 1, 4, this);
 	
 	partner_was_synced = false;
 	
@@ -55,20 +55,11 @@ func Destruction()
 		partner->LoseConnection();
 	if(elevator)
 		elevator->LostCase();
-		
-	for(var i = 0; i < 3; ++i)
-	{
-		var wood = CreateObjectAbove(Wood, 0, 0, NO_OWNER);
-		wood->Incinerate();
-		wood->SetXDir(RandomX(-10, 10));
-		wood->SetYDir(RandomX(-2, 0));
-	}
 	return _inherited(...);
 }
 
 func LostElevator()
 {
-	// die x.x
 	RemoveObject();
 }
 
@@ -98,16 +89,9 @@ func LoseConnection()
 	partner_was_synced = false;
 	if(GetEffect("TryToSync", this))
 		RemoveEffect("TryToSync", this);
-	SetPartnerVertices(0, 0);
-	SetActionData(0);
-	
+	OvertakePartnerVertices(0, 0);
+	SetSolidMask(0, 0, 24, 3, 0, 23);
 	Halt();
-}
-
-// slave loses attach to master?
-func AttachTargetLost()
-{
-	LoseConnection();
 }
 
 public func ExecuteSync()
@@ -118,22 +102,26 @@ public func ExecuteSync()
 	partner.partner_was_synced = true;
 	ForceSync();
 	
-	SetPartnerVertices(partner->GetX() - GetX(), partner->GetY() - GetY());
+	// Let the master take over all the vertices.
+	OvertakePartnerVertices(partner->GetX() - GetX(), partner->GetY() - GetY());
+	partner->MakeSlaveVertices();
 	
 	// Reset power usage.
 	ResetPowerUsage();
 	partner->ResetPowerUsage();
 	
-	// can now attach partner on one of the new vertices
-	partner->SetAction("Attach", this);
-	var vertex_data = (ElevatorCase_normal_vertex_index_begin << 8) + ElevatorCase_additional_vertex_index_begin;
-	partner->SetActionData(vertex_data);
+	// Update solidmasks.
+	if (partner->GetX() > GetX())
+		SetSolidMask(0, 3, 48, 3, 0, 23);
+	else
+		SetSolidMask(0, 3, 48, 3, -24, 23);
+	partner->SetSolidMask(0, 0, 0, 0, 0, 0);
 	
 	Sound("Click");
 }
 
 // sets additional vertices to partner's position
-func SetPartnerVertices(int off_x, int off_y)
+func OvertakePartnerVertices(int off_x, int off_y)
 {
 	var update_mode = 2; // force immediate update and store information
 	
@@ -141,6 +129,16 @@ func SetPartnerVertices(int off_x, int off_y)
 	{
 		SetVertex(ElevatorCase_additional_vertex_index_begin + i, VTX_X, GetVertex(ElevatorCase_normal_vertex_index_begin + i, VTX_X) + off_x, update_mode);
 		SetVertex(ElevatorCase_additional_vertex_index_begin + i, VTX_Y, GetVertex(ElevatorCase_normal_vertex_index_begin + i, VTX_Y) + off_y, update_mode);
+	}
+}
+
+func MakeSlaveVertices()
+{
+	var update_mode = 2; // force immediate update and store information
+	for(var i = 0; i < GetVertexNum(); ++i)
+	{
+		SetVertex(i, VTX_X, GetVertex(0, VTX_X), update_mode);
+		SetVertex(i, VTX_Y, GetVertex(0, VTX_Y), update_mode);
 	}
 }
 
@@ -205,7 +203,7 @@ func FxCheckAutoMoveToTimer(object target, effect, int time)
 			best = clonk;
 	}
 	if (best)
-		MoveTo(best->GetY(), 10, best);
+		MoveTo(best->GetY() + 1, 10, best);
 	return 1;
 }
 
@@ -281,8 +279,9 @@ protected func FxFetchVehiclesTimer(object target, proplist effect, int time)
 	// Fetch vehicles
 	for (var vehicle in FindObjects(Find_InRect(x - GetX(), y - GetY(), w - x, h - y), Find_Category(C4D_Vehicle), Find_NoContainer(), Find_Func("FitsInElevator")))
 	{
-		if (GetEffect("ElevatorControl", vehicle)) continue;
-		vehicle->SetPosition(vehicle->GetX(), GetY() + 12 - vehicle->GetObjHeight()/2);
+		if (GetEffect("ElevatorControl", vehicle)) 
+			continue;
+		vehicle->SetPosition(vehicle->GetX(), GetY() + GetBottom() - 3 - vehicle->GetBottom());
 		vehicle->SetSpeed();
 		vehicle->SetR();
 		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
@@ -457,13 +456,16 @@ private func Halt(bool user_requested, bool power_out)
 
 public func ForceSync()
 {
-	if (!IsMaster()) 
+	if (!IsMaster() || !partner) 
 		return;
 	// Clear rounding errors.
 	SetPosition(GetX(), GetY());
 	// Adjust partner.
 	partner->SetPosition(partner->GetX(), GetY());
-	partner->SetYDir(0);
+	partner->SetAction(GetAction());
+	partner->SetComDir(GetComDir());
+	partner->SetYDir(GetYDir());
+	return;
 }
 
 protected func ContactTop()
@@ -679,55 +681,44 @@ func SaveScenarioObject() { return false; }
 /*-- Properties --*/
 
 local ActMap = {
-		Drive = {
-			Prototype = Action,
-			Name = "Drive",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 24,
-			Hgt = 26,
-			NextAction = "Drive",
-		},
-		DriveIdle = {
-			Prototype = Action,
-			Name = "DriveIdle",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 24,
-			Hgt = 26,
-			NextAction = "DriveIdle",
-		},
-		Drill = {
-			Prototype = Action,
-			Name = "Drill",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 24,
-			Hgt = 26,
-			Delay = 1,
-			Length = 1,
-			PhaseCall = "Drilling",
-			NextAction = "Drill",
-			Sound = "ElevatorDrilling",
-			DigFree = 1
-		},
-		Attach = {
-			Prototype = Action,
-			Name = "Attach",
-			Procedure = DFA_ATTACH,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 24,
-			Hgt = 26,
-			NextAction = "Attach"
-		}
+	Drive = {
+		Prototype = Action,
+		Name = "Drive",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 24,
+		Hgt = 26,
+		NextAction = "Drive",
+	},
+	DriveIdle = {
+		Prototype = Action,
+		Name = "DriveIdle",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 24,
+		Hgt = 26,
+		NextAction = "DriveIdle",
+	},
+	Drill = {
+		Prototype = Action,
+		Name = "Drill",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 24,
+		Hgt = 26,
+		Delay = 1,
+		Length = 1,
+		PhaseCall = "Drilling",
+		NextAction = "Drill",
+		Sound = "ElevatorDrilling",
+		DigFree = 1
+	}
 };
 
 local Name = "$Name$";

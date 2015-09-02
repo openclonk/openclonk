@@ -602,7 +602,7 @@ bool MakeOriginalFilename(char *szFilename)
 			if (GetDriveTypeW(GetWideChar(szFilename)) == DRIVE_NO_ROOT_DIR) return false;
 			return true;
 		}
-	struct _wfinddata_t fdt; long shnd;
+	struct _wfinddata_t fdt; intptr_t shnd;
 	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
 	StdStrBuf name(fdt.name);
@@ -719,7 +719,7 @@ bool DirectoryExists(const char *szFilename)
 	}
 	// Check file attributes
 #ifdef _WIN32
-	struct _wfinddata_t fdt; int shnd;
+	struct _wfinddata_t fdt; intptr_t shnd;
 	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
 	if (fdt.attrib & _A_SUBDIR) return true;
@@ -750,7 +750,7 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	char contents[_MAX_PATH+1];
 	SCopy(szSource,contents); AppendBackslash(contents);
 	SAppend("*",contents);
-	_wfinddata_t fdt; int hfdt;
+	_wfinddata_t fdt; intptr_t hfdt;
 	if ( (hfdt=_wfindfirst(GetWideChar(contents),&fdt)) > -1 )
 	{
 		do
@@ -1060,7 +1060,7 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
 		AppendBackslash(szFilename);
 	int iFileCount = 0;
 #ifdef _WIN32
-	struct _wfinddata_t fdt; int fdthnd;
+	struct _wfinddata_t fdt; intptr_t fdthnd;
 	if (!fHasWildcard) // parameter without wildcard: Append "/*.*" or "\*.*"
 		SAppend("*",szFilename,_MAX_PATH);
 	if ((fdthnd = _wfindfirst (GetWideChar(szFilename), &fdt)) < 0)

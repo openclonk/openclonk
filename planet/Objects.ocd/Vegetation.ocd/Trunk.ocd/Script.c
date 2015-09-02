@@ -101,18 +101,22 @@ public func Place(int amount, proplist area, proplist settings)
 	var loc_area = nil;
 	if (area) 
 		loc_area = Loc_InArea(area);
-	var loc_background = Loc_Or(Loc_Sky(), Loc_Tunnel());
-	if (settings.underground)
+	var loc_background;
+	if (settings.underground == nil)
+		loc_background = Loc_Or(Loc_Sky(), Loc_Tunnel());
+	else if (settings.underground)
 		loc_background = Loc_Tunnel();
+	else
+		loc_background = Loc_Sky();	
 		
 	var trunks = [];	
 	for (var i = 0; i < amount; i++)
 	{
 		var size = RandomX(settings.size[0], settings.size[1]);
-		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top), loc_area);
+		var loc = FindLocation(loc_background, Loc_Not(Loc_Liquid()), Loc_Wall(CNAT_Left | CNAT_Right | CNAT_Top, Loc_Or(Loc_Material("Granite"), Loc_Material("Rock"), Loc_MaterialVal("Soil", "Material", nil, 1))), loc_area);
 		if (!loc)
 			continue;
-		var trunk = CreateObjectAbove(Trunk);
+		var trunk = CreateObject(Trunk);
 		trunk->SetPosition(loc.x, loc.y);
 		trunk->SetCon(size);
 		if (!Random(3))

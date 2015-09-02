@@ -5,6 +5,8 @@
 	Tosses objects farther than a clonk can. Requires no fuel.
 --*/
 
+#include Library_ElevatorControl
+
 local aim_anim;
 local turn_anim;
 local olddir;
@@ -79,26 +81,13 @@ public func ControlUseStart(object clonk)
 	return true;
 }
 
-public func ControlUseAltStart(object clonk)
-{
-	return true;
-}
+public func HoldingEnabled() { return true; }
 
-public func HoldingEnabled()	{	return true;	}
-
-public func ControlUseAnyHolding(object clonk, int x, int y)
-{
-	ArmAnimation(x,y);
-}
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	ControlUseAnyHolding(clonk,x,y);
-}
-
-public func ControlUseAltHolding(object clonk, int x, int y)
-{
-	ControlUseAnyHolding(clonk,x,y);
+	ArmAnimation(x,y);
+	return true;
 }
 
 public func DefinePower(int x, int y)
@@ -120,26 +109,21 @@ public func DefinePower(int x, int y)
 
 public func ArmAnimation(int x, int y)
 {
-	var power = DefinePower(x,y);
+	var power = DefinePower(x, y);
 	SetAnimationPosition(aim_anim, Anim_Const(759 - (power * 759 / 100)));
 }
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	DoFire(clonk,DefinePower(x,y),0);
-}
-
-public func ControlUseAltStop(object clonk, int x, int y)
-{
-	DoFire(clonk,DefinePower(x,y),1);
+	DoFire(clonk, DefinePower(x,y));
 }
 
 public func ContainedUse(object clonk, int x, int y)
 {
-	DoFire(clonk, 70, nil);
+	DoFire(clonk, 70);
 }
 
-protected func DoFire(object clonk, int power, int hand)
+protected func DoFire(object clonk, int power)
 {
 	//Fire the catapult!
 //	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
@@ -149,10 +133,12 @@ protected func DoFire(object clonk, int power, int hand)
 	Sound("Catapult_Launch");
 
 	var projectile = nil;
-	if(Contents(0))	projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!
+	if (Contents(0))
+		projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!
 	else
-		if(clonk->GetHandItem(hand)) projectile = clonk->GetHandItem(hand); //otherwise, fire what is in the clonk's hand
-	if(projectile)
+		if(clonk->GetHandItem(0)) 
+			projectile = clonk->GetHandItem(0); //otherwise, fire what is in the clonk's hand
+	if (projectile)
 	{
 		//finding the spot of the catapult's arm depending on rotation
 		var i = 1;

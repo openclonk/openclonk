@@ -1,6 +1,6 @@
 /*--
 		Objects.c
-		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
+		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, GÃ¼nther, Randrian
 
 		Functions generally applicable to objects; not enough to be worth distinct scripts though.
 --*/
@@ -348,4 +348,56 @@ global func InFrontOf(object back)
 		return;
 	
 	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
+}
+
+// Returns the current left of the object relative to its current position.
+global func GetLeft()
+{
+	var offset_x = GetObjectVal("Offset", nil, 0);
+	if (offset_x == nil)
+		offset_x = GetDefCoreVal("Offset", nil, 0);
+	return offset_x;
+}
+
+// Returns the current right of the object relative to its current position.
+global func GetRight()
+{
+	var offset_x = GetObjectVal("Offset", nil, 0);
+	if (offset_x == nil)
+		offset_x = GetDefCoreVal("Offset", nil, 0);
+	var width = GetObjectVal("Width");
+	return offset_x + width;
+}
+
+// Returns the current top of the object relative to its current position.
+global func GetTop()
+{
+	var offset_y = GetObjectVal("Offset", nil, 1);
+	if (offset_y == nil)
+		offset_y = GetDefCoreVal("Offset", nil, 1);
+	return offset_y;
+}
+
+// Returns the current bottom of the object relative to its current position.
+global func GetBottom()
+{
+	var offset_y = GetObjectVal("Offset", nil, 1);
+	if (offset_y == nil)
+		offset_y = GetDefCoreVal("Offset", nil, 1);
+	var height = GetObjectVal("Height");
+	return offset_y + height;
+}
+
+// Returns the current shape as an array [offset_x, offset_y, width, height].
+global func GetShape()
+{
+	var offset_x = GetObjectVal("Offset", nil, 0);
+	if (offset_x == nil)
+		offset_x= GetDefCoreVal("Offset", nil, 0);
+	var offset_y = GetObjectVal("Offset", nil, 1);
+	if (offset_y == nil)
+		offset_y = GetDefCoreVal("Offset", nil, 1);
+	var width = GetObjectVal("Width");
+	var height = GetObjectVal("Height");
+	return [offset_x, offset_y, width, height];
 }

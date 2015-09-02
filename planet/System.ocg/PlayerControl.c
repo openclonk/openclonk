@@ -25,8 +25,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
-	if (cursor)
-	if (cursor->GetCrewEnabled())
+	if (cursor && cursor->GetCrewEnabled())
 	{
 		// Object controlled by plr
 		cursor->SetController(plr);
@@ -48,14 +47,14 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 			// cancel menu
 			if (ctrl == CON_CancelMenu)
 			{
-				cursor->GetMenu()->Close();
+				cursor->TryCancelMenu();
 				return true;
 			}
 
 			if (ctrl == CON_GUIClick1 || ctrl == CON_GUIClick2 || ctrl == CON_GUICursor)
 			{
-				var menux = cursor->GetMenu()->GetX();
-				var menuy = cursor->GetMenu()->GetY();
+				var menux = cursor->GetMenu()->~GetX();
+				var menuy = cursor->GetMenu()->~GetY();
 				
 				var dx = x-menux;
 				var dy = y-menuy;
@@ -88,7 +87,6 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		{
 			if (cursor && !release && !repeat)
 			{
-				cursor->DoNoCollectDelay(-1);
 				// non-mouse controls reset view
 				if (!x && !y) ResetCursorView(plr);
 			}
@@ -97,7 +95,8 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		//else Log("-- not handled");
 
 	}
-	// No cursor? Nothing to handle control then
+	
+	// Nothing to handle control then
 	return false;
 }
 
@@ -415,8 +414,15 @@ global func ShiftCursor(int plr, bool back)
 	} while (!(GetCrew(plr,index)->GetCrewEnabled()) && cycle < maxcycle);
 
 	StopSelected();
-
-	return SetCursor(plr, GetCrew(plr,index));
+	
+	// Changing the cursor closes all menus that are associated with the old cursor.
+	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
+	var current_cursor = GetCursor(plr);
+	var new_cursor = GetCrew(plr, index);
+	if (current_cursor == new_cursor) return false;
+	if (current_cursor && current_cursor->~GetMenu() && !current_cursor->~TryCancelMenu()) return false;
+	
+	return SetCursor(plr, new_cursor);
 }
 
 // Temporarily used for Debugging!
@@ -513,3 +519,15 @@ global func MouseDragDrop(int plr, object source, object target)
 	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
 	return r;
 }*/
+
+/*
+This is used by Library_ClonkInventoryControl and needs to be a global function (in a non-appendto).
+This function returns the priority of an object when selecting an object to pick up.
+*/
+global func Library_ClonkInventoryControl_Sort_Priority(int x_position)
+{
+	// Objects are sorted by position, preferring the direction of the key press.
+	var priority_x = GetX() - x_position;
+	if (priority_x < 0) priority_x += 1000;
+	return priority_x; 
+}

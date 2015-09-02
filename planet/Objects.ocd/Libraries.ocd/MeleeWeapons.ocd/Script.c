@@ -179,12 +179,16 @@ func FxIntWeaponChargeHitByWeapon(pTarget, effect)
 	return this->~HitByWeapon(...);
 }
 
-func FxIntIsBeingStruckStart(pTarget, effect, iTemp, iDamage, angle)
+func FxIntIsBeingStruckStart(pTarget, effect, iTemp, iDamage, angle, object from)
 {
 	if(iTemp) return;
 	effect.delay = 3;
 	effect.damage = iDamage;
 	effect.angle = angle;
+	effect.from = from;
+	effect.from_player = NO_OWNER;
+	if (from)
+		effect.from_player = from->GetOwner();
 }
 
 func FxIntIsBeingStruckTimer(pTarget, effect, iEffectTime)
@@ -202,9 +206,13 @@ func FxIntIsBeingStruckTimer(pTarget, effect, iEffectTime)
 			if(effect.damage > 60)
 				pTarget->Fling();
 		}
-		//if(iEffectNumber.var1 > 20) iEffectNumber.var1 = 20;
+
 		pTarget->SetXDir(Sin(effect.angle, effect.damage ), 100);
 		pTarget->SetYDir(-Abs(Cos(effect.angle, effect.damage )), 100);
+		
+		// in case the object is flung down a cliff
+		if (effect.from_player != NO_OWNER)
+			pTarget->SetKiller(effect.from_player);
 		return -1;
 	}
 	
@@ -384,9 +392,10 @@ func GetWeaponSlow(pClonk)
 	return EffectCall(nil, e, "GetWeaponSlow");
 }
 
-func ApplyWeaponBash(pTo, int strength, angle)
+func ApplyWeaponBash(pTo, int strength, angle, object from)
 {
-	AddEffect("IntIsBeingStruck", pTo, 2, 1, nil, GetID(), strength, angle);
+	from = from ?? this;
+	AddEffect("IntIsBeingStruck", pTo, 2, 1, nil, GetID(), strength, angle, from);
 }
 
 func TranslateVelocity(object pTarget, int angle, int iLimited, int iExtraVelocity)

@@ -1,0 +1,8 @@
+[DefCore]
+id=Icon_Rank
+Version=6,0
+Category=C4D_StaticBack
+Picture=0,0,16,16
+Width=16
+Height=16
+Offset=-8,-8

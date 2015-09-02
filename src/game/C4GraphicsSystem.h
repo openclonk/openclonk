@@ -41,6 +41,7 @@ public:
 	bool ShowNetstatus;
 	int Show8BitSurface; // 0 normal, 1 foreground mats, 2 background mats
 	bool ShowLights;
+	bool ShowMenuInfo;
 	C4Video Video;
 	C4LoaderScreen *pLoaderScreen;
 	void Default();

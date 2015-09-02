@@ -124,6 +124,10 @@ namespace C4GUI
 		if (pLast) pLast->pNext = pChild; else pFirst = pChild;
 		pChild->pPrev = pLast; pChild->pNext = NULL; pLast = pChild;
 		pChild->pParent = this;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	void Container::ReaddElement(Element *pChild)
@@ -136,6 +140,10 @@ namespace C4GUI
 		// add to end of list
 		if (pLast) pLast->pNext = pChild; else pFirst = pChild;
 		pChild->pPrev = pLast; pChild->pNext = NULL; pLast = pChild;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	void Container::InsertElement(Element *pChild, Element *pInsertBefore)
@@ -153,6 +161,10 @@ namespace C4GUI
 			pFirst = pChild;
 		pChild->pNext = pInsertBefore; pInsertBefore->pPrev = pChild;
 		pChild->pParent = this;
+
+		assert(pChild->pNext != pChild);
+		assert(pChild->pPrev != pChild);
+		assert(pChild->pParent != pChild);
 	}
 
 	Element *Container::GetNextNestedElement(Element *pPrevElement, bool fBackwards)
@@ -500,8 +512,11 @@ namespace C4GUI
 		rtBounds.x += rtBounds.Wdt; rtBounds.Wdt = C4GUI_ScrollBarWdt;
 		pScrollBar = new ScrollBar(rtBounds, this);
 		// add self and scroll bar to window
-		pParentWindow->AddElement(this);
-		pParentWindow->AddElement(pScrollBar);
+		if (pParentWindow != this)
+		{
+			pParentWindow->AddElement(this);
+			pParentWindow->AddElement(pScrollBar);
+		}
 	}
 
 	void ScrollWindow::Update()
@@ -616,11 +631,13 @@ namespace C4GUI
 		Update();
 	}
 
-	void ScrollWindow::SetScrollBarEnabled(bool fToVal)
+	void ScrollWindow::SetScrollBarEnabled(bool fToVal, bool noAutomaticPositioning)
 	{
 		if (fHasBar == fToVal) return;
 		pScrollBar->SetVisibility(fHasBar = fToVal);
-		UpdateOwnPos();
+		// in some cases the windows will already care for the correct positioning themselves (see C4ScriptGuiWindow)
+		if (!noAutomaticPositioning)
+			UpdateOwnPos();
 	}
 
 	void ScrollWindow::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)

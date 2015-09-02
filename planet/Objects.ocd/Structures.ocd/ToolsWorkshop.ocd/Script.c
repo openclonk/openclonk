@@ -31,11 +31,6 @@ public func IsProduct(id product_id)
 private func ProductionTime(id toProduce) { return 150; }
 public func PowerNeed() { return 40; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	return true;
-}
-
 public func OnProductionStart(id product)
 {
 	SetSign(product);

@@ -10,6 +10,7 @@
 #include Library_HUDAdapter
 // standard controls
 #include Library_ClonkControl
+#include Library_CarryHeavyControl
 // manager for aiming
 #include Library_AimManager
 
@@ -81,7 +82,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 		}
 	}
 	// No overloaded command
-	return 0;
+	return _inherited(szCommand, pTarget, iTx, iTy, pTarget2, Data, ...);
 }
 
 
@@ -194,8 +195,30 @@ public func Eat(object food)
 	}
 }
 
+// Called when an object was dug free.
 func DigOutObject(object obj)
 {
+	// Some materials can only be transported/collected with a bucket.
+	if (obj->~IsBucketMaterial())
+	{
+		// Assume we might already be carrying a filled bucket and the object is stackable, try it!
+		var handled = obj->~TryPutInto(this);
+		if (!handled)
+		{
+			// Otherwise, force into empty buckets!
+			var empty_bucket = FindObject(Find_Container(this), Find_Func("IsBucket"), Find_Func("IsBucketEmpty"));
+			if (empty_bucket)
+			{
+				obj->Enter(empty_bucket);
+				handled = true;
+			}
+		}
+		// Those objects can only be carried with a bucket, sadly...
+		if (!handled)
+			obj->RemoveObject();
+		// Object might have been removed now.
+		return;
+	}
 	// Collect fragile objects when dug out
 	if (obj->GetDefFragile())
 		return Collect(obj,nil,nil,true);
@@ -459,6 +482,15 @@ public func GetHandAction()
 	return false;
 }
 
+/* Enable the Clonk to pick up stuff from its surrounding in the interaction menu */
+public func OnInteractionMenuOpen(object menu)
+{
+	_inherited(menu, ...);
+	
+	var surrounding = CreateObject(Helper_Surrounding);
+	surrounding->InitFor(this, menu);
+}
+
 /* Mesh transformations */
 
 local mesh_transformation_list;
@@ -679,7 +711,7 @@ Walk = {
 	Name = "Walk",
 	Procedure = DFA_WALK,
 	Accel = 16,
-	Decel = 22,
+	Decel = 48,
 	Speed = 200,
 	Directions = 2,
 	FlipDir = 0,
@@ -735,7 +767,8 @@ Roll = {
 	Y = 0,
 	Wdt = 8,
 	Hgt = 20,
-	StartCall = "StartRoll",
+	StartCall = "OnStartRoll",
+	AbortCall = "OnAbortRoll",
 	NextAction = "Walk",
 	InLiquidAction = "Swim",
 },
@@ -1009,6 +1042,7 @@ Eat = {
 	Attach=CNAT_Bottom,
 },
 };
+
 local Name = "Clonk";
 local MaxEnergy = 50000;
 local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
@@ -1016,6 +1050,9 @@ local JumpSpeed = 400;
 local ThrowSpeed = 294;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
+
+// Clonks are always shown in the interaction menu.
+public func HasInteractionMenu() { return true; }
 
 func Definition(def) {
 	// Set perspective

@@ -388,8 +388,6 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	// Exit object
 	pThing->Exit(cObj->GetX() + (cObj->Shape.x + cObj->Shape.Wdt * right) * !!tdir * iOutposReduction,
 	             cObj->GetY()+cObj->Shape.y+cObj->Shape.Hgt-(pThing->Shape.y+pThing->Shape.Hgt),0,pthrow*tdir,Fix0,Fix0);
-	// NoCollectDelay
-	cObj->NoCollectDelay=2;
 	// Update OCF
 	cObj->SetOCF();
 	// Ungrab

@@ -1,3 +1,4 @@
 Name=Airplane
 Description=Press [Up] and [Down] to stop and start engine. [Left] and [Right] control orientation. Press [Down] again when the engine is off to reverse the plane.
 NoShots=No available lead shot!
+NoRockets=No rockets available.

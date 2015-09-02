@@ -34,9 +34,13 @@ local ParticleCount;
 
 local grabber;
 
+public func RejectUse(object clonk)
+{
+	return !clonk->GetContact(-1);
+}
+
 public func ControlUse(object clonk, int x, int y)
 {
-	if(!clonk->GetContact(-1)) return true;
 	// Unroll dir
 	var dir = -1;
 	if(x > 0) dir = 1;

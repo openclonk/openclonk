@@ -1,1 +1,4 @@
-DescInteraction=Produktion
+Production=Produktion
+QueueRemove=Eins weniger produzieren.
+QueueInf=Immer produzieren, wenn genug Material da ist.
+infinite=immer

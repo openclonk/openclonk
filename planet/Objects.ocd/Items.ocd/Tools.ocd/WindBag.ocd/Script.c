@@ -35,10 +35,20 @@ public func IsInventorProduct() { return true; }
 
 /*-- Usage --*/
 
+func RejectUse(object clonk)
+{
+	return clonk->GetProcedure() == "ATTACH";
+}
+
+// used by this object
+func ReadyToBeUsed(proplist data)
+{
+	var clonk = data.clonk;
+	return !RejectUse(clonk) && !GetEffect("IntReload", this);
+}
+
 protected func ControlUse(object clonk, x, y)
 {
-	if (clonk->GetProcedure() == "ATTACH")
-		return true;
 	if (!GetEffect("IntReload", this) && !GetEffect("IntBurstWind", this))
 	{
 		if (!GBackLiquid())
@@ -46,6 +56,7 @@ protected func ControlUse(object clonk, x, y)
 		return true;
 	}
 	clonk->Message("$MsgReloading$");
+	clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
 	return true;
 }
 

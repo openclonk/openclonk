@@ -1,0 +1,8 @@
+[DefCore]
+id=Helper_Surrounding
+Version=5,2,0,1
+Category=0
+Width=8
+Height=8
+Offset=-4,-4
+Picture=0,0,64,64

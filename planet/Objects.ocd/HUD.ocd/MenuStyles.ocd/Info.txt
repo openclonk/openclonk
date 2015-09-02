@@ -1,0 +1,6 @@
+This folder contains some easy-to-use styles for working with menus.
+
+Using them usually means to create an object of the ID corresponding to the style you need
+and then either putting the object as a sub-proplist into your own menu design, or just call Open() on the menu object.
+
+If the menu is a stand-alone menu for a Clonk, do not forget to call clonk->SetMenu(menu).

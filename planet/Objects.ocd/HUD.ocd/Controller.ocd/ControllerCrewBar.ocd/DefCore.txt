@@ -1,0 +1,7 @@
+[DefCore]
+id=GUI_Controller_CrewBar
+Version=6,0
+Category=C4D_StaticBack
+Width=96
+Height=96
+Offset=-48,-48

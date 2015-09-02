@@ -71,13 +71,6 @@ private func IsProduct(id product_id)
 private func ProductionTime(id toProduce) { return 100; }
 public func PowerNeed() { return 20; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	if (rawmat_id->~IsSawmillProduct())
-		return true;
-	return false;
-}
-
 public func OnProductionStart(id product)
 {
 	if (!GetEffect("Sawing", this))

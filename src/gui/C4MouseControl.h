@@ -55,10 +55,6 @@ protected:
 
 	int32_t Cursor;
 
-	StdCopyStrBuf Caption;
-	int32_t CaptionBottomY;
-	int32_t KeepCaption;
-
 	int32_t VpX,VpY; // Pixel coordinates of mouse pos
 	float ViewX,ViewY; // Game coordinate scrolling offset of viewport
 	float GameX,GameY; // Game coordinates of mouse pos
@@ -86,17 +82,26 @@ protected:
 	C4ID DragID;
 	C4Def* DragImageDef;
 	C4Object* DragImageObject;
+	
+	// Tooltip management
+
+	// currently shown caption
+	StdCopyStrBuf Caption;
+	// tooltip text that will be shown when the mouse is kept in the tooltip rectangle for some time
+	StdCopyStrBuf TooltipText;
+	int32_t CaptionBottomY;
+	int32_t KeepCaption;
+	int32_t TimeInTooltipRectangle;
+	C4Rect ToolTipRectangle;
 
 	// Target object
 	C4Object *TargetObject; // valid during Move()
 	C4Object *DownTarget;
-	int32_t TimeOnTargetObject;
 public:
 	void Default();
 	void Clear();
 	bool Init(int32_t iPlayer);
 	void Execute();
-	const char *GetCaption();
 	void HideCursor();
 	void ShowCursor();
 	void Draw(C4TargetFacet &cgo, const ZoomData &GameZoom);
@@ -109,6 +114,10 @@ public:
 	bool IsMouseOwned() { return fMouseOwned; }
 	bool IsActive() { return !!Active; }
 	bool GetLastGUIPos(int32_t *x_out, int32_t *y_out) const;
+
+	const char *GetCaption();
+	void SetTooltipText(const StdStrBuf &text);
+	void SetTooltipRectangle(const C4Rect &rectangle);
 protected:
 	void SendPlayerSelectNext();
 	void UpdateFogOfWar();
@@ -138,6 +147,7 @@ protected:
 
 public:
 	bool IsDragging();
+	bool IsLeftDown() { return LeftButtonDown; }
 	int32_t GetPlayer() { return Player; }
 };
 

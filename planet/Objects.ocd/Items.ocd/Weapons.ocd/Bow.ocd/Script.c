@@ -54,14 +54,14 @@ func Initialize()
 
 public func GetAnimationSet() { return animation_set; }
 
-public func ControlUseStart(object clonk, int x, int y)
+public func RejectUse(object clonk)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-	{
-		return true;
-	}
-	
+	return !clonk->HasHandAction();
+}
+
+public func ControlUseStart(object clonk, int x, int y)
+{
 	// check for ammo
 	if(!Contents(0))
 	{
@@ -159,18 +159,6 @@ public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
 	return true;
-}
-
-public func OnPauseAim(object clonk)
-{
-	Reset(clonk);
-}
-
-public func OnRestartAim(object clonk)
-{
-	ControlUseStart(clonk);
-	if(fAiming) return true;
-	return false;
 }
 
 /* ++++++++ Animation functions ++++++++ */

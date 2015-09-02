@@ -1,8 +1,8 @@
-/*
+/**
 	Chest
-	Author: Maikel
-
 	Storage for items.
+	
+	@author Maikel
 */
 
 
@@ -21,27 +21,12 @@ protected func Construction()
 /*-- Contents --*/
 
 public func IsContainer() { return true; }
-public func IsInteractable() { return true; }
 
 private func MaxContentsCount()
 {
 	return 50;
 }
 
-public func GetInteractionMetaInfo(object clonk, int num)
-{
-	if (!is_open) 
-		return { Description = "$MsgOpen$" };
-	return { Description = "$MsgClose$" };
-}
-
-// Open contentsmenu via interaction
-public func Interact(object clonk, int mode)
-{
-	// Interaction does the same as the content control.
-	clonk->ObjectControl(clonk->GetOwner(), CON_Contents);
-}
-	
 protected func RejectCollect()
 {
 	if (ContentsCount() >= this->MaxContentsCount())
@@ -53,7 +38,6 @@ public func OnContentMenuOpened()
 {
 	return Open();
 }
-
 
 public func OnContentMenuClosed()
 {

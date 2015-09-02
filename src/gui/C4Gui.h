@@ -378,8 +378,7 @@ namespace C4GUI
 		bool fDragging;         // if set, mouse is down on component and dragging enabled
 		ContextHandler *pContextHandler; // context handler to be called upon context menu request
 	public:
-		bool fVisible;          // if false, component (and subcomponents) are not drawn
-
+		bool fVisible; // if false, component (and subcomponents) are not drawn
 	protected:
 		C4Rect rcBounds; // element bounds
 
@@ -748,13 +747,66 @@ namespace C4GUI
 		virtual Element *GetFirstContained() { return pFirst; }
 		virtual Element *GetLastContained() { return pLast; }
 		virtual Element *GetFirstNestedElement(bool fBackwards);
+		
+		class Iterator
+		{
+		private:
+			Element *current;
+		public:
+			Iterator(Element *element = nullptr) : current(element) { }
+
+			Element * operator*() const { return current; }
+			Element * operator->() const { return current; }
+			void operator++() { current = current->GetNext(); };
+			void operator++(int) { operator++(); }
+
+			bool operator==(const Iterator & other) const
+			{
+				return (current == other.current);
+			}
+
+			bool operator!=(const Iterator & other) const
+			{
+				return !(*this == other);
+			}
+		};
+
+		class ReverseIterator
+		{
+		private:
+			Element *current;
+		public:
+			ReverseIterator(Element *element = nullptr) : current(element) { }
+
+			Element * operator*() const { return current; }
+			Element * operator->() const { return current; }
+			void operator++() { current = current->GetPrev(); };
+			void operator++(int) { operator++(); }
+
+			bool operator==(const ReverseIterator & other) const
+			{
+				return (current == other.current);
+			}
+
+			bool operator!=(const ReverseIterator & other) const
+			{
+				return !(*this == other);
+			}
+		};
+		
+		// provide C++-style iterator interface
+		Iterator begin() { return Iterator(pFirst); }
+		Iterator end() { return Iterator(nullptr); }
+		ReverseIterator rbegin() { return ReverseIterator(pLast); }
+		ReverseIterator rend() { return ReverseIterator(nullptr); }
+
 		Element *GetFirst() { return pFirst; }
 		Element *GetLast() { return pLast; }
 		virtual Container *GetContainer() { return this; } // returns parent for elements; this for containers
 		Element *GetElementByIndex(int32_t i); // get indexed child element
 		int32_t GetElementCount();
-		virtual void SetVisibility(bool fToValue);
 
+		virtual void SetVisibility(bool fToValue);
 		virtual bool IsFocused(Control *pCtrl) { return pParent ? pParent->IsFocused(pCtrl) : false; }
 		virtual bool IsSelectedChild(Element *pChild) { return pParent ? pParent->IsSelectedChild(pChild) : true; } // whether the child element is selected - only false for list-box-containers which can have unselected children
 		virtual bool IsParentOf(Element *pEl); // whether this is the parent container (directly or recursively) of the passed element
@@ -817,11 +869,6 @@ namespace C4GUI
 		void Update();       // update scroll bar according to window
 		void OnPosChanged(); // update window according to scroll bar, and/or do callbacks
 
-		// mouse handling
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow dragging of thumb
-		virtual void MouseLeave(CMouse &rMouse);                                     // mouse leaves with button down: reset down state of buttons
-
 		virtual void DrawElement(C4TargetFacet &cgo); // draw scroll bar
 
 		// suppress scrolling pin for very narrow menus
@@ -846,6 +893,11 @@ namespace C4GUI
 		ScrollBar(C4Rect &rcBounds, bool fHorizontal, BaseParCallbackHandler<int32_t> *pCB, int32_t iCBMaxRange=256); // ctor for callback
 		~ScrollBar(); // dtor
 
+		// mouse handling
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow dragging of thumb
+		virtual void MouseLeave(CMouse &rMouse);                                     // mouse leaves with button down: reset down state of buttons
+
 		// change style
 		void SetDecoration(ScrollBarFacets *pToGfx, bool fAutoHide)
 		{ pCustomGfx = pToGfx; this->fAutoHide=fAutoHide; }
@@ -853,6 +905,7 @@ namespace C4GUI
 		void SetScrollPos(int32_t iToPos) { iScrollPos = iToPos * GetMaxScroll() / (iCBMaxRange-1); }
 
 		friend class ScrollWindow;
+		friend class ::C4ScriptGuiWindow;
 	};
 
 	// a window that can be scrolled
@@ -906,7 +959,7 @@ namespace C4GUI
 
 		int32_t GetScrollY() { return iScrollY; }
 
-		void SetScrollBarEnabled(bool fToVal);
+		void SetScrollBarEnabled(bool fToVal, bool noAutomaticPositioning = false);
 		bool IsScrollBarEnabled() { return fHasBar; }
 
 		bool IsScrollingActive() { return fHasBar && pScrollBar && pScrollBar->IsScrolling(); }
@@ -1953,6 +2006,7 @@ namespace C4GUI
 		bool SetFacetByAction(C4Def *pOfDef, class C4TargetFacet &rfctTarget, const char *szFacetName);
 
 	public:
+		C4Def *pSourceDef;
 		C4ID idSourceDef;
 		uint32_t dwBackClr; // background face color
 		C4TargetFacet fctTop, fctTopRight, fctRight, fctBottomRight, fctBottom, fctBottomLeft, fctLeft, fctTopLeft;
@@ -1963,7 +2017,8 @@ namespace C4GUI
 		void Clear(); // zero data
 
 		// create from ActMap and graphics of a definition (does some script callbacks to get parameters)
-		bool SetByDef(C4ID idSourceDef);
+		bool SetByDef(C4Def *pSrcDef);
+		bool SetByDef(C4ID idSourceDef); // a wrapper for the above method
 		bool UpdateGfx(); // update Surface, e.g. after def reload
 
 		void Ref() { ++iRefCount; }

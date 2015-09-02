@@ -6,16 +6,26 @@
 	@author Clonkonaut
 */
 
+// Uses an extra-slot to store and display material.
+#include Library_HasExtraSlot
+
 // Maximum distance at which material is collected / spilled
 local maxreach = 15;
-// Variable to store extracted material
-local in_bucket_mat, in_bucket_amount;
+
+// This is only temporary during drawing. The contents define the actual material & amount;
+local material_amount;
+local material_name;
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
 {
 	return Trans_Mul(Trans_Rotate(90, 0, 1, 0), Trans_Translate(3500, 0, -4000));
+}
+
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction();
 }
 
 public func ControlUse(object clonk, int iX, int iY)
@@ -33,43 +43,38 @@ public func ControlUse(object clonk, int iX, int iY)
 		PlayAnimation(clonk);
 		return true;
 	}
-	
-	// otherwise try to fill bucket
-	if(GBackSolid(x2,y2))
-	{
-		if (clonk->HasHandAction())
-		{
-			var mat = GetMaterial(x2,y2);
 
-			if(GetMaterialVal("DigFree","Material",mat))
-			{
-				Sound("SoftTouch2");
-				var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
-				FillBucket(mat, amount);
-				PlayAnimation(clonk);
-			}
-		}
-	}
 	return true;
+}
+
+public func RejectCollect(id def, object obj)
+{
+	if (!obj->~IsBucketMaterial()) return true;
+	// Can only contain one stackable object.
+	if (Contents() && Contents(0)->~IsStackable()) return true;
+	return false;
 }
 
 public func EmptyBucket()
 {
-	in_bucket_amount = 0;
-	in_bucket_mat = nil;
+	var i = ContentsCount();
+	while (--i >= 0)
+		if (Contents(0)) Contents(0)->RemoveObject();
 	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350));
 }
 
-public func FillBucket(int mat, int amount)
+public func FillBucket()
 {
-	in_bucket_amount = amount;
-	in_bucket_mat = mat;
 	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(20,0,1,0), Trans_Rotate(-15,0,0,1), Trans_Scale(1350));
 }
 
 public func IsBucketFilled()
 {
-	return in_bucket_mat != nil;
+	return ContentsCount();
+}
+public func IsBucketEmpty()
+{
+	return !IsBucketFilled();
 }
 
 /** Creates an imaginary line which runs for 'maxreach' distance (units in pixels) or until it hits a solid wall */
@@ -115,27 +120,36 @@ private func PlayAnimation(object clonk)
 
 private func Spill(int x, int y, bool soft_spill)
 {
+	var obj = Contents(0);
+	if (!obj) return;
+	material_name = obj->GetMaterialName();
+	material_amount = obj->GetMaterialAmount();
+	var stack_count = obj->~GetStackCount();
+	if (stack_count > 1) material_amount *= stack_count;
+	
 	// This will only spray out the material because no solid base to stick it on was found
 	if (soft_spill)
 	{
 		var angle = Angle(0,0, x,y);
-		CastPXS(MaterialName(in_bucket_mat), in_bucket_amount, 20, 0,0, angle, 15);
+		CastPXS(material_name, material_amount, 20, 0,0, angle, 15);
 		return;
 	}
-
+	
+	// Store as property. This is solely done so that we don't have to pass it as a parameter everywhere.
+	
 	for (var i = 0; i < 5; i++)
 	{
 		// Fix some holes
 		if (i == 1)
 		{
 			DrawPixel(GetX()+x-1, GetY()+y-1);
-			if (!in_bucket_amount) break;
+			if (!material_amount) break;
 			DrawPixel(GetX()+x+1, GetY()+y-1);
-			if (!in_bucket_amount) break;
+			if (!material_amount) break;
 			DrawPixel(GetX()+x-1, GetY()+y+1);
-			if (!in_bucket_amount) break;
+			if (!material_amount) break;
 			DrawPixel(GetX()+x+1, GetY()+y+1);
-			if (!in_bucket_amount) break;
+			if (!material_amount) break;
 		}
 		if (!DrawCircle(GetX()+x,GetY()+y,i))
 			break;
@@ -153,13 +167,13 @@ private func DrawCircle(int x0, int y0, int radius)
 	var y = radius;
 
 	DrawPixel(x0, y0 + radius);
-	if (!in_bucket_amount) return false;
+	if (!material_amount) return false;
 	DrawPixel(x0, y0 - radius);
-	if (!in_bucket_amount) return false;
+	if (!material_amount) return false;
 	DrawPixel(x0 + radius, y0);
-	if (!in_bucket_amount) return false;
+	if (!material_amount) return false;
 	DrawPixel(x0 - radius, y0);
-	if (!in_bucket_amount) return false;
+	if (!material_amount) return false;
 
 	while(x < y)
 	{
@@ -173,21 +187,21 @@ private func DrawCircle(int x0, int y0, int radius)
 		ddF_x += 2;
 		f += ddF_x;
 		DrawPixel(x0 + x, y0 + y);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 - x, y0 + y);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 + x, y0 - y);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 - x, y0 - y);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 + y, y0 + x);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 - y, y0 + x);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 + y, y0 - x);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 		DrawPixel(x0 - y, y0 - x);
-		if (!in_bucket_amount) return false;
+		if (!material_amount) return false;
 	}
 
 	return true;
@@ -198,8 +212,8 @@ private func DrawPixel(int x, int y)
 	// Don't overwrite solid material
 	if (GBackSolid(AbsX(x), AbsY(y))) return;
 
-	DrawMaterialQuad(MaterialName(in_bucket_mat), x,y, x+1,y, x+1,y+1, x,y+1, true);
-	in_bucket_amount--;
+	DrawMaterialQuad(material_name, x,y, x+1,y, x+1,y+1, x,y+1, true);
+	material_amount--;
 }
 
 protected func Hit()
@@ -207,38 +221,16 @@ protected func Hit()
 	Sound("DullWoodHit?");
 }
 
-// Production stuff (for loam)
-public func IsMaterialContainer() { return true; }
-public func GetContainedMaterial() { return MaterialName(in_bucket_mat); }
-public func RemoveContainedMaterial(string material, int amount)
-{
-	if (material != MaterialName(in_bucket_mat)) return 0;
-	if (amount > in_bucket_amount)
-	{
-		var ret = in_bucket_amount;
-		in_bucket_amount = 0;
-		in_bucket_mat = nil;
-		return ret;
-	}
-	in_bucket_amount -= amount;
-	return amount;
-}
-public func GetFillLevel() { return in_bucket_amount; }
 
+// Can collect IsBucketMaterial?
+public func IsBucket() { return true; }
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
-public func SetFilled(string mat, int amount)
-{
-	in_bucket_mat = mat;
-	in_bucket_amount = amount;
-	return true;
-}
 
 public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	if (in_bucket_mat) props->AddCall("Fill", this, "SetFilled", Format("%v", in_bucket_mat), in_bucket_amount);
 	return true;
 }
 

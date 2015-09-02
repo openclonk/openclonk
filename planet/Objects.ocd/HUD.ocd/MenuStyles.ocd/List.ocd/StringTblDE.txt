@@ -1,0 +1,2 @@
+Name=Liste
+Description=Ein einfaches Listenmenü.

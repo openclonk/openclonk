@@ -1,0 +1,14 @@
+HitPoints=Hit Points
+NoFlag=No flag pole in range
+Indestructible=Indestructible
+
+Invincible=The structure is invincible.
+Damage=Damage
+NotDamaged=Not damaged.
+SlightlyDamaged=Lightly damaged.
+HeavilyDamaged=Heavily damaged.
+Repair=Repair
+RepairRequires=Repairing requires a hammer and the following materials:|
+NoRepairNecessary=Repairing is not necessary at the moment.|If the structure is damaged, you can find a list of required materials here.
+YouNeedAHammer=You need a hammer.
+YouNeedMaterials=You need some of the required materials to repair this structure.

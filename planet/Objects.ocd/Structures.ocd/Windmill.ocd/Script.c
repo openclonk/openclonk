@@ -121,13 +121,6 @@ private func IsProduct(id product_id)
 
 private func ProductionTime(id toProduce) { return 290; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	if (rawmat_id == Seeds)
-		return true;
-	return false;
-}
-
 public func OnProductionStart(id product)
 {
 	AddEffect("InProduction", this, 100, 10, this);

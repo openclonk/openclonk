@@ -38,11 +38,13 @@ private func Hit(x, y)
 
 static const Pickaxe_SwingTime = 40;
 
+public func RejectUse(object clonk)
+{
+	return clonk->GetProcedure() != "WALK";
+}
+
 func ControlUseStart(object clonk, int ix, int iy)
 {
-	// Can clonk use pickaxe?
-	if (clonk->GetProcedure() != "WALK")
-		return true;
 	using = 1;
 	// Create an offset, so that the hit matches with the animation
 	swingtime = Pickaxe_SwingTime*1/38;
@@ -62,7 +64,7 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 	// Can clonk use pickaxe?
 	if (clonk->GetProcedure() != "WALK")
 	{
-		clonk->CancelUse();
+		clonk->PauseUse(this);
 		return true;
 	}
 

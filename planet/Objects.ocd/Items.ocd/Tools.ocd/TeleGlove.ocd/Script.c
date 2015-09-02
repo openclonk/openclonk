@@ -37,17 +37,15 @@ public func GetCarryTransform()
 
 protected func HoldingEnabled() { return true; }
 
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction() || !(clonk->IsWalking() || clonk->IsJumping());
+}
+
 protected func ControlUseStart(object clonk, ix, iy)
 {
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction() || (!clonk->IsWalking() && !clonk->IsJumping()))
-	return true;
-	else
-	{
-		StartUsage(clonk);
-		UpdateGloveAngle(clonk, ix, iy);
-	}
-
+	StartUsage(clonk);
+	UpdateGloveAngle(clonk, ix, iy);
 	return 1;
 }
 

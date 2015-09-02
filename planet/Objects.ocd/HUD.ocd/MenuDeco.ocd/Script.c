@@ -1,10 +1,10 @@
 /*-- Menu-Deco --*/
 
 func FrameDecorationBackClr() { return RGBa(0,0,0,128); }
-func FrameDecorationBorderTop()     { return 16; }
-func FrameDecorationBorderLeft()    { return 16; }
-func FrameDecorationBorderRight()   { return 16; }
-func FrameDecorationBorderBottom()  { return 16; }
+func FrameDecorationBorderTop()     { return 15; }
+func FrameDecorationBorderLeft()    { return 15; }
+func FrameDecorationBorderRight()   { return 15; }
+func FrameDecorationBorderBottom()  { return 15; }
 
 func Definition(def) 
 {

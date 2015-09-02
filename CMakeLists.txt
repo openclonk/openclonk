@@ -261,11 +261,13 @@ set(OC_CLONK_SOURCES
 	src/gui/C4Gui.cpp
 	src/gui/C4GuiDialogs.cpp
 	src/gui/C4GuiEdit.cpp
+	src/gui/C4ScriptGuiWindow.cpp
 	src/gui/C4Gui.h
 	src/gui/C4GuiLabels.cpp
 	src/gui/C4GuiListBox.cpp
 	src/gui/C4GuiMenu.cpp
 	src/gui/C4GuiTabular.cpp
+	src/gui/C4ScriptGuiWindow.cpp
 	src/gui/C4KeyboardInput.cpp
 	src/gui/C4KeyboardInput.h
 	src/gui/C4LoaderScreen.cpp

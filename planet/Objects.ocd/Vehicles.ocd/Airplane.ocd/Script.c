@@ -10,7 +10,6 @@ local rdir;
 local thrust;
 local dir;
 local propanim;
-local reticle;
 local health;
 local clonkmesh;
 
@@ -34,63 +33,163 @@ protected func Initialize()
 	return;
 }
 
-/*-- Control --*/
-
-public func ContainedUseStart(object clonk, int ix, int iy)
+protected func RejectCollect(id def, object obj)
 {
-	if(!clonk->FindContents(LeadShot))
+	// Only accept munition and clonks.
+	if (def != LeadShot && def != Boompack && !(obj->GetOCF() & OCF_CrewMember))
+		return true;
+	return false;
+}
+
+
+/*-- Control: Fire Bullets --*/
+
+public func ContainedUseStart(object clonk, int x, int y)
+{
+	//return ContainedUseAltStart(clonk, x, y);
+	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	if (!ammo)
 	{
-		CustomMessage("$NoShots$",this,clonk->GetOwner());
-		return 1;
+		CustomMessage("$NoShots$", this, clonk->GetOwner());
+		return true;
 	}
-	else
+	AddEffect("FireBullets", this, 100, 12, this);
+	return true;
+}
+
+protected func FxFireBulletsStart(object target, proplist effect, int temp)
+{
+	if (temp)
+		return FX_OK;
+	effect.reticle = CreateObject(GUI_Reticle);
+	effect.reticle->SetOwner(this->GetController());
+	effect.reticle->SetAction("Show", this);
+	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	if (!ammo)
+		return FX_Execute_Kill;
+	FireBullet(ammo);
+	return FX_OK;		
+}
+
+protected func FxFireBulletsTimer(object target, proplist effect, int time)
+{
+	var ammo = FindObject(Find_Container(this), Find_Func("IsMusketAmmo"));
+	if (!ammo)
+		return FX_Execute_Kill;
+	FireBullet(ammo);
+	return FX_OK;
+}
+
+protected func FxFireBulletsStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	if (effect.reticle)
+		effect.reticle->RemoveObject();
+	return FX_OK;		
+}
+
+private func FireBullet(object ammo)
+{
+	var shot = ammo->TakeObject();
+	var angle = this->GetR();
+	shot->Launch(this, angle, 35, 200);
+	Sound("GunShoot?");
+
+	// Muzzle Flash & gun smoke
+	var IX = Sin(GetR(), 30);
+	var IY = -Cos(GetR(), 30);
+
+	var x = Sin(angle, 20);
+	var y = -Cos(angle, 20);
+	CreateParticle("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+	
+	CreateMuzzleFlash(IX, IY, angle, 20);
+	CreateParticle("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
+	return;
+}
+
+public func ContainedUseStop(object clonk, int x, int y)
+{
+	//return ContainedUseAltStop(clonk, x, y);
+	if (GetEffect("FireBullets", this))
+		RemoveEffect("FireBullets", this);
+	return true;
+}
+
+public func ContainedUseCancel(object clonk, int x, int y)
+{
+	//return ContainedUseAltCancel(clonk, x, y);
+	if (GetEffect("FireBullets", this))
+		RemoveEffect("FireBullets", this);
+	return true;
+}
+
+
+/*-- Control: Fire Rockets --*/
+
+public func ContainedUseAltStart(object clonk, int x, int y)
+{
+	var rocket = FindObject(Find_Container(this), Find_ID(Boompack));
+	if (!rocket)
 	{
-		reticle = CreateObjectAbove(GUI_Reticle);
-		reticle->SetOwner(clonk->GetController());
-		reticle->SetAction("Show", this);
+		CustomMessage("$NoRockets$", this, clonk->GetOwner());
+		return true;
 	}
-	return 1;
+	return true;
 }
 
-public func ContainedUseStop(object clonk, int ix, int iy)
+public func ContainedUseAltStop(object clonk, int x, int y)
 {
-	if(reticle) reticle->RemoveObject();
-
-	var ammo = FindObject(Find_Container(clonk),Find_Func("IsMusketAmmo"));
-	if(GetEffect("IntCooldown",this)) return 1;
-	if(ammo)
+	var rocket = FindObject(Find_Container(this), Find_ID(Boompack));
+	if (!rocket)
 	{
-		var shot = ammo->TakeObject();
-		var angle = this->GetR();
-		shot->Launch(clonk, angle, 35, 200);
-		Sound("GunShoot?");
-
-		// Muzzle Flash & gun smoke
-		var IX = Sin(GetR(), 30);
-		var IY = -Cos(GetR(), 30);
-
-		var x = Sin(angle, 20);
-		var y = -Cos(angle, 20);
-		CreateParticle("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
-		
-		CreateMuzzleFlash(IX, IY, angle, 20);
-		CreateParticle("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
-
-		AddEffect("IntCooldown", this,1,1,this);
+		CustomMessage("$NoRockets$", this, clonk->GetOwner());
+		return true;
 	}
-	return 1;
+	FireRocket(rocket, x, y);
+	return true;
 }
 
-public func ContainedUseCancel(object clonk, int ix, int iy)
+public func ContainedUseAltCancel(object clonk, int x, int y)
 {
-	if(reticle) reticle->RemoveObject();
-	return 1;
+	return true;
 }
 
-public func FxIntCooldownTimer(object target, effect, int timer)
+private func FireRocket(object rocket, int x, int y)
 {
-	if(timer > 50) return -1;
+	var launch_x = Cos(GetR() - 180 * (1 - dir), 10);
+	var launch_y = Sin(GetR() - 180 * (1 - dir), 10);
+	rocket->Exit(launch_x, launch_y, GetR(), GetXDir(), GetYDir());
+	rocket->Launch(GetR());
+	var effect = AddEffect("IntControlRocket", rocket, 100, 1, this);
+	effect.x = GetX() + x;
+	effect.y = GetY() + y;
+	rocket->SetDirectionDeviation(0);
+	return;
 }
+
+protected func FxIntControlRocketTimer(object target, proplist effect, int time)
+{
+	// Remove gravity on rocket.
+	target->SetYDir(target->GetYDir(100) - GetGravity(), 100);
+	// Adjust angle to target.
+	var angle_to_target = Angle(target->GetX(), target->GetY(), effect.x, effect.y);
+	var angle_rocket = target->GetR();
+	if (angle_rocket < 0)
+		angle_rocket += 360;
+	var angle_delta = angle_rocket - angle_to_target;
+	if (Inside(angle_delta, -3, 3))
+		return FX_OK;
+	if (Inside(angle_delta, 0, 180) || Inside(angle_delta, -360, -180))
+		target->SetR(target->GetR() - 5);
+	else if (Inside(angle_delta, -180, 0) || Inside(angle_delta, 180, 360))
+		target->SetR(target->GetR() + 5);
+	return FX_OK;
+}
+
+
+/*-- Control: Movement --*/
 
 public func ContainedUp(object clonk)
 {
@@ -182,10 +281,10 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 	//--Ailerons--
 		//clockwise
 		if(rdir == 1)
-			if(GetRDir() < 5) SetRDir(GetRDir() + 1);
+			if(GetRDir() < 5) SetRDir(GetRDir() + 3);
 		//counter-clockwise
 		if(rdir == -1)
-			if(GetRDir() > -5) SetRDir(GetRDir() - 1);
+			if(GetRDir() > -5) SetRDir(GetRDir() - 3);
 		if(rdir == 0) SetRDir();
 
 		//Roll plane to movement direction
@@ -249,14 +348,6 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 	//Pilot, but no mesh? In case they are scripted into the plane.
 	if(FindContents(Clonk) && !clonkmesh)
 		PlaneMount(FindContents(Clonk));
-
-	//Gun Sights
-	if(reticle)
-	{
-		var retcol = RGB(0,255,0);
-		if(GetEffect("IntCooldown",this)) retcol = RGB(255,0,0);
-		reticle->SetClrModulation(retcol);
-	}
 }
 
 local newrot;
@@ -403,6 +494,8 @@ private func SetPropellerSound(int speed)
 }
 
 /* Properties */
+
+public func IsContainer() { return true; }
 
 func IsShipyardProduct() { return true; }
 

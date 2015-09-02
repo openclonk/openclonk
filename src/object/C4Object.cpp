@@ -173,7 +173,6 @@ void C4Object::Default()
 	Controller=NO_OWNER;
 	LastEnergyLossCausePlayer=NO_OWNER;
 	Category=0;
-	NoCollectDelay=0;
 	Con=0;
 	Mass=OwnMass=0;
 	Damage=0;
@@ -824,7 +823,6 @@ void C4Object::SetOCF()
 	if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
 		if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
 			if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
-				if (NoCollectDelay==0)
 					OCF|=OCF_Collection;
 	// OCF_Alive
 	if (Alive) OCF|=OCF_Alive;
@@ -905,7 +903,6 @@ void C4Object::UpdateOCF()
 	if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
 		if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
 			if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
-				if (NoCollectDelay==0)
 					OCF|=OCF_Collection;
 	// OCF_NotContained
 	if (!Contained)
@@ -2269,7 +2266,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Plane,                            "Plane",              0                 ));
 
 	pComp->Value(mkNamingAdapt( iLastAttachMovementFrame,         "LastSolidAtchFrame", -1                ));
-	pComp->Value(mkNamingAdapt( NoCollectDelay,                   "NoCollectDelay",     0                 ));
 	pComp->Value(mkNamingAdapt( Con,                              "Size",               0                 ));
 	pComp->Value(mkNamingAdapt( OwnMass,                          "OwnMass",            0                 ));
 	pComp->Value(mkNamingAdapt( Mass,                             "Mass",               0                 ));
@@ -2733,8 +2729,6 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
                           C4Object *pTarget2, bool fControl, C4Value iData,
                           int32_t iRetries, C4String *szText)
 {
-	// Decrease NoCollectDelay
-	if (NoCollectDelay>0) NoCollectDelay--;
 	// Clear stack
 	ClearCommands();
 	// Close menu

@@ -2,8 +2,10 @@
 	Structure Library
 	Basic library for structures, handles:
 	* Damage
+	* Info dialogue
 	* Energy bar if rule active
 	* Basements
+	* Value
 	
 	@author Maikel
 */
@@ -19,11 +21,25 @@ protected func Initialize()
 	if (lib_structure == nil)
 		lib_structure = {};
 	lib_structure.basement = nil;
+	// This contains a list of materials that are needed for repairing damage. (proplist with {id, count})
+	lib_structure.repair_materials = [];
+	// Total value of the components - used to calculate the required material for repairing.
+	lib_structure.total_component_value = nil;
 	// Add energy bars if the rule is active.
 	if (FindObject(Find_ID(Rule_StructureHPBars)))
 		if (this.HitPoints != nil)
 			AddEnergyBar();
 	return _inherited(...);
+}
+
+public func GetHitPoints()
+{
+	return this.HitPoints;
+}
+
+public func GetRemainingHitPoints()
+{
+	return this.HitPoints - GetDamage();
 }
 
 public func Damage(int change, int cause, int cause_plr)
@@ -53,3 +69,274 @@ public func SetBasement(object to_basement)
 public func GetBasement() { return lib_structure.basement; }
 
 public func IsStructureWithoutBasement() { return IsStructure() && !lib_structure.basement; }
+
+
+/*-- Value --*/
+
+public func CalcDefValue()
+{
+	var value = 0;
+	var comp, index = 0;
+	while (comp = GetComponent(nil, index++, nil, this))
+	{
+		var comp_value = comp->GetValue();
+		var comp_amount = GetComponent(comp, nil, nil, this);
+		value += comp_value * comp_amount;
+	}
+	return value;
+}
+
+/* Repair Materials */
+
+// Adds one unit of a material to the internal repair list.
+public func AddRepairMaterial(id material_id)
+{
+	// Sort into list of already contained
+	for (var old_material in lib_structure.repair_materials)
+	{
+		if (old_material.id == material_id)
+		{
+			old_material.count += 1;
+			return true;
+		}
+	}
+	
+	// New material?
+	PushBack(lib_structure.repair_materials, {id = material_id, count = 1});
+	return true;
+}
+
+// Calculates and caches the total component value.
+private func GetTotalComponentValue()
+{
+	if (lib_structure.total_component_value == nil)
+	{
+		lib_structure.total_component_value = 0;
+		
+		var component, i = 0;
+		while (component = GetComponent(nil, i++))
+		{
+			var count = GetComponent(component);
+			lib_structure.total_component_value += count * component->GetValue();
+		}
+	}
+	return lib_structure.total_component_value;
+}
+
+// Returns all materials that are currently needed to repair the structure fully.
+public func GetRepairMaterials()
+{
+	// Safety.
+	if (!GetComponent()) return [];
+	
+	var damage = GetDamage();
+	
+	// Reset repair materials if structure was magically repaired to 100%.
+	if (damage <= 0)
+	{
+		lib_structure.repair_materials = [];
+		return [];
+	}
+	
+	// Otherwise, figure out materials that could be used to repair the structure.
+	
+	// Initialize total component value (calculate only once for speed).
+	var total_component_value = GetTotalComponentValue();
+	
+	// Check if the material list already contains enough materials to repair all the damage.
+	var material_value = 0;
+	for (var material in lib_structure.repair_materials)
+	{
+		material_value += material.count * material.id->GetValue();
+	}
+	
+	var remaining_damage_value = total_component_value * GetDamage() / GetHitPoints() - material_value;
+	if (remaining_damage_value <= 0)
+	{
+		return lib_structure.repair_materials;
+	}
+	
+	// Otherwise, we need to fill the remaining space with additional materials.
+	while (remaining_damage_value > 0)
+	{
+		// Do a random sample of components weighted by value and amount.
+		var random_sample = Random(total_component_value);
+		
+		var current_offset = 0;
+		var component, i = 0;
+		while (component = GetComponent(nil, i++))
+		{
+			var count = GetComponent(component);
+			var value = component->GetValue();
+			var weight = count * value;
+			current_offset += weight;
+			
+			if (random_sample <= current_offset)
+			{
+				remaining_damage_value -= value;
+				AddRepairMaterial(component);
+				break;
+			}
+		}
+	}
+	
+	return lib_structure.repair_materials;
+}
+
+/*-- Interaction --*/
+
+// Show damage and allow a player to repair the building when damaged.
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited() ?? [];		
+	var damage_menu =
+	{
+		title = "$Damage$",
+		entries_callback = this.GetDamageMenuEntries,
+		callback = "OnRepairSelected",
+		callback_hover = "OnRepairMenuHover",
+		callback_target = this,
+		BackgroundColor = RGB(75, 50, 0),
+		Priority = 90
+	};
+	PushBack(menus, damage_menu);
+	return menus;
+}
+
+// Returns the contents of the "damage" section in the interaction menu.
+public func GetDamageMenuEntries()
+{
+	var is_invincible = this.HitPoints == nil;
+	var damage_text = "$Invincible$";
+	var color = RGB(0, 150, 0);
+	
+	if (!is_invincible)
+	{
+		if (GetDamage() == 0) damage_text = "$NotDamaged$";
+		else if (GetDamage() < this.HitPoints / 2)
+		{
+			damage_text = "$SlightlyDamaged$";
+			color = RGB(200, 150, 0);
+		}
+		else
+		{
+			damage_text = "<c ff0000>$HeavilyDamaged$</c>";
+			color = RGB(150, 0, 0);
+		}
+	}
+	
+	var menu = 
+	{
+		Bottom = "4em",
+		right =
+		{
+			Left = "4em",
+			Right = "100% - 1em",
+			bottom = {Top = "50%", Margin = "0.2em", BackgroundColor = RGB(0, 0, 0)},
+			top = {Text = damage_text, Style = GUI_TextHCenter}
+		},
+		symbol = 
+		{
+			Right = "4em",
+			Symbol = Hammer
+		}
+	};
+	if (!is_invincible)
+	{
+		// Show HitPoints.
+		var percent = Format("%d%%", 100 * GetRemainingHitPoints() / GetHitPoints());
+		menu.right.bottom.fill = {BackgroundColor = color, Right = percent, Margin = "0.1em"};
+		
+		if (GetDamage() == 0)
+		{
+			// Cross out hammer symbol.
+			menu.symbol.overlay = {Margin = "0.5em", Symbol = Icon_Cancel};
+		}
+	}
+	
+	return [{symbol = Hammer, extra_data = "repair", custom = menu}];
+}
+
+public func OnRepairSelected(id symbol, string action, object cursor)
+{
+	// Repairing requires a hammer or something alike.
+	var hammer = FindObject(Find_Container(cursor), Find_Func("IsConstructor"));
+	
+	if (!hammer)
+	{
+		PlayerMessage(cursor->GetOwner(), "$YouNeedAHammer$");
+		Sound("Click2", nil, nil, cursor->GetOwner());
+		return;
+	}
+	
+	// Check whether some of the required material can be found in the Clonk or the structure.
+	var materials = GetRepairMaterials();
+	var total_repair_value = 0;
+	
+	for (var material in materials)
+	{
+		while (material.count > 0)
+		{
+			var real_material = FindObject(Find_Or(Find_Container(this), Find_Container(cursor)), Find_ID(material.id));
+			if (!real_material) break;
+			
+			var repair_value = real_material->GetValue();
+			total_repair_value += repair_value;
+			real_material->RemoveObject();
+			material.count -= 1;
+		}
+	}
+	
+	if (total_repair_value == 0)
+	{
+		PlayerMessage(cursor->GetOwner(), "$YouNeedMaterials$");
+		Sound("Click2", nil, nil, cursor->GetOwner());
+		return;
+	}
+	
+	// Now repair based on the value fraction. Round up - rather be nice to the player.
+	var total_component_value = GetTotalComponentValue();
+	var total_damage_repaired = GetHitPoints() * total_repair_value / total_component_value + 1;
+	DoDamage(-total_damage_repaired);
+	UpdateInteractionMenus(this.GetDamageMenuEntries);
+	
+	// Clean up the material list and remove nil entries.
+	var new_list = [];
+	for (var material in lib_structure.repair_materials)
+	{
+		if (material.count > 0)
+			PushBack(new_list, material);
+	}
+	lib_structure.repair_materials = new_list;
+	
+	// todo: add sound for repairing..
+	Sound("Ding");
+}
+
+// On hovering, show a list of materials that are needed for repairing the structure.
+public func OnRepairMenuHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	var text = "$NoRepairNecessary$";
+	
+	if (GetDamage() > 0)
+	{
+		var materials = GetRepairMaterials();
+		text = "$RepairRequires$";
+		
+		var first = true;
+		for (var material in materials)
+		{
+			if (first)
+			{
+				text = Format("%s %dx%s ({{%i}})", text, material.count, material.id->GetName(), material.id);
+				first = false;
+			}
+			else
+			{
+				text = Format("%s, %dx%s ({{%i}})", text, material.count, material.id->GetName(), material.id);
+			}
+		}
+	}
+	
+	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}

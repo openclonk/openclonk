@@ -1,6 +1,9 @@
 ﻿SET_WASD_QWERTZ=Tastatur und Maus
 SET_Gamepad=Gamepad
 
+CON_Roll=Abrollen
+CON_Roll_Desc=Eine Vorwärtsrolle machen.
+
 CON_Jump=Springen
 CON_Jump_Desc=Im Laufen abspringen, aus dem Wasser springen oder sich von einer Wand abstoßen.
 
@@ -9,11 +12,12 @@ CON_AimAxisRight=Zielen - Rechts (Analog Stick)
 CON_AimAxisUp=Zielen - Hoch (Analog Stick)
 CON_AimAxisDown=Zielen - Runter (Analog Stick)
 
-CON_Throw=Werfen
-CON_Throw_Desc=Werfen des Gegenstandes in der Hand in die anvisierte Richtung.
-CON_ThrowAlt=Werfen (andere Hand)
-CON_ThrowAlt_Desc=Werfen des Gegenstandes in der anderen Hand in die anvisierte Richtung.
-
+CON_QuickSwitch=Schnellwechsel
+CON_QuickSwitch_Desc=Das zuletzt angewählte Inventarobjekt auswählen.
+CON_InventoryShiftForward=Nächstes Item
+CON_InventoryShiftForward_Desc=Wählt das nächste Item im Inventar aus.
+CON_InventoryShiftBackward=Letztes Item
+CON_InventoryShiftBackward_Desc=Wählt das vorherige Item im Inventar aus.
 CON_Drop=Ablegen
 CON_Drop_Desc=Ablegen des Gegenstandes in der Hand.
 CON_DropAlt=Ablegen (andere Hand)
@@ -21,8 +25,13 @@ CON_DropAlt_Desc=Ablegen des Gegenstandes in der anderen Hand.
 
 CON_Use=Benutzen
 CON_Use_Desc=Benutzen des Gegenstandes in der Hand.
-CON_UseAlt=Benutzen (andere Hand)
-CON_UseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand.
+CON_Throw=Werfen
+CON_Throw_Desc=Werfen des Gegenstandes in der Hand in die anvisierte Richtung.
+CON_UseAlt=Use
+CON_UseAlt_Desc=Use the item in the hand alternatively.
+
+CON_PickUp=Aufheben
+CON_PickUp_Desc=Hebt ein Objekt in der Nähe auf.
 
 CON_Hotkey1=Hotkey 1
 CON_Hotkey2=Hotkey 2
@@ -61,15 +70,17 @@ CON_ZoomOut_Desc=Aus der Spielwelt herauszoomen um eine Übersicht zu bekommen.
 
 # -- Assignment specific strings
 
-KEY_MouseUse=Benutzen / Werfen
-KEY_MouseUse_Desc=Benutzen des Gegenstandes in der Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen in die Richtung geworfen in die der Cursor zeigt.
-KEY_MouseUseAlt=Benutzen / Werfen (andere Hand)
-KEY_MouseUseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen in die Richtung geworfen in die der Cursor zeigt.
+KEY_MouseUse=Benutzen
+KEY_MouseUse_Desc=Benutzen des Gegenstandes in der Hand. 
+
+KEY_MouseThrow=Werfen
+KEY_MouseThrow_Desc=Werfen des Gegenstandes in der Hand.
+
+KEY_MouseUseAlt=Use Alt
+KEY_MouseUseAlt_Desc=Secondary use.
 
 KEY_GamepadUse=Benutzen / Werfen
 KEY_GamepadUse_Desc=Benutzen des Gegenstandes in der Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen bei Loslassen der Taste in die Richtung geworfen in die mit dem Analog Stick gezielt wird.
-KEY_GamepadUseAlt=Benutzen / Werfen (andere Hand)
-KEY_GamepadUseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen bei Loslassen der Taste in die Richtung geworfen in die mit dem Analog Stick gezielt wird.
 
 KEY_Left=Links
 KEY_Left_Desc=Nach links laufen, schwimmen, hangeln oder sich nach links von einer Wand abstoßen. Beim Klettern links an einer Wand kann hiermit ein Gegenstand aufgenommen werden der in der Wand steckt.

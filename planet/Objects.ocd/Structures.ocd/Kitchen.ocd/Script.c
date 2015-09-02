@@ -25,13 +25,6 @@ func IsProduct(id product_id)
 private func ProductionTime(id toProduce) { return 500; }
 public func PowerNeed() { return 0; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	if (rawmat_id->~IsFuel() || rawmat_id == Flour)
-		return true;
-	return false;
-}
-
 public func OnProductionStart(id product)
 {
 	AddEffect("Working", this, 100, 1, this);

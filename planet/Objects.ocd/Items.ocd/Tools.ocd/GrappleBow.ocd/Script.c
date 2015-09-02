@@ -96,10 +96,17 @@ protected func Departure()
 
 public func GetAnimationSet() { return animation_set; }
 
-public func ControlUseStart(object clonk, int x, int y)
+func RejectUse(object clonk)
 {
 	// Burned?
-	if (GetCon()<100) return false;
+	if (GetCon()<100) return true;
+	// able to cut the hook?
+	if(hook->Contained() != this) return false;
+	return !clonk->HasHandAction();
+}
+
+public func ControlUseStart(object clonk, int x, int y)
+{
 	// Cut rope, or otherwise remove helper object.
 	EnsureHook();
 	if (hook->Contained() != this)
@@ -115,12 +122,6 @@ public func ControlUseStart(object clonk, int x, int y)
 		{
 			hook->Enter(this);
 		}
-	}
-
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-	{
-		return true;
 	}
 
 	// Start aiming
@@ -185,18 +186,6 @@ public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming();
 	return true;
-}
-
-public func OnPauseAim(object clonk)
-{
-	Reset(clonk);
-}
-
-public func OnRestartAim(object clonk)
-{
-	ControlUseStart(clonk);
-	if(fAiming) return true;
-	return false;
 }
 
 /* Destroyed by fire? Make it visible. */

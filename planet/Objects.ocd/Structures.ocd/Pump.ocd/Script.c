@@ -49,51 +49,93 @@ func Initialize()
 
 /*-- Interaction --*/
 
-public func IsInteractable() { return GetCon() >= 100; }
-
-public func GetInteractionCount() 
+public func GetPumpControlMenuEntries(object clonk)
 {
-	var cnt = 1;
+	var menu_entries = [];
+	// default design of a control menu item
+	var custom_entry = 
+	{
+		Right = "100%", Bottom = "4em",
+		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		image = {Right = "4em"},
+		text = {Left = "4em"}
+	};
+	
+	if (!switched_on)
+		PushBack(menu_entries, {symbol = Icon_Play, extra_data = "on", 
+			custom =
+			{
+				Prototype = custom_entry,
+				Priority = 1,
+				text = {Prototype = custom_entry.text, Text = "$MsgTurnOn$"},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Play}
+			}});
+	else
+		PushBack(menu_entries, {symbol = Icon_Stop, extra_data = "off", 
+			custom =
+			{
+				Prototype = custom_entry,
+				Priority = 1,
+				text = {Prototype = custom_entry.text, Text = "$MsgTurnOff$"},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Stop}
+			}});
 	if (source_pipe)
-		cnt++;
+		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutsource", 
+			custom =
+			{
+				Prototype = custom_entry,
+				Priority = 2,
+				text = {Prototype = custom_entry.text, Text = "$MsgCutSource$"},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
+			}});
 	if (drain_pipe)
-		cnt++;
-	return cnt;
+		PushBack(menu_entries, {symbol = Icon_Cancel, extra_data = "cutdrain", 
+			custom =
+			{
+				Prototype = custom_entry,
+				Priority = 3,
+				text = {Prototype = custom_entry.text, Text = "$MsgCutDrain$"},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
+			}});
+	return menu_entries;
 }
 
-public func GetInteractionMetaInfo(object clonk, int num)
+public func GetInteractionMenus(object clonk)
 {
-	// Turning on/off.
-	if (num == 0)
+	var menus = _inherited() ?? [];		
+	var prod_menu =
 	{
-		if (switched_on)
-			return { Description = "$MsgTurnOff$", IconName = nil, IconID = Icon_Stop };
-		else
-			return { Description = "$MsgTurnOn$", IconName = nil, IconID = Icon_Play };
-	}
-	// Cutting the source pipe.
-	if (num == 1 && source_pipe)
-		return { Description = "$MsgCutSource$", IconName = nil, IconID = Icon_Cancel };
-	// Cutting the drain pipe.
-	if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
-		return { Description = "$MsgCutDrain$", IconName = nil, IconID = Icon_Cancel };
+		title = "$Control$",
+		entries_callback = this.GetPumpControlMenuEntries,
+		callback = "OnPumpControl",
+		callback_hover = "OnPumpControlHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 50, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
+	return menus;
 }
 
-public func Interact(object clonk, int num)
+public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_id)
 {
-	// Turning on/off.
-	if (num == 0)
-	{
-		switched_on = !switched_on;
-		CheckState();
-	}
-	// Cutting the source pipe.
-	else if (num == 1 && source_pipe)
+	var text = "";
+	if (action == "on") text = "$DescTurnOn$";
+	else if (action == "off") text = "$DescTurnOff$";
+	else if (action == "cutdrain") text = "$DescCutDrain$";
+	else if (action == "cutsource") text = "$DescCutSource$";
+	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}
+
+public func OnPumpControl(id symbol, string action, bool alt)
+{
+	if (action == "on" || action == "off")
+		ToggleOnOff(true);
+	else if (action == "cutsource" && source_pipe)
 		source_pipe->RemoveObject();
-	// Cutting the drain pipe.
-	else if ((num == 2 || (num == 1 && !source_pipe)) && drain_pipe)
+	else if (action == "cutdrain" && drain_pipe)
 		drain_pipe->RemoveObject();
-	return true;
+	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
 }
 
 /*-- Pipe connection --*/
@@ -394,9 +436,16 @@ private func SetState(string act)
 	}
 	// Finally, set the action.
 	SetAction(act);
-	return;
 }
 
+/* Deactivates a running pump or vice-versa. */
+func ToggleOnOff(bool no_menu_refresh)
+{
+	switched_on = !switched_on;
+	CheckState();
+	if (!no_menu_refresh)
+		UpdateInteractionMenus(this.GetPumpControlMenuEntries);
+}
 
 /*-- Properties --*/
 

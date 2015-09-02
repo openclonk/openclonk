@@ -15,6 +15,13 @@ func Hit()
 	Sound("GeneralHit?");
 }
 
+public func RejectUse(object clonk)
+{
+	// Duplicate check from Clonk::Bridge. This was done instead of an additional CanBridge callback in the Clonk because that would most likely stay the only usecase of that callback.
+	var proc = clonk->GetProcedure();
+	return (proc != "WALK") && (proc != "SCALE");
+}
+
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {
@@ -152,9 +159,6 @@ private func LoamDone(object clonk)
 
 public func IsFoundryProduct() { return true; }
 public func GetLiquidNeed() { return ["Water", 60]; }
-public func GetMaterialNeed() { return ["Earth", 25]; }
-
-public func GetMaterialIcon(string mat) { return Earth; }
 
 local Collectible = 1;
 local Name = "$Name$";

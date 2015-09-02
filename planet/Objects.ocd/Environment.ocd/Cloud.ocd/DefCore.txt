@@ -1,7 +1,7 @@
 [DefCore]
 id=Cloud
 Version=6,0
-Category=C4D_Vehicle | C4D_Background
+Category=C4D_Background
 Width=512
 Height=350
 Offset=-256,-175

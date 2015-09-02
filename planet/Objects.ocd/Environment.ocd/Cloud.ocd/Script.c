@@ -7,6 +7,7 @@
 	@authors Ringwaul, Maikel
 */
 
+local Plane = -300;
 
 // Cloud modes: idle, raining, condensing.
 static const CLOUD_ModeIdle = 0;

@@ -44,12 +44,20 @@ public func GetCarrySpecial(clonk)
 	return carry_bone;
 }
 
+func RejectUse(object clonk)
+{
+	return !clonk->IsWalking() && !clonk->IsJumping();
+}
+
+// used by this object
+func ReadyToBeUsed(proplist data)
+{
+	var clonk = data.clonk;
+	return !RejectUse(clonk) && CanStrikeWithWeapon(clonk) && clonk->HasHandAction();
+}
+
 public func ControlUseStart(object clonk, int iX, int iY)
 {
-	// Can clonk use the axe?
-	if (!clonk->IsWalking() && !clonk->IsJumping())
-		return true;
-
 	// find tree that is closest to the clonk's axe when swung
 	var x_offs = 10;
 	if(clonk->GetDir() == DIR_Left) {
@@ -107,11 +115,11 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	}
 
 	// Combat
-	if (!CanStrikeWithWeapon(clonk)) return true;
-
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if (!clonk->HasHandAction())
+	if(!CanStrikeWithWeapon(clonk) || !clonk->HasHandAction())
+	{
+		clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
 		return true;
+	}
 
 	var rand = Random(2)+1;
 	var arm = "R";

@@ -60,15 +60,13 @@ local MuzzleUp; local MuzzleFront; local MuzzleDown; local MuzzleOffset;
 
 protected func HoldingEnabled() { return true; }
 
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction();
+}
+
 func ControlUseStart(object clonk, int x, int y)
 {
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-	{
-		holding = true;
-		return true;
-	}
-
 	// nothing in extraslot?
 	if(!Contents(0))
 	{

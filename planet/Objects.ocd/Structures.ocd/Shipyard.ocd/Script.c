@@ -32,11 +32,6 @@ public func IsProduct(id product_id)
 private func ProductionTime(id toProduce) { return 400; }
 public func PowerNeed() { return 80; }
 
-public func NeedRawMaterial(id rawmat_id)
-{
-	return true;
-}
-
 private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
 {
 	if(effect.paused == true) return 1;

@@ -89,17 +89,30 @@ global func GetPlayerInTeamCount(int team)
 	return count;
 }
 
-// Returns an array of player numbers in the specified team.
-global func GetPlayersInTeam(int team)
+// Returns an array of player numbers of players of the specified type and in the specified team.
+// Set either player_type or team to nil to ignore that constraint.
+global func GetPlayers(int player_type, int team)
 {
 	var plr_list = [];
-	for (var index = 0; index < GetPlayerCount(); index++)
+	for (var index = 0; index < GetPlayerCount(player_type); index++)
 	{
-		var plr = GetPlayerByIndex(index);
-		if (GetPlayerTeam(plr) == team)
+		var plr = GetPlayerByIndex(index, player_type);
+		if (team == nil || GetPlayerTeam(plr) == team)
 			PushBack(plr_list, plr);
 	}
 	return plr_list;
+}
+
+// Returns the player number corresponding to the specified player ID.
+global func GetPlayerByID(int plr_id)
+{
+	for (var index = 0; index < GetPlayerCount(); index++)
+	{
+		var plr = GetPlayerByIndex(index);
+		if (plr_id == GetPlayerID(plr))
+			return plr;
+	}
+	return NO_OWNER;
 }
 
 // Adds value to the account of iPlayer.

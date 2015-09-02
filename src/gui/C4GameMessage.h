@@ -42,7 +42,8 @@ const int32_t C4GM_NoBreak = 1<<0,
               C4GM_DropSpeech = 1<<8, // cut any text after '$'
               C4GM_WidthRel = 1<<9,
               C4GM_XRel     = 1<<10,
-              C4GM_YRel     = 1<<11;
+              C4GM_YRel     = 1<<11,
+              C4GM_Zoom     = 1<<12;
 
 const int32_t C4GM_PositioningFlags = C4GM_Bottom | C4GM_Top | C4GM_Left | C4GM_Right | C4GM_HCenter | C4GM_VCenter;
 
@@ -54,7 +55,7 @@ public:
 	C4GameMessage();
 	~C4GameMessage();
 protected:
-	int32_t X,Y,Wdt;
+	int32_t X, Y, Wdt, Hgt;
 	int32_t Delay;
 	DWORD ColorDw;
 	int32_t Player;

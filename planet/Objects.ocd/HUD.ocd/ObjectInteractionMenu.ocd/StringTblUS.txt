@@ -1,0 +1,10 @@
+Name=ObjectInteractionMenu
+Description=Handles the inventory exchange and general interaction between the player and buildings, vehicles etc.
+
+Contents=Inventory
+Contains=Contains
+
+MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interactions possible at this point.
+MsgHostile=%s belongs to your enemy %s.|No interactions are possible.
+
+MoveAllTo=Put all items into %s

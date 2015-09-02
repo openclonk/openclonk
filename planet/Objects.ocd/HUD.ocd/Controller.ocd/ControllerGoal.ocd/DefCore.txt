@@ -1,0 +1,5 @@
+[DefCore]
+id=GUI_Controller_Goal
+Version=6,0
+Category=C4D_StaticBack
+Picture=0,0,128,128

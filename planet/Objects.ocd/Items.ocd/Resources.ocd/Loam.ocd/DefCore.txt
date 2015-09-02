@@ -10,6 +10,7 @@ Vertices=2
 VertexX=0,0
 VertexY=3,-3
 VertexFriction=40,40
+Components=Earth=2
 Value=5
 Mass=10
 Rotate=1

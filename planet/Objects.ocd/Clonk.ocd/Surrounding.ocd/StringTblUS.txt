@@ -1,0 +1,3 @@
+Name=Surrounding
+Description=Enables you to pick up objects from your surrounding.
+ObjectsAroundYou=Objects Around You

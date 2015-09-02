@@ -1084,7 +1084,6 @@ void C4Command::Get()
 						// Side-move jump
 						cObj->AddCommand(C4CMD_Jump,NULL,Tx._getInt(),Ty);
 						// FIXME: Drop stuff if full here
-						// Need to kill NoCollectDelay after drop...!
 						cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,cObj->GetY(),50);
 					}
 				}

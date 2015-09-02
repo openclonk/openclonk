@@ -1,21 +1,8 @@
 #appendto RelaunchContainer
 
-private func OpenWeaponMenu(object clonk)
+public func OnWeaponSelected(id weapon)
 {
-	if (!menu)
-	{
-		var weapons = WeaponList();
-		if(weapons)
-		{
-			menu = clonk->CreateRingMenu(this, this);
-			for (var weapon in weapons)
-			{
-				if(weapon == Firestone) menu->AddItem(weapon,2);
-				else if(weapon == Dynamite) menu->AddItem(weapon,2);
-				else menu->AddItem(weapon, 1);
-			}
-			menu->Show();
-			menu->SetUncloseable();
-		}
-	}
+	// Two items for special objects.
+	if (weapon == Firestone || weapon == Dynamite) GiveWeapon(weapon);
+	return inherited(weapon, ...);
 }

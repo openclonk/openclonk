@@ -1,2 +1,2 @@
 Name=Erdklumpen
-Description=Kann ausgegraben werden und zerbröckelt zu Erde bei Aufprall.
+Description=Kann nur in einem Eimer transportiert werden.|Kann ausgegraben werden und zerbröckelt bei Aufprall zu Erde.

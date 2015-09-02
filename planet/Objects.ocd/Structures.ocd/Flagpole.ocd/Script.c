@@ -3,11 +3,25 @@
 #include Library_Structure
 #include Library_Flag
 #include Library_GoldSeller
-#include Library_Base // Needed for DuBuy...
+#include Library_Base // Needed for DoBuy...
+
+local ActMap = {
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_FLOAT,
+		NextAction = "Hold",
+	},
+};
 
 protected func Initialize()
 {
-	SetCategory(C4D_StaticBack);
+	// The flag is not supposed to be moved ever, ever.
+	// But setting the category to StaticBack would mess with other things that rely on recognizing buildings by category.
+	// no: SetCategory(C4D_StaticBack);
+	// Thus the flag can now fly.
+	SetAction("Fly");
+	SetComDir(COMD_Stop);
 	return _inherited(...);
 }
 
@@ -21,46 +35,69 @@ public func NoConstructionFlip() { return true; }
 
 /*-- Interaction --*/
 
-public func IsInteractable(object clonk)
+public func GetInteractionMenus(object clonk)
 {
-	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) 
-		return false;
-	if (GetCon() < 100) 
-		return false;
-	return !Hostile(GetOwner(), clonk->GetOwner());	
+	var menus = _inherited() ?? [];
+	// only open the menus if ready
+	if (ObjectCount(Find_ID(Rule_BuyAtFlagpole)))
+	{
+		var buy_menu =
+		{
+			title = "$MsgBuy$",
+			entries_callback = this.GetBuyMenuEntries,
+			callback = "OnBuyMenuSelection",
+			callback_target = this,
+			BackgroundColor = RGB(50, 50, 0),
+			Priority = 20
+		};
+		PushBack(menus, buy_menu);
+	}
+	
+	return menus;
 }
 
-public func GetInteractionMetaInfo(object clonk)
+public func GetBuyMenuEntries(object clonk)
 {
-	return { Description = "$MsgBuy$", IconName = nil, IconID = Library_Base };
-}
-
-public func Interact(object clonk)
-{
-	var menu;
+	// default design of a control menu item
+	var custom_entry = 
+	{
+		Right = "8em", Bottom = "4em",
+		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		image = {Right = "4em", Style = GUI_TextBottom | GUI_TextRight},
+		price = {Left = "4em", Priority = 3}
+	};
+	
+	var wealth = GetWealth(GetOwner()); // Note that the flag owner pays for everything atm. 
+	var menu_entries = [];
 	var i = 0, item, amount;
 	while (item = GetBaseMaterial(GetOwner(), nil, i++))
 	{
 		amount = GetBaseMaterial(GetOwner(), item);
-		// Add even if amount==0
-		if (!menu) menu = clonk->CreateRingMenu(Flagpole, this);
-		if (!menu) return false;
-		menu->AddItem(item, amount, nil);
+		var entry = 
+		{
+			Prototype = custom_entry,
+			image = {Prototype = custom_entry.image},
+			price = {Prototype = custom_entry.price}
+		};
+		entry.image.Symbol = item;
+		entry.image.Text = Format("%dx", amount);
+		var value = GetBuyValue(item);
+		entry.price.Text = Format("<c ffff00>%d{{Icon_Wealth}}</c>", value);
+		entry.Priority = 1000 * value + i; // Order by value and then by BaseMaterial index.
+		if (value > wealth) // If the player can't afford it, the item (except for the price) is overlayed by a greyish color.
+		{
+			entry.overlay = {Priority = 2, BackgroundColor = RGBa(50, 50, 50, 150)};
+		}
+		PushBack(menu_entries, {symbol = item, extra_data = nil, custom = entry});
 	}
-	if (!menu) return false;
-	menu->Show();
-	return true;
+	
+	return menu_entries;
 }
 
-public func Selected(object menu, proplist menu_item, bool alt)
+public func OnBuyMenuSelection(id def, extra_data, object clonk)
 {
-	// Safety
-	var clonk = menu->GetMenuObject();
-	if (!clonk || !IsInteractable(clonk)) return;
-	var def = menu_item->GetSymbol();
-	if (!def) return;
 	// Buy
-	DoBuy(def, clonk->GetController(), GetOwner(), clonk, alt);
+	DoBuy(def, clonk->GetController(), GetOwner(), clonk);
 	// Excess objects exit flag (can't get them out...)
 	var i = ContentsCount();
 	var obj;
@@ -76,10 +113,7 @@ public func Selected(object menu, proplist menu_item, bool alt)
 				obj.Entrance = this.BuyItem_Entrance;
 			}
 		}
-	// Update available count
-	menu_item->SetAmount(GetBaseMaterial(GetOwner(), def));
-	menu->Show();
-	return true;
+	UpdateInteractionMenus(this.GetBuyMenuEntries);
 }
 
 // newly bought items do not fade out unless collected
@@ -95,6 +129,25 @@ func BuyItem_Entrance()
 	if (overloaded_fn) return Call(overloaded_fn, ...);
 }
 
+public func RejectCollect(id def, object obj)
+{
+	if (obj->~IsValuable())
+		if (!obj->~QueryOnSell(obj->GetController()))
+	 		return _inherited(def, obj, ...);
+	return true;
+}
+
+public func Collection(object obj)
+{
+	if (obj->~IsValuable() && !obj->~QueryOnSell(obj->GetController()))
+	{
+		DoWealth(obj->GetController(), obj->GetValue());
+		obj->RemoveObject();
+		Sound("Cash");
+	}
+	return _inherited(obj, ...);
+}
+
 func OnOwnerRemoved(int new_owner)
 {
 	// Our owner is dead :(
@@ -102,7 +155,6 @@ func OnOwnerRemoved(int new_owner)
 	SetOwner(new_owner);
 	return true;
 }
-
 
 /* Neutral banners - used as respawn points only */
 
@@ -144,6 +196,8 @@ public func SaveScenarioObject(props)
 
 
 /*-- Properties --*/
+// Provides an interaction menu for buying things.
+public func HasInteractionMenu() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

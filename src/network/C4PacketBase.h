@@ -167,7 +167,8 @@ enum C4PacketType
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
 
-	CID_DebugRec      = CID_First | 0x40
+	CID_DebugRec      = CID_First | 0x40,
+	CID_MenuCommand   = CID_First | 0x41,
 };
 
 // packet classes

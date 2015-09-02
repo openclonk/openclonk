@@ -1,6 +1,9 @@
 SET_WASD_QWERTZ=Keyboard and mouse
 SET_Gamepad=Gamepad
 
+CON_Roll=Roll
+CON_Roll_Desc=Do an ordinary roll forward.
+
 CON_Jump=Jump
 CON_Jump_Desc=Jump while running, jump out of the water or leap from a wall.
 
@@ -9,11 +12,13 @@ CON_AimAxisRight=Aim - Right (Analog Stick)
 CON_AimAxisUp=Aim - Up (Analog Stick)
 CON_AimAxisDown=Aim - Down (Analog Stick)
 
-CON_Throw=Throw
-CON_Throw_Desc=Throw the item in the hand into the aimed direction.
-CON_ThrowAlt=Throw (other hand)
-CON_ThrowAlt_Desc=Throw the item in the other hand into the aimed direction.
 
+CON_QuickSwitch=Quick Switch
+CON_QuickSwitch_Desc=Change the selection to the last active item slot.
+CON_InventoryShiftForward=Next item
+CON_InventoryShiftForward_Desc=Selects the next item from the inventory.
+CON_InventoryShiftBackward=Previous item
+CON_InventoryShiftBackward_Desc=Selects the last item from the inventory.
 CON_Drop=Drop
 CON_Drop_Desc=Drop the item in the hand.
 CON_DropAlt=Drop (other hand)
@@ -21,8 +26,13 @@ CON_DropAlt_Desc=Drop the item in the other hand.
 
 CON_Use=Use
 CON_Use_Desc=Use the item in the hand.
-CON_UseAlt=Use (other hand)
-CON_UseAlt_Desc=Use the item in the other hand.
+CON_Throw=Throw
+CON_Throw_Desc=Throw the item in the hand into the aimed direction.
+CON_UseAlt=Use
+CON_UseAlt_Desc=Use the item in the hand alternatively.
+
+CON_PickUp=Pick Up
+CON_PickUp_Desc=Pick up an object near you.
 
 CON_Hotkey1=Hotkey 1
 CON_Hotkey2=Hotkey 2
@@ -61,15 +71,17 @@ CON_ZoomOut_Desc=Zoom out of the game world to get an overview.
 
 # -- Assignment specific strings
 
-KEY_MouseUse=Use / Throw
-KEY_MouseUse_Desc=Use the item in the hand. If the item cannot be used, it is thrown into the direction of the cursor instead.
-KEY_MouseUseAlt=Use / Throw (other hand)
-KEY_MouseUseAlt_Desc=Use the item in the other hand. If the item cannot be used, it is thrown into the direction of the cursor instead.
+KEY_MouseUse=Use 
+KEY_MouseUse_Desc=Use the item in the hand.
+
+KEY_MouseThrow=Throw 
+KEY_MouseThrow_Desc=Throw the item in the hand.
+
+KEY_MouseUseAlt=Use Alt
+KEY_MouseUseAlt_Desc=Secondary use.
 
 KEY_GamepadUse=Use / Throw
 KEY_GamepadUse_Desc=Use the item in the hand. If the item cannot be used, it is thrown into the direction in which you aim with the analog stick on release.
-KEY_GamepadUseAlt=Use / Throw (other hand)
-KEY_GamepadUseAlt_Desc=Use the item in the other hand. If the item cannot be used, it is thrown into the direction in which you aim with the analog stick on release.
 
 KEY_Left=Left
 KEY_Left_Desc=Run, swim, hangle to the left or let go from a right wall. While climbing on a left wall, you can collect an item that is stuck in it with this key.

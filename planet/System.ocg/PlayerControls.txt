@@ -2,6 +2,7 @@
 #                                                                             #
 #                                ControlDefs                                  #
 #                                                                             #
+#                                                                             #
 ###############################################################################
 
 [ControlDefs]
@@ -10,14 +11,12 @@
 	# Summary
 	# --------
 	# Left Right Up Down Jump
-	# Throw Drop Use Collect ForcedThrow
-	# ThrowAlt DropAlt UseAlt ForcedThrowAlt
+
+
+	# Throw Drop Use ForcedThrow
+	# UseAlt
 	# 
 	# CancelUse CancelMenu
-	#
-	# Grab Ungrab GrabPrevious GrabNext PushEnter
-	#
-	# Enter Exit
 	#
 	# NextCrew PreviousCrew
 	#
@@ -38,8 +37,8 @@
 	#
 	# Gamepad controls
 	# -------------------------------------
-	# ThrowDelayed ThrowAltDelayed
-	# UseDelayed UseAltDelayed
+	# ThrowDelayed
+	# UseDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
 	# 
@@ -49,7 +48,6 @@
 	# PlayerHotkey0-9
 	# DropHotkey0-9
 	# Hotkey0-9Select
-	# Hotkey0-9SelectAlt
 	# InteractionHotkey0-9
 	
 	[ControlDef]
@@ -124,17 +122,34 @@
 	GUIName=$CON_Jump$
 	GUIDesc=$CON_Jump_Desc$
 	
+	[ControlDef]
+	Identifier=Roll
+	GUIName=$CON_Roll$
+	GUIDesc=$CON_Roll_Desc$
+	
 	# Inventory
+	
+	[ControlDef]
+	Identifier=QuickSwitch
+	GUIName=$CON_QuickSwitch$
+	GUIDesc=$CON_QuickSwitch_Desc$
+	
+	[ControlDef]
+	Identifier=InventoryShiftForward
+	GUIName=$CON_InventoryShiftForward$
+	GUIDesc=$CON_InventoryShiftForward_Desc$
+	
+	[ControlDef]
+	Identifier=InventoryShiftBackward
+	GUIName=$CON_InventoryShiftBackward$
+	GUIDesc=$CON_InventoryShiftBackward_Desc$
 	
 	[ControlDef]
 	Identifier=Throw
 	GUIName=$CON_Throw$
 	GUIDesc=$CON_Throw_Desc$
 	Hold=1
-	
-	[ControlDef]
-	Identifier=ForcedThrow
-	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=ThrowDelayed
@@ -147,83 +162,67 @@
 	GUIName=$CON_Drop$
 	GUIDesc=$CON_Drop_Desc$
 	Hold=1
-
-	[ControlDef]
-	Identifier=Collect
 	
+	# Picking up objects on the ground.
 	[ControlDef]
-	Identifier=ThrowAlt
-	GUIName=$CON_ThrowAlt$
-	GUIDesc=$CON_ThrowAlt_Desc$
-	Hold=1
-	
-	[ControlDef]
-	Identifier=ForcedThrowAlt
+	Identifier=PickUp
+	GUIName=$CON_PickUp$
+	GUIDesc=$CON_PickUp_Desc$
 	Hold=1
 	
 	[ControlDef]
-	Identifier=ThrowAltDelayed
-	GUIName=$CON_ThrowAlt$
-	GUIDesc=$CON_ThrowAlt_Desc$
-	Hold=1
-
+	Identifier=PickUpNext_Left
+	GUIName=None
+	
 	[ControlDef]
-	Identifier=DropAlt
-	GUIName=$CON_DropAlt$
-	GUIDesc=$CON_DropAlt_Desc$
-	Hold=1
+	Identifier=PickUpNext_Right
+	GUIName=None
+	
+	[ControlDef]
+	Identifier=PickUpNext_Stop
+	GUIName=None
 	
 	# Hotkeys (Inventory)
 	
 	[ControlDef]
 	Identifier=Hotkey1
 	GUIName=$CON_Hotkey1$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey2
 	GUIName=$CON_Hotkey2$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey3
 	GUIName=$CON_Hotkey3$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey4
 	GUIName=$CON_Hotkey4$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey5
 	GUIName=$CON_Hotkey5$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey6
 	GUIName=$CON_Hotkey6$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey7
 	GUIName=$CON_Hotkey7$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey8
 	GUIName=$CON_Hotkey8$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey9
 	GUIName=$CON_Hotkey9$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey0
 	GUIName=$CON_Hotkey0$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=DropHotkey1
@@ -254,67 +253,7 @@
 	
 	[ControlDef]
 	Identifier=DropHotkey0
-	
-	[ControlDef]
-	Identifier=Hotkey1Select
-	
-	[ControlDef]
-	Identifier=Hotkey1SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey2Select
-	
-	[ControlDef]
-	Identifier=Hotkey2SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey3Select
-	
-	[ControlDef]
-	Identifier=Hotkey3SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey4Select
-	
-	[ControlDef]
-	Identifier=Hotkey4SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey5Select
-	
-	[ControlDef]
-	Identifier=Hotkey5SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey6Select
-	
-	[ControlDef]
-	Identifier=Hotkey6SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey7Select
-	
-	[ControlDef]
-	Identifier=Hotkey7SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey8Select
-	
-	[ControlDef]
-	Identifier=Hotkey8SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey9Select
-	
-	[ControlDef]
-	Identifier=Hotkey9SelectAlt
-	
-	[ControlDef]
-	Identifier=Hotkey0Select
-	
-	[ControlDef]
-	Identifier=Hotkey0SelectAlt
-	
+
 	# Controlling (contents, vehicles, structures)
 	
 	[ControlDef]
@@ -332,13 +271,6 @@
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=CancelUse
-	
-	[ControlDef]
-	Identifier=CancelMenu
-	GUIName=$CON_MenuCancel$
-	
-	[ControlDef]
 	Identifier=UseAlt
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
@@ -353,44 +285,22 @@
 	SendCursorPos=1
 	
 	[ControlDef]
+	Identifier=CancelUse
+	
+	[ControlDef]
+	Identifier=CancelMenu
+	GUIName=$CON_MenuCancel$
+	
+	[ControlDef]
 	Identifier=Contents
 	GUIName=$CON_Contents$
 	GUIDesc=$CON_Contents_Desc$
 	SendCursorPos=1
-	
-	[ControlDef]
-	Identifier=Grab
-	SendCursorPos=1
-	Hold=1
-	
-	[ControlDef]
-	Identifier=Ungrab
-	Hold=1
-	
-	[ControlDef]
-	Identifier=GrabPrevious
-	
-	[ControlDef]
-	Identifier=GrabNext
-	
-	[ControlDef]
-	Identifier=PushEnter
-	Hold=1
 
 	[ControlDef]
 	Identifier=Interact
 	SendCursorPos=1
 	Hold=1
-	
-	[ControlDef]
-	Identifier=Enter
-	SendCursorPos=1
-	Hold=1
-	
-	[ControlDef]
-	Identifier=Exit
-	Hold=1
-	
 	
 	# Interaction Hotkeys (lower bar)
 	
@@ -629,6 +539,39 @@
 	# ======================================================================= #
 	#                   Mouse control with keyboard                           #
 	# ======================================================================= #
+	#
+	#
+	# Summary
+	# --------
+	# Left								A
+	# Right								D
+	# Up, Jump							W
+	# Down								S
+	#
+	# Hotkey0-9							(0-9)
+	# InteractionHotkey0-0				Shift+(0-9)
+	#
+	# Use						        Left mouse button
+	# Drop								S+Left mouse button
+	# Throw								Right mouse button
+	# UseAlt							Right mouse button (low priority)
+	#
+	# Interact							Space
+	#
+	# QuickSwitch						Q
+	# InventoryShiftForward             MouseWheelUp
+	# InventoryShiftBackward            MouseWheelDown
+	# Contents							E
+	#
+	# NextCrew							T
+	# PreviousCrew						R
+	# PlayerHotkey0-9					Ctrl+(0-9)
+	# 
+	# MenuOK							Return
+	# MenuCancel						Backspace
+	# 
+	# PlayerMenu						F
+
 
 	[ControlSet]
 	Name=WASD_Hotkeys_IntQueue_MouseCon_
@@ -642,8 +585,46 @@
 		[Assignment]
 		Key=E
 		Control=Contents
+		GUIGroup=1
+	
+		[Assignment]
+		Key=Q
+		Control=QuickSwitch
 		GUIGroup=50
-
+		
+		[Assignment]
+		Key=LeftShift
+		Control=PickUp
+		GUIGroup=50
+		
+		[Assignment]
+		Key=CON_PickUp,CON_Left
+		Control=PickUpNext_Left
+		
+		[Assignment]
+		Key=CON_PickUp,CON_Right
+		Control=PickUpNext_Right
+		
+		[Assignment]
+		Key=CON_PickUp,CON_Up
+		Control=PickUpNext_Stop
+		Priority=75
+		
+		[Assignment]
+		Key=CON_PickUp,CON_Down
+		Control=PickUpNext_Stop
+		Priority=75
+		
+		[Assignment]
+		Key=Mouse1Wheel1Up
+		GUIGroup=50
+		Control=InventoryShiftBackward
+  
+		[Assignment]
+		Key=Mouse1Wheel1Down
+		GUIGroup=50
+		Control=InventoryShiftForward
+		
 		# Menu
 
 		[Assignment]
@@ -688,7 +669,13 @@
 		GUIDesc=$KEY_Down_Desc$
 		GUIGroup=10
 		Control=Down
-
+		
+		[Assignment]
+		Key=S
+		Priority=10
+		GUIGroup=10
+		Control=Roll
+		
 		[Assignment]
 		Key=W
 		Priority=50
@@ -735,26 +722,35 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=Use
-  
+		
 		[Assignment]
 		Key=Mouse1ButtonRight
 		Priority=100
+		GUIName=$KEY_MouseThrow$
+		GUIDesc=$KEY_MouseThrow_Desc$
+		GUIDisabled=1
+		GUIGroup=20
+		Control=Throw
+		
+		[Assignment]
+		Key=Mouse1ButtonRight
+		Priority=80
 		GUIName=$KEY_MouseUseAlt$
 		GUIDesc=$KEY_MouseUseAlt_Desc$
 		GUIDisabled=1
 		GUIGroup=20
 		Control=UseAlt
-
+		
 		# Zoom
 		
 		[Assignment]
-		Key=Mouse1Wheel1Up
+		Key=Shift+Mouse1Wheel1Up
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomIn
   
 		[Assignment]
-		Key=Mouse1Wheel1Down
+		Key=Shift+Mouse1Wheel1Down
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomOut
@@ -898,14 +894,6 @@
 		GUIGroup=20
 		Priority=100
 		Control=UseDelayed
-  
-		[Assignment]
-		Key=Joy1D
-		GUIName=$KEY_GamepadUseAlt$
-		GUIDesc=$KEY_GamepadUseAlt_Desc$
-		GUIGroup=20
-		Priority=100
-		Control=UseAltDelayed
 
 		# Zoom
 		
@@ -976,26 +964,13 @@
 		GUIGroup=20
 		Priority=150
 		Control=Drop
-  
-		[Assignment]
-		Key=CON_Down,CON_UseAltDelayed
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=150
-		Control=DropAlt
 		
 		[Assignment]
 		Key=CON_UseDelayed
 		GUIName=None
 		Priority=50
 		Control=ThrowDelayed
-		
-		[Assignment]
-		Key=CON_UseAltDelayed
-		GUIName=None
-		Priority=50
-		Control=ThrowAltDelayed
-				
+	
 	# ======================================================================= #
 	#                           Default mouse control                         #
 	# ======================================================================= #
@@ -1026,88 +1001,6 @@
 		Key=Mouse1Move
 		Control=GUICursor
 		Priority=100
-		
-		# Forced Throw (also calls standard throw, if forced throw is not treated)
-		
-		[Assignment]
-		Key=Shift+CON_Use
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=150
-		Control=Throw
-		
-		[Assignment]
-		Key=Shift+CON_Use
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=151
-		Control=ForcedThrow
-		
-		[Assignment]
-		Key=Shift+CON_UseAlt
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=150
-		Control=ThrowAlt
-		
-		[Assignment]
-		Key=Shift+CON_UseAlt
-		GUIDisabled=1
-		GUIGroup=20
-		Priority=151
-		Control=ForcedThrowAlt
-		
-		# Standard throw
-
-		[Assignment]
-		Key=CON_Use
-		GUIName=None
-		Priority=50
-		Control=Throw
-		
-		[Assignment]
-		Key=CON_UseAlt
-		GUIName=None
-		Priority=50
-		Control=ThrowAlt
-		
-		
-	# ======================================================================= #
-	#                              Interaction queue                          #
-	# ======================================================================= #
-	
-	[ControlSet]
-	Name=*_IntQueue_*
-			
-		[Assignment]
-		Key=CON_Interact
-		Priority=50
-		Control=PushEnter
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=45
-		Control=GrabNext
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=40
-		Control=Ungrab
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=30
-		Control=Grab
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=25
-		Control=Exit
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=20
-		Control=Enter
 		
 	# ======================================================================= #
 	#                          Default hotkey controls                        #
@@ -1177,108 +1070,6 @@
 		Control=Hotkey0
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
-		# Hotkey + Mousebutton Select
-		[Assignment]
-		Key=CON_Hotkey1,Mouse1ButtonLeft
-		Control=Hotkey1Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey1,Mouse1ButtonRight
-		Control=Hotkey1SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey2,Mouse1ButtonLeft
-		Control=Hotkey2Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey2,Mouse1ButtonRight
-		Control=Hotkey2SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey3,Mouse1ButtonLeft
-		Control=Hotkey3Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey3,Mouse1ButtonRight
-		Control=Hotkey3SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey4,Mouse1ButtonLeft
-		Control=Hotkey4Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey4,Mouse1ButtonRight
-		Control=Hotkey4SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey5,Mouse1ButtonLeft
-		Control=Hotkey5Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey5,Mouse1ButtonRight
-		Control=Hotkey5SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey6,Mouse1ButtonLeft
-		Control=Hotkey6Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey6,Mouse1ButtonRight
-		Control=Hotkey6SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey7,Mouse1ButtonLeft
-		Control=Hotkey7Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey7,Mouse1ButtonRight
-		Control=Hotkey7SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey8,Mouse1ButtonLeft
-		Control=Hotkey8Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey8,Mouse1ButtonRight
-		Control=Hotkey8SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey9,Mouse1ButtonLeft
-		Control=Hotkey9Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey9,Mouse1ButtonRight
-		Control=Hotkey9SelectAlt
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey0,Mouse1ButtonLeft
-		Control=Hotkey0Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey0,Mouse1ButtonRight
-		Control=Hotkey0SelectAlt
-		Priority=200
-		
 		
 		[Assignment]
 		Key=Shift+CON_Hotkey1
@@ -1415,38 +1206,12 @@
 		Control=PlayerHotkey0				
 	
 	# ======================================================================= #
-	#                      Menu controls & Collect sets                       #
+	#                              Menu controls                              #
 	# ======================================================================= #
 	
 	[ControlSet]
 	Name=*
-	
-		# Collect
-	
-		[Assignment]
-		Key=CON_Left
-		GUIName=None
-		Priority=9
-		Control=Collect
 		
-		[Assignment]
-		Key=CON_Right
-		GUIName=None
-		Priority=9
-		Control=Collect
-		
-		[Assignment]
-		Key=CON_Up
-		GUIName=None
-		Priority=9
-		Control=Collect
-		
-		[Assignment]
-		Key=CON_Down
-		GUIName=None
-		Priority=9
-		Control=Collect
-	
 		# Menu control
 	
 		[Assignment]

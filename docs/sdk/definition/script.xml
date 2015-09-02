@@ -86,7 +86,7 @@
 		<row id="DigOutObject">
           <literal_col>DigOutObject</literal_col>
           <col>object obj</col>
-          <col>When the object dug out another object that was stucked in solid material.</col>
+          <col>When the object dug out another object that was stuck in solid material or when a new object is created from material during digging.</col>
         </row>
 		<row id="DugOut">
           <literal_col>DugOut</literal_col>

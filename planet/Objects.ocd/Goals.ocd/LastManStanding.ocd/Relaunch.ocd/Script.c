@@ -60,11 +60,15 @@ private func OpenWeaponMenu(object clonk)
 		var weapons = WeaponList();
 		if (weapons)
 		{
-			menu = clonk->CreateRingMenu(this, this);
+			menu = CreateObject(MenuStyle_Default, nil, nil, clonk->GetOwner());
+			menu->SetPermanent();
+			menu->SetTitle(Format("$MsgWeapon$", time / 36));
+			clonk->SetMenu(menu); 
+			
 			for (var weapon in weapons)
-				menu->AddItem(weapon, 1);
-			menu->Show();
-			menu->SetUncloseable();
+				menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
+				
+			menu->Open();
 		}
 	}
 }
@@ -85,28 +89,20 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 		return -1;
 	}
 	if (menu)
-		PlayerMessage(clonk->GetOwner(), Format("$MsgWeapon$", (time - fxtime) / 36));
+		menu->SetTitle(Format("$MsgWeapon$", (time - fxtime) / 36));
 	else
 		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / 36));
 	return 1;
 }
 
-public func Selected(object menu, object selector, bool alt)
+public func OnWeaponSelected(id weapon)
 {
-	if (!selector)
-		return false;
-	
-	var amount = selector->GetAmount();
-	if (amount > 1)
-		alt = nil;
-	
-	for (var i = 0; i < amount; i++)
-		GiveWeapon(selector->GetSymbol(), alt);
+	GiveWeapon(weapon);
 	
 	has_selected = true;
 	// Close menu manually, to prevent selecting more weapons.
 	if (menu)
-		menu->Close(true);
+		menu->Close();
 
 	if (!hold)
 		RelaunchClonk();
@@ -119,20 +115,20 @@ private func RelaunchClonk()
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk);
 	if (menu)
-		menu->Close(true);
+		menu->Close();
 	PlayerMessage(clonk->GetOwner(), "");
 	RemoveObject();
 	return;
 }
 
-private func GiveWeapon(id weapon_id, bool alt)
+private func GiveWeapon(id weapon_id)
 {
 	var newobj = CreateObjectAbove(weapon_id);
 	if (weapon_id == Bow)
 		newobj->CreateContents(Arrow);
 	if (weapon_id == Musket)
 		newobj->CreateContents(LeadShot);
-	crew->Collect(newobj, nil, alt);
+	crew->Collect(newobj);
 	return;
 }
 

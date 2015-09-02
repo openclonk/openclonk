@@ -23,12 +23,7 @@ global func IsThrowControl(int ctrl)
 {
 	// left mouse button
 	if(ctrl == CON_Throw
-	|| ctrl == CON_ForcedThrow
-	|| ctrl == CON_ThrowDelayed
-	// right mouse button
-	|| ctrl == CON_ThrowAlt
-	|| ctrl == CON_ForcedThrowAlt
-	|| ctrl == CON_ThrowAltDelayed)
+	|| ctrl == CON_ThrowDelayed)
 		return true;
 	
 	return false;
@@ -39,7 +34,6 @@ global func IsDropControl(int ctrl)
 {
 	// selected items
 	if(ctrl == CON_Drop
-	|| ctrl == CON_DropAlt
 	// hotkeys
 	|| ctrl == CON_DropHotkey0
 	|| ctrl == CON_DropHotkey1
@@ -61,13 +55,6 @@ global func IsInteractionControl(int ctrl)
 {
 	// Interaction itself
 	if(ctrl == CON_Interact
-	// other interactions
-	|| ctrl == CON_Grab
-	|| ctrl == CON_Ungrab
-	|| ctrl == CON_GrabNext
-	|| ctrl == CON_Enter
-	|| ctrl == CON_Exit
-	|| ctrl == CON_PushEnter
 	// hotkeys
 	|| ctrl == CON_InteractionHotkey0
 	|| ctrl == CON_InteractionHotkey1
@@ -110,9 +97,6 @@ global func IsCrewControl(int ctrl)
 /** Control uses selected item */
 global func IsUseControl(int ctrl)
 {
-	if(ctrl == CON_Use
-	|| ctrl == CON_UseAlt)
-		return true;
-	
+	if (ctrl == CON_Use || ctrl == CON_UseAlt) return true;
 	return false;
 }

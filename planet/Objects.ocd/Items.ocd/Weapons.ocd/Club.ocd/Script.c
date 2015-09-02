@@ -65,19 +65,17 @@ public func HoldingEnabled() { return true; }
 
 local fAiming;
 
+public func RejectUse(object clonk)
+{
+	return !CanStrikeWithWeapon(clonk) || !clonk->HasHandAction();
+}
+
 public func ControlUseStart(object clonk, int x, int y)
 {
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		ClubChangeHandAnims("R");
 	else
 		ClubChangeHandAnims("L");
-
-	// cooldown?
-	if(!CanStrikeWithWeapon(clonk)) return true;
-	
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-		return true;
 
 	fAiming = true;
 
@@ -200,7 +198,7 @@ func DoStrike(clonk, angle)
 		if (obj->GetOCF() & OCF_Alive)
 		{
 			var damage=5*1000;
-			ApplyWeaponBash(obj, 400, angle);
+			ApplyWeaponBash(obj, 400, angle, clonk);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}
 		else

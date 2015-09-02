@@ -129,7 +129,6 @@ public:
 	int32_t LastEnergyLossCausePlayer; // last player that caused an energy loss to this Clonk (used to trace kills when player tumbles off a cliff, etc.)
 	int32_t Category;
 	int32_t old_x, old_y; C4LArea Area; // position as currently seen by Game.Objecets.Sectors. UpdatePos to sync.
-	int32_t NoCollectDelay;
 	int32_t Mass, OwnMass;
 	int32_t Damage;
 	int32_t Energy;

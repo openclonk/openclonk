@@ -208,7 +208,7 @@ public:
 		      StdMeshSkeletonLoader &loader,
 	          DWORD dwLoadWhat, const char *szLanguage,
 	          class C4SoundSystem *pSoundSystem = NULL);
-	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0,C4DrawTransform* trans=NULL);
+	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0, C4DrawTransform* trans=NULL, const char * graphicsName=NULL);
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 	int32_t GetPlane() { return GetPropertyInt(P_Plane); }

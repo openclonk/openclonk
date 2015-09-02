@@ -1806,12 +1806,6 @@ static long FnGetUnusedOverlayID(C4Object *Obj, long iBaseIndex)
 	return iBaseIndex;
 }
 
-static C4Void FnDoNoCollectDelay(C4Object *Obj, int change)
-{
-	Obj->NoCollectDelay = Max<int32_t>(Obj->NoCollectDelay + change, 0);
-	return C4Void();
-}
-
 static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
 {
 	if (!Obj) return C4Void();
@@ -2721,7 +2715,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetHalfVehicleSolidMask", FnSetHalfVehicleSolidMask);
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
-	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
 
 	AddFunc(pEngine, "SetCommand", FnSetCommand);
 	AddFunc(pEngine, "AddCommand", FnAddCommand);
