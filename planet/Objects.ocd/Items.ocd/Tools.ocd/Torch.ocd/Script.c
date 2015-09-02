@@ -135,32 +135,50 @@ protected func Departure(object container)
 
 /*-- Burning Effect --*/
 
-protected func FxIntBurningStart(object target, proplist effect, int temporary)
+private func FxIntBurningStart(object target, effect fx, int temporary)
 {
 	if (temporary)
 		return 1;
 	// Ensure the interval is always one frame.
-	effect.Interval = 1;
+	fx.Interval = 1;
+	// Fire particle
+	fx.flame = 
+	{
+		R = PV_KeyFrames(0, 0, 0, 200, 255, 800, 255, 1000, 255),
+		G = PV_KeyFrames(0, 0, 0, 200, 210, 800, 70, 1000, 70),
+		B = PV_KeyFrames(0, 0, 255, 200, 100, 800, 0, 1000, 0),
+		
+		Alpha = PV_KeyFrames(1000, 0, 0, 10, 255, 500, 255, 1000, 0),
+		Size = PV_Linear(PV_Random(2, 3), PV_Random(4, 5)),
+		Stretch = 1000,
+		Phase = PV_Random(0, 4),
+		Rotation = PV_Random(0, 359),
+		DampingX = 900,
+		DampingY = 1000,
+		BlitMode = GFX_BLIT_Additive,
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		Attach = ATTACH_Front
+	};
+	fx.smoke = 
+	{
+		Prototype = Particles_Smoke(),
+		Size = PV_Linear(PV_Random(2, 3), PV_Random(3, 5))
+	};
 	// Set the light range for this torch.
 	SetLightRange(80, 60);
 	return 1;
 }
 
-protected func FxIntBurningTimer (object target, proplist effect, int time)
+private func FxIntBurningTimer (object target, effect fx, int time)
 {
 	// If the torched is attached or fixed it should emit some fire and smoke particles.
 	if (state == TRCH_Attached || state == TRCH_Fixed)
 	{
-		var x = 1;
-		var y = -1;
 		// Fire effects.
-		var particle_fire = Particles_Fire();
-		particle_fire.Size = PV_KeyFrames(0, 0, PV_Random(2, 4), 500, 2, 1000, 0);
-		CreateParticle("Fire", PV_Random(x - 2, x + 2), PV_Random(y - 2, y + 2), PV_Random(-1, 1), PV_Random(-1, 1), 16 + Random(8), particle_fire, 3);
+		CreateParticle("FireSharp", PV_Random(-1, 2), PV_Random(0, -3), PV_Random(-2, 2), PV_Random(-3, -5), 10 + Random(3), fx.flame, 8);
 		// Smoke effects.
-		var particle_smoke = Particles_Smoke();
-		particle_smoke.Size = PV_Linear(PV_Random(2, 3), PV_Random(3, 5));
-		CreateParticle("Smoke", PV_Random(x - 1, x + 1), PV_Random(y - 1, y + 1), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), particle_smoke, 2);
+		CreateParticle("Smoke", PV_Random(-1, 2), PV_Random(-7, -9), PV_Random(-2, 2), PV_Random(-2, 2), 24 + Random(12), fx.smoke, 2);
 	}
 	return 1;
 }
