@@ -593,25 +593,27 @@
 		GUIGroup=50
 		
 		[Assignment]
-		Key=Ctrl+LeftControl
+		Key=LeftShift
 		Control=PickUp
 		GUIGroup=50
 		
 		[Assignment]
-		Key=Ctrl+CON_Left
+		Key=CON_PickUp,CON_Left
 		Control=PickUpNext_Left
 		
 		[Assignment]
-		Key=Ctrl+CON_Right
+		Key=CON_PickUp,CON_Right
 		Control=PickUpNext_Right
 		
 		[Assignment]
-		Key=Ctrl+CON_Up
+		Key=CON_PickUp,CON_Up
 		Control=PickUpNext_Stop
+		Priority=75
 		
 		[Assignment]
-		Key=Ctrl+CON_Down
+		Key=CON_PickUp,CON_Down
 		Control=PickUpNext_Stop
+		Priority=75
 		
 		[Assignment]
 		Key=Mouse1Wheel1Up
