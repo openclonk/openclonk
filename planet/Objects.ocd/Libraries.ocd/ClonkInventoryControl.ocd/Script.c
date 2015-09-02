@@ -229,7 +229,7 @@ private func FindNextPickupObject(object start_from, int x_dir)
 {
 	if (!start_from) start_from = this;
 	var sort = Sort_Func("Library_ClonkInventoryControl_Sort_Priority", start_from->GetX()); 
-	var objects = FindObjects(Find_Distance(20), Find_Category(C4D_Object), Find_NoContainer(), Find_Func("GetProperty", "Collectible"), sort);
+	var objects = FindObjects(Find_Distance(20), Find_Or(Find_Category(C4D_Object), Find_Category(C4D_Living)), Find_NoContainer(), Find_Func("GetProperty", "Collectible"), sort);
 	var len = GetLength(objects);
 	// Find object next to the current one.
 	var index = GetIndexOf(objects, start_from);
