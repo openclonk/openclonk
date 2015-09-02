@@ -27,11 +27,11 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 		R = 255,
 		B = 255,
 		G = 255,
-		Alpha = PV_Linear(255,0),
-		Size = PV_Linear(30,150),
+		Alpha = PV_Linear(150,0),
+		Size = 30,
 		Stretch = 1000,
 		Phase = 0,
-		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
+		Rotation = PV_Random(0, 359),
 		DampingX = 1000,
 		DampingY = 1000,
 		BlitMode = GFX_BLIT_Additive,
@@ -39,38 +39,31 @@ private func FxIntMeteorStart(object target, effect fx, bool temp)
 		OnCollision = PC_Die(),
 		Attach = nil
 	};
-	fx.sparkright = 
+	fx.smoketrail = 
 	{
 		R = 255,
 		B = 255,
 		G = 255,
-		Alpha = PV_KeyFrames(0, 0, 0, 500, 255, 1000, 0),
-		Size = PV_Linear(20,100),
+		
+		Alpha = PV_KeyFrames(1000, 0, 0, 300, 255, 1000, 0),
+		Size = PV_Linear(30, 60),
 		Stretch = 1000,
-		Phase = 0,
-		Rotation = 30,
-		ForceX = 0,
-		ForceY = 0,
+		Phase = PV_Random(0, 4),
+		Rotation = PV_Random(-GetR() - 15, -GetR() + 15),
 		DampingX = 1000,
 		DampingY = 1000,
-		BlitMode = GFX_BLIT_Additive,
+		BlitMode = 0,
 		CollisionVertex = 0,
-		OnCollision = PC_Die(),
-		Attach = ATTACH_Back | ATTACH_MoveRelative
+		OnCollision = PC_Stop(),
+		Attach = nil
 	};
-	fx.sparkleft = 
+	fx.frontburn = 
 	{
-		Prototype = fx.sparkright,
-		Size = PV_Linear(30,100),
-		Rotation = -30,
-	};
-	fx.trail = 
-	{
-		R = 255,
+		R = 200,
 		B = 255,
 		G = 255,
-		Alpha = PV_Linear(255,0),
-		Size = GetCon()/3,
+		Alpha = PV_KeyFrames(0, 0, 0, PV_Random(200, 600), 0, 700, 255, 1000, 0),
+		Size = PV_Random(30, 80),
 		Stretch = 1000,
 		Phase = 0,
 		Rotation = 0,
@@ -93,14 +86,12 @@ private func FxIntMeteorTimer(object target, effect fx)
 	ydir -= size * ydir ** 2 / 11552000; // Magic number.
 	SetYDir(ydir, 100);
 	
-	// Fire trail.
-	fx.fire.ForceX = -GetXDir()/2 + RandomX(-5,5);
-	fx.fire.ForceY = -GetYDir()/2;
-	CreateParticle("BlueFireTrail", PV_Random(-1, 1), -15, 0, -GetYDir(), 7, fx.trail, 1);
+	// Smoke trail.
+	CreateParticle("SmokeThick", 0, 0, PV_Random(-3, 3), PV_Random(-3, 3), 200, fx.smoketrail, 5);
 	
-	CreateParticle("BlueSpark", 10, 15, 100 + GetXDir(), -GetYDir(), 20, fx.sparkright, 1);
-	CreateParticle("BlueSpark", -10, 15, -100 + GetXDir(), -GetYDir(), 20, fx.sparkleft, 1);
-	CreateParticle("BlueFire", PV_Random(-8, 8), PV_Random(-15, -35), 0, 0, 30, fx.fire, 4);
+	CreateParticle("FrontBurn", PV_Random(-2, 2), 15, 0, 0, 7, fx.frontburn, 2);
+	
+	CreateParticle("BlueFire", 0, -6, PV_Random(-3, 3), 0, 5, fx.fire, 2);
 	return 1;
 }
 

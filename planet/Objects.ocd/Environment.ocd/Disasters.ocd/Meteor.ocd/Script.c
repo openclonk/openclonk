@@ -110,8 +110,8 @@ public func OnAfterLaunch()
 	SetR(Random(360));
 	SetRDir(RandomX(-10, 10));
 	// Emit light
-	SetLightRange(300, 100);
-	SetLightColor(RGB(100, 230, 120));
+	SetLightRange(300, 30);
+	SetLightColor(RGB(255, 160, 120));
 	// Set right action.
 	AddEffect("IntMeteor", this, 100, 1, this);
 }
