@@ -133,7 +133,7 @@ void C4Network2UPnPP::ClearNatMappings()
 		mapping->get_InternalClient(&client);
 		mapping->get_Protocol(&proto);
 		if (SUCCEEDED(mappings->Remove(extport, proto)))
-			LogF("UPnP: Closed port %d->%s:%d (%s)", extport, StdStrBuf(client).getData(), intport, StdStrBuf(proto).getData());
+			LogF("UPnP: Closed port %d->%s:%d (%s)", (int)extport, StdStrBuf(client).getData(), (int)intport, StdStrBuf(proto).getData());
 		::SysFreeString(proto);
 		::SysFreeString(client);
 		SafeRelease(mapping);

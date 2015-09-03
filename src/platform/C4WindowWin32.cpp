@@ -708,7 +708,7 @@ bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, b
 
 void C4Window::SetTitle(const char *szToTitle)
 {
-	if (hWindow) SetWindowTextW(hWindow, (!szToTitle) ? L"" : GetWideChar(szToTitle));
+	if (hWindow) SetWindowTextW(hWindow, GetWideChar(szToTitle ? szToTitle : ""));
 }
 
 bool C4Window::GetSize(C4Rect * pRect)

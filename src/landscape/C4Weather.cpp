@@ -149,10 +149,10 @@ int32_t C4Weather::GetClimate()
 
 static float SeasonColors[4][3] =
 {
-	{ 0.90, 0.90, 1.00 }, // winter: slightly blue; blued out by temperature
-	{ 1.00, 1.05, 0.90 }, // spring: green to yellow
-	{ 1.00, 1.00, 1.00 }, // summer: regular ramp
-	{ 1.00, 0.95, 0.90 }  // fall:   dark, brown ramp
+	{ 0.90f, 0.90f, 1.00f }, // winter: slightly blue; blued out by temperature
+	{ 1.00f, 1.05f, 0.90f }, // spring: green to yellow
+	{ 1.00f, 1.00f, 1.00f }, // summer: regular ramp
+	{ 1.00f, 0.95f, 0.90f }  // fall:   dark, brown ramp
 };
 
 void C4Weather::SetSeasonGamma()
