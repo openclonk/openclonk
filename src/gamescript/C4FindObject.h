@@ -44,6 +44,7 @@ enum C4FindObjectCondID
 	C4FO_Func          = 20,
 	C4FO_Layer         = 21,
 	C4FO_InArray       = 22,
+	C4FO_Property      = 23,
 	// last C4FO must be smaller than C4SO_First.
 };
 
@@ -357,6 +358,17 @@ public:
 private:
 	C4String * Name;
 	C4AulParSet Pars;
+protected:
+	virtual bool Check(C4Object *pObj);
+	virtual bool IsImpossible();
+};
+
+class C4FindObjectProperty : public C4FindObject
+{
+public:
+	C4FindObjectProperty(C4String * Name) : Name(Name) { }
+private:
+	C4String * Name;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();

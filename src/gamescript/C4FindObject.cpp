@@ -216,6 +216,17 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_InArray:
 		return new C4FindObjectInArray(Data[1].getArray());
 
+	case C4FO_Property:
+	{
+		// Get property name
+		C4String *pStr = Data[1].getStr();
+		if (!pStr) return NULL;
+		// Construct
+		C4FindObjectProperty *pFO = new C4FindObjectProperty(pStr);
+		// Done
+		return pFO;
+	}
+
 	}
 	return NULL;
 }
@@ -746,14 +757,14 @@ void C4FindObjectFunc::SetPar(int i, const C4Value &Par)
 
 bool C4FindObjectFunc::Check(C4Object *pObj)
 {
+	assert(Name); // checked in constructor
 	// Function not found?
-	if (!Name) return false;
 	return pObj->Call(Name, &Pars).getBool();
 }
 
 bool C4FindObjectFunc::IsImpossible()
 {
-	return !Name;
+	return false;
 }
 
 // *** C4FindObjectLayer
@@ -785,6 +796,20 @@ bool C4FindObjectInArray::IsImpossible()
 {
 	return !pArray || !pArray->GetSize();
 }
+
+// *** C4FindObjectProperty
+
+bool C4FindObjectProperty::Check(C4Object *pObj)
+{
+	assert(Name); // checked in constructor
+	return pObj->GetPropertyBoolByS(Name);
+}
+
+bool C4FindObjectProperty::IsImpossible()
+{
+	return false;
+}
+
 
 // *** C4SortObject
 
