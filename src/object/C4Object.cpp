@@ -1371,7 +1371,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// 4. Call collection for container
 	// 5. Call entrance for object.
 
-	// No target or target is self
+	// No valid target or target is self
 	if (!pTarget || (pTarget==this)) return false;
 	// check if entrance is allowed
 	if (!! Call(PSF_RejectEntrance, &C4AulParSet(C4VObj(pTarget)))) return false;
@@ -1392,7 +1392,12 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	if (Contained) if (!Exit(GetX(),GetY())) return false;
 	if (Contained || !Status || !pTarget->Status) return false;
 	// Failsafe updates
-	CloseMenu(true);
+	if (Menu)
+	{
+		CloseMenu(true);
+		// CloseMenu might do bad stuff
+		if (Contained || !Status || !pTarget->Status) return false;
+	}
 	SetOCF();
 	// Set container
 	Contained=pTarget;
@@ -1835,7 +1840,20 @@ void C4Object::ClearPointers(C4Object *pObj)
 	if(pMeshInstance) pMeshInstance->ClearPointers(pObj);
 	// effects
 	if (pEffects) pEffects->ClearPointers(pObj);
-	// contents/contained: not necessary, because it's done in AssignRemoval and StatusDeactivate
+	// contents/contained: although normally not necessery because it's done in AssignRemoval and StatusDeactivate,
+	// it is also required during game destruction (because ClearPointers might do script callbacks)
+	// Perform silent exit to avoid additional callbacks
+	if (Contained)
+	{
+		Contained->Contents.Remove(this);
+		Contained = NULL;
+	}
+	while (Contents.First)
+	{
+		assert(Contents.First->Obj);
+		Contents.First->Obj->Contained = NULL;
+		Contents.Remove(Contents.First->Obj);
+	}
 	// Action targets
 	if (Action.Target==pObj) Action.Target=NULL;
 	if (Action.Target2==pObj) Action.Target2=NULL;
