@@ -1843,17 +1843,12 @@ void C4Object::ClearPointers(C4Object *pObj)
 	// contents/contained: although normally not necessery because it's done in AssignRemoval and StatusDeactivate,
 	// it is also required during game destruction (because ClearPointers might do script callbacks)
 	// Perform silent exit to avoid additional callbacks
-	if (Contained)
+	if (Contained == pObj)
 	{
 		Contained->Contents.Remove(this);
 		Contained = NULL;
 	}
-	while (Contents.First)
-	{
-		assert(Contents.First->Obj);
-		Contents.First->Obj->Contained = NULL;
-		Contents.Remove(Contents.First->Obj);
-	}
+	Contents.Remove(pObj);
 	// Action targets
 	if (Action.Target==pObj) Action.Target=NULL;
 	if (Action.Target2==pObj) Action.Target2=NULL;
