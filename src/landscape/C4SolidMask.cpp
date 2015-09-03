@@ -162,7 +162,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 						byPixel=_GBackPix(iTx,iTy);
 						// store it. If MCVehic, also store in initial put, but won't be used in restore
 						// do not overwrite current value in re-put issued by SolidMask-remover
-						if (IsSomeVehicle(byPixel) || RegularPut)
+						if (!IsSomeVehicle(byPixel) || RegularPut)
 							pSolidMaskMatBuff[i + xcnt] = byPixel;
 					}
 					// set mask pix
