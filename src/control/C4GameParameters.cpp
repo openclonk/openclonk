@@ -479,8 +479,8 @@ void C4GameParameters::EnforceLeagueRules(C4Scenario *pScenario)
 	if (pScenario) MaxPlayers = pScenario->Head.MaxPlayerLeague;
 	// forced league values in custom scenario parameters
 	size_t idx=0; const C4ScenarioParameterDef *pdef; int32_t val;
-	while(pdef = ::Game.ScenarioParameterDefs.GetParameterDefByIndex(idx++))
-		if (val = pdef->GetLeagueValue())
+	while ((pdef = ::Game.ScenarioParameterDefs.GetParameterDefByIndex(idx++)))
+		if ((val = pdef->GetLeagueValue()))
 			ScenarioParameters.SetValue(pdef->GetID(), val, false);
 }
 
