@@ -177,7 +177,7 @@ public func GetPowerNetwork(object for_obj)
 	// Otherwise just get the helper from the flag.
 	else
 	{
-		helper=flag->GetPowerHelper();
+		helper = flag->GetPowerHelper();
 		// Create the helper if it does not exist yet.
 		if (helper == nil)
 		{
@@ -185,12 +185,14 @@ public func GetPowerNetwork(object for_obj)
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
 			// Add to all linked flags.
 			flag->SetPowerHelper(helper);
-			for (var f in flag->GetLinkedFlags())
+			for (var linked_flag in flag->GetLinkedFlags())
 			{
+				if (!linked_flag)
+					continue;
 				// Assert different power helpers for the same network.
-				if (f->GetPowerHelper() != nil) 
+				if (linked_flag->GetPowerHelper() != nil) 
 					FatalError("Flags in the same network have different power helpers.");
-				f->SetPowerHelper(helper);
+				linked_flag->SetPowerHelper(helper);
 			}
 		}
 	}	
