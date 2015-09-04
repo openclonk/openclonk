@@ -316,13 +316,14 @@ public:
 	
 	// virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
 	// this is called only on the root menu
+	using C4GUI::ScrollWindow::MouseInput;
 	virtual bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	// this is then called on the child windows, note the return value
 	virtual bool ProcessMouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, int32_t parentOffsetX, int32_t parentOffsetY);
 	// called when mouse cursor enters element region
-	virtual void MouseEnter();
+	virtual void MouseEnter(C4GUI::CMouse &rMouse);
 	// called when mouse cursor leaves element region
-	virtual void MouseLeave();
+	virtual void MouseLeave(C4GUI::CMouse &rMouse);
 	// this remembers whether the window currently has mouse focus and whether it has been mouse-down-ed
 	// all windows with mouse focus set are remembered by their parents and notified when the mouse left
 	enum MouseState // values of this enum will be bit-wise combined

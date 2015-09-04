@@ -1883,7 +1883,7 @@ void C4ScriptGuiWindow::SetTag(C4String *tag)
 		(static_cast<C4ScriptGuiWindow*>(element))->SetTag(tag);
 }
 
-void C4ScriptGuiWindow::MouseEnter()
+void C4ScriptGuiWindow::MouseEnter(C4GUI::CMouse &)
 {
 	assert(::MouseControl.GetPlayer() != NO_OWNER);
 }
@@ -1918,7 +1918,7 @@ void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t
 	action->Execute(this, player, actionType);
 }
 
-void C4ScriptGuiWindow::MouseLeave()
+void C4ScriptGuiWindow::MouseLeave(C4GUI::CMouse &)
 {
 	assert(::MouseControl.GetPlayer() != NO_OWNER);
 
