@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2011-2013, The OpenClonk Team and contributors
+ * Copyright (c) 2011-2015, The OpenClonk Team and contributors
  *
  * Distributed under the terms of the ISC license; see accompanying file
  * "COPYING" for details.
@@ -24,13 +24,29 @@
 #include "object/C4DefList.h"
 #include "script/C4ScriptHost.h"
 
-int c4s_runscript(const char * filename)
+void InitializeC4Script()
 {
 	InitCoreFunctionMap(&ScriptEngine);
 
 	// Seed PRNG
 	FixedRandom(time(NULL));
+}
 
+C4Value RunLoadedC4Script()
+{
+	// Link script engine (resolve includes/appends, generate code)
+	ScriptEngine.Link(&::Definitions);
+
+	// Set name list for globals
+	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
+	C4Value result = GameScript.Call("Main");
+	GameScript.Clear();
+	ScriptEngine.Clear();
+	return result;
+}
+
+int c4s_runfile(const char * filename)
+{
 	C4Group File;
 	if (!File.Open(GetWorkingDirectory()))
 	{
@@ -46,15 +62,17 @@ int c4s_runscript(const char * filename)
 		fprintf(stderr, "FindNextEntry failed: %s\n", File.GetError());
 		return 1;
 	}
+
+	InitializeC4Script();
 	GameScript.Load(File, fn.getData(), NULL, NULL);
+	RunLoadedC4Script();
+	return 0;
+}
 
-	// Link script engine (resolve includes/appends, generate code)
-	ScriptEngine.Link(&::Definitions);
-
-	// Set name list for globals
-	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
-	GameScript.Call("Main");
-	GameScript.Clear();
-	ScriptEngine.Clear();
+int c4s_runstring(const char *script)
+{
+	InitializeC4Script();
+	GameScript.LoadData("<memory>", script, NULL);
+	RunLoadedC4Script();
 	return 0;
 }
