@@ -261,7 +261,6 @@ set(OC_CLONK_SOURCES
 	src/gui/C4Gui.cpp
 	src/gui/C4GuiDialogs.cpp
 	src/gui/C4GuiEdit.cpp
-	src/gui/C4ScriptGuiWindow.cpp
 	src/gui/C4Gui.h
 	src/gui/C4GuiLabels.cpp
 	src/gui/C4GuiListBox.cpp
@@ -286,6 +285,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4PlayerInfoListBox.h
 	src/gui/C4Scoreboard.cpp
 	src/gui/C4Scoreboard.h
+	src/gui/C4ScriptGuiWindow.cpp
+	src/gui/C4ScriptGuiWindow.h
 	src/gui/C4StartupAboutDlg.cpp
 	src/gui/C4StartupAboutDlg.h
 	src/gui/C4Startup.cpp
