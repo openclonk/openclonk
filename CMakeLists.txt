@@ -1048,6 +1048,9 @@ src/lib/C4SimpleLog.cpp
 )
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
+if (WIN32)
+	target_link_libraries(libmisc winmm)
+endif()
 
 add_library(libc4script
 src/c4group/C4GroupSet.cpp
