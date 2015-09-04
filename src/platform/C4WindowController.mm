@@ -13,6 +13,8 @@
  * for the above references.
  */
 
+#include <GL/glew.h>
+
 #include <C4Include.h>
 #include <C4Application.h>
 #include <C4Viewport.h>

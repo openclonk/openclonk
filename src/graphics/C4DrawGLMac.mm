@@ -167,6 +167,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 			return C4MC_Button_MiddleUp;
 		case NSScrollWheel:
 			return C4MC_Button_Wheel;
+		default:
+			break;
 	}
 	return C4MC_Button_None;
 }
