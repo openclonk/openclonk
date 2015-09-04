@@ -1088,6 +1088,7 @@ add_executable(c4script
 	include/c4script/c4script.h
 	src/script/C4ScriptMain.cpp
 	src/script/C4ScriptStandalone.cpp
+	src/script/C4ScriptStandaloneStubs.cpp
 )
 
 target_link_libraries(openclonk
