@@ -2713,7 +2713,7 @@ static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_
 			if (!plr->GainScenarioAchievement(achievement_name->GetCStr(), value, for_scenario ? for_scenario->GetCStr() : NULL))
 				result = false;
 	}
-	return true;
+	return result;
 }
 
 static long FnGetPXSCount(C4PropList * _this, Nillable<long> iMaterial, Nillable<long> iX0, Nillable<long> iY0, Nillable<long> iWdt, Nillable<long> iHgt)

@@ -311,8 +311,6 @@ void C4ControlMsgBoardReply::CompileFunc(StdCompiler *pComp)
 // *** C4ControlMsgBoardCmd
 void C4ControlMsgBoardCmd::Execute() const
 {
-	C4Player *source_player = ::Players.Get(player);
-
 	// don't handle this if the game isn't actually running
 	if (!::Game.IsRunning) return;
 

@@ -45,14 +45,14 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 	for (i = 0u; i < procs.size(); i++)
 	{
 		auto proc = procs[i];
-		if ( (hEvent = procs[i]->GetEvent()) )
+		if ( (hEvent = proc->GetEvent()) )
 		{
 			if (hEvent == STDSCHEDULER_EVENT_MESSAGE)
-				pMessageProc = procs[i];
+				pMessageProc = proc;
 			else
 			{
 				eventHandles[iEventCnt] = hEvent;
-				eventProcs[iEventCnt] = procs[i];
+				eventProcs[iEventCnt] = proc;
 				iEventCnt++;
 			}
 		}

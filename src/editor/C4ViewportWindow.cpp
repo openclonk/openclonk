@@ -33,8 +33,6 @@
 
 void UpdateWindowLayout(HWND hwnd)
 {
-	bool fMinimized = !!IsIconic(hwnd);
-	bool fMaximized = !!IsZoomed(hwnd);
 	RECT rect;
 	GetWindowRect(hwnd,&rect);
 	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left-1,rect.bottom-rect.top,true);

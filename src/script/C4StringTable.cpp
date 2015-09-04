@@ -58,7 +58,7 @@ C4String::~C4String()
 {
 	// unreg
 	static bool remove = false;
-	assert(!remove);
+	assert(!remove); (void)remove;
 	remove = true;
 	Strings.Set.Remove(this);
 	remove = false;

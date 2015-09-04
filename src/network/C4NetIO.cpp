@@ -2929,7 +2929,7 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 		// remove packet from queue
 		int iNr = pPkt->GetNr();
 		IPackets.DeletePacket(pPkt);
-		assert(!IPackets.GetPacketFrgm(iNr));
+		assert(!IPackets.GetPacketFrgm(iNr)); (void)iNr;
 	}
 	while ((pPkt = IMCPackets.GetFirstPacketComplete()))
 	{
@@ -2943,7 +2943,7 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 		// remove packet from queue
 		int iNr = pPkt->GetNr();
 		IMCPackets.DeletePacket(pPkt);
-		assert(!IMCPackets.GetPacketFrgm(iNr));
+		assert(!IMCPackets.GetPacketFrgm(iNr)); (void)iNr;
 	}
 }
 

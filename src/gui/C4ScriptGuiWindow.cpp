@@ -1828,8 +1828,6 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 
 	if (GraphicsSystem.ShowMenuInfo) // print helpful debug info
 	{
-		C4ScriptGuiWindow * parent = static_cast<C4ScriptGuiWindow*>(GetParent());
-
 		DWORD frameColor = C4RGB(100, 150, 100);
 		if (currentMouseState & MouseState::Focus) frameColor = C4RGB(0, 255, 0);
 
@@ -1887,8 +1885,7 @@ void C4ScriptGuiWindow::SetTag(C4String *tag)
 
 void C4ScriptGuiWindow::MouseEnter()
 {
-	const int32_t &player = ::MouseControl.GetPlayer();
-	assert(player != NO_OWNER);
+	assert(::MouseControl.GetPlayer() != NO_OWNER);
 }
 
 void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY)
@@ -1923,8 +1920,7 @@ void C4ScriptGuiWindow::OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t
 
 void C4ScriptGuiWindow::MouseLeave()
 {
-	const int32_t &player = ::MouseControl.GetPlayer();
-	assert(player != NO_OWNER);
+	assert(::MouseControl.GetPlayer() != NO_OWNER);
 
 }
 void C4ScriptGuiWindow::OnMouseOut(int32_t player)
