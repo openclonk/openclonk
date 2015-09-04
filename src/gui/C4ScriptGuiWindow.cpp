@@ -47,7 +47,7 @@
 
 // Adds some helpful logs for hunting control & menu based desyncs.
 //#define MenuDebugLogF(...) DebugLogF(__VA_ARGS__)
-#define MenuDebugLogF (void)
+#define MenuDebugLogF(...) ((void)0)
 
 // This in in EM! Also, golden ratio
 const float C4ScriptGuiWindow::standardWidth = 100.0f;
