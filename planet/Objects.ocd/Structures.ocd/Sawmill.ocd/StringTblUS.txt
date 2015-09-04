@@ -1,2 +1,4 @@
 Name=Sawmill
 Description=The sawmill can efficiently saw trees into wooded logs, but needs power to function.
+
+AutoProduction=The sawmill automatically processes trees or wooden objects to wood.

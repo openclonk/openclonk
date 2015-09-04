@@ -1,2 +1,4 @@
 Name=Sägewerk
 Description=Das Sägewerk kann Bäume effizient in Holz zersägen, braucht dazu aber Strom. 
+
+AutoProduction=Das Sägewerk verarbeitet automatisch Bäume oder hölzerne Objekte zu Holz.
