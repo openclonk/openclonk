@@ -106,13 +106,13 @@ func Init(object cursor)
 	EffectCall(cursor, checking_effect, "Timer");
 }
 
-func FxIntCheckObjectsStart(target, effect, temp)
+func FxIntCheckObjectsStart(target, effect fx, temp)
 {
 	if (temp) return;
-	EffectCall(target, effect, "Timer");
+	EffectCall(target, fx, "Timer");
 }
 
-func FxIntCheckObjectsTimer(target, effect, timer)
+func FxIntCheckObjectsTimer(target, effect fx)
 {
 	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(),
 		// Find only vehicles and structures (plus Clonks ("livings") and helper objects). This makes sure that no C4D_Object-containers (extra slot) are shown.
@@ -145,14 +145,8 @@ func UpdateObjects(array new_objects)
 		if (current_menus[i].forced) continue;
 		
 		var target = current_menus[i].target;
-		var found = false;
-		for (var obj in new_objects)
-		{
-			if (target != obj) continue;
-			found = true;
-			break;
-		}
-		if (found) continue;
+		// Still existant? Nothing to do!
+		if (GetIndexOf(new_objects, target) != -1) continue;
 		// not found? close!
 		// sub menus close automatically (and remove their dummy) due to a clever usage of OnClose
 		current_menus[i].menu_object->RemoveObject();
@@ -505,18 +499,32 @@ func OnSidebarEntrySelected(data, int player, int ID, int subwindowID, object ta
 */
 func CreateMainMenu(object obj, int slot)
 {
-	var container =
+	var big_menu =
 	{
 		Target = CreateDummy(),
 		Priority = 5,
 		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
-		Style = GUI_VerticalLayout,
-		BackgroundColor = RGB(25, 25, 25)
+		container =
+		{
+			Top = "2em",
+			Style = GUI_VerticalLayout,
+			BackgroundColor = RGB(25, 25, 25),
+		},
+		headline = 
+		{
+			Bottom = "2em",
+			Text = obj->GetName(),
+			Style = GUI_TextHCenter | GUI_TextVCenter,
+			BackgroundColor = 0xff000000
+		}
+		
 	};
+	var container = big_menu.container;
+	
 	if (slot == 0)
 	{
-		container.Left = ToEmString(InteractionMenu_SideBarSize);
-		container.Right = "100%";
+		big_menu.Left = ToEmString(InteractionMenu_SideBarSize);
+		big_menu.Right = "100%";
 	}
 	
 	// Do virtually nothing if the building is not ready to be interacted with. This can be caused by several things.
@@ -528,7 +536,7 @@ func CreateMainMenu(object obj, int slot)
 	{
 		container.Style = GUI_TextVCenter | GUI_TextHCenter;
 		container.Text = error_message;
-		return container;
+		return big_menu;
 	}
 	
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
@@ -615,7 +623,7 @@ func CreateMainMenu(object obj, int slot)
 		AddEffect("IntRefreshContentsMenu", this, 1, 1, this, nil, obj, slot, i);
 	}
 	
-	return container;
+	return big_menu;
 }
 
 func GetEntryInformation(proplist menu_info, int entry_index)
