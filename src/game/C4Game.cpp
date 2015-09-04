@@ -2427,6 +2427,12 @@ bool C4Game::LinkScriptEngine()
 	// Link script engine (resolve includes/appends, generate code)
 	ScriptEngine.Link(&::Definitions);
 
+	// display errors
+	LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
+		ScriptEngine.lineCnt, (ScriptEngine.lineCnt != 1 ? "s" : ""),
+		ScriptEngine.warnCnt, (ScriptEngine.warnCnt != 1 ? "s" : ""),
+		ScriptEngine.errCnt, (ScriptEngine.errCnt != 1 ? "s" : ""));
+
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 	

@@ -144,6 +144,8 @@ void C4ScriptHost::UnLink()
 
 void C4AulScriptEngine::UnLink()
 {
+	warnCnt = errCnt = lineCnt = 0;
+
 	// unlink scripts
 	for (C4AulScript *s = Child0; s; s = s->Next)
 		s->UnLink();
@@ -163,7 +165,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 {
 	try
 	{
-
 		// resolve appends
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->ResolveAppends(rDefs);
@@ -188,13 +189,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->GetPropList()->Freeze();
 		GetPropList()->Freeze();
-
-		// display state
-		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
-		     lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
-
-		// reset counters
-		warnCnt = errCnt = lineCnt = 0;
 	}
 	catch (C4AulError *err)
 	{
@@ -217,6 +211,10 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 	// re-link
 	Link(rDefs);
+
+	// display state
+	LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
+		lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
 
 	// update effect pointers
 	::Objects.UpdateScriptPointers();
