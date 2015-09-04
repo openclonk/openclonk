@@ -393,6 +393,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 		else
 		{
 			Contents.Remove(cobj);
+			cobj->Contained = NULL;
 			cobj->AssignRemoval();
 		}
 	}
