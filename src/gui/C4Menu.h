@@ -108,10 +108,6 @@ protected:
 	void SetSelected(bool fToVal) { fSelected = fToVal; }
 	void DoTextProgress(int32_t &riByVal); // progress number of shown characters by given amount
 
-	// GUI calls
-	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-	virtual void MouseEnter(class C4GUI::CMouse &rMouse); // called when mouse cursor enters element region: Select this item (deselects any other)
-
 public:
 	C4ID GetC4ID() const { return id; }
 	int32_t GetValue() const { return iValue; }
@@ -119,6 +115,10 @@ public:
 	const char *GetCommand() const { return Command; }
 
 	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = NULL; if(pObj == pSymbolObj) pSymbolObj = NULL; }
+
+	// GUI calls
+	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+	virtual void MouseEnter(class C4GUI::CMouse &rMouse); // called when mouse cursor enters element region: Select this item (deselects any other)
 };
 
 class C4Menu : public C4GUI::Dialog

@@ -323,8 +323,9 @@ private:
 	public:
 		MapPic(const FLOAT_RECT &rcfBounds, const C4Facet &rfct); // ctor
 
-	protected:
 		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons - deselect everything if clicked
+
+	protected:
 		virtual void DrawElement(C4TargetFacet &cgo); // draw the image
 	};
 
@@ -398,11 +399,10 @@ public:
 
 	protected:
 		virtual void UpdateOwnPos(); // recalculate item positioning
-		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
-
 		void Update() {}
 
 	public:
+		virtual void MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 		C4ScenarioListLoader::Entry *GetEntry() const { return pScenListEntry; }
 		ScenListItem *GetNext() { return static_cast<ScenListItem *>(BaseClass::GetNext()); }
 

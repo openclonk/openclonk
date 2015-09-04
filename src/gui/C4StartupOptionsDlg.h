@@ -188,10 +188,9 @@ private:
 			class C4PlayerControlAssignmentSet *assignment_set; // pointer to assignment set (not owned!)
 
 			void UpdateAssignmentString();
-		protected:
+		public:
 			virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 
-		public:
 			ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds);
 		};
 

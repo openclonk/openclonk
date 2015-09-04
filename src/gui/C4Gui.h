@@ -483,8 +483,6 @@ namespace C4GUI
 
 		Control *pClickFocusControl; // control that gets focus if the label is clicked or hotkey is pressed
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
-
 		virtual void DrawElement(C4TargetFacet &cgo); // output label
 		virtual void UpdateOwnPos();
 
@@ -495,6 +493,8 @@ namespace C4GUI
 	public:
 		Label(const char *szLblText, int32_t iX0, int32_t iTop, int32_t iAlign=ALeft, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, bool fMakeReadableOnBlack = true, bool fMarkup=true); // ctor
 		Label(const char *szLblText, const C4Rect &rcBounds, int32_t iAlign=ALeft, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, bool fMakeReadableOnBlack = true, bool fAutosize = true, bool fMarkup=true); // ctor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
 
 		void SetText(const char *szToText, bool fAllowHotkey=true); // update text
 		const char *GetText() { return sText.getData(); } // retrieve current text
@@ -824,11 +824,12 @@ namespace C4GUI
 	protected:
 		C4Rect rcClientRect; // area for contained elements
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 		virtual void Draw(C4TargetFacet &cgo); // draw this window
 
 	public:
 		Window(); // ctor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 
 		void SetPos(int32_t iXPos, int32_t iYPos)
 		{ rcBounds.x=iXPos; rcBounds.y=iYPos; UpdatePos(); }
@@ -930,11 +931,11 @@ namespace C4GUI
 			if (pParent) pParent->ElementPosChanged(pOfElement);
 		}
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
-
 	public:
 		ScrollWindow(Window *pParentWindow); // create scroll window in client area of window
 		~ScrollWindow() { if (pScrollBar) pScrollBar->pScrollWindow = NULL; }
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 
 		virtual bool IsComponentOutsideClientArea() { return true; } // always clip drawing routine of subcomponents to Bounds
 		void Update();               // update client rect and scroll bar according to window
@@ -1007,11 +1008,12 @@ namespace C4GUI
 	protected:
 		C4FacetSurface fctPaint;
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
 		virtual void DrawElement(C4TargetFacet &cgo); // draw what has been painted
 	public:
 		PaintBox(C4Rect &rtBounds, int32_t iSfcWdt=-1, int32_t iSfcHgt=-1); // ctor
 		~PaintBox();                // dtor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse
 	};
 
 	// a control that may have focus
@@ -1021,7 +1023,6 @@ namespace C4GUI
 		class C4KeyBinding *pKeyContext;
 	protected:
 		virtual bool CharIn(const char *) { return false; }         // input: character key pressed - should return false for none-character-inputs
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click sets focus
 
 		void DisableFocus(); // called when control gets disabled: Make sure it loses focus
 		virtual bool IsFocusOnClick() { return true; } // defaultly, controls get focused on left-down
@@ -1034,6 +1035,8 @@ namespace C4GUI
 	public:
 		Control(const C4Rect &rtBounds);  // ctor
 		~Control();
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click sets focus
 
 		bool HasFocus() { return pParent && pParent->IsFocused(this); }
 		bool HasDrawFocus();
@@ -1075,9 +1078,6 @@ namespace C4GUI
 		uint32_t cHotkey;   // hotkey for this button
 		bool fEnabled;
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void MouseEnter(CMouse &rMouse); // mouse re-enters with button down: set button down
-		virtual void MouseLeave(CMouse &rMouse); // mouse leaves with button down: reset down state
 		virtual bool IsFocusOnClick() { return false; } // buttons don't get focus on click (for easier input, e.g. in chatbox)
 
 		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
@@ -1094,6 +1094,10 @@ namespace C4GUI
 	public:
 		Button(const char *szBtnText, const C4Rect &rtBounds); // ctor
 		~Button(); // dtor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		virtual void MouseEnter(CMouse &rMouse); // mouse re-enters with button down: set button down
+		virtual void MouseLeave(CMouse &rMouse); // mouse leaves with button down: reset down state
 
 		void SetText(const char *szToText); // update button text (and hotkey)
 		void SetCustomGraphics(DynBarFacet *pCustomGfx, DynBarFacet *pCustomGfxDown)
@@ -1283,7 +1287,6 @@ namespace C4GUI
 		bool fLeftBtnDown;         // flag whether left mouse button is down or not
 
 		virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 		virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow text selection outside the component
 		virtual bool IsFocusOnClick() { return true; } // edit fields do get focus on click
 		virtual void OnGetFocus(bool fByMouse);                     // edit control gets focus
@@ -1302,6 +1305,8 @@ namespace C4GUI
 		virtual int32_t GetMarginBottom() { return 2; }
 
 	public:
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+
 		const char *GetText() { return Text; }
 		void SelectAll(); // select all the text
 
@@ -1430,15 +1435,16 @@ namespace C4GUI
 
 	protected:
 		virtual void UpdateOwnPos();
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
-		virtual void MouseEnter(CMouse &rMouse);
-		virtual void MouseLeave(CMouse &rMouse);
 		virtual bool IsFocusOnClick() { return false; } // just check/uncheck on click; do not gain keyboard focus as well
 		virtual Control *IsFocusElement() { return fEnabled ? Control::IsFocusElement() : NULL; }; // this control can gain focus if enabled
 		virtual void DrawElement(C4TargetFacet &cgo); // draw checkbox
 		virtual bool OnHotkey(uint32_t cHotkey); // return true when hotkey has been processed
 
 	public:
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
+		virtual void MouseEnter(CMouse &rMouse);
+		virtual void MouseLeave(CMouse &rMouse);
+
 		void SetChecked(bool fToVal) { fChecked = fToVal; } // set w/o callback
 		bool GetChecked() const { return fChecked; }
 		void SetOnChecked(BaseCallbackHandler *pCB);
@@ -1486,7 +1492,6 @@ namespace C4GUI
 			// subcontrol also counts as focused if the list has focus and the subcontrol is selected
 			return Control::IsFocused(pCtrl) || (HasFocus() && pSelectedItem == pCtrl);
 		}
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 		virtual bool IsFocusOnClick() { return true; } // list boxes do get focus on click
 		virtual Control *IsFocusElement() { return this; }; // this control can gain focus
 		virtual void OnGetFocus(bool fByMouse); // callback when control gains focus - select a list item if none are selected
@@ -1500,6 +1505,8 @@ namespace C4GUI
 	public:
 		ListBox(const C4Rect &rtBounds, int32_t iMultiColItemWidth=0); // ctor
 		virtual ~ListBox(); // dtor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 
 		virtual void RemoveElement(Element *pChild); // remove child component
 		bool AddElement(Element *pChild, int32_t iIndent=0); // add element and adjust its pos
@@ -1634,7 +1641,6 @@ namespace C4GUI
 		bool KeyCloseTab(); // keyboard callback: Close current sheet if possible
 
 		virtual void DrawElement(C4TargetFacet &cgo);
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 		void MouseLeaveCaptionArea();
 		virtual void MouseLeave(CMouse &rMouse);
 		virtual void OnGetFocus(bool fByMouse);
@@ -1658,6 +1664,8 @@ namespace C4GUI
 	public:
 		Tabular(C4Rect &rtBounds, TabPosition eTabPos); // ctor
 		~Tabular(); // dtor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 
 		virtual void RemoveElement(Element *pChild); // clear ptr
 		Sheet *AddSheet(const char *szTitle, int32_t icoTitle = Ico_None);
@@ -1802,7 +1810,6 @@ namespace C4GUI
 		virtual void RemoveElement(Element *pChild); // clear ptr - abort menu if target is destroyed
 
 		virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 		void MouseLeaveEntry(CMouse &rMouse, Entry *pOldEntry); // callback: mouse leaves - deselect menu item if no submenu is open (callback done by menu item)
 
 		virtual void DrawElement(C4TargetFacet &cgo); // draw BG
@@ -1829,6 +1836,8 @@ namespace C4GUI
 	public:
 		ContextMenu();  // ctor
 		~ContextMenu(); // dtor
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 
 		void Open(Element *pTarget, int32_t iScreenX, int32_t iScreenY);
 		void Abort(bool fByUser);
@@ -1870,11 +1879,12 @@ namespace C4GUI
 	protected:
 		virtual void DrawElement(C4TargetFacet &cgo);    // draw btn
 
+		virtual bool IsFocusOnClick() { return false; } // don't select control on click
+
+	public:
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click opens menu
 		virtual void MouseEnter(CMouse &rMouse);
 		virtual void MouseLeave(CMouse &rMouse);
-
-		virtual bool IsFocusOnClick() { return false; } // don't select control on click
 	};
 
 
@@ -1955,10 +1965,6 @@ namespace C4GUI
 	protected:
 		virtual void DrawElement(C4TargetFacet &cgo);    // draw combo box
 
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click opens menu
-		virtual void MouseEnter(CMouse &rMouse); // called when mouse cursor enters element region
-		virtual void MouseLeave(CMouse &rMouse); // called when mouse cursor leaves element region
-
 		virtual bool IsFocusOnClick() { return false; } // don't select control on click
 		virtual Control *IsFocusElement() { return fReadOnly ? NULL : this; }; // this control can gain focus if not readonly
 
@@ -1967,6 +1973,10 @@ namespace C4GUI
 	public:
 		ComboBox(const C4Rect &rtBounds);
 		~ComboBox();
+
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click opens menu
+		virtual void MouseEnter(CMouse &rMouse); // called when mouse cursor enters element region
+		virtual void MouseLeave(CMouse &rMouse); // called when mouse cursor leaves element region
 
 		void SetComboCB(ComboBox_FillCB *pNewFillCallback);
 		static int32_t GetDefaultHeight();
@@ -2077,13 +2087,14 @@ namespace C4GUI
 		virtual DialogWindow* GetDialogWindow() { return pWindow; }
 
 		virtual bool CharIn(const char * c);                                 // input: character key pressed - should return false for none-character-inputs  (forward to focused control)
-		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls
 
 	private:
 		bool KeyHotkey(const C4KeyCodeEx &key);
 		bool KeyFocusDefault();
 
 	public:
+		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls
+
 		// default control to be set if unprocessed keyboard input has been detected
 		virtual class Control *GetDefaultControl() { return NULL; }
 
@@ -2584,7 +2595,6 @@ namespace C4GUI
 
 		bool KeyAny(); // to be called on keystrokes; resets some tooltip-times
 		virtual bool CharIn(const char * c);        // input: character key pressed - should return false for none-character-inputs
-		using Window::MouseInput;
 		bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, Dialog *pDlg, class C4Viewport *pVP); // input: mouse movement or buttons; sends MouseEnter/Leave; return whether inside dialog
 		void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
 		void SetMouseInGUI(bool fInGUI, bool fByMouse);
