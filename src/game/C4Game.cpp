@@ -620,7 +620,7 @@ void C4Game::Clear()
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
-	Application.SoundSystem.Init(); // clear it up and re-init it for startup menu use
+	Application.SoundSystem.Clear(); // will be re-inited by application pre-init if running from startup system
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
