@@ -2595,6 +2595,7 @@ namespace C4GUI
 
 		bool KeyAny(); // to be called on keystrokes; resets some tooltip-times
 		virtual bool CharIn(const char * c);        // input: character key pressed - should return false for none-character-inputs
+		using Window::MouseInput;
 		bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, Dialog *pDlg, class C4Viewport *pVP); // input: mouse movement or buttons; sends MouseEnter/Leave; return whether inside dialog
 		void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
 		void SetMouseInGUI(bool fInGUI, bool fByMouse);
