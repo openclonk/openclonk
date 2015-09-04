@@ -102,7 +102,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	Revision.Ref(C4REVISION);
 
 	// Engine header message
-	Log(C4ENGINEINFOLONG);
+	Log(C4ENGINECAPTION);
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 	LogF("ExePath: \"%s\"", Config.General.ExePath.getData());
 	LogF("SystemDataPath: \"%s\"", Config.General.SystemDataPath);

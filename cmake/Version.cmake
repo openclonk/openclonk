@@ -35,17 +35,12 @@ SET(C4COPYRIGHT_YEAR ${YEARFIXED})
 # Build version strings
 ############################################################################
 SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
-set(C4ENGINEINFO        "${C4ENGINENAME}")
 set(C4ENGINECAPTION "${C4ENGINENAME}")
 
 set(C4VERSION           "${C4XVER1}.${C4XVER2}")
 
 if(C4VERSIONEXTRA)
 	set(C4VERSION "${C4VERSION}-${C4VERSIONEXTRA}")
-endif()
-
-if(C4VERSIONBUILDNAME)
-	set(C4ENGINECAPTION "${C4ENGINECAPTION} ${C4VERSIONBUILDNAME}")
 endif()
 
 if(WIN32)
