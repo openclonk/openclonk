@@ -127,6 +127,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (hot > 0)
 	{
+		// Do not stop picking-up but nullify object selection.
+		// That way, you can still drop during pickup, but you won't automatically pickup stuff when you try to drop.
+		if (this.inventory.is_picking_up)
+		{
+			SetNextPickupItem(nil);
+		}
+		
 		this->~DropInventoryItem(hot-1);
 		return true;
 	}
