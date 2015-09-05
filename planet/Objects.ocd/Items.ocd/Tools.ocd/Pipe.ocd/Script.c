@@ -8,7 +8,6 @@ local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
-local ApertureOffsetY = 3; // pump from bottom vertex
 
 protected func Hit()
 {
@@ -62,5 +61,19 @@ protected func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
+/* Cycling through several aperture offset indices to prevent easy clogging */
+
+// default: pump from bottom vertex
+local ApertureOffsetX = 0;
+local ApertureOffsetY = 3;
+
+public func CycleApertureOffset()
+{
+	// Cycle in three steps of three px each through X and Y
+	// covering a 3x3 grid on points -3,0,+3
+	ApertureOffsetX = (ApertureOffsetX + 6) % 9 - 3;
+	if (!ApertureOffsetX) ApertureOffsetY = (ApertureOffsetY + 6) % 9 - 3;
+	return true;
+}
 
 

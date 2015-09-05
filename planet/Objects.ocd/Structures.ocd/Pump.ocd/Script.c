@@ -26,6 +26,9 @@ local stored_material_amount;
 local source_pipe;
 local drain_pipe;
 
+local clog_count; // increased when the pump doesn't find liquid or can't insert it. When it reaches max_clog_count, it will put the pump into temporary idle mode.
+local max_clog_count = 5; // note that even when max_clog_count is reached, the pump will search through offsets (but in idle mode)
+
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 
@@ -220,6 +223,7 @@ protected func Pumping()
 		}
 		else
 		{
+			source_obj->~CycleApertureOffset(this); // try different offsets, so we don't stop pumping just because 1px of earth was dropped on the source pipe
 			pump_ok = false;
 		}
 	}
@@ -236,6 +240,7 @@ protected func Pumping()
 			// Drain is stuck.
 			else
 			{
+				drain_obj->~CycleApertureOffset(this); // try different offsets, so we don't stop pumping just because 1px of earth was dropped on the drain pipe
 				pump_ok = false;
 				break;
 			}
@@ -246,8 +251,18 @@ protected func Pumping()
 			stored_material_index = nil;
 	}
 	
-	if (!pump_ok)
-		SetState("WaitForLiquid");
+	if (pump_ok)
+	{
+		clog_count = 0;
+	}
+	else
+	{
+		// Put into wait state if no liquid could be pumped for a while
+		if (++clog_count >= max_clog_count)
+		{
+			SetState("WaitForLiquid");
+		}
+	}
 	return;
 }
 
@@ -279,6 +294,7 @@ func CheckState()
 			// otherwise, pump! :-)
 			else
 			{
+				clog_count = 0;
 				SetState("Pump");
 			}
 			
@@ -390,12 +406,18 @@ private func HasLiquidToPump()
 	// source
 	var source_obj = GetSourceObject();
 	if(!source_obj->GBackLiquid(source_obj.ApertureOffsetX, source_obj.ApertureOffsetY))
+	{
+		source_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
 		return false;
+	}
 	
 	// target (test with the very popular liquid "water")
 	var drain_obj = GetDrainObject();
 	if(!drain_obj->CanInsertMaterial(Material("Water"),drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
+	{
+		drain_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
 		return false;
+	}
 	
 	return true;
 }
