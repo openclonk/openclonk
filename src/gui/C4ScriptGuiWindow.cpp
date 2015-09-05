@@ -437,7 +437,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 
 	if (isTaggedPropList)
 	{
-		C4ValueArray *properties = proplist->GetProperties();
+		std::unique_ptr<C4ValueArray> properties(proplist->GetProperties());
 		properties->SortStrings();
 		for (int32_t i = 0; i < properties->GetSize(); ++i)
 		{
@@ -449,7 +449,6 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 			proplist->GetPropertyByS(key, &property);
 			Set(property, key);
 		}
-		delete properties;
 		return;
 	}
 
@@ -682,6 +681,8 @@ C4ScriptGuiWindow::~C4ScriptGuiWindow()
 
 	if (pScrollBar)
 		delete pScrollBar;
+	if (name)
+		name->DecRef();
 }
 
 // helper function
@@ -973,11 +974,14 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 	assert((parent || isLoading) && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
-	// get properties from proplist and check for those, that match an allowed property to set them
-	C4ValueArray *properties = proplist->GetProperties();
+
+	// Get properties from proplist and check for those, that match an allowed property to set them;
+	// We take ownership here. Automatically destroy the object when we're done.
+	std::unique_ptr<C4ValueArray> properties(proplist->GetProperties());
 	properties->SortStrings();
 	C4String *stdTag = &Strings.P[P_Std];
-	for (int32_t i = 0; i < properties->GetSize(); ++i)
+	const int32_t propertySize = properties->GetSize();
+	for (int32_t i = 0; i < propertySize; ++i)
 	{
 		const C4Value &entry = properties->GetItem(i);
 		C4String *key = entry.getStr();
@@ -985,8 +989,6 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 		MenuDebugLogF("--%s\t\t(I am %d)", key->GetCStr(), id);
 		C4Value property;
 		proplist->GetPropertyByS(key, &property);
-
-		C4Value value;
 
 		if(&Strings.P[P_Left] == key)
 		{
@@ -1106,7 +1108,11 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 				if (!child)
 				{
 					child = new C4ScriptGuiWindow();
-					child->name = childName;
+					if (childName != nullptr)
+					{
+						child->name = childName;
+						child->name->IncRef();
+					}
 					AddChild(child);
 					freshlyAdded = true;
 				}
@@ -1115,10 +1121,7 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 				{
 					// Remove the child again if we just added it. However, ignore when just updating an existing child.
 					if (freshlyAdded)
-					{
 						RemoveChild(child, false);
-						child = NULL;
-					}
 				}
 				else
 					layoutUpdateRequired = true;
@@ -1131,8 +1134,6 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 
 	if (resetStdTag || isLoading)
 		SetTag(stdTag);
-
-	delete properties;
 
 	return true;
 }
@@ -1280,6 +1281,7 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 		if (child->GetID() != 0)
 			ChildWithIDRemoved(child);
 		RemoveElement(static_cast<C4GUI::Element*>(child));
+		// RemoveElement does NOT delete the child itself.
 		delete child;
 	}
 	else if (close) // close all children
