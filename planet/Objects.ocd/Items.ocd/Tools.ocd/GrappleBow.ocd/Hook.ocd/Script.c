@@ -80,10 +80,12 @@ private func Stick()
 		SetVertex(6, VTX_Y, -1, 2);
 
 		rope->HockAnchored();
-		for(var obj in FindObjects(Find_ID(GrappleBow), Find_Container(clonk)))
-			if(obj != grappler)
+		
+		// Draw in possible other active grapplers the clonk is using once this hook hits a solid area and sticks.
+		for (var obj in FindObjects(Find_ID(GrappleBow), Find_Container(clonk)))
+			if (obj != grappler)
 				obj->DrawRopeIn();
-//		StartPull();
+
 		ScheduleCall(this, "StartPull", 5); // TODO
 	}
 }
@@ -91,7 +93,6 @@ private func Stick()
 public func StartPull()
 {
 	pull = 1;
-
 	fx_hook = AddEffect("IntGrappleControl", clonk, 1, 1, this);
 	if(clonk->GetAction() == "Jump")
 	{
@@ -152,7 +153,9 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
-	RemoveEffect(nil, clonk, fx_hook);
+	// Only remove control effect if it is available, otherwise if fx_hook == nil RemoveEffect removes some other effect.
+	if (fx_hook)
+		RemoveEffect(nil, clonk, fx_hook);
 	RemoveObject();
 	return;
 }
@@ -352,7 +355,7 @@ public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 	if(tmp) return;
 	target->SetTurnType(0);
 	target->SetMeshTransformation(0, 2);
-  target->SetMeshTransformation(0, 3);
+ 	target->SetMeshTransformation(0, 3);
 	target->StopAnimation(target->GetRootAnimation(10));
 //	target->SetObjDrawTransform();
 	if(!target->GetHandAction())
@@ -360,7 +363,7 @@ public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 	
 	// grapple hook == this:
 	// if the hook is not already drawing in, break the rope
-	if(!GetEffect("DrawIn", this->GetRope()))
+	if (!GetEffect("DrawIn", this->GetRope()))
 	{
 		this->GetRope()->BreakRope();
 	}

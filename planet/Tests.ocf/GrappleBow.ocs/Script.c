@@ -1,6 +1,5 @@
 func InitializePlayer(int plr)
 {
-	Log("init plr");
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{

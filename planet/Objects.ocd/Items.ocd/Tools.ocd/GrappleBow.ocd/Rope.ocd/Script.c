@@ -91,7 +91,7 @@ public func MaxLengthReached()
 	{
 		for(var i = 0; i < ParticleCount; i++)
 			particles[i][1] = particles[i][0][:];
-		DrawIn(1);
+		DrawIn(true);
 	}
 }
 
@@ -121,10 +121,10 @@ func FxDrawInTimer()
 	}
 }
 
-func DrawIn(fNoControl)
+func DrawIn(bool no_control)
 {
 	DrawingIn = 1;
-	if(!GetEffect("DrawIn", this))
+	if (!GetEffect("DrawIn", this))
 	{
 		AddEffect("DrawIn", this, 1, 1, this);
 		SetFixed(0, 1);
@@ -132,8 +132,15 @@ func DrawIn(fNoControl)
 		objects[0][0]->SetYDir();
 		ConnectPull();
 		var clonk = objects[1][0];
-		if(clonk->Contained()) clonk = clonk->Contained();
-		if(!fNoControl) RemoveEffect("IntGrappleControl", clonk);
+		if (clonk->Contained()) 
+			clonk = clonk->Contained();
+		if (!no_control) 
+		{
+			// Make sure to only remove control effects for this rope.
+			var control_effect = GetEffect("IntGrappleControl", clonk);
+			if (control_effect && control_effect.CommandTarget->GetRope() == this)
+				RemoveEffect(nil, clonk, control_effect);
+		}
 	}
 }
 
