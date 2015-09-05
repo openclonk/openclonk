@@ -744,13 +744,13 @@
 		# Zoom
 		
 		[Assignment]
-		Key=Shift+Mouse1Wheel1Up
+		Key=Ctrl+Mouse1Wheel1Up
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomIn
   
 		[Assignment]
-		Key=Shift+Mouse1Wheel1Down
+		Key=Ctrl+Mouse1Wheel1Down
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomOut
