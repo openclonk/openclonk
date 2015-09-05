@@ -114,7 +114,7 @@ void C4MapScriptMatTexMask::UnmaskSpec(C4String *spec)
 		if (prefix_done) break;
 		++cspec;
 	}
-	std::vector<bool> mat_mask(C4M_MaxTexIndex, false);
+	std::vector<bool> mat_mask(C4M_MaxTexIndex+1, false);
 	if (SEqual(cspec, DrawFn_Transparent_Name))
 	{
 		// "Transparent" is zero index. Force to non-IFT
