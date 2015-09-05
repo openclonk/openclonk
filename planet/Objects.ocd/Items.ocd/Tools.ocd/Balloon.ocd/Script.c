@@ -1,53 +1,58 @@
-/*-- Balloon --*/
+/** 
+	Balloon
+	Inflatable balloon which acts like a parachute.
+*/
 
-local user;
 
 public func RejectUse(object clonk)
 {
 	// Disallow if directly above ground or water or if the Clonk is already holding onto something.
-	return GBackSemiSolid(0,15) || clonk->GetActionTarget() != nil;
+	return GBackSemiSolid(0, 15) || clonk->GetActionTarget() != nil;
 }
 
-func ControlUseStart(object clonk, int ix, int iy)
+public func ControlUseStart(object clonk)
 {
-	var balloon = CreateObjectAbove(BalloonDeployed,0,5);
-	balloon->SetSpeed(clonk->GetXDir(),clonk->GetYDir());
+	// Create the balloon and set its speed and rider.
+	var balloon = CreateObjectAbove(BalloonDeployed, 0, 5);
+	balloon->SetSpeed(clonk->GetXDir(), clonk->GetYDir());
+	balloon->SetRider(clonk);
+	balloon->SetParent(this);
 
-	//sound
+	// Sound.
 	Sound("BalloonInflate");
 
-	//Lots of object pointers
-	user = clonk;
-	clonk->SetAction("Ride",balloon);
-	balloon["rider"] = clonk;
-	balloon["parent"] = this;
+	// Make the clonk ride the balloon.
+	clonk->SetAction("Ride", balloon);
 
-	//make sure clonk is not diving
-	var side = "R";
-	if(Random(2)) side = "L";
-	user->PlayAnimation(Format("Jump.%s",side), 5, Anim_Linear(user->GetAnimationLength("Jump.L"), 0,
-		user->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Make sure clonk is not diving.
+	var side = ["L", "R"][Random(2)];
+	clonk->PlayAnimation(Format("Jump.%s", side), 5, Anim_Linear(clonk->GetAnimationLength("Jump.L"), 0, clonk->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
-	AddEffect("NoDrop",this,1,1,this);
-	return 1;
+	// Ensure the balloon is not dropped or thrown.
+	var effect = AddEffect("NoDrop", this, 1, 1, this);
+	effect.user = clonk;
+	return true;
 }
 
-func FxNoDropTimer(object target, effect, int timer)
+// Replace me by a callback which blocks departure.
+public func FxNoDropTimer(object target, proplist effect, int timer)
 {
-	if(target->Contained() != user)
-	{
-		target->Enter(user);
-	}
+	if (target->Contained() != effect.user)
+		target->Enter(effect.user);
+	return FX_OK;
 }
 
-func Hit()
+public func Hit()
 {
 	Sound("GeneralHit?");
 }
 
-func IsInventorProduct() { return true; }
+public func IsInventorProduct() { return true; }
 
-local Collectible = 1;
+
+/*-- Properties --*/
+
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
