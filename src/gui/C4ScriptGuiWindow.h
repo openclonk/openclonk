@@ -278,7 +278,7 @@ public:
 	C4ScriptGuiWindow *AddChild() { return AddChild(new C4ScriptGuiWindow()); }
 
 	void ClearChildren(bool close = true); // close: whether to properly "Close" them, alias for RemoveChild
-	void RemoveChild(C4ScriptGuiWindow *child, bool close = true, bool all = false); // child = 0 & all = true to clear all
+	void RemoveChild(C4ScriptGuiWindow *child, bool close = true, bool all = false); // child = 0 & all = true to clear all. Also deletes the child(ren).
 	void Close();
 	void ClearPointers(C4Object *pObj);
 

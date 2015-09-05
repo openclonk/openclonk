@@ -449,6 +449,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 			proplist->GetPropertyByS(key, &property);
 			Set(property, key);
 		}
+		delete properties;
 		return;
 	}
 
@@ -1114,7 +1115,10 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 				{
 					// Remove the child again if we just added it. However, ignore when just updating an existing child.
 					if (freshlyAdded)
+					{
 						RemoveChild(child, false);
+						child = NULL;
+					}
 				}
 				else
 					layoutUpdateRequired = true;
@@ -1127,6 +1131,8 @@ bool C4ScriptGuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTa
 
 	if (resetStdTag || isLoading)
 		SetTag(stdTag);
+
+	delete properties;
 
 	return true;
 }
@@ -1267,13 +1273,14 @@ void C4ScriptGuiWindow::RemoveChild(C4ScriptGuiWindow *child, bool close, bool a
 	if (!all && !IsRoot())
 		RequestLayoutUpdate();
 
-	if (child && close)
+	if (child)
 	{
 		child->wasRemoved = true;
-		child->Close();
+		if (close) child->Close();
 		if (child->GetID() != 0)
 			ChildWithIDRemoved(child);
 		RemoveElement(static_cast<C4GUI::Element*>(child));
+		delete child;
 	}
 	else if (close) // close all children
 	{
