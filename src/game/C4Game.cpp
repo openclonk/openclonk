@@ -1450,7 +1450,6 @@ void C4Game::Default()
 	Players.Default();
 	Weather.Default();
 	Landscape.Default();
-	TextureMap.Default();
 	::DefaultRanks.Default();
 	MassMover.Default();
 	PXS.Default();

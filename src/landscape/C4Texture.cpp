@@ -95,9 +95,9 @@ bool C4TexMapEntry::Init()
 	return true;
 }
 
-C4TextureMap::C4TextureMap()
+C4TextureMap::C4TextureMap() : FirstTexture(NULL), fEntriesAdded(false), fOverloadMaterials(false), fOverloadTextures(false), fInitialized(false)
 {
-	Default();
+	Order.reserve(C4M_MaxTexIndex);
 }
 
 C4TextureMap::~C4TextureMap()
@@ -182,6 +182,9 @@ void C4TextureMap::Clear()
 	}
 	FirstTexture=NULL;
 	fInitialized = false;
+	fEntriesAdded = false;
+	fOverloadMaterials = false;
+	fOverloadTextures = false;
 	Order.clear();
 	Order.reserve(C4M_MaxTexIndex);
 }
@@ -497,17 +500,6 @@ BYTE C4TextureMap::DefaultBkgMatTex(BYTE fg) const
 
 	return fg;
 
-}
-
-void C4TextureMap::Default()
-{
-	FirstTexture=NULL;
-	fEntriesAdded=false;
-	fOverloadMaterials=false;
-	fOverloadTextures=false;
-	fInitialized = false;
-	Order.clear();
-	Order.reserve(C4M_MaxTexIndex);
 }
 
 void C4TextureMap::RemoveEntry(int32_t iIndex)

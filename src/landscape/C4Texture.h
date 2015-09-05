@@ -79,7 +79,6 @@ public:
 public:
 	const C4TexMapEntry *GetEntry(int32_t iIndex) const { return Inside<int32_t>(iIndex, 0, C4M_MaxTexIndex-1) ? &Entry[iIndex] : NULL; }
 	void RemoveEntry(int32_t iIndex);
-	void Default();
 	void Clear();
 	void StoreMapPalette(CStdPalette *, C4MaterialMap &rMaterials);
 	static bool LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
