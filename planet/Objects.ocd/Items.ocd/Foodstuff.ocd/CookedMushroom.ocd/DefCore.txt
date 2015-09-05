@@ -2,9 +2,9 @@
 id=CookedMushroom
 Version=6,0
 Category=C4D_Object
-Width=12
-Height=20
-Offset=-6,-10
+Width=8
+Height=10
+Offset=-4,-5
 Vertices=2
 VertexX=0,0
 VertexY=1,4

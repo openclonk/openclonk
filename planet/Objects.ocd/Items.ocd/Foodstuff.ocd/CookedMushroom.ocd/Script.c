@@ -1,5 +1,11 @@
 /*-- Cooked Mushroom --*/
 
+
+protected func Construction()
+{
+	this.MeshTransformation = Trans_Rotate(RandomX(0, 359), 0, 1, 0);
+}
+
 func Hit()
 {
 	Sound("GeneralHit?");
@@ -7,7 +13,7 @@ func Hit()
 
 /* Eating */
 
-protected func ControlUse(object clonk, int iX, int iY)
+protected func ControlUse(object clonk)
 {
 	clonk->Eat(this);
 }
@@ -20,5 +26,5 @@ public func GetFuelNeed() { return 50; }
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
-local Collectible = 1;
+local Collectible = true;
 local Rebuy = 1;
