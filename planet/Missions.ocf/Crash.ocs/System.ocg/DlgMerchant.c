@@ -21,6 +21,7 @@ func Dlg_Merchant_2(object clonk)
 	}
 	else
 	{
+		options[i++] = ["$MerchantQGold$", "Dlg_Merchant_Gold"];
 		options[i++] = ["$MerchantQLake$", "Dlg_Merchant_Lake"];
 	}
 	options[i++] = ["$MerchantQDone$", "StopDialogue()"];
@@ -115,6 +116,13 @@ func Dlg_Merchant_Catapult(object clonk)
 func Dlg_Merchant_40(object clonk)
 {
 	MessageBox("$MerchantACatapult2$", clonk, clonk);
+	SetDialogueProgress(2);
+	return true;
+}
+
+func Dlg_Merchant_Gold(object clonk)
+{
+	MessageBox("$MerchantAGold$", clonk);
 	SetDialogueProgress(2);
 	return true;
 }
