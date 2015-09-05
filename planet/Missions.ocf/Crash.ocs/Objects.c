@@ -2,34 +2,34 @@
 
 func InitializeObjects()
 {
-	CreateObject(Ambience);
-
-	CreateObject(Grass, 555, 550);
+	CreateObjectAbove(Grass, 555, 551);
 	CreateObjectAbove(Grass, 533, 550);
 	CreateObjectAbove(Grass, 1306, 706);
+
+	CreateObject(Ambience);
 
 	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
 	CreateObjectAbove(Tree_Coniferous, 380, 877);
-	CreateObjectAbove(Tree_Coniferous, 210, 875);
-	CreateObjectAbove(Tree_Coniferous, 207, 871);
+
+	CreateObjectAbove(Tree_Coniferous2, 562, 563);
+	CreateObjectAbove(Tree_Coniferous2, 519, 561);
+
 	CreateObjectAbove(Tree_Coniferous, 252, 872);
 	CreateObjectAbove(Tree_Coniferous, 367, 874);
 	CreateObjectAbove(Tree_Coniferous, 309, 871);
-	CreateObjectAbove(Tree_Coniferous, 179, 874);
-	CreateObjectAbove(Tree_Coniferous, 271, 874);
-	CreateObjectAbove(Tree_Coniferous, 423, 547);
-	CreateObjectAbove(Tree_Coniferous, 496, 560);
-	CreateObjectAbove(Tree_Coniferous, 322, 554);
-	CreateObjectAbove(Tree_Coniferous, 1339, 367);
-	CreateObjectAbove(Tree_Coniferous, 1357, 360);
-	CreateObjectAbove(Tree_Coniferous, 1393, 314);
-	CreateObjectAbove(Tree_Coniferous, 1304, 387);
 
-	CreateObjectAbove(Fern, 1331, 704);
-	CreateObjectAbove(Fern, 1468, 664);
+	CreateObjectAbove(Tree_Coniferous2, 347, 565);
+	CreateObjectAbove(Tree_Coniferous2, 422, 558);
+	CreateObjectAbove(Tree_Coniferous2, 1329, 384);
+	CreateObjectAbove(Tree_Coniferous2, 1364, 364);
+	CreateObjectAbove(Tree_Coniferous2, 1389, 327);
+	CreateObjectAbove(Tree_Coniferous2, 1295, 398);
+
+	CreateObject(Fern, 1331, 701);
+	CreateObject(Fern, 1468, 661);
 	CreateObjectAbove(Fern, 1583, 696);
 
 	var Lichen001 = CreateObjectAbove(Lichen, 1377, 696);
@@ -56,10 +56,7 @@ func InitializeObjects()
 
 	CreateObjectAbove(Trunk, 1447, 682);
 
-	CreateObjectAbove(SproutBerryBush, 1286, 734);
-
-	CreateObjectAbove(Tree_Coniferous, 1297, 388);
-
+	CreateObjectAbove(SproutBerryBush, 1286, 726);
 	CreateObjectAbove(SproutBerryBush, 565, 861);
 
 	CreateObjectAbove(Wheat, 1345, 696);
@@ -70,11 +67,10 @@ func InitializeObjects()
 	var Chest001 = CreateObjectAbove(Chest, 264, 1287);
 
 	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 870);
-	WoodenCabin001->MakeInvincible();
 
 	CreateObjectAbove(Idol, 102, 871);
 
-	var Flagpole001 = CreateObjectAbove(Flagpole, 119, 872);
+	var Flagpole001 = CreateObject(Flagpole, 119, 838);
 	Flagpole001->SetNeutral(true);
 
 	var Lorry001 = CreateObject(Lorry, 76, 1290);
@@ -87,11 +83,12 @@ func InitializeObjects()
 
 	var Clonk001 = CreateObjectAbove(Clonk, 556, 546);
 	Clonk001->SetDir(DIR_Right);
+	Clonk001->SetColor(0xa05000);
 	Clonk001->SetObjectLayer(Clonk001);
 	Clonk001->SetName("Gyro");
 	Clonk001->SetSkin(2);
-	Clonk001->SetDialogue("Gyro", true);
-	Clonk001->SetColor(0xa05000);
+
+	Clonk001->SetDialogue("Gyro",true);
 
 	CreateObject(Rock, 279, 964);
 	CreateObject(Rock, 469, 1213);
@@ -123,7 +120,7 @@ func InitializeObjects()
 	CreateObject(Nugget, 369, 1282);
 	CreateObject(Nugget, 373, 1242);
 
-	CreateObject(Metal, 124, 1302);
+	CreateObjectAbove(Metal, 124, 1302);
 
 	CreateObject(Loam, 520, 947);
 	CreateObject(Loam, 403, 1007);
@@ -138,6 +135,11 @@ func InitializeObjects()
 	CreateObject(Loam, 1519, 721);
 	CreateObject(Loam, 1348, 718);
 	CreateObject(Loam, 1379, 349);
+	CreateObject(Loam, 559, 1120);
+	CreateObject(Loam, 505, 850);
+	CreateObject(Loam, 517, 858);
+	CreateObject(Loam, 530, 856);
+	CreateObject(Loam, 476, 618);
 
 	var Wood001 = CreateObject(Wood, 518, 1078);
 	Wood001->SetR(35);
@@ -147,9 +149,9 @@ func InitializeObjects()
 
 	CreateObjectAbove(Moss, 1357, 695);
 	CreateObjectAbove(Moss, 1269, 905);
-	CreateObject(Moss, 336, 557);
+	CreateObjectAbove(Moss, 336, 558);
 	CreateObject(Moss, 479, 553);
-	CreateObject(Moss, 523, 846);
+	CreateObjectAbove(Moss, 523, 847);
 
 	CreateObjectAbove(Crate, 155, 1302);
 	CreateObjectAbove(Crate, 139, 1302);
