@@ -45,7 +45,7 @@ private func GetPossibleObjects(id limit_definition)
 		sort = Sort_Distance();
 		check_id = Find_ID(limit_definition);
 	}
-	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Property("Collectible"), check_id, sort);
+	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(GetActionTarget()->GetObjectLayer()), check_id, sort);
 }
 
 public func OnPickUpObject(id symbol)
