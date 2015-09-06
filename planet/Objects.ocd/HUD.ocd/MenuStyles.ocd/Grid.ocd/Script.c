@@ -15,7 +15,7 @@ func Construction()
 
 func MakeEntryProplist(symbol, text)
 {
-	var custom_entry = {Bottom = "+4em", Right = "+4em", desc = {Style = GUI_TextRight | GUI_TextBottom}};
+	var custom_entry = {Bottom = "+2em", Right = "+2em", desc = {Style = GUI_TextRight | GUI_TextBottom}};
 	custom_entry.Symbol = symbol;
 	custom_entry.desc.Text = text;
 	custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};

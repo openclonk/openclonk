@@ -17,7 +17,7 @@ func Construction()
 	_inherited(...);
 	this.topic = 
 	{
-		Bottom = "3em",
+		Bottom = "1.5em",
 		BackgroundColor = RGB(50, 50, 50),
 		Style = GUI_TextHCenter | GUI_TextVCenter,
 		ID = 2,
@@ -33,9 +33,9 @@ func Construction()
 			ID = 5,
 			Target = this,
 			Left = "50%",
-			textbox = {Top = "12em"},
-			headline = {Top = "9em", Bottom = "11em", BackgroundColor = RGB(50, 50, 50), Style = GUI_TextVCenter | GUI_TextHCenter},
-			icon = {Bottom = "8em"}
+			textbox = {Top = "6em"},
+			headline = {Top = "4.5em", Bottom = "5.5em", BackgroundColor = RGB(50, 50, 50), Style = GUI_TextVCenter | GUI_TextHCenter},
+			icon = {Bottom = "4em"}
 		}
 	};
 	this.Target = this;

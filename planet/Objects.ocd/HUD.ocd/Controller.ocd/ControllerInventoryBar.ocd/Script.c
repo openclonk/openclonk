@@ -13,9 +13,9 @@
 */
 
 // all values given in 10 em (-> 10 = 1.0em)
-static const GUI_Controller_InventoryBar_IconMarginScreenBottom = 2; // margin from left border of screen
-static const GUI_Controller_InventoryBar_IconSize = 40;
-static const GUI_Controller_InventoryBar_IconMargin = 10;
+static const GUI_Controller_InventoryBar_IconMarginScreenBottom = 1; // margin from left border of screen
+static const GUI_Controller_InventoryBar_IconSize = 20;
+static const GUI_Controller_InventoryBar_IconMargin = 5;
 
 local inventory_slots;
 local inventory_gui_target;

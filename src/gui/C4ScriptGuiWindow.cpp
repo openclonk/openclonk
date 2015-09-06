@@ -50,8 +50,18 @@
 #define MenuDebugLogF(...) ((void)0)
 
 // This in in EM! Also, golden ratio
-const float C4ScriptGuiWindow::standardWidth = 100.0f;
-const float C4ScriptGuiWindow::standardHeight = 61.8f;
+const float C4ScriptGuiWindow::standardWidth = 50.0f;
+const float C4ScriptGuiWindow::standardHeight = 31.0f;
+
+float C4ScriptGuiWindow::Em2Pix(float em)
+{
+	return static_cast<float>(::GraphicsResource.FontRegular.GetFontHeight()) * em;
+}
+
+float C4ScriptGuiWindow::Pix2Em(float pix)
+{
+	return pix / static_cast<float>(::GraphicsResource.FontRegular.GetFontHeight());
+}
 
 C4ScriptGuiWindowAction::~C4ScriptGuiWindowAction()
 {

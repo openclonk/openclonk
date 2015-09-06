@@ -7,8 +7,8 @@
 
 
 // HUD margin and size in tenths of em.
-static const GUI_Controller_Goal_IconSize = 60;
-static const GUI_Controller_Goal_IconMargin = 10;
+static const GUI_Controller_Goal_IconSize = 30;
+static const GUI_Controller_Goal_IconMargin = 5;
 
 // Local variables to keep track of the goal HUD menu.
 local goal_gui_target;
@@ -115,7 +115,7 @@ private func OpenGoalWindow(int plr)
 {
 	var goals = FindObjects(Find_Category(C4D_Goal));
 	var nr_goals = GetLength(goals);
-	var menu_width = BoundBy(nr_goals * 4, 20, 40); // in em
+	var menu_width = BoundBy(nr_goals * 2, 10, 20); // in em
 	
 	// Create a menu target.
 	goal_info_target = CreateObject(Dummy, AbsX(0), AbsY(0), plr);
@@ -132,8 +132,8 @@ private func OpenGoalWindow(int plr)
 		Decoration = GUI_MenuDeco,
 		Left = Format("50%%-%dem", menu_width),
 		Right = Format("50%%+%dem", menu_width),
-		Top = "50%-8em",
-		Bottom = "50%+16em",
+		Top = "50%-4em",
+		Bottom = "50%+8em",
 		BackgroundColor = {Std = 0},
 		OnClose = GuiAction_Call(this, "OnGoalWindowClosed"),
 	};
@@ -148,7 +148,7 @@ private func OpenGoalWindow(int plr)
 		ID = 1,
 		Left = "0%",
 		Right = "100%",
-		Top = "0%+8em",
+		Top = "0%+4em",
 		Bottom = "100%",
 		Text = "",
 		BackgroundColor = {Std = 0},	
@@ -188,7 +188,7 @@ public func OnGoalWindowClosed()
 private func GoalSubMenu(object goal, int nr, int size)
 {
 	if (size == nil)
-		size = 8;
+		size = 4;
 	
 	// Create the goal submenu with id counting upwards from 2.
 	var prop_goal = 
@@ -212,10 +212,10 @@ private func GoalSubMenu(object goal, int nr, int size)
 		prop_goal.star = 
 		{
 			Target = goal_info_target,
-			Left = "100%-2em",
+			Left = "100%-1em",
 			Right = "100%",
 			Top = "0%",
-			Bottom = "0%+2em",
+			Bottom = "0%+1em",
 			Symbol = Icon_Ok,
 			BackgroundColor = {Std = 0},	
 		};

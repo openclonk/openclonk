@@ -61,10 +61,10 @@ public func GetBuyMenuEntries(object clonk)
 	// default design of a control menu item
 	var custom_entry = 
 	{
-		Right = "8em", Bottom = "4em",
+		Right = "4em", Bottom = "2em",
 		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Right = "4em", Style = GUI_TextBottom | GUI_TextRight},
-		price = {Left = "4em", Priority = 3}
+		image = {Right = "2em", Style = GUI_TextBottom | GUI_TextRight},
+		price = {Left = "2em", Priority = 3}
 	};
 	
 	var wealth = GetWealth(GetOwner()); // Note that the flag owner pays for everything atm. 

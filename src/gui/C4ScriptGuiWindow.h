@@ -340,9 +340,9 @@ public:
 	void OnMouseIn(int32_t player, int32_t parentOffsetX, int32_t parentOffsetY);
 	bool HasMouseFocus() { return currentMouseState & MouseState::Focus; }
 private:
-	// TODO: actually scale with font size (needs font to be able to scale first..)
-	float Em2Pix(float em) { return 12.0f * em; }
-	float Pix2Em(float pix) { return pix / 12.0f; }
+	// Use the currently loaded font to determine on-screen size of 1 EM.
+	static float Em2Pix(float em);
+	static float Pix2Em(float pix);
 };
 
 #endif

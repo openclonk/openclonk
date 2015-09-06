@@ -58,10 +58,10 @@ public func GetPumpControlMenuEntries(object clonk)
 	// default design of a control menu item
 	var custom_entry = 
 	{
-		Right = "100%", Bottom = "4em",
+		Right = "100%", Bottom = "2em",
 		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Right = "4em"},
-		text = {Left = "4em"}
+		image = {Right = "2em"},
+		text = {Left = "2em"}
 	};
 	
 	if (!switched_on)

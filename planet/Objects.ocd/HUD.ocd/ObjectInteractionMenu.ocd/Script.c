@@ -8,7 +8,7 @@
 local Name = "$Name$";
 local Description = "$Description$";
 
-static const InteractionMenu_SideBarSize = 80; // in tenth-em
+static const InteractionMenu_SideBarSize = 40; // in tenth-em
 
 static const InteractionMenu_Contents = 2;
 static const InteractionMenu_Custom = 4;
@@ -258,8 +258,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
 	var part_menu =
 	{
-		Left = "0%", Right = "50%-2em",
-		Bottom = "100%-14em",
+		Left = "0%", Right = "50%-1em",
+		Bottom = "100%-7em",
 		sidebar = sidebar, main = main,
 		Target = current_menus[slot].menu_object,
 		ID = 1
@@ -267,7 +267,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	
 	if (slot == 1)
 	{
-		part_menu.Left = "50%+2em";
+		part_menu.Left = "50%+1em";
 		part_menu.Right = "100%";
 	}
 	
@@ -298,8 +298,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			minimize_button = 
 			{
 				Bottom = "100%",
-				Top = "100% - 2em",
-				Right = "8em",
+				Top = "100% - 1em",
+				Right = "4em",
 				Text = "$Minimize$",
 				BackgroundColor = {Std = RGB(50, 50, 50), OnHover = RGB(200, 0, 0)},
 				OnMouseIn = GuiAction_SetTag("OnHover"),
@@ -308,16 +308,16 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			},
 			center_column =
 			{
-				Left = "50%-2em",
-				Right = "50%+2em",
+				Left = "50%-1em",
+				Right = "50%+1em",
 				Top = "1.75em",
-				Bottom = "100%-14em",
+				Bottom = "100%-7em",
 				Style = GUI_VerticalLayout,
 				move_all_left =
 				{
 					Target = current_center_column_target,
 					ID = 10 + 0,
-					Right = "4em", Bottom = "6em",
+					Right = "2em", Bottom = "3em",
 					Style = GUI_TextHCenter | GUI_TextVCenter,
 					Symbol = Icon_MoveItems, GraphicsName = "Left",
 					Tooltip = "",
@@ -330,7 +330,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 				{
 					Target = current_center_column_target,
 					ID = 10 + 1,
-					Right = "4em", Bottom = "6em",
+					Right = "2em", Bottom = "3em",
 					Style = GUI_TextHCenter | GUI_TextVCenter,
 					Symbol = Icon_MoveItems,
 					Tooltip = "",
@@ -342,21 +342,21 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			},
 			description_box =
 			{
-				Top = "100%-10em",
+				Top = "100%-5em",
 				Margin = [sidebar_size_em, "0em"],
 				BackgroundColor = RGB(25, 25, 25),
 				symbol_part =
 				{
-					Right = "10em",
+					Right = "5em",
 					Symbol = nil,
-					Margin = "1em",
+					Margin = "0.5em",
 					ID = 1,
 					Target = current_description_box.symbol_target
 				},
 				desc_part =
 				{
-					Left = "10em",
-					Margin = "1em",
+					Left = "5em",
+					Margin = "0.5em",
 					ID = 1,
 					Target = current_description_box.target,
 					real_contents = // nested one more time so it can dynamically be replaced without messing up the layout
@@ -534,8 +534,8 @@ func CreateSideBar(int slot)
 			OnMouseOut = GuiAction_SetTag("Std"),
 			OnClick = GuiAction_Call(this, "OnSidebarEntrySelected", {slot = slot, obj = obj}),
 			Text = obj->GetName(),
-			obj_symbol = {Symbol = obj, Margin = "0.5em", Priority = 1},
-			obj_symbol_deactivated = {Symbol = deactivation_symbol, Margin = "1.0em", Priority = 2, Target = obj, ID = 1 + slot}
+			obj_symbol = {Symbol = obj, Margin = "0.25em", Priority = 1},
+			obj_symbol_deactivated = {Symbol = deactivation_symbol, Margin = "0.5em", Priority = 2, Target = obj, ID = 1 + slot}
 		};
 		
 		GuiAddSubwindow(entry, sidebar);
@@ -577,13 +577,13 @@ func CreateMainMenu(object obj, int slot)
 		Right = Format("100%% %s", ToEmString(-InteractionMenu_SideBarSize)),
 		container =
 		{
-			Top = "2em",
+			Top = "1em",
 			Style = GUI_VerticalLayout,
 			BackgroundColor = RGB(25, 25, 25),
 		},
 		headline = 
 		{
-			Bottom = "2em",
+			Bottom = "1em",
 			Text = obj->GetName(),
 			Style = GUI_TextHCenter | GUI_TextVCenter,
 			BackgroundColor = 0xff000000
@@ -646,11 +646,10 @@ func CreateMainMenu(object obj, int slot)
 		}
 		menu.menu_object = CreateObject(MenuStyle_Grid);
 		
-		menu.menu_object.Top = "+2em";
+		menu.menu_object.Top = "+1em";
 		menu.menu_object.Priority = 2;
 		menu.menu_object->SetPermanent();
 		menu.menu_object->SetFitChildren();
-		//menu.menu_object.Bottom = "4em";
 		menu.menu_object->SetMouseOverCallback(this, "OnMenuEntryHover");
 		for (var e = 0; e < GetLength(menu.entries); ++e)
 		{
@@ -668,15 +667,15 @@ func CreateMainMenu(object obj, int slot)
 			{
 				Priority = 1,
 				Style = GUI_TextVCenter | GUI_TextHCenter,
-				Bottom = "+1.5em",
+				Bottom = "+0.75em",
 				Text = menu.title,
 				BackgroundColor = 0xa0000000,
 				//Decoration = menu.decoration
-				hline = {Bottom = "0.1em", BackgroundColor = RGB(100, 100, 100)}
+				hline = {Bottom = "0.05em", BackgroundColor = RGB(100, 100, 100)}
 			},
-			Margin = [nil, nil, nil, "0.5em"],
+			Margin = [nil, nil, nil, "0.25em"],
 			real_menu = menu.menu_object,
-			spacer = {Left = "0em", Right = "0em", Bottom = "6em"} // guarantees a minimum height
+			spacer = {Left = "0em", Right = "0em", Bottom = "3em"} // guarantees a minimum height
 		};
 		if (menu.flag == InteractionMenu_Contents)
 			all.BackgroundColor = RGB(0, 50, 0);
@@ -885,11 +884,11 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
 				// Pack it into a larger frame to allow for another button below.
 				// The entries with contents are sorted to the back of the inventory menu. This makes for a nicer layout.
-				custom = {Right = custom.Right, Bottom = "8em", top = custom, Priority = 10000 + obj->GetValue()};
+				custom = {Right = custom.Right, Bottom = "4em", top = custom, Priority = 10000 + obj->GetValue()};
 				// Then add a little container-symbol (that can be clicked).
 				custom.bottom =
 				{
-					Top = "4em",
+					Top = "2em",
 					BackgroundColor = {Std = 0, Selected = RGBa(255, 100, 100, 100)},
 					OnMouseIn = GuiAction_SetTag("Selected"),
 					OnMouseOut = GuiAction_SetTag("Std"),
@@ -910,7 +909,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 					custom.bottom.contents = 
 					{
 						Symbol = obj->Contents(0)->GetID(),
-						Margin = "0.25em",
+						Margin = "0.125em",
 						Priority = 2
 					};
 					// Possibly add text for stackable items - this is an special exception for the Library_Stackable.
@@ -922,8 +921,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 						custom.bottom.contents.Style = GUI_TextBottom | GUI_TextRight;
 					}
 					// Also make the chest smaller, so that the contents symbol is not obstructed.
-					custom.bottom.container.Bottom = "2em";
-					custom.bottom.container.Left = "2em";
+					custom.bottom.container.Bottom = "1em";
+					custom.bottom.container.Left = "1em";
 				}
 			}
 			// Add to menu!

@@ -35,16 +35,16 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 		Target = menu,
 		inner =
 		{
-			Margin = "1em",
+			Margin = "0.5em",
 			header =
 			{
-				Bottom = "2em",
-				icon = {Symbol = symbol, Right = "2em", Bottom = "2em"}, 
-				caption = {Left = "2em", Text = caption, Style = GUI_TextVCenter}
+				Bottom = "1em",
+				icon = {Symbol = symbol, Right = "1em", Bottom = "1em"}, 
+				caption = {Left = "1em", Text = caption, Style = GUI_TextVCenter}
 			},
 			body =
 			{
-				Top = "2em",
+				Top = "1em",
 				items =
 				{
 					Right = "50%",
@@ -72,8 +72,8 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 		ID = ID,
 		BackgroundColor = {Std = 0, Hover = 0x50ff0000},
 		Symbol = symbol,
-		Right = "+4em",
-		Bottom = "+4em",
+		Right = "+2em",
+		Bottom = "+2em",
 		Text = Format("%dx", count),
 		Priority = ID,
 		OnClick = GuiAction_Call(this, "OnClick", [symbol, ID, command, parameter]),

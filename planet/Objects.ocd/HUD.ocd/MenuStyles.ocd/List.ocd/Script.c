@@ -62,7 +62,7 @@ func SetMouseOutCallback(proplist target, callback)
 // can be overloaded for custom menu styles
 func MakeEntryProplist(symbol, text)
 {
-	var custom_entry = {Bottom = "+4em", sym = {Right = "+4em", Bottom = "+4em"}, desc = {Left = "+4em"}};
+	var custom_entry = {Bottom = "+2em", sym = {Right = "+2em", Bottom = "+2em"}, desc = {Left = "+2em"}};
 	custom_entry.sym.Symbol = symbol;
 	custom_entry.desc.Text = text;
 	custom_entry.desc.Style = GUI_TextVCenter;

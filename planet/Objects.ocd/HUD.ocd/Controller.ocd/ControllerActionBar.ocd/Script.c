@@ -10,8 +10,8 @@ static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
 
 static const GUI_Controller_ActionBar_Delay = 20; // delay before the action bar is shown when pressing Interact
 // all values given in 10 em (-> 10 = 1.0em)
-static const GUI_Controller_ActionBar_IconSize = 80;
-static const GUI_Controller_ActionBar_Margin = 20;
+static const GUI_Controller_ActionBar_IconSize = 40;
+static const GUI_Controller_ActionBar_Margin = 10;
 
 local interaction_check_active;
 local actionbar_gui_target;
@@ -209,8 +209,8 @@ func UpdateActionBarDisplay()
 			info_icon =
 			{
 				Priority = 2,
-				Left = "+1em", Right = "0%+4.5em",
-				Top = "+1em", Bottom = "0%+4.5em"
+				Left = "+0.5em", Right = "0%+2.2em",
+				Top = "+0.5em", Bottom = "0%+2.2em"
 			},
 			OnClick = GuiAction_Call(this, "OnActionBarSelected", button_number),
 			OnMouseIn = GuiAction_SetTag("OnHover"), 

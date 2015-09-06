@@ -7,8 +7,8 @@
 
 
 // HUD margin and size in tenths of em.
-static const GUI_Controller_Wealth_IconSize = 60;
-static const GUI_Controller_Wealth_IconMargin = 10;
+static const GUI_Controller_Wealth_IconSize = 30;
+static const GUI_Controller_Wealth_IconMargin = 5;
 
 // Local variables to keep track of the wealth HUD menu.
 local wealth_gui_target;

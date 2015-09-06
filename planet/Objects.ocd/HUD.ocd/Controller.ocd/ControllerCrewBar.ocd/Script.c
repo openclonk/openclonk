@@ -9,8 +9,8 @@
 // TODO: Use old bars.
 
 // HUD margin and size in tenths of em.
-static const GUI_Controller_CrewBar_IconSize = 80;
-static const GUI_Controller_CrewBar_IconMargin = 10;
+static const GUI_Controller_CrewBar_IconSize = 40;
+static const GUI_Controller_CrewBar_IconMargin = 5;
 
 // Local variables to keep track of the crew HUD menu.
 local crew_gui_target;
@@ -309,8 +309,8 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 			Style = GUI_NoCrop,
 			Left = "0%",
 			Right = "100%",
-			Top = "100%+0.4em",
-			Bottom = "100%+1.3em",
+			Top = "100%+0.2em",
+			Bottom = "100%+0.65em",
 			BackgroundColor = RGB(40, 40, 40),
 			Priority = 6,
 			value = 
@@ -318,16 +318,16 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 				Target = crew_gui_target,
 				ID = 100 * (index + 1) + 9,
 				Style = GUI_NoCrop,
-				Left = "0.2em",
+				Left = "0.1em",
 				Right = Format("%s%s", ToPercentString(health_ratio), ToEmString((500 - health_ratio) / 250)),
-				Margin = ["0em", ToEmString(2)],
+				Margin = ["0em", "0.1em"],
 				BackgroundColor = RGB(160, 0, 0),
 				Priority = 7,
 				text = 
 				{
 					Target = crew_gui_target,
 					ID = 100 * (index + 1) + 10,
-					Top = "-0.9em",
+					Top = "-0.45em",
 					Style = GUI_TextHCenter,
 					Text = Format("<c dddd00>%d</c>", health_val),
 					Priority = 8,
@@ -341,8 +341,8 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 			Style = GUI_NoCrop,
 			Left = "0%",
 			Right = "100%",
-			Top = "100%+1.5em",
-			Bottom = "100%+2.4em",
+			Top = "100%+0.75em",
+			Bottom = "100%+1.2em",
 			Priority = 6,
 			value = 
 			{
@@ -350,7 +350,7 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 				ID = 100 * (index + 1) + 12,
 				Left = "0.2em",
 				Right = Format("%s%s", ToPercentString(breath_ratio), ToEmString((500 - breath_ratio) / 250)),
-				Margin = ["0em", ToEmString(2)],
+				Margin = ["0em", "0.1em"],
 				Priority = 7,
 			},
 		},
@@ -448,7 +448,7 @@ private func CrewHUDMenuUpdateHealth(object clonk, int health, int health_ratio)
 	if (!crew_menu)
 		return;
 	var health_menu = crew_menu[0].health;
-	health_menu.value.Right = Format("%s%s", ToPercentString(health_ratio), ToEmString((500 - health_ratio) / 250));
+	health_menu.value.Right = Format("%s%s", ToPercentString(health_ratio), ToEmString((500 - health_ratio) / 500));
 	health_menu.value.text.Text = Format("<c dddd00>%d</c>", health);
 	GuiUpdate(health_menu, crew_gui_id, health_menu.ID, health_menu.Target);
 	return;
@@ -460,7 +460,7 @@ private func CrewHUDMenuUpdateBreath(object clonk, int breath, int breath_ratio)
 	if (!crew_menu)
 		return;
 	var breath_menu = crew_menu[0].breath;
-	breath_menu.value.Right = Format("%s%s", ToPercentString(breath_ratio), ToEmString((500 - breath_ratio) / 250));
+	breath_menu.value.Right = Format("%s%s", ToPercentString(breath_ratio), ToEmString((500 - breath_ratio) / 500));
 	GuiUpdate(breath_menu, crew_gui_id, breath_menu.ID, breath_menu.Target);
 	return;
 }

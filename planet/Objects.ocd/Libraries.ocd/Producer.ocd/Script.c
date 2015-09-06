@@ -57,14 +57,14 @@ public func GetProductionMenuEntries()
 
 	var custom_entry = 
 	{
-		Right = "8em%", Bottom = "4em",
+		Right = "4em", Bottom = "2em",
 		// BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Prototype = control_prototype, Right = "4em", Style = GUI_TextBottom | GUI_TextRight},
+		image = {Prototype = control_prototype, Right = "2em", Style = GUI_TextBottom | GUI_TextRight},
 		controls = 
 		{
-			Left = "4em",
-			remove = {Prototype = control_prototype, Bottom = "2em", Symbol = Icon_Number, GraphicsName = "Minus", Tooltip = "$QueueRemove$"},
-			endless = {Prototype = control_prototype, Top = "2em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
+			Left = "2em",
+			remove = {Prototype = control_prototype, Bottom = "1em", Symbol = Icon_Number, GraphicsName = "Minus", Tooltip = "$QueueRemove$"},
+			endless = {Prototype = control_prototype, Top = "1em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
 		}
 	};
 	
@@ -139,7 +139,7 @@ public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 		Text = Format("%s:|%s", symbol.Name, symbol.Description,),
 		requirements = 
 		{
-			Top = "100% - 2em",
+			Top = "100% - 1em",
 			Style = GUI_TextBottom
 		}
 	};

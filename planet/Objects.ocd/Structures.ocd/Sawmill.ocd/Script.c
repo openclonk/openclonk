@@ -58,9 +58,9 @@ public func GetProductionMenuEntries()
 {
 	return [{symbol = Wood, custom =
 				{
-					Right = "100%", Bottom = "8em",
-					text = {Left = "4em", Text = "$AutoProduction$", Style = GUI_TextVCenter | GUI_TextHCenter},
-					image = {Right = "4em", Bottom = "4em", Symbol = Wood}
+					Right = "100%", Bottom = "4em",
+					text = {Left = "2em", Text = "$AutoProduction$", Style = GUI_TextVCenter | GUI_TextHCenter},
+					image = {Right = "2em", Bottom = "2em", Symbol = Wood}
 				}
 			}];
 }

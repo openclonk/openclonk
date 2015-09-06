@@ -227,17 +227,17 @@ public func GetDamageMenuEntries()
 	
 	var menu = 
 	{
-		Bottom = "4em",
+		Bottom = "2em",
 		right =
 		{
-			Left = "4em",
-			Right = "100% - 1em",
-			bottom = {Top = "50%", Margin = "0.2em", BackgroundColor = RGB(0, 0, 0)},
+			Left = "2em",
+			Right = "100% - 0.5em",
+			bottom = {Top = "50%", Margin = "0.1em", BackgroundColor = RGB(0, 0, 0)},
 			top = {Text = damage_text, Style = GUI_TextHCenter}
 		},
 		symbol = 
 		{
-			Right = "4em",
+			Right = "2em",
 			Symbol = Hammer
 		}
 	};
@@ -250,7 +250,7 @@ public func GetDamageMenuEntries()
 		if (GetDamage() == 0)
 		{
 			// Cross out hammer symbol.
-			menu.symbol.overlay = {Margin = "0.5em", Symbol = Icon_Cancel};
+			menu.symbol.overlay = {Margin = "0.25em", Symbol = Icon_Cancel};
 		}
 	}
 	

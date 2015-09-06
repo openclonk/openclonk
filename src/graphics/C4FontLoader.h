@@ -145,7 +145,14 @@ public:
 #else
 		return iLineHgt;
 #endif
-	}	// Sometimes, only the width of a text is needed
+	}
+	// get height of the font in pixels (without line spacing)
+	inline int GetFontHeight() const
+	{
+		// Currently, we do not use spacing between lines - if someone implements that, this needs to be adjusted.
+		return GetLineHeight();
+	}
+	// Sometimes, only the width of a text is needed
 	int32_t GetTextWidth(const char *szText, bool fCheckMarkup = true) { int32_t x, y; GetTextExtent(szText, x, y, fCheckMarkup); return x; }
 	// insert line breaks into a message and return overall height - uses and regards '|' as line breaks
 	int BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOutLen, bool fCheckMarkup, float fZoom=1.0f);

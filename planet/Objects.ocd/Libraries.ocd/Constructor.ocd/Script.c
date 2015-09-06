@@ -225,7 +225,7 @@ public func OpenConstructionMenu(object clonk)
 	menu_controller = clonk;
 	
 	// Size of the grid items in em.
-	var item_size = 8; 
+	var item_size = 4; 
 	
 	// Construction menu proplist.
 	menu =
@@ -240,7 +240,7 @@ public func OpenConstructionMenu(object clonk)
 	menu.separator =
 	{
 		Left = "60%",
-		Right = "60%+1em",
+		Right = "60%+0.5em",
 		BackgroundColor = {Std = 0x50888888}	
 	};
 
@@ -269,16 +269,16 @@ public func CreateStructureInfo()
 	{
 		Target = menu_target,
 		ID = 2,
-		Left = "60%+1em"
+		Left = "60%+0.5em"
 	};
 	// Bottom part for material costs, description and other written information.
 	structinfo.description = 
 	{
 		Target = menu_target,
 		Priority = 0x0fffff,
-		Left = "0.5em",
-		Right = "100%-0.5em",
-		Top = "100%-6em",
+		Left = "0.25em",
+		Right = "100%-0.25em",
+		Top = "100%-3em",
 		Bottom = "100%",	
 		Text = nil // will be updated
 	};
@@ -286,40 +286,40 @@ public func CreateStructureInfo()
 	{
 		Target = menu_target,
 		Priority = 0x0fffff,
-		Left = "0.5em",
-		Right = "100%-0.5em",
-		Top = "100%-10em",
-		Bottom = "100%-6em",	
+		Left = "0.25em",
+		Right = "100%-0.25em",
+		Top = "100%-5em",
+		Bottom = "100%-3em",	
 		Text = nil // will be updated
 	};
 	// Upper part is for the picture and power display.
 	structinfo.picture = 
 	{
 		Target = menu_target,
-		Bottom = "100%-10em",
-		Margin = ["10%+1em"],
+		Bottom = "100%-5em",
+		Margin = ["10%+0.5em"],
 		Symbol = nil, // will be updated
 		power_consumer =
 		{
 			Target = menu_target,
-			Right = "3em",
-			Bottom = "3em",	
+			Right = "1.5em",
+			Bottom = "1.5em",	
 			Symbol = nil // will be updated
 		},
 		power_producer = 
 		{
 			Target = menu_target,
-			Left = "3em",
-			Right = "6em",
-			Bottom = "3em",	
+			Left = "1.5em",
+			Right = "3em",
+			Bottom = "1.5em",	
 			Symbol = nil // will be updated
 		}	
 	};
 	structinfo.close_button = 
 	{
 		Target = menu_target,
-		Left = "100%-4em", 
-		Bottom = "4em",
+		Left = "100%-2em", 
+		Bottom = "2em",
 		Symbol = Icon_Cancel,
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
 		OnMouseIn = GuiAction_SetTag("Hover"),
