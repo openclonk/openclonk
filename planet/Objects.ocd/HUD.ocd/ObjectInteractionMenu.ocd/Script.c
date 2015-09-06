@@ -13,6 +13,15 @@ static const InteractionMenu_SideBarSize = 80; // in tenth-em
 static const InteractionMenu_Contents = 2;
 static const InteractionMenu_Custom = 4;
 
+/*
+	This contains an array with a proplist for every player number.
+	The attributes are also always attached to every interaction menu on creation (menu.minimized = InteractionMenu_Attributes[plr].minimized;).
+	The following properties are either used or nil:
+		minimized (bool): whether the player minimized the menu.
+			A minimized menu does not show some elements (like the description box).
+*/
+static InteractionMenu_Attributes;
+
 local current_objects;
 
 /*
@@ -89,6 +98,21 @@ func CreateFor(object cursor)
 {
 	var obj = CreateObject(GUI_ObjectInteractionMenu, AbsX(0), AbsY(0), cursor->GetOwner());
 	obj.Visibility = VIS_Owner;
+	
+	if (InteractionMenu_Attributes == nil)
+		InteractionMenu_Attributes = [];
+	
+	// Transfer some attributes from the player configuration.
+	if (GetLength(InteractionMenu_Attributes) > cursor->GetOwner())
+	{
+		var config = InteractionMenu_Attributes[cursor->GetOwner()];
+		obj.minimized = GetProperty("minimized", config) ?? false; 
+	}
+	else
+	{
+		obj.minimized = false;
+	}
+	
 	obj->Init(cursor);
 	cursor->SetMenu(obj);
 	return obj;
@@ -247,6 +271,11 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		part_menu.Right = "100%";
 	}
 	
+	if (this.minimized)
+	{
+		part_menu.Bottom = nil; // maximum height
+	}
+	
 
 	// need to open a completely new menu?
 	if (!current_main_menu_id)
@@ -266,6 +295,17 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			Target = this,
 			Decoration = GUI_MenuDeco,
 			BackgroundColor = RGB(0, 0, 0),
+			minimize_button = 
+			{
+				Bottom = "100%",
+				Top = "100% - 2em",
+				Right = "8em",
+				Text = "$Minimize$",
+				BackgroundColor = {Std = RGB(50, 50, 50), OnHover = RGB(200, 0, 0)},
+				OnMouseIn = GuiAction_SetTag("OnHover"),
+				OnMouseOut = GuiAction_SetTag("Std"),
+				OnClick = GuiAction_Call(this, "OnToggleMinimizeClicked")
+			},
 			center_column =
 			{
 				Left = "50%-2em",
@@ -327,6 +367,16 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 				}
 			}
 		};
+		
+		// Special setup for a minimized menu.
+		if (this.minimized)
+		{
+			root_menu.Top = "75%";
+			root_menu.minimize_button.Text = "$Maximize$";
+			root_menu.center_column.Bottom = nil; // full size
+			root_menu.description_box = nil;
+		}
+		
 		current_main_menu_id = GuiOpen(root_menu);
 	}
 	else // menu already exists and only one part has to be added
@@ -355,6 +405,27 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	{
 		GuiUpdate({Symbol = Icon_Cancel}, current_main_menu_id, 1 + 1 - slot, obj);
 	}
+}
+
+// Toggles the menu state between minimized and maximized.
+public func OnToggleMinimizeClicked()
+{
+	var config = nil;
+	if (GetLength(InteractionMenu_Attributes) <= GetOwner())
+	{
+		config = {minimized = false};
+		InteractionMenu_Attributes[GetOwner()] = config;
+	}
+	else
+	{
+		config = InteractionMenu_Attributes[GetOwner()];
+	}
+	config.minimized = !(GetProperty("minimized", config) ?? false);
+	
+	// Reopen with new layout..
+	var cursor = this.cursor;
+	RemoveObject();
+	GUI_ObjectInteractionMenu->CreateFor(cursor);
 }
 
 // Tries to put all items from the other menu's target into the target of menu menu_id. Returns nil.

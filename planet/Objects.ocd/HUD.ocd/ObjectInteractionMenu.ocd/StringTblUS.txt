@@ -8,3 +8,6 @@ MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interaction
 MsgHostile=%s belongs to your enemy %s.|No interactions are possible.
 
 MoveAllTo=Put all items into %s
+
+Minimize=Minimize
+Maximize=Maximize

@@ -8,3 +8,6 @@ MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Int
 MsgHostile=%s gehört deinem Feind %s.|Es sind keine Interaktionen möglich.
 
 MoveAllTo=Transferiere alle Gegenstände zu %s
+
+Minimize=Minimieren
+Maximize=Maximieren
