@@ -77,6 +77,7 @@ only returns results in area defined by a proplist
 */
 global func Loc_InArea(a)
 {
+	if (a == nil) return [LOC_INVALID];
 	return[LOC_INAREA, a];
 }
 
@@ -274,6 +275,7 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 	if (flag[0] == LOC_INAREA)
 	{
 		var area = flag[1];
+		area = area ?? Shape->LandscapeRectangle();
 		return area->IsPointContained(x, y);
 	}
 	
