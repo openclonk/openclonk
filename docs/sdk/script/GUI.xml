@@ -261,7 +261,7 @@ func MakeMyMenu()
 	GuiOpen(menu);
 }
 </code>
-		![Example Image](GuiPositioning.jpg "The result of the example code above.")
+		<text><img src="../../images/GuiPositioning.jpg" width="829" height="561"/><br />The result of the example code above.</text>
 		<text>In the screenshot the GUI debugging info is activated, too. You can reach it via hitting CTRL+F7 multiple times.</text>
 		<h id="tagsforproperties">Tags for Properties</h>
 		<text>Nearly all properties can be tagged - that means they can be assigned different values for different <em>tags</em>. The default tag for every window is <em>Std</em>. To assign multiple values for different tags, just assign a proplist instead of the original property value, such as:</text>
