@@ -50,7 +50,7 @@ func InitializePlayer(int plr)
 	crew->CreateContents(Shovel);
 	crew->CreateContents(Club);
 	crew->CreateContents(WindBag);
-	crew->CreateContents(Firestone,3);
+	crew->CreateContents(Firestone,2);
 	crew.MaxEnergy = 120000;
 	crew->DoEnergy(1000);
 	return true;
