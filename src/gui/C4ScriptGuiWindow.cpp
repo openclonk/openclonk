@@ -265,7 +265,7 @@ bool C4ScriptGuiWindowAction::ExecuteCommand(int32_t actionID, C4ScriptGuiWindow
 			from = static_cast<C4ScriptGuiWindow*>(from->GetParent());
 		}
 		MenuDebugLogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
-		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target));
+		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), (parent->target && parent->target->Status) ? C4VObj(parent->target) : C4VNull);
 		target->Call(text->GetCStr(), &Pars);
 		return true;
 	}
