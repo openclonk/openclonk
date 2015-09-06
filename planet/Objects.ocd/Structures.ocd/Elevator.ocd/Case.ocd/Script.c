@@ -500,7 +500,16 @@ private func CheckIdle()
 	// I have no mind of my own
 	if (IsSlave()) 
 		return false;
+		
+	// If there is someone pushing the case it is not idle.
+	if (GetCasePusher())
+		return false;
+	return true;
+}
 
+// Returns the first clonk found pushing this case.
+private func GetCasePusher()
+{
 	var in_rect = Find_InRect(-13, -13, 26, 26);
 	if (IsMaster())
 	{
@@ -511,20 +520,20 @@ private func CheckIdle()
 	}
 	for (var pusher in FindObjects(in_rect, Find_Action("Push")))
 	{
-		if (pusher->GetActionTarget() == this) 
-			return false;
-		if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == this) 
-			return false;
-		
+		var act_target = pusher->GetActionTarget();
+		if (act_target == this)
+			return pusher;
+		if (GetEffect("ElevatorControl", act_target) && GetEffect("ElevatorControl", act_target).case == this) 
+			return pusher;
 		if (IsMaster())
 		{
-			if (pusher->GetActionTarget() == partner) 
-				return false;
-			if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == partner) 
-				return false;
+			if (act_target == partner) 
+				return pusher;	
+			if (GetEffect("ElevatorControl", act_target) && GetEffect("ElevatorControl", act_target).case == partner) 
+				return pusher;
 		}
 	}
-	return true;
+	return;
 }
 
 private func StopAutomaticMovement()
@@ -670,6 +679,21 @@ public func Control2Master(string call, object clonk)
 	if (!IsSlave()) 
 		return false;
 	return partner->Call(call, clonk, ...);
+}
+
+
+/*-- Object Digging --*/
+
+public func DigOutObject(object obj)
+{
+	// Get the clonk controlling this elevator and forward the callback to this clonk.
+	var clonk = GetCasePusher();
+	if (clonk)
+		return clonk->~DigOutObject(obj);	
+	// If not handled by a clonk , remove the material if it is supposed to be in the bucket.
+	if (obj->~IsBucketMaterial())
+		return obj->RemoveObject();
+	return;
 }
 
 
