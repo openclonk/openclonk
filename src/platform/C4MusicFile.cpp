@@ -410,7 +410,8 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 /* Ogg Vobis */
 
 C4MusicFileOgg::C4MusicFileOgg() :
-	playing(false), streaming_done(false), loaded(false), channel(0), current_section(0), byte_pos_total(0), volume(1.0f)
+	playing(false), streaming_done(false), loaded(false), channel(0), current_section(0), byte_pos_total(0), volume(1.0f),
+	is_loading_from_file(false), last_source_file_pos(0)
 {
 	for (size_t i=0; i<num_buffers; ++i)
 		buffers[i] = 0;
@@ -431,6 +432,9 @@ void C4MusicFileOgg::Clear()
 		loaded = false;
 	}
 	categories.clear();
+	is_loading_from_file = false;
+	source_file.Close();
+	last_source_file_pos = 0;
 }
 
 bool C4MusicFileOgg::Init(const char *strFile)
@@ -439,28 +443,46 @@ bool C4MusicFileOgg::Init(const char *strFile)
 	Clear();
 	// Base init file
 	if (!C4MusicFile::Init(strFile)) return false;
-	// Initial file loading
-	// Currently, the whole compressed file is kept in memory because reading/seeking inside C4Group is problematic. Uncompress while playing.
-	// This uses about 50MB of RAM (for ala's music pack) and increases startup time a bit.
-	// Later, this could be replaced with proper random access in c4group. Either replacing the file format or e.g. storing the current zlib state here
-	//  and then updating callbacks.read/seek/close/tell_func to read data from the group directly as needed
-	char *file_contents;
-	size_t file_size;
-	if (!C4Group_ReadFile(FileName, &file_contents, &file_size))
-		return false;
-	data.SetOwnedData((BYTE *)file_contents, file_size);
-
 	// Prepare ogg reader
 	vorbis_info* info;
 	memset(&ogg_file, 0, sizeof(ogg_file));
 	ov_callbacks callbacks;
-	callbacks.read_func = &::C4SoundLoaders::VorbisLoader::read_func;
-	callbacks.seek_func = &::C4SoundLoaders::VorbisLoader::seek_func;
-	callbacks.close_func = &::C4SoundLoaders::VorbisLoader::close_func;
-	callbacks.tell_func = &::C4SoundLoaders::VorbisLoader::tell_func;
+	// Initial file loading
+	// For packed groups, the whole compressed file is kept in memory because reading/seeking inside C4Group is problematic. Uncompress while playing.
+	// This increases startup time a bit.
+	// Later, this could be replaced with proper random access in c4group. Either replacing the file format or e.g. storing the current zlib state here
+	//  and then updating callbacks.read/seek/close/tell_func to read data from the group directly as needed
+	bool is_loading_from_file = FileExists(strFile);
+	void *data_source;
+	if (!is_loading_from_file)
+	{
+		char *file_contents;
+		size_t file_size;
+		if (!C4Group_ReadFile(FileName, &file_contents, &file_size))
+			return false;
+		data.SetOwnedData((BYTE *)file_contents, file_size);
+		// C4Group preloaded ogg reader
+		callbacks.read_func = &::C4SoundLoaders::VorbisLoader::mem_read_func;
+		callbacks.seek_func = &::C4SoundLoaders::VorbisLoader::mem_seek_func;
+		callbacks.close_func = &::C4SoundLoaders::VorbisLoader::mem_close_func;
+		callbacks.tell_func = &::C4SoundLoaders::VorbisLoader::mem_tell_func;
+		data_source = &data;
+	}
+	else
+	{
+		// Load directly from file
+		if (!source_file.Open(FileName))
+			return false;
+		// Uncompressed file ogg reader
+		callbacks.read_func = &::C4SoundLoaders::VorbisLoader::file_read_func;
+		callbacks.seek_func = &::C4SoundLoaders::VorbisLoader::file_seek_func;
+		callbacks.close_func = &::C4SoundLoaders::VorbisLoader::file_close_func;
+		callbacks.tell_func = &::C4SoundLoaders::VorbisLoader::file_tell_func;
+		data_source = this;
+	}
 
-	// open using callbacks
-	if (ov_open_callbacks(&data, &ogg_file, NULL, 0, callbacks) != 0)
+	// open using callbacks either to memory or to file loader
+	if (ov_open_callbacks(data_source, &ogg_file, NULL, 0, callbacks) != 0)
 	{
 		ov_clear(&ogg_file);
 		return false;
@@ -500,8 +522,37 @@ bool C4MusicFileOgg::Init(const char *strFile)
 		}
 	}
 
+	// File not needed for now
+	UnprepareSourceFileReading();
+
 	// mark successfully loaded
 	return loaded = true;
+}
+
+void C4MusicFileOgg::UnprepareSourceFileReading()
+{
+	// The file loader could just keep all files open. But if someone symlinks
+	// Music.ocg into their music folder with a million files in it, we would
+	// crash with too many open file handles. So close it for now and reopen
+	// when that piece is actually requested.
+	if (is_loading_from_file && source_file.IsOpen())
+	{
+		last_source_file_pos = source_file.Tell();
+		source_file.Close();
+	}
+}
+
+bool C4MusicFileOgg::PrepareSourceFileReading()
+{
+	// mem loading always OK
+	if (!is_loading_from_file) return true;
+	// ensure file is open
+	if (!source_file.IsOpen())
+	{
+		if (!source_file.Open(FileName)) return false;
+		if (last_source_file_pos) if (source_file.Seek(last_source_file_pos, SEEK_SET) < 0) return false;
+	}
+	return true;
 }
 
 bool C4MusicFileOgg::Play(bool loop)
@@ -510,6 +561,8 @@ bool C4MusicFileOgg::Play(bool loop)
 	if (!loaded) return false;
 	// stop previous
 	Stop();
+	// Ensure data reading is ready
+	PrepareSourceFileReading();
 	// Get channel to use
 	alGenSources(1, (ALuint*)&channel);
 	if (!channel) return false;
@@ -559,6 +612,8 @@ void C4MusicFileOgg::Stop(int fadeout_ms)
 	}
 	playing = false;
 	channel = 0;
+	// close file
+	UnprepareSourceFileReading();
 }
 
 void C4MusicFileOgg::CheckIfPlaying()

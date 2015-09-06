@@ -82,10 +82,16 @@ namespace C4SoundLoaders
 			~CompressedData() { clear(); }
 			void clear()  { if (is_data_owned) delete [] data; data=NULL; }
 		};
-		static size_t read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);
-		static int seek_func(void* datasource, ogg_int64_t offset, int whence);
-		static int close_func(void* datasource);
-		static long tell_func(void* datasource);
+		// load from compressed data held in memory buffer
+		static size_t mem_read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);
+		static int mem_seek_func(void* datasource, ogg_int64_t offset, int whence);
+		static int mem_close_func(void* datasource);
+		static long mem_tell_func(void* datasource);
+		// load directly from file
+		static size_t file_read_func(void* ptr, size_t byte_size, size_t size_to_read, void* datasource);
+		static int file_seek_func(void* datasource, ogg_int64_t offset, int whence);
+		static int file_close_func(void* datasource);
+		static long file_tell_func(void* datasource);
 	public:
 		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
 	protected:

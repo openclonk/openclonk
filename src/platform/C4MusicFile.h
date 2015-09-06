@@ -159,6 +159,9 @@ private:
 	::C4SoundLoaders::VorbisLoader::CompressedData data;
 	::C4SoundLoaders::SoundInfo ogg_info;
 	OggVorbis_File ogg_file;
+	bool is_loading_from_file;
+	CStdFile source_file;
+	long last_source_file_pos; // remember position in source_file because it may be closed and re-opened
 	bool playing, streaming_done, loaded;
 	ALuint buffers[num_buffers];
 	ALuint channel;
@@ -169,6 +172,10 @@ private:
 
 	bool FillBuffer(size_t idx);
 	void Execute(); // fill processed buffers
+	void UnprepareSourceFileReading(); // close file handle but remember buffer position for re-opening
+	bool PrepareSourceFileReading(); // close file handle but remember buffer position for re-opening
+
+	friend class C4SoundLoaders::VorbisLoader;
 };
 
 #endif

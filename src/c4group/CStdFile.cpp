@@ -309,6 +309,20 @@ bool CStdFile::Advance(int iOffset)
 	return true;
 }
 
+int CStdFile::Seek(long int offset, int whence)
+{
+	// seek in file by offset and stdio-style SEEK_* constants. Only implemented for uncompressed files.
+	assert(!hgzFile);
+	return fseek(hFile, offset, whence);
+}
+
+long int CStdFile::Tell()
+{
+	// get current file pos. Only implemented for uncompressed files.
+	assert(!hgzFile);
+	return ftell(hFile);
+}
+
 int UncompressedFileSize(const char *szFilename)
 {
 	int rd,rval=0;

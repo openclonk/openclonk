@@ -64,6 +64,9 @@ public:
 	bool WriteString(const char *szStr);
 	bool Rewind();
 	bool Advance(int iOffset);
+	int Seek(long int offset, int whence); // seek in file by offset and stdio-style SEEK_* constants. Only implemented for uncompressed files.
+	long int Tell(); // get current file pos. Only implemented for uncompressed files.
+	bool IsOpen() const { return hFile || hgzFile; }
 	// flush contents to disk
 	inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
 	size_t AccessedEntrySize();
