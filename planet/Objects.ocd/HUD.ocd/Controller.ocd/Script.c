@@ -78,7 +78,7 @@ public func RemovePlayer(int plr, int team)
 	// removed already. Whats left to do is to remove this object,
 	// the lower hud and the upper right hud
 	// (which are handled by Destruction()
-	return RemoveObject();
+	if (plr == GetOwner()) RemoveObject();
 }
 
 /* When loading a savegame, make sure the GUI still works */
