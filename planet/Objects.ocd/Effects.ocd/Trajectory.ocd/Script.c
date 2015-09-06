@@ -1,68 +1,93 @@
-/*-- Trajectory Calculator --*/
+/**
+	Trajectory
+	Calculates and shows the trajectory of projectiles.	
+*/
 
-static const g_CrosshairID = Trajectory;
 
 protected func Initialize()
 {
-	SetProperty("Visibility",VIS_Owner);
+	this.Visibility = VIS_Owner;
 }
 
-global func RemoveTrajectory(object pObj)
+
+/*-- Interface --*/
+
+// Removes the trajectory for the given object.
+public func Remove(object obj)
 {
-	// Find and remove
-	var pTrajectory = FindObject(Find_ID(Trajectory), Find_ActionTarget(pObj));
-	if(pTrajectory) pTrajectory->RemoveObject();
+	if (this != Trajectory)
+		return;
+	// Find the trajectory for the given object and remove it.
+	var trajectory = FindObject(Find_ID(Trajectory), Find_ActionTarget(obj));
+	if (trajectory) 
+		trajectory->RemoveObject();
+	return;
 }
 
-//pObj = Object which has the trajectory. pObj must be owned by a player for the player to see the trajectory.
-//int ix = glogal x coordinate
-//int iy = global y coordinate
-//int iXDir & int iYDir = velocity of simulated shot
-//int iColor = What colour the trajectory particles are
-//int spacing = distance of pixels between each trajectory particle
-global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int iColor, int spacing)
+// Adds the trajectory for the given object.
+// x: start x position in global coordinates
+// y: start y position in global coordinates
+// xdir: direction in x
+// ydir: direction in y
+// color: color of the trajectory particles (default white)
+// spacing: spacing between the particles (default 10 pixels)
+public func Create(object obj, int x, int y, int xdir, int ydir, int color, int spacing)
 {
-	// Delete old trajectory
-	RemoveTrajectory(pObj);
-	// Create new helper object
-	var pTrajectory = CreateObjectAbove(Trajectory, pObj->GetX() - GetX(), pObj->GetY() - GetY(), pObj->GetOwner());
-	pTrajectory->SetAction("Attach", pObj);
-	// Set starting values
-	var i = -1, iXOld, iYOld;
-	var iFaktor = 100;
-	iX *= iFaktor; iY *= iFaktor;
-	iYDir *= 5; iXDir *= 5;
-	iY -= 4*iFaktor;
-	iXOld = iX; iYOld = iY;
-	if (!spacing) spacing = 10;
+	if (this != Trajectory)
+		return;
 	
-	// particle setup
+	// Delete old trajectory.
+	Trajectory->Remove(obj);
+	
+	// Default values with added precision.
+	x *= 10000; y *= 10000;
+	xdir *= 100; ydir *= 100;
+	if (!color)
+		color = RGB(255, 255, 255);
+	if (!spacing)
+		spacing = 20;
+	spacing *= 10000;
+	
+	// Create new helper object
+	var trajectory = CreateObject(Trajectory, obj->GetX(), obj->GetY(), obj->GetOwner());
+	trajectory->SetAction("Attach", obj);
+	
+	// Parrticle setup.
 	var particles =
 	{
 		Prototype = Particles_Trajectory(),
-		R = (iColor >> 16) & 0xff,
-		G = (iColor >>  8) & 0xff,
-		B = (iColor >>  0) & 0xff,
-		Alpha = (iColor >> 24) & 0xff
+		Size = 4,
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		Alpha = (color >> 24) & 0xff
 	};
-	
-	// Trajectory simulation
-	while(++i < 500)
+
+	var frame_step = 0;
+	var oldx = x, oldy = y;
+	while (frame_step < 36 * 100)
 	{
-		// Speed and gravity offset
-		iX += iXDir;
-		iY += iYDir + GetGravity() * i / 22;
-		// If we are far enough away insert a new point
-		if(Distance((iXOld - iX) / iFaktor, (iYOld - iY) / iFaktor) >= spacing)
+		// Update coordinates.
+		x += xdir;
+		y += ydir;
+		ydir += GetGravity();
+	
+		if (Distance(x, y, oldx, oldy) >= spacing)
 		{
-			pTrajectory->CreateParticle("Magic", iX/iFaktor - pTrajectory->GetX(), iY/iFaktor - pTrajectory->GetY(), 0, 0, 0, particles);
-			iXOld = iX; iYOld = iY;
+			// Correct for the fact that the trajectory object is attached to the shooting parent.
+			var parent = trajectory->GetActionTarget();
+			var off_x = -parent->GetVertex(0, VTX_X) - trajectory->GetX();
+			var off_y = -parent->GetVertex(0, VTX_Y) - trajectory->GetY();
+			trajectory->CreateParticle("Magic", x / 10000 + off_x, y / 10000 + off_y, 0, 0, 0, particles);
+			oldx = x; oldy = y;
 		}
-		// Or is it here already?
-		if(GBackSolid(iX / iFaktor - GetX(), iY / iFaktor - GetY())) break;
-	}
-	// So, ready
-	return pTrajectory;
+		
+		if (GBackSolid(x / 10000 - GetX(), y / 10000 - GetY())) 
+			break;
+	
+		frame_step++;
+	}	
+	return trajectory;
 }
 
 public func AttachTargetLost()
@@ -70,16 +95,19 @@ public func AttachTargetLost()
 	RemoveObject();
 }
 
-// Don't save in scenarios
-func SaveScenarioObject() { return false; }
+// Don't save in scenarios.
+public func SaveScenarioObject() { return false; }
+
+
+/*-- Properties --*/
 
 local ActMap = {
-Attach = {
-	Prototype = Action,
-	Name = "Attach",
-	Procedure = DFA_ATTACH,
-	Length = 1,
-	Delay = 0,
-},
+	Attach = {
+		Prototype = Action,
+		Name = "Attach",
+		Procedure = DFA_ATTACH,
+		Length = 1,
+		Delay = 0,
+	},
 };
 local Name = "$Name$";

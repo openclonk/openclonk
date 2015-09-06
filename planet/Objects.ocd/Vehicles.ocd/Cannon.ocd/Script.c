@@ -110,7 +110,7 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 	var iColor = RGB(255,255,255);
 	if (!Contents(0) || GetEffect("IntCooldown",this))
 		iColor = RGB(255,0,0);
-	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec), iColor, 20);
+	Trajectory->Create(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec));
 
 	SetCannonAngle(r);
 	
@@ -150,7 +150,7 @@ private func ConvertAngle(int angle)
 
 public func ControlUseStop(object clonk, int ix, int iy)
 {
-	RemoveTrajectory(this);
+	Trajectory->Remove(this);
 
 	if (!CheckForKeg(clonk))
 		return true;
@@ -189,7 +189,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 
 public func ControlUseCancel()
 {
-	RemoveTrajectory(this);
+	Trajectory->Remove(this);
 	return true;
 }
 
