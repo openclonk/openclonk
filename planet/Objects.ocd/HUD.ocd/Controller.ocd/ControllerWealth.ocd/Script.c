@@ -52,10 +52,14 @@ public func Destruction()
 // Callback when the wealth has changed: update the wealth HUD menu.
 public func OnWealthChanged(int plr)
 {
-	var wealth = GetWealth(plr);
-	wealth_gui_menu.GraphicsName = GetGraphicsName(wealth);
-	wealth_gui_menu.Text = Format("%d", wealth);
-	GuiUpdate(wealth_gui_menu, wealth_gui_id);
+	// Only update wealth when it is the right player.
+	if (plr == GetOwner())
+	{
+		var wealth = GetWealth(plr);
+		wealth_gui_menu.GraphicsName = GetGraphicsName(wealth);
+		wealth_gui_menu.Text = Format("%d", wealth);
+		GuiUpdate(wealth_gui_menu, wealth_gui_id);
+	}
 	return _inherited(plr, ...);
 }
 
