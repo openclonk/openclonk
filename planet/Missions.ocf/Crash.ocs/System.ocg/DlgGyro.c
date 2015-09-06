@@ -46,7 +46,13 @@ func Dlg_Gyro_7(object clonk)
 
 func Dlg_Gyro_8(object clonk)
 {
-	MessageBox("$Gyro8$", clonk); // Well, to be fair... it is pretty dangerous. I almost flung myself into the lava lake because I couldn't find my glasses. Fortunately I missed it by just a few inches and landed here. Stubbed my toe pretty bad though. Should have put on my safety-sandals...
+	MessageBox("$Gyro8$", clonk); // Well, to be fair... it is pretty dangerous. I almost flung myself into the lava lake because I couldn't find my glasses. Fortunately I missed it by just a few inches and landed here.
+	return true;
+}
+
+func Dlg_Gyro_9(object clonk)
+{
+	MessageBox("$Gyro9$", clonk); // Stubbed my toe pretty bad though. Should have put on my safety-sandals...
 	SetDialogueProgress(0);
 	return StopDialogue();
 }

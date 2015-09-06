@@ -47,7 +47,8 @@ Gyro4=Nun, Treibstoff ist in letzter Zeit ziemlich teuer und knapp geworden. Um 
 Gyro5=Das klingt ziemlich gefährlich!
 Gyro6=Ach was. Ich steige ins Katapult, ziele und ab geht's! Man kommt echt schnell an sonst schwer erreichbare Orte. Nur wenige Clonks scheinen dieses Geheimnis zu kennen! Und noch weniger nutzen es.
 Gyro7=Warum nur...
-Gyro8=Nun, um ehrlich zu sein...ist es schon etwas gefährlich. Ich wäre fast in den Lavasee geschleudert, weil ich zum Zielen meine Brille nicht finden konnte. Zum Glück habe ich es doch knapp verpasst und bin nun hier gelandet. Habe mir nur den Zeh gestoßen. Hätte ich doch meine Sicherheitssandalen getragen...
+Gyro8=Nun, um ehrlich zu sein...ist es schon etwas gefährlich. Ich wäre fast in den Lavasee geschleudert, weil ich zum Zielen meine Brille nicht finden konnte. Zum Glück habe ich es doch knapp verpasst und bin nun hier gelandet.
+Gyro9=Habe mir nur den Zeh gestoßen. Hätte ich doch meine Sicherheitssandalen getragen...
 
 # Outro
 Outro1=Es ist vollbracht! Das Flugzeug ist zurück.
