@@ -8,7 +8,7 @@ Vertices=4
 VertexX=-8,6,0
 VertexY=-1,-3,4
 VertexFriction=50,50,50
-Value=14
+Value=35
 Mass=12
 Components=Cloth=1;Metal=1;
 Rotate=1

@@ -9,7 +9,7 @@ Vertices=2
 VertexX=0,0
 VertexY=3,-3
 VertexFriction=75,100
-Value=1
-Mass=2
+Value=15
+Mass=4
 Rotate=1
 Components=Metal=1
