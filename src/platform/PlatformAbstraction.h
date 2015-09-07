@@ -144,10 +144,10 @@ namespace std { template<typename T> inline T &move (T &t) { return t; } }
 #  if defined(SIGTRAP)
 #    define BREAKPOINT_HERE raise(SIGTRAP);
 #  else
-#    define BREAKPOINT_HERE
+#    define BREAKPOINT_HERE ((void)0)
 #  endif
 #else
-#  define BREAKPOINT_HERE
+#  define BREAKPOINT_HERE ((void)0)
 #endif
 
 
