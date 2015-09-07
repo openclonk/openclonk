@@ -36,7 +36,6 @@ private func Deflate()
 		SetAction("Deflate");
 		SetComDir(COMD_None);
 	}
-	//Schedule(this, "Pack()", 20); //EndCall doesn't work. >:(
 }
 
 private func DeflateEffect()
@@ -90,13 +89,25 @@ public func ControlJump()
 public func FxControlFloatTimer(object target, proplist effect, int time)
 {
 	var speed = 7;
+	// Normalize vertical speed.
 	if (GetYDir() > speed) SetYDir(GetYDir() - 1);
 	if (GetYDir() < speed) SetYDir(GetYDir() + 1);
-	if (GetXDir() > speed * 3) SetXDir(GetXDir() - 1);
-	if (GetXDir() < -speed * 3) SetXDir(GetXDir() + 1);
-
-	// Forward the control direction into movement.
-	SetXDir(GetXDir() + effect.control_dir);
+	
+	// Adjust horizontal speed, according to control and max speed.
+	var xdir = GetXDir();
+	var xdir_dev = effect.control_dir;
+	if (xdir > speed * 3)
+		xdir_dev = -1;
+	else if (xdir < -speed * 3)
+		xdir_dev = 1;
+	else if (xdir_dev == 0)
+	{
+		if (xdir > 0)
+			xdir_dev = -1;
+		if (xdir < 0)
+			xdir_dev = 1;	
+	}
+	SetXDir(xdir + xdir_dev);
 
 	// Has a bottom vertex hit? Is the balloon stuck in material? Then deflate.
 	if (GetContact(-1) & CNAT_Bottom || Stuck()) 
