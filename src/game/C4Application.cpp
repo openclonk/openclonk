@@ -199,7 +199,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 void C4Application::ClearCommandLine()
 {
 	*Game.PlayerFilenames = 0;
-	Game.StartupPlayerCount = 0;
 }
 
 void C4Application::ParseCommandLine(int argc, char * argv[])
@@ -459,9 +458,6 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	// Default to editor if scenario given, player mode otherwise
 	if (isEditor == 2)
 		isEditor = !!*Game.ScenarioFilename && !Config.General.OpenScenarioInGameMode;
-
-	// Determine startup player count
-	Game.StartupPlayerCount = SModuleCount(Game.PlayerFilenames);
 
 	// record?
 	Game.Record = Game.Record || (Config.Network.LeagueServerSignUp && Game.NetworkActive);

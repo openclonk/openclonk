@@ -69,7 +69,6 @@ public:
 	bool  SaveGame;
 	bool  Replay;
 	int32_t  Film;
-	int32_t  StartupPlayerCount; // set for Frame0-replay!
 	int32_t  RandomSeed;
 	char Engine[C4MaxTitle+1]; // Relative filename of engine to be used for this scenario
 	char MissionAccess[C4MaxTitle+1];

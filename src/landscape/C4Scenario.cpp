@@ -141,7 +141,7 @@ void C4SHead::Default()
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
 	C4XVer[0] = C4XVer[1] = 0;
-	Difficulty = StartupPlayerCount = RandomSeed = 0;
+	Difficulty = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
 	Film = 0;
 	NetworkGame = NetworkRuntimeJoin = false;
@@ -167,7 +167,6 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(SaveGame,                  "SaveGame",             false));
 		pComp->Value(mkNamingAdapt(Replay,                    "Replay",               false));
 		pComp->Value(mkNamingAdapt(Film,                      "Film",                 0));
-		pComp->Value(mkNamingAdapt(StartupPlayerCount,        "StartupPlayerCount",   0));
 	}
 	pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         false));
 	pComp->Value(mkNamingAdapt(RandomSeed,                "RandomSeed",           0));

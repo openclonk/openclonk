@@ -354,7 +354,6 @@ bool C4Game::Init()
 	if (!*PlayerFilenames)
 	{
 		SCopy(Config.General.Participants, PlayerFilenames, Min(sizeof(PlayerFilenames), sizeof(Config.General.Participants)) - 1);
-		StartupPlayerCount = SModuleCount(PlayerFilenames);
 	}
 
 	// Join a game?
@@ -2511,7 +2510,6 @@ bool C4Game::InitControl()
 	if (C4S.Head.NetworkGame || C4S.Head.Replay)
 	{
 		RandomSeed = C4S.Head.RandomSeed;
-		StartupPlayerCount = C4S.Head.StartupPlayerCount;
 	}
 	// Randomize
 	FixRandom(RandomSeed);
@@ -2529,9 +2527,6 @@ bool C4Game::InitControl()
 	}
 	else if (Network.isEnabled())
 	{
-		// set startup player count
-		if (!C4S.Head.SaveGame && !C4S.Head.Replay)
-			StartupPlayerCount = PlayerInfos.GetPlayerCount();
 		// initialize
 		if (!Control.InitNetwork(Clients.getLocal()))
 			return false;

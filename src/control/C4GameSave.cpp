@@ -74,7 +74,6 @@ bool C4GameSave::SaveCore()
 	// some values relevant for synced saves only
 	if (IsExact())
 	{
-		rC4S.Head.StartupPlayerCount = Game.StartupPlayerCount;
 		rC4S.Head.RandomSeed=Game.RandomSeed;
 	}
 	// reset some network flags
