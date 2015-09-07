@@ -12,7 +12,7 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	// Control direction determines the horizontal movement of the balloon.
 	var effect = AddEffect("ControlFloat", this, 100, 1, this);
-	effect.control_dir = 0;
+	effect.control_dir = nil;
 
 	// Create some air particles on inflation.
 	CreateParticle("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
@@ -47,9 +47,12 @@ private func DeflateEffect()
 private func Pack()
 {
 	RemoveEffect("NoDrop", parent);
-	rider->SetAction("Jump");
-	rider->SetSpeed(GetXDir(), GetYDir());
-	rider->SetComDir(COMD_Down);
+	if (rider)
+	{
+		rider->SetAction("Jump");
+		rider->SetSpeed(GetXDir(), GetYDir());
+		rider->SetComDir(COMD_Down);
+	}
 	RemoveObject();
 }
 
@@ -72,7 +75,7 @@ public func ControlRight()
 	return true;
 }
 
-public func ControlStop()
+public func ControlDown()
 {
 	var effect = GetEffect("ControlFloat", this);
 	if (effect)
@@ -122,6 +125,27 @@ public func FxControlFloatTimer(object target, proplist effect, int time)
 	}
 }
 
+
+/*-- Event Handling --*/
+
+// Called when the clonk unmounts for whatever reason.
+protected func OnUnmount(object clonk)
+{
+	// Assume that if the clonk is now tumbling he could not have held on to the balloon.
+	// Therefore we drop the balloon.
+	if (clonk == rider && clonk->GetAction() == "Tumble")
+	{
+		if (parent)
+		{
+			RemoveEffect("NoDrop", parent);
+			clonk->SetCommand("Drop", parent);
+		}
+		rider = nil;
+		Deflate();	
+	}
+	return;
+}
+
 public func IsProjectileTarget()
 {
 	return true;
@@ -137,7 +161,8 @@ public func OnProjectileHit()
 		rider->SetAction("Tumble");
 		rider->SetSpeed(GetXDir(),GetYDir());
 	}
-	parent->RemoveObject();
+	if (parent)
+		parent->RemoveObject();
 	RemoveObject();
 }
 
