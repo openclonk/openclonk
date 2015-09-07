@@ -71,7 +71,7 @@ func Hit()
 }
 
 local Name = "$Name$";
-local Description = "$Description$"
+local Description = "$Description$";
 local Collectible = false;
 local ContainBlast = true;
 local Touchable = 2;
