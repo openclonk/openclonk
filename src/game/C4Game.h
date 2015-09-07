@@ -99,6 +99,7 @@ public:
 	char DirectJoinAddress[_MAX_PATH+1];
 	C4Network2Reference *pJoinReference;
 	int32_t StartupPlayerCount;
+	int32_t StartupTeamCount;
 	int32_t FPS,cFPS;
 	int32_t HaltCount;
 	bool GameOver;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetStartupTeamCount</title>
+    <category>Player</category>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+    </syntax>
+    <desc>Returns the number of teams scheduled to contain players when the game initially started. This value is determined before game start, so it can be used in early scenario initialization functions such as Initialize or InitializeMap. The function does not count empty teams.</desc>
+    <remark>The startup team count is not updated when a savegame is resumed with a different number of players.</remark>
+    <remark>The number of teams actually containing players might be different due to clients disconnecting at game start, players trying to join with invalid player files or other scripts manipulating player joins and team distribution. To get a reliable number of teams, query team counts after all players have joined by calling <funclink>GetTeamCount</funclink> shortly after game start.</remark>
+    <remark>In non-network mode, teams have not yet been assigned at game start. In this case, the function returns either the number of startup players (<funclink>GetStartupPlayerCount</funclink>()), or the maximum number of available teams, whichever is lower. Of course players may choose different team distribution.</remark>
+    <related>
+      <funclink>GetStartupPlayerCount</funclink>
+      <funclink>GetTeamCount</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2015-09</date>
+</funcs>

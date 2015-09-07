@@ -1428,6 +1428,7 @@ void C4Game::Default()
 	DirectJoinAddress[0]=0;
 	pJoinReference=NULL;
 	StartupPlayerCount=0;
+	StartupTeamCount = 0;
 	ScenarioTitle.Ref("");
 	HaltCount=0;
 	fReferenceDefinitionOverride=false;
@@ -1653,6 +1654,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(iTick255,              "Tick255",               0));
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
+		pComp->Value(mkNamingAdapt(StartupTeamCount,      "StartupTeamCount",      0));
 		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));
 		pComp->Value(mkNamingAdapt(PlayList,              "PlayList",""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
@@ -2209,8 +2211,12 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	// Load section sounds
 	Application.SoundSystem.LoadEffects(hGroup);
 
-	// determine startup player count
-	if (!FrameCounter) StartupPlayerCount = PlayerInfos.GetStartupCount();
+	// determine startup player and team count, which may be used for initial map generation
+	if (!FrameCounter)
+	{
+		StartupPlayerCount = PlayerInfos.GetStartupCount();
+		StartupTeamCount = Teams.GetStartupTeamCount(StartupPlayerCount);
+	}
 
 	// The Landscape is the last long chunk of loading time, so it's a good place to start the music fadeout
 	if (!fLoadSection) Application.MusicSystem.FadeOut(2000);

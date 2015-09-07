@@ -895,3 +895,37 @@ StdStrBuf C4TeamList::GetScriptPlayerName() const
 	sScriptPlayerNames.GetSection(SafeRandom(iNameIdx-1), &sOut, '|');
 	return sOut;
 }
+
+int32_t C4TeamList::GetStartupTeamCount(int32_t startup_player_count)
+{
+	// Count non-empty teams
+	int32_t i_team = 0; C4Team *team;
+	int32_t team_count = 0;
+	while ((team = GetTeamByIndex(i_team++)))
+	{
+		if (team->GetPlayerCount() > 0) ++team_count;
+	}
+	// No populated teams found? This can happen in non-network mode when no players are assigned
+	if (!team_count)
+	{
+		// Teams have not been selected yet, but the map script may want to have an estimate
+		// in this case, calculate prospective teams from startup player count
+		if (IsCustom() && !IsAutoGenerateTeams())
+		{
+			// Teams are pre-defined. Assume players will try to distribute broadly on these teams
+			team_count = Min<int32_t>(startup_player_count, GetTeamCount());
+		}
+		else if (IsRandomTeam())
+		{
+			// Randomized teams: Players will be put into two teams.
+			team_count = Min<int32_t>(startup_player_count, 2);
+		}
+		else
+		{
+			// Teams are auto-added -> fallback to player count
+			team_count = startup_player_count;
+		}
+	}
+
+	return team_count;
+}

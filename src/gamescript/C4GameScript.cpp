@@ -2693,6 +2693,12 @@ static int32_t FnGetStartupPlayerCount(C4PropList * _this)
 	return ::Game.StartupPlayerCount;
 }
 
+static int32_t FnGetStartupTeamCount(C4PropList * _this)
+{
+	// returns number of non-empty teams when game was initially started
+	return ::Game.StartupTeamCount;
+}
+
 static bool FnGainScenarioAchievement(C4PropList * _this, C4String *achievement_name, Nillable<long> avalue, Nillable<long> player, C4String *for_scenario)
 {
 	// safety
@@ -2909,6 +2915,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlAssignment", FnGetPlayerControlAssignment);
 	AddFunc(pEngine, "GetStartupPlayerCount", FnGetStartupPlayerCount);
+	AddFunc(pEngine, "GetStartupTeamCount", FnGetStartupTeamCount);
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
 	AddFunc(pEngine, "GainScenarioAchievement", FnGainScenarioAchievement);

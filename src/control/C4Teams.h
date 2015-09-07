@@ -212,6 +212,9 @@ public:
 	void SetTeamDistribution(TeamDist eToVal);
 	void SendSetTeamColors(bool fEnabled);
 	void SetTeamColors(bool fEnabled);
+
+	// return number of non-empty teams. if players have not been assigned, project a guess on future team count.
+	int32_t GetStartupTeamCount(int32_t startup_player_count);
 };
 
 #endif // INC_C4Teams
