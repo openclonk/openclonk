@@ -411,7 +411,7 @@ global func ShiftCursor(int plr, bool back)
 			if (index >= GetCrewCount(plr)) index = 0;
 		}
 		++cycle;
-	} while (!(GetCrew(plr,index)->GetCrewEnabled()) && cycle < maxcycle);
+	} while (cycle < maxcycle && !(GetCrew(plr,index)->GetCrewEnabled()));
 
 	StopSelected();
 	
