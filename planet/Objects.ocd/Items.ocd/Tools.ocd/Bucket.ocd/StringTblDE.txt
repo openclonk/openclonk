@@ -1,3 +1,4 @@
 Name=Eimer
-Description=Mit dem Eimer kann Erde aufgenommen und andernorts eingesetzt werden, um Brücken zu bauen und Wege zu ebnen.
-UsageHelp=Drücke [Benutzen] um Erde einzufüllen oder auszuschütten.
+Description=Der Eimer nimmt beim Schaufeln automatisch Erde auf, die andernorts eingesetzt werden kann, um Brücken zu bauen und Wege zu ebnen.
+UsageHelp=Grabe mit der Schaufel durch Erde, um den Eimer zu füllen. Drücke [Benutzen] um Erde auszuschütten.
+UsageHotTip=Der Eimer ist leer. Grabe mit der Schaufel durch Erde, um ihn zu füllen.

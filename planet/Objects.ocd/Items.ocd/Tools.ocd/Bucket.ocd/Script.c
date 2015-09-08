@@ -43,6 +43,10 @@ public func ControlUse(object clonk, int iX, int iY)
 		PlayAnimation(clonk);
 		return true;
 	}
+	else
+	{
+		Message("$UsageHotTip$");
+	}
 
 	return true;
 }
