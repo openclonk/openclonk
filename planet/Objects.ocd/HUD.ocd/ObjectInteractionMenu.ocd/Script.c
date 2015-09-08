@@ -867,6 +867,14 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				if (inv.has_contents) continue;
 				inv.count += object_amount;
 				inv.text = Format("%dx", inv.count);
+				
+				// This object has a custom symbol (because it's a container)? Then the normal text would not be displayed.
+				if (inv.custom != nil)
+				{
+					inv.custom.top.Text = inv.text;
+					inv.custom.top.Style = inv.custom.top.Style | GUI_TextRight | GUI_TextBottom;
+				}
+				
 				found = true;
 				break;
 			}
