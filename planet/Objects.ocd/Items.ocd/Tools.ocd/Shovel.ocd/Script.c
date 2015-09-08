@@ -12,6 +12,7 @@ public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "po
 local fDigging;
 local DigAngle;
 local DigX, DigY;
+local stuck_count;
 
 public func IsDigging() { return fDigging; }
 
@@ -104,6 +105,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	{
 		AddEffect("ShovelDust",clonk,1,1,this);
 		fDigging = true;
+		stuck_count = 0;
 	}
 	if(fDigging)
 	{
@@ -116,8 +118,26 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 
 		// limit angle
 		DigAngle = BoundBy(DigAngle,65,300);
-		clonk->SetXDir(Sin(DigAngle,+speed)+xdir_boost,100);
-		clonk->SetYDir(Cos(DigAngle,-speed)+ydir_boost,100);
+		var dig_xdir = Sin(DigAngle,+speed);
+		var dig_ydir = Cos(DigAngle,-speed);
+
+		// Stuck-check: When player wants to go horizontally while standing on the ground but can't, add a vertical redirect
+		// This helps with Clonks getting "stuck" not moving on certain terrain when dig speed is not sufficient to push him up a slope
+		// It also helps e.g. when just digging through earth just above rock, because it will nudge the clonk over the rock
+		if (!clonk->GetXDir(100) && !clonk->GetYDir(100) && GetContact(-1, CNAT_Bottom) && Abs(dig_xdir) > Abs(dig_ydir) && Abs(dig_xdir) > 10)
+		{
+			if (stuck_count++)
+			{
+				ydir_boost -= 100;
+			}
+		}
+		else
+		{
+			stuck_count = 0;
+		}
+		
+		clonk->SetXDir(dig_xdir+xdir_boost,100);
+		clonk->SetYDir(dig_ydir+ydir_boost,100);
 
 		// Dust
 		if (!Random(10))
