@@ -1,4 +1,4 @@
 Name=Crate
 OpenCrate=Open crate
 CloseCrate=Close crate
-Description=Can be used to store and transport up to four objects.
+Description=Can be used to store and transport up to five objects.

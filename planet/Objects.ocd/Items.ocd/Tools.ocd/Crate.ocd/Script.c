@@ -33,12 +33,14 @@ public func IsContainer() { return true; }
 
 private func MaxContentsCount()
 {
-	return 4;
+	return 5;
 }
 
-protected func RejectCollect()
+protected func RejectCollect(id def, object obj)
 {
 	if (ContentsCount() >= MaxContentsCount())
+		return true;
+	if (obj->~IsCarryHeavy())
 		return true;
 	return false;
 }
