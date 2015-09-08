@@ -38,6 +38,7 @@ protected func Initialize()
 
 /*-- Player interface --*/
 
+public func IsProducer() { return true; }
 // All producers are accessible. 
 public func IsContainer() { return true; }
 // Provides an own interaction menu, even if it wouldn't be a container.
@@ -791,9 +792,10 @@ public func RejectCollect(id obj_id, object obj)
 	// Is the object a container? If so, try to empty it.
 	if (obj->~IsContainer())
 	{
-		var count = obj->ContentsCount();
+		var count = obj->ContentsCount(), cont;
 		while (--count >= 0)
-			obj->Contents(count)->Enter(this);
+			if (cont = obj->Contents(count))
+				cont->Enter(this);
 	}
 	// Can we collect the object itself?
 	if (IsCollectionAllowed(obj)) 
