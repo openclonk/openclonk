@@ -30,6 +30,10 @@ protected func Construction()
 {
 	// Ensure object is not close to the bottom right border, so sub objects won't be created outside the landscape.
 	SetPosition(0, 0);
+	// Ensure existing clonks are registered into HUD
+	for (var i = 0, crew; crew = GetCrew(GetOwner(), i); ++i)
+		if (crew->~IsHUDAdapter())
+			crew->SetHUDController(this);
 	return _inherited(...);
 }
 
@@ -87,12 +91,29 @@ func OnSynchronized()
 	ScheduleCall(this, "Reset", 1);
 }
 
-private func Reset()
+public func Reset()
 {
 	// The simple way: A full UI reset \o/
-	Destruction();
-	Construction();
-	
-	if(GetCursor(GetOwner()))
-		OnCrewSelection(GetCursor(GetOwner()));
+	if (GetType(this) == C4V_C4Object)
+	{
+		// Object call: Reset on owned player
+		Destruction();
+		Construction();
+		
+		if(GetCursor(GetOwner()))
+			OnCrewSelection(GetCursor(GetOwner()));
+	}
+	else
+	{
+		// Definition call: Reset for all players
+		RemoveAll(Find_ID(GUI_Controller));
+		var plr;
+		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		{
+			var plr = GetPlayerByIndex(i, C4PT_User), cursor;
+			CreateObject(GUI_Controller, 0,0, plr);
+			if (cursor = GetCursor(plr)) OnCrewSelection(cursor);
+		}
+	}
+	return true;
 }

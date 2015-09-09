@@ -135,6 +135,7 @@ func Intro_11()
 {
 	g_intro_done = true;
 	LoadScenarioSection("main");
+	GUI_Controller->Reset();
 	SetWind(0);
 	SetSkyParallax(0, 20, 20, 0, 0);
 	GameCall("PostIntroInitialize");

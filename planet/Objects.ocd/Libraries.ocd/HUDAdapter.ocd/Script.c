@@ -36,6 +36,13 @@ protected func Recruitment(int plr)
 	return _inherited(plr, ...);
 }
 
+public func SetHUDController(object controller)
+{
+	// Called from HUD controller when it reinitializes
+	HUDcontroller = controller;
+	return true;
+}
+
 protected func DeRecruitment(int plr)
 {
 	if (HUDcontroller) 
