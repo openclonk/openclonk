@@ -29,7 +29,10 @@ public func SetTime(int to_time)
 	if (to_time < 10)
 	{
 		color = 0xff0000;
-		Sound("Click", true);
+		var play_for = GetOwner();
+		if (play_for == NO_OWNER)
+			play_for = nil; 	
+		Sound("Click", true, 80, play_for);
 	}
 	CustomMessage(Format("@<c %x>%02d:%02d</c>", color, minutes, seconds), this, GetOwner(), 0, 90);
 	return;
