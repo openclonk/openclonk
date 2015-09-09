@@ -39,9 +39,21 @@ func DoInit(int first_player)
 	merchant->SetObjectLayer(merchant);
 	merchant->SetDialogue("Merchant", true);
 	
+	// Newbies like to kill off all trees
+	var tree_area = Shape->Rectangle(166, 774, 300, 170);
+	ScheduleCall(nil, Scenario.EnsureTrees, 100, 99999999, tree_area);
+	
 	// Start intro if not yet started
 	StartSequence("Intro", 0, GetCrew(first_player));
 	
+	return true;
+}
+
+func EnsureTrees(proplist area)
+{
+	var nr_trees = ObjectCount(Find_Func("IsTree"), area->Find_In());
+	if (nr_trees < 2)
+		PlaceVegetation(Tree_Coniferous, 0, 0, LandscapeWidth(), LandscapeHeight(), 10, area);
 	return true;
 }
 
