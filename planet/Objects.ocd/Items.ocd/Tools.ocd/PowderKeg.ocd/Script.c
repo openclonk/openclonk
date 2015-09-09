@@ -142,8 +142,7 @@ func AlchemyProcessTime() { return 100; }
 
 /*-- Properties --*/
 
-local Collectible = false;
-local Touchable = 2;
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;

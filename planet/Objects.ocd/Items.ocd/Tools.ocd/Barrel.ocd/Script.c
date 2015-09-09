@@ -303,8 +303,7 @@ public func Definition(proplist def)
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
 }
 
-local Collectible = false;
-local Touchable = 2;
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;

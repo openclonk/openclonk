@@ -1,0 +1,1 @@
+TxtHandsFull=Hands are full!

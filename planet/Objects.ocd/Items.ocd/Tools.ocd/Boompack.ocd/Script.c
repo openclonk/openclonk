@@ -225,6 +225,7 @@ func Launch(int angle, object clonk)
 	
 	SetR(angle);
 	SetVelocity(angle,60);
+	this.Collectible = false;
 }
 
 func DoFireworks()
@@ -273,8 +274,7 @@ func Definition(def) {
 	DefaultPicTransform();
 }
 
-local Collectible = false;
-local Touchable = 2;
+local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
