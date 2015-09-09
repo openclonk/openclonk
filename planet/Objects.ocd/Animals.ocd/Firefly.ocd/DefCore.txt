@@ -1,0 +1,11 @@
+[DefCore]
+id=Firefly
+Version=6,1
+Category=C4D_Living
+Width=4
+Height=4
+Offset=-2,-2
+Vertices=1
+VertexFriction=100
+Value=1
+Mass=1
