@@ -29,7 +29,11 @@ protected:
 	int MaskPutRotation;     // rotation in which the mask was put (and resides in the buffers)
 	int MatBuffPitch;        // pitch (and width) of mat buffer
 
-	C4Real MaskRemovalX, MaskRemovalY; // last position mask was removed from
+	// last position mask was removed from
+	// A rounded position is used for y, even though that causes movement to be less smooth, because gravity will counter sub-pixel movement and cause all non-attached objects to fall through the mask eventually
+	C4Real MaskRemovalX;
+	int32_t MaskRemovalY;
+
 	class C4Object **ppAttachingObjects; // objects to be moved with mask motion
 	int iAttachingObjectsCount, iAttachingObjectsCapacity;
 

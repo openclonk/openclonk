@@ -184,8 +184,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	if (fRestoreAttachment && iAttachingObjectsCount)
 	{
 		C4Real dx = pForObject->GetFixedX() - MaskRemovalX;
-		C4Real dy = pForObject->GetFixedY() - MaskRemovalY;
-		if (dx != Fix0 || dy != Fix0)
+		int32_t dy = pForObject->GetY() - MaskRemovalY;
+		if (dx != Fix0 || dy != 0)
 			for (int i = 0; i < iAttachingObjectsCount; ++i)
 			{
 				C4Object *pObj = ppAttachingObjects[i];
@@ -194,7 +194,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
 							pObj->iLastAttachMovementFrame = Game.FrameCounter;
-							pObj->MovePosition(dx, dy);
+							pObj->MovePosition(dx, itofix(dy));
 						}
 			}
 		iAttachingObjectsCount = 0;
@@ -285,14 +285,24 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 	if (fBackupAttachment)
 	{
 		MaskRemovalX = pForObject->GetFixedX();
-		MaskRemovalY = pForObject->GetFixedY();
+		MaskRemovalY = pForObject->GetY();
 		iAttachingObjectsCount = 0;
-		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
+		// Search in area slightly larger than SolidMask because objects might have vertices slightly outside their shape
+		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-4, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
 		C4LSector *pSct;
 		for (C4ObjectList *pLst=SolidArea.FirstObjectShapes(&pSct); pLst; pLst=SolidArea.NextObjectShapes(pLst, &pSct))
 			for (C4Object *pObj : *pLst)
 				if (pObj && pObj != pForObject && pObj->IsMoveableBySolidMask(pForObject->GetSolidMaskPlane()) && !pObj->Shape.CheckContact(pObj->GetX(),pObj->GetY()))
 				{
+					// avoid duplicate that may be found due to sector overlaps
+					bool has_dup = false;
+					for (int32_t i_dup = 0; i_dup < iAttachingObjectsCount; ++i_dup)
+						if (ppAttachingObjects[i_dup] == pObj)
+						{
+							has_dup = true;
+							break;
+						}
+					if (has_dup) continue;
 					// check for any contact to own SolidMask - attach-directions, bottom - "stuck" (CNAT_Center) is ignored, because that causes problems with things being stuck in basements :(
 					int iVtx = 0;
 					for (; iVtx < pObj->Shape.VtxNum; ++iVtx)
