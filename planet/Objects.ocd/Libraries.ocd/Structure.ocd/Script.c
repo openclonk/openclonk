@@ -185,6 +185,9 @@ public func GetRepairMaterials()
 
 /*-- Interaction --*/
 
+// Always show an interaction menu with at least the damage entry.
+public func HasInteractionMenu() { return true; }
+
 // Show damage and allow a player to repair the building when damaged.
 public func GetInteractionMenus(object clonk)
 {

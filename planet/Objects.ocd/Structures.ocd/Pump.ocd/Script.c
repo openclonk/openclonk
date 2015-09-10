@@ -52,6 +52,8 @@ func Initialize()
 
 /*-- Interaction --*/
 
+public func HasInteractionMenu() { return true; }
+
 public func GetPumpControlMenuEntries(object clonk)
 {
 	var menu_entries = [];
