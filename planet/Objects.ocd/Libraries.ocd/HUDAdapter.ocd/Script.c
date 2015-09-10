@@ -28,18 +28,34 @@ public func IsHUDAdapter()
 // Bootstrap the HUD on the recruitement of a crew member.
 protected func Recruitment(int plr)
 {
-	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-	if (!HUDcontroller)
-		HUDcontroller = CreateObject(GUI_Controller, 0, 0, plr);
-	HUDcontroller->~OnCrewRecruitment(this, plr, ...);
-	HUDcontroller->~ScheduleUpdateInventory();
+	if (GetPlayerType(plr) == C4PT_User)
+	{
+		HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+		if (!HUDcontroller)
+			HUDcontroller = CreateObject(GUI_Controller, 0, 0, plr);
+		HUDcontroller->~OnCrewRecruitment(this, plr, ...);
+		HUDcontroller->~ScheduleUpdateInventory();
+	}
 	return _inherited(plr, ...);
 }
 
-public func SetHUDController(object controller)
+// On savegame load or after section change, ensure that there's a HUD adapter
+public func OnSynchronized(...)
 {
-	// Called from HUD controller when it reinitializes
-	HUDcontroller = controller;
+	var plr = GetOwner();
+	if (!HUDcontroller && GetPlayerType(plr) == C4PT_User)
+	{
+		HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+		if (!HUDcontroller) HUDcontroller = CreateObject(GUI_Controller, 0, 0, plr);
+		HUDcontroller->~ScheduleUpdateInventory();
+	}
+	return _inherited(...);
+}
+
+// Update HUD controlle e.g. when it was reinitialized
+public func SetHUDController(object new_controller)
+{
+	HUDcontroller = new_controller;
 	return true;
 }
 
