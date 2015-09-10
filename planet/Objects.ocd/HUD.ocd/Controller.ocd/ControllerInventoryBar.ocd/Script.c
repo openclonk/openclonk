@@ -320,7 +320,7 @@ private func UpdateInventoryButtons(object clonk)
 	{
 		var gui_id = GetInventoryGuiID();
 		var gui_target = GetInventoryGuiTarget();
-		for (var i = 0; i < old_count; ++i)
+		for (var i = 0; i < Min(old_count, max_contents_count); ++i)
 		{
 			var slot_info = inventory_slots[i];
 			var update = CalculateButtonPosition(i, max_contents_count);
