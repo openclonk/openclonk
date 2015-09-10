@@ -63,7 +63,7 @@ func InitializeObjects()
 	CreateObjectAbove(Tree_Coconut, 1822, 679);
 	CreateObjectAbove(Tree_Coniferous2, 2567, 583);
 	CreateObjectAbove(Tree_Coniferous2, 2107, 528);
-	var Tree_Coniferous2001 = CreateObject(Tree_Coniferous2, 1328, 499);
+	var Tree_Coniferous2001 = CreateObject(Tree_Coniferous2, 1409, 544);
 	Tree_Coniferous2001->SetR(20);
 	CreateObjectAbove(Tree_Coniferous2, 1157, 449);
 
@@ -73,6 +73,22 @@ func InitializeObjects()
 	Tree_Coniferous2002->SetR(-8);
 	CreateObjectAbove(Tree_Coniferous3, 2359, 624);
 	CreateObjectAbove(Tree_Coniferous3, 2424, 609);
+
+	CreateObjectAbove(Flower, 907, 399);
+	CreateObjectAbove(Flower, 997, 408);
+	CreateObjectAbove(Flower, 938, 407);
+	CreateObjectAbove(Flower, 1404, 599);
+	var Flower005 = CreateObject(Flower, 1322, 533);
+	Flower005->SetR(50);
+	var Flower006 = CreateObject(Flower, 1328, 541);
+	Flower006->SetR(50);
+	var Flower007 = CreateObject(Flower, 1311, 523);
+	Flower007->SetR(50);
+	var Flower008 = CreateObjectAbove(Flower, 2600, 592);
+	Flower008->SetSkin(2);
+	var Flower009 = CreateObject(Flower, 2578, 574);
+	Flower009->SetR(20);
+	Flower009->SetSkin(2);
 
 	CreateObject(Basement, 758, 370);
 	CreateObject(Basement, 464, 368);
