@@ -1,5 +1,5 @@
 
-#define HAVE_2PX
+#define OC_HAVE_2PX
 
 slice(texture+5)
 {

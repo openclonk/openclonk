@@ -1,7 +1,7 @@
 
 // Base light calculations
 
-#ifdef HAVE_LIGHT
+#ifdef OC_DYNAMIC_LIGHT
 uniform sampler2D lightTex;
 #endif
 uniform float cullMode; // 0 if backface culling is enabled, 1 if it is disabled
@@ -25,7 +25,7 @@ const float lightDarknessLevel = 8.0 / 256.0;
 
 slice(texture+5)
 {
-#ifdef HAVE_LIGHT
+#ifdef OC_DYNAMIC_LIGHT
 
 	// Query light texture
 	vec2 lightDirCoord = lightCoord.st;
@@ -57,7 +57,7 @@ slice(texture+5)
 slice(light)
 {
 	float light = 2.0 * lightBright * max(max(dot(normal, lightDir), 0.0), cullMode * max(dot(-normal, lightDir), 0.0));
-#ifdef HAVE_2PX
+#ifdef OC_HAVE_2PX
 	float light2 = 2.0 * lightBright * max(max(dot(normal2, lightDir), 0.0), cullMode * max(dot(-normal2, lightDir), 0.0));
 #endif
 }
@@ -73,7 +73,7 @@ slice(color+5)
 
 	// Add light
 	color.rgb = light * color.rgb * lightColor.rgb;
-#ifdef HAVE_2PX
+#ifdef OC_HAVE_2PX
 	color2.rgb = light2 * color2.rgb * lightColor.rgb;
 #endif
 }
@@ -82,7 +82,7 @@ slice(finish+5)
 {
 
 #ifdef LIGHT_DEBUG
-#ifdef HAVE_LIGHT
+#ifdef OC_DYNAMIC_LIGHT
 	float lightYDir = lightPx.b - 1.0/3.0;
 	float lightXDir = lightPx.g - 1.0/3.0;
 	float lightStrength = lightPx.a;

@@ -599,9 +599,9 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 
 	// Then load slices for fragment shader
 	shader.AddFragmentSlice(-1, "#define OPENCLONK");
-	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
-	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
-	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
+	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define OC_WITH_NORMALMAP");
+	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
 	shader.LoadSlices(pGroups, "UtilShader.glsl");
 	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
 

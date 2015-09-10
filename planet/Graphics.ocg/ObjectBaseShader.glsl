@@ -4,7 +4,7 @@ slice(init)
 {
 #define color gl_FragColor
 
-#ifdef MESH
+#ifdef OC_MESH
 	// TODO: Add emission part of the material. Note we cannot just
 	// add this to the color, but it would need to be handled separately,
 	// such that it is independent from the incident light direction.
@@ -27,7 +27,7 @@ slice(color)
 	// Could also try some sort of 3x3 matrix:
 	// out = (color, clrmod, 1) * (A,B,C,D,E,F,0,0,G) * (color, clrmod, 1)
 
-#ifdef CLRMOD_MOD2
+#ifdef OC_CLRMOD_MOD2
 	color = clamp(color + clrMod - 0.5, 0.0, 1.0);
 #else
 	color = color * clrMod;

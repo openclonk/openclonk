@@ -854,7 +854,7 @@ bool StdMeshMaterialProgram::AddParameterNames(const StdMeshMaterialShaderParame
 bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shader& shader, int ssc)
 {
 	// Add standard slices
-	shader.AddFragmentSlice(-1, "#define MESH");
+	shader.AddFragmentSlice(-1, "#define OC_MESH");
 	loader.AddShaderSlices(shader, ssc);
 	// Add our slices
 	shader.AddVertexSlice(-1, "varying vec2 texcoord;");

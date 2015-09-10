@@ -64,8 +64,8 @@ public:
 		shader.AddFragmentSlice(-1, "#define OPENCLONK");
 		shader.AddVertexSlice(-1, "#define OPENCLONK");
 
-		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
-		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
+		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
 
 		shader.LoadSlices(&::GraphicsResource.Files, "UtilShader.glsl");
 		shader.LoadSlices(&::GraphicsResource.Files, "ObjectBaseShader.glsl");
@@ -73,7 +73,7 @@ public:
 		shader.LoadSlices(&::GraphicsResource.Files, "GammaShader.glsl");
 
 		// Note that these shader slices are always loaded, even if lighting
-		// is disabled. The shaders then assume a default light if HAVE_LIGHT
+		// is disabled. The shaders then assume a default light if OC_DYNAMIC_LIGHT
 		// is not defined. This avoids completely flat shading for meshes
 		// that are shown as picture graphics for example.
 		shader.LoadSlices(&::GraphicsResource.Files, "ObjectLightShader.glsl");

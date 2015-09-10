@@ -13,7 +13,7 @@ void main()
 slice(init+1)
 {
 	// This picks up the normal map lookup in ObjectLightShader.c:
-#define HAVE_NORMALMAP
+#define OC_WITH_NORMALMAP
 
 	color = color * texture2D(basemap, texcoord);
 

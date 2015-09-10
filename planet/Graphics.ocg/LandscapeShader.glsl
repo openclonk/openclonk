@@ -74,7 +74,7 @@ slice(material)
 	vec4 normalPx = texture3D(materialTex, vec3(materialCoo, materialIx+0.5));
 
 	// Same for second pixel, but we'll simply use the first normal
-#ifdef HAVE_2PX
+#ifdef OC_HAVE_2PX
 	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
 	vec4 materialPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2));
 	vec4 normalPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2+0.5));
@@ -89,7 +89,7 @@ slice(normal)
 	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
 	normal = normal + textureNormal * normalMapStrength;
 
-#ifdef HAVE_2PX
+#ifdef OC_HAVE_2PX
 	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
 	vec3 textureNormal2 = normalPx2.xyz - vec3(0.5,0.5,0.5);
 	normal2 = normal2 + textureNormal2 * normalMapStrength;
@@ -100,7 +100,7 @@ slice(normal)
 slice(color) {
 #define color gl_FragColor
 	color = materialPx;
-#ifdef HAVE_2PX
+#ifdef OC_HAVE_2PX
 	vec4 color2 = materialPx2;
 #endif
 }

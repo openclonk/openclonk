@@ -537,8 +537,9 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	if(ssc & C4SSC_LIGHT) hLightTexCoord = shader.AddTexCoord("lightCoord");
 
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define LANDSCAPE");
-	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT"); // sample light from light texture
+	shader.AddFragmentSlice(-1, "#define OPENCLONK");
+	shader.AddFragmentSlice(-1, "#define OC_LANDSCAPE");
+	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT"); // sample light from light texture
 
 	shader.LoadSlices(pGroups, "UtilShader.glsl");
 	shader.LoadSlices(pGroups, "LandscapeShader.glsl");
