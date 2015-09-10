@@ -250,6 +250,7 @@ static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, i
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
 {
 	int i, iCnt = 0, iSortCnt = 0;
+	bool has_layer_check = false;
 	// Read all parameters
 	for (i = 0; i < C4AUL_MAX_Par; i++)
 	{
@@ -258,7 +259,7 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 		if (!Data) break;
 		// Construct
 		C4SortObject *pSO = NULL;
-		C4FindObject *pFO = C4FindObject::CreateByValue(Data, pSOs ? &pSO : NULL, context);
+		C4FindObject *pFO = C4FindObject::CreateByValue(Data, pSOs ? &pSO : NULL, context, &has_layer_check);
 		// Add FindObject
 		if (pFO)
 		{
@@ -275,6 +276,11 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 	{
 		for (i = 0; i < iSortCnt; ++i) delete pSOs[i];
 		return NULL;
+	}
+	// Implicit layer check
+	if (context && !has_layer_check)
+	{
+		pFOs[iCnt++] = new C4FindObjectLayer(context->Layer);
 	}
 	// create sort criterion
 	C4SortObject *pSO = NULL;
@@ -298,7 +304,7 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
 {
 	// Create FindObject-structure
-	C4FindObject *pFOs[C4AUL_MAX_Par];
+	C4FindObject *pFOs[C4AUL_MAX_Par+1]; // +1 array element to include space for implicit layer check
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, NULL, Object(_this));
 	// Error?
 	if (!pFO)
@@ -314,7 +320,7 @@ static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
 static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
 {
 	// Create FindObject-structure
-	C4FindObject *pFOs[C4AUL_MAX_Par];
+	C4FindObject *pFOs[C4AUL_MAX_Par]; // +1 array element to include space for implicit layer check
 	C4SortObject *pSOs[C4AUL_MAX_Par];
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
@@ -331,7 +337,7 @@ static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
 static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
 {
 	// Create FindObject-structure
-	C4FindObject *pFOs[C4AUL_MAX_Par];
+	C4FindObject *pFOs[C4AUL_MAX_Par]; // +1 array element to include space for implicit layer check
 	C4SortObject *pSOs[C4AUL_MAX_Par];
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
@@ -3028,6 +3034,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "C4FO_Layer"                ,C4V_Int,     C4FO_Layer          },
 	{ "C4FO_InArray"              ,C4V_Int,     C4FO_InArray        },
 	{ "C4FO_Property"             ,C4V_Int,     C4FO_Property       },
+	{ "C4FO_AnyLayer"             ,C4V_Int,     C4FO_AnyLayer       },
 
 	{ "MD_DragSource"             ,C4V_Int,     C4MC_MD_DragSource  },
 	{ "MD_DropTarget"             ,C4V_Int,     C4MC_MD_DropTarget  },

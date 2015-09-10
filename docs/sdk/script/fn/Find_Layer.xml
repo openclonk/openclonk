@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_Layer</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>1.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>layer</name>
+          <desc>The layer that has to be set for objects to be found.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: Finds all objects which have the layer set to the given value.</desc>
+    <remark>Starting from OC 7.0, all find and count functions in object context include an implicit Find_Layer(<funclink>GetObjectLayer</funclink>()). This search criterion can be used to override this setting and search for objects in an explicit layer instead. Using this criterion in a search function disables the implicit layer check.</remark>
+    <remark>If layer is nil, only objects without a specific layer are found. To find all objects regardless of layer, use <funclink>Find_AnyLayer</funclink>().</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink>
+    <funclink>Find_AnyLayer</funclink>
+    <funclink>GetObjectLayer</funclink>
+    <funclink>SetObjectLayer</funclink></related>
+  </func>
+  <author>Sven2</author><date>2015-09</date>
+</funcs>

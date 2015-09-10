@@ -30,7 +30,7 @@ C4FindObject::~C4FindObject()
 	delete pSort;
 }
 
-C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject **ppSortObj, const C4Object *context)
+C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject **ppSortObj, const C4Object *context, bool *has_layer_check)
 {
 	// Must be an array
 	C4ValueArray *pArray = C4Value(DataVal).getArray();
@@ -54,7 +54,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_Not:
 	{
 		// Create child condition
-		C4FindObject *pCond = C4FindObject::CreateByValue(Data[1], nullptr, context);
+		C4FindObject *pCond = C4FindObject::CreateByValue(Data[1], nullptr, context, has_layer_check);
 		if (!pCond) return NULL;
 		// wrap
 		return new C4FindObjectNot(pCond);
@@ -64,12 +64,12 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// Trivial case (one condition)
 		if (Data.GetSize() == 2)
-			return C4FindObject::CreateByValue(Data[1], nullptr, context);
+			return C4FindObject::CreateByValue(Data[1], nullptr, context, has_layer_check);
 		// Create all childs
 		int32_t i;
 		C4FindObject **ppConds = new C4FindObject *[Data.GetSize() - 1];
 		for (i = 0; i < Data.GetSize() - 1; i++)
-			ppConds[i] = C4FindObject::CreateByValue(Data[i+1], nullptr, context);
+			ppConds[i] = C4FindObject::CreateByValue(Data[i + 1], nullptr, context, has_layer_check);
 		// Count real entries, move them to start of list
 		int32_t iSize = 0;
 		for (i = 0; i < Data.GetSize() - 1; i++)
@@ -211,6 +211,8 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		return new C4FindObjectController(Data[1].getInt());
 
 	case C4FO_Layer:
+		// explicit layer check given. do not add implicit layer check
+		if (has_layer_check) *has_layer_check = true;
 		return new C4FindObjectLayer(Data[1].getObj());
 
 	case C4FO_InArray:
@@ -226,6 +228,11 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		// Done
 		return pFO;
 	}
+
+	case C4FO_AnyLayer:
+		// do not add implicit layer check
+		if (has_layer_check) *has_layer_check = true;
+		return NULL;
 
 	}
 	return NULL;

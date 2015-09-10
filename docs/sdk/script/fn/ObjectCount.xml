@@ -26,6 +26,7 @@
     </syntax>
     <desc>Returns the number of objects fulfilling the specified search criteria. Search criteria are composed of Find_x() function values.</desc>
     <remark>Search criteria are specified as in <funclink>FindObjects</funclink> and <funclink>FindObject</funclink>. See <funclink>FindObjects</funclink> for additional samples.</remark>
+    <remark>When this function is called in object context, only objects in the same layer as the calling object are considered, i.e. an implicit check <funclink>Find_Layer</funclink>(<funclink>GetObjectLayer</funclink>()) is added. To turn off this check, either supply a manual criterion with <funclink>Find_Layer</funclink>() to check for another layer, or allow objects in any layer to be returned by passing <funclink>Find_AnyLayer</funclink>().</remark>
     <examples>
       <example>
         <code><funclink>Log</funclink>( &quot;Still %d hostile clonks!&quot;, ObjectCount(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()) );</code>
@@ -35,10 +36,14 @@
     <related>
       <funclink>Find_Action</funclink>
       <funclink>Find_ActionTarget</funclink>
+      <funclink>Find_ActionTarget2</funclink>
+      <funclink>Find_ActionTargets</funclink>
       <funclink>Find_Allied</funclink>
       <funclink>Find_And</funclink>
       <funclink>Find_AnyContainer</funclink>
+      <funclink>Find_AnyLayer</funclink>
       <funclink>Find_AtPoint</funclink>
+      <funclink>Find_OnLine</funclink>
       <funclink>Find_Category</funclink>
       <funclink>Find_Container</funclink>
       <funclink>Find_Distance</funclink>
@@ -48,9 +53,11 @@
       <funclink>Find_ID</funclink>
       <funclink>Find_InArray</funclink>
       <funclink>Find_InRect</funclink>
+      <funclink>Find_Layer</funclink>
       <funclink>Find_NoContainer</funclink>
       <funclink>Find_Not</funclink>
       <funclink>Find_OCF</funclink>
+      <funclink>Find_OnLine</funclink>
       <funclink>Find_Or</funclink>
       <funclink>Find_Owner</funclink>
       <funclink>Find_Property</funclink>

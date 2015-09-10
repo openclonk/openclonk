@@ -18,7 +18,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Search criterion: Finds all objects which has the property set to a value that converts to boolean true.</desc>
+    <desc>Search criterion: Finds all objects which have the property set to a value that converts to boolean true.</desc>
     <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
     <examples>
       <example>

@@ -175,6 +175,11 @@ global func Find_Property(string s)
 	return [C4FO_Property, s];
 }
 
+global func Find_AnyLayer()
+{
+	return [C4FO_AnyLayer];
+}
+
 global func Find_PathFree(object to_obj)
 {
 	if (!to_obj)
