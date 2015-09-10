@@ -198,12 +198,12 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 	var health_phys = crew->GetMaxEnergy();
 	var health_val = crew->GetEnergy();
 	var health_ratio = 0;
-	if (health_phys != 0) 
+	if (health_phys) 
 		health_ratio = 1000 * health_val / health_phys;
 	var breath_phys = crew->GetMaxBreath();
 	var breath_val = crew->GetBreath();
 	var breath_ratio = 0;
-	if (breath_phys != 0) 
+	if (breath_phys) 
 		breath_ratio = 1000 * breath_val / breath_phys;
 	
 	// Create dummy objects for background and damage effects.
