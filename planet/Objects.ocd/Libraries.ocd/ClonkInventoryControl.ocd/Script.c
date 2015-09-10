@@ -235,20 +235,29 @@ private func SetNextPickupItem(object to)
 private func FindNextPickupObject(object start_from, int x_dir)
 {
 	if (!start_from) start_from = this;
+	// Returns objects sorted by ascending x-position, with all objects right of the clonk being sorted before objects left of the clonk
 	var sort = Sort_Func("Library_ClonkInventoryControl_Sort_Priority", start_from->GetX());
 	var objects = FindObjects(Find_Distance(20), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(this->GetObjectLayer()), sort);
 	var len = GetLength(objects);
+	if (!len) return nil;
 	// Find object next to the current one.
+	// (note that index==-1 accesses the last element)
 	var index = GetIndexOf(objects, start_from);
-	if (index != nil)
+	if (index != -1)
 	{
-		index = index + x_dir;
-		if (index < 0) index += len;
-		index = index % len;
+		// Previous item was found in the list.
+		// Cycle through list to the right (x_dir==1) or left (x_dir==-1)
+		index = (index + x_dir) % len;
 	}
-	else index = 0;
-	
-	if (index >= len) return nil;
+	else
+	{
+		// Previous item is no longer in range or there was no previous item - start with item closest to clonk position
+		// Going only in view direction may sound intuitive, but is weird in practice when you're standing just on top
+		// of an object that is 1px behind you and it selects an item very far away instead
+		// The most intuitive seems to pre-select the item closest to the clonk hands (also e.g. when scaling),
+		// so use distance from object center.
+		index += (ObjectDistance(objects[-1]) > ObjectDistance(objects[0]));
+	}
 	var next = objects[index];
 	if (next == start_from) return nil;
 	return next;
@@ -258,9 +267,7 @@ private func BeginPickingUp()
 {
 	this.inventory.is_picking_up = true;
 	
-	var dir = -1;
-	if (GetDir() == DIR_Right) dir = 1;
-	var obj = FindNextPickupObject(this, dir);
+	var obj = FindNextPickupObject(this, 0);
 	if (obj)
 		SetNextPickupItem(obj);
 }
