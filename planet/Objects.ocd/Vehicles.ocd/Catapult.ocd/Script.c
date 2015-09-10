@@ -53,7 +53,7 @@ func ControlLeft(object clonk)
 		}
 
 		StopAnimation(turn_anim);
-		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), 36 - (animstart * 204617 / 10000000), ANIM_Hold), Anim_Const(1000));
+		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
 	}
 }
 
@@ -72,7 +72,7 @@ func ControlRight(object clonk)
 		}
 
 		StopAnimation(turn_anim);
-		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), 36 - (animstart * 204617 / 10000000), ANIM_Hold), Anim_Const(1000));
+		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
 	}
 }
 
