@@ -190,7 +190,11 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 	
 	// Draw the item's graphics in front of it again to achieve a highlighting effect.
 	fx.dummy->SetGraphics(nil, nil, 1, GFXOV_MODE_Object, nil, GFX_BLIT_Additive, item);
-	
+
+	// Custom selector particle if object says so
+	if (item->~PickupHighlight(fx.dummy, fx.width, fx.height, GetOwner()))
+		return;
+
 	// Draw a nice selector particle on item change.
 	var selector =
 	{
@@ -199,7 +203,7 @@ private func FxIntHighlightItemStart(object target, proplist fx, temp, object it
 		Rotation = PV_Step(1, PV_Random(0, 360), 1),
 		Alpha = 200
 	};
-	
+
 	fx.dummy->CreateParticle("Selector", 0, 0, 0, 0, 0, Particles_Colored(selector, GetPlayerColor(GetOwner())), 1); 
 }
 
