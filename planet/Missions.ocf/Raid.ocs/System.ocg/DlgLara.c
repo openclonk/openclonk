@@ -141,7 +141,7 @@ func FxLaraWalkingTimer(object c, proplist fx, int time)
 				// short break - then drop.
 				if (c->GetXDir()) return FX_OK;
 				c->SetXDir();
-				fx.carry_obj->Drop();
+				fx.carry_obj->Exit();
 				fx.carry_obj = fx.target_pos = nil;
 			}
 			else 
