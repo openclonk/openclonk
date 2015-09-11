@@ -5,21 +5,14 @@
 	@author Win
 */
 
-local Plane = 500;
-
-local is_explosive = false;
-
-local grow_time = 2;
-local grow_timer = 0;
 
 public func Construction()
 {
-	AddEffect("Move", this, 1, 2, this);
-	
-	// Sometimes bubbles become darker and explosive
+	var effect = AddEffect("Move", this, 1, 2, this);
+	// Sometimes bubbles become darker and explosive.
 	if (!Random(10))
 	{
-		is_explosive = true;
+		effect.is_explosive = true;
 		SetGraphics("2");
 	}
 	return;
@@ -27,39 +20,38 @@ public func Construction()
 
 private func FxMoveTimer(object target, effect fx, int time)
 {
-	if (!GBackLiquid(0, -3) && !GetEffect("ObjFade", this) || time > 200)
+	// Fade out bubble if outside liquid or time is up.
+	if ((!GBackLiquid(0, -3) || time > 200) && !GetEffect("ObjFade", this))
 	{
-		if (!GBackLiquid(0, -3) && !is_explosive)
+		if (!GBackLiquid(0, -3) && !fx.is_explosive)
 			SetGraphics("3");
-		if(!Random(20))
-			Sound("Bubble*");
+		Sound("Bubble*");
 		FadeOut(50, true);
 	}
 	
-	grow_timer++;
-	
-	if (grow_timer >= grow_time)
-	{
+	// Grow bubble over time.
+	if ((time % 6) == 0)
 		DoCon(2);
-		grow_timer = 0;
-	}
 	
-	// Causes bubbles to repel each other
-	var nearbyBubble = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_ID(GetID()));
-	if (nearbyBubble != nil)
+	// Causes bubbles to repel each other.
+	var nearby_bubble = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_ID(GetID()));
+	if (nearby_bubble)
 	{
-		SetXDir(-(nearbyBubble->GetX() - GetX()) / 2);
-		SetYDir(-(nearbyBubble->GetY() - GetY()) / 2);
+		SetXDir(-(nearby_bubble->GetX() - GetX()) / 2);
+		SetYDir(-(nearby_bubble->GetY() - GetY()) / 2);
 	}
-	// Deep green bubbles explode when near a living thing
-	if (is_explosive)
+	// Deep green bubbles explode when near a living thing.
+	if (fx.is_explosive)
 	{
 		var prey = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_OCF(OCF_Alive));
-		if (prey != nil)
+		if (prey)
+		{
 			Explode(10);
+			return FX_OK;	
+		}
 	}
 	
-	// Bubble is faster in acid, moves erratically outside
+	// Bubble is faster in acid, moves erratically outside.
 	var speed_up = -3;
 	if (GetEffect("ObjFade", this))
 	{
@@ -68,11 +60,13 @@ private func FxMoveTimer(object target, effect fx, int time)
 			SetXDir(GetXDir() + RandomX(-6, 6));
 	}
 	
-	
 	SetYDir(GetYDir() - RandomX(3, 4) + speed_up - (GetCon() / 50));
-	
-	return 1;
+	return FX_OK;
 }
 
 // No need to blow up scenario object list with bubble spam.
 func SaveScenarioObject() { return false; }
+
+/*-- Properties --*/
+
+local Plane = 500;
