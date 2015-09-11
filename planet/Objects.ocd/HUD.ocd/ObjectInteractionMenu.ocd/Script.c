@@ -783,21 +783,31 @@ private func OnContentsSelection(symbol, extra_data)
 	var obj = extra_data.one_object ?? FindObject(Find_Container(target), Find_ID(symbol));
 	if (!obj) return;
 	
-	// If stackable, always try to grab a full stack.
-	// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
-	if (obj->~IsStackable())
+	var handled = false;
+	
+	// Does the object not want to leave the other container anyway?
+	if (!obj->~QueryRejectDeparture(target))
 	{
-		var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
-		for (var other in others) 
+		// If stackable, always try to grab a full stack.
+		// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+		if (obj->~IsStackable())
 		{
-			if (obj->IsFullStack()) break;
-			other->TryAddToStack(obj);
+			var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+			for (var other in others) 
+			{
+				if (obj->IsFullStack()) break;
+				other->TryAddToStack(obj);
+			}
 		}
+		
+		// More special handling for Stackable items..
+		handled = obj->~TryPutInto(other_target);
+		// Try to normally collect the object otherwise.
+		if (!handled)
+			handled = other_target->Collect(obj, true);
 	}
 	
-	// More special handling for Stackable items..
-	var handled = obj->~TryPutInto(other_target);
-	if (handled || other_target->Collect(obj, true))
+	if (handled)
 	{
 		Sound("SoftTouch*", true, nil, GetOwner());
 		return true;
