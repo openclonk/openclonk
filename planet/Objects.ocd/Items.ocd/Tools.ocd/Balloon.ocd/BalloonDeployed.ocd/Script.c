@@ -29,6 +29,11 @@ public func SetParent(object balloon)
 	parent = balloon;
 }
 
+public func GetParent()
+{
+	return parent;
+}
+
 private func Deflate()
 {
 	if (GetAction() != "Deflate")
@@ -46,7 +51,6 @@ private func DeflateEffect()
 
 private func Pack()
 {
-	RemoveEffect("NoDrop", parent);
 	if (rider)
 	{
 		rider->SetAction("Jump");
@@ -136,10 +140,7 @@ protected func OnUnmount(object clonk)
 	if (clonk == rider && clonk->GetAction() == "Tumble")
 	{
 		if (parent)
-		{
-			RemoveEffect("NoDrop", parent);
-			clonk->SetCommand("Drop", parent);
-		}
+			parent->Exit(0, 0, 0, clonk->GetXDir(), clonk->GetYDir());
 		rider = nil;
 		Deflate();	
 	}
@@ -159,7 +160,7 @@ public func OnProjectileHit()
 	if (rider)
 	{
 		rider->SetAction("Tumble");
-		rider->SetSpeed(GetXDir(),GetYDir());
+		rider->SetSpeed(GetXDir(), GetYDir());
 	}
 	if (parent)
 		parent->RemoveObject();

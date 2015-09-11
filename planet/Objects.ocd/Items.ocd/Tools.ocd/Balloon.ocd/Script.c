@@ -27,19 +27,19 @@ public func ControlUseStart(object clonk)
 	// Make sure clonk is not diving.
 	var side = ["L", "R"][Random(2)];
 	clonk->PlayAnimation(Format("Jump.%s", side), 5, Anim_Linear(clonk->GetAnimationLength("Jump.L"), 0, clonk->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-
-	// Ensure the balloon is not dropped or thrown.
-	var effect = AddEffect("NoDrop", this, 1, 1, this);
-	effect.user = clonk;
 	return true;
 }
 
-// Replace me by a callback which blocks departure.
-public func FxNoDropTimer(object target, proplist effect, int timer)
+// Ensure the balloon is not dropped or thrown.
+public func QueryRejectDeparture(object clonk)
 {
-	if (target->Contained() != effect.user)
-		target->Enter(effect.user);
-	return FX_OK;
+	if (!clonk)
+		return false;
+	if (!clonk->GetActionTarget())
+		return false;
+	if (clonk->GetAction() == "Ride" && clonk->GetActionTarget()->~GetParent() == this)
+		return true;
+	return false;
 }
 
 public func Hit()
