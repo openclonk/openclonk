@@ -377,7 +377,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	// only act on press, not release
-	if (!house && (!vehicle || proc == "ATTACH") && !release)
+	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed || ctrl == CON_Drop) && !house && (!vehicle || proc == "ATTACH") && !release)
 	{		
 		if (contents && !contents->~QueryRejectDeparture(this))
 		{		
