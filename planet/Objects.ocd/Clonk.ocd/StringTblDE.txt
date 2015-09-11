@@ -1,3 +1,5 @@
+Description=Ein Mitglied deiner Crew. Gewitzt und flink, wenn gekonnt gesteuert.
+
 CtxConstructionDesc=Bauauftrag
 CtxConstructionMaterial=Baumaterial
 CtxHomeDesc=Zurück zur Basis

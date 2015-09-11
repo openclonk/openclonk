@@ -1,3 +1,5 @@
+Description=A member of your crew. Witty and nimble if skillfully controlled.
+
 CtxConstructionDesc=Construction
 CtxConstructionMaterial=Construction material
 CtxHomeDesc=Back to base

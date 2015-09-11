@@ -1044,6 +1044,7 @@ Eat = {
 };
 
 local Name = "Clonk";
+local Description = "$Description$";
 local MaxEnergy = 50000;
 local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
 local JumpSpeed = 400;
