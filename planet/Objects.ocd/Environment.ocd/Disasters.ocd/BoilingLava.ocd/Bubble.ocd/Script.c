@@ -32,11 +32,15 @@ private func FxMoveTimer(object target, effect, int time)
 		for (var i = 0; i < 2; i++)
 		{
 			var bubble = CreateObjectAbove(GetID());
-			bubble->SetCon(2 * target->GetCon() / 3);
-			bubble->SetYDir(target->GetYDir());
+			// Bubble could have been removed in its construction call.
+			if (bubble)
+			{
+				bubble->SetCon(2 * target->GetCon() / 3);
+				bubble->SetYDir(target->GetYDir());
+			}
 		}
 		RemoveObject();
-		return -1;
+		return FX_Execute_Kill;
 	}
 
 	// Jittery movement
@@ -48,7 +52,7 @@ private func FxMoveTimer(object target, effect, int time)
 	var prey = FindObject(Find_Distance(GetCon()/15, 0, 0), Find_OCF(OCF_Alive));
 	if(prey != nil)
 		Explode(10);
-	return 1;
+	return FX_OK;
 }
 
 // No need to blow up scenario object list with bubble spam.
