@@ -32,7 +32,7 @@ private func FxMoveTimer(object target, effect fx, int time)
 		if (!GBackLiquid(0, -3) && !is_explosive)
 			SetGraphics("3");
 		if(!Random(20))
-			Sound("ef_Bubble*");
+			Sound("Bubble*");
 		FadeOut(50, true);
 	}
 	
