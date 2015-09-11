@@ -99,11 +99,24 @@ protected func InitializePlayer(int plr)
 // Initializes environment and disasters.
 private func InitEnvironment()
 {
-	// Water refill from sides
-	var initial_water_level = 0;
-	while (GetMaterial(0,initial_water_level) != Material("Water")) ++initial_water_level;
-	ScheduleCall(nil, this.EnsureWaterLevel, 20, 999999999, initial_water_level);
-
+	// Set infinite wate rreflow from sides
+	var water = Material("Water");
+	for (var x in [0, LandscapeWidth()-1])
+		for (var y=1,y0=0; y<=LandscapeHeight(); ++y)
+		{
+			if (GetMaterial(x, y) == water)
+			{
+				// Water section begins here
+				if (!y0) y0 = y;
+			}
+			else if (y0)
+			{
+				// Water section ends 1px above - apply auto-refill texture
+				DrawMaterialQuad("Water", x, y0, x+1, y0, x+1, y, x, y, "Water");
+				y0 = 0;
+			}
+		}
+		
 	// Set a certain parallax.
 	SetSkyParallax(0, 20, 20);
 	
@@ -111,17 +124,6 @@ private func InitEnvironment()
 	//Meteor->SetChance(5); Cloud->SetLightning(16);
 	
 	return;
-}
-
-// Ensures that the sea doesn't disappear
-func EnsureWaterLevel(int level, bool no_recursion)
-{
-	var water_mat = Material("Water");
-	if (GetMaterial(0,level) != water_mat) CastPXS("Water", 100, 20, 0,level, 90, 10);
-	if (GetMaterial(LandscapeWidth()-1,level) != water_mat) CastPXS("Water", 100, 20, LandscapeWidth()-1,level, 270, 10);
-	// Extra insertion at a lower level so it's not easy to block off
-	if (!no_recursion && !Random(3)) EnsureWaterLevel(level + 50 + Random(450), true);
-	return true;
 }
 
 private func InitVegetation()
