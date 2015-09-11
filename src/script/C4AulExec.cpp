@@ -106,7 +106,7 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 	if (_this && _this->GetDef())
 		script = &(_this->GetDef()->Script);
 	else
-		script = AulExec.pCurCtx[-1].Func->pOrgScript;
+		script = AulExec.pCurCtx[0].Func->pOrgScript;
 	if (!script) return NULL;
 	try
 	{
