@@ -100,7 +100,7 @@ func FxAttack_PanicStart(object c, proplist fx, int temp)
 	c->SetAction("Walk");
 	// drop heavy stuff
 	var item = c->Contents();
-	if (item && item->~IsBarrel()) item->Drop();
+	if (item && item->~IsBarrel()) item->Exit();
 	// start running
 	FxAttack_PanicTimer(c, fx, 0);
 	return FX_OK;
