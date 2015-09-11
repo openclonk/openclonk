@@ -137,7 +137,7 @@ bool C4ScenarioParameterDefs::Load(C4Group &hGroup, C4LangStringTable *pLang)
 	StdStrBuf Buf;
 	if (!hGroup.LoadEntryString(C4CFN_ScenarioParameterDefs,&Buf)) return false;
 	if (pLang) pLang->ReplaceStrings(Buf);
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Buf, C4CFN_ScenarioCore))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Buf, C4CFN_ScenarioParameterDefs))
 		{ return false; }
 	return true;
 }
