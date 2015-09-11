@@ -334,8 +334,8 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 		SetYDir(GetYDir(100)*maxspeed/speed,100);
 	}
 
-	//No pilot?
-	var pilot = FindObject(Find_OCF(OCF_CrewMember),Find_Container(this));
+	// No pilot? Look for all layers, since an NPC might be in a different layer.
+	var pilot = FindObject(Find_OCF(OCF_CrewMember), Find_Container(this), Find_AnyLayer());
 	if(!pilot && throttle != 0) CancelFlight();
 
 	//Planes cannot fly underwater!
