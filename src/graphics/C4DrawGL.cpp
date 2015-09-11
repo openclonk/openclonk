@@ -429,10 +429,6 @@ void CStdGL::ResetMultiBlt()
 
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
 {
-	// Only direct rendering
-	assert(sfcTarget->IsRenderTarget());
-	if(!PrepareRendering(sfcTarget)) return;
-
 	// Draw on pixel center:
 	glPushMatrix();
 	glTranslatef(0.5f, 0.5f, 0.0f);
@@ -451,9 +447,7 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	const unsigned int BATCH_SIZE = 256;
 	for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
 	{
-		glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[i].ftx);
-		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[i].color[0]);
-		glDrawArrays(GL_POINTS, 0, std::min(n_vertices - i, BATCH_SIZE));
+		PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -465,10 +459,6 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 
 void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
 {
-	// Only direct rendering
-	assert(sfcTarget->IsRenderTarget());
-	if(!PrepareRendering(sfcTarget)) return;
-
 	// In a first step, we transform the lines array to a triangle array, so that we can draw
 	// the lines with some thickness.
 	// In principle, this step could be easily (and probably much more efficiently) performed
@@ -515,37 +505,34 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	C4ShaderCall call(GetSpriteShader(true, false, false));
 	SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glClientActiveTexture(GL_TEXTURE0);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
 
-	glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].tx);
-	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &tri_vertices[0].ftx);
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &tri_vertices[0].color[0]);
-	glDrawArrays(GL_TRIANGLES, 0, n_vertices * 3);
-	delete[] tri_vertices;
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 	ResetMultiBlt();
+
+	delete[] tri_vertices;
 }
 
 void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayModClr)
+{
+	// Feed the vertices to the GL
+	C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
+	SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
+
+	PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
+
+	ResetMultiBlt();
+}
+
+void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex)
 {
 	// Only direct rendering
 	assert(sfcTarget->IsRenderTarget());
 	if(!PrepareRendering(sfcTarget)) return;
 
-	// Feed the vertices to the GL
-	C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
-	SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
-	if(pTex)
+	if(has_tex)
 	{
 		// We use the texture coordinate array in texture0 for
 		// the base, overlay and normal textures
@@ -556,13 +543,23 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 
 	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].ftx);
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[0].color[0]);
-	glDrawArrays(GL_TRIANGLES, 0, n_vertices);
 
-	if(pTex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	switch (op)
+	{
+	case OP_POINTS:
+		glDrawArrays(GL_POINTS, 0, n_vertices);
+		break;
+	case OP_TRIANGLES:
+		glDrawArrays(GL_TRIANGLES, 0, n_vertices);
+		break;
+	default:
+		assert(false);
+		break;
+	}
+
+	if(has_tex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-
-	ResetMultiBlt();
 }
 
 bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups)

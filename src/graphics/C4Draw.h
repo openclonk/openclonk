@@ -127,6 +127,8 @@ class C4FoWRegion;
 class C4Draw
 {
 public:
+	enum DrawOperation { OP_POINTS, OP_TRIANGLES };
+
 	C4Draw(): MaxTexSize(0) { }
 	virtual ~C4Draw() { pDraw=NULL; }
 public:
@@ -213,6 +215,7 @@ public:
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
 	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod) = 0; // blit the same texture many times
+	virtual void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex) = 0;
 	// Convenience drawing functions
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
