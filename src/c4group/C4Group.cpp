@@ -2206,24 +2206,38 @@ bool C4Group::OpenMother()
 	return true;
 }
 
-int C4Group::PreCacheEntries(const char *szSearchPattern)
+int C4Group::PreCacheEntries(const char *szSearchPattern, bool cache_previous)
 {
 	assert(szSearchPattern);
 	int result = 0;
 	// pre-load entries to memory. return number of loaded entries.
 	for (C4GroupEntry * p = FirstEntry; p; p = p->Next)
 	{
-		// skip some stuff that can not be cached
-		if (p->ChildGroup || p->bpMemBuf || !p->Size) continue;
 		// is this to be cached?
 		if (!WildcardListMatch(szSearchPattern, p->FileName)) continue;
-		// then load it!
-		StdBuf buf;
-		if (!this->LoadEntry(p->FileName, &buf)) continue;
-		p->HoldBuffer = true;
-		p->BufferIsStdbuf = true;
-		p->Size = buf.getSize(); // update size in case group changed on disk between calls
-		p->bpMemBuf = static_cast<BYTE *>(buf.GrabPointer());
+		// if desired, cache all entries up to that one to allow rewind in unpacked memory
+		// (only makes sense for groups)
+		if (cache_previous && Status == GRPF_File)
+		{
+			for (C4GroupEntry * p_pre = FirstEntry; p_pre != p; p_pre = p_pre->Next)
+				if (p_pre->Offset >= FilePtr)
+					PreCacheEntry(p_pre);
+		}
+		// cache the given entry
+		PreCacheEntry(p);
 	}
 	return result;
+}
+
+void C4Group::PreCacheEntry(C4GroupEntry * p)
+{
+	// skip some stuff that can not be cached or has already been cached
+	if (p->ChildGroup || p->bpMemBuf || !p->Size) return;
+	// now load it!
+	StdBuf buf;
+	if (!this->LoadEntry(p->FileName, &buf)) return;
+	p->HoldBuffer = true;
+	p->BufferIsStdbuf = true;
+	p->Size = buf.getSize(); // update size in case group changed on disk between calls
+	p->bpMemBuf = static_cast<BYTE *>(buf.GrabPointer());
 }

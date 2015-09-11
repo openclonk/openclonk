@@ -671,6 +671,9 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	// Only show them for "real" scenarios
 	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
 	{
+		// Skipping ahead in regular reading list, so keep other entries in memory
+		rGrp.PreCacheEntries(C4CFN_AnyScriptStringTbl, true);
+		rGrp.PreCacheEntries(C4CFN_ScenarioParameterDefs, true);
 		C4LangStringTable ScenarioLangStringTable;
 		C4Language::LoadComponentHost(&ScenarioLangStringTable, rGrp, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		ParameterDefs.Load(rGrp, &ScenarioLangStringTable);

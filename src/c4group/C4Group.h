@@ -257,7 +257,7 @@ public:
 	inline bool IsPacked() { return Status == GRPF_File; }
 	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
-	int PreCacheEntries(const char *szSearchPattern); // pre-load entries to memory. return number of loaded entries.
+	int PreCacheEntries(const char *szSearchPattern, bool cache_previous=false); // pre-load entries to memory. return number of loaded entries.
 
 	const C4GroupHeader &GetHeader() const { return Head; }
 	const C4GroupEntry *GetFirstEntry() const { return FirstEntry; }
@@ -292,6 +292,7 @@ protected:
 	C4GroupEntry *SearchNextEntry(const char *szName);
 	C4GroupEntry *GetNextFolderEntry();
 	uint32_t CalcCRC32(C4GroupEntry *pEntry);
+	void PreCacheEntry(C4GroupEntry * p);
 };
 
 #endif
