@@ -158,13 +158,12 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 		prev_container = container;
 		container = parent_container;
 	}
-	// Blast objects outside if there was no final container containing the blast.
-	if (!container)
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
 	
 	// Explosion outside: Explosion effects.
 	if (!container)
 	{
+		// Blast objects outside if there was no final container containing the blast.
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
 		// Incinerate oil.
 		if (!IncinerateLandscape(x, y))
 			if (!IncinerateLandscape(x, y - 10))
@@ -172,11 +171,9 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 					IncinerateLandscape(x + 5, y - 5);
 		// Graphic effects.
 		Call("ExplosionEffect", level, x, y, 0, silent);
-	}
-	
-	// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
-	if (!container)
+		// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
 		BlastFree(x, y, level, cause_plr);
+	}
 
 	return true;
 }
