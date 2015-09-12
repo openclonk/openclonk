@@ -123,7 +123,7 @@ public:
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
 	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
 	bool BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
-	bool Create(int iWdt, int iHgt, bool fOwnPal=false, bool fIsRenderTarget=false, int MaxTextureSize = 0);
+	bool Create(int iWdt, int iHgt, bool fOwnPal=false, bool fIsRenderTarget=false, int MaxTextureSize = 0, bool fTileable=false);
 	bool Copy(C4Surface &fromSfc);
 	bool CreateColorByOwner(C4Surface *pBySurface);  // create ColorByOwner-surface
 	bool SetAsClrByOwnerOf(C4Surface *pOfSurface);   // assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
@@ -140,16 +140,16 @@ public:
 	void NoClip();
 
 	// In C4SurfaceLoaders.cpp
-	bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-	bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-	bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false, bool fTileable=false);
+	bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false, bool fTileable=false);
+	bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false, bool fTileable=false);
 	bool Save(C4Group &hGroup, const char *szFilename);
 	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
 	bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
-	bool Read(CStdStream &hGroup, const char * extension);
-	bool ReadPNG(CStdStream &hGroup);
-	bool ReadJPEG(CStdStream &hGroup);
-	bool ReadBMP(CStdStream &hGroup);
+	bool Read(CStdStream &hGroup, const char * extension, bool fTileable);
+	bool ReadPNG(CStdStream &hGroup, bool fTileable);
+	bool ReadJPEG(CStdStream &hGroup, bool fTileable);
+	bool ReadBMP(CStdStream &hGroup, bool fTileable);
 
 	bool AttachPalette();
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
@@ -159,7 +159,7 @@ public:
 private:
 	void MapBytes(BYTE *bpMap);
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
-	bool CreateTextures(int MaxTextureSize = 0);    // create ppTex-array
+	bool CreateTextures(int MaxTextureSize = 0, bool fTileable=false);    // create ppTex-array
 	void FreeTextures();      // free ppTex-array if existant
 	
 	bool GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY);
@@ -186,9 +186,10 @@ public:
 	int iSizeX;
 	int iSizeY;
 	bool fIntLock;    // if set, texref is locked internally only
+	bool fTileable;   // Whether texture coordinates are clamped or repeated outside of [0,1]
 	C4Rect LockSize;
 
-	C4TexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
+	C4TexRef(int iSizeX, int iSizeY, bool fAsRenderTarget, bool fTileable);   // create texture with given size
 	~C4TexRef();           // release texture
 	bool Lock();          // lock texture
 	// Lock a part of the rect, discarding the content

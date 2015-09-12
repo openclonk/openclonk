@@ -76,10 +76,8 @@ public:
 	bool Create(int iWdt, int iHgt, int iWdt2=C4FCT_Full, int iHgt2=C4FCT_Full);
 	C4Surface &GetFace() { return Face; } // get internal face
 	bool CreateClrByOwner(C4Surface *pBySurface);
-	bool EnsureSize(int iMinWdt, int iMinHgt);
 	bool EnsureOwnSurface();
-	bool Load(C4Group &hGroup, const char *szName, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-	bool Load(BYTE *bpBitmap, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full);
+	bool Load(C4Group &hGroup, const char *szName, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full, bool fOwnPal=false, bool fNoErrIfNotFound=false, bool fTileable=false);
 	bool Save(C4Group &hGroup, const char *szName);
 	void GrabFrom(C4FacetSurface &rSource)
 	{

@@ -204,8 +204,7 @@ public:
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                bool fTransparency=true);
 	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
-	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0, bool fSrcColKey=false);
-	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0, bool fSrcColKey=false);
+	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0);
 	virtual void FillBG(DWORD dwClr=0) = 0;
 	// Text
 	enum { DEFAULT_MESSAGE_COLOR = 0xffffffff };

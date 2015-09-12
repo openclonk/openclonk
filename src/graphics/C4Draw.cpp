@@ -573,74 +573,36 @@ bool C4Draw::BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, 
 	}
 }
 
-bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
+bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY)
 {
-	int iSourceWdt,iSourceHgt;
-	float iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
-	// Get source surface size
-	if (!GetSurfaceSize(sfcSurface,iSourceWdt,iSourceHgt)) return false;
-	// reduce offset to needed size
-	iOffsetX = fmod(iOffsetX, iSourceWdt);
-	iOffsetY = fmod(iOffsetY, iSourceHgt);
-	// Vertical blits
-	for (iY=iToY+iOffsetY; iY<iToY+iToHgt; iY+=iSourceHgt)
-	{
-		// Vertical blit size
-		iBlitY=Max(iToY-iY,0.0f); iBlitHgt=Min<float>(iSourceHgt,iToY+iToHgt-iY)-iBlitY;
-		// Horizontal blits
-		for (iX=iToX+iOffsetX; iX<iToX+iToWdt; iX+=iSourceWdt)
-		{
-			// Horizontal blit size
-			iBlitX=Max(iToX-iX,0.0f); iBlitWdt=Min<float>(iSourceWdt,iToX+iToWdt-iX)-iBlitX;
-			// Blit
-			if (!Blit(sfcSurface, iBlitX, iBlitY, iBlitWdt, iBlitHgt, sfcTarget, iX+iBlitX, iY+iBlitY, iBlitWdt, iBlitHgt, fSrcColKey)) return false;
-		}
-	}
-	return true;
-}
+	// Only direct rendering from single, tileable, texture
+	if (!sfcTarget->IsRenderTarget()) return false;
+	if (!sfcSurface->IsSingleSurface()) return false;
+	if (!sfcSurface->textures[0].fTileable) return false;
 
-bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, bool fSrcColKey)
-{
-	float tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
-	// get tile size
-	int iTileWdt=sfcSurface->Wdt;
-	int iTileHgt=sfcSurface->Hgt;
-	// adjust size of offsets
-	iOffsetX = fmod(iOffsetX, iTileWdt);
-	iOffsetY = fmod(iOffsetY, iTileHgt);
-	if (iOffsetX<0) iOffsetX+=iTileWdt;
-	if (iOffsetY<0) iOffsetY+=iTileHgt;
-	// get start pos for blitting
-	float iStartX=iToX-iOffsetX;
-	float iStartY=iToY-iOffsetY;
-	ty=0;
-	// blit vertical
-	for (float iY=iStartY; fabs(ty - iToHgt) > 1e-3; iY+=iTileHgt)
-	{
-		// get vertical blit bounds
-		iBlitY=0; iBlitHgt=iTileHgt;
-		if (iY<iToY) { iBlitY=iToY-iY; iBlitHgt+=iY-iToY; }
-		float iOver=ty+iBlitHgt-iToHgt; if (iOver>0) iBlitHgt-=iOver;
-		// blit horizontal
-		tx=0;
-		for (float iX=iStartX; fabs(tx - iToWdt) > 1e-3; iX+=iTileWdt)
-		{
-			// get horizontal blit bounds
-			iBlitX=0; iBlitWdt=iTileWdt;
-			if (iX<iToX) { iBlitX=iToX-iX; iBlitWdt+=iX-iToX; }
-			iOver=tx+iBlitWdt-iToWdt; if (iOver>0) iBlitWdt-=iOver;
-			// blit
-			if (!Blit(sfcSurface,iBlitX,iBlitY,iBlitWdt,iBlitHgt,sfcTarget,tx+iToX,ty+iToY,iBlitWdt,iBlitHgt,fSrcColKey))
-			{
-				// Ignore blit errors. This is usually due to blit border lying outside surface and shouldn't cause remaining blits to fail.
-			}
-			// next col
-			tx+=iBlitWdt;
-		}
-		// next line
-		ty+=iBlitHgt;
-	}
-	// success
+	// source surface dimensions
+	const float sourceWdt = sfcSurface->Wdt;
+	const float sourceHgt = sfcSurface->Hgt;
+
+	// vertex positions
+	C4BltVertex vertices[6];
+	vertices[0].ftx = iToX; vertices[0].fty = iToY; vertices[0].ftz = 0.0f;
+	vertices[0].tx = (0.0f + iOffsetX) / sourceWdt; vertices[0].ty = (0.0f + iOffsetY) / sourceHgt;
+	DwTo4UB(0xffffffff, vertices[0].color);
+	vertices[1].ftx = iToX + iToWdt; vertices[1].fty = iToY; vertices[1].ftz = 0.0f;
+	vertices[1].tx = (iToWdt + iOffsetX) / sourceWdt; vertices[1].ty = (0.0f + iOffsetY) / sourceHgt;
+	DwTo4UB(0xffffffff, vertices[1].color);
+	vertices[2].ftx = iToX + iToWdt; vertices[2].fty = iToY + iToHgt; vertices[2].ftz = 0.0f;
+	vertices[2].tx = (iToWdt + iOffsetX) / sourceWdt; vertices[2].ty = (iToHgt + iOffsetY) / sourceHgt;
+	DwTo4UB(0xffffffff, vertices[2].color);
+	vertices[3].ftx = iToX; vertices[3].fty = iToY + iToHgt; vertices[3].ftz = 0.0f;
+	vertices[3].tx = (0.0f + iOffsetX) / sourceWdt; vertices[3].ty = (iToHgt + iOffsetY) / sourceHgt;
+	DwTo4UB(0xffffffff, vertices[3].color);
+	// duplicate vertices
+	vertices[4] = vertices[0]; vertices[5] = vertices[2];
+
+	// Draw
+	PerformMultiTris(sfcTarget, vertices, 6, NULL, &sfcSurface->textures[0], NULL, NULL, 0);
 	return true;
 }
 

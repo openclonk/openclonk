@@ -280,12 +280,12 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						const float w = z;
 						const float h = z * fcHgt / fcWdt;
 						const float x1 = fixtof(pxp->x) + cgox + z * pMat->PXSGfxRt.tx / fcWdt;
-						const float y1 = fixtof(pxp->y) + cgoy + z * pMat->PXSGfxRt.ty / fcWdt;
+						const float y1 = fixtof(pxp->y) + cgoy + z * pMat->PXSGfxRt.ty / fcHgt;
 						const float x2 = x1 + w;
 						const float y2 = y1 + h;
 
-						int32_t sfcWdt = pMat->PXSFace.Surface->Wdt;
-						int32_t sfcHgt = pMat->PXSFace.Surface->Hgt;
+						const float sfcWdt = pMat->PXSFace.Surface->Wdt;
+						const float sfcHgt = pMat->PXSFace.Surface->Hgt;
 
 						C4BltVertex vtx[6];
 						vtx[0].tx = (pnx + 0.f) * fcWdt / sfcWdt; vtx[0].ty = (pny + 0.f) * fcHgt / sfcHgt;

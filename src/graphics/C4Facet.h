@@ -128,7 +128,6 @@ public:
 	void Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
-	void DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 	void DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx); // draw energy level using graphics
 	void DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
 	void DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, float fHgt) const;

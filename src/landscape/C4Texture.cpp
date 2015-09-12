@@ -360,7 +360,7 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 		if (GetTexture(GetFilenameOnly(texname))) continue;
 		// create surface
 		ctex = new C4Surface();
-		if (ctex->Read(hGroup, GetExtension(texname)))
+		if (ctex->Read(hGroup, GetExtension(texname), false))
 		{
 			SReplaceChar(texname,'.',0);
 			if (AddTexture(texname,ctex)) texnum++;

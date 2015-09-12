@@ -460,13 +460,6 @@ void C4Facet::Set(C4Surface &rSfc)
 	Set(&rSfc,0,0,rSfc.Wdt,rSfc.Hgt);
 }
 
-void C4Facet::DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
-{
-	if (!pDraw || !Surface || !Wdt || !Hgt) return;
-	// Blits whole source surface, not surface facet area
-	pDraw->BlitSurfaceTile(Surface,sfcTarget,iX,iY,iWdt,iHgt,0,0,true);
-}
-
 void C4Facet::Expand(int32_t iLeft, int32_t iRight, int32_t iTop, int32_t iBottom)
 {
 	X-=iLeft; Wdt+=iLeft;

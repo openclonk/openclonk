@@ -122,8 +122,8 @@ public:
 	bool ReloadResolutionDependantFiles(); // reload any files that depend on the current resolution
 
 protected:
-	bool LoadFile(C4FacetID& fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt = C4FCT_Full, int32_t iHgt = C4FCT_Full, bool fNoWarnIfNotFound=false);
-	bool LoadFile(C4Surface& sfc, const char *szName, C4GroupSet &rGfxSet, int32_t &ridCurrSfc);
+	bool LoadFile(C4FacetID& fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt = C4FCT_Full, int32_t iHgt = C4FCT_Full, bool fNoWarnIfNotFound=false, bool fTileable=false);
+	bool LoadFile(C4Surface& sfc, const char *szName, C4GroupSet &rGfxSet, int32_t &ridCurrSfc, bool fTileable=false);
 	bool FindLoadRes(C4Group *pSecondFile, const char *szName);
 	bool LoadCursorGfx();
 

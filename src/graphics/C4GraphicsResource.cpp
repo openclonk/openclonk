@@ -241,27 +241,27 @@ bool C4GraphicsResource::Init()
 	fctClonkSkin.Set(&sfcClonkSkins,0,0,64,64);
 
 	// Facet bitmap resources
-	if (!LoadFile(fctFire,        "Fire",         Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctBackground,  "Background",   Files))               return false;
-	if (!LoadFile(fctFlag,        "Flag",         Files))               return false; // (new format)
-	if (!LoadFile(fctCrew,        "Crew",         Files))               return false; // (new format)
-	if (!LoadFile(fctWealth,      "Wealth",       Files))               return false; // (new)
-	if (!LoadFile(fctPlayer,      "Player",       Files))               return false; // (new format)
-	if (!LoadFile(fctRank,        "Rank",         Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctCaptain,     "Captain",      Files))               return false;
-	if (!LoadCursorGfx())                                               return false;
-	if (!LoadFile(fctSelectMark,  "SelectMark",   Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctMenu,        "Menu",         Files, 35,35))        return false;
-	if (!LoadFile(fctLogo,        "Logo",         Files))               return false;
-	if (!LoadFile(fctConstruction,"Construction", Files))               return false; // (new)
-	if (!LoadFile(fctEnergy,      "Energy",       Files))               return false; // (new)
-	if (!LoadFile(fctOptions,     "Options",      Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctUpperBoard,  "UpperBoard",   Files))               return false;
-	if (!LoadFile(fctArrow,       "Arrow",        Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctExit,        "Exit",         Files))               return false;
-	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height)) return false;
-	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80)) return false;
-	if (!LoadFile(fctBuild,       "Build",        Files)) return false;
+	if (!LoadFile(fctFire,        "Fire",         Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctBackground,  "Background",   Files, C4FCT_Full, C4FCT_Full, false, true)) return false; // tileable
+	if (!LoadFile(fctFlag,        "Flag",         Files))                                      return false; // (new format)
+	if (!LoadFile(fctCrew,        "Crew",         Files))                                      return false; // (new format)
+	if (!LoadFile(fctWealth,      "Wealth",       Files))                                      return false; // (new)
+	if (!LoadFile(fctPlayer,      "Player",       Files))                                      return false; // (new format)
+	if (!LoadFile(fctRank,        "Rank",         Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctCaptain,     "Captain",      Files))                                      return false;
+	if (!LoadCursorGfx())                                                                      return false;
+	if (!LoadFile(fctSelectMark,  "SelectMark",   Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctMenu,        "Menu",         Files, 35,35))                               return false;
+	if (!LoadFile(fctLogo,        "Logo",         Files))                                      return false;
+	if (!LoadFile(fctConstruction,"Construction", Files))                                      return false; // (new)
+	if (!LoadFile(fctEnergy,      "Energy",       Files))                                      return false; // (new)
+	if (!LoadFile(fctOptions,     "Options",      Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctUpperBoard,  "UpperBoard",   Files, C4FCT_Full, C4FCT_Full, false, true)) return false; // tileable
+	if (!LoadFile(fctArrow,       "Arrow",        Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctExit,        "Exit",         Files))                                      return false;
+	if (!LoadFile(fctHand,        "Hand",         Files, C4FCT_Height))                        return false;
+	if (!LoadFile(fctGamepad,     "Gamepad",      Files, 80))                                  return false;
+	if (!LoadFile(fctBuild,       "Build",        Files))                                      return false;
 
 	// achievements
 	if (!Achievements.Init(Files)) return false;
@@ -367,7 +367,7 @@ static C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *
 	return rGfxSet.FindSuitableFile(szName, extensions, szFileName, pID);
 }
 
-bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt, int32_t iHgt, bool fNoWarnIfNotFound)
+bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt, int32_t iHgt, bool fNoWarnIfNotFound, bool fTileable)
 {
 	char FileName[_MAX_FNAME]; int32_t ID = 0;
 	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, &ID);
@@ -385,7 +385,7 @@ bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet
 		// already up-to-date
 		return true;
 	// load
-	if (!fct.Load(*pGrp, FileName, iWdt, iHgt))
+	if (!fct.Load(*pGrp, FileName, iWdt, iHgt, false, false, fTileable))
 	{
 		LogF(LoadResStr("IDS_PRC_NOGFXFILE"), FileName, LoadResStr("IDS_ERR_NOFILE"));
 		return false;
@@ -396,7 +396,7 @@ bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet
 	return true;
 }
 
-bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet &rGfxSet, int32_t &ridCurrSfc)
+bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet &rGfxSet, int32_t &ridCurrSfc, bool fTileable)
 {
 	// find
 	char FileName[_MAX_FNAME]; int32_t ID = 0;
@@ -411,7 +411,7 @@ bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet
 		// already up-to-date
 		return true;
 	// load
-	if (!sfc.Load(*pGrp, FileName))
+	if (!sfc.Load(*pGrp, FileName, false, false, fTileable))
 	{
 		LogF(LoadResStr("IDS_PRC_NOGFXFILE"), FileName, LoadResStr("IDS_ERR_NOFILE"));
 		return false;

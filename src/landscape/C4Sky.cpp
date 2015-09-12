@@ -26,33 +26,6 @@
 #include <C4Weather.h>
 #include <C4GraphicsResource.h>
 
-static bool SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
-{
-	// safety
-	if (!ppSfc) return false; if (!*ppSfc) return false;
-	// get size
-	int iWdt=(*ppSfc)->Wdt, iHgt=(*ppSfc)->Hgt;
-	int iDstWdt=iWdt, iDstHgt=iHgt;
-	// check if it must be enlarged
-	while (iDstWdt<iMinWdt) iDstWdt+=iWdt;
-	while (iDstHgt<iMinHgt) iDstHgt+=iHgt;
-	// Without shaders, the textures need to be small for the FoW.
-	if (iDstWdt==iWdt && iDstHgt==iHgt && pDraw->IsShaderific()) return true;
-	// create new surface
-	C4Surface *pNewSfc=new C4Surface();
-	if (!pNewSfc->Create(iDstWdt, iDstHgt, false, false, pDraw->IsShaderific() ? 0 : 64))
-	{
-		delete pNewSfc;
-		return false;
-	}
-	// blit tiled into dest surface
-	pDraw->BlitSurfaceTile2(*ppSfc, pNewSfc, 0, 0, iDstWdt, iDstHgt, 0, 0, false);
-	// destroy old surface, assign new
-	delete *ppSfc; *ppSfc=pNewSfc;
-	// success
-	return true;
-}
-
 void C4Sky::SetFadePalette(int32_t *ipColors)
 {
 	// If colors all zero, use game palette default blue
@@ -82,7 +55,7 @@ bool C4Sky::Init(bool fSavegame)
 
 	// Check for sky bitmap in scenario file
 	Surface = new C4Surface();
-	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true);
+	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, true);
 
 	// Else, evaluate scenario core landscape sky default list
 	if (!loaded)
@@ -97,10 +70,10 @@ bool C4Sky::Init(bool fSavegame)
 		if (*str && !SEqual(str,"Default"))
 		{
 			// Check for sky tile in scenario file
-			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true);
+			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true,true);
 			if (!loaded)
 			{
-				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true);
+				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true, false, true);
 			}
 		}
 	}
@@ -109,8 +82,6 @@ bool C4Sky::Init(bool fSavegame)
 	{
 		// surface loaded, store first color index
 		FadeClr1=FadeClr2=0xffffffff;
-		// enlarge surface to avoid slow 1*1-px-skies
-		if (!SurfaceEnsureSize(&Surface, 128, 128)) return false;
 
 		// set parallax scroll mode
 		switch (Game.C4S.Landscape.SkyScrollMode)
@@ -218,7 +189,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 		ZoomDataStackItem zdsi(resultzoom);
 
-		pDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
+		pDraw->BlitSurfaceTile(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty);
 	}
 	else
 	{

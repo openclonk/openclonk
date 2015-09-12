@@ -45,7 +45,7 @@ public:
 		C4Surface* surface = new C4Surface;
 		// Suppress error message here, StdMeshMaterial loader
 		// will show one.
-		if (!surface->Read(Group, GetExtension(filename)))
+		if (!surface->Read(Group, GetExtension(filename), false))
 			{ delete surface; surface = NULL; }
 		return surface;
 	}
@@ -568,7 +568,7 @@ void C4Def::LoadRankFaces(C4Group &hGroup)
 	if (hGroup.AccessEntry(C4CFN_RankFacesPNG))
 	{
 		pRankSymbols = new C4FacetSurface();
-		if (!pRankSymbols->GetFace().ReadPNG(hGroup)) { delete pRankSymbols; pRankSymbols = NULL; }
+		if (!pRankSymbols->GetFace().ReadPNG(hGroup, false)) { delete pRankSymbols; pRankSymbols = NULL; }
 	}
 	// set size
 	if (pRankSymbols)
