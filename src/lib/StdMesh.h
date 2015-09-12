@@ -603,6 +603,9 @@ public:
 	const StdMesh& GetMesh() const { return *Mesh; }
 
 protected:
+	template<typename IteratorType, typename FuncObj>
+	static bool ScanAttachTree(IteratorType begin, IteratorType end, const FuncObj& obj);
+
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
