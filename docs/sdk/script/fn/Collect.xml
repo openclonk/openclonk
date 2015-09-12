@@ -16,6 +16,11 @@
           <name>item</name>
           <desc>Object to be collected.</desc>
         </param>
+        <param>
+          <type>bool</type>
+          <name>ignore_ocf</name>
+          <desc>Ignores the fact that a container must have OCF_Collection for it to collect an object.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Collects an object. This function performs the same events as they occur if the object is collected in the game through the Collection area (there will be a RejectCollect call, flag collection checks, hit calls, etc.) The only difference is that there will be no comparison of collection position and the collected item is not checked for the OCF_Carryable flag.<br/>Using this function you can for example collect objects directly from a container. If the function fails (e.g. through a RejectCollect or a full target container) the function returns <code>false</code>, otherwise <code>true</code>.</desc>
