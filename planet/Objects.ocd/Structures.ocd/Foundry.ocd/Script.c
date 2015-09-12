@@ -57,8 +57,8 @@ func CollectionZone()
 {
 	if (GetCon() < 100) return;
 
-	for (var object in FindObjects(Find_InRect(16 - 45 * GetDir(),3,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		Collect(object);
+	for (var obj in FindObjects(Find_InRect(16 - 45 * GetDir(),3,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(obj, true);
 }
 
 func Collection()
