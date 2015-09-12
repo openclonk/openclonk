@@ -15,6 +15,12 @@
           <name>animation_number</name>
           <desc>Animation number of which the weight must be queried.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to query instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Returns the weight of a combination node. The weight specifies the relative portion the combined animations contribute to the resulting animation. The number is always between 0 (only the first animation contributes) and 1000 (only the second animation contributes). Returns <code>nil</code> if there is no such animation with the calling number or if the number refers to an animation node.</desc>

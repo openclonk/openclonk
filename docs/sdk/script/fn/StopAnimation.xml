@@ -15,6 +15,12 @@
           <name>animation_number</name>
           <desc>Number of the animation to stop.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to use instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Stops the animation corresponding to the given number (such as returned by <funclink>PlayAnimation</funclink>) and removes it from the corresponding slot in the animation stack. If there is a combination node associated to that number then both of the anmiations being combined are removed as well; if either or both of those are combination nodes again then they are also removed and so on. If the node to be removed is combined with another node then the combining node is also removed because there is not anything to combine anymore. The function returns <code>true</code> if the animation was removed or <code>false</code> otherwise (for example if there is no animation for the given number or if belongs to slot 0).</desc>

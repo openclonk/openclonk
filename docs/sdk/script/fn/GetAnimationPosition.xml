@@ -15,6 +15,12 @@
           <name>animation_number</name>
           <desc>Animation number of the animation whose position to retrieve.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to query instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Returns the position of the animation refered to by the given number. The returned value lies between 0 and <funclink>GetAnimationLength</funclink>(<funclink>GetAnimationName</funclink>(animation_number)). If there is no such animation with the given number or the number refers to a combination node then this function returns <code>nil</code>.</desc>

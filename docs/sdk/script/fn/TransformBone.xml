@@ -36,6 +36,12 @@
           <desc>If the bone transformation is combined with another animation then this refers to the node with which the new node is combined. If not given or <code>nil</code> then the animation is combined with the animation at the top of the slot as returned by <funclink>GetRootAnimation</funclink>.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to use instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>This function is very similar to <funclink>PlayAnimation</funclink>. Instead of playing an animation which is pre-defined in the skeleton of the mesh, it allows individual bones to be transformed arbitrarily. The transformation is inserted as a leaf node into the animation tree for the given slot. The return value of this function is the animation number of the animation node inserted which can be used to manipulate or remove the animation later. If there are already animations in the given slot then additionally a combination node is created. This combination node is assigned the returned number plus 1.</desc>

@@ -15,6 +15,12 @@
           <name>slot</name>
           <desc>Slot whose topmost animation shall be returned.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to query instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Returns the number of the animation at the top of the given slot. This animation is combined with the animation of the next smaller slot number and the result of this combination will be combined with the animation at the top of the slot with the next higher slot number, or, if there is no such slot, be the final output displayed on the screen. If the slot contains more than one animation then the animation at the top is always a combination node which combines multiple animations or other combinations of animations to the result of the slot. Returns <code>nil</code> if there are no animations in the given slot.</desc>

@@ -15,6 +15,12 @@
           <name>animation</name>
           <desc>Name of the animation whose length to retrieve.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>If given, refers to the number of the attached mesh to query instead of the object's main mesh.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Returns the length of the animation with the given name, or <code>nil</code> if there is no such animation. Valid positions (for <funclink>PlayAnimation</funclink> and <funclink>SetAnimationPosition</funclink>) include values between 0 and the animation length. The returned number corresponds to the animation length (as specified in the modelling tool) in milliseconds.</desc>
