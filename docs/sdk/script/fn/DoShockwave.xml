@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoShockwave</title>
+    <category>Objects</category>
+    <version>7.0 OC</version>
+    <syntax>
+      <rtype>nil</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius and strength of the shock wave.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>caused_by</name>
+		  <optional />
+          <desc>Number of the player who has caused the shock wave. If not specified, the the controller of the calling object is considered to have caused the damage in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Flings all objects at the specified position in the specified radius. Has no visual effect. The x and y coordinates are always global coordinates.</desc>
+    <examples>
+      <example>
+        <code>DoShockwave(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 35);</code>
+        <text>The calling object causes a shock wave that extends 35 pixels.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Explode</funclink>
+    </related>
+  </func>
+  <author>Marky</author><date>2015-07</date>
+</funcs>
