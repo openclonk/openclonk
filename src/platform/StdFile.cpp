@@ -623,8 +623,7 @@ bool MakeOriginalFilename(char *szFilename)
 const char *GetWorkingDirectory()
 {
 #ifdef _WIN32
-	static char *buffer = 0;
-	if (buffer) StdBuf::DeletePointer(buffer);
+	static StdStrBuf buffer;
 	wchar_t *widebuf = 0;
 	DWORD widebufsz = GetCurrentDirectoryW(0, 0);
 	widebuf = new wchar_t[widebufsz];
@@ -632,9 +631,9 @@ const char *GetWorkingDirectory()
 		delete[] widebuf;
 		return 0;
 	}
-	StdStrBuf path(widebuf);
+	buffer.Take(StdStrBuf(widebuf));
 	delete[] widebuf;
-	return buffer = path.GrabPointer();
+	return buffer.getData();
 #else
 	static char buf[_MAX_PATH+1];
 	return getcwd(buf,_MAX_PATH);
