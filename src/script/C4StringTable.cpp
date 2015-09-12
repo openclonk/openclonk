@@ -198,6 +198,7 @@ C4StringTable::C4StringTable()
 	P[P_Phase] = "Phase";
 	P[P_Stretch] = "Stretch";
 	P[P_CollisionVertex] = "CollisionVertex";
+	P[P_CollisionDensity] = "CollisionDensity";
 	P[P_OnCollision] = "OnCollision";
 	P[P_Distance] = "Distance";
 	P[P_Smoke] = "Smoke";

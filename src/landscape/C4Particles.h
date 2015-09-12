@@ -199,7 +199,7 @@ public:
 	C4ParticleValueProvider colorR, colorG, colorB, colorAlpha;
 	C4ParticleValueProvider rotation;
 	C4ParticleValueProvider phase;
-	C4ParticleValueProvider collisionVertex;
+	C4ParticleValueProvider collisionVertex, collisionDensity;
 
 	float bouncyness;
 	C4ParticleCollisionCallback collisionCallback;

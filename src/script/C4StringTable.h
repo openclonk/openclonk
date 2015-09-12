@@ -400,6 +400,7 @@ enum C4PropertyName
 	P_Phase,
 	P_Stretch,
 	P_CollisionVertex,
+	P_CollisionDensity,
 	P_OnCollision,
 	P_Distance,
 	P_Smoke,

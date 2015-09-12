@@ -27,6 +27,7 @@
 #include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
+#include <C4Material.h>
 #include <C4MeshAnimation.h>
 #include <C4DrawGL.h>
 #include <C4Random.h>
@@ -676,6 +677,7 @@ C4ParticleProperties::C4ParticleProperties()
 	bouncyness = 0.f;
 
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
+	collisionDensity.Set(static_cast<float>(C4M_Solid));
 	collisionVertex.Set(0.f);
 	size.Set(8.f);
 	stretch.Set(1000.f);
@@ -695,6 +697,7 @@ void C4ParticleProperties::Floatify()
 {
 	bouncyness /= 1000.f;
 
+	collisionDensity.Floatify(1.f);
 	collisionVertex.Floatify(1000.f);
 	size.Floatify(2.f);
 	stretch.Floatify(1000.f);
@@ -788,6 +791,10 @@ void C4ParticleProperties::Set(C4PropList *dataSource)
 			collisionVertex.Set(property);
 			if (property.GetType() != C4V_Nil)
 				hasCollisionVertex = true;
+		}
+		else if (&Strings.P[P_CollisionDensity] == key)
+		{
+			collisionDensity.Set(property);
 		}
 		else if(&Strings.P[P_OnCollision] == key)
 		{
@@ -883,7 +890,9 @@ bool C4Particle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sourceDef)
 			float collisionPoint = properties.collisionVertex.GetValue(this);
 			float size_x = (currentSpeedX > 0.f ? size : -size) * 0.5f * collisionPoint;
 			float size_y = (currentSpeedY > 0.f ? size : -size) * 0.5f * collisionPoint;
-			if (GBackSolid(positionX + size_x + timeDelta * currentSpeedX, positionY + size_y + timeDelta * currentSpeedY))
+			float density = static_cast<float>(GBackDensity(positionX + size_x + timeDelta * currentSpeedX, positionY + size_y + timeDelta * currentSpeedY));
+			
+			if (density + 0.5f >= properties.collisionDensity.GetValue(this)) // Small offset against floating point insanities.
 			{
 				// exec collision func
 				if (properties.collisionCallback != 0 && !(properties.*properties.collisionCallback)(this)) return false;
