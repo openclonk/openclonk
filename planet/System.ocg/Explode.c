@@ -114,7 +114,7 @@ global func ExplosionParticles_Init()
 
 /*-- Explosion --*/
 
-global func Explode(int level, bool silent)
+global func Explode(int level, bool silent, int damage_level)
 {
 	if(!this) FatalError("Function Explode must be called from object context");
 
@@ -134,10 +134,10 @@ global func Explode(int level, bool silent)
 	// Execute the explosion in global context.
 	// There is no possibility to interact with the global context, apart from GameCall.
 	// So at least remove the object context.
-	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer, silent);
+	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer, silent, damage_level);
 }
 
-global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer, bool silent)
+global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer, bool silent, int damage_level)
 {
 	// If the object is contained, loop through all parent containers until the blast is contained or no container is found.
 	// Blast the containers it passes through and the objects inside them.
@@ -150,7 +150,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 		var contains_blast = container.ContainBlast;
 		var parent_container = container->Contained();
 		// Blast the current container, but not the previous container.
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, damage_level, layer, prev_container);
 		// Break the blasting if this container contains the blast.
 		if (contains_blast)
 			break;
@@ -163,14 +163,14 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	if (!container)
 	{
 		// Blast objects outside if there was no final container containing the blast.
-		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer, prev_container);
+		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, damage_level, layer, prev_container);
 		// Incinerate oil.
 		if (!IncinerateLandscape(x, y))
 			if (!IncinerateLandscape(x, y - 10))
 				if (!IncinerateLandscape(x - 5, y - 5))
 					IncinerateLandscape(x + 5, y - 5);
 		// Graphic effects.
-		Call("ExplosionEffect", level, x, y, 0, silent);
+		Call("ExplosionEffect", level, x, y, 0, silent, damage_level);
 		// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
 		BlastFree(x, y, level, cause_plr);
 	}
@@ -182,7 +182,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 Creates a visual explosion effect at a position.
 smoothness (in percent) determines how round the effect will look like
 */
-global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent)
+global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent, int damage_level)
 {
 	if(!silent) //Does object use it's own explosion sound effect?
 	{
@@ -251,7 +251,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 /*-- Blast objects & shockwaves --*/
 
 // Damage and hurl objects away.
-global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer, object no_blast)
+global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object no_blast)
 {
 	var obj;
 	
@@ -259,21 +259,25 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	var l_x = x - GetX(), l_y = y - GetY();
 	
 	// caused by: if not specified, controller of calling object
-	if(cause_plr == nil)
-		if(this)
+	if (cause_plr == nil)
+		if (this)
 			cause_plr = GetController();
+	
+	// damage: if not specified this is the same as the explosion radius
+	if (damage_level == nil)
+		damage_level = level;
 	
 	// In a container?
 	if (container)
 	{
 		if (container->GetObjectLayer() == layer)
 		{
-			container->BlastObject(level, cause_plr);
+			container->BlastObject(damage_level, cause_plr);
 			if (!container)
 				return true; // Container could be removed in the meanwhile.
 			for (obj in FindObjects(Find_Container(container), Find_Layer(layer), Find_Exclude(no_blast)))
 				if (obj)
-					obj->BlastObject(level, cause_plr);
+					obj->BlastObject(damage_level, cause_plr);
 		}
 	}
 	else
@@ -281,7 +285,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		// Object is outside.
 		// Damage objects at point of explosion.
 		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10,10), Find_NoContainer(), Find_Layer(layer), Find_Exclude(no_blast)))
-			if (obj) obj->BlastObject(level, cause_plr);
+			if (obj) obj->BlastObject(damage_level, cause_plr);
 
 		// TODO: -> Shockwave in own global func(?)
 
@@ -298,15 +302,15 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 				if (obj) // Test obj, cause OnShockwaveHit could have removed objects.
 				{
 					// Object has special reaction on shockwave?
-					if (obj->~OnShockwaveHit(level, x, y, cause_plr))
+					if (obj->~OnShockwaveHit(level, x, y, cause_plr, damage_level))
 						continue;
 					// Living beings are hurt more.
 					var cat = obj->GetCategory();
 					if (cat & C4D_Living)
 					{
-						obj->DoEnergy(level / -2, false, FX_Call_EngBlast, cause_plr);
+						obj->DoEnergy(damage_level / -2, false, FX_Call_EngBlast, cause_plr);
 						if (!obj) continue;
-						obj->DoDamage(level / 2, FX_Call_DmgBlast, cause_plr);
+						obj->DoDamage(damage_level / 2, FX_Call_DmgBlast, cause_plr);
 						if (!obj) continue;
 					}
 					// Killtracing for projectiles.

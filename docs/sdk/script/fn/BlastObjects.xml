@@ -37,6 +37,12 @@
 					<optional />
           <desc>Number of the player who has caused the damage. If not specified, the the controller of the calling object is considered to have caused the damage in local calls.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>damage_level</name>
+          <desc>If specified, then this value overrides the damage that is caused to objects.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects.</desc>
@@ -52,4 +58,5 @@
   </func>
   <author>jwk</author><date>2002-04</date>
   <author>Clonkonaut</author><date>2008-04</date>
+  <author>Marky</author><date>2015-07</date>
 </funcs>

@@ -17,15 +17,15 @@
           <desc>Explosion level. This determines the amount of explosion damage caused and the type of explosion sound played. Up to level 29 the explosion is a Blast1, 30 to 39 is a Blast2, and above is a Blast3.</desc>
         </param>
         <param>
-          <type>id</type>
-          <name>effect</name>
-          <desc>If specified, an object of this type is created instead of a particle. It is assumed that the newly created object will perform the explosion effect.</desc>
+          <type>bool</type>
+          <name>silent</name>
+          <desc>If true, then no sound will be played for the explosion.</desc>
           <optional />
         </param>
         <param>
-          <type>string</type>
-          <name>particle</name>
-          <desc>Type of particle to be created instead of the normal explosion particle.</desc>
+          <type>int</type>
+          <name>damage_level</name>
+          <desc>If specified, then this value overrides the damage that is caused to objects by the explosion.</desc>
           <optional />
         </param>
       </params>
@@ -46,4 +46,5 @@
   </func>
   <author>Sven2</author><date>2001-11</date>
   <author>Clonkonaut</author><date>2008-04</date>
+  <author>Marky</author><date>2015-07</date>
 </funcs>
