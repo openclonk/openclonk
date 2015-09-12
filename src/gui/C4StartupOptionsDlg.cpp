@@ -48,10 +48,11 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
 	float iDrawQuadBottom[8] = { x1,y1, x0,y1, x0+iIndent,y1-iIndent, x1,y1-iIndent };
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
+	// TODO: Switch to PerformMultiTris
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, NULL);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh, NULL);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow, NULL);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow, NULL);
 	// draw selection highlight
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))

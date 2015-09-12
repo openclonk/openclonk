@@ -32,6 +32,7 @@ public:
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	virtual bool PrepareRendering(C4Surface *) { return true; }
+	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
 	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD, float) { }
@@ -44,9 +45,9 @@ public:
 	virtual bool CreatePrimarySurfaces(unsigned int, unsigned int, int, unsigned int);
 	virtual bool SetOutputAdapter(unsigned int) { return true; }
 
-	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int) {}
-	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float) {}
-	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD) {}
+	virtual void PerformMultiPix(C4Surface *, const C4BltVertex *, unsigned int, C4ShaderCall*) {}
+	virtual void PerformMultiLines(C4Surface *, const C4BltVertex *, unsigned int, float, C4ShaderCall*) {}
+	virtual void PerformMultiTris(C4Surface *, const C4BltVertex *, unsigned int, const C4BltTransform *, C4TexRef *, C4TexRef *, C4TexRef *, DWORD, C4ShaderCall*) {}
 };
 
 #endif

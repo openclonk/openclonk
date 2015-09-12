@@ -817,7 +817,7 @@ namespace C4GUI
 	{
 		// draw upper board
 		if (HasUpperBoard())
-			pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
+			pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt, 0, 0, NULL);
 	}
 
 	void FullscreenDialog::UpdateOwnPos()

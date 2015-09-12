@@ -196,10 +196,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	GameZoom.Zoom = cgo.Zoom;
 
 	// Draw landscape borders
-	if (BorderLeft > 0.0f)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX, DrawY, BorderLeft, ViewHgt, -DrawX, -DrawY);
-	if (BorderTop > 0.0f)    pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY, ViewWdt - BorderLeft - BorderRight, BorderTop, -DrawX - BorderLeft, -DrawY);
-	if (BorderRight > 0.0f)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + ViewWdt - BorderRight, DrawY, BorderRight, ViewHgt, -DrawX - ViewWdt + BorderRight, -DrawY);
-	if (BorderBottom > 0.0f) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY + ViewHgt - BorderBottom, ViewWdt - BorderLeft - BorderRight, BorderBottom, -DrawX - BorderLeft, -DrawY - ViewHgt + BorderBottom);
+	if (BorderLeft > 0.0f)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX, DrawY, BorderLeft, ViewHgt, -DrawX, -DrawY, NULL);
+	if (BorderTop > 0.0f)    pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY, ViewWdt - BorderLeft - BorderRight, BorderTop, -DrawX - BorderLeft, -DrawY, NULL);
+	if (BorderRight > 0.0f)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + ViewWdt - BorderRight, DrawY, BorderRight, ViewHgt, -DrawX - ViewWdt + BorderRight, -DrawY, NULL);
+	if (BorderBottom > 0.0f) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface, cgo.Surface, DrawX + BorderLeft, DrawY + ViewHgt - BorderBottom, ViewWdt - BorderLeft - BorderRight, BorderBottom, -DrawX - BorderLeft, -DrawY - ViewHgt + BorderBottom, NULL);
 
 	// Compute non-bordered viewport area
 	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= (BorderLeft + BorderRight) / cgo.Zoom; cgo.Hgt -= (BorderTop + BorderBottom) / cgo.Zoom;
@@ -823,7 +823,7 @@ void C4ViewportList::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 	{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
+		pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y, NULL);
 	}
 }
 

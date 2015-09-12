@@ -2247,7 +2247,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo, int32_t at_player)
 		vertices[2*vtx+1].fty = Shape.VtxY[vtx+1] + cgo.Y - cgo.TargetY;
 	}
 
-	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f);
+	pDraw->PerformMultiLines(cgo.Surface, &vertices[0], vertices.size(), 1.0f, NULL);
 
 	// reset blit mode
 	FinishedDrawing();

@@ -584,7 +584,7 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	const unsigned int n_vertices = sizeof(vertices) / sizeof(vertices[0]);
 
-	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, 1.);
+	pDraw->PerformMultiLines(cgo.Surface, vertices, n_vertices, 1., NULL);
 }
 
 

@@ -123,6 +123,13 @@ struct ZoomData
 
 class C4FoWRegion;
 
+// Shader combinations
+static const int C4SSC_MOD2 = 1; // signed addition instead of multiplication for clrMod
+static const int C4SSC_BASE = 2; // use a base texture instead of just a single color
+static const int C4SSC_OVERLAY = 4; // use a colored overlay on top of base texture
+static const int C4SSC_LIGHT = 8; // use dynamic+ambient lighting
+static const int C4SSC_NORMAL = 16; // extract normals from normal map instead of (0,0,1)
+
 // direct draw encapsulation
 class C4Draw
 {
@@ -184,6 +191,7 @@ public:
 	void PrimaryUnlocked() { PrimaryLocked=false; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat) = 0; // Find best technique, fail if there is none
 	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
+	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices) = 0; // create sprite shader
 	// Blit
 	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
 	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt);
@@ -204,23 +212,22 @@ public:
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                bool fTransparency=true);
 	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
-	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX=0, float iOffsetY=0);
+	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, float iToX, float iToY, float iToWdt, float iToHgt, float iOffsetX, float iOffsetY, C4ShaderCall* shader_call);
 	virtual void FillBG(DWORD dwClr=0) = 0;
 	// Text
 	enum { DEFAULT_MESSAGE_COLOR = 0xffffffff };
 	bool TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	bool StringOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	// Drawing
-	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices) = 0;
-	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width) = 0;
-	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod) = 0; // blit the same texture many times
-	virtual void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex) = 0;
+	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call) = 0;
+	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call) = 0;
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod, C4ShaderCall* shader_call) = 0; // blit the same texture many times
 	// Convenience drawing functions
 	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
-	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
+	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call); // calls DrawQuadDw
 	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
 	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
-	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
+	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, C4ShaderCall* shader_call);
 	void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol); // Consider using PerformMultiPix if you draw more than one pixel
 	void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width = 1.0f); // Consider using PerformMultiLines if you draw more than one line
 	// gamma

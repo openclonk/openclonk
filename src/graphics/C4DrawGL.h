@@ -46,13 +46,6 @@ private:
 	StdCopyStrBuf Buf;
 };
 
-// Shader combinations
-static const int C4SSC_MOD2 = 1; // signed addition instead of multiplication for clrMod
-static const int C4SSC_BASE = 2; // use a base texture instead of just a single color
-static const int C4SSC_OVERLAY = 4; // use a colored overlay on top of base texture
-static const int C4SSC_LIGHT = 8; // use dynamic+ambient lighting
-static const int C4SSC_NORMAL = 16; // extract normals from normal map instead of (0,0,1)
-
 // Uniform data we give the sprite shader (constants from its viewpoint)
 enum C4SS_Uniforms
 {
@@ -166,9 +159,11 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
-	bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
+	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	// Surface
-	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
+	virtual bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
+	virtual bool PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices);
+
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef USE_WIN32_WINDOWS
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
@@ -179,10 +174,10 @@ public:
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
-	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices);
-	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width);
-	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod);
-	virtual void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex);
+	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call);
+	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call);
+	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod, C4ShaderCall* shader_call);
+	void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
@@ -201,8 +196,6 @@ protected:
 
 	bool CheckGLError(const char *szAtOp);
 	virtual bool Error(const char *szMsg);
-
-	bool CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups);
 
 	friend class C4Surface;
 	friend class C4TexRef;

@@ -421,8 +421,9 @@ namespace C4GUI
 					vtx[6] = d+iTabWidth; vtx[7] = y0;
 				}
 				DWORD dwClr = (pSheet == pActiveSheet) ? C4GUI_ActiveTabBGColor : C4GUI_StandardBGColor;
-				pDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr);
+				pDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr, NULL);
 				// draw caption frame
+				// TODO: Switch to PerformMultiLines
 				pDraw->DrawLineDw(cgo.Surface, (float)vtx[0]-1     , (float)vtx[1]      , (float)vtx[2]-1    ,(float)vtx[3]        , C4GUI_BorderColorA1);
 				pDraw->DrawLineDw(cgo.Surface, (float)vtx[2]-1     , (float)vtx[3]      , (float)vtx[4]-fLeft,(float)vtx[5]        , C4GUI_BorderColorA1);
 				pDraw->DrawLineDw(cgo.Surface, (float)vtx[4]       , (float)vtx[5]      , (float)vtx[6]      ,(float)vtx[7]        , C4GUI_BorderColorA1);

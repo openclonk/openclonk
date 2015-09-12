@@ -204,6 +204,75 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 	return true;
 }
 
+
+bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices)
+{
+	static const char vertexSlice[] = 
+		"  gl_FrontColor = gl_Color;"
+		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;";
+
+	const char* uniformNames[C4SSU_Count + 1];
+	uniformNames[C4SSU_ClrMod] = "clrMod";
+	uniformNames[C4SSU_Gamma] = "gamma";
+	uniformNames[C4SSU_BaseTex] = "baseTex";
+	uniformNames[C4SSU_OverlayTex] = "overlayTex";
+	uniformNames[C4SSU_OverlayClr] = "overlayClr";
+	uniformNames[C4SSU_LightTex] = "lightTex";
+	uniformNames[C4SSU_LightTransform] = "lightTransform";
+	uniformNames[C4SSU_NormalTex] = "normalTex";
+	uniformNames[C4SSU_AmbientTex] = "ambientTex";
+	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
+	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_Bones] = "bones";
+	uniformNames[C4SSU_CullMode] = "cullMode";
+	uniformNames[C4SSU_Count] = NULL;
+
+	// Clear previous content
+	shader.Clear();
+	shader.ClearSlices();
+
+	shader.AddVertexSlice(C4Shader_Vertex_PositionPos, vertexSlice);
+
+	// Add texture coordinate if we have base texture, overlay, or normal map
+	if ( (ssc & (C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL)) != 0)
+		shader.AddTexCoord("texcoord");
+
+	// Then load slices for fragment shader
+	shader.AddFragmentSlice(-1, "#define OPENCLONK");
+	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
+	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define OC_WITH_NORMALMAP");
+	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
+
+	if (additionalDefines)
+		for (const char* const* define = additionalDefines; *define != NULL; ++define)
+			shader.AddFragmentSlice(-1, FormatString("#define %s", *define).getData());
+
+	shader.LoadSlices(pGroups, "UtilShader.glsl");
+	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
+
+	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
+	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
+
+	// In case light is disabled, these shaders use a default light source
+	// (typically ambient light everywhere).
+	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
+	shader.LoadSlices(pGroups, "LightShader.glsl");
+	shader.LoadSlices(pGroups, "AmbientShader.glsl");
+	shader.LoadSlices(pGroups, "GammaShader.glsl");
+
+	if (additionalSlices)
+		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
+			shader.LoadSlices(pGroups, *slice);
+
+	if (!shader.Init(name, uniformNames))
+	{
+		shader.ClearSlices();
+		return false;
+	}
+
+	return true;
+}
+
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	DebugLog("  gl: Create Context...");
@@ -427,37 +496,39 @@ void CStdGL::ResetMultiBlt()
 	glPopMatrix();
 }
 
-void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices)
+void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call)
 {
 	// Draw on pixel center:
 	glPushMatrix();
 	glTranslatef(0.5f, 0.5f, 0.0f);
-
-	// Feed the vertices to the GL
-	C4ShaderCall call(GetSpriteShader(false, false, false));
-	SetupMultiBlt(call, NULL, 0, 0, 0, 0);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
 
 	// This is a workaround. Instead of submitting the whole vertex array to the GL, we do it
 	// in batches of 256 vertices. The intel graphics driver on Linux crashes with
 	// significantly larger arrays, such as 400. It's not clear to me why, maybe POINT drawing
 	// is just not very well tested.
 	const unsigned int BATCH_SIZE = 256;
-	for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
+
+	// Feed the vertices to the GL
+	if (!shader_call)
 	{
-		PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
+		C4ShaderCall call(GetSpriteShader(false, false, false));
+		SetupMultiBlt(call, NULL, 0, 0, 0, 0);
+		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
+			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
+		ResetMultiBlt();
+	}
+	else
+	{
+		SetupMultiBlt(*shader_call, NULL, 0, 0, 0, 0);
+		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
+			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
+		ResetMultiBlt();
 	}
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 	glPopMatrix();
-
-	ResetMultiBlt();
 }
 
-void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width)
+void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call)
 {
 	// In a first step, we transform the lines array to a triangle array, so that we can draw
 	// the lines with some thickness.
@@ -502,25 +573,39 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	}
 
 	// Then, feed the vertices to the GL
-	C4ShaderCall call(GetSpriteShader(true, false, false));
-	SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0);
-
-	PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
-
-	ResetMultiBlt();
+	if (!shader_call)
+	{
+		C4ShaderCall call(GetSpriteShader(true, false, false));
+		SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
+		ResetMultiBlt();
+	}
+	else
+	{
+		SetupMultiBlt(*shader_call, NULL, lines_tex, 0, 0, 0);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
+		ResetMultiBlt();
+	}
 
 	delete[] tri_vertices;
 }
 
-void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayModClr)
+void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayModClr, C4ShaderCall* shader_call)
 {
 	// Feed the vertices to the GL
-	C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
-	SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
-
-	PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
-
-	ResetMultiBlt();
+	if (!shader_call)
+	{
+		C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
+		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
+		ResetMultiBlt();
+	}
+	else
+	{
+		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
+		ResetMultiBlt();
+	}
 }
 
 void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex)
@@ -560,65 +645,6 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 	if(has_tex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-}
-
-bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups)
-{
-	static const char vertexSlice[] = 
-		"  gl_FrontColor = gl_Color;"
-		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;";
-
-	const char* uniformNames[C4SSU_Count + 1];
-	uniformNames[C4SSU_ClrMod] = "clrMod";
-	uniformNames[C4SSU_Gamma] = "gamma";
-	uniformNames[C4SSU_BaseTex] = "baseTex";
-	uniformNames[C4SSU_OverlayTex] = "overlayTex";
-	uniformNames[C4SSU_OverlayClr] = "overlayClr";
-	uniformNames[C4SSU_LightTex] = "lightTex";
-	uniformNames[C4SSU_LightTransform] = "lightTransform";
-	uniformNames[C4SSU_NormalTex] = "normalTex";
-	uniformNames[C4SSU_AmbientTex] = "ambientTex";
-	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
-	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
-	uniformNames[C4SSU_Bones] = "bones";
-	uniformNames[C4SSU_CullMode] = "cullMode";
-	uniformNames[C4SSU_Count] = NULL;
-
-	// Clear previous content
-	shader.Clear();
-	shader.ClearSlices();
-
-	shader.AddVertexSlice(C4Shader_Vertex_PositionPos, vertexSlice);
-
-	// Add texture coordinate if we have base texture, overlay, or normal map
-	if ( (ssc & (C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL)) != 0)
-		shader.AddTexCoord("texcoord");
-
-	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define OPENCLONK");
-	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
-	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define OC_WITH_NORMALMAP");
-	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
-	shader.LoadSlices(pGroups, "UtilShader.glsl");
-	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
-
-	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
-	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
-
-	// In case light is disabled, these shaders use a default light source
-	// (typically ambient light everywhere).
-	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
-	shader.LoadSlices(pGroups, "LightShader.glsl");
-	shader.LoadSlices(pGroups, "AmbientShader.glsl");
-	shader.LoadSlices(pGroups, "GammaShader.glsl");
-
-	if (!shader.Init(name, uniformNames))
-	{
-		shader.ClearSlices();
-		return false;
-	}
-
-	return true;
 }
 
 C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal)
@@ -676,38 +702,38 @@ C4Shader* CStdGL::GetSpriteShader(int ssc)
 bool CStdGL::InitShaders(C4GroupSet* pGroups)
 {
 	// Create sprite blitting shaders
-	if(!CreateSpriteShader(SpriteShader, "sprite", 0, pGroups))
+	if(!PrepareSpriteShader(SpriteShader, "sprite", 0, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderMod2, "spriteMod2", C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderMod2, "spriteMod2", C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderBase, "spriteBase", C4SSC_BASE, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderBase, "spriteBase", C4SSC_BASE, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderBaseMod2, "spriteBaseMod2", C4SSC_MOD2 | C4SSC_BASE, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderBaseMod2, "spriteBaseMod2", C4SSC_MOD2 | C4SSC_BASE, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderBaseOverlay, "spriteBaseOverlay", C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderBaseOverlay, "spriteBaseOverlay", C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderBaseOverlayMod2, "spriteBaseOverlayMod2", C4SSC_MOD2 | C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderBaseOverlayMod2, "spriteBaseOverlayMod2", C4SSC_MOD2 | C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
 		return false;
 
-	if(!CreateSpriteShader(SpriteShaderLight, "spriteLight", C4SSC_LIGHT, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLight, "spriteLight", C4SSC_LIGHT, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightMod2, "spriteLightMod2", C4SSC_LIGHT | C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightMod2, "spriteLightMod2", C4SSC_LIGHT | C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBase, "spriteLightBase", C4SSC_LIGHT | C4SSC_BASE, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBase, "spriteLightBase", C4SSC_LIGHT | C4SSC_BASE, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseMod2, "spriteLightBaseMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseMod2, "spriteLightBaseMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseOverlay, "spriteLightBaseOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlay, "spriteLightBaseOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseOverlayMod2, "spriteLightBaseOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseOverlayMod2, "spriteLightBaseOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseNormal, "spriteLightBaseNormal", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormal, "spriteLightBaseNormal", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseNormalMod2, "spriteLightBaseNormalMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL | C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalMod2, "spriteLightBaseNormalMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_NORMAL | C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseNormalOverlay, "spriteLightBaseNormalOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlay, "spriteLightBaseNormalOverlay", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL, pGroups, NULL, NULL))
 		return false;
-	if(!CreateSpriteShader(SpriteShaderLightBaseNormalOverlayMod2, "spriteLightBaseNormalOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL | C4SSC_MOD2, pGroups))
+	if(!PrepareSpriteShader(SpriteShaderLightBaseNormalOverlayMod2, "spriteLightBaseNormalOverlayMod2", C4SSC_LIGHT | C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL | C4SSC_MOD2, pGroups, NULL, NULL))
 		return false;
 
 	return true;

@@ -195,3 +195,6 @@ C4Game::~C4Game() {}
 
 C4AulDebug *C4AulDebug::pDebug;
 void C4AulDebug::DebugStep(C4AulBCC*, C4Value*) {}
+
+C4Shader::C4Shader() {}
+C4Shader::~C4Shader() {}
