@@ -86,6 +86,15 @@ protected func FxMoveToTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
+// Flagpoles do not work across landscape borders, therefore remove
+// the marker when it crosses a border as if it would move out of
+// the landscape. The border rule moves objects across the border,
+// so remove in the callback from this rule.
+public func OnBorderCrossed()
+{
+	return RemoveObject();
+}
+
 
 /*-- Fading --*/
 
