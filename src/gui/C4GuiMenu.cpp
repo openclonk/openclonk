@@ -460,6 +460,9 @@ namespace C4GUI
 
 	void ContextMenu::Draw(C4TargetFacet &cgo)
 	{
+		// In editor mode, the surface is not assigned
+		// The menu is drawn directly by the dialogue, so just exit here.
+		if (!cgo.Surface) return;
 		// draw self
 		Window::Draw(cgo);
 		// draw submenus on top

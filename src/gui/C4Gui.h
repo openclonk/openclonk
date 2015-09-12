@@ -1855,7 +1855,9 @@ namespace C4GUI
 		int32_t GetMenuIndex() { return iMenuIndex; }
 		static int32_t GetLastMenuIndex() { return iGlobalMenuIndex; }
 
-		friend class Screen; friend class Entry;
+		Dialog *GetTargetDialog() const { return pTarget ? pTarget->GetDlg() : NULL; }
+
+		friend class Screen; friend class Entry; friend class Dialog;
 	};
 
 	// a button to open a context menu
