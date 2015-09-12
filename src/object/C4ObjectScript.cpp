@@ -2132,7 +2132,7 @@ static bool FnSetAnimationWeight(C4Object *Obj, Nillable<int> iAnimationNumber, 
 	return true;
 }
 
-static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * szParentBone, C4String * szChildBone, C4ValueArray * Transformation, int Flags)
+static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * szParentBone, C4String * szChildBone, C4ValueArray * Transformation, int Flags, int AttachNumber)
 {
 	if (!Obj->pMeshInstance) return C4Void();
 	if (!Mesh) return C4Void();
@@ -2147,14 +2147,14 @@ static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * sz
 	if (pObj)
 	{
 		if (!pObj->pMeshInstance) return C4Void();
-		attach = Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
+		attach = Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans, Flags, AttachNumber);
 	}
 	else
 	{
 		C4Def* pDef = Mesh->GetDef();
 		if (!pDef) return C4Void();
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4Void();
-		attach = Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
+		attach = Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags, AttachNumber);
 		if(attach) attach->Child->SetFaceOrderingForClrModulation(Obj->ColorMod);
 	}
 

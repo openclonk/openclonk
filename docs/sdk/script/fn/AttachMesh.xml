@@ -54,6 +54,12 @@
           </desc>
           <optional />
         </param>
+	<param>
+	  <type>int</type>
+	  <name>attach_number</name>
+	  <desc>If given, refers to the number of the attached mesh to which to attach this mesh. This results in nested mesh attachments. This parameter can only be used if it refers to an attached definition, not an attached object. In order to attach a mesh to attached objects, call this function directly on the attached object.</desc>
+	  <optional />
+	</param>
       </params>
     </syntax>
     <desc>Attaches a mesh to another mesh. If <code>mesh</code> is an ID then the mesh of the corresponding definition is used. If <code>mesh</code> is an object then the current mesh of that object is used, including all its animations and attached meshes. However, in that case only the graphics will be attached - the object itself stays at its current position. The return value is a number that can be used to detach the mesh again via <funclink>DetachMesh</funclink>.</desc>
