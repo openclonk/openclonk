@@ -6,8 +6,8 @@ MsgIntro4=Uh oh...
 MsgIntro5=Quick! The ejection seats!
 MsgIntro6=Phew, that was close.
 MsgIntro7=What can we do now?
-MsgIntro8=I think I saw the plane crash into the snow on the hill on the other side of the volcano.
-MsgIntro9=The snow is soft. Maybe if you get there, you can still salvage the plane.
+MsgIntro8=I think I saw the plane crash into the hill on the other side of the volcano.
+MsgIntro9=The earth is soft on that hill. Maybe if you get there, you can still salvage the plane.
 MsgIntro10=I will try my best
 
 # NPC Pilot

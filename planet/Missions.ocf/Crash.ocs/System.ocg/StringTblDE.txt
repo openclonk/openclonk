@@ -6,8 +6,8 @@ MsgIntro4=Oh oh...
 MsgIntro5=Schnell! Der Schleudersitz!
 MsgIntro6=Puh, das war knapp.
 MsgIntro7=Was können wir nun tun?
-MsgIntro8=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans im Schnee gelandet ist.
-MsgIntro9=Schnee ist weich. Wenn du dorthin gelangst, kannst du das Flugzeug vielleicht retten.
+MsgIntro8=Ich glaube ich habe gesehen, wie das Flugzeug auf der anderen Seite des Vulkans auf der Insel gelandet ist.
+MsgIntro9=Die Erde dort ist weich. Wenn du dorthin gelangst, kannst du das Flugzeug vielleicht retten.
 MsgIntro10=Ich werde es versuchen.
 
 # NPC Pilot
