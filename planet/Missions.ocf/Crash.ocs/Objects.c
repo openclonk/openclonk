@@ -8,6 +8,9 @@ func InitializeObjects()
 
 	CreateObject(Ambience);
 
+	var BoilingLava001 = CreateObject(BoilingLava);
+	BoilingLava001->SetIntensity(25);
+
 	var Rule_BaseRespawn001 = CreateObject(Rule_BaseRespawn);
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
