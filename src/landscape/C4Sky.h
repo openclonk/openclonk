@@ -51,8 +51,8 @@ protected:
 	bool BackClrEnabled;    // is the background color enabled?
 public:
 	class C4Surface * Surface;
-	C4Shader Shader;        // shader to draw sky w/o dynamic light  (global viewport)
-	C4Shader ShaderLight;   // shader to draw sky with dynamic light (player viewport)
+	C4Shader Shader;          // shader to draw sky w/o dynamic light  (global viewport)
+	C4Shader ShaderLight;     // shader to draw sky with dynamic light (player viewport)
 	C4Real xdir,ydir;  // sky movement speed
 	C4Real x,y;        // sky movement pos
 	int32_t ParX, ParY; // parallax movement in xdir/ydir

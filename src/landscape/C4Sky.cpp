@@ -46,13 +46,6 @@ bool C4Sky::Init(bool fSavegame)
 {
 	int32_t skylistn;
 
-	// Load sky shaders: regular sprite shaders with OC_SKY define
-	const char* const SkyDefines[] = { "OC_SKY", NULL };
-	if (!pDraw->PrepareSpriteShader(Shader, "Sky", C4SSC_BASE, &::GraphicsResource.Files, SkyDefines, NULL))
-		return false;
-	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", C4SSC_BASE | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, NULL))
-		return false;
-
 	// reset scrolling pos+speed
 	// not in savegame, because it will have been loaded from game data there
 	if (!fSavegame)
@@ -114,6 +107,13 @@ bool C4Sky::Init(bool fSavegame)
 		delete Surface;
 		Surface = 0;
 	}
+
+	// Load sky shaders: regular sprite shaders with OC_SKY define
+	const char* const SkyDefines[] = { "OC_SKY", NULL };
+	if (!pDraw->PrepareSpriteShader(Shader, "Sky", Surface ? C4SSC_BASE : 0, &::GraphicsResource.Files, SkyDefines, NULL))
+		return false;
+	if (!pDraw->PrepareSpriteShader(ShaderLight, "SkyLight", (Surface ? C4SSC_BASE : 0) | C4SSC_LIGHT, &::GraphicsResource.Files, SkyDefines, NULL))
+		return false;
 
 	// no sky - using fade in newgfx
 	if (!Surface)
