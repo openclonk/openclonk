@@ -1,0 +1,5 @@
+Name=Lernrundenführer
+
+MsgCurrent=Aktuelle Nachricht
+MsgNext=Nächste Nachricht
+MsgPrevious=Letzte Nachricht

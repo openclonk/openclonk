@@ -1,0 +1,5 @@
+Name=Tutorial guide
+
+MsgCurrent=Current message
+MsgNext=Next message
+MsgPrevious=Previous message
