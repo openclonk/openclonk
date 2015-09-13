@@ -1,0 +1,83 @@
+[Developer/Maintainer]
+Maikel 
+
+[Folder Information]
+This is the introduction to OpenClonk for new players, it will contain a short story line and the explanation
+of all relevant controls in OpenClonk.
+
+[Information for developers]
+If you want to contribute to this folder please contact the maintainer (this does not hold for bug fixes).
+
+
+[List of Todos]
+
+[Tutorial 1: Wandering Wipf]
+
+[Tutorial 2: Bombing Barriers]
+*Block clonks movement in bridge scene.
+*Improve wipf movement throughout the map, especially crossing the bridge.
+*All mushrooms should be free to be picked up.
+*Add vegetation
+*Improve the easteregg, bushes should already have berries.
+*Disable interaction for clonk.
+
+[Tutorial 3: ]
+*Prevent production of loam.
+*Fix tutorial message after coal drop while already selected production of metal/gold.
+
+[Tutorial 4: ]
+*Interaction with AI to obtain a hammer.
+
+
+[General Tutorial Concept]
+Create a short adventure with a basic story line where the player is gradually learning the controls of OpenClonk. The general elements involve a wipf, he is the little animal friend of the clonk and shows the path most of the times. Other elements are exploring, settlement and battles.
+
+[Tutorial Story Line] (every * is one tutorial)
+Tutorial 01: Clonk & wipf stranded, wipf runs of, player must follow him to end of tutorial.
+Tutorial 02: The wipf runs of and is trapped, players must find and feed him, then they continue to Wipfville.
+Turotial 03: Wipfville has been attacked by evil fraction and the player rebuilds the wipf statue, mining ore and chopping trees.
+Tutorial 04: Wipfville's power grid is broken, player builds flag, can move lorry using elevator and produces weapons at armory.
+Tutorial 05: Evil fraction plans to attack again, player trains with bow, sword and shield, and sets up a lava trap using the pump.
+Tutorial 06: Evil wipf fraction attacks, a few enemies over the ground which the player must eliminate. Fraction steals wipf using plane.
+Tutorial 07:
+Tutorial 08:
+Tutorial 09:
+Tutorial 10: Attack the evil fraction's castle and free your and all wipfs.
+Play Ground: Unlocked after completing all tutorials, in here the player can spawn all items, vehicle and structures to play around.
+
+
+[Tutorial Explanations]
+
+[Tutorial 01: Movement (WASD)]
+* Clonk HUD 
+* Walking and jumping with WASD
+* Scaling, wall jump and hangling
+* Swimming, diving and breath 
+
+[Tutorial 02: Inventory & Items]
+* Collection of objects
+* Inventory control
+* Throwing items: firestones
+* Dropping items: mushroom/berries
+* Using items: shovel, loam
+
+[Tutorial 03: Contents, Production & Construction]
+* Contents: lorry, foundry and construction site
+* Production: menu foundry
+* Using items: dynamite, axe
+
+[Tutorial 04: Interaction & Ownership]
+* Construction: hammer->Flagpole
+* Ownership: influence on power
+* Interaction: moving a lorry with materials to armory
+* Production: Sword and Bow
+
+[Tutorial 05: Pumping and weapon training]
+* Training: sword and bow
+* Constructing a pump
+
+[Stuff to explain]
+* Liquids and pumping
+* Carry heavy objects
+* handling weapons: sword, shield, bow
+* controlling vehicles: blimp, catapult, airplane

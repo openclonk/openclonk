@@ -1,0 +1,3 @@
+# Achievements
+MsgTutorialCompleted=Tutorial Completed.
+MsgTutorialEasterEgg=Easter egg found.

@@ -1,0 +1,19 @@
+[ParameterDef]
+ID=TutorialCompleted
+Achievement=Done
+
+	[Options]
+		
+		[Option]
+		Description=$MsgTutorialCompleted$
+		Value=3
+
+[ParameterDef]
+ID=TutorialEasterEgg
+Achievement=EasterEgg
+
+	[Options]
+		
+		[Option]
+		Description=$MsgTutorialEasterEgg$
+		Value=1
