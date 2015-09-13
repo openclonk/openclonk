@@ -126,7 +126,7 @@ void C4ConfigSound::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(FESamples,             "MenuSound",            1             ,false, true));
 	pComp->Value(mkNamingAdapt(FMMode,                "FMMode",               1             ));
 	pComp->Value(mkNamingAdapt(Verbose,               "Verbose",              0             ));
-	pComp->Value(mkNamingAdapt(MusicVolume,           "MusicVolume",          100           ,false, true));
+	pComp->Value(mkNamingAdapt(MusicVolume,           "MusicVolume2",         40            ,false, true));
 	pComp->Value(mkNamingAdapt(SoundVolume,           "SoundVolume",          100           ,false, true));
 }
 
