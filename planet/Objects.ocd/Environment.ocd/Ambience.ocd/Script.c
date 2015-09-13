@@ -179,7 +179,7 @@ private func ExecutePlayer(int plr, array environments)
 			if (env.is_exclusive) break;
 		}
 		// Apply or clear global sound modifier
-		SetGlobalSoundModifier(sound_modifier);
+		SetGlobalSoundModifier(sound_modifier, plr);
 	}
 	return true;
 }
