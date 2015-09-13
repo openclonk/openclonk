@@ -1525,7 +1525,7 @@ set(OC_C4GROUPS
 	Arena.ocf
 	Parkour.ocf
 	Missions.ocf
-	Tutorial.ocf
+	Tutorials.ocf
 	Worlds.ocf
 )
 
