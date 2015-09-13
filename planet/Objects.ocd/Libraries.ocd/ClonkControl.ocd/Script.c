@@ -380,7 +380,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if ((ctrl == CON_Throw || ctrl == CON_ThrowDelayed || ctrl == CON_Drop) && !house && (!vehicle || proc == "ATTACH") && !release)
 	{		
 		if (contents)
-		{		
+		{
+			// Object overloaded throw control?
+			// Call this before QueryRejectDeparture to allow alternate use of non-droppable objects
+			if (contents->~ControlThrow(this))
+				return true;
+			
 			// The object does not want to be dropped? Still handle command.
 			if (contents->~QueryRejectDeparture(this))
 				return true;
