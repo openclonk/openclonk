@@ -1,1 +1,0 @@
-CatapultEntryDeactivated=Mit dieser Funktion könnte man sogar einen Clonk mit dem Katapult verschießen. Aber für die Lernrunde ist dies deaktiviert.
