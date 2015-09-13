@@ -383,7 +383,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			// Object overloaded throw control?
 			// Call this before QueryRejectDeparture to allow alternate use of non-droppable objects
-			if (contents->~ControlThrow(this))
+			if (contents->~ControlThrow(this, x, y))
 				return true;
 			
 			// The object does not want to be dropped? Still handle command.
