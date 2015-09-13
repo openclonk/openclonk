@@ -1349,12 +1349,14 @@ bool StdMeshInstance::DetachMesh(unsigned int number)
 	{
 		if ((*iter)->Number == number)
 		{
+			AttachedMesh* attached = *iter;
+
 			// Reset attach parent of child so it does not try
 			// to detach itself on destruction.
-			(*iter)->Child->AttachParent = NULL;
+			attached->Child->AttachParent = NULL;
+			attached->Parent->AttachChildren.erase(iter);
 
-			delete *iter;
-			AttachChildren.erase(iter);
+			delete attached;
 
 			// Finish scan
 			return false;
