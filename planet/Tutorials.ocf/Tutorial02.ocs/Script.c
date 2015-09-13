@@ -472,6 +472,9 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
+		// Transfer contents
+		var i = target->ContentsCount(), contents_obj;
+		while (i--) if (contents_obj = target->Contents(i)) contents_obj->Enter(clonk);
 	}
 	return FX_OK;
 }
