@@ -67,6 +67,10 @@ func InitializeObjects()
 	var Tree_Coniferous001 = CreateObjectAbove(Tree_Coniferous, 231, 878);
 	Tree_Coniferous001->SetCon(48);
 
+	CreateObjectAbove(Flower, 435, 551);
+	CreateObjectAbove(Flower, 526, 559);
+	CreateObjectAbove(Flower, 399, 552);
+
 	var Chest001 = CreateObjectAbove(Chest, 264, 1287);
 
 	var WoodenCabin001 = CreateObjectAbove(WoodenCabin, 62, 870);
@@ -78,11 +82,6 @@ func InitializeObjects()
 
 	var Lorry001 = CreateObject(Lorry, 76, 1290);
 	Lorry001->SetR(-14);
-
-	var Catapult001 = CreateObjectAbove(Catapult, 445, 547);
-	Catapult001->SetCon(80);
-	Catapult001->SetRDir(1);
-	Catapult001->SetClrModulation(0xff686868);
 
 	var Clonk001 = CreateObjectAbove(Clonk, 556, 546);
 	Clonk001->SetDir(DIR_Right);
