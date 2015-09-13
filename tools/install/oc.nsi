@@ -116,6 +116,8 @@ Section
   Delete "Issues.ocf"
   Delete "Experimental.ocd"
   Delete "Experimental.ocf"
+  ; from 6.0 (got renamed to Tutorials.ocf)
+  Delete "Tutorial.ocf"
 
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
