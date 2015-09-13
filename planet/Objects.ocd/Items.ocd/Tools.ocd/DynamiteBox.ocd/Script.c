@@ -62,12 +62,21 @@ public func ControlUse(object clonk, int x, int y)
 	if (count == 0)
 	{
 		var pos = clonk->GetItemPos(this);
-		ChangeDef(Igniter);
-		SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
+		ChangeToIgniter();
 		clonk->UpdateAttach();
 		clonk->OnSlotFull(pos);
 	}
 
+	return true;
+}
+
+// Empty this box and turn it into an igniter
+public func ChangeToIgniter()
+{
+	count = 0;
+	UpdatePicture();
+	ChangeDef(Igniter);
+	SetGraphics("Picture", Igniter, 1, GFXOV_MODE_Picture);
 	return true;
 }
 

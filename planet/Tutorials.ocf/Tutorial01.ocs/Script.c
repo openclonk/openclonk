@@ -192,9 +192,9 @@ private func InitGoldMine()
 	CreateObjectAbove(Fuse, 974, 597, NO_OWNER)->Connect(dyn2, dyn3);
 	CreateObjectAbove(Fuse, 970, 618, NO_OWNER)->Connect(dyn3, dyn4);
 	CreateObjectAbove(Fuse, 955, 633, NO_OWNER)->Connect(dyn4, dyn5);
-	var igniter = CreateObjectAbove(Igniter, 909, 637, NO_OWNER);
+	var igniter = CreateObjectAbove(DynamiteBox, 909, 637, NO_OWNER);
+	igniter->ChangeToIgniter();
 	CreateObjectAbove(Fuse, 941, 637, NO_OWNER)->Connect(dyn5, igniter);
-	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	return;
 }
 
