@@ -95,7 +95,7 @@ private func FxIntAreaMonteCarloTimer(object target, proplist effect, int time)
 	{
 		var x = Random(LandscapeWidth());
 		var y = Random(LandscapeHeight());
-		if (CoveredByFlag(x, y))
+		if (GetFlagpoleForPosition(x, y))
 			rate++;	
 	}
 	var promille = 1000 * rate / cnt;
@@ -105,15 +105,6 @@ private func FxIntAreaMonteCarloTimer(object target, proplist effect, int time)
 	if (effect.store_index >= effect.store_amount)
 		effect.store_index = 0;
 	return 1;
-}
-
-// Returns whether the point (x,y) is covered by a flagpole.
-private func CoveredByFlag(int x, int y)
-{
-	for (var flag in FindObjects(Find_Func("IsFlagpole"), Sort_Distance(x - GetX(), y - GetY())))
-		if (Distance(flag->GetX(), flag->GetY(), x, y) < flag->GetFlagRadius())
-			return true;
-	return false;
 }
 
 // Return the description of this goal.

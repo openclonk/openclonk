@@ -111,7 +111,7 @@ public func RedrawFlagRadius()
 		{
 			if (other_flag)
 			{
-				if (Distance(GetX() + x, GetY() + y, other_flag->GetX(), other_flag->GetY()) <= other_flag->GetFlagRadius())
+				if (other_flag->HasCoordinatesInControlArea(GetX() + x, GetY() + y))
 				{
 					// For equal construction times, increase this construction time.
 					// TODO: this feels rather hacky?!
@@ -163,6 +163,14 @@ public func RedrawFlagRadius()
 		SetLength(lib_flag.range_markers, old + 1);
 	}
 	return;
+}
+
+// Callback from the global function that determines the ownership for a position.
+// The coordinates x and y are global.
+public func HasCoordinatesInControlArea(int x, int y)
+{
+	var d = Distance(x, y, GetX(), GetY());
+	return d <= GetFlagRadius();
 }
 
 // Removes all the ownership markers for this flag.

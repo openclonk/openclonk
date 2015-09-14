@@ -18,10 +18,9 @@ global func GetFlagpoleForPosition(int x, int y)
 		// Safety in case this gets called during destruction of a flag.
 		if (!flag) 
 			continue;
-		var d = Distance(GetX() + x, GetY() + y, flag->GetX(), flag->GetY());
-		if (d > flag->GetFlagRadius()) 
-			continue; 
-		
+		if (!flag->HasCoordinatesInControlArea(x + GetX(), y + GetY()))
+			continue;
+
 		if (oldest == nil || flag->GetFlagConstructionTime() < oldest_time)
 		{
 			oldest = flag;
