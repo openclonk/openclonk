@@ -29,12 +29,24 @@ slice(light+1)
 	// For landscape, ambient brightness is coming from top
 	vec3 ambientDir = vec3(0.0, -1.0, 0.0);
 	light = mix(light, 1.0 + 1.0 * dot(normal, ambientDir), ambient);
-#ifdef OC_HAVE_2PX
-	light2 = mix(light2, 1.0 + 1.0 * dot(normal2, ambientDir), ambient);
-#endif
+	#ifdef OC_HAVE_2PX
+		light2 = mix(light2, 1.0 + 1.0 * dot(normal2, ambientDir), ambient);
+	#endif
 #else
-	// For objects, ambient brightness is coming from the front
-	vec3 ambientDir = vec3(0.0, 0.0, 1.0);
-	light = mix(light, max(max(dot(normal, ambientDir), 0.0), cullMode * max(dot(-normal, ambientDir), 0.0)), ambient);
+	#ifdef OC_SKY
+		// For sky, ambient brightness is coming from the front
+		vec3 ambientDir = vec3(0.0, 0.0, 1.0);
+		light = mix(light, max(max(dot(normal, ambientDir), 0.0), cullMode * max(dot(-normal, ambientDir), 0.0)), ambient);
+	#else
+		// For objects, ambient brightness is coming from the sky
+		vec3 ambientDir = normalize(vec3(0.5, -0.5, 0.5));
+		float ambientLight = max(dot(normal, ambientDir), 0.8);
+		// Also, objects do have a rimlight
+		vec3 rimDir = vec3(0.0, 0.0, 1.0);
+		float rimLight = 1.0 - dot(normal, rimDir);
+		ambientLight += ambientLight * rimLight;
+
+		light = mix(light, ambientLight, ambient);
+	#endif
 #endif
 }
