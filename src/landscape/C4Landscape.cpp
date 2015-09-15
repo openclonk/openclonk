@@ -1431,7 +1431,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	{
 		C4DebugRecOff DBGRECOFF;
 		// if overloading, clear current
-		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
+		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky, false);
 		// load it
 		if (!fLandscapeModeSet) Mode=C4LSC_Exact;
 		rfLoaded=true;
