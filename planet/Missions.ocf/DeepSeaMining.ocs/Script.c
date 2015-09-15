@@ -32,6 +32,14 @@ protected func PostIntroInitialize()
 		goal_site->CreateContents(Amethyst,5);
 	}
 	
+	// Rules
+	var respawn_rule = FindObject(Find_ID(Rule_BaseRespawn));
+	if (respawn_rule)
+	{
+		respawn_rule->SetInventoryTransfer(true);
+		respawn_rule->SetFreeCrew(true);
+	}
+	
 	// Initialize different parts of the scenario.
 	CreateObject(Ambience);
 	InitEnvironment();
