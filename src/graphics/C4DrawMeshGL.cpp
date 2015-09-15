@@ -238,31 +238,6 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 						break;
 					}
 
-					if (texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Point ||
-					    texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Linear)
-					{
-						// If mipmapping is enabled, then autogenerate mipmap data.
-						// In OGRE this is deactivated for several OS/graphics card
-						// combinations because of known bugs...
-
-						// This does work for me, but requires re-upload of texture data...
-						// so the proper way would be to set this prior to the initial
-						// upload, which would be the same place where we could also use
-						// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
-						// efficient though.
-
-						// Disabled for now, until we find a better place for this (C4TexRef?)
-#if 0
-						if (GLEW_VERSION_1_4)
-							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<C4TexRef*>(&texunit.GetTexture())->Lock(); const_cast<C4TexRef*>(&texunit.GetTexture())->Unlock(); }
-						else
-							technique.Available = false;
-#else
-						// Disable mipmap for now as a workaround.
-						texunit.Filtering[2] = StdMeshMaterialTextureUnit::F_None;
-#endif
-					}
-
 					switch (texunit.Filtering[0]) // min
 					{
 					case StdMeshMaterialTextureUnit::F_None:
