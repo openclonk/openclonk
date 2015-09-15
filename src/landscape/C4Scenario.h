@@ -233,7 +233,7 @@ public:
 	void SetExactLandscape();
 	void Clear();
 	void Default();
-	bool Load(C4Group &hGroup, bool fLoadSection=false);
+	bool Load(C4Group &hGroup, bool fLoadSection = false, bool suppress_errors = false);
 	bool Save(C4Group &hGroup, bool fSaveSection=false);
 	void CompileFunc(StdCompiler *pComp, bool fSection);
 	int32_t GetMinPlayer(); // will try to determine the minimum player count for this scenario

@@ -3391,7 +3391,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	C4Group hGroup, *pGrp;
 	// find section to load
 	C4ScenarioSection *pLoadSect = pScenarioSections;
-		while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
+	while (pLoadSect) if (SEqualNoCase(pLoadSect->szName, szSection)) break; else pLoadSect = pLoadSect->pNext;
 	if (!pLoadSect)
 	{
 		DebugLogF("LoadScenarioSection: scenario section %s not found!", szSection);
@@ -3509,8 +3509,11 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// backup old sky
 	char szOldSky[C4MaxDefString+1];
 	SCopy(C4S.Landscape.SkyDef, szOldSky, C4MaxDefString);
+	// do not warn on ignored values in main section
+	// they are caused because not all parts of scenario core are compiled on section change
+	bool is_main_section = SEqualNoCase(pLoadSect->szName, C4ScenSect_Main);
 	// overload scenario values (fails if no scenario core is present; that's OK)
-	C4S.Load(*pGrp, true);
+	C4S.Load(*pGrp, true, is_main_section);
 	// determine whether a new sky has to be loaded
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// set new Objects.c source

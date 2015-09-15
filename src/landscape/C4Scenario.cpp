@@ -80,13 +80,25 @@ void C4Scenario::Default()
 	Environment.Default();
 }
 
-bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection)
+bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection, bool suppress_errors)
 {
 	StdStrBuf Buf;
 	if (!hGroup.LoadEntryString(C4CFN_ScenarioCore,&Buf)) return false;
 	if (!fLoadSection) Default();
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), Buf, C4CFN_ScenarioCore))
-		{ return false; }
+	if (suppress_errors)
+	{
+		if (!CompileFromBuf_Log<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), Buf, C4CFN_ScenarioCore))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), Buf, C4CFN_ScenarioCore))
+		{
+			return false;
+		}
+	}
 	return true;
 }
 
