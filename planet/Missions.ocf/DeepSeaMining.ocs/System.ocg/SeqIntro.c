@@ -8,7 +8,8 @@ func Intro_Start()
 	// Intro starts high up in the clouds
 	LoadScenarioSection("Intro");
 	SetWind(-100);
-	SetSkyParallax(0, 20, 20, -10, 0);
+	this.intro_skyscroll_xdir = -10;
+	SetSkyParallax(0, 20, 20, this.intro_skyscroll_xdir, 0);
 	
 	this.plane = CreateObjectAbove(Plane, 500, 200);
 	this.plane->SetColor(0xa04000);
@@ -113,6 +114,9 @@ func Intro_9()
 func Intro_10()
 {
 	g_intro_sky_moving = false;
+	Schedule(this, "SetSkyParallax(0, 20, 20, ++this.intro_skyscroll_xdir, 0)", 10, -this.intro_skyscroll_xdir);
+	GetHero()->Sound("Hurt1");
+	GetHero()->Sound("Hurt2");
 	this.plane.rdir = 0;
 	this.plane->StartInstantFlight(this.plane->GetR(), 15);
 	MessageBoxAll("$Intro10$", GetHero(), true); // aaaah

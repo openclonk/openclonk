@@ -41,7 +41,7 @@ protected func PostIntroInitialize()
 	
 	// NPC
 	g_tuesday_pos = FindMainIslandPosition(0, 100, true);
-	npc_tuesday = CreateObjectAbove(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-10);
+	npc_tuesday = CreateObjectAbove(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-20);
 	npc_tuesday->SetDir(DIR_Left);
 	npc_tuesday->SetColor(0x804000);
 	npc_tuesday->SetName("$Tuesday$");
@@ -231,9 +231,9 @@ private func InitMainIsland()
 		pos = FindMainIslandPosition(nil, nil, true);
 		CreateObjectAbove(Sawmill, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObjectAbove(ChemicalLab, pos[0], pos[1]);
+		var lab = CreateObjectAbove(ChemicalLab, pos[0], pos[1]);
 		pos = FindMainIslandPosition(nil, nil, true);
-		CreateObjectAbove(ToolsWorkshop, pos[0], pos[1]);
+		var workshop = CreateObjectAbove(ToolsWorkshop, pos[0], pos[1]);
 	
 		lorry->CreateContents(Barrel, 1);
 		lorry->CreateContents(Bucket, 1);
@@ -241,6 +241,11 @@ private func InitMainIsland()
 		lorry->CreateContents(DynamiteBox, 1);
 		lorry->CreateContents(WallKit, 4);
 		//lorry->CreateContents(Boompack, 1);	
+		
+		lab->CreateContents(Dynamite, 5);
+		lab->CreateContents(DynamiteBox, 1);
+		
+		workshop->CreateContents(Metal, 5);
 	}
 	
 	return;
