@@ -67,8 +67,10 @@ global func Incinerate(
 		return true;
 	}
 	else
-		AddEffect("Fire", this, 100, 4, this, nil, caused_by, !!blasted, incinerating_object, strength);
-	return true;
+	{
+		effect = AddEffect("Fire", this, 100, 4, this, nil, caused_by, !!blasted, incinerating_object, strength);
+		return !!effect;
+	}
 }
 
 // Called if the object is submerged in incendiary material (for example in lava).
