@@ -790,6 +790,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			CStdFile todo_file;
 			if (!todo_file.Append(todo_filename.getData())) continue;
 			if (!todo_file.WriteString(pCmdPar)) continue;
+			// check on file close because CStdFile may do a delayed write
+			if (!todo_file.Close()) continue;
 			success = true;
 			break;
 		}
