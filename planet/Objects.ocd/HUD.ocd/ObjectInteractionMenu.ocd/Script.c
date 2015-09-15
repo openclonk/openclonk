@@ -831,6 +831,7 @@ func FxIntRefreshContentsMenuStart(object target, proplist effect, temp, object 
 func FxIntRefreshContentsMenuTimer(target, effect, time)
 {
 	if (!effect.obj) return -1;
+	if (!current_menus[effect.slot]) return -1;
 	// Helper object used to track extra-slot objects. When this object is removed, the tracking stops.
 	var extra_slot_keep_alive = current_menus[effect.slot].menu_object;
 	// The fast interval is only used for the very first check to ensure a fast startup.
