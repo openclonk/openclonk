@@ -734,7 +734,7 @@ private:
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);
 
 template <class CompT, class StructT>
-bool CompileFromBuf_Log(StructT &TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+bool CompileFromBuf_Log(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
 {
 	try
 	{
