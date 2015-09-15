@@ -55,26 +55,44 @@ global func SetObjAlpha(int by_alpha)
 	return SetClrModulation(clr_mod);
 }
 
-// Makes the calling object invincible.
-global func MakeInvincible()
+global func MakeInvincible(bool allow_fire)
 {
-	if (!this) return nil;
-	var fx;
-	if (fx = GetEffect("IntInvincible", this)) return fx;
-	return AddEffect("IntInvincible", this, 300);
+	if (!this) return false;
+	var fx = GetEffect("IntInvincible", this);
+	if (!fx) fx = AddEffect("IntInvincible", this, 300, 0);
+	if (!fx) return false;
+	fx.allow_fire = allow_fire;
+	if (!allow_fire && this->OnFire()) this->Extinguish();
+	return true;
 }
 
-// REmoves invincibility from object
+global func FxIntInvincibleDamage(target)
+{
+	// avert all damage
+	return 0;
+}
+
+global func FxIntInvincibleEffect(string new_name, object target, proplist fx)
+{
+	// Block fire effects.
+	if (WildcardMatch(new_name, "*Fire*") && !fx.allow_fire)
+		return FX_Effect_Deny;
+	// All other effects are okay.
+	return FX_OK;
+}
+
+global func FxIntInvincibleSaveScen(object obj, proplist fx, proplist props)
+{
+	// this is invincible. Save to scenario.
+	props->AddCall("Invincible", obj, "MakeInvincible");
+	return true;
+}
+
+// Removes invincibility from object
 global func ClearInvincible()
 {
 	if (!this) return nil;
 	return RemoveEffect("IntInvincible", this);
-}
-
-global func FxIntInvincibleDamage()
-{
-	// Object receives zero damage.
-	return 0;
 }
 
 // Move an object by the given parameters relative to its position.

@@ -31,7 +31,6 @@ func DoInit(int first_player)
 	// NPC: Merchant.
 	var merchant = CreateObjectAbove(Clonk, 76, 870);
 	merchant->MakeInvincible();
-	merchant->MakeNonFlammable();
 	merchant->SetSkin(1);
 	merchant->SetName("$NameMerchant$");
 	merchant->SetColor(RGB(55, 65, 75));

@@ -15,7 +15,6 @@ func Intro_Start()
 	this.plane->SetColor(0xa04000);
 	this.pilot = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
-	this.pilot->MakeNonFlammable();
 	this.pilot->SetSkin(2);
 	this.pilot->Enter(this.plane);
 	this.pilot->SetAction("Walk");

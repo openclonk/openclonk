@@ -68,7 +68,6 @@ global func FxIntIntroStart(object target, proplist effect)
 
 	effect.Sister = CreateObjectAbove(Clonk, 174, 532, NO_OWNER);
 	effect.Sister->MakeInvincible();
-	effect.Sister->MakeNonFlammable();
 	effect.Sister->SetSkin(1);
 	effect.Sister->SetName("$NameSister$");
 	effect.Sister->SetColor(RGB(213, 68, 172));

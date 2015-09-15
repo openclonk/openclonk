@@ -122,7 +122,7 @@ SetSpeed() - Does not set the speed of an object. But you can set two components
 SetVelocity() - Can set either speed or angle of velocity, or both.
 SetCon() - Sets the completion of this.
 SetObjAlpha() - Sets the object's transparency.
-MakeInvincible() - Makes the calling object invincible.
+MakeInvincible() - Makes the calling object invincible to damage and fire.
 MovePosition() - Move an object by the given parameters relative to its position.
 LaunchProjectile() - Speed the calling object into the given direction (angle).
 SetMaxEnergy() - Sets the MaxEnergy value of an object and does the necessary callbacks.
