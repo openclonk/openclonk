@@ -17,6 +17,18 @@ local lib_lamp_lit;
 */
 public func IsLamp() { return true; }
 
+/** Lamp property: How far it shines.
+*/
+public func GetLampRange() { return 160; }
+
+/** Lamp property: How far it shines into material.
+*/
+public func GetLampFadeRange() { return 160; }
+
+/** Lamp property: Which color it shines in.
+*/
+public func GetLampColor() { return 0xffa000; }
+
 /** Overload as needed to define a custom offset by the lamp.
 */
 public func LampOffset() {}
@@ -30,7 +42,8 @@ public func TurnOn()
 {
 	if (lib_lamp_lit) return false;
 	_inherited();
-	SetLightRange(80, 60);
+	SetLightRange(this->GetLampRange(), this->GetLampFadeRange());
+	SetLightColor(this->GetLampColor());
 	lib_lamp_lit = true;
 	return true;
 }
