@@ -44,9 +44,9 @@ public func IsContainer() { return true; }
 // Provides an own interaction menu, even if it wouldn't be a container.
 public func HasInteractionMenu() { return true; }
 
-public func GetProductionMenuEntries()
+public func GetProductionMenuEntries(object clonk)
 {
-	var products = GetProducts();
+	var products = GetProducts(clonk);
 	
 	// default design of a control menu item
 	var control_prototype =

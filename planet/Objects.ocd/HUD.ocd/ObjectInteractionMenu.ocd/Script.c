@@ -638,7 +638,7 @@ func CreateMainMenu(object obj, int slot)
 		if (!menu.flag)
 			menu.flag = InteractionMenu_Custom;
 		if (menu.entries_callback)
-			menu.entries = obj->Call(menu.entries_callback, obj);
+			menu.entries = obj->Call(menu.entries_callback, cursor);
 		if (menu.entries == nil)
 		{
 			FatalError(Format("An interaction menu did not return valid entries. %s -> %v() (object %v)", obj->GetName(), menu.entries_callback, obj));
