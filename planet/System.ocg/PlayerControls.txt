@@ -172,15 +172,12 @@
 	
 	[ControlDef]
 	Identifier=PickUpNext_Left
-	GUIName=None
 	
 	[ControlDef]
 	Identifier=PickUpNext_Right
-	GUIName=None
 	
 	[ControlDef]
 	Identifier=PickUpNext_Stop
-	GUIName=None
 	
 	# Hotkeys (Inventory)
 	
