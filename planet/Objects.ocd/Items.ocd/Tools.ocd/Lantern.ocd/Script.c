@@ -24,11 +24,6 @@ public func TurnOff()
 	SetMeshMaterial("LanternGlass", 1);
 }
 
-public func DummyDefinition()
-{
-	return DummyLantern;
-}
-
 /*-- Ground Hitting --*/
 
 private func Hit()
@@ -61,6 +56,16 @@ private func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(280,0,1,0), Trans_Rotate(35,0,0,1), Trans_Rotate(10,1,0,0), Trans_Translate(0,0,250)),def);
 }
+
+/** Scenario saving: Mesh material is included in lamp on-state
+*/
+public func SaveScenarioObject(props, ...)
+{
+	if (!_inherited(props, ...)) return false;
+	props->Remove("MeshMaterial"); // stored by lamp state anyway
+	return true;
+}
+
 
 /*-- Status --*/
 

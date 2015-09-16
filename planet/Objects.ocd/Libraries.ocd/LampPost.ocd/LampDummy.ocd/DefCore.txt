@@ -1,4 +1,0 @@
-[DefCore]
-id=Library_LampDummy
-Version=6,1
-Category=C4D_StaticBack

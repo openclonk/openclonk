@@ -1,2 +1,0 @@
-Name=Laterne
-Description=Zum Abnehmen aus dem Gebäude herausnehmen.

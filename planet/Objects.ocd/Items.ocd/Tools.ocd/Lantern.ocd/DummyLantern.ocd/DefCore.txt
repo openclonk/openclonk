@@ -1,7 +1,0 @@
-[DefCore]
-id=DummyLantern
-Version=6,0
-Category=C4D_StaticBack
-Width=5
-Height=8
-Offset=-2,-4

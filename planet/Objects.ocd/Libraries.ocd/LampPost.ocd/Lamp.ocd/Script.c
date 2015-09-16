@@ -95,3 +95,12 @@ public func Destruction()
 {
 	if (Contained()) Contained()->~LampDestruction(this);
 }
+
+/** Scenario saving: Store whether lamp is on
+*/
+public func SaveScenarioObject(props, ...)
+{
+	if (!_inherited(props, ...)) return false;
+	if (lib_lamp_lit) props->AddCall("Lamp", this, "TurnOn");
+	return true;
+}
