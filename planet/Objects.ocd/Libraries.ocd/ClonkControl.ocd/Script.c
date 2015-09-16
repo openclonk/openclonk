@@ -1363,3 +1363,21 @@ func ExecuteInteraction(proplist action_info)
 			action_info.extra_data.Object->Call(action_info.extra_data.Fn, this);
 	}
 }
+
+// Interaction with clonks is special:
+// * The clonk opening the menu should always have higher priority so the clonk is predictably selected on the left side even if standing behind e.g. a crate
+// * Other clonks should be behind because interaction with them is rare but having your fellow players stand in front of a building is very common
+//   (Allies also tend to run in front just when you opened that menu...)
+func GetInteractionPriority(object target)
+{
+	// Self with high priority
+	if (target == this) return 100;
+	var owner = NO_OWNER;
+	if (target) owner = target->GetOwner();
+	// Prefer own clonks for item transfer
+	if (owner == GetOwner()) return -100;
+	// If no own clonk, prefer friendly
+	if (!Hostile(owner, GetOwner())) return -120;
+	// Hostile clonks? Lowest priority.
+	return -200;
+}
