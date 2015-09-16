@@ -1018,7 +1018,9 @@ void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Re
 		for (C4Object *obj : *pObjs)
 		{
 			if (obj && obj->Status)
-				pObjIDs[i] = obj->Number;
+				pObjIDs[i++] = obj->Number;
+			else
+				pObjIDs[i++] = 0;
 		}
 	}
 
