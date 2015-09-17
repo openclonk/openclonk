@@ -1280,7 +1280,7 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	if(pComp->isCompiler())
 	{
 		int32_t ambient_brightness;
-		pComp->Value(mkNamingAdapt(ambient_brightness,       "AmbientBrightness", 1.0));
+		pComp->Value(mkNamingAdapt(ambient_brightness,       "AmbientBrightness",  255));
 		if(pFoW) pFoW->Ambient.SetBrightness(ambient_brightness / static_cast<double>(255));
 	}
 	else
@@ -1521,20 +1521,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
 				return false;
 		}
-
-		// Write landscape data
-		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
-		Game.SetInitProgress(87);
 	}
-
-	// Create pixel count array
-	// We will use 15x17 blocks so the pixel count can't get over 255.
-	int32_t PixCntWidth = (Width + 16) / 17;
-	PixCntPitch = (Height + 14) / 15;
-	PixCnt = new uint8_t [PixCntWidth * PixCntPitch];
-	UpdatePixCnt(C4Rect(0, 0, Width, Height));
-	ClearMatCount();
-	UpdateMatCnt(C4Rect(0,0,Width,Height), true);
 
 	// Save initial landscape
 	if (!SaveInitial())
@@ -1542,6 +1529,19 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 	// Load diff, if existant
 	ApplyDiff(hGroup);
+
+	// Create pixel count array
+	// We will use 15x17 blocks so the pixel count can't get over 255.
+	int32_t PixCntWidth = (Width + 16) / 17;
+	PixCntPitch = (Height + 14) / 15;
+	PixCnt = new uint8_t[PixCntWidth * PixCntPitch];
+	UpdatePixCnt(C4Rect(0, 0, Width, Height));
+	ClearMatCount();
+	UpdateMatCnt(C4Rect(0, 0, Width, Height), true);
+
+	// Create initial landscape render data (after applying diff so landscape is complete)
+	if (pLandscapeRender) pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
+	Game.SetInitProgress(87);
 
 	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
 	// and not creating the map
