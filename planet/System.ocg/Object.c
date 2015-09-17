@@ -213,6 +213,7 @@ global func FxIntGrowthTimer(object obj, effect)
 {
 	if (obj->OnFire()) return;
 	obj->DoCon(effect.growth, 1000);
+	if (!obj) return FX_Execute_Kill; // Negative growth might have removed the object
 	var done = obj->GetCon(1000) >= 1000;
 	return -done;
 }
