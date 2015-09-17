@@ -1,2 +1,0 @@
-EnergyConsumption=Energy usage
-NotEnoughEnergy=Not enough power!
