@@ -24,7 +24,7 @@
       </params>
     </syntax>
     <desc>Sets the light reach of the object. When a clonk is added to the crew via <funclink>MakeCrewMember</funclink>, a light is added automatically with the default range of 300 and a fadeout of 80.</desc>
-    <remark>A local offset for the light center can be defined by setting the object property LightRange to an array with two elements for X- and Y-offset respectively.</remark>
+    <remark>A local offset for the light center can be defined by setting the object property LightOffset to an array with two elements for X- and Y-offset respectively.</remark>
     <examples>
       <example>
         <code>func ControlUse(object clonk)
@@ -39,7 +39,7 @@
         <code>func Construction()
 {
 	SetLightRange(100, 100);
-	this.LightRange = [0,-100];
+	this.LightOffset = [0,-100];
 	return true;
 }</code>
         <text>Script for a lamp post. A light coming from 100 pixel above the object center is enabled when the object is created.</text>
