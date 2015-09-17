@@ -2,6 +2,7 @@
 # Index +128 for underground materials
 
 1=Vehicle-none
+2=HalfVehicle-none
 
 10=Tunnel-tunnel
 12=Tunnel-brickback
