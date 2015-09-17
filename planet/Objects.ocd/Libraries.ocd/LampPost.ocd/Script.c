@@ -10,8 +10,8 @@
 /** Whenever a lamp enters the building, a dummy lamp is created to visualise the effect.
 */
 local lib_lamp_overlay;
-
 local lib_lamp_lamp;
+local lib_lamp_offset;
 
 /** Return a 2-value array with the (offset) position of the dummy lamp.
 */
@@ -41,16 +41,23 @@ private func CreateLampDummy(object lamp)
 	var lamp_offset = lamp->~LampOffset();
 	if (!lamp_offset) lamp_offset = [0,0];
 	// In theory, LampPosition can distinguish between certain types of lamps
-	var my_offset = LampPosition(def);
-	my_offset[0] += lamp_offset[0];
-	my_offset[1] += lamp_offset[1];
+	lib_lamp_offset = LampPosition(def)[:]; // create copy in case LampPosition overloads by returning a variable
+	lib_lamp_offset[0] += lamp_offset[0];
+	lib_lamp_offset[1] += lamp_offset[1];
 	// Attach it as overlay, since this works for all combinations of meshes and bitmap graphics for buildings and lamps
 	lib_lamp_overlay = this->GetLampOverlayID(lamp);
 	if (!lib_lamp_overlay) return false; // Building rejected this lamp?
 	SetGraphics(nil, lamp->GetID(), lib_lamp_overlay, GFXOV_MODE_Object, nil,nil, lamp);
-	SetObjDrawTransform(1000, 0, my_offset[0] * 1000, 0, 1000, my_offset[1] * 1000, lib_lamp_overlay);
+	SetObjDrawTransform(1000, 0, lib_lamp_offset[0] * 1000, 0, 1000, lib_lamp_offset[1] * 1000, lib_lamp_overlay);
 	// TODO: Could add an optional mode where lamp is attached as mesh instead (e.g. to attach it to wind generator wings)
 	// But not needed for now since no animated structure does this.
+	// Update light position of lamp
+	if (lib_lamp_offset[0] || lib_lamp_offset[1])
+	{
+		if (!lamp.LightOffset) lamp.LightOffset = [0,0];
+		lamp.LightOffset[0] += lib_lamp_offset[0];
+		lamp.LightOffset[1] += lib_lamp_offset[1];
+	}
 	lib_lamp_lamp = lamp;
 	return true;
 }
@@ -64,6 +71,11 @@ public func LampDeparture(object lamp)
 {
 	if (lamp != lib_lamp_lamp || !lib_lamp_overlay) return;
 	SetGraphics(nil, nil, lib_lamp_overlay);
+	if (lamp.LightOffset)
+	{
+		lamp.LightOffset[0] -= lib_lamp_offset[0];
+		lamp.LightOffset[1] -= lib_lamp_offset[1];
+	}
 	lib_lamp_lamp = nil;
 	lib_lamp_overlay = nil;
 }
