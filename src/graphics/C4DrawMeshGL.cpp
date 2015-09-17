@@ -416,13 +416,13 @@ namespace
 		// Dynamic light
 		if(pFoW != NULL)
 		{
-			call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
+			call.AllocTexUnit(C4SSU_LightTex);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
 			float lightTransform[6];
 			pFoW->GetFragTransform(clipRect, outRect, lightTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
-			call.AllocTexUnit(C4SSU_AmbientTex, GL_TEXTURE_2D);
+			call.AllocTexUnit(C4SSU_AmbientTex);
 			glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
 			call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
 			float ambientTransform[6];
@@ -627,7 +627,7 @@ namespace
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
 				if (texunit.HasTexture())
 				{
-					call.AllocTexUnit(-1, GL_TEXTURE_2D);
+					call.AllocTexUnit(-1);
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
 					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName);
 

@@ -179,10 +179,9 @@ private:
 	bool fStarted;
 	const C4Shader *pShader;
 	int iUnits;
-	GLenum hUnit[C4ShaderCall_MaxUnits];
 
 public:
-	GLint AllocTexUnit(int iUniform, GLenum iType);
+	GLint AllocTexUnit(int iUniform);
 
 	// Setting uniforms... Lots of code duplication here, not quite sure whether
 	// something could be done about it.

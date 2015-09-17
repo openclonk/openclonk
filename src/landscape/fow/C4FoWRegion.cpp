@@ -199,7 +199,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		// Copy using shader
 		C4ShaderCall Call(pShader);
 		Call.Start();
-		if (Call.AllocTexUnit(0, GL_TEXTURE_2D))
+		if (Call.AllocTexUnit(0))
 			glBindTexture(GL_TEXTURE_2D, getBackSurface()->textures[0].texName);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly

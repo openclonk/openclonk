@@ -542,7 +542,7 @@ int C4Shader::GetObjectStatus(GLhandleARB hObj, GLenum type)
 bool C4Shader::IsLogging() { return Config.Graphics.DebugOpenGL != 0 || !!Application.isEditor; }
 
 #ifndef USE_CONSOLE
-GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
+GLint C4ShaderCall::AllocTexUnit(int iUniform)
 {
 	// Want to bind uniform automatically? If not, the caller will take
 	// care of it.
@@ -560,8 +560,6 @@ GLint C4ShaderCall::AllocTexUnit(int iUniform, GLenum iType)
 	// Activate the texture
 	GLint hTex = GL_TEXTURE0 + iUnits;
 	glActiveTexture(hTex);
-	hUnit[iUnits] = iType;
-	glEnable(iType);
 	iUnits++;
 	return hTex;
 }
@@ -583,12 +581,6 @@ void C4ShaderCall::Finish()
 		glUseProgramObjectARB(0);
 	}
 
-	// Deactivate all texture units
-	for (int i = iUnits; i > 0; i--)
-	{
-		glActiveTexture(GL_TEXTURE0 + i - 1);
-		glDisable(hUnit[i - 1]);
-	}
 	iUnits = 0;
 	fStarted = false;
 }

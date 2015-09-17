@@ -918,7 +918,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		GLint iLandscapeUnits[C4LR_SurfaceCount];
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
 		{
-			iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1, GL_TEXTURE_2D) - GL_TEXTURE0;
+			iLandscapeUnits[i] = ShaderCall.AllocTexUnit(-1) - GL_TEXTURE0;
 			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->textures[0].texName);
 			if (pGL->Zoom != 1.0)
 			{
@@ -933,23 +933,23 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		}
 		ShaderCall.SetUniform1iv(C4LRU_LandscapeTex, C4LR_SurfaceCount, iLandscapeUnits);
 	}
-	if(Light && ShaderCall.AllocTexUnit(C4LRU_LightTex, GL_TEXTURE_2D))
+	if(Light && ShaderCall.AllocTexUnit(C4LRU_LightTex))
 	{
 		glBindTexture(GL_TEXTURE_2D, Light->getSurface()->textures[0].texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(Light && ShaderCall.AllocTexUnit(C4LRU_AmbientTex, GL_TEXTURE_2D))
+	if(Light && ShaderCall.AllocTexUnit(C4LRU_AmbientTex))
 	{
 		glBindTexture(GL_TEXTURE_2D, Light->getFoW()->Ambient.Tex);
 	}
-	if(ShaderCall.AllocTexUnit(C4LRU_ScalerTex, GL_TEXTURE_2D))
+	if(ShaderCall.AllocTexUnit(C4LRU_ScalerTex))
 	{
 		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->textures[0].texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(ShaderCall.AllocTexUnit(C4LRU_MaterialTex, GL_TEXTURE_3D))
+	if(ShaderCall.AllocTexUnit(C4LRU_MaterialTex))
 	{
         // Decide which mip-map level to use
 		double z = 0.5; int iMM = 0;
@@ -959,7 +959,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(ShaderCall.AllocTexUnit(C4LRU_MatMapTex, GL_TEXTURE_1D))
+	if(ShaderCall.AllocTexUnit(C4LRU_MatMapTex))
 	{
 		GLubyte MatMap[256];
 		BuildMatMap(NULL, MatMap);

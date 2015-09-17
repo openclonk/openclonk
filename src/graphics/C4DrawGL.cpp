@@ -420,13 +420,13 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	if(baseTex != 0)
 	{
-		call.AllocTexUnit(C4SSU_BaseTex, GL_TEXTURE_2D);
+		call.AllocTexUnit(C4SSU_BaseTex);
 		glBindTexture(GL_TEXTURE_2D, baseTex);
 	}
 
 	if(overlayTex != 0)
 	{
-		call.AllocTexUnit(C4SSU_OverlayTex, GL_TEXTURE_2D);
+		call.AllocTexUnit(C4SSU_OverlayTex);
 		glBindTexture(GL_TEXTURE_2D, overlayTex);
 
 		const float fOverlayModClr[4] = {
@@ -441,7 +441,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	if(pFoW != NULL && normalTex != 0)
 	{
-		call.AllocTexUnit(C4SSU_NormalTex, GL_TEXTURE_2D);
+		call.AllocTexUnit(C4SSU_NormalTex);
 		glBindTexture(GL_TEXTURE_2D, normalTex);
 	}
 
@@ -452,7 +452,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		const FLOAT_RECT vpRect = pFoW->getViewportRegion();
 
 		// Dynamic Light
-		call.AllocTexUnit(C4SSU_LightTex, GL_TEXTURE_2D);
+		call.AllocTexUnit(C4SSU_LightTex);
 		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
 
 		float lightTransform[6];
@@ -460,7 +460,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);
 
 		// Ambient Light
-		call.AllocTexUnit(C4SSU_AmbientTex, GL_TEXTURE_2D);
+		call.AllocTexUnit(C4SSU_AmbientTex);
 		glBindTexture(GL_TEXTURE_2D, pFoW->getFoW()->Ambient.Tex);
 		call.SetUniform1f(C4SSU_AmbientBrightness, pFoW->getFoW()->Ambient.GetBrightness());
 

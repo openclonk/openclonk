@@ -1164,7 +1164,7 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	// allocate texture unit for particle texture, and remember allocated
 	// texture unit. Will be used for each particle chunk to bind
 	// their texture to this unit.
-	const GLint texUnit = call.AllocTexUnit(C4SSU_BaseTex, GL_TEXTURE_2D);
+	const GLint texUnit = call.AllocTexUnit(C4SSU_BaseTex);
 	// Texture coordinates are always associated to texture unit 0, since
 	// there is only one set of texture coordinates
 	glClientActiveTexture(GL_TEXTURE0);
