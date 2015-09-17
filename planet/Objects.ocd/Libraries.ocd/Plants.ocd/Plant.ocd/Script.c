@@ -11,18 +11,12 @@ public func IsPlant()
 	return true;
 }
 
-// This is a plant and not a tree
-public func IsTree()
-{
-	return false;
-}
-
 /** Automated positioning via RootSurface, make sure to call this if needed (in case Construction is overloaded)
 */
 protected func Construction()
 {
 	Schedule(this, "RootSurface()", 1);
-	AddTimer("Seed", 72);
+	AddTimer("Seed", 72 + Random(10));
 	_inherited(...);
 }
 
