@@ -3,7 +3,7 @@
 // Input textures
 uniform sampler2D landscapeTex[2];
 uniform sampler2D scalerTex;
-uniform sampler3D materialTex;
+uniform sampler2DArray materialTex;
 
 // Resolution of the landscape texture
 uniform vec2 resolution;
@@ -16,7 +16,7 @@ uniform sampler1D matMapTex;
 #else
 uniform float matMap[256];
 #endif
-uniform int materialDepth;
+uniform float materialDepth;
 uniform vec2 materialSize;
 
 // Expected parameters for the scaler
@@ -35,9 +35,10 @@ float queryMatMap(int pix)
 {
 #ifndef NO_BROKEN_ARRAYS_WORKAROUND
 	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
-	return float(idx) / 256.0 + 0.5 / float(materialDepth);
+	return (float(idx) / 256.0 + 0.0 / materialDepth) * materialDepth;
+	//return texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r;
 #else
-	return matMap[pix];
+	return matMap[pix] * materialDepth;
 #endif
 }
 
@@ -70,14 +71,14 @@ slice(material)
 
 	// Get material pixels
 	float materialIx = queryMatMap(f2i(landscapePx.r));
-	vec4 materialPx = texture3D(materialTex, vec3(materialCoo, materialIx));
-	vec4 normalPx = texture3D(materialTex, vec3(materialCoo, materialIx+0.5));
+	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
+	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5*materialDepth));
 
 	// Same for second pixel, but we'll simply use the first normal
 #ifdef OC_HAVE_2PX
 	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
-	vec4 materialPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2));
-	vec4 normalPx2 = texture3D(materialTex, vec3(materialCoo, materialIx2+0.5));
+	vec4 materialPx2 = texture(materialTex, vec3(materialCoo, materialIx2));
+	vec4 normalPx2 = texture(materialTex, vec3(materialCoo, materialIx2+0.5*materialDepth));
 #endif
 }
 
