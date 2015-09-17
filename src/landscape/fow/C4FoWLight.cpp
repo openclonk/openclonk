@@ -96,8 +96,16 @@ void C4FoWLight::SetColor(uint32_t iValue)
 
 void C4FoWLight::Update(C4Rect Rec)
 {
-	// Update position from object. Clear if we moved in any way
+	// Update position from object.
 	int32_t iNX = fixtoi(pObj->fix_x), iNY = fixtoi(pObj->fix_y);
+	// position may be affected by LightOffset property
+	C4ValueArray *light_offset = pObj->GetPropertyArray(P_LightOffset);
+	if (light_offset)
+	{
+		iNX += light_offset->GetItem(0).getInt();
+		iNY += light_offset->GetItem(1).getInt();
+	}
+	// Clear if we moved in any way
 	if (iNX != iX || iNY != iY)
 	{
 		for(size_t i = 0; i < sections.size(); ++i )

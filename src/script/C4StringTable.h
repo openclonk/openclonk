@@ -438,6 +438,7 @@ enum C4PropertyName
 	P_Equalizer_Mid2_Width,
 	P_Equalizer_High_Gain,
 	P_Equalizer_High_Cutoff,
+	P_LightOffset,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

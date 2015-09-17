@@ -236,6 +236,7 @@ C4StringTable::C4StringTable()
 	P[P_Equalizer_Mid2_Width] = "Equalizer_Mid2_Width";
 	P[P_Equalizer_High_Gain] = "Equalizer_High_Gain";
 	P[P_Equalizer_High_Cutoff] = "Equalizer_High_Cutoff";
+	P[P_LightOffset] = "LightOffset";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
