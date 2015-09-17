@@ -232,9 +232,13 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 				Log("   gl: Halp! Material texture is fragmented!");
 			else
 			{
-				// Size recheck
+				// Size recheck. It's fine if this texture's size is a divisor
+				// of the maximum texture size, because then we can just tile
+				// the smaller texture.
 				if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-					LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", Texture.getData(), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+					if (iTexWdt % pSurface->Wdt != 0 || iTexHgt % pSurface->Hgt != 0)
+						LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", Texture.getData(), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+
 				// Copy bytes
 				DWORD *texdata = reinterpret_cast<DWORD *>(p);
 				pSurface->Lock();
