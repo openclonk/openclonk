@@ -265,12 +265,10 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	while(glGetError()) {}
 	
 	// Alloc 2D texture array
-	//glEnable(GL_TEXTURE_2D_ARRAY);
 	glGenTextures(1, &hMaterialTexture);
 
 	// Generate textures
 	int iSizeSum = 0;
-	BYTE *pLastData = new BYTE [iSize / 4];
 
 	// Select texture
 	glBindTexture(GL_TEXTURE_2D_ARRAY, hMaterialTexture);
@@ -288,18 +286,11 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 				iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
 				pData);
 	   
-	// Exchange buffers
-	BYTE *tmp = pLastData;
-	pLastData = pData;
-	pData = tmp;
-
 	// Statistics
 	iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;
 	
 	// Dispose of data
 	delete [] pData;
-	delete [] pLastData;
-	//glDisable(GL_TEXTURE_3D);
 	
 	// Check whether we were successful
 	if(int err = glGetError())
