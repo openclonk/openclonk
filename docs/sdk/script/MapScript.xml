@@ -23,7 +23,7 @@ func InitializeMap(proplist map)
 	// Draw some resources into the ground
 	DrawWaterVeins(3, [0,map.Hgt/3,map.Wdt,map.Hgt*2/3]);
 	DrawCoal(6);
-	DrawSulphur(4);
+	DrawFirestone(4);
 	DrawRock(15);
 	DrawOre(4);
 	DrawGold(2*GetStartupPlayerCount()); // amount of gold depends on player count!
