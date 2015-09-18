@@ -96,7 +96,7 @@ protected func Hit(int dx, int dy)
 {
 	// Bounce: useful for spreading seeds further from parent tree.
 	if (dy > 1)
-		SetSpeed(dx, dy / -2, 100);
+		SetYDir(dy / -2, 100);
 		
 	StonyObjectHit(dx, dy);
 	return;
