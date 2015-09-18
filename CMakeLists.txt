@@ -823,6 +823,8 @@ include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 set(Boost_ADDITIONAL_VERSIONS
 	# FindBoost.cmake goes up to 1.56.0
+	"1.59.0" "1.59"
+	"1.58.0" "1.58"
 	"1.57.0" "1.57"
 	)
 find_package("Boost" 1.40.0 REQUIRED)
