@@ -331,7 +331,6 @@ public:
 		hbmExact(0)
 	{
 		pPreviewWindow = NULL;
-		toolsDlg->ModeBack = true;
 	}
 	
 	void LoadBitmaps(HINSTANCE instance)
@@ -375,6 +374,7 @@ public:
 
 	void Default()
 	{
+		GetOwner()->ModeBack = true;
 	}
 
 };
