@@ -8,7 +8,6 @@ local grow_stage;
 private func SeedChance() { return 1000; }
 private func SeedOffset() { return 10; }
 
-private func IsCrop() { return true; }
 private func SickleHarvesting() { return false; }
 
 protected func Construction()
@@ -17,6 +16,8 @@ protected func Construction()
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
 	_inherited();
+
+	if(GetCon() < 100) SetCon(100);
 }
 
 protected func Initialize()

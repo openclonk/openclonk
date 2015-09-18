@@ -9,87 +9,34 @@
 #include Library_Crop
 
 private func SeedArea() { return 60; }
-private func SeedChance() {	return 250; }
+private func SeedChance() { return 250; }
 private func SeedAmount() { return 4; } // small seed area -> don't allow too many plants
 private func SeedOffset() { return 20; }
 
 protected func Construction()
 {
 	// Editable ActMap
-	ActMap = { Prototype = this.Prototype.ActMap };
+	//ActMap = { Prototype = this.Prototype.ActMap };
 	StartGrowth(this.growth);
+	AddTimer("WaterCheck", 70+Random(10));
 	return _inherited(...);
 }
 
+//****** TODO: Fix mesh animation to make this work
+
+/*
 protected func Initialize()
 {
 	SetAction("Swing");
-
-	AddEffect("WaterCheck", this, 2, 70, this);
 	AddEffect("WindCheck", this, 3, 350, this);
 }
 
-/* Absorb water to grow faster */
+*/
 
-protected func FxWaterCheckTimer(object obj, effect)
-{
-	// Fully grown
-	if (GetCon() == 100) return -1;
-	// Submerged
-	if (InLiquid())
-	{
-		var degrowth = true;
-		// Ignore minimum amount of water if small
-		if (GetCon() < 20)
-			if (!GBackLiquid(0,-5))
-				degrowth = false;
-		if (degrowth)
-		{
-			var grow_effect = GetEffect("IntGrowth", this);
-			if (!grow_effect) { grow_effect = StartGrowth(this.degrowth); return; }
-			if (grow_effect.growth == this.degrowth) return;
-			grow_effect.growth = this.degrowth;
-			return;
-		}
-	}
-	// Decrease water amount
-	if (effect.water)
-		effect.water--;
-	// Search for water
-	var water = 0;
-	for (var i = 0; i < GetObjWidth()+1; i++)
-	{
-		var y = (GetObjHeight()/2)+1;
-		var x = i-(GetObjWidth()/2);
-		if (!GBackSolid(x,y)) continue;
-		while(GBackSolid(x,y) && y) --y;
-		if (!y) continue;
-		if (MaterialName(GetMaterial(x,y)) == "Water")
-			if (ExtractLiquid(x,y))
-				water++;
-		if (water == 5) // maximum amount of water extracted in one check
-			break;
-	}
-	// Fasten growth if needed
-	effect.water += water;
-	if (effect.water)
-	{
-		var grow_effect = GetEffect("IntGrowth", this);
-		if (!grow_effect) { grow_effect = StartGrowth(this.fastgrowth); return; }
-		if (grow_effect.growth == this.fastgrowth) return;
-		grow_effect.growth = this.fastgrowth;
-	}
-	else
-	{
-		var grow_effect = GetEffect("IntGrowth", this);
-		if (!grow_effect) { grow_effect = StartGrowth(this.growth); return; }
-		if (grow_effect.growth == this.growth) return;
-		grow_effect.growth = this.growth;
-	}
-}
 
 /* Check the wind to adjust the swinging speed of the stalks */
 
+/*
 protected func FxWindCheckStart(object obj, effect)
 {
 	if (Abs(GetWind()) < 25) effect.speed = 0;
@@ -134,17 +81,15 @@ public func SetSwingSpeed(int delay)
 	SetPhase(phase);
 }
 
-/* Callbacks */
-
-public func IsCrop() { return true; }
+*/
 
 local Name = "$Name$";
 local Description = "$Description$";
-local Collectible = 0;
 local growth = 3;
 local degrowth = -6;
 local fastgrowth = 9;
 
+/*
 local ActMap = {
 		Swing = {
 			Prototype = Action,
@@ -176,3 +121,4 @@ local ActMap = {
 			NextAction = "Swing"
 		}
 };
+*/
