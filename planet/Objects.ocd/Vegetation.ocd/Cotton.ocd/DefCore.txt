@@ -1,0 +1,15 @@
+[DefCore]
+id=Cotton
+Version=6,1
+Category=C4D_StaticBack
+Width=20
+Height=36
+Offset=-10,-18
+Vertices=2
+VertexX=0,0
+VertexY=17,19
+VertexCNAT=16,8
+VertexFriction=10,100
+Mass=6
+StretchGrowth=4
+Oversize=1

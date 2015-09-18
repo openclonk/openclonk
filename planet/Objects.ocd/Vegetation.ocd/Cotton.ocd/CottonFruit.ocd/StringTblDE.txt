@@ -1,0 +1,2 @@
+Name=Baumwollfrucht
+Description=Ein gasgefüllter Ballon, der die begehrte Wolle birgt. Beim Treffer von einer Waffe platzt der Ballon.

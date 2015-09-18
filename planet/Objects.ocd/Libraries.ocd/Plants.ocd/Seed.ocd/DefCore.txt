@@ -1,0 +1,4 @@
+[DefCore]
+id=Library_Seed
+Version=6,1
+Category=C4D_StaticBack

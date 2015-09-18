@@ -1,0 +1,24 @@
+material cotton_seed
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			depth_check on
+
+			ambient 1.0 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0 12.5
+			emissive 0.0 0.0 0.0 1.0
+
+			texture_unit
+			{
+				texture cotton_seed.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

@@ -1,0 +1,2 @@
+Name=Cotton fruit
+Description=A gas filled balloon that holds the precious cotton. Strike with any weapon to let it pop.

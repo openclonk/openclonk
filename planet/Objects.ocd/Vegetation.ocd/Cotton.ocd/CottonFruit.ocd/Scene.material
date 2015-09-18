@@ -1,0 +1,42 @@
+material Cotton_Fruit
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			scene_blend alpha_blend
+			depth_check on
+			alpha_rejection greater_equal 128
+
+			ambient 1.0 1.0 1.0 1.0
+			diffuse 1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0 12.5
+			emissive 0.0 0.0 0.0 1.0
+
+			texture_unit
+			{
+				texture cottonfruit_growing.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material Cotton_Fruit_Ripe: Cotton_Fruit
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit
+			{
+				texture cottonfruit.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

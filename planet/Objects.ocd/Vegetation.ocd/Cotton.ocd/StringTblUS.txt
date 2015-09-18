@@ -1,0 +1,2 @@
+Name=Cotton
+Description=A fruit bearing plant. The fruit contain wool that may be used to produce cloth.

@@ -1,0 +1,2 @@
+TxtBadGround=Can't plant %s here!
+UsageHelp=Press [Use] to plant.

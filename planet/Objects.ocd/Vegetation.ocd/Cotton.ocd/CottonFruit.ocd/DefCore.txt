@@ -1,0 +1,11 @@
+[DefCore]
+id=Cotton_Fruit
+Version=6,1
+Width=11
+Height=11
+Offset=-5,-5
+Vertices=3
+VertexX=0,3,-3
+VertexY=4,-4,-4
+VertexFriction=10,10,10
+BorderBound=1

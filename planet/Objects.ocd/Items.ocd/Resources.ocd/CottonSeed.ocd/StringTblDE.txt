@@ -1,0 +1,4 @@
+Name=Baumwollsamen
+Description=Baumwollsamen können angepflanzt oder zu Stoff verarbeitet werden.
+UsageHelp=Drücke [Benutzen] um hier eine Baumwollpflanze anzupflanzen.
+NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!
