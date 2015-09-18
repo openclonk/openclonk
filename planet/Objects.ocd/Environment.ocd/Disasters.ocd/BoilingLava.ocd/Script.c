@@ -66,8 +66,9 @@ public func SetIntensity(int intensity)
 }
 
 // Save the intensity IFF it is different from the definition's.
-public func SaveScenarioObject(props)
+public func SaveScenarioObject(props, ...)
 {
+	if (!_inherited(props, ...)) return false;
 	if (this.intensity != GetDefaultIntensity())
 		props->AddCall("Intensity", this, "SetIntensity", this.intensity);
 	return true;
