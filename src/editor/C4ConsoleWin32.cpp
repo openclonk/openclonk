@@ -821,7 +821,8 @@ void C4ConsoleGUI::ClearViewportMenu()
 
 void C4ConsoleGUI::ToolsDlgClose()
 {
-	::ClearDlg(Console.ToolsDlg.state->hDialog);
+	if (Console.ToolsDlg.state)
+		Console.ToolsDlg.state->Clear();
 }
 
 bool C4ConsoleGUI::PropertyDlgOpen()
