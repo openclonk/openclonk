@@ -275,18 +275,21 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 
 CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
-	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
 
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
 	bool first_ctx = !pMainCtx;
-	if (first_ctx) pMainCtx = pCtx;
+	if (first_ctx)
+	{
+		pMainCtx = pCtx;
+		Log("  gl: Create first context...");
+	}
 	bool success = pCtx->Init(pWindow, pApp);
 	if (Config.Graphics.DebugOpenGL && glDebugMessageCallbackARB)
 	{
-		DebugLog("  gl: Setting OpenGLDebugProc callback");
+		if (first_ctx) Log("  gl: Setting OpenGLDebugProc callback");
 		glDebugMessageCallbackARB(&OpenGLDebugProc, nullptr);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 #ifdef GL_KHR_debug
