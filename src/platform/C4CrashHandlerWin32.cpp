@@ -30,8 +30,10 @@
 #include <tlhelp32.h>
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#else
-
+#endif
+#include <assert.h>
+#if defined(__CRT_WIDE) || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#define USE_WIDE_ASSERT
 #endif
 
 static bool FirstCrash = true;
@@ -162,7 +164,7 @@ namespace {
 				LOG_STATIC_TEXT("Additional information for the exception was not provided.\n");
 				break;
 			}
-#ifdef __CRT_WIDE
+#ifdef USE_WIDE_ASSERT
 #	define ASSERTION_INFO_FORMAT "%ls"
 #	define ASSERTION_INFO_TYPE wchar_t *
 #else
@@ -470,7 +472,7 @@ namespace {
 	// replaces the trampoline with the original prologue, and calls the handler.
 	// If the standard handler returns control to assertion_handler(), it will then
 	// restore the hook.
-#ifdef __CRT_WIDE
+#ifdef USE_WIDE_ASSERT
 	typedef void (__cdecl *ASSERT_FUNC)(const wchar_t *, const wchar_t *, unsigned);
 	const ASSERT_FUNC assert_func = 
 		&_wassert;
@@ -525,7 +527,7 @@ namespace {
 
 	struct dump_thread_t {
 		HANDLE thread;
-#ifdef __CRT_WIDE
+#ifdef USE_WIDE_ASSERT
 		const wchar_t
 #else
 		const char
@@ -584,7 +586,7 @@ namespace {
 	}
 
 	// Replacement assertion handler
-#ifdef __CRT_WIDE
+#ifdef USE_WIDE_ASSERT
 	void __cdecl assertion_handler(const wchar_t *expression, const wchar_t *file, unsigned line)
 #else
 	void __cdecl assertion_handler(const char *expression, const char *file, int line)
