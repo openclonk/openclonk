@@ -39,7 +39,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	clonk->UpdateAttach();
 
 	// Search for harvestable plants
-	var crop = FindObject(Find_InRect(AbsX(clonk->GetX()-8), AbsY(clonk->GetY()-10), 16,20), Find_Func("IsHarvestable"), Find_Func("SickleHarvesting"));
+	var crop = FindObject(Find_InRect(AbsX(clonk->GetX()-8), AbsY(clonk->GetY()-10), 16,20), Find_NoContainer(), Find_Func("SickleHarvesting"), Find_Func("IsHarvestable"));
 	if (crop)
 		crop->Harvest();
 
