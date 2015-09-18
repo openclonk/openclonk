@@ -76,8 +76,30 @@ void C4ToolsDlg::SetTexture(const char *szTexture)
 		Console.ToolsDlgSelectTexture(this, szTexture);
 		return;
 	}
+
 	SCopy(szTexture,Texture,C4M_MaxName);
 	NeedPreviewUpdate();
+
+	// If the front texture changes, reset the background texture
+	// to something sensible.
+	int32_t mat = MaterialMap.Get(Material);
+	if (mat != MNone)
+	{
+		const C4Material* material = &MaterialMap.Map[mat];
+		if(DensitySemiSolid(material->Density))
+		{
+			if (!SEqual(BackMaterial, C4TLS_MatSky))
+			{
+				SelectBackMaterial("Tunnel");
+				SelectBackTexture("tunnel");
+			}
+		}
+		else
+		{
+			SelectBackMaterial(Material);
+			SelectBackTexture(Texture);
+		}
+	}
 }
 
 void C4ToolsDlg::SetBackMaterial(const char *szMaterial)
@@ -101,6 +123,7 @@ void C4ToolsDlg::SetBackTexture(const char *szTexture)
 		Console.ToolsDlgSelectBackTexture(this, szTexture);
 		return;
 	}
+
 	SCopy(szTexture,BackTexture,C4M_MaxName);
 }
 
