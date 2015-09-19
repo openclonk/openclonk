@@ -1163,7 +1163,9 @@ if(UNIX AND NOT APPLE)
 		target_link_libraries(mape rt)
 	endif()
 endif()
-set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
+if (GLEW_FOUND)
+	set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS ${GLEW_DEFINITIONS})
+endif()
 if(NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.10")
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
@@ -1350,17 +1352,17 @@ endif()
 
 if(NOT USE_CONSOLE)
 	find_package(OpenGL)
-	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
-	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
+	find_package(GLEW REQUIRED)
 	target_link_libraries(openclonk
 		${GLEW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
-	include_directories(${GLEW_INCLUDE_DIR})
+	include_directories(${GLEW_INCLUDE_DIRS})
+	add_definitions(${GLEW_DEFINITIONS})
 	# On some platforms, GLEW declares the userParam parameter of
 	# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
 	# Test which one works here.
-	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIR}")
+	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
 	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 endif()
 if(USE_GTK)
