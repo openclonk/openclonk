@@ -25,10 +25,6 @@ protected func Initialize()
 	lib_structure.repair_materials = [];
 	// Total value of the components - used to calculate the required material for repairing.
 	lib_structure.total_component_value = nil;
-	// Add energy bars if the rule is active.
-	if (FindObject(Find_ID(Rule_StructureHPBars)))
-		if (this.HitPoints != nil)
-			AddEnergyBar();
 	return _inherited(...);
 }
 
