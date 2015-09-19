@@ -25,8 +25,6 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
-// const float texScale[256]; Initialized by the engine
-
 // Parameters
 
 // how much % the normals from the normal map are added up to the landscape normal. The higher the strength, the more
@@ -72,17 +70,15 @@ slice(material)
 {
 
 	// Get material pixels
-	int materialIxInt = f2i(landscapePx.r);
-	float materialIx = queryMatMap(materialIxInt);
-	vec4 materialPx = texture(materialTex, vec3(materialCoo * texScale[materialIxInt], materialIx));
-	vec4 normalPx = texture(materialTex, vec3(materialCoo * texScale[materialIxInt], materialIx+0.5*materialDepth));
+	float materialIx = queryMatMap(f2i(landscapePx.r));
+	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
+	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5*materialDepth));
 
 	// Same for second pixel, but we'll simply use the first normal
 #ifdef OC_HAVE_2PX
-	int materialIxInt2 = f2i(landscapePx2.r);
-	float materialIx2 = queryMatMap(materialIxInt2);
-	vec4 materialPx2 = texture(materialTex, vec3(materialCoo * texScale[materialIxInt2], materialIx2));
-	vec4 normalPx2 = texture(materialTex, vec3(materialCoo * texScale[materialIxInt2], materialIx2+0.5*materialDepth));
+	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
+	vec4 materialPx2 = texture(materialTex, vec3(materialCoo, materialIx2));
+	vec4 normalPx2 = texture(materialTex, vec3(materialCoo, materialIx2+0.5*materialDepth));
 #endif
 }
 

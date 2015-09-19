@@ -112,12 +112,9 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 			// get texture map entry for pixel
 			const C4TexMapEntry *pTex = pTexs->GetEntry(PixCol2Tex(pix));
 			assert(pTex);
-			const C4Material *pMat = pTex->GetMaterial();
-			float scale = 1.0f;
-			if (pMat) scale = 512.0f / pMat->Scale;
 			// get texture contents
 			DWORD dwBackClr = 0u;
-			if (pTex) dwBackClr = pTex->GetPattern().PatternClr(static_cast<unsigned int>(iX * scale + 0.5), static_cast<unsigned int>(iY * scale + 0.5));
+			if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
 			// get density of surrounding materials
 			int iCompareDens = AboveDensity / 8;
 			if (iOwnDens > iCompareDens)
@@ -138,10 +135,6 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 		}
 	}
 	Surface32->Unlock();
-}
-
-void C4LandscapeRenderClassic::HandleTexMapUpdate()
-{
 }
 
 void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light)
