@@ -176,9 +176,11 @@ private func MoveCloud()
 {
 	// Get wind speed from various locations of the cloud.
 	var con = GetCon();
-	var wdt = GetDefWidth() * con / 250;
-	var hgt = GetDefHeight() * con / 350;
-	var wind = (GetWind() + GetWind(wdt, hgt) + GetWind(wdt, -hgt) + GetWind(-wdt, -hgt) + GetWind(-wdt, hgt) + GetWind(nil, nil, true)) / 6;
+	var wdt = GetDefWidth() * con / 100;
+	var hgt = GetDefHeight() * con / 100;
+	var xoff = wdt * 10 / 25;
+	var yoff = hgt * 10 / 35;
+	var wind = (GetWind() + GetWind(xoff, yoff) + GetWind(xoff, -yoff) + GetWind(-xoff, -yoff) + GetWind(-xoff, yoff) + GetWind(nil, nil, true)) / 6;
 	
 	// Move according to wind.
 	if (Abs(wind) < 7)
@@ -187,10 +189,10 @@ private func MoveCloud()
 		SetXDir(wind * 10, 1000);
 		
 	// Loop clouds around the map.
-	if (GetX() >= LandscapeWidth() - 10) 
-		SetPosition(12, GetY());
-	if (GetX() <= 10) 
-		SetPosition(LandscapeWidth()-12, GetY());
+	if (GetX() >= LandscapeWidth() + wdt/2 - 10) 
+		SetPosition(12 - wdt/2, GetY());
+	else if (GetX() <= 10 - wdt/2) 
+		SetPosition(LandscapeWidth() + wdt/2 - 12, GetY());
 		
 	// Some other safety.
 	if (GetY() <= 5) 
