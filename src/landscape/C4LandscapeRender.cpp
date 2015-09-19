@@ -51,7 +51,8 @@ const int C4LR_BiasDistanceY = 7;
 // Name used for the seperator texture
 const char *const SEPERATOR_TEXTURE = "--SEP--";
 
-C4LandscapeRenderGL::C4LandscapeRenderGL()
+C4LandscapeRenderGL::C4LandscapeRenderGL() :
+	pGroupSet(NULL)
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
 	hMaterialTexture = 0;
@@ -70,6 +71,7 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	this->iWidth = iWidth;
 	this->iHeight = iHeight;
 	this->pTexs = pTexs;
+	this->pGroupSet = pGraphics;
 
 	// Allocate landscape textures
 	if (!InitLandscapeTexture())
@@ -121,6 +123,14 @@ bool C4LandscapeRenderGL::ReInit(int32_t iWidth, int32_t iHeight)
 		LogFatal("[!] Could not initialize landscape texture!");
 		return false;
 	}
+
+	// Re-load shader to account for different mat-tex indices
+	if (!LoadShaders(pGroupSet))
+	{
+		LogFatal("[!] Could not initialize landscape shader!");
+		return false;
+	}
+
 	return true;
 }
 
@@ -135,8 +145,11 @@ void C4LandscapeRenderGL::Clear()
 		delete Surfaces[i];
 		Surfaces[i] = NULL;
 	}
+
 	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
 	hMaterialTexture = 0;
+
+	pGroupSet = NULL;
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -427,6 +440,12 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		Surfaces[i]->Unlock();
 }
 
+void C4LandscapeRenderGL::HandleTexMapUpdate()
+{
+	// Re-initialize shaders
+	LoadShaders(pGroupSet);
+}
+
 /** Returns the data used for the scaler shader for the given pixel. It is a 8-bit bitmask. The bits stand for the 8
     neighbouring pixels in this order:
 	  1 2 3
@@ -496,6 +515,25 @@ const char *C4LandscapeRenderGL::UniformNames[C4LRU_Count+1];
 
 bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, const char* name, int ssc)
 {
+	// Generate texture scaling constants
+	StdStrBuf texScaleConst;
+	texScaleConst.Append("const float texScale[256] = float[256](");
+	for (int i = 0; i < 256; ++i)
+	{
+		if (i != 0) texScaleConst.Append(",");
+		float scale = 1.0f;
+		const C4TexMapEntry* entry = pTexs->GetEntry(i);
+		if (entry != NULL)
+		{
+			const C4Material* material = entry->GetMaterial();
+			if (material != NULL)
+				scale = 512.0f / material->Scale;
+		}
+
+		texScaleConst.AppendFormat("%g", scale);
+	}
+	texScaleConst.Append(");");
+
 	// Create vertex shader (hard-coded)
 	shader.AddVertexDefaults();
 	hLandscapeTexCoord = shader.AddTexCoord("landscapeCoord");
@@ -504,6 +542,7 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	// Then load slices for fragment shader
 	shader.AddFragmentSlice(-1, "#define OPENCLONK");
 	shader.AddFragmentSlice(-1, "#define OC_LANDSCAPE");
+	shader.AddFragmentSlice(-1, texScaleConst.getData());
 	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT"); // sample light from light texture
 
 	shader.LoadSlices(pGroups, "UtilShader.glsl");

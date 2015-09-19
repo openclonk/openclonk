@@ -206,6 +206,11 @@
           <col>Bit mask for texture calculation on this material. Bit 0 (1): exact (no zoom), bit 1 (2): no texture, bit 2 (4): extra large zoom, bit 3 (8): calculate texture based on gray scale.</col>
         </row>
         <row>
+          <col>Scale</col>
+          <col>Integer</col>
+          <col>Zoom of the texture in 1/512 steps. Default value is 512, which means unzoomed.</col>
+        </row>
+        <row>
           <col>PXSGfx</col>
           <col>String (max. 30 chars)</col>
           <col>Graphics used for loose material pixels. This graphic should be available as material texture.</col>

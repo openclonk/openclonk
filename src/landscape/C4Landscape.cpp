@@ -3836,6 +3836,8 @@ void C4Landscape::HandleTexMapUpdate()
 	UpdatePixMaps();
 	// Update landscape palette
 	Mat2Pal();
+	// Propagate to renderer
+	if (pLandscapeRender) pLandscapeRender->HandleTexMapUpdate();
 }
 
 void C4Landscape::UpdatePixMaps()
