@@ -455,6 +455,16 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		}
 	}
 
+#ifdef _WIN32
+	// Clean up some forward/backward slach confusion since many internal OC file functions cannot handle both
+	SReplaceChar(Game.ScenarioFilename, AltDirectorySeparator, DirectorySeparator);
+	SReplaceChar(Game.PlayerFilenames, AltDirectorySeparator, DirectorySeparator);
+	SReplaceChar(Game.DefinitionFilenames, AltDirectorySeparator, DirectorySeparator);
+	Application.IncomingKeyfile.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+	Application.IncomingUpdate.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+	Game.RecordStream.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
+#endif
+
 	// Default to editor if scenario given, player mode otherwise
 	if (isEditor == 2)
 		isEditor = !!*Game.ScenarioFilename && !Config.General.OpenScenarioInGameMode;
