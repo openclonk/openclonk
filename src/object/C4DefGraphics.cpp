@@ -86,7 +86,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 	if (!szFilename) return false;
 	Type = TYPE_Bitmap; // will be reset to TYPE_None in Clear() if loading fails
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true))
+	if (!Bmp.Bitmap->Load(hGroup, szFilename, false, true, C4SF_MipMap))
 	{
 		Clear();
 		return false;
@@ -98,7 +98,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 		// Create additionmal bitmap
 		Bmp.BitmapClr=new C4Surface();
 		// if overlay-surface is present, load from that
-		if (szOverlay && Bmp.BitmapClr->Load(hGroup, szOverlay))
+		if (szOverlay && Bmp.BitmapClr->Load(hGroup, szOverlay, false, false, C4SF_MipMap))
 		{
 			// set as Clr-surface, also checking size
 			if (!Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap))
@@ -125,7 +125,7 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 	if (szNormal)
 	{
 		Bmp.BitmapNormal = new C4Surface();
-		if (Bmp.BitmapNormal->Load(hGroup, szNormal, false, true))
+		if (Bmp.BitmapNormal->Load(hGroup, szNormal, false, true, C4SF_MipMap))
 		{
 			// Normal map loaded. Sanity check and link.
 			if(Bmp.BitmapNormal->Wdt != Bmp.Bitmap->Wdt ||

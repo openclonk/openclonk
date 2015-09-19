@@ -77,7 +77,7 @@ public:
 	C4Surface &GetFace() { return Face; } // get internal face
 	bool CreateClrByOwner(C4Surface *pBySurface);
 	bool EnsureOwnSurface();
-	bool Load(C4Group &hGroup, const char *szName, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full, bool fOwnPal=false, bool fNoErrIfNotFound=false, bool fTileable=false);
+	bool Load(C4Group &hGroup, const char *szName, int iWdt, int iHgt, bool fNoErrIfNotFound, int iFlags);
 	bool Save(C4Group &hGroup, const char *szName);
 	void GrabFrom(C4FacetSurface &rSource)
 	{

@@ -475,7 +475,7 @@ void C4PortraitSelDlg::ListItem::Load()
 		GetParentPath(sFilename.getData(), &sParentPath);
 		bool fLoadError = true;
 		if (SrcGrp.Open(sParentPath.getData()))
-			if (fctLoadedImage.Load(SrcGrp, ::GetFilename(sFilename.getData())))
+			if (fctLoadedImage.Load(SrcGrp, ::GetFilename(sFilename.getData()), C4FCT_Full, C4FCT_Full, false, 0))
 			{
 				// image loaded. Can only be put into facet by main thread, because those operations aren't thread safe
 				fLoaded = true;

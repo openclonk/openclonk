@@ -30,7 +30,7 @@ bool C4AchievementGraphics::Init(C4Group &File)
 	while (File.FindNextEntry(C4CFN_Achievements, FileName))
 	{
 		C4FacetSurface *new_fct = new C4FacetSurface();
-		if (!new_fct->Load(File, FileName, C4FCT_Height, C4FCT_Full))
+		if (!new_fct->Load(File, FileName, C4FCT_Height, C4FCT_Full, false, 0))
 		{
 			delete new_fct;
 			LogF(LoadResStr("IDS_PRC_NOGFXFILE"), FileName, LoadResStr("IDS_ERR_NOFILE"));

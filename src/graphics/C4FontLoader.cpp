@@ -311,7 +311,7 @@ bool CStdFont::AddSurface()
 	psfcFontData = pNewSfcs;
 	C4Surface *sfcNew = psfcFontData[iNumFontSfcs] = new C4Surface();
 	++iNumFontSfcs;
-	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
+	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes,false,0,0)) return false;
 	// If old surface was locked, unlock it and lock the new one in its stead
 	if (sfcCurrent && sfcCurrent->IsLocked())
 	{

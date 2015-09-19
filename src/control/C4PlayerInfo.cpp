@@ -363,7 +363,7 @@ bool C4PlayerInfo::LoadBigIcon(C4FacetSurface &fctTarget)
 		if (Plr.Open(pRes ? pRes->getFile() : GetFilename()))
 			if (Plr.AccessEntry(C4CFN_BigIcon, &iBigIconSize))
 				if (iBigIconSize<=C4NetResMaxBigicon*1024)
-					if (fctTarget.Load(Plr, C4CFN_BigIcon))
+					if (fctTarget.Load(Plr, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, 0))
 						fSuccess = true;
 	return fSuccess;
 }

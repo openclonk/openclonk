@@ -128,7 +128,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	if (MinResX && MinResX>C4GUI::GetScreenWdt()) return false;
 	if (MinResY && MinResY>C4GUI::GetScreenHgt()) return false;
 	// load images
-	if (!fctBackgroundPicture.Load(hGroup, C4CFN_MapFolderBG))
+	if (!fctBackgroundPicture.Load(hGroup, C4CFN_MapFolderBG, C4FCT_Full, C4FCT_Full, false, 0))
 	{
 		DebugLogF("C4MapFolderData::Load(%s): Could not load background graphic \"%s\"", hGroup.GetName(), C4CFN_MapFolderBG);
 		return false;
@@ -160,12 +160,12 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 			continue;
 		}
 		// load images
-		if (pScen->sBaseImage.getLength()>0) if (!pScen->fctBase.Load(hGroup, pScen->sBaseImage.getData()))
+		if (pScen->sBaseImage.getLength()>0) if (!pScen->fctBase.Load(hGroup, pScen->sBaseImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
 				DebugLogF("C4MapFolderData::Load(%s): Could not load base graphic \"%s\"", hGroup.GetName(), pScen->sBaseImage.getData());
 				return false;
 			}
-		if (pScen->sOverlayImage.getLength()>0) if (!pScen->fctOverlay.Load(hGroup, pScen->sOverlayImage.getData()))
+		if (pScen->sOverlayImage.getLength()>0) if (!pScen->fctOverlay.Load(hGroup, pScen->sOverlayImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
 				DebugLogF("C4MapFolderData::Load(%s): Could not load graphic \"%s\"", hGroup.GetName(), pScen->sOverlayImage.getData());
 				return false;
@@ -174,7 +174,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	for (i=0; i<iAccessGfxCount; ++i)
 	{
 		AccessGfx *pGfx= ppAccessGfxList[i];
-		if (pGfx->sOverlayImage.getLength()>0) if (!pGfx->fctOverlay.Load(hGroup, pGfx->sOverlayImage.getData()))
+		if (pGfx->sOverlayImage.getLength()>0) if (!pGfx->fctOverlay.Load(hGroup, pGfx->sOverlayImage.getData(), C4FCT_Full, C4FCT_Full, false, 0))
 			{
 				DebugLogF("C4MapFolderData::Load(%s): Could not load graphic \"%s\"", hGroup.GetName(), pGfx->sOverlayImage.getData());
 				return false;
@@ -474,12 +474,12 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
 		// load entry icon
-		if (Group.FindEntry(C4CFN_IconPNG) && fctIcon.Load(Group, C4CFN_IconPNG))
+		if (Group.FindEntry(C4CFN_IconPNG) && fctIcon.Load(Group, C4CFN_IconPNG, C4FCT_Full, C4FCT_Full, false, 0))
 			fIconLoaded = true;
 		else
 		{
 			C4FacetSurface fctTemp;
-			if (Group.FindEntry(C4CFN_ScenarioIcon) && fctTemp.Load(Group, C4CFN_ScenarioIcon, C4FCT_Full, C4FCT_Full, true))
+			if (Group.FindEntry(C4CFN_ScenarioIcon) && fctTemp.Load(Group, C4CFN_ScenarioIcon, C4FCT_Full, C4FCT_Full, true, 0))
 			{
 				// old style icon: Blit it on a pieace of paper
 				fctTemp.Surface->Lock();

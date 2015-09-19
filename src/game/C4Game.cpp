@@ -1862,7 +1862,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	else if (!Application.isEditor && Application.Active)
 	{
 		C4Surface * sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
-		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt))) return false;
+		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt,0))) return false;
 
 		// Fullscreen
 		pDraw->Blit(FullScreen.pSurface,

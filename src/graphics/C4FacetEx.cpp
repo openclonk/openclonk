@@ -47,7 +47,7 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	Clear();
 	// Create surface
 	Face.Default();
-	if (!Face.Create(iWdt,iHgt)) return false;
+	if (!Face.Create(iWdt,iHgt,false,0,0)) return false;
 	// Set facet
 	if (iWdt2==C4FCT_Full) iWdt2=Face.Wdt; if (iWdt2==C4FCT_Height) iWdt2=Face.Hgt; if (iWdt2==C4FCT_Width) iWdt2=Face.Wdt;
 	if (iHgt2==C4FCT_Full) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Height) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Width) iHgt2=Face.Wdt;
@@ -66,7 +66,7 @@ bool C4FacetSurface::CreateClrByOwner(C4Surface *pBySurface)
 	return true;
 }
 
-bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHgt, bool fOwnPal, bool fNoErrIfNotFound, bool fTileable)
+bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHgt, bool fNoErrIfNotFound, int iFlags)
 {
 	Clear();
 	// Entry name
@@ -85,7 +85,7 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 		}
 	}
 	// Load surface
-	if (!Face.Load(hGroup,szFilename,fOwnPal,fNoErrIfNotFound, fTileable)) return false;
+	if (!Face.Load(hGroup,szFilename,false,fNoErrIfNotFound, iFlags)) return false;
 	// Set facet
 	if (iWdt==C4FCT_Full) iWdt=Face.Wdt; if (iWdt==C4FCT_Height) iWdt=Face.Hgt; if (iWdt==C4FCT_Width) iWdt=Face.Wdt;
 	if (iHgt==C4FCT_Full) iHgt=Face.Hgt; if (iHgt==C4FCT_Height) iHgt=Face.Hgt; if (iHgt==C4FCT_Width) iHgt=Face.Wdt;

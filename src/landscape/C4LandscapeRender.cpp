@@ -155,7 +155,7 @@ bool C4LandscapeRenderGL::InitLandscapeTexture()
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
 	{
 		Surfaces[i] = new C4Surface();
-		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt))
+		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt, false, 0, 0))
 			return false;
 	}
 
@@ -586,7 +586,7 @@ bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
 	C4Group *pGroup = pGroups->FindEntry(C4CFN_LandscapeScaler);
 	if(!pGroup) return false;
 	// Load scaler from group
-	if(!fctScaler.Load(*pGroup, C4CFN_LandscapeScaler))
+	if(!fctScaler.Load(*pGroup, C4CFN_LandscapeScaler, C4FCT_Full, C4FCT_Full, false, 0))
 		return false;
 	// Check size
 	const int iOrigWdt = 8 * 3, iOrigHgt = 4 * 8 * 3;

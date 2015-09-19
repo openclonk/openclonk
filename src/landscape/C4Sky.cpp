@@ -55,7 +55,7 @@ bool C4Sky::Init(bool fSavegame)
 
 	// Check for sky bitmap in scenario file
 	Surface = new C4Surface();
-	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, true);
+	bool loaded = !!Surface->LoadAny(Game.ScenarioFile,C4CFN_Sky,true,true, C4SF_Tileable | C4SF_MipMap);
 
 	// Else, evaluate scenario core landscape sky default list
 	if (!loaded)
@@ -70,10 +70,10 @@ bool C4Sky::Init(bool fSavegame)
 		if (*str && !SEqual(str,"Default"))
 		{
 			// Check for sky tile in scenario file
-			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true,true);
+			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true, C4SF_Tileable | C4SF_MipMap);
 			if (!loaded)
 			{
-				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true, false, true);
+				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true, false, C4SF_Tileable | C4SF_MipMap);
 			}
 		}
 	}

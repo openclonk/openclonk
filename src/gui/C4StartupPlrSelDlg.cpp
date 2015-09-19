@@ -182,7 +182,7 @@ void C4StartupPlrSelDlg::PlayerListItem::Load(const StdStrBuf &rsFilename)
 		throw LoadError(FormatString("Error loading player file from %s: Core data invalid or missing (Group: %s)!", rsFilename.getData(), PlrGroup.GetError()));
 	// load icon
 	C4FacetSurface fctIcon;
-	if (PlrGroup.FindEntry(C4CFN_BigIcon) && fctIcon.Load(PlrGroup, C4CFN_BigIcon))
+	if (PlrGroup.FindEntry(C4CFN_BigIcon) && fctIcon.Load(PlrGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, 0))
 		fHasCustomIcon = true;
 	else
 	{
@@ -1648,7 +1648,7 @@ void C4StartupPlrPropertiesDlg::SetNewPicture(const char *szFromFilename)
 		bool fSucc = false;
 		if (SrcGrp.Open(sParentPath.getData()))
 		{
-			if (sfcNewPic.Load(SrcGrp, GetFilename(szFromFilename)))
+			if (sfcNewPic.Load(SrcGrp, GetFilename(szFromFilename), false, false, 0))
 			{
 				fSucc = true;
 				if (!SetNewPicture(sfcNewPic, &fctNewBigIcon, C4MaxBigIconSize, true)) fSucc = false;
@@ -1690,7 +1690,7 @@ void C4StartupPlrPropertiesDlg::UpdateBigIcon()
 		{
 			if (PlrGroup.FindEntry(C4CFN_BigIcon))
 			{
-				if (fctOldBigIcon.Load(PlrGroup, C4CFN_BigIcon))
+				if (fctOldBigIcon.Load(PlrGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, 0))
 				{
 					pPictureBtn->SetFacet(fctOldBigIcon);
 					fHasIcon = true;

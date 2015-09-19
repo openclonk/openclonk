@@ -578,7 +578,7 @@ bool C4Draw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, floa
 	// Only direct rendering from single, tileable, texture
 	if (!sfcTarget->IsRenderTarget()) return false;
 	if (!sfcSurface->IsSingleSurface()) return false;
-	if (!sfcSurface->textures[0].fTileable) return false;
+	if ((sfcSurface->textures[0].iFlags & C4SF_Tileable) == 0) return false;
 
 	// source surface dimensions
 	const float sourceWdt = sfcSurface->Wdt;

@@ -1303,7 +1303,7 @@ void C4ToolsDlg::State::UpdatePreview()
 	iPrvWdt=64;
 	iPrvHgt=64;
 
-	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt,0))) return;
 
 	// fill bg
 	BYTE bCol = 0;

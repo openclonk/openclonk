@@ -33,7 +33,7 @@
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
-	return ::GraphicsResource.LoadFile(rToFct, szFilename, ::GraphicsResource.Files);
+	return ::GraphicsResource.LoadFile(rToFct, szFilename, ::GraphicsResource.Files, C4FCT_Full, C4FCT_Full, false, 0);
 }
 
 bool C4StartupGraphics::Init()

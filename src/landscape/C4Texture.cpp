@@ -358,9 +358,9 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 	{
 		// check if it already exists in the map
 		if (GetTexture(GetFilenameOnly(texname))) continue;
-		// create surface
+		// create surface (TODO: Why do we need this in video memory, except for PXS?)
 		ctex = new C4Surface();
-		if (ctex->Read(hGroup, GetExtension(texname), false))
+		if (ctex->Read(hGroup, GetExtension(texname), C4SF_MipMap))
 		{
 			SReplaceChar(texname,'.',0);
 			if (AddTexture(texname,ctex)) texnum++;

@@ -287,7 +287,7 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 	iPrvWdt = [ctrler(&Console).previewView frame].size.width;
 	iPrvHgt = [ctrler(&Console).previewView frame].size.height;
 
-	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return NULL;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt,0))) return NULL;
 
 	// fill bg
 	BYTE bCol = 0;

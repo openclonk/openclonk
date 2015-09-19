@@ -98,7 +98,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 
 	// load loader
 	fctBackground.GetFace().SetBackground();
-	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true)) return false;
+	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true,0)) return false;
 
 	// load info
 	if (szInfo) { delete [] szInfo; szInfo=NULL; }

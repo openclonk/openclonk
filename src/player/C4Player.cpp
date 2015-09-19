@@ -910,7 +910,7 @@ bool C4Player::Load(const char *szFilename, bool fSavegame)
 	if (!C4PlayerInfoCore::Load(hGroup))
 		{ hGroup.Close(); return false; }
 	// Load BigIcon
-	if (hGroup.FindEntry(C4CFN_BigIcon)) BigIcon.Load(hGroup, C4CFN_BigIcon);
+	if (hGroup.FindEntry(C4CFN_BigIcon)) BigIcon.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, 0);
 	// Load crew info list
 	CrewInfoList.Load(hGroup);
 	// Close group
