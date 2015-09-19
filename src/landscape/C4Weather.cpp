@@ -73,7 +73,7 @@ void C4Weather::Execute()
 	// Temperature
 	if (!::Game.iTick35)
 	{
-		int32_t iTemperature=Climate-(int32_t)(TemperatureRange*cos(6.28*(float)Season/100.0));
+		int32_t iTemperature = Climate - fixtoi(Cos(itofix(36 * Season, 10)), TemperatureRange);
 		if (Temperature<iTemperature) Temperature++;
 		else if (Temperature>iTemperature) Temperature--;
 	}
