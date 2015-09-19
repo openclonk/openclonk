@@ -584,7 +584,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	if (!Def->Rotateable) fix_r=Fix0;
 
 	// Out of bounds check
-	if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
+	if ((!Inside<int32_t>(GetX(),-Shape.Wdt/2,GBackWdt+Shape.Wdt/2) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()+Shape.Hgt/2>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
 	{
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
