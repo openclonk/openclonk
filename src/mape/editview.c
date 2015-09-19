@@ -68,13 +68,17 @@ static void mape_edit_view_set_filename(MapeEditView* view,
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(view->view) )
 	);
 
-	/* TODO: Verify that filename is absolute and make it absolute if
-	   it is not */
-	g_free(view->file_path);
-	if(filename != NULL)
-		view->file_path = g_strdup(filename);
-	else
-		view->file_path = NULL;
+	if (view->file_path != filename)
+	{
+		if(filename != NULL)
+		{
+			view->file_path = g_strdup(filename);
+		}
+		else
+		{
+			view->file_path = NULL;
+		}
+	}
 
 	if(filename != NULL)
 	{
