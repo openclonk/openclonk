@@ -27,7 +27,6 @@ protected func Initialize()
 	// Some rules.
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_BuyAtFlagpole);
-	CreateObject(Rule_StructureHPBars);
 	
 	// Rescale chasm exits.
 	var map_zoom = GetScenarioVal("MapZoom", "Landscape");
