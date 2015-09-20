@@ -970,7 +970,7 @@ void C4EditCursor::ApplyToolPicker()
 					if (Console.ToolsDlg.ModeBack)
 					{
 						const C4TexMapEntry *pBgTex = ::TextureMap.GetEntry(byIndexBkg);
-						if (pBgTex)
+						if (pBgTex && !pBgTex->isNull())
 						{
 							Console.ToolsDlg.SelectBackMaterial(pBgTex->GetMaterialName());
 							Console.ToolsDlg.SelectBackTexture(pBgTex->GetTextureName());
