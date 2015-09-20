@@ -39,7 +39,7 @@
               <rowh><col>Constant</col><col>Value</col><col>Description</col></rowh>
               <row><col>ANIM_Loop</col><col>0</col><col>Once end is reached the value is reset to begin so the cycle restarts.</col></row>
               <row><col>ANIM_Hold</col><col>1</col><col>Once end is reached the value remains constant.</col></row>
-              <row><col>ANIM_Remove</col><col>2</col><col>Once end is reached the corresponding animation is removed the same way as if <funclink>AnimationStop</funclink> were called to the exact point in time. For combination nodes the child node with the smaller weight is removed.</col></row>
+              <row><col>ANIM_Remove</col><col>2</col><col>Once end is reached the corresponding animation is removed the same way as if <funclink>StopAnimation</funclink> were called to the exact point in time. For combination nodes the child node with the smaller weight is removed.</col></row>
             </table>
           </desc>
         </param>
@@ -66,6 +66,7 @@ else
     </examples>
     <related>
       <funclink>PlayAnimation</funclink>
+      <funclink>StopAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
       <funclink>SetAnimationWeight</funclink>
       <funclink>Anim_Const</funclink>
