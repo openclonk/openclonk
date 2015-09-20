@@ -21,9 +21,11 @@ local lightning_chance; // chance of lightning strikes 0-100.
 local evap_x; // x coordinate for evaporation
 
 local rain; // Number of liquid pixels the cloud holds.
-local rain_mat; // Precipitation type from scenario or other. 
+local rain_mat; // Precipitation type from scenario or other. Material name of nil for no rain.
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
+local rain_mat_freeze_temp; // Freezing temperature of current rain material.
+local rain_mat_frozen; // Material currently frozen to.
 
 local cloud_shade; // Cloud shade.
 local cloud_alpha; // Cloud alpha.
@@ -103,6 +105,10 @@ public func SetPrecipitation(string mat, int amount)
 		rain_amount = amount;
 		// Also change rain content.
 		rain = BoundBy(amount * rain_max / 100, 0, 960); 
+		// Store snow/water conversion
+		rain_mat_freeze_temp = GetMaterialVal("BelowTempConvert", "Material", Material(rain_mat));
+		rain_mat_frozen = GetMaterialVal("BelowTempConvertTo", "Material", Material(rain_mat));
+		if (rain_mat_frozen == "Ice") rain_mat_frozen = "Snow";
 	}
 	return;
 }
@@ -153,11 +159,11 @@ protected func FxProcessCloudTimer()
 		mode_time = 480 + RandomX(-90, 90);
 	}
 	// Process modes.
-	if (mode == CLOUD_ModeIdle)
+	/*if (mode == CLOUD_ModeIdle)
 	{
-		/* Empty */
+		// Empty
 	}
-	else if (mode == CLOUD_ModeRaining)
+	else*/ if (mode == CLOUD_ModeRaining)
 	{	
 		Precipitation();
 		ThunderStrike();
@@ -207,11 +213,11 @@ private func MoveCloud()
 private func Precipitation()
 {
 	if (!rain_mat)
-		return;	
+		return;
 	// Precipitaion: water or snow.
 	if (rain > 0)
 	{
-		if (RainDrop(rain_mat));
+		if (RainDrop());
 			rain--;	
 	}	
 	// If out of liquids, skip mode.
@@ -221,7 +227,7 @@ private func Precipitation()
 }
 
 // Raindrop somewhere from the cloud.
-private func RainDrop(string mat)
+private func RainDrop()
 {
 	// Find Random Position.
 	var con = GetCon();
@@ -232,10 +238,11 @@ private func RainDrop(string mat)
 	if (!GBackSky(x, y))
 		return false;
 	// Check if liquid is maybe in frozen form.
-	var temp = GetTemperature();
-	var melt_temp = GetMaterialVal("BelowTempConvert", "Material", Material(mat));
-	if (melt_temp != nil && temp < melt_temp)
-		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));
+	var mat;
+	if (rain_mat_freeze_temp != nil && GetTemperature() < rain_mat_freeze_temp)
+		mat = rain_mat_frozen;
+	else
+		mat = rain_mat;
 	// Create rain drop.	
 	CastPXS(mat, 1, 1, x, y);
 	return true;
@@ -337,7 +344,7 @@ func SaveScenarioObject(props)
 	if (GetComDir() == COMD_None) props->Remove("ComDir");
 	props->Remove("Con");
 	props->Remove("ClrModulation");
-	if (rain_mat) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", rain_mat), rain_amount);
+	if (rain_mat != nil) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", MaterialName(rain_mat)), rain_amount);
 	if (lightning_chance) props->AddCall("Lightning", this, "SetLightning", lightning_chance);
 	if (rain) props->AddCall("Rain", this, "SetRain", rain);
 	return true;
