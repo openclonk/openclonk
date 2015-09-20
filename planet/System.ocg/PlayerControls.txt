@@ -179,6 +179,9 @@
 	[ControlDef]
 	Identifier=PickUpNext_Stop
 	
+	[ControlDef]
+	Identifier=PickUpNext_All
+	
 	# Hotkeys (Inventory)
 	
 	[ControlDef]
@@ -604,7 +607,7 @@
 		
 		[Assignment]
 		Key=CON_PickUp,CON_Up
-		Control=PickUpNext_Stop
+		Control=PickUpNext_All
 		Priority=75
 		
 		[Assignment]

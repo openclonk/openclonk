@@ -75,6 +75,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		}
 		
+		// Quickly pick up everything possible.
+		if (ctrl == CON_PickUpNext_All)
+		{
+			PickUpAll();
+			this.inventory.pickup_item = nil;
+			EndPickingUp();
+			return true;
+		}
+		
 		// Finish picking up (aka "collect").
 		if (ctrl == CON_PickUp && release)
 		{
@@ -236,12 +245,17 @@ private func SetNextPickupItem(object to)
 		AddEffect("IntHighlightItem", this, 1, 2, this, nil, to);
 }
 
+private func FindAllPickupItems(sorting_criterion)
+{
+	return FindObjects(Find_Distance(20), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(this->GetObjectLayer()), sorting_criterion);
+}
+
 private func FindNextPickupObject(object start_from, int x_dir)
 {
 	if (!start_from) start_from = this;
 	// Returns objects sorted by ascending x-position, with all objects right of the clonk being sorted before objects left of the clonk
 	var sort = Sort_Func("Library_ClonkInventoryControl_Sort_Priority", start_from->GetX());
-	var objects = FindObjects(Find_Distance(20), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(this->GetObjectLayer()), sort);
+	var objects = FindAllPickupItems(sort);
 	var len = GetLength(objects);
 	if (!len) return nil;
 	// Find object next to the current one.
@@ -282,23 +296,7 @@ private func EndPickingUp()
 
 	if (this.inventory.pickup_item)
 	{
-		// Remember stuff for a possible message - the item might have removed itself later.
-		var item = this.inventory.pickup_item;
-		var x = item->GetX();
-		var y = item->GetY();
-		var name = item->GetName();
-		// Try to collect the item.
-		Collect(item);
-		
-		// If anything happened, assume collection.
-		if (!item || item->Contained())
-		{
-			var message = CreateObject(FloatingMessage, AbsX(x), AbsY(y), GetOwner());
-			message.Visibility = VIS_Owner;
-			message->SetMessage(name);
-			message->SetYDir(-10);
-			message->FadeOut(1, 20);
-		}
+		TryToCollect(this.inventory.pickup_item);
 	}
 	
 	var e = nil;
@@ -308,6 +306,54 @@ private func EndPickingUp()
 	}
 	
 	this.inventory.pickup_item = nil;
+}
+
+// Shows an effect when you picked up an item.
+private func TryToCollect(object item)
+{
+	// Remember stuff for a possible message - the item might have removed itself later.
+	var x = item->GetX();
+	var y = item->GetY();
+	var name = item->GetName();
+	// Try to collect the item.
+	Collect(item);
+	
+	// If anything happened, assume collection.
+	if (!item || item->Contained())
+	{
+		var message = CreateObject(FloatingMessage, AbsX(x), AbsY(y), GetOwner());
+		message.Visibility = VIS_Owner;
+		message->SetMessage(name);
+		message->SetYDir(-10);
+		message->FadeOut(1, 20);
+	}
+}
+
+// Pick up all objects in the vicinity.
+private func PickUpAll()
+{
+	// First try to find objects with the ID of the currently selected object.
+	var preferred_id = nil;
+	if (this.inventory.pickup_item != nil)
+		preferred_id = this.inventory.pickup_item->GetID();
+	
+	var sort = Sort_Distance();
+	
+	var all_objects = FindAllPickupItems(sort);
+	// Try the preferred id first.
+	if (preferred_id)
+		for (var obj in all_objects)
+		{
+			if (!obj || obj->Contained()) continue;
+			if (obj->GetID() != preferred_id) continue;
+			TryToCollect(obj);
+		}
+	// And try the others now..
+	for (var obj in all_objects)
+	{
+		if (!obj || obj->Contained()) continue;
+		TryToCollect(obj);
+	}
 }
 
 // used in Inventory.ocd
