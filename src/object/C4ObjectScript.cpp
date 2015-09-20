@@ -2372,6 +2372,22 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 
 }
 
+static Nillable<long> FnGetDefWidth(C4PropList * _this)
+{
+	if (!_this) return C4Void();
+	C4Def *def = _this->GetDef();
+	if (!def) return  C4Void();
+	return def->Shape.Wdt;
+}
+
+static Nillable<long> FnGetDefHeight(C4PropList * _this)
+{
+	if (!_this) return C4Void();
+	C4Def *def = _this->GetDef();
+	if (!def) return  C4Void();
+	return def->Shape.Hgt;
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptObjectConstMap[]=
@@ -2722,4 +2738,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetCommand", FnGetCommand);
 	AddFunc(pEngine, "SetCrewExtraData", FnSetCrewExtraData);
 	AddFunc(pEngine, "GetCrewExtraData", FnGetCrewExtraData);
+	AddFunc(pEngine, "GetDefWidth", FnGetDefWidth);
+	AddFunc(pEngine, "GetDefHeight", FnGetDefHeight);
 }

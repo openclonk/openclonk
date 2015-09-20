@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetDefHeight</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>7.0 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines the height of the object or definition as specified in its DefCore.</desc>
+  </func>
+  <author>Sven2</author><date>2015-09</date>
+</funcs>

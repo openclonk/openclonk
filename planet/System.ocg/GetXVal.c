@@ -7,6 +7,8 @@
 		The usage might, under certain circumstances, lead to desynchronisation in
 		either network games or save games. The most dangerous functions are marked
 		with //(!).
+		
+		These functions are also very slow. Values should be cached if possible.
 --*/
 
 global func GetActMapVal(string entry, string action, id def, int num)
@@ -20,8 +22,6 @@ global func GetActMapVal(string entry, string action, id def, int num)
 
 // GetDefCoreVal
 global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
-global func GetDefWidth()       { return GetDefCoreVal("Width", "DefCore"); }
-global func GetDefHeight()      { return GetDefCoreVal("Height", "DefCore"); }
 global func GetDefOffset(nr)   { return GetDefCoreVal("Offset", "DefCore", nr); }
 global func GetDefValue()       { return GetDefCoreVal("Value", "DefCore"); }
 global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
