@@ -51,8 +51,6 @@ public:
 	C4IDList &operator = (const C4IDList &rCopy); // assignment
 	~C4IDList();
 	bool operator==(const C4IDList& rhs) const;
-	// trick g++
-	ALLOW_TEMP_TO_REF(C4IDList)
 protected:
 	size_t Count;                   // number of IDs in this list
 public:

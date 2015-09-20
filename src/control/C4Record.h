@@ -238,7 +238,6 @@ public:
 	C4RecordChunkType getType() const { return eType; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
-	ALLOW_TEMP_TO_REF(C4PktDebugRec)
 };
 
 class C4Record // demo recording

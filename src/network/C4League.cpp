@@ -256,7 +256,6 @@ private:
 	const C4ClientPlayerInfos &rPlayerInfos;
 
 public:
-	ALLOW_TEMP_TO_REF(DisconnectData)
 	DisconnectData(C4LeagueFBIDList &rFBIDList, const C4ClientPlayerInfos &rPlayerInfos)
 			: rFBIDList(rFBIDList), rPlayerInfos(rPlayerInfos) {}
 

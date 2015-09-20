@@ -837,7 +837,6 @@ struct C4ObjectListDumpHelper
 	void CompileFunc(StdCompiler *pComp) { pComp->Value(mkNamingAdapt(mkParAdapt(*pLst, numbers), "Objects")); }
 
 	C4ObjectListDumpHelper(C4ObjectList *pLst, C4ValueNumbers * numbers) : pLst(pLst), numbers(numbers) {}
-	ALLOW_TEMP_TO_REF(C4ObjectListDumpHelper)
 };
 
 bool C4ObjectList::CheckSort(C4ObjectList *pList)

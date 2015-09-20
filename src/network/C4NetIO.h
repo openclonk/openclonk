@@ -180,8 +180,6 @@ public:
 
 	// delete contents
 	void Clear();
-	// Talk gcc into accepting references to temporaries
-	ALLOW_TEMP_TO_REF(C4NetIOPacket)
 };
 
 

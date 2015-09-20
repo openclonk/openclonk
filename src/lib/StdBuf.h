@@ -88,8 +88,6 @@ public:
 		Clear();
 	}
 
-	ALLOW_TEMP_TO_REF(StdBuf)
-
 protected:
 
 	// Reference? Otherwise, this object holds the data.
@@ -456,8 +454,6 @@ public:
 	StdStrBuf(const char *pData, size_t iLength, bool fCopy = false)
 			: StdBuf(pData, pData ? iLength + 1 : 0, fCopy)
 	{ }
-
-	ALLOW_TEMP_TO_REF(StdStrBuf)
 
 public:
 

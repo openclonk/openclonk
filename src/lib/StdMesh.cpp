@@ -176,8 +176,6 @@ namespace
 			if(pComp->isCompiler())
 				*ValueProvider = svp;
 		}
-
-		ALLOW_TEMP_TO_REF(ValueProviderAdapt)
 	};
 
 	ValueProviderAdapt mkValueProviderAdapt(StdMeshInstance::ValueProvider** ValueProvider) { return ValueProviderAdapt(ValueProvider); }
@@ -218,8 +216,6 @@ namespace
 
 			pComp->Separator(StdCompiler::SEP_END);
 		}
-
-		ALLOW_TEMP_TO_REF(MatrixAdapt)
 	};
 
 	struct TransformAdapt
@@ -242,8 +238,6 @@ namespace
 			CompileFloat(pComp, Trans.scale.z);
 			pComp->Separator(StdCompiler::SEP_END);
 		}
-
-		ALLOW_TEMP_TO_REF(TransformAdapt);
 	};
 
 	MatrixAdapt mkMatrixAdapt(StdMeshMatrix& Matrix) { return MatrixAdapt(Matrix); }

@@ -34,7 +34,6 @@
 struct StdNullAdapt
 {
 	inline void CompileFunc(StdCompiler *pComp) const { }
-	ALLOW_TEMP_TO_REF(StdNullAdapt)
 };
 
 // * Defaulting Adaptor
@@ -61,7 +60,6 @@ struct StdDefaultAdapt
 			delete pEx;
 		}
 	}
-	ALLOW_TEMP_TO_REF(StdDefaultAdapt)
 };
 template <class T, class D>
 inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
@@ -90,7 +88,6 @@ struct StdNamingAdapt
 	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdNamingAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdNamingAdapt)
 };
 template <class T>
 inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
@@ -128,7 +125,6 @@ struct StdNamingDefaultAdapt
 		// End section
 		pComp->NameEnd();
 	}
-	ALLOW_TEMP_TO_REF(StdNamingDefaultAdapt)
 };
 template <class T, class D>
 inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
@@ -153,8 +149,6 @@ struct StdDecompileAdapt
 		assert(pComp->isDecompiler());
 		pComp->Value(mkParAdapt(const_cast<T &>(rValue), par));
 	}
-
-	ALLOW_TEMP_TO_REF(StdDecompileAdapt)
 };
 template <class T>
 inline StdDecompileAdapt<T> mkDecompileAdapt(const T& rValue) { return StdDecompileAdapt<T>(rValue); }
@@ -174,7 +168,6 @@ struct StdRuntimeValueAdapt
 	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdRuntimeValueAdapt<T> &operator = (const D &nValue) { rValue = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdRuntimeValueAdapt)
 };
 template <class T>
 inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
@@ -191,7 +184,6 @@ struct StdStringAdapt
 	}
 	inline bool operator == (const char *szDefault) const { return SEqual(szString, szDefault); }
 	inline StdStringAdapt &operator = (const char *szDefault) { SCopy(szDefault, szString, iMaxLength); return *this; }
-	ALLOW_TEMP_TO_REF(StdStringAdapt)
 };
 inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
 { return StdStringAdapt(szString, iMaxLength, eRawType); }
@@ -234,8 +226,6 @@ struct StdIntAdapt
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdIntAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdIntAdapt)
-
 };
 template <class T> inline StdIntAdapt<T> mkIntAdapt(T &rValue) { return StdIntAdapt<T>(rValue); }
 template <class int_t, class T> StdIntAdapt<T, int_t> mkIntAdaptT(T &rValue) { return StdIntAdapt<T, int_t>(rValue); }
@@ -258,8 +248,6 @@ struct StdCastAdapt
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdCastAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdCastAdapt)
-
 };
 template <class to_t, class T> StdCastAdapt<T, to_t> mkCastAdapt(T &rValue) { return StdCastAdapt<T, to_t>(rValue); }
 template <class T> StdCastAdapt<T, int32_t> mkCastIntAdapt(T &rValue) { return StdCastAdapt<T, int32_t>(rValue); }
@@ -315,7 +303,6 @@ struct StdArrayAdapt
 			pArray[i] = pDefaults[i];
 		return *this;
 	}
-	ALLOW_TEMP_TO_REF(StdArrayAdapt)
 };
 template <class T>
 inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
@@ -368,7 +355,6 @@ struct StdArrayDefaultAdapt
 			pArray[i] = pDefaults[i];
 		return *this;
 	}
-	ALLOW_TEMP_TO_REF(StdArrayDefaultAdapt)
 };
 template <class T, class D>
 inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
@@ -421,7 +407,6 @@ struct StdArrayDefaultArrayAdapt
 			pArray[i] = pDefaults[i];
 		return *this;
 	}
-	ALLOW_TEMP_TO_REF(StdArrayDefaultArrayAdapt)
 };
 template <class T, class D>
 inline StdArrayDefaultArrayAdapt<T, D> mkArrayAdaptDefArr(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultArrayAdapt<T, D>(pArray, iSize, rDefault); }
@@ -445,7 +430,6 @@ struct StdInsertAdapt
 		pComp->Value(rObj);
 		if (!fBefore) pComp->Value(rIns);
 	}
-	ALLOW_TEMP_TO_REF(StdInsertAdapt)
 };
 template <class T, class I>
 inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
@@ -467,8 +451,6 @@ struct StdParameterAdapt
 
 	// getting value
 	inline T &GetObj() { return rObj; }
-
-	ALLOW_TEMP_TO_REF(StdParameterAdapt)
 };
 template <class T, class P>
 inline StdParameterAdapt<T, P> mkParAdapt(T RREF rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
@@ -499,7 +481,6 @@ struct StdParameter2Adapt
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameter2Adapt &operator = (const D &nValue) { rObj = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdParameter2Adapt)
 };
 template <class T, class P1, class P2>
 inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
@@ -538,8 +519,6 @@ struct StdPtrAdapt: StdBasicPtrAdapt<T>
 	{
 		StdPtrAdaptCompileFunc(pComp, *this, p);
 	}
-
-	ALLOW_TEMP_TO_REF(StdPtrAdapt)
 };
 
 template <class T, class ContextT>
@@ -562,8 +541,6 @@ struct StdContextPtrAdapt: StdBasicPtrAdapt<T>
 	{
 		StdPtrAdaptCompileFunc(pComp, *this, p);
 	}
-
-	ALLOW_TEMP_TO_REF(StdContextPtrAdapt)
 };
 
 template <class T>
@@ -734,7 +711,6 @@ struct StdSTLContainerAdapt
 	// Operators for default checking/setting
 	inline bool operator == (const C &nValue) const { return rStruct == nValue; }
 	inline StdSTLContainerAdapt &operator = (const C &nValue) { rStruct = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdSTLContainerAdapt)
 };
 template <class C>
 inline StdSTLContainerAdapt<C> mkSTLContainerAdapt(C &rTarget, StdCompiler::Sep eSep = StdCompiler::SEP_SEP) { return StdSTLContainerAdapt<C>(rTarget, eSep); }
@@ -813,7 +789,6 @@ struct StdIntPackAdapt
 	}
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdIntPackAdapt &operator = (const D &nValue) { rVal = nValue; return *this; }
-	ALLOW_TEMP_TO_REF(StdIntPackAdapt)
 };
 template <class T>
 StdIntPackAdapt<T> mkIntPackAdapt(T &rVal) { return StdIntPackAdapt<T>(rVal); }
@@ -900,8 +875,6 @@ struct StdEnumAdapt
 
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdEnumAdapt<T, int_t> &operator = (const D &nValue) { rVal = nValue; return *this; }
-
-	ALLOW_TEMP_TO_REF(StdEnumAdapt)
 };
 template <class T, class int_t>
 StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
@@ -1010,8 +983,6 @@ struct StdBitfieldAdapt
 
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdBitfieldAdapt<T> &operator = (const D &nValue) { rVal = nValue; return *this; }
-
-	ALLOW_TEMP_TO_REF(StdBitfieldAdapt)
 };
 template <class T>
 StdBitfieldAdapt<T> mkBitfieldAdapt(T &rVal, const StdBitfieldEntry<T> *pNames) { return StdBitfieldAdapt<T>(rVal, pNames); }
@@ -1035,7 +1006,6 @@ struct StdNamingCountAdapt
 		else
 			pComp->Value(mkIntPackAdapt(iCount));
 	}
-	ALLOW_TEMP_TO_REF(StdNamingCountAdapt)
 };
 template <class int_t>
 inline StdNamingCountAdapt<int_t> mkNamingCountAdapt(int_t &iCount, const char *szName) { return StdNamingCountAdapt<int_t>(iCount, szName); }
@@ -1066,7 +1036,6 @@ public:
 			}
 		}
 	}
-	ALLOW_TEMP_TO_REF(StdHexAdapt)
 };
 inline StdHexAdapt mkHexAdapt(void *pData, size_t iSize) { return StdHexAdapt(pData, iSize); }
 template <class T>
