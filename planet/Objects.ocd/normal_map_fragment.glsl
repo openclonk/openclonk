@@ -10,7 +10,7 @@ void main()
 	color = vec4(1.0, 1.0, 1.0, 1.0);
 #endif
 
-slice(init+1)
+slice(texture+1)
 {
 	// This picks up the normal map lookup in ObjectLightShader.c:
 #define OC_WITH_NORMALMAP

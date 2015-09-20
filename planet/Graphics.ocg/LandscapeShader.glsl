@@ -1,5 +1,4 @@
 
-
 // Input textures
 uniform sampler2D landscapeTex[2];
 uniform sampler2D scalerTex;
@@ -11,11 +10,7 @@ uniform vec2 resolution;
 // Center position
 uniform vec2 center;
 // Texture map
-#ifndef NO_BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;
-#else
-uniform float matMap[256];
-#endif
 uniform float materialDepth;
 uniform vec2 materialSize;
 
@@ -25,21 +20,15 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
-// Parameters
+// How much % the normals from the normal map are added up to the
+// landscape normal. The higher the strength, the more structure
+// within the material is visible but also the less the borders
+// between the different materials stand out.
+const float normalMapStrength = 0.20;
 
-// how much % the normals from the normal map are added up to the landscape normal. The higher the strength, the more
-// structure within the material is visible but also the less the borders between the different materials stand out.
-const float normalMapStrength = 0.75;
-
-float queryMatMap(int pix)
+vec4 queryMatMap(int pix)
 {
-#ifndef NO_BROKEN_ARRAYS_WORKAROUND
-	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
-	return (float(idx) / 256.0 + 0.0 / materialDepth) * materialDepth;
-	//return texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r;
-#else
-	return matMap[pix] * materialDepth;
-#endif
+	return texture1D(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
 }
 
 slice(coordinate)
@@ -64,44 +53,74 @@ slice(texture)
 	// our pixel color (without/with interpolation)
 	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
 	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
+
+	// find scaler coordinate
+	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
+	int iScaler = f2i(landscapePx.a), iRow = iScaler / 8;
+	scalerCoo.x += float(iScaler - iRow * 8) / 8.0;
+	scalerCoo.y += float(iScaler / 8) / 32.0;
+
+	// query scaler texture
+	vec4 scalerPx = texture2D(scalerTex, scalerCoo);
+
+	// Get "second" landscape pixel
+	vec2 centerCoo2 = centerCoo + fullStep * floor(vec2(-0.5, -0.5) +
+	                                               scalerPx.gb * 255.0 / 64.0);
+	vec4 landscapePx2 = texture2D(landscapeTex[0], centerCoo2);
+
 }
 
 slice(material)
 {
 
-	// Get material pixels
-	float materialIx = queryMatMap(f2i(landscapePx.r));
-	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
-	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5*materialDepth));
+	// Get material properties from material map
+	int matMapIx = f2i(landscapePx.r);
+	vec4 matMap = queryMatMap(2*matMapIx);
+	vec4 matMapX = queryMatMap(2*matMapIx+1);
+	float materialIx = f2i(matMap.a) / 256.0 * materialDepth;
+	vec3 matEmit = matMap.rgb;
+	vec3 matSpot = matMapX.rgb * 255.9f / 16.0f;
+	float matAngle = matMapX.a;
 
-	// Same for second pixel, but we'll simply use the first normal
-#ifdef OC_HAVE_2PX
-	float materialIx2 = queryMatMap(f2i(landscapePx2.r));
+	// Query material texture pixels
+	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
+	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5 * materialDepth));
+
+	// Same for second pixel
+	int matMapIx2 = f2i(landscapePx2.r);
+	vec4 matMap2 = queryMatMap(2*matMapIx2);
+	vec4 matMapX2 = queryMatMap(2*matMapIx2+1);
+	float materialIx2 = f2i(matMap2.a) / 256.0 * materialDepth;
+	vec3 matEmit2 = matMap2.rgb;
+	vec3 matSpot2 = matMapX2.rgb * 255.9f / 16.0f;
+	float matAngle2 = matMapX2.a;
+
+	// Query material texture pixels
 	vec4 materialPx2 = texture(materialTex, vec3(materialCoo, materialIx2));
-	vec4 normalPx2 = texture(materialTex, vec3(materialCoo, materialIx2+0.5*materialDepth));
-#endif
+	vec4 normalPx2 = texture(materialTex, vec3(materialCoo, materialIx2+0.5 * materialDepth));
 }
 
 slice(normal)
 {
 	// Normal calculation
-	vec3 normal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
-								- vec2(0.5, 0.5));
+	vec3 normal = extend_normal(1.5 * (mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
+									   - vec2(0.5, 0.5)));
 	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
-	normal = normal + textureNormal * normalMapStrength;
+	normal = mix(textureNormal, normal, normalMapStrength);
 
-#ifdef OC_HAVE_2PX
 	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
 	vec3 textureNormal2 = normalPx2.xyz - vec3(0.5,0.5,0.5);
-	normal2 = normal2 + textureNormal2 * normalMapStrength;
-#endif
+	normal2 = mix(textureNormal2, normal2, normalMapStrength);
 
 }
 
 slice(color) {
 #define color gl_FragColor
 	color = materialPx;
-#ifdef OC_HAVE_2PX
 	vec4 color2 = materialPx2;
-#endif
+}
+
+slice(color+10) {
+	// Mix second color into main color according to scaler
+	color = mix(color2, color, scalerPx.r);
 }
