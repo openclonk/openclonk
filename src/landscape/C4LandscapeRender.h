@@ -45,7 +45,6 @@ enum C4LR_Uniforms
 	C4LRU_Gamma,
 	C4LRU_Resolution,
 	C4LRU_Center,
-	C4LRU_MatMap,
 	C4LRU_MatMapTex,
 	C4LRU_MaterialDepth,
 	C4LRU_MaterialSize,
@@ -150,7 +149,7 @@ private:
 	void AddTextureTransition(const char *szFrom, const char *szTo);
 	void AddTextureAnim(const char *szTextureAnim);
 	void AddTexturesFromMap(C4TextureMap *pMap);
-	void BuildMatMap(GLfloat *pFMap, GLubyte *pIMap);
+	void BuildMatMap(uint32_t *pTex);
 };
 #endif
 

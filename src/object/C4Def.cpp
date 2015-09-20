@@ -61,27 +61,15 @@ public:
 	{
 #ifndef USE_CONSOLE
 		// Add mesh-independent slices
-		shader.AddFragmentSlice(-1, "#define OPENCLONK");
-		shader.AddVertexSlice(-1, "#define OPENCLONK");
-
-		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
+		shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define MESH");
+		shader.AddVertexSlice(-1, "#define OPENCLONK\n#define MESH");
+		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define HAVE_MOD2");
 		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+		if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
+		if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
 
-		shader.LoadSlices(&::GraphicsResource.Files, "UtilShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "ObjectBaseShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "MeshShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "GammaShader.glsl");
-
-		// Note that these shader slices are always loaded, even if lighting
-		// is disabled. The shaders then assume a default light if HAVE_LIGHT
-		// is not defined. This avoids completely flat shading for meshes
-		// that are shown as picture graphics for example.
-		shader.LoadSlices(&::GraphicsResource.Files, "ObjectLightShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "LightShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "AmbientShader.glsl");
-
-		if (ssc & C4SSC_BASE) shader.LoadSlices(&::GraphicsResource.Files, "SpriteTextureShader.glsl");
-		if (ssc & C4SSC_OVERLAY) shader.LoadSlices(&::GraphicsResource.Files, "SpriteOverlayShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "CommonShader.glsl");
+		shader.LoadSlices(&::GraphicsResource.Files, "ObjectShader.glsl");
 #endif
 	}
 

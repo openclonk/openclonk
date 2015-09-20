@@ -598,22 +598,15 @@ bool CStdGL::CreateSpriteShader(C4Shader& shader, const char* name, int ssc, C4G
 		shader.AddTexCoord("texcoord");
 
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define OPENCLONK");
-	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define CLRMOD_MOD2");
+	shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define SPRITE");
+	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define HAVE_MOD2");
 	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define HAVE_NORMALMAP");
 	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT");
-	shader.LoadSlices(pGroups, "UtilShader.glsl");
-	shader.LoadSlices(pGroups, "ObjectBaseShader.glsl");
+	if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define HAVE_BASE");
+	if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define HAVE_OVERLAY");
 
-	if (ssc & C4SSC_BASE) shader.LoadSlices(pGroups, "SpriteTextureShader.glsl");
-	if (ssc & C4SSC_OVERLAY) shader.LoadSlices(pGroups, "SpriteOverlayShader.glsl");
-
-	// In case light is disabled, these shaders use a default light source
-	// (typically ambient light everywhere).
-	shader.LoadSlices(pGroups, "ObjectLightShader.glsl");
-	shader.LoadSlices(pGroups, "LightShader.glsl");
-	shader.LoadSlices(pGroups, "AmbientShader.glsl");
-	shader.LoadSlices(pGroups, "GammaShader.glsl");
+	shader.LoadSlices(pGroups, "CommonShader.glsl");
+	shader.LoadSlices(pGroups, "ObjectShader.glsl");
 
 	if (!shader.Init(name, uniformNames))
 	{

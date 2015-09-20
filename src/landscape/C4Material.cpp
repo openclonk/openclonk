@@ -267,6 +267,12 @@ void C4MaterialCore::Clear()
 	MinHeightCount = 0;
 	SplashRate=10;
 	KeepSinglePixels=false;
+	AnimationSpeed = 20;
+	LightAngle = 255;
+	for (int i = 0; i < 3; i++) {
+		LightEmit[i] = 0;
+		LightSpot[i] = 16;
+	}
 }
 
 void C4MaterialCore::Default()
@@ -304,7 +310,6 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) Clear();
 	pComp->Name("Material");
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),      "Name",                ""));
-	pComp->Value(mkNamingAdapt(ColorAnimation,      "ColorAnimation",      0));
 
 	const StdEnumEntry<C4MaterialCoreShape> Shapes[] =
 	{
@@ -368,6 +373,10 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MinHeightCount,      "MinHeightCount",      0));
 	pComp->Value(mkNamingAdapt(SplashRate,          "SplashRate",          10));
 	pComp->Value(mkNamingAdapt(KeepSinglePixels,    "KeepSinglePixels",    false));
+	pComp->Value(mkNamingAdapt(AnimationSpeed,      "AnimationSpeed",      100));
+	pComp->Value(mkNamingAdapt(LightAngle,          "LightAngle",          255));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(LightEmit, 0), "LightEmit"));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(LightSpot, 16),"LightSpot"));
 	pComp->NameEnd();
 	// material reactions
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(CustomReactionList),

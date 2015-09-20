@@ -537,15 +537,11 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	if(ssc & C4SSC_LIGHT) hLightTexCoord = shader.AddTexCoord("lightCoord");
 
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define LANDSCAPE");
+	shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define LANDSCAPE");
 	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define HAVE_LIGHT"); // sample light from light texture
 
-	shader.LoadSlices(pGroups, "UtilShader.glsl");
+	shader.LoadSlices(pGroups, "CommonShader.glsl");
 	shader.LoadSlices(pGroups, "LandscapeShader.glsl");
-	shader.LoadSlices(pGroups, "LightShader.glsl");
-	shader.LoadSlices(pGroups, "AmbientShader.glsl");
-	shader.LoadSlices(pGroups, "ScalerShader.glsl");
-	shader.LoadSlices(pGroups, "GammaShader.glsl");
 
 	// Initialise!
 	if (!shader.Init(name, UniformNames)) {
@@ -578,7 +574,6 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	UniformNames[C4LRU_Gamma]             = "gamma";
 	UniformNames[C4LRU_Resolution]        = "resolution";
 	UniformNames[C4LRU_Center]            = "center";
-	UniformNames[C4LRU_MatMap]            = "matMap";
 	UniformNames[C4LRU_MatMapTex]         = "matMapTex";
 	UniformNames[C4LRU_MaterialDepth]     = "materialDepth";
 	UniformNames[C4LRU_MaterialSize]      = "materialSize";
@@ -800,7 +795,7 @@ void C4LandscapeRenderGL::AddTexturesFromMap(C4TextureMap *pMap)
 
 }
 
-void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
+void C4LandscapeRenderGL::BuildMatMap(uint32_t *pTex)
 {
 	// TODO: Still merely an inefficient placeholder for things to come...
 
@@ -812,8 +807,8 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		if(!pEntry->GetTextureName())
 		{
 			// Undefined textures transparent
-			if(pFMap) pFMap[pix] = 0.5 / iMaterialTextureDepth;
-			if(pIMap) pIMap[pix] = 0;
+			pTex[2*pix] = 0;
+			pTex[2*pix+1] = RGBA(0,0,0,255);
 			continue;
 		}
 
@@ -821,8 +816,13 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		int iPhases = 1; const char *p = pEntry->GetTextureName();
 		while((p = strchr(p, '-'))) { p++; iPhases++; }
 		// Hard-coded hack. Fix me!
-		const int iPhaseLength = 300;
-		float phase = (iPhases == 1 ? 0 : float(C4TimeMilliseconds::Now().AsInt() % (iPhases * iPhaseLength)) / iPhaseLength);
+		C4Material *pMaterial = pEntry->GetMaterial();
+		const int iPhaseLength = pMaterial->AnimationSpeed;
+		float phase = 0;
+		if (iPhases > 1) {
+			phase = C4TimeMilliseconds::Now().AsInt() % (iPhases * iPhaseLength);
+			phase /= iPhaseLength;
+		}
 
 		// Find our transition
 		const char *pFrom = pEntry->GetTextureName();
@@ -851,8 +851,17 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		}
 
 		// Assign texture
-		if(pFMap) pFMap[pix] = (gTexCoo + 0.5) / iMaterialTextureDepth;
-		if(pIMap) pIMap[pix] = int((gTexCoo * 256.0 / iMaterialTextureDepth) + 0.5);
+		int iTexCoo = int((gTexCoo * 256.0 / iMaterialTextureDepth) + 0.5);
+		pTex[2*pix] = RGBA(
+			Clamp(pMaterial->LightEmit[0], 0, 255),
+			Clamp(pMaterial->LightEmit[1], 0, 255),
+			Clamp(pMaterial->LightEmit[2], 0, 255),
+			iTexCoo);
+		pTex[2*pix+1] = RGBA(
+			Clamp(pMaterial->LightSpot[0], 0, 255),
+			Clamp(pMaterial->LightSpot[1], 0, 255),
+			Clamp(pMaterial->LightSpot[2], 0, 255),
+			Clamp(pMaterial->LightAngle, 0, 255));
 	}
 }
 
@@ -889,12 +898,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	ShaderCall.SetUniform2f(C4LRU_Center,
 	                        centerX / float(Surfaces[0]->Wdt),
 	                        centerY / float(Surfaces[0]->Hgt));
-	if (shader->HaveUniform(C4LRU_MatMap))
-	{
-		GLfloat MatMap[256];
-		BuildMatMap(MatMap, NULL);
-		ShaderCall.SetUniform1fv(C4LRU_MatMap, 256, MatMap);
-	}
 	ShaderCall.SetUniform1i(C4LRU_MaterialDepth, iMaterialTextureDepth);
 	ShaderCall.SetUniform2f(C4LRU_MaterialSize,
 	                        float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
@@ -960,9 +963,9 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_MatMapTex, GL_TEXTURE_1D))
 	{
-		GLubyte MatMap[256];
-		BuildMatMap(NULL, MatMap);
-		glTexImage1D(GL_TEXTURE_1D, 0, 1, 256, 0, GL_RED, GL_UNSIGNED_BYTE, MatMap);
+		uint32_t MatMap[2*256];
+		BuildMatMap(MatMap);
+		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, 2*256, 0, GL_RGBA, GL_UNSIGNED_BYTE, MatMap);
 		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 
