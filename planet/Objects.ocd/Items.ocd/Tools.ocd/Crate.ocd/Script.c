@@ -29,8 +29,6 @@ protected func Construction()
 
 /*-- Contents --*/
 
-public func IsContainer() { return true; }
-
 private func MaxContentsCount()
 {
 	return 5;
@@ -67,7 +65,6 @@ protected func Definition(def)
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 public func IsContainer() { return true; }
-public func IsContainerEx() { return true; }
 
 func Hit()
 {

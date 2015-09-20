@@ -139,10 +139,12 @@ func FxIntCheckObjectsStart(target, effect fx, temp)
 func FxIntCheckObjectsTimer(target, effect fx)
 {
 	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Layer(target->GetObjectLayer()),
-		// Find only vehicles and structures (plus Clonks ("livings") and helper objects). This makes sure that no C4D_Object-containers (extra slot) are shown.
-		Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Structure), Find_OCF(OCF_Alive), Find_ActionTarget(target), Find_Func("IsContainerEx")),
-		// But these objects still need to either be a container or provide an own interaction menu.
-		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")), Find_Func("CheckVisibility", GetOwner()),
+		// Find all containers and objects with a custom menu.
+		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
+		// Do not show objects with an extra slot though - even if they are containers. They count as items here.
+		Find_Not(Find_And(Find_Category(C4D_Object), Find_Func("HasExtraSlots"))),
+		// Show only objects that the player can see.
+		Find_Func("CheckVisibility", GetOwner()),
 		// Normally sorted by z-order. But some objects may have a lower priority.
 		Sort_Reverse(Sort_Func("GetInteractionPriority", target))
 		);
