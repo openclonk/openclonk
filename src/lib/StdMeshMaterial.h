@@ -63,11 +63,11 @@ public:
 	StdMeshMaterialShaderParameter(); // type=FLOAT, value uninitialized
 	StdMeshMaterialShaderParameter(Type type); // value uninitialized
 	StdMeshMaterialShaderParameter(const StdMeshMaterialShaderParameter& other);
-	StdMeshMaterialShaderParameter(StdMeshMaterialShaderParameter RREF other);
+	StdMeshMaterialShaderParameter(StdMeshMaterialShaderParameter &&other);
 	~StdMeshMaterialShaderParameter();
 
 	StdMeshMaterialShaderParameter& operator=(const StdMeshMaterialShaderParameter& other);
-	StdMeshMaterialShaderParameter& operator=(StdMeshMaterialShaderParameter RREF other);
+	StdMeshMaterialShaderParameter& operator=(StdMeshMaterialShaderParameter &&other);
 
 	Type GetType() const { return type; }
 	void SetType(Type type); // changes type, new value is uninitialized
@@ -88,7 +88,7 @@ public:
 private:
 	void CopyShallow(const StdMeshMaterialShaderParameter& other);
 	void CopyDeep(const StdMeshMaterialShaderParameter& other);
-	void Move(StdMeshMaterialShaderParameter RREF other);
+	void Move(StdMeshMaterialShaderParameter &&other);
 
 	Type type;
 

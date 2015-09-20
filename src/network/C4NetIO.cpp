@@ -2258,7 +2258,7 @@ C4NetIOUDP::Packet::Packet()
 
 }
 
-C4NetIOUDP::Packet::Packet(C4NetIOPacket RREF rnData, nr_t inNr)
+C4NetIOUDP::Packet::Packet(C4NetIOPacket &&rnData, nr_t inNr)
 		: iNr(inNr),
 		Data(rnData),
 		pFragmentGot(NULL)
@@ -2867,7 +2867,7 @@ bool C4NetIOUDP::Peer::SendDirect(const Packet &rPacket, unsigned int iNr)
 	return fSuccess;
 }
 
-bool C4NetIOUDP::Peer::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
+bool C4NetIOUDP::Peer::SendDirect(C4NetIOPacket &&rPacket) // (mt-safe)
 {
 	// insert correct addr
 	if (!(rPacket.getStatus() & 0x80)) rPacket.SetAddr(addr);
@@ -2996,7 +2996,7 @@ bool C4NetIOUDP::BroadcastDirect(const Packet &rPacket, unsigned int iNr) // (mt
 	return fSuccess;
 }
 
-bool C4NetIOUDP::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
+bool C4NetIOUDP::SendDirect(C4NetIOPacket &&rPacket) // (mt-safe)
 {
 	addr_t toaddr = rPacket.getAddr();
 	// packet meant to be broadcasted?

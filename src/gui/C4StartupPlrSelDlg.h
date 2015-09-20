@@ -81,7 +81,7 @@ private:
 		class LoadError : public StdStrBuf
 		{
 		public:
-			LoadError(StdStrBuf RREF rTakeFrom) { Take(std::move(rTakeFrom)); }
+			LoadError(StdStrBuf &&rTakeFrom) { Take(std::move(rTakeFrom)); }
 		}; // class thrown off load function if load failed
 	};
 

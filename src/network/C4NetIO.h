@@ -507,7 +507,7 @@ protected:
 
 		// construction / destruction
 		Packet();
-		Packet(C4NetIOPacket RREF rnData, nr_t inNr);
+		Packet(C4NetIOPacket &&rnData, nr_t inNr);
 		~Packet();
 
 	protected:
@@ -681,7 +681,7 @@ protected:
 
 		// sending
 		bool SendDirect(const Packet &rPacket, unsigned int iNr = ~0);
-		bool SendDirect(C4NetIOPacket RREF rPacket);
+		bool SendDirect(C4NetIOPacket &&rPacket);
 
 		// events
 		void OnConn();
@@ -739,7 +739,7 @@ protected:
 
 	// sending
 	bool BroadcastDirect(const Packet &rPacket, unsigned int iNr = ~0u); // (mt-safe)
-	bool SendDirect(C4NetIOPacket RREF rPacket); // (mt-safe)
+	bool SendDirect(C4NetIOPacket &&rPacket); // (mt-safe)
 
 	// multicast related
 	bool DoLoopbackTest();

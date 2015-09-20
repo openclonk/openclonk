@@ -52,9 +52,6 @@
 /* Define to 1 if you have the <readline/readline.h> header file. */
 #cmakedefine HAVE_READLINE_READLINE_H 1
 
-/* C++ Compiler has rvalue references, a C++0x feature. */
-#cmakedefine HAVE_RVALUE_REF 1
-
 /* Define to 1 if you have SDL. */
 #cmakedefine HAVE_SDL 1
 

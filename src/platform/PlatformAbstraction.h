@@ -118,15 +118,6 @@ typedef ptrdiff_t ssize_t;
 
 
 
-#ifdef HAVE_RVALUE_REF
-# define RREF &&
-#else
-# define RREF &
-namespace std { template<typename T> inline T &move (T &t) { return t; } }
-#endif
-
-
-
 #if defined(_DEBUG) && defined(_MSC_VER)
 // use inline assembler to invoke the "breakpoint exception"
 #  define BREAKPOINT_HERE __debugbreak()

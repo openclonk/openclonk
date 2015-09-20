@@ -179,7 +179,7 @@ public:
 	void Value(bool &rBool)    { Boolean(rBool); }
 
 	// Compiling/Decompiling (may throw a data format exception!)
-	template <class T> inline void Compile(T RREF rStruct)
+	template <class T> inline void Compile(T &&rStruct)
 	{
 		assert(isCompiler());
 		DoCompilation(rStruct);
@@ -379,7 +379,7 @@ void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx, co
 
 // Helpers for buffer-based compiling (may throw a data format exception!)
 template <class CompT, class StructT>
-void CompileFromBuf(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf)
+void CompileFromBuf(StructT &&TargetStruct, const typename CompT::InT &SrcBuf)
 {
 	CompT Compiler;
 	Compiler.setInput(SrcBuf.getRef());
@@ -490,7 +490,7 @@ public:
 
 	// Input
 	typedef StdBuf InT;
-	void setInput(InT RREF In) { Buf = std::move(In); }
+	void setInput(InT &&In) { Buf = std::move(In); }
 
 	// Properties
 	virtual bool isCompiler()                     { return true; }
@@ -734,7 +734,7 @@ private:
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);
 
 template <class CompT, class StructT>
-bool CompileFromBuf_Log(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+bool CompileFromBuf_Log(StructT &&TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
 {
 	try
 	{
@@ -752,7 +752,7 @@ bool CompileFromBuf_Log(StructT RREF TargetStruct, const typename CompT::InT &Sr
 	}
 }
 template <class CompT, class StructT>
-bool CompileFromBuf_LogWarn(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+bool CompileFromBuf_LogWarn(StructT &&TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
 {
 	try
 	{
@@ -773,7 +773,7 @@ bool CompileFromBuf_LogWarn(StructT RREF TargetStruct, const typename CompT::InT
 	}
 }
 template <class CompT, class StructT>
-bool DecompileToBuf_Log(StructT RREF TargetStruct, typename CompT::OutT *pOut, const char *szName)
+bool DecompileToBuf_Log(StructT &&TargetStruct, typename CompT::OutT *pOut, const char *szName)
 {
 	if (!pOut) return false;
 	try

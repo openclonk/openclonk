@@ -62,7 +62,7 @@ struct StdDefaultAdapt
 	}
 };
 template <class T, class D>
-inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
+inline StdDefaultAdapt<T, D> mkDefaultAdapt(T &&rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
 
 // * Naming Adaptor
 // Embeds a value into a named section, failsafe
@@ -90,7 +90,7 @@ struct StdNamingAdapt
 	template <class D> inline StdNamingAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
 };
 template <class T>
-inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
+inline StdNamingAdapt<T> mkNamingAdapt(T &&rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
 
 // * Naming Adaptor (defaulting)
 // Embeds a value into a named section, sets default on fail
@@ -127,7 +127,7 @@ struct StdNamingDefaultAdapt
 	}
 };
 template <class T, class D>
-inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
+inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T &&rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
 
 // * Decompiling Adaptor
 // Allows to use const objects if the compiler won't change the targets
@@ -170,7 +170,7 @@ struct StdRuntimeValueAdapt
 	template <class D> inline StdRuntimeValueAdapt<T> &operator = (const D &nValue) { rValue = nValue; return *this; }
 };
 template <class T>
-inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
+inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T &&rValue) { return StdRuntimeValueAdapt<T>(rValue); }
 
 // * String adaptor
 struct StdStringAdapt
@@ -432,7 +432,7 @@ struct StdInsertAdapt
 	}
 };
 template <class T, class I>
-inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
+inline StdInsertAdapt<T, I> mkInsertAdapt(T &&rObj, I &&rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
 
 // * Parameter Adaptor
 // Specify a second parameter for the CompileFunc
@@ -453,7 +453,7 @@ struct StdParameterAdapt
 	inline T &GetObj() { return rObj; }
 };
 template <class T, class P>
-inline StdParameterAdapt<T, P> mkParAdapt(T RREF rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+inline StdParameterAdapt<T, P> mkParAdapt(T &&rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
 
 // for mkArrayAdaptMap
 template <class P>

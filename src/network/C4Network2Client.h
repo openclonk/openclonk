@@ -203,7 +203,7 @@ public:
 	bool BroadcastMsgToConnClients(const C4NetIOPacket &rPkt);
 	bool BroadcastMsgToClients(const C4NetIOPacket &rPkt);
 	bool SendMsgToHost(C4NetIOPacket rPkt);
-	bool SendMsgToClient(int32_t iClient, C4NetIOPacket RREF rPkt);
+	bool SendMsgToClient(int32_t iClient, C4NetIOPacket &&rPkt);
 
 	// packet handling
 	void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2IOConnection *pConn);

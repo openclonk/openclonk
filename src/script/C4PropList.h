@@ -48,11 +48,9 @@ public:
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
 	{ if(o.Key) o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
-#ifdef HAVE_RVALUE_REF
 	C4Property(C4Property && o) : Key(o.Key), Value(std::move(o.Value)) { o.Key = 0; }
 	C4Property & operator = (C4Property && o)
 	{ if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
-#endif
 	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;

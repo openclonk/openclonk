@@ -537,7 +537,7 @@ bool C4Network2ClientList::SendMsgToHost(C4NetIOPacket rPkt)
 	return pHost->SendMsg(rPkt);
 }
 
-bool C4Network2ClientList::SendMsgToClient(int32_t iClient, C4NetIOPacket RREF rPkt)
+bool C4Network2ClientList::SendMsgToClient(int32_t iClient, C4NetIOPacket &&rPkt)
 {
 	// find client
 	C4Network2Client *pClient = GetClientByID(iClient);

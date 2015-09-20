@@ -645,7 +645,7 @@ StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter(const StdMeshMate
 	CopyDeep(other);
 }
 
-StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter(StdMeshMaterialShaderParameter RREF other)
+StdMeshMaterialShaderParameter::StdMeshMaterialShaderParameter(StdMeshMaterialShaderParameter &&other)
 {
 	Move(std::move(other));
 }
@@ -667,7 +667,7 @@ StdMeshMaterialShaderParameter& StdMeshMaterialShaderParameter::operator=(const 
 	return *this;
 }
 
-StdMeshMaterialShaderParameter& StdMeshMaterialShaderParameter::operator=(StdMeshMaterialShaderParameter RREF other)
+StdMeshMaterialShaderParameter& StdMeshMaterialShaderParameter::operator=(StdMeshMaterialShaderParameter &&other)
 {
 	if(this == &other) return *this;
 
@@ -726,7 +726,7 @@ void StdMeshMaterialShaderParameter::CopyDeep(const StdMeshMaterialShaderParamet
 	}
 }
 
-void StdMeshMaterialShaderParameter::Move(StdMeshMaterialShaderParameter RREF other)
+void StdMeshMaterialShaderParameter::Move(StdMeshMaterialShaderParameter &&other)
 {
 	CopyShallow(other);
 	other.type = FLOAT;
