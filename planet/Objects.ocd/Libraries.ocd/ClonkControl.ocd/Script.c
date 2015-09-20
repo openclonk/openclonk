@@ -454,7 +454,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if (this->IsWalking())
 		{
-			this->DoRoll();
+			if (this->Stuck())
+			{
+				// Still show some visual feedback for the player.
+				this->DoKneel();
+			}
+			else
+			{
+				this->DoRoll();
+			}
 			return true;
 		}
 		else if (this->IsJumping())
