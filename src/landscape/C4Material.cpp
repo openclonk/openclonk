@@ -262,7 +262,6 @@ void C4MaterialCore::Clear()
 	BelowTempConvertDir = 0;
 	AboveTempConvert = 0;
 	AboveTempConvertDir = 0;
-	ColorAnimation = 0;
 	TempConvStrength = 0;
 	MinHeightCount = 0;
 	SplashRate=10;

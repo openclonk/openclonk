@@ -95,7 +95,6 @@ public:
 	int32_t SplitscreenDividers;
 	int32_t ShowStartupMessages;
 	int32_t VerboseObjectLoading;
-	int32_t ColorAnimation;
 	int32_t HighResLandscape;
 	int32_t VideoModule;
 	int32_t MenuTransparency;

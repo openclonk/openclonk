@@ -175,7 +175,6 @@ public:
 	int32_t  AboveTempConvert;
 	int32_t  AboveTempConvertDir;
 	StdCopyStrBuf sAboveTempConvertTo;
-	int32_t  ColorAnimation;
 	int32_t  TempConvStrength;
 	int32_t  MinHeightCount; // minimum material thickness in order for it to be counted
 	int32_t  SplashRate;
