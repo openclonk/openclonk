@@ -616,6 +616,11 @@
 		Priority=75
 		
 		[Assignment]
+		Key=CON_PickUp,CON_Throw
+		Control=Drop
+		Priority=75
+		
+		[Assignment]
 		Key=Mouse1Wheel1Up
 		GUIGroup=50
 		Control=InventoryShiftBackward

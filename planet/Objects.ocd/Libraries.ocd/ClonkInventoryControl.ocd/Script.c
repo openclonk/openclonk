@@ -64,6 +64,19 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
+	// Drop the mouse item?
+	if (ctrl == CON_Drop && !release)
+	{
+		var item = this->GetHandItem(0);
+		if (!item) return true;
+		this->DropInventoryItem(this->GetHandItemPos(0));
+		
+		// And do not immediately collect another thing.
+		this.inventory.pickup_item = nil;
+		EndPickingUp();
+		return true;
+	}
+	
 	// Switching pickup object or finish pickup?
 	if (this.inventory.is_picking_up)
 	{
