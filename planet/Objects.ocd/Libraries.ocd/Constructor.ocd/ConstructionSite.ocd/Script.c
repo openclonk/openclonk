@@ -19,24 +19,81 @@ public func RefuseTransfer(object toMove) { return true; }
 // disallow site cancellation. Useful e.g. for sites that are pre-placed for a game goal
 public func MakeUncancellable() { no_cancel = true; return true; }
 
-// we have 2 interaction modes
-public func IsInteractable(object obj)	{ return definition != nil && !full_material && !no_cancel; }
-public func GetInteractionMetaInfo(object obj, int num)
+/*-- Interaction --*/
+
+public func HasInteractionMenu() { return true; }
+
+public func GetInteractionMenuEntries(object clonk)
 {
-	return {IconName=nil, IconID=Icon_Cancel, Description="$TxtAbort$"};
+	// default design of a control menu item
+	var custom_entry = 
+	{
+		Right = "100%", Bottom = "2em",
+		BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
+		image = {Right = "2em"},
+		text = {Left = "2em"}
+	};
+	
+	return [{symbol = Icon_Cancel, extra_data = "abort", 
+			custom =
+			{
+				Prototype = custom_entry,
+				Priority = 1,
+				text = {Prototype = custom_entry.text, Text = "$TxtAbort$"},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Cancel}
+			}}];
 }
 
-// Interacting removes the Construction site
-public func Interact(object clonk, int num)
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited() ?? [];		
+	var prod_menu =
+	{
+		title = "$TxtAbort$",
+		entries_callback = this.GetInteractionMenuEntries,
+		callback = "OnInteractionControl",
+		callback_hover = "OnInteractionControlHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 50, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
+	return menus;
+}
+
+public func OnInteractionControlHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	var text = "";
+	if (action == "abort")
+	{
+		if (no_cancel)
+			text = "$TxtNoAbortDesc$";
+		else
+			text = "$TxtAbortDesc$";
+	}
+	GuiUpdateText(text, menu_id, 1, desc_menu_target);
+}
+
+public func OnInteractionControl(id symbol, string action, object clonk)
+{
+	if (action == "abort")
+	{
+		if (!Deconstruct())
+			Sound("Click*", false, nil, clonk->GetOwner());
+	}
+}
+
+public func Deconstruct()
 {
 	// Remove Site
-	if(!no_cancel)
+	if (!no_cancel)
 	{
 		for(var obj in FindObjects(Find_Container(this)))
 			obj->Exit();
 		RemoveObject();
+		return true;
 	}
-	return;
+	return false;
 }
 
 public func Construction()
@@ -212,7 +269,7 @@ private func StartConstructing()
 		// message on one of the contents.
 		if(Contents(0))
 			CustomMessage("$TxtNoConstructionHere$", Contents(0), GetOwner(), nil,nil, RGB(255,0,0));
-		Interact(nil, 1);
+		Deconstruct();
 		return;
 	}
 	
