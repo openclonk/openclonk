@@ -191,7 +191,7 @@ public func DropInventoryItem(int slot)
 	// Notify other libraries of deliberate drop.
 	this->~OnDropped(obj);
 	// And make the engine drop the object.
-	this->SetCommand("Drop",obj);
+	this->AddCommand("Drop",obj);
 }
 
 /** Search for the index of an item */
