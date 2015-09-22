@@ -375,9 +375,9 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup, int iFlags)
 
 #else // ifndef USE_CONSOLE
 
-bool C4Surface::ReadJPEG(CStdStream &hGroup, bool fTileable) {
+bool C4Surface::ReadJPEG(CStdStream &, int) {
 	// Dummy surface
-	if (!Create(1, 1)) return false;
+	if (!Create(1, 1, false, 1, 0)) return false;
 	return true;
 }
 

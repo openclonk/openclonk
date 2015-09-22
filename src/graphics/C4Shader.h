@@ -237,6 +237,11 @@ public:
 	void Start();
 	void Finish();
 };
+#else // USE_CONSOLE
+class C4ShaderCall {
+	public:
+	C4ShaderCall(const C4Shader *) {};
+};
 #endif
 
 #endif // INC_C4Shader

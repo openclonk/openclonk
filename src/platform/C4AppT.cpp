@@ -65,7 +65,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 
 void C4AbstractApp::RestoreVideoMode() {}
 
-bool C4AbstractApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool)
+bool C4AbstractApp::SetVideoMode(int, int, unsigned int, unsigned int, unsigned int, bool)
 {
 	return true;
 }
@@ -87,8 +87,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return false;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_GAMMARAMP&, bool) { return true; }
-bool C4AbstractApp::SaveDefaultGammaRamp(_GAMMARAMP&) { return true; }
 void C4AbstractApp::MessageDialog(const char * message) {}
 
 bool C4AbstractApp::FlushMessages()
