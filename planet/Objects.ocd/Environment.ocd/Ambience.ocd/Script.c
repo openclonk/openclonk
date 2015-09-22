@@ -323,9 +323,7 @@ private func EnvCheck_Snow(object cursor, int x, int y, bool is_current)
 private func EnvCheck_Night(object cursor, int x, int y, bool is_current)
 {
 	// Night time.
-	var time = FindObject(Find_ID(Environment_Time));
-	if (!time || !time->IsNight()) return false;
-	return true;
+	return Time->IsNight();
 }
 
 private func EnvCheck_Day(object cursor, int x, int y, bool is_current)

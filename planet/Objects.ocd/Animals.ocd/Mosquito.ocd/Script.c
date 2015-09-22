@@ -27,7 +27,7 @@ private func Death()
 
 private func MissionComplete()
 {
-	if (IsDay()) return;
+	if (Time->IsDay()) return;
 
 	// Mosquitos are very active
 	MoveToTarget();

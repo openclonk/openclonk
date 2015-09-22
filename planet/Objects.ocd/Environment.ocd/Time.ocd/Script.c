@@ -1,10 +1,18 @@
 /**
 	Time Controller
-	Creates time based on the 24-hour time scheme.
-	Time is computed in minutes, which are by default
-	1/2 a second in real life (18 frames). This will
-	make each complete day/night cycle last 12 minutes
-	in real life.
+	Creates time based on the 24-hour time scheme. Time is 
+	computed in minutes, which are by default 1/2 a second in
+	real life (18 frames). This will make each complete 
+	day/night cycle last 12 minutes in real life.
+	
+	The time controller has an interface which is accessed by:
+		Time->HasDayNightCycle(): whether time controller is active.
+		Time->SetTime(int to_time): sets the time.
+		Time->GetTime(): returns the time.
+		Time->IsDay(): whether it is day.
+		Time->IsNight(): whether it is night.
+		Time->SetCycleSpeed(int seconds_per_tick): set the speed of the day/night cycle.
+		Time->GetCycleSpeed(): returns the speed of the day/night cycle.
 
 	@author Ringwall, Maikel
 */
@@ -16,9 +24,27 @@ local advance_seconds_per_tick;
 
 /*-- Interface --*/
 
-// Sets the current time using a 24*60 minute clock scheme. 
+// Returns whether the time controller is active.
+public func HasDayNightCycle()
+{
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+		return FindObject(Find_ID(Time));
+	return;
+}
+
+// Sets the current time using a 24*60 minute clock scheme.
 public func SetTime(int to_time) 
 {
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			time_controller->SetTime(to_time);
+		return;
+	}
+	// Otherwise normal behavior.
 	// Set time.
 	time = (to_time * 60) % (24 * 60 * 60);
 	// Hide celestials during day.
@@ -34,19 +60,82 @@ public func SetTime(int to_time)
 // Returns the time in minutes.
 public func GetTime()
 {
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			return time_controller->GetTime();
+		return;
+	}
+	// Otherwise normal behavior.
 	return time / 60;
+}
+
+public func IsDay()
+{
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			return time_controller->IsDay();
+		return;
+	}
+	// Otherwise normal behavior.
+	var day_start = (time_set.sunrise_start + time_set.sunrise_end) / 2;
+	var day_end = (time_set.sunset_start + time_set.sunset_end) / 2;
+	if (Inside(time, day_start, day_end))
+		return true;
+	return false;
+}
+
+public func IsNight()
+{
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			return time_controller->IsNight();
+		return;
+	}
+	// Otherwise normal behavior.
+	var night_start = (time_set.sunset_start + time_set.sunset_end) / 2;
+	var night_end = (time_set.sunrise_start + time_set.sunrise_end) / 2;
+	if (!Inside(time, night_end, night_start))
+		return true;
+	return false;
 }
 
 // Sets the number of seconds the day will advance each tick (10 frames).
 // Setting to 0 will stop day-night cycle. Default is 30 seconds.
 public func SetCycleSpeed(int seconds_per_tick)
 {
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			time_controller->SetCycleSpeed(seconds_per_tick);
+		return;
+	}
+	// Otherwise normal behavior.
 	advance_seconds_per_tick = seconds_per_tick;
 }
 
 // Returns the number of seconds the day advances each tick (10 frames). 
 public func GetCycleSpeed()
 {
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			return time_controller->GetCycleSpeed();
+		return;
+	}
+	// Otherwise normal behavior.
 	return advance_seconds_per_tick;
 }
 
@@ -56,7 +145,7 @@ public func GetCycleSpeed()
 protected func Initialize()
 {
 	// Only one time control object.
-	if (ObjectCount(Find_ID(Environment_Time)) > 1) 
+	if (ObjectCount(Find_ID(Time)) > 1) 
 		return RemoveObject();
 	
 	// Determine the frame times for day and night events.
@@ -81,24 +170,6 @@ protected func Initialize()
 	SetCycleSpeed(30);
 	AddEffect("IntTimeCycle", this, 100, 10, this);
 	return;
-}
-
-public func IsDay()
-{
-	var day_start = (time_set.sunrise_start + time_set.sunrise_end) / 2;
-	var day_end = (time_set.sunset_start + time_set.sunset_end) / 2;
-	if (Inside(time, day_start, day_end))
-		return true;
-	return false;
-}
-
-public func IsNight()
-{
-	var night_start = (time_set.sunset_start + time_set.sunset_end) / 2;
-	var night_end = (time_set.sunrise_start + time_set.sunrise_end) / 2;
-	if (!Inside(time, night_end, night_start))
-		return true;
-	return false;
 }
 
 private func PlaceStars()

@@ -206,11 +206,11 @@ private func Activity()
 		// Escape ended
 		if (lib_insect_escape) lib_insect_escape = false;
 		// Go to sleep?
-		if (HasDayNightCycle())
+		if (Time->HasDayNightCycle())
 		{
-			if (!lib_insect_nocturnal && IsNight())
+			if (!lib_insect_nocturnal && Time->IsNight())
 				return Sleep();
-			if (lib_insect_nocturnal && IsDay())
+			if (lib_insect_nocturnal && Time->IsDay())
 				return Sleep();
 			if (IsSleeping())
 				WakeUp();

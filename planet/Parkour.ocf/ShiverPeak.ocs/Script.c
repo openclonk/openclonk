@@ -48,7 +48,7 @@ protected func Initialize()
 	/* --Environmental Effects-- */
 
 	// Time
-	var time = CreateObject(Environment_Time);
+	var time = CreateObject(Time);
 	time->SetCycleSpeed(0);
 	time->SetTime(900);
 

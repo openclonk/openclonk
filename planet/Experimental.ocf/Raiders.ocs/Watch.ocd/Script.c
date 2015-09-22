@@ -23,7 +23,7 @@ protected func Construction()
 
 public func WatchUpdate()
 {
-	var time = FindObject(Find_ID(Environment_Time));
+	var time = FindObject(Find_ID(Time));
 
 	if(time)
 	{

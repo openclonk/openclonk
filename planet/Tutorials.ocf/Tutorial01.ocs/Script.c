@@ -33,7 +33,7 @@ protected func Initialize()
 	InitAnimals();
 	
 	// Environment.
-	var time = CreateObject(Environment_Time);
+	var time = CreateObject(Time);
 	time->SetTime(18*60 + 30);
 	time->SetCycleSpeed(0);
 

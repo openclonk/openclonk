@@ -112,7 +112,7 @@ private func InitEnvironment(int difficulty)
 	SetGamma(100-dark,100-dark,100-dark);
 	
 	// Time of days and celestials.
-	var time = CreateObject(Environment_Time);
+	var time = CreateObject(Time);
 	time->SetTime(60 * 20);
 	time->SetCycleSpeed(20);
 		

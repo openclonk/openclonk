@@ -19,7 +19,7 @@ func DoInit(int first_player)
 	var storm = EnsureObject(Storm,0,0,NO_OWNER);
 	storm->SetStorm(-20,0,1000);
 	SetSkyParallax(1); // move background with the wind
-	var time = EnsureObject(Environment_Time,0,0,-1);
+	var time = EnsureObject(Time,0,0,-1);
 	time->SetTime(600);
 	time->SetCycleSpeed(20);
 	// Goal

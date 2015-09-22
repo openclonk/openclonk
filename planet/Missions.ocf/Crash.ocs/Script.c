@@ -13,7 +13,7 @@ func DoInit(int first_player)
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
-	var time = CreateObject(Environment_Time);
+	var time = CreateObject(Time);
 	time->SetTime(600);
 	time->SetCycleSpeed(20);
 	// Waterfall

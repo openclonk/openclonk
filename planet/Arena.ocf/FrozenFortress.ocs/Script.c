@@ -10,7 +10,7 @@ protected func Initialize()
 {
 	// Environment 
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	var time=CreateObject(Environment_Time);
+	var time=CreateObject(Time);
 	time->SetTime();
 	time->SetCycleSpeed();
 	FindObject(Find_ID(Moon))->SetMoonPhase(3);
