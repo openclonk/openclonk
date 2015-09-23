@@ -926,6 +926,11 @@ public:
 		pSurface = new C4Surface(&Application, this);
 	}
 
+	~C4ConsoleGUIPreviewWindow()
+	{
+		delete pSurface;
+	}
+
 	virtual void Close() {}
 };
 
