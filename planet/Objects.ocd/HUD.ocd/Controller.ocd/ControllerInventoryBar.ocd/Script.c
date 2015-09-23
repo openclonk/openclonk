@@ -153,7 +153,7 @@ func UpdateInventory()
 				contents = item->Contents(0);
 				if (contents)
 					extra_symbol = contents->GetID();
-				extra_slot_player = GetOwner();
+				extra_slot_player = nil; // 'nil' means 'do not hide' here.
 				extra_slot_background_symbol = Icon_Menu_Circle;
 				// And attach tracker..
 				var i = 0, e = nil;
