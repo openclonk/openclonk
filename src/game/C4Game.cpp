@@ -3666,8 +3666,6 @@ float C4Game::GetTextSpecImageAspect(const char* szSpec)
 		{
 			const StdMesh& mesh = *pGfx->Mesh;
 			const StdMeshBox& box = mesh.GetBoundingBox();
-
-			// Note the bounding box is in OGRE frame of reference
 			return (box.x2 - box.x1) / (box.y2 - box.y1);
 		}
 
