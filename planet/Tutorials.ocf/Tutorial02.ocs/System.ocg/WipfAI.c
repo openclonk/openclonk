@@ -2,26 +2,35 @@
 
 #appendto Wipf
 
-local had_food = false;
-
-protected func Initialize()
+public func EnableTutorialControl()
 {
-	_inherited(...);
-	
-	RemoveEffect("Activity", this);
-	
+	RemoveEffect("IntActivity", this);
 	AddEffect("TutorialWipf", this, 1, 5, this);
 	return;
 }
 
-public func HadFood() { return had_food; }
+public func DisableTutorialControl()
+{
+	RemoveEffect("TutorialWipf", this);
+	AddEffect("IntActivity", this, 1, 10, this);
+	return;
+}
+
+public func HadFood() 
+{ 
+	var effect = GetEffect("TutorialWipf", this);
+	if (effect)
+		return effect.had_food;
+	return false; 
+}
 
 protected func FxTutorialWipfStart(object target, proplist effect, int temp)
 {
 	if (temp)
 		return;
-		
-	effect.Sequence = "WaitForFood";	
+	
+	effect.sequence = "WaitForFood";
+	effect.had_food = false;
 	return FX_OK;
 }
 
@@ -29,32 +38,37 @@ protected func FxTutorialWipfTimer(object target, proplist effect, int time)
 {
 	// Wait for some food to appear.
 	var food = FindObject(Find_Func("NutritionalValue"), Find_Distance(16), Find_NoContainer());
-	if (effect.Sequence == "WaitForFood" && food)
+	if (effect.sequence == "WaitForFood" && food)
 	{
 		Collect(food, true);
-		had_food = true;	
-		//SetCommand("Follow", FindObject(Find_OCF(OCF_CrewMember)));
-		effect.Sequence = "MoveToLoam";
+		Eat(food);
+		effect.had_food = true;	
+		SetCommand("MoveTo", nil, 488, 620);
+		effect.sequence = "MoveToLoam";
 	}
 	// Move down to the loam.
-	if (effect.Sequence == "MoveToLoam" )
+	if (effect.sequence == "MoveToLoam" )
 	{
-		SetCommand("MoveTo", nil, 488, 620);
 		if (Inside(GetX(), 472, 520) && Inside(GetY(), 600, 632) && PathFree(484, 616, 544, 602))
-			effect.Sequence = "MoveToBridge";
+		{
+			SetCommand("MoveTo", nil, 796, 524);
+			effect.sequence = "MoveToBridge";			
+		}
 	}
 	// Move to the bridge.
-	if (effect.Sequence == "MoveToBridge")
+	if (effect.sequence == "MoveToBridge")
 	{
-		SetCommand("MoveTo", nil, 796, 524);
 		var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_InRect(AbsX(744), AbsY(480), 80, 48));
 		if (Inside(GetX(), 760, 816) && Inside(GetY(), 496, 528) && clonk)
-			effect.Sequence = "MoveToSettlement";
+		{
+			SetCommand("MoveTo", nil, 992, 524);
+			effect.sequence = "MoveToSettlement";
+		}
 	}
 	// Move to settlement.
-	if (effect.Sequence == "MoveToSettlement")
+	if (effect.sequence == "MoveToSettlement")
 	{
-		SetCommand("MoveTo", nil, 992, 524);
+		
 	}
-	return 1;
+	return FX_OK;
 }

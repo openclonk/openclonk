@@ -150,7 +150,8 @@ private func InitVegetation()
 private func InitAnimals()
 {
 	// The wipf as your friend, controlled by AI.
-	CreateObjectAbove(Wipf, 500, 536);
+	var wipf = CreateObjectAbove(Wipf, 500, 536);
+	wipf->EnableTutorialControl();
 	
 	// Some butterflies as atmosphere.
 	for (var i = 0; i < 25; i++)
@@ -225,6 +226,12 @@ global func FxGoalOutroStop(object target, proplist effect, int reason, bool tem
 {
 	if (temp) 
 		return FX_OK;
+
+	// Enable wipf activity.
+	var wipf = FindObject(Find_ID(Wipf));
+	if (wipf)
+		wipf->DisableTutorialControl();		
+	return FX_OK;
 }
 
 /*-- Guide Messages --*/
