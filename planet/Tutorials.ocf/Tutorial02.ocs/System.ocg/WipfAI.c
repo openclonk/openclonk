@@ -43,17 +43,8 @@ protected func FxTutorialWipfTimer(object target, proplist effect, int time)
 		Collect(food, true);
 		Eat(food);
 		effect.had_food = true;	
-		SetCommand("MoveTo", nil, 488, 620);
-		effect.sequence = "MoveToLoam";
-	}
-	// Move down to the loam.
-	if (effect.sequence == "MoveToLoam" )
-	{
-		if (Inside(GetX(), 472, 520) && Inside(GetY(), 600, 632) && PathFree(484, 616, 544, 602))
-		{
-			SetCommand("MoveTo", nil, 796, 524);
-			effect.sequence = "MoveToBridge";			
-		}
+		SetCommand("MoveTo", nil, 796, 524);
+		effect.sequence = "MoveToBridge";	
 	}
 	// Move to the bridge.
 	if (effect.sequence == "MoveToBridge")
