@@ -1,2 +1,0 @@
-Name=Wipf
-Description=Lives in caves.

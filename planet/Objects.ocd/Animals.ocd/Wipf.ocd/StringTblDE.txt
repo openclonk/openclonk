@@ -1,0 +1,2 @@
+Name=Wipf
+Description=Pelziger kleiner Freund der Clonk.

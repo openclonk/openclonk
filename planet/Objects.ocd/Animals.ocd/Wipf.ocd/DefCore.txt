@@ -1,0 +1,21 @@
+[DefCore]
+id=Wipf
+Version=5,4,0,0
+Category=C4D_Living
+Width=14
+Height=14
+Offset=-7,-7
+Vertices=7
+VertexX=         0,  0,  0, -4,  4, -2,  2
+VertexY=         0, -4,  5, -2, -2,  2,  2
+VertexCNAT=      0,  4,  8,  1,  2,  1,  2
+VertexFriction=300,300,300,100,300,300,300
+Mass=20 
+NoGet=1
+Float=0
+BorderBound=1
+StretchGrowth=1
+IncompleteActivity=1
+Oversize=1
+Pathfinder=1
+ContactCalls=1

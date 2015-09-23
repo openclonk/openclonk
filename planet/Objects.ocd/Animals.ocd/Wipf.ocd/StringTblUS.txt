@@ -1,0 +1,2 @@
+Name=Wipf
+Description=Furry little friend of the clonk.
