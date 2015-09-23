@@ -75,7 +75,7 @@ class StdMeshTrack
 	friend class StdMeshSkeleton;
 	friend class StdMeshSkeletonLoader;
 public:
-	StdMeshTransformation GetTransformAt(float time) const;
+	StdMeshTransformation GetTransformAt(float time, float length) const;
 
 private:
 	std::map<float, StdMeshKeyFrame> Frames;

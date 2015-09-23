@@ -284,26 +284,43 @@ namespace
 	}
 }
 
-StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
+StdMeshTransformation StdMeshTrack::GetTransformAt(float time, float length) const
 {
 	std::map<float, StdMeshKeyFrame>::const_iterator iter = Frames.lower_bound(time);
 
-	// If this points to end(), then either
-	// a) time > animation length
-	// b) The track does not include a frame for the very end of the animation
-	// Both is considered an error
-	assert(iter != Frames.end());
-
+	// We are at or before the first keyframe. This short typically not
+	// happen, since all animations have a keyframe 0. Simply return the
+	// first keyframe.
 	if (iter == Frames.begin())
 		return iter->second.Transformation;
 
 	std::map<float, StdMeshKeyFrame>::const_iterator prev_iter = iter;
-	-- prev_iter;
+	--prev_iter;
 
-	float dt = iter->first - prev_iter->first;
+	float iter_pos;
+	if (iter == Frames.end())
+	{
+		// We are beyond the last keyframe.
+		// Interpolate between the last and the first keyframe.
+		// See also bug #1406.
+		iter = Frames.begin();
+		iter_pos = length;
+	}
+	else
+	{
+		iter_pos = iter->first;
+	}
+
+	// No two keyframes with the same position:
+	assert(iter_pos > prev_iter->first);
+
+	// Requested position is between the two selected keyframes:
+	assert(time >= prev_iter->first);
+	assert(iter_pos >= time);
+
+	float dt = iter_pos - prev_iter->first;
 	float weight1 = (time - prev_iter->first) / dt;
-
-	float weight2 = (iter->first - time) / dt;
+	float weight2 = (iter_pos - time) / dt;
 	(void)weight2; // used in assertion only
 
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
@@ -802,7 +819,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	case LeafNode:
 		track = Leaf.Animation->Tracks[bone];
 		if (!track) return false;
-		transformation = track->GetTransformAt(fixtof(Leaf.Position->Value));
+		transformation = track->GetTransformAt(fixtof(Leaf.Position->Value), Leaf.Animation->Length);
 		return true;
 	case CustomNode:
 		if(bone == Custom.BoneIndex)
