@@ -506,7 +506,7 @@ void C4ScriptGuiWindowProperty::Set(const C4Value &value, C4String *tag)
 
 	case C4ScriptGuiWindowPropertyName::player:
 		if (value == C4VNull)
-			current->d = std::numeric_limits<int32_t>::max();
+			current->d = ANY_OWNER;
 		else
 			current->d = value.getInt();
 		break;
@@ -675,7 +675,7 @@ void C4ScriptGuiWindow::Init()
 	props[C4ScriptGuiWindowPropertyName::onCloseAction].SetNull();
 	props[C4ScriptGuiWindowPropertyName::style].SetNull();
 	props[C4ScriptGuiWindowPropertyName::priority].SetNull();
-	props[C4ScriptGuiWindowPropertyName::player].SetInt(std::numeric_limits<int32_t>::max());
+	props[C4ScriptGuiWindowPropertyName::player].SetInt(ANY_OWNER);
 
 	wasRemoved = false;
 	closeActionWasExecuted = false;
@@ -1764,7 +1764,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 
 	// message hidden?
 	const int32_t &myPlayer = props[C4ScriptGuiWindowPropertyName::player].GetInt();
-	if (!IsVisible() || (myPlayer != std::numeric_limits<int32_t>::max() && player != myPlayer) || (target && !target->IsVisible(player, false)))
+	if (!IsVisible() || (myPlayer != ANY_OWNER && player != myPlayer) || (target && !target->IsVisible(player, false)))
 	{
 		return false;
 	}
