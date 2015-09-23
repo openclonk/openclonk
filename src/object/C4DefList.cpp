@@ -83,10 +83,11 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	C4Group hChild;
 	bool fPrimaryDef=false;
 	bool fThisSearchMessage=false;
+	bool can_be_primary_def = SEqualNoCase(GetExtension(hGroup.GetName()), "ocd");
 
 	// This search message
 	if (fSearchMessage)
-		if (SEqualNoCase(GetExtension(hGroup.GetName()),"ocd")
+		if (can_be_primary_def
 		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocs")
 		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocf"))
 		{
@@ -97,12 +98,19 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	if (fThisSearchMessage) { LogF("%s...",GetFilename(hGroup.GetName())); }
 
 	// Load primary definition
-	if ((nDef=new C4Def))
+	if (can_be_primary_def)
 	{
-		if (nDef->Load(hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem) && Add(nDef, fOverload))
-			{ iResult++; fPrimaryDef=true; }
-		else
-			{ delete nDef; }
+		if ((nDef = new C4Def))
+		{
+			if (nDef->Load(hGroup, *SkeletonLoader, dwLoadWhat, szLanguage, pSoundSystem) && Add(nDef, fOverload))
+			{
+				iResult++; fPrimaryDef = true;
+			}
+			else
+			{
+				delete nDef;
+			}
+		}
 	}
 
 	// Load sub definitions
