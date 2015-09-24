@@ -387,18 +387,22 @@ public func Jump(int xdir, int ydir)
 		ydir = -20;
 
 	SetSpeed(GetXDir() + xdir, ydir - GetXDir() / 2);
-	for (var c = 0; c < 5; ++c)
+	
+	if (GetMaterialVal("DigFree", "Material", GetMaterial(0, 7)) != 0)
 	{
-		var dir = Sign(GetXDir());
-		var clr = GetAverageTextureColor(GetTexture(0, 7));
-		var particles =
+		for (var c = 0; c < 5; ++c)
 		{
-			Prototype = Particles_Dust(),
-			R = (clr >> 16) & 0xff,
-			G = (clr >> 8) & 0xff,
-			B = clr & 0xff,
-		};
-		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 5, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
+			var dir = Sign(GetXDir());
+			var clr = GetAverageTextureColor(GetTexture(0, 7));
+			var particles =
+			{
+				Prototype = Particles_Dust(),
+				R = (clr >> 16) & 0xff,
+				G = (clr >> 8) & 0xff,
+				B = clr & 0xff,
+			};
+			CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 5, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
+		}
 	}
 	return;
 }
