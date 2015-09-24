@@ -27,10 +27,10 @@ public func HadFood()
 protected func FxTutorialWipfStart(object target, proplist effect, int temp)
 {
 	if (temp)
-		return;
-	
+		return FX_OK;
 	effect.sequence = "WaitForFood";
 	effect.had_food = false;
+	this.Collectible = false;	
 	return FX_OK;
 }
 
@@ -61,5 +61,13 @@ protected func FxTutorialWipfTimer(object target, proplist effect, int time)
 	{
 		
 	}
+	return FX_OK;
+}
+
+protected func FxTutorialWipfStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	this.Collectible = true;
 	return FX_OK;
 }

@@ -30,6 +30,7 @@
 #include <StdRegistry.h>
 
 C4RankSystem::C4RankSystem()
+	: pszRankNames(NULL), szRankNames(NULL), pszRankExtensions(NULL)
 {
 	Default();
 }
@@ -272,12 +273,10 @@ void C4RankSystem::Clear()
 
 void C4RankSystem::Default()
 {
+	Clear();
 	Register[0]=0;
 	RankName[0]=0;
 	RankBase=1000;
-	pszRankNames=NULL;
-	szRankNames=NULL;
-	pszRankExtensions=NULL;
 	iRankExtNum=0;
 }
 

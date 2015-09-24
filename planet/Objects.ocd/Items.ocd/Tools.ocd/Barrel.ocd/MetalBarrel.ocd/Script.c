@@ -32,8 +32,6 @@ public func IsBarrelForMaterial(string sznMaterial)
 	return density < 50 && density >= 25;
 }
 
-local Collectible = false;
-local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
