@@ -159,6 +159,7 @@ private func InitAnimals()
 	// The wipf as your friend, controlled by AI.
 	var wipf = CreateObjectAbove(Wipf, 500, 536);
 	wipf->EnableTutorialControl();
+	wipf->SetMeshMaterial("WipfSkin");
 	
 	// Some butterflies as atmosphere.
 	for (var i = 0; i < 25; i++)
