@@ -157,7 +157,7 @@ void C4GameOptionsList::OptionScenarioParameter::Update()
 
 // Unfortunately, the control mode cannot be changed in the lobby
 C4GameOptionsList::OptionControlMode::OptionControlMode(class C4GameOptionsList *pForDlg)
-		: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_TEXT_CONTROLMODE"), !::Control.isCtrlHost() || !::Control.isNetwork() || !::Control.Network.IsEnabled() || !pForDlg->IsRuntime())
+		: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_TEXT_CONTROLMODE"), !::Control.isCtrlHost() || !::Control.isNetwork() || !::Control.Network.IsEnabled())
 {
 	SetToolTip(LoadResStr("IDS_DESC_CHANGESTHEWAYCONTROLDATAI"));
 }
@@ -177,7 +177,8 @@ void C4GameOptionsList::OptionControlMode::DoDropdownSelChange(int32_t idNewSele
 	if (!::Control.isNetwork() || !::Control.Network.IsEnabled() || !::Control.isCtrlHost()) return;
 	// perform it
 	::Network.SetCtrlMode(idNewSelection);
-	// update done in parent call
+	// update for clients done by packet; host needs to set it manually
+	Update();
 }
 
 void C4GameOptionsList::OptionControlMode::Update()
@@ -187,7 +188,7 @@ void C4GameOptionsList::OptionControlMode::Update()
 		szControlMode = LoadResStr("IDS_NET_NONET");
 	else
 	{
-		switch (::Control.Network.GetCtrlMode())
+		switch (::Network.Status.getCtrlMode())
 		{
 		case CNM_Central: szControlMode = LoadResStr("IDS_NET_CTRLMODE_CENTRAL"); break;
 		case CNM_Decentral: szControlMode = LoadResStr("IDS_NET_CTRLMODE_DECENTRAL"); break;
