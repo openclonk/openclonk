@@ -392,8 +392,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	// Show "put/take all items" buttons if applicable. Also update tooltip.
 	var show_grab_all = current_menus[0] && current_menus[1];
 	show_grab_all = show_grab_all 
-					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk() || current_menus[0].target->~AllowsGrabAll())
-					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk() || current_menus[1].target->~AllowsGrabAll());
+					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk())
+					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk());
 	if (show_grab_all)
 	{
 		current_center_column_target.Visibility = VIS_Owner;
@@ -441,19 +441,22 @@ public func OnMoveAllToClicked(int menu_id)
 	{
 		if (!current_menus[i] || !current_menus[i].target)
 			return;
-		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk() && !current_menus[i].target->~AllowsGrabAll())
+		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk())
 			return;
 	}
 	// Take all from the other object and try to put into the target.
 	var other = current_menus[1 - menu_id].target;
 	var target = current_menus[menu_id].target;
+	
+	// Get all contents in a separate step in case the object's inventory changes during the transfer.
+	// Also do not use FindObject(Find_Container(...)), because this way an object can simply overload Contents to return an own collection of items.
 	var contents = [];
-	if (other->~AllowsGrabAll())
-		contents = other->GetGrabAllObjects();
-	else	
-		contents = FindObjects(Find_Container(other));
+	var index = 0, obj;
+	while (obj = other->Contents(index++)) PushBack(contents, obj);
+	
+	// Now try transferring each item once.
 	var transfered = 0;
-	for (var obj in contents) 
+	for (obj in contents)
 	{
 		// Sanity, can actually happen if an item merges with others during the transfer etc.
 		if (!obj) continue;

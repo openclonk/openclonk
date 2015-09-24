@@ -5,37 +5,21 @@
 	@author Zapper 
 */
 
-// proplist {id = <id>, amount = <amount>}
-local current_object_info;
+// Search for new objects only once per frame.
+local last_search_frame;
+local current_objects;
 
-public func GetObjectsMenuEntries()
+// Overload contents callback for the interaction menu.
+public func Contents(int index)
 {
-	var menu_entries = [];
-	for (var info in current_object_info)
+	if (last_search_frame != FrameCounter())
 	{
-		var text = "";
-		if (info.amount > 1) text = Format("%dx", info.amount);
-		PushBack(menu_entries, {symbol = info.id, text = text});
+		current_objects = GetPossibleObjects();
+		last_search_frame = FrameCounter();
 	}
-	return menu_entries;
+	if (index < 0 || index >= GetLength(current_objects)) return nil;
+	return current_objects[index];
 }
-
-public func GetInteractionMenus(object clonk)
-{
-	var menus = _inherited() ?? [];		
-	var menu =
-	{
-		title = "$ObjectsAroundYou$",
-		entries_callback = this.GetObjectsMenuEntries,
-		callback = "OnPickUpObject",
-		callback_target = this,
-		BackgroundColor = RGB(0, 50, 0),
-		Priority = 20
-	};
-	PushBack(menus, menu);
-	return menus;
-}
-
 
 private func GetPossibleObjects(id limit_definition)
 {
@@ -48,77 +32,19 @@ private func GetPossibleObjects(id limit_definition)
 	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(GetActionTarget()->GetObjectLayer()), check_id, sort);
 }
 
-public func OnPickUpObject(id symbol)
-{
-	var found = nil;
-	for (var obj in GetPossibleObjects(symbol))
-	{
-		found = obj;
-		break;
-	}
-	// Maybe something else was quicker?
-	if (!found) return;
-	
-	var clonk = GetActionTarget();
-	clonk->Collect(found);
-	// It is possible that the Clonk removed the object.
-	if (!found || found->Contained())
-		Refresh();
-}
-
-func InitFor(object clonk, object menu)
+// Called by the Clonk when an interaction menu is opened.
+public func InitFor(object clonk, object menu)
 {
 	SetAction("Attach", clonk);
 	SetOwner(clonk->GetOwner());
+	this.Visibility = VIS_Owner;
 	
 	// The effects will remove this object once the interaction menu is closed.
 	AddEffect("KeepAlive", menu, 1, 0, this);
-	
-	// Refresh the objects regularly.
-	AddEffect("CheckRefresh", this, 1, 5, this);
-	
-	// And refresh one time.
-	Refresh();
-}
-
-func Refresh()
-{
-	// Look for all objects in the vicinity that can be accessed by the Clonk (aka non-stuck).
-	var objects = GetPossibleObjects();
-	var new_object_info = [];
-	for (var obj in objects)
-	{
-		// Already in the list? Just increase the amount.
-		var found = false;
-		for (var old_data in new_object_info)
-		{
-			if (old_data.id != obj->GetID()) continue;
-			++old_data.amount;
-			found = true;
-			break;
-		}
-		if (found) continue;
-		// Otherwise, just add to list.
-		PushBack(new_object_info, {id = obj->GetID(), amount = 1});
-	}
-	if (new_object_info == current_object_info) return;
-	current_object_info = new_object_info;
-	UpdateInteractionMenus(this.GetObjectsMenuEntries);
-}
-
-func FxCheckRefreshTimer(object target, proplist effect)
-{
-	Refresh();
-}
-
-func OnDropped(object clonk, object obj)
-{
-	// Make the Clonk not directly re-collect the object;
-	clonk->~OnDropped(obj);
 }
 
 // You can transfer items to the environment, which will then be placed on the ground.
-func Collection2(object obj)
+public func Collection2(object obj)
 {
 	var clonk = GetActionTarget();
 	obj->Exit(0, clonk->GetDefBottom() - clonk->GetY());
@@ -126,7 +52,7 @@ func Collection2(object obj)
 }
 
 // When the item is moved into this object via script, we don't even have to collect it in the first place.
-func Collect(object obj)
+public func Collect(object obj)
 {
 	var clonk = GetActionTarget();
 	var container = obj->Contained();
@@ -151,28 +77,24 @@ func Collect(object obj)
 	return true;
 }
 
+private func OnDropped(object clonk, object obj)
+{
+	// Make the Clonk not directly re-collect the object;
+	clonk->~OnDropped(obj);
+}
 
-
-func AttachTargetLost()
+public func AttachTargetLost()
 {
 	RemoveObject();
 }
 
-func FxKeepAliveStop(object target, proplist effect, int reason, int temp)
+private func FxKeepAliveStop(object target, proplist effect, int reason, int temp)
 {
 	if (temp) return;
 	RemoveObject();
 }
 
-public func HasInteractionMenu() { return true; }
-
-public func AllowsGrabAll() { return true; }
-
-public func GetGrabAllObjects()
-{
-	return GetPossibleObjects();
-}
-
+public func IsContainer() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
