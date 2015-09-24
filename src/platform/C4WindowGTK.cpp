@@ -750,7 +750,9 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, Info);
+	assert(vis_info);
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, vis_info->visualid);
+	XFree(vis_info);
 #if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
@@ -819,6 +821,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	XVisualInfo *vis_info = glXGetVisualFromFBConfig(dpy, new_info);
+	assert(vis_info);
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, vis_info->visualid);
 	XFree(vis_info);
 
