@@ -8,12 +8,18 @@
 static g_is_initialized; // set after first player join
 static g_max_player_num; // max number of players that were ever joined
 
-static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole;
+static npc_pyrit, npc_dagobert, npc_tarzan, g_golden_shovel, g_flagpole, g_golden_idol, g_last_stone_door;
 static g_got_gem_task, g_got_oil, g_goal, g_treasure_collected;
 
 func DoInit(int first_player)
 {
 	ClearFreeRect(530,1135, 50,2);
+	if (g_last_stone_door) g_last_stone_door->DoDamage(170 - g_last_stone_door->GetDamage());
+	if (g_golden_idol)
+	{
+		g_golden_idol->SetLightRange(150,15);
+		g_golden_idol->SetLightColor(0xffc000);
+	}
 	// Start Intro.
 	StartSequence("Intro", 0, g_flagpole);
 	return true;

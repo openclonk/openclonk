@@ -1,6 +1,6 @@
 /* Automatically created objects file */
 
-static g_flagpole, npc_dagobert, npc_tarzan, g_golden_shovel;
+static g_flagpole, npc_dagobert, npc_tarzan, g_golden_shovel, g_golden_idol, g_last_stone_door;
 
 func InitializeObjects()
 {
@@ -12,6 +12,11 @@ func InitializeObjects()
 	CreateObjectAbove(Grass, 1537, 525);
 	CreateObjectAbove(Grass, 1585, 486);
 	CreateObject(Grass, 1739, 429);
+
+	var Torch001 = CreateObjectAbove(Torch, 1869, 1454);
+	Torch001->AttachToWall(true);
+	var Torch002 = CreateObjectAbove(Torch, 562, 1126);
+	Torch002->AttachToWall(true);
 
 	var Chest001 = CreateObjectAbove(Chest, 1002, 313);
 	Chest001.Plane = 50;
@@ -125,8 +130,8 @@ func InitializeObjects()
 	var Chest016 = CreateObjectAbove(Chest, 397, 583);
 	var Chest008 = CreateObjectAbove(Chest, 871, 583);
 	Chest008->SetMeshMaterial("GoldenChest", 0);
-	var Chest018 = CreateObjectAbove(Chest, 12, 39);
-	var Chest017 = CreateObjectAbove(Chest, 2786, 55);
+	var Chest018 = CreateObjectAbove(Chest, 2662, 1357);
+	var Chest017 = CreateObjectAbove(Chest, 720, 352);
 	var Chest009 = CreateObjectAbove(Chest, 1830, 486);
 	Chest009.tool_spawn = Hammer;
 	var Chest019 = CreateObjectAbove(Chest, 730, 135);
@@ -156,9 +161,10 @@ func InitializeObjects()
 	var StoneDoor008 = CreateObject(StoneDoor, 813, 716);
 	StoneDoor008->SetComDir(COMD_Down);
 	StoneDoor008->MakeInvincible();
-	var StoneDoor009 = CreateObject(StoneDoor, 781, 716);
-	StoneDoor009->SetComDir(COMD_Down);
-	StoneDoor009->SetClrModulation(0xffa0a0a0);
+	g_last_stone_door = CreateObject(StoneDoor, 781, 716);
+	g_last_stone_door.StaticSaveVar = "g_last_stone_door";
+	g_last_stone_door->SetComDir(COMD_Down);
+	g_last_stone_door->SetClrModulation(0xffa0a0a0);
 	var StoneDoor010 = CreateObject(StoneDoor, 692, 748);
 	StoneDoor010->SetComDir(COMD_Down);
 	StoneDoor010->MakeInvincible();
@@ -224,9 +230,10 @@ func InitializeObjects()
 	var LotsOfCoins001 = CreateObject(LotsOfCoins, 805, 583);
 	LotsOfCoins001.Plane = 200;
 
-	var Idol002 = CreateObject(Idol, 824, 568);
-	Idol002->SetR(-4);
-	Idol002.Plane = 220;
+	g_golden_idol = CreateObject(Idol, 824, 568);
+	g_golden_idol.StaticSaveVar = "g_golden_idol";
+	g_golden_idol->SetR(-4);
+	g_golden_idol.Plane = 220;
 
 	var Lorry002 = CreateObjectAbove(Lorry, 200, 1183);
 	var Lorry001 = CreateObjectAbove(Lorry, 708, 1407);
@@ -443,7 +450,6 @@ func InitializeObjects()
 	Lorry001->CreateContents(Bread, 3);
 
 	Chest021->CreateContents(DynamiteBox, 2);
-	Chest018->CreateContents(DynamiteBox, 2);
 	Chest017->CreateContents(DynamiteBox, 2);
 	Chest020->CreateContents(DynamiteBox);
 	Chest015->CreateContents(DynamiteBox);
