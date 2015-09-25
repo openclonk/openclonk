@@ -80,7 +80,7 @@ public func Interact(object clonk)
 public func AttachToWall(bool fixed)
 {
 	// Exit the torch and make it a non-collectible static back, also change its state.
-	Exit(0, 3);
+	if (Contained()) Exit(0, 3);
 	SetCategory(C4D_StaticBack);
 	this.Collectible = false;
 	state = TRCH_Attached;
@@ -190,6 +190,18 @@ protected func FxIntBurningStop(object target, proplist effect, int reason, bool
 	// Remove the light from this torch.	
 	SetLightRange(0);
 	return 1;
+}
+
+public func SaveScenarioObject(proplist props, ...)
+{
+	if (!_inherited(props, ...)) return false;
+	if (state == TRCH_Attached || state == TRCH_Fixed)
+	{
+		props->AddCall("Attach", this, "AttachToWall", state == TRCH_Fixed);
+		props->Remove("Category");
+		props->Remove("Plane");
+	}
+	return true;
 }
 
 
