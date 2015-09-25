@@ -72,6 +72,7 @@ public:
 	int32_t  RandomSeed;
 	char Engine[C4MaxTitle+1]; // Relative filename of engine to be used for this scenario
 	char MissionAccess[C4MaxTitle+1];
+	bool Secret; // if true, scenario is invisible if MissionAccess has not been granted
 	bool NetworkGame;
 	bool NetworkRuntimeJoin;
 	StdCopyStrBuf Origin; // original oath and filename to scenario (for records and savegames)

@@ -152,6 +152,7 @@ void C4SHead::Default()
 	Origin.Clear();
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
+	Secret = false;
 	C4XVer[0] = C4XVer[1] = 0;
 	Difficulty = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
@@ -186,6 +187,7 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 	{
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Engine),   "Engine",               ""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
+		pComp->Value(mkNamingAdapt(Secret,                    "Secret",               false));
 		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));

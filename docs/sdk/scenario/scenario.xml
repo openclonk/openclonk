@@ -71,6 +71,11 @@
         <col>The scenario will only load if the player gained this password in another scenario. See script function <funclink>GainMissionAccess</funclink>().</col>
       </row>
       <row>
+        <col>Secret</col>
+        <col>bool</col>
+        <col>If true and MissionAccess is set, the scenario is invisible in the scenario selection list if the player does not have the required password access.</col>
+      </row>
+      <row>
         <col>ForcedFairCrew</col>
         <col>Integer</col>
         <col>0 or 1. If 1, fair crew is always used in this scenario.</col>

@@ -667,6 +667,8 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
+	// Mission access
+	fNoMissionAccess = (C4S.Head.MissionAccess[0] && !SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess));
 	// Localized parameter definitions. needed for achievements and parameter input boxes.
 	// Only show them for "real" scenarios
 	if (!C4S.Head.SaveGame && !C4S.Head.Replay)
@@ -767,7 +769,7 @@ bool C4ScenarioListLoader::Scenario::CanOpen(StdStrBuf &sErrOut)
 	C4StartupScenSelDlg *pDlg = C4StartupScenSelDlg::pInstance;
 	if (!pDlg) return false;
 	// check mission access
-	if (C4S.Head.MissionAccess[0] && !SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
+	if (!HasMissionAccess())
 	{
 		sErrOut.Copy(LoadResStr("IDS_PRC_NOMISSIONACCESS"));
 		return false;
@@ -1595,6 +1597,7 @@ void C4StartupScenSelDlg::UpdateList()
 		// add what has been loaded
 		for (C4ScenarioListLoader::Entry *pEnt = pScenLoader->GetFirstEntry(); pEnt; pEnt = pEnt->GetNext())
 		{
+			if (pEnt->IsHidden()) continue; // no UI entry at all for hidden items
 			ScenListItem *pEntItem = new ScenListItem(pScenSelList, pEnt);
 			if (pEnt == pOldSelection) pScenSelList->SelectEntry(pEntItem, false);
 		}
