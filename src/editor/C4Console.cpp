@@ -176,7 +176,7 @@ bool C4Console::SaveScenario(const char * path)
 	}
 
 	// Can't save to child groups
-	if (Game.ScenarioFile.GetMother())
+	if (Game.ScenarioFile.GetMother() && Game.ScenarioFile.GetMother()->IsPacked())
 	{
 		StdStrBuf str;
 		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
