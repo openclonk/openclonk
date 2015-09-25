@@ -1922,7 +1922,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Output boundary
 	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
 	{
-		if (pActionDef && fix_r == Fix0 && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
+		// For actions with a custom facet set, check against that action facet. Otherwise (or with oversize objects), just check against shape.
+		if (pActionDef && fix_r == Fix0 && !pActionDef->GetPropertyInt(P_FacetBase) && Con <= FullCon && Action.Facet.Wdt)
 		{
 			// active
 			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
