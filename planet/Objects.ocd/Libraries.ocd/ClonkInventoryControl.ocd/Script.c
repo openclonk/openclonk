@@ -274,7 +274,7 @@ private func SetNextPickupItem(object to)
 
 private func FindAllPickupItems(sorting_criterion)
 {
-	return FindObjects(Find_Distance(20), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(this->GetObjectLayer()), sorting_criterion);
+	return FindObjects(Find_Distance(20), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(this->GetObjectLayer()), Find_Not(Find_OCF(OCF_HitSpeed1)), sorting_criterion);
 }
 
 private func FindNextPickupObject(object start_from, int x_dir)
