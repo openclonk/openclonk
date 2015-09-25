@@ -1680,9 +1680,10 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	rcBounds.Wdt = width;
 	rcBounds.Hgt = height;
 
-	// if this window contains text, we auto-fit to the text height
+	// If this window contains text, we auto-fit to the text height;
+	// but we only break text when the window /would/ crop it otherwise. 
 	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::text].GetStrBuf();
-	if (strBuf)
+	if (strBuf && !(style & C4ScriptGuiWindowStyleFlag::NoCrop))
 	{
 		StdStrBuf sText;
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), rcBounds.Wdt, &sText, true);
@@ -1827,7 +1828,11 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	{
 		StdStrBuf sText;
 		int alignment = ALeft;
-		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), outDrawWdt, &sText, true);
+		// If we are set to NoCrop, the message will be split by string-defined line breaks only.
+		int allowedTextWidth = outDrawWdt;
+		if (style & C4ScriptGuiWindowStyleFlag::NoCrop)
+			allowedTextWidth = std::numeric_limits<int>::max();
+		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), allowedTextWidth, &sText, true);
 		float textYOffset = 0.0f, textXOffset = 0.0f;
 		if (style & C4ScriptGuiWindowStyleFlag::TextVCenter)
 			textYOffset = float(outDrawHgt) / 2.0f - float(textHgt) / 2.0f;

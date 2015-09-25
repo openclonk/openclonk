@@ -328,7 +328,7 @@ private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
 					Target = crew_gui_target,
 					ID = 100 * (index + 1) + 10,
 					Top = "-0.45em",
-					Style = GUI_TextHCenter,
+					Style = GUI_TextHCenter | GUI_NoCrop,
 					Text = Format("<c dddd00>%d</c>", health_val),
 					Priority = 8,
 				},
