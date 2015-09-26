@@ -117,6 +117,9 @@ global func ExplosionParticles_Init()
 global func Explode(int level, bool silent, int damage_level)
 {
 	if(!this) FatalError("Function Explode must be called from object context");
+	
+	// Special: Implode
+	if (level <= 0) return RemoveObject();
 
 	// Shake the viewport.
 	ShakeViewport(level);
@@ -139,6 +142,8 @@ global func Explode(int level, bool silent, int damage_level)
 
 global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer, bool silent, int damage_level)
 {
+	// Zero-size explosion doesn't affect anything
+	if (level <= 0) return;
 	// If the object is contained, loop through all parent containers until the blast is contained or no container is found.
 	// Blast the containers it passes through and the objects inside them.
 	var container = inobj;
@@ -184,6 +189,9 @@ smoothness (in percent) determines how round the effect will look like
 */
 global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent, int damage_level)
 {
+	// Zero-size explosion doesn't affect anything
+	if (level <= 0) return;
+	
 	if(!silent) //Does object use it's own explosion sound effect?
 	{
 		var grade = BoundBy(level / 10 - 1, 1, 3);
@@ -318,6 +326,9 @@ global func BlastObject(int level, int caused_by)
 
 global func DoShockwave(int x, int y, int level, int cause_plr, object layer)
 {
+	// Zero-size shockwave
+	if (level <= 0) return;
+	
 	// Coordinates are always supplied globally, convert to local coordinates.
 	var l_x = x - GetX(), l_y = y - GetY();
 	
