@@ -81,7 +81,15 @@ protected func OnClonkDeath(object clonk)
 			SetCursor(plr, crew);
 			// Transfer inventory if turned on.
 			if (inventory_transfer)
+			{
+				// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
+				var i = clonk->ContentsCount(), contents;
+				while (i--)
+					if (contents = clonk->Contents(i))
+						if (contents->~IsDroppedOnDeath(clonk))
+							contents->Exit();
 				crew->GrabContents(clonk);
+			}
 			break;
 		}
 		// Try to buy a crew member at the base.

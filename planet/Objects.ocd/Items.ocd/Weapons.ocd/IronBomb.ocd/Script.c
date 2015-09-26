@@ -81,6 +81,13 @@ protected func RejectEntrance()
 	return GetAction() == "Fuse" || GetAction() == "Ready";
 }
 
+// Drop fusing bomb on death to prevent explosion directly after respawn
+public func IsDroppedOnDeath(object clonk)
+{
+	return !!GetEffect("FuseBurn", this);
+}
+
+
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 public func IsGrenadeLauncherAmmo() { return true; }

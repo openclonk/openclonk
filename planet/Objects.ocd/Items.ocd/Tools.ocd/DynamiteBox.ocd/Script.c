@@ -115,7 +115,7 @@ public func DoExplode()
 protected func Incineration(int caused_by) 
 {
 	ActivateFuse();
-	AddEffect("Fuse", this, 100, 1, this);
+	if (!GetEffect("Fuse", this)) AddEffect("Fuse", this, 100, 1, this);
 	Sound("Fuse");
 	SetController(caused_by);
 	return;
@@ -137,6 +137,15 @@ public func FxFuseTimer(object target, effect, int timer)
 
 public func IsTool() { return true; }
 public func IsChemicalProduct() { return true; }
+
+
+/* Drop connected or fusing boxes */
+
+public func IsDroppedOnDeath(object clonk)
+{
+	return GetEffect("Fuse", this) || wire;
+}
+
 
 
 /*-- Properties --*/

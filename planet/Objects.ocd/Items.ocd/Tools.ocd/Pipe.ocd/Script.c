@@ -77,3 +77,9 @@ public func CycleApertureOffset()
 }
 
 
+/* Container dies: Drop connected pipes so they don't draw huge lines over the landscape */
+
+public func IsDroppedOnDeath(object clonk)
+{
+	return !!FindObject(Find_Func("IsConnectedTo",this));
+}
