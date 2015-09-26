@@ -530,11 +530,11 @@ private func ExecuteMelee(fx)
 		}
 		// Clonk is above us - jump there
 		//Message("MeleeJump %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
-		this->ControlJump();
+		ExecuteJump();
 		if (dx<-5) SetComDir(COMD_Left); else if (dx>5) SetComDir(COMD_Right); else SetComDir(COMD_None);
 	}
 	// Not in range. Walk there.
-	if (!GetCommand() || !Random(3)) SetCommand("MoveTo", fx.target);
+	if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
 	//Message("Melee %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
 	return true;
 }
@@ -551,9 +551,11 @@ private func ExecuteEvade(fx,int threat_dx,int threat_dy)
 private func ExecuteJump(fx)
 {
 	// Jump if standing on floor
-	if (GetProcedure() == "WALK")
-		//if (GetContact(-1, CNAT_Bottom)) - implied by walk
-			return this->ControlJump();
+	if (GetProcedure() == "WALK") // if (GetContact(-1, CNAT_Bottom)) - implied by walk
+	{
+		if (this->~ControlJump()) return true; // for clonks
+		return this->Jump(); // for others
+	}
 	return false;
 }
 
