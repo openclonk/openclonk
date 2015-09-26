@@ -74,6 +74,10 @@ private func StartUsage(object clonk)
 	Sound("Electrical",nil,nil,nil,+1);
 	PlayAnimation("Opening", -5, Anim_Linear(0,0,GetAnimationLength("Opening"), 10, ANIM_Hold), Anim_Const(1000));
 	anim_spin = PlayAnimation("Spin",5, Anim_Linear(0,0,GetAnimationLength("Spin"), 40, ANIM_Loop), Anim_Const(1000));
+	
+	// Light effects
+	SetLightRange(50, 10);
+	SetLightColor(0xa0a0ff);
 }
 
 private func EndUsage(object clonk)
@@ -83,6 +87,7 @@ private func EndUsage(object clonk)
 	iAngle = 0;
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->UpdateAttach();
+	SetLightRange();
 }
 
 // Update the glove aim angle
@@ -106,6 +111,10 @@ private func UpdateGloveAngle(object clonk, int x, int y)
 //	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
 
 	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(iAngle) * 11111/1000));
+	
+	// Light position at remote location
+	this.LightOffset = [x, y];
+	return true;
 }
 
 public func ControlUseHolding(object clonk, ix, iy)
