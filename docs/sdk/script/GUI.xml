@@ -191,7 +191,7 @@
 			</row>
 			<row>
 				<col>GUI_NoCrop</col>
-				<col>Children of this window may be drawn outside the window's bounds.</col>
+				<col>Children of this window may be drawn outside the window's bounds. Text in this window set with the <strong>Text</strong> property will not automatically be broken into multiple lines.</col>
 			</row>
 		</table>
 		<text>For example multiple Style elements can be combined as: <em>Style = GUI_Multiple | GUI_TextVCenter | GUI_TextHCenter</em></text>
