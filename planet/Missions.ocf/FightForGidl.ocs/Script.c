@@ -11,6 +11,7 @@ static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from S2AI; contains changes for this scenario
+static const ENEMY = 10; // player number of enemy
 
 static const MAX_RELAUNCH = 10;
 
@@ -25,6 +26,7 @@ func Initialize()
 
 func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 {
+	if (GetPlayerType(plr) != C4PT_User) return;
 	if (!g_statue) { EliminatePlayer(plr); return; } // no post-elimination join
 	if (!g_relaunchs)
 	{
@@ -54,6 +56,8 @@ func RemovePlayer(int plr)
 
 func RelaunchPlayer(int plr)
 {
+	// Not for AI attackers
+	if (GetPlayerType(plr) != C4PT_User) return;
 	// Relaunch count
 	if (!g_relaunchs[plr])
 	{
@@ -310,12 +314,13 @@ func InitWaveData()
 	var ogre       = { Name="$EnemyOgre$",      Inventory=bigclub,     Energy= 90, Bounty=100, Color=0xff00ffff, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
+	var chippie    = { Type=Chippie };
 	//newbie = runner;
 	//newbie = runner;
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
-	    { Name = "$WaveNewbies$", Enemies = [
+			{ Name = "$WaveNewbies$", Enemies = [
 			new newbie      {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "$WaveBows$", Enemies = [
 			new newbie      {            Num= 2, Interval=10 },
@@ -343,6 +348,10 @@ func InitWaveData()
 			new flintstone  {            Num=20, Interval=15 },
 			new nukeogre    {            Num= 2, Interval=99 },
 			new amazon      { Delay= 50, Num= 6, Interval=10 }
+	]}, { Name = "Alien invasion", Enemies = [
+			new bowman      { Delay=260, Num= 3, Interval= 5 },
+			new chippie     {            Num=10, Interval=10 },
+			new amazon      { Delay=250, Num= 6, Interval=10 }
 	]}, { Name = "Two of each kind", Enemies = [
 			new newbie      { Delay=  0                      },
 			new ogre        { Delay=  0                      },

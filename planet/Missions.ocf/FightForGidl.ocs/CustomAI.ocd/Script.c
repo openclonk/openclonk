@@ -63,7 +63,7 @@ private func ExecuteBomber(fx)
 	else
 	{
 		// Not in range. Walk there.
-		if (!GetCommand() || !Random(3)) SetCommand("MoveTo", fx.target);
+		if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
 	}
 	return true;
 }
@@ -102,7 +102,7 @@ private func ExecuteClub(fx)
 		return true;
 	}
 	// Not in range. Walk there.
-	if (!GetCommand() || !Random(3)) SetCommand("MoveTo", fx.target);
+	if (!GetCommand() || !Random(10)) SetCommand("MoveTo", fx.target);
 	//Message("Melee %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
 	return true;
 }
@@ -137,6 +137,12 @@ func Execute(proplist fx, int time)
 	return inherited(fx, time, ...);
 }
 
+func ExecuteIdle(proplist fx)
+{
+	// Idle execution overridden by Execute
+	return true;
+}
+
 
 //======================================================================
 /* Enemy creation */
@@ -169,7 +175,7 @@ func Inventory_GetCarryTransform()
 func LaunchEnemy(proplist enemy, int x, int y)
 {
 	// Create enemy (usually a Clonk)
-	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y), clonk;
+	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
 	// Enemy visuals
 	if (enemy.Skin)
 	{
@@ -258,5 +264,4 @@ global func ForceVal2Array(v) {  if (GetType(v) != C4V_Array) return [v]; else r
 
 // forward max contents count to property
 func Clonk_MaxContentsCount() { return this.MaxContentsCountVal; }
-
 

@@ -16,3 +16,6 @@ EnemyRunner=Bekloppter
 
 WaveNewbies=Nur zum Aufwärmen
 WaveBows=Fernkampfalarm!
+
+TeamAttackers=Angreifer
+TeamDefenders=Verteidiger

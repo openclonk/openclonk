@@ -16,3 +16,6 @@ EnemyRunner=Crazy
 
 WaveNewbies=Just warming up...
 WaveBows=Bowmen alarm!
+
+TeamAttackers=Attackers
+TeamDefenders=Defenders
