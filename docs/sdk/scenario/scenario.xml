@@ -258,7 +258,7 @@
       <row>
         <literal_col>MapZoom</literal_col>
         <col>4 integers</col>
-        <col>Factor for zooming the map to the real game world. Default is 10.</col>
+        <col>Factor for zooming the map to the real game world. Default is 8.</col>
       </row>
       <row>
         <literal_col>Amplitude</literal_col>
