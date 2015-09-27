@@ -857,7 +857,7 @@ static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 	for (std::list<const char*>::iterator it = items.begin(); it != items.end(); it++)
 	{
 		if (!*it)
-			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)L"----------");
+			SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"----------");
 		else
 			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(*it));
 	}

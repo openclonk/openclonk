@@ -246,6 +246,7 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 {
 	std::list<const char*> functions;
 	std::list<const char*> global_functions;
+	auto sort_alpha = [](const char * const &a, const char * const &b) -> bool { return strcmp(a, b) < 0; };
 	if (!p) p = GetPropList();
 	const C4ValueArray * a = p->GetProperties();
 	for (int i = 0; i < a->GetSize(); ++i)
@@ -255,15 +256,15 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 		C4AulFunc * f = p->GetFunc(key);
 		if (!f) continue;
 		if (!f->GetPublic()) continue;
-		if (p->HasProperty(key))
+		if (!::ScriptEngine.GetPropList()->HasProperty(key))
 			functions.push_back(key->GetCStr());
 		else
 			global_functions.push_back(key->GetCStr());
 	}
 	delete a;
-	functions.sort();
-	functions.push_back(0);
-	global_functions.sort();
+	functions.sort(sort_alpha);
+	if (!functions.empty() && !global_functions.empty()) functions.push_back(0); // separator
+	global_functions.sort(sort_alpha);
 	functions.splice(functions.end(), global_functions);
 	return functions;
 }
