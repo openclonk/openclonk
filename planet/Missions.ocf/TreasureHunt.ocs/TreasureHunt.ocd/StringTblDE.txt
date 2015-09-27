@@ -1,7 +1,7 @@
 Name=Ölsuche
 Name2=Schatzsuche
 MsgSideGoal=Sekundärziel: %d von %d Goldbarren gefunden.
-MsgGoalFulfilled=Schatz gefunden und verkauft :-)
-MsgGoalUnFulfilled=Schatz noch nicht gefunden und verkauft :-(
+MsgGoalFulfilled=Spielziel erfüllt.
+MsgGoalUnFulfilled=Finde den Schatz und bringe ihn zu Dagobert, um Öl für das Flugzeug zu erhalten!
 MsgGoalOil=Finde ein neues Ölfass.
 MsgGotOil=Bringe das Ölfass zum Flugzeug.
