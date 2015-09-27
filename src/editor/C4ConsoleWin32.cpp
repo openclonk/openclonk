@@ -205,7 +205,12 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			wchar_t buffer[16000];
 			GetDlgItemTextW(hDlg,IDC_COMBOINPUT,buffer,16000);
 			if (buffer[0])
-				Console.In(StdStrBuf(buffer).getData());
+			{
+				StdStrBuf in_char(buffer);
+				::Console.RegisterRecentInput(in_char.getData(), C4Console::MRU_Scenario);
+				::Console.In(in_char.getData());
+				::Console.UpdateInputCtrl();
+			}
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONHALT:
@@ -863,7 +868,7 @@ static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 	}
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update)
 {
 	HWND hDialog = state->hPropertyDlg;
 	if (!hDialog) return;
@@ -872,10 +877,11 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)iLine);
 	UpdateWindow(GetDlgItem(hDialog,IDC_EDITOUTPUT));
 
-	if (PropertyDlgObject == rSelection.GetObject()) return;
+	if (PropertyDlgObject == rSelection.GetObject() && !force_function_update) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject);
+	std::list<const char *> functions = ::Console.GetScriptSuggestions(PropertyDlgObject, C4Console::MRU_Object);
+
 	HWND hCombo = GetDlgItem(state->hPropertyDlg, IDC_COMBOINPUT);
 	wchar_t szLastText[500+1];
 	// Remember old window text
@@ -891,7 +897,9 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
-	SetComboItems(GetDlgItem(hWindow,IDC_COMBOINPUT), functions);
+	HWND hCombo = GetDlgItem(hWindow, IDC_COMBOINPUT);
+	SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
+	SetComboItems(hCombo, functions);
 }
 
 void C4ConsoleGUI::ClearPlayerMenu()

@@ -89,6 +89,18 @@ public:
 
 	int FrameCounter;
 	int Time,FPS;
+
+	// Script MRU: Keep track of recent script executions in global and local windows
+	enum RecentScriptInputLists
+	{
+		MRU_Scenario = 0,
+		MRU_Object = 1
+	};
+private:
+	std::list<StdCopyStrBuf> recent_script_input[2];
+public:
+	std::list<const char *> GetScriptSuggestions(class C4PropList *target, RecentScriptInputLists section) const;
+	void RegisterRecentInput(const char *input, RecentScriptInputLists section);
 };
 
 extern C4Console      Console;

@@ -75,7 +75,7 @@ void C4EditCursor::Execute()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 	if (!::Game.iTick35)
-		Console.PropertyDlgUpdate(Selection);
+		Console.PropertyDlgUpdate(Selection, false);
 }
 
 bool C4EditCursor::Init()
@@ -204,7 +204,7 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged()
 {
-	Console.PropertyDlgUpdate(Selection);
+	Console.PropertyDlgUpdate(Selection, false);
 	Console.ObjectListDlg.Update(Selection);
 }
 
@@ -480,7 +480,7 @@ bool C4EditCursor::OpenPropTools()
 	{
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
 		Console.PropertyDlgOpen();
-		Console.PropertyDlgUpdate(Selection);
+		Console.PropertyDlgUpdate(Selection, false);
 		break;
 	case C4CNS_ModeDraw:
 		Console.ToolsDlg.Open();
@@ -609,7 +609,9 @@ void C4EditCursor::FrameSelection()
 
 bool C4EditCursor::In(const char *szText)
 {
+	::Console.RegisterRecentInput(szText, C4Console::MRU_Object);
 	EMMoveObject(EMMO_Script, Fix0, Fix0, NULL, &Selection, szText);
+	::Console.PropertyDlgUpdate(Selection, true);
 	return true;
 }
 

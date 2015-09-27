@@ -121,7 +121,7 @@ public:
 	
 	bool PropertyDlgOpen();
 	void PropertyDlgClose();
-	void PropertyDlgUpdate(C4ObjectList &rSelection);
+	void PropertyDlgUpdate(C4ObjectList &rSelection, bool force_function_update);
 	C4Object * PropertyDlgObject;
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);

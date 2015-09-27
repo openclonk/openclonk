@@ -85,6 +85,7 @@ public:
 	int32_t ExtraWarnings;
 	char TodoFilename[CFG_MaxString + 1];
 	char AltTodoFilename[CFG_MaxString + 1];
+	int32_t MaxScriptMRU; // maximum number of remembered elements in recently used scripts
 	void CompileFunc(StdCompiler *pComp);
 };
 
