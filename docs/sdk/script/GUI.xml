@@ -138,6 +138,7 @@
 			</row>
 		</table>
 		<text>All other properties are proplists that define sub-windows. You should use non-capital names (i.e. <em>header</em>, not <em>Header</em>) for your sub-windows.</text>
+		<text>The names of your sub-windows properties can also be used in updates when you want to update properties in both a parent window and a child window. Names starting with an underscore (e.g. <em>_child</em>) are anonymous. That means that they can not be referenced by their name later and will not be overwritten by an update that uses the same name again. This can be used to add several new windows later without having to care for duplicate names. For an example, see <funclink>GuiUpdate</funclink>().</text>
 		<h id="styleflags">Style Flags</h>
 		Every window can have a combination of style flags as the <em>Style</em> property.
 		<table>

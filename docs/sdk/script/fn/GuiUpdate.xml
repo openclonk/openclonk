@@ -32,7 +32,10 @@ SYSTEM '../../../clonk.dtd'>
 				</param>
 			</params>
 		</syntax>
-		<desc>Updates an existing GUI window, that has previously been opened with <funclink>GuiOpen</funclink>(). It is possible to update only one certain sub-window by passing child_id and target. The update definition looks similar to the original proplist that defined the GUI window for <funclink>GuiOpen</funclink>(). However, this function can not update certain properties such as the ID and the target. When the name of a sub-proplist matches the original name of a GUI window, the window is updated. If no existing window was found, a new window is added. Returns true if a window was found. </desc>
+		<desc>
+		<text>Updates an existing GUI window, that has previously been opened with <funclink>GuiOpen</funclink>(). It is possible to update only one certain sub-window by passing child_id and target. The update definition looks similar to the original proplist that defined the GUI window for <funclink>GuiOpen</funclink>(). However, this function can not update certain properties such as the ID and the target. When the name of a sub-proplist matches the original name of a GUI window, the window is updated. If no existing window was found, a new window is added. Returns true if a window was found.</text>
+		<text>Because names starting with an underscore (e.g. <em>_child</em>) are anonymous, they will always lead to a new window being added when used in <funclink>GuiUpdate</funclink>.</text>
+		</desc>
 		<remark>See the <emlink href="script/GUI.html">GUI documentation</emlink> for further explanations. </remark>
 		<examples>
 			<example>
@@ -76,6 +79,29 @@ GuiUpdate(update, menuID)
 </code>
 				<text>Opens a menu window and then updates certain parts of it.</text>
 			</example>
+			
+			<example>
+<code>
+var menu =
+{
+	BackgroundColor = RGB(200, 100, 100)
+};
+var menuID = <funclink>GuiOpen</funclink>(menu);
+
+var update = 
+{
+	BackgroundColor = RGB(0, 255, 0)
+}
+for (var i = 0; i &lt; 5; i += 2)
+{
+	update.Left  = Format("%dem", i);
+	update.Right = Format("%dem", i + 1);
+	GuiUpdate({_child = update}, menuID);
+}
+</code>
+				<text>Opens a menu window and then adds three new children to that window.</text>
+			</example>
+			
 		</examples>
 		<related><emlink href="script/GUI.html">GUI Documentation</emlink><funclink>GuiAction_Call</funclink><funclink>GuiAction_SetTag</funclink><funclink>GuiClose</funclink><funclink>GuiOpen</funclink><funclink>GuiUpdateTag</funclink></related>
 	</func>
