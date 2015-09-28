@@ -224,7 +224,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup, int iFlags)
 	return fSuccess;
 }
 
-bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
+bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly)
 {
 	// Using temporary file at C4Group temp path
 	char szTemp[_MAX_PATH+1];
@@ -232,7 +232,7 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
 	// Save to temporary file
-	if (!C4Surface::SavePNG(szTemp, fSaveAlpha, fApplyGamma, fSaveOverlayOnly)) return false;
+	if (!C4Surface::SavePNG(szTemp, fSaveAlpha, fSaveOverlayOnly)) return false;
 	// Move temp file to group
 	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
 	// Success

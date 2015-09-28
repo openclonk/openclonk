@@ -272,9 +272,10 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 				if (FullScreen.pSurface->Lock())
 				{
 					// transfer each pixel - slooow...
-					for (int32_t iY2=0; iY2<bkHgt2; ++iY2)
-						for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
-							png.SetPix(iX+iX2, iY+iY2, pDraw->ApplyGammaTo(FullScreen.pSurface->GetPixDw(iX2, iY2, false)));
+					for (int32_t iY2 = 0; iY2 < bkHgt2; ++iY2)
+						glReadPixels(0, FullScreen.pSurface->Hgt - iY2 - 1, bkWdt2, 1, GL_BGR, GL_UNSIGNED_BYTE, reinterpret_cast<BYTE *>(png.GetRow(iY + iY2)) + iX * 3);
+						/*for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
+							png.SetPix(iX+iX2, iY+iY2, FullScreen.pSurface->GetPixDw(iX2, iY2, false));*/
 					// done; unlock
 					FullScreen.pSurface->Unlock();
 				}
@@ -295,7 +296,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		return png.Save(szFilename);
 	}
 	// Save primary surface
-	return FullScreen.pSurface->SavePNG(szFilename, false, true, false);
+	return FullScreen.pSurface->SavePNG(szFilename, false, false);
 }
 
 void C4GraphicsSystem::DeactivateDebugOutput()

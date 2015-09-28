@@ -153,7 +153,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 				              fctDump.Surface,
 				              0, 0,
 				              fctDump.Wdt, fctDump.Hgt);
-				fSuccess = fctDump.Surface->SavePNG(pScen->sBaseImage.getData(), true, false, false);
+				fSuccess = fctDump.Surface->SavePNG(pScen->sBaseImage.getData(), true, false);
 			}
 			if (!fSuccess)
 				DebugLogF("C4MapFolderData::Load(%s): Could not dump graphic \"%s\"", hGroup.GetName(), pScen->sBaseImage.getData());

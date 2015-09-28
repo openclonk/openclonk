@@ -147,8 +147,8 @@ public:
 	bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound, int iFlags);
 	bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound, int iFlags);
 	bool Save(C4Group &hGroup, const char *szFilename);
-	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
-	bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
+	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fSaveOverlayOnly=false);
+	bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly);
 	bool Read(CStdStream &hGroup, const char * extension, int iFlags);
 	bool ReadPNG(CStdStream &hGroup, int iFlags);
 	bool ReadJPEG(CStdStream &hGroup, int iFlags);

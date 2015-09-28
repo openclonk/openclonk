@@ -53,7 +53,7 @@ public:
 	bool Load(BYTE *pFile, int iSize);            // load from file that is completely in mem
 	DWORD GetPix(int iX, int iY);                 // get pixel value (rgba) - note that NO BOUNDS CHECKS ARE DONE due to performance reasons!
 	// Use ONLY for PNG_COLOR_TYPE_RGB_ALPHA!
-	const uint32_t * GetRow(int iY)
+	uint32_t * GetRow(int iY)
 	{
 		return reinterpret_cast<uint32_t *>(pImageData+iY*iRowSize);
 	}

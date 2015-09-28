@@ -457,7 +457,7 @@ bool C4Surface::ReadBMP(CStdStream &hGroup, int iFlags)
 	return true;
 }
 
-bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
+bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly)
 {
 	// Lock - WARNING - maybe locking primary surface here...
 	if (!Lock()) return false;
@@ -475,7 +475,7 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamm
 	{
 		// Take shortcut. FIXME: Check Endian
 		for (int y = 0; y < Hgt; ++y)
-			glReadPixels(0, Hgt - y, Wdt, 1, fSaveAlpha ? GL_BGRA : GL_BGR, GL_UNSIGNED_BYTE, png.GetImageData() + y * Wdt * (3 + fSaveAlpha));
+			glReadPixels(0, Hgt - y - 1, Wdt, 1, fSaveAlpha ? GL_BGRA : GL_BGR, GL_UNSIGNED_BYTE, png.GetImageData() + y * Wdt * (3 + fSaveAlpha));
 	}
 	else
 #endif
@@ -485,7 +485,6 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamm
 			for (int x=0; x<Wdt; ++x)
 			{
 				DWORD dwClr = GetPixDw(x, y, false);
-				if (fApplyGamma) dwClr = pDraw->ApplyGammaTo(dwClr);
 				png.SetPix(x, y, dwClr);
 			}
 	}
