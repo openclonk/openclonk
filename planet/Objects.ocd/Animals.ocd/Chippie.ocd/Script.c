@@ -85,7 +85,7 @@ private func FxClawingTimer(target, effect, time)
 		}
 		
 		// Grow and prosper.
-		if (GetCon() < 100 && !Random(10))
+		if (GetCon() < 150 && !Random(10))
 		{
 			DoCon(1);
 			DoEnergy(5);
@@ -185,7 +185,7 @@ private func FxActivityTimer(target, effect, time)
 	if(GetComDir() != COMD_Stop)
 		if(!Random(5)) Jump();
 	
-	if(!GetEffect("DmgShock", this))
+	if(!GetEffect("DmgShock", this) && !GBackSemiSolid())
 	{
 		for(var enemy in FindObjects(Find_Distance(100), Find_OCF(OCF_Alive), Find_Hostile(GetOwner()), Sort_Distance()))
 		{
@@ -229,7 +229,7 @@ private func FxActivityTimer(target, effect, time)
 			
 			if(!GetEffect("EggCooldown", this))
 			{
-				if(!Random(2))
+				if(!Random(10))
 				{
 					LayEgg();
 				}
@@ -267,6 +267,7 @@ private func LayEgg()
 local MaxEnergy = 10000;
 local MaxBreath = 10000;
 local NoBurnDecay = 1;
+local ContactIncinerate = 15;
 
 local ActMap = {
 Walk = {
