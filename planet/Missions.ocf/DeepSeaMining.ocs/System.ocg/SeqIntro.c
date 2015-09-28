@@ -6,6 +6,7 @@ static npc_tuesday;
 func Intro_Start()
 {
 	// Intro starts high up in the clouds
+	Music("TheSkylands");
 	LoadScenarioSection("Intro");
 	SetWind(-100);
 	this.intro_skyscroll_xdir = -10;

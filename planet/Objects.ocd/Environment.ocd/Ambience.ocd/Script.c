@@ -131,6 +131,7 @@ private func Execute()
 private func ExecutePlayer(int plr, array environments)
 {
 	var cursor = GetCursor(plr);
+	if (!cursor) cursor = GetPlrView(plr);
 	// Update active state of all player environments
 	if (cursor)
 	{
@@ -196,7 +197,8 @@ func InitializePlayer(int plr)
 			envs[i] = new all_environments[i] { change_delay = 999, is_active = false };
 		player_environments[plr] = envs;
 		// Newly joining players should have set playlist immediately (so they don't start playing a random song just to switch it immediately)
-		ExecutePlayer(plr);
+		// However, this only works with a cursor
+		ExecutePlayer(plr, envs);
 	}
 	return true;
 }
