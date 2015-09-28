@@ -40,7 +40,7 @@ public:
 	bool loop;
 
 	virtual bool Init(const char *strFile);
-	virtual bool Play(bool loop = false) = 0;
+	virtual bool Play(bool loop = false, double max_resume_time = 0.0) = 0;
 	virtual void Stop(int fadeout_ms = 0) = 0;
 	virtual void CheckIfPlaying() = 0;
 	virtual void SetVolume(int) = 0;
@@ -61,7 +61,7 @@ protected:
 class C4MusicFileMID : public C4MusicFile
 {
 public:
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	bool Extract();
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
@@ -77,7 +77,7 @@ class C4MusicFileMOD : public C4MusicFile
 public:
 	C4MusicFileMOD();
 	~C4MusicFileMOD();
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -93,7 +93,7 @@ class C4MusicFileMP3 : public C4MusicFile
 public:
 	C4MusicFileMP3();
 	~C4MusicFileMP3();
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -110,7 +110,7 @@ class C4MusicFileOgg : public C4MusicFile
 public:
 	C4MusicFileOgg();
 	~C4MusicFileOgg();
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -131,7 +131,7 @@ class C4MusicFileSDL : public C4MusicFile
 public:
 	C4MusicFileSDL();
 	~C4MusicFileSDL();
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -149,7 +149,7 @@ public:
 	~C4MusicFileOgg();
 	void Clear();
 	virtual bool Init(const char *strFile);
-	bool Play(bool loop = false);
+	bool Play(bool loop = false, double max_resume_time = 0.0);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -165,6 +165,7 @@ private:
 	bool playing, streaming_done, loaded;
 	ALuint buffers[num_buffers];
 	ALuint channel;
+	double last_playback_pos_sec; // last playback position for resume when fading between pieces
 	int current_section;
 	size_t byte_pos_total;
 	float volume;

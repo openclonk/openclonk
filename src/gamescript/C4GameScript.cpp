@@ -613,16 +613,17 @@ static bool FnSetGlobalSoundModifier(C4PropList * _this, C4PropList *modifier_pr
 	return true;
 }
 
-static bool FnMusic(C4PropList * _this, C4String *szSongname, bool fLoop, long iFadeTime_ms)
+static bool FnMusic(C4PropList * _this, C4String *szSongname, bool fLoop, long iFadeTime_ms, long max_resume_time_ms)
 {
 	bool success;
+	if (max_resume_time_ms < 0) return false; // Safety
 	if (!szSongname)
 	{
 		success = Application.MusicSystem.Stop();
 	}
 	else
 	{
-		success = Application.MusicSystem.Play(FnStringPar(szSongname), !!fLoop, iFadeTime_ms);
+		success = Application.MusicSystem.Play(FnStringPar(szSongname), !!fLoop, iFadeTime_ms, double(max_resume_time_ms)/1000.0);
 	}
 	if (::Control.SyncMode()) return true;
 	return success;
@@ -634,8 +635,10 @@ static long FnMusicLevel(C4PropList * _this, long iLevel)
 	return Application.MusicSystem.SetVolume(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<long> iAtPlayer, bool fForceSwitch, long iFadeTime_ms)
+static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<long> iAtPlayer, bool fForceSwitch, long iFadeTime_ms, long max_resume_time_ms)
 {
+	// Safety
+	if (max_resume_time_ms < 0) return 0;
 	// If a player number is provided, set play list for clients where given player is local only
 	if (!iAtPlayer.IsNil() && iAtPlayer != NO_OWNER)
 	{
@@ -644,7 +647,7 @@ static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<lon
 		if (!at_plr->LocalControl) return 0;
 	}
 	// Set playlist; count entries
-	long iFilesInPlayList = Application.MusicSystem.SetPlayList(FnStringPar(szPlayList), fForceSwitch, iFadeTime_ms);
+	long iFilesInPlayList = Application.MusicSystem.SetPlayList(FnStringPar(szPlayList), fForceSwitch, iFadeTime_ms, double(max_resume_time_ms)/1000.0f);
 	Game.PlayList.Copy(FnStringPar(szPlayList));
 	// network/record/replay: return 0 for sync reasons
 	if (::Control.SyncMode()) return 0;

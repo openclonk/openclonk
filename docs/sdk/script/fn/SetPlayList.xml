@@ -34,6 +34,12 @@
           <desc>Fade time to the new piece if force_change is true and the current song is changed in response to this call. Set to zero to change music instantly.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>resume_time_ms</name>
+          <desc>If greater than zero and changing the playlist causes a new piece to be selected immediately, the upcoming piece is resumed from the position where it last stopped playing if at least this amount of time is still left to be played.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Sets the play list of pieces of music to be played in random order, if music is activated. The actual number of pieces of music in the playlist is returned, or 0 in network mode.</desc>
@@ -43,5 +49,5 @@
     <related><funclink>Music</funclink></related>
   </func>
   <author>PeterW</author><date>2003-01</date>
-  <author>Sven2</author><date>2014-08</date>
+  <author>Sven2</author><date>2015-09</date>
 </funcs>

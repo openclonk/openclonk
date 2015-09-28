@@ -417,7 +417,7 @@ void C4MusicSystem::Execute()
 	}
 }
 
-bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms)
+bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, double max_resume_time)
 {
 	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
 		return false;
@@ -504,7 +504,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms)
 	}
 
 	// Play new song
-	if (!NewFile->Play(fLoop)) return false;
+	if (!NewFile->Play(fLoop, max_resume_time)) return false;
 	PlayMusicFile = NewFile;
 	NewFile->LastPlayed = SCounter++;
 	Loop = fLoop;
@@ -598,7 +598,7 @@ bool C4MusicSystem::GrpContainsMusic(C4Group &rGrp)
 	                 || rGrp.FindEntry("*.ogg");
 }
 
-int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fadetime_ms)
+int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fadetime_ms, double max_resume_time)
 {
 	// reset
 	C4MusicFile *pFile;
@@ -637,7 +637,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 	// Force switch of music if currently playing piece is not in list?
 	if (fForceSwitch && PlayMusicFile && PlayMusicFile->NoPlay)
 	{
-		Play(NULL, false, fadetime_ms);
+		Play(NULL, false, fadetime_ms, max_resume_time);
 	}
 	return ASongCount;
 }

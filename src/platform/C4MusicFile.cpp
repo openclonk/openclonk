@@ -69,7 +69,7 @@ bool C4MusicFile::Init(const char *szFile)
 }
 
 #if AUDIO_TK == AUDIO_TK_FMOD
-bool C4MusicFileMID::Play(bool loop)
+bool C4MusicFileMID::Play(bool loop, double max_resume_time)
 {
 	// check existance
 	if (!FileExists(FileName))
@@ -128,7 +128,7 @@ C4MusicFileMOD::~C4MusicFileMOD()
 	Stop();
 }
 
-bool C4MusicFileMOD::Play(bool loop)
+bool C4MusicFileMOD::Play(bool loop, double max_resume_time)
 {
 	// Load Song
 	size_t iFileSize;
@@ -185,7 +185,7 @@ C4MusicFileMP3::~C4MusicFileMP3()
 	Stop();
 }
 
-bool C4MusicFileMP3::Play(bool loop)
+bool C4MusicFileMP3::Play(bool loop, double max_resume_time)
 {
 #ifndef USE_MP3
 	return false;
@@ -247,7 +247,7 @@ C4MusicFileOgg::~C4MusicFileOgg()
 	Stop();
 }
 
-bool C4MusicFileOgg::Play(bool loop)
+bool C4MusicFileOgg::Play(bool loop, double max_resume_time)
 {
 	// Load Song
 	size_t iFileSize;
@@ -318,7 +318,7 @@ C4MusicFileSDL::~C4MusicFileSDL()
 	Stop();
 }
 
-bool C4MusicFileSDL::Play(bool loop)
+bool C4MusicFileSDL::Play(bool loop, double max_resume_time)
 {
 	const SDL_version * link_version = Mix_Linked_Version();
 	if (link_version->major < 1
@@ -411,7 +411,7 @@ void C4MusicFileSDL::SetVolume(int iLevel)
 
 C4MusicFileOgg::C4MusicFileOgg() :
 	playing(false), streaming_done(false), loaded(false), channel(0), current_section(0), byte_pos_total(0), volume(1.0f),
-	is_loading_from_file(false), last_source_file_pos(0)
+	is_loading_from_file(false), last_source_file_pos(0), last_playback_pos_sec(0)
 {
 	for (size_t i=0; i<num_buffers; ++i)
 		buffers[i] = 0;
@@ -435,6 +435,7 @@ void C4MusicFileOgg::Clear()
 	is_loading_from_file = false;
 	source_file.Close();
 	last_source_file_pos = 0;
+	last_playback_pos_sec = 0;
 }
 
 bool C4MusicFileOgg::Init(const char *strFile)
@@ -555,12 +556,16 @@ bool C4MusicFileOgg::PrepareSourceFileReading()
 	return true;
 }
 
-bool C4MusicFileOgg::Play(bool loop)
+bool C4MusicFileOgg::Play(bool loop, double max_resume_time)
 {
 	// Valid file?
 	if (!loaded) return false;
 	// stop previous
-	Stop();
+	if (playing)
+	{
+		if (max_resume_time > 0.0) return true; // no-op
+		Stop();
+	}
 	// Ensure data reading is ready
 	PrepareSourceFileReading();
 	// Get channel to use
@@ -572,13 +577,26 @@ bool C4MusicFileOgg::Play(bool loop)
 	this->loop = loop;
 	byte_pos_total = 0;
 
+	// Resume setting
+	if (max_resume_time > 0)
+	{
+		// Only resume if significant amount of data is left to be played
+		double piece_len_sec = ov_time_total(&ogg_file, -1);
+		double time_remaining_sec = piece_len_sec - last_playback_pos_sec;
+		if (time_remaining_sec < max_resume_time) last_playback_pos_sec = 0.0;
+	}
+	else
+	{
+		last_playback_pos_sec = 0;
+	}
+
 	// initial volume setting
 	SetVolume(float(::Config.Sound.MusicVolume) / 100.0f);
 
 	// prepare read
 	ogg_info.sound_data.resize(num_buffers * buffer_size);
 	alGenBuffers(num_buffers, buffers);
-	ov_pcm_seek(&ogg_file, 0);
+	ov_time_seek(&ogg_file, last_playback_pos_sec);
 
 	// Fill initial buffers
 	for (size_t i=0; i<num_buffers; ++i)
@@ -595,6 +613,11 @@ void C4MusicFileOgg::Stop(int fadeout_ms)
 {
 	if (playing)
 	{
+		// remember position for eventual later resume
+		ALfloat playback_pos_in_buffer = 0;
+		alErrorCheck(alGetSourcef(channel, AL_SEC_OFFSET, &playback_pos_in_buffer));
+		last_playback_pos_sec += playback_pos_in_buffer;
+		// stop!
 		alSourceStop(channel);
 		// clear queue
 		ALint num_queued=0;
@@ -695,9 +718,17 @@ void C4MusicFileOgg::Execute()
 		bool done = false;
 		while (num_processed--)
 		{
-			// refill processed buffers
-			ALuint buffer;
+			// release processed buffer
+			ALuint buffer; 
 			alErrorCheck(alSourceUnqueueBuffers(channel, 1, &buffer));
+			// add playback time of processed buffer to total playback time
+			ALint buf_bits = 16, buf_chans = 2, buf_freq = 44100;
+			alErrorCheck(alGetBufferi(buffer, AL_BITS, &buf_bits));
+			alErrorCheck(alGetBufferi(buffer, AL_CHANNELS, &buf_chans));
+			alErrorCheck(alGetBufferi(buffer, AL_FREQUENCY, &buf_freq));
+			double buffer_secs = double(buffer_size) / buf_bits / buf_chans / buf_freq * 8;
+			last_playback_pos_sec += buffer_secs;
+			// refill processed buffer
 			size_t buffer_idx;
 			for (buffer_idx=0; buffer_idx<num_buffers; ++buffer_idx)
 				if (buffers[buffer_idx] == buffer) break;
@@ -710,6 +741,8 @@ void C4MusicFileOgg::Execute()
 		if (state != AL_PLAYING && streaming_done)
 		{
 			Stop();
+			// reset playback to beginning for next time this piece is playing
+			last_playback_pos_sec = 0.0;
 		}
 		else if (state == AL_STOPPED)
 		{

@@ -40,11 +40,11 @@ public:
 	void NotifySuccess();
 	bool Init(const char * PlayList = NULL);
 	bool InitForScenario(C4Group & hGroup);
-	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0);
+	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
 
-	int SetPlayList(const char *szPlayList, bool fForceSwitch = false, int fadetime_ms = 0);
+	int SetPlayList(const char *szPlayList, bool fForceSwitch = false, int fadetime_ms = 0, double max_resume_time = 0.0);
 
 	bool ToggleOnOff(); // keyboard callback
 
