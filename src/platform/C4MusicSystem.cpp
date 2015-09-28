@@ -439,25 +439,37 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 				break;
 		}
 	}
-
-	// Random song
 	else
 	{
-		// try to find random song
-		for (int i = 0; i <= 1000; i++)
+		// When resuming, prefer songs that were interrupted before
+		if (max_resume_time > 0)
 		{
-			int nmb = SafeRandom(Max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
-			int j;
-			for (j = 0, NewFile = Songs; NewFile; NewFile = NewFile->pNext)
-				if (!NewFile->NoPlay)
-					if (NewFile->LastPlayed == -1 || NewFile->LastPlayed < SCounter - ASongCount / 2)
-					{
-						j++;
-						if (j > nmb) break;
-					}
-			if (NewFile) break;
+			for (C4MusicFile *check_file = Songs; check_file; check_file = check_file->pNext)
+				if (!check_file->NoPlay)
+					if (check_file->HasResumePos() && check_file->GetRemainingTime() > max_resume_time)
+						if (!NewFile || NewFile->LastPlayed < check_file->LastPlayed)
+							NewFile = check_file;
 		}
 
+		// Random song
+		if (!NewFile)
+		{
+			// try to find random song
+			for (int i = 0; i <= 1000; i++)
+			{
+				int nmb = SafeRandom(Max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
+				int j;
+				for (j = 0, NewFile = Songs; NewFile; NewFile = NewFile->pNext)
+					if (!NewFile->NoPlay)
+						if (NewFile->LastPlayed == -1 || NewFile->LastPlayed < SCounter - ASongCount / 2)
+						{
+							j++;
+							if (j > nmb) break;
+						}
+				if (NewFile) break;
+			}
+
+		}
 	}
 
 	// File found?
@@ -605,7 +617,6 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 	for (pFile = Songs; pFile; pFile = pFile->pNext)
 	{
 		pFile->NoPlay = true;
-		pFile->LastPlayed = -1;
 	}
 	ASongCount = 0;
 	SCounter = 0;

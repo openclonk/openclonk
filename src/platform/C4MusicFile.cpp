@@ -581,8 +581,7 @@ bool C4MusicFileOgg::Play(bool loop, double max_resume_time)
 	if (max_resume_time > 0)
 	{
 		// Only resume if significant amount of data is left to be played
-		double piece_len_sec = ov_time_total(&ogg_file, -1);
-		double time_remaining_sec = piece_len_sec - last_playback_pos_sec;
+		double time_remaining_sec = GetRemainingTime();
 		if (time_remaining_sec < max_resume_time) last_playback_pos_sec = 0.0;
 	}
 	else
@@ -608,6 +607,11 @@ bool C4MusicFileOgg::Play(bool loop, double max_resume_time)
 	return true;
 }
 
+double C4MusicFileOgg::GetRemainingTime()
+{
+	// Note: Only valid after piece has been stopped
+	return ov_time_total(&ogg_file, -1) - last_playback_pos_sec;
+}
 
 void C4MusicFileOgg::Stop(int fadeout_ms)
 {

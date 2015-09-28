@@ -45,6 +45,8 @@ public:
 	virtual void CheckIfPlaying() = 0;
 	virtual void SetVolume(int) = 0;
 	virtual bool HasCategory(const char *szcat) const { return false; }
+	virtual double GetRemainingTime() { return 0.0; }
+	virtual bool HasResumePos() const { return false; }
 
 	bool IsLooping() const { return loop; }
 
@@ -154,6 +156,8 @@ public:
 	void CheckIfPlaying();
 	void SetVolume(int);
 	virtual bool HasCategory(const char *szcat) const;
+	double GetRemainingTime();
+	bool HasResumePos() const { return (last_playback_pos_sec > 0);  }
 private:
 	enum { num_buffers = 4, buffer_size = 160*1024 };
 	::C4SoundLoaders::VorbisLoader::CompressedData data;
