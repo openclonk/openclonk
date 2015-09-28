@@ -162,7 +162,7 @@ private func ExecutePlayer(int plr, array environments)
 			// Music!
 			if (env.music && !has_music)
 			{
-				this->SetPlayList(env.music, plr, true, 3000);
+				this->SetPlayList(env.music, plr, true, 3000, 10000);
 				has_music = true;
 			}
 			// Sound effects like cave reverb etc.
