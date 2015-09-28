@@ -476,8 +476,6 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 	if (!NewFile)
 		return false;
 
-	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(NewFile->FileName));
-
 	// Stop/Fade out old music
 	bool is_fading = fadetime_ms && NewFile != PlayMusicFile && PlayMusicFile;
 	if (!is_fading)
@@ -523,6 +521,10 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 
 	// Set volume
 	PlayMusicFile->SetVolume(Volume * !is_fading);
+
+	// Message first time a piece is played
+	if (!NewFile->HasBeenAnnounced())
+		NewFile->Announce();
 
 	return true;
 }

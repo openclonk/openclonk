@@ -42,6 +42,12 @@
 
 /* helpers */
 
+void C4MusicFile::Announce()
+{
+	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(FileName));
+	announced = true;
+}
+
 bool C4MusicFile::ExtractFile()
 {
 	// safety

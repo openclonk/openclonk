@@ -28,7 +28,7 @@ class C4MusicFile
 public:
 
 	C4MusicFile() :
-		pNext(NULL), LastPlayed(-1), NoPlay(false), loop(false), SongExtracted(false)
+		pNext(NULL), LastPlayed(-1), NoPlay(false), loop(false), SongExtracted(false), announced(false)
 	{ }
 	virtual ~C4MusicFile() { }
 
@@ -38,6 +38,7 @@ public:
 	int LastPlayed;
 	bool NoPlay;
 	bool loop;
+	bool announced;
 
 	virtual bool Init(const char *strFile);
 	virtual bool Play(bool loop = false, double max_resume_time = 0.0) = 0;
@@ -49,6 +50,9 @@ public:
 	virtual bool HasResumePos() const { return false; }
 
 	bool IsLooping() const { return loop; }
+
+	bool HasBeenAnnounced() const { return announced; }
+	void Announce();
 
 protected:
 
