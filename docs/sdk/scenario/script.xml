@@ -71,6 +71,12 @@
           <col>int player</col>
           <col>Called when the wealth of a player has changed.</col>
         </row>
+
+        <row id="InitializeAmbience">
+          <literal_col>InitializeAmbience</literal_col>
+          <col></col>
+          <col>Called on game initialization in Frame zero (i.e. not in savegames). To be used to create sound and music controller objects. If not defined and Objects.ocd is loaded, falls back to a global function defined in Ambience.ocd which creates the default ambience controller.</col>
+        </row>
       </table>
 	</text>
 
