@@ -2345,6 +2345,9 @@ bool C4Game::InitGameFinal()
 	Objects.AssignInfo();
 	Objects.AssignLightRange(); // update FoW-repellers
 
+	// Ambience init (before scenario construction, so the scenario can easily modify ambience in Initialize)
+	if (!C4S.Head.SaveGame) ::GameScript.Call(PSF_InitializeAmbience);
+
 	// Script constructor call
 	int32_t iObjCount = Objects.ObjectCount();
 	if (!C4S.Head.SaveGame) ::GameScript.Call(PSF_Initialize);

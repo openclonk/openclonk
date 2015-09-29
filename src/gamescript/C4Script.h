@@ -49,6 +49,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 /* Engine-Calls */
 
 #define PSF_Initialize          "~Initialize"
+#define PSF_InitializeAmbience  "~InitializeAmbience"
 #define PSF_Construction        "~Construction"
 #define PSF_Destruction         "~Destruction"
 #define PSF_ContentsDestruction "~ContentsDestruction" // C4Object *pContents

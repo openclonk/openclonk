@@ -4,8 +4,6 @@ static g_chemical, g_cabin, g_sawmill, g_workshop, g_windmill, g_flagpole, npc_n
 
 func InitializeObjects()
 {
-	CreateObject(Ambience);
-	
 	var Time001 = CreateObject(Time);
 	Time001->SetTime(600);
 	Time001->SetCycleSpeed(20);

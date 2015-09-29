@@ -6,8 +6,6 @@ func InitializeObjects()
 	CreateObjectAbove(Grass, 533, 550);
 	CreateObjectAbove(Grass, 1306, 706);
 
-	CreateObject(Ambience);
-
 	var BoilingLava001 = CreateObject(BoilingLava);
 	BoilingLava001->SetIntensity(25);
 

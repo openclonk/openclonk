@@ -334,12 +334,21 @@ private func EnvCheck_Day(object cursor, int x, int y, bool is_current)
 	return true;
 }
 
+public func SaveScenarioObject(proplist props, ...)
+{
+	// Only save ambience if it has modifications set for this scenario
+	// However, modifications aren't possible for now so never save it
+	return false;
+}
+
 /*-- Proplist --*/
 
 local SoundModifier, CaveModifier, UnderwaterModifier;
 
-func ReleaseSoundModifier() { return ChangeSoundModifier(this, true); }
-func UpdateSoundModifier() { return ChangeSoundModifier(this, false); } // OpenAL-Soft implementation does not work for all modifiers
+private func ReleaseSoundModifier() { return ChangeSoundModifier(this, true); }
+private func UpdateSoundModifier() { return ChangeSoundModifier(this, false); } // OpenAL-Soft implementation does not work for all modifiers
+
+public func IsAmbienceController() { return true; }
 
 public func Definition(def)
 {
@@ -480,4 +489,18 @@ CreateEnvironmentObjects("Temperate", Rectangle(LandscapeWidth()/2, 0, Landscape
 		
 		p_id->Place(amount_percentage, area);
 	}
+}
+
+
+
+/* Global sound ambience object creation */
+
+global func InitializeAmbience()
+{
+	// Fallback for when this call is not defined in scenario: Ensure there is an ambience controller object
+	if (!FindObject(Find_Func("IsAmbienceController")))
+	{
+		CreateObject(Ambience);
+	}
+	return true;
 }
