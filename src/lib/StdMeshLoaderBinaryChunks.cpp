@@ -17,25 +17,33 @@
 #include "StdMeshLoaderBinaryChunks.h"
 #include "StdMeshLoaderDataStream.h"
 #include <cassert>
-#include <boost/static_assert.hpp>
-#include <boost/assign/list_of.hpp>
 #include <string>
+#include <utility>
+
+// deleter-agnostic unique_ptr static caster
+template<typename To, typename From>
+std::unique_ptr<To> static_unique_cast(From&& p) {
+	return std::unique_ptr<To>(static_cast<To*>(p.release()));
+}
+
+using std::move;
 
 namespace Ogre
 {
 	namespace Mesh
 	{
 		const uint32_t ChunkFileHeader::CurrentVersion = 1080; // Major * 1000 + Minor
-		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
+		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = {
 		    // 1.8: Current version
-		    ("[MeshSerializer_v1.8]",  CurrentVersion)
+		    std::make_pair("[MeshSerializer_v1.8]",  CurrentVersion),
 		    // 1.41: Changes to morph keyframes and poses. We don't use either, so no special handling needed
-		    ("[MeshSerializer_v1.41]", 1041)
+		    std::make_pair("[MeshSerializer_v1.41]", 1041),
 		    // 1.40: Changes to CID_Mesh_LOD chunks, we ignore those, so no special handling needed
-		    ("[MeshSerializer_v1.40]", 1040);
+		    std::make_pair("[MeshSerializer_v1.40]", 1040)
+		};
 
 		// Chunk factory
-		Chunk *Chunk::Read(DataStream *stream)
+		std::unique_ptr<Chunk> Chunk::Read(DataStream *stream)
 		{
 			assert(stream->GetRemainingBytes() >= ChunkHeaderLength);
 
@@ -79,7 +87,7 @@ namespace Ogre
 			chunk->type = id;
 			chunk->size = size;
 			chunk->ReadImpl(stream);
-			return chunk.release();
+			return move(chunk);
 		}
 
 		void ChunkUnknown::ReadImpl(DataStream *stream) { stream->Seek(GetSize()); }
@@ -100,40 +108,31 @@ namespace Ogre
 			     id = Chunk::Peek(stream)
 			    )
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				switch (chunk->GetType())
 				{
 				case CID_Geometry:
 					if (geometry)
-					{
-						delete chunk;
 						throw MultipleSingletonChunks("There's only one CID_Geometry chunk allowed within a CID_Mesh chunk");
-					}
-					geometry.reset(static_cast<ChunkGeometry*>(chunk));
+					geometry = static_unique_cast<ChunkGeometry>(move(chunk));
 					break;
 				case CID_Submesh:
-					submeshes.push_back(static_cast<ChunkSubmesh*>(chunk));
+					submeshes.push_back(static_unique_cast<ChunkSubmesh>(move(chunk)));
 					break;
 				case CID_Mesh_Skeleton_Link:
 					if (!skeletonFile.empty())
-					{
-						delete chunk;
 						throw MultipleSingletonChunks("There's only one CID_Mesh_Skeleton_Link chunk allowed within a CID_Mesh chunk");
-					}
-					skeletonFile = static_cast<ChunkMeshSkeletonLink*>(chunk)->skeleton;
-					delete chunk;
+					skeletonFile = static_cast<ChunkMeshSkeletonLink*>(chunk.get())->skeleton;
 					break;
 				case CID_Mesh_Bounds:
-					bounds = static_cast<ChunkMeshBounds*>(chunk)->bounds;
-					radius = static_cast<ChunkMeshBounds*>(chunk)->radius;
-					delete chunk;
+					bounds = static_cast<ChunkMeshBounds*>(chunk.get())->bounds;
+					radius = static_cast<ChunkMeshBounds*>(chunk.get())->radius;
 					break;
 				case CID_Mesh_Bone_Assignment:
 					// Collect bone assignments
 					{
-					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
+					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk.get());
 					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
-					delete chunk;
 					break;
 					}
 				default:
@@ -142,7 +141,6 @@ namespace Ogre
 				case CID_Submesh_Name_Table:
 				case CID_Edge_List:
 					// Ignore those
-					delete chunk;
 					break;
 				}
 				if (stream->AtEof()) break;
@@ -176,39 +174,30 @@ namespace Ogre
 			     id = Chunk::Peek(stream)
 			    )
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 
 				switch (chunk->GetType())
 				{
 				case CID_Geometry:
 					if (hasSharedVertices)
-					{
 						// Can't have own vertices and at the same time use those of the parent
-						delete chunk;
 						throw SharedVertexGeometryForbidden();
-					}
 					if (geometry)
-					{
-						delete chunk;
 						throw MultipleSingletonChunks("There's only one CID_Geometry chunk allowed within a CID_Submesh chunk");
-					}
-					geometry.reset(static_cast<ChunkGeometry*>(chunk));
+					geometry = static_unique_cast<ChunkGeometry>(move(chunk));
 					break;
 				case CID_Submesh_Op:
-					operation = static_cast<ChunkSubmeshOp*>(chunk)->operation;
-					delete chunk;
+					operation = static_cast<ChunkSubmeshOp*>(chunk.get())->operation;
 					break;
 				case CID_Submesh_Bone_Assignment:
 				{
 					// Collect bone assignments
-					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
+					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk.get());
 					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
 				}
-				delete chunk;
 				break;
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Submesh chunk", chunk->GetType());
-					delete chunk;
 					break;
 				}
 				if (stream->AtEof()) break;
@@ -255,25 +244,20 @@ namespace Ogre
 			     id = Chunk::Peek(stream)
 			    )
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 
 				switch (chunk->GetType())
 				{
 				case CID_Geometry_Vertex_Decl:
 					if (!vertexDeclaration.empty())
-					{
-						delete chunk;
 						throw MultipleSingletonChunks("There's only one CID_Geometry_Vertex_Decl chunk allowed within a CID_Geometry chunk");
-					}
-					vertexDeclaration.swap(static_cast<ChunkGeometryVertexDecl*>(chunk)->declaration);
-					delete chunk;
+					vertexDeclaration.swap(static_cast<ChunkGeometryVertexDecl*>(chunk.get())->declaration);
 					break;
 				case CID_Geometry_Vertex_Buffer:
-					vertexBuffers.push_back(static_cast<ChunkGeometryVertexBuffer*>(chunk));
+					vertexBuffers.push_back(static_unique_cast<ChunkGeometryVertexBuffer>(move(chunk)));
 					break;
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Geometry chunk", chunk->GetType());
-					delete chunk;
 					break;
 				}
 				if (stream->AtEof()) break;
@@ -284,9 +268,9 @@ namespace Ogre
 		{
 			while (Chunk::Peek(stream) == CID_Geometry_Vertex_Decl_Element)
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Geometry_Vertex_Decl_Element);
-				declaration.push_back(static_cast<ChunkGeometryVertexDeclElement*>(chunk));
+				declaration.push_back(static_unique_cast<ChunkGeometryVertexDeclElement>(chunk));
 				if (stream->AtEof()) break;
 			}
 		}
@@ -313,14 +297,11 @@ namespace Ogre
 
 			while (Chunk::Peek(stream) == CID_Geometry_Vertex_Data)
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Geometry_Vertex_Data);
 				if (data)
-				{
-					delete chunk;
 					throw MultipleSingletonChunks("There's only one CID_Geometry_Vertex_Data chunk allowed within a CID_Geometry_Vertex_Buffer chunk");
-				}
-				data.reset(static_cast<ChunkGeometryVertexData*>(chunk));
+				data = static_unique_cast<ChunkGeometryVertexData>(move(chunk));
 				if (stream->AtEof()) break;
 			}
 		}
@@ -335,13 +316,14 @@ namespace Ogre
 	namespace Skeleton
 	{
 		const uint32_t ChunkFileHeader::CurrentVersion = 1080; // Major * 1000 + Minor
-		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
+		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = {
 		    // 1.80: Current version
-		    ("[Serializer_v1.80]",  CurrentVersion)
+		    std::make_pair("[Serializer_v1.80]",  CurrentVersion),
 		    // 1.10: adds SKELETON_BLENDMODE and SKELETON_ANIMATION_BASEINFO chunks. The chunks have been added to the loader, but we ignore them for now.
-		    ("[Serializer_v1.10]", 1010);
+		    std::make_pair("[Serializer_v1.10]", 1010)
+		};
 
-		Chunk *Chunk::Read(DataStream *stream)
+		std::unique_ptr<Chunk> Chunk::Read(DataStream *stream)
 		{
 			assert(stream->GetRemainingBytes() >= ChunkHeaderLength);
 
@@ -377,7 +359,7 @@ namespace Ogre
 			chunk->type = id;
 			chunk->size = size;
 			chunk->ReadImpl(stream);
-			return chunk.release();
+			return chunk;
 		}
 
 		void ChunkUnknown::ReadImpl(DataStream *stream) { stream->Seek(GetSize()); }
@@ -432,18 +414,17 @@ namespace Ogre
 
 			if(!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_BaseInfo)
 			{
-				Chunk* chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_BaseInfo);
 				// TODO: Handle it
 				LogF("StdMeshLoader: CID_Animation_BaseInfo not implemented. Skeleton might not be imported properly.");
-				delete chunk;
 			}
 
 			while (!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_Track)
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_Track);
-				tracks.push_back(static_cast<ChunkAnimationTrack*>(chunk));
+				tracks.push_back(static_unique_cast<ChunkAnimationTrack>(move(chunk)));
 			}
 		}
 
@@ -458,9 +439,9 @@ namespace Ogre
 			bone = stream->Read<uint16_t>();
 			while (Chunk::Peek(stream) == CID_Animation_Track_KF)
 			{
-				Chunk *chunk = Chunk::Read(stream);
+				std::unique_ptr<Chunk> chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_Track_KF);
-				keyframes.push_back(static_cast<ChunkAnimationTrackKF*>(chunk));
+				keyframes.push_back(static_unique_cast<ChunkAnimationTrackKF>(move(chunk)));
 				if (stream->AtEof()) break;
 			}
 		}

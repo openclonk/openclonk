@@ -57,12 +57,6 @@ CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
-# We link Boost statically because that makes it easier for us to distribute
-# the resulting binary. Distributions have the ability to guarantee a certain
-# version of the library exists on the system though, so they may prefer
-# dynamic linking.
-option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
-
 # Allow distributions to use the system tinyxml instead of our bundled copy.
 option(USE_SYSTEM_TINYXML "Use system tinyxml library" OFF)
 
@@ -87,17 +81,16 @@ endif()
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
-CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
-CHECK_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
+REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
 
 # g++'s libstdc++ doesn't properly support <regex> until 4.9.
 # They ship a header that declares functions, but they don't ship an
 # implementation for some things (like std::regex_iterator).
 # This needs to test *linking*, not compilation; cmake does both at the same
 # time, so the test below works.
-CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
-CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
+REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
@@ -820,15 +813,6 @@ find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
-set(Boost_ADDITIONAL_VERSIONS
-	# FindBoost.cmake goes up to 1.56.0
-	"1.59.0" "1.59"
-	"1.58.0" "1.58"
-	"1.57.0" "1.57"
-	)
-find_package("Boost" 1.40.0 REQUIRED)
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-
 if(CMAKE_SYSTEM MATCHES "Windows")
 	message(STATUS "Using Win32 threading.")
 else()
@@ -1423,15 +1407,6 @@ endif()
 if(UPNP_FOUND)
 	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
-endif()
-
-if(USE_BOOST_REGEX)
-	SET(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
-	find_package(Boost 1.40.0 REQUIRED COMPONENTS regex)
-	# Disable automatic linking, we'll do it ourselves
-	add_definitions(-DBOOST_REGEX_NO_LIB)
-	target_link_libraries(libc4script ${Boost_REGEX_LIBRARY})
-	target_link_libraries(c4group ${Boost_REGEX_LIBRARY})
 endif()
 
 add_subdirectory(tests EXCLUDE_FROM_ALL)

@@ -16,7 +16,6 @@
 #include <C4FacetEx.h>
 
 #include <StdScheduler.h>
-#include <boost/noncopyable.hpp>
 
 
 #ifndef INC_C4Particles
@@ -328,8 +327,7 @@ public:
 };
 
 // a chunk contains all of the single particles that can be drawn with one draw call (~"have certain similar attributes")
-// this is noncopyable to make sure that the OpenGL buffers are never freed multiple times
-class C4ParticleChunk : public boost::noncopyable
+class C4ParticleChunk
 {
 private:
 	C4ParticleDef *sourceDefinition;
@@ -356,6 +354,9 @@ public:
 	{
 
 	}
+	// this is noncopyable to make sure that the OpenGL buffers are never freed multiple times
+	C4ParticleChunk(const C4ParticleChunk&) = delete;
+	C4ParticleChunk& operator=(const C4ParticleChunk&) = delete;
 	~C4ParticleChunk()
 	{
 		Clear();
@@ -377,7 +378,7 @@ public:
 
 // this class must not be copied, because deleting the contained CStdCSec twice would be fatal
 // a particle list belongs to a game-world entity (objects or global particles) and contains the chunks associated with that entity
-class C4ParticleList : public boost::noncopyable
+class C4ParticleList
 {
 private:
 	std::list<C4ParticleChunk*> particleChunks;
@@ -395,6 +396,9 @@ public:
 	{
 
 	}
+	// non-copyable
+	C4ParticleList(const C4ParticleList&) = delete;
+	C4ParticleList& operator=(const C4ParticleList&) = delete;
 	
 	~C4ParticleList() { Clear(); }
 

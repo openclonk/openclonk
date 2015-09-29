@@ -19,8 +19,6 @@
 #include "network/C4Network2UPnP.h"
 #include "C4Version.h"
 
-#include <boost/foreach.hpp>
-
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
@@ -124,7 +122,7 @@ void C4Network2UPnPP::ClearNatMappings()
 {
 	if (!mappings)
 		return;
-	BOOST_FOREACH(IStaticPortMapping *mapping, added_mappings)
+	for(IStaticPortMapping *mapping: added_mappings)
 	{
 		BSTR proto, client;
 		long intport, extport;

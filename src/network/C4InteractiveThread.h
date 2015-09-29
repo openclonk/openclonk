@@ -18,7 +18,6 @@
 
 #include "StdScheduler.h"
 #include "StdSync.h"
-#include <boost/function.hpp>
 
 // Event types
 enum C4InteractiveEventType
@@ -114,7 +113,7 @@ public:
 	template<typename Functor>
 	bool ThreadPostAsync(Functor function)
 	{
-		return PushEvent(Ev_Function, new boost::function<void ()>(function));
+		return PushEvent(Ev_Function, new std::function<void ()>(function));
 	}
 
 	// event handlers

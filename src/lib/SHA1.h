@@ -34,11 +34,10 @@ DEALINGS IN THE SOFTWARE.
 #ifndef LIB_SHA1_H
 #define LIB_SHA1_H
 
-#include <boost/static_assert.hpp>
 #include <cstddef>
 
-BOOST_STATIC_ASSERT(sizeof(unsigned char)*8 == 8);
-BOOST_STATIC_ASSERT(sizeof(unsigned int)*8 == 32);
+static_assert(sizeof(unsigned char)*8 == 8, "Please reboot the C universe.");
+static_assert(sizeof(unsigned int)*8 == 32, "sizeof(unsigned int) == 4");
 
 #define SHA_DIGEST_LENGTH 20
 

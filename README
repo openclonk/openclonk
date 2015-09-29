@@ -17,14 +17,13 @@ Additionally, OpenClonk depends on a number of third-party libraries:
   - The OpenGL Extension Wrangler Library (http://glew.sourceforge.net/)
   - FreeALUT (https://github.com/vancegroup/freealut)
   - libogg and libvorbis (https://www.xiph.org/downloads/)
-  - Boost (http://www.boost.org/users/download/)
 
 OS X Specific
 =============
 OpenClonk supports OS X versions 10.8 "Mountain Lion" and later.
 If you are using brew (https://github.com/mxcl/homebrew) or MacPorts
 (http://www.macports.org/), the packages you'll have to install are:
-    libjpeg, libpng, freetype, glew, libogg, libvorbis, boost
+    libjpeg, libpng, freetype, glew, libogg, libvorbis
 
 Linux Specific
 ==============
@@ -38,10 +37,10 @@ to the ones listed above:
   - libxrandr
 Most distributions should provide these dependencies via their packaging
 system. For Debian based distributions, you will need these packages:
-  build-essential cmake imagemagick libboost-dev libboost-regex-dev
-  libfreetype6-dev libgl1-mesa-dev libglew-dev libgtk2.0-dev libjpeg-dev
-  libpng-dev libsdl1.2-dev libsdl-mixer1.2-dev libupnp-dev libxrandr-dev
-  x11proto-core-dev zlib1g-dev
+  build-essential cmake imagemagick libfreetype6-dev libgl1-mesa-dev
+  libglew-dev libgtk2.0-dev libjpeg-dev libpng-dev libsdl1.2-dev
+  libsdl-mixer1.2-dev libupnp-dev libxrandr-dev x11proto-core-dev
+  zlib1g-dev
 
 Windows Specific
 ================

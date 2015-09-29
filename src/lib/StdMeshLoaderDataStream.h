@@ -17,13 +17,10 @@
 #define INC_StdMeshLoaderDataStream
 
 #include "StdMeshLoader.h"
-#include <boost/noncopyable.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/has_trivial_copy.hpp>
 
 namespace Ogre
 {
-	class DataStream : boost::noncopyable
+	class DataStream
 	{
 		const char *begin, *cursor, *end;
 	public:
@@ -32,6 +29,10 @@ namespace Ogre
 			begin = cursor = src;
 			end = cursor + length;
 		}
+
+		// non-copyable
+		DataStream(const DataStream&) = delete;
+		DataStream& operator=(const DataStream&) = delete;
 
 		bool AtEof() const { return cursor == end; }
 		size_t GetRemainingBytes() const { return end - cursor; }
@@ -47,8 +48,7 @@ namespace Ogre
 
 		// Only read directly into T when T is trivially copyable (i.e., allows bit-wise copy)
 		template<class T>
-		typename boost::enable_if<boost::has_trivial_copy<T>,
-		typename boost::disable_if<boost::is_pointer<T>, T>::type>::type
+		typename std::enable_if<std::is_pod<T>::value && !std::is_pointer<T>::value, T>::type
 		Peek() const
 		{
 			if (GetRemainingBytes() < sizeof(T))
@@ -59,7 +59,7 @@ namespace Ogre
 		}
 
 		// declaration for non-trivially copyable types
-		template<class T> typename boost::disable_if<boost::has_trivial_copy<T>, T>::type
+		template<class T> typename std::enable_if<!std::is_pod<T>::value, T>::type
 		Peek() const;
 
 		template<class T> T Read()

@@ -27,10 +27,6 @@ don't need to include this file or any of the files it includes. */
 
 #include "PlatformAbstraction.h"
 
-// boost headers - after PlatformAbstraction to prevent redefines of stdint
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
 #define DEBUGREC_PXS
@@ -67,15 +63,10 @@ don't need to include this file or any of the files it includes. */
 #include <utility>
 #include <vector>
 
-#ifdef USE_BOOST_REGEX
-#	include <boost/regex.hpp>
-	namespace re = boost;
-#else
-#	include <regex>
-	namespace re = std;
-#endif
+#include <regex>
+namespace re = std;
 
-// debug memory management - must come after standard and boost headers,
+// debug memory management - must come after standard headers,
 // because those libraries use placement new
 #ifndef NODEBUGMEM
 #if defined(_DEBUG) && defined(_MSC_VER)

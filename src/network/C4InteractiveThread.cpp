@@ -18,9 +18,6 @@
 #include "C4Application.h"
 #include "C4Log.h"
 
-#include <boost/function.hpp>
-#include <boost/scoped_ptr.hpp>
-
 #include <C4Game.h>
 
 // *** C4InteractiveThread
@@ -153,7 +150,7 @@ void C4InteractiveThread::ProcessEvents() // by main thread
 
 	case Ev_Function:
 		{
-			boost::scoped_ptr<boost::function<void ()> > func(static_cast<boost::function<void()>*>(pEventData));
+			std::unique_ptr<std::function<void ()> > func(static_cast<std::function<void()>*>(pEventData));
 			(*func)();
 		}
 

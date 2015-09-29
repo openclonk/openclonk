@@ -19,10 +19,6 @@
 #include "StdMesh.h"
 #include "StdMeshLoaderDataStream.h"
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/static_assert.hpp>
-
 // ==== Ogre file format ====
 // The Ogre file format is a chunked format similar to PNG.
 // Each chunk except for the file header (type 0x1000) has the following format:
@@ -276,6 +272,10 @@
 // Most of the chunk classes below faithfully match the abovementioned file format.
 namespace Ogre
 {
+	// used to have boost::ptr_vector. Behaves reasonably similar
+	template<typename T>
+	using unique_ptr_vector = std::vector<std::unique_ptr<T>>;
+
 	class DataStream;
 	template<class _Type>
 	class ChunkBase
@@ -348,7 +348,7 @@ namespace Ogre
 		class Chunk : public ChunkBase<ChunkID>
 		{
 		public:
-			static Chunk *Read(DataStream *stream);
+			static std::unique_ptr<Chunk> Read(DataStream *stream);
 		};
 
 		class ChunkUnknown; class 
@@ -384,8 +384,8 @@ namespace Ogre
 			ChunkMesh() : hasAnimatedSkeleton(false), radius(0.0f) {}
 			bool hasAnimatedSkeleton;
 			std::string skeletonFile;
-			boost::scoped_ptr<ChunkGeometry> geometry;
-			boost::ptr_vector<ChunkSubmesh> submeshes;
+			std::unique_ptr<ChunkGeometry> geometry;
+			unique_ptr_vector<ChunkSubmesh> submeshes;
 			std::vector<BoneAssignment> boneAssignments;
 			StdMeshBox bounds;
 			float radius;
@@ -409,7 +409,7 @@ namespace Ogre
 			std::string material;
 			bool hasSharedVertices;
 			std::vector<size_t> faceVertices;
-			boost::scoped_ptr<ChunkGeometry> geometry;
+			std::unique_ptr<ChunkGeometry> geometry;
 			enum SubmeshOperation
 			{
 				SO_PointList = 1,
@@ -455,8 +455,8 @@ namespace Ogre
 		{
 		public:
 			size_t vertexCount;
-			boost::ptr_vector<ChunkGeometryVertexDeclElement> vertexDeclaration;
-			boost::ptr_vector<ChunkGeometryVertexBuffer> vertexBuffers;
+			unique_ptr_vector<ChunkGeometryVertexDeclElement> vertexDeclaration;
+			unique_ptr_vector<ChunkGeometryVertexBuffer> vertexBuffers;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
 		};
@@ -464,7 +464,7 @@ namespace Ogre
 		class ChunkGeometryVertexDecl : public Chunk
 		{
 		public:
-			boost::ptr_vector<ChunkGeometryVertexDeclElement> declaration;
+			unique_ptr_vector<ChunkGeometryVertexDeclElement> declaration;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
 		};
@@ -515,7 +515,7 @@ namespace Ogre
 		public:
 			uint16_t index;
 			uint16_t vertexSize;
-			boost::scoped_ptr<ChunkGeometryVertexData> data;
+			std::unique_ptr<ChunkGeometryVertexData> data;
 		protected:
 			void ReadImpl(DataStream *stream);
 		};
@@ -550,7 +550,7 @@ namespace Ogre
 		class Chunk : public ChunkBase<ChunkID>
 		{
 		public:
-			static Chunk *Read(DataStream *stream);
+			static std::unique_ptr<Chunk> Read(DataStream *stream);
 		};
 
 		class ChunkUnknown; class ChunkFileHeader;
@@ -610,7 +610,7 @@ namespace Ogre
 		public:
 			std::string name;
 			float duration;
-			boost::ptr_vector<ChunkAnimationTrack> tracks;
+			unique_ptr_vector<ChunkAnimationTrack> tracks;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
 		};
@@ -628,7 +628,7 @@ namespace Ogre
 		{
 		public:
 			uint16_t bone;
-			boost::ptr_vector<ChunkAnimationTrackKF> keyframes;
+			unique_ptr_vector<ChunkAnimationTrackKF> keyframes;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
 		};
