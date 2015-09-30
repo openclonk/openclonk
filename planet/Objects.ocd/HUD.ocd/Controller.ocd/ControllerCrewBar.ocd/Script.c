@@ -1,635 +1,1156 @@
 /**
 	Controller Crew Bar
-	Controlls the crew bar display.
 
-	@author Maikel
+	Displays crew members in the top left corner.
+
+	@authors Maikel, Clonkonaut
 */
 
-// TODO: static const for bar margins.
-// TODO: Use old bars.
+/*
+	crew_bars contains an array of proplists with the following attributes:
+		ID: submenu ID. Unique in combination with the target == this
+		shown: If the bar is currently shown
+
+		Default bars are:
+		0 - Health
+		1 - Magic
+		2 - Breath
+*/
+
+/*
+	crew_warnings contains an array of integers, for proper positioning of crew warnings
+	See IssueWarning()
+*/
+
+/*
+	crew_displays contains an array of proplists with the following attributes:
+		ID: submenu ID. Unique in combination with the target == this
+		shown: If the menu is currently shown
+	#### currently not in use
+*/
 
 // HUD margin and size in tenths of em.
-static const GUI_Controller_CrewBar_IconSize = 40;
-static const GUI_Controller_CrewBar_IconMargin = 5;
+static const GUI_Controller_CrewBar_IconSize = 30; // Used by the next clonk display + 1em for the bars (health, breath)
+static const GUI_Controller_CrewBar_IconMargin = 6;
+static const GUI_Controller_CrewBar_CursorSize = 40; // Cursor size is bigger
+static const GUI_Controller_CrewBar_CursorMargin = 3;
+static const GUI_Controller_CrewBar_BarSize = 3;
+static const GUI_Controller_CrewBar_BarMargin = 3;
 
-// Local variables to keep track of the crew HUD menu.
-local crew_gui_target;
+local crew_bars;
+local crew_warnings;
+//local crew_displays;
+
+// To not have magic numbers
+local crew_health_bar;
+local crew_magic_bar;
+local crew_breath_bar;
+local crew_cursor_id;
+local crew_next_id;
+local crew_warning_id;
+
 local crew_gui_menu;
 local crew_gui_id;
 
+// Shown when there are more than 3 crew members, clickable
+local crew_plus_menu;
+local crew_plus_id;
 
-/*-- Construction & Destruction --*/
+// Shown when the plus icon was clicked
+local crew_info_menu;
+local crew_info_id;
 
-public func Construction()
+/* Creation / Destruction */
+
+private func Construction()
 {
-	var plr = GetOwner();
-	// Create the crew HUD menu.
-	CreateCrewHUDMenu(plr);
+	crew_bars = [];
+	crew_warnings = [];
+//	crew_displays = [];
+
+	var cursor_margin = GUI_Controller_CrewBar_CursorMargin;
+	var cursor_size = cursor_margin + GUI_Controller_CrewBar_CursorSize;
+
+	var next_margin = cursor_size + GUI_Controller_CrewBar_IconMargin;
+	var next_size = next_margin + GUI_Controller_CrewBar_IconSize;
+	var next_y_margin = GUI_Controller_CrewBar_IconMargin;
+	var next_y_size = next_y_margin + GUI_Controller_CrewBar_IconSize;
+
+	crew_cursor_id = 1;
+	crew_next_id = 10;
+	crew_warning_id = 20;
+
+	crew_gui_menu =
+	{
+		Target = this,
+		ID = 1,
+		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
+		cursor =
+		{
+			Target = this,
+			Player = NO_OWNER, // will be shown once a crew member is recruited
+			ID = crew_cursor_id,
+			Style = GUI_NoCrop,
+			Left = ToEmString(cursor_margin),
+			Right = ToEmString(cursor_size),
+			Top = ToEmString(cursor_margin),
+			Bottom = Format("100%%%s", ToEmString(-cursor_margin)),
+			portrait =
+			{
+				Target = this,
+				Style = GUI_NoCrop,
+				Left = "0%",
+				Right = "100%",
+				Top = "0%",
+				Bottom = ToEmString(cursor_size),
+				frame =
+				{
+					Target = this,
+					Symbol = GUI_Controller_CrewBar,
+					GraphicsName = "Selected",
+					Priority = 2
+				},
+				picture = // Also the name
+				{
+					Target = this,
+					Style = GUI_TextHCenter | GUI_TextBottom,
+					Priority = 3
+				},
+				rank =
+				{
+					Target = this,
+					Style = GUI_NoCrop,
+					Right = ToEmString(cursor_size / 6),
+					Bottom = ToEmString(cursor_size / 6),
+					Symbol = Icon_Rank,
+					Priority = 5,
+					grade = {
+						Target = this,
+						Left = "-20%",
+						Right = "80%",
+						Top = "-20%",
+						Bottom = "80%",
+						Symbol = Icon_Rank,
+						Priority = 6
+					}
+				},
+				heart =
+				{
+					Target = this,
+					Player = NO_OWNER,
+					ID = crew_cursor_id + 1,
+					Margin = ["5%"],
+					Symbol = Icon_Heart,
+					Priority = 7
+				}
+			}
+		},
+		next_clonk =
+		{
+			Target = this,
+			Player = NO_OWNER, // will be shown once at least two crew members are recruited
+			ID = crew_next_id,
+			Style = GUI_NoCrop,
+			Left = ToEmString(next_margin),
+			Right = ToEmString(next_size),
+			Top = ToEmString(next_y_margin),
+			Bottom = ToEmString(next_y_size),
+			portrait =
+			{
+				Target = this,
+				Style = GUI_NoCrop,
+				frame =
+				{
+					Target = this,
+					Symbol = GUI_Controller_CrewBar,
+					Priority = 2
+				},
+				picture = // Also the name
+				{
+					Target = this,
+					Style = GUI_TextHCenter | GUI_TextBottom,
+					Priority = 3
+				},
+				rank =
+				{
+					Target = this,
+					Style = GUI_NoCrop,
+					Right = ToEmString(GUI_Controller_CrewBar_IconSize / 6),
+					Bottom = ToEmString(GUI_Controller_CrewBar_IconSize / 6),
+					Symbol = Icon_Rank,
+					Priority = 5,
+					grade = {
+						Target = this,
+						ID = 7,
+						Left = "-20%",
+						Right = "80%",
+						Top = "-20%",
+						Bottom = "80%",
+						Symbol = Icon_Rank,
+						Priority = 6
+					}
+				},
+				heart =
+				{
+					Target = this,
+					Player = NO_OWNER,
+					ID = crew_next_id + 1,
+					Margin = ["5%"],
+					Symbol = Icon_Heart,
+					Priority = 7
+				}
+			},
+			health =
+			{
+				Target = this,
+				ID = crew_next_id + 2,
+				Style = GUI_NoCrop,
+				Top = "100%+0.2em",
+				Bottom = "100%+0.45em",
+				BackgroundColor = RGB(40, 40, 40),
+				Priority = 7,
+				fill =
+				{
+					Target = this,
+					Style = GUI_NoCrop,
+					Margin = ["0em", "0.1em"],
+					BackgroundColor = RGB(160, 0, 0),
+					Priority = 8
+				},
+				text =
+				{
+					Target = this,
+					Top = "-0.45em",
+					Style = GUI_TextHCenter,
+					Text = "",
+					Priority = 9
+				}
+			},
+			breath =
+			{
+				Target = this,
+				Player = NO_OWNER,
+				ID = crew_next_id + 3,
+				Style = GUI_NoCrop,
+				Top = "100%+0.6em",
+				Bottom = "100%+0.85em",
+				BackgroundColor = RGB(40, 40, 40),
+				Priority = 7,
+				fill =
+				{
+					Target = this,
+					Style = GUI_NoCrop,
+					Margin = ["0em", "0.1em"],
+					BackgroundColor = RGB(0, 160, 160),
+					Priority = 8
+				}
+			}
+		},
+		warning =// Displays warning signals for additional crew members
+		{
+			Target = this,
+			Player = GetOwner(), // content will be added whenever something happens to a crew members not displayed
+			ID = crew_warning_id,
+			Style = GUI_NoCrop,
+			Left = ToEmString(next_margin),
+			Right = ToEmString(next_size),
+			Top = ToEmString(next_y_size + GUI_Controller_CrewBar_IconMargin*2),
+			Bottom = ToEmString(next_y_size + GUI_Controller_CrewBar_IconMargin*2 + 20),
+			Priority = 10
+		}
+	};
+	crew_gui_id = GuiOpen(crew_gui_menu);
+	// Health bar
+	crew_health_bar = AddCrewBar(RGB(160, 0, 0));
+	// Magic bar
+	crew_magic_bar = AddCrewBar(RGB(0, 0, 160));
+	// Breath bar
+	crew_breath_bar = AddCrewBar(RGB(0, 160, 160));
+
+	crew_plus_menu =
+	{
+		Target = this,
+		Player = GetOwner(),
+		Style = GUI_NoCrop | GUI_Multiple,
+		Left = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize / 2),
+		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize * 3 / 2),
+		Top = ToEmString(next_y_margin),
+		Bottom = ToEmString(next_y_size - GUI_Controller_CrewBar_IconSize / 2),
+		Symbol = Icon_Number,
+		GraphicsName = "PlusGreen",
+		Priority = 10,
+		OnClick = GuiAction_Call(this, "OpenCrewInfo")
+	};
+
+	crew_info_menu =
+	{
+		Target = this,
+		Style = GUI_NoCrop | GUI_Multiple | GUI_FitChildren,
+		Left = ToEmString(next_margin),
+		Right = ToEmString(next_margin + GUI_Controller_CrewBar_IconSize),
+		Top = ToEmString(next_y_size + GUI_Controller_CrewBar_IconMargin*2),
+		Decoration = GUI_MenuDecoInventoryHeader,
+		Priority = 11
+	};
+
 	return _inherited(...);
 }
 
-public func Destruction()
+private func Destruction()
 {
-	// This also closes the crew HUD menu.
-	if (crew_gui_target)
-		crew_gui_target->RemoveObject();
-	return _inherited(...);
+	GuiClose(crew_gui_id);
+	crew_gui_id = nil;
+	crew_bars = [];
+	if (crew_plus_id)
+	{
+		GuiClose(crew_plus_id);
+		crew_plus_id = nil;
+	}
+	CloseCrewInfo();
+
+	_inherited(...);
 }
 
-
-/*-- Callbacks --*/
+/* Callbacks */
 
 public func OnCrewRecruitment(object clonk, int plr)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(plr);
+	UpdateCrewDisplay();
+	IssueWarning(clonk, Icon_Arrow, "Right");
+
 	return _inherited(clonk, plr, ...);
 }
 
 public func OnCrewDeRecruitment(object clonk, int plr)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(plr);
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, plr, ...);
 }
 
 public func OnCrewDeath(object clonk, int killer)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(clonk->GetOwner());
+	UpdateCrewDisplay();
+
+	var next_index = GetNextCrewIndex(GetCursorIndex());
+	if (GetCursor(GetOwner()) != clonk && GetCrew(GetOwner(), next_index) != clonk)
+		IssueWarning(this, Icon_Skull, "", clonk->GetName()); // this for target because Clonk might get deleted
+
 	return _inherited(clonk, killer, ...);
 }
 
 public func OnCrewDestruction(object clonk)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(clonk->GetOwner());
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, ...);
 }
 
 public func OnCrewDisabled(object clonk)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(clonk->GetOwner());
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, ...);
 }
 
 public func OnCrewEnabled(object clonk)
 {
-	RemoveCrewHUDMenu();
-	CreateCrewHUDMenu(clonk->GetOwner());
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, ...);
 }
 
 public func OnCrewSelection(object clonk, bool unselect)
 {
-	CrewHUDMenuUpdateSelection(clonk, unselect);
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, unselect, ...);
 }
 
 public func OnCrewNameChange(object clonk)
 {
-	CrewHUDMenuUpdateName(clonk);
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, ...);
 }
 
 public func OnCrewRankChange(object clonk)
 {
-	CrewHUDMenuUpdateRank(clonk);
+	UpdateCrewDisplay();
+
 	return _inherited(clonk, ...);
 }
 
-public func OnCrewHealthChange(object clonk)
+public func OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
 {
-	var health_phys = clonk->GetMaxEnergy();
-	var health_val = clonk->GetEnergy();
-	var health_ratio = 0;
-	if (health_phys != 0) 
-		health_ratio = 1000 * health_val / health_phys;
-	CrewHUDMenuUpdateHealth(clonk, health_val, health_ratio);
-	return _inherited(clonk, ...);
-}
-
-public func OnCrewBreathChange(object clonk)
-{
-	var breath_phys = clonk->GetMaxBreath();
-	var breath_val = clonk->GetBreath();
-	if (breath_phys == breath_val)
+	var health_phys = clonk->~GetMaxEnergy();
+	if (health_phys && change != 0) // no false positives where change is zero
 	{
-		// Hide breath bar and material background.
-		CrewHUDMenuHideBreath(clonk);
-		CrewHUDMenuHideBackground(clonk);
-		return _inherited(clonk, ...);
-	}
-	// Show breath bar.
-	var breath_ratio = 0;
-	if (breath_phys != 0) 
-		breath_ratio = 1000 * breath_val / breath_phys;
-	CrewHUDMenuShowBreath(clonk);
-	CrewHUDMenuUpdateBreath(clonk, breath_val, breath_ratio);
-	// Show material background.
-	var clr = GetAverageTextureColor(clonk->GetTexture());
-	CrewHUDMenuShowBackground(clonk, clr);
-	CrewHUDMenuUpdateBackground(clonk, clr);
-	return _inherited(clonk, ...);
-}
-
-
-/*-- Crew HUD --*/
-
-private func CreateCrewHUDMenu(int plr)
-{
-	// Create a menu target.
-	crew_gui_target = CreateObject(Dummy, AbsX(0), AbsY(0), plr);
-	crew_gui_target.Visibility = VIS_Owner;	
-	// Create the crew HUD menu.
-	var margin = GUI_Controller_CrewBar_IconMargin;
-	var size = GUI_Controller_CrewBar_IconSize;
-	crew_gui_menu = 
-	{
-		Target = crew_gui_target,
-		Style = GUI_Multiple | GUI_TextHCenter | GUI_TextBottom | GUI_NoCrop,
-		Left = ToEmString(margin),
-		Right = ToEmString(margin + size),
-		Top = ToEmString(margin),
-		Bottom = ToEmString(margin + size),
-		OnClose = GuiAction_Call(this, "OnCrewHUDMenuClosed", plr),
-	};
-	// Add the player's crew members to the menu.
-	var nr_added = 0;
-	for (var index = 0; index < GetCrewCount(plr); ++index)
-	{
-		var crew = GetCrew(plr, index);
-		if (!crew->GetCrewEnabled())
-			continue;
-		crew_gui_menu[Format("crew%d", index)] = AddCrewHUDMenuMember(crew, index, margin, size);
-		// Also add a health monitor for each crew member.
-		AddEffect("GUIHealthMonitor", crew, 100, 0, this);
-		nr_added++;
-	}
-	// Adjust menu size to number of crew members.
-	crew_gui_menu.Right = ToEmString((margin + size) * nr_added);
-	crew_gui_id = GuiOpen(crew_gui_menu);
-	return;
-}
-
-private func RemoveCrewHUDMenu()
-{
-	GuiClose(crew_gui_id);
-	return;
-}
-
-public func OnCrewHUDMenuClosed(int plr)
-{
-	if (crew_gui_target)
-		crew_gui_target->RemoveObject();
-	crew_gui_menu = nil;
-	crew_gui_id = nil;
-	for (var index = 0; index < GetCrewCount(plr); ++index)
-	{
-		var crew = GetCrew(plr, index);
-		RemoveEffect("GUIHealthMonitor", crew);
-	}
-	return;
-}
-
-private func AddCrewHUDMenuMember(object crew, int index, int margin, int size)
-{
-	var health_phys = crew->GetMaxEnergy();
-	var health_val = crew->GetEnergy();
-	var health_ratio = 0;
-	if (health_phys) 
-		health_ratio = 1000 * health_val / health_phys;
-	var breath_phys = crew->GetMaxBreath();
-	var breath_val = crew->GetBreath();
-	var breath_ratio = 0;
-	if (breath_phys) 
-		breath_ratio = 1000 * breath_val / breath_phys;
-	
-	// Create dummy objects for background and damage effects.
-	var background_dummy = CreateObject(Dummy);
-	background_dummy->Enter(crew_gui_target);
-	background_dummy.Visibility = VIS_None;
-	background_dummy->SetGraphics("Background", GUI_Controller_CrewBar, GFX_Overlay, GFXOV_MODE_Picture);
-	background_dummy->SetClrModulation(0x0, GFX_Overlay);
-	var damage_dummy = CreateObject(Dummy);
-	damage_dummy->Enter(crew_gui_target);
-	damage_dummy.Visibility = VIS_None;
-	damage_dummy->SetGraphics("Hurt", GUI_Controller_CrewBar, GFX_Overlay, GFXOV_MODE_Picture);
-	damage_dummy->SetClrModulation(0x0, GFX_Overlay);
-	
-	// Selection.
-	var selected = nil;
-	if (GetCursor(GetOwner()) == crew)
-		selected = "Selected";
-		
-	var crew_menu = 
-	{
-		// This part of the crew menu contains the background.
-		Target = crew_gui_target,
-		ID = 100 * (index + 1),
-		Style = GUI_NoCrop,
-		Left = ToEmString(margin * index + size * index),
-		Right = ToEmString(margin * index + size * (index + 1)),
-		Top = ToEmString(0),
-		Bottom = ToEmString(size),
-		// Background for in material showing.
-		background = 
+		var health_val = clonk->GetEnergy();
+		if (GetCursor(GetOwner()) == clonk)
 		{
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 1,
-			Symbol = background_dummy,
-			Priority = 1,
-		},
-		// The frame around the crew.
-		frame = 
+			// Show current health
+			SetCrewBarValue(crew_health_bar, 1000 * health_val / health_phys, clonk->GetEnergy());
+			// Show heart / broken heart
+			var graphics = "";
+			if (change < 0)
+				graphics = "Broken";
+			if (clonk->OnFire())
+				graphics = "OnFire";
+			Heartbeat(graphics, crew_cursor_id + 1);
+		}
+		else
 		{
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 2,
-			Symbol = GUI_Controller_CrewBar,
-			GraphicsName = { Std = selected, OnHover = "Focussed" },
-			OnMouseIn = GuiAction_SetTag("OnHover"),
-			OnMouseOut = GuiAction_SetTag("Std"),
-			OnClick = GuiAction_Call(this, "CrewHUDMenuOnSelection", crew),
-			Priority = 2,
-		},
-		// Contains the clonk and its name.
-		crew = {
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 3,
-			Symbol = crew,
-			Text = crew->GetName(),
-			Tooltip = Format("$TxtSelect$", Format("%s %s", crew->GetObjCoreRankName(), crew->GetName())),
-			Style = GUI_TextHCenter | GUI_TextBottom,
-			Priority = 3,
-			damage = 
+			// Clonk is next in line, show health changes
+			var next_index = GetNextCrewIndex(GetCursorIndex());
+			if (GetCrew(GetOwner(), next_index) == clonk)
 			{
-				Target = crew_gui_target,
-				ID = 100 * (index + 1) + 4,
-				Symbol = damage_dummy,
-				Priority = 4,
+				SetNextHealthValue(1000 * health_val / health_phys, clonk->GetEnergy());
+				var graphics = "";
+				if (change < 0)
+					graphics = "Broken";
+				if (clonk->OnFire())
+					graphics = "OnFire";
+				Heartbeat(graphics, crew_next_id + 1);
+			}
+			else // Show a warning
+			{
+				var graphics = "";
+				if (change < 0)
+					graphics = "Broken";
+				if (clonk->OnFire())
+					graphics = "OnFire";
+				IssueWarning(clonk, Icon_Heart, graphics);
+			}
+		}
+	}
+
+	return _inherited(clonk, change, cause, caused_by, ...);
+}
+
+public func OnCrewBreathChange(object clonk, int change)
+{
+	var breath_phys = clonk->~GetMaxBreath();
+	if (breath_phys)
+	{
+		var breath_val = clonk->GetBreath();
+		if (GetCursor(GetOwner()) == clonk)
+		{
+			// Hide bar if full breath
+			if (breath_val == breath_phys)
+				HideCrewBar(crew_breath_bar);
+			// Else show bar!
+			else
+			{
+				ShowCrewBar(crew_breath_bar);
+				SetCrewBarValue(crew_breath_bar, 1000 * breath_val / breath_phys);
+			}
+		}
+		else
+		{
+			// Clonk is next in line, show breath changes
+			var next_index = GetNextCrewIndex(GetCursorIndex());
+			if (GetCrew(GetOwner(), next_index) == clonk)
+			{
+				SetNextBreathValue(1000 * breath_val / breath_phys);
+			}
+			else if(change < 0 && breath_val < breath_phys) // Show a warning if decreasing
+			{
+				IssueWarning(clonk, Icon_Bubbles, "");
+			}
+		}
+	}
+
+	return _inherited(clonk, ...);
+}
+
+/* Display */
+
+// Add a new crew member to the mini displays
+// Unused for now, but we might want this in the future
+
+/*
+private func AddCrewDisplay(object clonk)
+{
+	var crew_index = 0;
+	while (GetCrew(GetOwner(), crew_index) != clonk && crew_index < GetCrewCount(GetOwner()))
+		crew_index++;
+	// Something went wrong
+	if (GetCrew(GetOwner(), crew_index) != clonk) return;
+
+	var crew_margin = GUI_Controller_CrewBar_CursorMargin + GUI_Controller_CrewBar_CursorSize + GUI_Controller_CrewBar_IconMargin;
+	var crew_top = GUI_Controller_CrewBar_IconMargin*2 + GUI_Controller_CrewBar_IconSize + 5;
+
+	var new_display =
+	{
+		ID = 1000 + crew_index,
+		shown = false
+	};
+	crew_displays[crew_index] = new_display;
+
+	var health_phys = clonk->~GetMaxEnergy();
+	var health_val = 0;
+	if (health_phys)
+	{
+		health_val = 1000 * clonk->GetEnergy() / health_phys;
+	}
+
+	crew_gui_menu[Format("crew%d", crew_index)] =
+	{
+		Target = this,
+		Player = NO_OWNER,
+		ID = new_display.ID,
+		Style = GUI_NoCrop,
+		Left = ToEmString(crew_margin),
+		Top = ToEmString(crew_top),
+		Bottom = ToEmString(crew_top + 10),
+		health =
+		{
+			Target = this,
+			Style = GUI_NoCrop,
+			Right = ToEmString(GUI_Controller_CrewBar_IconSize),
+			Top = "0.2em",
+			Bottom = "0.45em",
+			BackgroundColor = RGB(40, 40, 40),
+			Priority = 7,
+			fill =
+			{
+				Target = this,
+				Style = GUI_NoCrop,
+				Right = ToPercentString(health_val),
+				BackgroundColor = RGB(160, 0, 0),
+				Priority = 1
+			},
+			text =
+			{
+				Target = this,
+				Style = GUI_TextHCenter,
+				Text = Format("<c dddd00>%d</c>", clonk->GetEnergy()),
+				Priority = 2
 			}
 		},
-		// Contains the crew number.
-		number = {
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 5,
-			Left = Format("100%%%s", ToEmString(-size / 4)),
-			Bottom = ToEmString(size / 4),
-			Symbol = Icon_Number,
-			GraphicsName = Format("%d", index + 1),
-			Priority = 5,
-		},
-		// Contains the rank symbol.
-		rank = {
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 6,
-			Style = GUI_NoCrop,
-			Right = ToEmString(size / 6),
-			Bottom = ToEmString(size / 6),
-			Symbol = Icon_Rank,
-			GraphicsName = Format("%d", crew->GetRank() % 24),
-			Priority = 5,
-			grade = {
-				Target = crew_gui_target,
-				ID = 100 * (index + 1) + 7,
-				Left = "-20%",
-				Right = "80%",
-				Top = "-20%",
-				Bottom = "80%",
-				Symbol = Icon_Rank,
-				GraphicsName = Format("Upgrade%d", crew->GetRank() / 24),
-				Priority = 6,
-			},
-		},
-		// Contains the health bar.
-		health = {
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 8,
-			Style = GUI_NoCrop,
-			Left = "0%",
-			Right = "100%",
-			Top = "100%+0.2em",
-			Bottom = "100%+0.65em",
-			BackgroundColor = RGB(40, 40, 40),
-			Priority = 6,
-			value = 
-			{
-				Target = crew_gui_target,
-				ID = 100 * (index + 1) + 9,
-				Style = GUI_NoCrop,
-				Left = "0.1em",
-				Right = Format("%s%s", ToPercentString(health_ratio), ToEmString((500 - health_ratio) / 250)),
-				Margin = ["0em", "0.1em"],
-				BackgroundColor = RGB(160, 0, 0),
-				Priority = 7,
-				text = 
-				{
-					Target = crew_gui_target,
-					ID = 100 * (index + 1) + 10,
-					Top = "-0.45em",
-					Style = GUI_TextHCenter | GUI_NoCrop,
-					Text = Format("<c dddd00>%d</c>", health_val),
-					Priority = 8,
-				},
-			},
-		},
-		// Contains the breath bar.
-		breath = {
-			Target = crew_gui_target,
-			ID = 100 * (index + 1) + 11,
-			Style = GUI_NoCrop,
-			Left = "0%",
-			Right = "100%",
-			Top = "100%+0.75em",
-			Bottom = "100%+1.2em",
-			Priority = 6,
-			value = 
-			{
-				Target = crew_gui_target,
-				ID = 100 * (index + 1) + 12,
-				Left = "0.2em",
-				Right = Format("%s%s", ToPercentString(breath_ratio), ToEmString((500 - breath_ratio) / 250)),
-				Margin = ["0em", "0.1em"],
-				Priority = 7,
-			},
-		},
+		name =
+		{
+			Target = this,
+			Left = ToEmString(GUI_Controller_CrewBar_IconSize),
+			Style = GUI_TextLeft,
+			Text = clonk->GetName()
+		}
 	};
-	return crew_menu;
-}
+	GuiUpdate(crew_gui_menu, crew_gui_id);
+	UpdateCrewDisplay();
+}*/
 
-
-/*-- Crew Selection --*/
-
-private func CrewHUDMenuOnSelection(object clonk)
+// Update everything
+private func UpdateCrewDisplay()
 {
-	if (!clonk || (!clonk->GetCrewEnabled()))
-		return;
+	var cursor = GetCursor(GetOwner());
+	var cursor_index = GetCursorIndex();
 
-	// Stop previously selected crew and set new cursor.
-	var plr = GetOwner();
-	StopSelected(plr);
-	SetCursor(plr, clonk);
-	return;
-}
-
-
-/*-- Crew HUD: Updates --*/
-
-// Returns the submenu for this clonk, or nil if not found.
-private func CrewHUDMenuFindCrewMenu(object clonk)
-{
-	var index = 0, crew_menu;
-	while ((crew_menu = crew_gui_menu[Format("crew%d", index)]))
+	// No cursor: Don't display cursor information
+	if (!cursor || !cursor->GetCrewEnabled())
 	{
-		if (crew_menu.crew.Symbol == clonk)
-			break;
-		index++;
+		if (crew_gui_menu.cursor.Player != NO_OWNER)
+		{
+			crew_gui_menu.cursor.Player = NO_OWNER;
+			GuiUpdate(crew_gui_menu.cursor, crew_gui_id, 1, this);
+		}
 	}
-	if (crew_menu)
-		return [crew_menu, Format("crew%d", index)];
-	return;
-}
-
-private func CrewHUDMenuUpdateName(object clonk)
-{
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var name_menu = crew_menu[0].crew;
-	name_menu.Text = clonk->GetName();
-	name_menu.Tooltip = Format("$TxtSelect$", Format("%s %s", clonk->GetObjCoreRankName(), clonk->GetName()));
-	GuiUpdate(name_menu, crew_gui_id, name_menu.ID, name_menu.Target);
-	return;
-}
-
-private func CrewHUDMenuUpdateRank(object clonk)
-{
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	// Update rank.
-	var rank_menu = crew_menu[0].rank;
-	rank_menu.GraphicsName = Format("%d", clonk->GetRank() % 24);
-	rank_menu.grade.GraphicsName = Format("Upgrade%d", clonk->GetRank() / 24);
-	GuiUpdate(rank_menu, crew_gui_id, rank_menu.ID, rank_menu.Target);
-	// Also update tooltip rank.
-	var name_menu = crew_menu[0].crew;
-	name_menu.Tooltip = Format("$TxtSelect$", Format("%s %s", clonk->GetObjCoreRankName(), clonk->GetName()));
-	GuiUpdate(name_menu, crew_gui_id, name_menu.ID, name_menu.Target);	
-	return;
-}
-
-private func CrewHUDMenuUpdateSelection(object clonk, bool unselect)
-{
-	// Disable all previous selections.
-	/*var index = 0, crew_menu;
-	while ((crew_menu = crew_gui_menu[Format("crew%d", index)]))
+	else
 	{
-		crew_menu.frame.GraphicsName = nil;
-		GuiUpdate(crew_menu.frame, crew_gui_id, crew_menu.frame.ID, crew_menu.frame.Target);
-		index++;
+		// Update cursor information
+		var update =
+		{
+			Player = GetOwner(),
+			portrait =
+			{
+				picture =
+				{
+					Symbol = cursor,
+					Text = cursor->GetName()
+				},
+				rank =
+				{
+					GraphicsName = Format("%d", cursor->~GetRank() % 24),
+					grade =
+					{
+						GraphicsName = Format("Upgrade%d", cursor->~GetRank() / 24)
+					}
+				}
+			}
+		};
+		GuiUpdate(update, crew_gui_id, crew_cursor_id, this);
+
+		// Health
+		var health_phys = cursor->~GetMaxEnergy();
+
+		if (health_phys)
+		{
+			var health_val = cursor->GetEnergy();
+			ShowCrewBar(crew_health_bar);
+			SetCrewBarValue(crew_health_bar, 1000 * health_val / health_phys, cursor->GetEnergy());
+		}
+		else
+			HideCrewBar(crew_health_bar);
+
+		// Breath
+		var breath_phys = cursor->~GetMaxBreath();
+		var breath_val = cursor->~GetBreath();
+
+		if (breath_phys && breath_val < breath_phys)
+		{
+			ShowCrewBar(crew_breath_bar);
+			SetCrewBarValue(crew_breath_bar, 1000 * breath_val / breath_phys);
+		}
+		else
+			HideCrewBar(crew_breath_bar);
+	}
+
+	// Display next crew member
+	var next_index = GetNextCrewIndex(cursor_index);
+	if (next_index != cursor_index)
+	{
+		crew_gui_menu.next_clonk.Player = GetOwner();
+		var next_clonk = GetCrew(GetOwner(), next_index);
+
+		var health_visible = NO_OWNER;
+		var health_phys = next_clonk->~GetMaxEnergy();
+		var health_val = 0;
+		if (health_phys)
+		{
+			health_visible = GetOwner();
+			health_val = 1000 * next_clonk->GetEnergy() / health_phys;
+		}
+
+		var breath_visible = NO_OWNER;
+		var breath_phys = next_clonk->~GetMaxBreath();
+		var breath_val = 1000;
+		if (breath_phys && breath_val < breath_phys)
+		{
+			breath_visible = GetOwner();
+			breath_val = 1000 * next_clonk->GetBreath() / breath_phys;
+		}
+
+		var update =
+		{
+			Player = GetOwner(),
+			portrait =
+			{
+				picture =
+				{
+					Symbol = next_clonk,
+					Text = next_clonk->GetName()
+				},
+				rank =
+				{
+					GraphicsName = Format("%d", next_clonk->~GetRank() % 24),
+					grade =
+					{
+						GraphicsName = Format("Upgrade%d", next_clonk->~GetRank() / 24)
+					}
+				}
+			},
+			health =
+			{
+				Player = health_visible,
+				fill =
+				{
+					Right = ToPercentString(health_val)
+				},
+				text =
+				{
+					Text = Format("<c dddd00>%d</c>", next_clonk->GetEnergy())
+				}
+			},
+			breath =
+			{
+				Player = breath_visible,
+				fill =
+				{
+					Right = ToPercentString(breath_val)
+				}
+			}
+		};
+		GuiUpdate(update, crew_gui_id, crew_next_id, this);
+	}
+	else
+	{
+		// Hide second clonk display
+		if (crew_gui_menu.next_clonk.Player != NO_OWNER)
+		{
+			crew_gui_menu.next_clonk.Player = NO_OWNER;
+			GuiUpdate(crew_gui_menu.next_clonk, crew_gui_id, crew_next_id, this);
+		}
+	}
+
+	// More crew members? Show plus sign
+	if (GetCrewCount(GetOwner()) > 2)
+	{
+		if (!crew_plus_id)
+			crew_plus_id = GuiOpen(crew_plus_menu);
+	}
+	else if (crew_plus_id)
+	{
+		GuiClose(crew_plus_id);
+		crew_plus_id = nil;
+	}
+
+	// Only to be used when AddCrewDisplay gets reactivated
+/*
+	// Hide all mini crew displays
+	for (var i = 0; i < GetLength(crew_displays); i++)
+	{
+		if (!crew_displays[i]) continue;
+		GuiUpdate({ Player = NO_OWNER }, crew_gui_id, crew_displays[i].ID, this);
+		crew_displays[i].shown = false;
+	}
+
+	if (!cursor || cursor_index == nil) return;
+	// Display all crew members not yet shown
+	var top = GUI_Controller_CrewBar_IconMargin*2 + GUI_Controller_CrewBar_IconSize + 5;
+	while (GetNextCrewIndex(next_index) != cursor_index)
+	{
+		next_index = GetNextCrewIndex(next_index);
+		if (!crew_displays[next_index]) continue; // Shouldn't happen
+		var update =
+		{
+			Player = GetOwner(),
+			Top = ToEmString(top)
+		};
+		GuiUpdate(update, crew_gui_id, crew_displays[next_index].ID, this);
+		crew_displays[next_index].shown = true;
+		top += 12;
 	}*/
-	// Update the selection of the given clonk.	
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var frame_menu = crew_menu[0].frame;
-	frame_menu.GraphicsName = "Selected";
-	if (unselect)
-		frame_menu.GraphicsName = nil;
-	GuiUpdate(frame_menu, crew_gui_id, frame_menu.ID, frame_menu.Target);
-	return;
 }
 
-private func CrewHUDMenuUpdateHealth(object clonk, int health, int health_ratio)
+/* Bars (health, breath, ...) */
+
+// Adds a new bar to the portrait.
+// The bar is not shown until ShowCrewBar() is called. Bars will appear in order of creation.
+private func AddCrewBar(int foreground, int background)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var health_menu = crew_menu[0].health;
-	health_menu.value.Right = Format("%s%s", ToPercentString(health_ratio), ToEmString((500 - health_ratio) / 500));
-	health_menu.value.text.Text = Format("<c dddd00>%d</c>", health);
-	GuiUpdate(health_menu, crew_gui_id, health_menu.ID, health_menu.Target);
-	return;
-}
+	if (!crew_gui_id) return;
+	if (!foreground) return;
+	if (!background) background = RGB(40, 40, 40);
 
-private func CrewHUDMenuUpdateBreath(object clonk, int breath, int breath_ratio)
-{
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var breath_menu = crew_menu[0].breath;
-	breath_menu.value.Right = Format("%s%s", ToPercentString(breath_ratio), ToEmString((500 - breath_ratio) / 500));
-	GuiUpdate(breath_menu, crew_gui_id, breath_menu.ID, breath_menu.Target);
-	return;
-}
+	var y_begin = GUI_Controller_CrewBar_CursorMargin + GUI_Controller_CrewBar_CursorSize;
+	var y_end = y_begin + GUI_Controller_CrewBar_BarSize;
 
-private func CrewHUDMenuShowBreath(object clonk)
-{
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var breath_menu = crew_menu[0].breath;
-	breath_menu.BackgroundColor = RGB(40, 40, 40);
-	breath_menu.value.BackgroundColor = RGB(0, 160, 160);
-	GuiUpdate(breath_menu, crew_gui_id, breath_menu.ID, breath_menu.Target);
-	return;
-}
-
-private func CrewHUDMenuHideBreath(object clonk)
-{
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	var breath_menu = crew_menu[0].breath;
-	breath_menu.BackgroundColor = nil;
-	breath_menu.value.BackgroundColor = nil;
-	GuiUpdate(breath_menu, crew_gui_id, breath_menu.ID, breath_menu.Target);
-	return;
-}
-
-
-/*-- Health Monitor --*/
-
-public func FxGUIHealthMonitorDamage(object target, proplist effect, int damage, int cause)
-{
-	var change = Abs(damage) / ((target->GetMaxEnergy() * 10) || 1);
-	// For really small changes, like fire or higher precision DoEnergy, set the change to a non zero value.
-	if (change == 0)
-		change = 3;
-	
-	// Create a health display effect and set intensity.
-	if (!effect.worker)
+	var new_bar = 
 	{
-		effect.worker = AddEffect("GUIHealthDisplay", target, 100, 4, this);
-		effect.worker.intensity = change + 20;
-	}
-	else
-		effect.worker.intensity += change;
-	effect.worker.intensity = BoundBy(effect.worker.intensity, 0, 80);
-	
-	// Also set the type of the health: damage, heal or fire.
-	if (damage > 0)
-		effect.worker.type = 1;
-	else
-		effect.worker.type = 0;
-	if (cause == FX_Call_DmgFire || cause == FX_Call_EngFire)
-		effect.worker.type = 2;
-	// Just return the unchanged damage.
-	return damage;
-}
+		ID = 100 + GetLength(crew_bars),
+		shown = false
+	};
+	PushBack(crew_bars, new_bar);
 
-public func FxGUIHealthDisplayStart(object target, proplist effect, bool temp)
-{
-	if (temp) 
-		return;
-	CrewHUDMenuShowDamage(target);
-	EffectCall(target, effect, "Timer");
-	return FX_OK;
-}
-
-public func FxGUIHealthDisplayTimer(object target, proplist effect, int time)
-{
-	// Alpha of the effect depends on the intensity.
-	var alpha = BoundBy(effect.intensity * 7, 20, 255);
-	// Damage effect.
-	if (effect.type == 0)
+	// Will display the bar at the left screen border
+	// Unwanted for now
+/*
+	var y_begin = GUI_Controller_CrewBar_CursorMargin + GUI_Controller_CrewBar_CursorSize;
+	var y_end = GUI_Controller_CrewBar_CursorMargin;
+	crew_gui_menu.cursor[Format("bar%d", new_bar.ID)] =
 	{
-		var r = Min(200 + effect.intensity, 255);
-		CrewHUDMenuUpdateDamage(target, RGBa(r, 0, 0, alpha));
-	}
-	// Heal effect.
-	else if (effect.type == 1)
+		Target = this,
+		Player = NO_OWNER,
+		ID = new_bar.ID,
+		Left = "0%",
+		Right = Format("0%%%s", ToEmString(GUI_Controller_CrewBar_BarSize)),
+		Top = Format("0%%%s", ToEmString(y_begin)),
+		Bottom = Format("100%%%s", ToEmString(-y_end)),
+		BackgroundColor = background,
+		Priority = 3,
+		fill =
+		{
+			Target = this,
+			Margin = "0.1em",
+			BackgroundColor = foreground,
+			Priority = 4
+		}
+	};*/
+
+	crew_gui_menu.cursor[Format("bar%d", new_bar.ID)] =
 	{
-		var g = Min(100 + effect.intensity, 255);
-		alpha = Min(alpha + 100, 255);
-		CrewHUDMenuUpdateDamage(target, RGBa(50, g, 50, alpha));
-	}
-	// Fire effect.
-	else if (effect.type == 2)
+		Target = this,
+		Player = NO_OWNER,
+		Style = GUI_NoCrop,
+		ID = new_bar.ID,
+		Left = "0%",
+		Right = Format("0%%%s", ToEmString(GUI_Controller_CrewBar_CursorSize)),
+		Top = ToEmString(y_begin),
+		Bottom = ToEmString(y_end),
+		BackgroundColor = background,
+		Priority = 3,
+		fill =
+		{
+			Target = this,
+			Left = "0%",
+			Margin = ["0em", "0.1em"],
+			BackgroundColor = foreground,
+			Priority = 4
+		},
+		text =
+		{
+			Target = this,
+			Top = "-0.45em",
+			Style = GUI_TextHCenter,
+			Text = "",
+			Priority = 5
+		}
+	};
+
+	GuiUpdate(crew_gui_menu, crew_gui_id);
+	UpdateCrewDisplay();
+
+	return GetLength(crew_bars)-1;
+}
+
+// Shows the bar that was saved in crew_bars[bar]
+private func ShowCrewBar(int bar)
+{
+	if (!crew_bars[bar]) return;
+	if (crew_bars[bar].shown) return;
+	if (GetOwner() == NO_OWNER) return;
+
+	// Bars at left side of the screen
+/*	var left = GUI_Controller_CrewBar_BarMargin;
+	var i = 0;
+	while (i < bar)
 	{
-		var r = Min(150 + effect.intensity, 255);
-		var g = Min(effect.intensity, 100);
-		alpha = Min(alpha + 100, 255);
-		CrewHUDMenuUpdateDamage(target, RGBa(r, g, 0, alpha));
+		if (crew_bars[i] && crew_bars[i].shown)
+			left += GUI_Controller_CrewBar_BarSize + GUI_Controller_CrewBar_BarMargin;
+		i++;
 	}
-	// Not set yet? might happen at the start sometimes. we just hide in that case.
-	else
-		CrewHUDMenuUpdateDamage(target, RGBa(0, 0, 0, 0));
+	var right = ToEmString(left + GUI_Controller_CrewBar_BarSize);
+	left = ToEmString(left);
+
+	GuiUpdate({ Player = GetOwner(), Left = left, Right = right }, crew_gui_id, crew_bars[bar].ID, this);*/
+
+	var top = GUI_Controller_CrewBar_CursorMargin + GUI_Controller_CrewBar_CursorSize;
+	var i = 0;
+	while (i < bar)
+	{
+		if (crew_bars[i] && crew_bars[i].shown)
+			top += GUI_Controller_CrewBar_BarSize + GUI_Controller_CrewBar_BarMargin;
+		i++;
+	}
+	var bottom = ToEmString(top + GUI_Controller_CrewBar_BarSize);
+	top = ToEmString(top);
+
+	crew_bars[bar].shown = GuiUpdate({ Player = GetOwner(), Top = top, Bottom = bottom }, crew_gui_id, crew_bars[bar].ID, this);
+}
+
+// Sets the fill status of the bar. value is between 0 and 1000
+// Shows text_val before the bar if given
+private func SetCrewBarValue(int bar, int value, int text_val)
+{
+	if (!crew_bars[bar]) return;
+	value = BoundBy(value, 0, 1000);
+	var plr = GetOwner();
+	var bar_text = "";
+	if (text_val) bar_text = Format("<c dddd00>%d</c>", text_val);
+	// Displaying the fill with Top = 100% creates an unwanted scrollbar
+	//if (value == 0) plr = NO_OWNER;
+
+	GuiUpdate({ fill = { Player = plr, Right = ToPercentString(value) }, text = { Text = bar_text } }, crew_gui_id, crew_bars[bar].ID, this);
+}
+
+// Hides the bar that was saved in crew_bars[bar]
+private func HideCrewBar(int bar)
+{
+	if (!crew_bars[bar]) return;
+	if (!crew_bars[bar].shown) return;
+
+	GuiUpdate({ Player = NO_OWNER }, crew_gui_id, crew_bars[bar].ID, this);
+	crew_bars[bar].shown = false;
+
+	// Update position of all following bars
+	for (var i = bar; i < GetLength(crew_bars); i++)
+		if (crew_bars[i].shown)
+		{
+			crew_bars[i].shown = false;
+			ShowCrewBar(i);
+		}
+}
+
+/* Crew indices */
+
+// Returns the crew index of the cursor
+private func GetCursorIndex()
+{
+	var cursor = GetCursor(GetOwner());
+	if (!cursor) return;
+	var cursor_index;
+	for (var i = 0; i < GetCrewCount(GetOwner()); i++)
+		if (GetCrew(GetOwner(), i) == cursor)
+		{
+			cursor_index = i;
+			break;
+		}
+	if (!GetCrew(GetOwner(), cursor_index)) return;
+	return cursor_index;
+}
+
+// Returns the next valid crew member index
+// Wraps around, ignores dead and disabled crew members
+private func GetNextCrewIndex(int start)
+{
+	// Endless loop protection
+	if (!GetCrew(GetOwner(), start)) return;
+	if (!GetCrew(GetOwner(), start)->GetAlive()) return;
+	if (!GetCrew(GetOwner(), start)->GetCrewEnabled()) return;
+
+	var index = start;
+	do {
+		index++;
+		var crew = GetCrew(GetOwner(), index);
+		if (crew && crew->GetAlive() && crew->GetCrewEnabled())
+			break;
+		if (index >= GetCrewCount(GetOwner()))
+			index = -1;
+	} while (true);
+	return index;
+}
+
+/* Next clonk display */
+
+// Sets the fill status of the next clonk health bar. Value is between 0 and 1000
+private func SetNextHealthValue(int value, int text_val)
+{
+	value = BoundBy(value, 0, 1000);
+
+	GuiUpdate({ fill = { Right = ToPercentString(value) }, text = { Text = Format("<c dddd00>%d</c>", text_val) } }, crew_gui_id, crew_next_id + 2, this);
+}
+
+// Sets the fill status of the next clonk breath bar. Value is between 0 and 1000
+// Hides the bar if value == 1000
+private func SetNextBreathValue(int value)
+{
+	value = BoundBy(value, 0, 1000);
+
+	var plr = GetOwner();
+	if (value == 1000) plr = NO_OWNER;
+
+	GuiUpdate({ Player = plr, fill = { Right = ToPercentString(value) } }, crew_gui_id, crew_next_id + 3, this);
+}
+
+/* Warning effects */
+
+// Shows a heart overlay icon in the portrait on energy changes
+// graphics may either be "" or "Broken", id is the gui id to change
+private func Heartbeat(string graphics, int id)
+{
+	// Already triggered
+	for (var i = 0; i < GetEffectCount("Heartbeat", this); i++)
+		if (GetEffect("Heartbeat", this, i).id == id)
+			return;
+
+	var update =
+	{
+		Player = GetOwner(),
+		GraphicsName = graphics
+	};
+
+	GuiUpdate(update, crew_gui_id, id, this);
+	// Remove heart after ~1 second
+	var effect = AddEffect("Heartbeat", this, 1, 35, this);
+	effect.id = id;
+}
+
+private func FxHeartbeatStop(object o, proplist effect)
+{
+	GuiUpdate({ Player = NO_OWNER }, crew_gui_id, effect.id, this);
+}
+
+// Shows various warnings regarding crew members not displayed (not cursor, not next cursor)
+private func IssueWarning(object clonk, id icon, string graphics, string name)
+{
+	var next_warning_id = GetNextWarningID();
+	var effect = AddEffect("IntHUDWarning", clonk, 2, 70, this, nil, icon, graphics, next_warning_id);
+	// Make sure the exact same warning isn't already showing (effect gets rejected)
+	if (!effect) return;
+	if (!name) name = clonk->GetName();
+
+	var next_warning =
+	{
+		Target = this,
+		ID = 500 + next_warning_id, // let's hope there won't ever be more than 500 warnings
+		Top = ToEmString(0),
+		Bottom = ToEmString(10),
+		symbol =
+		{
+			Symbol = icon,
+			GraphicsName = graphics,
+			Right = "20%"
+		},
+		text =
+		{
+			Style = GUI_TextLeft,
+			Text = name,
+			Left = "20%"
+		}
+	};
+
+	// Save position of this warning
+	crew_warnings[next_warning_id] = 0;
+	// Show
+	GuiUpdate({ _new_warning = next_warning }, crew_gui_id, crew_warning_id, this);
+
+	// Lower all other crew warnings
+	RepositionCrewWarnings(next_warning_id, 12);
+}
+
+private func RemoveWarning(int warning_id)
+{
+	if (crew_warnings[warning_id] == nil || crew_warnings[warning_id] == -1) return;
+
+	GuiClose(crew_gui_id, 500 + warning_id, this);
 	
-	// Fade the effect, fade faster if huge numbers.
-	effect.intensity -= 3;
-	if (effect.intensity > 60)
-		effect.intensity -= 2;
-	
-	// Remove the effect if the intensity is below zero.
-	if (effect.intensity <= 0)
-		return FX_Execute_Kill;
-	return FX_OK;
+	crew_warnings[warning_id] = -1;
 }
 
-public func FxGUIHealthDisplayStop(object target, proplist effect, int reason, bool temp)
+// Returns the first index from crew_warnings with value -1 or GetLength(crew_warnings)
+private func GetNextWarningID()
 {
-	if (temp) 
-		return FX_OK;
-	CrewHUDMenuHideDamage(target);
-	return FX_OK;
+	var ret = GetLength(crew_warnings);
+
+	for (var i = 0; i < GetLength(crew_warnings); i++)
+		if (crew_warnings[i] == -1)
+		{
+			ret = i;
+			break;
+		}
+	return ret;
 }
 
-private func CrewHUDMenuShowDamage(object clonk, int color)
+// Adjusts the Top value of all crew warnings except for except_index by change
+private func RepositionCrewWarnings(int except_index, int change)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].crew.damage.Symbol->SetClrModulation(color, GFX_Overlay);
-	return;
+	for (var i = 0; i < GetLength(crew_warnings); i++)
+	{
+		if (except_index == i)
+			continue;
+		crew_warnings[i] += change;
+		GuiUpdate({ Top = ToEmString(crew_warnings[i]), Bottom = ToEmString(crew_warnings[i] + 10) }, crew_gui_id, 500+i, this);
+	}
 }
 
-private func CrewHUDMenuUpdateDamage(object clonk, int new_color)
+private func FxIntHUDWarningStart(object clonk, proplist effect, int temp, id icon, string graphic, int gui_id)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].crew.damage.Symbol->SetClrModulation(new_color, GFX_Overlay);
-	return;
+	if (temp) return;
+
+	effect.icon = icon;
+	effect.graphic = graphic;
+	effect.id = gui_id;
 }
 
-private func CrewHUDMenuHideDamage(object clonk)
+// Reject effects with same parameters
+private func FxIntHUDWarningEffect(string effect_name, object target, proplist effect, var1, var2)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].crew.damage.Symbol->SetClrModulation(0x0, GFX_Overlay);
-	return;
+	if (effect_name != "IntHUDWarning") return;
+
+	// Check if all parameters are the same
+	if (effect.icon == var1)
+		if (effect.graphic == var2)
+			// Reject
+			return -1;
 }
 
-
-/*-- In Material Background --*/
-
-private func CrewHUDMenuShowBackground(object clonk, int color)
+private func FxIntHUDWarningStop(object clonk, proplist effect, int reason, bool temp)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].background.Symbol->SetClrModulation(color, GFX_Overlay);
-	return;
+	if (temp) return;
+
+	RemoveWarning(effect.id);
 }
 
-private func CrewHUDMenuUpdateBackground(object clonk, int new_color)
+/* Crew info menu */
+
+private func OpenCrewInfo()
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].background.Symbol->SetClrModulation(new_color, GFX_Overlay);
-	return;
+	if (crew_info_id) return CloseCrewInfo();
+
+	crew_info_id = GuiOpen(crew_info_menu);
+
+	var y = 0;
+	for (var i = 0; i < GetCrewCount(GetOwner()); i++)
+	{
+		var crew = GetCrew(GetOwner(), i);
+		if (!crew) continue;
+		var portrait = crew->~GetPortrait();
+		var portraitgraphics = "";
+		if (portrait)
+		{
+			portraitgraphics = portrait.Name;
+			portrait = portrait.Source;
+		}
+		else
+			portrait = crew;
+
+		var new_sub =
+		{
+			Target = this,
+			Top = ToEmString(y),
+			Bottom = ToEmString(y+20),
+			Priority = 12,
+			BackgroundColor = { Std = nil, Hover = RGB(200,200,200) },
+			OnMouseIn = GuiAction_SetTag("Hover"),
+			OnMouseOut = GuiAction_SetTag("Std"),
+			OnClick = GuiAction_Call(this, "SelectClonk", i),
+			portrait =
+			{
+				Symbol = portrait,
+				GraphicsName = portraitgraphics,
+				Right = "20%",
+				Priority = 13
+			},
+			name =
+			{
+				Style = GUI_TextLeft,
+				Text = crew->GetName(),
+				Left = "20%",
+				Bottom = ToEmString(10),
+				Priority = 13
+			},
+			heart =
+			{
+				Symbol = Icon_Heart,
+				Left = "21%",
+				Right = ToEmString(10),
+				Top = ToEmString(10),
+				Priority = 13
+			},
+			health =
+			{
+				Style = GUI_TextLeft,
+				Text = Format("<c dddd00>%d</c>", crew->GetEnergy()),
+				Left = Format("20%%%s", ToEmString(5)),
+				Top = ToEmString(10),
+				Priority = 13
+			}
+		};
+		GuiUpdate({ _crew = new_sub }, crew_info_id);
+
+		y += 20;
+	}
+
+	return true;
 }
 
-private func CrewHUDMenuHideBackground(object clonk)
+private func SelectClonk(int index)
 {
-	var crew_menu = CrewHUDMenuFindCrewMenu(clonk);
-	if (!crew_menu)
-		return;
-	crew_menu[0].background.Symbol->SetClrModulation(0x0, GFX_Overlay);
-	return;
+	var clonk = GetCrew(GetOwner(), index);
+	// Change allowed?
+	if (clonk && clonk->GetCrewEnabled())
+		SetCursor(GetOwner(), clonk);
+
+	CloseCrewInfo();
+}
+
+private func CloseCrewInfo()
+{
+	if (!crew_info_id) return;
+
+	GuiClose(crew_info_id);
+	crew_info_id = nil;
+
+	return true;
 }

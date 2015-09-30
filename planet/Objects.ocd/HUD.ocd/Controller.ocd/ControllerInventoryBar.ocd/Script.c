@@ -1,140 +1,125 @@
 /**
 	ControllerInventoryBar
-	Controlls the inventory bar interaction and layout.
 
-	@author Zapper
+	Displays inventory slots and extra information.
+
+	@authors Zapper, Clonkonaut
 */
 
 /*
 	inventory_slot contains an array of proplists with the following attributes:
-		ID: submenu ID. Unique in combination with the target == GetInventoryGuiTarget
+		ID: submenu ID. Unique in combination with the target == this
 		obj: last object that was shown here
 		hand: bool, whether select with a hand
 */
 
-// all values given in 10 em (-> 10 = 1.0em)
-static const GUI_Controller_InventoryBar_IconMarginScreenBottom = 1; // margin from left border of screen
+// HUD margin and size in tenths of em.
+static const GUI_Controller_InventoryBar_IconMarginScreenTop = 5;
 static const GUI_Controller_InventoryBar_IconSize = 20;
 static const GUI_Controller_InventoryBar_IconMargin = 5;
 
 local inventory_slots;
-local inventory_gui_target;
+local inventory_gui_menu;
 local inventory_gui_id;
 
-func GetInventoryGuiID()
-{
-	if (inventory_gui_id) return inventory_gui_id;
-	var position_y_offset = -(GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize);
-	
-	var menu =
-	{
-		Target = GetInventoryGuiTarget(),
-		Style = GUI_Multiple | GUI_IgnoreMouse | GUI_NoCrop,
-		Top = ToEmString(position_y_offset),
-		OnClose = GuiAction_Call(this, "OnInventoryGuiClose")
-		
-	};
-	inventory_gui_id = GuiOpen(menu);
-	return inventory_gui_id;
-}
+/* Creation / Destruction */
 
-func OnInventoryGuiClose()
+private func Construction()
 {
-	inventory_gui_id = nil;
-}
-
-// this function returns a dummy object that is used as the custom GUI target by the inventory menu
-func GetInventoryGuiTarget()
-{
-	if (inventory_gui_target)
-		return inventory_gui_target;
-	inventory_gui_target = CreateObject(Dummy, AbsX(0), AbsY(0), GetOwner());
-	inventory_gui_target.Visibility = VIS_Owner;
-	return inventory_gui_target;
-}
-
-func Construction()
-{
-	inventory_gui_target = nil;
 	inventory_slots = [];
+
+	inventory_gui_menu =
+	{
+		Target = this,
+		Player = NO_OWNER, // will be shown once a gui update occurs
+		Style = GUI_Multiple | GUI_IgnoreMouse | GUI_NoCrop
+	};
+	inventory_gui_id = GuiOpen(inventory_gui_menu);
+
 	return _inherited(...);
 }
 
-func Destruction()
+private func Destruction()
 {
-	// this also closes the menu
-	if (inventory_gui_target)
-		inventory_gui_target->RemoveObject();
-		
-	return _inherited(...);
+	GuiClose(inventory_gui_id);
+
+	_inherited(...);
 }
 
-
-func OnClonkRecruitment(object clonk, int plr)
-{
-	ScheduleUpdateInventory();
-	return _inherited(clonk, plr, ...);
-}
+/* Callbacks */
 
 public func OnCrewDisabled(object clonk)
 {
 	ScheduleUpdateInventory();
+
+	return _inherited(clonk, ...);
+}
+
+public func OnCrewEnabled(object clonk)
+{
+	ScheduleUpdateInventory();
+
 	return _inherited(clonk, ...);
 }
 
 public func OnCrewSelection(object clonk, bool deselect)
 {
 	ScheduleUpdateInventory();
-	return _inherited(clonk, deselect, ...);
-}
 
-// call from HUDAdapter or inventory-buttons
-public func OnHandSelectionChange(int old, int new, int handslot)
-{
-	GuiUpdateTag("Std", GetInventoryGuiID(), inventory_slots[old].ID + 1000, GetInventoryGuiTarget());
-	GuiUpdateTag("Selected", GetInventoryGuiID(), inventory_slots[new].ID + 1000, GetInventoryGuiTarget());
-	
-	OnSlotObjectChanged(handslot);
-	return _inherited(old, new, handslot, ...);
+	return _inherited(clonk, deselect, ...);
 }
 
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
-{	
+{
 	// refresh inventory
 	ScheduleUpdateInventory();
+
 	return _inherited(slot, ...);
 }
 
 // Updates the Inventory in 1 frame
-func ScheduleUpdateInventory()
+public func ScheduleUpdateInventory()
 {
 	if (!GetEffect("UpdateInventory", this))
 		AddEffect("UpdateInventory", this, 1, 1, this);
 }
 
-func FxUpdateInventoryTimer()
+private func FxUpdateInventoryTimer()
 {
 	UpdateInventory();
-	return -1;
+	return FX_Execute_Kill;
 }
 
-/* Inventory stuff */
-func UpdateInventory()
+/* Display */
+
+private func UpdateInventory()
 {
-	// only display if we have a clonk
+	// only display if we have a clonk and it's not disabled
 	var clonk = GetCursor(GetOwner());
-	if(!clonk)
+	if(!clonk || !clonk->GetCrewEnabled())
 	{
-		GetInventoryGuiTarget().Visibility = VIS_None;
+		if (inventory_gui_menu.Player != NO_OWNER)
+		{
+			inventory_gui_menu.Player = NO_OWNER;
+			GuiUpdate(inventory_gui_menu, inventory_gui_id);
+		}
+
 		return;
 	}
-	GetInventoryGuiTarget().Visibility = VIS_Owner;
+
+	// Make sure inventory is visible
+	if (inventory_gui_menu.Player != GetOwner())
+	{
+		inventory_gui_menu.Player = GetOwner();
+		GuiUpdate(inventory_gui_menu, inventory_gui_id);
+	}
+
 	UpdateInventoryButtons(clonk);
-	
+
 	// update inventory-slots
 	var hand_item_pos = clonk->GetHandItemPos(0);
-	
+
 	for (var slot_info in inventory_slots)
 	{
 		var item = clonk->GetItem(slot_info.slot);
@@ -153,7 +138,7 @@ func UpdateInventory()
 				contents = item->Contents(0);
 				if (contents)
 					extra_symbol = contents->GetID();
-				extra_slot_player = nil; // 'nil' means 'do not hide' here.
+				extra_slot_player = GetOwner();
 				extra_slot_background_symbol = Icon_Menu_Circle;
 				// And attach tracker..
 				var i = 0, e = nil;
@@ -174,74 +159,72 @@ func UpdateInventory()
 					number_symbol = Icon_Number;
 				else extra_text = Format("%dx", contents->GetStackCount());
 			}
-			// If stackable itself, add count.
-			/*
-				Disabled for now, as the stackable objects add the number to their picture as an image.
-				Reenable as soon as we can use different (bigger) font-sizes and the stackable objects do not need to hack their picture.
-			var count = nil;
-			if (item) count = item->~GetStackCount();
-			var count_text = nil;
-			if (count > 1)
-			{
-				count_text = Format("%dx", count);
-			}*/
 
 			// Compose the update!
-			var update = 
+			var update =
 			{
-				icon = { Symbol = item/*, Text = count_text*/},
+				slot = { Symbol = item },
 				extra_slot =
 				{
 					Player = extra_slot_player,
-					text = {Text = extra_text, Symbol = number_symbol},
+					Text = extra_text,
+					symbol =
+					{
+						Symbol = number_symbol
+					},
 					circle =
 					{
 						Symbol = extra_slot_background_symbol,
-						symbol = {Symbol = extra_symbol}
+						symbol = { Symbol = extra_symbol }
 					}
 				}
 			};
-			GuiUpdate(update, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
+			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
+
 			var tag = "Std";
 			if (needs_selection) tag = "Selected";
-			GuiUpdateTag(tag, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
+			GuiUpdateTag(tag, inventory_gui_id, slot_info.ID, this);
+
 			slot_info.hand = needs_selection;
 			slot_info.obj = item;
 			slot_info.empty = !item;
 		}
 	}
-}	
-
-func FxExtraSlotUpdaterTimer(object target, proplist effect)
-{
-	if (!this) return -1;
-	if (target->Contained() != GetCursor(GetOwner())) return -1;
-	return 1;
 }
 
-func FxExtraSlotUpdaterUpdate(object target, proplist effect)
+// Sets the inventory size to the currently selected clonk
+private func UpdateInventoryButtons(object clonk)
 {
-	ScheduleUpdateInventory();
-}
+	var max_contents_count = clonk->~MaxContentsCount();
 
-// Calculates the position of a specific button and returns a proplist.
-public func CalculateButtonPosition(int slot_number, int max_slots)
-{
-	var pos_x_offset = -((GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * max_slots - GUI_Controller_InventoryBar_IconMargin) / 2;
-	var pos_x = pos_x_offset + (GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * slot_number;
-	var pos_y = - (GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize);
-	var pos =
+	var old_count = GetLength(inventory_slots);
+
+	// need to create more inventory buttons?
+	while (max_contents_count > GetLength(inventory_slots))
+		CreateNewInventoryButton(max_contents_count);
+
+	// need to remove some inventory buttons?
+	while (max_contents_count < GetLength(inventory_slots))
 	{
-		Left = Format("50%%%s", ToEmString(pos_x)),
-		Top = Format("100%%%s", ToEmString(pos_y)),
-		Right = Format("50%%%s", ToEmString(pos_x + GUI_Controller_InventoryBar_IconSize)),
-		Bottom = Format("100%%%s", ToEmString(pos_y + GUI_Controller_InventoryBar_IconSize))
-	};
-	return pos;
+		var slot_info = inventory_slots[-1];
+		GuiClose(inventory_gui_id, slot_info.ID, this);
+		SetLength(inventory_slots, GetLength(inventory_slots)-1);
+	}
+
+	// modifications occured? Adjust position of old slots
+	if (old_count != max_contents_count)
+	{
+		for (var i = 0; i < Min(old_count, max_contents_count); ++i)
+		{
+			var slot_info = inventory_slots[i];
+			var update = CalculateButtonPosition(i, max_contents_count);
+			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
+		}
+	}
 }
 
 // Insert an inventory slot into the inventory-bar
-func CreateNewInventoryButton(int max_slots)
+private func CreateNewInventoryButton(int max_slots)
 {
 	var slot_number = GetLength(inventory_slots);
 	var slot_info =
@@ -253,39 +236,38 @@ func CreateNewInventoryButton(int max_slots)
 		empty = true
 	};
 	PushBack(inventory_slots, slot_info);
-	
-	// the gui already exists, only update it with a new submenu
+
+	// The gui already exists, only update it with a new submenu
 	var pos = CalculateButtonPosition(slot_number, max_slots);
-	
-	var icon = 
+
+	var slot =
 	{
-		Target = GetInventoryGuiTarget(),
-		Style = GUI_NoCrop,
+		Target = this,
+		Style = GUI_NoCrop | GUI_TextBottom,
 		ID = slot_info.ID,
 		Symbol = {Std = Icon_Menu_Circle, Selected = Icon_Menu_CircleHighlight},
 		Left = pos.Left, Top = pos.Top, Right = pos.Right, Bottom = pos.Bottom,
 		Text = Format("%2d", slot_info.slot + 1),
-		icon = 
+		count =
 		{
-			Target = GetInventoryGuiTarget(),
 			ID = 1000 + slot_info.ID,
 			Style = GUI_TextRight | GUI_TextBottom,
 			Text = nil,
 			Priority = 2
 		},
 		// Prepare (invisible) extra-slot display circle.
-		extra_slot = 
+		extra_slot =
 		{
-			Top = ToEmString(-GUI_Controller_InventoryBar_IconSize/2),
-			Bottom = "0em",
-			text =
+			Top = ToEmString(GUI_Controller_InventoryBar_IconSize),
+			Bottom = ToEmString(GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2),
+			Style = GUI_TextLeft,
+			Text = nil,
+			symbol =// used to display an infinity sign if necessary (Icon_Number)
 			{
 				Right = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
-				Style = GUI_TextRight,
-				GraphicsName = "Inf", // sometimes used with Icon_Number
-				Text = nil,
+				GraphicsName = "Inf",
 			},
-			circle = 
+			circle =// shows the item in the extra slot
 			{
 				Left = ToEmString(GUI_Controller_InventoryBar_IconSize/2),
 				Symbol = nil,
@@ -293,47 +275,34 @@ func CreateNewInventoryButton(int max_slots)
 			}
 		}
 	};
-	GuiUpdate({_new_icon = icon}, GetInventoryGuiID(), 0);	
-	//return bt;
+	GuiUpdate({_new_icon = slot}, inventory_gui_id);
 }
 
-// sets the inventory size to the currently selected clonk
-private func UpdateInventoryButtons(object clonk)
+// Calculates the position of a specific button and returns a proplist.
+private func CalculateButtonPosition(int slot_number, int max_slots)
 {
-	var max_contents_count = clonk->~MaxContentsCount();
-	
-	var old_count = GetLength(inventory_slots);
-	// need to create more inventory buttons?
-	while (max_contents_count > GetLength(inventory_slots))
-		CreateNewInventoryButton(max_contents_count);
-
-	// need to remove some inventory buttons?
-	while (max_contents_count < GetLength(inventory_slots))
+	var pos_x_offset = -((GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * max_slots - GUI_Controller_InventoryBar_IconMargin) / 2;
+	var pos_x = pos_x_offset + (GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconMargin) * slot_number;
+	var pos_y = GUI_Controller_InventoryBar_IconMarginScreenTop;
+	var pos =
 	{
-		var slot_info = inventory_slots[-1];
-		GuiClose(GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
-		SetLength(inventory_slots, GetLength(inventory_slots)-1);
-	}
-	
-	// modifications occured? Adjust position of old slots
-	if (old_count != max_contents_count)
-	{
-		var gui_id = GetInventoryGuiID();
-		var gui_target = GetInventoryGuiTarget();
-		for (var i = 0; i < Min(old_count, max_contents_count); ++i)
-		{
-			var slot_info = inventory_slots[i];
-			var update = CalculateButtonPosition(i, max_contents_count);
-			GuiUpdate(update, gui_id, slot_info.ID, gui_target);
-		}
-	}
+		Left = Format("50%%%s", ToEmString(pos_x)),
+		Top = Format("0%%%s", ToEmString(pos_y)),
+		Right = Format("50%%%s", ToEmString(pos_x + GUI_Controller_InventoryBar_IconSize)),
+		Bottom = Format("0%%%s", ToEmString(pos_y + GUI_Controller_InventoryBar_IconSize))
+	};
+	return pos;
 }
 
-// Shows the Carryheavy-Inventoryslot if obj is set
-// Removes it if it's nil
-func OnCarryHeavyChange(object obj)
+private func FxExtraSlotUpdaterTimer(object target, proplist effect)
 {
-	// TODO
-	
-	UpdateInventory();
+	if (!this) return FX_Execute_Kill;
+	if (!target) return FX_Execute_Kill;
+	if (target->Contained() != GetCursor(GetOwner())) return FX_Execute_Kill;
+	return FX_OK;
+}
+
+private func FxExtraSlotUpdaterUpdate(object target, proplist effect)
+{
+	if (this) ScheduleUpdateInventory();
 }

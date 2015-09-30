@@ -1,144 +1,271 @@
 /**
 	ControllerActionBar
-	Controlls the action bar interaction and layout.
 
-	@author Zapper
+	Shows a small preview next to the crew portraits of what happens on CON_Interact.
+	Also displays a menu ("action bar") when CON_Interact (space by default) is held with all possible interactions.
+
+	@authors Zapper, Clonkonaut
 */
 
+/*
+	actionbar_items contains an array of proplists as returned by GetInteractableObjects(), see ClonkControl.ocd
+*/
 
-static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
+// HUD margin and size in tenths of em.
+static const GUI_Controller_ActionBar_IconSize = 30;
+static const GUI_Controller_ActionBar_MarginLeft = 6;
+static const GUI_Controller_ActionBar_MarginTop = 6;
+// !!! Does also use the following constants from ControllerCrewBar.ocd:
+// GUI_Controller_CrewBar_IconSize
+// GUI_Controller_CrewBar_IconMargin
+// GUI_Controller_CrewBar_CursorSize
+// GUI_Controller_CrewBar_CursorMargin
 
-static const GUI_Controller_ActionBar_Delay = 20; // delay before the action bar is shown when pressing Interact
-// all values given in 10 em (-> 10 = 1.0em)
-static const GUI_Controller_ActionBar_IconSize = 40;
-static const GUI_Controller_ActionBar_Margin = 10;
+// !!! Does also use all the ACTIONTYPE_* constants from ClonkControl.ocd
 
-local interaction_check_active;
-local actionbar_gui_target;
+static const GUI_MAX_ACTIONBAR = 10;
+// delay before the action bar is shown when pressing Interact
+static const GUI_Controller_ActionBar_Delay = 20;
+
+local current_interaction;
+
+local actionbar_gui_menu;
 local actionbar_gui_id;
 
-local actionbar_items;	// Array, action-buttons at the bottom
+local actionbar_info_menu;
+local actionbar_info_id;
 
-func GetActionBarGuiID()
-{
-	if (actionbar_gui_id) return actionbar_gui_id;
-	FatalError("GUI_Controller_ActionBar::GetActionBarGuiID called when no menu was open");
-	return nil;
-}
+local actionbar_items;
 
-func CloseActionBarGui()
-{
-	if (actionbar_gui_id)
-		GuiClose(actionbar_gui_id);
-	
-	actionbar_gui_id = nil;
-	actionbar_items = [];
-}
+/* Creation / Destruction */
 
-// this function returns a dummy object that is used as the custom GUI target by the inventory menu
-func GetActionBarGuiTarget()
-{
-	if (actionbar_gui_target)
-		return actionbar_gui_target;
-	actionbar_gui_target = CreateObject(Dummy, AbsX(0), AbsY(0), GetOwner());
-	actionbar_gui_target.Visibility = VIS_Owner;
-	return actionbar_gui_target;
-}
-
-func Construction()
+private func Construction()
 {
 	actionbar_items = [];
-	interaction_check_active = false;
-	return _inherited();
-}
 
-func Destruction()
-{
-	if (actionbar_gui_target)
-		actionbar_gui_target->RemoveObject();
-	return _inherited();
-}
+	// Calculate margin + width of crew portraits
+	var icon_margin = GUI_Controller_CrewBar_CursorMargin +
+	                  GUI_Controller_CrewBar_CursorSize +
+	                  GUI_Controller_CrewBar_IconMargin +
+	                  GUI_Controller_CrewBar_IconSize +
+	                  GUI_Controller_ActionBar_MarginLeft;
+	var icon_size = icon_margin + GUI_Controller_ActionBar_IconSize;
 
-
-// executes the mouseclick onto an actionbutton through hotkeys
-public func ControlHotkey(int hotindex)
-{
-	return OnActionBarButtonSelected(hotindex);
-}
-
-
-func StartInteractionCheck(object clonk)
-{
-	interaction_check_active = true;
-	if (!GetEffect("IntSearchInteractionObjects", clonk))
-		AddEffect("IntSearchInteractionObjects", clonk, 1, 10, this, nil);
-}
-
-func StopInteractionCheck(object clonk)
-{
-	clonk = clonk ?? GetCursor(GetOwner());
-	if (!clonk) return false;
-	var canceled = GetLength(actionbar_items) > 0;
-	interaction_check_active = false;
-	RemoveEffect("IntSearchInteractionObjects", clonk);
-	CloseActionBarGui();
-	return canceled;
-}
-
-// call from HUDAdapter (Clonk)
-public func OnCrewSelection(object clonk, bool deselect)
-{
-	// selected
-	if (!deselect)
+	actionbar_gui_menu =
 	{
-		// and start effect to monitor vehicles and structures...
-		if (interaction_check_active)
-			AddEffect("IntSearchInteractionObjects", clonk, 1, 10, this, nil);
+		Target = this,
+		Player = NO_OWNER, // will be shown only if there is an interaction possible, e.g. standing in front of a vehicle
+		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
+		Left = ToEmString(icon_margin),
+		Right = ToEmString(icon_size),
+		Top = ToEmString(GUI_Controller_ActionBar_MarginTop),
+		Bottom = ToEmString(GUI_Controller_ActionBar_MarginTop + GUI_Controller_ActionBar_IconSize),
+		Symbol = Icon_Menu_RectangleRounded,
+		Priority = 1,
+		key =// the interaction key
+		{
+			Target = this,
+			Style = GUI_NoCrop | GUI_TextHCenter | GUI_TextBottom,
+			Left = "-50%",
+			Right = "150%",
+			Top = ToEmString(-6),
+			Bottom = ToEmString(4),
+			Text = Format("<c dddd00>[%s]</c>", GetPlayerControlAssignment(GetOwner(), CON_Interact, true)),
+			Priority = 2
+		},
+		symbol =// the object to interact with
+		{
+			Target = this,
+			Symbol = nil,
+			Priority = 3
+		},
+		icon =// small icon visualising the action
+		{
+			Target = this,
+			Style = GUI_NoCrop,
+			Left = "50%",
+			Top = "50%",
+			Symbol = nil,
+			Priority = 4
+		},
+		text =// interaction description
+		{
+			Target = this,
+			Style = GUI_NoCrop | GUI_TextHCenter,
+			Left = "-50%",
+			Right = "150%",
+			Top = ToEmString(GUI_Controller_ActionBar_IconSize - 5),
+			Bottom = ToEmString(GUI_Controller_ActionBar_MarginTop + GUI_Controller_ActionBar_IconSize + 15),
+			Text = "",
+			Priority = 5
+		},
+		plus =// shown if there are multiple interactions
+		{
+			Target = this,
+			Player = NO_OWNER,
+			ID = 1,
+			Style = GUI_NoCrop,
+			Left = ToEmString(GUI_Controller_ActionBar_IconSize / 2),
+			Right = ToEmString(GUI_Controller_ActionBar_IconSize * 3 / 2),
+			Bottom = ToEmString(GUI_Controller_ActionBar_IconSize / 2),
+			Symbol = Icon_Number,
+			GraphicsName = "PlusGreen",
+			Priority = 6
+		}
+	};
+	actionbar_gui_id = GuiOpen(actionbar_gui_menu);
+
+	AddTimer("ShowInteraction", 10);
+
+	actionbar_info_menu =
+	{
+		Target = this,
+		Style = GUI_Multiple,
+		Top = "50%", Bottom = Format("50%%%s", ToEmString(GUI_Controller_ActionBar_IconSize))
+	};
+
+	return _inherited(...);
+}
+
+private func Destruction()
+{
+	GuiClose(actionbar_gui_id);
+	RemoveTimer("ShowInteraction");
+	current_interaction = nil;
+
+	CloseActionBar();
+
+	_inherited(...);
+}
+
+/* Callbacks */
+
+private func StartInteractionCheck(object clonk)
+{
+	ScheduleCall(this, "OpenActionBar", GUI_Controller_ActionBar_Delay);
+}
+
+private func StopInteractionCheck(object clonk)
+{
+	CloseActionBar();
+}
+
+/* Timer */
+
+// Runs every 10 frames to look for possible interactable objects and shows the interaction icon if applicable
+private func ShowInteraction()
+{
+	var cursor = GetCursor(GetOwner());
+	if (!cursor || !cursor->GetCrewEnabled()) return HideInteraction();
+
+	var interactables = cursor->~GetInteractableObjects();
+	if (!interactables || !GetLength(interactables)) return HideInteraction();
+
+	// Get the interaction with the highest priority
+	var high_prio = nil;
+	for (var interactable in interactables)
+		if (high_prio == nil || (interactable.priority < high_prio.priority)) high_prio = interactable;
+
+	// If the full action bar is displayed, update
+	if (actionbar_info_id) UpdateActionBar(interactables, cursor);
+
+	// If there are multiple interactions, show plus sign
+	if (GetLength(interactables) > 1)
+	{
+		if (actionbar_gui_menu.plus.Player != GetOwner())
+		{
+			actionbar_gui_menu.plus.Player = GetOwner();
+			GuiUpdate({ Player = GetOwner() }, actionbar_gui_id, 1, this);
+		}
 	}
 	else
 	{
-		var active = interaction_check_active;
-		StopInteractionCheck(clonk);
-		// stop the effect, yet start again when new clonk is selected!
-		interaction_check_active = active;
+		if (actionbar_gui_menu.plus.Player == GetOwner())
+		{
+			actionbar_gui_menu.plus.Player = NO_OWNER;
+			GuiUpdate({ Player = NO_OWNER }, actionbar_gui_id, 1, this);
+		}
 	}
-		
-	return _inherited(clonk, deselect, ...);
+
+	// Already showing?
+	if (DeepEqual(high_prio, current_interaction)) return;
+
+	// Display that information
+
+	current_interaction =high_prio;
+	actionbar_gui_menu.Player = GetOwner();
+	var help = GetInteractionHelp(current_interaction.actiontype, current_interaction.interaction_object, current_interaction.interaction_index, cursor);
+
+	var update = {
+		Player = GetOwner(),
+		symbol =
+		{
+			Symbol = current_interaction.interaction_object
+		},
+		icon =
+		{
+			Symbol = help.help_icon,
+			GraphicsName = help.help_icon_graphics
+		},
+		text =
+		{
+			Text = help.help_text
+		}
+	};
+
+	GuiUpdate(update, actionbar_gui_id);
 }
 
-public func FxIntSearchInteractionObjectsEffect(string newname, object target)
+// Does hide the interaction icon
+private func HideInteraction()
 {
-	if(newname == "IntSearchInteractionObjects")
-		return -1;
+	// Already hidden, do nothing
+	if (actionbar_gui_menu.Player == NO_OWNER) return;
+
+	actionbar_gui_menu.Player = NO_OWNER;
+	current_interaction = nil;
+	GuiUpdate({ Player = NO_OWNER }, actionbar_gui_id);
 }
 
-public func FxIntSearchInteractionObjectsStart(object target, effect, int temp)
+/* Display */
+
+// Opens the full interaction bar if CON_Interact was held down
+private func OpenActionBar()
 {
-	if(temp != 0) return;
+	var cursor = GetCursor(GetOwner());
+	if (!cursor || !cursor->GetCrewEnabled()) return;
+
+	actionbar_info_id = GuiOpen(actionbar_info_menu);
+	// Immediately update the entries
+	ShowInteraction();
 }
 
-// takes care of displaying the interactions
-public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
+private func CloseActionBar()
 {
-	if (time < GUI_Controller_ActionBar_Delay)
-		return 1;
-	if (!interaction_check_active)
-		return -1;
-		
-	// only update if we see any changes
-	var old_actionbar_items = actionbar_items;
-	actionbar_items = target->GetInteractableObjects();
-	PrepareAndSortNewActionBarItems(GetCursor(GetOwner()));
-	
-	// determine if update is necessary
-	var do_update = GetLength(actionbar_items) != GetLength(old_actionbar_items);
+	ClearScheduleCall(this, "OpenActionBar");
+
+	if (!actionbar_info_id) return;
+
+	GuiClose(actionbar_info_id);
+	actionbar_items = [];
+}
+
+private func UpdateActionBar(array interactables, object cursor)
+{
+	// Check whether an update is necessary
+	var do_update = false;
+
+	// Do update if the amount of interactions has changed
+	if (GetLength(interactables) != GetLength(actionbar_items))
+		do_update = true;
+	// Do a more thourough check, comparing everything in detail
 	if (!do_update)
 	{
-		// check if every new object was also an old object
-		for (var new_entry in actionbar_items)
+		// Check if every new object was also an old object
+		for (var new_entry in interactables)
 		{
 			var found = false;
-			for (var old_entry in old_actionbar_items)
+			for (var old_entry in actionbar_items)
 			{
 				if (new_entry.interaction_object != old_entry.interaction_object
 				||  new_entry.interaction_index != old_entry.interaction_index)
@@ -151,169 +278,85 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 				do_update = true;
 				break;
 			}
-		} 
+		}
 	}
-	
-	if (do_update)
-		UpdateActionBarDisplay();
-	else
-		actionbar_items = old_actionbar_items;
-	return 1;
-}
+	if (!do_update) return;
 
-func IsActionInfoSelected(action_info, crew)
-{
-	return (action_info.actiontype == ACTIONTYPE_VEHICLE && crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == action_info.interaction_object)
-					|| (action_info.actiontype == ACTIONTYPE_STRUCTURE && crew->Contained() == action_info.interaction_object)
-					|| (action_info.actiontype == ACTIONTYPE_INVENTORY);
-}
+	// Clean up and sort actionbar_items
+	actionbar_items = interactables;
+	PrepareAndSortNewActionBarItems();
 
-func UpdateActionBarDisplay()
-{
-	var crew = GetCursor(GetOwner());
-	// clean up old first
-	// the action bar is always completely re-created when an update is detected
-	var current_bar = actionbar_items;
-	CloseActionBarGui();
-	actionbar_items = current_bar;
+	// Update all buttons up to the maximum of possible buttons
+	var button_count = Min(GetLength(actionbar_items), GUI_MAX_ACTIONBAR);
+	var x_offset = -(GUI_Controller_ActionBar_MarginLeft + GUI_Controller_ActionBar_IconSize) * button_count / 2 + (GUI_Controller_ActionBar_MarginLeft / 2);
 
-	var menu =
+	for (var i = 0; i < GUI_MAX_ACTIONBAR; i++)
 	{
-		Target = GetActionBarGuiTarget(),
-		Style = 0,//GUI_GridLayout,
-		Top = "50%", Bottom = Format("50%%%s", ToEmString(GUI_Controller_ActionBar_IconSize))
-	};
-	
-	var button_number = 0;
-	var all_buttons_count = GetLength(actionbar_items);
-	for (var action_info in actionbar_items)
-	{
-		var pos_offset_x = - (GUI_Controller_ActionBar_Margin + GUI_Controller_ActionBar_IconSize) * all_buttons_count / 2 + (GUI_Controller_ActionBar_Margin / 2);
-		var pos_x = pos_offset_x + (GUI_Controller_ActionBar_Margin + GUI_Controller_ActionBar_IconSize) * button_number;
-		
-		var hotkey = button_number + 1;
-		var entry =
+		if (!actionbar_items[i])
 		{
-			ID = hotkey,
-			Priority = action_info.priority,
-			Style = GUI_NoCrop | GUI_TextTop | GUI_TextRight,
-			Left = Format("50%%%s", ToEmString(pos_x)),
-			Right = Format("50%%%s", ToEmString(pos_x + GUI_Controller_ActionBar_IconSize)),
-			Bottom = Format("0%%%s", ToEmString(GUI_Controller_ActionBar_IconSize)),
-			Symbol = Icon_Menu_RectangleBrightRounded,
-			Text = Format("%2d", hotkey),
-			icon =
+			actionbar_info_menu[Format("button%d", i)] =
 			{
-				Priority = 1
-			},
-			info_icon =
-			{
-				Priority = 2,
-				Left = "+0.5em", Right = "0%+2.2em",
-				Top = "+0.5em", Bottom = "0%+2.2em"
-			},
-			OnClick = GuiAction_Call(this, "OnActionBarSelected", button_number),
-			OnMouseIn = GuiAction_SetTag("OnHover"), 
-			OnMouseOut = GuiAction_SetTag("Std"), 
-		};
-		
-		var selected = IsActionInfoSelected(action_info, crew);
-		
-		var graphics_name = nil;
-		var graphics_id = nil, tooltip = nil;
-		
-		if (action_info.actiontype == ACTIONTYPE_EXTRA && action_info.extra_data)
-		{
-			graphics_name = action_info.extra_data.IconName;
-			graphics_id = action_info.extra_data.IconID;
-			tooltip = action_info.extra_data.Description;
+				Player = NO_OWNER
+			};
 		}
-		else if (action_info.actiontype == ACTIONTYPE_SCRIPT)
+		else
 		{
-			var metainfo = action_info.interaction_object->~GetInteractionMetaInfo(crew, action_info.interaction_index);
-			if(metainfo)
+			var left = x_offset + (GUI_Controller_ActionBar_MarginLeft + GUI_Controller_ActionBar_IconSize) * i;
+			var hotkey = i + 1;
+			var help = GetInteractionHelp(actionbar_items[i].actiontype, actionbar_items[i].interaction_object, actionbar_items[i].interaction_index, cursor);
+
+			actionbar_info_menu[Format("button%d", i)] =
 			{
-				graphics_name = metainfo.IconName;
-				graphics_id = metainfo.IconID;
-				tooltip = metainfo.Description;
-				selected = metainfo.Selected;
-			}
-		}
-		else if (action_info.actiontype == ACTIONTYPE_VEHICLE)
-		{
-			if (selected)
-			{
-				graphics_id = Icon_LetGo;
-				tooltip = Format("$TxtUnGrab$",action_info.interaction_object->GetName());
-			}
-			else
-			{
-				if(!action_info.interaction_object->Contained())
+				Target = this,
+				Player = GetOwner(),
+				ID = hotkey,
+				Style = GUI_NoCrop | GUI_TextTop | GUI_TextRight,
+				Left = Format("50%%%s", ToEmString(left)),
+				Right = Format("50%%%s", ToEmString(left + GUI_Controller_ActionBar_IconSize)),
+				Bottom = Format("0%%%s", ToEmString(GUI_Controller_ActionBar_IconSize)),
+				Symbol = Icon_Menu_RectangleBrightRounded,
+				Priority = 1,
+				Text = Format("%2d", hotkey),
+				Tooltip = help.help_text,
+				OnClick = GuiAction_Call(this, "OnActionBarSelected", i),
+				symbol =
 				{
-					graphics_id = Icon_Grab;
-					tooltip = Format("$TxtGrab$",action_info.interaction_object->GetName());
-				}
-				else
+					Target = this,
+					Symbol = actionbar_items[i].interaction_object,
+					Priority = 3
+				},
+				icon =
 				{
-					graphics_id = Icon_Exit;
-					tooltip = Format("$TxtPushOut$",action_info.interaction_object->GetName());
+					Target = this,
+					Style = GUI_NoCrop,
+					Left = "50%",
+					Top = "50%",
+					Symbol = help.help_icon,
+					GraphicsName = help.help_icon_graphics,
+					Priority = 4
+				},
+				text =
+				{
+					Target = this,
+					Style = GUI_NoCrop | GUI_TextHCenter,
+					Left = "-50%",
+					Right = "150%",
+					Top = ToEmString(GUI_Controller_ActionBar_IconSize - 5),
+					Bottom = ToEmString(GUI_Controller_ActionBar_MarginTop + GUI_Controller_ActionBar_IconSize + 15),
+					Text = "",
+					Priority = 5
 				}
-			}
+			};
 		}
-		else if (action_info.actiontype == ACTIONTYPE_STRUCTURE)
-		{
-			if (selected)
-			{
-				graphics_id = Icon_Exit;
-				tooltip = Format("$TxtExit$",action_info.interaction_object->GetName());
-			}
-			else
-			{
-				graphics_id = Icon_Enter;
-				tooltip = Format("$TxtEnter$",action_info.interaction_object->GetName());
-			}
-		}
-		
-		entry.icon.Symbol = action_info.interaction_object;
-		
-		if (graphics_id)
-		{
-			entry.info_icon.Symbol = Icon_Menu_RectangleRounded;
-			entry.info_icon.background = { Symbol = graphics_id };
-		}
-		
-		GuiAddSubwindow(entry, menu);
-		
-		++button_number;
 	}
-	
-	actionbar_gui_id = GuiOpen(menu);
+
+	GuiUpdate(actionbar_info_menu, actionbar_info_id);
 }
 
-// insert a button into the actionbar
-// it will be sorted to the correct position via /priority/ before drawing
-func CreateNewActionButton(int priority, object interaction_object, int actiontype, int interaction_index /* if an object has multiple interactions, this indicates which one is used */, proplist extra_data)
-{
-	// the actionbar has a maximum size
-	if (GetLength(actionbar_items) > GUI_MAX_ACTIONBAR)
-		return;
-		
-	var button_info = 
-	{
-		interaction_object = interaction_object,
-		priority = priority,
-		interaction_index = interaction_index,
-		extra_data = extra_data,
-		actiontype = actiontype
-	};
-	
-	PushBack(actionbar_items, button_info);
-}
-
-func PrepareAndSortNewActionBarItems(object crew)
+private func PrepareAndSortNewActionBarItems()
 {
 	RemoveHoles(actionbar_items);
-	
+
 	// sort correctly for priority
 	var len = GetLength(actionbar_items);
 	for (var c = 0; c < len; ++c)
@@ -330,20 +373,80 @@ func PrepareAndSortNewActionBarItems(object crew)
 	}
 }
 
-func OnActionBarSelected(int button_index, int player, int guiID, int subwindowID, target)
-{
-	OnActionBarButtonSelected(button_index);
-}
-
-func OnActionBarButtonSelected(int button_index)
+// When a button from the interaction bar was clicked
+private func OnActionBarSelected(int button_index)
 {
 	if (button_index < 0 || button_index >= GetLength(actionbar_items))
 		return false;
 	var action_info = actionbar_items[button_index];
 	var crew = GetCursor(GetOwner());
-	if (!crew) return false;
+	if (!crew || !crew->GetCrewEnabled()) return false;
 	crew->ExecuteInteraction(action_info);
-	StopInteractionCheck(crew);
+	CloseActionBar();
 	crew.control.hotkeypressed = true; // for Library_ClonkControl
 	return true;
+}
+
+/* Returns a proplist with the following properties to display:
+help_text: A text describing the interaction or ""
+help_icon: A pictographic icon definition symbolising the interaction or nil
+help_icon_graphics: The graphics of the icon definition to use or ""
+*/
+private func GetInteractionHelp(int actiontype, object to_interact, int interaction_index, object clonk)
+{
+	var ret =
+	{
+		help_text = "",
+		help_icon = nil,
+		help_icon_graphics = ""
+	};
+
+	// Help text: Grabbing / Ungrabbing / Pushing out
+	if (actiontype == ACTIONTYPE_VEHICLE)
+	{
+		if (clonk->Contained() && to_interact->Contained() == clonk->Contained())
+		{
+			ret.help_text = Format("$TxtPushOut$", to_interact->GetName());
+			ret.help_icon = Icon_Exit;
+		}
+		else if (clonk->GetProcedure() == "PUSH" && clonk->GetActionTarget() == to_interact)
+		{
+			ret.help_text = Format("$TxtUnGrab$", to_interact->GetName());
+			ret.help_icon = Icon_LetGo;
+		}
+		else
+		{
+			ret.help_text = Format("$TxtGrab$", to_interact->GetName());
+			ret.help_icon = Icon_Grab;
+		}
+	}
+
+	// Help text: Enter / Exit
+	if (actiontype == ACTIONTYPE_STRUCTURE)
+	{
+		if (clonk->Contained() && clonk->Contained() == to_interact)
+		{
+			ret.help_text = Format("$TxtExit$", to_interact->GetName());
+			ret.help_icon = Icon_Exit;
+		}
+		else
+		{
+			ret.help_text = Format("$TxtEnter$", to_interact->GetName());
+			ret.help_icon = Icon_Enter;
+		}
+	}
+
+	// Help text: Script Interaction
+	if (actiontype == ACTIONTYPE_SCRIPT)
+	{
+		var metainfo = to_interact->~GetInteractionMetaInfo(clonk, interaction_index);
+		if (metainfo)
+		{
+			ret.help_text = metainfo.Description;
+			ret.help_icon = metainfo.IconID;
+			ret.help_icon_graphics = metainfo.IconName;
+		}
+	}
+
+	return ret;
 }

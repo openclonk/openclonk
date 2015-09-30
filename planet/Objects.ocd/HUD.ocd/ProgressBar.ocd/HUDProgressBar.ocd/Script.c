@@ -124,7 +124,7 @@ public func RemoveBar(int subwindow_id, int height)
 
 private func CalculateTop()
 {
-	return -total_height - (GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2);
+	return -total_height - (GUI_Controller_InventoryBar_IconMarginScreenTop + GUI_Controller_InventoryBar_IconSize + GUI_Controller_InventoryBar_IconSize/2);
 }
 
 // Called once on creation by CreateProgressBar.

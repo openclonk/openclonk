@@ -1,55 +1,56 @@
 /**
 	ControllerWealth
-	Controlls the wealth display.
 
-	@author Maikel
+	Shows an icon and the current player's wealth in the top right corner.
+
+	@authors Maikel, Clonkonaut
 */
 
-
 // HUD margin and size in tenths of em.
-static const GUI_Controller_Wealth_IconSize = 30;
+static const GUI_Controller_Wealth_IconSize = 25;
 static const GUI_Controller_Wealth_IconMargin = 5;
 
-// Local variables to keep track of the wealth HUD menu.
-local wealth_gui_target;
 local wealth_gui_menu;
 local wealth_gui_id;
 
-public func Construction()
+/* Creation / Destruction */
+
+private func Construction()
 {
 	var plr = GetOwner();
 	var wealth = GetWealth(plr);
-	// Create a menu target.
-	wealth_gui_target = CreateObject(Dummy, AbsX(0), AbsY(0), plr);
-	wealth_gui_target.Visibility = VIS_Owner;
-	// Create the wealth HUD menu.
+
 	var margin = GUI_Controller_Wealth_IconMargin;
-	var end = margin + GUI_Controller_Wealth_IconSize;
-	wealth_gui_menu = 
+	var whole = margin + GUI_Controller_Wealth_IconSize;
+
+	wealth_gui_menu =
 	{
-		Target = wealth_gui_target,
+		Target = this,
+		Player = plr,
 		Style = GUI_Multiple | GUI_TextHCenter | GUI_TextBottom,
-		Left = Format("100%%%s", ToEmString(-end)),
+		Left = Format("100%%%s", ToEmString(-whole)),
 		Right = Format("100%%%s", ToEmString(-margin)),
 		Top = ToEmString(margin),
-		Bottom = ToEmString(end),
+		Bottom = ToEmString(whole),
+		Priority = 1,
 		Symbol = Icon_Wealth,
 		GraphicsName = GetGraphicsName(wealth),
 		Text = Format("%d", wealth),
 	};
 	wealth_gui_id = GuiOpen(wealth_gui_menu);
+
 	return _inherited(...);
 }
 
-public func Destruction()
+private func Destruction()
 {
-	// This also closes the wealth HUD menu.
-	if (wealth_gui_target)
-		wealth_gui_target->RemoveObject();
-	return _inherited(...);
+	GuiClose(wealth_gui_id);
+
+	_inherited(...);
 }
 
-// Callback when the wealth has changed: update the wealth HUD menu.
+/* Callbacks */
+
 public func OnWealthChanged(int plr)
 {
 	// Only update wealth when it is the right player.
@@ -60,16 +61,17 @@ public func OnWealthChanged(int plr)
 		wealth_gui_menu.Text = Format("%d", wealth);
 		GuiUpdate(wealth_gui_menu, wealth_gui_id);
 	}
+
 	return _inherited(plr, ...);
 }
 
-// Returns the graphics name for a specific wealth.
+// Graphics changes in accordance to accumulated wealth
 private func GetGraphicsName(int wealth)
 {
-	var num = 0;
-	if (wealth >= 10) num = 1;
-	if (wealth >= 30) num = 2;
-	if (wealth >= 70) num = 3;
-	if (wealth >= 120) num = 4;
-	return Format("%d", num);
+	var num = "0";
+	if (wealth >= 10) num = "1";
+	if (wealth >= 30) num = "2";
+	if (wealth >= 70) num = "3";
+	if (wealth >= 120) num = "4";
+	return num;
 }

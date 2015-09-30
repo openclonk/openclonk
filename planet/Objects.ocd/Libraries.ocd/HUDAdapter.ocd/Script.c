@@ -16,23 +16,38 @@
 
 local HUDcontroller;
 
-
 public func IsHUDAdapter()
 {
 	return true;
 }
 
+// Either returns the current HUD controller or creates one.
+// But only if owner is a human otherwise returns nil.
+private func GetHUDController()
+{
+	var plr = GetOwner();
+	if (GetPlayerType(plr) != C4PT_User) return nil;
+	if (HUDcontroller) return HUDcontroller;
+	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	if (!HUDcontroller)
+		HUDcontroller = CreateObject(GUI_Controller, AbsX(0), AbsY(0), plr);
+	return HUDcontroller;
+}
+
+// Update HUD controller e.g. when it was reinitialized
+public func SetHUDController(object new_controller)
+{
+	HUDcontroller = new_controller;
+	return true;
+}
 
 /*-- Engine callbacks --*/
 
 // Bootstrap the HUD on the recruitement of a crew member.
-protected func Recruitment(int plr)
+private func Recruitment(int plr)
 {
-	if (GetPlayerType(plr) == C4PT_User)
+	if (GetHUDController())
 	{
-		HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (!HUDcontroller)
-			HUDcontroller = CreateObject(GUI_Controller, 0, 0, plr);
 		HUDcontroller->~OnCrewRecruitment(this, plr, ...);
 		HUDcontroller->~ScheduleUpdateInventory();
 	}
@@ -42,40 +57,28 @@ protected func Recruitment(int plr)
 // On savegame load or after section change, ensure that there's a HUD adapter
 public func OnSynchronized(...)
 {
-	var plr = GetOwner();
-	if (!HUDcontroller && GetPlayerType(plr) == C4PT_User)
-	{
-		HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (!HUDcontroller) HUDcontroller = CreateObject(GUI_Controller, 0, 0, plr);
+	if (GetHUDController())
 		HUDcontroller->~ScheduleUpdateInventory();
-	}
 	return _inherited(...);
 }
 
-// Update HUD controlle e.g. when it was reinitialized
-public func SetHUDController(object new_controller)
+private func DeRecruitment(int plr)
 {
-	HUDcontroller = new_controller;
-	return true;
-}
-
-protected func DeRecruitment(int plr)
-{
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->~OnCrewDeRecruitment(this, plr, ...);
 	return _inherited(plr, ...);
 }
 
-protected func Death(int killed_by)
+private func Death(int killed_by)
 {
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->~OnCrewDeath(this, killed_by, ...);
 	return _inherited(killed_by, ...);
 }
 
-protected func Destruction()
+private func Destruction()
 {
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->~OnCrewDestruction(this, ...);
 	return _inherited(...);
 }
@@ -86,72 +89,64 @@ public func ControlHotkey(int hotindex)
 		return HUDcontroller->~ControlHotkey(hotindex);
 }
 
-
-public func OnDisplayInfoMessage()
-{
-	
-}
-
-protected func OnPromotion()
+private func OnPromotion()
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewRankChange(this);
 	return _inherited(...); 
 }
 
-protected func OnEnergyChange()	
+private func OnEnergyChange(int change, int cause, int caused_by)
 {
 	if (HUDcontroller)
-		HUDcontroller->~OnCrewHealthChange(this);
+		HUDcontroller->~OnCrewHealthChange(this, change, cause, caused_by);
 	return _inherited(...);
 
 }
-protected func OnBreathChange() 
+private func OnBreathChange(int change)
 {
 	if (HUDcontroller)
-		HUDcontroller->~OnCrewBreathChange(this);
+		HUDcontroller->~OnCrewBreathChange(this, change);
 	return _inherited(...);
 }
 
-protected func OnNameChanged()
+private func OnNameChanged()
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewNameChange(this);
 	return _inherited(...);
 }
 
-protected func OnPhysicalChange(string physical, int change)
+private func OnPhysicalChange(string physical, int change)
 {
 	if (HUDcontroller)
 	{
 		if (!physical)
 		{
-			HUDcontroller->~OnCrewHealthChange(this);
-			HUDcontroller->~OnCrewBreathChange(this);
+			HUDcontroller->~OnCrewHealthChange(this, change);
+			HUDcontroller->~OnCrewBreathChange(this, change);
 		}
-		else if (physical == "Energy") HUDcontroller->~OnCrewHealthChange(this);
-		else if (physical == "Breath") HUDcontroller->~OnCrewBreathChange(this);
+		else if (physical == "Energy") HUDcontroller->~OnCrewHealthChange(this, change);
+		else if (physical == "Breath") HUDcontroller->~OnCrewBreathChange(this, change);
 	}
 	return _inherited(physical, change, ...);
 }
 
-// calls to both crew selector and controller
-protected func CrewSelection(bool unselect)
+private func CrewSelection(bool unselect)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewSelection(this, unselect);
 	return _inherited(unselect, ...);
 }
 
-// calls to controller
-protected func OnCrewEnabled()
+private func OnCrewEnabled()
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewEnabled(this);
 	return _inherited(...);
 }
 
-protected func OnCrewDisabled()
+private func OnCrewDisabled()
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnCrewDisabled(this);
@@ -159,25 +154,18 @@ protected func OnCrewDisabled()
 }
 
 // from ClonkControl.ocd
-protected func OnSlotFull(int slot)
+private func OnSlotFull(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnSlotObjectChanged(slot);
 	return _inherited(slot, ...);
 }
 
-protected func OnSlotEmpty(int slot)
+private func OnSlotEmpty(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnSlotObjectChanged(slot);
 	return _inherited(slot, ...);
-}
-
-protected func OnHandSelectionChange(int old, int new, int handslot)
-{
-	if (HUDcontroller)
-		HUDcontroller->~OnHandSelectionChange(old, new, handslot);
-	return _inherited(old, new, handslot, ...);
 }
 
 // handled by GUI_Controller_ActionBars
@@ -194,14 +182,14 @@ func StopInteractionCheck()
 		return HUDcontroller->~StopInteractionCheck(...);
 }
 
-protected func OnInventoryHotkeyPress(int slot)
+private func OnInventoryHotkeyPress(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnInventoryHotkeyPress(slot);
 	return _inherited(slot, ...);
 }
 
-protected func OnInventoryHotkeyRelease(int slot)
+private func OnInventoryHotkeyRelease(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->~OnInventoryHotkeyRelease(slot);
@@ -209,20 +197,11 @@ protected func OnInventoryHotkeyRelease(int slot)
 }
 
 // when something in the inventory changed
-protected func OnInventoryChange()
+private func OnInventoryChange()
 {
 	if (HUDcontroller)
 		HUDcontroller->~ScheduleUpdateInventory();
 	return _inherited(...);
-}
-
-// when a carryheavy object is picked up/dropped
-protected func OnCarryHeavyChange(object carried)
-{
-	if (HUDcontroller)
-		if (GetCursor(GetOwner()) == this)
-			HUDcontroller->~OnCarryHeavyChange(carried);
-	return _inherited(carried, ...);
 }
 
 public func Collection2()
