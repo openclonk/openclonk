@@ -400,7 +400,7 @@ bool C4Network2IRCClient::Join(const char *szChannel)
 			const char* message = LoadResStr("IDS_ERR_CHANNELNOTALLOWED");
 			PushMessage(MSG_Status, "", "", message);
 			SetError("Joining this channel not allowed");
-			Application.InteractiveThread.ThreadPostAsync(std::bind(&C4GUI::Screen::ShowMessage, ::pGUI, message, LoadResStr("IDS_DLG_CHAT"), C4GUI::Ico_Error, static_cast<int32_t* const &>(0)));
+			Application.InteractiveThread.ThreadPostAsync<bool>(std::bind(&C4GUI::Screen::ShowMessage, ::pGUI, message, LoadResStr("IDS_DLG_CHAT"), C4GUI::Ico_Error, static_cast<int32_t* const &>(0)));
 			return false;
 		}
 	return Send("JOIN", szChannel);
