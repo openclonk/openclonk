@@ -821,6 +821,11 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
 	if(state->txtScript == NULL) return;
 
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
+	if(!completion)
+	{
+		ClearInput();
+		completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
+	}
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
 	g_assert(store);
