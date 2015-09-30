@@ -110,6 +110,13 @@ private func OnBreathChange(int change)
 	return _inherited(...);
 }
 
+private func OnMagicEnergyChange(int change)
+{
+	if (HUDcontroller)
+		HUDcontroller->~OnCrewMagicChange(this, change);
+	return _inherited(...);
+}
+
 private func OnNameChanged()
 {
 	if (HUDcontroller)

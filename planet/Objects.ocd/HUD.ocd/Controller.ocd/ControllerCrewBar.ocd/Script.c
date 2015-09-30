@@ -263,7 +263,7 @@ private func Construction()
 	// Health bar
 	crew_health_bar = AddCrewBar(RGB(160, 0, 0));
 	// Magic bar
-	crew_magic_bar = AddCrewBar(RGB(0, 0, 160));
+	crew_magic_bar = AddCrewBar(RGB(75, 75, 160));
 	// Breath bar
 	crew_breath_bar = AddCrewBar(RGB(0, 160, 160));
 
@@ -461,7 +461,30 @@ public func OnCrewBreathChange(object clonk, int change)
 		}
 	}
 
-	return _inherited(clonk, ...);
+	return _inherited(clonk, change, ...);
+}
+
+public func OnCrewMagicChange(object clonk, int change)
+{
+	var magic_phys = clonk->~GetMaxMagicEnergy();
+	if (magic_phys)
+	{
+		var magic_val = clonk->GetMagicEnergy();
+		if (GetCursor(GetOwner()) == clonk) // Only displayed for cursor
+		{
+			// Hide bar if no magic
+			if (magic_val == 0)
+				HideCrewBar(crew_magic_bar);
+			// Else show bar!
+			else
+			{
+				ShowCrewBar(crew_magic_bar);
+				SetCrewBarValue(crew_magic_bar, 1000 * magic_val / magic_phys);
+			}
+		}
+	}
+
+	return _inherited(clonk, change, ...);
 }
 
 /* Display */
@@ -592,6 +615,18 @@ private func UpdateCrewDisplay()
 		}
 		else
 			HideCrewBar(crew_health_bar);
+
+		// Magic
+		var magic_phys = cursor->~GetMaxMagicEnergy();
+		var magic_val = cursor->~GetMagicEnergy();
+
+		if (magic_phys && magic_val > 0)
+		{
+			ShowCrewBar(crew_magic_bar);
+			SetCrewBarValue(crew_magic_bar, 1000 * magic_val / magic_phys);
+		}
+		else
+			HideCrewBar(crew_magic_bar);
 
 		// Breath
 		var breath_phys = cursor->~GetMaxBreath();
