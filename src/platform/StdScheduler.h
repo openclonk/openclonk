@@ -40,6 +40,9 @@ struct pollfd;
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif // HAVE_PTHREAD
+#ifdef __APPLE__
+#include <sched.h>
+#endif
 #endif // _WIN32
 
 
