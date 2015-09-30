@@ -1,0 +1,2 @@
+Name=Squid
+Description=Peaceful giant of the depths.

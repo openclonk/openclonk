@@ -1,0 +1,2 @@
+Name=Tintenfisch
+Description=Friedliebender Riese der Ozeane.

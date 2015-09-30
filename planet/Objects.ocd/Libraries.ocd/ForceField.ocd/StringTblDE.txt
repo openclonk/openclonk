@@ -1,0 +1,2 @@
+Name=Kraftfelderlibrary
+Description=Enthält Funktionen um Attraktoren und Repulsoren zu definieren und daraufhin einen Kraftvektor zu einem Ort zu berechnen.

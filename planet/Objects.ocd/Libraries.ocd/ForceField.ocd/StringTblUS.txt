@@ -1,0 +1,2 @@
+Name=Force Field library
+Description=Contains functions to define attractors and repulsors and afterwards calculate a force vector for a specified position.
