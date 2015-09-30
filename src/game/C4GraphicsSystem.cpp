@@ -204,9 +204,10 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 
 bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 {
-	// Filename
+	// Find a unique screenshot filename by iterating over all possible names
+	// Keep static counter so multiple screenshots in succession do not use same filename even if the background thread hasn't started writing the file yet
 	char szFilename[_MAX_PATH+1];
-	int32_t iScreenshotIndex=1;
+	static int32_t iScreenshotIndex=1;
 	const char *strFilePath = NULL;
 	do
 		sprintf(szFilename,"Screenshot%03i.png",iScreenshotIndex++);
@@ -235,9 +236,10 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		float zoom = fSaveAllZoom;
 		// get viewport to draw in
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
-		// create image large enough to hold the landcape
-		CPNGFile png; int32_t lWdt=GBackWdt * zoom,lHgt=GBackHgt * zoom;
-		if (!png.Create(lWdt, lHgt, false)) return false;
+		// create image large enough to hold the landscape
+		std::unique_ptr<CPNGFile> png(new CPNGFile());
+		int32_t lWdt = GBackWdt * zoom, lHgt = GBackHgt * zoom;
+		if (!png->Create(lWdt, lHgt, false)) return false;
 		// get backbuffer size
 		int32_t bkWdt=C4GUI::GetScreenWdt(), bkHgt=C4GUI::GetScreenHgt();
 		if (!bkWdt || !bkHgt) return false;
@@ -273,11 +275,15 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 				{
 					// transfer each pixel - slooow...
 					for (int32_t iY2 = 0; iY2 < bkHgt2; ++iY2)
-						glReadPixels(0, FullScreen.pSurface->Hgt - iY2 - 1, bkWdt2, 1, GL_BGR, GL_UNSIGNED_BYTE, reinterpret_cast<BYTE *>(png.GetRow(iY + iY2)) + iX * 3);
+						glReadPixels(0, FullScreen.pSurface->Hgt - iY2 - 1, bkWdt2, 1, GL_BGR, GL_UNSIGNED_BYTE, reinterpret_cast<BYTE *>(png->GetRow(iY + iY2)) + iX * 3);
 						/*for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
 							png.SetPix(iX+iX2, iY+iY2, FullScreen.pSurface->GetPixDw(iX2, iY2, false));*/
 					// done; unlock
 					FullScreen.pSurface->Unlock();
+					// This can take a long time and we would like to pump messages
+					// However, we're currently hogging the primary surface and horrible things might happen if we do that, including initiation of another screenshot
+					// The only thing that can be safely run is music (sound could play but that would just make them out of sync of the game)
+					::Application.MusicSystem.Execute(true);
 				}
 			}
 		// restore viewport player
@@ -293,10 +299,10 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		// restore viewport size
 		::Viewports.RecalculateViewports();
 		// save!
-		return png.Save(szFilename);
+		CPNGFile::ScheduleSaving(png.release(), szFilename);
 	}
-	// Save primary surface
-	return FullScreen.pSurface->SavePNG(szFilename, false, false);
+	// Save primary surface in background thread
+	return FullScreen.pSurface->SavePNG(szFilename, false, false, true);
 }
 
 void C4GraphicsSystem::DeactivateDebugOutput()

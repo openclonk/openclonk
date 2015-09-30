@@ -345,6 +345,12 @@ unsigned int StdThread::ThreadFunc()
 	// Keep calling Execute until someone gets fed up and calls Stop()
 	while (!IsStopSignaled())
 		Execute();
+	// Handle deletion
+	if (IsSelfDestruct())
+	{
+		fStarted = false; // reset start flag to avoid Stop() call
+		delete this;
+	}
 	return(0);
 }
 

@@ -232,7 +232,7 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
 	// Save to temporary file
-	if (!C4Surface::SavePNG(szTemp, fSaveAlpha, fSaveOverlayOnly)) return false;
+	if (!C4Surface::SavePNG(szTemp, fSaveAlpha, fSaveOverlayOnly, false)) return false;
 	// Move temp file to group
 	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
 	// Success

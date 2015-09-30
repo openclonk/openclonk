@@ -384,7 +384,7 @@ void C4MusicSystem::Clear()
 	if (MODInitialized) { DeinitializeMOD(); }
 }
 
-void C4MusicSystem::Execute()
+void C4MusicSystem::Execute(bool force_buffer_checks)
 {
 	// Execute music fading
 	if (FadeMusicFile)
@@ -407,7 +407,7 @@ void C4MusicSystem::Execute()
 	}
 	// Ensure a piece is played
 #if AUDIO_TK != AUDIO_TK_SDL_MIXER
-	if (!::Game.iTick35 || !Game.IsRunning)
+	if (!::Game.iTick35 || !Game.IsRunning || force_buffer_checks)
 #endif
 	{
 		if (!PlayMusicFile)

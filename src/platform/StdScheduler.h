@@ -335,6 +335,7 @@ protected:
 	virtual void Execute() = 0;
 
 	bool IsStopSignaled();
+	virtual bool IsSelfDestruct() { return false; } // whether thread should delete itself after execution finished
 
 private:
 	// thread func

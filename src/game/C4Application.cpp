@@ -39,6 +39,7 @@
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
 #include <C4Particles.h>
+#include <StdPNG.h>
 
 #include <getopt.h>
 
@@ -613,6 +614,9 @@ void C4Application::Clear()
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();
+	// There might be pending saves - do them after the fullscreen windows got closed
+	// so the app just remains as a lingering process until saving is done
+	CPNGFile::WaitForSaves();
 	// The very final stuff
 	C4AbstractApp::Clear();
 }

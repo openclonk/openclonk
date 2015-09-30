@@ -36,7 +36,7 @@ public:
 	~C4MusicSystem();
 	void Clear();
 	int SetVolume(int);
-	void Execute();
+	void Execute(bool force_buffer_checks = false);
 	void NotifySuccess();
 	bool Init(const char * PlayList = NULL);
 	bool InitForScenario(C4Group & hGroup);

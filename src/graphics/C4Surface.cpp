@@ -457,14 +457,14 @@ bool C4Surface::ReadBMP(CStdStream &hGroup, int iFlags)
 	return true;
 }
 
-bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly)
+bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverlayOnly, bool use_background_thread)
 {
 	// Lock - WARNING - maybe locking primary surface here...
 	if (!Lock()) return false;
 
 	// create png file
-	CPNGFile png;
-	if (!png.Create(Wdt, Hgt, fSaveAlpha)) { Unlock(); return false; }
+	std::unique_ptr<CPNGFile> png(new CPNGFile());
+	if (!png->Create(Wdt, Hgt, fSaveAlpha)) { Unlock(); return false; }
 
 	// reset overlay if desired
 	C4Surface *pMainSfcBackup = NULL;
@@ -475,7 +475,7 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverl
 	{
 		// Take shortcut. FIXME: Check Endian
 		for (int y = 0; y < Hgt; ++y)
-			glReadPixels(0, Hgt - y - 1, Wdt, 1, fSaveAlpha ? GL_BGRA : GL_BGR, GL_UNSIGNED_BYTE, png.GetImageData() + y * Wdt * (3 + fSaveAlpha));
+			glReadPixels(0, Hgt - y - 1, Wdt, 1, fSaveAlpha ? GL_BGRA : GL_BGR, GL_UNSIGNED_BYTE, png->GetRow(y));
 	}
 	else
 #endif
@@ -485,18 +485,25 @@ bool C4Surface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fSaveOverl
 			for (int x=0; x<Wdt; ++x)
 			{
 				DWORD dwClr = GetPixDw(x, y, false);
-				png.SetPix(x, y, dwClr);
+				png->SetPix(x, y, dwClr);
 			}
 	}
 
 	// reset overlay
 	if (fSaveOverlayOnly) pMainSfc=pMainSfcBackup;
 
-	// save png
-	if (!png.Save(szFilename)) { Unlock(); return false; }
-
 	// Unlock
 	Unlock();
+
+	// save png - either directly or delayed in a background thread if desired
+	if (use_background_thread)
+	{
+		CPNGFile::ScheduleSaving(png.release(), szFilename);
+	}
+	else
+	{
+		if (!png->Save(szFilename)) return false;
+	}
 
 	// Success
 	return true;
