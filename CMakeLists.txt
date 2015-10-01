@@ -85,12 +85,6 @@ REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STA
 CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
 REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
 
-CHECK_CXX_SOURCE_COMPILES("#include<stdlib.h>\n#include<locale.h>\nint main() { locale_t l = newlocale(LC_ALL_MASK, \"C\", (locale_t)0); char *c; float f = strtof_l(c, &c, l);}" HAVE_STRTOF_L)
-CHECK_CXX_SOURCE_COMPILES("#include<stdlib.h>\n#include<locale.h>\nint main() { locale_t l = newlocale(LC_ALL_MASK, \"C\", (locale_t)0); char *c; float f = _strtof_l(c, &c, l);}" HAVE__STRTOF_L)
-if(NOT(HAVE_STRTOF_L OR HAVE__STRTOF_L))
-	message(SEND_ERROR "newlocale and either strtof_l or _strtof_l is required. Or a rewrite of C4ScriptGuiWindow::SetPositionStringProperties")
-endif()
-
 # g++'s libstdc++ doesn't properly support <regex> until 4.9.
 # They ship a header that declares functions, but they don't ship an
 # implementation for some things (like std::regex_iterator).
