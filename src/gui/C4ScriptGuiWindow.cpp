@@ -42,6 +42,11 @@
 #include <C4Viewport.h>
 
 #include <cmath>
+#include <locale.h>
+#include <stdlib.h>
+#ifndef HAVE_STRTOF_L
+#define strtof_l _strtof_l
+#endif
 
 // Adds some helpful logs for hunting control & menu based desyncs.
 //#define MenuDebugLogF(...) DebugLogF(__VA_ARGS__)
@@ -801,12 +806,13 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 	const char *currentPosition = trimmedString.data();
 	char *nextPosition;
 	const char *lastPosition = trimmedString.data() + trimmedString.size();
+	locale_t c_loc = newlocale(LC_ALL_MASK, "C", nullptr);
 
 	while (currentPosition < lastPosition)
 	{
 		// look for next float
 		nextPosition = 0;
-		float value = static_cast<float>(strtod(currentPosition, &nextPosition));
+		float value = strtof_l(currentPosition, &nextPosition, c_loc);
 
 		// fail? exit right here (there must be some space left in the string for a unit, too)
 		if (currentPosition == nextPosition || nextPosition == 0 || nextPosition >= lastPosition) break;
@@ -1557,7 +1563,7 @@ void C4ScriptGuiWindow::RequestLayoutUpdate()
 			return;
 		}
 		else // we are one of the multiple windows.. the root better do a full refresh
-			;
+		{}
 	}
 	// propagate to parent window
 	static_cast<C4ScriptGuiWindow*>(GetParent())->RequestLayoutUpdate();

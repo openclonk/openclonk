@@ -194,3 +194,7 @@
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
+
+/* strtof_l is defined and usable */
+#cmakedefine HAVE_STRTOF_L 1
+#cmakedefine HAVE__STRTOF_L 2
