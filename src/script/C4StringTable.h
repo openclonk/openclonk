@@ -433,6 +433,10 @@ enum C4PropertyName
 	P_Equalizer_High_Gain,
 	P_Equalizer_High_Cutoff,
 	P_LightOffset,
+	P_PlayList,
+	P_MusicBreakMin,
+	P_MusicBreakMax,
+	P_MusicBreakChance,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

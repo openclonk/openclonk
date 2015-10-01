@@ -131,9 +131,7 @@ public:
 	bool PointersDenumerated; // (NoSave) set after object pointers have been denumerated
 	size_t StartupLogPos, QuitLogPos; // current log positions when game was last started and cleared
 	bool fQuitWithError; // if set, game shut down irregularly
-	int32_t iMusicLevel;      // scenario-defined music level
-	// current play list
-	StdCopyStrBuf PlayList;
+	// Show errors and allow debug commands?
 	bool DebugMode;
 	// next mission to be played after this one
 	StdCopyStrBuf NextMission, NextMissionText, NextMissionDesc;
@@ -289,7 +287,6 @@ protected:
 
 public:
 	bool ToggleChart(); // chart dlg on/off
-	void SetMusicLevel(int32_t iToLvl); // change game music volume; multiplied by config volume for real volume
 	void SetGlobalSoundModifier(C4PropList *modifier_props);
 };
 

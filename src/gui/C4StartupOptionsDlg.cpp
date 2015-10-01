@@ -1395,7 +1395,8 @@ void C4StartupOptionsDlg::OnFEMusicCheck(C4GUI::Element *pCheckBox)
 void C4StartupOptionsDlg::OnMusicVolumeSliderChange(int32_t iNewVal)
 {
 	// option change is reflected immediately;
-	Application.MusicSystem.SetVolume(Config.Sound.MusicVolume = iNewVal);
+	Config.Sound.MusicVolume = iNewVal;
+	Application.MusicSystem.UpdateVolume();
 }
 
 void C4StartupOptionsDlg::OnSoundVolumeSliderChange(int32_t iNewVal)

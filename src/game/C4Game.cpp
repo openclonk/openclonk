@@ -613,8 +613,7 @@ void C4Game::Clear()
 	CloseScenario();
 	GroupSet.Clear();
 	KeyboardInput.Clear();
-	SetMusicLevel(100);
-	PlayList.Clear();
+	::Application.MusicSystem.ClearGame();
 	PlayerControlUserAssignmentSets.Clear();
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
@@ -1471,8 +1470,7 @@ void C4Game::Default()
 	pGlobalEffects=NULL;
 	fResortAnyObject=false;
 	pNetworkStatistics = NULL;
-	iMusicLevel = 100;
-	PlayList.Clear();
+	::Application.MusicSystem.ClearGame();
 	DebugPort = 0;
 	DebugPassword.Clear();
 	DebugHost.Clear();
@@ -1660,15 +1658,16 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
 		pComp->Value(mkNamingAdapt(StartupTeamCount,      "StartupTeamCount",      0));
 		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));
-		pComp->Value(mkNamingAdapt(PlayList,              "PlayList",""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
 		pComp->Value(mkNamingAdapt(fResortAnyObject,      "ResortAnyObj",          false));
-		pComp->Value(mkNamingAdapt(iMusicLevel,           "MusicLevel",            100));
 		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalSoundModifier, numbers),   "GlobalSoundModifier", C4Value()));
 		pComp->Value(mkNamingAdapt(NextMission,           "NextMission",           StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionText,       "NextMissionText",       StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
 		pComp->NameEnd();
+
+		// Music settings
+		pComp->Value(mkNamingAdapt(::Application.MusicSystem, "Music"));
 
 		// scoreboard compiles into main level [Scoreboard]
 		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
@@ -1780,8 +1779,6 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, 
 		int32_t iObjects = Objects.ObjectCount();
 		if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
 	}
-	// Music System: Set play list
-	if (!fLoadSection) Application.MusicSystem.SetPlayList(PlayList.getData());
 	// Success
 	return true;
 }
@@ -2322,15 +2319,15 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection)
 	{
 		// Music
-		Application.MusicSystem.InitForScenario(ScenarioFile);
-		if (Config.Sound.RXMusic)
+		::Application.MusicSystem.InitForScenario(ScenarioFile);
+		::Application.MusicSystem.UpdateVolume();
+		if (::Config.Sound.RXMusic)
 		{
 			// Play something that is not Frontend.mid
-			Application.MusicSystem.Play();
+			::Application.MusicSystem.Play();
 		}
 		else
-			Application.MusicSystem.Stop();
-		SetMusicLevel(iMusicLevel);
+			::Application.MusicSystem.Stop();
 		SetInitProgress(97);
 	}
 
@@ -3728,13 +3725,6 @@ bool C4Game::SlowDown()
 		FullSpeed = false;
 	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
 	return true;
-}
-
-void C4Game::SetMusicLevel(int32_t iToLvl)
-{
-	// change game music volume; multiplied by config volume for real volume
-	iMusicLevel = Clamp<int32_t>(iToLvl, 0, 100);
-	Application.MusicSystem.SetVolume(Config.Sound.MusicVolume * iMusicLevel / 100);
 }
 
 bool C4Game::ToggleChat()

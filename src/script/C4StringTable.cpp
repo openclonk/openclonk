@@ -237,6 +237,10 @@ C4StringTable::C4StringTable()
 	P[P_Equalizer_High_Gain] = "Equalizer_High_Gain";
 	P[P_Equalizer_High_Cutoff] = "Equalizer_High_Cutoff";
 	P[P_LightOffset] = "LightOffset";
+	P[P_PlayList] = "PlayList";
+	P[P_MusicBreakMin] = "MusicBreakMin";
+	P[P_MusicBreakMax] = "MusicBreakMax";
+	P[P_MusicBreakChance] = "MusicBreakChance";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

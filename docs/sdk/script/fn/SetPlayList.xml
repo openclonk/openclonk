@@ -11,9 +11,16 @@
       <rtype>int</rtype>
       <params>
         <param>
-          <type>string</type>
+          <type>any</type>
           <name>playlist</name>
-          <desc>List of pieces of music to be played. The individual file and category names are separated with semicolons (";"). Wildcards are expanded. If the parameter is left out, the standard playlist is restored.</desc>
+          <desc>If this parameter is a string: List of pieces of music to be played. The individual file and category names are separated with semicolons (";"). Wildcards are expanded. If the parameter is left out, the standard playlist is restored. The parameter may also be a proplist with any of the following members:
+            <table><rowh><col>Property</col><col>Type</col><col>Meaning</col></rowh>
+              <row><col>PlayList</col><col>string</col><col>Same as providing the playlist directly as a string.</col></row>
+              <row><col>MusicBreakMin</col><col>int</col><col>Minimum time of silence between two songs in milliseconds. Defaults to 10000.</col></row>
+              <row><col>MusicBreakMax</col><col>int</col><col>Maximum time of silence between two songs in milliseconds. Defaults to 10000. A random value between the minimum and maximum is chosen before each new song is selected.</col></row>
+              <row><col>MusicBreakChance</col><col>int</col><col>Chance in percent that silence is inserted between two songs. Defaults to 50.</col></row>
+            </table>
+          </desc>
           <optional />
         </param>
         <param>

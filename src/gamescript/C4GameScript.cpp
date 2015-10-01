@@ -631,11 +631,10 @@ static bool FnMusic(C4PropList * _this, C4String *szSongname, bool fLoop, long i
 
 static long FnMusicLevel(C4PropList * _this, long iLevel)
 {
-	Game.SetMusicLevel(iLevel);
-	return Application.MusicSystem.SetVolume(iLevel);
+	return ::Application.MusicSystem.SetGameMusicLevel(iLevel);
 }
 
-static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<long> iAtPlayer, bool fForceSwitch, long iFadeTime_ms, long max_resume_time_ms)
+static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nillable<long> iAtPlayer, bool fForceSwitch, long iFadeTime_ms, long max_resume_time_ms)
 {
 	// Safety
 	if (max_resume_time_ms < 0) return 0;
@@ -646,9 +645,24 @@ static long FnSetPlayList(C4PropList * _this, C4String *szPlayList, Nillable<lon
 		if (!at_plr) return 0;
 		if (!at_plr->LocalControl) return 0;
 	}
+	// Playlist might be a string for the new playlist, a proplist with more info, or nil to reset the playlist
+	C4String * szPlayList = playlist_data.getStr();
+	C4PropList *playlist_props = NULL;
+	if (!szPlayList)
+	{
+		playlist_props = playlist_data.getPropList();
+		if (playlist_props)
+		{
+			szPlayList = playlist_props->GetPropertyStr(P_PlayList);
+			// Update playlist properties
+			C4Value val;
+			if (playlist_props->GetProperty(P_MusicBreakMin, &val)) ::Application.MusicSystem.SetMusicBreakMin(val.getInt());
+			if (playlist_props->GetProperty(P_MusicBreakMax, &val)) ::Application.MusicSystem.SetMusicBreakMax(val.getInt());
+			if (playlist_props->GetProperty(P_MusicBreakChance, &val)) ::Application.MusicSystem.SetMusicBreakChance(val.getInt());
+		}
+	}
 	// Set playlist; count entries
-	long iFilesInPlayList = Application.MusicSystem.SetPlayList(FnStringPar(szPlayList), fForceSwitch, iFadeTime_ms, double(max_resume_time_ms)/1000.0f);
-	Game.PlayList.Copy(FnStringPar(szPlayList));
+	long iFilesInPlayList = ::Application.MusicSystem.SetPlayList(FnStringPar(szPlayList), fForceSwitch, iFadeTime_ms, double(max_resume_time_ms)/1000.0f);
 	// network/record/replay: return 0 for sync reasons
 	if (::Control.SyncMode()) return 0;
 	return iFilesInPlayList;

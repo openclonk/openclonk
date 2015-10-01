@@ -35,12 +35,13 @@ public:
 	C4MusicSystem();
 	~C4MusicSystem();
 	void Clear();
-	int SetVolume(int);
+	void ClearGame();
+	void UpdateVolume(); // compute volume from game + config data
 	void Execute(bool force_buffer_checks = false);
 	void NotifySuccess();
 	bool Init(const char * PlayList = NULL);
 	bool InitForScenario(C4Group & hGroup);
-	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0);
+	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
 
@@ -61,12 +62,18 @@ protected:
 	C4MusicFile *FadeMusicFile;
 	C4TimeMilliseconds FadeTimeStart, FadeTimeEnd;
 
+	// Wait time until next song
+	bool is_waiting;
+	C4TimeMilliseconds wait_time_end;
+
 	void LoadDir(const char *szPath); // load some music files (by wildcard / directory)
 	void Load(const char *szFile); // load a music file
 	void LoadMoreMusic(); // load music file names from MoreMusic.txt
 	void ClearSongs();
 
 	bool GrpContainsMusic(C4Group &rGrp); // return whether this group contains music files
+
+	bool ScheduleWaitTime();
 
 	// FMod / SDL_mixer / OpenAL
 	bool MODInitialized;
@@ -83,6 +90,25 @@ public:
 #endif
 public:
 	inline bool IsMODInitialized() {return MODInitialized;}
+
+private:
+	// scenario-defined music level
+	int32_t game_music_level;
+	// current play list
+	StdCopyStrBuf playlist;
+	// Set to nonzero to allow pauses between songs
+	int32_t music_break_min, music_break_max, music_break_chance;
+
+	static const int32_t DefaultMusicBreak = 120000; // two minutes default music break time
+	static const int32_t DefaultMusicBreakChance = 50; // ...with a 50% chance
+
+public:
+	void CompileFunc(class StdCompiler *comp);
+
+	void SetMusicBreakMin(int32_t val) { music_break_min = Max<int32_t>(val, 0); }
+	void SetMusicBreakMax(int32_t val) { music_break_max = Max<int32_t>(val, 0); }
+	void SetMusicBreakChance(int32_t val) { music_break_chance = Clamp<int32_t>(val, 0, 100); }
+	int32_t SetGameMusicLevel(int32_t val);
 };
 
 
