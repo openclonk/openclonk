@@ -1,0 +1,43 @@
+material DiamondSocket 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 0.5 0.5 0.5 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture DiamondSocket.jpg
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
+
+material Diamond
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            ambient 0.7 0.7 0.7 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit
+            {
+                texture DiamondSocket.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}

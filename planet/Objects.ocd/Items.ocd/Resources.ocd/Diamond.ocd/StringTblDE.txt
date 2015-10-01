@@ -1,0 +1,2 @@
+Name=Diamant
+Description=Sehr wertvoll und selten.

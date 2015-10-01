@@ -1,0 +1,2 @@
+Name=Diamantensockel
+Description=Enthält einen wertvollen Diamanten, der mit einer Spitzhacke befreit werden kann.

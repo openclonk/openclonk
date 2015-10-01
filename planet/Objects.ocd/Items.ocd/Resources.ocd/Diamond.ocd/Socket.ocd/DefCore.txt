@@ -1,0 +1,11 @@
+[DefCore]
+id=Diamond_Socket
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=1
+VertexX=0
+VertexFriction=20
+

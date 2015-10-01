@@ -1,0 +1,15 @@
+[DefCore]
+id=Diamond
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=-3,3,0
+VertexY=2,2,-1
+VertexCNAT=1,2,16
+VertexFriction=30,30,30
+Value=25
+Mass=16
+Rotate=1

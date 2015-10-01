@@ -1,0 +1,180 @@
+/**
+	Diamond Socket
+	Contains a valuable diamond that can be freed using a pickaxe.
+*/
+
+local Name = "$Name$";
+local Description = "$Description$";
+
+local attached_mesh;
+local last_free;
+local mat_color;
+
+public func Place(int amount, proplist rect)
+{
+	rect = rect ?? Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
+	
+	var failsafe = amount * 100;
+	while((amount > 0) && (--failsafe > 0))
+	{
+		// select cluster
+		var c_size = Min(5 + RandomX(-1, 1), amount);
+		
+		// look for random in-earth position
+		var failsafe2 = 500;
+		var x, y;
+		while (--failsafe2)
+		{
+			x = RandomX(rect.x, rect.x + rect.w);
+			y = RandomX(rect.y, rect.y + rect.h);
+			
+			if(!GBackSolid(x, y)) continue;
+			
+			// must be diggable
+			var mat = GetMaterial(x, y);
+			if(!GetMaterialVal("DigFree","Material",mat)) continue;
+			break;
+		}
+		
+		if(failsafe2 <= 0) continue;
+		
+		// color of cluster
+		var hsl = HSL(Random(255), 50, 150);
+		var r2 = (hsl >> 16) & 0xff;
+		var g2 = (hsl >> 8) & 0xff;
+		var b2 = (hsl >> 0) & 0xff;
+		
+		// we have a position now!
+		failsafe2 = 50;
+		var i = 0;
+		while ((i < c_size) && (--failsafe2 > 0))
+		{
+			var mx = x + RandomX(-20, 20);
+			var my = y + RandomX(-20, 20);
+			if (!GBackSolid(mx, my)) continue;
+			var mat = GetMaterial(mx, my);
+			if (!GetMaterialVal("DigFree","Material",mat)) continue;
+			if (FindObject(Find_Distance(8, mx, my), Find_ID(this))) continue;
+			
+			++i;
+			var socket = CreateObject(this, mx, my, NO_OWNER);
+			socket->Set(r2, g2, b2);
+		}
+		
+		amount -= i;
+	}
+}
+
+public func Construction()
+{
+	var tex = GetTexture(0, 0);
+	if (tex)
+	{
+		mat_color = GetAverageTextureColor(tex);
+	}
+	else
+	{
+		mat_color = RGB(100, 50, 5);
+	}
+	
+	last_free = false;
+	
+	var contents = CreateContents(Diamond);
+	contents->SetObjectBlitMode(GFX_BLIT_Mod2);
+	this.MeshTransformation = Trans_Rotate(90, 1, 0, 0);
+	attached_mesh = AttachMesh(contents, "main", "main", Trans_Mul(Trans_Rotate(Random(360), 1, 0, 0)));
+	
+	SetR(Random(360));
+	this.Visibility = VIS_None;
+	AddTimer("CheckFree", 30 + Random(20));
+	
+	// Random color for now. The Place() function will create groups of the same color.
+	Set(Random(255), Random(255), Random(255));
+}
+
+public func Set(int r, int g, int b)
+{
+	var contents = Contents(0);
+	if (contents)
+		contents->SetClrModulation(RGB(r, g, b), 0);
+}
+
+private func CheckFree()
+{	
+	if (GBackSolid() == last_free)
+	{
+		last_free = !GBackSolid();
+		if (!last_free)
+		{
+			this.Visibility = VIS_None;
+			if (!Contents()) return RemoveObject();
+		}
+		else
+		{
+			DugOutDust();
+			AddEffect("MuchSparkle", this, 1, 1, this);
+			this.Visibility = VIS_All;
+		}
+	}
+	
+	if (!Random(60))
+		Sparkle();
+	if (last_free && !Random(10))
+		Sparkle();
+	return 1;
+}
+
+private func FxMuchSparkleTimer(target, fx, time)
+{
+	if (time > Random(90)) return -1;
+	if (Random(3)) return;
+	Sparkle();
+}
+
+private func Sparkle()
+{
+	var r = Random(360);
+	var particles = 
+	{
+		Size = PV_Step(1, 1, 0),
+		Stretch = PV_Step(2),
+		BlitMode = GFX_BLIT_Additive,
+		Alpha = PV_Linear(255, 0),
+		Rotation = r
+	};
+	var x = RandomX(-3, 3);
+	var y = RandomX(-3, 3);
+	CreateParticle("StarSpark", x, y, 0, 0, 10 + Random(20), particles);
+	CreateParticle("StarSpark", x, y, 0, 0, 10 + Random(20), {Prototype = particles, Rotation = r + 90});
+}
+
+private func DugOutDust()
+{
+	var particles =
+	{
+		Prototype = Particles_Colored(Particles_Dust(), mat_color),
+		ForceY = PV_Gravity(100),
+		DampingX = 750, DampingY = 750,
+		Size = PV_KeyFrames(0, 0, 2, 100, 10, 1000, 4),
+		Alpha = PV_KeyFrames(0, 0, 0, 100, 100, 1000, 0),
+		OnCollision = PC_Die()
+	};
+
+	CreateParticle("Dust", 0, 0, PV_Random(-40, 40), PV_Random(-40, 40), PV_Random(10, 60), particles, 40 + Random(20));
+}
+
+public func OnHitByPickaxe()
+{
+	var c = Contents();
+	if(!c) return;
+	if(Random(3)) return;
+	
+	Sound("RockHit*");
+	DetachMesh(attached_mesh);
+	c->Exit(0, 0, 0, RandomX(-3, 3), RandomX(-3, -1), RandomX(-20, 20));
+}
+
+public func CanBeHitByPickaxe()
+{
+	return !!Contents();
+}

@@ -1,0 +1,2 @@
+Name=Diamond Socket
+Description=Contains a valuable diamond that can be freed using a pickaxe.
