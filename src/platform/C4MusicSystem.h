@@ -42,6 +42,7 @@ public:
 	bool Init(const char * PlayList = NULL);
 	bool InitForScenario(C4Group & hGroup);
 	bool Play(const char *szSongname = NULL, bool fLoop = false, int fadetime_ms = 0, double max_resume_time = 0.0, bool allow_break = false);
+	bool Play(C4MusicFile *NewFile, bool fLoop, double max_resume_time);
 	bool Stop();
 	void FadeOut(int fadeout_ms);
 
@@ -59,7 +60,7 @@ protected:
 	int Volume; bool Loop;
 
 	// fading between two songs
-	C4MusicFile *FadeMusicFile;
+	C4MusicFile *FadeMusicFile, *upcoming_music_file;
 	C4TimeMilliseconds FadeTimeStart, FadeTimeEnd;
 
 	// Wait time until next song

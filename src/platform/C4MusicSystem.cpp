@@ -38,7 +38,8 @@ C4MusicSystem::C4MusicSystem():
 		Volume(100),
 		is_waiting(false),
 		wait_time_end(),
-		FadeMusicFile(NULL)
+		FadeMusicFile(NULL),
+		upcoming_music_file(NULL)
 #if AUDIO_TK == AUDIO_TK_OPENAL
 		, alcDevice(NULL), alcContext(NULL)
 #endif
@@ -377,6 +378,7 @@ void C4MusicSystem::ClearSongs()
 		delete pFile;
 	}
 	SongCount = 0;
+	FadeMusicFile = upcoming_music_file = PlayMusicFile = NULL;
 }
 
 void C4MusicSystem::Clear()
@@ -396,9 +398,10 @@ void C4MusicSystem::ClearGame()
 	music_break_chance = DefaultMusicBreakChance;
 	SetPlayList(NULL);
 	is_waiting = false;
+	upcoming_music_file = NULL;
 }
 
-void C4MusicSystem::Execute(bool force_buffer_checks)
+void C4MusicSystem::Execute(bool force_song_execution)
 {
 	// Execute music fading
 	if (FadeMusicFile)
@@ -409,7 +412,15 @@ void C4MusicSystem::Execute(bool force_buffer_checks)
 		{
 			FadeMusicFile->Stop();
 			FadeMusicFile = NULL;
-			if (PlayMusicFile) PlayMusicFile->SetVolume(Volume);
+			if (PlayMusicFile)
+			{
+				PlayMusicFile->SetVolume(Volume);
+			}
+			else if (upcoming_music_file)
+			{
+				// Fade end -> start desired next immediately
+				force_song_execution = true;
+			}
 		}
 		else
 		{
@@ -421,7 +432,7 @@ void C4MusicSystem::Execute(bool force_buffer_checks)
 	}
 	// Ensure a piece is played
 #if AUDIO_TK != AUDIO_TK_SDL_MIXER
-	if (!::Game.iTick35 || !::Game.IsRunning || force_buffer_checks || ::Game.IsPaused())
+	if (!::Game.iTick35 || !::Game.IsRunning || force_song_execution || ::Game.IsPaused())
 #endif
 	{
 		if (!PlayMusicFile)
@@ -429,8 +440,13 @@ void C4MusicSystem::Execute(bool force_buffer_checks)
 			if (!is_waiting || (C4TimeMilliseconds::Now() >= wait_time_end))
 			{
 				// Play a song if no longer in silence mode and nothing is playing right now
-				// Noe that play resets is_waiting.
-				Play();
+				C4MusicFile *next_file = upcoming_music_file;
+				is_waiting = false;
+				upcoming_music_file = NULL;
+				if (next_file)
+					Play(next_file, false, 0.0);
+				else
+					Play();
 			}
 		}
 		else
@@ -443,7 +459,11 @@ void C4MusicSystem::Execute(bool force_buffer_checks)
 
 bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, double max_resume_time, bool allow_break)
 {
-	is_waiting = false; // pause is done
+	// pause is done
+	is_waiting = false;
+	upcoming_music_file = NULL;
+
+	// music off?
 	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
 		return false;
 
@@ -453,9 +473,9 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 	if (szSongname && szSongname[0])
 	{
 		// Search in list
-		for (NewFile=Songs; NewFile; NewFile = NewFile->pNext)
+		for (NewFile = Songs; NewFile; NewFile = NewFile->pNext)
 		{
-			char songname[_MAX_FNAME+1];
+			char songname[_MAX_FNAME + 1];
 			SCopy(szSongname, songname); DefaultExtension(songname, "mid");
 			if (SEqual(GetFilename(NewFile->FileName), songname))
 				break;
@@ -483,7 +503,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 			if (allow_break) ScheduleWaitTime();
 			if (!is_waiting)
 			{
-				// try to findrandom song
+				// try to find random song
 				for (int i = 0; i <= 1000; i++)
 				{
 					int nmb = SafeRandom(Max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
@@ -535,7 +555,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 				// Also happens when fading back to the same song but loop status changes, but that should be really uncommon.
 				FadeMusicFile->Stop();
 			}
-			
+
 		}
 		FadeMusicFile = PlayMusicFile;
 		PlayMusicFile = NULL;
@@ -546,14 +566,33 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 	// Waiting?
 	if (!NewFile) return false;
 
-	// Play new song
+	// If the old file is being faded out and a new file would just start, start delayed and without fading
+	// so the beginning of a song isn't faded unnecesserily (because our songs often start very abruptly)
+	if (is_fading && (!NewFile->HasResumePos() || NewFile->GetRemainingTime() <= max_resume_time))
+	{
+		upcoming_music_file = NewFile;
+		is_waiting = true;
+		wait_time_end = FadeTimeEnd;
+		return false;
+	}
+
+	if (!Play(NewFile, fLoop, max_resume_time)) return false;
+
+	if (is_fading) PlayMusicFile->SetVolume(0);
+
+	return true;
+}
+
+bool C4MusicSystem::Play(C4MusicFile *NewFile, bool fLoop, double max_resume_time)
+{
+	// Play new song directly
 	if (!NewFile->Play(fLoop, max_resume_time)) return false;
 	PlayMusicFile = NewFile;
 	NewFile->LastPlayed = SCounter++;
 	Loop = fLoop;
 
 	// Set volume
-	PlayMusicFile->SetVolume(Volume * !is_fading);
+	PlayMusicFile->SetVolume(Volume);
 
 	// Message first time a piece is played
 	if (!NewFile->HasBeenAnnounced())
