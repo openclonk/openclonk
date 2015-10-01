@@ -100,8 +100,8 @@ private:
 	// Set to nonzero to allow pauses between songs
 	int32_t music_break_min, music_break_max, music_break_chance;
 
-	static const int32_t DefaultMusicBreak = 120000; // two minutes default music break time
-	static const int32_t DefaultMusicBreakChance = 50; // ...with a 50% chance
+	static const int32_t DefaultMusicBreak;
+	static const int32_t DefaultMusicBreakChance;
 
 public:
 	void CompileFunc(class StdCompiler *comp);

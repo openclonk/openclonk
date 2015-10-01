@@ -806,3 +806,6 @@ int32_t C4MusicSystem::SetGameMusicLevel(int32_t volume_percent)
 	UpdateVolume();
 	return game_music_level;
 }
+
+const int32_t C4MusicSystem::DefaultMusicBreak = 120000; // two minutes default music break time
+const int32_t C4MusicSystem::DefaultMusicBreakChance = 50; // ...with a 50% chance
