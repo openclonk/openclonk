@@ -6,6 +6,12 @@ public func Hit()
 	return 1;
 }
 
+public func Place(int amount, proplist area, ...)
+{
+	// Diamonds naturally occur in sockets.
+	return Diamond_Socket->Place(amount, area, ...);
+}
+
 public func IsValuable() { return true; }
 
 local Name = "$Name$";

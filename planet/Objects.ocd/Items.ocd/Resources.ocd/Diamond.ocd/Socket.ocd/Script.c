@@ -10,9 +10,9 @@ local attached_mesh;
 local last_free;
 local mat_color;
 
-public func Place(int amount, proplist rect)
+public func Place(int amount, proplist area)
 {
-	rect = rect ?? Rectangle(0, 0, LandscapeWidth(), LandscapeHeight());
+	area = area ?? Shape->LandscapeRectangle();
 	
 	var failsafe = amount * 100;
 	while((amount > 0) && (--failsafe > 0))
@@ -22,16 +22,15 @@ public func Place(int amount, proplist rect)
 		
 		// look for random in-earth position
 		var failsafe2 = 500;
-		var x, y;
+		var pt = {};
 		while (--failsafe2)
 		{
-			x = RandomX(rect.x, rect.x + rect.w);
-			y = RandomX(rect.y, rect.y + rect.h);
+			if (!area->GetRandomPoint(pt)) break;
 			
-			if(!GBackSolid(x, y)) continue;
+			if(!GBackSolid(pt.x, pt.y)) continue;
 			
 			// must be diggable
-			var mat = GetMaterial(x, y);
+			var mat = GetMaterial(pt.x, pt.y);
 			if(!GetMaterialVal("DigFree","Material",mat)) continue;
 			break;
 		}
@@ -49,8 +48,8 @@ public func Place(int amount, proplist rect)
 		var i = 0;
 		while ((i < c_size) && (--failsafe2 > 0))
 		{
-			var mx = x + RandomX(-20, 20);
-			var my = y + RandomX(-20, 20);
+			var mx = pt.x + RandomX(-20, 20);
+			var my = pt.y + RandomX(-20, 20);
 			if (!GBackSolid(mx, my)) continue;
 			var mat = GetMaterial(mx, my);
 			if (!GetMaterialVal("DigFree","Material",mat)) continue;
@@ -86,7 +85,7 @@ public func Construction()
 	
 	SetR(Random(360));
 	this.Visibility = VIS_None;
-	AddTimer("CheckFree", 30 + Random(20));
+	AddTimer("CheckFree", 100 + Random(10));
 	
 	// Random color for now. The Place() function will create groups of the same color.
 	Set(Random(255), Random(255), Random(255));
@@ -99,11 +98,17 @@ public func Set(int r, int g, int b)
 		contents->SetClrModulation(RGB(r, g, b), 0);
 }
 
-private func CheckFree()
+public func DugOut(object clonk)
+{
+	// For instant appearance
+	return CheckFree(true);
+}
+
+private func CheckFree(bool by_dig_free)
 {	
 	if (GBackSolid() == last_free)
 	{
-		last_free = !GBackSolid();
+		last_free = !last_free;
 		if (!last_free)
 		{
 			this.Visibility = VIS_None;
@@ -111,17 +116,31 @@ private func CheckFree()
 		}
 		else
 		{
+			// Look what's appearing behind the dust!
 			DugOutDust();
+			// One shiny burst because MuchSparkle is a bit thin sometims
+			var particles = 
+			{
+				Size = PV_Step(5, 5),
+				Stretch = PV_Step(2),
+				BlitMode = GFX_BLIT_Additive,
+				Alpha = PV_Linear(255, 0),
+				Rotation = Random(360)
+			};
+			CreateParticle("StarSpark", 0, 0, 0, 0, 10, particles);
+			// And some extra sparkling in the future
 			AddEffect("MuchSparkle", this, 1, 1, this);
 			this.Visibility = VIS_All;
+			// Also, some sound (delayed for audibility on visibility change)
+			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "DiamondDigOut");
 		}
 	}
 	
-	if (!Random(60))
+	if (!Random(20))
 		Sparkle();
-	if (last_free && !Random(10))
+	if (last_free && !Random(3))
 		Sparkle();
-	return 1;
+	return true;
 }
 
 private func FxMuchSparkleTimer(target, fx, time)
