@@ -1,5 +1,7 @@
 /*-- Bubble --*/
 
+local Plane = 300;
+
 local creator; // The object that has created this bubble. Used to prevent Clonk from breathing from his own bubbles.
 
 global func Bubble(int amount, int x, int y)

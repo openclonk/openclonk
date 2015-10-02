@@ -1,7 +1,7 @@
 [DefCore]
 id=Fx_Bubble
 Version=6,0
-Category=C4D_Vehicle
+Category=C4D_None
 Width=2
 Height=2
 Offset=0,-1
