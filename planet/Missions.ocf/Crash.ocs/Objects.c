@@ -15,15 +15,15 @@ func InitializeObjects()
 
 	CreateObjectAbove(Tree_Coniferous, 380, 877);
 
-	CreateObjectAbove(Tree_Coniferous2, 562, 563);
-	CreateObjectAbove(Tree_Coniferous2, 519, 561);
+	var Tree_Coniferous2001 = CreateObjectAbove(Tree_Coniferous2, 562, 563);
+	var Tree_Coniferous2002 = CreateObjectAbove(Tree_Coniferous2, 519, 561);
 
 	CreateObjectAbove(Tree_Coniferous, 252, 872);
 	CreateObjectAbove(Tree_Coniferous, 367, 874);
 	CreateObjectAbove(Tree_Coniferous, 309, 871);
 
-	CreateObjectAbove(Tree_Coniferous2, 347, 565);
-	CreateObjectAbove(Tree_Coniferous2, 422, 558);
+	var Tree_Coniferous2003 = CreateObjectAbove(Tree_Coniferous2, 347, 565);
+	var Tree_Coniferous2004 = CreateObjectAbove(Tree_Coniferous2, 422, 558);
 	CreateObjectAbove(Tree_Coniferous2, 1329, 384);
 	CreateObjectAbove(Tree_Coniferous2, 1364, 364);
 	CreateObjectAbove(Tree_Coniferous2, 1389, 327);
@@ -89,6 +89,11 @@ func InitializeObjects()
 	Clonk001->SetSkin(2);
 
 	Clonk001->SetDialogue("Gyro",true);
+
+	Firefly->SpawnSwarm(Tree_Coniferous2001, 1);
+	Firefly->SpawnSwarm(Tree_Coniferous2002, 2);
+	Firefly->SpawnSwarm(Tree_Coniferous2003, 1);
+	Firefly->SpawnSwarm(Tree_Coniferous2004, 2);
 
 	CreateObject(Rock, 279, 964);
 	CreateObject(Rock, 469, 1213);
