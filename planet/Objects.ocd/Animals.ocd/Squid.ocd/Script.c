@@ -15,6 +15,7 @@ static const SQUID_VISION_MAX_RANGE = 100;
 local walking, swimming;
 
 local swim_animation, idle_animation, walk_animation, movement_animation_node;
+local custom_bone_transform_slot, custom_bone_transform_r;
 local base_transform;
 
 // this is a 3D vector with the current direction the squid is facing
@@ -24,9 +25,17 @@ local current_angle; // for smoother turning
 
 local ink_level;
 
+// Whether the squid is friendly or will actively chase Clonks.
+local is_friendly;
 
+/*
+	Places squid.
+	"settings" can contain a boolean property "friendly" which defines whether the squid will be harmless or harmful. Defaults to being harmless.
+*/
 public func Place(int amount, proplist rectangle, proplist settings)
 {
+	settings = settings ?? {};
+	var friendly = settings.friendly ?? true;
 	var max_tries = 2 * amount;
 	var loc_area = nil;
 	if (rectangle) loc_area = Loc_InRect(rectangle);
@@ -39,14 +48,19 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		
 		f = CreateObject(this, spot.x, spot.y, NO_OWNER);
 		if (!f) continue;
-		// Randomly add some large/slim fish
+		
+		if (!friendly)
+			f->SetFriendly(false);
+		
+		// Randomly add some large/slim squid
 		if (Random(3))
 		{
-			// there are naturally smaller and larger fishes
+			// there are naturally smaller and larger squid
 			f->SetCon(RandomX(75, 125));
 			// make sure the smaller ones don't grow larger any more
 			f->StopGrowth(); 
 		}
+		
 		if (f->Stuck())
 		{
 			f->RemoveObject();
@@ -82,12 +96,29 @@ public func Construction()
 	ScheduleCall(this, this.InitActivity,  1 + Random(10), 0);
 	AddTimer(this.UpdateSwim, 2);
 	
+	// The squid is friendly by default.
+	SetFriendly(true);
+	
 	_inherited(...);
 	
 	// setup of the force fields after the call to inherited()
 	SetDefaultForceFieldMaxDistance(SQUID_VISION_MAX_RANGE);
 	SetDefaultForceFieldTTD(36 * 4);
 	SetMaxEmitterNumber(7);
+}
+
+public func SetFriendly(bool friendly)
+{
+	is_friendly = friendly ?? true;
+	
+	if (is_friendly)
+	{
+		SetMeshMaterial("SquidMaterialFriendly");
+	}
+	else
+	{
+		SetMeshMaterial("SquidMaterial");
+	}
 }
 
 private func InitActivity()
@@ -183,7 +214,21 @@ private func Activity()
 
 private func UpdateVision()
 {
-	UpdateVisionFor(FindObjects(Find_Distance(SQUID_VISION_MAX_RANGE), Find_OCF(OCF_HitSpeed1), Find_Exclude(this), Find_NoContainer(), Sort_Distance()));
+	var playful_distance = SQUID_VISION_MAX_RANGE;
+	if (!is_friendly)
+		playful_distance /= 2;
+	UpdateVisionFor(FindObjects(Find_Distance(playful_distance), Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_OCF(OCF_HitSpeed2), Find_Exclude(this), Find_NoContainer(), Sort_Distance()));
+	
+	if (!is_friendly)
+	{
+		UpdateVisionFor(FindObjects(Find_Distance(SQUID_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Func("IsClonk"), Find_NoContainer(), Sort_Distance()), true);
+	}
+	else
+	{
+		// Suddenly find a random object surprisingly interesting.
+		if (!Random(10))
+			UpdateVisionFor(FindObjects(Find_Distance(playful_distance), Find_Category(C4D_Object | C4D_Living | C4D_Vehicle), Find_Exclude(this), Find_NoContainer(), Sort_Reverse(Sort_Distance()))); 
+	}
 	UpdateWallVision();
 }
 
@@ -196,6 +241,11 @@ private func UpdateVisionFor(array objects, bool is_food)
 		if ((obj->GetMaterial() != GetMaterial())) continue;
 		
 		AddAttractor(obj, nil, 250);
+		
+		if (is_food && ink_level > 800 && ObjectDistance(this, obj) < 20)
+		{
+			DoInk();
+		}
 		return true;
 	}
 	return false;
@@ -269,9 +319,28 @@ private func UpdateSwim()
 		SetAnimationWeight(movement_animation_node, Anim_Linear(current_weight, start, end, 30, ANIM_Hold));
 		is_in_idle_animation = !is_in_idle_animation;
 	}
-
+	
+	// Where do we want to go?
 	var target_angle = Angle(0, 0, GetXDir(1), GetYDir(1));
-	current_angle = current_angle + BoundBy(GetTurnDirection(current_angle, target_angle), -4, +4);
+	var turn_direction = BoundBy(GetTurnDirection(current_angle, target_angle), -4, +4);
+	
+	// Move head a bit to simulate water resistance.
+	custom_bone_transform_r = BoundBy(custom_bone_transform_r + turn_direction, -45, 45);
+	// The head wants to stand upright, though.
+	if (custom_bone_transform_r > 0) custom_bone_transform_r -= 1;
+	else custom_bone_transform_r += 1;
+	// Need to remove the old bone transformation?
+	if (custom_bone_transform_slot != nil)
+		StopAnimation(custom_bone_transform_slot);
+		
+	if (custom_bone_transform_r != 0)
+		custom_bone_transform_slot = TransformBone("shell", Trans_Rotate(custom_bone_transform_r, 0, 1, 0), 6, Anim_Const(800)); 
+	else
+		custom_bone_transform_slot = nil;
+
+	
+	// And finally, slowly turn to target.
+	current_angle = current_angle + turn_direction;
 	this.MeshTransformation = Trans_Mul(Trans_Rotate(current_angle, 0, 0, 1), base_transform);
 }
 
@@ -352,7 +421,31 @@ private func DoInk()
 		Phase = PV_Random(0, 15)
 	};
 	CreateParticle("SmokeThick", 0, 0, PV_Random(-40, 40), PV_Random(-40, 40), PV_Random(36, 100), particles, 64);
+	// Make squid invisible for some time. Also inverse behavior during invisibility.
 	AddEffect("Invisibility", this, 1, 2, this, 0, particles);
+	// Drain Clonks' breath a bit faster when in ink.
+	AddEffect("IntInkBlob", nil, 1, 5, nil, GetID(), GetX(), GetY());
+}
+
+private func FxIntInkBlobStart(object target, effect fx, temp, int x, int y)
+{
+	if (temp) return;
+	fx.x = x;
+	fx.y = y;
+}
+
+private func FxIntInkBlobTimer(object target, effect fx, int time)
+{
+	if (time > 30 + Random(20)) return -1;
+	var max_distance = 40;
+	for (var clonk in FindObjects(Find_Distance(max_distance, fx.x, fx.y), Find_OCF(OCF_Alive), Find_Func("IsClonk")))
+	{
+		if (!PathFree(fx.x, fx.y, clonk->GetX(), clonk->GetY())) continue;
+		var distance = Distance(fx.x, fx.y, clonk->GetX(), clonk->GetY());
+		var breath_penalty = 2 * (max_distance - distance);
+		clonk->DoBreath(-breath_penalty);
+	}
+	return FX_OK;
 }
 
 private func FxInvisibilityStart(object target, effect fx, temp, particles)
@@ -385,6 +478,12 @@ private func FxInvisibilityStop(object target, effect fx, int reason, int temp)
 
 // Only bleeding Squid will be eaten by other predators.
 public func IsPrey() { return GetEnergy() < this.MaxEnergy / 3000; }
+
+public func SaveScenarioObject(props)
+{
+	if (!is_friendly) props->AddCall("Hostile", this, "SetFriendly", false);
+	return true;
+}
 
 local ActMap = {
 
