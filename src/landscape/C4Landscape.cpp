@@ -441,30 +441,35 @@ void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 
 C4ValueArray *C4Landscape::PrepareFreeShape(C4Rect &BoundingBox, C4Object *by_object)
 {
-	// Remember any collectible objects in area
+	// Remember any in-earth objects in area
 	C4FindObjectInRect fo_inrect(BoundingBox);
-	C4FindObjectOCF fo_collectible(OCF_Carryable);
 	C4FindObjectOCF fo_insolid(OCF_InSolid);
 	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
-	C4FindObject *fo_list[] = {&fo_inrect, &fo_collectible, &fo_insolid, &fo_layer};
-	C4FindObjectAndStatic fo_srch(4, fo_list);
+	C4FindObject *fo_list[] = {&fo_inrect, &fo_insolid, &fo_layer};
+	C4FindObjectAndStatic fo_srch(3, fo_list);
 	return fo_srch.FindMany(::Objects, ::Objects.Sectors);
 }
 
 void C4Landscape::PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object)
 {
-	// Do callbacks to digger for objects that are now dug free
+	// Do callbacks to digger and dug out objects for objects that are now dug free
 	if (by_object)
 	{
 		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
 		{
 			C4Object *dig_object = dig_objects->GetItem(i).getObj();
 			if (dig_object && !GBackSolid(dig_object->GetX(), dig_object->GetY()))
-				if (!dig_object->Contained && dig_object->Status)
-				{
-					C4AulParSet pars(C4VObj(dig_object));
-					by_object->Call(PSF_DigOutObject, &pars);
-				}
+				if (dig_object != by_object)
+					if (!dig_object->Contained && dig_object->Status)
+					{
+						C4AulParSet pars(C4VObj(by_object));
+						dig_object->Call(PSF_OnDugOut, &pars);
+						if (dig_object->Status && by_object->Status)
+						{
+							C4AulParSet pars(C4VObj(dig_object));
+							by_object->Call(PSF_DigOutObject, &pars);
+						}
+					}
 		}
 	}
 }
