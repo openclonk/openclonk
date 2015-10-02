@@ -110,8 +110,6 @@ public func PowerNeed()
 
 /*-- Production --*/
 
-public func IsInteractable() { return true; }
-
 private func IgnoreKnowledge() { return true; }
 
 private func IsProduct(id product_id)
