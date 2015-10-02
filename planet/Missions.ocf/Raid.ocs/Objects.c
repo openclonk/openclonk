@@ -240,6 +240,8 @@ func InitializeObjects()
 
 	CreateObjectAbove(Fish, 1889, 728);
 	CreateObjectAbove(Fish, 1879, 726);
+	
+	CreateObjectAbove(Squid, 2100, 800);
 
 	var Mosquito001 = CreateObjectAbove(Mosquito, 2292, 514);
 	Mosquito001->SetXDir(-6);
