@@ -34,7 +34,7 @@ material Diamond
 
             texture_unit
             {
-                texture DiamondSocket.png
+                texture DiamondSocket.jpg
                 tex_address_mode wrap
                 filtering trilinear
             }
