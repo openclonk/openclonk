@@ -344,7 +344,7 @@ void C4ScriptGuiWindowProperty::CleanUpAll()
 
 const C4Value C4ScriptGuiWindowProperty::ToC4Value()
 {
-	C4PropList *proplist = nullptr; 
+	C4PropList *proplist = nullptr;
 	
 	bool onlyOneTag = taggedProperties.size() == 1;
 	if (!onlyOneTag) // we will need a tagged proplist
@@ -782,47 +782,54 @@ void C4ScriptGuiWindow::SetPositionStringProperties(const C4Value &property, C4S
 		return;
 	}
 	// safety
-	if (property.GetType() != C4V_Type::C4V_String) return;
-	StdStrBuf buf(property.getStr()->GetData());
-	
-	std::string trimmedString;
-	size_t maxLength = buf.getLength();
-	trimmedString.reserve(maxLength);
-	// add all non-whitespace characters to the new string (strtod could abort the parsing otherwise)
-	for (size_t i = 0; i < maxLength; ++i)
-	{
-		if (!isspace(buf[i]))
-			trimmedString.push_back(buf[i]);
+	if (property.GetType() != C4V_Type::C4V_String) {
+		if(property.GetType() != C4V_Type::C4V_Nil)
+			LogF("Warning: Got %s instead of expected menu format string.", property.GetTypeName());
+		return;
 	}
 
 	float relativeValue = 0.0;
 	float absoluteValue = 0.0;
 
-	const char *currentPosition = trimmedString.data();
-	char *nextPosition;
-	const char *lastPosition = trimmedString.data() + trimmedString.size();
+	std::locale c_locale("C");
+	std::istringstream reader(std::string(property.getStr()->GetCStr()));
+	reader.imbue(c_locale);
+	if(!reader.good()) return;
 
-	while (currentPosition < lastPosition)
+	while (!reader.eof())
 	{
+		reader >> std::ws; // eat white space
+
 		// look for next float
-		nextPosition = 0;
-		float value = static_cast<float>(strtod(currentPosition, &nextPosition));
+		float value;
+		// here comes the fun.
+		// strtod is locale dependent
+		// istringstream will try to parse scientific notation, so things like 3em will be tried to be parsed as 3e<exponent> and consequently fail
+		// thus, per stackoverflow recommendation, parse the float into a separate string and then let that be parsed
+		std::stringstream floatss;
+		floatss.imbue(c_locale);
+		if(reader.peek() == '+' || reader.peek() == '-') floatss.put(reader.get());
+		reader >> std::ws;
+		while(std::isdigit(reader.peek()) || reader.peek() == '.') floatss.put(reader.get());
+		floatss >> value;
+		reader >> std::ws;
 
-		// fail? exit right here (there must be some space left in the string for a unit, too)
-		if (currentPosition == nextPosition || nextPosition == 0 || nextPosition >= lastPosition) break;
-
-		if (*nextPosition == '%')
+		if (reader.peek() == '%')
 		{
 			relativeValue += value;
-			currentPosition = nextPosition + 1;
+			reader.get();
 		}
-		else if (*nextPosition == 'e' && *(nextPosition+1) == 'm')
+		else if (reader.get() == 'e' && reader.get() == 'm')
 		{
 			absoluteValue += value;
-			currentPosition = nextPosition + 2;
 		}
-		else // error, abort!
-			break;
+		else // error, abort! (readere is not in a clean state anyway)
+		{
+			LogF("Warning: Could not parse menu format string \"%s\"!", property.getStr()->GetCStr());
+			return;
+		}
+
+		reader.peek(); // get eof bit to be set
 	}
 	props[relative].SetFloat(relativeValue / 100.0f, tag);
 	props[absolute].SetFloat(absoluteValue, tag);
@@ -1557,7 +1564,7 @@ void C4ScriptGuiWindow::RequestLayoutUpdate()
 			return;
 		}
 		else // we are one of the multiple windows.. the root better do a full refresh
-			;
+		{}
 	}
 	// propagate to parent window
 	static_cast<C4ScriptGuiWindow*>(GetParent())->RequestLayoutUpdate();
@@ -1679,7 +1686,7 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	rcBounds.Hgt = height;
 
 	// If this window contains text, we auto-fit to the text height;
-	// but we only break text when the window /would/ crop it otherwise. 
+	// but we only break text when the window /would/ crop it otherwise.
 	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::text].GetStrBuf();
 	if (strBuf && !(style & C4ScriptGuiWindowStyleFlag::NoCrop))
 	{
@@ -1798,9 +1805,9 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	{
 		// the frame decoration will adjust for cgo.TargetX/Y itself
 		C4Rect rect(
-			outDrawX - frameDecoration->iBorderLeft - cgo.TargetX, 
-			outDrawY - frameDecoration->iBorderTop - cgo.TargetY, 
-			outDrawWdt + frameDecoration->iBorderRight + frameDecoration->iBorderLeft, 
+			outDrawX - frameDecoration->iBorderLeft - cgo.TargetX,
+			outDrawY - frameDecoration->iBorderTop - cgo.TargetY,
+			outDrawWdt + frameDecoration->iBorderRight + frameDecoration->iBorderLeft,
 			outDrawHgt + frameDecoration->iBorderBottom + frameDecoration->iBorderTop);
 		frameDecoration->Draw(cgo, rect);
 	}
