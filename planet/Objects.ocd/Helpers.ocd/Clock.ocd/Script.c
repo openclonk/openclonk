@@ -6,12 +6,43 @@
 */
 
 
-protected func Initialize()
+// HUD margin and size in tenths of em.
+static const GUI_Controller_Clock_IconSize = 25;
+static const GUI_Controller_Clock_IconMargin = 5;
+
+local clock_gui_menu;
+local clock_gui_id;
+
+public func Construction()
 {
-	// Set parallaxity.
-	this.Parallaxity = [0, 0];
 	// Set visibility.
-	this.Visibility = VIS_All;
+	this.Visibility = VIS_All;	
+	
+	// Place the clock next to the goal and wealth HUD element.
+	var y_begin = GUI_Controller_Clock_IconMargin;
+	var y_end = y_begin + GUI_Controller_Clock_IconSize;
+	var x_begin = y_end + GUI_Controller_Goal_IconSize + GUI_Controller_Goal_IconMargin + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+	var x_end = y_begin + GUI_Controller_Goal_IconSize + GUI_Controller_Goal_IconMargin + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+
+	clock_gui_menu = 
+	{
+		Target = this,
+		Style = GUI_Multiple | GUI_IgnoreMouse,
+		Left = Format("100%%%s", ToEmString(-x_begin)),
+		Right = Format("100%%%s", ToEmString(-x_end)),
+		Top = ToEmString(y_begin),
+		Bottom = ToEmString(y_end),
+		Priority = 1,
+		Symbol = GUI_Clock,
+		Tooltip = nil,
+		text = 
+		{
+			Style = GUI_TextHCenter | GUI_TextBottom | GUI_NoCrop,
+			Text = nil,
+			Priority = 3,
+		},
+	};
+	clock_gui_id = GuiOpen(clock_gui_menu);
 	return;
 }
 
@@ -34,7 +65,8 @@ public func SetTime(int to_time)
 			play_for = nil; 	
 		Sound("Click", true, 80, play_for);
 	}
-	CustomMessage(Format("@<c %x>%02d:%02d</c>", color, minutes, seconds), this, GetOwner(), 0, 90);
+	clock_gui_menu.text.Text = Format("<c %x>%02d:%02d</c>", color, minutes, seconds);
+	GuiUpdate(clock_gui_menu, clock_gui_id);
 	return;
 }
 
@@ -56,9 +88,8 @@ public func CreateCountdown(int total_time, int for_plr, object callback_obj)
 	// Create the clock object.
 	var plr = for_plr ?? NO_OWNER;
 	var clock = CreateObject(GUI_Clock, 0, 0, plr);
+	// Store for which player and update visibility.
 	clock.for_plr = for_plr;
-	// Place the clock next to the goal.
-	clock->SetPosition((-64 - 16) * 2 - 32 - GUI_Clock->GetDefHeight() / 2, 8 + GUI_Clock->GetDefHeight() / 2);
 	if (for_plr != nil)
 		clock.Visibility = VIS_Owner;
 	// Add a countdown effect.
@@ -93,9 +124,7 @@ protected func FxIntCountdownTimer(object target, proplist effect, int time)
 	effect.time--;
 	SetTime(effect.time);
 	if (effect.time <= 0)
-	{
 		return FX_Execute_Kill;
-	}
 	return FX_OK;
 }
 
