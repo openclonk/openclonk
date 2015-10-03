@@ -320,15 +320,6 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 				LogSilentF("GLExt: %s", gl_extensions ? gl_extensions : "");
 			}
 		}
-
-		// Check which workarounds we have to apply
-		{
-			// If we have less than 2048 uniform components available, we
-			// need to upload bone matrices in a different way
-			GLint count;
-			glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &count);
-			Workarounds.LowMaxVertexUniformCount = count < 2048;
-		}
 	}
 	if (!success)
 	{

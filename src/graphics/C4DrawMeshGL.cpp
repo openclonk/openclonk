@@ -101,7 +101,7 @@ namespace
 		}
 	}
 
-	StdStrBuf GetVertexShaderCodeForPass(const StdMeshMaterialPass& pass)
+	StdStrBuf GetVertexShaderCodeForPass(const StdMeshMaterialPass& pass, bool LowMaxVertexUniformCount)
 	{
 		StdStrBuf buf;
 
@@ -128,7 +128,7 @@ namespace
 			);
 		}
 
-		if (pGL->Workarounds.LowMaxVertexUniformCount)
+		if (LowMaxVertexUniformCount)
 			return StdStrBuf("#define OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS\n") + buf;
 		else
 			return buf;
@@ -321,11 +321,13 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			// if a custom shader is not provided.
 			// Re-use existing programs if the generated
 			// code is the same (determined by SHA1 hash).
+			bool custom_shader = true;
 			if(!pass.VertexShader.Shader)
 			{
-				StdStrBuf buf = GetVertexShaderCodeForPass(pass);
+				StdStrBuf buf = GetVertexShaderCodeForPass(pass, Workarounds.LowMaxVertexUniformCount);
 				StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
 				pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+				custom_shader = false;
 			}
 
 			if(!pass.FragmentShader.Shader)
@@ -340,6 +342,27 @@ bool CStdGL::PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoad
 			StdStrBuf name(FormatString("%s:%s:%s", mat.Name.getData(), technique.Name.getData(), pass.Name.getData()));
 			const StdMeshMaterialProgram* added_program = mat_manager.AddProgram(name.getData(), loader, pass.FragmentShader, pass.VertexShader, pass.GeometryShader);
 			if(!added_program)
+			{
+				// If the program could not be compiled, try again with the LowMaxVertexUniformCount workaround.
+				// See bug #1368.
+				if (!custom_shader && !Workarounds.LowMaxVertexUniformCount)
+				{
+					StdStrBuf buf = GetVertexShaderCodeForPass(pass, true);
+					StdStrBuf hash = GetSHA1HexDigest(buf.getData(), buf.getLength());
+					pass.VertexShader.Shader = mat_manager.AddShader("auto-generated vertex shader", hash.getData(), "glsl", SMMS_VERTEX, buf.getData(), true);
+
+					added_program = mat_manager.AddProgram(name.getData(), loader, pass.FragmentShader, pass.VertexShader, pass.GeometryShader);
+					if(added_program)
+					{
+						// If this actually work, cache the result, so we don't
+						// need to fail again next time before trying the workaround.
+						Workarounds.LowMaxVertexUniformCount = true;
+						Log("  gl: Enabling low max vertex uniform workaround");
+					}
+				}
+			}
+
+			if (!added_program)
 			{
 				technique.Available = false;
 			}
