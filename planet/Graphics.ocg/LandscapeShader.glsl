@@ -103,13 +103,13 @@ slice(material)
 slice(normal)
 {
 	// Normal calculation
-	vec3 normal = extend_normal(1.5 * (mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
-									   - vec2(0.5, 0.5)));
-	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
+	vec3 normal = extend_normal(8.0 * (mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
+									    - vec2(0.5, 0.5)));
+	vec3 textureNormal = 2.0*(normalPx.xyz - vec3(0.5,0.5,0.5));
 	normal = mix(textureNormal, normal, normalMapStrength);
 
-	vec3 normal2 = extend_normal(landscapePx2.yz - vec2(0.5, 0.5));
-	vec3 textureNormal2 = normalPx2.xyz - vec3(0.5,0.5,0.5);
+	vec3 normal2 = extend_normal(8.0 * (landscapePx2.yz - vec2(0.5, 0.5)));
+	vec3 textureNormal2 = 2.0*(normalPx2.xyz - vec3(0.5,0.5,0.5));
 	normal2 = mix(textureNormal2, normal2, normalMapStrength);
 
 }

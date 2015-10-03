@@ -39,7 +39,7 @@ float lightDot(vec3 normal, vec3 lightDir) {
 vec3 extend_normal(vec2 v)
 {
 	// the higher the second value, the further away the light source from the landscape
-	return normalize(vec3(v, 0.45));
+	return normalize(vec3(v, 0.75));
 }
 
 // Converts the pixel range 0.0..1.0 into the integer range 0..255
@@ -55,7 +55,7 @@ slice(texture+5)
 	vec2 lightDirCoord = lightCoord.st;
 
 	vec4  lightPx = texture2D(lightTex, lightDirCoord);
-	float lightBright = 2.0*max(0.0, lightPx.a-lightDarknessLevel);
+	float lightBright = 3.0*max(0.0, lightPx.a-lightDarknessLevel);
 	vec3  lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
 
 	// Query light color texture (part of the light texture)
@@ -68,6 +68,10 @@ slice(texture+5)
 		lightBright = 0.5;
 		lightColor = vec4(1.0, 0.0, 1.0, 1.0);
 	#endif
+
+	// Ambient light
+	// Extra .xy since some old intel drivers return a vec3
+	float ambient = texture2D(ambientTex, (ambientTransform * vec3(gl_FragCoord.xy, 1.0)).xy).r;
 #else
 	// When lighting is disabled, put a light source coming from the camera.
 	// Note that in most cases this does not actually matter, since in the
@@ -75,14 +79,7 @@ slice(texture+5)
 	float lightBright = 0.5;
 	vec3  lightDir = vec3(0.0, 0.0, 1.0);
 	vec3  lightColor = vec3(1.0, 1.0, 1.0);
-#endif
-
-#ifdef OC_DYNAMIC_LIGHT
-	// Ambient light
-	// Extra .xy since some old intel drivers return a vec3
-	float ambient = texture2D(ambientTex, (ambientTransform * vec3(gl_FragCoord.xy, 1.0)).xy).r * ambientBrightness;
-#else
-	// Lighting disabled: Ambient light everywhere
+	float ambientBrightness = 0.5;
 	float ambient = 1.0;
 #endif
 }
@@ -91,7 +88,6 @@ slice(light)
 {
 
 	// Light dot product, taking backface culling into account
-	normal = normalize(normal);
 	float light = lightDot(normal, lightDir);
 	// Amount of reflection, depending on the angle where material reflects most
 	light = min(light / matAngle, 2.0 - light / matAngle);
@@ -105,18 +101,13 @@ slice(light)
 
 slice(light+1)
 {
-#ifdef OC_LANDSCAPE
 	// For landscape, ambient brightness is coming from top
-	vec3 ambientDir = normalize(vec3(0.0, -1.0, 1.0));
-#else
-	// For objects, ambient brightness is coming from the front
-	vec3 ambientDir = vec3(0.0, 0.0, 1.0);
-#endif
+	vec3 ambientDir = extend_normal(vec2(0.0, -1.0));
 	// Add ambience to brightness
 	lightBright = mix(lightBright, 1.0, ambient);
-	light = mix(light, 0.5 * (ambient + lightDot(normal, ambientDir)), ambient);
+	light = mix(light, ambientBrightness * (1.0 + lightDot(normal, ambientDir)), ambient);
 #ifdef OC_LANDSCAPE
-	light2 = mix(light2, 0.5 * (ambient + lightDot(normal2, ambientDir)), ambient);
+	light2 = mix(light2, ambientBrightness * (1.0 + lightDot(normal2, ambientDir)), ambient);
 #endif
 	lightColor = mix(lightColor, vec3(1.0,1.0,1.0), ambient);
 }
