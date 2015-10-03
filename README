@@ -41,6 +41,7 @@ system. For Debian based distributions, you will need these packages:
   libglew-dev libgtk2.0-dev libjpeg-dev libpng-dev libsdl1.2-dev
   libsdl-mixer1.2-dev libupnp-dev libxrandr-dev x11proto-core-dev
   zlib1g-dev
+At least gcc-4.9 is required.
 
 Windows Specific
 ================

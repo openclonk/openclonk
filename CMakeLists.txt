@@ -90,7 +90,7 @@ REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0
 # implementation for some things (like std::regex_iterator).
 # This needs to test *linking*, not compilation; cmake does both at the same
 # time, so the test below works.
-REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
+REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
