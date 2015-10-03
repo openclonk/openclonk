@@ -1,6 +1,5 @@
 [Material]
 Name=DuroLava
-ColorAnimation=1
 Density=25
 Instable=1
 MaxAirSpeed=50

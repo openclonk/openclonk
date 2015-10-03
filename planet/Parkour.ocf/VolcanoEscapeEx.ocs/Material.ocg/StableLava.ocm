@@ -1,6 +1,5 @@
 [Material]
 Name=StableLava
-ColorAnimation=1
 Density=25
 Instable=0
 MaxAirSpeed=50
