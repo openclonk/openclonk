@@ -1,0 +1,43 @@
+material wheat_material
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			cull_hardware none
+			alpha_rejection greater_equal 128.0
+			
+			diffuse 1.0 1.0 1.0
+			
+            texture_unit
+            {
+                texture wheat_green.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}
+
+material wheat_material_ripe
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			cull_hardware none
+			alpha_rejection greater_equal 128.0
+			
+			diffuse 1.0 1.0 1.0
+			
+            texture_unit
+            {
+                texture wheat.png
+                tex_address_mode wrap
+                filtering trilinear
+            }
+        }
+    }
+}

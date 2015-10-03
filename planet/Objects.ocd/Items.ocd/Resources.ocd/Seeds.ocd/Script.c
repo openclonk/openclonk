@@ -28,7 +28,9 @@ public func ControlUse(object clonk, int x, int y, bool box)
 	{
 		// Plant!
 		clonk->DoKneel();
-		CreateObjectAbove(Wheat, 0, ground_y, clonk->GetOwner())->SetCon(1);
+		var wheat = CreateObjectAbove(Wheat, 0, ground_y, clonk->GetOwner());
+		wheat->SetCon(1);
+		wheat->Unripe();
 		RemoveObject();
 	}
 	else
