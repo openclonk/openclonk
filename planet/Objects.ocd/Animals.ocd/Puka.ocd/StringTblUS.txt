@@ -1,0 +1,2 @@
+Name=Puka
+Description=Cute little creature but extremely dangerous near water.
