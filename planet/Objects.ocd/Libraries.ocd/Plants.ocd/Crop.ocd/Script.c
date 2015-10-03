@@ -119,7 +119,7 @@ private func WaterCheck()
 				var y = 0;
 				var x = i - my_width/2;
 				while (!GBackLiquid(x, my_height - y) && y < my_height + 1)
-					y--;
+					y++;
 				if (MaterialName(GetMaterial(x, y)) == "Water")
 					if (ExtractLiquid(x, y))
 						water++;
