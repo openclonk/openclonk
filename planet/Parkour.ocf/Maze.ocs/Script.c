@@ -5,7 +5,7 @@
 	Dynamic maze
 --*/
 
-static g_caves;
+static g_caves, g_end_cave_x, g_end_cave_y;
 local goal_cave;
 
 func InitializePlayer(int plr)
@@ -88,6 +88,9 @@ protected func Initialize()
 {
 	var zoom = 10, cave, n_caves = GetLength(g_caves);
 	for (cave in g_caves) { cave.X *= zoom; cave.Y *= zoom; }
+	// Light at end cave
+	var light = CreateLight(g_end_cave_x * zoom, g_end_cave_y * zoom, 100, Fx_Light.LGT_Constant, NO_OWNER, 100);
+	if (light) light->SetLightColor(0xff8080);
 	// Goal
 	var is_cooperative = (SCENPAR_Goal == 1);
 	var starting_cave = g_caves[0];

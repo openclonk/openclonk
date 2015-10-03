@@ -6,7 +6,7 @@
 
 #include Library_Map
 
-static g_caves;
+static g_caves, g_end_cave_x, g_end_cave_y;
 
 local caves, n_caves, start_cave, end_cave;
 
@@ -230,6 +230,8 @@ func DrawStart()
 func DrawEnd()
 {
 	Draw("Ruby", {Algo=MAPALGO_Ellipsis, X=end_cave.X, Y=end_cave.Y, Wdt=4, Hgt=4});
+	g_end_cave_x = end_cave.X;
+	g_end_cave_y = end_cave.Y;
 	return true;
 }
 
