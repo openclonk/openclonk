@@ -48,7 +48,7 @@ namespace
 	}
 
 	// Transformation matrix to convert meshes from Ogre to Clonk coordinate system
-	const StdMeshMatrix OgreToClonkMatrix = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
+	const StdMeshMatrix OgreToClonkMatrix = StdMeshMatrix::Scale(-1.0f, -1.0f, -1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 1.0f, 0.0f);
 
 	const StdMeshMatrix OgreToClonkInverse = StdMeshMatrix::Inverse(OgreToClonkMatrix);
 	const StdMeshMatrix OgreToClonkInverseTranspose = Transpose(OgreToClonkInverse);
