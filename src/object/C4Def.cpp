@@ -66,8 +66,10 @@ public:
 
 		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
 		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
-		if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_LIGHT");
-		if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_LIGHT");
+
+		// Note these are never set for meshes at the moment:
+		if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_BASE");
+		if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_OVERLAY");
 
 		shader.LoadSlices(&::GraphicsResource.Files, "CommonShader.glsl");
 		shader.LoadSlices(&::GraphicsResource.Files, "ObjectShader.glsl");

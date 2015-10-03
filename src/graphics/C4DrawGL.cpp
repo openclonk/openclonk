@@ -238,7 +238,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 		shader.AddTexCoord("texcoord");
 
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define SPRITE");
+	shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define OC_SPRITE");
 	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
 	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define OC_WITH_NORMALMAP");
 	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
