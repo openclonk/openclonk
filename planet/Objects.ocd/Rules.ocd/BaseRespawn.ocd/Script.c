@@ -9,15 +9,16 @@
 
 
 // Determines whether the inventory of the crew member is transfered upon respawn.
-local inventory_transfer;
+local inventory_transfer = false;
 
 // Determines whether a crew member needs to be bought.
-local free_crew;
+local free_crew = false;
+
+// Delay between clonk death and respawn (in seconds)
+local respawn_delay = 2;
 
 protected func Initialize()
 {
-	inventory_transfer = false;
-	free_crew = false;
 	ScheduleCall(this, this.CheckDescription, 1, 1);
 	return true;
 }
@@ -67,7 +68,7 @@ protected func OnClonkDeath(object clonk)
 		return true;
 
 	// Get the bases at which the clonk can possibly respawn.
-	var bases = GetBases(clonk);
+	var bases = GetBases(clonk), crew;
 	for (var base in bases)
 	{
 		if (!base)
@@ -76,20 +77,11 @@ protected func OnClonkDeath(object clonk)
 		// If free crew just create a clonk at the base.
 		if (free_crew)
 		{
-			var crew = CreateObjectAbove(Clonk, base->GetX() - GetX(), base->GetY() + base->GetDefHeight() / 2 - GetX(), plr);
+			crew = CreateObjectAbove(Clonk, base->GetX() - GetX(), base->GetY() + base->GetDefHeight() / 2 - GetX(), plr);
 			crew->MakeCrewMember(plr);
 			SetCursor(plr, crew);
 			// Transfer inventory if turned on.
-			if (inventory_transfer)
-			{
-				// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
-				var i = clonk->ContentsCount(), contents;
-				while (i--)
-					if (contents = clonk->Contents(i))
-						if (contents->~IsDroppedOnDeath(clonk))
-							contents->Exit();
-				crew->GrabContents(clonk);
-			}
+			if (inventory_transfer) TransferInventory(clonk, crew);
 			break;
 		}
 		// Try to buy a crew member at the base.
@@ -97,18 +89,41 @@ protected func OnClonkDeath(object clonk)
 		// Payment in neutral bases by clonk owner.
 		if (pay_plr == NO_OWNER) 
 			pay_plr = plr;
-		var crew = base->~DoBuy(Clonk, plr, pay_plr, clonk);
+		crew = base->~DoBuy(Clonk, plr, pay_plr, clonk);
 		if (crew)
 		{
 			crew->Exit(0, base->GetDefHeight() / 2);
 			SetCursor(plr, crew);
 			// Transfer inventory if turned on.
-			if (inventory_transfer)
-				crew->GrabContents(clonk);
+			if (inventory_transfer) TransferInventory(clonk, crew);
 			break;
 		}
-	}	
+	}
+	// Respawn delay (+Weapon choice if desired by scenario)
+	if (crew && respawn_delay)
+	{
+		crew->SetCrewEnabled(false); // will be re-set by relauncher
+		var relaunch = CreateObject(RelaunchContainer, crew->GetX() - GetX(), crew->GetY() - GetY(), plr);
+		relaunch->SetRelaunchTime(respawn_delay, false);
+		relaunch->StartRelaunch(crew);
+		// But keep view on old corpse because the death might be exciting!
+		// And sometimes you want to know why you died (just like in real-life!)
+		var light = CreateLight(clonk->GetX() - GetX(), clonk->GetY() - GetY(), 100, Fx_Light.LGT_Temp, plr, 20, respawn_delay*36);
+		SetCursor(plr, nil);
+		SetPlrView(plr, light);
+	}
 	return true;
+}
+
+private func TransferInventory(object from, object to)
+{
+	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
+	var i = from->ContentsCount(), contents;
+	while (i--)
+		if (contents = from->Contents(i))
+			if (contents->~IsDroppedOnDeath(from))
+				contents->Exit();
+	return to->GrabContents(from);
 }
 
 private func GetBases(object clonk)

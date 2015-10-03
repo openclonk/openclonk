@@ -112,6 +112,13 @@ public func OnWeaponSelected(id weapon)
 private func RelaunchClonk()
 {
 	var clonk = crew;
+	// When relaunching from disabled state (i.e base respawn), reset view to clonk
+	if (!clonk->GetCrewEnabled())
+	{
+		clonk->SetCrewEnabled(true);
+		SetCursor(clonk->GetOwner(), clonk);
+		SetPlrView(clonk->GetOwner(), clonk);
+	}
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk);
 	if (menu)
