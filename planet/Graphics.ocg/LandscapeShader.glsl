@@ -20,15 +20,25 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
-// How much % the normals from the normal map are added up to the
-// landscape normal. The higher the strength, the more structure
-// within the material is visible but also the less the borders
-// between the different materials stand out.
-const float normalMapStrength = 0.20;
-
 vec4 queryMatMap(int pix)
 {
 	return texture1D(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
+}
+
+slice(init)
+{
+	// How much % the normals from the normal map are added up to the
+	// landscape normal. The higher the strength, the more structure
+	// within the material is visible but also the less the borders
+	// between the different materials stand out.
+	//  0.0 = just textures
+	//  1.0 = just material borders
+	const float normalMapStrength = 0.2;
+
+	// Depth assumed for landscape normals. This decides how deep the
+	// material "borders" appear to be. Lower means sharper normals
+	// means more of a 3D look.
+	float landscapeNormalDepth = 0.15;
 }
 
 slice(coordinate)
@@ -103,14 +113,15 @@ slice(material)
 slice(normal)
 {
 	// Normal calculation
-	vec3 normal = extend_normal(8.0 * (mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a)
-									    - vec2(0.5, 0.5)));
+	vec2 landscapeNormalPx = mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5);
+	vec3 landscapeNormal = normalize(vec3(landscapeNormalPx, landscapeNormalDepth));
 	vec3 textureNormal = 2.0*(normalPx.xyz - vec3(0.5,0.5,0.5));
-	normal = mix(textureNormal, normal, normalMapStrength);
+	vec3 normal = mix(textureNormal, landscapeNormal, normalMapStrength);
 
-	vec3 normal2 = extend_normal(8.0 * (landscapePx2.yz - vec2(0.5, 0.5)));
+	vec2 landscapeNormalPx2 = landscapePx2.yz - vec2(0.5, 0.5);
+	vec3 landscapeNormal2 = normalize(vec3(landscapeNormalPx2, landscapeNormalDepth));
 	vec3 textureNormal2 = 2.0*(normalPx2.xyz - vec3(0.5,0.5,0.5));
-	normal2 = mix(textureNormal2, normal2, normalMapStrength);
+	vec3 normal2 = mix(textureNormal2, landscapeNormal2, normalMapStrength);
 
 }
 
