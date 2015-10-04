@@ -433,6 +433,8 @@ void C4MusicSystem::Execute(bool force_song_execution)
 	// Ensure a piece is played
 #if AUDIO_TK != AUDIO_TK_SDL_MIXER
 	if (!::Game.iTick35 || !::Game.IsRunning || force_song_execution || ::Game.IsPaused())
+#else
+	(void) force_song_execution;
 #endif
 	{
 		if (!PlayMusicFile)
