@@ -899,7 +899,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 			iTime = iMinTime + dt*iX/tw;
 			if (!Inside(iTime, iThisMinTime, iThisMaxTime)) continue;
 			int iY2 = int((-pSeries->GetValue(iTime) + iMinVal) * th / dv) + ty+th;
-			if (fAnyVal) pDraw->DrawLineDw(cgo.Surface, (float) (tx+iX-1), (float) iY, (float) (tx+iX), (float) iY2, pSeries->GetColorDw());
+			if (fAnyVal) pDraw->DrawLineDw(cgo.Surface, (float) (tx+iX-1), (float) iY, (float) (tx+iX), (float) iY2, pSeries->GetColorDw() | 0xff000000);
 			iY = iY2;
 			fAnyVal = true;
 		}
