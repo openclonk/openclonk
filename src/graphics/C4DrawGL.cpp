@@ -245,6 +245,10 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_BASE");
 	if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_OVERLAY");
 
+	if (additionalDefines)
+		for (const char* const* define = additionalDefines; *define != NULL; ++define)
+			shader.AddFragmentSlice(-1, FormatString("#define %s", *define).getData());
+
 	shader.LoadSlices(pGroups, "CommonShader.glsl");
 	shader.LoadSlices(pGroups, "ObjectShader.glsl");
 
