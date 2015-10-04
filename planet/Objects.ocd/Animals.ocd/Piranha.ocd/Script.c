@@ -5,9 +5,6 @@
 
 #include Fish
 
-#include Library_FuzzyLogic
-
-
 local hunger;
 
 func Construction()
@@ -25,22 +22,24 @@ func MoreHunger()
 
 func InitFuzzyRules()
 {
-	// ACTION SETS
-	AddFuzzySet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
-	AddFuzzySet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
-	AddFuzzySet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	brain = FuzzyLogic->Init();
 	
-	AddFuzzySet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
-	AddFuzzySet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
+	// ACTION SETS
+	brain->AddSet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
+	brain->AddSet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
+	brain->AddSet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	
+	brain->AddSet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
+	brain->AddSet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
 	
 	// RULE SETS
 	var directional_sets = ["food", "wall"];
 	
 	for (var set in directional_sets)
 	{
-		AddFuzzySet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
-		AddFuzzySet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
-		AddFuzzySet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
+		brain->AddSet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
+		brain->AddSet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
+		brain->AddSet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
 	}
 	
 	var proximity_sets = ["food_range"];
@@ -49,31 +48,31 @@ func InitFuzzyRules()
 	
 	for (var set in proximity_sets)
 	{
-		AddFuzzySet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-		AddFuzzySet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
-		AddFuzzySet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
+		brain->AddSet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
+		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+		brain->AddSet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
 	}
 	
-	AddFuzzySet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-	AddFuzzySet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
-	AddFuzzySet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
+	brain->AddSet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
+	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
 	
 	
-	AddFuzzySet("hunger", "low", [[0, 1], [0, 1], [75, 0]]);
-	AddFuzzySet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
+	brain->AddSet("hunger", "low", [[0, 1], [0, 1], [75, 0]]);
+	brain->AddSet("hunger", "high", [[25, 0], [100, 1], [100, 1]]);
 	
 	// RULES
-	AddFuzzyRule(FuzzyOr(FuzzyAnd("wall_range=close", "wall=left"), FuzzyAnd("hunger=high", "food=right")), "swim=right");
-	AddFuzzyRule(FuzzyOr(FuzzyAnd("wall_range=close", "wall=right"),  FuzzyAnd("hunger=high", "food=left")), "swim=left");
-	AddFuzzyRule("hunger=high", "speed=fast");
-	AddFuzzyRule(FuzzyOr("wall_range=close", "hunger=low"), "speed=slow");
+	brain->AddRule(brain->Or(brain->And("wall_range=close", "wall=left"), brain->And("hunger=high", "food=right")), "swim=right");
+	brain->AddRule(brain->Or(brain->And("wall_range=close", "wall=right"), brain->And("hunger=high", "food=left")), "swim=left");
+	brain->AddRule("hunger=high", "speed=fast");
+	brain->AddRule(brain->Or("wall_range=close", "hunger=low"), "speed=slow");
 	
 }
 
 
 func UpdateVision()
 {
-	Fuzzify("hunger", hunger);
+	brain->Fuzzify("hunger", hunger);
 	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Func("IsPrey"), Find_NoContainer(), Sort_Distance()), true);
 	UpdateWallVision();
 }

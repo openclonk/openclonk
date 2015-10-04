@@ -3,8 +3,6 @@
 	Author: Zapper
 */
 
-#include Library_FuzzyLogic
-
 static const FISH_SWIM_MAX_ANGLE = 15;
 static const FISH_SWIM_MAX_SPEED = 30;
 static const FISH_VISION_MAX_ANGLE = 140;
@@ -15,6 +13,7 @@ local current_angle, current_speed, current_direction;
 local swim_animation;
 local base_transform;
 
+local brain;
 
 func Place(int amount, proplist rectangle, proplist settings)
 {
@@ -68,10 +67,9 @@ func Construction()
 	SetComDir(COMD_None);
 	ScheduleCall(this, this.InitActivity,  1 + Random(10), 0);
 	AddTimer(this.UpdateSwim, 2);
-	
-	// FUZZY LOGIC INIT BELOW
-	_inherited(...);
 	InitFuzzyRules();
+	
+	return _inherited(...);
 }
 
 func InitActivity()
@@ -118,22 +116,24 @@ public func NutritionalValue() { if (!GetAlive()) return 15; else return 0; }
 
 func InitFuzzyRules()
 {
-	// ACTION SETS
-	AddFuzzySet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
-	AddFuzzySet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
-	AddFuzzySet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	brain = FuzzyLogic->Init();
 	
-	AddFuzzySet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
-	AddFuzzySet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
+	// ACTION SETS
+	brain->AddSet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
+	brain->AddSet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
+	brain->AddSet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	
+	brain->AddSet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
+	brain->AddSet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
 	
 	// RULE SETS
 	var directional_sets = ["friend", "enemy", "food", "wall"];
 	
 	for (var set in directional_sets)
 	{
-		AddFuzzySet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
-		AddFuzzySet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
-		AddFuzzySet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
+		brain->AddSet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
+		brain->AddSet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
+		brain->AddSet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
 	}
 	
 	var proximity_sets = ["friend_range", "enemy_range", "food_range"];
@@ -142,23 +142,23 @@ func InitFuzzyRules()
 	
 	for (var set in proximity_sets)
 	{
-		AddFuzzySet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-		AddFuzzySet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
-		AddFuzzySet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
+		brain->AddSet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
+		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+		brain->AddSet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
 	}
 	
-	AddFuzzySet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-	AddFuzzySet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
-	AddFuzzySet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
+	brain->AddSet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
+	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
 	
 	// RULES
-	AddFuzzyRule("enemy_range=close", "speed=fast");
-	AddFuzzyRule(FuzzyOr("friend_range=close", "food_range=close", "wall_range=close"), "speed=slow");
+	brain->AddRule("enemy_range=close", "speed=fast");
+	brain->AddRule(brain->Or("friend_range=close", "food_range=close", "wall_range=close"), "speed=slow");
 	
-	AddFuzzyRule(FuzzyAnd(FuzzyNot("wall_range=close"), FuzzyOr("food=left", FuzzyAnd("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
-	AddFuzzyRule(FuzzyAnd(FuzzyNot("wall_range=close"), FuzzyOr("food=right", FuzzyAnd("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
-	AddFuzzyRule(FuzzyAnd(FuzzyOr("wall=straight", "wall=right"), "wall_range=close"), "swim=left");
-	AddFuzzyRule(FuzzyAnd("wall=left", "wall_range=close"), "swim=right");
+	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=left", brain->And("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
+	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=right", brain->And("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
+	brain->AddRule(brain->And(brain->Or("wall=straight", "wall=right"), "wall_range=close"), "swim=left");
+	brain->AddRule(brain->And("wall=left", "wall_range=close"), "swim=right");
 	
 }
 
@@ -168,7 +168,7 @@ func Activity()
 	if (swimming)
 	{
 		UpdateVision();
-		var actions = FuzzyExec();
+		var actions = brain->Execute();
 		DoActions(actions);
 	}
 	else if (walking)
@@ -232,8 +232,8 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		//CreateParticle("MagicSpark", obj->GetX() - GetX(), obj->GetY() - GetY(), 0, 0, 60, RGB(0, 255, 0));
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
 		var distance = ObjectDistance(this, obj);
-		Fuzzify(set, d);
-		Fuzzify(range_set, distance);
+		brain->Fuzzify(set, d);
+		brain->Fuzzify(range_set, distance);
 		
 		// now that we fuzzified our food - can we actually eat it, too???
 		if (is_food && distance < GetCon()/10)
@@ -242,8 +242,8 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		return true;
 	}
 	
-	Fuzzify(set, 0);
-	Fuzzify(range_set, FISH_VISION_MAX_RANGE + 1);
+	brain->Fuzzify(set, 0);
+	brain->Fuzzify(range_set, FISH_VISION_MAX_RANGE + 1);
 	return false;
 }
 
@@ -300,8 +300,8 @@ func UpdateWallVision()
 		}
 	}
 	
-	Fuzzify("wall", closest);
-	Fuzzify("wall_range", closest_distance);
+	brain->Fuzzify("wall", closest);
+	brain->Fuzzify("wall_range", closest_distance);
 }
 
 func DoActions(proplist actions)

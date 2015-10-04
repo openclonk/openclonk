@@ -1,4 +1,4 @@
 [DefCore]
-id=Library_FuzzyLogic
-Version=6,0
+id=FuzzyLogic
+Version=7,0
 Category=C4D_StaticBack
