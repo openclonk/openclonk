@@ -15,6 +15,7 @@ local dlg_status;
 local dlg_interact;  // default true. can be set to false to deactivate the dialogue
 local dlg_attention; // if set, a red attention mark is put above the clonk
 local dlg_broadcast; // if set, all non-message (i.e. menu) MessageBox calls are called as MessageBoxBroadcast.
+local dlg_last_opt_sel; // may contain array with recently selected options
 
 static const DLG_Status_Active = 0; // next interaction calls progress function
 static const DLG_Status_Stop   = 1; // dialogue is done and menu closed on next interaction
@@ -172,6 +173,8 @@ public func SetDialogueStatus(int status)
 // to be called from within dialogue after the last message
 public func StopDialogue()
 {
+	// clear remembered positions
+	dlg_last_opt_sel = nil;
 	// put on wait for a while; then reenable
 	SetDialogueStatus(DLG_Status_Wait);
 	ScheduleCall(this, this.SetDialogueStatus, 30, 1, DLG_Status_Stop);
@@ -317,17 +320,18 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 			cmd = "MenuOK";
 		}
 		clonk->CreateMenu(Dialogue, menu_target, C4MN_Extra_None, nil, nil, C4MN_Style_Dialog, false, Dialogue);
+		var menu_item_offset = 0;
 		
 		// Add NPC portrait.
 		//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
 		if (talker)
 			if (portrait)
-				clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgPropListSpec, portrait);
+				menu_item_offset += clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgPropListSpec, portrait);
 			else
-				clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
+				menu_item_offset += clonk->AddMenuItem("", nil, Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker);
 
 		// Add NPC message.
-		clonk->AddMenuItem(message, nil, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
+		menu_item_offset += clonk->AddMenuItem(message, nil, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
 		
 		// Add answers.
 		if (options) for (var option in options)
@@ -362,6 +366,32 @@ private func MessageBox(string message, object clonk, object talker, int for_pla
 		
 		// If there are no answers, add a next entry
 		if (cmd && !options) clonk->AddMenuItem("$Next$", cmd, nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
+		
+		// When reaching the same options set while clicking through a dialogue, pre-select the next item
+		if (options)
+		{
+			if (!dlg_last_opt_sel) dlg_last_opt_sel = [];
+			var found_remembered_option = false, remembered_opts, i = 0;
+			for (remembered_opts in dlg_last_opt_sel)
+			{
+				if (DeepEqual(remembered_opts.options, options))
+				{
+					found_remembered_option = true;
+					break;
+				}
+				++i;
+			}
+			if (found_remembered_option)
+			{
+				// We've seen this before. Pre-select the next option
+				clonk->SelectMenuItem(++remembered_opts.sel);
+			}
+			else
+			{
+				// First encounter of this option set: Select first item.
+				dlg_last_opt_sel[i] = { options = options[:], sel = menu_item_offset };
+			}
+		}
 		
 		// Set menu decoration.
 		clonk->SetMenuDecoration(GUI_MenuDeco);
