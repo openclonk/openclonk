@@ -788,13 +788,13 @@ private func OnContentsSelection(symbol, extra_data)
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
 	
-	var obj = extra_data.one_object ?? FindObject(Find_Container(target), Find_ID(symbol));
+	var obj = extra_data.one_object ?? target->FindContents(symbol);
 	if (!obj) return;
 	
 	var handled = false;
 	
 	// Does the object not want to leave the other container anyway?
-	if (!obj->~QueryRejectDeparture(target))
+	if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
 	{
 		// If stackable, always try to grab a full stack.
 		// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
@@ -886,6 +886,7 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				if (inv.has_contents) continue;
 				inv.count += object_amount;
 				inv.text = Format("%dx", inv.count);
+				inv.extra_data.one_object = nil;
 				
 				// This object has a custom symbol (because it's a container)? Then the normal text would not be displayed.
 				if (inv.custom != nil)
@@ -898,8 +899,8 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				break;
 			}
 		}
-		else // Can't stack? Remember object..
-			extra_data.one_object = obj;
+		// Remember object. Will be unset when stacked with other objects
+		extra_data.one_object = obj;
 		// Add new!
 		if (!found)
 		{
@@ -1005,9 +1006,11 @@ func FxExtraSlotTrackerUpdate(object target, proplist effect)
 func OnExtraSlotClicked(proplist extra_data)
 {
 	var menu = current_menus[extra_data.slot];
-	if (!menu) return;
+	if (!menu || !menu.target) return;
 	var obj = extra_data.one_object; 
-	if (!obj || obj->Contained() != menu.target)
+	// Sanity check if object is still available
+	// (ask menu target for special container check because "Surroundings" container hacks its contents)
+	if (!obj || (obj->Contained() != menu.target && !menu.target->~IsObjectContained(obj)))
 	{
 		// Maybe find a similar object? (case: stack of empty bows and one was removed -> user doesn't care which one is displayed)
 		for (var o in FindObjects(Find_Container(menu.target), Find_ID(extra_data.ID)))

@@ -32,6 +32,14 @@ private func GetPossibleObjects(id limit_definition)
 	return FindObjects(Find_Distance(Radius), Find_NoContainer(), Find_Property("Collectible"), Find_Layer(GetActionTarget()->GetObjectLayer()), check_id, sort);
 }
 
+// Find first contents object of type. Used by interaction menu.
+public func FindContents(id idcont)
+{
+	var objs = GetPossibleObjects(idcont);
+	if (!GetLength(objs)) return nil;
+	return objs[0];
+}
+
 // Called by the Clonk when an interaction menu is opened.
 public func InitFor(object clonk, object menu)
 {
@@ -92,6 +100,13 @@ private func FxKeepAliveStop(object target, proplist effect, int reason, int tem
 {
 	if (temp) return;
 	RemoveObject();
+}
+
+public func IsObjectContained(object obj)
+{
+	// Callback from menu if obj is still "in" this container
+	// Since we're hacking our contents, just do the distance check
+	return (obj && !obj->Contained() && ObjectDistance(obj) <= this.Radius);
 }
 
 public func IsContainer() { return true; }
