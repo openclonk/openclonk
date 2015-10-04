@@ -26,6 +26,9 @@
 #include GUI_Controller_Goal
 #include GUI_Controller_Wealth
 
+// All elements visible to HUD owner only - so NO_OWNER on sub-elements can be used to make them invisible temporarily.
+local Visibility = VIS_Owner;
+
 // Is created by Recruitment from the HUD adapter.
 private func Construction()
 {
