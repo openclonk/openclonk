@@ -130,8 +130,6 @@ public:
 
 	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion *Light);
 
-	void RefreshShaders();
-
 private:
 	bool InitLandscapeTexture();
 	bool InitMaterialTexture(C4TextureMap *pMap);

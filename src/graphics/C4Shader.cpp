@@ -18,6 +18,9 @@
 #include "C4Application.h"
 #include "graphics/C4DrawGL.h"
 
+// How often we check whether shader files got updated
+const uint32_t C4Shader_RefreshInterval = 1000; // ms
+
 struct C4ShaderPosName {
 	int Position; const char *Name;
 };
@@ -39,9 +42,11 @@ C4ShaderPosName C4SH_PosNames[] = {
 
 C4Shader::C4Shader()
 	: iTexCoords(0)
+	, LastRefresh()
 #ifndef USE_CONSOLE
 	, hVert(0), hFrag(0), hProg(0)
 	, pUniforms(NULL)
+	, pUniformNames(NULL)
 #endif
 {
 
@@ -299,6 +304,7 @@ void C4Shader::Clear()
 	hFrag = hVert = hProg = 0;
 	// Clear uniform data
 	delete[] pUniforms; pUniforms = NULL;
+	delete[] pUniformNames; pUniformNames = NULL;
 	iUniformCount = 0;
 #endif
 }
@@ -314,7 +320,8 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	}
 
 	// Clear old shader first
-	if (hProg) Clear();
+	const char **pOldUniformNames = pUniformNames;
+	if (hProg) { pUniformNames = NULL; Clear(); }
 #endif
 
 	StdStrBuf VertexShader = Build(VertexSlices, true),
@@ -370,19 +377,30 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 	while (szUniforms[iUniformCount])
 		iUniformCount++;
 	pUniforms = new GLint[iUniformCount];
+	pUniformNames = new const char *[iUniformCount+1];
 
 	// Get uniform locations. Note this is expected to fail for a few of them
 	// because the respective uniforms got optimized out!
-	for (int i = 0; i < iUniformCount; i++)
+	for (int i = 0; i < iUniformCount; i++) {
 		pUniforms[i] = glGetUniformLocationARB(hProg, szUniforms[i]);
+		ShaderLogF("Uniform %s = %d", szUniforms[i], pUniforms[i]);
+		pUniformNames[i] = szUniforms[i];
+	}
+	delete[] pOldUniformNames;
+	pUniformNames[iUniformCount] = NULL;
 #endif
 
+	Name.Copy(szWhat);
+	LastRefresh = C4TimeMilliseconds::Now();
 	return true;
 }
 
 
-bool C4Shader::Refresh(const char *szWhat, const char **szUniforms)
+bool C4Shader::Refresh()
 {
+	// Update last refresh. Align across engine for reasons.
+	LastRefresh = C4TimeMilliseconds::Now();
+	LastRefresh -= LastRefresh.AsInt() % C4Shader_RefreshInterval;
 	// Find a slice where the source file has updated
 	ShaderSliceList::iterator pSlice;
 	for (pSlice = FragmentSlices.begin(); pSlice != FragmentSlices.end(); pSlice++)
@@ -410,8 +428,8 @@ bool C4Shader::Refresh(const char *szWhat, const char **szUniforms)
 	   !Group.LoadEntryString(GetFilename(Source.getData()),&Shader) ||
 	   !Group.Close())
 	{
-		ShaderLogF("  gl: Failed to refresh %s shader from %s!", szWhat, Source.getData());
-		return Refresh(szWhat, szUniforms);
+		ShaderLogF("  gl: Failed to refresh %s shader from %s!", Name.getData(), Source.getData());
+		return false;
 	}
 
 	// Load slices
@@ -420,11 +438,12 @@ bool C4Shader::Refresh(const char *szWhat, const char **szUniforms)
 	AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
 
 	// Reinitialise
-	if (!Init(szWhat, szUniforms))
+	StdCopyStrBuf What(Name);
+	if (!Init(What.getData(), pUniformNames))
 		return false;
 
-	// Retry
-	return Refresh(szWhat, szUniforms);
+	// Retry in case there have been more changes
+	return Refresh();
 }
 
 StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
@@ -544,6 +563,7 @@ bool C4Shader::IsLogging() { return Config.Graphics.DebugOpenGL != 0 || !!Applic
 #ifndef USE_CONSOLE
 GLint C4ShaderCall::AllocTexUnit(int iUniform)
 {
+
 	// Want to bind uniform automatically? If not, the caller will take
 	// care of it.
 	if (iUniform >= 0) {
@@ -568,6 +588,10 @@ void C4ShaderCall::Start()
 {
 	assert(!fStarted);
 	assert(pShader->hProg != 0); // Shader must be initialized
+
+	// Possibly refresh shader
+	if (C4TimeMilliseconds::Now() > pShader->LastRefresh + C4Shader_RefreshInterval)
+		const_cast<C4Shader *>(pShader)->Refresh();
 
 	// Activate shader
 	glUseProgramObjectARB(pShader->hProg);

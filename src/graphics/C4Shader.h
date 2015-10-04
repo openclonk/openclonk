@@ -55,6 +55,8 @@ public:
 
 private:
 
+	StdStrBuf Name;
+
 	// Program texts
 	struct ShaderSlice {
 		int Position;
@@ -65,6 +67,9 @@ private:
 	typedef std::list<ShaderSlice> ShaderSliceList;
 	ShaderSliceList VertexSlices, FragmentSlices;
 
+	// Last refresh check
+	C4TimeMilliseconds LastRefresh;
+
 	// Used texture coordinates
 	int iTexCoords;
 
@@ -74,6 +79,7 @@ private:
 	// shader variables
 	int iUniformCount;
 	GLint *pUniforms;
+	const char **pUniformNames;
 #endif
 
 public:
@@ -144,7 +150,7 @@ public:
 
 	// Assemble and link the shader. Should be called again after new slices are added.
 	bool Init(const char *szWhat, const char **szUniforms);
-	bool Refresh(const char *szWhat, const char **szUniforms);
+	bool Refresh();
 
 	void ClearSlices();
 	void Clear();

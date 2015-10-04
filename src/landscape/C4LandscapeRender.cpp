@@ -569,12 +569,6 @@ void C4LandscapeRenderGL::ClearShaders()
 	}
 }
 
-void C4LandscapeRenderGL::RefreshShaders()
-{
-	Shader.Refresh("landscape", UniformNames);
-	ShaderLight.Refresh("landscapeLight", UniformNames);
-}
-
 bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
 {
 	// Search for scaler
@@ -839,10 +833,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	// prepare rendering to surface
 	C4Surface *sfcTarget = cgo.Surface;
 	if (!pGL->PrepareRendering(sfcTarget)) return;
-
-#ifdef AUTO_RELOAD_SHADERS
-	RefreshShaders();
-#endif // AUTO_RELOAD_SHADERS
 
 	// Clear error(s?)
 	while(glGetError()) {}
