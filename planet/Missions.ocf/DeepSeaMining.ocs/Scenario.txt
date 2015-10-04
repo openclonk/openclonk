@@ -7,6 +7,7 @@ MissionAccess=S2Crash
 
 [Definitions]
 Definition1=Objects.ocd
+Definition2=Decoration.ocd\Misc.ocd\Hat.ocd
 
 [Game]
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;Rule_BaseRespawn=1;

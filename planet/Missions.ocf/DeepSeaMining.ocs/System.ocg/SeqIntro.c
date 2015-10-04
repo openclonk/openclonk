@@ -24,6 +24,7 @@ func Intro_Start()
 	this.pilot->SetColor(0xff0000);
 	this.pilot->SetDir(DIR_Left);
 	this.pilot->SetObjectLayer(this.pilot);
+	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Mul(Trans_Translate(5500, 0, 0), Trans_Rotate(90, 0, 0, 1))); // Hat is seen in the cockpit!
 
 	this.plane.FxIntPlaneTimer = this.Intro_PlaneTimer;
 	RemoveEffect("IntPlane", this.plane);

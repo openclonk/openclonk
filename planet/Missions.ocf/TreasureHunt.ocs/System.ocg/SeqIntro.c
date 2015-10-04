@@ -30,7 +30,7 @@ func Intro_Init(object flagpole)
 	this.pilot->SetObjectLayer(this.pilot);
 	
 	// Pyit has a red hat!
-	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
+	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Mul(Trans_Translate(5500, 0, 0), Trans_Rotate(90, 0, 0, 1)));
 
 	// Dialogue object also used as helper container for clonks
 	this.dialogue = this.pilot->SetDialogue("Pyrit");

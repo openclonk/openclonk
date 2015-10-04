@@ -21,6 +21,8 @@ func Intro_Init()
 	this.pilot->SetColor(0xff0000);
 	this.pilot->SetDir(DIR_Left);
 	this.pilot->SetObjectLayer(this.pilot);
+	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Mul(Trans_Translate(5500, 0, 0), Trans_Rotate(90, 0, 0, 1)));
+	
 	this.dialogue = this.pilot->SetDialogue("Pyrit");
 	this.dialogue->SetInteraction(false);
 
