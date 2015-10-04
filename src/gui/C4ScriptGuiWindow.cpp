@@ -2101,7 +2101,8 @@ bool C4ScriptGuiWindow::ProcessMouseInput(int32_t button, int32_t mouseX, int32_
 	//C4GUI::Element::MouseInput(rMouse, button, mouseX, mouseY, dwKeyParam);
 
 	// remember button-down events. The action will only be executed on button-up
-	if (button == C4MC_Button_LeftDown)
+	// The sequence for double-clicks is LeftDown-LeftUp-LeftDouble-LeftUp, so treat double as down
+	if (button == C4MC_Button_LeftDown || button == C4MC_Button_LeftDouble)
 		currentMouseState |= MouseState::MouseDown;
 	// trigger!
 	if (button == C4MC_Button_LeftUp && (currentMouseState & MouseState::MouseDown))
