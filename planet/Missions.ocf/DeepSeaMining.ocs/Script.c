@@ -9,7 +9,7 @@
 static main_island_x, main_island_y;
 static goal_platform_x, goal_platform_y;
 
-static const SCEN_TEST = true;
+static const SCEN_TEST = false;
 
 static g_is_initialized, g_is_in_intro, g_intro_done, npc_tuesday, g_tuesday_pos;
 
