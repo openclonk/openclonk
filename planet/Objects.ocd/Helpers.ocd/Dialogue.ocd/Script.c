@@ -229,6 +229,10 @@ public func Interact(object clonk)
 	{
 		clonk->CloseMenu();
 		dlg_status = DLG_Status_Active;
+		// Do a call on a closed dialogue as well.
+		var fn_closed = Format("~Dlg_%s_Closed", dlg_name);
+		if (!Call(fn_closed, clonk, dlg_target))
+			GameCall(fn_closed, this, clonk, dlg_target);
 		return true;
 	}
 	// Remove dialogue?
