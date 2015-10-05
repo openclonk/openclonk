@@ -1036,6 +1036,7 @@ private func IssueWarning(object clonk, id icon, string graphics, string name)
 
 private func RemoveWarning(int warning_id)
 {
+	if (!crew_warnings) return;
 	if (crew_warnings[warning_id] == nil || crew_warnings[warning_id] == -1) return;
 
 	GuiClose(crew_gui_id, 500 + warning_id, this);
