@@ -19,7 +19,7 @@ OverloadTextures
 27=Acid-acid
 28=Lava-lava_red
 29=Earth-earth_spongy
-30=Earth-earth_roots
+30=Earth-earth_root
 31=Earth-earth
 32=Earth-earth
 #33=Ashes-Smooth3
