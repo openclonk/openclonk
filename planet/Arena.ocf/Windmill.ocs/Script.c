@@ -87,7 +87,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 			gui_arrow = CreateObjectAbove(GUI_GoalArrow,0,0,owner);
 			gui_arrow->SetAction("Show", GetCursor(owner));
 			gui_arrow->SetClrModulation(RGB(255,0,0));
-			gui_arrow->SetObjectBlitMode(GFX_BLIT_Mod2);
+			gui_arrow->SetObjectBlitMode(GFX_BLIT_Additive);
 		}
 		gui_arrow->SetR(angle);
 		gui_arrow.Plane = 500;
