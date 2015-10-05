@@ -38,6 +38,7 @@ global func GivePlayerToolsBaseMaterial(int plr)
 		[Hammer, 2, 1],
 		[Axe, 2, 1],
 		[Pickaxe, 2, 1],
+		[Sickle, 2, 1],
 		[Loam, 4, 2],
 		[Dynamite, 4, 2]
 	];

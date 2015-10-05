@@ -61,6 +61,21 @@ global func GivePlayerPumpingKnowledge(int plr)
 	return;
 }
 
+global func GivePlayerFarmingKnowledge(int plr)
+{
+	var knowledge = [
+		// Structures needed to process farming materials
+		Kitchen, Loom,
+		// Basic tools for farming
+		Sickle,
+		// Processed goods
+		Cloth, Flour, Bread
+	];
+	for (var plan in knowledge)
+		SetPlrKnowledge(plr, plan);
+	return;
+}
+
 global func GivePlayerWeaponryKnowledge(int plr)
 {
 	var knowledge = [
