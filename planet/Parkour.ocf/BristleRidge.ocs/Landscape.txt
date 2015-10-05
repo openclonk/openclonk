@@ -6,9 +6,9 @@ overlay Mats {
 	overlay { algo=rndchecker; turbulence=100; mat=Granite; a=3; };
 	overlay { algo=rndchecker; turbulence=100; mat=Rock; a=4; };
 	overlay { algo=rndchecker; turbulence=100; mat=Ore; a=6; };
-	overlay { algo=rndchecker; turbulence=100; mat=Earth; tex=earth_dry; a=6; };
+	overlay { algo=rndchecker; turbulence=100; mat=Earth; tex=earth_root; a=6; };
 	overlay { algo=rndchecker; turbulence=100; mat=Earth; tex=earth; a=6; };
-	overlay { algo=rndchecker; turbulence=100; mat=Rock; tex=rock_cracked; a=5; };
+	overlay { algo=rndchecker; turbulence=100; mat=Rock; tex=rock; a=5; };
 	overlay { algo=rndchecker; turbulence=100; mat=Gold; a=4; };
 	overlay { algo=rndchecker; turbulence=100; mat=Earth; a=3; };
 };

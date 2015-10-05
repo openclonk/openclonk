@@ -180,7 +180,7 @@ func DrawVariations(string mat, int ratio, int sx, int sy)
 func DrawBackground()
 {
 	Draw("Rock");
-	DrawVariations("Rock-rock_cracked", 50, 5,15);
+	DrawVariations("Rock", 50, 5,15);
 	DrawVariations("Ore", 10, 8,8);
 	DrawVariations("Firestone", 8, 12,3);
 	DrawVariations("Coal", 8, 8,3);

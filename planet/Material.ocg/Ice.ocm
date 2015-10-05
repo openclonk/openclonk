@@ -18,4 +18,4 @@ AboveTempConvert=10
 AboveTempConvertDir=1
 AboveTempConvertTo=Water
 Placement=21
-TextureOverlay=ice3
+TextureOverlay=ice

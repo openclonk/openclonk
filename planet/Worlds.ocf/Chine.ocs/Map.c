@@ -57,12 +57,12 @@ public func DrawChine(proplist map, int nr_hurdles, int difficulty)
 
 	// Draw the material for the sides.
 	map->Draw("Earth", chine);
-	map->DrawMaterial("Earth-earth_rough", chine, 2, 20);
-	map->DrawMaterial("Earth-earth_dry", chine, 2, 20);
-	map->DrawMaterial("Earth-earth_midsoil", chine, 4, 18);
+	map->DrawMaterial("Earth-earth_root", chine, 2, 20);
+	map->DrawMaterial("Earth-earth_spongy", chine, 2, 20);
+	map->DrawMaterial("Earth-earth", chine, 4, 18);
 	map->DrawMaterial("Granite", chine, 3, 12 + 4 * difficulty);
 	map->DrawMaterial("Tunnel", chine, 2, 24);
-	map->DrawMaterial("Rock-rock_cracked", chine, 3, 14);
+	map->DrawMaterial("Rock-rock", chine, 3, 14);
 	map->DrawMaterial("Rock", chine, 3, 14);
 	map->DrawMaterial("Ore", chine, 3, 14);
 	map->DrawMaterial("Firestone", chine, 3, 10);
@@ -83,7 +83,7 @@ public func DrawChine(proplist map, int nr_hurdles, int difficulty)
 	// Draw the border.
 	map->Draw("Granite", border);
 	map->DrawMaterial("Tunnel", border, 2, 36 - 6 * difficulty);
-	map->DrawMaterial("Rock-rock_cracked", border, 3, 24 - 4 * difficulty);
+	map->DrawMaterial("Rock-rock", border, 3, 24 - 4 * difficulty);
 	map->DrawMaterial("Rock", border, 3, 24 - 4 * difficulty);
 	// Parts of this border, which covers the middle section are overground materials.
 	// This achieved by double drawing parts of the border as overgroud material.
@@ -92,7 +92,7 @@ public func DrawChine(proplist map, int nr_hurdles, int difficulty)
 	var border_overground = {Algo = MAPALGO_And, Op = [border, overground, rand_checker]};
 	map->Draw("^Granite", border_overground);
 	map->DrawMaterial("Tunnel", border_overground, 2, 30);
-	map->DrawMaterial("^Rock-rock_cracked", border_overground, 3, 20);
+	map->DrawMaterial("^Rock-rock", border_overground, 3, 20);
 	map->DrawMaterial("^Rock", border_overground, 3, 20);
 	
 	// Empty out some parts of the chine to provide more serious climbing hurdles.
@@ -112,7 +112,7 @@ public func DrawChine(proplist map, int nr_hurdles, int difficulty)
 	var granite_rnd2 = {Algo = MAPALGO_Turbulence, Amplitude = 4, Scale = 2, Iterations = 4, Seed = Random(65536), Op = granite};
 	granite = {Algo = MAPALGO_Or, Op = [granite, granite_rnd1, granite_rnd2]};
 	map->Draw("Granite", granite);
-	map->DrawMaterial("Rock-rock_cracked", granite, 3, 10);
+	map->DrawMaterial("Rock-rock", granite, 3, 10);
 	map->DrawMaterial("Rock", granite, 3, 10);
 	
 	return {Algo = MAPALGO_Or, Op = [chine, border]};
@@ -142,7 +142,7 @@ public func DrawHurdle(proplist map, int type, int y, int side_wdt)
 		var sky = {Algo = MAPALGO_And, Op = [rect, {Algo = MAPALGO_Not, Op = stripes}]};
 		map->Draw("Sky", sky);
 		map->Draw("Granite", stripes);
-		map->DrawMaterial("Rock-rock_cracked", stripes, 3, 10);
+		map->DrawMaterial("Rock-rock", stripes, 3, 10);
 		map->DrawMaterial("Rock", stripes, 3, 10);
 	}
 	// A basin with water, shifted a bit to the left or right.
@@ -158,7 +158,7 @@ public func DrawHurdle(proplist map, int type, int y, int side_wdt)
 		var border = {Algo = MAPALGO_Border, Wdt = [-1, 1], Op = ellipsis};
 		border = {Algo = MAPALGO_And, Op = [border, {Algo = MAPALGO_Rect, X = 0, Y = y, Wdt = wdt, Hgt = 18}]};
 		map->Draw("Granite", border);
-		map->DrawMaterial("Rock-rock_cracked", border, 1, 10);
+		map->DrawMaterial("Rock-rock", border, 1, 10);
 		map->DrawMaterial("Rock", border, 1, 10);
 	}
 	return;

@@ -174,14 +174,14 @@ public func IsLineOverlap(int x1, int y1, int x2, int y2, int x3, int y3, int x4
 public func DrawBackground()
 {
 	Draw("Rock");
-	DrawVariations("Rock-rock_cracked", 50, 5, 15);
+	DrawVariations("Rock", 50, 5, 15);
 	DrawVariations("Ore", 10, 8, 8);
 	DrawVariations("Firestone", 8, 12, 3);
 	DrawVariations("Earth", 3, 8, 3);
-	DrawVariations("Earth-earth_topsoil", 3, 8, 3);
-	DrawVariations("Earth-earth_midsoil", 3, 8, 3);
-	DrawVariations("Earth-earth_dry", 3, 8, 3);
-	DrawVariations("Earth-earth_rough", 3, 8, 3);
+	DrawVariations("Earth-earth", 3, 8, 3);
+	DrawVariations("Earth-earth", 3, 8, 3);
+	DrawVariations("Earth-earth_root", 3, 8, 3);
+	DrawVariations("Earth-earth_spongy", 3, 8, 3);
 	DrawVariations("Firestone", 6, 12, 3);
 	DrawVariations("Coal", 8, 8, 3);
 	DrawVariations("Gold", 5, 4, 4);
@@ -204,9 +204,9 @@ public func DrawLargeCave(proplist large_cave)
 	Draw("Tunnel", large_cave);
 	DrawMaterial("Tunnel-brickback", large_cave, 3, 30);
 	Draw("Earth", lower_half);
-	DrawMaterial("Earth-earth_topsoil", lower_half, 3, 20);
-	DrawMaterial("Earth-earth_midsoil", lower_half, 3, 20);
-	DrawMaterial("Earth-earth_dry", lower_half, 3, 20);
+	DrawMaterial("Earth-earth", lower_half, 3, 20);
+	DrawMaterial("Earth-earth", lower_half, 3, 20);
+	DrawMaterial("Earth-earth_root", lower_half, 3, 20);
 	DrawMaterial("Ore", lower_half, 3, 20);
 	DrawMaterial("Firestone", lower_half, 3, 20);
 	DrawMaterial("Coal", lower_half, 3, 20);

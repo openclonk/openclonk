@@ -4,9 +4,9 @@ func InitializeMap(map)
 {
 	// Mountain top
 	var mountain_shape = { Algo=MAPALGO_Polygon, X=[-100,0,10,30,50,46,46,-100], Y=[80,80,70,90,90,100,200,200] };
-	DrawVaried("Ice-ice2", { Algo=MAPALGO_Turbulence, Op={Algo=MAPALGO_Offset, OffY=-5, Op=mountain_shape}, Amplitude=[10, 0], Scale=20}, nil, "Ice-ice3");
+	DrawVaried("Ice-ice", { Algo=MAPALGO_Turbulence, Op={Algo=MAPALGO_Offset, OffY=-5, Op=mountain_shape}, Amplitude=[10, 0], Scale=20}, nil, "Ice-ice2");
 	Draw("Snow", {Algo=MAPALGO_Border, Op=Duplicate(), Top=1});
-	DrawVaried("Rock", { Algo=MAPALGO_Turbulence, Op=mountain_shape, Amplitude=[20, 0], Scale=10}, nil, "Earth-earth_topSoil");
+	DrawVaried("Rock", { Algo=MAPALGO_Turbulence, Op=mountain_shape, Amplitude=[20, 0], Scale=10}, nil, "Earth");
 	
 	// Sky islands
 	var sky_islands = CreateLayer();

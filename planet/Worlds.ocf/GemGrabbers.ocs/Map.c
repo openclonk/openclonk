@@ -69,8 +69,8 @@ public func DrawMainIsland(proplist map, int size)
 	Draw("Earth", island);
 		
 	// Overlay a set of materials inside the island.
-	DrawIslandMat("Earth-earth_dry", island, 4, 30);
-	DrawIslandMat("Earth-earth_midSoil", island, 3, 30);
+	DrawIslandMat("Earth-earth_root", island, 4, 30);
+	DrawIslandMat("Earth-earth", island, 3, 30);
 	DrawIslandMat("Tunnel", island, 3, 10);
 	DrawIslandMat("Water", island, 4, 8);
 	DrawIslandMat("Gold", island, 3, 6);
@@ -82,14 +82,14 @@ public func DrawMainIsland(proplist map, int size)
 	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
  	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1, 3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
 	Draw("Sand", sand_border);
-	Draw("Earth-earth_topSoil", topsoil_border);	
+	Draw("Earth-earth_root", topsoil_border);	
 	
 	// Draw a bottom border out of granite and rock.
 	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-4, 3]};
 	Draw("Granite", granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-	Draw("Rock-rock_cracked", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 	
 	// Draw some gems attached at the bottom of the island.
 	var rect = [x - size / 2, y - size / 3, size / 2, 3 * size / 4];
@@ -114,8 +114,8 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 	Draw("Earth", island);
 	
 	// Overlay a set of materials inside the island.
-	DrawIslandMat("Earth-earth_dry", island, 4, 30);
-	DrawIslandMat("Earth-earth_midSoil", island, 3, 30);
+	DrawIslandMat("Earth-earth_root", island, 4, 30);
+	DrawIslandMat("Earth-earth", island, 3, 30);
 	DrawIslandMat("Tunnel", island, 3, 10);
 	for (var mat in mats)
 	{
@@ -127,14 +127,14 @@ public func DrawIsland(proplist map, int x, int y, int wdt, int hgt, array mats)
 	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
  	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island, Top = [-1,3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
 	Draw("Sand", sand_border);
-	Draw("Earth-earth_topSoil", topsoil_border);	
+	Draw("Earth-earth", topsoil_border);	
 	
 	// Draw a bottom border out of granite and rock.
 	var granite_border = {Algo = MAPALGO_Border, Op = island, Bottom = [-2,3]};
 	Draw("Granite", granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-	Draw("Rock-rock_cracked", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 		
 	// Draw some gems attached at the bottom of the island.
 	var gem = ["Ruby", "Amethyst"][Random(2)];

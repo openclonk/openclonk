@@ -64,7 +64,7 @@ func DrawCoal(int num, array rect) { return DrawSpots("Coal", num, [20,60], [4,8
 func DrawFirestone(int num, array rect) { return DrawSpots("Firestone", num, [20,60], [8,12], rect, nil); }
 func DrawOre(int num, array rect) { return DrawSpots("Ore", num, [8,12], [14,20], rect, nil); }
 func DrawGold(int num, array rect) { return DrawSpots("Gold", num, [10,14], [10,14], rect, nil); }
-func DrawRock(int num, array rect) { return DrawSpots("Rock-rock", num, [20,80], [6,8], rect, nil, [["Rock-rock_cracked", 3,10], ["Granite", 6,2]]); }
+func DrawRock(int num, array rect) { return DrawSpots("Rock-rock", num, [20,80], [6,8], rect, nil, [["Rock-rock", 3,10], ["Granite", 6,2]]); }
 
 // Draws the given material onto an existing mask with given size and ratio.
 public func DrawMaterial(string mat, proplist onto_mask, speck_size, int ratio)
@@ -115,11 +115,11 @@ func DrawRegularGround(array rect, yoff, turbulence)
 	if (GetType(turbulence) == C4V_Nil) turbulence = 30;
 	var ground_rect = {Algo=MAPALGO_Rect, X=-100, Y=rect[1]+yoff, Wdt=rect[0]+rect[2]+200, Hgt=rect[3]+100};
 	var ground_algo = {Algo=MAPALGO_Turbulence, Amplitude=turbulence, Scale=30, Op=ground_rect};
-	var earth_shape = DrawVaried("Earth-earth", ground_algo, rect, [["Earth-earth_dry", 3,10], ["Earth-earth_rough", 6,2]]);
+	var earth_shape = DrawVaried("Earth-earth", ground_algo, rect, [["Earth-earth_root", 3,10], ["Earth-earth_spongy", 6,2]]);
 	var top1 = {Algo=MAPALGO_Border, Top=[-10, 3], Op=earth_shape};
 	var top2 = {Algo=MAPALGO_Border, Top=[-10, 1], Op=earth_shape};
-	this->Draw("Earth-earth_midSoil", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top1}]});
-	this->Draw("Earth-earth_topSoil", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top2}]});
+	this->Draw("Earth-earth", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top1}]});
+	this->Draw("Earth-earth", {Algo=MAPALGO_And, Op=[earth_shape, {Algo=MAPALGO_Turbulence, Amplitude=4, Scale=10, Op=top2}]});
 	return true;
 }
 
@@ -128,7 +128,7 @@ func FixLiquidBorders(border_material, lava_border_material)
 	// Makes sure liquids bordering other liquids as well as liquids
 	// bordering background materials are surrounded by fix_material
 	// Default border materials
-	if (!border_material) border_material = "Earth-earth_topSoil";
+	if (!border_material) border_material = "Earth-earth";
 	if (!lava_border_material) lava_border_material = "Rock";
 	// Find liquid-to-background borders
 	var liquids = this->Duplicate("Liquid");

@@ -11,4 +11,4 @@ MaxAirSpeed=100
 MaxSlide=1
 Soil=1
 Placement=30
-TextureOverlay=earth_rough
+TextureOverlay=earth

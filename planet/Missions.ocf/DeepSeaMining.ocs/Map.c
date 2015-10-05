@@ -85,8 +85,8 @@ private func DrawMainIsland(int size)
 	var island_shape = island->Duplicate();
 		
 	// Overlay a set of materials inside the island.
-	DrawIslandMat("Earth-earth_dry", island, 4, 30, true);
-	DrawIslandMat("Earth-earth_midSoil", island, 3, 30, true);
+	DrawIslandMat("Earth-earth_root", island, 4, 30, true);
+	DrawIslandMat("Earth-earth", island, 3, 30, true);
 	DrawIslandMat("Tunnel", island, 3, 10, true);
 	//DrawIslandMat("Water", island, 4, 8);
 	//DrawIslandMat("Gold", island, 3, 6);
@@ -98,14 +98,14 @@ private func DrawMainIsland(int size)
 	var sand_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island_shape, Top = [-1,2]}, {Algo = MAPALGO_RndChecker, Ratio = 50, Wdt = 4, Hgt = 3}]};
  	var topsoil_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Op = island_shape, Top = [-1,3]}, {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 4, Hgt = 2}]};
 	island->Draw("Sand", sand_border);
-	island->Draw("Earth-earth_topSoil", topsoil_border);
+	island->Draw("Earth-earth", topsoil_border);
 	
 	// Draw a bottom border out of granite and rock.
 	var granite_border = {Algo = MAPALGO_Border, Op = island_shape, Bottom = [-4,3]};
 	island->Draw("Granite", granite_border);
 	var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 	island->Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-	island->Draw("Rock-rock_cracked", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+	island->Draw("Rock-rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 	
 	// Draw goal platform
 	island->Draw("Sky", nil, [x,y-10,14,10]);
@@ -150,8 +150,8 @@ private func DrawSecondaryIsland(int size, array materials, bool has_border, int
 	island->Draw("Earth", island_algo);
 	var island_shape = island->Duplicate();
 	
-	DrawIslandMat("Earth-earth_dry", island, 4, 30);
-	DrawIslandMat("Earth-earth_midSoil", island, 3, 30);
+	DrawIslandMat("Earth-earth_spongy", island, 4, 30);
+	DrawIslandMat("Earth-earth", island, 3, 30);
 		
 	// Overlay a set of materials inside the island.
 	for (var mat in materials)
@@ -167,7 +167,7 @@ private func DrawSecondaryIsland(int size, array materials, bool has_border, int
 		island->Draw("Granite", granite_border);
 		var rock_border = {Algo = MAPALGO_RndChecker, Ratio = 20, Wdt = 2, Hgt = 2};
 		island->Draw("Rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
-		island->Draw("Rock-rock_cracked", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
+		island->Draw("Rock-rock", {Algo = MAPALGO_And, Op = [granite_border, rock_border]});
 	}
 	
 	// Draw island onto main map
@@ -196,8 +196,8 @@ private func DrawGround()
 	ground->Draw("Granite", {Algo = MAPALGO_Turbulence, Amplitude = 5, Iterations = 1, Op = {Algo = MAPALGO_Border, Op = ground->Duplicate(), Top= [-2,2]}});
 	ground->Draw("Rock", {Algo=MAPALGO_And, Op=[ground->Duplicate("Granite"), {Algo = MAPALGO_RndChecker, Ratio = 40, Wdt = 2, Hgt = 2}]});
 	// Alterations in earth material
-	DrawIslandMat("Earth-earth_dry", ground, 12, 60, false);
-	DrawIslandMat("Earth-earth_midSoil", ground, 8, 60, false);
+	DrawIslandMat("Earth-earth_spongy", ground, 12, 60, false);
+	DrawIslandMat("Earth-earth", ground, 8, 60, false);
 	// Gem spots
 	var gem_spots = CreateLayer();
 	var earth_mats = CreateMatTexMask("Earth");
@@ -236,7 +236,7 @@ private func DrawGround()
 	ground->Draw("Rock", {Algo=MAPALGO_And, Op=[{Algo=MAPALGO_Not, Op=gem_spots}, {Algo = MAPALGO_Turbulence, Amplitude = 5, Iterations = 5, Op = {Algo = MAPALGO_Border, Op = gem_spots, Wdt=-4}}]});
 	ground->Draw("Granite", {Algo = MAPALGO_Border, Op = gem_spots, Wdt=-1});
 	// Lots of rocks
-	DrawIslandMat("Rock-rock_cracked", ground, 2, 20, false);
+	DrawIslandMat("Rock", ground, 2, 20, false);
 	DrawIslandMat("Rock", ground, 2, 20, false);
 	// And some lava
 	DrawIslandMat("DuroLava", ground, 2, 20, false);

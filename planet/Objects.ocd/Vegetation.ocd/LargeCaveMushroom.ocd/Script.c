@@ -26,7 +26,7 @@ public func Place(int amount, proplist area, proplist settings)
 		if (!spot)
 		{
 			// note that the border is temporarily off until the bug with a turbulent-parent-overlay is fixed
-			var cave = Landscape_Cave->Place(1, area, {width = 200 + Random(50), height = 100 + Random(50), borderheight = 0, bordermat = "Earth", bordertex = "earth_topSoil" });
+			var cave = Landscape_Cave->Place(1, area, {width = 200 + Random(50), height = 100 + Random(50), borderheight = 0, bordermat = "Earth", bordertex = "earth" });
 			if (GetLength(cave) == 0) return plants; // can't place more
 			cave = cave[0];
 			spot = { x = cave->GetX(), y = cave->GetY() };

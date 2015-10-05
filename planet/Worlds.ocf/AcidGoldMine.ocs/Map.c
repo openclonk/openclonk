@@ -39,12 +39,12 @@ protected func InitializeMap(proplist map)
 	// Draw the basic shape of the earth and add different earth types.
 	var ground = GetGroundShape(map, acid_level, acid_hills, acid_bottom);
 	map->Draw("Earth", ground);
-	map->DrawMaterial("Earth-earth_topSoil", ground, 4, 30);
-	map->DrawMaterial("Earth-earth_midSoil", ground, 4, 30);
-	map->DrawMaterial("Earth-earth_dry", ground, 4, 30);
-	map->DrawMaterial("Earth-earth_rough", ground, 4, 30);
+	map->DrawMaterial("Earth-earth", ground, 4, 30);
+	map->DrawMaterial("Earth-earth", ground, 4, 30);
+	map->DrawMaterial("Earth-earth_root", ground, 4, 30);
+	map->DrawMaterial("Earth-earth_spongy", ground, 4, 30);
 	var ground_border = {Algo = MAPALGO_Border, Left = [1, -1], Right = [1, -1], Top = -1, Op = ground};
-	map->DrawMaterial("Rock-rock_cracked", ground_border, 4, 40);
+	map->DrawMaterial("Rock-rock", ground_border, 4, 40);
 	map->DrawMaterial("Rock-rock", ground_border, 4, 40);
 	
 	// Fill the basic shape with materials.
@@ -61,12 +61,12 @@ protected func InitializeMap(proplist map)
 	ground_bottomlayer = {Algo = MAPALGO_Turbulence, Amplitude = 12, Scale = 8, Iterations = 4, Seed = Random(65536), Op = ground_bottomlayer};
 	ground_bottomlayer = {Algo = MAPALGO_And, Op = [ground, ground_bottomlayer]};
 	// Fill the top layer with rock.
-	map->DrawMaterial("Rock-rock_cracked", ground_toplayer, [6, 2], 6);
-	map->DrawMaterial("Rock-rock", ground_toplayer, [6, 2], 6);
+	map->DrawMaterial("Rock", ground_toplayer, [6, 2], 6);
+	map->DrawMaterial("Rock", ground_toplayer, [6, 2], 6);
 	// Fill the first middle layer with materials and rock.
-	map->DrawMaterial("Rock-rock_cracked", ground_toplayer, [6, 2], 6);
-	map->DrawMaterial("Rock-rock_cracked", ground_toplayer, [12, 3], 6);
-	map->DrawMaterial("Rock-rock", ground_middle1layer, [12, 3], 6);
+	map->DrawMaterial("Rock", ground_toplayer, [6, 2], 6);
+	map->DrawMaterial("Rock", ground_toplayer, [12, 3], 6);
+	map->DrawMaterial("Rock", ground_middle1layer, [12, 3], 6);
 	map->DrawMaterial("Ore", ground_middle1layer, [12, 3], 8);
 	map->DrawMaterial("Coal", ground_middle1layer, [12, 3], 8);
 	map->DrawMaterial("Firestone", ground_middle1layer, [12, 3], 8);
@@ -89,14 +89,14 @@ protected func InitializeMap(proplist map)
 	lake_pit = {Algo = MAPALGO_Turbulence, Amplitude = 8, Scale = 6, Iterations = 2, Seed = Random(65536), Op = lake_pit};
 	lake_pit = {Algo = MAPALGO_And, Op = [ground, lake_pit]};
 	map->Draw("Granite", lake_pit);
-	map->DrawMaterial("Rock-rock_cracked", lake_pit, 2, 15);
-	map->DrawMaterial("Rock-rock", lake_pit, 2, 15);
+	map->DrawMaterial("Rock", lake_pit, 2, 15);
+	map->DrawMaterial("Rock", lake_pit, 2, 15);
 
 	// Draw the map sides and the upper part of the volcano out of granite.
 	var granite = GetGraniteShape(map, ground_bottom);
 	map->Draw("Granite", granite);
-	map->DrawMaterial("Rock-rock_cracked", granite, 5, 25);
-	map->DrawMaterial("Rock-rock", granite, 5, 25);
+	map->DrawMaterial("Rock", granite, 5, 25);
+	map->DrawMaterial("Rock", granite, 5, 25);
 	map->DrawMaterial("DuroLava", granite, 5, 25);
 	map->DrawMaterial("DuroLava", granite, 2, 15);
 	map->Draw("Granite", {Algo = MAPALGO_Border, Wdt = 2, Op = granite});

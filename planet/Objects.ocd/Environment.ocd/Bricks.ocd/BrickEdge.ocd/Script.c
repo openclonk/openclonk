@@ -13,10 +13,10 @@ protected func Initialize() {
 func PermaEdge()
 {
 	var p=dir;
-	if(p==0) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX(),GetY(),GetX()+4,GetY()+4,GetX()-4,GetY()+4);
-	if(p==1) DrawMaterialQuad("Brick-brick1",GetX(),GetY(),GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX()-4,GetY()+4);
-	if(p==3) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX(),GetY());
-	if(p==2) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX(),GetY(),GetX()-4,GetY()+4);
+	if(p==0) DrawMaterialQuad("Brick-brick",GetX()-4,GetY()-4,GetX(),GetY(),GetX()+4,GetY()+4,GetX()-4,GetY()+4);
+	if(p==1) DrawMaterialQuad("Brick-brick",GetX(),GetY(),GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX()-4,GetY()+4);
+	if(p==3) DrawMaterialQuad("Brick-brick",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX(),GetY());
+	if(p==2) DrawMaterialQuad("Brick-brick",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX(),GetY(),GetX()-4,GetY()+4);
 	this->RemoveObject();
 }
 

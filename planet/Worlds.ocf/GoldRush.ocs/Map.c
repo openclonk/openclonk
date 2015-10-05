@@ -48,10 +48,10 @@ public func DrawMaterials(proplist rect, proplist surface)
 	// A bit of different types of earth all around the surface.
 	mask = {Algo = MAPALGO_Rect, X = x,  Y = y, Wdt = wdt, Hgt = hgt};
 	mask = {Algo = MAPALGO_And, Op = [surface, mask]};
-	DrawMaterial("Earth-earth_topsoil", mask, 4, 12);
-	DrawMaterial("Earth-earth_rough", mask, 2, 16);
-	DrawMaterial("Earth-earth_dry", mask, 2, 16);
-	DrawMaterial("Earth-earth_midsoil", mask, 4, 12);
+	DrawMaterial("Earth-earth", mask, 4, 12);
+	DrawMaterial("Earth-earth_root", mask, 2, 16);
+	DrawMaterial("Earth-earth_spongy", mask, 2, 16);
+	DrawMaterial("Earth-earth", mask, 4, 12);
 
 	// Coal and surface in the first layer.
 	mask = {Algo = MAPALGO_Rect, X = x,  Y = y, Wdt = wdt, Hgt = hgt / 4};
@@ -74,11 +74,11 @@ public func DrawMaterials(proplist rect, proplist surface)
 	mask = {Algo = MAPALGO_Rect, X = x,  Y = y + 2 * hgt / 4, Wdt = wdt, Hgt = hgt / 4};
 	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
 	mask = {Algo = MAPALGO_And, Op = [surface, mask]}; 
-	DrawMaterial("Ore", mask, 3, 10);	
-	DrawMaterial("Rock-rock_cracked", mask, 2, 8);
+	DrawMaterial("Ore", mask, 3, 10);
+	DrawMaterial("Rock", mask, 2, 8);
 	DrawMaterial("Granite", mask, 2, 8);
 	DrawMaterial("Rock", mask);
-	DrawMaterial("Ore", mask);	
+	DrawMaterial("Ore", mask);
 	
 	// Gold in the last layer.
 	mask = {Algo = MAPALGO_Rect, X = x,  Y = y + 3 * hgt / 4, Wdt = wdt, Hgt = hgt / 4};
@@ -95,6 +95,6 @@ public func DrawMaterials(proplist rect, proplist surface)
 	var rnd_checker = {Algo = MAPALGO_RndChecker, Ratio = 30, Wdt = 2, Hgt = 2};
 	var rnd_border = {Algo = MAPALGO_And, Op = [border, rnd_checker]};
 	Draw("Sand", rnd_border);
-	Draw("Earth-earth_topsoil", rnd_border);
+	Draw("Earth-earth_root", rnd_border);
 	return;
 }

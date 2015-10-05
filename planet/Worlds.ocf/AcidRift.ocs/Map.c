@@ -115,7 +115,7 @@ func InitializeMap(proplist map)
 	
 	// Alternate rock textures
 	var rock_area = Duplicate("Rock");
-	DrawMaterial("Rock-rock_cracked", rock_area, [3, 3], 50);
+	DrawMaterial("Rock", rock_area, [3, 3], 50);
 	
 	// Patches of earth
 	DrawPatches(num_earth, "Earth", "^*", size_earth, true, 20, [0, top_off_earth, this.Wdt, this.Hgt - top_off_earth - bottom_off_earth]);
@@ -132,7 +132,7 @@ func InitializeMap(proplist map)
 	
 	// Materials
 	DrawPatches(num_water, "Water", "Earth", size_water, false, 10);
-	Draw("Earth-earth_topSoil", {Algo=MAPALGO_Border, Op=Duplicate("Water")});
+	Draw("Earth-earth", {Algo=MAPALGO_Border, Op=Duplicate("Water")});
 	DrawPatches(num_firestone, "Firestone", "Earth", size_firestone, false, 10);
 	DrawPatches(num_coal, "Coal", "Earth", size_coal, false, 7);
 	DrawPatches(num_ore, "Ore", "Earth", size_ore, true, 6);	
@@ -149,11 +149,11 @@ func InitializeMap(proplist map)
 	
 	// Alternations in earth texture
 	var earth_area = Duplicate("Earth");
-	DrawMaterial("Earth-earth_dry", earth_area, [10, 4], 30);
-	DrawMaterial("Earth-earth_midSoil", earth_area, [10, 4], 30);
+	DrawMaterial("Earth-earth_root", earth_area, [10, 4], 30);
+	DrawMaterial("Earth-earth", earth_area, [10, 4], 30);
 	
 	// Start area is always dark
-	Draw("Earth-earth_topSoil", algo);
+	Draw("Earth-earth", algo);
 	
 	// Return true to tell the engine a map has been successfully created.
 	return true;

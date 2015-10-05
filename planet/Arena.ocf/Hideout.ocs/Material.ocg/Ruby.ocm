@@ -8,4 +8,4 @@ MaxAirSpeed=100
 MaxSlide=1
 Corrode=60
 Placement=21
-TextureOverlay=Ruby
+TextureOverlay=ruby

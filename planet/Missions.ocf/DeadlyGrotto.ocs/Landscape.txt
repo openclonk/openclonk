@@ -1,13 +1,13 @@
 /* Deadly grotto - by Sven2 */
 
 overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
-overlay GraniteBorders {turbulence=100; mat=Granite; loosebounds=1; VaryTex {mat=Rock; tex=rock_cracked; a=1;};};
+overlay GraniteBorders {turbulence=100; mat=Granite; loosebounds=1; VaryTex {mat=Rock; tex=rock; a=1;};};
 overlay AcidVein { turbulence=100; algo=rndchecker; zoomX=-100; zoomY=100; a=5; y=-100; hgt=300; loosebounds=1; mat=Acid; };
 
 map AcidCave {
   // Base background is earth
-  mat=Earth; tex=earth_rough;
-  VaryTex { mat=Earth; tex=earth_dry; };
+  mat=Earth; tex=earth_root;
+  VaryTex { mat=Earth; tex=earth_spongy; };
   VaryTex { mat=Earth; tex=earth; };
 
   // Resources
@@ -36,7 +36,7 @@ map AcidCave {
 
   // Veins interrupted by some rock
   overlay { x=100px; turbulence=10; loosebounds=1; mask=1; algo=rndchecker; a=1; zoomX=10;
-    VaryTex { mat=Rock; tex=rock_cracked; zoomX=-100; };
+    VaryTex { mat=Rock; tex=rock; zoomX=-100; };
     VaryTex { mat=Granite; zoomX=-100; };
   };
 
@@ -84,7 +84,7 @@ map AcidCave {
     point { x=-100px; y=195px; };
 
     // ensure border on right side
-    overlay { algo=border; a=1; b=1; x=82px; mat=Rock; tex=rock_cracked; };
+    overlay { algo=border; a=1; b=1; x=82px; mat=Rock; tex=rock; };
 
     // sky back
     VaryTex { a=2; wdt=80px; };

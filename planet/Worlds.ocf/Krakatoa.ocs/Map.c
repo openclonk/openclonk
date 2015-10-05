@@ -122,14 +122,14 @@ public func DrawVolcano(proplist map, proplist volcano, int difficulty)
 	map->Draw("Earth", volcano);
 	
 	// Also add other materials to the volcano.
-	map->DrawMaterial("Earth-earth_rough", volcano, 2, 18);
-	map->DrawMaterial("Earth-earth_dry", volcano, 2, 18);
-	map->DrawMaterial("Earth-earth_midsoil", volcano, 4, 16);
+	map->DrawMaterial("Earth-earth_root", volcano, 2, 18);
+	map->DrawMaterial("Earth-earth_spongy", volcano, 2, 18);
+	map->DrawMaterial("Earth-earth", volcano, 4, 16);
 	map->DrawMaterial("Ashes", volcano, 3, 8);
 	map->DrawMaterial("Tunnel", volcano, 7, 16);
 	map->DrawMaterial("Tunnel", volcano, 8, 10);
 	map->DrawMaterial("Rock", volcano, 3, 6);
-	map->DrawMaterial("Rock-rock_cracked", volcano, 3, 6);
+	map->DrawMaterial("Rock", volcano, 3, 6);
 	map->DrawMaterial("Ore", volcano, 5, 12);
 	map->DrawMaterial("Firestone", volcano, 5, 12);
 	map->DrawMaterial("Coal", volcano, 5, 12);
@@ -180,7 +180,7 @@ public func DrawChasm(proplist map, proplist volcano, proplist chasm)
 	map->Draw("Granite", chasm_crust);
 	chasm_crust = {Algo = MAPALGO_Border, Left = -1, Right = -1, Op = full_chasm};
 	map->Draw("Rock", chasm_crust);
-	map->DrawMaterial("Rock-rock_cracked", chasm_crust, 3, 50);
+	map->DrawMaterial("Rock-rock", chasm_crust, 3, 50);
 	
 	// Draw the gold area in the volcano's core.
 	var core = {Algo = MAPALGO_Ellipsis, X = wdt / 2, Y = hgt, Wdt = wdt / 10, Hgt = hgt / 7};

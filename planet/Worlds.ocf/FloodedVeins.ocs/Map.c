@@ -52,12 +52,12 @@ public func DrawCavern(proplist map)
     var map_top = {Algo = MAPALGO_Rect, X = 0, Y = 0, Wdt = wdt, Hgt = cavern_hgt};
     
     // The top part is mainly granite and rock.
-    map->DrawMaterial("Earth-earth_rough", map_top, 2, 16);
-	map->DrawMaterial("Earth-earth_dry", map_top, 2, 16);
-	map->DrawMaterial("Earth-earth_midsoil", map_top, 4, 12);
+    map->DrawMaterial("Earth-earth_root", map_top, 2, 16);
+	map->DrawMaterial("Earth-earth_spongy", map_top, 2, 16);
+	map->DrawMaterial("Earth-earth", map_top, 4, 12);
 	map->DrawMaterial("Granite", map_top, 3, 60);
 	map->DrawMaterial("Tunnel", map_top, 2, 16);
-	map->DrawMaterial("Rock-rock_cracked", map_top, 3, 20);
+	map->DrawMaterial("Rock-rock", map_top, 3, 20);
 	map->DrawMaterial("Rock", map_top, 3, 20);
    
     // The cavern is located a bit to the left and can be entered from the left side of the map.
@@ -106,12 +106,12 @@ public func DrawMiddle(proplist map, int size)
     var map_middle = {Algo = MAPALGO_Rect, X = 0, Y = 25, Wdt = wdt, Hgt = size};
     
     // Fill the middle part with resources.
-    map->DrawMaterial("Earth-earth_rough", map_middle, 2, 16);
-	map->DrawMaterial("Earth-earth_dry", map_middle, 2, 16);
-	map->DrawMaterial("Earth-earth_midsoil", map_middle, 4, 12);
+    map->DrawMaterial("Earth-earth_root", map_middle, 2, 16);
+	map->DrawMaterial("Earth-earth_spongy", map_middle, 2, 16);
+	map->DrawMaterial("Earth-earth", map_middle, 4, 12);
 	map->DrawMaterial("Granite", map_middle, 3, 10);
 	map->DrawMaterial("Tunnel", map_middle, 2, 8);
-	map->DrawMaterial("Rock-rock_cracked", map_middle, 3, 8);
+	map->DrawMaterial("Rock-rock", map_middle, 3, 8);
 	map->DrawMaterial("Rock", map_middle, 3, 8);
    	map->DrawMaterial("Ore", map_middle, 6, 16);
    	map->DrawMaterial("Firestone", map_middle, 5, 12);
@@ -134,9 +134,9 @@ public func DrawMiddle(proplist map, int size)
 	map->Draw("Tunnel", tunnel);
 	var tunnel_ground = {Algo = MAPALGO_Border, Bottom = -2, Op = tunnel};
 	map->Draw("Earth", tunnel_ground);
-	map->DrawMaterial("Earth-earth_rough", tunnel_ground, 2, 16);
-	map->DrawMaterial("Earth-earth_dry", tunnel_ground, 2, 16);
-	map->DrawMaterial("Earth-earth_midsoil", tunnel_ground, 4, 12);
+	map->DrawMaterial("Earth-earth_root", tunnel_ground, 2, 16);
+	map->DrawMaterial("Earth-earth_spongy", tunnel_ground, 2, 16);
+	map->DrawMaterial("Earth-earth", tunnel_ground, 4, 12);
 	return;
 }
 
@@ -152,11 +152,11 @@ public func DrawGemVeins(proplist map, int size, int difficulty)
     // Fill the bottom with mostly granite materials.
     map->Draw("Granite", map_bottom);
     map->DrawMaterial("Firestone", map_bottom, 2, 6);
-	map->DrawMaterial("Rock-rock_cracked", map_bottom, 3, 12);
+	map->DrawMaterial("Rock-rock", map_bottom, 3, 12);
 	map->DrawMaterial("Rock", map_bottom, 3, 12);
-	map->DrawMaterial("Earth-earth_rough", map_bottom, 2, 8);
-	map->DrawMaterial("Earth-earth_dry", map_bottom, 2, 8);
-	map->DrawMaterial("Earth-earth_midsoil", map_bottom, 4, 6);
+	map->DrawMaterial("Earth-earth_root", map_bottom, 2, 8);
+	map->DrawMaterial("Earth-earth_spongy", map_bottom, 2, 8);
+	map->DrawMaterial("Earth-earth", map_bottom, 4, 6);
 	
 	// Draw a labyrinth using nodes and connections and make it out of tunnel.
 	var nodes = FindVeinNodes(map, size + 12, size / 2);

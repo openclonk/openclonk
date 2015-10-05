@@ -4,5 +4,5 @@ Shape=Smoother
 Density=50
 Friction=15
 Placement=80
-TextureOverlay=brick1
+TextureOverlay=brick
 BlastShiftTo=Granite
