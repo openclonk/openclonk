@@ -14,13 +14,25 @@ local ActMap = {
 	}
 };
 
-protected func Initialize()
+private func Initialize()
 {
 	SetAction("Connect");
 	SetVertexXY(0, GetX(), GetY());
 	SetVertexXY(1, GetX(), GetY());
 	SetProperty("LineColors", [RGB(80, 80, 120), RGB(80, 80, 120)]);
 	return;
+}
+
+// Reddish colour
+public func SetDrain()
+{
+	SetProperty("LineColors", [RGB(110, 80, 80), RGB(110, 80, 80)]);
+}
+
+// Greenish colour
+public func SetSource()
+{
+	SetProperty("LineColors", [RGB(80, 110, 80), RGB(80, 110, 80)]);
 }
 
 /** Returns true if this object is a functioning pipe. */
@@ -45,12 +57,26 @@ public func GetConnectedObject(object obj)
 	return;
 }
 
-protected func LineBreak(bool no_msg)
+private func LineBreak(bool no_msg)
 {
 	Sound("LineBreak");
 	if (!no_msg)
 		BreakMessage();
+
+	var line_end = GetActionTarget(0);
+	if (line_end->GetID() != Pipe)
+		line_end = GetActionTarget(1);
+	if (line_end) line_end->~ResetPicture();
+
 	return;
+}
+
+private func Destruction()
+{
+	var line_end = GetActionTarget(0);
+	if (line_end->GetID() != Pipe)
+		line_end = GetActionTarget(1);
+	if (line_end) line_end->~ResetPicture();
 }
 
 private func BreakMessage()
@@ -63,7 +89,7 @@ private func BreakMessage()
 	return;
 }
 
-func SaveScenarioObject(props)
+public func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	SaveScenarioObjectAction(props);

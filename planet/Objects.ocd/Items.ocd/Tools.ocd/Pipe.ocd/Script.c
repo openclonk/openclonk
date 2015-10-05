@@ -51,14 +51,24 @@ protected func ControlUse(object clonk, int x, int y)
 	{
 		liquid_pump->SetSource(pipe);
 		clonk->Message("$MsgCreatedSource$");
+		SetGraphics("Source", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+		pipe->SetSource();
 	}
 	// Otherwise if liquid pump has no drain, create one.
 	else
 	{
 		liquid_pump->SetDrain(pipe);
 		clonk->Message("$MsgCreatedDrain$");
+		SetGraphics("Drain", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+		pipe->SetDrain();
 	}
 	return true;
+}
+
+// Line broke or something
+public func ResetPicture()
+{
+	SetGraphics("", nil, GFX_Overlay, GFXOV_MODE_Picture);
 }
 
 /* Cycling through several aperture offset indices to prevent easy clogging */
@@ -75,7 +85,6 @@ public func CycleApertureOffset()
 	if (!ApertureOffsetX) ApertureOffsetY = (ApertureOffsetY + 6) % 9 - 3;
 	return true;
 }
-
 
 /* Container dies: Drop connected pipes so they don't draw huge lines over the landscape */
 
