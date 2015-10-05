@@ -82,6 +82,8 @@ protected func InitializePlayer(int plr)
 	GivePlayerToolsBaseMaterial(plr);
 	SetBaseMaterial(plr, Wood, 100);
 	SetBaseProduction(plr, Wood, 10);
+	SetBaseMaterial(plr, Cloth, 10);
+	SetBaseProduction(plr, Cloth, 5);
 	
 	// Set player wealth.
 	SetWealth(plr, 75 - 25 * SCENPAR_Difficulty);
