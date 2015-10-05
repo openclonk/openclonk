@@ -16,6 +16,7 @@ protected func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 11, 40), Trans_Scale(400)));
 	objShine = CreateObjectAbove(EnvPack_Lantern_Shine, x, y + 15, -1);
+	SetLightRange(80, 60);
 }
 
 private func Shining()
