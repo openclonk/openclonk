@@ -118,6 +118,7 @@
 		<li>Libraries
 			<ul>
 				<text><emlink href="script/Shape.html">Shape</emlink></text>
+				<text><emlink href="script/FuzzyLogic.html">Fuzzy Logic</emlink></text>
 			</ul>
 		</li>
 <!-- Insert Functions here -->
