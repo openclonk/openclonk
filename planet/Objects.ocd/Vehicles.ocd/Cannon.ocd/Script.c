@@ -240,8 +240,6 @@ func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
 
 protected func DoFire(object iammo, object clonk, int angle)
 {
-	iammo->~Fuse();
-
 	//Don't excede possible trajectory
 	var r = Normalize(angle,-180 * angPrec, angPrec);
 	if(r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
@@ -251,6 +249,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	iammo->SetR(r / angPrec);
 	iammo->SetRDir(-4 + Random(9));
 	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0,0, angPrec);
+	iammo->~Fuse();
 
 	//Particles
 	var dist = 25;
