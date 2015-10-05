@@ -1,35 +1,30 @@
 [Head]
 Icon=17
 Title=Boomshire
-Version=6,0
-MinPlayer=2
-MaxPlayer=2
+Version=7
 Difficulty=50
+MaxPlayer=2
+MinPlayer=2
+NoInitialize=true
 
 [Definitions]
-Definition1=Objects.ocd
+Definition2=Decoration.ocd
 
 [Player1]
-Crew=Clonk=1
 
 [Player2]
-Crew=Clonk=1
 
 [Player3]
-Crew=Clonk=1
 
 [Player4]
-Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Nugget=1;Loam=1
-InEarthLevel=65,0,0,100
 Sky=Clouds2
-MapZoom=10
 BottomOpen=1
+MapWidth=100,0,64,10000
+MapHeight=50,0,40,10000
+MapZoom=10,0,5,15
 SkyScrollMode=2
 
 [Weather]
-Climate=0,0,0,100
-YearSpeed=20,10,0,100
-Wind=1,100,-100,100
+Climate=0,10,0,100

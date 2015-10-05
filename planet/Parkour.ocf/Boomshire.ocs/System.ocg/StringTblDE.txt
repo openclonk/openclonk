@@ -1,0 +1,3 @@
+Concierge1=Willkommen %s, im Boomshire-Vergüngungspark. Bitte bleiben Sie auf den Pfaden. Wenn Sie den Weg nicht finden, suchen Sie nach Licht.
+
+OpenChest=Kiste öffnen

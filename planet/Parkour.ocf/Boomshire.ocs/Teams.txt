@@ -1,7 +1,10 @@
 [Teams]
-Active=true
+LastTeamID=1
 
-	[Team]
-	id=1
-	Name=Boomshire
-	MaxPlayer=2
+  [Team]
+  id=1
+  Name=Boomshire
+  PlayerCount=1
+  Players=1
+  Color=4294180864
+  MaxPlayer=2

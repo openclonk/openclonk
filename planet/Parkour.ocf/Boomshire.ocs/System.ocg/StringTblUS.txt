@@ -1,0 +1,3 @@
+Concierge1=Welcome %s, to the Boomshire amusement park. Please stay on the path. Whenever you are lost, look for light.
+
+OpenChest=Open chest
