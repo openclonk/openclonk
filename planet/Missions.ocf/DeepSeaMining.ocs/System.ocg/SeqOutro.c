@@ -44,7 +44,7 @@ func Outro_4()
 	this.pilot->SetName("Pyrit");
 	this.pilot->SetColor(0xff0000);
 	this.pilot->SetDir(DIR_Right);
-	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Mul(Trans_Translate(5500, 0, 0), Trans_Rotate(90, 0, 0, 1)));
+	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
 	this.plane->FaceRight();
 	this.plane->StartInstantFlight(90, 15);
 	return ScheduleNext(5);
