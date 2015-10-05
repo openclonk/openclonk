@@ -102,7 +102,7 @@ slice(color)
 	// out = (color, clrmod, 1) * (A,B,C,D,E,F,0,0,G) * (color, clrmod, 1)
 
 #ifdef OC_CLRMOD_MOD2
-	color = clamp(color + clrMod - 0.5, 0.0, 1.0);
+	color = vec4(clamp(color.rgb + clrMod.rgb - 0.5, 0.0, 1.0), color.a * clrMod.a);
 #else
 	color = color * clrMod;
 #endif
