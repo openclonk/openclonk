@@ -1,0 +1,15 @@
+[ParameterDef]
+ID=Chests
+Achievement=Chests
+	[Options]
+		[Option]
+		Description=$Found4$
+		Value=1
+
+		[Option]
+		Description=$Found7$
+		Value=2
+
+		[Option]
+		Description=$Found14$
+		Value=3

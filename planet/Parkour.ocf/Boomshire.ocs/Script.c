@@ -51,7 +51,7 @@ private func Initialize()
 	DrawMaterialQuad("Tunnel-brickback",2680,1185,2750,1185,2750,1195,2680,1195);
 	DrawMaterialQuad("Tunnel-brickback",2737,1195,2750,1190,2775,1255,2765,1255);
 
-	//AddEffect("DynamiteEruption",nil,100,130);
+	AddEffect("DynamiteEruption",nil,100,130);
 }
 
 private func InitializePlayer(int plr)
