@@ -9,8 +9,10 @@ static const Elevator_needed_power = 20;
 local case, rope;
 local partner, slave;
 
+/* Editing helpers */
+
 // Frees a rectangle for the case
-func CreateShaft(int length)
+public func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
@@ -19,23 +21,51 @@ func CreateShaft(int length)
 	case->SetPosition(case->GetX(), GetY()+20);
 }
 
-func SetCasePosition(int y)
+// Move case to specified absolute y position
+public func SetCasePosition(int y)
 {
-	// Move case to specified absolute y position
 	if (case) return case->SetPosition(case->GetX(), y);
 	return false;
 }
 
+// Overloaded to reposition the case
+public func SetDir(new_dir, ...)
+{
+	var r = inherited(new_dir, ...);
+	// Update position of child objects on direction change
+	if (case) case->SetPosition(GetX() -19 * GetCalcDir(), case->GetY());
+	if (rope) rope->SetPosition(GetX() -19 * GetCalcDir(), rope->GetY());
+	return r;
+}
+
+// Forward config to case
+public func SetNoPowerNeed(bool to_val)
+{
+	if (case) return case->SetNoPowerNeed(to_val);
+	return false;
+}
+
+private func EditCursorMoved()
+{
+	// Move case and rope along with elevator in editor mode
+	if (case) case->SetPosition(GetX() + GetCaseXOff(), case->GetY());
+	if (rope) rope->SetPosition(GetX() + GetCaseXOff(), GetY() - 13);
+	return true;
+}
+
+// return default horizontal offset of case/rope to elevator
+public func GetCaseXOff() { return -19 * GetCalcDir(); }
+
 /* Initialization */
 
-func Construction(object creator)
+private func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-44,0,1,0));
 	SetAction("Default");
-	return _inherited(creator, ...);
+	return _inherited(...);
 }
 
-func Initialize()
+private func Initialize()
 {
 	SetCategory(C4D_StaticBack);
 	CreateCase();
@@ -54,55 +84,28 @@ func Initialize()
 	return _inherited();
 }
 
-func CreateCase()
+private func CreateCase()
 {
-	case = CreateObjectAbove(ElevatorCase, -19 * GetCalcDir(), 33, GetOwner());
-	case->Connect(this);
+	case = CreateObjectAbove(ElevatorCase, GetCaseXOff(), 33, GetOwner());
+	if (case) case->Connect(this);
 }
 
-func CreateRope()
+private func CreateRope()
 {
-	rope = CreateObjectAbove(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
-	rope->SetAction("Be", case.back);
-}
-
-func SetDir(new_dir, ...)
-{
-	var r = inherited(new_dir, ...);
-	// Update position of child objects on direction change
-	if (case) case->SetPosition(GetX() -19 * GetCalcDir(), case->GetY());
-	if (rope) rope->SetPosition(GetX() -19 * GetCalcDir(), rope->GetY());
-	return r;
-}
-
-/* Scenario saving */
-
-func SaveScenarioObject(props)
-{
-	if (!inherited(props, ...)) return false;
-	props->Remove("Category");
-	if (partner && slave)
-	{
-		props->AddCall("Friends", partner, "LetsBecomeFriends", this);
-	}
-	if (case && case->GetY() > GetY() + 20)
-	{
-		props->AddCall("Shaft", this, "CreateShaft", case->GetY() - GetY() - 20);
-		props->AddCall("Shaft", this, "SetCasePosition", case->GetY());
-	}
-	return true;
+	rope = CreateObjectAbove(ElevatorRope, GetCaseXOff(), -11, GetOwner());
+	if (rope) rope->SetAction("Be", case.back);
 }
 
 /* Destruction */
 
-func Destruction()
+private func Destruction()
 {
 	if(rope) rope->RemoveObject();
 	if(case) case->LostElevator();
 	if (partner) partner->LoseCombination();
 }
 
-func LostCase()
+public func LostCase()
 {
 	if(partner) partner->LoseCombination();
 	if(rope) rope->RemoveObject();
@@ -113,31 +116,30 @@ func LostCase()
 
 /* Effects */
 
-func StartEngine()
+public func StartEngine()
 {
 	Sound("ElevatorStart", nil, nil, nil, nil, 400);
 	ScheduleCall(this, "EngineLoop", 34);
-	//Sound("ElevatorMoving", nil, nil, nil, 1);
 }
-func EngineLoop()
+public func EngineLoop()
 {
 	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
 }
-func StopEngine()
+public func StopEngine()
 {
 	Sound("ElevatorMoving", nil, nil, nil, -1);
 	ClearScheduleCall(this, "EngineLoop");
 	Sound("ElevatorStop", nil, nil, nil, nil, 400);
 }
 
-/* Construction */
+/* Construction preview */
 
 // Sticking to other elevators
 public func ConstructionCombineWith() { return "IsElevator"; }
 public func ConstructionCombineDirection() { return CONSTRUCTION_STICK_Left | CONSTRUCTION_STICK_Right; }
 
 // Called to determine if sticking is possible
-func IsElevator(object previewer)
+public func IsElevator(object previewer)
 {
 	if (!previewer) return true;
 
@@ -153,7 +155,7 @@ func IsElevator(object previewer)
 }
 
 // Called when the elevator construction site is created
-func CombineWith(object other)
+public func CombineWith(object other)
 {
 	// Save for use in Initialize
 	partner = other;
@@ -163,7 +165,7 @@ func CombineWith(object other)
 
 // Called by a new elevator next to this one
 // The other elevator will be the slave
-func LetsBecomeFriends(object other)
+public func LetsBecomeFriends(object other)
 {
 	partner = other;
 	other.slave = true; // Note: This is liberal slavery
@@ -171,7 +173,7 @@ func LetsBecomeFriends(object other)
 }
 
 // Partner was destroyed or moved
-func LoseCombination()
+public func LoseCombination()
 {
 	partner = nil;
 	slave = false;
@@ -179,7 +181,7 @@ func LoseCombination()
 }
 
 // Called by our case because the case has a timer anyway
-func CheckSlavery()
+public func CheckSlavery()
 {
 	// Check if somehow we moved away from our fellow
 	if (ObjectDistance(partner) > 62 || !Inside(partner->GetY(), GetY()-1, GetY()+1))
@@ -189,21 +191,21 @@ func CheckSlavery()
 	}
 }
 
-// Forward config to case
-func SetNoPowerNeed(bool to_val)
-{
-	if (case) return case->SetNoPowerNeed(to_val);
-	return false;
-}
+/* Scenario saving */
 
-// return default horizontal offset of case to elevator
-func GetCaseXOff() { return -19 * GetCalcDir(); }
-
-func EditCursorMoved()
+public func SaveScenarioObject(props)
 {
-	// Move case and rope along with elevator in editor mode
-	if (case) case->SetPosition(GetX() + GetCaseXOff(), case->GetY());
-	if (rope) rope->SetPosition(GetX() + GetCaseXOff(), GetY() - 13);
+	if (!inherited(props, ...)) return false;
+	props->Remove("Category");
+	if (partner && slave)
+	{
+		props->AddCall("Friends", partner, "LetsBecomeFriends", this);
+	}
+	if (case && case->GetY() > GetY() + 20)
+	{
+		props->AddCall("Shaft", this, "CreateShaft", case->GetY() - GetY() - 20);
+		props->AddCall("Shaft", this, "SetCasePosition", case->GetY());
+	}
 	return true;
 }
 
@@ -221,7 +223,7 @@ local ActMap = {
 		},
 };
 
-func Definition(def) {
+private func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-20,1,0), Trans_Rotate(-20, 0, 1, 0)));
 }
 local Name = "$Name$";

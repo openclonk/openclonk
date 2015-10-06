@@ -15,6 +15,34 @@ local elevator;
 local partner, partner_was_synced, is_master;
 
 
+/* Interaction */
+
+public func GetCallDescription()
+{
+	return "$InteractCall$";
+}
+
+// Return true when a clonk can call this case (interaction icon is shown)
+public func Ready(object clonk)
+{
+	if (!elevator) return false;
+	if (GetCasePusher()) return false;
+	if(GetEffect("MoveTo", this)) return false;
+	// Clonk is out of reach
+	if (clonk->GetY() < elevator->GetY()) return false;
+	// No need to call?
+	if (Inside(clonk->GetY(), GetY()-10, GetY()+10)) return false;
+	// Enemy
+	if (Hostile(GetOwner(), clonk->GetOwner())) return false;
+
+	return true;
+}
+
+public func CallCase(object clonk)
+{
+	MoveTo(nil, nil, clonk, true);
+}
+
 /*-- Callbacks --*/
 
 // Elevator speeds.
@@ -25,9 +53,9 @@ private func GetDrillSpeed() { return GetCaseSpeed() / 2; }
 // Case is not a structure, but uses the library.
 public func IsStructure() { return false; }
 
-protected func Initialize()
+private func Initialize()
 {
-	AddEffect("CheckAutoMoveTo", this, 1, 30, this);
+	//AddEffect("CheckAutoMoveTo", this, 1, 30, this);
 	AddEffect("ElevatorUpperLimitCheck", this, 1, 1, this);
 	AddEffect("FetchVehicles", this, 1, 4, this);
 	
@@ -42,14 +70,14 @@ protected func Initialize()
 }
 
 // Called by the elevator
-func Connect(object connect_to)
+public func Connect(object connect_to)
 {
 	elevator = connect_to;
 	SetComDir(COMD_None);
 	SetAction("DriveIdle");
 }
 
-func Destruction()
+private func Destruction()
 {
 	if(partner)
 		partner->LoseConnection();
@@ -58,13 +86,13 @@ func Destruction()
 	return _inherited(...);
 }
 
-func LostElevator()
+public func LostElevator()
 {
 	RemoveObject();
 }
 
 // Called by the elevator in case a partner elevator was constructed
-func StartConnection(object case)
+public func StartConnection(object case)
 {
 	partner = case;
 	partner_was_synced = false;
@@ -82,7 +110,7 @@ func StartConnection(object case)
 }
 
 // Called when the other elevator is destroyed or moved
-func LoseConnection()
+public func LoseConnection()
 {
 	partner = nil;
 	is_master = nil;
@@ -96,32 +124,32 @@ func LoseConnection()
 
 public func ExecuteSync()
 {
-	if (!is_master) 
+	if (!is_master)
 		FatalError("ExecuteSync() called on slave elevator case!");
 	partner_was_synced = true;
 	partner.partner_was_synced = true;
 	ForceSync();
-	
+
 	// Let the master take over all the vertices.
 	OvertakePartnerVertices(partner->GetX() - GetX(), partner->GetY() - GetY());
 	partner->MakeSlaveVertices();
-	
+
 	// Reset power usage.
 	ResetPowerUsage();
 	partner->ResetPowerUsage();
-	
+
 	// Update solidmasks.
 	if (partner->GetX() > GetX())
 		SetSolidMask(0, 3, 48, 3, 0, 23);
 	else
 		SetSolidMask(0, 3, 48, 3, -24, 23);
 	partner->SetSolidMask(0, 0, 0, 0, 0, 0);
-	
+
 	Sound("Click");
 }
 
 // sets additional vertices to partner's position
-func OvertakePartnerVertices(int off_x, int off_y)
+private func OvertakePartnerVertices(int off_x, int off_y)
 {
 	var update_mode = 2; // force immediate update and store information
 	
@@ -132,7 +160,7 @@ func OvertakePartnerVertices(int off_x, int off_y)
 	}
 }
 
-func MakeSlaveVertices()
+public func MakeSlaveVertices()
 {
 	var update_mode = 2; // force immediate update and store information
 	for(var i = 0; i < GetVertexNum(); ++i)
@@ -142,10 +170,10 @@ func MakeSlaveVertices()
 	}
 }
 
-func IsMaster() { return partner && is_master && partner_was_synced; }
-func IsSlave() { return partner && !is_master && partner_was_synced; }
+public func IsMaster() { return partner && is_master && partner_was_synced; }
+public func IsSlave() { return partner && !is_master && partner_was_synced; }
 
-func FxTryToSyncTimer(object target, effect, int time)
+private func FxTryToSyncTimer(object target, effect, int time)
 {
 	var diff = Abs(partner->GetY() - GetY());
 	if(diff > 5) return 1;
@@ -153,61 +181,7 @@ func FxTryToSyncTimer(object target, effect, int time)
 	return -1;
 }
 
-func FxCheckAutoMoveToTimer(object target, effect, int time)
-{
-	if(!elevator) return -1;
-	if(IsSlave()) return 1;
-	if(!CheckIdle()) return 1;
-	if(GetEffect("MoveTo", this)) return 1;
-	
-	// look for Clonks at shaft
-	var additional = 20;
-	var x = GetX() - additional;
-	var w = GetX() + additional;
-	var y = elevator->GetY();
-	var h = LandscapeHeight();
-	
-	if(IsMaster())
-	{
-		x = Min(x, partner->GetX() - additional);
-		w = Max(w, partner->GetX() + additional);
-	}
-	var clonk, best;
-
-	for (clonk in FindObjects(Find_InRect(x - GetX(), y - GetY(), w - x, h - y), Find_OCF(OCF_CrewMember), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Allied(GetOwner()), Sort_Distance(), Sort_Reverse()))
-	{
-		var proc = clonk.Action.Procedure;
-		if (clonk->GetComDir() != COMD_Stop && !((proc == "SWIM") && Inside(clonk->GetXDir(), -5, 5)))
-			continue;
-		if (proc != "WALK" && proc != "PUSH" && proc != "SCALE" && proc != "HANGLE" && proc != "SWIM") continue;
-		if (clonk->GetY() < GetY() - 7)
-			if (!PathFree(GetX(), GetY(), GetX(), clonk->GetY()))
-				continue;
-		if (clonk->GetY() > GetY() + 7)
-			if (!PathFree(GetX(), GetY() + 16, GetX(), clonk->GetY()))
-				continue;
-		if ((clonk->GetY() > GetY()) && GetContact(-1, CNAT_Bottom)) 
-			continue;
-		
-		// Do not move to very close Clonks.
-		if (Abs(GetY() - clonk->GetY()) < 5) 
-			continue;
-		
-		// Priority rules: Cursor is better than no cursor, nearer is better than farer (Sort_Distance() & Sort_Reverse() do this)
-		// So unlike in CR's elevator, no distance check has to be done because later cycles are always nearer clonks
-		if (!best) 
-			best = clonk;
-		else if (GetCursor(clonk->GetController()) == clonk)
-			best = clonk;
-		else if (GetCursor(best->GetController()) != best)
-			best = clonk;
-	}
-	if (best)
-		MoveTo(best->GetY() + 1, 10, best);
-	return 1;
-}
-
-func FxElevatorUpperLimitCheckTimer(target, effect, time)
+private func FxElevatorUpperLimitCheckTimer(target, effect, time)
 {
 	if (!elevator || IsSlave()) 
 		return -1;
@@ -239,7 +213,7 @@ func FxElevatorUpperLimitCheckTimer(target, effect, time)
 }
 
 // for vehicle control
-func OutOfRange(object vehicle)
+public func OutOfRange(object vehicle)
 {
 	if(Abs(GetY() - vehicle->GetY()) > 10) return true;
 	
@@ -256,7 +230,7 @@ func OutOfRange(object vehicle)
 	return false;
 }
 
-protected func FxFetchVehiclesTimer(object target, proplist effect, int time)
+private func FxFetchVehiclesTimer(object target, proplist effect, int time)
 {
 	if (!elevator) 
 		return -1;
@@ -339,7 +313,7 @@ public func OnEnoughPower()
 	return _inherited(...);
 }
 
-protected func FxHasPowerStart()
+private func FxHasPowerStart()
 {
 	return 1;
 }
@@ -468,14 +442,14 @@ public func ForceSync()
 	return;
 }
 
-protected func ContactTop()
+private func ContactTop()
 {
 	Halt();
 	Sound("WoodHit*");
 	return;
 }
 
-protected func ContactBottom()
+private func ContactBottom()
 {
 	// try to dig free
 	if (GetAction() == "Drill")
@@ -563,7 +537,7 @@ public func MoveTo(int y, int delay, object target, bool user_requested)
 	return;
 }
 
-protected func FxMoveToTimer(object target, proplist effect, int time)
+private func FxMoveToTimer(object target, proplist effect, int time)
 {
 	if (time < effect.delay) return 1;
 	// what would take more than 10 seconds?
@@ -602,7 +576,7 @@ protected func FxMoveToTimer(object target, proplist effect, int time)
 	return 1;
 }
 
-protected func Drilling()
+private func Drilling()
 {
 	var additional_y = 1;
 	var rect = Rectangle(GetX() - 12, GetY() - 13 - additional_y, GetX() + 12, GetY() + 13 + additional_y);

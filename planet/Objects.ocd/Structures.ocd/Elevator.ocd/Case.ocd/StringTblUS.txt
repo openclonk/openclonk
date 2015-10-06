@@ -1,2 +1,3 @@
 Name=Elevator case
 Description=[Up] / [Down] to drive, hold [Use] to drill a shaft.
+InteractCall=Call elevator|case

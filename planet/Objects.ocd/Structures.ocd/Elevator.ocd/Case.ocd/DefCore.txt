@@ -20,4 +20,3 @@ Picture=24,0,152,128
 HorizontalFix=1
 NoPushEnter=1
 ContactCalls=1
-
