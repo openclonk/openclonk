@@ -42,6 +42,9 @@ static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
 static const ACTIONTYPE_EXTRA = 4;
 
+// elevators within this range (x) can be called
+static const ELEVATOR_CALL_DISTANCE = 30;
+
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
 /*
@@ -165,7 +168,10 @@ public func GetExtraInteractions()
 		if(effect.flipable)
 			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=effect.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
 	}
-		
+	// call elevator cases
+	var elevators = FindObjects(Find_ID(ElevatorCase), Find_InRect(-ELEVATOR_CALL_DISTANCE, AbsY(0), ELEVATOR_CALL_DISTANCE * 2, GetY() + AbsY(LandscapeHeight())), Find_Func("Ready", this));
+	for (var elevator in elevators)
+		PushBack(functions, { Fn = "CallCase", Object=elevator, Description=elevator->GetCallDescription(), Priority=0 });
 	return functions;
 }
 

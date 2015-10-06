@@ -194,7 +194,7 @@ private func ShowInteraction()
 
 	current_interaction =high_prio;
 	actionbar_gui_menu.Player = GetOwner();
-	var help = GetInteractionHelp(current_interaction.actiontype, current_interaction.interaction_object, current_interaction.interaction_index, cursor);
+	var help = GetInteractionHelp(current_interaction.actiontype, current_interaction.interaction_object, current_interaction.interaction_index, cursor, current_interaction);
 
 	var update = {
 		Player = GetOwner(),
@@ -303,7 +303,7 @@ private func UpdateActionBar(array interactables, object cursor)
 		{
 			var left = x_offset + (GUI_Controller_ActionBar_MarginLeft + GUI_Controller_ActionBar_IconSize) * i;
 			var hotkey = i + 1;
-			var help = GetInteractionHelp(actionbar_items[i].actiontype, actionbar_items[i].interaction_object, actionbar_items[i].interaction_index, cursor);
+			var help = GetInteractionHelp(actionbar_items[i].actiontype, actionbar_items[i].interaction_object, actionbar_items[i].interaction_index, cursor, actionbar_items[i]);
 
 			actionbar_info_menu[Format("button%d", i)] =
 			{
@@ -392,7 +392,7 @@ help_text: A text describing the interaction or ""
 help_icon: A pictographic icon definition symbolising the interaction or nil
 help_icon_graphics: The graphics of the icon definition to use or ""
 */
-private func GetInteractionHelp(int actiontype, object to_interact, int interaction_index, object clonk)
+private func GetInteractionHelp(int actiontype, object to_interact, int interaction_index, object clonk, proplist interaction)
 {
 	var ret =
 	{
@@ -446,6 +446,14 @@ private func GetInteractionHelp(int actiontype, object to_interact, int interact
 			ret.help_icon = metainfo.IconID;
 			ret.help_icon_graphics = metainfo.IconName;
 		}
+	}
+
+	// Help text: Extra Interaction (already in proplist)
+	if (actiontype == ACTIONTYPE_EXTRA)
+	{
+		ret.help_text = interaction.extra_data.Description;
+		ret.help_icon = interaction.extra_data.IconID;
+		ret.help_icon_graphics = interaction.extra_data.IconName;
 	}
 
 	return ret;
