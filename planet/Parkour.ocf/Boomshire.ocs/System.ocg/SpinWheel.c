@@ -9,6 +9,7 @@ public func SetArrowWheel()
 
 public func ControlUp(object clonk)
 {
+	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 	if (!shoot_arrow) return _inherited(clonk, ...);
 
 	if (GetAction() == "Still")
@@ -20,5 +21,4 @@ public func ControlUp(object clonk)
 		arrw->SetGraphics("1");
 		CreateParticle("Straw", 0, 0, PV_Random(-20, 20), PV_Random(-20,20), PV_Random(30, 120), Particles_Straw(), 20);
 	}
-	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 }
