@@ -1,4 +1,4 @@
-/*-- Tree Trunk 2 Front --*/
+/*-- Walkable Trunk Front --*/
 
 #include Library_Cover
 

@@ -1,5 +1,5 @@
 /*
-	Tree Trunk 2
+	Walkable Trunk
 	Authors: Win, Clonkonaut
 */
 
@@ -7,7 +7,7 @@ local front;
 
 private func Initialize()
 {
-	front = CreateObject(Trunk2_Front, 11, 2, GetOwner());
+	front = CreateObject(WalkableTrunk_Front, 11, 2, GetOwner());
 	front->Set(this);
 }
 

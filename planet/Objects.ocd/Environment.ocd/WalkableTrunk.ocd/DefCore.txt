@@ -1,5 +1,5 @@
 [DefCore]
-id=Trunk2
+id=WalkableTrunk
 Version=6,0
 Category=C4D_StaticBack
 Width=264
