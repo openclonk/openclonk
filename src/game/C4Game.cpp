@@ -2879,12 +2879,12 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
-			Log("[!]Loading local scenario player control definitions...");
+			Log(LoadResStr("IDS_PRC_LOADSCEPLRCTRL"));
 			C4PlayerControlFile PlayerControlFile;
 			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, pSysGroupString))
 			{
 				// non-fatal error here
-				Log("[!]Error loading scenario defined player controls");
+				Log(LoadResStr("IDS_PRC_LOADSCEPLRCTRLFAIL"));
 			}
 			else
 			{
