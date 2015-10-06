@@ -251,6 +251,7 @@ public func IsPrey() { return true; }
 
 public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
+public func IsSwimming(){return GetProcedure() == "SWIM";}
 public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
 /* Carry items on the clonk */
