@@ -184,7 +184,7 @@ private func FxTryToSyncTimer(object target, effect, int time)
 
 public func ForceSync()
 {
-	if (!IsMaster() || !partner) 
+	if (!IsMaster() || !partner)
 		return;
 	// Clear rounding errors.
 	SetPosition(GetX(), GetY());
@@ -429,14 +429,10 @@ private func SetMoveDirection(int dir, bool user_requested, bool drill)
 
 	if (has_power)
 	{
-		if (dir == COMD_Down)
-			SetYDir(speed);
-		else if (dir == COMD_Up)
-			SetYDir(-speed);
 		SetAction(action);
-		SetComDir(COMD_None);
+		SetComDir(dir);
 		ForceSync();
-		elevator->StartEngine();
+		elevator->StartEngine(dir);
 	}
 	else
 	{
@@ -451,7 +447,7 @@ private func Halt(bool user_requested, bool power_out)
 	if (IsSlave())
 		return;
 
-	// Stop the engine if it was still moving.	
+	// Stop the engine if it was still moving.
 	if (GetYDir())
 		if(elevator)
 			elevator->StopEngine();
@@ -459,8 +455,9 @@ private func Halt(bool user_requested, bool power_out)
 	// Clear speed.
 	SetAction("DriveIdle");
 	SetYDir();
+	SetComDir(COMD_Stop);
 	ForceSync();
-	
+
 	// Unregister the power request and stop automatic movement.
 	if (user_requested || !power_out)
 	{
@@ -573,11 +570,11 @@ private func ContactBottom()
 	if (GetAction() == "Drill")
 	{
 		Drilling();
-		
+
 		// wee!
 		if (!GetContact(-1, CNAT_Bottom))
 		{
-			SetYDir(GetDrillSpeed());
+			SetComDir(COMD_Down);
 			return;
 		}
 	}
@@ -601,7 +598,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func ControlDown(object clonk)
 {
-	if (IsSlave()) 
+	if (IsSlave())
 		return Control2Master("ControlDown", clonk);
 	
 	// Pressing down when already on ground results in drilling.
@@ -690,33 +687,27 @@ local ActMap = {
 		Prototype = Action,
 		Name = "Drive",
 		Procedure = DFA_FLOAT,
-		Directions = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 24,
-		Hgt = 26,
+		FacetBase = 1,
+		Speed = 200,
+		Accel = 2,
+		Decel = 5,
 		NextAction = "Drive",
 	},
 	DriveIdle = {
 		Prototype = Action,
 		Name = "DriveIdle",
 		Procedure = DFA_FLOAT,
-		Directions = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 24,
-		Hgt = 26,
+		FacetBase = 1,
 		NextAction = "DriveIdle",
 	},
 	Drill = {
 		Prototype = Action,
 		Name = "Drill",
 		Procedure = DFA_FLOAT,
-		Directions = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 24,
-		Hgt = 26,
+		FacetBase = 1,
+		Speed = 100,
+		Accel = 2,
+		Decel = 10,
 		Delay = 1,
 		Length = 1,
 		PhaseCall = "Drilling",

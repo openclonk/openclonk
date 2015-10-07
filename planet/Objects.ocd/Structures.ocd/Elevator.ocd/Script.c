@@ -62,6 +62,8 @@ private func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-44,0,1,0));
 	SetAction("Default");
+	wheel_anim = PlayAnimation("winchSpin", 1, Anim_Const(0), Anim_Const(1000));
+
 	return _inherited(...);
 }
 
@@ -116,20 +118,75 @@ public func LostCase()
 
 /* Effects */
 
-public func StartEngine()
+local wheel_anim, case_speed;
+
+public func StartEngine(int direction)
 {
+	if (!case) return;
+
 	Sound("ElevatorStart", nil, nil, nil, nil, 400);
 	ScheduleCall(this, "EngineLoop", 34);
+	if (wheel_anim == nil) // If for some reason the animation stopped
+		wheel_anim = PlayAnimation("winchSpin", 1, Anim_Const(0), Anim_Const(1000));
+
+	var begin, end;
+	if (direction == COMD_Up) // Either that or COMD_Down
+	{
+		begin = GetAnimationLength("winchSpin");
+		end = 0;
+	}
+	else
+	{
+		begin = 0;
+		end = GetAnimationLength("winchSpin");
+	}
+
+	case_speed = Abs(case->GetYDir());
+	var speed = 80 - case_speed * 2;
+	SetAnimationPosition(wheel_anim, Anim_Linear(GetAnimationPosition(wheel_anim), begin, end, speed, ANIM_Loop));
 }
+
 public func EngineLoop()
 {
 	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
 }
+
 public func StopEngine()
 {
 	Sound("ElevatorMoving", nil, nil, nil, -1);
 	ClearScheduleCall(this, "EngineLoop");
 	Sound("ElevatorStop", nil, nil, nil, nil, 400);
+
+	if (!case) return;
+	if (wheel_anim == nil) return;
+
+	case_speed = nil;
+	SetAnimationPosition(wheel_anim, Anim_Const(GetAnimationPosition(wheel_anim)));
+}
+
+// Adjusting the turning speed of the wheel to the case's speed
+private func UpdateTurnSpeed()
+{
+	if (!case) return;
+	if (case_speed == nil || wheel_anim == nil) return;
+
+	if (Abs(case->GetYDir()) != case_speed)
+	{
+		var begin, end;
+		if (case->GetYDir() < 0) // Either that or COMD_Down
+		{
+			begin = GetAnimationLength("winchSpin");
+			end = 0;
+		}
+		else
+		{
+			begin = 0;
+			end = GetAnimationLength("winchSpin");
+		}
+		case_speed = Abs(case->GetYDir());
+		var speed = 80 - case_speed * 2;
+		SetAnimationPosition(wheel_anim, Anim_Linear(GetAnimationPosition(wheel_anim), begin, end, speed, ANIM_Loop));
+	}
 }
 
 /* Construction preview */
@@ -217,9 +274,10 @@ local ActMap = {
 			Directions = 2,
 			FlipDir = 1,
 			Length = 1,
-			Delay = 0,
+			Delay = 3,
 			FacetBase = 1,
 			NextAction = "Default",
+			EndCall = "UpdateTurnSpeed",
 		},
 };
 
