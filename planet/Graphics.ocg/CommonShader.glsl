@@ -122,10 +122,7 @@ slice(light)
 	float light2 = lightDot(normal2, lightDir);
 	light2 = min(light2 / matAngle2, 2.0 - light2 / matAngle2);
 #endif
-}
 
-slice(light+1)
-{
 	// For landscape, ambient brightness is coming from top
 	vec3 ambientDir = normalize(ambientLightPos);
 	float ambientMul = maxAmbientBrightness / (ambientAmbience + lightDot(vec3(0.0,0.0,1.0), ambientDir));

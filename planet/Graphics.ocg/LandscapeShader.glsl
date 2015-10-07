@@ -33,12 +33,12 @@ slice(init)
 	// between the different materials stand out.
 	//  0.0 = just textures
 	//  1.0 = just material borders
-	const float normalMapStrength = 0.2;
+	const float normalMapStrength = 0.4;
 
 	// Depth assumed for landscape normals. This decides how deep the
 	// material "borders" appear to be. Lower means sharper normals
 	// means more of a 3D look.
-	float landscapeNormalDepth = 0.15;
+	float landscapeNormalDepth = 0.25;
 }
 
 slice(coordinate)
@@ -95,7 +95,6 @@ slice(material)
 	// Query material texture pixels
 	vec4 materialPx = texture(materialTex, vec3(materialCoo, materialIx));
 	vec4 normalPx = texture(materialTex, vec3(materialCoo, materialIx+0.5 * materialDepth));
-
 	// Same for second pixel
 	int matMapIx2 = f2i(landscapePx2.r);
 	vec4 matMap2 = queryMatMap(2*matMapIx2);
@@ -116,11 +115,13 @@ slice(normal)
 	vec2 landscapeNormalPx = mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5);
 	vec3 landscapeNormal = normalize(vec3(landscapeNormalPx, landscapeNormalDepth));
 	vec3 textureNormal = 2.0*(normalPx.xyz - vec3(0.5,0.5,0.5));
+	textureNormal.y *= -1.0;
 	vec3 normal = mix(textureNormal, landscapeNormal, normalMapStrength);
 
 	vec2 landscapeNormalPx2 = landscapePx2.yz - vec2(0.5, 0.5);
 	vec3 landscapeNormal2 = normalize(vec3(landscapeNormalPx2, landscapeNormalDepth));
 	vec3 textureNormal2 = 2.0*(normalPx2.xyz - vec3(0.5,0.5,0.5));
+	textureNormal2.y *= -1.0;
 	vec3 normal2 = mix(textureNormal2, landscapeNormal2, normalMapStrength);
 
 }
