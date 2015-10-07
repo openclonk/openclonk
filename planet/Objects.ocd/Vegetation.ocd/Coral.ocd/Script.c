@@ -5,6 +5,7 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 0;
 
+local mesh_attachments;
 
 local ActMap = {
 	Exist = {
@@ -28,7 +29,10 @@ func Place(int amount, proplist area, proplist settings)
 		var spot = FindLocation(Loc_Material("Water"), Loc_Wall(CNAT_Bottom | CNAT_Top | CNAT_Left | CNAT_Right), loc_area);
 		if (!spot) continue;
 		
-		CreateObjectAbove(this, spot.x, spot.y + 5, NO_OWNER);
+		var plant = CreateObject(this, spot.x, spot.y, NO_OWNER);
+		plant->SetClrModulation(HSL(Random(255), 255, 200));
+		plant->AddFork(nil, true);
+
 		--amount;
 	}
 	return true;
@@ -40,24 +44,77 @@ func StartFloating()
 	SetAction("Idle");
 	this.Collectible = 1;
 	this.NutritionalValue = this.NutritionalValue_;
+	
+	for (var attachment in mesh_attachments)
+		DetachMesh(attachment);
+	for (var obj in FindObjects(Find_Container(this)))
+	{
+		obj->Exit();
+		obj->StartFloating();
+	}
 }
 
 func Construction()
 {
-	SetCon(10+Random(80));
+	mesh_attachments = [];
+
 	ScheduleCall(this, "AdjustPosition", 1, 0);
 	this.MaxCon = RandomX(100, 200);
+		
+	SetAction("Exist");
+	
+	AddTimer("Seed", 60+Random(60));
+}
+
+public func MakeAttachment(object parent)
+{
+	RemoveTimer("Seed");
+	SetClrModulation(parent->GetClrModulation());
+}
+
+private func SetScale(int scale)
+{
+	this.MeshTransformation = Trans_Mul(Trans_Scale(scale, scale, scale), Trans_Rotate(Random(360), 0, 1, 0));
+}
+
+private func AddFork(int allowed_depth, bool is_root)
+{
+	if (is_root)
+	{
+		allowed_depth = 3;
+		SetScale(750);
+	}
+	if (allowed_depth <= 0) return;
+	
+	var bones = ["Bone.10", "Bone.11", "Bone.13", "Bone.17", "Bone.16"];
+	var attach_counts = BoundBy(RandomX(1, 3) + RandomX(-1, 1) + RandomX(-1, 0), 0, 3);
+	
+	while (attach_counts-- > 0)
+	{
+		var bone_index = Random(GetLength(bones));
+		var bone = bones[bone_index];
+		RemoveArrayIndex(bones, bone_index, true);
+		
+		var other_coral = CreateContents(GetID());
+		other_coral->MakeAttachment(this);
+		other_coral->SetScale(500);
+		var mesh = AttachMesh(other_coral, bone, "Bone.00", Trans_Mul(Trans_Rotate(Random(360), 1, 0, 0)));
+		PushBack(mesh_attachments, mesh); 
+		
+		other_coral->AddFork(allowed_depth - 1);
+	}
 }
 
 func AdjustPosition()
 {
+	if (Contained()) return;
+	
 	var vec = GetSurfaceVector();
 	var r = Angle(0, 0, vec[0], vec[1]);
 	SetR(r);
 	
 	// project a bit out of the ground
 	r += 180;
-	var d = 5 * GetCon() / 100;
 	var cnt = 10;
 	while (--cnt)
 	{
@@ -74,13 +131,6 @@ func AdjustPosition()
 			break;
 		}			
 	}
-	
-	SetClrModulation(HSL(Random(255), 255, 200));
-	 
-	this.MeshTransformation = Trans_Rotate(Random(360), 0, 1, 0);
-	SetAction("Exist");
-	
-	AddTimer("Seed", 60+Random(60));
 }
 
 
@@ -131,4 +181,4 @@ protected func ControlUse(object clonk, int iX, int iY)
 	clonk->Eat(this);
 }
 
-func NutritionalValue_() { return 15; }
+func NutritionalValue_() { return 5; }
