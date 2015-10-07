@@ -33,7 +33,7 @@
 45=Gold-gold
 
 50=Rock-rock
-51=Rock-rock
+51=Rock-rock_smooth
 
 53=Firestone-firestone
 
