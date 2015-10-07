@@ -10,3 +10,6 @@ MaxAirSpeed=100
 MaxSlide=1
 Placement=21
 TextureOverlay=amethyst
+LightEmit=128,90,164
+LightSpot=160,96,128
+LightAngle=204
