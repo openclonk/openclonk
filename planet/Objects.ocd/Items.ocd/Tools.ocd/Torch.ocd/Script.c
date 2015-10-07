@@ -167,6 +167,7 @@ private func FxIntBurningStart(object target, effect fx, int temporary)
 	};
 	// Set the light range for this torch.
 	SetLightRange(80, 60);
+	SetLightColor(FIRE_LIGHT_COLOR);
 	return 1;
 }
 

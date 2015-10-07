@@ -12,6 +12,7 @@ protected func Initialize()
 	AddEffect("IntEvaporate", this, 100, 1, this);
 	// Add light to the chunk.
 	SetLightRange(60, 40);
+	SetLightColor(FIRE_LIGHT_COLOR);
 	// Lava chunk is on fire.
 	//Incinerate(); // TODO: Wait for decent graphics
 	return;

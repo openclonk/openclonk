@@ -62,6 +62,7 @@ public func FxIntBurningTimer(object target, proplist effect, int time)
 	CreateParticle("Smoke", PV_Random(x - 1, x + 1), PV_Random(y - 1, y + 1), PV_Random(-2, 2), PV_Random(-2, 2), 40 + Random(20), particle_smoke, burn_level / 30);
 	// Light level.
 	SetLightRange(burn_level / 3, burn_level / 3);
+	SetLightColor(FIRE_LIGHT_COLOR);
 	return 1;
 
 }

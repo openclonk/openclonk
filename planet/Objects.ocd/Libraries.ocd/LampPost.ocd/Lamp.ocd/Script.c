@@ -27,7 +27,7 @@ public func GetLampFadeRange() { return 160; }
 
 /** Lamp property: Which color it shines in.
 */
-public func GetLampColor() { return 0xffa000; }
+public func GetLampColor() { return FIRE_LIGHT_COLOR; }
 
 /** Overload as needed to define a custom offset by the lamp.
 */

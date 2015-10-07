@@ -7,6 +7,7 @@
 		Functions to be used as documented in the docs.
 --*/
 
+static const FIRE_LIGHT_COLOR = 0xc86400;
 
 // fire drawing modes
 static const C4Fx_FireMode_Default   = 0; // determine mode by category
