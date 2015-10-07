@@ -1,0 +1,9 @@
+[Material]
+Name=Everrock
+Shape=Rough
+Density=85
+Friction=100
+MaxAirSpeed=100
+MaxSlide=250
+Placement=70
+TextureOverlay=everrock
