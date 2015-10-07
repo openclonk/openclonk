@@ -66,21 +66,24 @@ public func HitObject(object obj)
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx * relx + rely * rely);
-	var dmg = ArrowStrength() * speed / 100;
-	ProjectileHit(obj, dmg, ProjectileHit_tumble);
+	var dmg = ArrowStrength() * speed * 1000 / 100;
+	
+	if (WeaponCanHit(obj))
+	{
+		if (obj->GetAlive())
+			Sound("ProjectileHitLiving?");
+		else
+			Sound("ArrowHitGround");
+		
+		obj->~OnProjectileHit(this);
+		WeaponDamage(obj, dmg, FX_Call_EngObjHit, true);
+		WeaponTumble(obj, this->TumbleStrength());
+	}
+	
 	// Stick does something unwanted to controller.
 	if (this) 
 		Stick();
 	return;
-}
-
-// Called by a successful hit of object after from ProjectileHit(...).
-public func OnStrike(object obj)
-{
-	if(obj->GetAlive())
-		Sound("ProjectileHitLiving?");
-	else
-		Sound("ArrowHitGround");
 }
 
 public func Hit()
@@ -154,6 +157,7 @@ protected func RejectEntrance()
 public func IsArrow() { return true; }
 public func MaxStackCount() { return 15; }
 public func ArrowStrength() { return 10; }
+public func TumbleStrength() { return 100; }
 public func IsArmoryProduct() { return true; }
 
 

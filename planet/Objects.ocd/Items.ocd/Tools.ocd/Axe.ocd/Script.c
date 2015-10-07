@@ -334,7 +334,7 @@ func CheckStrike(iTime)
 
 				// fixed damage (3)
 				var damage=((100-shield)*3*1000 / 100);
-				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
+				WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
 
 				if (obj)
 					DoWeaponSlow(obj, 200);

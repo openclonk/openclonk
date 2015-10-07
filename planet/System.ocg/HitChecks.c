@@ -144,71 +144,60 @@ global func FxHitCheckTimer(object target, proplist effect, int time)
 	return;
 }
 
-// flags for the ProjectileHit function
-static const ProjectileHit_tumble=1; // the target tumbles
-static const ProjectileHit_no_query_catch_blow_callback=2; // if you want to call QueryCatchBlow manually
-static const ProjectileHit_exact_damage=4; // exact damage, factor 1000
-static const ProjectileHit_no_on_projectile_hit_callback=8;
-
-global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
+/*
+	Checks whether an object is ready to take damage from this object, calling QueryCatchBlow.
+*/
+global func WeaponCanHit(object target)
 {
-	if(flags == nil) flags=0;
-	if(!damage_type) damage_type=FX_Call_EngObjHit;
-	var tumble=flags & ProjectileHit_tumble;
+	if (target->~QueryCatchBlow(this)) return false;
+	if (!target || !this) return false;
+	return true;
+}
+
+/*
+	Deals damage to an object, draining either energy for living things or dealing damage otherwise.
+	CatchBlow is called on the target if it's alive.
+*/
+global func WeaponDamage(object target, int damage, int damage_type, bool exact_damage)
+{
+	if (!this || !target) return;
 	
-	if (!this || !obj)
-		return;
+	damage_type = damage_type ?? FX_Call_EngObjHit;
+	var true_damage = damage;
+	if (exact_damage) true_damage = damage / 1000;
 	
-	if(!(flags & ProjectileHit_no_query_catch_blow_callback))
+	if (target->GetAlive())
 	{
-		if (obj->GetAlive())
-			if (obj->~QueryCatchBlow(this))
-				return;
-				
-		if (!this || !obj)
-			return;
-	}
-	
-	if(!(flags & ProjectileHit_no_on_projectile_hit_callback))
-	{
-		obj->~OnProjectileHit(this);
-		if (!this || !obj)
-			return;
-	}
-	
-	this->~OnStrike(obj);
-	if (!this || !obj)
-		return;
-	if (obj->GetAlive())
-	{
-		obj->DoEnergy(-dmg, (flags & ProjectileHit_exact_damage), damage_type, GetController());
-		if(!obj) return;
-		
-		var true_dmg=dmg;
-		if(flags & ProjectileHit_exact_damage) true_dmg/=1000;
-		obj->~CatchBlow(-true_dmg, this);
+		target->DoEnergy(-damage, exact_damage, damage_type, GetController());
+		if (!target) return;
+
+		target->~CatchBlow(-true_damage, this);
 	}
 	else
 	{
-		var true_dmg=dmg;
-		if(flags & ProjectileHit_exact_damage) true_dmg/=1000;
-		
-		obj->DoDamage(true_dmg, damage_type, GetController());
+		target->DoDamage(true_damage, damage_type, GetController());
 	}
-	// Target could have done something with this projectile.
-	if (!this || !obj)
-		return;
+}
+
+/*
+	Tumbles an object based on this object's speed and mass.
+	strength = 100 means using 100% of the own mass for tumbling the other object.
+*/
+global func WeaponTumble(object target, int strength)
+{
+	if (!this || !target) return;
 	
-	// Tumble target.
-	if (obj->GetAlive() && tumble)
+	strength = strength ?? 100;
+	if (strength <= 0) return;
+	
+	if (target->GetAlive())
 	{
-		obj->SetAction("Tumble");
+		target->SetAction("Tumble");
 		// Constrained by conservation of linear momentum, unrealism != 1 for unrealistic behaviour.
 		var unrealism = 3;
-		var mass = GetMass();
-		var obj_mass = obj->GetMass();
-		obj->SetXDir((obj->GetXDir() * obj_mass + GetXDir() * mass * unrealism) / (mass + obj_mass));		
-		obj->SetYDir((obj->GetYDir() * obj_mass + GetYDir() * mass * unrealism) / (mass + obj_mass));
+		var mass = strength * GetMass() / 100;
+		var obj_mass = target->GetMass();
+		target->SetXDir((target->GetXDir() * obj_mass + GetXDir() * mass * unrealism) / (mass + obj_mass));		
+		target->SetYDir((target->GetYDir() * obj_mass + GetYDir() * mass * unrealism) / (mass + obj_mass));
 	}
-	return;
 }

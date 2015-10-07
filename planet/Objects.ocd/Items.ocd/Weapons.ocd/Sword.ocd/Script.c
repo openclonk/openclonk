@@ -228,7 +228,7 @@ func CheckStrike(iTime)
 				
 				// fixed damage (9)
 				var damage = SwordDamage(shield);
-				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
+				WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
 				
 				// object has not been deleted?
 				if(obj)

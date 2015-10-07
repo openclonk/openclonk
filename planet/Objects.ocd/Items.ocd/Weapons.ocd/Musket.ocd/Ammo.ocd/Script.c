@@ -7,6 +7,7 @@ public func MaxStackCount() { return 8; }
 public func IsMusketAmmo() { return true; }
 
 public func ProjectileDamage() { return 15; }
+public func TumbleStrength() { return 100; }
 public func FlightTime() { return 30; }
 
 protected func Hit()
@@ -46,18 +47,21 @@ public func Launch(object shooter, int angle, int dist, int speed, int offset_x,
 
 public func HitObject(object obj)
 {
-	ProjectileHit(obj,ProjectileDamage(),ProjectileHit_tumble);
+	if (WeaponCanHit(obj))
+	{
+		if (obj->GetAlive())
+			Sound("ProjectileHitLiving?");
+		else
+			Sound("BulletHitGround");
+		
+		obj->~OnProjectileHit(this);
+		WeaponDamage(obj, this->ProjectileDamage(), FX_Call_EngObjHit, false);
+		WeaponTumble(obj, this->TumbleStrength());
+		if (!this) return;
+	}
 	RemoveObject();
 }
 
-// called by successful hit of object after from ProjectileHit(...)
-public func OnStrike(object obj)
-{
-	if(obj->GetAlive())
-		Sound("ProjectileHitLiving?");
-	else
-		Sound("BulletHitGround?");
-}
 
 func UpdatePicture()
 {

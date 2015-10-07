@@ -8,6 +8,8 @@
 #include Library_Stackable
 
 public func MaxStackCount() { return 3; }
+public func JavelinStrength() { return 14; }
+public func TumbleStrength() { return 100; }
 
 local animation_set;
 
@@ -119,8 +121,6 @@ public func DoThrow(object clonk, int angle)
 	clonk->UpdateAttach();
 }
 
-protected func JavelinStrength() { return 14; }
-
 //slightly modified HitObject() from arrow
 public func HitObject(object obj)
 {
@@ -128,19 +128,22 @@ public func HitObject(object obj)
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
 
-	var dmg = JavelinStrength()*speed/100;
-	ProjectileHit(obj,dmg,ProjectileHit_tumble);
+	var dmg = JavelinStrength() * speed * 1000 / 100;
+	
+	if (WeaponCanHit(obj))
+	{
+		if (obj->GetAlive())
+			Sound("ProjectileHitLiving?");
+		else
+			Sound("JavelinHitGround");
+		
+		obj->~OnProjectileHit(this);
+		WeaponDamage(obj, dmg, FX_Call_EngObjHit, true);
+		WeaponTumble(obj, this->TumbleStrength());
+		if (!this) return;
+	}
 	
 	Stick();
-}
-
-// called by successful hit of object after from ProjectileHit(...)
-public func OnStrike(object obj)
-{
-	if(obj->GetAlive())
-		Sound("ProjectileHitLiving?");
-	else
-		Sound("JavelinHitGround");
 }
 
 protected func Hit()

@@ -1,6 +1,7 @@
 /* shrapnel */
 
 public func ProjectileDamage() { return 3; }
+public func TumbleStrength() { return 100; }
 public func FlightTime() { return 4; }
 
 protected func Initialize()
@@ -32,8 +33,16 @@ protected func Hit()
 
 public func HitObject(object obj)
 {
-	ProjectileHit(obj,ProjectileDamage(),ProjectileHit_tumble);
 	Sound("ProjectileHitLiving?");
+	
+	if (WeaponCanHit(obj))
+	{
+		obj->~OnProjectileHit(this);
+		WeaponDamage(obj, this->ProjectileDamage(), FX_Call_EngObjHit);
+		WeaponTumble(obj, this->TumbleStrength());
+		if (!this) return;
+	}
+	
 	RemoveObject();
 }
 
