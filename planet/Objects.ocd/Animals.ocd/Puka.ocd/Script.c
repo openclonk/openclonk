@@ -73,10 +73,19 @@ public func Construction()
 	
 	SetCreatureControlled();
 	
-	// A rare blue Puka?
-	if (!Random(5))
+	// Two spot layouts are available.
+	if (!Random(2))
 		SetMeshMaterial("Puka2");
+	ScheduleCall(this, "RandomizeColor", 10);
 	return true;
+}
+
+private func RandomizeColor()
+{
+	// Normally, Pukas are somewhat blue-ish. Rarely, you can find red ones, too!
+	var base_color = 170;
+	if (!Random(5)) base_color = 0;
+	SetColor(HSL(RandomX(base_color - 45, base_color + 45), 100 + Random(150), 50 + Random(50)));
 }
 
 public func CatchBlow(int damage, object from)

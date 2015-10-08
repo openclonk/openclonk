@@ -19,3 +19,4 @@ StretchGrowth=1
 IncompleteActivity=1
 Oversize=1
 Pathfinder=1
+ColorByOwner=1

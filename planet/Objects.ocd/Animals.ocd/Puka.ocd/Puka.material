@@ -5,39 +5,52 @@ material Puka
     {
         pass
         {
-            ambient 1.0 1.0 1.0 1.0
-            diffuse 1.0 1.0 1.0 1.0
+            ambient 0.8 0.8 0.8 1.0
+            diffuse 0.8 0.8 0.8 1.0
             specular 0.0 0.0 0.0 1.0 12.5
             emissive 0.0 0.0 0.0 1.0
-
-            texture_unit 
+			
+			texture_unit Overlay
+			{
+				texture puka_overlay1.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex modulate src_texture src_player_colour
+				// take alpha from texture only, ignore player alpha
+				alpha_op_ex source1 src_texture src_player_colour
+			}
+			
+            texture_unit Base
             {
-                texture puka.png
+                texture puka.jpg
                 tex_address_mode wrap
                 filtering trilinear
+                colour_op_ex blend_current_alpha src_current src_texture
+				// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
+				alpha_op_ex add src_current src_texture
             }
+            
+            texture_unit Light
+			{
+				// apply lighting -- note this texture unit does not need an
+				// actual texture image: no hardware TIU will be used.
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
         }
     }
 }
 
-material Puka2
+material Puka2 : Puka
 {
-    receive_shadows on
-    technique
+    technique 0
     {
-        pass
+        pass 0
         {
-            ambient 1.0 1.0 1.0 1.0
-            diffuse 1.0 1.0 1.0 1.0
-            specular 0.0 0.0 0.0 1.0 12.5
-            emissive 0.0 0.0 0.0 1.0
-
-            texture_unit 
-            {
-                texture puka2.png
-                tex_address_mode wrap
-                filtering trilinear
-            }
+			texture_unit Overlay
+			{
+				texture puka_overlay2.png
+			}
         }
     }
 }
