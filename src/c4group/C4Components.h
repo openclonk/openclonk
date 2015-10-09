@@ -128,7 +128,7 @@
 #define C4CFN_PlayerControls  "PlayerControls.txt"
 #define C4CFN_LandscapeShader "LandscapeShader.c"
 #define C4CFN_LandscapeScaler "Scaler.png"
-#define C4CFN_MaterialShapeFiles "Shape*.txt"
+#define C4CFN_MaterialShapeFiles "_Shape.png"
 
 #define C4CFN_MapFolderData   "FolderMap.txt"
 #define C4CFN_MapFolderBG     "FolderMap"

@@ -24,6 +24,7 @@
 #include <C4Id.h>
 #include <C4Shape.h>
 #include <C4Facet.h>
+#include <CSurface8.h>
 #include <vector>
 
 #define C4MatOv_Default     0
@@ -68,54 +69,6 @@ struct C4MaterialReaction
 	bool operator ==(const C4MaterialReaction &rCmp) const { return false; } // never actually called; only comparing with empty vector of C4MaterialReactions
 };
 
-// Custom material shape: Vectorized texture
-class C4MaterialShape
-{
-private:
-	int32_t prepared_for_zoom; // zoom for which internal overlap data has been calculated
-
-	bool DoPrepareForZoom(int32_t zoom);
-public:
-	struct Pt
-	{
-		int32_t x,y;
-
-		Pt(int32_t x, int32_t y) : x(x), y(y) {}
-		Pt() {}
-		void CompileFunc(StdCompiler *comp);
-	};
-
-	typedef std::vector<Pt> PtVec;
-
-	struct Poly : PtVec
-	{
-		Pt center,min,max; // arithmetic middle, minimum and maximum of all border points
-		PtVec overlaps; // map pixels that are overlapped by this shape for current zoom
-
-		void CompileFunc(StdCompiler *comp);
-		void PrepareForZoom(int32_t zoom);
-		bool IsPtContained(int32_t x, int32_t y) const;
-	};
-	typedef std::vector<Poly> PolyVec;
-
-	PolyVec polys;
-	int32_t wdt,hgt;
-	int32_t overlap_left,overlap_top,overlap_right,overlap_bottom; // amount by which the polygons extend past the rectangle (0,0)-(wdt,hgt)
-	int32_t max_poly_width, max_poly_height; // maximum size of any polygon in the list
-public:
-	C4MaterialShape();
-
-	void Clear();
-	bool Load(C4Group &group, const char *filename);
-
-	void CompileFunc(StdCompiler *comp);
-	bool operator ==(const C4MaterialShape &cmp) const;
-
-	bool PrepareForZoom(int32_t zoom) { if (zoom != prepared_for_zoom) return DoPrepareForZoom(zoom); else return true; }
-};
-
-typedef std::map<StdCopyStrBuf, C4MaterialShape> C4MaterialShapeMap;
-
 enum C4MaterialCoreShape
 {
 	C4M_Flat    = 0,
@@ -137,7 +90,6 @@ public:
 	char Name[C4M_MaxName+1];
 
 	C4MaterialCoreShape MapChunkType;
-	StdCopyStrBuf ShapeTexture;
 	int32_t  Density;
 	int32_t  Friction;
 	int32_t  DigFree;
@@ -183,6 +135,7 @@ public:
 	int32_t  LightAngle; // light angle at which we have maximum reflection
 	int32_t  LightEmit[3]; // amount the material lights up itself
 	int32_t  LightSpot[3]; // spot strength
+	int32_t MinShapeOverlap; // if drawn with a texture with custom shapes, minimum overlap of map pixels over shape blocks in percent to force them being drawn
 
 	void Clear();
 	void Default();
@@ -204,8 +157,6 @@ public:
 
 	C4Facet PXSFace;        // loose pixel facet
 
-	C4MaterialShape *CustomShape;
-
 	void UpdateScriptPointers(); // set all material script pointers
 };
 
@@ -218,7 +169,6 @@ public:
 	int32_t Num;
 	C4Material *Map;
 	C4MaterialReaction **ppReactionMap;
-	C4MaterialShapeMap Shapes;
 	int32_t max_shape_width,max_shape_height; // maximum size of the largest polygon in any of the used shapes
 
 	C4MaterialReaction DefReactConvert, DefReactPoof, DefReactCorrode, DefReactIncinerate, DefReactInsert;
@@ -247,7 +197,6 @@ public:
 	C4MaterialReaction *GetReaction(int32_t iPXSMat, int32_t iLandscapeMat);
 	void UpdateScriptPointers(); // set all material script pointers
 	bool CrossMapMaterials(const char* szEarthMaterial);
-	C4MaterialShape *GetShapeByName(const char *name);
 protected:
 	void SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact);
 	bool SortEnumeration(int32_t iMat, const char *szMatName);

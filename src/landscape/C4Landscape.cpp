@@ -1452,6 +1452,13 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Scan settings
 	ScanSpeed=Clamp(Width/500,2,15);
 
+	// Create pixel count array before any SetPix operations may take place
+	// Proper pixel counts will be done later, but needs to have the arrays redy to avoid dead pointer access.
+	// We will use 15x17 blocks so the pixel count can't get over 255.
+	int32_t PixCntWidth = (Width + 16) / 17;
+	PixCntPitch = (Height + 14) / 15;
+	PixCnt = new uint8_t[PixCntWidth * PixCntPitch];
+
 	// map to big surface and sectionize it
 	// (not for shaders though - they require continous textures)
 	if (!Game.C4S.Landscape.ExactLandscape)
@@ -1535,11 +1542,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Load diff, if existant
 	ApplyDiff(hGroup);
 
-	// Create pixel count array
-	// We will use 15x17 blocks so the pixel count can't get over 255.
-	int32_t PixCntWidth = (Width + 16) / 17;
-	PixCntPitch = (Height + 14) / 15;
-	PixCnt = new uint8_t[PixCntWidth * PixCntPitch];
+	// Pixel count tracking from landscape zoom is incomplete, so recalculate it.
 	UpdatePixCnt(C4Rect(0, 0, Width, Height));
 	ClearMatCount();
 	UpdateMatCnt(C4Rect(0, 0, Width, Height), true);
@@ -2047,67 +2050,15 @@ void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t 
 	ForPolygon(vtcs, 4, NULL, NULL, mcol, mcolBkg);
 }
 
-void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t off_x, int32_t off_y, uint8_t mcol, uint8_t mcolBkg)
-{
-	// put poly into plain int array format; add offset and send to polygon drawing proc
-	size_t n = poly.size(), i = 0;
-	int *vtcs = new int[n*2];
-	for (C4MaterialShape::Poly::const_iterator j=poly.begin(); j!=poly.end(); ++j)
-	{
-		vtcs[i++] = j->x + off_x;
-		vtcs[i++] = j->y + off_y;
-	}
-	ForPolygon(vtcs, n, NULL, NULL, mcol, mcolBkg);
-	// done
-	delete [] vtcs;
-}
-
-void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, CSurface8* sfcMapBkg, C4MaterialShape *shape, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY)
-{
-	// Prepare shape for map zoom
-	if (!shape->PrepareForZoom(MapZoom))
-	{
-		DebugLogF("ERROR: Cannot apply texture index %d: Material shape size not a multiple of map zoom!", (int)iTexture);
-		return;
-	}
-	// Get affected range of shapes
-	// range in pixels
-	int32_t x0 = iMapX*MapZoom, y0 = iMapY*MapZoom;
-	int32_t x1 = x0 + iMapWdt*MapZoom, y1 = y0 + iMapHgt*MapZoom;
-	// range in shape blocks
-	x0 = (x0-shape->overlap_right +shape->wdt) / shape->wdt - 1;
-	y0 = (y0-shape->overlap_bottom+shape->hgt) / shape->hgt - 1;
-	x1 = (x1+shape->overlap_left  +shape->wdt) / shape->wdt - 1;
-	y1 = (y1+shape->overlap_top   +shape->hgt) / shape->hgt - 1;
-	// paint from all affected shape blocks
-	for (int32_t y=y0; y<=y1; ++y)
-		for (int32_t x=x0; x<=x1; ++x)
-		{
-			int32_t x_map = x*shape->wdt/MapZoom, y_map = y*shape->hgt/MapZoom;
-			for (C4MaterialShape::PolyVec::const_iterator i = shape->polys.begin(); i!=shape->polys.end(); ++i)
-			{
-				const C4MaterialShape::Poly &p = *i;
-				// does this shape block overlap any map pixels of our material
-				for (C4MaterialShape::PtVec::const_iterator j=p.overlaps.begin(); j!=p.overlaps.end(); ++j)
-				{
-					const BYTE pix = sfcMap->GetPix(x_map + j->x, y_map + j->y);
-					if (pix == iTexture)
-					{
-						// First pixel in overlap list defines IFT
-						const BYTE pixBkg = sfcMapBkg->GetPix(x_map + j->x, y_map + j->y);
-						// draw this poly!
-						DrawCustomShapePoly(p, x_map*MapZoom+iOffX, y_map*MapZoom+iOffY, pix, pixBkg);
-						break;
-					}
-				}
-			}
-		}
-}
-
 void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY)
 {
-	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
+	const C4TexMapEntry *entry = ::TextureMap.GetEntry(iTexture);
+	C4Material *pMaterial = entry->GetMaterial();
 	if (!pMaterial) return;
+	const char *texture_name = entry->GetTextureName();
+	C4Texture *texture = ::TextureMap.GetTexture(texture_name);
+	C4TextureShape *shape = texture ? texture->GetMaterialShape() : NULL;
+	// Chunk type by material
 	C4MaterialCoreShape iChunkType = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : pMaterial->MapChunkType;
 	// Get map & landscape size
 	int iMapWidth, iMapHeight;
@@ -2190,7 +2141,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t 
 		}
 	}
 	// Draw custom shapes on top of regular materials
-	if (pMaterial->CustomShape) DrawCustomShape(sfcMap, sfcMapBkg, pMaterial->CustomShape, iMapX, iMapY, iMapWdt, iMapHgt, iTexture, iOffX, iOffY);
+	if (shape && !::Game.C4S.Landscape.FlatChunkShapes) shape->Draw(sfcMap, sfcMapBkg, iMapX, iMapY, iMapWdt, iMapHgt, iTexture, iOffX, iOffY, MapZoom, pMaterial->MinShapeOverlap);
 }
 
 bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, CSurface8 * sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage) const
@@ -3309,11 +3260,12 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 	if (!GetMapColorIndex(szBackMaterial,szBackTexture,byColBkg)) return false;
 	// Get material shape size
 	int32_t mat = PixCol2Mat(byCol);
+	C4Texture *texture = ::TextureMap.GetTexture(szTexture);
 	int32_t shape_wdt=0, shape_hgt=0;
-	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	if (texture && texture->GetMaterialShape())
 	{
-		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
-		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+		shape_wdt = texture->GetMaterialShape()->GetMaxPolyWidth() / MapZoom;
+		shape_hgt = texture->GetMaterialShape()->GetMaxPolyHeight() / MapZoom;
 	}
 	// Draw
 	switch (Mode)
@@ -3368,12 +3320,12 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 	if (!GetMapColorIndex(szMaterial,szTexture,line_color)) return false;
 	if (!GetMapColorIndex(szBackMaterial,szBackTexture,line_color_bkg)) return false;
 	// Get material shape size
-	int32_t mat = PixCol2Mat(line_color);
-	int32_t shape_wdt=0, shape_hgt=0;
-	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	C4Texture *texture = ::TextureMap.GetTexture(szTexture);
+	int32_t shape_wdt = 0, shape_hgt = 0;
+	if (texture && texture->GetMaterialShape())
 	{
-		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
-		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+		shape_wdt = texture->GetMaterialShape()->GetMaxPolyWidth() / MapZoom;
+		shape_hgt = texture->GetMaterialShape()->GetMaxPolyHeight() / MapZoom;
 	}
 	// Draw
 	switch (Mode)
@@ -3418,12 +3370,12 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
 	if (!GetMapColorIndex(szBackMaterial,szBackTexture,byColBkg)) return false;
 	// Get material shape size
-	int32_t mat = PixCol2Mat(byCol);
-	int32_t shape_wdt=0, shape_hgt=0;
-	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	C4Texture *texture = ::TextureMap.GetTexture(szTexture);
+	int32_t shape_wdt = 0, shape_hgt = 0;
+	if (texture && texture->GetMaterialShape())
 	{
-		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
-		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+		shape_wdt = texture->GetMaterialShape()->GetMaxPolyWidth() / MapZoom;
+		shape_hgt = texture->GetMaterialShape()->GetMaxPolyHeight() / MapZoom;
 	}
 	// Draw
 	switch (Mode)

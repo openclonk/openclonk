@@ -20,9 +20,10 @@
       <dd>
         <text>The engine will accept up to 252 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
       </dd>
-      <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/>*.png</dt>
+      <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/>*.png, *.jpg</dt>
       <dd>
         <text>There can be any number of textures in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.).</text>
+        <text>Each texture may optionally have a normal map named texturename_NRM.jpg and a shape texture named texturename_Shape.png (see section below).</text>
       </dd>
     </dl>
     <h id="MaterialTexturReferenzen">Material-Texture-References</h>
@@ -43,7 +44,10 @@
         </row>
       </table>
     </text>
+    <h id="TextureShapes">Texture shapes</h>
+    <text>Shape textures may be used to denote individual objects like rocks or bricks within a texture. When zooming the map to the landscape, the engine tries to zoom such that only complete objects from the shape texture are used in the final landscape. This is achieved by completing all shapes that have a minimum coverage from the map pixels zoomed at flat shape. The minimum coverage can be set per material using the MinShapeOverlap setting.</text>
+    <text>Texture files should be named [Texturename]_Shape.png and use one distinct color per shape. Shapes may (and should) wrap around borders, but must not exceed 25% of the total texture size in each dimension. Areas outside a shape must be made fully transparent. All shape colors must be exact, i.e. no anti-aliasing between shapes or to transparency may be used. Shape files should have be sized as a whole multiple of the corresponding texture size divided by its scaler (usually 4). A maximum of 255 shapes may be defined in each texture. See granite_Shape.png in the original Materials.ocg for an example.</text>
   </part>
-  <author>Sven2</author><date>2002-04</date>
+  <author>Sven2</author><date>2015-10</date>
   <author>matthes</author><date>2004-04</date>
 </doc>

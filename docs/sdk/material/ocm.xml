@@ -215,6 +215,11 @@
           <col>4 integers</col>
           <col>Target rectangle for the graphics of loose material pixels. Additional phases on the right and below the specified rectangle will be used. The rectangle should always start in the top left corner and use the complete texture size.</col>
         </row>
+        <row>
+          <col>MinShapeOverlap</col>
+          <col>Integer</col>
+          <col>Used during map-to-landscape zooming when drawn with a texture with shape definitions: Minimum overlap of map pixels to corresponding shapes to cause a full shape expansion. See <emlink href="material/index.html#TextureShapes">Shape textures</emlink>.</col>
+        </row>
       </table>
     </text>
   </part>
@@ -438,5 +443,5 @@
  The return value of the function should be either 1 for removal or 0 for keeping the loose material.
     </text>
   </part>
-  <author>Sven2</author><date>2006-12</date>
+  <author>Sven2</author><date>2015-10</date>
 </doc>

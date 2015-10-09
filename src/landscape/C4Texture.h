@@ -24,6 +24,32 @@
 #include <C4Constants.h>
 #include <C4Material.h>
 
+// Custom texture drawing shape for Map2Landscape zooming
+class C4TextureShape
+{
+private:
+	enum { Shape_None = 0xff }; // special value in data surface: No shape defined here.
+	CSurface8 data;
+	int32_t num_shapes;
+	std::vector<bool> shape_border_x, shape_border_y; // whether shapes are touching horizontal/vertical borders
+	std::vector<int32_t> shape_pixnum; // number of pixels
+public:
+	C4TextureShape();
+
+	void Clear();
+	bool Load(C4Group &group, const char *filename, int32_t base_tex_wdt, int32_t base_tex_hgt);
+
+	int32_t GetWidth() const { return data.Wdt; }
+	int32_t GetHeight() const { return data.Hgt; }
+	// Poly range used to ensure update range in editor mode is large enough
+	// not calculated on loading for now. Just assume something reasonably safe
+	int32_t GetMaxPolyWidth() const { return GetWidth() / 4; }
+	int32_t GetMaxPolyHeight() const { return GetHeight() / 4; }
+
+	void Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, uint8_t iTexture, int32_t iOffX, int32_t iOffY, int32_t MapZoom, int32_t min_overlap_ratio);
+};
+
+
 class C4Texture
 {
 	friend class C4TextureMap;
@@ -34,9 +60,12 @@ public:
 
 	void SetAverageColor(uint32_t Color) { AvgColor = Color; }
 	uint32_t GetAverageColor() const { return AvgColor; }
+	void SetMaterialShape(class C4TextureShape *s) { material_shape.reset(s); }
+	class C4TextureShape *GetMaterialShape() const { return material_shape.get(); }
 protected:
 	StdStrBuf Name;
 	uint32_t AvgColor;
+	std::unique_ptr<class C4TextureShape> material_shape;
 	C4Texture *Next;
 };
 
