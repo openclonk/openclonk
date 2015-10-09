@@ -45,7 +45,7 @@ public func GetTreetopPosition(pos)
 
 private func Definition(def) 
 {
-	SetProperty("PictureTransformation", Trans_Translate(0, 0, 20000), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-27000, -000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1)), def);
 }
 
 local Name = "$Name$";

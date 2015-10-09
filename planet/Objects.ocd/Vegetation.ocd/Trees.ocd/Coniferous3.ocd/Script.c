@@ -7,12 +7,17 @@ private func SeedChance() { return 500; }
 private func SeedArea() { return 400; }
 private func SeedAmount() { return 10; }
 
+local lib_tree_burned = Tree_Coniferous3_Burned;
+
 public func GetTreetopPosition(pos)
 {
 	return Shape->Rectangle(-10,-8, 20,10)->GetRandomPoint(pos);
 }
 
-local lib_tree_burned = Tree_Coniferous3_Burned;
+private func Definition(def)
+{
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-25000, -8000, 22000), Trans_Rotate(40,0,0,1), Trans_Rotate(-10,1)), def);
+}
 
 local Name = "$Name$";
 local Touchable = 0;

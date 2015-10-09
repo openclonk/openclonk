@@ -14,6 +14,11 @@ public func GetTreetopPosition(pos)
 	return Shape->Rectangle(-23,-11, 46,33)->GetRandomPoint(pos);
 }
 
+private func Definition(def)
+{
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-20000, -10000, 60000), Trans_Rotate(35,0,0,1)), def);
+}
+
 local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 2;
