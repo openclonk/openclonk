@@ -11,7 +11,6 @@ static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from S2AI; contains changes for this scenario
-static g_homebases; // item management / buy menus for each player
 static const ENEMY = 10; // player number of enemy
 
 static const MAX_RELAUNCH = 10;
@@ -21,8 +20,6 @@ static const MAX_RELAUNCH = 10;
 
 func Initialize()
 {
-	// Player homebase preparation
-	g_homebases = [];
 	// static variable init
 	InitWaveData();
 }
@@ -46,7 +43,6 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
 	SetFoW(false,plr);
-	g_homebases[plr] = CreateObject(Homebase, 0,0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
 	return;
@@ -54,7 +50,6 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 
 func RemovePlayer(int plr)
 {
-	if (g_homebases[plr]) g_homebases[plr]->RemoveObject();
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	return;
 }
@@ -100,8 +95,8 @@ func JoinPlayer(plr)
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
 	// contents
-	clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
-	clonk.MaxContentsCountVal = 1;
+	//clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
+	//clonk.MaxContentsCountVal = 2;
 	clonk->CreateContents(Bow);
 	var arrow = CreateObjectAbove(Arrow);
 	clonk->Collect(arrow);
