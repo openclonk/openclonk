@@ -129,7 +129,7 @@
 	
 	# Modifier keys (e.g. for menus). Usually map to one of the default keys.
 	[ControlDef]
-	Identifier=ModifierInventory1
+	Identifier=ModifierMenu1
 	Hold=1
 	
 	# Inventory
@@ -639,7 +639,7 @@
 		
 		[Assignment]
 		Key=CON_PickUp
-		Control=ModifierInventory1
+		Control=ModifierMenu1
 		Priority=100
 		
 		[Assignment]

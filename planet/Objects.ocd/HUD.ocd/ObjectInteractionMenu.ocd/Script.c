@@ -791,7 +791,7 @@ private func OnContentsSelection(symbol, extra_data)
 	var to_transfer = nil;
 	if (extra_data.one_object) // Transfer a specific object?
 		to_transfer = [extra_data.one_object];
-	else if (!GetPlayerModifierKey(GetOwner(), MODIFIER_Inventory1)) // Transfer ONE object with some ID?
+	else if (GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0) // Transfer ONE object with some ID?
 	{
 		to_transfer = [target->FindContents(symbol)];
 	}
