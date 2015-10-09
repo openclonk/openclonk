@@ -1081,7 +1081,7 @@ void C4ToolsDlg::UpdateTextures()
 			}
 		}
 		// reselect current
-		SendDlgItemMessage(state->hDialog, box, CB_SELECTSTRING, 0, GetWideLPARAM(texture));
+		SendDlgItemMessage(state->hDialog, box, CB_SELECTSTRING, -1, GetWideLPARAM(texture));
 	}
 }
 
