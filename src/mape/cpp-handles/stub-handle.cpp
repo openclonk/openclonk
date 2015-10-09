@@ -156,6 +156,8 @@ bool C4PXSSystem::Create(int, C4Real, C4Real, C4Real, C4Real) { return false; }
 
 void AddDbgRec(C4RecordChunkType, const void *, int) {}
 
+bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex_wdt, int32_t base_tex_hgt) { return true; }
+
 #if 0
 /* Pulled in by C4Game... */
 CStdFont::CStdFont() {}

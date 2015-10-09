@@ -343,6 +343,8 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4SolidMask.h
 	src/landscape/C4Texture.cpp
 	src/landscape/C4Texture.h
+	src/landscape/C4TextureShape.cpp
+	src/landscape/C4TextureShape.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
 	src/lib/C4LogBuf.cpp
