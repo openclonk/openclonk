@@ -10,6 +10,13 @@ static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
 static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
 
+// Array of arrays that contain the state of modifier keys as boolean values (true = pressed).
+static g_player_modifier_keys;
+// Modifier key that maps to the "inventory" button (which is 'shift' on a default keyboard).
+static const MODIFIER_Inventory1 = 0;
+// Always the last modifier key identifier.
+static const MODIFIER_MAX = 1;
+
 // PlayerControlRelease
 // Called by engine whenever a control is issued
 // Forwards control to special handler or cursor
@@ -158,6 +165,19 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		return SetCursor(plr, crew);
 	}
 	
+	// Modifier keys - store information but continue with the next command.
+	var modifier_mapping = -1;
+	if (ctrl == CON_ModifierInventory1) modifier_mapping = MODIFIER_Inventory1;
+	if (modifier_mapping != -1)
+	{
+		if (!g_player_modifier_keys) g_player_modifier_keys = CreateArray(plr+1);
+		if (!g_player_modifier_keys[plr]) g_player_modifier_keys[plr] = CreateArray(MODIFIER_MAX);
+		g_player_modifier_keys[plr][modifier_mapping] = !release;
+		// Continue with the "real" command!
+		return false;
+	}
+	
+	
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
@@ -180,6 +200,14 @@ global func GetPlayerCursorPos(int plr)
 {
 	if (!g_player_cursor_pos) return 0;
 	return g_player_cursor_pos[plr];
+}
+
+/* return state of modifier key for player (true == is being held down) */
+global func GetPlayerModifierKey(int plr, int key)
+{
+	if (!g_player_modifier_keys) return false;
+	if (!g_player_modifier_keys[plr]) return false;
+	return g_player_modifier_keys[plr][key];
 }
 
 global func StopSelected(int plr)

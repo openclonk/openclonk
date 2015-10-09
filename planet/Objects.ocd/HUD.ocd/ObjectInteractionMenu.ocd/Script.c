@@ -788,34 +788,60 @@ private func OnContentsSelection(symbol, extra_data)
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
 	
-	var obj = extra_data.one_object ?? target->FindContents(symbol);
-	if (!obj) return;
-	
-	var handled = false;
-	
-	// Does the object not want to leave the other container anyway?
-	if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
+	var to_transfer = nil;
+	if (extra_data.one_object) // Transfer a specific object?
+		to_transfer = [extra_data.one_object];
+	else if (!GetPlayerModifierKey(GetOwner(), MODIFIER_Inventory1)) // Transfer ONE object with some ID?
 	{
-		// If stackable, always try to grab a full stack.
-		// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
-		if (obj->~IsStackable())
+		to_transfer = [target->FindContents(symbol)];
+	}
+	else // Transfer all!
+	{
+		// Use Contents instead of FindObjets(Find_Container(..)) so that objects can overload Contents().
+		to_transfer = [];
+		var c;
+		var i = 0;
+		while (c = target->Contents(i++))
 		{
-			var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
-			for (var other in others) 
-			{
-				if (obj->IsFullStack()) break;
-				other->TryAddToStack(obj);
-			}
+			if (c->GetID() == symbol)
+				PushBack(to_transfer, c);
 		}
+	}
+	var successful_transfers = 0;
+	
+	// Try to transfer all the previously selected items.
+	for (var obj in to_transfer)
+	{
+		if (!obj) continue;
 		
-		// More special handling for Stackable items..
-		handled = obj->~TryPutInto(other_target);
-		// Try to normally collect the object otherwise.
-		if (!handled)
-			handled = other_target->Collect(obj, true);
+		var handled = false;
+		// Does the object not want to leave the other container anyway?
+		if (!obj->Contained() || !obj->~QueryRejectDeparture(target))
+		{
+			// If stackable, always try to grab a full stack.
+			// Imagine armory with 200 arrows, but not 10 stacks with 20 each but 200 stacks with 1 each.
+			if (obj->~IsStackable())
+			{
+				var others = FindObjects(Find_Container(target), Find_ID(symbol), Find_Exclude(obj));
+				for (var other in others) 
+				{
+					if (obj->IsFullStack()) break;
+					other->TryAddToStack(obj);
+				}
+			}
+			
+			// More special handling for Stackable items..
+			handled = obj->~TryPutInto(other_target);
+			// Try to normally collect the object otherwise.
+			if (!handled)
+				handled = other_target->Collect(obj, true);
+		}
+		if (handled)
+			successful_transfers += 1;
 	}
 	
-	if (handled)
+	// Did we at least transfer one item?
+	if (successful_transfers > 0)
 	{
 		Sound("SoftTouch*", true, nil, GetOwner());
 		return true;

@@ -127,6 +127,11 @@
 	GUIName=$CON_Roll$
 	GUIDesc=$CON_Roll_Desc$
 	
+	# Modifier keys (e.g. for menus). Usually map to one of the default keys.
+	[ControlDef]
+	Identifier=ModifierInventory1
+	Hold=1
+	
 	# Inventory
 	
 	[ControlDef]
@@ -631,7 +636,12 @@
 		Control=InventoryShiftForward
 		
 		# Menu
-
+		
+		[Assignment]
+		Key=CON_PickUp
+		Control=ModifierInventory1
+		Priority=100
+		
 		[Assignment]
 		Key=F
 		Control=PlayerMenu
