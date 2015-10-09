@@ -28,6 +28,7 @@
 #include "C4PXS.h"
 #include "C4Record.h"
 #include "C4RoundResults.h"
+#include "C4TextureShape.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. It also instantiates global variables required by mape that are
