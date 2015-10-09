@@ -15,6 +15,7 @@ protected func Initialize()
 
 public func Burning()
 {
+	// TODO: Consume inflammable material
 	// Split the flame if it is large enough.
 	if (GetCon() > 50 && !Random(3))
 	{

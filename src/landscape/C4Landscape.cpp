@@ -970,15 +970,15 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 	return true;
 }
 
-bool C4Landscape::Incinerate(int32_t x, int32_t y)
+bool C4Landscape::Incinerate(int32_t x, int32_t y, int32_t cause_player)
 {
 	int32_t mat=GetMat(x,y);
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Inflammable)
-			// Not too much FLAMs
-			if (!Game.FindObject (C4Id2Def(C4ID::Flame), x - 4, y - 1, 8, 20))
-				if (Game.CreateObject(C4ID::Flame,NULL,NO_OWNER,x,y))
-					return true;
+		{
+			C4AulParSet pars(C4VInt(x), C4VInt(y), C4VInt(cause_player));
+			::ScriptEngine.GetPropList()->Call(P_InflameLandscape, &pars);
+		}
 	return false;
 }
 

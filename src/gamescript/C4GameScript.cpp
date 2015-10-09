@@ -44,10 +44,10 @@
 #include <C4FoW.h>
 
 // undocumented!
-static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
+static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY, long caused_by_plr)
 {
 	if (Object(_this)) { iX += Object(_this)->GetX(); iY += Object(_this)->GetY(); }
-	return !!::Landscape.Incinerate(iX, iY);
+	return !!::Landscape.Incinerate(iX, iY, caused_by_plr);
 }
 
 static C4Void FnSetGravity(C4PropList * _this, long iGravity)

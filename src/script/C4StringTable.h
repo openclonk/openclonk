@@ -437,6 +437,7 @@ enum C4PropertyName
 	P_MusicBreakMin,
 	P_MusicBreakMax,
 	P_MusicBreakChance,
+	P_InflameLandscape,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

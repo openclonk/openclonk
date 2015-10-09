@@ -245,6 +245,7 @@ C4StringTable::C4StringTable()
 	P[P_MusicBreakMin] = "MusicBreakMin";
 	P[P_MusicBreakMax] = "MusicBreakMax";
 	P[P_MusicBreakChance] = "MusicBreakChance";
+	P[P_InflameLandscape] = "InflameLandscape";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

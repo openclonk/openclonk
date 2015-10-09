@@ -33,7 +33,6 @@ const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 // TODO: Remove these eventually, since they are deprecated.
 const C4ID C4ID::Flag(std::string("FLAG"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
-const C4ID C4ID::Flame(std::string("FLAM"));
 const C4ID C4ID::Melee(std::string("MELE"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }

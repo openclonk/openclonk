@@ -827,7 +827,7 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 	{
 	case meeMassMove: // MassMover-movement
 	case meePXSPos: // PXS check before movement
-		if (::Landscape.Incinerate(iX, iY)) return true;
+		if (::Landscape.Incinerate(iX, iY, NO_OWNER)) return true;
 		break;
 
 	case meePXSMove: // PXS movement
@@ -836,7 +836,7 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 			// either splash or slide prevented interaction
 			return false;
 		// evaluate inflammation (should always succeed)
-		if (::Landscape.Incinerate(iX, iY)) return true;
+		if (::Landscape.Incinerate(iX, iY, NO_OWNER)) return true;
 		// Else: dead. Insert material here
 		::Landscape.InsertMaterial(iPxsMat,&iX,&iY);
 		return true;
