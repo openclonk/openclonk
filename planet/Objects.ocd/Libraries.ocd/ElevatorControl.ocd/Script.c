@@ -12,6 +12,13 @@ public func FitsInElevator()
 	return true;
 }
 
+// Set to true for objects that only fit into a double elevator
+// Objects will be centered inbetween the two cases
+public func FitsInDoubleElevator()
+{
+	return false;
+}
+
 /* Controls */
 
 func ControlUp(object clonk)

@@ -15,6 +15,7 @@ local clonkmesh;
 
 public func IsVehicle() { return true; }
 public func IsArmoryProduct() { return true; }
+public func FitsInDoubleElevator() { return true; }
 
 protected func Initialize()
 {

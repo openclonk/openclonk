@@ -312,14 +312,25 @@ private func FxFetchVehiclesTimer(object target, proplist effect, int time)
 	{
 		if (GetEffect("ElevatorControl", vehicle))
 			continue;
+		if (vehicle->FitsInDoubleElevator())
+			if (!IsMaster())
+				continue;
 		vehicle->SetSpeed();
 		// If a clonk is pushing the vehicle, its receive another push after 1 frame
 		Schedule(vehicle, "SetSpeed()", 2);
 		vehicle->SetR();
 		var x = GetX();
 		if (IsMaster())
-			if (ObjectDistance(vehicle) > ObjectDistance(vehicle, partner))
+		{
+			// Position vehicle inbetween the two cases
+			if (vehicle->FitsInDoubleElevator())
+			{
+				x = GetX() + 12;
+				if (partner->GetX() < GetX())
+					x -= 24;
+			} else if (ObjectDistance(vehicle) > ObjectDistance(vehicle, partner))
 				x = partner->GetX();
+		}
 		vehicle->SetPosition(x, GetY() + GetBottom() - 3 - vehicle->GetBottom());
 		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
 		Sound("Connect");
@@ -441,7 +452,7 @@ private func SetMoveDirection(int dir, bool user_requested, bool drill)
 		SetComDir(dir);
 		ForceSync();
 		elevator->StartEngine(dir);
-		if (partner)
+		if (IsMaster())
 			partner->ForwardEngineStart(dir);
 	}
 	else
@@ -459,7 +470,7 @@ private func Halt(bool user_requested, bool power_out)
 	// Stop the engine if it was still moving.
 	if(elevator)
 		elevator->StopEngine();
-	if (partner)
+	if (IsMaster())
 		partner->ForwardEngineStop();
 
 	// Clear speed.
