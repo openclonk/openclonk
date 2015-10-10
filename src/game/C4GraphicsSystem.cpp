@@ -300,6 +300,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 		::Viewports.RecalculateViewports();
 		// save!
 		CPNGFile::ScheduleSaving(png.release(), szFilename);
+		return true;
 	}
 	// Save primary surface in background thread
 	return FullScreen.pSurface->SavePNG(szFilename, false, false, true);
