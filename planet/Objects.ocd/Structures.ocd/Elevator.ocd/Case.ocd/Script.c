@@ -33,6 +33,8 @@ public func Ready(object clonk)
 	if (Inside(clonk->GetY(), GetY()-10, GetY()+10)) return false;
 	// Enemy
 	if (Hostile(GetOwner(), clonk->GetOwner())) return false;
+	// PathFree
+	if (!PathFree(GetX(), GetY(), GetX(), clonk->GetY())) return false;
 
 	return true;
 }
