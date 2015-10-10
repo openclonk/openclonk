@@ -159,6 +159,8 @@ public func GetPowerNetwork(object for_obj)
 	// If no flag was available the object is neutral and needs a neutral helper.
 	if (!flag)
 	{
+		if (!LIB_POWR_Networks)
+			LIB_POWR_Networks = [];
 		for (var network in LIB_POWR_Networks)
 		{
 			if (!network || !network.lib_power.neutral_network) 
@@ -167,12 +169,12 @@ public func GetPowerNetwork(object for_obj)
 			break;
 		}
 		// Create the helper if it does not exist yet.
-		if (helper == nil) 
+		if (helper == nil)
 		{
 			helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
 			helper.lib_power.neutral_network = true;
 			LIB_POWR_Networks[GetLength(LIB_POWR_Networks)] = helper;
-		}		
+		}
 	}
 	// Otherwise just get the helper from the flag.
 	else
