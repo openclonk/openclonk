@@ -35,6 +35,7 @@ cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/
 earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486/)
 qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/)
 Aiwha           - Ding (modified) (http://freesound.org/people/Aiwha/sounds/196106/)
+discokingmusic	- Connect (http://www.freesound.org/people/discokingmusic/sounds/271387/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 

@@ -265,12 +265,13 @@ public func OutOfRange(object vehicle)
 {
 	if(Abs(GetY() - vehicle->GetY()) > 10) return true;
 
-	var min_x = GetX() - 12;
-	var max_x = GetX() + 12;
+	var dist = vehicle->GetObjWidth();
+	var min_x = GetX() - dist;
+	var max_x = GetX() + dist;
 	if(IsMaster())
 	{
-		min_x = Min(min_x, partner->GetX() - 12);
-		max_x = Max(max_x, partner->GetX() + 12);
+		min_x = Min(min_x, partner->GetX() - dist);
+		max_x = Max(max_x, partner->GetX() + dist);
 	}
 
 	if(vehicle->GetX() < min_x) return true;
@@ -280,13 +281,13 @@ public func OutOfRange(object vehicle)
 
 private func FxFetchVehiclesTimer(object target, proplist effect, int time)
 {
-	if (!elevator) 
+	if (!elevator)
 		return FX_Execute_Kill;
 	if (IsSlave())
 		return FX_OK;
 
 	// look for vehicles
-	var additional = -5;
+	var additional = 5;
 	var x = GetX() - 12 - additional;
 	var w = GetX() + 12 + additional;
 	var y = GetY() - 12;
@@ -303,13 +304,20 @@ private func FxFetchVehiclesTimer(object target, proplist effect, int time)
 	{
 		if (GetEffect("ElevatorControl", vehicle))
 			continue;
-		vehicle->SetPosition(vehicle->GetX(), GetY() + GetBottom() - 3 - vehicle->GetBottom());
 		vehicle->SetSpeed();
+		// If a clonk is pushing the vehicle, its receive another push after 1 frame
+		Schedule(vehicle, "SetSpeed()", 2);
 		vehicle->SetR();
+		var x = GetX();
+		if (IsMaster())
+			if (ObjectDistance(vehicle) > ObjectDistance(vehicle, partner))
+				x = partner->GetX();
+		vehicle->SetPosition(x, GetY() + GetBottom() - 3 - vehicle->GetBottom());
 		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
+		Sound("Connect");
 	}
 
-	return 1;
+	return FX_OK;
 }
 
 /*-- Power Consumption --*/
@@ -448,9 +456,8 @@ private func Halt(bool user_requested, bool power_out)
 		return;
 
 	// Stop the engine if it was still moving.
-	if (GetYDir())
-		if(elevator)
-			elevator->StopEngine();
+	if(elevator)
+		elevator->StopEngine();
 
 	// Clear speed.
 	SetAction("DriveIdle");
