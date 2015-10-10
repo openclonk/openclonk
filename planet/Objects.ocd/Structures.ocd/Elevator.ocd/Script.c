@@ -111,7 +111,9 @@ public func LostCase()
 {
 	if(partner) partner->LoseCombination();
 	if(rope) rope->RemoveObject();
-	
+
+	StopEngine();
+
 	// for now: the elevator dies, too
 	Incinerate();
 }
@@ -120,13 +122,16 @@ public func LostCase()
 
 local wheel_anim, case_speed;
 
-public func StartEngine(int direction)
+public func StartEngine(int direction, bool silent)
 {
 	if (!case) return;
 
-	Sound("ElevatorStart", nil, nil, nil, nil, 400);
-	ScheduleCall(this, "EngineLoop", 34);
-	if (wheel_anim == nil) // If for some reason the animation stopped
+	if (!silent)
+	{
+		Sound("ElevatorStart", nil, nil, nil, nil, 400);
+		ScheduleCall(this, "EngineLoop", 34);
+	}
+	if (wheel_anim == nil) // If for some reason the animation has stopped
 		wheel_anim = PlayAnimation("winchSpin", 1, Anim_Const(0), Anim_Const(1000));
 
 	var begin, end;
@@ -151,13 +156,15 @@ public func EngineLoop()
 	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
 }
 
-public func StopEngine()
+public func StopEngine(bool silent)
 {
-	Sound("ElevatorMoving", nil, nil, nil, -1);
-	ClearScheduleCall(this, "EngineLoop");
-	Sound("ElevatorStop", nil, nil, nil, nil, 400);
+	if (!silent)
+	{
+		Sound("ElevatorMoving", nil, nil, nil, -1);
+		ClearScheduleCall(this, "EngineLoop");
+		Sound("ElevatorStop", nil, nil, nil, nil, 400);
+	}
 
-	if (!case) return;
 	if (wheel_anim == nil) return;
 
 	case_speed = nil;

@@ -46,11 +46,6 @@ public func CallCase(object clonk)
 
 /*-- Callbacks --*/
 
-// Elevator speeds.
-private func GetCaseSpeed() { return 20; }
-private func GetAutoSpeed() { return GetCaseSpeed() * 2; }
-private func GetDrillSpeed() { return GetCaseSpeed() / 2; }
-
 // Case is not a structure, but uses the library.
 public func IsStructure() { return false; }
 
@@ -195,7 +190,18 @@ public func ForceSync()
 	partner->SetAction(GetAction());
 	partner->SetComDir(GetComDir());
 	partner->SetYDir(GetYDir());
-	return;
+}
+
+public func ForwardEngineStart(int direction)
+{
+	if (elevator)
+		elevator->StartEngine(direction, true);
+}
+
+public func ForwardEngineStop()
+{
+	if (elevator)
+		elevator->StopEngine(true);
 }
 
 /* Security checks */
@@ -425,17 +431,9 @@ private func SetMoveDirection(int dir, bool user_requested, bool drill)
 	if (dir == COMD_Stop)
 		return Halt();
 
-	var speed = GetCaseSpeed();
-	// Note: can not move down with full speed because of solidmask problem.
-	if (!user_requested && dir == COMD_Up)
-		speed = GetAutoSpeed();
-
 	var action = "Drive";
 	if (drill)
-	{
 		action = "Drill";
-		speed = GetDrillSpeed();
-	}
 
 	if (has_power)
 	{
@@ -443,13 +441,14 @@ private func SetMoveDirection(int dir, bool user_requested, bool drill)
 		SetComDir(dir);
 		ForceSync();
 		elevator->StartEngine(dir);
+		if (partner)
+			partner->ForwardEngineStart(dir);
 	}
 	else
 	{
 		StoreMovementData(dir, action, user_requested);
 		RegisterPowerRequest(GetNeededPower());
 	}
-	return;
 }
 
 private func Halt(bool user_requested, bool power_out)
@@ -460,6 +459,8 @@ private func Halt(bool user_requested, bool power_out)
 	// Stop the engine if it was still moving.
 	if(elevator)
 		elevator->StopEngine();
+	if (partner)
+		partner->ForwardEngineStop();
 
 	// Clear speed.
 	SetAction("DriveIdle");
@@ -612,7 +613,7 @@ public func ControlDown(object clonk)
 	
 	// Pressing down when already on ground results in drilling.
 	var drill = !!GetContact(-1, CNAT_Bottom);
-	
+
 	StopAutomaticMovement();
 	SetMoveDirection(COMD_Down, true, drill);
 	return true;
@@ -669,7 +670,6 @@ private func Drilling()
 		rect.h = Max(rect.h, partner->GetY() + 13 + additional_y);
 	}
 	DigFreeRect(rect.x, rect.y, rect.w - rect.x, rect.h - rect.y);
-	return;
 }
 
 public func DigOutObject(object obj)
