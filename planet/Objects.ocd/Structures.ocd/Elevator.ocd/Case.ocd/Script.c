@@ -570,8 +570,6 @@ private func CheckIdle()
 private func ContactTop()
 {
 	Halt();
-	Sound("WoodHit*");
-	return;
 }
 
 private func ContactBottom()
@@ -589,8 +587,6 @@ private func ContactBottom()
 		}
 	}
 	Halt();
-	Sound("WoodHit*");
-	return;
 }
 
 /*-- Controls --*/
