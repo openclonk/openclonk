@@ -1,4 +1,4 @@
-// Make's the wipf turn into rainbow colors after eating a berry.
+// The wipf will produce pink bubbles when eating a berry.
 
 #appendto Wipf
 
@@ -9,9 +9,10 @@ protected func RejectCollect(id object_id)
 	{
 		// Add some stars effect to the clonk indicating the easteregg.
 		CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 25, Particles_Magic(), 20);
-		
+		// Add the bubbles effect for the wipf.
 		AddEffect("IntBreathBubbles", this, 100, 5, this);
-	
+		// Achievement: easter egg found.
+		GainScenarioAchievement("TutorialEasterEgg");
 	}
 	return _inherited(...);	
 }
@@ -19,7 +20,7 @@ protected func RejectCollect(id object_id)
 protected func FxIntBreathBubblesTimer(object target, proplist effect, int time)
 {
 	if (!Random(4))
-		return 1;
+		return FX_OK;
 		
 	var bubble = 
 	{
@@ -34,6 +35,5 @@ protected func FxIntBreathBubblesTimer(object target, proplist effect, int time)
 		Phase = 0
 	};	
 	CreateParticle("SphereSpark", 3 * GetDir(), -2, PV_Random(-2, 2), PV_Random(-8, 0), 25, bubble, 1);	
-
-	return 1;
+	return FX_OK;
 }
