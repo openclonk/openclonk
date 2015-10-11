@@ -1,0 +1,28 @@
+# Dialogue: Lumberjack
+DlgLumberjackHello=Hello I am %s, the lumberjack of this small village.
+DlgLumberjackReply=My name is %s, you seem sad.
+DlgLumberjackSawmill=Yes, indeed. My sawmill got destroyed and I can't find any rock to rebuild it. Can you help me?
+DlgLumberjackRock=Yes, I'll find you some rock.
+DlgLumberjackWellDone=Thanks a lot, for constructing the sawmill. Can I do anything for you?
+DlgLumberjackFavor=Actually you can, I need wood, do you happen to have an axe?
+DlgLumberjackMines=No, I don't, but I have dropped my axe in the mines when I was hiding there during the attack.
+DlgLumberjackLook=Ok, I'll have a look.
+
+# Dialogue: Fireman
+DlgFiremanLastFire=Phew that was the last fire!
+DlgFiremanGoodJob=Good job, have you been under attack?
+DlgFiremanEvilGuys=Yes our village has been, the evil guys took some of our wipfs.
+DlgFiremanFurryFriend=That is bad, I hope they won't take my little furry friend! How can I help?
+DlgFiremanFlagpole=We need to construct a new flag pole, to reconnect the power supply in our village.
+
+# Dialogue: Builder
+DlgBuilderHello=Hi there, My name is %s and I am a builder.
+DlgBuilderReply=Then you have lots of work. Do you need a hand?
+DlgBuilderFlagpole=Yes, can you construct a flagpole over here?
+DlgBuilderWhyHere=Of course, but why over here?
+DlgBuilderConnect=Because then the flagpole will provide a power connection between the wind generator and the elevator.
+
+# Dialogue: Farmer
+DlgFarmerHello=Hi, is my wipf safe here?
+DlgFarmerYesSafe=Yes it is, I will look after it. Are you helping us rebuild?
+DlgFarmerRebuild=I am!
