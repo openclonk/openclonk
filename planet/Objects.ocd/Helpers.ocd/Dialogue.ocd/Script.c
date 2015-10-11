@@ -48,10 +48,22 @@ global func RemoveDialogue()
 }
 
 // Find dialogue attached to a target (definition call, e.g. var dlg = Dialogue->FindByTarget(foo))
-func FindByTarget(object target)
+public func FindByTarget(object target)
 {
 	if (!target) return nil;
 	return FindObject(Find_ID(Dialogue), Find_ActionTarget(target));
+}
+
+// Find dialogue with a given name.
+public func FindByName(string name)
+{
+	if (!name) return nil;
+	return FindObject(Find_ID(Dialogue), Find_Func("HasName", name));
+}
+
+public func HasName(string name)
+{
+	return name = dlg_name;
 }
 
 /*-- Dialogue properties --*/
