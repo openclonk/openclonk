@@ -32,9 +32,13 @@ public func Ready(object clonk)
 	// No need to call?
 	if (Inside(clonk->GetY(), GetY()-10, GetY()+10)) return false;
 	// Enemy
-	if (Hostile(GetOwner(), clonk->GetOwner())) return false;
+	if (Hostile(elevator->GetOwner(), clonk->GetOwner())) return false;
 	// PathFree
-	if (!PathFree(GetX(), GetY(), GetX(), clonk->GetY())) return false;
+	if (clonk->GetY() < GetY())
+	{
+		if (!PathFree(GetX(), GetY(), GetX(), clonk->GetY())) return false;
+	} else if (!PathFree(GetX(), GetY()+14, GetX(), clonk->GetY()))
+		return false;
 
 	return true;
 }
