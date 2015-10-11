@@ -77,64 +77,59 @@ protected func Destruction()
 
 // Menu IDs.
 local id_menu;
-local id_guide;
-local id_text;
-local id_next;
-local id_prev;
 
 // Menu proplists.
 local prop_menu;
-local prop_guide;
-local prop_text;
 local prop_next;
 local prop_prev;
 
 private func InitializeMenu()
 {
 	var menu_width = 25; // in percentage of whole screen
+	var meny_offset = 4; // in em
 	var menu_height = 6; // in em, should correspond to six lines of text
 	var text_margin = 1; // margins in 1/10 em
 	
-	// Menu IDs.
-	id_guide = 1;
-	id_text = 2;
-	id_next = 3;
-	id_prev = 4;
-
-	// Submenu proplists.
-	prop_guide = 
+	// Menu proplist.
+	prop_menu =
 	{
 		Target = this,
-		ID = id_guide,
-		Left = "0%",
+		Style = GUI_Multiple,
+		Decoration = GUI_MenuDeco,
+		Left = Format("%d%%", 50 - menu_width),
+		Right = Format("%d%%", 50 + menu_width),
+		Top = Format("0%%+%dem", meny_offset),
+		Bottom = Format("0%%+%dem", meny_offset + menu_height),
+		BackgroundColor = {Std = 0},
+	};
+
+	// Submenu proplists.
+	var prop_guide = 
+	{
+		Target = this,
+		ID = 1,
 		Right = Format("0%%+%dem", menu_height),
-		Top = "0%",
-		Bottom = Format("0%%+%dem", menu_height),
 		Symbol = GetID(),
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = GuiAction_SetTag("Hover"),
 		OnMouseOut = GuiAction_SetTag("Std"),
 		OnClick = GuiAction_Call(this, "ShowCurrentMessage"),
 	};
-	prop_text = 
+	var prop_text = 
 	{
 		Target = this,
-		ID = id_text,
+		ID = 2,
 		Left = Format("0%%%s", ToEmString(10 * menu_height + text_margin)),
 		Right = Format("100%%%s", ToEmString(- 5 * menu_height - text_margin)),
-		Top = "0%",
-		Bottom = "100%",
 		Text = "",
 		BackgroundColor = {Std = 0},	
 	};	
 	prop_next =
 	{
 		Target = this,
-		ID = id_next,
+		ID = 3,
 		Left = Format("100%%-%dem", menu_height / 2),
-		Right = "100%",
 		Top = Format("100%%-%dem", menu_height / 2),
-		Bottom = "100%",
 		Symbol = Icon_Arrow,
 		GraphicsName = "Down",
 		Text = "$MsgNext$",
@@ -147,10 +142,8 @@ private func InitializeMenu()
 	prop_prev =
 	{
 		Target = this,
-		ID = id_prev,
+		ID = 4,
 		Left = Format("100%%-%dem", menu_height / 2),
-		Right = "100%",
-		Top = "0%", 
 		Bottom = Format("0%%+%dem", menu_height / 2),
 		Symbol = Icon_Arrow,
 		GraphicsName = "Up",
@@ -162,18 +155,7 @@ private func InitializeMenu()
 		OnClick = GuiAction_Call(this, "ShowPreviousMessage"),
 	};
 	
-	// Menu proplist.
-	prop_menu =
-	{
-		Target = this,
-		Style = GUI_Multiple,
-		Decoration = GUI_MenuDeco,
-		Left = Format("%d%%", 50 - menu_width),
-		Right = Format("%d%%", 50 + menu_width),
-		Top = "0%+1em",
-		Bottom = Format("0%%+%dem", menu_height + 1),
-		BackgroundColor = {Std = 0},
-	};
+	// Add menu elements.
 	prop_menu.guide = prop_guide;
 	prop_menu.text = prop_text;
 	prop_menu.next = prop_next;
@@ -181,6 +163,7 @@ private func InitializeMenu()
 	
 	// Menu ID.
 	id_menu = GuiOpen(prop_menu);
+	return;
 }
 
 private func ShowGuideMenu(int index)
@@ -201,24 +184,38 @@ private func ShowGuideMenu(int index)
 	// Notify the scenario script.
 	if (message_open != nil)	
 		GameCall("OnGuideMessageShown", GetOwner(), message_open);
+	return;
 }
 
 private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev)
 {
-	GuiClose(id_menu, 0, this);
-
-	prop_text.Text = guide_message;
-	prop_menu.text = prop_text;
+	// Update the text message entry.
+	prop_menu.text.Text = guide_message;
+	GuiUpdate(prop_menu.text, id_menu, prop_menu.text.ID, this);
+	
+	// Update the next button.
 	if (has_next)
+	{
 		prop_menu.next = prop_next;
-	else
+		GuiUpdate(prop_menu, id_menu, prop_menu.ID, this);
+	}
+	else if (prop_menu.next != nil)
+	{
+		GuiClose(id_menu, prop_menu.next.ID, this);
 		prop_menu.next = nil;
-	if (has_prev)
-		prop_menu.prev = prop_prev;
-	else
-		prop_menu.prev = nil;	
+	}
 		
-	id_menu = GuiOpen(prop_menu);	
+	// Update the previous button.	
+	if (has_prev)
+	{
+		prop_menu.prev = prop_prev;
+		GuiUpdate(prop_menu, id_menu, prop_menu.ID, this);
+	}
+	else if (prop_menu.prev != nil)
+	{
+		GuiClose(id_menu, prop_menu.prev.ID, this);
+		prop_menu.prev = nil;
+	}
 	return;
 }
 
@@ -247,7 +244,7 @@ public func ShowNextMessage()
 	return;
 }
 
-// Menu callback: the player has clicked on previos message.
+// Menu callback: the player has clicked on previous message.
 public func ShowPreviousMessage()
 {
 	if (message_open == 0)
