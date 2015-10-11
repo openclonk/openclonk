@@ -188,7 +188,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if (!release)
 		{
-						
 			if(GetMenu())
 			{
 				// close a possible menu but still open the action bar later
@@ -211,11 +210,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		else
 		{
 			var closed = this->~StopInteractionCheck(); // for GUI_Controller_ActionBar
-						
+
 			// releasing of space cancels the action bar without selecting anything
 			if (closed)
 				return true;
-			
+
 			// if the first actionbar item can not be handled, look for interaction objects and use the one with the best priority
 			var interaction_objects = GetInteractableObjects();
 			// look for minimum priority

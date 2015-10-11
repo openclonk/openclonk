@@ -147,7 +147,14 @@ private func StartInteractionCheck(object clonk)
 
 private func StopInteractionCheck(object clonk)
 {
-	CloseActionBar();
+	return CloseActionBar();
+}
+
+private func ControlHotkey(int hotkey)
+{
+	// If action bar is opened, try to execute an interaction associated with the hotkey
+	if (actionbar_info_id)
+		OnActionBarSelected(hotkey);
 }
 
 /* Timer */
@@ -244,10 +251,12 @@ private func CloseActionBar()
 {
 	ClearScheduleCall(this, "OpenActionBar");
 
-	if (!actionbar_info_id) return;
+	if (!actionbar_info_id) return false;
 
 	GuiClose(actionbar_info_id);
+	actionbar_info_id = nil;
 	actionbar_items = [];
+	return true;
 }
 
 private func UpdateActionBar(array interactables, object cursor)
@@ -373,7 +382,7 @@ private func PrepareAndSortNewActionBarItems()
 	}
 }
 
-// When a button from the interaction bar was clicked
+// When a button from the interaction bar was clicked or a hotkey was pressed
 private func OnActionBarSelected(int button_index)
 {
 	if (button_index < 0 || button_index >= GetLength(actionbar_items))
