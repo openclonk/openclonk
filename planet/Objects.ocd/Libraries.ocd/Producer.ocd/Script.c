@@ -658,12 +658,13 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 {
 	if(temp) return;
 	
-	// no need to consume power anymore
-	UnregisterPowerRequest();
-		
+	if (!GetLength(queue))
+		// no need to consume power anymore
+		UnregisterPowerRequest();
+
 	if (reason != 0)
 		return 1;
-		
+
 	// Callback to the producer.
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
