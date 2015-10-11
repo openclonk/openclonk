@@ -1,10 +1,16 @@
-/*-- Grass --*/
+/**
+	Grass 
+	Is placed just behind the landscape.
+	
+	@authors
+*/
 
 protected func Initialize()
 {
 	DoCon(Random(50));
 	if (Random(2))
 		SetGraphics("1");
+	return;
 }
 
 public func Incineration()
@@ -27,13 +33,35 @@ private func Destroy()
 	RemoveObject();
 }
 
-public func SaveScenarioObject(props)
+// Place some grass at the surface in the given area. The amount determines the density.
+public func Place(int amount, proplist area)
 {
-	if (!inherited(props, ...)) return false;
-	props->Remove("Con");
-	return true;
+	// Definition call.
+	if (this != Grass)
+		return;
+	var rectangle = Shape->LandscapeRectangle();
+	if (area) 
+		rectangle = area->GetBoundingRectangle(); 
+		
+	var grass_list = [];
+	for (var x = rectangle.x; x <= rectangle.x + rectangle.w; x += 9)
+	{
+		for (var y = rectangle.y; y <= rectangle.y + rectangle.h; y += 3)
+		{
+			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky") && GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
+			{
+				if (Random(100) < amount)
+				{
+					var grass =	CreateObjectAbove(Grass, AbsX(x), AbsY(y + 1));
+					PushBack(grass_list, grass);
+				}
+			}
+		}
+	}
+	return grass_list;
 }
 
+// OUTDATED: use Grass->Place() instead, this function will be removed at some point.
 global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 {
 	if (!start)
@@ -61,33 +89,17 @@ global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 	}
 }
 
-global func MakeGrasFunction()
+public func SaveScenarioObject(props)
 {
-	var x=[];
-	var y=[];
-	var r=[];
-	for(var e in FindObjects(Find_ID(Grass)))
-	{
-		x[GetLength(x)]=e->GetX();
-		y[GetLength(y)]=e->GetY();
-		r[GetLength(r)]=e->GetR();
-	}
-	Log("private func PlaceGras()");
-	Log("{");
-	Log("	var x=%v;",x);
-	Log("	var y=%v;",y);
-	Log("	var r=%v;",r);
-
-	Log("	for (var i = 0; i < GetLength(x); i++)");
-	Log("	{");
-	Log("		var grass=CreateObjectAbove(Grass, x[i], y[i] + 5, NO_OWNER);");
-	Log("		grass->SetR(r[i]); ");
-	Log("	}");
-	Log("	return;");
-	Log("}");
+	if (!inherited(props, ...)) return false;
+	props->Remove("Con");
+	return true;
 }
 
+
+/*-- Properties --*/
+
+local Name = "$Name$";
 local Plane = -1;
-local Name = "Grass";
 local Placement = 0;
 local BlastIncinerate = 1;
