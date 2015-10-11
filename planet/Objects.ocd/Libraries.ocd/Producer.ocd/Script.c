@@ -51,22 +51,15 @@ public func GetProductionMenuEntries(object clonk)
 	// default design of a control menu item
 	var control_prototype =
 	{
-		BackgroundColor = {Std = 0, Selected = RGBa(200, 0, 0, 200)},
+		BackgroundColor = {Std = 0, Selected = RGB(100, 30, 30)},
 		OnMouseIn = GuiAction_SetTag("Selected"),
 		OnMouseOut = GuiAction_SetTag("Std")
 	};
 
 	var custom_entry = 
 	{
-		Right = "4em", Bottom = "2em",
-		// BackgroundColor = {Std = 0, OnHover = 0x50ff0000},
-		image = {Prototype = control_prototype, Right = "2em", Style = GUI_TextBottom | GUI_TextRight},
-		controls = 
-		{
-			Left = "2em",
-			remove = {Prototype = control_prototype, Bottom = "1em", Symbol = Icon_Number, GraphicsName = "Minus", Tooltip = "$QueueRemove$"},
-			endless = {Prototype = control_prototype, Top = "1em", Symbol = Icon_Number, GraphicsName = "Inf", Tooltip = "$QueueInf$"}
-		}
+		Right = "3em", Bottom = "2em",
+		image = {Right = "2em", Prototype = control_prototype, Style = GUI_TextBottom | GUI_TextRight}
 	};
 	
 	var menu_entries = [];
@@ -84,11 +77,13 @@ public func GetProductionMenuEntries(object clonk)
 		// Prepare menu entry.
 		var entry = new custom_entry 
 		{
-			image = new custom_entry.image{}, 
-			controls = new custom_entry.controls
+			image = new custom_entry.image{},
+			remove = new control_prototype
 			{
-				remove = new custom_entry.controls.remove{},
-				endless = new custom_entry.controls.endless{},
+				Left = "2em", Bottom = "1em",
+				Symbol = Icon_Cancel,
+				Tooltip = "$QueueRemove$",
+				disabled = {BackgroundColor = RGBa(0, 0, 0, 150)}
 			}
 		};
 		
@@ -99,16 +94,14 @@ public func GetProductionMenuEntries(object clonk)
 				entry.image.Text = "$infinite$";
 			else // normal amount
 				entry.image.Text = Format("%dx", info.Amount);
-			entry.controls.remove.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = -1});
-			entry.BackgroundColor = RGB(50, 50, 50);
+			entry.remove.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = -1});
+			entry.remove.disabled = nil;
+			entry.BackgroundColor = RGB(50, 100, 50);
 		}
-		else
-			entry.controls.remove = nil;
 			
 		entry.Priority = 1000 * product->GetValue() + index; // Sort by (estimated) value and then by index.
 		entry.Tooltip = product->GetName();
 		entry.image.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = +1});
-		entry.controls.endless.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Infinite = true}); 
 		PushBack(menu_entries, {symbol = product, extra_data = nil, custom = entry});
 	}
 	return menu_entries;
@@ -337,27 +330,38 @@ public func ClearQueue(bool abort)
 	return;
 }
 
-/** Modifies a certain production item arbitrarily. This is mainly used by the interaction menu.
+/** Modifies a certain production item arbitrarily. This is only used by the interaction menu.
 	This also creates a new production order if none exists yet.
 	@param info
-		proplist with Product, Amount, Infinite. If Infinite is set to true, it acts as a toggle. 
+		proplist with Product, Amount. If the player holds the menu-modifier key, this will toggle infinite production. 
 */
-public func ModifyProduction(proplist info)
+private func ModifyProduction(proplist info, int player)
 {
-	var index = GetQueueIndex(info.Product);
-	if (index == nil && (info.Amount > 0 || info.Infinite))
+	if (Hostile(GetOwner(), player)) return;
+	
+	var product = info.Product;
+	var infinite = GetPlayerControlState(player, CON_ModifierMenu1) != 0;
+	var amount = info.Amount;
+	var index = GetQueueIndex(product);
+	
+	if (index == nil && (amount > 0 || infinite))
 	{
-		AddToQueue(info.Product, info.Amount, info.Infinite);
+		AddToQueue(product, amount, infinite);
 	}
-	else
+	else if (index != nil)
 	{
+	
 		// Toggle infinity?
-		if (queue[index].Infinite)
+		if (infinite)
 		{
-			if (info.Infinite || info.Amount < 0)
-				info.Infinite = false;
+			// Toggle it but always reset the amount to 0.
+			// If the production is infinite afterwards, the amount is not displayed anyways. If it's not infinite, it's removed (because the amount is 0).
+			ModifyQueueIndex(index, -queue[index].Amount, !queue[index].Infinite);
 		}
-		ModifyQueueIndex(index, info.Amount, info.Infinite);
+		else // Just remove (or add) some amount from the queue.
+		{
+			ModifyQueueIndex(index, amount, false);
+		}
 	}
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 }
