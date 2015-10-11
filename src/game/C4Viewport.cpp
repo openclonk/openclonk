@@ -875,6 +875,13 @@ bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
 	RecalculateViewports();
 	// Viewports start off at centered position
 	nvp->CenterPosition();
+	// Initial player zoom values to viewport (in case they were set early in InitializePlayer, loaded from savegame, etc.)
+	C4Player *plr = ::Players.Get(iPlayer);
+	if (plr)
+	{
+		plr->ZoomToViewport(nvp, true, false, false);
+		plr->ZoomLimitsToViewport(nvp);
+	}
 	// Action sound
 	if (GetViewportCount()!=iLastCount) if (!fSilent)
 			StartSoundEffect("CloseViewport");
