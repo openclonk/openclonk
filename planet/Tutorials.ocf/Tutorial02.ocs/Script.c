@@ -131,7 +131,6 @@ private func InitAcidLake()
 	post2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
 	var bridge = CreateObjectAbove(Ropebridge, 872, 528);
 	bridge->MakeBridge(post1, post2);
-	bridge->SetFragile();
 	
 	// Make the acid lake bubbling a bit.
 	BoilingAcid->Place();
@@ -368,6 +367,8 @@ global func FxTutorialDigOutLoamTimer()
 		guide->AddGuideMessage(Format("$MsgTutorialDigOutLoam$", use));
 		guide->ShowGuideMessage(8);
 		AddEffect("TutorialFragileBridge", nil, 100, 5);
+		var bridge = FindObject(Find_ID(Ropebridge));
+		bridge->SetFragile();
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
