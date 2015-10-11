@@ -207,7 +207,7 @@ private func FxIntLiftHeavyStart(object me, proplist effect, bool tmp, object to
 	effect.mesh = AttachMesh(to_lift, "pos_tool1", to_lift->GetCarryBone(), to_lift->~GetCarryTransform(this));
 
 	//Play the animation of the clonk picking up the object
-	effect.anim = PlayAnimation("CarryArmsPickup", 10, Anim_Linear(0,0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
+	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0, GetAnimationLength("CarryArmsPickup"), lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
 
 	effect.obj = to_lift;
 }
@@ -271,7 +271,7 @@ private func FxIntDropHeavyStart(object me, proplist effect, bool tmp, object to
 	effect.mesh = AttachMesh(to_lift, "pos_tool1", to_lift->GetCarryBone(), to_lift->~GetCarryTransform(this));
 
 	//Play the animation of the clonk setting down the object
-	effect.anim = PlayAnimation("CarryArmsPickup", 10, Anim_Linear(GetAnimationLength("CarryArmsPickup"), GetAnimationLength("CarryArmsPickup"), 0, lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
+	effect.anim = PlayAnimation("CarryArmsPickup", CLONK_ANIM_SLOT_Arms, Anim_Linear(GetAnimationLength("CarryArmsPickup"), GetAnimationLength("CarryArmsPickup"), 0, lib_carryheavy_lifttime, ANIM_Remove), Anim_Const(1000));
 
 	effect.obj = to_lift;
 }

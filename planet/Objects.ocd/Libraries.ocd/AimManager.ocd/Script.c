@@ -148,7 +148,7 @@ public func StartLoad(object weapon)
 	}
 
 	if(aim_set["AnimationLoad"] != nil)
-		PlayAnimation(aim_set["AnimationLoad"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationLoad"]), aim_set["LoadTime"], ANIM_Remove), Anim_Const(1000));
+		PlayAnimation(aim_set["AnimationLoad"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationLoad"]), aim_set["LoadTime"], ANIM_Remove), Anim_Const(1000));
 
 	aim_schedule_timer = aim_set["LoadTime"];
 	aim_schedule_call  = "StopLoad";
@@ -191,11 +191,11 @@ public func StartAim(object weapon, int angle)
 	if(aim_set["AnimationAim"] != nil)
 	{
 		if(aim_set["AimMode"] == AIM_Position)
-			aim_animation_index = PlayAnimation(aim_set["AnimationAim"], 10, Anim_Const(GetAnimationLength(aim_set["AnimationAim"])/2), Anim_Const(1000));
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim"], CLONK_ANIM_SLOT_Arms, Anim_Const(GetAnimationLength(aim_set["AnimationAim"])/2), Anim_Const(1000));
 		if(aim_set["AimMode"] == AIM_Weight)
 		{
-			aim_animation_index = PlayAnimation(aim_set["AnimationAim"],  10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim"]),  aim_set["AimTime"], ANIM_Loop), Anim_Const(1000));
-			aim_animation_index = PlayAnimation(aim_set["AnimationAim2"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim2"]), aim_set["AimTime"], ANIM_Loop), Anim_Const(1000), aim_animation_index);
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim"],  CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim"]),  aim_set["AimTime"], ANIM_Loop), Anim_Const(1000));
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim2"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim2"]), aim_set["AimTime"], ANIM_Loop), Anim_Const(1000), aim_animation_index);
 			aim_animation_index++;
 			SetAnimationWeight(aim_animation_index, Anim_Const(500));
 		}
@@ -282,13 +282,13 @@ public func StartShoot(object weapon)
 	{
 		// Do we just have one animation? Then just play it
 		if(aim_set["AnimationShoot2"] == nil)
-			PlayAnimation(aim_set["AnimationShoot"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
+			PlayAnimation(aim_set["AnimationShoot"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
 		// Well two animations blend betweend them (animtion 1 is 0° animation2 for 180°)
 		else if(aim_set["AnimationShoot3"] == nil)
 		{
 			var iAim;
-			iAim = PlayAnimation(aim_set["AnimationShoot"],  10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
-			iAim = PlayAnimation(aim_set["AnimationShoot2"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot2"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
+			iAim = PlayAnimation(aim_set["AnimationShoot"],  CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
+			iAim = PlayAnimation(aim_set["AnimationShoot2"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot2"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
 			SetAnimationWeight(iAim+1, Anim_Const(1000*Abs(aim_angle)/180));
 		}
 		// Well then we'll have three to blend (animation 1 is 90°, animation 2 is 0°, animation 2 for 180°)
@@ -297,14 +297,14 @@ public func StartShoot(object weapon)
 			var iAim;
 			if(Abs(aim_angle) < 90)
 			{
-				iAim = PlayAnimation(aim_set["AnimationShoot2"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot2"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
-				iAim = PlayAnimation(aim_set["AnimationShoot"],  10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
+				iAim = PlayAnimation(aim_set["AnimationShoot2"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot2"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
+				iAim = PlayAnimation(aim_set["AnimationShoot"],  CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
 				SetAnimationWeight(iAim+1, Anim_Const(1000*Abs(aim_angle)/90));
 			}
 			else
 			{
-				iAim = PlayAnimation(aim_set["AnimationShoot"],  10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
-				iAim = PlayAnimation(aim_set["AnimationShoot3"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot3"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
+				iAim = PlayAnimation(aim_set["AnimationShoot"],  CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"] ), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
+				iAim = PlayAnimation(aim_set["AnimationShoot3"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot3"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000), iAim);
 				SetAnimationWeight(iAim+1, Anim_Const(1000*(Abs(aim_angle)-90)/90));
 			}
 		}

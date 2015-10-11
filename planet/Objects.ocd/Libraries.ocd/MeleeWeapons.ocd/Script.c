@@ -271,7 +271,7 @@ func PlayWeaponAnimation(pTarget)
 /*func StartWeaponAnimation(pTarget)
 {
 	if(hWeaponAnimStrike) StopWeaponAnimation(pTarget);
-	hWeaponAnimStrike = pTarget->PlayAnimation(GetStrikeAnimation(), 10, Anim_Linear(0, 0, pTarget->GetAnimationLength(GetStrikeAnimation()), GetStrikeTime(), ANIM_Remove), Anim_Const(1000));
+	hWeaponAnimStrike = pTarget->PlayAnimation(GetStrikeAnimation(), CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, pTarget->GetAnimationLength(GetStrikeAnimation()), GetStrikeTime(), ANIM_Remove), Anim_Const(1000));
 }*/
 
 func GetRelativeVelocity(pObject1, pObject2)

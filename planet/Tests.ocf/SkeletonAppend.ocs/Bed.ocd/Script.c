@@ -59,7 +59,7 @@ private func OnEntrance(object pClonk)
     if(iAttachedMesh)
         DetachMesh(iAttachedMesh);
     iAttachedMesh = AttachMesh(pClonk, "Clonk", "Master", Trans_Scale(1100));
-    iAnimation = pClonk->PlayAnimation("Sleep", 20, Anim_Const(pClonk->GetAnimationLength("Sleep")), Anim_Const(1000));
+    iAnimation = pClonk->PlayAnimation("Sleep", CLONK_ANIM_SLOT_Death, Anim_Const(pClonk->GetAnimationLength("Sleep")), Anim_Const(1000));
     return 1;
 }
 

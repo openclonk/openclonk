@@ -83,7 +83,7 @@ func FxIntSearchLadderTimer(target, effect, time)
 	{
 		SetAction("Climb");
 		ladder->~OnLadderGrab(this);
-		PlayAnimation(GetLadderScaleAnimation(), 5, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		PlayAnimation(GetLadderScaleAnimation(), CLONK_ANIM_SLOT_Movement, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		AddEffect("IntClimbControl", this, 1, 1, this, 0, ladder);
 		return -1;
 	}

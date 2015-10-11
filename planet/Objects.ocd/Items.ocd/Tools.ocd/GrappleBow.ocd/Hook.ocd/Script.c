@@ -288,7 +288,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 			if(fxnum.ani_mode != 2)
 			{
 				fxnum.ani_mode = 2;
-				fxnum.Climb = target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				fxnum.Climb = target->PlayAnimation("RopeClimb", CLONK_ANIM_SLOT_Arms, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
         fxnum.speedCounter = 0;
 			}
 		}
@@ -297,7 +297,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 			if(fxnum.ani_mode != 3)
 			{
 				fxnum.ani_mode = 3;
-				target->PlayAnimation("RopeDown", 10, Anim_Const(0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				target->PlayAnimation("RopeDown", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			}
 		}
 		else if(fxnum.mv_left || fxnum.mv_right)
@@ -310,14 +310,14 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 				) dir = 1;
 			if(fxnum.ani_mode != 4+dir)
 			{
-				iSwingAnimation = target->PlayAnimation("RopeSwing", 10, Anim_Linear(start, length*dir, length*(!dir), 35, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				iSwingAnimation = target->PlayAnimation("RopeSwing", CLONK_ANIM_SLOT_Arms, Anim_Linear(start, length*dir, length*(!dir), 35, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 				fxnum.ani_mode = 4+dir;
 			}
 		}
 		else if(fxnum.ani_mode != 1)
 		{
 			fxnum.ani_mode = 1;
-			target->PlayAnimation("OnRope", 10, Anim_Linear(0, 0, target->GetAnimationLength("OnRope"), 35*2, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			target->PlayAnimation("OnRope", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, target->GetAnimationLength("OnRope"), 35*2, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		}
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();

@@ -51,7 +51,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 	clonk->SetTurnType(1);
 	clonk->SetHandAction(1);
 	clonk->UpdateAttach();
-	clonk->PlayAnimation("StrikePickaxe", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
+	clonk->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
 
 	AddEffect("IntPickaxe", clonk, 1, 1, this);
 	return true;

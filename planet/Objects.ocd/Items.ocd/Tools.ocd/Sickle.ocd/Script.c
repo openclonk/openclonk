@@ -35,7 +35,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	if(clonk->IsJumping())
 		animation = Format("SwordJump2.%s",arm);
 
-	clonk->PlayAnimation(animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+	clonk->PlayAnimation(animation, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	clonk->UpdateAttach();
 
 	// Search for harvestable plants

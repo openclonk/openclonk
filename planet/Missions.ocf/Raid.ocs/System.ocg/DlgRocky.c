@@ -77,7 +77,7 @@ func FxRockyPickaxeingTimer(object c, proplist fx, int time)
 	if (FrameCounter() < this.anim_continue_frame) { fx.phase=false; return FX_OK; }
 	c->SetDir(DIR_Right);
 	var len = c->GetAnimationLength("StrikePickaxe");
-	this.anim = c->PlayAnimation("StrikePickaxe", 10, Anim_Linear(0,0,len, Rocky_Pickaxe_SwingTime, ANIM_Remove), Anim_Const(1000));
+	this.anim = c->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0,0,len, Rocky_Pickaxe_SwingTime, ANIM_Remove), Anim_Const(1000));
 	c->Sound("Clang?");
 	var x = (c->GetDir()*2-1) * 9;
 	var y = 16;

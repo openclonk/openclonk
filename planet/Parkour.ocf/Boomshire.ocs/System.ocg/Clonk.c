@@ -22,7 +22,7 @@ public func HandObjects()
 // Lose all items on death.
 func StartDead()
 {
-	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation("Dead", CLONK_ANIM_SLOT_Death, Anim_Linear(0, 0, GetAnimationLength("Dead"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 	if(Contents(1))Contents(1)->RemoveObject();

@@ -26,7 +26,7 @@ public func ControlUseStart(object clonk)
 
 	// Make sure clonk is not diving.
 	var side = ["L", "R"][Random(2)];
-	clonk->PlayAnimation(Format("Jump.%s", side), 5, Anim_Linear(clonk->GetAnimationLength("Jump.L"), 0, clonk->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	clonk->PlayAnimation(Format("Jump.%s", side), CLONK_ANIM_SLOT_Movement, Anim_Linear(clonk->GetAnimationLength("Jump.L"), 0, clonk->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	return true;
 }
 

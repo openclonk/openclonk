@@ -173,7 +173,7 @@ public func OnMount(clonk)
 {
 	var iDir = 1;
 	if(clonk->GetDir() == 1) iDir = -1;
-	clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
+	clonk->PlayAnimation("PosRocket", CLONK_ANIM_SLOT_Arms, Anim_Const(0), Anim_Const(1000));
 	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(-1000,2000*iDir,2000), Trans_Rotate(-90*iDir,1,0,0)));
 	
 	//Modify picture transform to fit icon on clonk mount

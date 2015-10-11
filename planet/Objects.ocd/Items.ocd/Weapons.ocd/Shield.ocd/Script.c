@@ -57,7 +57,7 @@ private func StartUsage(object clonk)
 		hand = "ShieldArms.L";
 	}
 
-	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
+	aim_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 
 	var handLR;
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
