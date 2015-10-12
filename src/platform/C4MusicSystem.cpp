@@ -60,41 +60,7 @@ void C4MusicSystem::SelectContext()
 
 bool C4MusicSystem::InitializeMOD()
 {
-#if AUDIO_TK == AUDIO_TK_FMOD
-#ifdef _WIN32
-	// Debug code
-	switch (Config.Sound.FMMode)
-	{
-	case 0:
-		FSOUND_SetOutput(FSOUND_OUTPUT_WINMM);
-		break;
-	case 1:
-		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
-#ifdef USE_WIN32_WINDOWS
-		FSOUND_SetHWND(Application.pWindow->hWindow);
-#endif
-		break;
-	case 2:
-		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
-		FSOUND_SetDriver(0);
-		break;
-	}
-	FSOUND_SetMixer(FSOUND_MIXER_QUALITY_AUTODETECT);
-#endif
-	if (FSOUND_GetVersion() < FMOD_VERSION)
-	{
-		LogF("FMod: You are using the wrong DLL version!  You should be using %.02f", FMOD_VERSION);
-		return false;
-	}
-	if (!FSOUND_Init(44100, 32, 0))
-	{
-		LogF("FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
-		return false;
-	}
-	// ok
-	MODInitialized = true;
-	return true;
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	SDL_version compile_version;
 	const SDL_version * link_version;
 	MIX_VERSION(&compile_version);
@@ -143,13 +109,7 @@ bool C4MusicSystem::InitializeMOD()
 
 void C4MusicSystem::DeinitializeMOD()
 {
-#if AUDIO_TK == AUDIO_TK_FMOD
-	FSOUND_StopSound(FSOUND_ALL); /* to prevent some hangs in FMOD */
-#ifdef DEBUG
-	Sleep(0);
-#endif
-	FSOUND_Close();
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_CloseAudio();
 	SDL_Quit();
 #elif AUDIO_TK == AUDIO_TK_OPENAL
@@ -237,27 +197,6 @@ void C4MusicSystem::Load(const char *szFile)
 	// openal: Only ogg supported
 	const char *szExt = GetExtension(szFile);
 	if (SEqualNoCase(szExt, "ogg")) NewSong = new C4MusicFileOgg;
-#elif AUDIO_TK == AUDIO_TK_FMOD
-	const char *szExt = GetExtension(szFile);
-	// get type
-	switch (GetMusicFileTypeByExtension(GetExtension(szFile)))
-	{
-	case MUSICTYPE_MOD:
-		if (MODInitialized) NewSong = new C4MusicFileMOD;
-		break;
-	case MUSICTYPE_MP3:
-		if (MODInitialized) NewSong = new C4MusicFileMP3;
-		break;
-	case MUSICTYPE_OGG:
-		if (MODInitialized) NewSong = new C4MusicFileOgg;
-		break;
-
-	case MUSICTYPE_MID:
-		if (MODInitialized)
-			NewSong = new C4MusicFileMID;
-		break;
-	default: return; // safety
-	}
 #elif AUDIO_TK == AUDIO_TK_SDL_MIXER
 	if (GetMusicFileTypeByExtension(GetExtension(szFile)) == MUSICTYPE_UNKNOWN) return;
 	NewSong = new C4MusicFileSDL;
@@ -680,7 +619,7 @@ MusicType GetMusicFileTypeByExtension(const char* ext)
 {
 	if (SEqualNoCase(ext, "mid"))
 		return MUSICTYPE_MID;
-#if AUDIO_TK == AUDIO_TK_FMOD || AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	else if (SEqualNoCase(ext, "xm") || SEqualNoCase(ext, "it") || SEqualNoCase(ext, "s3m") || SEqualNoCase(ext, "mod"))
 		return MUSICTYPE_MOD;
 #ifdef USE_MP3

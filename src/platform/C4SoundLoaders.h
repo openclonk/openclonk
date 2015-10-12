@@ -115,14 +115,6 @@ namespace C4SoundLoaders
 		static SDLMixerSoundLoader singleton;
 		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
 	};
-
-#elif AUDIO_TK == AUDIO_TK_FMOD
-	class FMODSoundLoader: public SoundLoader
-	{
-	public:
-		static FMODSoundLoader singleton;
-		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t options);
-	};
 #endif
 }
 

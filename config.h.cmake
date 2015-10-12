@@ -188,7 +188,6 @@
 /* Select an audio provider */
 #define AUDIO_TK_NONE 0
 #define AUDIO_TK_OPENAL 1
-#define AUDIO_TK_FMOD 2
 #define AUDIO_TK_SDL_MIXER 3
 #define AUDIO_TK AUDIO_TK_${Audio_TK_UPPER}
 

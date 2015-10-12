@@ -18,11 +18,7 @@
 #ifndef INC_C4SoundIncludes
 #define INC_C4SoundIncludes
 
-#if AUDIO_TK == AUDIO_TK_FMOD
-#	include <fmod.h>
-	typedef FSOUND_SAMPLE* C4SoundHandle;
-#	include <fmod_errors.h>
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 #	define USE_RWOPS
 #	include <SDL_mixer.h>
 #	undef USE_RWOPS

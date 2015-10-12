@@ -15,7 +15,7 @@
  * for the above references.
  */
 
-/* Handles the sound bank and plays effects using FMOD */
+/* Plays sound effects */
 
 #ifndef INC_C4SoundModifiers
 #define INC_C4SoundModifiers

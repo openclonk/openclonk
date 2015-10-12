@@ -48,9 +48,7 @@ C4SoundEffect::~C4SoundEffect()
 void C4SoundEffect::Clear()
 {
 	while (FirstInst) RemoveInst(FirstInst);
-#if AUDIO_TK == AUDIO_TK_FMOD
-	if (pSample) FSOUND_Sample_Free(pSample);
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	if (pSample) Mix_FreeChunk(pSample);
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (pSample) alDeleteBuffers(1, &pSample);
@@ -271,20 +269,7 @@ bool C4SoundInstance::CheckStart()
 
 bool C4SoundInstance::Start()
 {
-#if AUDIO_TK == AUDIO_TK_FMOD
-	// Start
-	if ((iChannel = FSOUND_PlaySound(FSOUND_FREE, pEffect->pSample)) == -1)
-		return false;
-	if (!FSOUND_SetLoopMode(iChannel, fLooping ? FSOUND_LOOP_NORMAL : FSOUND_LOOP_OFF))
-		{ Stop(); return false; }
-	// set position
-	if (C4TimeMilliseconds::Now() > tStarted + 20)
-	{
-		assert(pEffect->Length > 0);
-		int32_t iTime = (C4TimeMilliseconds::Now() - tStarted) % pEffect->Length;
-		FSOUND_SetCurrentPosition(iChannel, iTime / 10 * pEffect->SampleRate / 100);
-	}
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.MODInitialized) return false;
 	if ((iChannel = Mix_PlayChannel(-1, pEffect->pSample, fLooping? -1 : 0)) == -1)
@@ -311,10 +296,7 @@ bool C4SoundInstance::Stop()
 	if (!pEffect) return false;
 	// Stop sound
 	bool fRet = true;
-#if AUDIO_TK == AUDIO_TK_FMOD
-	if (Playing())
-		fRet = !! FSOUND_StopSound(iChannel);
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	// iChannel == -1 will halt all channels. Is that right?
 	if (Playing())
 		Mix_HaltChannel(iChannel);
@@ -336,10 +318,7 @@ bool C4SoundInstance::Playing()
 {
 	if (!pEffect) return false;
 	if (fLooping) return true;
-#if AUDIO_TK == AUDIO_TK_FMOD
-	return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
-	       : C4TimeMilliseconds::Now() < tStarted + pEffect->Length;
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 	if (iChannel == -1)
@@ -379,9 +358,7 @@ void C4SoundInstance::Execute()
 		// stop, if started
 		if (isStarted())
 		{
-#if AUDIO_TK == AUDIO_TK_FMOD
-			FSOUND_StopSound(iChannel);
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 			Mix_HaltChannel(iChannel);
 #elif AUDIO_TK == AUDIO_TK_OPENAL
 			alDeleteSources(1, (ALuint*)&iChannel);
@@ -396,10 +373,7 @@ void C4SoundInstance::Execute()
 			if (!CheckStart())
 				return;
 		// set volume & panning
-#if AUDIO_TK == AUDIO_TK_FMOD
-		FSOUND_SetVolume(iChannel, Clamp(iVol / 100, 0, 255));
-		FSOUND_SetPan(iChannel, Clamp(256*(iPan+100)/200,0,255));
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
 		Mix_SetPanning(iChannel, Clamp((100 - iPan) * 256 / 100, 0, 255), Clamp((100 + iPan) * 256 / 100, 0, 255));
 #elif AUDIO_TK == AUDIO_TK_OPENAL

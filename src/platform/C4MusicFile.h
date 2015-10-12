@@ -64,74 +64,8 @@ protected:
 	bool SongExtracted;
 
 };
-#if AUDIO_TK == AUDIO_TK_FMOD
-class C4MusicFileMID : public C4MusicFile
-{
-public:
-	bool Play(bool loop = false, double max_resume_time = 0.0);
-	bool Extract();
-	void Stop(int fadeout_ms = 0);
-	void CheckIfPlaying();
-	void SetVolume(int);
-protected:
-	FMUSIC_MODULE *mod;
-};
 
-/* MOD class */
-
-class C4MusicFileMOD : public C4MusicFile
-{
-public:
-	C4MusicFileMOD();
-	~C4MusicFileMOD();
-	bool Play(bool loop = false, double max_resume_time = 0.0);
-	void Stop(int fadeout_ms = 0);
-	void CheckIfPlaying();
-	void SetVolume(int);
-protected:
-	FMUSIC_MODULE *mod;
-	char *Data;
-};
-
-/* MP3 class */
-
-class C4MusicFileMP3 : public C4MusicFile
-{
-public:
-	C4MusicFileMP3();
-	~C4MusicFileMP3();
-	bool Play(bool loop = false, double max_resume_time = 0.0);
-	void Stop(int fadeout_ms = 0);
-	void CheckIfPlaying();
-	void SetVolume(int);
-protected:
-	FSOUND_STREAM *stream;
-	char *Data;
-	int Channel;
-};
-
-/* Ogg class */
-
-class C4MusicFileOgg : public C4MusicFile
-{
-public:
-	C4MusicFileOgg();
-	~C4MusicFileOgg();
-	bool Play(bool loop = false, double max_resume_time = 0.0);
-	void Stop(int fadeout_ms = 0);
-	void CheckIfPlaying();
-	void SetVolume(int);
-
-	static signed char __stdcall OnEnd(FSOUND_STREAM* stream, void* buff, int length, void* param);
-protected:
-	FSOUND_STREAM *stream;
-	char *Data;
-	int Channel;
-
-	bool Playing;
-};
-
-#elif AUDIO_TK == AUDIO_TK_SDL_MIXER
+#if AUDIO_TK == AUDIO_TK_SDL_MIXER
 typedef struct _Mix_Music Mix_Music;
 class C4MusicFileSDL : public C4MusicFile
 {

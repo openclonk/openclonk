@@ -76,7 +76,7 @@ protected:
 
 	bool ScheduleWaitTime();
 
-	// FMod / SDL_mixer / OpenAL
+	// SDL_mixer / OpenAL
 	bool MODInitialized;
 	bool InitializeMOD();
 	void DeinitializeMOD();

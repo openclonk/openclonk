@@ -300,29 +300,4 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 
 SDLMixerSoundLoader SDLMixerSoundLoader::singleton;
 
-#elif AUDIO_TK == AUDIO_TK_FMOD
-bool FMODSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t options)
-{
-	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
-	if (options & OPTION_Raw)
-		iOptions |= FSOUND_LOADRAW;
-	C4SoundHandle pSample;
-	if (!(pSample = FSOUND_Sample_Load(FSOUND_UNMANAGED, (const char *)data, iOptions, 0, data_length)))
-		{ return false; }
-	// get length
-	int32_t iSamples = FSOUND_Sample_GetLength(pSample);
-	int iSampleRate = 0;
-	if (!iSamples || !FSOUND_Sample_GetDefaults(pSample, &iSampleRate, 0, 0, 0))
-	{
-		FSOUND_Sample_Free(pSample);
-		return false;
-	}
-	result->sample_rate = iSampleRate;
-	result->sample_length = static_cast<double>(iSamples) / iSampleRate;
-	result->final_handle = pSample;
-	assert(result->sample_length > 0);
-	return true;
-}
-
-FMODSoundLoader FMODSoundLoader::singleton;
 #endif

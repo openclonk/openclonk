@@ -296,7 +296,7 @@ BYTE *CStdAVIFile::GetAudioStreamData(size_t *piStreamLength)
 	if (AVIStreamRead(pAudioStream, 0, AVIStreamLength(pAudioStream), NULL, 0, &iAudioDataLength, NULL)) return NULL;
 	if (iAudioDataLength<=0) return NULL;
 	// make sure current audio data buffer is large enoiugh to hold the data
-	// preceding return data with the RIFF+waveformat structure here, so it can be easily loaded by fmod
+	// preceding return data with the RIFF+waveformat structure here
 	uint32_t iHeaderLength = iAudioInfoLength + sizeof(FOURCC) * 4 + 3 * sizeof(uint32_t);
 	LONG iReturnDataLength = iAudioDataLength + iHeaderLength;
 	if (iAudioBufferLength < iReturnDataLength)
