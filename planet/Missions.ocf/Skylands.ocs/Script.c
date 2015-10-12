@@ -49,17 +49,9 @@ func InitializePlayer(int plr)
 		crew->CreateContents(Shovel);
 		// one clonk can construct, another can mine.
 		if (index == 1)
-		{
 			crew->CreateContents(Hammer);
-			crew->CreateContents(Wood,4);
-			crew->CreateContents(Metal);
-		}
 		else
-		{
 			crew->CreateContents(Axe);
-			crew->CreateContents(Wood,3);
-			crew->CreateContents(Metal,2);
-		}
 		index++;
 	}
 	return;
