@@ -71,7 +71,6 @@ if(USE_GCC_STD_0X)
 endif()
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
-CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
 REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)

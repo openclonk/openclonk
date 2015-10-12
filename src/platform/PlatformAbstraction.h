@@ -74,10 +74,8 @@
 
 
 // C++0x nullptr
-#ifdef HAVE_NULLPTR
 #undef NULL
 #define NULL nullptr
-#endif
 
 
 

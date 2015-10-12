@@ -25,9 +25,6 @@
 /* Define to 1 if your stdlib has std::make_unique */
 #cmakedefine HAVE_MAKE_UNIQUE 1
 
-/* Define to 1 if you have support for nullptr. */
-#cmakedefine HAVE_NULLPTR 1
-
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
 
