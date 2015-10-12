@@ -1,6 +1,6 @@
 # Goal name and description
-GoalName=Gold Transport
-GoalDesc=Construct an airplane and load it with %d gold bars to transport them to a safe location.
+GoalName=Goldtransport
+GoalDesc=Baue ein neues Flugzeug und lade es mit %d Goldbarren, damit diese an einen sicheren Ort geschafft werden können.
 
 # Scenario parameters: difficulty
 Difficulty=Schwierigkeit
@@ -9,8 +9,8 @@ DiffNormal=Normal
 DescDiffNormal=Die Schwierigkeit dieser Runde ist normal.
 DiffHard=Schwer
 DescDiffHard=Die Schwierigkeit dieser Runde ist schwer.
-DiffInsane=Insane
-DescDiffInsane=Die Schwierigkeit dieser Runde ist insane.
+DiffInsane=Wahnsinnig
+DescDiffInsane=Die Schwierigkeit dieser Runde ist wahnsinnig.
 
 # Scenario parameters: map size
 MapSize=Kartengröße
