@@ -5,6 +5,17 @@ private func Hit()
 	Sound("WoodHit?");
 }
 
+private func Destruction()
+{
+	if (Contained())
+		if (Contained()->GetAction("Dig"))
+		{
+			// We assume that the clonk digs with this shovel. If not, too bad. You stop shoveling.
+			Contained()->SetAction("Walk");
+			Contained()->SetComDir(COMD_Stop);
+		}
+}
+
 public func GetCarryMode(clonk) { return CARRY_Back; }
 
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
@@ -63,6 +74,16 @@ public func ControlUseStop(object clonk, int x, int y)
 
 public func FxShovelDigTimer(object clonk, effect, int time)
 {
+	// Left the clonk?
+	if (Contained() != clonk)
+	{
+		if (clonk->GetAction() == "Dig")
+		{
+			clonk->SetAction("Walk");
+			clonk->SetComDir(COMD_Stop);
+		}
+		return FX_Execute_Kill;
+	}
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?
 	if(clonk->GetAction() != "Dig" || clonk->GBackLiquid(0,-4))
