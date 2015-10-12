@@ -57,9 +57,6 @@ CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
-# Allow distributions to use the system tinyxml instead of our bundled copy.
-option(USE_SYSTEM_TINYXML "Use system tinyxml library" OFF)
-
 # Remove obsolete options
 unset(OC_BUILD_MULTIPROCESSOR CACHE)
 unset(USE_APPLE_CLANG CACHE)
@@ -1317,14 +1314,16 @@ endif()
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
 # TinyXML
-if(USE_SYSTEM_TINYXML)
-	find_package(TinyXML REQUIRED)
-	target_link_libraries(openclonk ${TinyXML_LIBRARIES})
-else()
+find_package(TinyXML)
+if(NOT TinyXML_FOUND)
 	add_subdirectory(thirdparty/tinyxml)
-	include_directories(SYSTEM thirdparty/tinyxml)
-	target_link_libraries(openclonk tinyxml)
+	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
+	set(TinyXML_LIBRARIES tinyxml)
+	set(TinyXML_FOUND TRUE)
 endif()
+
+include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
+target_link_libraries(openclonk ${TinyXML_LIBRARIES})
 
 if(WIN32)
 	find_package(DbgHelp)
