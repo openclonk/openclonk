@@ -52,9 +52,6 @@
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
 
-/* Define to 1 if your compiler supports static_assert */
-#cmakedefine HAVE_STATIC_ASSERT 1
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
 
@@ -119,9 +116,6 @@
 
 /* Developer mode */
 #cmakedefine WITH_DEVELOPER_MODE 1
-
-/* Define to 1 if you want to use Boost.Regex instead of <regex>. */
-#cmakedefine USE_BOOST_REGEX 1
 
 /* Define to 1 if the userParam parameter to GLDEBUGPROCARB is const, as the
    spec requires. */
