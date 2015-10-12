@@ -57,12 +57,6 @@ CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
-# Remove obsolete options
-unset(OC_BUILD_MULTIPROCESSOR CACHE)
-unset(USE_APPLE_CLANG CACHE)
-
-unset(HAVE_NATUPNP_H CACHE)
-
 ############################################################################
 # Check for compiler quirks and features
 ############################################################################
