@@ -16,9 +16,6 @@
 /* Define to 1 if you have the <io.h> header file. */
 #cmakedefine HAVE_IO_H 1
 
-/* Define to 1 if you have the <langinfo.h> header file. */
-#cmakedefine HAVE_LANGINFO_H 1
-
 /* Define if you have a readline compatible library */
 #cmakedefine HAVE_LIBREADLINE 1
 
@@ -27,9 +24,6 @@
 
 /* Define to 1 if your stdlib has std::make_unique */
 #cmakedefine HAVE_MAKE_UNIQUE 1
-
-/* Define to 1 if you have the <memory.h> header file. */
-#cmakedefine HAVE_MEMORY_H 1
 
 /* Define to 1 if you have support for nullptr. */
 #cmakedefine HAVE_NULLPTR 1
@@ -66,15 +60,6 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine HAVE_STDLIB_H 1
-
-/* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine HAVE_STRINGS_H 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#cmakedefine HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/eventfd.h> header file. */
 #cmakedefine HAVE_SYS_EVENTFD_H 1
@@ -120,31 +105,6 @@
 /* compile without debug options */
 #cmakedefine NDEBUG 1
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#cmakedefine NO_MINUS_C_MINUS_O 1
-
-/* Define to the address where bug reports for this package should be sent. */
-#cmakedefine PACKAGE_BUGREPORT
-
-/* Define to the full name of this package. */
-#cmakedefine PACKAGE_NAME
-
-/* Define to the full name and version of this package. */
-#cmakedefine PACKAGE_STRING
-
-/* Define to the one symbol short name of this package. */
-#cmakedefine PACKAGE_TARNAME
-
-/* Define to the version of this package. */
-#cmakedefine PACKAGE_VERSION
-
-/* Define to necessary symbol if this constant uses a non-standard name on
-   your system. */
-#cmakedefine PTHREAD_CREATE_JOINABLE
-
-/* Define to 1 if you have the ANSI C header files. */
-#cmakedefine STDC_HEADERS 1
-
 /* dedicated server mode */
 #cmakedefine USE_CONSOLE 1
 
@@ -172,9 +132,6 @@
 
 /* Glib */
 #cmakedefine WITH_GLIB 1
-
-/* Define to 1 if the X Window System is missing or not being used. */
-#cmakedefine X_DISPLAY_MISSING 1
 
 /* compile with debug options */
 #cmakedefine _DEBUG 1
