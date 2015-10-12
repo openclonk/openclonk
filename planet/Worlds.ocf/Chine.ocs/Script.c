@@ -14,7 +14,7 @@ protected func Initialize()
 	// Rules: team account and buying at flagpole.
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_BuyAtFlagpole);
-	
+
 	// Goal: transport the cannon to the top of the chine.
 	var cannon = CreateObjectAbove(Cannon, 96 + RandomX(-12, 12), LandscapeHeight() - 92);
 	var keg = cannon->CreateContents(PowderKeg);
@@ -23,14 +23,15 @@ protected func Initialize()
 	var cannon_goal = CreateObject(Goal_Script);
 	cannon_goal.Name = "$GoalName$";
 	cannon_goal.Description = "$GoalDesc$";
+	cannon_goal.Picture = Chine_GoalIcon;
 	// Add an effect to check whether the goal is fulfilled.
 	AddEffect("GoalCheck", nil, 100, 2, nil);
-	
+
 	// Initialize different parts of the scenario.
 	InitEnvironment(SCENPAR_MapSize, SCENPAR_Difficulty);
 	InitVegetation(SCENPAR_MapSize, SCENPAR_Difficulty);
 	InitAnimals(SCENPAR_Difficulty);
-	InitMaterial(4 - SCENPAR_Difficulty);	
+	InitMaterial(4 - SCENPAR_Difficulty);
 	return;
 }
 

@@ -75,11 +75,22 @@ public func OnGoalUpdate(object goal)
 
 		return _inherited(goal, ...);
 	}
+	var goal_picture_def;
+	var update_req = goal_gui_menu.Symbol != goal->GetID();
+	if (goal->~GetPictureDefinition())
+	{
+		goal_picture_def = goal->GetPictureDefinition();
+		update_req = goal_gui_menu.Symbol != goal_picture_def;
+	}
+
 	// Only update if something has changed.
-	if (goal_gui_menu.Symbol != goal->GetID() || goal_gui_menu.GraphicsName != goal->GetGraphics() || goal_gui_menu.text.Text != goal->~GetShortDescription(GetOwner()))
+	if (update_req || goal_gui_menu.GraphicsName != goal->GetGraphics() || goal_gui_menu.text.Text != goal->~GetShortDescription(GetOwner()))
 	{
 		goal_gui_menu.text.Text = goal->~GetShortDescription(GetOwner());
-		goal_gui_menu.Symbol = goal->GetID();
+		if (goal_picture_def)
+			goal_gui_menu.Symbol = goal_picture_def;
+		else
+			goal_gui_menu.Symbol = goal->GetID();
 		goal_gui_menu.GraphicsName = goal->GetGraphics();
 
 		goal_gui_menu.Player = GetOwner();
@@ -180,6 +191,7 @@ private func GoalSubMenu(object goal, int nr, int size)
 	if (size == nil)
 		size = 4;
 
+	var symbol = goal->~GetPictureDefinition() ?? goal->GetID();
 	// Create the goal submenu with id counting upwards from 2.
 	var prop_goal = 
 	{
@@ -189,7 +201,7 @@ private func GoalSubMenu(object goal, int nr, int size)
 		Right = Format("0%%+%dem", (nr + 1) * size),
 		Top = "0%",
 		Bottom = Format("0%%+%dem", size),
-		Symbol = goal->GetID(),
+		Symbol = symbol,
 		GraphicsName = goal->GetGraphics(),
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnGoalGUIHover", goal)],

@@ -1,0 +1,5 @@
+[DefCore]
+id=Chine_GoalIcon
+Version=7,0
+Category=C4D_StaticBack
+Picture=0,0,128,128
