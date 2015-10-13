@@ -12,6 +12,7 @@ local grave_inscription;
 public func SetInscription(object dead)
 {
 	var death_message = dead->GetObjCoreDeathMessage();
+	if (!death_message) death_message = dead.SpecialDeathMessage;
 	// Set grave inscription dependent on whether there is a death message.
 	if (death_message && GetLength(death_message))
 		grave_inscription = Format("$Epitaph$ %s.|\"%s\"", dead->GetName(), death_message);

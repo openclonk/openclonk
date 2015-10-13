@@ -2,3 +2,4 @@ MsgIntro1=Endlich sind wir bei Hörxs Schloss angekommen. Jetzt brauchen wir nur 
 MsgIntro2=Eindringlinge! Schießt sie ab!
 MsgIntro3=Aaaaah wir sind getroffen.
 MsgIntro4=Verdammter Hörx und seine Artillerie. Sieht so aus als müssten wir einen anderen Weg in sein Schloss suchen.
+DeathOfBrutus=Bitte komm zurück.

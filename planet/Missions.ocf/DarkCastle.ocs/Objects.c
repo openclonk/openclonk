@@ -232,6 +232,7 @@ func InitializeObjects()
 	var Clonk006 = CreateObjectAbove(Clonk, 1372, 1244);
 	Clonk006->SetColor(0xffff0000);
 	Clonk006->SetName("Anna");
+	Clonk006->SetSkin(1);
 	S2AI->AddAI(Clonk006);
 	S2AI->SetHome(Clonk006, 1370, 1237, DIR_Left);
 	S2AI->SetGuardRange(Clonk006, 1150, 1140, 320, 150);
@@ -240,6 +241,7 @@ func InitializeObjects()
 	var Clonk007 = CreateObjectAbove(Clonk, 1448, 1246);
 	Clonk007->SetColor(0xffff0000);
 	Clonk007->SetName("Cindy");
+	Clonk007->SetSkin(1);
 	S2AI->AddAI(Clonk007);
 	S2AI->SetGuardRange(Clonk007, 1150, 1140, 320, 150);
 	S2AI->SetAllyAlertRange(Clonk007, 170);
@@ -254,11 +256,13 @@ func InitializeObjects()
 	var Clonk008 = CreateObjectAbove(Clonk, 1197, 550);
 	Clonk008->SetDir(DIR_Right);
 	Clonk008->SetName("Sabrina");
+	Clonk008->SetSkin(1);
 	S2AI->AddAI(Clonk008);
 	S2AI->SetHome(Clonk008, 1196, 542, DIR_Right);
 	S2AI->SetGuardRange(Clonk008, 955, 472, 415, 299);
 	var Clonk009 = CreateObjectAbove(Clonk, 1265, 551);
 	Clonk009->SetName("Laura");
+	Clonk009->SetSkin(1);
 	S2AI->AddAI(Clonk009);
 	S2AI->SetHome(Clonk009, 1266, 541, DIR_Left);
 	S2AI->SetGuardRange(Clonk009, 966, 391, 383, 283);
@@ -297,7 +301,9 @@ func InitializeObjects()
 	g_cannoneer = CreateObjectAbove(Clonk, 1000, 471);
 	g_cannoneer.StaticSaveVar = "g_cannoneer";
 	g_cannoneer->SetDir(DIR_Left);
+	g_cannoneer->SetName("Brutus");
 	var Clonk016 = CreateObjectAbove(Clonk, 1317, 334);
+	Clonk016->SetName("Archibald");
 	S2AI->AddAI(Clonk016);
 	S2AI->SetGuardRange(Clonk016, 978, 231, 391, 244);
 	Clonk016->SetDir(DIR_Left);
@@ -544,5 +550,8 @@ func InitializeObjects()
 	Clonk011->CreateContents(Firestone, 4);
 	Chest003->CreateContents(Firestone, 3);
 	g_king->CreateContents(Firestone, 3);
+
+	CreateObject(Rule_Gravestones);
+
 	return true;
 }

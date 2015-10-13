@@ -152,6 +152,7 @@ func Intro_Stop()
 	S2AI->BindInventory(g_cannoneer);
 	g_cannoneer->DoEnergy(10000);
 	g_cannoneer->AddEnergyBar();
+	g_cannoneer.SpecialDeathMessage = "$DeathOfBrutus$";
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
 	return true;
 }

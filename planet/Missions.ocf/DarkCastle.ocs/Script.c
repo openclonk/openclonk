@@ -10,7 +10,7 @@ static g_is_initialized;
 static g_ruin1, g_ruin2, g_ruin3, g_elev1, g_elev2, g_farmer, g_king;
 static npc_pyrit, g_cannon, g_cannoneer;
 
-func DoInit(int first_player)
+private func DoInit(int first_player)
 {
 	// Message when first player enters shroom area
 	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
@@ -29,6 +29,9 @@ func DoInit(int first_player)
 			S2AI->BindInventory(enemy);
 			enemy->DoEnergy(10000);
 			enemy->AddEnergyBar();
+			SetSpecialDeathMessage(enemy);
+			
+			SetSpecialDeathMessage(enemy);
 		}
 	g_farmer.portrait = { Source=DialogueCastle };
 	// Start intro if not yet started
@@ -36,7 +39,25 @@ func DoInit(int first_player)
 	return true;
 }
 
-func InitializePlayer(int plr)
+private func SetSpecialDeathMessage(object clonk)
+{
+	var name = clonk->GetName();
+	if (name == "Horst") clonk.SpecialDeathMessage = "$DeathOfHorst$";
+	if (name == "Hanniball") clonk.SpecialDeathMessage = "$DeathOfHanniball$";
+	if (name == "Twonky") clonk.SpecialDeathMessage = "$DeathOfTwonky$";
+	if (name == "Sven") clonk.SpecialDeathMessage = "$DeathOfSven$";
+	if (name == "Luki") clonk.SpecialDeathMessage = "$DeathOfLuki$";
+	if (name == "Anna") clonk.SpecialDeathMessage = "$DeathOfAnna$";
+	if (name == "Cindy") clonk.SpecialDeathMessage = "$DeathOfCindy$";
+	if (name == "Sabrina") clonk.SpecialDeathMessage = "$DeathOfSabrina$";
+	if (name == "Laura") clonk.SpecialDeathMessage = "$DeathOfLaura$";
+	if (name == "Wolfgang") clonk.SpecialDeathMessage = "$DeathOfWolfgang$";
+	if (name == "Hans") clonk.SpecialDeathMessage = "$DeathOfHans$";
+	if (name == "Joki") clonk.SpecialDeathMessage = "$DeathOfJoki$";
+	if (name == "Archibald") clonk.SpecialDeathMessage = "$DeathOfArchibald$";
+}
+
+private func InitializePlayer(int plr)
 {
 	// Players only
 	if (GetPlayerType(plr)!=C4PT_User) return;
@@ -59,19 +80,19 @@ func InitializePlayer(int plr)
 
 /* Enemy encounter messages */
 
-func EncounterCave(object enemy, object player)
+public func EncounterCave(object enemy, object player)
 {
 	Dialogue->MessageBoxAll("$MsgEncounterCave$", enemy, true);
 	return true;
 }
 
-func EncounterOutpost(object enemy, object player)
+public func EncounterOutpost(object enemy, object player)
 {
 	Dialogue->MessageBoxAll("$MsgEncounterOutpost$", enemy, true);
 	return true;
 }
 
-func EncounterKing(object enemy, object player)
+public func EncounterKing(object enemy, object player)
 {
 	if (!player) player = enemy; // Leads to a funny message, but better than a null pointer.
 	Dialogue->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy, true);
@@ -81,7 +102,7 @@ func EncounterKing(object enemy, object player)
 
 /* Mushroom cave encounter */
 
-func ShroomCaveCheck()
+public func ShroomCaveCheck()
 {
 	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
 	if (!intruder) return true;
@@ -90,7 +111,7 @@ func ShroomCaveCheck()
 	return true;
 }
 
-func OnGoalsFulfilled()
+public func OnGoalsFulfilled()
 {
 	GainScenarioAchievement("Done");
 	GainMissionAccess("S2Castle");
