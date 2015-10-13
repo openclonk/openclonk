@@ -104,6 +104,16 @@ public func GetProductionMenuEntries(object clonk)
 		entry.image.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = +1});
 		PushBack(menu_entries, {symbol = product, extra_data = nil, custom = entry});
 	}
+	
+	// At the bottom of the menu, we add some helpful information about the additional features.
+	var entry = 
+	{
+		Style = GUI_TextBottom,
+		Bottom = "2em", BackgroundColor = RGBa(0, 0, 0, 100),
+		Priority = 999999,
+		Text = Format("<c 666666>%s + $Click$: $InfiniteProduction$</c>", GetPlayerControlAssignment(clonk->GetOwner(), CON_ModifierMenu1, true))
+	};
+	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry});
 	return menu_entries;
 }
 
@@ -128,6 +138,8 @@ public func GetInteractionMenus(object clonk)
 
 public func OnProductHover(symbol, extra_data, desc_menu_target, menu_id)
 {
+	if (symbol == nil) return;
+	
 	var new_box =
 	{
 		Text = Format("%s:|%s", symbol.Name, symbol.Description,),

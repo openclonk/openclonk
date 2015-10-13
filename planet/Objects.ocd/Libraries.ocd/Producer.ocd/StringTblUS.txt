@@ -1,3 +1,5 @@
 Production=Production
 QueueRemove=Produce one less.
 infinite=always
+InfiniteProduction=Infinite production
+Click=Click
