@@ -57,12 +57,6 @@ public func EmptyBucket()
 	var i = ContentsCount();
 	while (--i >= 0)
 		if (Contents(0)) Contents(0)->RemoveObject();
-	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350));
-}
-
-public func FillBucket()
-{
-	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(20,0,1,0), Trans_Rotate(-15,0,0,1), Trans_Scale(1350));
 }
 
 public func IsBucketFilled()
@@ -112,7 +106,7 @@ private func Spill(int angle)
 	var material_amount = obj->GetMaterialAmount();
 	var stack_count = obj->~GetStackCount();
 	if (stack_count > 1) material_amount *= stack_count;
-	
+
 	// This will only spray out the material because no solid base to stick it on was found
 	CastPXS(material_name, material_amount, 20, 0,0, angle, 15);
 }
@@ -153,7 +147,7 @@ public func SaveScenarioObject(props)
 
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1100)),def);
 }
 
 local Name = "$Name$";
