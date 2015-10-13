@@ -26,6 +26,7 @@ func SetProgress(int new_progress)
 	{
 		SetGraphics(Format("%d", new_progress));
 		SetGraphics("Site", GetID(), GFX_Overlay, GFXOV_MODE_Base);
+		GameCallEx("OnPlanePartAdded", this);
 	}
 	else
 	{
@@ -52,7 +53,7 @@ func AddPart(object part)
 {
 	part->RemoveRestoreMode();
 	part->RemoveObject();
-	Sound("Applause", true);
+	Sound("Ding", true);
 	SetProgress(progress+1);
 	return true;
 }

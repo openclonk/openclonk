@@ -5,10 +5,11 @@
 		All plane parts have to be brought to the construction site
 --*/
 
-
 #include Library_Goal
 
-protected func Initialize()
+local progress = 0;
+
+private func Initialize()
 {
 	return inherited(...);
 }
@@ -22,24 +23,46 @@ public func GetDescription(int plr)
 {
 	var message;
 	if (IsFulfilled())
-		message = "$MsgGoalFulfilled$";		
+		message = "$MsgGoalFulfilled$";
 	else
+	{
 		message = "$MsgGoalUnFulfilled$";
+		if (!progress)
+			message = Format("%s|$MsgGoalSkids$", message);
+		if (progress == 1)
+			message = Format("%s|$MsgGoalChassis$", message);
+		if (progress == 2)
+			message = Format("%s|$MsgGoalWings$", message);
+		if (progress == 3)
+			message = Format("%s|$MsgGoalEngine$", message);
+		if (progress == 4)
+			message = Format("%s|$MsgGoalPropeller$", message);
+	}
 	return message;
 }
 
 public func Activate(int byplr)
 {
-	if (IsFulfilled())
-		MessageWindow("$MsgGoalFulfilled$", byplr);
-	else
-		MessageWindow("$MsgGoalUnFulfilled$", byplr);
-	return;
+	MessageWindow(GetDescription(byplr), byplr);
 }
 
 public func GetShortDescription(int plr)
 {
-	return "{{Plane}}"; // TODO
+	var next_part = Plane_Skids;
+	if (progress == 1)
+		next_part = Plane_Chassis;
+	if (progress == 2)
+		next_part = Plane_Wings;
+	if (progress == 3)
+		next_part = Plane_Engine;
+	if (progress == 4)
+		next_part = Plane_Propeller;
+	return Format("{{%i}}", next_part);
+}
+
+public func OnPlanePartAdded()
+{
+	progress++;
 }
 
 /*-- Proplist --*/

@@ -1,3 +1,8 @@
 Name=Build the airplane
 MsgGoalFulfilled=You have assembled the airplane!
 MsgGoalUnFulfilled=Collect all the airplane parts and bring them to the construction site.
+MsgGoalSkids=At first you need to get the skids.
+MsgGoalChassis=Next attach the chassis.
+MsgGoalWings=Get the wings now.
+MsgGoalEngine=At this point construct a new engine.
+MsgGoalPropeller=All that's missing is the propeller.

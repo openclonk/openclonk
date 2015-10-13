@@ -45,7 +45,7 @@ func InitializePlayer(int plr)
 	while (crew = GetCrew(plr, index))
 	{
 		var x = 150 + Random(50);
-		crew->SetPosition(x , 400);
+		crew->SetPosition(x , 390);
 		crew->CreateContents(Shovel);
 		// one clonk can construct, another can mine.
 		if (index == 1)

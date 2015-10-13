@@ -399,7 +399,7 @@ func GetWindEx(int x, int y)
 	var idx = MapXYToIdx(x, y);
 	if (idx<0) return 0; // outside landscape
 	// check storm density map
-	return BoundBy(map[idx]*strength/10, 0,100);
+	return -BoundBy(map[idx]*strength/10, 0,100);
 }
 
 global func GetWind(int x, int y)

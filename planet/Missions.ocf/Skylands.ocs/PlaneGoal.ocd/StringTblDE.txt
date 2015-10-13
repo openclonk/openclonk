@@ -1,3 +1,8 @@
 Name=Baue das Flugzeug zusammen
 MsgGoalFulfilled=Das Flugzeug ist fertig!
-MsgGoalUnFulfilled=Baue das Flugzeug zusammen
+MsgGoalUnFulfilled=Baue das Flugzeug zusammen!
+MsgGoalSkids=Die Kufen müssen als erstes her.
+MsgGoalChassis=Der Rumpf muss aufgesetzt werden.
+MsgGoalWings=Die Flügel sind als nächstes dran.
+MsgGoalEngine=Jetzt muss ein neuer Motor hergestellt werden.
+MsgGoalPropeller=Es fehlt nur noch der Propeller.
