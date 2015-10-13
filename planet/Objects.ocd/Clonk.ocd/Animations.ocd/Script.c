@@ -523,11 +523,21 @@ func FxIntWalkTimer(pTarget, effect)
 		}
 		if (anim == Clonk_WalkRun)
 		{
-			effect.footstep_time++;
-			if (effect.footstep_time == 12)
+			// There are roughly two animation positions in Run when a foot touches the ground:
+			// 550 and 1700
+			// This here is trying to trigger a footstep as close as possible to these two moments.
+			var pos = GetAnimationPosition(effect.animation_id);
+			if (pos < 550 && effect.footstep_time)
+				effect.footstep_time = 0;
+			if (Inside(pos, 550, 1699) && effect.footstep_time != 1)
 			{
 				Footstep();
-				effect.footstep_time = 0;
+				effect.footstep_time = 1;
+			}
+			if (pos >= 1700 && effect.footstep_time != 2)
+			{
+				Footstep();
+				effect.footstep_time = 2;
 			}
 		}
 		else if(effect.footstep_time) effect.footstep_time = 0;
