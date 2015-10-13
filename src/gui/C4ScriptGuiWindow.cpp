@@ -1411,9 +1411,21 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 		const float childWdtF = float(child->rcBounds.Wdt) + childLeftMargin + childRightMargin;
 		const float childHgtF = float(child->rcBounds.Hgt) + childTopMargin + childBottomMargin;
 
+		auto doLineBreak = [&]()
+		{
+			currentX = borderX;
+			currentY += maxChildHeight + borderY;
+			maxChildHeight = 0;
+		};
+
 		// do all the rounding after the calculations
 		const int32_t childWdt = (int32_t)(childWdtF + 0.5f);
 		const int32_t childHgt = (int32_t)(childHgtF + 0.5f);
+
+		// Check if the child even fits in the remainder of the row
+		const bool fitsInRow = (width - currentX) >= childWdt;
+		if (!fitsInRow) doLineBreak();
+
 		// remember the highest child to make sure rows don't overlap
 		if (!maxChildHeight || (childHgt > maxChildHeight))
 		{
@@ -1424,16 +1436,10 @@ void C4ScriptGuiWindow::UpdateLayoutGrid()
 		child->rcBounds.y = currentY + static_cast<int32_t>(childTopMargin);
 
 		currentX += childWdt + borderX;
-		if (currentX + childWdt >= width)
-		{
-			currentX = borderX;
-			currentY += maxChildHeight + borderY;
-			maxChildHeight = 0;
-		}
 	}
 
 	// do we need a scroll bar?
-	EnableScrollBar(currentY > height, lowestChildRelY);
+	EnableScrollBar(lowestChildRelY > height, lowestChildRelY);
 }
 
 void C4ScriptGuiWindow::UpdateLayoutVertical()
