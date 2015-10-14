@@ -31,6 +31,8 @@ public func Hit()
 // Determines the arrow strength: only 30% that of the normal arrow.
 public func ArrowStrength() { return 3; }
 
+public func HasExplosionOnImpact() { return !!GetEffect("InFlight", this); }
+
 
 /*-- Properties --*/
 

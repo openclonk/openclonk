@@ -87,6 +87,7 @@ public func IsDroppedOnDeath(object clonk)
 	return !!GetEffect("FuseBurn", this);
 }
 
+public func HasExplosionOnImpact() { return armed; }
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }

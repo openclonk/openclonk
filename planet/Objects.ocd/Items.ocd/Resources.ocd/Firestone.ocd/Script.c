@@ -26,6 +26,8 @@ func Hit2()
 	return Explode(18);
 }
 
+public func HasExplosionOnImpact() { return true; }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";

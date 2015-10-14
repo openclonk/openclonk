@@ -243,8 +243,8 @@ private func ExecuteProtection(fx)
 			if (!PathFree(GetX(),GetY(),obj->GetX(),obj->GetY())) continue;
 			// This might hit :o
 			fx.alert=fx.time;
-			// do we have a shield?
-			if (fx.shield)
+			// Use a shield if the object is not explosive.
+			if (fx.shield && !obj->~HasExplosionOnImpact())
 			{
 				// use it!
 				if (fx.aim_weapon == fx.shield)
