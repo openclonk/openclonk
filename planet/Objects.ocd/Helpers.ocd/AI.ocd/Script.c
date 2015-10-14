@@ -1,6 +1,6 @@
 /**
-	Enemy AI
-	Controls enemy behaviour.
+	AI
+	Controls NPC behaviour.
 
 	@author Sven2
 */
@@ -9,27 +9,27 @@
 #include AI_HelperFunctions
 
 
-static const S2AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
-             S2AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
-             S2AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
-             S2AI_AlertTime      = 800; // number of frames after alert after which AI no longer checks for projectiles
+static const AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
+             AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
+             AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
+             AI_AlertTime      = 800; // number of frames after alert after which AI no longer checks for projectiles
              
 /* Public interface */
 
 // Add AI execution timer to target Clonk
 func AddAI(object clonk)
 {
-	var fx = GetEffect("S2AI", clonk);
-	if (!fx) fx = AddEffect("S2AI", clonk, 1, 3, nil, S2AI);
+	var fx = GetEffect("AI", clonk);
+	if (!fx) fx = AddEffect("AI", clonk, 1, 3, nil, AI);
 	if (!fx || !clonk) return nil;
-	fx.ai = S2AI;
-	clonk.ExecuteS2AI = S2AI.Execute;
+	fx.ai = AI;
+	clonk.ExecuteAI = AI.Execute;
 	clonk.ai = fx;
 	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
 	BindInventory(clonk);
 	SetHome(clonk);
-	SetGuardRange(clonk, fx.home_x-S2AI_DefGuardRangeX, fx.home_y-S2AI_DefGuardRangeY, S2AI_DefGuardRangeX*2, S2AI_DefGuardRangeY*2);
-	SetMaxAggroDistance(clonk, S2AI_DefMaxAggroDistance);
+	SetGuardRange(clonk, fx.home_x-AI_DefGuardRangeX, fx.home_y-AI_DefGuardRangeY, AI_DefGuardRangeX*2, AI_DefGuardRangeY*2);
+	SetMaxAggroDistance(clonk, AI_DefMaxAggroDistance);
 	// AI editor commands
 	if (!clonk.EditCursorCommands)
 		clonk.EditCursorCommands = [];
@@ -37,11 +37,11 @@ func AddAI(object clonk)
 		clonk.EditCursorCommands = clonk.EditCursorCommands[:];
 	var idx;
 	if ((idx=GetIndexOf(clonk.EditCursorCommands, "AI_Add()"))>=0) clonk.EditCursorCommands[idx] = nil;
-	if (GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome)<0)
+	if (GetIndexOf(clonk.EditCursorCommands, AI.AI_SetHome)<0)
 	{
 		var l = GetLength(clonk.EditCursorCommands);
-		clonk.EditCursorCommands[l++] = clonk.AI_SetHome = S2AI.AI_SetHome;
-		clonk.EditCursorCommands[l++] = clonk.AI_BindInventory = S2AI.AI_BindInventory;
+		clonk.EditCursorCommands[l++] = clonk.AI_SetHome = AI.AI_SetHome;
+		clonk.EditCursorCommands[l++] = clonk.AI_BindInventory = AI.AI_BindInventory;
 	}
 	return fx;
 }
@@ -120,28 +120,28 @@ func SetEncounterCB(object clonk, string cb_fn)
 
 /* Scenario saving */
 
-func FxS2AISaveScen(clonk, fx, props)
+func FxAISaveScen(clonk, fx, props)
 {
 	if (!clonk) return false;
-	props->AddCall("S2AI", S2AI, "AddAI", clonk);
+	props->AddCall("AI", AI, "AddAI", clonk);
 	if (fx.home_x != clonk->GetX() || fx.home_y != clonk->GetY() || fx.home_dir != clonk->GetDir())
-		props->AddCall("S2AI", S2AI, "SetHome", clonk, fx.home_x, fx.home_y, GetConstantNameByValueSafe(fx.home_dir, "DIR_"));
-	props->AddCall("S2AI", S2AI, "SetGuardRange", clonk, fx.guard_range.x, fx.guard_range.y, fx.guard_range.wdt, fx.guard_range.hgt);
-	if (fx.max_aggro_distance != S2AI_DefMaxAggroDistance)
-		props->AddCall("S2AI", S2AI, "SetMaxAggroDistance", clonk, fx.max_aggro_distance);
+		props->AddCall("AI", AI, "SetHome", clonk, fx.home_x, fx.home_y, GetConstantNameByValueSafe(fx.home_dir, "DIR_"));
+	props->AddCall("AI", AI, "SetGuardRange", clonk, fx.guard_range.x, fx.guard_range.y, fx.guard_range.wdt, fx.guard_range.hgt);
+	if (fx.max_aggro_distance != AI_DefMaxAggroDistance)
+		props->AddCall("AI", AI, "SetMaxAggroDistance", clonk, fx.max_aggro_distance);
 	if (fx.ally_alert_range)
-		props->AddCall("S2AI", S2AI, "SetAllyAlertRange", clonk, fx.ally_alert_range);
+		props->AddCall("AI", AI, "SetAllyAlertRange", clonk, fx.ally_alert_range);
 	if (fx.encounter_cb)
-		props->AddCall("S2AI", S2AI, "SetEncounterCB", clonk, Format("%v", fx.encounter_cb));
+		props->AddCall("AI", AI, "SetEncounterCB", clonk, Format("%v", fx.encounter_cb));
 	return true;
 }
 
 
 /* AI effect callback functions */
 
-protected func FxS2AITimer(clonk, fx, int time) { clonk->ExecuteS2AI(fx, time); return FX_OK; }
+protected func FxAITimer(clonk, fx, int time) { clonk->ExecuteAI(fx, time); return FX_OK; }
 
-protected func FxS2AIStop(clonk, fx, int reason)
+protected func FxAIStop(clonk, fx, int reason)
 {
 	// remove debug display
 	if (fx.debug) clonk->Call(fx.ai.EditCursorDeselection, fx);
@@ -156,13 +156,13 @@ protected func FxS2AIStop(clonk, fx, int reason)
 	if (clonk && clonk.EditCursorCommands)
 	{
 		var idx;
-		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_SetHome))>=0) clonk.EditCursorCommands[idx] = nil;
-		if ((idx=GetIndexOf(clonk.EditCursorCommands, S2AI.AI_BindInventory))>=0) clonk.EditCursorCommands[idx] = nil;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, AI.AI_SetHome))>=0) clonk.EditCursorCommands[idx] = nil;
+		if ((idx=GetIndexOf(clonk.EditCursorCommands, AI.AI_BindInventory))>=0) clonk.EditCursorCommands[idx] = nil;
 	}
 	return FX_OK;
 }
 
-protected func FxS2AIDamage(clonk, fx, int dmg, int cause)
+protected func FxAIDamage(clonk, fx, int dmg, int cause)
 {
 	// AI takes damage: Make sure we're alert so evasion and healing scripts are executed!
 	// It might also be feasible to execute encounter callbacks here (in case an AI is shot from a position it cannot see).
@@ -198,7 +198,7 @@ private func Execute(proplist fx, int time)
 		{
 			var ally_fx;
 			for (var ally in FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner())))
-				if (ally_fx = S2AI->GetAI(ally))
+				if (ally_fx = AI->GetAI(ally))
 					if (!ally_fx.target)
 					{
 						ally_fx.target = fx.target;
@@ -275,7 +275,7 @@ private func ExecuteProtection(fx)
 	//Log("OK");
 	// stay alert if there's a target. Otherwise alert state may wear off
 	if (!fx.target) fx.target = FindEmergencyTarget(fx);
-	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > S2AI_AlertTime) fx.alert=nil;
+	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > AI_AlertTime) fx.alert=nil;
 	// nothing to do
 	return false;
 }
@@ -765,10 +765,10 @@ func CreateDebugDisplay(fx, int ignore_range_marker)
 		fx.debug.r2 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r3 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,clr);
 		fx.debug.r4 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y,clr);
-		if (!fx.debug.rm1) fx.debug.rm1 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y                   ,  0, this, S2AI.ChangeGuardRange, 0);
-		if (!fx.debug.rm2) fx.debug.rm2 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y                   , 90, this, S2AI.ChangeGuardRange, 1);
-		if (!fx.debug.rm3) fx.debug.rm3 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y+fx.guard_range.hgt,180, this, S2AI.ChangeGuardRange, 2);
-		if (!fx.debug.rm4) fx.debug.rm4 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y+fx.guard_range.hgt,270, this, S2AI.ChangeGuardRange, 3);
+		if (!fx.debug.rm1) fx.debug.rm1 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y                   ,  0, this, AI.ChangeGuardRange, 0);
+		if (!fx.debug.rm2) fx.debug.rm2 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y                   , 90, this, AI.ChangeGuardRange, 1);
+		if (!fx.debug.rm3) fx.debug.rm3 = RangeMarker->Create(fx.guard_range.x+fx.guard_range.wdt, fx.guard_range.y+fx.guard_range.hgt,180, this, AI.ChangeGuardRange, 2);
+		if (!fx.debug.rm4) fx.debug.rm4 = RangeMarker->Create(fx.guard_range.x                   , fx.guard_range.y+fx.guard_range.hgt,270, this, AI.ChangeGuardRange, 3);
 	}
 	return true;
 }

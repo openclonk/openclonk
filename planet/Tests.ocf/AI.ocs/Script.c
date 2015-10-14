@@ -73,7 +73,7 @@ global func CreateEnemy(id clonktype, int x,int y, int plr, array contents, int 
 	enemy->MakeCrewMember(plr);
 	enemy->SetMaxEnergy(life);
 	if (contents) for (var c in contents) enemy->CreateContents(c);
-	S2AI->AddAI(enemy);
+	AI->AddAI(enemy);
 	enemy->AddEnergyBar();
 	return enemy;
 }

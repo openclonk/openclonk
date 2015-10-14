@@ -1,8 +1,4 @@
 [DefCore]
-id=S2AI
+id=AI
 Version=6,0
 Category=C4D_Vehicle | C4D_MouseIgnore
-Width=1
-Height=1
-Mass=1
-

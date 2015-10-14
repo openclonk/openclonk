@@ -145,11 +145,11 @@ func Intro_Stop()
 {
 	//this.dialogue->SetInteraction(true); - no dialogue yet
 	//this.dialogue->AddAttention();
-	S2AI->AddAI(g_cannoneer);
-	S2AI->SetHome(g_cannoneer);
-	S2AI->SetGuardRange(g_cannoneer, g_cannoneer->GetX()-100, g_cannoneer->GetY()-100, 300, 110);
+	AI->AddAI(g_cannoneer);
+	AI->SetHome(g_cannoneer);
+	AI->SetGuardRange(g_cannoneer, g_cannoneer->GetX()-100, g_cannoneer->GetY()-100, 300, 110);
 	g_cannoneer->CreateContents(Sword);
-	S2AI->BindInventory(g_cannoneer);
+	AI->BindInventory(g_cannoneer);
 	g_cannoneer->DoEnergy(10000);
 	g_cannoneer->AddEnergyBar();
 	g_cannoneer.SpecialDeathMessage = "$DeathOfBrutus$";

@@ -10,7 +10,7 @@ static g_wave; // index of current wave
 static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
-static g_ai; // derived from S2AI; contains changes for this scenario
+static g_ai; // derived from AI; contains changes for this scenario
 static const ENEMY = 10; // player number of enemy
 
 static const MAX_RELAUNCH = 10;

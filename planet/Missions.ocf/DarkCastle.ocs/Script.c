@@ -23,10 +23,10 @@ private func DoInit(int first_player)
 	// Update AI stuff
 	var fx;
 	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
-		if (fx = S2AI->GetAI(enemy))
+		if (fx = AI->GetAI(enemy))
 		{
 			fx.weapon = fx.target = nil;
-			S2AI->BindInventory(enemy);
+			AI->BindInventory(enemy);
 			enemy->DoEnergy(10000);
 			enemy->AddEnergyBar();
 			SetSpecialDeathMessage(enemy);

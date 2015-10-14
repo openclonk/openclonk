@@ -722,22 +722,22 @@ func SaveScenarioObject(props)
 
 func EditCursorSelection(...)
 {
-	var ai = S2AI->GetAI(this);
-	if (ai) Call(S2AI.EditCursorSelection, ai, ...);
+	var ai = AI->GetAI(this);
+	if (ai) Call(AI.EditCursorSelection, ai, ...);
 	return _inherited(...);
 }
 
 func EditCursorDeselection(...)
 {
-	var ai = S2AI->GetAI(this);
-	if (ai) Call(S2AI.EditCursorDeselection, ai, ...);
+	var ai = AI->GetAI(this);
+	if (ai) Call(AI.EditCursorDeselection, ai, ...);
 	return _inherited(...);
 }
 
 func AI_Add()
 {
 	// Create AI and re-select
-	S2AI->AddAI(this);
+	AI->AddAI(this);
 	EditCursorDeselection();
 	EditCursorSelection();
 	return true;

@@ -1,13 +1,13 @@
-#include S2AI
+#include AI
 
 static g_statue;
 
 func AddAI(object clonk)
 {
-	var fx = S2AI->AddAI(clonk);
+	var fx = AI->AddAI(clonk);
 	if (fx)
 	{
-		clonk.ExecuteS2AI = CustomAI.Execute;
+		clonk.ExecuteAI = CustomAI.Execute;
 		fx.ai = CustomAI;
 	}
 	return fx;
@@ -15,7 +15,7 @@ func AddAI(object clonk)
 
 func SetEnemyData(object clonk, proplist data)
 {
-	var fx = GetEffect("S2AI", clonk);
+	var fx = GetEffect("AI", clonk);
 	if (fx)
 	{
 		if (data.Siege) fx.is_siege = true;
@@ -116,7 +116,7 @@ private func CheckVehicleAmmo(fx, object catapult)
 func PathFree()
 {
 	// ignore path che4cks to doors because of solidmask)
-	var fx = GetEffect("S2AI", this);
+	var fx = GetEffect("AI", this);
 	if (fx && fx.target && fx.target->GetID()==StoneDoor) return true;
 	return inherited(...);
 }
@@ -244,7 +244,7 @@ func LaunchEnemy(proplist enemy, int x, int y)
 	// Init AI: Run towards statue
 	CustomAI->AddAI(obj);
 	CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
-	var fx = GetEffect("S2AI", obj);
+	var fx = GetEffect("AI", obj);
 	if (fx) fx.vehicle = vehicle;
 	if (g_statue)
 	{
