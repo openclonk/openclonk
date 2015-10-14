@@ -263,7 +263,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	var sidebar_size_em = ToEmString(InteractionMenu_SideBarSize);
 	var part_menu =
 	{
-		Left = "0%", Right = "50%-1em",
+		Left = "0%", Right = "50%-3em",
 		Bottom = "100%-7em",
 		sidebar = sidebar, main = main,
 		Target = current_menus[slot].menu_object,
@@ -272,8 +272,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	
 	if (slot == 1)
 	{
-		part_menu.Left = "50%+1em";
-		part_menu.Right = "100%";
+		part_menu.Left = "50%-1em";
+		part_menu.Right = "100%-2em";
 	}
 	
 	if (this.minimized)
@@ -303,18 +303,20 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			minimize_button = 
 			{
 				Bottom = "100%",
-				Top = "100% - 1em",
-				Right = "4em",
-				Text = "$Minimize$",
-				BackgroundColor = {Std = RGB(50, 50, 50), OnHover = RGB(200, 0, 0)},
+				Top = "100% - 2em",
+				Left = "100% - 2em",
+				Tooltip = "$Minimize$",
+				Symbol = Icon_Arrow,
+				GraphicsName = "Down",
+				BackgroundColor = {Std = nil, OnHover = 0x50ffff00},
 				OnMouseIn = GuiAction_SetTag("OnHover"),
 				OnMouseOut = GuiAction_SetTag("Std"),
 				OnClick = GuiAction_Call(this, "OnToggleMinimizeClicked")
 			},
 			center_column =
 			{
-				Left = "50%-1em",
-				Right = "50%+1em",
+				Left = "50%-3em",
+				Right = "50%-1em",
 				Top = "1.75em",
 				Bottom = "100%-7em",
 				Style = GUI_VerticalLayout,
@@ -326,7 +328,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 					Style = GUI_TextHCenter | GUI_TextVCenter,
 					Symbol = Icon_MoveItems, GraphicsName = "Left",
 					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = RGBa(255, 0, 0, 100)},
+					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
 					OnMouseIn = GuiAction_SetTag("Hover"),
 					OnMouseOut = GuiAction_SetTag("Std"),
 					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 0)
@@ -339,7 +341,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 					Style = GUI_TextHCenter | GUI_TextVCenter,
 					Symbol = Icon_MoveItems,
 					Tooltip = "",
-					BackgroundColor ={Std = 0, Hover = RGBa(255, 0, 0, 100)},
+					BackgroundColor ={Std = 0, Hover = 0x50ffff00},
 					OnMouseIn = GuiAction_SetTag("Hover"),
 					OnMouseOut = GuiAction_SetTag("Std"),
 					OnClick = GuiAction_Call(this, "OnMoveAllToClicked", 1)
@@ -348,6 +350,7 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			description_box =
 			{
 				Top = "100%-5em",
+				Right = "100% - 2em",
 				Margin = [sidebar_size_em, "0em"],
 				BackgroundColor = RGB(25, 25, 25),
 				symbol_part =
@@ -373,11 +376,15 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 			}
 		};
 		
+		// Allow the menu to be closed with a clickable button.
+		var close_button = GuiAddCloseButton(root_menu, this, "Close");
+		
 		// Special setup for a minimized menu.
 		if (this.minimized)
 		{
 			root_menu.Top = "75%";
-			root_menu.minimize_button.Text = "$Maximize$";
+			root_menu.minimize_button.Tooltip = "$Maximize$";
+			root_menu.minimize_button.GraphicsName = "Up";
 			root_menu.center_column.Bottom = nil; // full size
 			root_menu.description_box = nil;
 		}
