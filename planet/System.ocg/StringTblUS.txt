@@ -1,3 +1,5 @@
+TooltipGUIClose=Close
+
 SET_WASD_QWERTZ=Keyboard and mouse
 SET_Gamepad=Gamepad
 

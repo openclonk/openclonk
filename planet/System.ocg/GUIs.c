@@ -16,6 +16,7 @@ global func GuiAddCloseButton(proplist menu, proplist target, string callback, p
 {
 	var close_button =
 	{
+		Tooltip = "$TooltipGUIClose$",
 		Priority = 0x0fffff,
 		Left = "100%-2em", Top = "0%+0em",
 		Right = "100%", Bottom = "0%+2em",
