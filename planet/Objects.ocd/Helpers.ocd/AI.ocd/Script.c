@@ -197,7 +197,7 @@ private func Execute(proplist fx, int time)
 		if (fx.ally_alert_range)
 		{
 			var ally_fx;
-			for (var ally in FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner())))
+			for (var ally in FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(this), Find_OCF(OCF_CrewMember), Find_Owner(GetOwner())))
 				if (ally_fx = AI->GetAI(ally))
 					if (!ally_fx.target)
 					{
@@ -217,7 +217,7 @@ private func ExecuteProtection(fx)
 {
 	// Search for nearby projectiles. Ranged AI also searches for enemy clonks to evade.
 	var enemy_search;
-	if (fx.ranged) enemy_search = Find_And(Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())));
+	if (fx.ranged) enemy_search = Find_And(Find_OCF(OCF_CrewMember), Find_Not(Find_Owner(GetOwner())));
 	//Log("ExecProt");
 	var projectiles = FindObjects(Find_InRect(-150,-50,300,80), Find_Or(Find_Category(C4D_Object), Find_Func("IsDangerous4AI"), Find_Func("IsArrow"), enemy_search), Find_OCF(OCF_HitSpeed2), Find_NoContainer(), Sort_Distance());
 	for (var obj in projectiles)
@@ -389,7 +389,7 @@ private func ExecuteRanged(fx)
 		//Log("AI: Ranged attack calculated angle %d from coordinates (%d, %d) and (%d, %d)", shooting_angle, x, y, tx, ty); 
 		if (GetType(shooting_angle) != C4V_Nil)
 		{
-			// No ally on path?
+			// No ally on path? Also search for allied animals, just in case.
 			var ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
 			if (ally)
 			{
@@ -666,23 +666,29 @@ private func ExecuteIdle(fx)
 
 private func FindTarget(fx)
 {
-	// could search for hostile...for now, just search for all other players
-	for (var target in FindObjects(Find_InRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Find_NoContainer(), Sort_Random()))
+	// Consider hostile clonks, or all clonks if the AI does not have an owner.
+	var hostile_criteria = Find_Hostile(GetOwner());
+	if (GetOwner() == NO_OWNER)
+		hostile_criteria = Find_Not(Find_Owner(GetOwner()));
+	for (var target in FindObjects(Find_InRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Random()))
 		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
 			return target;
-	// nothing found
-	return nil;
+	// Nothing found.
+	return;
 }
 
 private func FindEmergencyTarget(fx)
 {
-	// search nearest enemy clonk in area even if not in guard range
-	// used e.g. when outside guard range (AI fell down) and being attacked
-	for (var target in FindObjects(Find_Distance(200), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Find_NoContainer(), Sort_Distance()))
+	// Consider hostile clonks, or all clonks if the AI does not have an owner.
+	var hostile_criteria = Find_Hostile(GetOwner());
+	if (GetOwner() == NO_OWNER)
+		hostile_criteria = Find_Not(Find_Owner(GetOwner()));
+	// Search nearest enemy clonk in area even if not in guard range, used e.g. when outside guard range (AI fell down) and being attacked.
+	for (var target in FindObjects(Find_Distance(200), Find_OCF(OCF_CrewMember), hostile_criteria, Find_NoContainer(), Sort_Distance()))
 		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
 			return target;
-	// nothing found
-	return nil;
+	// Nothing found.
+	return;
 }
 
 // Helper function: Convert target cordinates and bow out speed to desired shooting angle
