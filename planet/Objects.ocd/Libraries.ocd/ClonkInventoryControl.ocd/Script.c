@@ -58,7 +58,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Quick-pickup item via click? Note that this relies on being executed after the normal Clonk controls
-	if (ctrl == CON_Use && !this->GetHandItem(0))
+	if (ctrl == CON_Use && !this->GetHandItem(0) && !release)
 	{
 		var sort = Sort_Distance(x, y);
 		var items = FindAllPickupItems(sort);
