@@ -11,7 +11,8 @@
 
 local messages; // A container to hold all messages.
 local message_index; // Progress in reading messages.
-local message_open; // current open message.
+local message_open; // Currently open message.
+local close_on_last; // Close guide on after last message.
 
 protected func Initialize()
 {
@@ -20,6 +21,7 @@ protected func Initialize()
 	messages = [];
 	message_index = nil;
 	message_open = nil;
+	close_on_last = false;
 	
 	// Initialize menu properties.
 	InitializeMenu();
@@ -63,6 +65,12 @@ public func ShowGuideMessage(int show_index)
 public func HideGuide()
 {
 	CloseGuideMenu();
+	return;
+}
+
+public func EnableCloseOnLastMessage(bool disable)
+{
+	close_on_last = !disable;
 	return;
 }
 
@@ -177,8 +185,9 @@ private func ShowGuideMenu(int index)
 	if (!message)
 		return;
 	var has_next = index < GetLength(messages) - 1;
-	var has_prev = index > 0;			
-	UpdateGuideMenu(message, has_next, has_prev);
+	var has_prev = index > 0;
+	var has_close = close_on_last && !has_next;
+	UpdateGuideMenu(message, has_next, has_prev, has_close);
 	message_open = index;
 
 	// Notify the scenario script.
@@ -187,16 +196,27 @@ private func ShowGuideMenu(int index)
 	return;
 }
 
-private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev)
+private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev, bool has_close)
 {
 	// Update the text message entry.
 	prop_menu.text.Text = guide_message;
 	GuiUpdate(prop_menu.text, id_menu, prop_menu.text.ID, this);
 	
-	// Update the next button.
-	if (has_next)
+	// Update the next/close button.
+	if (has_next || has_close)
 	{
 		prop_menu.next = prop_next;
+		if (has_next)
+		{
+			prop_menu.next.Symbol = Icon_Arrow;
+			prop_menu.next.GraphicsName = "Down";
+			prop_menu.next.Text = "$MsgNext$";
+		}
+		else if (has_close)
+		{
+			prop_menu.next.Symbol = Icon_Cancel;
+			prop_menu.next.Text = "$MsgClose$";
+		}
 		GuiUpdate(prop_menu, id_menu, prop_menu.ID, this);
 	}
 	else if (prop_menu.next != nil)
@@ -221,7 +241,12 @@ private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev)
 
 private func CloseGuideMenu()
 {
+	// Gamecall on closing of the open message.
+	if (message_open != nil)
+		GameCall("OnGuideMessageRemoved", GetOwner(), message_open);
+	message_open = nil;
 	GuiClose(id_menu, nil, this);
+	return;
 }
 
 // Menu callback: the player has clicked on the guide.
@@ -239,7 +264,11 @@ private func ShowCurrentMessage()
 public func ShowNextMessage()
 {
 	if (message_open >= GetLength(messages) - 1)
+	{
+		if (close_on_last)
+			CloseGuideMenu();
 		return;
+	}
 	ShowGuideMenu(message_open + 1);
 	return;
 }
