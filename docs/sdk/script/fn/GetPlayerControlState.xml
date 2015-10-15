@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerControlState</title>
+    <category>Player</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose control state you want to query.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>control</name>
+          <desc>Control to query. A CON_* constant should be used here.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the current state of a control for a certain player. The return value is the strength of the control (e.g. for gamepad joysticks). If the control is assigned to a key, a value not equal to 0 means that the key is currently held down by the player.</desc>
+    <examples>
+      <example>
+        <code>
+if (GetPlayerControlState(GetOwner(), CON_Left) != 0)
+    Log("You are currently holding down the left cursor key!");</code>
+        <text>Prints a message when the player is holding down the key assigned to the control CON_Left.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlayerControlAssignment</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2015-10</date>
+</funcs>

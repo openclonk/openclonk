@@ -2633,7 +2633,6 @@ static bool FnSetNextMission(C4PropList * _this, C4String *szNextMission, C4Stri
 	return true;
 }
 
-// undocumented!
 static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl)
 {
 	// get control set to check
