@@ -206,13 +206,14 @@
 <code>
 func MakeMyMenu()
 {
-	var menu = {
+	var menu =
+	{
 		Left = "50%",
 		Top = "0%",
 		Right = "100%",
 		Bottom = "100%",
 		...
-		};
+	};
 	var menu_id = <funclink>GuiOpen</funclink>(menu);
 	
 	// I made  up my mind, I'd rather not have a menu.
@@ -223,13 +224,14 @@ func MakeMyMenu()
 <code>
 func MakeMyMenu()
 {
-	var menu = {
+	var menu =
+	{
 		Left = "50% + 3.5em",
 		Top = "0%",
 		Right = "100%",
 		Bottom = "100% - 3.5em",
 		...
-		};
+	};
 	GuiOpen(menu);
 }
 </code>
@@ -240,7 +242,7 @@ func MakeMyMenu()
 <code>
 func MakeMyMenu()
 {
-	menu =
+	var menu =
 	{
 		Text = "I am the container!",
 		BackgroundColor = <funclink>RGB</funclink>(255, 255, 100),
@@ -287,9 +289,9 @@ func Initialize()
 			Std = 0,
 			Hover = <funclink>RGBa</funclink>(255, 0, 0, 200)
 		},
-		OnMouseIn = [<funclink>GuiAction_SetTag</funclink>("Hover"), <funclink>GuiAction_Call</funclink>("Hovering", this, "I am a parameter")],
+		OnMouseIn = [<funclink>GuiAction_SetTag</funclink>("Hover"), <funclink>GuiAction_Call</funclink>(this, "Hovering", "I am a parameter")],
 		OnMouseOut = <funclink>GuiAction_SetTag</funclink>("Std"),
-		OnMouseClick = <funclink>GuiAction_Call</funclink>("ClickedMyMenu", this)
+		OnClick = <funclink>GuiAction_Call</funclink>(this, "ClickedMyMenu")
 	};
 	GuiOpen(menu);
 }
