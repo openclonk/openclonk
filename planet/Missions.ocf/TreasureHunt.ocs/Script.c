@@ -20,6 +20,11 @@ func DoInit(int first_player)
 		g_golden_idol->SetLightRange(150,15);
 		g_golden_idol->SetLightColor(0xffc000);
 	}
+	if (g_golden_shovel)
+	{
+		g_golden_shovel->SetLightRange(25,15);
+		g_golden_shovel->SetLightColor(0xffc000);
+	}
 	// Start Intro.
 	StartSequence("Intro", 0, g_flagpole);
 	return true;
