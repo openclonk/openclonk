@@ -30,10 +30,10 @@
 // mattex masks: Array of bools for each possible material-texture index
 class C4MapScriptMatTexMask
 {
-	std::vector<bool> fg_mask; // vector of size C4M_MaxTexIndex + 1: true means pixel color is let through; false means it is blocked
-	std::vector<bool> bg_mask; // vector of size C4M_MaxTexIndex + 1: true means pixel color is let through; false means it is blocked
+	std::vector<bool> sky_mask; // vector of size C4M_MaxTexIndex + 1: true means pixel color is let through; false means it is blocked
+	std::vector<bool> tunnel_mask; // vector of size C4M_MaxTexIndex + 1: true means pixel color is let through; false means it is blocked
 
-	// fg_mask stores the mask for pixels with sky background, and bg_mask
+	// sky_mask stores the mask for pixels with sky or transparent background, and tunnel_mask
 	// stores the mask for pixels with non-sky background. We don't allow
 	// different masks for different background materials since this would
 	// need a C4M_MaxTexIndex + 1 x C4M_MaxTexIndex + 1 matrix to account
@@ -41,11 +41,11 @@ class C4MapScriptMatTexMask
 
 	void UnmaskSpec(C4String *spec);
 public:
-	C4MapScriptMatTexMask() : fg_mask(C4M_MaxTexIndex + 1,false), bg_mask(C4M_MaxTexIndex + 1, false) { }
-	C4MapScriptMatTexMask(const C4Value &spec) : fg_mask(C4M_MaxTexIndex + 1, false), bg_mask(C4M_MaxTexIndex + 1, false) { Init(spec); }
+	C4MapScriptMatTexMask() : sky_mask(C4M_MaxTexIndex + 1,false), tunnel_mask(C4M_MaxTexIndex + 1, false) { }
+	C4MapScriptMatTexMask(const C4Value &spec) : sky_mask(C4M_MaxTexIndex + 1, false), tunnel_mask(C4M_MaxTexIndex + 1, false) { Init(spec); }
 	void Init(const C4Value &spec);
 
-	bool operator()(uint8_t fg, uint8_t bg) const { if (bg == C4M_MaxTexIndex) return fg_mask[fg]; else return bg_mask[fg]; }
+	bool operator()(uint8_t fg, uint8_t bg) const { if (bg == C4M_MaxTexIndex) return sky_mask[fg]; else return tunnel_mask[fg]; }
 };
 
 // algorithms may be either indicator functions (int,int)->bool that tell whether a map pixel should be

@@ -173,13 +173,13 @@ void C4MapScriptMatTexMask::UnmaskSpec(C4String *spec)
 		}
 	}
 
-	// 'OR' spec onto this->fg_mask and this->bg_mask. Apply bgsky, bgtunnel and invert.
+	// 'OR' spec onto this->sky_mask and this->tunnel_mask. Apply bgsky, bgtunnel and invert.
 	for (int32_t i=0; i<C4M_MaxTexIndex + 1; ++i)
 	{
 		if ((mat_mask[i] && (bgsky || !bgtunnel)) != invert)
-			fg_mask[i] = true;
+			sky_mask[i] = true;
 		if ((mat_mask[i] && (!bgsky || bgtunnel)) != invert)
-			bg_mask[i] = true;
+			tunnel_mask[i] = true;
 	}
 }
 
@@ -207,10 +207,10 @@ void C4MapScriptMatTexMask::Init(const C4Value &spec)
 		{
 			if (spec) throw new C4AulExecError("MatTexMask expected string or array of strings.");
 			// nil defaults to everything except index zero unmasked
-			fg_mask = std::vector<bool>(256, true);
-			bg_mask = std::vector<bool>(256, true);
-			fg_mask[0] = false;
-			bg_mask[0] = false;
+			sky_mask = std::vector<bool>(256, true);
+			tunnel_mask = std::vector<bool>(256, true);
+			sky_mask[0] = false;
+			tunnel_mask[0] = false;
 		}
 	}
 }
