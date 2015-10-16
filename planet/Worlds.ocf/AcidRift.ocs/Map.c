@@ -29,6 +29,9 @@ func InitializeMap(proplist map)
 	var map_size = [[100, 200],[120, 250],[130, 400]][s];
 	Resize(map_size[0], map_size[1]);
 	
+	// Background sky to ensure "^*" can be used to place materials
+	Draw("Sky");
+	
 	// Parameters by map size and difficulty
 	var acid_level = [10, 30, 40][d];	 // filling (in %) of basin with acid
 	var num_earth = [15, 20, 30][s];
