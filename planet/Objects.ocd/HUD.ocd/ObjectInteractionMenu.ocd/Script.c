@@ -71,6 +71,8 @@ public func Close() { return RemoveObject(); }
 public func IsContentMenu() { return true; }
 public func Show() { this.Visibility = VIS_Owner; return true; }
 public func Hide() { this.Visibility = VIS_None; return true; }
+// Called when the menu is open and the player clicks outside.
+public func OnMouseClick() { return Close(); }
 
 func Construction()
 {
