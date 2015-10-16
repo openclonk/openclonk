@@ -360,30 +360,8 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 		// check if it already exists in the map
 		const char *base_filename = GetFilenameOnly(texname);
 		if (GetTexture(base_filename)) continue;
-		// check if it needs to be associated as shape to a loaded texture instead
-		// (makes use of the fact that due to filename ordering, shapes will always be loaded after their textures)
-		if (WildcardMatch("*" C4CFN_MaterialShapeFiles, texname))
-		{
-			// get associated texture
-			StdStrBuf texname4shape(texname, true);
-			texname4shape.SetLength(texname4shape.getLength() - SLen(C4CFN_MaterialShapeFiles));
-			C4Texture *base_tex = GetTexture(texname4shape.getData());
-			if (!base_tex || !base_tex->Surface32)
-			{
-				LogF("ERROR: Texture shape %s not loaded because associated texture (%s) not found or invalid.", hGroup.GetFullName().getData(), texname4shape.getData());
-				continue;
-			}
-			std::unique_ptr<C4TextureShape> shape(new C4TextureShape());
-			int32_t scaler_zoom = 4;
-			if (!shape->Load(hGroup, texname, base_tex->Surface32->Wdt / scaler_zoom, base_tex->Surface32->Hgt / scaler_zoom))
-			{
-				LogF("Error loading texture shape %s.", hGroup.GetFullName().getData());
-				continue;
-			}
-			base_tex->SetMaterialShape(shape.release());
-			// never load as regular texture
-			continue;
-		}
+		// skip shape textures for now. Will be added later after all base textures have been loaded
+		if (WildcardMatch("*" C4CFN_MaterialShapeFiles, texname)) continue;
 		// create surface
 		ctex = new C4Surface();
 		if (ctex->Read(hGroup, GetExtension(texname), C4SF_MipMap))
@@ -396,6 +374,29 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 		{
 			delete ctex;
 		}
+	}
+
+	// Load texture shapes
+	hGroup.ResetSearch();
+	while (hGroup.AccessNextEntry("*" C4CFN_MaterialShapeFiles, &binlen, texname))
+	{
+		// get associated texture
+		StdStrBuf texname4shape(texname, true);
+		texname4shape.SetLength(texname4shape.getLength() - SLen(C4CFN_MaterialShapeFiles));
+		C4Texture *base_tex = GetTexture(texname4shape.getData());
+		if (!base_tex || !base_tex->Surface32)
+		{
+			LogF("ERROR: Texture shape %s not loaded because associated texture (%s) not found or invalid.", hGroup.GetFullName().getData(), texname4shape.getData());
+			continue;
+		}
+		std::unique_ptr<C4TextureShape> shape(new C4TextureShape());
+		int32_t scaler_zoom = 4;
+		if (!shape->Load(hGroup, texname, base_tex->Surface32->Wdt / scaler_zoom, base_tex->Surface32->Hgt / scaler_zoom))
+		{
+			LogF("Error loading texture shape %s.", hGroup.GetFullName().getData());
+			continue;
+		}
+		base_tex->SetMaterialShape(shape.release());
 	}
 
 	return texnum;
