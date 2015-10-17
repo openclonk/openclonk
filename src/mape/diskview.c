@@ -200,6 +200,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 	overload_materials = mape_texture_map_get_overload_materials(texture_map);
 	overload_textures = mape_texture_map_get_overload_textures(texture_map);
 
+	overloaded_group = NULL;
 	if(overload_materials || overload_textures)
 	{
 		/* Look for overloaded Material.ocg */
@@ -211,8 +212,6 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 
 		for(;;)
 		{
-			overloaded_group = NULL;
-
 			has_parent = gtk_tree_model_iter_parent(
 				disk_view->tree_store,
 				&new_parent,
