@@ -420,7 +420,7 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 		/* Check if this entry is a directory (we are hiding files). */
 		if(mape_group_is_child_folder(child_group, filename) == FALSE)
 		{
-			free(filename);
+			g_free(filename);
 			continue;
 		}
 
