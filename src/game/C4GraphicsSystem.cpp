@@ -265,7 +265,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 				if (iX+bkWdt2>lWdt) bkWdt2-=iX+bkWdt2-lWdt;
 				if (iY+bkHgt2>lHgt) bkHgt2-=iY+bkHgt2-lHgt;
 				// update facet
-				bkFct.Set(FullScreen.pSurface, 0, 0, ceil(float(bkWdt2)/zoom), ceil(float(bkHgt2)/zoom), iX/zoom, iY/zoom, zoom);
+				bkFct.Set(FullScreen.pSurface, 0, 0, ceil(float(bkWdt2)/zoom), ceil(float(bkHgt2)/zoom), iX/zoom, iY/zoom, zoom, 0, 0);
 				// draw there
 				pVP->Draw(bkFct, false);
 				// render

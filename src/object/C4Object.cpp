@@ -4478,8 +4478,8 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	if (resultzoom <= 0 || resultzoom > 100) // FIXME: optimize treshhold
 		return false;
 
-	float rx = ((1 - parx) * targetx) * resultzoom + objx / (parx + zoom - parx * zoom);
-	float ry = ((1 - pary) * targety) * resultzoom + objy / (pary + zoom - pary * zoom);
+	float rx = ((1 - parx) * cgo.ParRefX) * resultzoom + objx / (parx + zoom - parx * zoom);
+	float ry = ((1 - pary) * cgo.ParRefY) * resultzoom + objy / (pary + zoom - pary * zoom);
 
 	// Step 2: convert to screen coordinates
 	if(parx == 0 && fix_x < 0)

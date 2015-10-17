@@ -23,20 +23,28 @@
 #include <C4Rect.h>
 #include <C4Group.h>
 
-
 void C4TargetFacet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom)
+{
+	Set(nsfc, nx, ny, nwdt, nhgt, ntx, nty, Zoom, ntx, nty);
+}
+
+void C4TargetFacet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom, float prx, float pry)
 {
 	C4Facet::Set(nsfc, nx, ny, nwdt, nhgt);
 	TargetX = ntx; TargetY = nty; this->Zoom = Zoom;
+	ParRefX = prx; ParRefY = pry;
 }
 
 void C4TargetFacet::Set(C4Surface * nsfc, const C4Rect & r, float ntx, float nty, float Zoom)
 {
 	Set(nsfc, r.x, r.y, r.Wdt, r.Hgt, ntx, nty, Zoom);
 }
+
 void C4TargetFacet::SetRect(C4TargetRect &rSrc)
 {
-	X=rSrc.x; Y=rSrc.y; Wdt=rSrc.Wdt; Hgt=rSrc.Hgt; TargetX=rSrc.tx; TargetY=rSrc.ty;
+	X=rSrc.x; Y=rSrc.y; Wdt=rSrc.Wdt; Hgt=rSrc.Hgt;
+	TargetX=rSrc.tx; TargetY=rSrc.ty;
+	ParRefX=rSrc.tx; TargetY=rSrc.ty;
 }
 
 // ------------------------
