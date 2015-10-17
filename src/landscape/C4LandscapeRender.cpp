@@ -262,7 +262,15 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		}
 		// If we didn't "continue" yet, we haven't written the texture yet.
 		// Make color texture transparent, and normal texture flat.
-		memset(p, fNormal ? 127 : 0, iTexSize);
+		if (fNormal)
+		{
+			DWORD *texdata = reinterpret_cast<DWORD *>(p);
+			for (int y = 0; y < iTexHgt; ++y)
+				for (int x = 0; x < iTexWdt; ++x)
+					*texdata++ = RGBA(127, 127, 255, 255);
+		}
+		else
+			memset(p, 0, iTexSize);
 	}
 
 	// Clear error error(s?)
