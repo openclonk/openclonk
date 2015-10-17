@@ -2050,6 +2050,10 @@ bool C4Game::ReloadDef(C4ID id)
 	// reload def
 	C4Def *pDef = ::Definitions.ID2Def(id);
 	if (!pDef) return false;
+	// Open Graphics.ocg -- we might need to fetch some shader (slices)
+	// from there when reloading mesh materials.
+	if (!::GraphicsResource.RegisterGlobalGraphics()) return false;
+	if (!::GraphicsResource.RegisterMainGroups()) return false;
 	// Message
 	LogF("Reloading %s from %s",pDef->id.ToString(),GetFilename(pDef->Filename));
 	// Reload def
@@ -2079,6 +2083,8 @@ bool C4Game::ReloadDef(C4ID id)
 		Log("Reloading failure. All objects of this type removed.");
 		fSucc = false;
 	}
+	// close Graphics.ocg again
+	::GraphicsResource.CloseFiles();
 	// update game messages
 	::Messages.UpdateDef(id);
 	// re-put removed SolidMasks
