@@ -107,3 +107,11 @@ global func ToPercentString(int value, int factor)
 		percent_decimal = "0";
 	return Format("%s%s.%s", percent_sign, percent_value, percent_decimal);
 }
+
+/*
+Returns true if /this/ object is allowed to be displayed on the same stack as the /other/ object in a GUI.
+*/
+global func CanBeStackedWith(object other)
+{
+	return this->GetID() == other->GetID();
+}

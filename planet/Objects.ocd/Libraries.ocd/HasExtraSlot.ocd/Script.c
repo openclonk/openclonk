@@ -25,4 +25,10 @@ func NotifyHUD()
 // This object is a container that can be inspected further in the interaction menu.
 func IsContainer() { return true; }
 
+// Disallow stacking if this object is not empty.
+public func CanBeStackedWith(object other)
+{
+	return !ContentsCount() && inherited(other, ...);
+}
+
 local Name = "ExtraSlot";
