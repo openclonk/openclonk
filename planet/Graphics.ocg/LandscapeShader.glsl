@@ -29,16 +29,16 @@ slice(init)
 {
 	// How much % the normals from the normal map are added up to the
 	// landscape normal. The higher the strength, the more structure
-	// within the material is visible but also the less the borders
-	// between the different materials stand out.
+	// within the material is visible.
 	//  0.0 = just textures
 	//  1.0 = just material borders
-	const float normalMapStrength = 0.4;
+	const float normalMapStrengthMin = 0.4;
+	const float normalMapStrengthMax = 0.6;
 
 	// Depth assumed for landscape normals. This decides how deep the
 	// material "borders" appear to be. Lower means sharper normals
 	// means more of a 3D look.
-	float landscapeNormalDepth = 0.25;
+	float landscapeNormalDepth = 0.1;
 }
 
 slice(coordinate)
@@ -111,18 +111,23 @@ slice(material)
 
 slice(normal)
 {
-	// Normal calculation
+	// Normal calculation. At edges, take landscape normals
+	// more into account (#1418).
 	vec2 landscapeNormalPx = mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5);
 	vec3 landscapeNormal = normalize(vec3(landscapeNormalPx, landscapeNormalDepth));
 	vec3 textureNormal = 2.0*(normalPx.xyz - vec3(0.5,0.5,0.5));
 	textureNormal.y *= -1.0;
-	vec3 normal = mix(textureNormal, landscapeNormal, normalMapStrength);
+	float edgeFactor = 2.0 * length(landscapeNormalPx);
+	float edgeStrength = normalMapStrengthMin + (normalMapStrengthMax - normalMapStrengthMin) * edgeFactor;
+	vec3 normal = mix(textureNormal, landscapeNormal, edgeStrength);
 
 	vec2 landscapeNormalPx2 = landscapePx2.yz - vec2(0.5, 0.5);
 	vec3 landscapeNormal2 = normalize(vec3(landscapeNormalPx2, landscapeNormalDepth));
 	vec3 textureNormal2 = 2.0*(normalPx2.xyz - vec3(0.5,0.5,0.5));
 	textureNormal2.y *= -1.0;
-	vec3 normal2 = mix(textureNormal2, landscapeNormal2, normalMapStrength);
+	float edgeFactor2 = 2.0 * length(landscapeNormalPx2);
+	float edgeStrength2 = normalMapStrengthMin + (normalMapStrengthMax - normalMapStrengthMin) * edgeFactor2;
+	vec3 normal2 = mix(textureNormal2, landscapeNormal2, edgeStrength2);
 
 }
 
