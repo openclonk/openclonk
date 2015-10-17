@@ -508,8 +508,7 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 			&child_iter
 		);
 
-		free(filename);
-		/*free(utf8_file);*/
+		g_free(filename);
 	}
 	
 	/* TODO: Close group if no content */
