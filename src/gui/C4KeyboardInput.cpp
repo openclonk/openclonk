@@ -458,7 +458,8 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	if (name) { // is there a string representation of the keysym?
 		// prevent memleak
 		StdStrBuf buf;
-		buf.Take(name);
+		buf.Copy(name);
+		g_free(name);
 		return buf;
 	}
 #elif defined(USE_SDL_MAINLOOP)
