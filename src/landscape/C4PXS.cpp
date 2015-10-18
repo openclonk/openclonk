@@ -88,6 +88,7 @@ void C4PXS::Execute()
 		}
 
 	// Test path to target position
+	int32_t iX0 = iX, iY0 = iY;
 	bool fStopMovement = false;
 	do
 	{
@@ -109,7 +110,9 @@ void C4PXS::Execute()
 				// no destructive contact, but speed or position changed: Stop moving for now
 				if (fStopMovement)
 				{
-					x = itofix(iX); y = itofix(iY);
+					// But keep fractional positions to allow proper movement on moving ground
+					if (iX != iX0) x = itofix(iX);
+					if (iY != iY0) y = itofix(iY);
 					return;
 				}
 				// there was a reaction func, but it didn't do anything - continue movement

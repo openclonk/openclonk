@@ -638,6 +638,16 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 	// always manipulating pos/speed here
 	if (pfPosChanged) *pfPosChanged = true;
 
+	// Move up by up to 3px to account for moving SolidMasks, other material insertions, etc.
+	int32_t mdens = Min<int32_t>(::MaterialMap.Map[iPxsMat].Density, C4M_Solid);
+	int32_t max_upwards = 3;
+	bool was_pushed_upwards = false;
+	while (max_upwards-- && (::Landscape.GetDensity(iX, iY) >= mdens))
+	{
+		--iY;
+		was_pushed_upwards = true;
+	}
+
 	// Rough contact? May splash
 	if (fYDir > itofix(1))
 		if (::MaterialMap.Map[iPxsMat].SplashRate && !Random(::MaterialMap.Map[iPxsMat].SplashRate))
@@ -648,7 +658,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 		}
 
 	// Contact: Stop
-	fYDir = 0;
+	fYDir = -GravAccel;
 
 	// Incindiary mats smoke on contact even before doing their slide
 	if (::MaterialMap.Map[iPxsMat].Incindiary)
@@ -659,10 +669,14 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
-	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Min(::MaterialMap.Map[iPxsMat].Density, C4M_Solid),::MaterialMap.Map[iPxsMat].MaxSlide))
+	
+	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),mdens,::MaterialMap.Map[iPxsMat].MaxSlide))
 	{
-		if (iPxsMat == iLsMat)
+		// Sliding on equal material: Move directly to optimize insertion of rain onto lakes
+		// Also move directly when shifted upwards to ensure movement on permamently moving SolidMask
+		if (iPxsMat == iLsMat || was_pushed_upwards)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
+		// Otherwise, just move using xdir/ydir for nice visuals when rain is moving over landscape
 		// Accelerate into the direction
 		fXDir = (fXDir * 10 + Sign(iSlideX - iX)) / 11 + C4REAL10(Random(5)-2);
 		// Slide target in range? Move there directly.
