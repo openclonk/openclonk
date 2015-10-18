@@ -525,11 +525,7 @@ static gboolean mape_disk_view_cb_key_press_event(GtkWidget* widget,
 
 	disk_view = (MapeDiskView*)user_data;
 
-#if GTK_CHECK_VERSION(2,21,8)
 	if(event->keyval != GDK_KEY_Left && event->keyval != GDK_KEY_Right)
-#else
-	if(event->keyval != GDK_Left && event->keyval != GDK_Right)
-#endif
 		return FALSE;
 
 	gtk_tree_view_get_cursor(
@@ -542,11 +538,7 @@ static gboolean mape_disk_view_cb_key_press_event(GtkWidget* widget,
 
 	switch(event->keyval)
 	{
-#if GTK_CHECK_VERSION(2,21,8)
 	case GDK_KEY_Left:
-#else
-	case GDK_Left:
-#endif
 		result = gtk_tree_view_row_expanded(
 			GTK_TREE_VIEW(disk_view->view),
 			path
@@ -576,11 +568,7 @@ static gboolean mape_disk_view_cb_key_press_event(GtkWidget* widget,
 		}
 
 		break;
-#if GTK_CHECK_VERSION(2,21,8)
 	case GDK_KEY_Right:
-#else
-	case GDK_Right:
-#endif
 		result = gtk_tree_view_row_expanded(
 			GTK_TREE_VIEW(disk_view->view),
 			path

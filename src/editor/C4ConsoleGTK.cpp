@@ -1109,17 +1109,10 @@ bool C4ToolsDlg::State::Open()
 		gtk_box_pack_start(GTK_BOX(local_hbox), scale, false, false, 0);
 
 		vbox = gtk_vbox_new(false, 6);
-#if GTK_CHECK_VERSION(2,23,0)
 		fg_materials = gtk_combo_box_text_new();
 		fg_textures = gtk_combo_box_text_new();		
 		bg_materials = gtk_combo_box_text_new();
 		bg_textures = gtk_combo_box_text_new();	
-#else
-		fg_materials = gtk_combo_box_new_text();
-		fg_textures = gtk_combo_box_new_text();
-		bg_materials = gtk_combo_box_new_text();
-		bg_textures = gtk_combo_box_new_text();
-#endif
 
 		// Link the material combo boxes together, but not the texture combo boxes,
 		// so that we can sort the texture combo box differently.
@@ -1178,11 +1171,6 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg *dlg)
 	dlg->state->InitMaterialCtrls();
 }
 
-#if GTK_CHECK_VERSION(2,23,0)
-#define gtk_combo_box_append_text(c,t) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),t)
-#define	gtk_combo_box_prepend_text(c,t) gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(c),t)
-#define gtk_combo_box_get_active_text(c) gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(c))
-#endif
 void C4ToolsDlg::State::InitMaterialCtrls()
 {
 	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(fg_materials)));
@@ -1191,11 +1179,11 @@ void C4ToolsDlg::State::InitMaterialCtrls()
 	g_signal_handler_block(bg_materials, handlerBgMaterials);
 	gtk_list_store_clear(list);
 
-	gtk_combo_box_append_text(GTK_COMBO_BOX(fg_materials), C4TLS_MatSky);
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fg_materials), C4TLS_MatSky);
 
 	for (int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(fg_materials), ::MaterialMap.Map[cnt].Name);
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fg_materials), ::MaterialMap.Map[cnt].Name);
 	}
 
 	g_signal_handler_unblock(fg_materials, handlerFgMaterials);
@@ -1260,13 +1248,13 @@ void C4ToolsDlg::UpdateTextures()
 				if (!::TextureMap.GetIndex(material, szTexture, false))
 				{
 					fAnyEntry = true;
-					gtk_combo_box_prepend_text(box, szTexture);
+					gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(box), szTexture);
 				}
 			}
 		// separator
 		if (fAnyEntry)
 		{
-			gtk_combo_box_prepend_text(box, "-------");
+			gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(box), "-------");
 		}
 
 		// atop: valid textures
@@ -1275,7 +1263,7 @@ void C4ToolsDlg::UpdateTextures()
 			// Current material-texture valid? Always valid for exact mode
 			if (::TextureMap.GetIndex(material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
 			{
-				gtk_combo_box_prepend_text(box, szTexture);
+				gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(box), szTexture);
 			}
 		}
 	}
@@ -1630,28 +1618,28 @@ void C4ToolsDlg::State::OnButtonNoIft(GtkWidget* widget, gpointer data)
 
 void C4ToolsDlg::State::OnComboMaterial(GtkWidget* widget, gpointer data)
 {
-	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetMaterial(text);
 	g_free(text);
 }
 
 void C4ToolsDlg::State::OnComboTexture(GtkWidget* widget, gpointer data)
 {
-	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetTexture(text);
 	g_free(text);
 }
 
 void C4ToolsDlg::State::OnComboBgMaterial(GtkWidget* widget, gpointer data)
 {
-	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetBackMaterial(text);
 	g_free(text);
 }
 
 void C4ToolsDlg::State::OnComboBgTexture(GtkWidget* widget, gpointer data)
 {
-	gchar* text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+	gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->SetBackTexture(text);
 	g_free(text);
 }

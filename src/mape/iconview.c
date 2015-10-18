@@ -32,11 +32,7 @@ MapeIconView* mape_icon_view_new(GError** error)
 	view->view = gtk_icon_view_new_with_model(view->list_store);
 	g_object_unref(view->list_store);
 
-#if GTK_CHECK_VERSION(2,22,0)
 	gtk_icon_view_set_item_orientation(
-#else
-	gtk_icon_view_set_orientation(
-#endif
 		GTK_ICON_VIEW(view->view),
 		GTK_ORIENTATION_HORIZONTAL
 	);

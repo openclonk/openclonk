@@ -189,11 +189,7 @@ static void OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 
 static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-#if GTK_CHECK_VERSION(2,21,8)
 	if (event->keyval == GDK_KEY_Scroll_Lock)
-#else
-	if (event->keyval == GDK_Scroll_Lock)
-#endif
 	{
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 		return true;
@@ -446,14 +442,12 @@ static gboolean OnScroll(GtkWidget* widget, GdkEventScroll* event, gpointer user
 	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
 	int idy;
-#if GTK_CHECK_VERSION(3,4,0)
 	gdouble dx, dy;
 	if (gdk_event_get_scroll_deltas((GdkEvent*)event, &dx, &dy))
 	{
 		idy = short(round(dy));
 	}
 	else
-#endif
 	{
 		if (event->direction == GDK_SCROLL_UP)
 			idy = 32;
@@ -662,11 +656,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 		gtk_drag_dest_set(GTK_WIDGET(render_widget), GTK_DEST_DEFAULT_ALL, drag_drop_entries, 1, GDK_ACTION_COPY);
 		g_signal_connect(G_OBJECT(render_widget), "drag-data-received", G_CALLBACK(OnDragDataReceivedStatic), this);
-	#if GTK_CHECK_VERSION(3,0,0)
 		g_signal_connect(G_OBJECT(render_widget), "draw", G_CALLBACK(OnExposeStatic), this);
-	#else
-		g_signal_connect(G_OBJECT(render_widget), "expose-event", G_CALLBACK(OnExposeStatic), this);
-	#endif
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPressStatic), this);
 		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyReleaseStatic), this);
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollVW), this);
@@ -684,9 +674,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
-#if GTK_CHECK_VERSION(3,0,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
-#endif
 	}
 	else if (windowKind == W_Fullscreen)
 	{
@@ -712,9 +700,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_object_set_property (G_OBJECT (render_widget), "can-focus", &val);
 		g_object_set_property (G_OBJECT (window), "can-focus", &val);
 		g_value_unset (&val);
-#if GTK_CHECK_VERSION(3,0,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
-#endif
 	}
 	else if (windowKind == W_GuiWindow)
 	{
@@ -726,9 +712,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScroll), this);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
-#if GTK_CHECK_VERSION(3,0,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
-#endif
 	}
 	else if (windowKind == W_Console)
 	{
@@ -743,9 +727,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), this);
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
 	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
-#if GTK_CHECK_VERSION(3,4,0)
 	gtk_widget_add_events(GTK_WIDGET(window), GDK_SMOOTH_SCROLL_MASK);
-#endif
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
@@ -753,13 +735,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	assert(vis_info);
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, vis_info->visualid);
 	XFree(vis_info);
-#if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
-#else
-	GdkColormap * cmap = gdk_colormap_new(vis, true);
-	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
-	g_object_unref(cmap);
-#endif
 	gtk_widget_show_all(GTK_WIDGET(window));
 
 //  XVisualInfo vitmpl; int blub;
@@ -832,13 +808,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 	g_object_set(G_OBJECT(render_widget), "can-focus", TRUE, NULL);
 	
-#if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
-#else
-	GdkColormap * cmap = gdk_colormap_new(vis, true);
-	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
-	g_object_unref(cmap);
-#endif
 
 	Info = new_info;
 

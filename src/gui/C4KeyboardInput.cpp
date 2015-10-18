@@ -453,11 +453,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
 	char* name = NULL;
 	if (keysym != NoSymbol) { // is the keycode without shift modifiers mapped to a symbol?
-		#if defined(USE_GTK3)
-		name = gtk_accelerator_get_label_with_keycode(dpy, keysym, wCode+8, (GdkModifierType)0);
-		#else
-		name = gtk_accelerator_get_label(keysym, (GdkModifierType)0);
-		#endif
+		name = gtk_accelerator_get_label_with_keycode(gdk_display_get_default(), keysym, wCode+8, (GdkModifierType)0);
 	}
 	if (name) { // is there a string representation of the keysym?
 		// prevent memleak

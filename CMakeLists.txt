@@ -52,8 +52,6 @@ CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF "NO
 CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
 	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP AND NOT USE_CONSOLE" OFF)
 CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF)
-CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
-
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
@@ -860,25 +858,15 @@ endif()
 # otherwise the path is not used for linking clonk
 if(USE_GTK)
 	find_package(PkgConfig)
-	if (USE_GTK3)
-		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
-		include_directories(${GTK3_INCLUDE_DIRS})
-		link_directories(${GTK3_LIBRARY_DIRS})
-	else()
-		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.28" "gtk+-2.0 >= 2.20")
-		include_directories(${GTK_INCLUDE_DIRS})
-		link_directories(${GTK_LIBRARY_DIRS})
-	endif()
+	pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
+	include_directories(${GTK_INCLUDE_DIRS})
+	link_directories(${GTK_LIBRARY_DIRS})
 endif()
 
 # Try to find GTK for mape
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
-	if (USE_GTK3)
-		pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
-	else()
-		pkg_check_modules(MAPE_GTK glib-2.0>=2.28 gthread-2.0 gtk+-2.0>=2.20 gtksourceview-2.0)
-	endif()
+	pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
 endif()
 if(MAPE_GTK_FOUND)
 	# hrm, cmake doesn't have target_include_directories...
@@ -1342,19 +1330,11 @@ if(NOT USE_CONSOLE)
 	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 endif()
 if(USE_GTK)
-	if(USE_GTK3)
-		SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
-		SET(WITH_GLIB ${GTK3_FOUND})
-		target_link_libraries(openclonk
-			${GTK3_LIBRARIES}
-		)
-	else()
-		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
-		SET(WITH_GLIB ${GTK_FOUND})
-		target_link_libraries(openclonk
-			${GTK_LIBRARIES}
-		)
-	endif()
+	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
+	SET(WITH_GLIB ${GTK_FOUND})
+	target_link_libraries(openclonk
+		${GTK_LIBRARIES}
+	)
 endif()
 if(MAPE_GTK_FOUND)
 	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
