@@ -137,7 +137,6 @@ slice(light)
 
 slice(color+5)
 {
-#ifdef OC_DYNAMIC_LIGHT
 	// Normalize light colour
 	vec3 lightColorNorm = sqrt(3.0) * normalize(lightColor);
 
@@ -149,7 +148,6 @@ slice(color+5)
 #ifdef OC_LANDSCAPE
 	vec3 spotLight2 = pow(vec3(light2,light2,light2), matSpot2);
 	color2.rgb = lightBright * color2.rgb * (matEmit2 + lightColorNorm * spotLight2);
-#endif
 #endif
 }
 
