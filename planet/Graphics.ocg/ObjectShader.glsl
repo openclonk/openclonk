@@ -69,18 +69,7 @@ slice(normal)
 #ifdef OC_WITH_NORMALMAP
 	vec4 normalPx = texture2D(normalTex, texcoord.xy);
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
-#ifdef OC_MESH
-	// For meshes, the normal matrix is typically provided in Clonk
-	// coordinates, but the normal matrix incorporates a component that
-	// transforms from Ogre to Clonk coordinates. Therefore, we need to
-	// reverse that transformation for meshes.
-	// TODO: This could be optimized since the matrix is so simple that
-	// we don't need to do a full matrix multiplication.
-	mat3 c2o = mat3(0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 1.0, 0.0, 0.0);
-	vec3 normal = normalize(c2o * gl_NormalMatrix * normalPxDir);
-#else
 	vec3 normal = normalize(gl_NormalMatrix * normalPxDir);
-#endif
 #else
 #ifdef OC_MESH
 	vec3 normal = normalDir; // Normal matrix is already applied in vertex shader
