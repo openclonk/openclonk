@@ -67,7 +67,7 @@ public func Collect(object obj)
 	if (container)
 	{
 		// Special treatment for objects that the Clonk holds. Just use the appropriate library function.
-		if (container->~IsClonk())
+		if (container->~IsClonk() && !obj->~IsCarryHeavy())
 			container->DropInventoryItem(container->GetItemPos(obj));
 		else
 		{
