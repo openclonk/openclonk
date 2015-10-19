@@ -561,11 +561,13 @@ set(MAPE_SOURCES
 	src/mape/window.h
 )
 
+find_program(GDK_PIXBUF_CSOURCE gdk-pixbuf-csource)
+
 # generated source files
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
 	COMMAND
-		gdk-pixbuf-csource "--raw" "--static" "--build-list"
+		${GDK_PIXBUF_CSOURCE} "--raw" "--static" "--build-list"
 		"mape_icon_ocd" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico"
 		"mape_icon_ocf" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico"
 		"mape_icon_ocg" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico"
@@ -609,7 +611,7 @@ if(USE_GTK)
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
 		COMMAND
-			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			${GDK_PIXBUF_CSOURCE} "--raw" "--rle" "--static" "--build-list"
 			"brush_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png"
 			"halt_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png"
 			"picker_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png"
@@ -647,7 +649,7 @@ if(USE_GTK)
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
 		COMMAND
-			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			${GDK_PIXBUF_CSOURCE} "--raw" "--rle" "--static" "--build-list"
 			"oc_icon_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico"
 			> ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
 		DEPENDS
