@@ -7,3 +7,6 @@ add_library(tinyxml
 	tinyxmlparser.cpp
 )
 
+if(GTK3_FOUND)
+	target_include_directories(tinyxml PRIVATE ${GTK3_INCLUDE_DIRS})
+endif()

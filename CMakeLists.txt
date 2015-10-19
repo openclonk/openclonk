@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.8.7)
+cmake_minimum_required (VERSION 2.8.10)
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
@@ -858,22 +858,9 @@ endif()
 
 # Set GTK link directory. This needs to be done before add_executable,
 # otherwise the path is not used for linking clonk
+find_package(GTK3 COMPONENTS gthread gio gobject OPTIONAL_COMPONENTS gtksourceview)
 if(USE_GTK)
-	find_package(PkgConfig)
-	pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
-	include_directories(${GTK_INCLUDE_DIRS})
-	link_directories(${GTK_LIBRARY_DIRS})
-endif()
-
-# Try to find GTK for mape
-find_package(PkgConfig)
-if (PKG_CONFIG_FOUND)
-	pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
-endif()
-if(MAPE_GTK_FOUND)
-	# hrm, cmake doesn't have target_include_directories...
-	include_directories(${MAPE_GTK_INCLUDE_DIRS})
-	link_directories(${MAPE_GTK_LIBRARY_DIRS})
+	link_directories(${GTK3_LIBRARY_DIRS})
 endif()
 
 # Select an audio library
@@ -958,12 +945,11 @@ add_executable(openclonk WIN32 MACOSX_BUNDLE
 	${OC_CLONK_SOURCES}
 )
 
-if(MAPE_GTK_FOUND)
+if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
-	unseparate_arguments(MAPE_GTK_CFLAGS "${MAPE_GTK_CFLAGS}")
-	set_property(TARGET mape PROPERTY COMPILE_FLAGS "${MAPE_GTK_CFLAGS}")
-	unseparate_arguments(MAPE_GTK_LDFLAGS "${MAPE_GTK_LDFLAGS}")
-	set_property(TARGET mape PROPERTY LINK_FLAGS "${MAPE_GTK_LDFLAGS}")
+	set_property(TARGET mape APPEND PROPERTY COMPILE_FLAGS ${GTK3_COMPILE_DEFINITIONS})
+	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
+	target_link_libraries(mape ${GTK3_LIBRARIES} ${GTK3_gtksourceview_LIBRARIES})
 endif()
 
 add_executable(c4group
@@ -1333,14 +1319,12 @@ if(NOT USE_CONSOLE)
 	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
 endif()
 if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
-	SET(WITH_GLIB ${GTK_FOUND})
+	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
+	SET(WITH_GLIB ${GTK3_FOUND})
+	include_directories(${GTK3_INCLUDE_DIRS})
 	target_link_libraries(openclonk
-		${GTK_LIBRARIES}
+		${GTK3_LIBRARIES}
 	)
-endif()
-if(TARGET mape)
-	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
