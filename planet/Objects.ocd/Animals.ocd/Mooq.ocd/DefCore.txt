@@ -1,0 +1,21 @@
+[DefCore]
+id=Mooq
+Version=7,0,0,0
+Category=C4D_Living
+Width=20
+Height=12
+Offset=-10,-6
+Vertices=7
+VertexX=   0, 0,0,-5,5,-5, 5
+VertexY=   0,-5,5, 1,1,-1,-1
+VertexCNAT=0, 4,8, 1,2, 1, 2
+VertexFriction=300,300,100,300,300,300,300
+Mass=250
+ContactCalls=1
+NoGet=1
+Float=0
+BorderBound=1
+StretchGrowth=1
+IncompleteActivity=1
+Oversize=1
+Pathfinder=1

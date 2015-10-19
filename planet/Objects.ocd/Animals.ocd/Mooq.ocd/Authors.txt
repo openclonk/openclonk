@@ -1,0 +1,11 @@
+Model by pluto
+--------------
+Model, texture and animations.
+
+Sounds by ala
+-------------
+CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/).
+
+MooqSnort1-3
+MooqSnorting1-2
+
