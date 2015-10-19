@@ -94,7 +94,7 @@ private func StartWalk() {
 }
 
 public func Death() {
-	SoundAt("MooqDie");
+	SoundAt("MooqDie*");
 }
 
 private func SpitPhase() {
@@ -113,7 +113,7 @@ private func SpitPhase() {
         iXDir = 300; if (!GetDir()) iXDir = -iXDir;
         iYDir = -300;
 
-        Sound("MooqSpit");
+        Sound("MooqSpit*");
         var obj = CreateContents(Mooq_Firebomb);
         obj->Exit(iX, iY);
         obj->SetXDir(iXDir,100);
@@ -132,7 +132,7 @@ private func EatPhase() {
         }
     }
     if(actt == 22) {
-        Sound("MooqMunch");
+        Sound("MooqMunch*");
 		DoEnergy(food->GetMass());
 		food->RemoveObject();
     }
