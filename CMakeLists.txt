@@ -1078,7 +1078,7 @@ if(Audio_FOUND)
 	include_directories(${Audio_INCLUDE_DIRS})
 endif()
 
-if(MAPE_GTK_FOUND)
+if(TARGET mape)
 	target_link_libraries(mape
 		libc4script
 		libmisc
@@ -1107,7 +1107,7 @@ if(HAVE_PTHREAD)
 	target_link_libraries(c4script
 		pthread
 	)
-	if(MAPE_GTK_FOUND)
+	if(TARGET mape)
 		target_link_libraries(mape
 			pthread
 		)
@@ -1123,7 +1123,7 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(c4script rt)
 	target_link_libraries(netpuncher rt)
 	target_link_libraries(openclonk rt)
-	if(MAPE_GTK_FOUND)
+	if(TARGET mape)
 		target_link_libraries(mape rt)
 	endif()
 endif()
@@ -1338,7 +1338,7 @@ if(USE_GTK)
 		${GTK_LIBRARIES}
 	)
 endif()
-if(MAPE_GTK_FOUND)
+if(TARGET mape)
 	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
 endif()
 if(USE_X11)
@@ -1369,7 +1369,7 @@ if (WIN32)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(netpuncher ws2_32 winmm)
 	target_link_libraries(c4script ws2_32 winmm)
-	if(MAPE_GTK_FOUND)
+	if(TARGET mape)
 		target_link_libraries(mape winmm)
 		# Suppress the console window for mape even though only a main() and not
 		# a WinMain() entry point is provided.
