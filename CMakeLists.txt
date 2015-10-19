@@ -892,6 +892,7 @@ endif()
 if(HAVE_PRECOMPILED_HEADERS)
 	if(MSVC_VERSION)
 		list(INSERT OC_SYSTEM_SOURCES 0 src/C4Include.cpp)
+		list(INSERT MAPE_SOURCES 0 src/C4Include.cpp)
 	endif()
 endif()
 
