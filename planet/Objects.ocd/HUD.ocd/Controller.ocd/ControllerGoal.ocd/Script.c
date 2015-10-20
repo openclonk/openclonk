@@ -202,6 +202,7 @@ private func GoalSubMenu(object goal, int nr, int size)
 		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
 		OnMouseIn = [GuiAction_SetTag("Hover"), GuiAction_Call(this, "OnGoalGUIHover", goal)],
 		OnMouseOut = GuiAction_SetTag("Std"),
+		fulfilled = nil
 	};
 	// Indicate whether the goal is already fulfilled
 	if (goal->~IsFulfilled())
@@ -242,5 +243,12 @@ private func OnGoalWindowUpdate(object goal)
 	var index = GetIndexOf(goals, goal);
 	if (index == -1) return;
 	var menu = GoalSubMenu(goal, index);
-	GuiUpdate(menu, goal_info_id, menu.ID, menu.Target);
+	// Update only very selectively. (To e.g. not reset the background/tag)
+	var update = 
+	{
+		Symbol = menu.Symbol,
+		GraphicsName = menu.GraphicsName,
+		fulfilled = menu.fulfilled,
+	};
+	GuiUpdate(update, goal_info_id, menu.ID, menu.Target);
 }
