@@ -2514,7 +2514,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "CNAT_Center"               ,C4V_Int,      CNAT_Center                },
 	{ "CNAT_MultiAttach"          ,C4V_Int,      CNAT_MultiAttach           },
 	{ "CNAT_NoCollision"          ,C4V_Int,      CNAT_NoCollision           },
-	{ "CNAT_CollideHalfVehicle"   ,C4V_Int,      CNAT_CollideHalfVehicle    },
+	{ "CNAT_PhaseHalfVehicle"     ,C4V_Int,      CNAT_PhaseHalfVehicle      },
 
 	// vertex data
 	{ "VTX_X"                     ,C4V_Int,      VTX_X                      },

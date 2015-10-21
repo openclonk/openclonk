@@ -189,7 +189,7 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
 
 inline bool C4Shape::CheckTouchableMaterial(int32_t x, int32_t y, int32_t vtx_i, int32_t ydir, const C4DensityProvider &rDensityProvider) {
 	return rDensityProvider.GetDensity(x,y) >= ContactDensity &&
-	       ((ydir > 0 && (CNAT_CollideHalfVehicle & VtxCNAT[vtx_i])) || !IsMCHalfVehicle(GBackPix(x,y)));
+	       ((ydir > 0 && !(CNAT_PhaseHalfVehicle & VtxCNAT[vtx_i])) || !IsMCHalfVehicle(GBackPix(x,y)));
 }
 
 // Adjust given position to one pixel before contact
@@ -544,7 +544,7 @@ void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 		{ "CNAT_Center", CNAT_Center },
 		{ "CNAT_MultiAttach", CNAT_MultiAttach },
 		{ "CNAT_NoCollision", CNAT_NoCollision },
-		{ "CNAT_CollideHalfVehicle", CNAT_CollideHalfVehicle },
+		{ "CNAT_PhaseHalfVehicle", CNAT_PhaseHalfVehicle },
 
 		{ NULL, 0 }
 	};

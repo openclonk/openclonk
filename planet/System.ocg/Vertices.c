@@ -36,7 +36,7 @@ global func HasCNAT(int cnat)
 	return false;
 }
 
-// e.g. clonk->SetVertexCNAT(2, CNAT_CollideHalfVehicle, true); makes the clonk behave correctly wrt. to HalfVehicle
+// e.g. clonk->SetVertexCNAT(k, CNAT_CollideHalfVehicle, true); for k != 2 makes the clonk behave correctly wrt. to HalfVehicle
 global func SetVertexCNAT(int vtx, int val, bool set)
 {
 	if (val == nil || set == nil)
@@ -67,9 +67,9 @@ global func FxIntHalfVehicleFadeJumpStart(object target, proplist effect, int te
 	}
 	effect.collideverts = CreateArray();
 	for (var i = target->GetVertexNum(); i-->0;)
-		if(target->GetVertex(i, VTX_CNAT) & CNAT_CollideHalfVehicle) {
+		if(!(target->GetVertex(i, VTX_CNAT) & CNAT_PhaseHalfVehicle)) {
 			PushBack(effect.collideverts, i);
-			target->SetVertexCNAT(i, CNAT_CollideHalfVehicle, false);
+			target->SetVertexCNAT(i, CNAT_PhaseHalfVehicle, true);
 		}
 	effect.origpos = target->GetPosition();
 	return FX_OK;
@@ -92,5 +92,5 @@ global func FxIntHalfVehicleFadeJumpStop(object target, proplist effect, int rea
 	if (reason == FX_Call_RemoveClear)
 		return;
 	for (var i = GetLength(effect.collideverts); i-->0;)
-			target->SetVertexCNAT(effect.collideverts[i], CNAT_CollideHalfVehicle, true);
+			target->SetVertexCNAT(effect.collideverts[i], CNAT_PhaseHalfVehicle, false);
 }

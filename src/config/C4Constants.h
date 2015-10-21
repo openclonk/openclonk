@@ -130,9 +130,9 @@ const BYTE // Directional
 	// Additional flags
 	CNAT_MultiAttach = 32, // new attachment behaviour; see C4Shape::Attach
 	CNAT_NoCollision = 64, // turn off collision for this vertex
-	CNAT_CollideHalfVehicle = 128;
+	CNAT_PhaseHalfVehicle = 128;
 
-const BYTE CNAT_Flags = CNAT_MultiAttach | CNAT_NoCollision | CNAT_CollideHalfVehicle; // all attchment flags that can be combined with regular attachment
+const BYTE CNAT_Flags = CNAT_MultiAttach | CNAT_NoCollision | CNAT_PhaseHalfVehicle; // all attchment flags that can be combined with regular attachment
 
 //=============================== Keyboard Input Controls =====================================================
 
