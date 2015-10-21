@@ -1142,15 +1142,6 @@ func EndKneel()
 // Start a roll into the current direction.
 func DoRoll()
 {
-	// make sure the Clonk does not roll in place..
-	var comd = GetComDir();
-	if (comd != COMD_Left && comd != COMD_Right)
-	{
-		var dir = GetDir();
-		if (dir == DIR_Left) SetComDir(COMD_Left);
-		else SetComDir(COMD_Right);
-	}
-	
 	SetAction("Roll");
 }
 
