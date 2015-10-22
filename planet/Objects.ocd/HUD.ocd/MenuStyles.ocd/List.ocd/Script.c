@@ -182,6 +182,7 @@ func DoCallback(data, int player, int ID, int subwindowID, object target)
 
 func Open()
 {
+	this.ID = nil; // no subwindow ID when opened as real menu
 	menu_id = GuiOpen(this);
 	return menu_id;
 }
