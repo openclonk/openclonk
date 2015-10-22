@@ -1,0 +1,2 @@
+Name=Kleiner Piranha
+Description=Durch die kleinere Größe jagt dieser Piranha lieber in Schwärmen.

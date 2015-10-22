@@ -1,5 +1,3 @@
-// PiranhaMaterial genrated by blender2ogre 0.6.0
-
 material PiranhaMaterial 
 {
     receive_shadows on 
@@ -21,11 +19,25 @@ material PiranhaMaterial
 
             texture_unit 
             {
-                texture piranha_color.png
+                texture piranha_color.jpg
                 tex_address_mode wrap
                 scale 1.0 1.0
                 colour_op modulate
             }
         }
     }
+}
+
+material PiranhaSmall : PiranhaMaterial
+{
+	technique 0
+	{
+		pass PiranhaMaterial
+		{
+			texture_unit 0
+			{
+				texture piranha_small_color.png
+			}
+		}
+	}
 }

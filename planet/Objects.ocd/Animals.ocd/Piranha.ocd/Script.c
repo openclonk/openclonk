@@ -5,12 +5,19 @@
 
 #include Fish
 
+// Default additional scaling for the mesh.
+local BaseScale = +200;
+// Damage per bite.
+local BiteStrength = 10;
+
 local hunger;
 
 func Construction()
 {
 	hunger = 0;
 	AddTimer("MoreHunger", 80);
+	// Set base transform (can be overwritten by e.g. Place()).
+	SetYZScale(1000);
 	_inherited(...);
 }
 
@@ -25,36 +32,36 @@ func InitFuzzyRules()
 	brain = FuzzyLogic->Init();
 	
 	// ACTION SETS
-	brain->AddSet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
+	brain->AddSet("swim", "left", [[-SwimMaxAngle, 1], [-SwimMaxAngle/2, 0], [SwimMaxAngle, 0]]);
 	brain->AddSet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
-	brain->AddSet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	brain->AddSet("swim", "right", [[-SwimMaxAngle, 0], [SwimMaxAngle/2, 0], [SwimMaxAngle, 1]]);
 	
-	brain->AddSet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
-	brain->AddSet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
+	brain->AddSet("speed", "slow", [[0, 1], [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 0]]);
+	brain->AddSet("speed", "fast", [[0, 0],  [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 1]]);
 	
 	// RULE SETS
 	var directional_sets = ["food", "wall"];
 	
 	for (var set in directional_sets)
 	{
-		brain->AddSet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
+		brain->AddSet(set, "left", [[-VisionMaxAngle, 1], [0, 0], [VisionMaxAngle, 0]]);
 		brain->AddSet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
-		brain->AddSet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
+		brain->AddSet(set, "right", [[-VisionMaxAngle, 0], [0, 0], [VisionMaxAngle, 1]]);
 	}
 	
 	var proximity_sets = ["food_range"];
-	var middle = FISH_VISION_MAX_RANGE / 2;
-	var quarter = FISH_VISION_MAX_RANGE / 4;
+	var middle = VisionMaxRange / 2;
+	var quarter = VisionMaxRange / 4;
 	
 	for (var set in proximity_sets)
 	{
-		brain->AddSet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+		brain->AddSet(set, "far", [[middle, 0], [VisionMaxRange, 1], [VisionMaxRange, 1]]);
+		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [VisionMaxRange, 0]]);
 		brain->AddSet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
 	}
 	
-	brain->AddSet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+	brain->AddSet("wall_range", "far", [[middle, 0], [VisionMaxRange, 1], [VisionMaxRange, 1]]);
+	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [VisionMaxRange, 0]]);
 	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
 	
 	
@@ -73,22 +80,34 @@ func InitFuzzyRules()
 func UpdateVision()
 {
 	brain->Fuzzify("hunger", hunger);
-	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Func("IsPrey"), Find_NoContainer(), Sort_Distance()), true);
+	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(VisionMaxRange), Find_OCF(OCF_Alive), Find_Func("IsPrey"), Find_NoContainer(), Sort_Distance()), true);
 	UpdateWallVision();
 }
 
 func DoEat(object obj)
 {
-	Sound("FishMunch*");
+	BiteEffect();
 	var len = GetAnimationLength("Bite");
 	PlayAnimation("Bite", 5,  Anim_Linear(0, 0, len, 36, ANIM_Remove), Anim_Const(1000));
 	if (obj->GetAlive())
-		obj->DoEnergy(-5);
-	hunger -= 10;
+		obj->DoEnergy(-BiteStrength);
+	hunger -= 20;
 	if (hunger < 0) hunger = 0;
 	//CastParticles("MaterialParticle", 10, 10, 0, 0, 10, 20, RGB(200, 5, 5), RGB(200, 5, 5));
 	
-	DoEnergy(5);
+	DoEnergy(BiteStrength);
+}
+
+private func BiteEffect()
+{
+	Sound("FishMunch*");
+}
+
+// Make this piranha a little larger than the mesh.
+func SetYZScale(int new_scale)
+{
+	base_transform = Trans_Scale(1000 + BaseScale, new_scale + BaseScale, new_scale + BaseScale);
+	return true;
 }
 
 local Name = "$Name$";

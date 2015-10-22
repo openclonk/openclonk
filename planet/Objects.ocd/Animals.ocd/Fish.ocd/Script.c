@@ -3,10 +3,10 @@
 	Author: Zapper
 */
 
-static const FISH_SWIM_MAX_ANGLE = 15;
-static const FISH_SWIM_MAX_SPEED = 30;
-static const FISH_VISION_MAX_ANGLE = 140;
-static const FISH_VISION_MAX_RANGE = 200;
+local SwimMaxAngle = 15;
+local SwimMaxSpeed = 30;
+local VisionMaxAngle = 140;
+local VisionMaxRange = 200;
 
 local walking, swimming;
 local current_angle, current_speed, current_direction;
@@ -42,6 +42,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 			else if (!Random(3))
 				f->SetYZScale(400+Random(600)); 
 		}
+		
 		if (f->Stuck())
 		{
 			f->RemoveObject();
@@ -57,7 +58,7 @@ func Construction()
 	// general stuff	
 	StartGrowth(15);
 	current_angle = Random(360);
-	current_speed = RandomX(FISH_SWIM_MAX_SPEED/5, FISH_SWIM_MAX_SPEED);
+	current_speed = RandomX(SwimMaxSpeed/5, SwimMaxSpeed);
 	
 	var len = GetAnimationLength("Swim");
 	swim_animation = PlayAnimation("Swim", 5, Anim_Linear(0, 0, len, 100, ANIM_Loop), Anim_Const(500));
@@ -119,36 +120,36 @@ func InitFuzzyRules()
 	brain = FuzzyLogic->Init();
 	
 	// ACTION SETS
-	brain->AddSet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
+	brain->AddSet("swim", "left", [[-SwimMaxAngle, 1], [-SwimMaxAngle/2, 0], [SwimMaxAngle, 0]]);
 	brain->AddSet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
-	brain->AddSet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	brain->AddSet("swim", "right", [[-SwimMaxAngle, 0], [SwimMaxAngle/2, 0], [SwimMaxAngle, 1]]);
 	
-	brain->AddSet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
-	brain->AddSet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
+	brain->AddSet("speed", "slow", [[0, 1], [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 0]]);
+	brain->AddSet("speed", "fast", [[0, 0],  [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 1]]);
 	
 	// RULE SETS
 	var directional_sets = ["friend", "enemy", "food", "wall"];
 	
 	for (var set in directional_sets)
 	{
-		brain->AddSet(set, "left", [[-FISH_VISION_MAX_ANGLE, 1], [0, 0], [FISH_VISION_MAX_ANGLE, 0]]);
+		brain->AddSet(set, "left", [[-VisionMaxAngle, 1], [0, 0], [VisionMaxAngle, 0]]);
 		brain->AddSet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
-		brain->AddSet(set, "right", [[-FISH_VISION_MAX_ANGLE, 0], [0, 0], [FISH_VISION_MAX_ANGLE, 1]]);
+		brain->AddSet(set, "right", [[-VisionMaxAngle, 0], [0, 0], [VisionMaxAngle, 1]]);
 	}
 	
 	var proximity_sets = ["friend_range", "enemy_range", "food_range"];
-	var middle = FISH_VISION_MAX_RANGE / 2;
-	var quarter = FISH_VISION_MAX_RANGE / 4;
+	var middle = VisionMaxRange / 2;
+	var quarter = VisionMaxRange / 4;
 	
 	for (var set in proximity_sets)
 	{
-		brain->AddSet(set, "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+		brain->AddSet(set, "far", [[middle, 0], [VisionMaxRange, 1], [VisionMaxRange, 1]]);
+		brain->AddSet(set, "medium", [[0, 0], [middle, 1], [VisionMaxRange, 0]]);
 		brain->AddSet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
 	}
 	
-	brain->AddSet("wall_range", "far", [[middle, 0], [FISH_VISION_MAX_RANGE, 1], [FISH_VISION_MAX_RANGE, 1]]);
-	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [FISH_VISION_MAX_RANGE, 0]]);
+	brain->AddSet("wall_range", "far", [[middle, 0], [VisionMaxRange, 1], [VisionMaxRange, 1]]);
+	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [VisionMaxRange, 0]]);
 	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
 	
 	// RULES
@@ -210,9 +211,9 @@ func Activity()
 
 func UpdateVision()
 {
-	UpdateVisionFor("enemy", "enemy_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Or(Find_Func("IsPredator"), Find_Func("IsClonk")), Find_NoContainer(), Sort_Distance()));
-	UpdateVisionFor("friend", "friend_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_ID(GetID()), Find_Exclude(this), Find_NoContainer(), Sort_Distance()));
-	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_Func("NutritionalValue"), Find_NoContainer(), Sort_Distance()), true);
+	UpdateVisionFor("enemy", "enemy_range", FindObjects(Find_Distance(VisionMaxRange), Find_OCF(OCF_Alive), Find_Or(Find_Func("IsPredator"), Find_Func("IsClonk")), Find_NoContainer(), Sort_Distance()));
+	UpdateVisionFor("friend", "friend_range", FindObjects(Find_Distance(VisionMaxRange), Find_ID(GetID()), Find_Exclude(this), Find_NoContainer(), Sort_Distance()));
+	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(VisionMaxRange), Find_Func("NutritionalValue"), Find_NoContainer(), Sort_Distance()), true);
 	UpdateWallVision();
 }
 
@@ -224,7 +225,7 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		if (!PathFree(GetX(), GetY(), obj->GetX(), obj->GetY())) continue;
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
 		var d = GetTurnDirection(current_angle, angle);
-		if (!Inside(d, -FISH_VISION_MAX_ANGLE, FISH_VISION_MAX_ANGLE)) continue;
+		if (!Inside(d, -VisionMaxAngle, VisionMaxAngle)) continue;
 		
 		// prevent piranhas to jump out of the water to eat unsuspecting Clonks
 		if (is_food && (obj->GetMaterial() != GetMaterial())) continue;
@@ -233,7 +234,8 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
 		var distance = ObjectDistance(this, obj);
 		brain->Fuzzify(set, d);
-		brain->Fuzzify(range_set, distance);
+		if (range_set != nil)
+			brain->Fuzzify(range_set, distance);
 		
 		// now that we fuzzified our food - can we actually eat it, too???
 		if (is_food && distance < GetCon()/10)
@@ -243,7 +245,8 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 	}
 	
 	brain->Fuzzify(set, 0);
-	brain->Fuzzify(range_set, FISH_VISION_MAX_RANGE + 1);
+	if (range_set != nil)
+		brain->Fuzzify(range_set, VisionMaxRange + 1);
 	return false;
 }
 
@@ -253,14 +256,14 @@ func UpdateWallVision()
 	
 	// asses direction of wall
 	var closest = 0;
-	var closest_distance = FISH_VISION_MAX_RANGE;
-	//for (var angle = -FISH_VISION_MAX_ANGLE/3; angle <= FISH_VISION_MAX_ANGLE; angle += FISH_VISION_MAX_ANGLE/3)
+	var closest_distance = VisionMaxRange;
+	//for (var angle = -VisionMaxAngle/3; angle <= VisionMaxAngle; angle += VisionMaxAngle/3)
 	
-	var angle = -FISH_VISION_MAX_ANGLE/5;
+	var angle = -VisionMaxAngle/5;
 	do
 	{
 		// quickly check solid point
-		var max = FISH_VISION_MAX_RANGE/3;
+		var max = VisionMaxRange/3;
 		var px, py;
 		for (var d = 5; d <= max; d += 20)
 		{
@@ -275,8 +278,8 @@ func UpdateWallVision()
 			break;
 		}
 		
-		/*var px = Sin(current_angle + angle, FISH_VISION_MAX_RANGE);
-		var py = -Cos(current_angle + angle, FISH_VISION_MAX_RANGE);		
+		/*var px = Sin(current_angle + angle, VisionMaxRange);
+		var py = -Cos(current_angle + angle, VisionMaxRange);		
 		var point = PathFree2(GetX(), GetY(), GetX() + px, GetY() + py);
 		*/
 		if (!px && !py) { angle *= -1; continue; }
@@ -290,7 +293,7 @@ func UpdateWallVision()
 	}
 	while (angle > 0);
 	
-	if (closest_distance == FISH_VISION_MAX_RANGE)
+	if (closest_distance == VisionMaxRange)
 	{
 		// check for material in front, happens occasionally
 		var d = 5;
@@ -321,7 +324,7 @@ func UpdateSwim()
 	
 	var len = GetAnimationLength("Swim");
 	var pos = GetAnimationPosition(swim_animation);
-	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, FISH_SWIM_MAX_SPEED - current_speed + 1, ANIM_Loop));
+	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, SwimMaxSpeed - current_speed + 1, ANIM_Loop));
 	
 	var t = current_angle - 270;
 	var t2 = Cos(t, 90) - 90; // Expand the areas around 0deg and 180deg a bit so you see fish from the side more

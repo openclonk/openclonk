@@ -1,0 +1,2 @@
+Name=Small Piranha
+Description=Due to the smaller size, this piranha hunts in swarms.
