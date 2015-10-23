@@ -745,7 +745,7 @@ func OnMenuEntryHover(proplist menu_info, int entry_index, int player)
 	{
 		var text = Format("%s:|%s", info.entry.symbol->GetName(), info.entry.symbol.Description);
 		var obj = nil;
-		if (info.entry.extra_data.objects)
+		if (info.entry.extra_data && info.entry.extra_data.objects)
 		{
 			for (var possible in info.entry.extra_data.objects)
 			{
