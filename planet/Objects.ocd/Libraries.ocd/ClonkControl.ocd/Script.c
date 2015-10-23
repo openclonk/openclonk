@@ -637,6 +637,8 @@ func GetUseCallString(string action)
 
 func CanReIssueCommand(proplist data)
 {
+	if (!data.obj) return false;
+	
 	if(data.ctrl == CON_Use)
 		return !data.obj->~RejectUse(this);
 	
