@@ -4,3 +4,4 @@ TxtNoAbortDesc=The construction site can not be torn down.
 TxtAbortDesc=Tears down the construction site. Already supplied materials will be returned.
 TxtConstruction=Construction Site: %s
 TxtNoConstructionHere=The building ground is not fit for construction anymore!
+TxtMissingMaterial=Missing Material

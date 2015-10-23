@@ -44,9 +44,32 @@ public func GetInteractionMenuEntries(object clonk)
 			}}];
 }
 
+public func GetMissingMaterialMenuEntries(object clonk)
+{
+	var material = GetMissingComponents();
+	if (!material) return [];
+	
+	var entries = [];
+	for (var mat in material)
+	{
+		var text = nil;
+		if (mat.count > 1) text = Format("x%d", mat.count);
+		PushBack(entries, {symbol = mat.id, text = text});
+	}
+	return entries;
+}
+
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];		
+	var comp_menu =
+	{
+		title = "$TxtMissingMaterial$",
+		entries_callback = this.GetMissingMaterialMenuEntries,
+		BackgroundColor = RGB(50, 0, 0),
+		Priority = 15
+	};
+	PushBack(menus, comp_menu);
 	var prod_menu =
 	{
 		title = "$TxtAbort$",
@@ -178,6 +201,9 @@ public func Collection2(object obj)
 	
 	// update message
 	ShowMissingComponents();
+	
+	// Update possibly open menus.
+	UpdateInteractionMenus(this.GetMissingMaterialMenuEntries);
 	
 	// Update preview image
 	if (definition) definition->~SetConstructionSiteOverlay(this, direction, stick_to, obj);
