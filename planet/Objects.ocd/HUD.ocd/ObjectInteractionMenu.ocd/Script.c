@@ -50,7 +50,10 @@ local current_objects;
 				text: text shown on the object (f.e. count in inventory)
 				custom (optional): completely custom menu entry that is passed to the grid menu - allows for custom design
 				unique_index: generated from entry_index_count (not set by user)
+				fx: (optional) effect that gets a "OnMenuOpened(int menu_id, object menu_target, int subwindow_id)" callback once which can be used to update a specific entry only
 			entries: last result of the callback function described above
+				additional properties that are added are:
+				ID: (menu) id of the entry as returned by the menu_object - can be used for updating
 */
 local current_menus;
 /*
@@ -414,6 +417,17 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 		current_center_column_target.Visibility = VIS_None;
 	}
 	
+	// Now tell all user-provided effects for the new menu that the menu is ready.
+	// Those effects can be used to update only very specific menu entries without triggering a full refresh.
+	for (var menu in current_menus[slot].menus)
+	{
+		for (var entry in menu.entries)
+		{
+			if (!entry.fx) continue;
+			EffectCall(nil, entry.fx, "OnMenuOpened", current_main_menu_id, entry.ID, menu.menu_object);
+		}
+	}
+	
 	// Finally disable object for selection in other sidebar, if available.
 	if (other_menu)
 	{
@@ -673,7 +687,9 @@ func CreateMainMenu(object obj, int slot)
 			var entry = menu.entries[e];
 			entry.unique_index = ++menu.entry_index_count;
 			// This also allows the interaction-menu user to supply a custom entry with custom layout f.e.
-			menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
+			var added_entry = menu.menu_object->AddItem(entry.symbol, entry.text, entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = i }, entry["custom"]);
+			// Remember the menu entry's ID (e.g. for passing it to an update effect after the menu has been opened).
+			entry.ID = added_entry.ID;
 		}
 		
 		var all =

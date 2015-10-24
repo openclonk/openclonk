@@ -67,7 +67,8 @@ public func GetBuyMenuEntries(object clonk)
 		price = {Left = "2em", Priority = 3}
 	};
 	
-	var wealth = GetWealth(GetOwner()); // Note that the flag owner pays for everything atm. 
+	var wealth_player = GetOwner(); // Note that the flag owner pays for everything atm.
+	var wealth = GetWealth(wealth_player); 
 	var menu_entries = [];
 	var i = 0, item, amount;
 	while (item = GetBaseMaterial(GetOwner(), nil, i++))
@@ -90,6 +91,27 @@ public func GetBuyMenuEntries(object clonk)
 		}
 		PushBack(menu_entries, {symbol = item, extra_data = nil, custom = entry});
 	}
+	
+	// At the top of the menu, we add the player's wealth.
+	var entry = 
+	{
+		Bottom = "1.1em", BackgroundColor = RGBa(50, 50, 0, 100),
+		Priority = -1,
+		left_text =
+		{
+			Style = GUI_TextVCenter | GUI_TextLeft,
+			Text = "<c 666666>$YourWealth$:</c>"
+		},
+		right_text = 
+		{
+			Style = GUI_TextVCenter | GUI_TextRight, 
+			Text = Format("<c ffff00>%d{{Icon_Wealth}}</c>", wealth)
+		}
+	};
+	var fx = AddEffect("UpdateWealthDisplay", this, 1, 5, nil, GetID());
+	fx.last_wealth = wealth;
+	fx.plr = wealth_player;
+	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = fx});
 	
 	return menu_entries;
 }
@@ -114,6 +136,22 @@ public func OnBuyMenuSelection(id def, extra_data, object clonk)
 			}
 		}
 	UpdateInteractionMenus(this.GetBuyMenuEntries);
+}
+
+private func FxUpdateWealthDisplayTimer(object target, effect fx, int time)
+{
+	if (!fx.menu_target) return -1;
+	if (fx.last_wealth == GetWealth(fx.wealth_player)) return FX_OK;
+	fx.last_wealth = GetWealth(fx.wealth_player);
+	GuiUpdate({right_text = {Text = Format("<c ffff00>%d{{Icon_Wealth}}</c>", fx.last_wealth)}}, fx.main_ID, fx.ID, fx.menu_target);
+	return FX_OK;
+}
+
+public func FxUpdateWealthDisplayOnMenuOpened(object target, effect fx, int main_ID, int ID, object subwindow_target)
+{
+	fx.main_ID = main_ID;
+	fx.menu_target = subwindow_target;
+	fx.ID = ID;
 }
 
 // newly bought items do not fade out unless collected

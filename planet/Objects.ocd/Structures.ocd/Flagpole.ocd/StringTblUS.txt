@@ -1,3 +1,4 @@
 Name=Flagpole
 Description=Marks your reign, where you are able to buy items in buildings.
 MsgBuy=Buy Stuff
+YourWealth=Your wealth
