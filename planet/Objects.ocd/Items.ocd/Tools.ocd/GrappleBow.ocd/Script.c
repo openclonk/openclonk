@@ -26,7 +26,7 @@ public func HoldingEnabled() { return true; }
 
 local animation_set;
 
-func Initialize()
+private func Initialize()
 {
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
@@ -74,7 +74,7 @@ public func DrawRopeIn()
 	}
 }
 
-protected func Destruction()
+private func Destruction()
 {
 	if (hook)
 	{
@@ -84,7 +84,18 @@ protected func Destruction()
 	}
 }
 
-protected func Departure()
+private func Departure()
+{
+	if (hook)
+	{
+		var rope = hook->GetRope();
+		if (rope)
+			rope->BreakRope();
+	}
+}
+
+// If shot (e.g. by a cannon)
+public func LaunchProjectile()
 {
 	if (hook)
 	{
@@ -92,11 +103,12 @@ protected func Departure()
 		if (rope)
 			rope->DrawIn();
 	}
+	_inherited(...);
 }
 
 public func GetAnimationSet() { return animation_set; }
 
-func RejectUse(object clonk)
+public func RejectUse(object clonk)
 {
 	// Burned?
 	if (GetCon()<100) return true;
@@ -190,7 +202,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 /* Destroyed by fire? Make it visible. */
 
-func Incineration()
+private func Incineration()
 {
 	// GrappleBow becomes unusable on incineration.
 	if (hook)
@@ -203,7 +215,7 @@ func Incineration()
 	return _inherited(...);
 }
 
-func Extinguishing()
+private func Extinguishing()
 {
 	// If extinguished on the same frame it got incinerated, make it usable again
 	if (GetCon()>=100)
@@ -224,11 +236,12 @@ public func Reset(clonk)
 	StopAnimation(GetRootAnimation(6));
 }
 
-func IsInventorProduct() { return true; }
+public func IsInventorProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-700,400),Trans_Scale(1150),Trans_Rotate(180,0,1,0),Trans_Rotate(-30,-1,0,-1)),def);
 }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
