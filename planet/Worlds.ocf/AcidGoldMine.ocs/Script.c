@@ -46,6 +46,8 @@ protected func InitializePlayer(int plr)
 	{
 		var pos = FindTopSpot();
 		crew->SetPosition(pos.x, pos.y - 10);
+		while(crew->Stuck())
+			crew->SetPosition(pos.x, crew->GetY()-1);
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can chop.
 		if (index == 0)
@@ -120,6 +122,8 @@ private func InitMaterial(int amount)
 		lorry->CreateContents(Firestone, 5);
 		lorry->CreateContents(Dynamite, 3);
 		lorry->CreateContents(DynamiteBox, 2);
+		while(lorry->Stuck())
+			lorry->SetPosition(lorry->GetX(), lorry->GetY()-1);
 	}
 	// Create some chests in caves.
 	var chest_pos, chest;
@@ -141,7 +145,7 @@ private func InitMaterial(int amount)
 
 private func FindTopSpot()
 {
-	return FindLocation(Loc_InRect(LandscapeWidth() / 4, 0, LandscapeWidth() / 2, LandscapeHeight() / 9), Loc_Wall(CNAT_Bottom), Loc_Space(10, CNAT_Top)) ?? { x = LandscapeWidth() / 3 + Random(30), y = LandscapeHeight() / 12 };
+	return FindLocation(Loc_InRect(LandscapeWidth() / 3, 0, LandscapeWidth() * 2 / 3, LandscapeHeight() / 9), Loc_Wall(CNAT_Bottom), Loc_Space(10, CNAT_Top)) ?? { x = LandscapeWidth() / 3 + Random(30), y = LandscapeHeight() / 12 };
 }
 
 global func FxKeepAreaClearTimer(object q, proplist fx, int time)
