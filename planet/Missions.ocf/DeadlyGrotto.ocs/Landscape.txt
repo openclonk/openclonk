@@ -96,7 +96,7 @@ map AcidCave {
 
     // starting platform
     overlay { x=70px; wdt=15px; y=92px; hgt=1px; mat=Brick; };
-    overlay { y=93px; mat=Granite; algo=poly;
+    overlay { y=93px; mat=Rock; algo=poly;
       point { x=80px; y=-20px; };
       point { x=70px; y=0px; };
       point { x=60px; y=10px; };
