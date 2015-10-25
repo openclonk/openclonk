@@ -102,7 +102,7 @@ private func InitBase(int owner, int amount)
 		var workshop = CreateObjectAbove(ToolsWorkshop, x - 56, y, owner);
 		workshop->CreateContents(Wood, 4);
 		workshop->CreateContents(Metal, 2);
-		var lorry = CreateObjectAbove(Lorry, x - 56, 160);
+		var lorry = CreateObjectAbove(Lorry, x - 56, 155);
 		
 		// And even more material includes explosives and food.
 		if (amount >= 3)
