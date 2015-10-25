@@ -105,7 +105,7 @@ private func InitEnvironment()
 private func InitVegetation(int map_size)
 {
 	// Place some trees in a forest shape.
-	PlaceForest([Tree_Coniferous], 0, LandscapeHeight() / 2 + 50, nil, true);
+	PlaceForest([Tree_Deciduous, Tree_Coniferous2], 0, LandscapeHeight() / 2 + 50, nil, true);
 
 	SproutBerryBush->Place();
 	PlaceGrass(100);

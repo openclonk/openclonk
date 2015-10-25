@@ -6,11 +6,11 @@ func InitializeObjects()
 	CreateObjectAbove(Grass, 468, 197);
 	CreateObjectAbove(Grass, 441, 202);
 
-	CreateObjectAbove(Tree_Coniferous, 452, 200);
-	CreateObjectAbove(Tree_Coniferous, 391, 200);
-	CreateObjectAbove(Tree_Coniferous, 336, 202);
-	CreateObjectAbove(Tree_Coniferous, 427, 199);
-	CreateObjectAbove(Tree_Coniferous, 367, 201);
+	CreateObjectAbove(Tree_Coniferous3, 452, 205);
+	CreateObjectAbove(Tree_Coniferous3, 391, 205);
+	CreateObjectAbove(Tree_Coniferous3, 336, 207);
+	CreateObjectAbove(Tree_Coniferous3, 427, 204);
+	CreateObjectAbove(Tree_Coniferous3, 367, 206);
 
 	CreateObjectAbove(SproutBerryBush, 59, 214);
 
