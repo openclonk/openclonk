@@ -835,7 +835,7 @@ private func OnContentsSelection(symbol, extra_data)
 	}
 	else
 	{
-		to_transfer = RemoveHoles(extra_data.objects);
+		to_transfer = extra_data.objects;
 	}
 	
 	var successful_transfers = 0;
