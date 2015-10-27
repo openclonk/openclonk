@@ -10,6 +10,9 @@
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current energy value of an object. 100% representing the maximum physical value of 100,000</desc>
     <remark>For living beings, \"energy\" stands for health, in buildings it stands for electrical charge.</remark>
+    <related>
+      <funclink>DoEnergy</funclink>
+    </related>
   </func>
   <author>jwk</author><date>2002-06</date>
 </funcs>
