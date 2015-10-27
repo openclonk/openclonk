@@ -188,7 +188,7 @@ public func Eat(object food)
 {
 	if(GetProcedure() == "WALK")
 	{
-		DoEnergy(food->NutritionalValue());
+		Heal(food->NutritionalValue());
 		food->RemoveObject();
 		Sound("Munch?");
 		SetAction("Eat");
