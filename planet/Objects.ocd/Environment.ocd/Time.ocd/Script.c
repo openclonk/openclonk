@@ -20,7 +20,7 @@
 local time_set;
 local time; 
 local advance_seconds_per_tick;
-
+local daycolour_global;
 
 /*-- Interface --*/
 
@@ -54,7 +54,6 @@ public func SetTime(int to_time)
 		ShowCelestials();
 	// Adjust to time.
 	AdjustToTime();
-	return;
 }
 
 // Returns the time in minutes.
@@ -169,7 +168,9 @@ protected func Initialize()
 	// Add effect that controls time cycle.
 	SetCycleSpeed(30);
 	AddEffect("IntTimeCycle", this, 100, 10, this);
-	return;
+
+	// Set standard colour of the day
+	daycolour_global = [255, 255, 255];
 }
 
 private func PlaceStars()
@@ -271,7 +272,7 @@ private func DoSkyShade()
 	// Specify colors in terms of R, G, B, A arrays.
 	var skyshade = [0, 0, 0, 0];
 	var nightcolour = [10, 25, 40];
-	var daycolour = [255, 255, 255];
+	var daycolour = daycolour_global;
 	var sunsetcolour = [140, 45, 10];
 	var sunrisecolour = [140, 100, 70];
 	
@@ -285,7 +286,7 @@ private func DoSkyShade()
 			nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];
 		}
 	}
-		
+
 	// Sunrise.
 	if (sunrise)
 	{
@@ -305,7 +306,8 @@ private func DoSkyShade()
 	// Day.
 	else if (day)
 	{
-		skyshade = [255, 255, 255, 255];
+		skyshade = [daycolour[0], daycolour[1], daycolour[2], 255];
+		daycolour_global = [GetRGBaValue(GetSkyAdjust(), 1), GetRGBaValue(GetSkyAdjust(), 2), GetRGBaValue(GetSkyAdjust(), 3)];
 	}
 	// Sunset.
 	else if (sunset)
