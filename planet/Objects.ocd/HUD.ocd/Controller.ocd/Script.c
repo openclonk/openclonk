@@ -107,8 +107,8 @@ public func Reset()
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
 			var plr = GetPlayerByIndex(i, C4PT_User), cursor;
-			CreateObject(GUI_Controller, 0,0, plr);
-			if (cursor = GetCursor(plr)) OnCrewSelection(cursor);
+			var controller = CreateObject(GUI_Controller, 0,0, plr);
+			if (cursor = GetCursor(plr)) controller->OnCrewSelection(cursor);
 		}
 	}
 	return true;
