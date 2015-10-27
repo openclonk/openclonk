@@ -25,7 +25,9 @@ func Hit() {
 
     CreateParticle("Blast", 0, 0, 0, 0, 21, blast, 1);
 
-    Sound("Blast3");
+
+    Call("ExplosionEffect", dmg/2, 0, 0, 0);
+
     RemoveObject();
 }
 
