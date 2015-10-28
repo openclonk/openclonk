@@ -13,7 +13,7 @@ protected func ControlUse(object clonk, int iX, int iY)
 	clonk->Eat(this);
 }
 
-public func NutritionalValue() { return 10; }
+public func NutritionalValue() { return 5; }
 
 local Name = "$Name$";
 local Description = "$Description$";

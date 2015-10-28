@@ -44,7 +44,7 @@ protected func ControlUse(object clonk)
 }
 
 // Nutritional value depends on the completion of the mushroom.
-public func NutritionalValue() { return 3 * GetCon() / 20; }
+public func NutritionalValue() { return GetCon() / 10; }
 
 local Name = "$Name$";
 local Description = "$Description$";
