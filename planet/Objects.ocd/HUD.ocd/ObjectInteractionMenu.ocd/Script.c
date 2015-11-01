@@ -421,6 +421,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	// Those effects can be used to update only very specific menu entries without triggering a full refresh.
 	for (var menu in current_menus[slot].menus)
 	{
+		if (!menu.entries) continue;
+		
 		for (var entry in menu.entries)
 		{
 			if (!entry.fx) continue;
