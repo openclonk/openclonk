@@ -2,7 +2,15 @@
 
 #include Library_Structure
 
+local walls;
+
 /* Initialization */
+
+public func Construction()
+{
+	walls = [nil, nil, nil, nil, nil, nil, nil, nil];
+	return _inherited(...);
+}
 
 func Initialize()
 {
@@ -23,71 +31,191 @@ func Incineration()
 
 func RemoveWalls()
 {
-	if (wall_left)    wall_left->RemoveObject();
-	if (wall_right)   wall_right->RemoveObject();
-	if (wall_top)     wall_top->RemoveObject();
-	if (wall_bottom)  wall_bottom->RemoveObject();
-	if (wall_right2)  wall_right2->RemoveObject();
-	if (wall_bottom2) wall_bottom2->RemoveObject();
+	for (var wall in walls)
+	{
+		if (wall) wall->RemoveObject();
+	}
 	return true;
 }
 
-/* Interaction */
+/*-- Interaction --*/
 
-local wall_left, wall_right, wall_top, wall_bottom;
+public func HasInteractionMenu() { return true; }
 
-local wall_right2, wall_bottom2; // Hack to make Skylands work for now...
-
-func ControlUp()
+public func GetExtensionMenuEntries(object clonk)
 {
-	if (wall_top)
-		wall_top->RemoveObject();
-	else
-		(wall_top = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetTop(this);
-	Sound("DullWoodHit1");
-	return true;
-}
-
-func ControlLeft()
-{
-	if (wall_left)
-		wall_left->RemoveObject();
-	else
-		(wall_left = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetLeft(this);
-	Sound("DullWoodHit1");
-	return true;
-}
-
-func ControlRight()
-{
-	if (wall_right)
-		if (wall_right2)
+	// Add one menu entry that consists of a whole sub-menu.
+	
+	var control_entry_prototype = 
+	{
+		Style = GUI_NoCrop,
+		BackgroundColor = {Std = 0, Hover = RGB(0, 100, 0)},
+		OnMouseIn = GuiAction_SetTag("Hover"),
+		OnMouseOut = GuiAction_SetTag("Std"),
+		icon = 
 		{
-			wall_right->RemoveObject();
-			wall_right2->RemoveObject();
+			Style = GUI_NoCrop,
+			Symbol = ScaffoldWall
 		}
-		else
-			(wall_right2 = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetRight2(this);
-	else
-		(wall_right = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetRight(this);
-	Sound("DullWoodHit1");
-	return true;
+	};
+	
+	var menu_entry = 
+	{
+		Left = "50% - 6em", Right = "50% + 6em",
+		Top = "0em", Bottom = "12em",
+		
+		center_icon = 
+		{
+			Left = "4em", Right = "8em", Top = "4em", Bottom = "8em",
+			Margin = "1em",
+			Symbol = GetID()
+		},
+		
+		reinforce_top = 
+		{
+			Left = "4em", Right = "8em", Top = "0em", Bottom = "4em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Reinforcement$: $Top$",
+			icon =
+			{
+				Prototype = control_entry_prototype.icon,
+				GraphicsName = "Top",
+				Top = "3.5em", Bottom = "7.5em"
+			},
+			OnClick = GuiAction_Call(this, "Reinforce", 0)
+		},
+		reinforce_bottom = 
+		{
+			Left = "4em", Right = "8em", Top = "8em", Bottom = "12em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Reinforcement$: $Bottom$",
+			icon = {Prototype = control_entry_prototype.icon, GraphicsName = "Bottom"},
+			OnClick = GuiAction_Call(this, "Reinforce", 1)
+		},
+		reinforce_left = 
+		{
+			Left = "0em", Right = "4em", Top = "4em", Bottom = "8em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Reinforcement$: $Left$",
+			icon = 
+			{
+				Prototype = control_entry_prototype.icon,
+				GraphicsName = "Left",
+				Left = "3.5em", Right = "7.5em",
+			},
+			OnClick = GuiAction_Call(this, "Reinforce", 2)
+		},
+		reinforce_right = 
+		{
+			Left = "8em", Right = "12em", Top = "4em", Bottom = "8em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Reinforcement$: $Right$",
+			icon = {Prototype = control_entry_prototype.icon, GraphicsName = "Right"},
+			OnClick = GuiAction_Call(this, "Reinforce", 3)
+		},
+		extend_left = 
+		{
+			Left = "0em", Right = "4em", Top = "8em", Bottom = "12em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Extension$: $Left$",
+			icon =  { Prototype = control_entry_prototype.icon, GraphicsName = "Bottom" },
+			OnClick = GuiAction_Call(this, "Reinforce", 4)
+		},
+		extend_right = 
+		{
+			Left = "8em", Right = "12em", Top = "8em", Bottom = "12em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Extension$: $Right$",
+			icon =  { Prototype = control_entry_prototype.icon, GraphicsName = "Bottom" },
+			OnClick = GuiAction_Call(this, "Reinforce", 5)
+		},
+		extend_topleft = 
+		{
+			Left = "0em", Right = "4em", Top = "0em", Bottom = "4em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Extension$: $Top$ $Left$",
+			icon = 
+			{
+				Prototype = control_entry_prototype.icon,
+				GraphicsName = "Left",
+				Left = "3.5em", Right = "7.5em",
+			},
+			OnClick = GuiAction_Call(this, "Reinforce", 6)
+		},
+		extend_topright = 
+		{
+			Left = "8em", Right = "12em", Top = "0em", Bottom = "4em",
+			Prototype = control_entry_prototype, 
+			Tooltip = "$Extension$: $Top$ $Right$",
+			icon = 
+			{
+				Prototype = control_entry_prototype.icon,
+				GraphicsName = "Right"
+			},
+			OnClick = GuiAction_Call(this, "Reinforce", 7)
+		},
+	};
+	
+	// Replace arrows with real symbols if the wall is already built in that direction.
+	var subentries = [menu_entry.reinforce_top, menu_entry.reinforce_bottom,
+					menu_entry.reinforce_left, menu_entry.reinforce_right,
+					menu_entry.extend_left, menu_entry.extend_right,
+					menu_entry.extend_topleft, menu_entry.extend_topright];
+	for (var direction = 0; direction < 8; ++ direction)
+	{
+		if (!walls[direction]) continue;
+		var entry = subentries[direction];
+		entry.Tooltip = "$TearDown$";
+		entry.cancel = 
+		{
+			Margin = "1em",
+			Symbol = Icon_Cancel,
+		};
+	}
+	
+	return [{symbol = GetID(), custom = menu_entry}];
 }
 
-func ControlDown()
+public func GetInteractionMenus(object clonk)
 {
-	if (wall_bottom)
-		if (wall_bottom2)
-		{
-			wall_bottom->RemoveObject();
-			wall_bottom2->RemoveObject();
-		}
-		else
-			(wall_bottom2 = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetBottom2(this);
+	var menus = _inherited() ?? [];		
+	var menu =
+	{
+		title = "$ReinforceScaffold$",
+		entries_callback = this.GetExtensionMenuEntries,
+		//callback = "OnPumpControl",
+		callback_hover = "OnExtensionMenuHover",
+		callback_target = this,
+		BackgroundColor = RGB(0, 50, 50),
+		Priority = 20
+	};
+	PushBack(menus, menu);
+	return menus;
+}
+
+public func OnExtensionMenuHover(id symbol, string action, desc_menu_target, menu_id)
+{
+	GuiUpdateText("$DescExtend$", menu_id, 1, desc_menu_target);
+}
+
+
+public func Reinforce(int direction)
+{
+	if (walls[direction])
+	{
+		walls[direction]->RemoveObject();
+	}
 	else
-		(wall_bottom = CreateObjectAbove(ScaffoldWall,0,0,GetOwner()))->SetBottom(this);
+	{
+		var new_wall = CreateObject(ScaffoldWall, 0, 0, GetOwner());
+		walls[direction] = new_wall;
+		
+		var callbacks = ["SetTop", "SetBottom", "SetLeft", "SetRight", "SetLeftExtension", "SetRightExtension", "SetTopLeftExtension", "SetTopRightExtension"];
+		new_wall->Call(callbacks[direction], this);
+	}
+	
+	UpdateInteractionMenus(this.GetExtensionMenuEntries);
 	Sound("DullWoodHit1");
-	return true;
 }
 
 /* Destruction */
@@ -115,4 +243,3 @@ local ContainBlast = true;
 local BlastIncinerate = 100;
 local HitPoints = 30;
 local Plane = 120;
-local Touchable = 1;

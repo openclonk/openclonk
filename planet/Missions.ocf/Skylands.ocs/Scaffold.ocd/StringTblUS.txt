@@ -1,2 +1,12 @@
 Name=Scaffold
 Description=Allows you to build greater structures.
+
+ReinforceScaffold=Reinforce scaffold
+Reinforcement=Reinforcement
+Extension=Extension
+Top=Top
+Bottom=Bottom
+Left=Left
+Right=Right
+DescExtend=You can reinforce sides of the scaffold here to be able to e.g. walk on it.|Additionally, you can add an extended walking area or a protection above.
+TearDown=Tear down reinforcement or extension

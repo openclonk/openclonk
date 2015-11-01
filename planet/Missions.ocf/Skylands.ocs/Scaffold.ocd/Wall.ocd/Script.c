@@ -13,6 +13,17 @@ func SetLeft(object host)
 	return true;
 }
 
+func SetLeftExtension(object host)
+{
+	SetGraphics("Bottom");
+	SetAction("Bottom", host);
+	SetShape(0,0,32,4);
+	SetPosition(host->GetX()+13, host->GetY()+12);
+	SetSolidMask(0,0,32,4);
+	SetVertexXY(0,1+29,-27);
+	return true;
+}
+
 func SetRight(object host)
 {
 	SetGraphics("Right");
@@ -24,14 +35,36 @@ func SetRight(object host)
 	return true;
 }
 
-func SetRight2(object host)
+func SetRightExtension(object host)
+{
+	SetGraphics("Bottom");
+	SetAction("Bottom", host);
+	SetShape(0,0,32,4);
+	SetPosition(host->GetX()+13, host->GetY()+12);
+	SetSolidMask(0,0,32,4);
+	SetVertexXY(0,1-29,-27);
+	return true;
+}
+
+func SetTopRightExtension(object host)
 {
 	SetGraphics("Right");
 	SetAction("Right", host);
 	SetShape(0,0,4,32);
 	SetPosition(host->GetX()+15, host->GetY()-48);
 	SetSolidMask(0,0,2,32,2,0);
-	SetVertexXY(0,-27-3,1+32);
+	SetVertexXY(0,-27,1+32);
+	return true;
+}
+
+func SetTopLeftExtension(object host)
+{
+	SetGraphics("Left");
+	SetAction("Left", host);
+	SetShape(0,0,4,32);
+	SetPosition(host->GetX()-16, host->GetY()-48);
+	SetSolidMask(0,0,2,32);
+	SetVertexXY(0,1,1+32);
 	return true;
 }
 
@@ -54,17 +87,6 @@ func SetBottom(object host)
 	SetPosition(host->GetX()-16, host->GetY()+12);
 	SetSolidMask(0,0,32,4);
 	SetVertexXY(0,1,-27);
-	return true;
-}
-
-func SetBottom2(object host)
-{
-	SetGraphics("Bottom");
-	SetAction("Bottom", host);
-	SetShape(0,0,32,4);
-	SetPosition(host->GetX()+13, host->GetY()+12);
-	SetSolidMask(0,0,32,4);
-	SetVertexXY(0,1-29,-27);
 	return true;
 }
 
