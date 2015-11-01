@@ -8,7 +8,8 @@
 #include Library_Stackable
 
 public func MaxStackCount() { return 3; }
-public func JavelinStrength() { return 14; }
+// Note that the javelin damage also takes the speed into account. A direct eye-to-eye hit will do roughly this damage.
+public func JavelinStrength() { return 15; }
 public func TumbleStrength() { return 100; }
 
 local animation_set;
@@ -127,9 +128,9 @@ public func HitObject(object obj)
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
-
-	var dmg = JavelinStrength() * speed * 1000 / 100;
 	
+	var dmg = JavelinStrength() * speed * 1000 / 60;
+
 	if (WeaponCanHit(obj))
 	{
 		if (obj->GetAlive())
