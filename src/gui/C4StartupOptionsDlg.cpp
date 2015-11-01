@@ -1048,6 +1048,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 #ifndef USE_CONSOLE
 	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
 	pDraw->RestoreDeviceObjects();
+	if(pGL) pGL->InitShaders(&::GraphicsResource.Files);
 #endif
 	if(pTexMgr) pTexMgr->IntUnlock();
 	if(!success) Config.Graphics.MultiSampling = PrevMultiSampling;

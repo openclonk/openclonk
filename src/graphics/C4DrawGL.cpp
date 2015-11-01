@@ -770,6 +770,27 @@ bool CStdGL::InvalidateDeviceObjects()
 		glDeleteTextures(1, &lines_tex);
 		lines_tex = 0;
 	}
+	// invalidate shaders
+
+	// TODO: We don't do this here because we cannot re-validate them in
+	// RestoreDeviceObjects. This should be refactored.
+
+	/*SpriteShader.Clear();
+	SpriteShaderMod2.Clear();
+	SpriteShaderBase.Clear();
+	SpriteShaderBaseMod2.Clear();
+	SpriteShaderBaseOverlay.Clear();
+	SpriteShaderBaseOverlayMod2.Clear();
+	SpriteShaderLight.Clear();
+	SpriteShaderLightMod2.Clear();
+	SpriteShaderLightBase.Clear();
+	SpriteShaderLightBaseMod2.Clear();
+	SpriteShaderLightBaseOverlay.Clear();
+	SpriteShaderLightBaseOverlayMod2.Clear();
+	SpriteShaderLightBaseNormal.Clear();
+	SpriteShaderLightBaseNormalMod2.Clear();
+	SpriteShaderLightBaseNormalOverlay.Clear();
+	SpriteShaderLightBaseNormalOverlayMod2.Clear();*/
 	return fSuccess;
 }
 
