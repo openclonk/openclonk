@@ -43,7 +43,7 @@ Newton115=Das ist mehr, als wir vorweisen können.
 Newton116=Also, was ist? Wirst du uns helfen, Hörx zu besiegen?
 Newton117=Ja
 Newton118=Sehr gut!
-Newton119=Mache dich auf dem Weg nach Osten zum Wipfstadt. Hier hast du eine Schaufel, um dich dorthin durchzugraben.
+Newton119=Mache dich auf den Weg nach Wipfstadt im Osten. Hier hast du eine Schaufel, um dich dorthin durchzugraben.
 Newton120=Frage dort nach Pyrit, dem Schmied. Er ist ein alter Freund von mir und wird dir weiter helfen.
 Newton121=Viel Glück! Du wirst es brauchen.
 
