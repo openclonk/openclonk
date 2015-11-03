@@ -177,7 +177,7 @@ func CheckStrike(iTime)
 	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
 		offset_y=10;
 	
-	var width=10;
+	var width=15;
 	var height=20;
 	var angle=0;
 	
