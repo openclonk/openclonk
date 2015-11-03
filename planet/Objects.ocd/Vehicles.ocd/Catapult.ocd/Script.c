@@ -166,6 +166,34 @@ protected func DoFire(object clonk, int power)
 		{
 			CatapultDismount(projectile);
 			projectile->SetAction("Tumble");
+			
+			// Special behavior for Clonks: make sure the Clonk can't shoot itself into solid material.
+			if (projectile->Stuck())
+			{
+				// First, try to just put the Clonk a few pixels lower - might still look okay in some situations.
+				for (var i = 0; i <= 4; ++i)
+				{
+					projectile->SetPosition(projectile->GetX(), projectile->GetY() + 2);
+					if (!projectile->Stuck()) break;
+				}
+				// Then as a safeguard, just place the Clonk at the catapult's feet and do nothing.
+				if (projectile->Stuck())
+				{
+					projectile->SetPosition(GetX(), GetY());
+					// Still stuck? Then we don't actually care if stuck here or at the end of the arm.
+					if (projectile->Stuck())
+					{
+						// Go back to normal shooting position.
+						projectile->SetPosition(GetX() + x, GetY() + y);
+					}
+					else
+					{
+						// We set the Clonk back down on the ground. This is not a normal shot.
+						angle = 0;
+						power = 20;
+					}
+				}
+			}
 		}
 
 		//Catapult is facing left or right?
