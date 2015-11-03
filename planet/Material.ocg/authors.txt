@@ -4,16 +4,9 @@ CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
 Author				  Work(s)
 ===============================================================================
 
-Newton				- coal, earth, earth_dry, gold, ice3, ore,
-					  rock, rocked_cracked, sand_rough, firestone, tunnel, water
-MimmoO				- ice2, brick
-Nachtfalter			- acid, lava_red
-Dustin Senos		- earth_rough
-Andrew McConnochie	- granite
-Ben Cloward			- snow1
+Matthi				- ashes, granite, rock
+MimmoO				- brick
+Nachtfalter			- amethyst, earth, earth_root, earth_spongy, firestone, gold, ice, ore, rock_smooth, ruby, sand, snow1, tunnel
+Newton				- coal, ice3, water
 Redwolf Design GmbH	- snow, lava
-Pyrit				- sand_smooth
-
-The following textures are licensed under the CC Attribution-Share Alike 3.0 Unported license (http://creativecommons.org/licenses/by-sa/3.0/)
-
-texturepalace.com	- ashes (http://www.texturepalace.com/ash-wood-premium-and-free-stock-textures/)
+Win					- everrock
