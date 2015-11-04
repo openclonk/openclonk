@@ -5,6 +5,10 @@ protected func Hit()
 	Sound("SoftHit1");
 }
 
+public func Construction()
+{
+	this.MeshTransformation = Trans_Scale(1500, 1500, 1500);
+}
 
 /* Eating */
 
