@@ -196,10 +196,10 @@ Dora1=Hallo, Forscherkollege. Was treibst du hier unten?
 Dora2=Ich bin auf der Suche nach einem Ölsee.
 Dora3=Haha, das war ich auch. Aber den See gibt es nicht.
 Dora4=Aber...die Gerüchte...?
-Dora5=I weiß. Offenbar sind Gerüchte doch nicht immer wahr.
+Dora5=Ich weiß. Offenbar sind Gerüchte doch nicht immer wahr.
 Dora6=Das Gerücht um den Ölsee stimmte nicht. So ein Pech.
 Dora7=Wo könnte ich noch nach Öl suchen?
-Dora8=Hast du die Newton im Clunkerdorf schon gefragt? Wenn er sich nicht an Hörxs Regeln hält, hat er vielleicht noch Reserven.
+Dora8=Hast du Newton im Clunkerdorf schon gefragt? Wenn er sich nicht an Hörxs Regeln hält, hat er vielleicht noch Reserven.
 
 
 Dora100=Ich suche nach Öl.
