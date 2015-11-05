@@ -23,3 +23,15 @@ func Exit(...)
 	}
 	return inherited(...);
 }
+
+// The barrel is always full with oil and does not accept anything else.
+private func AcceptMaterial(int material)
+{
+	return false;
+}
+
+// ..and can also not be emptied.
+public func RejectUse()
+{
+	return true;
+}
