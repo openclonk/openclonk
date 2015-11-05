@@ -616,8 +616,8 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 		}
 	// Splash sound
 	if (amt>=20)
-		StartSoundEffect("Splash2",false,100,pByObj);
-	else if (amt>1) StartSoundEffect("Splash1",false,100,pByObj);
+		StartSoundEffect("Splash2", false, 50, pByObj);
+	else if (amt>1) StartSoundEffect("Splash1", false, 50, pByObj);
 }
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
