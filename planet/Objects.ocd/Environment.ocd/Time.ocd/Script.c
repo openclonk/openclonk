@@ -331,22 +331,24 @@ private func DoSkyShade()
 		skyshade = nightcolour;
 		skyshade[3] = 0;
 	}
-	
-	// Shade the sky using sky adjust.
-	SetSkyAdjust(RGB(skyshade[0], skyshade[1], skyshade[2]));
-	
-	// Shade the landscape and the general feeling by reducing the ambient light.
-	var new_ambient = 100 * skyshade[2] / 255;
-	if (GetAmbientBrightness() != new_ambient)
-		SetAmbientBrightness(new_ambient);
-	
-	// Adjust celestial objects and clouds.
-	if (!day && !night)
+
+	// Update the environment during sunrise and sunset.
+	if (sunrise ^ sunset)
 	{
+		// Shade the sky using sky adjust.
+		SetSkyAdjust(RGBa(skyshade[0], skyshade[1], skyshade[2], GetRGBaValue(GetSkyAdjust(), 0)), GetSkyAdjust(true));
+
+		// Shade the landscape and the general feeling by reducing the ambient light.
+		if (sunset) var new_ambient = 100 * (255 - 215 * progress / 1800) / 255;
+		if (sunrise) var new_ambient = 100 * (40 + 215 * progress / 1800) / 255;
+		if (GetAmbientBrightness() != new_ambient)
+			SetAmbientBrightness(new_ambient);
+
+		// Adjust celestial objects and clouds.
 		for (var celestial in FindObjects(Find_Func("IsCelestial")))
 			celestial->SetObjAlpha(255 - skyshade[3]);
 		for (var cloud in FindObjects(Find_ID(Cloud)))
-			cloud->SetLightingShade(255 - skyshade[2]);
+			cloud->SetLightingShade(255 - skyshade[3]);
 	}
 	return;
 }
