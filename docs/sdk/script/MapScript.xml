@@ -53,7 +53,7 @@ Blit(layer, [0,0,layer.Wdt/2,layer.Hgt]);</code>
     <code>Draw("Earth", {Algo=MAPALGO_RndChecker, Wdt=5, Hgt=5});</code>
     <text>In addition to pattern-generating algorithms, there are also modifier algorithms that take other algorithms as parameters. For example, the Turbulence algorithm jumbles all pixels of the underlying algorithm around to create a noisy pattern:</text>
     <code>var checkerboard = {Algo=MAPALGO_RndChecker, Wdt=10, Hgt=10};
-var jumbled_checkerboard = {Algo=MAPALGO_Turbulence, Amplitude=10, Scale=10};
+var jumbled_checkerboard = {Algo=MAPALGO_Turbulence, Amplitude=10, Scale=10, Op=checkerboard};
 Draw("Earth", jumbled_checkerboard);</code>
     <text>Modifier algorithms can also be applied to layer contents directly. For example, to flip the contents of the current map, one could write:</text>
     <code>// Backup contents of current map
