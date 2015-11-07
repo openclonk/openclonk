@@ -1,4 +1,0 @@
-[DefCore]
-id=Library_GoldSeller
-Version=6,0
-Category=C4D_StaticBack

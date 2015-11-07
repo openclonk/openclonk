@@ -2,7 +2,6 @@
 
 #include Library_Structure
 #include Library_Flag
-#include Library_GoldSeller
 #include Library_Base // Needed for DoBuy...
 
 local ActMap = {
