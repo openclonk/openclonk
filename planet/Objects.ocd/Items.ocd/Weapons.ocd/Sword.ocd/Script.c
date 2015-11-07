@@ -53,7 +53,7 @@ public func ControlUse(object clonk, int x, int y)
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("SwordStrikeStop", clonk))
-			AddEffect("SwordStrikeStop", clonk, 2, length, this);
+			AddEffect("SwordStrikeStop", clonk, 2, length, nil, GetID());
 	}
 	else
 	if(clonk->IsJumping())
