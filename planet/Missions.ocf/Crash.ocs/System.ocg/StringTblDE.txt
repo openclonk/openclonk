@@ -22,7 +22,7 @@ PyritQDone=Nichts weiter.
 # NPC Merchant
 Merchant1=Seid gegrüßt, Fremde aus dem Himmel. Wie kann ich euch helfen?
 MerchantQPlane=Hast du unser Flugzeug gesehen?
-MerchantAPlane1=Der seltame Vogel? Er trudelte über den Vulkan und landere auf der anderen Seite im Schnee.
+MerchantAPlane1=Der seltsame Vogel? Er trudelte über den Vulkan und landete auf der anderen Seite im Schnee.
 MerchantAPlane2=Dorthin zu gelangen wird nicht einfach sein.
 MerchantQLake=Kannst du uns helfen, den See zu überqueren?
 MerchantSellPlans=Ich habe hier ein paar interessante Baupläne! Für 150 Clunker würde ich sie dir überlassen.
