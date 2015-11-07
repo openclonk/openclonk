@@ -143,6 +143,13 @@ protected func DoSwing(object clonk, int ix, int iy)
 		
 		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
 		BlastFree(GetX()+x2,GetY()+y2,5,GetController(),MaxPickDensity);
+		
+		// Make sure that new loose objects do not directly hit the Clonk and tumble it.
+		for (var obj in FindObjects(Find_Distance(10, x2, y2), Find_Category(C4D_Object), Find_Layer(), Find_NoContainer()))
+		{
+			if (obj->Stuck()) continue;
+			AddEffect("IntNoHitAllowed", obj, 1, 30, nil, GetID());
+		}
 	}
 
 }
@@ -193,6 +200,22 @@ public func Reset(clonk)
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	swingtime=0;
 	RemoveEffect("IntPickaxe", clonk);
+}
+
+// Effects that sets the category of C4D_Objects to C4D_None for some time to prevent those objects from hitting the Clonk.
+private func FxIntNoHitAllowedStart(object target, effect fx, temp)
+{
+	if (temp) return;
+	fx.category = target->GetCategory();
+	target->SetCategory(C4D_None);
+}
+
+private func FxIntNoHitAllowedStop(object target, effect fx, int reason, temp)
+{
+	if (temp || !target) return;
+	// If nothing magically changed the category, reset it.
+	if (target->GetCategory() == C4D_None)
+		target->SetCategory(fx.category);
 }
 
 public func IsTool() { return true; }
