@@ -9,7 +9,7 @@
 
 public func MaxStackCount() { return 3; }
 // Note that the javelin damage also takes the speed into account. A direct eye-to-eye hit will do roughly this damage.
-public func JavelinStrength() { return 15; }
+public func JavelinStrength() { return 18; }
 public func TumbleStrength() { return 100; }
 
 local animation_set;
