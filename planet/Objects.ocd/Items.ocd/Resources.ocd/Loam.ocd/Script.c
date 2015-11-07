@@ -115,6 +115,11 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 	{
 		clonk->CancelUse();
 	}
+	else
+	{
+		// Update usage bar.
+		clonk->~OnInventoryChange();
+	}
 	return FX_OK;
 }
 
@@ -155,6 +160,36 @@ private func LoamDone(object clonk)
 	if (loamused > BridgeLength - 10)
 		RemoveObject();
 	return;
+}
+
+// Do not put used loam on top of fresh loam in an inventory menu.
+public func CanBeStackedWith(object other)
+{
+	if (this.loamused != other.loamused) return false;
+	return inherited(other, ...);
+}
+
+// Display the usage as a bar over the loam icon.
+public func GetInventoryIconOverlay()
+{
+	if (!this.loamused) return nil;
+
+	var percentage = 100 - 100 * this.loamused / this.BridgeLength;
+	
+	// Overlay a usage bar.
+	var overlay = 
+	{
+		Bottom = "0.75em", Margin = ["0.1em", "0.25em"],
+		BackgroundColor = RGB(0, 0, 0),
+		inner = 
+		{
+			Margin = "0.05em",
+			BackgroundColor = RGB(200, 150, 0),
+			Right = Format("%d%%", percentage),
+		}
+	};
+	
+	return overlay;
 }
 
 public func IsFoundryProduct() { return true; }
