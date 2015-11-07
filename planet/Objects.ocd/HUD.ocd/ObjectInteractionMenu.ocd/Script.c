@@ -1007,6 +1007,19 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 					custom.bottom.container.Left = "1em";
 				}
 			}
+			// Enable objects to provide a custom overlay for the icon slot.
+			// This could e.g. be used by special scenarios or third-party mods.
+			var overlay = obj->~GetInventoryIconOverlay();
+			if (overlay != nil)
+			{
+				if (!custom)
+				{
+					custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
+					custom.Priority = obj->GetValue();
+				}
+				custom._overlay = overlay;
+			}
+			
 			// Add to menu!
 			var text = nil;
 			if (object_amount > 1)

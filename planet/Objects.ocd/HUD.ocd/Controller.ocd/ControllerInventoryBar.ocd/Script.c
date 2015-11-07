@@ -123,9 +123,13 @@ private func UpdateInventory()
 	for (var slot_info in inventory_slots)
 	{
 		var item = clonk->GetItem(slot_info.slot);
+		// Enable objects to provide a custom overlay for the icon slot.
+		// This could e.g. be used by special scenarios or third-party mods.
+		var custom_overlay = nil;
+		if (item) custom_overlay = item->~GetInventoryIconOverlay();
 		var needs_selection = hand_item_pos == slot_info.slot;
 		var has_extra_slot = item && item->~HasExtraSlot();
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot)
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot || custom_overlay)
 		{
 			// Hide or show extra-slot display?
 			var extra_slot_player = NO_OWNER;
@@ -177,8 +181,19 @@ private func UpdateInventory()
 						Symbol = extra_slot_background_symbol,
 						symbol = { Symbol = extra_symbol }
 					}
+				},
+				overlay =
+				{
+					Player = NO_OWNER,
 				}
 			};
+			
+			if (custom_overlay)
+			{
+				update.overlay = custom_overlay;
+				update.overlay.Player = nil;
+			}
+			
 			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
 
 			var tag = "Std";
