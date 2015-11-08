@@ -420,6 +420,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		}
 	}
+
+	// Fall through half-solid mask
+	if (ctrl == CON_FallThrough)
+	{
+		if(!release)
+		{
+			if (this->IsWalking())
+			{
+				HalfVehicleFadeJumpStart();
+			}
+		}
+		else
+		{
+			HalfVehicleFadeJumpStop();
+		}
+		return true;
+	}
 	
 	// hotkeys action bar hotkeys
 	var hot = 0;

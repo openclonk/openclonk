@@ -51,11 +51,24 @@ global func SetVertexCNAT(int vtx, int val, bool set)
 }
 
 // Allow falling down throughg a HalfVehicle platform
-global func HalfVehicleFadeJump()
+global func HalfVehicleFadeJumpStart()
 {
 	if (!this)
 		return FatalError("this function requires object context");
-	AddEffect("IntHalfVehicleFadeJump", this, 1, 1);
+	if (GetEffect("IntHalfVehicleFadeJump", this))
+		return;
+	AddEffect("IntHalfVehicleFadeJump", this, 1);
+}
+
+
+global func HalfVehicleFadeJumpStop()
+{
+	if (!this)
+		return FatalError("this function requires object context");
+	var effect;
+	if(effect = GetEffect("IntHalfVehicleFadeJump", this)) {
+		effect.Interval = 1;
+	}
 }
 
 global func FxIntHalfVehicleFadeJumpStart(object target, proplist effect, int temp)
@@ -85,6 +98,7 @@ global func FxIntHalfVehicleFadeJumpTimer(object target, proplist effect, int ti
 			return FX_OK;
 	}
 	return FX_Execute_Kill;
+	// The way this is implemented, it may ignore smaller cracks beteween half-solid masks at high speeds. Fix if necessary.
 }
 
 global func FxIntHalfVehicleFadeJumpStop(object target, proplist effect, int reason, bool temp)

@@ -93,6 +93,8 @@ private func Initialize()
 	front->SetAction("Attach", this);
 	back->SetAction("Attach", this);
 
+	SetHalfVehicleSolidMask(true);
+
 	return _inherited(...);
 }
 

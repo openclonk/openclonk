@@ -15,7 +15,7 @@
 
 	# Throw Drop Use ForcedThrow
 	# UseAlt
-	# 
+	#
 	# CancelUse CancelMenu
 	#
 	# NextCrew PreviousCrew
@@ -23,7 +23,7 @@
 	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight MenuSelect
 	# ObjectMenuCancel ObjectMenuOK ObjectMenuSelect ObjectMenuSelectAll
 	# ObjectMenuDown ObjectMenuUp ObjectMenuLeft ObjectMenuRight
-	# PlayerMenu 
+	# PlayerMenu
 	#
 	# CursorPos
 	#
@@ -41,7 +41,7 @@
 	# UseDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
-	# 
+	#
 	# with Keyboard
 	# ------------------
 	# Hotkey0-9
@@ -49,7 +49,7 @@
 	# DropHotkey0-9
 	# Hotkey0-9Select
 	# InteractionHotkey0-9
-	
+
 	[ControlDef]
 	Identifier=Aim
 	DefaultDisabled=1
@@ -58,49 +58,49 @@
 	Identifier=GUICursor
 	DefaultDisabled=1
 	CoordinateSpace=Viewport
-	
+
 	[ControlDef]
 	Identifier=AimUp
 	DefaultDisabled=1
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimDown
 	DefaultDisabled=1
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimLeft
 	DefaultDisabled=1
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimRight
 	DefaultDisabled=1
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimAxisUp
 	GUIName=$CON_AimAxisUp$
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimAxisDown
 	GUIName=$CON_AimAxisDown$
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimAxisLeft
 	GUIName=$CON_AimAxisLeft$
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=AimAxisRight
 	GUIName=$CON_AimAxisRight$
 	Hold=1
-	
+
 	# Movement
-	
+
 	[ControlDef]
 	Identifier=Left
 	Hold=1
@@ -108,7 +108,7 @@
 	[ControlDef]
 	Identifier=Right
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=Up
 	Hold=1
@@ -121,41 +121,47 @@
 	Identifier=Jump
 	GUIName=$CON_Jump$
 	GUIDesc=$CON_Jump_Desc$
-	
+
+	[ControlDef]
+	Identifier=FallThrough
+	GUIName=$CON_FallThrough$
+	GUIDesc=$CON_FallThrough_Desc$
+	Hold=1
+
 	[ControlDef]
 	Identifier=Roll
 	GUIName=$CON_Roll$
 	GUIDesc=$CON_Roll_Desc$
-	
+
 	# Modifier keys (e.g. for menus). Usually map to one of the default keys.
 	[ControlDef]
 	Identifier=ModifierMenu1
 	Hold=1
-	
+
 	# Inventory
-	
+
 	[ControlDef]
 	Identifier=QuickSwitch
 	GUIName=$CON_QuickSwitch$
 	GUIDesc=$CON_QuickSwitch_Desc$
-	
+
 	[ControlDef]
 	Identifier=InventoryShiftForward
 	GUIName=$CON_InventoryShiftForward$
 	GUIDesc=$CON_InventoryShiftForward_Desc$
-	
+
 	[ControlDef]
 	Identifier=InventoryShiftBackward
 	GUIName=$CON_InventoryShiftBackward$
 	GUIDesc=$CON_InventoryShiftBackward_Desc$
-	
+
 	[ControlDef]
 	Identifier=Throw
 	GUIName=$CON_Throw$
 	GUIDesc=$CON_Throw_Desc$
 	Hold=1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=ThrowDelayed
 	GUIName=$CON_Throw$
@@ -167,135 +173,135 @@
 	GUIName=$CON_Drop$
 	GUIDesc=$CON_Drop_Desc$
 	Hold=1
-	
+
 	# Picking up objects on the ground.
 	[ControlDef]
 	Identifier=PickUp
 	GUIName=$CON_PickUp$
 	GUIDesc=$CON_PickUp_Desc$
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=PickUpNext_Left
-	
+
 	[ControlDef]
 	Identifier=PickUpNext_Right
-	
+
 	[ControlDef]
 	Identifier=PickUpNext_Stop
-	
+
 	[ControlDef]
 	Identifier=PickUpNext_All
-	
+
 	# Hotkeys (Inventory)
-	
+
 	[ControlDef]
 	Identifier=Hotkey1
 	GUIName=$CON_Hotkey1$
-	
+
 	[ControlDef]
 	Identifier=Hotkey2
 	GUIName=$CON_Hotkey2$
-	
+
 	[ControlDef]
 	Identifier=Hotkey3
 	GUIName=$CON_Hotkey3$
-	
+
 	[ControlDef]
 	Identifier=Hotkey4
 	GUIName=$CON_Hotkey4$
-	
+
 	[ControlDef]
 	Identifier=Hotkey5
 	GUIName=$CON_Hotkey5$
-	
+
 	[ControlDef]
 	Identifier=Hotkey6
 	GUIName=$CON_Hotkey6$
-	
+
 	[ControlDef]
 	Identifier=Hotkey7
 	GUIName=$CON_Hotkey7$
-	
+
 	[ControlDef]
 	Identifier=Hotkey8
 	GUIName=$CON_Hotkey8$
-	
+
 	[ControlDef]
 	Identifier=Hotkey9
 	GUIName=$CON_Hotkey9$
-	
+
 	[ControlDef]
 	Identifier=Hotkey0
 	GUIName=$CON_Hotkey0$
-	
+
 	[ControlDef]
 	Identifier=DropHotkey1
-	
+
 	[ControlDef]
 	Identifier=DropHotkey2
-	
+
 	[ControlDef]
 	Identifier=DropHotkey3
-	
+
 	[ControlDef]
 	Identifier=DropHotkey4
-	
+
 	[ControlDef]
 	Identifier=DropHotkey5
-	
+
 	[ControlDef]
 	Identifier=DropHotkey6
-	
+
 	[ControlDef]
 	Identifier=DropHotkey7
-	
+
 	[ControlDef]
 	Identifier=DropHotkey8
-	
+
 	[ControlDef]
 	Identifier=DropHotkey9
-	
+
 	[ControlDef]
 	Identifier=DropHotkey0
 
 	# Controlling (contents, vehicles, structures)
-	
+
 	[ControlDef]
 	Identifier=Use
 	GUIName=$CON_Use$
 	GUIDesc=$CON_Use_Desc$
 	Hold=1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=UseDelayed
 	GUIName=$CON_Use$
 	GUIDesc=$CON_Use_Desc$
 	Hold=1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=UseAlt
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
 	Hold=1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=UseAltDelayed
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
 	Hold=1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=CancelUse
-	
+
 	[ControlDef]
 	Identifier=CancelMenu
 	GUIName=$CON_MenuCancel$
-	
+
 	[ControlDef]
 	Identifier=Contents
 	GUIName=$CON_Contents$
@@ -307,106 +313,106 @@
 	GUIName=$CON_Interact$
 	GUIDesc=$CON_Interact_Desc$
 	Hold=1
-	
+
 	[ControlDef]
 	Identifier=InteractNext_Left
-	
+
 	[ControlDef]
 	Identifier=InteractNext_Right
-	
+
 	[ControlDef]
 	Identifier=InteractNext_Stop
-	
+
 	[ControlDef]
 	Identifier=InteractNext_CycleObject
-	
+
 	# Interaction Hotkeys (lower bar)
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey1
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey2
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey3
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey4
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey5
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey6
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey7
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey8
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey9
 	SendCursorPos=1
-	
+
 	[ControlDef]
 	Identifier=InteractionHotkey0
 	SendCursorPos=1
-	
-	# Crew 
-	
+
+	# Crew
+
 	[ControlDef]
 	Identifier=NextCrew
 	GUIName=$CON_NextCrew$
 	GUIDesc=$CON_NextCrew_Desc$
-	
+
 	[ControlDef]
 	Identifier=PreviousCrew
 	GUIName=$CON_PreviousCrew$
 	GUIDesc=$CON_PreviousCrew_Desc$
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey1
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey2
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey3
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey4
-		
+
 	[ControlDef]
 	Identifier=PlayerHotkey5
-		
+
 	[ControlDef]
 	Identifier=PlayerHotkey6
-		
+
 	[ControlDef]
 	Identifier=PlayerHotkey7
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey8
- 
+
 	[ControlDef]
 	Identifier=PlayerHotkey9
-	
+
 	[ControlDef]
 	Identifier=PlayerHotkey0
-	
-	
+
+
 	# Menu control
-	
+
 	[ControlDef]
 	Identifier=GUIClick1
 	DefaultDisabled=1
@@ -418,95 +424,95 @@
 	DefaultDisabled=1
 	Hold=1
 	CoordinateSpace=Viewport
-	
+
 	[ControlDef]
 	Identifier=MenuOK
 	GUIName=$CON_MenuOK$
 	GUIDesc=$CON_MenuOK_Desc$
 	Action=MenuOK
-	
+
 	[ControlDef]
 	Identifier=MenuCancel
 	GUIName=$CON_MenuCancel$
 	GUIDesc=$CON_MenuCancel_Desc$
 	Action=MenuCancel
-	
+
 	[ControlDef]
 	Identifier=MenuLeft
 	Action=MenuLeft
-	
+
 	[ControlDef]
 	Identifier=MenuRight
 	Action=MenuRight
-	
+
 	[ControlDef]
 	Identifier=MenuUp
 	Action=MenuUp
-	
+
 	[ControlDef]
 	Identifier=MenuDown
 	Action=MenuDown
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuTextComplete
 	GUIName=$CON_MenuTextComplete$
 	Action=ObjectMenuTextComplete
-	
+
 	# hardcoded identifier called by engine mouse control - do not change!
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuOK
 	GUIName=$CON_MenuOK$
 	Action=ObjectMenuOK
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuOKAll
 	GUIName=$CON_MenuOKAll$
 	Action=ObjectMenuOKAll
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuSelect
 	GUIName=$CON_MenuSelect$
 	GUIDesc=$CON_MenuSelect_Desc$
 	Action=ObjectMenuSelect
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuCancel
 	GUIName=$CON_MenuCancel$
 	GUIDesc=$CON_MenuCancel_Desc$
 	Action=ObjectMenuCancel
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuLeft
 	Action=ObjectMenuLeft
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuRight
 	Action=ObjectMenuRight
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuUp
 	Action=ObjectMenuUp
-	
+
 	[ControlDef]
 	Identifier=ObjectMenuDown
 	Action=ObjectMenuDown
-	
+
 	# control sent by engine along controls with SendCursorPos=1
 	[ControlDef]
 	Identifier=CursorPos
 	CoordinateSpace=Viewport
-	
+
 	# Extra buttons...
-	
+
 	[ControlDef]
 	Identifier=PlayerMenu
 	GUIName=$CON_PlayerMenu$
 	GUIDesc=$CON_PlayerMenu_Desc$
 	Action=Menu
-	
+
 	# Viewport Zoom
-	
+
 	[ControlDef]
 	Identifier=ZoomIn
 	GUIName=$CON_ZoomIn$
@@ -514,7 +520,7 @@
 	Action=ZoomIn
 	Hold=1
 	RepeatDelay=3
-	
+
 	[ControlDef]
 	Identifier=ZoomOut
 	GUIName=$CON_ZoomOut$
@@ -522,36 +528,36 @@
 	Action=ZoomOut
 	Hold=1
 	RepeatDelay=3
-	
+
 	[ControlDef]
 	Identifier=WheelZoomIn
 	GUIName=$CON_ZoomIn$
 	GUIDesc=$CON_ZoomIn_Desc$
 	Action=ZoomIn
-	
+
 	[ControlDef]
 	Identifier=WheelZoomOut
 	GUIName=$CON_ZoomOut$
 	GUIDesc=$CON_ZoomOut_Desc$
 	Action=ZoomOut
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
 
 ###############################################################################
 #                                                                             #
 #                                  ControlSets                                #
 #                                                                             #
 ###############################################################################
- 
+
 [ControlSets]
 
 	# ======================================================================= #
@@ -584,10 +590,10 @@
 	# NextCrew							T
 	# PreviousCrew						R
 	# PlayerHotkey0-9					Ctrl+(0-9)
-	# 
+	#
 	# MenuOK							Return
 	# MenuCancel						Backspace
-	# 
+	#
 	# PlayerMenu						F
 
 
@@ -597,75 +603,75 @@
 	Keyboard=1
 	Mouse=1
 	Gamepad=0
-	
+
 		# Contents Menu
-		
+
 		[Assignment]
 		Key=E
 		Control=Contents
 		GUIGroup=1
-	
+
 		[Assignment]
 		Key=Q
 		Control=QuickSwitch
 		GUIGroup=50
-		
+
 		[Assignment]
 		Key=LeftShift
 		Control=PickUp
 		GUIGroup=50
-		
+
 		[Assignment]
 		Key=CON_PickUp,CON_Left
 		Control=PickUpNext_Left
-		
+
 		[Assignment]
 		Key=CON_PickUp,CON_Right
 		Control=PickUpNext_Right
-		
+
 		[Assignment]
 		Key=CON_PickUp,CON_Up
 		Control=PickUpNext_All
 		Priority=75
-		
+
 		[Assignment]
 		Key=CON_PickUp,CON_Down
 		Control=PickUpNext_Stop
 		Priority=75
-		
+
 		[Assignment]
 		Key=CON_PickUp,CON_Throw
 		Control=Drop
 		Priority=75
-		
+
 		[Assignment]
 		Key=Mouse1Wheel1Up
 		GUIGroup=50
 		Control=InventoryShiftBackward
-  
+
 		[Assignment]
 		Key=Mouse1Wheel1Down
 		GUIGroup=50
 		Control=InventoryShiftForward
-		
+
 		# Menu
-		
+
 		[Assignment]
 		Key=CON_PickUp
 		Control=ModifierMenu1
 		Priority=100
-		
+
 		[Assignment]
 		Key=F
 		Control=PlayerMenu
 		GUIGroup=50
-  
+
 		[Assignment]
 		Key=Space
 		Priority=100
 		Control=MenuOK
 		GUIGroup=50
-		
+
 		[Assignment]
 		Key=BackSpace
 		Priority=100
@@ -673,7 +679,7 @@
 		GUIGroup=50
 
 		# Movement
-		
+
 		[Assignment]
 		Key=A
 		Priority=50
@@ -697,13 +703,13 @@
 		GUIDesc=$KEY_Down_Desc$
 		GUIGroup=10
 		Control=Down
-		
+
 		[Assignment]
 		Key=S
 		Priority=10
 		GUIGroup=10
 		Control=Roll
-		
+
 		[Assignment]
 		Key=W
 		Priority=50
@@ -717,7 +723,13 @@
 		Priority=10
 		GUIGroup=10
 		Control=Jump
-		
+
+		[Assignment]
+		Key=X
+		Priority=10
+		GUIGroup=10
+		Control=FallThrough
+
 		# Object interaction
 
 		[Assignment]
@@ -743,22 +755,22 @@
 		[Assignment]
 		Key=CON_Interact,CON_Down
 		Control=InteractNext_Stop
-  		Priority=75
+		Priority=75
 
 		# Crew
-		
+
 		[Assignment]
 		Key=T
 		GUIGroup=70
 		Control=PreviousCrew
-  
+
 		[Assignment]
 		Key=R
 		GUIGroup=70
 		Control=NextCrew
-		
+
 		# Use
-		
+
 		[Assignment]
 		Key=Mouse1ButtonLeft
 		Priority=100
@@ -767,7 +779,7 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=Use
-		
+
 		[Assignment]
 		Key=Mouse1ButtonRight
 		Priority=100
@@ -776,7 +788,7 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=Throw
-		
+
 		[Assignment]
 		Key=Mouse1ButtonRight
 		Priority=80
@@ -785,15 +797,15 @@
 		GUIDisabled=1
 		GUIGroup=20
 		Control=UseAlt
-		
+
 		# Zoom
-		
+
 		[Assignment]
 		Key=Ctrl+Mouse1Wheel1Up
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomIn
-  
+
 		[Assignment]
 		Key=Ctrl+Mouse1Wheel1Down
 		GUIGroup=60
@@ -822,29 +834,29 @@
 	Gamepad=1
 
 		# Contents Menu
-		
+
 		[Assignment]
 		Key=Joy1F
 		GUIGroup=50
 		Control=Contents
-	
+
 		# Menu
 
 		[Assignment]
 		Key=Joy1J
 		GUIGroup=50
 		Control=PlayerMenu
-  
+
 		[Assignment]
 		Key=Joy1C
 		GUIGroup=50
 		Control=MenuOK
-		
+
 		[Assignment]
 		Key=Joy1B
 		GUIGroup=50
 		Control=MenuCancel
-		
+
 		# Movement
 
 		[Assignment]
@@ -884,7 +896,7 @@
 		Priority=10
 		GUIGroup=10
 		Control=Jump
-				
+
 		[Assignment]
 		Key=Joy1Axis1Min
 		GUIDesc=$KEY_AimAxis_Desc$
@@ -914,22 +926,22 @@
 		Control=AimAxisUp
 
 		# Object interaction
-		
+
 		[Assignment]
 		Key=Joy1B
 		Priority=35
 		GUIGroup=40
 		Control=Interact
-  
+
 		# Crew
-		
+
 		[Assignment]
 		Key=Joy1I
 		Control=NextCrew
 		GUIGroup=70
-  
+
 		# Use, Throw, Drop
-		
+
 		[Assignment]
 		Key=Joy1A
 		GUIName=$KEY_GamepadUse$
@@ -939,28 +951,28 @@
 		Control=UseDelayed
 
 		# Zoom
-		
+
 		[Assignment]
 		Key=Joy1H
 		Priority=100
 		GUIGroup=60
 		Control=ZoomIn
-  
+
 		[Assignment]
 		Key=Joy1G
 		Priority=100
 		GUIGroup=60
 		Control=ZoomOut
-		
-		
-		
+
+
+
 	# ======================================================================= #
 	#                           Default gamepad control                       #
 	# ======================================================================= #
-		
+
 	[ControlSet]
 	Name=*_GamepadCon_*
-		
+
 		[Assignment]
 		Key=CON_AimAxisLeft
 		Priority=50
@@ -980,7 +992,7 @@
 		Key=CON_AimAxisUp
 		Priority=50
 		Control=Up
-		
+
 		[Assignment]
 		Key=CON_Left
 		Priority=70
@@ -1000,29 +1012,29 @@
 		Key=CON_Up
 		Priority=70
 		Control=AimUp
-		
+
 		[Assignment]
 		Key=CON_Down,CON_UseDelayed
 		GUIDisabled=1
 		GUIGroup=20
 		Priority=150
 		Control=Drop
-		
+
 		[Assignment]
 		Key=CON_UseDelayed
 		GUIName=None
 		Priority=50
 		Control=ThrowDelayed
-	
+
 	# ======================================================================= #
 	#                           Default mouse control                         #
 	# ======================================================================= #
-		
+
 	[ControlSet]
 	Name=*_MouseCon_*
-	
+
 		# click in gui
-		
+
 		[Assignment]
 		Key=Mouse1ButtonLeft
 		Priority=300
@@ -1032,179 +1044,179 @@
 		Key=Mouse1ButtonRight
 		Priority=300
 		Control=GUIClick2
-	
+
 		# Aiming
-	
+
 		[Assignment]
 		Key=Mouse1Move
 		Control=Aim
 		Priority=50
-		
+
 		[Assignment]
 		Key=Mouse1Move
 		Control=GUICursor
 		Priority=100
-		
+
 	# ======================================================================= #
 	#                          Default hotkey controls                        #
 	# ======================================================================= #
-	
+
 	[ControlSet]
 	Name=*_Hotkeys_*
 
 		# Hotkeys for inventory management
-		
+
 		[Assignment]
 		Key=1
 		Control=Hotkey1
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=2
 		Control=Hotkey2
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=3
 		Control=Hotkey3
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=4
 		Control=Hotkey4
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=5
 		Control=Hotkey5
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=6
 		Control=Hotkey6
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=7
 		Control=Hotkey7
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=8
 		Control=Hotkey8
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=9
 		Control=Hotkey9
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=0
 		Control=Hotkey0
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey1
 		Control=DropHotkey1
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey2
 		Control=DropHotkey2
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey3
 		Control=DropHotkey3
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey4
 		Control=DropHotkey4
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey5
 		Control=DropHotkey5
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey6
 		Control=DropHotkey6
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey7
 		Control=DropHotkey7
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey8
 		Control=DropHotkey8
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey9
 		Control=DropHotkey9
-		
+
 		[Assignment]
 		Key=Shift+CON_Hotkey0
 		Control=DropHotkey0
-				
+
 		# Hotkeys for choosing clonk
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey1
 		Control=PlayerHotkey1
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey2
 		Control=PlayerHotkey2
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey3
 		Control=PlayerHotkey3
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey4
 		Control=PlayerHotkey4
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey5
 		Control=PlayerHotkey5
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey6
 		Control=PlayerHotkey6
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey7
 		Control=PlayerHotkey7
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey8
 		Control=PlayerHotkey8
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey9
 		Control=PlayerHotkey9
-		
+
 		[Assignment]
 		Key=Ctrl+CON_Hotkey0
-		Control=PlayerHotkey0				
-	
+		Control=PlayerHotkey0
+
 	# ======================================================================= #
 	#                              Menu controls                              #
 	# ======================================================================= #
-	
+
 	[ControlSet]
 	Name=*
-		
+
 		# Menu control
-	
+
 		[Assignment]
 		Key=CON_Left
 		GUIName=None
@@ -1228,7 +1240,7 @@
 		GUIName=None
 		Priority=100
 		Control=MenuUp
-		
+
 		[Assignment]
 		Key=CON_Left
 		GUIName=None
@@ -1252,25 +1264,25 @@
 		GUIName=None
 		Priority=90
 		Control=ObjectMenuUp
-		
+
 		[Assignment]
 		Key=CON_MenuOK
 		GUIName=None
 		Priority=95
 		Control=ObjectMenuTextComplete
-		
+
 		[Assignment]
 		Key=CON_MenuOK
 		GUIName=None
 		Priority=90
 		Control=ObjectMenuOK
-		
+
 		[Assignment]
 		Key=CON_MenuCancel
 		GUIName=None
 		Priority=90
 		Control=ObjectMenuCancel
-		
+
 		[Assignment]
 		Key=CON_MenuCancel
 		GUIName=None
