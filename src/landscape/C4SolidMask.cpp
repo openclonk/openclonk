@@ -354,7 +354,7 @@ void C4SolidMask::RemoveTemporary(C4Rect where)
 			{
 				// restore
 				assert(IsSomeVehicle(GBackPix(x,y)));
-				::Landscape.SetPix2(x, y, *pPix, ::Landscape.Transparent);
+				::Landscape._SetPix2Tmp(x, y, *pPix, ::Landscape.Transparent);
 			}
 		}
 	}
@@ -375,7 +375,7 @@ void C4SolidMask::PutTemporary(C4Rect where)
 			{
 				// put
 				assert(GBackPix(x,y)==*pPix);
-				::Landscape.SetPix2(x, y, MaskMaterial, ::Landscape.Transparent);
+				::Landscape._SetPix2Tmp(x, y, MaskMaterial, ::Landscape.Transparent);
 			}
 		}
 	}

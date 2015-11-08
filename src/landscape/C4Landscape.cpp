@@ -329,7 +329,6 @@ bool C4Landscape::DoRelights()
 		if (!Relights[i].Wdt)
 			break;
 		// Remove all solid masks in the (twice!) extended region around the change
-		// TODO: Isn't Relights[i] already an "affected" rect? Might save a bit here...
 		C4Rect SolidMaskRect = pLandscapeRender->GetAffectedRect(Relights[i]);
 		C4SolidMask * pSolid;
 		for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
@@ -704,20 +703,6 @@ bool C4Landscape::SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	// no change?
 	if ((fgPix == Transparent || fgPix == _GetPix(x, y)) && (bgPix == Transparent || bgPix == Surface8Bkg->_GetPix(x, y)))
 		return true;
-	// note for relight (TODO: Why is this not in _SetPix2?)
-	if(pLandscapeRender)
-	{
-		C4Rect CheckRect = pLandscapeRender->GetAffectedRect(C4Rect(x, y, 1, 1));
-		for (int32_t i = 0; i < C4LS_MaxRelights; i++)
-			if (!Relights[i].Wdt || Relights[i].Overlap(CheckRect) || i + 1 >= C4LS_MaxRelights)
-			{
-				Relights[i].Add(CheckRect);
-				break;
-			}
-		// Invalidate FoW
-		if (pFoW)
-			pFoW->Invalidate(CheckRect);
-	}
 	// set pixel
 	return _SetPix2(x, y, fgPix, bgPix);
 }
@@ -788,8 +773,30 @@ bool C4Landscape::_SetPix2(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
 	// set 8bpp-surface only!
 	Surface8->SetPix(x, y, fgPix);
 	Surface8Bkg->SetPix(x, y, bgPix);
+	// note for relight
+	if(pLandscapeRender)
+	{
+		C4Rect CheckRect = pLandscapeRender->GetAffectedRect(C4Rect(x, y, 1, 1));
+		for (int32_t i = 0; i < C4LS_MaxRelights; i++)
+			if (!Relights[i].Wdt || Relights[i].Overlap(CheckRect) || i + 1 >= C4LS_MaxRelights)
+			{
+				Relights[i].Add(CheckRect);
+				break;
+			}
+		// Invalidate FoW
+		if (pFoW)
+			pFoW->Invalidate(CheckRect);
+	}
 	// success
 	return true;
+}
+
+void C4Landscape::_SetPix2Tmp(int32_t x, int32_t y, BYTE fgPix, BYTE bgPix)
+{
+	// set 8bpp-surface only!
+	assert(x >= 0 && y >= 0 && x < Width && y < Height);
+	if (fgPix != Transparent) Surface8->SetPix(x, y, fgPix);
+	if (bgPix != Transparent) Surface8Bkg->SetPix(x, y, bgPix);
 }
 
 bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
