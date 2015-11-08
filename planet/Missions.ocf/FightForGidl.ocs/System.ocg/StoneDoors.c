@@ -34,4 +34,4 @@ func GetStrength() { return this.MaxEnergy/1000; }
 func Find_InRect(x,y,wdt,hgt) { return inherited(x/2, y+10, wdt/2, hgt-20); }
 
 // Open for all players
-func Find_Allied(plr) { return Find_Not(Find_Owner(NO_OWNER)); }
+func Find_Allied(plr) { return Find_Not(Find_Owner(ENEMY)); }
