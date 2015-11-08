@@ -1146,7 +1146,7 @@ void C4Object::AssignDeath(bool fForced)
 	if(pPlr)
 		if(!pPlr->Crew.ObjectCount())
 			::GameScript.GRBroadcast(PSF_RelaunchPlayer,
-			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer)));
+			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer),Status ? C4VObj(this) : C4VNull));
 	if (pInfo)
 		pInfo->HasDied = false;
 }
