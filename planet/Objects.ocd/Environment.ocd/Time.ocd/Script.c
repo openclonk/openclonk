@@ -333,7 +333,7 @@ private func DoSkyShade()
 	}
 
 	// Update the environment during sunrise and sunset.
-	if (sunrise ^ sunset)
+	if (sunrise || sunset)
 	{
 		// Shade the sky using sky adjust.
 		SetSkyAdjust(RGBa(skyshade[0], skyshade[1], skyshade[2], GetRGBaValue(GetSkyAdjust(), 0)), GetSkyAdjust(true));
