@@ -487,6 +487,13 @@ namespace C4GUI
 		// only if owned
 		if (!fActive) return;
 
+		// Make sure to draw the cursor without zoom.
+		ZoomData GuiZoom;
+		pDraw->GetZoom(&GuiZoom);
+		const float oldZoom = GuiZoom.Zoom;
+		GuiZoom.Zoom = 1.0;
+		pDraw->SetZoom(GuiZoom);
+
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
@@ -500,6 +507,10 @@ namespace C4GUI
 				Screen::DrawToolTip(szTip, cgoTip, x, y);
 			}
 		}
+
+		// And restore old zoom settings.
+		GuiZoom.Zoom = oldZoom;
+		pDraw->SetZoom(GuiZoom);
 	}
 
 	void CMouse::ReleaseElements()
