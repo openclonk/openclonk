@@ -344,20 +344,22 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		Surfaces[i]->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
 	}
 
-	// Initialize up & down placement arrays:
-	// Calculate the placement sums for the first line in the rectangle only. For the consecutive lines, it is updated 
-	// for each line in the below for-loop.
+	// Initialize up & down placement arrays. These arrays are always updated
+	// so that they contain the placement sums of C4LR_BiasDistanceY pixels
+	// above and below the current row.
 	int x, y;
-	int *placementSumsUp = new int [To.Wdt * 2];
-	int *placementSumsDown = placementSumsUp + To.Wdt;
-	for(x = 0; x < To.Wdt; x++)
+	int placementSumsWidth = C4LR_BiasDistanceX * 2 + To.Wdt;
+	int *placementSumsUp = new int [placementSumsWidth * 2];
+	int *placementSumsDown = placementSumsUp + placementSumsWidth;
+	for(x = 0; x < placementSumsWidth; x++)
 	{
 		placementSumsUp[x] = 0;
 		placementSumsDown[x] = 0;
+		if (To.x + x - C4LR_BiasDistanceX < 0 || To.x + x - C4LR_BiasDistanceX >= iWidth) continue;
 		for(y = 1; y <= Min(C4LR_BiasDistanceY, To.y); y++)
-			placementSumsUp[x] += pSource->_GetPlacement(To.x+x, To.y-y);
+			placementSumsUp[x] += pSource->_GetPlacement(To.x+x-C4LR_BiasDistanceX, To.y-y);
 		for(y = 1; y <= Min(C4LR_BiasDistanceY, iHeight - 1 - To.y); y++)
-			placementSumsDown[x] += pSource->_GetPlacement(To.x+x, To.y+y);
+			placementSumsDown[x] += pSource->_GetPlacement(To.x+x-C4LR_BiasDistanceX, To.y+y);
 	}
 
 	// Get tex refs (shortcut, we will use them quite heavily)
@@ -369,30 +371,50 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	// Go through it from top to bottom
 	for(y = 0; y < To.Hgt; y++)
 	{
-		// Initialize left & right placement for the left-most pixel. Will be updated in the below loop for every pixel
-		// in the line
-		int placementSumLeft = 0;
-		int placementSumRight = 0;
+		// Initialize left & right placement sums. These are meant to contain
+		// the placement sum of a (C4LR_BiasDistanceX, 2*C4LR_BiasDistanceY+1)
+		// rectangle left/right of the current pixel. So we initialise it to
+		// be correct at x=0. Note that the placementSum arrays don't contain
+		// information about the current row, therefore we need a special case
+		// for those pixels.
+		int sumLeft = 0, sumRight = 0;
 		for(x = 1; x <= Min(C4LR_BiasDistanceX, To.x); x++)
-			placementSumLeft += pSource->_GetPlacement(To.x-x,To.y+y);
+			sumLeft += pSource->_GetPlacement(To.x-x,To.y+y);
 		for(x = 1; x <= Min(C4LR_BiasDistanceX, iWidth - 1 - To.x ); x++)
-			placementSumRight += pSource->_GetPlacement(To.x+x,To.y+y);
+			sumRight += pSource->_GetPlacement(To.x+x,To.y+y);
+		for (int i = 1; i <= C4LR_BiasDistanceX; i++) {
+			sumLeft += placementSumsUp[C4LR_BiasDistanceX - i];
+			sumLeft += placementSumsDown[C4LR_BiasDistanceX - i];
+			sumRight += placementSumsUp[C4LR_BiasDistanceX + i];
+			sumRight += placementSumsDown[C4LR_BiasDistanceX + i];
+		}
+
+		// Initialise up & down sums. Same principle as above, but slightly
+		// easier as we do not miss pixels if we just use the placement sums.
+		int sumUp = 0, sumDown = 0;
+		for (int i = -C4LR_BiasDistanceX; i <= C4LR_BiasDistanceX; i++) {
+			sumUp += placementSumsUp[C4LR_BiasDistanceX + i];
+			sumDown += placementSumsDown[C4LR_BiasDistanceX + i];
+		}
 
 		for(x = 0; x < To.Wdt; x++)
 		{
 			int pixel = pSource->_GetPix(To.x+x, To.y+y);
 			int placement = pSource->_GetPlacement(To.x+x, To.y+y);
 
-			int horizontalBias = Max(0, placement * C4LR_BiasDistanceX - placementSumRight) -
-			                     Max(0, placement * C4LR_BiasDistanceX - placementSumLeft);
-			int verticalBias = Max(0, placement * C4LR_BiasDistanceY - placementSumsDown[x]) -
-			                   Max(0, placement * C4LR_BiasDistanceY - placementSumsUp[x]);
+			// Calculate bias. The scale here is the size of the rectangle (see above)
+			const int horizontalFactor = C4LR_BiasDistanceX * (2 * C4LR_BiasDistanceY + 1);
+			int horizontalBias = Max(0, placement * horizontalFactor - sumRight) -
+			                     Max(0, placement * horizontalFactor - sumLeft);
+			const int verticalFactor = C4LR_BiasDistanceY * (2 * C4LR_BiasDistanceX + 1);
+			int verticalBias = Max(0, placement * verticalFactor - sumDown) -
+			                   Max(0, placement * verticalFactor - sumUp);
 
 			// Maximum placement differences that make a difference in the result,  after which we are at the limits of
 			// what can be packed into a byte
 			const int maximumPlacementDifference = 40;
-			int horizontalBiasScaled = Clamp(horizontalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceX + 128, 0, 255);
-			int verticalBiasScaled = Clamp(verticalBias * 127 / maximumPlacementDifference / C4LR_BiasDistanceY + 128, 0, 255);
+			int horizontalBiasScaled = Clamp(horizontalBias * 127 / maximumPlacementDifference / horizontalFactor + 128, 0, 255);
+			int verticalBiasScaled = Clamp(verticalBias * 127 / maximumPlacementDifference / verticalFactor + 128, 0, 255);
 
 			// Collect data to save per pixel
 			unsigned char data[C4LR_SurfaceCount * 4];
@@ -408,24 +430,49 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 				texture[i]->SetPix4(To.x+x, To.y+y, 
 					RGBA(data[i*4+0], data[i*4+1], data[i*4+2], data[i*4+3]));
 
+			// Update sums (last column would be out-of-bounds, and not
+			// necessary as we will re-initialise it for the next row)
+			if (x < To.Wdt - 1) {
+				sumLeft -= placementSumsUp[x] + placementSumsDown[x];
+				sumLeft += placementSumsUp[x + C4LR_BiasDistanceX] + placementSumsDown[x + C4LR_BiasDistanceX];
+				sumRight -= placementSumsUp[x + C4LR_BiasDistanceX + 1] + placementSumsDown[x + C4LR_BiasDistanceX + 1];
+				sumUp -= placementSumsUp[x];
+				sumDown -= placementSumsDown[x];
+				sumRight += placementSumsUp[x + 2 * C4LR_BiasDistanceX + 1] + placementSumsDown[x + 2 * C4LR_BiasDistanceX + 1];
+				sumUp += placementSumsUp[x + 2 * C4LR_BiasDistanceX + 1];
+				sumDown += placementSumsDown[x + 2 * C4LR_BiasDistanceX + 1];
+			}
+
 			// Update left & right for next pixel in line
 			if(x + To.x + 1 < iWidth)
-				placementSumRight -= pSource->_GetPlacement(To.x+x + 1, To.y+y);
+				sumRight -= pSource->_GetPlacement(To.x+x + 1, To.y+y);
 			if(To.x+x + C4LR_BiasDistanceX + 1 < iWidth)
-				placementSumRight += pSource->_GetPlacement(To.x+x + C4LR_BiasDistanceX + 1, To.y+y);
-			placementSumLeft += placement;
+				sumRight += pSource->_GetPlacement(To.x+x + C4LR_BiasDistanceX + 1, To.y+y);
+			sumLeft += placement;
 			if(To.x+x - C4LR_BiasDistanceX >= 0)
-				placementSumLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX, To.y+y);
+				sumLeft -= pSource->_GetPlacement(To.x+x - C4LR_BiasDistanceX, To.y+y);
 
 			// Update up & down arrays (for next line already)
-			if(To.y+y + 1 < iHeight)
-				placementSumsDown[x] -= pSource->_GetPlacement(To.x+x, To.y+y + 1);
-			if(To.y+y + C4LR_BiasDistanceY + 1 < iHeight)
-				placementSumsDown[x] += pSource->_GetPlacement(To.x+x, To.y+y + C4LR_BiasDistanceY + 1);
-			placementSumsUp[x] += placement;
-			if(To.y+y - C4LR_BiasDistanceY >= 0) {
-				placementSumsUp[x] -= pSource->_GetPlacement(To.x+x, To.y+y - C4LR_BiasDistanceY);
+			if (To.x + x >= C4LR_BiasDistanceX) {
+				if (To.y + y + 1 < iHeight)
+					placementSumsDown[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + 1);
+				if (To.y + y + C4LR_BiasDistanceY + 1 < iHeight)
+					placementSumsDown[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + C4LR_BiasDistanceY + 1);
+				if (To.y + y - C4LR_BiasDistanceY >= 0)
+					placementSumsUp[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y - C4LR_BiasDistanceY);
+				placementSumsUp[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y);
 			}
+		}
+
+		// Finish updating up & down arrays for the next line
+		for (; x < Min(placementSumsWidth, iWidth - To.x + C4LR_BiasDistanceX); x++) {
+			if (To.y + y + 1 < iHeight)
+				placementSumsDown[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + 1);
+			if (To.y + y + C4LR_BiasDistanceY + 1 < iHeight)
+				placementSumsDown[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + C4LR_BiasDistanceY + 1);
+			if (To.y + y - C4LR_BiasDistanceY >= 0)
+				placementSumsUp[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y - C4LR_BiasDistanceY);
+			placementSumsUp[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y);
 		}
 	}
 
