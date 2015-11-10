@@ -883,7 +883,10 @@ void C4Object::UpdateOCF()
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Grab | OCF_FullCon | OCF_Rotate | OCF_OnFire
-		| OCF_Inflammable | OCF_Alive | OCF_CrewMember | OCF_AttractLightning);
+		| OCF_Alive | OCF_CrewMember | OCF_AttractLightning);
+	// OCF_inflammable: can catch fire and is not currently burning.
+	if (!OnFire && GetPropertyInt(P_ContactIncinerate) > 0)
+		OCF |= OCF_Inflammable;
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
 		OCF|=OCF_Carryable;
