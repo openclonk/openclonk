@@ -2,3 +2,4 @@ Name=Moos
 Description=Nützlicher Brennstoff. Kann in der Nähe von Wasser gezüchtet werden.
 UsageHelp=[Benutzen] zum Einpflanzen in der Nähe von Wasser. Zum Trocknen Kontakt mit Wasser vermeiden.
 NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!
+Dry=Trockenes

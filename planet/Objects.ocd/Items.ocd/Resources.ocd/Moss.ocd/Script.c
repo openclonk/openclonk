@@ -49,30 +49,15 @@ private func FxMossMoistureTimer(target, effect, time)
 {
 	if (GetMaterial() == Material("Water"))
 	{
-		
-		if (wetness < MOSS_MAXWETNESS)
-		{	
-			wetness = MOSS_MAXWETNESS;
-			if(graphic)
-				SetGraphics(Format("%d",graphic));
-			else
-				SetGraphics();
-		}
+		DoWetness(MOSS_MAXWETNESS);
 	}
 	else if (!Contained() && !GBackSolid() && !GBackLiquid())
 		if (wetness)
 		{
-			wetness--;
+			DoWetness(-1);
 			// Fire nearby -> dry faster
-			if (FindObject(Find_Distance(100), Find_OCF(OCF_OnFire))) wetness--;
-			if (wetness <= 0)
-			{
-				wetness = 0;
-				if (graphic)
-					SetGraphics(Format("%dDry",graphic));
-				else
-					SetGraphics("Dry");
-			}
+			if (FindObject(Find_Distance(100), Find_OCF(OCF_OnFire))) DoWetness(-1);
+
 			if ([GetX(),GetY()]==lastpos)
 			{
 				if (FindNearWater())
@@ -81,6 +66,38 @@ private func FxMossMoistureTimer(target, effect, time)
 			else
 				lastpos = [GetX(), GetY()];
 		}		 
+}
+
+private func DoWetness(int change)
+{
+	var was_wet = wetness > 0;
+	wetness = BoundBy(wetness + change, 0, MOSS_MAXWETNESS);
+	var is_wet = wetness > 0;
+	
+	if (was_wet && !is_wet)
+	{
+		this.Name = Format("$Dry$ %s", this.Name);
+		
+		if (graphic)
+			SetGraphics(Format("%dDry",graphic));
+		else
+			SetGraphics("Dry");
+	}
+	else if (!was_wet && is_wet)
+	{
+		this.Name = this.Prototype.Name;
+		
+		if (graphic)
+			SetGraphics(Format("%d",graphic));
+		else
+			SetGraphics();
+	}
+}
+
+public func CanBeStackedWith(object other)
+{
+	if ((this.wetness > 0) != (other.wetness > 0)) return false;
+	return _inherited(other, ...);
 }
 
 protected func TryToLichen()
