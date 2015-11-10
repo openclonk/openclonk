@@ -185,8 +185,21 @@ private func UpdateInventory()
 				overlay =
 				{
 					Player = NO_OWNER,
+				},
+				count = 
+				{
+					Text = ""
 				}
 			};
+			
+			if (item)
+			{
+				var stack_count = item->~GetStackCount();
+				if (stack_count > 1 && !item->~IsInfiniteStackCount())
+				{
+					update.count.Text = Format("%dx", stack_count);
+				}
+			}
 			
 			if (custom_overlay)
 			{

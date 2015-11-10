@@ -935,6 +935,9 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 		}
 		// How many objects are this object?!
 		var object_amount = obj->~GetStackCount() ?? 1;
+		// Infinite stacks work differently - showing an arbitrary amount would not make sense.
+		if (object_amount > 1 && obj->~IsInfiniteStackCount())
+			object_amount = 1;
 		// Empty containers can be stacked.
 		for (var inv in inventory)
 		{
@@ -987,21 +990,28 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				// And if the object has contents, show the first one, too.
 				if (obj->ContentsCount() != 0)
 				{
+					var first_contents = obj->Contents(0);
 					// Add to GUI.
 					custom.bottom.contents = 
 					{
-						Symbol = obj->Contents(0),
+						Symbol = first_contents ,
 						Margin = "0.125em",
 						Priority = 2
 					};
 					// Possibly add text for stackable items - this is an special exception for the Library_Stackable.
-					var count = obj->Contents(0)->~GetStackCount();
-					count = count ?? obj->ContentsCount(obj->Contents(0)->GetID());
+					var count = first_contents->~GetStackCount();
+					// Infinite stacks display an own overlay.
+					if ((count > 1) && (first_contents->~IsInfiniteStackCount())) count = nil;
+					
+					count = count ?? obj->ContentsCount(first_contents->GetID());
 					if (count > 1)
 					{
 						custom.bottom.contents.Text = Format("%dx", count);
 						custom.bottom.contents.Style = GUI_TextBottom | GUI_TextRight;
 					}
+					var overlay = first_contents->~GetInventoryIconOverlay();
+					if (overlay)
+						custom.bottom.contents.overlay = overlay;
 					// Also make the chest smaller, so that the contents symbol is not obstructed.
 					custom.bottom.container.Bottom = "1em";
 					custom.bottom.container.Left = "1em";

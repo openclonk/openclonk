@@ -162,45 +162,7 @@ public func UpdateStackDisplay()
 
 private func UpdatePicture()
 {
-	// Put a small number showing the stack count in the bottom right 
-	// corner of the picture
-	var s = 400;
-	var yoffs = 14000;
-	var xoffs = 22000;
-	var spacing = 14000;
-
-	if  (count_is_infinite)
-	{
-		SetGraphics(nil, nil, 10);
-		SetGraphics(nil, nil, 11);
-		SetGraphics("Inf", Icon_Number, 12, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
-	}
-	else
-	{
-		var one = GetStackCount() % 10;
-		var ten = (GetStackCount() / 10) % 10;
-		var hun = (GetStackCount() / 100) % 10;
-		
-		if (hun > 0)
-		{
-			SetGraphics(Format("%d", hun), Icon_Number, 10, GFXOV_MODE_Picture);
-			SetObjDrawTransform(s, 0, xoffs - 2 * spacing, 0, s, yoffs, 10);
-		}
-		else
-			SetGraphics(nil, nil, 10);
-
-		if (ten > 0 || hun > 0)
-		{
-			SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
-			SetObjDrawTransform(s, 0, xoffs - spacing, 0, s, yoffs, 11);
-		}
-		else
-			SetGraphics(nil, nil, 11);
-			
-		SetGraphics(Format("%d", one), Icon_Number, 12, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
-	}
+	// Allow other objects to adjust their picture.
 	return _inherited(...);
 }
 
@@ -292,6 +254,20 @@ public func TryPutInto(object into, bool only_add_to_existing_stacks)
 	if (before != count)
 		UpdateStackDisplay();
 	return false;
+}
+
+// Infinite stacks can only be stacked on top of others.
+public func CanBeStackedWith(object other)
+{
+	if (other.count_is_infinite != this.count_is_infinite) return false;
+	return _inherited(other, ...);
+}
+
+// Infinite stacks show a little symbol in their corner.
+public func GetInventoryIconOverlay()
+{
+	if (!count_is_infinite) return nil;
+	return {Left = "50%", Bottom="50%", Symbol=Icon_Number, GraphicsName="Inf"};
 }
 
 // Save stack counts in saved scenarios
