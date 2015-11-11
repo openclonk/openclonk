@@ -252,5 +252,14 @@ func Intro_Stop()
 	this.dialogue->SetInteraction(true);
 	this.dialogue->AddAttention();
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
+	
+	// Turn and relocate the airplane to make starting it easier.
+	var plane = FindObject(Find_ID(Plane));
+	if (plane)
+	{
+		plane->FaceLeft();
+		plane->SetR(-130);
+		plane->SetPosition(1387, 238);
+	}
 	return true;
 }
