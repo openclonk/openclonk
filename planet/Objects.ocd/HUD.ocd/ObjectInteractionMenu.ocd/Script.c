@@ -143,7 +143,7 @@ func FxIntCheckObjectsStart(target, effect fx, temp)
 
 func FxIntCheckObjectsTimer(target, effect fx)
 {
-	var new_objects = FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_NoContainer(), Find_Layer(target->GetObjectLayer()),
+	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), Find_NoContainer(), Find_Layer(target->GetObjectLayer()),
 		// Find all containers and objects with a custom menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
 		// Do not show objects with an extra slot though - even if they are containers. They count as items here.
