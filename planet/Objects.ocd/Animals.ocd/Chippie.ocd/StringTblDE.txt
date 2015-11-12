@@ -1,2 +1,2 @@
 Name=Chippie
-Description=Small, lovely creatures.
+Description=Kleine, knuffige Kreaturen. Saugen Blut.
