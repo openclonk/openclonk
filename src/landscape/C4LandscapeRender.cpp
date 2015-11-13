@@ -141,15 +141,15 @@ void C4LandscapeRenderGL::Clear()
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
 {
-
-	// Round up to nearest power of two
-	int iSfcWdt = 1, iSfcHgt = 1;
-	while(iSfcWdt < iWidth) iSfcWdt *= 2;
-	while(iSfcHgt < iHeight) iSfcHgt *= 2;
-
-	// One bit more of information to safe more space
-	if(iSfcWdt * 3 / 4 >= iWidth) iSfcWdt = iSfcWdt * 3 / 4;
-	if(iSfcHgt * 3 / 4 >= iHeight) iSfcHgt = iSfcHgt * 3 / 4;
+	// Don't round up to the nearest power-of-two here. Modern
+	// hardware should handle NPOT-textures just fine, and they
+	// are already used in other places in Clonk. This avoids
+	// accessing one row or column of pixels below the actually
+	// used surface in the shader, which can lead to strange
+	// one-pixel edges at the bottom or right of the landscape
+	// (see e.g. http://bugs.openclonk.org/view.php?id=771).
+	int iSfcWdt = iWidth;
+	int iSfcHgt = iHeight;
 
 	// Create our surfaces
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
