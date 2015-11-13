@@ -131,6 +131,8 @@ public:
 
 	GtkWidget* propertydlg;
 	GtkWidget* propertydlg_textview;
+	GtkAdjustment* propertydlg_vadj;
+	double propertydlg_vadj_pos;
 	GtkWidget* propertydlg_entry;
 
 	gulong handlerDestroy;
@@ -139,6 +141,7 @@ public:
 	gulong handlerModePlay;
 	gulong handlerModeEdit;
 	gulong handlerModeDraw;
+	guint handlerPropertyDlgRescrollIdle;
 
 	State(C4ConsoleGUI *console): Super(console)
 	{	
@@ -161,6 +164,8 @@ public:
 			g_signal_handler_disconnect(btnModeEdit, handlerModeEdit);
 		if(handlerModeDraw)
 			g_signal_handler_disconnect(btnModeDraw, handlerModeDraw);
+		if (handlerPropertyDlgRescrollIdle)
+			g_source_remove(handlerPropertyDlgRescrollIdle);
 		if (propertydlg)
 		{
 			C4DevmodeDlg::RemovePage(propertydlg);
@@ -202,6 +207,9 @@ public:
 	static void OnNetClient(GtkWidget* item, gpointer data);
 
 	static void OnScriptActivate(GtkWidget* widget, gpointer data);
+
+	static void OnPropertyVadjustmentChanged(GtkAdjustment* adj, gpointer data);
+	static gboolean OnPropertyDlgRescrollIdle(gpointer data);
 };
 
 class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
@@ -293,6 +301,25 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 	const gchar* text = gtk_entry_get_text(GTK_ENTRY(widget));
 	if (text && text[0])
 		Console.EditCursor.In(text);
+}
+
+void C4ConsoleGUI::State::OnPropertyVadjustmentChanged(GtkAdjustment* adj, gpointer data)
+{
+	C4ConsoleGUI* gui = static_cast<C4ConsoleGUI*>(data);
+	State* state = gui->state;
+
+	if (state->propertydlg_vadj_pos != -1.0)
+		gtk_adjustment_set_value(adj, state->propertydlg_vadj_pos);
+}
+
+gboolean C4ConsoleGUI::State::OnPropertyDlgRescrollIdle(gpointer data)
+{
+	C4ConsoleGUI* gui = static_cast<C4ConsoleGUI*>(data);
+	State* state = gui->state;
+
+	state->propertydlg_vadj_pos = -1.0;
+	state->handlerPropertyDlgRescrollIdle = 0;
+	return FALSE;
 }
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
@@ -533,6 +560,7 @@ void C4ConsoleGUI::State::Clear()
 	handlerModePlay = 0;
 	handlerModeEdit = 0;
 	handlerModeDraw = 0;
+	handlerPropertyDlgRescrollIdle = 0;
 
 	propertydlg = 0;
 }
@@ -962,6 +990,10 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_SHADOW_IN);
+		GtkAdjustment* adj = state->propertydlg_vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrolled_wnd));
+		state->propertydlg_vadj_pos = -1.0;
+
+		g_signal_connect(G_OBJECT(adj), "changed", G_CALLBACK(State::OnPropertyVadjustmentChanged), this);
 
 		GtkWidget * textview = state->propertydlg_textview = gtk_text_view_new();
 		GtkWidget * entry = state->propertydlg_entry = gtk_entry_new();
@@ -995,6 +1027,19 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_functi
 	if (!state->propertydlg) return;
 	if (!C4DevmodeDlg::GetWindow()) return;
 	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
+
+	// Remember current scroll position
+	if (PropertyDlgObject == rSelection.GetObject())
+	{
+		state->propertydlg_vadj_pos = gtk_adjustment_get_value(state->propertydlg_vadj);
+		state->handlerPropertyDlgRescrollIdle = g_idle_add_full(GTK_TEXT_VIEW_PRIORITY_VALIDATE + 1, State::OnPropertyDlgRescrollIdle, this, NULL);
+	}
+	else
+	{
+		state->propertydlg_vadj_pos = -1.0;
+		// TODO: Reset idle handler?
+	}
+
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
 	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
 
