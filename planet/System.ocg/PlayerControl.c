@@ -329,6 +329,15 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 			else if (ctrl == CON_Right) SetDir(DIR_Right);
 		}
 	}
+	else // release
+	{
+		// If rolling, allow to instantly switch to walking again.
+		if (GetAction() == "Roll")
+		{
+			if (ctrl == CON_Left && GetDir() == DIR_Left || ctrl == CON_Right && GetDir() == DIR_Right)
+				SetAction("Walk");
+		}
+	}
 	return ObjectControlUpdateComdir(plr);
 }
 

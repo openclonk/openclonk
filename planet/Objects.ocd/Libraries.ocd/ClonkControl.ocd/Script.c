@@ -449,7 +449,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Do a roll on landing or when standing. This means that the CON_Down was not handled previously.
-	if (ctrl == CON_Roll)
+	if (ctrl == CON_Roll && ComDir2XY(GetComDir())[0] != 0)
 	{
 		if (this->IsWalking())
 		{
@@ -462,11 +462,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				this->DoRoll();
 			}
-			return true;
-		}
-		else if (this->IsJumping())
-		{
-			AddEffect("ScheduleRollOnLanding", this, 1, 30, this);
 			return true;
 		}
 	}
