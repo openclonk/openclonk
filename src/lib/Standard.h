@@ -20,8 +20,28 @@
 #ifndef INC_STANDARD
 #define INC_STANDARD
 
-#include "PlatformAbstraction.h"
+#include <type_traits>
+#pragma push_macro("new")
+#undef new
 
+// The Clear/Default functions that exist on most OpenClonk classes are A
+// BAD IDEA because the caller has no guarantee that every member has been
+// properly cleared/initialized. The proper way to handle this, which is
+// using ctors/dtors, is hard to integrate into the current design. To help
+// with this, InplaceReconstruct will destroy and default-construct an object
+// in the same memory. The nothrow test attempts to ensure that the object
+// will not end up in a destroyed state when the ctor fails (by checking that
+// the ctor cannot fail beforehand).
+template<class T>
+typename std::enable_if<std::is_nothrow_default_constructible<T>::value>::type
+inline InplaceReconstruct(T *obj)
+{
+	obj->~T();
+	new (obj) T();
+}
+#pragma pop_macro("new")
+
+#include "PlatformAbstraction.h"
 
 // Small helpers
 template <class T> inline T Max(T val1, T val2) { return val1 > val2 ? val1 : val2; }
@@ -45,7 +65,9 @@ int Pow(int base, int exponent);
 int32_t StrToI32(const char *s, int base, const char **scan_end);
 
 #include <cstring>
-inline void ZeroMem(void *lpMem, size_t dwSize)
+template <class T>
+typename std::enable_if<std::is_pod<T>::value>::type
+inline ZeroMem(T *lpMem, size_t dwSize)
 {
 	std::memset(lpMem,'\0',dwSize);
 }

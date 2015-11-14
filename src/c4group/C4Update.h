@@ -26,14 +26,12 @@ const int C4UP_MaxUpGrpCnt = 50;
 class C4UpdatePackageCore
 {
 public:
-	C4UpdatePackageCore();  // ctor
-public:
-	int32_t RequireVersion[4];
-	char Name[C4MaxName+1];
-	char DestPath[_MAX_PATH+1];
-	int32_t GrpUpdate;
-	int32_t UpGrpCnt; // number of file versions that can be updated by this package
-	uint32_t GrpChks1[C4UP_MaxUpGrpCnt], GrpChks2;
+	int32_t RequireVersion[4] = { 0, 0, 0, 0 };
+	char Name[C4MaxName + 1] = { 0 };
+	char DestPath[_MAX_PATH + 1] = { 0 };
+	int32_t GrpUpdate = 0;
+	int32_t UpGrpCnt = 0; // number of file versions that can be updated by this package
+	uint32_t GrpChks1[C4UP_MaxUpGrpCnt] = { 0 }, GrpChks2 = 0;
 public:
 	void CompileFunc(StdCompiler *pComp);
 	bool Load(C4Group &hGroup);

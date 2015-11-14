@@ -40,7 +40,7 @@ public:
 
 	// *** Construction
 	// Standard constructor
-	StdBuf() : fRef(true), pData(NULL), iSize(0) { }
+	StdBuf() = default;
 
 	// Constructor from other buffer (copy construction):
 	// Will take over buffer ownership. Copies data if specified.
@@ -89,17 +89,17 @@ public:
 protected:
 
 	// Reference? Otherwise, this object holds the data.
-	bool fRef;
+	bool fRef = true;
 	// Data
 	union
 	{
-		const void *pData;
+		const void *pData = 0;
 		void *pMData;
 #if defined(_DEBUG)
 		char *szString; // for debugger preview
 #endif
 	};
-	unsigned int iSize;
+	unsigned int iSize = 0;
 
 public:
 
@@ -362,8 +362,7 @@ class StdCopyBuf : public StdBuf
 {
 public:
 
-	StdCopyBuf()
-	{ }
+	StdCopyBuf() = default;
 
 	// Set by buffer. Copies data by default.
 	StdCopyBuf(const StdBuf &Buf2, bool fCopy = true)
@@ -398,9 +397,7 @@ public:
 
 	// *** Construction
 
-	StdStrBuf()
-			: StdBuf()
-	{ }
+	StdStrBuf() = default;
 
 	// See StdBuf::StdBuf. Will take data if possible.
 	// The static_cast is necessary to pass a rvalue reference to
@@ -686,8 +683,7 @@ class StdCopyStrBuf : public StdStrBuf
 {
 public:
 
-	StdCopyStrBuf()
-	{ }
+	StdCopyStrBuf() = default;
 
 	explicit StdCopyStrBuf(const StdStrBuf &Buf2, bool fCopy = true)
 			: StdStrBuf(Buf2.getRef(), fCopy)

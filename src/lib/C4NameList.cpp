@@ -20,14 +20,9 @@
 #include "C4Include.h"
 #include <C4NameList.h>
 
-C4NameList::C4NameList()
-{
-	Clear();
-}
-
 void C4NameList::Clear()
 {
-	ZeroMem(this,sizeof(C4NameList));
+	InplaceReconstruct(this);
 }
 
 bool C4NameList::Set(const char *szName, int32_t iCount)

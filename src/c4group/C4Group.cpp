@@ -404,29 +404,6 @@ void MemScramble(BYTE *bypBuffer, int iSize)
 
 //---------------------------------- C4Group ---------------------------------------------
 
-C4GroupHeader::C4GroupHeader()
-{
-	ZeroMem(this,sizeof(C4GroupHeader));
-}
-
-void C4GroupHeader::Init()
-{
-	SCopy(C4GroupFileID,id,sizeof(id)-1);
-	Ver1=C4GroupFileVer1; Ver2=C4GroupFileVer2;
-	Entries=0;
-	std::memset(reserved, '\0', sizeof(reserved));
-}
-
-C4GroupEntryCore::C4GroupEntryCore()
-{
-	ZeroMem(this,sizeof(C4GroupEntryCore));
-}
-
-C4GroupEntry::C4GroupEntry()
-{
-	ZeroMem(this,sizeof(C4GroupEntry));
-}
-
 C4GroupEntry::~C4GroupEntry()
 {
 	if (HoldBuffer)
@@ -441,7 +418,8 @@ C4GroupEntry::~C4GroupEntry()
 
 void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 {
-	ZeroMem(this,sizeof(C4GroupEntry));
+	InplaceReconstruct(this);
+
 	SCopy(GetFilename(*iter),FileName,_MAX_FNAME);
 	SCopy(*iter, DiskPath, _MAX_PATH-1);
 	Size = FileSize(*iter);
@@ -473,7 +451,7 @@ void C4Group::Init()
 	FilePtr=0;
 	EntryOffset=0;
 	Modified=false;
-	Head.Init();
+	InplaceReconstruct(&Head);
 	FirstEntry=NULL;
 	SearchPtr=NULL;
 	pInMemEntry=NULL; iInMemEntrySize=0u;

@@ -35,19 +35,7 @@ bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 
 void C4Shape::Default()
 {
-	ZeroMem(this,sizeof (C4Shape));
-	AttachMat=MNone;
-	ContactDensity=C4M_Solid;
-}
-
-C4Shape::C4Shape()
-{
-	Default();
-}
-
-void C4Shape::Clear()
-{
-	ZeroMem(this, sizeof (C4Shape));
+	InplaceReconstruct(this);
 }
 
 void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)

@@ -158,7 +158,6 @@ bool CSurface8::Read(CStdStream &hGroup)
 bool CSurface8::Save(const char *szFilename, CStdPalette *bpPalette)
 {
 	C4BMP256Info BitmapInfo;
-	ZeroMem(&BitmapInfo, sizeof(BitmapInfo));
 	BitmapInfo.Set(Wdt,Hgt, bpPalette ? bpPalette : pPal);
 
 	// Create file & write info

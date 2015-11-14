@@ -29,10 +29,8 @@ const int C4MaxNameList = 10;
 class C4NameList
 {
 public:
-	C4NameList();
-public:
-	char Name[C4MaxNameList][C4MaxName+1];
-	int32_t Count[C4MaxNameList];
+	char Name[C4MaxNameList][C4MaxName + 1] = { { 0 } };
+	int32_t Count[C4MaxNameList] = { 0 };
 public:
 	void Clear();
 	bool Add(const char *szName, int32_t iCount=0);

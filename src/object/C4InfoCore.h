@@ -65,15 +65,13 @@ protected:
 class C4RoundResult
 {
 public:
-	C4RoundResult();
-public:
 	StdCopyStrBuf Title;
-	uint32_t Date;
-	int32_t Duration;
-	int32_t Won;
-	int32_t Score,FinalScore,TotalScore;
-	int32_t Bonus;
-	int32_t Level;
+	uint32_t Date = 0;
+	int32_t Duration = 0;
+	int32_t Won = 0;
+	int32_t Score = 0, FinalScore = 0, TotalScore = 0;
+	int32_t Bonus = 0;
+	int32_t Level = 0;
 public:
 	void Default();
 	void CompileFunc(StdCompiler *pComp);

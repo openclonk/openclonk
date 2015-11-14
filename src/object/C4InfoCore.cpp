@@ -368,14 +368,9 @@ bool C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
 
 //------------------------------- Round Info ------------------------------------------
 
-C4RoundResult::C4RoundResult()
-{
-	Default();
-}
-
 void C4RoundResult::Default()
 {
-	ZeroMem(this,sizeof(C4RoundResult));
+	InplaceReconstruct(this);
 }
 
 void C4RoundResult::CompileFunc(StdCompiler *pComp)

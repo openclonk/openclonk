@@ -20,6 +20,7 @@
 #ifndef INC_C4Material
 #define INC_C4Material
 
+#include "config/C4Constants.h"
 #include "C4Real.h"
 #include <C4Id.h>
 #include <C4Shape.h>
@@ -203,15 +204,6 @@ protected:
 };
 
 extern C4MaterialMap MaterialMap;
-
-// Material Density Levels
-const int32_t C4M_Vehicle   = 100,
-              C4M_Solid     = 50,
-              C4M_SemiSolid = 25,
-              C4M_Liquid    = 25,
-              C4M_Background= 0;
-
-const int32_t MNone = -1;
 
 extern int32_t MVehic,MTunnel,MWater,MEarth; // presearched materials
 extern BYTE MCVehic; // precalculated material color

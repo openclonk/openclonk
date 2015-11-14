@@ -227,12 +227,6 @@ public:
 
 // *** C4UpdatePackageCore
 
-C4UpdatePackageCore::C4UpdatePackageCore()
-{
-	// zero fields
-	ZeroMem(this, sizeof(C4UpdatePackageCore));
-}
-
 void C4UpdatePackageCore::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(toC4CArr(RequireVersion), "RequireVersion"));

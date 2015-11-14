@@ -21,14 +21,9 @@
 #include <Bitmap256.h>
 #include <StdColors.h>
 
-C4BMPInfo::C4BMPInfo()
-{
-	Default();
-}
-
 void C4BMPInfo::Default()
 {
-	ZeroMem(this,sizeof(C4BMPInfo));
+	InplaceReconstruct(this);
 }
 
 int C4BMPInfo::FileBitsOffset()
@@ -54,11 +49,6 @@ void C4BMPInfo::Set(int iWdt, int iHgt, int iBitDepth)
 	Info.biClrUsed=Info.biClrImportant=0;
 }
 
-
-C4BMP256Info::C4BMP256Info()
-{
-	Default();
-}
 
 bool C4BMP256Info::Valid()
 {
@@ -99,6 +89,6 @@ void C4BMP256Info::Set(int iWdt, int iHgt, CStdPalette *Palette)
 
 void C4BMP256Info::Default()
 {
-	ZeroMem(this,sizeof(C4BMP256Info));
+	InplaceReconstruct(this);
 }
 

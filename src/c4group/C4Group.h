@@ -80,31 +80,25 @@ extern const char *C4CFN_FLS[];
 
 #pragma pack (push, 1)
 
-class C4GroupHeader
+struct C4GroupHeader
 {
-public:
-	C4GroupHeader();
-public:
-	char id[24+4];
-	int Ver1,Ver2;
-	int Entries;
-	char reserved[164];
-public:
-	void Init();
+	char id[24+4] = C4GroupFileID;
+	int Ver1 = C4GroupFileVer1;
+	int Ver2 = C4GroupFileVer2;
+	int Entries = 0;
+	char reserved[164] = { 0 };
 };
 
-class C4GroupEntryCore
+struct C4GroupEntryCore
 {
-public:
-	C4GroupEntryCore();
-public:
-	char FileName[260];
-	int32_t Packed,ChildGroup;
-	int32_t Size, reserved1, Offset;
-	int32_t reserved2;
-	char reserved3; unsigned int reserved4;
-	char Executable;
-	BYTE fbuf[26];
+	char FileName[260] = { 0 };
+	int32_t Packed = 0, ChildGroup = 0;
+	int32_t Size = 0, reserved1 = 0, Offset = 0;
+	int32_t reserved2 = 0;
+	char reserved3 = '\0';
+	unsigned int reserved4 = 0;
+	char Executable = '\0';
+	BYTE fbuf[26] = { 0 };
 };
 
 #pragma pack (pop)
@@ -112,7 +106,6 @@ public:
 class C4GroupEntry: public C4GroupEntryCore
 {
 public:
-	C4GroupEntry();
 	~C4GroupEntry();
 
 	enum EntryStatus
@@ -124,14 +117,14 @@ public:
 	};
 
 public:
-	char DiskPath[_MAX_PATH + 1];
-	EntryStatus Status;
-	bool DeleteOnDisk;
-	bool HoldBuffer;
-	bool BufferIsStdbuf;
-	bool NoSort;
-	BYTE *bpMemBuf;
-	C4GroupEntry *Next;
+	char DiskPath[_MAX_PATH + 1] = { 0 };
+	EntryStatus Status = C4GRES_InGroup;
+	bool DeleteOnDisk = false;
+	bool HoldBuffer = false;
+	bool BufferIsStdbuf = false;
+	bool NoSort = false;
+	BYTE *bpMemBuf = 0;
+	C4GroupEntry *Next = 0;
 public:
 	void Set(const DirectoryIterator & iter, const char * szPath);
 };

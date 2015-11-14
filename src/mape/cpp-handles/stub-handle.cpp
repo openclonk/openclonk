@@ -98,7 +98,6 @@ void C4IDList::CompileFunc(StdCompiler *, bool) {}
 C4IDListChunk::C4IDListChunk() {}
 C4IDListChunk::~C4IDListChunk() {}
 
-C4Shape::C4Shape() {}
 C4DefGraphics::C4DefGraphics(C4Def*) {}
 void C4DefGraphics::Clear() {}
 

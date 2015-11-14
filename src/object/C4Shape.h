@@ -36,28 +36,25 @@ public:
 
 extern C4DensityProvider DefaultDensityProvider;
 
-class C4Shape: public C4Rect
+class C4Shape : public C4Rect
 {
 public:
-	C4Shape();
-public:
 	// remember to adjust C4Shape::CopyFrom and CreateOwnOriginalCopy when adding members here!
-	int32_t FireTop;
-	int32_t VtxNum;
-	int32_t VtxX[C4D_MaxVertex];
-	int32_t VtxY[C4D_MaxVertex];
-	int32_t VtxCNAT[C4D_MaxVertex];
-	int32_t VtxFriction[C4D_MaxVertex];
-	int32_t ContactDensity;
-	int32_t ContactCNAT;
-	int32_t ContactCount;
-	int32_t AttachMat;
-	int32_t VtxContactCNAT[C4D_MaxVertex];
-	int32_t VtxContactMat[C4D_MaxVertex];
-	int32_t iAttachX, iAttachY, iAttachVtx;
+	int32_t FireTop = 0;
+	int32_t VtxNum = 0;
+	int32_t VtxX[C4D_MaxVertex] = { 0 };
+	int32_t VtxY[C4D_MaxVertex] = { 0 };
+	int32_t VtxCNAT[C4D_MaxVertex] = { 0 };
+	int32_t VtxFriction[C4D_MaxVertex] = { 0 };
+	int32_t ContactDensity = C4M_Solid;
+	int32_t ContactCNAT = 0;
+	int32_t ContactCount = 0;
+	int32_t AttachMat = MNone;
+	int32_t VtxContactCNAT[C4D_MaxVertex] = { 0 };
+	int32_t VtxContactMat[C4D_MaxVertex] = { 0 };
+	int32_t iAttachX = 0, iAttachY = 0, iAttachVtx = 0;
 public:
 	void Default();
-	void Clear();
 	void Rotate(C4Real Angle, bool bUpdateVertices);
 	void Stretch(int32_t iCon, bool bUpdateVertices);
 	void Jolt(int32_t iCon, bool bUpdateVertices);

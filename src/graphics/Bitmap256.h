@@ -61,11 +61,10 @@ typedef struct tagRGBQUAD
 class C4BMPInfo
 {
 public:
-	C4BMPInfo();
 	void Default();
 public:
-	BITMAPFILEHEADER Head;
-	BITMAPINFOHEADER Info;
+	BITMAPFILEHEADER Head = BITMAPFILEHEADER();
+	BITMAPINFOHEADER Info = BITMAPINFOHEADER();
 	void Set(int iWdt, int iHgt, int iBitDepth);
 
 	int FileBitsOffset();
@@ -74,8 +73,7 @@ public:
 class C4BMP256Info : public C4BMPInfo
 {
 public:
-	C4BMP256Info();
-	RGBQUAD Colors[256];
+	RGBQUAD Colors[256] = {};
 public:
 	void Default();
 	void Set(int iWdt, int iHgt, CStdPalette *);
