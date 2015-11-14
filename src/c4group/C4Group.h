@@ -78,8 +78,6 @@ bool C4Group_ReadFile(const char *szFilename, char **pData, size_t *iSize);
 
 extern const char *C4CFN_FLS[];
 
-extern time_t C4Group_AssumeTimeOffset;
-
 #pragma pack (push, 1)
 
 class C4GroupHeader

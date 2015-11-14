@@ -59,7 +59,6 @@ int iC4GroupRewindFilePtrNoWarn=0;
 char C4Group_TempPath[_MAX_PATH+1]="";
 char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
 const char **C4Group_SortList = NULL;
-time_t C4Group_AssumeTimeOffset=0;
 bool (*C4Group_ProcessCallback)(const char *, int)=NULL;
 
 void C4Group_SetProcessCallback(bool (*fnCallback)(const char *, int))
