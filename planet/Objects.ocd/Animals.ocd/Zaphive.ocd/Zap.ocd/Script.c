@@ -99,7 +99,7 @@ private func GetAttraction(proplist coordinates)
 	}
 	// GetAttraction will only be called for the swarm master, perfect to have just one being make sound
 	if(!Random(20))
-		Sound("Zap?", nil,nil,nil,nil, 200);
+		Sound("Zap?", nil,nil,nil,nil, 200, Random(100));
 
 	coordinates.x = home->GetX() + Random(20)-10;
 	coordinates.y = home->GetY() + Random(20)-10;
@@ -170,7 +170,7 @@ private func CheckTurn()
 
 private func AngryBuzz()
 {
-	Sound("Zap?");
+	Sound("Zap?", nil,nil,nil,nil, nil, -Random(100));
 }
 
 /*-- Saving --*/
