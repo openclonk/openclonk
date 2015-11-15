@@ -33,7 +33,6 @@ func LaunchPlayer(int plr)
 			if (obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer())) obj->RemoveObject();
 			crew->CreateContents(tool);
 		}
-		crew->CreateContents(Loam,2);
 		crew->CreateContents(Dynamite,2);
 	}
 	return true;
