@@ -287,21 +287,6 @@ bool SCopySegmentEx(const char *szString, int iSegment, char *sTarget,
 	return true;
 }
 
-
-bool SCopyNamedSegment(const char *szString, const char *szName, char *sTarget,
-                       char cSeparator, char cNameSeparator, int iMaxL)
-{
-	// Advance to named segment
-	while (!( SEqual2(szString,szName) && (szString[SLen(szName)]==cNameSeparator) ))
-	{
-		if (SCharPos(cSeparator,szString)==-1) { sTarget[0]=0; return false; } // No more segments
-		szString += SCharPos(cSeparator,szString)+1;
-	}
-	// Copy segment contents
-	SCopyUntil(szString+SLen(szName)+1,sTarget,cSeparator,iMaxL);
-	return true;
-}
-
 unsigned int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
 {
 	unsigned int iResult=0;
@@ -343,35 +328,6 @@ void SCapitalize(char *str)
 		*str=CharCapital(*str);
 		str++;
 	}
-}
-
-const char *SSearchIdentifier(const char *szString, const char *szIndex)
-{
-	// Does not check whether szIndex itself is an identifier.
-	// Just checks for space in front and back.
-	const char *cscr;
-	size_t indexlen,match=0;
-	bool frontok=true;
-	if (!szString || !szIndex) return NULL;
-	indexlen=SLen(szIndex);
-	for (cscr=szString; cscr && *cscr; cscr++)
-	{
-		// Match length
-		if (*cscr==szIndex[match]) match++;
-		else match=0;
-		// String is matched, front and back ok?
-		if (match>=indexlen)
-			if (frontok)
-				if (!IsIdentifier(*(cscr+1)))
-					return cscr+1;
-		// Currently no match, check for frontok
-		if (match==0)
-		{
-			if (IsIdentifier(*cscr)) frontok=false;
-			else frontok=true;
-		}
-	}
-	return NULL;
 }
 
 const char *SSearch(const char *szString, const char *szIndex)
@@ -512,71 +468,6 @@ int SLineGetCharacters(const char *szText, const char *cpPosition)
 		szText++;
 	}
 	return iChars;
-}
-
-void SRemoveComments(char *szScript)
-{
-	const char *pScriptCont;
-	if (!szScript) return;
-	while (*szScript)
-	{
-		// Advance to next slash
-		while (*szScript && (*szScript!='/')) szScript++;
-		if (!(*szScript)) return; // No more comments
-		// Line comment
-		if (szScript[1]=='/')
-		{
-			if ((pScriptCont = SSearch(szScript+2,LineFeed)))
-				SCopy(pScriptCont-SLen(LineFeed),szScript);
-			else
-				szScript[0]=0;
-		}
-		// Block comment
-		else if (szScript[1]=='*')
-		{
-			if ((pScriptCont = SSearch(szScript+2,"*/")))
-				SCopy(pScriptCont,szScript);
-			else
-				szScript[0]=0;
-		}
-		// No comment
-		else
-		{
-			szScript++;
-		}
-	}
-}
-
-bool SCopyPrecedingIdentifier(const char *pBegin, const char *pIdentifier, char *sTarget, int iSize)
-{
-	// Safety
-	if (!pIdentifier || !sTarget || !pBegin) return false;
-	// Empty default
-	sTarget[0]=0;
-	// Identifier is at begin
-	if (!(pIdentifier>pBegin)) return false;
-	// Rewind space
-	const char *cPos;
-	if (!(cPos = SRewindSpace(pIdentifier-1,pBegin))) return false;
-	// Rewind to beginning of identifier
-	while ((cPos>pBegin) && IsIdentifier(cPos[-1])) cPos--;
-	// Copy identifier
-	SCopyIdentifier(cPos,sTarget,iSize);
-	// Success
-	return true;
-}
-
-const char *SSearchFunction(const char *szString, const char *szIndex)
-{
-	// Safety
-	if (!szString || !szIndex) return NULL;
-	// Ignore failsafe
-	if (szIndex[0]=='~') szIndex++;
-	// Buffer to append colon
-	char szDeclaration[256+2];
-	SCopy(szIndex,szDeclaration,256); SAppendChar(':',szDeclaration);
-	// Search identifier
-	return SSearchIdentifier(szString,szDeclaration);
 }
 
 void SInsert(char *szString, const char *szInsert, int iPosition, int iMaxLen)

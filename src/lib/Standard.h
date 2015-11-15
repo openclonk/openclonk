@@ -103,17 +103,13 @@ bool SEqualUntil(const char *szStr1, const char *szStr2, char cWild);
 bool SEqualNoCase(const char *szStr1, const char *szStr2, int iLen=-1);
 bool SEqual2NoCase(const char *szStr1, const char *szStr2, int iLen = -1);
 
-inline int SCompare(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?std::strcmp(szStr1,szStr2):0; }
-
 void SCopy(const char *szSource, char *sTarget);
 void SCopy(const char *szSource, char *sTarget, size_t iMaxL);
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL=-1, int iIndex=0);
 void SCopyUntil(const char *szSource, char *sTarget, const char * sUntil, size_t iMaxL);
 void SCopyIdentifier(const char *szSource, char *sTarget, int iMaxL=0);
-bool SCopyPrecedingIdentifier(const char *pBegin, const char *pIdentifier, char *sTarget, int iSize);
 bool SCopySegment(const char *fstr, int segn, char *tstr, char sepa=';', int iMaxL=-1, bool fSkipWhitespace=false);
 bool SCopySegmentEx(const char *fstr, int segn, char *tstr, char sepa1, char sepa2, int iMaxL=-1, bool fSkipWhitespace=false);
-bool SCopyNamedSegment(const char *szString, const char *szName, char *sTarget, char cSeparator=';', char cNameSeparator='=', int iMaxL=-1);
 bool SCopyEnclosed(const char *szSource, char cOpen, char cClose, char *sTarget, int iSize);
 
 void SAppend(const char *szSource, char *szTarget, int iMaxL=-1);
@@ -131,8 +127,6 @@ void SReplaceChar(char *str, char fc, char tc);
 
 const char *SSearch(const char *szString, const char *szIndex);
 const char *SSearchNoCase(const char *szString, const char *szIndex);
-const char *SSearchIdentifier(const char *szString, const char *szIndex);
-const char *SSearchFunction(const char *szString, const char *szIndex);
 
 const char *SAdvanceSpace(const char *szSPos);
 const char *SAdvancePast(const char *szSPos, char cPast);
@@ -145,7 +139,6 @@ bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive=false
 bool SRemoveModules(char *szList, const char *szModules, bool fCaseSensitive=false);
 int SModuleCount(const char *szList);
 
-void SRemoveComments(char *szScript);
 void SNewSegment(char *szStr, const char *szSepa=";");
 void SCapitalize(char *szString);
 void SWordWrap(char *szText, char cSpace, char cSepa, int iMaxLine);
