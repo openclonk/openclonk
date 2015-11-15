@@ -572,7 +572,7 @@ void C4Def::LoadRankFaces(C4Group &hGroup)
 			if (pRankNames)
 			{
 				// if extended rank names are defined, subtract those from the symbol count. The last symbols are used as overlay
-				iNumRankSymbols = Max<int32_t>(1, iNumRankSymbols - pRankNames->GetExtendedRankNum());
+				iNumRankSymbols = std::max<int32_t>(1, iNumRankSymbols - pRankNames->GetExtendedRankNum());
 			}
 			fRankSymbolsOwned = true;
 		}

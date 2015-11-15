@@ -120,16 +120,16 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 			if (iOwnDens > iCompareDens)
 			{
 				// apply light
-				LightenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
+				LightenClrBy(dwBackClr, std::min(30, 2 * (iOwnDens - iCompareDens)));
 			}
 			else if (iOwnDens < iCompareDens && iOwnDens < 30)
 			{
-				DarkenClrBy(dwBackClr, Min(30, 2 * (iCompareDens - iOwnDens)));
+				DarkenClrBy(dwBackClr, std::min(30, 2 * (iCompareDens - iOwnDens)));
 			}
 			iCompareDens = BelowDensity / 8;
 			if (iOwnDens > iCompareDens)
 			{
-				DarkenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
+				DarkenClrBy(dwBackClr, std::min(30, 2 * (iOwnDens - iCompareDens)));
 			}
 			Surface32->SetPixDw(iX, iY, dwBackClr);
 		}

@@ -291,7 +291,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		if (!pIcon->EnsureOwnSurface()) return;
 		// draw join info
 		C4Facet fctDraw = pIcon->GetFacet();
-		int32_t iSizeMax = Max<int32_t>(fctDraw.Wdt, fctDraw.Hgt);
+		int32_t iSizeMax = std::max<int32_t>(fctDraw.Wdt, fctDraw.Hgt);
 		int32_t iCrewClrHgt = iSizeMax/2;
 		fctDraw.Hgt -= iCrewClrHgt; fctDraw.Y += iCrewClrHgt;
 		fctDraw.Wdt = iSizeMax/2;

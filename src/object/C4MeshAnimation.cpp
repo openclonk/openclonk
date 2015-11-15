@@ -458,7 +458,7 @@ bool C4ValueProviderXDir::Execute()
 	// Object might have been removed
 	if(!Object) return false;
 
-	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->xdir/MaxXDir), itofix(1));
+	Value = Begin + (End - Begin) * std::min<C4Real>(Abs(Object->xdir/MaxXDir), itofix(1));
 	return true;
 }
 
@@ -486,7 +486,7 @@ bool C4ValueProviderYDir::Execute()
 	// Object might have been removed
 	if(!Object) return false;
 
-	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->ydir/MaxYDir), itofix(1));
+	Value = Begin + (End - Begin) * std::min<C4Real>(Abs(Object->ydir/MaxYDir), itofix(1));
 	return true;
 }
 

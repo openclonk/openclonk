@@ -431,7 +431,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 	for (cnt=0; (id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount)); cnt++)
 	{
 		// Minimum one clonk if empty id
-		iCount = Max<int32_t>(iCount,1);
+		iCount = std::max<int32_t>(iCount,1);
 
 		for (int32_t cnt2=0; cnt2<iCount; cnt2++)
 		{
@@ -711,9 +711,9 @@ void C4Player::Evaluate()
 	LastRound.Duration = Game.Time;
 	LastRound.Won = !Eliminated;
 	// Melee: personal value gain score ...check ::Objects(C4D_Goal)
-	if (Game.C4S.Game.IsMelee()) LastRound.Score = Max<int32_t>(CurrentScore-InitialScore,0);
+	if (Game.C4S.Game.IsMelee()) LastRound.Score = std::max<int32_t>(CurrentScore-InitialScore,0);
 	// Cooperative: shared score
-	else LastRound.Score = Max(::Players.AverageScoreGain(),0);
+	else LastRound.Score = std::max(::Players.AverageScoreGain(),0);
 	LastRound.Level = 0; // unknown...
 	LastRound.Bonus = SuccessBonus * LastRound.Won;
 	LastRound.FinalScore = LastRound.Score + LastRound.Bonus;
@@ -1413,7 +1413,7 @@ int igOffX, igOffY;
 int VisibilityCheck(int iVis, int sx, int sy, int cx, int cy)
 {
 	sx -= igOffX; sy -= igOffY; cx -= igOffX; cy -= igOffY;
-	int st = Max(1, Max(Abs(sx - cx), Abs(sy - cy)));
+	int st = std::max(1, std::max(Abs(sx - cx), Abs(sy - cy)));
 	for (int i = 0; i <= st; i++)
 	{
 		int x = (sx * (st - i) + cx * i) / st, y = (sy * (st - i) + cy * i) / st;

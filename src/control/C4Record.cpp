@@ -248,7 +248,7 @@ bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
 	while (iFrame > int(iLastFrame + 0xff))
 		Rec(iLastFrame + 0xff, StdBuf(), RCT_Frame);
 	// get frame difference
-	uint8_t iFrameDiff = Max<uint8_t>(0, iFrame - iLastFrame);
+	uint8_t iFrameDiff = std::max<uint8_t>(0, iFrame - iLastFrame);
 	iLastFrame += iFrameDiff;
 	// create head
 	C4RecordChunkHead Head = { iFrameDiff, uint8_t(eType) };
@@ -445,7 +445,7 @@ bool C4Playback::Open(C4Group &rGrp)
 				          const size_t iChunkSize = 1024*1024*16; // 16M
 				          while (iSize)
 				            {
-				            size_t iLoadSize = Min<size_t>(iChunkSize, iSize);
+				            size_t iLoadSize = std::min<size_t>(iChunkSize, iSize);
 				            BinaryBuf.SetSize(iLoadSize);
 				            if (!rGrp.Read(BinaryBuf.getMData(), iLoadSize))
 				              {

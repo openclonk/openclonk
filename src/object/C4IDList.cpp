@@ -397,7 +397,7 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 
 	int32_t sections = cgo.GetSectionCount();
 	int32_t idnum = GetNumberOfIDs(rDefs,dwCategory);
-	int32_t firstid = Clamp<int32_t>(iSelection-sections/2,0,Max<int32_t>(idnum-sections,0));
+	int32_t firstid = Clamp<int32_t>(iSelection-sections/2,0,std::max<int32_t>(idnum-sections,0));
 	int32_t idcount;
 	C4ID c_id;
 	C4Facet cgo2;
@@ -458,8 +458,8 @@ bool C4IDList::operator==(const C4IDList& rhs) const
 	int32_t cnt=Count;
 	while (pChunk1 && pChunk2)
 	{
-		if (memcmp(pChunk1->id, pChunk2->id, sizeof(C4ID)*Min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
-		if (memcmp(pChunk1->Count, pChunk2->Count, sizeof(int32_t)*Min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
+		if (memcmp(pChunk1->id, pChunk2->id, sizeof(C4ID)*std::min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
+		if (memcmp(pChunk1->Count, pChunk2->Count, sizeof(int32_t)*std::min<int32_t>(cnt, C4IDListChunkSize)) ) return false;
 		pChunk1=pChunk1->pNext; pChunk2=pChunk2->pNext;
 		cnt-=C4IDListChunkSize;
 	}

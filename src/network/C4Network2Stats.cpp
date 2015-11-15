@@ -116,11 +116,11 @@ C4Graph::ValueType C4TableGraph::GetMinValue() const
 	int iPos0 = iBackLogPos ? iBackLogPos-1 : iBackLogPos;
 	ValueType iMinVal = pAveragedValues[iPos0];
 	int i = iPos0; ValueType *p = pAveragedValues;
-	while (i--) iMinVal = Min(iMinVal, *p++);
+	while (i--) iMinVal = std::min(iMinVal, *p++);
 	if (fWrapped)
 	{
 		i = iBackLogLength - iPos0;
-		while (--i) iMinVal = Min(iMinVal, *++p);
+		while (--i) iMinVal = std::min(iMinVal, *++p);
 	}
 	return iMinVal * fMultiplier;
 }
@@ -130,11 +130,11 @@ C4Graph::ValueType C4TableGraph::GetMaxValue() const
 	int iPos0 = iBackLogPos ? iBackLogPos-1 : iBackLogPos;
 	ValueType iMaxVal = pAveragedValues[iPos0];
 	int i = iPos0; ValueType *p = pAveragedValues;
-	while (i--) iMaxVal = Max(iMaxVal, *p++);
+	while (i--) iMaxVal = std::max(iMaxVal, *p++);
 	if (fWrapped)
 	{
 		i = iBackLogLength - iPos0;
-		while (--i) iMaxVal = Max(iMaxVal, *++p);
+		while (--i) iMaxVal = std::max(iMaxVal, *++p);
 	}
 	return iMaxVal * fMultiplier;
 }
@@ -211,10 +211,10 @@ void C4TableGraph::Update() const
 #else
 	int iAvgFwRange = 0;
 #endif
-	for (int iUpdateTime = Max(iAveragedTime-iAvgFwRange-1, iStartTime); iUpdateTime < iTime; ++iUpdateTime)
+	for (int iUpdateTime = std::max(iAveragedTime-iAvgFwRange-1, iStartTime); iUpdateTime < iTime; ++iUpdateTime)
 	{
 		ValueType iSum=0, iSumWeight=0, iWeight;
-		for (int iSumTime = Max(iUpdateTime - iAvgRange, iStartTime); iSumTime < Min(iUpdateTime + iAvgFwRange+1, iTime); ++iSumTime)
+		for (int iSumTime = std::max(iUpdateTime - iAvgRange, iStartTime); iSumTime < std::min(iUpdateTime + iAvgFwRange+1, iTime); ++iSumTime)
 		{
 			iWeight = (ValueType) iAvgRange - Abs(iUpdateTime - iSumTime) + 1;
 			iSum += GetAtValue(iSumTime) * iWeight;
@@ -232,7 +232,7 @@ C4Graph::TimeType C4GraphCollection::GetStartTime() const
 {
 	const_iterator i = begin(); if (i == end()) return 0;
 	C4Graph::TimeType iTime = (*i)->GetStartTime();
-	while (++i != end()) iTime = Min(iTime, (*i)->GetStartTime());
+	while (++i != end()) iTime = std::min(iTime, (*i)->GetStartTime());
 	return iTime;
 }
 
@@ -240,7 +240,7 @@ C4Graph::TimeType C4GraphCollection::GetEndTime() const
 {
 	const_iterator i = begin(); if (i == end()) return 0;
 	C4Graph::TimeType iTime = (*i)->GetEndTime();
-	while (++i != end()) iTime = Max(iTime, (*i)->GetEndTime());
+	while (++i != end()) iTime = std::max(iTime, (*i)->GetEndTime());
 	return iTime;
 }
 
@@ -248,7 +248,7 @@ C4Graph::ValueType C4GraphCollection::GetMinValue() const
 {
 	const_iterator i = begin(); if (i == end()) return 0;
 	C4Graph::ValueType iVal = (*i)->GetMinValue();
-	while (++i != end()) iVal = Min(iVal, (*i)->GetMinValue());
+	while (++i != end()) iVal = std::min(iVal, (*i)->GetMinValue());
 	return iVal;
 }
 
@@ -256,7 +256,7 @@ C4Graph::ValueType C4GraphCollection::GetMaxValue() const
 {
 	const_iterator i = begin(); if (i == end()) return 0;
 	C4Graph::ValueType iVal = (*i)->GetMaxValue();
-	while (++i != end()) iVal = Max(iVal, (*i)->GetMaxValue());
+	while (++i != end()) iVal = std::max(iVal, (*i)->GetMaxValue());
 	return iVal;
 }
 

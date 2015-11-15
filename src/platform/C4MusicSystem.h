@@ -106,8 +106,8 @@ private:
 public:
 	void CompileFunc(class StdCompiler *comp);
 
-	void SetMusicBreakMin(int32_t val) { music_break_min = Max<int32_t>(val, 0); }
-	void SetMusicBreakMax(int32_t val) { music_break_max = Max<int32_t>(val, 0); }
+	void SetMusicBreakMin(int32_t val) { music_break_min = std::max<int32_t>(val, 0); }
+	void SetMusicBreakMax(int32_t val) { music_break_max = std::max<int32_t>(val, 0); }
 	void SetMusicBreakChance(int32_t val) { music_break_chance = Clamp<int32_t>(val, 0, 100); }
 	int32_t SetGameMusicLevel(int32_t val);
 };

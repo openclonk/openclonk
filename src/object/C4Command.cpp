@@ -143,7 +143,7 @@ bool FreeMoveTo(C4Object *cObj)
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
-	int32_t iY=Min(rY, GBackHgt);
+	int32_t iY=std::min(rY, GBackHgt);
 	while ((iY>=0) && GBackSolid(rX,iY)) iY--;
 	if (iY>=0) rY=iY;
 	// No-free-move adjustments (i.e. if walking)
@@ -423,7 +423,7 @@ void C4Command::MoveTo()
 	{
 		C4Real dx = itofix(Tx._getInt()) - cObj->fix_x, dy = itofix(Ty) - cObj->fix_y;
 		// normalize
-		C4Real dScale = C4REAL100(cObj->GetAction()->GetPropertyInt(P_Speed)) / Max(Abs(dx), Abs(dy));
+		C4Real dScale = C4REAL100(cObj->GetAction()->GetPropertyInt(P_Speed)) / std::max(Abs(dx), Abs(dy));
 		dx *= dScale; dy *= dScale;
 		// difference to momentum
 		dx -= cObj->xdir; dy -= cObj->ydir;
@@ -1126,7 +1126,7 @@ void C4Command::Activate()
 	// In container
 	if (cObj->Contained==Target2)
 	{
-		for (Tx.SetInt(Data ? Max<int32_t>(Tx._getInt(),1) : 1); Tx._getInt(); --Tx)
+		for (Tx.SetInt(Data ? std::max<int32_t>(Tx._getInt(),1) : 1); Tx._getInt(); --Tx)
 		{
 			// If not specified get object from target contents by type
 			// Find first object requested id that has no command exit yet

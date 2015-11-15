@@ -209,7 +209,7 @@ C4GameOptionsList::OptionControlRate::OptionControlRate(class C4GameOptionsList 
 
 void C4GameOptionsList::OptionControlRate::DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
 {
-	for (int i = 1; i < Min(C4MaxControlRate, 10); ++i)
+	for (int i = 1; i < std::min(C4MaxControlRate, 10); ++i)
 		pFiller->AddEntry(FormatString("%d", i).getData(), i);
 }
 

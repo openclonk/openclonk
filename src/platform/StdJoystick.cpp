@@ -97,8 +97,8 @@ CStdGamePad::AxisPos CStdGamePad::GetAxisPos(int idAxis, int32_t *out_strength)
 		if (fAxisCalibrated[idAxis])
 		{
 			// update it
-			dwAxisMin[idAxis] = Min<uint32_t>(dwAxisMin[idAxis], dwPos);
-			dwAxisMax[idAxis] = Max<uint32_t>(dwAxisMax[idAxis], dwPos);
+			dwAxisMin[idAxis] = std::min(dwAxisMin[idAxis], dwPos);
+			dwAxisMax[idAxis] = std::max(dwAxisMax[idAxis], dwPos);
 			// Calculate center
 			DWORD dwCenter = (dwAxisMin[idAxis] + dwAxisMax[idAxis]) / 2;
 			// Axis strength

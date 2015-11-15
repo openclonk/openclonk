@@ -303,7 +303,7 @@ public:
 	C4Object* CreateContents(C4PropList *);
 	bool CreateContentsByList(C4IDList &idlist);
 	BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt) const;
-	inline int32_t addtop() const { return Max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check
+	inline int32_t addtop() const { return std::max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check
 	inline int32_t Left() const { return GetX()+Shape.x; } // left border of shape
 	inline int32_t Top() const { return GetY()+Shape.y-addtop(); } // top border of shape (+build-top)
 	inline int32_t Width() const { return Shape.Wdt; } // width of shape

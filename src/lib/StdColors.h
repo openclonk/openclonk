@@ -35,10 +35,10 @@ inline void BltAlpha(DWORD &dwDst, DWORD dwSrc)
 	// blit one color value w/alpha on another
 	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
 	BYTE byAlphaSrc=BYTE(dwSrc>>24); BYTE byAlphaDst=255-byAlphaSrc;
-	dwDst = Min<uint32_t>((int(dwDst    & 0xff ) * byAlphaDst + int(dwSrc & 0xff    ) * byAlphaSrc) >>8,            0xff)      | // blue
-	        Min<uint32_t>((int(dwDst   & 0xff00) * byAlphaDst + int(dwSrc & 0xff00  ) * byAlphaSrc) >>8 & 0xff00,   0xff00)    | // green
-	        Min<uint32_t>((int(dwDst & 0xff0000) * byAlphaDst + int(dwSrc & 0xff0000) * byAlphaSrc) >>8 & 0xff0000, 0xff0000)  | // red
-	        Min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
+	dwDst = std::min<uint32_t>((int(dwDst    & 0xff ) * byAlphaDst + int(dwSrc & 0xff    ) * byAlphaSrc) >>8,            0xff)      | // blue
+	        std::min<uint32_t>((int(dwDst   & 0xff00) * byAlphaDst + int(dwSrc & 0xff00  ) * byAlphaSrc) >>8 & 0xff00,   0xff00)    | // green
+	        std::min<uint32_t>((int(dwDst & 0xff0000) * byAlphaDst + int(dwSrc & 0xff0000) * byAlphaSrc) >>8 & 0xff0000, 0xff0000)  | // red
+	        std::min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 }
 
 inline void BltAlphaAdd(DWORD &dwDst, DWORD dwSrc)
@@ -46,10 +46,10 @@ inline void BltAlphaAdd(DWORD &dwDst, DWORD dwSrc)
 	// blit one color value w/alpha on another in additive mode
 	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
 	BYTE byAlphaSrc=BYTE(dwSrc>>24);
-	dwDst = Min<uint32_t>((dwDst    & 0xff ) + ((int(dwSrc    & 0xff  ) * byAlphaSrc) >>8)       , 0xff)      | // blue
-	        Min<uint32_t>(((dwDst   & 0xff00) + (int(dwSrc>>8 & 0xff  ) * byAlphaSrc)) & 0x00ffff00, 0xff00)    | // green
-	        Min<uint32_t>(((dwDst & 0xff0000) + (int(dwSrc>>8 & 0xff00) * byAlphaSrc)) & 0xffff0000, 0xff0000)  | // red
-	        Min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
+	dwDst = std::min<uint32_t>((dwDst    & 0xff ) + ((int(dwSrc    & 0xff  ) * byAlphaSrc) >>8)       , 0xff)      | // blue
+	        std::min<uint32_t>(((dwDst   & 0xff00) + (int(dwSrc>>8 & 0xff  ) * byAlphaSrc)) & 0x00ffff00, 0xff00)    | // green
+	        std::min<uint32_t>(((dwDst & 0xff0000) + (int(dwSrc>>8 & 0xff00) * byAlphaSrc)) & 0xffff0000, 0xff0000)  | // red
+	        std::min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 }
 
 inline void ModulateClr(DWORD &dwDst, DWORD dwMod) // modulate two color values
@@ -61,7 +61,7 @@ inline void ModulateClr(DWORD &dwDst, DWORD dwMod) // modulate two color values
 	dwDst = ((dwDst     & 0xff) * (dwMod     & 0xff) / 0xff)      | // blue
 	        ((dwDst>> 8 & 0xff) * (dwMod>> 8 & 0xff) / 0xff) << 8 | // green
 	        ((dwDst>>16 & 0xff) * (dwMod>>16 & 0xff) / 0xff) << 16| // red
-	        Min(iA1*iA2/0xff, 255)                           << 24; // alpha (TODO: We don't need Min() here, do we?)
+	        std::min(iA1*iA2/0xff, 255)                           << 24; // alpha (TODO: We don't need std::min() here, do we?)
 }
 
 inline void ModulateClrA(DWORD &dwDst, DWORD dwMod) // modulate two color values and add alpha value
@@ -70,7 +70,7 @@ inline void ModulateClrA(DWORD &dwDst, DWORD dwMod) // modulate two color values
 	dwDst = ((dwDst     & 0xff) * (dwMod     & 0xff) / 0xff)      | // B
 	        ((dwDst>> 8 & 0xff) * (dwMod>> 8 & 0xff) / 0xff) << 8 | // G
 	        ((dwDst>>16 & 0xff) * (dwMod>>16 & 0xff) / 0xff) << 16| // R
-	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
+	        (std::max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
 }
 inline void ModulateClrMOD2(DWORD &dwDst, DWORD dwMod) // clr1+clr2-0.5
 {
@@ -78,7 +78,7 @@ inline void ModulateClrMOD2(DWORD &dwDst, DWORD dwMod) // clr1+clr2-0.5
 	dwDst = (Clamp<int>(((int)(dwDst&0xff)+(dwMod&0xff)-0x7f)<<1,0,0xff)&0xff) |  // B
 	        (Clamp<int>(((int)(dwDst&0xff00)+(dwMod&0xff00)-0x7f00)<<1,0,0xff00)&0xff00) | // G
 	        (Clamp<int>(((int)(dwDst&0xff0000)+(dwMod&0xff0000)-0x7f0000)<<1,0,0xff0000)&0xff0000) | // R
-	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
+	        (std::max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
 }
 
 inline void ModulateClrMono(DWORD &dwDst, BYTE byMod)
@@ -97,7 +97,7 @@ inline void ModulateClrMonoA(DWORD &dwDst, BYTE byMod, BYTE byA)
 	dwDst = ((dwDst     & 0xff) * byMod / 0xff)      | // blue
 	        ((dwDst>> 8 & 0xff) * byMod / 0xff) << 8 | // green
 	        ((dwDst>>16 & 0xff) * byMod / 0xff) << 16| // red
-	        (Max<uint32_t>((dwDst>>24) + byA, 0xff) - 0xff) << 24; // alpha
+	        (std::max<uint32_t>((dwDst>>24) + byA, 0xff) - 0xff) << 24; // alpha
 }
 
 
@@ -116,9 +116,9 @@ inline DWORD LightenClrBy(DWORD &dwDst, int iBy) // enlight a color
 {
 	// enlight a color
 	// quite a desaturating method...
-	dwDst = Min<int>((dwDst     & 0xff) + iBy, 255)       | // blue
-	        Min<int>((dwDst>> 8 & 0xff) + iBy, 255) <<  8 | // green
-	        Min<int>((dwDst>>16 & 0xff) + iBy, 255) << 16 | // red
+	dwDst = std::min<int>((dwDst     & 0xff) + iBy, 255)       | // blue
+	        std::min<int>((dwDst>> 8 & 0xff) + iBy, 255) <<  8 | // green
+	        std::min<int>((dwDst>>16 & 0xff) + iBy, 255) << 16 | // red
 	        (dwDst & 0xff000000);                     // alpha
 	return dwDst;
 }
@@ -133,9 +133,9 @@ inline DWORD DarkenClrBy(DWORD &dwDst, int iBy) // darken a color
 {
 	// darken a color
 	// quite a desaturating method...
-	dwDst = Max<int>(int(dwDst     & 0xff) - iBy, 0)       | // blue
-	        Max<int>(int(dwDst>> 8 & 0xff) - iBy, 0) <<  8 | // green
-	        Max<int>(int(dwDst>>16 & 0xff) - iBy, 0) << 16 | // red
+	dwDst = std::max<int>(int(dwDst     & 0xff) - iBy, 0)       | // blue
+	        std::max<int>(int(dwDst>> 8 & 0xff) - iBy, 0) <<  8 | // green
+	        std::max<int>(int(dwDst>>16 & 0xff) - iBy, 0) << 16 | // red
 	        (dwDst & 0xff000000);                     // alpha
 	return dwDst;
 }
@@ -143,7 +143,7 @@ inline DWORD DarkenClrBy(DWORD &dwDst, int iBy) // darken a color
 inline DWORD PlrClr2TxtClr(DWORD dwClr)
 {
 	// convert player color to text color, lightening up when necessary
-	int lgt=Max(Max(GetRedValue(dwClr), GetGreenValue(dwClr)), GetBlueValue(dwClr));
+	int lgt=std::max(std::max(GetRedValue(dwClr), GetGreenValue(dwClr)), GetBlueValue(dwClr));
 	if (lgt<0x8f) LightenClrBy(dwClr, 0x8f-lgt);
 	return dwClr|0xff000000;
 }
@@ -167,8 +167,8 @@ inline DWORD GetClrModulation(DWORD dwSrcClr, DWORD dwDstClr, DWORD &dwBack)
 	// get max enlightment
 	int diffN=0;
 	if (cR>0) diffN=cR;
-	if (cG>0) diffN=Max(diffN, cG);
-	if (cB>0) diffN=Max(diffN, cB);
+	if (cG>0) diffN=std::max(diffN, cG);
+	if (cB>0) diffN=std::max(diffN, cB);
 	// is dest > src?
 	if (diffN)
 	{
@@ -179,7 +179,7 @@ inline DWORD GetClrModulation(DWORD dwSrcClr, DWORD dwDstClr, DWORD &dwBack)
 		dwBack=RGBA(bR, bG, bB, 255);
 	}
 	if (!sR) sR=1; if (!sG) sG=1; if (!sB) sB=1;
-	return RGBA(Min((int)dR*256/sR, 255), Min((int)dG*256/sG, 255), Min((int)dB*256/sB, 255), 255-diffN);
+	return RGBA(std::min((int)dR*256/sR, 255), std::min((int)dG*256/sG, 255), std::min((int)dB*256/sB, 255), 255-diffN);
 }
 
 inline DWORD NormalizeColors(DWORD &dwClr1, DWORD &dwClr2, DWORD &dwClr3, DWORD &dwClr4)

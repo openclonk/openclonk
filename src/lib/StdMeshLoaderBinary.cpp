@@ -579,13 +579,13 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *sourcefile, size_t length, co
 			}
 			else
 			{
-				mesh->BoundingBox.x1 = Min(vertex.x, mesh->BoundingBox.x1);
-				mesh->BoundingBox.x2 = Max(vertex.x, mesh->BoundingBox.x2);
-				mesh->BoundingBox.y1 = Min(vertex.y, mesh->BoundingBox.y1);
-				mesh->BoundingBox.y2 = Max(vertex.y, mesh->BoundingBox.y2);
-				mesh->BoundingBox.z1 = Min(vertex.z, mesh->BoundingBox.z1);
-				mesh->BoundingBox.z2 = Max(vertex.z, mesh->BoundingBox.z2);
-				mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
+				mesh->BoundingBox.x1 = std::min(vertex.x, mesh->BoundingBox.x1);
+				mesh->BoundingBox.x2 = std::max(vertex.x, mesh->BoundingBox.x2);
+				mesh->BoundingBox.y1 = std::min(vertex.y, mesh->BoundingBox.y1);
+				mesh->BoundingBox.y2 = std::max(vertex.y, mesh->BoundingBox.y2);
+				mesh->BoundingBox.z1 = std::min(vertex.z, mesh->BoundingBox.z1);
+				mesh->BoundingBox.z2 = std::max(vertex.z, mesh->BoundingBox.z2);
+				mesh->BoundingRadius = std::max(mesh->BoundingRadius, d);
 			}
 		}
 	}

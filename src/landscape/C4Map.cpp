@@ -99,9 +99,9 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 	float amplitude= (float) rLScape.Amplitude.Evaluate();
 	float phase=     (float) rLScape.Phase.Evaluate();
 	float period=    (float) rLScape.Period.Evaluate();
-	if (rLScape.MapPlayerExtend) period *= Min(iPlayerNum, C4S_MaxMapPlayerExtend);
+	if (rLScape.MapPlayerExtend) period *= std::min(iPlayerNum, C4S_MaxMapPlayerExtend);
 	float natural=   (float) rLScape.Random.Evaluate();
-	int32_t level0=    Min(MapWdt,MapHgt)/2;
+	int32_t level0=    std::min(MapWdt,MapHgt)/2;
 	int32_t maxrange=  level0*3/4;
 	double cy_curve,cy_natural; // -1.0 - +1.0 !
 

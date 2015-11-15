@@ -242,7 +242,7 @@ void C4ValueArray::SetSize(int32_t inSize)
 
 bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
 {
-	for (int32_t i=0; i<Max(iSize, IntList2.GetSize()); i++)
+	for (int32_t i=0; i<std::max(iSize, IntList2.GetSize()); i++)
 		if (GetItem(i) != IntList2.GetItem(i))
 			return false;
 
@@ -318,11 +318,11 @@ void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value 
 		const C4ValueArray &Other = *Val._getArray(); // Remember that &Other could be equal to this, carefull with modifying pData
 
 		// Calculcate new size
-		int32_t iNewEnd = Min(startIndex + Other.GetSize(), (int32_t)MaxSize);
+		int32_t iNewEnd = std::min(startIndex + Other.GetSize(), (int32_t)MaxSize);
 		int32_t iNewSize = iNewEnd;
 		if(endIndex < iSize)
 			iNewSize += iSize - endIndex;
-		iNewSize = Min(iNewSize, (int32_t)MaxSize);
+		iNewSize = std::min(iNewSize, (int32_t)MaxSize);
 		int32_t iOtherSize = Other.GetSize();
 
 		if(iNewSize != iSize)

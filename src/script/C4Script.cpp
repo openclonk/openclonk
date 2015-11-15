@@ -45,7 +45,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			// Scan field type
 			for (cpType=cpFormat+1; *cpType && (*cpType == '+' || *cpType == '-' || *cpType == '.' || *cpType == '#' || *cpType == ' ' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
-			SCopy(cpFormat,szField,Min<unsigned int>(sizeof szField - 1, cpType - cpFormat + 1));
+			SCopy(cpFormat,szField,std::min<unsigned int>(sizeof szField - 1, cpType - cpFormat + 1));
 			// Insert field by type
 			switch (*cpType)
 			{
@@ -461,12 +461,12 @@ static long FnArcCos(C4PropList * _this, long iVal, long iRadius)
 
 static long FnMin(C4PropList * _this, long iVal1, long iVal2)
 {
-	return Min(iVal1,iVal2);
+	return std::min(iVal1,iVal2);
 }
 
 static long FnMax(C4PropList * _this, long iVal1, long iVal2)
 {
-	return Max(iVal1,iVal2);
+	return std::max(iVal1,iVal2);
 }
 
 static long FnDistance(C4PropList * _this, long iX1, long iY1, long iX2, long iY2)
@@ -631,7 +631,7 @@ static long FnModulateColor(C4PropList * _this, long iClr1, long iClr2)
 	DWORD r = (((dwClr1     & 0xff) * (dwClr2    &   0xff))    >>  8)   | // blue
 	          (((dwClr1>> 8 & 0xff) * (dwClr2>>8 &   0xff)) &   0xff00) | // green
 	          (((dwClr1>>16 & 0xff) * (dwClr2>>8 & 0xff00)) & 0xff0000) | // red
-	          (Min<long>(iA1+iA2 - ((iA1*iA2)>>8), 255)           << 24); // alpha
+	          (std::min<long>(iA1+iA2 - ((iA1*iA2)>>8), 255)           << 24); // alpha
 	return r;
 }
 

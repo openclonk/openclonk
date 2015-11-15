@@ -75,8 +75,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = oy;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.y = 0; }
 			else MaskPutRect.ty = 0;
-			MaskPutRect.Wdt = Min<int32_t>(ox + pForObject->SolidMask.Wdt, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = Min<int32_t>(oy + pForObject->SolidMask.Hgt, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(ox + pForObject->SolidMask.Wdt, GBackWdt) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(oy + pForObject->SolidMask.Hgt, GBackHgt) - MaskPutRect.y;
 		}
 		// fill rect with mask
 		for (ycnt=0; ycnt<pClipRect->Hgt; ++ycnt)
@@ -128,8 +128,8 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.y = ystart;
 			if (MaskPutRect.y < 0) { MaskPutRect.ty = -MaskPutRect.y; MaskPutRect.Hgt = MaskPutRect.y; MaskPutRect.y = 0; }
 			else { MaskPutRect.ty = 0; MaskPutRect.Hgt = 0; }
-			MaskPutRect.Wdt = Min<int32_t>(xstart + MatBuffPitch, GBackWdt) - MaskPutRect.x;
-			MaskPutRect.Hgt = Min<int32_t>(ystart + MatBuffPitch, GBackHgt) - MaskPutRect.y;
+			MaskPutRect.Wdt = std::min<int32_t>(xstart + MatBuffPitch, GBackWdt) - MaskPutRect.x;
+			MaskPutRect.Hgt = std::min<int32_t>(ystart + MatBuffPitch, GBackHgt) - MaskPutRect.y;
 		}
 		// go through clipping rect
 		const C4Real y0 = itofix(pClipRect->ty - MatBuffPitch/2);

@@ -120,8 +120,8 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 		if (hChild.OpenAsChild(&hGroup,szEntryname))
 		{
 			// Hack: Assume that there are sixteen sub definitions to avoid unnecessary I/O
-			int iSubMinProgress = Min<int32_t>(iMaxProgress, iMinProgress + ((iMaxProgress - iMinProgress) * i) / 16);
-			int iSubMaxProgress = Min<int32_t>(iMaxProgress, iMinProgress + ((iMaxProgress - iMinProgress) * (i + 1)) / 16);
+			int iSubMinProgress = std::min(iMaxProgress, iMinProgress + ((iMaxProgress - iMinProgress) * i) / 16);
+			int iSubMaxProgress = std::min(iMaxProgress, iMinProgress + ((iMaxProgress - iMinProgress) * (i + 1)) / 16);
 			++i;
 			iResult += Load(hChild,dwLoadWhat,szLanguage,pSoundSystem,fOverload,fSearchMessage,iSubMinProgress,iSubMaxProgress);
 			hChild.Close();

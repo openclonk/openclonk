@@ -189,8 +189,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &iMaxTexLayers);
 	if (iTexWdt > iMaxTexSize || iTexHgt > iMaxTexSize)
 	{
-		iTexWdt = Min(iTexWdt, iMaxTexSize);
-		iTexHgt = Min(iTexHgt, iMaxTexSize);
+		iTexWdt = std::min(iTexWdt, iMaxTexSize);
+		iTexHgt = std::min(iTexHgt, iMaxTexSize);
 		LogF("   gl: Material textures too large, GPU only supports %dx%d! Cropping might occur!", iMaxTexSize, iMaxTexSize);
 	}
 	if(iMaterialTextureDepth >= iMaxTexLayers)
@@ -356,9 +356,9 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		placementSumsUp[x] = 0;
 		placementSumsDown[x] = 0;
 		if (To.x + x - C4LR_BiasDistanceX < 0 || To.x + x - C4LR_BiasDistanceX >= iWidth) continue;
-		for(y = 1; y <= Min(C4LR_BiasDistanceY, To.y); y++)
+		for(y = 1; y <= std::min(C4LR_BiasDistanceY, To.y); y++)
 			placementSumsUp[x] += pSource->_GetPlacement(To.x+x-C4LR_BiasDistanceX, To.y-y);
-		for(y = 1; y <= Min(C4LR_BiasDistanceY, iHeight - 1 - To.y); y++)
+		for(y = 1; y <= std::min(C4LR_BiasDistanceY, iHeight - 1 - To.y); y++)
 			placementSumsDown[x] += pSource->_GetPlacement(To.x+x-C4LR_BiasDistanceX, To.y+y);
 	}
 
@@ -378,9 +378,9 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		// information about the current row, therefore we need a special case
 		// for those pixels.
 		int sumLeft = 0, sumRight = 0;
-		for(x = 1; x <= Min(C4LR_BiasDistanceX, To.x); x++)
+		for(x = 1; x <= std::min(C4LR_BiasDistanceX, To.x); x++)
 			sumLeft += pSource->_GetPlacement(To.x-x,To.y+y);
-		for(x = 1; x <= Min(C4LR_BiasDistanceX, iWidth - 1 - To.x ); x++)
+		for(x = 1; x <= std::min(C4LR_BiasDistanceX, iWidth - 1 - To.x ); x++)
 			sumRight += pSource->_GetPlacement(To.x+x,To.y+y);
 		for (int i = 1; i <= C4LR_BiasDistanceX; i++) {
 			sumLeft += placementSumsUp[C4LR_BiasDistanceX - i];
@@ -404,11 +404,11 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 
 			// Calculate bias. The scale here is the size of the rectangle (see above)
 			const int horizontalFactor = C4LR_BiasDistanceX * (2 * C4LR_BiasDistanceY + 1);
-			int horizontalBias = Max(0, placement * horizontalFactor - sumRight) -
-			                     Max(0, placement * horizontalFactor - sumLeft);
+			int horizontalBias = std::max(0, placement * horizontalFactor - sumRight) -
+			                     std::max(0, placement * horizontalFactor - sumLeft);
 			const int verticalFactor = C4LR_BiasDistanceY * (2 * C4LR_BiasDistanceX + 1);
-			int verticalBias = Max(0, placement * verticalFactor - sumDown) -
-			                   Max(0, placement * verticalFactor - sumUp);
+			int verticalBias = std::max(0, placement * verticalFactor - sumDown) -
+			                   std::max(0, placement * verticalFactor - sumUp);
 
 			// Maximum placement differences that make a difference in the result,  after which we are at the limits of
 			// what can be packed into a byte
@@ -465,7 +465,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		}
 
 		// Finish updating up & down arrays for the next line
-		for (; x < Min(placementSumsWidth, iWidth - To.x + C4LR_BiasDistanceX); x++) {
+		for (; x < std::min(placementSumsWidth, iWidth - To.x + C4LR_BiasDistanceX); x++) {
 			if (To.y + y + 1 < iHeight)
 				placementSumsDown[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + 1);
 			if (To.y + y + C4LR_BiasDistanceY + 1 < iHeight)

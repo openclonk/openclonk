@@ -201,7 +201,7 @@ bool C4Draw::GetSurfaceSize(C4Surface * sfcSurface, int &iWdt, int &iHgt)
 bool C4Draw::SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 {
 	// Set sub primary clipper
-	SetPrimaryClipper(Max(iX1,iClipX1),Max(iY1,iClipY1),Min(iX2,iClipX2),Min(iY2,iClipY2));
+	SetPrimaryClipper(std::max(iX1,iClipX1),std::max(iY1,iClipY1),std::min(iX2,iClipX2),std::min(iY2,iClipY2));
 	return true;
 }
 
@@ -364,10 +364,10 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	// get involved texture offsets
 	int iTexSizeX=sfcSource->iTexSize;
 	int iTexSizeY=sfcSource->iTexSize;
-	int iTexX=Max(int(fx/iTexSizeX), 0);
-	int iTexY=Max(int(fy/iTexSizeY), 0);
-	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
-	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
+	int iTexX=std::max(int(fx/iTexSizeX), 0);
+	int iTexY=std::max(int(fy/iTexSizeY), 0);
+	int iTexX2=std::min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
+	int iTexY2=std::min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
 	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 	{
@@ -389,10 +389,10 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
-			fTexBlt.left  = Max<float>(fx - iBlitX, 0);
-			fTexBlt.top   = Max<float>(fy - iBlitY, 0);
-			fTexBlt.right = Min<float>(fx + fwdt - (float)iBlitX, (float)iTexSizeX);
-			fTexBlt.bottom= Min<float>(fy + fhgt - (float)iBlitY, (float)iTexSizeY);
+			fTexBlt.left  = std::max<float>(fx - iBlitX, 0);
+			fTexBlt.top   = std::max<float>(fy - iBlitY, 0);
+			fTexBlt.right = std::min<float>(fx + fwdt - (float)iBlitX, (float)iTexSizeX);
+			fTexBlt.bottom= std::min<float>(fy + fhgt - (float)iBlitY, (float)iTexSizeY);
 			// get new dest bounds
 			FLOAT_RECT tTexBlt;
 			tTexBlt.left  = (fTexBlt.left  + iBlitX - fx) * scaleX + tx;
@@ -487,10 +487,10 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	pTransform->TransformPoint(ttx1, tty1);
 	pTransform->TransformPoint(ttx2, tty2);
 	pTransform->TransformPoint(ttx3, tty3);
-	int ttxMin = Max<int>((int)floor(Min(Min(ttx0, ttx1), Min(ttx2, ttx3))), 0);
-	int ttxMax = Min<int>((int)ceil(Max(Max(ttx0, ttx1), Max(ttx2, ttx3))), sfcTarget->Wdt);
-	int ttyMin = Max<int>((int)floor(Min(Min(tty0, tty1), Min(tty2, tty3))), 0);
-	int ttyMax = Min<int>((int)ceil(Max(Max(tty0, tty1), Max(tty2, tty3))), sfcTarget->Hgt);
+	int ttxMin = std::max<int>((int)floor(std::min(std::min(ttx0, ttx1), std::min(ttx2, ttx3))), 0);
+	int ttxMax = std::min<int>((int)ceil(std::max(std::max(ttx0, ttx1), std::max(ttx2, ttx3))), sfcTarget->Wdt);
+	int ttyMin = std::max<int>((int)floor(std::min(std::min(tty0, tty1), std::min(tty2, tty3))), 0);
+	int ttyMax = std::min<int>((int)ceil(std::max(std::max(tty0, tty1), std::max(tty2, tty3))), sfcTarget->Hgt);
 	// blit within target rect
 	for (int y = ttyMin; y < ttyMax; ++y)
 		for (int x = ttxMin; x < ttxMax; ++x)
@@ -754,8 +754,8 @@ bool C4Draw::GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2)
 
 C4Rect C4Draw::GetClipRect() const
 {
-	int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
-	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+	int iWdt=std::min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+	int iHgt=std::min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
 	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
 	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
 	return C4Rect(iX, iY, iWdt, iHgt);

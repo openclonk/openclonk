@@ -126,8 +126,8 @@ void C4FoWAmbient::CreateFromLandscape(const C4Landscape& landscape, double reso
 	// Number of zoomed pixels
 	LandscapeX = landscape.Width;
 	LandscapeY = landscape.Height;
-	SizeX = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
-	SizeY = Min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
+	SizeX = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeX / resolution)), pDraw->MaxTexSize);
+	SizeY = std::min<unsigned int>(static_cast<unsigned int>(ceil(LandscapeY / resolution)), pDraw->MaxTexSize);
 
 #ifndef USE_CONSOLE
 	glGenTextures(1, &Tex);
@@ -157,10 +157,10 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	const double zoom_x = static_cast<double>(landscape.Width) / SizeX;
 	const double zoom_y = static_cast<double>(landscape.Height) / SizeY;
 	// Update region in zoomed coordinates
-	const unsigned int left = Max(static_cast<int>( (update.x - Radius) / zoom_x), 0);
-	const unsigned int right = Min(static_cast<unsigned int>( (update.x + update.Wdt + Radius) / zoom_x), SizeX - 1) + 1;
-	const unsigned int top = Max(static_cast<int>( (update.y - Radius) / zoom_y), 0);
-	const unsigned int bottom = Min(static_cast<unsigned int>( (update.y + update.Hgt + Radius) / zoom_y), SizeY - 1) + 1;
+	const unsigned int left = std::max(static_cast<int>( (update.x - Radius) / zoom_x), 0);
+	const unsigned int right = std::min(static_cast<unsigned int>( (update.x + update.Wdt + Radius) / zoom_x), SizeX - 1) + 1;
+	const unsigned int top = std::max(static_cast<int>( (update.y - Radius) / zoom_y), 0);
+	const unsigned int bottom = std::min(static_cast<unsigned int>( (update.y + update.Hgt + Radius) / zoom_y), SizeY - 1) + 1;
 	assert(right > left);
 	assert(bottom > top);
 	// Zoomed radius
@@ -175,7 +175,7 @@ void C4FoWAmbient::UpdateFromLandscape(const C4Landscape& landscape, const C4Rec
 	{
 		for(unsigned int x = left; x < right; ++x)
 		{
-			ambient[(y - top) * (right - left) + (x - left)] = Min(AmbientForPix(x, y, R, light_mapZoom) / norm, 1.0);
+			ambient[(y - top) * (right - left) + (x - left)] = std::min(AmbientForPix(x, y, R, light_mapZoom) / norm, 1.0);
 		}
 	}
 

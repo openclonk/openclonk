@@ -583,7 +583,7 @@ void StdCompilerConfigRead::String(char *szString, size_t iMaxLength, RawCompile
 		const char *s = LastString.getData();
 		size_t ncpy = 0;
 		while (isalnum((unsigned char)s[ncpy])) ++ncpy;
-		SCopy(LastString.getData(), szString, Min<size_t>(iMaxLength, ncpy));
+		SCopy(LastString.getData(), szString, std::min(iMaxLength, ncpy));
 		LastString.Take(StdStrBuf(s+ncpy, true));
 	}
 	else

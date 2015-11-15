@@ -201,7 +201,7 @@ bool CStdFile::Read(void *pBuffer, size_t iSize, size_t *ipFSize)
 		// Valid data in the buffer: Transfer as much as possible
 		if (BufferLoad>BufferPtr)
 		{
-			transfer=Min<size_t>(BufferLoad-BufferPtr,iSize);
+			transfer=std::min<size_t>(BufferLoad-BufferPtr,iSize);
 			memmove(bypBuffer, Buffer+BufferPtr, transfer);
 			BufferPtr+=transfer;
 			bypBuffer+=transfer;
@@ -253,7 +253,7 @@ bool CStdFile::Write(const void *pBuffer, int iSize)
 		// Space in buffer: Transfer as much as possible
 		if (BufferLoad<CStdFileBufSize)
 		{
-			transfer=Min(CStdFileBufSize-BufferLoad,iSize);
+			transfer=std::min(CStdFileBufSize-BufferLoad,iSize);
 			memcpy(Buffer+BufferLoad,bypBuffer,transfer);
 			BufferLoad+=transfer;
 			bypBuffer+=transfer;
@@ -295,7 +295,7 @@ bool CStdFile::Advance(int iOffset)
 		// Valid data in the buffer: Transfer as much as possible
 		if (BufferLoad > BufferPtr)
 		{
-			int transfer = Min(BufferLoad-BufferPtr,iOffset);
+			int transfer = std::min(BufferLoad-BufferPtr,iOffset);
 			BufferPtr += transfer;
 			iOffset -= transfer;
 		}

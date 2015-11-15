@@ -925,8 +925,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	else
 	{
 		// Perspective projection. We need current viewport size.
-		const int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
-		const int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+		const int iWdt=std::min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+		const int iHgt=std::min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
 
 		// Get away with orthographic projection matrix currently loaded
 		glLoadIdentity();

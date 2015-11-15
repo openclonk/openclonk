@@ -116,7 +116,7 @@ void C4LogBuffer::AppendSingleLine(const char *szLine, int iLineLength, const ch
 		if (fDynamicGrow)
 		{
 			// insufficient buffer in grow mode: grow text buffer
-			GrowTextBuffer(Max(iLineLength, iBufSize/2));
+			GrowTextBuffer(std::max(iLineLength, iBufSize/2));
 		}
 		else
 		{

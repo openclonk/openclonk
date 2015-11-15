@@ -981,7 +981,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
-				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(fctBlit.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(fctBlit.Hgt,1));
+				float fZoom = std::min(pForObj->Shape.Wdt / std::max(fctBlit.Wdt, 1.0f), pForObj->Shape.Hgt / std::max(fctBlit.Hgt, 1.0f));
 				trf.ScaleAt(fZoom, fZoom, offX, offY);
 			}
 
@@ -995,7 +995,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
-				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(pDef->Shape.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(pDef->Shape.Hgt,1));
+				float fZoom = std::min((float)pForObj->Shape.Wdt / std::max(pDef->Shape.Wdt, 1), (float)pForObj->Shape.Hgt / std::max(pDef->Shape.Hgt, 1));
 				trf.ScaleAt(fZoom, fZoom,  offX, offY);
 			}
 

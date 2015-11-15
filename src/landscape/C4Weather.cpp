@@ -85,7 +85,7 @@ void C4Weather::Execute()
 		                      Game.C4S.Weather.Wind.Min,
 		                      Game.C4S.Weather.Wind.Max);
 	if (!::Game.iTick10)
-		SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
+		SoundLevel("Wind",NULL,std::max(Abs(Wind)-30,0)*2);
 }
 
 void C4Weather::Clear()

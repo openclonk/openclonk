@@ -110,7 +110,7 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
 				float dy = y - light->getY();
 				float dist = sqrt(dx*dx+dy*dy);
 				float bright = light->getBrightness();
-				float mult = Min(0.5f / light->getNormalSize(), 0.5f / dist);
+				float mult = std::min(0.5f / light->getNormalSize(), 0.5f / dist);
 				float normX = Clamp(0.5f + dx * mult, 0.0f, 1.0f) / 1.5f;
 				float normY = Clamp(0.5f + dy * mult, 0.0f, 1.0f) / 1.5f;
 				glColor4f(0.0f, normX,     normY,     bright);

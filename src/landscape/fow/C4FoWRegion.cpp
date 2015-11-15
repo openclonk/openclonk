@@ -179,10 +179,10 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 			dy1 = Region.y + Region.Hgt - OldRegion.y - OldRegion.Hgt;
 
 		// Source and target rect coordinates (landscape coordinate system)
-		int sx0 = Max(0, dx0),                  sy0 = Max(0, dy0),
-			sx1 = OldRegion.Wdt - Max(0, -dx1), sy1 = OldRegion.Hgt - Max(0, -dy1),
-			tx0 = Max(0, -dx0),                 ty0 = Max(0, -dy0),
-			tx1 = Region.Wdt - Max(0, dx1),     ty1 = Region.Hgt - Max(0, dy1);
+		int sx0 = std::max(0, dx0),                  sy0 = std::max(0, dy0),
+			sx1 = OldRegion.Wdt - std::max(0, -dx1), sy1 = OldRegion.Hgt - std::max(0, -dy1),
+			tx0 = std::max(0, -dx0),                 ty0 = std::max(0, -dy0),
+			tx1 = Region.Wdt - std::max(0, dx1),     ty1 = Region.Hgt - std::max(0, dy1);
 
 		// Quad coordinates
 		float squad[8] = { float(sx0), float(sy0),  float(sx0), float(sy1),

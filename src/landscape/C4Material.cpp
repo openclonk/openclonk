@@ -542,7 +542,7 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 void C4MaterialMap::SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact)
 {
 	// evaluate reaction swap
-	if (pReact && pReact->fReverse) Swap(iPXSMat, iLSMat);
+	if (pReact && pReact->fReverse) std::swap(iPXSMat, iLSMat);
 	// set it
 	ppReactionMap[(iLSMat+1)*(Num+1) + iPXSMat+1] = pReact;
 }
@@ -639,7 +639,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 	if (pfPosChanged) *pfPosChanged = true;
 
 	// Move up by up to 3px to account for moving SolidMasks, other material insertions, etc.
-	int32_t mdens = Min<int32_t>(::MaterialMap.Map[iPxsMat].Density, C4M_Solid);
+	int32_t mdens = std::min(::MaterialMap.Map[iPxsMat].Density, C4M_Solid);
 	int32_t max_upwards = 3;
 	bool was_pushed_upwards = false;
 	while (max_upwards-- && (::Landscape.GetDensity(iX, iY) >= mdens))

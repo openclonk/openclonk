@@ -140,7 +140,7 @@ static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t co
 void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
 {
 	// validity
-	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, ::MaterialMap.Num-1);
+	iBridgeMaterial = std::min(iBridgeMaterial, ::MaterialMap.Num-1);
 	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
 	iBridgeTime = Clamp<int32_t>(iBridgeTime, 0, 0xffff);
 	// mask in this->Data
@@ -274,7 +274,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 		Mobile=1;
 
 	// Mass
-	Mass=Max<int32_t>(Def->Mass*Con/FullCon,1);
+	Mass=std::max<int32_t>(Def->Mass*Con/FullCon,1);
 
 	// Life, energy, breath
 	if (Category & C4D_Living) Alive=1;
@@ -689,7 +689,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 		}
 		tx = Def->Shape.GetX() + Action.FacetX + offX;
 		twdt = swdt;
-		float offset_from_top = shgt * Max<float>(float(FullCon - Con), 0) / FullCon;
+		float offset_from_top = shgt * std::max(FullCon - Con, 0) / FullCon;
 		fy += offset_from_top;
 		fhgt -= offset_from_top;
 	}
@@ -724,7 +724,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 
 void C4Object::UpdateMass()
 {
-	Mass=Max<int32_t>((Def->Mass+OwnMass)*Con/FullCon,1);
+	Mass=std::max<int32_t>((Def->Mass+OwnMass)*Con/FullCon,1);
 	if (!Def->NoComponentMass) Mass+=Contents.Mass;
 	if (Contained)
 	{
@@ -739,7 +739,7 @@ void C4Object::ComponentConCutoff()
 	int32_t cnt;
 	for (cnt=0; Component.GetID(cnt); cnt++)
 		Component.SetCount(cnt,
-		                   Min<int32_t>(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
+		                   std::min(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
 }
 
 void C4Object::ComponentConGain()
@@ -748,7 +748,7 @@ void C4Object::ComponentConGain()
 	int32_t cnt;
 	for (cnt=0; Component.GetID(cnt); cnt++)
 		Component.SetCount(cnt,
-		                   Max<int32_t>(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
+		                   std::max(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
 }
 
 void C4Object::UpdateInMat()
@@ -1212,7 +1212,7 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 		if (!iChange) return;
 	}
 	// Change value
-	Damage = Max<int32_t>( Damage+iChange, 0 );
+	Damage = std::max<int32_t>( Damage+iChange, 0 );
 	// Engine script call
 	Call(PSF_Damage,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedBy)));
 }
@@ -1264,7 +1264,7 @@ void C4Object::DoCon(int32_t iChange, bool grow_from_center)
 
 	// Change con
 	if (Def->Oversize)
-		Con=Max<int32_t>(Con+iChange,0);
+		Con=std::max<int32_t>(Con+iChange,0);
 	else
 		Con=Clamp<int32_t>(Con+iChange,0,FullCon);
 
@@ -2632,8 +2632,8 @@ bool C4Object::CheckSolidMaskRect()
 		SolidMask.Set(0,0,0,0,0,0);
 		return false;
 	}
-	SolidMask.Set(Max<int32_t>(SolidMask.x,0), Max<int32_t>(SolidMask.y,0),
-	              Min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), Min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
+	SolidMask.Set(std::max<int32_t>(SolidMask.x,0), std::max<int32_t>(SolidMask.y,0),
+	              std::min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), std::min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
 	              SolidMask.tx, SolidMask.ty);
 	if (SolidMask.Hgt<=0) SolidMask.Wdt=0;
 	return SolidMask.Wdt>0;
@@ -3631,10 +3631,10 @@ void C4Object::ExecAction()
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir -= Max(Min(limit + xdir, xdir > 0 ? decel : accel), itofix(0));
+			xdir -= std::max(std::min(limit + xdir, xdir > 0 ? decel : accel), itofix(0));
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir += Max(Min(limit - xdir, xdir < 0 ? decel : accel), itofix(0));
+			xdir += std::max(std::min(limit - xdir, xdir < 0 ? decel : accel), itofix(0));
 			break;
 		}
 
@@ -3748,7 +3748,7 @@ void C4Object::ExecAction()
 		// Set target controller
 		Action.Target->Controller=Controller;
 		// ObjectAction got hold check
-		iPushDistance = Max(Shape.Wdt/2-8,0);
+		iPushDistance = std::max(Shape.Wdt/2-8,0);
 		iPushRange = iPushDistance + 10;
 		int32_t sax,say,sawdt,sahgt;
 		Action.Target->GetArea(sax,say,sawdt,sahgt);
@@ -3823,7 +3823,7 @@ void C4Object::ExecAction()
 		}
 
 		// Pulling range
-		iPushDistance = Max(Shape.Wdt/2-8,0);
+		iPushDistance = std::max(Shape.Wdt/2-8,0);
 		iPushRange = iPushDistance + 20;
 		Action.Target->GetArea(sax,say,sawdt,sahgt);
 		// Object lost
@@ -4736,7 +4736,7 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 					{ --iSolidRight; break; }
 		// calculate destination angle
 		// 100% accurate for large values of Pi ;)
-		iDestAngle=(iSolidRight-iSolidLeft)*(35/Max<int32_t>(iRangeX, 1));
+		iDestAngle=(iSolidRight-iSolidLeft)*(35/std::max<int32_t>(iRangeX, 1));
 	}
 	else
 	{
@@ -4767,7 +4767,7 @@ void C4Object::UpdateInLiquid()
 		if (!InLiquid) // Enter liquid
 		{
 			if (OCF & OCF_HitSpeed2) if (Mass>3)
-					Splash(GetX(),GetY()+1,Min(Shape.Wdt*Shape.Hgt/10,20),this);
+					Splash(GetX(),GetY()+1,std::min(Shape.Wdt*Shape.Hgt/10,20),this);
 			InLiquid=1;
 		}
 	}

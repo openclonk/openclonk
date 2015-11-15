@@ -185,7 +185,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd *)
 				// Get next entry
 				if (!pNotify->NextEntryOffset) break;
 				pPos += pNotify->NextEntryOffset;
-				if (pPos >= pWatch->Buffer + Min<size_t>(sizeof(pWatch->Buffer), dwBytes))
+				if (pPos >= pWatch->Buffer + std::min<size_t>(sizeof(pWatch->Buffer), dwBytes))
 					break;
 				break;
 			}

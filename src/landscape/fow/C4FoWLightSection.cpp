@@ -65,7 +65,7 @@ C4FoWLightSection::~C4FoWLightSection()
 inline void C4FoWLightSection::LightBallExtremePoint(float x, float y, float dir, float &lightX, float &lightY) const
 {
 	float d = sqrt(x * x + y * y);
-	float s = Min(float(pLight->getSize()), d / 5.0f);
+	float s = std::min(float(pLight->getSize()), d / 5.0f);
 	lightX = dir * y * s / d;
 	lightY = dir * -x * s / d;
 }
@@ -112,13 +112,13 @@ void C4FoWLightSection::Dirty(int32_t reach)
 {
 	for (C4FoWBeam *beam = pBeams; beam; beam = beam->getNext())
 		if (beam->getLeftEndY() >= reach || beam->getRightEndY() >= reach)
-			beam->Dirty(Min(beam->getLeftEndY(), beam->getRightEndY()));
+			beam->Dirty(std::min(beam->getLeftEndY(), beam->getRightEndY()));
 }
 
 C4FoWBeam *C4FoWLightSection::FindBeamLeftOf(int32_t x, int32_t y) const
 {
 	// Trivial
-	y = Max(y, 0);
+	y = std::max(y, 0);
 	if (!pBeams || !pBeams->isRight(x, y))
 		return NULL;
 	// Go through list
@@ -184,7 +184,7 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	while (beam && !beam->isLeft(rx, ry)) {
 		if (beam->isDirty() && beam->getLeftEndY() <= Rect.y + Rect.Hgt) {
 			endBeam = beam;
-			startY = Min(startY, beam->getLeftEndY());
+			startY = std::min(startY, beam->getLeftEndY());
 		}
 		beam = beam->getNext();
 	}
@@ -204,11 +204,11 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 	}
 
 	// Bottom of scan - either bound by rectangle or by light's reach
-	int32_t endY = Min(Rect.GetBottom(), pLight->getReach());
+	int32_t endY = std::min(Rect.GetBottom(), pLight->getReach());
 
 	// Scan lines
 	int32_t y;
-	for(y = Max(0, startY); y < endY; y++) {
+	for(y = std::max(0, startY); y < endY; y++) {
 
 		// We ignore all material up to a certain distance. This is the X
 		// range for that in this scan line
@@ -240,8 +240,8 @@ void C4FoWLightSection::Update(C4Rect RectIn)
 			beam->Dirty(y+1);
 
 			// Do a scan
-			int32_t xl = Max(beam->getLeftX(y), Bounds.x),
-			        xr = Min(beam->getRightX(y), Bounds.x+Bounds.Wdt-1);
+			int32_t xl = std::max(beam->getLeftX(y), Bounds.x),
+			        xr = std::min(beam->getRightX(y), Bounds.x+Bounds.Wdt-1);
 			for(int32_t x = xl; x <= xr; x++)
 			{
 				// Ignore material up to a certain distance (see above)
@@ -486,7 +486,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 		for (std::list<C4FoWBeamTriangle>::iterator it = result.begin(), nextIt; it != --result.end(); ++it)
 		{
 			nextIt = it; ++nextIt;
-			float level = Min(it->fanRY, nextIt->fanLY);
+			float level = std::min(it->fanRY, nextIt->fanLY);
 			if (level <= scanLevel || level >= bestLevel)
 				continue;
 			bestLevel = level;
@@ -505,7 +505,7 @@ std::list<C4FoWBeamTriangle> C4FoWLightSection::CalculateTriangles(C4FoWRegion *
 			C4FoWBeamTriangle tri = *it, nextTri = *nextIt;
 
 			// Skip ray pairs that do not match the current level (see above)
-			float level = Min(tri.fanRY, nextTri.fanLY);
+			float level = std::min(tri.fanRY, nextTri.fanLY);
 			if(level != bestLevel)
 				continue;
 

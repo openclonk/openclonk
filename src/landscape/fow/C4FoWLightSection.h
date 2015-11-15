@@ -103,13 +103,13 @@ private:
 		In other words, the given rectangle's right most point when looked at from the origin.
 	  */
 	inline int32_t RectLeftMostX(const C4Rect &r) const { return r.x; }
-	inline int32_t RectLeftMostY(const C4Rect &r) const { return Max(0, r.x >= 0 ? r.y + r.Hgt : r.y); }
+	inline int32_t RectLeftMostY(const C4Rect &r) const { return std::max(0, r.x >= 0 ? r.y + r.Hgt : r.y); }
 	/** These methods return the position of the left delimiter point of a beam from the origin that would enclose the 
 	    given rectangle. Note that we assume the rect to have a positive Y-position.
 		In other words, the given rectangle's right most point when looked at from the origin.
 	  */
 	inline int32_t RectRightMostX(const C4Rect &r) const { return r.x + r.Wdt; }
-	inline int32_t RectRightMostY(const C4Rect &r) const { return Max(0, r.x + r.Wdt <= 0 ? r.y + r.Hgt : r.y); }
+	inline int32_t RectRightMostY(const C4Rect &r) const { return std::max(0, r.x + r.Wdt <= 0 ? r.y + r.Hgt : r.y); }
 
 	inline void LightBallExtremePoint(float x, float y, float dir, float &lightX, float &lightY) const;
 

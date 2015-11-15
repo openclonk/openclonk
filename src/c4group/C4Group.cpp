@@ -1477,7 +1477,7 @@ bool C4Group::Extract(const char *szFiles, const char *szExtractTo, const char *
 			if (StdOutput) printf("%s\n",tentry->FileName);
 			cbytes+=tentry->Size;
 			if (fnProcessCallback)
-				fnProcessCallback(tentry->FileName,100*cbytes/Max(tbytes,1));
+				fnProcessCallback(tentry->FileName,100*cbytes/std::max(tbytes,1));
 
 			// Extract
 			if (!ExtractEntry(tentry->FileName,szExtractTo))

@@ -263,7 +263,7 @@ public:
 
 	int32_t GetProgress() const { return iProgress; }
 	int32_t GetMaxProgress() const { return iMaxProgress; }
-	int32_t GetProgressPercent() const { return iProgress * 100 / Max<int32_t>(iMaxProgress, 1); }
+	int32_t GetProgressPercent() const { return iProgress * 100 / std::max<int32_t>(iMaxProgress, 1); }
 
 	const C4ScenarioParameters &GetAchievements() const { return Achievements; }
 };

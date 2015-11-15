@@ -84,14 +84,14 @@ void C4FoWLight::SetColor(uint32_t iValue)
 	colorG = GetGreenValue(iValue) / 255.0f;
 	colorB = GetBlueValue(iValue) / 255.0f;
 
-	float min = Min(colorR, Min(colorG, colorB));
-	colorV = Max(Max(colorR, Max(colorG, colorB)), 1e-3f); // prevent division by 0
+	float min = std::min(colorR, std::min(colorG, colorB));
+	colorV = std::max(std::max(colorR, std::max(colorG, colorB)), 1e-3f); // prevent division by 0
 	colorL = (min + colorV) / 2.0f;
 
 	// maximize color, so that dark colors will not be desaturated after normalization
-	colorR = Min(colorR / colorV, 1.0f);
-	colorG = Min(colorG / colorV, 1.0f);
-	colorB = Min(colorB / colorV, 1.0f);
+	colorR = std::min(colorR / colorV, 1.0f);
+	colorG = std::min(colorG / colorV, 1.0f);
+	colorB = std::min(colorB / colorV, 1.0f);
 }
 
 void C4FoWLight::Update(C4Rect Rec)
@@ -192,7 +192,7 @@ void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const
 
 void C4FoWLight::ProjectPointOutward(float &x, float &y, float maxDistance) const
 {
-	float distanceDifference = Min(maxDistance, (float) getTotalReach()) / sqrt((x - getX()) * (x - getX()) + (y - getY()) * (y - getY()));
+	float distanceDifference = std::min(maxDistance, (float) getTotalReach()) / sqrt((x - getX()) * (x - getX()) + (y - getY()) * (y - getY()));
 
 	x = getX() + distanceDifference * (x-getX());
 	y = getY() + distanceDifference * (y-getY());

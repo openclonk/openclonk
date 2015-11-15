@@ -146,7 +146,7 @@ void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL, int
 
 void SCopyUntil(const char *szSource, char *sTarget, const char * sUntil, size_t iMaxL)
 {
-	size_t n = Min(strcspn(szSource, sUntil), iMaxL - 1);
+	size_t n = std::min(strcspn(szSource, sUntil), iMaxL - 1);
 	strncpy(sTarget, szSource, n);
 	sTarget[n] = 0;
 }
@@ -605,7 +605,7 @@ bool SCopyEnclosed(const char *szSource, char cOpen, char cClose, char *sTarget,
 	if (!szSource || !sTarget) return false;
 	if ((iPos = SCharPos(cOpen,szSource)) < 0) return false;
 	if ((iLen = SCharPos(cClose,szSource+iPos+1)) < 0) return false;
-	SCopy(szSource+iPos+1,sTarget,Min(iLen,iSize));
+	SCopy(szSource+iPos+1,sTarget,std::min(iLen,iSize));
 	return true;
 }
 

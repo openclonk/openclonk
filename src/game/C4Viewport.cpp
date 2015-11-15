@@ -375,7 +375,7 @@ void C4Viewport::CalculateZoom()
 	if (plr)
 		plr->ZoomLimitsToViewport(this);
 	else
-		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
+		SetZoomLimits(0.8*std::min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
 
 }
 
@@ -388,7 +388,7 @@ void C4Viewport::InitZoom()
 	}
 	else
 	{
-		ZoomTarget = Max<float>(float(ViewWdt)/GBackWdt, 1.0f);
+		ZoomTarget = std::max<float>(float(ViewWdt)/GBackWdt, 1.0f);
 		Zoom = ZoomTarget;
 	}
 
@@ -489,9 +489,9 @@ void C4Viewport::AdjustPosition()
 		float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f/8.0f);
 
 		if (Zoom < ZoomTarget)
-			Zoom = Min(Zoom * ZoomAdjustFactor, ZoomTarget);
+			Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
 		if (Zoom > ZoomTarget)
-			Zoom = Max(Zoom / ZoomAdjustFactor, ZoomTarget);
+			Zoom = std::max(Zoom / ZoomAdjustFactor, ZoomTarget);
 	}
 	// View position
 	if (PlayerLock && ValidPlr(Player))
@@ -510,17 +510,17 @@ void C4Viewport::AdjustPosition()
 		}
 		else
 		{
-			scrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
+			scrollRange = std::min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 
 			// if view is close to border, allow scrolling
-			if (targetCenterViewX < ViewportScrollBorder) extraBoundsX = Min<float>(ViewportScrollBorder - targetCenterViewX, ViewportScrollBorder);
-			else if (targetCenterViewX >= GBackWdt - ViewportScrollBorder) extraBoundsX = Min<float>(targetCenterViewX - GBackWdt, 0) + ViewportScrollBorder;
-			if (targetCenterViewY < ViewportScrollBorder) extraBoundsY = Min<float>(ViewportScrollBorder - targetCenterViewY, ViewportScrollBorder);
-			else if (targetCenterViewY >= GBackHgt - ViewportScrollBorder) extraBoundsY = Min<float>(targetCenterViewY - GBackHgt, 0) + ViewportScrollBorder;
+			if (targetCenterViewX < ViewportScrollBorder) extraBoundsX = std::min<float>(ViewportScrollBorder - targetCenterViewX, ViewportScrollBorder);
+			else if (targetCenterViewX >= GBackWdt - ViewportScrollBorder) extraBoundsX = std::min<float>(targetCenterViewX - GBackWdt, 0) + ViewportScrollBorder;
+			if (targetCenterViewY < ViewportScrollBorder) extraBoundsY = std::min<float>(ViewportScrollBorder - targetCenterViewY, ViewportScrollBorder);
+			else if (targetCenterViewY >= GBackHgt - ViewportScrollBorder) extraBoundsY = std::min<float>(targetCenterViewY - GBackHgt, 0) + ViewportScrollBorder;
 		}
 
-		extraBoundsX = Max(extraBoundsX, (ViewWdt/Zoom - GBackWdt)/2 + 1);
-		extraBoundsY = Max(extraBoundsY, (ViewHgt/Zoom - GBackHgt)/2 + 1);
+		extraBoundsX = std::max(extraBoundsX, (ViewWdt/Zoom - GBackWdt)/2 + 1);
+		extraBoundsY = std::max(extraBoundsY, (ViewHgt/Zoom - GBackHgt)/2 + 1);
 
 		// add mouse auto scroll
 		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAutoScroll)
@@ -561,14 +561,14 @@ void C4Viewport::CenterPosition()
 
 void C4Viewport::UpdateBordersX()
 {
-	BorderLeft = Max(-GetViewX() * Zoom, 0.0f);
-	BorderRight = Max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f);
+	BorderLeft = std::max(-GetViewX() * Zoom, 0.0f);
+	BorderRight = std::max(ViewWdt - GBackWdt * Zoom + GetViewX() * Zoom, 0.0f);
 }
 
 void C4Viewport::UpdateBordersY()
 {
-	BorderTop = Max(-GetViewY() * Zoom, 0.0f);
-	BorderBottom = Max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f);
+	BorderTop = std::max(-GetViewY() * Zoom, 0.0f);
+	BorderBottom = std::max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f);
 }
 
 void C4Viewport::Default()

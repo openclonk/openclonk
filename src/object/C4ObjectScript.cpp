@@ -633,7 +633,7 @@ enum VertexUpdateMode
 static Nillable<long> FnGetVertex(C4Object *Obj, long iIndex, long iValueToGet)
 {
 	if (Obj->Shape.VtxNum<1) return C4Void();
-	iIndex=Min<long>(iIndex,Obj->Shape.VtxNum-1);
+	iIndex=std::min<long>(iIndex,Obj->Shape.VtxNum-1);
 	switch (static_cast<VertexDataIndex>(iValueToGet))
 	{
 	case VTX_X: return Obj->Shape.VtxX[iIndex]; break;
@@ -855,8 +855,8 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		const char * sep = strstr(s, "%s");
 		if (sep && pDef)
 		{
-			strncpy(caption, s, Min<intptr_t>(sep - s,256));
-			caption[Min<intptr_t>(sep - s,256)] = 0;
+			strncpy(caption, s, std::min<intptr_t>(sep - s,256));
+			caption[std::min<intptr_t>(sep - s,256)] = 0;
 			strncat(caption, pDef->GetName(), 256);
 			strncat(caption, sep + 2, 256);
 		}

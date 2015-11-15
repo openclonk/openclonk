@@ -373,11 +373,11 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 		return true;
 	}
 	// linebreak/ new surface check
-	int width = Max<int>(slot->advance.x / 64, Max(slot->bitmap_left,0) + slot->bitmap.width) + fDoShadow;
+	int width = std::max<int>(slot->advance.x / 64, std::max(slot->bitmap_left,0) + slot->bitmap.width) + fDoShadow;
 	if (!CheckRenderedCharSpace(width, iGfxLineHgt)) return false;
 	// offset from the top
 	int at_y = iCurrentSfcY + dwDefFontHeight * (*pVectorFont)->ascender / (*pVectorFont)->units_per_EM - slot->bitmap_top;
-	int at_x = iCurrentSfcX + Max(slot->bitmap_left,0);
+	int at_x = iCurrentSfcX + std::max(slot->bitmap_left,0);
 	// Copy to the surface
 	if (!sfcCurrent->Lock()) return false;
 	for (unsigned int y = 0; y < slot->bitmap.rows + fDoShadow; ++y)
@@ -549,7 +549,7 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 		if (fCheckMarkup && c=='{' && szText[0]=='{' && szText[1]!='{' && (iImgLgt=SCharPos('}', szText+1))>0 && szText[iImgLgt+2]=='}')
 		{
 			char imgbuf[101];
-			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
+			SCopy(szText+1, imgbuf, std::min(iImgLgt, 100));
 
 			int w2, h2;
 			if(!GetFontImageSize(imgbuf, w2, h2))
@@ -624,7 +624,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			if (fCheckMarkup && c=='{' && szPos[0]=='{' && szPos[1]!='{' && (iImgLgt=SCharPos('}', szPos+1))>0 && szPos[iImgLgt+2]=='}')
 			{
 				char imgbuf[101];
-				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
+				SCopy(szPos+1, imgbuf, std::min(iImgLgt, 100));
 
 				int iCharHgt;
 				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
@@ -752,7 +752,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	       iXBreak=0, // text width as it was at last break pos
 	               iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
 	                                  iHgt=iLineHgt; // total height of output text
-	int iCharHOverlap = Max<int>(-iHSpace, 0); // character width exceeding placement of next character
+	int iCharHOverlap = std::max<int>(-iHSpace, 0); // character width exceeding placement of next character
 	bool fIsFirstLineChar = true;
 	// ignore any markup
 	C4Markup MarkupChecker(false);
@@ -774,7 +774,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			if (fCheckMarkup && c=='{' && szPos[0]=='{' && szPos[1]!='{' && (iImgLgt=SCharPos('}', szPos+1))>0 && szPos[iImgLgt+2]=='}')
 			{
 				char imgbuf[101];
-				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
+				SCopy(szPos+1, imgbuf, std::min(iImgLgt, 100));
 
 				int iCharHgt;
 				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
@@ -934,7 +934,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 	bool fWasModulated = pDraw->GetBlitModulation(dwOldModClr);
 	if (fWasModulated) ModulateClr(dwColor, dwOldModClr);
 	// get alpha fade percentage
-	DWORD dwAlphaMod = Min<uint32_t>(((dwColor>>0x18)*0xff)/0xaf, 255)<<0x18 | 0xffffff;
+	DWORD dwAlphaMod = std::min<uint32_t>(((dwColor>>0x18)*0xff)/0xaf, 255)<<0x18 | 0xffffff;
 
 	/*  char TEXT[8192];
 	  sprintf(TEXT, "%s(%x-%x-%x)", szText, dwAlphaMod>>0x18, dwColor>>0x15, (((int)(dwColor>>0x15)-0x50)*0xff)/0xaf); szText=TEXT;*/
@@ -987,7 +987,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 		char imgbuf[101] = "";
 		if (c=='{' && szText[0]=='{' && szText[1]!='{' && (iImgLgt=SCharPos('}', szText+1))>0 && szText[iImgLgt+2]=='}' && !(dwFlags & STDFONT_NOMARKUP))
 		{
-			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
+			SCopy(szText+1, imgbuf, std::min(iImgLgt, 100));
 			szText+=iImgLgt+3;
 			if(!GetFontImageSize(imgbuf, w2, h2))
 				continue;

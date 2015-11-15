@@ -1735,7 +1735,7 @@ void C4ControlVote::Execute() const
 		int32_t iPositive = 0, iNegative = 0, iVotes = 0;
 		// If there are no teams, count as if all were in the same team
 		// (which happens to be equivalent to "everyone is in his own team" here)
-		for (int32_t i = 0; i < Max<int32_t>(Game.Teams.GetTeamCount(), 1); i++)
+		for (int32_t i = 0; i < std::max<int32_t>(Game.Teams.GetTeamCount(), 1); i++)
 		{
 			C4Team *pTeam = Game.Teams.GetTeamByIndex(i);
 			// Votes for this team

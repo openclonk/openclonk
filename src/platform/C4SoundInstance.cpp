@@ -382,7 +382,7 @@ void C4SoundInstance::Execute()
 		if (pitch_dirty)
 		{
 			// set pitch; map -90..+100 range to 0.1f..2.0f
-			alSourcef(iChannel, AL_PITCH, Max<float>(float(iPitch + 100) / 100.0f, 0.1f));
+			alSourcef(iChannel, AL_PITCH, std::max(float(iPitch + 100) / 100.0f, 0.1f));
 			pitch_dirty = false;
 		}
 #endif

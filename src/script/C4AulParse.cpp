@@ -488,7 +488,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 			C = *(++SPos);
 		}
 
-		Len = Min(Len, C4AUL_MAX_Identifier);
+		Len = std::min(Len, C4AUL_MAX_Identifier);
 		SCopy(TokenSPos, Idtf, Len);
 		return dir ? ATT_DIR : ATT_IDTF;
 	}

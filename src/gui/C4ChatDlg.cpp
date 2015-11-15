@@ -132,7 +132,7 @@ void C4ChatControl::ChatSheet::UpdateSize()
 	// position child elements
 	C4GUI::ComponentAligner caMain(GetContainedClientRect(), 0,0);
 	C4GUI::ComponentAligner caChat(caMain.GetFromBottom(C4GUI::Edit::GetDefaultEditHeight()), 0,0);
-	if (pNickList) pNickList->SetBounds(caMain.GetFromRight(Max<int32_t>(caMain.GetInnerWidth()/5, 100)));
+	if (pNickList) pNickList->SetBounds(caMain.GetFromRight(std::max<int32_t>(caMain.GetInnerWidth()/5, 100)));
 	pChatBox->SetBounds(caMain.GetAll());
 	if (pInputLbl) pInputLbl->SetBounds(caChat.GetFromLeft(40));
 	pInputEdit->SetBounds(caChat.GetAll());
@@ -402,7 +402,7 @@ void C4ChatControl::UpdateSize()
 	int32_t iIndent1 = C4GUI_DefDlgSmallIndent/2, iIndent2 = C4GUI_DefDlgIndent/2;
 	int32_t iLoginHgt = pUseFont->GetLineHeight() * 8 + iIndent1*10 + iIndent2*10 + C4GUI_ButtonHgt + 20;
 	int32_t iLoginWdt = iLoginHgt*2/3;
-	C4GUI::ComponentAligner caLogin(caLoginSheet.GetCentered(Min<int32_t>(iLoginWdt, caLoginSheet.GetInnerWidth()), Min<int32_t>(iLoginHgt, caLoginSheet.GetInnerHeight())), iIndent1, iIndent1);
+	C4GUI::ComponentAligner caLogin(caLoginSheet.GetCentered(std::min<int32_t>(iLoginWdt, caLoginSheet.GetInnerWidth()), std::min<int32_t>(iLoginHgt, caLoginSheet.GetInnerHeight())), iIndent1, iIndent1);
 	pLblLoginNick->SetBounds(caLogin.GetFromTop(pUseFont->GetLineHeight()));
 	pEdtLoginNick->SetBounds(caLogin.GetFromTop(C4GUI::Edit::GetDefaultEditHeight()));
 	caLogin.ExpandTop(2*(iIndent1-iIndent2));

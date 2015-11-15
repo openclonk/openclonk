@@ -447,7 +447,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 				// try to find random song
 				for (int i = 0; i <= 1000; i++)
 				{
-					int nmb = SafeRandom(Max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
+					int nmb = SafeRandom(std::max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
 					int j;
 					for (j = 0, NewFile = Songs; NewFile; NewFile = NewFile->pNext)
 						if (!NewFile->NoPlay)

@@ -97,7 +97,7 @@ public:
 	bool IsActivated() const { return fActivated; }
 
 	int32_t getControlPreSend() const { return iControlPreSend; }
-	void setControlPreSend(int32_t iToVal) { iControlPreSend = Min(iToVal, C4MaxPreSend); }
+	void setControlPreSend(int32_t iToVal) { iControlPreSend = std::min(iToVal, C4MaxPreSend); }
 	int32_t getAvgControlSendTime() const { return iAvgControlSendTime; }
 	void setTargetFPS(int32_t iToVal) { iTargetFPS = iToVal; }
 

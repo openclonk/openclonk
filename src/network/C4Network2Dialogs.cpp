@@ -150,10 +150,10 @@ C4Network2ClientListBox::ClientListItem::ClientListItem(class C4Network2ClientLi
 		// activate/deactivate and kick btns for clients at host
 		if (!pForDlg->IsStartup())
 		{
-			pActivateBtn = new C4GUI::CallbackButtonEx<C4Network2ClientListBox::ClientListItem, C4GUI::IconButton>(C4GUI::Ico_Active, GetToprightCornerRect(Max(iIconSize, 16),Max(iIconSize, 16),2,1,1), 0, this, &ClientListItem::OnButtonActivate);
+			pActivateBtn = new C4GUI::CallbackButtonEx<C4Network2ClientListBox::ClientListItem, C4GUI::IconButton>(C4GUI::Ico_Active, GetToprightCornerRect(std::max(iIconSize, 16),std::max(iIconSize, 16),2,1,1), 0, this, &ClientListItem::OnButtonActivate);
 			fShownActive = true;
 		}
-		pKickBtn = new  C4GUI::CallbackButtonEx<C4Network2ClientListBox::ClientListItem, C4GUI::IconButton>(C4GUI::Ico_Kick, GetToprightCornerRect(Max(iIconSize, 16),Max(iIconSize, 16),2,1,0), 0, this, &ClientListItem::OnButtonKick);
+		pKickBtn = new  C4GUI::CallbackButtonEx<C4Network2ClientListBox::ClientListItem, C4GUI::IconButton>(C4GUI::Ico_Kick, GetToprightCornerRect(std::max(iIconSize, 16),std::max(iIconSize, 16),2,1,0), 0, this, &ClientListItem::OnButtonKick);
 		pKickBtn->SetToolTip(LoadResStrNoAmp("IDS_NET_KICKCLIENT"));
 	}
 	if (!pForDlg->IsStartup()) if (pClient && !pClient->isLocal())
@@ -587,12 +587,12 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 	SetBounds(rcBounds);
 	// calculate button size from area
 	int32_t iButtonCount = fNetwork ? fHost ? 6 : 3 : 2;
-	int32_t iIconSize = Min<int32_t>(C4GUI_IconExHgt, rcBounds.Hgt), iIconSpacing = rcBounds.Wdt/(rcBounds.Wdt >= 400 ? 64 : 128);
+	int32_t iIconSize = std::min<int32_t>(C4GUI_IconExHgt, rcBounds.Hgt), iIconSpacing = rcBounds.Wdt/(rcBounds.Wdt >= 400 ? 64 : 128);
 	if ((iIconSize+iIconSpacing*2)*iButtonCount > rcBounds.Wdt)
 	{
 		if (iIconSize*iButtonCount <= rcBounds.Wdt)
 		{
-			iIconSpacing = Max<int32_t>(0, (rcBounds.Wdt-iIconSize*iButtonCount)/(iButtonCount*2)-1);
+			iIconSpacing = std::max<int32_t>(0, (rcBounds.Wdt-iIconSize*iButtonCount)/(iButtonCount*2)-1);
 		}
 		else
 		{
@@ -828,7 +828,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 		iMinVal = ((iMinVal-(iMinVal<0))/ddv+(iMinVal<0))*ddv;
 	ValueType dv=iMaxVal-iMinVal; TimeType dt=iMaxTime-iMinTime;
 	// axis calculations
-	sbuf.Format("-%d", (int) Max(Abs(iMaxVal), Abs(iMinVal)));
+	sbuf.Format("-%d", (int) std::max(Abs(iMaxVal), Abs(iMinVal)));
 	rFont.GetTextExtent(sbuf.getData(), XAxisMinStepWdt, YAxisMinStepHgt, false);
 	YAxisWdt += XAxisMinStepWdt; XAxisHgt += YAxisMinStepHgt;
 	XAxisMinStepWdt += 2; YAxisMinStepHgt += 2;
@@ -844,7 +844,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 		while ((pSeries = pDisplayGraph->GetSeries(iSeries++)))
 		{
 			rFont.GetTextExtent(pSeries->GetTitle(), W, Q, true);
-			iLegendWdt = Max(iLegendWdt, W);
+			iLegendWdt = std::max(iLegendWdt, W);
 		}
 		tw -= iLegendWdt+1;
 		iSeries = 0;
@@ -891,8 +891,8 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	int iSeries = 0;
 	while (const C4Graph *pSeries = pDisplayGraph->GetSeries(iSeries++))
 	{
-		int iThisMinTime = Max(iMinTime, pSeries->GetStartTime());
-		int iThisMaxTime = Min(iMaxTime, pSeries->GetEndTime());
+		int iThisMinTime = std::max(iMinTime, pSeries->GetStartTime());
+		int iThisMaxTime = std::min(iMaxTime, pSeries->GetEndTime());
 		bool fAnyVal = false;
 		for (iX = 0; iX<tw; ++iX)
 		{

@@ -93,7 +93,7 @@ void C4GoalDisplay::SetGoals(const C4IDList &rAllGoals, const C4IDList &rFulfill
 	int32_t iGoalSymbolMargin = C4GUI_DefDlgSmallIndent;
 	int32_t iGoalSymbolAreaHeight = 2*iGoalSymbolMargin + iGoalSymbolHeight;
 	int32_t iGoalAreaWdt = GetClientRect().Wdt;
-	int32_t iGoalsPerRow = Max<int32_t>(1, iGoalAreaWdt / iGoalSymbolAreaHeight);
+	int32_t iGoalsPerRow = std::max<int32_t>(1, iGoalAreaWdt / iGoalSymbolAreaHeight);
 	int32_t iGoalCount = rAllGoals.GetNumberOfIDs();
 	int32_t iRowCount = (iGoalCount-1) / iGoalsPerRow + 1;
 	C4Rect rcNewBounds = GetBounds();
@@ -104,7 +104,7 @@ void C4GoalDisplay::SetGoals(const C4IDList &rAllGoals, const C4IDList &rFulfill
 	int32_t iGoal = 0;
 	for (int32_t iRow=0; iRow<iRowCount; ++iRow)
 	{
-		int32_t iColCount = Min<int32_t>(iGoalCount - iGoal, iGoalsPerRow);
+		int32_t iColCount = std::min<int32_t>(iGoalCount - iGoal, iGoalsPerRow);
 		C4GUI::ComponentAligner caGoalArea(caAll.GetFromTop(iGoalSymbolAreaHeight, iColCount*iGoalSymbolAreaHeight), iGoalSymbolMargin,iGoalSymbolMargin, false);
 		for (int32_t iCol=0; iCol<iColCount; ++iCol,++iGoal)
 		{
@@ -120,8 +120,8 @@ void C4GoalDisplay::SetGoals(const C4IDList &rAllGoals, const C4IDList &rFulfill
 
 bool C4GameOverDlg::is_shown = false;
 
-C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? (C4GUI::GetScreenWdt()-10) : Min<int32_t>(C4GUI::GetScreenWdt()-150, 800),
-		    (C4GUI::GetScreenHgt() < 600) ? (C4GUI::GetScreenHgt()-10) : Min<int32_t>(C4GUI::GetScreenHgt()-150, 600),
+C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? (C4GUI::GetScreenWdt()-10) : std::min<int32_t>(C4GUI::GetScreenWdt()-150, 800),
+		    (C4GUI::GetScreenHgt() < 600) ? (C4GUI::GetScreenHgt()-10) : std::min<int32_t>(C4GUI::GetScreenHgt()-150, 600),
 		    LoadResStr("IDS_TEXT_EVALUATION"),
 		    false), pNetResultLabel(NULL), fIsNetDone(false), fHasNextMissionButton(false)
 {
@@ -138,7 +138,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	// lower button-area
 	C4GUI::ComponentAligner caBottom(caMain.GetFromBottom(iDefBtnHeight+iIndentY1*2), iIndentX1,0);
 	int32_t iBottomButtonSize = caBottom.GetInnerWidth();
-	iBottomButtonSize = Min<int32_t>(iBottomButtonSize/2-2*iIndentX1, ::GraphicsResource.CaptionFont.GetTextWidth("Quit it, baby! And some.")*2);
+	iBottomButtonSize = std::min<int32_t>(iBottomButtonSize/2-2*iIndentX1, ::GraphicsResource.CaptionFont.GetTextWidth("Quit it, baby! And some.")*2);
 	// goal display
 	const C4IDList &rGoals = Game.RoundResults.GetGoals();
 	const C4IDList &rFulfilledGoals = Game.RoundResults.GetFulfilledGoals();

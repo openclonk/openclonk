@@ -118,7 +118,7 @@ namespace C4GUI
 	int32_t Edit::GetCustomEditHeight(CStdFont *pUseFont)
 	{
 		// edit height for custom font: Make it so edits and wooden labels have same height
-		return Max<int32_t>(pUseFont->GetLineHeight()+3, C4GUI_MinWoodBarHgt);
+		return std::max<int32_t>(pUseFont->GetLineHeight()+3, C4GUI_MinWoodBarHgt);
 	}
 
 	void Edit::ClearText()
@@ -148,11 +148,11 @@ namespace C4GUI
 	void Edit::DeleteSelection()
 	{
 		// move end text to front
-		int32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
+		int32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd), iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 		if (iSelectionStart == iSelectionEnd) return;
 		memmove(Text + iSelBegin, Text + iSelEnd, strlen(Text + iSelEnd)+1);
 		// adjust cursor pos
-		if (iCursorPos > iSelBegin) iCursorPos = Max(iSelBegin, iCursorPos - iSelEnd + iSelBegin);
+		if (iCursorPos > iSelBegin) iCursorPos = std::max(iSelBegin, iCursorPos - iSelEnd + iSelBegin);
 		// cursor might have moved: ensure it is shown
 		tLastInputTime = C4TimeMilliseconds::Now();
 		// nothing selected
@@ -234,7 +234,7 @@ namespace C4GUI
 	{
 		if (rcClientRect.Wdt<5) return;
 		// get position of cursor
-		int32_t iScrollOff = Min<int32_t>(20, rcClientRect.Wdt/3);
+		int32_t iScrollOff = std::min<int32_t>(20, rcClientRect.Wdt/3);
 		int32_t w,h;
 		if (!cPasswordMask)
 		{
@@ -249,12 +249,12 @@ namespace C4GUI
 		while (w-iXScroll < rcClientRect.Wdt/5 && w<iScrollOff+iXScroll && iXScroll > 0)
 		{
 			// left
-			iXScroll = Max(iXScroll - Min(100, rcClientRect.Wdt/4), 0);
+			iXScroll = std::max(iXScroll - std::min(100, rcClientRect.Wdt/4), 0);
 		}
 		while (w-iXScroll >= rcClientRect.Wdt/5 && w>=rcClientRect.Wdt-iScrollOff+iXScroll)
 		{
 			// right
-			iXScroll += Min(100, rcClientRect.Wdt/4);
+			iXScroll += std::min(100, rcClientRect.Wdt/4);
 		}
 	}
 
@@ -288,7 +288,7 @@ namespace C4GUI
 	bool Edit::Copy()
 	{
 		// get selected range
-		int32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
+		int32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd), iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 		if (iSelBegin == iSelEnd) return false;
 		StdStrBuf buf;
 		// allocate a global memory object for the text.
@@ -608,8 +608,8 @@ namespace C4GUI
 		if (iSelectionStart != iSelectionEnd)
 		{
 			// get selection range
-			int32_t iSelBegin = Min(iSelectionStart, iSelectionEnd);
-			int32_t iSelEnd = Max(iSelectionStart, iSelectionEnd);
+			int32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd);
+			int32_t iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 			// get offsets in text
 			int32_t iSelX1, iSelX2, h;
 			char c = pDrawText[iSelBegin]; pDrawText[iSelBegin]=0; pFont->GetTextExtent(pDrawText, iSelX1, h, false); pDrawText[iSelBegin]=c;
@@ -655,7 +655,7 @@ namespace C4GUI
 		ContextMenu *pCtx = new ContextMenu();
 		// fill with any valid items
 		// get selected range
-		uint32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
+		uint32_t iSelBegin = std::min(iSelectionStart, iSelectionEnd), iSelEnd = std::max(iSelectionStart, iSelectionEnd);
 		bool fAnythingSelected = (iSelBegin != iSelEnd);
 		if (fAnythingSelected)
 		{
@@ -680,7 +680,7 @@ namespace C4GUI
 		int32_t iPos = iCursorPos;
 		while (iPos>0)
 				if (IsWholeWordSpacer(Text[iPos-1])) break; else --iPos;
-		SCopy(Text + iPos, szTargetBuf, Min(iCursorPos - iPos, iMaxTargetBufLen));
+		SCopy(Text + iPos, szTargetBuf, std::min(iCursorPos - iPos, iMaxTargetBufLen));
 		return !!*szTargetBuf;
 	}
 
@@ -818,14 +818,14 @@ namespace C4GUI
 		if (fMultiline)
 		{
 			iEditWdt += 2; // indent edit a bit
-			if (piWdt) *piWdt = Max<int32_t>(iLabelWdt, iEditWdt);
+			if (piWdt) *piWdt = std::max<int32_t>(iLabelWdt, iEditWdt);
 			if (piHgt) *piHgt = iLabelHgt + iEditHgt + 2;
 		}
 		else
 		{
 			iLabelWdt += 2; // add a bit of spacing between label and edit
 			if (piWdt) *piWdt = iLabelWdt + iEditWdt;
-			if (piHgt) *piHgt = Max<int32_t>(iLabelHgt, iEditHgt);
+			if (piHgt) *piHgt = std::max<int32_t>(iLabelHgt, iEditHgt);
 		}
 		return true;
 	}

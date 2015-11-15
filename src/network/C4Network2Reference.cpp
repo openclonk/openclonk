@@ -115,7 +115,7 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ObservingAllowed,  "ObservingAllowed", true));
 	pComp->Value(mkNamingAdapt(PasswordNeeded,    "PasswordNeeded",   false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddrCnt), "AddressCount", 0));
-	iAddrCnt = Min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
+	iAddrCnt = std::min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));
 	pComp->Value(mkNamingAdapt(Game.sEngineName,      "Game",             "None"));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"    ));
@@ -351,7 +351,7 @@ bool C4Network2HTTPClient::Decompress(StdBuf *pData)
 	size_t iSize = pData->getSize();
 	// Create buffer
 	uint32_t iOutSize = *getBufPtr<uint32_t>(*pData, pData->getSize() - sizeof(uint32_t));
-	iOutSize = Min<uint32_t>(iOutSize, iSize * 1000);
+	iOutSize = std::min<uint32_t>(iOutSize, iSize * 1000);
 	StdBuf Out; Out.New(iOutSize);
 	// Prepare stream
 	z_stream zstrm;
@@ -434,9 +434,9 @@ C4TimeMilliseconds C4Network2HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
 	if (!fBusy)
 		return tNetIOTCPTick;
 
-	C4TimeMilliseconds tHTTPClientTick = tNow + 1000 * Max<time_t>(iRequestTimeout - time(NULL), 0);
+	C4TimeMilliseconds tHTTPClientTick = tNow + 1000 * std::max<time_t>(iRequestTimeout - time(NULL), 0);
 
-	return Max(tNetIOTCPTick, tHTTPClientTick);
+	return std::max(tNetIOTCPTick, tHTTPClientTick);
 }
 
 bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)

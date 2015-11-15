@@ -142,7 +142,7 @@ void C4FoWBeam::MergeDirty()
 
 	// Figure out how far the new dirty beams reaches. Note that
 	// we might lose information about the landscape here.
-	Dirty(Min(getLeftEndY(), pWith->getLeftEndY()));
+	Dirty(std::min(getLeftEndY(), pWith->getLeftEndY()));
 
 	// Set right
 	iRightX = pWith->iRightX;

@@ -1290,7 +1290,7 @@ int C4Network2IOConnection::getLag() const
 			int iPingLag = C4TimeMilliseconds::Now() - tLastPing;
 			// Use it for lag measurement once it's larger then the last ping time
 			// (the ping time won't be better than this anyway once the pong's here)
-			return Max(iPingLag, iPingTime);
+			return std::max(iPingLag, iPingTime);
 		}
 	}
 	// Last ping result

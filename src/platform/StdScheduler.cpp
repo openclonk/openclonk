@@ -55,7 +55,7 @@ bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 	for (;;)
 	{
 		// Call execute with given timeout
-		if (!Execute(Max(iTimeout, 0)))
+		if (!Execute(std::max(iTimeout, 0)))
 			return false;
 		// Calculate timeout
 		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
@@ -144,7 +144,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 		tProcTick = proc->GetNextTick(tNow);
 		if (iTimeout == -1 || tNow + iTimeout > tProcTick)
 		{
-			iTimeout = Max<decltype(iTimeout)>(tProcTick - tNow, 0);
+			iTimeout = std::max<decltype(iTimeout)>(tProcTick - tNow, 0);
 		}
 	}
 	

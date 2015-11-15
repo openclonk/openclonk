@@ -182,13 +182,13 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 				}
 				else
 				{
-					BoundingBox.x1 = Min(vertices[i].x, BoundingBox.x1);
-					BoundingBox.x2 = Max(vertices[i].x, BoundingBox.x2);
-					BoundingBox.y1 = Min(vertices[i].y, BoundingBox.y1);
-					BoundingBox.y2 = Max(vertices[i].y, BoundingBox.y2);
-					BoundingBox.z1 = Min(vertices[i].z, BoundingBox.z1);
-					BoundingBox.z2 = Max(vertices[i].z, BoundingBox.z2);
-					mesh.BoundingRadius = Max(mesh.BoundingRadius, d);
+					BoundingBox.x1 = std::min(vertices[i].x, BoundingBox.x1);
+					BoundingBox.x2 = std::max(vertices[i].x, BoundingBox.x2);
+					BoundingBox.y1 = std::min(vertices[i].y, BoundingBox.y1);
+					BoundingBox.y2 = std::max(vertices[i].y, BoundingBox.y2);
+					BoundingBox.z1 = std::min(vertices[i].z, BoundingBox.z1);
+					BoundingBox.z2 = std::max(vertices[i].z, BoundingBox.z2);
+					mesh.BoundingRadius = std::max(mesh.BoundingRadius, d);
 				}
 			}
 		}

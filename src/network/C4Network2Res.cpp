@@ -281,7 +281,7 @@ bool C4Network2ResChunkData::MergeRanges(ChunkRange *pRange)
 	ChunkRange *pNext = pRange->Next;
 	if (pRange->Start + pRange->Length < pNext->Start) return false;
 	// get overlap
-	int32_t iOverlap = Min((pRange->Start + pRange->Length) - pNext->Start, pNext->Length);
+	int32_t iOverlap = std::min((pRange->Start + pRange->Length) - pNext->Start, pNext->Length);
 	// set new chunk range
 	pRange->Length += pNext->Length - iOverlap;
 	// remove range
@@ -1205,7 +1205,7 @@ bool C4Network2ResChunk::Set(C4Network2Res *pRes, uint32_t inChunk)
 	iChunk = inChunk;
 	// calculate offset and size
 	int32_t iOffset = iChunk * Core.getChunkSize(),
-	                  iSize = Min<int32_t>(Core.getFileSize() - iOffset, C4NetResChunkSize);
+	                  iSize = std::min<int32_t>(Core.getFileSize() - iOffset, C4NetResChunkSize);
 	if (iSize < 0) { LogF("Network: could not get chunk from offset %d from resource file %s: File size is only %d!", iOffset, pRes->getFile(), Core.getFileSize()); return false; }
 	// open file
 	int32_t f = pRes->OpenFileRead();
@@ -1343,7 +1343,7 @@ int32_t C4Network2ResList::nextResID() // by main thread
 	CStdLock ResIDLock(&ResIDCSec);
 	assert(iNextResID >= (iClientID << 16));
 	if (iNextResID >= ((iClientID+1) << 16) - 1)
-		iNextResID = Max<int32_t>(0, iClientID) << 16;
+		iNextResID = std::max<int32_t>(0, iClientID) << 16;
 	// find free
 	while (getRes(iNextResID))
 		iNextResID++;

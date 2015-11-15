@@ -48,7 +48,7 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Player=iPlayer;
 	ColorDw=dwClr;
 	Type=iType;
-	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * (Target ? ObjectMsgDelayFactor : GlobalMsgDelayFactor));
+	Delay=std::max<int32_t>(C4GM_MinDelay, Text.getLength() * (Target ? ObjectMsgDelayFactor : GlobalMsgDelayFactor));
 	DecoID=idDecoID;
 	this->dwFlags=dwFlags;
 	PictureDef=NULL;
@@ -135,9 +135,9 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			// Word wrap to cgo width
 			if (PictureDef)
 			{
-				if (!wdt) wdt = Clamp<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
+				if (!wdt) wdt = Clamp<int32_t>(cgo.Wdt/2, 50, std::min<int32_t>(500, cgo.Wdt-10));
 				int32_t iUnbrokenTextWidth = ::GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
-				wdt = Min<int32_t>(wdt, iUnbrokenTextWidth+10);
+				wdt = std::min<int32_t>(wdt, iUnbrokenTextWidth+10);
 			}
 			else
 			{
@@ -169,7 +169,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			if (pFrameDeco)
 			{
 				iDrawX *= cgo.Zoom; iDrawY *= cgo.Zoom;
-				C4Rect rect(iDrawX-cgo.TargetX, iDrawY-cgo.TargetY, iTextWdt + PictureWidth + PictureIndent + pFrameDeco->iBorderLeft + pFrameDeco->iBorderRight, Max(iTextHgt, PictureWidth) + pFrameDeco->iBorderTop + pFrameDeco->iBorderBottom);
+				C4Rect rect(iDrawX-cgo.TargetX, iDrawY-cgo.TargetY, iTextWdt + PictureWidth + PictureIndent + pFrameDeco->iBorderLeft + pFrameDeco->iBorderRight, std::max(iTextHgt, PictureWidth) + pFrameDeco->iBorderTop + pFrameDeco->iBorderBottom);
 				if (dwFlags & C4GM_Bottom) { rect.y -= rect.Hgt; iDrawY -= rect.Hgt; }
 				else if (dwFlags & C4GM_VCenter) { rect.y -= rect.Hgt/2; iDrawY -= rect.Hgt/2; }
 				if (dwFlags & C4GM_Right) { rect.x -= rect.Wdt; iDrawX -= rect.Wdt; }

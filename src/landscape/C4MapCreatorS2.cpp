@@ -1038,7 +1038,7 @@ bool C4MCParser::GetNextToken()
 			if (((C < '0') || (C > '9')) && ((C < 'a') || (C > 'z')) && ((C < 'A') || (C > 'Z')) && (C != '_'))
 			{
 				// return ident/directive
-				Len = Min<int32_t>(Len, C4MaxName);
+				Len = std::min<int32_t>(Len, C4MaxName);
 				SCopy(CPos0, CurrTokenIdtf, Len);
 				if (State==TGS_Ident) CurrToken=MCT_IDTF; else CurrToken=MCT_DIR;
 				return true;
@@ -1049,7 +1049,7 @@ bool C4MCParser::GetNextToken()
 			if ((C < '0') || (C > '9'))
 			{
 				// return integer
-				Len = Min<int32_t>(Len, C4MaxName);
+				Len = std::min<int32_t>(Len, C4MaxName);
 				CurrToken=MCT_INT;
 				// check for "-"
 				if (Len == 1 && *CPos0 == '-')
@@ -1711,12 +1711,12 @@ bool AlgoPolygon(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 					if ((uY < iY) == (iY <= cY))
 					{
 						//and edge intersects ray, because both points are right of iX
-						if (iX < Min (uX, cX))
+						if (iX < std::min (uX, cX))
 						{
 							count++;
 						}
 						//or one is right of I
-						else if (iX <= Max (uX, cX))
+						else if (iX <= std::max (uX, cX))
 						{
 							//and edge intersects with ray
 							if (iX < (zX = ((cX - uX) * (iY - uY) / (cY - uY)) + uX)) count++;

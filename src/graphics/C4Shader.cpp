@@ -477,7 +477,7 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 			if (pSlice->Position < iPos) continue;
 			if (pSlice->Position > iPos)
 			{
-				iNextPos = Min(iNextPos, pSlice->Position);
+				iNextPos = std::min(iNextPos, pSlice->Position);
 				continue;
 			}
 			// Same position - add slice!

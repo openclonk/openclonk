@@ -458,7 +458,7 @@ C4PortraitSelDlg::ListItem::ListItem(const char *szFilename) : C4FileSelDlg::Lis
 		sDisplayLabel.Ref(LoadResStr("IDS_MSG_NOPORTRAIT"));
 	}
 	// insert linebreaks into label text
-	int32_t iLineHgt = Max<int32_t>(pUseFont->BreakMessage(sDisplayLabel.getData(), ImagePreviewSize-6, &sFilenameLabelText, false), 1);
+	int32_t iLineHgt = std::max<int32_t>(pUseFont->BreakMessage(sDisplayLabel.getData(), ImagePreviewSize-6, &sFilenameLabelText, false), 1);
 	// set size
 	SetBounds(C4Rect(0,0,ImagePreviewSize,ImagePreviewSize+iLineHgt));
 }

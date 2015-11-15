@@ -300,9 +300,9 @@ void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
 {
 	rWdt = MapWdt.Evaluate();
 	rHgt = MapHgt.Evaluate();
-	iPlayerNum = Max<int32_t>( iPlayerNum, 1 );
+	iPlayerNum = std::max<int32_t>( iPlayerNum, 1 );
 	if (MapPlayerExtend)
-		rWdt = Min(rWdt * Min(iPlayerNum, C4S_MaxMapPlayerExtend), MapWdt.Max);
+		rWdt = std::min(rWdt * std::min(iPlayerNum, C4S_MaxMapPlayerExtend), MapWdt.Max);
 }
 
 void C4SLandscape::CompileFunc(StdCompiler *pComp)

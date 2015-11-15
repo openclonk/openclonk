@@ -120,13 +120,13 @@ namespace C4GUI
 		int32_t yOff; float fZoom;
 		if (pUseFont->GetLineHeight() <= rcBounds.Hgt)
 		{
-			yOff = Max<int32_t>(rcBounds.Hgt - pUseFont->GetLineHeight(), 0)/2;
+			yOff = std::max<int32_t>(rcBounds.Hgt - pUseFont->GetLineHeight(), 0)/2;
 			fZoom = 1.0f;
 		}
 		else
 		{
 			yOff = 0;
-			fZoom = (float) rcBounds.Hgt / Max(pUseFont->GetLineHeight(), 1);
+			fZoom = (float) rcBounds.Hgt / std::max(pUseFont->GetLineHeight(), 1);
 		}
 		pDraw->TextOut(sCaption.getData(), *pUseFont, fZoom, cgo.Surface, x0 + rcBounds.Hgt + C4GUI_CheckBoxLabelSpacing, y0 + yOff, fEnabled ? dwEnabledClr : dwDisabledClr, ALeft, true);
 		// selection marker

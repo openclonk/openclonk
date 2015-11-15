@@ -290,7 +290,7 @@ namespace C4GUI
 				int32_t iTabWidth, iTabHeight;
 				pSheet->GetCaptionSize(&iTabWidth, &iTabHeight, HasLargeCaptions(), pSheet == pActiveSheet, pfctClip, pfctIcons, pSheetCaptionFont);
 				iTabWidth += (eTabPos == tbLeft) ? 20 : iSheetSpacing;
-				iMaxTabWidth = Max(iTabWidth, iMaxTabWidth);
+				iMaxTabWidth = std::max(iTabWidth, iMaxTabWidth);
 				if (eTabPos == tbLeft)
 				{
 					iTotalHgt += iTabHeight;

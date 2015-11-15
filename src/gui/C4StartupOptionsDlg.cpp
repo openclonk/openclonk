@@ -42,7 +42,7 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	int32_t iTextHgt = rUseFont.GetLineHeight();
 	// draw frame
 	uint32_t dwClrHigh = C4StartupBtnBorderColor1, dwClrLow = C4StartupBtnBorderColor2;
-	if (fDown) Swap<uint32_t>(dwClrHigh, dwClrLow);
+	if (fDown) std::swap(dwClrHigh, dwClrLow);
 	int32_t iIndent = Clamp<int32_t>((rcBounds.Hgt-iTextHgt)/3, 2, 5);
 	float iDrawQuadTop[8] = { x0,y0, x1,y0, x1-iIndent,y0+iIndent, x0,y0+iIndent };
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
@@ -381,7 +381,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	C4GUI::ComponentAligner caArea(rcArea, iHMargin, iVMargin, true);
 	// get number of control sets to be configured
 	C4PlayerControlAssignmentSets &assignment_sets = Game.PlayerControlUserAssignmentSets;
-	iMaxControlSets = Max<size_t>(assignment_sets.GetSetCount(),1u); // do not devide by zero
+	iMaxControlSets = std::max<size_t>(assignment_sets.GetSetCount(),1u); // do not devide by zero
 	ppKeyControlSetBtns = new C4GUI::IconButton *[iMaxControlSets];
 	// top line buttons to select control configuration
 	C4Facet fctCtrlDefPic = ::GraphicsResource.fctKeyboard; // 
@@ -673,7 +673,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	else
 	{
 		iIndentY1 = GetClientRect().Hgt/200;
-		iIndentY2 = Max<int32_t>(1, iIndentY1/2);
+		iIndentY2 = std::max<int32_t>(1, iIndentY1/2);
 	}
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/(fSmall ? 20 : 7)),0,0);
@@ -713,7 +713,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLbl->SetToolTip(szLangTip);
 	pSheetGeneral->AddElement(pLbl);
 	pUseFont->GetTextExtent("XX: Top Secret Language", w,q,true);
-	pLangCombo = new C4GUI::ComboBox(caLanguageBox.GetFromLeft(Min(w, caLanguageBox.GetWidth())));
+	pLangCombo = new C4GUI::ComboBox(caLanguageBox.GetFromLeft(std::min(w, caLanguageBox.GetWidth())));
 	pLangCombo->SetToolTip(szLangTip);
 	pLangCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnLangComboFill, &C4StartupOptionsDlg::OnLangComboSelChange));
 	pLangCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
@@ -733,7 +733,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLbl->SetToolTip(szFontTip);
 	pSheetGeneral->AddElement(pLbl);
 	pUseFont->GetTextExtent("Comic Sans MS", w,q,true);
-	pFontFaceCombo = new C4GUI::ComboBox(caFontBox.GetFromLeft(Min<int32_t>(caFontBox.GetInnerWidth()*3/4, w*3)));
+	pFontFaceCombo = new C4GUI::ComboBox(caFontBox.GetFromLeft(std::min<int32_t>(caFontBox.GetInnerWidth()*3/4, w*3)));
 	pFontFaceCombo->SetToolTip(szFontTip);
 	pFontFaceCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFontFaceComboFill, &C4StartupOptionsDlg::OnFontComboSelChange));
 	pFontFaceCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
@@ -741,7 +741,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pFontFaceCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
 	caFontBox.ExpandLeft(-C4GUI_DefDlgSmallIndent);
 	pSheetGeneral->AddElement(pFontFaceCombo);
-	pFontSizeCombo = new C4GUI::ComboBox(caFontBox.GetFromLeft(Min<int32_t>(caFontBox.GetInnerWidth(), w)));
+	pFontSizeCombo = new C4GUI::ComboBox(caFontBox.GetFromLeft(std::min<int32_t>(caFontBox.GetInnerWidth(), w)));
 	pFontSizeCombo->SetToolTip(LoadResStr("IDS_DESC_FONTSIZE"));
 	pFontSizeCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFontSizeComboFill, &C4StartupOptionsDlg::OnFontComboSelChange));
 	pFontSizeCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
@@ -758,7 +758,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETCONFIG");
 	C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton> *pSmallBtn;
 	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
-	C4Rect rcResetBtn = caSheetProgram.GetGridCell(1,2,6,7, Min<int32_t>(iButtonWidth+iButtonHeight*4, caSheetProgram.GetInnerWidth()*2/5), SmallButton::GetDefaultButtonHeight(), true);
+	C4Rect rcResetBtn = caSheetProgram.GetGridCell(1,2,6,7, std::min<int32_t>(iButtonWidth+iButtonHeight*4, caSheetProgram.GetInnerWidth()*2/5), SmallButton::GetDefaultButtonHeight(), true);
 	pSmallBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::OnResetConfigBtn, this);
 	pSheetGeneral->AddElement(pSmallBtn);
 	pSmallBtn->SetToolTip(LoadResStr("IDS_DESC_RESETCONFIG"));
@@ -777,7 +777,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::ComponentAligner resBox(caGroupResolution.GetGridCell(0,1,iOpt++,iNumGfxOptions), 0, 0, false);
 	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_RESOLUTION"), w,q, true);
 	pGroupResolution->AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_RESOLUTION"), resBox.GetFromLeft(w+C4GUI_DefDlgSmallIndent,q), ALeft, C4StartupFontClr, pUseFont, false, false));
-	pUseFont->GetTextExtent("1600 x 1200", w,q,true); w = Min<int32_t>(caGroupResolution.GetInnerWidth(), w+40);
+	pUseFont->GetTextExtent("1600 x 1200", w,q,true); w = std::min<int32_t>(caGroupResolution.GetInnerWidth(), w+40);
 	C4GUI::ComboBox *pGfxResCombo = new C4GUI::ComboBox(resBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
 	pGfxResCombo->SetToolTip(LoadResStr("IDS_MSG_RESOLUTION_DESC"));
 	pGfxResCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxResComboFill, &C4StartupOptionsDlg::OnGfxResComboSelChange));
@@ -790,7 +790,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::ComponentAligner cdBox(caGroupResolution.GetGridCell(0,1,iOpt++,iNumGfxOptions), 0, 0, false);
 	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_BITDEPTH"), w,q, true);
 	pGroupResolution->AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_BITDEPTH"), cdBox.GetFromLeft(w+C4GUI_DefDlgSmallIndent,q), ALeft, C4StartupFontClr, pUseFont, false, false));
-	pUseFont->GetTextExtent("32bit", w,q,true); w = Min<int32_t>(caGroupResolution.GetInnerWidth(), w+40);
+	pUseFont->GetTextExtent("32bit", w,q,true); w = std::min<int32_t>(caGroupResolution.GetInnerWidth(), w+40);
 	C4GUI::ComboBox *pGfxClrDepthCombo = new C4GUI::ComboBox(cdBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
 	pGfxClrDepthCombo->SetToolTip(LoadResStr("IDS_CTL_BITDEPTHC"));
 	pGfxClrDepthCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxClrDepthComboFill, &C4StartupOptionsDlg::OnGfxClrDepthComboSelChange));
@@ -807,7 +807,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	for(int i = 0; i < 3; ++i)
 	{
 		pUseFont->GetTextExtent(GetWindowedName(i),w,q,true);
-		wmax = Max<int32_t>(w, wmax);
+		wmax = std::max<int32_t>(w, wmax);
 	}
 	C4GUI::ComboBox * pCombo = new C4GUI::ComboBox(fsBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
 	pCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnWindowedModeComboFill, &C4StartupOptionsDlg::OnWindowedModeComboSelChange));
@@ -940,7 +940,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	StdStrBuf sServerText; sServerText.Copy(LoadResStr("IDS_CTL_USEOTHERSERVER"));
 	NetworkServerAddressConfig::GetControlSize(&iServerCfgWdt, &iServerCfgHgt, &iServerCfgWdtMid, sServerText.getData());
 	int32_t net_component_hgt = iPortCfgHgt * 4 + iServerCfgHgt + 3 * pUseFont->GetLineHeight();
-	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth() / 20, Max<int32_t>(0, (caMain.GetHeight() - net_component_hgt)/10), true);
+	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth() / 20, std::max<int32_t>(0, (caMain.GetHeight() - net_component_hgt)/10), true);
 	pPortCfgTCP = new NetworkPortConfig(caSheetNetwork.GetGridCell(0,2,0,2, iPortCfgWdt, iPortCfgHgt), LoadResStr("IDS_NET_PORT_TCP"), &(Config.Network.PortTCP), C4NetStdPortTCP);
 	pPortCfgUDP = new NetworkPortConfig(caSheetNetwork.GetGridCell(1,2,0,2, iPortCfgWdt, iPortCfgHgt), LoadResStr("IDS_NET_PORT_UDP"), &(Config.Network.PortUDP), C4NetStdPortUDP);
 	pPortCfgRef = new NetworkPortConfig(caSheetNetwork.GetGridCell(0,2,1,2, iPortCfgWdt, iPortCfgHgt), LoadResStr("IDS_NET_PORT_REFERENCE"), &(Config.Network.PortRefServer), C4NetStdPortRefServer);

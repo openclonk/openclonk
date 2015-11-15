@@ -586,18 +586,18 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	// screen calculations
 	UpdateSize();
 	int32_t iIconSize = C4GUI_IconExWdt;
-	int32_t iButtonWidth,iCaptionFontHgt, iSideSize = Max<int32_t>(GetBounds().Wdt/6, iIconSize);
+	int32_t iButtonWidth,iCaptionFontHgt, iSideSize = std::max<int32_t>(GetBounds().Wdt/6, iIconSize);
 	int32_t iButtonHeight = C4GUI_ButtonHgt, iButtonIndent = GetBounds().Wdt/40;
 	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/7),0,0);
 	int32_t iButtonAreaWdt = caButtonArea.GetWidth()*7/8;
-	iButtonWidth = Min<int32_t>(iButtonWidth, (iButtonAreaWdt - 8 * iButtonIndent)/4);
+	iButtonWidth = std::min<int32_t>(iButtonWidth, (iButtonAreaWdt - 8 * iButtonIndent)/4);
 	iButtonIndent = (iButtonAreaWdt - 4 * iButtonWidth) / 8;
 	C4GUI::ComponentAligner caButtons(caButtonArea.GetCentered(iButtonAreaWdt, iButtonHeight),iButtonIndent,0);
-	C4GUI::ComponentAligner caLeftBtnArea(caMain.GetFromLeft(iSideSize), Min<int32_t>(caMain.GetWidth()/20, (iSideSize-C4GUI_IconExWdt)/2), caMain.GetHeight()/40);
-	C4GUI::ComponentAligner caConfigArea(caMain.GetFromRight(iSideSize), Min<int32_t>(caMain.GetWidth()/20, (iSideSize-C4GUI_IconExWdt)/2), caMain.GetHeight()/40);
+	C4GUI::ComponentAligner caLeftBtnArea(caMain.GetFromLeft(iSideSize), std::min<int32_t>(caMain.GetWidth()/20, (iSideSize-C4GUI_IconExWdt)/2), caMain.GetHeight()/40);
+	C4GUI::ComponentAligner caConfigArea(caMain.GetFromRight(iSideSize), std::min<int32_t>(caMain.GetWidth()/20, (iSideSize-C4GUI_IconExWdt)/2), caMain.GetHeight()/40);
 
 	// left button area: Switch between chat and game list
 	if (C4ChatDlg::IsChatEnabled())

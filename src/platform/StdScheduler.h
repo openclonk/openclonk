@@ -114,7 +114,7 @@ public:
 		if (tTime < tLastTimer + iDelay) return false;
 		// Compensate light drifting
 		int32_t iDrift = tTime - (tLastTimer + iDelay); // a positive time difference because of above check
-		tLastTimer = tTime - Min(iDrift, (int32_t) iDelay / 2);
+		tLastTimer = tTime - std::min(iDrift, (int32_t) iDelay / 2);
 		return true;
 	}
 

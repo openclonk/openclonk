@@ -367,13 +367,13 @@ void C4ScoreboardDlg::Update()
 		for (int32_t iRow = 0; iRow < iRowCount; ++iRow)
 		{
 			C4Scoreboard::Entry *pCell = pBrd->GetCell(iCol, iRow);
-			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = Max<int32_t>(piColWidths[iCol], ::GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
+			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = std::max<int32_t>(piColWidths[iCol], ::GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
 		}
 		iWdt += piColWidths[iCol];
 	}
 	iHgt += iRowCount * (::GraphicsResource.FontRegular.GetLineHeight() + YIndent);
 	const char *szTitle = pBrd->GetCell(0,0)->Text.getData();
-	if (szTitle) iWdt = Max<int32_t>(iWdt, ::GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
+	if (szTitle) iWdt = std::max<int32_t>(iWdt, ::GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
 	if (!pTitle != !szTitle) SetTitle(szTitle); // needed for title margin...
 	iWdt += GetMarginLeft() + GetMarginRight();
 	iHgt += GetMarginTop() + GetMarginBottom();

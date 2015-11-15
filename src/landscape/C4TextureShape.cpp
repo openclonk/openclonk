@@ -167,10 +167,10 @@ void C4TextureShape::Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMap
 	if (!num_shapes) return;
 	// Get affected range of shapes in pixels
 	// Add max polygon size because polygons may extent far onto outside pixels
-	int32_t x0 = Max<int32_t>(0, iMapX*MapZoom + iOffX - GetMaxPolyWidth()),
-		y0 = Max<int32_t>(0, iMapY*MapZoom + iOffY - GetMaxPolyHeight());
-	int32_t x1 = Min<int32_t>(::Landscape.Width, x0 + iMapWdt*MapZoom + GetMaxPolyWidth() * 2),
-		y1 = Min<int32_t>(::Landscape.Height, y0 + iMapHgt*MapZoom + GetMaxPolyHeight() * 2);
+	int32_t x0 = std::max<int32_t>(0, iMapX*MapZoom + iOffX - GetMaxPolyWidth()),
+		y0 = std::max<int32_t>(0, iMapY*MapZoom + iOffY - GetMaxPolyHeight());
+	int32_t x1 = std::min<int32_t>(::Landscape.Width, x0 + iMapWdt*MapZoom + GetMaxPolyWidth() * 2),
+		y1 = std::min<int32_t>(::Landscape.Height, y0 + iMapHgt*MapZoom + GetMaxPolyHeight() * 2);
 	// Range in shape blocks.
 	// A shape block is the coverage of the size of one loaded shape data surface
 	int32_t rblock_x0 = x0 / data.Wdt;

@@ -679,7 +679,7 @@ void C4ConsoleGUI::Out(const char* message)
 	int len,len2,lines; wchar_t *buffer, *buffer2;
 	len = 65000;//SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINELENGTH,(WPARAM)0,(LPARAM)0);
 	StdBuf messageW = GetWideCharBuf(message);
-	len2 = len+Min<int32_t>(messageW.getSize()/sizeof(wchar_t)+2, 5000);
+	len2 = len+std::min<int32_t>(messageW.getSize()/sizeof(wchar_t)+2, 5000);
 	buffer = new wchar_t [len2];
 	buffer[0]=0;
 	GetDlgItemTextW(hWindow,IDC_EDITOUTPUT,buffer,len);

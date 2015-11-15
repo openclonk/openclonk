@@ -537,8 +537,8 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	// Draw drag frame
 	if (DragFrame)
 		pDraw->DrawFrameDw(cgo.Surface,
-		                               Min(X, X2) + cgo.X - cgo.TargetX, Min(Y, Y2) + cgo.Y - cgo.TargetY,
-		                               Max(X, X2) + cgo.X - cgo.TargetX, Max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
+		                               std::min(X, X2) + cgo.X - cgo.TargetX, std::min(Y, Y2) + cgo.Y - cgo.TargetY,
+		                               std::max(X, X2) + cgo.X - cgo.TargetX, std::max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drag line
 	if (DragLine)
 		pDraw->DrawLineDw(cgo.Surface,
@@ -600,7 +600,7 @@ void C4EditCursor::FrameSelection()
 	{
 		if (cobj->Status && cobj->OCF & OCF_NotContained)
 		{
-			if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
+			if (Inside(cobj->GetX(),std::min(X,X2),std::max(X,X2)) && Inside(cobj->GetY(),std::min(Y,Y2),std::max(Y,Y2)))
 				AddToSelection(cobj);
 		}
 	}

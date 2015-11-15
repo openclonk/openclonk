@@ -68,7 +68,7 @@ void C4PXS::Execute()
 		C4Real tydir = C4REAL256(Random(1200) - 600);
 
 		// Air friction, based on WindDrift. MaxSpeed is ignored.
-		int32_t iWindDrift = Max(::MaterialMap.Map[Mat].WindDrift - 20, 0);
+		int32_t iWindDrift = std::max(::MaterialMap.Map[Mat].WindDrift - 20, 0);
 		xdir += ((txdir - xdir) * iWindDrift) * WindDrift_Factor;
 		ydir += ((tydir - ydir) * iWindDrift) * WindDrift_Factor;
 	}
@@ -321,7 +321,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						{
 							// lines for stuff that goes whooosh!
 							int len = fixtoi(Abs(pxp->xdir) + Abs(pxp->ydir));
-							const DWORD dwMatClrLen = uint32_t(Max<int>(dwMatClr >> 24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr & 0xffffff);
+							const DWORD dwMatClrLen = uint32_t(std::max<int>(dwMatClr >> 24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr & 0xffffff);
 							C4BltVertex begin, end;
 							begin.ftx = fixtof(pxp->x - pxp->xdir) + cgox; begin.fty = fixtof(pxp->y - pxp->ydir) + cgoy;
 							end.ftx = fixtof(pxp->x) + cgox; end.fty = fixtof(pxp->y) + cgoy;

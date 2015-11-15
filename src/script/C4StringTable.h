@@ -119,7 +119,7 @@ template<typename T> class C4Set
 	}
 	void MaintainCapacity()
 	{
-		if (Capacity - Size < Max(2u, Capacity / 4))
+		if (Capacity - Size < std::max(2u, Capacity / 4))
 		{
 			unsigned int OCapacity = Capacity;
 			Capacity *= 2;

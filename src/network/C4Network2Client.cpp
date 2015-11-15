@@ -319,7 +319,7 @@ void C4Network2Client::CreateGraphs()
 	// get client color
 	static const DWORD ClientDefColors[] = {0xff0000, 0x00ff00, 0xffff00, 0x7f7fff, 0xffffff, 0x00ffff, 0xff00ff, 0x7f7f7f, 0xff7f7f, 0x7fff7f, 0x0000ff};
 	int32_t iClientColorNum = sizeof(ClientDefColors)/sizeof(DWORD);
-	DWORD dwClientClr = ClientDefColors[Max<int32_t>(getID(), 0) % iClientColorNum];
+	DWORD dwClientClr = ClientDefColors[std::max<int32_t>(getID(), 0) % iClientColorNum];
 	// create graphs
 	pstatPing = new C4TableGraph(C4TableGraph::DefaultBlockLength, Game.pNetworkStatistics ? Game.pNetworkStatistics->SecondCounter : 0);
 	pstatPing->SetColorDw(dwClientClr);
