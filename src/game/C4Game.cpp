@@ -3555,7 +3555,7 @@ bool C4Game::ToggleDebugMode()
 {
 	// debug mode not allowed
 	if (!Parameters.AllowDebug && !DebugMode) { GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_DEBUGMODENOTALLOWED")); return false; }
-	Toggle(DebugMode);
+	DebugMode = !DebugMode;
 	if (!DebugMode) GraphicsSystem.DeactivateDebugOutput();
 	GraphicsSystem.FlashMessageOnOff(LoadResStr("IDS_CTL_DEBUGMODE"), DebugMode);
 	return true;

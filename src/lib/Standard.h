@@ -48,7 +48,6 @@ template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }
 template <class T, class U, class V> inline bool Inside(T ival, U lbound, V rbound) { return ival >= lbound && ival <= rbound; }
 template <class T> inline T Clamp(T bval, T lbound, T rbound) { return bval < lbound ? lbound : bval > rbound ? rbound : bval; }
 template <class T> inline int Sign(T val) { return val < 0 ? -1 : val > 0 ? 1 : 0; }
-template <class T> inline void Toggle(T &v) { v = !v; }
 
 inline int DWordAligned(int val)
 {

@@ -424,8 +424,8 @@ bool C4GraphicsSystem::ToggleShowNetStatus()
 bool C4GraphicsSystem::ToggleShowVertices()
 {
 	if (!Game.DebugMode && !Console.Active) { FlashMessage(LoadResStr("IDS_MSG_NODEBUGMODE")); return false; }
-	Toggle(ShowVertices);
-	Toggle(ShowEntrance); // vertices and entrance now toggled together
+	ShowVertices = !ShowVertices;
+	ShowEntrance = !ShowEntrance; // vertices and entrance now toggled together
 	FlashMessageOnOff("Entrance+Vertices", ShowVertices || ShowEntrance);
 	return true;
 }
@@ -463,7 +463,7 @@ bool C4GraphicsSystem::ToggleShow8BitSurface()
 
 bool C4GraphicsSystem::ToggleShowHelp()
 {
-	Toggle(ShowHelp);
+	ShowHelp = !ShowHelp;
 	// Turned off? Invalidate background.
 	if (!ShowHelp) InvalidateBg();
 	return true;
