@@ -16,7 +16,7 @@ DlgFiremanFurryFriend=That is bad, I hope they won't take my little furry friend
 DlgFiremanFlagpole=We need to construct a new flag pole, to reconnect the power supply in our village.
 
 # Dialogue: Builder
-DlgBuilderHello=Hi there, My name is %s and I am a builder.
+DlgBuilderHello=Hi there, my name is %s and I am a builder.
 DlgBuilderReply=Then you have lots of work. Do you need a hand?
 DlgBuilderFlagpole=Yes, can you construct a flagpole over here?
 DlgBuilderWhyHere=Of course, but why over here?
