@@ -49,7 +49,7 @@ protected:
 	int iVersion[4];
 
 	// status
-	bool fActivated, fObserver;
+	bool fActivated, fObserver, fLobbyReady;
 
 public:
 
@@ -58,10 +58,12 @@ public:
 	bool        isHost()          const { return iID == C4ClientIDHost; }
 	bool        isActivated()     const { return fActivated; }
 	bool        isObserver()      const { return fObserver; }
+	bool		isLobbyReady()	  const { return fLobbyReady; }
 	void SetID(int32_t inID)            { iID = inID; }
 	void SetName(const char *sznName)   { Name.CopyValidated(sznName); }
 	void SetActivated(bool fnActivated) { fActivated = fnActivated; fObserver = false; }
 	void SetObserver(bool fnObserver)   { fActivated &= !(fObserver = fnObserver); }
+	void SetReady(bool fnLobbyReady)	{ fLobbyReady = fnLobbyReady; fObserver = false; }
 
 	// misc
 	const char *getName()     const { return Name.getData(); }
@@ -106,6 +108,7 @@ public:
 	const char *getNick()     const { return Core.getNick(); }
 	bool        isActivated() const { return Core.isActivated(); }
 	bool        isObserver()  const { return Core.isObserver(); }
+	bool		isLobbyReady()const { return Core.isLobbyReady(); }
 	bool        isRegistered()const { return Core.isRegistered(); }
 	bool IsIgnored() const { return fIsIgnored; }
 
@@ -117,6 +120,7 @@ public:
 
 	void SetActivated(bool fnActivated);
 	void SetObserver() { Core.SetObserver(true); }
+	void SetReady(bool fnLobbyReady);
 	void SetLocal();
 
 	void ToggleIgnore() { fIsIgnored = !fIsIgnored; }

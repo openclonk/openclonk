@@ -102,8 +102,10 @@ namespace C4GameLobby
 		C4GUI::Edit *pEdt; // chat input
 		C4GUI::CallbackButton<MainDlg> *btnRun; // host only
 		C4GUI::CallbackButton<MainDlg, C4GUI::IconButton> *btnPlayers, *btnResources, *btnTeams, *btnOptions, *btnScenario, *btnChat; // right list sheet selection
+		C4GUI::CheckBox *checkReady;
 
 	protected:
+		void OnReadyCheck(C4GUI::Element *pCheckBox); // callback: checkbox ticked
 		void OnRunBtn(C4GUI::Control *btn); // callback: run button pressed
 		void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
 		bool KeyHistoryUpDown(bool fUp); // key callback

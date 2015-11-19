@@ -34,7 +34,8 @@
 C4ClientCore::C4ClientCore()
 		: iID(-1),
 		fActivated(false),
-		fObserver(false)
+		fObserver(false),
+		fLobbyReady(false)
 {
 	Name.Ref(""); CUID.Ref(""); Nick.Ref("");
 }
@@ -90,7 +91,7 @@ int32_t C4ClientCore::getDiffLevel(const C4ClientCore &CCore2) const
 	if (iID != CCore2.getID() || Name != CCore2.getName())
 		return C4ClientCoreDL_IDChange;
 	// status change?
-	if (fActivated != CCore2.isActivated() || fObserver != CCore2.isObserver())
+	if (fActivated != CCore2.isActivated() || fObserver != CCore2.isObserver() || fLobbyReady != CCore2.isLobbyReady())
 		return C4ClientCoreDL_IDMatch;
 	// otherwise: identical
 	return C4ClientCoreDL_None;
@@ -103,6 +104,7 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iID, "ID", C4ClientIDUnknown));
 	pComp->Value(mkNamingAdapt(fActivated, "Activated", false));
 	pComp->Value(mkNamingAdapt(fObserver, "Observer", false));
+	pComp->Value(mkNamingAdapt(fLobbyReady, "Ready", false));
 	pComp->Value(mkNamingAdapt(Name, "Name", ""));
 	pComp->Value(mkNamingAdapt(CUID, "CUID", ""));
 	pComp->Value(mkNamingAdapt(Nick, "Nick", ""));
@@ -134,6 +136,11 @@ void C4Client::SetActivated(bool fnActivated)
 	// activity
 	if (fnActivated && pNetClient)
 		pNetClient->SetLastActivity(Game.FrameCounter);
+}
+
+void C4Client::SetReady(bool fnLobbyReady)
+{
+	Core.SetReady(fnLobbyReady);
 }
 
 void C4Client::SetLocal()

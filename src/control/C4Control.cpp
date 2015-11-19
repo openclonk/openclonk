@@ -918,7 +918,7 @@ void C4ControlClientJoin::CompileFunc(StdCompiler *pComp)
 void C4ControlClientUpdate::Execute() const
 {
 	// host only
-	if (iByClient != C4ClientIDHost) return;
+	if (iByClient != C4ClientIDHost && eType != CUT_SetReady) return;
 	// find client
 	C4Client *pClient = Game.Clients.getClientByID(iID);
 	if (!pClient) return;
@@ -951,6 +951,14 @@ void C4ControlClientUpdate::Execute() const
 		// remove all players ("soft kick")
 		::Players.RemoveAtClient(iID, true);
 		break;
+	case CUT_SetReady:
+		// nothing to do?
+		if (pClient->isLobbyReady() == !!iData) break;
+		// log
+		LogF(LoadResStr(iData ? "IDS_NET_CLIENT_READY" : "IDS_NET_CLIENT_UNREADY"), strClient.getData(), pClient->getName());
+		// ready/unready
+		pClient->SetReady(!!iData);
+		break;
 	}
 }
 
@@ -959,6 +967,8 @@ void C4ControlClientUpdate::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eType), "Type", CUT_None));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iID), "ClientID", C4ClientIDUnknown));
 	if (eType == CUT_Activate)
+		pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
+	if (eType == CUT_SetReady)
 		pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
 	C4ControlPacket::CompileFunc(pComp);
 }
