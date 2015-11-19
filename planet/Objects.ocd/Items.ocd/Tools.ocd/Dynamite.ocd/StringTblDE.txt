@@ -1,3 +1,3 @@
 Name=Dynamitstange
-Description=Einfacher Sprengstoff, geeignet zum Abbau von Ressourcen.
+Description=Einfacher Sprengstoff, geeignet zum Abbau von Ressourcen.|Nach dem Zünden kann die Dynamitstange in festes Material gesteckt werden.
 UsageHelp=Drücke [Benutzen], um sie anzuzünden. Ziele und drücke danach in eine Richtung um sie zu platzieren.
