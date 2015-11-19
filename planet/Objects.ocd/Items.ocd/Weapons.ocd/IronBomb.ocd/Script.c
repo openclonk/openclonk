@@ -10,9 +10,10 @@ local armed; // If true, explodes on contact
 public func ControlUse(object clonk, int x, int y)
 {
 	// if already activated, nothing (so, throw)
-	if(GetEffect("FuseBurn", this))
+	if (GetEffect("FuseBurn", this))
 	{
-		return false;
+		clonk->ControlThrow(this, x, y);
+		return true;
 	}
 	else
 	{
