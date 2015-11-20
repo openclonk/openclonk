@@ -228,7 +228,7 @@ global func FxBigVolcanoTimer(object target, proplist effect)
 	{
 		var pos = chasm_exits[i];
 		var lava = FindLocation(Loc_Material("DuroLava"), Loc_InRect(pos[0] - 100, pos[1] - 100, 200, 200));
-		InsertMaterial(Material("DuroLava"), lava.x, lava.y);
+		if (lava) InsertMaterial(Material("DuroLava"), lava.x, lava.y);
 	}
 	
 	// At more rare occasions there will be a bigger eruption with chunks.
