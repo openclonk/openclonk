@@ -674,9 +674,10 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 {
 	if(temp) return;
 	
-	if (!GetLength(queue))
-		// no need to consume power anymore
-		UnregisterPowerRequest();
+	// no need to consume power anymore
+	// always unregister even if there's a queue left to process, because OnNotEnoughPower relies on it
+	// and it gives other producers the chance to get some power
+	UnregisterPowerRequest();
 
 	if (reason != 0)
 		return 1;
