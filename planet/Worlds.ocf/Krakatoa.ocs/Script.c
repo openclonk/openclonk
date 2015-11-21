@@ -111,7 +111,7 @@ private func InitEnvironment(int difficulty)
 	// Adjust the mood, orange sky, darker feeling in general.
 	var dark = 10;
 	SetSkyAdjust(RGB(150, 42, 0));
-	SetGamma(100-dark,100-dark,100-dark);
+	SetGamma(100 - dark, 100 - dark, 100 - dark);
 	
 	// Time of days and celestials.
 	var time = CreateObject(Time);

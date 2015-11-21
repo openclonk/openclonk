@@ -104,16 +104,16 @@ private func InitEnvironment(int difficulty)
 	// Add a snow storm effect, strong winds and lot's of snow.
 	AddEffect("SnowStorm", nil, 100, 5, nil);
 	
+	// A light blue hue, to indicate the cold climate.
+	var blue = 4;
+	SetGamma(100 - blue, 100 - blue, 100 + blue);
+	
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);
 	Cloud->SetPrecipitation("Snow", 20 + 5 * difficulty);
 	var time = CreateObject(Time);
 	time->SetTime(60 * 22);
 	time->SetCycleSpeed(0);
-	
-	// A light blue hue, to indicate the cold climate.
-	var blue = 4;
-	SetGamma(100-blue,100-blue,100+blue);
 	
 	// Some natural disasters. 
 	Earthquake->SetChance(5 + 5 * difficulty);
