@@ -86,6 +86,7 @@ public:
 	char TodoFilename[CFG_MaxString + 1];
 	char AltTodoFilename[CFG_MaxString + 1];
 	int32_t MaxScriptMRU; // maximum number of remembered elements in recently used scripts
+	int32_t DebugShapeTextures; // if nonzero, show messages about loaded shape textures
 	void CompileFunc(StdCompiler *pComp);
 };
 
