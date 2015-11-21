@@ -5,7 +5,7 @@
 public func Intro_Init()
 {
 	// Create an airplane with pilot and fly it towards the peak.
-	this.airplane = CreateObjectAbove(Plane, 24, LandscapeHeight() - 480);
+	this.airplane = CreateObjectAbove(Airplane, 24, LandscapeHeight() - 480);
 	this.pilot = CreateObjectAbove(Clonk, 24, LandscapeHeight() - 480);
 	this.pilot->SetName("$PilotName$");
 	this.pilot->SetSkin(2);

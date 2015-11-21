@@ -16,7 +16,7 @@ private func Initialize()
 
 public func IsFulfilled()
 {
-	return ObjectCount(Find_ID(Plane));
+	return ObjectCount(Find_ID(Airplane));
 }
 
 public func GetDescription(int plr)
@@ -48,15 +48,15 @@ public func Activate(int byplr)
 
 public func GetShortDescription(int plr)
 {
-	var next_part = Plane_Skids;
+	var next_part = Airplane_Skids;
 	if (progress == 1)
-		next_part = Plane_Chassis;
+		next_part = Airplane_Chassis;
 	if (progress == 2)
-		next_part = Plane_Wings;
+		next_part = Airplane_Wings;
 	if (progress == 3)
-		next_part = Plane_Engine;
+		next_part = Airplane_Engine;
 	if (progress == 4)
-		next_part = Plane_Propeller;
+		next_part = Airplane_Propeller;
 	return Format("{{%i}}", next_part);
 }
 

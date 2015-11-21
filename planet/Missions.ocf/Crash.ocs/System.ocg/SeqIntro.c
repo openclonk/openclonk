@@ -4,7 +4,7 @@
 
 func Intro_Init()
 {
-	this.plane = CreateObjectAbove(Plane, 0, 400);
+	this.plane = CreateObjectAbove(Airplane, 0, 400);
 	this.plane->SetColor(0xa04000);
 	this.pilot = npc_pyrit = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
@@ -254,7 +254,7 @@ func Intro_Stop()
 	SetPlayerZoomByViewRange(NO_OWNER, 400,300, PLRZOOM_Set);
 	
 	// Turn and relocate the airplane to make starting it easier.
-	var plane = FindObject(Find_ID(Plane));
+	var plane = FindObject(Find_ID(Airplane));
 	if (plane)
 	{
 		plane->FaceLeft();

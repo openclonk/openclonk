@@ -91,7 +91,7 @@ protected func InitializePlayer(int plr)
 global func FxGoalCheckTimer(object target, proplist effect)
 {
 	// Complete goal if there is an airplane with the required amount of gold bars.
-	for (var plane in FindObjects(Find_ID(Plane), Find_Not(Find_Func("IsBroken"))))
+	for (var plane in FindObjects(Find_ID(Airplane), Find_Not(Find_Func("IsBroken"))))
 	{
 		if (plane->ContentsCount(GoldBar) >= effect.barcnt)
 		{

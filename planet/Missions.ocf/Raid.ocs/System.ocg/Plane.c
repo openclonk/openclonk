@@ -1,4 +1,4 @@
-#appendto Plane
+#appendto Airplane
 
 func Initialize(...)
 {

@@ -1,5 +1,5 @@
 /*--
-		Plane goal
+		Airplane goal
 		Author: Maikel
 		
 		The plane has to be retrieved and transported back to the pilot.
@@ -24,10 +24,10 @@ public func IsFulfilled()
 	var cabin = FindObject(Find_ID(WoodenCabin));
 	if (!cabin)
 		return false;
-	var plane = FindObject(Find_ID(Plane));
+	var plane = FindObject(Find_ID(Airplane));
 	if (!plane)
 		return false;
-	// Plane has to be brought to the wooden cabin.
+	// Airplane has to be brought to the wooden cabin.
 	if (ObjectDistance(plane, cabin) < 200)
 	{
 		is_outro_stated = true;
@@ -59,7 +59,7 @@ public func Activate(int byplr)
 
 public func GetShortDescription(int plr)
 {
-	return "{{Plane}}"; // TODO
+	return "{{Airplane}}"; // TODO
 }
 
 public func SetFulfilled()

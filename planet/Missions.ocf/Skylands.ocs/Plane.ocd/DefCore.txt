@@ -1,5 +1,5 @@
 [DefCore]
-id=Plane_Construction
+id=Airplane_Construction
 Version=6,0
 Category=C4D_Structure
 Width=60
@@ -11,6 +11,6 @@ VertexY=14,14
 VertexFriction=100,100
 Value=200
 Mass=4000
-Components=Plane_Propeller=1;Plane_Chassis=1;Plane_Skids=1;Plane_Engine=1;Plane_Wings=1;
+Components=Airplane_Propeller=1;Airplane_Chassis=1;Airplane_Skids=1;Airplane_Engine=1;Airplane_Wings=1;
 Construction=0
 Rotate=0

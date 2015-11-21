@@ -12,7 +12,7 @@ func Intro_Start()
 	this.intro_skyscroll_xdir = -10;
 	SetSkyParallax(0, 20, 20, this.intro_skyscroll_xdir, 0);
 	
-	this.plane = CreateObjectAbove(Plane, 500, 200);
+	this.plane = CreateObjectAbove(Airplane, 500, 200);
 	this.plane->SetColor(0xa04000);
 	this.pilot = CreateObjectAbove(Clonk, 100, 100, NO_OWNER);
 	this.pilot->MakeInvincible();
@@ -42,7 +42,7 @@ func Intro_Start()
 func Intro_PlaneTimer(...)
 {
 	// Plane flight overload: Just move sky and have plane do turbulent movement during initial part of intro
-	var rv = Call(Plane.FxIntPlaneTimer, ...);
+	var rv = Call(Airplane.FxIntPlaneTimer, ...);
 	if (g_intro_sky_moving)
 	{
 		if (!Random(4)) this.rdir = BoundBy((80+Random(21)-GetR())/5,-1,1);

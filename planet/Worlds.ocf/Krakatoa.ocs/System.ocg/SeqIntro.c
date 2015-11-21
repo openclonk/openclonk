@@ -13,7 +13,7 @@ public func Intro_Init(int difficulty)
 		lava_y++;
 	
 	// Create an airplane with pilot and fly it towards the peak.
-	this.airplane = CreateObjectAbove(Plane, LandscapeWidth() / 2 - 564, lava_y - 176);
+	this.airplane = CreateObjectAbove(Airplane, LandscapeWidth() / 2 - 564, lava_y - 176);
 	this.pilot = CreateObjectAbove(Clonk, LandscapeWidth() / 2 - 564, lava_y - 176);
 	this.pilot->SetName("$PilotName$");
 	this.pilot->SetSkin(2);
@@ -140,7 +140,7 @@ public func Intro_6()
 
 public func Intro_PlaneHit()
 {
-	// Plane hit ground! Continue sequence.
+	// Airplane hit ground! Continue sequence.
 	Sound("PlaneCrash", true);
 	var particles = Particles_Smoke(true);
 	particles.Size = PV_Linear(PV_Random(20, 60), PV_Random(50, 100));
@@ -163,7 +163,7 @@ public func Intro_PlaneHit()
 	// Stop plane movement and rotate for crash effect.
 	SetXDir(0);
 	this.Hit = this.intro_seq.plane_hit;
-	this.MeshTransformation=Trans_Mul(Trans_Rotate(10,0,2,1), Plane.MeshTransformation);
+	this.MeshTransformation = Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
 	this.intro_seq->ScheduleNext(50);
 	return true;
 }

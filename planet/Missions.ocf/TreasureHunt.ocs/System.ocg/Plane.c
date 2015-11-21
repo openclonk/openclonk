@@ -1,4 +1,4 @@
-#appendto Plane
+#appendto Airplane
 
 // plane needs oil
 public func ContainedUp(object clonk, ...)

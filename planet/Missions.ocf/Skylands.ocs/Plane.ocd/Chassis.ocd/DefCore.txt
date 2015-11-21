@@ -1,5 +1,5 @@
 [DefCore]
-id=Plane_Chassis
+id=Airplane_Chassis
 Version=6,0
 Category=C4D_Vehicle
 Width=60

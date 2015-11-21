@@ -102,7 +102,7 @@ func Dlg_Pyrit_15(object clonk)
 	SetBroadcast(false);
 	StopDialogue();
 	SetDialogueProgress(16);
-	SetPlrKnowledge(NO_OWNER, Plane);
+	SetPlrKnowledge(NO_OWNER, Airplane);
 	// many NPCs get new texts now
 	Dialogue->FindByTarget(npc_newton)->SetDialogueProgress(200, nil, true);
 	Dialogue->FindByTarget(npc_mave)->SetDialogueProgress(100, nil, true);
@@ -115,7 +115,7 @@ func Dlg_Pyrit_15(object clonk)
 func CheckOilAtPlane()
 {
 	var barrel;
-	for (var plane in FindObjects(Find_ID(Plane)))
+	for (var plane in FindObjects(Find_ID(Airplane)))
 		if (barrel = plane->FindObject(plane->Find_AtRect(-30,-10,60,20), Find_ID(MetalBarrel)))
 		{
 			RemoveTimer(Scenario.CheckOilAtPlane);

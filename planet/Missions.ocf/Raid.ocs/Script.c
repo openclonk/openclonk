@@ -42,7 +42,7 @@ func DoInit(int first_player)
 		tree.ChopDown = Scenario.Tree_Chopdown;
 		//tree->ChopDown();
 	}
-	//g_attack_done = true; GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); GetCrew()->CreateObjectAbove(Plane); GetCrew()->CreateObjectAbove(MetalBarrel);
+	//g_attack_done = true; GetCrew()->SetPosition(npc_pyrit->GetX(), npc_pyrit->GetY()); GetCrew()->CreateObjectAbove(Airplane); GetCrew()->CreateObjectAbove(MetalBarrel);
 	//GetCrew()->CreateContents(Shovel);
 	return true;
 }
@@ -66,7 +66,7 @@ func InitializePlayer(int plr)
 	// Ensure flag has owner
 	if (g_flagpole && g_flagpole->GetOwner()<0) g_flagpole->SetOwner(plr);
 	// Late join stuff
-	if (g_pyrit_spoken) SetPlrKnowledge(plr, Plane);
+	if (g_pyrit_spoken) SetPlrKnowledge(plr, Airplane);
 	// Join intro listening or regular scenario
 	SetPlayerViewLock(plr, true);
 	JoinPlayer(plr);
