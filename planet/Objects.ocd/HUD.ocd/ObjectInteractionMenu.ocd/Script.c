@@ -640,6 +640,7 @@ func CreateMainMenu(object obj, int slot)
 	{
 		container.Style = GUI_TextVCenter | GUI_TextHCenter;
 		container.Text = error_message;
+		current_menus[slot].menus = [];
 		return big_menu;
 	}
 	
