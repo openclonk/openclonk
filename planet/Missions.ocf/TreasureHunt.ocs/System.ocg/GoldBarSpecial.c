@@ -2,6 +2,12 @@
 
 #appendto GoldBar
 
+public func Construction(...)
+{
+	this.Description = Format("$SpecialGoldBarDesc$", MAX_GOLD_BARS);
+	return _inherited(...);
+}
+
 public func IsFoundryProduct() { return false; } // Don't let players produce them
 
 func Entrance(container)

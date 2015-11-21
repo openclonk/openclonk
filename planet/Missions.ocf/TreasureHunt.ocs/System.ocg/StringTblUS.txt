@@ -1,3 +1,4 @@
+SpecialGoldBarDesc=Hidden treasure. Try to collect all %d hidden gold bars!
 PlaneNoOil=The plane needs fuel. I must find oil somewhere.
 
 Intro1=Ouch. Pyrit!

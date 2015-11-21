@@ -1,3 +1,4 @@
+SpecialGoldBarDesc=Versteckter Schatz. Kannst du alle %d Goldbarren finden?
 PlaneNoOil=Das Flugzeug braucht noch Treibstoff. Ich muss irgendwo Öl auftreiben.
 
 Intro1=Autsch. Pyrit!
