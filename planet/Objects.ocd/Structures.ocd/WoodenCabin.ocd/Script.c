@@ -7,6 +7,7 @@
 public func Initialize()
 {
 	SetAction("Idle");
+	return _inherited(...);
 }
 
 protected func IsBuilt()

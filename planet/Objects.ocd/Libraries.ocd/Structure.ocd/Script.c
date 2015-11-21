@@ -15,7 +15,7 @@
 // for which variables are being used.
 local lib_structure;
 
-protected func Initialize()
+protected func Construction()
 {
 	// Initialize the single proplist for the structure library.
 	if (lib_structure == nil)
@@ -67,9 +67,16 @@ public func SetBasement(object to_basement)
 	return;
 }
 
-public func GetBasement() { return lib_structure.basement; }
+public func GetBasement()
+{
+	if (lib_structure) return lib_structure.basement;
+	return nil;
+}
 
-public func IsStructureWithoutBasement() { return IsStructure() && !lib_structure.basement; }
+public func IsStructureWithoutBasement()
+{
+	return IsStructure() && !(lib_structure && lib_structure.basement);
+}
 
 
 /*-- Value --*/
