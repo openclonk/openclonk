@@ -179,6 +179,7 @@ func IsPlant(){return true;}
 protected func ControlUse(object clonk, int iX, int iY)
 {
 	clonk->Eat(this);
+	return true;
 }
 
 func NutritionalValue_() { return 5; }
