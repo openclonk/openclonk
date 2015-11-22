@@ -129,7 +129,7 @@ private func UpdateInventory()
 		if (item) custom_overlay = item->~GetInventoryIconOverlay();
 		var needs_selection = hand_item_pos == slot_info.slot;
 		var has_extra_slot = item && item->~HasExtraSlot();
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot || custom_overlay)
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
 		{
 			// Hide or show extra-slot display?
 			var extra_slot_player = NO_OWNER;
@@ -163,7 +163,11 @@ private func UpdateInventory()
 					number_symbol = Icon_Number;
 				else extra_text = Format("%dx", contents->GetStackCount());
 			}
-
+			
+			// Close a possible lingering custom overlay for that slot.
+			var custom_overlay_id = 2000 + slot_info.ID;
+			GuiClose(inventory_gui_id, custom_overlay_id, nil);
+			
 			// Compose the update!
 			var update =
 			{
@@ -181,10 +185,6 @@ private func UpdateInventory()
 						Symbol = extra_slot_background_symbol,
 						symbol = { Symbol = extra_symbol }
 					}
-				},
-				overlay =
-				{
-					Player = NO_OWNER,
 				},
 				count = 
 				{
@@ -204,7 +204,12 @@ private func UpdateInventory()
 			if (custom_overlay)
 			{
 				update.overlay = custom_overlay;
-				update.overlay.Player = nil;
+				update.overlay.ID = custom_overlay_id;
+				slot_info.had_custom_overlay = true;
+			}
+			else
+			{
+				slot_info.had_custom_overlay = false;
 			}
 			
 			GuiUpdate(update, inventory_gui_id, slot_info.ID, this);
@@ -301,6 +306,10 @@ private func CreateNewInventoryButton(int max_slots)
 				Symbol = nil,
 				symbol = {}
 			}
+		},
+		overlay = // Custom inventory overlays can be shown here.
+		{
+			ID = 2000 + slot_info.ID
 		}
 	};
 	GuiUpdate({_new_icon = slot}, inventory_gui_id);
