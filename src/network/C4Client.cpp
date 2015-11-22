@@ -114,12 +114,12 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 // *** C4Client
 
 C4Client::C4Client()
-		: pNetClient(NULL), fIsIgnored(false)
+		: fLocal(false), pNetClient(NULL), fIsIgnored(false), last_lobby_ready_change(0)
 {
 }
 
 C4Client::C4Client(const C4ClientCore &Core)
-		: Core(Core), fLocal(false), pNetClient(NULL), fIsIgnored(false), pNext(NULL)
+		: Core(Core), fLocal(false), pNetClient(NULL), fIsIgnored(false), pNext(NULL), last_lobby_ready_change(0)
 {
 
 }
@@ -138,9 +138,17 @@ void C4Client::SetActivated(bool fnActivated)
 		pNetClient->SetLastActivity(Game.FrameCounter);
 }
 
-void C4Client::SetReady(bool fnLobbyReady)
+void C4Client::SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change)
 {
-	Core.SetReady(fnLobbyReady);
+	// Change state
+	Core.SetLobbyReady(fnLobbyReady);
+	// Keep track of times
+	if (time_since_last_change)
+	{
+		time_t now = time(NULL);
+		*time_since_last_change = now - last_lobby_ready_change;
+		last_lobby_ready_change = now;
+	}
 }
 
 void C4Client::SetLocal()

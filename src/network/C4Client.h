@@ -63,7 +63,7 @@ public:
 	void SetName(const char *sznName)   { Name.CopyValidated(sznName); }
 	void SetActivated(bool fnActivated) { fActivated = fnActivated; fObserver = false; }
 	void SetObserver(bool fnObserver)   { fActivated &= !(fObserver = fnObserver); }
-	void SetReady(bool fnLobbyReady)	{ fLobbyReady = fnLobbyReady; fObserver = false; }
+	void SetLobbyReady(bool fnLobbyReady){ fLobbyReady = fnLobbyReady; }
 
 	// misc
 	const char *getName()     const { return Name.getData(); }
@@ -94,6 +94,7 @@ private:
 
 	bool fLocal; // Local, NoSync
 	class C4Network2Client *pNetClient; // Local, NoSync
+	time_t last_lobby_ready_change; // Local, NoSync: Time when the lobby ready state was changed last through the SetLobbyReady call. 0 for never changed.
 
 	bool fIsIgnored; // Local, NoSync: chat messages from this client are suppressed
 
@@ -120,7 +121,7 @@ public:
 
 	void SetActivated(bool fnActivated);
 	void SetObserver() { Core.SetObserver(true); }
-	void SetReady(bool fnLobbyReady);
+	void SetLobbyReady(bool fnLobbyReady, time_t *time_since_last_change = NULL);
 	void SetLocal();
 
 	void ToggleIgnore() { fIsIgnored = !fIsIgnored; }
