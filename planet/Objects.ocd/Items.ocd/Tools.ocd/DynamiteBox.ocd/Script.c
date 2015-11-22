@@ -56,8 +56,6 @@ public func ControlUse(object clonk, int x, int y)
 	wires[count - 1] = wire;
 	
 	count--;
-
-	UpdatePicture();
 	
 	if (count == 0)
 	{
@@ -66,7 +64,13 @@ public func ControlUse(object clonk, int x, int y)
 		clonk->UpdateAttach();
 		clonk->OnSlotFull(pos);
 	}
+	else
+	{
+		UpdatePicture();
+	}
 
+	// Make sure the inventory gets notified of the changes.
+	clonk->~OnInventoryChange();
 	return true;
 }
 
@@ -82,13 +86,50 @@ public func ChangeToIgniter()
 
 private func UpdatePicture()
 {
-	var s = 400;
-	var yoffs = 14000;
-	var xoffs = 22000;
-	SetGraphics(Format("%d", count), Icon_Number, 12, GFXOV_MODE_Picture);
-	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
 	SetGraphics(Format("%d", 6 - count), DynamiteBox, 1, GFXOV_MODE_Picture);
 	return;
+}
+
+// Do not stack empty dynamite boxes with full ones.
+public func CanBeStackedWith(object other)
+{
+	if (this.count != other.count) return false;
+	return inherited(other, ...);
+}
+
+// Display the remaining dynamite sticks in menus.
+public func GetInventoryIconOverlay()
+{
+	// Full boxes don't need an overlay. Same for igniters.
+	if (count == DYNA_MaxCount || count <= 0) return nil;
+
+	// Overlay the sticks.
+	var overlay = 
+	{
+		Top = "0.1em",
+		Bottom = "1.1em",
+		back_stripe = 
+		{
+			Priority = -1,
+			Margin = ["0em", "0.3em", "0em", "0.2em"],
+			BackgroundColor = RGBa(0, 0, 0, 200)
+		}
+	};
+	
+	for (var i = 0; i < count; ++i)
+	{
+		var left = -i * 4 - 10;
+		var left_string = ToEmString(left);
+		var stick = 
+		{
+			Left = Format("100%% %s", left_string),
+			Right = Format("100%% %s + 1em", left_string),
+			Symbol = Dynamite
+		};
+		GuiAddSubwindow(stick, overlay);
+	}
+	
+	return overlay;
 }
 
 public func OnFuseFinished()
