@@ -34,14 +34,16 @@ protected func RejectCollect()
 	return false;
 }
 
-public func OnContentMenuOpened()
+public func OnShownInInteractionMenuStart(bool first)
 {
-	return Open();
+	if (first)
+		Open();
 }
 
-public func OnContentMenuClosed()
+public func OnShownInInteractionMenuStop(bool last)
 {
-	return Close();
+	if (last)
+		Close();
 }
 
 private func Open()

@@ -90,7 +90,11 @@ func Destruction()
 	for (var menu in current_menus)
 	{
 		if (menu && menu.menu_object)
+		{
+			// Notify the object of the deleted menu.
+			DoInteractionMenuClosedCallback(menu.target);
 			menu.menu_object->RemoveObject();
+		}
 	}
 	// remove all remaining contained dummy objects to prevent script warnings about objects in removed containers
 	var i = ContentsCount(), obj = nil;
@@ -237,6 +241,9 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	var other_menu = current_menus[1 - slot];
 	if (old_menu)
 	{
+		// Notify other object of the closed menu.
+		DoInteractionMenuClosedCallback(old_menu.target);
+		
 		// Re-enable entry in (other!) sidebar.
 		if (other_menu)
 		{
@@ -435,6 +442,30 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	{
 		GuiUpdate({Symbol = Icon_Cancel}, current_main_menu_id, 1 + 1 - slot, obj);
 	}
+	
+	// And notify the object of the fresh menu.
+	DoInteractionMenuOpenedCallback(obj);
+}
+
+private func DoInteractionMenuOpenedCallback(object obj)
+{
+	if (!obj) return;
+	if (obj._open_interaction_menus == nil)
+		obj._open_interaction_menus = 0;
+	
+	obj._open_interaction_menus += 1;
+	
+	var is_first = obj._open_interaction_menus == 1;
+	obj->~OnShownInInteractionMenuStart(is_first);
+}
+
+private func DoInteractionMenuClosedCallback(object obj)
+{
+	if (!obj) return;
+	obj._open_interaction_menus = Max(0, obj._open_interaction_menus - 1);
+	
+	var is_last = obj._open_interaction_menus == 0;
+	obj->~OnShownInInteractionMenuStop(is_last);
 }
 
 // Toggles the menu state between minimized and maximized.
