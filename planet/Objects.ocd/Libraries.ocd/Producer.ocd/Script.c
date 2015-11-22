@@ -32,7 +32,7 @@ local queue;
 protected func Initialize()
 {
 	queue = [];
-	AddEffect("ProcessQueue", this, 100, 5, this);
+	AddTimer("ProcessQueue", 10);
 	return _inherited(...);
 }
 
@@ -386,12 +386,7 @@ public func GetQueue()
 	return queue;
 }
 
-protected func FxProcessQueueStart()
-{
-	return FX_OK;
-}
-
-protected func FxProcessQueueTimer(object target, proplist effect)
+private func ProcessQueue()
 {
 	// If target is currently producing, don't do anything.
 	if (IsProducing())
@@ -404,7 +399,7 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
 	// Check raw material need.
-	if (!CheckAllComponentsForProduct(product_id))
+	if (!Produce(product_id))
 	{
 		// No material available? request from cable network.
 		RequestAllMissingComponents(product_id);
@@ -412,9 +407,6 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 		CycleQueue();
 		return FX_OK;
 	}
-	// Start the item production.
-	if (!Produce(product_id))
-		return FX_OK;
 		
 	// Update queue, reduce amount.
 	var is_still_there = ModifyQueueIndex(0, -1);
@@ -717,21 +709,6 @@ public func OnProductEjection(object product)
 }
 
 /*-- --*/
-
-/**
-	Determines whether there is sufficient material to produce an item.
-*/
-private func CheckAllComponentsForProduct(id product_id)
-{
-	for (var item in ProductionCosts(product_id))
-	{
-		var mat_id = item[0];
-		var mat_cost = item[1];
-		var available = GetAvailableComponentAmount(mat_id);
-		if (available < mat_cost) return false;
-	}
-	return true;
-}
 
 /**
 	Requests the necessary material from the cable network if available.
