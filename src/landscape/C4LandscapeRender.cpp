@@ -465,14 +465,17 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		}
 
 		// Finish updating up & down arrays for the next line
-		for (; x < std::min(placementSumsWidth, iWidth - To.x + C4LR_BiasDistanceX); x++) {
-			if (To.y + y + 1 < iHeight)
-				placementSumsDown[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + 1);
-			if (To.y + y + C4LR_BiasDistanceY + 1 < iHeight)
-				placementSumsDown[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + C4LR_BiasDistanceY + 1);
-			if (To.y + y - C4LR_BiasDistanceY >= 0)
-				placementSumsUp[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y - C4LR_BiasDistanceY);
-			placementSumsUp[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y);
+		if (To.x + x >= C4LR_BiasDistanceX)
+		{
+			for (; x < std::min(placementSumsWidth, iWidth - To.x + C4LR_BiasDistanceX); x++) {
+				if (To.y + y + 1 < iHeight)
+					placementSumsDown[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + 1);
+				if (To.y + y + C4LR_BiasDistanceY + 1 < iHeight)
+					placementSumsDown[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y + C4LR_BiasDistanceY + 1);
+				if (To.y + y - C4LR_BiasDistanceY >= 0)
+					placementSumsUp[x] -= pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y - C4LR_BiasDistanceY);
+				placementSumsUp[x] += pSource->_GetPlacement(To.x + x - C4LR_BiasDistanceX, To.y + y);
+			}
 		}
 	}
 
