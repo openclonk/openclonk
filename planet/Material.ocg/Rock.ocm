@@ -10,3 +10,4 @@ MaxAirSpeed=100
 MaxSlide=250
 Placement=50
 TextureOverlay=rock
+MinShapeOverlap=8
