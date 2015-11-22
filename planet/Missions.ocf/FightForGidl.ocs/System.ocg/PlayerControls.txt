@@ -1,0 +1,95 @@
+[ControlDefs]
+
+	[ControlDef]
+	Identifier=ToggleShop
+	
+	[ControlDef]
+	Identifier=QuickBuy0
+	
+	[ControlDef]
+	Identifier=QuickBuy1
+	
+	[ControlDef]
+	Identifier=QuickBuy2
+	
+	[ControlDef]
+	Identifier=QuickBuy3
+	
+	[ControlDef]
+	Identifier=QuickBuy4
+	
+	[ControlDef]
+	Identifier=QuickBuy5
+	
+	[ControlDef]
+	Identifier=QuickBuy6
+	
+	[ControlDef]
+	Identifier=QuickBuy7
+	
+	[ControlDef]
+	Identifier=QuickBuy8
+	
+	[ControlDef]
+	Identifier=QuickBuy9
+	
+
+[ControlSets]
+
+	[ControlSet]
+	Name=*
+		
+		[Assignment]
+		Key=P
+		Priority=-1
+		Control=ToggleShop
+		
+		[Assignment]
+		Key=0
+		Priority=999
+		Control=QuickBuy0
+
+		[Assignment]
+		Key=1
+		Priority=999
+		Control=QuickBuy1
+
+		[Assignment]
+		Key=2
+		Priority=999
+		Control=QuickBuy2
+
+		[Assignment]
+		Key=3
+		Priority=999
+		Control=QuickBuy3
+
+		[Assignment]
+		Key=4
+		Priority=999
+		Control=QuickBuy4
+
+		[Assignment]
+		Key=5
+		Priority=999
+		Control=QuickBuy5
+
+		[Assignment]
+		Key=6
+		Priority=999
+		Control=QuickBuy6
+
+		[Assignment]
+		Key=7
+		Priority=999
+		Control=QuickBuy7
+		
+		[Assignment]
+		Key=8
+		Priority=999
+		Control=QuickBuy8
+		
+		[Assignment]
+		Key=9
+		Priority=999
+		Control=QuickBuy9

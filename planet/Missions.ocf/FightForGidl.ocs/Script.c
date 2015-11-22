@@ -11,6 +11,7 @@ static g_spawned_enemies;
 static g_relaunchs; // array of relaunch counts
 static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
+static g_homebases; // item management / buy menus for each player
 static const ENEMY = 10; // player number of enemy
 
 static const MAX_RELAUNCH = 10;
@@ -20,6 +21,8 @@ static const MAX_RELAUNCH = 10;
 
 func Initialize()
 {
+	// Player homebase preparation
+	g_homebases = [];
 	// static variable init
 	InitWaveData();
 }
@@ -27,6 +30,7 @@ func Initialize()
 func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 {
 	if (GetPlayerType(plr) != C4PT_User) return;
+	//DoWealth(plr, 10000);
 	if (!g_statue) { EliminatePlayer(plr); return; } // no post-elimination join
 	if (!g_relaunchs)
 	{
@@ -42,7 +46,8 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->NewPlayerEntry(plr);
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
-	SetFoW(false,plr);
+	//SetFoW(false,plr); - need FoW for lights
+	g_homebases[plr] = CreateObject(Homebase, 0,0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
 	return;
@@ -50,32 +55,23 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 
 func RemovePlayer(int plr)
 {
+	if (g_homebases[plr]) g_homebases[plr]->RemoveObject();
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
 	return;
 }
 
-func RelaunchPlayer(int plr)
+private func TransferInventory(object from, object to)
 {
-	// Not for AI attackers
-	if (GetPlayerType(plr) != C4PT_User) return;
-	// Relaunch count
-	if (!g_relaunchs[plr])
-	{
-		Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
-		Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
-		EliminatePlayer(plr);
-		return false;
-	}
-	// Relaunch count
-	--g_relaunchs[plr];
-	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
-	Log("$MsgRelaunch$", GetTaggedPlayerName(plr));
-	JoinPlayer(plr);
-	//var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
-	//gui_arrow->SetAction("Show", GetCursor(plr));
+	// Drop some items that cannot be transferred (such as connected pipes and dynamite igniters)
+	var i = from->ContentsCount(), contents;
+	while (i--)
+		if (contents = from->Contents(i))
+			if (contents->~IsDroppedOnDeath(from))
+				contents->Exit();
+	return to->GrabContents(from);
 }
 
-func JoinPlayer(plr)
+func JoinPlayer(plr, prev_clonk)
 {
 	var relaunch_target = FindObject(Find_ID(Flagpole), Sort_Random()),x,y;
 	if (relaunch_target)
@@ -95,12 +91,16 @@ func JoinPlayer(plr)
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
 	// contents
-	//clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
-	//clonk.MaxContentsCountVal = 2;
-	clonk->CreateContents(Bow);
-	var arrow = CreateObjectAbove(Arrow);
-	clonk->Collect(arrow);
-	arrow->SetInfiniteStackCount();
+	clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
+	clonk.MaxContentsCountVal = 1;
+	if (prev_clonk) TransferInventory(prev_clonk, clonk);
+	if (!clonk->ContentsCount())
+	{
+		clonk->CreateContents(Bow);
+		var arrow = CreateObjectAbove(Arrow);
+		clonk->Collect(arrow);
+		arrow->SetInfiniteStackCount();
+	}
 	//clonk->CreateContents(Musket);
 	//clonk->Collect(CreateObjectAbove(LeadShot));
 	clonk->~CrewSelection(); // force update HUD
@@ -226,21 +226,46 @@ func OnWaveCleared(int wave)
 // Clonk death callback
 func OnClonkDeath(clonk, killed_by)
 {
-	// Remove inventory (players and enemies)
-	var i = clonk->ContentsCount(), obj;
-	while (i--) if (obj=clonk->Contents(i))
-		if (!obj->~OnContainerDeath())
-			obj->RemoveObject();
-	// Clear enemies from list
-	i = GetIndexOf(g_spawned_enemies, clonk);
-	if (i>=0)
+	// Player died?
+	if (!clonk) return;
+	var plr = clonk->GetOwner();
+	if (GetPlayerType(plr) == C4PT_User)
 	{
-		g_spawned_enemies[i] = nil;
-		// Kill bounty
-		if (killed_by>=0)
+		// Relaunch count
+		if (!g_relaunchs[plr])
 		{
-			Scoreboard->SetPlayerData(killed_by, "score", ++g_scores[killed_by]);
-			DoWealth(killed_by, clonk.Bounty);
+			Log("$MsgOutOfRelaunchs$", GetTaggedPlayerName(plr));
+			Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
+			EliminatePlayer(plr);
+			return false;
+		}
+		// Relaunch count
+		--g_relaunchs[plr];
+		Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
+		Log("$MsgRelaunch$", GetTaggedPlayerName(plr));
+		JoinPlayer(plr, clonk);
+		//var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
+		//gui_arrow->SetAction("Show", GetCursor(plr));
+	}
+	else
+	{
+		// Enemy clonk death
+		// Remove inventory
+		var i = clonk->ContentsCount(), obj;
+		while (i--) if (obj=clonk->Contents(i))
+			if (!obj->~OnContainerDeath())
+				obj->RemoveObject();
+		// Clear enemies from list
+		i = GetIndexOf(g_spawned_enemies, clonk);
+		if (i>=0)
+		{
+			g_spawned_enemies[i] = nil;
+			// Kill bounty
+			if (killed_by>=0)
+			{
+				Scoreboard->SetPlayerData(killed_by, "score", ++g_scores[killed_by]);
+				DoWealth(killed_by, clonk.Bounty);
+			}
 		}
 	}
 	return;
