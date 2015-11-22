@@ -129,10 +129,10 @@ public func HasPowerNeed()
 protected func FxCoolDownStart(object target, proplist effect, int temp)
 {
 	if (temp) 
-		return 1;
+		return FX_OK;
 	// Set Interval to the cool down time.
 	effect.Interval = GetStorageCoolDown();	
-	return 1;
+	return FX_OK;
 }
 
 // Cooldown effect to prevent continuous switching between consumption and production.
@@ -142,17 +142,17 @@ protected func FxCoolDownTimer(object target, proplist effect, int time)
 	{
 		// After the cool down register the storage as both a producer and consumer if either makes sense.
 		UpdateNetworkStatus();
-		return -1;
+		return FX_Execute_Kill;
 	}
-	return 1;
+	return FX_OK;
 }
 
 // Cooldown effect to prevent continuous switching between consumption and production.
 protected func FxCoolDownStop(object target, proplist effect, int reason, bool temp)
 {
-	if (temp) 
-		return 1;
-	return 1;
+	if (temp)
+		return FX_OK;
+	return FX_OK;
 }
 
 // Updates the network status: registers as consumer and/or producer.
@@ -198,10 +198,10 @@ public func OnPowerProductionStop(int amount)
 protected func FxProducePowerStart(object target, proplist effect, int temp)
 {
 	if (temp) 
-		return 1;
+		return FX_OK;
 	// Set Interval to 2.
 	effect.Interval = 2;	
-	return 1;
+	return FX_OK;
 }
 
 protected func FxProducePowerTimer(object target, proplist effect, time)
@@ -216,16 +216,16 @@ protected func FxProducePowerTimer(object target, proplist effect, time)
 		// Notify the power network that the storage is empty.
 		UnregisterPowerProduction();
 		RegisterPowerRequest(GetStoragePower());
-		return 1;
+		return FX_OK;
 	}
-	return 1;
+	return FX_OK;
 }
 
 protected func FxProducePowerStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp) 
-		return 1;
-	return 1;
+		return FX_OK;
+	return FX_OK;
 }
 
 
@@ -260,10 +260,10 @@ public func OnNotEnoughPower(int amount)
 protected func FxConsumePowerStart(object target, proplist effect, int temp)
 {
 	if (temp) 
-		return 1;
+		return FX_OK;
 	// Set Interval to 2.
 	effect.Interval = 2;	
-	return 1;
+	return FX_OK;
 }
 
 protected func FxConsumePowerTimer(object target, proplist effect, int time)
@@ -278,15 +278,15 @@ protected func FxConsumePowerTimer(object target, proplist effect, int time)
 		// Notify the power network that the storage is full.
 		UnregisterPowerRequest();
 		RegisterPowerProduction(GetStoragePower());
-		return -1;
+		return FX_Execute_Kill;
 	}
-	return 1;
+	return FX_OK;
 }
 
 protected func FxConsumePowerStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp) 
-		return 1;
+		return FX_OK;
 	// Remove a possible cooldown effect as well.
-	return 1;
+	return FX_OK;
 }

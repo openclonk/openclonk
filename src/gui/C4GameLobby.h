@@ -149,6 +149,7 @@ namespace C4GameLobby
 		void OnLog(const char *szLogMsg, DWORD dwClr=C4GUI_LogFontClr); // log callback
 		void OnError(const char *szErrMsg); // error sound + log in red
 		void OnPlayersChange() { UpdatePlayerList(); }
+		void OnClientReadyStateChange() { UpdatePlayerList(); }
 		void OnClientAddPlayer(const char *szFilename, int32_t idClient);
 		// packet callbacks from C4Network2
 		void HandlePacket(char cStatus, const C4PacketBase *pBasePkt, C4Network2Client *pClient);

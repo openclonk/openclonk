@@ -1,6 +1,6 @@
 // The airplane acts as a container for gold bars and starting material.
 
-#appendto Plane
+#appendto Airplane
 
 
 public func IsContainer() { return true; }

@@ -60,7 +60,7 @@ func InitializePlayer(int plr)
 func OnPlaneFinished(object plane)
 {
   // todo: outro
-  plane->CreateObjectAbove(Plane, 0,0, NO_OWNER);
+  plane->CreateObjectAbove(Airplane, 0,0, NO_OWNER);
   plane->RemoveObject();
 }
 

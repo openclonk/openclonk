@@ -952,13 +952,25 @@ void C4ControlClientUpdate::Execute() const
 		::Players.RemoveAtClient(iID, true);
 		break;
 	case CUT_SetReady:
+		{
 		// nothing to do?
 		if (pClient->isLobbyReady() == !!iData) break;
-		// log
-		LogF(LoadResStr(iData ? "IDS_NET_CLIENT_READY" : "IDS_NET_CLIENT_UNREADY"), strClient.getData(), pClient->getName());
-		// ready/unready
-		pClient->SetReady(!!iData);
+		// ready/unready (while keeping track of time)
+		time_t last_change_time = MinReadyAnnouncementDelay;
+		pClient->SetLobbyReady(!!iData, &last_change_time);
+		// log to others, but don't spam
+		if (last_change_time >= MinReadyAnnouncementDelay)
+		{
+			if (!pClient->isLocal())
+			{
+				LogF(LoadResStr(iData ? "IDS_NET_CLIENT_READY" : "IDS_NET_CLIENT_UNREADY"), strClient.getData(), pClient->getName());
+			}
+			// Also update icons
+			C4GameLobby::MainDlg *lobby = ::Network.GetLobby();
+			if (lobby) lobby->OnClientReadyStateChange();
+		}
 		break;
+		}
 	}
 }
 

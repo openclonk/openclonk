@@ -123,7 +123,7 @@ global func GivePlayerAirKnowledge(int plr)
 		// Shipyard to construct the vehicles.
 		Shipyard,
 		// Airship and plane.
-		Airship, Plane
+		Airship, Airplane
 	];
 	for (var plan in knowledge)
 		SetPlrKnowledge(plr, plan);

@@ -56,6 +56,7 @@ bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex
 	shape_border_y.resize(255, false);
 	// Create shape data surface as downscaled version where equal pixel colors are assigned the same index
 	std::map<uint32_t, uint8_t> clr2shape;
+	std::vector<int32_t> first_px_pos_x(255), first_px_pos_y(255);
 	if (!data.Create(base_tex_wdt, base_tex_hgt)) return false;
 	for (int32_t y = 0; y < data.Hgt; ++y)
 	{
@@ -79,6 +80,8 @@ bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex
 					px_data = num_shapes;
 					clr2shape[px] = num_shapes;
 					shape_pixnum.push_back(1);
+					first_px_pos_x[num_shapes] = x;
+					first_px_pos_y[num_shapes] = y;
 					++num_shapes;
 					if (num_shapes >= 255)
 					{
@@ -98,6 +101,17 @@ bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex
 				if (!y || y == data.Hgt - 1) shape_border_y[px_data] = true;
 			}
 			data._SetPix(x, y, px_data);
+		}
+	}
+	// Show a summary about found shapes in this texture
+	if (Config.Developer.DebugShapeTextures)
+	{
+		LogF("Shape texture summary for %s (%d x %d downscaled to %d x %d):", filename, (int)png.iWdt, (int)png.iHgt, (int)base_tex_wdt, (int)base_tex_wdt);
+		for (auto iter : clr2shape)
+		{
+			unsigned int clr = iter.first;
+			int i = iter.second;
+			LogF("  Color 0x%08x: %d pixels. First seen pos: %d/%d", clr, int(shape_pixnum[i]), int(first_px_pos_x[i]), int(first_px_pos_y[i]));
 		}
 	}
 

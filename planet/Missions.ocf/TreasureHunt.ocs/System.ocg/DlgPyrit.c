@@ -84,13 +84,13 @@ func FxPyritHammeringTimer(object c, proplist fx, int time)
 	var fc = FrameCounter();
 	if (fc < this.anim_continue_frame || c.has_sequence) return FX_OK;
 	this.anim = 0;
-	if (!fx.plane) if (!(fx.plane = FindObject(Find_ID(Plane), Sort_Distance()))) return FX_OK;
+	if (!fx.plane) if (!(fx.plane = FindObject(Find_ID(Airplane), Sort_Distance()))) return FX_OK;
 	// After a while, the plane is finished. Prefer to finish while no players are nearby.
 	if ((fc > 11500 && !ObjectCount(Find_ID(Clonk), Find_InRect(-300,-200,600,400), Find_Not(Find_Owner(NO_OWNER)))) || fc > 24000)
 	{
-		fx.plane->SetMeshMaterial(Plane->GetMeshMaterial());
+		fx.plane->SetMeshMaterial(Airplane->GetMeshMaterial());
 		fx.plane->SetR(90);
-		fx.plane.MeshTransformation=Plane.MeshTransformation;
+		fx.plane.MeshTransformation=Airplane.MeshTransformation;
 		return FX_Execute_Kill;
 	}
 	if ((!Random(20)) || this.was_walk_interrupted)

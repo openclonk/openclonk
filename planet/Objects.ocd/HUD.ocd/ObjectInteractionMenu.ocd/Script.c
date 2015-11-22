@@ -640,6 +640,7 @@ func CreateMainMenu(object obj, int slot)
 	{
 		container.Style = GUI_TextVCenter | GUI_TextHCenter;
 		container.Text = error_message;
+		current_menus[slot].menus = [];
 		return big_menu;
 	}
 	
@@ -1026,8 +1027,9 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				{
 					custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
 					custom.Priority = obj->GetValue();
+					custom.top = {};
 				}
-				custom._overlay = overlay;
+				custom.top._overlay = overlay;
 			}
 			
 			// Add to menu!

@@ -7,23 +7,19 @@ NoInitialize=true
 
 [Game]
 Goals=Goal_ProtectTheStatue=1
-Rules=Rule_ObjectFace=1
+Rules=Rule_ObjectFade=1
 
 [Player1]
 Wealth=50,0,0,250
-BaseMaterial=Sword=999;Firestone=999;Bow=999;Musket=999;Bread=999;DynamiteBox=999;IronBomb=999;GrenadeLauncher=999;
 
 [Player2]
 Wealth=50,0,0,250
-BaseMaterial=Sword=999;Firestone=999;Bow=999;Musket=999;Bread=999;DynamiteBox=999;IronBomb=999;GrenadeLauncher=999;
 
 [Player3]
 Wealth=50,0,0,250
-BaseMaterial=Sword=999;Firestone=999;Bow=999;Musket=999;Bread=999;DynamiteBox=999;IronBomb=999;GrenadeLauncher=999;
 
 [Player4]
 Wealth=50,0,0,250
-BaseMaterial=Sword=999;Firestone=999;Bow=999;Musket=999;Bread=999;DynamiteBox=999;IronBomb=999;GrenadeLauncher=999;
 
 [Landscape]
 Sky=Clouds1

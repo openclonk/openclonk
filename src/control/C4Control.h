@@ -392,6 +392,8 @@ public:
 	C4ControlClientUpdate(int32_t iID, C4ControlClientUpdType eType, int32_t iData = 0)
 			: iID(iID), eType(eType), iData(iData)
 	{ }
+private:
+	static const int32_t MinReadyAnnouncementDelay = 1; // seconds that need to pass between ready-state announcements to prevent spam
 public:
 	int32_t iID;
 	C4ControlClientUpdType eType;

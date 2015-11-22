@@ -15,7 +15,7 @@ public func Initialize()
 
 func SetProgress(int new_progress)
 {
-	var parts = [Plane_Skids, Plane_Chassis, Plane_Wings, Plane_Engine, Plane_Propeller, nil];
+	var parts = [Airplane_Skids, Airplane_Chassis, Airplane_Wings, Airplane_Engine, Airplane_Propeller, nil];
 	progress = new_progress;
 	if (!progress)
 	{

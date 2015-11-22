@@ -12,8 +12,8 @@ private func Initialize()
 	PlaceObjects(Loam,25,"Earth");
 	PlaceObjects(Nugget,25,"Earth");
 
-	AddEffect("PlaneReset",CreateObjectAbove(Plane,3030,315,0),100,10,nil,nil);
-	AddEffect("PlaneReset",CreateObjectAbove(Plane,3160,315,1),100,10,nil,nil);
+	AddEffect("PlaneReset",CreateObjectAbove(Airplane,3030,315,0),100,10,nil,nil);
+	AddEffect("PlaneReset",CreateObjectAbove(Airplane,3160,315,1),100,10,nil,nil);
 
 	Doors();
 
@@ -89,7 +89,7 @@ global func FxAutoOpenTimer(object pTarget, effect, int timer)
 {
 	if (!effect.fired)
 	{
-		if (FindObject(Find_ID(Plane),Find_InRect(2710,310,130,40)))
+		if (FindObject(Find_ID(Airplane),Find_InRect(2710,310,130,40)))
 		{
 			effect.fired = true;
 			var cannons = FindObjects(Find_ID(Cannon));
@@ -100,7 +100,7 @@ global func FxAutoOpenTimer(object pTarget, effect, int timer)
 			}
 		}
 	}
-	if(FindObject(Find_ID(Plane),Find_InRect(0,0,2000,500)))
+	if(FindObject(Find_ID(Airplane),Find_InRect(0,0,2000,500)))
 	{
 		pTarget->OpenDoor();
 		return FX_Execute_Kill;

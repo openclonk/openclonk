@@ -23,7 +23,7 @@ func DoInit(int first_player)
 	if (windmill) windmill->SetOwner(first_player);
 	
 	// Goal
-	CreateObject(Goal_Plane);
+	CreateObject(Goal_Airplane);
 	
 	// Rules
 	CreateObject(Rule_TeamAccount, 50, 50);

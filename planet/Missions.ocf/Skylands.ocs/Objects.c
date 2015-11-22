@@ -130,15 +130,15 @@ func InitializeObjects()
 	Chest006->SetClrModulation(0xd0ffffff);
 	var Chest007 = CreateObjectAbove(Chest, 212, 406);
 
-	CreateObjectAbove(Plane_Construction, 272, 415);
+	CreateObjectAbove(Airplane_Construction, 272, 415);
 
-	var Plane_Wings001 = CreateObject(Plane_Wings, 600, 118);
+	var Plane_Wings001 = CreateObject(Airplane_Wings, 600, 118);
 	Plane_Wings001->SetR(117);
 
-	var Plane_Skids001 = CreateObject(Plane_Skids, 457, 887);
+	var Plane_Skids001 = CreateObject(Airplane_Skids, 457, 887);
 	Plane_Skids001->SetR(13);
 
-	var Plane_Chassis001 = CreateObject(Plane_Chassis, 908, 960);
+	var Plane_Chassis001 = CreateObject(Airplane_Chassis, 908, 960);
 	Plane_Chassis001->SetR(-18);
 
 	Chest004->CreateContents(Rock, 4);
@@ -177,7 +177,7 @@ func InitializeObjects()
 	Chest003->CreateContents(GoldBar, 3);
 	Chest006->CreateContents(GoldBar);
 
-	var Plane_Propeller001 = CreateObject(Plane_Propeller, 1031, 329);
+	var Plane_Propeller001 = CreateObject(Airplane_Propeller, 1031, 329);
 	Plane_Propeller001->SetR(20);
 
 	Chest002->CreateContents(Firestone, 3);

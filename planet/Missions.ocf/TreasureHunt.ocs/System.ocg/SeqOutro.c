@@ -11,7 +11,7 @@ func Outro_Start(object plane)
 	SetViewTarget(GetHero());
 	npc_pyrit.has_sequence = true; // Pyrit stops hammering
 	this.plane->SetR(90); // in case Pyrit isn't done yet
-	this.plane.MeshTransformation=Plane.MeshTransformation;
+	this.plane.MeshTransformation=Airplane.MeshTransformation;
 	var max_unstick = 10;
 	while (this.plane->Stuck() && max_unstick--) this.plane->SetPosition(this.plane->GetX(), this.plane->GetY()-1);
 	return ScheduleNext(5);

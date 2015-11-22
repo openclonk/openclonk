@@ -6,7 +6,7 @@ static npc_pyrit, g_cannon, g_cannoneer;
 
 func Intro_Init()
 {
-	this.plane = CreateObjectAbove(Plane, 0, 800);
+	this.plane = CreateObjectAbove(Airplane, 0, 800);
 	this.plane->SetColor(0xa04000);
 	this.plane.health = 9999999;
 	this.plane.intro_seq = this;
@@ -179,7 +179,7 @@ func Intro_PlaneHit()
 	npc_pyrit->Exit(0,-5, 0, -1, -2);
 	npc_pyrit->SetAction("Tumble");
 	this.Hit = this.intro_seq.plane_Hit;
-	this.MeshTransformation=Trans_Mul(Trans_Rotate(10,0,2,1), Plane.MeshTransformation);
+	this.MeshTransformation=Trans_Mul(Trans_Rotate(10,0,2,1), Airplane.MeshTransformation);
 	this.intro_seq->ScheduleNext(50);
 	SetObjectLayer(this); // plane is broken
 	return true;

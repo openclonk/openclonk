@@ -275,6 +275,7 @@ private func DoSkyShade()
 	var daycolour = daycolour_global;
 	var sunsetcolour = [140, 45, 10];
 	var sunrisecolour = [140, 100, 70];
+	var ambient_brightness = 0;
 	
 	// Darkness of night dependent on the moon-phase.
 	if (!day)
@@ -302,12 +303,14 @@ private func DoSkyShade()
 			skyshade[i] = Min(255, dayfade + nightfade + sunrisefade);
 		}
 		skyshade[3] = Min(255, progress / 2);
+		ambient_brightness = 100 * (40 + 215 * progress / 1800) / 255;
 	}
 	// Day.
 	else if (day)
 	{
 		skyshade = [daycolour[0], daycolour[1], daycolour[2], 255];
-		daycolour_global = [GetRGBaValue(GetSkyAdjust(), 1), GetRGBaValue(GetSkyAdjust(), 2), GetRGBaValue(GetSkyAdjust(), 3)];
+		//daycolour_global = [GetRGBaValue(GetSkyAdjust(), RGBA_RED), GetRGBaValue(GetSkyAdjust(), RGBA_GREEN), GetRGBaValue(GetSkyAdjust(), RGBA_BLUE)];
+		ambient_brightness = 100;
 	}
 	// Sunset.
 	else if (sunset)
@@ -324,32 +327,28 @@ private func DoSkyShade()
 			skyshade[i] = Min(255, dayfade + nightfade + sunsetfade);
 		}		
 		skyshade[3] = Min(255, 900 - progress / 2);
+		ambient_brightness = 100 * (255 - 215 * progress / 1800) / 255;
 	}
 	// Night.
 	else if (night)
 	{
 		skyshade = nightcolour;
 		skyshade[3] = 0;
+		ambient_brightness = 15;
 	}
 
-	// Update the environment during sunrise and sunset.
-	if (sunrise || sunset)
-	{
-		// Shade the sky using sky adjust.
-		SetSkyAdjust(RGBa(skyshade[0], skyshade[1], skyshade[2], GetRGBaValue(GetSkyAdjust(), 0)), GetSkyAdjust(true));
+	// Shade the sky using sky adjust.
+	SetSkyAdjust(RGBa(skyshade[0], skyshade[1], skyshade[2], GetRGBaValue(GetSkyAdjust(), RGBA_ALPHA)), GetSkyAdjust(true));
 
-		// Shade the landscape and the general feeling by reducing the ambient light.
-		if (sunset) var new_ambient = 100 * (255 - 215 * progress / 1800) / 255;
-		if (sunrise) var new_ambient = 100 * (40 + 215 * progress / 1800) / 255;
-		if (GetAmbientBrightness() != new_ambient)
-			SetAmbientBrightness(new_ambient);
+	// Shade the landscape and the general feeling by reducing the ambient light.
+	if (GetAmbientBrightness() != ambient_brightness)
+		SetAmbientBrightness(ambient_brightness);
 
-		// Adjust celestial objects and clouds.
-		for (var celestial in FindObjects(Find_Func("IsCelestial")))
-			celestial->SetObjAlpha(255 - skyshade[3]);
-		for (var cloud in FindObjects(Find_ID(Cloud)))
-			cloud->SetLightingShade(255 - skyshade[3]);
-	}
+	// Adjust celestial objects and clouds.
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+		celestial->SetObjAlpha(255 - skyshade[3]);
+	for (var cloud in FindObjects(Find_ID(Cloud)))
+		cloud->SetLightingShade(255 - skyshade[3]);
 	return;
 }
 

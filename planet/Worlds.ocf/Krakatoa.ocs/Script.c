@@ -91,7 +91,7 @@ protected func InitializePlayer(int plr)
 global func FxGoalCheckTimer(object target, proplist effect)
 {
 	// Complete goal if there is an airplane with the required amount of gold bars.
-	for (var plane in FindObjects(Find_ID(Plane), Find_Not(Find_Func("IsBroken"))))
+	for (var plane in FindObjects(Find_ID(Airplane), Find_Not(Find_Func("IsBroken"))))
 	{
 		if (plane->ContentsCount(GoldBar) >= effect.barcnt)
 		{
@@ -111,7 +111,7 @@ private func InitEnvironment(int difficulty)
 	// Adjust the mood, orange sky, darker feeling in general.
 	var dark = 10;
 	SetSkyAdjust(RGB(150, 42, 0));
-	SetGamma(100-dark,100-dark,100-dark);
+	SetGamma(100 - dark, 100 - dark, 100 - dark);
 	
 	// Time of days and celestials.
 	var time = CreateObject(Time);
@@ -228,7 +228,7 @@ global func FxBigVolcanoTimer(object target, proplist effect)
 	{
 		var pos = chasm_exits[i];
 		var lava = FindLocation(Loc_Material("DuroLava"), Loc_InRect(pos[0] - 100, pos[1] - 100, 200, 200));
-		InsertMaterial(Material("DuroLava"), lava.x, lava.y);
+		if (lava) InsertMaterial(Material("DuroLava"), lava.x, lava.y);
 	}
 	
 	// At more rare occasions there will be a bigger eruption with chunks.

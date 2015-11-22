@@ -1,5 +1,5 @@
 [DefCore]
-id=Plane_Wings
+id=Airplane_Wings
 Version=6,0
 Category=C4D_Vehicle
 Width=10

@@ -1,5 +1,5 @@
 [DefCore]
-id=Plane_Propeller
+id=Airplane_Propeller
 Version=6,0
 Category=C4D_Object
 Width=9

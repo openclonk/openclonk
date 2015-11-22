@@ -4,7 +4,6 @@ static g_goal, g_object_fade, g_statue, g_doorleft, g_doorright;
 
 func InitializeObjects()
 {
-	CreateObject(Rule_BuyAtFlagpole, 0, 0);
 	CreateObject(Rule_TeamAccount, 0, 0);
 
 	g_goal = CreateObject(Goal_ProtectTheStatue, 0, 0);
@@ -27,10 +26,10 @@ func InitializeObjects()
 
 	var Flagpole0012 = CreateObjectAbove(Flagpole, 676, 369);
 	Flagpole0012->SetCategory(C4D_StaticBack);
-	Flagpole0012->SetColor(0xff);
+	Flagpole0012->MakeInvincible();
 	var Flagpole0007 = CreateObjectAbove(Flagpole, 582, 369);
 	Flagpole0007->SetCategory(C4D_StaticBack);
-	Flagpole0007->SetColor(0xff);
+	Flagpole0007->MakeInvincible();
 
 	CreateObjectAbove(Rock, 312, 713);
 	CreateObjectAbove(Rock, 353, 679);

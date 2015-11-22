@@ -41,6 +41,7 @@ public func RootSurface()
 protected func ControlUse(object clonk)
 {
 	clonk->Eat(this);
+	return true;
 }
 
 // Nutritional value depends on the completion of the mushroom.

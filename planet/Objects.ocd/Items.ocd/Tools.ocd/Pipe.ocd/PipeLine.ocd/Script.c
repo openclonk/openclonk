@@ -64,28 +64,30 @@ private func LineBreak(bool no_msg)
 		BreakMessage();
 
 	var line_end = GetActionTarget(0);
-	if (line_end->GetID() != Pipe)
+	if (!line_end ||line_end->GetID() != Pipe)
 		line_end = GetActionTarget(1);
-	if (line_end) line_end->~ResetPicture();
-
+	if (line_end) 
+		line_end->~ResetPicture();
 	return;
 }
 
 private func Destruction()
 {
 	var line_end = GetActionTarget(0);
-	if (line_end->GetID() != Pipe)
+	if (!line_end || line_end->GetID() != Pipe)
 		line_end = GetActionTarget(1);
-	if (line_end) line_end->~ResetPicture();
+	if (line_end) 
+		line_end->~ResetPicture();
+	return;
 }
 
 private func BreakMessage()
 {
 	var line_end = GetActionTarget(0);
-	if (line_end->GetID() != Pipe)
+	if (!line_end || line_end->GetID() != Pipe)
 		line_end = GetActionTarget(1);
-	
-	line_end->Message("$TxtPipeBroke$");
+	if (line_end)
+		line_end->Message("$TxtPipeBroke$");
 	return;
 }
 

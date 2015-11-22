@@ -1091,7 +1091,9 @@ func Hit(int iXSpeed, int iYSpeed)
 	if (this->IsWalking() && iYSpeed > 450)
 	{
 		// roll :D
-		if (ComDir2XY(GetComDir())[0] != 0)
+		var x_movement = ComDir2XY(GetComDir())[0];
+		var looking_right = GetDir() == DIR_Right;
+		if ((x_movement > 0 && looking_right) || (x_movement < 0 && !looking_right))
 		{
 			DoRoll();
 		}

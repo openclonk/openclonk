@@ -983,7 +983,7 @@ global func Test16_OnStart(int plr)
 	workshop->AddToQueue(Shovel, 1);
 	
 	// Log what the test is about.
-	Log("Undproduction of power not meeting a single demand, which should not lead to producing any power at all.");
+	Log("Underproduction of power not meeting a single demand, which should not lead to producing any power at all.");
 	return true;
 }
 
@@ -1008,8 +1008,49 @@ global func Test16_OnFinished()
 	return;
 }
 
-// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+// Test a bug where an elevator is connected with a flagpole to an existing settlement with two players.
 global func Test17_OnStart(int plr)
+{
+	// Power source: wind generator producing the power difference between the two pumps.
+	SetWindFixed(50);
+	CreateObjectAbove(WindGenerator, 40, 160, plr);
+	CreateObjectAbove(Flagpole, 12, 160, plr);
+	
+	// Power consumers.
+	CreateObjectAbove(ChemicalLab, 70, 160, plr);
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
+	workshop->CreateContents(Wood, 2);
+	workshop->CreateContents(Metal, 2);
+	
+	// Create elevator and flagpole by script player.
+	ScheduleCall(nil, "CreateObjectAbove", 2 * 36, 0, Elevator, 372, 104, script_plr);
+	ScheduleCall(nil, "CreateObjectAbove", 4 * 36, 0, Flagpole, 300, 160, script_plr);
+		
+	// Start a task in the workshop.
+	ScheduleCall(workshop, "AddToQueue", 8 * 36, 0, Shovel, 2);
+	
+	// Log what the test is about.
+	Log("An elevator is connected with a flagpole to an existing settlement with two players");
+	return true;
+}
+
+global func Test17_Completed()
+{
+	if (ObjectCount(Find_ID(Shovel)) >= 2)
+		return true;
+	return false;
+}
+
+global func Test17_OnFinished()
+{
+	// Remove structures.
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Flagpole), Find_ID(ChemicalLab), Find_ID(ToolsWorkshop), Find_ID(Elevator)));
+	return;
+}
+
+
+// Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
+global func Test18_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -1038,14 +1079,14 @@ global func Test17_OnStart(int plr)
 	return true;
 }
 
-global func Test17_Completed()
+global func Test18_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test17_OnFinished()
+global func Test18_OnFinished()
 {
 	// Restore water levels.
 	RestoreWaterLevels();
