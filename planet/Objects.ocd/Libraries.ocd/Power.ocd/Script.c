@@ -807,9 +807,9 @@ protected func FxVisualPowerChangeRefresh(object target, proplist effect)
 protected func FxVisualPowerChangeTimer(object target, proplist effect, int time)
 {
 	if (!effect.bar) 
-		return -1;
+		return FX_Execute_Kill;
 	if (effect.current == effect.to) 
-		return 1;
+		return FX_OK;
 	
 	if (effect.to < effect.current) 
 		effect.current = Max(effect.current - 15, effect.to);
@@ -817,7 +817,7 @@ protected func FxVisualPowerChangeTimer(object target, proplist effect, int time
 		effect.current = Min(effect.current + 15, effect.to);
 
 	effect.bar->SetValue(effect.current);
-	return 1;
+	return FX_OK;
 }
 
 

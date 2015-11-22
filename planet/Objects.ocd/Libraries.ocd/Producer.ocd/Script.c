@@ -388,19 +388,18 @@ public func GetQueue()
 
 protected func FxProcessQueueStart()
 {
-
-	return 1;
+	return FX_OK;
 }
 
 protected func FxProcessQueueTimer(object target, proplist effect)
 {
 	// If target is currently producing, don't do anything.
 	if (IsProducing())
-		return 1;
+		return FX_OK;
 
 	// Wait if there are no items in the queue.
 	if (!queue[0])
-		return 1;
+		return FX_OK;
 	
 	// Produce first item in the queue.
 	var product_id = queue[0].Product;
@@ -411,11 +410,11 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 		RequestAllMissingComponents(product_id);
 		// In the meanwhile, just cycle the queue and try the next one.
 		CycleQueue();
-		return 1;
+		return FX_OK;
 	}
 	// Start the item production.
 	if (!Produce(product_id))
-		return 1;
+		return FX_OK;
 		
 	// Update queue, reduce amount.
 	var is_still_there = ModifyQueueIndex(0, -1);
@@ -425,7 +424,7 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	// We changed something. Update menus.
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	// Done with production checks.
-	return 1;
+	return FX_OK;
 }
 
 /*-- Production --*/
@@ -603,7 +602,7 @@ private func IsProducing()
 protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
 {
 	if (temporary)
-		return 1;
+		return FX_OK;
 		
 	// Set product.
 	effect.Product = product;
@@ -624,7 +623,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// change its power need during production.
 	RegisterPowerRequest(this->PowerNeed());
 	
-	return 1;
+	return FX_OK;
 }
 
 public func OnNotEnoughPower()
@@ -656,7 +655,7 @@ public func OnEnoughPower()
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
 	if (!effect.Active)
-		return 1;
+		return FX_OK;
 	
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
@@ -665,14 +664,15 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	
 	// Check if production time has been reached.
 	if (effect.Duration >= ProductionTime(effect.Product))
-		return -1;
+		return FX_Execute_Kill;
 	
-	return 1;
+	return FX_OK;
 }
 
 protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
-	if(temp) return;
+	if (temp) 
+		return FX_OK;
 	
 	// no need to consume power anymore
 	// always unregister even if there's a queue left to process, because OnNotEnoughPower relies on it
@@ -680,7 +680,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	UnregisterPowerRequest();
 
 	if (reason != 0)
-		return 1;
+		return FX_OK;
 
 	// Callback to the producer.
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
@@ -689,7 +689,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
 	
-	return 1;
+	return FX_OK;
 }
 
 // Standard behaviour for product ejection.
@@ -702,13 +702,13 @@ public func OnProductEjection(object product)
 	if (product->GetCategory() & C4D_Vehicle || product->~OnCompletionEjectProduct())
 	{
 		var x = GetX();
-		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;
+		var y = GetY() + GetDefHeight() / 2 - product->GetDefHeight() / 2;
 		product->SetPosition(x, y);
 		// Sometimes, there is material in front of the building. Move vehicles upwards in that case
-		var max_unstick_range = Max(GetDefHeight()/5,5); // 8 pixels for tools workshop
+		var max_unstick_range = Max(GetDefHeight() / 5, 5); // 8 pixels for tools workshop
 		var y_off = 0;
 		while (product->Stuck() && y_off < max_unstick_range)
-			product->SetPosition(x, y-++y_off);
+			product->SetPosition(x, y - ++y_off);
 	}
 	// Items should stay inside.
 	else
