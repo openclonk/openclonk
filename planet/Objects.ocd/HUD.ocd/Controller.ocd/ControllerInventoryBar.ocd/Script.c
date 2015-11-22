@@ -126,10 +126,16 @@ private func UpdateInventory()
 		// Enable objects to provide a custom overlay for the icon slot.
 		// This could e.g. be used by special scenarios or third-party mods.
 		var custom_overlay = nil;
-		if (item) custom_overlay = item->~GetInventoryIconOverlay();
+		// For stacked objects, we will have multiple virtual objects in one slot.
+		var stack_count = nil;
+		if (item)
+		{
+			stack_count = item->~GetStackCount();
+			custom_overlay = item->~GetInventoryIconOverlay();
+		}
 		var needs_selection = hand_item_pos == slot_info.slot;
 		var has_extra_slot = item && item->~HasExtraSlot();
-		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
+		if ((!!item == slot_info.empty) || (item != slot_info.obj) || (needs_selection != slot_info.hand) || (stack_count != slot_info.last_count) || has_extra_slot || slot_info.had_custom_overlay || custom_overlay)
 		{
 			// Hide or show extra-slot display?
 			var extra_slot_player = NO_OWNER;
@@ -194,11 +200,15 @@ private func UpdateInventory()
 			
 			if (item)
 			{
-				var stack_count = item->~GetStackCount();
 				if (stack_count > 1 && !item->~IsInfiniteStackCount())
 				{
 					update.count.Text = Format("%dx", stack_count);
+					slot_info.last_count = stack_count;
 				}
+			}
+			else
+			{
+				slot_info.last_count = nil;
 			}
 			
 			if (custom_overlay)

@@ -150,12 +150,13 @@ public func UpdateStackDisplay()
 	{
 		// has an extra slot
 		if (container->~HasExtraSlot())
-			container->~NotifyHUD();
-		// is a clonk with new inventory system
-		else if (container->~GetSelected())
 		{
-			var pos = container->GetItemPos(this);
-			container->~OnSlotFull(pos);
+			container->~NotifyHUD();
+		}
+		// is a clonk with new inventory system
+		else
+		{
+			container->~OnInventoryChange();
 		}
 	}
 }
