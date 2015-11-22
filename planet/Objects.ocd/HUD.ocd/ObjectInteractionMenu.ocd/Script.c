@@ -1027,8 +1027,9 @@ func FxIntRefreshContentsMenuTimer(target, effect, time)
 				{
 					custom = MenuStyle_Grid->MakeEntryProplist(symbol, nil);
 					custom.Priority = obj->GetValue();
+					custom.top = {};
 				}
-				custom._overlay = overlay;
+				custom.top._overlay = overlay;
 			}
 			
 			// Add to menu!
