@@ -343,6 +343,11 @@ private func CancelAiming(fx)
 		fx.aim_weapon->~ControlUseCancel(this);
 		fx.aim_weapon = nil;
 	}
+	else
+	{
+		// Also cancel aiming done outside AI control
+		this->~CancelAiming();
+	}
 	return true;
 }
 
@@ -383,9 +388,11 @@ private func ExecuteRanged(fx)
 	if (PathFree(x,y,tx,ty))
 	{
 		// Get shooting angle
-		var shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
+		var shooting_angle;
 		if (fx.ranged_direct)
 			shooting_angle = Angle(x, y, tx, ty, 10);
+		else
+			shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
 		//Log("AI: Ranged attack calculated angle %d from coordinates (%d, %d) and (%d, %d)", shooting_angle, x, y, tx, ty); 
 		if (GetType(shooting_angle) != C4V_Nil)
 		{
