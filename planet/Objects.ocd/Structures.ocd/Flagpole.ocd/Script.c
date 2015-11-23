@@ -66,6 +66,8 @@ public func GetBuyMenuEntries(object clonk)
 		price = {Left = "2em", Priority = 3}
 	};
 	
+	// We need to know when exactly we should refresh the menu to prevent unecessary refreshs.
+	var lowest_greyed_out_price = nil;
 	var wealth_player = GetOwner(); // Note that the flag owner pays for everything atm.
 	var wealth = GetWealth(wealth_player); 
 	var menu_entries = [];
@@ -87,6 +89,8 @@ public func GetBuyMenuEntries(object clonk)
 		if (value > wealth) // If the player can't afford it, the item (except for the price) is overlayed by a greyish color.
 		{
 			entry.overlay = {Priority = 2, BackgroundColor = RGBa(50, 50, 50, 150)};
+			if (lowest_greyed_out_price == nil || value < lowest_greyed_out_price)
+				lowest_greyed_out_price = value;
 		}
 		PushBack(menu_entries, {symbol = item, extra_data = nil, custom = entry});
 	}
@@ -94,12 +98,13 @@ public func GetBuyMenuEntries(object clonk)
 	// At the top of the menu, we add the player's wealth.
 	var entry = 
 	{
-		Bottom = "1.1em", BackgroundColor = RGBa(50, 50, 0, 100),
+		Bottom = "1.1em",
+		BackgroundColor = RGBa(100, 100, 50, 100),
 		Priority = -1,
 		left_text =
 		{
 			Style = GUI_TextVCenter | GUI_TextLeft,
-			Text = "<c 666666>$YourWealth$:</c>"
+			Text = "<c 888888>$YourWealth$:</c>"
 		},
 		right_text = 
 		{
@@ -108,6 +113,7 @@ public func GetBuyMenuEntries(object clonk)
 		}
 	};
 	var fx = AddEffect("UpdateWealthDisplay", this, 1, 5, nil, GetID());
+	fx.lowest_greyed_out_price = lowest_greyed_out_price;
 	fx.last_wealth = wealth;
 	fx.plr = wealth_player;
 	PushBack(menu_entries, {symbol = nil, extra_data = nil, custom = entry, fx = fx});
@@ -142,6 +148,13 @@ private func FxUpdateWealthDisplayTimer(object target, effect fx, int time)
 	if (!fx.menu_target) return -1;
 	if (fx.last_wealth == GetWealth(fx.wealth_player)) return FX_OK;
 	fx.last_wealth = GetWealth(fx.wealth_player);
+	// Do we need a full refresh? New objects might have become available.
+	if (fx.lowest_greyed_out_price && fx.lowest_greyed_out_price <= fx.last_wealth)
+	{
+		target->UpdateInteractionMenus(target.GetBuyMenuEntries);
+		return FX_OK;
+	}
+	// Just update the money display otherwise.
 	GuiUpdate({right_text = {Text = Format("<c ffff00>%d{{Icon_Wealth}}</c>", fx.last_wealth)}}, fx.main_ID, fx.ID, fx.menu_target);
 	return FX_OK;
 }
