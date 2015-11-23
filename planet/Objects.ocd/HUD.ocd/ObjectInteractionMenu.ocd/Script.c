@@ -1152,7 +1152,7 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 			var new_entry = new_entries[ni];
 			if (!EntriesEqual(new_entry, old_entry))
 			{
-				if ((new_entry.symbol == old_entry.symbol) && (new_entry.extra_data == old_entry.extra_data))
+				if ((new_entry.symbol == old_entry.symbol) && (new_entry.extra_data == old_entry.extra_data) && (new_entry.fx == old_entry.fx))
 					symbol_equal_index = ni;
 				continue;
 			}
@@ -1185,6 +1185,8 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 		}
 		if (removed)
 		{
+			if (old_entry.fx)
+				RemoveEffect(nil, nil, old_entry.fx);
 			menu.menu_object->RemoveItem(old_entry.unique_index, current_main_menu_id);
 			current_entries[c] = nil;
 		}
@@ -1212,8 +1214,13 @@ func DoMenuRefresh(int slot, int menu_index, array new_entries)
 		if (existing) continue;
 		
 		new_entry.unique_index = ++menu.entry_index_count;
-		menu.menu_object->AddItem(new_entry.symbol, new_entry.text, new_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, new_entry["custom"], current_main_menu_id);
+		var added_entry = menu.menu_object->AddItem(new_entry.symbol, new_entry.text, new_entry.unique_index, this, "OnMenuEntrySelected", { slot = slot, index = menu_index }, new_entry["custom"], current_main_menu_id);
+		new_entry.ID = added_entry.ID;
 		
+		if (new_entry.fx)
+		{
+			EffectCall(nil, new_entry.fx, "OnMenuOpened", current_main_menu_id, new_entry.ID, menu.menu_object);
+		}
 	}
 	menu.entries = new_entries;
 }
