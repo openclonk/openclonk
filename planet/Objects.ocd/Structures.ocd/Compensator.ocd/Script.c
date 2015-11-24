@@ -92,7 +92,7 @@ protected func FxSparkleTimer(object target, proplist effect, int time)
 	effect.Interval *= 2;
 	if (effect.Interval > 36 * 3) 
 		return -1;
-	CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
+	CreateParticle("ElectroSpark", PV_Random(-3, 3), PV_Random(-15, -13), PV_Random(-5, 5), PV_Random(-5, 1), 10, Particles_ElectroSpark1(), 10);
 	return 1;
 }
 
