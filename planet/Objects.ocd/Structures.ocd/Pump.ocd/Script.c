@@ -32,6 +32,9 @@ local max_clog_count = 5; // note that even when max_clog_count is reached, the 
 /** This object is a liquid pump, thus pipes can be connected. */
 public func IsLiquidPump() { return true; }
 
+// The pump is rather complex for players. If anything happened, tell it to the player via the interaction menu.
+local last_status_message;
+
 func Construction()
 {
 	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
@@ -65,6 +68,25 @@ public func GetPumpControlMenuEntries(object clonk)
 		image = {Right = "2em"},
 		text = {Left = "2em"}
 	};
+	
+	// Add info message about what is going on with the pump.
+	var status = "$StateOk$";
+	var lightbulb_graphics = "Green";
+	if (last_status_message != nil)
+	{
+		status = last_status_message;
+		lightbulb_graphics = "Red";
+	}
+	PushBack(menu_entries, {symbol = this, extra_data = "description",
+			custom =
+			{
+				Prototype = custom_entry,
+				Bottom = "1.2em",
+				Priority = -1,
+				BackgroundColor = RGB(25, 100, 100),
+				text = {Prototype = custom_entry.text, Text = status},
+				image = {Prototype = custom_entry.image, Symbol = Icon_Lightbulb, GraphicsName = lightbulb_graphics}
+			}});
 	
 	if (!switched_on)
 		PushBack(menu_entries, {symbol = Icon_Play, extra_data = "on", 
@@ -129,6 +151,7 @@ public func OnPumpControlHover(id symbol, string action, desc_menu_target, menu_
 	else if (action == "off") text = "$DescTurnOff$";
 	else if (action == "cutdrain") text = "$DescCutDrain$";
 	else if (action == "cutsource") text = "$DescCutSource$";
+	else if (action == "description") text = this.Description;
 	GuiUpdateText(text, menu_id, 1, desc_menu_target);
 }
 
@@ -141,6 +164,13 @@ public func OnPumpControl(id symbol, string action, bool alt)
 	else if (action == "cutdrain" && drain_pipe)
 		drain_pipe->RemoveObject();
 	UpdateInteractionMenus(this.GetPumpControlMenuEntries);	
+}
+
+private func SetInfoMessage(string msg)
+{
+	if (last_status_message == msg) return;
+	last_status_message = msg;
+	UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }
 
 /*-- Pipe connection --*/
@@ -277,13 +307,21 @@ func CheckState()
 	// can't pump at all -> wait
 	if (!can_pump)
 	{
+		if (!source_pipe && switched_on)
+			SetInfoMessage("$StateNoSource$");
 		SetState("Wait");
 	}
 	else
 	{
 		// can pump but has no liquid -> wait for liquid
-		if (!HasLiquidToPump())
+		var source_ok = IsLiquidSourceOk();
+		var drain_ok  = IsLiquidDrainOk();
+		if (!source_ok || !drain_ok)
 		{
+			if (!source_ok)
+				SetInfoMessage("$StateNoInput$");
+			else if (!drain_ok)
+				SetInfoMessage("$StateNoOutput$");
 			SetState("WaitForLiquid");
 		}
 		else
@@ -291,11 +329,13 @@ func CheckState()
 			// can pump, has liquid but has no power -> wait for power
 			if (!powered)
 			{
+				SetInfoMessage("$StateNoPower$");
 				SetState("WaitForPower");
 			}
 			// otherwise, pump! :-)
 			else
 			{
+				SetInfoMessage();
 				clog_count = 0;
 				SetState("Pump");
 			}
@@ -403,7 +443,7 @@ private func PumpHeight2Power(int pump_height)
 }
 
 // Returns whether there is liquid at the source pipe to pump.
-private func HasLiquidToPump()
+private func IsLiquidSourceOk()
 {
 	// source
 	var source_obj = GetSourceObject();
@@ -412,7 +452,12 @@ private func HasLiquidToPump()
 		source_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
 		return false;
 	}
-	
+	return true;
+}
+
+// Returns whether the drain pipe is free.
+private func IsLiquidDrainOk()
+{
 	// target (test with the very popular liquid "water")
 	var drain_obj = GetDrainObject();
 	if(!drain_obj->CanInsertMaterial(Material("Water"),drain_obj.ApertureOffsetX, drain_obj.ApertureOffsetY))
@@ -420,7 +465,6 @@ private func HasLiquidToPump()
 		drain_obj->~CycleApertureOffset(this); // try different offsets, so we can resume pumping after clog because 1px of earth was dropped on the source pipe
 		return false;
 	}
-	
 	return true;
 }
 
@@ -467,6 +511,8 @@ func ToggleOnOff(bool no_menu_refresh)
 {
 	switched_on = !switched_on;
 	CheckState();
+	if (!switched_on)
+		SetInfoMessage("$StateTurnedOff$");
 	if (!no_menu_refresh)
 		UpdateInteractionMenus(this.GetPumpControlMenuEntries);
 }

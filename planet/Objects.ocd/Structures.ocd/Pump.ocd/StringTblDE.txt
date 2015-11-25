@@ -9,3 +9,10 @@ DescTurnOn=Aktiviert das Pumpen wieder. Dafür muss mindestens ein Zufluss angesc
 DescCutSource=Entfernt das Zuflussrohr. Die Pumpe kann dann nicht mehr pumpen.
 DescCutDrain=Entfernt das Abflussrohr. Es wird dann direkt zur Pumpe gepumpt.
 Control=Pumpensteuerung
+
+StateOk=Die Pumpe läuft.
+StateNoSource=Es ist kein Zufluss angeschlossen.
+StateNoInput=Es gibt keine Flüssigkeiten zu pumpen.
+StateNoOutput=Der Abfluss ist verstopft.
+StateNoPower=Die Pumpe hat keinen Strom.
+StateTurnedOff=Die Pumpe wurde ausgeschaltet.

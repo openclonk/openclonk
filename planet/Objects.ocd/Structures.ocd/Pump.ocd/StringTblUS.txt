@@ -9,3 +9,10 @@ DescTurnOn=Reactivates the pumping. Successful pumping requires at least a conne
 DescCutSource=Removes the source pipe. The pump will be unable to continue pumping without a source pipe.
 DescCutDrain=Removes the drain pipe. Liquids will be pumped directly to the pump.
 Control=Pump Control
+
+StateOk=The pump is working.
+StateNoSource=There is no source pipe connected.
+StateNoInput=The pump does not have liquid to pump.
+StateNoOutput=The drain pipe is clogged.
+StateNoPower=The pump does not have power.
+StateTurnedOff=The pump has been turned off.
