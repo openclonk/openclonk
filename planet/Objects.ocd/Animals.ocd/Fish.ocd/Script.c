@@ -15,6 +15,10 @@ local base_transform;
 
 local brain;
 
+// Wall vision behaves slightly differently and it does not make much sense for other fishes to overload these values.
+local wall_vision_range = 64;
+local wall_vision_max_angle = 35;
+
 func Place(int amount, proplist rectangle, proplist settings)
 {
 	var max_tries = 2 * amount;
@@ -32,15 +36,13 @@ func Place(int amount, proplist rectangle, proplist settings)
 		// Randomly add some large/slim fish
 		if (Random(3))
 		{
-			// there are naturally smaller and larger fishes
-			f->SetCon(RandomX(75, 125));
+			// There are naturally smaller and larger fishes. Fishes above around 150 can be clipped, so stay below that.
+			f->SetCon(RandomX(75, 140));
 			// make sure the smaller ones don't grow larger any more
 			f->StopGrowth(); 
-			// slim fish. Large fish must be made slim because otherwise the graphics are clipped D:
-			if (f->GetCon() > 100)
-				f->SetYZScale(400+Random(300)); 
-			else if (!Random(3))
-				f->SetYZScale(400+Random(600)); 
+			// Slim fish.
+			if (f->GetCon() > 100 || !Random(3))
+				f->SetYZScale(1000 - Random(300));  
 		}
 		
 		if (f->Stuck())
@@ -75,7 +77,7 @@ func Construction()
 
 func InitActivity()
 {
-	if (GetAlive()) AddTimer(this.Activity, 15);
+	if (GetAlive()) AddTimer(this.Activity, 10 + Random(5));
 }
 
 func SetYZScale(int new_scale)
@@ -120,15 +122,17 @@ func InitFuzzyRules()
 	brain = FuzzyLogic->Init();
 	
 	// ACTION SETS
+	brain->AddSet("swim", "sharp_left", [[-2 * SwimMaxAngle, 1], [-SwimMaxAngle, 0], [SwimMaxAngle, 0]]);
 	brain->AddSet("swim", "left", [[-SwimMaxAngle, 1], [-SwimMaxAngle/2, 0], [SwimMaxAngle, 0]]);
 	brain->AddSet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
 	brain->AddSet("swim", "right", [[-SwimMaxAngle, 0], [SwimMaxAngle/2, 0], [SwimMaxAngle, 1]]);
+	brain->AddSet("swim", "sharp_right", [[-SwimMaxAngle, 0], [SwimMaxAngle, 0], [2 * SwimMaxAngle, 1]]);
 	
 	brain->AddSet("speed", "slow", [[0, 1], [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 0]]);
 	brain->AddSet("speed", "fast", [[0, 0],  [SwimMaxSpeed/2, 0], [SwimMaxSpeed, 1]]);
 	
 	// RULE SETS
-	var directional_sets = ["friend", "enemy", "food", "wall"];
+	var directional_sets = ["friend", "enemy", "food"];
 	
 	for (var set in directional_sets)
 	{
@@ -136,10 +140,9 @@ func InitFuzzyRules()
 		brain->AddSet(set, "straight", [[-5, 0], [0, 1], [5, 0]]);
 		brain->AddSet(set, "right", [[-VisionMaxAngle, 0], [0, 0], [VisionMaxAngle, 1]]);
 	}
-	
+
 	var proximity_sets = ["friend_range", "enemy_range", "food_range"];
 	var middle = VisionMaxRange / 2;
-	var quarter = VisionMaxRange / 4;
 	
 	for (var set in proximity_sets)
 	{
@@ -148,19 +151,18 @@ func InitFuzzyRules()
 		brain->AddSet(set, "close", [[0, 1], [0, 1], [middle, 0]]);
 	}
 	
-	brain->AddSet("wall_range", "far", [[middle, 0], [VisionMaxRange, 1], [VisionMaxRange, 1]]);
-	brain->AddSet("wall_range", "medium", [[0, 0], [middle, 1], [VisionMaxRange, 0]]);
-	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [quarter, 0]]);
+	brain->AddSet("left_wall", "close", [[0, 1], [0, 1], [wall_vision_range/2, 0]]);
+	brain->AddSet("right_wall", "close", [[0, 1], [0, 1], [wall_vision_range/2, 0]]);
+	brain->AddSet("wall_range", "close", [[0, 1], [0, 1], [wall_vision_range, 0]]);
 	
 	// RULES
-	brain->AddRule("enemy_range=close", "speed=fast");
+	brain->AddRule(brain->And(brain->Not("wall_range=close"), "enemy_range=close"), "speed=fast");
 	brain->AddRule(brain->Or("friend_range=close", "food_range=close", "wall_range=close"), "speed=slow");
 	
 	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=left", brain->And("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
 	brain->AddRule(brain->And(brain->Not("wall_range=close"), brain->Or("food=right", brain->And("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
-	brain->AddRule(brain->And(brain->Or("wall=straight", "wall=right"), "wall_range=close"), "swim=left");
-	brain->AddRule(brain->And("wall=left", "wall_range=close"), "swim=right");
-	
+	brain->AddRule(brain->And("left_wall=close", brain->Not("right_wall=close")), "swim=sharp_right");
+	brain->AddRule("right_wall=close", "swim=sharp_left");
 }
 
 
@@ -225,15 +227,17 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		if (!PathFree(GetX(), GetY(), obj->GetX(), obj->GetY())) continue;
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
 		var d = GetTurnDirection(current_angle, angle);
-		if (!Inside(d, -VisionMaxAngle, VisionMaxAngle)) continue;
+		if (!Inside(d, -VisionMaxAngle, VisionMaxAngle) || d == 0) continue;
 		
 		// prevent piranhas to jump out of the water to eat unsuspecting Clonks
 		if (is_food && (obj->GetMaterial() != GetMaterial())) continue;
 		
 		//CreateParticle("MagicSpark", obj->GetX() - GetX(), obj->GetY() - GetY(), 0, 0, 60, RGB(0, 255, 0));
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
+		var angle = -VisionMaxAngle;
+		if (d > 0) angle = VisionMaxRange;
 		var distance = ObjectDistance(this, obj);
-		brain->Fuzzify(set, d);
+		brain->Fuzzify(set, angle * distance / VisionMaxRange);
 		if (range_set != nil)
 			brain->Fuzzify(range_set, distance);
 		
@@ -252,65 +256,59 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 
 func UpdateWallVision()
 {
-	// anything in this function, that appears weird, looks that way due to optimization..
-	
-	// asses direction of wall
-	var closest = 0;
-	var closest_distance = VisionMaxRange;
-	//for (var angle = -VisionMaxAngle/3; angle <= VisionMaxAngle; angle += VisionMaxAngle/3)
-	
-	var angle = -VisionMaxAngle/5;
-	do
+	if (!Random(5))
 	{
-		// quickly check solid point
-		var max = VisionMaxRange/3;
-		var px, py;
-		for (var d = 5; d <= max; d += 20)
+		// check for material in front, happens occasionally
+		var d = 10;
+		if (!GBackLiquid(Sin(current_angle, d), -Cos(current_angle, d)))
 		{
-			//var x = (x_fac * d) / 1000;
-			//var y = (y_fac * d) / 1000;
+			brain->Fuzzify("wall_range", d);
+			brain->Fuzzify("left_wall", d);
+			brain->Fuzzify("right_wall", wall_vision_range);
+			return;
+		}
+	}
+	
+	// anything in this function, that appears weird, looks that way due to optimization..
+	var closest_wall = wall_vision_range;
+	
+	for (var i = 0; i <= 1; ++i)
+	{
+		var what = "left_wall";
+		var angle = -wall_vision_max_angle;
+		if (i == 1)
+		{
+			angle = +wall_vision_max_angle;
+			what = "right_wall";
+		}
+		
+		// quickly check solid point
+		var distance = wall_vision_range;
+		for (var d = 1; d <= wall_vision_range; d *= 2)
+		{
 			var x = Sin(current_angle + angle, d);
 			var y = -Cos(current_angle + angle, d);
 			if (GBackLiquid(x, y)) continue;
 
-			px = x;
-			py = y;
+			distance = Distance(0, 0, x, y);
+			if (distance < closest_wall) closest_wall = distance;
+			
+			// CreateParticle("SphereSpark", x, y, 0, 0, 30, {Prototype = Particles_MagicRing(), Attach = nil}, 1);
 			break;
 		}
 		
-		/*var px = Sin(current_angle + angle, VisionMaxRange);
-		var py = -Cos(current_angle + angle, VisionMaxRange);		
-		var point = PathFree2(GetX(), GetY(), GetX() + px, GetY() + py);
-		*/
-		if (!px && !py) { angle *= -1; continue; }
-		//CreateParticle("MagicSpark", px , py, 0, 0, 60, RGB(255, 0, 0));
-		var distance = Distance(0, 0, px, py);
-		if (distance >= closest_distance) { angle *= -1; continue; }
-		closest = angle;
-		closest_distance = distance;
+		brain->Fuzzify(what, distance);
+	}
 		
-		angle *= -1;
-	}
-	while (angle > 0);
-	
-	if (closest_distance == VisionMaxRange)
-	{
-		// check for material in front, happens occasionally
-		var d = 5;
-		if (!GBackLiquid(Sin(current_angle, d), -Cos(current_angle, d)))
-		{
-			closest_distance = d;
-		}
-	}
-	
-	brain->Fuzzify("wall", closest);
-	brain->Fuzzify("wall_range", closest_distance);
+	brain->Fuzzify("wall_range", closest_wall);
 }
 
 func DoActions(proplist actions)
 {
 	current_speed = actions.speed;
+	if (current_speed == 0) current_speed = SwimMaxSpeed / 3; 
 	current_direction = actions.swim;
+	if (current_direction == 0) current_direction = RandomX(-2, 2);
 }
 
 func UpdateSwim()
