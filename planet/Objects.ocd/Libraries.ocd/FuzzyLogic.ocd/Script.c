@@ -37,6 +37,8 @@ public func Init()
 		// which could happen quite often. (For example the "hunger" of an animal could be at the same value for quite some FuzzyExecs)
 		cache_defuz = {}, // optimizes defuzzification
 		cache_fuz = {}, // optimizes fuzzification
+		DumpCache = FuzzyLogic.FuzzyDumpCache,
+		// the interface
 		AddSet = FuzzyLogic.AddFuzzySet,
 		AddRule = FuzzyLogic.AddFuzzyRule,
 		Execute = FuzzyLogic.Execute,
@@ -198,6 +200,42 @@ public func DefuzzifyGetCentroidFromGraph(array coords1, array coords2, int Y, b
 		//Log("          -> d1_x: %d, d1_weight: %d, d2_x: %d, d2_weight: %d: centroid: %d", d1[0], d1[1], d2[0], d2[1], center);
 		return [center, d1[1] + d2[1]];
 	}
+}
+
+/*
+	For debugging purposes.
+*/
+private func FuzzyDumpCache()
+{
+	Log("Fuzzification cache (last values):");
+	for (var prop in GetProperties(this.cache_fuz))
+	{
+		var dump = Format("%s = %d -> ", prop, this.cache_fuz[prop]);
+		if (!this.updates[prop])
+		{
+			dump = Format("%s ..no actions available..", dump);
+		}
+		else
+		{
+			for (var subset in GetProperties(this.updates[prop]))
+			{
+				dump = Format("%s %s (%d)", dump, subset, this.updates[prop][subset][1]);
+			}
+		}
+		Log(dump);
+	}
+	Log("Defuzzification cache (last categorical actions):");
+	for (var prop in GetProperties(this.cache_defuz))
+	{
+		var action_set = this.cache_defuz[prop];
+		var dump = Format("%s: ", prop);
+		for (var action in GetProperties(action_set))
+		{
+			dump = Format("%s %s (%v)", dump, action, action_set[action]);
+		}
+		Log(dump);
+	}
+	Log("end dump---------------------------");
 }
 
 // returns value between 0 and 1000 for how much the rule fits
