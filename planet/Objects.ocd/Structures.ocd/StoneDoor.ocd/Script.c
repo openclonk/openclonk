@@ -16,6 +16,7 @@ protected func Initialize()
 
 public func OpenDoor()
 {
+	ForceDigFree();
 	SetComDir(COMD_Up);
 	Sound("GateMove");
 	return;
@@ -23,6 +24,7 @@ public func OpenDoor()
 
 public func CloseDoor()
 {
+	ForceDigFree();
 	SetComDir(COMD_Down);
 	Sound("GateMove");
 	return;
@@ -46,6 +48,14 @@ protected func Hit()
 {
 	Sound("GateHit");
 	return;
+}
+
+// Digs away earth behind the door. Needs to temporarily disable the solid mask, though.
+private func ForceDigFree()
+{
+	SetSolidMask();
+	DigFreeRect(GetX() - 4, GetY() - 20, 8, 40, true);
+	SetSolidMask(0, 0, 8, 40);
 }
 
 /*-- Automatic movement --*/
@@ -106,6 +116,17 @@ protected func Damage()
 	// Destroy if damage above strength.
 	if (GetDamage() > GetStrength())
 	{
+		var particles = 
+		{
+			Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(3, 5), 1000, 3),
+			R = PV_Random(230, 250),
+			G = PV_Random(210, 230),
+			B = PV_Random(190, 210),
+			Alpha = PV_Linear(255, 0),
+			ForceY = PV_Gravity(100),
+			CollisionVertex = 0
+		};
+		CreateParticle("SmokeDirty", PV_Random(-4, 4), PV_Random(-18, 18), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 60), particles, 300);
 		CastObjects(Rock, 5, 20);
 		return RemoveObject();
 	}
