@@ -1048,9 +1048,44 @@ global func Test17_OnFinished()
 	return;
 }
 
+// Test for one steady source and one steady consumer, where the consumer moves out of the energy range.
+global func Test18_OnStart(int plr)
+{
+	// Power source: one wind generator.
+	SetWindFixed(50);
+	CreateObjectAbove(WindGenerator, 72, 160, plr);
+	
+	// Power consumer: one workshop.
+	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
+	workshop->CreateContents(Wood, 4);
+	workshop->CreateContents(Metal, 4);
+	workshop->AddToQueue(Shovel, 4);
+	
+	// Move workshop.
+	ScheduleCall(workshop, "SetPosition", 2 * 36, 0, 250, 140);
+	ScheduleCall(workshop, "SetPosition", 8 * 36, 0, 110, 140);
+	
+	// Log what the test is about.
+	Log("A steady power source (wind generator) supplying an on-demand consumer (workshop), the consumer moves out and into the power range.");
+	return true;
+}
+
+global func Test18_Completed()
+{
+	if (ObjectCount(Find_ID(Shovel)) >= 4)
+		return true;
+	return false;
+}
+
+global func Test18_OnFinished()
+{
+	// Remove wind generator, compensator and workshop.
+	RemoveAll(Find_Or(Find_ID(WindGenerator), Find_ID(Compensator), Find_ID(ToolsWorkshop)));
+	return;
+}
 
 // Test for the supported infinite pump loop, with two pumps pumping in opposite directions.
-global func Test18_OnStart(int plr)
+global func Test19_OnStart(int plr)
 {
 	// Power source: wind generator producing the power difference between the two pumps.
 	SetWindFixed(10);
@@ -1079,14 +1114,14 @@ global func Test18_OnStart(int plr)
 	return true;
 }
 
-global func Test18_Completed()
+global func Test19_Completed()
 {
 	if (GetMaterial(248, 48) == Material("Water"))
 		return true;
 	return false;
 }
 
-global func Test18_OnFinished()
+global func Test19_OnFinished()
 {
 	// Restore water levels.
 	RestoreWaterLevels();
