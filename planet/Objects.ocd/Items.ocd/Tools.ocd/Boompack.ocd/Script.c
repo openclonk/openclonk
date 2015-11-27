@@ -156,6 +156,10 @@ private func JumpOff(object clonk, int speed)
 	clonk->SetAction("Tumble");
 	clonk->SetXDir(GetXDir(50)+speed*xdir/100,100);
 	clonk->SetYDir(GetYDir(50)-speed*ydir/100,100);
+	
+	// Add hit check to explode on mid-air contact.
+	// This increases the military efficacy of the boompack.
+	AddEffect("HitCheck", this, 1, 2, nil, nil, clonk);
 }
 
 protected func Hit()
@@ -167,6 +171,15 @@ protected func Hit()
 	//Message("I have hit something",this);
 	Sound("GeneralHit?");
 	if(GetEffect("Flight",this)) DoFireworks();
+}
+
+// Called when hitting something mid-air after the Clonk jumped off.
+public func HitObject(object target)
+{
+	if (target && WeaponCanHit(target))
+		target->~OnProjectileHit(this);
+	if (this)
+		DoFireworks();
 }
 
 public func OnMount(clonk)
