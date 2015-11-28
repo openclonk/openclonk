@@ -7,3 +7,4 @@ MaxAirSpeed=100
 MaxSlide=250
 Placement=70
 TextureOverlay=everrock
+LightSpot=11,25,11
