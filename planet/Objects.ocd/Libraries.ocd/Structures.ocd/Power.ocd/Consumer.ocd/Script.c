@@ -71,7 +71,7 @@ private func UnregisterPowerRequest()
 // the power network of this consumer.
 private func UpdatePowerRequest()
 {
-	Library_Power->UpdateForPowerLink(this);
+	Library_Power->UpdateNetworkForPowerLink(this);
 	return;
 }
 
@@ -140,6 +140,13 @@ protected func Destruction()
 	return _inherited(...);
 }
 
+// When ownership has changed, the consumer may have moved out of or into a new network.
+public func OnOwnerChanged(int new_owner, int old_owner)
+{
+	Library_Power->TransferPowerLink(this);
+	return _inherited(new_owner, old_owner, ...);
+}
+
 // By calling this function you can make this consumer ignore the power need.  This is 
 // used by the power need rule and can be used by scripters to temporarily turn off the
 // need for power in a certain consumer.
@@ -147,7 +154,7 @@ public func SetNoPowerNeed(bool no_need)
 {
 	lib_power.power_need = !no_need;
 	// Make sure the power balance of the network is updated.
-	UpdatePowerRequest();	
+	UpdatePowerRequest();
 	return;
 }
 

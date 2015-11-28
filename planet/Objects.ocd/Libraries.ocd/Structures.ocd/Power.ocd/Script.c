@@ -123,12 +123,50 @@ public func UnregisterPowerConsumer(object consumer)
 	return;
 }
 
-// Definition call: updates the network for this power link.
-public func UpdateForPowerLink(object link)
+// Definition call: transfers a power link from the network it is registered in to
+// the network it is currently in (base radius).
+public func TransferPowerLink(object link)
 {
 	// Definition call safety checks.
 	if (this != Library_Power || !link)
-		return FatalError("UpdateForPowerLink() either not called from definition context or no link specified.");
+		return FatalError("TransferPowerLink() either not called from definition context or no link specified.");
+	// Get the new network for this power link.
+	var new_network = GetPowerNetwork(link);
+	// Loop over existing networks and find the link.
+	var old_network;
+	for (var network in LIB_POWR_Networks)
+	{
+		if (network->ContainsPowerLink(link))
+		{
+			old_network = network;
+			break;
+		}
+	}
+	// Only perform a transfer if the link was registered in an old network which is not equal to the new network.
+	if (old_network && old_network != new_network)
+	{
+		var producer = old_network->GetProducerLink(link);
+		if (producer)
+		{
+			old_network->RemovePowerProducer(producer.obj);
+			new_network->AddPowerProducer(producer.obj, producer.prod_amount, producer.priority);		
+		}
+		var consumer = old_network->GetConsumerLink(link);
+		if (consumer)
+		{
+			old_network->RemovePowerConsumer(consumer.obj);
+			new_network->AddPowerConsumer(consumer.obj, consumer.cons_amount, consumer.priority);		
+		}
+	}
+	return;
+}
+
+// Definition call: updates the network for this power link.
+public func UpdateNetworkForPowerLink(object link)
+{
+	// Definition call safety checks.
+	if (this != Library_Power || !link)
+		return FatalError("UpdateNetworkForPowerLink() either not called from definition context or no link specified.");
 	// Find the network for this link and update it.
 	var network = GetPowerNetwork(link);
 	network->CheckPowerBalance();
@@ -703,6 +741,30 @@ public func IsEmpty()
 		&& GetLength(lib_power.active_producers) == 0
 		&& GetLength(lib_power.waiting_consumers) == 0
 		&& GetLength(lib_power.active_consumers) == 0;
+}
+
+// Returns whether this network contains a power link.
+public func ContainsPowerLink(object link)
+{
+	return !!GetProducerLink(link) || !!GetConsumerLink(link);
+}
+
+// Returns the producer link in this network.
+public func GetProducerLink(object link)
+{
+	for (var test_link in Concatenate(lib_power.idle_producers, lib_power.active_producers))
+		if (test_link.obj == link)
+			return test_link;
+	return;
+}
+
+// Returns the consumer link in this network.
+public func GetConsumerLink(object link)
+{
+	for (var test_link in Concatenate(lib_power.waiting_consumers, lib_power.active_consumers))
+		if (test_link.obj == link)
+			return test_link;
+	return;
 }
 
 

@@ -1057,13 +1057,15 @@ global func Test18_OnStart(int plr)
 	
 	// Power consumer: one workshop.
 	var workshop = CreateObjectAbove(ToolsWorkshop, 110, 160, plr);
-	workshop->CreateContents(Wood, 4);
-	workshop->CreateContents(Metal, 4);
-	workshop->AddToQueue(Shovel, 4);
+	workshop->CreateContents(Wood, 2);
+	workshop->CreateContents(Metal, 2);
+	workshop->AddToQueue(Shovel, 2);
 	
 	// Move workshop.
 	ScheduleCall(workshop, "SetPosition", 2 * 36, 0, 250, 140);
 	ScheduleCall(workshop, "SetPosition", 8 * 36, 0, 110, 140);
+	ScheduleCall(workshop, "SetPosition", 12 * 36, 0, 250, 140);
+	ScheduleCall(workshop, "SetPosition", 16 * 36, 0, 110, 140);
 	
 	// Log what the test is about.
 	Log("A steady power source (wind generator) supplying an on-demand consumer (workshop), the consumer moves out and into the power range.");
@@ -1072,7 +1074,7 @@ global func Test18_OnStart(int plr)
 
 global func Test18_Completed()
 {
-	if (ObjectCount(Find_ID(Shovel)) >= 4)
+	if (ObjectCount(Find_ID(Shovel)) >= 2)
 		return true;
 	return false;
 }
