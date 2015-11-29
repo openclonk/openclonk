@@ -164,7 +164,7 @@ public func DuringLoad() { aim_weapon->~DuringLoad(this); }
 
 public func StopLoad()
 {
-	if(!aim_weapon->~FinishedLoading(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
+	if(!aim_weapon || !aim_weapon->~FinishedLoading(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
 		ResetHands();
 }
 
