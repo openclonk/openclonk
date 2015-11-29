@@ -49,7 +49,7 @@ public func Create(object obj, int x, int y, int xdir, int ydir, int color, int 
 	spacing *= 10000;
 	
 	// Create new helper object
-	var trajectory = CreateObject(Trajectory, obj->GetX(), obj->GetY(), obj->GetOwner());
+	var trajectory = CreateObject(Trajectory, obj->GetX(), obj->GetY(), obj->GetController());
 	trajectory->SetAction("Attach", obj);
 	
 	// Parrticle setup.
