@@ -1,4 +1,4 @@
 [DefCore]
 id=AI
 Version=6,0
-Category=C4D_Vehicle | C4D_MouseIgnore
+Category=C4D_None | C4D_MouseIgnore

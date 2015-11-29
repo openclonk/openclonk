@@ -13,6 +13,8 @@ local pull;
 local grappler;
 local fx_hook;
 
+local Plane = 300;
+
 public func ArrowStrength() { return 10; }
 
 public func GetRope() { return rope; }

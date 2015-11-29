@@ -23,6 +23,8 @@
 
 */
 
+local Plane = 300;
+
 local toSpawn;
 
 static ItemSpark_particle;

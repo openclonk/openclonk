@@ -115,6 +115,8 @@ public func DrawTransform() {
 
 public func SaveScenarioObject() { return false; }
 
+local Plane = 300;
+
 local ActMap = {
 
 Travel = {

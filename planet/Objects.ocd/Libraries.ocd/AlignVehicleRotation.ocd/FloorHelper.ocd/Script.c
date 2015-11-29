@@ -3,6 +3,7 @@ protected func Initialize()
 	SetAction("Floor");
 }
 
+local Plane = 300;
 local ActMap = {
 		Floor = {
 			Prototype = Action,

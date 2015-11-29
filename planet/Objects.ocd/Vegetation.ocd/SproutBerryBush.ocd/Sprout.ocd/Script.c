@@ -2,6 +2,7 @@
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 300;
 
 local grow_anim;
 local attached_berry;

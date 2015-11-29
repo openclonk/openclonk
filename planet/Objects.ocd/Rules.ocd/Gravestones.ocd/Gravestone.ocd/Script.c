@@ -44,3 +44,4 @@ public func Interact(object clonk)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 300;

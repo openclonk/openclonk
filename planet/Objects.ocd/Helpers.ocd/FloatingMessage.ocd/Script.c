@@ -22,6 +22,7 @@ Float = {
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 300;
 
 local msg;
 local r, g, b;

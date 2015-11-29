@@ -8,6 +8,7 @@
 
 #include AI_HelperFunctions
 
+local Plane = 300;
 
 static const AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
              AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)

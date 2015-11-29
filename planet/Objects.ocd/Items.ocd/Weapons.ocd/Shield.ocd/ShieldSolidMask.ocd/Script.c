@@ -30,3 +30,5 @@ func OnAttachTargetLost()
 {
 	return this->RemoveObject();
 }
+
+local Plane = 300;

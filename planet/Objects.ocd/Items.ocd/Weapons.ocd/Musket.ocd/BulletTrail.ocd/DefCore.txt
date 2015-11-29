@@ -1,6 +1,6 @@
 [DefCore]
 id=BulletTrail
-Category=C4D_Vehicle
+Category=C4D_None
 Width=5
 Height=5
 Offset=-2,-2
