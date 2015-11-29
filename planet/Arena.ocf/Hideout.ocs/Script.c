@@ -14,8 +14,8 @@ protected func Initialize()
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 120, 506);
-	goal->SetFlagBase(2, LandscapeWidth() - 120, 506);
+	goal->SetFlagBase(1, 120, 502);
+	goal->SetFlagBase(2, LandscapeWidth() - 120, 502);
 	
 	// Rules
 	CreateObject(Rule_Restart);
