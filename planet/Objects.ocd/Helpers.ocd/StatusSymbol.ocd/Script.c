@@ -17,7 +17,7 @@ public func Init(object to)
 	SetVertex(0, VTX_Y, hgt);
 	var x = to->GetVertex(0, VTX_X);
 	SetVertex(0, VTX_X, x);
-	// Set plane to be high.
+	// Set plane to be higher than the object attached to.
 	this.Plane = Max(to.Plane + 1, 1000);	
 	return;
 }
@@ -131,6 +131,7 @@ public func SaveScenarioObject() { return false; }
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 1000;
 
 local ActMap =
 {
