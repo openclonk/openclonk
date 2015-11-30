@@ -189,6 +189,8 @@ func UpdateObjects(array new_objects)
 		// sub menus close automatically (and remove their dummy) due to a clever usage of OnClose
 		current_menus[i].menu_object->RemoveObject();
 		current_menus[i] = nil;
+		// Notify the target of the now closed menu.
+		DoInteractionMenuClosedCallback(target);
 	}
 	
 	current_objects = new_objects;
