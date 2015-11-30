@@ -15,6 +15,11 @@
           <name>player</name>
           <desc>Number of the player to be eliminated.</desc>
         </param>
+        <param>
+          <type>bool</type>
+          <name>remove_direct</name>
+          <desc>Eliminates the player as fast as possible, skipping the usual waiting time (in which the player is e.g. still counted for <funclink>GetPlayerCount</funclink>). There is nonetheless a delay of a few frames.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Eliminates a player. The round counts as 'lost' for all eliminated players.</desc>
@@ -27,4 +32,5 @@
     <related><funclink>GameOver</funclink></related>
   </func>
   <author>Sven2</author><date>2001-11</date>
+  <author>Clonkonaut</author><date>2015-11</date>
 </funcs>
