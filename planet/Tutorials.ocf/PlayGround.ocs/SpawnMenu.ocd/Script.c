@@ -439,6 +439,7 @@ private func SpawnObject(id obj_id)
 		return;
 		
 	// Create object at the feet of the clonk.
+	var clonk_was_stuck = menu_controller->Stuck();
 	var obj = menu_controller->CreateObjectAbove(obj_id, 0, 9);	
 	
 	// Clonk tries to collect the item.
@@ -449,7 +450,39 @@ private func SpawnObject(id obj_id)
 		if (menu_controller->Collect(obj, true))
 			return;	
 	}
-
+	else if (obj->GetCategory() & C4D_Vehicle)
+	{
+		// Try to unstuck vehicles.
+		var original_x = obj->GetX();
+		var original_y = obj->GetY();
+		// Move up until not stuck anymore.
+		for (var i = 0; obj->Stuck() && (i < 52); i += 4)
+			obj->SetPosition(original_x, original_y - i);
+		// Still stuck? Nothing we can do for you (e.g. in tunnels).
+		if (obj->Stuck())
+		{
+			obj->SetPosition(original_x, original_y);
+		}
+		else // Otherwise, gently put it down to the ground again.
+		{
+			for (var i = 0; !obj->Stuck() && (i < 5); ++i)
+				obj->SetPosition(original_x, obj->GetY() + 1);
+			obj->SetPosition(original_x, obj->GetY() - 1);
+		}
+	}
+	
+	// If whatever spawned made the Clonk stuck, free it.
+	if (!clonk_was_stuck && menu_controller->Stuck())
+	{
+		var original_x = menu_controller->GetX();
+		var original_y = menu_controller->GetY();
+		// Move the Clonk up.
+		for (var i = 0; menu_controller->Stuck() && (i < 40); i += 2)
+			menu_controller->SetPosition(original_x, original_y - i);
+		// Still? Reset.
+		if (menu_controller->Stuck())
+			menu_controller->SetPosition(original_x, original_y);
+	}
 	return;
 }
 
