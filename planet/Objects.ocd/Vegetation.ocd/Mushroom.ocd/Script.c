@@ -12,6 +12,11 @@ private func SeedArea() { return 150; }
 private func SeedAmount() { return 4; }
 private func SeedOffset() { return 10; }
 
+private func Incineration()
+{
+	SetClrModulation(RGB(48, 32, 32));
+}
+
 /*-- Initialization --*/
 
 protected func Construction()
@@ -35,7 +40,6 @@ public func RootSurface()
 	return;
 }
 
-
 /*-- Eating --*/
 
 protected func ControlUse(object clonk)
@@ -51,4 +55,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = true;
+local BlastIncinerate = 5;
+local ContactIncinerate = 1;
 local Placement = 4;
