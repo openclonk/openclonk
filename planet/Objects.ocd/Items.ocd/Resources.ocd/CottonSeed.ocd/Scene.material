@@ -7,7 +7,9 @@ material cotton_seed
 		{
 			cull_hardware none
 			depth_check on
-
+			scene_blend alpha_blend
+			alpha_rejection greater_equal 128
+			
 			ambient 1.0 1.0 1.0 1.0
 			diffuse 1.0 1.0 1.0 1.0
 			specular 0.0 0.0 0.0 1.0 12.5
