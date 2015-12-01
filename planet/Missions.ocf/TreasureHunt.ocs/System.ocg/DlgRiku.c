@@ -51,7 +51,7 @@ func Dlg_Riku_7(object clonk)
 
 func Dlg_Riku_8(object clonk)
 {
-	MessageBox("$Riku3$", clonk, clonk); // ok
+	MessageBox("$Riku8$", clonk, clonk); // ok
 	SetDialogueProgress(1);
 	return StopDialogue();
 }
