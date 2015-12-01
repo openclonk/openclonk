@@ -893,7 +893,7 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 		cObj->ClearPointers(pObj);
 	}
 	// check in inactive objects as well
-	for (C4Object *cObj : Objects)
+	for (C4Object *cObj : Objects.InactiveObjects)
 	{
 		cObj->ClearPointers(pObj);
 	}
