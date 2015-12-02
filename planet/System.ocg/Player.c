@@ -139,8 +139,15 @@ global func MessageWindow(string msg, int for_plr, id icon, string caption)
 	if (!caption)
 		caption = GetName();
 	// Create msg window as regular text
-	CustomMessage(Format("<c ffff00>%s</c>: %s", caption, msg), nil, for_plr, 0,150, nil, GUI_MenuDeco, icon, MSG_HCenter);
+	CustomMessage(Format("<c ffff00>%s</c>: %s", caption, msg), nil, for_plr, 0,150, nil, GetDefaultMenuDecoration(), icon, MSG_HCenter);
 	return true;
+}
+
+// Returns the default menu decoration used in most places.
+// The return value should be a definition, e.g. GUI_MenuDeco.
+global func GetDefaultMenuDecoration()
+{
+	return _inherited(...);
 }
 
 // Find a base of the given player. Use index to search through all bases.

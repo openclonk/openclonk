@@ -20,7 +20,7 @@ global func GuiAddCloseButton(proplist menu, proplist target, string callback, p
 		Priority = 0x0fffff,
 		Left = "100%-2em", Top = "0%+0em",
 		Right = "100%", Bottom = "0%+2em",
-		Symbol = Icon_Cancel,
+		Symbol = GetDefaultCancelSymbol(),
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
 		OnMouseIn = GuiAction_SetTag("Hover"),
 		OnMouseOut = GuiAction_SetTag("Std"),
@@ -114,4 +114,10 @@ Returns true if /this/ object is allowed to be displayed on the same stack as th
 global func CanBeStackedWith(object other)
 {
 	return this->GetID() == other->GetID();
+}
+
+// Returns the default symbol used for the "cancel" icon displayed e.g. in the top-right corner of menus.
+global func GetDefaultCancelSymbol()
+{
+	return _inherited(...);
 }
