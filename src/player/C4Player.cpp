@@ -349,7 +349,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	if (Game.pNetworkStatistics) CreateGraphs();
 
 	// init sound mod
-	SetSoundModifier(SoundModifier._getPropList());
+	SetSoundModifier(SoundModifier.getPropList());
 
 	return true;
 }
@@ -1107,6 +1107,10 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(SoundModifier, numbers), "SoundModifier", C4Value()));
 	
+	if (pComp->isCompiler())
+	{
+		SoundModifier.Denumerate(numbers);
+	}
 
 	// Keys held down
 	pComp->Value(Control);
