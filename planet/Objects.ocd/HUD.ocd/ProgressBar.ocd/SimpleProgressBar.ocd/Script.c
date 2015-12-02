@@ -53,7 +53,7 @@ func Init(to, max, cur, timeout, offset, visibility, proplist data)
 	SetBarColor(data.color, data.back_color);
 	
 	SetAction("Attach", to);
-	SetVertexXY(0, -offset.x, -offset.y);
+	SetVertexXY(0, -offset.x + to->GetVertex(0, VTX_X), -offset.y + to->GetVertex(0, VTX_Y));
 	
 	AddEffect("LifeCheck", to, 1, 0, this);
 	Update();
