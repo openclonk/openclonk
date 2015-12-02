@@ -134,7 +134,7 @@ func StartGame()
 func Object_NoPlayerDamage(object target, fx, dmg, cause, cause_player)
 {
 	// players can't damage statue or doors
-	if (cause_player>=0) return 0;
+	if (GetPlayerType(cause_player) == C4PT_User) return 0;
 	return dmg;
 }
 
