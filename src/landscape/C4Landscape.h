@@ -322,10 +322,6 @@ public:
 	bool ClearPix(int32_t tx, int32_t ty);	// also used by mass mover (corrode)
 
 private:
-	std::vector<int32_t> GetRoundPolygon(int32_t x, int32_t y, int32_t size, int32_t smoothness) const;
-	std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const;
-	C4Rect getBoundingBox(int *vtcs, int length) const;
-
 	CSurface8* CreateDefaultBkgSurface(CSurface8& sfcFg, bool msbAsIft) const;
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);

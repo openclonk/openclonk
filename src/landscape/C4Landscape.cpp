@@ -350,8 +350,7 @@ bool C4Landscape::DoRelights()
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 /* +++++++++++++++++++++++ Add and destroy landscape++++++++++++++++++++++++ */
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-
-std::vector<int32_t> C4Landscape::GetRoundPolygon(int32_t x, int32_t y, int32_t size, int32_t smoothness) const
+static std::vector<int32_t> GetRoundPolygon(int32_t x, int32_t y, int32_t size, int32_t smoothness)
 {
 	/*
 	So what is this? It's basically a circle with the radius 'size'. The radius
@@ -395,7 +394,7 @@ std::vector<int32_t> C4Landscape::GetRoundPolygon(int32_t x, int32_t y, int32_t 
 	return vertices;
 }
 
-std::vector<int32_t> C4Landscape::GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const
+static std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
 {
 	std::vector<int32_t> vertices;
 	vertices.resize(8);
@@ -406,6 +405,16 @@ std::vector<int32_t> C4Landscape::GetRectangle(int32_t tx, int32_t ty, int32_t w
 	vertices[6] = tx+wdt;  vertices[7] = ty;
 
 	return vertices;
+}
+
+static C4Rect getBoundingBox(int *vtcs, int length)
+{
+	C4Rect BoundingBox(vtcs[0], vtcs[1], 1, 1);
+	for (int32_t i = 2; i + 1 < length; i += 2)
+	{
+		BoundingBox.Add(C4Rect(vtcs[i], vtcs[i + 1], 1, 1));
+	}
+	return BoundingBox;
 }
 
 void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
@@ -3446,16 +3455,6 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 	// success
 	return true;
-}
-
-C4Rect C4Landscape::getBoundingBox(int *vtcs, int length) const
-{
-	C4Rect BoundingBox(vtcs[0],vtcs[1],1,1);
-	for(int32_t i=2; i+1 < length; i+=2)
-	{
-		BoundingBox.Add(C4Rect(vtcs[i],vtcs[i+1],1,1));
-	}
-	return BoundingBox;
 }
 
 bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, const char* szBackMaterial, bool fDrawBridge)
