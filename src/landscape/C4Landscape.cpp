@@ -411,7 +411,10 @@ std::vector<int32_t> C4Landscape::GetRectangle(int32_t tx, int32_t ty, int32_t w
 void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
 {
 	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
+	C4Rect r(tx, ty, wdt, hgt);
+	PrepareChange(r);
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ClearPix);
+	FinishChange(r);
 }
 
 int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
