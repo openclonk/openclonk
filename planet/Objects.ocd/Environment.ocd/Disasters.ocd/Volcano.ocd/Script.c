@@ -130,7 +130,7 @@ private func Advance()
 		GetX() - strx / 4, GetY() - stry / 4,
 		GetX() + strx / 4, GetY() + stry / 4,
 		oldx + strx / 4, oldy + stry / 4,
-		oldx - strx / 4, oldy - stry / 4, true);
+		oldx - strx / 4, oldy - stry / 4, DMQ_Sub);
 	// Drag Objects along.
 	for (var pObj in FindObjects(Find_OCF(OCF_Collectible), Find_InRect()))
 	{
