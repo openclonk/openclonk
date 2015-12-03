@@ -1666,6 +1666,8 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
 		pComp->NameEnd();
 
+
+
 		// Music settings
 		pComp->Value(mkNamingAdapt(::Application.MusicSystem, "Music"));
 
@@ -2285,6 +2287,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	// Denumerate game data pointers
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
 	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
+	if (!fLoadSection) GlobalSoundModifier.Denumerate(numbers);
 	numbers->Denumerate();
 	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
 	// Object.PostLoad must happen after number->Denumerate(), becuase UpdateFace() will access Action proplist,
