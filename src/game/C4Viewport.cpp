@@ -368,7 +368,12 @@ void C4Viewport::Execute()
    and ViewHgt. */
 void C4Viewport::CalculateZoom()
 {
-	if(!ZoomInitialized)
+	// Zoom is only initialized by player or global setting during viewport creation time, because after that
+	// the player may have changed to another preferred zoom.
+	// However, viewports may change multiple times during startup (because of NO_OWNER viewport being deleted
+	// and possible other player joins). So check by frame counter. Zoom changes done in paused mode on the
+	// player init frame will be lost, but that should not be a problem.
+	if(ViewportOpenFrame >= Game.FrameCounter)
 		InitZoom();
 
 	C4Player *plr = Players.Get(Player);
@@ -391,8 +396,6 @@ void C4Viewport::InitZoom()
 		ZoomTarget = std::max<float>(float(ViewWdt)/GBackWdt, 1.0f);
 		Zoom = ZoomTarget;
 	}
-
-	ZoomInitialized = true;
 }
 
 void C4Viewport::ChangeZoom(float by_factor)
@@ -584,7 +587,7 @@ void C4Viewport::Default()
 	DrawX=DrawY=0;
 	Zoom = 1.0;
 	ZoomTarget = 0.0;
-	ZoomInitialized = false;
+	ViewportOpenFrame = 0;
 	ZoomLimitMin=ZoomLimitMax=0; // no limit
 	Next=NULL;
 	PlayerLock=true;
@@ -609,6 +612,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	// Set Player
 	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
 	Player=iPlayer;
+	ViewportOpenFrame = Game.FrameCounter;
 	if (!fSetTempOnly) fIsNoOwnerViewport = (iPlayer == NO_OWNER);
 	if (Application.isEditor)
 	{

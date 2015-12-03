@@ -95,7 +95,7 @@ protected:
 	float Zoom;
 	float ZoomTarget;
 	float ZoomLimitMin,ZoomLimitMax;
-	bool ZoomInitialized;
+	int32_t ViewportOpenFrame; // Game FrameCounter in which viewport was opened. Used to init zoom during initial fullscreen viewport movement chaos, but not change it later e.g. when other local players join.
 	int32_t Player;
 	bool PlayerLock;
 	int32_t OutX,OutY;
