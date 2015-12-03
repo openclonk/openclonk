@@ -346,7 +346,7 @@ void C4Viewport::BlitOutput()
 void C4Viewport::Execute()
 {
 	// Adjust position
-	AdjustPosition();
+	AdjustZoomAndPosition();
 	// Current graphics output
 	C4TargetFacet cgo;
 	C4Window * w = pWindow;
@@ -460,7 +460,36 @@ void C4Viewport::SetZoom(float zoomValue)
 	ZoomTarget = zoomValue;
 }
 
-void C4Viewport::AdjustPosition()
+void C4Viewport::AdjustZoomAndPosition()
+{
+	// Move zoom towards target zoom
+	if (ZoomTarget < 0.000001f) CalculateZoom();
+	// Change Zoom
+
+	if (Zoom != ZoomTarget)
+	{
+		float DeltaZoom = Zoom / ZoomTarget;
+		if (DeltaZoom<1) DeltaZoom = 1 / DeltaZoom;
+
+		// Minimal Zoom change factor
+		static const float Z0 = pow(C4GFX_ZoomStep, 1.0f / 8.0f);
+
+		// We change zoom based on (logarithmic) distance of current zoom
+		// to target zoom. The greater the distance the more we adjust the
+		// zoom in one frame. There is a minimal zoom change Z0 to make sure
+		// we reach ZoomTarget in finite time.
+		float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f / 8.0f);
+
+		if (Zoom < ZoomTarget)
+			Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
+		if (Zoom > ZoomTarget)
+			Zoom = std::max(Zoom / ZoomAdjustFactor, ZoomTarget);
+	}
+	// Adjust position
+	AdjustPosition(false);
+}
+
+void C4Viewport::AdjustPosition(bool immediate)
 {
 	if (ViewWdt == 0 || ViewHgt == 0)
 	{
@@ -469,33 +498,12 @@ void C4Viewport::AdjustPosition()
 		return;
 	}
 
-	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
-	C4Player *pPlr = ::Players.Get(Player);
-	if (ZoomTarget < 0.000001f) CalculateZoom();
-	// Change Zoom
 	assert(Zoom>0);
 	assert(ZoomTarget>0);
 
+	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
+	C4Player *pPlr = ::Players.Get(Player);
 
-	if(Zoom != ZoomTarget)
-	{
-		float DeltaZoom = Zoom/ZoomTarget;
-		if(DeltaZoom<1) DeltaZoom = 1/DeltaZoom;
-
-		// Minimal Zoom change factor
-		static const float Z0 = pow(C4GFX_ZoomStep, 1.0f/8.0f);
-
-		// We change zoom based on (logarithmic) distance of current zoom
-		// to target zoom. The greater the distance the more we adjust the
-		// zoom in one frame. There is a minimal zoom change Z0 to make sure
-		// we reach ZoomTarget in finite time.
-		float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f/8.0f);
-
-		if (Zoom < ZoomTarget)
-			Zoom = std::min(Zoom * ZoomAdjustFactor, ZoomTarget);
-		if (Zoom > ZoomTarget)
-			Zoom = std::max(Zoom / ZoomAdjustFactor, ZoomTarget);
-	}
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 	{
@@ -534,17 +542,30 @@ void C4Viewport::AdjustPosition()
 		}
 		
 		// scroll range
-		targetCenterViewX = Clamp(targetCenterViewX, targetCenterViewX - scrollRange, targetCenterViewX + scrollRange);
-		targetCenterViewY = Clamp(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
+		if (!immediate)
+		{
+			targetCenterViewX = Clamp(targetCenterViewX, targetCenterViewX - scrollRange, targetCenterViewX + scrollRange);
+			targetCenterViewY = Clamp(targetCenterViewY, targetCenterViewY - scrollRange, targetCenterViewY + scrollRange);
+		}
 		// bounds
 		targetCenterViewX = Clamp(targetCenterViewX, ViewWdt/Zoom/2 - extraBoundsX, GBackWdt - ViewWdt/Zoom/2 + extraBoundsX);
 		targetCenterViewY = Clamp(targetCenterViewY, ViewHgt/Zoom/2 - extraBoundsY, GBackHgt - ViewHgt/Zoom/2 + extraBoundsY);
 
 		targetViewX = targetCenterViewX - ViewWdt/Zoom/2 + viewOffsX;
 		targetViewY = targetCenterViewY - ViewHgt/Zoom/2 + viewOffsY;
-		// smooth
-		int32_t smooth = Clamp<int32_t>(Config.General.ScrollSmooth, 1, 50);
-		ScrollView((targetViewX - viewX) / smooth, (targetViewY - viewY) / smooth);
+		
+		if (immediate)
+		{
+			// immediate scroll
+			SetViewX(targetViewX);
+			SetViewY(targetViewY);
+		}
+		else
+		{
+			// smooth scroll
+			int32_t smooth = Clamp<int32_t>(Config.General.ScrollSmooth, 1, 50);
+			ScrollView((targetViewX - viewX) / smooth, (targetViewY - viewY) / smooth);
+		}
 	}
 
 	UpdateBordersX();

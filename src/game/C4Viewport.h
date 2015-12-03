@@ -110,8 +110,9 @@ protected:
 	void DrawPlayerInfo(C4TargetFacet &cgo);
 	void InitZoom();
 	void BlitOutput();
-	void AdjustPosition();
+	void AdjustZoomAndPosition();
 public:
+	void AdjustPosition(bool immediate = false);
 	C4ViewportWindow* GetWindow() {return pWindow;}
 	bool UpdateOutputSize();
 	bool ViewPositionByScrollBars();

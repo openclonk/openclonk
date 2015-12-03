@@ -159,8 +159,8 @@ public:
 	void ClearPointers(C4Object *tptr, bool fDeath);
 	void Execute();
 	void ExecuteControl();
-	void SetViewMode(int32_t iMode, C4Object *pTarget=NULL);
-	void ResetCursorView(); // reset view to cursor if any cursor exists
+	void SetViewMode(int32_t iMode, C4Object *pTarget=NULL, bool immediate_position=false);
+	void ResetCursorView(bool immediate_position = false); // reset view to cursor if any cursor exists
 	void Evaluate();
 	void Surrender();
 	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates

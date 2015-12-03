@@ -20,6 +20,12 @@
           <type>object</type>
           <name>obj</name>
           <desc>Object to which to want to set the view.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>immediate</name>
+          <desc>If true, the view of the first open viewport for that player on each machine does not scroll smoothly but is set immediately.</desc>
         </param>
       </params>
     </syntax>
@@ -67,4 +73,5 @@ protected func Timer()
     </related>
   </func>
   <author>PeterW</author><date>2003-04</date>
+  <author>Sven2</author><date>2015-12</date>
 </funcs>

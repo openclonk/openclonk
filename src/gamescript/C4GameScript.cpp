@@ -800,10 +800,10 @@ static bool FnSetHostility(C4PropList * _this, long iPlr, long iPlr2, bool fHost
 	return true;
 }
 
-static bool FnSetPlrView(C4PropList * _this, long iPlr, C4Object *tobj)
+static bool FnSetPlrView(C4PropList * _this, long iPlr, C4Object *tobj, bool immediate_position)
 {
 	if (!ValidPlr(iPlr)) return false;
-	::Players.Get(iPlr)->SetViewMode(C4PVM_Target,tobj);
+	::Players.Get(iPlr)->SetViewMode(C4PVM_Target, tobj, immediate_position);
 	return true;
 }
 
@@ -814,10 +814,10 @@ static long FnGetPlrViewMode(C4PropList * _this, long iPlr)
 	return ::Players.Get(iPlr)->ViewMode;
 }
 
-static C4Void FnResetCursorView(C4PropList * _this, long plr)
+static C4Void FnResetCursorView(C4PropList * _this, long plr, bool immediate_position)
 {
 	C4Player *pplr = ::Players.Get(plr);
-	if (pplr) pplr->ResetCursorView();
+	if (pplr) pplr->ResetCursorView(immediate_position);
 	return C4Void();
 }
 

@@ -685,17 +685,24 @@ bool C4Player::SetWealth(int32_t iVal)
 	return true;
 }
 
-void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget)
+void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
 {
 	// safe back
 	ViewMode=iMode; ViewTarget=pTarget;
+	// immediate position set desired?
+	if (immediate_position)
+	{
+		UpdateView();
+		C4Viewport *vp = ::Viewports.GetViewport(this->Number);
+		if (vp) vp->AdjustPosition(true);
+	}
 }
 
-void C4Player::ResetCursorView()
+void C4Player::ResetCursorView(bool immediate_position)
 {
 	// reset view to cursor if any cursor exists
 	if (!ViewCursor && !Cursor) return;
-	SetViewMode(C4PVM_Cursor);
+	SetViewMode(C4PVM_Cursor, NULL, immediate_position);
 }
 
 void C4Player::Evaluate()
