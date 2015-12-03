@@ -294,6 +294,23 @@ bool C4MusicFileOgg::Init(const char *strFile)
 	return loaded = true;
 }
 
+StdStrBuf C4MusicFileOgg::GetDebugInfo() const
+{
+	StdStrBuf result;
+	result.Append(FileName);
+	result.AppendFormat("[%.0lf]", last_playback_pos_sec);
+	result.AppendChar('[');
+	bool sec = false;
+	for (auto i = categories.cbegin(); i != categories.cend(); ++i)
+	{
+		if (sec) result.AppendChar(',');
+		result.Append(i->getData());
+		sec = true;
+	}
+	result.AppendChar(']');
+	return result;
+}
+
 void C4MusicFileOgg::UnprepareSourceFileReading()
 {
 	// The file loader could just keep all files open. But if someone symlinks

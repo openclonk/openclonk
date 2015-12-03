@@ -50,6 +50,8 @@ public:
 	virtual bool HasResumePos() const { return false; }
 	virtual void ClearResumePos() { }
 
+	virtual StdStrBuf GetDebugInfo() const { return StdStrBuf(FileName); }
+
 	bool IsLooping() const { return loop; }
 
 	bool HasBeenAnnounced() const { return announced; }
@@ -98,6 +100,7 @@ public:
 	double GetRemainingTime();
 	bool HasResumePos() const { return (last_playback_pos_sec > 0);  }
 	void ClearResumePos() { last_playback_pos_sec = 0.0; }
+	virtual StdStrBuf GetDebugInfo() const;
 private:
 	enum { num_buffers = 4, buffer_size = 160*1024 };
 	::C4SoundLoaders::VorbisLoader::CompressedData data;

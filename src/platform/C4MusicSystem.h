@@ -97,6 +97,7 @@ private:
 	int32_t game_music_level;
 	// current play list
 	StdCopyStrBuf playlist;
+	bool playlist_valid;
 	// Set to nonzero to allow pauses between songs
 	int32_t music_break_min, music_break_max, music_break_chance;
 

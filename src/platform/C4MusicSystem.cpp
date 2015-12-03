@@ -34,6 +34,7 @@ C4MusicSystem::C4MusicSystem():
 		PlayMusicFile(NULL),
 		game_music_level(100),
 		playlist(),
+		playlist_valid(false),
 		music_break_min(DefaultMusicBreak), music_break_max(DefaultMusicBreak),
 		Volume(100),
 		is_waiting(false),
@@ -212,6 +213,7 @@ void C4MusicSystem::Load(const char *szFile)
 	NewSong->pNext = NULL;
 	// count songs
 	SongCount++;
+	playlist_valid = false;
 }
 
 void C4MusicSystem::LoadDir(const char *szPath)
@@ -318,6 +320,7 @@ void C4MusicSystem::ClearSongs()
 	}
 	SongCount = 0;
 	FadeMusicFile = upcoming_music_file = PlayMusicFile = NULL;
+	playlist_valid = false;
 }
 
 void C4MusicSystem::Clear()
@@ -407,6 +410,12 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 	// music off?
 	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
 		return false;
+
+	// info
+	if (::Config.Sound.Verbose)
+	{
+		LogF("MusicSystem: Play(\"%s\", %s, %d, %.3lf, %s)", szSongname ? szSongname : "(null)", fLoop ? "true" : "false", fadetime_ms, max_resume_time, allow_break ? "true" : "false");
+	}
 
 	C4MusicFile* NewFile = NULL;
 
@@ -526,6 +535,11 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 
 bool C4MusicSystem::Play(C4MusicFile *NewFile, bool fLoop, double max_resume_time)
 {
+	// info
+	if (::Config.Sound.Verbose)
+	{
+		LogF("MusicSystem: PlaySong(\"%s\", %s, %.3lf)", NewFile->GetDebugInfo().getData(), fLoop ? "true" : "false", max_resume_time);
+	}
 	// Play new song directly
 	if (!NewFile->Play(fLoop, max_resume_time)) return false;
 	PlayMusicFile = NewFile;
@@ -569,6 +583,10 @@ bool C4MusicSystem::ScheduleWaitTime()
 		{
 			is_waiting = true;
 			wait_time_end = C4TimeMilliseconds::Now() + music_break;
+			if (::Config.Sound.Verbose)
+			{
+				LogF("MusicSystem: Pause (%d secs)", (int)music_break);
+			}
 			// After wait, do not resume previously started songs
 			for (C4MusicFile *check_file = Songs; check_file; check_file = check_file->pNext)
 				check_file->ClearResumePos();
@@ -648,6 +666,13 @@ bool C4MusicSystem::GrpContainsMusic(C4Group &rGrp)
 
 int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fadetime_ms, double max_resume_time)
 {
+	// Shortcut if no change
+	if (playlist_valid && playlist == szPlayList) return 0;
+	// info
+	if (::Config.Sound.Verbose)
+	{
+		LogF("MusicSystem: SetPlayList(\"%s\", %s, %d, %.3lf)", szPlayList ? szPlayList : "(null)", fForceSwitch ? "true" : "false", fadetime_ms, max_resume_time);
+	}
 	// reset
 	C4MusicFile *pFile;
 	for (pFile = Songs; pFile; pFile = pFile->pNext)
@@ -701,6 +726,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 	}
 	// Remember setting (e.g. to be saved in savegames)
 	playlist.Copy(szPlayList);
+	playlist_valid = true; // do not re-calculate available song if playlist is reset to same value in the future
 	return ASongCount;
 }
 
