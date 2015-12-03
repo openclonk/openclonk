@@ -246,7 +246,7 @@ void C4TextureShape::Draw(CSurface8 * sfcMap, CSurface8* sfcMapBkg, int32_t iMap
 						// This may overwrite the previous pixBkg when multiple chunks are covered
 						// So effectively, it will always have the background of the bottom right map coverage
 						// Could manage priorities here and ensure the center determines the background
-						// - but it's just for the corner case of map designers switching background material within a single path.
+						// - but it's just for the corner case of map designers switching background material within a single patch.
 						activation.Add(block_x1, block_y1, shape_idx, 0, 0, pixBkg);
 						activation.Add(block_x2, block_y1, shape_idx, 1, 0, pixBkg);
 						activation.Add(block_x1, block_y2, shape_idx, 0, 1, pixBkg);

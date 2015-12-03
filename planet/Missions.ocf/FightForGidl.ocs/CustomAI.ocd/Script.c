@@ -115,7 +115,7 @@ private func CheckVehicleAmmo(fx, object catapult)
 
 func PathFree()
 {
-	// ignore path che4cks to doors because of solidmask)
+	// ignore path checks to doors because of solidmask)
 	var fx = GetEffect("AI", this);
 	if (fx && fx.target && fx.target->GetID()==StoneDoor) return true;
 	return inherited(...);
