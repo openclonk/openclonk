@@ -137,7 +137,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 				spark.R = PV_Random(0, 128, 2);
 				spark.OnCollision = PC_Bounce();
 			}
-			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), spark, 10);
+			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
 			Sound("Clang?", nil, nil, nil, nil, nil, pitch);
 		}
 		
