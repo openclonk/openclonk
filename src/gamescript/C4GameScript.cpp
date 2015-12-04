@@ -659,6 +659,7 @@ static long FnSetPlayList(C4PropList * _this, const C4Value & playlist_data, Nil
 			if (playlist_props->GetProperty(P_MusicBreakMin, &val)) ::Application.MusicSystem.SetMusicBreakMin(val.getInt());
 			if (playlist_props->GetProperty(P_MusicBreakMax, &val)) ::Application.MusicSystem.SetMusicBreakMax(val.getInt());
 			if (playlist_props->GetProperty(P_MusicBreakChance, &val)) ::Application.MusicSystem.SetMusicBreakChance(val.getInt());
+			if (playlist_props->GetProperty(P_MusicMaxPositionMemory, &val)) ::Application.MusicSystem.SetMusicMaxPositionMemory(val.getInt());
 		}
 	}
 	// Set playlist; count entries

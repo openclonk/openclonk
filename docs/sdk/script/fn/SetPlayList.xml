@@ -19,6 +19,7 @@
               <row><col>MusicBreakMin</col><col>int</col><col>Minimum time of silence between two songs in milliseconds. Defaults to 10000.</col></row>
               <row><col>MusicBreakMax</col><col>int</col><col>Maximum time of silence between two songs in milliseconds. Defaults to 10000. A random value between the minimum and maximum is chosen before each new song is selected.</col></row>
               <row><col>MusicBreakChance</col><col>int</col><col>Chance in percent that silence is inserted between two songs. Defaults to 50.</col></row>
+              <row><col>MusicMaxPositionMemory</col><col>int</col><col>Time in seconds that the current position in a piece is remembered and will be used for resume if it becomes available through a call to SetPlayList. Defaults to 420. A value of zero means infinite memory.</col></row>
             </table>
           </desc>
           <optional />

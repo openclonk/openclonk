@@ -338,6 +338,7 @@ void C4MusicSystem::ClearGame()
 	game_music_level = 100;
 	music_break_min = music_break_max = DefaultMusicBreak;
 	music_break_chance = DefaultMusicBreakChance;
+	music_max_position_memory = DefaultMusicMaxPositionMemory;
 	SetPlayList(NULL);
 	is_waiting = false;
 	upcoming_music_file = NULL;
@@ -439,11 +440,15 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 		// When resuming, prefer songs that were interrupted before
 		if (max_resume_time > 0)
 		{
+			C4TimeMilliseconds t_now = C4TimeMilliseconds::Now();
 			for (C4MusicFile *check_file = Songs; check_file; check_file = check_file->pNext)
 				if (!check_file->NoPlay)
+				{
 					if (check_file->HasResumePos() && check_file->GetRemainingTime() > max_resume_time)
-						if (!NewFile || NewFile->LastPlayed < check_file->LastPlayed)
-							NewFile = check_file;
+						if (!music_max_position_memory || (t_now - check_file->GetLastInterruptionTime() <= music_max_position_memory*1000))
+							if (!NewFile || NewFile->LastPlayed < check_file->LastPlayed)
+								NewFile = check_file;
+				}
 		}
 
 		// Random song
@@ -758,6 +763,7 @@ void C4MusicSystem::CompileFunc(StdCompiler *comp)
 	comp->Value(mkNamingAdapt(music_break_min, "MusicBreakMin", DefaultMusicBreak));
 	comp->Value(mkNamingAdapt(music_break_max, "MusicBreakMax", DefaultMusicBreak));
 	comp->Value(mkNamingAdapt(music_break_chance, "MusicBreakChance", DefaultMusicBreakChance));
+	comp->Value(mkNamingAdapt(music_max_position_memory, "MusicMaxPositionMemory", DefaultMusicMaxPositionMemory));
 	// Wait time is not saved - begin savegame resume with a fresh song!
 	// Reflect loaded values immediately
 	if (comp->isCompiler())
@@ -776,3 +782,4 @@ int32_t C4MusicSystem::SetGameMusicLevel(int32_t volume_percent)
 
 const int32_t C4MusicSystem::DefaultMusicBreak = 120000; // two minutes default music break time
 const int32_t C4MusicSystem::DefaultMusicBreakChance = 50; // ...with a 50% chance
+const int32_t C4MusicSystem::DefaultMusicMaxPositionMemory = 420; // after this time (in seconds) a piece is no longer continued at the position where it was interrupted

@@ -100,9 +100,12 @@ private:
 	bool playlist_valid;
 	// Set to nonzero to allow pauses between songs
 	int32_t music_break_min, music_break_max, music_break_chance;
+	// Maximum time (in seconds) last position in a song is remembered until it would just be restarted from the beginning
+	int32_t music_max_position_memory;
 
 	static const int32_t DefaultMusicBreak;
 	static const int32_t DefaultMusicBreakChance;
+	static const int32_t DefaultMusicMaxPositionMemory;
 
 public:
 	void CompileFunc(class StdCompiler *comp);
@@ -110,6 +113,7 @@ public:
 	void SetMusicBreakMin(int32_t val) { music_break_min = std::max<int32_t>(val, 0); }
 	void SetMusicBreakMax(int32_t val) { music_break_max = std::max<int32_t>(val, 0); }
 	void SetMusicBreakChance(int32_t val) { music_break_chance = Clamp<int32_t>(val, 0, 100); }
+	void SetMusicMaxPositionMemory(int32_t val) { music_max_position_memory = val; }
 	int32_t SetGameMusicLevel(int32_t val);
 };
 

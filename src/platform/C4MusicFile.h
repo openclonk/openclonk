@@ -49,6 +49,7 @@ public:
 	virtual double GetRemainingTime() { return 0.0; }
 	virtual bool HasResumePos() const { return false; }
 	virtual void ClearResumePos() { }
+	virtual C4TimeMilliseconds GetLastInterruptionTime() const { return C4TimeMilliseconds(); }
 
 	virtual StdStrBuf GetDebugInfo() const { return StdStrBuf(FileName); }
 
@@ -99,7 +100,8 @@ public:
 	virtual bool HasCategory(const char *szcat) const;
 	double GetRemainingTime();
 	bool HasResumePos() const { return (last_playback_pos_sec > 0);  }
-	void ClearResumePos() { last_playback_pos_sec = 0.0; }
+	void ClearResumePos() { last_playback_pos_sec = 0.0; last_interruption_time = C4TimeMilliseconds(); }
+	C4TimeMilliseconds GetLastInterruptionTime() const { return last_interruption_time; }
 	virtual StdStrBuf GetDebugInfo() const;
 private:
 	enum { num_buffers = 4, buffer_size = 160*1024 };
@@ -113,6 +115,7 @@ private:
 	ALuint buffers[num_buffers];
 	ALuint channel;
 	double last_playback_pos_sec; // last playback position for resume when fading between pieces
+	C4TimeMilliseconds last_interruption_time; // set to nonzero when song is interrupted
 	int current_section;
 	size_t byte_pos_total;
 	float volume;
