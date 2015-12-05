@@ -2,7 +2,7 @@
 Icon=39
 Title=Windmill
 Version=6,0
-Difficulty=10
+Difficulty=90
 
 [Definitions]
 Definition1=Objects.ocd
