@@ -3512,7 +3512,7 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int32_t for_material_col) const
 				conv_map[i] = i;
 			}
 		}
-		BridgeMatConversion[for_material] = conv_map;
+		BridgeMatConversion[for_material_col] = conv_map;
 	}
 	return conv_map;
 }
