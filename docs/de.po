@@ -12720,8 +12720,8 @@ msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Mus
 msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
 
 #: sdk/scenario/index.xml:75(text)
-msgid "If the scenario contains music (*.ogg or *.mid) files, these can be played back during the game in random order. Also see the script command <emlink href=\"script/fn/Music.html\">Music</emlink>(). Local music files should be stored in a local music group."
-msgstr "Wenn das Szenario lokale Musikdateien (*.ogg or *.mid) enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href=\"script/fn/Music.html\">Music</emlink>()."
+msgid "If the scenario contains music (*.ogg) files, these can be played back during the game in random order. Also see the script command <emlink href=\"script/fn/Music.html\">Music</emlink>(). Local music files should be stored in a local music group."
+msgstr "Wenn das Szenario lokale Musikdateien (*.ogg) enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href=\"script/fn/Music.html\">Music</emlink>()."
 
 #: sdk/scenario/index.xml:77(emlink)
 #: sdk/folder/index.xml:48(emlink)
