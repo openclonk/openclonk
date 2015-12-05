@@ -19,6 +19,39 @@ local goal_gui_id;
 local goal_info_id;
 local goals;
 
+/* Wealth Showing / Hiding */
+
+public func ShiftGoal()
+{
+	if (goal_gui_id == nil) return;
+
+	var offset = GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+	var x_end = GUI_Controller_Goal_IconMargin + offset;
+	var x_begin = GUI_Controller_Goal_IconMargin + GUI_Controller_Goal_IconSize + offset;
+
+	var update = {
+		Left = Format("100%%%s", ToEmString(-x_begin)),
+		Right = Format("100%%%s", ToEmString(-x_end)),
+	};
+
+	GuiUpdate(update, goal_gui_id);
+}
+
+public func UnshiftGoal()
+{
+	if (goal_gui_id == nil) return;
+
+	var x_end = GUI_Controller_Goal_IconMargin;
+	var x_begin = GUI_Controller_Goal_IconMargin + GUI_Controller_Goal_IconSize;
+
+	var update = {
+		Left = Format("100%%%s", ToEmString(-x_begin)),
+		Right = Format("100%%%s", ToEmString(-x_end)),
+	};
+
+	GuiUpdate(update, goal_gui_id);
+}
+
 /* Creation */
 
 public func Construction()
@@ -27,9 +60,15 @@ public func Construction()
 
 	var y_begin = GUI_Controller_Goal_IconMargin;
 	var y_end = y_begin + GUI_Controller_Goal_IconSize;
-	// Also take into account the margin and size of the wealth HUD.
-	var x_begin = y_end + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
-	var x_end = y_begin + GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+	// Also take into account the margin and size of the wealth HUD if shown
+	var x_begin = y_end;
+	var x_end = y_begin;
+	if (this->~IsShowingWealth())
+	{
+		x_begin += GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+		x_end += GUI_Controller_Wealth_IconSize + GUI_Controller_Wealth_IconMargin;
+	}
+	// See also ShiftGoal() / UnshiftGoal()
 
 	goal_gui_menu = 
 	{

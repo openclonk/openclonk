@@ -75,6 +75,10 @@ protected func InitializePlayer(int plr)
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
 	
+	// Show wealth
+	var controller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	if (controller) controller->ShowWealth();
+	
 	// Initialize the intro sequence if not yet started.
 	if (!intro_init)
 	{

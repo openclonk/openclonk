@@ -1,7 +1,10 @@
 /**
 	ControllerWealth
 
-	Shows an icon and the current player's wealth in the top right corner.
+	(Optionally) shows an icon and the current player's wealth in the top right corner.
+	Use GUI_Controller->ShowWealth(); to show the wealth display to all players.
+	Or call it individually on particular controllers.
+	Use GUI_Controller->HideWealth(); to hide the display.
 
 	@authors Maikel, Clonkonaut
 */
@@ -12,6 +15,53 @@ static const GUI_Controller_Wealth_IconMargin = 5;
 
 local wealth_gui_menu;
 local wealth_gui_id;
+
+local wealth_display = false;
+
+/* Showing / Hiding */
+
+public func ShowWealth()
+{
+	// Definition call
+	if (GetType(this) == C4V_Def)
+	{
+		var plr;
+		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		{
+			var plr = GetPlayerByIndex(i, C4PT_User);
+			var controller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+			if (controller) controller->ShowWealth();
+		}
+	} else {
+		if (wealth_display) return;
+		wealth_gui_id = GuiOpen(wealth_gui_menu);
+		wealth_display = true;
+		this->~ShiftGoal();
+	}
+}
+
+public func HideWealth()
+{
+	// Definition call
+	if (GetType(this) == C4V_Def)
+	{
+		var plr;
+		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		{
+			var plr = GetPlayerByIndex(i, C4PT_User);
+			var controller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+			if (controller) controller->HideWealth();
+		}
+	} else {
+		if (!wealth_display) return;
+		GuiClose(wealth_gui_id);
+		wealth_gui_id = nil;
+		wealth_display = false;
+		this->~UnshiftGoal();
+	}
+}
+
+public func IsShowingWealth() { return wealth_display; }
 
 /* Creation / Destruction */
 
@@ -37,14 +87,15 @@ private func Construction()
 		GraphicsName = GetGraphicsName(wealth),
 		Text = Format("%d", wealth),
 	};
-	wealth_gui_id = GuiOpen(wealth_gui_menu);
+
+	if (wealth_display) wealth_gui_id = GuiOpen(wealth_gui_menu);
 
 	return _inherited(...);
 }
 
 private func Destruction()
 {
-	GuiClose(wealth_gui_id);
+	if (wealth_gui_id) GuiClose(wealth_gui_id);
 
 	_inherited(...);
 }
