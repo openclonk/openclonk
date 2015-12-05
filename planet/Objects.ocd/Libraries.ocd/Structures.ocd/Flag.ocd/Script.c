@@ -169,8 +169,7 @@ public func RedrawFlagRadius()
 // The coordinates x and y are global.
 public func HasCoordinatesInControlArea(int x, int y)
 {
-	var d = Distance(x, y, GetX(), GetY());
-	return d <= GetFlagRadius();
+	return Distance(x, y, GetX(), GetY()) <= GetFlagRadius();
 }
 
 // Removes all the ownership markers for this flag.

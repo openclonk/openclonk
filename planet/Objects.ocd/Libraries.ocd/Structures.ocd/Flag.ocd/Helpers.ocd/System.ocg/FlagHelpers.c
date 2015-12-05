@@ -8,7 +8,7 @@
 global func GetFlagpoleForPosition(int x, int y)
 {
 	if (GetType(LIB_FLAG_FlagList) != C4V_Array)
-		return nil;
+		return;
 	
 	var oldest = nil;
 	var oldest_time = 0;
