@@ -668,6 +668,7 @@ func CreateMainMenu(object obj, int slot)
 	var error_message = nil;
 	if (obj->GetCon() < 100) error_message = Format("$MsgNotFullyConstructed$", obj->GetName());
 	else if (Hostile(cursor->GetOwner(), obj->GetOwner())) error_message = Format("$MsgHostile$", obj->GetName(), GetTaggedPlayerName(obj->GetOwner()));
+	else if (obj->~IsClonk() && !obj->~GetAlive()) error_message = Format("$MsgDeadClonk$", obj->GetName());
 	
 	if (error_message)
 	{

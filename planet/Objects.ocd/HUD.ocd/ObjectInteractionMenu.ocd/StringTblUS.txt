@@ -6,6 +6,7 @@ Contains=Contains
 
 MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interactions possible at this point.
 MsgHostile=%s belongs to your enemy %s.|No interactions are possible.
+MsgDeadClonk=%s is dead.|No interactions are possible.
 
 MoveAllTo=Put all items into %s
 
