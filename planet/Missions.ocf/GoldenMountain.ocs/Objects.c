@@ -12,6 +12,10 @@ func InitializeObjects()
 	CreateObjectAbove(Tree_Coniferous3, 427, 204);
 	CreateObjectAbove(Tree_Coniferous3, 367, 206);
 
+	CreateObjectAbove(Cotton, 420, 205);
+	CreateObjectAbove(Cotton, 380, 205);
+	CreateObjectAbove(Cotton, 395, 207);
+
 	CreateObjectAbove(SproutBerryBush, 59, 214);
 
 	CreateObjectAbove(Trunk, 301, 202);
