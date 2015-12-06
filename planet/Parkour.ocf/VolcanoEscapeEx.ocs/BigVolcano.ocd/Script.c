@@ -9,7 +9,7 @@ static const BigVolcanoBehaviour_Fill = 0,
              BigVolcanoBehaviour_Advance = 1,
              BigVolcanoBehaviour_AdvanceLava = 2,
              BigVolcanoBehaviour_Stop = 3,
-             BigVolcanoBehaviour_Underground = true;
+             BigVolcanoBehaviour_Underground = DMQ_Sub;
              
 static const BigVolcano_XRes = 25; // step size of segments of lava_y array
 
