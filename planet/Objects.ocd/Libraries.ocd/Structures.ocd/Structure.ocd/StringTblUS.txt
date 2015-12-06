@@ -12,3 +12,5 @@ RepairRequires=Repairing requires a hammer and the following materials:|
 NoRepairNecessary=Repairing is not necessary at the moment.|If the structure is damaged, you can find a list of required materials here.
 YouNeedAHammer=You need a hammer.
 YouNeedMaterials=You need some of the required materials to repair this structure.
+
+MsgNotFullyConstructed=%s is not fully constructed yet.|There are no interactions possible at this point.

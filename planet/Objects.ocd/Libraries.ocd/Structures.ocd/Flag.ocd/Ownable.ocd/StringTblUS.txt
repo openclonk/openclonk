@@ -1,0 +1,1 @@
+MsgHostile=%s belongs to your enemy %s.|No interactions are possible.

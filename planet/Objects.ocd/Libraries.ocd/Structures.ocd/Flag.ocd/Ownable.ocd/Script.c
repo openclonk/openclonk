@@ -40,6 +40,13 @@ public func IsInteractable(object clonk)
 	return _inherited(clonk, ...);
 }
 
+// And show a message in an interaction menu.
+public func RejectInteractionMenu(object clonk)
+{
+	if (Hostile(GetOwner(), clonk->GetOwner())) 
+		return Format("$MsgHostile$", GetName(), GetTaggedPlayerName(GetOwner()));
+	return _inherited(clonk, ...);
+}
 
 /*-- Movement Check --*/
 

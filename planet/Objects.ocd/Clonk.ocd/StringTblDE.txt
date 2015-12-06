@@ -8,3 +8,5 @@ CtxChop=Fällen
 CtrlMenuDesc=Menü
 TxtDescend=Abspringen
 TxtEnergysupply=Energieversorgung
+
+MsgDeadClonk=%s ist tot.|Es sind keine Interaktionen möglich.

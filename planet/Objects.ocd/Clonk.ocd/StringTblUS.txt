@@ -8,3 +8,5 @@ CtxChop=Chop
 CtrlMenuDesc=Menu
 TxtDescend=Jump off
 TxtEnergysupply=Energy supply
+
+MsgDeadClonk=%s is dead.|No interactions are possible.

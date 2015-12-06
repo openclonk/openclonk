@@ -7,6 +7,7 @@
 
 
 #include Library_Structure
+#include Library_Ownable
 
 local is_open;
 

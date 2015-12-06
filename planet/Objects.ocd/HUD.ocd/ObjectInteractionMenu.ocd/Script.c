@@ -412,9 +412,14 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	
 	// Show "put/take all items" buttons if applicable. Also update tooltip.
 	var show_grab_all = current_menus[0] && current_menus[1];
+	// Both objects have to be containers.
 	show_grab_all = show_grab_all 
 					&& (current_menus[0].target->~IsContainer())
 					&& (current_menus[1].target->~IsContainer());
+	// And neither must disallow interaction.
+	show_grab_all = show_grab_all
+					&& !current_menus[0].target->~RejectInteractionMenu(cursor)
+					&& !current_menus[1].target->~RejectInteractionMenu(cursor);
 	if (show_grab_all)
 	{
 		current_center_column_target.Visibility = VIS_Owner;
@@ -664,14 +669,13 @@ func CreateMainMenu(object obj, int slot)
 		big_menu.Right = "100%";
 	}
 	
-	// Do virtually nothing if the building is not ready to be interacted with. This can be caused by several things.
-	var error_message = nil;
-	if (obj->GetCon() < 100) error_message = Format("$MsgNotFullyConstructed$", obj->GetName());
-	else if (Hostile(cursor->GetOwner(), obj->GetOwner())) error_message = Format("$MsgHostile$", obj->GetName(), GetTaggedPlayerName(obj->GetOwner()));
-	else if (obj->~IsClonk() && !obj->~GetAlive()) error_message = Format("$MsgDeadClonk$", obj->GetName());
+	// Do virtually nothing if the building/object is not ready to be interacted with. This can be caused by several things.
+	var error_message = obj->~RejectInteractionMenu(cursor);
 	
 	if (error_message)
 	{
+		if (GetType(error_message) != C4V_String)
+			error_message = "$NoInteractionsPossible$";
 		container.Style = GUI_TextVCenter | GUI_TextHCenter;
 		container.Text = error_message;
 		current_menus[slot].menus = [];
@@ -857,6 +861,9 @@ private func OnContentsSelection(symbol, extra_data)
 	if (!current_menus[1 - extra_data.slot]) return;
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
+	
+	// Only if the object wants to be interacted with (hostility etc.)
+	if (other_target->~RejectInteractionMenu(cursor)) return;
 	
 	// Allow transfer only into containers.
 	if (!other_target->~IsContainer())

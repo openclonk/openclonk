@@ -1,5 +1,6 @@
 /*-- Flagpole --*/
 
+#include Library_Ownable
 #include Library_Structure
 #include Library_Flag
 #include Library_Base // Needed for DoBuy...

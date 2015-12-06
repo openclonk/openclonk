@@ -196,6 +196,12 @@ public func GetRepairMaterials()
 // Always show an interaction menu with at least the damage entry.
 public func HasInteractionMenu() { return true; }
 
+public func RejectInteractionMenu(object clonk)
+{
+	if (GetCon() < 100) return Format("$MsgNotFullyConstructed$", GetName());
+	return _inherited(clonk, ...);
+}
+
 // Show damage and allow a player to repair the building when damaged.
 public func GetInteractionMenus(object clonk)
 {

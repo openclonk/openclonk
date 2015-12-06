@@ -12,3 +12,5 @@ RepairRequires=Reparieren benötigt einen Hammer und folgende Materialien:|
 NoRepairNecessary=Das Gebäude ist aktuell nicht beschädigt.|Bei Schaden findet sich hier eine Liste von benötigten Materialien.
 YouNeedAHammer=Es wird ein Hammer benötigt.
 YouNeedMaterials=Es werden Materialien benötigt.
+
+MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen möglich.

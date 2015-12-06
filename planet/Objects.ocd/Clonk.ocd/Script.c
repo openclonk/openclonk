@@ -257,6 +257,15 @@ public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 // Clonks act as containers for the interaction menu as long as they are alive.
 public func IsContainer() { return GetAlive(); }
 
+// You can not interact with dead Clonks.
+// This would be the place to show a death message etc.
+public func RejectInteractionMenu(object to)
+{
+	if (!GetAlive())
+		return Format("$MsgDeadClonk$", GetName());
+	return _inherited(to, ...);
+}
+
 /* Carry items on the clonk */
 
 local iHandMesh;

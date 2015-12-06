@@ -4,11 +4,8 @@ Description=Kümmert sich um die Spielerinteraktion mit Gebäuden, Fahrzeugen etc.
 Contents=Inventar
 Contains=Enthält
 
-MsgNotFullyConstructed=%s ist noch nicht fertig gebaut.|Im Moment sind keine Interaktionen möglich.
-MsgHostile=%s gehört deinem Feind %s.|Es sind keine Interaktionen möglich.
-MsgDeadClonk=%s ist tot.|Es sind keine Interaktionen möglich.
-
 MoveAllTo=Transferiere alle Gegenstände zu %s
+NoInteractionsPossible=Es sind keine Interaktionen möglich.
 
 Minimize=Minimieren
 Maximize=Maximieren

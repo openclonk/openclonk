@@ -1,0 +1,1 @@
+MsgHostile=%s gehört deinem Feind %s.|Es sind keine Interaktionen möglich.
