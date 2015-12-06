@@ -67,6 +67,7 @@ protected func InitializePlayer(int plr)
 	GivePlayerPumpingKnowledge(plr);
 	GivePlayerWeaponryKnowledge(plr);
 	GivePlayerAdvancedKnowledge(plr);
+	GivePlayerFarmingKnowledge(plr);
 	GivePlayerAirKnowledge(plr);
 	RemovePlayerSpecificKnowledge(plr, [InventorsLab, Shipyard, WallKit]);
 	
@@ -128,7 +129,11 @@ private func InitVegetation()
 	for (var i = 0; i < 40 + Random(8); i++)
 		PlaceVegetation(Tree_Coconut, 0, 0, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
 	for (var i = 0; i < 6 + Random(2); i++)
-		PlaceVegetation(Tree_Coconut, LandscapeWidth() - 300, LandscapeHeight() - 200, 600, 400, 1000 * (71 + Random(30)));
+		PlaceVegetation(Tree_Coconut, LandscapeWidth()/2 - 300, LandscapeHeight()/2 - 200, 600, 400, 1000 * (71 + Random(30)));
+		
+	// Place some cotton plants over the map
+	for (var i = 0; i < 8 + Random(2); i++)
+		PlaceVegetation(Cotton, 0, 0, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
 		
 	// Create an effect to make sure there will always grow some new trees.	
 	AddEffect("EnsureTreesOnMainIsland", nil, 100, 20, nil);
@@ -150,6 +155,11 @@ global func FxEnsureTreesOnMainIslandTimer()
 	if (Random(9) >= nr_trees)
 		if (!Random(20))
 			PlaceVegetation(Tree_Coconut, wdt / 2 - 300, hgt / 2 - 200, 600, 400, 3);
+	// Place cotton plants (at least two)
+	var nr_cotton = ObjectCount(Find_ID(Cotton), Find_InRect(wdt / 2 - 300, hgt / 2 - 200, 600, 400));
+	if (Random(3) >= nr_trees)
+		if (!Random(20))
+			PlaceVegetation(Cotton, wdt / 2 - 300, hgt / 2 - 200, 600, 400, 3);
 	return FX_OK;
 }
 
