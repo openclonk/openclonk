@@ -25,8 +25,8 @@ public func Initialize()
 
 /*-- Interaction --*/
 
-// Sawmill can't be accessed as a container.
-public func IsContainer() { return false; }
+// Sawmill acts as a container to be able to collect wooden objects.
+public func IsContainer() { return true; }
 
 // Sawmill can't be interacted with.
 public func IsInteractable() { return false; }

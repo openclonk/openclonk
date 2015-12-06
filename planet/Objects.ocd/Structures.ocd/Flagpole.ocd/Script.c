@@ -34,6 +34,9 @@ public func NoConstructionFlip() { return true; }
 
 /*-- Interaction --*/
 
+// The flag can take valuables which are then auto-sold.
+public func IsContainer() { return true; }
+
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];

@@ -413,8 +413,8 @@ func OpenMenuForObject(object obj, int slot, bool forced)
 	// Show "put/take all items" buttons if applicable. Also update tooltip.
 	var show_grab_all = current_menus[0] && current_menus[1];
 	show_grab_all = show_grab_all 
-					&& (current_menus[0].target->~IsContainer() || current_menus[0].target->~IsClonk())
-					&& (current_menus[1].target->~IsContainer() || current_menus[1].target->~IsClonk());
+					&& (current_menus[0].target->~IsContainer())
+					&& (current_menus[1].target->~IsContainer());
 	if (show_grab_all)
 	{
 		current_center_column_target.Visibility = VIS_Owner;
@@ -499,7 +499,7 @@ public func OnMoveAllToClicked(int menu_id)
 	{
 		if (!current_menus[i] || !current_menus[i].target)
 			return;
-		if (!current_menus[i].target->~IsContainer() && !current_menus[i].target->~IsClonk())
+		if (!current_menus[i].target->~IsContainer())
 			return;
 	}
 	// Take all from the other object and try to put into the target.
@@ -681,7 +681,7 @@ func CreateMainMenu(object obj, int slot)
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
-	if (obj->~IsContainer() || obj->~IsClonk())
+	if (obj->~IsContainer())
 	{
 		var info =
 		{
@@ -857,6 +857,14 @@ private func OnContentsSelection(symbol, extra_data)
 	if (!current_menus[1 - extra_data.slot]) return;
 	var other_target = current_menus[1 - extra_data.slot].target;
 	if (!other_target) return;
+	
+	// Allow transfer only into containers.
+	if (!other_target->~IsContainer())
+	{
+		// Todo: other sound for "nope".
+		Sound("LightMetalHit*", nil, 10, GetController(), nil, nil, -50);
+		return;
+	}
 	
 	var transfer_only_one = GetPlayerControlState(GetOwner(), CON_ModifierMenu1) == 0; // Transfer ONE object of the stack?
 	var to_transfer = nil;

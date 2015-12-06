@@ -254,6 +254,9 @@ public func IsWalking(){return GetProcedure() == "WALK";}
 public func IsSwimming(){return GetProcedure() == "SWIM";}
 public func IsBridging(){return WildcardMatch(GetAction(), "Bridge*");}
 
+// Clonks act as containers for the interaction menu as long as they are alive.
+public func IsContainer() { return GetAlive(); }
+
 /* Carry items on the clonk */
 
 local iHandMesh;
