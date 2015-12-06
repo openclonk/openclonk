@@ -280,6 +280,7 @@ func OnAllWavesCleared()
 {
 	// Success!
 	if (g_goal) g_goal.is_fulfilled = true;
+	if (GetPlayerType(ENEMY) == C4PT_Script) EliminatePlayer(ENEMY);
 	GainScenarioAchievement("Done");
 	GameOver();
 	return true;
