@@ -1,4 +1,4 @@
 Name=Cotton Seed
-Description=Cotton seed may be sown or fabricated into cloth.
+Description=Cotton seed may be sown or fabricated into cloth. Can also be used as fuel.
 UsageHelp=Press [Use] to plant a cotton plant here.
 NoSuitableGround=Ground not suitable|for planting!
