@@ -34,7 +34,7 @@
 	GetAnimationSet();         // Has to return the animation set
 	// The following Stop* Callbacks, have to return true if the clonk doesn't have to be reset (e.g. stating aiming after loading)
 	FinishedLoading(object clonk);             // When the loading animation is over (after LoadTime frames)
-	FinishedAiming(object clonk, int angle);   // When the clonk has finished loading and aiming at the disired position
+	FinishedAiming(object clonk, int angle);   // When the clonk has finished loading and aiming at the desired position
 	FinishedShooting(object clonk, int angle); // When the shooting animation is over (after ShootTime frames)
 	DuringLoad(object clonk);                  // LoadTime2 frames after load start
 	DuringShoot(object clonk, int angle);      // ShootTime2 frames after shoot start

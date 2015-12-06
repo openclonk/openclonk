@@ -340,6 +340,7 @@ private func CancelAiming(fx)
 {
 	if (fx.aim_weapon)
 	{
+		//Log("CancelAiming"); LogCallStack();
 		//if (fx.aim_weapon==fx.shield) Log("cancel shield");
 		fx.aim_weapon->~ControlUseCancel(this);
 		fx.aim_weapon = nil;
@@ -357,7 +358,13 @@ private func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
 private func ExecuteRanged(fx)
 {
 	// Still carrying the bow?
-	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
+	if (fx.weapon->Contained() != this) { fx.weapon=fx.post_aim_weapon=nil; return false; }
+	// Finish shooting process
+	if (fx.post_aim_weapon)
+	{
+		if (IsAimingOrLoading()) return true;
+		fx.post_aim_weapon = nil;
+	}
 	// Target still in guard range?
 	if (!CheckTargetInGuardRange(fx)) return false;
 	// Look at target
@@ -415,6 +422,7 @@ private func ExecuteRanged(fx)
 				{
 					//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
 					fx.aim_weapon->ControlUseStop(this, x,y);
+					fx.post_aim_weapon = fx.aim_weapon; // assign post-aim status to allow slower shoot animations to pass
 					fx.aim_weapon = nil;
 				}
 				return true;
