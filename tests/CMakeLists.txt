@@ -107,6 +107,14 @@ if (GTEST_FOUND AND GMOCK_FOUND)
     if(WIN32)
         target_link_libraries(tests winmm)
     endif()
+
+    create_test(aul_test
+        SOURCES
+            aul/aul_test.cpp
+            ../src/script/C4ScriptStandaloneStubs.cpp
+        LIBRARIES
+            libmisc
+            libc4script)
 else()
     set(_gtest_missing "")
     if (NOT GTEST_INCLUDE_DIR)
