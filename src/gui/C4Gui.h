@@ -211,8 +211,8 @@ namespace C4GUI
 	class MenuHandler; class ContextHandler;
 
 
-	// expand text like "Te&xt" to "Te<c ffff00>x</c>t"
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey);
+	// expand text like "Te&xt" to "Te<c ffff00>x</c>t". Color yellow for normal hotkey and red for tooltip.
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey, bool for_tooltip = false);
 
 	// make color readable on black: max alpha to 0x1f, max color hues
 	DWORD MakeColorReadableOnBlack(DWORD &rdwClr);
@@ -369,6 +369,7 @@ namespace C4GUI
 	{
 	private:
 		StdStrBuf ToolTip; // MouseOver - status text
+		bool is_immediate_tooltip;
 
 	protected:
 		Container *pParent;     // owning container
@@ -433,9 +434,10 @@ namespace C4GUI
 		void ScreenPos2ClientPos(int32_t &riX, int32_t &riY); // transform screen coordinates to element coordinates
 		void ClientPos2ScreenPos(int32_t &riX, int32_t &riY); // transform element coordinates to screen coordinates
 
-		void SetToolTip(const char *szNewTooltip); // update used tooltip
+		void SetToolTip(const char *szNewTooltip, bool is_immediate = false); // update used tooltip
 		const char *GetToolTip();                  // return tooltip const char* (own or fallback to parent)
 		const char *GetOwnToolTip() { return ToolTip.getData(); } // return tooltip const char*, without fallback to parent
+		bool IsImmediateToolTip() const { return is_immediate_tooltip; }
 
 		int32_t GetWidth() { return rcBounds.Wdt; }
 		int32_t GetHeight() { return rcBounds.Hgt; }
@@ -1118,7 +1120,7 @@ namespace C4GUI
 		virtual void DrawElement(C4TargetFacet &cgo); // draw icon and highlight if necessary
 
 	public:
-		IconButton(Icons eUseIcon, const C4Rect &rtBounds, char cHotkey); // ctor
+		IconButton(Icons eUseIcon, const C4Rect &rtBounds, char cHotkey='\0', const char *tooltip_text=NULL); // ctor
 		void SetIcon(Icons eUseIcon);
 		void SetFacet(const C4Facet &rCpy, uint32_t dwClr=0u) { fctIcon = rCpy; }
 		void SetColor(uint32_t dwClr) { fHasClr=true; this->dwClr=dwClr; }
@@ -1191,6 +1193,8 @@ namespace C4GUI
 				: Base(szBtnText, rtBounds), pCB(pCB), pCallbackFn(pFn) { }
 		CallbackButton(Icons eUseIcon, const C4Rect &rtBounds, char cHotkey, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
 				: Base(eUseIcon, rtBounds, cHotkey), pCB(pCB), pCallbackFn(pFn) { }
+		CallbackButton(Icons eUseIcon, const C4Rect &rtBounds, const char *tooltip_text, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB = NULL) // ctor
+				: Base(eUseIcon, rtBounds, '\0', tooltip_text), pCB(pCB), pCallbackFn(pFn) { }
 		CallbackButton(int32_t iID, const C4Rect &rtBounds, char cHotkey, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
 				: Base(iID, rtBounds, cHotkey), pCB(pCB), pCallbackFn(pFn) { }
 	};
@@ -2513,6 +2517,13 @@ namespace C4GUI
 		// reset by keyboard actions to avoid tooltips where the user isn't even doing anything
 		bool fActiveInput;
 
+		enum TooltipShowState
+		{
+			TTST_None = 0, // show no tooltips
+			TTST_Immediate = 1, // show only tooltips of elements that require immediate show (i.e. otherwise unlabeled buttons)
+			TTST_All = 2, // show all tooltips (mouse hovered on same element for some time)
+		};
+
 	public:
 		Element *pMouseOverElement, *pPrevMouseOverElement; // elements at mouse position (after and before processing of mouse event)
 		Element *pDragElement;                              // element at pos where left mouse button was clicked last
@@ -2521,7 +2532,7 @@ namespace C4GUI
 		CMouse(int32_t iX, int32_t iY);  // ctor
 		~CMouse(); // dtor
 
-		void Draw(C4TargetFacet &cgo, bool fDrawToolTip); // draw cursor
+		void Draw(C4TargetFacet &cgo, TooltipShowState draw_tool_tips); // draw cursor
 
 		void Input(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // process mouse input
 		bool IsLDown() { return LDown; }

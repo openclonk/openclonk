@@ -35,9 +35,9 @@ namespace C4GUI
 // --------------------------------------------------
 // Generic helpers
 
-	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey)
+	bool ExpandHotkeyMarkup(StdStrBuf &sText, uint32_t &rcHotkey, bool for_tooltip)
 	{
-		static const char HotkeyMarkup[] = "<c ffffff7f>%s</c>";
+		const char *HotkeyMarkup = (for_tooltip ? "<c ff800000>%s</c>" : "<c ffffff7f>%s</c>");
 
 		StdStrBuf output;
 
@@ -150,7 +150,7 @@ namespace C4GUI
 // --------------------------------------------------
 // Element
 
-	Element::Element() : pParent(NULL), pDragTarget(NULL), fDragging(false), pContextHandler(NULL), fVisible(true)
+	Element::Element() : pParent(NULL), pDragTarget(NULL), fDragging(false), pContextHandler(NULL), fVisible(true), is_immediate_tooltip(false)
 	{
 		// pParent=NULL invalidates pPrev/pNext
 		// fDragging=false invalidates iDragX/Y
@@ -406,10 +406,12 @@ namespace C4GUI
 		return rtBounds;
 	}
 
-	void Element::SetToolTip(const char *szNewTooltip)
+	void Element::SetToolTip(const char *szNewTooltip, bool is_immediate)
 	{
 		// store tooltip
 		if (szNewTooltip) ToolTip.Copy(szNewTooltip); else ToolTip.Clear();
+		// store immediate flag
+		is_immediate_tooltip = is_immediate;
 	}
 
 	bool Element::DoContext()
@@ -482,7 +484,7 @@ namespace C4GUI
 		}
 	}
 
-	void CMouse::Draw(C4TargetFacet &cgo, bool fDrawToolTip)
+	void CMouse::Draw(C4TargetFacet &cgo, TooltipShowState draw_tool_tips)
 	{
 		// only if owned
 		if (!fActive) return;
@@ -498,13 +500,16 @@ namespace C4GUI
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
 		// ToolTip
-		if (fDrawToolTip && pMouseOverElement)
+		if (pMouseOverElement && draw_tool_tips != TTST_None)
 		{
-			const char *szTip = pMouseOverElement->GetToolTip();
-			if (szTip && *szTip)
+			if (draw_tool_tips == TTST_All || pMouseOverElement->IsImmediateToolTip())
 			{
-				C4TargetFacet cgoTip; cgoTip.Set(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
-				Screen::DrawToolTip(szTip, cgoTip, x, y);
+				const char *szTip = pMouseOverElement->GetToolTip();
+				if (szTip && *szTip)
+				{
+					C4TargetFacet cgoTip; cgoTip.Set(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
+					Screen::DrawToolTip(szTip, cgoTip, x, y);
+				}
 			}
 		}
 
@@ -741,7 +746,8 @@ namespace C4GUI
 	void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 		// draw mouse cursor
-		Mouse.Draw(cgo, Mouse.IsMouseStill() && Mouse.IsActiveInput());
+		// All tool tips hidden during keyboard input. Immediate tooltips hidden if mouse was moving recently.
+		Mouse.Draw(cgo, Mouse.IsActiveInput() ? Mouse.IsMouseStill() ? CMouse::TTST_All : CMouse::TTST_Immediate : CMouse::TTST_None);
 	}
 
 	void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)

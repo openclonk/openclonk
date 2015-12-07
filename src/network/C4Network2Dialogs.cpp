@@ -612,8 +612,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 			fIsInternet = true;
 			fIsDisabled = true;
 		}
-		btnInternet = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(fIsInternet ? C4GUI::Ico_Ex_InternetOn : C4GUI::Ico_Ex_InternetOff, caButtons.GetFromLeft(iIconSize, iIconSize), 'I' /* 2do */, &C4GameOptionButtons::OnBtnInternet, this);
-		btnInternet->SetToolTip(LoadResStr("IDS_DLGTIP_STARTINTERNETGAME"));
+		btnInternet = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(fIsInternet ? C4GUI::Ico_Ex_InternetOn : C4GUI::Ico_Ex_InternetOff, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DLGTIP_STARTINTERNETGAME"), &C4GameOptionButtons::OnBtnInternet, this);
 		btnInternet->SetEnabled(!fIsDisabled);
 		AddElement(btnInternet);
 	}
@@ -625,25 +624,21 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		C4GUI::Icons eLeagueIcon;
 		fIsLeague = fLobby ? Game.Parameters.isLeague() : !!Config.Network.LeagueServerSignUp;
 		eLeagueIcon = fIsLeague ? C4GUI::Ico_Ex_LeagueOn : C4GUI::Ico_Ex_LeagueOff;
-		btnLeague = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(eLeagueIcon, caButtons.GetFromLeft(iIconSize, iIconSize), 'L' /* 2do */, &C4GameOptionButtons::OnBtnLeague, this);
-		btnLeague->SetToolTip(LoadResStr("IDS_DLGTIP_STARTLEAGUEGAME"));
+		btnLeague = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(eLeagueIcon, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DLGTIP_STARTLEAGUEGAME"), &C4GameOptionButtons::OnBtnLeague, this);
 		btnLeague->SetEnabled(fHost && !fLobby);
 		AddElement(btnLeague);
 	}
 	else btnLeague=NULL;
 	if (fNetwork && fHost)
 	{
-		btnPassword = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(::Network.isPassworded() ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked, caButtons.GetFromLeft(iIconSize, iIconSize), 'P' /* 2do */, &C4GameOptionButtons::OnBtnPassword, this);
-		btnPassword->SetToolTip(LoadResStr("IDS_NET_PASSWORD_DESC"));
+		btnPassword = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(::Network.isPassworded() ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_NET_PASSWORD_DESC"), &C4GameOptionButtons::OnBtnPassword, this);
 		AddElement(btnPassword);
-		btnComment = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(C4GUI::Ico_Ex_Comment, caButtons.GetFromLeft(iIconSize, iIconSize), 'M' /* 2do */, &C4GameOptionButtons::OnBtnComment, this);
-		btnComment->SetToolTip(LoadResStr("IDS_DESC_COMMENTDESCRIPTIONFORTHIS"));
+		btnComment = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(C4GUI::Ico_Ex_Comment, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DESC_COMMENTDESCRIPTIONFORTHIS"), &C4GameOptionButtons::OnBtnComment, this);
 		AddElement(btnComment);
 	}
 	else btnPassword=btnComment=NULL;
-	btnRecord = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(Game.Record || fIsLeague ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff, caButtons.GetFromLeft(iIconSize, iIconSize), 'R' /* 2do */, &C4GameOptionButtons::OnBtnRecord, this);
+	btnRecord = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(Game.Record || fIsLeague ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff, caButtons.GetFromLeft(iIconSize, iIconSize), LoadResStr("IDS_DLGTIP_RECORD"), &C4GameOptionButtons::OnBtnRecord, this);
 	btnRecord->SetEnabled(!fIsLeague);
-	btnRecord->SetToolTip(LoadResStr("IDS_DLGTIP_RECORD"));
 	AddElement(btnRecord);
 }
 

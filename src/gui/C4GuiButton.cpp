@@ -235,12 +235,19 @@ namespace C4GUI
 		}
 	}
 
-	IconButton::IconButton(Icons eUseIcon, const C4Rect &rtBounds, char caHotkey)
+	IconButton::IconButton(Icons eUseIcon, const C4Rect &rtBounds, char caHotkey, const char *tooltip_text)
 			: Button("", rtBounds), dwClr(0u), fHasClr(false), fHighlight(false)
 	{
 		// ctor
 		cHotkey = caHotkey;
 		SetIcon(eUseIcon);
+		// set tooltip and expand hotkey
+		if (tooltip_text)
+		{
+			StdStrBuf tooltip_text_buf(tooltip_text);
+			if (!cHotkey) ExpandHotkeyMarkup(tooltip_text_buf, cHotkey, true);
+			SetToolTip(tooltip_text_buf.getData(), true);
+		}
 	}
 
 	void IconButton::SetIcon(Icons eUseIcon)
