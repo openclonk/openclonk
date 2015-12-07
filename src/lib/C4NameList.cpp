@@ -47,41 +47,6 @@ bool C4NameList::Set(const char *szName, int32_t iCount)
 	return false;
 }
 
-bool C4NameList::Read(const char *szSource, int32_t iDefValue)
-{
-	char buf[50];
-	if (!szSource) return false;
-	Clear();
-	for (int32_t cseg=0; SCopySegment(szSource,cseg,buf,';',50); cseg++)
-	{
-		SClearFrontBack(buf);
-		int32_t value = iDefValue;
-		if (SCharCount('=',buf))
-		{
-			value = strtol(buf + SCharPos('=',buf) + 1, NULL, 10);
-			buf[SCharPos('=',buf)]=0;
-			SClearFrontBack(buf);
-		}
-		if (!Set(buf,value)) return false;
-	}
-	return true;
-}
-
-bool C4NameList::Write(char *szTarget, bool fValues)
-{
-	char buf[50];
-	if (!szTarget) return false;
-	szTarget[0]=0;
-	for (int32_t cnt=0; cnt<C4MaxNameList; cnt++)
-		if (Name[cnt][0])
-		{
-			if (fValues) sprintf(buf,"%s=%d; ",Name[cnt],Count[cnt]);
-			else sprintf(buf,"%s; ",Name[cnt]);
-			SAppend(buf,szTarget);
-		}
-	return true;
-}
-
 bool C4NameList::Add(const char *szName, int32_t iCount)
 {
 	// Find empty spot, set name and count
