@@ -28,6 +28,9 @@ public func Initialize()
 // Sawmill acts as a container to be able to collect wooden objects.
 public func IsContainer() { return true; }
 
+// Do not show normal inventory menu. Instead we show the remaining wood in an extra menu.
+public func RejectContentsMenu() { return true; }
+
 // Sawmill can't be interacted with.
 public func IsInteractable() { return false; }
 
@@ -56,13 +59,20 @@ private func CheckWoodObject(object target)
 // Overload production menu entries to show helpful hint to player.
 public func GetProductionMenuEntries()
 {
-	return [{symbol = Wood, custom =
-				{
-					Right = "100%", Bottom = "4em",
-					text = {Left = "2em", Text = "$AutoProduction$", Style = GUI_TextVCenter | GUI_TextHCenter},
-					image = {Right = "2em", Bottom = "2em", Symbol = Wood}
-				}
-			}];
+	var wood_count = ContentsCount(Wood);
+	var info_text =
+	{
+		Right = "100%", Bottom = "6em",
+		text = {Left = "2em", Text = "$AutoProduction$", Style = GUI_TextVCenter | GUI_TextHCenter},
+		image = {Right = "2em", Bottom = "2em", Symbol = Wood},
+		queue =
+		{
+			Top = "100% - 1.5em",
+			Style = GUI_TextRight,
+			Text = Format("$WoodInQueue$: %2d {{Wood}}", wood_count)
+		}
+	};
+	return [{symbol = Wood, custom = info_text}];
 }
 
 private func IgnoreKnowledge() { return true; }
@@ -74,6 +84,8 @@ public func Saw(object target)
 	var output = target->GetComponent(Wood);
 	target->Split2Components();
 	AddToQueue(Wood, output);
+	// Refresh interaction menus to show the wood count.
+	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return true;
 }
 
