@@ -685,7 +685,7 @@ func CreateMainMenu(object obj, int slot)
 	var menus = obj->~GetInteractionMenus(cursor) ?? [];
 	// get all interaction info from the object and put it into a menu
 	// contents first
-	if (obj->~IsContainer())
+	if (obj->~IsContainer() && !obj->~RejectContentsMenu())
 	{
 		var info =
 		{
