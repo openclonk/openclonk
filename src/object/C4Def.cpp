@@ -582,7 +582,7 @@ void C4Def::LoadRankFaces(C4Group &hGroup)
 void C4Def::LoadSounds(C4Group &hGroup, C4SoundSystem* pSoundSystem)
 {
 	if (pSoundSystem)
-		pSoundSystem->LoadEffects(hGroup, NULL, true);
+		pSoundSystem->LoadEffects(hGroup, (id == C4ID::None) ? NULL : id.ToString(), true);
 }
 
 void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans, const char *graphicsName)

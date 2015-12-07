@@ -192,13 +192,13 @@ public func ToggleVisibility(int player, ...)
 	{
 		// Close menu
 		menu.Visibility = VIS_None;
-		Sound("CloseBuyMenu", true, nil, GetOwner());
+		Sound("GUI_BuyMenu::CloseBuyMenu", true, nil, GetOwner());
 	}
 	else
 	{
 		// Open menu
 		menu.Visibility = VIS_Owner;
-		Sound("OpenBuyMenu", true, nil, GetOwner());
+		Sound("GUI_BuyMenu::OpenBuyMenu", true, nil, GetOwner());
 	}
 	return true;
 }
