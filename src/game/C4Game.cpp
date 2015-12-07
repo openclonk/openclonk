@@ -2218,7 +2218,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	}
 
 	// Load section sounds
-	Application.SoundSystem.LoadEffects(hGroup);
+	Application.SoundSystem.LoadEffects(hGroup, NULL, true);
 
 	// determine startup player and team count, which may be used for initial map generation
 	if (!FrameCounter)

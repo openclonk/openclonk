@@ -56,7 +56,7 @@ void C4SoundEffect::Clear()
 	pSample = 0;
 }
 
-bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
+bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, const char *namespace_prefix)
 {
 	// Sound check
 	if (!Config.Sound.RXSound) return false;
@@ -66,7 +66,18 @@ bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
 	// load it from mem
 	if (!Load((BYTE*)WaveBuffer.getMData(), WaveBuffer.getSize())) return false;
 	// Set name
-	SCopy(szFileName,Name,C4MaxSoundName);
+	if (namespace_prefix)
+	{
+		// Local sound name
+		SAppend(namespace_prefix, Name, C4MaxSoundName);
+		SAppend("::", Name, C4MaxSoundName);
+		SAppend(szFileName, Name, C4MaxSoundName);
+	}
+	else
+	{
+		// Global sound name
+		SCopy(szFileName, Name, C4MaxSoundName);
+	}
 	return true;
 }
 

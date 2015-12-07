@@ -24,6 +24,7 @@
 
 #define C4CFN_Material        "Material.ocg"
 #define C4CFN_Sound           "Sound.ocg"
+#define C4CFN_SoundSubgroups  "*.ocg"
 #define C4CFN_Graphics        "Graphics.ocg"
 #define C4CFN_System          "System.ocg"
 #define C4CFN_Music           "Music.ocg"
@@ -196,7 +197,7 @@
             "|StartupMainMenuBG.*|StartupScenSelBG.*|StartupPlrSelBG.*|StartupPlrPropBG.*|StartupNetworkBG.*|StartupAboutBG.*|StartupBigButton.png|StartupBigButtonDown.png|StartupBookScroll.png|StartupContext.png|StartupScenSelIcons.png|StartupScenSelTitleOv.png|StartupDlgPaper.png|StartupOptionIcons.png|StartupTabClip.png|StartupNetGetRef.png|StartupLogo.png"
 #define C4FLS_Objects   "Names*.txt|Desc*.txt|*.ocd"
 #define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|PlayerControls.txt|*.c|Names.txt"
-#define C4FLS_Sound     C4CFN_SoundFiles
+#define C4FLS_Sound     C4CFN_SoundFiles "|" C4CFN_SoundSubgroups
 #define C4FLS_Music     "Frontend.*|Credits.*"
 
 #endif

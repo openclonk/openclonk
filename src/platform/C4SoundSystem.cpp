@@ -54,7 +54,7 @@ bool C4SoundSystem::Init()
 	if (!SoundFile.IsOpen())
 		if (!Reloc.Open(SoundFile, C4CFN_Sound)) return false;
 	// Load static sound from Sound.ocg
-	LoadEffects(SoundFile);
+	LoadEffects(SoundFile, NULL, false);
 #if AUDIO_TK == AUDIO_TK_SDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif
@@ -156,14 +156,14 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 
 // LoadEffects will load all sound effects of all known sound types (i.e. *.wav and *.ogg) as defined in C4CFN_SoundFiles
 
-int32_t C4SoundSystem::LoadEffects(C4Group &hGroup)
+int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix, bool group_is_root)
 {
-	// if there is a Sound.ocg in the group, load the sound from there
-	if(hGroup.FindEntry(C4CFN_Sound))
+	// Local definition sounds: If there is a Sound.ocg in the group, load the sound from there
+	if(group_is_root && hGroup.FindEntry(C4CFN_Sound))
 	{
 		C4Group g;
 		g.OpenAsChild(&hGroup, C4CFN_Sound, false, false);
-		return LoadEffects(g);
+		return LoadEffects(g, namespace_prefix, false);
 	}
 	int32_t iNum=0;
 	char szFilename[_MAX_FNAME+1];
@@ -178,10 +178,10 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup)
 			// Create and load effect
 			if ((nsfx = new C4SoundEffect))
 			{
-				if (nsfx->Load(szFilename,hGroup))
+				if (nsfx->Load(szFilename, hGroup, namespace_prefix))
 				{
 					// Overload same name effects
-					RemoveEffect(szFilename);
+					RemoveEffect(nsfx->Name);
 					// Add effect
 					nsfx->Next=FirstSound;
 					FirstSound=nsfx;
@@ -190,6 +190,26 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup)
 				else
 					delete nsfx;
 			}
+	}
+	// Search all sound files in group
+	hGroup.ResetSearch();
+	while (hGroup.FindNextEntry(C4CFN_SoundSubgroups, szFilename))
+	{
+		// Load from subgroup as a sub-namespace
+		// get namespace name
+		StdStrBuf sub_namespace;
+		if (namespace_prefix)
+		{
+			sub_namespace.Copy(namespace_prefix);
+			sub_namespace.Append("::");
+		}
+		sub_namespace.Append(szFilename, strlen(szFilename) - strlen(C4CFN_SoundSubgroups) + 1);
+		// load from child group
+		C4Group subgroup;
+		if (subgroup.OpenAsChild(&hGroup, szFilename, false, false))
+		{
+			iNum += LoadEffects(subgroup, sub_namespace.getData(), false);
+		}
 	}
 	return iNum;
 }

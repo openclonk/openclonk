@@ -42,7 +42,7 @@ public:
 	~C4SoundSystem();
 	void Clear();
 	void Execute();
-	int32_t LoadEffects(C4Group &hGroup);
+	int32_t LoadEffects(C4Group &hGroup, const char *namespace_prefix, bool group_is_root);
 	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0, int32_t iPitch = 0, C4SoundModifier *modifier = NULL);
 	C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
 	C4SoundInstance *GetFirstInstance() const;
