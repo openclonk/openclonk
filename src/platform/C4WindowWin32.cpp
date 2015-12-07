@@ -162,7 +162,12 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
 		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
+		{
+			// Remove handled message from queue to prevent Windows "standard" sound for unprocessed system message
+			MSG msg;
+			PeekMessage(&msg, hwnd, 0, 0, PM_REMOVE);
 			return 0;
+		}
 		break;
 	case WM_CHAR:
 	{
