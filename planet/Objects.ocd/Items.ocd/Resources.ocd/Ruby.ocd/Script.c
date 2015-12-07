@@ -42,12 +42,12 @@ func FxSparkleTimer(target, effect, effect_time)
 
 func IsValuable() { return true; }
 
-func QueryOnSell()
+func OnSale(int to_player, object sale_base)
 {
 	// Inform goal of gem sale
 	var goal = FindObject(Find_ID(Goal_SellGems));
 	if (goal) goal->OnGemSold();
-	return false; // do perform selling
+	return true;
 }
 
 func Hit()

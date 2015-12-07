@@ -387,9 +387,11 @@ func DoSell(object pObj, int iPlr, bool bRight)
 				break;
 			}
 	}
+	// OnSale callback to object e.g. for goal callbacks
+	pObj->~OnSale(iPlr, this);
 	// And remove the object
 	pObj->RemoveObject();
-	if(bFound) return DoSell(pNewObj, iPlr, bRight);
+	if(bFound) return DoSell(pNewObj, iPlr, bRight); // wtf why is this recursive? will fail with too many objects
 	return true;
 }
 
