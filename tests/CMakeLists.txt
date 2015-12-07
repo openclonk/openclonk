@@ -20,6 +20,7 @@ set(C4SCRIPT_SOURCES
 	../src/lib/C4SimpleLog.cpp
 	../src/C4Include.cpp
 	../src/script/C4ScriptStandalone.cpp
+    ../src/script/C4ScriptStandaloneStubs.cpp
 )
 
 # Look for GTest's CMake project
