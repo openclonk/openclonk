@@ -53,26 +53,26 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 	{
 		int32_t end = Data[3].getInt(), len = Data[4].getInt();
 		if (len == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 		// Sanity check for linear animations that are too long and could cause excessive animation stacks
 		if (pos_for_animation)
 		{
 			int32_t max_end = fixtoi(ftofix(pos_for_animation->Length), 1000);
 			if (end < 0 || end > max_end)
-				throw new C4AulExecError(FormatString("End (%d) not in range of animation '%s' (0-%d).", (int)end, pos_for_animation->Name.getData(), (int)max_end).getData());
+				throw C4AulExecError(FormatString("End (%d) not in range of animation '%s' (0-%d).", (int)end, pos_for_animation->Name.getData(), (int)max_end).getData());
 		}
 		return new C4ValueProviderLinear(itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(end, 1000), len, static_cast<C4AnimationEnding>(Data[5].getInt()));
 	}
 	case C4AVP_X:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 
 		return new C4ValueProviderX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_Y:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 
 		return new C4ValueProviderY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_R:
@@ -83,38 +83,38 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 	case C4AVP_AbsX:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderAbsX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_AbsY:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderAbsY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_Dist:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
-			throw new C4AulExecError("Length cannot be zero");
+			throw C4AulExecError("Length cannot be zero");
 		return new C4ValueProviderDist(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_XDir:
 		if (!pForObj) return NULL;
 		if (Data[3].getInt() == 0)
-			throw new C4AulExecError("MaxXDir cannot be zero");
+			throw C4AulExecError("MaxXDir cannot be zero");
 		return new C4ValueProviderXDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_YDir:
 		if (!pForObj) return NULL;
 		if (Data[3].getInt() == 0)
-			throw new C4AulExecError("MaxYDir cannot be zero");
+			throw C4AulExecError("MaxYDir cannot be zero");
 		return new C4ValueProviderYDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_RDir:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() - Data[3].getInt() == 0)
-			throw new C4AulExecError("MaxRDir - MinRDir cannot be zero");
+			throw C4AulExecError("MaxRDir - MinRDir cannot be zero");
 		return new C4ValueProviderRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
 
 	case C4AVP_AbsRDir:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() - Data[3].getInt() == 0)
-			throw new C4AulExecError("MaxRDir - MinRDir cannot be zero");
+			throw C4AulExecError("MaxRDir - MinRDir cannot be zero");
 		return new C4ValueProviderAbsRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[5].getInt()), itofix(Data[4].getInt(),Data[5].getInt()));
 	case C4AVP_CosR:
 		if (!pForObj) return NULL;

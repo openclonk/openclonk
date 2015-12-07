@@ -177,7 +177,7 @@ static long FnGetCon(C4Object *Obj, long iPrec)
 static C4String *FnGetName(C4PropList * _this)
 {
 	if (!_this)
-		throw new NeedNonGlobalContext("GetName");
+		throw NeedNonGlobalContext("GetName");
 	else
 		return String(_this->GetName());
 }
@@ -187,7 +187,7 @@ static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, b
 	if (!Object(_this))
 	{
 		if (!_this)
-			throw new NeedNonGlobalContext("SetName");
+			throw NeedNonGlobalContext("SetName");
 		else if (fSetInInfo)
 			return false;
 		// Definition name
@@ -572,7 +572,7 @@ static long FnGetMass(C4PropList * _this)
 {
 	if (!Object(_this))
 		if (!_this || !_this->GetDef())
-			throw new NeedNonGlobalContext("GetMass");
+			throw NeedNonGlobalContext("GetMass");
 		else
 			return _this->GetDef()->Mass;
 	else
@@ -741,7 +741,7 @@ static long FnGetCategory(C4PropList * _this)
 {
 	if (!Object(_this))
 		if (!_this || !_this->GetDef())
-			throw new NeedNonGlobalContext("GetCategory");
+			throw NeedNonGlobalContext("GetCategory");
 		else
 			return _this->GetDef()->Category;
 	else
@@ -762,7 +762,7 @@ static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer)
 {
 	if (!Object(_this))
 		if (!_this || !_this->GetDef())
-			throw new NeedNonGlobalContext("GetValue");
+			throw NeedNonGlobalContext("GetValue");
 		else
 			return _this->GetDef()->GetValue(pInBase, iForPlayer);
 	else
@@ -884,7 +884,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		else if (Parameter.getPropList()->GetDef())
 			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
 		else
-			throw new C4AulExecError("proplist as parameter to AddMenuItem");
+			throw C4AulExecError("proplist as parameter to AddMenuItem");
 		break;
 	case C4V_String:
 		// note this breaks if there is '"' in the string.
@@ -897,7 +897,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		break;
 	case C4V_Array:
 		// Arrays were never allowed, so tell the scripter
-		throw new C4AulExecError("array as parameter to AddMenuItem");
+		throw C4AulExecError("array as parameter to AddMenuItem");
 	default:
 		return false;
 	}
@@ -1040,7 +1040,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		// draw object picture
 		if (!XPar.CheckConversion(C4V_Object))
-			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
+			throw C4AulExecError(FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
 			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		pGfxObj = XPar.getObj();
@@ -1522,7 +1522,7 @@ static bool FnSetGraphics(C4Object *Obj, C4String *pGfxName, C4Def *pSrcDef, lon
 static long FnGetDefBottom(C4PropList * _this)
 {
 	if (!_this || !_this->GetDef())
-		throw new NeedNonGlobalContext("GetDefBottom");
+		throw NeedNonGlobalContext("GetDefBottom");
 
 	C4Object *obj = Object(_this);
 	C4Def *def = _this->GetDef();
@@ -1880,7 +1880,7 @@ static Nillable<int> FnTransformBone(C4Object *Obj, C4String *szBoneName, C4Valu
 
 	StdMeshMatrix matrix;
 	if (!C4ValueToMatrix(*Transformation, &matrix))
-		throw new C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
+		throw C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
 
 	// For bone transformations we cannot use general matrix transformations, but we use decomposed
 	// translate, scale and rotation components (represented by the StdMeshTransformation class). This
@@ -1945,7 +1945,7 @@ static Nillable<C4ValueArray*> FnGetAnimationList(C4PropList* _this, Nillable<in
 	const StdMeshSkeleton* skeleton;
 	if (!Obj)
 	{
-		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetAnimationList");
+		if (!_this || !_this->GetDef()) throw NeedNonGlobalContext("GetAnimationList");
 		C4Def *def = _this->GetDef();
 		if (!def->Graphics.IsMesh()) return C4Void();
 
@@ -2100,7 +2100,7 @@ static bool FnSetAnimationBoneTransform(C4Object *Obj, Nillable<int> iAnimationN
 
 	StdMeshMatrix matrix;
 	if (!C4ValueToMatrix(*Transformation, &matrix))
-		throw new C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
+		throw C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
 	// Here the same remark applies as in FnTransformBone
 	StdMeshTransformation trans = matrix.Decompose();
 
@@ -2140,7 +2140,7 @@ static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * sz
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if (Transformation)
 		if (!C4ValueToMatrix(*Transformation, &trans))
-			throw new C4AulExecError("AttachMesh: Transformation is not a valid 3x4 matrix");
+			throw C4AulExecError("AttachMesh: Transformation is not a valid 3x4 matrix");
 
 	StdMeshInstance::AttachedMesh* attach;
 	C4Object* pObj = Mesh->GetObject();
@@ -2198,7 +2198,7 @@ static bool FnSetAttachTransform(C4Object *Obj, long iAttachNumber, C4ValueArray
 
 	StdMeshMatrix trans;
 	if (!C4ValueToMatrix(*Transformation, &trans))
-		throw new C4AulExecError("SetAttachTransform: Transformation is not a valid 3x4 matrix");
+		throw C4AulExecError("SetAttachTransform: Transformation is not a valid 3x4 matrix");
 
 	attach->SetAttachTransformation(trans);
 	return true;
@@ -2210,7 +2210,7 @@ static Nillable<C4String*> FnGetMeshMaterial(C4PropList * _this, int iSubMesh)
 	C4Object *Obj = Object(_this);
 	if (!Obj)
 	{
-		if (!_this || !_this->GetDef()) throw new NeedNonGlobalContext("GetMeshMaterial");
+		if (!_this || !_this->GetDef()) throw NeedNonGlobalContext("GetMeshMaterial");
 		// Called in definition context: Get definition default mesh material
 		C4Def *def = _this->GetDef();
 		if (!def->Graphics.IsMesh()) return C4Void();
@@ -2263,7 +2263,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	if(Pos)
 	{
 		if(Pos->GetSize() != 3)
-			throw new C4AulExecError("CreateParticleAtBone: Pos is not a three-vector");
+			throw C4AulExecError("CreateParticleAtBone: Pos is not a three-vector");
 		x.x = (*Pos)[0].getInt();
 		x.y = (*Pos)[1].getInt();
 		x.z = (*Pos)[2].getInt();
@@ -2273,7 +2273,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	if(Dir)
 	{
 		if(Dir->GetSize() != 3)
-			throw new C4AulExecError("CreateParticleAtBone: Dir is not a three-vector");
+			throw C4AulExecError("CreateParticleAtBone: Dir is not a three-vector");
 		dir.x = (*Dir)[0].getInt() / 10.0f;
 		dir.y = (*Dir)[1].getInt() / 10.0f;
 		dir.z = (*Dir)[2].getInt() / 10.0f;

@@ -646,7 +646,7 @@ void C4ParticleValueProvider::Set(const C4ValueArray &fromArray)
 		}
 		break;
 	default:
-		throw new C4AulExecError("invalid particle value provider supplied");
+		throw C4AulExecError("invalid particle value provider supplied");
 		break;
 	}
 }

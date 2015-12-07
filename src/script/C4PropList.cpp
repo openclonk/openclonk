@@ -743,7 +743,7 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 		C4PropList * newpt = to.getPropList();
 		for(C4PropList * it = newpt; it; it = it->GetPrototype())
 			if(it == this)
-				throw new C4AulExecError("Trying to create cyclic prototype structure");
+				throw C4AulExecError("Trying to create cyclic prototype structure");
 		prototype.SetPropList(newpt);
 	}
 	else if (Properties.Has(k))

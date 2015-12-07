@@ -52,7 +52,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 				// number
 			case 'd': case 'x': case 'X':
 			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				if (cPar >= ParCount) throw C4AulExecError("format placeholder without parameter");
 				StringBuf.AppendFormat(szField, Pars[cPar++].getInt());
 				cpFormat+=SLen(szField);
 				break;
@@ -60,7 +60,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			// character
 			case 'c':
 			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				if (cPar >= ParCount) throw C4AulExecError("format placeholder without parameter");
 				StringBuf.AppendCharacter(Pars[cPar++].getInt());
 				cpFormat+=SLen(szField);
 				break;
@@ -70,7 +70,7 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			// C4Value
 			case 'v':
 			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				if (cPar >= ParCount) throw C4AulExecError("format placeholder without parameter");
 				StringBuf.Append(static_cast<const StdStrBuf&>(Pars[cPar++].GetDataString(10)));
 				cpFormat+=SLen(szField);
 				break;
@@ -79,12 +79,12 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			case 's':
 			{
 				// get string
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				if (cPar >= ParCount) throw C4AulExecError("format placeholder without parameter");
 				const char *szStr = "(null)";
 				if (Pars[cPar].GetData())
 				{
 					C4String * pStr = Pars[cPar].getStr();
-					if (!pStr) throw new C4AulExecError("string format placeholder without string");
+					if (!pStr) throw C4AulExecError("string format placeholder without string");
 					szStr = pStr->GetCStr();
 				}
 				++cPar;
@@ -300,7 +300,7 @@ static bool FnSetProperty(C4PropList * _this, C4String * key, const C4Value & to
 	if (!pObj) return false;
 	if (!key) return false;
 	if (pObj->IsFrozen())
-		throw new C4AulExecError("proplist write: proplist is readonly");
+		throw C4AulExecError("proplist write: proplist is readonly");
 	pObj->SetPropertyByS(key, to);
 	return true;
 }
@@ -312,7 +312,7 @@ static bool FnResetProperty(C4PropList * _this, C4String * key, C4PropList * pOb
 	if (!key) return false;
 	if (!pObj->HasProperty(key)) return false;
 	if (pObj->IsFrozen())
-		throw new C4AulExecError("proplist write: proplist is readonly");
+		throw C4AulExecError("proplist write: proplist is readonly");
 	pObj->ResetProperty(key);
 	return true;
 }
@@ -320,7 +320,7 @@ static bool FnResetProperty(C4PropList * _this, C4String * key, C4PropList * pOb
 static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 {
 	if (!p) p = _this;
-	if (!p) throw new NeedNonGlobalContext("GetProperties");
+	if (!p) throw NeedNonGlobalContext("GetProperties");
 	C4ValueArray * r = p->GetProperties();
 	r->SortStrings();
 	return r;
@@ -348,7 +348,7 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 		}
 	}
 	if (!fn)
-		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+		throw C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
 	fn->CheckParTypes(ParSet.Par);
 	return fn->Exec(_this, &ParSet, true);
 }
@@ -518,7 +518,7 @@ static int FnGetLength(C4PropList * _this, const C4Value & Par)
 	C4String * pStr = Par.getStr();
 	if (pStr)
 		return GetCharacterCount(pStr->GetData().getData());
-	throw new C4AulExecError("GetLength: parameter 0 cannot be converted to string or array");
+	throw C4AulExecError("GetLength: parameter 0 cannot be converted to string or array");
 }
 
 static int FnGetIndexOf(C4PropList * _this, C4ValueArray * pArray, const C4Value & Needle)
@@ -545,7 +545,7 @@ static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize
 {
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
-		throw new C4AulExecError(FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
+		throw C4AulExecError(FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
 
 	// set new size
 	pArray->SetSize(iNewSize);
@@ -642,7 +642,7 @@ static long FnWildcardMatch(C4PropList * _this, C4String *psString, C4String *ps
 
 static bool FnFatalError(C4PropList * _this, C4String *pErrorMsg)
 {
-	throw new C4AulExecError(FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
+	throw C4AulExecError(FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
 }
 
 static bool FnStartCallTrace(C4PropList * _this)
@@ -692,7 +692,7 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 
 static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descending)
 {
-	if (!pArray) throw new C4AulExecError("SortArray: no array given");
+	if (!pArray) throw C4AulExecError("SortArray: no array given");
 	// sort array by its members
 	pArray->Sort(descending);
 	return true;
@@ -700,19 +700,19 @@ static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descendin
 
 static bool FnSortArrayByProperty(C4PropList * _this, C4ValueArray *pArray, C4String *prop_name, bool descending)
 {
-	if (!pArray) throw new C4AulExecError("SortArrayByProperty: no array given");
-	if (!prop_name) throw new C4AulExecError("SortArrayByProperty: no property name given");
+	if (!pArray) throw C4AulExecError("SortArrayByProperty: no array given");
+	if (!prop_name) throw C4AulExecError("SortArrayByProperty: no property name given");
 	// sort array by property
-	if (!pArray->SortByProperty(prop_name, descending)) throw new C4AulExecError("SortArrayByProperty: not all array elements are proplists");
+	if (!pArray->SortByProperty(prop_name, descending)) throw C4AulExecError("SortArrayByProperty: not all array elements are proplists");
 	return true;
 }
 
 static bool FnSortArrayByArrayElement(C4PropList * _this, C4ValueArray *pArray, int32_t element_index, bool descending)
 {
-	if (!pArray) throw new C4AulExecError("SortArrayByArrayElement: no array given");
-	if (element_index<0) throw new C4AulExecError("SortArrayByArrayElement: element index must be >=0");
+	if (!pArray) throw C4AulExecError("SortArrayByArrayElement: no array given");
+	if (element_index<0) throw C4AulExecError("SortArrayByArrayElement: element index must be >=0");
 	// sort array by array element
-	if (!pArray->SortByArrayElement(element_index, descending)) throw new C4AulExecError("SortArrayByArrayElement: not all array elements are arrays of sufficient length");
+	if (!pArray->SortByArrayElement(element_index, descending)) throw C4AulExecError("SortArrayByArrayElement: not all array elements are arrays of sufficient length");
 	return true;
 }
 
@@ -720,7 +720,7 @@ static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
 {
 	// resolve file handle to user file
 	C4AulUserFile *file = ::ScriptEngine.GetUserFile(file_handle);
-	if (!file) throw new C4AulExecError("FileWrite: invalid file handle");
+	if (!file) throw C4AulExecError("FileWrite: invalid file handle");
 	// prepare string to write
 	if (!data) return false; // write NULL? No.
 	// write it

@@ -67,7 +67,7 @@ void C4AulFunc::CheckParTypes(const C4Value pPars[]) const {
 	int parcount = GetParCount();
 	for (int i = 0; i < parcount; i++) {
 		if (!pPars[i].CheckParConversion(pTypes[i]))
-			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
+			throw C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
 			                                      GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
 			                                     ).getData());
 	}

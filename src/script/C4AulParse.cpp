@@ -261,7 +261,7 @@ void C4AulParse::Error(const char *pMsg, ...)
 	StdStrBuf Buf;
 	Buf.FormatV(pMsg, args);
 
-	throw new C4AulParseError(this, Buf.getData());
+	throw C4AulParseError(this, Buf.getData());
 }
 
 C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const char *pIdtf, bool Warn)
@@ -592,7 +592,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 				}
 				}
 			else if (C == 0 || C == 10 || C == 13) // line break / feed
-				throw new C4AulParseError(this, "string not closed");
+				throw C4AulParseError(this, "string not closed");
 			else
 				// copy character
 				strbuf.push_back(C);
@@ -613,9 +613,9 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 	{
 		// show appropriate error message
 		if (C >= '!' && C <= '~')
-			throw new C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
+			throw C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
 		else
-			throw new C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
+			throw C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
 	}
 }
 
@@ -1059,7 +1059,7 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
 	default: 
-		throw new C4AulParseError(this, "assignment to a constant");
+		throw C4AulParseError(this, "assignment to a constant");
 	}
 	// Remove value BCC
 	RemoveLastBCC();
@@ -1200,7 +1200,7 @@ void C4AulParse::Match(C4AulTokenType RefTokenType, const char * Expected)
 }
 void C4AulParse::UnexpectedToken(const char * Expected)
 {
-	throw new C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
+	throw C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
 void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
@@ -1257,7 +1257,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			else if (SEqual(Idtf, C4AUL_Append))
 			{
 				if (pOrgScript->GetPropList()->GetDef())
-					throw new C4AulParseError(this, "#appendto in a Definition");
+					throw C4AulParseError(this, "#appendto in a Definition");
 				// for #appendto * '*' needs to be ATT_STAR, not an operator.
 				Shift(StarsPlease);
 				if (Type == PREPARSER)
@@ -1283,7 +1283,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			}
 			else
 				// -> unknown directive
-				throw new C4AulParseError(this, "unknown directive: ", Idtf);
+				throw C4AulParseError(this, "unknown directive: ", Idtf);
 			break;
 		case ATT_IDTF:
 			// need a keyword here to avoid parsing random function contents
@@ -1313,18 +1313,17 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 		}
 		all_ok = true;
 	}
-	catch (C4AulError *err)
+	catch (C4AulError &err)
 	{
 		// damn! something went wrong, print it out
 		// but only one error per function
 		if (all_ok)
 		{
-			err->show();
+			err.show();
 			// and count (visible only ;) )
 			++::ScriptEngine.errCnt;
 		}
 		all_ok = false;
-		delete err;
 
 		if (Fn)
 		{
@@ -1356,7 +1355,7 @@ void C4AulParse::Parse_Function()
 
 	// check for func declaration
 	if (!SEqual(Idtf, C4AUL_Func))
-		throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
+		throw C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
 	Shift();
 	// get next token, must be func name
 	Check(ATT_IDTF, "function name");
@@ -1364,14 +1363,14 @@ void C4AulParse::Parse_Function()
 	if (!is_global)
 	{
 		if (Host->LocalNamed.GetItemNr(Idtf) != -1)
-			throw new C4AulParseError(this, "function definition: name already in use (local variable)");
+			throw C4AulParseError(this, "function definition: name already in use (local variable)");
 	}
 	if (is_global || !Host->GetPropList())
 	{
 		if (Host != pOrgScript)
-			throw new C4AulParseError(this, "global func in appendto/included script: ", Idtf);
+			throw C4AulParseError(this, "global func in appendto/included script: ", Idtf);
 		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
+			throw C4AulParseError(this, "function definition: name already in use (global variable)");
 		if (Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
 			Error("function definition: name already in use (global constant)");
 	}
@@ -1422,7 +1421,7 @@ void C4AulParse::Parse_Function()
 	{
 		// too many parameters?
 		if (cpar >= C4AUL_MAX_Par)
-			throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
+			throw C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
 		if (TokenType == ATT_LDOTS)
 		{
 			if (Type == PREPARSER) Fn->ParCount = C4AUL_MAX_Par;
@@ -1628,7 +1627,7 @@ void C4AulParse::Parse_Statement()
 		         SEqual(Idtf, C4AUL_Public) ||
 		         SEqual(Idtf, C4AUL_Global))
 		{
-			throw new C4AulParseError(this, "unexpected end of function");
+			throw C4AulParseError(this, "unexpected end of function");
 		}
 		// get function by identifier: first check special functions
 		else if (SEqual(Idtf, C4AUL_If)) // if
@@ -1638,7 +1637,7 @@ void C4AulParse::Parse_Statement()
 		}
 		else if (SEqual(Idtf, C4AUL_Else)) // else
 		{
-			throw new C4AulParseError(this, "misplaced 'else'");
+			throw C4AulParseError(this, "misplaced 'else'");
 		}
 		else if (SEqual(Idtf, C4AUL_Do)) // while
 		{
@@ -1887,7 +1886,7 @@ void C4AulParse::Parse_PropList()
 		}
 		if (Fn->GetLastCode()->bccType == AB_CPROPLIST && Fn->GetLastCode()->Par.p->GetDef())
 		{
-			throw new C4AulParseError(this, "Can't use new on definitions yet.");
+			throw C4AulParseError(this, "Can't use new on definitions yet.");
 		}
 		++size;
 	}
@@ -1925,7 +1924,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 {
 	C4Value v;
 	if (!Name)
-		throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
+		throw C4AulParseError(this, "a static proplist is not allowed to be anonymous");
 	C4PropListStatic * p;
 	if (Type == PREPARSER)
 	{
@@ -1946,10 +1945,10 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		}
 		p = v.getPropList()->IsStatic();
 		if (!p)
-			throw new C4AulParseError(this, "internal error: constant proplist is not static");
+			throw C4AulParseError(this, "internal error: constant proplist is not static");
 		if (p->GetParent() != parent || p->GetParentKeyName() != Name)
 		{
-			throw new C4AulParseError(this, "internal error: constant proplist has the wrong parent");
+			throw C4AulParseError(this, "internal error: constant proplist has the wrong parent");
 		}
 		// In case of script reloads
 		p->Thaw();
@@ -2155,7 +2154,7 @@ void C4AulParse::Parse_ForEach()
 	// search variable (fail if not found)
 	int iVarID = Fn->VarNamed.GetItemNr(Idtf);
 	if (iVarID < 0)
-		throw new C4AulParseError(this, "internal error: var definition: var not found in variable table");
+		throw C4AulParseError(this, "internal error: var definition: var not found in variable table");
 	Shift();
 	if (TokenType != ATT_IDTF || !SEqual(Idtf, C4AUL_In))
 		UnexpectedToken("'in'");
@@ -2228,7 +2227,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		{
 			// global func?
 			if (Fn->Owner == &::ScriptEngine)
-				throw new C4AulParseError(this, "using local variable in global function!");
+				throw C4AulParseError(this, "using local variable in global function!");
 			// insert variable by id
 			C4String * pKey = Strings.RegString(Idtf);
 			AddBCC(AB_LOCALN, (intptr_t) pKey);
@@ -2256,16 +2255,16 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		// function identifier: check special functions
 		else if (SEqual(Idtf, C4AUL_If))
 			// -> if is not a valid parameter
-			throw new C4AulParseError(this, "'if' may not be used as a parameter");
+			throw C4AulParseError(this, "'if' may not be used as a parameter");
 		else if (SEqual(Idtf, C4AUL_While))
 			// -> while is not a valid parameter
-			throw new C4AulParseError(this, "'while' may not be used as a parameter");
+			throw C4AulParseError(this, "'while' may not be used as a parameter");
 		else if (SEqual(Idtf, C4AUL_Else))
 			// -> else is not a valid parameter
-			throw new C4AulParseError(this, "misplaced 'else'");
+			throw C4AulParseError(this, "misplaced 'else'");
 		else if (SEqual(Idtf, C4AUL_For))
 			// -> for is not a valid parameter
-			throw new C4AulParseError(this, "'for' may not be used as a parameter");
+			throw C4AulParseError(this, "'for' may not be used as a parameter");
 		else if (SEqual(Idtf, C4AUL_Return))
 		{
 			Error("return may not be used as a parameter");
@@ -2306,7 +2305,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			else
 				// not found? raise an error, if it's not a safe call
 				if (SEqual(Idtf, C4AUL_Inherited) && Type == PARSER)
-					throw new C4AulParseError(this, "inherited function not found (use _inherited to disable this message)");
+					throw C4AulParseError(this, "inherited function not found (use _inherited to disable this message)");
 				else
 				{
 					// otherwise, parse parameters, but discard them
@@ -2364,14 +2363,14 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 				AddBCC(AB_CFUNCTION, reinterpret_cast<intptr_t>(val._getFunction()));
 				break;
 			default:
-				throw new C4AulParseError(this, FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
+				throw C4AulParseError(this, FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
 			}
 			Shift();
 		}
 		else
 		{
 			// identifier could not be resolved
-			throw new C4AulParseError(this, "unknown identifier: ", Idtf);
+			throw C4AulParseError(this, "unknown identifier: ", Idtf);
 		}
 		break;
 	case ATT_INT: // constant in cInt
@@ -2388,7 +2387,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		// postfix?
 		if (op->Postfix)
 			// oops. that's wrong
-			throw new C4AulParseError(this, "postfix operator without first expression");
+			throw C4AulParseError(this, "postfix operator without first expression");
 		Shift();
 		// generate code for the following expression
 		Parse_Expression(op->Priority);
@@ -2472,7 +2471,7 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 				// not found?
 				if (!postfixop->Identifier)
 				{
-					throw new C4AulParseError(this, "unexpected prefix operator: ", op->Identifier);
+					throw C4AulParseError(this, "unexpected prefix operator: ", op->Identifier);
 				}
 				// otherwise use the new-found correct postfix operator
 				op = postfixop;
@@ -2593,7 +2592,7 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 			Shift();
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF)
-				throw new C4AulParseError(this, "expecting func name after '->'");
+				throw C4AulParseError(this, "expecting func name after '->'");
 			if (Type == PARSER)
 			{
 				pName = ::Strings.RegString(Idtf);
@@ -2624,7 +2623,7 @@ void C4AulParse::Parse_Var()
 		// search variable (fail if not found)
 		int iVarID = Fn->VarNamed.GetItemNr(Idtf);
 		if (iVarID < 0)
-			throw new C4AulParseError(this, "internal error: var definition: var not found in variable table");
+			throw C4AulParseError(this, "internal error: var definition: var not found in variable table");
 		Shift();
 		if(TokenType == ATT_SET)
 		{
@@ -2650,7 +2649,7 @@ void C4AulParse::Parse_Local()
 			// get desired variable name
 			// check: symbol already in use?
 			if (Host->GetPropList() && Host->GetPropList()->GetFunc(Idtf))
-				throw new C4AulParseError(this, "variable definition: name already in use");
+				throw C4AulParseError(this, "variable definition: name already in use");
 			// insert variable
 			Host->LocalNamed.AddName(Idtf);
 		}
@@ -2660,7 +2659,7 @@ void C4AulParse::Parse_Local()
 		if (TokenType == ATT_SET)
 		{
 			if (!Host->GetPropList())
-				throw new C4AulParseError(this, "local variables can only be initialized on proplists");
+				throw C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
 			C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
 			assert(Host->GetPropList()->IsStatic());
@@ -2811,7 +2810,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 		{
 			C4String * k = ::Strings.FindString(Idtf);
 			if (!r.CheckConversion(C4V_PropList))
-				throw new C4AulParseError(this, FormatString("proplist access: proplist expected, got %s", r.GetTypeName()).getData());
+				throw C4AulParseError(this, FormatString("proplist access: proplist expected, got %s", r.GetTypeName()).getData());
 			if (!k || !r._getPropList()->GetPropertyByS(k, &r))
 				r.Set0();
 		}

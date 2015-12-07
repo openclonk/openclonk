@@ -302,7 +302,7 @@ public C4AulDefFuncHelper {                   \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
     virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { \
-      C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw new NeedObjectContext(GetName()); \
+      C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw NeedObjectContext(GetName()); \
       return C4ValueConv<RType>::ToC4V(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
     } \
   protected:                                  \

@@ -193,7 +193,7 @@ void C4MapScriptMatTexMask::Init(const C4Value &spec)
 		for (int32_t i=0; i<arr->GetSize(); ++i)
 		{
 			C4String *smask = arr->GetItem(i).getStr();
-			if (!smask) throw new C4AulExecError(FormatString("MatTexMask expected string as %dth element in array.", (int)i).getData());
+			if (!smask) throw C4AulExecError(FormatString("MatTexMask expected string as %dth element in array.", (int)i).getData());
 			UnmaskSpec(smask);
 		}
 	}
@@ -205,7 +205,7 @@ void C4MapScriptMatTexMask::Init(const C4Value &spec)
 			UnmaskSpec(smask);
 		else
 		{
-			if (spec) throw new C4AulExecError("MatTexMask expected string or array of strings.");
+			if (spec) throw C4AulExecError("MatTexMask expected string or array of strings.");
 			// nil defaults to everything except index zero unmasked
 			sky_mask = std::vector<bool>(256, true);
 			tunnel_mask = std::vector<bool>(256, true);
@@ -259,7 +259,7 @@ static C4PropList *FnCreateLayer(C4PropList * _this, C4String *mattex_fill, int3
 	uint8_t fg = 0, bg = 0;
 	if (mattex_fill && mattex_fill->GetCStr())
 		if (!FnParTexCol(mattex_fill, fg, bg))
-			throw new C4AulExecError(FormatString("CreateLayer: Invalid fill material.").getData());
+			throw C4AulExecError(FormatString("CreateLayer: Invalid fill material.").getData());
 
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
 	if (!layer) return NULL;
@@ -268,7 +268,7 @@ static C4PropList *FnCreateLayer(C4PropList * _this, C4String *mattex_fill, int3
 		width = layer->GetWdt();
 		height = layer->GetHgt();
 	}
-	if (width<=0 || height<=0) throw new C4AulExecError(FormatString("CreateLayer: Invalid size (%d*%d).", (int)width, (int)height).getData());
+	if (width<=0 || height<=0) throw C4AulExecError(FormatString("CreateLayer: Invalid size (%d*%d).", (int)width, (int)height).getData());
 	C4MapScriptMap *map = layer->GetMap();
 	if (!map) return NULL;
 	layer = map->CreateLayer(width, height);
@@ -357,12 +357,12 @@ static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Va
 		if (str != NULL)
 		{
 			if (!TexColSingle(str->GetCStr(), fg))
-				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
 		}
 		else
 		{
 			if (!Inside(val.getInt(), 0, 255))
-				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
 			fg = val.getInt();
 		}
 	}
@@ -378,12 +378,12 @@ static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Va
 		if (str != NULL)
 		{
 			if (!TexColSingle(str->GetCStr(), bg))
-				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
 		}
 		else
 		{
 			if (!Inside(val.getInt(), 0, 255))
-				throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
+				throw C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
 			bg = val.getInt();
 		}
 	}

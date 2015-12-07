@@ -308,7 +308,7 @@ static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, NULL, Object(_this));
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError("ObjectCount: No valid search criterions supplied");
+		throw C4AulExecError("ObjectCount: No valid search criterions supplied");
 	// Search
 	int32_t iCnt = pFO->Count(::Objects, ::Objects.Sectors);
 	// Free
@@ -325,7 +325,7 @@ static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError("FindObject: No valid search criterions supplied");
+		throw C4AulExecError("FindObject: No valid search criterions supplied");
 	// Search
 	C4Object *pObj = pFO->Find(::Objects, ::Objects.Sectors);
 	// Free
@@ -342,7 +342,7 @@ static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError("FindObjects: No valid search criterions supplied");
+		throw C4AulExecError("FindObjects: No valid search criterions supplied");
 	// Search
 	C4ValueArray *pResult = pFO->FindMany(::Objects, ::Objects.Sectors);
 	// Free
@@ -683,7 +683,7 @@ static bool FnGainMissionAccess(C4PropList * _this, C4String *szPassword)
 
 static C4Value FnPlayerMessage(C4PropList * _this, C4Value * Pars)
 {
-	if (!Object(_this)) throw new NeedObjectContext("PlayerMessage");
+	if (!Object(_this)) throw NeedObjectContext("PlayerMessage");
 	int iPlayer = Pars[0].getInt();
 	C4String * szMessage = Pars[1].getStr();
 	if (!szMessage) return C4VBool(false);
@@ -709,7 +709,7 @@ static C4Value FnPlayerMessage(C4PropList * _this, C4Value * Pars)
 
 static C4Value FnMessage(C4PropList * _this, C4Value * Pars)
 {
-	if (!Object(_this)) throw new NeedObjectContext("Message");
+	if (!Object(_this)) throw NeedObjectContext("Message");
 	C4String * szMessage = Pars[0].getStr();
 	if (!szMessage) return C4VBool(false);
 	StdStrBuf buf;
@@ -735,7 +735,7 @@ static C4Value FnMessage(C4PropList * _this, C4Value * Pars)
 // undocumented!
 static C4Value FnAddMessage(C4PropList * _this, C4Value * Pars)
 {
-	if (!Object(_this)) throw new NeedObjectContext("AddMessage");
+	if (!Object(_this)) throw NeedObjectContext("AddMessage");
 	C4String * szMessage = Pars[0].getStr();
 	if (!szMessage) return C4VBool(false);
 
@@ -1615,7 +1615,7 @@ C4Value GetValByStdCompiler(const char *strEntry, const char *strSection, int iE
 static C4Value FnGetDefCoreVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iEntryNr)
 {
 	if (!_this || !_this->GetDef())
-		throw new NeedNonGlobalContext("GetDefCoreVal");
+		throw NeedNonGlobalContext("GetDefCoreVal");
 
 	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
 			iEntryNr, mkNamingAdapt(*_this->GetDef(), "DefCore"));
@@ -2500,11 +2500,11 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	uint32_t vpos = dwFlags & (C4GM_Top | C4GM_VCenter | C4GM_Bottom);
 	if (((hpos | (hpos-1)) + 1)>>1 != hpos)
 	{
-		throw new C4AulExecError("CustomMessage: Only one horizontal positioning flag allowed");
+		throw C4AulExecError("CustomMessage: Only one horizontal positioning flag allowed");
 	}
 	if (((vpos | (vpos-1)) + 1)>>1 != vpos)
 	{
-		throw new C4AulExecError("CustomMessage: Only one vertical positioning flag allowed");
+		throw C4AulExecError("CustomMessage: Only one vertical positioning flag allowed");
 	}
 	// message color
 	if (!dwClr) dwClr = 0xffffffff;

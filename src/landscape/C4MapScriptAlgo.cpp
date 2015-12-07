@@ -38,7 +38,7 @@ bool C4MapScriptAlgo::GetXYProps(const C4PropList *props, C4PropertyName k, int3
 	if ((arr = val.getArray()))
 	{
 		if (arr->GetSize() != 2)
-			throw new C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
+			throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
 		out_xy[0] = arr->GetItem(0).getInt();
 		out_xy[1] = arr->GetItem(1).getInt();
 	}
@@ -54,7 +54,7 @@ C4MapScriptAlgoLayer::C4MapScriptAlgoLayer(const C4PropList *props)
 	// Get MAPALGO_Layer properties
 	C4PropList *layer_pl = props->GetPropertyPropList(P_Layer);
 	if (!layer_pl || !(layer = layer_pl->GetMapScriptLayer()))
-		throw new C4AulExecError("C4MapScriptAlgoLayer: Expected layer in \"Layer\" property.");
+		throw C4AulExecError("C4MapScriptAlgoLayer: Expected layer in \"Layer\" property.");
 }
 
 bool C4MapScriptAlgoLayer::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
@@ -143,7 +143,7 @@ C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
 	props->GetProperty(P_X, &vptx); props->GetProperty(P_Y, &vpty);
 	C4ValueArray *ptx = vptx.getArray(), *pty = vpty.getArray();
 	if (!ptx || !pty || ptx->GetSize() != pty->GetSize())
-		throw new C4AulExecError("C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties \"X\" and \"Y\".");
+		throw C4AulExecError("C4MapScriptAlgoPolygon: Expected two equally sized int arrays in properties \"X\" and \"Y\".");
 	poly.resize(ptx->GetSize());
 	for (int32_t i=0; i<ptx->GetSize(); ++i)
 	{
@@ -154,7 +154,7 @@ C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
 	if (!wdt) wdt = 1;
 	empty = !!props->GetPropertyInt(P_Empty);
 	open = !!props->GetPropertyInt(P_Open);
-	if (open && !empty) throw new C4AulExecError("C4MapScriptAlgoPolygon: Only empty polygons may be open.");
+	if (open && !empty) throw C4AulExecError("C4MapScriptAlgoPolygon: Only empty polygons may be open.");
 }
 
 bool C4MapScriptAlgoPolygon::operator () (int32_t x, int32_t y, uint8_t& fg, uint8_t& bg) const
@@ -195,7 +195,7 @@ C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
 	// Get MAPALGO_Lines properties
 	lx = props->GetPropertyInt(P_X);
 	ly = props->GetPropertyInt(P_Y);
-	if (!lx && !ly) throw new C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
+	if (!lx && !ly) throw C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
 	ox = props->GetPropertyInt(P_OffX);
 	oy = props->GetPropertyInt(P_OffY);
 		// use sync-safe distance function to calculate line width
@@ -240,7 +240,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		n = ops->GetSize();
 	}
 	if (!ops || n<min_ops || (max_ops && n>max_ops))
-		throw new C4AulExecError(FormatString("C4MapScriptAlgo: Expected between %d and %d operands in property \"Op\".", (int)min_ops, (int)max_ops).getData());
+		throw C4AulExecError(FormatString("C4MapScriptAlgo: Expected between %d and %d operands in property \"Op\".", (int)min_ops, (int)max_ops).getData());
 	operands.resize(n);
 	try
 	{
@@ -249,7 +249,7 @@ C4MapScriptAlgoModifier::C4MapScriptAlgoModifier(const C4PropList *props, int32_
 		for (int32_t i=0; i<n; ++i)
 		{
 			C4MapScriptAlgo *new_algo = FnParAlgo(ops->GetItem(i).getPropList());
-			if (!new_algo) throw new C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)i).getData());
+			if (!new_algo) throw C4AulExecError(FormatString("C4MapScriptAlgo: Operand %d in property \"Op\" not valid.", (int)i).getData());
 			operands[i] = new_algo;
 		}
 	}
@@ -474,7 +474,7 @@ C4MapScriptAlgoFilter::C4MapScriptAlgoFilter(const C4PropList *props) : C4MapScr
 	// Get MAPALGO_Filter properties
 	C4Value spec;
 	if (!props->GetProperty(P_Filter, &spec))
-		throw new C4AulExecError("MapScriptAlgoFilter without Filter property.");
+		throw C4AulExecError("MapScriptAlgoFilter without Filter property.");
 	filter.Init(spec);
 }
 
@@ -514,7 +514,7 @@ C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par)
 	case MAPALGO_Border:      return new C4MapScriptAlgoBorder(algo_par);
 	case MAPALGO_Filter:      return new C4MapScriptAlgoFilter(algo_par);
 	default:
-		throw new C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
+		throw C4AulExecError(FormatString("got invalid algo: %d", algo_par->GetPropertyInt(P_Algo)).getData());
 	}
 	return NULL;
 }

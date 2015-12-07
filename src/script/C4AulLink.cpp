@@ -190,11 +190,10 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 			s->GetPropList()->Freeze();
 		GetPropList()->Freeze();
 	}
-	catch (C4AulError *err)
+	catch (C4AulError &err)
 	{
 		// error??! show it!
-		err->show();
-		delete err;
+		err.show();
 	}
 
 

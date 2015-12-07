@@ -82,7 +82,7 @@ private:
 	void CheckOverflow(int iCnt)
 	{
 		if (pCurVal - Values >= MAX_VALUE_STACK - iCnt)
-			throw new C4AulExecError("value stack overflow, probably due to too deep recursion");
+			throw C4AulExecError("value stack overflow, probably due to too deep recursion");
 	}
 
 	void PushInt(int32_t i)
@@ -178,17 +178,17 @@ private:
 
 		// Typecheck parameters
 		if (!pPar1->CheckParConversion(Type1))
-			throw new C4AulExecError(FormatString("operator \"%s\" left side got %s, but expected %s",
+			throw C4AulExecError(FormatString("operator \"%s\" left side got %s, but expected %s",
 			                                      opname, pPar1->GetTypeName(), GetC4VName(Type1)).getData());
 		if (!pPar2->CheckParConversion(Type2))
-			throw new C4AulExecError(FormatString("operator \"%s\" right side got %s, but expected %s",
+			throw C4AulExecError(FormatString("operator \"%s\" right side got %s, but expected %s",
 			                                      opname, pPar2->GetTypeName(), GetC4VName(Type2)).getData());
 	}
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
 		if (!pCurVal->CheckParConversion(Type1))
-			throw new C4AulExecError(FormatString("operator \"%s\": got %s, but expected %s",
+			throw C4AulExecError(FormatString("operator \"%s\": got %s, but expected %s",
 			                                      opname, pCurVal->GetTypeName(), GetC4VName(Type1)).getData());
 	}
 
@@ -197,17 +197,17 @@ private:
 		if (pStructure->CheckConversion(C4V_Array))
 		{
 			if (!pIndex->CheckConversion(C4V_Int))
-				throw new C4AulExecError(FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
+				throw C4AulExecError(FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
 		else if (pStructure->CheckConversion(C4V_PropList))
 		{
 			if (!pIndex->CheckConversion(C4V_String))
-				throw new C4AulExecError(FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
+				throw C4AulExecError(FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
 			return C4V_PropList;
 		}
 		else
-			throw new C4AulExecError(FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
+			throw C4AulExecError(FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
 	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = NULL);
 };
