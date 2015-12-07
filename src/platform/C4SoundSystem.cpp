@@ -191,24 +191,27 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, const char *namespace_prefix
 					delete nsfx;
 			}
 	}
-	// Search all sound files in group
-	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_SoundSubgroups, szFilename))
+	// Load subgroups from Sound.ocg and other subgroups
+	if (!group_is_root)
 	{
-		// Load from subgroup as a sub-namespace
-		// get namespace name
-		StdStrBuf sub_namespace;
-		if (namespace_prefix)
+		hGroup.ResetSearch();
+		while (hGroup.FindNextEntry(C4CFN_SoundSubgroups, szFilename))
 		{
-			sub_namespace.Copy(namespace_prefix);
-			sub_namespace.Append("::");
-		}
-		sub_namespace.Append(szFilename, strlen(szFilename) - strlen(C4CFN_SoundSubgroups) + 1);
-		// load from child group
-		C4Group subgroup;
-		if (subgroup.OpenAsChild(&hGroup, szFilename, false, false))
-		{
-			iNum += LoadEffects(subgroup, sub_namespace.getData(), false);
+			// Load from subgroup as a sub-namespace
+			// get namespace name
+			StdStrBuf sub_namespace;
+			if (namespace_prefix)
+			{
+				sub_namespace.Copy(namespace_prefix);
+				sub_namespace.Append("::");
+			}
+			sub_namespace.Append(szFilename, strlen(szFilename) - strlen(C4CFN_SoundSubgroups) + 1);
+			// load from child group
+			C4Group subgroup;
+			if (subgroup.OpenAsChild(&hGroup, szFilename, false, false))
+			{
+				iNum += LoadEffects(subgroup, sub_namespace.getData(), false);
+			}
 		}
 	}
 	return iNum;
