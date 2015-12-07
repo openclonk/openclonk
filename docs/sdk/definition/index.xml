@@ -72,6 +72,7 @@
       <dt id="wav"><img height="16" src="../../images/icon_sound.png" width="16"/>*.wav/*.ogg</dt>
       <dd>
         <text>Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only.</text>
+        <text>Object local sounds within valid definitions are automatically put into a namespace with the ID of the object. They can be played using <funclink>Sound</funclink>("id::soundname").</text>
       </dd>
     </dl>
 	<h id="CrewMembers">Additional files for crew members</h>

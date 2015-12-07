@@ -28,6 +28,7 @@
       <text>Graphics, sound, and music of the original game are grouped in these folders and should not be modified.</text>
       <text>Using the menu system, group files can be edited and/or converted to normal directories. Group file components can then be edited using common applications for text or graphics editing. Menu system and game engine can both load packed group files or unpacked directories directly.</text>
       <text>Unpacking group files greatly increases speed while editing large or deeply nested groups.</text>
+      <text>The global file Sound.ocg may contain any subfolders with .ocg extension to define sound namespaces. For example, a file Sound.ocg/Animals.ocg/Growl.ogg can be played back using <funclink>Sound</funclink>("Animals::Growl").</text>
     </dd>
   </dl>
   <author>Sven2</author><date>2002-04</date>

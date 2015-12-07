@@ -81,6 +81,7 @@ US:Attack of the Killer Wipfs</code>
       <dt id="Soundocg"><img height="16" src="../../images/icon_system.png" width="16"/>Sound.ocg</dt>
       <dd>
 		<text>Scenarios can contain any number of sound files (*.ogg or *.wav). These can be played back by script during the game. Scenario local sounds are loaded dynamically on demand which might cause delays with large scenario files. The sounds should be stored in a local sound group.</text>
+		<text>Just like the global sound file, scenario local Sound.ocg groups may contain any subfolders with .ocg extension to define sound namespaces. For example, a file Sound.ocg/Animals.ocg/Growl.ogg can be played back using <funclink>Sound</funclink>("Animals::Growl").</text>
       </dd>
       <dt id="Musicocg"><img height="16" src="../../images/icon_system.png" width="16"/>Music.ocg</dt>
       <dd>
