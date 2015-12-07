@@ -12,5 +12,5 @@ VertexY=1,-1,-1
 VertexFriction=75,75
 Value=4
 Mass=9
-Components=Wood=2;
+Components=Coal=1;
 Rotate=1
