@@ -1,27 +1,22 @@
-/*
+/**
 	Ropeladder
-	Author: Randrian
+	A ladder consisting of ropesegments. The physics is done completly internally with point masses.
+	Verlet integration and simple stick constraints are used for the rope physics. The segments are 
+	extra objects, which handle the graphics and the detection of the ladder by the clonk.
 
-	A ladder consisting of ropesegments. The physics is done completly intern with point masses.
-	Verlet integration and simple stick constraints are used for the rope physics.
-	The segments are an extra object, which handels the graphics and the detection of the ladder by the clonk.
+	In a scenario you can unroll the ladder with the command Unroll(int dir, int unrolldir, int length).
 
-	Interface:
-	Unroll(int dir, int unrolldir, int length);	// dir == -1 expand to the left, dir == 1 expand right;
-																							// unrolldir == COMD_Down, COMD_Right, COMD_Left or COMD_Up specifies where to adjust to a wall
-																							// length, length of segments, default 15
+	@author Randrian																				
 */
 
 #include Library_Rope
 
-static const Ladder_MaxParticles = 15;//30;//15*3;
+static const Ladder_MaxParticles = 15;
 static const Ladder_Iterations = 10;
 static const Ladder_Precision = 100;
-static const Ladder_SegmentLength = 5;//2;
-
-local particles;
-local segments;
-local TestArray;
+static const Ladder_SegmentLength = 5;
+static const Ropeladder_Segment_LeftXOffset = 200;
+static const Ropeladder_Segment_RightXOffset = -100;
 
 local MaxSegmentCount;
 
@@ -29,8 +24,6 @@ local switch_ropes;
 local MirrorSegments;
 
 local UnrollDir;
-
-local ParticleCount;
 
 local grabber;
 
@@ -72,20 +65,20 @@ public func ControlUse(object clonk, int x, int y)
 
 public func UpdateSegmentOverlays()
 {
-	for (var i = 1; i < GetLength(segments); i++)
+	for (var i = 1; i < GetLength(lib_rope_segments); i++)
 	{
-		segments[i]->SetGraphics("Line", GetID(), 2, 1);
-		segments[i]->SetGraphics("Line", GetID(), 3, 1);
-		segments[i]->SetGraphics(nil, nil, 4);
-		segments[i]->SetGraphics(nil, nil, 5);
+		lib_rope_segments[i]->SetGraphics("Line", GetID(), 2, 1);
+		lib_rope_segments[i]->SetGraphics("Line", GetID(), 3, 1);
+		lib_rope_segments[i]->SetGraphics(nil, nil, 4);
+		lib_rope_segments[i]->SetGraphics(nil, nil, 5);
 		if (i > 1)
-			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 4, 1);
-		if (i == GetLength(segments)-1)
-			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 5, 1);
+			lib_rope_segments[i]->SetGraphics("NoRope", lib_rope_segments[i]->GetID(), 4, 1);
+		if (i == GetLength(lib_rope_segments)-1)
+			lib_rope_segments[i]->SetGraphics("NoRope", lib_rope_segments[i]->GetID(), 5, 1);
 		if (i == 1)
 		{
-			segments[i]->SetGraphics("Anchor", GetID(), 1, 1);
-			segments[i]->SetGraphics("AnchorOverlay", GetID(), 5, 1);
+			lib_rope_segments[i]->SetGraphics("Anchor", GetID(), 1, 1);
+			lib_rope_segments[i]->SetGraphics("AnchorOverlay", GetID(), 5, 1);
 		}
 	}
 }
@@ -186,44 +179,63 @@ protected func DoUnroll(dir)
 	AddEffect("UnRoll", this, 1, 2, this);
 }
 
-func StartRollUp() { RemoveEffect("UnRoll", this); AddEffect("RollUp", this, 1, 1, this); }
-
-func FxUnRollTimer()
+public func StartRollUp()
 {
-	if(ParticleCount == MaxSegmentCount)
+	RemoveEffect("UnRoll", this); 
+	AddEffect("RollUp", this, 1, 1, this);
+	return;
+}
+
+public func FxUnRollTimer()
+{
+	if (lib_rope_particle_count == MaxSegmentCount)
 	{
-		if(GetActTime() < MaxSegmentCount*2*2) return;
+		if (GetActTime() < MaxSegmentCount * 4) 
+			return FX_OK;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
-		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*Ladder_SegmentLength*Ladder_Precision)/2)
+		if( -(lib_rope_particles[0][0][1]-lib_rope_particles[lib_rope_particle_count-1][0][1]) < (lib_rope_particle_count*Ladder_SegmentLength*Ladder_Precision)/2)
 			StartRollUp();
-		return -1;
+		return FX_Execute_Kill;
 	}
-	AddSegment(UnrollDir*Ladder_Precision, 0);
+	AddSegment(UnrollDir * Ladder_Precision, 0);
+	return FX_OK;
 }
 
-func FxRollUpTimer() { if(ParticleCount == 0) return -1; RemoveSegment(); }
+public func FxRollUpTimer() 
+{ 
+	if (lib_rope_particle_count == 0) 
+		return FX_Execute_Kill;
+	RemoveSegment();
+	return FX_OK; 
+}
 
-func FxIntHangTimer()
+public func FxIntHangTimer()
 {
+	// Perform a step in the rope library simulation.
 	TimeStep();
-	if(!Stuck()) TestLength();
+	if (!Stuck()) 
+		TestLength();
+	return FX_OK;
 }
 
-func TestLength()
+public func TestLength()
 {
-	if(GetActTime() < 36) return;
-	// If it wasn't possible to acchieve at least half the full length we pull in again
-	if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
+	if (GetActTime() < 36) 
+		return;
+	// If it wasn't possible to acchieve at least half the full length we pull in again.
+	if (lib_rope_particles[lib_rope_particle_count - 1][0][1] - lib_rope_particles[0][0][1] < lib_rope_particle_count * 5 * Ladder_Precision / 2)
 		StartRollUp();
+	return;
 }
 
-/* --------------------- Callbacks form the rope ---------------------- */
 
-/* To be overloaded for special segment behaviour */
+/*-- Rope Callbacks --*/
+
+// To be overloaded for special segment behaviour.
 private func CreateSegment(int index, object previous)
 {
 	var segment;
-	if(index == 0)
+	if (index == 0)
 	{
 		segment = CreateObjectAbove(Ropeladder_Segment);
 		segment->SetGraphics("None");
@@ -232,12 +244,9 @@ private func CreateSegment(int index, object previous)
 	else
 	{
 		segment = CreateObjectAbove(Ropeladder_Segment);
-
-		segment->SetMaster(this, ParticleCount);
-
+		segment->SetMaster(this, lib_rope_particle_count);
 		segment->SetNextLadder(previous);
 		previous->SetPreviousLadder(segment);
-
 		segment->SetGraphics("None");
 	}
 	return segment;
@@ -245,62 +254,64 @@ private func CreateSegment(int index, object previous)
 
 private func DeleteSegment(object segment, previous)
 {
-	if(segment)
+	if (segment)
 		segment->RemoveObject();
-	if(previous)
+	if (previous)
 		previous->SetPreviousLadder(nil);
+	return;
 }
 
-/* When the last segment is removed */
+// Called when the last segment is removed.
 private func RopeRemoved()
 {
 	RemoveEffect("IntHang", this);
 	SetCategory(C4D_Object);
 	SetAction("Idle");
-	SetProperty("Collectible", 1);
+	SetProperty("Collectible", true);
 
-	// Try to move the Ropeladder somewhere out if it is stuck
+	// Try to move the ropeladder somewhere out if it is stuck.
 	TestMoveOut( 0, -1); // Up
 	TestMoveOut( 0, +1); // Down
 	TestMoveOut(-1,  0); // Left
 	TestMoveOut(+1,  0); // Right
 
+	// Remove the ladder grabber and reset the graphics.
 	grabber->RemoveObject();
-
 	SetGraphics("", GetID());
+	return;
 }
 
-/* --------------------- Graphics of segments ---------------------- */
-func UpdateLines()
+/*-- Segment Graphics --*/
+public func UpdateLines()
 {
 	var oldangle;
-	for(var i=1; i < ParticleCount; i++)
+	for (var i = 1; i < lib_rope_particle_count; i++)
 	{
-		// Update the Position of the Segment
-		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
+		// Update the position of the segment.
+		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
-		// Calculate the angle to the previous segment
+		// Calculate the angle to the previous segment.
 		var angle;
-		if(i >= 1)
+		if (i >= 1)
 		{
-			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
-			segments[i]->SetAngle(angle);
+			angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i - 1][0][0], lib_rope_particles[i - 1][0][1]);
+			lib_rope_segments[i]->SetAngle(angle);
 		}
 
-		// Every segment has not its graphics, but the graphics of the previous segment (or achor for the first)
-		// Otherwise the drawing order would be wrong an we would get lines over segments
+		// Every segment does not have its own graphics, but the graphics of the previous segment (or achor for the first).
+		// Otherwise the drawing order would be wrong an we would get lines over segments.
 		
-		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous)
-		if(i > 1)
-			SetLineTransform(segments[i], -oldangle, particles[i-1][0][0]*10-GetPartX(i)*1000,particles[i-1][0][1]*10-GetPartY(i)*1000, 1000, 4, MirrorSegments );
-		if(i == ParticleCount-1)
-			SetLineTransform(segments[i], -angle, particles[i][0][0]*10-GetPartX(i)*1000,particles[i][0][1]*10-GetPartY(i)*1000, 1000, 5, MirrorSegments );
+		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous).
+		if (i > 1)
+			SetLineTransform(lib_rope_segments[i], -oldangle, lib_rope_particles[i - 1][0][0] * 10-GetPartX(i) * 1000, lib_rope_particles[i - 1][0][1] * 10-GetPartY(i) * 1000, 1000, 4, MirrorSegments);
+		if (i == lib_rope_particle_count-1)
+			SetLineTransform(lib_rope_segments[i], -angle, lib_rope_particles[i][0][0] * 10 - GetPartX(i) * 1000, lib_rope_particles[i][0][1] * 10 - GetPartY(i) * 1000, 1000, 5, MirrorSegments);
 
 		// The first segment has to draw the achor too
-		if(i == 1)
+		if (i == 1)
 		{
-			SetLineTransform(segments[i], -GetR(), GetX()*1000-GetPartX(i)*1000, GetY()*1000-GetPartY(i)*1000, 1000, 1);
-			SetLineTransform(segments[i], -GetR(), GetX()*1000-GetPartX(i)*1000, GetY()*1000-GetPartY(i)*1000, 1000, 5);
+			SetLineTransform(lib_rope_segments[i], -GetR(), GetX() * 1000 - GetPartX(i) * 1000, GetY() * 1000 - GetPartY(i) * 1000, 1000, 1);
+			SetLineTransform(lib_rope_segments[i], -GetR(), GetX() * 1000 - GetPartX(i) * 1000, GetY() * 1000 - GetPartY(i) * 1000, 1000, 5);
 		}
 
 		// Draw the left line
@@ -312,7 +323,7 @@ func UpdateLines()
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
 
-		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 2 );
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 2 );
 
 		// Draw the right line
 		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
@@ -323,15 +334,14 @@ func UpdateLines()
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
 
-		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 3 );
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 3 );
 
 		// Remember the angle
 		oldangle = angle;
 	}
+	return;
 }
 
-static const Ropeladder_Segment_LeftXOffset = 200;
-static const Ropeladder_Segment_RightXOffset = -100;
 
 func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
 {
@@ -344,7 +354,7 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
 		{
 			if(index >= 2)
 			{
-				start = particles[index-1][0][:];
+				start = lib_rope_particles[index-1][0][:];
 				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 			}
@@ -359,7 +369,7 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
 		{
 			if(index >= 2)
 			{
-				start = particles[index-1][0][:];
+				start = lib_rope_particles[index-1][0][:];
 				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 			}
@@ -377,13 +387,13 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
 		var end = [0,0];
 		if(fRight == 0)
 		{
-			end = particles[index][0][:];
+			end = lib_rope_particles[index][0][:];
 			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 		}
 		else
 		{
-			end = particles[index][0][:];
+			end = lib_rope_particles[index][0][:];
 			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 		}
@@ -391,74 +401,88 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
 	}
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
-	if(!MirrorSegments) MirrorSegments = 1;
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-	// set matrix values
+public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments)
+{
+	if (!MirrorSegments) 
+		MirrorSegments = 1;
+	var fsin = Sin(r, 1000), fcos=Cos(r, 1000);
+	// Draw transform the object.
 	obj->SetObjDrawTransform (
 		+fcos*MirrorSegments, +fsin*length/1000, xoff,
-		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
+		-fsin*MirrorSegments, +fcos*length/1000, yoff, layer
 	);
+	return;
 }
 
-/* --------------------- Clonk on ladder ---------------------- */
-public func OnLadderGrab(clonk, index)
+
+/*-- Clonk Interaction --*/
+
+// Perturb some segments when the clonk jumps onto the ladder
+public func OnLadderGrab(object clonk, int index)
 {
-	// Do some speed when the clonk jumps on the ladder
-	if(index == 0) return;
-	particles[index][0][0] += BoundBy(clonk->GetXDir()/2, -25, 25)*Ladder_Precision;
+	if (index == 0) 
+		return;
+	lib_rope_particles[index][0][0] += BoundBy(clonk->GetXDir() / 2, -25, 25) * Ladder_Precision;
+	return;
 }
 
-public func OnLadderClimb(clonk, index)
+// Called when the clonk climbs the ladder.
+public func OnLadderClimb(object clonk, int index)
 {
+	var dir = 2 * clonk->GetDir() - 1;
 	// The clonk drags on the upper segments and pushes on the lower ones
-	if(index > 2 && index < ParticleCount-3)
+	if (index > 2 && index < lib_rope_particle_count - 3)
 	{
-		particles[index-2][0][0] -= 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
-		particles[index+2][0][0] += 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
+		lib_rope_particles[index-2][0][0] -= dir * Ladder_Precision / 5;
+		lib_rope_particles[index+2][0][0] += dir * Ladder_Precision / 5;
 	}
-	else if(index > 2 && index < ParticleCount-2)
+	else if(index > 2 && index < lib_rope_particle_count - 2)
 	{
-		particles[index-2][0][0] -= 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
-		particles[index+1][0][0] += 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
+		lib_rope_particles[index-2][0][0] -= dir * Ladder_Precision / 5;
+		lib_rope_particles[index+1][0][0] += dir * Ladder_Precision / 5;
 	}
+	return;
 }
 
-public func GetLadderData(index)
+public func GetLadderData(int index)
 {
-	var startx = particles[index][0][0]*10;
-	var starty = particles[index][0][1]*10;
-	if(index == 0)
+	var startx = lib_rope_particles[index][0][0] * 10;
+	var starty = lib_rope_particles[index][0][1] * 10;
+	if (index == 0)
 	{
-		var angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-		return [startx, starty, startx, starty-5000, angle];
+		var angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
+		return [startx, starty, startx, starty - 5000, angle];
 	}
-	if(index == ParticleCount-1 || segments[index+1]->~CanNotBeClimbed())
+	if (index == lib_rope_particle_count-1 || lib_rope_segments[index + 1]->~CanNotBeClimbed())
 	{
-		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
+		angle = Angle(lib_rope_particles[index][0][0], lib_rope_particles[index][0][1], lib_rope_particles[index-2][0][0], lib_rope_particles[index-2][0][1]);
 	}
 	else
-		angle = Angle(particles[index+1][0][0], particles[index+1][0][1], particles[index-1][0][0], particles[index-1][0][1]);
-	var endx = particles[index-1][0][0]*10;
-	var endy = particles[index-1][0][1]*10;
+		angle = Angle(lib_rope_particles[index + 1][0][0], lib_rope_particles[index + 1][0][1], lib_rope_particles[index - 1][0][0], lib_rope_particles[index - 1][0][1]);
+	var endx = lib_rope_particles[index - 1][0][0] * 10;
+	var endy = lib_rope_particles[index - 1][0][1] * 10;
 	return [startx, starty, endx, endy, angle];
 }
 
-func Hit()
+public func Hit()
 {
 	Sound("WoodHit?");
 }
 
-// Save unrolled ladders in scenario
+// Save unrolled ladders in scenario.
 public func SaveScenarioObject(props)
 {
-	if (!inherited(props, ...)) return false;
-	if (UnrollDir) props->AddCall("Unroll", this, "Unroll", UnrollDir);
+	if (!inherited(props, ...)) 
+		return false;
+	if (UnrollDir) 
+		props->AddCall("Unroll", this, "Unroll", UnrollDir);
 	return true;
 }
 
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
+
+/*-- Properties --*/
 
 local ActMap = {
 	Hanging = {

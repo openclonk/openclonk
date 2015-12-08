@@ -174,7 +174,7 @@ public func LadderStep(target, effect, fUp)
 			return false;
 		}
 	}
-	if (effect.ladder == nil) return 0;
+	if (effect.ladder == nil) return false;
 	return true;
 }
 
@@ -182,7 +182,7 @@ public func FxIntClimbControlTimer(object target, proplist effect, int time)
 {
 	if (GetAction() != "Climb" || Contained()) 
 		return FX_Execute_Kill;
-	if (effect.ladder && effect.ladder->~CanNotBeClimbed(1)) 
+	if (effect.ladder && effect.ladder->~CanNotBeClimbed(true)) 
 		effect.ladder = nil;
 	if (!effect.ladder)
 	{
@@ -200,7 +200,7 @@ public func FxIntClimbControlTimer(object target, proplist effect, int time)
 	if (GetComDir() == COMD_Up) 
 		step = 1;
 
-	if (step && LadderStep(target, effect, step) == 0)
+	if (step && !LadderStep(target, effect, step))
 	{
 		var contact = GetContact(-1);
 		if (contact & CNAT_Left || contact & CNAT_Right)

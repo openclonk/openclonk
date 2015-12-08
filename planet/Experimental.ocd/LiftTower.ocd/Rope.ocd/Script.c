@@ -15,10 +15,10 @@ static const Library_Rope_MAXLENGTH = 1000;
 // Call this to break the rope.
 public func BreakRope(bool silent)
 {
-	if(length == -1) return;
-	length = -1;
-	var act1 = objects[0][0];
-	var act2 = objects[1][0];
+	if(lib_rope_length == -1) return;
+	lib_rope_length = -1;
+	var act1 = lib_rope_objects[0][0];
+	var act2 = lib_rope_objects[1][0];
 	SetAction("Idle");
 	// notify action targets.
 	if (act1 != nil && !silent)
@@ -59,10 +59,10 @@ public func Connect(object obj1, object obj2, int max_length)
 
 public func Reconnect(object reconnect)
 {
-	objects[1][0] = reconnect;
+	lib_rope_objects[1][0] = reconnect;
 }
 
-public func GetConnectStatus() { return !length_auto; }
+public func GetConnectStatus() { return !lib_rope_length_auto; }
 
 public func HookRemoved()
 {
@@ -76,34 +76,34 @@ local last_point;
 func UpdateLines()
 {
 	var oldangle;
-	for(var i=1; i < ParticleCount; i++)
+	for(var i=1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
-		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
+		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
 		// Calculate the angle to the previous segment
-		var angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
+		var angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i-1][0][0], lib_rope_particles[i-1][0][1]);
 
 		// Draw the left line
-		var start = particles[i-1][0][:];
-		var end   = particles[i][0][:];
+		var start = lib_rope_particles[i-1][0][:];
+		var end   = lib_rope_particles[i][0][:];
 
-		if(i == 1 && ParticleCount > 2)
+		if(i == 1 && lib_rope_particle_count > 2)
 		{
-			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-			end = particles[0][0][:];
+			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
+			end = lib_rope_particles[0][0][:];
 			end[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			end[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
-			segments[i]->SetGraphics("Invis");
+			lib_rope_segments[i]->SetGraphics("Invis");
 		}
 		
 		if(i == 2)
 		{
-			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-			start = particles[0][0][:];
+			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
+			start = lib_rope_particles[0][0][:];
 			start[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			start[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
-			segments[i]->SetGraphics("Short");
+			lib_rope_segments[i]->SetGraphics("Short");
 		}
 		
 		var diff = Vec_Sub(end,start);
@@ -111,9 +111,9 @@ func UpdateLines()
 		var diffangle = Vec_Angle(diff, [0,0]);
 		var length = Vec_Length(diff)*1000/LIB_ROPE_Precision/10;
 	
-		if(i ==  ParticleCount-1)
+		if(i ==  lib_rope_particle_count-1)
 		{
-			var old = particles[i-2][0][:];
+			var old = lib_rope_particles[i-2][0][:];
 			var old_diff = Vec_Sub(start,old);
 			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
 			if(!o_length) diff = old_diff;
@@ -123,8 +123,8 @@ func UpdateLines()
 			last_point = point;
 		}
 
-		segments[i]->SetGraphics(nil);
-		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length );
+		lib_rope_segments[i]->SetGraphics(nil);
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length );
 
 		// Remember the angle
 		oldangle = angle;
@@ -133,8 +133,8 @@ func UpdateLines()
 
 func GetHookAngle()
 {
-	if(ParticleCount > 3)
-	return Angle(particles[-2][0][0], particles[-2][0][1], particles[-3][0][0], particles[-3][0][1])+180;
+	if(lib_rope_particle_count > 3)
+	return Angle(lib_rope_particles[-2][0][0], lib_rope_particles[-2][0][1], lib_rope_particles[-3][0][0], lib_rope_particles[-3][0][1])+180;
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
@@ -156,15 +156,15 @@ local pull_position, pull_faults, pull_frame;
 // impulses to every direction
 func ForcesOnObjects()
 {
-	if(!length) return;
+	if(!lib_rope_length) return;
 
 	var redo = LengthAutoTryCount();
-	while(length_auto && redo)
+	while(lib_rope_length_auto && redo)
 	{
-		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
-		if(length == GetMaxLength())
+		var speed = Vec_Length(Vec_Sub(lib_rope_particles[-1][0], lib_rope_particles[-1][1]));
+		if(lib_rope_length == GetMaxLength())
 		{
-			if(ObjContact(objects[1][0]))
+			if(ObjContact(lib_rope_objects[1][0]))
 				speed = 40;
 			else speed = 100;
 		}
@@ -177,10 +177,10 @@ func ForcesOnObjects()
 	if(PullObjects() )
 	for(var i = 0; i < 2; i++)
 	{
-		if(i == 1) j = ParticleCount-1;
-		var obj = objects[i][0];
+		if(i == 1) j = lib_rope_particle_count-1;
+		var obj = lib_rope_objects[i][0];
 
-		if(obj == nil || objects[i][1] == 0) continue;
+		if(obj == nil || lib_rope_objects[i][1] == 0) continue;
 
 		if(obj->Contained()) obj = obj->Contained();
 
@@ -189,8 +189,8 @@ func ForcesOnObjects()
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
-		var xdir = BoundBy(particles[j][0][0]-particles[j][1][0], -100, 100);
-		var ydir = particles[j][0][1]-particles[j][1][1];
+		var xdir = BoundBy(lib_rope_particles[j][0][0]-lib_rope_particles[j][1][0], -100, 100);
+		var ydir = lib_rope_particles[j][0][1]-lib_rope_particles[j][1][1];
 
 		if (!obj->GetContact(-1))
 			ydir = BoundBy(ydir, -120, 120);
@@ -223,8 +223,8 @@ func ForcesOnObjects()
 // Altered to function in 'ConnectPull' mode
 public func ConstraintObjects()
 {
-		if(length < GetMaxLength()) // in the rope library this is
-		{                           // if(length_auto && length < GetMaxLength())
+		if(lib_rope_length < GetMaxLength()) // in the rope library this is
+		{
 			for(var i = 0, i2 = 0; i < 2; i++ || i2--)
 				SetParticleToObject(i2, i);
 		}
@@ -235,8 +235,8 @@ public func ConstraintObjects()
 // and the hooked up object
 public func DoLength(int dolength)
 {
-	var obj = objects[0][0]; // First connected object
-	var obj2 = objects[1][0]; // Second connected object
+	var obj = lib_rope_objects[0][0]; // First connected object
+	var obj2 = lib_rope_objects[1][0]; // Second connected object
 	// I guess this is not possible but just to be sure
 	if (!obj || !obj2) return _inherited(dolength);
 	if (obj->Contained()) obj = obj->Contained();

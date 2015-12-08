@@ -1,53 +1,56 @@
-/*-- Ropeladder_Segment --*/
+/**
+	Ropeladder Segment
+
+	@author Randrian	
+*/
 
 #include Library_Ladder
 
 local master, index;
 local angle;
 
-public func SetAngle(int new_angle) {	angle = new_angle; }
+public func SetAngle(int new_angle) 
+{ 
+	angle = new_angle;
+}
 
-public func SetMaster(new_master, new_index) { master = new_master; index = new_index; }
+// Called from the ladder object to set a master and the segment index.
+public func SetMaster(object new_master, int new_index) 
+{
+	master = new_master; 
+	index = new_index; 
+}
 
-public func CanNotBeClimbed(bool fClimbing)
+// Returns whether the ladder can be climbed.
+public func CanNotBeClimbed(bool is_climbing)
 {
 	var test_height = 10;
-	if(fClimbing) test_height = 8;
+	if (is_climbing) 
+		test_height = 8;
 
-	if(GBackSolid(1, test_height) && GBackSolid(-1, test_height)) return true;
-	if( (angle>45 && angle < 360-45) && GBackSolid(0, test_height)) return true;
-	
+	if (GBackSolid(1, test_height) && GBackSolid(-1, test_height)) 
+		return true;
+	if (Inside(angle, 45, 315) && GBackSolid(0, test_height))
+		return true;
 	return false;
 }
 
 public func GetLadderData()
 {
-	if(master != nil)
-	{
+	if (master)
 		return master->~GetLadderData(index);
-	}
 	return _inherited();
 }
 
-public func LogLadderData()
+public func OnLadderGrab(object clonk)
 {
-	var startx, starty, endx, endy;
-	if(master != nil)
-	{
-		master->~GetLadderData(index, startx, starty, endx, endy);
-		return;
-	}
-}
-
-public func OnLadderGrab(clonk)
-{
-	if(master != nil)
+	if (master)
 		master->OnLadderGrab(clonk, index);
 }
 
 public func OnLadderClimb(clonk)
 {
-	if(master != nil)
+	if (master)
 		master->OnLadderClimb(clonk, index);
 }
 

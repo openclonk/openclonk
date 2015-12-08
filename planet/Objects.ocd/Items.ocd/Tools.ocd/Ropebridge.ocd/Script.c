@@ -1,9 +1,8 @@
 /**
 	Ropebridge
-	Author: Randrian
-
 	A bridge consisting of single wooden planks tied together with ropes.
 
+	@author Randrian
 */
 
 #include Library_Rope
@@ -13,50 +12,46 @@ static const Ladder_Iterations = 10;
 static const Ladder_Precision = 100;
 static const Ladder_SegmentLength = 5;
 
-local particles;
-local segments;
-
 local MirrorSegments;
 
-local ParticleCount;
 
 public func UpdateSegmentOverlays()
 {
-	for (var i = 1; i < GetLength(segments); i++)
+	for (var i = 1; i < GetLength(lib_rope_segments); i++)
 	{
-    	segments[i]->CreateDouble();
-		segments[i]->SetGraphics("Line", GetID(), 2, 1);
-		segments[i]->SetGraphics("Line", GetID(), 3, 1);
-    	segments[i].Double->SetGraphics("Line", GetID(), 4, 1);
-    	segments[i]->SetGraphics("Line", GetID(), 5, 1);
+    	lib_rope_segments[i]->CreateDouble();
+		lib_rope_segments[i]->SetGraphics("Line", GetID(), 2, 1);
+		lib_rope_segments[i]->SetGraphics("Line", GetID(), 3, 1);
+    	lib_rope_segments[i].Double->SetGraphics("Line", GetID(), 4, 1);
+    	lib_rope_segments[i]->SetGraphics("Line", GetID(), 5, 1);
 	    if (i > 1)
 	    {
-			segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
-			segments[i]->SetGraphics("Line", GetID(), 8, 1);
+			lib_rope_segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
+			lib_rope_segments[i]->SetGraphics("Line", GetID(), 8, 1);
 	    }
-		segments[i]->SetSolidMask(6,0,7,3,-5,9);
-		if(i > 1 && i < GetLength(segments)-1)
+		lib_rope_segments[i]->SetSolidMask(6,0,7,3,-5,9);
+		if(i > 1 && i < GetLength(lib_rope_segments)-1)
    		{
-			segments[i].Plank = 1;
-			segments[i]->SetGraphics("Segment", GetID(), 6, 1);
-      		segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
+			lib_rope_segments[i].Plank = 1;
+			lib_rope_segments[i]->SetGraphics("Segment", GetID(), 6, 1);
+      		lib_rope_segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
     	}
 		if(i % 2 == 0)
 		{
 			var color = RGB(200,200,200);
-			segments[i]->SetClrModulation(color, 2);
-			segments[i]->SetClrModulation(color, 3);
-			segments[i].Double->SetClrModulation(color, 4);
-			segments[i]->SetClrModulation(color, 5);
-			segments[i].Double->SetClrModulation(color, 7);
-			segments[i]->SetClrModulation(color, 8);
+			lib_rope_segments[i]->SetClrModulation(color, 2);
+			lib_rope_segments[i]->SetClrModulation(color, 3);
+			lib_rope_segments[i].Double->SetClrModulation(color, 4);
+			lib_rope_segments[i]->SetClrModulation(color, 5);
+			lib_rope_segments[i].Double->SetClrModulation(color, 7);
+			lib_rope_segments[i]->SetClrModulation(color, 8);
     	}
 	}
-	segments[0]->CreateDouble();
-	segments[-1]->CreateDouble();
-	segments[1]->SetSolidMask();
-	segments[-1]->SetSolidMask();
-	segments[1]->SetGraphics(nil, nil,6);
+	lib_rope_segments[0]->CreateDouble();
+	lib_rope_segments[-1]->CreateDouble();
+	lib_rope_segments[1]->SetSolidMask();
+	lib_rope_segments[-1]->SetSolidMask();
+	lib_rope_segments[1]->SetGraphics(nil, nil,6);
 	return;
 }
 
@@ -76,14 +71,14 @@ public func MakeBridge(obj1, obj2)
 func FxIntHangTimer()
 {
 	TimeStep();
-  for(var i = 1; i < ParticleCount-1; i++)
-    particles[i][2] = [0,segments[i]->~GetLoadWeight()];
+  for(var i = 1; i < lib_rope_particle_count-1; i++)
+    lib_rope_particles[i][2] = [0,lib_rope_segments[i]->~GetLoadWeight()];
 }
 
 func SetFragile()
 {
-  for(var i = 0; i < ParticleCount; i++)
-    segments[i].fragile = 1;
+  for(var i = 0; i < lib_rope_particle_count; i++)
+    lib_rope_segments[i].fragile = 1;
 }
 
 public func SaveScenarioObject(props)
@@ -91,9 +86,9 @@ public func SaveScenarioObject(props)
 	if (!inherited(props, ...)) return false;
 	props->Remove("Category");
 	// Save bridge creation on scenario save
-	if (objects && objects[0] && objects[1])
+	if (lib_rope_objects && lib_rope_objects[0] && lib_rope_objects[1])
 	{
-		var o1 = objects[0][0], o2 = objects[1][0];
+		var o1 = lib_rope_objects[0][0], o2 = lib_rope_objects[1][0];
 		if (o1 && o2) props->AddCall("Bridge", this, "MakeBridge", o1, o2);
 	}
 	return true;
@@ -133,9 +128,9 @@ func DrawRopeLine(start, end, i, int index)
   var length = Vec_Length(diff)*1000/Ladder_Precision/8+100;
 
   if(index != 4 && index != 7)
-  SetLineTransform(segments[i], -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, length, index);
-  else if(segments[i].Double)
-    SetLineTransform(segments[i].Double, -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, length, index);
+  SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, length, index);
+  else if(lib_rope_segments[i].Double)
+    SetLineTransform(lib_rope_segments[i].Double, -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, length, index);
     
 }
 
@@ -145,37 +140,35 @@ func DrawRopeLine2(start, end, i, int index)
   var diffangle = Vec_Angle(diff, [0,0]);
   var point = Vec_Add(start, Vec_Div(diff, 2));
 
-  SetLineTransform(segments[i], -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, 1000, 6);
+  SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, 1000, 6);
 }
 
 func UpdateLines()
 {
-	var oldangle = Angle(particles[1][0][0], particles[1][0][1], particles[0][0][0], particles[0][0][1]);
-	for(var i=1; i < ParticleCount; i++)
+	var oldangle = Angle(lib_rope_particles[1][0][0], lib_rope_particles[1][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
+	for(var i=1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
-		segments[i]->SetPosition(particles[i][0][0], particles[i][0][1], 0, LIB_ROPE_Precision);
-    if(segments[i].Double)
-    segments[i].Double->SetPosition(particles[i][0][0], particles[i][0][1], 0, LIB_ROPE_Precision);
+		lib_rope_segments[i]->SetPosition(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], 0, LIB_ROPE_Precision);
+    if(lib_rope_segments[i].Double)
+    lib_rope_segments[i].Double->SetPosition(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], 0, LIB_ROPE_Precision);
 
 		// Calculate the angle to the previous segment
 		var angle;
-		angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
+		angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i-1][0][0], lib_rope_particles[i-1][0][1]);
 
 		// Every segment has not its graphics, but the graphics of the previous segment (or achor for the first)
 		// Otherwise the drawing order would be wrong an we would get lines over segments
 		
 		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous)
-/*		if(i > 1 && i < GetLength(segments)-1)
-			SetLineTransform(segments[i], -oldangle, particles[i-1][0][0]*10-GetPartX(i)*1000,particles[i-1][0][1]*10-GetPartY(i)*1000, 1000, 6, MirrorSegments );*/
 
-    segments[i]->SetR(90+angle);
+    lib_rope_segments[i]->SetR(90+angle);
 		// Draw the left line
 		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
     var end1 = start;
     DrawRopeLine(start, end, i, 2);
-    if(segments[i].Plank)
+    if(lib_rope_segments[i].Plank)
       DrawRopeLine2(start, end, i, 6);
     
 		// Draw the right line
@@ -236,16 +229,16 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
   var AnchorOffset =  [[Ropebridge_Anchor_LeftXOffset,   Ropebridge_Anchor_LeftYOffset], 
                        [Ropebridge_Anchor_RightXOffset,  Ropebridge_Anchor_RightYOffset]];
   var point;
-  if( (fEnd == 0 && index == 1) || (fEnd == 1 && index == ParticleCount-1) )
+  if( (fEnd == 0 && index == 1) || (fEnd == 1 && index == lib_rope_particle_count-1) )
   {
-    point = [objects[fEnd][0]->GetX(Ladder_Precision), objects[fEnd][0]->GetY(Ladder_Precision)];
-    point[0] += -Cos(objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))+Sin(objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
-    point[1] += -Sin(objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))-Cos(objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
+    point = [lib_rope_objects[fEnd][0]->GetX(Ladder_Precision), lib_rope_objects[fEnd][0]->GetY(Ladder_Precision)];
+    point[0] += -Cos(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))+Sin(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
+    point[1] += -Sin(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))-Cos(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
   }
   else
   {
     if(fEnd == 0) index -= 1;
-    point = particles[index][0][:];
+    point = lib_rope_particles[index][0][:];
     point[0] += -Cos(oldangle, SegmentOffset[fRight][0]*MirrorSegments)-Sin(oldangle, SegmentOffset[fRight][1]*MirrorSegments);
     point[1] += -Sin(oldangle, SegmentOffset[fRight][0]*MirrorSegments)+Cos(oldangle, SegmentOffset[fRight][1]*MirrorSegments);
   }
