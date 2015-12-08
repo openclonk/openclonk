@@ -86,6 +86,7 @@ public func FxIntGerminateTimer(object coconut, proplist effect, int timer)
 protected func ControlUse(object clonk, int iX, int iY)
 {
 	clonk->Eat(this);
+	return true;
 }
 
 public func NutritionalValue() { return 5; }
