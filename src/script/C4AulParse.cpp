@@ -712,6 +712,9 @@ void C4AulScriptFunc::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
 		bcc.Par.s->IncRef();
 		break;
+	case AB_CARRAY:
+		bcc.Par.a->IncRef();
+		break;
 	default: break;
 	}
 }
@@ -723,6 +726,9 @@ void C4AulScriptFunc::RemoveLastBCC()
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 		pBCC->Par.s->DecRef();
+		break;
+	case AB_CARRAY:
+		pBCC->Par.a->DecRef();
 		break;
 	default: break;
 	}
@@ -2725,8 +2731,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 		{
 			Shift();
 			// Create an array
-			if (Type == PARSER)
-				r.SetArray(new C4ValueArray());
+			r.SetArray(new C4ValueArray());
 			int size = 0;
 			bool fDone = false;
 			do
@@ -2737,8 +2742,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 					// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 					if (size > 0)
 					{
-						if (Type == PARSER)
-							r._getArray()->SetItem(size, C4VNull);
+						r._getArray()->SetItem(size, C4VNull);
 						++size;
 					}
 					fDone = true;
@@ -2747,18 +2751,14 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 				case ATT_COMMA:
 				{
 					// got no parameter before a ","? then push nil
-					if (Type == PARSER)
-						r._getArray()->SetItem(size, C4VNull);
+					r._getArray()->SetItem(size, C4VNull);
 					Shift();
 					++size;
 					break;
 				}
 				default:
 				{
-					if (Type == PARSER)
-						r._getArray()->SetItem(size, Parse_ConstExpression(NULL, NULL));
-					else
-						Parse_ConstExpression(NULL, NULL);
+					r._getArray()->SetItem(size, Parse_ConstExpression(NULL, NULL));
 					++size;
 					if (TokenType == ATT_COMMA)
 						Shift();
