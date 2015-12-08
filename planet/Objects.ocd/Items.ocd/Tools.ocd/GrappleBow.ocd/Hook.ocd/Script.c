@@ -325,7 +325,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		var off = rope->GetClonkOff();
 //    off = [0,0];
     //var pos = rope->GetClonkPos();
-    //target->SetPosition(pos[0], pos[1], nil, Rope_Precision);
+    //target->SetPosition(pos[0], pos[1], nil, LIB_ROPE_Precision);
     target.MyAngle = angle;
     //angle = 0;
 		target->SetMeshTransformation(Trans_Translate(-off[0]*10+3000*(1-2*target->GetDir()),-off[1]*10), 2);

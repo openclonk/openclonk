@@ -1,16 +1,17 @@
-/*--
-	Ladder climbing
-	Authors: Randrian
+/**
+	Ladder Climbing
+	Gives the ability to clonks climb on ladders.
 
-	Gives the ability to climb on ladders
---*/
+	@author Randrian
+*/
 
 local jump_startcall;
 local no_ladder_counter;
 
-func GetTurnPhase() { return _inherited(...); }
+public func GetTurnPhase() { return _inherited(...); }
 
-func Definition(def) {
+public func Definition(proplist def) 
+{
 	// Only add action if included by clonk.
 	if (!def.ActMap)
 		return _inherited(def);
@@ -31,50 +32,61 @@ func Definition(def) {
 			StartCall = "StartSearchLadder",
 			// save old phasecall of jump
 			StartCallLadderOverloaded = def.ActMap.Jump.StartCall
+		},
+		WallJump = {
+			Prototype = def.ActMap.WallJump,
+			StartCall = "StartSearchLadder",
+			// save old phasecall of jump
+			StartCallLadderOverloaded = def.ActMap.WallJump.StartCall
 		}
 	};
 	_inherited(def);
 }
 
-func StartScale()
+public func StartScale()
 {
 	// Should be overloaded, and add a climb animation here
 	return _inherited(...);
 }
 
-func StartSearchLadder()
+public func StartSearchLadder()
 {
-	// call overwriten old phase call
-	if (GetProperty("StartCallLadderOverloaded", GetProperty("Jump", GetProperty("ActMap"))))
-		Call(GetProperty("StartCallLadderOverloaded", GetProperty("Jump", GetProperty("ActMap"))));
+	// Call the overwriten old phase call.
+	if (GetAction() == "Jump" && this.ActMap.Jump.StartCallLadderOverloaded)
+		Call(this.ActMap.Jump.StartCallLadderOverloaded);
+	if (GetAction() == "WallJump" && this.ActMap.WallJump.StartCallLadderOverloaded)
+		Call(this.ActMap.WallJump.StartCallLadderOverloaded);
 	if (!GetEffect("InSearchLadder", this))
-	{
 		AddEffect("IntSearchLadder", this, 1, 5, this);
-	}
 	FxIntSearchLadderTimer();
+	return;
 }
 
-func GetLadderScaleAnimation()
+public func GetLadderScaleAnimation()
 {
 	var animation = _inherited(...);
-	if(animation) return animation;
+	if (animation) 
+		return animation;
 	return "Scale";
 }
 
-func FxIntSearchLadderTimer(target, effect, time)
+public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 {
-	if (GetAction() != "Jump") return -1;
+	if (GetAction() != "Jump" && GetAction() != "WallJump") 
+		return FX_Execute_Kill;
 
 	var ladder;
 	if (!no_ladder_counter)
 	{
-		for(ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"),
-		    Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		for (ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 		{
-			if(ladder->~CanNotBeClimbed()) continue;
-			else break;
+			if (ladder->~CanNotBeClimbed()) 
+				continue;
+			else 
+				break;
 		}
-		if(ladder && ladder->~CanNotBeClimbed()) ladder = nil;
+		if (ladder && ladder->~CanNotBeClimbed()) 
+			ladder = nil;
 	}
 	else
 		no_ladder_counter--;
@@ -84,20 +96,23 @@ func FxIntSearchLadderTimer(target, effect, time)
 		SetAction("Climb");
 		ladder->~OnLadderGrab(this);
 		PlayAnimation(GetLadderScaleAnimation(), CLONK_ANIM_SLOT_Movement, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-		AddEffect("IntClimbControl", this, 1, 1, this, 0, ladder);
-		return -1;
+		AddEffect("IntClimbControl", this, 1, 1, this, nil, ladder);
+		return FX_Execute_Kill;
 	}
 }
 
-func FxIntSearchLadderStop(target, effect, reason, tmp)
+public func FxIntSearchLadderStop(object target, proplist effect, reason, tmp)
 {
-	if (tmp) return;
+	if (tmp) 
+		return FX_OK;
 	no_ladder_counter = 0;
+	return FX_OK;
 }
 
-func FxIntClimbControlStart(target, effect, tmp, ladder)
+public func FxIntClimbControlStart(object target, proplist effect, tmp, object ladder)
 {
-	if (tmp) return;
+	if (tmp) 
+		return FX_OK;
 	effect.ladder = ladder;
 	SetXDir(0);
 	SetYDir(0);
@@ -105,12 +120,13 @@ func FxIntClimbControlStart(target, effect, tmp, ladder)
 	effect.odd = 0; // odd or even segment?
 	SetHandAction(1);
 	SetTurnType(1);
+	return FX_OK;
 }
 
-func SetTurnType() { return _inherited(...); }
-func SetHandAction() { return _inherited(...); }
+public func SetTurnType() { return _inherited(...); }
+public func SetHandAction() { return _inherited(...); }
 
-func LadderStep(target, effect, fUp)
+public func LadderStep(target, effect, fUp)
 {
 	if (fUp == 1)
 	{
@@ -127,13 +143,13 @@ func LadderStep(target, effect, fUp)
 			if (contact & CNAT_Left || contact & CNAT_Right)
 			{
 				SetAction("Scale");
-				return 0;
+				return false;
 			}
 			no_ladder_counter = 5;
 			SetAction("Jump");
 			SetXDir(-5+10*GetDir());
 			SetYDir(-5);
-			return 0;
+			return false;
 		}
 	}
 	else
@@ -151,83 +167,90 @@ func LadderStep(target, effect, fUp)
 			if (contact & CNAT_Left || contact & CNAT_Right)
 			{
 				SetAction("Scale");
-				return 0;
+				return false;
 			}
 			no_ladder_counter = 5;
 			SetAction("Jump");
-			return 0;
+			return false;
 		}
 	}
 	if (effect.ladder == nil) return 0;
 	return true;
 }
 
-func FxIntClimbControlTimer(target, effect, time)
+public func FxIntClimbControlTimer(object target, proplist effect, int time)
 {
-	if (GetAction() != "Climb" || Contained()) return -1;
-	if(effect.ladder && effect.ladder->~CanNotBeClimbed(1)) effect.ladder = nil;
-	if(!effect.ladder)
+	if (GetAction() != "Climb" || Contained()) 
+		return FX_Execute_Kill;
+	if (effect.ladder && effect.ladder->~CanNotBeClimbed(1)) 
+		effect.ladder = nil;
+	if (!effect.ladder)
 	{
 		no_ladder_counter = 5;
 		SetAction("Jump");
-		SetXDir(-5+10*GetDir());
+		SetXDir(-5 + 10 * GetDir());
 		SetYDir(-5);
-		return -1;
+		return FX_Execute_Kill;
 	}
 
 	// Progress
 	var step = 0;
-	if (GetComDir() == COMD_Down) step = -1;
-	if (GetComDir() == COMD_Up)   step = 1;
+	if (GetComDir() == COMD_Down) 
+		step = -1;
+	if (GetComDir() == COMD_Up) 
+		step = 1;
 
 	if (step && LadderStep(target, effect, step) == 0)
 	{
 		var contact = GetContact(-1);
 		if (contact & CNAT_Left || contact & CNAT_Right)
-				SetAction("Scale");
+			SetAction("Scale");
 		else
 		{
 			no_ladder_counter = 5;
 			SetAction("Jump");
 			if (step == 1) // For Up add some speed
 			{
-				SetXDir(-5+10*GetDir());
+				SetXDir(-5 + 10 * GetDir());
 				SetYDir(-5);
 				no_ladder_counter = 10;
 			}
 		}
-		return -1;
+		return FX_Execute_Kill;
 	}
 	var data = effect.ladder->GetLadderData();
 	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
-	var x = startx + (endx-startx)*effect.pos/100+5000-100*GetTurnPhase();
-	var y = starty + (endy-starty)*effect.pos/100;
+	var x = startx + (endx-startx) * effect.pos / 100 + 5000 - 100 * GetTurnPhase();
+	var y = starty + (endy-starty) * effect.pos / 100;
 	var lx = LadderToLandscapeCoordinates(x);
 	var ly = LadderToLandscapeCoordinates(y);
 	var old_x = GetX(), old_y = GetY();
-	if(Abs(old_x-lx)+Abs(old_y-ly) > 10 && time > 1)
-		return -1;
+	if (Abs(old_x - lx) + Abs(old_y - ly) > 10 && time > 1)
+		return FX_Execute_Kill;
 	SetPosition(lx, ly);
-	SetXDir(0); SetYDir(0);
-	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//effect.odd);
+	SetXDir(0);
+	SetYDir(0);
+	SetLadderRotation(-angle, x - GetX() * 1000, y - GetY() * 1000);
 	if (Stuck())
 	{
 		var dir = -1;
-		if (GetDir() == 0) dir = 1;
+		if (GetDir() == 0) 
+			dir = 1;
 		for (var i = 1; i <= 5; i++)
 		{
-			SetPosition(LadderToLandscapeCoordinates(x)+i*dir, LadderToLandscapeCoordinates(y));
+			SetPosition(LadderToLandscapeCoordinates(x) + i * dir, LadderToLandscapeCoordinates(y));
 			if (!Stuck()) break;
 		}
-		if (Stuck()) SetPosition(LadderToLandscapeCoordinates(x)+5*dir, LadderToLandscapeCoordinates(y));
+		if (Stuck()) SetPosition(LadderToLandscapeCoordinates(x) + 5 * dir, LadderToLandscapeCoordinates(y));
 	}
 	if (Stuck())
 	{
 		// Revert Position and step
 		SetPosition(old_x, old_y);
-		if (step) LadderStep(target, effect, -step);
+		if (step) 
+			LadderStep(target, effect, -step);
 		// if we are to far left or right try to turn
-		if (GetDir() == 0 && LadderToLandscapeCoordinates(x)-2 > GetX())
+		if (GetDir() == 0 && LadderToLandscapeCoordinates(x) - 2 > GetX())
 		{
 			SetComDir(COMD_Right);
 			SetDir(1);
@@ -274,45 +297,51 @@ func FxIntClimbControlTimer(target, effect, time)
 			SetAction("Walk");
 			return -1;
 		}
-/*		if(contact & CNAT_Left || contact & CNAT_Right)
-		{
-			SetAction("Scale");
-			return -1;
-		}*/
 	}
 }
 
-func LadderToLandscapeCoordinates(int x)
+private func LadderToLandscapeCoordinates(int x)
 {
-	return (x+500)/1000; // round to the next thousand
+	// Round to the next thousand.
+	return (x + 500) / 1000;
 }
 
-func FxIntClimbControlStop(target, effect)
+public func FxIntClimbControlStop(target, effect)
 {
-	if(GetAction() == "Climb") SetAction("Walk");
+	if (GetAction() == "Climb") 
+		SetAction("Walk");
 	SetLadderRotation(0);
 	SetHandAction(0);
 }
 
-func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, release)
+public func FxIntClimbControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return;
-	if (release == 1) return;
-	if (ctrl == CON_Up)   SetComDir(COMD_Up);
-	else if (ctrl == CON_Down) SetComDir(COMD_Down);
+	//Log("LIBLADDER: Control effect ctrl = %d, dir = %d", ctrl, GetDir());	
+	// Only handle movement controls.
+	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
+		return false;
+	// Perform actions on key down and not on release.
+	if (release) 
+		return false;
+			
+	if (ctrl == CON_Up)
+		SetComDir(COMD_Up);
+	else if (ctrl == CON_Down) 
+		SetComDir(COMD_Down);
+	
 	else if (ctrl == CON_Left)
 	{
-		if (GetDir() == 0)
+		if (GetDir() == DIR_Left)
 		{
 			if (GetComDir() == COMD_Stop)
 			{
-				SetPosition(GetX()-10, GetY());
+				SetPosition(GetX() - 10, GetY());
 				if (!Stuck())
 				{
 					SetComDir(COMD_Right);
-					SetDir(1);
+					SetDir(DIR_Right);
 				}
-				SetPosition(GetX()+10, GetY());
+				SetPosition(GetX() + 10, GetY());
 			}
 			SetComDir(COMD_Stop);
 		}
@@ -325,17 +354,17 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 	}
 	else if (ctrl == CON_Right)
 	{
-		if (GetDir() == 1)
+		if (GetDir() == DIR_Right)
 		{
 			if (GetComDir() == COMD_Stop)
 			{
-				SetPosition(GetX()+10, GetY());
+				SetPosition(GetX() + 10, GetY());
 				if (!Stuck())
 				{
 					SetComDir(COMD_Left);
-					SetDir(0);
+					SetDir(DIR_Left);
 				}
-				SetPosition(GetX()-10, GetY());
+				SetPosition(GetX() - 10, GetY());
 			}
 			SetComDir(COMD_Stop);
 		}
@@ -343,23 +372,17 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		{
 			no_ladder_counter = 5;
 			SetAction("Jump");
-			SetXDir(+15);
+			SetXDir(15);
 		}
 	}
-	return 1;
+	return true;
 }
 
-func SetLadderRotation (int r, int xoff, int yoff) {
-	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)), 5);
-//	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)));
+public func SetLadderRotation (int r, int xoff, int yoff) 
+{
+	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r, 0, 0, 1), Trans_Translate(xoff, 10000 + yoff)), 5);
 	return;
-//	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-//	// set matrix values
-//	SetObjDrawTransform (
-//		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-//		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
-//	);
 }
 
-// Defined to prevent an error.
+// Defined to prevent an error, because SetMeshTransformation is overloaded by the clonk.
 func SetMeshTransformation() { return _inherited(...); }

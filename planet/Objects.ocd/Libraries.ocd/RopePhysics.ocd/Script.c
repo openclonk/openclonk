@@ -1,13 +1,13 @@
-/** Rope control
-* This library contains all functions for using dynamic ropes
-* @sa Ropeladder, GrapplerRope
-* @author Randrian
+/** 
+	Rope Library
+	This library contains all functions for using dynamic ropes
+
+	@author Randrian
 */
 
-static const Rope_MaxParticles = 15;//30;//15*3;
-static const Rope_Iterations = 10;
-static const Rope_Precision = 100;
-static const Rope_SegmentLength = 5;//2;
+static const LIB_ROPE_Iterations = 10;
+static const LIB_ROPE_Precision = 100;
+static const LIB_ROPE_SegmentLength = 5;
 
 local particles;
 local segments;
@@ -21,9 +21,9 @@ local length_auto;
 
 local Max_Length;
 
-func GetRopeGravity()
+public func GetRopeGravity()
 {
-	return GetGravity()*Rope_Precision/100;
+	return GetGravity() * LIB_ROPE_Precision / 100;
 }
 
 /** Starts a rope
@@ -35,14 +35,14 @@ protected func StartRope()
 {
 	objects = [[this, 0], [nil, nil]];
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
-	length = Rope_SegmentLength;
+	length = LIB_ROPE_SegmentLength;
 
 	ParticleCount = 1;
 	segments = CreateArray(ParticleCount);
 	segments[0] = CreateSegment(0, nil);
 
 	particles = CreateArray(ParticleCount);
-	particles[0] = [[ GetX()*Rope_Precision, GetY()*Rope_Precision],  [(GetX()+1)*Rope_Precision, GetY()*Rope_Precision], [0,GetRopeGravity()], 0];
+	particles[0] = [[ GetX()*LIB_ROPE_Precision, GetY()*LIB_ROPE_Precision],  [(GetX()+1)*LIB_ROPE_Precision, GetY()*LIB_ROPE_Precision], [0,GetRopeGravity()], 0];
 }
 
 /** Connects \a obj1 and \a obj2
@@ -58,7 +58,7 @@ public func StartRopeConnect(object obj1, object obj2)
 
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
-	ParticleCount = length/Rope_SegmentLength;
+	ParticleCount = length/LIB_ROPE_SegmentLength;
 
 	var yoff = 0;
 	if(ParticleCount < 2)
@@ -80,10 +80,11 @@ public func StartRopeConnect(object obj1, object obj2)
 	var x, y;
 	for(var i = 0; i < ParticleCount; i++)
 	{
-		x = obj1->GetX(Rope_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetX(Rope_Precision)*i/ParticleCount;
-		y = obj1->GetY(Rope_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetY(Rope_Precision)*i/ParticleCount;
+		x = obj1->GetX(LIB_ROPE_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetX(LIB_ROPE_Precision)*i/ParticleCount;
+		y = obj1->GetY(LIB_ROPE_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetY(LIB_ROPE_Precision)*i/ParticleCount;
 		y += yoff*i;
-		particles[i] = [[ x, y], [ x, y], [0,GetRopeGravity()], 1]; // Pos, Oldpos, acceleration (gravity), mass
+		// Pos, Oldpos, acceleration (gravity), mass.
+		particles[i] = [[ x, y], [ x, y], [0,GetRopeGravity()], 1]; 
 	}
 	particles[0][2] = [0,0];
 	particles[0][3] = 0;
@@ -103,12 +104,12 @@ protected func Destruction()
 	RemoveRope();
 }
 
-func SetMaxLength(int newlength)
+public func SetMaxLength(int newlength)
 {
 	Max_Length = newlength;
 }
 
-func GetMaxLength()
+public func GetMaxLength()
 {
 	return Max_Length;
 }
@@ -141,7 +142,7 @@ public func SetFixed(bool fixed_1, bool fixed_2)
 * A loose rope will vary the length according to the connected objects. If a object is non-fixed and pulls at the rope the length will increase.
 * If it doesn't pull the length will decrease.
 */
-func ConnectLoose()
+public func ConnectLoose()
 {
 	length_auto = 1;
 }
@@ -151,12 +152,12 @@ func ConnectLoose()
 */
 local table2 ;//= [80,126,177,232,292,355,421,491,563,638,716,796,878,963,1050,1139,1230,1323,1417,1514,1612,1712,1814,1917,2022,2128,2236,2346,2457,2569,2683,2798,2914,3032,3151,3271,3393,3516,3640,3765,3891,4019,4148,4278,4409,4541,4674,4808,4943,5080,5217,5356,5495,5635,5777,5919,6063,6207,6352,6498,6645,6794,6943,7092,7243,7395,7547,7701,7855,8010,8166,8323,8481,8639,8798,8958,9119,9281,9444,9607,9771,9936,10102,10268,10435,10603,10772,10941,11111,11282,11454,11626,11799,11973,12148,12323,12499,12675,12853,13031,13209,13389,13569,13749,13931,14113,14295,14479,14663,14847,15033,15219,15405,15593,15780,15969,16158,16348,16538,16729,16921,17113,17306,17499,17693,17888,18083,18279,18475,18672,18870,19068,19267,19466,19666,19867,20000,20000,20000,2000];
 
-func ConnectPull()
+public func ConnectPull()
 {
 	length_auto = 0;
 }
 
-func TogglePull()
+public func TogglePull()
 {
 	if(length_auto) ConnectPull();
 	else ConnectLoose();
@@ -201,7 +202,7 @@ public func AddSegment(int xoffset, int yoffset)
 
 	ParticleCount++;
 
-	length += Rope_SegmentLength;
+	length += LIB_ROPE_SegmentLength;
 
 	UpdateSegmentOverlays();
 }
@@ -247,7 +248,7 @@ public func RemoveSegment(fNoLengthAdjust)
 	}
 
 	if(!fNoLengthAdjust)
-		length -= Rope_SegmentLength;
+		length -= LIB_ROPE_SegmentLength;
 
 	SetLength(segments, ParticleCount);
 	SetLength(particles, ParticleCount);
@@ -271,11 +272,11 @@ public func DoLength(int dolength)
 			MaxLengthReached();
 			length = GetMaxLength();
 		}
-	if(length < Rope_SegmentLength*2) length = Rope_SegmentLength*2;
+	if(length < LIB_ROPE_SegmentLength*2) length = LIB_ROPE_SegmentLength*2;
 
 	var last_length = GetLastLength();
 	// Remove Points
-	while( last_length < Rope_SegmentLength*Rope_Precision/2 && ParticleCount > 2)
+	while( last_length < LIB_ROPE_SegmentLength*LIB_ROPE_Precision/2 && ParticleCount > 2)
 	{
 		particles[ParticleCount-2] = particles[ParticleCount-1];
 		RemoveSegment(1);
@@ -283,7 +284,7 @@ public func DoLength(int dolength)
 		last_length = GetLastLength();
 	}
 	var i = 0;
-	while( last_length > Rope_SegmentLength*Rope_Precision*3/2)
+	while( last_length > LIB_ROPE_SegmentLength*LIB_ROPE_Precision*3/2)
 	{
 		ParticleCount++;
 		SetLength(particles, ParticleCount);
@@ -308,7 +309,7 @@ public func DoLength(int dolength)
 			var y4 = particles[i][1][1];
 
 			particles[i] = [[ x/ParticleCount +x2*(ParticleCount-1)/ParticleCount, y/ParticleCount +y2*(ParticleCount-1)/ParticleCount],
-											[ x3/ParticleCount+x4*(ParticleCount-1)/ParticleCount, y3/ParticleCount+y4*(ParticleCount-1)/ParticleCount], [0,1*Rope_Precision], 1];
+											[ x3/ParticleCount+x4*(ParticleCount-1)/ParticleCount, y3/ParticleCount+y4*(ParticleCount-1)/ParticleCount], [0,1*LIB_ROPE_Precision], 1];
 		}
 		SetLength(segments, ParticleCount);
 		segments[ParticleCount-1] = CreateSegment(ParticleCount, segments[ParticleCount-2]);
@@ -321,12 +322,12 @@ public func DoLength(int dolength)
 	return;
 }
 
-/** Returns the length of the last segment (other segments have \c Rope_SegmentLength length)
+/** Returns the length of the last segment (other segments have \c LIB_ROPE_SegmentLength length)
 * @return the length of the last segment
 */
-func GetLastLength()
+public func GetLastLength()
 {
-	return length*Rope_Precision-Rope_SegmentLength*Rope_Precision*(ParticleCount-1);
+	return length*LIB_ROPE_Precision-LIB_ROPE_SegmentLength*LIB_ROPE_Precision*(ParticleCount-1);
 }
 
 /** This is called when a new segment is added, the segments can adjust their appeareance to that
@@ -353,7 +354,7 @@ public func TimeStep()
 * These are gravity and for connect \a loose mode this is also a straightening of the rope.
 * Only called when in connect \a loose mode. NOT USED AT THE MOMENT!
 */
-func AccumulateForces()
+public func AccumulateForces()
 {
 	for(var i = 1; i < ParticleCount; i++)
 	{
@@ -361,14 +362,8 @@ func AccumulateForces()
 		if(i < ParticleCount-2)
 		{
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i+1][0][0], particles[i+1][0][1]);
-			fx = Sin(angle, 5*Rope_Precision);
-			fy =-Cos(angle, 5*Rope_Precision);
-/*			angle = Angle(particles[i-1][0][0], particles[i-1][0][1], particles[i+1][0][0], particles[i+1][0][1]);
-			var middle = Vec_Div(Vec_Add(particles[i-1][0], particles[i+1][0]), 1);
-			var diff = Vec_Sub(middle, particles[i][0]);
-			var length = Vec_Length(diff);
-			fx = Sin(angle, length/2);
-			fy =-Cos(angle, length/2);*/
+			fx = Sin(angle, 5*LIB_ROPE_Precision);
+			fy =-Cos(angle, 5*LIB_ROPE_Precision);
 		}
 		particles[i][2] = [fx,fy+GetRopeGravity()];
 	}
@@ -382,10 +377,7 @@ private func Verlet()
 	// Copy Position of the objects
 	var j = 0;
 	for(var i = 0; i < 2; i++ || j--)
-	{//Log("Verlet %d %d (%v), %d", i, j, objects, objects[i][1] == 0);
-//		if(objects[i][1] == 0 )//|| PullObjects())
 			SetParticleToObject(j, i);
-	}//Log("End");
 
 	// Verlet
 	var start = 1;
@@ -421,8 +413,8 @@ public func SetParticleToObject(int index, int obj_index)
 	if(obj == nil) return;
 
 	if(obj->Contained()) obj = obj->Contained();
-	particles[index][0][0] = obj->GetX(Rope_Precision);
-	particles[index][0][1] = obj->GetY(Rope_Precision);
+	particles[index][0][0] = obj->GetX(LIB_ROPE_Precision);
+	particles[index][0][1] = obj->GetY(LIB_ROPE_Precision);
 	return;
 //Log("Set %d %d", index, obj_index);
 //	particles[index][1][0] = particles[index][0][0];
@@ -442,7 +434,7 @@ public func ConstraintObjects()
 public func ConstraintLength()
 {
 	// Satisfy all stick constraints (move the particles to fit the length)
-	var normal_restlength = Rope_SegmentLength*Rope_Precision;
+	var normal_restlength = LIB_ROPE_SegmentLength*LIB_ROPE_Precision;
 	var restlength;
 	var invmass1, invmass2;
 	var delta = [0,0], deltaDot, deltalength; // diff
@@ -496,11 +488,11 @@ public func ConstraintLandscape()
 						// Calculate the new position (if we don't move in a direction don't overwrite the old value)
 						var new = [0,0];
 						if(pos[0])
-							new[0] = (GetPartX(i)+xdir*pos[0])*Rope_Precision-xdir*Rope_Precision/2+xdir;
+							new[0] = (GetPartX(i)+xdir*pos[0])*LIB_ROPE_Precision-xdir*LIB_ROPE_Precision/2+xdir;
 						else
 							new[0] = particles[i][0][0];
 						if(pos[1])
-							new[1] = (GetPartY(i)+ydir*pos[1])*Rope_Precision-ydir*Rope_Precision/2+ydir;
+							new[1] = (GetPartY(i)+ydir*pos[1])*LIB_ROPE_Precision-ydir*LIB_ROPE_Precision/2+ydir;
 						else
 							new[1] = particles[i][0][1];
 						particles[i][4] = 1; // Notifier for applying friction after the constraints
@@ -521,7 +513,7 @@ public func ConstraintLandscape()
 */
 private func SatisfyConstraints()
 {
-	for(var j=0; j < Rope_Iterations; j++)
+	for(var j=0; j < LIB_ROPE_Iterations; j++)
 	{
 		ConstraintObjects();
 		ConstraintLength();
@@ -541,7 +533,7 @@ private func SatisfyConstraints()
 /** Returns the length of the rope
 * @return the length of the rope
 */
-func GetLineLength()
+public func GetLineLength()
 {
 	var length_vertex = 0;
 	for(var i=1; i < ParticleCount; i++)
@@ -549,11 +541,11 @@ func GetLineLength()
 	return length_vertex;
 }
 
-func LengthAutoTryCount() { return 5; }
+public func LengthAutoTryCount() { return 5; }
 
 /** Applies the forces on the objects (only non-fixed ones) or adjust the length then the object pulls
 */
-func ForcesOnObjects()
+public func ForcesOnObjects()
 {
 	if(!length) return;
 
@@ -583,27 +575,27 @@ func ForcesOnObjects()
 
 		if(obj->Contained()) obj = obj->Contained();
 
-/*		var x = obj->GetX(Rope_Precision), y = obj->GetY(Rope_Precision);
-		obj->SetPosition(particles[j][0][0], particles[j][0][1], 1, Rope_Precision);
+/*		var x = obj->GetX(LIB_ROPE_Precision), y = obj->GetY(LIB_ROPE_Precision);
+		obj->SetPosition(particles[j][0][0], particles[j][0][1], 1, LIB_ROPE_Precision);
 		if(obj->Stuck())
-			obj->SetPosition(x, y, 1, Rope_Precision);*/
+			obj->SetPosition(x, y, 1, LIB_ROPE_Precision);*/
 
 		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
 			obj->SetAction("Jump");
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
-		obj->SetXDir( particles[j][0][0]-particles[j][1][0], Rope_Precision);
-		obj->SetYDir( particles[j][0][1]-particles[j][1][1], Rope_Precision);
+		obj->SetXDir( particles[j][0][0]-particles[j][1][0], LIB_ROPE_Precision);
+		obj->SetYDir( particles[j][0][1]-particles[j][1][1], LIB_ROPE_Precision);
 	}
 }
 
-func PullObjects()
+public func PullObjects()
 {
 	return !length_auto || length == GetMaxLength();
 }
 
-func ObjContact(obj)
+public func ObjContact(obj)
 {
 	if(obj->Contained()) obj = obj->Contained();
 	if(obj->GetContact(-1)) return true;
@@ -647,64 +639,64 @@ func LogSpeed()
 * @param y vector to add
 * @param return vector \a x plus \a y
 */
-func Vec_Add(array x, array y) { return [x[0]+y[0], x[1]+y[1]]; }
+public func Vec_Add(array x, array y) { return [x[0] + y[0], x[1] + y[1]]; }
 
 /** Subtraction of two vectors
 * @param x vector 1
 * @param y vector to subtract
 * @param return vector \a x minus \a y
 */
-func Vec_Sub(array x, array y) { return [x[0]-y[0], x[1]-y[1]]; }
+public func Vec_Sub(array x, array y) { return [x[0] - y[0], x[1] - y[1]]; }
 
 /** Multiplication of a vector and a number
 * @param x vector
 * @param i number
 * @param return \a i times \a x
 */
-func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
+public func Vec_Mul(array x, int i) { return [x[0] * i, x[1] * i]; }
 
 /** Division of a vector and a number
 * @param x vector
 * @param i number
 * @param return \a x divided throught \a i
 */
-func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
+public func Vec_Div(array x, int i) { return [x[0] / i, x[1] / i]; }
 
 /** Dot product of two vectors
 * @param x vector 1
 * @param y vector 2
 * @param return dot product between \a x and \a y
 */
-func Vec_Dot(array x, array y) { return x[0]*y[0]+x[1]*y[1];    }
+public func Vec_Dot(array x, array y) { return x[0] * y[0] + x[1] * y[1]; }
 
 /** Length of a vector
 * @param x vector
 * @param return length of vector \a a
 */
-func Vec_Length(array x) { return Sqrt(x[0]*x[0]+x[1]*x[1]); }
+public func Vec_Length(array x) { return Sqrt(x[0] * x[0] + x[1] * x[1]); }
 
 /** Angle between two vectors
 * @param x vector 1
 * @param y vector 2
 * @param return angle between \a x and \a y
 */
-func Vec_Angle(array x, array y) { return Angle(x[0], x[1], y[0], y[1]); }
+public func Vec_Angle(array x, array y) { return Angle(x[0], x[1], y[0], y[1]); }
 
 /** Normalizes a vector with precision
 * @param x vector
 * @param precision factor for the resultion length
 * @param return the normalize vector with length 1*precision
 */
-func Vec_Normalize(array x, int precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
+public func Vec_Normalize(array x, int precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
 
 /** Gives the the rounded x coordinate of particles \a index
 * @param index the particle which position is desired
 * @param return the x coordinate of particle \a index
 */
-func GetPartX(index) { return (particles[index][0][0]+Rope_Precision/2)/Rope_Precision; }
+public func GetPartX(index) { return (particles[index][0][0] + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }
 
 /** Gives the the rounded y coordinate of particles \a index
 * @param index the particle which position is desired
 * @param return the y coordinate of particle \a index
 */
-func GetPartY(index) { return (particles[index][0][1]+Rope_Precision/2)/Rope_Precision; }
+public func GetPartY(index) { return (particles[index][0][1] + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }

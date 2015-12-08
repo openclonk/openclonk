@@ -150,7 +150,7 @@ func AdjustClonkMovement()
 	if(clonk->Contained()) clonk = clonk->Contained();
 	
 	var rope_vector = Vec_Sub(particles[-1][0], particles[-2][0]);
-	var clonk_speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
+	var clonk_speed = [clonk->GetXDir(LIB_ROPE_Precision), clonk->GetYDir(LIB_ROPE_Precision)];
 
 
 	var rope_orthogonal = [rope_vector[1], -rope_vector[0]];
@@ -158,8 +158,8 @@ func AdjustClonkMovement()
 	
 	var clonk_newspeed = Vec_Normalize(rope_orthogonal, new_speed);
 
-	clonk->SetXDir(clonk_newspeed[0], Rope_Precision);
-	clonk->SetYDir(clonk_newspeed[1], Rope_Precision);
+	clonk->SetXDir(clonk_newspeed[0], LIB_ROPE_Precision);
+	clonk->SetYDir(clonk_newspeed[1], LIB_ROPE_Precision);
 }
 
 local last_point;
@@ -183,28 +183,28 @@ func UpdateLines()
 		{
 			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 			end = particles[0][0][:];
-			end[0] += -Sin(angle, 45*Rope_Precision/10);
-			end[1] += +Cos(angle, 45*Rope_Precision/10);
+			end[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
+			end[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 		}
 		
 		if(i == 2)
 		{
 			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 			start = particles[0][0][:];
-			start[0] += -Sin(angle, 45*Rope_Precision/10);
-			start[1] += +Cos(angle, 45*Rope_Precision/10);
+			start[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
+			start[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 		}
 		
 		var diff = Vec_Sub(end,start);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
 		var diffangle = Vec_Angle(diff, [0,0]);
-		var length = Vec_Length(diff)*1000/Rope_Precision/10;
+		var length = Vec_Length(diff)*1000/LIB_ROPE_Precision/10;
 	
 		if(i ==  ParticleCount-1)
 		{
 			var old = particles[i-2][0][:];
 			var old_diff = Vec_Sub(start,old);
-			var o_length = Vec_Length(old_diff)*1000/Rope_Precision/10;
+			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
 			if(!o_length) diff = old_diff;
 			else diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
 	//		objects[1][0]->Message("%d", Vec_Length(diff)*1000/Rope_Precision/10);
@@ -218,8 +218,8 @@ func UpdateLines()
 		{
 			segments[i]->SetGraphics(nil, GrappleHook);
 			segments[i].MeshTransformation = Trans_Mul(Trans_Translate(1500,0,0),Trans_Scale(1500));
-			point[0] += -Cos(diffangle, 15*Rope_Precision/10)+Sin(diffangle, 4*Rope_Precision);
-			point[1] += -Cos(diffangle, 4*Rope_Precision)-Sin(diffangle, 15*Rope_Precision/10);
+			point[0] += -Cos(diffangle, 15*LIB_ROPE_Precision/10)+Sin(diffangle, 4*LIB_ROPE_Precision);
+			point[1] += -Cos(diffangle, 4*LIB_ROPE_Precision)-Sin(diffangle, 15*LIB_ROPE_Precision/10);
 			length = 1000;
 		}
 
@@ -298,8 +298,8 @@ func ForcesOnObjects()
 		var xdir = BoundBy(particles[j][0][0]-particles[j][1][0], -300, 300);
 		var ydir = BoundBy(particles[j][0][1]-particles[j][1][1], -300, 300);
 
-		obj->SetXDir( xdir, Rope_Precision);
-		obj->SetYDir( ydir, Rope_Precision);
+		obj->SetXDir( xdir, LIB_ROPE_Precision);
+		obj->SetYDir( ydir, LIB_ROPE_Precision);
 	}
 }
 

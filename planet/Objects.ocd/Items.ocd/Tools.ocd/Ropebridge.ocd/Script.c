@@ -1,4 +1,4 @@
-/*
+/**
 	Ropebridge
 	Author: Randrian
 
@@ -8,10 +8,10 @@
 
 #include Library_Rope
 
-static const Ladder_MaxParticles = 15;//30;//15*3;
+static const Ladder_MaxParticles = 15;
 static const Ladder_Iterations = 10;
 static const Ladder_Precision = 100;
-static const Ladder_SegmentLength = 5;//2;
+static const Ladder_SegmentLength = 5;
 
 local particles;
 local segments;
@@ -22,41 +22,42 @@ local ParticleCount;
 
 public func UpdateSegmentOverlays()
 {
-	for(var i = 1; i < GetLength(segments); i++)
+	for (var i = 1; i < GetLength(segments); i++)
 	{
-    segments[i]->CreateDouble();
+    	segments[i]->CreateDouble();
 		segments[i]->SetGraphics("Line", GetID(), 2, 1);
 		segments[i]->SetGraphics("Line", GetID(), 3, 1);
-    segments[i].Double->SetGraphics("Line", GetID(), 4, 1);
-    segments[i]->SetGraphics("Line", GetID(), 5, 1);
-    if(i>1)
-    {
-      segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
-      segments[i]->SetGraphics("Line", GetID(), 8, 1);
-    }
-    segments[i]->SetSolidMask(6,0,7,3,-5,9);
+    	segments[i].Double->SetGraphics("Line", GetID(), 4, 1);
+    	segments[i]->SetGraphics("Line", GetID(), 5, 1);
+	    if (i > 1)
+	    {
+			segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
+			segments[i]->SetGraphics("Line", GetID(), 8, 1);
+	    }
+		segments[i]->SetSolidMask(6,0,7,3,-5,9);
 		if(i > 1 && i < GetLength(segments)-1)
-    {
-      segments[i].Plank = 1;
+   		{
+			segments[i].Plank = 1;
 			segments[i]->SetGraphics("Segment", GetID(), 6, 1);
-      segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
-    }
-    if(i%2 == 0)
-    {
-      var color = RGB(200,200,200);
-      segments[i]->SetClrModulation(color, 2);
-      segments[i]->SetClrModulation(color, 3);
-      segments[i].Double->SetClrModulation(color, 4);
-      segments[i]->SetClrModulation(color, 5);
-      segments[i].Double->SetClrModulation(color, 7);
-      segments[i]->SetClrModulation(color, 8);
-    }
+      		segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
+    	}
+		if(i % 2 == 0)
+		{
+			var color = RGB(200,200,200);
+			segments[i]->SetClrModulation(color, 2);
+			segments[i]->SetClrModulation(color, 3);
+			segments[i].Double->SetClrModulation(color, 4);
+			segments[i]->SetClrModulation(color, 5);
+			segments[i].Double->SetClrModulation(color, 7);
+			segments[i]->SetClrModulation(color, 8);
+    	}
 	}
 	segments[0]->CreateDouble();
-  segments[-1]->CreateDouble();
+	segments[-1]->CreateDouble();
 	segments[1]->SetSolidMask();
-  segments[-1]->SetSolidMask();
-  segments[1]->SetGraphics(nil, nil,6);
+	segments[-1]->SetSolidMask();
+	segments[1]->SetGraphics(nil, nil,6);
+	return;
 }
 
 public func MakeBridge(obj1, obj2)
@@ -153,9 +154,9 @@ func UpdateLines()
 	for(var i=1; i < ParticleCount; i++)
 	{
 		// Update the Position of the Segment
-		segments[i]->SetPosition(particles[i][0][0], particles[i][0][1], 0, Rope_Precision);
+		segments[i]->SetPosition(particles[i][0][0], particles[i][0][1], 0, LIB_ROPE_Precision);
     if(segments[i].Double)
-    segments[i].Double->SetPosition(particles[i][0][0], particles[i][0][1], 0, Rope_Precision);
+    segments[i].Double->SetPosition(particles[i][0][0], particles[i][0][1], 0, LIB_ROPE_Precision);
 
 		// Calculate the angle to the previous segment
 		var angle;
@@ -170,29 +171,29 @@ func UpdateLines()
 
     segments[i]->SetR(90+angle);
 		// Draw the left line
-		var start = GetRopeConnetPosition(i, 0, 0, angle, oldangle);
-		var end   = GetRopeConnetPosition(i, 0, 1, angle, oldangle);
+		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
+		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
     var end1 = start;
     DrawRopeLine(start, end, i, 2);
     if(segments[i].Plank)
       DrawRopeLine2(start, end, i, 6);
     
 		// Draw the right line
-		var start = GetRopeConnetPosition(i, 1, 0, angle, oldangle);
-		var end   = GetRopeConnetPosition(i, 1, 1, angle, oldangle);
+		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
+		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
     var end2 = start;
     DrawRopeLine(start, end, i, 3);
     
     // Draw the upper left line
-    var start = GetRopeConnetPosition(i, 0, 0, angle, oldangle);
-    var end   = GetRopeConnetPosition(i, 0, 1, angle, oldangle);
+    var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
+    var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
     var end3 = start[:];
     start[1]-=800;end[1]-=800;
     DrawRopeLine(start, end, i, 4);
     
     // Draw the upder right line
-    var start = GetRopeConnetPosition(i, 1, 0, angle, oldangle);
-    var end   = GetRopeConnetPosition(i, 1, 1, angle, oldangle);
+    var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
+    var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
     var end4 = start[:];
     start[1]-=800;end[1]-=800;
     DrawRopeLine(start, end, i, 5);
@@ -228,7 +229,7 @@ static const  Ropebridge_Anchor_RightYOffset = 0;
 static const  Ropebridge_Anchor_LeftXOffset = -150;
 static const  Ropebridge_Anchor_LeftYOffset = -100;
 
-func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
 {
   var SegmentOffset = [[Ropebridge_Segment_LeftXOffset,  Ropebridge_Segment_LeftYOffset],
                        [Ropebridge_Segment_RightXOffset, Ropebridge_Segment_RightYOffset]];

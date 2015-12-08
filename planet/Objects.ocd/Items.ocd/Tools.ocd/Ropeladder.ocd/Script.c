@@ -25,7 +25,7 @@ local TestArray;
 
 local MaxSegmentCount;
 
-local SwitchRopes;
+local switch_ropes;
 local MirrorSegments;
 
 local UnrollDir;
@@ -43,10 +43,10 @@ public func ControlUse(object clonk, int x, int y)
 {
 	// Unroll dir
 	var dir = -1;
-	if(x > 0) dir = 1;
+	if (x > 0) dir = 1;
 	if(clonk->GetAction() == "Scale")
 	{
-		if(clonk->GetDir() == 0)
+		if (clonk->GetDir() == 0)
 		{
 			Exit(0, 8);
 			Unroll(1, COMD_Right);
@@ -67,23 +67,22 @@ public func ControlUse(object clonk, int x, int y)
 		Exit(0, 5);
 		Unroll(dir, COMD_Down);
 	}
-
 	return true;
 }
 
 public func UpdateSegmentOverlays()
 {
-	for(var i = 1; i < GetLength(segments); i++)
+	for (var i = 1; i < GetLength(segments); i++)
 	{
 		segments[i]->SetGraphics("Line", GetID(), 2, 1);
 		segments[i]->SetGraphics("Line", GetID(), 3, 1);
 		segments[i]->SetGraphics(nil, nil, 4);
 		segments[i]->SetGraphics(nil, nil, 5);
-		if(i > 1)
+		if (i > 1)
 			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 4, 1);
-		if(i == GetLength(segments)-1)
+		if (i == GetLength(segments)-1)
 			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 5, 1);
-		if(i == 1)
+		if (i == 1)
 		{
 			segments[i]->SetGraphics("Anchor", GetID(), 1, 1);
 			segments[i]->SetGraphics("AnchorOverlay", GetID(), 5, 1);
@@ -91,27 +90,29 @@ public func UpdateSegmentOverlays()
 	}
 }
 
-func TestMoveOut(xdir, ydir)
+public func TestMoveOut(int xdir, int ydir)
 {
-	if(!Stuck()) return;
-	for(var i = 0; i < 8; i++)
+	if (!Stuck()) 
+		return;
+	for (var i = 0; i < 8; i++)
 	{
-		if(!GBackSolid(i*xdir, i*ydir))
+		if (!GBackSolid(i * xdir, i * ydir))
 		{
-			SetPosition(GetX()+i*xdir, GetY()+i*ydir);
-			if(!Stuck())
+			SetPosition(GetX() + i * xdir, GetY() + i * ydir);
+			if (!Stuck())
 				break;
-			SetPosition(GetX()-i*xdir, GetY()-i*ydir);
+			SetPosition(GetX() - i * xdir, GetY() - i * ydir);
 		}
 	}
 }
 
 public func Unroll(int dir, int unrolldir, int length)
 {
-	if(!unrolldir) unrolldir = COMD_Down;
-	SwitchRopes = 0;
+	if (!unrolldir) 
+		unrolldir = COMD_Down;
+	switch_ropes = false;
 	// Unroll dir
-	if(unrolldir == COMD_Left || unrolldir == COMD_Right)
+	if (unrolldir == COMD_Left || unrolldir == COMD_Right)
 	{
 		var xdir = 1;
 		if(unrolldir == COMD_Right)
@@ -143,7 +144,7 @@ public func Unroll(int dir, int unrolldir, int length)
 
 		SetPosition(GetX(), GetY()+y0+2);
 		SetR(-90+Angle(x2, y2, x1, y1));
-		SwitchRopes = 1;
+		switch_ropes = true;
 	}
 	else
 	{
@@ -168,22 +169,12 @@ public func Unroll(int dir, int unrolldir, int length)
 	DoUnroll(dir);
 }
 
-public func MakeBridge(obj1, obj2)
-{
-	MirrorSegments = 1;
-	SetProperty("Collectible", 0);
-	StartRopeConnect(obj1, obj2);
-	AddEffect("IntHang", this, 1, 1, this);
-}//MakeBridge(Object(221), Object(150))
-
 protected func DoUnroll(dir)
 {
 	MirrorSegments = dir;
 	UnrollDir = dir;
 	SetAction("Hanging");
 	SetProperty("Collectible", 0);
-
-//	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	grabber = CreateObjectAbove(Ropeladder_Grabber);
 	grabber->SetAction("Attach", this);
@@ -313,8 +304,8 @@ func UpdateLines()
 		}
 
 		// Draw the left line
-		var start = GetRopeConnetPosition(i, 0, 0, angle, oldangle);
-		var end   = GetRopeConnetPosition(i, 0, 1, angle, oldangle);
+		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
+		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
 
 		var diff = Vec_Sub(end,start);
 		var diffangle = Vec_Angle(diff, [0,0]);
@@ -324,8 +315,8 @@ func UpdateLines()
 		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 2 );
 
 		// Draw the right line
-		var start = GetRopeConnetPosition(i, 1, 0, angle, oldangle);
-		var end   = GetRopeConnetPosition(i, 1, 1, angle, oldangle);
+		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
+		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
 		
 		var diff = Vec_Sub(end,start);
 		var diffangle = Vec_Angle(diff, [0,0]);
@@ -342,11 +333,11 @@ func UpdateLines()
 static const Ropeladder_Segment_LeftXOffset = 200;
 static const Ropeladder_Segment_RightXOffset = -100;
 
-func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
 {
-	if(SwitchRopes && index == 1 && fEnd == 0) fRight = !fRight;
-	if(!(index == 1 && fEnd == 0) && MirrorSegments == -1) fRight = !fRight;
-	if(fEnd == 0)
+	if (switch_ropes && index == 1 && !fEnd) fRight = !fRight;
+	if (!(index == 1 && !fEnd) && MirrorSegments == -1) fRight = !fRight;
+	if (!fEnd)
 	{
 		var start = [0,0];
 		if(fRight == 0)
@@ -359,9 +350,9 @@ func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int old
 			}
 			else
 			{
-				start = [GetX()*Ladder_Precision, GetY()*Ladder_Precision];
-				start[0] += -Cos(GetR(), 188)+Sin(GetR(), 113);
-				start[1] += -Sin(GetR(), 188)-Cos(GetR(), 113);
+				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				start[0] += -Cos(GetR(), 188) + Sin(GetR(), 113);
+				start[1] += -Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
 		else
@@ -470,13 +461,13 @@ public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
 local ActMap = {
-Hanging = {
-	Prototype = Action,
-	Name = "Hanging"
-},
+	Hanging = {
+		Prototype = Action,
+		Name = "Hanging"
+	},
 };
 local Name = "$Name$";
 local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
-local Collectible = 1;
+local Collectible = true;
 local Rebuy = true;
