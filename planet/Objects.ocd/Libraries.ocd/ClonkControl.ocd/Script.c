@@ -1158,7 +1158,8 @@ public func ControlJump()
 			ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
 	}
 
-	if (GetProcedure() == "SCALE")
+	// Jump speed of the wall kick is halved.
+	if (GetProcedure() == "SCALE" || GetAction() == "Climb")
 	{
 		ydir = this.JumpSpeed/2;
 	}
@@ -1167,8 +1168,8 @@ public func ControlJump()
 	{
 		SetPosition(GetX(),GetY()-1);
 
-		//Wall kick
-		if(GetProcedure() == "SCALE")
+		// Wall kick if scaling or climbing.
+		if(GetProcedure() == "SCALE" || GetAction() == "Climb")
 		{
 			AddEffect("WallKick",this,1);
 			SetAction("Jump");

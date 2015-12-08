@@ -348,8 +348,10 @@ public func FxIntClimbControlControl(object target, proplist effect, int ctrl, i
 		else
 		{
 			no_ladder_counter = 5;
-			SetAction("Jump");
-			SetXDir(-15);
+			if (GetComDir() == COMD_Up)
+				this->ObjectCommand("Jump");
+			else
+				this->ObjectComLetGo(-10);
 		}
 	}
 	else if (ctrl == CON_Right)
@@ -371,8 +373,10 @@ public func FxIntClimbControlControl(object target, proplist effect, int ctrl, i
 		else
 		{
 			no_ladder_counter = 5;
-			SetAction("Jump");
-			SetXDir(15);
+			if (GetComDir() == COMD_Up)
+				this->ObjectCommand("Jump");
+			else
+				this->ObjectComLetGo(10);
 		}
 	}
 	return true;
