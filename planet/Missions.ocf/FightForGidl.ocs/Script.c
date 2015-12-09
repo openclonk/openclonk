@@ -21,6 +21,8 @@ static const MAX_RELAUNCH = 10;
 
 func Initialize()
 {
+	// Wealth shown at all time
+	GUI_Controller->ShowWealth();
 	// Player homebase preparation
 	g_homebases = [];
 	// static variable init
