@@ -292,13 +292,8 @@ func ControlStop(object clonk, int control)
 
 private func AirshipPilot()
 {
-	//Looks for a clonk within the Gondola
-	var g = gondola;
-	var clonk = FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive),Find_InRect(g[0],g[1],g[2],g[3]));
-	if(clonk)
-		return clonk;
-	else
-		return false;
+	// Looks for a clonk within the gondola.
+	return FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive), Find_InRect(gondola[0], gondola[1], gondola[2], gondola[3]));
 }
 
 /* -- Airship Destruction --*/
