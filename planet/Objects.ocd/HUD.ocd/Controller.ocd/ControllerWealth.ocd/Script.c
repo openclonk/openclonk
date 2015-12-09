@@ -13,6 +13,8 @@
 static const GUI_Controller_Wealth_IconSize = 25;
 static const GUI_Controller_Wealth_IconMargin = 5;
 
+static GUI_Controller_Wealth_shown; // shown or hidden for newly joining players?
+
 local wealth_gui_menu;
 local wealth_gui_id;
 
@@ -25,6 +27,7 @@ public func ShowWealth()
 	// Definition call
 	if (GetType(this) == C4V_Def)
 	{
+		GUI_Controller_Wealth_shown = true; // for players joining later
 		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
@@ -45,6 +48,7 @@ public func HideWealth()
 	// Definition call
 	if (GetType(this) == C4V_Def)
 	{
+		GUI_Controller_Wealth_shown = false; // for players joining later
 		var plr;
 		for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
 		{
@@ -67,6 +71,7 @@ public func IsShowingWealth() { return wealth_display; }
 
 private func Construction()
 {
+	wealth_display = GUI_Controller_Wealth_shown; // initial show/hide setting
 	var plr = GetOwner();
 	var wealth = GetWealth(plr);
 
