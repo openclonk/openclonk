@@ -83,10 +83,10 @@ public func UpdateCaption(string title, bool available, int item_idx)
 
 public func ClickCaption() { return true; } // nothing to be done here (maybe expand/collapse in the future)
 
-public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_idx, bool was_last_selection, int extra_width, string hotkey)
+public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_idx, bool was_last_selection, int extra_width, string hotkey, string graphics)
 {
 	if (!menu) return false;
-	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+extra_width), Symbol = buy_def }, fontclr, bgclr, bgclr_hover;
+	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+extra_width), Symbol = buy_def, GraphicsName=graphics }, fontclr, bgclr, bgclr_hover;
 	if (available)
 	{
 		fontclr = 0x00ff00;

@@ -13,6 +13,9 @@ local techs;
 
 local is_selling; // temp to prevent recursion from object removal
 
+// Technology fields - queried by objects using them
+local tech_load_speed_multiplier = 100;
+
 static g_quickbuy_items;
 
 // Types for purchasable stuff
@@ -55,6 +58,7 @@ public func Construction(...)
 	
 	AddCaption("$Technology$");
 	AddHomebaseItem(new ITEMTYPE_Technology { item = Icon_World,cost = 100, tech = "AdvancedWeapons" });
+	AddHomebaseItem(new ITEMTYPE_Technology { item = Homebase_Icon, graphics="LoadSpeed", cost = 100, tech = "LoadSpeed" });
 	AddHomebaseItem(new ITEMTYPE_Technology { item = Icon_World,cost = 1000, tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 	
 	AddCaption("$Upgrades$");
@@ -94,7 +98,7 @@ public func UpdateIndexedItem(int index)
 		if (entry.is_caption)
 			return buy_menu->UpdateCaption(entry.title, available, index);
 		else
-			return buy_menu->UpdateBuyEntry(entry.item, available, entry.cost, index, index == last_buy_idx, entry.extra_width, entry.hotkey);
+			return buy_menu->UpdateBuyEntry(entry.item, available, entry.cost, index, index == last_buy_idx, entry.extra_width, entry.hotkey, entry.graphics);
 	}
 	return false;
 }
@@ -250,7 +254,19 @@ private func GainTechnology(proplist entry)
 private func GainAdvancedWeapons(proplist entry)
 {
 	// All done by requirements
+	return true;
 }
+
+private func GainLoadSpeed(proplist entry)
+{
+	// Increase player's load speed
+	tech_load_speed_multiplier = 30;
+	// Update all current weapons
+	for (var weapon in FindObjects(Find_Owner(GetOwner()), Find_Func("Gidl_IsRangedWeapon")))
+		weapon->Gidl_UpdateLoadTimes();
+	return true;
+}
+
 
 public func Definition(def)
 {
