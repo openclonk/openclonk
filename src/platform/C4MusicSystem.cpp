@@ -590,7 +590,7 @@ bool C4MusicSystem::ScheduleWaitTime()
 			wait_time_end = C4TimeMilliseconds::Now() + music_break;
 			if (::Config.Sound.Verbose)
 			{
-				LogF("MusicSystem: Pause (%d secs)", (int)music_break);
+				LogF("MusicSystem: Pause (%d msecs)", (int)music_break);
 			}
 			// After wait, do not resume previously started songs
 			for (C4MusicFile *check_file = Songs; check_file; check_file = check_file->pNext)
