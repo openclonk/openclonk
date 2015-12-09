@@ -84,6 +84,16 @@ public func ChangeToIgniter()
 	return true;
 }
 
+public func SetDynamiteCount(int new_count)
+{
+	count = BoundBy(new_count, 1, DYNA_MaxCount);
+	UpdatePicture();
+	// Update inventory if contained in a crew member.
+	if (Contained())
+		Contained()->~OnInventoryChange();
+	return;
+}
+
 private func UpdatePicture()
 {
 	SetGraphics(Format("%d", 6 - count), DynamiteBox, 1, GFXOV_MODE_Picture);
