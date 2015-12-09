@@ -146,9 +146,21 @@ private func FxIntFlightTimer(object target, proplist effect, int time)
 	}
 	if (time > float_time + fly_time + 35)
 	{
-		Pop();
-		// Pop deletes this object
-		return FX_Execute_Kill;
+		if (TryPop())
+		{
+			// Pop deletes this object
+			return FX_Execute_Kill;
+		}
+		else
+		{
+			// Try again in a second or so.
+			fly_time += 20 + Random(20);
+			if (!Random(5) || GetContact())
+			{
+				Pop(true);
+				return FX_Execute_Kill;
+			}
+		}
 	}
 
 	SetSpeed(xdir, ydir);
@@ -166,11 +178,60 @@ public func OnProjectileHit() { Pop(); }
 public func Damage() { Pop(); }
 public func Harvest() { Pop(); }
 
-public func Pop()
+// Checks whether the ground below would be suitable for planting and then pops the fruit.
+public func TryPop()
 {
-	CreateParticle("CottonBalloon", 0,0, PV_Random(-15,15), PV_Random(-10,-5), 100, Particles_CottonBalloon(), RandomX(4,8));
-	var seed = CreateObject(CottonSeed);
-	if (OnFire()) seed->Incinerate();
+	// Find the ground below.
+	var max_h = 300;
+	var stepsize = 20;
+	var y = 0;
+	for (; y < max_h; y += stepsize)
+		if (GBackSolid(0, y))
+			break;
+	// No ground hit?
+	if (y >= max_h) return false;
+	
+	// Ground found! Then check again in smaller steps to actually find the surface.
+	y -= stepsize;
+	for (var i = 0; i < stepsize; i += 2)
+	{
+		y += 2;
+		if (!GBackSolid(0, y)) continue;
+		// Solid! But is it any good?
+		if (GetMaterialVal("Soil", "Material", GetMaterial(0, y)) != 1)
+			return false;
+		break;
+	}
+	
+	// Soil found! Overpopulated already?
+	if (ObjectCount(Find_AtPoint(0, y), Find_ID(Cotton)) > 1) return false;
+	
+	// Spot found! Place a plant and cast some "seed" like particles.
+	var plant = CreateObjectAbove(Cotton, 0, y, GetOwner());
+	plant->SetCon(1);
+	
+	var particles = 
+	{
+		Prototype = Particles_Glimmer(),
+		ForceX = PV_Wind(10),
+		Stretch = PV_Speed(500, 500),
+		R = 255, G = 255, B = 255,
+		BlitMode = nil,
+		Size = PV_Linear(1, 0)
+	};
+	CreateParticle("SphereSpark", 0, 0, PV_Random(-5, 5), PV_Random(-5, 20), PV_Random(100, 300), particles, 30);
+	Pop(true);
+	return true;
+}
+
+public func Pop(bool no_seed)
+{
+	CreateParticle("CottonBalloon", 0,0, PV_Random(-30,30), PV_Random(-30,30), PV_Random(40, 60), Particles_CottonBalloon(), 50);
+	if (!no_seed)
+	{
+		var seed = CreateObject(CottonSeed);
+		if (OnFire()) seed->Incinerate();
+	}
 	RemoveObject();
 }
 
