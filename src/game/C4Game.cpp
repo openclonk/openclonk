@@ -1793,22 +1793,15 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, bool 
 		// Decompile (without players for scenario sections)
 		DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact, fSaveSync), numbers), &Buf, "Game");
 
-		// Clear alternate saving method
-		hGroup.Delete(C4CFN_ScenarioObjectsScript);
-
-		// Empty? All default; just remove from group then
-		if (!Buf.getLength())
-		{
-			hGroup.Delete(C4CFN_Game);
-			return true;
-		}
+		// Empty? All default save a Game.txt anyway because it is used to signal the engine to not load Objects.c
+		if (!Buf.getLength()) Buf.Copy(" ");
 
 		// Save
 		return hGroup.Add(C4CFN_Game,Buf,false,true);
 	}
 	else
 	{
-		// Clear alternate saving method
+		// Clear any exact game data in case scenario is saved from savegame resume
 		hGroup.Delete(C4CFN_Game);
 
 		// Save objects to file using system scripts
