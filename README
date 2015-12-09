@@ -40,7 +40,7 @@ system. For Debian based distributions, you will need these packages:
   build-essential cmake imagemagick libfreetype6-dev libgl1-mesa-dev
   libglew-dev libgtk-3-dev libjpeg-dev libpng-dev libsdl1.2-dev
   libsdl-mixer1.2-dev libupnp-dev libxrandr-dev x11proto-core-dev
-  zlib1g-dev
+  zlib1g-dev libalut0
 At least gcc-4.9 is required.
 
 Windows Specific
