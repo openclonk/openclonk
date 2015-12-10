@@ -553,5 +553,7 @@ func InitializeObjects()
 
 	CreateObject(Rule_Gravestones);
 
+	CreateObject(Rule_Restart);
+
 	return true;
 }

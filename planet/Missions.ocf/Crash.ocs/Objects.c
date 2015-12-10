@@ -13,6 +13,10 @@ func InitializeObjects()
 	Rule_BaseRespawn001->SetInventoryTransfer(true);
 	Rule_BaseRespawn001->SetFreeCrew(true);
 
+	CreateObject(Rule_TeamAccount);
+
+	CreateObject(Rule_Restart);
+
 	CreateObjectAbove(Tree_Coniferous, 380, 877);
 
 	var Tree_Coniferous2001 = CreateObjectAbove(Tree_Coniferous2, 562, 563);

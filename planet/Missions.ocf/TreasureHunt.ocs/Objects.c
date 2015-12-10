@@ -34,6 +34,8 @@ func InitializeObjects()
 
 	CreateObject(Rule_NoPowerNeed);
 
+	CreateObject(Rule_Restart);
+
 	var LargeCaveMushroom001 = CreateObjectAbove(LargeCaveMushroom, 1308, 1038);
 	LargeCaveMushroom001->SetClrModulation(0xffe4effc);
 	var LargeCaveMushroom002 = CreateObjectAbove(LargeCaveMushroom, 1345, 1028);

@@ -16,6 +16,8 @@ func InitializeObjects()
 
 	CreateObject(Rule_TeamAccount);
 
+	CreateObject(Rule_Restart);
+
 	CreateObjectAbove(EnvPack_Scarecrow, 1218, 440);
 
 	CreateObjectAbove(EnvPack_Guidepost, 835, 369);
