@@ -860,7 +860,7 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 	{
 		FirstViewport = cvp->Next;
 		delete cvp;
-		StartSoundEffect("CloseViewport");
+		StartSoundEffect("Click");
 	}
 	// Take out of the chain
 	else for (C4Viewport * prev = FirstViewport; prev; prev = prev->Next)
@@ -869,7 +869,7 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 			{
 				prev->Next = cvp->Next;
 				delete cvp;
-				StartSoundEffect("CloseViewport");
+				StartSoundEffect("Click");
 			}
 		}
 	// Recalculate viewports
