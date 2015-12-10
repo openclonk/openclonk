@@ -129,7 +129,6 @@ bool C4MusicSystem::Init(const char * PlayList)
 {
 	// init mod
 	if (!MODInitialized && !InitializeMOD()) return false;
-
 	// Might be reinitialisation
 	ClearSongs();
 	// Global music file
@@ -139,10 +138,10 @@ bool C4MusicSystem::Init(const char * PlayList)
 	// read MoreMusic.txt
 	LoadMoreMusic();
 	// set play list
+	SCounter = 0;
 	if (PlayList) SetPlayList(PlayList); else SetPlayList(0);
 	// set initial volume
 	UpdateVolume();
-
 	// ok
 	return true;
 }
@@ -458,19 +457,37 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop, int fadetime_ms, do
 			if (allow_break) ScheduleWaitTime();
 			if (!is_waiting)
 			{
+				if (::Config.Sound.Verbose) LogF("  ASongCount=%d SCounter=%d", ASongCount, SCounter);
 				// try to find random song
-				for (int i = 0; i <= 1000; i++)
+				int32_t new_file_playability = 0, new_file_num_rolls = 0;
+				for (C4MusicFile *check_file = Songs; check_file; check_file = check_file->pNext)
 				{
-					int nmb = SafeRandom(std::max(ASongCount / 2 + ASongCount % 2, ASongCount - SCounter));
-					int j;
-					for (j = 0, NewFile = Songs; NewFile; NewFile = NewFile->pNext)
-						if (!NewFile->NoPlay)
-							if (NewFile->LastPlayed == -1 || NewFile->LastPlayed < SCounter - ASongCount / 2)
-							{
-								j++;
-								if (j > nmb) break;
-							}
-					if (NewFile) break;
+					if (!check_file->NoPlay)
+					{
+						// Categorize song playability:
+						// 0 = no song found yet
+						// 1 = song was played recently
+						// 2 = song not played recently
+						// 3 = song was not played yet
+						int32_t check_file_playability = (check_file->LastPlayed < 0) ? 3 : (SCounter - check_file->LastPlayed <= ASongCount / 2) ? 1 : 2;
+						if (::Config.Sound.Verbose) LogF("  Song LastPlayed %d [%d] (%s)", int(check_file->LastPlayed), int(check_file_playability), check_file->GetDebugInfo().getData());
+						if (check_file_playability > new_file_playability)
+						{
+							// Found much better fit. Play this and reset number of songs found in same plyability
+							new_file_num_rolls = 1;
+							NewFile = check_file;
+							new_file_playability = check_file_playability;
+						}
+						else if (check_file_playability == new_file_playability)
+						{
+							// Found a fit in the same playability category: Roll for it
+							if (!SafeRandom(++new_file_num_rolls)) NewFile = check_file;
+						}
+						else
+						{
+							// Worse playability - ignore this song
+						}
+					}
 				}
 			}
 
@@ -685,7 +702,6 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 		pFile->NoPlay = true;
 	}
 	ASongCount = 0;
-	SCounter = 0;
 	if (szPlayList && *szPlayList)
 	{
 		// match
