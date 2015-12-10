@@ -133,7 +133,12 @@ C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int
 	if (!Config.Sound.RXSound) return NULL;
 	// Get sound
 	C4SoundEffect *csfx;
-	if (!(csfx=GetEffect(szSndName))) return NULL;
+	if (!(csfx = GetEffect(szSndName)))
+	{
+		// Warn about missing or incorrectly spelled sound to allow finding mistakes earlier.
+		DebugLogF("Warning: could not find sound matching '%s'", szSndName);
+		return NULL;
+	}
 	// Play
 	return csfx->New(fLoop, iVolume, pObj, iCustomFalloffDistance, iPitch, modifier);
 }
