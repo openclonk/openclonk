@@ -1,5 +1,6 @@
 Requirements=Benoetigt
 Tier=Stufe
+Cost=Preis
 
 Weapons=Waffen
 Items=Gegenstaende

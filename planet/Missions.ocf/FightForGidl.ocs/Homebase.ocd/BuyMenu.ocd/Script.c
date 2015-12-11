@@ -102,7 +102,9 @@ public func Open()
 
 public func RemoveItem(idx)
 {
+	OnMenuEntryHoverExit(idx, idx, GetOwner()); // remove description
 	if (menu) return menu->RemoveItem(idx, container_id);
+	
 	return false;
 }
 

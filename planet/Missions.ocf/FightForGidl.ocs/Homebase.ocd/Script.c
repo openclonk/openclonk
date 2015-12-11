@@ -129,6 +129,15 @@ public func GetEntryInformation(int entry_idx)
 {
 	// Fill with current information for this entry
 	var entry = base_material[entry_idx];
+	// Append (Tier x/y) to name
+	if (entry.tiers)
+	{
+		if (!entry.base_name) entry.base_name = entry.name;
+		var tier = techs[entry.tech];
+		entry.name = Format("%s ($Tier$ %d/%d)", entry.base_name, tier+1, entry.tiers);
+	}
+	// Compose info message
+	// Info message: Requirements
 	var msg = "";
 	if (entry.requirements)
 	{
@@ -146,6 +155,11 @@ public func GetEntryInformation(int entry_idx)
 	else
 	{
 		msg = "";
+	}
+	// Info message: Cannot afford
+	if (entry.cost > GetWealth(GetOwner()))
+	{
+		msg = Format("%s<c ff0000>$Cost$: %d</c>", msg, entry.cost);
 	}
 	entry.message = msg;
 	return entry;
@@ -219,9 +233,14 @@ public func OnBuySelection(int callback_idx)
 		entry.hidden = true;
 		if (buy_menu) buy_menu->RemoveItem(callback_idx);
 	}
-	else if (!entry.tech)
+	else if (entry.tech)
 	{
-		// Remember what has been bought (except for multi-tier tech)
+		// Multi-tier tech upgrade
+		UpdateIndexedItem(callback_idx);
+	}
+	else
+	{
+		// Non-tech: Remember what has been bought
 		if (last_buy_idx != callback_idx)
 		{
 			var last_last_buy_idx = last_buy_idx;

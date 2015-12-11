@@ -1,5 +1,6 @@
 Requirements=Requires
 Tier=Tier
+Cost=Price
 
 Weapons=Weapons
 Items=Items
