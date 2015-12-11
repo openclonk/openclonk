@@ -25,16 +25,16 @@ public func Construction(...)
 	menu->SetMouseOverCallback(this, "OnMenuEntryHover");
 	menu->SetMouseOutCallback(this, "OnMenuEntryHoverExit");
 	menu.Player = nil; // by visibility
-	menu.Visibility = VIS_None; // default off - enable through button.
 	menu.Bottom = "100% - 5em";
 	menu.BackgroundColor = 0x20000000;
+	menu.Visibility = VIS_None;
 	// Create description box
 	description_box =
 	{
 		Top = menu.Bottom,
 		Margin = ["0em", "0em"],
 		BackgroundColor = 0x40000000,
-		Target = menu, // for visibility bound to menu
+		Target = this,
 		ID = 0xffffef,
 		name_part =
 		{
@@ -66,6 +66,8 @@ public func Construction(...)
 		Right = "100% - 1em",
 		Bottom = "100% - 4em",
 		Style = GUI_Multiple,
+		Target = menu, // bind visibility to menu object
+		ID = 0xffffee,
 		
 		menu = menu,
 		description_box = description_box
@@ -107,7 +109,7 @@ public func RemoveItem(idx)
 
 /* Buy menu entries */
 
-public func UpdateCaption(string title, bool available, int item_idx)
+public func UpdateCaption(string title, bool available, proplist entry, int item_idx)
 {
 	if (!menu) return false;
 	var custom_entry = { Bottom = "+1.3em" }, fontclr, bgclr, bgclr_hover;
@@ -130,10 +132,10 @@ public func UpdateCaption(string title, bool available, int item_idx)
 
 public func ClickCaption() { return true; } // nothing to be done here (maybe expand/collapse in the future)
 
-public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_idx, bool was_last_selection, int extra_width, string hotkey, string graphics)
+public func UpdateBuyEntry(id buy_def, bool available, proplist entry, int callback_idx, bool was_last_selection)
 {
 	if (!menu) return false;
-	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+extra_width), Symbol = buy_def, GraphicsName=graphics }, fontclr, bgclr, bgclr_hover;
+	var custom_entry = {Bottom = "+2em", Right = Format("+%dem", 2+entry.extra_width), Symbol = buy_def, GraphicsName=entry.graphic }, fontclr, bgclr, bgclr_hover;
 	if (available)
 	{
 		fontclr = 0x00ff00;
@@ -146,16 +148,18 @@ public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_i
 		bgclr = 0x50000000;
 		bgclr_hover = 0x50ff0000;
 	}
-	custom_entry.price = {
-		Text = Format("{{Icon_Wealth}}<c %x>%d</c>", fontclr, price),
-		Style = GUI_TextRight | GUI_TextBottom
-	};
-	custom_entry.Style = GUI_FitChildren;
-	//if (!price) custom_entry.price.Visibility = VIS_None;
-	if (hotkey)
+	if (entry.cost)
+	{
+		custom_entry.price = {
+			Text = Format("{{Icon_Wealth}}<c %x>%d</c>", fontclr, entry.cost),
+			Style = GUI_TextRight | GUI_TextBottom
+		};
+		custom_entry.Style = GUI_FitChildren;
+	}
+	if (entry.hotkey)
 	{
 		custom_entry.hotkey = {
-			Text = Format("<c %x>[%s]</c>", 0xffff00, hotkey),
+			Text = Format("<c %x>[%s]</c>", 0xffff00, entry.hotkey),
 			Style = GUI_TextRight | GUI_TextTop
 		};
 	}

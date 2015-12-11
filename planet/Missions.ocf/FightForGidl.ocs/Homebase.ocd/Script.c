@@ -62,7 +62,7 @@ public func Construction(...)
 	AddHomebaseItem(new ITEMTYPE_Technology { name="$MasterWeapons$", item = Icon_World,cost = 1000, desc = "$DescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 	
 	AddCaption("$Upgrades$");
-	AddHomebaseItem(new ITEMTYPE_Technology { name="$LoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed", cost = 100, desc = "$DescLoadSpeed$", tech = "LoadSpeed" });
+	AddHomebaseItem(new ITEMTYPE_Technology { name="$LoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$DescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
 	AddCaption("$Artifacts$");
 
 	// Buy menu always open (but hidden at start)
@@ -111,10 +111,16 @@ public func UpdateIndexedItem(int index)
 			for (var req in entry.requirements)
 				if (!techs[req])
 					available = false;
+		if (entry.tiers)
+		{
+			var tier = techs[entry.tech];
+			entry.graphic = Format(entry.graphics, tier+1);
+			entry.cost = entry.costs[tier];
+		}
 		if (entry.is_caption)
-			return buy_menu->UpdateCaption(entry.title, available, index);
+			return buy_menu->UpdateCaption(entry.title, available, entry, index);
 		else
-			return buy_menu->UpdateBuyEntry(entry.item, available, entry.cost, index, index == last_buy_idx, entry.extra_width, entry.hotkey, entry.graphics);
+			return buy_menu->UpdateBuyEntry(entry.item, available, entry, index, index == last_buy_idx, tier);
 	}
 	return false;
 }
@@ -207,15 +213,15 @@ public func OnBuySelection(int callback_idx)
 			}
 		}
 	}
-	// Buy only once? (all technologies)
+	// Buy only once? (all technologies without further upgrade tiers)
 	if (entry.remove_after_buy)
 	{
 		entry.hidden = true;
 		if (buy_menu) buy_menu->RemoveItem(callback_idx);
 	}
-	else
+	else if (!entry.tech)
 	{
-		// Remember what has been bought
+		// Remember what has been bought (except for multi-tier tech)
 		if (last_buy_idx != callback_idx)
 		{
 			var last_last_buy_idx = last_buy_idx;
@@ -282,8 +288,13 @@ public func QuickBuyItem(id item)
 
 private func GainTechnology(proplist entry)
 {
-	techs[entry.tech] = true;
-	Call(Format("~Gain%s", entry.tech));
+	// Reach next tier
+	var tier = techs[entry.tech] + 1;
+	techs[entry.tech] = tier;
+	// For multi-tier-technologies, remove entry when last tier has been reached
+	if (entry.tiers) entry.remove_after_buy = (tier == entry.tiers);
+	// Technology gain callback.
+	Call(Format("~Gain%s", entry.tech), entry, tier);
 	// Update any related techs that may become available
 	var n = GetLength(base_material), req;
 	for (var i=0; i<n; ++i)
@@ -293,16 +304,16 @@ private func GainTechnology(proplist entry)
 	return true;
 }
 
-private func GainAdvancedWeapons(proplist entry)
+private func GainAdvancedWeapons(proplist entry, int tier)
 {
 	// All done by requirements
 	return true;
 }
 
-private func GainLoadSpeed(proplist entry)
+private func GainLoadSpeed(proplist entry, int tier)
 {
 	// Increase player's load speed
-	tech_load_speed_multiplier = 30;
+	tech_load_speed_multiplier = [100, 40, 20, 1][tier];
 	// Update all current weapons
 	for (var weapon in FindObjects(Find_Owner(GetOwner()), Find_Func("Gidl_IsRangedWeapon")))
 		weapon->Gidl_UpdateLoadTimes();

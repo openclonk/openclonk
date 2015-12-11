@@ -1,4 +1,5 @@
 Requirements=Benoetigt
+Tier=Stufe
 
 Weapons=Waffen
 Items=Gegenstaende

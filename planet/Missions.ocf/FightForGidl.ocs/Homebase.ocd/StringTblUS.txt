@@ -1,4 +1,5 @@
 Requirements=Requires
+Tier=Tier
 
 Weapons=Weapons
 Items=Items
