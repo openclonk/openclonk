@@ -1,5 +1,19 @@
+Requirements=Benoetigt
+
 Weapons=Waffen
 Items=Gegenstaende
 Technology=Technologie
 Upgrades=Verbesserungen
 Artifacts=Artefakte
+
+DescBow=Klassische Fernkampfwaffe. Endlos Pfeile.
+DescMusket=Moderne Feuerwaffe. Endlos Munition.
+DescGrenadeLauncher=Schleudert Bomben in die Gegner. Endlos Bomben.
+DescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
+
+LoadSpeed=Nachladezeit
+DescLoadSpeed=Verkuerzt den Ladevorgang von Fernkampfwaffen.
+AdvancedWeapons=Fortgeschrittene Waffen
+DescAdvancedWeapons=Schaltet mehr Waffen und Upgrades frei.
+MasterWeapons=Meisterwaffen
+DescMasterWeapons=Schaltet mehr Waffen und Upgrades frei.

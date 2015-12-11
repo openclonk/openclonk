@@ -9,7 +9,7 @@
 local buy_menu;
 local base_material; // array of base material entries
 local last_buy_idx;
-local techs;
+local techs, requirement_names;
 
 local is_selling; // temp to prevent recursion from object removal
 
@@ -38,34 +38,41 @@ public func Construction(...)
 {
 	base_material = [];
 	techs = {};
+	requirement_names = {};
 	last_buy_idx = -1;
 	// Buy menu
 	buy_menu = CreateObject(GUI_BuyMenu, 0,0, GetOwner());
 	buy_menu->SetHomebase(this);
 	// Initial availability of items
 	AddCaption("$Weapons$");
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Bow,                  ammo = Arrow });
+	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Bow,                  ammo = Arrow, desc = "$DescBow$" });
 	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Sword,     cost = 25 });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = Firestone, cost = 5  });
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadShot, requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = IronBomb,  cost = 15,  requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = DynamiteBox,cost = 15,  requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, requirements = ["MasterWeapons"] });
+	AddHomebaseItem(new ITEMTYPE_Consumable { item = Firestone, cost = 5});
+	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadShot, desc = "$DescMusket$",     requirements = ["AdvancedWeapons"] });
+	AddHomebaseItem(new ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
+	AddHomebaseItem(new ITEMTYPE_Consumable { item = DynamiteBox,cost = 15,                                            requirements = ["AdvancedWeapons"] });
+	AddHomebaseItem(new ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$DescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 	
 	AddCaption("$Items$");
 	AddHomebaseItem(new ITEMTYPE_Consumable { item = Bread,     cost = 5  });
-	AddHomebaseItem(new ITEMTYPE_Weapon { item = Hammer,    cost = 1000, extra_width = 1 });
+	AddHomebaseItem(new ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$DescHammer$", extra_width = 1 });
 	
 	AddCaption("$Technology$");
-	AddHomebaseItem(new ITEMTYPE_Technology { item = Icon_World,cost = 100, tech = "AdvancedWeapons" });
-	AddHomebaseItem(new ITEMTYPE_Technology { item = Homebase_Icon, graphics="LoadSpeed", cost = 100, tech = "LoadSpeed" });
-	AddHomebaseItem(new ITEMTYPE_Technology { item = Icon_World,cost = 1000, tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+	AddHomebaseItem(new ITEMTYPE_Technology { name="$AdvancedWeapons$", item = Icon_World,cost = 100, desc="$DescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	AddHomebaseItem(new ITEMTYPE_Technology { name="$MasterWeapons$", item = Icon_World,cost = 1000, desc = "$DescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
 	
 	AddCaption("$Upgrades$");
+	AddHomebaseItem(new ITEMTYPE_Technology { name="$LoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed", cost = 100, desc = "$DescLoadSpeed$", tech = "LoadSpeed" });
 	AddCaption("$Artifacts$");
 
 	// Buy menu always open (but hidden at start)
 	buy_menu->Open();
+	return true;
+}
+
+public func Destruction()
+{
+	if (buy_menu) buy_menu->RemoveObject();
 	return true;
 }
 
@@ -76,6 +83,15 @@ public func AddCaption(string title, array requirements)
 
 public func AddHomebaseItem(proplist entry)
 {
+	// Default name and description
+	if (entry.item)
+	{
+		if (!entry.name) entry.name = entry.item.Name;
+		if (!entry.desc) entry.desc = entry.item.Description;
+	}
+	// Remember tech name mapping
+	if (entry.tech) requirement_names[entry.tech] = entry.name;
+	// Add to end of list
 	var idx = GetLength(base_material);
 	base_material[idx] = entry;
 	var quickbuy_idx = GetIndexOf(g_quickbuy_items, entry.item);
@@ -101,6 +117,32 @@ public func UpdateIndexedItem(int index)
 			return buy_menu->UpdateBuyEntry(entry.item, available, entry.cost, index, index == last_buy_idx, entry.extra_width, entry.hotkey, entry.graphics);
 	}
 	return false;
+}
+
+public func GetEntryInformation(int entry_idx)
+{
+	// Fill with current information for this entry
+	var entry = base_material[entry_idx];
+	var msg = "";
+	if (entry.requirements)
+	{
+		var req_str = "";
+		var req_sep = "";
+		for (var req in entry.requirements)
+		{
+			var clr = 0xff00;
+			if (!techs[req]) clr = 0xff0000;
+			req_str = Format("%s%s<c %x>%s</c>", req_str, req_sep, clr, requirement_names[req]);
+			req_sep = ", ";
+		}
+		msg = Format("$Requirements$: %s|", req_str);
+	}
+	else
+	{
+		msg = "";
+	}
+	entry.message = msg;
+	return entry;
 }
 
 public func OnBuySelection(int callback_idx)
@@ -178,7 +220,7 @@ public func OnBuySelection(int callback_idx)
 		{
 			var last_last_buy_idx = last_buy_idx;
 			last_buy_idx = callback_idx;
-			UpdateIndexedItem(last_last_buy_idx);
+			if (last_last_buy_idx >= 0) UpdateIndexedItem(last_last_buy_idx);
 			UpdateIndexedItem(last_buy_idx);
 		}
 	}

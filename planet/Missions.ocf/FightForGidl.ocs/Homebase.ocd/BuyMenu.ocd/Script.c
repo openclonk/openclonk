@@ -6,9 +6,12 @@
 	@authors Sven2
 */
 
+local container, container_id; // container window containing menu entries and other stuff
 local menu; // the actual menu (a MenuStyle_Grid)
+local description_box, description_name_id, description_desc_id, description_message_id; // box showing name+desc of currently hovered item
 local homebase; // associated base
 local buymenu_toggle_id; // button to toggle menu visibility
+local hovered_entry_index; // keep track of hovered entry to update description box
 
 /* Creation / Destruction */
 
@@ -19,14 +22,54 @@ public func Construction(...)
 	// invisible if the menu closes. So just create an extra object for now.
 	menu = CreateObject(MenuStyle_Grid, 0,0, GetOwner());
 	menu->SetPermanent(true);
-	menu.Style |= GUI_Multiple;
+	menu->SetMouseOverCallback(this, "OnMenuEntryHover");
+	menu->SetMouseOutCallback(this, "OnMenuEntryHoverExit");
 	menu.Player = nil; // by visibility
 	menu.Visibility = VIS_None; // default off - enable through button.
-	menu.Left = "100% - 12em";
-	menu.Top = "4em";
-	menu.Right = "100% - 4em";
-	menu.Bottom = "90% - 12em";
+	menu.Bottom = "100% - 5em";
 	menu.BackgroundColor = 0x20000000;
+	// Create description box
+	description_box =
+	{
+		Top = menu.Bottom,
+		Margin = ["0em", "0em"],
+		BackgroundColor = 0x40000000,
+		Target = menu, // for visibility bound to menu
+		ID = 0xffffef,
+		name_part =
+		{
+			Bottom = "1em",
+			Left = "0.2em",
+			ID = description_name_id = 3,
+			Target = this
+		},
+		desc_part =
+		{
+			Top = "1em",
+			Bottom = "3em",
+			ID = description_desc_id = 4,
+			Target = this,
+		},
+		message_part =
+		{
+			Top = "3em",
+			Bottom = "5em",
+			ID = description_message_id = 5,
+			Target = this,
+		}
+	};
+	// overall container
+	container =
+	{
+		Left = "100% - 14em",
+		Top = "4em",
+		Right = "100% - 1em",
+		Bottom = "100% - 4em",
+		Style = GUI_Multiple,
+		
+		menu = menu,
+		description_box = description_box
+	};
 	// Create button to show/hide menu
 	CreateToggleVisibilityButton();
 	return true;
@@ -34,6 +77,8 @@ public func Construction(...)
 
 public func Destruction(...)
 {
+	if (container_id) GuiClose(container_id);
+	if (menu) menu->RemoveObect();
 	DestroyToggleVisibilityButton();
 	return true;
 }
@@ -45,15 +90,17 @@ public func SetHomebase(object to)
 }
 
 // Forward menu operations
-public func Open(...)
+public func Open()
 {
-	if (menu) return menu->Open(...);
+	if (container_id) GuiClose(container_id);
+	container_id = GuiOpen(container);
+	hovered_entry_index = -1;
 	return false;
 }
 
 public func RemoveItem(idx)
 {
-	if (menu) return menu->RemoveItem(idx);
+	if (menu) return menu->RemoveItem(idx, container_id);
 	return false;
 }
 
@@ -77,7 +124,7 @@ public func UpdateCaption(string title, bool available, int item_idx)
 	custom_entry.BackgroundColor = bgclr;
 	custom_entry.Text = Format("  <c %x>%s</c>", fontclr, title);
 	custom_entry.Style = GUI_IgnoreMouse | GUI_TextBottom;
-	menu->AddItem(GetID(), nil, item_idx, this, this.ClickCaption, item_idx, custom_entry, nil, true);
+	menu->AddItem(GetID(), nil, item_idx, this, this.ClickCaption, item_idx, custom_entry, container_id, true);
 	return true;
 }
 
@@ -99,14 +146,12 @@ public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_i
 		bgclr = 0x50000000;
 		bgclr_hover = 0x50ff0000;
 	}
-	if (price)
-	{
-		custom_entry.price = {
-			Text = Format("{{Icon_Wealth}}<c %x>%d</c>", fontclr, price),
-			Style = GUI_TextRight | GUI_TextBottom
-		};
-		custom_entry.Style = GUI_FitChildren;
-	}
+	custom_entry.price = {
+		Text = Format("{{Icon_Wealth}}<c %x>%d</c>", fontclr, price),
+		Style = GUI_TextRight | GUI_TextBottom
+	};
+	custom_entry.Style = GUI_FitChildren;
+	//if (!price) custom_entry.price.Visibility = VIS_None;
 	if (hotkey)
 	{
 		custom_entry.hotkey = {
@@ -121,7 +166,7 @@ public func UpdateBuyEntry(id buy_def, bool available, int price, int callback_i
 		};
 	}
 	custom_entry.BackgroundColor = {Std = bgclr, OnHover = bgclr_hover };
-	menu->AddItem(buy_def, nil, callback_idx, this, this.ClickBuyButton, callback_idx, custom_entry, nil, true);
+	menu->AddItem(buy_def, nil, callback_idx, this, this.ClickBuyButton, callback_idx, custom_entry, container_id, true);
 	return true;
 }
 
@@ -136,16 +181,44 @@ public func ClickBuyButton(int callback_idx, entry_id, int player)
 	return false;
 }
 
+public func OnMenuEntryHover(int entry_idx, int entry_id, int player)
+{
+	if (homebase && homebase[0])
+	{
+		if (player != homebase[0]->GetOwner()) return false; // wat?
+		var info = homebase[0]->GetEntryInformation(entry_idx);
+		if (!info) info = {}; // clear boxes on invalid
+		GuiUpdateText(Format("<c ffff00>%s</c>", info.name ?? ""), container_id, description_name_id, this);
+		GuiUpdateText(info.desc ?? "", container_id, description_desc_id, this);
+		GuiUpdateText(info.message ?? "", container_id, description_message_id, this);
+		hovered_entry_index = entry_idx;
+		return true;
+	}
+	return false;
+}
+
+public func OnMenuEntryHoverExit(int entry_idx, int entry_id, int player)
+{
+	if (homebase && homebase[0])
+	{
+		if (player != homebase[0]->GetOwner()) return false; // wat?
+		if (hovered_entry_index == entry_idx) // must check for index because next Hover callback might have arrived before HoverExit callback
+		{
+			GuiUpdateText("", container_id, description_name_id, this);
+			GuiUpdateText("", container_id, description_desc_id, this);
+			GuiUpdateText("", container_id, description_message_id, this);
+		}
+		return true;
+	}
+	return false;
+}
+
 
 /* Buy menu open/close button */
 
 private func CreateToggleVisibilityButton()
 {
 	var plr = GetOwner();
-	// Place the button just below the wealth display
-	// (in tenths of em)
-	var margin = 5;
-	var whole = margin + 25;
 	
 	var hotkey_string = GetPlayerControlAssignment(GetOwner(), CON_ToggleShop, true);
 	if (hotkey_string && GetLength(hotkey_string) > 0)
@@ -158,10 +231,11 @@ private func CreateToggleVisibilityButton()
 		Target = this,
 		Player = plr,
 		Style = GUI_Multiple | GUI_TextHCenter | GUI_TextBottom,
-		Left = Format("100%%%s", ToEmString(-whole)),
-		Right = Format("100%%%s", ToEmString(-margin)),
-		Top = ToEmString(margin+whole),
-		Bottom = ToEmString(2*whole),
+		// Place the button just left of the wealth display
+		Left = "100% - 9em",
+		Right = "100% - 6.5em",
+		Top = "0.5em",
+		Bottom = "3em",
 		Priority = 1, // Z order?
 		// Hover child element because a root window cannot collect clicks properly
 		hover = {
