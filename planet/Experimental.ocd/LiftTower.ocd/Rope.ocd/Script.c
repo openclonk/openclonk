@@ -82,16 +82,16 @@ func UpdateLines()
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
 		// Calculate the angle to the previous segment
-		var angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i-1][0][0], lib_rope_particles[i-1][0][1]);
+		var angle = Angle(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i-1].x, lib_rope_particles[i-1].y);
 
 		// Draw the left line
-		var start = lib_rope_particles[i-1][0][:];
-		var end   = lib_rope_particles[i][0][:];
+		var start = [lib_rope_particles[i-1].x, lib_rope_particles[i-1].y];
+		var end   = [lib_rope_particles[i].x, lib_rope_particles[i].y];
 
 		if(i == 1 && lib_rope_particle_count > 2)
 		{
-			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
-			end = lib_rope_particles[0][0][:];
+			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
+			end = [lib_rope_particles[0].x, lib_rope_particles[0].y];
 			end[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			end[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 			lib_rope_segments[i]->SetGraphics("Invis");
@@ -99,8 +99,8 @@ func UpdateLines()
 		
 		if(i == 2)
 		{
-			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
-			start = lib_rope_particles[0][0][:];
+			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
+			start = [lib_rope_particles[0].x, lib_rope_particles[0].y];
 			start[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			start[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 			lib_rope_segments[i]->SetGraphics("Short");
@@ -113,7 +113,7 @@ func UpdateLines()
 	
 		if(i ==  lib_rope_particle_count-1)
 		{
-			var old = lib_rope_particles[i-2][0][:];
+			var old = [lib_rope_particles[i-2].x, lib_rope_particles[i-2].y];
 			var old_diff = Vec_Sub(start,old);
 			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
 			if(!o_length) diff = old_diff;
@@ -134,7 +134,7 @@ func UpdateLines()
 func GetHookAngle()
 {
 	if(lib_rope_particle_count > 3)
-	return Angle(lib_rope_particles[-2][0][0], lib_rope_particles[-2][0][1], lib_rope_particles[-3][0][0], lib_rope_particles[-3][0][1])+180;
+	return Angle(lib_rope_particles[-2].x, lib_rope_particles[-2].y, lib_rope_particles[-3].x, lib_rope_particles[-3].y)+180;
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
@@ -161,7 +161,7 @@ func ForcesOnObjects()
 	var redo = LengthAutoTryCount();
 	while(lib_rope_length_auto && redo)
 	{
-		var speed = Vec_Length(Vec_Sub(lib_rope_particles[-1][0], lib_rope_particles[-1][1]));
+		var speed = Vec_Length(Vec_Sub([lib_rope_particles[-1].x, lib_rope_particles[-1].y], [lib_rope_particles[-1].oldx, lib_rope_particles[-1].oldy]));
 		if(lib_rope_length == GetMaxLength())
 		{
 			if(ObjContact(lib_rope_objects[1][0]))
@@ -189,8 +189,8 @@ func ForcesOnObjects()
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
-		var xdir = BoundBy(lib_rope_particles[j][0][0]-lib_rope_particles[j][1][0], -100, 100);
-		var ydir = lib_rope_particles[j][0][1]-lib_rope_particles[j][1][1];
+		var xdir = BoundBy(lib_rope_particles[j].x-lib_rope_particles[j].oldx, -100, 100);
+		var ydir = lib_rope_particles[j].y-lib_rope_particles[j].oldy;
 
 		if (!obj->GetContact(-1))
 			ydir = BoundBy(ydir, -120, 120);

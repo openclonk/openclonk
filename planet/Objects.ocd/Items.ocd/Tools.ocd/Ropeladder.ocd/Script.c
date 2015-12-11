@@ -27,6 +27,9 @@ local UnrollDir;
 
 local grabber;
 
+
+/*-- Usage --*/
+
 public func RejectUse(object clonk)
 {
 	return !clonk->GetContact(-1);
@@ -37,7 +40,7 @@ public func ControlUse(object clonk, int x, int y)
 	// Unroll dir
 	var dir = -1;
 	if (x > 0) dir = 1;
-	if(clonk->GetAction() == "Scale")
+	if (clonk->GetAction() == "Scale")
 	{
 		if (clonk->GetDir() == 0)
 		{
@@ -108,35 +111,33 @@ public func Unroll(int dir, int unrolldir, int length)
 	if (unrolldir == COMD_Left || unrolldir == COMD_Right)
 	{
 		var xdir = 1;
-		if(unrolldir == COMD_Right)
-		{
+		if (unrolldir == COMD_Right)
 			xdir = -1;
-		}
 		var x1 = 0;
 		var x2 = 0;
 		var x0 = 0;
 		var y1 =-5;
 		var y2 = 5;
-		while(!GBackSolid(x0,  0) && Abs(x0) < 10) x0 += xdir;
-		while(!GBackSolid(x1, y1) && Abs(x1) < 10) x1 += xdir;
-		while(!GBackSolid(x2, y2) && Abs(x2) < 10) x2 += xdir;
+		while (!GBackSolid(x0,  0) && Abs(x0) < 10) x0 += xdir;
+		while (!GBackSolid(x1, y1) && Abs(x1) < 10) x1 += xdir;
+		while (!GBackSolid(x2, y2) && Abs(x2) < 10) x2 += xdir;
 
-		SetPosition(GetX()+x0-2*xdir, GetY());
-		SetR(90*xdir+Angle(x1, y1, x2, y2));
+		SetPosition(GetX() + x0 - 2 * xdir, GetY());
+		SetR(90 * xdir + Angle(x1, y1, x2, y2));
 	}
-	else if(unrolldir == COMD_Up)
+	else if (unrolldir == COMD_Up)
 	{
 		var x1 =-2;
 		var x2 = 2;
 		var y1 = 0;
 		var y2 = 0;
 		var y0 = 0;
-		while(!GBackSolid( 0, y0) && Abs(y0) < 10) y0--;
-		while(!GBackSolid(x1, y1) && Abs(y1) < 10) y1--;
-		while(!GBackSolid(x2, y2) && Abs(y2) < 10) y2--;
+		while (!GBackSolid( 0, y0) && Abs(y0) < 10) y0--;
+		while (!GBackSolid(x1, y1) && Abs(y1) < 10) y1--;
+		while (!GBackSolid(x2, y2) && Abs(y2) < 10) y2--;
 
-		SetPosition(GetX(), GetY()+y0+2);
-		SetR(-90+Angle(x2, y2, x1, y1));
+		SetPosition(GetX(), GetY() + y0 + 2);
+		SetR(-90 + Angle(x2, y2, x1, y1));
 		switch_ropes = true;
 	}
 	else
@@ -146,19 +147,20 @@ public func Unroll(int dir, int unrolldir, int length)
 		var y1 = 0;
 		var y2 = 0;
 		var y0 = 0;
-		while(!GBackSolid( 0, y0) && Abs(y0) < 10) y0++;
-		while(!GBackSolid(x1, y1) && Abs(y1) < 10) y1++;
-		while(!GBackSolid(x2, y2) && Abs(y2) < 10) y2++;
+		while (!GBackSolid( 0, y0) && Abs(y0) < 10) y0++;
+		while (!GBackSolid(x1, y1) && Abs(y1) < 10) y1++;
+		while (!GBackSolid(x2, y2) && Abs(y2) < 10) y2++;
 
-		SetPosition(GetX(), GetY()+y0-2);
-		SetR(90+Angle(x2, y2, x1, y1));
+		SetPosition(GetX(), GetY() + y0 - 2);
+		SetR(90 + Angle(x2, y2, x1, y1));
 	}
-	if(!length)
+	if (!length)
 	{
-		if(MaxSegmentCount == nil)
+		if (MaxSegmentCount == nil)
 			MaxSegmentCount = Ladder_MaxParticles;
 	}
-	else MaxSegmentCount = length;
+	else 
+		MaxSegmentCount = length;
 	DoUnroll(dir);
 }
 
@@ -177,6 +179,7 @@ protected func DoUnroll(dir)
 	AddEffect("IntHang", this, 1, 1, this);
 
 	AddEffect("UnRoll", this, 1, 2, this);
+	return;
 }
 
 public func StartRollUp()
@@ -193,7 +196,7 @@ public func FxUnRollTimer()
 		if (GetActTime() < MaxSegmentCount * 4) 
 			return FX_OK;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
-		if( -(lib_rope_particles[0][0][1]-lib_rope_particles[lib_rope_particle_count-1][0][1]) < (lib_rope_particle_count*Ladder_SegmentLength*Ladder_Precision)/2)
+		if (-(lib_rope_particles[0].y - lib_rope_particles[lib_rope_particle_count - 1].y) < (lib_rope_particle_count * Ladder_SegmentLength * Ladder_Precision) / 2)
 			StartRollUp();
 		return FX_Execute_Kill;
 	}
@@ -223,7 +226,7 @@ public func TestLength()
 	if (GetActTime() < 36) 
 		return;
 	// If it wasn't possible to acchieve at least half the full length we pull in again.
-	if (lib_rope_particles[lib_rope_particle_count - 1][0][1] - lib_rope_particles[0][0][1] < lib_rope_particle_count * 5 * Ladder_Precision / 2)
+	if (lib_rope_particles[lib_rope_particle_count - 1].y - lib_rope_particles[0].y < lib_rope_particle_count * 5 * Ladder_Precision / 2)
 		StartRollUp();
 	return;
 }
@@ -282,30 +285,27 @@ private func RopeRemoved()
 }
 
 /*-- Segment Graphics --*/
+
 public func UpdateLines()
 {
-	var oldangle;
+	var oldangle = 0;
 	for (var i = 1; i < lib_rope_particle_count; i++)
 	{
 		// Update the position of the segment.
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
 		// Calculate the angle to the previous segment.
-		var angle;
-		if (i >= 1)
-		{
-			angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i - 1][0][0], lib_rope_particles[i - 1][0][1]);
-			lib_rope_segments[i]->SetAngle(angle);
-		}
+		var angle = Angle(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i - 1].x, lib_rope_particles[i - 1].y);
+		lib_rope_segments[i]->SetAngle(angle);
 
 		// Every segment does not have its own graphics, but the graphics of the previous segment (or achor for the first).
 		// Otherwise the drawing order would be wrong an we would get lines over segments.
 		
 		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous).
 		if (i > 1)
-			SetLineTransform(lib_rope_segments[i], -oldangle, lib_rope_particles[i - 1][0][0] * 10-GetPartX(i) * 1000, lib_rope_particles[i - 1][0][1] * 10-GetPartY(i) * 1000, 1000, 4, MirrorSegments);
-		if (i == lib_rope_particle_count-1)
-			SetLineTransform(lib_rope_segments[i], -angle, lib_rope_particles[i][0][0] * 10 - GetPartX(i) * 1000, lib_rope_particles[i][0][1] * 10 - GetPartY(i) * 1000, 1000, 5, MirrorSegments);
+			SetLineTransform(lib_rope_segments[i], -oldangle, lib_rope_particles[i - 1].x * 10-GetPartX(i) * 1000, lib_rope_particles[i - 1].y * 10-GetPartY(i) * 1000, 1000, 4, MirrorSegments);
+		if (i == lib_rope_particle_count - 1)
+			SetLineTransform(lib_rope_segments[i], -angle, lib_rope_particles[i].x * 10 - GetPartX(i) * 1000, lib_rope_particles[i].y * 10 - GetPartY(i) * 1000, 1000, 5, MirrorSegments);
 
 		// The first segment has to draw the achor too
 		if (i == 1)
@@ -319,22 +319,22 @@ public func UpdateLines()
 		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
 
 		var diff = Vec_Sub(end,start);
-		var diffangle = Vec_Angle(diff, [0,0]);
+		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
-		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
+		var length = Vec_Length(diff) * 125 / Ladder_Precision;
 
-		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 2 );
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - GetPartX(i) * 1000, point[1] * 10 - GetPartY(i) * 1000, length, 2);
 
 		// Draw the right line
 		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
 		
 		var diff = Vec_Sub(end,start);
-		var diffangle = Vec_Angle(diff, [0,0]);
+		var diffangle = Vec_Angle(diff, [0, 0]);
 		var point = Vec_Add(start, Vec_Div(diff, 2));
-		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
+		var length = Vec_Length(diff) * 1000 / Ladder_Precision / 8;
 
-		SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 3 );
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - GetPartX(i) * 1000, point[1] * 10 - GetPartY(i) * 1000, length, 3);
 
 		// Remember the angle
 		oldangle = angle;
@@ -343,20 +343,22 @@ public func UpdateLines()
 }
 
 
-func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+public func GetRopeConnectPosition(int index, bool right, bool end, int angle, int oldangle)
 {
-	if (switch_ropes && index == 1 && !fEnd) fRight = !fRight;
-	if (!(index == 1 && !fEnd) && MirrorSegments == -1) fRight = !fRight;
-	if (!fEnd)
+	if (switch_ropes && index == 1 && !end) 
+		right = !right;
+	if (!(index == 1 && !end) && MirrorSegments == -1) 
+		right = !right;
+	if (!end)
 	{
-		var start = [0,0];
-		if(fRight == 0)
+		var start = [0, 0];
+		if (!right)
 		{
-			if(index >= 2)
+			if (index >= 2)
 			{
-				start = lib_rope_particles[index-1][0][:];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 			}
 			else
 			{
@@ -367,49 +369,49 @@ func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int ol
 		}
 		else
 		{
-			if(index >= 2)
+			if (index >= 2)
 			{
-				start = lib_rope_particles[index-1][0][:];
-				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
-				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+				start = [lib_rope_particles[index-1].x, lib_rope_particles[index-1].y];
+				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 			}
 			else
 			{
-				start = [GetX()*Ladder_Precision, GetY()*Ladder_Precision];
-				start[0] += +Cos(GetR(), 188)+Sin(GetR(), 113);
-				start[1] += +Sin(GetR(), 188)-Cos(GetR(), 113);
+				start = [GetX() * Ladder_Precision, GetY() * Ladder_Precision];
+				start[0] += Cos(GetR(), 188) + Sin(GetR(), 113);
+				start[1] += Sin(GetR(), 188) - Cos(GetR(), 113);
 			}
 		}
 		return start;
 	}
 	else
 	{
-		var end = [0,0];
-		if(fRight == 0)
+		var end = [0, 0];
+		if (!right)
 		{
-			end = lib_rope_particles[index][0][:];
-			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
+			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset * MirrorSegments);
 		}
 		else
 		{
-			end = lib_rope_particles[index][0][:];
-			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
-			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+			end = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
+			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset * MirrorSegments);
 		}
 		return end;
 	}
 }
 
-public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments)
+public func SetLineTransform(object obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments)
 {
 	if (!MirrorSegments) 
 		MirrorSegments = 1;
-	var fsin = Sin(r, 1000), fcos=Cos(r, 1000);
+	var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
 	// Draw transform the object.
 	obj->SetObjDrawTransform (
-		+fcos*MirrorSegments, +fsin*length/1000, xoff,
-		-fsin*MirrorSegments, +fcos*length/1000, yoff, layer
+		 fcos * MirrorSegments, fsin * length / 1000, xoff,
+		-fsin * MirrorSegments, fcos * length / 1000, yoff, layer
 	);
 	return;
 }
@@ -422,7 +424,7 @@ public func OnLadderGrab(object clonk, int index)
 {
 	if (index == 0) 
 		return;
-	lib_rope_particles[index][0][0] += BoundBy(clonk->GetXDir() / 2, -25, 25) * Ladder_Precision;
+	lib_rope_particles[index].x += BoundBy(clonk->GetXDir() / 2, -25, 25) * Ladder_Precision;
 	return;
 }
 
@@ -433,34 +435,35 @@ public func OnLadderClimb(object clonk, int index)
 	// The clonk drags on the upper segments and pushes on the lower ones
 	if (index > 2 && index < lib_rope_particle_count - 3)
 	{
-		lib_rope_particles[index-2][0][0] -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+2][0][0] += dir * Ladder_Precision / 5;
+		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
+		lib_rope_particles[index+2].x += dir * Ladder_Precision / 5;
 	}
 	else if(index > 2 && index < lib_rope_particle_count - 2)
 	{
-		lib_rope_particles[index-2][0][0] -= dir * Ladder_Precision / 5;
-		lib_rope_particles[index+1][0][0] += dir * Ladder_Precision / 5;
+		lib_rope_particles[index-2].x -= dir * Ladder_Precision / 5;
+		lib_rope_particles[index+1].x += dir * Ladder_Precision / 5;
 	}
 	return;
 }
 
 public func GetLadderData(int index)
 {
-	var startx = lib_rope_particles[index][0][0] * 10;
-	var starty = lib_rope_particles[index][0][1] * 10;
+	var startx = lib_rope_particles[index].x * 10;
+	var starty = lib_rope_particles[index].y * 10;
+	var angle;
 	if (index == 0)
 	{
-		var angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
+		angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
 		return [startx, starty, startx, starty - 5000, angle];
 	}
 	if (index == lib_rope_particle_count-1 || lib_rope_segments[index + 1]->~CanNotBeClimbed())
 	{
-		angle = Angle(lib_rope_particles[index][0][0], lib_rope_particles[index][0][1], lib_rope_particles[index-2][0][0], lib_rope_particles[index-2][0][1]);
+		angle = Angle(lib_rope_particles[index].x, lib_rope_particles[index].y, lib_rope_particles[index - 2].x, lib_rope_particles[index - 2].y);
 	}
 	else
-		angle = Angle(lib_rope_particles[index + 1][0][0], lib_rope_particles[index + 1][0][1], lib_rope_particles[index - 1][0][0], lib_rope_particles[index - 1][0][1]);
-	var endx = lib_rope_particles[index - 1][0][0] * 10;
-	var endy = lib_rope_particles[index - 1][0][1] * 10;
+		angle = Angle(lib_rope_particles[index + 1].x, lib_rope_particles[index + 1].y, lib_rope_particles[index - 1].x, lib_rope_particles[index - 1].y);
+	var endx = lib_rope_particles[index - 1].x * 10;
+	var endy = lib_rope_particles[index - 1].y * 10;
 	return [startx, starty, endx, endy, angle];
 }
 

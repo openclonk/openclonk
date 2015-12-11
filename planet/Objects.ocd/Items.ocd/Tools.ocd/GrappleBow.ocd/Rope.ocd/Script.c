@@ -79,21 +79,26 @@ public func HookRemoved()
 public func MaxLengthReached()
 {
 	var clonk = lib_rope_objects[1][0];
-	if(clonk->Contained()) clonk = clonk->Contained();
-	if(!HoockAnchored)
+	if (clonk->Contained()) 
+		clonk = clonk->Contained();
+	if (!HoockAnchored)
 	{
-		for(var i = 0; i < lib_rope_particle_count; i++)
-			lib_rope_particles[i][1] = lib_rope_particles[i][0][:];
+		for (var i = 0; i < lib_rope_particle_count; i++)
+		{
+			lib_rope_particles[i].oldx = lib_rope_particles[i].x;
+			lib_rope_particles[i].oldy = lib_rope_particles[i].y;
+		}
 		DrawIn(true);
 	}
 }
 
 /* for swinging */
-func DoSpeed(int value)
+public func DoSpeed(int value)
 {
-	var speed = lib_rope_particles[-1][0][0]-lib_rope_particles[-1][1][0];
-	if(speed*value > 0) value += speed/10;
-	lib_rope_particles[-1][1][0] -= value;
+	var speed = lib_rope_particles[-1].x - lib_rope_particles[-1].oldx;
+	if (speed * value > 0) 
+		value += speed / 10;
+	lib_rope_particles[-1].oldx -= value;
 }
 
 func FxIntHangTimer() { TimeStep(); }
@@ -106,10 +111,13 @@ func FxDrawInTimer()
 		return -1;
 	}
 	DoLength(-5);
-	if(!HoockAnchored)
+	if (!HoockAnchored)
 	{
-		for(var i = 0; i < lib_rope_particle_count; i++)
-			lib_rope_particles[i][1] = lib_rope_particles[i][0][:];
+		for (var i = 0; i < lib_rope_particle_count; i++)
+		{
+			lib_rope_particles[i].oldx = lib_rope_particles[i].x;
+			lib_rope_particles[i].oldy = lib_rope_particles[i].y;
+		}
 		DoLength(-3);
 	}
 }
@@ -140,11 +148,11 @@ func DrawIn(bool no_control)
 func AdjustClonkMovement()
 {
 	var clonk = lib_rope_objects[1][0];
-	if(clonk->Contained()) clonk = clonk->Contained();
+	if (clonk->Contained()) 
+		clonk = clonk->Contained();
 	
-	var rope_vector = Vec_Sub(lib_rope_particles[-1][0], lib_rope_particles[-2][0]);
+	var rope_vector = Vec_Sub([lib_rope_particles[-1].x, lib_rope_particles[-1].y], [lib_rope_particles[-2].x, lib_rope_particles[-2].y]);
 	var clonk_speed = [clonk->GetXDir(LIB_ROPE_Precision), clonk->GetYDir(LIB_ROPE_Precision)];
-
 
 	var rope_orthogonal = [rope_vector[1], -rope_vector[0]];
 	var new_speed = Vec_Dot(rope_orthogonal, clonk_speed)/Vec_Length(rope_orthogonal);
@@ -166,24 +174,24 @@ func UpdateLines()
 		lib_rope_segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
 		// Calculate the angle to the previous segment
-		var angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i-1][0][0], lib_rope_particles[i-1][0][1]);
+		var angle = Angle(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i-1].x, lib_rope_particles[i-1].y);
 
 		// Draw the left line
-		var start = lib_rope_particles[i-1][0][:];
-		var end   = lib_rope_particles[i][0][:];
+		var start = [lib_rope_particles[i-1].x, lib_rope_particles[i-1].y];
+		var end   = [lib_rope_particles[i].x, lib_rope_particles[i].y];
 
 		if(i == 1 && lib_rope_particle_count > 2)
 		{
-			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
-			end = lib_rope_particles[0][0][:];
+			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
+			end = [lib_rope_particles[0].x, lib_rope_particles[0].y];
 			end[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			end[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 		}
 		
 		if(i == 2)
 		{
-			angle = Angle(lib_rope_particles[2][0][0], lib_rope_particles[2][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
-			start = lib_rope_particles[0][0][:];
+			angle = Angle(lib_rope_particles[2].x, lib_rope_particles[2].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
+			start = [lib_rope_particles[0].x, lib_rope_particles[0].y];
 			start[0] += -Sin(angle, 45*LIB_ROPE_Precision/10);
 			start[1] += +Cos(angle, 45*LIB_ROPE_Precision/10);
 		}
@@ -195,7 +203,7 @@ func UpdateLines()
 	
 		if(i == lib_rope_particle_count-1)
 		{
-			var old = lib_rope_particles[i-2][0][:];
+			var old = [lib_rope_particles[i-2].x, lib_rope_particles[i-2].y];
 			var old_diff = Vec_Sub(start,old);
 			var o_length = Vec_Length(old_diff)*1000/LIB_ROPE_Precision/10;
 			if(!o_length) diff = old_diff;
@@ -224,19 +232,19 @@ func UpdateLines()
 func GetClonkAngle()
 {
 	if(lib_rope_particle_count > 3)
-	return Angle(lib_rope_particles[-2][0][0], lib_rope_particles[-2][0][1], lib_rope_particles[-3][0][0], lib_rope_particles[-3][0][1]);
+	return Angle(lib_rope_particles[-2].x, lib_rope_particles[-2].y, lib_rope_particles[-3].x, lib_rope_particles[-3].y);
 }
 
 local ClonkOldSpeed;
 
 func GetClonkPos()
 {
-	return lib_rope_particles[-1][0];
+	return [lib_rope_particles[-1].x, lib_rope_particles[-1].y];
 }
 
 func GetClonkOff()
 {
-	return Vec_Sub(lib_rope_particles[-1][0],last_point);
+	return Vec_Sub(GetClonkPos(), last_point);
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
@@ -258,7 +266,7 @@ func ForcesOnObjects()
 	var redo = LengthAutoTryCount();
 	while(lib_rope_length_auto && redo)
 	{
-		var speed = Vec_Length(Vec_Sub(lib_rope_particles[-1][0], lib_rope_particles[-1][1]));
+		var speed = Vec_Length(Vec_Sub([lib_rope_particles[-1].x, lib_rope_particles[-1].y], [lib_rope_particles[-1].oldx, lib_rope_particles[-1].oldy]));
 		if(lib_rope_length == GetMaxLength())
 		{
 			if(ObjContact(lib_rope_objects[1][0]))
@@ -286,8 +294,8 @@ func ForcesOnObjects()
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
-		var xdir = BoundBy(lib_rope_particles[j][0][0]-lib_rope_particles[j][1][0], -300, 300);
-		var ydir = BoundBy(lib_rope_particles[j][0][1]-lib_rope_particles[j][1][1], -300, 300);
+		var xdir = BoundBy(lib_rope_particles[j].x-lib_rope_particles[j].oldx, -300, 300);
+		var ydir = BoundBy(lib_rope_particles[j].y-lib_rope_particles[j].oldy, -300, 300);
 
 		obj->SetXDir( xdir, LIB_ROPE_Precision);
 		obj->SetYDir( ydir, LIB_ROPE_Precision);

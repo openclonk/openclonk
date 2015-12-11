@@ -46,7 +46,7 @@ protected func StartRope()
 	lib_rope_segments[0] = CreateSegment(0, nil);
 
 	lib_rope_particles = [];
-	lib_rope_particles[0] = [[GetX() * LIB_ROPE_Precision, GetY() * LIB_ROPE_Precision], [(GetX() + 1) * LIB_ROPE_Precision, GetY() * LIB_ROPE_Precision], [0, GetRopeGravity()], 0];
+	lib_rope_particles[0] = {x = GetX() * LIB_ROPE_Precision, y = GetY() * LIB_ROPE_Precision, oldx = (GetX() + 1) * LIB_ROPE_Precision, oldy = GetY() * LIB_ROPE_Precision, accx = 0, accy = GetRopeGravity(), mass = 0};
 	return;
 }
 
@@ -60,10 +60,10 @@ public func StartRopeConnect(object obj1, object obj2)
 {
 	lib_rope_length = ObjectDistance(obj1, obj2);
 	lib_rope_objects = [[obj1, 0], [obj2, 1]];
-	lib_rope_particle_count = lib_rope_length/LIB_ROPE_SegmentLength;
+	lib_rope_particle_count = lib_rope_length / LIB_ROPE_SegmentLength;
 
 	var yoff = 0;
-	if(lib_rope_particle_count < 2)
+	if (lib_rope_particle_count < 2)
 	{
 		lib_rope_particle_count = 2;
 		yoff = 1;
@@ -71,33 +71,34 @@ public func StartRopeConnect(object obj1, object obj2)
 	}
 
 	lib_rope_segments = [];
-	for(var i = 0; i < lib_rope_particle_count; i++)
+	for (var i = 0; i < lib_rope_particle_count; i++)
 	{
 		var prev = nil;
-		if(i > 0) prev = lib_rope_segments[i-1];
+		if (i > 0) 
+			prev = lib_rope_segments[i-1];
 		lib_rope_segments[i] = CreateSegment(i, prev);
 	}
 
 	lib_rope_particles = [];
 	var x, y;
-	for(var i = 0; i < lib_rope_particle_count; i++)
+	for (var i = 0; i < lib_rope_particle_count; i++)
 	{
-		x = obj1->GetX(LIB_ROPE_Precision)*(lib_rope_particle_count-i)/lib_rope_particle_count+obj2->GetX(LIB_ROPE_Precision)*i/lib_rope_particle_count;
-		y = obj1->GetY(LIB_ROPE_Precision)*(lib_rope_particle_count-i)/lib_rope_particle_count+obj2->GetY(LIB_ROPE_Precision)*i/lib_rope_particle_count;
-		y += yoff*i;
+		x = obj1->GetX(LIB_ROPE_Precision) * (lib_rope_particle_count - i) / lib_rope_particle_count + obj2->GetX(LIB_ROPE_Precision) * i / lib_rope_particle_count;
+		y = obj1->GetY(LIB_ROPE_Precision) * (lib_rope_particle_count - i) / lib_rope_particle_count + obj2->GetY(LIB_ROPE_Precision) * i / lib_rope_particle_count;
+		y += yoff * i;
 		// Pos, Oldpos, acceleration (gravity), mass.
-		lib_rope_particles[i] = [[ x, y], [ x, y], [0,GetRopeGravity()], 1]; 
+		lib_rope_particles[i] = {x = x, y = y, oldx = x, oldy = y, accx = 0, accy = GetRopeGravity(), mass = 1}; 
 	}
-	lib_rope_particles[0][2] = [0,0];
-	lib_rope_particles[0][3] = 0;
-	lib_rope_particles[-1][2] = [0,0];
-	lib_rope_particles[-1][3] = 1;
+	lib_rope_particles[0].accx = 0;
+	lib_rope_particles[0].accy = 0;	
+	lib_rope_particles[0].mass = 0;
+	lib_rope_particles[-1].accx = 0;
+	lib_rope_particles[-1].accy = 0;	
+	lib_rope_particles[-1].mass = 1;
 
 	ConnectLoose();
-
 	UpdateSegmentOverlays();
 	TimeStep();
-
 	return;
 }
 
@@ -116,14 +117,13 @@ public func GetMaxLength()
 	return lib_rope_max_length;
 }
 
-/** Removes the rope
-* All segments are removed. This should be called to clear the rope.
-*/
+// Removes the rope: All segments are removed. This should be called to clear the rope.
 public func RemoveRope()
 {
 	if (lib_rope_segments)
 		for (var segment in lib_rope_segments)
 			DeleteSegment(segment);
+	return;
 }
 
 /** Sets the fixed status of the two targets
@@ -136,8 +136,8 @@ public func SetFixed(bool fixed_1, bool fixed_2)
 {
 	lib_rope_objects[0][1] = !fixed_1;
 	lib_rope_objects[1][1] = !fixed_2;
-	lib_rope_particles[ 0][3] = lib_rope_objects[0][1];
-	lib_rope_particles[-1][3] = lib_rope_objects[1][1];
+	lib_rope_particles[ 0].mass = lib_rope_objects[0][1];
+	lib_rope_particles[-1].mass = lib_rope_objects[1][1];
 }
 
 // Sets the rope connection mode to loose. A loose rope will vary the length according to the connected objects. 
@@ -193,15 +193,11 @@ private func RopeRemoved() { }
 public func AddSegment(int xoffset, int yoffset)
 {
 	lib_rope_segments[lib_rope_particle_count] = CreateSegment(lib_rope_particle_count, lib_rope_segments[lib_rope_particle_count - 1]);
-
-	var oldx = lib_rope_particles[lib_rope_particle_count - 1][0][0];
-	var oldy = lib_rope_particles[lib_rope_particle_count - 1][0][1];
-	// Pos, Oldpos, acceleration (gravity), mass
-	lib_rope_particles[lib_rope_particle_count] = [[oldx + xoffset, oldy + yoffset], [oldx, oldy], [0, GetRopeGravity()], 1]; 
+	var oldx = lib_rope_particles[lib_rope_particle_count - 1].oldx;
+	var oldy = lib_rope_particles[lib_rope_particle_count - 1].oldy;
+	lib_rope_particles[lib_rope_particle_count] = {x = oldx + xoffset, y = oldy + yoffset, oldx = oldx, oldy = oldy, accx = 0, accy = GetRopeGravity(), mass = 1};	
 	lib_rope_particle_count++;
-
 	lib_rope_length += LIB_ROPE_SegmentLength;
-
 	UpdateSegmentOverlays();
 	return;
 }
@@ -209,22 +205,25 @@ public func AddSegment(int xoffset, int yoffset)
 // Removes a segment from the middle of the rope.
 public func PickSegment(int index)
 {
-	if(index >= lib_rope_particle_count-1) return RemoveSegment();
+	if (index >= lib_rope_particle_count - 1) 
+		return RemoveSegment();
 
 	var previous = nil;
-	if(index > 0) previous = lib_rope_segments[index-1];
+	if (index > 0) 
+		previous = lib_rope_segments[index - 1];
 	DeleteSegment(lib_rope_segments[index], previous);
 
-	for(var i = index; i < lib_rope_particle_count-1; i++)
+	for (var i = index; i < lib_rope_particle_count - 1; i++)
 	{
-		lib_rope_segments[i] = lib_rope_segments[i+1];
-		lib_rope_particles[i] = lib_rope_particles[i+1];
+		lib_rope_segments[i] = lib_rope_segments[i + 1];
+		lib_rope_particles[i] = lib_rope_particles[i + 1];
 	}
 	lib_rope_particle_count--;
 
 	SetLength(lib_rope_segments, lib_rope_particle_count);
 	SetLength(lib_rope_particles, lib_rope_particle_count);
 	UpdateSegmentOverlays();
+	return;
 }
 
 // Removes a segment from the end of the rope, set no_length_adjust to not adjust rope length.
@@ -259,58 +258,58 @@ public func MaxLengthReached() { }
 public func DoLength(int dolength)
 {
 	lib_rope_length += dolength;
-	if(GetMaxLength())
-		if(lib_rope_length >= GetMaxLength())
+	if (GetMaxLength())
+		if (lib_rope_length >= GetMaxLength())
 		{
 			MaxLengthReached();
 			lib_rope_length = GetMaxLength();
 		}
-	if(lib_rope_length < LIB_ROPE_SegmentLength*2) lib_rope_length = LIB_ROPE_SegmentLength*2;
+	if (lib_rope_length < LIB_ROPE_SegmentLength * 2) 
+		lib_rope_length = LIB_ROPE_SegmentLength * 2;
 
 	var last_length = GetLastLength();
 	// Remove Points
-	while( last_length < LIB_ROPE_SegmentLength*LIB_ROPE_Precision/2 && lib_rope_particle_count > 2)
+	while (last_length < LIB_ROPE_SegmentLength * LIB_ROPE_Precision / 2 && lib_rope_particle_count > 2)
 	{
-		lib_rope_particles[lib_rope_particle_count-2] = lib_rope_particles[lib_rope_particle_count-1];
+		lib_rope_particles[lib_rope_particle_count - 2] = lib_rope_particles[lib_rope_particle_count - 1];
 		RemoveSegment(1);
 
 		last_length = GetLastLength();
 	}
 	var i = 0;
-	while( last_length > LIB_ROPE_SegmentLength*LIB_ROPE_Precision*3/2)
+	while (last_length > LIB_ROPE_SegmentLength * LIB_ROPE_Precision * 3 / 2)
 	{
 		lib_rope_particle_count++;
 		SetLength(lib_rope_particles, lib_rope_particle_count);
-		var x2 = lib_rope_particles[lib_rope_particle_count-2][0][0];
-		var y2 = lib_rope_particles[lib_rope_particle_count-2][0][1];
+		var x2 = lib_rope_particles[lib_rope_particle_count - 2].x;
+		var y2 = lib_rope_particles[lib_rope_particle_count - 2].y;
+		var x4 = lib_rope_particles[lib_rope_particle_count - 2].oldx;
+		var y4 = lib_rope_particles[lib_rope_particle_count - 2].oldy;
+		lib_rope_particles[-1] = {x = x2, y = y2, oldx = x4, oldy =  y4, accx = 0, accy =  GetRopeGravity(), mass =  1};
 
-		var x4 = lib_rope_particles[lib_rope_particle_count-2][1][0];
-		var y4 = lib_rope_particles[lib_rope_particle_count-2][1][1];
-		lib_rope_particles[-1] = [[x2, y2], [x4, y4], [0,GetRopeGravity()], 1];
-
-		for(var i = lib_rope_particle_count-2; i > 0; i--)
+		for (var i = lib_rope_particle_count - 2; i > 0; i--)
 		{
-			var x =  lib_rope_particles[i-1][0][0];
-			var y =  lib_rope_particles[i-1][0][1];
-			var x2 = lib_rope_particles[i][0][0];
-			var y2 = lib_rope_particles[i][0][1];
+			var x =  lib_rope_particles[i - 1].x;
+			var y =  lib_rope_particles[i - 1].y;
+			var x2 = lib_rope_particles[i].x;
+			var y2 = lib_rope_particles[i].y;
 
-			var x3 = lib_rope_particles[i-1][1][0];
-			var y3 = lib_rope_particles[i-1][1][1];
-			var x4 = lib_rope_particles[i][1][0];
-			var y4 = lib_rope_particles[i][1][1];
+			var x3 = lib_rope_particles[i - 1].oldx;
+			var y3 = lib_rope_particles[i - 1].oldy;
+			var x4 = lib_rope_particles[i].oldx;
+			var y4 = lib_rope_particles[i].oldy;
 
-			lib_rope_particles[i] = [[ x/lib_rope_particle_count +x2*(lib_rope_particle_count-1)/lib_rope_particle_count, y/lib_rope_particle_count +y2*(lib_rope_particle_count-1)/lib_rope_particle_count],
-											[ x3/lib_rope_particle_count+x4*(lib_rope_particle_count-1)/lib_rope_particle_count, y3/lib_rope_particle_count+y4*(lib_rope_particle_count-1)/lib_rope_particle_count], [0,1*LIB_ROPE_Precision], 1];
+			lib_rope_particles[i] = {x = x / lib_rope_particle_count + x2 * (lib_rope_particle_count - 1) / lib_rope_particle_count, y = y / lib_rope_particle_count + y2 * (lib_rope_particle_count - 1) / lib_rope_particle_count,
+									 oldx = x3 / lib_rope_particle_count + x4 * (lib_rope_particle_count - 1) / lib_rope_particle_count, oldy = y3 / lib_rope_particle_count + y4 * (lib_rope_particle_count - 1) / lib_rope_particle_count,
+									 accx = 0, accy = LIB_ROPE_Precision, mass = 1};
 		}
 		SetLength(lib_rope_segments, lib_rope_particle_count);
-		lib_rope_segments[lib_rope_particle_count-1] = CreateSegment(lib_rope_particle_count, lib_rope_segments[lib_rope_particle_count-2]);
-
+		lib_rope_segments[lib_rope_particle_count - 1] = CreateSegment(lib_rope_particle_count, lib_rope_segments[lib_rope_particle_count - 2]);
 		last_length = GetLastLength();
 	}
 	UpdateLines();
-	lib_rope_particles[ 0][3] = lib_rope_objects[0][1];
-	lib_rope_particles[-1][3] = lib_rope_objects[1][1];
+	lib_rope_particles[ 0].mass = lib_rope_objects[0][1];
+	lib_rope_particles[-1].mass = lib_rope_objects[1][1];
 	return;
 }
 
@@ -319,7 +318,7 @@ public func DoLength(int dolength)
 */
 public func GetLastLength()
 {
-	return lib_rope_length*LIB_ROPE_Precision-LIB_ROPE_SegmentLength*LIB_ROPE_Precision*(lib_rope_particle_count-1);
+	return lib_rope_length * LIB_ROPE_Precision - LIB_ROPE_SegmentLength * LIB_ROPE_Precision * (lib_rope_particle_count - 1);
 }
 
 /** This is called when a new segment is added, the segments can adjust their appeareance to that
@@ -331,9 +330,7 @@ private func UpdateSegmentOverlays() { }
 */
 private func UpdateLines() {}
 
-/** The procedure of a time step.
-* Should be \b called with a timercall or an effect!
-*/
+// The procedure of a time step. Should be called with a timercall or an effect!
 public func TimeStep()
 {
 	Verlet();
@@ -354,11 +351,12 @@ public func AccumulateForces()
 		var fx = 0, fy = 0, angle;
 		if (i < lib_rope_particle_count - 2)
 		{
-			angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i + 1][0][0], lib_rope_particles[i + 1][0][1]);
+			angle = Angle(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i + 1].x, lib_rope_particles[i + 1].y);
 			fx = Sin(angle, 5 * LIB_ROPE_Precision);
 			fy = -Cos(angle, 5 * LIB_ROPE_Precision);
 		}
-		lib_rope_particles[i][2] = [fx, fy + GetRopeGravity()];
+		lib_rope_particles[i].accx = fx;
+		lib_rope_particles[i].accy = fy + GetRopeGravity();
 	}
 	return;
 }
@@ -370,25 +368,25 @@ private func Verlet()
 {
 	// Copy Position of the objects
 	var j = 0;
-	for(var i = 0; i < 2; i++ || j--)
-			SetParticleToObject(j, i);
+	for (var i = 0; i < 2; i++ || j--)
+		SetParticleToObject(j, i);
 
 	// Verlet
 	var start = 1;
 	var last = lib_rope_particle_count;
-	if(lib_rope_objects[-1][1] == 1 && PullObjects()) last -= 1;
-	for(var i = start; i < lib_rope_particle_count; i++)
+	if (lib_rope_objects[-1][1] == 1 && PullObjects())
+		last -= 1;
+	for (var i = start; i < lib_rope_particle_count; i++)
 	{
-		var x = lib_rope_particles[i][0][:];
-		var temp = x;
-		var oldx = lib_rope_particles[i][1][:];
-		var a = lib_rope_particles[i][2][:];
-
-		// Verlet step, get speed out of distance moved relativ to the last position
-		lib_rope_particles[i][0][0] += x[0]-oldx[0]+a[0];
-		lib_rope_particles[i][0][1] += x[1]-oldx[1]+a[1];
-		lib_rope_particles[i][1] = temp;
-		lib_rope_particles[i][4] = 0;
+		var part = lib_rope_particles[i];
+		var temp_x = part.x;
+		var temp_y = part.y;
+		// Verlet step, get speed out of distance moved relativ to the last position.
+		lib_rope_particles[i].x += part.x - part.oldx + part.accx;
+		lib_rope_particles[i].y += part.y - part.oldy + part.accy;
+		lib_rope_particles[i].oldx = temp_x;
+		lib_rope_particles[i].oldy = temp_y;
+		lib_rope_particles[i].friction = 0;
 	}
 	return;
 }
@@ -405,19 +403,42 @@ public func SetParticleToObject(int index, int obj_index)
 
 	if (obj->Contained()) 
 		obj = obj->Contained();
-	lib_rope_particles[index][0][0] = obj->GetX(LIB_ROPE_Precision);
-	lib_rope_particles[index][0][1] = obj->GetY(LIB_ROPE_Precision);
+	lib_rope_particles[index].x = obj->GetX(LIB_ROPE_Precision);
+	lib_rope_particles[index].y = obj->GetY(LIB_ROPE_Precision);
+	return;
+}
+
+// Satisfying the constraints for the particles. The constraints are: Staying at the position of the objects,
+// respecting the length to the next particles and staying out of material.
+private func SatisfyConstraints()
+{
+	for (var j = 0; j < LIB_ROPE_Iterations; j++)
+	{
+		ConstraintObjects();
+		ConstraintLength();
+		ConstraintLandscape();
+	}
+	// Apply friction for those who have the notifier for it.
+	// Friction just means that the velocity is divided by 2 to simulate a frictional force.
+	for (var i = 0; i < lib_rope_particle_count; i++)
+	{
+		if (!lib_rope_particles[i].friction)
+			continue;
+		lib_rope_particles[i].oldx = (lib_rope_particles[i].oldx + lib_rope_particles[i].x) / 2;
+		lib_rope_particles[i].oldy = (lib_rope_particles[i].oldy + lib_rope_particles[i].y) / 2;			
+		/*var newvel = Vec_Sub(lib_rope_particles[i][0], lib_rope_particles[i][1]);
+		newvel = Vec_Div(newvel, 2);
+		lib_rope_particles[i][1] = Vec_Sub(lib_rope_particles[i][0], newvel);*/
+	}
 	return;
 }
 
 public func ConstraintObjects()
 {
+	// Copy position of the objects.
 	if (lib_rope_length_auto && lib_rope_length < GetMaxLength())
-	{
-		// Copy position of the objects.
-		for (var i = 0, i2 = 0; i < 2; i++ || i2--)
-			SetParticleToObject(i2, i);
-	}
+		for (var i = 0, j = 0; i < 2; i++ || j--)
+			SetParticleToObject(j, i);
 	return;
 }
 
@@ -433,21 +454,21 @@ public func ConstraintLength()
 		if (i == lib_rope_particle_count - 2)
 			restlength = GetLastLength();
 		// Get coordinates and inverse masses.
-		invmass1 = lib_rope_particles[i    ][3];
-		invmass2 = lib_rope_particles[i + 1][3];
+		invmass1 = lib_rope_particles[i].mass;
+		invmass2 = lib_rope_particles[i + 1].mass;
 		// Calculate difference.
-		delta1 = lib_rope_particles[i + 1][0][0] - lib_rope_particles[i][0][0];
-		delta2 = lib_rope_particles[i + 1][0][1] - lib_rope_particles[i][0][1];
+		delta1 = lib_rope_particles[i + 1].x - lib_rope_particles[i].x;
+		delta2 = lib_rope_particles[i + 1].y - lib_rope_particles[i].y;
 		delta_length = Sqrt(delta1**2 + delta2**2);
 		if (delta_length < restlength)
 			continue;
 		delta1 = delta1 * (delta_length - restlength) / (delta_length * (invmass1 + invmass2));
 		delta2 = delta2 * (delta_length - restlength) / (delta_length * (invmass1 + invmass2));
 		// Set new positions.
-		lib_rope_particles[i    ][0][0] += delta1*invmass1;
-		lib_rope_particles[i    ][0][1] += delta2*invmass1;
-		lib_rope_particles[i + 1][0][0] -= delta1*invmass2;
-		lib_rope_particles[i + 1][0][1] -= delta2*invmass2;
+		lib_rope_particles[i    ].x += delta1 * invmass1;
+		lib_rope_particles[i    ].y += delta2 * invmass1;
+		lib_rope_particles[i + 1].x -= delta1 * invmass2;
+		lib_rope_particles[i + 1].y -= delta2 * invmass2;
 	}
 	return;
 }
@@ -456,68 +477,41 @@ public func ConstraintLandscape()
 {
 	for (var i = 0; i < lib_rope_particle_count; i++)
 	{
-		// Don't touch ground.
+		// Don't touch the ground.
 		if (GBackSolid(GetPartX(i) - GetX(), GetPartY(i) - GetY()))
 		{
 			// Moving left?
 			var xdir = -1;
-			if (lib_rope_particles[i][0][0] < lib_rope_particles[i][1][0])
+			if (lib_rope_particles[i].x < lib_rope_particles[i].oldx)
 				xdir = 1;
 			var ydir = -1;
 			// Moving up?
-			if (lib_rope_particles[i][0][1] < lib_rope_particles[i][1][1])
+			if (lib_rope_particles[i].y < lib_rope_particles[i].oldy)
 				ydir = 1;
-			var found = 0;
+			var found = false;
 			// Look for all possible places where the particle could move (from nearest to furthest).
 			for (var pos in LIB_ROPE_LandscapeMoveDirs)
 			{
 				if (!GBackSolid(GetPartX(i) - GetX() + xdir * pos[0], GetPartY(i) - GetY() + ydir * pos[1]))
 				{
 					// Calculate the new position (if we don't move in a direction don't overwrite the old value).
-					var new_pos = [0, 0];
 					if (pos[0])
-						new_pos[0] = (GetPartX(i) + xdir * pos[0]) * LIB_ROPE_Precision - xdir * LIB_ROPE_Precision / 2 + xdir;
-					else
-						new_pos[0] = lib_rope_particles[i][0][0];
+						lib_rope_particles[i].x = (GetPartX(i) + xdir * pos[0]) * LIB_ROPE_Precision - xdir * LIB_ROPE_Precision / 2 + xdir;
 					if (pos[1])
-						new_pos[1] = (GetPartY(i) + ydir * pos[1]) * LIB_ROPE_Precision - ydir * LIB_ROPE_Precision / 2 + ydir;
-					else
-						new_pos[1] = lib_rope_particles[i][0][1];
+						lib_rope_particles[i].y = (GetPartY(i) + ydir * pos[1]) * LIB_ROPE_Precision - ydir * LIB_ROPE_Precision / 2 + ydir;
 					// Notifier for applying friction after the constraints.
-					lib_rope_particles[i][4] = 1; 
-					lib_rope_particles[i][0] = new_pos;
+					lib_rope_particles[i].friction = 1; 
 					found = true;
 					break;
 				}
 			}
 			// No possibility to move the particle out? Then reset it. The old position should be valid.
 			if (!found)
-				lib_rope_particles[i][0] = lib_rope_particles[i][1][:];
+			{
+				lib_rope_particles[i].x = lib_rope_particles[i].oldx;
+				lib_rope_particles[i].y = lib_rope_particles[i].oldy;	
+			}
 		}
-	}
-	return;
-}
-
-/** Satisfying the constraints for the particles
-* The constraints are: Staying at the position of the objects, respecting the length to the next particles and staying out of material
-*/
-private func SatisfyConstraints()
-{
-	for (var j = 0; j < LIB_ROPE_Iterations; j++)
-	{
-		ConstraintObjects();
-		ConstraintLength();
-		ConstraintLandscape();
-	}
-	// Apply friction for those who have the notifier for it.
-	// Friction just means that the velocity is divided by 2 to simulate a frictional force
-	for (var i = 0; i < lib_rope_particle_count; i++)
-	{
-		if (!lib_rope_particles[i][4])
-			continue;
-		var newvel = Vec_Sub(lib_rope_particles[i][0], lib_rope_particles[i][1]);
-		newvel = Vec_Div(newvel, 2);
-		lib_rope_particles[i][1] = Vec_Sub(lib_rope_particles[i][0], newvel);
 	}
 	return;
 }
@@ -527,7 +521,7 @@ public func GetLineLength()
 {
 	var length_vertex = 0;
 	for (var i = 1; i < lib_rope_particle_count; i++)
-		length_vertex += Distance(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i - 1][0][0], lib_rope_particles[i - 1][0][1]);
+		length_vertex += Distance(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i - 1].x, lib_rope_particles[i - 1].y);
 	return length_vertex;
 }
 
@@ -537,42 +531,54 @@ public func LengthAutoTryCount() { return 5; }
 */
 public func ForcesOnObjects()
 {
-	if(!lib_rope_length) return;
+	if (!lib_rope_length)
+		return;
 
 	var redo = LengthAutoTryCount();
-	while(lib_rope_length_auto && redo)
+	while (lib_rope_length_auto && redo)
 	{
-		var speed = Vec_Length(Vec_Sub(lib_rope_particles[-1][0], lib_rope_particles[-1][1]));
-		if(lib_rope_length == GetMaxLength())
+		var speed = Distance(lib_rope_particles[-1].x, lib_rope_particles[-1].y, lib_rope_particles[-1].oldx ,lib_rope_particles[-1].oldy);
+		if (lib_rope_length == GetMaxLength())
 		{
-			if(ObjContact(lib_rope_objects[1][0]))
+			if (ObjContact(lib_rope_objects[1][0]))
 				speed = 40;
-			else speed = 100;
+			else
+				speed = 100;
 		}
-		if(speed > 150) DoLength(1);
-		else if(speed < 50) DoLength(-1); // TODO not just obj 1
-		else redo = 0;
-		if(redo) redo --;
+		if (speed > 150)
+			DoLength(1);
+		else if(speed < 50) 
+			DoLength(-1); // TODO not just obj 1
+		else 
+			redo = 0;
+		if (redo) 
+			redo--;
 	}
 	var j = 0;
-	if(PullObjects() )
-	for(var i = 0; i < 2; i++)
+	if (PullObjects())
 	{
-		if(i == 1) j = lib_rope_particle_count-1;
-		var obj = lib_rope_objects[i][0];
-
-		if(obj == nil || lib_rope_objects[i][1] == 0) continue;
-
-		if(obj->Contained()) obj = obj->Contained();
-
-		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
-			obj->SetAction("Jump");
-		if( obj->GetAction() == "Climb")
-			obj->SetAction("Jump");
-
-		obj->SetXDir( lib_rope_particles[j][0][0]-lib_rope_particles[j][1][0], LIB_ROPE_Precision);
-		obj->SetYDir( lib_rope_particles[j][0][1]-lib_rope_particles[j][1][1], LIB_ROPE_Precision);
+		for (var i = 0; i < 2; i++)
+		{
+			if (i == 1) 
+				j = lib_rope_particle_count - 1;
+			var obj = lib_rope_objects[i][0];
+	
+			if (obj == nil || lib_rope_objects[i][1] == 0) 
+				continue;
+	
+			if (obj->Contained())
+				obj = obj->Contained();
+	
+			if ((obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
+				obj->SetAction("Jump");
+			if (obj->GetAction() == "Climb")
+				obj->SetAction("Jump");
+	
+			obj->SetXDir(lib_rope_particles[j].x - lib_rope_particles[j].oldx, LIB_ROPE_Precision);
+			obj->SetYDir(lib_rope_particles[j].y - lib_rope_particles[j].oldy, LIB_ROPE_Precision);
+		}
 	}
+	return;
 }
 
 public func PullObjects()
@@ -617,10 +623,10 @@ public func Vec_Angle(array x, array y) { return Angle(x[0], x[1], y[0], y[1]); 
 public func Vec_Normalize(array x, int precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
 
 // Gives the the rounded x coordinate of particles index.
-public func GetPartX(index) { return (lib_rope_particles[index][0][0] + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }
+public func GetPartX(index) { return (lib_rope_particles[index].x + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }
 
 // Gives the the rounded y coordinate of particles index.
-public func GetPartY(index) { return (lib_rope_particles[index][0][1] + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }
+public func GetPartY(index) { return (lib_rope_particles[index].y + LIB_ROPE_Precision / 2) / LIB_ROPE_Precision; }
 
 
 /*-- Helper Functions --*/
@@ -644,10 +650,6 @@ func LogSpeed()
 	// Helperfunction for Debugpurpose
 	var speed_array = [];
 	for(var i = 0; i < lib_rope_particle_count; i++)
-	{
-		var x = lib_rope_particles[i][0][:];
-		var oldx = lib_rope_particles[i][1][:];
-		PushBack(speed_array, Distance(x[0] - oldx[0], x[1] - oldx[1]));
-	}
+		PushBack(speed_array, Distance(lib_rope_particles[i].x - lib_rope_particles[i].oldx, lib_rope_particles[i].y - lib_rope_particles[i].oldy));
 	return Log("%v", speed_array);
 }

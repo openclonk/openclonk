@@ -59,26 +59,29 @@ public func MakeBridge(obj1, obj2)
 {
 	MirrorSegments = 1;
 	SetProperty("Collectible", 0);
-  SetCategory(C4D_StaticBack);
+	SetCategory(C4D_StaticBack);
 	StartRopeConnect(obj1, obj2);
-  SetFixed(1,1);
-  ConnectPull();
+	SetFixed(1, 1);
+	ConnectPull();
 	AddEffect("IntHang", this, 1, 1, this);
-  SetAction("Hanging");
-  UpdateSegmentOverlays();
+	SetAction("Hanging");
+	UpdateSegmentOverlays();
 }
 
-func FxIntHangTimer()
+public func FxIntHangTimer()
 {
 	TimeStep();
-  for(var i = 1; i < lib_rope_particle_count-1; i++)
-    lib_rope_particles[i][2] = [0,lib_rope_segments[i]->~GetLoadWeight()];
+ 	for (var i = 1; i < lib_rope_particle_count - 1; i++)
+ 	{
+   		lib_rope_particles[i].accx = 0;
+   		lib_rope_particles[i].accy = lib_rope_segments[i]->~GetLoadWeight();
+   	}
 }
 
-func SetFragile()
+public func SetFragile()
 {
-  for(var i = 0; i < lib_rope_particle_count; i++)
-    lib_rope_segments[i].fragile = 1;
+	for (var i = 0; i < lib_rope_particle_count; i++)
+		lib_rope_segments[i].fragile = 1;
 }
 
 public func SaveScenarioObject(props)
@@ -96,20 +99,19 @@ public func SaveScenarioObject(props)
 
 
 
-/* --------------------- Callbacks form the rope ---------------------- */
+/*-- Rope Callbacks --*/
 
 /* To be overloaded for special segment behaviour */
 private func CreateSegment(int index, object previous)
 {
-	var segment;
-	segment = CreateObjectAbove(Ropebridge_Segment);
-  segment->SetMaster(this);
+	var segment = CreateObjectAbove(Ropebridge_Segment);
+	segment->SetMaster(this);
 	return segment;
 }
 
 private func DeleteSegment(object segment, previous)
 {
-	if(segment)
+	if (segment)
 		segment->RemoveObject();
 }
 
@@ -119,154 +121,157 @@ private func RopeRemoved()
 	RemoveObject();
 }
 
-/* --------------------- Graphics of segments ---------------------- */
-func DrawRopeLine(start, end, i, int index)
-{
-  var diff = Vec_Sub(end,start);
-  var diffangle = Vec_Angle(diff, [0,0]);
-  var point = Vec_Add(start, Vec_Div(diff, 2));
-  var length = Vec_Length(diff)*1000/Ladder_Precision/8+100;
 
-  if(index != 4 && index != 7)
-  SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, length, index);
-  else if(lib_rope_segments[i].Double)
-    SetLineTransform(lib_rope_segments[i].Double, -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, length, index);
-    
+/*-- Segment Graphics --*/
+
+public func DrawRopeLine(start, end, i, int index)
+{
+	var diff = Vec_Sub(end,start);
+	var diffangle = Vec_Angle(diff, [0,0]);
+	var point = Vec_Add(start, Vec_Div(diff, 2));
+	var length = Vec_Length(diff) * 1000 / Ladder_Precision / 8 + 100;
+
+	if (index != 4 && index != 7)
+		SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - lib_rope_particles[i].x * 10, point[1] * 10 - lib_rope_particles[i].y * 10 + 2000, length, index);
+	else if (lib_rope_segments[i].Double)
+    	SetLineTransform(lib_rope_segments[i].Double, -diffangle, point[0] * 10 - lib_rope_particles[i].x * 10, point[1] * 10 - lib_rope_particles[i].y * 10 + 2000, length, index);
+    return;
 }
 
-func DrawRopeLine2(start, end, i, int index)
+public func DrawRopeLine2(start, end, i, int index)
 {
-  var diff = Vec_Sub(end,start);
-  var diffangle = Vec_Angle(diff, [0,0]);
-  var point = Vec_Add(start, Vec_Div(diff, 2));
-
-  SetLineTransform(lib_rope_segments[i], -diffangle, point[0]*10-lib_rope_particles[i][0][0]*10,point[1]*10-lib_rope_particles[i][0][1]*10+2000, 1000, 6);
+	var diff = Vec_Sub(end,start);
+	var diffangle = Vec_Angle(diff, [0, 0]);
+	var point = Vec_Add(start, Vec_Div(diff, 2));
+	SetLineTransform(lib_rope_segments[i], -diffangle, point[0] * 10 - lib_rope_particles[i].x * 10, point[1] * 10 - lib_rope_particles[i].y * 10 + 2000, 1000, 6);
+	return;
 }
 
-func UpdateLines()
+public func UpdateLines()
 {
-	var oldangle = Angle(lib_rope_particles[1][0][0], lib_rope_particles[1][0][1], lib_rope_particles[0][0][0], lib_rope_particles[0][0][1]);
-	for(var i=1; i < lib_rope_particle_count; i++)
+	var oldangle = Angle(lib_rope_particles[1].x, lib_rope_particles[1].y, lib_rope_particles[0].x, lib_rope_particles[0].y);
+	for (var i = 1; i < lib_rope_particle_count; i++)
 	{
 		// Update the Position of the Segment
-		lib_rope_segments[i]->SetPosition(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], 0, LIB_ROPE_Precision);
-    if(lib_rope_segments[i].Double)
-    lib_rope_segments[i].Double->SetPosition(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], 0, LIB_ROPE_Precision);
+		lib_rope_segments[i]->SetPosition(lib_rope_particles[i].x, lib_rope_particles[i].y, 0, LIB_ROPE_Precision);
+    	if (lib_rope_segments[i].Double)
+			lib_rope_segments[i].Double->SetPosition(lib_rope_particles[i].x, lib_rope_particles[i].y, 0, LIB_ROPE_Precision);
 
 		// Calculate the angle to the previous segment
-		var angle;
-		angle = Angle(lib_rope_particles[i][0][0], lib_rope_particles[i][0][1], lib_rope_particles[i-1][0][0], lib_rope_particles[i-1][0][1]);
+		var angle = Angle(lib_rope_particles[i].x, lib_rope_particles[i].y, lib_rope_particles[i - 1].x, lib_rope_particles[i - 1].y);
 
 		// Every segment has not its graphics, but the graphics of the previous segment (or achor for the first)
 		// Otherwise the drawing order would be wrong an we would get lines over segments
 		
 		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous)
-
-    lib_rope_segments[i]->SetR(90+angle);
+		lib_rope_segments[i]->SetR(90 + angle);
 		// Draw the left line
 		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
 		var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
-    var end1 = start;
-    DrawRopeLine(start, end, i, 2);
-    if(lib_rope_segments[i].Plank)
-      DrawRopeLine2(start, end, i, 6);
+    	var end1 = start;
+    	DrawRopeLine(start, end, i, 2);
+    	if (lib_rope_segments[i].Plank)
+      		DrawRopeLine2(start, end, i, 6);
     
 		// Draw the right line
 		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
-		var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
-    var end2 = start;
-    DrawRopeLine(start, end, i, 3);
-    
-    // Draw the upper left line
-    var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
-    var end   = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
-    var end3 = start[:];
-    start[1]-=800;end[1]-=800;
-    DrawRopeLine(start, end, i, 4);
-    
-    // Draw the upder right line
-    var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
-    var end   = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
-    var end4 = start[:];
-    start[1]-=800;end[1]-=800;
-    DrawRopeLine(start, end, i, 5);
-    
-    if(i>1)
-    {
-      // Draw the upper left line
-      var start = end1;
-      var end   = end3;
-      start[1]+=000;
-      end[1]-=800;
-      DrawRopeLine(start, end, i, 7);
-      
-      // Draw the upder right line
-      var start = end2;
-      var end   = end4;
-      start[1]+=000;
-      end[1]-=800;
-      DrawRopeLine(start, end, i, 8);
-    }
-
-		// Remember the angle
+		var end = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
+		var end2 = start;
+    	DrawRopeLine(start, end, i, 3);
+    	
+		// Draw the upper left line
+		var start = GetRopeConnectPosition(i, 0, 0, angle, oldangle);
+		var end = GetRopeConnectPosition(i, 0, 1, angle, oldangle);
+		var end3 = start[:];
+		start[1] -= 800;
+		end[1] -= 800;
+		DrawRopeLine(start, end, i, 4);
+	
+		// Draw the upder right line
+		var start = GetRopeConnectPosition(i, 1, 0, angle, oldangle);
+		var end = GetRopeConnectPosition(i, 1, 1, angle, oldangle);
+		var end4 = start[:];
+		start[1] -= 800;
+		end[1] -= 800;
+		DrawRopeLine(start, end, i, 5);
+	    
+	    if (i > 1)
+	    {
+			// Draw the upper left line
+			var start = end1;
+			var end = end3;
+			start[1] += 000;
+			end[1]-=800;
+			DrawRopeLine(start, end, i, 7);
+	      
+			// Draw the upder right line
+			var start = end2;
+			var end = end4;
+			start[1] += 000;
+			end[1] -= 800;
+			DrawRopeLine(start, end, i, 8);
+	    }
+		// Remember the angle.
 		oldangle = angle;
 	}
 }
 
 static const Ropebridge_Segment_LeftXOffset = 200;
 static const Ropebridge_Segment_RightXOffset = -100;
-static const Ropebridge_Segment_LeftYOffset = 00;
+static const Ropebridge_Segment_LeftYOffset = 0;
 static const Ropebridge_Segment_RightYOffset = -100;
-static const  Ropebridge_Anchor_RightXOffset = 200;
-static const  Ropebridge_Anchor_RightYOffset = 0;
-static const  Ropebridge_Anchor_LeftXOffset = -150;
-static const  Ropebridge_Anchor_LeftYOffset = -100;
+static const Ropebridge_Anchor_RightXOffset = 200;
+static const Ropebridge_Anchor_RightYOffset = 0;
+static const Ropebridge_Anchor_LeftXOffset = -150;
+static const Ropebridge_Anchor_LeftYOffset = -100;
 
-func GetRopeConnectPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+public func GetRopeConnectPosition(int index, int right, int end, int angle, int oldangle)
 {
-  var SegmentOffset = [[Ropebridge_Segment_LeftXOffset,  Ropebridge_Segment_LeftYOffset],
-                       [Ropebridge_Segment_RightXOffset, Ropebridge_Segment_RightYOffset]];
-  var AnchorOffset =  [[Ropebridge_Anchor_LeftXOffset,   Ropebridge_Anchor_LeftYOffset], 
-                       [Ropebridge_Anchor_RightXOffset,  Ropebridge_Anchor_RightYOffset]];
-  var point;
-  if( (fEnd == 0 && index == 1) || (fEnd == 1 && index == lib_rope_particle_count-1) )
-  {
-    point = [lib_rope_objects[fEnd][0]->GetX(Ladder_Precision), lib_rope_objects[fEnd][0]->GetY(Ladder_Precision)];
-    point[0] += -Cos(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))+Sin(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
-    point[1] += -Sin(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][0]*(-1+2*fEnd))-Cos(lib_rope_objects[fEnd][0]->GetR(), AnchorOffset[fRight][1]);
-  }
-  else
-  {
-    if(fEnd == 0) index -= 1;
-    point = lib_rope_particles[index][0][:];
-    point[0] += -Cos(oldangle, SegmentOffset[fRight][0]*MirrorSegments)-Sin(oldangle, SegmentOffset[fRight][1]*MirrorSegments);
-    point[1] += -Sin(oldangle, SegmentOffset[fRight][0]*MirrorSegments)+Cos(oldangle, SegmentOffset[fRight][1]*MirrorSegments);
-  }
-  return point;
+	var SegmentOffset = [[Ropebridge_Segment_LeftXOffset,  Ropebridge_Segment_LeftYOffset],
+	                     [Ropebridge_Segment_RightXOffset, Ropebridge_Segment_RightYOffset]];
+	var AnchorOffset =  [[Ropebridge_Anchor_LeftXOffset,   Ropebridge_Anchor_LeftYOffset], 
+	                     [Ropebridge_Anchor_RightXOffset,  Ropebridge_Anchor_RightYOffset]];
+	var point;
+	if ((!end && index == 1) || (end && index == lib_rope_particle_count - 1))
+	{
+		point = [lib_rope_objects[end][0]->GetX(Ladder_Precision), lib_rope_objects[end][0]->GetY(Ladder_Precision)];
+		point[0] += -Cos(lib_rope_objects[end][0]->GetR(), AnchorOffset[right][0]*(-1+2*end))+Sin(lib_rope_objects[end][0]->GetR(), AnchorOffset[right][1]);
+		point[1] += -Sin(lib_rope_objects[end][0]->GetR(), AnchorOffset[right][0]*(-1+2*end))-Cos(lib_rope_objects[end][0]->GetR(), AnchorOffset[right][1]);
+	}
+  	else
+  	{	
+  		if (!end) 
+  			index -= 1;
+		point = [lib_rope_particles[index].x, lib_rope_particles[index].y];
+		point[0] += -Cos(oldangle, SegmentOffset[right][0]*MirrorSegments)-Sin(oldangle, SegmentOffset[right][1]*MirrorSegments);
+		point[1] += -Sin(oldangle, SegmentOffset[right][0]*MirrorSegments)+Cos(oldangle, SegmentOffset[right][1]*MirrorSegments);
+	}
+	return point;
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
-	if(!MirrorSegments) MirrorSegments = 1;
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-	// set matrix values
+public func SetLineTransform(object obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+	if (!MirrorSegments) 
+		MirrorSegments = 1;
+	var fsin = Sin(r, 1000), fcos = Cos(r, 1000);
+	// Set matrix values.
 	obj->SetObjDrawTransform (
-		+fcos*MirrorSegments, +fsin*length/1000, xoff,
-		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
+		+fcos * MirrorSegments, +fsin * length / 1000, xoff,
+		-fsin * MirrorSegments, +fcos * length / 1000, yoff, layer
 	);
 }
 
-func Hit()
+public func Hit()
 {
 	Sound("WoodHit?");
 }
 
 local ActMap = {
-Hanging = {
-	Prototype = Action,
-	Name = "Hanging",
-  Width = 0,
-  Height = 0
-},
+	Hanging = {
+		Prototype = Action,
+		Name = "Hanging",
+		Width = 0,
+		Height = 0
+	},
 };
 local Name = "$Name$";
 local Collectible = 1;
