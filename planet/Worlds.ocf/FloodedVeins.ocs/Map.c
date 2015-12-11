@@ -74,7 +74,7 @@ public func DrawCavern(proplist map)
     map->DrawMaterial("Brick", cavern_ground, 3, 80);
 
     // Draw the left tunnel.
-    var tunnel_left = {Algo = MAPALGO_Polygon, X = [0, wdt / 2 - 30], Y = [cavern_hgt, cavern_hgt], Wdt = -5, Open = 1, Empty = 1};
+    var tunnel_left = {Algo = MAPALGO_Polygon, X = [0, wdt / 2 - 30], Y = [cavern_hgt, cavern_hgt], Wdt = -6, Open = 1, Empty = 1};
     tunnel_left = {Algo = MAPALGO_Or, Op = [tunnel_left, {Algo = MAPALGO_Turbulence, Amplitude = 6, Scale = 8, Iterations = 4, Seed = Random(65536), Op = tunnel_left}]};
     tunnel_left = {Algo = MAPALGO_And, Op = [tunnel_left, map_top]};
     map->Draw("Tunnel", tunnel_left);
