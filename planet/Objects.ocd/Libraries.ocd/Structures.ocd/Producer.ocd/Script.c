@@ -91,7 +91,14 @@ public func GetProductionMenuEntries(object clonk)
 		if (info) // Currently in queue?
 		{
 			if (info.Infinite)
-				entry.image.Text = "$infinite$";
+			{
+				entry.image.infinity = 
+				{
+					Top = "1em", Left = "1em",
+					Symbol = Icon_Number,
+					GraphicsName = "Inf",
+				};
+			}
 			else // normal amount
 				entry.image.Text = Format("%dx", info.Amount);
 			entry.remove.OnClick = GuiAction_Call(this, "ModifyProduction", {Product = product, Amount = -1});
