@@ -4,8 +4,6 @@ static g_goal, g_object_fade, g_statue, g_doorleft, g_doorright;
 
 func InitializeObjects()
 {
-	CreateObject(Rule_TeamAccount, 0, 0);
-
 	g_goal = CreateObject(Goal_ProtectTheStatue, 0, 0);
 	g_goal.StaticSaveVar = "g_goal";
 

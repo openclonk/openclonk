@@ -6,6 +6,8 @@
 	@authors Sven2
 */
 
+static g_homebases;
+
 local buy_menu;
 local base_material; // array of base material entries
 local last_buy_idx;
@@ -15,6 +17,7 @@ local is_selling; // temp to prevent recursion from object removal
 
 // Technology fields - queried by objects using them
 local tech_load_speed_multiplier = 100;
+local tech_life = 1;
 
 static g_quickbuy_items;
 
@@ -36,6 +39,12 @@ local ITEMTYPE_Technology = {
 
 public func Construction(...)
 {
+	// Manage pointers
+	if (GetOwner() < 0) FatalError("Invalid Homebase owner");
+	if (!g_homebases) g_homebases = [];
+	if (g_homebases[GetOwner()]) g_homebases[GetOwner()]->RemoveObject(); // remove old (shouldn't be here)
+	g_homebases[GetOwner()] = this;
+	// Init
 	base_material = [];
 	techs = {};
 	requirement_names = {};
@@ -63,6 +72,7 @@ public func Construction(...)
 	
 	AddCaption("$Upgrades$");
 	AddHomebaseItem(new ITEMTYPE_Technology { name="$LoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$DescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
+	AddHomebaseItem(new ITEMTYPE_Technology { name="$Life$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$DescLife$", tech = "Life", tiers=3 });
 	AddCaption("$Artifacts$");
 
 	// Buy menu always open (but hidden at start)
@@ -338,6 +348,20 @@ private func GainLoadSpeed(proplist entry, int tier)
 		weapon->Gidl_UpdateLoadTimes();
 	return true;
 }
+
+private func GainLife(proplist entry, int tier)
+{
+	// Increase player's life
+	tech_life = [1, 5, 10, 20][tier];
+	// Full refresh and max increase on current value
+	for (var clonk in FindObjects(Find_Owner(GetOwner()), Find_Func("IsClonk")))
+	{
+		clonk.MaxEnergy = clonk.Prototype.MaxEnergy * tech_life;
+		clonk->DoEnergy(clonk.MaxEnergy, true);
+	}
+	return true;
+}
+
 
 
 public func Definition(def)

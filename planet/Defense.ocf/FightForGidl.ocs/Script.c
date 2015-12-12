@@ -26,9 +26,8 @@ func Initialize()
 	g_doorright.dummy_target = g_doorright->CreateObject(DoorDummy, +6, 6);
 	// Wealth shown at all time
 	GUI_Controller->ShowWealth();
-	// Player homebase preparation
-	g_homebases = [];
 	// static variable init
+	g_homebases = [];
 	InitWaveData();
 }
 
@@ -51,7 +50,7 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 	Scoreboard->SetPlayerData(plr, "relaunchs", g_relaunchs[plr]);
 	Scoreboard->SetPlayerData(plr, "score", g_scores[plr]);
 	//SetFoW(false,plr); - need FoW for lights
-	g_homebases[plr] = CreateObject(Homebase, 0,0, plr);
+	CreateObject(Homebase, 0,0, plr);
 	JoinPlayer(plr);
 	if (!g_wave) StartGame();
 	return;
