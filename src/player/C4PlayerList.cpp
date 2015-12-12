@@ -317,7 +317,7 @@ void C4PlayerList::JoinNew(const char *szFilename)
 {
 	if (::Network.isEnabled())
 	{
-		::Network.Players.JoinLocalPlayer(szFilename, true);
+		::Network.Players.JoinLocalPlayer(szFilename);
 		return;
 	}
 	// security

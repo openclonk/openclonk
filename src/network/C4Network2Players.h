@@ -47,7 +47,7 @@ public:
 
 	void Init();            // add local players; add player file resources - should be called with net connections initialized
 	void Clear();           // clear all player infos
-	bool JoinLocalPlayer(const char *szLocalPlayerFilename, bool fAdd); // join a local player (to game or lobby) - sends to host/and or schedules for queue
+	bool JoinLocalPlayer(const char *szLocalPlayerFilename, bool initial=false); // join a local player (to game or lobby) - sends to host/and or schedules for queue
 
 public:
 	void SendUpdatedPlayers(); // send all player infos with updated flags to all clients (host only!)

@@ -46,11 +46,19 @@ void C4Network2Players::Init()
 	assert(::Network.isEnabled());
 	// must init before game is running
 	assert(!Game.IsRunning);
-	// join the local player(s)
-	JoinLocalPlayer(Game.PlayerFilenames, false);
-	// host: Rejoin script players from savegame
 	if (::Network.isHost())
+	{
+		// host: Rejoin script players from savegame before joining local players so team distribution is done correctly
+		// But prepare empty host list before recreation
+		JoinLocalPlayer("", true);
 		Game.PlayerInfos.CreateRestoreInfosForJoinedScriptPlayers(Game.RestorePlayerInfos);
+		JoinLocalPlayer(Game.PlayerFilenames, false);
+	}
+	else
+	{
+		// Client: join the local player(s)
+		JoinLocalPlayer(Game.PlayerFilenames, true);
+	}
 }
 
 void C4Network2Players::Clear()
@@ -58,7 +66,7 @@ void C4Network2Players::Clear()
 	// nothing...
 }
 
-bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool fAdd)
+bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool initial)
 {
 	// ignore in replay
 	// shouldn't even come here though
@@ -69,7 +77,7 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 	// network only
 	assert(::Network.isEnabled());
 	// create join info packet
-	C4ClientPlayerInfos JoinInfo(szLocalPlayerFilename, fAdd);
+	C4ClientPlayerInfos JoinInfo(szLocalPlayerFilename, !initial);
 	// league game: get authentication for players
 	if (Game.Parameters.isLeague())
 		for (int i = 0; i < JoinInfo.GetPlayerCount(); i++)
@@ -85,7 +93,7 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 	if (::Network.isHost())
 	{
 		// error joining players? Zero players is OK for initial packet; marks host as observer
-		if (fAdd && !JoinInfo.GetPlayerCount()) return false;
+		if (!initial && !JoinInfo.GetPlayerCount()) return false;
 		// handle it as a direct request
 		HandlePlayerInfoUpdRequest(&JoinInfo, true);
 	}
@@ -97,7 +105,7 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 		// any players to join? Zero players is OK for initial packet; marks client as observer
 		// it's also necessary to send the empty player info packet, so the host will answer
 		// with infos of all other clients
-		if (fAdd && !JoinRequest.Info.GetPlayerCount()) return false;
+		if (!initial && !JoinRequest.Info.GetPlayerCount()) return false;
 		::Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, JoinRequest));
 		// request activation
 		if (JoinRequest.Info.GetPlayerCount() && !Game.Clients.getLocal()->isActivated())

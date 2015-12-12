@@ -453,7 +453,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			C4GameLobby::LobbyError(FormatString(LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData()).getData());
 		}
 		else
-			::Network.Players.JoinLocalPlayer(plrPath.getData(), true);
+			::Network.Players.JoinLocalPlayer(plrPath.getData());
 		return true;
 	}
 	if (!Game.IsRunning && SEqualNoCase(szCmdName, "plrclr"))

@@ -598,7 +598,7 @@ namespace C4GameLobby
 			return;
 		}
 		// join!
-		::Network.Players.JoinLocalPlayer(Config.AtRelativePath(szFilename), true);
+		::Network.Players.JoinLocalPlayer(Config.AtRelativePath(szFilename));
 	}
 
 	void MainDlg::OnTabPlayers(C4GUI::Control *btn)
