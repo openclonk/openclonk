@@ -12,15 +12,26 @@ public func AttachToTree(object tree)
 	ScheduleCall(this, "DeattachFromTree", 4200 + Random(500));
 }
 
-public func DeattachFromTree()
+public func DeattachFromTree(bool no_bounce)
 {
 	ClearScheduleCall(this, "DeattachFromTree");
 	SetCategory(GetCategory() ^ C4D_StaticBack);
 	if (mother) mother->LostCoconut();
 	var effect = AddEffect("IntSeed", this, 100, 18, this);
 	effect.SeedTime = GetSeedTime();
+	mother = nil;
 
 	AddEffect("Bouncy", this, 1, 175);
+}
+
+private func Entrance()
+{
+	if (mother) DeattachFromTree(true);
+}
+
+private func Destruction()
+{
+	if (mother) DeattachFromTree(true);
 }
 
 /** Destroy coconut instead of seeding if it tries to seed outside given area
