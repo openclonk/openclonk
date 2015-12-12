@@ -13,14 +13,20 @@ static g_scores; // array of player scores
 static g_ai; // derived from AI; contains changes for this scenario
 static g_homebases; // item management / buy menus for each player
 static const ENEMY = 10; // player number of enemy
+static const ALLOW_DEBUG_COMMANDS = true;
 
 static const MAX_RELAUNCH = 10;
+
+local shared_wealth_remainder = 0;
 
 //======================================================================
 /* Initialization */
 
 func Initialize()
 {
+	// dev stuff (we will forget to turn this off for release)
+	AddMsgBoardCmd("waveinfo", "GameCall(\"ShowWaveInfo\")");
+	AddMsgBoardCmd("next", "GameCall(\"SetNextWave\", \"%s\")");
 	// Init door dummies
 	g_doorleft.dummy_target = g_doorleft->CreateObject(DoorDummy, -6, 6);
 	g_doorright.dummy_target = g_doorright->CreateObject(DoorDummy, +6, 6);
@@ -60,6 +66,8 @@ func RemovePlayer(int plr)
 {
 	if (g_homebases[plr]) g_homebases[plr]->RemoveObject();
 	Scoreboard->SetPlayerData(plr, "relaunchs", Icon_Cancel);
+	// Split player's wealth among the remaining players
+	ScheduleCall(nil, Scenario.DoSharedWealth, 50, 1, GetWealth(plr));
 	return;
 }
 
@@ -223,7 +231,13 @@ func CheckWaveCleared(int wave)
 
 func OnWaveCleared(int wave)
 {
-	CustomMessage(Format("$MsgWaveCleared$", wave));
+	var bounty = ENEMY_WAVE_DATA[g_wave].Bounty, bounty_msg = "";
+	if (bounty)
+	{
+		bounty_msg = Format("|<c ffff00>+%d</c>{{Icon_Wealth}}", bounty);
+		DoWealthForAll(bounty);
+	}
+	CustomMessage(Format("$MsgWaveCleared$%s|                                                             ", wave, bounty_msg));
 	Sound("Ding");
 	// Fade out corpses
 	if (g_object_fade) 
@@ -283,9 +297,39 @@ func OnClonkDeath(clonk, killed_by)
 				Scoreboard->SetPlayerData(killed_by, "score", ++g_scores[killed_by]);
 				DoWealth(killed_by, clonk.Bounty);
 			}
+			else
+			{
+				// Killer could not be determined. Just give gold to everyone.
+				DoSharedWealth(clonk.Bounty);
+			}
 		}
 	}
 	return;
+}
+
+public func DoSharedWealth(int amount)
+{
+	// Split gold among all players. Keep track of remainder and use it next time
+	shared_wealth_remainder += amount;
+	var cnt = GetPlayerCount(C4PT_User);
+	if (cnt)
+	{
+		var wealth_add = shared_wealth_remainder / cnt;
+		if (wealth_add)
+		{
+			shared_wealth_remainder -= wealth_add * cnt;
+			DoWealthForAll(wealth_add);
+		}
+	}
+	return true;
+}
+
+public func DoWealthForAll(int amount)
+{
+	// Add wealth to all players
+	for (var iplr = 0; iplr < GetPlayerCount(C4PT_User); ++iplr)
+		DoWealth(GetPlayerByIndex(iplr, C4PT_User), amount);
+	return true;
 }
 
 
@@ -312,6 +356,36 @@ func Statue_Death()
 	// Statue down :(
 	CastObjects(Nugget, 5, 10);
 	Explode(10);
+	return true;
+}
+
+/* Developer commands */
+
+public func ShowWaveInfo()
+{
+	// Debug summary to balance waves
+	var total_reward = 0, total_bonus = 0;
+	for (var i = 1; i<GetLength(ENEMY_WAVE_DATA); ++i)
+	{
+		var wave = ENEMY_WAVE_DATA[i];
+		var reward = wave.Bounty ?? 0;
+		var bonus = 0;
+		for (var enemy in wave.Enemies)
+		{
+			var numsides = 2;
+			if (enemy.Side) numsides = 1;
+			bonus += enemy.Bounty  * enemy.Num * numsides;
+		}
+		total_reward += reward;
+		total_bonus += bonus;
+		Log("[%02d] %04d + %04d  (= %05d + %05d = %05d) %s", i, reward, bonus, total_reward, total_bonus, total_reward + total_bonus, wave.Name);
+	}
+	return true;
+}
+
+public func SetNextWave(wave_name)
+{
+	Log("Next wave: %s", wave_name);
 	return true;
 }
 
@@ -357,50 +431,54 @@ func InitWaveData()
 	var ogre       = { Name="$EnemyOgre$",      Inventory=bigclub,     Energy= 90, Bounty=100, Color=0xff00ffff, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
-	var chippie    = { Type=Chippie };
-	var boomattack = { Type=Boomattack };
+	var chippie    = { Type=Chippie, Bounty=30 };
+	var boomattack = { Type=Boomattack, Bounty=10 };
+	var boomattackf= { Type=Boomattack, Bounty=25, Speed=300 };
 	//newbie = runner;
 	//newbie = runner;
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
-			{ Name = "$WaveNewbies$", Enemies = [
-			new newbie      {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
-	]}, { Name = "$WaveBows$", Enemies = [
+			{ Name = "$WaveNewbies$", Bounty = 10, Enemies = [
+			new boomattack   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
+	]}, { Name = "$WaveBows$", Bounty = 15, Enemies = [
 			new newbie      {            Num= 2, Interval=10 },
 			new bowman      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_RIGHT },
 			new amazon      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_LEFT }
-	]}, { Name = "Explosive", Enemies = [
+	]}, { Name = "Explosive", Bounty = 20, Enemies = [
 			new flintstone  {            Num=10, Interval=20 }
-	]}, { Name = "Boomattack", Enemies = [
+	]}, { Name = "Boomattack", Bounty = 20, Enemies = [
 			new boomattack  {            Num=10, Interval=70 }
-	]}, { Name = "Suicidal", Enemies = [
+	]}, { Name = "Suicidal", Bounty = 20, Enemies = [
 			new suicide     {            Num= 2, Interval= 5 },
 			new flintstone  { Delay= 15, Num= 5, Interval= 5 },
 			new suicide     { Delay= 50, Num= 1 }
-	]}, { Name = "Swordsmen", Enemies = [
+	]}, { Name = "Swordsmen", Bounty = 30, Enemies = [
 			new swordman    {            Num=10, Interval=20 },
 			new bigswordman { Delay=210, Num= 1, Interval=10 }
-	]}, { Name = "Oh Shrek!", Enemies = [
+	]}, { Name = "Oh Shrek!", Bounty = 50, Enemies = [
 			new ogre        {            Num= 2, Interval=20 },
 			new swordogre   { Delay= 40, Num= 1, Interval=20 },
 			new bowman      { Delay= 60, Num= 3, Interval= 5 }
-	]}, { Name = "Heavy artillery incoming", Enemies = [
+	]}, { Name = "Heavy artillery incoming", Bounty = 50, Enemies = [
 			new artillery   {            Num= 1              },
 			new ogre        {            Num= 2, Interval=20 },
 			new flintstone  { Delay= 15, Num= 5, Interval= 5 },
 			new swordogre   { Delay= 60, Num= 1, Interval=20 }
-	]}, { Name = "Stop the big ones", Enemies = [
+	]}, { Name = "Fast rockets", Bounty = 50, Enemies = [
+			new boomattackf {            Num=6, Interval=30 }
+	]}, { Name = "Stop the big ones", Bounty = 75, Enemies = [
 			new flintstone  {            Num=20, Interval=15 },
 			new nukeogre    {            Num= 2, Interval=99 },
 			new amazon      { Delay= 50, Num= 6, Interval=10 }
-	]}, { Name = "Supreme Boomattack", Enemies = [
-			new boomattack  {            Num=30, Interval=10 }
-	]}, { Name = "Alien invasion", Enemies = [
+	]}, { Name = "Supreme Boomattack", Bounty = 100, Enemies = [
+			new boomattack  {            Num=30, Interval=10 },
+			new boomattackf {            Num=5, Interval=40 }
+	]}, { Name = "Alien invasion", Bounty = 100, Enemies = [
 			new bowman      { Delay=260, Num= 3, Interval= 5 },
 			new chippie     {            Num=10, Interval=10 },
 			new amazon      { Delay=250, Num= 6, Interval=10 }
-	]}, { Name = "Two of each kind", Enemies = [
+	]}, { Name = "Two of each kind", Bounty = 250, Enemies = [
 			new newbie      { Delay=  0                      },
 			new ogre        { Delay=  0                      },
 			new swordman    { Delay= 10                      },
@@ -412,8 +490,9 @@ func InitWaveData()
 			new flintstone  { Delay= 22                      },
 			new bigswordman { Delay= 40                      },
 			new bowman      { Delay= 45                      },
-			new suicide     { Delay= 30                      }
-	]}, { Name = "Finale!", Enemies = [
+			new suicide     { Delay= 30                      },
+			new boomattackf { Delay= 50                      }
+	]}, { Name = "Finale!", Bounty = 1000, Enemies = [
 			new artillery   {            Num= 2, Interval= 5 },
 			new newbie      {            Num=10, Interval=15 },
 			new swordman    { Delay=  3, Num= 5, Interval=30 },

@@ -31,7 +31,7 @@ private func FxFlightTimer(object _this, effect, int time)
 {
 	// Attack statue!
 	var target = g_statue;
-	if (!target) { DoFireworks(); return FX_OK; }
+	if (!target) { DoFireworks(NO_OWNER); return FX_OK; }
 	if(!(time % 10))
 	{
 		// Adjust angle for something similar to a parabulum towards target
@@ -59,18 +59,19 @@ private func FxFlightTimer(object _this, effect, int time)
 /* Contact / Explosion */
 
 public func IsProjectileTarget(target,shooter) { return true; }
-public func OnProjectileHit(object shot) { return DoFireworks(); }
+public func OnProjectileHit(object shot) { return DoFireworks(shot->GetController()); }
 
 public func ContactBottom() { return Hit(); }
 public func ContactTop() { return Hit(); }
 public func ContactLeft() { return Hit(); }
 public func ContactRight() { return Hit(); }
 
-public func Hit() { return DoFireworks(); }
-public func HitObject() { return DoFireworks(); }
+public func Hit() { return DoFireworks(NO_OWNER); }
+public func HitObject() { return DoFireworks(NO_OWNER); }
 
-private func DoFireworks(int speed)
+private func DoFireworks(int killed_by)
 {
+	GameCallEx("OnClonkDeath", this, killed_by); // for reward
 	RemoveEffect("Flight",this);
 	Fireworks();
 	Explode(40);
