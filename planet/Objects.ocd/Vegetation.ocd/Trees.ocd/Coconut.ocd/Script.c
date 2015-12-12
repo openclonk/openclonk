@@ -7,6 +7,7 @@ private func SeedChance() {	return 100; }
 private func SeedArea() { return 400; }
 private func SeedAmount() { return 12; }
 
+local coconuts;
 // Saved for GetTreetopPosition
 local mesh_rotation;
 
@@ -20,25 +21,30 @@ private func Construction()
 
 private func Seed()
 {
-	if(!IsStanding()) return false;
+	if(!IsStanding()) return;
+	if(OnFire()) return;
+	if(GetCon() < 100) return;
+	if(coconuts >= MaxCoconuts) return;
 
-	// Coconut trees always create coconut seeds
-	// The seed area checks are done by the coconut before creating the tree.
-	var chance = this->SeedChance();
-	if (!Random(chance) && GetCon() >= 100 && ObjectCount(Find_ID(Coconut)) < ObjectCount(Find_ID(Tree_Coconut)))
+	if (CheckSeedChance())
 	{
-		var seed = CreateObjectAbove(Coconut, 0, -35);
-		seed->SetXDir(-5 + Random(11));
-		seed->SetR(Random(360));
-		seed->SetRDir(RandomX(-5,5));
+		var seed = CreateObjectInTreetop(Coconut);
+		if (!seed) return;
+		coconuts++;
 		seed->SetConfinement(this.Confinement);
+		seed.Plane = this.Plane - 2; // coconuts should always be behind the tree
 	}
 }
 
 public func GetTreetopPosition(pos)
 {
 	var offset = Sin(mesh_rotation/2, 20);
-	return Shape->Rectangle(-45+offset,-25, 50,10)->GetRandomPoint(pos);
+	return Shape->Rectangle(-25+offset,-25, 30,5)->GetRandomPoint(pos);
+}
+
+public func LostCoconut()
+{
+	coconuts--;
 }
 
 /*-- Properties --*/
@@ -52,3 +58,4 @@ local Name = "$Name$";
 local Touchable = 0;
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local MaxCoconuts = 3;
