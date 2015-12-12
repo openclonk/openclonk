@@ -44,7 +44,6 @@ func InitializePlayer(int plr, int iX, int iY, object pBase, int iTeam)
 		Scoreboard->Init([{key = "relaunchs", title = Rule_Restart, sorted = true, desc = true, default = "", priority = 75},
 	                    {key = "score", title = Nugget, sorted = true, desc = true, default = "0", priority = 100}]);
 	}
-	for (var flagpole in FindObjects(Find_ID(Flagpole), Find_Owner(NO_OWNER))) flagpole->SetOwner(plr);
 	for (var stonedoor in FindObjects(Find_ID(StoneDoor), Find_Owner(NO_OWNER))) stonedoor->SetOwner(plr);
 	g_relaunchs[plr] = MAX_RELAUNCH;
 	g_scores[plr] = 0;
@@ -78,19 +77,17 @@ private func TransferInventory(object from, object to)
 
 func JoinPlayer(plr, prev_clonk)
 {
-	var relaunch_target = FindObject(Find_ID(Flagpole), Sort_Random()),x,y;
-	if (relaunch_target)
-		{ x = relaunch_target->GetX(); y = relaunch_target->GetY()+20; }
-	else
-		{ x = LandscapeWidth()/2; y = LandscapeHeight()/2-100; }
+	var spawn_idx = Random(2);
+	if (prev_clonk && g_statue) spawn_idx = (prev_clonk->GetX() > g_statue->GetX());
+	var x=[494,763][spawn_idx],y = 360;
 	var clonk = GetCrew(plr);
 	if (clonk)
 	{
-		clonk->SetPosition(x,y);
+		clonk->SetPosition(x,y-10);
 	}
 	else
 	{
-		clonk = CreateObjectAbove(Clonk, x,y+10, plr);
+		clonk = CreateObjectAbove(Clonk, x,y, plr);
 		clonk->MakeCrewMember(plr);
 	}
 	SetCursor(plr, clonk);
@@ -177,10 +174,25 @@ func LaunchWave(int wave)
 func ScheduleLaunchEnemy(proplist enemy)
 {
 	// Schedules spawning of enemy definition
+	// Spawn on ground or in air?
+	var xmin, xmax, y;
+	if (enemy.Type && enemy.Type->~IsFlyingEnemy())
+	{
+		// Air spawn
+		xmin = 0;
+		xmax = 550;
+		y = 5;
+	}
+	else
+	{
+		xmin = xmax = 0;
+		y = 509;
+	}
+	// Spawn either only enemy or mirrored enemies on both sides
 	var side = enemy.Side;
 	if (!side) side = WAVE_SIDE_LEFT | WAVE_SIDE_RIGHT;
-	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 10, 529);
-	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 1190, 509);
+	if (side & WAVE_SIDE_LEFT)  ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 10 + xmin, xmax - xmin, y);
+	if (side & WAVE_SIDE_RIGHT) ScheduleCall(nil, CustomAI.LaunchEnemy, Max(enemy.Interval,1), Max(enemy.Num,1), enemy, 1190 - xmax, xmax - xmin, y);
 	return true;
 }
 
@@ -347,6 +359,7 @@ func InitWaveData()
 	var swordogre  = { Name="$EnemyOgre$",      Inventory=ogresword,   Energy= 90, Bounty=100, Color=0xff805000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=50 };
 	var nukeogre   = { Name="$EnemyOgre$",      Inventory=nukekeg,     Energy=120, Bounty=100, Color=0xffff0000, Skin=CSKIN_Ogre,      Backpack=0, Scale=[1400,1200,1200], Speed=40, Siege=true };
 	var chippie    = { Type=Chippie };
+	var boomattack = { Type=Boomattack };
 	//newbie = runner;
 	//newbie = runner;
 
@@ -360,6 +373,8 @@ func InitWaveData()
 			new amazon      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "Explosive", Enemies = [
 			new flintstone  {            Num=10, Interval=20 }
+	]}, { Name = "Boomattack", Enemies = [
+			new boomattack  {            Num=10, Interval=70 }
 	]}, { Name = "Suicidal", Enemies = [
 			new suicide     {            Num= 2, Interval= 5 },
 			new flintstone  { Delay= 15, Num= 5, Interval= 5 },
@@ -380,6 +395,8 @@ func InitWaveData()
 			new flintstone  {            Num=20, Interval=15 },
 			new nukeogre    {            Num= 2, Interval=99 },
 			new amazon      { Delay= 50, Num= 6, Interval=10 }
+	]}, { Name = "Supreme Boomattack", Enemies = [
+			new boomattack  {            Num=30, Interval=10 }
 	]}, { Name = "Alien invasion", Enemies = [
 			new bowman      { Delay=260, Num= 3, Interval= 5 },
 			new chippie     {            Num=10, Interval=10 },
@@ -390,6 +407,7 @@ func InitWaveData()
 			new swordman    { Delay= 10                      },
 			new amazon      { Delay= 12                      },
 			new nukeogre    { Delay= 14                      },
+			new boomattack  { Delay= 15                      },
 			new swordogre   { Delay= 20                      },
 			new artillery   { Delay= 21                      },
 			new flintstone  { Delay= 22                      },
@@ -403,6 +421,7 @@ func InitWaveData()
 			new nukeogre    { Delay= 60, Num= 2, Interval=50 },
 			new bigswordman { Delay=103, Num= 3, Interval=30 },
 			new amazon      { Delay= 10, Num= 5, Interval=10 },
+			new boomattack  { Delay= 40, Num=20, Interval=20 },
 			new flintstone  {            Num=20, Interval=10 },
 			new bowman      { Delay=  8, Num= 5, Interval=40 },
 			new suicide     { Delay= 25, Num=10, Interval=20 },

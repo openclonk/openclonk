@@ -164,10 +164,13 @@ func Inventory_GetCarryTransform()
 		return this.ExtraTransform;
 }
 
-func LaunchEnemy(proplist enemy, int x, int y)
+func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 {
 	// Create enemy (usually a Clonk)
+	var x = xmin+Random(xrange);
 	var obj = CreateObjectAbove(enemy.Type ?? Clonk, x,y, ENEMY), clonk;
+	if (!obj) return nil;
+	obj->SetController(ENEMY);
 	// Enemy visuals
 	if (enemy.Skin)
 	{
@@ -197,6 +200,7 @@ func LaunchEnemy(proplist enemy, int x, int y)
 			obj.ActMap[action].Speed = obj.ActMap[action].Speed * enemy.Speed / 100;
 		}
 		obj.JumpSpeed = obj.JumpSpeed * enemy.Speed / 100;
+		obj.FlySpeed = obj.FlySpeed * enemy.Speed / 100;
 	}
 	obj.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
 	obj->MakeInvincibleToFriendlyFire();
@@ -234,17 +238,25 @@ func LaunchEnemy(proplist enemy, int x, int y)
 			}
 		}
 	}
-	// Init AI: Run towards statue
-	CustomAI->AddAI(obj);
-	CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
-	var fx = GetEffect("AI", obj);
-	if (fx) fx.vehicle = vehicle;
-	if (g_statue)
+	// Flying AI
+	if (obj->~IsFlyingEnemy())
 	{
-		CustomAI->SetHome(obj, g_statue->GetX(), g_statue->GetY(), Random(2));
-		CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
-		CustomAI->SetEnemyData(obj, enemy);
-		//	CustomAI->SetGuardRange(obj, g_statue->GetX()-200, g_statue->GetY()-50, 400, 100);
+		// Flying enemies all init themselves to fly at the statue at the moment
+	}
+	else
+	{
+		// Init AI: Run towards statue
+		CustomAI->AddAI(obj);
+		CustomAI->SetMaxAggroDistance(obj, LandscapeWidth());
+		var fx = GetEffect("AI", obj);
+		if (fx) fx.vehicle = vehicle;
+		if (g_statue)
+		{
+			CustomAI->SetHome(obj, g_statue->GetX(), g_statue->GetY(), Random(2));
+			CustomAI->SetGuardRange(obj, 0,0,LandscapeWidth(),LandscapeHeight()); // nowhere to run!
+			CustomAI->SetEnemyData(obj, enemy);
+			//	CustomAI->SetGuardRange(obj, g_statue->GetX()-200, g_statue->GetY()-50, 400, 100);
+		}
 	}
 	// Remember this clonk to end wave when all enemies have been killed
 	g_spawned_enemies[GetLength(g_spawned_enemies)] = obj;

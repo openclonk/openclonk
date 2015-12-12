@@ -24,13 +24,6 @@ func InitializeObjects()
 	g_doorright.StaticSaveVar = "g_doorright";
 	g_doorright->SetAutoControl();
 
-	var Flagpole0012 = CreateObjectAbove(Flagpole, 676, 369);
-	Flagpole0012->SetCategory(C4D_StaticBack);
-	Flagpole0012->MakeInvincible();
-	var Flagpole0007 = CreateObjectAbove(Flagpole, 582, 369);
-	Flagpole0007->SetCategory(C4D_StaticBack);
-	Flagpole0007->MakeInvincible();
-
 	CreateObjectAbove(Rock, 312, 713);
 	CreateObjectAbove(Rock, 353, 679);
 	CreateObjectAbove(Rock, 894, 707);
