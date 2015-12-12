@@ -14,7 +14,11 @@ local using;
 local carry_bone;
 local magic_number;
 
+local movement_effect;
+
 static const axe_swing_time = 30;
+
+static const Axe_Standard_StrikingLength = 40; // in frames
 
 private func Hit(int x, int y)
 {
@@ -124,13 +128,14 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	var rand = Random(2)+1;
 	var arm = "R";
 	var animation = Format("SwordSlash%d.%s", rand, arm);
-	var length = 15;
 	carry_bone = "pos_hand2";
+
+	var length = Sword_Standard_StrikingLength;
 
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("AxeStrikeStop", clonk, 0))
-			AddEffect("AxeStrikeStop", clonk, 2, 50, this);
+			AddEffect("AxeStrikeStop", clonk, 2, length, this);
 	}
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
@@ -287,6 +292,7 @@ public func Reset(clonk)
 	swing_anim = nil;
 	RemoveEffect("IntAxe", clonk);
 	RemoveEffect("IntSplit", clonk);
+	RemoveEffect("AxeStrike", clonk);
 }
 
 /* Combat */
@@ -369,13 +375,23 @@ func FxAxeStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
 	pTarget->PopActionSpeed("Walk");
+	movement_effect = nil;
 }
 
 func FxAxeStrikeStopTimer(pTarget, effect)
 {
-	return 1;
+	return -1;
 }
 
+private func Departure(object container)
+{
+	// Always end the movement impairing effect when exiting
+	if (movement_effect)
+	{
+		RemoveEffect(nil, container, movement_effect);
+		movement_effect = nil;
+	}
+}
 
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }

@@ -4,6 +4,8 @@
 
 static const Sword_Standard_StrikingLength = 15; // in frames
 
+local movement_effect;
+
 func Hit()
 {
 	Sound("LightMetalHit?");
@@ -53,7 +55,7 @@ public func ControlUse(object clonk, int x, int y)
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("SwordStrikeStop", clonk))
-			AddEffect("SwordStrikeStop", clonk, 2, length, nil, GetID());
+			movement_effect = AddEffect("SwordStrikeStop", clonk, 2, length, nil, GetID());
 	}
 	else
 	if(clonk->IsJumping())
@@ -276,6 +278,7 @@ func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
 	pTarget->PopActionSpeed("Walk");
+	movement_effect = nil;
 }
 
 func FxSwordStrikeStopTimer(pTarget, effect)
@@ -320,6 +323,16 @@ func FxSwordStrikeSlowTimer(pTarget, effect, iEffectTime)
 func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk");
+}
+
+private func Departure(object container)
+{
+	// Always end the movement impairing effect when exiting
+	if (movement_effect)
+	{
+		RemoveEffect(nil, container, movement_effect);
+		movement_effect = nil;
+	}
 }
 
 public func IsWeapon() { return true; }
