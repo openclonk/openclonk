@@ -544,7 +544,7 @@ bool C4Application::PreInit()
 	if (!Game.PreInit()) return false;
 
 	// Music
-	if (!MusicSystem.Init("Frontend.*"))
+	if (!MusicSystem.Init("frontend"))
 		Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
 	Game.SetInitProgress(fUseStartupDialog ? 34.0f : 2.0f);

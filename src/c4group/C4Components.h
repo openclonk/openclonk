@@ -164,7 +164,7 @@
 #define C4CFN_PlayerFiles     "*.ocp"
 #define C4CFN_MaterialFiles   "*.ocm"
 #define C4CFN_ObjectInfoFiles "*.oci"
-#define C4CFN_MusicFiles      "*.mid"
+#define C4CFN_MusicFiles      "*.ogg"
 #define C4CFN_SoundFiles      "*.wav|*.ogg"
 #define C4CFN_PNGFiles        "*.png"
 #define C4CFN_BitmapFiles     "*.bmp"
@@ -198,6 +198,6 @@
 #define C4FLS_Objects   "Names*.txt|Desc*.txt|*.ocd"
 #define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|PlayerControls.txt|*.c|Names.txt"
 #define C4FLS_Sound     C4CFN_SoundFiles "|" C4CFN_SoundSubgroups
-#define C4FLS_Music     "Frontend.*|Credits.*"
+#define C4FLS_Music     C4CFN_MusicFiles
 
 #endif

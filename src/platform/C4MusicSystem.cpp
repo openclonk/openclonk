@@ -720,8 +720,8 @@ int C4MusicSystem::SetPlayList(const char *szPlayList, bool fForceSwitch, int fa
 		// Ignore frontend and credits music
 		for (pFile = Songs; pFile; pFile = pFile->pNext)
 			if (*GetFilename(pFile->FileName) != '@' &&
-			    !SEqual2(GetFilename(pFile->FileName), "Credits.") &&
-			    !SEqual2(GetFilename(pFile->FileName), "Frontend."))
+			    !pFile->HasCategory("frontend") &&
+			    !pFile->HasCategory("credits"))
 			{
 				ASongCount++;
 				pFile->NoPlay = false;
