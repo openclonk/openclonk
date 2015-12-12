@@ -3,3 +3,4 @@ Description=Das Sägewerk kann Bäume effizient in Holz zersägen, braucht dazu abe
 
 AutoProduction=Das Sägewerk verarbeitet automatisch Bäume oder hölzerne Objekte zu Holz.
 WoodInQueue=Holz in Produktion
+Production=Produktion

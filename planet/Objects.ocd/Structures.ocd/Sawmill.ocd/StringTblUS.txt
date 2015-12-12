@@ -3,3 +3,4 @@ Description=The sawmill can efficiently saw trees into wooded logs, but needs po
 
 AutoProduction=The sawmill automatically processes trees or wooden objects to wood.
 WoodInQueue=Wood in queue
+Production=Production

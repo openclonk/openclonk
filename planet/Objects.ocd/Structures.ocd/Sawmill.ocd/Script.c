@@ -85,8 +85,27 @@ private func CheckWoodObject(object target)
 	return true;
 }
 
-// Hijack the production menu to show helpful hint to player.
-private func GetProductionMenuEntries()
+// Provides an own interaction menu.
+public func HasInteractionMenu() { return true; }
+
+// Show a helpful hint to the player. The hint is colored and titled the same as the production menu for more visual coherence.
+public func GetInteractionMenus(object clonk)
+{
+	var menus = _inherited() ?? [];
+	var prod_menu =
+	{
+		title = "$Production$",
+		entries_callback = this.GetInfoMenuEntries,
+		callback = nil,
+		BackgroundColor = RGB(0, 0, 50),
+		Priority = 20
+	};
+	PushBack(menus, prod_menu);
+	
+	return menus;
+}
+
+public func GetInfoMenuEntries()
 {
 	var wood_count = ContentsCount(Wood);
 	var info_text =
@@ -112,7 +131,7 @@ public func Saw(object target)
 	target->Split2Components();
 	AddEffect("WoodProduction", this, 100, 3, this);
 	// Refresh interaction menus to show the wood count.
-	UpdateInteractionMenus(this.GetProductionMenuEntries);
+	UpdateInteractionMenus(this.GetInfoMenuEntries);
 	return true;
 }
 
@@ -197,6 +216,9 @@ public func EjectWood()
 
 	wood->Exit(-25 * GetCalcDir(), -8, 30 - Random(59), -2 * GetCalcDir(), 1);
 	Sound("Pop");
+	
+	// Refresh interaction menus to show the wood count.
+	UpdateInteractionMenus(this.GetInfoMenuEntries);
 }
 
 /*-- Animation --*/
