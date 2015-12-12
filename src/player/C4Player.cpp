@@ -678,7 +678,7 @@ bool C4Player::SetWealth(int32_t iVal)
 {
 	if (iVal == Wealth) return true;
 
-	Wealth=Clamp<int32_t>(iVal,0,10000);
+	Wealth=Clamp<int32_t>(iVal,0,1000000000);
 
 	::GameScript.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
