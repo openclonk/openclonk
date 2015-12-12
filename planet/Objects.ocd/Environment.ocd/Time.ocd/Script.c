@@ -79,7 +79,8 @@ public func IsDay()
 		var time_controller = FindObject(Find_ID(Time));
 		if (time_controller)
 			return time_controller->IsDay();
-		return;
+		// If there is no time controller active it is day.	
+		return true;
 	}
 	// Otherwise normal behavior.
 	var day_start = (time_set.sunrise_start + time_set.sunrise_end) / 2;
@@ -97,7 +98,8 @@ public func IsNight()
 		var time_controller = FindObject(Find_ID(Time));
 		if (time_controller)
 			return time_controller->IsNight();
-		return;
+		// If there is no time controller active it is not night.
+		return false;
 	}
 	// Otherwise normal behavior.
 	var night_start = (time_set.sunset_start + time_set.sunset_end) / 2;
