@@ -1,13 +1,16 @@
 /**
 	Sawmill
-	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
+	Cuts trees or other objects into wood. Accepts only objects purely made from wood (like trees).
 	
 	@authors Ringwaul, Clonkonaut
 */
 
 #include Library_Structure
 #include Library_Ownable
-#include Library_Producer
+#include Library_PowerConsumer
+
+local running = false;
+local power = false;
 
 public func Construction()
 {
@@ -34,8 +37,36 @@ public func RejectContentsMenu() { return true; }
 // Sawmill can't be interacted with.
 public func IsInteractable() { return false; }
 
+/*-- Production --*/
+
+private func Collection(object obj)
+{
+	Sound("Clonk");
+	Saw(obj);
+}
+
+private func RejectCollect(id id_def, object collect)
+{
+	// Don't collect wood
+	if (id_def == Wood)
+		return true;
+	if (CheckWoodObject(collect))
+		return false;
+	return true;
+}
+
+// Timer, check for objects to collect in the designated collection zone
+public func CollectTrees()
+{
+	if (GetCon() < 100)
+		return;
+	// Only take one tree at a time
+	if (!ContentsCount(Wood))
+		FindTrees();
+}
+
 // Automatically search for trees in front of sawmill. Temporary solution?
-protected func FindTrees()
+private func FindTrees()
 {
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
 	if (!tree)
@@ -54,10 +85,8 @@ private func CheckWoodObject(object target)
 	return true;
 }
 
-/*-- Production --*/
-
-// Overload production menu entries to show helpful hint to player.
-public func GetProductionMenuEntries()
+// Hijack the production menu to show helpful hint to player.
+private func GetProductionMenuEntries()
 {
 	var wood_count = ContentsCount(Wood);
 	var info_text =
@@ -75,128 +104,150 @@ public func GetProductionMenuEntries()
 	return [{symbol = Wood, custom = info_text}];
 }
 
-private func IgnoreKnowledge() { return true; }
-
 public func Saw(object target)
 {
 	if (target->Contained() != this)
 		target->Enter(this);
 	var output = target->GetComponent(Wood);
 	target->Split2Components();
-	AddToQueue(Wood, output);
+	AddEffect("WoodProduction", this, 100, 3, this);
 	// Refresh interaction menus to show the wood count.
 	UpdateInteractionMenus(this.GetProductionMenuEntries);
 	return true;
 }
 
-private func IsProduct(id product_id)
-{
-	return product_id->~IsSawmillProduct();
-}
-private func ProductionTime(id toProduce) { return 100; }
-public func PowerNeed() { return 20; }
+private func ProductionTime() { return 100; }
+private func PowerNeed() { return 20; }
 
-public func OnProductionStart(id product)
+private func FxWoodProductionStart(object t, proplist effect, int temp)
 {
-	if (!GetEffect("Sawing", this))
+	if (temp) return;
+
+	effect.runtime = 0;
+	effect.starttime = 0;
+
+	RegisterPowerRequest(PowerNeed());
+}
+
+private func FxWoodProductionTimer(object t, proplist effect, int time)
+{
+	if (!power)
 	{
-		SpinOn();
-		AddEffect("Sawing", this, 100, 1, this);
+		if (effect.starttime)
+			effect.starttime = 0;
+		return FX_OK;
 	}
-}
 
-public func OnProductionHold(id product)
-{
-	SpinOff();
-	RemoveEffect("Sawing", this);
-}
-
-public func OnProductionContinued(id product)
-{
-	if (!GetEffect("Sawing", this))
-	{
-		SpinOn();
-		AddEffect("Sawing", this, 100, 1, this);
-	}
-}
-
-public func OnProductionFinish(id product)
-{
-	if (!GetLength(queue))
-	{
-		SpinOff();
-		RemoveEffect("Sawing", this);
-	}
-}	
-
-// Timer, check for objects to collect in the designated collection zone
-public func CollectTrees()
-{
-	if (GetCon() < 100) 
-		return;
-	// Only take one tree at a time
-	if (GetLength(queue) == 0)
-		FindTrees();
-	return;
-}
-
-protected func Collection(object obj)
-{
-	Sound("Clonk");
-	Saw(obj);
-}
-
-public func FxSawingTimer(object target, proplist effect, int time)
-{
-	var dir = GetCalcDir();
-	if (time >= this.SpinStep * 3 && time % 5)
-		CreateParticle("WoodChip", PV_Random(-7 * dir, -3 * dir), PV_Random(3, 6), PV_Random(-5 * dir, -11 * dir), PV_Random(-4, -2), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 3);
-
-	if (!(time % 20))
+	if (!(time%20))
 		Smoke(10 * GetCalcDir(),10,10);
+
+	if (!running)
+	{
+		SpinOn(effect.starttime);
+		effect.starttime += 3;
+		return FX_OK;
+	}
+
+	effect.runtime += 3;
+	var dir = GetCalcDir();
+	CreateParticle("WoodChip", PV_Random(-7 * dir, -3 * dir), PV_Random(3, 6), PV_Random(-5 * dir, -11 * dir), PV_Random(-4, -2), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 3);
+
+	if (effect.runtime >= ProductionTime())
+	{
+		EjectWood();
+		effect.runtime = 0;
+	}
+	else
+		return FX_OK;
+
+	if (!ContentsCount(Wood))
+		return FX_Execute_Kill;
 }
 
-public func OnProductEjection(object product)
+private func FxWoodProductionStop(object t, proplist effect, int r, bool temp)
 {
-	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() - 8);
-	product->SetSpeed(-7 * GetCalcDir(), 5);
-	product->SetR(30 - Random(59));
+	if (temp) return;
+
+	UnregisterPowerRequest();
+	SpinOff();
+	power = false;
+}
+
+public func OnEnoughPower()
+{
+	if (power) return _inherited(...);
+
+	power = true;
+	return _inherited(...);
+}
+
+public func OnNotEnoughPower()
+{
+	if (!power) return _inherited(...);
+
+	power = false;
+	SpinOff();
+	return _inherited(...);
+}
+
+public func EjectWood()
+{
+	var wood = FindContents(Wood);
+	if (!wood) return;
+
+	wood->Exit(-25 * GetCalcDir(), -8, 30 - Random(59), -2 * GetCalcDir(), 1);
 	Sound("Pop");
-}
-
-protected func RejectCollect(id id_def, object collect)
-{
-	// Don't collect wood
-	if (id_def == Wood) 
-		return true;
-	if (collect->~IsSawmillIngredient() || CheckWoodObject(collect)) 
-		return false;
-	return true;
 }
 
 /*-- Animation --*/
 
-private func SpinOn(int call)
+private func SpinOn(int diff)
 {
 	var spin;
-	// Slowest spin on first call
-	if (!call) { spin = 100; SetMeshMaterial("Beltspin", 1); ClearScheduleCall(this, "SpinOff"); }
-	if (call == 1) spin = 75;
-	if (call == 2) spin = 50;
-	if (call == 3) { spin = 30; SetMeshMaterial("SawmillBlade.Spin", 2); }
+	var rotate = 0;
+	if (diff == 0)
+	{
+		ClearScheduleCall(this, "SpinOff");
+		Sound("Sawmill::EngineStart");
+		SetMeshMaterial("Beltspin", 1);
+	}
+	if (diff > 20) rotate = Sin(70 * diff, 1) - 1;
+	if (Inside(diff, 0, 20)) spin = 100;
+	if (Inside(diff, 21, 40)) spin = 75;
+	if (Inside(diff, 41, 60)) spin = 50;
+	if (Inside(diff, 61, 80)) spin = 30;
+	if (diff > 80)
+	{
+		spin = 30;
+		rotate = 0;
+		SetMeshMaterial("SawmillBlade.Spin", 2);
+		running = true;
+		Sound("SawmillRipcut", nil, nil, nil, +1);
+		Sound("Sawmill::EngineLoop", nil, nil, nil, +1);
+	}
 
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(rotate, 1, 0, 0)));
 	SetAnimationPosition(this.SpinAnimation, Anim_Linear(GetAnimationPosition(this.SpinAnimation), 0, GetAnimationLength("work"), spin, ANIM_Loop));
-
-	if (call < 3) ScheduleCall(this, "SpinOn", this.SpinStep, nil, call+1);
-	else Sound("SawmillRipcut", nil, nil, nil, +1);
 }
 
-private func SpinOff(int call, int animation_no)
+private func SpinOff(int call)
 {
 	var spin;
-	if (!call) { spin = 50; SetMeshMaterial("SawmillBlade", 2); Sound("SawmillRipcut", nil, nil, nil, -1); ClearScheduleCall(this, "SpinOn"); }
+	if (!call)
+	{
+		running = false;
+		spin = 50;
+		SetMeshMaterial("SawmillBlade", 2);
+		Sound("SawmillRipcut", nil, nil, nil, -1);
+		SetProperty("MeshTransformation", Trans_Rotate(-20, 0, 1, 0));
+	}
 	if (call == 1) spin = 75;
-	if (call == 2) spin = 100;
+	if (call == 2)
+	{
+		spin = 100;
+		Sound("Sawmill::EngineLoop", nil, nil, nil, -1);
+		Sound("Sawmill::EngineStop");
+	}
 	if (call == 3) spin = 150;
 	if (call == 4)
 	{

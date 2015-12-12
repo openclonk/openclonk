@@ -1,3 +1,6 @@
 CC0 1.0
 
 SawmillRipcut			-	kolczok (http://freesound.org/people/kolczok/sounds/198988/)
+EngineStart / EngineLoop / EngineStop	gthall (http://www.freesound.org/people/gthall/sounds/222808/)
+
+note by Clonkonaut: I will move these sounds into Sound.ocg once refactoring has been finished.
