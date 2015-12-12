@@ -1,0 +1,9 @@
+[DefCore]
+id=DoorDummy
+Version=7,0
+Category=C4D_StaticBack | C4D_MouseIgnore
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=1
+VertexY=10

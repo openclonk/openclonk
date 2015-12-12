@@ -21,6 +21,9 @@ static const MAX_RELAUNCH = 10;
 
 func Initialize()
 {
+	// Init door dummies
+	g_doorleft.dummy_target = g_doorleft->CreateObject(DoorDummy, -6, 6);
+	g_doorright.dummy_target = g_doorright->CreateObject(DoorDummy, +6, 6);
 	// Wealth shown at all time
 	GUI_Controller->ShowWealth();
 	// Player homebase preparation
@@ -92,6 +95,7 @@ func JoinPlayer(plr, prev_clonk)
 	}
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(1000);
+	clonk->MakeInvincibleToFriendlyFire();
 	// contents
 	clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
 	clonk.MaxContentsCountVal = 1;

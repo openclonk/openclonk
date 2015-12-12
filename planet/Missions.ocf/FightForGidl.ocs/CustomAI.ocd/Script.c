@@ -9,6 +9,7 @@ func AddAI(object clonk)
 	{
 		clonk.ExecuteAI = CustomAI.Execute;
 		fx.ai = CustomAI;
+		fx.ignore_allies = true;
 	}
 	return fx;
 }
@@ -24,13 +25,12 @@ func SetEnemyData(object clonk, proplist data)
 	return false;
 }
 
-
 func FindTarget(fx)
 {
 	// Attack doors and statue unless an enemy clonk is closer than these objectives
 	var objective;
-	     if (g_doorleft  && GetX()<=g_doorleft ->GetX()+5) objective = g_doorleft;
-	else if (g_doorright && GetX()>=g_doorright->GetX()-5) objective = g_doorright;
+	     if (g_doorleft  && GetX()<=g_doorleft ->GetX()+5) objective = g_doorleft.dummy_target;
+	else if (g_doorright && GetX()>=g_doorright->GetX()-5) objective = g_doorright.dummy_target;
 	else objective = g_statue;
 	var target = inherited(fx, ...);
 	if (objective)
@@ -111,14 +111,6 @@ private func CheckVehicleAmmo(fx, object catapult)
 {
 	// Ammo is auto-refilled
 	return true;
-}
-
-func PathFree()
-{
-	// ignore path checks to doors because of solidmask)
-	var fx = GetEffect("AI", this);
-	if (fx && fx.target && fx.target->GetID()==StoneDoor) return true;
-	return inherited(...);
 }
 
 func Execute(proplist fx, int time)
@@ -207,6 +199,7 @@ func LaunchEnemy(proplist enemy, int x, int y)
 		obj.JumpSpeed = obj.JumpSpeed * enemy.Speed / 100;
 	}
 	obj.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
+	obj->MakeInvincibleToFriendlyFire();
 	obj.MaxContentsCountVal = 1;
 	// Reward for killing enemy
 	obj.Bounty = enemy.Bounty;
@@ -229,7 +222,7 @@ func LaunchEnemy(proplist enemy, int x, int y)
 			inv_obj.IsAIWeapon = true;
 			// Infinite ammo
 			inv_obj->~SetInfiniteStackCount();
-			if (GetIndexOf(g_respawning_weapons, inv_type)) inv_obj.Departure = CustomAI.Departure_WeaponRespawn;
+			if (GetIndexOf(g_respawning_weapons, inv_type) >= 0) inv_obj.Departure = CustomAI.Departure_WeaponRespawn;
 			// Extra settings?
 			if (inv.InvType)
 			{

@@ -14,7 +14,6 @@ static const AI_DefMaxAggroDistance = 200, // lose sight to target if it is this
              AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
              AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
              AI_AlertTime      = 800; // number of frames after alert after which AI no longer checks for projectiles
-             
 /* Public interface */
 
 // Add AI execution timer to target Clonk
@@ -76,6 +75,7 @@ func SetHome(object clonk, int x, int y, int dir)
 // Put into clonk proplist
 func AI_BindInventory() { return this.ai.ai->BindInventory(this); }
 func AI_SetHome() { return this.ai.ai->SetHome(this); }
+func AI_SetIgnoreAllies() { return (this.ai.ignore_allies = true); }
 
 // Set the guard range to the provided rectangle
 func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
@@ -362,7 +362,9 @@ private func ExecuteRanged(fx)
 	// Finish shooting process
 	if (fx.post_aim_weapon)
 	{
-		if (IsAimingOrLoading()) return true;
+		// wait max one second after shot (otherwise may be locked in wait animation forever if something goes wrong during shot)
+		if (FrameCounter() - fx.post_aim_weapon_time < 36)
+			if (IsAimingOrLoading()) return true;
 		fx.post_aim_weapon = nil;
 	}
 	// Target still in guard range?
@@ -378,6 +380,7 @@ private func ExecuteRanged(fx)
 		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
 		fx.aim_weapon = fx.weapon;
 		fx.aim_time = fx.time;
+		fx.post_aim_weapon = nil;
 		// Enough for now
 		return;
 	}
@@ -391,7 +394,7 @@ private func ExecuteRanged(fx)
 	var dt = d * 10 / fx.projectile_speed; // projected travel time of the arrow
 	tx += GetTargetXDir(fx.target, dt);
 	ty += GetTargetYDir(fx.target, dt);
-	if (!fx.target->GetContact(-1)) ty += GetGravity()*dt*dt/200;
+	if (!fx.target->GetContact(-1)) if (!fx.target->GetCategory() & C4D_StaticBack) ty += GetGravity()*dt*dt/200;
 	// Path to target free?
 	if (PathFree(x,y,tx,ty))
 	{
@@ -405,7 +408,8 @@ private func ExecuteRanged(fx)
 		if (GetType(shooting_angle) != C4V_Nil)
 		{
 			// No ally on path? Also search for allied animals, just in case.
-			var ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
+			var ally;
+			if (!fx.ignore_allies) ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
 			if (ally)
 			{
 				if (ExecuteJump()) return true;
@@ -423,6 +427,7 @@ private func ExecuteRanged(fx)
 					//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
 					fx.aim_weapon->ControlUseStop(this, x,y);
 					fx.post_aim_weapon = fx.aim_weapon; // assign post-aim status to allow slower shoot animations to pass
+					fx.post_aim_weapon_time = FrameCounter();
 					fx.aim_weapon = nil;
 				}
 				return true;
@@ -499,10 +504,23 @@ private func ExecuteStand(fx)
 	SetCommand("None");
 	if (GetProcedure() == "SCALE")
 	{
+		var tx;
+		if (fx.target) tx = fx.target->GetX() - GetX();
+		// Scale: Either scale up if target is beyond this obstacle or let go if it's not
 		if (GetDir()==DIR_Left)
-			ObjectControlMovement(GetOwner(), CON_Right, 100);
+		{
+			if (tx < -20)
+				SetComDir(COMD_Left);//ObjectControlMovement(GetOwner(), CON_Up, 100); // scale up
+			else
+				ObjectControlMovement(GetOwner(), CON_Right, 100); // let go
+		}
 		else
-			ObjectControlMovement(GetOwner(), CON_Left, 100);
+		{
+			if (tx > -20)
+				SetComDir(COMD_Right);//ObjectControlMovement(GetOwner(), CON_Up, 100); // scale up
+			else
+				ObjectControlMovement(GetOwner(), CON_Left, 100); // let go
+		}
 	}
 	else if (GetProcedure() == "HANGLE")
 	{
@@ -566,6 +584,7 @@ private func ExecuteEvade(fx,int threat_dx,int threat_dy)
 
 private func ExecuteJump(fx)
 {
+	//LogCallStack("Jump");
 	// Jump if standing on floor
 	if (GetProcedure() == "WALK") // if (GetContact(-1, CNAT_Bottom)) - implied by walk
 	{
