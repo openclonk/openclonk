@@ -60,6 +60,9 @@ broumbroum      - Cleared (http://www.freesound.org/people/broumbroum/sounds/505
 volivieri       - Waterfall (http://www.freesound.org/people/volivieri/sounds/38390/)
 Pat             - Roll, Rustle1, Rustle2, Rustle3, Rustle4, RustleLand (http://www.freesound.org/people/pwausc1/sounds/118259/)
 HerbertBoland   - StepSoft1, StepSoft2, StepSoft3, StepSoft4, StepSoft5, StepSoft6, StepHard1, StepHard2, StepHard3, StepHard4, StepHard5 (http://www.freesound.org/people/HerbertBoland/sounds/31962/)
+Julien Matthey  - Fireball (http://www.freesound.org/people/Julien%20Matthey/sounds/105016/)
+Connum          - GlassShatter (http://www.freesound.org/people/Connum/sounds/66520/)
+Zapper          - Breathing
 
 
 The following sound effects are licensed under the CC 0 license (public domain):
