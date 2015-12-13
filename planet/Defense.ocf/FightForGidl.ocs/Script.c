@@ -17,7 +17,7 @@ static const ALLOW_DEBUG_COMMANDS = true;
 
 static const MAX_RELAUNCH = 10;
 
-local shared_wealth_remainder = 0;
+static shared_wealth_remainder;
 
 //======================================================================
 /* Initialization */
@@ -27,6 +27,8 @@ func Initialize()
 	// dev stuff (we will forget to turn this off for release)
 	AddMsgBoardCmd("waveinfo", "GameCall(\"ShowWaveInfo\")");
 	AddMsgBoardCmd("next", "GameCall(\"SetNextWave\", \"%s\")");
+	AddMsgBoardCmd("nextwait", "GameCall(\"SetNextWave\", \"%s\", true)");
+	AddMsgBoardCmd("scrooge", "GameCall(\"DoWealthForAll\", 1000000000)");
 	// Init door dummies
 	g_doorleft.dummy_target = g_doorleft->CreateObject(DoorDummy, -6, 6);
 	g_doorright.dummy_target = g_doorright->CreateObject(DoorDummy, +6, 6);
@@ -356,6 +358,7 @@ func Statue_Death()
 	// Statue down :(
 	CastObjects(Nugget, 5, 10);
 	Explode(10);
+	ScheduleCall(nil, Global.GameOver, 50, 1);
 	return true;
 }
 
@@ -383,12 +386,52 @@ public func ShowWaveInfo()
 	return true;
 }
 
-public func SetNextWave(wave_name)
+private func GetWaveByName(string wave_name)
 {
-	Log("Next wave: %s", wave_name);
-	return true;
+	var i = 0, imax = GetLength(ENEMY_WAVE_DATA);
+	while (++i < imax) if (WildcardMatch(ENEMY_WAVE_DATA[i].Name, wave_name)) break;
+	if (i == imax)
+	{
+		Log("No match for wave mask: %s", wave_name);
+		i = 0;
+	}
+	return i;
 }
 
+public func SetNextWave(string wave_name, bool wait)
+{
+	// Find wave by wildcard
+	var i_wave;
+	if (!GetLength(wave_name))
+		i_wave = (g_wave + 1) % GetLength(ENEMY_WAVE_DATA);
+	else
+		i_wave = GetWaveByName(wave_name);
+	if (!i_wave) return false;
+	// Clear any previous
+	ClearScheduleCall(nil, Scenario.CheckWaveCleared);
+	if (g_spawned_enemies)
+		for (var enemy in g_spawned_enemies)
+			if (enemy) enemy->RemoveObject();
+	// Give gold for skipped waves
+	var total_reward = 0, total_bonus = 0;
+	for (var i=g_wave; i<i_wave; ++i)
+	{
+		var wave = ENEMY_WAVE_DATA[i];
+		total_reward += wave.Bounty ?? 0;
+		for (var enemy in wave.Enemies)
+		{
+			var numsides = 2;
+			if (enemy.Side) numsides = 1;
+			total_bonus += enemy.Bounty  * enemy.Num * numsides;
+		}
+	}
+	DoWealthForAll(total_reward);
+	DoSharedWealth(total_bonus);
+	// Schedule next wave
+	Log("Next wave: %s", ENEMY_WAVE_DATA[i_wave].Name);
+	g_wave = i_wave;
+	ScheduleCall(nil, Scenario.LaunchWave, 500 + wait * 2000, 1, g_wave);
+}
 
 //======================================================================
 /* Wave and enemy definitions */
@@ -440,7 +483,7 @@ func InitWaveData()
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
 			{ Name = "$WaveNewbies$", Bounty = 10, Enemies = [
-			new boomattack   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
+			new newbie   {            Num= 1, Interval=10, Side = WAVE_SIDE_LEFT }
 	]}, { Name = "$WaveBows$", Bounty = 15, Enemies = [
 			new newbie      {            Num= 2, Interval=10 },
 			new bowman      { Delay= 30, Num= 3, Interval=10, Side = WAVE_SIDE_RIGHT },
