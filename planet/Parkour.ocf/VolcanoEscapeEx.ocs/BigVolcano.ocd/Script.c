@@ -192,7 +192,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	if (behaviour == BigVolcanoBehaviour_Fill)
 	{
 		CastPXS("DuroLava", 4+Cos(fx.fill_time*40,2), 30+Cos(fx.fill_time*40,25), nx,ny-1, 0,50);
-		if (!(fx.fill_time%20) && !GBackSemiSolid(nx,ny-6)) SoundAt("BigVolcanoBubble*", nx,ny, 10);
+		if (!(fx.fill_time%20) && !GBackSemiSolid(nx,ny-6)) SoundAt("BigVolcano::BigVolcanoBubble*", nx,ny, 10);
 		if (fx.fill_time++ > 31) return FX_Execute_Kill; // Done?
 	}
 	else if (behaviour != BigVolcanoBehaviour_Stop)
