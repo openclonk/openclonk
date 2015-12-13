@@ -52,7 +52,7 @@ public func HitObject(object obj)
 		if (obj->GetAlive())
 			Sound("ProjectileHitLiving?");
 		else
-			Sound("BulletHitGround");
+			Sound("BulletHitGround?");
 		
 		obj->~OnProjectileHit(this);
 		WeaponDamage(obj, this->ProjectileDamage(), FX_Call_EngObjHit, false);
