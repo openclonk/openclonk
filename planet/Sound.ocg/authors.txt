@@ -4,10 +4,15 @@ CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
 Author        Work(s)
 ===============================================================================
 
-Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
+Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine, ChestOpen, ChestClose, WindCharge*, WindGust, Clang*
 Clonkonaut      - Confirm*, FDie
-Checkmaty       - ProjectileHitLiving*
+Checkmaty       - ProjectileHitLiving*, Sword*, DrawJavelin*, ThrowJavelin*, JavelinHitGround, BulletHit*,
+                  ShieldMetalHit*, ShieldWoodHit*, BowLoad*, BowShoot*, DrawBow*, PutAwayBow*, GunShoot*, 
+                  ArrowHitGround, ArrowShoot
 ala             - Bubble1-3, Zap1-4, GlassBreak, Rockfall1-2, Waterdrop1-2, OrganicHit1-2
+                  PukaGulp, PukaHiss1-2, PukaHurt1-3b
+                  PukaTeleportIn/Out based on work by parnellij (CC0) - http://www.freesound.org/people/parnellij/sounds/74892/
+                  ChippieChirp1-3, ChippieTalk1-2, ChippieBite1-2
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
@@ -36,6 +41,25 @@ earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486
 qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/)
 Aiwha           - Ding (modified) (http://freesound.org/people/Aiwha/sounds/196106/)
 discokingmusic	- Connect (http://www.freesound.org/people/discokingmusic/sounds/271387/)
+luffy           - SmokeSizzle (https://www.freesound.org/people/luffy/sounds/17299/)
+Pullover        - PropellerLoop (aus Milch (EngineLoop))
+Sergenious      - GateHit (http://www.freesound.org/people/Sergenious/sounds/55820/)
+daveincamas     - Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
+Traveler        - Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
+jenc            - ElevatorDrilling (http://www.freesound.org/people/jenc/sounds/519/)
+pempi           - ElevatorMoving, ElevatorStart, ElevatorStop (http://www.freesound.org/people/pempi/sounds/33873/)
+Stephen Hall    - Dig* (http://www.freesound.org/people/shall555/sounds/72199/)
+Sven2           - GateMove (adapted from GateHit), IceHit* (adapted from GlassHit*), PlaneCrash,
+                  DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit*, OpenBuyMenu, CloseBuyMenu
+                  CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
+primeval_polypod- BoompackFly (http://www.freesound.org/people/primeval_polypod/sounds/158894/) (adapted)
+soundscalpel.com, sarge4267 - BlastFirework (adapted from: http://www.freesound.org/people/soundscalpel.com/sounds/110391/, http://www.freesound.org/people/sarge4267/sounds/102720/)
+Christian James Muise - Chop* (http://www.freesound.org/people/hazure/sounds/23700/)
+broumbroum      - Cleared (http://www.freesound.org/people/broumbroum/sounds/50565/)
+volivieri       - Waterfall (http://www.freesound.org/people/volivieri/sounds/38390/)
+Pat             - Roll, Rustle1, Rustle2, Rustle3, Rustle4, RustleLand (http://www.freesound.org/people/pwausc1/sounds/118259/)
+HerbertBoland   - StepSoft1, StepSoft2, StepSoft3, StepSoft4, StepSoft5, StepSoft6, StepHard1, StepHard2, StepHard3, StepHard4, StepHard5 (http://www.freesound.org/people/HerbertBoland/sounds/31962/)
+
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -64,3 +88,5 @@ Adam_N			- Blowout (http://freesound.org/people/Adam_N/sounds/166126/)
 BenNevis		- SteamEngine (http://freesound.org/people/BenNevis/sounds/203175/)
 felix.blume		- Pumpjack (http://freesound.org/people/felix.blume/sounds/203990/)
 Kane53126		- Click2 (http://www.freesound.org/people/Kane53126/sounds/257944/)
+Zywx				- MosquitoBuzz (http://www.freesound.org/people/Zywx/sounds/188708/)
+tc630				- FurnaceStart, FurnaceStop, FurnaceLoop (http://www.freesound.org/people/tc630/sounds/47835/)

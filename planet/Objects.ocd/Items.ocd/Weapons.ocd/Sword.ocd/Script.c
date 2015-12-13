@@ -278,7 +278,7 @@ func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	if(iTemp) return;
 	pTarget->PopActionSpeed("Walk");
-	movement_effect = nil;
+	if (this) movement_effect = nil;
 }
 
 func FxSwordStrikeStopTimer(pTarget, effect)

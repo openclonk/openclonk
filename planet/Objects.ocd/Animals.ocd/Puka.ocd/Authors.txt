@@ -1,15 +1,3 @@
-Sounds by ala
--------------
-CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/).
-
-PukaGulp
-PukaHiss1-2
-PukaHurt1-3b
-
-Other sounds
--------------
-PukaTeleportIn/Out based on work by parnellij (CC0) - http://www.freesound.org/people/parnellij/sounds/74892/
-
 Model
 -----
 Model, texture and most animations by pluto.
