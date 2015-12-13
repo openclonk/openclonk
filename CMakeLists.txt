@@ -1040,6 +1040,8 @@ src/script/C4ValueMap.cpp
 src/script/C4ValueMap.h
 )
 
+target_link_libraries(libc4script libmisc)
+
 add_executable(c4script
 	include/c4script/c4script.h
 	src/script/C4ScriptMain.cpp
