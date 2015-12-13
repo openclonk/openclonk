@@ -10,10 +10,7 @@
 protected func Initialize()
 {
 	// Goal.
-	if (SCENPAR_GoalType == 0)
-		CreateObject(Goal_LastManStanding);
-	else if (SCENPAR_GoalType == 1)
-		CreateObject(Goal_DeathMatch);
+	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	

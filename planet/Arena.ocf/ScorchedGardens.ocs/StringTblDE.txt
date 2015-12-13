@@ -1,6 +1,0 @@
-GoalType=Goal
-DescGoalType=Definiert das Ziel.
-GoalTypeLMS=Last Man Standing
-DescGoalTypeLMS=Bleibe als Letzter am Leben und gewinne.
-GoalTypeDM=Deathmatch
-DescGoalTypeDM=Erziele eine gewisse Menge an Kills und gewinne.
