@@ -105,7 +105,7 @@ map AcidCave {
     };
 
     // rock at entrance
-    VaryTex { y=93px; mat=Rock; VaryTex { mat=Granite; }; };
+    VaryTex { y=93px; mat=Rock; VaryTex { mat=Rock; tex=rock_smooth; }; };
   };
 
 };
