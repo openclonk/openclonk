@@ -113,7 +113,7 @@ func Execute()
 						// gfx
 						var particle_speed = blast_size * 3;
 						CreateParticle("FireDense", PV_Random(x - 1, x + 1), PV_Random(y - 4, y - 2), PV_Random(-particle_speed, particle_speed), PV_Random(-particle_speed, particle_speed), PV_Random(30, 40), Particles_Fire(), 5);
-						if (!Random(5)) SoundAt("RockHit*", x,y-3, 100);
+						if (!Random(5)) SoundAt("Hits::Materials::Rock::RockHit*", x,y-3, 100);
 					}
 					else if (speed <=50)
 					{

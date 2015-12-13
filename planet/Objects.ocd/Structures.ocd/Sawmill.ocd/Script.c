@@ -41,7 +41,7 @@ public func IsInteractable() { return false; }
 
 private func Collection(object obj)
 {
-	Sound("Clonk");
+	Sound("Objects::Clonk");
 	Saw(obj);
 }
 
@@ -244,7 +244,7 @@ private func SpinOn(int diff)
 		rotate = 0;
 		SetMeshMaterial("SawmillBlade.Spin", 2);
 		running = true;
-		Sound("SawmillRipcut", nil, nil, nil, +1);
+		Sound("Structures::SawmillRipcut", nil, nil, nil, +1);
 		Sound("Sawmill::EngineLoop", nil, nil, nil, +1);
 	}
 
@@ -260,7 +260,7 @@ private func SpinOff(int call)
 		running = false;
 		spin = 50;
 		SetMeshMaterial("SawmillBlade", 2);
-		Sound("SawmillRipcut", nil, nil, nil, -1);
+		Sound("Structures::SawmillRipcut", nil, nil, nil, -1);
 		SetProperty("MeshTransformation", Trans_Rotate(-20, 0, 1, 0));
 	}
 	if (call == 1) spin = 75;

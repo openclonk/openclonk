@@ -191,7 +191,7 @@ protected func Hit(int dx, int dy)
 	// Acid kills rockfall
 	if (GetMaterialVal("Corrosive", "Material", GetMaterial()))
 	{
-		Sound("Pshshsh");
+		Sound("Liquids::Pshshsh");
 		var sz = Max(GetCon()/10, 5);
 		var particles = new Particles_Dust() { Size = sz*3, };
 		if (is_explosive)
@@ -244,7 +244,7 @@ protected func Hit(int dx, int dy)
 	}
 
 	// Sound.
-	Sound("EarthquakeEnd", nil, 3 * GetCon() / 2);
+	Sound("Environment::Disasters::EarthquakeEnd", nil, 3 * GetCon() / 2);
 	StonyObjectHit(dx, dy);
 	return;
 }
@@ -289,7 +289,7 @@ private func SplitRock()
 	CreateParticle("SmokeDirty", PV_Random(-5, 5), PV_Random(-5, 5), 0, PV_Random(-2, 0), PV_Random(50, 100), rock_explode, 8);
 	
 	// Some sound effects.
-	Sound("EarthquakeEnd", nil, 100);
+	Sound("Environment::Disasters::EarthquakeEnd", nil, 100);
 
 	RemoveObject();
 	return;

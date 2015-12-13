@@ -372,7 +372,7 @@ func DoSell(object pObj, int iPlr, bool bRight)
 		DoSell(pContents, iPlr);
 	// Give the player the cash
 	DoWealth(iPlr, GetSellValue(pObj));
-	Sound("Cash", 0, 100, iPlr+1); // TODO: get sound
+	Sound("UI::Cash", 0, 100, iPlr+1); // TODO: get sound
 	if(pObj.Rebuy)
 		ChangeBaseMaterial(pObj->GetID(), 1);
 	// right clicked? then sell other objects too

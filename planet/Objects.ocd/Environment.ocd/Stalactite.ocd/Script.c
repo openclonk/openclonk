@@ -43,7 +43,7 @@ private func Hit()
 	if (GetR() != 0) height *= -1;
 	
 	CreateParticle("SmokeDirty", PV_Random(-width, width), PV_Random(0, height), PV_Random(-5, 5), PV_Random(-5, 15), PV_Random(10, 60), particles, 200);
-	Sound("Rockfall*");
+	Sound("Hits::Materials::Rock::Rockfall*");
 
 	for (var i = 0; i < 4; i++)
 	{
@@ -180,7 +180,7 @@ private func DrawWaterSource()
 private func DoWaterdrop()
 {
 	if (Random(9)) return;
-	Sound("Waterdrop*");
+	Sound("Liquids::Waterdrop*");
 }
 
 local Name = "$Name$";

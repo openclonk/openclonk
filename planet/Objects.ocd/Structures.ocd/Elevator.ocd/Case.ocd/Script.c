@@ -147,7 +147,7 @@ public func ExecuteSync()
 		SetSolidMask(0, 3, 48, 3, -24, 23);
 	partner->SetSolidMask(0, 0, 0, 0, 0, 0);
 
-	Sound("Click");
+	Sound("UI::Click");
 }
 
 // sets additional vertices to partner's position
@@ -337,7 +337,7 @@ private func FxFetchVehiclesTimer(object target, proplist effect, int time)
 		}
 		vehicle->SetPosition(x, GetY() + GetBottom() - 3 - vehicle->GetBottom());
 		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
-		Sound("Connect");
+		Sound("Objects::Connect");
 	}
 
 	return FX_OK;
@@ -612,7 +612,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	if (IsSlave()) 
 		return Control2Master("ControlUseStart", clonk, x, y);
 	MoveTo(GetY() + y, 0, nil, true);
-	Sound("Click", nil, nil, clonk->GetOwner());
+	Sound("UI::Click", nil, nil, clonk->GetOwner());
 	// Do not trigger a UseStop-callback.
 	return false;
 }
@@ -642,7 +642,7 @@ public func ControlUp(object clonk)
 	// what is that player even doing
 	if (GetY() <= elevator->GetY() + 20)
 	{
-		Sound("Click", nil, nil, clonk->GetOwner());
+		Sound("UI::Click", nil, nil, clonk->GetOwner());
 		return true;
 	}
 	
@@ -736,7 +736,7 @@ local ActMap = {
 		Length = 1,
 		PhaseCall = "Drilling",
 		NextAction = "Drill",
-		Sound = "ElevatorDrilling",
+		Sound = "Structures::Elevator::Drilling",
 		DigFree = 1
 	}
 };

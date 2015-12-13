@@ -469,7 +469,7 @@ public func GetLadderData(int index)
 
 public func Hit()
 {
-	Sound("WoodHit?");
+	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
 // Save unrolled ladders in scenario.

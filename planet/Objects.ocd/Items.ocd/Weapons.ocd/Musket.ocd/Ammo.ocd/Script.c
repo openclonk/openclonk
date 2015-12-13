@@ -16,7 +16,7 @@ protected func Hit()
 	{
 		RemoveEffect("HitCheck",this);
 	
-		Sound("BulletHitGround?");
+		Sound("Objects::Weapons::Musket::BulletHitGround?");
 		
 		CreateParticle("StarSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 		
@@ -42,7 +42,7 @@ public func Launch(object shooter, int angle, int dist, int speed, int offset_x,
 	CreateObjectAbove(BulletTrail,0,0)->Set(2, 200, this);
 	
 	// sound
-	Sound("BulletShot?");
+	Sound("Objects::Weapons::Musket::BulletShot?");
 }
 
 public func HitObject(object obj)
@@ -50,9 +50,9 @@ public func HitObject(object obj)
 	if (WeaponCanHit(obj))
 	{
 		if (obj->GetAlive())
-			Sound("ProjectileHitLiving?");
+			Sound("Hits::ProjectileHitLiving?");
 		else
-			Sound("BulletHitGround?");
+			Sound("Objects::Weapons::Musket::BulletHitGround?");
 		
 		obj->~OnProjectileHit(this);
 		WeaponDamage(obj, this->ProjectileDamage(), FX_Call_EngObjHit, false);

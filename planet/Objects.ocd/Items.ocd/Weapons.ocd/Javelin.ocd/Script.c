@@ -50,7 +50,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	ControlUseHolding(clonk, x, y);
 	
-	Sound("DrawJavelin");
+	Sound("Objects::Weapons::Javelin::Draw");
 	return 1;
 }
 
@@ -116,7 +116,7 @@ public func DoThrow(object clonk, int angle)
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
 	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);
 	
-	Sound("ThrowJavelin?");
+	Sound("Objects::Weapons::Javelin::Throw?");
 	
 	aiming = -1;
 	clonk->UpdateAttach();
@@ -134,9 +134,9 @@ public func HitObject(object obj)
 	if (WeaponCanHit(obj))
 	{
 		if (obj->GetAlive())
-			Sound("ProjectileHitLiving?");
+			Sound("Hits::ProjectileHitLiving?");
 		else
-			Sound("JavelinHitGround");
+			Sound("Objects::Weapons::Javelin::HitGround");
 		
 		obj->~OnProjectileHit(this);
 		WeaponDamage(obj, dmg, FX_Call_EngObjHit, true);
@@ -152,10 +152,10 @@ protected func Hit()
 	if(GetEffect("Flight",this))
 	{
 		Stick();
-		Sound("JavelinHitGround");
+		Sound("Objects::Weapons::Javelin::HitGround");
 	}
 	else
-		Sound("WoodHit?");
+		Sound("Hits::Materials::Wood::WoodHit?");
 }
 
 protected func Stick()

@@ -30,7 +30,7 @@ func DoSellEffect(container)
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);
 	fm->SetMessage("+1</c>{{GoldBar}}");
-	container->Sound("Cash");
+	container->Sound("UI::Cash");
 	
 	var dust_particles =
 	{

@@ -10,7 +10,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit");
+	Sound("Hits::Materials::Wood::WoodHit*");
 }
 
 public func Definition(proplist def)

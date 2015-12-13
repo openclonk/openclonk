@@ -261,7 +261,7 @@ public func ChopDown()
 			i--;
 		}
 	}
-	Sound("TreeCrack");
+	Sound("Environment::Tree::Crack");
 	AddEffect("TreeFall", this, 1, 1, this);
 }
 
@@ -300,7 +300,7 @@ private func FxTreeFallTimer(object target, proplist effect)
 	if (Abs(target->GetR()) > 80)
 	{
 		target->SetRDir(0);
-		if (target->GetCon() > 50) target->Sound("TreeLanding", false);
+		if (target->GetCon() > 50) target->Sound("Environment::Tree::Landing", false);
 		return -1;
 	}
 	//check every frame if the tree is stuck and stop rotation in that case this is necessary as a tree could get stuck before reaching 80 degrees

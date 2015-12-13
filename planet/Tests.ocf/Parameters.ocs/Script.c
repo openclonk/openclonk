@@ -21,7 +21,7 @@ func GotNugget()
 {
 	--num_to_collect;
 	if (num_to_collect == 0) GameCall("Finished");
-	Sound("Cash");
+	Sound("UI::Cash");
 	RemoveObject();
 }
 

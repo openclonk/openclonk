@@ -156,7 +156,7 @@ public func OnProjectileHit()
 {
 	// Pop the balloon and tumble the rider.
 	CreateParticle("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
-	Sound("BalloonPop");
+	Sound("Objects::Balloon::Pop");
 	if (rider)
 	{
 		rider->SetAction("Tumble");

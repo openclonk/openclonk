@@ -77,7 +77,7 @@ protected func Hit()
 {
 	//Message("I have hit something");
 	if(GetEffect("Flight",this)) DoFireworks();
-	else Sound("WoodHit");
+	else Sound("Hits::Materials::Wood::WoodHit*");
 }
 
 protected func HitObject()

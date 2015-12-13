@@ -28,7 +28,7 @@ func Initialize()
 	PlaceGrass(100, 800, 1400);
 	SetSkyParallax(0,25,25,0,0,0,0);
 	AddEffect("BoomAttack", nil, 100, 35);
-	Sound("WindLoop",true,40,nil,+1);
+	Sound("Environment::WindLoop",true,40,nil,+1);
 }
 
 global func FxBoomAttackTimer(object target, effect, int time)

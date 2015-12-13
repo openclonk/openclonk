@@ -198,14 +198,14 @@ public func OnBuySelection(int callback_idx)
 		{
 			if (GetWealth(plr) < entry.cost) return false;
 			DoWealth(plr, -entry.cost);
-			Sound("Cash", true, nil, plr);
+			Sound("UI::Cash", true, nil, plr);
 			// Some items cost only once
 			if (entry.free_rebuy) entry.cost = nil;
 		}
 		else
 		{
 			// Still some feedback even on free selections
-			Sound("Waterdrop1", true, nil, plr);
+			Sound("Liquids::Waterdrop1", true, nil, plr);
 		}
 		// Technology?
 		if (entry.callback)
@@ -269,7 +269,7 @@ public func SellItem(item)
 	if (item.GidlValue)
 	{
 		DoWealth(GetOwner(), item.GidlValue);
-		Sound("Cash", true, nil, GetOwner());
+		Sound("UI::Cash", true, nil, GetOwner());
 	}
 	is_selling = true; // no item re-buy during sale
 	var success = item->RemoveObject();

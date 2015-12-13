@@ -116,8 +116,8 @@ func Intro_10()
 {
 	g_intro_sky_moving = false;
 	Schedule(this, "SetSkyParallax(0, 20, 20, ++this.intro_skyscroll_xdir, 0)", 10, -this.intro_skyscroll_xdir);
-	GetHero()->Sound("Hurt1");
-	GetHero()->Sound("Hurt2");
+	GetHero()->Sound("Clonk::Verbal::Hurt1");
+	GetHero()->Sound("Clonk::Verbal::Hurt2");
 	this.plane.rdir = 0;
 	this.plane->StartInstantFlight(this.plane->GetR(), 15);
 	MessageBoxAll("$Intro10$", GetHero(), true); // aaaah

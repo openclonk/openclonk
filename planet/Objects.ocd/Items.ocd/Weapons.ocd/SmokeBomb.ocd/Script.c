@@ -31,7 +31,7 @@ public func Fuse()
 
 protected func Hit()
 {
-	Sound("MetalHit?");
+	Sound("Hits::Materials::Metal::DullMetalHit?");
 	return;
 }
 
@@ -63,8 +63,8 @@ protected func FxIntSmokeBombStart(object target, proplist effect, int temp)
 		Phase = PV_Random(0, 15)
 	};
 	// Sound.
-	Sound("Smoke.wav", false, 100, nil, +1);
-	Sound("SmokeSizzle", false, 100, nil, +1);
+	Sound("Fire::Smoke", false, 100, nil, +1);
+	Sound("Liquids::SmokeSizzle", false, 100, nil, +1);
 	// Make non-collectible.
 	this.Collectible = false;
 	return FX_OK;
@@ -102,8 +102,8 @@ protected func FxIntSmokeBombStop(object target, proplist effect, int reason, bo
 	if (temp)
 		return FX_OK;
 	// Sound.
-	Sound("Smoke.wav", false, 100, nil, -1);
-	Sound("SmokeSizzle", false, 100, nil, -1);
+	Sound("Fire::Smoke", false, 100, nil, -1);
+	Sound("Liquids::SmokeSizzle", false, 100, nil, -1);
 	RemoveObject();
 	return FX_OK;
 }

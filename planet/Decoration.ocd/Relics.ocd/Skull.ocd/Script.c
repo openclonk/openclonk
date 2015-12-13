@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("GeneralHit*");
+	Sound("Hits::GeneralHit*");
 	return 1;
 }
 

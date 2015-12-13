@@ -18,7 +18,7 @@ public func OpenDoor()
 {
 	ForceDigFree();
 	SetComDir(COMD_Up);
-	Sound("GateMove");
+	Sound("Structures::StoneGate::GateMove");
 	return;
 }
 
@@ -26,7 +26,7 @@ public func CloseDoor()
 {
 	ForceDigFree();
 	SetComDir(COMD_Down);
-	Sound("GateMove");
+	Sound("Structures::StoneGate::GateMove");
 	return;
 }
 
@@ -46,7 +46,7 @@ private func IsClosed()
 
 protected func Hit()
 {
-	Sound("GateHit");
+	Sound("Structures::StoneGate::GateHit");
 	return;
 }
 

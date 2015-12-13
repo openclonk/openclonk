@@ -9,13 +9,13 @@
 
 private func Hit()
 {
-	Sound("DullMetalHit?");
+	Sound("Hits::Materials::Metal::DullMetalHit?");
 	if (iVolume >= 1)
 	{
 		if (GBackLiquid(0, 7) && GetMaterial(0, 7) != szLiquid)
 			return 0;
 		EmptyBarrel(GetR());
-		Sound("Splash1");
+		Sound("Liquids::Splash1");
 	}
 }
 

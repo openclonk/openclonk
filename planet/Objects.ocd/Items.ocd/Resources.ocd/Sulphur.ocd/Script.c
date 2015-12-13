@@ -9,7 +9,7 @@ protected func Construction()
 
 protected func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 local Collectible = 1;

@@ -31,7 +31,7 @@ public func Initialize()
 
 private func Hit()
 {
-	Sound("DullWoodHit?");
+	Sound("Hits::Materials::Wood::DullWoodHit?");
 }
 
 public func HoldingEnabled() { return true; }
@@ -52,7 +52,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	wire = CreateObject(Fuse);
 	wire->Connect(dynamite, this);
-	Sound("Connect");
+	Sound("Objects::Connect");
 	wires[count - 1] = wire;
 	
 	count--;
@@ -167,7 +167,7 @@ protected func Incineration(int caused_by)
 {
 	ActivateFuse();
 	if (!GetEffect("Fuse", this)) AddEffect("Fuse", this, 100, 1, this);
-	Sound("Fuse");
+	Sound("Fire::Fuse");
 	SetController(caused_by);
 	return;
 }

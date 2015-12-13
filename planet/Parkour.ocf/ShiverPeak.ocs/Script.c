@@ -55,7 +55,7 @@ protected func Initialize()
 	// Snow
 	AddEffect("Snowfall", nil, 1, 2);
 	//Wind
-	Sound("WindLoop", true, 40, nil, +1);
+	Sound("Environment::WindLoop", true, 40, nil, +1);
 
 	// Spawn some chests with items around the map.
 	for (var i = 0; i < 10; i++)

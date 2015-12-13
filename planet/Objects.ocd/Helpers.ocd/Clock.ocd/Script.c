@@ -63,7 +63,7 @@ public func SetTime(int to_time)
 		var play_for = GetOwner();
 		if (play_for == NO_OWNER)
 			play_for = nil; 	
-		Sound("Click", true, 80, play_for);
+		Sound("UI::Click", true, 80, play_for);
 	}
 	clock_gui_menu.text.Text = Format("<c %x>%02d:%02d</c>", color, minutes, seconds);
 	GuiUpdate(clock_gui_menu, clock_gui_id);

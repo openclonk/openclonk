@@ -86,7 +86,7 @@ protected func AllGoalsFulfilled()
 	// Custom scenario goal evaluation?
 	if (GameCall("OnGoalsFulfilled")) return true;
 	// We're done. Play some sound and schedule game over call
-	Sound("Fanfare", true);
+	Sound("UI::Fanfare", true);
 	AddEffect("IntGoalDone", nil, 1, 30, nil, Library_Goal);
 }
 

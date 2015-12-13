@@ -7,7 +7,7 @@ global func BlueExplode(int level)
 
 	// Sound must be created before object removal, for it to be played at the right position.
 	var grade = BoundBy(level / 10 - 1, 1, 3);
-	Sound(Format("Blast%d", grade), false);
+	Sound(Format("Fire::Blast%d", grade), false);
 
 	// Explosion parameters.
 	var x = GetX(), y = GetY();

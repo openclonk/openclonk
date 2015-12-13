@@ -60,7 +60,7 @@ protected func RejectCollect(id object_id, object obj)
 {
 	if (ContentsCount() < this->MaxContentsCount())
 	{
-		Sound("Clonk");
+		Sound("Objects::Clonk");
 		return false;
 	}
 	if (obj->Contained())

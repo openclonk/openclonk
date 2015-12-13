@@ -15,9 +15,9 @@ global func ExplosionEffect(int level, int x, int y, int smoothness, bool silent
 	{
 		var grade = BoundBy(level / 10 - 1, 1, 3);
 		if(GBackLiquid(x, y))
-			SoundAt(Format("BlastLiquid%d",grade), x, y);
+			SoundAt(Format("Fire::BlastLiquid%d",grade), x, y);
 		else
-			SoundAt(Format("Blast%d", grade), x, y);
+			SoundAt(Format("Fire::Blast%d", grade), x, y);
 	}
 	
 	// possibly init particle definitions?

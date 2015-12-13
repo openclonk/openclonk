@@ -34,7 +34,7 @@ public func Start(string name, int progress, ...)
 	}
 	started = true;
 	// Sound effect.
-	Sound("Ding", true);
+	Sound("UI::Ding", true);
 	// Call start function of this scene.
 	var fn_start = Format("%s_Start", seq_name);
 	if (!Call(fn_start, ...))
@@ -108,7 +108,7 @@ public func Stop(bool no_remove)
 			// Per-player sequence callback.
 			RemovePlayer(plr);
 		}
-		Sound("Ding", true);
+		Sound("UI::Ding", true);
 		started = false;
 		// Call stop function of this scene.
 		var fn_init = Format("~%s_Stop", seq_name);

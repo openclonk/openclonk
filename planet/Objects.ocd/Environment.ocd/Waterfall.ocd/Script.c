@@ -31,7 +31,7 @@ protected func FxIntWaterfallStart(object target, proplist effect, int temporary
 	effect.Strength = strength;
 	effect.Material = mat;
 	// Start sound.
-	target->Sound("Waterfall", false, 5 * effect.Strength, nil, 1);
+	target->Sound("Environment::Waterfall", false, 5 * effect.Strength, nil, 1);
 	return 1;
 }
 
@@ -48,7 +48,7 @@ protected func FxIntWaterfallStop(object target, proplist effect, bool temporary
 	if (temporary)
 		return 1;
 	// Stop sound.
-	target->Sound("Waterfall", false, 5 * effect.Strength, nil, -1);
+	target->Sound("Environment::Waterfall", false, 5 * effect.Strength, nil, -1);
 	return 1;
 }
 
@@ -87,7 +87,7 @@ public func SetSoundLocation(int x, int y)
 	// Update sound.
 	var effect = GetEffect("IntWaterfall", this);
 	if (effect)
-		Sound("Waterfall", false, 5 * effect.Strength, nil, 1);
+		Sound("Environment::Waterfall", false, 5 * effect.Strength, nil, 1);
 	return;
 }
 

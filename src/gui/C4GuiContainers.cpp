@@ -448,7 +448,7 @@ namespace C4GUI
 				}
 			}
 		// sound effekt when buttons are pressed
-		if ((fTopDown || fBottomDown) != fPrevDown) GUISound("ArrowHit");
+		if ((fTopDown || fBottomDown) != fPrevDown) GUISound("Objects::Arrow::HitGround");
 	}
 
 	void ScrollBar::DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)

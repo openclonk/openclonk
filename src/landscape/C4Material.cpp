@@ -751,7 +751,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 	case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
-		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) StartSoundEffectAt("Liquids::Pshshsh", iX, iY);
 		return true;
 
 	case meePXSMove: // PXS movement
@@ -763,7 +763,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 		// Always kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY,false);
 		if (!Random(3)) Smoke(iX,iY,3);
-		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) StartSoundEffectAt("Liquids::Pshshsh", iX, iY);
 		return true;
 	}
 	// not handled
@@ -794,7 +794,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			{
 				Smoke(iX, iY, 3 + Random(3));
 			}
-			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
+			if (!Random(20)) StartSoundEffectAt("Liquids::Corrode", iX, iY);
 			return true;
 		}
 	}
@@ -821,7 +821,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			{
 				Smoke(iX,iY,3+Random(3));
 			}
-			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
+			if (!Random(20)) StartSoundEffectAt("Liquids::Corrode", iX, iY);
 			return true;
 		}
 		// Else: dead. Insert material here

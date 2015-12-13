@@ -165,7 +165,7 @@ func LaunchWave(int wave)
 	{
 		var wave_spawn_time = 0;
 		CustomMessage(Format("$MsgWave$: %s", wave, wave_data.Name));
-		Sound("Ding");
+		Sound("UI::Ding");
 		for (var enemy in ForceVal2Array(wave_data.Enemies)) if (enemy)
 		{
 			if (enemy.Delay)
@@ -240,7 +240,7 @@ func OnWaveCleared(int wave)
 		DoWealthForAll(bounty);
 	}
 	CustomMessage(Format("$MsgWaveCleared$%s|                                                             ", wave, bounty_msg));
-	Sound("Ding");
+	Sound("UI::Ding");
 	// Fade out corpses
 	if (g_object_fade) 
 		for (var obj in FindObjects(Find_Or(Find_And(Find_ID(Clonk), Find_Not(Find_OCF(OCF_Alive))), Find_ID(Catapult))))

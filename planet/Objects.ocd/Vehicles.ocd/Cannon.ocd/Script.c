@@ -86,7 +86,7 @@ private func CheckForKeg(object clonk)
 		{
 			keg->Exit();
 			keg->Enter(this);
-			Sound("WoodHit?");
+			Sound("Hits::Materials::Wood::WoodHit?");
 		}
 		else // No keg, stop using cannon.
 		{
@@ -262,7 +262,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	CreateParticle("Smoke", px, py, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 	CreateMuzzleFlash(px, py, r / angPrec, 60);
 	//sound
-	Sound("Blast3");
+	Sound("Fire::Blast3");
 }
 
 local ActMap = {

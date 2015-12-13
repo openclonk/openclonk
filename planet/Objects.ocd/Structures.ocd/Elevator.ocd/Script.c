@@ -128,7 +128,7 @@ public func StartEngine(int direction, bool silent)
 
 	if (!silent)
 	{
-		Sound("ElevatorStart", nil, nil, nil, nil, 400);
+		Sound("Structures::Elevator::Start", nil, nil, nil, nil, 400);
 		ScheduleCall(this, "EngineLoop", 34);
 	}
 	if (wheel_anim == nil) // If for some reason the animation has stopped
@@ -153,16 +153,16 @@ public func StartEngine(int direction, bool silent)
 
 public func EngineLoop()
 {
-	Sound("ElevatorMoving", nil, nil, nil, 1, 400);
+	Sound("Structures::Elevator::Moving", nil, nil, nil, 1, 400);
 }
 
 public func StopEngine(bool silent)
 {
 	if (!silent)
 	{
-		Sound("ElevatorMoving", nil, nil, nil, -1);
+		Sound("Structures::Elevator::Moving", nil, nil, nil, -1);
 		ClearScheduleCall(this, "EngineLoop");
-		Sound("ElevatorStop", nil, nil, nil, nil, 400);
+		Sound("Structures::Elevator::Stop", nil, nil, nil, nil, 400);
 	}
 
 	if (wheel_anim == nil) return;

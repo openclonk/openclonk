@@ -22,6 +22,6 @@ func ControlUseStart(object clonk, int ix, int iy)
 
 func Hit()
 {
-	Sound("GlassHit?");
+	Sound("Hits::Materials::Glass::GlassHit?");
 	return true;
 }

@@ -4,7 +4,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit?");
+	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }

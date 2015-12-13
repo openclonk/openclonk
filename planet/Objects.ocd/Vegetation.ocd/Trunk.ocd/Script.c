@@ -40,7 +40,7 @@ public func ChopDown()
 		}
 	}
 	// Effect
-	Sound("TreeCrack");
+	Sound("Environment::Tree::Crack");
 	AddEffect("TreeFall", this, 1, 1, nil, Library_Plant);
 }
 

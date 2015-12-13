@@ -1121,7 +1121,7 @@ void C4StartupNetDlg::DoRefresh()
 	if (tLastRefresh && tNow < tLastRefresh + C4NetMinRefreshInterval)
 	{
 		// avoid hammering on refresh key
-		C4GUI::GUISound("Error");
+		C4GUI::GUISound("UI::Error");
 		return;
 	}
 	tLastRefresh = tNow;

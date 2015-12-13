@@ -187,7 +187,7 @@ namespace C4GUI
 		// already down?
 		if (fDown) return;
 		// play sound
-		GUISound("ArrowHit");
+		GUISound("Objects::Arrow::HitGround");
 		// set down
 		fDown = true;
 	}
@@ -197,7 +197,7 @@ namespace C4GUI
 		// already up?
 		if (!fDown) return;
 		// play sound
-		GUISound(fPress ? "Click" : "ArrowHit");
+		GUISound(fPress ? "UI::Click" : "Objects::Arrow::HitGround");
 		// set up
 		fDown = false;
 	}

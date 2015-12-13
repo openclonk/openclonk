@@ -123,7 +123,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 				Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(2, 50), 1000, 0),
 			};
 			CreateParticle("Dust", x2, y2, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 3);
-			Sound("Dig?");
+			Sound("Clonk::Action::Dig::Dig?");
 		}
 		//It's solid, but not diggable. So it is a hard mineral.
 		else
@@ -138,7 +138,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 				spark.OnCollision = PC_Bounce();
 			}
 			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
-			Sound("Clang?", nil, nil, nil, nil, nil, pitch);
+			Sound("Objects::Pickaxe::Clang?", nil, nil, nil, nil, nil, pitch);
 		}
 		
 		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"

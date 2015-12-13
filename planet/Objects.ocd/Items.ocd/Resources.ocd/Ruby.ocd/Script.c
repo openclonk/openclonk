@@ -52,6 +52,6 @@ func OnSale(int to_player, object sale_base)
 
 func Hit()
 {
-	Sound("GlassHit*");
+	Sound("Hits::Materials::Glass::GlassHit*");
 	return true;
 }

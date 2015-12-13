@@ -2,7 +2,7 @@
 
 public func Hit()
 {
-	Sound("GlassHit?");
+	Sound("Hits::Materials::Glass::GlassHit?");
 	return 1;
 }
 

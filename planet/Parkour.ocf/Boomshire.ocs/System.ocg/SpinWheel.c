@@ -15,7 +15,7 @@ public func ControlUp(object clonk)
 	if (GetAction() == "Still")
 	{	
 		SetAction("SpinLeft");
-		Sound("Chain");
+		Sound("Structures::StoneGate::Chain");
 		var arrw= CreateObjectAbove(Arrow, -370, 50,-1);
 		arrw->Launch(40,80, clonk);
 		arrw->SetGraphics("1");

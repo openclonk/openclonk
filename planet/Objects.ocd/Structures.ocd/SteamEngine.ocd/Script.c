@@ -43,7 +43,7 @@ protected func RejectCollect(id item, object obj)
 
 protected func Collection(object obj, bool put)
 {
-	Sound("Clonk");
+	Sound("Objects::Clonk");
 }
 
 public func ContentsCheck()
@@ -112,7 +112,7 @@ public func OnPowerProductionStop(int amount)
 // Start call from working action.
 protected func WorkStart()
 {
-	Sound("SteamEngine", false, nil, nil, 1);
+	Sound("Structures::SteamEngine", false, nil, nil, 1);
 	return;
 }
 
@@ -155,7 +155,7 @@ protected func WorkStop()
 protected func WorkAbort()
 {
 	// Sound can be safely stopped here since this action will always end with an abort call.
-	Sound("SteamEngine", false, nil, nil, -1);
+	Sound("Structures::SteamEngine", false, nil, nil, -1);
 	return;	
 }
 

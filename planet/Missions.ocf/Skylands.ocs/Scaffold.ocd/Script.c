@@ -215,7 +215,7 @@ public func Reinforce(int direction)
 	}
 	
 	UpdateInteractionMenus(this.GetExtensionMenuEntries);
-	Sound("DullWoodHit1");
+	Sound("Hits::Materials::Wood::DullWoodHit1");
 }
 
 /* Destruction */

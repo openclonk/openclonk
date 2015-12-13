@@ -14,7 +14,7 @@ protected func Hit()
 {
 	
 	CastPXS("Earth", GetMaterialAmount() * GetStackCount(), 18);
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 	RemoveObject();
 	return 1;
 }

@@ -296,7 +296,7 @@ func FxNewtonHammeringTimer(object c, proplist fx, int time)
 	{
 		// Hammer backswing
 		this.anim = c->PlayAnimation("StrikePickaxe", 10, Anim_Linear(b,b,a, Newton_Hammer_SwingTime, ANIM_Remove), Anim_Const(1000));
-		c->Sound("Clang?");
+		c->Sound("Objects::Pickaxe::Clang?");
 		var x = (c->GetDir()*2-1) * 9;
 		var y = -16;
 		c->CreateParticle("Dust", x,y, PV_Random(-10, 10), PV_Random(-10, 20), PV_Random(10, 20), new Particles_Dust() { R=120, G=100, B=80 }, 10);

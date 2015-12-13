@@ -318,19 +318,19 @@ namespace C4GameLobby
 		// changing away from countdown?
 		if (eCountdownState == CDS_Countdown)
 		{
-			StopSoundEffect("Elevator", NULL);
-			if (eToState != CDS_Start) StartSoundEffect("Pshshsh");
+			StopSoundEffect("Structures::Elevator::Moving", NULL);
+			if (eToState != CDS_Start) StartSoundEffect("Liquids::Pshshsh");
 		}
 		// change to game start?
 		if (eToState == CDS_Start)
 		{
 			// announce it!
-			StartSoundEffect("Blast3");
+			StartSoundEffect("Fire::Blast3");
 		}
 		else if (eToState == CDS_Countdown)
 		{
-			StartSoundEffect("Fuse");
-			StartSoundEffect("Elevator", true);
+			StartSoundEffect("Fire::Fuse");
+			StartSoundEffect("Structures::Elevator::Moving", true);
 		}
 		if (eToState == CDS_Countdown || eToState == CDS_LongCountdown)
 		{
@@ -381,7 +381,7 @@ namespace C4GameLobby
 		{
 			// first countdown message
 			OnLog(Pkt.GetCountdownMsg(!fWasCountdown).getData(), C4GUI_LogFontClr2);
-			StartSoundEffect("Command");
+			StartSoundEffect("Hits::Materials::Wood::WoodHit*");
 		}
 	}
 
@@ -441,7 +441,7 @@ namespace C4GameLobby
 		if (!szInputText || !*szInputText)
 		{
 			// do some error sound then
-			C4GUI::GUISound("Error");
+			C4GUI::GUISound("UI::Error");
 		}
 		else
 		{
@@ -542,7 +542,7 @@ namespace C4GameLobby
 	{
 		if (pChatBox)
 		{
-			StartSoundEffect("Error");
+			StartSoundEffect("UI::Error");
 			pChatBox->AddTextLine(szErrMsg, &::GraphicsResource.TextFont, C4GUI_ErrorFontClr, true, true);
 			pChatBox->ScrollToBottom();
 		}

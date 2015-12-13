@@ -395,7 +395,7 @@ func GetCurrentWalkAnimation()
 func Footstep()
 {
 	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
-		Sound("StepHard?");
+		Sound("Clonk::Movement::StepHard?");
 	else
 	{
 		var dir = Sign(GetXDir());
@@ -408,7 +408,7 @@ func Footstep()
 			B = clr & 0xff,
 		};
 		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
-		Sound("StepSoft?");
+		Sound("Clonk::Movement::StepSoft?");
 	}
 }
 
@@ -769,7 +769,7 @@ func FxFallTimer(object target, effect, int timer)
 	}
 	if(timer == 2 && GetYDir() < 1)
 	{
-		Sound("Rustle?");
+		Sound("Clonk::Movement::Rustle?");
 	}
 
 	if(GetYDir() > 55 && GetAction() == "Jump")
@@ -1035,7 +1035,7 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 				};
 				CreateParticle("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
 			}
-			Sound("Splash?");
+			Sound("Liquids::Splash?");
 		}
 		// Animation speed by X
 		if(effect.animation_name != "Swim")
@@ -1109,7 +1109,7 @@ func DoKneel(bool create_dust)
 
 	SetXDir(0);
 	SetAction("Kneel");
-	Sound("RustleLand");
+	Sound("Clonk::Movement::RustleLand");
 	PlayAnimation("KneelDown", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
@@ -1150,7 +1150,7 @@ func DoRoll()
 func OnStartRoll()
 {	
 	SetTurnForced(GetDir());
-	Sound("Roll");
+	Sound("Clonk::Movement::Roll");
 	if(GetDir() == 1) lAnim.rollDir = 1;
 	else
 		lAnim.rollDir = -1;
@@ -1237,7 +1237,7 @@ func FxIntDigStart(pTarget, effect, fTmp)
 	UpdateAttach();
 
 	// Sound
-	Sound("Dig?");
+	Sound("Clonk::Action::Dig::Dig?");
 
 	// Set proper turn type
 	SetTurnType(0);
@@ -1247,7 +1247,7 @@ func FxIntDigTimer(pTarget, effect, iTime)
 {
 	if(iTime % 36 == 0)
 	{
-		Sound("Dig?");
+		Sound("Clonk::Action::Dig::Dig?");
 	}
 	if( (iTime-18) % 36 == 0 ||  iTime > 35)
 	{

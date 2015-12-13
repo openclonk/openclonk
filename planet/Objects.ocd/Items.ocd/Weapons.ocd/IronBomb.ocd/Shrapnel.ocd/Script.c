@@ -25,7 +25,7 @@ protected func Hit()
 {
 	ShakeFree(6);
 	RemoveEffect("HitCheck",this);
-	Sound("BulletHitGround?");
+	Sound("Objects::Weapons::Musket::BulletHitGround?");
 	CreateParticle("StarSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 	
 	RemoveObject();
@@ -33,7 +33,7 @@ protected func Hit()
 
 public func HitObject(object obj)
 {
-	Sound("ProjectileHitLiving?");
+	Sound("Hits::ProjectileHitLiving?");
 	
 	if (WeaponCanHit(obj))
 	{

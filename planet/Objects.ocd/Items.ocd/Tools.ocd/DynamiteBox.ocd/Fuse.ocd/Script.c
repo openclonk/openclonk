@@ -63,7 +63,7 @@ protected func FxIntFusingStart(object target, proplist effect, int temporary)
 	if (temporary)
 		return FX_OK;
 	SetAction("Fusing");
-	Sound("FuseLoop", false, 75, nil, 1);
+	Sound("Fire::FuseLoop", false, 75, nil, 1);
 	return FX_OK;
 }
 
@@ -106,7 +106,7 @@ protected func FxIntFusingStop(object target, proplist effect, int reason, bool 
 {
 	if (temporary)
 		return FX_OK;
-	Sound("FuseLoop", false, 75, nil, -1);
+	Sound("Fire::FuseLoop", false, 75, nil, -1);
 	return FX_OK;
 }
 

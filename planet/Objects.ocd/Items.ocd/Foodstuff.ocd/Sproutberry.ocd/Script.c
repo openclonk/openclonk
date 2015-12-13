@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("SoftHit1");
+	Sound("Hits::SoftHit1");
 }
 
 public func Construction()

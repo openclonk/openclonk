@@ -170,7 +170,7 @@ namespace C4GUI
 	void ContextMenu::Abort(bool fByUser)
 	{
 		// effect
-		if (fByUser) GUISound("DoorClose");
+		if (fByUser) GUISound("Buildings::DoorClose");
 		// simply del menu: dtor will remove itself
 		delete this;
 	}
@@ -477,7 +477,7 @@ namespace C4GUI
 		// set target
 		this->pTarget = pTarget;
 		// effect :)
-		GUISound("DoorOpen");
+		GUISound("Buildings::DoorOpen");
 		// done
 	}
 
@@ -540,7 +540,7 @@ namespace C4GUI
 		// close all menus (deletes this class!) w/o sound
 		GetScreen()->AbortContext(false);
 		// sound
-		GUISound("Click");
+		GUISound("UI::Click");
 		// do CB
 		pCallback->OnOK(pTarget);
 		// free CB class

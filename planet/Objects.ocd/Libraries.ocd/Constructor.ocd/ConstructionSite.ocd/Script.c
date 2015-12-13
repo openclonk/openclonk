@@ -102,7 +102,7 @@ public func OnInteractionControl(id symbol, string action, object clonk)
 	if (action == "abort")
 	{
 		if (!Deconstruct())
-			Sound("Click*", false, nil, clonk->GetOwner());
+			Sound("UI::Click*", false, nil, clonk->GetOwner());
 	}
 }
 

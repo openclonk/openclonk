@@ -113,9 +113,9 @@ protected func CatchBlow()
 protected func Hurt()
 {
 	if(gender == 0)
-		Sound("Hurt?");
+		Sound("Clonk::Verbal::Hurt?");
 	else
-		Sound("FHurt?");
+		Sound("Clonk::Verbal::FHurt?");
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -149,9 +149,9 @@ protected func Death(int killed_by)
 	if (!this.silent_death)
 	{
 		if(gender == 0)
-			Sound("Die");
+			Sound("Clonk::Verbal::Die");
 		else
-			Sound("FDie");
+			Sound("Clonk::Verbal::FDie");
 			
 		DeathAnnounce();
 	}
@@ -190,7 +190,7 @@ public func Eat(object food)
 	{
 		Heal(food->NutritionalValue());
 		food->RemoveObject();
-		Sound("Munch?");
+		Sound("Clonk::Action::Munch?");
 		SetAction("Eat");
 	}
 }

@@ -104,7 +104,7 @@ public func Wind2Turn()
 	wheel->SetRDir(current_wind * 90, MinRevolutionTime());
 	// Make some sounds.
 	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
-		Sound(["WoodCreak?","HingeCreak?"][Random(2)], false, nil, nil, nil, 75);
+		Sound(["Hits::Materials::Wood::WoodCreak?","Structures::HingeCreak?"][Random(2)], false, nil, nil, nil, 75);
 	return;
 }
 

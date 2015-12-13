@@ -8,7 +8,7 @@ protected func Construction()
 
 func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 /* Eating */

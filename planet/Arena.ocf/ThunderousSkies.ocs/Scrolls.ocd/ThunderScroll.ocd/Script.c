@@ -8,7 +8,7 @@
 
 public func ControlUse(object pClonk)
 {
-	Sound("Blast3");
+	Sound("Fire::Blast3");
 	Exit(0,-GetY());
 	AddEffect("ThunderStrike",nil,100,1,nil,this->GetID(),pClonk->GetOwner(),this->GetX()-5);
 	RemoveObject();

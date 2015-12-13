@@ -16,7 +16,7 @@ func Hit()
 
 func Fuse()
 {
-	Sound("FuseShort");
+	Sound("Fire::FuseShort");
 	CreateParticle("Fire", 0, 0, PV_Random(-5, 5), PV_Random(-15, 5), PV_Random(10, 40), Particles_Glimmer(), 5);
 	return true;
 }

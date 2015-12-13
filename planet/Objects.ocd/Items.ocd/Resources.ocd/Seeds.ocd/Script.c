@@ -41,7 +41,7 @@ public func ControlUse(object clonk, int x, int y, bool box)
 
 protected func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 public func IsMillIngredient() { return true; }

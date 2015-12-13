@@ -179,7 +179,7 @@ private:
 	void UpdatePlayerList(); // refill pPlrListBox with players in player folder, or with crew in selected player
 	void UpdateSelection();
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
-	void OnSelDblClick(class C4GUI::Element *pEl) { C4GUI::GUISound("Click"); OnPropertyBtn(NULL); }
+	void OnSelDblClick(class C4GUI::Element *pEl) { C4GUI::GUISound("UI::Click"); OnPropertyBtn(NULL); }
 	void UpdateActivatedPlayers(); // update Config.General.Participants by currently activated players
 	void SelectItem(const StdStrBuf &Filename, bool fActivate); // find item by filename and select (and activate it, if desired)
 

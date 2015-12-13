@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("WoodHit?");
+	Sound("Hits::Materials::Wood::WoodHit?");
 	return 1;
 }
 

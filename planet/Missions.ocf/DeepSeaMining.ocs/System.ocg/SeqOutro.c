@@ -95,7 +95,7 @@ func Outro_10()
 
 func Outro_11()
 {
-	Sound("Fanfare");
+	Sound("UI::Fanfare");
 	return GameOver();
 }
 

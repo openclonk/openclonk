@@ -9,7 +9,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit");
+	Sound("Hits::Materials::Wood::WoodHit*");
 }
 
 func IsToolProduct() { return true; }

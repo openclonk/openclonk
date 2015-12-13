@@ -262,7 +262,7 @@ public func SetLineTransform(object obj, int r, int xoff, int yoff, int length, 
 
 public func Hit()
 {
-	Sound("WoodHit?");
+	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
 local ActMap = {

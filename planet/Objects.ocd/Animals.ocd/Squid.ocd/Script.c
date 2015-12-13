@@ -348,7 +348,7 @@ private func UpdateSwim()
 private func DoJump()
 {
 	SetAction("Jump");
-	Sound("SoftTouch*");
+	Sound("Hits::SoftTouch*");
 	
 	var x_dir = RandomX(ActMap.Jump.Speed/2, ActMap.Jump.Speed);
 	if (GetComDir() == COMD_Left) x_dir *= -1;

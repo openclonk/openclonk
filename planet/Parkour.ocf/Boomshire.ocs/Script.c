@@ -6,7 +6,7 @@ private func Initialize()
 	// Create dynamite below the first lava basin
 	DrawMaterialQuad("Tunnel",1378,1327-5,1860,1327-5,1860,1330,1387,1330,1);
 
-	//Sound("BirdsLoop",true,100,nil,+1);
+	//Sound("Environment::BirdsLoop",true,100,nil,+1);
 	Cloud->Place(40);
 	PlaceObjects(Rock,50,"Earth");
 	PlaceObjects(Loam,25,"Earth");

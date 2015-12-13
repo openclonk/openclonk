@@ -182,7 +182,7 @@ public func ClickBuyButton(int callback_idx, entry_id, int player)
 	{
 		if (player != homebase[0]->GetOwner()) return false; // wat?
 		if (homebase[0]->OnBuySelection(callback_idx)) return true;
-		Sound("DullMetalHit3", true, nil, player);
+		Sound("Hits::Materials::Metal::DullMetalHit3", true, nil, player);
 	}
 	return false;
 }

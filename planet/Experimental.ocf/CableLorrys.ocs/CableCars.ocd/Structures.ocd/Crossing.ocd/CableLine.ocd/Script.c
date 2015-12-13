@@ -152,7 +152,7 @@ public func SetConnectedObjects(obj1, obj2)
 
 protected func LineBreak(bool no_msg)
 {
-	Sound("LineBreak");
+	Sound("Objects::Connect");
 	if (!no_msg) 
 		BreakMessage();
 	return;

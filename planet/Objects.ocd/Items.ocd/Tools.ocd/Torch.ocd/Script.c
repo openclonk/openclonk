@@ -22,7 +22,7 @@ protected func Initialize()
 
 private func Hit()
 {
-	Sound("WoodHit?");
+	Sound("Hits::Materials::Wood::WoodHit?");
 	return;
 }
 

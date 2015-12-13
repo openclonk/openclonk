@@ -1982,7 +1982,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	// Must not be the scenario file that is currently open
 	if (ItemIdentical(ScenarioFilename, strSavePath.getData()))
 	{
-		StartSoundEffect("Error");
+		StartSoundEffect("UI::Error");
 		::GraphicsSystem.FlashMessage(LoadResStr("IDS_GAME_NOSAVEONCURR"));
 		Log(LoadResStr("IDS_GAME_FAILSAVEGAME"));
 		return false;

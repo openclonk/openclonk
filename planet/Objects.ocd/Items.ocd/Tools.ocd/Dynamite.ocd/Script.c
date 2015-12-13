@@ -61,7 +61,7 @@ private func Place(object clonk, int x, int y, bool box)
 		if(box) SetReady();
 		
 		// put into ...
-		Sound("Connect");
+		Sound("Objects::Connect");
 		Exit(pos[0], pos[1], Angle(pos[0],pos[1]));
 		SetPosition(clonk->GetX()+pos[0], clonk->GetY()+pos[1]);
 		return true;
@@ -74,7 +74,7 @@ public func Fuse()
 	if (GetAction() != "Fuse")
 	{
 		if (!FindObject(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this))) 
-			Sound("Fuse");
+			Sound("Fire::Fuse");
 		SetAction("Fuse");
 		// Object can't be collected anymore when it fuses.
 		this.Collectible = false;	
@@ -96,7 +96,7 @@ private func GetWall(int angle)
 	return false;
 }
 
-protected func Hit() { Sound("GeneralHit?"); }
+protected func Hit() { Sound("Hits::GeneralHit?"); }
 
 protected func Incineration(int caused_by)
 {
@@ -185,7 +185,7 @@ local ActMap = {
 		Delay = 1,
 		Length = 1,
 		FacetBase = 1,
-		Sound = "Fusing",
+		Sound = "Fire::FuseLoop",
 		StartCall = "Fusing"
 	},
 	Ready = {

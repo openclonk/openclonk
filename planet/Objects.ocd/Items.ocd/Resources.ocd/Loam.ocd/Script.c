@@ -12,7 +12,7 @@ protected func Construction()
 // Impact sound
 func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 public func RejectUse(object clonk)

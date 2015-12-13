@@ -233,7 +233,7 @@ void C4ChatControl::ChatSheet::DoError(const char *szError)
 	{
 		AddTextLine(szError, C4GUI_ErrorFontClr);
 	}
-	C4GUI::GUISound("Error");
+	C4GUI::GUISound("UI::Error");
 }
 
 void C4ChatControl::ChatSheet::Update(bool fLock)

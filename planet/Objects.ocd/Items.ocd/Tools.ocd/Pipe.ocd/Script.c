@@ -11,7 +11,7 @@ local Rebuy = true;
 
 protected func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 public func IsToolProduct() { return true; }
@@ -44,7 +44,7 @@ protected func ControlUse(object clonk, int x, int y)
 	// Create and connect pipe.
 	var pipe = CreateObjectAbove(PipeLine, 0, 0, NO_OWNER);
 	pipe->SetActionTargets(this, liquid_pump);
-	Sound("Connect");
+	Sound("Objects::Connect");
 	
 	// If liquid pump has no source yet, create one.
 	if (!liquid_pump->GetSource())

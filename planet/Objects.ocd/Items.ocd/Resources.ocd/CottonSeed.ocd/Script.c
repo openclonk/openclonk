@@ -14,7 +14,7 @@ public func GetCarryBone() { return "main"; }
 
 private func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 }
 
 public func IsFuel() { return true; }

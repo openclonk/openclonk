@@ -1405,7 +1405,7 @@ void C4StartupOptionsDlg::OnSoundVolumeSliderChange(int32_t iNewVal)
 	// sound system reads this value directly
 	Config.Sound.SoundVolume = iNewVal;
 	// test sound
-	StartSoundEffect("ArrowHit", false, 100, NULL);
+	StartSoundEffect("Objects::Arrow::HitGround", false, 100, NULL);
 }
 
 void C4StartupOptionsDlg::OnRXSoundCheck(C4GUI::Element *pCheckBox)

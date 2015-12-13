@@ -14,8 +14,8 @@ func Initialize()
 public func ControlUse(object pClonk, int ix, int iy)
 {
 	AddEffect("Frostbolt", nil, 100, 1, nil, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
-	Sound("Fireball");
-	Sound("Fireball");
+	Sound("Fire::Fireball");
+	Sound("Fire::Fireball");
 	RemoveObject();
 	return 1;
 }
@@ -68,7 +68,7 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	{
 		CreateObjectAbove(Dynamite,x,y,effect.owner)->BlueExplode();
 		var dummy = CreateObjectAbove(Dummy,x,y,-1);
-		dummy->Sound("GlassShatter");
+		dummy->Sound("Hits::Materials::Glass::GlassShatter");
 		ScheduleCall(dummy, "RemoveObject", 36);
 		for(var i=0; i<=60;i++)
 		{

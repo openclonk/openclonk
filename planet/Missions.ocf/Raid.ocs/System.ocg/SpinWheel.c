@@ -23,7 +23,7 @@ func CheckLock(object clonk)
 	if (!key)
 	{
 		Dialogue->MessageBox("$DoorNoKey$", clonk, clonk);
-		clonk->Sound("WipfWhine");
+		clonk->Sound("Animals::Wipf::Whine");
 		return false;
 	}
 	// too far away? (may happen when callback is from key)
@@ -36,6 +36,6 @@ func CheckLock(object clonk)
 	Dialogue->MessageBox("$DoorUnlocked$", clonk, clonk, nil, true);
 	this.unlocked = true;
 	key->RemoveObject();
-	Sound("Click");
+	Sound("UI::Click");
 	return true;
 }

@@ -37,7 +37,7 @@ public func IsToolProduct() { return true; }
 
 protected func Hit3()
 {
-	Sound("DullMetalHit?");
+	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
 /*-- Contents --*/
@@ -52,7 +52,7 @@ protected func RejectCollect(id object_id, object obj)
 	// Objects can still be collected.
 	if (ContentsCount() < this->MaxContentsCount())
 	{
-		Sound("Clonk");
+		Sound("Objects::Clonk");
 		return false;
 	}
 	
@@ -66,7 +66,7 @@ protected func RejectCollect(id object_id, object obj)
 		{
 			obj->SetYDir(-2);
 			obj->SetRDir(0);
-			Sound("SoftHit*");
+			Sound("Hits::SoftHit*");
 		}
 	}
 	// Reject collection.
@@ -119,12 +119,12 @@ public func TurnWheels()
 	if (Abs(GetXDir()) > 1 && !wheel_sound)
 	{
 		if (!wheel_sound) 
-			Sound("WheelsTurn", false, nil, nil, 1);
+			Sound("Structures::WheelsTurn", false, nil, nil, 1);
 		wheel_sound = true;
 	}
 	else if (wheel_sound && !GetXDir())
 	{
-		Sound("WheelsTurn", false, nil, nil, -1);
+		Sound("Structures::WheelsTurn", false, nil, nil, -1);
 		wheel_sound = false;
 	}
 }

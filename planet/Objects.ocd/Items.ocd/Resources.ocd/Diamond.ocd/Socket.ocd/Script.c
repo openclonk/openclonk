@@ -132,7 +132,7 @@ private func CheckFree(bool by_dig_free)
 			AddEffect("MuchSparkle", this, 1, 1, this);
 			this.Visibility = VIS_All;
 			// Also, some sound (delayed for audibility on visibility change)
-			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "DiamondDigOut");
+			if (by_dig_free) ScheduleCall(this, Global.Sound, 1,1, "Objects::DiamondDigOut");
 		}
 	}
 	
@@ -188,7 +188,7 @@ public func OnHitByPickaxe()
 	if(!c) return;
 	if(Random(3)) return;
 	
-	Sound("RockHit*");
+	Sound("Hits::Materials::Rock::RockHit*");
 	DetachMesh(attached_mesh);
 	c->Exit(0, 0, 0, RandomX(-3, 3), RandomX(-3, -1), RandomX(-20, 20));
 }

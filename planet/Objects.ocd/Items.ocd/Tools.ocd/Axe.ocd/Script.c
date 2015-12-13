@@ -196,7 +196,7 @@ func FxIntAxeTimer(object clonk, effect, int time)
 	//This block is executed when the axe hits the tree
 	if((time + 25) % axe_swing_time == 1)
 	{
-		Sound("Chop?");
+		Sound("Environment::Tree::Chop?");
 
 		//Which direction does the clonk face?
 		var x = 10;
@@ -243,7 +243,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 	//This block is executed when the axe hits the tree
 	if ((time + 25) % axe_swing_time == 1)
 	{
-		Sound("Chop?");
+		Sound("Environment::Tree::Chop?");
 
 		//Which direction does the clonk face?
 		var x = 10;
@@ -346,7 +346,7 @@ func CheckStrike(iTime)
 					DoWeaponSlow(obj, 200);
 
 				// sound and done. We can only hit one target
-				Sound("WeaponHit?", false);
+				Sound("Objects::Weapons::WeaponHit?", false);
 				break;
 			}
 		}

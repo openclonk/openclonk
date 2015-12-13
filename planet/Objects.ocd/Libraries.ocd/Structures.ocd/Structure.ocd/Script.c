@@ -282,7 +282,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (!hammer)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedAHammer$");
-		Sound("Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", nil, nil, cursor->GetOwner());
 		return;
 	}
 	
@@ -307,7 +307,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	if (total_repair_value == 0)
 	{
 		PlayerMessage(cursor->GetOwner(), "$YouNeedMaterials$");
-		Sound("Click2", nil, nil, cursor->GetOwner());
+		Sound("UI::Click2", nil, nil, cursor->GetOwner());
 		return;
 	}
 	
@@ -327,7 +327,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	lib_structure.repair_materials = new_list;
 	
 	// todo: add sound for repairing..
-	Sound("Ding");
+	Sound("UI::Ding");
 }
 
 // On hovering, show a list of materials that are needed for repairing the structure.

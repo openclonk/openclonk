@@ -111,7 +111,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 		JumpOff(rider,30);
 	}
 
-	if(!Random(105)) Sound("Cracker");
+	if(!Random(105)) Sound("Fire::Cracker");
 
 	if(fuel<=0)
 	{
@@ -169,7 +169,7 @@ protected func Hit()
 		JumpOff(rider);
 	}
 	//Message("I have hit something",this);
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 	if(GetEffect("Flight",this)) DoFireworks();
 }
 
@@ -211,9 +211,9 @@ func Launch(int angle, object clonk)
 	SetCategory(C4D_Vehicle);
 
 	Exit();
-	Sound("BoompackLaunch");
+	Sound("Objects::Boompack::Launch");
 	AddEffect("Flight",this,150,1,this);
-	Sound("BoompackFly", false, 60, nil, 1);
+	Sound("Objects::Boompack::Fly", false, 60, nil, 1);
 	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
@@ -245,7 +245,7 @@ func DoFireworks()
 {
 	RemoveEffect("Flight",this);
 	Fireworks();
-	Sound("BlastFirework", false, 200);
+	Sound("Fire::BlastFirework", false, 200);
 	Explode(30);
 }
 

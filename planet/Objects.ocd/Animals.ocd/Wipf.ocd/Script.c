@@ -517,7 +517,7 @@ public func Eat(object food)
 	{
 		DoEnergy(food->~NutritionalValue());
 		food->RemoveObject();
-		Sound("Munch?");
+		Sound("Clonk::Action::Munch?");
 		SetAction("Eat");
 	}
 	return;
@@ -539,7 +539,7 @@ public func IsDead()
 
 protected func Death(int killed_by)
 {
-	Sound("WipfAroof");
+	Sound("Animals::Wipf::Aroof");
 	return;
 }
 
@@ -571,7 +571,7 @@ protected func CatchBlow()
 {
 	if (IsDead()) 
 		return;
-	Sound("Weep?");
+	Sound("Animals::Wipf::Weep?");
 	return;
 }
 

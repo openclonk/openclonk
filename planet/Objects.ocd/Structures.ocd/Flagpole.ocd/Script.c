@@ -196,7 +196,7 @@ public func Collection(object obj)
 	if (obj->~IsValuable() && !obj->~QueryOnSell(obj->GetController()))
 	{
 		DoWealth(obj->GetController(), obj->GetValue());
-		Sound("Cash");
+		Sound("UI::Cash");
 		// OnSale callback to object e.g. for goal updates
 		obj->~OnSale(obj->GetController(), this);
 		if (obj) obj->RemoveObject();

@@ -30,7 +30,7 @@ public func Launch(int angle, int str, object shooter)
 	SetXDir(xdir);
 	SetYDir(ydir);
 	SetR(angle);
-	Sound("ArrowShoot?");
+	Sound("Objects::Arrow::Shoot?");
 	// Shooter controls the arrow for correct kill tracing.
 	SetController(shooter->GetController());
 	
@@ -71,9 +71,9 @@ public func HitObject(object obj)
 	if (WeaponCanHit(obj))
 	{
 		if (obj->GetAlive())
-			Sound("ProjectileHitLiving?");
+			Sound("Hits::ProjectileHitLiving?");
 		else
-			Sound("ArrowHitGround");
+			Sound("Objects::Arrow::HitGround");
 		
 		obj->~OnProjectileHit(this);
 		WeaponDamage(obj, dmg, FX_Call_EngObjHit, true);
@@ -89,7 +89,7 @@ public func HitObject(object obj)
 public func Hit()
 {
 	if (GetEffect("InFlight",this))
-		Sound("ArrowHitGround");
+		Sound("Objects::Arrow::HitGround");
 	Stick();
 }
 

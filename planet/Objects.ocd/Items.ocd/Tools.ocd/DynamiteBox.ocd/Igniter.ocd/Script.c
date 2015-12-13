@@ -9,7 +9,7 @@
 
 private func Hit()
 {
-	Sound("DullMetalHit?");
+	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
 public func HoldingEnabled() { return true; }

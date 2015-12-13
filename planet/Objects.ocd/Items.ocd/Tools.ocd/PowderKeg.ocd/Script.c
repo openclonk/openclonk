@@ -125,7 +125,7 @@ public func OnProjectileHit()
 
 func Hit()
 {
-	Sound("DullWoodHit?");
+	Sound("Hits::Materials::Wood::DullWoodHit?");
 }
 
 public func SaveScenarioObject(props)

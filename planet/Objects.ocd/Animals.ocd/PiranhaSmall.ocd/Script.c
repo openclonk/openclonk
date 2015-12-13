@@ -79,7 +79,7 @@ private func UpdateVision()
 
 private func BiteEffect()
 {
-	Sound("FishMunch*", nil, nil, nil, nil, nil, 100);
+	Sound("Animals::Fish::Munch*", nil, nil, nil, nil, nil, 100);
 }
 
 local Name = "$Name$";

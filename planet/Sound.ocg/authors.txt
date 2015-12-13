@@ -4,33 +4,34 @@ CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
 Author        Work(s)
 ===============================================================================
 
-Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine, ChestOpen, ChestClose, WindCharge*, WindGust, Clang*
+Ringwaul        - Monster/Growl*, Monster/Die, Wipf/Snuff*, Wipf/Aroof, Wipf/Whine, Chest/Open, Chest/Close
+				- Winbag/Charge, Winbag/ChargeStop, Winbag/Gust, Pickaxe/Clang1-3
+Checkmaty       - ProjectileHitLiving*, Arrow/HitGround, Arrow/Shoot1/3, Bow/Draw, Bow/GetArrow1-2, Bow/Load1-2, Bow/PutAwayBow, Shoot1-3,
+				  Javelin/Draw, Javelin/HitGround, Javelin/Throw1-3, WeaponHit1-3, WeaponSwing1-3, Shield/WeaponHitShield, Shield/MetalHit1-4,
+				  Shield/WoodHit1-3, Musket/GunShot1-5, Musket/BulletShot1-2, Musket/BulletHitGround1-3		  
 Clonkonaut      - Confirm*, FDie
-Checkmaty       - ProjectileHitLiving*, Sword*, DrawJavelin*, ThrowJavelin*, JavelinHitGround, BulletHit*,
-                  ShieldMetalHit*, ShieldWoodHit*, BowLoad*, BowShoot*, DrawBow*, PutAwayBow*, GunShoot*, 
-                  ArrowHitGround, ArrowShoot
-ala             - Bubble1-3, Zap1-4, GlassBreak, Rockfall1-2, Waterdrop1-2, OrganicHit1-2
-                  PukaGulp, PukaHiss1-2, PukaHurt1-3b
-                  PukaTeleportIn/Out based on work by parnellij (CC0) - http://www.freesound.org/people/parnellij/sounds/74892/
-                  ChippieChirp1-3, ChippieTalk1-2, ChippieBite1-2
+Pullover aus Milch	  - PropellerLoop
+
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
-Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
+Benboncan       - Blast*, BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
                   BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
-CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
+CGEffex         - Splash1-3 (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Pshshsh (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
-gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
+				- Elevator/Drilling (http://www.freesound.org/people/jenc/sounds/519/)
+gelo_papas		- Balloon/Inflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 FreqMan			- Cash (http://www.freesound.org/people/FreqMan/sounds/31377/)
 fresco			- Munch1 (http://www.freesound.org/people/fresco/sounds/48933/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
 digifishmusic	- LiquidBlast2 (http://www.freesound.org/people/digifishmusic/sounds/45439/)
-HerbertBoland	- WoodHit* (http://www.freesound.org/people/HerbertBoland/sounds/33206/)
+HerbertBoland	- WoodHit1-3 (http://www.freesound.org/people/HerbertBoland/sounds/33206/)
+				- Clonk/StepSoft1-6, Clonk/StepHard1-5 by HerbertBoland (http://www.freesound.org/people/HerbertBoland/sounds/31962/)
 Erdie			- LightMetalHit1 (http://www.freesound.org/people/Erdie/sounds/27826/)
 Anton			- DullWoodHit1 (http://www.freesound.org/people/Anton/sounds/1257/)
 CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
@@ -42,32 +43,33 @@ qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/
 Aiwha           - Ding (modified) (http://freesound.org/people/Aiwha/sounds/196106/)
 discokingmusic	- Connect (http://www.freesound.org/people/discokingmusic/sounds/271387/)
 luffy           - SmokeSizzle (https://www.freesound.org/people/luffy/sounds/17299/)
-Pullover        - PropellerLoop (aus Milch (EngineLoop))
-Sergenious      - GateHit (http://www.freesound.org/people/Sergenious/sounds/55820/)
-daveincamas     - Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
-Traveler        - Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
-jenc            - ElevatorDrilling (http://www.freesound.org/people/jenc/sounds/519/)
-pempi           - ElevatorMoving, ElevatorStart, ElevatorStop (http://www.freesound.org/people/pempi/sounds/33873/)
-Stephen Hall    - Dig* (http://www.freesound.org/people/shall555/sounds/72199/)
+pempi			- Elevator/Start, Elevator/Moving, Elevator/Stop (http://www.freesound.org/people/pempi/sounds/33873/)
+Traveler 		- Pop (http://www.freesound.org/people/Traveler/sounds/16064/)
+Pat 			- Clonk/Roll, Clonk/Rustle1-4, Clonk/RustleLand, (http://www.freesound.org/people/pwausc1/sounds/118259/)
+Stephen Hall 	- Clonk/Dig1-5 (http://www.freesound.org/people/shall555/sounds/72199/)
+broumbroum 		- Cleared (http://www.freesound.org/people/broumbroum/sounds/50565/)
+Sergenious		- StoneDoor/GateHit(http://www.freesound.org/people/Sergenious/sounds/55820/)
+daveincamas		- StoneDoor/Chain (http://www.freesound.org/people/daveincamas/sounds/44076/)
+volivieri		- Waterfall (http://www.freesound.org/people/volivieri/sounds/38390/)
+Julien Matthey	- Fireball (http://www.freesound.org/people/Julien%20Matthey/sounds/105016/)
+Connum			- GlassShatter (http://www.freesound.org/people/Connum/sounds/66520/)
+sarge4267		- BlastFireworks (http://www.freesound.org/people/sarge4267/sounds/102720/?page=2#comment)
+soundscalpel.com 		- BlastFireworks (http://www.freesound.org/people/soundscalpel.com/sounds/110391)
+Christian James Muise	- Tree/Chop1-5.wav (http://www.freesound.org/people/hazure/sounds/23700/)
+primeval_polypod		- Boompack/Fly (http://www.freesound.org/people/primeval_polypod/sounds/158894/)
 Sven2           - GateMove (adapted from GateHit), IceHit* (adapted from GlassHit*), PlaneCrash,
                   DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit*, OpenBuyMenu, CloseBuyMenu
                   CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
                   Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
-primeval_polypod- BoompackFly (http://www.freesound.org/people/primeval_polypod/sounds/158894/) (adapted)
-soundscalpel.com, sarge4267 - BlastFirework (adapted from: http://www.freesound.org/people/soundscalpel.com/sounds/110391/, http://www.freesound.org/people/sarge4267/sounds/102720/)
-Christian James Muise - Chop* (http://www.freesound.org/people/hazure/sounds/23700/)
-broumbroum      - Cleared (http://www.freesound.org/people/broumbroum/sounds/50565/)
-volivieri       - Waterfall (http://www.freesound.org/people/volivieri/sounds/38390/)
-Pat             - Roll, Rustle1, Rustle2, Rustle3, Rustle4, RustleLand (http://www.freesound.org/people/pwausc1/sounds/118259/)
-HerbertBoland   - StepSoft1, StepSoft2, StepSoft3, StepSoft4, StepSoft5, StepSoft6, StepHard1, StepHard2, StepHard3, StepHard4, StepHard5 (http://www.freesound.org/people/HerbertBoland/sounds/31962/)
-Julien Matthey  - Fireball (http://www.freesound.org/people/Julien%20Matthey/sounds/105016/)
-Connum          - GlassShatter (http://www.freesound.org/people/Connum/sounds/66520/)
 Zapper          - Breathing
+
+The following sounds use two sources:
+
 
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
-mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
+mrmayo			- Balloon/Pop (http://www.freesound.org/people/mrmayo/sounds/77039/)
 adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/13878/ and http://www.freesound.org/people/adcbicycle/sounds/13914/)
 				- SoftHit2 (http://www.freesound.org/people/adcbicycle/sounds/13866/)
 				- GeneralHit1 (http://www.freesound.org/people/adcbicycle/sounds/13860/)
@@ -82,15 +84,16 @@ thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
 Oddworld		- LiquidBlast1 (http://www.freesound.org/people/Oddworld/sounds/75328/)
-mbezzola		- RockHit* (http://www.freesound.org/people/mbezzola/sounds/105282/)
+mbezzola		- RockHit1-3 (http://www.freesound.org/people/mbezzola/sounds/105282/)
 RytmenPinnen	- Fuse/FuseLoop/FuseShort (http://www.freesound.org/people/RytmenPinnen/sounds/102264/)
 kibibu			- LightMetalHit2 (http://www.freesound.org/people/kibibu/sounds/22435/)
 prozaciswack	- Earthquake (http://www.freesound.org/people/prozaciswack/sounds/82722/)
-alienistcog		- WoodCreak* (http://freesound.org/people/alienistcog/sounds/123712/)
+alienistcog		- WoodCreak1-3 (http://freesound.org/people/alienistcog/sounds/123712/)
 fryzu82			- Boiling (http://freesound.org/people/fryzu82/sounds/142333/)
 Adam_N			- Blowout (http://freesound.org/people/Adam_N/sounds/166126/)
 BenNevis		- SteamEngine (http://freesound.org/people/BenNevis/sounds/203175/)
 felix.blume		- Pumpjack (http://freesound.org/people/felix.blume/sounds/203990/)
 Kane53126		- Click2 (http://www.freesound.org/people/Kane53126/sounds/257944/)
 Zywx				- MosquitoBuzz (http://www.freesound.org/people/Zywx/sounds/188708/)
-tc630				- FurnaceStart, FurnaceStop, FurnaceLoop (http://www.freesound.org/people/tc630/sounds/47835/)
+tc630			- Furnace/Start, Furnace/Stop, Furnace/Loop(http://www.freesound.org/people/tc630/sounds/47835/)
+kolczok			- SawmillRipcut(http://freesound.org/people/kolczok/sounds/198988/)

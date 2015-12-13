@@ -8,7 +8,7 @@ func MaxStackCount() { return 4; }
 
 func ControlUseStart(object clonk, int x, int y)
 {
-	clonk->Sound("WallKitClick");
+	clonk->Sound("Objects::WallKit::Click");
 	SetPreview(clonk,x,y);
 	return true;
 }
@@ -46,7 +46,7 @@ private func CreateBridge(object clonk, int x, int y)
 	x = clonk->GetX(); 
 	y = clonk->GetY();
 	DrawMaterialQuad(BridgeMaterial, x + c.x1 - c.dxm, y + c.y1 - c.dym, x + c.x1 + c.dxp, y + c.y1 + c.dyp, x + c.x2 + c.dxp, y + c.y2 + c.dyp, x + c.x2 - c.dxm, y + c.y2 - c.dym, DMQ_Bridge);
-	clonk->Sound("WallKitLock");
+	clonk->Sound("Objects::WallKit::Lock");
 	return true;
 }
 
@@ -105,7 +105,7 @@ func StopPreview(object clonk)
 
 func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 	return true;
 }
 

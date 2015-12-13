@@ -199,7 +199,7 @@ public func StartCommunication()
 		Attach = ATTACH_Front | ATTACH_MoveRelative,
 	};
 	// Run effects
-	Sound("CrystalCommCharge");
+	Sound("CrystalCommunicator::CrystalCommCharge");
 	time = 0;
 	AddTimer(this.PreActivity, 5);
 }
@@ -222,13 +222,13 @@ private func PreActivity()
 		else
 			gem_target->CreateParticle("StarFlash", x, y, -x, -y, 10, small_flash_particle, 10);
 	}
-	if (time == 20) Sound("CrystalCommBoost");
+	if (time == 20) Sound("CrystalCommunicator::CrystalCommBoost");
 	if (time > 50)
 	{
 		RemoveTimer(this.PreActivity);
 		time = 0;
 		CreateParticle("StarFlash", PV_Random(-12, +12), PV_Random(-12, +12), PV_Random(-10, +10),PV_Random(-10, +10), PV_Random(20, 100), large_flash_particle, 10);
-		Sound("CrystalCommWumm");
+		Sound("CrystalCommunicator::CrystalCommWumm");
 		SetAction("Active");
 		AddTimer(this.Activity, 1);
 	}
@@ -265,12 +265,12 @@ private func Activity()
 				// Next char to send
 				if (send_char == GetChar("."))
 				{
-					Sound("CrystalCommToneA");
+					Sound("CrystalCommunicator::CrystalCommToneA");
 					next_send_time = time + 13;
 				}
 				else
 				{
-					Sound("CrystalCommToneB");
+					Sound("CrystalCommunicator::CrystalCommToneB");
 					next_send_time = time + 27;
 				}
 			}
@@ -346,7 +346,7 @@ local ActMap = {
 			Delay = 0,
 			Length = 1,
 			NextAction = "Active",
-			Sound = "CrystalCommActive",
+			Sound = "CrystalCommunicator::CrystalCommActive",
 		},
 	};
 

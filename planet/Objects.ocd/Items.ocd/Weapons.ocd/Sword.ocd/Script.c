@@ -8,7 +8,7 @@ local movement_effect;
 
 func Hit()
 {
-	Sound("LightMetalHit?");
+	Sound("Hits::Materials::Metal::LightMetalHit?");
 }
 
 public func Initialize()
@@ -108,7 +108,7 @@ public func ControlUse(object clonk, int x, int y)
 	magic_number = ObjectNumber();
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
-	this->Sound("WeaponSwing?");
+	this->Sound("Objects::Weapons::WeaponSwing?");
 	return true;
 }
 
@@ -226,7 +226,7 @@ func CheckStrike(iTime)
 					continue;
 					
 				// Sound before damage to prevent null pointer access if callbacks delete this
-				Sound("WeaponHit?", false);
+				Sound("Objects::Weapons::WeaponHit?", false);
 				
 				// fixed damage (9)
 				var damage = SwordDamage(shield);

@@ -53,7 +53,7 @@ func AddPart(object part)
 {
 	part->RemoveRestoreMode();
 	part->RemoveObject();
-	Sound("Ding", true);
+	Sound("UI::Ding", true);
 	SetProgress(progress+1);
 	return true;
 }

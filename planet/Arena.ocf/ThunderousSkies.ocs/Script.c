@@ -22,7 +22,7 @@ protected func Initialize()
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
 	SetSkyParallax(1, 20,20, 0,0, nil, nil);
-	Sound("BirdsLoop",true,100,nil,+1);
+	Sound("Environment::BirdsLoop",true,100,nil,+1);
 		
 	CreateObjectAbove(Column,650,379);
 	CreateObjectAbove(Column,350,409);

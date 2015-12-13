@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("RockHit?");
+	Sound("Hits::Materials::Rock::RockHit?");
 }
 
 public func IsToolProduct() { return true; }
@@ -26,7 +26,7 @@ protected func ControlUse(object clonk, int x, int y)
 		{
 			// Power line is already connected to obj -> remove line.
 			line->RemoveObject();
-			Sound("Connect");
+			Sound("Objects::Connect");
 			clonk->Message("$TxtLineRemoval$");
 			return true;
 		}
@@ -39,7 +39,7 @@ protected func ControlUse(object clonk, int x, int y)
 				line->SetActionTargets(line->GetActionTarget(0), obj);
 			else
 				return;
-			Sound("Connect");
+			Sound("Objects::Connect");
 			line->SetAction("Wait");
 			line->UpdateDraw();
 			obj->AddCableConnection(line);
@@ -52,7 +52,7 @@ protected func ControlUse(object clonk, int x, int y)
 	{
 		line = CreateObjectAbove(CableLine, 0, 0, NO_OWNER);
 		line->SetActionTargets(this, obj);
-		Sound("Connect");
+		Sound("Objects::Connect");
 		clonk->Message("$TxtConnect$", obj->GetName());
 		return true;
 	}

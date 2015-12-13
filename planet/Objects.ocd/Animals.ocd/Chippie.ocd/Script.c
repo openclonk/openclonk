@@ -42,7 +42,7 @@ public func Death()
 					PV_Random(-20, 20), PV_Random(-20, 20),
 					PV_Random(20, 60), particles, 60);
 	}
-	Sound("ChippieChirp*", false, 50);
+	Sound("Animals::Chippie::Chirp*", false, 50);
 	RemoveObject();
 }
 
@@ -117,7 +117,7 @@ private func FxJumpCheckTimer(target, effect, time)
 private func ClawTo(object obj)
 {
 	// Play the sound on the object, because the chippie turns invisible.
-	obj->Sound("ChippieBite*", false, 50);
+	obj->Sound("Animals::Chippie::Bite*", false, 50);
 	
 	energy_sucked += 5 * 1000;
 	obj->DoEnergy(-5, false, FX_Call_EngGetPunched, GetOwner());
@@ -221,7 +221,7 @@ private func FxActivityTimer(target, effect, time)
 		else
 		if(!Random(20) && !GetEffect("DanceCooldown", this))
 		{
-			Sound("ChippieTalk*");
+			Sound("Animals::Chippie::Talk*");
 			
 			var cnt = 0;
 			for(var obj in FindObjects(Find_Distance(100), Find_ID(GetID()), Find_Allied(GetOwner()), Sort_Distance()))

@@ -78,7 +78,7 @@ func Intro_2()
 {
 	// Plane drop sound when it enters view range
 	if (this.plane->GetY() > 900)
-		Sound("PlaneDrop", true);
+		Sound("Goal_TreasureHunt::PlaneDrop", true);
 	else
 		ScheduleSame(2);
 	return true;
@@ -87,7 +87,7 @@ func Intro_2()
 func Intro_PlaneHit()
 {
 	// Plane hit ground! Continue sequence.
-	Sound("PlaneCrash", true);
+	Sound("Objects::Plane::PlaneCrash", true);
 	SetR(-90);
 	var particles = Particles_Smoke(true);
 	particles.Size = PV_Linear(PV_Random(20, 60), PV_Random(50, 100));

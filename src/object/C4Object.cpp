@@ -1013,7 +1013,7 @@ bool C4Object::ExecLife()
 				{
 					// message
 					GameMsgObject(FormatString(LoadResStr("IDS_OBJ_BIRTHDAY"),GetName (), Info->TotalPlayingTime / 3600 / 5).getData(),this);
-					StartSoundEffect("Trumpet",false,100,this);
+					StartSoundEffect("UI::Trumpet",false,100,this);
 				}
 
 				Info->Age = iNewAge;
@@ -1834,7 +1834,7 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 	// call to object
 	Call(PSF_Promotion);
 
-	StartSoundEffect("Trumpet",0,100,this);
+	StartSoundEffect("UI::Trumpet",0,100,this);
 	return true;
 }
 

@@ -17,7 +17,7 @@ public func Construction()
 	}
 	
 	AddEffect("Move", this, 1, 2, this);
-	Sound("Bubble*");
+	Sound("Liquids::Bubble*");
 	return;
 }
 

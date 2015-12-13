@@ -359,7 +359,7 @@ void C4StartupPlrSelDlg::CrewListItem::OnDeathMessageSet(const StdStrBuf &rsNewM
 	// save
 	RewriteCore();
 	// acoustic feedback
-	C4GUI::GUISound("Connect");
+	C4GUI::GUISound("Objects::Connect");
 }
 
 void C4StartupPlrSelDlg::CrewListItem::RewriteCore()
@@ -846,7 +846,7 @@ void C4StartupPlrSelDlg::OnCrewBtn(C4GUI::Control *btn)
 void C4StartupPlrSelDlg::SetPlayerMode()
 {
 	// change view to listing players
-	C4GUI::GUISound("DoorClose");
+	C4GUI::GUISound("Buildings::DoorClose");
 	StdStrBuf LastPlrFilename;
 	LastPlrFilename.Copy(static_cast<const StdStrBuf &>(CurrPlayer.Grp.GetFullName()));
 	CurrPlayer.Grp.Close();
@@ -875,7 +875,7 @@ void C4StartupPlrSelDlg::SetCrewMode(PlayerListItem *pSel)
 		                         strCrew.getData(), C4GUI::Ico_Player);
 		return;
 	}
-	C4GUI::GUISound("DoorOpen");
+	C4GUI::GUISound("Buildings::DoorOpen");
 	eMode = PSDM_Crew;
 	UpdatePlayerList();
 	UpdateSelection();

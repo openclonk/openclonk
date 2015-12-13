@@ -26,7 +26,7 @@ public func ControlUp(object clonk)
 		}
 		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
-		Sound("Chain");
+		Sound("Structures::StoneGate::Chain");
 	}
 }
 
@@ -43,7 +43,7 @@ public func ControlDown(object clonk)
 		}
 		targetdoor->CloseDoor();
 		SetAction("SpinRight");
-		Sound("Chain");
+		Sound("Structures::StoneGate::Chain");
 	}
 }
 

@@ -90,7 +90,7 @@ public func Hit(int x, int y)
 	}
 		
 	SetRDir(0);
-	Sound("SoftHit*");
+	Sound("Hits::SoftHit*");
 	
 	var particles = 
 	{
@@ -150,7 +150,7 @@ private func Hatch()
 	
 	var c = CreateObject(Chippie, 0, 0, GetOwner());
 	c->SetCon(50);
-	c->Sound("ChippieChirp*", false, 25);
+	c->Sound("Animals::Chippie::Chirp*", false, 25);
 	
 	var particles = 
 	{

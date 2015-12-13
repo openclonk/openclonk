@@ -860,7 +860,7 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 	{
 		FirstViewport = cvp->Next;
 		delete cvp;
-		StartSoundEffect("Click");
+		StartSoundEffect("UI::CloseViewport");
 	}
 	// Take out of the chain
 	else for (C4Viewport * prev = FirstViewport; prev; prev = prev->Next)
@@ -869,7 +869,7 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 			{
 				prev->Next = cvp->Next;
 				delete cvp;
-				StartSoundEffect("Click");
+				StartSoundEffect("UI::CloseViewport");
 			}
 		}
 	// Recalculate viewports
@@ -909,7 +909,7 @@ bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
 	}
 	// Action sound
 	if (GetViewportCount()!=iLastCount) if (!fSilent)
-			StartSoundEffect("CloseViewport");
+			StartSoundEffect("UI::CloseViewport");
 	return true;
 }
 
@@ -953,7 +953,7 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 		// Recalculate viewports
 		RecalculateViewports();
 		// Action sound
-		if (!fSilent) StartSoundEffect("CloseViewport");
+		if (!fSilent) StartSoundEffect("UI::CloseViewport");
 	}
 	return true;
 }

@@ -531,12 +531,12 @@ public func OnMoveAllToClicked(int menu_id)
 	
 	if (transfered > 0)
 	{
-		Sound("SoftTouch*", true, nil, GetOwner());
+		Sound("Hits::SoftTouch*", true, nil, GetOwner());
 		return;
 	}
 	else
 	{
-		Sound("BalloonPop", true, nil, GetOwner());
+		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
 		return;
 	}
 }
@@ -869,7 +869,7 @@ private func OnContentsSelection(symbol, extra_data)
 	if (!other_target->~IsContainer())
 	{
 		// Todo: other sound for "nope".
-		Sound("LightMetalHit*", nil, 10, GetController(), nil, nil, -50);
+		Sound("Hits::Materials::Metal::LightMetalHit*", nil, 10, GetController(), nil, nil, -50);
 		return;
 	}
 	
@@ -926,12 +926,12 @@ private func OnContentsSelection(symbol, extra_data)
 	// Did we at least transfer one item?
 	if (successful_transfers > 0)
 	{
-		Sound("SoftTouch*", true, nil, GetOwner());
+		Sound("Hits::SoftTouch*", true, nil, GetOwner());
 		return true;
 	}
 	else
 	{
-		Sound("BalloonPop", true, nil, GetOwner());
+		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
 		return false;
 	}
 }

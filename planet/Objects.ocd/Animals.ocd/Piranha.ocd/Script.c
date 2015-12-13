@@ -101,7 +101,7 @@ func DoEat(object obj)
 
 private func BiteEffect()
 {
-	Sound("FishMunch*");
+	Sound("Animals::Fish::Munch*");
 }
 
 // Make this piranha a little larger than the mesh.

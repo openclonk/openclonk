@@ -191,7 +191,7 @@ void C4ControlSet::Execute() const
 		if (Game.Parameters.isLeague())
 		{
 			Log("/set maxplayer disabled in league!");
-			C4GUI::GUISound("Error");
+			C4GUI::GUISound("UI::Error");
 			break;
 		}
 		// set it
@@ -840,7 +840,7 @@ void C4ControlSyncCheck::Execute() const
 		LogFatal("Network: Synchronization loss!");
 		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szThis, Frame,ControlTick,RandomCount,AllCrewPosX,PXSCount,MassMoverIndex,ObjectCount,ObjectEnumerationIndex, SectShapeSum).getData());
 		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
-		StartSoundEffect("SyncError");
+		StartSoundEffect("UI::SyncError");
 #ifdef _DEBUG
 		// Debug safe
 		C4GameSaveNetwork SaveGame(false);

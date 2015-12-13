@@ -224,7 +224,7 @@ protected func CheckForClonks()
 		{
 			var team_clear = !ClearedByTeam(team);
 			cleared_by_plr[plrid] = true;
-			Sound("Cleared", false, 100, plr);
+			Sound("UI::Cleared", false, 100, plr);
 			cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
 			if (ClearedByTeam(team) && team_clear)
 				cp_con->AddTeamClearedCP(team, this); // Notify parkour goal.
@@ -232,7 +232,7 @@ protected func CheckForClonks()
 		// Check finish status.
 		if (cp_mode & PARKOUR_CP_Finish)
 		{
-			Sound("Cleared", false, 100, plr);
+			Sound("UI::Cleared", false, 100, plr);
 			cleared_by_plr[plrid] = true;
 			if (team)
 			{

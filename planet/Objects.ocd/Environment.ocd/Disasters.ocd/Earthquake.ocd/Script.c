@@ -66,15 +66,15 @@ protected func FxIntEarthquakeStart(object target, effect)
 {
 	// Start sound at quake local coordinates.
 	// < Maikel> Global until someone implements non-object local sounds
-	Sound("Earthquake", true, 100, nil, 1);
+	Sound("Environment::Disasters::Earthquake", true, 100, nil, 1);
 	return FX_OK;
 }
 
 protected func FxIntEarthquakeStop(object target, effect)
 {
 	// Stop sound.
-	Sound("Earthquake", true, 100, nil, -1);
-	Sound("EarthquakeEnd",true);
+	Sound("Environment::Disasters::Earthquake", true, 100, nil, -1);
+	Sound("Environment::Disasters::EarthquakeEnd",true);
 	return FX_OK;
 }
 

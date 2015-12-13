@@ -17,7 +17,7 @@ protected func Initialize()
 
 protected func Hit()
 {
-	Sound("GeneralHit?");
+	Sound("Hits::GeneralHit?");
 	return;
 }
 
@@ -87,8 +87,8 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	{
 		if (effect.sound)
 		{
-			Sound("WindCharge", false, nil, nil, -1);
-			Sound("WindChargeStop");
+			Sound("Objects::Windbag::Charge", false, nil, nil, -1);
+			Sound("Objects::Windbag::ChargeStop");
 			effect.sound = false;
 		}
 		return FX_OK;
@@ -104,7 +104,7 @@ public func FxIntReloadTimer(object target, proplist effect, int time)
 	{
 		if (!effect.sound)
 		{
-			Sound("WindCharge", false, nil, nil, 1);
+			Sound("Objects::Windbag::Charge", false, nil, nil, 1);
 			effect.sound = true;
 		}
 		
@@ -127,8 +127,8 @@ public func FxIntReloadStop(object target, proplist effect, int reason, bool tem
 		return FX_OK;
 	if (effect.sound)
 	{
-		Sound("WindCharge", false, nil, nil, -1);	
-		Sound("WindChargeStop");
+		Sound("Objects::Windbag::Charge", false, nil, nil, -1);	
+		Sound("Objects::Windbag::ChargeStop");
 	}
 	return FX_OK;
 }
@@ -159,7 +159,7 @@ public func FxIntBurstWindStart(object target, proplist effect, int temp, object
 	effect.y = clonk->GetY();
 	effect.angle = Angle(0, 0, x, y);
 	// Sound effect.
-	Sound("WindGust");
+	Sound("Objects::Windbag::Gust");
 	// Particle effect.
 	for (var dr = 12; dr < 32; dr++)
 	{

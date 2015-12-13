@@ -76,7 +76,7 @@ public func ControlUse(object clonk)
 	} else {
 		TurnOn();
 	}
-	Sound("Click2");
+	Sound("UI::Click2");
 	return true;
 }
 

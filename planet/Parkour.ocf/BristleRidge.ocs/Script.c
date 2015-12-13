@@ -44,7 +44,7 @@ protected func Initialize()
 	}
 	
 	// Create a little mood.
-	Sound("BirdsLoop", true, 100, nil, 1);
+	Sound("Environment::BirdsLoop", true, 100, nil, 1);
 	Cloud->Place(30);
 	PlaceGrass(200);
 	return;

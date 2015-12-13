@@ -666,8 +666,8 @@ bool C4Player::DoWealth(int32_t iChange)
 {
 	if (LocalControl)
 	{
-		if (iChange>0) StartSoundEffect("Cash");
-		if (iChange<0) StartSoundEffect("UnCash");
+		if (iChange>0) StartSoundEffect("UI::Cash");
+		if (iChange<0) StartSoundEffect("UI::UnCash");
 	}
 	SetWealth(Wealth+iChange);
 
@@ -752,7 +752,7 @@ void C4Player::Surrender()
 	Surrendered=true;
 	Eliminated=true;
 	RetireDelay=C4RetireDelay;
-	StartSoundEffect("Eliminated");
+	StartSoundEffect("UI::Eliminated");
 	Log(FormatString(LoadResStr("IDS_PRC_PLRSURRENDERED"),GetName()).getData());
 }
 
@@ -771,7 +771,7 @@ bool C4Player::SetHostility(int32_t iOpponent, int32_t hostile, bool fSilent)
 	// no announce in first frame, or if specified
 	if (!Game.FrameCounter || fSilent) return true;
 	// Announce
-	StartSoundEffect("Trumpet");
+	StartSoundEffect("UI::Trumpet");
 	Log(FormatString(LoadResStr(hostile ? "IDS_PLR_HOSTILITY" : "IDS_PLR_NOHOSTILITY"),
 	                 GetName(),opponent->GetName()).getData());
 	// Success
@@ -1448,7 +1448,7 @@ void C4Player::Eliminate()
 	if (Eliminated) return;
 	Eliminated=true;
 	RetireDelay=C4RetireDelay;
-	StartSoundEffect("Eliminated");
+	StartSoundEffect("UI::Eliminated");
 	Log(FormatString(LoadResStr("IDS_PRC_PLRELIMINATED"),GetName()).getData());
 
 	// Early client deactivation check

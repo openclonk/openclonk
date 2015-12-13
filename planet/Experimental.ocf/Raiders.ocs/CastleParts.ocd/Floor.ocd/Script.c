@@ -25,7 +25,7 @@ private func CheckBurden()
 
 private func BreakRight()
 {
-	Sound("TreeCrack");
+	Sound("Environment::Tree::Crack");
 	CastObjects(Wood, 2, 15, 20, 1, 180, 90);
 	if (GetPhase() == 1)
 	{
@@ -42,7 +42,7 @@ private func BreakRight()
 
 private func BreakLeft()
 {
-	Sound("TreeCrack");
+	Sound("Environment::Tree::Crack");
 	CastObjects(Wood, 2, 15, -20, 1, 180, 90);
 	if (GetPhase() == 2)
 	{

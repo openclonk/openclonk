@@ -47,14 +47,14 @@ private func Open()
 {
 	StopAnimation(crateanim);
 	crateanim = PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
-	Sound("ChestOpen");
+	Sound("Structures::Chest::Open");
 }
 
 private func Close()
 {
 	StopAnimation(crateanim);
 	crateanim = PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
-	Sound("ChestClose");
+	Sound("Structures::Chest::Close");
 }
 
 protected func Definition(def)
@@ -68,7 +68,7 @@ public func IsContainer() { return true; }
 
 func Hit()
 {
-	Sound("DullWoodHit?");
+	Sound("Hits::Materials::Wood::DullWoodHit?");
 }
 
 local Name = "$Name$";

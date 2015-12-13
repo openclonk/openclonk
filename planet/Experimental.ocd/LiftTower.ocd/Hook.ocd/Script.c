@@ -100,7 +100,7 @@ public func Interact(object clonk)
 
 protected func Hit()
 {
-	Sound("MetalHit?");
+	Sound("Hits::Materials::Metal::LightMetalHit?");
 }
 
 func Construction(object constructor)

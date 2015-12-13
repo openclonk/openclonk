@@ -29,26 +29,26 @@ public func OnProductionStart(id product)
 {
 	AddEffect("Working", this, 100, 1, this);
 	hold_production = false;
-	Sound("Boiling", false, nil, nil, 1);
+	Sound("Liquids::Boiling", false, nil, nil, 1);
 }
 
 public func OnProductionHold(id product)
 {
 	hold_production = true;
-	Sound("Boiling", false, nil, nil, -1);
-	Sound("Blowout");
+	Sound("Liquids::Boiling", false, nil, nil, -1);
+	Sound("Fire::Blowout");
 }
 
 public func OnProductionContinued(id product)
 {
 	hold_production = false;
-	Sound("Boiling", false, nil, nil, 1);
+	Sound("Liquids::Boiling", false, nil, nil, 1);
 }
 
 public func OnProductionFinish(id product)
 {
 	RemoveEffect("Working", this);
-	Sound("Boiling", false, nil, nil, -1);
+	Sound("Liquids::Boiling", false, nil, nil, -1);
 }
 
 protected func FxWorkingTimer()

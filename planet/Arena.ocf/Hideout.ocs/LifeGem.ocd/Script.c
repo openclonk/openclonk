@@ -38,7 +38,7 @@ public func ControlUse(object clonk, int ix, int iy)
 	// applies the healing effect even when the Clonk is at full HP
 	// does this because you can block one source of damage
 	AddEffect("GemHealing", clonk, 10, 4, nil, this->GetID());
-	clonk->Sound("Breathing", false, 50, nil);
+	clonk->Sound("Clonk::Action::Breathing", false, 50, nil);
 	this->RemoveObject();
 	return true;
 }

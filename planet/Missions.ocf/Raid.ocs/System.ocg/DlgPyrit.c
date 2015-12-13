@@ -237,7 +237,7 @@ func Pyrit_HitFx()
 	var x = (GetDir()*2-1) * 14;
 	var y = 4;
 	CreateParticle("StarSpark", x*9/10,y*9/10, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 10);
-	Sound("Clang?");
+	Sound("Objects::Pickaxe::Clang?");
 	return true;
 }
 
