@@ -154,7 +154,7 @@ private func Hatch()
 	
 	var particles = 
 	{
-		Prototype = Particles_Material(RGB(50, 200, 50)),
+		Prototype = Particles_Material(RGB(100, 255, 50)),
 		DampingX = 800, DampingY = 800,
 		ForceY = -GetGravity() / 10,
 	};
