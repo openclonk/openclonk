@@ -5,7 +5,6 @@ autom4te.cache
 deps
 *.o
 /openclonk
-/netpuncher
 /c4group
 /c4script
 .dirstamp

@@ -956,10 +956,6 @@ add_executable(c4group
 	src/c4group/C4GroupMain.cpp
 )
 
-add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/netpuncher/main.cpp
-)
-
 add_library(libmisc
 src/c4group/C4Group.cpp
 src/c4group/C4Group.h
@@ -1074,10 +1070,6 @@ if(TARGET mape)
 	)
 endif()
 
-target_link_libraries(netpuncher
-	libmisc
-)
-
 target_link_libraries(c4group
 	libmisc
 )
@@ -1143,7 +1135,6 @@ if(MSVC)
 	oc_set_target_names(openclonk)
 	oc_set_target_names(c4group)
 	oc_set_target_names(c4script)
-	oc_set_target_names(netpuncher)
 
 	# cmake does not support embedding arbitrary manifests,
 	# so we add it to the resource file ourselves and tell
@@ -1337,7 +1328,6 @@ if (WIN32)
 
 	target_link_libraries(openclonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
-	target_link_libraries(netpuncher ws2_32 winmm)
 	target_link_libraries(c4script ws2_32 winmm)
 	if(TARGET mape)
 		target_link_libraries(mape winmm)

@@ -1976,11 +1976,6 @@ bool C4Network2::LeagueStart(bool *pCancel)
 		return false;
 	}
 
-	// We have an internet connection, so let's punch the master server here in order to open an udp port
-	C4NetIO::addr_t PuncherAddr;
-	if (ResolveAddress(Config.Network.PuncherAddress, &PuncherAddr, C4NetStdPortPuncher))
-		NetIO.Punch(PuncherAddr);
-
 	// Let's wait for response
 	StdStrBuf Message = FormatString(LoadResStr("IDS_NET_LEAGUE_REGGAME"), pLeagueClient->getServerName());
 	Log(Message.getData());

@@ -166,7 +166,6 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PacketLogging,           "PacketLogging",        0             ));
 	
 
-	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "clonk.de:11115")); // maybe store default for this one?
 	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueServer, StdCompiler::RCT_All),     "LastLeagueServer",     ""            ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeaguePlayerName, StdCompiler::RCT_All), "LastLeaguePlayerName", ""            ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(LastLeagueAccount, StdCompiler::RCT_All),    "LastLeagueAccount",    ""            ));
