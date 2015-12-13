@@ -26,11 +26,17 @@
           <name>x</name>
           <desc>Y offset in relative coordinates from the calling object.</desc>
         </param>
+        <param>
+          <type>int</type>
+          <name>range</name>
+          <desc>Range from shake center at which the effect falls off to zero. Defaults to 700.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Shake the player viewports near the given position. This disorienting effect is used for earthquakes, explosions
 and other rumbling effects. The further away the player is from the source, the less his viewport is shaken. The 
-strength falls off linearly by distance from 100% to 0% when the player is 700 pixels away.</desc>
+strength falls off linearly by distance from 100% to 0% when the player is [range] pixels away.</desc>
     <related><funclink>SetViewOffset</funclink></related>
   </func>
 </funcs>
