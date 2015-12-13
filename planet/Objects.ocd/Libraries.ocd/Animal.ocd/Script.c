@@ -1,6 +1,7 @@
 /**
 	Animal Library
-	Handles reproduction for animals.
+	Handles reproduction and growth for animals. If included the Construction()
+	call must return _inherited(...) for this library to work.
 	
 	@author Maikel
 */
@@ -12,9 +13,17 @@ public func IsAnimal() { return true; }
 protected func Construction()
 {
 	// Add a reproduction timer.
-	AddTimer("Reproduction", 72);
+	AddEffect("IntReproduction", this, 100, 72, this);
+	// Add a growth effect.
+	StartGrowth(GrowthSpeed());
 	_inherited(...);
 }
+
+
+/*-- Growth --*/
+
+// Speed of the growth of an animal.
+private func GrowthSpeed() { return 5; }
 
 
 /*-- Reproduction --*/
@@ -22,7 +31,8 @@ protected func Construction()
 // Population control is handled through these variables.
 // The area, in which new animals of this kind can appear.
 private func ReproductionAreaSize() { return 800; }
-// The chane that reproduction takes place in one timer interval.
+// The chance that reproduction takes place in one timer interval.
+// The higher this value the less likely it is to reproduce.
 private func ReproductionRate() { return 150; }
 // The maximal animal count in the area.
 private func MaxAnimalCount() { return 10; }
@@ -47,35 +57,36 @@ private func SpecialReproductionCondition()
 private func CountAnimalsInArea()
 {
 	var reprod_size = ReproductionAreaSize();
-	var reprod_size_half = reprod_size / -2;
-	return ObjectCount(Find_ID(GetID()), Find_InRect(reprod_size_half, reprod_size_half, reprod_size , reprod_size), Find_OCF(OCF_Alive));
+	var reprod_size_half = reprod_size / 2;
+	return ObjectCount(Find_ID(GetID()), Find_InRect(-reprod_size_half, -reprod_size_half, reprod_size , reprod_size), Find_OCF(OCF_Alive));
 }
 
-public func Reproduction()
+public func FxIntReproductionTimer(object target, proplist effect, int time)
 {
 	// Already dead or not full grown? Don't do anything.
 	if (!GetAlive() || GetCon() < 100) 
-		return;
+		return FX_OK;
 	// Special conditions not fulfilled? Don't do anything either.
 	if (!SpecialReproductionCondition()) 
-		return;
+		return FX_OK;
 	// Check whether there are already enough animals of this kind.
 	if (CountAnimalsInArea() > MaxAnimalCount())
-		return;
+		return FX_OK;
 	// Then apply the reproduction rate.
 	if (Random(ReproductionRate()))
-		return;
+		return FX_OK;
 	// Reproduction: first try special reproduction, otherwise normal.
 	if (!SpecialReproduction())
 	{
-		// Normal reproduction
-		var child = CreateConstruction(GetID(), 0, 0, -1, 40);
-		child->~Birth();
+		// Normal reproduction.
+		var child = CreateConstruction(GetID(), 0, 0, NO_OWNER, 40);
+		child->~Birth(this);
 	}
-	return;
+	return FX_OK;
 }
 
-public func Birth()
+// Callback in the animal on its birth.
+public func Birth(object parent)
 {
 	SetAction("Walk");
 	if (Random(2)) 
