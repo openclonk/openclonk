@@ -52,6 +52,7 @@ Stephen Hall    - Dig* (http://www.freesound.org/people/shall555/sounds/72199/)
 Sven2           - GateMove (adapted from GateHit), IceHit* (adapted from GlassHit*), PlaneCrash,
                   DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit*, OpenBuyMenu, CloseBuyMenu
                   CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
+                  Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
 primeval_polypod- BoompackFly (http://www.freesound.org/people/primeval_polypod/sounds/158894/) (adapted)
 soundscalpel.com, sarge4267 - BlastFirework (adapted from: http://www.freesound.org/people/soundscalpel.com/sounds/110391/, http://www.freesound.org/people/sarge4267/sounds/102720/)
 Christian James Muise - Chop* (http://www.freesound.org/people/hazure/sounds/23700/)
