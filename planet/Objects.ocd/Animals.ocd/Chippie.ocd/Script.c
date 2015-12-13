@@ -32,12 +32,16 @@ public func Death()
 	var particles = 
 	{
 		Prototype = Particles_Material(RGB(50, 200, 50)),
-		OnCollision = nil,
+		OnCollision = PC_Bounce(),
 		DampingX = 900, DampingY = 900,
 	};
-	CreateParticle("SmokeDirty", PV_Random(-5, 5), PV_Random(-5, 5),
+	
+	for (var particle_graphics in ["SmokeDirty", "Flash"])
+	{
+		CreateParticle(particle_graphics, PV_Random(-1, 1), PV_Random(-1, 1),
 					PV_Random(-20, 20), PV_Random(-20, 20),
-					PV_Random(20, 60), particles, 120);
+					PV_Random(20, 60), particles, 60);
+	}
 	Sound("ChippieChirp*", false, 50);
 	RemoveObject();
 }

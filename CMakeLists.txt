@@ -1040,6 +1040,8 @@ src/script/C4ValueMap.cpp
 src/script/C4ValueMap.h
 )
 
+target_link_libraries(libc4script libmisc)
+
 add_executable(c4script
 	include/c4script/c4script.h
 	src/script/C4ScriptMain.cpp
@@ -1085,20 +1087,9 @@ target_link_libraries(c4script
 	libmisc
 )
 if(HAVE_PTHREAD)
-	target_link_libraries(openclonk
+	target_link_libraries(libmisc
 		pthread
 	)
-	target_link_libraries(netpuncher
-		pthread
-	)
-	target_link_libraries(c4script
-		pthread
-	)
-	if(TARGET mape)
-		target_link_libraries(mape
-			pthread
-		)
-	endif()
 endif()
 if(USE_CONSOLE)
 	target_link_libraries(openclonk
@@ -1106,13 +1097,7 @@ if(USE_CONSOLE)
 	)
 endif()
 if(UNIX AND NOT APPLE)
-	target_link_libraries(c4group rt)
-	target_link_libraries(c4script rt)
-	target_link_libraries(netpuncher rt)
-	target_link_libraries(openclonk rt)
-	if(TARGET mape)
-		target_link_libraries(mape rt)
-	endif()
+	target_link_libraries(libmisc rt)
 endif()
 if (GLEW_FOUND)
 	set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS ${GLEW_DEFINITIONS})
