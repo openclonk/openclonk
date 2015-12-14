@@ -167,7 +167,7 @@ private func Seed()
 			x -= GetX();
 			y -= GetY();
 			if (!GBackSolid(x, y + 2)) continue;
-			if (GetMaterial(x, y) != Material("Tunnel")) continue;
+			if (GetMaterial(x, y - 2) != Material("Tunnel")) continue;
 			
 			var mat = GetMaterial(x, y + 2);
 			if (GetMaterialVal("Soil", "Material", mat) != 1) continue;
