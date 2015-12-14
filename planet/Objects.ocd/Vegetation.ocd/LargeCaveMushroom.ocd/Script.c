@@ -127,7 +127,7 @@ private func Damage(int change, int cause)
 {
 	_inherited(change, cause);
 
-	if (!burned && GetDamage() > MaxDamage()/3 && OnFire())
+	if (this && !burned && GetDamage() > MaxDamage()/3 && OnFire())
 	{
 		SetClrModulation(RGB(100, 100, 100));
 		RemoveTimer("Growing");
