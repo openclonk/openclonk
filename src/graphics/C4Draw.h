@@ -170,7 +170,6 @@ public:
 	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
-	virtual bool IsOpenGL() { return false; }
 	virtual bool IsShaderific() { return false; }
 	// Clipper
 	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
