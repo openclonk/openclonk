@@ -578,7 +578,7 @@ namespace C4GUI
 		if (pSelectedItem)
 		{
 			// effect
-			if (fByUser) GUISound("Command");
+			if (fByUser) GUISound("UI::Select");
 		}
 		// callback (caution: May do periluous things...)
 		if (pSelectionChangeHandler) pSelectionChangeHandler->DoCall(pSelectedItem);

@@ -1929,7 +1929,7 @@ void C4StartupScenSelDlg::OnButtonScenario(C4GUI::Control *pEl)
 void C4StartupScenSelDlg::DeselectAll()
 {
 	// Deselect all so current folder info is displayed
-	if (GetFocus()) C4GUI::GUISound("Objects::Arrow::HitGround");
+	if (GetFocus()) C4GUI::GUISound("UI::Tick");
 	SetFocus(NULL, true);
 	if (pMapData) pMapData->ResetSelection();
 	UpdateSelection();

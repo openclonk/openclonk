@@ -74,7 +74,7 @@ namespace C4GUI
 		// user can't toggle if disabled
 		if (fByUser && !fEnabled) return;
 		// sound
-		if (fByUser) GUISound("Objects::Arrow::HitGround");
+		if (fByUser) GUISound("UI::Tick");
 		// toggle state
 		fChecked = !fChecked;
 		// callback (last call; may destroy element)

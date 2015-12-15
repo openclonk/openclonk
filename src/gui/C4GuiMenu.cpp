@@ -170,7 +170,7 @@ namespace C4GUI
 	void ContextMenu::Abort(bool fByUser)
 	{
 		// effect
-		if (fByUser) GUISound("Buildings::DoorClose");
+		if (fByUser) GUISound("UI::Close");
 		// simply del menu: dtor will remove itself
 		delete this;
 	}
@@ -427,7 +427,7 @@ namespace C4GUI
 		if (pSelectedItem)
 		{
 			// effect
-			if (fByUser) GUISound("Command");
+			if (fByUser) GUISound("UI::Select");
 		}
 		// close any submenu from prev selection
 		if (pSubmenu) pSubmenu->Abort(true);
@@ -477,7 +477,7 @@ namespace C4GUI
 		// set target
 		this->pTarget = pTarget;
 		// effect :)
-		GUISound("Buildings::DoorOpen");
+		GUISound("UI::Open");
 		// done
 	}
 

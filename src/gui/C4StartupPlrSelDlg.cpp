@@ -846,7 +846,7 @@ void C4StartupPlrSelDlg::OnCrewBtn(C4GUI::Control *btn)
 void C4StartupPlrSelDlg::SetPlayerMode()
 {
 	// change view to listing players
-	C4GUI::GUISound("Buildings::DoorClose");
+	C4GUI::GUISound("UI::Close");
 	StdStrBuf LastPlrFilename;
 	LastPlrFilename.Copy(static_cast<const StdStrBuf &>(CurrPlayer.Grp.GetFullName()));
 	CurrPlayer.Grp.Close();
@@ -875,7 +875,7 @@ void C4StartupPlrSelDlg::SetCrewMode(PlayerListItem *pSel)
 		                         strCrew.getData(), C4GUI::Ico_Player);
 		return;
 	}
-	C4GUI::GUISound("Buildings::DoorOpen");
+	C4GUI::GUISound("UI::Open");
 	eMode = PSDM_Crew;
 	UpdatePlayerList();
 	UpdateSelection();
@@ -1290,7 +1290,7 @@ void C4StartupPlrColorPickerDlg::Picker::MouseInput(C4GUI::CMouse &rMouse, int32
 		if (HandleMouseDown(iX, iY))
 		{
 			rMouse.pDragElement = this;
-			C4GUI::GUISound("Command");
+			C4GUI::GUISound("UI::Select");
 		}
 		else
 		{

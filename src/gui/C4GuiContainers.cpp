@@ -444,11 +444,11 @@ namespace C4GUI
 					OnPosChanged();
 					// start dragging
 					rMouse.pDragElement = this;
-					GUISound("Command");
+					GUISound("UI::Select");
 				}
 			}
 		// sound effekt when buttons are pressed
-		if ((fTopDown || fBottomDown) != fPrevDown) GUISound("Objects::Arrow::HitGround");
+		if ((fTopDown || fBottomDown) != fPrevDown) GUISound("UI::Tick");
 	}
 
 	void ScrollBar::DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)

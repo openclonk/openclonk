@@ -272,13 +272,13 @@ public func ToggleVisibility(int player, ...)
 	{
 		// Close menu
 		menu.Visibility = VIS_None;
-		Sound("GUI_BuyMenu::CloseBuyMenu", true, nil, GetOwner());
+		Sound("UI::Close", true, nil, GetOwner());
 	}
 	else
 	{
 		// Open menu
 		menu.Visibility = VIS_Owner;
-		Sound("GUI_BuyMenu::OpenBuyMenu", true, nil, GetOwner());
+		Sound("UI::Open", true, nil, GetOwner());
 	}
 	return true;
 }
