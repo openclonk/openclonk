@@ -723,7 +723,7 @@ void C4GameOptionButtons::OnPasswordSet(const StdStrBuf &rsNewPassword)
 		SCopy(szPass, Config.Network.LastPassword, CFG_MaxString);
 	}
 	// acoustic feedback
-	C4GUI::GUISound("Objects::Connect");
+	C4GUI::GUISound("UI::Confirmed");
 }
 
 void C4GameOptionButtons::UpdatePasswordBtn()
@@ -753,7 +753,7 @@ void C4GameOptionButtons::OnCommentSet(const StdStrBuf &rsNewComment)
 	// message feedback
 	Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 	// acoustic feedback
-	C4GUI::GUISound("Objects::Connect");
+	C4GUI::GUISound("UI::Confirmed");
 }
 
 void C4GameOptionButtons::SetCountdown(bool fToVal)

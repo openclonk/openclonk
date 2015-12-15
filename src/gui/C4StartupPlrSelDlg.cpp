@@ -359,7 +359,7 @@ void C4StartupPlrSelDlg::CrewListItem::OnDeathMessageSet(const StdStrBuf &rsNewM
 	// save
 	RewriteCore();
 	// acoustic feedback
-	C4GUI::GUISound("Objects::Connect");
+	C4GUI::GUISound("UI::Confirmed");
 }
 
 void C4StartupPlrSelDlg::CrewListItem::RewriteCore()

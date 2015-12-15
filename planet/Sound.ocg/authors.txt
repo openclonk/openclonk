@@ -18,7 +18,7 @@ Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27
                   BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
-TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
+TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/), UI::Confirmed (modified)
 CGEffex         - Splash1-3 (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Pshshsh (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
@@ -58,9 +58,10 @@ soundscalpel.com 		- BlastFireworks (http://www.freesound.org/people/soundscalpe
 Christian James Muise	- Tree/Chop1-5.wav (http://www.freesound.org/people/hazure/sounds/23700/)
 primeval_polypod		- Boompack/Fly (http://www.freesound.org/people/primeval_polypod/sounds/158894/)
 Sven2           - GateMove (adapted from GateHit), IceHit* (adapted from GlassHit*), PlaneCrash,
-                  DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit*, OpenBuyMenu, CloseBuyMenu
+                  DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit*, UI::Open, UI::Close
                   CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
                   Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
+                  UI::Select
 Zapper          - Breathing
 
 The following sounds use two sources:
