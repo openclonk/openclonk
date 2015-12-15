@@ -62,6 +62,7 @@ Sven2           - Structures/StoneGate/GateMove (adapted from GateHit), IceHit* 
                   Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
                   UI::Select
 Zapper          - Breathing
+zimbot          - Animals/Chippie/EggCrack1-3 (modified) (http://www.freesound.org/people/zimbot/sounds/244480/)
 
 The following sounds use two sources:
 

@@ -150,7 +150,7 @@ private func Hatch()
 	
 	var c = CreateObject(Chippie, 0, 0, GetOwner());
 	c->SetCon(50);
-	c->Sound("Animals::Chippie::Chirp*", false, 25);
+	c->Sound("Animals::Chippie::EggCrack*", false, 100);
 	
 	var particles = 
 	{
