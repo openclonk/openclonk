@@ -418,7 +418,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		// for config files and such: dump scancode
 		return FormatString("$%x", static_cast<unsigned int>(wCode));
 	}
-#if defined(_WIN32)
+#if defined(USE_WIN32_WINDOWS)
 
 	// Query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;

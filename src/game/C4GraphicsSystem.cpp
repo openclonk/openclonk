@@ -275,9 +275,12 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 				{
 					// transfer each pixel - slooow...
 					for (int32_t iY2 = 0; iY2 < bkHgt2; ++iY2)
+#ifndef USE_CONSOLE
 						glReadPixels(0, FullScreen.pSurface->Hgt - iY2 - 1, bkWdt2, 1, GL_BGR, GL_UNSIGNED_BYTE, reinterpret_cast<BYTE *>(png->GetRow(iY + iY2)) + iX * 3);
-						/*for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
-							png.SetPix(iX+iX2, iY+iY2, FullScreen.pSurface->GetPixDw(iX2, iY2, false));*/
+#else
+						for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
+							png->SetPix(iX+iX2, iY+iY2, FullScreen.pSurface->GetPixDw(iX2, iY2, false));
+#endif
 					// done; unlock
 					FullScreen.pSurface->Unlock();
 					// This can take a long time and we would like to pump messages

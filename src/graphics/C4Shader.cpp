@@ -439,7 +439,13 @@ bool C4Shader::Refresh()
 
 	// Reinitialise
 	StdCopyStrBuf What(Name);
-	if (!Init(What.getData(), pUniformNames))
+	if (!Init(What.getData(), 
+#ifndef USE_CONSOLE
+		pUniformNames
+#else
+		0
+#endif
+		))
 		return false;
 
 	// Retry in case there have been more changes
