@@ -162,7 +162,6 @@ public:
 	// General
 	void Clear();
 	void Default();
-	virtual bool IsShaderific() { return true; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target

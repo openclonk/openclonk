@@ -38,7 +38,7 @@ bool C4LandscapeRenderClassic::ReInit(int32_t iWidth, int32_t iHeight)
 	delete Surface32; Surface32 = NULL;
 	Surface32 = new C4Surface();
 	// without shaders, the FoW is only as detailed as the landscape has tiles.
-	if(!Surface32->Create(iWidth, iHeight,false,pDraw->IsShaderific() ? 0 : 64, 0))
+	if (!Surface32->Create(iWidth, iHeight, false, 0, 0))
 		return false;
 	// Safe back info
 	this->iWidth = iWidth;
