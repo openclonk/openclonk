@@ -338,6 +338,8 @@ public:
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
+#endif
+#ifdef USE_X11
 protected:
 	bool FindFBConfig(int samples, GLXFBConfig *info);
 

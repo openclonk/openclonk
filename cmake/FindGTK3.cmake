@@ -25,6 +25,7 @@
 #  gobject - Glib GObject 2.0
 #  gio - Glib GIO 2.0
 #  gthread
+#  glib - Glib 2.0
 #
 # If any of these components are requested, the following variables will be
 # defined with the same meaning as above:
@@ -60,7 +61,6 @@ if(PKG_CONFIG_FOUND)
 		if(__component STREQUAL "${__cname}")
 			pkg_check_modules(GTK3_${__cname} ${__GTK3_QUIET} "${__cfullname}")
 			if(GTK3_${__cname}_FOUND)
-				list(REMOVE_ITEM GTK3_${__cname}_LIBRARIES ${GTK3_LIBRARIES})
 				if(GTK3_LIBRARY_DIRS)
 					list(REMOVE_ITEM GTK3_${__cname}_LIBRARY_DIRS ${GTK3_LIBRARY_DIRS})
 				endif()
@@ -80,6 +80,7 @@ if(PKG_CONFIG_FOUND)
 		__GTK3_HANDLE_COMPONENT(gobject "gobject-2.0")
 		__GTK3_HANDLE_COMPONENT(gio "gio-2.0")
 		__GTK3_HANDLE_COMPONENT(gthread "gthread-2.0")
+		__GTK3_HANDLE_COMPONENT(glib "glib-2.0")
 	endforeach()
 
 	set(GTK3_COMPILE_DEFINITIONS ${GTK3_CFLAGS_OTHER})
@@ -171,6 +172,7 @@ else()
 		__GTK3_HANDLE_COMPONENT(gobject gobject/gobject.h glib-2.0 gobject-2.0)
 		__GTK3_HANDLE_COMPONENT(gio gio/gio.h glib-2.0 gio-2.0)
 		__GTK3_HANDLE_COMPONENT(gthread glib/gthread.h glib-2.0 gthread-2.0)
+		__GTK3_HANDLE_COMPONENT(glib glib.h glib-2.0 glib-2.0)
 	endforeach()
 
 	# Parse version from GTK3 header

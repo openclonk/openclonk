@@ -99,9 +99,6 @@
 /* compile without debug options */
 #cmakedefine NDEBUG 1
 
-/* dedicated server mode */
-#cmakedefine USE_CONSOLE 1
-
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
@@ -110,6 +107,9 @@
 
 /* Define to 1 if the X Window System is used */
 #cmakedefine USE_X11 1
+
+/* Use Apple Cocoa for the UI */
+#cmakedefine USE_COCOA 1
 
 /* Enable automatic update system */
 #cmakedefine WITH_AUTOMATIC_UPDATE 1
@@ -130,9 +130,6 @@
 /* Define to 1 if you have support for precompiled headers */
 #cmakedefine HAVE_PRECOMPILED_HEADERS 1
 
-/* Use Apple Cocoa for the UI */
-#cmakedefine USE_COCOA 1
-
 /* Select an audio provider */
 #define AUDIO_TK_NONE 0
 #define AUDIO_TK_OPENAL 1
@@ -141,3 +138,12 @@
 
 /* Include OpenAL extensions (alext.h) for sound modifiers */
 #cmakedefine HAVE_ALEXT 1
+
+#ifdef USE_CONSOLE
+/* FIXME: Sort this out in CMake instead of here */
+#undef USE_COCOA
+#undef USE_SDL_MAINLOOP
+#undef USE_X11
+#undef WITH_AUTOMATIC_UPDATE
+#undef WITH_DEVELOPER_MODE
+#endif

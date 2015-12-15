@@ -47,10 +47,9 @@ endfunction()
 ############################################################################
 include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
-option(USE_CONSOLE "Build dedicated server" OFF)
-CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF "NOT USE_CONSOLE" OFF)
+option(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF)
 CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
-	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP AND NOT USE_CONSOLE" OFF)
+	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP" OFF)
 CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF)
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
@@ -120,7 +119,8 @@ endif()
 ############################################################################
 # OC_CLONK_SOURCES: Sources for OpenClonk that are needed by every build.
 # OC_SYSTEM_SOURCES: Sources for OpenClonk that are only needed by specific
-# 	configurations.
+# 	platforms.
+# OC_GUI_SOURCES: Sources that are only needed by GUI applications.
 set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
 	src/c4group/C4Components.h
@@ -591,6 +591,7 @@ if(APPLE)
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
 		src/platform/StdSchedulerMac.mm
+		src/platform/ObjectiveCAssociated.h
 	)
 else()
 	list(APPEND OC_SYSTEM_SOURCES
@@ -600,6 +601,8 @@ endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4CrashHandlerWin32.cpp
+	)
+	list(APPEND OC_GUI_SOURCES
 		src/res/engine.rc
 		src/res/resource.h
 	)
@@ -644,7 +647,7 @@ if(USE_GTK)
 			${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png
 		VERBATIM
 	)
-	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h)
+	list(APPEND OC_GUI_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h)
 
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
@@ -656,9 +659,9 @@ if(USE_GTK)
 			${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 		VERBATIM
 	)
-	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h)
+	list(APPEND OC_GUI_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h)
 
-	list(APPEND OC_SYSTEM_SOURCES
+	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleGTK.cpp
 		src/editor/C4ConsoleGTKDlg.cpp
 		src/editor/C4ConsoleGTKDlg.h
@@ -667,23 +670,19 @@ if(USE_GTK)
 		src/platform/C4WindowGTK.cpp
 	)
 elseif(USE_SDL_MAINLOOP)
-	list(APPEND OC_SYSTEM_SOURCES
+	list(APPEND OC_GUI_SOURCES
 		src/platform/C4AppSDL.cpp
 		src/platform/C4WindowSDL.cpp
 	)
-elseif(USE_CONSOLE)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppT.cpp
-	)
 elseif(WIN32)
-	list(APPEND OC_SYSTEM_SOURCES
+	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleWin32.cpp
 		src/platform/C4WindowWin32.cpp
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 	)
 elseif(USE_COCOA)
-	list(APPEND OC_SYSTEM_SOURCES
+	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleCocoa.mm
 		src/platform/C4AppMac.mm
 		src/platform/C4WindowMac.mm
@@ -696,11 +695,10 @@ elseif(USE_COCOA)
 		src/platform/CocoaKeycodeMap.h
 		src/editor/C4EditorWindowController.h
 		src/editor/C4EditorWindowController.mm
-		src/platform/ObjectiveCAssociated.h
 	)
 endif()
 if(WITH_AUTOMATIC_UPDATE)
-	list(APPEND OC_CLONK_SOURCES
+	list(APPEND OC_GUI_SOURCES
 		src/gui/C4UpdateDlg.cpp
 		src/gui/C4UpdateDlg.h
 	)
@@ -796,10 +794,8 @@ if(MSVC)
 	endif()
 endif()
 
-if(NOT USE_CONSOLE)
-	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
-	find_package(JPEG REQUIRED)
-endif()
+SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
+find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
@@ -811,10 +807,8 @@ else()
 	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
 endif()
 
-if(NOT USE_CONSOLE)
-	find_package(Freetype REQUIRED)
-	include_directories(${FREETYPE_INCLUDE_DIRS})
-endif()
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
 # advanced so it doesn't show in GUIs by default
@@ -858,7 +852,7 @@ endif()
 
 # Set GTK link directory. This needs to be done before add_executable,
 # otherwise the path is not used for linking clonk
-find_package(GTK3 COMPONENTS gthread gio gobject OPTIONAL_COMPONENTS gtksourceview)
+find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 if(USE_GTK)
 	link_directories(${GTK3_LIBRARY_DIRS})
 endif()
@@ -932,7 +926,7 @@ if(APPLE)
 		${OC_BUNDLE_RESOURCES}
 		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
 	)
-	list(APPEND OC_SYSTEM_SOURCES ${OC_BUNDLE_RESOURCES})
+	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
 
 endif()
 
@@ -942,8 +936,16 @@ endif()
 add_definitions(-DHAVE_CONFIG_H)
 add_executable(openclonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
+	${OC_GUI_SOURCES}
 	${OC_CLONK_SOURCES}
 )
+
+add_executable(openclonk-server
+	${OC_SYSTEM_SOURCES}
+	${OC_CLONK_SOURCES}
+	src/platform/C4AppT.cpp
+)
+set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
@@ -1054,12 +1056,22 @@ target_link_libraries(openclonk
 	libmisc
 )
 
+target_link_libraries(openclonk-server
+	${PNG_LIBRARIES}
+	${JPEG_LIBRARIES}
+	${EXECINFO_LIBRARY}
+	libc4script
+	libmisc
+)
+
+
 if (SDL_FOUND)
 	target_link_libraries(openclonk ${SDL_LIBRARY})
 endif()
 
 if(Audio_FOUND)
 	target_link_libraries(openclonk ${Audio_LIBRARIES})
+	target_link_libraries(openclonk-server ${Audio_LIBRARIES})
 	include_directories(${Audio_INCLUDE_DIRS})
 endif()
 
@@ -1083,8 +1095,8 @@ if(HAVE_PTHREAD)
 		pthread
 	)
 endif()
-if(USE_CONSOLE)
-	target_link_libraries(openclonk
+if(HAVE_LIBREADLINE)
+	target_link_libraries(openclonk-server
 		${READLINE_LIBRARIES}
 	)
 endif()
@@ -1133,6 +1145,7 @@ if(MSVC)
 		endforeach()
 	endfunction()
 	oc_set_target_names(openclonk)
+	oc_set_target_names(openclonk-server)
 	oc_set_target_names(c4group)
 	oc_set_target_names(c4script)
 
@@ -1248,11 +1261,13 @@ if(NOT HAVE_GETOPT_H)
 	include_directories(SYSTEM thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
 	target_link_libraries(openclonk getopt)
+	target_link_libraries(openclonk-server getopt)
 elseif(MINGW)
 	# Link libiberty which my contain getopt with mingw
 	FINDLIB(iberty_LIBRARIES iberty)
 	if(iberty_LIBRARIES)
 		target_link_libraries(openclonk iberty)
+		target_link_libraries(openclonk-server iberty)
 	endif()
 endif()
 
@@ -1269,11 +1284,13 @@ endif()
 
 include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
 target_link_libraries(openclonk ${TinyXML_LIBRARIES})
+target_link_libraries(openclonk-server ${TinyXML_LIBRARIES})
 
 if(WIN32)
 	find_package(DbgHelp)
 	if(DBGHELP_FOUND)
 		target_link_libraries(openclonk ${DBGHELP_LIBRARIES})
+		target_link_libraries(openclonk-server ${DBGHELP_LIBRARIES})
 		include_directories(${DBGHELP_INCLUDE_DIR})
 	endif()
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
@@ -1301,6 +1318,11 @@ if(USE_GTK)
 	target_link_libraries(openclonk
 		${GTK3_LIBRARIES}
 	)
+	# We really only need Glib here, but FindGTK3.cmake doesn't currently set
+	# a variable for that if it's using pkg-config
+	target_link_libraries(openclonk-server
+		${GTK3_glib_LIBRARIES}
+	)
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
@@ -1320,15 +1342,18 @@ if (WIN32)
 	FINDLIB(wavifil32_LIBRARIES wavifil32)
 	if (VFW32_LIBRARIES)
 		target_link_libraries(openclonk vfw32)
+		target_link_libraries(openclonk-server vfw32)
 		set(HAVE_VFW32 TRUE)
 	elseif(wavifil32_LIBRARIES)
 		target_link_libraries(openclonk wavifil32 msvfw32)
+		target_link_libraries(openclonk-server wavifil32 msvfw32)
 		set(HAVE_VFW32 TRUE)
 	endif()
 
-	target_link_libraries(openclonk ws2_32 winmm)
+	target_link_libraries(openclonk ws2_32)
+	target_link_libraries(openclonk-server ws2_32)
 	target_link_libraries(c4group ws2_32)
-	target_link_libraries(c4script ws2_32 winmm)
+	target_link_libraries(c4script ws2_32)
 	if(TARGET mape)
 		target_link_libraries(mape winmm)
 		# Suppress the console window for mape even though only a main() and not
@@ -1342,6 +1367,7 @@ endif()
 if(UPNP_FOUND)
 	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
+	target_link_libraries(openclonk-server ${UPNP_LIBRARIES})
 endif()
 
 add_subdirectory(tests EXCLUDE_FROM_ALL)
@@ -1368,6 +1394,7 @@ if(USE_GCC_PCH)
 	add_precompiled_header(libmisc src/C4Include.h)
 	add_precompiled_header(libc4script src/C4Include.h)
 	add_precompiled_header(openclonk src/C4Include.h)
+	add_precompiled_header(openclonk-server src/C4Include.h)
 endif()
 
 # When cross-compiling, import c4group from a native build
