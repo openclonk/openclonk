@@ -311,6 +311,7 @@ private func StartConstructing()
 		// If not: Autoconstruct 2.0!
 		Schedule(site, "DoCon(2)",1,50);
 		Schedule(this,"RemoveObject()",1);
+		site->Sound("Structures::FinishBuilding");
 	}
 	
 	// clean up stuck objects

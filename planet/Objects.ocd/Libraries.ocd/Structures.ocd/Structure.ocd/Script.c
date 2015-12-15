@@ -326,8 +326,7 @@ public func OnRepairSelected(id symbol, string action, object cursor)
 	}
 	lib_structure.repair_materials = new_list;
 	
-	// todo: add sound for repairing..
-	Sound("UI::Ding");
+	Sound("Structures::Repair");
 }
 
 // On hovering, show a list of materials that are needed for repairing the structure.
