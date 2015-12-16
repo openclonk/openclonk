@@ -43,7 +43,6 @@ Sky=Clouds2
 BottomOpen=1
 MapWidth=100,0,64,10000
 MapHeight=200,0,40,10000
-NewStyleLandscape=2
 AutoScanSideOpen=0
 LeftOpen=1200
 RightOpen=1200

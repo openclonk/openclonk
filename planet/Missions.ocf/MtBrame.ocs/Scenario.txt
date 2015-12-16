@@ -29,7 +29,6 @@ Sky=Clouds2
 MapWidth=200,0,64,10000
 MapHeight=175,0,40,10000
 NoScan=true
-NewStyleLandscape=2
 
 [Weather]
 Climate=30,10,0,100
