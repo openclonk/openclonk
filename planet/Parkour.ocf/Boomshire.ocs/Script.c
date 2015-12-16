@@ -108,9 +108,38 @@ global func FxAutoOpenTimer(object pTarget, effect, int timer)
 	else return FX_OK;
 }
 
-global func FxSparklingAttentionTimer(object pTarget, effect, int timer)
+global func FxSparklingAttentionStart(object target, effect fx, temp)
 {
-	CreateParticle("Flash", pTarget->GetX(), pTarget->GetY(), PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(8, 15), {Prototype = Particles_Flash(), Size = 10}, 10);
+	if (temp) return;
+	fx.particles = 
+	{
+		Size = PV_Linear(2, 0),
+		Alpha = PV_KeyFrames(0, 0, 0, 300, 255, 1000, 0),
+		Rotation = PV_Random(0, 360),
+		R = 255, G = 200, B = 50,
+		Stretch = PV_Random(10000, 15000),
+		BlitMode = GFX_BLIT_Additive
+	};
+}
+
+global func FxSparklingAttentionTimer(object target, effect fx, int timer)
+{
+	// Sparkle quickly every now-and-then.
+	var sparkle_cycle = timer % 100;
+	if (sparkle_cycle < 30)
+	{
+		fx.Interval = 1;
+		if (Random(2)) return FX_OK;
+	}
+	else
+	{
+		fx.Interval = 100;
+		return FX_OK;
+	}
+	var x = RandomX(-10, 10);
+	var y = RandomX(-10, 10);
+	target->CreateParticle("StarSpark", x, y, 0, 0, PV_Random(1, 7), fx.particles, 10);
+	return FX_OK;
 }
 
 global func FxPlaneResetTimer(object target, effect, int time)
