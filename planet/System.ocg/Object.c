@@ -63,6 +63,12 @@ global func MakeInvincible(bool allow_fire)
 	if (!fx) return false;
 	fx.allow_fire = allow_fire;
 	if (!allow_fire && this->OnFire()) this->Extinguish();
+	fx.OnShockwaveHit = this.OnShockwaveHit;
+	fx.RejectWindbagForce = this.RejectWindbagForce;
+	fx.QueryCatchBlow = this.QueryCatchBlow;
+	this.OnShockwaveHit = Global.Invincibility_OnShockwaveHit;
+	this.RejectWindbagForce = Global.Invincibility_RejectWindbagForce;
+	this.QueryCatchBlow = Global.Invincibility_QueryCatchBlow;
 	return true;
 }
 
@@ -92,7 +98,33 @@ global func FxIntInvincibleSaveScen(object obj, proplist fx, proplist props)
 global func ClearInvincible()
 {
 	if (!this) return nil;
+	var fx = GetEffect("IntInvincible", this);
+	if (fx)
+	{
+		this.OnShockwaveHit = fx.OnShockwaveHit;
+		this.RejectWindbagForce = fx.RejectWindbagForce;
+		this.QueryCatchBlow = fx.QueryCatchBlow;
+	} else { // just to be sure
+		this.OnShockwaveHit = this->GetID().OnShockwaveHit;
+		this.RejectWindbagForce = this->GetID().RejectWindbagForce;
+		this.QueryCatchBlow = this->GetID().QueryCatchBlow;
+	}
 	return RemoveEffect("IntInvincible", this);
+}
+
+global func Invincibility_OnShockwaveHit()
+{
+	return true;
+}
+
+global func Invincibility_RejectWindbagForce()
+{
+	return true;
+}
+
+global func Invincibility_QueryCatchBlow()
+{
+	return true;
 }
 
 // Move an object by the given parameters relative to its position.
