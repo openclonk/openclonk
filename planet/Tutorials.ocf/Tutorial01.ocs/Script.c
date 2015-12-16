@@ -34,7 +34,7 @@ protected func Initialize()
 	
 	// Environment.
 	var time = CreateObject(Time);
-	time->SetTime(18*60 + 30);
+	time->SetTime(18 * 60 + 30);
 	time->SetCycleSpeed(0);
 
 	// Dialogue options -> repeat round.
@@ -259,7 +259,7 @@ protected func InitializePlayer(int plr)
 	DisablePlrControls(plr);
 	
 	// Add an effect to the clonk to track the goal.
-	var track_goal = AddEffect("TrackGoal", clonk, 100, 2);
+	var track_goal = AddEffect("TrackGoal", nil, 100, 2);
 	track_goal.plr = plr;
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
@@ -297,11 +297,12 @@ private func OnFinishedTutorialIntro(int plr)
 
 global func FxTrackGoalTimer(object target, proplist effect, int time)
 {
-	if (Inside(target->GetX(), 980, 996) && Inside(target->GetY(), 314, 324))
+	var crew = GetCrew(effect.plr);
+	if (Inside(crew->GetX(), 980, 996) && Inside(crew->GetY(), 314, 324))
 	{
-		if (FindObject(Find_ID(Wipf), Find_Distance(15, target->GetX(), target->GetY())))
+		if (FindObject(Find_ID(Wipf), Find_Distance(15, crew->GetX(), crew->GetY())))
 		{
-			var outro = AddEffect("GoalOutro", target, 100, 5);
+			var outro = AddEffect("GoalOutro", crew, 100, 5);
 			outro.plr = effect.plr;
 			return FX_Execute_Kill;	
 		}		

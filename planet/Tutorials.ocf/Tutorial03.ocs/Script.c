@@ -241,7 +241,7 @@ protected func InitializePlayer(int plr)
 		structure->SetOwner(plr);
 	
 	// Add an effect to the clonk to track the goal.
-	AddEffect("TrackGoal", clonk, 100, 2);
+	AddEffect("TrackGoal", nil, 100, 2);
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);

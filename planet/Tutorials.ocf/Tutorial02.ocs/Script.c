@@ -178,7 +178,8 @@ protected func InitializePlayer(int plr)
 	effect.to_y = 318;
 	
 	// Add an effect to the clonk to track the goal.
-	AddEffect("TrackGoal", clonk, 100, 2);
+	var track_goal = AddEffect("TrackGoal", nil, 100, 2);
+	track_goal.plr = plr;
 
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
@@ -196,11 +197,12 @@ protected func InitializePlayer(int plr)
 
 global func FxTrackGoalTimer(object target, proplist effect, int time)
 {
-	if (Inside(target->GetX(), 982, 1002) && Inside(target->GetY(), 504, 528))
+	var crew = GetCrew(effect.plr);
+	if (Inside(crew->GetX(), 982, 1002) && Inside(crew->GetY(), 504, 528))
 	{
-		if (FindObject(Find_ID(Wipf), Find_Distance(15, target->GetX(), target->GetY())))
+		if (FindObject(Find_ID(Wipf), Find_Distance(15, crew->GetX(), crew->GetY())))
 		{
-			AddEffect("GoalOutro", target, 100, 5);
+			AddEffect("GoalOutro", crew, 100, 5);
 			return FX_Execute_Kill;	
 		}		
 	}
