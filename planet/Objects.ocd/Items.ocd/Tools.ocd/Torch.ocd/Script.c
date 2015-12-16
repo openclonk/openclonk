@@ -32,6 +32,12 @@ public func IsWorkshopProduct() { return true; }
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+// Returns whether the torch currently is a source of light.
+public func IsLightSource()
+{
+	return !!GetEffect("IntBurning", this);
+}
+
 
 /*-- Usage --*/
 

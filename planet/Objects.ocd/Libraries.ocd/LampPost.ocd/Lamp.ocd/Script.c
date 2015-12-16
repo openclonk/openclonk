@@ -60,6 +60,12 @@ public func TurnOff()
 	return true;
 }
 
+// Returns whether the lamp currently is a source of light.
+public func IsLightSource()
+{
+	return lib_lamp_lit;
+}
+
 /*-- Usage --*/
 
 /** Standard control procedure. Overload as needed.
