@@ -19,3 +19,23 @@ WaveBows=Bowmen alarm!
 
 TeamAttackers=Attackers
 TeamDefenders=Defenders
+
+HomebaseWeapons=Weapons
+HomebaseItems=Items
+HomebaseTechnology=Technology
+HomebaseUpgrades=Upgrades
+HomebaseArtifacts=Artifacts
+
+HomebaseDescBow=Classic ranged weapon. Infinite arrows.
+HomebaseDescMusket=Modern fire weapon. Infinite ammunition.
+HomebaseDescGrenadeLauncher=Launches bombs at the enemies. Infinite bombs.
+HomebaseDescHammer=To construct defensive towers and other buildings.
+
+HomebaseLoadSpeed=Load speed
+HomebaseDescLoadSpeed=Shortens reload time of ranged weapons.
+HomebaseLife=Life energy
+HomebaseDescLife=Makes your clonk able to take more damage.
+HomebaseAdvancedWeapons=Advanced weapons
+HomebaseDescAdvancedWeapons=Unlocks more weapons and upgrades.
+HomebaseMasterWeapons=Master weapons
+HomebaseDescMasterWeapons=Unlocks more weapons and upgrades.

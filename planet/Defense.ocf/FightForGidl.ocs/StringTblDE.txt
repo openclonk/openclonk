@@ -19,3 +19,23 @@ WaveBows=Fernkampfalarm!
 
 TeamAttackers=Angreifer
 TeamDefenders=Verteidiger
+
+HomebaseWeapons=Waffen
+HomebaseItems=Gegenstaende
+HomebaseTechnology=Technologie
+HomebaseUpgrades=Verbesserungen
+HomebaseArtifacts=Artefakte
+
+HomebaseDescBow=Klassische Fernkampfwaffe. Endlos Pfeile.
+HomebaseDescMusket=Moderne Feuerwaffe. Endlos Munition.
+HomebaseDescGrenadeLauncher=Schleudert Bomben in die Gegner. Endlos Bomben.
+HomebaseDescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
+
+HomebaseLoadSpeed=Nachladezeit
+HomebaseDescLoadSpeed=Verkuerzt den Ladevorgang von Fernkampfwaffen.
+HomebaseLife=Lebensenergie
+HomebaseDescLife=Erhoeht die Lebensenergie des Clonks.
+HomebaseAdvancedWeapons=Fortgeschrittene Waffen
+HomebaseDescAdvancedWeapons=Schaltet mehr Waffen und Upgrades frei.
+HomebaseMasterWeapons=Meisterwaffen
+HomebaseDescMasterWeapons=Schaltet mehr Waffen und Upgrades frei.

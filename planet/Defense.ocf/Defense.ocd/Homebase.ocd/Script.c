@@ -52,28 +52,8 @@ public func Construction(...)
 	// Buy menu
 	buy_menu = CreateObject(GUI_BuyMenu, 0,0, GetOwner());
 	buy_menu->SetHomebase(this);
-	// Initial availability of items
-	AddCaption("$Weapons$");
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Bow,                  ammo = Arrow, desc = "$DescBow$" });
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Sword,     cost = 25 });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = Firestone, cost = 5});
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadShot, desc = "$DescMusket$",     requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = DynamiteBox,cost = 15,                                            requirements = ["AdvancedWeapons"] });
-	AddHomebaseItem(new ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$DescGrenadeLauncher$", requirements = ["MasterWeapons"] });
-	
-	AddCaption("$Items$");
-	AddHomebaseItem(new ITEMTYPE_Consumable { item = Bread,     cost = 5  });
-	AddHomebaseItem(new ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$DescHammer$", extra_width = 1 });
-	
-	AddCaption("$Technology$");
-	AddHomebaseItem(new ITEMTYPE_Technology { name="$AdvancedWeapons$", item = Icon_World,cost = 100, desc="$DescAdvancedWeapons$", tech = "AdvancedWeapons" });
-	AddHomebaseItem(new ITEMTYPE_Technology { name="$MasterWeapons$", item = Icon_World,cost = 1000, desc = "$DescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
-	
-	AddCaption("$Upgrades$");
-	AddHomebaseItem(new ITEMTYPE_Technology { name="$LoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$DescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
-	AddHomebaseItem(new ITEMTYPE_Technology { name="$Life$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$DescLife$", tech = "Life", tiers=3 });
-	AddCaption("$Artifacts$");
+	// Get available items
+	GameCall("FillHomebase", this);
 
 	// Buy menu always open (but hidden at start)
 	buy_menu->Open();
@@ -84,6 +64,11 @@ public func Destruction()
 {
 	if (buy_menu) buy_menu->RemoveObject();
 	return true;
+}
+
+public func SetQuickbuyItems(array list)
+{
+	g_quickbuy_items = list;
 }
 
 public func AddCaption(string title, array requirements)
@@ -360,13 +345,4 @@ private func GainLife(proplist entry, int tier)
 		clonk->DoEnergy(clonk.MaxEnergy, true);
 	}
 	return true;
-}
-
-
-
-public func Definition(def)
-{
-	// Arrays in static const are broken
-	// So init them here
-	g_quickbuy_items = [Hammer, Bow, Sword, Musket, GrenadeLauncher, nil, Firestone, IronBomb, nil, nil];
 }

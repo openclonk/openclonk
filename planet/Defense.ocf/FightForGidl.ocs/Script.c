@@ -119,6 +119,36 @@ func JoinPlayer(plr, prev_clonk)
 	return;
 }
 
+// Enter all buyable things into the homebase
+func FillHomebase(object homebase)
+{
+	// Quick buy items on hotkeys
+	homebase->SetQuickbuyItems([Hammer, Bow, Sword, Musket, GrenadeLauncher, nil, Firestone, IronBomb, nil, nil]);
+
+	// Buy menu entries
+	homebase->AddCaption("$HomebaseWeapons$");
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Bow,                  ammo = Arrow, desc = "$HomebaseDescBow$" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Sword,     cost = 25 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Firestone, cost = 5});
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,    cost = 50, ammo = LeadShot, desc = "$HomebaseDescMusket$",     requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = IronBomb,  cost = 15,                                             requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = DynamiteBox,cost = 15,                                            requirements = ["AdvancedWeapons"] });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher, ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
+
+	homebase->AddCaption("$HomebaseItems$");
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Bread,     cost = 5  });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
+
+	homebase->AddCaption("$HomebaseTechnology$");
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseMasterWeapons$", item = Icon_World,cost = 1000, desc = "$HomebaseDescMasterWeapons$", tech = "MasterWeapons", requirements = ["AdvancedWeapons"] });
+
+	homebase->AddCaption("$HomebaseUpgrades$");
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLoadSpeed$", item = Homebase_Icon, graphics="LoadSpeed%d", costs = [100, 500, 1000], desc = "$HomebaseDescLoadSpeed$", tech = "LoadSpeed", tiers=3 });
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseLife$", item = Homebase_Icon, graphics="Life%d", costs = [10, 50, 100], desc = "$HomebaseDescLife$", tech = "Life", tiers=3 });
+	homebase->AddCaption("$HomebaseArtifacts$");
+}
+
 func StartGame()
 {
 	// Init objects to defend
