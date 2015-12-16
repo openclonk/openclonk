@@ -101,12 +101,13 @@ public func CreateObjectInTreetop(id to_create, int tries, bool no_overlap_check
 }
 
 // Whenever something happens to the tree (e.g. axe hit or fire). Afterwards all fruit/objects are considered "dropped" and no longer saved.
-private func DeattachObjects()
+private func DetachObjects()
 {
+	RemoveHoles(lib_tree_attach);
 	if (!GetLength(lib_tree_attach)) return;
 
 	for (var object in lib_tree_attach)
-		object->~DeattachFromTree();
+		if (object) object->~DetachFromTree();
 	lib_tree_attach = CreateArray();
 }
 
@@ -155,7 +156,7 @@ private func Damage(int change, int cause)
 		// Burn
 		if (OnFire())
 		{
-			DeattachObjects();
+			DetachObjects();
 			if (!lib_tree_burned) return BurstIntoAshes();
 			var burned = CreateObject(lib_tree_burned, 0, 0, GetOwner());
 			burned->SetCategory(GetCategory());
@@ -193,7 +194,7 @@ private func ShakeTree()
 {
 	var effect = AddEffect("IntShakeTree", this, 100, 1, this);
 	effect.current_trans = this.MeshTransformation;
-	DeattachObjects();
+	DetachObjects();
 }
 
 private func FxIntShakeTreeTimer(object target, proplist effect, int time)
@@ -243,7 +244,7 @@ public func ChopDown()
 	StopGrowth();
 	// stop reproduction
 	RemoveTimer("Seed");
-	DeattachObjects();
+	DetachObjects();
 
 	this.Touchable = 1;
 	this.Plane = 300;

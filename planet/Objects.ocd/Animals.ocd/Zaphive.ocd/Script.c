@@ -43,7 +43,7 @@ public func AttachToTree(object to_attach)
 }
 
 // Called by trees
-public func DeattachFromTree()
+public func DetachFromTree()
 {
 	// Fall down
 	SetCategory(GetCategory() & ~C4D_StaticBack);
