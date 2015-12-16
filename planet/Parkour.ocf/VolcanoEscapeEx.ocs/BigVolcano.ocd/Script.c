@@ -325,17 +325,6 @@ func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int
 	return true;
 }
 
-func SoundAt(string sound_name, int x, int y, int vol)
-{
-	var sound_host = CreateObjectAbove(BigVolcano,x,y), r;
-	if (sound_host)
-	{
-		r = sound_host->Sound(sound_name, false, vol);
-		ScheduleCall(sound_host, Global.RemoveObject, 100);
-	}
-	return r;
-}
-
 // Get highest point of lava surface
 func GetLavaPeak()
 {
