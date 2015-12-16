@@ -1,0 +1,8 @@
+# Dialogue: Pilot
+DlgPilotHello=Hello I am %s, have you seen sky islands before?
+DlgPilotReply=No, but I have been told they are home to gem stalactites.
+DlgPilotBats=Yes, indeed. But you have to be careful, they are also home to bats which become active during night.
+DlgPilotAgainstBats=Oh, what can I do against bats?
+DlgPilotBowArrow=Well, if they attack you... You can fend them off using the bow and arrows.
+DlgPilotHaveBow=I see, well, do you have a bow for me?
+DlgPilotArmory=I think you can produce one in the armory together with arrows, I have built an armory on the island to the lower right from here.

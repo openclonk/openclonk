@@ -1,0 +1,17 @@
+# Goal Description
+MsgGoalName=Edelsteine abbauen
+MsgGoalDescription=Find and mine the gem stalactite, then sell the gems at the flagpole.
+
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
+# Tutorial messages
+MsgTutorialFindRubies=You are high up in the sky in an area with several sky islands. Talk to the pilot for some advice about the area and then take the airship and find the ruby stalactite hanging from one of the islands. You can grab the airship with [%s] and then steer it with %s.
+MsgTutorialParkAirship=Ah you found the ruby stalactite. Now it is time to blast it to gems! Park your airship in front of the rope ladders over there.
+MsgTutorialLadderJump=Good, now your companion will control the airship and you can jump to the ruby stalactite. Jump towards a hanging rope ladder and you will automatically grab it. You can switch sides or let go of the ladder by pressing the movement keys [%s]/[%s]. Instead of letting go you can also jump off the ladder if you press the movement key corresponding to the side your a hanging on while climbing up.
+MsgTutorialBlastGems=Okay, you can now plant some dynamite sticks on the stalactite and get back on board of the airship. Then fuse the dynamite to blast the stalactite.
+MsgTutorialCollectGems=Perfect blast! Now collect at least five gems and sell them back at the flagpole, you can sell them by transfering them into the flagpole using the interaction menu. If you are lazy you can use the teleglove to pick up the gems from the sky island below.
+MsgTutorialCompleted=Well done, you have stolen enough rubies from the evil Wipf fraction to hire some clonks for your attack on the fraction's stronghold.
