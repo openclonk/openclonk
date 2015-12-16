@@ -670,19 +670,6 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n, int32_t default_val) const
 	return default_val;
 }
 
-bool C4PropList::GetPropertyBoolByS(C4String * k, bool default_val) const
-{
-	if (Properties.Has(k))
-	{
-		return Properties.Get(k).Value.getBool();
-	}
-	if (GetPrototype())
-	{
-		return GetPrototype()->GetPropertyBoolByS(k, default_val);
-	}
-	return default_val;
-}
-
 C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
 {
 	C4String * k = &Strings.P[n];

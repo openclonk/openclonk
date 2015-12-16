@@ -809,7 +809,8 @@ bool C4FindObjectInArray::IsImpossible()
 bool C4FindObjectProperty::Check(C4Object *pObj)
 {
 	assert(Name); // checked in constructor
-	return pObj->GetPropertyBoolByS(Name);
+	C4Value value;
+	return pObj->GetPropertyByS(Name, &value) && value.getBool();
 }
 
 bool C4FindObjectProperty::IsImpossible()
