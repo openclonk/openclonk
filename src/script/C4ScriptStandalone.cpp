@@ -21,7 +21,6 @@
 #include "c4group/C4Group.h"
 #include "gamescript/C4Script.h"
 #include "script/C4Aul.h"
-#include "object/C4DefList.h"
 #include "script/C4ScriptHost.h"
 
 void InitializeC4Script()
@@ -35,7 +34,7 @@ void InitializeC4Script()
 C4Value RunLoadedC4Script()
 {
 	// Link script engine (resolve includes/appends, generate code)
-	ScriptEngine.Link(&::Definitions);
+	ScriptEngine.Link(NULL);
 
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);

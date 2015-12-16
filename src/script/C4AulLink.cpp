@@ -42,9 +42,9 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 	if (State != ASS_PREPARSED) return false;
 	for (std::list<StdCopyStrBuf>::iterator a = Appends.begin(); a != Appends.end(); ++a)
 	{
-		if (*a != "*")
+		if (*a != "*" || !rDefs)
 		{
-			C4Def *Def = rDefs->GetByName(*a);
+			C4Def *Def = rDefs ? rDefs->GetByName(*a) : NULL;
 			if (Def)
 			{
 				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), GetScriptHost()) == Def->Script.SourceScripts.end())
@@ -93,7 +93,7 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	// append all includes to local script
 	for (std::list<StdCopyStrBuf>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
 	{
-		C4Def *Def = rDefs->GetByName(*i);
+		C4Def *Def = rDefs ? rDefs->GetByName(*i) : NULL;
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )
@@ -180,7 +180,8 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// engine is always parsed (for global funcs)
 		State = ASS_PARSED;
 
-		rDefs->CallEveryDefinition();
+		if (rDefs)
+			rDefs->CallEveryDefinition();
 
 		// Done modifying the proplists now
 		for (C4AulScript *s = Child0; s; s = s->Next)
