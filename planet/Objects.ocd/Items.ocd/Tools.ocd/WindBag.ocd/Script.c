@@ -196,7 +196,7 @@ public func FxIntBurstWindTimer(object target, proplist effect, int time)
 	}
 	
 	// Move other objects in a cone around the burst direction.
-	var criteria = Find_And(Find_Not(Find_Category(C4D_Structure)), Find_Not(Find_Func("IsEnvironment")), Find_Not(Find_Func("NoWindbagForce")),
+	var criteria = Find_And(Find_Not(Find_Category(C4D_Structure)), Find_Not(Find_Func("IsEnvironment")), Find_Not(Find_Func("RejectWindbagForce")),
 	                        Find_Layer(GetObjectLayer()), Find_NoContainer(), Find_Exclude(effect.clonk), Find_PathFree(effect.clonk));
 	var dist = 14 + 9 * real_time / 2;
 	var rad = 8 + 8 * real_time / 3;
