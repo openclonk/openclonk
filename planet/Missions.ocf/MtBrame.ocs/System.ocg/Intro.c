@@ -148,7 +148,10 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	if(effect.Time == 556)
 	{
 		for(var crew in effect.Players)
+		{
 			crew->Contained()->Fling(2,-2);
+			crew->Contained()->PlaySoundScream();
+		}
 	}
 
 	if(effect.Time == 570)

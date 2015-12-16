@@ -8,13 +8,19 @@ ala             -
                   Structures/Repair, Structures/FinishBuilding made from following resources:
                       - JoelAudio: https://www.freesound.org/people/JoelAudio/sounds/135860/ - CC-By 3.0
                       - cmusounddesign: https://www.freesound.org/people/cmusounddesign/sounds/84696 - CC-By 3.0
+                  Clonk/Skin/Adventurer:
+                     Confirm1&2&4&6, Decline1&2&3, Die1&2&3, Doubt1&2&3&4&5, Hurt1&2&3&4&5&6&7, Laughter1&2&3, Shock1&2&3&4&5&6
+                  Clonk/Skin/Alchemist:
+                     Confirm1&2&3&5, Decline1&2&3&6, Die1&2&3, Doubt1&2&3, EvilConfirm1&2&3, Hurt1&2&3&4&5&6, Scream1&2
+                  Clonk/Skin/Steampunk:
+                     Confirm1&2&3&4, Decline1&2&4, Die1&2&3, Doubt1&2&3&4&5, Hurt1&2&3&4&5&6, Laughter1&2&3, Scream1, Shock1&2&4, Singing1&2
 Ringwaul        - Monster/Growl1-3, Monster/Die, Wipf/Snuff1-2, Wipf/Aroof, Wipf/Whine, Chest/Open, Chest/Close
                   Winbag/Charge, Winbag/ChargeStop, Winbag/Gust, Pickaxe/Clang1-3
 
 Checkmaty       - ProjectileHitLiving*, Arrow/HitGround, Arrow/Shoot1/3, Bow/Draw, Bow/GetArrow1-2, Bow/Load1-2, Bow/PutAwayBow, Shoot1-3,
 				  Javelin/Draw, Javelin/HitGround, Javelin/Throw1-3, WeaponHit1-3, WeaponSwing1-3, Shield/WeaponHitShield, Shield/MetalHit1-4,
 				  Shield/WoodHit1-3, Musket/GunShot1-5, Musket/BulletShot1-2, Musket/BulletHitGround1-3
-Clonkonaut      - Clonk/Verbal/Confirm*, Clonk/Verbal/FDie
+Clonkonaut      - Clonk/Skin/Farmer/Die1
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast*, BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
@@ -39,7 +45,7 @@ Erdie			- LightMetalHit1 (http://www.freesound.org/people/Erdie/sounds/27826/)
 Anton			- DullWoodHit1 (http://www.freesound.org/people/Anton/sounds/1257/)
 CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
 dobroide		- Fire (http://www.freesound.org/people/dobroide/sounds/4211/)
-bennychico11	- FHurt1, FHurt2 (http://www.freesound.org/people/bennychico11/sounds/80438/)
+bennychico11	- Clonk/Skin/Farmer/Hurt1&2 (http://www.freesound.org/people/bennychico11/sounds/80438/)
 cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/126302/)
 earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486/)
 qubodup         - Sizzle (http://www.freesound.org/people/qubodup/sounds/194635/)
@@ -85,7 +91,6 @@ adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/1387
 				- DullWoodHit2 (http://www.freesound.org/people/adcbicycle/sounds/13958/)
 				- GlassHit1 (http://www.freesound.org/people/adcbicycle/sounds/13936/)
 				- GlassHit2 (http://www.freesound.org/people/adcbicycle/sounds/13931/)
-thecheeseman    - Clonk/Verbal/Hurt*, Clonk/Verbal/Die (http://www.freesound.org/people/thecheeseman/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
 Oddworld		- LiquidBlast1 (http://www.freesound.org/people/Oddworld/sounds/75328/)

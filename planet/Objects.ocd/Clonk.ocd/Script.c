@@ -107,15 +107,7 @@ public func Redefine(idTo)
 protected func CatchBlow()
 {
 	if (GetAction() == "Dead") return;
-	if (!Random(5)) Hurt();
-}
-	
-protected func Hurt()
-{
-	if(gender == 0)
-		Sound("Clonk::Verbal::Hurt?");
-	else
-		Sound("Clonk::Verbal::FHurt?");
+	if (!Random(5)) PlaySoundHurt();
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -148,12 +140,16 @@ protected func Death(int killed_by)
 	// Some effects on dying.
 	if (!this.silent_death)
 	{
-		if(gender == 0)
-			Sound("Clonk::Verbal::Die");
-		else
-			Sound("Clonk::Verbal::FDie");
-			
+		PlaySkinSound("Die*");
 		DeathAnnounce();
+		
+		// When killed by a team member, the other Clonk randomly plays a sound.
+		if (!Random(5) && killed_by != NO_OWNER && killed_by != GetOwner() && !Hostile(killed_by, GetOwner()))
+		{
+			var other_cursor = GetCursor(killed_by);
+			if (other_cursor)
+				other_cursor->~PlaySoundTaunt();
+		}
 	}
 	CloseEyes(1);
 	
@@ -174,6 +170,12 @@ protected func Destruction(...)
 protected func DeepBreath()
 {
 	Sound("Breath");
+}
+
+public func Incineration()
+{
+	PlaySoundShock();
+	return _inherited(...);
 }
 
 protected func CheckStuck()
@@ -648,6 +650,61 @@ func GetSkinCount() { return 4; }
 func GetSkin() { return skin; }
 func GetSkinName() { return skin_name; }
 
+
+// Returns the skin name as used to select the right sound subfolder.
+public func GetSoundSkinName()
+{
+	if (skin_name == nil) return "Adventurer";
+	return skin_name;
+}
+
+public func PlaySkinSound(string sound, ...)
+{
+	Sound(Format("Clonk::Skin::%s::%s", GetSoundSkinName(), sound), ...);
+}
+
+/*
+Helper functions to play some sounds. This are encapsulated here in case sound names change.
+*/
+public func PlaySoundConfirm(...)
+{
+	if (skin_name != "Farmer")
+		PlaySkinSound("Confirm*", ...);
+}
+public func PlaySoundDecline(...)
+{
+	if (skin_name != "Farmer")
+		PlaySkinSound("Decline*", ...);
+}
+// Doubtful sound, e.g. when trying a clearly impossible action.
+public func PlaySoundDoubt(...)
+{
+	if (skin_name != "Farmer")
+		PlaySkinSound("Doubt*", ...);
+}
+
+public func PlaySoundHurt(...) { PlaySkinSound("Hurt*", ...); }
+// Sound that is supposed to be funny in situations where the Clonk maybe did something "evil" like killing a teammate.
+public func PlaySoundTaunt(...)
+{
+	if (skin_name == "Alchemist")
+		PlaySkinSound("EvilConfirm*", ...);
+	else if (skin_name == "Steampunk")
+		PlaySkinSound("Laughter*", ...);
+}
+// Surprised sounds, e.g. when catching fire.
+public func PlaySoundShock(...)
+{
+	if (skin_name == "Steampunk" || skin_name == "Adventurer")
+		PlaySkinSound("Shock*", ...);
+}
+public func PlaySoundScream() { PlaySkinSound("Scream*"); }
+// General idle sounds, played when also playing an idle animation.
+public func PlaySoundIdle(...)
+{
+	if (skin_name == "Steampunk")
+		PlaySkinSound("Singing*", ...);
+}
 //Portrait definition of this Clonk for messages
 func GetPortrait()
 {

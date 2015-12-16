@@ -868,8 +868,7 @@ private func OnContentsSelection(symbol, extra_data)
 	// Allow transfer only into containers.
 	if (!other_target->~IsContainer())
 	{
-		// Todo: other sound for "nope".
-		Sound("Hits::Materials::Metal::LightMetalHit*", nil, 10, GetController(), nil, nil, -50);
+		cursor->~PlaySoundDoubt(true, nil, cursor->GetOwner());
 		return;
 	}
 	
@@ -931,7 +930,7 @@ private func OnContentsSelection(symbol, extra_data)
 	}
 	else
 	{
-		Sound("Objects::Balloon::Pop", true, nil, GetOwner());
+		Sound("Hits::Materials::Wood::DullWoodHit*", true, nil, GetOwner());
 		return false;
 	}
 }
