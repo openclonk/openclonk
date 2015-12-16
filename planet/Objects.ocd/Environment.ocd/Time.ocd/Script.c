@@ -24,6 +24,19 @@ local daycolour_global;
 
 /*-- Interface --*/
 
+// Creates the time controller object if it does not exist otherwise returns the existing controller.
+public func Init()
+{
+	// Only a definition call if needed.
+	if (GetType(this) != C4V_Def)
+		return;
+	// Create and return time controller if it does not exist.
+	var time_controller = FindObject(Find_ID(Time));
+	if (!time_controller)
+		time_controller = CreateObject(Time);
+	return time_controller;
+}
+
 // Returns whether the time controller is active.
 public func HasDayNightCycle()
 {
@@ -54,6 +67,7 @@ public func SetTime(int to_time)
 		ShowCelestials();
 	// Adjust to time.
 	AdjustToTime();
+	return;
 }
 
 // Returns the time in minutes.
