@@ -38,6 +38,8 @@ public func Place(int amount, proplist area)
 	return wipfs;
 }
 
+public func IsPrey() { return true; }
+
 
 /*-- Activity --*/
 
