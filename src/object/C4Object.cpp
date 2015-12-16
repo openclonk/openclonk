@@ -882,7 +882,7 @@ void C4Object::UpdateOCF()
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
-	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Grab | OCF_FullCon | OCF_Rotate | OCF_OnFire
+	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_FullCon | OCF_Rotate | OCF_OnFire
 		| OCF_Alive | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_inflammable: can catch fire and is not currently burning.
 	if (!OnFire && GetPropertyInt(P_ContactIncinerate) > 0)
@@ -890,6 +890,9 @@ void C4Object::UpdateOCF()
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
 		OCF|=OCF_Carryable;
+	// OCF_Grab: Can be grabbed.
+	if (GetPropertyInt(P_Touchable))
+		OCF |= OCF_Grab;
 	// OCF_Construct: Can be built outside
 	if (Def->Constructable && (Con<FullCon)
 	    && (fix_r == Fix0) && !OnFire)
