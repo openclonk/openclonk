@@ -1775,43 +1775,31 @@ void C4AulParse::Parse_Array()
 	Match(ATT_BOPEN2);
 	// Create an array
 	int size = 0;
-	bool fDone = false;
-	do switch (TokenType)
+	while (TokenType != ATT_BCLOSE2)
 	{
-	case ATT_BCLOSE2:
-		Shift();
+		// got no parameter before a ","? then push nil
+		if (TokenType == ATT_COMMA)
+		{
+			if (Config.Developer.ExtraWarnings)
+				Warn(FormatString("array entry %d is empty", size).getData(), NULL);
+			AddBCC(AB_NIL);
+		}
+		else
+			Parse_Expression();
+		++size;
+		if (TokenType == ATT_BCLOSE2)
+			break;
+		Match(ATT_COMMA, "',' or ']'");
 		// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
-		if (size > 0)
+		if (TokenType == ATT_BCLOSE2)
 		{
 			if (Config.Developer.ExtraWarnings)
 				Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 			AddBCC(AB_NIL);
 			++size;
 		}
-		fDone = true;
-		break;
-	case ATT_COMMA:
-		// got no parameter before a ","? then push nil
-		if (Config.Developer.ExtraWarnings)
-			Warn(FormatString("array entry %d is empty", size).getData(), NULL);
-		AddBCC(AB_NIL);
-		Shift();
-		++size;
-		break;
-	default:
-		Parse_Expression();
-		++size;
-		if (TokenType == ATT_COMMA)
-			Shift();
-		else if (TokenType == ATT_BCLOSE2)
-		{
-			Shift();
-			fDone = true;
-			break;
-		}
-		else
-			UnexpectedToken("',' or ']'");
-	} while (!fDone);
+	}
+	Shift();
 	// add terminator
 	AddBCC(AB_NEW_ARRAY, size);
 }
@@ -2709,45 +2697,30 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			// Create an array
 			r.SetArray(new C4ValueArray());
 			int size = 0;
-			bool fDone = false;
-			do
-			switch (TokenType)
+			while (TokenType != ATT_BCLOSE2)
 			{
-				case ATT_BCLOSE2:
+				// got no parameter before a ","? then push nil
+				if (TokenType == ATT_COMMA)
 				{
-					// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
-					if (size > 0)
-					{
-						r._getArray()->SetItem(size, C4VNull);
-						++size;
-					}
-					fDone = true;
-					break;
-				}
-				case ATT_COMMA:
-				{
-					// got no parameter before a ","? then push nil
+					if (Config.Developer.ExtraWarnings)
+						Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 					r._getArray()->SetItem(size, C4VNull);
-					Shift();
-					++size;
-					break;
 				}
-				default:
-				{
+				else
 					r._getArray()->SetItem(size, Parse_ConstExpression(NULL, NULL));
+				++size;
+				if (TokenType == ATT_BCLOSE2)
+					break;
+				Match(ATT_COMMA, "',' or ']'");
+				// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
+				if (TokenType == ATT_BCLOSE2)
+				{
+					if (Config.Developer.ExtraWarnings)
+						Warn(FormatString("array entry %d is empty", size).getData(), NULL);
+					r._getArray()->SetItem(size, C4VNull);
 					++size;
-					if (TokenType == ATT_COMMA)
-						Shift();
-					else if (TokenType == ATT_BCLOSE2)
-					{
-						fDone = true;
-						break;
-					}
-					else
-						UnexpectedToken("',' or ']'");
 				}
 			}
-			while (!fDone);
 			Shift();
 			break;
 		}
