@@ -100,25 +100,32 @@ void C4AulExec::LogCallStack()
 
 C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 {
+#define ReturnIfTranslationAvailable(script, key) do \
+{ \
+	const auto &s = script; \
+	const auto &k = key; \
+	if (s) \
+	{ \
+		try \
+		{ \
+			return ::Strings.RegString(s->Translate(k).c_str()); \
+		} \
+		catch (C4LangStringTable::NoSuchTranslation &) {} \
+	} \
+} while(0)
+
 	if (!text || text->GetData().isNull()) return NULL;
 	// Find correct script: translations of the context if possible, containing script as fallback
-	C4AulScript *script = NULL;
 	if (_this && _this->GetDef())
-		script = &(_this->GetDef()->Script);
-	else
-		script = AulExec.pCurCtx[0].Func->pOrgScript;
-	if (!script) return NULL;
-	try
-	{
-		return ::Strings.RegString(script->Translate(text->GetCStr()).c_str());
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
-		// Trace
-		AulExec.LogCallStack();
-		return text;
-	}
+		ReturnIfTranslationAvailable(&(_this->GetDef()->Script), text->GetCStr());
+	ReturnIfTranslationAvailable(AulExec.pCurCtx[0].Func->pOrgScript, text->GetCStr());
+
+	// No translation available, log
+	DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
+	// Trace
+	AulExec.LogCallStack();
+	return text;
+#undef ReturnIfTranslationAvailable
 }
 
 bool C4AulExec::FnLogCallStack(C4PropList * _this)
