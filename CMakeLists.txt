@@ -473,7 +473,7 @@ set(OC_CLONK_SOURCES
 	src/gamescript/C4FindObject.cpp
 	src/gamescript/C4FindObject.h
 	src/gamescript/C4GameScript.cpp
-	src/gamescript/C4Script.h
+	src/gamescript/C4GameScript.h
 	src/gamescript/C4TransferZone.cpp
 	src/gamescript/C4TransferZone.h
 	src/graphics/Bitmap256.cpp

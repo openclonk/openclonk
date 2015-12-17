@@ -18,7 +18,7 @@
 /* Functions mapped by C4Script */
 
 #include <C4Include.h>
-#include <C4Script.h>
+#include <C4GameScript.h>
 
 #include <C4Application.h>
 #include <C4AulDefFunc.h>

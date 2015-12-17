@@ -17,8 +17,8 @@
 
 /* Functions mapped by C4Script */
 
-#ifndef INC_C4Script
-#define INC_C4Script
+#ifndef INC_C4GameScript
+#define INC_C4GameScript
 
 #include <C4Value.h>
 

@@ -26,7 +26,7 @@
 #include <C4FileMonitor.h>
 #include <C4GameVersion.h>
 #include <C4Language.h>
-#include <C4Script.h>
+#include <C4GameScript.h>
 #include <C4Record.h>
 
 #include <StdMeshLoader.h>
