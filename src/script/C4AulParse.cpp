@@ -1706,11 +1706,6 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 	{
 	case ATT_BCLOSE:
 		Shift();
-		if (size > 0)
-		{
-			if (sWarn && Config.Developer.ExtraWarnings)
-				Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
-		}
 		fDone = true;
 		break;
 	case ATT_COMMA:
