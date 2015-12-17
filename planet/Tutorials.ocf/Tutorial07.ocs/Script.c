@@ -90,6 +90,9 @@ private func InitIslands()
 	var armory = CreateObjectAbove(Armory, 654, 648);
 	armory->CreateContents(Wood, 10);
 	armory->CreateContents(Metal, 5);
+	// Flowers on two of the islands.
+	Flower->Place(12, Rectangle(200, 100, 300, 200));
+	Flower->Place(8, Rectangle(300, 300, 200, 200));
 	return;
 }
 
@@ -99,7 +102,7 @@ private func InitVegetation()
 	PlaceGrass(85);
 	PlaceObjects(Firestone, 25 + Random(5), "Earth");
 	PlaceObjects(Loam, 15 + Random(5), "Earth");
-	
+	Mushroom->Place(10);
 	Branch->Place(40);
 	Trunk->Place(10);
 	Tree_Deciduous->Place(40);
@@ -129,7 +132,6 @@ private func InitAI()
 	npc_pilot->SetObjectLayer(npc_pilot);
 	npc_pilot->SetSkin(2);
 	npc_pilot->SetDir(DIR_Right);
-	npc_pilot->CreateContents(TeleGlove);
 	npc_pilot->SetDialogue("Pilot", true);
 	return;
 }
