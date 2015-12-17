@@ -22,6 +22,7 @@
 #include <C4Def.h>
 #include <C4DefList.h>
 #include <C4Effect.h>
+#include <utility>
 
 inline const static char *FnStringPar(C4String *pString)
 {
@@ -203,114 +204,86 @@ protected:
 	C4V_Type ParType[10];// type of the parameters
 	bool Public;
 };
+template <typename RType, typename ...ParTypes>
+class C4AulEngineFunc: public C4AulDefFuncHelper {
+public:
+	/* A pointer to the function which this class wraps */
+	typedef RType (*Func)(C4PropList *, ParTypes...);
 
-// A macro to create lists with some helper macros
-// LIST(2, foo) would create ", foo(0), foo(1)
-// TEXT can be a macro
-#define LIST(N, TEXT) LIST##N(TEXT)
-// The lists are used in a context where a leading comma is needed when the list is not empty
-#define LIST0(TEXT)
-#define LIST1(TEXT) LIST0(TEXT), TEXT(0)
-#define LIST2(TEXT) LIST1(TEXT), TEXT(1)
-#define LIST3(TEXT) LIST2(TEXT), TEXT(2)
-#define LIST4(TEXT) LIST3(TEXT), TEXT(3)
-#define LIST5(TEXT) LIST4(TEXT), TEXT(4)
-#define LIST6(TEXT) LIST5(TEXT), TEXT(5)
-#define LIST7(TEXT) LIST6(TEXT), TEXT(6)
-#define LIST8(TEXT) LIST7(TEXT), TEXT(7)
-#define LIST9(TEXT) LIST8(TEXT), TEXT(8)
-#define LIST10(TEXT) LIST9(TEXT), TEXT(9)
+	virtual int GetParCount() const
+	{
+		return sizeof...(ParTypes);
+	}
 
-// Macros which are passed to LIST
-#define TYPENAMES(N) typename Par##N##_t
-#define PARS(N) Par##N##_t
-#define CONV_TYPE(N) C4ValueConv<Par##N##_t>::Type()
-#define CONV_FROM_C4V(N) C4ValueConv<Par##N##_t>::_FromC4V(pPars[N])
+	virtual C4V_Type GetRetType() const
+	{
+		return C4ValueConv<RType>::Type();
+	}
 
-// N is the number of parameters pFunc needs. Templates can only have a fixed number of arguments,
-// so eleven templates are needed
-#define TEMPLATE(N)                           \
-template <typename RType LIST(N, TYPENAMES)>  \
-class C4AulDefFunc##N:                        \
-public C4AulDefFuncHelper {                   \
-  public:                                     \
-/* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4PropList * LIST(N, PARS)); \
-    virtual int GetParCount() const { return N; } \
-    virtual C4V_Type GetRetType() const       \
-    { return C4ValueConv<RType>::Type(); }    \
-/* Constructor, using the base class to create the ParType array */ \
-    C4AulDefFunc##N(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public): \
-      C4AulDefFuncHelper(Parent, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
-    { return C4Value(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
-  protected:                                  \
-    Func pFunc;                               \
-  };                                          \
-template <typename RType LIST(N, TYPENAMES)>  \
-class C4AulDefObjectFunc##N:                  \
-public C4AulDefFuncHelper {                   \
-  public:                                     \
-/* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4Object * LIST(N, PARS)); \
-    virtual int GetParCount() const { return N; } \
-    virtual C4V_Type GetRetType() const       \
-    { return C4ValueConv<RType>::Type(); }    \
-/* Constructor, using the base class to create the ParType array */ \
-    C4AulDefObjectFunc##N(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public): \
-      C4AulDefFuncHelper(Parent, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
-    { \
-      C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw NeedObjectContext(GetName()); \
-      return C4Value(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
-    } \
-  protected:                                  \
-    Func pFunc;                               \
-  };                                          \
-template <typename RType LIST(N, TYPENAMES)>  \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList * LIST(N, PARS)), bool Public=true) \
-  { \
-  new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner->GetPropList(), Name, pFunc, Public); \
-  } \
-template <typename RType LIST(N, TYPENAMES)> \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object * LIST(N, PARS)), bool Public=true) \
-  { \
-  new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner->GetPropList(), Name, pFunc, Public); \
-  }
+	/* Constructor, using the base class to create the ParType array */
+	C4AulEngineFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
+	C4AulDefFuncHelper(Parent, pName, Public, C4ValueConv<ParTypes>::Type()...), pFunc(pFunc)
+	{ }
 
-TEMPLATE(0)
-TEMPLATE(1)
-TEMPLATE(2)
-TEMPLATE(3)
-TEMPLATE(4)
-TEMPLATE(5)
-TEMPLATE(6)
-TEMPLATE(7)
-TEMPLATE(8)
-TEMPLATE(9)
-TEMPLATE(10)
+	/* Extracts the parameters from C4Values and wraps the return value in a C4Value */
+	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
+	{
+		return ExecImpl(_this, pPars, std::index_sequence_for<ParTypes...>{});
+	}
+protected:
+	template<std::size_t... Is> C4Value ExecImpl(C4PropList * _this, C4Value pPars[], std::index_sequence<Is...>)
+	{
+		return C4Value(pFunc(_this, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...));
+		(void) pPars;
+	}
+	Func pFunc;
+};
+template <typename RType, typename ...ParTypes>
+class C4AulObjectFunc: public C4AulDefFuncHelper {
+public:
+	/* A pointer to the function which this class wraps */
+	typedef RType (*Func)(C4Object *, ParTypes...);
 
+	virtual int GetParCount() const
+	{
+		return sizeof...(ParTypes);
+	}
 
-#undef LIST
-#undef LIST0
-#undef LIST1
-#undef LIST2
-#undef LIST3
-#undef LIST4
-#undef LIST5
-#undef LIST6
-#undef LIST7
-#undef LIST8
-#undef LIST9
-#undef LIST10
+	virtual C4V_Type GetRetType() const
+	{
+		return C4ValueConv<RType>::Type();
+	}
 
-#undef TYPENAMES
-#undef PARS
-#undef CONV_TYPE
-#undef CONV_FROM_C4V
-#undef TEMPLATE
+	/* Constructor, using the base class to create the ParType array */
+	C4AulObjectFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
+	C4AulDefFuncHelper(Parent, pName, Public, C4ValueConv<ParTypes>::Type()...), pFunc(pFunc)
+	{ }
+
+	/* Extracts the parameters from C4Values and wraps the return value in a C4Value */
+	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
+	{
+		C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw NeedObjectContext(GetName());
+		return ExecImpl(Obj, pPars, std::index_sequence_for<ParTypes...>{});
+	}
+protected:
+	template<std::size_t... Is> C4Value ExecImpl(C4Object * Obj, C4Value pPars[], std::index_sequence<Is...>)
+	{
+		return C4Value(pFunc(Obj, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...));
+		(void) pPars;
+	}
+	Func pFunc;
+};
+
+template <typename RType, typename ...ParTypes>
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList *, ParTypes...), bool Public=true)
+{
+	new C4AulEngineFunc<RType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
+}
+template <typename RType, typename ...ParTypes>
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object *, ParTypes...), bool Public=true)
+{
+	new C4AulObjectFunc<RType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
+}
 
 // a definition of a script constant
 struct C4ScriptConstDef
