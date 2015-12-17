@@ -130,7 +130,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	carry_bone = "pos_hand2";
 
-	var length = Sword_Standard_StrikingLength;
+	var length = Axe_Standard_StrikingLength;
 
 	if(clonk->IsWalking())
 	{
