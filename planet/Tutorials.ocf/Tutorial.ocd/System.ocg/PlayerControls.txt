@@ -1,0 +1,22 @@
+[ControlDefs]
+
+	[ControlDef]
+	Identifier=TutorialGuide
+	GUIName=TutorialGuide
+	GUIDesc=Show/hide tutorial guide
+	SendCursorPos=1
+
+
+[ControlSets]
+
+	[ControlSet]
+	Name=WASD_Hotkeys_IntQueue_MouseCon_
+	GUIName=Keyboard and Mouse
+	Keyboard=1
+	Mouse=1
+	Gamepad=0
+
+		[Assignment]
+		Key=G
+		Control=TutorialGuide
+	

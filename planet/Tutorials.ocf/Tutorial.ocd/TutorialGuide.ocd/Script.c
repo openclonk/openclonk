@@ -60,12 +60,34 @@ public func ShowGuideMessage(int show_index)
 	return;
 }
 
-/* Hides the guide and its menu to the player.
-*/
+// Hides the guide and its menu to the player.
 public func HideGuide()
 {
-	CloseGuideMenu();
+	if (this.Visibility = VIS_Owner)
+	{
+		// Change visibility and do script callback.
+		this.Visibility = VIS_None;
+		GameCall("OnGuideMessageRemoved", GetOwner(), message_open);
+	}
 	return;
+}
+
+// Shows the guide and its menu to the player, if it was hidden before.
+public func ShowGuide()
+{
+	if (this.Visibility = VIS_None)
+	{
+		// Change visibility and do script callback.
+		this.Visibility = VIS_Owner;
+		GameCall("OnGuideMessageShown", GetOwner(), message_open);
+	}
+	return;
+}
+
+// Returns whether the guide is currently hidden.
+public func IsHidden()
+{
+	return this.Visibility == VIS_None;
 }
 
 public func EnableCloseOnLastMessage(bool disable)
