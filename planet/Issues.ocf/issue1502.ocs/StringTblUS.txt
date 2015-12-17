@@ -1,0 +1,3 @@
+Original1=Translation1
+Original2=Translation2
+Name=Translation3
