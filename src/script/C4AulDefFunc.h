@@ -100,6 +100,39 @@ public:
 // return type of functions returning nil
 typedef Nillable<void> C4Void;
 
+// For functions taking a C4Object as this, check that they got one
+template <typename ThisType> struct ThisImpl;
+template <> struct ThisImpl<C4Object>
+{
+	static C4Object* Conv(C4PropList* _this, C4AulFunc* func)
+	{
+		C4Object* Obj = _this ? _this->GetObject() : nullptr;
+		if (Obj)
+			return Obj;
+		else
+			throw NeedObjectContext(func->GetName());
+	}
+};
+template <> struct ThisImpl<C4PropList>
+{
+	static C4PropList* Conv(C4PropList* _this, C4AulFunc* func)
+	{
+		return _this;
+	}
+};
+
+// Extracts the parameters from C4Values and wraps the return value in a C4Value
+template <typename RType, typename ThisType, typename ...ParTypes>
+struct ExecImpl
+{
+	template <std::size_t... Is>
+	static C4Value Exec(RType (*pFunc)(ThisType *, ParTypes...), ThisType * _this, C4Value pPars[], std::index_sequence<Is...>)
+	{
+		return C4Value(pFunc(_this, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...));
+		(void) pPars;
+	}
+};
+
 // converter templates
 template <typename T>
 struct C4ValueConv<Nillable<T> >
@@ -173,116 +206,56 @@ template <> struct C4ValueConv<C4Value>
 	inline static C4Value _FromC4V(C4Value &v) { return v; }
 };
 
-// defined function class
-class C4AulDefFuncHelper: public C4AulFunc
+// Wrapper around an ordinary C++ function callable from C4Script
+template <typename RType, typename ThisType, typename ...ParTypes>
+class C4AulEngineFunc: public C4AulFunc
 {
 public:
-	C4AulDefFuncHelper(C4PropListStatic * Parent, const char *pName, bool Public,
-	                   C4V_Type pt0 = C4V_Any, C4V_Type pt1 = C4V_Any, C4V_Type pt2 = C4V_Any, C4V_Type pt3 = C4V_Any, C4V_Type pt4 = C4V_Any,
-	                   C4V_Type pt5 = C4V_Any, C4V_Type pt6 = C4V_Any, C4V_Type pt7 = C4V_Any, C4V_Type pt8 = C4V_Any, C4V_Type pt9 = C4V_Any):
-			C4AulFunc(Parent, pName),
-			Public(Public)
+	/* A pointer to the function which this class wraps */
+	typedef RType (*Func)(ThisType *, ParTypes...);
+
+	C4AulEngineFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
+		C4AulFunc(Parent, pName),
+		pFunc(pFunc), ParType {C4ValueConv<ParTypes>::Type()...}, Public(Public)
 	{
-		ParType[0] = pt0;
-		ParType[1] = pt1;
-		ParType[2] = pt2;
-		ParType[3] = pt3;
-		ParType[4] = pt4;
-		ParType[5] = pt5;
-		ParType[6] = pt6;
-		ParType[7] = pt7;
-		ParType[8] = pt8;
-		ParType[9] = pt9;
 		Parent->SetPropertyByS(Name, C4VFunction(this));
 	}
-	~C4AulDefFuncHelper()
+
+	virtual int GetParCount() const
 	{
+		return sizeof...(ParTypes);
 	}
-	virtual const C4V_Type* GetParType() const { return ParType; }
-	virtual bool GetPublic() const { return Public; }
+
+	virtual const C4V_Type* GetParType() const
+	{
+		return ParType;
+	}
+
+	virtual C4V_Type GetRetType() const
+	{
+		return C4ValueConv<RType>::Type();
+	}
+
+	virtual bool GetPublic() const
+	{
+		return Public;
+	}
+
+	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
+	{
+		return ExecImpl<RType, ThisType, ParTypes...>::Exec(pFunc, ThisImpl<ThisType>::Conv(_this, this),
+								    pPars, std::index_sequence_for<ParTypes...>{});
+	}
 protected:
+	Func pFunc;
 	C4V_Type ParType[10];// type of the parameters
 	bool Public;
 };
-template <typename RType, typename ...ParTypes>
-class C4AulEngineFunc: public C4AulDefFuncHelper {
-public:
-	/* A pointer to the function which this class wraps */
-	typedef RType (*Func)(C4PropList *, ParTypes...);
 
-	virtual int GetParCount() const
-	{
-		return sizeof...(ParTypes);
-	}
-
-	virtual C4V_Type GetRetType() const
-	{
-		return C4ValueConv<RType>::Type();
-	}
-
-	/* Constructor, using the base class to create the ParType array */
-	C4AulEngineFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
-	C4AulDefFuncHelper(Parent, pName, Public, C4ValueConv<ParTypes>::Type()...), pFunc(pFunc)
-	{ }
-
-	/* Extracts the parameters from C4Values and wraps the return value in a C4Value */
-	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
-	{
-		return ExecImpl(_this, pPars, std::index_sequence_for<ParTypes...>{});
-	}
-protected:
-	template<std::size_t... Is> C4Value ExecImpl(C4PropList * _this, C4Value pPars[], std::index_sequence<Is...>)
-	{
-		return C4Value(pFunc(_this, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...));
-		(void) pPars;
-	}
-	Func pFunc;
-};
-template <typename RType, typename ...ParTypes>
-class C4AulObjectFunc: public C4AulDefFuncHelper {
-public:
-	/* A pointer to the function which this class wraps */
-	typedef RType (*Func)(C4Object *, ParTypes...);
-
-	virtual int GetParCount() const
-	{
-		return sizeof...(ParTypes);
-	}
-
-	virtual C4V_Type GetRetType() const
-	{
-		return C4ValueConv<RType>::Type();
-	}
-
-	/* Constructor, using the base class to create the ParType array */
-	C4AulObjectFunc(C4PropListStatic * Parent, const char *pName, Func pFunc, bool Public):
-	C4AulDefFuncHelper(Parent, pName, Public, C4ValueConv<ParTypes>::Type()...), pFunc(pFunc)
-	{ }
-
-	/* Extracts the parameters from C4Values and wraps the return value in a C4Value */
-	virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors)
-	{
-		C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw NeedObjectContext(GetName());
-		return ExecImpl(Obj, pPars, std::index_sequence_for<ParTypes...>{});
-	}
-protected:
-	template<std::size_t... Is> C4Value ExecImpl(C4Object * Obj, C4Value pPars[], std::index_sequence<Is...>)
-	{
-		return C4Value(pFunc(Obj, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...));
-		(void) pPars;
-	}
-	Func pFunc;
-};
-
-template <typename RType, typename ...ParTypes>
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList *, ParTypes...), bool Public=true)
+template <typename RType, typename ThisType, typename ...ParTypes>
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(ThisType *, ParTypes...), bool Public=true)
 {
-	new C4AulEngineFunc<RType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
-}
-template <typename RType, typename ...ParTypes>
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object *, ParTypes...), bool Public=true)
-{
-	new C4AulObjectFunc<RType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
+	new C4AulEngineFunc<RType, ThisType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
 }
 
 // a definition of a script constant
