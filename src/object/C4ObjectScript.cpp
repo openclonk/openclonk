@@ -815,10 +815,10 @@ static C4PropList* FnGetID(C4Object *Obj)
 	return Obj->GetPrototype();
 }
 
-static Nillable<C4ID> FnGetMenu(C4Object *Obj)
+static Nillable<C4Def*> FnGetMenu(C4Object *Obj)
 {
 	if (Obj->Menu && Obj->Menu->IsActive())
-		return C4ID(Obj->Menu->GetIdentification());
+		return C4Id2Def(C4ID(Obj->Menu->GetIdentification()));
 	return C4Void();
 }
 

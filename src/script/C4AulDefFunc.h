@@ -100,110 +100,77 @@ public:
 typedef Nillable<void> C4Void;
 
 // converter templates
-template<typename T>
+template <typename T>
 struct C4ValueConv<Nillable<T> >
 {
-	inline static Nillable<T> FromC4V(C4Value &v) { if (v.GetType() == C4V_Nil) return C4Void(); else return C4ValueConv<T>::FromC4V(v); }
 	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Nil) return C4Void(); else return C4ValueConv<T>::_FromC4V(v); }
 	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
-	inline static C4Value ToC4V(const Nillable<T> &v) { if (v.IsNil()) return C4Value(); else return C4ValueConv<T>::ToC4V(v.operator T()); }
 };
-template<>
-struct C4ValueConv<Nillable<void> >
+template <> struct C4ValueConv<Nillable<void> >
 {
 	inline static C4V_Type Type() { return C4V_Nil; }
-	inline static C4Value ToC4V(const Nillable<void> &) { return C4Value(); }
 };
-template <> struct C4ValueConv<int32_t>
+template <> struct C4ValueConv<int>
 {
 	inline static C4V_Type Type() { return C4V_Int; }
-	inline static int32_t FromC4V(C4Value &v) { return v.getInt(); }
-	inline static int32_t _FromC4V(C4Value &v) { return v._getInt(); }
-	inline static C4Value ToC4V(int32_t v) { return C4VInt(v); }
+	inline static int _FromC4V(C4Value &v) { return v._getInt(); }
 };
+template <> struct C4ValueConv<long>: public C4ValueConv<int> { };
 template <> struct C4ValueConv<bool>
 {
 	inline static C4V_Type Type() { return C4V_Bool; }
-	inline static bool FromC4V(C4Value &v) { return v.getBool(); }
 	inline static bool _FromC4V(C4Value &v) { return v._getBool(); }
-	inline static C4Value ToC4V(bool v) { return C4VBool(v); }
 };
 template <> struct C4ValueConv<C4ID>
 {
 	inline static C4V_Type Type() { return C4V_PropList; }
-	inline static C4ID FromC4V(C4Value &v) { C4Def * def = v.getDef(); return def ? def->id : C4ID::None; }
-	inline static C4ID _FromC4V(C4Value &v) { return FromC4V(v); }
-	inline static C4Value ToC4V(C4ID v) { return C4VPropList(C4Id2Def(v)); }
+	inline static C4ID _FromC4V(C4Value &v) { C4Def * def = v.getDef(); return def ? def->id : C4ID::None; }
 };
 template <> struct C4ValueConv<C4Object *>
 {
 	inline static C4V_Type Type() { return C4V_Object; }
-	inline static C4Object *FromC4V(C4Value &v) { return v.getObj(); }
 	inline static C4Object *_FromC4V(C4Value &v) { return v._getObj(); }
-	inline static C4Value ToC4V(C4Object *v) { return C4VObj(v); }
 };
 template <> struct C4ValueConv<C4String *>
 {
 	inline static C4V_Type Type() { return C4V_String; }
-	inline static C4String *FromC4V(C4Value &v) { return v.getStr(); }
 	inline static C4String *_FromC4V(C4Value &v) { return v._getStr(); }
-	inline static C4Value ToC4V(C4String *v) { return C4VString(v); }
 };
 template <> struct C4ValueConv<C4ValueArray *>
 {
 	inline static C4V_Type Type() { return C4V_Array; }
-	inline static C4ValueArray *FromC4V(C4Value &v) { return v.getArray(); }
 	inline static C4ValueArray *_FromC4V(C4Value &v) { return v._getArray(); }
-	inline static C4Value ToC4V(C4ValueArray *v) { return C4VArray(v); }
 };
 template <> struct C4ValueConv<C4AulFunc *>
 {
 	inline static C4V_Type Type() { return C4V_Function; }
-	inline static C4AulFunc *FromC4V(C4Value &v) { return v.getFunction(); }
 	inline static C4AulFunc *_FromC4V(C4Value &v) { return v._getFunction(); }
-	inline static C4Value ToC4V(C4AulFunc *v) { return C4VFunction(v); }
 };
 template <> struct C4ValueConv<C4PropList *>
 {
 	inline static C4V_Type Type() { return C4V_PropList; }
-	inline static C4PropList *FromC4V(C4Value &v) { return v.getPropList(); }
 	inline static C4PropList *_FromC4V(C4Value &v) { return v._getPropList(); }
-	inline static C4Value ToC4V(C4PropList *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<C4Effect *>
 {
 	inline static C4V_Type Type() { return C4V_Effect; }
-	inline static C4Effect *FromC4V(C4Value &v) { C4PropList * p = v.getPropList(); return p ? p->GetEffect() : 0; }
 	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : 0; }
-	inline static C4Value ToC4V(C4Effect *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<C4Def *>
 {
 	inline static C4V_Type Type() { return C4V_Def; }
-	inline static C4Def *FromC4V(C4Value &v) { return v.getDef(); }
 	inline static C4Def *_FromC4V(C4Value &v) { return v._getDef(); }
-	inline static C4Value ToC4V(C4Def *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<const C4Value &>
 {
 	inline static C4V_Type Type() { return C4V_Any; }
-	inline static const C4Value &FromC4V(C4Value &v) { return v; }
 	inline static const C4Value &_FromC4V(C4Value &v) { return v; }
-	inline static C4Value ToC4V(const C4Value &v) { return v; }
 };
 template <> struct C4ValueConv<C4Value>
 {
 	inline static C4V_Type Type() { return C4V_Any; }
-	inline static C4Value FromC4V(C4Value &v) { return v; }
 	inline static C4Value _FromC4V(C4Value &v) { return v; }
-	inline static C4Value ToC4V(C4Value v) { return v; }
 };
-
-// aliases
-template <> struct C4ValueConv<long> : public C4ValueConv<int32_t> { };
-#if defined(_MSC_VER) && _MSC_VER <= 1100
-template <> struct C4ValueConv<int> : public C4ValueConv<int32_t> { };
-#endif
 
 // defined function class
 class C4AulDefFuncHelper: public C4AulFunc
@@ -277,7 +244,7 @@ public C4AulDefFuncHelper {                   \
       C4AulDefFuncHelper(Parent, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
     virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
-    { return C4ValueConv<RType>::ToC4V(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
+    { return C4Value(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
@@ -297,7 +264,7 @@ public C4AulDefFuncHelper {                   \
     virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { \
       C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw NeedObjectContext(GetName()); \
-      return C4ValueConv<RType>::ToC4V(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
+      return C4Value(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
     } \
   protected:                                  \
     Func pFunc;                               \
