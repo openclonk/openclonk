@@ -23,6 +23,7 @@
 #include <C4Landscape.h>
 #include <C4Texture.h>
 #include <C4Random.h>
+#include <C4Script.h>
 
 C4MapScriptAlgo *FnParAlgo(C4PropList *algo_par);
 

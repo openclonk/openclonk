@@ -25,7 +25,6 @@
 // add functions to engine
 void InitGameFunctionMap(C4AulScriptEngine *pEngine);
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine);
-void InitCoreFunctionMap(C4AulScriptEngine *pEngine);
 
 bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix);
 bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);

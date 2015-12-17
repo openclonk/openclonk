@@ -19,7 +19,6 @@
 
 #include "lib/C4Random.h"
 #include "c4group/C4Group.h"
-#include "gamescript/C4Script.h"
 #include "script/C4Aul.h"
 #include "script/C4ScriptHost.h"
 #include <C4DefList.h>

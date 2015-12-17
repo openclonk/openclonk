@@ -17,11 +17,10 @@
 #ifndef INC_C4Aul
 #define INC_C4Aul
 
-#include <C4ValueMap.h>
 #include <C4Id.h>
-#include <C4Script.h>
 #include <C4StringTable.h>
-#include "C4AulFunc.h"
+#include <C4Value.h>
+#include <C4ValueMap.h>
 #include <string>
 #include <vector>
 
@@ -250,4 +249,6 @@ public:
 };
 
 extern C4AulScriptEngine ScriptEngine;
+void InitCoreFunctionMap(C4AulScriptEngine *pEngine);
+
 #endif

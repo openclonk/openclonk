@@ -18,9 +18,10 @@
 #ifndef INC_C4AulDefFunc
 #define INC_C4AulDefFunc
 
-#include <C4Object.h>
-#include <C4Effect.h>
+#include <C4Aul.h>
+#include <C4Def.h>
 #include <C4DefList.h>
+#include <C4Effect.h>
 
 inline const static char *FnStringPar(C4String *pString)
 {

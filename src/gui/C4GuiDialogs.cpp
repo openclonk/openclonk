@@ -26,6 +26,7 @@
 #include <C4Def.h>
 #include <C4GraphicsResource.h>
 #include <C4Application.h>
+#include <C4Script.h>
 
 #include <C4DrawGL.h>
 #include <StdRegistry.h>
