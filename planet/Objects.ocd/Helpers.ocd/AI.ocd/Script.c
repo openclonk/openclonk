@@ -214,6 +214,14 @@ private func Execute(proplist fx, int time)
 	return Call(fx.strategy, fx);
 }
 
+// Selects an item the clonk is about to use
+private func SelectItem(object item)
+{
+	if (!item) return;
+	if (item->Contained() != this) return;
+	this->SetHandItemPos(0, this->GetItemPos(item));
+}
+
 private func ExecuteProtection(fx)
 {
 	// Search for nearby projectiles. Ranged AI also searches for enemy clonks to evade.
@@ -248,6 +256,7 @@ private func ExecuteProtection(fx)
 			if (fx.shield && !obj->~HasExplosionOnImpact())
 			{
 				// use it!
+				SelectItem(fx.shield);
 				if (fx.aim_weapon == fx.shield)
 				{
 					// continue to hold shield
@@ -377,6 +386,7 @@ private func ExecuteRanged(fx)
 		CancelAiming(fx);
 		if (!CheckHandsAction(fx)) return true;
 		// Start aiming
+		SelectItem(fx.weapon);
 		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
 		fx.aim_weapon = fx.weapon;
 		fx.aim_time = fx.time;
@@ -478,6 +488,7 @@ private func ExecuteThrow(fx)
 			// And throw!
 			//Message("Throw!");
 			SetCommand("None"); SetComDir(COMD_Stop);
+			SelectItem(fx.weapon);
 			return this->ControlThrow(fx.weapon, dx, dy);
 		}
 	}
@@ -560,6 +571,7 @@ private func ExecuteMelee(fx)
 			}
 			// OK, slash!
 			//Message("MeleeSLASH %s @ %s!!!", fx.weapon->GetName(), fx.target->GetName());
+			SelectItem(fx.weapon);
 			return fx.weapon->ControlUse(this, tx,ty);
 		}
 		// Clonk is above us - jump there
@@ -597,11 +609,12 @@ private func ExecuteJump(fx)
 private func ExecuteArm(fx)
 {
 	// Find shield
-	if (fx.shield = FindContents(Shield)) this->SetHandItemPos(1, this->GetItemPos(fx.shield));
+	//if (fx.shield = FindContents(Shield)) this->SetHandItemPos(1, this->GetItemPos(fx.shield));
+	fx.shield = FindContents(Shield);
 	// Find a weapon. For now, just search own inventory
 	if (FindInventoryWeapon(fx) && fx.weapon->Contained()==this)
 	{
-		this->SetHandItemPos(0, this->GetItemPos(fx.weapon));
+		SelectItem(fx.weapon);
 		return true;
 	}
 	// no weapon :(
