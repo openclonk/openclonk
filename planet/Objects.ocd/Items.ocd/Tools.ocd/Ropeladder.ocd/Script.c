@@ -270,7 +270,7 @@ private func RopeRemoved()
 	RemoveEffect("IntHang", this);
 	SetCategory(C4D_Object);
 	SetAction("Idle");
-	SetProperty("Collectible", true);
+	this.Collectible = true;
 
 	// Try to move the ropeladder somewhere out if it is stuck.
 	TestMoveOut( 0, -1); // Up
@@ -280,7 +280,7 @@ private func RopeRemoved()
 
 	// Remove the ladder grabber and reset the graphics.
 	grabber->RemoveObject();
-	SetGraphics("", GetID());
+	SetGraphics();
 	return;
 }
 
@@ -458,10 +458,15 @@ public func GetLadderData(int index)
 	}
 	if (index == lib_rope_particle_count-1 || lib_rope_segments[index + 1]->~CanNotBeClimbed())
 	{
-		angle = Angle(lib_rope_particles[index].x, lib_rope_particles[index].y, lib_rope_particles[index - 2].x, lib_rope_particles[index - 2].y);
+		var to_index = index - 2;
+		if (index == 1)
+			to_index = 0;
+		angle = Angle(lib_rope_particles[index].x, lib_rope_particles[index].y, lib_rope_particles[to_index].x, lib_rope_particles[to_index].y);
 	}
 	else
+	{
 		angle = Angle(lib_rope_particles[index + 1].x, lib_rope_particles[index + 1].y, lib_rope_particles[index - 1].x, lib_rope_particles[index - 1].y);
+	}
 	var endx = lib_rope_particles[index - 1].x * 10;
 	var endy = lib_rope_particles[index - 1].y * 10;
 	return [startx, starty, endx, endy, angle];

@@ -78,7 +78,7 @@ public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 	var ladder;
 	if (!no_ladder_counter)
 	{
-		for (ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		for (ladder in FindObjects(Find_AtRect(-5, -5, 10, 10), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 		{
 			if (ladder->~CanNotBeClimbed()) 
 				continue;
@@ -234,7 +234,7 @@ public func FxIntClimbControlTimer(object target, proplist effect, int time)
 	if (Stuck())
 	{
 		var dir = -1;
-		if (GetDir() == 0) 
+		if (GetDir() == DIR_Left) 
 			dir = 1;
 		for (var i = 1; i <= 5; i++)
 		{
@@ -250,15 +250,15 @@ public func FxIntClimbControlTimer(object target, proplist effect, int time)
 		if (step) 
 			LadderStep(target, effect, -step);
 		// if we are to far left or right try to turn
-		if (GetDir() == 0 && LadderToLandscapeCoordinates(x) - 2 > GetX())
+		if (GetDir() == DIR_Left && LadderToLandscapeCoordinates(x) - 2 > GetX())
 		{
 			SetComDir(COMD_Right);
-			SetDir(1);
+			SetDir(DIR_Right);
 		}
-		else if (GetDir() == 1 && LadderToLandscapeCoordinates(x)+2 < GetX())
+		else if (GetDir() == DIR_Right && LadderToLandscapeCoordinates(x)+2 < GetX())
 		{
 			SetComDir(COMD_Left);
-			SetDir(0);
+			SetDir(DIR_Left);
 		}
 	}
 	else effect.ladder->~OnLadderClimb(this);
@@ -269,8 +269,7 @@ public func FxIntClimbControlTimer(object target, proplist effect, int time)
 		if (GetAnimationName(animation) != nil)
 		{
 			var length = GetAnimationLength(GetAnimationName(animation));
-			var pos = effect.pos*length/200+length/2*effect.odd;
-			//pos = BoundBy(pos, 1, length-1);
+			var pos = effect.pos * length / 200 + length / 2 * effect.odd;
 			SetAnimationPosition(animation, Anim_Const(pos));
 		}
 	}
@@ -316,7 +315,6 @@ public func FxIntClimbControlStop(target, effect)
 
 public func FxIntClimbControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	//Log("LIBLADDER: Control effect ctrl = %d, dir = %d", ctrl, GetDir());	
 	// Only handle movement controls.
 	if (ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) 
 		return false;
@@ -382,7 +380,7 @@ public func FxIntClimbControlControl(object target, proplist effect, int ctrl, i
 	return true;
 }
 
-public func SetLadderRotation (int r, int xoff, int yoff) 
+public func SetLadderRotation(int r, int xoff, int yoff) 
 {
 	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r, 0, 0, 1), Trans_Translate(xoff, 10000 + yoff)), 5);
 	return;

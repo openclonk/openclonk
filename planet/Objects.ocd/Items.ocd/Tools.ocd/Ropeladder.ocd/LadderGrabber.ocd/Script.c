@@ -31,10 +31,10 @@ public func SaveScenarioObject() { return false; }
 /*-- Properties --*/
 
 local ActMap = {
-		Attach = {
-			Prototype = Action,
-			Name = "Attach",
-			Procedure = DFA_ATTACH,
-		},
+	Attach = {
+		Prototype = Action,
+		Name = "Attach",
+		Procedure = DFA_ATTACH,
+	},
 };
 local Name = "$Name$";
