@@ -68,6 +68,7 @@ public:
 	void Clear() { constant = false; Properties.Clear(); prototype.Set0(); }
 	const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
+	virtual void SetOnFire(bool OnFire) { }
 
 	// These functions return this or a prototype.
 	virtual C4Def const * GetDef() const;

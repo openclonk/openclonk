@@ -84,11 +84,11 @@ protected:
 
 	void AssignCallbackFunctions(); // resolve callback function names
 
-	int CallStart(C4Object * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
-	int CallStop(C4Object * obj, int reason, bool temporary);
-	int CallTimer(C4Object * obj, int time);
-	void CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr);
-	int CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+	int CallStart(C4PropList * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+	int CallStop(C4PropList * obj, int reason, bool temporary);
+	int CallTimer(C4PropList * obj, int time);
+	void CallDamage(C4PropList * obj, int32_t & damage, int damagetype, int plr);
+	int CallEffect(const char * effect, C4PropList * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 
 	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
 	C4Effect(const C4Effect &); // unimplemented, do not use
@@ -110,15 +110,15 @@ public:
 
 	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
 	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
-	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
+	C4Effect *Check(C4PropList *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
 	C4PropList * GetCallbackScript(); // get script context for effect callbacks
 
 	void Execute(C4Object *pObj); // execute all effects
-	void Kill(C4Object *pObj);    // mark this effect deleted and do approprioate calls
-	void ClearAll(C4Object *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
-	void DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
+	void Kill(C4PropList *pObj);    // mark this effect deleted and do approprioate calls
+	void ClearAll(C4PropList *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
+	void DoDamage(C4PropList *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
 
-	C4Value DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
+	C4Value DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
 
 	void ReAssignCallbackFunctions()
 	{ AssignCallbackFunctions(); }
@@ -137,8 +137,8 @@ public:
 	virtual C4ValueArray * GetProperties() const;
 
 protected:
-	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
-	void TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
+	void TempRemoveUpperEffects(C4PropList *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
+	void TempReaddUpperEffects(C4PropList *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
 };
 
 // fire effect constants

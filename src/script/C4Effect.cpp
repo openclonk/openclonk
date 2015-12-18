@@ -207,7 +207,7 @@ int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 	return iCnt;
 }
 
-C4Effect* C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect* C4Effect::Check(C4PropList *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	// priority=1: always OK; no callbacks
 	if (iPrio == 1) return 0;
@@ -298,7 +298,7 @@ void C4Effect::Execute(C4Object *pObj)
 	while (pEffect);
 }
 
-void C4Effect::Kill(C4Object *pObj)
+void C4Effect::Kill(C4PropList *pObj)
 {
 	// active?
 	C4Effect *pLastRemovedEffect=NULL;
@@ -322,7 +322,7 @@ void C4Effect::Kill(C4Object *pObj)
 			pObj->SetOnFire(false);
 }
 
-void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
+void C4Effect::ClearAll(C4PropList *pObj, int32_t iClearFlag)
 {
 	// simply remove access all effects recursively, and do removal calls
 	// this does not regard lower-level effects being added in the removal calls,
@@ -345,7 +345,7 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 			pObj->SetOnFire(false);
 }
 
-void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
+void C4Effect::DoDamage(C4PropList *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
 {
 	// ask all effects for damage adjustments
 	C4Effect *pEff = this;
@@ -358,7 +358,7 @@ void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, 
 	while ((pEff = pEff->pNext) && riDamage);
 }
 
-C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
+C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
 	// def script or global only?
 	C4PropList *p = GetCallbackScript();
@@ -368,30 +368,30 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1,
 	return p->Call(fn, &C4AulParSet(pObj, this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 }
 
-int C4Effect::CallStart(C4Object * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
+int C4Effect::CallStart(C4PropList * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (pFnStart)
 		return pFnStart->Exec(GetCallbackScript(), &C4AulParSet(obj, this, temporary, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
 }
-int C4Effect::CallStop(C4Object * obj, int reason, bool temporary)
+int C4Effect::CallStop(C4PropList * obj, int reason, bool temporary)
 {
 	if (pFnStop)
 		return pFnStop->Exec(GetCallbackScript(), &C4AulParSet(obj, this, reason, temporary)).getInt();
 	return C4Fx_OK;
 }
-int C4Effect::CallTimer(C4Object * obj, int time)
+int C4Effect::CallTimer(C4PropList * obj, int time)
 {
 	if (pFnTimer)
 		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(obj, this, time)).getInt();
 	return C4Fx_Execute_Kill;
 }
-void C4Effect::CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr)
+void C4Effect::CallDamage(C4PropList * obj, int32_t & damage, int damagetype, int plr)
 {
 	if (pFnDamage)
 		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(obj, this, damage, damagetype, plr)).getInt();
 }
-int C4Effect::CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
+int C4Effect::CallEffect(const char * effect, C4PropList * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (pFnEffect)
 		return pFnEffect->Exec(GetCallbackScript(), &C4AulParSet(effect, obj, this, var1, var2, var3, var4)).getInt();
@@ -412,7 +412,7 @@ void C4Effect::OnObjectChangedDef(C4PropList *pObj)
 	}
 }
 
-void C4Effect::TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect)
+void C4Effect::TempRemoveUpperEffects(C4PropList *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect)
 {
 	if (pObj && !pObj->Status) return; // this will be invalid!
 	// priority=1: no callbacks
@@ -437,7 +437,7 @@ void C4Effect::TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Ef
 	}
 }
 
-void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
+void C4Effect::TempReaddUpperEffects(C4PropList *pObj, C4Effect *pLastReaddEffect)
 {
 	// nothing to do? - this will also happen if TempRemoveUpperEffects did nothing due to priority==1
 	if (!pLastReaddEffect) return;
