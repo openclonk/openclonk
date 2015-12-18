@@ -955,21 +955,6 @@ static bool FnDoBaseProduction(C4PropList * _this, long iPlr, C4ID id, long iCha
 	return ::Players.Get(iPlr)->BaseProduction.SetIDCount(id,iLastcount+iChange,true);
 }
 
-bool FnSetPlrKnowledge(C4Player *player, C4ID id, bool fRemove)
-{
-	if (fRemove)
-	{
-		long iIndex = player->Knowledge.GetIndex(id);
-		if (iIndex<0) return false;
-		return player->Knowledge.DeleteItem(iIndex);
-	}
-	else
-	{
-		if (!C4Id2Def(id)) return false;
-		return player->Knowledge.SetIDCount(id, 1, true);
-	}
-}
-
 static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> iPlr, C4ID id, bool fRemove)
 {
 	
@@ -978,14 +963,14 @@ static bool FnSetPlrKnowledge(C4PropList * _this, Nillable<long> iPlr, C4ID id, 
 	if (iPlr.IsNil())
 	{
 		for (C4Player *player = ::Players.First; player; player = player->Next)
-			if (FnSetPlrKnowledge(player, id, fRemove))
+			if (player->SetKnowledge(id, fRemove))
 				success = true;
 	}
 	else
 	{
 		// Otherwise call for requested player
 		C4Player *player = ::Players.Get(iPlr);
-		if (player) success = FnSetPlrKnowledge(player, id, fRemove);
+		if (player) success = player->SetKnowledge(id, fRemove);
 	}
 	return success;
 }

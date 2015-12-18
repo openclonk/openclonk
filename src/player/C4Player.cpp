@@ -720,6 +720,21 @@ bool C4Player::SetWealth(int32_t iVal)
 	return true;
 }
 
+bool C4Player::SetKnowledge(C4ID id, bool fRemove)
+{
+	if (fRemove)
+	{
+		long iIndex = Knowledge.GetIndex(id);
+		if (iIndex<0) return false;
+		return Knowledge.DeleteItem(iIndex);
+	}
+	else
+	{
+		if (!C4Id2Def(id)) return false;
+		return Knowledge.SetIDCount(id, 1, true);
+	}
+}
+
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget, bool immediate_position)
 {
 	// safe back
