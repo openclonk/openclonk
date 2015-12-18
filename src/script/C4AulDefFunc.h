@@ -79,14 +79,6 @@ public:
 	inline bool IsNil() const { return true; }
 };
 
-// Some functions are callable in definition context only.
-// This exception gets thrown if they are called from anywhere else.
-class NeedDefinitionContext : public C4AulExecError
-{
-public:
-	NeedDefinitionContext(const char *function) : C4AulExecError(FormatString("%s: must be called from definition context", function).getData()) {}
-};
-
 // Other functions are callable in object context only.
 // This exception gets thrown if they are called from anywhere else.
 class NeedObjectContext : public C4AulExecError
