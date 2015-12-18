@@ -24,7 +24,6 @@
 #ifndef INC_C4Effects
 #define INC_C4Effects
 
-#include <C4ObjectPtr.h>
 #include <C4PropList.h>
 
 // callback return values
@@ -70,15 +69,13 @@
 class C4Effect: public C4PropListNumbered
 {
 public:
-	C4ObjectPtr CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
-	C4ID idCommandTarget;     // ID of command target definition
-
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
 	int32_t iTime, iInterval;  // effect time; effect callback intervall
 
 	C4Effect *pNext;        // next effect in linked list
 
 protected:
+	C4Value CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
 	// presearched callback functions for faster calling
 	C4AulFunc *pFnTimer;           // timer function Fx%sTimer
 	C4AulFunc *pFnStart, *pFnStop; // init/deinit-functions Fx%sStart, Fx%sStop
@@ -93,17 +90,17 @@ protected:
 	void CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr);
 	int CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 
-	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
 	C4Effect(const C4Effect &); // unimplemented, do not use
 	C4Effect(); // for the StdCompiler
 	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
 public:
-	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	~C4Effect();                      // dtor - deletes all following effects
 
 	void Register(C4Object *pForObj, int32_t iPrio);  // add into effect list of object or global effect list
 	void Denumerate(C4ValueNumbers *); // numbers to object pointers
-	void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
+	void ClearPointers(C4PropList *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 
 	void SetDead() { iPriority=0; }      // mark effect to be removed in next execution cycle
 	bool IsDead() { return !iPriority; } // return whether effect is to be removed
@@ -130,7 +127,7 @@ public:
 		ReAssignCallbackFunctions();
 		if (pNext) pNext->ReAssignAllCallbackFunctions();
 	}
-	void OnObjectChangedDef(C4Object *pObj);
+	void OnObjectChangedDef(C4PropList *pObj);
 
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	virtual C4Effect * GetEffect() { return this; }

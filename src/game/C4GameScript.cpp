@@ -2145,14 +2145,17 @@ static long FnLoadScenarioSection(C4PropList * _this, C4String *pstrSection, lon
 }
 
 static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4Object * pTarget,
-                           int iPrio, int iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget,
+                           int iPrio, int iTimerInterval, C4Object * pCmdTarget, C4Def * idCmdTarget,
                            const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
 {
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szEffect || !*szEffect->GetCStr() || !iPrio) return C4Value();
 	// create effect
-	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, Val1, Val2, Val3, Val4);
+	C4PropList * p = pCmdTarget;
+	if (!p) p = idCmdTarget;
+	if (!p) p = ::ScriptEngine.GetPropList();
+	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, p, Val1, Val2, Val3, Val4);
 	// return effect - may be 0 if the effect has been denied by another effect
 	if (!pEffect) return C4Value();
 	return C4VPropList(pEffect);

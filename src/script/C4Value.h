@@ -130,6 +130,7 @@ public:
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
 	void SetFunction(C4AulFunc * Fn) { C4V_Data d; d.Fn = Fn; Set(d, C4V_Function); }
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
+	void SetObjectEnum(int i) { C4V_Data d; d.Int = i; Set(d, C4V_C4ObjectEnum); }
 	void Set0();
 
 	bool operator == (const C4Value& Value2) const;

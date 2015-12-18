@@ -21,7 +21,6 @@
 #include <C4Include.h>
 #include <C4Effect.h>
 
-#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Game.h>
 
@@ -39,27 +38,16 @@ void C4Effect::AssignCallbackFunctions()
 
 C4PropList * C4Effect::GetCallbackScript()
 {
-	C4Def *pDef;
-	if (CommandTarget)
-	{
-		// overwrite ID for sync safety in runtime join
-		idCommandTarget = CommandTarget->id;
-		return CommandTarget;
-	}
-	else if (idCommandTarget && (pDef=::Definitions.ID2Def(idCommandTarget)))
-		return pDef;
-	else
-		return ::ScriptEngine.GetPropList();
+	return CommandTarget._getPropList();
 }
 
-C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4PropList *pCmdTarget)
 {
 	// assign values
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	iInterval = iTimerInterval;
 	iTime = 0;
-	CommandTarget = pCmdTarget;
-	idCommandTarget = idCmdTarget;
+	CommandTarget.SetPropList(pCmdTarget);
 	AcquireNumber();
 	Register(pForObj, iPrio);
 	// Set name and callback functions
@@ -87,9 +75,9 @@ void C4Effect::Register(C4Object *pForObj, int32_t iPrio)
 	}
 }
 
-C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
-	C4Effect * pEffect = new C4Effect(pForObj, szName, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, rVal1, rVal2, rVal3, rVal4);
+	C4Effect * pEffect = new C4Effect(pForObj, szName, iPrio, iTimerInterval, pCmdTarget);
 	// ask all effects with higher priority first - except for prio 1 effects, which are considered out of the priority call chain (as per doc)
 	bool fRemoveUpper = (iPrio != 1);
 	// note that apart from denying the creation of this effect, higher priority effects may also remove themselves
@@ -135,7 +123,7 @@ C4Effect::C4Effect()
 {
 	// defaults
 	iPriority=iTime=iInterval=0;
-	CommandTarget=NULL;
+	CommandTarget.Set0();
 	pNext = NULL;
 }
 
@@ -158,7 +146,7 @@ void C4Effect::Denumerate(C4ValueNumbers * numbers)
 	do
 	{
 		// command target
-		pEff->CommandTarget.DenumeratePointers();
+		pEff->CommandTarget.Denumerate(numbers);
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
 		pEff->C4PropList::Denumerate(numbers);
@@ -166,16 +154,16 @@ void C4Effect::Denumerate(C4ValueNumbers * numbers)
 	while ((pEff=pEff->pNext));
 }
 
-void C4Effect::ClearPointers(C4Object *pObj)
+void C4Effect::ClearPointers(C4PropList *pObj)
 {
 	// clear pointers in all effects
 	C4Effect *pEff = this;
 	do
 		// command target lost: effect dead w/o callback
-		if (pEff->CommandTarget == pObj)
+		if (pEff->CommandTarget.getPropList() == pObj)
 		{
 			pEff->SetDead();
-			pEff->CommandTarget=NULL;
+			pEff->CommandTarget.Set0();
 		}
 	while ((pEff=pEff->pNext));
 }
@@ -383,34 +371,34 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1,
 int C4Effect::CallStart(C4Object * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (pFnStart)
-		return pFnStart->Exec(CommandTarget, &C4AulParSet(obj, this, temporary, var1, var2, var3, var4)).getInt();
+		return pFnStart->Exec(GetCallbackScript(), &C4AulParSet(obj, this, temporary, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
 }
 int C4Effect::CallStop(C4Object * obj, int reason, bool temporary)
 {
 	if (pFnStop)
-		return pFnStop->Exec(CommandTarget, &C4AulParSet(obj, this, reason, temporary)).getInt();
+		return pFnStop->Exec(GetCallbackScript(), &C4AulParSet(obj, this, reason, temporary)).getInt();
 	return C4Fx_OK;
 }
 int C4Effect::CallTimer(C4Object * obj, int time)
 {
 	if (pFnTimer)
-		return pFnTimer->Exec(CommandTarget, &C4AulParSet(obj, this, time)).getInt();
+		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(obj, this, time)).getInt();
 	return C4Fx_Execute_Kill;
 }
 void C4Effect::CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr)
 {
 	if (pFnDamage)
-		damage = pFnDamage->Exec(CommandTarget, &C4AulParSet(obj, this, damage, damagetype, plr)).getInt();
+		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(obj, this, damage, damagetype, plr)).getInt();
 }
 int C4Effect::CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
 	if (pFnEffect)
-		return pFnEffect->Exec(CommandTarget, &C4AulParSet(effect, obj, this, var1, var2, var3, var4)).getInt();
+		return pFnEffect->Exec(GetCallbackScript(), &C4AulParSet(effect, obj, this, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
 }
 
-void C4Effect::OnObjectChangedDef(C4Object *pObj)
+void C4Effect::OnObjectChangedDef(C4PropList *pObj)
 {
 	// safety
 	if (!pObj) return;
@@ -418,7 +406,7 @@ void C4Effect::OnObjectChangedDef(C4Object *pObj)
 	C4Effect *pCheck = this;
 	while (pCheck)
 	{
-		if (pCheck->CommandTarget == pObj)
+		if (pCheck->GetCallbackScript() == pObj)
 			pCheck->ReAssignCallbackFunctions();
 		pCheck = pCheck->pNext;
 	}
@@ -479,9 +467,34 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(iTime); pComp->Separator();
 	pComp->Value(iInterval); pComp->Separator();
 	// read object number
-	pComp->Value(CommandTarget); pComp->Separator();
+	// FIXME: replace with this when savegame compat breaks for other reasons
+	// pComp->Value(mkParAdapt(CommandTarget, numbers));
+	int32_t nptr = 0;
+	if (!pComp->isCompiler() && CommandTarget.getPropList() && CommandTarget._getPropList()->GetPropListNumbered())
+		nptr = CommandTarget._getPropList()->GetPropListNumbered()->Number;
+	pComp->Value(nptr);
+	if (pComp->isCompiler())
+		CommandTarget.SetObjectEnum(nptr);
+	pComp->Separator();
 	// read ID
-	pComp->Value(idCommandTarget); pComp->Separator();
+	if (pComp->isDecompiler())
+	{
+		const C4PropListStatic * p = CommandTarget.getPropList()->IsStatic();
+		if (p)
+			p->RefCompileFunc(pComp, numbers);
+		else
+			pComp->String(const_cast<char*>("None"), 5, StdCompiler::RCT_ID);
+	}
+	else
+	{
+		StdStrBuf s;
+		pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+		// An Object trumps a definition as command target
+		if (!nptr)
+			if (!::ScriptEngine.GetGlobalConstant(s.getData(), &CommandTarget))
+				CommandTarget.Set0();
+	}
+	pComp->Separator();
 	// proplist
 	C4PropListNumbered::CompileFunc(pComp, numbers);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
@@ -555,16 +568,7 @@ bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
 			case P_Name: return C4PropListNumbered::GetPropertyByS(k, pResult);
 			case P_Priority: *pResult = C4VInt(Abs(iPriority)); return true;
 			case P_Interval: *pResult = C4VInt(iInterval); return true;
-			case P_CommandTarget:
-				if (CommandTarget)
-					*pResult = C4VObj(CommandTarget);
-				else if (idCommandTarget)
-					*pResult = C4VPropList(Definitions.ID2Def(idCommandTarget));
-				else
-					*pResult = C4VNull;
-				//*pResult = CommandTarget ? C4VObj(CommandTarget) :
-				//           (idCommandTarget ? C4VPropList(Definitions.ID2Def(idCommandTarget)) : C4VNull);
-				return true;
+			case P_CommandTarget: *pResult = CommandTarget; return true;
 			case P_Time: *pResult = C4VInt(iTime); return true;
 		}
 	}
