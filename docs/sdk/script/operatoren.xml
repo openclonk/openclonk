@@ -147,8 +147,8 @@
         </row>
         <row>
           <col>10l</col>
-          <col>&gt;</col>
-          <col id="&gt;">Returns whether a is greater than b.</col>
+          <col id="&gt;">&gt;</col>
+          <col>Returns whether a is greater than b.</col>
           <col>postfix</col>
           <col>bool, int/int</col>
         </row>
