@@ -146,8 +146,4 @@ protected:
 #define C4Fx_FirePriority   100
 #define C4Fx_FireTimer      1
 
-// some other hardcoded engine effects
-void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj);
-void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr=0);
-
 #endif

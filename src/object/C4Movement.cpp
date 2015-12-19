@@ -435,8 +435,8 @@ void C4Object::DoMovement()
 	{
 		if (!InLiquid) // Enter liquid
 		{
-			if (OCF & OCF_HitSpeed2) if (Mass>3)
-					Splash(GetX(),GetY()+1,std::min(Shape.Wdt*Shape.Hgt/10,20),this);
+			if (OCF & OCF_HitSpeed2)
+				if (Mass>3) Splash();
 			fNoAttach=false;
 			InLiquid=1;
 		}

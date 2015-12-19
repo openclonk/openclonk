@@ -23,12 +23,7 @@
 
 #include <C4DefList.h>
 #include <C4Object.h>
-#include <C4Random.h>
 #include <C4Game.h>
-#include <C4Landscape.h>
-#include <C4PXS.h>
-#include <C4GameObjects.h>
-#include <C4SoundSystem.h>
 
 void C4Effect::AssignCallbackFunctions()
 {
@@ -567,67 +562,4 @@ C4ValueArray * C4Effect::GetProperties() const
 	(*a)[i++] = C4VString(&::Strings.P[P_CommandTarget]);
 	(*a)[i++] = C4VString(&::Strings.P[P_Time]);
 	return a;
-}
-
-// Some other, internal effects -------------------------------------------------------------
-
-static int32_t GetSmokeLevel()
-{
-	// just use fixed smoke level, smoke uses particles anyway
-	return 150;
-}
-
-static void BubbleOut(int32_t tx, int32_t ty)
-{
-	// No bubbles from nowhere
-	if (!GBackSemiSolid(tx,ty)) return;
-	// User-defined smoke level
-	int32_t SmokeLevel = GetSmokeLevel();
-	// Enough bubbles out there already
-	if (::Objects.ObjectCount(C4ID::Bubble) >= SmokeLevel) return;
-	// Create bubble
-	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
-}
-
-void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
-{
-	// Splash only if there is free space above
-	if (GBackSemiSolid(tx, ty - 15)) return;
-	// get back mat
-	int32_t iMat = GBackMat(tx, ty);
-	// check liquid
-	if (MatValid(iMat))
-		if (DensityLiquid(::MaterialMap.Map[iMat].Density) && ::MaterialMap.Map[iMat].Instable)
-		{
-			int32_t sy = ty;
-			while (GBackLiquid(tx, sy) && sy > ty - 20 && sy >= 0) sy--;
-			// Splash bubbles and liquid
-			for (int32_t cnt=0; cnt<amt; cnt++)
-			{
-				int32_t bubble_x = tx+Random(16)-8;
-				int32_t bubble_y = ty+Random(16)-6;
-				BubbleOut(bubble_x,bubble_y);
-				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
-				{
-					C4Real xdir = C4REAL100(Random(151)-75);
-					C4Real ydir = C4REAL100(-Random(200));
-					::PXS.Create(::Landscape.ExtractMaterial(tx,ty,false),
-					             itofix(tx),itofix(sy),
-					             xdir,
-					             ydir);
-				}
-			}
-		}
-	// Splash sound
-	if (amt>=20)
-		StartSoundEffect("Liquids::Splash2", false, 50, pByObj);
-	else if (amt>1) StartSoundEffect("Liquids::Splash1", false, 50, pByObj);
-}
-
-void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
-{
-	// Use scripted function (global func Smoke) to create smoke
-	// Caution: This makes engine internal smoking a synced call.
-	C4AulParSet pars(C4VInt(tx), C4VInt(ty), C4VInt(level), C4VInt(dwClr));
-	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
 }

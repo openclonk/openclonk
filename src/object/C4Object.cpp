@@ -24,6 +24,7 @@
 #include <C4Effect.h>
 #include <C4ObjectInfo.h>
 #include <C4Physics.h>
+#include <C4PXS.h>
 #include <C4ObjectCom.h>
 #include <C4Command.h>
 #include <C4Viewport.h>
@@ -4783,6 +4784,53 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 	return true;
 }
 
+static void BubbleOut(int32_t tx, int32_t ty)
+{
+	// No bubbles from nowhere
+	if (!GBackSemiSolid(tx,ty)) return;
+	// Enough bubbles out there already
+	if (::Objects.ObjectCount(C4ID::Bubble) >= 150) return;
+	// Create bubble
+	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
+}
+
+void C4Object::Splash()
+{
+	int32_t tx = GetX(); int32_t ty = GetY()+1;
+	int32_t amt = std::min(Shape.Wdt*Shape.Hgt/10,20);
+	// Splash only if there is free space above
+	if (GBackSemiSolid(tx, ty - 15)) return;
+	// get back mat
+	int32_t iMat = GBackMat(tx, ty);
+	// check liquid
+	if (MatValid(iMat))
+		if (DensityLiquid(::MaterialMap.Map[iMat].Density) && ::MaterialMap.Map[iMat].Instable)
+		{
+			int32_t sy = ty;
+			while (GBackLiquid(tx, sy) && sy > ty - 20 && sy >= 0) sy--;
+			// Splash bubbles and liquid
+			for (int32_t cnt=0; cnt<amt; cnt++)
+			{
+				int32_t bubble_x = tx+Random(16)-8;
+				int32_t bubble_y = ty+Random(16)-6;
+				BubbleOut(bubble_x,bubble_y);
+				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
+				{
+					C4Real xdir = C4REAL100(Random(151)-75);
+					C4Real ydir = C4REAL100(-Random(200));
+					::PXS.Create(::Landscape.ExtractMaterial(tx,ty,false),
+					             itofix(tx),itofix(sy),
+					             xdir,
+					             ydir);
+				}
+			}
+		}
+	// Splash sound
+	if (amt>=20)
+		StartSoundEffect("Liquids::Splash2", false, 50, this);
+	else if (amt>1) StartSoundEffect("Liquids::Splash1", false, 50, this);
+}
+
 void C4Object::UpdateInLiquid()
 {
 	// InLiquid check
@@ -4790,8 +4838,8 @@ void C4Object::UpdateInLiquid()
 	{
 		if (!InLiquid) // Enter liquid
 		{
-			if (OCF & OCF_HitSpeed2) if (Mass>3)
-					Splash(GetX(),GetY()+1,std::min(Shape.Wdt*Shape.Hgt/10,20),this);
+			if (OCF & OCF_HitSpeed2)
+				if (Mass>3) Splash();
 			InLiquid=1;
 		}
 	}
