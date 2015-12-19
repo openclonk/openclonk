@@ -121,6 +121,7 @@ if (GTEST_FOUND AND GMOCK_FOUND)
 			aul/AulMathTest.cpp
 			aul/AulPredefinedFunctionTest.cpp
             ../src/script/C4ScriptStandaloneStubs.cpp
+            ../src/script/C4ScriptStandalone.cpp
         LIBRARIES
             libmisc
             libc4script)

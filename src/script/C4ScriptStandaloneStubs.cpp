@@ -19,11 +19,11 @@
 #include <C4AulDebug.h>
 #include <C4Config.h>
 #include <C4Def.h>
-#include <C4DefList.h>
 #include <C4PropList.h>
 #include <C4Record.h>
 #include <C4Reloc.h>
 
+/* Parts of the ScriptEngine that are normally in C4Globals for initialization order reasons. */
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
 #endif
@@ -34,16 +34,11 @@ int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
 
+/* Stubs */
 C4Config Config;
 C4Config::C4Config() {}
 C4Config::~C4Config() {}
 const char * C4Config::AtRelativePath(char const*s) {return s;}
-
-C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
-C4Def * C4DefList::GetDef(int) {return 0;}
-int C4DefList::GetDefCount() {return 0;}
-void C4DefList::CallEveryDefinition() {}
-void C4DefList::ResetIncludeDependencies() {}
 
 C4AulDebug *C4AulDebug::pDebug;
 void C4AulDebug::DebugStep(C4AulBCC*,C4Value*) {}

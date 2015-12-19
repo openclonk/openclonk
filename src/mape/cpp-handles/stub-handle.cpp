@@ -31,38 +31,16 @@
 #include "C4TextureShape.h"
 
 /* This file implements stubs for the parts of the engine that are not used
- * by mape. It also instantiates global variables required by mape that are
- * not instantiated elsewhere. In particular, we avoid C4Globals.cpp. */
+ * by mape. */
 
-/* These are actually used by mape: */
-#ifdef _DEBUG
-C4Set<C4PropList *> C4PropList::PropLists;
-#endif
-C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
-C4Set<C4PropListScript *> C4PropListScript::PropLists;
-std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
-int32_t C4PropListNumbered::EnumerationIndex = 0;
-C4StringTable Strings;
-C4AulScriptEngine ScriptEngine;
-C4DefList Definitions;
-
-/* These are just stubs used by dead code: */
 C4Landscape Landscape;
 C4PXSSystem PXS;
-C4Config Config;
 C4GameObjects Objects;
-C4Reloc Reloc;
 class C4Draw *pDraw = NULL;
 
-bool EraseItemSafe(const char *szFilename) {return false;}
-void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr) {}
 class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, int32_t, int32_t, int32_t, class C4SoundModifier *) { return NULL; }
 
-C4Config::C4Config() {}
-C4Config::~C4Config() {}
 const char* C4Config::AtTempPath(const char *) { return NULL; }
-const char* C4Config::AtRelativePath(char const* s) {return s;}
-bool C4Reloc::Open(C4Group&, char const*) const {return false;}
 
 bool C4Draw::TextOut(const char *, CStdFont &, float, C4Surface *, float, float, DWORD, BYTE, bool) { return false; }
 
@@ -100,8 +78,6 @@ C4IDListChunk::~C4IDListChunk() {}
 
 C4DefGraphics::C4DefGraphics(C4Def*) {}
 void C4DefGraphics::Clear() {}
-
-void C4Def::IncludeDefinition(C4Def*) {}
 
 void C4DefList::Draw(C4ID, C4Facet &, bool, int32_t) {}
 void C4DefList::CallEveryDefinition() {}
@@ -154,8 +130,6 @@ C4PXSSystem::C4PXSSystem() {}
 C4PXSSystem::~C4PXSSystem() {}
 bool C4PXSSystem::Create(int, C4Real, C4Real, C4Real, C4Real) { return false; }
 
-void AddDbgRec(C4RecordChunkType, const void *, int) {}
-
 bool C4TextureShape::Load(C4Group &group, const char *filename, int32_t base_tex_wdt, int32_t base_tex_hgt) { return true; }
 
 #if 0
@@ -194,9 +168,6 @@ static C4RoundResults GameRoundResults;
 C4Game::C4Game(): Parameters(GameParameters), Clients(Parameters.Clients), Teams(Parameters.Teams), PlayerInfos(Parameters.PlayerInfos), RestorePlayerInfos(Parameters.RestorePlayerInfos), RoundResults(GameRoundResults), Input(Control.Input), KeyboardInput(C4KeyboardInput_Init()) {}
 C4Game::~C4Game() {}
 #endif
-
-C4AulDebug *C4AulDebug::pDebug;
-void C4AulDebug::DebugStep(C4AulBCC*, C4Value*) {}
 
 C4Shader::C4Shader() {}
 C4Shader::~C4Shader() {}

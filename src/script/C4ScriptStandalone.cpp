@@ -22,6 +22,14 @@
 #include "gamescript/C4Script.h"
 #include "script/C4Aul.h"
 #include "script/C4ScriptHost.h"
+#include <C4DefList.h>
+
+/* StandaloneStubs.cpp is shared with mape, which has a real implementation of these */
+C4Def* C4DefList::GetByName(const StdStrBuf &) {return NULL;}
+C4Def * C4DefList::GetDef(int) {return 0;}
+int C4DefList::GetDefCount() {return 0;}
+void C4DefList::CallEveryDefinition() {}
+void C4DefList::ResetIncludeDependencies() {}
 
 void InitializeC4Script()
 {

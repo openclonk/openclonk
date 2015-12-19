@@ -785,6 +785,7 @@ set(MAPE_BASE_SOURCES
 	src/lib/C4Rect.h
 	src/object/C4Id.cpp
 	src/object/C4Id.h
+	src/script/C4ScriptStandaloneStubs.cpp
 )
 
 set(MAPE_SOURCES
