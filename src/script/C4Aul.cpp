@@ -17,11 +17,12 @@
 
 #include <C4Include.h>
 #include <C4Aul.h>
+
 #include <C4AulExec.h>
 #include <C4AulDebug.h>
-
 #include <C4Config.h>
 #include <C4Def.h>
+#include <C4Effect.h>
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4LangStringTable.h>
@@ -84,6 +85,7 @@ void C4AulScriptEngine::Clear()
 	RegisterGlobalConstant("Global", C4VPropList(this));
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
+	delete pGlobalEffects; pGlobalEffects=NULL;
 	UserFiles.clear();
 }
 
@@ -115,15 +117,47 @@ void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 	// runtime data only: don't denumerate consts
 	GameScript.ScenPropList.Denumerate(numbers);
 	C4PropListStaticMember::Denumerate(numbers);
+	if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 }
 
-void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
+void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C4ValueNumbers * numbers)
 {
-	assert(UserFiles.empty()); // user files must not be kept open
-	C4ValueMapData GlobalNamedDefault;
-	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
-	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
-	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
+	if (!fScenarioSection)
+	{
+		assert(UserFiles.empty()); // user files must not be kept open
+		C4ValueMapData GlobalNamedDefault;
+		GlobalNamedDefault.SetNameList(&GlobalNamedNames);
+		pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
+		pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
+	}
+	if (fScenarioSection && pComp->isCompiler())
+	{
+		// loading scenario section: Merge effects
+		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
+		// and otherwise dead pointers would remain on the stack
+		C4Effect *pOldGlobalEffects, *pNextOldGlobalEffects=pGlobalEffects;
+		pGlobalEffects = NULL;
+		try
+		{
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+		}
+		catch (...)
+		{
+			delete pNextOldGlobalEffects;
+			throw;
+		}
+		while ((pOldGlobalEffects=pNextOldGlobalEffects))
+		{
+			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
+			pOldGlobalEffects->Register(&pGlobalEffects, Abs(pOldGlobalEffects->iPriority));
+		}
+	}
+	else
+	{
+		// Otherwise, just compile effects
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+	}
+	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 }
 
 std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)

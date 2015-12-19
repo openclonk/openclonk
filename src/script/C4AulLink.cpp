@@ -20,6 +20,7 @@
 
 #include <C4Def.h>
 #include <C4DefList.h>
+#include <C4Effect.h>
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
@@ -189,6 +190,9 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	// display state
 	LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
 		lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
+
+	// adjust global effects
+	if (pGlobalEffects) pGlobalEffects->ReAssignAllCallbackFunctions();
 }
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, const char *szLanguage)

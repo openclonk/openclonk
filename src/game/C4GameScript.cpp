@@ -45,7 +45,7 @@
 
 C4Effect ** FnGetEffectsFor(C4Object * pTarget)
 {
-	return pTarget ? &pTarget->pEffects : &Game.pGlobalEffects;
+	return pTarget ? &pTarget->pEffects : &ScriptEngine.pGlobalEffects;
 }
 
 // undocumented!

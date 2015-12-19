@@ -121,6 +121,8 @@ public:
 	C4ValueMapNames GlobalConstNames;
 	C4ValueMapData GlobalConsts;
 
+	C4Effect * pGlobalEffects = NULL;
+
 	C4AulScriptEngine(); // constructor
 	~C4AulScriptEngine(); // destructor
 	void Clear(); // clear data
@@ -139,7 +141,7 @@ public:
 	void UnLink(); // called when a script is being reloaded (clears string table)
 
 	// Compile scenario script data (without strings and constants)
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
+	void CompileFunc(StdCompiler *pComp, bool fScenarioSection, C4ValueNumbers * numbers);
 
 	// Handle user files
 	int32_t CreateUserFile(); // create new file and return handle

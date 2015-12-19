@@ -574,7 +574,6 @@ void C4Game::Clear()
 	::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
-	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
 	ScriptGuiRoot.reset();
 	Particles.Clear();
 	::MaterialMap.Clear();
@@ -721,7 +720,7 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
-	EXEC_S_DR(  C4Effect::Execute(NULL, &Game.pGlobalEffects);
+	EXEC_S_DR(  C4Effect::Execute(NULL, &ScriptEngine.pGlobalEffects);
 	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
@@ -909,8 +908,8 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MouseControl.ClearPointers(pObj);
 	ScriptGuiRoot->ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
-	if (pGlobalEffects)
-		pGlobalEffects->ClearPointers(pObj);
+	if (::ScriptEngine.pGlobalEffects)
+		::ScriptEngine.pGlobalEffects->ClearPointers(pObj);
 	if (::Landscape.pFoW) ::Landscape.pFoW->Remove(pObj);
 }
 
@@ -1464,7 +1463,6 @@ void C4Game::Default()
 	pParentGroup=NULL;
 	pScenarioSections=pCurrentScenarioSection=NULL;
 	*CurrentScenarioSection=0;
-	pGlobalEffects=NULL;
 	fResortAnyObject=false;
 	pNetworkStatistics.reset();
 	::Application.MusicSystem.ClearGame();
@@ -1724,40 +1722,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 
 	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
 
-	pComp->Name("Script");
-	if (!comp.fScenarioSection)
-	{
-		pComp->Value(mkParAdapt(ScriptEngine, numbers));
-	}
-	if (comp.fScenarioSection && pComp->isCompiler())
-	{
-		// loading scenario section: Merge effects
-		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
-		// and otherwise dead pointers would remain on the stack
-		C4Effect *pOldGlobalEffects, *pNextOldGlobalEffects=pGlobalEffects;
-		pGlobalEffects = NULL;
-		try
-		{
-			pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-		}
-		catch (...)
-		{
-			delete pNextOldGlobalEffects;
-			throw;
-		}
-		while ((pOldGlobalEffects=pNextOldGlobalEffects))
-		{
-			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
-			pOldGlobalEffects->Register(&pGlobalEffects, Abs(pOldGlobalEffects->iPriority));
-		}
-	}
-	else
-	{
-		// Otherwise, just compile effects
-		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-	}
-	pComp->Value(mkNamingAdapt(*numbers, "Values"));
-	pComp->NameEnd();
+	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptEngine, comp.fScenarioSection, numbers), "Script"));
 }
 
 bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, bool sync, C4ValueNumbers * numbers)
@@ -2278,7 +2243,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 	// Denumerate game data pointers
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
-	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	if (!fLoadSection) GlobalSoundModifier.Denumerate(numbers);
 	numbers->Denumerate();
 	if (!fLoadSection) ScriptGuiRoot->Denumerate(numbers);
@@ -3513,12 +3477,12 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		}
 	DeleteObjects(false);
 	// remove global effects
-	if (pGlobalEffects) if (!(dwFlags & C4S_KEEP_EFFECTS))
-		{
-			pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
-			// scenario section call might have been done from a global effect
-			// rely on dead effect removal for actually removing the effects; do not clear the array here!
-		}
+	if (::ScriptEngine.pGlobalEffects && !(dwFlags & C4S_KEEP_EFFECTS))
+	{
+		::ScriptEngine.pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
+		// scenario section call might have been done from a global effect
+		// rely on dead effect removal for actually removing the effects; do not clear the array here!
+	}
 	// del particles as well
 	Particles.ClearAllParticles();
 	// clear transfer zones
