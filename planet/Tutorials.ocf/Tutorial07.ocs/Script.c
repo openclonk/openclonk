@@ -119,6 +119,15 @@ private func InitAnimals()
 		bat.MaxEnergy = 7000;
 		bat->DoEnergy(bat.MaxEnergy - bat->GetEnergy());
 	}
+	// Some fireflies attracted to trees on two islands.
+	var count = 0;
+	for (var tree in FindObjects(Find_ID(Tree_Deciduous), Find_Or(Find_AtRect(200, 100, 300, 200), Find_AtRect(300, 300, 200, 200)), Sort_Random()))
+	{
+		Firefly->SpawnSwarm(tree, RandomX(6, 12));
+		count++;
+		if (count > 4)
+			break;	
+	}
 	return;
 }
 

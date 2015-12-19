@@ -76,7 +76,11 @@ public func FxIntPilotTimer(object target, proplist effect, int time)
 	{
 		var to_x = lorry->GetX();
 		var to_y = lorry->GetY();
+		// Only if the gem is not stuck and the path to the lorry is free.
 		if (!PathFree(gem->GetX(), gem->GetY(), to_x, to_y) || gem->Stuck())
+			continue;
+		// Only if the gem is not controlled by another glove.
+		if (GetEffect("TeleGloveWeight", gem))		
 			continue;
 		if (!GetEffect("IntControlGem", target))
 			AddEffect("IntControlGem", target, 100, 1, this, nil, gem, effect.glove);
