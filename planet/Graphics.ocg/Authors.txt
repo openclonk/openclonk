@@ -11,3 +11,5 @@ StartupDlgPaper.png
 StartupPlrPropBG.png
 StartupPlrSelBG.jpg
 StartupScenSelBG.jpg)
+
+Loader1.jpg             - Nachtfalter (CC-BY 2.0)
