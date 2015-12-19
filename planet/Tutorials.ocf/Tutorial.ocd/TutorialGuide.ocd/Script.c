@@ -199,7 +199,7 @@ private func InitializeMenu()
 private func ShowGuideMenu(int index)
 {
 	// There will always be the removal of the previous message.
-	if (message_open != nil)
+	if (message_open != nil && !IsHidden())
 		GameCall("OnGuideMessageRemoved", GetOwner(), message_open);
 
 	// Show the new message.
@@ -213,7 +213,7 @@ private func ShowGuideMenu(int index)
 	message_open = index;
 
 	// Notify the scenario script.
-	if (message_open != nil)	
+	if (message_open != nil && !IsHidden())	
 		GameCall("OnGuideMessageShown", GetOwner(), message_open);
 	return;
 }
