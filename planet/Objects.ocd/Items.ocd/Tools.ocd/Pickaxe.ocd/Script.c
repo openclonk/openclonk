@@ -130,15 +130,17 @@ protected func DoSwing(object clonk, int ix, int iy)
 		{
 			var spark = Particles_Glimmer();
 			var pitch = nil;
+			var sound = "Objects::Pickaxe::Clang?";
 			if (GetMaterialVal("Density","Material",mat) > MaxPickDensity)
 			{
-				pitch = 60;
+				sound = "Objects::Pickaxe::ClangHard?";
+				pitch = RandomX(-20, 20);
 				spark.B = 255;
 				spark.R = PV_Random(0, 128, 2);
 				spark.OnCollision = PC_Bounce();
 			}
 			CreateParticle("StarSpark", x2*9/10,y2*9/10, PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(10, 50), spark, 30);
-			Sound("Objects::Pickaxe::Clang?", nil, nil, nil, nil, nil, pitch);
+			Sound(sound, nil, nil, nil, nil, nil, pitch);
 		}
 		
 		// Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
