@@ -329,7 +329,8 @@ global func DoShockwaveCheck(int x, int y, int cause_plr)
 	// Some special cases, which won't go into FindObjects.
 	if (def->GetDefHorizontalFix())
 		return false;
-	if (def->GetDefGrab() != 1)
+	// Only move vehicles and floating objects which can be grabbed and pushed (Touchable = 1).	
+	if (this.Touchable != 1)
 	{
 		if (GetCategory() & C4D_Vehicle)
 			return false;
