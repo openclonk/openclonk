@@ -43,12 +43,12 @@ Stand = {
         <row>
           <col><code>Touchable</code></col>
           <col>int</col>
-          <col>1 the object can be grabbed, 2 the object can be grabbed and pushed</col>
+          <col>1 the object can be grabbed and pushed, 2 the object can only be grabbed.</col>
         </row>
         <row>
           <col><code>ActMap</code></col>
           <col>proplist</col>
-          <col>See the <emlink href="definition/actmap.html">detailed description of the ActMap</emlink></col>
+          <col>See the <emlink href="definition/actmap.html">detailed description of the ActMap</emlink>.</col>
         </row>
         <row>
           <col><code>Visibility</code></col>
