@@ -90,15 +90,16 @@ protected:
 	void CallDamage(C4PropList * obj, int32_t & damage, int damagetype, int plr);
 	int CallEffect(const char * effect, C4PropList * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 
-	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
+	C4Effect(C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
 	C4Effect(const C4Effect &); // unimplemented, do not use
 	C4Effect(); // for the StdCompiler
+	C4Effect * Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
 public:
-	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	~C4Effect();                      // dtor - deletes all following effects
 
-	void Register(C4Object *pForObj, int32_t iPrio);  // add into effect list of object or global effect list
+	void Register(C4Effect **ppEffectList, int32_t iPrio);  // add into effect list of object or global effect list
 	void Denumerate(C4ValueNumbers *); // numbers to object pointers
 	void ClearPointers(C4PropList *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 
@@ -113,7 +114,7 @@ public:
 	C4Effect *Check(C4PropList *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
 	C4PropList * GetCallbackScript(); // get script context for effect callbacks
 
-	void Execute(C4Object *pObj); // execute all effects
+	static void Execute(C4PropList *pObj, C4Effect **ppEffectList); // execute all effects
 	void Kill(C4PropList *pObj);    // mark this effect deleted and do approprioate calls
 	void ClearAll(C4PropList *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
 	void DoDamage(C4PropList *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage

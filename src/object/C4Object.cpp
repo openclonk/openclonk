@@ -1053,7 +1053,7 @@ void C4Object::Execute()
 	// effects
 	if (pEffects)
 	{
-		pEffects->Execute(this);
+		C4Effect::Execute(this, &pEffects);
 		if (!Status) return;
 	}
 	// Life

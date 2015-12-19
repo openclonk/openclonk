@@ -21,8 +21,8 @@
 #include <C4Include.h>
 #include <C4Effect.h>
 
-#include <C4Object.h>
-#include <C4Game.h>
+#include <C4Aul.h>
+#include <C4GameScript.h>
 
 void C4Effect::AssignCallbackFunctions()
 {
@@ -41,7 +41,7 @@ C4PropList * C4Effect::GetCallbackScript()
 	return CommandTarget._getPropList();
 }
 
-C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4PropList *pCmdTarget)
+C4Effect::C4Effect(C4Effect **ppEffectList, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4PropList *pCmdTarget)
 {
 	// assign values
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
@@ -49,15 +49,14 @@ C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t i
 	iTime = 0;
 	CommandTarget.SetPropList(pCmdTarget);
 	AcquireNumber();
-	Register(pForObj, iPrio);
+	Register(ppEffectList, iPrio);
 	// Set name and callback functions
 	SetProperty(P_Name, C4VString(szName));
 }
 
-void C4Effect::Register(C4Object *pForObj, int32_t iPrio)
+void C4Effect::Register(C4Effect **ppEffectList, int32_t iPrio)
 {
 	// get effect target
-	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
 	C4Effect *pCheck, *pPrev = *ppEffectList;
 	if (pPrev && Abs(pPrev->iPriority) < iPrio)
 	{
@@ -75,18 +74,23 @@ void C4Effect::Register(C4Object *pForObj, int32_t iPrio)
 	}
 }
 
-C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect * C4Effect::New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
-	C4Effect * pEffect = new C4Effect(pForObj, szName, iPrio, iTimerInterval, pCmdTarget);
+	C4Effect * pEffect = new C4Effect(ppEffectList, szName, iPrio, iTimerInterval, pCmdTarget);
+	return pEffect->Init(pForObj, iPrio, rVal1, rVal2, rVal3, rVal4);
+}
+
+C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+{
 	// ask all effects with higher priority first - except for prio 1 effects, which are considered out of the priority call chain (as per doc)
 	bool fRemoveUpper = (iPrio != 1);
 	// note that apart from denying the creation of this effect, higher priority effects may also remove themselves
 	// or do other things with the effect list
 	// (which does not quite make sense, because the effect might be denied by another effect)
 	// so the priority is assigned after this call, marking this effect dead before it's definitely valid
-	if (fRemoveUpper && pEffect->pNext)
+	if (fRemoveUpper && pNext)
 	{
-		C4Effect * pEffect2 = pEffect->pNext->Check(pForObj, szName->GetCStr(), iPrio, iTimerInterval, rVal1, rVal2, rVal3, rVal4);
+		C4Effect * pEffect2 = pNext->Check(pForObj, GetName(), iPrio, iInterval, rVal1, rVal2, rVal3, rVal4);
 		if (pEffect2)
 		{
 			// effect denied (iResult = -1), added to an effect (iResult = Number of that effect)
@@ -102,21 +106,21 @@ C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, i
 	// because that would cause a wrong initialization order
 	// (hardly ever causing trouble, however...)
 	C4Effect *pLastRemovedEffect=NULL;
-	if (fRemoveUpper && pEffect->pNext && pEffect->pFnStart)
-		pEffect->TempRemoveUpperEffects(pForObj, false, &pLastRemovedEffect);
+	if (fRemoveUpper && pNext && pFnStart)
+		TempRemoveUpperEffects(pForObj, false, &pLastRemovedEffect);
 	// bad things may happen
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
-	pEffect->iPriority = iPrio; // validate effect now
-	if (pEffect->CallStart(pForObj, 0, rVal1, rVal2, rVal3, rVal4) == C4Fx_Start_Deny)
+	iPriority = iPrio; // validate effect now
+	if (CallStart(pForObj, 0, rVal1, rVal2, rVal3, rVal4) == C4Fx_Start_Deny)
 		// the effect denied to start: assume it hasn't, and mark it dead
-		pEffect->SetDead();
-	if (fRemoveUpper && pEffect->pNext && pEffect->pFnStart)
-		pEffect->TempReaddUpperEffects(pForObj, pLastRemovedEffect);
+		SetDead();
+	if (fRemoveUpper && pNext && pFnStart)
+		TempReaddUpperEffects(pForObj, pLastRemovedEffect);
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
 	// Update OnFire cache
-	if (!pEffect->IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName->GetCStr()))
+	if (!IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 		pForObj->SetOnFire(true);
-	return pEffect;
+	return this;
 }
 
 C4Effect::C4Effect()
@@ -255,13 +259,12 @@ C4Effect* C4Effect::Check(C4PropList *pForObj, const char *szCheckEffect, int32_
 	return 0;
 }
 
-void C4Effect::Execute(C4Object *pObj)
+void C4Effect::Execute(C4PropList *pObj, C4Effect **ppEffectList)
 {
 	// get effect list
-	C4Effect **ppEffectList = pObj ? &pObj->pEffects : &Game.pGlobalEffects;
 	// execute all effects not marked as dead
-	C4Effect *pEffect = this, **ppPrevEffect=ppEffectList;
-	do
+	C4Effect *pEffect = *ppEffectList, **ppPrevEffect=ppEffectList;
+	while (pEffect)
 	{
 		// effect dead?
 		if (pEffect->IsDead())
@@ -295,7 +298,6 @@ void C4Effect::Execute(C4Object *pObj)
 			pEffect = pEffect->pNext;
 		}
 	}
-	while (pEffect);
 }
 
 void C4Effect::Kill(C4PropList *pObj)

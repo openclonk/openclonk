@@ -2160,7 +2160,8 @@ static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4Object * p
 	C4PropList * p = pCmdTarget;
 	if (!p) p = idCmdTarget;
 	if (!p) p = ::ScriptEngine.GetPropList();
-	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, p, Val1, Val2, Val3, Val4);
+	C4Effect * pEffect = C4Effect::New(pTarget, FnGetEffectsFor(pTarget),
+			szEffect, iPrio, iTimerInterval, p, Val1, Val2, Val3, Val4);
 	// return effect - may be 0 if the effect has been denied by another effect
 	if (!pEffect) return C4Value();
 	return C4VPropList(pEffect);

@@ -721,8 +721,8 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
-	if (pGlobalEffects)
-		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
+	EXEC_S_DR(  C4Effect::Execute(NULL, &Game.pGlobalEffects);
+	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
@@ -1748,7 +1748,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		while ((pOldGlobalEffects=pNextOldGlobalEffects))
 		{
 			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
-			pOldGlobalEffects->Register(NULL, Abs(pOldGlobalEffects->iPriority));
+			pOldGlobalEffects->Register(&pGlobalEffects, Abs(pOldGlobalEffects->iPriority));
 		}
 	}
 	else
