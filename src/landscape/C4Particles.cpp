@@ -978,7 +978,7 @@ bool C4ParticleChunk::Exec(C4Object *obj, float timeDelta)
 #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #endif
 
-void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
+void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call, int texUnit, const StdMeshMatrix& modelview)
 {
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
@@ -987,12 +987,16 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
 	// use a relative offset?
-	bool resetMatrix(false);
+	// (note the normal matrix is unaffected by this)
 	if ((attachment & C4ATTACH_MoveRelative) && (obj != 0))
 	{
-		resetMatrix = true;
-		glPushMatrix();
-		glTranslatef((float)obj->GetX(), (float)obj->GetY(), 0.0f);
+		StdMeshMatrix new_modelview(modelview);
+		Translate(new_modelview, fixtof(obj->GetFixedX()), fixtof(obj->GetFixedY()), 0.0f);
+		call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, new_modelview);
+	}
+	else
+	{
+		call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelview);
 	}
 
 	// enable additive blending for particles with that blit mode
@@ -1063,8 +1067,6 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, int texUnit)
 	{
 		glMultiDrawElements(GL_TRIANGLE_STRIP, ::Particles.GetMultiDrawElementsCountArray(), GL_UNSIGNED_INT, const_cast<const GLvoid**>(::Particles.GetMultiDrawElementsIndexArray()), static_cast<GLsizei> (particleCount));
 	}
-	if (resetMatrix)
-		glPopMatrix();
 
 	// reset buffer data
 	if (!Particles.useBufferObjectWorkaround)
@@ -1158,9 +1160,11 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	// enable shader
 	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
 	// apply zoom and upload shader uniforms
-	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0);
-	// go to correct output position
-	glTranslatef(cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
+	StdMeshMatrix modelview = StdMeshMatrix::Identity();
+	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0, &modelview);
+	// go to correct output position (note the normal matrix is unaffected
+	// by this)
+	Translate(modelview, cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
 	// allocate texture unit for particle texture, and remember allocated
 	// texture unit. Will be used for each particle chunk to bind
 	// their texture to this unit.
@@ -1188,14 +1192,12 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 		}
 		else
 		{
-			(*iter)->Draw(cgo, obj, texUnit);
+			(*iter)->Draw(cgo, obj, call, texUnit, modelview);
 			++iter;
 		}
 	}
 
 	accessMutex.Leave();
-
-	pGL->ResetMultiBlt();
 
 	if (Particles.useBufferObjectWorkaround)
 	{

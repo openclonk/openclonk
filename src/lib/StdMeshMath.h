@@ -102,6 +102,8 @@ public:
 	float Determinant() const;
 	StdMeshTransformation Decompose() const;
 
+	const float* data() const { return &a[0][0]; }
+
 private:
 	// 3x3 orthogonal + translation in last column
 	float a[3][4];
@@ -141,5 +143,10 @@ StdMeshVertex operator+(const StdMeshVertex& lhs, const StdMeshVertex& rhs);
 StdMeshVertex operator*(float lhs, const StdMeshVertex& rhs);
 StdMeshVertex operator*(const StdMeshVertex& lhs, float rhs);
 StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs);
+
+// Multiply in-place the given matrix with a translation matrix to the right
+void Translate(StdMeshMatrix& mat, float dx, float dy, float dz);
+// Multiply in-place the given matrix with a scale matrix to the right
+void Scale(StdMeshMatrix& mat, float sx, float sy, float sz);
 
 #endif

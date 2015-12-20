@@ -19,6 +19,7 @@
 #define INC_C4Shader
 
 #include "StdBuf.h"
+#include "StdMeshMath.h"
 #include "C4Surface.h"
 
 // Shader version
@@ -230,6 +231,11 @@ public:
 			glUniformMatrix3x2fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
 
+	void SetUniformMatrix3x3fv(int iUniform, int iLength, const float *pVals) const {
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix3fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+	}
+
 	void SetUniformMatrix3x4fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix4x3fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
@@ -238,6 +244,39 @@ public:
 	void SetUniformMatrix4x4fv(int iUniform, int iLength, const float* pVals) const {
 		if (pShader->HaveUniform(iUniform))
 			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+	}
+
+	void SetUniformMatrix3x3(int iUniform, const StdMeshMatrix& matrix)
+	{
+		if (pShader->HaveUniform(iUniform))
+		{
+			const float mat[9] = { matrix(0, 0), matrix(1, 0), matrix(2, 0), matrix(0, 1), matrix(1, 1), matrix(2, 1), matrix(0, 2), matrix(1, 2), matrix(2, 2) };
+			glUniformMatrix3fv(pShader->GetUniform(iUniform), 1, GL_FALSE, mat);
+		}
+	}
+
+	void SetUniformMatrix3x3Transpose(int iUniform, const StdMeshMatrix& matrix)
+	{
+		if (pShader->HaveUniform(iUniform))
+		{
+			const float mat[9] = { matrix(0, 0), matrix(0, 1), matrix(0, 2), matrix(1, 0), matrix(1, 1), matrix(1, 2), matrix(2, 0), matrix(2, 1), matrix(2, 2) };
+			glUniformMatrix3fv(pShader->GetUniform(iUniform), 1, GL_FALSE, mat);
+		}
+	}
+
+	void SetUniformMatrix3x4(int iUniform, const StdMeshMatrix& matrix)
+	{
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix4x3fv(pShader->GetUniform(iUniform), 1, GL_TRUE, matrix.data());
+	}
+
+	void SetUniformMatrix4x4(int iUniform, const StdMeshMatrix& matrix)
+	{
+		if (pShader->HaveUniform(iUniform))
+		{
+			const float mat[16] = { matrix(0, 0), matrix(1, 0), matrix(2, 0), 0.0f, matrix(0, 1), matrix(1, 1), matrix(1, 2), 0.0f, matrix(2, 0), matrix(2, 1), matrix(2, 2), 0.0f, matrix(0, 3), matrix(1, 3), matrix(2, 3), 1.0f };
+			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), 1, GL_FALSE, mat);
+		}
 	}
 
 	void Start();

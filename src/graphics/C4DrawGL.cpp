@@ -173,7 +173,37 @@ bool CStdGL::UpdateClipper()
 	glLoadIdentity();
 
 	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
+	UpdateProjectionMatrix();
 	return true;
+}
+
+void CStdGL::UpdateProjectionMatrix()
+{
+	const C4Rect clipRect = GetClipRect();
+
+	const float left = clipRect.x;
+	const float right = clipRect.x + clipRect.Wdt;
+	const float bottom = clipRect.y + clipRect.Hgt;
+	const float top = clipRect.y;
+	const float near = -1.0f;
+	const float far = +1.0f;
+
+	ProjectionMatrix[0] = 2.0f / (right - left);
+	ProjectionMatrix[1] = 0.0f;
+	ProjectionMatrix[2] = 0.0f;
+	ProjectionMatrix[3] = -(right + left) / (right - left);
+	ProjectionMatrix[4] = 0.0f;
+	ProjectionMatrix[5] = 2.0f / (top - bottom);
+	ProjectionMatrix[6] = 0.0f;
+	ProjectionMatrix[7] = -(top + bottom) / (top - bottom);
+	ProjectionMatrix[8] = 0.0f;
+	ProjectionMatrix[9] = 0.0f;
+	ProjectionMatrix[10] = -2.0f / (far - near);
+	ProjectionMatrix[11] = -(far + near) / (far - near);
+	ProjectionMatrix[12] = 0.0f;
+	ProjectionMatrix[13] = 0.0f;
+	ProjectionMatrix[14] = 0.0f;
+	ProjectionMatrix[15] = 1.0f;
 }
 
 bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
@@ -207,11 +237,18 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 
 bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices)
 {
+	static const char vertexUniforms[] =
+		"uniform mat4 projectionMatrix;"
+		"uniform mat4 modelviewMatrix;";
+
 	static const char vertexSlice[] = 
 		"  gl_FrontColor = gl_Color;"
-		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;";
+		"  gl_Position = projectionMatrix * modelviewMatrix * gl_Vertex;";
 
 	const char* uniformNames[C4SSU_Count + 1];
+	uniformNames[C4SSU_ProjectionMatrix] = "projectionMatrix";
+	uniformNames[C4SSU_ModelViewMatrix] = "modelviewMatrix";
+	uniformNames[C4SSU_NormalMatrix] = "normalMatrix";
 	uniformNames[C4SSU_ClrMod] = "clrMod";
 	uniformNames[C4SSU_Gamma] = "gamma";
 	uniformNames[C4SSU_BaseTex] = "baseTex";
@@ -223,14 +260,15 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
-	uniformNames[C4SSU_Bones] = "bones";
-	uniformNames[C4SSU_CullMode] = "cullMode";
+	uniformNames[C4SSU_Bones] = "bones"; // unused
+	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
 	uniformNames[C4SSU_Count] = NULL;
 
 	// Clear previous content
 	shader.Clear();
 	shader.ClearSlices();
 
+	shader.AddVertexSlice(-1, vertexUniforms);
 	shader.AddVertexSlice(C4Shader_Vertex_PositionPos, vertexSlice);
 
 	// Add texture coordinate if we have base texture, overlay, or normal map
@@ -384,7 +422,7 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 	return ok;
 }
 
-void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr)
+void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdMeshMatrix* out_modelview)
 {
 	// Initialize multi blit shader.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
@@ -457,36 +495,57 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	call.SetUniform1f(C4SSU_CullMode, 0.0f);
 
+	StdMeshMatrix default_modelview = StdMeshMatrix::Identity();
+	StdMeshMatrix& modelview = out_modelview ? *out_modelview : default_modelview;
+
 	// Apply zoom and transform
-	glPushMatrix();
-	glTranslatef(ZoomX, ZoomY, 0.0f);
+	Translate(modelview, ZoomX, ZoomY, 0.0f);
 	// Scale Z as well so that we don't distort normals.
-	glScalef(Zoom, Zoom, Zoom);
-	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+	Scale(modelview, Zoom, Zoom, Zoom);
+	Translate(modelview, -ZoomX, -ZoomY, 0.0f);
 
 	if(pTransform)
 	{
-		// Decompose scale factors and scale Z accordingly to X and Y, again to avoid distorting normals
-		// We could instead work around this by using the projection matrix, but then for object rotations (SetR)
-		// the normals would not be correct.
-		const float sx = sqrt(pTransform->mat[0]*pTransform->mat[0] + pTransform->mat[1]*pTransform->mat[1]);
-		const float sy = sqrt(pTransform->mat[3]*pTransform->mat[3] + pTransform->mat[4]*pTransform->mat[4]);
-		const float sz = sqrt(sx * sy);
-		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, sz, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
-		glMultMatrixf(transform);
-	}
-}
+		float sz = 1.0f;
+		if (pFoW != NULL && normalTex != 0)
+		{
+			// Decompose scale factors and scale Z accordingly to X and Y, again to avoid distorting normals
+			// We could instead work around this by using the projection matrix, but then for object rotations (SetR)
+			// the normals would not be correct.
+			const float sx = sqrt(pTransform->mat[0]*pTransform->mat[0] + pTransform->mat[1]*pTransform->mat[1]);
+			const float sy = sqrt(pTransform->mat[3]*pTransform->mat[3] + pTransform->mat[4]*pTransform->mat[4]);
+			sz = sqrt(sx * sy);
+		}
 
-void CStdGL::ResetMultiBlt()
-{
-	glPopMatrix();
+		// Multiply modelview matrix with transform
+		StdMeshMatrix transform;
+		transform(0, 0) = pTransform->mat[0];
+		transform(0, 1) = pTransform->mat[1];
+		transform(0, 2) = 0.0f;
+		transform(0, 3) = pTransform->mat[2];
+		transform(1, 0) = pTransform->mat[3];
+		transform(1, 1) = pTransform->mat[4];
+		transform(1, 2) = 0.0f;
+		transform(1, 3) = pTransform->mat[5];
+		transform(2, 0) = pTransform->mat[6];
+		transform(2, 1) = pTransform->mat[7];
+		transform(2, 2) = sz;
+		transform(2, 3) = pTransform->mat[8];
+
+		modelview *= transform;
+	}
+
+	call.SetUniformMatrix4x4fv(C4SSU_ProjectionMatrix, 1, ProjectionMatrix);
+	call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelview);
+
+	if (pFoW != NULL && normalTex != 0)
+		call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, StdMeshMatrix::Inverse(modelview));
 }
 
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call)
 {
 	// Draw on pixel center:
-	glPushMatrix();
-	glTranslatef(0.5f, 0.5f, 0.0f);
+	StdMeshMatrix transform = StdMeshMatrix::Translate(0.5f, 0.5f, 0.0f);
 
 	// This is a workaround. Instead of submitting the whole vertex array to the GL, we do it
 	// in batches of 256 vertices. The intel graphics driver on Linux crashes with
@@ -498,20 +557,16 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 	if (!shader_call)
 	{
 		C4ShaderCall call(GetSpriteShader(false, false, false));
-		SetupMultiBlt(call, NULL, 0, 0, 0, 0);
+		SetupMultiBlt(call, NULL, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
 			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
-		ResetMultiBlt();
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, NULL, 0, 0, 0, 0);
+		SetupMultiBlt(*shader_call, NULL, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
 			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
-		ResetMultiBlt();
 	}
-
-	glPopMatrix();
 }
 
 void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call)
@@ -562,15 +617,13 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	if (!shader_call)
 	{
 		C4ShaderCall call(GetSpriteShader(true, false, false));
-		SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0);
+		SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0, NULL);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
-		ResetMultiBlt();
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, NULL, lines_tex, 0, 0, 0);
+		SetupMultiBlt(*shader_call, NULL, lines_tex, 0, 0, 0, NULL);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
-		ResetMultiBlt();
 	}
 
 	delete[] tri_vertices;
@@ -582,15 +635,13 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	if (!shader_call)
 	{
 		C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
-		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
+		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
-		ResetMultiBlt();
 	}
 	else
 	{
-		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr);
+		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
 		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
-		ResetMultiBlt();
 	}
 }
 

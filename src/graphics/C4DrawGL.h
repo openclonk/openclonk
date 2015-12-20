@@ -49,6 +49,10 @@ private:
 // Uniform data we give the sprite shader (constants from its viewpoint)
 enum C4SS_Uniforms
 {
+	C4SSU_ProjectionMatrix, // 4x4
+	C4SSU_ModelViewMatrix,  // 4x4
+	C4SSU_NormalMatrix,     // 3x3, transpose-inverse of modelview matrix
+
 	C4SSU_ClrMod, // always
 	C4SSU_Gamma, // always
 
@@ -129,6 +133,10 @@ protected:
 	int iClrDpt;                // color depth
 	// texture for smooth lines
 	GLuint lines_tex;
+
+	// The orthographic projection matrix
+	float ProjectionMatrix[16];
+
 	// programs for drawing points, lines, quads
 
 	// Sprite shaders -- there is a variety of shaders to avoid
@@ -159,6 +167,7 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
+	void UpdateProjectionMatrix();
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	// Surface
 	virtual bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
@@ -169,8 +178,7 @@ public:
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
 	// Blit
-	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr);
-	void ResetMultiBlt();
+	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdMeshMatrix* out_modelview);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	void FillBG(DWORD dwClr=0);
 	// Drawing

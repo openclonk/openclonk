@@ -2,6 +2,7 @@
 uniform mat3x2 lightTransform;
 
 #ifdef OC_WITH_NORMALMAP
+uniform mat3 normalMatrix;
 uniform sampler2D normalTex;
 #endif
 
@@ -69,7 +70,13 @@ slice(normal)
 #ifdef OC_WITH_NORMALMAP
 	vec4 normalPx = texture2D(normalTex, texcoord.xy);
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
+#ifdef OC_MESH
+	// TODO: Change to normalMatrix once we changed mesh rendering
+	// to use custom matrices
 	vec3 normal = normalize(gl_NormalMatrix * normalPxDir);
+#else
+	vec3 normal = normalize(normalMatrix * normalPxDir);
+#endif
 #else
 #ifdef OC_MESH
 	vec3 normal = normalDir; // Normal matrix is already applied in vertex shader

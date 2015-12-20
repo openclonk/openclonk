@@ -364,7 +364,7 @@ public:
 	// removes all particles
 	void Clear();
 	bool Exec(C4Object *obj, float timeDelta);
-	void Draw(C4TargetFacet cgo, C4Object *obj, int texUnit);
+	void Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call, int texUnit, const StdMeshMatrix& modelview);
 	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
 	bool IsEmpty() const { return !particleCount; }
 

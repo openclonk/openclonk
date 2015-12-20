@@ -669,3 +669,23 @@ StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs)
 	vtx.u = rhs.u; vtx.v = rhs.v;
 	return vtx;
 }
+
+void Translate(StdMeshMatrix& mat, float dx, float dy, float dz)
+{
+	mat(0, 3) += mat(0,0)*dx + mat(0,1)*dy + mat(0,2)*dz;
+	mat(1, 3) += mat(1,0)*dx + mat(1,1)*dy + mat(1,2)*dz;
+	mat(2, 3) += mat(2,0)*dx + mat(2,1)*dy + mat(2,2)*dz;
+}
+
+void Scale(StdMeshMatrix& mat, float sx, float sy, float sz)
+{
+	mat(0, 0) *= sx;
+	mat(1, 0) *= sx;
+	mat(2, 0) *= sx;
+	mat(0, 1) *= sy;
+	mat(1, 1) *= sy;
+	mat(2, 1) *= sy;
+	mat(0, 2) *= sz;
+	mat(1, 2) *= sz;
+	mat(2, 2) *= sz;
+}
