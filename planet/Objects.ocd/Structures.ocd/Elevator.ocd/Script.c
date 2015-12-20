@@ -92,6 +92,11 @@ private func CreateCase()
 	if (case) case->Connect(this);
 }
 
+public func GetCase()
+{
+	return case;
+}
+
 private func CreateRope()
 {
 	rope = CreateObjectAbove(ElevatorRope, GetCaseXOff(), -11, GetOwner());
