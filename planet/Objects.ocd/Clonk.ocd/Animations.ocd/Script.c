@@ -497,7 +497,7 @@ func FxIntWalkTimer(pTarget, effect)
 		effect.animation_id = PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
-	else if(anim == Clonk_WalkStand && !GetHandAction())
+	else if(anim == Clonk_WalkStand && !GetHandAction() && GetMenu() == nil)
 	{
 		if (effect.footstop_time) effect.footstep_time = 0;
 		if(!effect.idle_animation_time)
@@ -510,7 +510,7 @@ func FxIntWalkTimer(pTarget, effect)
 				var rand = Random(GetLength(Clonk_IdleActions));
 				PlayAnimation(Clonk_IdleActions[rand][0], CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength(Clonk_IdleActions[rand][0]), Clonk_IdleActions[rand][1], ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 				effect.idle_animation_time = Clonk_IdleActions[rand][1]-5;
-				if (!Random(5))
+				if (!Random(10))
 					this->PlaySoundIdle();
 			}
 		}

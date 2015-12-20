@@ -1085,6 +1085,14 @@ If you want to remove the menu, the suggested method is clonk->TryCancelMenu() t
 */
 func GetMenu()
 {
+	// No new-style menu set? Return the classic menu ID. This is deprecated and should be removed in some future.
+	// This function must return a proplist, but clashes with the engine-defined "GetMenu".
+	// This workaround here at least allows developers to reach the Clonk's menu ID.
+	if (menu == nil)
+	{
+		var menu_id = inherited(...);
+		if (menu_id) return {ID = menu_id};
+	}
 	return menu;
 }
 
