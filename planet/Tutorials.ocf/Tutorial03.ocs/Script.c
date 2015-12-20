@@ -58,7 +58,7 @@ private func InitVillageEntrance()
 	CreateObjectAbove(Tree_Coniferous, 188, 384);
 	
 	// Wind generator and sawmill construction site for wood production.
-	CreateObjectAbove(WindGenerator, 224, 384);
+	CreateObjectAbove(WindGenerator, 224, 384)->MakeInvincible();
 	var site = CreateObjectAbove(ConstructionSite, 264, 386);
 	site.MeshTransformation = Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0));
 	site->Set(Sawmill);
@@ -76,6 +76,7 @@ private func InitVillageEntrance()
 	cabin->AddScorch(15, 0, -45, 50, 1500);
 	var chest = CreateObjectAbove(Chest, 410, 352);
 	chest->CreateContents(Hammer);
+	chest->MakeInvincible();
 	return;
 }
 
@@ -83,6 +84,7 @@ private func InitOreMine()
 {
 	// A foundry halfway down.
 	var foundry = CreateObjectAbove(Foundry, 456, 488);
+	foundry->MakeInvincible();
 	var lantern = foundry->CreateContents(Lantern);
 	lantern->TurnOn();
 	
@@ -97,6 +99,7 @@ private func InitVillageMain()
 	// Elevator, and grain production on the right.
 	var elevator = CreateObjectAbove(Elevator, 601, 392);
 	elevator->CreateShaft(264);
+	elevator->MakeInvincible();
 	var mill = CreateObjectAbove(Ruin_Windmill, 816, 392);
 	mill->AddScorch(-15, 42, 90, 50, 1200);
 	CreateObjectAbove(Kitchen, 904, 376);
@@ -118,9 +121,9 @@ private func InitVillageMain()
 	tree.Plane = 450;
 	
 	// Tools and armory down below.	
-	CreateObjectAbove(ToolsWorkshop, 698, 504);
-	CreateObjectAbove(Armory, 772, 504);
-	CreateObjectAbove(Flagpole, 828, 496);
+	CreateObjectAbove(ToolsWorkshop, 698, 504)->MakeInvincible();
+	CreateObjectAbove(Armory, 772, 504)->MakeInvincible();
+	CreateObjectAbove(Flagpole, 828, 496)->MakeInvincible();
 	return;
 }
 
@@ -139,6 +142,7 @@ private func InitVillageUnderground()
 	// Steam engine for power supply below.
 	var engine = CreateObjectAbove(SteamEngine, 780, 752);
 	engine->CreateContents(Coal, 5);
+	engine->MakeInvincible();
 	
 	// Lorry with materials down below, the materials are only added in tutorial 4.
 	CreateObjectAbove(Lorry, 954, 670);	
@@ -598,6 +602,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
+		Rule_BaseRespawn->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

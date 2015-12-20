@@ -168,7 +168,7 @@ private func InitCaveCenter()
 private func InitGoldMine()
 {
 	// Foundry with a lorry and some metal.
-	CreateObjectAbove(Foundry, 980, 486);
+	CreateObjectAbove(Foundry, 980, 486)->MakeInvincible();
 	CreateObjectAbove(Metal, 950, 474);
 	
 	// Pickaxe + ore near ore field.
@@ -204,7 +204,8 @@ private func InitCaveExit()
 	// A small settlement.
 	var elevator = CreateObjectAbove(Elevator, 872, 328);
 	elevator->CreateShaft(248);
-	CreateObjectAbove(WoodenCabin, 968, 328);
+	elevator->MakeInvincible();
+	CreateObjectAbove(WoodenCabin, 968, 328)->MakeInvincible();
 	
 	// Some vegetation / rocks on top of the cave.
 	SproutBerryBush->Place(1 + Random(2), Rectangle(420, 200, 160, 70));
@@ -503,7 +504,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
@@ -511,8 +512,9 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var to_y = effect.to_y;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
+		Rule_BaseRespawn->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");

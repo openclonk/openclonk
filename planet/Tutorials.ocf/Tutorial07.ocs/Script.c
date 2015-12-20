@@ -56,8 +56,9 @@ protected func OnGoalsFulfilled()
 private func InitMountain()
 {
 	// Shipyard with lantern and flagpole.
-	CreateObjectAbove(Flagpole, 55, 504);
+	CreateObjectAbove(Flagpole, 55, 504)->MakeInvincible();
 	var shipyard = CreateObjectAbove(Shipyard, 90, 504);
+	shipyard->MakeInvincible();
 	var lamp = shipyard->CreateContents(Lantern);
 	lamp->TurnOn();
 	// Indestructible airship.
@@ -72,6 +73,7 @@ private func InitMountain()
 	}
 	lorry->CreateContents(Pickaxe);
 	lorry->CreateContents(TeleGlove);
+	lorry->MakeInvincible();
 	return;
 }
 
@@ -86,10 +88,11 @@ private func InitRubyIsland()
 private func InitIslands()
 {
 	// Armory on the lower island with weaponry to kill bats.
-	CreateObjectAbove(WindGenerator, 700, 648);
+	CreateObjectAbove(WindGenerator, 700, 648)->MakeInvincible();
 	var armory = CreateObjectAbove(Armory, 654, 648);
 	armory->CreateContents(Wood, 10);
 	armory->CreateContents(Metal, 5);
+	armory->MakeInvincible();
 	// Flowers on two of the islands.
 	Flower->Place(12, Rectangle(200, 100, 300, 200));
 	Flower->Place(8, Rectangle(300, 300, 200, 200));
@@ -323,19 +326,23 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 {
 	if (reason == 3 || reason == 4)
 	{
-		var restorer = CreateObjectAbove(ObjectRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_x = effect.to_x;
 		var to_y = effect.to_y;
 		var airship = FindObject(Find_ID(Airship));
-		to_x = airship->GetX();
-		to_y = airship->GetY();
+		if (airship)
+		{
+			to_x = airship->GetX();
+			to_y = airship->GetY();
+		}
 		// Respawn new clonk.
 		var plr = target->GetOwner();
-		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
+		Rule_BaseRespawn->TransferInventory(target, clonk);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
