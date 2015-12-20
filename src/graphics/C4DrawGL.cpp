@@ -518,6 +518,8 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		}
 
 		// Multiply modelview matrix with transform
+		// TODO: projection components of C4BltTransform
+		// not taken into account
 		StdMeshMatrix transform;
 		transform(0, 0) = pTransform->mat[0];
 		transform(0, 1) = pTransform->mat[1];
@@ -527,10 +529,10 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		transform(1, 1) = pTransform->mat[4];
 		transform(1, 2) = 0.0f;
 		transform(1, 3) = pTransform->mat[5];
-		transform(2, 0) = pTransform->mat[6];
-		transform(2, 1) = pTransform->mat[7];
+		transform(2, 0) = 0.0f;
+		transform(2, 1) = 0.0f;
 		transform(2, 2) = sz;
-		transform(2, 3) = pTransform->mat[8];
+		transform(2, 3) = 0.0f;
 
 		modelview *= transform;
 	}
