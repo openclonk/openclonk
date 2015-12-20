@@ -44,6 +44,8 @@ private func GetAttraction(proplist coordinates)
 			continue;
 		if (plant->GetCon() < 30) // Too small
 			continue;
+		if (plant->GBackSemiSolid()) // Under water or covered with solid material
+			continue;
 		var width = plant->GetObjWidth();
 		var height = plant->GetObjHeight();
 		coordinates.x = plant->GetX() + Random(width) - width / 2;
