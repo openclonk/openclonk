@@ -43,9 +43,16 @@
 #include <C4Viewport.h>
 #include <C4FoW.h>
 
-C4Effect ** FnGetEffectsFor(C4Object * pTarget)
+C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 {
-	return pTarget ? &pTarget->pEffects : &ScriptEngine.pGlobalEffects;
+	if (pTarget)
+	{
+		C4Object * Obj = pTarget->GetObject();
+		if (!Obj)
+			throw C4AulExecError("Effect target has to be an object");
+		return &Obj->pEffects;
+	}
+	return &ScriptEngine.pGlobalEffects;
 }
 
 // undocumented!
@@ -2149,8 +2156,8 @@ static long FnLoadScenarioSection(C4PropList * _this, C4String *pstrSection, lon
 	return Game.LoadScenarioSection(szSection, dwFlags);
 }
 
-static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4Object * pTarget,
-                           int iPrio, int iTimerInterval, C4Object * pCmdTarget, C4Def * idCmdTarget,
+static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4PropList * pTarget,
+                           int iPrio, int iTimerInterval, C4PropList * pCmdTarget, C4Def * idCmdTarget,
                            const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
 {
 	// safety
@@ -2167,7 +2174,7 @@ static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4Object * p
 	return C4VPropList(pEffect);
 }
 
-static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4Object *pTarget, int index, int iMaxPriority)
+static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, int index, int iMaxPriority)
 {
 	const char *szEffect = FnStringPar(psEffectName);
 	// get effects
@@ -2179,7 +2186,7 @@ static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4Obje
 	return NULL;
 }
 
-static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4Object *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
+static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
 {
 	// evaluate parameters
 	const char *szEffect = FnStringPar(psEffectName);
@@ -2208,7 +2215,7 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4Object 
 	return true;
 }
 
-static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4Object * pTarget,
+static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4PropList * pTarget,
                              int iPrio, int iTimerInterval,
                              const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
 {
@@ -2226,7 +2233,7 @@ static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4Obje
 	return C4VPropList(r);
 }
 
-static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4Object *pTarget, long iMaxPriority)
+static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, long iMaxPriority)
 {
 	// evaluate parameters
 	const char *szEffect = FnStringPar(psEffectName);
@@ -2241,7 +2248,7 @@ static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4Objec
 static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 {
 	// evaluate parameters
-	C4Object *pTarget = Pars[0].getObj();
+	C4PropList *pTarget = Pars[0].getPropList();
 	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
 	const char *szCallFn = FnStringPar(Pars[2].getStr());
 	// safety

@@ -37,7 +37,7 @@ inline C4Object * Object(C4PropList * _this)
 	return _this ? _this->GetObject() : NULL;
 }
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
-C4Effect ** FnGetEffectsFor(C4Object * pTarget);
+C4Effect ** FnGetEffectsFor(C4PropList * pTarget);
 
 // Nillable: Allow integer and boolean parameters to be nil
 // pointer parameters represent nil via plain NULL
