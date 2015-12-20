@@ -343,6 +343,35 @@ float StdMeshMatrix::Determinant() const
 	       - a[0][0]*a[1][2]*a[2][1] - a[0][1]*a[1][0]*a[2][2] - a[0][2]*a[1][1]*a[2][0];
 }
 
+StdProjectionMatrix StdProjectionMatrix::Identity()
+{
+	StdProjectionMatrix m;
+	m.a[0][0] = 1.0f; m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = 0.0f;
+	m.a[1][0] = 0.0f; m.a[1][1] = 1.0f; m.a[1][2] = 0.0f; m.a[1][3] = 0.0f;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = 1.0f; m.a[2][3] = 0.0f;
+	m.a[3][0] = 0.0f; m.a[3][1] = 0.0f; m.a[3][2] = 0.0f; m.a[3][3] = 1.0f;
+	return m;
+}
+
+StdProjectionMatrix StdProjectionMatrix::Translate(float dx, float dy, float dz)
+{
+	StdProjectionMatrix m;
+	m.a[0][0] = 1.0f; m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = dx;
+	m.a[1][0] = 0.0f; m.a[1][1] = 1.0f; m.a[1][2] = 0.0f; m.a[1][3] = dy;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = 1.0f; m.a[2][3] = dz;
+	m.a[3][0] = 0.0f; m.a[3][1] = 0.0f; m.a[3][2] = 0.0f; m.a[3][3] = 1.0f;
+	return m;
+}
+
+StdMeshMatrix StdProjectionMatrix::Upper3x4(const StdProjectionMatrix& matrix)
+{
+	StdMeshMatrix m;
+	m(0, 0) = matrix.a[0][0]; m(0, 1) = matrix.a[0][1]; m(0, 2) = matrix.a[0][2]; m(0, 3) = matrix.a[0][3];
+	m(1, 0) = matrix.a[1][0]; m(1, 1) = matrix.a[1][1]; m(1, 2) = matrix.a[1][2]; m(1, 3) = matrix.a[1][3];
+	m(2, 0) = matrix.a[2][0]; m(2, 1) = matrix.a[2][1]; m(2, 2) = matrix.a[2][2]; m(2, 3) = matrix.a[2][3];
+	return m;
+}
+
 StdMeshTransformation StdMeshMatrix::Decompose() const
 {
 	// Extract the scale part of the matrix
@@ -447,6 +476,39 @@ StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
 	m(1,3) = lhs(1,3) + rhs(1,3);
 	m(2,3) = lhs(2,3) + rhs(2,3);
 	return m;
+}
+
+StdProjectionMatrix operator*(const StdProjectionMatrix& lhs, const StdProjectionMatrix& rhs)
+{
+	StdProjectionMatrix m;
+
+	m(0,0) = lhs(0,0)*rhs(0,0) + lhs(0,1)*rhs(1,0) + lhs(0,2)*rhs(2,0) + lhs(0,3)*rhs(3,0);
+	m(1,0) = lhs(1,0)*rhs(0,0) + lhs(1,1)*rhs(1,0) + lhs(1,2)*rhs(2,0) + lhs(1,3)*rhs(3,0);
+	m(2,0) = lhs(2,0)*rhs(0,0) + lhs(2,1)*rhs(1,0) + lhs(2,2)*rhs(2,0) + lhs(2,3)*rhs(3,0);
+	m(3,0) = lhs(3,0)*rhs(0,0) + lhs(3,1)*rhs(1,0) + lhs(3,2)*rhs(2,0) + lhs(3,3)*rhs(3,0);
+
+	m(0,1) = lhs(0,0)*rhs(0,1) + lhs(0,1)*rhs(1,1) + lhs(0,2)*rhs(2,1) + lhs(0,3)*rhs(3,1);
+	m(1,1) = lhs(1,0)*rhs(0,1) + lhs(1,1)*rhs(1,1) + lhs(1,2)*rhs(2,1) + lhs(1,3)*rhs(3,1);
+	m(2,1) = lhs(2,0)*rhs(0,1) + lhs(2,1)*rhs(1,1) + lhs(2,2)*rhs(2,1) + lhs(2,3)*rhs(3,1);
+	m(3,1) = lhs(3,0)*rhs(0,1) + lhs(3,1)*rhs(1,1) + lhs(3,2)*rhs(2,1) + lhs(3,3)*rhs(3,1);
+
+	m(0,2) = lhs(0,0)*rhs(0,2) + lhs(0,1)*rhs(1,2) + lhs(0,2)*rhs(2,2) + lhs(0,3)*rhs(3,2);
+	m(1,2) = lhs(1,0)*rhs(0,2) + lhs(1,1)*rhs(1,2) + lhs(1,2)*rhs(2,2) + lhs(1,3)*rhs(3,2);
+	m(2,2) = lhs(2,0)*rhs(0,2) + lhs(2,1)*rhs(1,2) + lhs(2,2)*rhs(2,2) + lhs(2,3)*rhs(3,2);
+	m(3,2) = lhs(3,0)*rhs(0,2) + lhs(3,1)*rhs(1,2) + lhs(3,2)*rhs(2,2) + lhs(3,3)*rhs(3,2);
+
+	m(0,3) = lhs(0,0)*rhs(0,3) + lhs(0,1)*rhs(1,3) + lhs(0,2)*rhs(2,3) + lhs(0,3)*rhs(3,3);
+	m(1,3) = lhs(1,0)*rhs(0,3) + lhs(1,1)*rhs(1,3) + lhs(1,2)*rhs(2,3) + lhs(1,3)*rhs(3,3);
+	m(2,3) = lhs(2,0)*rhs(0,3) + lhs(2,1)*rhs(1,3) + lhs(2,2)*rhs(2,3) + lhs(2,3)*rhs(3,3);
+	m(3,3) = lhs(3,0)*rhs(0,3) + lhs(3,1)*rhs(1,3) + lhs(3,2)*rhs(2,3) + lhs(3,3)*rhs(3,3);
+
+	return m;
+}
+
+StdProjectionMatrix& operator*=(StdProjectionMatrix& lhs, const StdProjectionMatrix& rhs)
+{
+	lhs = lhs * rhs;
+	return lhs;
 }
 
 StdMeshQuaternion operator-(const StdMeshQuaternion& rhs)
@@ -668,24 +730,4 @@ StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs)
 	vtx.z  = lhs(2,0)*rhs.x + lhs(2,1)*rhs.y + lhs(2,2)*rhs.z + lhs(2,3);
 	vtx.u = rhs.u; vtx.v = rhs.v;
 	return vtx;
-}
-
-void Translate(StdMeshMatrix& mat, float dx, float dy, float dz)
-{
-	mat(0, 3) += mat(0,0)*dx + mat(0,1)*dy + mat(0,2)*dz;
-	mat(1, 3) += mat(1,0)*dx + mat(1,1)*dy + mat(1,2)*dz;
-	mat(2, 3) += mat(2,0)*dx + mat(2,1)*dy + mat(2,2)*dz;
-}
-
-void Scale(StdMeshMatrix& mat, float sx, float sy, float sz)
-{
-	mat(0, 0) *= sx;
-	mat(1, 0) *= sx;
-	mat(2, 0) *= sx;
-	mat(0, 1) *= sy;
-	mat(1, 1) *= sy;
-	mat(2, 1) *= sy;
-	mat(0, 2) *= sz;
-	mat(1, 2) *= sz;
-	mat(2, 2) *= sz;
 }

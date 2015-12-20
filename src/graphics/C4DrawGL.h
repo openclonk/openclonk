@@ -135,7 +135,7 @@ protected:
 	GLuint lines_tex;
 
 	// The orthographic projection matrix
-	float ProjectionMatrix[16];
+	StdProjectionMatrix ProjectionMatrix;
 
 	// programs for drawing points, lines, quads
 
@@ -178,7 +178,7 @@ public:
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
 	// Blit
-	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdMeshMatrix* out_modelview);
+	void SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdProjectionMatrix* out_modelview);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	void FillBG(DWORD dwClr=0);
 	// Drawing

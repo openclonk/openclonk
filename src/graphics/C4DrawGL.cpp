@@ -188,22 +188,22 @@ void CStdGL::UpdateProjectionMatrix()
 	const float nearVal = -1.0f;
 	const float farVal = +1.0f;
 
-	ProjectionMatrix[0] = 2.0f / (right - left);
-	ProjectionMatrix[1] = 0.0f;
-	ProjectionMatrix[2] = 0.0f;
-	ProjectionMatrix[3] = -(right + left) / (right - left);
-	ProjectionMatrix[4] = 0.0f;
-	ProjectionMatrix[5] = 2.0f / (top - bottom);
-	ProjectionMatrix[6] = 0.0f;
-	ProjectionMatrix[7] = -(top + bottom) / (top - bottom);
-	ProjectionMatrix[8] = 0.0f;
-	ProjectionMatrix[9] = 0.0f;
-	ProjectionMatrix[10] = -2.0f / (farVal - nearVal);
-	ProjectionMatrix[11] = -(farVal + nearVal) / (farVal - nearVal);
-	ProjectionMatrix[12] = 0.0f;
-	ProjectionMatrix[13] = 0.0f;
-	ProjectionMatrix[14] = 0.0f;
-	ProjectionMatrix[15] = 1.0f;
+	ProjectionMatrix(0,0) = 2.0f / (right - left);
+	ProjectionMatrix(0,1) = 0.0f;
+	ProjectionMatrix(0,2) = 0.0f;
+	ProjectionMatrix(0,3) = -(right + left) / (right - left);
+	ProjectionMatrix(1,0) = 0.0f;
+	ProjectionMatrix(1,1) = 2.0f / (top - bottom);
+	ProjectionMatrix(1,2) = 0.0f;
+	ProjectionMatrix(1,3) = -(top + bottom) / (top - bottom);
+	ProjectionMatrix(2,0) = 0.0f;
+	ProjectionMatrix(2,1) = 0.0f;
+	ProjectionMatrix(2,2) = -2.0f / (farVal - nearVal);
+	ProjectionMatrix(2,3) = -(farVal + nearVal) / (farVal - nearVal);
+	ProjectionMatrix(3,0) = 0.0f;
+	ProjectionMatrix(3,1) = 0.0f;
+	ProjectionMatrix(3,2) = 0.0f;
+	ProjectionMatrix(3,3) = 1.0f;
 }
 
 bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
@@ -422,7 +422,7 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 	return ok;
 }
 
-void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdMeshMatrix* out_modelview)
+void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform, GLuint baseTex, GLuint overlayTex, GLuint normalTex, DWORD dwOverlayModClr, StdProjectionMatrix* out_modelview)
 {
 	// Initialize multi blit shader.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
@@ -495,8 +495,17 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 	call.SetUniform1f(C4SSU_CullMode, 0.0f);
 
-	StdMeshMatrix default_modelview = StdMeshMatrix::Identity();
-	StdMeshMatrix& modelview = out_modelview ? *out_modelview : default_modelview;
+	// The primary reason we use a 4x4 matrix for the modelview matrix is that
+	// that the C4BltTransform pTransform parameter can have projection components
+	// (see SetObjDrawTransform2). Still, for sprites the situation is a bit
+	// unsatisfactory because there's no distinction between modelview and projection
+	// components in the BltTransform. Object rotation is part of the BltTransform
+	// for sprites, which should be part of the modelview matrix, so that lighting
+	// is correct for rotated sprites. This is much more common than projection
+	// components in the BltTransform, and therefore we turn the BltTransform into
+	// the modelview matrix and not the projection matrix.
+	StdProjectionMatrix default_modelview = StdProjectionMatrix::Identity();
+	StdProjectionMatrix& modelview = out_modelview ? *out_modelview : default_modelview;
 
 	// Apply zoom and transform
 	Translate(modelview, ZoomX, ZoomY, 0.0f);
@@ -518,9 +527,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		}
 
 		// Multiply modelview matrix with transform
-		// TODO: projection components of C4BltTransform
-		// not taken into account
-		StdMeshMatrix transform;
+		StdProjectionMatrix transform;
 		transform(0, 0) = pTransform->mat[0];
 		transform(0, 1) = pTransform->mat[1];
 		transform(0, 2) = 0.0f;
@@ -533,21 +540,24 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 		transform(2, 1) = 0.0f;
 		transform(2, 2) = sz;
 		transform(2, 3) = 0.0f;
-
+		transform(3, 0) = pTransform->mat[6];
+		transform(3, 1) = pTransform->mat[7];
+		transform(3, 2) = 0.0f;
+		transform(3, 3) = pTransform->mat[8];
 		modelview *= transform;
 	}
 
-	call.SetUniformMatrix4x4fv(C4SSU_ProjectionMatrix, 1, ProjectionMatrix);
+	call.SetUniformMatrix4x4(C4SSU_ProjectionMatrix, ProjectionMatrix);
 	call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelview);
 
 	if (pFoW != NULL && normalTex != 0)
-		call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, StdMeshMatrix::Inverse(modelview));
+		call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, StdMeshMatrix::Inverse(StdProjectionMatrix::Upper3x4(modelview)));
 }
 
 void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call)
 {
 	// Draw on pixel center:
-	StdMeshMatrix transform = StdMeshMatrix::Translate(0.5f, 0.5f, 0.0f);
+	StdProjectionMatrix transform = StdProjectionMatrix::Translate(0.5f, 0.5f, 0.0f);
 
 	// This is a workaround. Instead of submitting the whole vertex array to the GL, we do it
 	// in batches of 256 vertices. The intel graphics driver on Linux crashes with

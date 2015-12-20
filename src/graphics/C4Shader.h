@@ -279,6 +279,12 @@ public:
 		}
 	}
 
+	void SetUniformMatrix4x4(int iUniform, const StdProjectionMatrix& matrix)
+	{
+		if (pShader->HaveUniform(iUniform))
+			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), 1, GL_TRUE, matrix.data());
+	}
+
 	void Start();
 	void Finish();
 };

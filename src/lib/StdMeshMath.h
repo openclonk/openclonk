@@ -87,6 +87,9 @@ struct StdMeshTransformation
 class StdMeshMatrix
 {
 public:
+	static const int NColumns = 4;
+	static const int NRows = 3;
+
 	static StdMeshMatrix Zero();
 	static StdMeshMatrix Identity();
 	static StdMeshMatrix Inverse(const StdMeshMatrix& mat);
@@ -109,11 +112,34 @@ private:
 	float a[3][4];
 };
 
+// Full 4x4 matrix with projection components
+class StdProjectionMatrix
+{
+public:
+	static const int NColumns = 4;
+	static const int NRows = 4;
+
+	static StdProjectionMatrix Identity();
+	static StdProjectionMatrix Translate(float dx, float dy, float dz);
+	static StdMeshMatrix Upper3x4(const StdProjectionMatrix& matrix);
+
+	float& operator()(int i, int j) { return a[i][j]; }
+	float operator()(int i, int j) const { return a[i][j]; }
+
+	const float* data() const { return &a[0][0]; }
+private:
+	float a[4][4];
+};
+
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator*(float lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs);
 StdMeshMatrix& operator*=(StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
+
+StdProjectionMatrix operator*(const StdProjectionMatrix& lhs, const StdProjectionMatrix& rhs);
+StdProjectionMatrix& operator*=(StdProjectionMatrix& lhs, const StdProjectionMatrix& rhs);
+
 StdMeshQuaternion operator-(const StdMeshQuaternion& rhs);
 StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
 StdMeshQuaternion& operator*=(StdMeshQuaternion& lhs, float rhs);
@@ -145,8 +171,27 @@ StdMeshVertex operator*(const StdMeshVertex& lhs, float rhs);
 StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs);
 
 // Multiply in-place the given matrix with a translation matrix to the right
-void Translate(StdMeshMatrix& mat, float dx, float dy, float dz);
+template<typename MatrixType>
+void Translate(MatrixType& mat, float dx, float dy, float dz)
+{
+	static_assert(MatrixType::NColumns >= 4, "Matrix must have at least 4 columns");
+
+	for (int i = 0; i < MatrixType::NRows; ++i)
+		mat(i, 3) += mat(i,0)*dx + mat(i,1)*dy + mat(i,2)*dz;
+}
+
 // Multiply in-place the given matrix with a scale matrix to the right
-void Scale(StdMeshMatrix& mat, float sx, float sy, float sz);
+template<typename MatrixType>
+void Scale(MatrixType& mat, float sx, float sy, float sz)
+{
+	static_assert(MatrixType::NColumns >= 3, "Matrix must have at least 3 columns");
+
+	for (int i = 0; i < MatrixType::NRows; ++i)
+	{
+		mat(i, 0) *= sx;
+		mat(i, 1) *= sy;
+		mat(i, 2) *= sz;
+	}
+}
 
 #endif

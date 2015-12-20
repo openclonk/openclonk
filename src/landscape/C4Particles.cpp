@@ -978,7 +978,7 @@ bool C4ParticleChunk::Exec(C4Object *obj, float timeDelta)
 #define glDeleteVertexArrays glDeleteVertexArraysAPPLE
 #endif
 
-void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call, int texUnit, const StdMeshMatrix& modelview)
+void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call, int texUnit, const StdProjectionMatrix& modelview)
 {
 	if (particleCount == 0) return;
 	const int stride = sizeof(C4Particle::DrawingData::Vertex);
@@ -990,7 +990,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	// (note the normal matrix is unaffected by this)
 	if ((attachment & C4ATTACH_MoveRelative) && (obj != 0))
 	{
-		StdMeshMatrix new_modelview(modelview);
+		StdProjectionMatrix new_modelview(modelview);
 		Translate(new_modelview, fixtof(obj->GetFixedX()), fixtof(obj->GetFixedY()), 0.0f);
 		call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, new_modelview);
 	}
@@ -1160,7 +1160,7 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	// enable shader
 	C4ShaderCall call(pGL->GetSpriteShader(true, false, false));
 	// apply zoom and upload shader uniforms
-	StdMeshMatrix modelview = StdMeshMatrix::Identity();
+	StdProjectionMatrix modelview = StdProjectionMatrix::Identity();
 	pGL->SetupMultiBlt(call, NULL, 0, 0, 0, 0, &modelview);
 	// go to correct output position (note the normal matrix is unaffected
 	// by this)
