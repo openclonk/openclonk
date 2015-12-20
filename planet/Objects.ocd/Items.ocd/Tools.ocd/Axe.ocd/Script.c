@@ -16,9 +16,10 @@ local magic_number;
 
 local movement_effect;
 
-static const axe_swing_time = 30;
-
-static const Axe_Standard_StrikingLength = 40; // in frames
+// When using the axe to chop a tree.
+local SwingTime = 30;
+// When using the axe as a weapon (without trees).
+local StrikingLength = 20; // in frames
 
 private func Hit(int x, int y)
 {
@@ -87,7 +88,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 			//Make sure the clonk is holding the axe in the correct position
 			var hand = "Chop.R";
 			if((clonk->GetDir() == 0) != (clonk.Plane < tree.Plane)) hand = "Chop.L";
-			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), axe_swing_time, ANIM_Loop), Anim_Const(1000));
+			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), SwingTime, ANIM_Loop), Anim_Const(1000));
 
 			//The timed effect for when the axe actually hits the tree
 			AddEffect("IntAxe", clonk, 1, 1, this, 0, tree);
@@ -107,7 +108,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 			//Make sure the clonk is holding the axe in the correct position
 			var hand = "Chop.R";
 			if(clonk->GetDir() == 0) hand = "Chop.L";
-			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), axe_swing_time, ANIM_Loop), Anim_Const(1000));
+			swing_anim = clonk->PlayAnimation(hand, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), SwingTime, ANIM_Loop), Anim_Const(1000));
 
 			//clonk cannot turn around to face the screen while chopping
 			clonk->SetTurnForced(clonk->GetDir());
@@ -130,12 +131,10 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	carry_bone = "pos_hand2";
 
-	var length = Axe_Standard_StrikingLength;
-
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("AxeStrikeStop", clonk, 0))
-			AddEffect("AxeStrikeStop", clonk, 2, length, this);
+			AddEffect("AxeStrikeStop", clonk, 2, StrikingLength, this);
 	}
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
@@ -150,11 +149,12 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		animation = Format("SwordJump%d.%s",rand,arm);
 	}
 
-	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), StrikingLength, ANIM_Remove), Anim_Const(1000));
 	clonk->UpdateAttach();
+	Sound("Objects::Weapons::WeaponSwing?", nil, nil, nil, nil, nil, -Random(10));
 
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
-	StartWeaponHitCheckEffect(clonk, length, 1);
+	StartWeaponHitCheckEffect(clonk, StrikingLength, 1);
 
 	return true;
 }
@@ -194,7 +194,7 @@ func FxIntAxeTimer(object clonk, effect, int time)
 	if (!clonk->IsWalking()) return -1;
 
 	//This block is executed when the axe hits the tree
-	if((time + 25) % axe_swing_time == 1)
+	if((time + 25) % SwingTime == 1)
 	{
 		Sound("Environment::Tree::Chop?");
 
@@ -241,7 +241,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 	if (!clonk->IsWalking()) return -1;
 
 	//This block is executed when the axe hits the tree
-	if ((time + 25) % axe_swing_time == 1)
+	if ((time + 25) % SwingTime == 1)
 	{
 		Sound("Environment::Tree::Chop?");
 
@@ -253,7 +253,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 10);
 	}
 	// Tree split!
-	if ((axe_swing_time * 12) / time == 1)
+	if ((SwingTime * 12) / time == 1)
 	{
 		var wood_count = effect.tree->GetComponent(Wood) / 2;
 		CastObjects(Wood, wood_count, 5, AbsX(effect.tree->GetX()), AbsY(effect.tree->GetY()));
