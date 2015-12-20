@@ -339,7 +339,7 @@ func CheckStrike(iTime)
 					continue;
 
 				// fixed damage (3)
-				var damage=((100-shield)*3*1000 / 100);
+				var damage = ((100-shield) * this.WeaponStrength * 1000 / 100);
 				WeaponDamage(obj, damage, FX_Call_EngGetPunched, true);
 
 				if (obj)
@@ -401,4 +401,7 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+// Damage dealt to trees when chopping.
 local ChopStrength = 10;
+// Damage dealt to living beings when hit with an axe.
+local WeaponStrength = 6;
