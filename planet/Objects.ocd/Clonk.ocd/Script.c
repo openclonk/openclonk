@@ -668,18 +668,18 @@ Helper functions to play some sounds. This are encapsulated here in case sound n
 */
 public func PlaySoundConfirm(...)
 {
-	if (skin_name != "Farmer")
+	if (GetSoundSkinName() != "Farmer")
 		PlaySkinSound("Confirm*", ...);
 }
 public func PlaySoundDecline(...)
 {
-	if (skin_name != "Farmer")
+	if (GetSoundSkinName() != "Farmer")
 		PlaySkinSound("Decline*", ...);
 }
 // Doubtful sound, e.g. when trying a clearly impossible action.
 public func PlaySoundDoubt(...)
 {
-	if (skin_name != "Farmer")
+	if (GetSoundSkinName() != "Farmer")
 		PlaySkinSound("Doubt*", ...);
 }
 
@@ -687,22 +687,22 @@ public func PlaySoundHurt(...) { PlaySkinSound("Hurt*", ...); }
 // Sound that is supposed to be funny in situations where the Clonk maybe did something "evil" like killing a teammate.
 public func PlaySoundTaunt(...)
 {
-	if (skin_name == "Alchemist")
+	if (GetSoundSkinName() == "Alchemist")
 		PlaySkinSound("EvilConfirm*", ...);
-	else if (skin_name == "Steampunk")
+	else if (GetSoundSkinName() == "Steampunk")
 		PlaySkinSound("Laughter*", ...);
 }
 // Surprised sounds, e.g. when catching fire.
 public func PlaySoundShock(...)
 {
-	if (skin_name == "Steampunk" || skin_name == "Adventurer")
+	if (GetSoundSkinName() == "Steampunk" || GetSoundSkinName() == "Adventurer")
 		PlaySkinSound("Shock*", ...);
 }
 public func PlaySoundScream() { PlaySkinSound("Scream*"); }
 // General idle sounds, played when also playing an idle animation.
 public func PlaySoundIdle(...)
 {
-	if (skin_name == "Steampunk")
+	if (GetSoundSkinName() == "Steampunk")
 		PlaySkinSound("Singing*", ...);
 }
 //Portrait definition of this Clonk for messages
