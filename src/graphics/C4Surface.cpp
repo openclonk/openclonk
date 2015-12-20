@@ -1045,7 +1045,7 @@ void C4TexRef::Unlock()
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
 				if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-				glTexImage2D(GL_TEXTURE_2D, 0, 4, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 			}
 			else
 			{
