@@ -212,9 +212,11 @@ func DoStrike(clonk, angle)
 			var precision = BoundBy(Distance(obj->GetX(), obj->GetY(), GetX() + x, GetY() + y), 1, 15);
 			
 			// mass/size factor
-			var fac1 = 10000/Max(2, obj->GetMass());
+			var fac1 = 10000 / Max(5, obj->GetMass());
 			var fac2 = BoundBy(10-Abs(obj->GetDefCoreVal("Width", "DefCore")-obj->GetDefCoreVal("Height", "DefCore")), 1, 10);
 			var speed = (3000 * fac1 * fac2) / 2 / 1000 / precision;
+			speed = BoundBy(speed, 500, 1500);
+			
 			obj->SetXDir((obj->GetXDir(100) + Sin(angle, speed)) / 2, div);
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, speed)) / 2, div);
 		}
