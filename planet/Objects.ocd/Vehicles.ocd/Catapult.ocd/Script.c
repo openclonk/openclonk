@@ -1,9 +1,9 @@
-/*--
+/**
 	Catapult
-	Author: Ringwaul
-	
-	Tosses objects farther than a clonk can. Requires no fuel.
---*/
+	Tosses objects farther than a clonk can, withour requiring gunpowder.
+
+	@author Ringwaul
+*/
 
 #include Library_ElevatorControl
 
@@ -13,45 +13,49 @@ local olddir;
 local dir;
 local clonkmesh;
 
+// Shooting strength for normal launching and self launches.
+static const CATAPULT_MaxPower = 100;
+static const CATAPULT_MaxPower_SelfLaunch = 75;
+
 public func IsVehicle() { return true; }
 public func IsArmoryProduct() { return true; }
 public func FitsInDoubleElevator() { return true; }
 
 protected func Initialize()
 {
-	dir = 1;
+	dir = DIR_Right;
+	olddir = DIR_Right;
 	SetAction("Roll");
-	olddir = 1;
-	aim_anim =  PlayAnimation("ArmPosition", 1,  Anim_Const(0),Anim_Const(1000));
+	aim_anim =  PlayAnimation("ArmPosition", 1,  Anim_Const(0), Anim_Const(1000));
 	turn_anim = PlayAnimation("TurnRight", 5, Anim_Const(GetAnimationLength("TurnRight")), Anim_Const(1000));
 }
 
-//some left-overs from Lorry script. Not sure of it's purpose...
 protected func ContactLeft()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5))
+		SetRDir(RandomX(-7, +7));
 }
+
 protected func ContactRight()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5))
+		SetRDir(RandomX(-7, +7));
 }
 
-/* ---- CONTROLS ---- */
+/*-- Controls --*/
 
-//Activate turn animations
+// Activate turn animations
 func ControlLeft(object clonk)
 {
-	dir = 0;
-	if(dir != olddir)
+	dir = DIR_Left;
+	if (dir != olddir)
 	{
 		olddir = dir;
 
-		//if the animation is playing for the other direction, turn back from where it already is in the animation
+		// If the animation is playing for the other direction, turn back from where it already is in the animation.
 		var animstart = 0;
-		if(GetAnimationPosition(turn_anim) != GetAnimationLength("TurnRight"))
-		{
+		if (GetAnimationPosition(turn_anim) != GetAnimationLength("TurnRight"))
 			animstart = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
-		}
 
 		StopAnimation(turn_anim);
 		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
@@ -60,56 +64,75 @@ func ControlLeft(object clonk)
 
 func ControlRight(object clonk)
 {
-	dir = 1;
-	if(dir != olddir)
+	dir = DIR_Right;
+	if (dir != olddir)
 	{
 		olddir = dir;
 
-		//if the animation is playing for the other direction, turn back from where it already is in the animation
+		// If the animation is playing for the other direction, turn back from where it already is in the animation.
 		var animstart = 0;
-		if(GetAnimationPosition(turn_anim) != GetAnimationLength("TurnLeft"))
-		{
+		if (GetAnimationPosition(turn_anim) != GetAnimationLength("TurnLeft"))
 			animstart = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
-		}
 
 		StopAnimation(turn_anim);
 		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), Max(36 - (animstart * 204617 / 10000000), 1), ANIM_Hold), Anim_Const(1000));
 	}
 }
 
+public func HoldingEnabled() { return true; }
+
 public func ControlUseStart(object clonk)
 {
 	return true;
 }
 
-public func HoldingEnabled() { return true; }
-
-
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	ArmAnimation(x, y);
-	ShowTrajectory(DefinePower(x, y));
+	var power = DefinePower(x, y);
+	DoArmAnimation(power);
+	ShowTrajectory(power);
 	return true;
 }
 
-public func DefinePower(int x, int y)
+public func ControlUseStop(object clonk, int x, int y)
 {
-	var angle = Angle(0, 0, x, y);
-	
-	//balancing stats
-	var padding = 20;
+	DoFire(clonk, DefinePower(x,y));
+}
 
-	var x2 = Sin(padding, angle);
-	var y2 = -Cos(padding, angle);
-	var power = Distance(x2, y2, x2 + x, y2 + y) - padding;
-	power = BoundBy(power, 20, 100);
+public func ContainedUseStart(object clonk, int x, int y)
+{
+	return true;
+}
+
+public func ContainedUseHolding(object clonk, int x, int y)
+{
+	var power = DefinePower(x, y, CATAPULT_MaxPower_SelfLaunch);
+	DoArmAnimation(power);
+	ShowTrajectory(power);
+	return true;
+}
+
+public func ContainedUseStop(object clonk, int x, int y)
+{
+	DoFire(clonk, DefinePower(x, y, CATAPULT_MaxPower_SelfLaunch));
+}
+
+
+/*-- Shooting --*/
+
+public func DefinePower(int x, int y, int max_power)
+{
+	if (max_power == nil)
+		max_power = CATAPULT_MaxPower;
+	var power = 2 * Distance(x, y) / 3 - 24;
+	power = BoundBy(power, 20, max_power);
 	return power;
 }
 
-public func ArmAnimation(int x, int y)
+public func DoArmAnimation(int power)
 {
-	var power = DefinePower(x, y);
 	SetAnimationPosition(aim_anim, Anim_Const(759 - (power * 759 / 100)));
+	return;
 }
 
 public func ShowTrajectory(int power)
@@ -124,90 +147,82 @@ public func ShowTrajectory(int power)
 	return;
 }
 
-public func ControlUseStop(object clonk, int x, int y)
-{
-	DoFire(clonk, DefinePower(x,y));
-}
-
-public func ContainedUse(object clonk, int x, int y)
-{
-	DoFire(clonk, 70);
-}
-
 protected func DoFire(object clonk, int power)
 {
-	//Fire the catapult!
-//	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
-	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
+	// Play the fire animation.
+	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim), 0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
 
-	//Sound
+	// Sound.
 	Sound("Objects::Catapult_Launch");
-
-	var projectile = nil;
-	if (Contents(0))
-		projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!
-	else
-		if(clonk->GetHandItem(0)) 
-			projectile = clonk->GetHandItem(0); //otherwise, fire what is in the clonk's hand
-	if (projectile)
-	{
-		//finding the spot of the catapult's arm depending on rotation
-		var exit = GetProjectileExit();
-		var x = exit[0];
-		var y = exit[1];
-		var angle = exit[2] + GetR();
-
-		projectile->Exit();
-		//Put the ammo at the catapult's arm
-		projectile->SetPosition(GetX() + x, GetY() + y);
-
-		//Launch the clonk!
-		if(projectile->~IsClonk())
-		{
-			CatapultDismount(projectile);
-			projectile->SetAction("Tumble");
 			
-			// Special behavior for Clonks: make sure the Clonk can't shoot itself into solid material.
+	// Remove trajectory display.
+	Trajectory->Remove(this);
+	
+	// The clonk will be the projectile if he sits in the catapult.
+	var projectile = Contents(0);
+	// Otherwise, fire what is in the clonk's hand.
+	if (!projectile)
+		projectile = clonk->GetHandItem(0);
+
+	// Don't do anything further if there is no projectile.
+	if (!projectile)
+		return;
+		
+	// Find the spot of the catapult's arm depending on rotation.
+	var exit = GetProjectileExit();
+	var x = exit[0];
+	var y = exit[1];
+	var angle = exit[2] + GetR();
+
+	projectile->Exit();
+	// Put the ammo at the catapult's arm.
+	projectile->SetPosition(GetX() + x, GetY() + y);
+
+	// Special behavior for crew members.
+	if (projectile->GetOCF() & OCF_CrewMember)
+	{
+		CatapultDismount(projectile);
+		projectile->SetAction("Tumble");
+		
+		// Make sure the Clonk can't shoot itself into solid material.
+		if (projectile->Stuck())
+		{
+			// First, try to just put the Clonk a few pixels lower - might still look okay in some situations.
+			for (var i = 0; i <= 4; ++i)
+			{
+				projectile->SetPosition(projectile->GetX(), projectile->GetY() + 2);
+				if (!projectile->Stuck()) 
+					break;
+			}
+			// Then as a safeguard, just place the Clonk at the catapult's feet and do nothing.
 			if (projectile->Stuck())
 			{
-				// First, try to just put the Clonk a few pixels lower - might still look okay in some situations.
-				for (var i = 0; i <= 4; ++i)
-				{
-					projectile->SetPosition(projectile->GetX(), projectile->GetY() + 2);
-					if (!projectile->Stuck()) break;
-				}
-				// Then as a safeguard, just place the Clonk at the catapult's feet and do nothing.
+				projectile->SetPosition(GetX(), GetY());
+				// Still stuck? Then we don't actually care if stuck here or at the end of the arm.
 				if (projectile->Stuck())
 				{
-					projectile->SetPosition(GetX(), GetY());
-					// Still stuck? Then we don't actually care if stuck here or at the end of the arm.
-					if (projectile->Stuck())
-					{
-						// Go back to normal shooting position.
-						projectile->SetPosition(GetX() + x, GetY() + y);
-					}
-					else
-					{
-						// We set the Clonk back down on the ground. This is not a normal shot.
-						angle = 0;
-						power = 20;
-					}
+					// Go back to normal shooting position.
+					projectile->SetPosition(GetX() + x, GetY() + y);
+				}
+				else
+				{
+					// We set the Clonk back down on the ground. This is not a normal shot.
+					angle = 0;
+					power = 20;
 				}
 			}
 		}
-
-		//Catapult is facing left or right?
-		projectile->SetVelocity(angle + GetR(), power);
 	}
-	
-	// Remove trajectory display.
-	Trajectory->Remove(this);
+
+	// Set the speed of the projectile.
+	projectile->SetVelocity(angle + GetR(), power);
+	return;
 }
 
 private func GetProjectileExit()
 {
 	var xdir = 1;
-	if (dir == 0) 
+	if (dir == DIR_Left)
 		xdir = -1;
 	var x = 8 * xdir;
 	var y = -28;
@@ -218,25 +233,24 @@ private func GetProjectileExit()
 public func ActivateEntrance(object clonk)
 {
 	var cnt = ObjectCount(Find_Container(this), Find_OCF(OCF_CrewMember));
-	if(cnt > 0)
-		if(clonk->Contained() == this)
+	if (cnt > 0)
+	{
+		if (clonk->Contained() == this)
 		{
 			CatapultDismount(clonk);
 			clonk->Exit();
-			return;
 		}
-		else
-			return;
-
-	if(cnt == 0)
+		return;
+	}
+	if (cnt == 0)
 	{
-		SetAnimationPosition(aim_anim, Anim_Const(150));
 		clonk->Enter(this);
 		SetOwner(clonk->GetController());
-		clonkmesh = AttachMesh(clonk,"shot","skeleton_body",Trans_Mul(Trans_Rotate(180, 1, 0, 0), Trans_Translate(-3000, 1000, 0)),AM_DrawBefore);
+		clonkmesh = AttachMesh(clonk,"shot","skeleton_body",Trans_Mul(Trans_Rotate(180, 1, 0, 0), Trans_Translate(-3000, 1000, 0)), AM_DrawBefore);
 		clonk->PlayAnimation("CatapultSit", CLONK_ANIM_SLOT_Movement, Anim_Const(0), Anim_Const(1000));
-		ShowTrajectory(70);
+		DoArmAnimation(CATAPULT_MaxPower_SelfLaunch);
 	}
+	return;
 }
 
 public func CatapultDismount(object clonk)
@@ -247,28 +261,31 @@ public func CatapultDismount(object clonk)
 	return true;
 }
 
-local ActMap = {
-Roll = {
-	Prototype = Action,
-	Name = "Roll",
-	Procedure = DFA_NONE,
-	Directions = 1,
-	FlipDir = 1,
-	Length = 50,
-	Delay = 2,
-	X = 0,
-	Y = 0,
-	Wdt = 22,
-	Hgt = 16,
-	NextAction = "Roll",
-},
-};
-func Definition(def)
+/*-- Properties --*/
+
+func Definition(proplist def)
 {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(6000,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(35,0,1,0),Trans_Scale(1350)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(6000, 0, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(35, 0, 1, 0), Trans_Scale(1350)), def);
 }
 
 local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 1;
 local Rebuy = true;
+
+local ActMap = {
+	Roll = {
+		Prototype = Action,
+		Name = "Roll",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		//FlipDir = 1,
+		Length = 50,
+		Delay = 2,
+		X = 0,
+		Y = 0,
+		Wdt = 22,
+		Hgt = 16,
+		NextAction = "Roll",
+	},
+};
