@@ -1,0 +1,22 @@
+# Goal description
+MsgGoalName=Salvage lorry
+MsgGoalDescription=Locate the lorry with metal and transport it back to the surface.
+
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
+# Tutorial messages
+MsgTutorialFloodedMines=You are right in front of the mine entrance. Talk to the mine operator standing in front of the pump to find out how you can help.
+MsgTutorialConnectPipe=Get a pipe from the chest. Pipes can be connected to the pump by using them in front of the pump, the first pipe will be the source and the second pipe will be the drain. Connect the pipe to the pump. More options for the pump are found in the interaction menu.
+MsgTutorialFindMetalLorry=Good, this way the pump will take water from the pipe and drop it right in front of itself since no drain pipe is connected. You can then keep the pipe in your inventory and use it to pump water from the mine. Now enter the mine by following the path of the elevator and locate the lorry with the metal. Remember to catch your breath every once in a while.
+MsgTutorialMoveLorry=Okay, let's move the lorry out of the mine to the flooded elevator shaft. Push it into the water, maybe it will make its way to where the elevator case would touch the shaft's ground.
+MsgTutorialCallElevator=Hm, that did not work. Swim to the place where the elevator case would reach the ground and call it by pressing [%s]. It will take a few seconds for it to make its way down. In the meanwhile talk to the NPC standing in front of the chemical lab, maybe he has some idea.
+MsgTutorialProduceWallKit=That was not very helpful. The problem seems to be getting the lorry onto the elevator case. If one could somehow close of a small part around the elevator case to remove the water with the pump. Wait a second... One could use a wall kit for this. Produce one in the workshop.
+MsgTutorialCloseMineShaft=Take the wall kit and a dynamite box from the chemical lab. Then make sure the elevator is at the bottom of the flooded shaft and close off the gap above the elevator with wall kits. To place a wall kit, select it in the inventory and hold the left mouse button. Then position the wall kit by moving the mouse cursor and place it by releasing the button.
+MsgTutorialWaitAndMoveLorry=Perfect, now place the pipe in near the elevator case and wait for the lower part of the shaft to be drained, then move the lorry into the case.
+MsgTutorialBlastWall=Good, now that the lorry is in the elevator case we can blast the the wall again to allow the elevator to move up to the surface. Take a dynamite box from the chemical lab and place all five dynamite sticks at the indicated location, then move a way and use the igniter to blast it.
+MsgTutorialSwimUp=Now you can swim back up to the surface again and call the elevator case when you are at the top. Then move the metal lorry to the chief of the mine and talk to him.
+MsgTutorialCompleted=Well done, you see that in this game you sometimes need nifty tricks to solve difficult problems! Now the villagers have enough metal to produce weapons and you are one step closer to mounting an attack against the evil fraction.
