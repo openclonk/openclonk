@@ -82,6 +82,32 @@ namespace
 		return FormatString("currentColor = vec4(%s, %s);\n", TextureUnitBlendToCode(index, texunit.ColorOpEx, color_source1.getData(), color_source2.getData(), texunit.ColorOpManualFactor).getData(), TextureUnitBlendToCode(index, texunit.AlphaOpEx, alpha_source1.getData(), alpha_source2.getData(), texunit.AlphaOpManualFactor).getData());
 	}
 
+	StdStrBuf AlphaTestToCode(const StdMeshMaterialPass& pass)
+	{
+		switch (pass.AlphaRejectionFunction)
+		{
+		case StdMeshMaterialPass::DF_AlwaysPass:
+			return StdStrBuf("");
+		case StdMeshMaterialPass::DF_AlwaysFail:
+			return StdStrBuf("discard;");
+		case StdMeshMaterialPass::DF_Less:
+			return FormatString("if (!(color.a < %f)) discard;", pass.AlphaRejectionValue);
+		case StdMeshMaterialPass::DF_LessEqual:
+			return FormatString("if (!(color.a <= %f)) discard;", pass.AlphaRejectionValue);
+		case StdMeshMaterialPass::DF_Equal:
+			return FormatString("if (!(color.a == %f)) discard;", pass.AlphaRejectionValue);
+		case StdMeshMaterialPass::DF_NotEqual:
+			return FormatString("if (!(color.a != %f)) discard;", pass.AlphaRejectionValue);
+		case StdMeshMaterialPass::DF_Greater:
+			return FormatString("if (!(color.a > %f)) discard;", pass.AlphaRejectionValue);
+		case StdMeshMaterialPass::DF_GreaterEqual:
+			return FormatString("if (!(color.a >= %f)) discard;", pass.AlphaRejectionValue);
+		default:
+			assert(false);
+			return StdStrBuf();
+		}
+	}
+
 	// Simple helper function
 	inline GLenum OgreBlendTypeToGL(StdMeshMaterialPass::SceneBlendType blend)
 	{
@@ -168,9 +194,15 @@ namespace
 			"  vec4 currentColor = diffuse;\n"
 			"  %s\n"
 			"  color = currentColor;\n"
+			"}\n"
+			"\n"
+			"slice(finish)\n"
+			"{\n"
+			"  %s\n"
 			"}\n",
 			textureUnitDeclCode.getData(),
-			textureUnitCode.getData()
+			textureUnitCode.getData(),
+			AlphaTestToCode(pass).getData()
 		);
 	}
 
@@ -518,42 +550,6 @@ namespace
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
-			{
-				glEnable(GL_ALPHA_TEST);
-
-				switch (pass.AlphaRejectionFunction)
-				{
-				case StdMeshMaterialPass::DF_AlwaysPass:
-					glAlphaFunc(GL_ALWAYS, 0.0f);
-					break;
-				case StdMeshMaterialPass::DF_AlwaysFail:
-					glAlphaFunc(GL_NEVER, 0.0f);
-					break;
-				case StdMeshMaterialPass::DF_Less:
-					glAlphaFunc(GL_LESS, pass.AlphaRejectionValue);
-					break;
-				case StdMeshMaterialPass::DF_LessEqual:
-					glAlphaFunc(GL_LEQUAL, pass.AlphaRejectionValue);
-					break;
-				case StdMeshMaterialPass::DF_Equal:
-					glAlphaFunc(GL_EQUAL, pass.AlphaRejectionValue);
-					break;
-				case StdMeshMaterialPass::DF_NotEqual:
-					glAlphaFunc(GL_NOTEQUAL, pass.AlphaRejectionValue);
-					break;
-				case StdMeshMaterialPass::DF_Greater:
-					glAlphaFunc(GL_GREATER, pass.AlphaRejectionValue);
-					break;
-				case StdMeshMaterialPass::DF_GreaterEqual:
-					glAlphaFunc(GL_GEQUAL, pass.AlphaRejectionValue);
-					break;
-				default:
-					assert(false);
-					break;
-				}
-			}
-
 			// Set material properties
 			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
 			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
@@ -761,8 +757,6 @@ namespace
 
 			if(!pass.DepthCheck)
 				glEnable(GL_DEPTH_TEST);
-			if (pass.AlphaRejectionFunction != StdMeshMaterialPass::DF_AlwaysPass)
-				glDisable(GL_ALPHA_TEST);
 		}
 	}
 
