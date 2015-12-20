@@ -185,8 +185,8 @@ void CStdGL::UpdateProjectionMatrix()
 	const float right = clipRect.x + clipRect.Wdt;
 	const float bottom = clipRect.y + clipRect.Hgt;
 	const float top = clipRect.y;
-	const float near = -1.0f;
-	const float far = +1.0f;
+	const float nearVal = -1.0f;
+	const float farVal = +1.0f;
 
 	ProjectionMatrix[0] = 2.0f / (right - left);
 	ProjectionMatrix[1] = 0.0f;
@@ -198,8 +198,8 @@ void CStdGL::UpdateProjectionMatrix()
 	ProjectionMatrix[7] = -(top + bottom) / (top - bottom);
 	ProjectionMatrix[8] = 0.0f;
 	ProjectionMatrix[9] = 0.0f;
-	ProjectionMatrix[10] = -2.0f / (far - near);
-	ProjectionMatrix[11] = -(far + near) / (far - near);
+	ProjectionMatrix[10] = -2.0f / (farVal - nearVal);
+	ProjectionMatrix[11] = -(farVal + nearVal) / (farVal - nearVal);
 	ProjectionMatrix[12] = 0.0f;
 	ProjectionMatrix[13] = 0.0f;
 	ProjectionMatrix[14] = 0.0f;
