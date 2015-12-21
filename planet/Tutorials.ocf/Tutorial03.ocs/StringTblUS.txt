@@ -9,7 +9,7 @@ MsgRepeatRound=&Repeat this round
 MsgRepeatRoundDesc=Restart this scenario.
 
 # Tutorial messages
-MsgTutorialWipfville=This guidepost reads Wipfville, probably the reason why your wipf ran off. It seems that this little village has been under attack, maybe you can find out more by talking to that lumberjack over there. Stand in front of an NPC and press [%s] to start a conversation.
+MsgTutorialWipfville=This guidepost reads Wipfville, probably the reason why Roger ran off. It seems that this little village has been under attack, maybe you can find out more by talking to that lumberjack over there. Stand in front of an NPC and press [%s] to start a conversation.
 MsgTutorialFindRock=Okay, we need to find some rock to finish the construction of this sawmill over here. Let's have a look at the mines of this village, maybe we can find something there.
 MsgTutorialDynamiteLorry=There is a lorry filled with dynamite. You can access the contents of many vehicles and buildings by pressing [%s], which opens the interaction menu. You can interchange items between different containers by clicking them. Grab a stick of dynamite!
 MsgTutorialBlastRock=Perfect, with dynamite you can blast the rock at the ceiling, rock is used as a construction material. Hang onto the rock material and select one of the dynamite sticks, press the left mouse button once to fuse it and press it another time in the direction of the rock to stick it into the wall. Then jump off and run!
@@ -23,3 +23,7 @@ MsgTutorialOreMining=Good, now only one piece of metal is needed to finish the f
 MsgTutorialProduceMetal=With ore and coal you can smelt metal, which is used as construction material for many structures and items. Go to the foundry and use the interaction menu (press [%s] to open) to transfer the coal and ore to the foundry. For production facilities like the foundry there is an additional section in the interaction menu, select metal production here and wait for it to finish.
 MsgTutorialMetalToSite=The metal is finished, pick it up and put it into the flagpole construction site to finish the flagpole.
 MsgTutorialCompleted=Well done! You have mastered the basics of construction, using rock, wood and metal. The villagers of Wipfville will be grateful. Let's proceed to the next tutorial.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Your furry little friend.

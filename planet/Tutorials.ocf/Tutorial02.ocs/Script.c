@@ -159,6 +159,8 @@ private func InitAnimals()
 	var wipf = CreateObjectAbove(Wipf, 500, 536);
 	wipf->EnableTutorialControl();
 	wipf->SetMeshMaterial("WipfSkin");
+	wipf.Name = "$WipfName$";
+	wipf.Description = "$WipfDescription$";
 	
 	// Some butterflies as atmosphere.
 	for (var i = 0; i < 25; i++)

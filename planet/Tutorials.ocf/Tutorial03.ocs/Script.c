@@ -166,6 +166,8 @@ private func InitAnimals()
 	wipf->SetMeshMaterial("WipfSkin");
 	wipf->SetObjectLayer(wipf);
 	wipf->EnableTutorialControl(true);
+	wipf.Name = "$WipfName$";
+	wipf.Description = "$WipfDescription$";
 		
 	// Some wipfs near the grain field.
 	var wipfs = Wipf->Place(4, Rectangle(640, 352, 180, 40));
