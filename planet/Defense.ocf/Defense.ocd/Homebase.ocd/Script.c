@@ -17,6 +17,7 @@ local is_selling; // temp to prevent recursion from object removal
 
 // Technology fields - queried by objects using them
 local tech_load_speed_multiplier = 100;
+local tech_shooting_strength_multiplier = 0;
 local tech_life = 1;
 
 static g_quickbuy_items;
@@ -220,6 +221,11 @@ public func OnBuySelection(int callback_idx)
 				else if (stack_count > 0)
 					ammo->SetStackCount(stack_count);
 			}
+			// stack count
+			if (entry.infinite && item)
+			{
+				item->SetInfiniteStackCount();
+			}
 		}
 	}
 	// Buy only once? (all technologies without further upgrade tiers)
@@ -331,6 +337,17 @@ private func GainLoadSpeed(proplist entry, int tier)
 	// Update all current weapons
 	for (var weapon in FindObjects(Find_Owner(GetOwner()), Find_Func("Gidl_IsRangedWeapon")))
 		weapon->Gidl_UpdateLoadTimes();
+	return true;
+}
+
+private func GainShootingStrength(proplist entry, int tier)
+{
+	// Increase player's shooting strength
+	// Weapon get plus x percent shooting strength
+	tech_shooting_strength_multiplier = [10, 20, 30, 40][tier];
+	// Update all current weapons
+	for (var weapon in FindObjects(Find_Owner(GetOwner()), Find_Func("Gidl_IsRangedWeapon")))
+		weapon->Guardians_UpdateShootingStrength();
 	return true;
 }
 
