@@ -9,6 +9,9 @@
 //Uses the extra slot library
 #include Library_HasExtraSlot
 
+// Initial velocity of the bomb
+local shooting_strength = 75;
+
 func Hit()
 {
 	Sound("Hits::GeneralHit?");
@@ -156,7 +159,7 @@ private func FireWeapon(object clonk, int angle)
 	var IX=Sin(180-angle,MuzzleFront);
 	var IY=Cos(180-angle,MuzzleUp)+MuzzleOffset;
 
-	shot->LaunchProjectile(angle, 0, 75, IX, IY);
+	shot->LaunchProjectile(angle, 0, shooting_strength, IX, IY);
 	shot->~Fuse(true);
 	shot->SetController(clonk->GetController());
 

@@ -18,7 +18,7 @@ public func FinishedAiming(object clonk, int angle)
 		if(Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
-			arrow->Launch(angle,100,clonk);
+			arrow->Launch(angle,this.shooting_strength,clonk);
 			if(king_size)
 			{
 				AddEffect("ExplosiveArrow",arrow,100,1,this);

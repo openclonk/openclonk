@@ -7,6 +7,9 @@
 
 #include Library_Stackable
 
+// Multiplication factor to clonk.ThrowSpeed
+local shooting_strength = 21;
+
 public func MaxStackCount() { return 3; }
 // Note that the javelin damage also takes the speed into account. A direct eye-to-eye hit will do roughly this damage.
 public func JavelinStrength() { return 18; }
@@ -104,7 +107,7 @@ public func DoThrow(object clonk, int angle)
 	var div = 60; // 40% is converted to the direction of the throwing angle.
 	var xdir = clonk->GetXDir(1000);
 	var ydir = clonk->GetYDir(1000);
-	var speed = clonk.ThrowSpeed * 21 + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
+	var speed = clonk.ThrowSpeed * shooting_strength + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
 	var jav_x = div * xdir / 100 + Sin(angle, speed);
 	var jav_y = div * ydir / 100 - Cos(angle, speed);
 		
