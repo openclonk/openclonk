@@ -61,7 +61,7 @@ public func MakeBridge(obj1, obj2)
 	SetProperty("Collectible", 0);
 	SetCategory(C4D_StaticBack);
 	StartRopeConnect(obj1, obj2);
-	SetFixed(1, 1);
+	SetFixed(true, true);
 	ConnectPull();
 	AddEffect("IntHang", this, 1, 1, this);
 	SetAction("Hanging");

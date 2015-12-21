@@ -180,7 +180,7 @@ func ForcesOnObjects()
 		if(i == 1) j = lib_rope_particle_count-1;
 		var obj = lib_rope_objects[i][0];
 
-		if(obj == nil || lib_rope_objects[i][1] == 0) continue;
+		if(obj == nil || !lib_rope_objects[i][1]) continue;
 
 		if(obj->Contained()) obj = obj->Contained();
 

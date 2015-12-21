@@ -349,7 +349,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 
 global func Trans_RotX(int rotation, int ox, int oy)
 {
-  return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation,0,0,1), Trans_Translate(ox, oy));
+	return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation, 0, 0, 1), Trans_Translate(ox, oy));
 }
 
 public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)

@@ -127,7 +127,6 @@ public func ControlUseStart(object clonk, int x, int y)
 		if (rope)
 		{
 			rope->DrawIn();
-		//	rope->BreakRope();
 			return true;
 		}
 		else

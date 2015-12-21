@@ -22,7 +22,7 @@ local lib_rope_length;         // Length of the rope.
 local lib_rope_particle_count; // Number of rope particles.
 local lib_rope_particles;      // List of rope particles.
 local lib_rope_segments;       // List of rope segments.
-local lib_rope_objects;        // List of rope objects.
+local lib_rope_objects;        // List of rope objects, first entry is the start of the rope, second entry is the end of the rope; format for entry: [object, bool fixed].
 local lib_rope_length_auto;    // Automatic rope length (true/false).
 local lib_rope_max_length;     // Maximum rope length.
 
@@ -38,7 +38,7 @@ public func GetRopeGravity()
 */
 protected func StartRope()
 {
-	lib_rope_objects = [[this, 0], [nil, nil]];
+	lib_rope_objects = [[this, false], [nil, false]];
 	lib_rope_length = LIB_ROPE_SegmentLength;
 
 	lib_rope_particle_count = 1;
@@ -59,7 +59,7 @@ protected func StartRope()
 public func StartRopeConnect(object obj1, object obj2)
 {
 	lib_rope_length = ObjectDistance(obj1, obj2);
-	lib_rope_objects = [[obj1, 0], [obj2, 1]];
+	lib_rope_objects = [[obj1, false], [obj2, true]];
 	lib_rope_particle_count = lib_rope_length / LIB_ROPE_SegmentLength;
 
 	var yoff = 0;
@@ -373,9 +373,6 @@ private func Verlet()
 
 	// Verlet
 	var start = 1;
-	var last = lib_rope_particle_count;
-	if (lib_rope_objects[-1][1] == 1 && PullObjects())
-		last -= 1;
 	for (var i = start; i < lib_rope_particle_count; i++)
 	{
 		var part = lib_rope_particles[i];
@@ -563,15 +560,13 @@ public func ForcesOnObjects()
 				j = lib_rope_particle_count - 1;
 			var obj = lib_rope_objects[i][0];
 	
-			if (obj == nil || lib_rope_objects[i][1] == 0) 
+			if (obj == nil || !lib_rope_objects[i][1]) 
 				continue;
 	
 			if (obj->Contained())
 				obj = obj->Contained();
 	
-			if ((obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
-				obj->SetAction("Jump");
-			if (obj->GetAction() == "Climb")
+			if (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle" || obj->GetAction() == "Climb")
 				obj->SetAction("Jump");
 	
 			obj->SetXDir(lib_rope_particles[j].x - lib_rope_particles[j].oldx, LIB_ROPE_Precision);

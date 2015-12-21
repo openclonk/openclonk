@@ -60,7 +60,7 @@ public func GetConnectStatus() { return !lib_rope_length_auto; }
 local HoockAnchored;
 local DrawingIn;
 
-/* Callback form the hook, when it hits ground */
+// Callback form the hook, when it hits ground.
 public func HockAnchored(bool pull)
 {
 	HoockAnchored = 1;
@@ -128,7 +128,7 @@ func DrawIn(bool no_control)
 	if (!GetEffect("DrawIn", this))
 	{
 		AddEffect("DrawIn", this, 1, 1, this);
-		SetFixed(0, 1);
+		SetFixed(false, true);
 		lib_rope_objects[0][0]->SetXDir();
 		lib_rope_objects[0][0]->SetYDir();
 		ConnectPull();
@@ -279,19 +279,17 @@ func ForcesOnObjects()
 		if(redo) redo --;
 	}
 	var j = 0;
-	if(PullObjects() )
+	if (PullObjects())
 	for(var i = 0; i < 2; i++)
 	{
 		if(i == 1) j = lib_rope_particle_count-1;
 		var obj = lib_rope_objects[i][0];
 
-		if(obj == nil || lib_rope_objects[i][1] == 0) continue;
+		if(obj == nil || !lib_rope_objects[i][1]) continue;
 
 		if(obj->Contained()) obj = obj->Contained();
 
-		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
-			obj->SetAction("Jump");
-		if( obj->GetAction() == "Climb")
+		if(obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle" || obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
 		var xdir = BoundBy(lib_rope_particles[j].x-lib_rope_particles[j].oldx, -300, 300);
