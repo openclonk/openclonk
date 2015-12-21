@@ -34,6 +34,13 @@ int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
 
+/* Avoid a C4Object dependency */
+C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
+{
+	if (pTarget) throw C4AulExecError("Only global effects are supported");
+	return &ScriptEngine.pGlobalEffects;
+}
+
 /* Stubs */
 C4Config Config;
 C4Config::C4Config() {}

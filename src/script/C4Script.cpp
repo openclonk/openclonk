@@ -251,6 +251,8 @@ static C4Value FnTrans_Mul(C4PropList * _this, C4Value *pars)
 
 #undef MAKE_AND_RETURN_ARRAY
 
+/* PropLists */
+
 static C4PropList * FnCreatePropList(C4PropList * _this, C4PropList * prototype)
 {
 	return C4PropList::New(prototype);
@@ -323,6 +325,111 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	if (!fn)
 		throw C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
 	return fn->Exec(_this, &ParSet, true);
+}
+
+/* Effects */
+
+static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4PropList * pTarget,
+                           int iPrio, int iTimerInterval, C4PropList * pCmdTarget, C4Def * idCmdTarget,
+                           const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szEffect || !*szEffect->GetCStr() || !iPrio) return C4Value();
+	// create effect
+	C4PropList * p = pCmdTarget;
+	if (!p) p = idCmdTarget;
+	if (!p) p = ::ScriptEngine.GetPropList();
+	C4Effect * pEffect = C4Effect::New(pTarget, FnGetEffectsFor(pTarget),
+			szEffect, iPrio, iTimerInterval, p, Val1, Val2, Val3, Val4);
+	// return effect - may be 0 if the effect has been denied by another effect
+	if (!pEffect) return C4Value();
+	return C4VPropList(pEffect);
+}
+
+static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, int index, int iMaxPriority)
+{
+	const char *szEffect = FnStringPar(psEffectName);
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return NULL;
+	// name/wildcard given: find effect by name and index
+	if (szEffect && *szEffect)
+		return pEffect->Get(szEffect, index, iMaxPriority);
+	return NULL;
+}
+
+static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
+{
+	// evaluate parameters
+	const char *szEffect = FnStringPar(psEffectName);
+	// if the user passed an effect, it can be used straight-away
+	C4Effect *pEffect = pEffect2;
+	// otherwise, the correct effect will be searched in the target's effects or in the global ones
+	if (!pEffect)
+	{
+		pEffect = *FnGetEffectsFor(pTarget);
+		// the object has no effects attached, nothing to look for
+		if (!pEffect) return 0;
+		// name/wildcard given: find effect by name
+		if (szEffect && *szEffect)
+			pEffect = pEffect->Get(szEffect, 0);
+	}
+
+	// neither passed nor found - nothing to remove!
+	if (!pEffect) return 0;
+
+	// kill it
+	if (fDoNoCalls)
+		pEffect->SetDead();
+	else
+		pEffect->Kill(pTarget);
+	// done, success
+	return true;
+}
+
+static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4PropList * pTarget,
+                             int iPrio, int iTimerInterval,
+                             const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	const char *szEffect = FnStringPar(psEffectName);
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szEffect || !*szEffect) return C4Value();
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return C4Value();
+	// let them check
+	C4Effect * r = pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, Val1, Val2, Val3, Val4);
+	if (r == (C4Effect *)C4Fx_Effect_Deny) return C4VInt(C4Fx_Effect_Deny);
+	if (r == (C4Effect *)C4Fx_Effect_Annul) return C4VInt(C4Fx_Effect_Annul);
+	return C4VPropList(r);
+}
+
+static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, long iMaxPriority)
+{
+	// evaluate parameters
+	const char *szEffect = FnStringPar(psEffectName);
+	// get effects
+	C4Effect *pEffect = *FnGetEffectsFor(pTarget);
+	if (!pEffect) return false;
+	// count effects
+	if (!*szEffect) szEffect = 0;
+	return pEffect->GetCount(szEffect, iMaxPriority);
+}
+
+static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
+{
+	// evaluate parameters
+	C4PropList *pTarget = Pars[0].getPropList();
+	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
+	const char *szCallFn = FnStringPar(Pars[2].getStr());
+	// safety
+	if (pTarget && !pTarget->Status) return C4Value();
+	if (!szCallFn || !*szCallFn) return C4Value();
+	if (!pEffect) return C4Value();
+	// do call
+	return pEffect->DoCall(pTarget, szCallFn, Pars[3], Pars[4], Pars[5], Pars[6], Pars[7], Pars[8], Pars[9]);
 }
 
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
@@ -738,6 +845,33 @@ static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
+	{ "FX_OK"                     ,C4V_Int,      C4Fx_OK                    }, // generic standard behaviour for all effect callbacks
+	{ "FX_Effect_Deny"            ,C4V_Int,      C4Fx_Effect_Deny           }, // delete effect
+	{ "FX_Effect_Annul"           ,C4V_Int,      C4Fx_Effect_Annul          }, // delete effect, because it has annulled a countereffect
+	{ "FX_Effect_AnnulDoCalls"    ,C4V_Int,      C4Fx_Effect_AnnulCalls     }, // delete effect, because it has annulled a countereffect; temp readd countereffect
+	{ "FX_Execute_Kill"           ,C4V_Int,      C4Fx_Execute_Kill          }, // execute callback: Remove effect now
+	{ "FX_Stop_Deny"              ,C4V_Int,      C4Fx_Stop_Deny             }, // deny effect removal
+	{ "FX_Start_Deny"             ,C4V_Int,      C4Fx_Start_Deny            }, // deny effect start
+
+	{ "FX_Call_Normal"            ,C4V_Int,      C4FxCall_Normal            }, // normal call; effect is being added or removed
+	{ "FX_Call_Temp"              ,C4V_Int,      C4FxCall_Temp              }, // temp call; effect is being added or removed in responce to a lower-level effect change
+	{ "FX_Call_TempAddForRemoval" ,C4V_Int,      C4FxCall_TempAddForRemoval }, // temp call; effect is being added because it had been temp removed and is now removed forever
+	{ "FX_Call_RemoveClear"       ,C4V_Int,      C4FxCall_RemoveClear       }, // effect is being removed because object is being removed
+	{ "FX_Call_RemoveDeath"       ,C4V_Int,      C4FxCall_RemoveDeath       }, // effect is being removed because object died - return -1 to avoid removal
+	{ "FX_Call_DmgScript"         ,C4V_Int,      C4FxCall_DmgScript         }, // damage through script call
+	{ "FX_Call_DmgBlast"          ,C4V_Int,      C4FxCall_DmgBlast          }, // damage through blast
+	{ "FX_Call_DmgFire"           ,C4V_Int,      C4FxCall_DmgFire           }, // damage through fire
+	{ "FX_Call_DmgChop"           ,C4V_Int,      C4FxCall_DmgChop           }, // damage through chopping
+	{ "FX_Call_Energy"            ,C4V_Int,      32                         }, // bitmask for generic energy loss
+	{ "FX_Call_EngScript"         ,C4V_Int,      C4FxCall_EngScript         }, // energy loss through script call
+	{ "FX_Call_EngBlast"          ,C4V_Int,      C4FxCall_EngBlast          }, // energy loss through blast
+	{ "FX_Call_EngObjHit"         ,C4V_Int,      C4FxCall_EngObjHit         }, // energy loss through object hitting the living
+	{ "FX_Call_EngFire"           ,C4V_Int,      C4FxCall_EngFire           }, // energy loss through fire
+	{ "FX_Call_EngBaseRefresh"    ,C4V_Int,      C4FxCall_EngBaseRefresh    }, // energy reload in base (also by base object, but that's normally not called)
+	{ "FX_Call_EngAsphyxiation"   ,C4V_Int,      C4FxCall_EngAsphyxiation   }, // energy loss through asphyxiaction
+	{ "FX_Call_EngCorrosion"      ,C4V_Int,      C4FxCall_EngCorrosion      }, // energy loss through corrosion (acid)
+	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss from punch
+
 	{ "C4V_Nil",         C4V_Int, C4V_Nil},
 	{ "C4V_Int",         C4V_Int, C4V_Int},
 	{ "C4V_Bool",        C4V_Int, C4V_Bool},
@@ -758,6 +892,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 C4ScriptFnDef C4ScriptFnMap[]=
 {
 	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
+	{ "EffectCall",    1, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
 	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
 	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
 	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
@@ -799,6 +934,11 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperty);
 	F(SetProperty);
 	F(ResetProperty);
+	F(AddEffect);
+	F(CheckEffect);
+	F(RemoveEffect);
+	F(GetEffect);
+	F(GetEffectCount);
 	F(Distance);
 	F(Angle);
 	F(GetChar);
