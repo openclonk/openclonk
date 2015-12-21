@@ -82,6 +82,7 @@ func ControlUseStart(object clonk, int x, int y)
 	if(!Contents(0))
 	{
 		clonk->CancelUse();
+		Sound("Objects::Weapons::Musket::Click*");
 		return true;
 	}
 
