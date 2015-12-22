@@ -26,21 +26,6 @@ include(Version)
 
 set(CMAKE_ADDITIONAL_DEPS_PATH "${CMAKE_CURRENT_BINARY_DIR}/deps" CACHE PATH "Additional directory to search for libraries and headers")
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
-set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-separate_arguments(OC_CXX_FLAGS)
-set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
-separate_arguments(OC_CXX_FLAGS_DEBUG)
-set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
-separate_arguments(OC_EXE_LINKER_FLAGS)
-set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
-
-function(unseparate_arguments _var _list)
-	foreach(_arg ${_list})
-		set(_string "${_string} ${_arg}")
-	endforeach()
-	set(${_var} "${_string}" PARENT_SCOPE)
-endfunction()
 
 ############################################################################
 # User selectable options
@@ -55,29 +40,23 @@ CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 ############################################################################
-# Check for compiler quirks and features
+# Assemble compiler flags
 ############################################################################
 include(CheckCXXCompilerFlag)
-include(CheckCXXSourceCompiles)
-include(RequireCXXSourceCompiles)
+
+set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+separate_arguments(OC_CXX_FLAGS)
+set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+separate_arguments(OC_CXX_FLAGS_DEBUG)
+set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+separate_arguments(OC_EXE_LINKER_FLAGS)
+set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
+separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
 CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
 if(USE_GCC_STD_0X)
 	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
 endif()
-
-REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
-REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
-CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
-REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
-
-# g++'s libstdc++ doesn't properly support <regex> until 4.9.
-# They ship a header that declares functions, but they don't ship an
-# implementation for some things (like std::regex_iterator).
-# This needs to test *linking*, not compilation; cmake does both at the same
-# time, so the test below works.
-REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
@@ -113,6 +92,61 @@ if(WIN32 AND MINGW)
 	# Activate DEP and ASLR
 	list(APPEND OC_EXE_LINKER_FLAGS -Wl,--nxcompat -Wl,--dynamicbase)
 endif()
+
+if(UNIX)
+	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
+	# and when the path is changed both the old and new definition appears
+	# in the list of flags.
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
+endif()
+
+if(OC_CXX_FLAGS)
+	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
+endif()
+set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
+endforeach()
+if(OC_CXX_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+endif()
+set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+endforeach()
+if(OC_EXE_LINKER_FLAGS)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
+endforeach()
+if(OC_EXE_LINKER_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
+	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the linker during debug builds." FORCE)
+endforeach()
+
+############################################################################
+# Check for compiler quirks and features
+############################################################################
+include(CheckCXXSourceCompiles)
+include(RequireCXXSourceCompiles)
+
+REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
+REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
+REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
+
+# g++'s libstdc++ doesn't properly support <regex> until 4.9.
+# They ship a header that declares functions, but they don't ship an
+# implementation for some things (like std::regex_iterator).
+# This needs to test *linking*, not compilation; cmake does both at the same
+# time, so the test below works.
+REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
+
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
@@ -1173,44 +1207,6 @@ if(HAVE_PRECOMPILED_HEADERS)
 		set_property(SOURCE src/C4Include.cpp PROPERTY COMPILE_FLAGS /YcC4Include.h)
 	endif()
 endif()
-
-############################################################################
-# Assemble compiler flags
-############################################################################
-if(UNIX)
-	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
-	# and when the path is changed both the old and new definition appears
-	# in the list of flags.
-	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
-endif()
-if(OC_CXX_FLAGS)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
-endif()
-set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
-endforeach()
-if(OC_CXX_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
-endif()
-set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-endforeach()
-if(OC_EXE_LINKER_FLAGS)
-	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
-endif()
-set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
-foreach(FLAG ${OC_EXE_LINKER_FLAGS})
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
-endforeach()
-if(OC_EXE_LINKER_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
-endif()
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
-foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the linker during debug builds." FORCE)
-endforeach()
 
 ############################################################################
 # Some Xcode/OSX specific settings involving building with clang, precompiled headers...
