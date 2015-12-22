@@ -106,6 +106,7 @@ class C4PlayerInfoList;
 class C4PlayerInfoListBox;
 class C4PlayerList;
 class C4PropList;
+class C4PropListStatic;
 class C4PXS;
 class C4PXSSystem;
 class C4RankSystem;
