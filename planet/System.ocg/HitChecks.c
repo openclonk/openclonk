@@ -129,12 +129,13 @@ global func FxHitCheckTimer(object target, proplist effect, int time)
 		{
 			var ready = true;
 			// We search for all objects with the id of our shooter.
-			for (var foo in FindObjects(Find_AtPoint(target->GetX(), target->GetY()), Find_ID(shooter->GetID())))
+			if (shooter)
 			{
-				// If its the shooter...
-				if(foo == shooter)
+				if (FindObject(Find_AtPoint(target->GetX(), target->GetY()), Find_InArray([shooter])))
+				{
 					// we may not switch to "live" yet.
 					ready = false;
+				}
 			}
 			// Otherwise, the shot will be live.
 			if (ready)
