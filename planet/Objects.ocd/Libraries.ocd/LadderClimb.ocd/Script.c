@@ -72,33 +72,31 @@ public func GetLadderScaleAnimation()
 
 public func FxIntSearchLadderTimer(object target, proplist effect, int time)
 {
+	// Only search for a ladder if jumping.
 	if (GetAction() != "Jump" && GetAction() != "WallJump") 
 		return FX_Execute_Kill;
-
-	var ladder;
-	if (!no_ladder_counter)
+		
+	// Don't search for ladders if the counter is non-zero.
+	if (no_ladder_counter > 0)
 	{
-		for (ladder in FindObjects(Find_AtRect(-5, -5, 10, 10), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		{
-			if (ladder->~CanNotBeClimbed()) 
-				continue;
-			else 
-				break;
-		}
-		if (ladder && ladder->~CanNotBeClimbed()) 
-			ladder = nil;
-	}
-	else
 		no_ladder_counter--;
-	// Found ladder?
-	if (ladder != nil)
-	{
-		SetAction("Climb");
-		ladder->~OnLadderGrab(this);
-		PlayAnimation(GetLadderScaleAnimation(), CLONK_ANIM_SLOT_Movement, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-		AddEffect("IntClimbControl", this, 1, 1, this, nil, ladder);
-		return FX_Execute_Kill;
+		return FX_OK;	
 	}
+		
+	// Find a ladder.
+	var ladder;
+	for (ladder in FindObjects(Find_AtRect(-5, -10, 10, 8), Find_Func("IsLadder"), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	{
+		if (!ladder->~CanNotBeClimbed()) 
+		{
+			SetAction("Climb");
+			ladder->~OnLadderGrab(this);
+			PlayAnimation(GetLadderScaleAnimation(), CLONK_ANIM_SLOT_Movement, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			AddEffect("IntClimbControl", this, 1, 1, this, nil, ladder);
+			return FX_Execute_Kill;		
+		}
+	}
+	return FX_OK;
 }
 
 public func FxIntSearchLadderStop(object target, proplist effect, reason, tmp)
