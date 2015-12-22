@@ -37,6 +37,8 @@ C4AulScriptEngine ScriptEngine;
 /* Avoid a C4Object dependency */
 C4Effect ** FnGetEffectsFor(C4PropList * pTarget)
 {
+	if (pTarget == ScriptEngine.GetPropList())
+		return &ScriptEngine.pGlobalEffects;
 	if (pTarget) throw C4AulExecError("Only global effects are supported");
 	return &ScriptEngine.pGlobalEffects;
 }

@@ -357,6 +357,18 @@ static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4PropList *
 	return C4VPropList(pEffect);
 }
 
+static C4Effect * FnCreateEffect(C4PropList * _this, C4PropList * prototype, int iPrio, int iTimerInterval,
+                              const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
+{
+	if (!prototype || !(prototype->GetName()[0])) throw C4AulExecError("CreateEffect needs a prototype with a name");
+	if (!iPrio) throw C4AulExecError("CreateEffect needs a nonzero priority");
+	// create effect
+	C4Effect * pEffect = C4Effect::New(_this, FnGetEffectsFor(_this), prototype, iPrio, iTimerInterval,
+	                                   Val1, Val2, Val3, Val4);
+	// return effect - may be 0 if the effect has been denied by another effect
+	return pEffect;
+}
+
 static C4Effect * FnGetEffect(C4PropList * _this, C4String *psEffectName, C4PropList *pTarget, int index, int iMaxPriority)
 {
 	const char *szEffect = FnStringPar(psEffectName);
@@ -946,6 +958,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(ResetProperty);
 	F(GetName);
 	F(AddEffect);
+	F(CreateEffect);
 	F(CheckEffect);
 	F(RemoveEffect);
 	F(GetEffect);

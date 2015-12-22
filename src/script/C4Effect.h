@@ -91,12 +91,14 @@ protected:
 	int CallEffect(const char * effect, C4PropList * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
 
 	C4Effect(C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget);
+	C4Effect(C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval);
 	C4Effect(const C4Effect &); // unimplemented, do not use
 	C4Effect(); // for the StdCompiler
 	C4Effect * Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
 public:
 	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4PropList *pForObj, C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	~C4Effect();                      // dtor - deletes all following effects
 
 	void Register(C4Effect **ppEffectList, int32_t iPrio);  // add into effect list of object or global effect list

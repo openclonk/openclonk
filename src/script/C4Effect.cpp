@@ -54,6 +54,18 @@ C4Effect::C4Effect(C4Effect **ppEffectList, C4String *szName, int32_t iPrio, int
 	SetProperty(P_Name, C4VString(szName));
 }
 
+C4Effect::C4Effect(C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval):
+		C4PropListNumbered(prototype)
+{
+	// assign values
+	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
+	iInterval = iTimerInterval;
+	iTime = 0;
+	CommandTarget.Set0();
+	AcquireNumber();
+	Register(ppEffectList, iPrio);
+}
+
 void C4Effect::Register(C4Effect **ppEffectList, int32_t iPrio)
 {
 	// get effect target
@@ -77,6 +89,12 @@ void C4Effect::Register(C4Effect **ppEffectList, int32_t iPrio)
 C4Effect * C4Effect::New(C4PropList *pForObj, C4Effect **ppEffectList, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4PropList * pCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	C4Effect * pEffect = new C4Effect(ppEffectList, szName, iPrio, iTimerInterval, pCmdTarget);
+	return pEffect->Init(pForObj, iPrio, rVal1, rVal2, rVal3, rVal4);
+}
+
+C4Effect * C4Effect::New(C4PropList *pForObj, C4Effect **ppEffectList, C4PropList * prototype, int32_t iPrio, int32_t iTimerInterval, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+{
+	C4Effect * pEffect = new C4Effect(ppEffectList, prototype, iPrio, iTimerInterval);
 	return pEffect->Init(pForObj, iPrio, rVal1, rVal2, rVal3, rVal4);
 }
 
@@ -106,7 +124,12 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	// because that would cause a wrong initialization order
 	// (hardly ever causing trouble, however...)
 	C4Effect *pLastRemovedEffect=NULL;
-	if (fRemoveUpper && pNext && pFnStart)
+	C4AulFunc * pFn;
+	if (!GetCallbackScript())
+		pFn = GetFunc(P_Start);
+	else
+		pFn = pFnStart;
+	if (fRemoveUpper && pNext && pFn)
 		TempRemoveUpperEffects(pForObj, false, &pLastRemovedEffect);
 	// bad things may happen
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
@@ -114,7 +137,7 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	if (CallStart(pForObj, 0, rVal1, rVal2, rVal3, rVal4) == C4Fx_Start_Deny)
 		// the effect denied to start: assume it hasn't, and mark it dead
 		SetDead();
-	if (fRemoveUpper && pNext && pFnStart)
+	if (fRemoveUpper && pNext && pFn)
 		TempReaddUpperEffects(pForObj, pLastRemovedEffect);
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
 	// Update OnFire cache
@@ -360,43 +383,60 @@ void C4Effect::DoDamage(C4PropList *pObj, int32_t &riDamage, int32_t iDamageType
 	while ((pEff = pEff->pNext) && riDamage);
 }
 
+static C4Object * Obj(C4PropList * p) { return p ? p->GetObject() : NULL; }
+
 C4Value C4Effect::DoCall(C4PropList *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
-	// def script or global only?
 	C4PropList *p = GetCallbackScript();
+	if (!p) return Call(szFn, &C4AulParSet(pObj, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	// old variant
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxCustom, GetName(), szFn);
-	return p->Call(fn, &C4AulParSet(pObj, this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	return p->Call(fn, &C4AulParSet(Obj(pObj), this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 }
 
 int C4Effect::CallStart(C4PropList * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
+	if (!GetCallbackScript())
+		return Call(P_Start, &C4AulParSet(obj, temporary, var1, var2, var3, var4)).getInt();
 	if (pFnStart)
-		return pFnStart->Exec(GetCallbackScript(), &C4AulParSet(obj, this, temporary, var1, var2, var3, var4)).getInt();
+		return pFnStart->Exec(GetCallbackScript(), &C4AulParSet(Obj(obj), this, temporary, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
 }
 int C4Effect::CallStop(C4PropList * obj, int reason, bool temporary)
 {
+	if (!GetCallbackScript())
+		return Call(P_Stop, &C4AulParSet(obj, reason, temporary)).getInt();
 	if (pFnStop)
-		return pFnStop->Exec(GetCallbackScript(), &C4AulParSet(obj, this, reason, temporary)).getInt();
+		return pFnStop->Exec(GetCallbackScript(), &C4AulParSet(Obj(obj), this, reason, temporary)).getInt();
 	return C4Fx_OK;
 }
 int C4Effect::CallTimer(C4PropList * obj, int time)
 {
+	if (!GetCallbackScript())
+		return Call(P_Timer, &C4AulParSet(obj, time)).getInt();
 	if (pFnTimer)
-		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(obj, this, time)).getInt();
+		return pFnTimer->Exec(GetCallbackScript(), &C4AulParSet(Obj(obj), this, time)).getInt();
 	return C4Fx_Execute_Kill;
 }
 void C4Effect::CallDamage(C4PropList * obj, int32_t & damage, int damagetype, int plr)
 {
-	if (pFnDamage)
-		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(obj, this, damage, damagetype, plr)).getInt();
+	if (!GetCallbackScript())
+	{
+		C4AulFunc *pFn = GetFunc(P_Damage);
+		if (pFn)
+			damage = pFn->Exec(this, &C4AulParSet(obj, damage, damagetype, plr)).getInt();
+	}
+	else if (pFnDamage)
+		damage = pFnDamage->Exec(GetCallbackScript(), &C4AulParSet(Obj(obj), this, damage, damagetype, plr)).getInt();
 }
 int C4Effect::CallEffect(const char * effect, C4PropList * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
 {
+	if (!GetCallbackScript())
+		return Call(P_Effect, &C4AulParSet(effect, obj, var1, var2, var3, var4)).getInt();
 	if (pFnEffect)
-		return pFnEffect->Exec(GetCallbackScript(), &C4AulParSet(effect, obj, this, var1, var2, var3, var4)).getInt();
+		return pFnEffect->Exec(GetCallbackScript(), &C4AulParSet(effect, Obj(obj), this, var1, var2, var3, var4)).getInt();
 	return C4Fx_OK;
 }
 

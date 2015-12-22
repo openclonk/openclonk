@@ -87,6 +87,11 @@ C4StringTable::C4StringTable()
 	P[P_Interval] = "Interval";
 	P[P_CommandTarget] = "CommandTarget";
 	P[P_Time] = "Time";
+	P[P_Start] = "Start";
+	P[P_Stop] = "Stop";
+	P[P_Timer] = "Timer";
+	P[P_Effect] = "Effect";
+	P[P_Damage] = "Damage";
 	P[P_Collectible] = "Collectible";
 	P[P_Touchable] = "Touchable";
 	P[P_ActMap] = "ActMap";

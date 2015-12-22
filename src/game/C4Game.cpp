@@ -720,7 +720,7 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
-	EXEC_S_DR(  C4Effect::Execute(NULL, &ScriptEngine.pGlobalEffects);
+	EXEC_S_DR(  C4Effect::Execute(ScriptEngine.GetPropList(), &ScriptEngine.pGlobalEffects);
 	                                              , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")

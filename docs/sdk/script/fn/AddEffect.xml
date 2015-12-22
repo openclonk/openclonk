@@ -7,6 +7,7 @@
     <title>AddEffect</title>
     <category>Effects</category>
     <version>5.1 OC</version>
+    <deprecated />
     <syntax>
       <rtype>proplist</rtype>
       <params>
@@ -18,7 +19,7 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object for the effect. If <code>nil</code>, a global effect is created.</desc>
+          <desc>Target object for the effect. If <code>nil</code>, <code>Global</code> is used, but the target parameter of the callbacks will get <code>nil</code>.</desc>
           <optional />
         </param>
         <param>
@@ -74,6 +75,7 @@
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
+      <funclink>CreateEffect</funclink>
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>
