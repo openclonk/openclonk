@@ -1,2 +1,8 @@
 Name=Wind generator
 Description=Generates electricity from the wind.
+Efficacy=Efficacy
+EfficacyUnknown=The efficacy could not yet be estimated.
+EfficacyGood=The location of the wind generator is very good.
+EfficacyMedium=The location of the wind generator could be better.
+EfficacyBad=The location of the wind generator is very bad.
+EfficacyGeneral=The efficacy is higher the more free sky is in close proximity around the wind generator.
