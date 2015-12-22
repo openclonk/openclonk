@@ -87,6 +87,12 @@ protected:
 
 	void AssignCallbackFunctions(); // resolve callback function names
 
+	int CallStart(C4Object * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+	int CallStop(C4Object * obj, int reason, bool temporary);
+	int CallTimer(C4Object * obj, int time);
+	void CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr);
+	int CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4);
+
 	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	C4Effect(const C4Effect &); // unimplemented, do not use
 	C4Effect(); // for the StdCompiler

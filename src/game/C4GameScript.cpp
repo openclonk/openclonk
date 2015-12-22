@@ -2234,8 +2234,7 @@ static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 	// evaluate parameters
 	C4Object *pTarget = Pars[0].getObj();
 	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
-	C4String *psCallFn = Pars[2].getStr();
-	const char *szCallFn = FnStringPar(psCallFn);
+	const char *szCallFn = FnStringPar(Pars[2].getStr());
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szCallFn || !*szCallFn) return C4Value();

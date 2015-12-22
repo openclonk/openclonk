@@ -119,10 +119,9 @@ C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, i
 	// bad things may happen
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
 	pEffect->iPriority = iPrio; // validate effect now
-	if (pEffect->pFnStart)
-		if (pEffect->pFnStart->Exec(pCmdTarget, &C4AulParSet(C4VObj(pForObj), C4VPropList(pEffect), C4VInt(0), rVal1, rVal2, rVal3, rVal4)).getInt() == C4Fx_Start_Deny)
-			// the effect denied to start: assume it hasn't, and mark it dead
-			pEffect->SetDead();
+	if (pEffect->CallStart(pForObj, 0, rVal1, rVal2, rVal3, rVal4) == C4Fx_Start_Deny)
+		// the effect denied to start: assume it hasn't, and mark it dead
+		pEffect->SetDead();
 	if (fRemoveUpper && pEffect->pNext && pEffect->pFnStart)
 		pEffect->TempReaddUpperEffects(pForObj, pLastRemovedEffect);
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
@@ -229,9 +228,9 @@ C4Effect* C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t 
 	C4Effect *pLastRemovedEffect=NULL;
 	for (C4Effect *pCheck = this; pCheck; pCheck = pCheck->pNext)
 	{
-		if (!pCheck->IsDead() && pCheck->pFnEffect && pCheck->iPriority >= iPrio)
+		if (!pCheck->IsDead() && pCheck->iPriority >= iPrio)
 		{
-			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VPropList(pCheck), rVal1, rVal2, rVal3, rVal4)).getInt();
+			int32_t iResult = pCheck->CallEffect(szCheckEffect, pForObj, rVal1, rVal2, rVal3, rVal4);
 			if (iResult == C4Fx_Effect_Deny)
 				// effect denied
 				return (C4Effect*)C4Fx_Effect_Deny;
@@ -293,21 +292,15 @@ void C4Effect::Execute(C4Object *pObj)
 			// check timer execution
 			if (pEffect->iInterval && !(pEffect->iTime % pEffect->iInterval))
 			{
-				if (pEffect->pFnTimer)
+				if (pEffect->CallTimer(pObj, pEffect->iTime) == C4Fx_Execute_Kill)
 				{
-					if (pEffect->pFnTimer->Exec(pEffect->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEffect), C4VInt(pEffect->iTime))).getInt() == C4Fx_Execute_Kill)
-					{
-						// safety: this class got deleted!
-						if (pObj && !pObj->Status) return;
-						// timer function decided to finish it
-						pEffect->Kill(pObj);
-					}
 					// safety: this class got deleted!
 					if (pObj && !pObj->Status) return;
-				}
-				else
-					// no timer function: mark dead after time elapsed
+					// timer function decided to finish it
 					pEffect->Kill(pObj);
+				}
+				// safety: this class got deleted!
+				if (pObj && !pObj->Status) return;
 			}
 			// next effect
 			ppPrevEffect = &pEffect->pNext;
@@ -327,13 +320,12 @@ void C4Effect::Kill(C4Object *pObj)
 	else
 		// otherwise: temp reactivate before real removal
 		// this happens only if a lower priority effect removes an upper priority effect in its add- or removal-call
-		if (pFnStart && iPriority!=1) pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_TempAddForRemoval)));
+		if (iPriority!=1) CallStart(pObj, C4FxCall_TempAddForRemoval, C4Value(), C4Value(), C4Value(), C4Value());
 	// remove this effect
 	int32_t iPrevPrio = iPriority; SetDead();
-	if (pFnStop)
-		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_Normal))).getInt() == C4Fx_Stop_Deny)
-			// effect denied to be removed: recover
-			iPriority = iPrevPrio;
+	if (CallStop(pObj, C4FxCall_Normal, false) == C4Fx_Stop_Deny)
+		// effect denied to be removed: recover
+		iPriority = iPrevPrio;
 	// reactivate other effects
 	TempReaddUpperEffects(pObj, pLastRemovedEffect);
 	// Update OnFire cache
@@ -351,15 +343,14 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 	if ((pObj && !pObj->Status) || IsDead()) return;
 	int32_t iPrevPrio = iPriority;
 	SetDead();
-	if (pFnStop)
-		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(iClearFlag))).getInt() == C4Fx_Stop_Deny)
-		{
-			// this stop-callback might have deleted the object and then denied its own removal
-			// must not modify self in this case...
-			if (pObj && !pObj->Status) return;
-			// effect denied to be removed: recover it
-			iPriority = iPrevPrio;
-		}
+	if (CallStop(pObj, iClearFlag, false) == C4Fx_Stop_Deny)
+	{
+		// this stop-callback might have deleted the object and then denied its own removal
+		// must not modify self in this case...
+		if (pObj && !pObj->Status) return;
+		// effect denied to be removed: recover it
+		iPriority = iPrevPrio;
+	}
 	// Update OnFire cache
 	if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()) && IsDead())
 		if (!Get(C4Fx_AnyFire))
@@ -372,8 +363,8 @@ void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, 
 	C4Effect *pEff = this;
 	do
 	{
-		if (!pEff->IsDead() && pEff->pFnDamage)
-			riDamage = pEff->pFnDamage->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEff), C4VInt(riDamage), C4VInt(iDamageType), C4VInt(iCausePlr))).getInt();
+		if (!pEff->IsDead())
+			pEff->CallDamage(pObj, riDamage, iDamageType, iCausePlr);
 		if (pObj && !pObj->Status) return;
 	}
 	while ((pEff = pEff->pNext) && riDamage);
@@ -387,6 +378,36 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1,
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxCustom, GetName(), szFn);
 	return p->Call(fn, &C4AulParSet(pObj, this, rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+}
+
+int C4Effect::CallStart(C4Object * obj, int temporary, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
+{
+	if (pFnStart)
+		return pFnStart->Exec(CommandTarget, &C4AulParSet(obj, this, temporary, var1, var2, var3, var4)).getInt();
+	return C4Fx_OK;
+}
+int C4Effect::CallStop(C4Object * obj, int reason, bool temporary)
+{
+	if (pFnStop)
+		return pFnStop->Exec(CommandTarget, &C4AulParSet(obj, this, reason, temporary)).getInt();
+	return C4Fx_OK;
+}
+int C4Effect::CallTimer(C4Object * obj, int time)
+{
+	if (pFnTimer)
+		return pFnTimer->Exec(CommandTarget, &C4AulParSet(obj, this, time)).getInt();
+	return C4Fx_Execute_Kill;
+}
+void C4Effect::CallDamage(C4Object * obj, int32_t & damage, int damagetype, int plr)
+{
+	if (pFnDamage)
+		damage = pFnDamage->Exec(CommandTarget, &C4AulParSet(obj, this, damage, damagetype, plr)).getInt();
+}
+int C4Effect::CallEffect(const char * effect, C4Object * obj, const C4Value &var1, const C4Value &var2, const C4Value &var3, const C4Value &var4)
+{
+	if (pFnEffect)
+		return pFnEffect->Exec(CommandTarget, &C4AulParSet(effect, obj, this, var1, var2, var3, var4)).getInt();
+	return C4Fx_OK;
 }
 
 void C4Effect::OnObjectChangedDef(C4Object *pObj)
@@ -423,7 +444,7 @@ void C4Effect::TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Ef
 			if (!Get(C4Fx_AnyFire))
 				pObj->SetOnFire(false);
 		// temp callbacks only for higher priority effects
-		if (pFnStop && iPriority!=1) pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_Temp), C4VBool(true)));
+		if (iPriority!=1) CallStop(pObj, C4FxCall_Temp, true);
 		if (!*ppLastRemovedEffect) *ppLastRemovedEffect = this;
 	}
 }
@@ -439,7 +460,7 @@ void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
 		if (pEff->IsInactiveAndNotDead())
 		{
 			pEff->FlipActive();
-			if (pEff->pFnStart && pEff->iPriority!=1) pEff->pFnStart->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEff), C4VInt(C4FxCall_Temp)));
+			if (pEff->iPriority!=1) pEff->CallStart(pObj, C4FxCall_Temp, C4Value(), C4Value(), C4Value(), C4Value());
 			if (pObj && WildcardMatch(C4Fx_AnyFire, pEff->GetName()))
 				pObj->SetOnFire(true);
 		}
