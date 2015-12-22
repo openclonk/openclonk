@@ -102,16 +102,16 @@ if(MSVC_VERSION)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
+	list(APPEND OC_CXX_FLAGS -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wextra-tokens -Wpointer-arith -Wno-cast-align -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
+	list(APPEND OC_CXX_FLAGS -Wall -Wextra -Wextra-tokens -Wpointer-arith -Wno-cast-align -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
 
 if(WIN32 AND MINGW)
 	# Activate DEP and ASLR
-	list(APPEND OC_EXE_LINKER_FLAGS "-Wl,--nxcompat -Wl,--dynamicbase")
+	list(APPEND OC_EXE_LINKER_FLAGS -Wl,--nxcompat -Wl,--dynamicbase)
 endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
