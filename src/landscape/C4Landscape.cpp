@@ -1276,6 +1276,9 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRender
 	delete [] pInitial; pInitial = NULL;
 	delete [] pInitialBkg; pInitialBkg = NULL;
 	delete pFoW; pFoW = NULL;
+	// clear relight array
+	for (int32_t i = 0; i < C4LS_MaxRelights; ++i)
+		Relights[i].Default();
 	// clear scan
 	ScanX=0;
 	Mode=C4LSC_Undefined;
