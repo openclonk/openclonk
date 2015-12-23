@@ -193,6 +193,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 	// adjust global effects
 	if (pGlobalEffects) pGlobalEffects->ReAssignAllCallbackFunctions();
+	if (GameScript.pScenarioEffects) GameScript.pScenarioEffects->ReAssignAllCallbackFunctions();
 }
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, const char *szLanguage)

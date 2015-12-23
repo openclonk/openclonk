@@ -1197,6 +1197,8 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// This is ugly, because every effect there is must be updated...
 	if (::ScriptEngine.pGlobalEffects)
 		::ScriptEngine.pGlobalEffects->OnObjectChangedDef(this);
+	if (::GameScript.pScenarioEffects)
+		::GameScript.pScenarioEffects->OnObjectChangedDef(this);
 	for (C4Object *obj : Objects)
 		if (obj->pEffects) obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)

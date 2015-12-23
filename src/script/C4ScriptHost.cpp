@@ -21,6 +21,7 @@
 #include <C4ScriptHost.h>
 
 #include <C4Def.h>
+#include <C4Effect.h>
 
 /*--- C4ScriptHost ---*/
 
@@ -300,12 +301,19 @@ void C4GameScriptHost::Clear()
 	C4ScriptHost::Clear();
 	ScenPropList.Set0();
 	ScenPrototype.Set0();
+	delete pScenarioEffects; pScenarioEffects=NULL;
 }
 
 C4PropListStatic * C4GameScriptHost::GetPropList()
 {
 	C4PropList * p = ScenPrototype._getPropList();
 	return p ? p->IsStatic() : 0;
+}
+
+void C4GameScriptHost::Denumerate(C4ValueNumbers * numbers)
+{
+	ScenPropList.Denumerate(numbers);
+	if (pScenarioEffects) pScenarioEffects->Denumerate(numbers);
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)

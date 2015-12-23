@@ -130,9 +130,11 @@ public:
 	virtual bool LoadData(const char *, const char *, C4LangStringTable *);
 	void Clear();
 	virtual C4PropListStatic * GetPropList();
+	void Denumerate(C4ValueNumbers * numbers);
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value ScenPropList;
 	C4Value ScenPrototype;
+	C4Effect * pScenarioEffects = NULL;
 };
 
 extern C4GameScriptHost GameScript;

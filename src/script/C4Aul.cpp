@@ -115,9 +115,29 @@ void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
-	GameScript.ScenPropList.Denumerate(numbers);
+	GameScript.Denumerate(numbers);
 	C4PropListStaticMember::Denumerate(numbers);
 	if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
+}
+
+static void GlobalEffectsMergeCompileFunc(StdCompiler *pComp, C4Effect * & pEffects, const char * name, C4ValueNumbers * numbers)
+{
+	C4Effect *pOldEffect, *pNextOldEffect=pEffects;
+	pEffects = NULL;
+	try
+	{
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pEffects, name), numbers));
+	}
+	catch (...)
+	{
+		delete pNextOldEffect;
+		throw;
+	}
+	while ((pOldEffect=pNextOldEffect))
+	{
+		pNextOldEffect = pOldEffect->pNext;
+		pOldEffect->Register(&pEffects, Abs(pOldEffect->iPriority));
+	}
 }
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C4ValueNumbers * numbers)
@@ -135,27 +155,14 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, bool fScenarioSection, C
 		// loading scenario section: Merge effects
 		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
 		// and otherwise dead pointers would remain on the stack
-		C4Effect *pOldGlobalEffects, *pNextOldGlobalEffects=pGlobalEffects;
-		pGlobalEffects = NULL;
-		try
-		{
-			pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
-		}
-		catch (...)
-		{
-			delete pNextOldGlobalEffects;
-			throw;
-		}
-		while ((pOldGlobalEffects=pNextOldGlobalEffects))
-		{
-			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
-			pOldGlobalEffects->Register(&pGlobalEffects, Abs(pOldGlobalEffects->iPriority));
-		}
+		GlobalEffectsMergeCompileFunc(pComp, pGlobalEffects, "Effects", numbers);
+		GlobalEffectsMergeCompileFunc(pComp, GameScript.pScenarioEffects, "ScenarioEffects", numbers);
 	}
 	else
 	{
 		// Otherwise, just compile effects
 		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(GameScript.pScenarioEffects, "ScenarioEffects"), numbers));
 	}
 	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 }
