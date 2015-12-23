@@ -3,10 +3,10 @@ MsgGoalName=Free your Wipf
 MsgGoalDescription=Locate your little friend, free him and take him to the next settlement.
 
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialIntro=It seems your Rüdiger is lost again, he's quite a character! Wipfs tend to spend quite some time underground cause of their craving for digging, so you might find him there. For now just proceed to the right.

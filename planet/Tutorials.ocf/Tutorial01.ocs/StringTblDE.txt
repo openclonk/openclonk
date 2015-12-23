@@ -3,10 +3,10 @@ MsgGoalName=Catch your Wipf
 MsgGoalDescription=Follow your little friend and catch him as soon as possible.
 
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialWelcome=Welcome to OpenClonk! This is your clonk and it is controlled with the %s keys. Click on the next button to read the next hint and click on my icon at any time to view the current hint.

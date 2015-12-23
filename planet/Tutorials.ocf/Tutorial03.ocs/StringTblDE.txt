@@ -3,10 +3,10 @@ MsgGoalName=Reconstruct Village
 MsgGoalDescription=Help the villagers reconstruct their destroyed buildings.
 
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialWipfville=This guidepost reads Wipfville, probably the reason why Rüdiger ran off. It seems that this little village has been under attack, maybe you can find out more by talking to that lumberjack over there. Stand in front of an NPC and press [%s] to start a conversation.

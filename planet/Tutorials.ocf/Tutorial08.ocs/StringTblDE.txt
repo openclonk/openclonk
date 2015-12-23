@@ -3,10 +3,10 @@ MsgGoalName=Salvage lorry
 MsgGoalDescription=Locate the lorry with metal and transport it back to the surface.
 
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialFloodedMines=You are right in front of the mine entrance. Talk to the mine operator standing in front of the pump to find out how you can help.

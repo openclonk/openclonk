@@ -3,10 +3,10 @@ MsgGoalName=Edelsteine abbauen
 MsgGoalDescription=Find and mine the gem stalactite, then sell the gems at the flagpole.
 
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutorialFindRubies=You are high up in the sky in an area with several sky islands. Talk to the pilot for some advice about the area and then take the airship and find the ruby stalactite hanging from one of the islands. You can grab the airship with [%s] and then steer it with %s.
