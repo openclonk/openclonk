@@ -16,8 +16,8 @@ local DefaultFlagRadius = 90;
 
 local last_power;
 local wheel;
-// Rates the current efficacy of the wind generator from 0 to 100.
-local last_wind_efficacy = nil;
+// Rates the current efficiency of the wind generator from 0 to 100.
+local last_wind_efficiency = nil;
 
 func TurnAnimation() { return "Turn"; }
 func MinRevolutionTime() { return 4500; } // in frames
@@ -86,7 +86,7 @@ private func GetWeightedWind()
 	}
 	var wind_output = weighted_wind_sum / 100;
 	if (max_wind != 0)
-		last_wind_efficacy = 100 * Abs(wind_output) / max_wind;
+		last_wind_efficiency = 100 * Abs(wind_output) / max_wind;
 	
 	return wind_output;
 }
@@ -126,13 +126,13 @@ public func Wind2Turn()
 // Provides an own interaction menu.
 public func HasInteractionMenu() { return true; }
 
-// Show hint about efficacy in the interaction menu.
+// Show hint about efficiency in the interaction menu.
 public func GetInteractionMenus(object clonk)
 {
 	var menus = _inherited() ?? [];
 	var prod_menu =
 	{
-		title = "$Efficacy$",
+		title = "$Efficiency$",
 		entries_callback = this.GetInfoMenuEntries,
 		callback = nil,
 		BackgroundColor = RGB(0, 0, 50),
@@ -145,15 +145,15 @@ public func GetInteractionMenus(object clonk)
 
 public func GetInfoMenuEntries()
 {
-	var text = "$EfficacyUnknown$";
-	if (last_wind_efficacy != nil)
+	var text = "$EfficiencyUnknown$";
+	if (last_wind_efficiency != nil)
 	{
-		var hint = "$EfficacyGood$";
-		if (last_wind_efficacy < 25)
-			hint = "$EfficacyBad$||$EfficacyGeneral$";
-		else if (last_wind_efficacy < 75)
-			hint = "$EfficacyMedium$||$EfficacyGeneral$";
-		text = Format("$Efficacy$: %3d%%|%s", last_wind_efficacy, hint); 
+		var hint = "$EfficiencyGood$";
+		if (last_wind_efficiency < 25)
+			hint = "$EfficiencyBad$||$EfficiencyGeneral$";
+		else if (last_wind_efficiency < 75)
+			hint = "$EfficiencyMedium$||$EfficiencyGeneral$";
+		text = Format("$Efficiency$: %3d%%|%s", last_wind_efficiency, hint); 
 	}
 	var info_text =
 	{
