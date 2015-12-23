@@ -126,7 +126,11 @@ C4Effect * C4Effect::Init(C4PropList *pForObj, int32_t iPrio, const C4Value &rVa
 	C4Effect *pLastRemovedEffect=NULL;
 	C4AulFunc * pFn;
 	if (!GetCallbackScript())
+	{
+		Call(P_Construction, &C4AulParSet(pForObj, rVal1, rVal2, rVal3, rVal4)).getInt();
+		if (pForObj && !pForObj->Status) return 0;
 		pFn = GetFunc(P_Start);
+	}
 	else
 		pFn = pFnStart;
 	if (fRemoveUpper && pNext && pFn)
@@ -345,6 +349,8 @@ void C4Effect::Kill(C4PropList *pObj)
 	if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 		if (!Get(C4Fx_AnyFire))
 			pObj->SetOnFire(false);
+	if (IsDead() && !GetCallbackScript())
+		Call(P_Destruction, &C4AulParSet(pObj, C4FxCall_Normal));
 }
 
 void C4Effect::ClearAll(C4PropList *pObj, int32_t iClearFlag)
@@ -368,6 +374,8 @@ void C4Effect::ClearAll(C4PropList *pObj, int32_t iClearFlag)
 	if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()) && IsDead())
 		if (!Get(C4Fx_AnyFire))
 			pObj->SetOnFire(false);
+	if (IsDead() && !GetCallbackScript())
+		Call(P_Destruction, &C4AulParSet(pObj, iClearFlag));
 }
 
 void C4Effect::DoDamage(C4PropList *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)

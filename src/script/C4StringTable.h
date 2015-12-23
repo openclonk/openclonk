@@ -294,6 +294,8 @@ enum C4PropertyName
 	P_Interval,
 	P_CommandTarget,
 	P_Time,
+	P_Construction,
+	P_Destruction,
 	P_Start,
 	P_Stop,
 	P_Timer,

@@ -87,6 +87,8 @@ C4StringTable::C4StringTable()
 	P[P_Interval] = "Interval";
 	P[P_CommandTarget] = "CommandTarget";
 	P[P_Time] = "Time";
+	P[P_Construction] = "Construction";
+	P[P_Destruction] = "Destruction";
 	P[P_Start] = "Start";
 	P[P_Stop] = "Stop";
 	P[P_Timer] = "Timer";
