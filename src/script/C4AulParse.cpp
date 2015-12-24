@@ -169,7 +169,6 @@ private:
 	void Parse_For();
 	void Parse_ForEach();
 	void Parse_Expression(int iParentPrio = -1);
-	void Parse_Expression2(int iParentPrio = -1);
 	void Parse_Var();
 	void Parse_Local();
 	void Parse_Static();
@@ -2370,11 +2369,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 	default:
 		UnexpectedToken("expression");
 	}
-	Parse_Expression2(iParentPrio);
-}
 
-void C4AulParse::Parse_Expression2(int iParentPrio)
-{
 	while (1) switch (TokenType)
 	{
 	case ATT_SET:
