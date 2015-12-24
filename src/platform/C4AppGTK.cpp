@@ -112,9 +112,6 @@ gtk_clipboard_store_all (void)
 void C4AbstractApp::Clear()
 {
 	gtk_clipboard_store_all();
-#if USE_CONSOLE && HAVE_LIBREADLINE
-	rl_callback_handler_remove();
-#endif
 }
 
 void C4AbstractApp::Quit()

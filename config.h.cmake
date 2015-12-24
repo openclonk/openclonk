@@ -34,18 +34,6 @@
 /* Define if you have POSIX threads libraries and header files. */
 #cmakedefine HAVE_PTHREAD 1
 
-/* Define to 1 if you have the <readline.h> header file. */
-#cmakedefine HAVE_READLINE_H 1
-
-/* Define if your readline library has \`add_history' */
-#cmakedefine HAVE_READLINE_HISTORY 1
-
-/* Define to 1 if you have the <readline/history.h> header file. */
-#cmakedefine HAVE_READLINE_HISTORY_H 1
-
-/* Define to 1 if you have the <readline/readline.h> header file. */
-#cmakedefine HAVE_READLINE_READLINE_H 1
-
 /* Define to 1 if you have SDL. */
 #cmakedefine HAVE_SDL 1
 

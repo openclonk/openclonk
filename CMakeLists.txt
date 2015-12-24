@@ -491,8 +491,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundSystem.h
 	src/platform/C4TimeMilliseconds.cpp 
 	src/platform/C4TimeMilliseconds.h
-	src/platform/C4StdInProc.cpp
-	src/platform/C4StdInProc.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/PlatformAbstraction.cpp
@@ -801,10 +799,6 @@ CHECK_INCLUDE_FILE_CXX(sys/timerfd.h HAVE_SYS_TIMERFD_H)
 CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE_CXX(sys/eventfd.h HAVE_SYS_EVENTFD_H)
 CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
-if(USE_CONSOLE)
-	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
-	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
-endif()
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 
@@ -874,11 +868,11 @@ elseif(UPNP_STYLE STREQUAL "libupnp")
 	)
 endif()
 
-if(USE_CONSOLE)
-	find_package(Readline)
-	include_directories(${READLINE_INCLUDE_DIRS})
-	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
+find_package(Readline)
+if(READLINE_FOUND)
+	include_directories(SYSTEM ${READLINE_INCLUDE_DIR})
 endif()
+SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
 # Set GTK link directory. This needs to be done before add_executable,
 # otherwise the path is not used for linking clonk
@@ -974,6 +968,8 @@ add_executable(openclonk-server
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 	src/platform/C4AppT.cpp
+	src/platform/C4StdInProc.cpp
+	src/platform/C4StdInProc.h
 )
 set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
 

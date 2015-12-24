@@ -21,19 +21,8 @@
 #include <C4Application.h>
 
 #ifdef HAVE_LIBREADLINE
-#  if defined(HAVE_READLINE_READLINE_H)
-#    include <readline/readline.h>
-#  elif defined(HAVE_READLINE_H)
-#    include <readline.h>
-#  endif
-
-#  ifdef HAVE_READLINE_HISTORY
-#    if defined(HAVE_READLINE_HISTORY_H)
-#      include <readline/history.h>
-#    elif defined(HAVE_HISTORY_H)
-#      include <history.h>
-#    endif
-#  endif /* HAVE_READLINE_HISTORY */
+#include <readline.h>
+#include <history.h>
 
 static void readline_callback (char * line)
 {
@@ -45,12 +34,10 @@ static void readline_callback (char * line)
 	{
 		Application.OnCommand(line);
 	}
-#if HAVE_READLINE_HISTORY
 	if (line && *line)
 	{
 		add_history (line);
 	}
-#endif
 	free(line);
 }
 
