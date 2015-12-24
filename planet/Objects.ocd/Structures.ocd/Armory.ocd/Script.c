@@ -63,6 +63,11 @@ private func Smoking()
 		CreateParticle("Fire", PV_Random(x-1, x+1), PV_Random(y-2, y+2), 0, PV_Random(-1, 0), PV_Random(18, 36), Particles_Fire(), 2);
 }
 
+func Definition(proplist def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(7000, 0, 30000), Trans_Rotate(-10, 1, 0, 0), Trans_Rotate(25, 0, 1, 0));
+}
+
 local ActMap = {
 	Default = {
 		Prototype = Action,
