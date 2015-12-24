@@ -156,13 +156,14 @@ protected:
 public:
 	void HandleSDLEvent(SDL_Event& event);
 
-#elif defined(USE_COCOA)
-public:
-	StdStrBuf GetGameDataPath();
-
 #elif defined(USE_CONSOLE)
 protected:
 	C4StdInProc InProc;
+#endif
+
+#ifdef __APPLE__
+public:
+	StdStrBuf GetGameDataPath();
 #endif
 
 #ifdef USE_WIN32_WINDOWS

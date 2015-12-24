@@ -23,11 +23,12 @@
 #include <C4Window.h>
 #include <C4Draw.h>
 
+#include "C4App.h"
 #import <Cocoa/Cocoa.h>
+
+#ifndef USE_CONSOLE
 #import "C4WindowController.h"
 #import "C4DrawGLMac.h"
-
-#include "C4App.h"
 
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
@@ -151,11 +152,6 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-StdStrBuf C4AbstractApp::GetGameDataPath()
-{
-	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
-}
-
 bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
@@ -190,7 +186,8 @@ bool C4AbstractApp::SetVideoMode(int iXRes, int iYRes, unsigned int iColorDepth,
 	return true;
 }
 
-#endif
+#endif // USE_COCOA
+#endif // USE_CONSOLE
 
 bool IsGermanSystem()
 {
@@ -214,4 +211,9 @@ bool EraseItemSafe(const char* szFilename)
 		destination: @""
 		files: [NSArray arrayWithObject: [filename lastPathComponent]]
 		tag: 0];
+}
+
+StdStrBuf C4AbstractApp::GetGameDataPath()
+{
+	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
 }

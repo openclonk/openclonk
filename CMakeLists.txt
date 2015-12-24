@@ -621,6 +621,7 @@ list(APPEND MAPE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h)
 # source files specific to an operating system
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppMac.mm
 		src/platform/C4FileMonitorMac.mm
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
@@ -718,7 +719,6 @@ elseif(WIN32)
 elseif(USE_COCOA)
 	list(APPEND OC_GUI_SOURCES
 		src/editor/C4ConsoleCocoa.mm
-		src/platform/C4AppMac.mm
 		src/platform/C4WindowMac.mm
 		src/platform/C4AppDelegate+MainMenuActions.h
 		src/platform/C4AppDelegate+MainMenuActions.mm
@@ -1330,6 +1330,7 @@ if(USE_X11)
 endif()
 if(USE_COCOA)
 	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
+	TARGET_LINK_LIBRARIES(openclonk-server "-framework Cocoa")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to

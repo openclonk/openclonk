@@ -283,8 +283,10 @@
 
 - (void) applicationDidBecomeActive:(NSNotification*)notification
 {
+#ifdef USE_COCOA
 	if (gameWindowController)
 		[gameWindowController.window makeKeyAndOrderFront:self];
+#endif
 }
 
 @end

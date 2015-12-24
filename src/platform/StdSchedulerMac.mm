@@ -15,7 +15,6 @@
 
 #include <C4Include.h>
 #include <StdScheduler.h>
-#ifdef USE_COCOA
 #import <Cocoa/Cocoa.h>
 
 using namespace std;
@@ -296,4 +295,3 @@ void StdScheduler::Changed(StdSchedulerProc* pProc)
 {
 	[[[SCHAdditions requestAdditionsForScheduler:this] additionForProc:pProc] changed];
 }
-#endif

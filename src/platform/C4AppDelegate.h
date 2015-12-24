@@ -34,8 +34,10 @@
 {
 	NSMutableArray *gatheredArguments;
 	NSString *addonSupplied;
+#ifdef USE_COCOA
 	C4EditorWindowController *editorWindowController;
 	C4WindowController *gameWindowController;
+#endif
 	BOOL running;
 	std::vector<char*> args;
 }
