@@ -265,7 +265,7 @@ public func CatapultDismount(object clonk)
 
 func Definition(proplist def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(6000, 0, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(35, 0, 1, 0), Trans_Scale(1350)), def);
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-1000, -4000, 0), Trans_Rotate(-20, 1, 0, 0), Trans_Rotate(35, 0, 1, 0));
 }
 
 local Name = "$Name$";
