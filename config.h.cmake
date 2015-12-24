@@ -1,3 +1,6 @@
+#ifndef CONFIG_H_INC
+#define CONFIG_H_INC
+
 /* Generate minidumps on crash */
 #cmakedefine HAVE_DBGHELP 1
 
@@ -146,4 +149,10 @@
 #undef USE_X11
 #undef WITH_AUTOMATIC_UPDATE
 #undef WITH_DEVELOPER_MODE
+
+#undef AUDIO_TK
+#define AUDIO_TK AUDIO_TK_NONE
+
+#endif
+
 #endif
