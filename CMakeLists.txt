@@ -1300,7 +1300,7 @@ CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc
 if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
 	SET(WITH_GLIB ${GTK3_FOUND})
-	include_directories(${GTK3_INCLUDE_DIRS})
+	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
 	target_link_libraries(openclonk
 		${GTK3_LIBRARIES}
 	)
