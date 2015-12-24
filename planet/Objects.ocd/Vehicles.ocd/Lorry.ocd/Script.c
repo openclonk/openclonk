@@ -7,7 +7,6 @@
 
 #include Library_ElevatorControl
 
-local content_menu;
 local drive_anim;
 local tremble_anim;
 local wheel_sound;
@@ -40,6 +39,98 @@ protected func Hit3()
 	Sound("Hits::Materials::Metal::DullMetalHit?");
 }
 
+
+/*-- Content Dumping --*/
+
+public func HoldingEnabled() { return true; }
+
+public func ControlUseStart(object clonk, int x, int y)
+{
+	var direction = DIR_Left;
+	if (x > 0)
+		direction = DIR_Right;
+	if (!GetEffect("DumpContents", this))
+		AddEffect("DumpContents", this, 100, 1, this, nil, direction);
+	return true;
+}
+
+public func ControlUseHolding(object clonk, int x, int y)
+{
+	var direction = DIR_Left;
+	if (x > 0)
+		direction = DIR_Right;
+	var effect = GetEffect("DumpContents", this);
+	if (effect)
+		effect.dump_dir = direction;
+	return true;
+}
+
+public func ControlUseStop(object clonk, int x, int y)
+{
+	RemoveEffect("DumpContents", this);
+	return true;
+}
+
+public func ControlUseCancel(object clonk, int x, int y)
+{
+	RemoveEffect("DumpContents", this);
+	return true;
+}
+
+public func FxDumpContentsStart(object target, proplist effect, int temp, int direction)
+{
+	if (temp)
+		return FX_OK;
+	// The time it takes to dump the contents depends on the mass of the lorry.
+	effect.dump_strength = BoundBy(1000 / GetMass(), 3, 8);
+	effect.dump_dir = direction;
+	// Rotate the lorry into the requested direction.
+	var rdir = -effect.dump_strength;
+	if (effect.dump_dir == DIR_Right)
+		rdir = effect.dump_strength;
+	SetRDir(rdir);
+	return FX_OK;
+}
+
+public func FxDumpContentsTimer(object target, proplist effect, int time)
+{
+	// Rotate the lorry into the requested direction.
+	var rdir = -effect.dump_strength;
+	if (effect.dump_dir == DIR_Right)
+		rdir = effect.dump_strength;	
+	SetRDir(rdir);
+	// Dump one item every some frames if the angle is above 45 degrees. Only do this if the effect is at least active 
+	// for 10 frames to prevent an accidental click while holding the lorry to dump some of its contents.
+	if (time >= 10 && ((effect.dump_dir == DIR_Left && GetR() < -45) || (effect.dump_dir == DIR_Right && GetR() > 45)))
+	{
+		if (!Random(3))
+		{
+			var x = RandomX(6, 8) * Sign(GetR());
+			var xdir = RandomX(70, 90) * Sign(GetR());
+			var random_content = FindObject(Find_Container(this), Sort_Random());
+			if (random_content)
+			{
+				random_content->Exit(x, RandomX(2, 3), Random(360), 0, 0, RandomX(-5, 5));
+				random_content->SetXDir(xdir, 100);
+				AddEffect("BlockCollectionByLorry", random_content, 100, 8, this);
+			}		
+		}
+	}
+	return FX_OK;
+}
+
+public func FxDumpContentsStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	// Stop rotating the lorry.
+	SetRDir(0);
+	return FX_OK;
+}
+
+public func FxBlockCollectionByLorryTimer() { return FX_Execute_Kill; }
+
+
 /*-- Contents --*/
 
 private func MaxContentsCount()
@@ -49,6 +140,10 @@ private func MaxContentsCount()
 
 protected func RejectCollect(id object_id, object obj)
 {
+	// Collection maybe blocked if this object was just dumped.
+	if (!obj->Contained() && GetEffect("BlockCollectionByLorry", obj))
+		return true;
+	
 	// Objects can still be collected.
 	if (ContentsCount() < this->MaxContentsCount())
 	{

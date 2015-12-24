@@ -2,4 +2,4 @@ TxtControl=Steuerung
 TxtLorryisfull=Lore ist|voll.
 TxtLoadUp=Einladen
 Name=Lore
-Description=Erleichtert den Transport grˆﬂerer Materialmengen. Fasst bis zu 50 Objekte.
+Description=Erleichtert den Transport gr√∂√üerer Materialmengen. Fasst bis zu 50 Objekte. Dr√ºcke [Benutzen] um den Inhalt der Lore aus zu kippen.

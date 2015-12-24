@@ -2,4 +2,4 @@ TxtControl=Control
 TxtLorryisfull=Lorry is full!
 TxtLoadUp=Load up
 Name=Lorry
-Description=Useful to transport large amounts of material. Holds up to 50 items.
+Description=Useful to transport large amounts of material. Holds up to 50 items. By pressing [Use] while holding the lorry its contents can be dumped.
