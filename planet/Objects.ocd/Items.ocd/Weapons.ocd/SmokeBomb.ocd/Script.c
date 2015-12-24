@@ -52,14 +52,14 @@ protected func FxIntSmokeBombStart(object target, proplist effect, int temp)
 		R = 255,
 		G = 255,
 		B = 255,
-		Alpha = PV_KeyFrames(1, 0, 100, 900, PV_Random(150, 180), 1000, 0),
+		Alpha = PV_KeyFrames(1, 0, 200, 500, PV_Random(200, 255), 1000, 0),
 		CollisionVertex = 1000,
 		OnCollision = PC_Stop(),
 		ForceX = PV_Wind(50, PV_Random(-4, 4)),
 		ForceY = PV_Random(-2, 1, 10),
 		DampingX = 850,
 		DampingY = 850,
-		Size = PV_KeyFrames(0, 0, 1, 10, PV_Random(20, 30), 1000, PV_Random(25, 50)),
+		Size = PV_KeyFrames(0, 0, 1, 10, PV_Random(30, 40), 1000, PV_Random(25, 50)),
 		Phase = PV_Random(0, 15)
 	};
 	// Sound.
@@ -91,7 +91,7 @@ protected func FxIntSmokeBombTimer(object target, proplist effect, int time)
 	var fuse_dx = GetVertex(1, VTX_X);
 	var fuse_dy = GetVertex(1, VTX_Y);
 	var smoke_life = (effect.lifetime - time/2);
-	CreateParticle("Smoke", smoke_dx, smoke_dy, PV_Random(smoke_dx - 100, smoke_dx + 100),  PV_Random(smoke_dy - 60, smoke_dy + 60), smoke_life, effect.smoke, 8);
+	CreateParticle("Smoke", smoke_dx, smoke_dy, PV_Random(smoke_dx - 100, smoke_dx + 100),  PV_Random(smoke_dy - 60, smoke_dy + 60), smoke_life, effect.smoke, 4);
 	CreateParticle("Fire", fuse_dx, fuse_dy, PV_Random(2 * fuse_dx - 3, 2 * fuse_dx + 3),  PV_Random(2 * fuse_dy - 3, 2 * fuse_dy + 3), PV_Random(10, 20), Particles_Glimmer(), 2);
 	
 	return FX_OK;
