@@ -1,2 +1,2 @@
 Name=Ruined Airship
-Description=hurr durr
+Description=Slightly reduced aerodynamics.
