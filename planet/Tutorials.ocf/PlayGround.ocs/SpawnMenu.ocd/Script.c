@@ -15,13 +15,13 @@ public func Show() { this.Visibility = VIS_Owner; return true; }
 public func Hide() { this.Visibility = VIS_None; return true; }
 
 // Close the menu when this object is removed.
-func Destruction()
+public func Destruction()
 {
 	CloseSpawnMenu();
 }
 
 // Used as a static function called by the ClonkControl library.
-func CreateFor(object cursor)
+public func CreateFor(object cursor)
 {
 	var obj = CreateObject(GUI_SpawnMenu, AbsX(0), AbsY(0), cursor->GetOwner());
 	obj.Visibility = VIS_Owner;
@@ -33,12 +33,6 @@ func CreateFor(object cursor)
 
 /*-- Menu Handling --*/
 
-// Menu sizes in percent relative to the screen width and height.
-static const SPAWNMENU_Width = 50;
-static const SPAWNMENU_Height = 72;
-// Number of items per row and minimal size.
-static const SPAWNMENU_RowItems = 8;
-static const SPAWNMENU_MinItemSize = 6;
 // Background colors for hovering and bars and description.
 static const SPAWNMENU_HoverColor = 0x50ffffff;
 static const SPAWNMENU_BarColor = 0x50888888;
@@ -60,22 +54,16 @@ public func OpenSpawnMenu(object clonk)
 	menu_target.Visibility = VIS_Owner;
 	menu_controller = clonk;
 	
-	// Width should be a multiple of 6 and 8 em.
-	// TODO: the 2 is added for a small margin.
-	var menu_width = 12 * 2; 
-	// Height should be a multiple of 3 em + 12 em.
-	var menu_height = 12 + 3 * 8;
-	
 	// Construction menu proplist.
 	menu =
 	{
 		Target = menu_target,
 		Style = GUI_Multiple,
 		Decoration = GUI_MenuDeco,
-		Left = Format("50%%-%dem", menu_width / 2),
-		Right = Format("50%%+%dem", menu_width / 2),
-		Top = Format("50%%-%dem", menu_height / 2),
-		Bottom = Format("50%%+%dem", menu_height / 2),
+		Left = "10%",
+		Right = "90%",
+		Top = "10%",
+		Bottom = "90%",
 		BackgroundColor = {Std = 0},
 	};
 	
@@ -103,14 +91,13 @@ private func MakeCategoryBar()
 	var bar = 
 	{
 		Target = menu_target,
-		ID = 100,		
-		Left = "0%",
-		Right = "100%",
+		ID = 100,
 		Top = "0%",
 		Bottom = "4em",
+		Style = GUI_GridLayout,
 		BackgroundColor = {Std = 0}
 	};
-	// Create the categories: max 6.
+	// Create the categories.
 	var categories = [{Symbol = Shovel, Name = "Items"}, 
 	                  {Symbol = Lorry, Name = "Vehicles"}, 
 	                  {Symbol = ToolsWorkshop, Name = "Structures"}, 
@@ -120,14 +107,12 @@ private func MakeCategoryBar()
 	for (var i = 0; i < GetLength(categories); ++i)
 	{
 		var cat = categories[i];
-		var cat_id = Format("Cat%d", i + 1);
+		var cat_id = Format("cat%d", i + 1);
 		var cat_menu = 
 		{
 			Target = menu_target,
 			ID = 101 + i,		
-			Left = Format("%dem", 4 * i),
-			Right = Format("%dem", 4 * (i + 1)),
-			Top = "0%",
+			Right = "4em",
 			Bottom = "4em",
 			Symbol = cat.Symbol,
 			BackgroundColor = {Std = 0, Hover = SPAWNMENU_HoverColor},
@@ -147,9 +132,7 @@ private func MakeObjectGrid()
 	var grid_desc = 
 	{
 		Target = menu_target,
-		ID = 999,		
-		Left = "0%",
-		Right = "100%",
+		ID = 999,
 		Top = "4em",
 		Bottom = "5em",
 		Text = "",
@@ -164,10 +147,8 @@ private func MakeObjectGrid()
 	{
 		Target = menu_target,
 		ID = 1000,		
-		Left = "0%",
-		Right = "100%+0.1em",
 		Top = "5em",
-		Bottom = "100%-7.01em",
+		Bottom = "100%-5em",
 		Style = GUI_GridLayout,
 		BackgroundColor = {Std = 0},
 		items = []
@@ -183,19 +164,13 @@ private func MakeInfoBar()
 	{
 		Target = menu_target,
 		ID = 10000,		
-		Left = "0%",
-		Right = "100%",
-		Top = "100%-7em",
-		Bottom = "100%",
+		Top = "100%-5em",
 		BackgroundColor = {Std = 0}
 	};
 	bar.header = 
 	{
 		Target = menu_target,
-		ID = 10001,	
-		Left = "0%",
-		Right = "100%",
-		Top = "0%",
+		ID = 10001,
 		Bottom = "1em",
 		Text = "",
 		Style = GUI_TextHCenter | GUI_TextVCenter,
@@ -205,29 +180,27 @@ private func MakeInfoBar()
 	{
 		Target = menu_target,
 		ID = 10002,	
-		Left = "0.5em",
-		Right = "5.5em",
-		Top = "1.5em",
-		Bottom = "6.5em",	
+		Left = "0.25em",
+		Right = "3.75em",
+		Top = "1.25em",
+		Bottom = "4.75em",	
 	};
 	bar.description = 
 	{
 		Target = menu_target,
 		ID = 10003,	
-		Left = "6em",
-		Right = "100%",
+		Left = "4em",
 		Top = "1em",
-		Bottom = "4em",
+		Bottom = "3em",
 		Text = ""	
 	};
 	bar.usage = 
 	{
 		Target = menu_target,
 		ID = 10004,	
-		Left = "6em",
-		Right = "100%",
-		Top = "4em",
-		Bottom = "7em",
+		Left = "4em",
+		Top = "3em",
+		Bottom = "5em",
 		Text = ""	
 	};	
 	// Add the grid to the menu.
@@ -247,7 +220,7 @@ private func MenuShowCategory(proplist category)
 	{
 		var item = menu.object_grid.items[i];
 		GuiClose(menu_id, item.ID, menu_target);
-		var item_id = Format("Item%d", i + 1);
+		var item_id = Format("item%d", i + 1);
 		menu.object_grid[item_id] = nil;
 	}
 	menu.object_grid.Items = [];
@@ -255,7 +228,7 @@ private func MenuShowCategory(proplist category)
 	for (var i = 0; i < GetLength(id_list); ++i)
 	{
 		var item = id_list[i];
-		var item_id = Format("Item%d", i + 1);
+		var item_id = Format("item%d", i + 1);
 		var item_menu = 
 		{
 			Target = menu_target,
@@ -323,6 +296,7 @@ public func MenuHideInformation(id obj_id)
 	GuiUpdate(menu.info_bar.icon, menu_id, menu.info_bar.icon.ID, menu_target);
 	GuiUpdate(menu.info_bar.description, menu_id, menu.info_bar.description.ID, menu_target);
 	GuiUpdate(menu.info_bar.usage, menu_id, menu.info_bar.usage.ID, menu_target);
+	return;
 }
 
 public func MenuSpawnObject(id obj_id)
@@ -429,6 +403,7 @@ private func GetVegetation()
 	}
 	return vegetation;
 }
+
 
 /*-- Object Spawning --*/
 
