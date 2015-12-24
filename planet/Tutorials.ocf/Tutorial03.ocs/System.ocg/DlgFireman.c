@@ -4,7 +4,7 @@
 
 public func Dlg_Fireman_Init(object clonk)
 {
-	clonk->Message("<c ff0000>Fire!</c> Out of my way!");
+	clonk->Message("$DlgFiremanOutOfWay$");
 	AddEffect("IntFireman", clonk, 100, 5, this);
 	return true;
 }

@@ -225,6 +225,12 @@ private func InitAI()
 	npc_farmer->SetDialogue("Farmer", true);
 	
 	// Lookout.
+	var npc_lookout = CreateObjectAbove(Clonk, 992, 296);
+	npc_lookout->SetColor(0x000055);
+	npc_lookout->SetName("Larry");
+	npc_lookout->SetObjectLayer(npc_lookout);
+	npc_lookout->SetDir(DIR_Left);
+	npc_lookout->SetDialogue("Lookout", true);
 
 	// Village head.
 	return;

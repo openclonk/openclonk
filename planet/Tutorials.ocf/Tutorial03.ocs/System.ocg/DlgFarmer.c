@@ -1,4 +1,4 @@
-// An npc next to the farming area.
+// An NPC next to the farming area.
 
 #appendto Dialogue
 

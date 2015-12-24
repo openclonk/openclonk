@@ -9,6 +9,7 @@ DlgLumberjackMines=No, I don't, but I have dropped my axe in the mines when I wa
 DlgLumberjackLook=Ok, I'll have a look.
 
 # Dialogue: Fireman
+DlgFiremanOutOfWay=<c ff0000>Fire!</c> Out of my way!
 DlgFiremanLastFire=Phew that was the last fire!
 DlgFiremanGoodJob=Good job, have you been under attack?
 DlgFiremanEvilGuys=Yes our village has been, the evil guys took some of our wipfs.
@@ -26,3 +27,10 @@ DlgBuilderConnect=Because then the flagpole will provide a power connection betw
 DlgFarmerHello=Hi, is my wipf safe here?
 DlgFarmerYesSafe=Yes it is, I will look after it. Are you helping us rebuild?
 DlgFarmerRebuild=I am!
+
+# Dialogue: Lookout
+DlgLookoutHello=Hello, why are you standing over here?
+DlgLookoutProtecting=I am on the lookout for attacks from the evil fraction.
+DlgLookoutMusket=Is that why you are carrying a musket?
+DlgLookoutNoChance=Yes, but I don't think I have any chance against those evil guys.
+DlgLookoutNoShow=Then let's hope they don't come again.
