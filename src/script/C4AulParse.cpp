@@ -2127,6 +2127,13 @@ void C4AulParse::Parse_ForEach()
 	AddBCC(AB_STACK, -2);
 }
 
+static bool GetPropertyByS(const C4PropList * p, const char * s, C4Value & v)
+{
+	C4String * k = Strings.FindString(s);
+	if (!k) return false;
+	return p->GetPropertyByS(k, &v);
+}
+
 void C4AulParse::Parse_Expression(int iParentPrio)
 {
 	int ndx;
@@ -2164,9 +2171,24 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		else if (Host && Host->GetPropList() == Fn->Parent && Host->LocalNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			C4String * pKey = Strings.RegString(Idtf);
-			AddBCC(AB_LOCALN, (intptr_t) pKey);
+			AddBCC(AB_LOCALN, (intptr_t) Strings.RegString(Idtf));
 			Shift();
+		}
+		else if ((!Host || Host->GetPropList() != Fn->Parent) && GetPropertyByS(Fn->Parent, Idtf, val))
+		{
+			if (FoundFn = val.getFunction())
+			{
+				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
+					Warn("using deprecated function %s", Idtf);
+				Shift();
+				Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
+				AddBCC(AB_FUNC, (intptr_t) FoundFn);
+			}
+			else
+			{
+				AddBCC(AB_LOCALN, (intptr_t) Strings.RegString(Idtf));
+				Shift();
+			}
 		}
 		else if (SEqual(Idtf, C4AUL_True))
 		{
