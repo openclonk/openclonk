@@ -134,6 +134,7 @@ endforeach()
 ############################################################################
 include(CheckCXXSourceCompiles)
 include(RequireCXXSourceCompiles)
+include(CheckCXXSymbolExists)
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
@@ -146,6 +147,8 @@ REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0
 # This needs to test *linking*, not compilation; cmake does both at the same
 # time, so the test below works.
 REQUIRE_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX " If you are using gcc, please update to gcc 4.9.")
+check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
+check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
@@ -841,9 +844,6 @@ macro(FINDLIB lib)
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
 
-include(CheckCXXSymbolExists)
-check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
-check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 if(HAVE_EXECINFO_H)
 	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
