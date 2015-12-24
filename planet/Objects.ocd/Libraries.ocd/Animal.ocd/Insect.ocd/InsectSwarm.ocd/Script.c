@@ -133,18 +133,23 @@ private func MoveToTarget()
 	if (!lib_swarm_helper || (lib_swarm_helper->GetMaster() == this))
 		return _inherited();
 
-	var coordinates = { x=0, y=0 };
+	var x, y;
 	// Follow previous in line
 	if (lib_swarm_previnline && Random(3))
 	{
-		coordinates.x = lib_swarm_previnline->GetX();
-		coordinates.y = lib_swarm_previnline->GetY();
-	} else { // Go wild and stay around the master!
-		lib_swarm_helper->GetSwarmCenter(coordinates);
+		x = lib_swarm_previnline->GetX();
+		y = lib_swarm_previnline->GetY();
 	}
-	coordinates.x = BoundBy(coordinates.x + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeWidth()-10);
-	coordinates.y = BoundBy(coordinates.y + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeHeight()-10);
-	SetCommand("MoveTo", nil, coordinates.x, coordinates.y, nil, true);
+	else // Go wild and stay around the master!
+	{
+		var point = {};
+		lib_swarm_helper->GetSwarmCenter(point);
+		x = point.x;
+		y = point.y;
+	}
+	x = BoundBy(x + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeWidth()-10);
+	y = BoundBy(y + Random(lib_swarm_density*2) - lib_swarm_density, 10, LandscapeHeight()-10);
+	SetCommand("MoveTo", nil, x, y, nil, true);
 	AppendCommand("Call", this, nil,nil,nil,nil, "MissionComplete");
 }
 
