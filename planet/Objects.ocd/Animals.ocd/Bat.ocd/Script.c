@@ -104,7 +104,7 @@ private func FxCoreBehaviorTimer(object target, proplist effect, int time)
 	
 	// Make flying sounds and sometimes do a sonar wave.
 	if (!Random(250))
-		Sound("Bat::BatFlutter*");
+		Sound("Animals::Bat::Flutter*");
 	if (!Random(225))
 		DoSonarWave(false);	
 		
@@ -226,7 +226,7 @@ public func CatchBlow(int damage, object obj)
 	if (GetAction() == "Dead")
 		return;
 	// Make a sound.
-	Sound("Bat::BatNoise*");
+	Sound("Animals::Bat::Noise*");
 	// Get the most probable crew member causing this blow.
 	var by_crewmember = GetCursor(obj->GetController());
 	// When hurt, startle this bat and nearby bats.
@@ -373,9 +373,9 @@ private func DoSonarWave(bool agressive)
 	CreateParticle("Shockwave", 0, 0, 0, 0, 24, sonar_particle, 1);
 	// Make a sound dependent on the agression.		
 	if (agressive)
-		Sound("Bat::BatChirp");
+		Sound("Animals::Bat::Chirp");
 	else
-		Sound("Bat::BatNoise*", false, 50);	
+		Sound("Animals::Bat::Noise*", false, 50);	
 	return;
 }
 
