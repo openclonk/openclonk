@@ -235,8 +235,9 @@ func DoStrike(clonk, angle)
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 
-func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Rotate(-30,0,0,1),def);
+func Definition(def)
+{
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-4500, -2000, 2000), Trans_Rotate(45,0,0,1));
 }
 
 local Collectible = 1;

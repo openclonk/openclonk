@@ -261,7 +261,7 @@ public func IsInventorProduct() { return true; }
 
 public func Definition(proplist def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-700, 400), Trans_Scale(1150), Trans_Rotate(180, 0, 1, 0), Trans_Rotate(-30, -1, 0, -1)), def);
+	def.PictureTransformation = Trans_Mul(Trans_Translate(-2500, 1000),Trans_Scale(1800),Trans_Rotate(-60,1,-1,1), Trans_Rotate(180, 0, 1, 0));
 }
 
 local Name = "$Name$";
