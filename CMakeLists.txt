@@ -806,7 +806,7 @@ CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
 
 ############################################################################
-# Locate necessary libraries
+# Locate libraries
 ############################################################################
 # Find win32 SDK, since a lot of users don't have the include path in their environment
 if(MSVC)
@@ -825,7 +825,12 @@ SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
-include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+find_package(Freetype REQUIRED)
+include_directories(
+	${JPEG_INCLUDE_DIR}
+	${PNG_INCLUDE_DIR}
+	${ZLIB_INCLUDE_DIR}
+	${FREETYPE_INCLUDE_DIRS})
 
 if(CMAKE_SYSTEM MATCHES "Windows")
 	message(STATUS "Using Win32 threading.")
@@ -834,9 +839,6 @@ else()
 	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
 endif()
 
-find_package(Freetype REQUIRED)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
 # FINDLIB works the same as find_library, but also marks the resulting var as
 # advanced so it doesn't show in GUIs by default
 macro(FINDLIB lib)
@@ -844,13 +846,57 @@ macro(FINDLIB lib)
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
 
-
 if(HAVE_EXECINFO_H)
 	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
 	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
 	if(NOT HAVE_EXECINFO_WO_LINK)
 		FINDLIB(EXECINFO_LIBRARY execinfo)
 	endif()
+endif()
+
+CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+if(NOT HAVE_GETOPT_H)
+	include_directories(SYSTEM thirdparty/getopt)
+	add_subdirectory(thirdparty/getopt)
+	set(GETOPT_LIBRARIES getopt)
+elseif(MINGW)
+	# Link libiberty which my contain getopt with mingw
+	FINDLIB(iberty_LIBRARIES iberty)
+	set(GETOPT_LIBRARIES ${iberty_LIBRARIES})
+endif()
+
+# TinyXML
+find_package(TinyXML)
+if(NOT TinyXML_FOUND)
+	add_subdirectory(thirdparty/tinyxml)
+	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
+	set(TinyXML_LIBRARIES tinyxml)
+	set(TinyXML_FOUND TRUE)
+endif()
+
+include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
+
+find_package(OpenGL)
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+add_definitions(${GLEW_DEFINITIONS})
+# On some platforms, GLEW declares the userParam parameter of
+# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
+# Test which one works here.
+set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
+CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+
+if(USE_X11)
+	FINDLIB(X11_LIBRARIES X11)
+	FINDLIB(XRANDR_LIBRARIES Xrandr)
+endif()
+
+if (WIN32)
+	find_package(DbgHelp)
+	if(DBGHELP_FOUND)
+		include_directories(${DBGHELP_INCLUDE_DIR})
+	endif()
+	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
 find_package(Upnp)
@@ -867,6 +913,9 @@ elseif(UPNP_STYLE STREQUAL "libupnp")
 		src/network/C4Network2UPnPLinux.cpp
 	)
 endif()
+if(UPNP_FOUND)
+	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
+endif()
 
 find_package(Readline)
 if(READLINE_FOUND)
@@ -874,15 +923,21 @@ if(READLINE_FOUND)
 endif()
 SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 
-# Set GTK link directory. This needs to be done before add_executable,
-# otherwise the path is not used for linking clonk
 find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
 if(USE_GTK)
+	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
+	SET(WITH_GLIB ${GTK3_FOUND})
+	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
+	# Set GTK link directory. This needs to be done before add_executable,
+	# otherwise the path is not used for linking clonk
 	link_directories(${GTK3_LIBRARY_DIRS})
 endif()
 
 # Select an audio library
 find_package("Audio")
+if(Audio_FOUND)
+	include_directories(${Audio_INCLUDE_DIRS})
+endif()
 
 # SDL
 if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
@@ -958,31 +1013,6 @@ endif()
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
-add_executable(openclonk WIN32 MACOSX_BUNDLE
-	${OC_SYSTEM_SOURCES}
-	${OC_GUI_SOURCES}
-	${OC_CLONK_SOURCES}
-)
-
-add_executable(openclonk-server
-	${OC_SYSTEM_SOURCES}
-	${OC_CLONK_SOURCES}
-	src/platform/C4AppT.cpp
-	src/platform/C4StdInProc.cpp
-	src/platform/C4StdInProc.h
-)
-set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
-
-if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
-	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
-	set_property(TARGET mape APPEND PROPERTY COMPILE_FLAGS ${GTK3_COMPILE_DEFINITIONS})
-	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
-	target_link_libraries(mape ${GTK3_LIBRARIES} ${GTK3_gtksourceview_LIBRARIES})
-endif()
-
-add_executable(c4group
-	src/c4group/C4GroupMain.cpp
-)
 
 add_library(libmisc
 src/c4group/C4Group.cpp
@@ -1027,6 +1057,12 @@ src/lib/C4SimpleLog.cpp
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
 if (WIN32)
 	target_link_libraries(libmisc winmm)
+endif()
+if(HAVE_PTHREAD)
+	target_link_libraries(libmisc pthread)
+endif()
+if(UNIX AND NOT APPLE)
+	target_link_libraries(libmisc rt)
 endif()
 
 add_library(libc4script
@@ -1073,64 +1109,104 @@ add_executable(c4script
 	src/script/C4ScriptStandaloneStubs.cpp
 )
 
+target_link_libraries(c4script
+	libc4script
+	libmisc
+)
+
+add_executable(openclonk WIN32 MACOSX_BUNDLE
+	${OC_SYSTEM_SOURCES}
+	${OC_GUI_SOURCES}
+	${OC_CLONK_SOURCES}
+)
+
 target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${EXECINFO_LIBRARY}
+	${SDL_LIBRARY}
+	${Audio_LIBRARIES}
+	${GETOPT_LIBRARIES}
+	${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES}
+	${TinyXML_LIBRARIES}
+	${X11_LIBRARIES}
+	${XRANDR_LIBRARIES}
+	${DBGHELP_LIBRARIES}
+	${UPNP_LIBRARIES}
 	libc4script
 	libmisc
 )
+if(USE_GTK)
+	target_link_libraries(openclonk ${GTK3_LIBRARIES})
+endif()
+if(USE_COCOA)
+	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
+endif()
+if (GLEW_FOUND)
+	set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS ${GLEW_DEFINITIONS})
+endif()
+
+add_executable(openclonk-server
+	${OC_SYSTEM_SOURCES}
+	${OC_CLONK_SOURCES}
+	src/platform/C4AppT.cpp
+	src/platform/C4StdInProc.cpp
+	src/platform/C4StdInProc.h
+)
+set_property(TARGET openclonk-server APPEND PROPERTY COMPILE_DEFINITIONS "USE_CONSOLE")
 
 target_link_libraries(openclonk-server
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${EXECINFO_LIBRARY}
+	${READLINE_LIBRARIES}
+	${Audio_LIBRARIES}
+	${GETOPT_LIBRARIES}
+	${GTK3_glib_LIBRARIES}
+	${TinyXML_LIBRARIES}
+	${DBGHELP_LIBRARIES}
+	${UPNP_LIBRARIES}
 	libc4script
 	libmisc
 )
-
-if (SDL_FOUND)
-	target_link_libraries(openclonk ${SDL_LIBRARY})
+if(USE_COCOA)
+	target_link_libraries(openclonk-server "-framework Cocoa")
 endif()
 
-if(Audio_FOUND)
-	target_link_libraries(openclonk ${Audio_LIBRARIES})
-	target_link_libraries(openclonk-server ${Audio_LIBRARIES})
-	include_directories(${Audio_INCLUDE_DIRS})
-endif()
-
-if(TARGET mape)
+if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
+	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
+	set_property(TARGET mape APPEND PROPERTY COMPILE_FLAGS ${GTK3_COMPILE_DEFINITIONS})
+	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
 	target_link_libraries(mape
+		${GTK3_LIBRARIES}
+		${GTK3_gtksourceview_LIBRARIES}
 		libc4script
 		libmisc
 	)
+	# Suppress the console window for mape even though only a main() and not
+	# a WinMain() entry point is provided.
+	if(MINGW)
+		set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
+	endif()
 endif()
+
+add_executable(c4group
+	src/c4group/C4GroupMain.cpp
+)
 
 target_link_libraries(c4group
 	libmisc
 )
 
-target_link_libraries(c4script
-	libc4script
-	libmisc
-)
-if(HAVE_PTHREAD)
-	target_link_libraries(libmisc
-		pthread
-	)
+if(WIN32)
+	target_link_libraries(openclonk ws2_32)
+	target_link_libraries(openclonk-server ws2_32)
+	target_link_libraries(c4group ws2_32)
+	target_link_libraries(c4script ws2_32)
 endif()
-if(HAVE_LIBREADLINE)
-	target_link_libraries(openclonk-server
-		${READLINE_LIBRARIES}
-	)
-endif()
-if(UNIX AND NOT APPLE)
-	target_link_libraries(libmisc rt)
-endif()
-if (GLEW_FOUND)
-	set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS ${GLEW_DEFINITIONS})
-endif()
+
 if(NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.10")
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
@@ -1241,108 +1317,8 @@ if (APPLE)
 endif()
 
 ############################################################################
-# Locate optional libraries (if so desired)
+# Miscellaneous
 ############################################################################
-CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
-if(NOT HAVE_GETOPT_H)
-	include_directories(SYSTEM thirdparty/getopt)
-	add_subdirectory(thirdparty/getopt)
-	target_link_libraries(openclonk getopt)
-	target_link_libraries(openclonk-server getopt)
-elseif(MINGW)
-	# Link libiberty which my contain getopt with mingw
-	FINDLIB(iberty_LIBRARIES iberty)
-	if(iberty_LIBRARIES)
-		target_link_libraries(openclonk iberty)
-		target_link_libraries(openclonk-server iberty)
-	endif()
-endif()
-
-CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
-
-# TinyXML
-find_package(TinyXML)
-if(NOT TinyXML_FOUND)
-	add_subdirectory(thirdparty/tinyxml)
-	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
-	set(TinyXML_LIBRARIES tinyxml)
-	set(TinyXML_FOUND TRUE)
-endif()
-
-include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
-target_link_libraries(openclonk ${TinyXML_LIBRARIES})
-target_link_libraries(openclonk-server ${TinyXML_LIBRARIES})
-
-if(WIN32)
-	find_package(DbgHelp)
-	if(DBGHELP_FOUND)
-		target_link_libraries(openclonk ${DBGHELP_LIBRARIES})
-		target_link_libraries(openclonk-server ${DBGHELP_LIBRARIES})
-		include_directories(${DBGHELP_INCLUDE_DIR})
-	endif()
-	set(HAVE_DBGHELP ${DBGHELP_FOUND})
-endif()
-
-find_package(OpenGL)
-find_package(GLEW REQUIRED)
-target_link_libraries(openclonk
-	${GLEW_LIBRARIES}
-	${OPENGL_LIBRARIES}
-)
-include_directories(${GLEW_INCLUDE_DIRS})
-add_definitions(${GLEW_DEFINITIONS})
-# On some platforms, GLEW declares the userParam parameter of
-# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
-# Test which one works here.
-set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
-
-if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
-	SET(WITH_GLIB ${GTK3_FOUND})
-	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
-	target_link_libraries(openclonk
-		${GTK3_LIBRARIES}
-	)
-	# We really only need Glib here, but FindGTK3.cmake doesn't currently set
-	# a variable for that if it's using pkg-config
-	target_link_libraries(openclonk-server
-		${GTK3_glib_LIBRARIES}
-	)
-endif()
-if(USE_X11)
-	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XRANDR_LIBRARIES Xrandr)
-	target_link_libraries(openclonk
-		${X11_LIBRARIES}
-		${XRANDR_LIBRARIES}
-	)
-endif()
-if(USE_COCOA)
-	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
-	TARGET_LINK_LIBRARIES(openclonk-server "-framework Cocoa")
-endif()
-if (WIN32)
-	target_link_libraries(openclonk ws2_32)
-	target_link_libraries(openclonk-server ws2_32)
-	target_link_libraries(c4group ws2_32)
-	target_link_libraries(c4script ws2_32)
-	if(TARGET mape)
-		target_link_libraries(mape winmm)
-		# Suppress the console window for mape even though only a main() and not
-		# a WinMain() entry point is provided.
-		if(MINGW)
-			set_target_properties(mape PROPERTIES LINK_FLAGS -mwindows)
-		endif()
-	endif()
-endif()
-
-if(UPNP_FOUND)
-	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
-	target_link_libraries(openclonk ${UPNP_LIBRARIES})
-	target_link_libraries(openclonk-server ${UPNP_LIBRARIES})
-endif()
-
 add_subdirectory(tests EXCLUDE_FROM_ALL)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
@@ -1369,15 +1345,6 @@ if(USE_GCC_PCH)
 	add_precompiled_header(openclonk src/C4Include.h)
 	add_precompiled_header(openclonk-server src/C4Include.h)
 endif()
-
-# When cross-compiling, import c4group from a native build
-IF(CMAKE_CROSSCOMPILING)
-	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
-	INCLUDE(${IMPORT_NATIVE_TOOLS})
-	SET(native_c4group native-c4group)
-ELSE()
-   SET(native_c4group c4group)
-ENDIF()
 
 ############################################################################
 # installation
@@ -1425,6 +1392,20 @@ if (NOT APPLE)
 		RENAME openclonk.png
 	)
 endif()
+
+# Export native tools for later use in cross-compile builds
+IF(NOT CMAKE_CROSSCOMPILING)
+	EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
+ENDIF()
+
+# When cross-compiling, import c4group from a native build
+IF(CMAKE_CROSSCOMPILING)
+	SET(IMPORT_NATIVE_TOOLS "IMPORT_NATIVE_TOOLS-NOTFOUND" CACHE FILEPATH "Export file from a native build")
+	INCLUDE(${IMPORT_NATIVE_TOOLS})
+	SET(native_c4group native-c4group)
+ELSE()
+	SET(native_c4group c4group)
+ENDIF()
 
 # NOTE: The scripts that does the autobuilds and ultimately the automated
 # releases as well do keep their own list of group files around currently.
@@ -1497,11 +1478,6 @@ else()
 		RUNTIME DESTINATION .
 	)
 endif()
-
-# Export native tools for later use in cross-compile builds
-IF(NOT CMAKE_CROSSCOMPILING) 
-	EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
-ENDIF() 
 
 ############################################################################
 # setup_openclonk.exe
