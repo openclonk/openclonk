@@ -151,6 +151,159 @@ check_cxx_symbol_exists(vasprintf stdio.h HAVE_VASPRINTF)
 check_cxx_symbol_exists(__mingw_vasprintf stdio.h HAVE___MINGW_VASPRINTF)
 
 ############################################################################
+# Check for required system headers
+############################################################################
+include(CheckIncludeFileCXX)
+include(CheckIncludeFilesCXX)
+CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
+CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
+CHECK_INCLUDE_FILE_CXX(locale.h HAVE_LOCALE_H)
+CHECK_INCLUDE_FILE_CXX(share.h HAVE_SHARE_H)
+CHECK_INCLUDE_FILE_CXX(signal.h HAVE_SIGNAL_H)
+CHECK_INCLUDE_FILE_CXX(stdint.h HAVE_STDINT_H)
+CHECK_INCLUDE_FILE_CXX(inttypes.h HAVE_INTTYPES_H)
+CHECK_INCLUDE_FILE_CXX(sys/stat.h HAVE_SYS_STAT_H)
+CHECK_INCLUDE_FILE_CXX(sys/types.h HAVE_SYS_TYPES_H)
+CHECK_INCLUDE_FILE_CXX(unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE_CXX(execinfo.h HAVE_EXECINFO_H)
+CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
+CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
+CHECK_INCLUDE_FILE_CXX(sys/timerfd.h HAVE_SYS_TIMERFD_H)
+CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE_CXX(sys/eventfd.h HAVE_SYS_EVENTFD_H)
+CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
+CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
+CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+
+############################################################################
+# Locate libraries
+############################################################################
+# Find win32 SDK, since a lot of users don't have the include path in their environment
+if(MSVC)
+	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
+	mark_as_advanced(WINSDK_ROOT)
+	list(APPEND CMAKE_INCLUDE_PATH "${WINSDK_ROOT}/Include")
+	include_directories(SYSTEM ${WINSDK_ROOT}/Include)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib/x64)
+	else()
+		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib)
+	endif()
+endif()
+
+SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
+find_package(JPEG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(Freetype REQUIRED)
+include_directories(
+	${JPEG_INCLUDE_DIR}
+	${PNG_INCLUDE_DIR}
+	${ZLIB_INCLUDE_DIR}
+	${FREETYPE_INCLUDE_DIRS})
+
+if(CMAKE_SYSTEM MATCHES "Windows")
+	message(STATUS "Using Win32 threading.")
+else()
+	find_package("Threads" REQUIRED)
+	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
+endif()
+
+# FINDLIB works the same as find_library, but also marks the resulting var as
+# advanced so it doesn't show in GUIs by default
+macro(FINDLIB lib)
+	find_library(${ARGV})
+	mark_as_advanced(${lib})
+endmacro(FINDLIB)
+
+if(HAVE_EXECINFO_H)
+	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
+	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
+	if(NOT HAVE_EXECINFO_WO_LINK)
+		FINDLIB(EXECINFO_LIBRARY execinfo)
+	endif()
+endif()
+
+if(NOT HAVE_GETOPT_H)
+	include_directories(SYSTEM thirdparty/getopt)
+	add_subdirectory(thirdparty/getopt)
+	set(GETOPT_LIBRARIES getopt)
+elseif(MINGW)
+	# Link libiberty which my contain getopt with mingw
+	FINDLIB(iberty_LIBRARIES iberty)
+	set(GETOPT_LIBRARIES ${iberty_LIBRARIES})
+endif()
+
+# TinyXML
+find_package(TinyXML)
+if(NOT TinyXML_FOUND)
+	add_subdirectory(thirdparty/tinyxml)
+	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
+	set(TinyXML_LIBRARIES tinyxml)
+	set(TinyXML_FOUND TRUE)
+endif()
+
+include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
+
+find_package(OpenGL)
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+add_definitions(${GLEW_DEFINITIONS})
+# On some platforms, GLEW declares the userParam parameter of
+# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
+# Test which one works here.
+set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
+CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+
+if(USE_X11)
+	FINDLIB(X11_LIBRARIES X11)
+	FINDLIB(XRANDR_LIBRARIES Xrandr)
+endif()
+
+if (WIN32)
+	find_package(DbgHelp)
+	if(DBGHELP_FOUND)
+		include_directories(${DBGHELP_INCLUDE_DIR})
+	endif()
+	set(HAVE_DBGHELP ${DBGHELP_FOUND})
+endif()
+
+find_package(Upnp)
+if(UPNP_FOUND)
+	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
+endif()
+
+find_package(Readline)
+if(READLINE_FOUND)
+	include_directories(SYSTEM ${READLINE_INCLUDE_DIR})
+endif()
+SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
+
+find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
+if(USE_GTK)
+	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
+	SET(WITH_GLIB ${GTK3_FOUND})
+	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
+	# Set GTK link directory. This needs to be done before add_executable,
+	# otherwise the path is not used for linking clonk
+	link_directories(${GTK3_LIBRARY_DIRS})
+endif()
+
+# Select an audio library
+find_package("Audio")
+if(Audio_FOUND)
+	include_directories(${Audio_INCLUDE_DIRS})
+endif()
+
+# SDL
+if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
+	find_package(SDL)
+	SET(HAVE_SDL ${SDL_FOUND})
+	include_directories(${SDL_INCLUDE_DIR})
+endif()
+
+############################################################################
 # generated source files
 ############################################################################
 find_program(GDK_PIXBUF_CSOURCE gdk-pixbuf-csource)
@@ -691,6 +844,20 @@ if(WIN32)
 	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/res/openclonk.manifest" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.manifest" COPYONLY)
 endif()
 
+if(NOT UPNP_FOUND)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPDummy.cpp
+	)
+elseif(UPNP_STYLE STREQUAL "Win32")
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPWin32.cpp
+	)
+elseif(UPNP_STYLE STREQUAL "libupnp")
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPLinux.cpp
+	)
+endif()
+
 # source files specific to a GUI library
 if(USE_GTK)
 	list(APPEND OC_GUI_SOURCES
@@ -781,172 +948,6 @@ include_directories(
 include_directories(SYSTEM
 	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
-
-############################################################################
-# Check for required system headers
-############################################################################
-include(CheckIncludeFileCXX)
-include(CheckIncludeFilesCXX)
-CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
-CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
-CHECK_INCLUDE_FILE_CXX(locale.h HAVE_LOCALE_H)
-CHECK_INCLUDE_FILE_CXX(share.h HAVE_SHARE_H)
-CHECK_INCLUDE_FILE_CXX(signal.h HAVE_SIGNAL_H)
-CHECK_INCLUDE_FILE_CXX(stdint.h HAVE_STDINT_H)
-CHECK_INCLUDE_FILE_CXX(inttypes.h HAVE_INTTYPES_H)
-CHECK_INCLUDE_FILE_CXX(sys/stat.h HAVE_SYS_STAT_H)
-CHECK_INCLUDE_FILE_CXX(sys/types.h HAVE_SYS_TYPES_H)
-CHECK_INCLUDE_FILE_CXX(unistd.h HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE_CXX(execinfo.h HAVE_EXECINFO_H)
-CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
-CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
-CHECK_INCLUDE_FILE_CXX(sys/timerfd.h HAVE_SYS_TIMERFD_H)
-CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
-CHECK_INCLUDE_FILE_CXX(sys/eventfd.h HAVE_SYS_EVENTFD_H)
-CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
-CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
-CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
-
-############################################################################
-# Locate libraries
-############################################################################
-# Find win32 SDK, since a lot of users don't have the include path in their environment
-if(MSVC)
-	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
-	mark_as_advanced(WINSDK_ROOT)
-	list(APPEND CMAKE_INCLUDE_PATH "${WINSDK_ROOT}/Include")
-	include_directories(SYSTEM ${WINSDK_ROOT}/Include)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib/x64)
-	else()
-		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib)
-	endif()
-endif()
-
-SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
-find_package(JPEG REQUIRED)
-find_package(PNG REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(Freetype REQUIRED)
-include_directories(
-	${JPEG_INCLUDE_DIR}
-	${PNG_INCLUDE_DIR}
-	${ZLIB_INCLUDE_DIR}
-	${FREETYPE_INCLUDE_DIRS})
-
-if(CMAKE_SYSTEM MATCHES "Windows")
-	message(STATUS "Using Win32 threading.")
-else()
-	find_package("Threads" REQUIRED)
-	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
-endif()
-
-# FINDLIB works the same as find_library, but also marks the resulting var as
-# advanced so it doesn't show in GUIs by default
-macro(FINDLIB lib)
-	find_library(${ARGV})
-	mark_as_advanced(${lib})
-endmacro(FINDLIB)
-
-if(HAVE_EXECINFO_H)
-	check_cxx_symbol_exists(backtrace execinfo.h HAVE_EXECINFO_WO_LINK)
-	mark_as_advanced(HAVE_EXECINFO_WO_LINK)
-	if(NOT HAVE_EXECINFO_WO_LINK)
-		FINDLIB(EXECINFO_LIBRARY execinfo)
-	endif()
-endif()
-
-CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
-if(NOT HAVE_GETOPT_H)
-	include_directories(SYSTEM thirdparty/getopt)
-	add_subdirectory(thirdparty/getopt)
-	set(GETOPT_LIBRARIES getopt)
-elseif(MINGW)
-	# Link libiberty which my contain getopt with mingw
-	FINDLIB(iberty_LIBRARIES iberty)
-	set(GETOPT_LIBRARIES ${iberty_LIBRARIES})
-endif()
-
-# TinyXML
-find_package(TinyXML)
-if(NOT TinyXML_FOUND)
-	add_subdirectory(thirdparty/tinyxml)
-	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
-	set(TinyXML_LIBRARIES tinyxml)
-	set(TinyXML_FOUND TRUE)
-endif()
-
-include_directories(SYSTEM ${TinyXML_INCLUDE_DIRS})
-
-find_package(OpenGL)
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-add_definitions(${GLEW_DEFINITIONS})
-# On some platforms, GLEW declares the userParam parameter of
-# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
-# Test which one works here.
-set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
-
-if(USE_X11)
-	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XRANDR_LIBRARIES Xrandr)
-endif()
-
-if (WIN32)
-	find_package(DbgHelp)
-	if(DBGHELP_FOUND)
-		include_directories(${DBGHELP_INCLUDE_DIR})
-	endif()
-	set(HAVE_DBGHELP ${DBGHELP_FOUND})
-endif()
-
-find_package(Upnp)
-if(NOT UPNP_FOUND)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPDummy.cpp
-	)
-elseif(UPNP_STYLE STREQUAL "Win32")
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPWin32.cpp
-	)
-elseif(UPNP_STYLE STREQUAL "libupnp")
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPLinux.cpp
-	)
-endif()
-if(UPNP_FOUND)
-	include_directories(SYSTEM ${UPNP_INCLUDE_DIR})
-endif()
-
-find_package(Readline)
-if(READLINE_FOUND)
-	include_directories(SYSTEM ${READLINE_INCLUDE_DIR})
-endif()
-SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
-
-find_package(GTK3 COMPONENTS gthread gio gobject glib OPTIONAL_COMPONENTS gtksourceview)
-if(USE_GTK)
-	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
-	SET(WITH_GLIB ${GTK3_FOUND})
-	include_directories(SYSTEM ${GTK3_INCLUDE_DIRS})
-	# Set GTK link directory. This needs to be done before add_executable,
-	# otherwise the path is not used for linking clonk
-	link_directories(${GTK3_LIBRARY_DIRS})
-endif()
-
-# Select an audio library
-find_package("Audio")
-if(Audio_FOUND)
-	include_directories(${Audio_INCLUDE_DIRS})
-endif()
-
-# SDL
-if(USE_SDL_MAINLOOP OR (Audio_TK STREQUAL "SDL_Mixer"))
-	find_package(SDL)
-	SET(HAVE_SDL ${SDL_FOUND})
-	include_directories(${SDL_INCLUDE_DIR})
-endif()
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
