@@ -27,6 +27,8 @@ struct StdMeshVector
 	static StdMeshVector UnitScale();
 	static StdMeshVector Translate(float dx, float dy, float dz);
 	static StdMeshVector Cross(const StdMeshVector& lhs, const StdMeshVector& rhs);
+
+	void Normalize();
 };
 
 
@@ -98,6 +100,7 @@ public:
 	static StdMeshMatrix Rotate(float angle, float rx, float ry, float rz);
 	static StdMeshMatrix Transform(const StdMeshTransformation& transform);
 	static StdMeshMatrix TransformInverse(const StdMeshTransformation& transform);
+	static StdMeshMatrix LookAt(const StdMeshVector& eye, const StdMeshVector& center, const StdMeshVector& up);
 
 	float& operator()(int i, int j) { return a[i][j]; }
 	float operator()(int i, int j) const { return a[i][j]; }
@@ -121,6 +124,8 @@ public:
 
 	static StdProjectionMatrix Identity();
 	static StdProjectionMatrix Translate(float dx, float dy, float dz);
+	static StdProjectionMatrix Scale(float sx, float sy, float sz);
+	static StdProjectionMatrix Rotate(float angle, float rx, float ry, float rz);
 	static StdMeshMatrix Upper3x4(const StdProjectionMatrix& matrix);
 
 	float& operator()(int i, int j) { return a[i][j]; }
@@ -153,6 +158,8 @@ StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshT
 StdMeshVector operator-(const StdMeshVector& rhs);
 StdMeshVector& operator+=(StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector operator+(const StdMeshVector& lhs, const StdMeshVector& rhs);
+StdMeshVector& operator-=(StdMeshVector& lhs, const StdMeshVector& rhs);
+StdMeshVector operator-(const StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector operator*(const StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector& operator*=(StdMeshVector& lhs, float rhs);
 StdMeshVector operator*(const StdMeshVector& lhs, float rhs);
@@ -191,6 +198,34 @@ void Scale(MatrixType& mat, float sx, float sy, float sz)
 		mat(i, 0) *= sx;
 		mat(i, 1) *= sy;
 		mat(i, 2) *= sz;
+	}
+}
+
+// Multiply in-place the given matrix with a rotation matrix to the right
+template<typename MatrixType>
+void Rotate(MatrixType& mat, float angle, float x, float y, float z)
+{
+	mat *= MatrixType::Rotate(angle, x, y, z);
+}
+
+// Multiply in-place the given matrix with a perspective projection matrix to the right
+template<typename MatrixType>
+void Perspective(MatrixType& mat, float cot_fovy2, float aspect, float nearVal, float farVal)
+{
+	static_assert(MatrixType::NColumns >= 4, "Matrix must have at least 4 columns");
+
+	const float fa = cot_fovy2 / aspect;
+	const float fb = cot_fovy2;
+	const float z1 = (nearVal + farVal) / (nearVal - farVal);
+	const float z2 = 2 * nearVal * farVal / (nearVal - farVal);
+
+	for (int i = 0; i < MatrixType::NRows; ++i)
+	{
+		const float mat2 = mat(i, 2);
+		mat(i, 0) *= fa;
+		mat(i, 1) *= fb;
+		mat(i, 2) = mat2 * z1 - mat(i, 3);
+		mat(i, 3) = mat2 * z2;
 	}
 }
 

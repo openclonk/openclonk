@@ -47,6 +47,7 @@ class StdMeshMaterialShaderParameter
 public:
 	enum Type {
 		AUTO,
+		AUTO_TEXTURE_MATRIX, // Texture matrix for the i-th texture
 		INT,
 		FLOAT,
 		FLOAT2,
@@ -74,14 +75,14 @@ public:
 
 	// Getters
 	Auto GetAuto() const { assert(type == AUTO); return a; }
-	int GetInt() const { assert(type == INT); return i; }
+	int GetInt() const { assert(type == INT || type == AUTO_TEXTURE_MATRIX); return i; }
 	float GetFloat() const { assert(type == FLOAT); return f[0]; }
 	const float* GetFloatv() const { assert(type == FLOAT2 || type == FLOAT3 || type == FLOAT4); return f; }
 	const float* GetMatrix() const { assert(type == MATRIX_4X4); return matrix; }
 
 	// Setters
 	Auto& GetAuto() { assert(type == AUTO); return a; }
-	int& GetInt() { assert(type == INT); return i; }
+	int& GetInt() { assert(type == INT || type == AUTO_TEXTURE_MATRIX); return i; }
 	float& GetFloat() { assert(type == FLOAT); return f[0]; }
 	float* GetFloatv() { assert(type == FLOAT2 || type == FLOAT3 || type == FLOAT4); return f; }
 	float* GetMatrix() { assert(type == MATRIX_4X4); return matrix; }

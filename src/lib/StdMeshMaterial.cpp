@@ -693,6 +693,7 @@ void StdMeshMaterialShaderParameter::CopyShallow(const StdMeshMaterialShaderPara
 	case AUTO:
 		a = other.a;
 		break;
+	case AUTO_TEXTURE_MATRIX:
 	case INT:
 		i = other.i;
 		break;
@@ -864,9 +865,9 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	std::vector<const char*> uniformNames;
 #ifndef USE_CONSOLE
 	uniformNames.resize(C4SSU_Count + ParameterNames.size() + 1);
-	uniformNames[C4SSU_ProjectionMatrix] = "projectionMatrix"; // unused YET
-	uniformNames[C4SSU_ModelViewMatrix] = "modelviewMatrix"; // unused YET
-	uniformNames[C4SSU_NormalMatrix] = "normalMatrix"; // unused YET
+	uniformNames[C4SSU_ProjectionMatrix] = "projectionMatrix";
+	uniformNames[C4SSU_ModelViewMatrix] = "modelviewMatrix";
+	uniformNames[C4SSU_NormalMatrix] = "normalMatrix";
 	uniformNames[C4SSU_ClrMod] = "clrMod";
 	uniformNames[C4SSU_Gamma] = "gamma";
 	uniformNames[C4SSU_BaseTex] = "baseTex"; // unused

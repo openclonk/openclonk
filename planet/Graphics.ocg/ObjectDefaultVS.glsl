@@ -38,6 +38,10 @@
 
 varying vec3 normalDir;
 
+uniform mat4 projectionMatrix;
+uniform mat4 modelviewMatrix;
+uniform mat3 normalMatrix;
+
 #ifndef OC_WA_LOW_MAX_VERTEX_UNIFORM_COMPONENTS
 uniform mat4x3 bones[MAX_BONE_COUNT];
 #else
@@ -72,7 +76,7 @@ vec4 merge_bone(vec4 vertex, vec4 original, mat3x4 bone, float weight)
 slice(position)
 {
 #if BONE_COUNT == 0
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	gl_Position = projectionMatrix * modelviewMatrix * gl_Vertex;
 #else
 	vec4 vertex = vec4(0, 0, 0, 0);
 	vertex = merge_bone(vertex, gl_Vertex, bones[int(oc_BoneIndices0.x)], oc_BoneWeights0.x);
@@ -85,7 +89,7 @@ slice(position)
 	vertex = merge_bone(vertex, gl_Vertex, bones[int(oc_BoneIndices1.z)], oc_BoneWeights1.z);
 	vertex = merge_bone(vertex, gl_Vertex, bones[int(oc_BoneIndices1.w)], oc_BoneWeights1.w);
 #endif
-	gl_Position = gl_ModelViewProjectionMatrix * vertex;
+	gl_Position = projectionMatrix * modelviewMatrix * vertex;
 #endif
 }
 
@@ -97,7 +101,7 @@ slice(texcoord)
 slice(normal)
 {
 #if BONE_COUNT == 0
-	normalDir = normalize(gl_NormalMatrix * gl_Normal);
+	normalDir = normalize(normalMatrix * gl_Normal);
 #else
 	vec4 base_normal = vec4(gl_Normal, 0.0);
 	vec4 normal = vec4(0, 0, 0, 0);
@@ -111,6 +115,6 @@ slice(normal)
 	normal = merge_bone(normal, base_normal, bones[int(oc_BoneIndices1.z)], oc_BoneWeights1.z);
 	normal = merge_bone(normal, base_normal, bones[int(oc_BoneIndices1.w)], oc_BoneWeights1.w);
 #endif
-	normalDir = normalize(gl_NormalMatrix * normal.xyz);
+	normalDir = normalize(normalMatrix * normal.xyz);
 #endif
 }
