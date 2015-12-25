@@ -31,12 +31,7 @@ public func Initialize()
 	CreateObjectAbove(Ropeladder, 602, 158)->Unroll(1, -1);
 	
 	// Profile.
-	//ProfileObject(Ropebridge);
 	ProfileObject(Ropeladder);
-	//StartScriptProfiler();
-	//ArrayAccess();
-	//ProplistAccess();
-	//StopScriptProfiler();
 	return;
 }
 
@@ -54,18 +49,4 @@ global func ProfileObject(id def, int duration)
 		duration = 10;
 	StartScriptProfiler(def);
 	ScheduleCall(nil, "StopScriptProfiler", duration * 36, 0);
-}
-
-global func ArrayAccess()
-{
-	var a = [[[0,0]]], c;
-	for (var i = 0; i < 10**6; i++)
-		c = a[0][0][0];
-}
-
-global func ProplistAccess()
-{
-	var a = [{x = 1}], c;
-	for (var i = 0; i < 10**6; i++)
-		c = a[0].x;
 }

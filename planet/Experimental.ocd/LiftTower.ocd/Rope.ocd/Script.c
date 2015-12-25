@@ -9,7 +9,6 @@
 
 #include Library_Rope
 
-static const Weight = 1;
 static const Library_Rope_MAXLENGTH = 1000;
 
 // Call this to break the rope.
@@ -71,8 +70,6 @@ public func HookRemoved()
 
 func FxIntHangTimer() { TimeStep(); }
 
-local last_point;
-
 func UpdateLines()
 {
 	var oldangle;
@@ -120,7 +117,6 @@ func UpdateLines()
 			else diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
 			diffangle = Vec_Angle(diff, [0,0]);
 			point = Vec_Add(start, Vec_Div(diff, 2));
-			last_point = point;
 		}
 
 		lib_rope_segments[i]->SetGraphics(nil);
@@ -131,13 +127,13 @@ func UpdateLines()
 	}
 }
 
-func GetHookAngle()
+public func GetHookAngle()
 {
 	if(lib_rope_particle_count > 3)
 	return Angle(lib_rope_particles[-2].x, lib_rope_particles[-2].y, lib_rope_particles[-3].x, lib_rope_particles[-3].y)+180;
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+public func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
@@ -174,19 +170,18 @@ func ForcesOnObjects()
 		if(redo) redo --;
 	}
 	var j = 0;
-	if(PullObjects() )
-	for(var i = 0; i < 2; i++)
+	if (PullObjects())
+	for (var i = 0; i < 2; i++)
 	{
-		if(i == 1) j = lib_rope_particle_count-1;
+		if (i == 1) j = lib_rope_particle_count-1;
 		var obj = lib_rope_objects[i][0];
 
-		if(obj == nil || !lib_rope_objects[i][1]) continue;
+		if (obj == nil || !lib_rope_objects[i][1]) continue;
 
-		if(obj->Contained()) obj = obj->Contained();
+		if (obj->Contained())
+			obj = obj->Contained();
 
-		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
-			obj->SetAction("Jump");
-		if( obj->GetAction() == "Climb")
+		if (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle" || obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
 		var xdir = BoundBy(lib_rope_particles[j].x-lib_rope_particles[j].oldx, -100, 100);
@@ -223,11 +218,11 @@ func ForcesOnObjects()
 // Altered to function in 'ConnectPull' mode
 public func ConstraintObjects()
 {
-		if(lib_rope_length < GetMaxLength()) // in the rope library this is
-		{
-			for(var i = 0, i2 = 0; i < 2; i++ || i2--)
-				SetParticleToObject(i2, i);
-		}
+	if(lib_rope_length < GetMaxLength()) // in the rope library this is
+	{
+		for (var i = 0, i2 = 0; i < 2; i++ || i2--)
+			SetParticleToObject(i2, i);
+	}
 }
 
 // This is called constantly by the lift tower as long as something is reeled in
