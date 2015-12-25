@@ -13,11 +13,7 @@ public func Initialize()
 	CreateObjectAbove(Ropeladder, 222, 40)->Unroll(1, -1, 12);
 	
 	// Ropebridge.
-	var post1 = CreateObjectAbove(Ropebridge_Post, 80, 152);
-	var post2 = CreateObjectAbove(Ropebridge_Post, 176, 152);
-	post2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	post2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	CreateObjectAbove(Ropebridge, 140, 152)->MakeBridge(post1, post2);
+	Ropebridge->Create(80, 152, 176, 152);
 	
 	// Series of rope ladders.
 	CreateObjectAbove(Ropeladder, 292, 60)->Unroll(-1, COMD_Up);

@@ -2,31 +2,14 @@
 
 func Initialize()
 {
-//	CreateObjectAbove(Ropeladder, 174, 445)->Unroll(-1, 0, 25);
 	CreateObjectAbove(Ropeladder, 328, 564);
 	CreateObjectAbove(Ropeladder, 226, 330);
 
 	CreateObjectAbove(Rock, 159, 363);
 	CreateObjectAbove(Rock, 232, 388);
   
-  var Anchor1 = CreateObjectAbove(Ropebridge_Post, 515, 547);
-  var Anchor2 = CreateObjectAbove(Ropebridge_Post, 602, 538);
-  Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-  Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-  var bridge = CreateObjectAbove(Ropebridge, 515, 547);
-  bridge->MakeBridge(Anchor1, Anchor2);
-  bridge->SetFragile();
-  
-  var Anchor1 = CreateObjectAbove(Ropebridge_Post, 266, 435+6);
-  var Anchor2 = CreateObjectAbove(Ropebridge_Post, 346, 473+6);
-  Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-  Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-  CreateObjectAbove(Ropebridge, 515, 547)->MakeBridge(Anchor1, Anchor2);
   CreateObjectAbove(Branch, 505, 547);
   CreateObjectAbove(Rock,495, 547);
-//	CreateObjectAbove(Ropeladder, 197, 432)->MakeBridge(Rock1, Rock2);
-//   for(var i = 0; i < 10; i++)
-//     bridge->CreateObjectAbove(Zap, RandomX(-30,30), -40+RandomX(-30,30));
   
   
   var obj;

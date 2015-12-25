@@ -14,6 +14,22 @@ static const Ladder_SegmentLength = 5;
 
 local MirrorSegments;
 
+// Create a rope bridge starting at (x1, y1) and ending at (x2, y2).
+public func Create(int x1, int y1, int x2, int y2, bool fragile)
+{
+	if (this != Ropebridge)
+		return;
+	var bridge_post1 = CreateObjectAbove(Ropebridge_Post, x1, y1);
+	var bridge_post2 = CreateObjectAbove(Ropebridge_Post, x2, y2);
+	bridge_post2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
+	bridge_post2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
+	var bridge = CreateObjectAbove(Ropebridge, (x1 + x2) / 2, (y1 + y2) / 2);
+	bridge->MakeBridge(bridge_post1, bridge_post2);
+	if (fragile)
+		bridge->SetFragile();
+	return;
+}
+
 
 public func UpdateSegmentOverlays()
 {
@@ -55,7 +71,7 @@ public func UpdateSegmentOverlays()
 	return;
 }
 
-public func MakeBridge(obj1, obj2)
+public func MakeBridge(object obj1, object obj2)
 {
 	MirrorSegments = 1;
 	SetProperty("Collectible", 0);
@@ -265,6 +281,9 @@ public func Hit()
 	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
+
+/*-- Properties --*/
+
 local ActMap = {
 	Hanging = {
 		Prototype = Action,
@@ -275,4 +294,3 @@ local ActMap = {
 };
 local Name = "$Name$";
 local Collectible = 1;
-local Rebuy = true;

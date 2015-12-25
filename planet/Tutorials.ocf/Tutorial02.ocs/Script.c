@@ -125,12 +125,7 @@ private func InitCliffTop()
 private func InitAcidLake()
 {
 	// Ropebridge over the acid lake.
-	var post1 = CreateObjectAbove(Ropebridge_Post, 816, 528);
-	var post2 = CreateObjectAbove(Ropebridge_Post, 928, 528);
-	post2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	post2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	var bridge = CreateObjectAbove(Ropebridge, 872, 528);
-	bridge->MakeBridge(post1, post2);
+	Ropebridge->Create(816, 528, 928, 528);
 	
 	// Make the acid lake bubbling a bit.
 	BoilingAcid->Place();

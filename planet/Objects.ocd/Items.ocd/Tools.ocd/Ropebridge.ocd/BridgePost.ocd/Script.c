@@ -1,27 +1,35 @@
-/*-- Ropebridge_Post --*/
+/**
+	Ropebridge Post
+	
+	@author Randrian
+*/
 
 local Double;
 
-func Initialize()
+public func Initialize()
 {
-  if(FindObject(Find_ID(GetID()), Find_Exclude(this), Find_AtPoint()))
-    return; // I am just a double!
-  if(!Double)
-  {
-    Double = CreateObjectAbove(GetID());
-    Double.Plane = 600;
-    Double->SetAction("Attach", this);
-    Double->SetGraphics("Foreground", GetID());
-  }
+	if (FindObject(Find_ID(GetID()), Find_Exclude(this), Find_AtPoint()))
+		return; // I am just a double!
+	if (!Double)
+	{
+		Double = CreateObject(GetID());
+		Double.Plane = 600;
+		Double->SetAction("Attach", this);
+		Double->SetGraphics("Foreground", GetID());
+	}
+	return;
 }
 
+
+/*-- Properties --*/
+
 local ActMap = {
-    Attach = {
-      Prototype = Action,
-      Name = "Attach",
-      Procedure = DFA_ATTACH,
-      FacetBase = 1,
-    },
+	Attach = {
+		Prototype = Action,
+		Name = "Attach",
+		Procedure = DFA_ATTACH,
+		FacetBase = 1,
+	},
 };
 local Name = "$Name$";
 local Description = "$Description$";

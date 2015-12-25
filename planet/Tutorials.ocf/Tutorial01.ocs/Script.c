@@ -69,11 +69,7 @@ private func InitStartLake()
 	CreateObjectAbove(Tree_Coconut, 105, 620);
 	
 	// Ropebridge over the lake.
-	var post1 = CreateObjectAbove(Ropebridge_Post, 144, 616);
-	var post2 = CreateObjectAbove(Ropebridge_Post, 232, 616);
-	post2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	post2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-	CreateObjectAbove(Ropebridge, 186, 616)->MakeBridge(post1, post2);
+	Ropebridge->Create(144, 616, 232, 616);
 	
 	// Small sink hole for the water to flow through, cover by a trunk.
 	DrawMaterialQuad("Tunnel", 231, 631, 231, 633, 251, 615, 249, 615, DMQ_Sub);

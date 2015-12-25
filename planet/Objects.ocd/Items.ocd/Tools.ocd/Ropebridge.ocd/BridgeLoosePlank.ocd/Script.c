@@ -1,14 +1,18 @@
-/*--- plank of a ropebridge ---*/
+/**
+	Ropebridge Plank
+	
+	@author Randrian
+*/
 
 protected func Hit()
 {
 	Sound("Hits::Materials::Wood::WoodHit?");
-	return 1;
+	return;
 }
 
-func Incineration()
+public func Incineration()
 {
-	SetClrModulation (RGB(48, 32, 32));
+	SetClrModulation(RGB(48, 32, 32));
 }
 
 public func IsFuel() { return true; }
@@ -20,6 +24,5 @@ func SaveScenarioObject() { return false; }
 local Collectible = 0;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = false;
 local BlastIncinerate = 5;
 local ContactIncinerate = 1;
