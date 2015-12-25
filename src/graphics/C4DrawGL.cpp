@@ -874,23 +874,28 @@ bool CStdGL::Error(const char *szMsg)
 	return r;
 }
 
+const char* CStdGL::GLErrorString(GLenum code)
+{
+	switch (code)
+	{
+	case GL_NO_ERROR: return "No error";
+	case GL_INVALID_ENUM: return "An unacceptable value is specified for an enumerated argument";
+	case GL_INVALID_VALUE: return "A numeric argument is out of range";
+	case GL_INVALID_OPERATION: return "The specified operation is not allowed in the current state";
+	case GL_INVALID_FRAMEBUFFER_OPERATION: return "The framebuffer object is not complete";
+	case GL_OUT_OF_MEMORY: return "There is not enough memory left to execute the command";
+	case GL_STACK_UNDERFLOW: return "An attempt has been made to perform an operation that would cause an internal stack to underflow";
+	case GL_STACK_OVERFLOW: return "An attempt has been made to perform an operation that would cause an internal stack to overflow";
+	default: assert(false); return "";
+	}
+}
+
 bool CStdGL::CheckGLError(const char *szAtOp)
 {
 	GLenum err = glGetError();
 	if (!err) return true;
 
-#ifdef USE_WIN32_WINDOWS
-	StdStrBuf err_buf(gluErrorUnicodeStringEXT(err));
-#else
-	// gluErrorString returns latin-1 strings. Our code expects UTF-8, so convert
-	// Also for some reason gluErrorString returns const GLubyte* instead of a more
-	// reasonable const char *, so cast it - C-style cast required here to match
-	// both unsigned and signed char
-	StdStrBuf err_buf((const char*)gluErrorString(err));
-	err_buf.EnsureUnicode();
-#endif
-
-	LogF("GL error with %s: %d - %s", szAtOp, err, err_buf.getData());
+	LogF("GL error with %s: %d - %s", szAtOp, err, GLErrorString(err));
 	return false;
 }
 

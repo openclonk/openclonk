@@ -16,16 +16,6 @@
 #include "C4Include.h"
 #include "C4FoWRegion.h"
 
-#ifndef USE_CONSOLE
-bool glCheck() {
-	if (int err = glGetError()) {
-		LogF("GL error %d: %s", err, gluErrorString(err));
-		return false;
-	}
-	return true;
-}
-#endif
-
 C4FoWRegion::~C4FoWRegion()
 {
 	Clear();
@@ -83,8 +73,7 @@ bool C4FoWRegion::BindFramebuf()
 	GLenum status1 = glCheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER_EXT),
 		   status2 = glCheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER_EXT);
 	if (status1 != GL_FRAMEBUFFER_COMPLETE_EXT ||
-		(pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE_EXT) ||
-		!glCheck())
+	   (pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE_EXT))
 	{
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 		return false;
@@ -220,7 +209,6 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	pDraw->RestorePrimaryClipper();
-	glCheck();
 
 	OldRegion = Region;
 #endif

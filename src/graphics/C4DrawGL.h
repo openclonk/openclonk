@@ -203,6 +203,7 @@ protected:
 	bool CreatePrimarySurfaces(unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
 	bool CheckGLError(const char *szAtOp);
+	const char* GLErrorString(GLenum code);
 	virtual bool Error(const char *szMsg);
 
 	friend class C4Surface;
@@ -213,6 +214,7 @@ protected:
 	friend class C4FullScreen;
 	friend class C4Window;
 	friend class C4ShaderCall;
+	friend class C4FoWRegion;
 };
 
 // Global access pointer
