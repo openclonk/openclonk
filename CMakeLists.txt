@@ -376,6 +376,56 @@ add_custom_command(
 )
 
 ############################################################################
+# Mac OS bundle setup
+############################################################################
+
+if(APPLE)
+	list(APPEND OC_BUNDLE_RESOURCES
+		src/res/oc.icns
+		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
+		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
+		src/res/Mouse_Trans.png
+		src/res/Cursor_Trans.png
+		src/res/Brush_Trans.png
+		src/res/Play_Trans.png
+		src/res/Halt_Trans.png
+		src/res/Dynamic_Trans.png
+		src/res/Static_Trans.png
+		src/res/Exact_Trans.png
+		src/res/Line_Trans.png
+		src/res/Rect_Trans.png
+		src/res/Fill_Trans.png
+		src/res/Picker_Trans.png
+		src/res/Ift_Trans.png
+		src/res/NoIft_Trans.png
+	)
+
+	if (CMAKE_GENERATOR STREQUAL Xcode)
+		list(APPEND OC_BUNDLE_RESOURCES
+			src/res/MainMenu.xib
+			src/res/FullScreen.xib
+			src/res/EditorGUIWindow.xib
+			src/res/EditorViewport.xib
+			src/res/Editor.xib
+		)
+	else()
+		list(APPEND OC_BUNDLE_RESOURCES
+			src/res/nib/MainMenu.nib
+			src/res/nib/FullScreen.nib
+			src/res/nib/EditorGUIWindow.nib
+			src/res/nib/EditorViewport.nib
+			src/res/nib/Editor.nib
+		)
+	endif()
+
+	# Add icon resources
+	set_source_files_properties(
+		${OC_BUNDLE_RESOURCES}
+		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+	)
+endif()
+
+############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
 ############################################################################
@@ -828,6 +878,7 @@ if(APPLE)
 		src/platform/StdSchedulerMac.mm
 		src/platform/ObjectiveCAssociated.h
 	)
+	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
 else()
 	list(APPEND OC_SYSTEM_SOURCES
 		src/game/ClonkMain.cpp
@@ -957,59 +1008,6 @@ if(HAVE_PRECOMPILED_HEADERS)
 		list(INSERT OC_SYSTEM_SOURCES 0 src/C4Include.cpp)
 		list(INSERT MAPE_SOURCES 0 src/C4Include.cpp)
 	endif()
-endif()
-
-############################################################################
-# Mac OS bundle setup
-############################################################################
-
-if(APPLE)
-
-	list(APPEND OC_BUNDLE_RESOURCES
-		src/res/oc.icns
-		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
-		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
-		src/res/Mouse_Trans.png
-		src/res/Cursor_Trans.png
-		src/res/Brush_Trans.png
-		src/res/Play_Trans.png
-		src/res/Halt_Trans.png
-		src/res/Dynamic_Trans.png
-		src/res/Static_Trans.png
-		src/res/Exact_Trans.png
-		src/res/Line_Trans.png
-		src/res/Rect_Trans.png
-		src/res/Fill_Trans.png
-		src/res/Picker_Trans.png
-		src/res/Ift_Trans.png
-		src/res/NoIft_Trans.png
-	)
-	
-	if (CMAKE_GENERATOR STREQUAL Xcode)
-		list(APPEND OC_BUNDLE_RESOURCES
-			src/res/MainMenu.xib
-			src/res/FullScreen.xib
-			src/res/EditorGUIWindow.xib
-			src/res/EditorViewport.xib
-			src/res/Editor.xib
-		)
-	else()
-		list(APPEND OC_BUNDLE_RESOURCES
-			src/res/nib/MainMenu.nib
-			src/res/nib/FullScreen.nib
-			src/res/nib/EditorGUIWindow.nib
-			src/res/nib/EditorViewport.nib
-			src/res/nib/Editor.nib
-		)
-	endif()
-
-	# Add icon resources
-	set_source_files_properties(
-		${OC_BUNDLE_RESOURCES}
-		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
-	)
-	list(APPEND OC_GUI_SOURCES ${OC_BUNDLE_RESOURCES})
-
 endif()
 
 ############################################################################
