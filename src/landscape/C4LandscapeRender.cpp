@@ -301,12 +301,13 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_GENERATE_MIPMAP, GL_TRUE);
 
 	// Make it happen!
 	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, iTexWdt, iTexHgt, iMaterialTextureDepth, 0, GL_BGRA,
 				iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
 				pData);
+
+	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 	   
 	// Statistics
 	iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;

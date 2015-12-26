@@ -729,6 +729,8 @@ bool C4Surface::SetPixDw(int iX, int iY, DWORD dwClr)
 				uint16_t wClr=ClrDw2W(dwClr);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, iX, iY, 1, 1, GL_BGRA, GL_UNSIGNED_SHORT_4_4_4_4_REV, &wClr);
 			}
+			const bool fMipMap = (pTexRef->iFlags & C4SF_MipMap) != 0;
+			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 			return true;
 		}
 		// Otherwise, make sure that the texlock covers the new pixel
@@ -968,8 +970,8 @@ void C4TexRef::CreateTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
+	if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
 
@@ -1038,6 +1040,10 @@ void C4TexRef::Unlock()
 				assert(pGL->pMainCtx);
 				pGL->pMainCtx->Select();
 			}
+
+			const bool fTileable = (iFlags & C4SF_Tileable) != 0;
+			const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
+
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			// reuse the existing texture
@@ -1047,6 +1053,7 @@ void C4TexRef::Unlock()
 			                GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
+			if (fMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 #endif
 }
 
