@@ -16,6 +16,9 @@ static g_start_x, g_start_y;
 
 protected func Initialize()
 {
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	
 	// Goal: Ruby mine
 	var goal = CreateObject(Goal_SellGems);
 	goal->SetTargetAmount(BoundBy(SCENPAR_Difficulty*10, 10, 20));

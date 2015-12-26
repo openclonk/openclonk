@@ -13,6 +13,9 @@ static intro_init;
 
 protected func Initialize()
 {
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	
 	// Goal: Expand your area of influence to secure the ore.
 	var goal = CreateObject(Goal_Expansion);
 	goal->SetExpansionGoal(300 + 100 * SCENPAR_Difficulty);

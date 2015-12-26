@@ -14,6 +14,9 @@ static intro_init;
 
 protected func Initialize()
 {
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	
 	// Goal: construct an airplane and fill it with gold bars.
 	var goal = CreateObject(Goal_Script);
 	// Add an effect to check whether the goal is fulfilled.
