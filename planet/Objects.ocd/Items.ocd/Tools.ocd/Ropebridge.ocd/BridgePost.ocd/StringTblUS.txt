@@ -1,2 +1,3 @@
-Name=Ropebridge
-Description=Holds the ropebridge.
+Name=Bridge post
+Description=Holds the rope bridge.
+MsgRetractBridge=Retract the rope bridge.

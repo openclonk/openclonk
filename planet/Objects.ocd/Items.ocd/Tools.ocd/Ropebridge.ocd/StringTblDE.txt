@@ -1,1 +1,5 @@
-Name=Hängebrücke
+Name=HÃ¤ngebrÃ¼cke
+Description=Short rope bridge which can cover small gaps in the landscape. Press [Use] once to place the left and another time to place the right end of the bridge.
+MsgBridgeLong=Post can't be placed here, bridge would be too long.
+MsgBridgeShort=Post can't be placed here, bridge would be too short.
+MsgBridgeUneven=Post can't be placed here, bridge would be too uneven.

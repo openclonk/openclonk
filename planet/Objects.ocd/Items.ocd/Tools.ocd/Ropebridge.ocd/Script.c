@@ -12,28 +12,53 @@ static const Ladder_Iterations = 10;
 static const Ladder_Precision = 100;
 static const Ladder_SegmentLength = 5;
 
+local bridge_post1;
+local bridge_post2;
+
+
 /*-- Bridge Creation --*/
 
 // Create a rope bridge starting at (x1, y1) and ending at (x2, y2).
-public func Create(int x1, int y1, int x2, int y2, bool fragile)
+// Set fragile to make the steps break when pressured.
+// Set portable to make a bridge which can be retracted.
+public func Create(int x1, int y1, int x2, int y2, bool fragile, bool portable)
 {
 	if (this != Ropebridge)
 		return;
-	var bridge_post1 = CreateObjectAbove(Ropebridge_Post, x1, y1);
-	var bridge_post2 = CreateObjectAbove(Ropebridge_Post, x2, y2);
-	bridge_post2->Turn(DIR_Right);
+	var post1 = CreateObjectAbove(Ropebridge_Post, x1, y1);
+	var post2 = CreateObjectAbove(Ropebridge_Post, x2, y2);
 	var bridge = CreateObject(Ropebridge, (x1 + x2) / 2, (y1 + y2) / 2);
-	bridge->MakeBridge(bridge_post1, bridge_post2);
+	bridge->MakeBridge(post1, post2);
+	post1->SetStatic(!portable);
+	post2->SetStatic(!portable);
 	if (fragile)
 		bridge->SetFragile();
 	return;
 }
 
-public func MakeBridge(object obj1, object obj2)
+// Creates the rope bridge between the two bridge posts.
+public func MakeBridge(object post1, object post2)
 {
-	this.Collectible = 0;
+	if (post1->GetID() != Ropebridge_Post || post2->GetID() != Ropebridge_Post)
+		return FatalError("Ropebridge can only be connected between bridge posts");
+	// Change the properties of the ropebridge object.
+	this.Collectible = false;
 	SetCategory(C4D_StaticBack);
-	StartRopeConnect(obj1, obj2);
+	// Swap the posts if they have inverted x-coordinates.
+	if (post1->GetX() > post2->GetX())
+	{
+		var swap = post1;
+		post1 = post2;
+		post2 = swap;	
+	}
+	// Set the bridge posts.
+	bridge_post1 = post1;
+	bridge_post2 = post2;
+	bridge_post1->SetBridge(this);
+	bridge_post2->SetBridge(this);
+	bridge_post1->Turn(DIR_Left);
+	bridge_post2->Turn(DIR_Right);
+	StartRopeConnect(bridge_post1, bridge_post2);
 	SetFixed(true, true);
 	ConnectPull();
 	AddEffect("IntHang", this, 1, 1, this);
@@ -45,6 +70,52 @@ public func SetFragile()
 {
 	for (var i = 0; i < lib_rope_particle_count; i++)
 		lib_rope_segments[i]->SetFragile(true);
+}
+
+
+/*-- Usage --*/
+
+public func RejectUse(object clonk)
+{
+	return !clonk->IsWalking();
+}
+
+public func ControlUse(object clonk, int x, int y)
+{
+	// Create the first bridge post at the clonks feet.
+	if (!bridge_post1)
+	{
+		bridge_post1 = CreateObjectAbove(Ropebridge_Post, 0, clonk->GetBottom());
+		return true;
+	}
+	// Check whether the location of the second post is fine.
+	var from_x = bridge_post1->GetX();
+	var from_y = bridge_post1->GetY() + clonk->GetBottom();
+	var to_x = clonk->GetX();
+	var to_y = clonk->GetY() + clonk->GetBottom();
+	var distance = Distance(from_x, from_y, to_x, to_y);
+	var angle = Angle(from_x, from_y, to_x, to_y);
+	if (distance > 120)
+	{
+		clonk->Message("$MsgBridgeLong$");	
+		return true;
+	}
+	if (distance < 40)
+	{
+		clonk->Message("$MsgBridgeShort$");	
+		return true;
+	}
+	if (!Inside(angle, 240, 300) && !Inside(angle, 60, 120))
+	{
+		clonk->Message("$MsgBridgeUneven$");	
+		return true;
+	}
+	// Create the second bridge post at the clonks feet.
+	bridge_post2 = CreateObjectAbove(Ropebridge_Post, 0, clonk->GetBottom());
+	// Exit the ropebridge and connect between the two posts.
+	Exit();
+	MakeBridge(bridge_post1, bridge_post2);
+	return true;
 }
 
 
@@ -77,10 +148,27 @@ private func DeleteSegment(object segment, object previous)
 		segment->RemoveObject();
 }
 
-// When the last segment is removed.
-private func RopeRemoved()
+// Called if either of the posts got destroyed: consider the bridge lost and remove it.
+public func OnBridgePostDestruction()
 {
 	RemoveObject();
+	return;
+}
+
+public func Destruction()
+{
+	// Make sure both bridge posts are removed as well.
+	if (bridge_post1)
+	{
+		bridge_post1->SetBridge(nil);
+		bridge_post1->RemoveObject();
+	}
+	if (bridge_post2)
+	{
+		bridge_post2->SetBridge(nil);
+		bridge_post2->RemoveObject();
+	}
+	return _inherited(...);
 }
 
 
@@ -117,10 +205,13 @@ public func UpdateLines()
 		var segment = lib_rope_segments[i];
 		var particle = lib_rope_particles[i];
 		// Update the position of the segment.
-		segment->SetPosition(particle.x, particle.y, 0, LIB_ROPE_Precision);
-		if (segment->GetDouble())
-			segment->GetDouble()->SetPosition(particle.x, particle.y, 0, LIB_ROPE_Precision);
-
+		if (segment)
+		{
+			segment->SetPosition(particle.x, particle.y, 0, LIB_ROPE_Precision);
+			if (segment->GetDouble())
+				segment->GetDouble()->SetPosition(particle.x, particle.y, 0, LIB_ROPE_Precision);
+		}
+		
 		// Calculate the angle to the previous segment.
 		var prev_particle = lib_rope_particles[i - 1];
 		var angle = Angle(particle.x, particle.y, prev_particle.x, prev_particle.y);
@@ -257,6 +348,8 @@ public func Hit()
 	Sound("Hits::Materials::Wood::WoodHit?");
 }
 
+public func IsInventorProduct() { return true; }
+
 
 /*-- Scenario Saving --*/
 
@@ -285,4 +378,5 @@ local ActMap = {
 	},
 };
 local Name = "$Name$";
-local Collectible = 1;
+local Description = "$Description$";
+local Collectible = true;

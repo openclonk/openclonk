@@ -79,6 +79,13 @@ public func GetLoadWeight()
 	return weight;
 }
 
+public func Destruction()
+{
+	if (double)
+		double->RemoveObject();
+	return;
+}
+
 // Main bridge object is saved
 func SaveScenarioObject() { return false; }
 

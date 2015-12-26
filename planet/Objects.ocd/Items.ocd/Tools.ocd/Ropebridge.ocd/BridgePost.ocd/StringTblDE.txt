@@ -1,2 +1,3 @@
-Name=Hängebrücke
-Description=Hält die Hängebrücke
+Name=BrÃ¼ckenpfosten
+Description=HÃ¤lt die HÃ¤ngebrÃ¼cke.
+MsgRetractBridge=Die HÃ¤ngebrÃ¼cke einziehen.
