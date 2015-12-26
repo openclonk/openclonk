@@ -255,7 +255,7 @@ private func CreateSegment(int index, object previous)
 	return segment;
 }
 
-private func DeleteSegment(object segment, previous)
+private func DeleteSegment(object segment, object previous)
 {
 	if (segment)
 		segment->RemoveObject();

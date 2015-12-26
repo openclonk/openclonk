@@ -18,8 +18,11 @@ public func Incineration()
 public func IsFuel() { return true; }
 public func GetFuelAmount(bool get_partial) { return 30; }
 
-// Main bridge object is saved
+// Main bridge object is saved.
 func SaveScenarioObject() { return false; }
+
+
+/*-- Properties --*/
 
 local Collectible = 0;
 local Name = "$Name$";

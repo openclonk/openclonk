@@ -27,7 +27,7 @@ public func Initialize()
 	CreateObjectAbove(Ropeladder, 602, 158)->Unroll(1, -1);
 	
 	// Profile.
-	ProfileObject(Ropeladder);
+	ProfileObject(Ropebridge);
 	return;
 }
 

@@ -174,7 +174,7 @@ private func CreateSegment(int index, object previous) { }
 * @param segment the segment to be removed
 * @param previous the previous segment (in case it needs to be notified)
 */
-private func DeleteSegment(object segment, previous)
+private func DeleteSegment(object segment, object previous)
 {
 	if (segment)
 		segment->RemoveObject();
