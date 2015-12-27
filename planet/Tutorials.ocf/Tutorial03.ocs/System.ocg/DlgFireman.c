@@ -58,18 +58,18 @@ public func FxIntFiremanStart(object target, proplist effect, bool temp)
 public func FxIntFiremanTimer(object target, proplist effect, int time)
 {
 	if (time == 20)
-		target->SetCommand("MoveTo", nil, 320, 348);
+		target->SetCommand("MoveTo", nil, 300, 364);
 	
 	if (effect.kill_time == nil && !target->GetCommand() && time > 50)
 	{
 		target->SetDir(DIR_Right);
-		target->Contents(0)->ControlUse(target, 10, -2);
+		target->Contents(0)->ControlUse(target, 10, -12);
 		effect.kill_time = time + 20;		
 	}
 	
 	if (effect.kill_time != nil && time > effect.kill_time)
 	{
-		RemoveAll(Find_ID(Flame), Find_AtRect(AbsX(300), AbsY(300), 100, 100));
+		RemoveAll(Find_ID(Flame), Find_AtRect(AbsX(300), AbsY(300), 140, 100));
 		return FX_Execute_Kill;
 	}
 	return FX_OK;

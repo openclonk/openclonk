@@ -70,6 +70,7 @@ private func InitVillageEntrance()
 	
 	// A wooden cabin ruin on fire.
 	var cabin = CreateObjectAbove(Ruin_WoodenCabin, 370, 352);
+	cabin.Plane = -400;
 	for (var x = -20; x <= 20; x += 10)
 		CreateObjectAbove(Flame, cabin->GetX() + x, cabin->GetY());
 	cabin->AddScorch(-30, 15, 45, 32, 1200);
