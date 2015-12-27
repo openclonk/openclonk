@@ -1,5 +1,5 @@
 /**
-	Ropebridge
+	Rope bridge
 	A bridge consisting of single wooden planks tied together with ropes.
 
 	@author Randrian

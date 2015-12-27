@@ -1,10 +1,10 @@
 [DefCore]
 id=MovingBrick
 Version=6,0
-Category=C4D_Structure
+Category=C4D_None
 Width=40
 Height=8
 Offset=-20,-4
 SolidMask=0,0,40,8,0,0
 Mass=10
-Components=Wood=6;Metal=2;
+Components=Rock=2;

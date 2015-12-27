@@ -1,7 +1,7 @@
 [DefCore]
 id=SpinWheel
 Version=6,0
-Category=C4D_Structure
+Category=C4D_None
 Width=16
 Height=16
 Offset=-8,-8

@@ -1,7 +1,7 @@
 [DefCore]
 id=StoneDoor
 Version=6,0
-Category=C4D_Structure
+Category=C4D_None
 Width=8
 Height=40
 Offset=-4,-20

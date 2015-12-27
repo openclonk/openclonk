@@ -136,3 +136,4 @@ local ActMap = {
 	},
 };
 local Name = "MovingBrick";
+local Plane = 600;
