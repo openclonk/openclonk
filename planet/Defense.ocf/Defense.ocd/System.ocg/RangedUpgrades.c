@@ -35,6 +35,9 @@ public func Gidl_UpdateLoadTimes()
 		if (GetType(base_set.LoadTime)) new_set.LoadTime = Max(1, base_set.LoadTime * base.tech_load_speed_multiplier / 100);
 		if (GetType(base_set.LoadTime2)) new_set.LoadTime2 = Max(1, base_set.LoadTime2 * base.tech_load_speed_multiplier / 100); // Bow: add arrow
 		if (GetType(base_set.ShootTime)) new_set.ShootTime = Max(1, base_set.ShootTime * base.tech_load_speed_multiplier / 100);
+		if (GetType(base_set.ShootTime2)) new_set.ShootTime2 = Max(1, base_set.ShootTime2 * base.tech_load_speed_multiplier / 100);
+		if (new_set.ShootTime <= new_set.ShootTime2)
+			new_set.ShootTime = new_set.ShootTime2 + 1;
 	}
 	return true;
 }
