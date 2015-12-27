@@ -67,7 +67,6 @@ protected:
 	void DrawFlashMessage();
 	void DrawHoldMessages();
 	void ClearFullscreenBackground();
-	int32_t SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int32_t iLoaderCount, char *szDstName, C4Group **ppDestGrp);
 
 public:
 	bool ToggleShow8BitSurface();
