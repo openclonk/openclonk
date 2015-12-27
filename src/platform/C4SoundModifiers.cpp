@@ -238,7 +238,16 @@ void C4SoundModifierList::Init()
 	}
 	StdStrBuf sAvailableEffects("");
 	StdStrBuf sUnavailableEffects("");
-	ALenum test_effects[] = { AL_EFFECT_REVERB, AL_EFFECT_ECHO, AL_EFFECT_EQUALIZER, };
+	static const struct {
+		ALenum effect;
+		const char *name;
+	} test_effects[] = {
+#define AL_TEST_EFFECT(effect) { effect, #effect }
+		AL_TEST_EFFECT(AL_EFFECT_REVERB),
+		AL_TEST_EFFECT(AL_EFFECT_ECHO),
+		AL_TEST_EFFECT(AL_EFFECT_EQUALIZER),
+#undef AL_TEST_EFFECT
+	};
 	ALuint effect = 0u;
 	alGenEffects(1, &effect);
 	ALenum err = alGetError();
@@ -248,18 +257,20 @@ void C4SoundModifierList::Init()
 	}
 	for (auto test_effect : test_effects)
 	{
-		alEffecti(effect, AL_EFFECT_TYPE, test_effect);
+		alEffecti(effect, AL_EFFECT_TYPE, test_effect.effect);
 		err = alGetError();
 		bool is_ok = (err == AL_NO_ERROR);
-		is_effect_available[test_effect] = is_ok;
+		is_effect_available[test_effect.effect] = is_ok;
 		StdStrBuf *target_string;
 		if (!is_ok) target_string = &sUnavailableEffects; else target_string = &sAvailableEffects;
 		if (target_string->getLength()) target_string->Append(", ");
-		target_string->AppendFormat("%d", (int)test_effect);
+		target_string->Append(test_effect.name);
 		if (!is_ok) target_string->AppendFormat(" (%s)", alGetString(err));
 	}
 	if (alIsEffect(effect)) alDeleteEffects(1, &effect);
-	LogF("OpenAL extensions loaded. ON: %s. OFF: %s.", sAvailableEffects.getData(), sUnavailableEffects.getData());
+	if (sAvailableEffects.getLength() == 0) sAvailableEffects = "(none)";
+	if (sUnavailableEffects.getLength() == 0) sUnavailableEffects = "(none)";
+	LogF("OpenAL extensions loaded. Available: %s. Unavailable: %s.", sAvailableEffects.getData(), sUnavailableEffects.getData());
 #undef LOAD_ALPROC
 #else
 	// modifiers not supported
