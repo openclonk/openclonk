@@ -57,8 +57,6 @@ void C4GraphicsSystem::Clear()
 {
 	// Clear message board
 	MessageBoard.Clear();
-	// Clear upper board
-	UpperBoard.Clear();
 	// clear loader
 	if (pLoaderScreen) { delete pLoaderScreen; pLoaderScreen=NULL; }
 	// Close viewports
@@ -159,7 +157,6 @@ void C4GraphicsSystem::Execute()
 
 void C4GraphicsSystem::Default()
 {
-	UpperBoard.Default();
 	MessageBoard.Default();
 	InvalidateBg();
 	ShowVertices=false;

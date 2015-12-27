@@ -22,19 +22,9 @@
 
 C4UpperBoard::C4UpperBoard()
 {
-	Default();
 }
 
 C4UpperBoard::~C4UpperBoard()
-{
-	Clear();
-}
-
-void C4UpperBoard::Default()
-{
-}
-
-void C4UpperBoard::Clear()
 {
 }
 

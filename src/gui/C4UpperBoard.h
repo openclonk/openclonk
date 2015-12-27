@@ -24,8 +24,6 @@ class C4UpperBoard
 public:
 	C4UpperBoard();
 	~C4UpperBoard();
-	void Default();
-	void Clear();
 	void Init(C4Facet &cgo);
 	void Execute();
 protected:
