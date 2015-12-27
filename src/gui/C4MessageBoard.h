@@ -51,7 +51,6 @@ public:
 	void Clear();
 	void Init(C4Facet &cgo, bool fStartup);
 	void Execute();
-	void DrawLoader(C4Facet &cgo);
 	void Draw(C4Facet &cgo);
 	void AddLog(const char *szMessage);
 	void ClearLog();
