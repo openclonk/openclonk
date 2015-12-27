@@ -243,7 +243,7 @@ private func Startle(object by_crewmember)
 	if (GetAction() == "Hang")
 	{
 		Fly();
-		ScheduleCall(this, "Sound", Random(15), 0, "Bat::BatNoise*");
+		ScheduleCall(this, "Sound", Random(15), 0, "Animals::Bat::Noise*");
 		if (behavior_control)
 			behavior_control.time_since_startle = 150;
 	}
