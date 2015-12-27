@@ -56,7 +56,7 @@ bool C4GraphicsSystem::Init()
 void C4GraphicsSystem::Clear()
 {
 	// Clear message board
-	MessageBoard.Clear();
+	MessageBoard.reset();
 	// clear loader
 	if (pLoaderScreen) { delete pLoaderScreen; pLoaderScreen=NULL; }
 	// Close viewports
@@ -99,7 +99,7 @@ void C4GraphicsSystem::Execute()
 			{
 				// Message board
 				if (iRedrawBackground) ClearFullscreenBackground();
-				MessageBoard.Execute();
+				MessageBoard->Execute();
 				if (!C4GUI::IsActive())
 					{ FinishDrawing(); return; }
 				fBGDrawn = true;
@@ -133,7 +133,7 @@ void C4GraphicsSystem::Execute()
 		UpperBoard.Execute();
 
 		// Message board
-		MessageBoard.Execute();
+		MessageBoard->Execute();
 
 		// Help & Messages
 		DrawHelp();
@@ -157,7 +157,7 @@ void C4GraphicsSystem::Execute()
 
 void C4GraphicsSystem::Default()
 {
-	MessageBoard.Default();
+	MessageBoard.reset(new C4MessageBoard);
 	InvalidateBg();
 	ShowVertices=false;
 	ShowAction=false;

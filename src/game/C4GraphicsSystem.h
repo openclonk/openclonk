@@ -24,12 +24,14 @@
 #include <C4UpperBoard.h>
 #include <C4Video.h>
 
+#include <memory>
+
 class C4GraphicsSystem
 {
 public:
 	C4GraphicsSystem();
 	~C4GraphicsSystem();
-	C4MessageBoard MessageBoard;
+	std::unique_ptr<C4MessageBoard> MessageBoard;
 	C4UpperBoard UpperBoard;
 	int32_t iRedrawBackground;
 	bool ShowHelp;

@@ -35,38 +35,29 @@ const int C4LogSize=30000, C4LogMaxLines=1000;
 
 C4MessageBoard::C4MessageBoard() : LogBuffer(C4LogSize, C4LogMaxLines, 0, "  ", false)
 {
-	Default();
+	Delay = -1;
+	Fader = 0;
+	Speed = 2;
+	Output.Default();
+	Startup = false;
+	ScreenFader = 0;
+	iBackScroll = -1;
+	ScrollUpBinding = nullptr;
+	ScrollDownBinding = nullptr;
 }
 
 C4MessageBoard::~C4MessageBoard()
 {
-	Clear();
-}
-
-void C4MessageBoard::Default()
-{
-	Clear();
-	Active=false;
-	Delay=-1;
-	Fader=0;
-	Speed=2;
-	Output.Default();
-	Startup=false;
-	ScreenFader=0;
-	iBackScroll = -1;
-}
-
-void C4MessageBoard::Clear()
-{
-	Active=false;
+	if (ScrollUpBinding)
+		::Game.KeyboardInput.UnregisterKeyBinding(ScrollUpBinding);
+	if (ScrollDownBinding)
+		::Game.KeyboardInput.UnregisterKeyBinding(ScrollDownBinding);
 	LogBuffer.Clear();
 	LogBuffer.SetLBWidth(0);
 }
 
 void C4MessageBoard::Execute()
 {
-	if (!Active) return;
-
 	// Startup? draw only
 	if (Startup) { Draw(Output); return; }
 
@@ -118,7 +109,6 @@ void C4MessageBoard::Execute()
 
 void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 {
-	Active=true;
 	Output=cgo;
 	Startup=fStartup;
 	iLineHgt=::GraphicsResource.FontRegular.GetLineHeight();
@@ -135,11 +125,16 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 		LogBuffer.SetLBWidth(Output.Wdt);
 	}
 
+	// messageboard
+	ScrollUpBinding = new C4CustomKey(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp));
+	ScrollDownBinding = new C4CustomKey(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown));
+	Game.KeyboardInput.RegisterKey(ScrollUpBinding);
+	Game.KeyboardInput.RegisterKey(ScrollDownBinding);
 }
 
 void C4MessageBoard::Draw(C4Facet &cgo)
 {
-	if (!Active || !Application.Active) return;
+	if (!Application.Active) return;
 
 	// Startup: draw Loader
 	if (Startup)
@@ -193,7 +188,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 void C4MessageBoard::EnsureLastMessage()
 {
 	// Ingore if startup or typein
-	if (!Active || Startup) return;
+	if (Startup) return;
 	// scroll until end of log
 	for (int i = 0; i < 100; i++)
 	{
@@ -206,8 +201,6 @@ void C4MessageBoard::EnsureLastMessage()
 
 void C4MessageBoard::AddLog(const char *szMessage)
 {
-	// Not active
-	if (!Active) return;
 	// safety
 	if (!szMessage || !*szMessage) return;
 	// make sure new message will be drawn
@@ -223,8 +216,6 @@ void C4MessageBoard::ClearLog()
 
 void C4MessageBoard::LogNotify()
 {
-	// Not active
-	if (!Active) return;
 	// do not show startup board if GUI is active
 	if (::pGUI->IsActive()) return;
 	// Reset
@@ -255,7 +246,6 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 
 bool C4MessageBoard::ControlScrollUp()
 {
-	if (!Active) return false;
 	Delay=-1; Fader=0;
 	iBackScroll++;
 	return true;
@@ -263,7 +253,6 @@ bool C4MessageBoard::ControlScrollUp()
 
 bool C4MessageBoard::ControlScrollDown()
 {
-	if (!Active) return false;
 	Delay=-1; Fader=0;
 	if (iBackScroll > -1) iBackScroll--;
 	return true;

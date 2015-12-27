@@ -209,9 +209,9 @@ bool Log(const char *szMessage)
 
 	// Add message to log buffer
 	bool fNotifyMsgBoard = false;
-	if (::GraphicsSystem.MessageBoard.Active)
+	if (::GraphicsSystem.MessageBoard)
 	{
-		::GraphicsSystem.MessageBoard.AddLog(szMessage);
+		::GraphicsSystem.MessageBoard->AddLog(szMessage);
 		fNotifyMsgBoard = true;
 	}
 
@@ -219,7 +219,7 @@ bool Log(const char *szMessage)
 	LogSilent(szMessage, true);
 
 	// Notify message board
-	if (fNotifyMsgBoard) ::GraphicsSystem.MessageBoard.LogNotify();
+	if (fNotifyMsgBoard) ::GraphicsSystem.MessageBoard->LogNotify();
 
 	return true;
 }

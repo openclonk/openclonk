@@ -661,8 +661,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			pLobby->ClearLog();
 		}
 		// fullscreen
-		else if (::GraphicsSystem.MessageBoard.Active)
-			::GraphicsSystem.MessageBoard.ClearLog();
+		else if (::GraphicsSystem.MessageBoard)
+			::GraphicsSystem.MessageBoard->ClearLog();
 		else
 		{
 			// EM mode

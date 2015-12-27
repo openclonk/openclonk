@@ -530,7 +530,7 @@ bool C4Application::PreInit()
 		if (Config.Graphics.ShowStartupMessages || Game.NetworkActive)
 		{
 			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-			GraphicsSystem.MessageBoard.Init(cgo,true);
+			GraphicsSystem.MessageBoard->Init(cgo,true);
 		}
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec

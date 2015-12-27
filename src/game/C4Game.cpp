@@ -770,7 +770,7 @@ void C4Game::InitFullscreenComponents(bool fRunning)
 	// fullscreen message board
 	C4Facet cgo;
 	cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-	GraphicsSystem.MessageBoard.Init(cgo, !fRunning);
+	GraphicsSystem.MessageBoard->Init(cgo, !fRunning);
 	if (fRunning)
 	{
 		// running game: Message board upper board and viewports
@@ -1986,7 +1986,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 	// Wait message
 	Log(LoadResStr("IDS_HOLD_SAVINGGAME"));
-	GraphicsSystem.MessageBoard.EnsureLastMessage();
+	GraphicsSystem.MessageBoard->EnsureLastMessage();
 
 	// Save to target scenario file
 	C4GameSave *pGameSave;
@@ -2936,10 +2936,6 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F5                ), "ZoomIn",                 KEYSCOPE_Generic,    new C4KeyCB  <C4ViewportList>  (::Viewports, &C4ViewportList::ViewportZoomIn)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F6                ), "ZoomOut",                KEYSCOPE_Generic,    new C4KeyCB  <C4ViewportList>  (::Viewports, &C4ViewportList::ViewportZoomOut)));
 
-	// messageboard
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_UP,     KEYS_Shift), "MsgBoardScrollUp",       KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>  (GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_DOWN,   KEYS_Shift), "MsgBoardScrollDown",     KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>  (GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown)));
-
 	// debug mode & debug displays
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F5,   KEYS_Control), "DbgModeToggle",          KEYSCOPE_Generic,    new C4KeyCB  <C4Game>          (*this, &C4Game::ToggleDebugMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F6,   KEYS_Control), "DbgShowVtxToggle",       KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowVertices)));
@@ -3364,7 +3360,7 @@ void C4Game::SetInitProgress(float fToProgress)
 	if (InitProgress > LastInitProgress)
 	{
 		LastInitProgress=InitProgress;
-		GraphicsSystem.MessageBoard.LogNotify();
+		GraphicsSystem.MessageBoard->LogNotify();
 	}
 	// Cheap hack to get the Console window updated while loading
 	Application.FlushMessages();
