@@ -204,10 +204,11 @@ public func OnBuySelection(int callback_idx)
 			// Regular item: Buy into inventory
 			// Get rid of current item (unless it's the same we already want)
 			var item;
-			if (last_item) SellItem(last_item);
 			// Create item
 			if (!item) item = cursor->CreateContents(entry.item);
 			if (!item) return false;
+			cursor->Switch2Items(cursor->GetItemPos(last_item), cursor->GetItemPos(item));
+			if (last_item) SellItem(last_item);
 			// for later sale
 			item.GidlValue = entry.cost;
 			// ammo up!
