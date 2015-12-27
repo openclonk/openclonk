@@ -355,10 +355,6 @@ void C4Viewport::Execute()
 	pDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);
-	// Video record & status (developer mode, first player viewport)
-	if (Application.isEditor)
-		if (Player==0 && (this==::Viewports.GetViewport((int32_t) 0)))
-			::GraphicsSystem.Video.Execute();
 	// Blit output
 	BlitOutput();
 }

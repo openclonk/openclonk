@@ -493,15 +493,11 @@ set(OC_CLONK_SOURCES
 	src/platform/C4TimeMilliseconds.h
 	src/platform/C4StdInProc.cpp
 	src/platform/C4StdInProc.h
-	src/platform/C4Video.cpp
-	src/platform/C4Video.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
 	src/platform/StdSync.h
-	src/platform/StdVideo.cpp
-	src/platform/StdVideo.h
 	src/player/C4Player.cpp
 	src/player/C4Player.h
 	src/player/C4PlayerList.cpp
@@ -1333,20 +1329,6 @@ if(USE_COCOA)
 	TARGET_LINK_LIBRARIES(openclonk-server "-framework Cocoa")
 endif()
 if (WIN32)
-	# CMake is too incompetent to check whether these libraries can be linked to
-	# So just pretend that everything is fine
-	FINDLIB(VFW32_LIBRARIES vfw32)
-	FINDLIB(wavifil32_LIBRARIES wavifil32)
-	if (VFW32_LIBRARIES)
-		target_link_libraries(openclonk vfw32)
-		target_link_libraries(openclonk-server vfw32)
-		set(HAVE_VFW32 TRUE)
-	elseif(wavifil32_LIBRARIES)
-		target_link_libraries(openclonk wavifil32 msvfw32)
-		target_link_libraries(openclonk-server wavifil32 msvfw32)
-		set(HAVE_VFW32 TRUE)
-	endif()
-
 	target_link_libraries(openclonk ws2_32)
 	target_link_libraries(openclonk-server ws2_32)
 	target_link_libraries(c4group ws2_32)

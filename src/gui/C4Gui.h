@@ -147,7 +147,6 @@
 #define C4GUI_TabCaptionScrollTime 500 // 0.5 seconds
 
 // Z-ordering of dialogs
-#define C4GUI_Z_VIDEO           +3 // video dialog obstructing all
 #define C4GUI_Z_CHAT            +2 // chat input dialog more important than other input dialogs
 #define C4GUI_Z_INPUT           +1 // input dialogs on top of others
 #define C4GUI_Z_DEFAULT          0 // normal placement on top of viewports

@@ -123,7 +123,6 @@ public:
 	friend class C4ViewportWindow;
 	friend class C4ViewportList;
 	friend class C4GraphicsSystem;
-	friend class C4Video;
 };
 
 class C4ViewportList {

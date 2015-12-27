@@ -99,7 +99,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
-	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
 	pComp->Value(mkNamingAdapt(MenuTransparency,      "MenuTransparency",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(UpperBoard,            "UpperBoard",           1             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowClock,             "ShowClock",            0             ,false, true));

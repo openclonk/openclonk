@@ -46,9 +46,6 @@ C4GraphicsSystem::~C4GraphicsSystem()
 
 bool C4GraphicsSystem::Init()
 {
-	// Init video module
-	if (Config.Graphics.VideoModule)
-		Video.Init(FullScreen.pSurface);
 	// Success
 	return true;
 }
@@ -61,8 +58,6 @@ void C4GraphicsSystem::Clear()
 	if (pLoaderScreen) { delete pLoaderScreen; pLoaderScreen=NULL; }
 	// Close viewports
 	::Viewports.Clear();
-	// Clear video system
-	Video.Clear();
 	// No debug stuff
 	DeactivateDebugOutput();
 }
@@ -147,10 +142,6 @@ void C4GraphicsSystem::Execute()
 		::pGUI->Render(false);
 	}
 
-	// Video record & status (fullsrceen)
-	if (!Application.isEditor)
-		Video.Execute();
-
 	// done
 	FinishDrawing();
 }
@@ -171,7 +162,6 @@ void C4GraphicsSystem::Default()
 	ShowHelp=false;
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
-	Video.Default();
 	pLoaderScreen=NULL;
 }
 
