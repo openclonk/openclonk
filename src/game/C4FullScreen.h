@@ -32,11 +32,9 @@ public:
 	C4FullScreen();
 	~C4FullScreen();
 	void Execute();
-	bool Restart();
 	bool ViewportCheck();
 	bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
 	bool ActivateMenuMain();
-	bool MenuCommand(const char *szCommand);
 	void CloseMenu();
 	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
 	using C4Window::Init;
