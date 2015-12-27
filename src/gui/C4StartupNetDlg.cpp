@@ -1101,7 +1101,7 @@ bool C4StartupNetDlg::DoOK()
 	SCopy("Objects.ocd", Game.DefinitionFilenames);
 	Game.NetworkActive = true;
 	Game.fObserve = false;
-	Game.pJoinReference = pRef;
+	Game.pJoinReference.reset(pRef);
 	// start with this set!
 	Application.OpenGame();
 	return true;

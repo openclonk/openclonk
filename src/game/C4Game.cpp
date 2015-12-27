@@ -100,20 +100,16 @@ C4Game::C4Game():
 		RoundResults(GameRoundResults),
 		Input(Control.Input),
 		KeyboardInput(C4KeyboardInput_Init()),
-		pFileMonitor(NULL),
 		pSec1Timer(new C4GameSec1Timer()),
 		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
 		fQuitWithError(false),
-		GlobalSoundModifier(GameGlobalSoundModifier),
-		ScriptGuiRoot(0)
+		GlobalSoundModifier(GameGlobalSoundModifier)
 {
 	Default();
 }
 
 C4Game::~C4Game()
 {
-	// remove timer
-	delete pSec1Timer; pSec1Timer = NULL;
 	// make sure no startup gfx remain loaded
 	C4Startup::Unload();
 }
@@ -379,7 +375,7 @@ bool C4Game::Init()
 		{
 			// By reference
 			bool fSuccess = InitNetworkFromReference(*pJoinReference);
-			delete pJoinReference; pJoinReference = NULL;
+			pJoinReference.reset();
 			if (!fSuccess)
 				return false;
 		}
@@ -492,7 +488,7 @@ bool C4Game::Init()
 	FullScreen.CloseMenu();
 
 	// start statistics (always for now. Make this a config?)
-	pNetworkStatistics = new C4Network2Stats();
+	pNetworkStatistics.reset(new C4Network2Stats);
 
 	// clear loader screen
 	if (GraphicsSystem.pLoaderScreen)
@@ -534,7 +530,7 @@ void C4Game::SetScenarioFilename(const char * c4sfile)
 
 void C4Game::Clear()
 {
-	delete pFileMonitor; pFileMonitor = NULL;
+	pFileMonitor.reset();
 	// fade out music
 	Application.MusicSystem.FadeOut(2000);
 	// game no longer running
@@ -551,7 +547,7 @@ void C4Game::Clear()
 	}
 
 	// stop statistics
-	if (pNetworkStatistics) { delete pNetworkStatistics; pNetworkStatistics = NULL; }
+	pNetworkStatistics.reset();
 	C4AulProfiler::Abort();
 
 	// exit gui
@@ -579,7 +575,7 @@ void C4Game::Clear()
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
-	if (ScriptGuiRoot) { delete ScriptGuiRoot; ScriptGuiRoot = nullptr; }
+	ScriptGuiRoot.reset();
 	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
@@ -637,7 +633,7 @@ void C4Game::Clear()
 	*DefinitionFilenames = *DirectJoinAddress = *ScenarioFilename = *PlayerFilenames = 0;
 
 	// join reference
-	delete pJoinReference; pJoinReference=NULL;
+	pJoinReference.reset();
 
 	// okay, game cleared now. Remember log section
 	QuitLogPos = GetLogPos();
@@ -1469,14 +1465,14 @@ void C4Game::Default()
 	*CurrentScenarioSection=0;
 	pGlobalEffects=NULL;
 	fResortAnyObject=false;
-	pNetworkStatistics = NULL;
+	pNetworkStatistics.reset();
 	::Application.MusicSystem.ClearGame();
 	DebugPort = 0;
 	DebugPassword.Clear();
 	DebugHost.Clear();
 	DebugWait = false;
 	assert(!ScriptGuiRoot);
-	ScriptGuiRoot = nullptr;
+	ScriptGuiRoot.reset();
 }
 
 void C4Game::Evaluate()
@@ -2133,7 +2129,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// file monitor
 		if (Config.Developer.AutoFileReload && Application.isEditor && !pFileMonitor)
-			pFileMonitor = new C4FileMonitor(FileMonitorCallback);
+			pFileMonitor.reset(new C4FileMonitor(FileMonitorCallback));
 
 		// system scripts
 		if (!InitScriptEngine())
@@ -2207,7 +2203,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// prepare script menus
 		assert(!ScriptGuiRoot);
-		ScriptGuiRoot = new C4ScriptGuiWindow();
+		ScriptGuiRoot.reset(new C4ScriptGuiWindow);
 	}
 
 	// Load section sounds

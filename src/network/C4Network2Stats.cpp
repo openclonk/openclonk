@@ -301,8 +301,6 @@ void C4GraphCollection::SetMultiplier(ValueType fToVal)
 
 C4Network2Stats::C4Network2Stats()
 {
-	// set self (needed in CreateGraph-fns)
-	Game.pNetworkStatistics = this;
 	// init callback timer
 	Application.Add(this);
 	SecondCounter = 0;

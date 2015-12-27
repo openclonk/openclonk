@@ -27,6 +27,8 @@
 #include <C4PlayerControl.h>
 #include <C4TransferZone.h>
 
+#include <memory>
+
 class C4ScriptGuiWindow;
 
 class C4Game
@@ -85,10 +87,10 @@ public:
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
-	C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
+	std::unique_ptr<C4Network2Stats> pNetworkStatistics; // may be NULL if no statistics are recorded
 	C4KeyboardInput &KeyboardInput;
-	C4FileMonitor *pFileMonitor;
-	C4GameSec1Timer *pSec1Timer;
+	std::unique_ptr<C4FileMonitor> pFileMonitor;
+	std::unique_ptr<C4GameSec1Timer> pSec1Timer;
 	C4Value            &GlobalSoundModifier; // contains proplist for sound modifier to be applied to all new sounds played
 
 	char CurrentScenarioSection[C4MaxName+1];
@@ -97,7 +99,7 @@ public:
 	char PlayerFilenames[20*_MAX_PATH+1];
 	char DefinitionFilenames[20*_MAX_PATH+1];
 	char DirectJoinAddress[_MAX_PATH+1];
-	C4Network2Reference *pJoinReference;
+	std::unique_ptr<C4Network2Reference> pJoinReference;
 	int32_t StartupPlayerCount;
 	int32_t StartupTeamCount;
 	int32_t FPS,cFPS;
@@ -217,7 +219,7 @@ public:
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
 	void SetDefaultGamma();
 
-	C4ScriptGuiWindow *ScriptGuiRoot;
+	std::unique_ptr<C4ScriptGuiWindow> ScriptGuiRoot;
 protected:
 	void Default();
 	void InitInEarth();

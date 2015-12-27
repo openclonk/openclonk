@@ -2227,5 +2227,5 @@ bool C4ScriptGuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t
 
 bool C4ScriptGuiWindow::IsRoot()
 {
-	return this == Game.ScriptGuiRoot;
+	return this == Game.ScriptGuiRoot.get();
 }
