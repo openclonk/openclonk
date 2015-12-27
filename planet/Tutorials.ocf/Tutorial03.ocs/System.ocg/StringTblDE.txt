@@ -34,3 +34,8 @@ DlgLookoutProtecting=I am on the lookout for attacks from the evil fraction.
 DlgLookoutMusket=Is that why you are carrying a musket?
 DlgLookoutNoChance=Yes, but I don't think I have any chance against those evil guys.
 DlgLookoutNoShow=Then let's hope they don't come again.
+
+#Dialogue: Village head
+DlgVillageHeadHello=I am the head of this village.
+DlgVillageHeadHere=Why are you down here?
+DlgVillageHeadOverview=I am making an overview of the damages. Come back later, I'll have an assignment for you.

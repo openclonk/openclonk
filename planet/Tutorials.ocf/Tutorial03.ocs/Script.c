@@ -130,7 +130,7 @@ private func InitVillageMain()
 private func InitVillageUnderground()
 {
 	// A wooden cabin ruin.
-	var cabin = CreateObjectAbove(Ruin_WoodenCabin, 574, 568);
+	var cabin = CreateObjectAbove(Ruin_WoodenCabin, 568, 568);
 	cabin->AddScorch(-20, 12, 45, 50, 1500);
 	cabin->AddScorch(15, 10, -45, 50, 1500);
 	
@@ -222,7 +222,7 @@ private func InitAI()
 	npc_farmer->SetObjectLayer(npc_farmer);
 	npc_farmer->SetSkin(1);
 	npc_farmer->SetDir(DIR_Left);
-	npc_farmer->SetDialogue("Farmer", true);
+	npc_farmer->SetDialogue("Farmer", false);
 	
 	// Lookout.
 	var npc_lookout = CreateObjectAbove(Clonk, 992, 296);
@@ -230,9 +230,18 @@ private func InitAI()
 	npc_lookout->SetName("Larry");
 	npc_lookout->SetObjectLayer(npc_lookout);
 	npc_lookout->SetDir(DIR_Left);
-	npc_lookout->SetDialogue("Lookout", true);
+	npc_lookout->SetDialogue("Lookout", false);
 
 	// Village head.
+	var npc_head = CreateObjectAbove(Clonk, 840, 736);
+	npc_head->SetColor(0x224455);
+	npc_head->SetName("Archibald");
+	npc_head->SetObjectLayer(npc_head);
+	npc_head->SetSkin(2);
+	npc_head->SetDir(DIR_Right);
+	npc_head->SetDialogue("VillageHead", false);
+	var lantern = npc_head->CreateContents(Lantern);
+	lantern->TurnOn();
 	return;
 }
 
