@@ -24,11 +24,33 @@
 
 #include "StdMesh.h"
 #include "graphics/C4GraphicsResource.h"
+#include <locale.h>
+#include <stdexcept>
 
 #ifndef USE_CONSOLE
 
 namespace
 {
+	template<int category>
+	class ScopedLocale
+	{
+		// We need to make a copy of the return value of setlocale, because
+		// it's using TLS
+		std::string saved_loc;
+	public:
+		explicit ScopedLocale(const char *locale)
+		{
+			const char *old_loc = setlocale(category, locale);
+			if (old_loc == nullptr)
+				throw std::invalid_argument("Argument to setlocale was invalid");
+			saved_loc = old_loc;
+		}
+		~ScopedLocale()
+		{
+			setlocale(category, saved_loc.c_str());
+		}
+	};
+
 	////////////////////////////////////////////
 	// Shader code generation
 	// This translates the fixed function instructions in a material script
@@ -80,6 +102,7 @@ namespace
 
 	StdStrBuf TextureUnitToCode(int index, const StdMeshMaterialTextureUnit& texunit)
 	{
+		ScopedLocale<LC_NUMERIC> scoped_c_locale("C");
 		const bool hasTextureAnimation = texunit.HasTexCoordAnimation();
 
 		StdStrBuf color_source1 = FormatString("%s.rgb", TextureUnitSourceToCode(index, texunit.ColorOpSources[0], texunit.ColorOpManualColor1, texunit.AlphaOpManualAlpha1, hasTextureAnimation).getData());
@@ -92,6 +115,7 @@ namespace
 
 	StdStrBuf AlphaTestToCode(const StdMeshMaterialPass& pass)
 	{
+		ScopedLocale<LC_NUMERIC> scoped_c_locale("C");
 		switch (pass.AlphaRejectionFunction)
 		{
 		case StdMeshMaterialPass::DF_AlwaysPass:
