@@ -1745,6 +1745,9 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	// never show scrollbar on non-cropping windows
 	if ((style & C4ScriptGuiWindowStyleFlag::NoCrop) || !C4GUI::ScrollWindow::IsScrollingNecessary())
 		pScrollBar->SetVisibility(false);
+	// The "dirty" flag is unset here. Note that it's only used for non "multiple"-style windows after startup.
+	// The "multiple"-style windows are updated together when the root window does a full refresh.
+	mainWindowNeedsLayoutUpdate = false;
 	return true;
 }
 
@@ -1781,16 +1784,17 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 		return false;
 	}
 	
+	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
+
 	if (mainWindowNeedsLayoutUpdate)
 	{
 		assert(GetParent() && (static_cast<C4ScriptGuiWindow*>(GetParent())->IsRoot()));
 		assert(isMainWindow);
+		assert(!(style & C4ScriptGuiWindowStyleFlag::Multiple) && "\"Multiple\"-style window not updated by a full refresh of the root window.");
 		C4ScriptGuiWindow * parent = static_cast<C4ScriptGuiWindow*>(GetParent());
 		UpdateLayout(cgo, parent->rcBounds.Wdt, parent->rcBounds.Hgt);
-		mainWindowNeedsLayoutUpdate = false;
+		assert(!mainWindowNeedsLayoutUpdate);
 	}
-
-	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
 
 	const int32_t outDrawX = cgo.X + cgo.TargetX + rcBounds.x;
 	const int32_t outDrawY = cgo.Y + cgo.TargetY + rcBounds.y;
