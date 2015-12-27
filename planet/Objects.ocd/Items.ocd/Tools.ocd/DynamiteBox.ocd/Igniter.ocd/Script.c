@@ -82,8 +82,7 @@ public func ResetClonk(object clonk)
 public func SaveScenarioObject() { return false; }
 
 public func IsTool() { return true; }
-public func IsToolProduct() { return false; }
-public func IsAlchemyProduct() { return false; }
+public func IsChemicalProduct() { return false; }
 
 
 /*-- Properties --*/
