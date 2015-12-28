@@ -18,8 +18,6 @@
 #ifndef INC_C4UpdateDialogs
 #define INC_C4UpdateDialogs
 
-#include "PlatformAbstraction.h"
-
 #ifdef WITH_AUTOMATIC_UPDATE
 
 #include "C4Gui.h"

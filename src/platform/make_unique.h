@@ -16,8 +16,6 @@
 #ifndef INC_make_unique
 #define INC_make_unique
 
-#include "config.h"
-
 // C++14 std::make_unique
 #include <memory>
 #include <utility>
