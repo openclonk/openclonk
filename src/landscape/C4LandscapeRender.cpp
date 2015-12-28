@@ -951,7 +951,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(Light && ShaderCall.AllocTexUnit(C4LRU_LightTex))
 	{
-		glBindTexture(GL_TEXTURE_2D, Light->getSurface()->textures[0].texName);
+		glBindTexture(GL_TEXTURE_2D, Light->getSurfaceName());
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
@@ -1008,8 +1008,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 		if (Light)
 		{
 			const C4Rect LightRect = Light->getRegion();
-			int32_t iLightWdt = Light->getSurface()->Wdt,
-				iLightHgt = Light->getSurface()->Hgt;
+			int32_t iLightWdt = Light->getSurfaceWidth(),
+				iLightHgt = Light->getSurfaceHeight();
 			lTexBlt.left = (fx - LightRect.x) / iLightWdt;
 			lTexBlt.top = 1.0 - (fy - LightRect.y) / iLightHgt;
 			lTexBlt.right = (fx + cgo.Wdt - LightRect.x) / iLightWdt;

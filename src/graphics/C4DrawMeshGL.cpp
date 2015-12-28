@@ -518,7 +518,7 @@ namespace
 		if(pFoW != NULL)
 		{
 			call.AllocTexUnit(C4SSU_LightTex);
-			glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
+			glBindTexture(GL_TEXTURE_2D, pFoW->getSurfaceName());
 			float lightTransform[6];
 			pFoW->GetFragTransform(clipRect, outRect, lightTransform);
 			call.SetUniformMatrix2x3fv(C4SSU_LightTransform, 1, lightTransform);

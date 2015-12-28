@@ -48,7 +48,7 @@ bool C4FoWRegion::BindFramebuf()
 		iHgt *= 2;
 
 		// Create the texture
-		if (!pSurface->Create(iWdt, iHgt, false, 0, 0))
+		if (!pSurface->Create(iWdt, iHgt, false, 0, 0) || !pBackSurface->Create(iWdt, iHgt, false, 0, 0))
 			return false;
 	}
 
@@ -84,6 +84,26 @@ bool C4FoWRegion::BindFramebuf()
 	// Worked!
 	return true;
 }
+
+int32_t C4FoWRegion::getSurfaceHeight() const
+{
+	return pSurface->Hgt;
+}
+
+int32_t C4FoWRegion::getSurfaceWidth() const
+{
+	return pSurface->Wdt;
+}
+
+#ifndef USE_CONSOLE
+GLuint C4FoWRegion::getSurfaceName() const
+{
+	assert(!pSurface->textures.empty());
+	if (pSurface->textures.empty())
+		return 0;
+	return pSurface->textures[0].texName;
+}
+#endif
 
 void C4FoWRegion::Update(C4Rect r, const FLOAT_RECT& vp)
 {
@@ -122,21 +142,21 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		return;
 
 	// Set up a clean context
-	glViewport(0, 0, getSurface()->Wdt, getSurface()->Hgt);
+	glViewport(0, 0, pSurface->Wdt, pSurface->Hgt);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	gluOrtho2D(0, getSurface()->Wdt, getSurface()->Hgt, 0);
+	gluOrtho2D(0, pSurface->Wdt, pSurface->Hgt, 0);
 
 	// Clear texture contents
-	assert(getSurface()->Hgt % 2 == 0);
-	glScissor(0, getSurface()->Hgt / 2, getSurface()->Wdt, getSurface()->Hgt / 2);
+	assert(pSurface->Hgt % 2 == 0);
+	glScissor(0, pSurface->Hgt / 2, pSurface->Wdt, pSurface->Hgt / 2);
 	glClearColor(0.0f, 0.5f / 1.5f, 0.5f / 1.5f, 0.0f);
 	glEnable(GL_SCISSOR_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// clear lower half of texture
-	glScissor(0, 0, getSurface()->Wdt, getSurface()->Hgt / 2);
+	glScissor(0, 0, pSurface->Wdt, pSurface->Hgt / 2);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDisable(GL_SCISSOR_TEST);
@@ -169,15 +189,15 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		// Transform into texture coordinates
 		for (int i = 0; i < 4; i++)
 		{
-			squad[i*2] = squad[i*2] / getBackSurface()->Wdt;
-			squad[i*2+1] = 1.0 - squad[i*2+1] / getBackSurface()->Hgt;
+			squad[i*2] = squad[i*2] / pBackSurface->Wdt;
+			squad[i*2+1] = 1.0 - squad[i*2+1] / pBackSurface->Hgt;
 		}
 
 		// Copy using shader
 		C4ShaderCall Call(pShader);
 		Call.Start();
 		if (Call.AllocTexUnit(0))
-			glBindTexture(GL_TEXTURE_2D, getBackSurface()->textures[0].texName);
+			glBindTexture(GL_TEXTURE_2D, pBackSurface->textures[0].texName);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly
 		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
@@ -218,9 +238,9 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 	// Offset between viewport and light texture
 	trans.Translate(vpRect.left - lightRect.x, vpRect.top - lightRect.y);
 	// Light surface normalization
-	trans.Scale(1.0f / getSurface()->Wdt, 1.0f / getSurface()->Hgt);
+	trans.Scale(1.0f / pSurface->Wdt, 1.0f / pSurface->Hgt);
 	// Light surface Y offset
-	trans.Translate(0.0f, 1.0f - (float)(lightRect.Hgt) / (float)getSurface()->Hgt);
+	trans.Translate(0.0f, 1.0f - (float)(lightRect.Hgt) / (float)pSurface->Hgt);
 
 	// Extract matrix
 	trans.Get2x3(lightTransform);

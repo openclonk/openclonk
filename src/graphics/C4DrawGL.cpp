@@ -477,7 +477,7 @@ void CStdGL::SetupMultiBlt(C4ShaderCall& call, const C4BltTransform* pTransform,
 
 		// Dynamic Light
 		call.AllocTexUnit(C4SSU_LightTex);
-		glBindTexture(GL_TEXTURE_2D, pFoW->getSurface()->textures[0].texName);
+		glBindTexture(GL_TEXTURE_2D, pFoW->getSurfaceName());
 
 		float lightTransform[6];
 		pFoW->GetFragTransform(ClipRect, OutRect, lightTransform);

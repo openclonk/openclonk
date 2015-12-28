@@ -36,8 +36,8 @@ void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
-	float width = region->getSurface()->Wdt;
-	float height = region->getSurface()->Hgt / 2.0;
+	float width = region->getSurfaceWidth();
+	float height = region->getSurfaceHeight() / 2.0;
 
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
 	// for details.
@@ -125,7 +125,7 @@ void C4FoWDrawLightTextureStrategy::DrawVertex(float x, float y, bool shadow)
 			break;
 		case C4DP_Color: // has a block so that alpha is scoped to this block only
 		{
-			y_offset = region->getSurface()->Hgt / 2;
+			y_offset = region->getSurfaceHeight() / 2;
 
 			float alpha; // 0.0 == fully transparent (takes old color), 1.0 == solid color (takes new color)
 

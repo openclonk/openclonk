@@ -44,8 +44,12 @@ public:
 	const C4FoW* getFoW() const { return pFoW; }
 	const C4Rect &getRegion() const { return Region; }
 	const FLOAT_RECT &getViewportRegion() const { return ViewportRegion; }
-	const C4Surface *getSurface() const { return pSurface.get(); }
-	const C4Surface *getBackSurface() const { return pBackSurface.get(); }
+	int32_t getSurfaceHeight() const;
+	int32_t getSurfaceWidth() const;
+
+#ifndef USE_CONSOLE
+	GLuint getSurfaceName() const;
+#endif
 
 	void Update(C4Rect r, const FLOAT_RECT& vp);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
