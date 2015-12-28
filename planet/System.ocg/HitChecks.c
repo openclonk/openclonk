@@ -74,8 +74,8 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 			// CheckEnemy
 			//if(!CheckEnemy(obj,target)) continue;
 
-			// IsProjectileTarget or Alive will be hit
-			if (obj->~IsProjectileTarget(target, shooter) || obj->GetOCF() & OCF_Alive)
+			// IsProjectileTarget will be hit (defaults to true for OCF_Alive).
+			if (obj->~IsProjectileTarget(target, shooter))
 			{
 				target->~HitObject(obj);
 				if (!target)
@@ -143,6 +143,11 @@ global func FxHitCheckTimer(object target, proplist effect, int time)
 		}
 	}
 	return;
+}
+
+global func IsProjectileTarget(object projectile, object shooter)
+{
+	return GetOCF() & OCF_Alive;
 }
 
 /*

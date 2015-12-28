@@ -198,7 +198,7 @@ func CheckStrike(iTime)
 							   Find_Exclude(Contained()),
 							   Find_Layer(GetObjectLayer())))
 	{
-		if (obj->~IsProjectileTarget(this, Contained()) || obj->GetOCF() & OCF_Alive)
+		if (obj->~IsProjectileTarget(this, Contained()))
 		{
 			var effect_name=Format("HasBeenHitBySwordEffect%d", magic_number);
 			var sword_name=Format("HasBeenHitBySword%d", this->ObjectNumber());
