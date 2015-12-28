@@ -21,17 +21,11 @@ protected func Initialize()
 	Sound("Environment::BirdsLoop", true, 100, nil, 1);
 	
 	// Brick edges at horizontal moving bricks.
-	var x=[525, 436, 436, 525, 812, 812, 716, 716, 573, 573, 213, 213];
-	var y=[692, 677, 692, 677, 653, 668, 500, 485, 500, 485, 677, 692];
-	var d=[2, 1, 3, 0, 1, 3, 3, 1, 2, 0, 0, 2];
+	var x = [524, 436, 436, 524, 812, 812, 716, 716, 572, 572, 212, 212];
+	var y = [692, 676, 692, 676, 652, 668, 500, 484, 500, 484, 676, 692];
+	var d = [1, 3, 2, 0, 3, 2, 2, 3, 1, 0, 0, 1];
 	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObjectAbove(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
+		DrawMaterialTriangle("Brick-brick", x[i], y[i], d[i]);
 	
 	// Vertically moving bricks
 	var brick = CreateObjectAbove(MovingBrick, 660, 90);

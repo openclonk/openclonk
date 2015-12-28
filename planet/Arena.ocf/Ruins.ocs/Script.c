@@ -33,19 +33,6 @@ protected func Initialize()
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
-	// Smooth brick edges.
-	var x=[188, 205, 261, 244, 308, 325];
-	var y=[124, 124, 132, 132, 108, 108];
-	var d=[3, 2, 2, 3, 3, 2];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObjectAbove(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
-	
 	AddEffect("DryTime",nil,100,2);
 	return;
 }

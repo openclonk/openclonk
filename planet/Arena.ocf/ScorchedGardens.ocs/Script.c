@@ -24,7 +24,7 @@ protected func Initialize()
 	
 	AddEffect("RandomMeteor", nil, 100, 20);
 	AddEffect("DangerousLava", nil, 100, 1);
-	// Smooth brick edges.
+
 	PlaceEdges();
 	PlaceGras();
 	return;
@@ -47,17 +47,11 @@ global func FxRandomMeteorTimer()
 
 private func PlaceEdges()
 {
-	var x=[69, 69, 76, 84, 484, 76, 565, 565, 532, 68, 68, 476, 468, 235, 665, 675, 685, 775, 685, 775, 532, 765, 695, 765, 765, 365, 525, 505];
-	var y=[357, 349, 364, 364, 260, 300, 305, 313, 313, 300, 308, 260, 268, 495, 375, 365, 355, 355, 275, 415, 305, 345, 345, 255, 285, 445, 445, 435];
-	var d=[3, 1, 3, 2, 0, 0, 1, 3, 2, 1, 3, 1, 1, 3, 1, 1, 1, 0, 3, 2, 0, 0, 1, 1, 3, 3, 2, 3];
+	var x = [69, 69, 76, 84, 484, 76, 565, 565, 532, 68, 68, 476, 468, 532];
+	var y = [357, 349, 364, 364, 260, 300, 305, 313, 313, 300, 308, 260, 268, 305];
+	var d = [2, 3, 2, 1, 0, 0, 3, 2, 1, 3, 2, 3, 3, 0];
 	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObjectAbove(BrickEdge, x[i], y[i] + 4, NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
+		DrawMaterialTriangle("Brick-brick", x[i], y[i], d[i]);
 	return;
 }
 
