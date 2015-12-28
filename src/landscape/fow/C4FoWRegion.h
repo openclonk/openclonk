@@ -46,8 +46,6 @@ public:
 	const C4Surface *getSurface() const { return pSurface; }
 	const C4Surface *getBackSurface() const { return pBackSurface; }
 
-	void Clear();
-
 	void Update(C4Rect r, const FLOAT_RECT& vp);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
 

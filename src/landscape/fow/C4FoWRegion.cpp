@@ -18,7 +18,15 @@
 
 C4FoWRegion::~C4FoWRegion()
 {
-	Clear();
+#ifndef USE_CONSOLE
+	if (hFrameBufDraw) {
+		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
+		glDeleteFramebuffersEXT(1, &hFrameBufRead);
+	}
+	hFrameBufDraw = hFrameBufRead = 0;
+#endif
+	delete pSurface; pSurface = NULL;
+	delete pBackSurface; pBackSurface = NULL;
 }
 
 bool C4FoWRegion::BindFramebuf()
@@ -82,19 +90,6 @@ bool C4FoWRegion::BindFramebuf()
 
 	// Worked!
 	return true;
-}
-
-void C4FoWRegion::Clear()
-{
-#ifndef USE_CONSOLE
-	if (hFrameBufDraw) {
-		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
-		glDeleteFramebuffersEXT(1, &hFrameBufRead);
-	}
-	hFrameBufDraw = hFrameBufRead = 0;
-#endif
-	delete pSurface; pSurface = NULL;
-	delete pBackSurface; pBackSurface = NULL;
 }
 
 void C4FoWRegion::Update(C4Rect r, const FLOAT_RECT& vp)
