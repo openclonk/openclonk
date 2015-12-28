@@ -98,3 +98,29 @@ global func FlameConsumeMaterial(int x, int y)
 		return false;
 	return !!ExtractMaterialAmount(x, y, mat, 1);
 }
+
+// Draws a rectangular triangle of the specified material.
+// The center coordinates (cx, cy) represent the center of the square the triangle would be in.
+// dir (0, 1, 2, 3) is the direction of the long edge (up-right, down-right, down-left, up-left).
+global func DrawMaterialTriangle(string mat_tex, int cx, int cy, int dir, int edge_size, bool sub)
+{
+	// Default to the standard map pixel size.
+	if (edge_size == nil)
+		edge_size = 8;
+	edge_size /= 2;
+	// Determine direction.
+	var sx = -1;
+	if (dir == 2 || dir == 3)
+		sx = 1;
+	var sy = -1;
+	if (dir == 1 || dir == 2)
+		sy = 1;
+	DrawMaterialQuad(mat_tex, 
+		cx + sx * edge_size, cy - sy * edge_size, 
+		cx + sx * edge_size, cy + sy * edge_size, 
+		cx - sx * edge_size, cy - sy * edge_size,
+		cx                 , cy - sy * edge_size,
+		sub
+	);
+	return;
+}
