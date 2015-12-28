@@ -55,9 +55,6 @@ separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
 CHECK_CXX_COMPILER_FLAG("-std=gnu++14" USE_GCC_STD_14)
 if(USE_GCC_STD_14)
-	if(OC_CXX_FLAGS MATCHES \\-std=gnu\\+\\+0x)
-		list(REMOVE_ITEM OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
 	list(APPEND OC_CXX_FLAGS "-std=gnu++14")
 endif()
 
