@@ -35,6 +35,16 @@ public func SetDir(new_dir, ...)
 	// Update position of child objects on direction change
 	if (case) case->SetPosition(GetX() -19 * GetCalcDir(), case->GetY());
 	if (rope) rope->SetPosition(GetX() -19 * GetCalcDir(), rope->GetY());
+	
+	// Set mesh transformation so that the rope on the mesh fits the rope from the elevator case.
+	if (new_dir == DIR_Left)
+	{
+		this.MeshTransformation = Trans_Rotate(-44,0,1,0);
+	}
+	else
+	{
+		this.MeshTransformation = Trans_Rotate(-47,0,1,0);
+	}
 	return r;
 }
 
@@ -60,7 +70,8 @@ public func GetCaseXOff() { return -19 * GetCalcDir(); }
 
 private func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Rotate(-44,0,1,0));
+	// Set default mesh transformation.
+	SetDir(DIR_Left);
 	SetAction("Default");
 	wheel_anim = PlayAnimation("winchSpin", 1, Anim_Const(0), Anim_Const(1000));
 
