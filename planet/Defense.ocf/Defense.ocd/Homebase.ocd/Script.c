@@ -121,6 +121,14 @@ public func UpdateIndexedItem(int index)
 	return false;
 }
 
+public func GetEntryByID(def id)
+{
+	for (var i = 0; i < GetLength(base_material); i++)
+		if (base_material[i].item == id)
+			return i;
+	return nil;
+}
+
 public func GetEntryInformation(int entry_idx)
 {
 	// Fill with current information for this entry
@@ -267,6 +275,18 @@ public func SellItem(item)
 	var success = item->RemoveObject();
 	is_selling = false;
 	return success;
+}
+
+// Makes an item available even though the requirements aren't yet met
+public func SetItemAvailable(int entry_idx)
+{
+	// Safety
+	var entry = base_material[entry_idx];
+	if (!entry) return false;
+
+	entry.requirements = nil;
+	entry.cost = nil;
+	return true;
 }
 
 public func OnOwnerChanged(new_owner)

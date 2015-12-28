@@ -1,0 +1,8 @@
+[DefCore]
+id=CustomAI
+Version=7
+Category=C4D_Vehicle | C4D_MouseIgnore
+Width=1
+Height=1
+Mass=1
+

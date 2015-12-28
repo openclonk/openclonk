@@ -1,0 +1,15 @@
+[PlayerInfoList]
+LastPlayerID=1
+
+  [Client]
+  ID=0
+  Flags=Initial
+
+    [Player]
+    Name="Don Quijote"
+    Type=Script
+    Flags=Joined|AttributesFixed|NoScenarioInit|NoEliminationCheck
+    ID=1
+    Color=4294901760
+    Team=2
+    GameNumber=10

@@ -1,7 +1,7 @@
 [DefCore]
 id=Boomattack
-Version=6,0
-Category=C4D_Object
+Version=7,0
+Category=C4D_Vehicle
 ContactCalls=1
 Width=15
 Height=27
@@ -14,3 +14,4 @@ VertexFriction=80,60,60,60
 Rotate=1
 StretchGrowth=1
 Oversize=1
+IncompleteActivity=1

@@ -5,8 +5,8 @@
 	An evil rocket which is hungry on the destruction of windmills
 --*/
 
-#include Boomattack
 
+/*
 local hits;
 
 protected func Construction()
@@ -68,7 +68,7 @@ public func OnProjectileHit(object shot)
 }
 
 /* Contact */
-
+/*
 protected func ContactBottom() { DoDrill(180); }
 protected func ContactTop() { DoDrill(0); }
 protected func ContactLeft() { DoDrill(-40); }
@@ -109,3 +109,4 @@ local ActMap =  {
 		Hgt = 100
 	},
 };
+*/

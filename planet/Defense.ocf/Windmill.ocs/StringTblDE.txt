@@ -1,2 +1,49 @@
-MsgWave=%d. Angriff
-MsgBoss=Bossangriff!!!
+MsgWave=Welle %d
+MsgWaveCleared=Welle %d geschafft!
+MsgOutOfRelaunchs=%s hat keinen Relaunch mehr.
+MsgRelaunch=Relaunch %s.
+
+EnemyPilot=Pilot
+EnemyCrewman=Matrose
+EnemyDefender=Schildkämpfer
+EnemyBow=Bogenschütze
+EnemyBalloon=Fallschirmspringer
+EnemyRocket=Raketenreiter
+
+WaveFirst=Nur die Vorhut
+WaveSecond=Raketengeschwader
+WaveThird=Raketenreiter
+WaveFourth=Raketenreitergeschwader
+WaveFifth=Luftschifffinte
+WaveSixth=Luftwaffe
+WaveSeventh=Fallschirmabwurf
+WaveEighth=Schwere Luftwaffe
+WaveNinth=Sonderkommando
+WaveTenth=Volle Attacke
+
+TeamAttackers=Angreifer
+TeamDefenders=Verteidiger
+
+HomebaseWeapons=Waffen
+HomebaseItems=Gegenstände
+HomebaseTechnology=Technologie
+HomebaseUpgrades=Verbesserungen
+HomebaseArtifacts=Artefakte
+
+HomebaseDescBow=Mittlere Reichweite, geringer Schaden. Endlos Pfeile.
+HomebaseDescJavelin=Kurze Reichweite, hoher Schaden. Endlos Speere.
+HomebaseDescMusket=Hohe Reichweite, mittlerer Schaden. Endlos Munition.
+HomebaseDescGrenadeLauncher=Schleudert Bomben in die Gegner. Endlos Bomben.
+HomebaseDescWindBag=Lässt Luftstöße los, die Gegner von den Füßen fegen.
+HomebaseDescHammer=Zum Errichten von Verteidigungstuermen und anderen Gebaeuden.
+
+HomebaseLoadSpeed=Nachladezeit
+HomebaseDescLoadSpeed=Verkürzt den Ladevorgang von Fernkampfwaffen (alle).
+HomebaseShootingStrength=Schusskraft
+HomebaseDescShootingStrength=Verstärkt die Schusskraft, wodurch die Waffen weiter schießen (außer Muskete).
+HomebaseLife=Lebensenergie
+HomebaseDescLife=Erhöht die Lebensenergie des Clonks.
+HomebaseAdvancedWeapons=Fortgeschrittene Waffen
+HomebaseDescAdvancedWeapons=Schaltet mehr Waffen und Upgrades frei.
+HomebaseMasterWeapons=Meisterwaffen
+HomebaseDescMasterWeapons=Schaltet mehr Waffen und Upgrades frei.

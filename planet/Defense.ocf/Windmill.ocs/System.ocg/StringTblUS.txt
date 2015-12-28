@@ -1,0 +1,6 @@
+MsgAttack0=ATTACK!|                             
+MsgAttack1=Charge!|                             
+MsgAttack2=Get them!|                             
+MsgAttack3=For glory!|                             
+
+MsgGotWindbag=Windbag now available.|                             

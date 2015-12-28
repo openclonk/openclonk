@@ -1,29 +1,28 @@
 [Head]
 Icon=39
 Title=Windmill
-Version=6,0
+Version=7
 Difficulty=90
 
 [Definitions]
-Definition1=Objects.ocd
+Definition2=Decoration.ocd
 
 [Player1]
-Crew=Clonk=1
+Wealth=50,0,0,250
 
 [Player2]
-Crew=Clonk=1
+Wealth=50,0,0,250
 
 [Player3]
-Crew=Clonk=1
+Wealth=50,0,0,250
 
 [Player4]
-Crew=Clonk=1
+Wealth=50,0,0,250
 
 [Landscape]
 Sky=Sky
 MapZoom=10
 BottomOpen=1
-SkyScrollMode=2
 
 [Weather]
 Climate=0,0,0,100

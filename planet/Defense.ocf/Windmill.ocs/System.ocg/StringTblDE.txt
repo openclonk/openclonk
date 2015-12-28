@@ -1,0 +1,6 @@
+MsgAttack0=ANGRIFF!|                             
+MsgAttack1=Zum Angriff!|                             
+MsgAttack2=Attacke!|                             
+MsgAttack3=Vorwärts!|                             
+
+MsgGotWindbag=Windbeutel jetzt verfügbar.|                             
