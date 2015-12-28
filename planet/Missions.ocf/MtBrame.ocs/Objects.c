@@ -190,14 +190,6 @@ func InitializeObjects()
 	Coal0464->SetCon(98);
 	CreateObjectAbove(Coal, 609, 1179);
 
-	CreateObjectAbove(Sulphur, 663, 947);
-	CreateObjectAbove(Sulphur, 897, 958);
-	CreateObjectAbove(Sulphur, 973, 784);
-	CreateObjectAbove(Sulphur, 993, 673);
-	CreateObjectAbove(Sulphur, 1324, 692);
-	CreateObjectAbove(Sulphur, 1554, 749);
-	CreateObjectAbove(Sulphur, 1393, 640);
-
 	Chest0158->CreateContents(Loam);
 	CreateObjectAbove(Loam, 28, 587);
 	Chest0160->CreateContents(Loam);

@@ -1,2 +1,0 @@
-Name=Sulphur
-Description= Raw material for various explosives.
