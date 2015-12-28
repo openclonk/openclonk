@@ -447,6 +447,7 @@ set(OC_CLONK_SOURCES
 	src/c4group/C4Extra.h
 	src/c4group/C4Language.cpp
 	src/c4group/C4Language.h
+	src/C4Include.cpp
 	src/C4Include.h
 	src/C4Prototypes.h
 	src/C4Version.h
@@ -795,6 +796,7 @@ set(OC_CLONK_SOURCES
 )
 
 set(MAPE_BASE_SOURCES
+	src/C4Include.cpp
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
 	src/landscape/C4MapScriptAlgo.cpp
@@ -1008,21 +1010,12 @@ include_directories(SYSTEM
 )
 
 ############################################################################
-# Precompiled header support, part 1 (pre-target)
-############################################################################
-if(HAVE_PRECOMPILED_HEADERS)
-	if(MSVC_VERSION)
-		list(INSERT OC_SYSTEM_SOURCES 0 src/C4Include.cpp)
-		list(INSERT MAPE_SOURCES 0 src/C4Include.cpp)
-	endif()
-endif()
-
-############################################################################
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
 
 add_library(libmisc
+src/C4Include.cpp
 src/c4group/C4Group.cpp
 src/c4group/C4Group.h
 src/c4group/C4Update.cpp
@@ -1031,6 +1024,9 @@ src/c4group/CStdFile.cpp
 src/c4group/CStdFile.h
 src/lib/C4InputValidation.cpp
 src/lib/C4InputValidation.h
+src/lib/C4Markup.cpp
+src/lib/C4Markup.h
+src/lib/C4SimpleLog.cpp
 src/lib/SHA1.h
 src/lib/Standard.cpp
 src/lib/Standard.h
@@ -1038,8 +1034,6 @@ src/lib/StdBuf.cpp
 src/lib/StdBuf.h
 src/lib/StdCompiler.cpp
 src/lib/StdCompiler.h
-src/lib/C4Markup.cpp
-src/lib/C4Markup.h
 src/lib/StdResStr2.cpp
 src/network/C4NetIO.cpp
 src/network/C4NetIO.h
@@ -1057,9 +1051,6 @@ src/platform/make_unique.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
-
-src/C4Include.cpp
-src/lib/C4SimpleLog.cpp
 )
 
 target_link_libraries(libmisc ${ZLIB_LIBRARIES})
@@ -1074,6 +1065,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 add_library(libc4script
+src/C4Include.cpp
 src/c4group/C4GroupSet.cpp
 src/c4group/C4GroupSet.h
 src/c4group/C4ComponentHost.cpp
@@ -1262,7 +1254,7 @@ if(MSVC)
 endif()
 
 ############################################################################
-# Precompiled header support, part 2 (post-target)
+# Precompiled header support for MSVC
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
 	if(MSVC_VERSION)
