@@ -312,5 +312,4 @@ public func Definition(proplist def)
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 local ContactIncinerate = 2;

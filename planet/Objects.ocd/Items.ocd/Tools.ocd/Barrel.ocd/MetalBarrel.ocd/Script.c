@@ -34,5 +34,4 @@ public func IsBarrelForMaterial(string sznMaterial)
 
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 local ContactIncinerate = 0;

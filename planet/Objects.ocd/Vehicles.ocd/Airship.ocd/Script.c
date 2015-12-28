@@ -348,6 +348,5 @@ func Definition(def)
 local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 2;
-local Rebuy = true;
 local Plane = 500;
 local SolidMaskPlane = 275;

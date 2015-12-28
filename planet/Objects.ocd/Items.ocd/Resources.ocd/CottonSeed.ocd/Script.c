@@ -28,7 +28,6 @@ public func GetFuelAmount(bool get_partial)
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 local Plane = 460;
 local BlastIncinerate = 5;
 local ContactIncinerate = 2;

@@ -233,7 +233,7 @@ func FxShieldStopControlQueryCatchBlow(object target, effect, object obj)
 	// angle difference: 0..180
 	var angle_diff = Abs(Normalize(shield_angle-object_angle,-180));
 
-	// objects hits if the angle difference is greater than 45°
+	// objects hits if the angle difference is greater than 45 degrees
 	if (angle_diff > 45) return false;
 	
 	// projectile bounces off
@@ -291,4 +291,3 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
-local Rebuy = true;

@@ -202,6 +202,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
-local Rebuy = true;
+
 local BlastIncinerate = 1;
 local ContactIncinerate = 1;

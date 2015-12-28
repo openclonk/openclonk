@@ -69,4 +69,3 @@ private func Find_CableLine(object obj)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
-local Rebuy = true;

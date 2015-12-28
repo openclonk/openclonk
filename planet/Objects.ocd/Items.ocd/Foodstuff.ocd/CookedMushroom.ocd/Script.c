@@ -28,4 +28,3 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = true;
-local Rebuy = 1;

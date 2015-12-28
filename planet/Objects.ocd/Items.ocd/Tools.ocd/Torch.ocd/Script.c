@@ -222,5 +222,4 @@ protected func Definition(def)
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 

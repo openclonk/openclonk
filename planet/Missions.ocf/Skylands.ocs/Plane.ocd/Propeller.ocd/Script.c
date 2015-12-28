@@ -21,5 +21,4 @@ public func IsPlanePart() { return true; }
 local Collectible = true;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 local HitPoints = 20;

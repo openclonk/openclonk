@@ -136,7 +136,6 @@ protected func Hit(int dx, int dy)
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-local Rebuy = true;
 local BlastIncinerate = 8;
 local ContactIncinerate = 2;
 local Confinement;

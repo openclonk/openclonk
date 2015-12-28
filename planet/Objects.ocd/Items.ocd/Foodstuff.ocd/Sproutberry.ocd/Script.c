@@ -24,7 +24,6 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
-local Rebuy = false;
 
 
 // sproutberries are extremely unstable and likely to grow a new plant if not carried

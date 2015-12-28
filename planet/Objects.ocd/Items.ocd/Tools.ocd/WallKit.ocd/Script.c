@@ -119,7 +119,6 @@ local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
-local Rebuy = true;
 local BridgeLength = 20;
 local BridgeThickness = 5;
 local BridgeMaterial = "Granite-granite";
