@@ -53,16 +53,12 @@ separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
-CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
 CHECK_CXX_COMPILER_FLAG("-std=gnu++14" USE_GCC_STD_14)
 if(USE_GCC_STD_14)
 	if(OC_CXX_FLAGS MATCHES \\-std=gnu\\+\\+0x)
-		unset(HAVE_MAKE_UNIQUE CACHE)
 		list(REMOVE_ITEM OC_CXX_FLAGS "-std=gnu++0x")
 	endif()
 	list(APPEND OC_CXX_FLAGS "-std=gnu++14")
-elseif(USE_GCC_STD_0X)
-	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 endif()
 
 if(MSVC_VERSION GREATER 1499)
@@ -149,7 +145,8 @@ include(CheckCXXSymbolExists)
 
 REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 REQUIRE_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
-CHECK_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); }" HAVE_MAKE_UNIQUE)
+REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { auto a = std::make_unique<int>(0); return !!a; }" HAVE_MAKE_UNIQUE)
+REQUIRE_CXX_SOURCE_COMPILES("#include <utility>\ntemplate<std::size_t... Is> int foo(std::index_sequence<Is...>) {return 0;} int main() { return foo(std::index_sequence_for<int,int>{}); }" HAVE_INDEX_SEQUENCE)
 REQUIRE_CXX_SOURCE_COMPILES("template<class... T> class C; int main() { return 0; }" HAVE_VARIADIC_TEMPLATES)
 
 # g++'s libstdc++ doesn't properly support <regex> until 4.9.
@@ -1046,8 +1043,7 @@ src/platform/StdSchedulerWin32.cpp
 src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
 src/platform/C4TimeMilliseconds.cpp 
-src/platform/C4TimeMilliseconds.h	
-src/platform/make_unique.h
+src/platform/C4TimeMilliseconds.h
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
