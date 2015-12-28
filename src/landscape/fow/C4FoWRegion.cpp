@@ -23,28 +23,21 @@ C4FoWRegion::~C4FoWRegion()
 		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
 		glDeleteFramebuffersEXT(1, &hFrameBufRead);
 	}
-	hFrameBufDraw = hFrameBufRead = 0;
 #endif
-	delete pSurface; pSurface = NULL;
-	delete pBackSurface; pBackSurface = NULL;
 }
 
 bool C4FoWRegion::BindFramebuf()
 {
 #ifndef USE_CONSOLE
 	// Flip texture
-	C4Surface *pSfc = pSurface;
-	pSurface = pBackSurface;
-	pBackSurface = pSfc;
+	pSurface.swap(pBackSurface);
 
 	// Can simply reuse old texture?
-	if (!pSurface || pSurface->Wdt < Region.Wdt || (pSurface->Hgt / 2) < Region.Hgt)
+	if (pSurface->Wdt < Region.Wdt || (pSurface->Hgt / 2) < Region.Hgt)
 	{
 		// Determine texture size. Round up to next power of two in order to
 		// prevent rounding errors, as well as preventing lots of
 		// re-allocations when region size changes quickly (think zoom).
-		if (!pSurface)
-			pSurface = new C4Surface();
 		int iWdt = 1, iHgt = 1;
 		while (iWdt < Region.Wdt) iWdt *= 2;
 		while (iHgt < Region.Hgt) iHgt *= 2;
@@ -72,7 +65,7 @@ bool C4FoWRegion::BindFramebuf()
 	glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER_EXT,
 		GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
 		pSurface->textures[0].texName, 0);
-	if (pBackSurface)
+	if (!pBackSurface->textures.empty())
 		glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT,
 			GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
 			pBackSurface->textures[0].texName, 0);
@@ -240,7 +233,7 @@ C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	, hFrameBufDraw(0), hFrameBufRead(0)
 #endif
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
-	, pSurface(NULL), pBackSurface(NULL)
+	, pSurface(new C4Surface), pBackSurface(new C4Surface)
 {
 	ViewportRegion.left = ViewportRegion.right = ViewportRegion.top = ViewportRegion.bottom = 0.0f;
 }

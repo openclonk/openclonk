@@ -17,10 +17,11 @@
 #define C4FOWREGION_H
 
 #include "C4Rect.h"
-#include "C4Surface.h"
 #include "C4FacetEx.h"
 #include "C4Player.h"
 #include "C4FoW.h"
+
+class C4Surface;
 
 class C4FoWRegion
 {
@@ -31,7 +32,7 @@ public:
 private:
 	C4FoW *pFoW;
 	C4Player *pPlayer;
-	C4Surface *pSurface, *pBackSurface;
+	std::unique_ptr<C4Surface> pSurface, pBackSurface;
 	C4Rect Region, OldRegion;
 	FLOAT_RECT ViewportRegion; // Region covered by visible viewport
 
@@ -43,8 +44,8 @@ public:
 	const C4FoW* getFoW() const { return pFoW; }
 	const C4Rect &getRegion() const { return Region; }
 	const FLOAT_RECT &getViewportRegion() const { return ViewportRegion; }
-	const C4Surface *getSurface() const { return pSurface; }
-	const C4Surface *getBackSurface() const { return pBackSurface; }
+	const C4Surface *getSurface() const { return pSurface.get(); }
+	const C4Surface *getBackSurface() const { return pBackSurface.get(); }
 
 	void Update(C4Rect r, const FLOAT_RECT& vp);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
