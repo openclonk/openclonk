@@ -181,7 +181,7 @@ CHECK_INCLUDE_FILE_CXX(sys/eventfd.h HAVE_SYS_EVENTFD_H)
 CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/extensions/Xrandr.h" HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES_CXX("X11/Xlib.h;X11/keysym.h" HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+CHECK_CXX_SOURCE_COMPILES("include <getopt.h>\nint main(int argc, char * argv[]) { getopt_long(argc, argv, \"\", 0, 0); }" HAVE_GETOPT_H)
 
 ############################################################################
 # Locate libraries
@@ -236,10 +236,6 @@ if(NOT HAVE_GETOPT_H)
 	include_directories(SYSTEM thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
 	set(GETOPT_LIBRARIES getopt)
-elseif(MINGW)
-	# Link libiberty which my contain getopt with mingw
-	FINDLIB(iberty_LIBRARIES iberty)
-	set(GETOPT_LIBRARIES ${iberty_LIBRARIES})
 endif()
 
 # TinyXML
