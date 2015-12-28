@@ -41,8 +41,6 @@ public:
 	float GetZoom() { return Zoom; }
 	void SetZoom(float zoomValue);
 	float GetGUIZoom() const { return Clamp<float>(float(ViewWdt)/1280,0.5f,1.0f); }
-	void Default();
-	void Clear();
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);

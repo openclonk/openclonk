@@ -78,25 +78,30 @@ bool C4Viewport::UpdateOutputSize()
 
 C4Viewport::C4Viewport()
 {
-	Default();
+	pWindow = NULL;
+	pFoW = NULL;
+	Player = 0;
+	viewX = viewY = 0;
+	targetViewX = targetViewY = 0;
+	ViewWdt = ViewHgt = 0;
+	BorderLeft = BorderTop = BorderRight = BorderBottom = 0;
+	OutX = OutY = ViewWdt = ViewHgt = 0;
+	DrawX = DrawY = 0;
+	Zoom = 1.0;
+	ZoomTarget = 0.0;
+	ViewportOpenFrame = 0;
+	ZoomLimitMin = ZoomLimitMax = 0; // no limit
+	Next = NULL;
+	PlayerLock = true;
+	ResetMenuPositions = false;
+	viewOffsX = viewOffsY = 0;
+	fIsNoOwnerViewport = false;
 }
 
 C4Viewport::~C4Viewport()
 {
-	Clear();
-}
-
-void C4Viewport::Clear()
-{
 	DisableFoW();
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
-	Player=NO_OWNER;
-	viewX=viewY=0;
-	targetViewX=targetViewY=0;
-	ViewWdt=ViewHgt=0;
-	OutX=OutY=ViewWdt=ViewHgt=0;
-	DrawX=DrawY=0;
-	viewOffsX = viewOffsY = 0;
 }
 
 void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -589,30 +594,6 @@ void C4Viewport::UpdateBordersY()
 {
 	BorderTop = std::max(-GetViewY() * Zoom, 0.0f);
 	BorderBottom = std::max(ViewHgt - GBackHgt * Zoom + GetViewY() * Zoom, 0.0f);
-}
-
-void C4Viewport::Default()
-{
-	pWindow=NULL;
-	pFoW = NULL;
-	Player=0;
-	viewX=viewY=0;
-	targetViewX=targetViewY=0;
-	ViewWdt=ViewHgt=0;
-	BorderLeft=BorderTop=BorderRight=BorderBottom=0;
-	OutX=OutY=ViewWdt=ViewHgt=0;
-	DrawX=DrawY=0;
-	Zoom = 1.0;
-	ZoomTarget = 0.0;
-	ViewportOpenFrame = 0;
-	ZoomLimitMin=ZoomLimitMax=0; // no limit
-	Next=NULL;
-	PlayerLock=true;
-	ResetMenuPositions=false;
-	viewOffsX = viewOffsY = 0;
-	fIsNoOwnerViewport = false;
-	last_game_draw_cgo.Default();
-	last_gui_draw_cgo.Default();
 }
 
 void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
