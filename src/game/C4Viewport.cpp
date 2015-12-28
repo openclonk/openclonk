@@ -78,8 +78,6 @@ bool C4Viewport::UpdateOutputSize()
 
 C4Viewport::C4Viewport()
 {
-	pWindow = NULL;
-	pFoW = NULL;
 	Player = 0;
 	viewX = viewY = 0;
 	targetViewX = targetViewY = 0;
@@ -101,7 +99,7 @@ C4Viewport::C4Viewport()
 C4Viewport::~C4Viewport()
 {
 	DisableFoW();
-	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
+	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); }
 }
 
 void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -229,7 +227,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		C4Player *pPlr = ::Players.Get(Player);
 		assert(pPlr != NULL);
 
-		if(pPlr->fFogOfWar) pFoW = this->pFoW;
+		if(pPlr->fFogOfWar) pFoW = this->pFoW.get();
 	}
 
 	// Update FoW
@@ -354,10 +352,9 @@ void C4Viewport::Execute()
 	AdjustZoomAndPosition();
 	// Current graphics output
 	C4TargetFacet cgo;
-	C4Window * w = pWindow;
-	if (!w) w = &FullScreen;
-	cgo.Set(w->pSurface,DrawX,DrawY,float(ViewWdt)/Zoom,float(ViewHgt)/Zoom,GetViewX(),GetViewY(),Zoom);
-	pDraw->PrepareRendering(w->pSurface);
+	C4Surface *target = pWindow ? pWindow->pSurface : FullScreen.pSurface;
+	cgo.Set(target,DrawX,DrawY,float(ViewWdt)/Zoom,float(ViewHgt)/Zoom,GetViewX(),GetViewY(),Zoom);
+	pDraw->PrepareRendering(target);
 	// Draw
 	Draw(cgo, true);
 	// Blit output
@@ -616,7 +613,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	{
 		// Console viewport initialization
 		// Create window
-		pWindow = new C4ViewportWindow(this);
+		pWindow.reset(new C4ViewportWindow(this));
 		if (!pWindow->Init(Player))
 			return false;
 		UpdateOutputSize();
@@ -638,16 +635,19 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 
 void C4Viewport::DisableFoW()
 {
-	delete pFoW;
-	pFoW = NULL;
+	pFoW.reset();
 }
 
 void C4Viewport::EnableFoW()
 {
-	DisableFoW();
-
 	if (::Landscape.pFoW && Player != NO_OWNER)
-		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(Player));
+	{
+		pFoW.reset(new C4FoWRegion(::Landscape.pFoW, ::Players.Get(Player)));
+	}
+	else
+	{
+		DisableFoW();
+	}
 }
 
 extern int32_t DrawMessageOffset;

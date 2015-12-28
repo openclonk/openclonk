@@ -22,6 +22,9 @@
 
 #include <C4FacetEx.h>
 
+class C4ViewportWindow;
+class C4FoWRegion;
+
 class C4Viewport
 {
 	friend class C4MouseControl;
@@ -99,8 +102,8 @@ protected:
 	int32_t OutX,OutY;
 	bool ResetMenuPositions;
 	C4Viewport *Next;
-	class C4ViewportWindow * pWindow;
-	class C4FoWRegion *pFoW;
+	std::unique_ptr<C4ViewportWindow> pWindow;
+	std::unique_ptr<C4FoWRegion> pFoW;
 	void DrawPlayerStartup(C4TargetFacet &cgo);
 	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
@@ -111,7 +114,7 @@ protected:
 	void AdjustZoomAndPosition();
 public:
 	void AdjustPosition(bool immediate = false);
-	C4ViewportWindow* GetWindow() {return pWindow;}
+	C4ViewportWindow* GetWindow() {return pWindow.get();}
 	bool UpdateOutputSize();
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
