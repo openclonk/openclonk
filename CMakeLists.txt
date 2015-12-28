@@ -59,8 +59,8 @@ if(USE_GCC_STD_0X)
 endif()
 
 if(MSVC_VERSION GREATER 1499)
-		list(APPEND OC_CXX_FLAGS /MP)
-		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
+	list(APPEND OC_CXX_FLAGS /MP)
+	list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
 
 	if (NOT CMAKE_CL_64)
 		# Activate edit-and-continue
@@ -1090,7 +1090,6 @@ target_link_libraries(openclonk-server
 	libmisc
 )
 
-
 if (SDL_FOUND)
 	target_link_libraries(openclonk ${SDL_LIBRARY})
 endif()
@@ -1284,21 +1283,20 @@ if(WIN32)
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
-if(NOT USE_CONSOLE)
-	find_package(OpenGL)
-	find_package(GLEW REQUIRED)
-	target_link_libraries(openclonk
-		${GLEW_LIBRARIES}
-		${OPENGL_LIBRARIES}
-	)
-	include_directories(${GLEW_INCLUDE_DIRS})
-	add_definitions(${GLEW_DEFINITIONS})
-	# On some platforms, GLEW declares the userParam parameter of
-	# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
-	# Test which one works here.
-	set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
-	CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
-endif()
+find_package(OpenGL)
+find_package(GLEW REQUIRED)
+target_link_libraries(openclonk
+	${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES}
+)
+include_directories(${GLEW_INCLUDE_DIRS})
+add_definitions(${GLEW_DEFINITIONS})
+# On some platforms, GLEW declares the userParam parameter of
+# GLDEBUGPROCARB as const void *, and on other platforms, it's void *.
+# Test which one works here.
+set(CMAKE_REQUIRED_INCLUDES "${GLEW_INCLUDE_DIRS}")
+CHECK_CXX_SOURCE_COMPILES("#include <GL/glew.h>\nvoid GLAPIENTRY OpenGLDebugProc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam) {}\nint main() { GLDEBUGPROCARB proc = &OpenGLDebugProc; }" GLDEBUGPROCARB_USERPARAM_IS_CONST)
+
 if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK3_FOUND})
 	SET(WITH_GLIB ${GTK3_FOUND})
@@ -1502,7 +1500,7 @@ endif()
 
 # Export native tools for later use in cross-compile builds
 IF(NOT CMAKE_CROSSCOMPILING) 
-  EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
+	EXPORT(TARGETS c4group FILE ${CMAKE_BINARY_DIR}/NativeToolsExport.cmake NAMESPACE native- )
 ENDIF() 
 
 ############################################################################
