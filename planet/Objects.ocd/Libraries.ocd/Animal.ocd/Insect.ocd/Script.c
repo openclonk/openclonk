@@ -188,6 +188,12 @@ private func QueryCatchBlow()
 	return true;
 }
 
+// They are also too tiny to be hit by arrows etc.
+public func IsProjectileTarget()
+{
+	return false;
+}
+
 private func Activity()
 {
 	if (Contained()) return;
