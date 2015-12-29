@@ -1,0 +1,2 @@
+Name=Holzbrücke
+Description=Wird benutzt um Täler und Flüsse zu überqueren.
