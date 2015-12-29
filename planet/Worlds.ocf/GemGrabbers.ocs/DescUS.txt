@@ -1,12 +1,11 @@
-   Gem Grabbers 
- 
-A group of settlers set out for the skies, after a turbulent and rainy ride in their airship they stumbled upon an abandoned settlement. One divided among different islands. Unfortunately the airship got lost, but as the settlers arrived something shiny caught their eyes. Gems! Hanging like stalactites from the different sky islands. These types of minerals are worth a lot back home, so this is a great opportunity to become wealthy. 
- 
-Goal: Mine a significant amount of gems. 
- 
-Hints: 
-- There is heavy rain, be careful to not build tunnels which will flood. 
-- The gems hang like stalactites from the islands, and sometimes a new one grows.  
-- There are other sky islands besides the one you landed on, explore them. 
-- There are strong winds, take precautions and only go on a trip with the right equipment. 
- 
+Gem Grabbers
+
+A group of settlers set out for the skies, after a turbulent and rainy ride in their airship they stumbled upon an abandoned settlement. One divided among different islands. Unfortunately the airship got lost, but as the settlers arrived something shiny caught their eyes. Gems! Hanging like stalactites from the different sky islands. These types of minerals are worth a lot back home, so this is a great opportunity to become wealthy.
+
+Goal: Mine a significant amount of gems.
+
+Hints:
+- There is heavy rain, be careful to not build tunnels which will flood.
+- The gems hang like stalactites from the islands, and sometimes a new one grows.
+- There are other sky islands besides the one you landed on, explore them.
+- There are strong winds, take precautions and only go on a trip with the right equipment.

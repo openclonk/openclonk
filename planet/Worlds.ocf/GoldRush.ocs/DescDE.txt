@@ -1,9 +1,10 @@
-   Goldrausch
+Goldrausch
 
-Clonker-Geologen haben kürzlich entdeckt, dass ein alter Gletscher beachtliche Mengen Gold unter dem Wald von Orgos zurückgelassen hat. Deine Expedition hat sich aufgemacht, diese begrabenen Schätze zu bergen.
+Clonker-Geologen haben kÃ¼rzlich entdeckt, dass ein alter Gletscher beachtliche Mengen Gold unter dem Wald von Orgos zurÃ¼ckgelassen hat. Deine Expedition hat sich aufgemacht, diese begrabenen SchÃ¤tze zu bergen.
 
-Ziel: Konstruktion goldener Statuen und Profit (erbeute Geldeinheiten um das Szenario abzuschließen).
+Ziel: Konstruktion goldener Statuen und Profit (erbeute Geldeinheiten um das Szenario abzuschlieÃŸen).
 
-- Mehrere Spieler können kooperativ zusammenarbeiten.
-- Goldbarren und -klumpen können durch Ablegen in die Flagge verkauft werden.
+Tipps:
+- Mehrere Spieler kÃ¶nnen kooperativ zusammenarbeiten.
+- Goldbarren und -klumpen kÃ¶nnen durch Ablegen in die Flagge verkauft werden.
 - Barren sind jedoch wertvoller als Goldklumpen.

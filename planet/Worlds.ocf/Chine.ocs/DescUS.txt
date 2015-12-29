@@ -1,9 +1,10 @@
-    Chine 
- 
-While transporting a precious treasure a golden cannon dropped down into chine carved out by a large waterfall. It is your task to transport it back to the top of the chine. 
- 
-Goal: Transport the cannon back to the top of the map. 
- 
-- Don't let the cannon fall down the bottom of the map. 
-- The cannon has unlimited gunpowder, use it. 
-- Use tools like the rope ladder and grappler to climb up the chine. 
+Chine
+
+While transporting a precious treasure a golden cannon dropped down into chine carved out by a large waterfall. It is your task to transport it back to the top of the chine.
+
+Goal: Transport the cannon back to the top of the map.
+
+Hints:
+- Don't let the cannon fall down the bottom of the map.
+- The cannon has unlimited gunpowder, use it.
+- Use tools like the rope ladder and grappler to climb up the chine.

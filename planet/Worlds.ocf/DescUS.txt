@@ -1,5 +1,5 @@
-   Worlds 
- 
-This scenario folder contains cooperative settlement rounds with random and versatile landscapes. The players work together to fulfill  goals like mining, production of materials or expanding territory. Challenges are provided by the rough terrains and disasters like volcanoes, earthquakes and rockfall. 
- 
-Each of the rounds can be played with different difficulty settings and different sizes for the map. It is recommended that you first play the rounds with normal difficulty and a small map. After all goals have been completed, the players can continue the round and build whatever they like, for which the larger maps are especially suited. 
+Worlds
+
+This scenario folder contains cooperative settlement rounds with random and versatile landscapes. The players work together to fulfill  goals like mining, production of materials or expanding territory. Challenges are provided by the rough terrains and disasters like volcanoes, earthquakes and rockfall.
+
+Each of the rounds can be played with different difficulty settings and different sizes for the map. It is recommended that you first play the rounds with normal difficulty and a small map. After all goals have been completed, the players can continue the round and build whatever they like, for which the larger maps are especially suited.

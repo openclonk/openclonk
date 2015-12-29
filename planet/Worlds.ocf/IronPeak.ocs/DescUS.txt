@@ -1,8 +1,9 @@
-   Iron Peak 
+Iron Peak
+
+For decades, exploitation of Iron Peak had not been considered a profitable undertaking. Iron reserves were high and more easily accessible reserves were frequently found. But the demand for iron has grown and lead to the dangerous attempt to exploit this mountain at last. Your captain will drop you with his air plane and you must conquer Iron Peak and process its iron ore into metal. But beware: Though this task would be trivial under normal circumstances, the region is known for its devastating earthquakes, icy blizzards and deadly rock falls.
  
-For decades, exploitation of Iron Peak had not been considered a profitable undertaking. Iron reserves were high and more easily accessible reserves were frequently found. But the demand for iron has grown and lead to the dangerous attempt to exploit this mountain at last. Your captain will drop you with his air plane and you must conquer Iron Peak and process its iron ore into metal. But beware: Though this task would be trivial under normal circumstances, the region is known for its devastating earthquakes, icy blizzards and deadly rock falls. 
- 
-Goal: Metal production and territorial expansion (claim the region with flags to complete the scenario). 
- 
-- A lorry with useful materials has been dropped on top of the peak. 
-- The large mushrooms inside the peak can be chopped for wood as well. 
+Goal: Metal production and territorial expansion (claim the region with flags to complete the scenario).
+
+Hints:
+- A lorry with useful materials has been dropped on top of the peak.
+- The large mushrooms inside the peak can be chopped for wood as well.

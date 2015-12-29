@@ -1,11 +1,10 @@
- Acid gold mine
+Acid gold mine
 
 A gold mine located in some very hostile environment.
 
-Goal: Gain 225 wealth.
+Goal: Gain wealth.
 
 Hints:
--At the beginning, you should dig down to build an underground base
--Use metal bridges to secure the cave against acid floodings
--There is an underground spot into which you can cram two windmills. Use it!
-
+- At the beginning, you should dig down to build an underground base.
+- Use metal bridges to secure the cave against acid floodings.
+- There is an underground spot into which you can cram two windmills. Use it!

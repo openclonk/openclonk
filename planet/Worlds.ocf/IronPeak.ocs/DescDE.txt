@@ -1,6 +1,10 @@
-   Eisenberg 
- 
-Über Jahrzehnte wurde der Abbau des Eisenbergs nicht als profitabel angesehen. Die Eisenrücklagen waren hoch und ständig wurden einfachere abzubauende Lagerstätten entdeckt. Doch die Nachfrage nach Eisen ist gestiegen und hat zu diesem gefährlichen Unternehmen geführt, schließlich auch diesen Berg zu erschließen. 
-Du musst den Eisenberg erschließen und Eisenerz zu Metall verarbeiten. Aber Vorsicht: Diese Aufgabe wäre zwar unter normalen Umständen Routine, doch der Eisenberg ist bekannt für seine verheerenden Erdbeben, eisigen Blitze und tödlichen Steinschläge. 
- 
-Ziel: Metall Produktion und Ausbreitung (breite deine Region durch Flaggen aus um das Szenario abzuschließen). 
+Eisenberg
+
+Ãœber Jahrzehnte wurde der Abbau des Eisenbergs nicht als profitabel angesehen. Die EisenrÃ¼cklagen waren hoch und stÃ¤ndig wurden einfachere abzubauende LagerstÃ¤tten entdeckt. Doch die Nachfrage nach Eisen ist gestiegen und hat zu diesem gefÃ¤hrlichen Unternehmen gefÃ¼hrt, schlieÃŸlich auch diesen Berg zu erschlieÃŸen. 
+Du musst den Eisenberg erschlieÃŸen und Eisenerz zu Metall verarbeiten. Aber Vorsicht: Diese Aufgabe wÃ¤re zwar unter normalen UmstÃ¤nden Routine, doch der Eisenberg ist bekannt fÃ¼r seine verheerenden Erdbeben, eisigen Blitze und tÃ¶dlichen SteinschlÃ¤ge.
+
+Ziel: Metall Produktion und Ausbreitung (breite deine Region durch Flaggen aus um das Szenario abzuschlieÃŸen).
+
+Tipps:
+- Eine Lore mit nÃ¼tzliche Materialien ist auf dem Gipfel hinterlassen worden.
+- Die groÃŸe Pilze im Berg kÃ¶nnen auch gefÃ¤llt werden um Holz zu gewinnen.
