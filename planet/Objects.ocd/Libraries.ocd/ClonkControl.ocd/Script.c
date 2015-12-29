@@ -1385,6 +1385,8 @@ func GetInteractionPriority(object target)
 {
 	// Self with high priority
 	if (target == this) return 100;
+	// Dead Clonks are shown (for a death message e.g.) but sorted to the bottom.
+	if (!GetAlive()) return -190;
 	var owner = NO_OWNER;
 	if (target) owner = target->GetOwner();
 	// Prefer own clonks for item transfer
