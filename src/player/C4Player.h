@@ -154,8 +154,6 @@ public:
 
 public:
 	void Eliminate();
-	void Default();
-	void Clear();
 	void ClearPointers(C4Object *tptr, bool fDeath);
 	void Execute();
 	void ExecuteControl();

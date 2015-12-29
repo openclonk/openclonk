@@ -47,12 +47,47 @@
 
 C4Player::C4Player() : C4PlayerInfoCore()
 {
-	Default();
+	Filename[0] = 0;
+	Number = C4P_Number_None;
+	ID = 0;
+	Team = 0;
+	DefaultRuntimeData();
+	Menu.Default();
+	Crew.Default();
+	CrewInfoList.Default();
+	LocalControl = false;
+	BigIcon.Default();
+	Next = NULL;
+	fFogOfWar = true;
+	LeagueEvaluated = false;
+	GameJoinTime = 0; // overwritten in Init
+	pstatControls = pstatActions = NULL;
+	ControlCount = ActionCount = 0;
+	LastControlType = PCID_None;
+	LastControlID = 0;
+	pMsgBoardQuery = NULL;
+	pGamepad = NULL;
+	NoEliminationCheck = false;
+	Evaluated = false;
+	ZoomLimitMinWdt = ZoomLimitMinHgt = ZoomLimitMaxWdt = ZoomLimitMaxHgt = ZoomWdt = ZoomHgt = 0;
+	ZoomLimitMinVal = ZoomLimitMaxVal = ZoomVal = Fix0;
+	ViewLock = true;
+	SoundModifier.Set0();
 }
 
 C4Player::~C4Player()
 {
-	Clear();
+	ClearGraphs();
+	Menu.Clear();
+	SetSoundModifier(NULL);
+	while (pMsgBoardQuery)
+	{
+		C4MessageBoardQuery *pNext = pMsgBoardQuery->pNext;
+		delete pMsgBoardQuery;
+		pMsgBoardQuery = pNext;
+	}
+	delete pGamepad; pGamepad = NULL;
+	ClearControl();
 }
 
 bool C4Player::ObjectInCrew(C4Object *tobj)
@@ -853,57 +888,6 @@ bool C4Player::Message(const char *szMsg)
 	SCopy(szMsg,MessageBuf,256);
 	MessageStatus=SLen(szMsg)*2;
 	return true;
-}
-
-void C4Player::Clear()
-{
-	ClearGraphs();
-	Crew.Clear();
-	CrewInfoList.Clear();
-	Menu.Clear();
-	BigIcon.Clear();
-	SetSoundModifier(NULL);
-	fFogOfWar=true;
-	while (pMsgBoardQuery)
-	{
-		C4MessageBoardQuery *pNext = pMsgBoardQuery->pNext;
-		delete pMsgBoardQuery;
-		pMsgBoardQuery = pNext;
-	}
-	if (pGamepad) delete pGamepad;
-	pGamepad = NULL;
-	Status = 0;
-	ClearControl();
-}
-
-void C4Player::Default()
-{
-	Filename[0]=0;
-	Number=C4P_Number_None;
-	ID=0;
-	Team = 0;
-	DefaultRuntimeData();
-	Menu.Default();
-	Crew.Default();
-	CrewInfoList.Default();
-	LocalControl=false;
-	BigIcon.Default();
-	Next=NULL;
-	fFogOfWar=true;
-	LeagueEvaluated=false;
-	GameJoinTime=0; // overwritten in Init
-	pstatControls = pstatActions = NULL;
-	ControlCount = ActionCount = 0;
-	LastControlType = PCID_None;
-	LastControlID = 0;
-	pMsgBoardQuery = NULL;
-	pGamepad = NULL;
-	NoEliminationCheck = false;
-	Evaluated = false;
-	ZoomLimitMinWdt=ZoomLimitMinHgt=ZoomLimitMaxWdt=ZoomLimitMaxHgt=ZoomWdt=ZoomHgt=0;
-	ZoomLimitMinVal=ZoomLimitMaxVal=ZoomVal=Fix0;
-	ViewLock = true;
-	SoundModifier.Set0();
 }
 
 bool C4Player::Load(const char *szFilename, bool fSavegame)
