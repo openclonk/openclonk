@@ -23,10 +23,8 @@
 class C4Extra
 {
 public:
-	C4Extra() { Default(); };     // ctor
-	~C4Extra() { Clear(); };      // dtor
-	void Default(); // zero fields
-	void Clear();   // free class members
+	C4Extra();
+	~C4Extra();
 
 	bool Init();      // init extra group, using scneario presets
 	bool InitGroup(); // open extra group

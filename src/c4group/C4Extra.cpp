@@ -23,12 +23,11 @@
 #include <C4Game.h>
 #include <C4Log.h>
 
-void C4Extra::Default()
+C4Extra::C4Extra()
 {
-	// zero fields
 }
 
-void C4Extra::Clear()
+C4Extra::~C4Extra()
 {
 	// free class members
 	for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
