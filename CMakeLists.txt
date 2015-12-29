@@ -1148,9 +1148,6 @@ endif()
 if(USE_COCOA)
 	target_link_libraries(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolbox")
 endif()
-if (GLEW_FOUND)
-	set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS ${GLEW_DEFINITIONS})
-endif()
 
 add_executable(openclonk-server
 	${OC_SYSTEM_SOURCES}
