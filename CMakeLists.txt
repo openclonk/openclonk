@@ -1331,6 +1331,26 @@ if(MSVC_VERSION EQUAL 1600)
 	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
 endif()
 
+# For MSVC 2015, add a Solution Items folder to the solution that contains
+# a reference to the debugger visualization file.
+if(CMAKE_GENERATOR MATCHES "^Visual Studio 14 2015")
+	file(RELATIVE_PATH NATVIS_SOURCE_PATH "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/openclonk.vs14.natvis")
+	file(TO_NATIVE_PATH "${NATVIS_SOURCE_PATH}" NATVIS_SOURCE_PATH)
+	# We need to set the GUID of this to the cache, so CMake uses it for
+	# dependency resolution. As a special bonus, this makes it so the
+	# project has an actual version 4 GUID instead of the CMake-generated
+	# almost-version-3 (actually just a bunch of MD5 hex output with dashes).
+	set(VS_SolutionItems_GUID "9570CE35-9E26-4091-AF06-6B0C7F9D8F69")
+	set("Solution Items_GUID_CMAKE" "${VS_SolutionItems_GUID}" CACHE INTERNAL "Stored GUID")
+	# Unfortunately CMake doesn't allow us to add solution items directly, so
+	# instead we abuse that it doesn't validate the TYPE parameter and instead
+	# passes it straight through into the .sln file.
+	include_external_msproject(
+		"Solution Items" "Solution Items"
+		TYPE "2150E333-8FDC-42A3-9474-1A3956D46DE8}\") = \"Solution Items\", \"Solution Items\", \"{${VS_SolutionItems_GUID}}\"\n	ProjectSection(SolutionItems) = preProject\n		${NATVIS_SOURCE_PATH} = ${NATVIS_SOURCE_PATH}\n	EndProjectSection\n#"
+	)
+endif()
+
 ############################################################################
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################

@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+OpenClonk, http://www.openclonk.org
+
+Copyright (c) 2015, The OpenClonk Team and contributors
+
+Distributed under the terms of the ISC license; see accompanying file
+"COPYING" for details.
+
+"Clonk" is a registered trademark of Matthes Bender, used with permission.
+See accompanying file "TRADEMARK" for details.
+
+To redistribute this file separately, substitute the full license texts
+for the above references.
+-->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="StdStrBuf">
+    <DisplayString>{pData,s}</DisplayString>
+    <StringView>(const char*)pData</StringView>
+  </Type>
+  <Type Name="C4ID">
+    <DisplayString IncludeView="name">{C4ID::names[v],sb}</DisplayString>
+    <DisplayString>{C4ID::names[v],sb} ({v})</DisplayString>
+  </Type>
+  <Type Name="C4Def">
+    <DisplayString IncludeView="name">{id,view(name)}</DisplayString>
+    <DisplayString>{id}</DisplayString>
+  </Type>
+
+  <Type Name="C4String">
+    <DisplayString>{Data}</DisplayString>
+  </Type>
+
+  <Type Name="C4ValueArray">
+    <Expand>
+      <Item Name="[size]">iSize</Item>
+      <Item Name="[capacity]">iCapacity</Item>
+      <ArrayItems>
+        <Size>iSize</Size>
+        <ValuePointer>pData</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="C4AulBCC">
+    <!-- opcodes with string parameter -->
+    <DisplayString Condition="
+                   bccType==AB_STRING ||
+                   bccType==AB_PROP ||
+                   bccType==AB_PROP_SET ||
+                   bccType==AB_LOCALN ||
+                   bccType==AB_LOCALN_SET ||
+                   bccType==AB_GLOBALN ||
+                   bccType==AB_GLOBALN_SET ||
+                   bccType==AB_CALL ||
+                   bccType==AB_CALLFS
+                   ">{bccType,en} {Par.s,na}</DisplayString>
+    <!-- opcodes with int parameter -->
+    <DisplayString Condition="
+                   bccType==AB_INT ||
+                   bccType==AB_BOOL ||
+                   bccType==AB_DUP ||
+                   bccType==AB_STACK_SET ||
+                   bccType==AB_POP_TO ||
+                   bccType==AB_PARN_CONTEXT ||
+                   bccType==AB_VARN_CONTEXT ||
+                   bccType==AB_GLOBALN ||
+                   bccType==AB_GLOBALN_SET ||
+                   bccType==AB_NEW_ARRAY ||
+                   bccType==AB_NEW_PROPLIST ||
+                   bccType==AB_STACK ||
+                   bccType==AB_JUMP ||
+                   bccType==AB_JUMPAND ||
+                   bccType==AB_JUMPOR ||
+                   bccType==AB_JUMPNNIL ||
+                   bccType==AB_CONDN ||
+                   bccType==AB_COND ||
+                   bccType==AB_FOREACH_NEXT
+                   ">{bccType,en} {Par.i}</DisplayString>
+    <!-- opcodes with function parameter -->
+    <DisplayString Condition="
+                   bccType==AB_CFUNCTION ||
+                   bccType==AB_FUNC
+                   ">{bccType,en} {Par.f}</DisplayString>
+    <!-- opcodes with proplist parameter -->
+    <DisplayString Condition="
+                   bccType==AB_CPROPLIST
+                   ">{bccType,en} {Par.p}</DisplayString>
+    <!-- opcodes with array parameter -->
+    <DisplayString Condition="
+                   bccType==AB_CARRAY
+                   ">{bccType,en} {Par.a}</DisplayString>
+    <!-- opcodes without parameters -->
+    <DisplayString Condition="
+                   bccType==AB_NIL ||
+                   bccType==AB_EOFN ||
+                   bccType==AB_ERR ||
+                   bccType==AB_BitNot ||
+                   bccType==AB_Not ||
+                   bccType==AB_Neg ||
+                   bccType==AB_Inc ||
+                   bccType==AB_Pow ||
+                   bccType==AB_Div ||
+                   bccType==AB_Mul ||
+                   bccType==AB_Mod ||
+                   bccType==AB_Sub ||
+                   bccType==AB_Sum ||
+                   bccType==AB_LeftShift ||
+                   bccType==AB_RightShift ||
+                   bccType==AB_LessThan ||
+                   bccType==AB_LessThanEqual ||
+                   bccType==AB_GreaterThan ||
+                   bccType==AB_GreaterThanEqual ||
+                   bccType==AB_Equal ||
+                   bccType==AB_NotEqual ||
+                   bccType==AB_BitAnd ||
+                   bccType==AB_BitXOr ||
+                   bccType==AB_BitOr ||
+                   bccType==AB_ARRAYA ||
+                   bccType==AB_ARRAYA_SET ||
+                   bccType==AB_ARRAY_SLICE ||
+                   bccType==AB_ARRAY_SLICE_SET ||
+                   bccType==AB_RETURN ||
+                   bccType==AB_PAR ||
+                   bccType==AB_THIS ||
+                   bccType==AB_DEBUG
+                   ">{bccType,en}</DisplayString>
+    <!-- unknown opcodes -->
+    <DisplayString>{bccType,en} {Par,na}</DisplayString>
+  </Type>
+
+  <Type Name="C4Value">
+    <DisplayString Condition="Type==C4V_Nil">nil</DisplayString>
+    <DisplayString Condition="Type==C4V_Int">{Data.Int}</DisplayString>
+    <DisplayString Condition="Type==C4V_Bool">{(bool)Data.Int}</DisplayString>
+    <DisplayString Condition="Type==C4V_PropList">{Data.PropList,na}</DisplayString>
+    <DisplayString Condition="Type==C4V_String">{Data.Str,na}</DisplayString>
+    <DisplayString Condition="Type==C4V_Array">{Data.Array,na}</DisplayString>
+    <DisplayString Condition="Type==C4V_Function">{Data.Fn,na}</DisplayString>
+    <DisplayString>{Type,en} {Data}</DisplayString>
+    <Expand>
+      <Item Name="[type]">Type</Item>
+      <Item Name="[value]" Condition="Type==C4V_Int">Data.Int</Item>
+      <Item Name="[value]" Condition="Type==C4V_Bool">(bool)Data.Int</Item>
+      <ExpandedItem Condition="Type==C4V_PropList">Data.PropList</ExpandedItem>
+      <Item Name="[value]" Condition="Type==C4V_String">Data.Str</Item>
+      <ExpandedItem Condition="Type==C4V_Array">Data.Array</ExpandedItem>
+      <Item Name="[value]" Condition="Type==C4V_Function">Data.Fn</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="C4Property">
+    <DisplayString>{(const char*)Key-&gt;Data.pData,na}: {Value}</DisplayString>
+  </Type>
+
+  <Type Name="C4PropList">
+    <Expand>
+      <Item Name="[prototype]">prototype</Item>
+      <ExpandedItem>Properties</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="C4Set&lt;*&gt;">
+    <Expand>
+      <Item Name="[size]">Size</Item>
+      <Item Name="[capacity]">Capacity</Item>
+      <CustomListItems>
+        <Variable Name="slot" InitialValue="0"/>
+        <Size>Size</Size>
+        <Loop>
+          <If Condition="Table[slot].Key != nullptr">
+            <Item Name="[{slot}]">Table[slot]</Item>
+          </If>
+          <Exec>++slot</Exec>
+          <Break Condition="slot &gt;= Capacity"/>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="C4AulScriptFunc">
+    <DisplayString>{*Owner,view(name)}::{Name,sb}</DisplayString>
+    <Expand>
+      <Synthetic Name="[parameters]">
+        <!--<DisplayString>{ParType,[ParCount]}</DisplayString>-->
+        <Expand>
+          <ArrayItems>
+            <Size>ParCount</Size>
+            <ValuePointer>ParType</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+
+  <Type Name="C4DefScriptHost">
+    <DisplayString IncludeView="name">{*Def,view(name)}</DisplayString>
+    <DisplayString>{*Def}</DisplayString>
+  </Type>
+  <Type Name="C4GameScriptHost">
+    <DisplayString IncludeView="name">{{scenario}}</DisplayString>
+    <DisplayString>{ScriptName}</DisplayString>
+  </Type>
+
+  <Type Name="C4RefCntPointer&lt;*&gt;">
+    <DisplayString>{*p}</DisplayString>
+  </Type>
+
+  <Type Name="C4MaterialMap">
+    <Expand>
+      <Synthetic Name="[materials]">
+        <Expand>
+          <ArrayItems>
+            <Size>Num</Size>
+            <ValuePointer>Map</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+      <Synthetic Name="[reactions]">
+        <Expand>
+          <CustomListItems>
+            <Variable Name="pxs" InitialValue="0"/>
+            <Variable Name="ls" InitialValue="0"/>
+            <Loop>
+              <Loop>
+                <Item Name="{Map[pxs]} -&gt; {Map[ls]}" Condition="ppReactionMap[(ls + 1)*(Num + 1) + pxs + 1] != nullptr">ppReactionMap[(ls + 1)*(Num + 1) + pxs + 1]</Item>
+                <Exec Condition="pxs &lt; Num">++pxs</Exec>
+                <Break Condition="pxs == Num"/>
+              </Loop>
+              <Exec>pxs = 0</Exec>
+              <Exec Condition="ls &lt; Num">++ls</Exec>
+              <Break Condition="ls == Num"/>
+            </Loop>
+          </CustomListItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+  <Type Name="C4Material">
+    <DisplayString>{Name,sb}</DisplayString>
+  </Type>
+</AutoVisualizer>
