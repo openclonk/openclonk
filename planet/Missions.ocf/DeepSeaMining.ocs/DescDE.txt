@@ -1,0 +1,11 @@
+  Tiefseemine
+
+Ihr seid auf einer einsamen Insel inmitten des Ozeans gestranded. Eure einzige Hoffnung ist, ein Kommunikationsgerät fertig zu stellen und um Hilfe zu rufen. Leider braucht das Gerät zum Bau Edelsteine, die sich nur tief im Ozean finden lassen.
+
+Ziel: Vervollständige die Konstruktion des Kristallkommunikators.
+
+Tipps:
+-Der Kommunikator braucht Edelsteine, die sich auf Inseln unter dem Meer sowie tief im Meeresgrund befinden.
+-Das Wasser ist tief. Es lohnt sich, einen trockenen Schacht oder zumindest Atemlöcher auf dem Weg zu schaffen.
+-Die roten Fische beißen.
+-Wenn die Kohle knapp wird, kann man Holz zum Schmelzen von Metall nutzen. Bäume wachsen nach.

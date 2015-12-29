@@ -1,0 +1,3 @@
+ Verteidigung
+
+In Verteidigungsszenarien beschuetzen ein oder mehr Spieler ihre Basis gegen immer staerker werdende Wellen von Angreifern. Jeder erledigte Angreifer gibt Gold und es koennen Upgrades gekauft oder Tuerme gebaut werden.

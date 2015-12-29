@@ -1,0 +1,11 @@
+  Deep sea mine
+
+You are stranded on a lonely island amidst the vast ocean. Your only hope is to build a long range communication device and call for help. But the device needs precious materials to construct which won't be easy to obtain.
+
+Goal: Finish construction of the crystal communicator.
+
+Hints:
+-The crystal communicator needs gems for its construction. Try to find them on islands in the ocean and beneath the ocean floor.
+-The ocean is deep. You need to create breating space on your way down.
+-Red fish are evil!
+-If coal is getting scarce, use wood to burn metal. Trees will regrow.

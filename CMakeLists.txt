@@ -660,8 +660,6 @@ set(OC_CLONK_SOURCES
 	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
-	src/lib/C4RTF.cpp
-	src/lib/C4RTF.h
 	src/lib/C4Stat.cpp
 	src/lib/C4Stat.h
 	src/lib/StdAdaptors.h

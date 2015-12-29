@@ -1,0 +1,8 @@
+ Thunderous Skies
+
+Claim rulership over this island which floats up high in the sky.
+
+Goal: King of the Hill (Points are awarded when the king kills someone, or when someone kills the king.)
+
+- Solidfy your control by gaining 5 points.
+- The king will be healed by 30% of the damage he inflicts.

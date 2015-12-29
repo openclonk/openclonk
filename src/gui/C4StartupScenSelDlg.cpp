@@ -25,7 +25,6 @@
 #include <C4StartupNetDlg.h>
 #include <C4ComponentHost.h>
 #include <C4Components.h>
-#include <C4RTF.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameDialogs.h>
@@ -513,9 +512,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		C4ComponentHost DefDesc;
 		if (C4Language::LoadComponentHost(&DefDesc, Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 		{
-			C4RTFFile rtf;
-			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
-			sDesc.Take(rtf.GetPlainText());
+			sDesc.Copy(DefDesc.GetData());
 		}
 		// load title
 		fctTitle.Load(Group, C4CFN_ScenarioTitle,C4FCT_Full,C4FCT_Full,false,true);

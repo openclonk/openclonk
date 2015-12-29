@@ -1,0 +1,3 @@
+ Arena
+
+This scenario folder contains fast-paced melees. You have free for all or team based rounds. The arena style provides for quick relaunches and spawn equipment.

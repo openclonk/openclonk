@@ -1,0 +1,6 @@
+ Kamikaze Cowboys
+
+Daring clonks race on boompacks, a hazardous undertaking, as boompacks are little more than oversized fireworks which explode shortly after ignition.
+Each clonk gets a new boompack in his hand every few seconds, with which he can ride his way to the goal.
+
+Goal: Race

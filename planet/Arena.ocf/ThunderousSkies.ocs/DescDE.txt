@@ -1,0 +1,8 @@
+    Donnernde Himmel 
+ 
+Erlange die Herrschaft über diese Himmelsinsel, die hoch oben in den Wolken schwebt. 
+ 
+Ziel: King of the Hill (nur der König bekommt Punkte für Kills oder andere Spieler für einen Königsmord) 
+ 
+- Erlange die Herrschaft über die Insel, indem zu 5 Punkte erreichst. 
+- Als König wirst du um 30% des Schadens, den du verursachst, geheilt! 

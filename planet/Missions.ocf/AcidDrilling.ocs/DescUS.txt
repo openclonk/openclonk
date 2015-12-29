@@ -1,0 +1,13 @@
+ Acid drilling
+
+Count Helmi had issued a new moat to be constructed for the improved defense of his noble estate. Unfortunately for his great project the most important ingredient is missing: Acid. Now, he summoned you to acquire it from the nearby volcano. And "No", he calls after you, "Lava is beyond question, that is completely out of fashion!"
+
+Goal: Fill the basin to the right with acid.
+
+Hints:
+- You cannot build structures within power crystal range
+- The length of pump pipes is limited in this scenario.
+- Since there is no power plant available and power crystals are in the way, you have to think about how you can get power into the cave.
+- Pumps generate energy when they pump downwards.
+
+

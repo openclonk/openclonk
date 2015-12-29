@@ -1,0 +1,9 @@
+   Gold Rush
+
+Clonk geologists recently discovered that an ancient glacier deposited significant amounts of gold beneath the Forest of Orgos. Your expedition has set out to collect the reward buried deep below.
+
+Goal: Gold idol construction and Profit (Gain clunkers to complete the scenario).
+
+- Multiple players can work cooperatively towards the goal.
+- Gold bars or nuggets may be put into the flag for money.
+- Gold bars are worth more than gold nuggets.

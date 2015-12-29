@@ -1,0 +1,8 @@
+ Hot ice
+
+A heated battle on shaky grounds. Care for explosives and chests from above!
+
+Goal: Last Man Standing (Be the one to stay alive longest)
+
+-An arena for two to forty players.
+-Inspired by Clonk Rage scenario by Diddy

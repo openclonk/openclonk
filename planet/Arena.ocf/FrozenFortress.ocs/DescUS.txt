@@ -1,0 +1,12 @@
+  Frozen Fortress
+
+Two rival fortresses are fighting in these unfavourable surroundings.
+
+Goal: Steal your enemies' flag and bring it to your base (your flag has to be in your base)!
+
+- Three useful spells, bound into scrolls, may help you.
+- The chests are frequently restocked with weapons and other useful stuff.
+- The geyser in the middle of the map erupts almost once a minute.
+- Because it is so cold here, you cannot dig through the ice, however, you can destroy it with explosives.
+- The gates open automatically when a friendly clonk comes within range.
+

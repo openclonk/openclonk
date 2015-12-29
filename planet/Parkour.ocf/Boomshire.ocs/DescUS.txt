@@ -1,0 +1,7 @@
+ Boomshire
+
+This cooperative race for two players is different from other races because the players need to work together in order to win. None of the tasks can be solved alone.
+
+Goal: Cooperative race
+
+- Warning: This scenario requires precisely two players!

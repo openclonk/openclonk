@@ -1,0 +1,8 @@
+ Cool Cavern
+
+You were a member of the most prestigious expedition into mountainous territory ever organized. All of a sudden the expedition turned to horror as an earthquake shattered the snow deck you were walking on. You are now trapped inside the deep cavern below. You must abandon your scientific goals; survival is the only thing that matters. Be the first to reach the surface again.
+
+Goal: Race
+
+- Chests contain useful items.
+- In the co-op mode only one team member needs to pass each checkpoint.

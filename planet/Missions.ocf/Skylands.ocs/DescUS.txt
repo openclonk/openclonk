@@ -1,0 +1,5 @@
+  Skylands
+
+The rising storm smashed your plane and scattered the planes all over the skylands. You must gather the parts as quickly as possible before the storm strengthens again and assemble the plane. You will need to construct a new engine because that thing went straight to the surface, miles below you.
+
+Goal: Assemble the plane from all its parts (skids, chassis, wings, propellor and engine).

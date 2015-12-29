@@ -1,0 +1,13 @@
+ Hideout
+
+Protect your hideout from the opposing team and try to capture the enemy flag.
+
+Goal: Steal your enemies' flag and bring it to your base. 
+
+- The gates are destructible and open automatically for friendly clonks.
+- Chests inside the hideouts contain basic weapons.
+- Chests outside the hideouts contain more advanced weaponry.
+- The central chest contains only gems and other special stuff.
+- Throw gems! They activate on impact.
+- Killed enemies leave a healing gem behind. Use it to slowly heal your clonk.
+- Your flag must be in your base for you to score.

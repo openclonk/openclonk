@@ -1,0 +1,7 @@
+ Scorched Gardens
+
+Once a beautiful place, the Scorched Gardens are now a deserted ruin where only fire-proof plants can grow. In addition to your enemies, you will also have to face lava pools and randomly falling meteorites.
+
+Goal: Melee
+
+- Use the teleglove to throw meteorites at your enemies.

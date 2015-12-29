@@ -1,0 +1,4 @@
+ Missions
+
+Missions are cooperative settlement rounds with very specific goals. The players work together to overcome certain challenging tasks and find ingenious solutions or engineer technical constructions to aid them.
+Often, these rounds also use custom rules and have a small intro story.

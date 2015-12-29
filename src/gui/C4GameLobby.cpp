@@ -22,7 +22,6 @@
 #include <C4Components.h>
 #include "C4Network2Dialogs.h"
 #include "C4GameOptions.h"
-#include "C4RTF.h"
 #include "C4ChatDlg.h"
 #include "C4PlayerInfoListBox.h"
 #include <C4MessageInput.h>
@@ -90,17 +89,10 @@ namespace C4GameLobby
 			}
 			else
 			{
-				StdStrBuf sDesc;
 				// load desc
 				C4ComponentHost DefDesc;
 				if (C4Language::LoadComponentHost(&DefDesc, ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
-				{
-					C4RTFFile rtf;
-					rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
-					sDesc.Take(rtf.GetPlainText());
-				}
-				if (!!sDesc)
-					pDescBox->AddTextLine(sDesc.getData(), &rTextFont, C4GUI_MessageFontClr, false, true, &rTitleFont);
+					pDescBox->AddTextLine(DefDesc.GetData(), &rTextFont, C4GUI_MessageFontClr, false, true, &rTitleFont);
 				else
 					pDescBox->AddTextLine(Game.ScenarioTitle.getData(), &rTitleFont, C4GUI_CaptionFontClr, false, true);
 			}

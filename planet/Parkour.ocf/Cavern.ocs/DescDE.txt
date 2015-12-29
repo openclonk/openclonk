@@ -1,0 +1,9 @@
+ Eisige Höhle
+
+Du warst auf einer prestigeträchtigen Expedition in einem bergigen Gebiet, als plötzlich die Erde zu beben begann und sich die Schneedecke unter deinen Füßen löste. Jetzt bist du tief in einer eisigen Höhle gefangen, doch kannst du weit oben das Loch erkennen, von dem du hier hereingefallen bist.
+Vergiss deine wissenschaftlichen Ziele, nun ist Überleben das einzige was zählt. Erreiche als Erster wieder die Oberfläche.
+
+Ziel: Wettrennen
+
+- Truhen können einige nützliche Gegenstände enthalten.
+- Im Kooperativmodus muss nur ein Teammitglied einen Checkpoint passieren

@@ -1,0 +1,5 @@
+ The Cauldron
+
+When a group of clonks are trapped in the Cauldron, the outcome is certain. Only the last clonk left alive will rise from its depths.
+
+Goal: Last Man Standing (Be the last one alive to win)

@@ -1,0 +1,10 @@
+ Crash landing
+
+Moments ago, you were eagerly sitting in your airplane on your way to the castle of the evil king. But then, turbulence caused by a volcano below catches your plane and you tumble towards the ground...
+
+Recover the plane to continue your voyage on your mission to kill the king!
+
+Goal: Plane recovery
+
+- Valuable water is on the other side of the lava lake but the path over the molten rock needs to be well prepared.
+- Talk to other clonks, they may be able to help you.

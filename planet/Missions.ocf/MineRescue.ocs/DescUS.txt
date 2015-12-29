@@ -1,0 +1,4 @@
+ Mine Rescue
+
+The mine in the Clepal mountains has been abandoned a long time ago. It turned out to be a too dangerous site with its icy weather conditions and difficult terrain. Mining operations began again only recently, but it didn't take long until the first accidents occured: An emergency call from three miners in the area has been received. Their power supply for their elevator has broken down, and now they are trapped in the mine. Can you restore electricity in the mountain area and save the miners?
+Goal: Power the mining elevator on the mountain with electricity.

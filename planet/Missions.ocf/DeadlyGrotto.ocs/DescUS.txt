@@ -1,0 +1,5 @@
+ Deadly Grotto
+
+The grottos beneath the iron mountains were once famous for their extensive stalactite caves and the massive statue of the proud mine worker. But since an earthquake has demolished the statue and its head has been washed away into the depths of the caves, the area has been cursed. The air stinks, the lakes are poisonous and most gold-seeking mine workers have left the place for good. Do you have what it takes to restore the glory of the grottos?
+
+Goal: Return the statue's head to its proper position.

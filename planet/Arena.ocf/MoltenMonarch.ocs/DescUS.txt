@@ -1,0 +1,9 @@
+ Molten Monarch
+
+Fight inside a volcano to regain leadership of the kingdom below the mountain.
+
+Goal: King of the Hill (Points are awarded when the king kills someone, or when someone kills the king.)
+
+- Solidify your control by gaining 6 points.
+- You will become the king if you reach the star circle first or by killing the current king.
+- The king has upgraded weaponry to help him survive longer.

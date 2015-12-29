@@ -236,19 +236,12 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 	// Unfortunately, there's no way to prealloc the buffer in an appropriate size
 	StdStrBuf sBuffer;
 
-	// Header
-	sBuffer.AppendFormat("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1031{\\fonttbl {\\f0\\fnil\\fcharset%d Times New Roman;}}", 0 /*FIXME: a number for UTF-8 here*/);
-	sBuffer.Append(LineFeed);
-
 	// Scenario title
-	sBuffer.AppendFormat("\\uc1\\pard\\ulnone\\b\\f0\\fs20 %s\\par",Game.ScenarioTitle.getData());
-	sBuffer.Append(LineFeed "\\b0\\fs16\\par" LineFeed);
+	sBuffer.Append(Game.ScenarioTitle.getData());
+	sBuffer.Append(LineFeed LineFeed);
 
 	// OK; each specializations has its own desc format
 	WriteDesc(sBuffer);
-
-	// End of file
-	sBuffer.Append(LineFeed "}" LineFeed);
 
 	// Generate Filename
 	StdStrBuf sFilename; char szLang[3];
@@ -262,7 +255,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 void C4GameSave::WriteDescLineFeed(StdStrBuf &sBuf)
 {
 	// paragraph end + cosmetics
-	sBuf.Append("\\par" LineFeed);
+	sBuf.Append(LineFeed LineFeed);
 }
 
 void C4GameSave::WriteDescDate(StdStrBuf &sBuf, bool fRecord)
@@ -321,8 +314,6 @@ void C4GameSave::WriteDescDefinitions(StdStrBuf &sBuf)
 			// Get exe relative path
 			StdStrBuf sDefFilename;
 			sDefFilename.Copy(Config.AtRelativePath(szDef));
-			// Convert rtf backslashes
-			sDefFilename.Replace("\\", "\\\\");
 			// Append comma
 			if (cnt>0) sBuf.Append(", ");
 			// Apend to desc

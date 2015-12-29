@@ -1,0 +1,8 @@
+   Wasserwerk 
+ 
+You were sent to the mine where the villagers of Wipfville get their metal supplies. Unfortunately the mine got flooded as a dike broke during a recent disaster. The chief of the mining operation tells you the mine is still in operation, but they have trouble getting the metal out of the mine. This is where you come in: help the miners salvage their lorries filled with metal. 
+ 
+Goal: Salvage the lorry from the flooded mine. 
+ 
+Tutorial explains: Pump and liquids, elevator, wall kits 
+ 

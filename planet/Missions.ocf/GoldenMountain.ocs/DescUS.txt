@@ -1,0 +1,9 @@
+ Golden Mountain
+
+Countless myths surround the Golden Mountain. It is said that the heat of this volcano will never cease and devour anyone who dares come close to touch the riches buried within.
+
+Goal: Sell 30 gems.
+
+Hints:
+- Loam and metal bridges are very useful, but you do not have the tools to build them. Maybe you can find something in the caves?
+- Grapple bow and tele glove are suitable tools for mining on top of the lava

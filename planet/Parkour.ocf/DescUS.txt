@@ -1,0 +1,4 @@
+ Parkour
+
+This scenario folder contains racing scenarios and cooperative obstacle courses. The goal is to finish every scenario as quickly as possible. Though it is not enough to simply get to the end, because every scenario has checkpoints along the way which must be reached as well.
+	
