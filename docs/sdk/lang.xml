@@ -19,9 +19,9 @@ US:Attack of the Killer Wipfs
         <code>FR:Les wipfes moerderesque attaquent</code>        <text>If an entry for the choosen language is present, the Title entry from the <emlink href="scenario/scenario.html#SektionHead">Scenario.txt</emlink> is replaced by the corresponding name.</text>
         <text>Important: No quotation marks and special characters should be used.</text>
       </dd>
-      <dt id="Desctxt"><img height="16" src="../images/icon_text.png" width="16"/>Desc*.rtf</dt>
+      <dt id="Desctxt"><img height="16" src="../images/icon_text.png" width="16"/>Desc*.txt</dt>
       <dd>
-        <text>To customize the description of a <emlink href="scenario/index.html#Desc__rtf">scenario</emlink> language dependant, a Desc*.rtf in the scenario has to be present. (The * is a placeholder for the language abbreviation)</text>
+        <text>To customize the description of a <emlink href="scenario/index.html#Desc__txt">scenario</emlink> language dependant, a Desc*.txt in the scenario has to be present. (The * is a placeholder for the language abbreviation)</text>
       </dd>
       <dt id="Sciptc"><img height="16" src="../images/icon_text.png" width="16"/>Script.c, Teams.txt</dt>
       <dd>

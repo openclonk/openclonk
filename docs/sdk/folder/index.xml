@@ -25,11 +25,10 @@
       <dd>
         <text>The icon of a scenario folder which is to be displayed instead of the book icon. 24x24 pixels, alpha channel is used for transparency.</text>
       </dd>
-      <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.png" width="16"/>Desc*.rtf</dt>
+      <dt id="Desc__txt"><img height="16" src="../../images/icon_text.png" width="16"/>Desc*.txt</dt>
       <dd>
-        <text>The description text of the scenario in rich text format (rtf). '__' is to be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a scenario file of which the game will automatically load the one appropriate for the configured language.</text>
-        <text>The font of the description text is set internally on display. The character size in the file should be 10pt for headings and 8pt for text. Images or other rtf tags are ignored.</text>
-        <text>It is recommended to edit this file using a small scale rtf editor such as WordPad.exe in Windows and not a full-blown word processor such as Word as these will stuff kilobytes of unneeded extra information into the rtf file.</text>
+        <text>The description of the folder. '__' must be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a folder file of which the game will automatically load the one appropriate for the configured language.</text>
+        <text>The first line of the file will be used as a heading.</text>
       </dd>
       <dt id="Titletxt"><img height="16" src="../../images/icon_text.png" width="16"/>Title.txt</dt>
       <dd>
