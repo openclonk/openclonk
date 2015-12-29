@@ -24,7 +24,7 @@ protected func Initialize()
 		wdt = BoundBy(parent->GetObjWidth(), 8, 120);
 	SetWidth(wdt);
 	// Move objects out of the basement.
-	MoveOutOfBasement();
+	 MoveOutOfSolidMask();
 	return _inherited(...);
 }
 
@@ -64,36 +64,6 @@ public func  SetParent(object to_parent)
 }
 
 public func GetParent() { return parent; }
-
-// Move objects out of the basement.
-private func MoveOutOfBasement()
-{
-	// Find all objects inside the basement which are stuck.
-	var wdt = GetObjWidth();
-	var hgt = GetObjHeight();
-	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)), Find_AtRect(-wdt / 2, -hgt / 2, wdt, hgt), Find_NoContainer());
-	// Move up these objects.
-	for (var obj in lying_around)
-	{
-		var x = obj->GetX();
-		var y = obj->GetY();
-		var delta_y = 0;
-		var max_delta = obj->GetObjHeight() + hgt;
-		// Move up object until it is not stuck any more.
-		while (obj->Stuck() || obj->GetContact(-1, CNAT_Bottom))
-		{
-			// Only move up the object by at most its height plus the basements height.
-			if (delta_y > max_delta)
-			{
-				obj->SetPosition(x, y);
-				break;
-			}
-			delta_y++;
-			obj->SetPosition(x, y - delta_y);
-		}
-	}
-	return;
-}
 
 // Is a construction that is built just below the surface.
 public func IsBelowSurfaceConstruction() { return true; }
