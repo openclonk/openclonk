@@ -35,8 +35,6 @@ protected:
 public:
 	bool GetEntryPoint(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY);
 	void Draw(C4TargetFacet &cgo, bool fHighlight=false);
-	void Default();
-	void Clear();
 	bool At(int32_t iX, int32_t iY);
 };
 
