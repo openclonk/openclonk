@@ -1,0 +1,7 @@
+Name=Lokomotive
+Description=Transportmittel für lange Strecken und schwere Ladung.
+
+MsgNoCoal=Keine Kohle im Ofen!
+MsgNoWater=Kein Wasser im Kessel!
+MsgNoCoalAndWater=Keine Kohle und kein Wasser verfügbar!
+MsgStuck=Lokomotive steckt fest

@@ -1,0 +1,4 @@
+# Intro sequence messages
+MsgDriveTrain=We only have to drive this train to the village on the other side of these canyons.
+MsgOutOfFuel=Are we out of fuel again?!
+MsgBridgesGone=Yes, and it seems all the bridges over the canyons have been destroyed as well.

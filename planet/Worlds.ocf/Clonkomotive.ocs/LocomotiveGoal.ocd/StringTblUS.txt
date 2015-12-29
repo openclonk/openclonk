@@ -1,0 +1,5 @@
+Name=Locomotive Transport
+
+# Goal window
+MsgGoalFulfilled=Done! You brought the locomotive safely across the landscape!
+MsgGoalUnfulfilled=Bring the locomotive safely to the train station on the other side of the map! Build wooden bridges to cross deep canyons. The train needs lots of coal and water as fuel.

@@ -1,0 +1,7 @@
+Name=Locomotive
+Description=Transportation device for long distances and heavy cargo.
+
+MsgNoCoal=No coal available!
+MsgNoWater=No water available!
+MsgNoCoalAndWater=No coal and water available!
+MsgStuck=Locomotive is stuck

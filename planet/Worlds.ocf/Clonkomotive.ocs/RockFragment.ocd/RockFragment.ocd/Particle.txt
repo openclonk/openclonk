@@ -1,0 +1,3 @@
+[Particle]
+Name=RockFragment
+Face=0,0,32,24,-16,-12

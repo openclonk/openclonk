@@ -1,0 +1,5 @@
+Clonkomotive
+
+A once flourishing train route through Clonkomotive Canyon has been disrupted by heavy rockfall. The rockfall destroyed the necessary bridges to connect the cliffs in between the canyons, thereby disconnecting two villages on the route. You are left with the locomotive in one of the villages and now you need to rebuild the route to the other village. Luckily Nature has settled and the rockfall has become less severe. 
+
+Goal: Transport the locomotive to the village on the far right.

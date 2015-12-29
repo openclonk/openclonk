@@ -1,0 +1,5 @@
+Name=Eisenbahn Transport
+
+# Goal window
+MsgGoalFulfilled=Geschafft! Du hast die Eisenbahn sicher durch die Landschaft gebracht!
+MsgGoalUnfulfilled=Bringe die Lokomotive sicher zu dem Bahnhof auf der anderen Seite der Karte! Baue hölzerne Brücken, um tiefe Schluchten zu überqueren. Die Lokomotive braucht viel Kohle und Wasser als Treibstoff.

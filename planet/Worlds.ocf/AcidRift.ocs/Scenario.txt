@@ -2,7 +2,7 @@
 Icon=34
 Title=AcidRift
 Version=6,0
-Difficulty=60
+Difficulty=70
 
 [Definitions]
 Definition1=Objects.ocd

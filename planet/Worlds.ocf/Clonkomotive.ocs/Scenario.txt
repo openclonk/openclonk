@@ -1,12 +1,11 @@
 [Head]
-Icon=23
-Title=Krakatoa
+Icon=24
+Title=Clonkomotive
 Version=6,0
-Difficulty=60
+Difficulty=40
 
 [Definitions]
 Definition1=Objects.ocd
-Definition2=Decoration.ocd\Misc.ocd\AltMaterials.ocd
 
 [Player1]
 Crew=Clonk=2
@@ -21,12 +20,11 @@ Crew=Clonk=2
 Crew=Clonk=2
 
 [Landscape]
-Sky=Clouds2
-MapWidth=200
-MapHeight=150
-SkyScrollMode=2
+MapWidth=400
+MapHeight=120
+TopOpen=1
 
 [Weather]
 Climate=0
-StartSeason=50
 YearSpeed=0
+Wind=0,100,-100,100
