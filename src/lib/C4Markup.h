@@ -76,6 +76,6 @@ public:
 	bool Clean() { return !pTags; } // empty?
 
 	static bool StripMarkup(char *szText); // strip any markup codes from given text buffer
-	static bool StripMarkup(class StdStrBuf *sText); // strip any markup codes from given text buffer
+	static bool StripMarkup(StdStrBuf *sText); // strip any markup codes from given text buffer
 };
 #endif // INC_STDMARKUP

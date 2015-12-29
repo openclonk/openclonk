@@ -38,15 +38,15 @@ const char *GetFilename(const char *path);
 const char *GetFilenameWeb(const char *path);
 const char *GetExtension(const char *fname);
 void DefaultExtension(char *szFileName, const char *szExtension);
-void DefaultExtension(class StdStrBuf *sFilename, const char *szExtension);
+void DefaultExtension(StdStrBuf *sFilename, const char *szExtension);
 void EnforceExtension(char *szFileName, const char *szExtension);
-void EnforceExtension(class StdStrBuf *sFilename, const char *szExtension);
+void EnforceExtension(StdStrBuf *sFilename, const char *szExtension);
 void RemoveExtension(char *szFileName);
 void RemoveExtension(StdStrBuf *psFileName);
 void AppendBackslash(char *szFileName);
 void TruncateBackslash(char *szFilename);
 void MakeTempFilename(char *szFileName);
-void MakeTempFilename(class StdStrBuf *sFileName);
+void MakeTempFilename(StdStrBuf *sFileName);
 bool WildcardListMatch(const char *szWildcardList, const char *szString); // match string in list like *.png|*.bmp
 bool IsWildcardString(const char *szString); // does szString contain wildcard characters?
 bool WildcardMatch(const char *szWildcard, const char *szString);

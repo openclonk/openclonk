@@ -109,7 +109,7 @@ struct C4RecordChunk
 		C4Control *pCtrl;
 		C4IDPacket *pPkt;
 		class C4PktDebugRec *pDbg;
-		class StdBuf *pFileData;
+		StdBuf *pFileData;
 	};
 	StdCopyStrBuf Filename; // RCT_File only
 public:
