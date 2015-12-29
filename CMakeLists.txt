@@ -11,7 +11,7 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.8.10)
+cmake_minimum_required (VERSION 3.0.2)
 project (openclonk CXX C)
 
 # CMP0054: Only interpret if() arguments as variables or keywords when unquoted
@@ -1195,18 +1195,8 @@ if(WIN32)
 	target_link_libraries(c4script ws2_32)
 endif()
 
-if(NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.10")
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
-else()
-	# CMake started supporting generator expressions in 2.8.10. Earlier
-	# versions pass most of this through unmodified, which confuses make.
-	# Once we stop supporting old versions of CMake, this case can be removed.
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELEASE NDEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELWITHDEBINFO NDEBUG)
-	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_MINSIZEREL NDEBUG)
-endif()
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:_DEBUG>)
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS $<$<NOT:$<CONFIG:Debug>>:NDEBUG>)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
