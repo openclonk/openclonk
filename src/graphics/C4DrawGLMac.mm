@@ -478,6 +478,8 @@ static NSOpenGLContext* MainContext;
 + (NSOpenGLContext*) createContext:(CStdGLCtx*) pMainCtx
 {
 	std::vector<NSOpenGLPixelFormatAttribute> attribs;
+	attribs.push_back(NSOpenGLPFAOpenGLProfile);
+	attribs.push_back(NSOpenGLProfileVersion3_2Core);
 	attribs.push_back(NSOpenGLPFADepthSize);
 	attribs.push_back(16);
 	if (!Application.isEditor && Config.Graphics.MultiSampling > 0)
@@ -495,10 +497,9 @@ static NSOpenGLContext* MainContext;
 	}
 	attribs.push_back(NSOpenGLPFANoRecovery);
 	//attribs.push_back(NSOpenGLPFADoubleBuffer);
-	attribs.push_back(NSOpenGLPFAWindow);
+	//attribs.push_back(NSOpenGLPFAWindow); // cannot create a core profile with this
 	attribs.push_back(0);
 	NSOpenGLPixelFormat* format = [[NSOpenGLPixelFormat alloc] initWithAttributes:&attribs[0]];
-
 	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? pMainCtx->objectiveCObject<NSOpenGLContext>() : nil];
 	if (!MainContext)
 		MainContext = result;
@@ -588,6 +589,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
+	glewExperimental = GL_TRUE; // Init GL 3.0+ function pointers
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
