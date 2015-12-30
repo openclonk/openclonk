@@ -39,6 +39,8 @@ CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF
 CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ${PROJECT_FOLDERS})
+
 ############################################################################
 # Assemble compiler flags
 ############################################################################
@@ -235,6 +237,7 @@ endif()
 if(NOT HAVE_GETOPT_H)
 	include_directories(SYSTEM thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
+	set_property(TARGET getopt PROPERTY FOLDER "Third-party libraries")
 	set(GETOPT_LIBRARIES getopt)
 endif()
 
@@ -242,6 +245,7 @@ endif()
 find_package(TinyXML)
 if(NOT TinyXML_FOUND)
 	add_subdirectory(thirdparty/tinyxml)
+	set_property(TARGET tinyxml PROPERTY FOLDER "Third-party libraries")
 	set(TinyXML_INCLUDE_DIRS thirdparty/tinyxml)
 	set(TinyXML_LIBRARIES tinyxml)
 	set(TinyXML_FOUND TRUE)
@@ -1073,6 +1077,7 @@ add_executable(c4script
 	src/script/C4ScriptStandalone.cpp
 	src/script/C4ScriptStandaloneStubs.cpp
 )
+set_property(TARGET c4script PROPERTY FOLDER "Utilities")
 
 target_link_libraries(c4script
 	libc4script
@@ -1140,6 +1145,7 @@ endif()
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
+	set_property(TARGET mape PROPERTY FOLDER "Utilities")
 	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
@@ -1157,6 +1163,7 @@ endif()
 add_executable(c4group
 	src/c4group/C4GroupMain.cpp
 )
+set_property(TARGET c4group PROPERTY FOLDER "Utilities")
 
 target_link_libraries(c4group
 	libmisc
@@ -1324,6 +1331,7 @@ ENDIF()
 # hack to build the data on install, see
 # http://public.kitware.com/Bug/view.php?id=8438
 add_custom_target(data)
+set_property(TARGET data PROPERTY FOLDER "Setup")
 install(
 	CODE
 	"execute_process(
@@ -1426,6 +1434,7 @@ endforeach()
 
 if (NOT APPLE)
 	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+	set_property(TARGET groups PROPERTY FOLDER "Setup")
 	add_dependencies(data groups)
 	
 	# Install new files
@@ -1467,6 +1476,7 @@ add_custom_command(
 add_custom_target(setup
 	DEPENDS setup_openclonk.exe groups
 )
+set_property(TARGET setup PROPERTY FOLDER "Setup")
 
 ############################################################################
 # CPack support
