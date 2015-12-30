@@ -1,6 +1,3 @@
-   Lernrunden 
- 
-Willkommen in der Welt von OpenClonk. Dieser Rundenordner enthält die Lernrunden. 
-Diese Reihe von Szenarien gibt dir eine grundlegende Einführung in die Steuerung des Clonks. Nachdem du diese Lernrunden durchgespielt hast, wirst du eine ordentliche Grundlage haben, mit der du gegen andere Clonker kämpfen, kooperative Siedelrunden spielen oder Adventures bestreiten kannst.
+Lernrunden
 
-In diesen Tutorials wirst du dich auf ein kleines Abenteuer begeben, begleitet von einem erfahrenen Clonk, der dich hineinführt in die Welt von OpenClonk. Du kannst die Nachrichten jederzeit mit der G Taste ausblenden.
+Willkommen in der Welt von OpenClonk. Dieser Rundenordner enthÃ¤lt die Lernrunden. Diese Reihe von Szenarien gibt dir eine grundlegende EinfÃ¼hrung in die Steuerung des Clonks. Nachdem du diese Lernrunden durchgespielt hast, wirst du eine ordentliche Grundlage haben, mit der du gegen andere Clonker kÃ¤mpfen, kooperative Siedelrunden spielen oder Adventures bestreiten kannst. In diesen Tutorials wirst du dich auf ein kleines Abenteuer begeben, begleitet von einem erfahrenen Clonk, der dich hineinfÃ¼hrt in die Welt von OpenClonk. Du kannst die Nachrichten jederzeit mit der G Taste ausblenden.

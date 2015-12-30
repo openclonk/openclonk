@@ -1,7 +1,7 @@
-   Carry & Construct 
- 
-Roger has lead you to Wipfville, a small village full of wipfs. Finally he has found his friends and is happy. However, the villagers of Wipfville are less so. Their village has been under attack by an evil fraction threatening to capture their wipf population. The first attack they could fend off, but has lead to lots of damage to the village. You decide to stay and help the villagers, because the Roger can make a lot of friends here. 
- 
-Goal: Help the villagers rebuild there village. 
- 
-Tutorial explains: constructing buildings, basic materials (metal, wood, rock) and mining. 
+Carry & Construct
+
+Roger has lead you to Wipfville, a small village full of wipfs. Finally he has found his friends and is happy. However, the villagers of Wipfville are less so. Their village has been under attack by an evil fraction threatening to capture their wipf population. The first attack they could fend off, but has lead to lots of damage to the village. You decide to stay and help the villagers, because the Roger can make a lot of friends here.
+
+Goal: Help the villagers rebuild there village.
+
+Tutorial explains: constructing buildings, basic materials (metal, wood, rock) and mining.

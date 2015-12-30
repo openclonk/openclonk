@@ -1,7 +1,7 @@
-  Wandernder Wipf
+Airborne Mining
 
-Dein bester Freund, ein noch junger und neckischer Wipf, ist mal wieder davon gerannt. Fange ihn bevor er sich verletzt.
+Up high in the skies, far above the stronghold of the evil wipf fraction, one of the villagers has an airbase. The head of Wipfville has asked you to help him mine gems from the sky islands over there. The clunkers can help the villagers hire some men in their fight against the evil fraction.
 
-Ziel: Finde und fange deinen kleinen Freund.
+Goal: Mine some gems from the sky islands.
 
-Lernrunde erklärt: Bewegung, Klettern und Schwimmen.
+Tutorial explains: Airship, rope ladder, selling valuables.

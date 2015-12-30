@@ -1,4 +1,3 @@
-   Playground 
- 
-In this round you can experiment with all objects in the game. Just have fun! 
- 
+Playground
+
+In this round you can experiment with all objects in the game. Just have fun!

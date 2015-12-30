@@ -1,4 +1,3 @@
-   Tutorials 
- 
-Welcome to the world of OpenClonk. This scenario folder contains the tutorials. 
-This sequence of scenarios provides an essential introduction to the controls of Clonk. After completing the tutorials you should have a proper foundation to engage in online battles or cooperate with others to build settlements and explore adventures.  In these tutorials you will embark on a small adventure aided by the tutorial guide with helpful messages. If you want to hide these messages you can toggle the guide's presence by pressing G on your keyboard.  
+Tutorials
+
+Welcome to the world of OpenClonk. This scenario folder contains the tutorials. This sequence of scenarios provides an essential introduction to the controls of Clonk. After completing the tutorials you should have a proper foundation to engage in online battles or cooperate with others to build settlements and explore adventures. In these tutorials you will embark on a small adventure aided by the tutorial guide with helpful messages. If you want to hide these messages you can toggle the guide's presence by pressing G on your keyboard.

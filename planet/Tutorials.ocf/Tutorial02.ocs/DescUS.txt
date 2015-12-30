@@ -1,7 +1,7 @@
-   Bombing Barriers 
- 
+Bombing Barriers
+
 Your little friend ran off once again, but now he is trapped and needs your help.  
- 
-Goal: locate and free your little friend. 
- 
-Tutorial explains: inventory, collecting, throwing, dropping and using items. 
+
+Goal: locate and free your little friend.
+
+Tutorial explains: inventory, collecting, throwing, dropping and using items.

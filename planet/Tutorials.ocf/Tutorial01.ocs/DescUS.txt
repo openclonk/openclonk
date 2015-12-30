@@ -1,8 +1,7 @@
-   Wandering Wipf 
- 
-Your best friend Roger, a still young and playful Wipf, has ran away. Catch him before he hurts himself. 
- 
-Goal: Find and catch your little friend. 
- 
-Tutorial explains: Movement, climbing and swimming. 
- 
+Wandering Wipf
+
+Your best friend Roger, a still young and playful Wipf, has ran away. Catch him before he hurts himself.
+
+Goal: Find and catch your little friend.
+
+Tutorial explains: Movement, climbing and swimming.

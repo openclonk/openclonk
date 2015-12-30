@@ -1,8 +1,7 @@
-   Airborne Mining 
- 
-Up high in the skies, far above the stronghold of the evil wipf fraction, one of the villagers has an airbase. The head of Wipfville has asked you to help him mine gems from the sky islands over there. The clunkers can help the villagers hire some men in their fight against the evil fraction. 
- 
-Goal: Mine some gems from the sky islands. 
- 
-Tutorial explains: Airship, rope ladder, selling valuables. 
- 
+Airborne Mining
+
+Up high in the skies, far above the stronghold of the evil wipf fraction, one of the villagers has an airbase. The head of Wipfville has asked you to help him mine gems from the sky islands over there. The clunkers can help the villagers hire some men in their fight against the evil fraction.
+
+Goal: Mine some gems from the sky islands.
+
+Tutorial explains: Airship, rope ladder, selling valuables.
