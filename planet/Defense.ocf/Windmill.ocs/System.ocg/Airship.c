@@ -8,7 +8,7 @@ public func AllStop()
 
 	for (var airship in FindObjects(Find_ID(Airship)))
 	{
-		airship->SetCommand();
+		airship->SetCommand("None");
 		airship->SetXDir();
 		airship->SetYDir();
 	}
@@ -41,7 +41,7 @@ public func PrepareToBoard(object cpt)
 		if (member->GetProcedure() == "PUSH") member->SetAction("Walk");
 		count++;
 	}
-	// Suitable crows
+	// Suitable crew
 	if (count >= 5)
 		Sound("Attack");
 	// Let the captain yell something

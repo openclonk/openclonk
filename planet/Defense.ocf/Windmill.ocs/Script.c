@@ -416,14 +416,14 @@ static const g_respawning_weapons = [Firestone, Rock];
 func InitWaveData()
 {
 	// Define different enemy types
-	var pilot      = { Name="$EnemyPilot$",     Inventory=Rock,         Energy= 30, Bounty=  10, Color=0xff0000ff, Skin=CSKIN_Alchemist, Backpack=0, Vehicle=Airship };
-	var swordman   = { Name="$EnemyCrewman$",   Inventory=Sword,        Energy= 50, Bounty=  15, Color=0xffff0000, Skin=CSKIN_Default,   Backpack=0,                    IsCrew=true };
-	var defender   = { Name="$EnemyDefender$",  Inventory=[Shield, Axe],Energy= 50, Bounty=  5,  Color=0xff00ff00, Skin=CSKIN_Farmer,    Backpack=0,                    IsCrew=true };
-	var bowman     = { Name="$EnemyBow$",       Inventory=[Bow, Arrow], Energy= 30, Bounty=  10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
-	var ballooner  = { Name="$EnemyBalloon$",   Inventory=Sword,        Energy= 30, Bounty=  15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
-	var rocketeer  = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow], Energy= 15, Bounty=  10, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
-	var boomattack = { Type=Boomattack, Bounty=1 };
-	var boomattackf= { Type=Boomattack, Bounty=15, Speed=300 };
+	var pilot       = { Name="$EnemyPilot$",    Inventory=Rock,          Energy=30, Bounty=20, Color=0xff0000ff, Skin=CSKIN_Alchemist, Backpack=0, Vehicle=Airship };
+	var swordman    = { Name="$EnemyCrewman$",  Inventory=Sword,         Energy=50, Bounty=15, Color=0xffff0000, Skin=CSKIN_Default,   Backpack=0,                    IsCrew=true };
+	var defender    = { Name="$EnemyDefender$", Inventory=[Shield, Axe], Energy=50, Bounty=10, Color=0xff00ff00, Skin=CSKIN_Farmer,    Backpack=0,                    IsCrew=true };
+	var bowman      = { Name="$EnemyBow$",      Inventory=[Bow, Arrow],  Energy=30, Bounty=10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
+	var ballooner   = { Name="$EnemyBalloon$",  Inventory=Sword,         Energy=30, Bounty=15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
+	var rocketeer   = { Name="$EnemyRocket$",   Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
+	var boomattack  = { Type=Boomattack, Bounty=2 };
+	var boomattackf = { Type=Boomattack, Bounty=15, Speed=300 };
 
 	// Define composition of waves
 	ENEMY_WAVE_DATA = [nil,
@@ -431,80 +431,80 @@ func InitWaveData()
 			new boomattack   {  Num= 1, Interval=10, PosX = 0, PosY = 500 },
 			Arrows = { X = 0, Y = 500 }
 		}, { Name = "$WaveSecond$", Bounty = 30, Enemies = 
-			[new boomattack  {  Num= 3, Interval=10, PosX = 0, PosY = 500 },
-			new boomattack   {  Num= 3, Interval=20, PosX = 2000, PosY = 500 },],
+			[new boomattack  {  Num= 3, Interval=10, PosX = 0,    PosY = 500 },
+			new boomattack   {  Num= 3, Interval=10, PosX = 2000, PosY = 500 },],
 			Arrows = [{ X = 0, Y = 500 },{ X = 2000, Y = 500 }]
 		}, { Name = "$WaveThird$", Bounty = 10, Enemies = 
 			new rocketeer    {  Num= 8, PosX = 0, PosY = 500 },
 			Arrows = { X = 0, Y = 500 }
 		}, { Name = "$WaveFourth$", Bounty = 15, Enemies = 
-			[new rocketeer   {  Num= 8, PosX = 0, PosY = 500 },
-			new rocketeer    {  Num= 8, PosX = 2000, PosY = 500 },],
+			[new rocketeer   {  Num= 8, Interval=10, PosX = 0,    PosY = 500 },
+			new rocketeer    {  Num= 8, Interval=10, PosX = 2000, PosY = 500 },],
 			Arrows = [{ X = 0, Y = 500 },{ X = 2000, Y = 500 }]
 		}, { Name = "$WaveFifth$", Bounty = 20, Enemies = 
-			[new boomattack  {  Num= 10, PosX = 1000, PosY = 2000 },
-			new pilot        {  Num= 1,  Interval = 1, PosX = 2000, PosY = 750 },
-			new defender     {  Num= 1,  Interval = 2, PosX = 2000, PosY = 750 },
-			new pilot        {  Num= 1,  Interval = 3, PosX = 0,    PosY = 750 },
-			new defender     {  Num= 1,  Interval = 4, PosX = 0,    PosY = 750 },],
+			[new boomattack  {  Num= 10,           PosX = 1000, PosY = 2000 },
+			new pilot        {  Num= 1, Delay = 1, PosX = 2000, PosY = 750  },
+			new defender     {  Num= 1, Delay = 2, PosX = 2000, PosY = 750  },
+			new pilot        {  Num= 1, Delay = 3, PosX = 0,    PosY = 750  },
+			new defender     {  Num= 1, Delay = 4, PosX = 0,    PosY = 750  },],
 			Arrows = [{ X = 0, Y = 750 },{ X = 2000, Y = 750 },{ X = 1000, Y = 2000 }]
 		}, { Name = "$WaveSixth$", Bounty = 20, Enemies = 
-			[new pilot       {  Num= 1,  Interval = 1, PosX = 2000, PosY = 1250 },
-			new defender     {  Num= 2,  Interval = 2, PosX = 2000, PosY = 1250 },
-			new bowman       {  Num= 2,  Interval = 2, PosX = 2000, PosY = 1250 },
-			new swordman     {  Num= 1,  Interval = 2, PosX = 2000, PosY = 1250 },
-			new pilot        {  Num= 1,  Interval = 3, PosX = 0,    PosY = 1250 },
-			new defender     {  Num= 2,  Interval = 4, PosX = 0,    PosY = 1250 },
-			new bowman       {  Num= 2,  Interval = 4, PosX = 0,    PosY = 1250 },
-			new swordman     {  Num= 1,  Interval = 4, PosX = 0,    PosY = 1250 },],
+			[new pilot       {  Num= 1, Delay = 1, PosX = 2000, PosY = 1250 },
+			new defender     {  Num= 2, Delay = 2, PosX = 2000, PosY = 1250 },
+			new bowman       {  Num= 2, Delay = 2, PosX = 2000, PosY = 1250 },
+			new swordman     {  Num= 1, Delay = 2, PosX = 2000, PosY = 1250 },
+			new pilot        {  Num= 1, Delay = 3, PosX = 0,    PosY = 1250 },
+			new defender     {  Num= 2, Delay = 4, PosX = 0,    PosY = 1250 },
+			new bowman       {  Num= 2, Delay = 4, PosX = 0,    PosY = 1250 },
+			new swordman     {  Num= 1, Delay = 4, PosX = 0,    PosY = 1250 },],
 			Arrows = [{ X = 0, Y = 1250 },{ X = 2000, Y = 1250 }]
 		}, { Name = "$WaveSeventh$", Bounty = 50, Enemies = 
-			new ballooner    {  Num= 10,  PosX = 1000, PosY = 0 },
+			new ballooner    {  Num= 10, PosX = 1000, PosY = 0 },
 			Arrows = { X = 1000, Y = 0 }
 		}, { Name = "$WaveEighth$", Bounty = 50, Enemies = 
-			[new boomattack  {  Num= 15, Interval =  1, PosX = 500,  PosY =    0 },
-			new pilot        {  Num= 1,  Interval = 80, PosX = 0,    PosY = 1250 },
-			new defender     {  Num= 3,  Interval = 81, PosX = 0,    PosY = 1250 },
-			new bowman       {  Num= 3,  Interval = 81, PosX = 0,    PosY = 1250 },
-			new pilot        {  Num= 1,  Interval = 82, PosX = 2000, PosY = 1250 },
-			new defender     {  Num= 3,  Interval = 83, PosX = 2000, PosY = 1250 },
-			new bowman       {  Num= 3,  Interval = 83, PosX = 2000, PosY = 1250 },
-			new pilot        {  Num= 1,  Interval = 84, PosX = 200,  PosY = 2000 },
-			new defender     {  Num= 3,  Interval = 85, PosX = 200,  PosY = 2000 },
-			new swordman     {  Num= 3,  Interval = 85, PosX = 200,  PosY = 2000 },
-			new pilot        {  Num= 1,  Interval = 86, PosX = 1800, PosY = 2000 },
-			new defender     {  Num= 3,  Interval = 87, PosX = 1800, PosY = 2000 },
-			new swordman     {  Num= 3,  Interval = 87, PosX = 1800, PosY = 2000 },],
+			[new boomattack  {  Num= 15, Interval =  5,             PosX = 500,  PosY =    0 },
+			new pilot        {  Num=  1,                Delay = 80, PosX = 0,    PosY = 1250 },
+			new defender     {  Num=  3,                Delay = 81, PosX = 0,    PosY = 1250 },
+			new bowman       {  Num=  3,                Delay = 81, PosX = 0,    PosY = 1250 },
+			new pilot        {  Num=  1,                Delay = 82, PosX = 2000, PosY = 1250 },
+			new defender     {  Num=  3,                Delay = 83, PosX = 2000, PosY = 1250 },
+			new bowman       {  Num=  3,                Delay = 83, PosX = 2000, PosY = 1250 },
+			new pilot        {  Num=  1,                Delay = 84, PosX = 200,  PosY = 2000 },
+			new defender     {  Num=  3,                Delay = 85, PosX = 200,  PosY = 2000 },
+			new swordman     {  Num=  3,                Delay = 85, PosX = 200,  PosY = 2000 },
+			new pilot        {  Num=  1,                Delay = 86, PosX = 1800, PosY = 2000 },
+			new defender     {  Num=  3,                Delay = 87, PosX = 1800, PosY = 2000 },
+			new swordman     {  Num=  3,                Delay = 87, PosX = 1800, PosY = 2000 },],
 			Arrows = [{ X = 500, Y = 0 },{ X = 0, Y = 1250 },{ X = 2000, Y = 1250 },{ X = 200, Y = 2000 },{ X = 1800, Y = 2000 }]
 		}, { Name = "$WaveNinth$", Bounty = 100, Enemies = 
-			[new ballooner   {  Num= 10, Interval = 350, PosX = 1000, PosY =   0 },
-			new boomattackf  {  Num= 8,  Interval =   1, PosX = 0,    PosY = 300 },
-			new boomattackf  {  Num= 8,  Interval =   1, PosX = 2000, PosY = 300 },],
+			[new ballooner   {  Num= 10, Interval = 10, Delay = 350, PosX = 1000, PosY =   0 },
+			new boomattackf  {  Num= 8,  Interval =  1,              PosX = 0,    PosY = 300 },
+			new boomattackf  {  Num= 8,  Interval =  1,              PosX = 2000, PosY = 300 },],
 			Arrows = [{ X = 1000, Y = 0 },{ X = 0, Y = 300 },{ X = 2000, Y = 300 }]
 		}, { Name = "$WaveTenth$", Bounty = 1000, Enemies = 
-			[new boomattack  {  Num= 7,  Interval =   1, PosX = 0,    PosY =   0 },
-			new boomattack   {  Num= 7,  Interval =   1, PosX = 2000, PosY =   0 },
-			new rocketeer    {  Num= 4,  Interval =  10, PosX = 0,    PosY = 300 },
-			new rocketeer    {  Num= 4,  Interval =  10, PosX = 2000, PosY = 300 },
-			new ballooner    {  Num= 10, Interval = 100, PosX = 1000, PosY =   0 },
-			new pilot        {  Num= 1,  Interval = 80, PosX = 0,    PosY = 1250 },
-			new defender     {  Num= 3,  Interval = 81, PosX = 0,    PosY = 1250 },
-			new bowman       {  Num= 4,  Interval = 81, PosX = 0,    PosY = 1250 },
-			new pilot        {  Num= 1,  Interval = 82, PosX = 2000, PosY = 1250 },
-			new defender     {  Num= 3,  Interval = 83, PosX = 2000, PosY = 1250 },
-			new bowman       {  Num= 4,  Interval = 83, PosX = 2000, PosY = 1250 },
-			new pilot        {  Num= 1,  Interval = 84, PosX = 200,  PosY = 2000 },
-			new defender     {  Num= 3,  Interval = 85, PosX = 200,  PosY = 2000 },
-			new swordman     {  Num= 4,  Interval = 85, PosX = 200,  PosY = 2000 },
-			new pilot        {  Num= 1,  Interval = 86, PosX = 1800, PosY = 2000 },
-			new defender     {  Num= 3,  Interval = 87, PosX = 1800, PosY = 2000 },
-			new swordman     {  Num= 4,  Interval = 87, PosX = 1800, PosY = 2000 },
-			new pilot        {  Num= 1,  Interval = 88, PosX = 880,  PosY = 2000 },
-			new bowman       {  Num= 3,  Interval = 89, PosX = 880,  PosY = 2000 },
-			new swordman     {  Num= 3,  Interval = 89, PosX = 880,  PosY = 2000 },
-			new pilot        {  Num= 1,  Interval = 88, PosX = 1120, PosY = 2000 },
-			new bowman       {  Num= 3,  Interval = 89, PosX = 1120, PosY = 2000 },
-			new swordman     {  Num= 3,  Interval = 89, PosX = 1120, PosY = 2000 },],
+			[new boomattack  {  Num=  7, Interval =  1,              PosX = 0,    PosY =    0 },
+			new boomattack   {  Num=  7, Interval =  1,              PosX = 2000, PosY =    0 },
+			new rocketeer    {  Num=  4, Interval = 10,              PosX = 0,    PosY =  300 },
+			new rocketeer    {  Num=  4, Interval = 10,              PosX = 2000, PosY =  300 },
+			new ballooner    {  Num= 10, Interval =  5, Delay = 100, PosX = 1000, PosY =    0 },
+			new pilot        {  Num=  1,                Delay =  80, PosX = 0,    PosY = 1250 },
+			new defender     {  Num=  3,                Delay =  81, PosX = 0,    PosY = 1250 },
+			new bowman       {  Num=  4,                Delay =  81, PosX = 0,    PosY = 1250 },
+			new pilot        {  Num=  1,                Delay =  82, PosX = 2000, PosY = 1250 },
+			new defender     {  Num=  3,                Delay =  83, PosX = 2000, PosY = 1250 },
+			new bowman       {  Num=  4,                Delay =  83, PosX = 2000, PosY = 1250 },
+			new pilot        {  Num=  1,                Delay =  84, PosX = 200,  PosY = 2000 },
+			new defender     {  Num=  3,                Delay =  85, PosX = 200,  PosY = 2000 },
+			new swordman     {  Num=  4,                Delay =  85, PosX = 200,  PosY = 2000 },
+			new pilot        {  Num=  1,                Delay =  86, PosX = 1800, PosY = 2000 },
+			new defender     {  Num=  3,                Delay =  87, PosX = 1800, PosY = 2000 },
+			new swordman     {  Num=  4,                Delay =  87, PosX = 1800, PosY = 2000 },
+			new pilot        {  Num=  1,                Delay =  88, PosX = 880,  PosY = 2000 },
+			new bowman       {  Num=  3,                Delay =  89, PosX = 880,  PosY = 2000 },
+			new swordman     {  Num=  3,                Delay =  89, PosX = 880,  PosY = 2000 },
+			new pilot        {  Num=  1,                Delay =  88, PosX = 1120, PosY = 2000 },
+			new bowman       {  Num=  3,                Delay =  89, PosX = 1120, PosY = 2000 },
+			new swordman     {  Num=  3,                Delay =  89, PosX = 1120, PosY = 2000 },],
 			Arrows = [{ X = 0, Y = 0 },{ X = 2000, Y = 0 },{ X = 0, Y = 300 },{ X = 2000, Y = 300 },{ X = 1000, Y = 0 },{ X = 0, Y = 1250 },{ X = 2000, Y = 1250 },{ X = 200, Y = 2000 },{ X = 1800, Y = 2000 },{ X = 880, Y = 2000 },{ X = 1120, Y = 2000 }]
 		}];
 	return true;

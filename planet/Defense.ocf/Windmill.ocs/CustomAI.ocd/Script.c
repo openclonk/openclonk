@@ -66,7 +66,7 @@ func Execute(proplist fx, int time)
 			return inherited(fx, time, ...);
 		fx.target = nil;
 		fx.parachute_lost = nil;
-		SetCommand();
+		SetCommand("None");
 	}
 
 	return inherited(fx, time, ...);
@@ -208,7 +208,7 @@ func ExecuteMelee(fx)
 		{
 			// Don't jump for higher windmills, get a new target!
 			fx.target = nil;
-			SetCommand();
+			SetCommand("None");
 			return true;
 		}
 		// Clonk is above us - jump there
@@ -224,7 +224,8 @@ func ExecuteMelee(fx)
 // Use shields only if still on the airship
 func ExecuteProtection(fx)
 {
-	if (!fx.carrier) return false;
+	if (!fx.carrier)
+		return false;
 	return _inherited(fx);
 }
 
