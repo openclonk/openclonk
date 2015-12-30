@@ -356,7 +356,7 @@ C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, b
 	for (C4Object *pObj : *this)
 		if (pObj && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
 		{
-			C4Value vResult = pObj->Call(szFunction, pPars/*, fPassError*/);
+			C4Value vResult = pObj->Call(szFunction, pPars, fPassError);
 			// rejection tests abort on first nonzero result
 			if (fRejectTest && !!vResult) return vResult;
 		}
