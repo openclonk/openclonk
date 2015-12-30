@@ -8,6 +8,7 @@ local phase;
 
 protected func Initialize()
 {
+	phase = 0;
 	var alpha = 0;
 	if (Time->IsNight())
 		alpha = 255;

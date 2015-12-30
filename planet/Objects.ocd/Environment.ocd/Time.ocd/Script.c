@@ -155,6 +155,44 @@ public func GetCycleSpeed()
 }
 
 
+// Places stars in the indicated rectangle from (0, 0) to (lw, lh).
+public func PlaceStars(int lw, int lh)
+{
+	// Do definition call if needed.
+	if (GetType(this) == C4V_Def)
+	{
+		var time_controller = FindObject(Find_ID(Time));
+		if (time_controller)
+			return time_controller->PlaceStars(lw, lh);
+		return;
+	}
+	
+	// First remove possible old star objects, to prevent too many.
+	RemoveAll(Find_ID(Stars));
+	
+	// Since stars are almost completely parallax (=in screen coordinates), we only need
+	// to place stars for max. a reasonable maximum resolution, let's say 1920x1200.
+	lw = lw ?? 1920;
+	lh = lh ?? 1200;
+	
+	// Star Creation.
+	var maxfailedtries = lw * lh / 40000;
+	var failed = 0;
+
+	while (failed != maxfailedtries)
+	{
+		var pos = [Random(lw), Random(lh)];
+		if (!FindObject(Find_ID(Stars), Find_AtPoint(pos[0], pos[1])))
+		{
+			CreateObjectAbove(Stars, pos[0], pos[1]); 
+			continue;
+		}
+		failed++;
+	}	
+	return;
+}
+
+
 /*-- Code -- */
 
 protected func Initialize()
@@ -175,7 +213,7 @@ protected func Initialize()
 	if (!GameCall("HasNoCelestials"))
 	{
 		PlaceStars();
-		CreateObjectAbove(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
+		CreateObject(Moon);
 	}
 	
 	// Set the time to midday (12:00).
@@ -187,30 +225,6 @@ protected func Initialize()
 
 	// Set standard colour of the day
 	daycolour_global = [255, 255, 255];
-}
-
-private func PlaceStars()
-{
-	// Since stars are almost completely parallax (=in screen coordinates), we only need
-	// to place stars for max. a reasonable maximum resolution, let's say 1920x1200.
-	var lw = Min(LandscapeWidth(), 1920);
-	var lh = Min(LandscapeHeight(), 1200);
-	
-	// Star Creation.
-	var maxfailedtries = lw * lh / 40000;
-	var failed = 0;
-
-	while (failed != maxfailedtries)
-	{
-		var pos = [Random(lw), Random(lh)];
-		if (!FindObject(Find_ID(Stars), Find_AtPoint(pos[0], pos[1])))
-		{
-			CreateObjectAbove(Stars, pos[0], pos[1]); 
-			continue;
-		}
-		failed++;
-	}	
-	return;
 }
 
 // Cycles through day and night.

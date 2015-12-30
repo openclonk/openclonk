@@ -100,7 +100,7 @@ public func InitializePlayer(plr)
 private func InitEnvironment(int map_size, int difficulty)
 {
 	// Sky scrolling.
-	SetSkyParallax(0, 75, 75, nil, nil, nil, -240);
+	SetSkyParallax(0, 75, 75, nil, nil, nil, -200);
 
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(16);
@@ -113,6 +113,8 @@ private func InitEnvironment(int map_size, int difficulty)
 	Time->Init();
 	Time->SetTime(60 * 12);
 	Time->SetCycleSpeed(20);
+	// Place stars manually to not overlap with mountain background.
+	Time->PlaceStars(2400, 180);
 	
 	// Add an effect which controls the rock fall in this round.
 	AddEffect("ScenarioRockFall", nil, 100, 36, nil, nil, difficulty);
