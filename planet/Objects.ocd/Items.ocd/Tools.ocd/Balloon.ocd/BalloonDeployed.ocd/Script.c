@@ -158,10 +158,9 @@ public func OnProjectileHit()
 	CreateParticle("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
 	Sound("Objects::Balloon::Pop");
 	if (rider)
-	{
 		rider->SetAction("Tumble");
+	if (rider) // sometimes OnUnmount is called and rider is nilled
 		rider->SetSpeed(GetXDir(), GetYDir());
-	}
 	if (parent)
 		parent->RemoveObject();
 	RemoveObject();
