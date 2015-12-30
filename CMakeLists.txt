@@ -1272,7 +1272,7 @@ endif()
 ############################################################################
 # Miscellaneous
 ############################################################################
-add_subdirectory(tests EXCLUDE_FROM_ALL)
+add_subdirectory(tests)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 

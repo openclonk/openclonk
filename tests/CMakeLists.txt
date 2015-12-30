@@ -11,10 +11,6 @@
 # To redistribute this file separately, substitute the full license texts
 # for the above references.
 
-cmake_minimum_required (VERSION 2.8.3)
-
-project(openclonk_unittest)
-
 # used by c4script and by the unit tests
 set(C4SCRIPT_SOURCES
 	../include/c4script/c4script.h
@@ -63,6 +59,7 @@ if (GMOCK_SOURCE_ALL AND GMOCK_INCLUDE_DIR)
         "${GMOCK_SOURCE_ALL}"
         "${GMOCK_INCLUDE_DIR}/gmock/gmock.h"
         )
+	set_property(TARGET gmock PROPERTY FOLDER "Third-party libraries")
     if (GMOCK_ROOT)
         include_directories("${GMOCK_ROOT}")
     endif()
@@ -75,6 +72,7 @@ if (GTEST_SOURCE_ALL AND GTEST_INCLUDE_DIR)
         "${GTEST_SOURCE_ALL}"
         "${GTEST_INCLUDE_DIR}/gtest/gtest.h"
         )
+	set_property(TARGET gtest PROPERTY FOLDER "Third-party libraries")
     if (GTEST_ROOT)
         include_directories("${GTEST_ROOT}")
     endif()
@@ -90,7 +88,8 @@ function(create_test testName)
     set(oneValueArgs "")
     set(multiValueArgs SOURCES LIBRARIES)
     CMAKE_PARSE_ARGUMENTS(CT "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    add_executable("${testName}" ${CT_SOURCES} main.cpp)
+    add_executable("${testName}" EXCLUDE_FROM_ALL ${CT_SOURCES} main.cpp)
+	set_property(TARGET "${testName}" PROPERTY FOLDER "Testing")
     target_link_libraries("${testName}" gtest ${CT_LIBRARIES})
     add_test(NAME "${testName}" COMMAND "${testName}")
 endfunction()
@@ -99,7 +98,8 @@ if (GTEST_FOUND AND GMOCK_FOUND)
     enable_testing()
 
     AUX_SOURCE_DIRECTORY("${CMAKE_CURRENT_LIST_DIR}" TESTS_SOURCES)
-    add_executable(tests ${TESTS_SOURCES} ${C4SCRIPT_SOURCES})
+    add_executable(tests EXCLUDE_FROM_ALL ${TESTS_SOURCES} ${C4SCRIPT_SOURCES})
+	set_property(TARGET "tests" PROPERTY FOLDER "Testing")
     target_link_libraries(tests gtest libc4script libmisc)
     if(UNIX AND NOT APPLE)
 	    target_link_libraries(tests rt)
