@@ -3348,7 +3348,7 @@ bool DoBridge(C4Object *clk)
 			clk->Action.Time = 0;
 			if (fWall && clk->Action.ComDir==COMD_Up)
 			{
-				// special for roof above Clonk: The nonmoving roof is started at bridgelength before the Clonkl
+				// special for roof above Clonk: The nonmoving roof is started at bridgelength before the Clonk
 				// so, when interrupted, an action time halfway through the action must be set
 				clk->Action.Time = iBridgeTime;
 				iBridgeTime += iBridgeTime;
@@ -3375,8 +3375,18 @@ static void DoGravity(C4Object *cobj)
 		if (cobj->xdir>+FloatFriction) cobj->xdir-=FloatFriction;
 		if (cobj->rdir<-FloatFriction) cobj->rdir+=FloatFriction;
 		if (cobj->rdir>+FloatFriction) cobj->rdir-=FloatFriction;
-		if (!GBackLiquid(cobj->GetX(),cobj->GetY()-1+ cobj->Def->Float*cobj->GetCon()/FullCon -1 ))
-			if (cobj->ydir<0) cobj->ydir=0;
+		// Reduce upwards speed when about to leave liquid to prevent eternal moving up and down.
+		// Check both for no liquid one and two pixels above the surface, because the object could
+		// skip one pixel as its speed can be more than 100.
+		int32_t y_float = cobj->GetY() - 1 + cobj->Def->Float * cobj->GetCon() / FullCon;
+		if (!GBackLiquid(cobj->GetX(), y_float - 1) || !GBackLiquid(cobj->GetX(), y_float - 2))
+			if (cobj->ydir < 0)
+			{
+				// Reduce the upwards speed and set to zero for small values to prevent fluctuations.
+				cobj->ydir /= 2;
+				if (Abs(cobj->ydir) < C4REAL100(10))
+					cobj->ydir = 0;
+			}
 	}
 	// Free fall gravity
 	else if (~cobj->Category & C4D_StaticBack)
