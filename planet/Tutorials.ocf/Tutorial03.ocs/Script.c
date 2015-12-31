@@ -131,7 +131,7 @@ private func InitVillageMain()
 private func InitVillageUnderground()
 {
 	// A wooden cabin ruin.
-	var cabin = CreateObjectAbove(Ruin_WoodenCabin, 568, 568);
+	var cabin = CreateObjectAbove(Ruin_WoodenCabin, 562, 568);
 	cabin->AddScorch(-20, 12, 45, 50, 1500);
 	cabin->AddScorch(15, 10, -45, 50, 1500);
 	
@@ -152,11 +152,11 @@ private func InitVillageUnderground()
 
 private func InitVegetation()
 {
-	PlaceGrass(85);
-	PlaceObjects(Firestone, 25 + Random(5), "Earth");
-	PlaceObjects(Loam, 15 + Random(5), "Earth");
-	
+	Grass->Place(85);
+	PlaceObjects(Firestone, 10 + Random(5), "Earth");
+	PlaceObjects(Rock, 25 + Random(5), "Earth");
 	Branch->Place(20, nil, {underground = true});
+	Flower->Place(10);
 	return;
 }
 
@@ -179,8 +179,7 @@ private func InitAnimals()
 	}
 	
 	// Some butterflies as atmosphere.
-	for (var i = 0; i < 25; i++)
-		PlaceAnimal(Butterfly);
+	Butterfly->Place(25);
 	return;
 }
 
