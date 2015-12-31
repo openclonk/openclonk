@@ -23,7 +23,7 @@ public func Initialize()
 	
 	// Create goal: transport train to other village.
 	var goal = CreateObject(Goal_LocomotiveTransport);
-	goal->SetGoalRect(LandscapeWidth() - 240, FindHeight(LandscapeWidth() - 240) - 200, 240, 200);
+	goal->SetGoalRect(LandscapeWidth() - 180, FindHeight(LandscapeWidth() - 240) - 200, 180, 200);
 	
 	// Rescale map coordinates.
 	var map_zoom = GetScenarioVal("MapZoom", "Landscape");
@@ -55,9 +55,9 @@ public func InitializePlayer(plr)
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
-		//var x = 60;
-		//var y = FindHeight(x);
-		//crew->SetPosition(x, y - 12);
+		var x = 60;
+		var y = FindHeight(x);
+		crew->SetPosition(x, y - 12);
 		// First clonk can construct, others can chop.
 		crew->CreateContents(Shovel);
 		if (index == 0)
@@ -76,6 +76,10 @@ public func InitializePlayer(plr)
 	GivePlayerAirKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [WoodenBridge]);
 	RemovePlayerSpecificKnowledge(plr, [WallKit]);
+	
+	// Give the player the elementary base materials and some tools.
+	GivePlayerElementaryBaseMaterial(plr);
+	GivePlayerToolsBaseMaterial(plr);
 	
 	// Take over small village at the start of the map.
 	for (var structure in FindObjects(Find_Func("IsFlagpole")))
@@ -113,8 +117,8 @@ private func InitEnvironment(int map_size, int difficulty)
 	Time->Init();
 	Time->SetTime(60 * 12);
 	Time->SetCycleSpeed(20);
-	// Place stars manually to not overlap with mountain background.
-	Time->PlaceStars(2400, 180);
+	// Place stars manually to not overlap with mountain background and fit map size.
+	Time->PlaceStars(LandscapeWidth(), 180);
 	
 	// Add an effect which controls the rock fall in this round.
 	AddEffect("ScenarioRockFall", nil, 100, 36, nil, nil, difficulty);
@@ -133,6 +137,7 @@ private func InitVegetation(int map_size, int difficulty)
 	Tree_Deciduous->Place(30 + 10 * map_size, Rectangle(wdt / 6, 0, 4 * wdt / 6, 4 * hgt / 9));
 	Tree_Coniferous2->Place(4 + 2 * map_size, Rectangle(wdt / 6, 0, 4 * wdt / 6, 4 * hgt / 9));
 	Tree_Coniferous3->Place(4 + 2 * map_size, Rectangle(wdt / 6, 0, 4 * wdt / 6, 4 * hgt / 9));
+	LargeCaveMushroom->Place(12 + 2 * map_size, Rectangle(wdt / 6, 4 * hgt / 9, 4 * wdt / 6, 5 * hgt / 9));
 		
 	// Smaller vegetation.
 	Grass->Place(100);
@@ -213,9 +218,9 @@ private func InitMaterial(int amount)
 private func InitCity()
 {
 	var wdt = LandscapeWidth();
-	CreateObjectAbove(WoodenCabin, wdt - 60, FindHeight(wdt - 60));
-	CreateObjectAbove(WoodenCabin, wdt - 190, FindHeight(wdt - 190));
-	CreateObjectAbove(Windmill, wdt - 120, FindHeight(wdt - 120));
+	CreateObjectAbove(WoodenCabin, wdt - 60, FindHeight(wdt - 60))->MakeInvincible();
+	CreateObjectAbove(WoodenCabin, wdt - 190, FindHeight(wdt - 190))->MakeInvincible();
+	CreateObjectAbove(Windmill, wdt - 120, FindHeight(wdt - 120))->MakeInvincible();
 	return;
 }
 

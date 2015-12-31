@@ -63,8 +63,8 @@ protected func InitializeMap(proplist map)
 	
 	// Fill the middle of all the cliffs with materials.
 	var cliffs_middle = {Algo = MAPALGO_And, Op = [cliffs_noborder, {Algo = MAPALGO_Rect, X = 0, Y = map.Hgt - 54, Wdt = map.Wdt, Hgt = 26}]};
-	DrawMaterial("Coal", cliffs_middle, [6, 3], 12);
 	DrawMaterial("Ore", cliffs_middle, [6, 3], 12);
+	DrawMaterial("Coal", cliffs_middle, [6, 3], 14);
 	DrawMaterial("Tunnel", cliffs_middle, [6, 6], 6);
 	DrawMaterial("Firestone", cliffs_middle, [6, 3], 8);	
 	DrawMaterial("Rock-rock", cliffs_middle, [6, 3], 6);
