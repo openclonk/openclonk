@@ -283,6 +283,18 @@ func LaunchWave(int wave)
 		var wave_spawn_time = 0;
 		CustomMessage(Format("$MsgWave$: %s", wave, wave_data.Name));
 		Sound("UI::Ding");
+		if (wave_data.Chest != nil && g_chest)
+		{
+			var item = g_chest->CreateContents(wave_data.Chest.Item);
+			if (item)
+			{
+				if (item->GetID() == GoldBar)
+				{
+					item->SetValue(wave_data.Chest.Value);
+					g_chest->SetMeshMaterial("GoldenChest", 0);
+				}
+			}
+		}
 		for (var enemy in ForceVal2Array(wave_data.Enemies)) if (enemy)
 		{
 			if (enemy.Delay)
@@ -416,12 +428,13 @@ static const g_respawning_weapons = [Firestone, Rock];
 func InitWaveData()
 {
 	// Define different enemy types
-	var pilot       = { Name="$EnemyPilot$",    Inventory=Rock,          Energy=30, Bounty=20, Color=0xff0000ff, Skin=CSKIN_Alchemist, Backpack=0, Vehicle=Airship };
-	var swordman    = { Name="$EnemyCrewman$",  Inventory=Sword,         Energy=50, Bounty=15, Color=0xffff0000, Skin=CSKIN_Default,   Backpack=0,                    IsCrew=true };
-	var defender    = { Name="$EnemyDefender$", Inventory=[Shield, Axe], Energy=50, Bounty=10, Color=0xff00ff00, Skin=CSKIN_Farmer,    Backpack=0,                    IsCrew=true };
-	var bowman      = { Name="$EnemyBow$",      Inventory=[Bow, Arrow],  Energy=30, Bounty=10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
-	var ballooner   = { Name="$EnemyBalloon$",  Inventory=Sword,         Energy=30, Bounty=15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
-	var rocketeer   = { Name="$EnemyRocket$",   Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
+	var pilot       = { Name="$EnemyPilot$",     Inventory=Rock,          Energy=30, Bounty=20, Color=0xff0000ff, Skin=CSKIN_Alchemist, Backpack=0, Vehicle=Airship };
+	var swordman    = { Name="$EnemyCrewman$",   Inventory=Sword,         Energy=50, Bounty=15, Color=0xffff0000, Skin=CSKIN_Default,   Backpack=0,                    IsCrew=true };
+	var defender    = { Name="$EnemyDefender$",  Inventory=[Shield, Axe], Energy=50, Bounty=10, Color=0xff00ff00, Skin=CSKIN_Farmer,    Backpack=0,                    IsCrew=true };
+	var bowman      = { Name="$EnemyBow$",       Inventory=[Bow, Arrow],  Energy=30, Bounty=10, Color=0xff80ff80, Skin=CSKIN_Steampunk, Backpack=0,                    IsCrew=true };
+	var artillery   = { Name="$EnemyArtillery$", Inventory=Firestone,     Energy=10, Bounty=25, Color=0xffffff80, Skin=CSKIN_Steampunk, Backpack=0, Vehicle=Catapult,  IsCrew=true };
+	var ballooner   = { Name="$EnemyBalloon$",   Inventory=Sword,         Energy=30, Bounty=15, Color=0xff008000, Skin=CSKIN_Default,               Vehicle=Balloon };
+	var rocketeer   = { Name="$EnemyRocket$",    Inventory=[Bow, Arrow],  Energy=15, Bounty=15, Color=0xffffffff, Skin=CSKIN_Steampunk,             Vehicle=Boomattack };
 	var boomattack  = { Type=Boomattack, Bounty=2 };
 	var boomattackf = { Type=Boomattack, Bounty=15, Speed=300 };
 
@@ -429,7 +442,8 @@ func InitWaveData()
 	ENEMY_WAVE_DATA = [nil,
 			{ Name = "$WaveFirst$", Bounty = 1, Enemies = 
 			new boomattack   {  Num= 1, Interval=10, PosX = 0, PosY = 500 },
-			Arrows = { X = 0, Y = 500 }
+			Arrows = { X = 0, Y = 500 },
+			Chest = { Item = GoldBar, Value = 25 }
 		}, { Name = "$WaveSecond$", Bounty = 30, Enemies = 
 			[new boomattack  {  Num= 3, Interval=10, PosX = 0,    PosY = 500 },
 			new boomattack   {  Num= 3, Interval=10, PosX = 2000, PosY = 500 },],
@@ -457,7 +471,8 @@ func InitWaveData()
 			new defender     {  Num= 2, Delay = 4, PosX = 0,    PosY = 1250 },
 			new bowman       {  Num= 2, Delay = 4, PosX = 0,    PosY = 1250 },
 			new swordman     {  Num= 1, Delay = 4, PosX = 0,    PosY = 1250 },],
-			Arrows = [{ X = 0, Y = 1250 },{ X = 2000, Y = 1250 }]
+			Arrows = [{ X = 0, Y = 1250 },{ X = 2000, Y = 1250 }],
+			Chest = { Item = GoldBar, Value = 100 }
 		}, { Name = "$WaveSeventh$", Bounty = 50, Enemies = 
 			new ballooner    {  Num= 10, PosX = 1000, PosY = 0 },
 			Arrows = { X = 1000, Y = 0 }

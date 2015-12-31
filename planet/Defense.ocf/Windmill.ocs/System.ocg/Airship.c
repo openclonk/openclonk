@@ -58,3 +58,6 @@ private func GetCrewMembers()
 {
 	return FindObjects(Find_InRect(this.gondola[0], this.gondola[1], this.gondola[2], this.gondola[3]), Find_Owner(GetOwner()), Find_OCF(OCF_Alive));
 }
+
+// When fading out the airship, the fade out rule does not check for position changes
+public func FadeOutForce() { return true; }

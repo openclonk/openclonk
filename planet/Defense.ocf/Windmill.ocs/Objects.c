@@ -25,8 +25,8 @@ func InitializeObjects()
 
 	g_chest = CreateObjectAbove(Chest, 997, 1023);
 	g_chest.StaticSaveVar = "g_chest";
-	g_windbag = g_chest->CreateContents(WindBag);
-	g_windbag.StaticSaveVar = "g_windbag";
+//	g_windbag = g_chest->CreateContents(WindBag);
+//	g_windbag.StaticSaveVar = "g_windbag";
 
 	g_lorry = CreateObjectAbove(Lorry, 924, 938);
 	g_lorry.StaticSaveVar = "g_lorry";

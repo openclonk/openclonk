@@ -176,7 +176,7 @@ func ExecuteMelee(fx)
 		if (ObjectDistance(fx.carrier) > CustomAI.AIRSHIP_LOST_DIST) fx.carrier = nil;
 		if (GetCommand()) SetCommand("None");
 		if (fx.shield) return ExecuteProtection(fx);
-		return true;
+		return ExecuteIdle();
 	}
 
 	// Still carrying the melee weapon?

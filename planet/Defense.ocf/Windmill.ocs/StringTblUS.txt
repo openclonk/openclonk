@@ -7,6 +7,7 @@ EnemyPilot=Pilot
 EnemyCrewman=Crewman
 EnemyDefender=Shield Fighter
 EnemyBow=Archer
+EnemyArtillery=Artillery
 EnemyBalloon=Parachutist
 EnemyRocket=Rocketeer
 

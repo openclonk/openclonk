@@ -15,3 +15,26 @@ func CheckFadeConditions(object fade)
 	if (fade->GetID() == Airship) return true;
 	return _inherited(fade);
 }
+
+public func FxIntFadeOutTimer(object target, effect, int time) 
+{
+	if (time < fade_time * 2/3) 
+		return;
+
+	if ((!(target->Contained()) && effect.x == target->GetX() && effect.y == target->GetY()) || target->~FadeOutForced()) // some objects must always fade out (e.g. Airships)
+	{
+		if(time >= fade_time) 
+		{
+			target->RemoveObject();
+			return -1;
+		}
+	}
+	else 
+	{
+		target->SetClrModulation(effect.alpha << 24 | effect.color);
+		return -1;
+	}
+
+	target->SetClrModulation(((fade_time - time) * effect.alpha / (fade_time/3)) << 24 | effect.color);
+	return 1;
+}
