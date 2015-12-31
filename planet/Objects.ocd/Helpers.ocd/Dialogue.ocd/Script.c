@@ -63,7 +63,7 @@ public func FindByName(string name)
 
 public func HasName(string name)
 {
-	return name = dlg_name;
+	return name == dlg_name;
 }
 
 /*-- Dialogue properties --*/
@@ -180,6 +180,11 @@ public func SetDialogueStatus(int status)
 {
 	dlg_status = status;
 	return;
+}
+
+public func GetDialogueTarget()
+{
+	return dlg_target;
 }
 
 // to be called from within dialogue after the last message
