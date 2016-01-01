@@ -49,7 +49,7 @@ bool C4FoWRegion::BindFramebuf()
 		iHgt *= 2;
 
 		// Create the texture
-		if (!pSurface->Create(iWdt, iHgt, false, 0, 0) || !pBackSurface->Create(iWdt, iHgt, false, 0, 0))
+		if (!pSurface->Create(iWdt, iHgt, false, 0, C4SF_Unlocked) || !pBackSurface->Create(iWdt, iHgt, false, 0, C4SF_Unlocked))
 			return false;
 	}
 

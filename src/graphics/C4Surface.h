@@ -58,6 +58,7 @@ extern CStdGL *pGL;
 
 const int C4SF_Tileable = 1;
 const int C4SF_MipMap   = 2;
+const int C4SF_Unlocked = 4;
 
 class C4Surface
 {

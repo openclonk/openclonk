@@ -940,7 +940,7 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
 #endif
-	if (pDraw)
+	if ((iFlags & C4SF_Unlocked) == 0 && pDraw)
 	{
 		texLock.pBits = new unsigned char[iSizeX*iSizeY*pDraw->byByteCnt];
 		texLock.Pitch = iSizeX*pDraw->byByteCnt;
