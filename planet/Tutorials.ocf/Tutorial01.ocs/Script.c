@@ -316,7 +316,7 @@ global func FxGoalOutroStart(object target, proplist effect, int temp)
 		
 	// Show guide message congratulating.
 	guide->AddGuideMessage("$MsgTutorialCompleted$");
-	guide->ShowGuideMessage(8);
+	guide->ShowGuideMessage();
 		
 	// Halt clonk and disable player controls.	
 	DisablePlrControls(effect.plr);
@@ -368,7 +368,7 @@ global func FxTutorialScaleTimer(object target, proplist effect, int timer)
 		var up = GetPlayerControlAssignment(plr, CON_Up, true, true);
 		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialScaleWall$", up, down));
-		guide->ShowGuideMessage(3);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialHangle", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -383,7 +383,7 @@ global func FxTutorialHangleTimer(object target, proplist effect, int timer)
 		var plr = clonk->GetOwner();
 		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialHangle$", down));
-		guide->ShowGuideMessage(4);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialJump", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -395,7 +395,7 @@ global func FxTutorialJumpTimer(object target, proplist effect, int timer)
 	if (FindObject(Find_ID(Clonk), Find_InRect(744, 568, 56, 40)))
 	{
 		guide->AddGuideMessage("$MsgTutorialJump$");
-		guide->ShowGuideMessage(5);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialSwimming", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -414,7 +414,7 @@ global func FxTutorialSwimmingTimer(object target, proplist effect, int timer)
 		var down = GetPlayerControlAssignment(plr, CON_Down, true, true);
 		var control_keys = Format("[%s] [%s] [%s] [%s]", up, left, down, right);
 		guide->AddGuideMessage(Format("$MsgTutorialSwimming$", control_keys));
-		guide->ShowGuideMessage(6);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialDiving", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -426,7 +426,7 @@ global func FxTutorialDivingTimer(object target, proplist effect, int timer)
 	if (FindObject(Find_ID(Clonk), Find_InRect(472, 280, 48, 64)))
 	{
 		guide->AddGuideMessage("$MsgTutorialDiving$");
-		guide->ShowGuideMessage(7);
+		guide->ShowGuideMessage();
 		return FX_Execute_Kill;
 	}
 	return FX_OK;

@@ -191,7 +191,7 @@ protected func InitializePlayer(int plr)
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObjectAbove(TutorialGuide, 0, 0, plr);
 	guide->AddGuideMessage(Format("$MsgTutorialFindRubies$", interact, control_keys));
-	guide->ShowGuideMessage(0);
+	guide->ShowGuideMessage();
 	AddEffect("TutorialFindStalactite", nil, 100, 2);
 	return;
 }
@@ -216,7 +216,7 @@ global func FxGoalOutroStart(object target, proplist effect, int temp)
 		return FX_OK;	
 	// Show guide message congratulating.
 	guide->AddGuideMessage("$MsgTutorialCompleted$");
-	guide->ShowGuideMessage(5);	
+	guide->ShowGuideMessage();	
 	return FX_OK;
 }
 
@@ -248,7 +248,7 @@ global func FxTutorialFindStalactiteTimer(object target, proplist effect, int ti
 	if (clonk)
 	{
 		guide->AddGuideMessage(Format("$MsgTutorialParkAirship$"));
-		guide->ShowGuideMessage(1);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialAirshipParked", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -265,7 +265,7 @@ global func FxTutorialAirshipParkedTimer(object target, proplist effect, int tim
 		var left = GetPlayerControlAssignment(plr, CON_Left, true, true);
 		var right = GetPlayerControlAssignment(plr, CON_Right, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialLadderJump$", left, right));
-		guide->ShowGuideMessage(2);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialOnStalactite", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -277,7 +277,7 @@ global func FxTutorialOnStalactiteTimer(object target, proplist effect, int time
 	if (FindObject(Find_ID(Clonk), Find_InRect(810, 150, 24, 72)))
 	{
 		guide->AddGuideMessage("$MsgTutorialBlastGems$");
-		guide->ShowGuideMessage(3);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialCollectGems", nil, 100, 2);
 		return FX_Execute_Kill;
 	}
@@ -289,7 +289,7 @@ global func FxTutorialCollectGemsTimer(object target, proplist effect, int timer
 	if (FindObject(Find_ID(Ruby)))
 	{
 		guide->AddGuideMessage("$MsgTutorialCollectGems$");
-		guide->ShowGuideMessage(4);
+		guide->ShowGuideMessage();
 		return FX_Execute_Kill;
 	}
 	return FX_OK;

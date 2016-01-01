@@ -10,7 +10,6 @@
 
 
 local messages; // A container to hold all messages.
-local message_index; // Progress in reading messages.
 local message_open; // Currently open message.
 local close_on_last; // Close guide on after last message.
 
@@ -19,7 +18,6 @@ protected func Initialize()
 	// Visibility
 	this.Visibility = VIS_Owner;
 	messages = [];
-	message_index = nil;
 	message_open = nil;
 	close_on_last = false;
 	
@@ -37,10 +35,8 @@ protected func Initialize()
 */
 public func AddGuideMessage(string msg)
 {
-	// Automatically set index to current.
-	message_index = GetLength(messages);
 	// Add message to list.
-	messages[message_index] = msg;
+	messages[GetLength(messages)] = msg;
 	// Update the menu, because of the next button.
 	if (message_open != nil)
 		ShowGuideMenu(message_open);
@@ -48,15 +44,16 @@ public func AddGuideMessage(string msg)
 }
 
 /* Shows a guide message to the player, also resets the internal index to that point.
-*	@param show_index The message corresponding to this index will be shown.
+*	@param show_index The message corresponding to this index will be shown, if nil the last message will be shown.
 */
 public func ShowGuideMessage(int show_index)
 {
-	message_index = Max(0, show_index);
-	ShowGuideMenu(message_index);
-	// Increase index if possible.	
-	if (GetLength(messages) > message_index + 1)
-		message_index++;
+	// If the index is not specified show last message, index must be between first and last message.
+	if (show_index == nil)
+		show_index = GetLength(messages) - 1;
+	show_index = BoundBy(show_index, 0, GetLength(messages) - 1);
+	// Show the guide message.
+	ShowGuideMenu(show_index);
 	return;
 }
 
@@ -140,10 +137,6 @@ private func InitializeMenu()
 		ID = 1,
 		Right = Format("0%%+%dem", menu_height),
 		Symbol = GetID(),
-		BackgroundColor = {Std = 0, Hover = 0x50ffffff},
-		OnMouseIn = GuiAction_SetTag("Hover"),
-		OnMouseOut = GuiAction_SetTag("Std"),
-		OnClick = GuiAction_Call(this, "ShowCurrentMessage"),
 	};
 	var prop_text = 
 	{
@@ -151,8 +144,7 @@ private func InitializeMenu()
 		ID = 2,
 		Left = Format("0%%%s", ToEmString(10 * menu_height + text_margin)),
 		Right = Format("100%%%s", ToEmString(- 5 * menu_height - text_margin)),
-		Text = "",
-		BackgroundColor = {Std = 0},	
+		Text = nil,
 	};	
 	prop_next =
 	{
@@ -271,19 +263,8 @@ private func CloseGuideMenu()
 	return;
 }
 
-// Menu callback: the player has clicked on the guide.
-private func ShowCurrentMessage()
-{
-	// Show guide message if there is a new one.
-	ShowGuideMenu(message_index);
-	// Increase index if possible.
-	if (GetLength(messages) > message_index + 1)
-		message_index++;
-	return;
-}
-
 // Menu callback: the player has clicked on next message.
-public func ShowNextMessage()
+private func ShowNextMessage()
 {
 	if (message_open >= GetLength(messages) - 1)
 	{
@@ -296,7 +277,7 @@ public func ShowNextMessage()
 }
 
 // Menu callback: the player has clicked on previous message.
-public func ShowPreviousMessage()
+private func ShowPreviousMessage()
 {
 	if (message_open == 0)
 		return;

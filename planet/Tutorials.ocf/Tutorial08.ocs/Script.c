@@ -199,7 +199,7 @@ protected func InitializePlayer(int plr)
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
 	guide->AddGuideMessage("$MsgTutorialFloodedMines$");
-	guide->ShowGuideMessage(0);
+	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToMineChief", nil, 100, 5);
 	effect.plr = plr;
 	return;
@@ -221,7 +221,7 @@ global func FxGoalOutroStart(object target, proplist effect, int temp)
 		return FX_OK;	
 	// Show guide message congratulating.
 	guide->AddGuideMessage("$MsgTutorialCompleted$");
-	guide->ShowGuideMessage(10);	
+	guide->ShowGuideMessage();	
 	return FX_OK;
 }
 
@@ -263,7 +263,7 @@ global func FxTutorialTalkedToMineChiefStop(object target, proplist effect, int 
 	if (temp)
 		return FX_OK;
 	guide->AddGuideMessage("$MsgTutorialConnectPipe$");
-	guide->ShowGuideMessage(1);
+	guide->ShowGuideMessage();
 	var new_effect = AddEffect("TutorialConnectedSourcePipe", nil, 100, 5);
 	new_effect.plr = effect.plr;
 	return FX_OK;
@@ -281,7 +281,7 @@ global func FxTutorialConnectedSourcePipeTimer(object target, proplist effect)
 	if (connected_source)
 	{
 		guide->AddGuideMessage("$MsgTutorialFindMetalLorry$");
-		guide->ShowGuideMessage(2);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialFoundMetalLorry", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -294,7 +294,7 @@ global func FxTutorialFoundMetalLorryTimer(object target, proplist effect)
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Owner(effect.plr), Find_AtRect(586, 866, 40, 24)))
 	{
 		guide->AddGuideMessage("$MsgTutorialMoveLorry$");
-		guide->ShowGuideMessage(3);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialShovedMetalLorry", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -308,7 +308,7 @@ global func FxTutorialShovedMetalLorryTimer(object target, proplist effect)
 	{
 		var interact = GetPlayerControlAssignment(effect.plr, CON_Interact, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialCallElevator$", interact));
-		guide->ShowGuideMessage(4);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialTalkedToExplosiveExpert", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -329,7 +329,7 @@ global func FxTutorialTalkedToExplosiveExpertTimer(object target, proplist effec
 	if (effect.has_talked && FindObject(Find_ID(ElevatorCase), Find_AtRect(282, 816, 20, 48)))
 	{
 		guide->AddGuideMessage("$MsgTutorialProduceWallKit$");
-		guide->ShowGuideMessage(5);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialProducedWallKit", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -343,7 +343,7 @@ global func FxTutorialProducedWallKitTimer(object target, proplist effect)
 	if (FindObject(Find_ID(WallKit), Find_Container(workshop)))
 	{
 		guide->AddGuideMessage("$MsgTutorialCloseMineShaft$");
-		guide->ShowGuideMessage(6);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialHasClosedShaft", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -358,7 +358,7 @@ global func FxTutorialHasClosedShaftTimer(object target, proplist effect)
 	if (pathlength1 == nil && pathlength2 == nil)
 	{
 		guide->AddGuideMessage("$MsgTutorialWaitAndMoveLorry$");
-		guide->ShowGuideMessage(7);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialHasPlacedLorryInCase", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -374,7 +374,7 @@ global func FxTutorialHasPlacedLorryInCaseTimer(object target, proplist effect)
 	if (elevator_case->FindObject(Find_ID(Lorry), Find_AtPoint()))
 	{
 		guide->AddGuideMessage("$MsgTutorialBlastWall$");
-		guide->ShowGuideMessage(8);
+		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialHasBlastedWall", nil, 100, 5);
 		new_effect.plr = effect.plr;
 		return FX_Execute_Kill;
@@ -396,7 +396,7 @@ global func FxTutorialHasBlastedWallTimer(object target, proplist effect)
 	if (blasted_free)
 	{
 		guide->AddGuideMessage("$MsgTutorialSwimUp$");
-		guide->ShowGuideMessage(9);
+		guide->ShowGuideMessage();
 		return FX_Execute_Kill;
 	}
 	return FX_OK;

@@ -185,7 +185,7 @@ protected func InitializePlayer(int plr)
 	// Create tutorial guide, add messages, show first.
 	guide = CreateObject(TutorialGuide, 0, 0, plr);
 	guide->AddGuideMessage("$MsgTutorialIntro$");
-	guide->ShowGuideMessage(0);
+	guide->ShowGuideMessage();
 	AddEffect("TutorialShovel", nil, 100, 5);
 	return;
 }
@@ -213,7 +213,7 @@ global func FxGoalOutroStart(object target, proplist effect, int temp)
 		
 	// Show guide message congratulating.
 	guide->AddGuideMessage("$MsgTutorialCompleted$");
-	guide->ShowGuideMessage(11);
+	guide->ShowGuideMessage();
 	return FX_OK;
 }
 
@@ -250,7 +250,7 @@ global func FxTutorialShovelTimer()
 		var plr = clonk->GetOwner();
 		var pick_up = GetPlayerControlAssignment(plr, CON_PickUp, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialShovel$", pick_up));
-		guide->ShowGuideMessage(1);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialInventory", nil, 100, 5);
 		return FX_Execute_Kill;
 	}
@@ -274,7 +274,7 @@ global func FxTutorialInventoryTimer()
 			var inv_inv_scroll_down = GetPlayerControlAssignment(plr, CON_InventoryShiftBackward, true, true);
 			var inv_scroll = Format("[%s][%s]", inv_inv_scroll_up, inv_inv_scroll_down);
 			guide->AddGuideMessage(Format("$MsgTutorialInventory$", inv_hotkeys, inv_scroll));
-			guide->ShowGuideMessage(2);
+			guide->ShowGuideMessage();
 			AddEffect("TutorialDigging", nil, 100, 5);
 			return FX_Execute_Kill;
 		}
@@ -293,7 +293,7 @@ global func FxTutorialDiggingTimer()
 		{
 			var use = GetPlayerControlAssignment(plr, CON_Use, true, true);
 			guide->AddGuideMessage(Format("$MsgTutorialDigging$", use));
-			guide->ShowGuideMessage(3);
+			guide->ShowGuideMessage();
 			AddEffect("TutorialFirestones", nil, 100, 5);
 			return FX_Execute_Kill;
 		}
@@ -306,7 +306,7 @@ global func FxTutorialFirestonesTimer()
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(288, 384, 24, 96)))
 	{
 		guide->AddGuideMessage("$MsgTutorialFirestones$");
-		guide->ShowGuideMessage(4);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialWipfHole", nil, 100, 5);
 		return FX_Execute_Kill;
 	}
@@ -321,7 +321,7 @@ global func FxTutorialWipfHoleTimer()
 		var plr = clonk->GetOwner();
 		var throw = GetPlayerControlAssignment(plr, CON_Throw, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialFoundWipf$", throw));
-		guide->ShowGuideMessage(5);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialBlastedRock", nil, 100, 5);
 		return FX_Execute_Kill;
 	}
@@ -336,7 +336,7 @@ global func FxTutorialBlastedRockTimer()
 		var plr = clonk->GetOwner();
 		var drop = GetPlayerControlAssignment(plr, CON_DropHotkey1, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialBlastedRock$", drop));
-		guide->ShowGuideMessage(6);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialFedWipf", nil, 100, 5);
 		return FX_Execute_Kill;
 	}
@@ -349,7 +349,7 @@ global func FxTutorialFedWipfTimer()
 	if (wipf->HadFood())
 	{
 		guide->AddGuideMessage("$MsgTutorialFedWipf$");
-		guide->ShowGuideMessage(7);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialDigOutLoam", nil, 100, 5);
 		return FX_Execute_Kill;
 	}
@@ -364,7 +364,7 @@ global func FxTutorialDigOutLoamTimer()
 		var plr = clonk->GetOwner();
 		var use = GetPlayerControlAssignment(plr, CON_Use, true, true);
 		guide->AddGuideMessage(Format("$MsgTutorialDigOutLoam$", use));
-		guide->ShowGuideMessage(8);
+		guide->ShowGuideMessage();
 		AddEffect("TutorialFragileBridge", nil, 100, 5);
 		var bridge = FindObject(Find_ID(Ropebridge));
 		bridge->SetFragile();
@@ -379,7 +379,7 @@ global func FxTutorialFragileBridgeTimer()
 	if (clonk)
 	{
 		guide->AddGuideMessage("$MsgTutorialFragileBridge$");
-		guide->ShowGuideMessage(9);
+		guide->ShowGuideMessage();
 		// Stop the controls of the clonk for a few seconds.
 		DisablePlrControls(clonk->GetOwner());
 		clonk->SetComDir(COMD_Stop);
@@ -395,7 +395,7 @@ global func FxTutorialWaitForBridgeTimer(object target, proplist effect, int tim
 	if (time > 2 * 36)
 	{
 		guide->AddGuideMessage("$MsgTutorialMakeLoamBridge$");
-		guide->ShowGuideMessage(10);
+		guide->ShowGuideMessage();
 		// Start the controls of the clonk again.
 		EnablePlrControls(effect.plr);
 		return FX_Execute_Kill;
