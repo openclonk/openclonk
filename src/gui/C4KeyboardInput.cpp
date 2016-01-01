@@ -608,14 +608,6 @@ C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeySco
 	}
 }
 
-C4CustomKey::C4CustomKey(const C4KeyCodeEx &Code, const StdStrBuf &rName)
-		: Codes(), DefaultCodes(), Scope(KEYSCOPE_None), Name(), uiPriority(PRIO_None), iRef(0)
-{
-	// ctor for custom key override
-	if (Code.Key != KEY_Default) Codes.push_back(Code);
-	Name.Copy(rName);
-}
-
 C4CustomKey::C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks)
 		: Codes(rCpy.Codes), DefaultCodes(rCpy.DefaultCodes), Scope(rCpy.Scope), Name(), uiPriority(rCpy.uiPriority), iRef(0)
 {

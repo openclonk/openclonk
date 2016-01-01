@@ -48,10 +48,6 @@ C4MessageBoard::C4MessageBoard() : LogBuffer(C4LogSize, C4LogMaxLines, 0, "  ", 
 
 C4MessageBoard::~C4MessageBoard()
 {
-	if (ScrollUpBinding)
-		::Game.KeyboardInput.UnregisterKeyBinding(ScrollUpBinding);
-	if (ScrollDownBinding)
-		::Game.KeyboardInput.UnregisterKeyBinding(ScrollDownBinding);
 	LogBuffer.Clear();
 	LogBuffer.SetLBWidth(0);
 }
@@ -126,10 +122,8 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	}
 
 	// messageboard
-	ScrollUpBinding = new C4CustomKey(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp));
-	ScrollDownBinding = new C4CustomKey(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown));
-	Game.KeyboardInput.RegisterKey(ScrollUpBinding);
-	Game.KeyboardInput.RegisterKey(ScrollDownBinding);
+	ScrollUpBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_UP, KEYS_Shift), "MsgBoardScrollUp", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp)));
+	ScrollDownBinding.reset(new C4KeyBinding(C4KeyCodeEx(K_DOWN, KEYS_Shift), "MsgBoardScrollDown", KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>(*GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollDown)));
 }
 
 void C4MessageBoard::Draw(C4Facet &cgo)

@@ -44,7 +44,7 @@ private:
 	int iBackScroll; // how many lines scrolled back?
 	int iLineHgt; // line height
 
-	C4CustomKey *ScrollUpBinding, *ScrollDownBinding;
+	std::unique_ptr<C4KeyBinding> ScrollUpBinding, ScrollDownBinding;
 
 	C4LogBuffer LogBuffer; // backbuffer for log
 public:
