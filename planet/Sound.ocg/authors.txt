@@ -74,6 +74,11 @@ Sven2           - Structures/StoneGate/GateMove (adapted from GateHit), IceHit* 
                   UI::Select
 Zapper          - Breathing
 zimbot          - Animals/Chippie/EggCrack1-3 (modified) (http://www.freesound.org/people/zimbot/sounds/244480/)
+xerana          - Environemnt/Lightning/Thunder1 (https://www.freesound.org/people/xerana/sounds/199638/ adapted by Maikel)
+infopablo       - Environemnt/Lightning/Thunder2 (https://www.freesound.org/people/infopablo/sounds/21887/ adapted by Maikel)
+nicStage        - Environemnt/Lightning/Thunder3 (https://www.freesound.org/people/nicStage/sounds/64460/ adapted by Maikel)
+jrosin          - Environemnt/Lightning/Thunder4 (https://www.freesound.org/people/jrosin/sounds/329978/ adapted by Maikel)
+shaka9          - Environemnt/Lightning/Thunder5 (https://www.freesound.org/people/shaka9/sounds/160514/ adapted by Maikel)
 
 The following sounds use two sources:
 
