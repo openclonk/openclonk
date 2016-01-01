@@ -210,6 +210,9 @@ public:
 	{
 		*((DWORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
 	}
+private:
+	void CreateTexture();
+	friend class C4TexMgr;
 };
 
 // texture management

@@ -913,6 +913,9 @@ bool C4Surface::CopyBytes(BYTE *pImageData)
 C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 {
 	// zero fields
+#ifndef USE_CONSOLE
+	texName = 0;
+#endif
 	texLock.pBits=NULL; fIntLock=false;
 	// store size
 	this->iSizeX=iSizeX;
@@ -925,21 +928,9 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 	if (!pDraw) return;
 	if (!pDraw->DeviceReady()) return;
 	// create it!
-#ifndef USE_CONSOLE
 	// Reserve video memory
-	const bool fTileable = (iFlags & C4SF_Tileable) != 0;
-	const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
+	CreateTexture();
 
-	// create a new texture
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
-#endif
 	if ((iFlags & C4SF_Unlocked) == 0 && pDraw)
 	{
 		texLock.pBits = new unsigned char[iSizeX*iSizeY*pDraw->byByteCnt];
@@ -961,6 +952,25 @@ C4TexRef::~C4TexRef()
 	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = 0;
 	// remove from texture manager
 	pTexMgr->UnregTex(this);
+}
+
+void C4TexRef::CreateTexture()
+{
+#ifndef USE_CONSOLE
+	assert(texName == 0);
+
+	const bool fTileable = (iFlags & C4SF_Tileable) != 0;
+	const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
+
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
+	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
+#endif
 }
 
 bool C4TexRef::LockForUpdate(C4Rect & rtUpdate)
@@ -1153,7 +1163,12 @@ void C4TexMgr::IntUnlock()
 	for (std::list<C4TexRef *>::iterator i=Textures.begin(); j--; ++i)
 	{
 		C4TexRef *pRef = *i;
-		if (pRef->fIntLock) { pRef->fIntLock = false; pRef->Unlock(); }
+		if (pRef->fIntLock)
+		{
+			pRef->fIntLock = false;
+			pRef->CreateTexture();
+			pRef->Unlock();
+		}
 	}
 }
 
