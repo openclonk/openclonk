@@ -913,9 +913,6 @@ bool C4Surface::CopyBytes(BYTE *pImageData)
 C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 {
 	// zero fields
-#ifndef USE_CONSOLE
-	texName=0;
-#endif
 	texLock.pBits=NULL; fIntLock=false;
 	// store size
 	this->iSizeX=iSizeX;
@@ -929,13 +926,19 @@ C4TexRef::C4TexRef(int iSizeX, int iSizeY, int iFlags)
 	if (!pDraw->DeviceReady()) return;
 	// create it!
 #ifndef USE_CONSOLE
-	// OpenGL
-	// create mem array for texture creation
-	texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
-	texLock.Pitch = iSizeX*pGL->byByteCnt;
-	memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
-	// turn mem array into texture
-	Unlock();
+	// Reserve video memory
+	const bool fTileable = (iFlags & C4SF_Tileable) != 0;
+	const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
+
+	// create a new texture
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
+	if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, NULL);
 #endif
 	if (pDraw)
 	{
@@ -953,7 +956,7 @@ C4TexRef::~C4TexRef()
 	fIntLock=false;
 	// free texture
 #ifndef USE_CONSOLE
-	if (texName && pGL && pGL->pCurrCtx) glDeleteTextures(1, &texName);
+	if (pGL && pGL->pCurrCtx) glDeleteTextures(1, &texName);
 #endif
 	if (pDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = 0;
 	// remove from texture manager
@@ -978,18 +981,12 @@ bool C4TexRef::LockForUpdate(C4Rect & rtUpdate)
 	}
 	// lock
 #ifndef USE_CONSOLE
-		if (texName)
-		{
-			// prepare texture data
-			texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
-			texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
-			LockSize = rtUpdate;
-			return true;
-		}
+	// prepare texture data
+	texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
+	texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
+	LockSize = rtUpdate;
+	return true;
 #endif
-		{
-			// nothing to do
-		}
 	// failure
 	return false;
 }
@@ -1032,31 +1029,14 @@ void C4TexRef::Unlock()
 				pGL->pMainCtx->Select();
 			}
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			if (!texName)
-			{
-				const bool fTileable = (iFlags & C4SF_Tileable) != 0;
-				const bool fMipMap = (iFlags & C4SF_MipMap) != 0;
 
-				// create a new texture
-				glGenTextures(1, &texName);
-				glBindTexture(GL_TEXTURE_2D, texName);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, fTileable ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, fMipMap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR);
-				if (fMipMap) glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iSizeX, iSizeY, 0, GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
-			}
-			else
-			{
-				// reuse the existing texture
-				glBindTexture(GL_TEXTURE_2D, texName);
-				glTexSubImage2D(GL_TEXTURE_2D, 0,
-				                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
-				                GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
-			}
+			// reuse the existing texture
+			glBindTexture(GL_TEXTURE_2D, texName);
+			glTexSubImage2D(GL_TEXTURE_2D, 0,
+			                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
+			                GL_BGRA, pDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
-			// switch back to original context
 #endif
 }
 
