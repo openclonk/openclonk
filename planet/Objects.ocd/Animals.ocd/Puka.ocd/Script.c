@@ -651,7 +651,7 @@ private func EndShockWater()
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
 		var xdir = +Sin(angle, 5);
 		var ydir = -Cos(angle, 5);
-		LaunchLightning(GetX() + x, GetY() + y, RandomX(50, 70), xdir, ydir, 10, 10, false);
+		LaunchLightning(GetX() + x, GetY() + y, RandomX(50, 70), xdir, ydir, 10, 10, true);
 	}
 	
 	// And some particles on the tail.
@@ -748,7 +748,7 @@ private func FxIntTurningTimer(object target, effect fx, int time)
 }
 
 // Immune to lightning.
-public func LightningStrike() { return true; }
+public func RejectLightningStrike() { return true; }
 
 local MaxEnergy = 30000;
 local MaxBreath = 10000;

@@ -273,7 +273,7 @@ private func ThunderStrike()
 	
 	var str = 2 * con / 3 + RandomX(-15, 15);
 	// Launch lightning.
-	return LaunchLightning(x, y, str, 0, str / 5, str / 10, str / 10, true);
+	return LaunchLightning(x, y, str, 0, str / 5, str / 10, str / 10);
 }
 
 // Tries to evaporate liquids from the surface.

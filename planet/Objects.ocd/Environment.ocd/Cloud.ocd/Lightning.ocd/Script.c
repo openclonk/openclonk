@@ -1,36 +1,46 @@
-// Lightning bolt
+/**
+	Lightning Bolt
+	Launch a single bolt of lightning which splits up into smaller branches.
+	
+	@author Maikel
+*/
 
-local xDir, yDir;
-local xDev, yDev;
-local gamma;
+local xdir, ydir;
+local xdev, ydev;
 local strength;
 
-/// Creates a lightning bolt at the specified location.
-/// \par x X coordinate. Always global.
-/// \par y Y coordinate. Always global.
-/// \par strength Strength of the bolt, 0 - 100.
-/// \par xdir Average horizontal speed of the bolt.
-/// \par ydir Average vertical speed of the bolt.
-/// \par xdev Maximum deviation from the average horizontal speed.
-/// \par ydev Maximum deviation from the average vertical speed.
-/// \par do_gamma If \c true, the lightning bolt will flash the screen.
-/// \returns \c true if the lightning could be launched, \c false otherwise.
-global func LaunchLightning(int x, int y, int to_strength, int xdir, int ydir, int xdev, int ydev, bool do_gamma)
+// Creates a lightning bolt at the specified location. 
+// x: X coordinate, always global.
+// y: Y coordinate, always global.
+// strength: Strength of the bolt, 0 - 100.
+// xdir: Average horizontal speed of the bolt.
+// ydir: Average vertical speed of the bolt.
+// xdev: Maximum deviation from the average horizontal speed.
+// ydev: Maximum deviation from the average vertical speed.
+// no_sound: Whether to not play a sound.
+global func LaunchLightning(int x, int y, int strength, int xdir, int ydir, int xdev, int ydev, bool no_sound)
 {
-	var lightning = CreateObjectAbove(Lightning, x - GetX(), y - GetY());
-	return lightning && lightning->Launch(x, y, to_strength, xdir, ydir, xdev, ydev, do_gamma);
+	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
+	return lightning && lightning->Launch(x, y, strength, xdir, ydir, xdev, ydev, no_sound);
 }
 
-public func Launch(int x, int y, int to_strength, int xdir, int ydir, int xdev, int ydev, bool do_gamma)
+public func Launch(int x, int y, int to_strength, int to_xdir, int to_ydir, int to_xdev, int to_ydev, bool no_sound)
 {
-	xDir = xdir; yDir = ydir;
-	xDev = xdev; yDev = ydev;
-	gamma = do_gamma;
-	strength = to_strength || 20;
-	AddVertex(x-GetX(), y-GetY());
-	//Log("Lightning %d: Launching at %d/%d (offset %d/%d)", ObjectNumber(), GetX(), GetY(), GetVertex(0,0), GetVertex(0,1));
-	AddEffect("LightningMove", this, 1, 1, this);
+	xdir = to_xdir; ydir = to_ydir;
+	xdev = to_xdev; ydev = to_ydev;
+	strength = to_strength ?? 20;
+	AddVertex(x - GetX(), y - GetY());
+	AddEffect("LightningMove", this, 1, 1, this, nil, !no_sound);
 	return true;
+}
+
+protected func FxLightningMoveStart(object target, proplist effect, int temp, bool play_sound)
+{
+	if (temp)
+		return FX_OK;
+	if (play_sound && strength > 30)
+		Sound("Environment::Lightning::Thunder?", false, strength);
+	return FX_OK;
 }
 
 protected func FxLightningMoveTimer()
@@ -39,100 +49,102 @@ protected func FxLightningMoveTimer()
 	var vertices = GetVertexNum();
 	var oldx = GetVertex(vertices - 1, 0);
 	var oldy = GetVertex(vertices - 1, 1);
-	var newx = oldx + xDir + xDev - Random(2 * xDev);
-	var newy = oldy + yDir + yDev - Random(2 * yDev);
-	//Log("Lightning %d: Moving from %d/%d to %d/%d", ObjectNumber(), oldx+GetX(), oldy+GetY(), newx+GetX(), newy+GetY());
-	// Check if lightning hits landscape, and adapt new coordinates. Should it penetrate liquids?
+	var newx = oldx + xdir + xdev - Random(2 * xdev);
+	var newy = oldy + ydir + ydev - Random(2 * ydev);
+	
+	// Check if lightning hits landscape, and adapt new coordinates.
+	// Open question: should it penetrate liquids?
 	var strike_solid = PathFree2(oldx + GetX(), oldy + GetY(), newx + GetX(), newy + GetY());
 	if (strike_solid)
 	{
 		newx = strike_solid[0] - GetX();
 		newy = strike_solid[1] - GetY();
-		//Log("Lightning %d: Move blocked, moving to %d/%d instead", ObjectNumber(), newx+GetX(), newy+GetY());
 	}
 	AddVertex(newx, newy);
 	
 	// Draw the new line with lightning particles.
-	DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength / 30, strength / 3, 0xa0f0f0f0);
+	DrawLightningLine(oldx, oldy, newx, newy, strength / 10, Min(16, strength / 3));
+	
+	// Update the light range for this strike, it is set at the new position with the given strength.
+	SetLightRange(strength / 2, strength);
+	SetLightColor(RGB(60, 60, 192));
+	this.LightOffset = [newx, newy];
 	
 	// Strike objects on the line.
-	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer()))
 	{
-		if (obj && !obj->~LightningStrike(3 + strength / 10))
+		var damage = 3 + strength / 10;
+		// Check if the object rejects a lightning strike, also check if object still exists because an object
+		// at the same location may have been struck first and have removed nearby objects.
+		if (obj && !obj->~RejectLightningStrike(this, damage))
 		{
+			// Do a callback notifying the object that it has been struck by lightning.
+			obj->~OnLightningStrike(damage);
+			if (!obj)
+				continue;
+			// Damage or hurt objects. Lightning strikes may have a controller, thus pass this for kill tracing.	
 			if (obj->GetOCF() & OCF_Alive)
-				Punch(obj, 3 + strength / 10);
+				Punch(obj, damage);
 			else
-				// Todo: Lightning strikes may have controllers? Pass them for kill tracing.
-				obj->DoDamage(3 + strength / 10, FX_Call_DmgScript); 
+				obj->DoDamage(damage, FX_Call_DmgScript, GetController());
 		}
 	}
 	
-	// Remove lightning, if struck landscape.
-	if (strike_solid)
+	// Remove lightning, if struck landscape or if strength is too low.
+	if (strike_solid || (strength < 50 && !Random(strength / 4)))
 	{
 		RemoveObject();
+		return FX_OK;
 	}
 	// Branch with chance inversely proportional to strength.
-	else if (strength > 20)
+	if (strength > 24 && Random(Sqrt(10 * strength)) > 12)
 	{
-		if (Random(strength) > 5)
-		{
-			var branch_strength = (strength + Random(strength)) / 3;
-			var lightning = CreateObjectAbove(Lightning, newx, newy);
-			if (lightning)
-				lightning->Launch(newx + GetX(), newy + GetY(), branch_strength, xDir, yDir, xDev, yDev, false);
-			strength -= branch_strength / 4;
-		}
+		var branch_strength = (strength + Random(strength)) / 4;
+		var lightning = CreateObject(Lightning, newx, newy);
+		if (lightning)
+			lightning->Launch(newx + GetX(), newy + GetY(), branch_strength, xdir, ydir, xdev, ydev);
+		strength -= branch_strength / 3;
 	}
-	// Remove lightning if strength is low.
-	else if (!Random(strength / 4))
-	{
-		RemoveObject();		
-	}
-	return 1;
+	return FX_OK;
 }
 
-private func Redraw()
+private func DrawLightningLine(int x1, int y1, int x2, int y2, int distance, int size)
 {
-	var oldx = GetVertex(0, 0);
-	var oldy = GetVertex(0, 1);
-	for (var vtx = 1; vtx < GetVertexNum(); ++vtx)
-	{
-		var newx = GetVertex(vtx, 0);
-		var newy = GetVertex(vtx, 1);
-		//Log("Lightning %d: Redraw vtx %d->%d %d/%d->%d/%d", ObjectNumber(), vtx-1, vtx, oldx, oldy, newx, newy);
-		DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, strength/5, strength / 3, 0xa0f0f0f0);
-		oldx = newx; oldy = newy;
-	}
-}
-
-private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int size, int color)
-{
+	// Need at least two particles: start and end.
 	distance = Max(distance, 1);
 	var angle = Angle(x1, y1, x2, y2);
-
-	// Need at least two particles: start and end
 	var count = Max(2, Distance(x1, y1, x2, y2) / distance);
 	var deltax = x2 - x1, deltay = y2 - y1;
-	//Log("DrawRPL: %s in %d steps, angle %d xdir %d ydir %d", particle, count, angle, xdir, ydir);
-	var particle_prop = 
+	// Create a set of blue particles and smaller white particles on the line.
+	var particle_blue = 
 	{
-		R = GetRGBaValue(color, 1),
-		G = GetRGBaValue(color, 2),
-		B = GetRGBaValue(color, 3),
+		R = 0,
+		G = 0,
+		B = 240,
 		Alpha = PV_Linear(128, 0),
 		Size = size,
 		Rotation = angle,
 		BlitMode = GFX_BLIT_Additive
 	};
-	for (var i = count+1; --i; )
+	var particle_white = 
 	{
-		CreateParticle(particle, x1 + deltax * i / count, y1 + deltay * i / count, 0, 0, 18, particle_prop);
+		R = 240,
+		G = 240,
+		B = 240,
+		Alpha = PV_Linear(192, 0),
+		Size = 3 * size / 4,
+		Rotation = angle,
+		BlitMode = GFX_BLIT_Additive
+	};
+	for (var i = 1; i <= count; i++)
+	{
+		CreateParticle("LightningBolt", x1 + deltax * i / (count + 1), y1 + deltay * i / (count + 1), 0, 0, 20, particle_blue);
+		CreateParticle("LightningBolt", x1 + deltax * i / (count + 1), y1 + deltay * i / (count + 1), 0, 0, 20, particle_white);
 	}
+	return;
 }
 
-// Don't save in scenarios
+// Don't save in scenarios.
 func SaveScenarioObject() { return false; }
 
 local Name = "$Name$";
