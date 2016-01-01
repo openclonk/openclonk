@@ -863,6 +863,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	shader.AddFragmentSlices(FragmentShader->GetFilename(), FragmentShader->GetCode(), FragmentShader->GetFilename());
 	// Construct the list of uniforms
 	std::vector<const char*> uniformNames;
+	std::vector<const char*> attributeNames;
 #ifndef USE_CONSOLE
 	uniformNames.resize(C4SSU_Count + ParameterNames.size() + 1);
 	uniformNames[C4SSU_ProjectionMatrix] = "projectionMatrix";
@@ -884,6 +885,12 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	for (unsigned int i = 0; i < ParameterNames.size(); ++i)
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
+	attributeNames.resize(C4SSA_Count + 1);
+	attributeNames[C4SSA_BoneIndices0] = "oc_BoneIndices0";
+	attributeNames[C4SSA_BoneIndices1] = "oc_BoneIndices1";
+	attributeNames[C4SSA_BoneWeights0] = "oc_BoneWeights0";
+	attributeNames[C4SSA_BoneWeights1] = "oc_BoneWeights1";
+	attributeNames[C4SSA_Count] = NULL;
 #endif
 	// Compile the shader
 	StdCopyStrBuf name(Name);
@@ -892,7 +899,7 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	if (ssc & C4SSC_LIGHT) name.Append("Light");
 	if (ssc & C4SSC_MOD2) name.Append("Mod2");
 #endif
-	return shader.Init(name.getData(), &uniformNames[0]);
+	return shader.Init(name.getData(), &uniformNames[0], &attributeNames[0]);
 }
 
 bool StdMeshMaterialProgram::Compile(StdMeshMaterialLoader& loader)

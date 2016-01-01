@@ -76,36 +76,18 @@ private:
 
 #ifndef USE_CONSOLE
 	// shaders
-	GLhandleARB hVert, hFrag, hProg;
+	GLhandleARB hProg;
 	// shader variables
-	int iUniformCount;
-	GLint *pUniforms;
-	const char **pUniformNames;
+	struct Variable { int address; const char* name; };
+	std::vector<Variable> Uniforms;
+	std::vector<Variable> Attributes;
 #endif
 
 public:
-	enum VertexAttribIndex
-	{
-		// These correspond to the locations nVidia uses for the
-		// respective gl_* attributes, so make sure whatever you
-		// use for custom ones doesn't conflict with these UNLESS
-		// you're not using the pre-defined ones in your shader
-		VAI_Vertex = 0,
-		VAI_Normal = 2,
-		VAI_Color = 3,
-		VAI_TexCoord0 = 8, // and upwards through TexCoord7 = 15
-
-		// Make sure you move these if we implement multitexturing
-		VAI_BoneWeights,
-		VAI_BoneWeightsMax = VAI_BoneWeights + 1,
-		VAI_BoneIndices,
-		VAI_BoneIndicesMax = VAI_BoneIndices + VAI_BoneWeightsMax - VAI_BoneWeights
-	};
-
 	bool Initialised() const
 	{
 #ifndef USE_CONSOLE
-		return hVert != 0;
+		return hProg != 0;
 #else
 		return true;
 #endif
@@ -115,12 +97,19 @@ public:
 #ifndef USE_CONSOLE
 	GLint GetUniform(int iUniform) const
 	{
-		return iUniform >= 0 && iUniform < iUniformCount ? pUniforms[iUniform] : -1;
+		return iUniform >= 0 && static_cast<unsigned int>(iUniform) < Uniforms.size() ? Uniforms[iUniform].address : -1;
 	}
+
 	bool HaveUniform(int iUniform) const
 	{
 		return GetUniform(iUniform) != GLint(-1);
 	}
+
+	GLint GetAttribute(int iAttribute) const
+	{
+		return iAttribute >= 0 && static_cast<unsigned int>(iAttribute) < Attributes.size() ? Attributes[iAttribute].address : -1;
+	}
+
 #else
 	int GetUniform(int iUniform) const
 	{
@@ -129,6 +118,10 @@ public:
 	bool HaveUniform(int iUniform) const
 	{
 		return false;
+	}
+	int GetAttribute(int iAttribute) const
+	{
+		return -1;
 	}
 #endif
 
@@ -148,7 +141,7 @@ public:
 #endif
 
 	// Assemble and link the shader. Should be called again after new slices are added.
-	bool Init(const char *szWhat, const char **szUniforms);
+	bool Init(const char *szWhat, const char **szUniforms, const char **szAttributes);
 	bool Refresh();
 
 	void ClearSlices();

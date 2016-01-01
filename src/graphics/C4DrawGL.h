@@ -74,6 +74,18 @@ enum C4SS_Uniforms
 	C4SSU_Count
 };
 
+// Attribute data for sprites and meshes
+enum C4SS_Attributes
+{
+	C4SSA_BoneIndices0,
+	C4SSA_BoneIndices1,
+
+	C4SSA_BoneWeights0,
+	C4SSA_BoneWeights1,
+
+	C4SSA_Count
+};
+
 // one OpenGL context
 class CStdGLCtx
 #ifdef USE_COCOA

@@ -569,7 +569,7 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	shader.LoadFragmentSlices(pGroups, "LandscapeShader.glsl");
 
 	// Initialise!
-	if (!shader.Init(name, UniformNames)) {
+	if (!shader.Init(name, UniformNames, NULL)) {
 		shader.ClearSlices();
 		return false;
 	}

@@ -44,9 +44,7 @@ C4Shader::C4Shader()
 	: iTexCoords(0)
 	, LastRefresh()
 #ifndef USE_CONSOLE
-	, hVert(0), hFrag(0), hProg(0)
-	, pUniforms(NULL)
-	, pUniformNames(NULL)
+	, hProg(0)
 #endif
 {
 
@@ -301,34 +299,16 @@ void C4Shader::Clear()
 #ifndef USE_CONSOLE
 	if (!hProg) return;
 	// Need to be detached, then deleted
-	glDetachObjectARB(hProg, hFrag);
-	glDetachObjectARB(hProg, hVert);
-	glDeleteObjectARB(hFrag);
-	glDeleteObjectARB(hVert);
 	glDeleteObjectARB(hProg);
-	hFrag = hVert = hProg = 0;
+	hProg = 0;
 	// Clear uniform data
-	delete[] pUniforms; pUniforms = NULL;
-	delete[] pUniformNames; pUniformNames = NULL;
-	iUniformCount = 0;
+	Uniforms.clear();
+	Attributes.clear();
 #endif
 }
 
-bool C4Shader::Init(const char *szWhat, const char **szUniforms)
+bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **szAttributes)
 {
-#ifndef USE_CONSOLE
-	// No support?
-	if(!GLEW_ARB_fragment_program)
-	{
-		Log("  gl: no shader support!");
-		return false;
-	}
-
-	// Clear old shader first
-	const char **pOldUniformNames = pUniformNames;
-	if (hProg) { pUniformNames = NULL; Clear(); }
-#endif
-
 	StdStrBuf VertexShader = Build(VertexSlices, true),
 		FragmentShader = Build(FragmentSlices, true);
 
@@ -343,56 +323,72 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms)
 
 #ifndef USE_CONSOLE
 	// Attempt to create shaders
-	hVert = Create(GL_VERTEX_SHADER_ARB,
-				   FormatString("%s vertex shader", szWhat).getData(),
-				   VertexShader.getData());
-	hFrag = Create(GL_FRAGMENT_SHADER_ARB,
-				   FormatString("%s fragment shader", szWhat).getData(),
-				   FragmentShader.getData());
+	const GLint hVert = Create(GL_VERTEX_SHADER_ARB,
+	               FormatString("%s vertex shader", szWhat).getData(),
+	               VertexShader.getData());
+	const GLint hFrag = Create(GL_FRAGMENT_SHADER_ARB,
+	               FormatString("%s fragment shader", szWhat).getData(),
+	               FragmentShader.getData());
+
 	if(!hFrag || !hVert)
+	{
+		if (hVert) glDeleteObjectARB(hVert);
 		return false;
+	}
 
 	// Link program
-	hProg = glCreateProgramObjectARB();
+	const GLint hNewProg = glCreateProgramObjectARB();
 #ifdef GL_KHR_debug
 	if (glObjectLabel)
-		glObjectLabel(GL_PROGRAM, hProg, -1, szWhat);
+		glObjectLabel(GL_PROGRAM, hNewProg, -1, szWhat);
 #endif
-	glAttachObjectARB(hProg, hVert);
-	glAttachObjectARB(hProg, hFrag);
-	// Bind all input variables
-	for (int i = 0; i <= VAI_BoneWeightsMax - VAI_BoneWeights; ++i)
-	{
-		glBindAttribLocation(hProg, VAI_BoneWeights + i, FormatString("oc_BoneWeights%d", i).getData());
-		glBindAttribLocation(hProg, VAI_BoneIndices + i, FormatString("oc_BoneIndices%d", i).getData());
-	}
-	glLinkProgramARB(hProg);
+	glAttachObjectARB(hNewProg, hVert);
+	glAttachObjectARB(hNewProg, hFrag);
+	glLinkProgramARB(hNewProg);
+	// Delete vertex and fragment shader after we linked the program
+	glDeleteObjectARB(hFrag);
+	glDeleteObjectARB(hVert);
 
 	// Link successful?
-	DumpInfoLog(FormatString("%s shader program", szWhat).getData(), hProg);
-	if(GetObjectStatus(hProg, GL_OBJECT_LINK_STATUS_ARB) != 1) {
-		Clear();
+	DumpInfoLog(FormatString("%s shader program", szWhat).getData(), hNewProg);
+	if(GetObjectStatus(hNewProg, GL_OBJECT_LINK_STATUS_ARB) != 1) {
+		glDeleteObjectARB(hNewProg);
 		ShaderLogF("  gl: Failed to link %s shader!", szWhat);
 		return false;
 	}
 	ShaderLogF("  gl: %s shader linked successfully", szWhat);
 
-	// Okay, allocate uniform array
-	iUniformCount = 0;
-	while (szUniforms[iUniformCount])
-		iUniformCount++;
-	pUniforms = new GLint[iUniformCount];
-	pUniformNames = new const char *[iUniformCount+1];
+	// Everything successful, delete old shader
+	if (hProg != 0) glDeleteObjectARB(hProg);
+	hProg = hNewProg;
 
-	// Get uniform locations. Note this is expected to fail for a few of them
+	// Allocate uniform and attribute arrays
+	int iUniformCount = 0;
+	if (szUniforms != NULL)
+		while (szUniforms[iUniformCount])
+			iUniformCount++;
+	Uniforms.resize(iUniformCount);
+
+	int iAttributeCount = 0;
+	if (szAttributes != NULL)
+		while (szAttributes[iAttributeCount])
+			iAttributeCount++;
+	Attributes.resize(iAttributeCount);
+
+	// Get uniform and attribute locations. Note this is expected to fail for a few of them
 	// because the respective uniforms got optimized out!
 	for (int i = 0; i < iUniformCount; i++) {
-		pUniforms[i] = glGetUniformLocationARB(hProg, szUniforms[i]);
-		ShaderLogF("Uniform %s = %d", szUniforms[i], pUniforms[i]);
-		pUniformNames[i] = szUniforms[i];
+		Uniforms[i].address = glGetUniformLocationARB(hProg, szUniforms[i]);
+		Uniforms[i].name = szUniforms[i];
+		ShaderLogF("Uniform %s = %d", szUniforms[i], Uniforms[i].address);
 	}
-	delete[] pOldUniformNames;
-	pUniformNames[iUniformCount] = NULL;
+
+	for (int i = 0; i < iAttributeCount; i++) {
+		Attributes[i].address = glGetAttribLocationARB(hProg, szAttributes[i]);
+		Attributes[i].name = szAttributes[i];
+		ShaderLogF("Attribute %s = %d", szAttributes[i], Attributes[i].address);
+	}
+
 #endif
 
 	Name.Copy(szWhat);
@@ -442,12 +438,26 @@ bool C4Shader::Refresh()
 	StdStrBuf WhatSrc = FormatString("file %s", Config.AtRelativePath(Source.getData()));
 	AddFragmentSlices(WhatSrc.getData(), Shader.getData(), Source.getData(), iSourceTime);
 
+#ifndef USE_CONSOLE
+	std::vector<const char*> UniformNames(Uniforms.size() + 1);
+	for (std::size_t i = 0; i < Uniforms.size(); ++i)
+		UniformNames[i] = Uniforms[i].name;
+	UniformNames[Uniforms.size()] = NULL;
+
+	std::vector<const char*> AttributeNames(Attributes.size() + 1);
+	for (std::size_t i = 0; i < Attributes.size(); ++i)
+		AttributeNames[i] = Attributes[i].name;
+	AttributeNames[Attributes.size()] = NULL;
+#endif
+
 	// Reinitialise
 	StdCopyStrBuf What(Name);
 	if (!Init(What.getData(), 
 #ifndef USE_CONSOLE
-		pUniformNames
+		&UniformNames[0],
+		&AttributeNames[0]
 #else
+		0,
 		0
 #endif
 		))

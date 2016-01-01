@@ -40,7 +40,7 @@ C4Shader *C4FoW::GetFramebufShader()
 		FramebufShader.AddFragmentSlice(0,
 			"gl_FragColor = texture2D(tex, texCoord.st);");
 		const char *szUniforms[] = { "tex", "projectionMatrix", NULL };
-		if (!FramebufShader.Init("framebuf", szUniforms)) {
+		if (!FramebufShader.Init("framebuf", szUniforms, NULL)) {
 			FramebufShader.ClearSlices();
 			return NULL;
 		}
@@ -63,7 +63,7 @@ C4Shader *C4FoW::GetRenderShader()
 		RenderShader.AddFragmentSlice(0,
 			"gl_FragColor = gl_Color;");
 		const char *szUniforms[] = { "projectionMatrix", NULL };
-		if (!RenderShader.Init("fowRender", szUniforms)) {
+		if (!RenderShader.Init("fowRender", szUniforms, NULL)) {
 			RenderShader.ClearSlices();
 			return NULL;
 		}

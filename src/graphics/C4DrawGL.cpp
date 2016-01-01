@@ -261,7 +261,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
 			shader.LoadFragmentSlices(pGroups, *slice);
 
-	if (!shader.Init(name, uniformNames))
+	if (!shader.Init(name, uniformNames, NULL))
 	{
 		shader.ClearSlices();
 		return false;
