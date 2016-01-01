@@ -171,11 +171,6 @@
           <col>0 or 1. If 1, the object can only move vertically.</col>
         </row>
         <row>
-          <literal_col>BorderBound</literal_col>
-          <col>Integer</col>
-          <col>Bit mask: bit 0 (value 1) stop at the sides, bit 1 (value 2) stop at the top, bit 2 (value 4) stop at the bottom.</col>
-        </row>
-        <row>
           <literal_col>UprightAttach</literal_col>
           <col>Integer</col>
           <col>If not 0, the unrotated object attaches to solid areas (attachment directions 8-10).</col>

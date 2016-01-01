@@ -117,6 +117,7 @@ local MaxEnergy = 50000;
 local Placement = 1;
 local NoBurnDecay = 1;
 local BreatheWater = 1;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 
 func IsPrey() { return false; }
 func IsPredator() { return true; }

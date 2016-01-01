@@ -554,6 +554,7 @@ local MaxBreath = 360; // 360 =ten seconds
 local Placement = 1;
 local NoBurnDecay = 1;
 local BreatheWater = 1;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 
 public func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);

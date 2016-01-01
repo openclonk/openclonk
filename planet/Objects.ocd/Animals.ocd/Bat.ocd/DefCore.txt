@@ -15,4 +15,3 @@ ContactCalls=1
 StretchGrowth=1
 Oversize=1
 IncompleteActivity=1
-BorderBound=7

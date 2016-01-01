@@ -13,4 +13,3 @@ VertexY=-1,1,0,0
 VertexCNAT=4,8,1,2
 VertexFriction=100,100,100,100
 Float=1
-BorderBound=7

@@ -8,5 +8,3 @@ Vertices=1
 VertexX=0
 VertexY=0
 VertexFriction=100
-BorderBound=7
-

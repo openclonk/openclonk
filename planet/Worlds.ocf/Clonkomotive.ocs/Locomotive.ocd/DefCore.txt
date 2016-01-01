@@ -16,6 +16,5 @@ Mass=500
 Components=Metal=4;Wood=1;
 Rotate=15
 UprightAttach=8
-BorderBound=1
 Entrance=-8,-10,16,20
 RotatedEntrance=1

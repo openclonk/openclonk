@@ -1171,6 +1171,7 @@ local JumpSpeed = 400;
 local ThrowSpeed = 294;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
+local BorderBound = C4D_Border_Sides;
 
 // Clonks are always shown in the interaction menu.
 public func HasInteractionMenu() { return true; }

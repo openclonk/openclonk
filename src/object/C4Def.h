@@ -124,7 +124,6 @@ public:
 	int32_t Float;
 	int32_t ColorByOwner;
 	int32_t NoHorizontalMove;
-	int32_t BorderBound;
 	int32_t LiftTop;
 	int32_t GrabPutGet;
 	int32_t UprightAttach;

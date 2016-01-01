@@ -460,7 +460,7 @@ private func Death()
 	// Remove behavior effect and play dead animation.
 	RemoveEffect("CoreBehaviour", this);
 	SetAction("Dead");
-	
+	// Set border bound to zero when dead.
 	this.BorderBound = 0;
 	
 	// Decay the dead bat.	
@@ -512,6 +512,7 @@ local MaxEnergy = 20000;
 local MaxBreath = 180;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
 
 local ActMap = {
 	Hang = {

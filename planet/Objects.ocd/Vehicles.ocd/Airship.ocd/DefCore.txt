@@ -16,4 +16,3 @@ Components=Metal=4;Wood=4;Cloth=2;
 Float=-27;
 SolidMask=0,0,36,4,11,49
 Picture=128,0,128,128,0,0
-BorderBound=7

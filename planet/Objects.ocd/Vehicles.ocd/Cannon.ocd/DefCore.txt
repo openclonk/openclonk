@@ -17,4 +17,3 @@ Components=Metal=4;Wood=2;
 GrabPutGet=C4D_GrabGet|C4D_GrabPut
 Rotate=30
 UprightAttach=8
-BorderBound=1

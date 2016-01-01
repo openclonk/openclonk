@@ -13,7 +13,6 @@ VertexX=0,0,-3,3
 VertexY=-3,3,0,0
 VertexCNAT=4,8,1,2
 VertexFriction=100,100,100,100,100,100
-BorderBound=7
 StretchGrowth=1
 Oversize=1
 IncompleteActivity=1

@@ -175,6 +175,11 @@ Stand = {
           <col>Array</col>
           <col>Array of functions made available in the context menu when right-clicking an object in the editor. Functions may be either strings (like "Explode(20)") or function pointers (like this.Hit). Function pointers are always called by name. Windows only.</col>
         </row>
+		<row>
+          <literal_col>BorderBound</literal_col>
+          <col>Integer</col>
+          <col>Bit mask indicating object boundaries: stop at map sides (C4D_Border_Sides), stop at map top (C4D_Border_Top), stop at map bottom (C4D_Border_Sides), stop at object layer boundaries (C4D_Border_Layer). For example BorderBound = C4D_Border_Top | C4D_Border_Bottom.</col>
+        </row>
       </table>
     </text>
   </part>

@@ -538,3 +538,5 @@ func Definition(def)
 
 local Name="$Name$";
 local Description="$Description$";
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+

@@ -20,4 +20,3 @@ Exclusive=1
 RotatedEntrance=1
 VehicleControl=1
 NoStabilize=1
-BorderBound=7

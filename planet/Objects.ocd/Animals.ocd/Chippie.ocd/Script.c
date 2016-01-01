@@ -273,6 +273,7 @@ local MaxBreath = 10000;
 local NoBurnDecay = 1;
 local ContactIncinerate = 15;
 local CorrosionResist = 1;
+local BorderBound = C4D_Border_Sides;
 
 local ActMap = {
 Walk = {

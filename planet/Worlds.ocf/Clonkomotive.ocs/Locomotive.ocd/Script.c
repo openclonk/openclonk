@@ -206,3 +206,4 @@ local MeshTransformation = [0, 580, 0, -15660, 580, 0, 0, 13920, 0, 0, 580, 0];
 local PictureTransformation = [0, -940, -342, -18000, 1000, 0, 0, 27000, 0, -342, 940, 0];
 local Name = "$Name$";
 local Description = "$Description$";
+local BorderBound = C4D_Border_Sides;

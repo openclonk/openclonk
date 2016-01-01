@@ -19,4 +19,3 @@ Picture=24,0,128,128
 HorizontalFix=1
 NoPushEnter=1
 ContactCalls=1
-BorderBound=6

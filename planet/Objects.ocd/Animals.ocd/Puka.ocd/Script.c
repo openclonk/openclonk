@@ -753,6 +753,7 @@ public func RejectLightningStrike() { return true; }
 local MaxEnergy = 30000;
 local MaxBreath = 10000;
 local NoBurnDecay = 1;
+local BorderBound = C4D_Border_Sides;
 
 local ActMap = {
 Walk = {

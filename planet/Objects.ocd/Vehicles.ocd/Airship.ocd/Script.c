@@ -350,3 +350,4 @@ local Description = "$Description$";
 local Touchable = 2;
 local Plane = 500;
 local SolidMaskPlane = 275;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;

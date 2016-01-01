@@ -24,7 +24,7 @@
         <param>
           <type>bool</type>
           <name>check_bounds</name>
-          <desc>Only applies to objects using the BorderBound flag. Ensures that the position is always within the limits specified by the object.</desc>
+          <desc>Only applies to objects using the <emlink href="definition/properties.html">BorderBound property</emlink>. Ensures that the position is always within the limits specified by the object.</desc>
           <optional />
         </param>
         <param>

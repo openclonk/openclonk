@@ -17,7 +17,6 @@ CrewMember=1
 NoGet=1
 Float=-2
 ColorByOwner=1
-BorderBound=1
 StretchGrowth=1
 IncompleteActivity=1
 Oversize=1

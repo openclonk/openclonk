@@ -2412,6 +2412,11 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "C4D_GrabGet"            ,C4V_Int,          C4D_Grab_Get},
 	{ "C4D_GrabPut"            ,C4V_Int,          C4D_Grab_Put},
 
+	{ "C4D_Border_Sides"       ,C4V_Int,          C4D_Border_Sides},
+	{ "C4D_Border_Top"         ,C4V_Int,          C4D_Border_Top},
+	{ "C4D_Border_Bottom"      ,C4V_Int,          C4D_Border_Bottom},
+	{ "C4D_Border_Layer"       ,C4V_Int,          C4D_Border_Layer},
+
 	{ "COMD_None"              ,C4V_Int,          COMD_None},
 	{ "COMD_Stop"              ,C4V_Int,          COMD_Stop},
 	{ "COMD_Up"                ,C4V_Int,          COMD_Up},

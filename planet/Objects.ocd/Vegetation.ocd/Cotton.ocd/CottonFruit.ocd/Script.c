@@ -273,3 +273,4 @@ local ActMap = {
 local Plane = 460;
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local BorderBound = C4D_Border_Sides;

@@ -602,6 +602,7 @@ local MaxBreath = 720;
 local NoBurnDecay = true;
 local Collectible = true;
 local ContactIncinerate = 10;
+local BorderBound = C4D_Border_Sides;
 
 protected func Definition(proplist def)
 {

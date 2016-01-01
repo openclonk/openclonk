@@ -11,4 +11,3 @@ VertexY=1
 VertexFriction=0
 VertexCNAT=6
 SolidMask=0,0,6,4,0,0
-BorderBound=7

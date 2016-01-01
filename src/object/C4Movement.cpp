@@ -156,7 +156,7 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack
 void C4Object::SideBounds(C4Real &ctcox)
 {
 	// layer bounds
-	if (Layer && Layer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer && Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer)
 	{
 		C4PropList* pActionDef = GetAction();
 		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
@@ -168,19 +168,18 @@ void C4Object::SideBounds(C4Real &ctcox)
 		}
 	}
 	// landscape bounds
-	if (Def->BorderBound & C4D_Border_Sides)
-	{
-		C4Real lbound = itofix(0 - Shape.GetX()),
-		       rbound = itofix(GBackWdt + Shape.GetX());
-		if (ctcox < lbound) StopAndContact(ctcox, lbound, xdir, CNAT_Left);
-		else if (ctcox > rbound) StopAndContact(ctcox, rbound, xdir, CNAT_Right);
-	}
+	C4Real lbound = itofix(0 - Shape.GetX()),
+	       rbound = itofix(GBackWdt + Shape.GetX());
+	if (ctcox < lbound && GetPropertyInt(P_BorderBound) & C4D_Border_Sides)
+		StopAndContact(ctcox, lbound, xdir, CNAT_Left);
+	if (ctcox > rbound && GetPropertyInt(P_BorderBound) & C4D_Border_Sides)
+		StopAndContact(ctcox, rbound, xdir, CNAT_Right);
 }
 
 void C4Object::VerticalBounds(C4Real &ctcoy)
 {
 	// layer bounds
-	if (Layer && Layer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer && Layer->GetPropertyInt(P_BorderBound) & C4D_Border_Layer)
 	{
 		C4PropList* pActionDef = GetAction();
 		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
@@ -194,10 +193,10 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 	// landscape bounds
 	C4Real tbound = itofix(0 - Shape.GetY()),
 	       bbound = itofix(GBackHgt + Shape.GetY());
-	if (Def->BorderBound & C4D_Border_Top)
-		if (ctcoy < tbound) StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
-	if (Def->BorderBound & C4D_Border_Bottom)
-		if (ctcoy > bbound) StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
+	if (ctcoy < tbound && GetPropertyInt(P_BorderBound) & C4D_Border_Top)
+		StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
+	if (ctcoy > bbound && GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)
+		StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
 }
 
 void C4Object::DoMovement()
@@ -579,7 +578,8 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	if (!Def->Rotateable) fix_r=Fix0;
 
 	// Out of bounds check
-	if ((!Inside<int32_t>(GetX(), -Shape.Wdt / 2, GBackWdt + Shape.Wdt / 2) && !(Def->BorderBound & C4D_Border_Sides)) || ((GetY() > GBackHgt + Shape.Hgt / 2) && !(Def->BorderBound & C4D_Border_Bottom)))
+	if ((!Inside<int32_t>(GetX(), -Shape.Wdt / 2, GBackWdt + Shape.Wdt / 2) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Sides))
+	    || ((GetY() > GBackHgt + Shape.Hgt / 2) && !(GetPropertyInt(P_BorderBound) & C4D_Border_Bottom)))
 	{
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,

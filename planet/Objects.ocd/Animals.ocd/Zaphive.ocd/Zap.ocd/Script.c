@@ -247,3 +247,4 @@ local MaxEnergy = 30000;
 local MaxBreath = 250;
 local Placement = 2;
 local NoBurnDecay = 1;
+local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
