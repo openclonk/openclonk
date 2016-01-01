@@ -414,6 +414,28 @@ StdProjectionMatrix StdProjectionMatrix::Rotate(float angle, float rx, float ry,
 	return m;
 }
 
+StdProjectionMatrix StdProjectionMatrix::Orthographic(float left, float right, float bottom, float top)
+{
+	StdProjectionMatrix matrix;
+	matrix(0,0) = 2.0f / (right - left);
+	matrix(0,1) = 0.0f;
+	matrix(0,2) = 0.0f;
+	matrix(0,3) = -(right + left) / (right - left);
+	matrix(1,0) = 0.0f;
+	matrix(1,1) = 2.0f / (top - bottom);
+	matrix(1,2) = 0.0f;
+	matrix(1,3) = -(top + bottom) / (top - bottom);
+	matrix(2,0) = 0.0f;
+	matrix(2,1) = 0.0f;
+	matrix(2,2) = -1.0f;
+	matrix(2,3) = 0.0f;
+	matrix(3,0) = 0.0f;
+	matrix(3,1) = 0.0f;
+	matrix(3,2) = 0.0f;
+	matrix(3,3) = 1.0f;
+	return matrix;
+}
+
 StdMeshMatrix StdProjectionMatrix::Upper3x4(const StdProjectionMatrix& matrix)
 {
 	StdMeshMatrix m;

@@ -77,6 +77,16 @@ void C4Shader::AddFragmentSlices(const char *szWhat, const char *szText, const c
 	AddSlices(FragmentSlices, szWhat, szText, szSource, iSourceTime);
 }
 
+bool C4Shader::LoadFragmentSlices(C4GroupSet *pGroups, const char *szFile)
+{
+	return LoadSlices(FragmentSlices, pGroups, szFile);
+}
+
+bool C4Shader::LoadVertexSlices(C4GroupSet *pGroups, const char *szFile)
+{
+	return LoadSlices(VertexSlices, pGroups, szFile);
+}
+
 void C4Shader::AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iSourceTime)
 {
 	ShaderSlice Slice;
@@ -240,7 +250,7 @@ int C4Shader::ParsePosition(const char *szWhat, const char **ppPos)
 	return iPosition;
 }
 
-bool C4Shader::LoadSlices(C4GroupSet *pGroups, const char *szFile)
+bool C4Shader::LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroups, const char *szFile)
 {
 	// Search for our shaders
 	C4Group *pGroup = pGroups->FindEntry(szFile);
@@ -257,13 +267,8 @@ bool C4Shader::LoadSlices(C4GroupSet *pGroups, const char *szFile)
 		iSourceTime = FileTime(Source.getData());
 	// Load
 	StdStrBuf What = FormatString("file %s", Config.AtRelativePath(Source.getData()));
-	AddFragmentSlices(What.getData(), Shader.getData(), Source.getData(), iSourceTime);
+	AddSlices(slices, What.getData(), Shader.getData(), Source.getData(), iSourceTime);
 	return true;
-}
-
-void C4Shader::AddVertexDefaults()
-{
-	AddVertexSlice(C4Shader_Vertex_PositionPos, "gl_Position = ftransform();\n");
 }
 
 #ifndef USE_CONSOLE

@@ -169,41 +169,8 @@ bool CStdGL::UpdateClipper()
 	ClipAll=false;
 	// set it
 	glViewport(clipRect.x, RenderTarget->Hgt-clipRect.y-clipRect.Hgt, clipRect.Wdt, clipRect.Hgt);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	gluOrtho2D((GLdouble) clipRect.x, (GLdouble) (clipRect.x + clipRect.Wdt), (GLdouble) (clipRect.y + clipRect.Hgt), (GLdouble) clipRect.y);
-	UpdateProjectionMatrix();
+	ProjectionMatrix = StdProjectionMatrix::Orthographic(clipRect.x, clipRect.x + clipRect.Wdt, clipRect.y + clipRect.Hgt, clipRect.y);
 	return true;
-}
-
-void CStdGL::UpdateProjectionMatrix()
-{
-	const C4Rect clipRect = GetClipRect();
-
-	const float left = clipRect.x;
-	const float right = clipRect.x + clipRect.Wdt;
-	const float bottom = clipRect.y + clipRect.Hgt;
-	const float top = clipRect.y;
-	const float nearVal = -1.0f;
-	const float farVal = +1.0f;
-
-	ProjectionMatrix(0,0) = 2.0f / (right - left);
-	ProjectionMatrix(0,1) = 0.0f;
-	ProjectionMatrix(0,2) = 0.0f;
-	ProjectionMatrix(0,3) = -(right + left) / (right - left);
-	ProjectionMatrix(1,0) = 0.0f;
-	ProjectionMatrix(1,1) = 2.0f / (top - bottom);
-	ProjectionMatrix(1,2) = 0.0f;
-	ProjectionMatrix(1,3) = -(top + bottom) / (top - bottom);
-	ProjectionMatrix(2,0) = 0.0f;
-	ProjectionMatrix(2,1) = 0.0f;
-	ProjectionMatrix(2,2) = -2.0f / (farVal - nearVal);
-	ProjectionMatrix(2,3) = -(farVal + nearVal) / (farVal - nearVal);
-	ProjectionMatrix(3,0) = 0.0f;
-	ProjectionMatrix(3,1) = 0.0f;
-	ProjectionMatrix(3,2) = 0.0f;
-	ProjectionMatrix(3,3) = 1.0f;
 }
 
 bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
@@ -287,12 +254,12 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 		for (const char* const* define = additionalDefines; *define != NULL; ++define)
 			shader.AddFragmentSlice(-1, FormatString("#define %s", *define).getData());
 
-	shader.LoadSlices(pGroups, "CommonShader.glsl");
-	shader.LoadSlices(pGroups, "ObjectShader.glsl");
+	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
+	shader.LoadFragmentSlices(pGroups, "ObjectShader.glsl");
 
 	if (additionalSlices)
 		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
-			shader.LoadSlices(pGroups, *slice);
+			shader.LoadFragmentSlices(pGroups, *slice);
 
 	if (!shader.Init(name, uniformNames))
 	{

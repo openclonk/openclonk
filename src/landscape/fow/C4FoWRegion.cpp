@@ -15,6 +15,7 @@
 
 #include "C4Include.h"
 #include "C4FoWRegion.h"
+#include "C4DrawGL.h"
 
 C4FoWRegion::~C4FoWRegion()
 {
@@ -121,7 +122,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	// On screen? No need to set up frame buffer - simply shortcut
 	if (pOnScreen)
 	{
-		pFoW->Render(this, pOnScreen, pPlayer);
+		pFoW->Render(this, pOnScreen, pPlayer, pGL->GetProjectionMatrix());
 		return;
 	}
 
@@ -143,10 +144,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Set up a clean context
 	glViewport(0, 0, pSurface->Wdt, pSurface->Hgt);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0, pSurface->Wdt, pSurface->Hgt, 0);
+	const StdProjectionMatrix projectionMatrix = StdProjectionMatrix::Orthographic(0.0, pSurface->Wdt, pSurface->Hgt, 0);
 
 	// Clear texture contents
 	assert(pSurface->Hgt % 2 == 0);
@@ -163,7 +161,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Render FoW to frame buffer object
 	glBlendFunc(GL_ONE, GL_ONE);
-	pFoW->Render(this, NULL, pPlayer);
+	pFoW->Render(this, NULL, pPlayer, projectionMatrix);
 
 	// Copy over the old state
 	if (OldRegion.Wdt > 0)
@@ -198,6 +196,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		Call.Start();
 		if (Call.AllocTexUnit(0))
 			glBindTexture(GL_TEXTURE_2D, pBackSurface->textures[0].texName);
+		Call.SetUniformMatrix4x4(1, projectionMatrix);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly
 		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
@@ -214,8 +213,6 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Done!
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
 	pDraw->RestorePrimaryClipper();
 
 	OldRegion = Region;

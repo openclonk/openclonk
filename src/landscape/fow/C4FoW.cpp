@@ -30,27 +30,51 @@ C4Shader *C4FoW::GetFramebufShader()
 	// Not created yet?
 	if (!FramebufShader.Initialised())
 	{
-
 		// Create the frame buffer shader. The details are in C4FoWRegion, but
 		// this is about how to utilise old frame buffer data in the lights texture.
 		// Or put in other words: This shader is responsible for fading lights out.
-		FramebufShader.AddVertexDefaults();
+		FramebufShader.AddVertexSlice(-1, "uniform mat4 projectionMatrix;");
+		FramebufShader.AddVertexSlice(0, "gl_Position = projectionMatrix * gl_Vertex;");
 		FramebufShader.AddTexCoord("texCoord");
 		FramebufShader.AddFragmentSlice(-1, "uniform sampler2D tex;");
 		FramebufShader.AddFragmentSlice(0,
 			"gl_FragColor = texture2D(tex, texCoord.st);");
-		const char *szUniforms[] = { "tex", NULL };
+		const char *szUniforms[] = { "tex", "projectionMatrix", NULL };
 		if (!FramebufShader.Init("framebuf", szUniforms)) {
 			FramebufShader.ClearSlices();
 			return NULL;
 		}
-
 	}
 	return &FramebufShader;
 #else
 	return NULL;
 #endif
 }
+
+C4Shader *C4FoW::GetRenderShader()
+{
+#ifndef USE_CONSOLE
+	// Not created yet?
+	if (!RenderShader.Initialised())
+	{
+		// Create the render shader. Fairly simple pass-through.
+		RenderShader.AddVertexSlice(-1, "uniform mat4 projectionMatrix;");
+		RenderShader.AddVertexSlice(0, "gl_FrontColor = gl_Color; gl_Position = projectionMatrix * gl_Vertex;");
+		RenderShader.AddFragmentSlice(0,
+			"gl_FragColor = gl_Color;");
+		const char *szUniforms[] = { "projectionMatrix", NULL };
+		if (!RenderShader.Init("fowRender", szUniforms)) {
+			RenderShader.ClearSlices();
+			return NULL;
+		}
+
+	}
+	return &RenderShader;
+#else
+	return NULL;
+#endif
+}
+
 
 void C4FoW::Add(C4Object *pObj)
 {
@@ -119,11 +143,22 @@ void C4FoW::Update(C4Rect r, C4Player *pPlr)
 #endif
 }
 
-void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr)
+void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr, const StdProjectionMatrix& projectionMatrix)
 {
 #ifndef USE_CONSOLE
+	// Set up shader. If this one doesn't work, we're really in trouble.
+	C4Shader *pShader = GetRenderShader();
+	assert(pShader);
+	if (!pShader) return;
+
+	C4ShaderCall Call(pShader);
+	Call.Start();
+	Call.SetUniformMatrix4x4(0, projectionMatrix);
+
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
 			pLight->Render(pRegion, pOnScreen);
+
+	Call.Finish();
 #endif
 }

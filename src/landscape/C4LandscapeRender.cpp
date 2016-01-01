@@ -554,8 +554,9 @@ const char *C4LandscapeRenderGL::UniformNames[C4LRU_Count+1];
 
 bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, const char* name, int ssc)
 {
-	// Create vertex shader (hard-coded)
-	shader.AddVertexDefaults();
+	// Create vertex shader
+	shader.LoadVertexSlices(pGroups, "LandscapeVertexShader.glsl");
+
 	hLandscapeTexCoord = shader.AddTexCoord("landscapeCoord");
 	if(ssc & C4SSC_LIGHT) hLightTexCoord = shader.AddTexCoord("lightCoord");
 
@@ -564,8 +565,8 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 	shader.AddFragmentSlice(-1, "#define OC_LANDSCAPE");
 	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT"); // sample light from light texture
 
-	shader.LoadSlices(pGroups, "CommonShader.glsl");
-	shader.LoadSlices(pGroups, "LandscapeShader.glsl");
+	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
+	shader.LoadFragmentSlices(pGroups, "LandscapeShader.glsl");
 
 	// Initialise!
 	if (!shader.Init(name, UniformNames)) {
@@ -590,6 +591,7 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 
 	// Make uniform name map
 	ZeroMem(UniformNames, sizeof(UniformNames));
+	UniformNames[C4LRU_ProjectionMatrix]  = "projectionMatrix";
 	UniformNames[C4LRU_LandscapeTex]      = "landscapeTex";
 	UniformNames[C4LRU_ScalerTex]         = "scalerTex";
 	UniformNames[C4LRU_MaterialTex]       = "materialTex";
@@ -905,6 +907,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	ShaderCall.Start();
 
 	// Bind data
+	ShaderCall.SetUniformMatrix4x4(C4LRU_ProjectionMatrix, pGL->GetProjectionMatrix());
 	ShaderCall.SetUniform3fv(C4LRU_Gamma, 1, pGL->gammaOut);
 	ShaderCall.SetUniform2f(C4LRU_Resolution, Surfaces[0]->Wdt, Surfaces[0]->Hgt);
 	float centerX = float(cgo.TargetX)+float(cgo.Wdt)/2,

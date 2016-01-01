@@ -126,6 +126,9 @@ public:
 	static StdProjectionMatrix Translate(float dx, float dy, float dz);
 	static StdProjectionMatrix Scale(float sx, float sy, float sz);
 	static StdProjectionMatrix Rotate(float angle, float rx, float ry, float rz);
+
+	static StdProjectionMatrix Orthographic(float left, float right, float bottom, float top);
+
 	static StdMeshMatrix Upper3x4(const StdProjectionMatrix& matrix);
 
 	float& operator()(int i, int j) { return a[i][j]; }

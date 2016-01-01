@@ -36,6 +36,8 @@ enum C4LR_Byte {
 // Don't forget to update GetUniformName when introducing new uniforms!
 enum C4LR_Uniforms
 {
+	C4LRU_ProjectionMatrix,
+
 	C4LRU_LandscapeTex,
 	C4LRU_ScalerTex,
 	C4LRU_MaterialTex,

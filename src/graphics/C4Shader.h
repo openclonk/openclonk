@@ -137,10 +137,8 @@ public:
 	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
 	void AddVertexSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
 	void AddFragmentSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
-	bool LoadSlices(C4GroupSet *pGroupSet, const char *szFile);
-
-	// Add default vertex code (2D - no transformation)
-	void AddVertexDefaults();
+	bool LoadFragmentSlices(C4GroupSet *pGroupSet, const char *szFile);
+	bool LoadVertexSlices(C4GroupSet *pGroupSet, const char *szFile);
 
 #ifndef USE_CONSOLE
 	// Allocate a texture coordinate, returning its ID to be used with glMultiTexCoord.
@@ -159,6 +157,7 @@ public:
 private:
 	void AddSlice(ShaderSliceList& slices, int iPos, const char *szText, const char *szSource, int iFileTime);
 	void AddSlices(ShaderSliceList& slices, const char *szWhat, const char *szText, const char *szSource, int iFileTime);
+	bool LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroupSet, const char *szFile);
 	int ParsePosition(const char *szWhat, const char **ppPos);
 
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);

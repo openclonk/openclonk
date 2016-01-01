@@ -71,8 +71,8 @@ public:
 		if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_BASE");
 		if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_OVERLAY");
 
-		shader.LoadSlices(&::GraphicsResource.Files, "CommonShader.glsl");
-		shader.LoadSlices(&::GraphicsResource.Files, "ObjectShader.glsl");
+		shader.LoadFragmentSlices(&::GraphicsResource.Files, "CommonShader.glsl");
+		shader.LoadFragmentSlices(&::GraphicsResource.Files, "ObjectShader.glsl");
 #endif
 	}
 

@@ -83,6 +83,8 @@ public:
 
 	// Shader to use for updating the frame buffer
 	C4Shader *GetFramebufShader();
+	// Shader to use for rendering the lights
+	C4Shader *GetRenderShader();
 
 	void Clear();
 
@@ -96,12 +98,13 @@ public:
 	/** Triggers the recalculation of all light beams within the given rectangle because the landscape changed. */
 	void Invalidate(C4Rect r);
 
-	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr);
+	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Player *pPlr, const StdProjectionMatrix& projectionMatrix);
 
 private:
 #ifndef USE_CONSOLE
 	// Shader for updating the frame buffer
 	C4Shader FramebufShader;
+	C4Shader RenderShader;
 #endif
 };
 

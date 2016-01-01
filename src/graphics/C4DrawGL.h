@@ -165,7 +165,7 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 	// Clipper
 	bool UpdateClipper(); // set current clipper to render target
-	void UpdateProjectionMatrix();
+	const StdProjectionMatrix& GetProjectionMatrix() const { return ProjectionMatrix; }
 	virtual bool PrepareMaterial(StdMeshMatManager& mat_manager, StdMeshMaterialLoader& loader, StdMeshMaterial& mat);
 	// Surface
 	virtual bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
