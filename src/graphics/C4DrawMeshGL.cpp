@@ -891,6 +891,17 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	static const float FOV = 60.0f;
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
 
+	// Check mesh transformation; abort when it is degenerate.
+	bool mesh_transform_parity = false;
+	if (MeshTransform)
+	{
+		const float det = MeshTransform->Determinant();
+		if (fabs(det) < 1e-6)
+			return;
+		else if (det < 0.0f)
+			mesh_transform_parity = true;
+	}
+
 	const StdMesh& mesh = instance.GetMesh();
 
 	bool parity = false;
@@ -1045,11 +1056,10 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	// Apply mesh transformation matrix
 	if (MeshTransform)
 	{
-		const float det = MeshTransform->Determinant();
-		if (det < 0) parity = !parity;
-
 		// Apply MeshTransformation (in the Mesh's coordinate system)
 		modelviewMatrix *= *MeshTransform;
+		// Keep track of parity
+		if (mesh_transform_parity) parity = !parity;
 	}
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
