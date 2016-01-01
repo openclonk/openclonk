@@ -55,6 +55,7 @@ C4LandscapeRenderGL::C4LandscapeRenderGL()
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
 	hMaterialTexture = 0;
+	hVBO = 0;
 }
 
 C4LandscapeRenderGL::~C4LandscapeRenderGL()
@@ -99,6 +100,12 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 		return false;
 	}
 
+	if (!InitVBO())
+	{
+		LogFatal("[!] Could not initialize landscape VBO!");
+		return false;
+	}
+
 	return true;
 }
 
@@ -137,6 +144,9 @@ void C4LandscapeRenderGL::Clear()
 	}
 	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
 	hMaterialTexture = 0;
+
+	glDeleteBuffers(1, &hVBO);
+	hVBO = 0;
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -614,6 +624,17 @@ bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 	return true;
 }
 
+bool C4LandscapeRenderGL::InitVBO()
+{
+	// Our VBO needs to hold 4 vertices with 6 floats each.
+	assert(hVBO == 0);
+	glGenBuffers(1, &hVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), NULL, GL_STREAM_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	return true;
+}
+
 void C4LandscapeRenderGL::ClearShaders()
 {
 	if (Shader.Initialised())
@@ -894,9 +915,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	C4Surface *sfcTarget = cgo.Surface;
 	if (!pGL->PrepareRendering(sfcTarget)) return;
 
-	// Clear error(s?)
-	while(glGetError()) {}
-
 	// Choose the right shader depending on whether we have dynamic lighting or not
 	const C4Shader* shader = &Shader;
 	if (Light) shader = &ShaderLight;
@@ -1000,58 +1018,84 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	// Blend it
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// To the blit
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_QUADS);
+	// Prepare vertex data
+	float vtxData[24];
+	float* pos = &vtxData[0];
+	float* tex = &vtxData[8];
+	float* lightTex = &vtxData[16];
+
+	pos[0] = tTexBlt.left;
+	pos[1] = tTexBlt.top;
+	pos[2] = tTexBlt.right;
+	pos[3] = tTexBlt.top;
+	pos[4] = tTexBlt.left;
+	pos[5] = tTexBlt.bottom;
+	pos[6] = tTexBlt.right;
+	pos[7] = tTexBlt.bottom;
+
+	tex[0] = fTexBlt.left;
+	tex[1] = fTexBlt.top;
+	tex[2] = fTexBlt.right;
+	tex[3] = fTexBlt.top;
+	tex[4] = fTexBlt.left;
+	tex[5] = fTexBlt.bottom;
+	tex[6] = fTexBlt.right;
+	tex[7] = fTexBlt.bottom;
+
+	unsigned int nFloats = 16;
+	if (Light)
+	{
+		FLOAT_RECT lTexBlt;
+		const C4Rect LightRect = Light->getRegion();
+		int32_t iLightWdt = Light->getSurfaceWidth(),
+			iLightHgt = Light->getSurfaceHeight();
+		lTexBlt.left = (fx - LightRect.x) / iLightWdt;
+		lTexBlt.top = 1.0 - (fy - LightRect.y) / iLightHgt;
+		lTexBlt.right = (fx + cgo.Wdt - LightRect.x) / iLightWdt;
+		lTexBlt.bottom = 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+
+		lightTex[0] = lTexBlt.left;
+		lightTex[1] = lTexBlt.top;
+		lightTex[2] = lTexBlt.right;
+		lightTex[3] = lTexBlt.top;
+		lightTex[4] = lTexBlt.left;
+		lightTex[5] = lTexBlt.bottom;
+		lightTex[6] = lTexBlt.right;
+		lightTex[7] = lTexBlt.bottom;
+		nFloats = 24;
+	}
+
+	// Upload vertex data
+	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, nFloats * sizeof(float), vtxData);
+	glVertexPointer(2, GL_FLOAT, 0, 0);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glClientActiveTexture(hLandscapeTexCoord);
+	glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (Light)
 	{
-		// Calculate coordinates into light texture
-		FLOAT_RECT lTexBlt;
-		if (Light)
-		{
-			const C4Rect LightRect = Light->getRegion();
-			int32_t iLightWdt = Light->getSurfaceWidth(),
-				iLightHgt = Light->getSurfaceHeight();
-			lTexBlt.left = (fx - LightRect.x) / iLightWdt;
-			lTexBlt.top = 1.0 - (fy - LightRect.y) / iLightHgt;
-			lTexBlt.right = (fx + cgo.Wdt - LightRect.x) / iLightWdt;
-			lTexBlt.bottom = 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
-		}
-
-		#define LVERTEX(x, y) \
-			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
-			glMultiTexCoord2f(hLightTexCoord, lTexBlt.x, lTexBlt.y); \
-			glVertex2f(tTexBlt.x, tTexBlt.y);
-
-		LVERTEX(left, top);
-		LVERTEX(right, top);
-		LVERTEX(right, bottom);
-		LVERTEX(left, bottom);
-
-		#undef LVERTEX
+		glClientActiveTexture(hLightTexCoord);
+		glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-	else
+
+	// Do the blit
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// Reset state
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (Light)
 	{
-		#define VERTEX(x, y) \
-			glMultiTexCoord2f(hLandscapeTexCoord, fTexBlt.x, fTexBlt.y); \
-			glVertex2f(tTexBlt.x, tTexBlt.y);
-
-		VERTEX(left, top);
-		VERTEX(right, top);
-		VERTEX(right, bottom);
-		VERTEX(left, bottom);
-
-		#undef VERTEX
+		glClientActiveTexture(hLandscapeTexCoord);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
-	
-
-	glEnd();
-
-	// Remove shader
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	ShaderCall.Finish();
-
 }
 
 #endif // #ifndef USE_CONSOLE

@@ -109,6 +109,8 @@ private:
 	C4Shader ShaderLight;
 	static const char *UniformNames[];
 	GLenum hLandscapeTexCoord, hLightTexCoord;
+	// VBO for landscape vertex data
+	GLuint hVBO;
 
 	// 2D texture array of material textures
 	GLuint hMaterialTexture;
@@ -137,7 +139,8 @@ private:
 	bool InitMaterialTexture(C4TextureMap *pMap);
 	bool LoadShader(C4GroupSet *pGraphics, C4Shader& shader, const char* name, int ssc);
 	bool LoadShaders(C4GroupSet *pGraphics);
-    void ClearShaders();
+	bool InitVBO();
+	void ClearShaders();
 	bool LoadScaler(C4GroupSet *pGraphics);
 
 	int CalculateScalerBitmask(int x, int y, C4Rect To, C4Landscape *pSource);
