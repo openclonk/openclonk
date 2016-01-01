@@ -103,8 +103,9 @@ namespace
 #undef USERPARAM_CONST
 
 CStdGL::CStdGL():
-		pMainCtx(0)
+	pMainCtx(0), CurrentVBO(0)
 {
+	GenericVBOs[0] = 0;
 	Default();
 	byByteCnt=4;
 	// global ptr
@@ -630,6 +631,22 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 	assert(sfcTarget->IsRenderTarget());
 	if(!PrepareRendering(sfcTarget)) return;
 
+	// Select a buffer
+	const unsigned int vbo_index = CurrentVBO;
+	CurrentVBO = (CurrentVBO + 1) % N_GENERIC_VBOS;
+
+	// Upload data into the buffer, resize buffer if necessary
+	glBindBuffer(GL_ARRAY_BUFFER, GenericVBOs[vbo_index]);
+	if (GenericVBOSizes[vbo_index] < n_vertices)
+	{
+		GenericVBOSizes[vbo_index] = n_vertices;
+		glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(C4BltVertex), vertices, GL_STREAM_DRAW);
+	}
+	else
+	{
+		glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(C4BltVertex), vertices);
+	}
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
@@ -639,11 +656,11 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		// the base, overlay and normal textures
 		glClientActiveTexture(GL_TEXTURE0);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].tx);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
 	}
 
-	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vertices[0].ftx);
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), &vertices[0].color[0]);
+	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
 
 	switch (op)
 	{
@@ -658,6 +675,7 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		break;
 	}
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	if(has_tex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -781,6 +799,17 @@ bool CStdGL::RestoreDeviceObjects()
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
 	if (s>0) MaxTexSize = s;
 
+	// Generic VBOs
+	glGenBuffers(N_GENERIC_VBOS, GenericVBOs);
+	for (unsigned int i = 0; i < N_GENERIC_VBOS; ++i)
+	{
+		GenericVBOSizes[i] = GENERIC_VBO_SIZE;
+		glBindBuffer(GL_ARRAY_BUFFER, GenericVBOs[i]);
+		glBufferData(GL_ARRAY_BUFFER, GenericVBOSizes[i] * sizeof(C4BltVertex), NULL, GL_STREAM_DRAW);
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	// reset blit states
 	dwBlitMode = 0;
 
@@ -800,6 +829,13 @@ bool CStdGL::InvalidateDeviceObjects()
 		glDeleteTextures(1, &lines_tex);
 		lines_tex = 0;
 	}
+
+	// invalidate generic VBOs
+	if (GenericVBOs[0] != 0)
+		glDeleteBuffers(N_GENERIC_VBOS, GenericVBOs);
+	GenericVBOs[0] = 0;
+	CurrentVBO = 0;
+
 	// invalidate shaders
 
 	// TODO: We don't do this here because we cannot re-validate them in

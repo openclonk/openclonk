@@ -170,6 +170,20 @@ protected:
 	C4Shader SpriteShaderLightBaseNormalMod2;
 	C4Shader SpriteShaderLightBaseNormalOverlay;
 	C4Shader SpriteShaderLightBaseNormalOverlayMod2;
+
+	// Generic VBOs for rendering arbitrary points, lines and
+	// triangles, used by PerformMultiBlt. Use more than one VBO, so that
+	// two PerformMultiBlt calls in quick succession can use two different
+	// buffers. Otherwise, the second call would need to wait until the
+	// rendering pipeline has actually drained the buffer. Each buffer
+	// starts with a fixed size. If more than this many vertices need to
+	// be rendered (can happen e.g. for PXS), then the buffer is resized.
+	static const unsigned int N_GENERIC_VBOS = 16;
+	static const unsigned int GENERIC_VBO_SIZE = 3 * 64; // vertices
+	GLuint GenericVBOs[N_GENERIC_VBOS];
+	unsigned int GenericVBOSizes[N_GENERIC_VBOS];
+	unsigned int CurrentVBO;
+
 public:
 	// General
 	void Clear();
