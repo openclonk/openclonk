@@ -126,29 +126,22 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
 	fix_x += mx; fix_y += my;
 }
 
-static inline int32_t ForceLimits(C4Real &rVal, int32_t iLow, int32_t iHi)
-{
-	if (rVal<iLow) { rVal=iLow; return -1; }
-	if (rVal>iHi)  { rVal=iHi;  return +1; }
-	return 0;
-}
-
 void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
 {
-	switch (ForceLimits(ctco,limit_low,limit_hi))
+	if (ctco<limit_low)
 	{
-	case -1:
+		ctco=limit_low;
 		// stop
 		if (cnat_low==CNAT_Left) xdir=0; else ydir=0;
 		// do calls
 		Contact(cnat_low);
-		break;
-	case +1:
+	}
+	else if (ctco>limit_hi) {
+		ctco=limit_hi;
 		// stop
 		if (cnat_hi==CNAT_Right) xdir=0; else ydir=0;
 		// do calls
 		Contact(cnat_hi);
-		break;
 	}
 }
 
