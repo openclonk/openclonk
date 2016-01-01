@@ -271,7 +271,7 @@ public:
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
 	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0, bool collide_halfvehic=false);
 	bool Contact(int32_t cnat);
-	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
+	void StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 	C4PropList* GetAction() const;
 	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);

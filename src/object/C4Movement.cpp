@@ -126,23 +126,11 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
 	fix_x += mx; fix_y += my;
 }
 
-void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
+void C4Object::StopAndContact(C4Real & ctco, C4Real limit, C4Real & speed, int32_t cnat)
 {
-	if (ctco<limit_low)
-	{
-		ctco=limit_low;
-		// stop
-		if (cnat_low==CNAT_Left) xdir=0; else ydir=0;
-		// do calls
-		Contact(cnat_low);
-	}
-	else if (ctco>limit_hi) {
-		ctco=limit_hi;
-		// stop
-		if (cnat_hi==CNAT_Right) xdir=0; else ydir=0;
-		// do calls
-		Contact(cnat_hi);
-	}
+	ctco = limit;
+	speed = 0;
+	Contact(cnat);
 }
 
 int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts, bool collide_halfvehic)
@@ -164,38 +152,52 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack
 	return Shape.ContactCount;
 }
 
+// Stop the object and do contact calls if it collides with the border
 void C4Object::SideBounds(C4Real &ctcox)
 {
 	// layer bounds
-	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer && Layer->Def->BorderBound & C4D_Border_Layer)
+	{
+		C4PropList* pActionDef = GetAction();
+		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
-			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
-			{
-				TargetBounds(ctcox, Layer->GetX() + Layer->Shape.GetX() - Shape.GetX(), Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt + Shape.GetX(), CNAT_Left, CNAT_Right);
-			}
+			C4Real lbound = itofix(Layer->GetX() + Layer->Shape.GetX() - Shape.GetX()),
+			       rbound = itofix(Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt + Shape.GetX());
+			if (ctcox < lbound) StopAndContact(ctcox, lbound, xdir, CNAT_Left);
+			if (ctcox > rbound) StopAndContact(ctcox, rbound, xdir, CNAT_Right);
 		}
+	}
 	// landscape bounds
 	if (Def->BorderBound & C4D_Border_Sides)
-		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
+	{
+		C4Real lbound = itofix(0 - Shape.GetX()),
+		       rbound = itofix(GBackWdt + Shape.GetX());
+		if (ctcox < lbound) StopAndContact(ctcox, lbound, xdir, CNAT_Left);
+		else if (ctcox > rbound) StopAndContact(ctcox, rbound, xdir, CNAT_Right);
+	}
 }
 
 void C4Object::VerticalBounds(C4Real &ctcoy)
 {
 	// layer bounds
-	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer && Layer->Def->BorderBound & C4D_Border_Layer)
+	{
+		C4PropList* pActionDef = GetAction();
+		if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
-			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
-			{
-				TargetBounds(ctcoy, Layer->GetY() + Layer->Shape.GetY() - Shape.GetY(), Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt + Shape.GetY(), CNAT_Top, CNAT_Bottom);
-			}
+			C4Real tbound = itofix(Layer->GetY() + Layer->Shape.GetY() - Shape.GetY()),
+			       bbound = itofix(Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt + Shape.GetY());
+			if (ctcoy < tbound) StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
+			if (ctcoy > bbound) StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
 		}
+	}
 	// landscape bounds
+	C4Real tbound = itofix(0 - Shape.GetY()),
+	       bbound = itofix(GBackHgt + Shape.GetY());
 	if (Def->BorderBound & C4D_Border_Top)
-		TargetBounds(ctcoy,0-Shape.GetY(),+1000000,CNAT_Top,CNAT_Bottom);
+		if (ctcoy < tbound) StopAndContact(ctcoy, tbound, ydir, CNAT_Top);
 	if (Def->BorderBound & C4D_Border_Bottom)
-		TargetBounds(ctcoy,-1000000,GBackHgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
+		if (ctcoy > bbound) StopAndContact(ctcoy, bbound, ydir, CNAT_Bottom);
 }
 
 void C4Object::DoMovement()
