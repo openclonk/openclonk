@@ -1,4 +1,4 @@
-// A builder which tells you how to use the sawmill.
+// A builder which tells you about the flagpole.
 
 #appendto Dialogue
 
