@@ -15,7 +15,7 @@ body {
 }
 
 #iframe {
-	position: absolute; top: 143px; width: 300px; border: 0; bottom: 0; overflow: auto;
+	position: absolute; top: 143px; left: 0; width: 300px; border: 0; bottom: 0; overflow: auto;
 	height: auto;
 	display: block;
 }
