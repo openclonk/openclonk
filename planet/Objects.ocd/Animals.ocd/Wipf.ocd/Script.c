@@ -532,6 +532,54 @@ public func StartEat()
 }
 
 
+/*-- Hanging --*/
+
+public func IsHanging()
+{
+	return GetAction() == "Hang";
+}
+
+public func StartHang()
+{
+	if (!GetEffect("IntHanging", this))
+		AddEffect("IntHanging", this, 1, 1, this);
+
+	return;
+}
+
+public func StopHang()
+{
+	if (!IsStanding()) 
+		RemoveEffect("IntHanging", this);
+	return;
+}
+
+public func FxIntHangingStart(object target, proplist effect, int temp)
+{
+	if (temp)
+		return FX_OK;
+	SetComDir(COMD_Stop);
+	effect.current_transform = this.MeshTransformation;
+	this.MeshTransformation = Trans_Mul(this.MeshTransformation, Trans_Translate(-750, -1000, 0), Trans_Rotate(90, 0, 1, 0), Trans_Rotate(35, 0, 0, 1));
+	effect.anim_number = PlayAnimation("Idle", 5, Anim_Linear(0, 0, GetAnimationLength("Idle"), 35, ANIM_Hold), Anim_Const(1000));
+	return FX_OK;
+}
+
+public func FxIntHangingTimer(object target, proplist effect, int time)
+{
+	return FX_OK;
+}
+
+public func FxIntHangingStop(object target, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	this.MeshTransformation = effect.current_transform;
+	StopAnimation(effect.anim_number);
+	return FX_OK;
+}
+
+
 /*-- Dead --*/
 
 public func IsDead()
@@ -740,6 +788,21 @@ local ActMap = {
 		Hgt = 14,
 		StartCall = "StartEat",
 		NextAction = "Walk",
+		InLiquidAction = "Swim",
+	},
+	Hang = {
+		Prototype = Action,
+		Name = "Hang",
+		Procedure = DFA_ATTACH,
+		Directions = 2,
+		Length = 1,
+		Delay = 0,
+		X = 0,
+		Y = 0,
+		Wdt = 14,
+		Hgt = 14,
+		StartCall = "StartHang",
+		AbortCall = "StopHang",
 		InLiquidAction = "Swim",
 	},
 };
