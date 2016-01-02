@@ -21,6 +21,7 @@
 #include "C4Surface.h"
 #include "C4FacetEx.h"
 #include "C4FoWLightSection.h"
+#include "C4FoWDrawStrategy.h"
 #include "C4Rect.h"
 
 #include <vector>
@@ -108,6 +109,10 @@ private:
 	    for comparison of distances. So we don't bother to sqrt it */
 	float GetSquaredDistanceTo(int32_t x, int32_t y) const { return (x - getX()) * (x - getX()) + (y - getY()) * (y - getY()); }
 
+	/* Draw strategy instances. We keep them around once created, so they can
+	 * reuse a VBO between individual renderings. */
+	std::unique_ptr<C4FoWDrawStrategy> OnScreenStrategy;
+	std::unique_ptr<C4FoWDrawStrategy> OffScreenStrategy;
 };
 
 #endif

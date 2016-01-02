@@ -50,7 +50,7 @@ public:
 	/** Returns in how many rendering passes the light should be rendered */
 	virtual int32_t GetRequestedPasses() { return 1; };
 	/** Called before each rendering pass */
-	virtual void Begin(int32_t pass) = 0;
+	virtual void Begin(int32_t pass, const C4FoWRegion* region) = 0;
 	/** Called after each rendering pass */
 	virtual void End(int32_t pass) = 0;
 
@@ -83,12 +83,12 @@ public:
 class C4FoWDrawLightTextureStrategy : public C4FoWDrawStrategy
 {
 public:
-	C4FoWDrawLightTextureStrategy(const C4FoWLight* light, const C4FoWRegion* region) : light(light), region(region) {};
+	C4FoWDrawLightTextureStrategy(const C4FoWLight* light) : light(light), region(NULL), pass(0) {}
 
 	virtual int32_t GetRequestedPasses() { return 3; };
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(int32_t pass);
+	virtual void Begin(int32_t pass, const C4FoWRegion* region);
 	virtual void End(int32_t pass);
 
 private:
@@ -113,7 +113,7 @@ public:
 
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(int32_t pass);
+	virtual void Begin(int32_t pass, const C4FoWRegion* region);
 	virtual void End(int32_t pass);
 
 private:

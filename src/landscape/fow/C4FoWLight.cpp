@@ -139,23 +139,26 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 	CalculateFanMaxed(triangles);
 	CalculateIntermediateFadeTriangles(triangles);
 
-	C4FoWDrawStrategy* pen;
-	if (onScreen) pen = new C4FoWDrawWireframeStrategy(this, onScreen);
-	else          pen = new C4FoWDrawLightTextureStrategy(this, region);
-
-	for(int pass = 0; pass < pen->GetRequestedPasses(); pass++)
+	std::unique_ptr<C4FoWDrawStrategy>& strategy = onScreen ? OnScreenStrategy : OffScreenStrategy;
+	if (!strategy.get())
 	{
-		pen->Begin(pass);
-
-		DrawFan(pen, triangles);
-		DrawFanMaxed(pen, triangles);
-		DrawFade(pen, triangles);
-		DrawIntermediateFadeTriangles(pen, triangles);
-
-		pen->End(pass);
+		if (onScreen)
+			strategy.reset(new C4FoWDrawWireframeStrategy(this, onScreen));
+		else
+			strategy.reset(new C4FoWDrawLightTextureStrategy(this));
 	}
 
-	delete pen;
+	for(int pass = 0; pass < strategy->GetRequestedPasses(); pass++)
+	{
+		strategy->Begin(pass, region);
+
+		DrawFan(strategy.get(), triangles);
+		DrawFanMaxed(strategy.get(), triangles);
+		DrawFade(strategy.get(), triangles);
+		DrawIntermediateFadeTriangles(strategy.get(), triangles);
+
+		strategy->End(pass);
+	}
 }
 
 void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const

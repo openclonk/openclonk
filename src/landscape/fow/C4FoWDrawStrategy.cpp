@@ -30,9 +30,10 @@ enum C4DrawPass
 	C4DP_Last
 };
 
-void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar)
+void C4FoWDrawLightTextureStrategy::Begin(int32_t passPar, const C4FoWRegion* regionPar)
 {
 	pass = passPar;
+	region = regionPar;
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
@@ -163,7 +164,7 @@ void C4FoWDrawLightTextureStrategy::DrawLightVertex(float x, float y)
 	DrawVertex(x,y, true);
 }
 
-void C4FoWDrawWireframeStrategy::Begin(int32_t pass)
+void C4FoWDrawWireframeStrategy::Begin(int32_t pass, const C4FoWRegion* region)
 {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
