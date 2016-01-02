@@ -304,8 +304,21 @@
 
 	[ControlDef]
 	Identifier=Interact
-	SendCursorPos=1
+	GUIName=$CON_Interact$
+	GUIDesc=$CON_Interact_Desc$
 	Hold=1
+	
+	[ControlDef]
+	Identifier=InteractNext_Left
+	
+	[ControlDef]
+	Identifier=InteractNext_Right
+	
+	[ControlDef]
+	Identifier=InteractNext_Stop
+	
+	[ControlDef]
+	Identifier=InteractNext_CycleObject
 	
 	# Interaction Hotkeys (lower bar)
 	
@@ -706,15 +719,32 @@
 		Control=Jump
 		
 		# Object interaction
-		
+
 		[Assignment]
 		Key=Space
-		Priority=35
-		GUIName=$KEY_Interact$
-		GUIDesc=$KEY_Interact_Desc$
 		GUIGroup=40
 		Control=Interact
-  
+
+		[Assignment]
+		Key=CON_Interact,CON_Left
+		Control=InteractNext_Left
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Right
+		Control=InteractNext_Right
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Up
+		Control=InteractNext_CycleObject
+		Priority=75
+
+		[Assignment]
+		Key=CON_Interact,CON_Down
+		Control=InteractNext_Stop
+  		Priority=75
+
 		# Crew
 		
 		[Assignment]
@@ -888,8 +918,6 @@
 		[Assignment]
 		Key=Joy1B
 		Priority=35
-		GUIName=$KEY_Interact$
-		GUIDesc=$KEY_Interact_Desc$
 		GUIGroup=40
 		Control=Interact
   
@@ -1125,59 +1153,7 @@
 		[Assignment]
 		Key=Shift+CON_Hotkey0
 		Control=DropHotkey0
-		
-		# Hotkeys for interacting (actionbar)
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey1
-		Control=InteractionHotkey1
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey2
-		Control=InteractionHotkey2
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey3
-		Control=InteractionHotkey3
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey4
-		Control=InteractionHotkey4
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey5
-		Control=InteractionHotkey5
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey6
-		Control=InteractionHotkey6
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey7
-		Control=InteractionHotkey7
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey8
-		Control=InteractionHotkey8
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey9
-		Control=InteractionHotkey9
-		Priority=101
-		
-		[Assignment]
-		Key=CON_Interact,CON_Hotkey0
-		Control=InteractionHotkey0
-		Priority=101
-		
+				
 		# Hotkeys for choosing clonk
 		
 		[Assignment]

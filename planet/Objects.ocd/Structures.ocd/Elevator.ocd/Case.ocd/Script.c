@@ -48,6 +48,33 @@ public func CallCase(object clonk)
 	MoveTo(nil, nil, clonk, true);
 }
 
+// Called when an interaction is highlighted.
+public func DrawCustomInteractionSelector(object dummy, object clonk, int interaction_index, extra_data)
+{
+	if (extra_data && extra_data.Fn == "CallCase")
+	{
+		var max_y = clonk->GetY() - GetY();
+		// Relocate the dummy to the Clonk.
+		dummy->SetVertex(0, VTX_Y, -max_y);
+		
+		// And draw some particles upwards.
+		var particles =
+		{
+			Prototype = Particles_Trajectory(),
+			Size = PV_Sin(PV_Step(5, PV_Random(90)), 2, 3),
+		};
+		particles = Particles_Colored(particles, GetPlayerColor(clonk->GetOwner()));
+		
+		var dir = 1;
+		if (max_y < 0) dir = -1;
+		max_y = Abs(max_y);
+		for (var y = 0; y < max_y; y += 5)
+			dummy->CreateParticle("SphereSpark", 0, -y * dir + 10, 0, 0, 0, particles, 1);
+		return true;
+	}
+	return false;
+}
+
 /*-- Callbacks --*/
 
 // Case is not a structure, but uses the library.

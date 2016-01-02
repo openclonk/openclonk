@@ -8,10 +8,9 @@
 /*
 	used properties:
 	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
-
-	other used properties of "this.inventory" might have been declared in Inventory.ocd
+	this.inventory.is_picking_up: whether currently picking up
 	
-	this.control.hotkeypressed: declared in ClonkControl.ocd
+	other used properties of "this.inventory" might have been declared in Inventory.ocd
 */
 
 
@@ -21,6 +20,13 @@ func Construction()
 		this.inventory = {};
 	this.inventory.last_slot = 0;
 	return _inherited(...);
+}
+
+public func OnShiftCursor(object new_cursor)
+{
+	if (this.control.is_interacting)
+		AbortPickingUp();
+	return _inherited(new_cursor, ...);
 }
 
 // Called by other libraries and objects when the Clonk has forcefully dropped (not thrown) an object.
@@ -97,8 +103,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// Stop picking up.
 		if (ctrl == CON_PickUpNext_Stop)
 		{
-			this.inventory.pickup_item = nil;
-			EndPickingUp();
+			AbortPickingUp();
 			return true;
 		}
 		
@@ -106,8 +111,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (ctrl == CON_PickUpNext_All)
 		{
 			PickUpAll();
-			this.inventory.pickup_item = nil;
-			EndPickingUp();
+			AbortPickingUp();
 			return true;
 		}
 		
@@ -315,6 +319,13 @@ private func BeginPickingUp()
 	var obj = FindNextPickupObject(this, 0);
 	if (obj)
 		SetNextPickupItem(obj);
+}
+
+// Ends the pickup process without actually doing anything.
+private func AbortPickingUp()
+{
+	this.inventory.pickup_item = nil;
+	EndPickingUp();
 }
 
 private func EndPickingUp()

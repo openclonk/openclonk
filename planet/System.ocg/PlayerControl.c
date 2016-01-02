@@ -391,8 +391,15 @@ global func ObjectControlUpdateComdir(int plr)
 }
 
 // selects the next/previous crew member (that is not disabled)
-global func ShiftCursor(int plr, bool back)
+global func ShiftCursor(int plr, bool back, bool force)
 {
+	// Is the selected Clonk busy at the moment? E.g. uncloseable menu open..
+	if (!force)
+	{
+		var cursor = GetCursor(plr);
+		if (cursor && cursor->~RejectShiftCursor()) return false;
+	}
+	
 	// get index of currently selected crew
 	var index = 0;
 	while (index < GetCrewCount(plr))
@@ -424,16 +431,17 @@ global func ShiftCursor(int plr, bool back)
 		}
 		++cycle;
 	} while (cycle < maxcycle && !(GetCrew(plr,index)->GetCrewEnabled()));
-
-	StopSelected();
 	
 	// Changing the cursor closes all menus that are associated with the old cursor.
 	// However, if a menu is not closable, then it requires the attention of the player and switching the cursor is disabled..
 	var current_cursor = GetCursor(plr);
 	var new_cursor = GetCrew(plr, index);
 	if (current_cursor == new_cursor) return false;
-	if (current_cursor && current_cursor->~GetMenu() && !current_cursor->~TryCancelMenu()) return false;
 	
+	StopSelected(plr);
+	if (current_cursor)
+		current_cursor->~OnShiftCursor(new_cursor);
+		
 	return SetCursor(plr, new_cursor);
 }
 

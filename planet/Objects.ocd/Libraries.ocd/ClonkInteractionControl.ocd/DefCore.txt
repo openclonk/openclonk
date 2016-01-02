@@ -1,0 +1,6 @@
+[DefCore]
+id=Library_ClonkInteractionControl
+Category=1
+Width=1
+Height=1
+Offset=-1,-1

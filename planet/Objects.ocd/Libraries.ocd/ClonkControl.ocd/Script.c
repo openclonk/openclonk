@@ -33,6 +33,7 @@
 // make use of other sub-libraries
 #include Library_Inventory
 #include Library_ClonkInventoryControl
+#include Library_ClonkInteractionControl
 #include Library_ClonkGamepadControl
 
 // used for interaction with objects
@@ -182,52 +183,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) 
 		return false;
-
-	// some controls should only do something on release (everything that has to do with interaction)
-	if(ctrl == CON_Interact)
-	{
-		if (!release)
-		{
-			if(GetMenu())
-			{
-				// close a possible menu but still open the action bar later
-				TryCancelMenu();
-				// interaction with a menu counts as a special hotkey
-				this.control.hotkeypressed = true;
-				return true;
-			}
-			
-			// this is needed to reset the hotkey-memory
-			this.control.hotkeypressed = false;
-			
-			this->~StartInteractionCheck(this); // for GUI_Controller_ActionBar
-			return true;
-		}
-		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
-		else if(this.control.hotkeypressed)
-			return true;
-		// check if we can handle it by simply accessing the first actionbar item (for consistency)
-		else
-		{
-			var closed = this->~StopInteractionCheck(); // for GUI_Controller_ActionBar
-
-			// releasing of space cancels the action bar without selecting anything
-			if (closed)
-				return true;
-
-			// if the first actionbar item can not be handled, look for interaction objects and use the one with the best priority
-			var interaction_objects = GetInteractableObjects();
-			// look for minimum priority
-			var best = nil;
-			for (var info in interaction_objects)
-				if (best == nil || (info.priority < best.priority)) best = info;
-			if (best)
-			{
-				ExecuteInteraction(best);
-				return true;
-			}
-		}
-	}
 	
 	// Contents menu
 	if (ctrl == CON_Contents && !release)
@@ -1117,6 +1072,18 @@ func TryCancelMenu()
 	return true;
 }
 
+public func RejectShiftCursor()
+{
+	if (menu && menu->~Unclosable()) return true;
+	return _inherited(...);
+}
+
+public func OnShiftCursor()
+{
+	TryCancelMenu();
+	return _inherited(...);
+}
+
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 
 // Throwing
@@ -1212,169 +1179,6 @@ public func ControlJump()
 func FxIsWallKickStart(object target, int num, bool temp)
 {
 	return 1;
-}
-
-/*
-	returns an array containing proplists with informations about the interactable actions.
-	The proplist properties are:
-		interaction_object
-		priority: used for sorting the objects in the action bar. Note that the returned objects are not yet sorted
-		interaction_index: when an object has multiple defined interactions, this is the index
-		extra_data: custom extra_data for an interaction specified by the object
-		actiontype: the kind of interaction. One of the ACTIONTYPE_* constants
-*/
-func GetInteractableObjects()
-{
-	var possible_interactions = [];
-	// find vehicles & structures & script interactables
-	// Get custom interactions from the clonk
-	// extra interactions are an array of proplists. proplists have to contain at least a function pointer "f", a description "desc" and an "icon" definition/object. Optional "front"-boolean for sorting in before/after other interactions.
-	var extra_interactions = this->~GetExtraInteractions() ?? []; // if not present, just use []. Less error prone than having multiple if(!foo).
-		
-	// all except structures only if outside
-	var can_only_use_container = !!Contained();
-
-	// add extra-interactions
-	if (!can_only_use_container)
-	for(var interaction in extra_interactions)
-	{
-		PushBack(possible_interactions,
-			{
-				interaction_object = interaction.Object,
-				priority = interaction.Priority,
-				interaction_index = nil,
-				extra_data = interaction,
-				actiontype = ACTIONTYPE_EXTRA
-			});
-	}
-	
-	// add interactables (script interface)
-	var interactables = FindObjects(
-		Find_AtPoint(0, 0),
-		Find_Or(Find_OCF(OCF_Grab), Find_Func("IsInteractable", this), Find_OCF(OCF_Entrance)),
-		Find_NoContainer(), Find_Layer(GetObjectLayer()));
-	for(var interactable in interactables)
-	{
-		var icnt = interactable->~GetInteractionCount() ?? 1;
-		
-		if (!can_only_use_container)
-		{
-			// first the script
-			// one object could have a scripted interaction AND be a vehicle
-			if (interactable->~IsInteractable(this))
-				for(var j = 0; j < icnt; j++)
-				{
-					PushBack(possible_interactions,
-						{
-							interaction_object = interactable,
-							priority = 9,
-							interaction_index = j,
-							extra_data = nil,
-							actiontype = ACTIONTYPE_SCRIPT
-						});
-				}
-			// check whether further interactions are possible
-	
-			// can be grabbed? (vehicles/chests..)
-			if (interactable->GetOCF() & OCF_Grab)
-			{
-				var priority = 19;
-				// high priority if already grabbed
-				if (GetActionTarget() == interactable) priority = 0;
-				
-				PushBack(possible_interactions,
-					{
-						interaction_object = interactable,
-						priority = priority,
-						interaction_index = nil,
-						extra_data = nil,
-						actiontype = ACTIONTYPE_VEHICLE
-					});
-			}
-		}
-		
-		// can be entered?
-		if (interactable->GetOCF() & OCF_Entrance && (!can_only_use_container || interactable == Contained()))
-		{
-			var priority = 29;
-			if (Contained() == interactable) priority = 0;
-			PushBack(possible_interactions,
-				{
-					interaction_object = interactable,
-					priority = priority,
-					interaction_index = nil,
-					extra_data = nil,
-					actiontype = ACTIONTYPE_STRUCTURE
-				});
-		}
-	}
-	
-	return possible_interactions;
-}
-
-// executes interaction with an object. /action_info/ is a proplist as returned by GetInteractableObjects
-func ExecuteInteraction(proplist action_info)
-{
-	if (!action_info.interaction_object)
-		return;
-		
-	// object is a pushable vehicle
-	if(action_info.actiontype == ACTIONTYPE_VEHICLE)
-	{
-		var proc = GetProcedure();
-		// object is inside building -> activate
-		if(Contained() && action_info.interaction_object->Contained() == Contained())
-		{
-			SetCommand("Activate", action_info.interaction_object);
-			return true;
-		}
-		// crew is currently pushing vehicle
-		else if(proc == "PUSH")
-		{
-			// which is mine -> let go
-			if(GetActionTarget() == action_info.interaction_object)
-				ObjectCommand("UnGrab");
-			else
-				ObjectCommand("Grab", action_info.interaction_object);
-				
-			return true;
-		}
-		// grab
-		else if(proc == "WALK")
-		{
-			ObjectCommand("Grab", action_info.interaction_object);
-			return true;
-		}
-	}
-	// object is a building
-	else if (action_info.actiontype == ACTIONTYPE_STRUCTURE)
-	{
-		// inside? -> exit
-		if(Contained() == action_info.interaction_object)
-		{
-			ObjectCommand("Exit");
-			return true;
-		}
-		// outside? -> enter
-		else if(this->CanEnter())
-		{
-			ObjectCommand("Enter", action_info.interaction_object);
-			return true;
-		}
-	}
-	else if (action_info.actiontype == ACTIONTYPE_SCRIPT)
-	{
-		if(action_info.interaction_object->~IsInteractable(this))
-		{
-			action_info.interaction_object->Interact(this, action_info.interaction_index);
-			return true;
-		}
-	}
-	else if (action_info.actiontype == ACTIONTYPE_EXTRA)
-	{
-		if(action_info.extra_data)
-			action_info.extra_data.Object->Call(action_info.extra_data.Fn, this);
-	}
 }
 
 // Interaction with clonks is special:
