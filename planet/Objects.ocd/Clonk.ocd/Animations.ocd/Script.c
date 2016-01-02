@@ -585,7 +585,13 @@ func CheckScaleTop()
 {
 	// Test whether the clonk has reached a top corner
 	// That is, the leg vertices are the only ones attached to the wall
-	if(GBackSolid(-3+6*GetDir(),-3) || GBackSolid(-5+10*GetDir(),2)) return false;
+
+	// Check the head vertex
+	if (GBackSolid(-1+2*GetDir(),-7)) return false;
+	// Check the shoulder vertices
+	if(GBackSolid(-3+6*GetDir(),-3)) return false;
+	// Check the hip vertices
+	if(GBackSolid(-5+10*GetDir(),2)) return false;
 	return true;
 }
 
@@ -608,6 +614,7 @@ func FxIntScaleTimer(target, number, time)
 		dist *= 100;
 		// add the fractional part of the position (dist counts in the opposite direction of y)
 		dist -= GetY(100)-GetY()*100;
+		dist = BoundBy(dist, 0, GetAnimationLength("ScaleTop"));
 		if(number.animation_mode != 1)
 		{
 			number.animation_id = PlayAnimation("ScaleTop", CLONK_ANIM_SLOT_Movement, Anim_Const(GetAnimationLength("ScaleTop")*dist/800), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
