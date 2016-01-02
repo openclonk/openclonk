@@ -81,7 +81,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	Scoreboard->NewEntry(ScoreboardTeamID(team), GetTaggedTeamName(team));
 
 	// Broadcast to scenario.
-	GameCall("OnPlayerRelaunch", plr);
+	GameCall("OnPlayerRelaunch", plr, false);
 	return _inherited(plr, ...);
 }
 
@@ -94,7 +94,7 @@ protected func RelaunchPlayer(int plr)
 	// Join new clonk.
 	JoinPlayer(plr);
 	// Broadcast to scenario.
-	GameCall("OnPlayerRelaunch", plr);
+	GameCall("OnPlayerRelaunch", plr, true);
 	return _inherited(plr, ...);
 }
 

@@ -31,7 +31,7 @@ protected func InitializePlayer(int plr)
 	// Join plr.
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRelaunch", plr);
+	GameCall("OnPlayerRelaunch", plr, false);
 	return _inherited(plr, ...);
 }
 
@@ -43,7 +43,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("OnPlayerRelaunch", plr);
+	GameCall("OnPlayerRelaunch", plr, true);
 	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
