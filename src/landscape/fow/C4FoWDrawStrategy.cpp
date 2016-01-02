@@ -126,6 +126,9 @@ void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
 
 void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 {
+	// If we have nothing to draw (e.g. directly after initialization), abort early.
+	if (vertices.empty()) return;
+
 	// Upload vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	if (vbo == 0 || vbo_size < vertices.size())
