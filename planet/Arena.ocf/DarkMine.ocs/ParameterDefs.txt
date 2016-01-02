@@ -1,27 +1,62 @@
 [ParameterDef]
-Name=$NrRelaunches$
-Description=$DescNrRelaunches$
-ID=NrRelaunches
-Default=0
+Name=$GameMode$
+Description=$DescGameMode$
+ID=GameMode
+Default=1
 
 	[Options]
 		
 		[Option]
-		Name=$RelaunchesZero$
-		Description=$DescDiffRelaunchesZero$
+		Name=$ModeDeathmatch$
+		Description=$DescModeDeathmatch$
 		Value=0
 		
 		[Option]
-		Name=$RelaunchesOne$
-		Description=$DescRelaunchesOne$
+		Name=$ModeLastManStanding$
+		Description=$DescModeLastManStanding$
+		Value=1
+
+
+[ParameterDef]
+Name=$NrRelaunchesKills$
+Description=$DescNrRelaunchesKills$
+ID=NrRelaunchesKills
+Default=1
+
+	[Options]
+		
+		[Option]
+		Name=0
+		Value=0
+		
+		[Option]
+		Name=1
 		Value=1
 		
 		[Option]
-		Name=$RelaunchesTwo$
-		Description=$DescRelaunchesTwo$
+		Name=2
 		Value=2
 
 		[Option]
-		Name=$RelaunchesThree$
-		Description=$DescRelaunchesThree$
+		Name=3
 		Value=3
+
+		[Option]
+		Name=4
+		Value=4
+		
+		[Option]
+		Name=5
+		Value=5
+		
+		[Option]
+		Name=6
+		Value=6
+		
+		[Option]
+		Name=7
+		Value=7
+		
+		[Option]
+		Name=8
+		Value=8

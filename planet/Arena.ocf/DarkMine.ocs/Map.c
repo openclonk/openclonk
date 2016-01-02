@@ -17,8 +17,8 @@ protected func InitializeMap(proplist map)
 {
 	// Map size: all other settings depend on this value.
 	// The map size depends on the number of players.
-	var plr_cnt = GetStartupPlayerCount();
-	var map_size = BoundBy(120 + plr_cnt * 10, 140, 240);
+	var plr_cnt = GetStartupPlayerCount() - 2;
+	var map_size = BoundBy(140 + plr_cnt * 6, 140, 240);
 	
 	// Set the map size, which is always square.
 	map->Resize(map_size, map_size);
@@ -129,7 +129,11 @@ public func FindCaveConnections(array small_caves, int max_length)
 				}
 			if (has_overlap)
 				continue;
-			var tunnel = {Algo = MAPALGO_Polygon, X = [fx, tx], Y = [fy, ty], Wdt = RandomX(2, 3), Open = 1, Empty = 1};
+			// Determine tunnel width and make the tunnel.
+			var tunnel_wdt = 3;
+			if (!Random(10))
+				tunnel_wdt = 2;
+			var tunnel = {Algo = MAPALGO_Polygon, X = [fx, tx], Y = [fy, ty], Wdt = tunnel_wdt, Open = 1, Empty = 1};
 			PushBack(connections, tunnel);
 			small_caves[i].conn_count++;
 			small_caves[j].conn_count++;

@@ -1,11 +1,11 @@
+# Scenario parameters: game mode
+GameMode=Spielmodus
+DescGameMode=Choose the game mode.
+ModeDeathmatch=Deathmatch
+DescModeDeathmatch=The first player to reach the required number of kills wins the round.
+ModeLastManStanding=Last Man Standing
+DescModeLastManStanding=The last surviving player wins the round.
+
 # Scenario parameters: number of relaunches
-NrRelaunches=Anzahl der Relaunches
-DescNrRelaunches=Anzahl der zusätzliche Relaunches, aber das Szenario ist optimiert für Runden ohne Relaunches.
-RelaunchesZero=Null
-DescDiffRelaunchesZero=Spieler haben keine zusätzliche Relaunches.
-RelaunchesOne=Eins
-DescRelaunchesOne=Spieler haben ein zusätzlicher Relaunch.
-RelaunchesTwo=Zwei
-DescRelaunchesTwo=Spieler haben zwei zusätzliche Relaunches.
-RelaunchesThree=Drei
-DescRelaunchesThree=Spieler haben drei zusätzliche Relaunches.
+NrRelaunchesKills=Kills (DM) / Relaunches (LMS)
+DescNrRelaunchesKills=Number of needed kills to win a deathmatch round or number of additional relaunches for a last man standing round.
