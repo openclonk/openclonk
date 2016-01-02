@@ -1177,7 +1177,7 @@ func OnAbortRoll()
 		RemoveEffect(nil, this, e);
 }
 
-func FxRollingTimer(object target, int num, int timer)
+func FxRollingTimer(object target, effect effect, int timer)
 {
 	if(GetContact(-1)) SetXDir(23 * lAnim.rollDir);
 
