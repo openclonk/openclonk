@@ -3,9 +3,9 @@ uniform sampler2D normalTex;
 uniform mat3 normalMatrix;
 
 #ifndef OPENCLONK
+varying vec2 texcoord;
 #define slice(x)
 #define color gl_FragColor
-varying vec2 texcoord;
 void main()
 {
 	color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -27,7 +27,7 @@ slice(normal+1)
 	// from ObjectShader.glsl. It's probably optimized out,
 	// but a more elegant solution would be nice. Also maybe
 	// a function in UtilShader.glsl to reduce code duplication.
-	vec4 normalPx = texture2D(normalTex, texcoord.xy);
+	vec4 normalPx = texture2D(normalTex, texcoord);
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
 	normal = normalize(normalMatrix * normalPxDir);
 }

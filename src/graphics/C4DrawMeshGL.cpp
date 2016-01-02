@@ -163,28 +163,32 @@ namespace
 	{
 		StdStrBuf buf;
 
-		if (!::GraphicsResource.Files.LoadEntryString("ObjectDefaultVS.glsl", &buf))
+		if (!::GraphicsResource.Files.LoadEntryString("MeshVertexShader.glsl", &buf))
 		{
 			// Fall back just in case
 			buf.Copy(
-				"varying vec3 normalDir;\n"
+				"attribute vec3 oc_Position;\n"
+				"attribute vec3 oc_Normal;\n"
+				"attribute vec2 oc_TexCoord;\n"
+				"varying vec3 vtxNormal;\n"
+				"varying vec2 texcoord;\n"
 				"uniform mat4 projectionMatrix;\n"
 				"uniform mat4 modelviewMatrix;\n"
 				"uniform mat3 normalMatrix;\n"
 				"\n"
 				"slice(position)\n"
 				"{\n"
-				"  gl_Position = projectionMatrix * modelviewMatrix * gl_Vertex;\n"
+				"  gl_Position = projectionMatrix * modelviewMatrix * vec4(oc_Position, 1.0);\n"
 				"}\n"
 				"\n"
 				"slice(texcoord)\n"
 				"{\n"
-				"  texcoord = gl_MultiTexCoord0.xy;\n"
+				"  texcoord = oc_TexCoord;\n"
 				"}\n"
 				"\n"
 				"slice(normal)\n"
 				"{\n"
-				"  normalDir = normalize(normalMatrix * gl_Normal);\n"
+				"  vtxNormal = normalize(normalMatrix * oc_Normal);\n"
 				"}\n"
 			);
 		}
@@ -742,13 +746,16 @@ namespace
 			// Bind the vertex data of the mesh
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
-			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
-			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+			glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
+			glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+			glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
 			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight));
 			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
 			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index));
 			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
+			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
+			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
+			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
 			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
 			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
 			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
@@ -816,6 +823,9 @@ namespace
 			size_t vertex_count = 3 * instance.GetNumFaces();
 			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
+			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
+			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
 			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
 			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
 			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
@@ -918,12 +928,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
-
-	glClientActiveTexture(GL_TEXTURE0); // our only texcoord corresponds to tex0
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 
 	// TODO: We ignore the additive drawing flag for meshes but instead
 	// set the blending mode of the corresponding material. I'm not sure
@@ -1069,14 +1073,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	RenderMeshImpl(projectionMatrix, modelviewMatrix, instance, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, outRect, parity);
 
-	glActiveTexture(GL_TEXTURE0); // switch back to default
-	glClientActiveTexture(GL_TEXTURE0); // switch back to default
+	// Reset state
+	//glActiveTexture(GL_TEXTURE0);
 	glDepthMask(GL_TRUE);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);

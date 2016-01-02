@@ -77,6 +77,11 @@ enum C4SS_Uniforms
 // Attribute data for sprites and meshes
 enum C4SS_Attributes
 {
+	C4SSA_Position, // 2d for sprites, 3d for meshes
+	C4SSA_Normal,  // meshes only
+	C4SSA_TexCoord, // 2d
+	C4SSA_Color,    // sprites only, 4d
+
 	C4SSA_BoneIndices0,
 	C4SSA_BoneIndices1,
 
@@ -209,7 +214,7 @@ public:
 	virtual void PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, C4ShaderCall* shader_call);
 	virtual void PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, float width, C4ShaderCall* shader_call);
 	virtual void PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices, unsigned int n_vertices, const C4BltTransform* pTransform, C4TexRef* pTex, C4TexRef* pOverlay, C4TexRef* pNormal, DWORD dwOverlayClrMod, C4ShaderCall* shader_call);
-	void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex);
+	void PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex, C4ShaderCall* shader_call);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects

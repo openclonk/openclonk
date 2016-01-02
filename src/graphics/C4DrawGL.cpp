@@ -205,14 +205,6 @@ bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 
 bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4GroupSet* pGroups, const char* const* additionalDefines, const char* const* additionalSlices)
 {
-	static const char vertexUniforms[] =
-		"uniform mat4 projectionMatrix;"
-		"uniform mat4 modelviewMatrix;";
-
-	static const char vertexSlice[] = 
-		"  gl_FrontColor = gl_Color;"
-		"  gl_Position = projectionMatrix * modelviewMatrix * gl_Vertex;";
-
 	const char* uniformNames[C4SSU_Count + 1];
 	uniformNames[C4SSU_ProjectionMatrix] = "projectionMatrix";
 	uniformNames[C4SSU_ModelViewMatrix] = "modelviewMatrix";
@@ -232,29 +224,35 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
 	uniformNames[C4SSU_Count] = NULL;
 
+	const char* attributeNames[C4SSA_Count + 1];
+	attributeNames[C4SSA_Position] = "oc_Position";
+	attributeNames[C4SSA_Normal] = "oc_Normal"; // unused
+	attributeNames[C4SSA_TexCoord] = "oc_TexCoord"; // only used if C4SSC_Base is set
+	attributeNames[C4SSA_Color] = "oc_Color";
+	attributeNames[C4SSA_BoneIndices0] = "oc_BoneIndices0"; // unused
+	attributeNames[C4SSA_BoneIndices1] = "oc_BoneIndices1"; // unused
+	attributeNames[C4SSA_BoneWeights0] = "oc_BoneWeights0"; // unused
+	attributeNames[C4SSA_BoneWeights1] = "oc_BoneWeights1"; // unused
+	attributeNames[C4SSA_Count] = NULL;
+
 	// Clear previous content
 	shader.Clear();
 	shader.ClearSlices();
 
-	shader.AddVertexSlice(-1, vertexUniforms);
-	shader.AddVertexSlice(C4Shader_Vertex_PositionPos, vertexSlice);
-
-	// Add texture coordinate if we have base texture, overlay, or normal map
-	if ( (ssc & (C4SSC_BASE | C4SSC_OVERLAY | C4SSC_NORMAL)) != 0)
-		shader.AddTexCoord("texcoord");
-
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define OC_SPRITE");
-	if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
-	if (ssc & C4SSC_NORMAL) shader.AddFragmentSlice(-1, "#define OC_WITH_NORMALMAP");
-	if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
-	if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_BASE");
-	if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_OVERLAY");
+	shader.AddDefine("OPENCLONK");
+	shader.AddDefine("OC_SPRITE");
+	if (ssc & C4SSC_MOD2) shader.AddDefine("OC_CLRMOD_MOD2");
+	if (ssc & C4SSC_NORMAL) shader.AddDefine("OC_WITH_NORMALMAP");
+	if (ssc & C4SSC_LIGHT) shader.AddDefine("OC_DYNAMIC_LIGHT");
+	if (ssc & C4SSC_BASE) shader.AddDefine("OC_HAVE_BASE");
+	if (ssc & C4SSC_OVERLAY) shader.AddDefine("OC_HAVE_OVERLAY");
 
 	if (additionalDefines)
 		for (const char* const* define = additionalDefines; *define != NULL; ++define)
-			shader.AddFragmentSlice(-1, FormatString("#define %s", *define).getData());
+			shader.AddDefine(*define);
 
+	shader.LoadVertexSlices(pGroups, "SpriteVertexShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "ObjectShader.glsl");
 
@@ -262,7 +260,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 		for (const char* const* slice = additionalSlices; *slice != NULL; ++slice)
 			shader.LoadFragmentSlices(pGroups, *slice);
 
-	if (!shader.Init(name, uniformNames, NULL))
+	if (!shader.Init(name, uniformNames, attributeNames))
 	{
 		shader.ClearSlices();
 		return false;
@@ -539,13 +537,13 @@ void CStdGL::PerformMultiPix(C4Surface* sfcTarget, const C4BltVertex* vertices, 
 		C4ShaderCall call(GetSpriteShader(false, false, false));
 		SetupMultiBlt(call, NULL, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
-			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
+			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false, &call);
 	}
 	else
 	{
 		SetupMultiBlt(*shader_call, NULL, 0, 0, 0, 0, &transform);
 		for(unsigned int i = 0; i < n_vertices; i += BATCH_SIZE)
-			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false);
+			PerformMultiBlt(sfcTarget, OP_POINTS, &vertices[i], std::min(n_vertices - i, BATCH_SIZE), false, shader_call);
 	}
 }
 
@@ -598,12 +596,12 @@ void CStdGL::PerformMultiLines(C4Surface* sfcTarget, const C4BltVertex* vertices
 	{
 		C4ShaderCall call(GetSpriteShader(true, false, false));
 		SetupMultiBlt(call, NULL, lines_tex, 0, 0, 0, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true, &call);
 	}
 	else
 	{
 		SetupMultiBlt(*shader_call, NULL, lines_tex, 0, 0, 0, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, tri_vertices, n_vertices * 3, true, shader_call);
 	}
 
 	delete[] tri_vertices;
@@ -616,16 +614,16 @@ void CStdGL::PerformMultiTris(C4Surface* sfcTarget, const C4BltVertex* vertices,
 	{
 		C4ShaderCall call(GetSpriteShader(pTex != NULL, pOverlay != NULL, pNormal != NULL));
 		SetupMultiBlt(call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL, &call);
 	}
 	else
 	{
 		SetupMultiBlt(*shader_call, pTransform, pTex ? pTex->texName : 0, pOverlay ? pOverlay->texName : 0, pNormal ? pNormal->texName : 0, dwOverlayModClr, NULL);
-		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL);
+		PerformMultiBlt(sfcTarget, OP_TRIANGLES, vertices, n_vertices, pTex != NULL, shader_call);
 	}
 }
 
-void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex)
+void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4BltVertex* vertices, unsigned int n_vertices, bool has_tex, C4ShaderCall* shader_call)
 {
 	// Only direct rendering
 	assert(sfcTarget->IsRenderTarget());
@@ -647,20 +645,21 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(C4BltVertex), vertices);
 	}
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+	const GLuint position = shader_call->GetAttribute(C4SSA_Position);
+	const GLuint color = shader_call->GetAttribute(C4SSA_Color);
+	const GLuint texcoord = has_tex ? shader_call->GetAttribute(C4SSA_TexCoord) : 0;
+
+	glEnableVertexAttribArray(position);
+	glEnableVertexAttribArray(color);
 
 	if(has_tex)
 	{
-		// We use the texture coordinate array in texture0 for
-		// the base, overlay and normal textures
-		glClientActiveTexture(GL_TEXTURE0);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
+		glEnableVertexAttribArray(texcoord);
+		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
 	}
 
-	glVertexPointer(2, GL_FLOAT, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
+	glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
+	glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
 
 	switch (op)
 	{
@@ -676,9 +675,9 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	if(has_tex) glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
+	if(has_tex) glDisableVertexAttribArray(texcoord);
+	glDisableVertexAttribArray(position);
+	glDisableVertexAttribArray(color);
 }
 
 C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal)

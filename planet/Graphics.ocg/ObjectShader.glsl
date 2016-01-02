@@ -6,19 +6,24 @@ uniform mat3 normalMatrix;
 uniform sampler2D normalTex;
 #endif
 
-#ifdef OC_MESH
-varying vec3 normalDir;
-#endif
-
 uniform vec4 clrMod;
-
-#ifdef OC_HAVE_BASE
-uniform sampler2D baseTex;
-#endif
 
 #ifdef OC_HAVE_OVERLAY
 uniform vec4 overlayClr;
 uniform sampler2D overlayTex;
+#endif
+
+#ifdef OC_MESH
+varying vec3 vtxNormal;
+varying vec2 texcoord;
+#endif
+
+#ifndef OC_MESH
+varying vec4 vtxColor;
+#ifdef OC_HAVE_BASE
+uniform sampler2D baseTex;
+varying vec2 texcoord;
+#endif
 #endif
 
 slice(material)
@@ -39,20 +44,21 @@ slice(texture)
 	// such that it is independent from the incident light direction.
 	color = gl_FrontMaterial.diffuse;
 #else
-	vec4 baseColor = gl_Color;
-	color = baseColor;
-#endif
 
 #ifdef OC_HAVE_BASE
-	color = baseColor * texture2D(baseTex, texcoord.xy);
-#endif
-
+	// Texturing: Use color from texture, modulated with vertex color
+	color = vtxColor * texture2D(baseTex, texcoord);
 #ifdef OC_HAVE_OVERLAY
 	// Get overlay color from overlay texture
-	vec4 overlay = baseColor * overlayClr * texture2D(overlayTex, texcoord.xy);
+	vec4 overlay = vtxColor * overlayClr * texture2D(overlayTex, texcoord);
 	// Mix overlay with texture
 	float alpha0 = 1.0 - (1.0 - color.a) * (1.0 - overlay.a);
 	color = vec4(mix(color.rgb, overlay.rgb, overlay.a / alpha0), alpha0);
+#endif
+#else
+	// No texturing: Just use color assigned to vertex
+	color = vtxColor;
+#endif
 #endif
 }
 
@@ -68,12 +74,12 @@ slice(texture+4)
 slice(normal)
 {
 #ifdef OC_WITH_NORMALMAP
-	vec4 normalPx = texture2D(normalTex, texcoord.xy);
+	vec4 normalPx = texture2D(normalTex, texcoord);
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
 	vec3 normal = normalize(normalMatrix * normalPxDir);
 #else
 #ifdef OC_MESH
-	vec3 normal = normalDir; // Normal matrix is already applied in vertex shader
+	vec3 normal = vtxNormal; // Normal matrix is already applied in vertex shader
 #else
 	vec3 normal = vec3(0.0, 0.0, 1.0);
 #endif

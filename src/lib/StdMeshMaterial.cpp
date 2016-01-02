@@ -857,8 +857,6 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 	// Add standard slices
 	loader.AddShaderSlices(shader, ssc);
 	// Add our slices
-	shader.AddVertexSlice(-1, "varying vec2 texcoord;");
-	shader.AddFragmentSlice(-1, "varying vec2 texcoord;");
 	shader.AddVertexSlices(VertexShader->GetFilename(), VertexShader->GetCode(), VertexShader->GetFilename());
 	shader.AddFragmentSlices(FragmentShader->GetFilename(), FragmentShader->GetCode(), FragmentShader->GetFilename());
 	// Construct the list of uniforms
@@ -886,6 +884,10 @@ bool StdMeshMaterialProgram::CompileShader(StdMeshMaterialLoader& loader, C4Shad
 		uniformNames[C4SSU_Count + i] = ParameterNames[i].getData();
 	uniformNames[C4SSU_Count + ParameterNames.size()] = NULL;
 	attributeNames.resize(C4SSA_Count + 1);
+	attributeNames[C4SSA_Position] = "oc_Position";
+	attributeNames[C4SSA_Normal] = "oc_Normal";
+	attributeNames[C4SSA_TexCoord] = "oc_TexCoord";
+	attributeNames[C4SSA_Color] = "oc_Color"; // unused
 	attributeNames[C4SSA_BoneIndices0] = "oc_BoneIndices0";
 	attributeNames[C4SSA_BoneIndices1] = "oc_BoneIndices1";
 	attributeNames[C4SSA_BoneWeights0] = "oc_BoneWeights0";

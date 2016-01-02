@@ -61,15 +61,15 @@ public:
 	{
 #ifndef USE_CONSOLE
 		// Add mesh-independent slices
-		shader.AddFragmentSlice(-1, "#define OPENCLONK\n#define OC_MESH");
-		shader.AddVertexSlice(-1, "#define OPENCLONK\n#define OC_MESH");
+		shader.AddDefine("OPENCLONK");
+		shader.AddDefine("OC_MESH");
 
-		if (ssc & C4SSC_MOD2) shader.AddFragmentSlice(-1, "#define OC_CLRMOD_MOD2");
-		if (ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT");
+		if (ssc & C4SSC_MOD2) shader.AddDefine("OC_CLRMOD_MOD2");
+		if (ssc & C4SSC_LIGHT) shader.AddDefine("OC_DYNAMIC_LIGHT");
 
 		// Note these are never set for meshes at the moment:
-		if (ssc & C4SSC_BASE) shader.AddFragmentSlice(-1, "#define OC_HAVE_BASE");
-		if (ssc & C4SSC_OVERLAY) shader.AddFragmentSlice(-1, "#define OC_HAVE_OVERLAY");
+		if (ssc & C4SSC_BASE) shader.AddDefine("OC_HAVE_BASE");
+		if (ssc & C4SSC_OVERLAY) shader.AddDefine("OC_HAVE_OVERLAY");
 
 		shader.LoadFragmentSlices(&::GraphicsResource.Files, "CommonShader.glsl");
 		shader.LoadFragmentSlices(&::GraphicsResource.Files, "ObjectShader.glsl");

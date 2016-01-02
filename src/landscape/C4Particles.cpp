@@ -1035,12 +1035,12 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
 #endif
 
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_COLOR_ARRAY);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glVertexPointer(2, GL_FLOAT, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
-			glTexCoordPointer(2, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
-			glColorPointer(4, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
+			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
+			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
+			glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
+			glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
+			glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
+			glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
 			glBindVertexArray(0);
 		}
 	}
@@ -1060,9 +1060,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	}
 	else
 	{
-		glVertexPointer(2, GL_FLOAT, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
-		glTexCoordPointer(2, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
-		glColorPointer(4, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
+		glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
+		glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
 	}
 
 	if (!Particles.usePrimitiveRestartIndexWorkaround)
@@ -1182,9 +1182,9 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	if (Particles.useVAOWorkaround)
 	{
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
 	}
 
 	accessMutex.Enter();
@@ -1208,9 +1208,9 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	if (Particles.useVAOWorkaround)
 	{
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Position));
+		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Color));
+		glDisableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
 	}
 
 	if (!Particles.usePrimitiveRestartIndexWorkaround)

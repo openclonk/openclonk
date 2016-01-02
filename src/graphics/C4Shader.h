@@ -45,6 +45,7 @@ const int C4Shader_LastPosition = 256;
 // Positions in vertex shader
 const int C4Shader_Vertex_TexCoordPos = 50;
 const int C4Shader_Vertex_NormalPos = 60;
+const int C4Shader_Vertex_ColorPos = 70;
 const int C4Shader_Vertex_PositionPos = 80;
 
 class C4Shader
@@ -126,6 +127,7 @@ public:
 #endif
 
 	// Shader is composed from various slices
+	void AddDefine(const char* name);
 	void AddVertexSlice(int iPos, const char *szText);
 	void AddFragmentSlice(int iPos, const char *szText, const char *szSource = "", int iFileTime = 0);
 	void AddVertexSlices(const char *szWhat, const char *szText, const char *szSource = "", int iFileTime = 0);
@@ -173,6 +175,11 @@ public:
 		: fStarted(false), pShader(pShader), iUnits(0)
 	{ }
 	~C4ShaderCall() { Finish(); }
+
+	GLint GetAttribute(int iAttribute) const
+	{
+		return pShader->GetAttribute(iAttribute);
+	}
 
 private:
 	bool fStarted;

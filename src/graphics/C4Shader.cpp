@@ -35,8 +35,9 @@ C4ShaderPosName C4SH_PosNames[] = {
 	{ C4Shader_PositionColor,		 "color" },
 	{ C4Shader_PositionFinish,		 "finish" },
 
-	{ C4Shader_Vertex_TexCoordPos,		"texcoord" },
+	{ C4Shader_Vertex_TexCoordPos,	        "texcoord" },
 	{ C4Shader_Vertex_NormalPos,            "normal" },
+	{ C4Shader_Vertex_ColorPos,             "color" },
 	{ C4Shader_Vertex_PositionPos,          "position" }
 };
 
@@ -53,6 +54,13 @@ C4Shader::C4Shader()
 C4Shader::~C4Shader()
 {
 	Clear();
+}
+
+void C4Shader::AddDefine(const char* name)
+{
+	StdStrBuf define = FormatString("#define %s", name);
+	AddVertexSlice(-1, define.getData());
+	AddFragmentSlice(-1, define.getData());
 }
 
 void C4Shader::AddVertexSlice(int iPos, const char *szText)
