@@ -83,7 +83,7 @@ public:
 	/** Update all light beams within the given rectangle for this light */
 	void Update(C4Rect r);
 	/** Render this light*/
-	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4ShaderCall& call);
 
 	bool IsVisibleForPlayer(C4Player *player) const; // check if attached to an object that is not hostile to the given player
 

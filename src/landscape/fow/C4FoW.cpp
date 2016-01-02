@@ -59,10 +59,11 @@ C4Shader *C4FoW::GetRenderShader()
 	{
 		// Create the render shader. Fairly simple pass-through.
 		RenderShader.AddVertexSlice(-1, "uniform mat4 projectionMatrix;");
-		RenderShader.AddVertexSlice(0, "gl_FrontColor = gl_Color; gl_Position = projectionMatrix * gl_Vertex;");
+		RenderShader.AddVertexSlice(-1, "uniform vec4 vertexOffset;");
+		RenderShader.AddVertexSlice(0, "gl_FrontColor = gl_Color; gl_Position = projectionMatrix * (gl_Vertex + vertexOffset);");
 		RenderShader.AddFragmentSlice(0,
 			"gl_FragColor = gl_Color;");
-		const char *szUniforms[] = { "projectionMatrix", NULL };
+		const char *szUniforms[] = { "projectionMatrix", "vertexOffset", NULL };
 		if (!RenderShader.Init("fowRender", szUniforms, NULL)) {
 			RenderShader.ClearSlices();
 			return NULL;
@@ -157,7 +158,7 @@ void C4FoW::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen, C4Playe
 
 	for (C4FoWLight *pLight = pLights; pLight; pLight = pLight->getNext())
 		if (pLight->IsVisibleForPlayer(pPlr))
-			pLight->Render(pRegion, pOnScreen);
+			pLight->Render(pRegion, pOnScreen, Call);
 
 	Call.Finish();
 #endif

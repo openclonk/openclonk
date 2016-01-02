@@ -19,11 +19,43 @@
 #ifndef USE_CONSOLE
 
 #include "C4DrawGL.h"
+#include "C4Shader.h"
 #include <list>
 
 class C4FoWRegion;
 class C4TargetFacet;
 class C4FoWLight;
+
+/** This class decomposes Triangle fans and quads into individual triangles.
+ * This is used to so that all FoW elements can be drawn as triangles in a
+ * single glDrawElements call. */
+class C4FoWDrawTriangulator
+{
+public:
+	C4FoWDrawTriangulator();
+
+	void Fan();
+	void Quads();
+
+	void AddVertex();
+	void Reset();
+
+	const unsigned int* GetIndices() const { return &indices[0]; }
+	unsigned int GetNIndices() const { return indices.size(); }
+
+private:
+	void FinishPrimitive();
+
+	enum Mode {
+		M_Fan,
+		M_Quads
+	};
+
+	std::vector<unsigned int> indices;
+	unsigned int begin_vertices;
+	unsigned int cur_vertices;
+	Mode mode;
+};
 
 /** A C4FoWDrawStrategy is a connector to OpenGL calls used to draw the light.
    C4FoWLight tells this class which part of the light should be drawn now
@@ -47,35 +79,36 @@ public:
 		P_Intermediate
 	} phase;
 
-	/** Returns in how many rendering passes the light should be rendered */
-	virtual int32_t GetRequestedPasses() { return 1; };
 	/** Called before each rendering pass */
-	virtual void Begin(int32_t pass, const C4FoWRegion* region) = 0;
+	virtual void Begin(const C4FoWRegion* region) = 0;
 	/** Called after each rendering pass */
-	virtual void End(int32_t pass) = 0;
+	virtual void End(C4ShaderCall& call) { triangulator.Reset(); }
 
-	virtual void DrawLightVertex(float x, float y) = 0;
-	virtual void DrawDarkVertex(float x, float y) = 0;
+	virtual void DrawLightVertex(float x, float y) { triangulator.AddVertex(); }
+	virtual void DrawDarkVertex(float x, float y) { triangulator.AddVertex(); }
 
 	/** Called before rendering the inner triangle fan (the area with 100% light) */
-	virtual void BeginFan() { glBegin(GL_TRIANGLE_FAN); phase = P_Fan; };
+	virtual void BeginFan() { triangulator.Fan(); phase = P_Fan; };
 	/** Called after rendering the inner triangle fan */
-	virtual void EndFan() { glEnd(); };
+	virtual void EndFan() { };
 	
 	/** Called before rendering the triangle fan existnsion (100% light, maxed out normals) */
-	virtual void BeginFanMaxed() { glBegin(GL_QUADS); phase = P_FanMaxed;  };
+	virtual void BeginFanMaxed() { triangulator.Quads(); phase = P_FanMaxed;  };
 	/** Called after rendering the inner triangle fan */
-	virtual void EndFanMaxed() { glEnd(); };
+	virtual void EndFanMaxed() { };
 
 	/** Called before rendering the quads in which the light fades out */
-	virtual void BeginFade() { glBegin(GL_QUADS); phase = P_Fade; };
+	virtual void BeginFade() { triangulator.Quads(); phase = P_Fade; };
 	/** Called after rendering the quads in which the light fades out */
-	virtual void EndFade() { glEnd(); };
+	virtual void EndFade() { };
 
 	/** Called before rendering the triangles that fill the space between the fadeout quads */
-	virtual void BeginIntermediateFade() { glBegin(GL_TRIANGLE_FAN); phase = P_Intermediate; };
+	virtual void BeginIntermediateFade() { triangulator.Fan(); phase = P_Intermediate; };
 	/** Called after rendering the triangles that fill the space between the fadeout quads */
-	virtual void EndIntermediateFade() { glEnd(); };
+	virtual void EndIntermediateFade() { };
+
+protected:
+	C4FoWDrawTriangulator triangulator;
 };
 
 /** This draw strategy is the default draw strategy that draws the light
@@ -83,13 +116,13 @@ public:
 class C4FoWDrawLightTextureStrategy : public C4FoWDrawStrategy
 {
 public:
-	C4FoWDrawLightTextureStrategy(const C4FoWLight* light) : light(light), region(NULL), pass(0) {}
+	C4FoWDrawLightTextureStrategy(const C4FoWLight* light);
+	virtual ~C4FoWDrawLightTextureStrategy();
 
-	virtual int32_t GetRequestedPasses() { return 3; };
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(int32_t pass, const C4FoWRegion* region);
-	virtual void End(int32_t pass);
+	virtual void Begin(const C4FoWRegion* region);
+	virtual void End(C4ShaderCall& call);
 
 private:
 	void DrawVertex(float x, float y, bool shadeLight);
@@ -99,7 +132,16 @@ private:
 	const C4FoWLight* light;
 	const C4FoWRegion* region;
 
-	int32_t pass;
+	struct Vertex {
+		float x, y;           // position in upper half of texture
+		float r1, g1, b1, a1; // color for first pass
+		float r2, g2, b2, a2; // color for second pass
+		float r3, g3, b3, a3; // color for third pass
+	};
+
+	GLuint vbo;
+	std::vector<Vertex> vertices;
+	unsigned int vbo_size;
 };
 
 /** This draw strategy is the debug draw strategy (press Ctrl+F7,...) that
@@ -108,19 +150,29 @@ private:
 class C4FoWDrawWireframeStrategy : public C4FoWDrawStrategy
 {
 public:
-	C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen)
-	  : light(light), screen(screen) {};
+	C4FoWDrawWireframeStrategy(const C4FoWLight* light, const C4TargetFacet *screen);
+	virtual ~C4FoWDrawWireframeStrategy();
+	//  : light(light), screen(screen), vbo(0) {};
 
 	virtual void DrawLightVertex(float x, float y);
 	virtual void DrawDarkVertex(float x, float y);
-	virtual void Begin(int32_t pass, const C4FoWRegion* region);
-	virtual void End(int32_t pass);
+	virtual void Begin(const C4FoWRegion* region);
+	virtual void End(C4ShaderCall& call);
 
 private:
-	void DrawVertex(float x, float y);
+	struct Vertex {
+		float x, y;
+		float r, g, b;
+	};
+
+	void DrawVertex(Vertex& vertex);
 
 	const C4FoWLight* light;
 	const C4TargetFacet* screen;
+
+	GLuint vbo;
+	std::vector<Vertex> vertices;
+	unsigned int vbo_size;
 };
 
 #endif

@@ -117,7 +117,7 @@ void C4FoWLight::Update(C4Rect Rec)
 		sections[i]->Update(Rec);
 }
 
-void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
+void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen, C4ShaderCall& call)
 {
 	TriangleList triangles;
 
@@ -148,17 +148,14 @@ void C4FoWLight::Render(C4FoWRegion *region, const C4TargetFacet *onScreen)
 			strategy.reset(new C4FoWDrawLightTextureStrategy(this));
 	}
 
-	for(int pass = 0; pass < strategy->GetRequestedPasses(); pass++)
-	{
-		strategy->Begin(pass, region);
+	strategy->Begin(region);
 
-		DrawFan(strategy.get(), triangles);
-		DrawFanMaxed(strategy.get(), triangles);
-		DrawFade(strategy.get(), triangles);
-		DrawIntermediateFadeTriangles(strategy.get(), triangles);
+	DrawFan(strategy.get(), triangles);
+	DrawFanMaxed(strategy.get(), triangles);
+	DrawFade(strategy.get(), triangles);
+	DrawIntermediateFadeTriangles(strategy.get(), triangles);
 
-		strategy->End(pass);
-	}
+	strategy->End(call);
 }
 
 void C4FoWLight::CalculateFanMaxed(TriangleList &triangles) const
@@ -255,7 +252,7 @@ void C4FoWLight::CalculateIntermediateFadeTriangles(TriangleList &triangles) con
 void C4FoWLight::DrawFan(C4FoWDrawStrategy* pen, TriangleList &triangles) const
 {
 	pen->BeginFan();
-	pen->DrawLightVertex(getX(), getY());
+	if (!triangles.empty()) pen->DrawLightVertex(getX(), getY());
 
 	for (TriangleList::iterator it = triangles.begin(), nextIt = it; it != triangles.end(); ++it)
 	{
