@@ -179,12 +179,10 @@ private:
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
-	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
-	enum OperatorPolicy { OperatorsPlease = 0, StarsPlease };
 	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(OperatorPolicy Operator = OperatorsPlease); // get next token of SPos
+	C4AulTokenType GetNextToken(); // get next token of SPos
 
-	void Shift(OperatorPolicy Operator = OperatorsPlease);
+	void Shift();
 	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
 	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
 	void UnexpectedToken(const char * Expected) NORETURN;
@@ -466,7 +464,7 @@ void C4AulParse::ClearToken()
 	}
 }
 
-C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
+C4AulTokenType C4AulParse::GetNextToken()
 {
 	// clear mem of prev token
 	ClearToken();
@@ -519,8 +517,6 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 		{ SPos+=2; return ATT_CALLFS;}// "->~"
 	else if (C == '-' && *SPos == '>')
 		{ ++SPos;  return ATT_CALL; } // "->"
-	else if (C == '*' && Operator == StarsPlease)
-	                   return ATT_STAR;   // "*"
 	else if ((cInt = GetOperator(SPos - 1)) != -1)
 	{
 		SPos += SLen(C4ScriptOpMap[cInt].Identifier) - 1;
@@ -1204,7 +1200,6 @@ const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
 	case ATT_BLCLOSE: return "'}'";
 	case ATT_CALL: return "'->'";
 	case ATT_CALLFS: return "'->~'";
-	case ATT_STAR: return "'*'";
 	case ATT_LDOTS: return "'...'";
 	case ATT_SET: return "'='";
 	case ATT_OPERATOR: return "operator";
@@ -1213,9 +1208,9 @@ const char * C4AulParse::GetTokenName(C4AulTokenType TokenType)
 	}
 }
 
-void C4AulParse::Shift(OperatorPolicy Operator)
+void C4AulParse::Shift()
 {
-	TokenType = GetNextToken(Operator);
+	TokenType = GetNextToken();
 }
 void C4AulParse::Check(C4AulTokenType RefTokenType, const char * Expected)
 {
@@ -1287,8 +1282,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			{
 				if (pOrgScript->GetPropList()->GetDef())
 					throw C4AulParseError(this, "#appendto in a Definition");
-				// for #appendto * '*' needs to be ATT_STAR, not an operator.
-				Shift(StarsPlease);
+				Shift();
 				if (Type == PREPARSER)
 				{
 					// get id of script to include/append
@@ -1298,9 +1292,13 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 					case ATT_IDTF:
 						Id = StdCopyStrBuf(Idtf);
 						break;
-					case ATT_STAR: // "*"
-						Id = StdCopyStrBuf("*");
-						break;
+					case ATT_OPERATOR:
+						if (SEqual(C4ScriptOpMap[cInt].Identifier, "*"))
+						{
+							Id = StdCopyStrBuf("*");
+							break;
+						}
+						//fallthrough
 					default:
 						// -> ID expected
 						UnexpectedToken("identifier or '*'");
