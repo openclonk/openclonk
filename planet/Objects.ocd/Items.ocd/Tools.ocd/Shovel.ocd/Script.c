@@ -191,9 +191,9 @@ public func Dust(object target)
 			R = (clr >> 16) & 0xff,
 			G = (clr >> 8) & 0xff,
 			B = clr & 0xff,
-			Size = PV_KeyFrames(0, 0, 0, 300, 40, 1000, 15),
+			Size = PV_KeyFrames(0, 0, 0, 300, 20, 1000, 7),
 		};
-		CreateParticle("Dust", groundx, groundy, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 3);
+		CreateParticle("Dust", groundx/2, groundy/2, PV_Random(-6, 6), PV_Random(-6, 6), PV_Random(18, 1 * 36), particles, 8);
 	}
 }
 
