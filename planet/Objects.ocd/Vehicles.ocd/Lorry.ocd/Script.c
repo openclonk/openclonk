@@ -107,9 +107,10 @@ public func FxDumpContentsTimer(object target, proplist effect, int time)
 		{
 			var x = RandomX(6, 8) * Sign(GetR());
 			var xdir = RandomX(70, 90) * Sign(GetR());
-			var random_content = FindObject(Find_Container(this), Sort_Random());
-			if (random_content)
+			var random_content = FindObjects(Find_Container(this), Sort_Random());
+			if (GetLength(random_content) >= 1)
 			{
+				random_content = random_content[0];
 				random_content->Exit(x, RandomX(2, 3), Random(360), 0, 0, RandomX(-5, 5));
 				random_content->SetXDir(xdir, 100);
 				AddEffect("BlockCollectionByLorry", random_content, 100, 8, this);
