@@ -1,0 +1,42 @@
+# Dialogue: Lumberjack
+DlgLumberjackForest=Where are all the trees?
+DlgLumberjackCutDown=I have processed them all into logs for the reconstruction of our village.
+DlgLumberjackNoWood=So you ran out of wood completely?
+DlgLumberjackSupply=No we have a small supply in the mines, hidden from the evil faction.
+
+# Dialogue: Fireman
+DlgFiremanWhereBarrel=Hi, where did you leave that big barrel you used to extinguish fires?
+DlgFiremanFoundry=I put it back into the foundry below, where we use it to produce loam, which requires water.
+DlgFiremanWhereWater=Where do you get the water from then?
+DlgFiremanDive=Oh, I just dive into any small lake I see with the barrel. There are some underground in the mines we have.
+
+# Dialogue: Builder
+DlgBuilderThanks=Thank you for constructing that flagpole.
+DlgBuilderNoProblem=No problem.
+DlgBuilderPowerConnection=With that flagpole the elevator is not connected to the power sources of our village, as you can see.
+
+# Dialogue: Farmer
+DlgFarmerWipf=Hi, how is my wipf doing?
+DlgFarmerDoingWell=It is getting along with our wipfs very well.
+DlgFarmerPleasure=That is a pleasure to hear!
+
+# Dialogue: Lookout
+DlgLookoutNewAttack=Hello, any signs for a new attack?
+DlgLookoutNo=No, not at the moment.
+
+# Dialogue: Village head
+DlgVillageHeadThank=Thank you for your help with repairing our buildings. Are you willing to help more?
+DlgVillageHeadHelp=Yes, of course, as long as my wipf can stay with the other wipfs. How can I help?
+DlgVillageHeadTools=Well, we are lacking tools and I was about to take this lorry with materials to the workshop to produce them, but you see there is a problem.
+DlgVillageHeadProblem=What problem?
+DlgVillageHeadGap=There is this gap which we need to cross with the lorry to make it to the elevator shaft.
+DlgVillageHeadFix=Ah I see, I'll fix that for you!
+DlgVillageHeadPickaxe=Cool, maybe you can then produce a pickaxe and mine some iron ore for us? We are a bit low on explosives.
+DlgVillageHeadYes=Yes, no problem.
+DlgVillageHeadPutOre=Please put three pieces of iron ore in the foundry.
+DlgVillageHeadThanks=Thanks a lot for helping out again.
+
+# Sequence: Outro
+MsgVillageHeadNoise=What is that noise?
+MsgFarmerAirplanes=Oh no that must be the airplanes of the evil faction again.
+MsgEvilLeaderItsUs=Yes, it's us again! Resistance is futile, so tell your guard to stand down!

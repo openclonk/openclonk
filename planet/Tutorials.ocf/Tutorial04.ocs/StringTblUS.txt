@@ -1,0 +1,26 @@
+# Goal Description
+MsgGoalName=Tool Production
+MsgGoalDescription=Help the villagers produce tools essential to operate their village.
+
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
+# Tutorial messages
+MsgTutorialVillageHead=The buildings in Wipfville have been repaired again, but it seems the villagers are lacking tools to continue with their work. Descend into the mines and talk to the village head to let him know you want to help out. Take the elevator down into the mines, stand on the elevator case and press [%s] to grab the case, then press [%s] and [%s] to go up and down.
+MsgTutorialLoamProduction=To move the lorry to the elevator case you need a piece of loam to cross this gap over here. Go to the foundry and grab the bucket, to produce loam you need water and earth. Earth is collected in the bucket whilst you are digging with your shovel.
+MsgTutorialFillBucket=Now that you have both the shovel and the bucket in your inventory you can dig out earth. Dig out some earth to the right of the foundry and the bucket will fill itself automatically.
+MsgTutorialGetBarrel=Good, the bucket is filled, put it back into the foundry and now take out the barrel.
+MsgTutorialFillBarrel=The barrel is a heavy object which needs to be carried with both hands. While carrying the barrel you can't use any of your other inventory items. The barrel will fill itself automatically with once it is submerged in liquid. Find a body of water and swim in it with the barrel, then put the barrel back in the foundry.
+MsgTutorialProduceLoam=Now produce a piece of loam (in the interaction menu opened with [%s]) and take it back to the lorry.
+MsgTutorialMakeLoamBridge=Now stand as close to the edge as possible and close the gap with loam. Select the loam in your inventory and press [%s] in the direction you want to construct the bridge. Then grab the lorry with [%s] and move it to the workshop.
+MsgTutorialProducePickaxe=Transfer the contents of the lorry to the workshop using the interaction menu (open with [%s]). Select the lorry and the workshop and then click the \"transfer all\" button in the middle of the menu. Then produce a pickaxe in the workshop, the rest of the materials will be used by the village head to produce other tools.
+MsgTutorialMineOre=Take the pickaxe and make your way to the ore mine below the foundry. Hack out three pieces of ore. The pickaxe is an alternative to explosives and can be used to mine harder materials like iron ore or gold. To use the pickaxe select it and point your mouse cursor are solid material close to the clonk, then press [%s].
+MsgTutorialPutOre=Collect the three pieces of ore and put them into the foundry. Then talk to the village head.
+MsgTutorialCompleted=Well, you helped the village head and completed this tutorial. But the villagers seem in trouble and your wipf got kidnapped... Time to make plans against the evil faction in the next tutorial.
+
+# Wipf name
+WipfName=Roger
+WipfDescription=Your furry little friend.
