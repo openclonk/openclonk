@@ -53,44 +53,54 @@ protected func Initialize()
 	return;
 }
 
-global func FxBlessTheKingStart(target, effect, temp)
+global func FxBlessTheKingStart(target, effect fx, temp)
 {
 	if (temp) return;
-	effect.particles = 
+	fx.particles = 
 	{
 		Prototype = Particles_Fire(),
 		Attach = ATTACH_Back
 	};
+	fx.koth_location = nil;
 }
 
-global func FxBlessTheKingTimer(object target, effect, int timer)
+global func FxBlessTheKingTimer(object target, effect fx, int timer)
 {
-	if(!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
-	if(FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
-	
-	var king=FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
-	//if(king->GetOCF() & OCF_OnFire) king->Extinguish();
-	
-	if(king->Contents(0)) king->Contents(0)->~MakeKingSize();
-	if(king->Contents(1)) king->Contents(1)->~MakeKingSize();
-	king->CreateParticle("Fire", PV_Random(-4, 4), PV_Random(-11, 8), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 30), effect.particles, 10);
+	if (!fx.koth_location)
+	{
+		fx.koth_location = FindObject(Find_ID(KingOfTheHill_Location));
+		if (!fx.koth_location) return FX_OK;
+	}
+	var king = fx.koth_location->GetKing(); 
+	if(king == nil) return 1;
+
+	var item = king->GetHandItem(0);
+	if (item) item->~MakeKingSize();
+
+	king->CreateParticle("Fire", PV_Random(-4, 4), PV_Random(-11, 8), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 30), fx.particles, 10);
 	return 1;
 }
 
-global func FxDeathByFireTimer(object target, effect, int timer)
+global func FxDeathByFireStart(object target, effect fx, bool temp)
 {
-	for(var burning in FindObjects(Find_ID(Clonk),Find_OCF(OCF_OnFire)))
-	{
-		burning->DoEnergy(-3); //lava hurts a lot
-	}
-	
-	for(var obj in FindObjects(Find_InRect(55,0,50,70),Find_OCF(OCF_Alive)))
-		obj->~Kill();
+	if (temp) return;
+	fx.particles = Particles_Fire();
+}
 
-	for(var obj in FindObjects(Find_InRect(55,0,50,30),Find_OCF(OCF_Alive),Find_Not(Find_ID(MovingBrick))))
-		obj->RemoveObject();	
+global func FxDeathByFireTimer(object target, effect fx, int timer)
+{
+	for(var obj in FindObjects(Find_InRect(55,0,50,70), Find_Category(C4D_Object | C4D_Living)))
+	{
+		if (obj->GetAlive())
+			obj->Kill();
 		
-	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), Particles_Fire(), 20);
+		if (obj && obj->GetY() <= 30 && obj->GetID() != MovingBrick)
+		{
+			obj->RemoveObject();
+		}
+	}
+
+	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), fx.particles, 20);
 }
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)
