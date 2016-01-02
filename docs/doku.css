@@ -15,7 +15,7 @@ body {
 }
 
 #iframe {
-	position: absolute; top: 145px; width: 300px; border: 0; bottom: 0; overflow: auto;
+	position: absolute; top: 143px; width: 300px; border: 0; bottom: 0; overflow: auto;
 	height: auto;
 	display: block;
 }
@@ -42,7 +42,8 @@ body {
 #content {
 	padding: 0 1em;
 	margin: 0 auto;
-	position: absolute; top: 145px; left: 300px; right: 0; bottom: 0; overflow: auto;
+	position: absolute; top: 143px; left: 300px; right: 0; bottom: 0; overflow: auto;
+	background: white;
 }
 
 .text, pre.code, ul, ol, dl {

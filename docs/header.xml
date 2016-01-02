@@ -6,6 +6,11 @@ clonk.xsl also uses it to match the processing for it. -->
 	<style type="text/css">@import url("http://www.openclonk.org/header/header.css");</style>
 	
 	<div id="nav_header">
+
+		<div id="nav_doclangswitch">
+			<a href="http://docs.openclonk.org/en/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/gb.png"/></a>
+			<a href="http://docs.openclonk.org/de/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/de.png"/></a>
+		</div>
 	
 		<div id="nav_search">
 		<form action="http://www.openclonk.org/header/search.php" id="nav_searchform" method="get" target="_top"><div>
@@ -23,21 +28,10 @@ clonk.xsl also uses it to match the processing for it. -->
 			</div></form>
 		</div>
 
-		<div style="float:right">
-			<ul>
-				<li>
-					<a href="http://docs.openclonk.org/en/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/gb.png"/></a>
-				</li>
-				<li>
-					<a href="http://docs.openclonk.org/de/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/de.png"/></a>
-				</li>
-			</ul>
-		</div>
-		
 		<div id="nav_logo">
-			<a href="http://www.openclonk.org/" target="_top"><img src="http://www.openclonk.org/header/logo.jpg" width="450" height="94" alt="OpenClonk"/></a>
+			<a href="http://www.openclonk.org/" target="_top"><img src="http://www.openclonk.org/header/logo.png" width="450" height="94" alt="OpenClonk"/></a>
 		</div>
-		
+
 		<div id="nav_navigation">
 			<div id="nav_links">
 				<ul>
@@ -45,7 +39,7 @@ clonk.xsl also uses it to match the processing for it. -->
 					<li><a href="http://www.openclonk.org/download/" target="_top">Download</a></li>
 					<li><a href="http://blog.openclonk.org/" target="_top">Blog</a></li>
 					<li><a href="http://forum.openclonk.org/" target="_top">Forum</a></li>
-					<!--<li><a href="http://league.openclonk.org/" target="_top">League</a></li>-->
+					<li><a href="http://league.openclonk.org/" target="_top">League</a></li>
 					<li><a href="http://wiki.openclonk.org/w/C4Script_Documentation" target="_top">Docs</a></li>
 					<li><a href="http://wiki.openclonk.org/w/Development" target="_top">Developers</a></li>
 					<li><a href="http://git.openclonk.org/openclonk.git" target="_top">Repository</a></li>
@@ -53,6 +47,6 @@ clonk.xsl also uses it to match the processing for it. -->
 				</ul>
 			</div>
 		</div>
-	</div>
 
+	</div>
 </header>
