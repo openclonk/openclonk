@@ -38,6 +38,7 @@ private:
 
 #ifndef USE_CONSOLE
 	GLuint hFrameBufDraw, hFrameBufRead;
+	GLuint hVBO;
 #endif
 
 public:

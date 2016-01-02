@@ -17,12 +17,28 @@
 #include "C4FoWRegion.h"
 #include "C4DrawGL.h"
 
+C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
+	: pFoW(pFoW)
+	, pPlayer(pPlayer)
+#ifndef USE_CONSOLE
+	, hFrameBufDraw(0), hFrameBufRead(0), hVBO(0)
+#endif
+	, Region(0,0,0,0), OldRegion(0,0,0,0)
+	, pSurface(new C4Surface), pBackSurface(new C4Surface)
+{
+	ViewportRegion.left = ViewportRegion.right = ViewportRegion.top = ViewportRegion.bottom = 0.0f;
+}
+
 C4FoWRegion::~C4FoWRegion()
 {
 #ifndef USE_CONSOLE
 	if (hFrameBufDraw) {
 		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
 		glDeleteFramebuffersEXT(1, &hFrameBufRead);
+	}
+
+	if (hVBO) {
+		glDeleteBuffers(1, &hVBO);
 	}
 #endif
 }
@@ -144,7 +160,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Set up a clean context
 	glViewport(0, 0, pSurface->Wdt, pSurface->Hgt);
-	const StdProjectionMatrix projectionMatrix = StdProjectionMatrix::Orthographic(0.0, pSurface->Wdt, pSurface->Hgt, 0);
+	const StdProjectionMatrix projectionMatrix = StdProjectionMatrix::Orthographic(0.0f, pSurface->Wdt, pSurface->Hgt, 0.0f);
 
 	// Clear texture contents
 	assert(pSurface->Hgt % 2 == 0);
@@ -180,15 +196,46 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 			tx1 = Region.Wdt - std::max(0, dx1),     ty1 = Region.Hgt - std::max(0, dy1);
 
 		// Quad coordinates
-		float squad[8] = { float(sx0), float(sy0),  float(sx0), float(sy1),
-			               float(sx1), float(sy1),  float(sx1), float(sy0) };
-		int tquad[8] = { sx0, ty0,  tx0, ty1,  tx1, ty1, tx1, ty0, };
+		float vtxData[16];
+		float* squad = &vtxData[0];
+		float* tquad = &vtxData[8];
+
+		squad[0] = float(sx0);
+		squad[1] = float(sy0);
+		squad[2] = float(sx0);
+		squad[3] = float(sy1);
+		squad[4] = float(sx1);
+		squad[5] = float(sy0);
+		squad[6] = float(sx1);
+		squad[7] = float(sy1);
+
+		tquad[0] = float(tx0);
+		tquad[1] = float(ty0);
+		tquad[2] = float(tx0);
+		tquad[3] = float(ty1);
+		tquad[4] = float(tx1);
+		tquad[5] = float(ty0);
+		tquad[6] = float(tx1);
+		tquad[7] = float(ty1);
 
 		// Transform into texture coordinates
 		for (int i = 0; i < 4; i++)
 		{
 			squad[i*2] = squad[i*2] / pBackSurface->Wdt;
 			squad[i*2+1] = 1.0 - squad[i*2+1] / pBackSurface->Hgt;
+		}
+
+		// Load coordinates into vertex buffer
+		if (hVBO == 0)
+		{
+			glGenBuffers(1, &hVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vtxData), vtxData, GL_STREAM_DRAW);
+		}
+		else
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, hVBO);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vtxData), vtxData);
 		}
 
 		// Copy using shader
@@ -201,13 +248,18 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly
 		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
 		glBlendColor(0.0f,normalBlend,normalBlend,brightBlend);
-		glBegin(GL_QUADS);
-		for (int i = 0; i < 4; i++)
-		{
-			glTexCoord2f(squad[i*2], squad[i*2+1]);
-			glVertex2i(tquad[i*2], tquad[i*2+1]);
-		}
-		glEnd();
+
+		glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(0));
+		glVertexPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableClientState(GL_VERTEX_ARRAY);
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 		Call.Finish();
 	}
 
@@ -241,16 +293,4 @@ void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect
 
 	// Extract matrix
 	trans.Get2x3(lightTransform);
-}
-
-C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
-	: pFoW(pFoW)
-	, pPlayer(pPlayer)
-#ifndef USE_CONSOLE
-	, hFrameBufDraw(0), hFrameBufRead(0)
-#endif
-	, Region(0,0,0,0), OldRegion(0,0,0,0)
-	, pSurface(new C4Surface), pBackSurface(new C4Surface)
-{
-	ViewportRegion.left = ViewportRegion.right = ViewportRegion.top = ViewportRegion.bottom = 0.0f;
 }
