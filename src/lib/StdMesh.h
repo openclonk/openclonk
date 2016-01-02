@@ -260,8 +260,8 @@ public:
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 protected:
 	void SetMaterial(const StdMeshMaterial& material);
-	void SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering);
-	void SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod);
+	void SetFaceOrdering(class StdMeshInstance& instance, const StdSubMesh& submesh, FaceOrdering ordering);
+	void SetFaceOrderingForClrModulation(class StdMeshInstance& instance, const StdSubMesh& submesh, uint32_t clrmod);
 
 	const StdSubMesh *base;
 	// Faces sorted according to current face ordering

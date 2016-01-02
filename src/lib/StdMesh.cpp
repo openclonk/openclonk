@@ -701,7 +701,7 @@ void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 #endif
 }
 
-void StdSubMeshInstance::SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering)
+void StdSubMeshInstance::SetFaceOrdering(StdMeshInstance& instance, const StdSubMesh& submesh, FaceOrdering ordering)
 {
 #ifndef USE_CONSOLE
 	if (CurrentFaceOrdering != ordering)
@@ -709,24 +709,23 @@ void StdSubMeshInstance::SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering
 		CurrentFaceOrdering = ordering;
 		if (ordering == FO_Fixed)
 		{
-			for (unsigned int i = 0; i < submesh.GetNumFaces(); ++i)
-				Faces[i] = submesh.GetFace(i);
+			LoadFacesForCompletion(instance, submesh, instance.GetCompletion());
 		}
 	}
 #endif
 }
 
-void StdSubMeshInstance::SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod)
+void StdSubMeshInstance::SetFaceOrderingForClrModulation(StdMeshInstance& instance, const StdSubMesh& submesh, uint32_t clrmod)
 {
 #ifndef USE_CONSOLE
 	bool opaque = Material->IsOpaque();
 
 	if(!opaque)
-		SetFaceOrdering(submesh, FO_FarthestToNearest);
+		SetFaceOrdering(instance, submesh, FO_FarthestToNearest);
 	else if( ((clrmod >> 24) & 0xff) != 0xff)
-		SetFaceOrdering(submesh, FO_NearestToFarthest);
+		SetFaceOrdering(instance, submesh, FO_NearestToFarthest);
 	else
-		SetFaceOrdering(submesh, FO_Fixed);
+		SetFaceOrdering(instance, submesh, FO_Fixed);
 #endif
 }
 
@@ -1090,7 +1089,7 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 {
 #ifndef USE_CONSOLE
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
-		SubMeshInstances[i]->SetFaceOrdering(Mesh->GetSubMesh(i), ordering);
+		SubMeshInstances[i]->SetFaceOrdering(*this, Mesh->GetSubMesh(i), ordering);
 
 	// Update attachments (only own meshes for now... others might be displayed both attached and non-attached...)
 	// still not optimal.
@@ -1104,7 +1103,7 @@ void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
 {
 #ifndef USE_CONSOLE
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
-		SubMeshInstances[i]->SetFaceOrderingForClrModulation(Mesh->GetSubMesh(i), clrmod);
+		SubMeshInstances[i]->SetFaceOrderingForClrModulation(*this, Mesh->GetSubMesh(i), clrmod);
 
 	// Update attachments (only own meshes for now... others might be displayed both attached and non-attached...)
 	// still not optimal.
