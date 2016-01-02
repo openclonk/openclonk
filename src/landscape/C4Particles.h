@@ -507,8 +507,8 @@ public:
 	GLsizei *GetMultiDrawElementsCountArray() { return &multiDrawElementsCountArray[0]; } 
 	GLvoid **GetMultiDrawElementsIndexArray() { return reinterpret_cast<GLvoid**> (&multiDrawElementsIndexArray[0]); }
 
-	// if true, OpenGL buffer objects will not be used (instead the slower direct calls will be made)
-	bool useBufferObjectWorkaround;
+	// if true, OpenGL VAOs will not be used (instead the slower direct calls will be made)
+	bool useVAOWorkaround;
 
 	// usually, the following methods are used for drawing
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
