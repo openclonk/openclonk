@@ -117,8 +117,8 @@
 		<li><emlink href="script/SoundModifiers.html">Sound Modifiers</emlink></li>
 		<li>Libraries
 			<ul>
-				<text><emlink href="script/Shape.html">Shape</emlink></text>
-				<text><emlink href="script/FuzzyLogic.html">Fuzzy Logic</emlink></text>
+				<li><emlink href="script/Shape.html">Shape</emlink></li>
+				<li><emlink href="script/FuzzyLogic.html">Fuzzy Logic</emlink></li>
 			</ul>
 		</li>
 <!-- Insert Functions here -->
