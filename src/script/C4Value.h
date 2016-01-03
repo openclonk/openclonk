@@ -92,7 +92,6 @@ public:
 	{ Data.Fn = pFn; AddDataRef(); }
 	explicit C4Value(C4PropList *p): NextRef(NULL), Type(p ? C4V_PropList : C4V_Nil)
 	{ Data.PropList = p; AddDataRef(); }
-	C4Value(const Nillable<void> & x): C4Value() {}
 	C4Value(C4ObjectPtr p): C4Value(p.operator C4Object *()) {}
 	template<typename T> C4Value(Nillable<T> v): C4Value(v.IsNil() ? C4Value() : C4Value(v.operator T())) {}
 
@@ -205,7 +204,7 @@ public:
 	// Compilation
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 
-	static inline bool IsNullableType(C4V_Type Type)
+	static inline constexpr bool IsNullableType(C4V_Type Type)
 	{ return Type == C4V_Int || Type == C4V_Bool; }
 
 private:

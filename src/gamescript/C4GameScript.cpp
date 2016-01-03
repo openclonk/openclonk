@@ -50,10 +50,9 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY, long cau
 	return !!::Landscape.Incinerate(iX, iY, caused_by_plr);
 }
 
-static C4Void FnSetGravity(C4PropList * _this, long iGravity)
+static void FnSetGravity(C4PropList * _this, long iGravity)
 {
 	::Landscape.Gravity = C4REAL100(Clamp<long>(iGravity,-1000,1000));
-	return C4Void();
 }
 
 static long FnGetGravity(C4PropList * _this)
@@ -483,13 +482,12 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	return extracted;
 }
 
-static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy, Nillable<long> iMaxDensity)
+static void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy, Nillable<long> iMaxDensity)
 {
 	if (iCausedBy.IsNil() && Object(_this)) iCausedBy = Object(_this)->Controller;
 	if (iMaxDensity.IsNil()) iMaxDensity = C4M_Vehicle;
 
 	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this), iMaxDensity);
-	return C4Void();
 }
 
 static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance, long iPitch, C4PropList *modifier_props)
@@ -815,11 +813,10 @@ static long FnGetPlrViewMode(C4PropList * _this, long iPlr)
 	return ::Players.Get(iPlr)->ViewMode;
 }
 
-static C4Void FnResetCursorView(C4PropList * _this, long plr, bool immediate_position)
+static void FnResetCursorView(C4PropList * _this, long plr, bool immediate_position)
 {
 	C4Player *pplr = ::Players.Get(plr);
 	if (pplr) pplr->ResetCursorView(immediate_position);
-	return C4Void();
 }
 
 static C4Object *FnGetPlrView(C4PropList * _this, long iPlr)
@@ -1215,16 +1212,14 @@ static long FnGetWind(C4PropList * _this, long x, long y, bool fGlobal)
 	return ::Weather.GetWind(x,y);
 }
 
-static C4Void FnSetWind(C4PropList * _this, long iWind)
+static void FnSetWind(C4PropList * _this, long iWind)
 {
 	::Weather.SetWind(iWind);
-	return C4Void();
 }
 
-static C4Void FnSetTemperature(C4PropList * _this, long iTemperature)
+static void FnSetTemperature(C4PropList * _this, long iTemperature)
 {
 	::Weather.SetTemperature(iTemperature);
-	return C4Void();
 }
 
 static long FnGetTemperature(C4PropList * _this)
@@ -1232,11 +1227,10 @@ static long FnGetTemperature(C4PropList * _this)
 	return ::Weather.GetTemperature();
 }
 
-static C4Void FnSetAmbientBrightness(C4PropList * _this, long iBrightness)
+static void FnSetAmbientBrightness(C4PropList * _this, long iBrightness)
 {
 	if (::Landscape.pFoW)
 		::Landscape.pFoW->Ambient.SetBrightness(iBrightness / 100.);
-	return C4Void();
 }
 
 static long FnGetAmbientBrightness(C4PropList * _this)
@@ -1246,10 +1240,9 @@ static long FnGetAmbientBrightness(C4PropList * _this)
 	return static_cast<long>(::Landscape.pFoW->Ambient.GetBrightness() * 100. + 0.5);
 }
 
-static C4Void FnSetSeason(C4PropList * _this, long iSeason)
+static void FnSetSeason(C4PropList * _this, long iSeason)
 {
 	::Weather.SetSeason(iSeason);
-	return C4Void();
 }
 
 static long FnGetSeason(C4PropList * _this)
@@ -1257,10 +1250,9 @@ static long FnGetSeason(C4PropList * _this)
 	return ::Weather.GetSeason();
 }
 
-static C4Void FnSetClimate(C4PropList * _this, long iClimate)
+static void FnSetClimate(C4PropList * _this, long iClimate)
 {
 	::Weather.SetClimate(iClimate);
-	return C4Void();
 }
 
 static long FnGetClimate(C4PropList * _this)
@@ -1278,10 +1270,9 @@ static long FnLandscapeHeight(C4PropList * _this)
 	return GBackHgt;
 }
 
-static C4Void FnShakeFree(C4PropList * _this, long x, long y, long rad)
+static void FnShakeFree(C4PropList * _this, long x, long y, long rad)
 {
 	::Landscape.ShakeFree(x,y,rad);
-	return C4Void();
 }
 
 static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects, bool no_instability_check)
@@ -1294,10 +1285,9 @@ static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long 
 	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects,no_instability_check);
 }
 
-static C4Void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)
+static void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)
 {
 	::Landscape.ClearFreeRect(iX,iY,iWdt,iHgt);
-	return C4Void();
 }
 
 static bool FnPathFree(C4PropList * _this, long X1, long Y1, long X2, long Y2)
@@ -1420,14 +1410,12 @@ static bool FnAbortMessageBoard(C4PropList * _this, C4Object *pObj, long iForPlr
 	return pPlr->RemoveMessageBoardQuery(pObj);
 }
 
-static C4Void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)
+static void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)
 {
 	// safety
-	if (!ValidPlr(iPlr)) return C4Void();
+	if (!ValidPlr(iPlr)) return;
 	// set enabled
 	::Players.Get(iPlr)->SetFoW(!!fEnabled);
-	// success
-	return C4Void();
 }
 
 static long FnSetMaxPlayer(C4PropList * _this, long iTo)
@@ -2464,10 +2452,9 @@ static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long idPlay
 }
 
 // undocumented!
-static C4Void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
+static void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 {
 	Game.RoundResults.HideSettlementScore(fHide);
-	return C4Void();
 }
 
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)

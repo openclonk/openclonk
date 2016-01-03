@@ -38,10 +38,12 @@ inline C4Object * Object(C4PropList * _this)
 }
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
 
-template <typename T> struct C4ValueConv;
-// Allow integer and boolean parameters to be nil
+// Nillable: Allow integer and boolean parameters to be nil
 // pointer parameters represent nil via plain NULL
-template<typename T>
+// other types can use C4Void
+class C4Void { };
+template <typename T> struct C4ValueConv;
+template <typename T>
 class Nillable
 {
 	bool _nil;
@@ -51,7 +53,7 @@ public:
 	inline Nillable() : _nil(true), _val(T()) {}
 	inline Nillable(std::nullptr_t) : _nil(true), _val(T()) {}
 	template <typename T2> inline Nillable(const Nillable<T2> & n2) : _nil(n2._nil), _val(n2._val) {}
-	inline Nillable(const Nillable<void> & n2) : _nil(true), _val(T()) {}
+	inline Nillable(const C4Void &) : _nil(true), _val(T()) {}
 	inline bool IsNil() const { return _nil; }
 	inline operator T() const { return _val; }
 	inline Nillable<T> &operator =(const T &val)
@@ -73,14 +75,6 @@ public:
 	inline T operator --(int) { T v(_val--); return v; }
 };
 
-template<>
-class Nillable<void>
-{
-public:
-	inline Nillable() {}
-	inline bool IsNil() const { return true; }
-};
-
 // Other functions are callable in object context only.
 // This exception gets thrown if they are called from anywhere else.
 class NeedObjectContext : public C4AulExecError
@@ -96,9 +90,6 @@ class NeedNonGlobalContext : public C4AulExecError
 public:
 	NeedNonGlobalContext(const char *function) : C4AulExecError(FormatString("%s: call must not be from global context", function).getData()) {}
 };
-
-// return type of functions returning nil
-typedef Nillable<void> C4Void;
 
 // For functions taking a C4Object as this, check that they got one
 template <typename ThisType> struct ThisImpl;
@@ -132,6 +123,17 @@ struct ExecImpl
 		(void) pPars;
 	}
 };
+template <typename ThisType, typename ...ParTypes>
+struct ExecImpl<void, ThisType, ParTypes...>
+{
+	template <std::size_t... Is>
+	static C4Value Exec(void (*pFunc)(ThisType *, ParTypes...), ThisType * _this, C4Value pPars[], std::index_sequence<Is...>)
+	{
+		pFunc(_this, C4ValueConv<ParTypes>::_FromC4V(pPars[Is])...);
+		return C4Value();
+		(void) pPars;
+	}
+};
 
 // converter templates
 template <typename T>
@@ -140,7 +142,7 @@ struct C4ValueConv<Nillable<T> >
 	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Nil) return C4Void(); else return C4ValueConv<T>::_FromC4V(v); }
 	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
 };
-template <> struct C4ValueConv<Nillable<void> >
+template <> struct C4ValueConv<void>
 {
 	inline static C4V_Type Type() { return C4V_Nil; }
 };

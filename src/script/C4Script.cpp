@@ -555,7 +555,7 @@ static bool FnDeepEqual(C4PropList * _this, const C4Value & v1, const C4Value & 
 	return v1 == v2;
 }
 
-static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
+static void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
 {
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
@@ -563,7 +563,6 @@ static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize
 
 	// set new size
 	pArray->SetSize(iNewSize);
-	return C4Void();
 }
 
 static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iIndex)

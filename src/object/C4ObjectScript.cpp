@@ -69,23 +69,21 @@ static bool FnChangeDef(C4Object *Obj, C4ID to_id)
 	return !!Obj->ChangeDef(to_id);
 }
 
-static C4Void FnSetSolidMask(C4Object *Obj, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
+static void FnSetSolidMask(C4Object *Obj, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
 {
 	Obj->SetSolidMask(iX,iY,iWdt,iHgt,iTX,iTY);
-	return C4Void();
 }
 
-static C4Void FnSetHalfVehicleSolidMask(C4Object *Obj, bool set)
+static void FnSetHalfVehicleSolidMask(C4Object *Obj, bool set)
 {
 	Obj->SetHalfVehicleSolidMask(set);
-	return C4Void();
 }
 
-static C4Void FnDeathAnnounce(C4Object *Obj)
+static void FnDeathAnnounce(C4Object *Obj)
 {
 	const long MaxDeathMsg=7;
 	if (Game.C4S.Head.Film)
-		return C4Void();
+		return;
 	// Check if crew member has an own death message
 	if (Obj->Info && *(Obj->Info->DeathMessage))
 	{
@@ -96,7 +94,6 @@ static C4Void FnDeathAnnounce(C4Object *Obj)
 		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
 		GameMsgObject(FormatString(LoadResStr(idDeathMsg), Obj->GetName()).getData(), Obj);
 	}
-	return C4Void();
 }
 
 static bool FnGrabContents(C4Object *Obj, C4Object *from)
@@ -125,14 +122,13 @@ static bool FnKill(C4PropList * _this, C4Object *pObj, bool fForced)
 	return true;
 }
 
-static C4Void FnFling(C4Object *Obj, long iXDir, long iYDir, long iPrec, bool fAddSpeed)
+static void FnFling(C4Object *Obj, long iXDir, long iYDir, long iPrec, bool fAddSpeed)
 {
 	if (!iPrec) iPrec=1;
 	Obj->Fling(itofix(iXDir, iPrec),itofix(iYDir, iPrec),fAddSpeed);
 	// unstick from ground, because Fling command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	Obj->Action.t_attach=0;
-	return C4Void();
 }
 
 static bool FnJump(C4Object *Obj)
@@ -169,13 +165,12 @@ static bool FnCollect(C4Object *Obj, C4Object *pItem, bool ignoreOCF)
 	return false;
 }
 
-static C4Void FnRemoveObject(C4Object *Obj, bool fEjectContents)
+static void FnRemoveObject(C4Object *Obj, bool fEjectContents)
 {
 	Obj->AssignRemoval(fEjectContents);
-	return C4Void();
 }
 
-static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, long iPrec)
+static void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, long iPrec)
 {
 	if (!iPrec) iPrec = 1;
 	C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
@@ -187,14 +182,12 @@ static C4Void FnSetPosition(C4Object *Obj, long iX, long iY, bool fCheckBounds, 
 	Obj->ForcePosition(i_x, i_y);
 	// update liquid
 	Obj->UpdateInLiquid();
-	return C4Void();
 }
 
-static C4Void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
+static void FnDoCon(C4Object *Obj, long iChange, long iPrec, bool bGrowFromCenter)
 {
 	if (!iPrec) iPrec = 100;
 	Obj->DoCon(FullCon*iChange / iPrec, bGrowFromCenter);
-	return C4Void();
 }
 
 static long FnGetCon(C4Object *Obj, long iPrec)
@@ -313,75 +306,63 @@ static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 	return pInfo->ExtraData[ival];
 }
 
-static C4Void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
+static void FnDoEnergy(C4Object *Obj, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)
 {
 	if (iEngType.IsNil()) iEngType = C4FxCall_EngScript;
 	if (iCausedBy.IsNil())
 		iCausedBy = NO_OWNER;
 	Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
-	return C4Void();
 }
 
-static C4Void FnDoBreath(C4Object *Obj, long iChange)
+static void FnDoBreath(C4Object *Obj, long iChange)
 {
 	Obj->DoBreath(iChange);
-	return C4Void();
 }
 
-static C4Void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
+static void FnDoDamage(C4Object *Obj, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
 {
 	if (iDmgType.IsNil()) iDmgType = C4FxCall_DmgScript;
 	if (iCausedBy.IsNil())
 		iCausedBy = NO_OWNER;
 	Obj->DoDamage(iChange, iCausedBy, iDmgType);
-	return C4Void();
 }
 
-static C4Void FnSetEntrance(C4Object *Obj, bool e_status)
+static void FnSetEntrance(C4Object *Obj, bool e_status)
 {
 	Obj->EntranceStatus = e_status;
-	return C4Void();
 }
 
 
-static C4Void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
+static void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update xdir
 	Obj->xdir=itofix(nxdir, iPrec);
 	Obj->Mobile=1;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
+static void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update rdir
 	Obj->rdir=itofix(nrdir, iPrec);
 	Obj->Mobile=1;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
+static void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update ydir
 	Obj->ydir=itofix(nydir, iPrec);
 	Obj->Mobile=1;
-	return C4Void();
 }
 
-static C4Void FnSetR(C4Object *Obj, long nr)
+static void FnSetR(C4Object *Obj, long nr)
 {
-	// set rotation
 	Obj->SetRotation(nr);
-	// success
-	return C4Void();
 }
 
 static bool FnSetAction(C4Object *Obj, C4String *szAction,
@@ -420,28 +401,24 @@ static bool FnSetActionData(C4Object *Obj, long iData)
 	return true;
 }
 
-static C4Void FnSetComDir(C4Object *Obj, long ncomdir)
+static void FnSetComDir(C4Object *Obj, long ncomdir)
 {
 	Obj->Action.ComDir=ncomdir;
-	return C4Void();
 }
 
-static C4Void FnSetDir(C4Object *Obj, long ndir)
+static void FnSetDir(C4Object *Obj, long ndir)
 {
 	Obj->SetDir(ndir);
-	return C4Void();
 }
 
-static C4Void FnSetCategory(C4Object *Obj, long iCategory)
+static void FnSetCategory(C4Object *Obj, long iCategory)
 {
 	Obj->SetCategory(iCategory);
-	return C4Void();
 }
 
-static C4Void FnSetAlive(C4Object *Obj, bool nalv)
+static void FnSetAlive(C4Object *Obj, bool nalv)
 {
 	Obj->SetAlive(nalv);
-	return C4Void();
 }
 
 static bool FnSetOwner(C4Object *Obj, long iOwner)
@@ -564,12 +541,11 @@ static C4Object *FnGetActionTarget(C4Object *Obj, long target_index)
 	return NULL;
 }
 
-static C4Void FnSetActionTargets(C4Object *Obj, C4Object *pTarget1, C4Object *pTarget2)
+static void FnSetActionTargets(C4Object *Obj, C4Object *pTarget1, C4Object *pTarget2)
 {
 	// set targets
 	Obj->Action.Target=pTarget1;
 	Obj->Action.Target2=pTarget2;
-	return C4Void();
 }
 
 static long FnGetDir(C4Object *Obj)
@@ -722,10 +698,9 @@ static bool FnRemoveVertex(C4Object *Obj, long iIndex)
 	return !!Obj->Shape.RemoveVertex(iIndex);
 }
 
-static C4Void FnSetContactDensity(C4Object *Obj, long iDensity)
+static void FnSetContactDensity(C4Object *Obj, long iDensity)
 {
 	Obj->Shape.ContactDensity = iDensity;
-	return C4Void();
 }
 
 static bool FnGetAlive(C4Object *Obj)
@@ -1334,11 +1309,10 @@ static long FnShowInfo(C4Object *Obj, C4Object *pObj)
 	return Obj->ActivateMenu(C4MN_Info,0,0,0,pObj);
 }
 
-static C4Void FnSetMass(C4Object *Obj, long iValue)
+static void FnSetMass(C4Object *Obj, long iValue)
 {
 	Obj->OwnMass=iValue-Obj->Def->Mass;
 	Obj->UpdateMass();
-	return C4Void();
 }
 
 static long FnGetColor(C4Object *Obj)
@@ -1346,15 +1320,14 @@ static long FnGetColor(C4Object *Obj)
 	return Obj->Color;
 }
 
-static C4Void FnSetColor(C4Object *Obj, long iValue)
+static void FnSetColor(C4Object *Obj, long iValue)
 {
 	Obj->Color=iValue;
 	Obj->UpdateGraphics(false);
 	Obj->UpdateFace(false);
-	return C4Void();
 }
 
-static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeoutRange)
+static void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeoutRange)
 {
 	if (iFadeoutRange.IsNil())
 	{
@@ -1365,8 +1338,6 @@ static C4Void FnSetLightRange(C4Object *Obj, long iRange, Nillable<long> iFadeou
 	}
 	// set range
 	Obj->SetLightRange(iRange, iFadeoutRange);
-	// success
-	return C4Void();
 }
 
 static long FnGetLightColor(C4Object *Obj)
@@ -1376,18 +1347,15 @@ static long FnGetLightColor(C4Object *Obj)
 }
 
 
-static C4Void FnSetLightColor(C4Object *Obj, long iValue)
+static void FnSetLightColor(C4Object *Obj, long iValue)
 {
 	Obj->SetLightColor(iValue);
-	return C4Void();
 }
 
-static C4Void FnSetPicture(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
+static void FnSetPicture(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 {
 	// set new picture rect
 	Obj->PictureRect.Set(iX, iY, iWdt, iHgt);
-	// success
-	return C4Void();
 }
 
 static C4String *FnGetProcedure(C4Object *Obj)
@@ -1580,7 +1548,7 @@ static bool FnGetCrewEnabled(C4Object *Obj)
 	return !Obj->CrewDisabled;
 }
 
-static C4Void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
+static void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
 {
 	bool change = (Obj->CrewDisabled == fEnabled) ? true : false;
 
@@ -1609,17 +1577,12 @@ static C4Void FnSetCrewEnabled(C4Object *Obj, bool fEnabled)
 		else
 			Obj->Call(PSF_CrewDisabled);
 	}
-
-	// success
-	return C4Void();
 }
 
-static C4Void FnDoCrewExp(C4Object *Obj, long iChange)
+static void FnDoCrewExp(C4Object *Obj, long iChange)
 {
 	// do exp
 	Obj->DoExperience(iChange);
-	// success
-	return C4Void();
 }
 
 static bool FnClearMenuItems(C4Object *Obj)
@@ -1638,7 +1601,7 @@ static C4Object *FnGetObjectLayer(C4Object *Obj)
 	return Obj->Layer;
 }
 
-static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
+static void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 {
 	// set layer object
 	Obj->Layer = pNewLayer;
@@ -1646,11 +1609,9 @@ static C4Void FnSetObjectLayer(C4Object *Obj, C4Object *pNewLayer)
 	for (C4Object* contentObj : Obj->Contents)
 		if (contentObj && contentObj->Status)
 			contentObj->Layer = pNewLayer;
-	// success
-	return C4Void();
 }
 
-static C4Void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
+static void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 {
 	// update shape
 	Obj->Shape.x = iX;
@@ -1659,8 +1620,6 @@ static C4Void FnSetShape(C4Object *Obj, long iX, long iY, long iWdt, long iHgt)
 	Obj->Shape.Hgt = iHgt;
 	// section list needs refresh
 	Obj->UpdatePos();
-	// done, success
-	return C4Void();
 }
 
 static bool FnSetObjDrawTransform(C4Object *Obj, long iA, long iB, long iC, long iD, long iE, long iF, long iOverlayID)
