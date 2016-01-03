@@ -165,7 +165,7 @@ global func FxIntTestControlStop(object target, proplist effect, int reason, boo
 global func FxIntTestControlOnDeath(object target, proplist effect, int killer, object clonk)
 {
 	// Log the result.
-	Log("Test %d (%s): %v", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer);
+	Log("Test %d (%s): %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, GetPlayerName(killer));
 	// Store the result.
 	effect.results[effect.testnr - 1] = (plr_killer == killer);
 	effect.launched = false;
@@ -189,6 +189,13 @@ public func RelaunchPlayer(int plr)
 	SetCursor(plr, clonk);
 	clonk->DoEnergy(100000);
 	return;
+}
+
+global func GetPlayerName(int plr)
+{
+	if (plr == NO_OWNER)
+		return "NO_OWNER";
+	return _inherited(plr, ...);
 }
 
 
@@ -317,7 +324,7 @@ global func Test8_OnStart()
 	return true;
 }
 
-global func Test9_Log() { return "Club shot"; }
+global func Test9_Log() { return "Club object shot"; }
 global func Test9_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -480,24 +487,8 @@ global func Test18_OnStart()
 	return true;
 }
 
-global func Test19_Log() { return "Dynamite explosion (thrown)"; }
+global func Test19_Log() { return "Powder keg (shot by musket)"; }
 global func Test19_OnStart()
-{
-	var victim = GetCrew(plr_victim);
-	var killer = GetCrew(plr_killer);
-	
-	victim->SetPosition(140, 150);
-	victim->DoEnergy(-45);
-		
-	var dynamite = killer->CreateContents(Dynamite);
-	dynamite->ControlUse(killer);
-	killer->SetHandAction(0);
-	killer->ControlThrow(dynamite, 20, -20);
-	return true;
-}
-
-global func Test20_Log() { return "Powder keg (shot by musket)"; }
-global func Test20_OnStart()
 {
 	var victim = GetCrew(plr_victim);
 	var killer = GetCrew(plr_killer);
@@ -511,6 +502,22 @@ global func Test20_OnStart()
 	musket.loaded = true;
 	musket->ControlUseStart(killer, 20, -8);
 	musket->ControlUseStop(killer, 20, -8);
+	return true;
+}
+
+global func Test20_Log() { return "Dynamite explosion (thrown)"; }
+global func Test20_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(140, 150);
+	victim->DoEnergy(-45);
+		
+	var dynamite = killer->CreateContents(Dynamite);
+	dynamite->ControlUse(killer);
+	killer->SetHandAction(0);
+	killer->ControlThrow(dynamite, 20, -20);
 	return true;
 }
 
@@ -532,6 +539,120 @@ global func Test21_OnStart()
 	killer->AppendCommand("MoveTo", nil, killer->GetX(), killer->GetY());
 	return true;
 }
+
+global func Test22_Log() { return "Lorry dump"; }
+global func Test22_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Tunnel", 110, 160, 170, 160, 170, 260, 110, 260);
+
+	victim->SetPosition(144, 250);
+	victim->DoEnergy(-48);
+	
+	killer->SetPosition(100, 150);
+	var lorry = CreateObjectAbove(Lorry, 110, 160);
+	lorry->CreateContents(Rock, 20);
+	lorry->SetR(55);
+	killer->SetCommand("Grab", lorry);
+	lorry->ControlUseStart(killer, 1, 0);
+	ScheduleCall(lorry, "ControlUseHolding", 1, 40, killer, 1, 0);
+	return true;
+}
+
+global func Test23_Log() { return "Lorry destruction"; }
+global func Test23_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Tunnel", 110, 160, 170, 160, 170, 260, 110, 260);
+
+	victim->SetPosition(124, 250);
+	victim->DoEnergy(-45);
+	
+	killer->SetPosition(100, 150);
+	var lorry = CreateObjectAbove(Lorry, 150, 260);
+	lorry->DoDamage(95);
+	lorry->CreateContents(Rock, 20);
+	var firestone = killer->CreateContents(Firestone);
+	killer->SetHandAction(0);
+	ScheduleCall(killer, "ControlThrow", 4, 0, firestone, 14, -50);
+	return true;
+}
+
+global func Test24_Log() { return "Catapult shot"; }
+global func Test24_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	var fake_killer = GetCrew(plr_killer_fake);
+	
+	victim->SetPosition(240, 150);
+	victim->DoEnergy(-45);
+
+	var cannon = killer->CreateObject(Catapult);
+	fake_killer->CreateContents(Shield)->Enter(killer);
+	cannon->ControlUseStart(killer, 120, 0);
+	cannon->ControlUseStop(killer, 120, 0);
+	return true;
+}
+
+global func Test25_Log() { return "Moving lava"; }
+global func Test25_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Tunnel", 60, 160, 90, 160, 90, 260, 60, 260);
+	DrawMaterialQuad("Earth", 90, 90, 130, 90, 130, 160, 90, 160);
+	DrawMaterialQuad("DuroLava", 94, 90, 126, 90, 126, 160, 94, 160);
+
+	victim->SetPosition(75, 250);
+	victim->DoEnergy(-45);
+
+	var firestone = killer->CreateContents(Firestone);
+	killer->SetHandAction(0);
+	ScheduleCall(killer, "ControlThrow", 4, 0, firestone, 14, -6);
+	return true;
+}
+
+global func Test26_Log() { return "Moving acid"; }
+global func Test26_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Tunnel", 60, 160, 90, 160, 90, 260, 60, 260);
+	DrawMaterialQuad("Earth", 90, 90, 130, 90, 130, 160, 90, 160);
+	DrawMaterialQuad("Acid", 94, 90, 126, 90, 126, 160, 94, 160);
+
+	victim->SetPosition(75, 250);
+	victim->DoEnergy(-45);
+
+	var firestone = killer->CreateContents(Firestone);
+	killer->SetHandAction(0);
+	ScheduleCall(killer, "ControlThrow", 4, 0, firestone, 14, -6);
+	return true;
+}
+
+global func Test27_Log() { return "Windbag object shot"; }
+global func Test27_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(240, 150);
+	victim->DoEnergy(-45);
+
+	var windbag = killer->CreateContents(WindBag);
+	windbag->DoFullLoad();
+	CreateObject(Rock, killer->GetX() + 10, killer->GetY() - 10); 
+	ScheduleCall(windbag, "ControlUse", 4, 1, killer, 20, -8);
+	return true;
+}
+
 
 /*-- Wiki Overview Table --*/
 
