@@ -142,12 +142,7 @@ public:
 
 	friend class C4AulScriptEngine;
 	friend class C4AulDebug;
-	// Translate a string using the script's lang table
-	std::string Translate(const std::string &text) const;
-
 protected:
-	C4LangStringTable *stringTable;	
-
 	C4AulScriptEngine *Engine; //owning engine
 	C4AulScript *Prev, *Next; // tree structure
 

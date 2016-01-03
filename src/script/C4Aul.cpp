@@ -82,22 +82,6 @@ void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
 	Next = NULL;
 }
 
-std::string C4AulScript::Translate(const std::string &text) const
-{
-	try
-	{
-		if (stringTable)
-			return stringTable->Translate(text);
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		// Ignore, soldier on
-	}
-	if (Engine && Engine != this)
-		return Engine->Translate(text);
-	throw C4LangStringTable::NoSuchTranslation(text);
-}
-
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():

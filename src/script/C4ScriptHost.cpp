@@ -140,11 +140,12 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 	return false;
 }
 
-void C4ScriptHost::SetError(const char *szMessage)
+std::string C4ScriptHost::Translate(const std::string &text) const
 {
-
+	if (stringTable)
+		return stringTable->Translate(text);
+	throw C4LangStringTable::NoSuchTranslation(text);
 }
-
 
 /*--- C4ExtraScriptHost ---*/
 

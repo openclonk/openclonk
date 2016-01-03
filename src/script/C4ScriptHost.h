@@ -45,11 +45,12 @@ public:
 	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
+	// Translate a string using the script's lang table
+	std::string Translate(const std::string &text) const;
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
 protected:
 	C4ScriptHost();
-	void SetError(const char *szMessage);
 	void MakeScript();
 	bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
@@ -70,6 +71,7 @@ protected:
 	bool IncludesResolved;
 
 	StdStrBuf Script; // script
+	C4LangStringTable *stringTable;
 	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
