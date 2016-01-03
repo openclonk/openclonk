@@ -2,6 +2,7 @@
 Title=KillTracing
 
 [Landscape]
+BottomOpen=1
 NoScan=1
 
 [Weather]

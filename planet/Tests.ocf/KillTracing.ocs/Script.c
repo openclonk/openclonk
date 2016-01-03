@@ -18,6 +18,8 @@ static plr_victim;
 static plr_killer;
 static plr_killer_fake;
 
+static const TEST_START_NR = 1;
+
 protected func Initialize()
 {
 	// Create script players for these tests.
@@ -65,7 +67,7 @@ protected func InitializePlayer(int plr)
 	
 	// Add test control effect.
 	var effect = AddEffect("IntTestControl", nil, 100, 2);
-	effect.testnr = 1;
+	effect.testnr = TEST_START_NR;
 	effect.launched = false;
 	effect.plr = plr;
 	return;
@@ -128,20 +130,7 @@ global func FxIntTestControlTimer(object target, proplist effect)
 	// Launch new test if needed.
 	if (!effect.launched)
 	{
-		// Remove all objects except the living crew members.
-		RemoveAll(Find_Not(Find_Or(Find_OCF(OCF_CrewMember), Find_ID(RelaunchContainer))));
-		// Remove all landscape changes.
-		DrawMaterialQuad("Brick", 0, 160, LandscapeWidth(), 160, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight());
-		ClearFreeRect(0, 0, LandscapeWidth(), 160);
-		// Extinguish all remaining crew members and restore positions.
-		for (var crew in FindObjects(Find_OCF(OCF_CrewMember)))
-		{
-			crew->Extinguish();
-			if (crew->GetOwner() == plr_killer)
-				crew->SetPosition(50, 150);
-			else if (crew->GetOwner() == plr_killer_fake)
-				crew->SetPosition(20, 150);
-		}
+		InitTest();
 		// Start the test if available, otherwise finish test sequence.
 		if (!Call(Format("~Test%d_OnStart", effect.testnr)))
 		{
@@ -173,21 +162,32 @@ global func FxIntTestControlOnDeath(object target, proplist effect, int killer, 
 	return FX_OK;
 }
 
-public func OnClonkDeath(object clonk, int killer)
+global func InitTest()
 {
-	if (clonk->GetOwner() != plr_victim)
-		return;
-	var effect = GetEffect("IntTestControl");
-	EffectCall(nil, effect, "OnDeath", killer, clonk);
-	return;
-}
+	// Remove all objects except the player crew members and relaunch container they are in.
+	for (var obj in FindObjects(Find_Not(Find_ID(RelaunchContainer))))
+		if (!((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User || obj->GetOwner() == plr_victim)))
+			obj->RemoveObject();
 
-public func RelaunchPlayer(int plr)
-{
-	var clonk = CreateObjectAbove(Clonk, 100, 150, plr);
-	clonk->MakeCrewMember(plr);
-	SetCursor(plr, clonk);
-	clonk->DoEnergy(100000);
+	// Remove all landscape changes.
+	DrawMaterialQuad("Brick", 0, 160, LandscapeWidth(), 160, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight());
+	ClearFreeRect(0, 0, LandscapeWidth(), 160);
+	
+	// Give script players new crew.
+	for (var plr in [plr_victim, plr_killer, plr_killer_fake])
+	{	
+		if (!GetCrew(plr))
+		{
+			var clonk = CreateObjectAbove(Clonk, 100, 150, plr);
+			clonk->MakeCrewMember(plr);
+			clonk->SetDir(DIR_Right);
+			SetCursor(plr, clonk);
+			clonk->DoEnergy(100000);
+		}
+	}
+	GetCrew(plr_victim)->SetPosition(100, 150);
+	GetCrew(plr_killer)->SetPosition(50, 150);
+	GetCrew(plr_killer_fake)->SetPosition(20, 150);
 	return;
 }
 
@@ -196,6 +196,15 @@ global func GetPlayerName(int plr)
 	if (plr == NO_OWNER)
 		return "NO_OWNER";
 	return _inherited(plr, ...);
+}
+
+public func OnClonkDeath(object clonk, int killer)
+{
+	if (clonk->GetOwner() != plr_victim)
+		return;
+	var effect = GetEffect("IntTestControl");
+	EffectCall(nil, effect, "OnDeath", killer, clonk);
+	return;
 }
 
 
@@ -330,13 +339,14 @@ global func Test9_OnStart()
 	var victim = GetCrew(plr_victim);
 	var killer = GetCrew(plr_killer);
 	
-	victim->SetPosition(140, 150);
+	victim->SetPosition(260, 150);
 	victim->DoEnergy(-45);
 
 	var club = killer->CreateContents(Club);
-	CreateObject(Rock, killer->GetX() + 5, killer->GetY() - 10); 
-	club->ControlUseStart(killer, 20, 0);
-	club->ControlUseStop(killer, 20, 0);
+	CreateObject(Rock, killer->GetX() + 4, killer->GetY() - 4); 
+	ScheduleCall(club, "ControlUseStart", 2, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseHolding", 3, 0, killer, 20, -10);
+	ScheduleCall(club, "ControlUseStop", 4, 0, killer, 20, -10);
 	return true;
 }
 
@@ -649,7 +659,126 @@ global func Test27_OnStart()
 	var windbag = killer->CreateContents(WindBag);
 	windbag->DoFullLoad();
 	CreateObject(Rock, killer->GetX() + 10, killer->GetY() - 10); 
-	ScheduleCall(windbag, "ControlUse", 4, 1, killer, 20, -8);
+	ScheduleCall(windbag, "ControlUse", 4, 0, killer, 20, -8);
+	return true;
+}
+
+global func Test28_Log() { return "Balloon tumble out of map (hit rider)"; }
+global func Test28_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Sky:Sky", 100, 0, LandscapeWidth(), 0, LandscapeWidth(), LandscapeHeight(), 100, LandscapeHeight());
+	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
+	
+	victim->SetPosition(260, 120);
+	var balloon = victim->CreateContents(Balloon);
+	balloon->ControlUseStart(victim);
+
+	var musket = killer->CreateContents(Musket);
+	musket->CreateContents(LeadShot);
+	musket.loaded = true;
+	musket->ControlUseStart(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
+	musket->ControlUseStop(killer, victim->GetX() - killer->GetX(), victim->GetY() - killer->GetY());
+	return true;
+}
+
+global func Test29_Log() { return "Balloon tumble out of map (hit balloon)"; }
+global func Test29_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Sky:Sky", 100, 0, LandscapeWidth(), 0, LandscapeWidth(), LandscapeHeight(), 100, LandscapeHeight());
+	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
+	
+	victim->SetPosition(260, 120);
+	var balloon = victim->CreateContents(Balloon);
+	balloon->ControlUseStart(victim);
+
+	var musket = killer->CreateContents(Musket);
+	musket->CreateContents(LeadShot);
+	musket.loaded = true;
+	musket->ControlUseStart(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
+	musket->ControlUseStop(killer, victim->GetActionTarget()->GetX() - killer->GetX(), victim->GetActionTarget()->GetY() - killer->GetY());
+	return true;
+}
+
+global func Test30_Log() { return "Windbag shot out of map"; }
+global func Test30_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Sky:Sky", 100, 0, LandscapeWidth(), 0, LandscapeWidth(), LandscapeHeight(), 100, LandscapeHeight());
+	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
+	
+	victim->SetPosition(60, 150);
+	ScheduleCall(victim, "ControlJump", 4, 1);
+
+	var windbag = killer->CreateContents(WindBag);
+	windbag->DoFullLoad();
+	ScheduleCall(windbag, "ControlUse", 12, 0, killer, 20, -30);
+	return true;
+}
+
+global func Test31_Log() { return "Boompack hit"; }
+global func Test31_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(90, 150);
+	victim->DoEnergy(-45);
+
+	var boompack = killer->CreateContents(Boompack);
+	ScheduleCall(boompack, "ControlUse", 12, 0, killer, 20, -2);
+	ScheduleCall(boompack, "ControlJump", 16, 0, killer);
+	return true;
+}
+
+global func Test32_Log() { return "Dynamite box (placed by other)"; }
+global func Test32_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	var fake_killer = GetCrew(plr_killer_fake);
+	
+	victim->SetPosition(140, 150);
+	victim->DoEnergy(-45);
+
+	fake_killer->SetPosition(140, 150);
+	var dynamite_box = fake_killer->CreateContents(DynamiteBox);
+	ScheduleCall(dynamite_box, "ControlUse", 1, 5, fake_killer, 0, 10);
+	ScheduleCall(fake_killer, "ControlThrow", 5, 0, dynamite_box, -14, -6);
+	ScheduleCall(killer, "SetCommand", 40, 0, "MoveTo", dynamite_box);
+	ScheduleCall(killer, "Collect", 70, 0, dynamite_box);
+	ScheduleCall(dynamite_box, "ControlUse", 72, 0, killer, 0, 10);
+	return true;
+}
+
+global func Test33_Log() { return "Teleglove drop"; }
+global func Test33_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	var fake_killer = GetCrew(plr_killer_fake);
+	
+	victim->SetPosition(120, 150);
+	victim->DoEnergy(-45);
+
+	var teleglove = killer->CreateContents(TeleGlove);
+	var rock = CreateObject(Rock, 120, 100);
+	ScheduleCall(teleglove, "ControlUseStart", 1, 0, killer, rock->GetX() - killer->GetX(), rock->GetY() - killer->GetY());
+	ScheduleCall(teleglove, "ControlUseHolding", 1, 20, killer, rock->GetX() - killer->GetX(), rock->GetY() - killer->GetY());
+	ScheduleCall(teleglove, "ControlUseStop", 21, 0, killer, rock->GetX() - killer->GetX(), rock->GetY() - killer->GetY());
+	
+	fake_killer->SetPosition(180, 150);
+	var teleglove_fake = fake_killer->CreateContents(TeleGlove);
+	ScheduleCall(teleglove_fake, "ControlUseStart", 1, 0, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
+	ScheduleCall(teleglove_fake, "ControlUseHolding", 1, 15, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
+	ScheduleCall(teleglove_fake, "ControlUseStop", 16, 0, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
 	return true;
 }
 
@@ -658,16 +787,16 @@ global func Test27_OnStart()
 
 global func CreateWikiOverviewTable(array results)
 {
-	var table = "{| border=\"1\" class=\"wikitable\"\n|-\n! Kill Description\n! Traced?\n";
+	var table = "{| border=\"1\" class=\"wikitable\" style=\"margin: 1em auto 1em auto;\"\n|-\n! #\n! Kill Description\n! Traced?\n";
 	for (var index = 1; index <= GetLength(results); index++)
 	{
 		var result = results[index - 1];
 		if (result == nil)
 			continue;
-		var success = "<span style=\"color:#FF0000\">false</span>";
+		var success = "<span style=\"color:#FF0000\">no</span>";
 		if (result)
-			success = "<span style=\"color:#00CC00\">true</span>";
-		var entry = Format("|-\n| %s\n| %s\n", Call(Format("~Test%d_Log", index)), success);
+			success = "<span style=\"color:#00CC00\">yes</span>";
+		var entry = Format("|-\n| %d\n| %s\n| %s\n", index, Call(Format("~Test%d_Log", index)), success);
 		table = Format("%s%s", table, entry);
 	}
 	var table_closing = "|-\n|}";
