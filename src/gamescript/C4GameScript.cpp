@@ -2829,7 +2829,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerByIndex", FnGetPlayerByIndex);
 	AddFunc(pEngine, "EliminatePlayer", FnEliminatePlayer);
 	AddFunc(pEngine, "SurrenderPlayer", FnSurrenderPlayer);
-	AddFunc(pEngine, "FnGetLeagueScore", FnGetLeagueScore);
+	AddFunc(pEngine, "GetLeagueScore", FnGetLeagueScore);
 	AddFunc(pEngine, "SetLeaguePerformance", FnSetLeaguePerformance);
 	AddFunc(pEngine, "SetLeagueProgressData", FnSetLeagueProgressData);
 	AddFunc(pEngine, "GetLeagueProgressData", FnGetLeagueProgressData);
