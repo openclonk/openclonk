@@ -173,7 +173,7 @@ func ExecuteMelee(fx)
 	// Don't attack if still on the carrier
 	if (fx.carrier)
 	{
-		if (ObjectDistance(fx.carrier) > CustomAI.AIRSHIP_LOST_DIST) fx.carrier = nil;
+		if (!fx.carrier->IsInsideGondola(this)) fx.carrier = nil;
 		if (GetCommand()) SetCommand("None");
 		if (fx.shield) return ExecuteProtection(fx);
 		return ExecuteIdle();
@@ -225,6 +225,8 @@ func ExecuteMelee(fx)
 func ExecuteProtection(fx)
 {
 	if (!fx.carrier)
+		return false;
+	if (!fx.shield)
 		return false;
 	return _inherited(fx);
 }

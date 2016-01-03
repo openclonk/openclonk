@@ -123,7 +123,7 @@ func FillHomebase(object homebase)
 	// Buy menu entries
 	homebase->AddCaption("$HomebaseWeapons$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Bow,                         ammo = Arrow,    desc = "$HomebaseDescBow$" });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Javelin,         cost = 1,                    desc = "$HomebaseDescJavelin$"                                            , infinite = true});
+	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Javelin,         cost = 10,                   desc = "$HomebaseDescJavelin$"                                            , infinite = true});
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = Musket,          cost = 50,  ammo = LeadShot, desc = "$HomebaseDescMusket$",          requirements = ["AdvancedWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = GrenadeLauncher,             ammo = IronBomb, desc = "$HomebaseDescGrenadeLauncher$", requirements = ["MasterWeapons"] });
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon     { item = WindBag,         cost = 500,                  desc = "$HomebaseDescWindBag$", requirements = ["MasterWeapons"] });
@@ -379,6 +379,7 @@ func OnWaveCleared(int wave)
 	var bounty = ENEMY_WAVE_DATA[g_wave].Bounty, bounty_msg = "";
 	if (bounty)
 	{
+		bounty = bounty * 4 / BoundBy(GetPlayerCount(C4PT_User), 1, 4); // Carefully tested balancing
 		bounty_msg = Format("|<c ffff00>+%d</c>{{Icon_Wealth}}", bounty);
 		DoWealthForAll(bounty);
 	}

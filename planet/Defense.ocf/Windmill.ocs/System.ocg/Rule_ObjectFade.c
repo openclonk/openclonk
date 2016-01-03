@@ -29,7 +29,7 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 			return -1;
 		}
 	}
-	else 
+	else
 	{
 		target->SetClrModulation(effect.alpha << 24 | effect.color);
 		return -1;

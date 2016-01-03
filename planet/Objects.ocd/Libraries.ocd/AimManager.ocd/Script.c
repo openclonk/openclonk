@@ -322,7 +322,7 @@ public func StartShoot(object weapon)
 	}
 }
 
-public func DuringShoot() { aim_weapon->~DuringShoot(this, aim_angle); }
+public func DuringShoot() { if (aim_weapon) aim_weapon->~DuringShoot(this, aim_angle); }
 
 public func StopShoot()
 {

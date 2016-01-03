@@ -14,6 +14,16 @@ public func AllStop()
 	}
 }
 
+public func IsInsideGondola(object clonk)
+{
+	if (!clonk) return false;
+
+	if (Inside(clonk->GetX() - GetX(), this.gondola[0], this.gondola[2]))
+		if (Inside(clonk->GetY() - GetY(), this.gondola[1], this.gondola[3]))
+			return true;
+	return false;
+}
+
 public func PromoteNewCaptain()
 {
 	var crew = GetCrewMembers();
@@ -60,4 +70,4 @@ private func GetCrewMembers()
 }
 
 // When fading out the airship, the fade out rule does not check for position changes
-public func FadeOutForce() { return true; }
+public func FadeOutForced() { return true; }
