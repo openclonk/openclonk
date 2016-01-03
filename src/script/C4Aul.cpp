@@ -41,47 +41,6 @@ const char *C4AulError::what() const noexcept
 	return sMessage ? sMessage.getData() : "(unknown error)";
 }
 
-C4AulScript::C4AulScript()
-{
-	// prepare lists
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-C4AulScript::~C4AulScript()
-{
-	// unreg
-	Unreg();
-}
-
-
-void C4AulScript::Unreg()
-{
-	// remove from list
-	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
-	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
-	Prev = Next = NULL;
-	Engine = NULL;
-}
-
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
-{
-	// already regged? (def reloaded)
-	if (Engine) return;
-	// reg to list
-	if ((Engine = pEngine))
-	{
-		if ((Prev = Engine->ChildL))
-			Prev->Next = this;
-		else
-			Engine->Child0 = this;
-		Engine->ChildL = this;
-	}
-	else
-		Prev = NULL;
-	Next = NULL;
-}
-
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():

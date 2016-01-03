@@ -92,36 +92,6 @@ public:
 	int32_t GetHandle() const { return handle; }
 };
 
-
-// script class
-class C4AulScript
-{
-public:
-	C4AulScript(); // constructor
-	virtual ~C4AulScript(); // destructor
-	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
-	void Unreg(); // remove from list
-	virtual bool Delete() { return true; } // allow deletion on pure class
-
-	StdCopyStrBuf ScriptName; // script name
-
-	virtual C4PropListStatic * GetPropList() { return 0; }
-	virtual C4ScriptHost * GetScriptHost() { return 0; }
-
-	friend class C4AulScriptEngine;
-	friend class C4AulDebug;
-	friend class C4AulProfiler;
-protected:
-	C4AulScriptEngine *Engine; //owning engine
-	C4AulScript *Prev, *Next; // tree structure
-
-	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
-	virtual bool Parse();
-	virtual bool ResolveIncludes(C4DefList *rDefs);
-	virtual bool ResolveAppends(C4DefList *rDefs);
-	virtual void UnLink();
-};
-
 // holds all C4AulScripts
 class C4AulScriptEngine
 {
@@ -132,7 +102,7 @@ protected:
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }
 	C4Value GlobalPropList;
-	C4AulScript *Child0, *ChildL; // tree structure
+	C4ScriptHost *Child0, *ChildL; // tree structure
 
 	// all open user files
 	// user files aren't saved - they are just open temporary e.g. during game saving
@@ -184,7 +154,6 @@ public:
 	friend class C4ScriptHost;
 	friend class C4AulParse;
 	friend class C4AulDebug;
-	friend class C4AulScript;
 };
 
 extern C4AulScriptEngine ScriptEngine;

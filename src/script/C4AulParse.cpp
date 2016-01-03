@@ -2849,11 +2849,6 @@ void C4AulParse::Parse_Const()
 	}
 }
 
-bool C4AulScript::Parse()
-{
-	return true;
-}
-
 void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 {
 	// append all funcs and local variable initializations

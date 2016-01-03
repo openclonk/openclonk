@@ -1077,7 +1077,7 @@ void C4AulProfiler::ResetTimes()
 	// zero all profiler times of owned functions
 	ResetTimes(::ScriptEngine.GetPropList());
 	// reset sub-scripts
-	for (C4AulScript *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+	for (C4ScriptHost *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
 		ResetTimes(pScript->GetPropList());
 }
 
@@ -1086,6 +1086,6 @@ void C4AulProfiler::CollectTimes()
 	// collect all profiler times of owned functions
 	CollectTimes(::ScriptEngine.GetPropList());
 	// collect sub-scripts
-	for (C4AulScript *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+	for (C4ScriptHost *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
 		CollectTimes(pScript->GetPropList());
 }

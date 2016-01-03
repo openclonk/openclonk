@@ -24,16 +24,6 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
-bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
-{
-	return false;
-}
-
-bool C4AulScript::ResolveAppends(C4DefList *rDefs)
-{
-	return false;
-}
-
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
 bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
@@ -47,8 +37,8 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 			C4Def *Def = rDefs ? rDefs->GetByName(*a) : NULL;
 			if (Def)
 			{
-				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), GetScriptHost()) == Def->Script.SourceScripts.end())
-					Def->Script.SourceScripts.push_back(GetScriptHost());
+				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), this) == Def->Script.SourceScripts.end())
+					Def->Script.SourceScripts.push_back(this);
 			}
 			else
 			{
@@ -67,8 +57,8 @@ bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 				if (!pDef) break;
 				if (pDef == GetPropList()) continue;
 				// append
-				if (std::find(pDef->Script.SourceScripts.begin(), pDef->Script.SourceScripts.end(), GetScriptHost()) == pDef->Script.SourceScripts.end())
-					pDef->Script.SourceScripts.push_back(GetScriptHost());
+				if (std::find(pDef->Script.SourceScripts.begin(), pDef->Script.SourceScripts.end(), this) == pDef->Script.SourceScripts.end())
+					pDef->Script.SourceScripts.push_back(this);
 			}
 		}
 	}
@@ -103,8 +93,8 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 
 			for (std::list<C4ScriptHost *>::reverse_iterator s = Def->Script.SourceScripts.rbegin(); s != Def->Script.SourceScripts.rend(); ++s)
 			{
-				if (std::find(GetScriptHost()->SourceScripts.begin(), GetScriptHost()->SourceScripts.end(), *s) == GetScriptHost()->SourceScripts.end())
-					GetScriptHost()->SourceScripts.push_front(*s);
+				if (std::find(SourceScripts.begin(), SourceScripts.end(), *s) == SourceScripts.end())
+					SourceScripts.push_front(*s);
 			}
 		}
 		else
@@ -120,11 +110,6 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	Resolving=false;
 	State = ASS_LINKED;
 	return true;
-}
-
-void C4AulScript::UnLink()
-{
-
 }
 
 void C4ScriptHost::UnLink()
@@ -147,7 +132,7 @@ void C4AulScriptEngine::UnLink()
 	warnCnt = errCnt = lineCnt = 0;
 
 	// unlink scripts
-	for (C4AulScript *s = Child0; s; s = s->Next)
+	for (C4ScriptHost *s = Child0; s; s = s->Next)
 		s->UnLink();
 	GetPropList()->Thaw();
 	// Do not clear global variables and constants, because they are registered by the
@@ -155,32 +140,27 @@ void C4AulScriptEngine::UnLink()
 	// variable or constant at runtime by removing it from the script.
 }
 
-bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
-{
-	return false;
-}
-
 void C4AulScriptEngine::Link(C4DefList *rDefs)
 {
 	try
 	{
 		// resolve appends
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->ResolveAppends(rDefs);
 
 		// resolve includes
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
 
 		// parse the scripts to byte code
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->Parse();
 
 		if (rDefs)
 			rDefs->CallEveryDefinition();
 
 		// Done modifying the proplists now
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->GetPropList()->Freeze();
 		GetPropList()->Freeze();
 	}
@@ -213,7 +193,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, const char *szLanguage)
 {
-	C4AulScript * s;
+	C4ScriptHost * s;
 	for (s = Child0; s; s = s->Next)
 		if (s->ReloadScript(szScript, szLanguage))
 			break;

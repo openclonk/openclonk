@@ -68,7 +68,7 @@ private:
 	bool fProfiling;
 	C4TimeMilliseconds tDirectExecStart;
 	uint32_t tDirectExecTotal; // profiler time for DirectExec
-	C4AulScript *pProfiledScript;
+	C4ScriptHost *pProfiledScript;
 
 	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
 	C4Value Values[MAX_VALUE_STACK];

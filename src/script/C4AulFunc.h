@@ -46,7 +46,6 @@ struct C4AulParSet
 // base function class
 class C4AulFunc: public C4RefCnt
 {
-	friend class C4AulScript;
 	friend class C4AulScriptEngine;
 	friend class C4AulFuncMap;
 	friend class C4AulParse;

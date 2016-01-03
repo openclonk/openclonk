@@ -25,6 +25,9 @@
 /*--- C4ScriptHost ---*/
 
 C4ScriptHost::C4ScriptHost():
+	// prepare lists
+	Prev(NULL), Next(NULL),
+	Engine(NULL),
 	State(ASS_NONE) // not compiled
 {
 	Script = NULL;
@@ -39,6 +42,7 @@ C4ScriptHost::C4ScriptHost():
 }
 C4ScriptHost::~C4ScriptHost()
 {
+	Unreg();
 	Clear();
 }
 
@@ -60,6 +64,33 @@ void C4ScriptHost::Clear()
 	Appends.clear();
 	// reset flags
 	State = ASS_NONE;
+}
+
+void C4ScriptHost::Unreg()
+{
+	// remove from list
+	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
+	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
+	Prev = Next = NULL;
+	Engine = NULL;
+}
+
+void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
+{
+	// already regged? (def reloaded)
+	if (Engine) return;
+	// reg to list
+	if ((Engine = pEngine))
+	{
+		if ((Prev = Engine->ChildL))
+			Prev->Next = this;
+		else
+			Engine->Child0 = this;
+		Engine->ChildL = this;
+	}
+	else
+		Prev = NULL;
+	Next = NULL;
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
