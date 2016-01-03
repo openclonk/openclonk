@@ -1027,13 +1027,13 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 #endif
 	// profiler
 	StartDirectExec();
-	C4AulScript * script = &::GameScript;
+	C4ScriptHost * script = &::GameScript;
 	if (p == ::ScriptEngine.GetPropList())
-		script = &::ScriptEngine;
+		script = NULL;
 	else if (p && p->GetDef())
 		script = &p->GetDef()->Script;
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(script->GetPropList(), script->GetScriptHost(), 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(script ? script->GetPropList() : p->IsStatic(), script, 0, szScript);
 	// Parse function
 	try
 	{

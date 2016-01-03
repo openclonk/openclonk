@@ -123,7 +123,7 @@ protected:
 };
 
 // holds all C4AulScripts
-class C4AulScriptEngine : public C4AulScript
+class C4AulScriptEngine
 {
 protected:
 	C4AulFuncMap FuncLookUp;
@@ -157,10 +157,9 @@ public:
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink, link and parse all scripts
-	virtual C4PropListStatic * GetPropList();
+	C4PropListStatic * GetPropList();
 	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false)
 	{ return GetPropList()->Call(k, pPars, fPassErrors); }
-	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, const char *szLanguage); // search script and reload, if found
 
 	// For the list of functions in the PropertyDlg

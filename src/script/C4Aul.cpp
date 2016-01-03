@@ -88,10 +88,6 @@ C4AulScriptEngine::C4AulScriptEngine():
 		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
-	// /me r b engine
-	Engine = this;
-	ScriptName.Ref(C4CFN_System);
-
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
