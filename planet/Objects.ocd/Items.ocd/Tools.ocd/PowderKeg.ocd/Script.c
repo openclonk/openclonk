@@ -92,9 +92,10 @@ public func UpdatePicture()
 	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
 }
 
-public func Incineration()
+public func Incineration(int caused_by)
 {
-	AddEffect("Fuse",this,1,1,this);
+	SetController(caused_by);
+	AddEffect("Fuse", this, 1, 1, this);
 }
 
 public func FxFuseTimer(object target, effect, int timer)
@@ -113,14 +114,14 @@ public func IsProjectileTarget()
 	return true;
 }
 
-public func Damage()
+public func Damage(int change, int cause, int by_player)
 {
-	Incinerate();
+	Incinerate(100, by_player);
 }
 
-public func OnProjectileHit()
+public func OnProjectileHit(object projectile)
 {
-	Incinerate();
+	Incinerate(100, projectile->GetController());
 }
 
 func Hit()
