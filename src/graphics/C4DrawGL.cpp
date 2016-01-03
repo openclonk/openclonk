@@ -103,7 +103,7 @@ namespace
 #undef USERPARAM_CONST
 
 CStdGL::CStdGL():
-	pMainCtx(0), CurrentVBO(0)
+	pMainCtx(0), CurrentVBO(0), NextVAOID(VAOIDs.end())
 {
 	GenericVBOs[0] = 0;
 	Default();
@@ -930,6 +930,122 @@ void CStdGL::Default()
 	sfcFmt=0;
 	iClrDpt=0;
 	Workarounds.LowMaxVertexUniformCount = false;
+}
+
+unsigned int CStdGL::GenVAOID()
+{
+	// Generate a new VAO ID. Make them sequential so that the actual
+	// VAOs in the context can be simply maintained with a lookup table.
+	unsigned int id;
+	if (NextVAOID == VAOIDs.begin())
+	{
+		// Insert at the beginning
+		id = 1;
+	}
+	else
+	{
+		// Insert at the end, or somewhere in the middle
+		std::set<unsigned int>::iterator iter = NextVAOID;
+		--iter;
+
+		id = *iter + 1;
+	}
+
+	// Actually insert the ID
+#ifdef NDEBUG
+	std::set<unsigned int>::iterator> inserted_iter = VAOIDs.insert(NextVAOID, id);
+#else
+	std::pair<std::set<unsigned int>::iterator, bool> inserted = VAOIDs.insert(id);
+	assert(inserted.second == true);
+	std::set<unsigned int>::iterator inserted_iter = inserted.first;
+#endif
+
+	// Update next VAO ID: increment iterator until we find a gap
+	// in the sequence.
+	NextVAOID = inserted_iter;
+	unsigned int prev_id = id;
+	++NextVAOID;
+	while(NextVAOID != VAOIDs.end() && prev_id + 1 == *NextVAOID)
+	{
+		prev_id = *NextVAOID;
+		++NextVAOID;
+	}
+
+	return id;
+}
+
+void CStdGL::FreeVAOID(unsigned int vaoid)
+{
+	std::set<unsigned int>::iterator iter = VAOIDs.find(vaoid);
+	assert(iter != VAOIDs.end());
+
+	// Delete this VAO in the current context
+	if (pCurrCtx)
+	{
+		if (vaoid < pCurrCtx->hVAOs.size() && pCurrCtx->hVAOs[vaoid] != 0)
+		{
+			glDeleteVertexArrays(1, &pCurrCtx->hVAOs[vaoid]);
+			pCurrCtx->hVAOs[vaoid] = 0;
+		}
+	}
+
+	// For all other contexts, mark it to be deleted as soon as we select
+	// that context. Otherwise we would need to do a lot of context
+	// switching at this point.
+	for (std::list<CStdGLCtx*>::iterator iter = CStdGLCtx::contexts.begin(); iter != CStdGLCtx::contexts.end(); ++iter)
+	{
+		CStdGLCtx* ctx = *iter;
+		if (ctx != pCurrCtx && vaoid < ctx->hVAOs.size() && ctx->hVAOs[vaoid] != 0)
+			if (std::find(ctx->VAOsToBeDeleted.begin(), ctx->VAOsToBeDeleted.end(), vaoid) == ctx->VAOsToBeDeleted.end())
+				ctx->VAOsToBeDeleted.push_back(vaoid);
+	}
+
+	// Delete the VAO ID from our list of VAO IDs in use
+	// If the Next VAO ID is 1, then no matter what we delete we don't need
+	// to update anything. If it is not at the beginning, then move it to the
+	// gap we just created if it was at a higher place, to make sure we keep
+	// the numbers as sequential as possible.
+	unsigned int nextVaoID = 1;
+	if (NextVAOID != VAOIDs.begin())
+	{
+		std::set<unsigned int>::iterator next_vao_iter = NextVAOID;
+		--next_vao_iter;
+		nextVaoID = *next_vao_iter + 1;
+	}
+
+	assert(vaoid != nextVaoID);
+
+	if (vaoid < nextVaoID || iter == NextVAOID)
+		NextVAOID = VAOIDs.erase(iter);
+	else
+		VAOIDs.erase(iter);
+}
+
+bool CStdGL::GetVAO(unsigned int vaoid, GLuint& vao)
+{
+	assert(pCurrCtx != NULL);
+
+	if (vaoid >= pCurrCtx->hVAOs.size())
+	{
+		// Resize the VAO array so that all generated VAO IDs fit
+		// in it, and not only the one requested in this call.
+		// We hope to get away with fewer reallocations this way.
+		assert(VAOIDs.find(vaoid) != VAOIDs.end());
+		std::set<unsigned int>::iterator iter = VAOIDs.end();
+		--iter;
+
+		pCurrCtx->hVAOs.resize(*iter + 1);
+	}
+
+	if (pCurrCtx->hVAOs[vaoid] == 0)
+	{
+		glGenVertexArrays(1, &pCurrCtx->hVAOs[vaoid]);
+		vao = pCurrCtx->hVAOs[vaoid];
+		return false;
+	}
+
+	vao = pCurrCtx->hVAOs[vaoid];
+	return true;
 }
 
 #endif // USE_CONSOLE

@@ -555,13 +555,19 @@ static NSOpenGLContext* MainContext;
 
 #pragma mark CStdGLCtx: Initialization
 
-CStdGLCtx::CStdGLCtx(): pWindow(0) {}
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) {}
 
 void CStdGLCtx::Clear()
 {
 	Deselect();
 	setObjectiveCObject(nil);
 	pWindow = 0;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
@@ -594,6 +600,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	{
 		[controller.openGLView setContext:ctx];
 	}
+
+	this_context = contexts.insert(contexts.end(), this);
 	return true;
 }
 

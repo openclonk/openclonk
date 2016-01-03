@@ -24,6 +24,8 @@
 
 #ifndef USE_CONSOLE
 
+std::list<CStdGLCtx*> CStdGLCtx::contexts;
+
 void CStdGLCtx::SelectCommon()
 {
 	pGL->pCurrCtx = this;
@@ -32,6 +34,22 @@ void CStdGLCtx::SelectCommon()
 	glDepthFunc(GL_LESS);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
+	// Delete pending VAOs
+	std::vector<GLuint> toBeDeleted;
+	if (!VAOsToBeDeleted.empty())
+	{
+		for (unsigned int i = 0; i < VAOsToBeDeleted.size(); ++i)
+		{
+			if (VAOsToBeDeleted[i] < hVAOs.size() && hVAOs[VAOsToBeDeleted[i]] != 0)
+			{
+				toBeDeleted.push_back(hVAOs[VAOsToBeDeleted[i]]);
+				hVAOs[VAOsToBeDeleted[i]] = 0;
+			}
+		}
+
+		glDeleteVertexArrays(toBeDeleted.size(), &toBeDeleted[0]);
+		VAOsToBeDeleted.clear();
+	}
 }
 
 void CStdGLCtx::Reinitialize()
@@ -239,7 +257,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	return glewInitialized;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hDC(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
@@ -250,6 +268,12 @@ void CStdGLCtx::Clear()
 		hDC=0;
 	}
 	pWindow = 0; hWindow = NULL;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
@@ -342,6 +366,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 			return false;
 		}
+
+		this_context = contexts.insert(contexts.end(), this);
 		return true;
 	}
 
@@ -417,7 +443,7 @@ void InitGLXPointers()
 }
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
@@ -429,6 +455,12 @@ void CStdGLCtx::Clear()
 		ctx = 0;
 	}
 	pWindow = 0;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
@@ -485,6 +517,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
+
+	this_context = contexts.insert(contexts.end(), this);
 	return true;
 }
 
@@ -538,11 +572,17 @@ bool CStdGLCtx::PageFlip()
 
 #elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), this_context(contexts.end()) { }
 
 void CStdGLCtx::Clear()
 {
 	pWindow = 0;
+
+	if (this_context != contexts.end())
+	{
+		contexts.erase(this_context);
+		this_context = contexts.end();
+	}
 }
 
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
@@ -560,6 +600,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
+
+	this_context = contexts.insert(contexts.end(), this);
 	return true;
 }
 
