@@ -480,6 +480,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	GLXContext dummy_ctx = glXCreateContext(dpy, vis_info, 0, True);
 	XFree(vis_info);
 	glXMakeCurrent(dpy, pWindow->renderwnd, dummy_ctx);
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (err != GLEW_OK)
 	{
@@ -488,7 +489,10 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	const int attribs[] = {
+		GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+		GLX_CONTEXT_MINOR_VERSION_ARB, 1,
 		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
+		GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
 		None
 	};
 	GLXContext share_context = (pGL->pMainCtx != this) ? static_cast<GLXContext>(pGL->pMainCtx->ctx) : 0;
@@ -511,6 +515,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
+	glewExperimental = GL_TRUE;
 	err = glewInit();
 	if (GLEW_OK != err)
 	{

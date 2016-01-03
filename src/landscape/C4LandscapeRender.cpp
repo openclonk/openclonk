@@ -612,13 +612,6 @@ bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, cons
 
 bool C4LandscapeRenderGL::LoadShaders(C4GroupSet *pGroups)
 {
-	// No support?
-	if(!GLEW_ARB_fragment_program)
-	{
-		Log("  gl: no shader support!");
-		return false;
-	}
-
 	// First, clear out all existing shaders
 	ClearShaders();
 

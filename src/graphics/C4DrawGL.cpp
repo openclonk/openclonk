@@ -382,14 +382,10 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 	// store options
 	bool ok = RestoreDeviceObjects();
 
-	// - AMD GPUs have supported OpenGL 2.1 since 2007
-	// - nVidia GPUs have supported OpenGL 2.1 since 2005
-	// - Intel integrated GPUs have supported OpenGL 2.1 since Clarkdale (maybe earlier).
-	// And we've already been using features from OpenGL 2.1. Nobody has complained yet.
-	// So checking for 2.1 support should be fine.
-	if (!GLEW_VERSION_2_1)
+	// We need at least OpenGL 3.0
+	if (!GLEW_VERSION_3_0)
 	{
-		return Error("  gl: OpenGL Version 2.1 or higher required. A better graphics driver will probably help.");
+		return Error("  gl: OpenGL Version 3.0 or higher required. A better graphics driver will probably help.");
 	}
 	return ok;
 }
