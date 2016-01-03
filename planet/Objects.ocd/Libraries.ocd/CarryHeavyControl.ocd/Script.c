@@ -99,23 +99,6 @@ public func GetExtraInteractions()
 	return functions;
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
-{
-	if (!this) 
-		return false;
-	var handled = _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
-	if(handled) return handled;
-	
-	if(ctrl == CON_Interact)
-	{
-		if(IsCarryingHeavy() && GetAction() == "Walk")
-		{
-			DropCarryHeavy();
-			return true;
-		}
-	}
-}
-
 /* Carry heavy stuff */
 
 /** Tells the clonk that he is carrying the given carry heavy object */
