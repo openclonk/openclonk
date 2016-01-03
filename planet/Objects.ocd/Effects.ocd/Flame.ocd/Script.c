@@ -8,7 +8,7 @@
 
 protected func Initialize()
 {
-	Incinerate();
+	Incinerate(100, GetController());
 	AddTimer("Burning");
 	return;
 }
@@ -20,7 +20,7 @@ public func Burning()
 	if (GetCon() > 50 && !Random(3))
 	{
 		var x = Random(15);
-		var new_flame = CreateObjectAbove(GetID(), 0, 0, GetOwner());
+		var new_flame = CreateObjectAbove(GetID());
 		new_flame->SetSpeed(x, -7);
 		new_flame->SetCon(GetCon() / 2);
 		SetSpeed(-x, -7);
@@ -42,3 +42,4 @@ func SaveScenarioObject(props)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 500;

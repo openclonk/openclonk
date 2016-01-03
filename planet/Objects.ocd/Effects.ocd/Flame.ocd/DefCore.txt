@@ -1,7 +1,7 @@
 [DefCore]
 id=Flame
 Version=6,0
-Category=C4D_Object
+Category=C4D_None
 Width=15
 Height=20
 Offset=-7,-10
