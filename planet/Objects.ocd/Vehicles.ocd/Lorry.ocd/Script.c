@@ -264,7 +264,7 @@ protected func Damage(int change, int cause, int by_player)
 				// Set the controller of the fragments to the one causing the blast for kill tracing.
 				fragment->SetController(by_player);
 				// Incinerate the fragments.
-				fragment->Incinerate();
+				fragment->Incinerate(100, by_player);
 			}		
 		}
 		// Remove the lorry itself, eject possible contents as they might have entered again.
