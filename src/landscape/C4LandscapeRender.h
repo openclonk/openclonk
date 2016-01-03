@@ -56,6 +56,15 @@ enum C4LR_Uniforms
 	C4LRU_Count
 };
 
+enum C4LR_Attributes
+{
+	C4LRA_Position,
+	C4LRA_LandscapeTexCoord,
+	C4LRA_LightTexCoord,
+
+	C4LRA_Count
+};
+
 // How much data we want to store per landscape pixel
 const int C4LR_BytesPerPx = 3;
 
@@ -108,7 +117,6 @@ private:
 	C4Shader Shader;
 	C4Shader ShaderLight;
 	static const char *UniformNames[];
-	GLenum hLandscapeTexCoord, hLightTexCoord;
 	// VBO for landscape vertex data
 	GLuint hVBO;
 

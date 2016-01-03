@@ -239,7 +239,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	shader.Clear();
 	shader.ClearSlices();
 
-	// Then load slices for fragment shader
+	// Start with #defines
 	shader.AddDefine("OPENCLONK");
 	shader.AddDefine("OC_SPRITE");
 	if (ssc & C4SSC_MOD2) shader.AddDefine("OC_CLRMOD_MOD2");
@@ -252,6 +252,7 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 		for (const char* const* define = additionalDefines; *define != NULL; ++define)
 			shader.AddDefine(*define);
 
+	// Then load slices for fragment and vertex shader
 	shader.LoadVertexSlices(pGroups, "SpriteVertexShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "ObjectShader.glsl");

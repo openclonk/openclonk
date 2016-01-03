@@ -15,10 +15,27 @@
 
 // Default Vertex Shader for the landscape.
 
+attribute vec2 oc_Position;
+attribute vec2 oc_LandscapeTexCoord;
+attribute vec2 oc_LightTexCoord;
+
+varying vec2 landscapeTexCoord;
+#ifdef OC_DYNAMIC_LIGHT
+varying vec2 lightTexCoord;
+#endif
+
 uniform mat4 projectionMatrix;
 
 slice(position)
 {
 	// model-view matrix is always the identity matrix
-	gl_Position = projectionMatrix * gl_Vertex;
+	gl_Position = projectionMatrix * vec4(oc_Position, 0.0, 1.0);
+}
+
+slice(texcoord)
+{
+	landscapeTexCoord = oc_LandscapeTexCoord;
+#ifdef OC_DYNAMIC_LIGHT
+	lightTexCoord = oc_LightTexCoord;
+#endif
 }

@@ -564,22 +564,27 @@ const char *C4LandscapeRenderGL::UniformNames[C4LRU_Count+1];
 
 bool C4LandscapeRenderGL::LoadShader(C4GroupSet *pGroups, C4Shader& shader, const char* name, int ssc)
 {
+	// Setup #defines
+	shader.AddDefine("OPENCLONK");
+	shader.AddDefine("OC_LANDSCAPE");
+	if(ssc & C4SSC_LIGHT) shader.AddDefine("OC_DYNAMIC_LIGHT"); // sample light from light texture
+
 	// Create vertex shader
 	shader.LoadVertexSlices(pGroups, "LandscapeVertexShader.glsl");
 
-	hLandscapeTexCoord = shader.AddTexCoord("landscapeCoord");
-	if(ssc & C4SSC_LIGHT) hLightTexCoord = shader.AddTexCoord("lightCoord");
-
 	// Then load slices for fragment shader
-	shader.AddFragmentSlice(-1, "#define OPENCLONK");
-	shader.AddFragmentSlice(-1, "#define OC_LANDSCAPE");
-	if(ssc & C4SSC_LIGHT) shader.AddFragmentSlice(-1, "#define OC_DYNAMIC_LIGHT"); // sample light from light texture
-
 	shader.LoadFragmentSlices(pGroups, "CommonShader.glsl");
 	shader.LoadFragmentSlices(pGroups, "LandscapeShader.glsl");
 
+	// Make attribute name map
+	const char* AttributeNames[C4LRA_Count + 1];
+	AttributeNames[C4LRA_Position] = "oc_Position";
+	AttributeNames[C4LRA_LandscapeTexCoord] = "oc_LandscapeTexCoord";
+	AttributeNames[C4LRA_LightTexCoord] = "oc_LightTexCoord"; // unused if no dynamic light
+	AttributeNames[C4LRA_Count] = NULL;
+
 	// Initialise!
-	if (!shader.Init(name, UniformNames, NULL)) {
+	if (!shader.Init(name, UniformNames, AttributeNames)) {
 		shader.ClearSlices();
 		return false;
 	}
@@ -1068,33 +1073,30 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	// Upload vertex data
 	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, nFloats * sizeof(float), vtxData);
-	glVertexPointer(2, GL_FLOAT, 0, 0);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glClientActiveTexture(hLandscapeTexCoord);
-	glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	// Setup state
+	glEnableVertexAttribArray(shader->GetAttribute(C4LRA_Position));
+	glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LandscapeTexCoord));
+
+	glVertexAttribPointer(shader->GetAttribute(C4LRA_Position), 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(shader->GetAttribute(C4LRA_LandscapeTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
 
 	if (Light)
 	{
-		glClientActiveTexture(hLightTexCoord);
-		glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
+		glVertexAttribPointer(shader->GetAttribute(C4LRA_LightTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));
 	}
 
 	// Do the blit
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	// Reset state
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
+	glDisableVertexAttribArray(shader->GetAttribute(C4LRA_Position));
+	glDisableVertexAttribArray(shader->GetAttribute(C4LRA_LandscapeTexCoord));
 	if (Light)
-	{
-		glClientActiveTexture(hLandscapeTexCoord);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
-
+		glDisableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	ShaderCall.Finish();
 }
 

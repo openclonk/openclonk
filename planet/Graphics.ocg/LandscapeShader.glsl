@@ -1,4 +1,10 @@
 
+// Interpolated texture coordinates
+varying vec2 landscapeTexCoord;
+#ifdef OC_DYNAMIC_LIGHT
+varying vec2 lightTexCoord;
+#endif
+
 // Input textures
 uniform sampler2D landscapeTex[2];
 uniform sampler2D scalerTex;
@@ -48,7 +54,7 @@ slice(coordinate)
 	vec2 fullStepX = vec2(fullStep.x, 0.0);
 	vec2 fullStepY = vec2(0.0, fullStep.y);
 
-	vec2 texCoo = gl_TexCoord[0].st;
+	vec2 texCoo = landscapeTexCoord;
 
 	// calculate pixel position in landscape, find center of current pixel
 	vec2 pixelCoo = texCoo * resolution;
@@ -78,6 +84,13 @@ slice(texture)
 	                                               scalerPx.gb * 255.0 / 64.0);
 	vec4 landscapePx2 = texture2D(landscapeTex[0], centerCoo2);
 
+}
+
+slice(texture+4)
+{
+#ifdef OC_DYNAMIC_LIGHT
+	vec2 lightCoord = lightTexCoord;
+#endif
 }
 
 slice(material)

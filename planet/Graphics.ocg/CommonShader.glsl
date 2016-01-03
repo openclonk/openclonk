@@ -74,14 +74,14 @@ slice(texture+5)
 #ifdef OC_DYNAMIC_LIGHT
 
 	// Query light texture
-	vec2 lightDirCoord = lightCoord.st;
+	vec2 lightDirCoord = lightCoord;
 
 	vec4  lightPx = texture2D(lightTex, lightDirCoord);
 	float lightBright = maxLightBrightness * max(0.0, (lightPx.a-lightDarknessLevel)/(1.0-lightDarknessLevel));
 	vec3  lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.yz * 3.0, lightDepth));
 
 	// Query light color texture (part of the light texture)
-	vec2 lightColorCoord = lightCoord.st - vec2(0.0, 0.5); // subtract offset for the color texture
+	vec2 lightColorCoord = lightCoord - vec2(0.0, 0.5); // subtract offset for the color texture
 
 	vec3 lightColor = texture2D(lightTex, lightColorCoord.st).rgb;
 
