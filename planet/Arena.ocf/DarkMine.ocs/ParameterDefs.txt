@@ -15,6 +15,11 @@ Default=1
 		Name=$ModeLastManStanding$
 		Description=$DescModeLastManStanding$
 		Value=1
+		
+		[Option]
+		Name=$ModeKingOfTheHill$
+		Description=$DescModeKingOfTheHillg$
+		Value=2		
 
 
 [ParameterDef]

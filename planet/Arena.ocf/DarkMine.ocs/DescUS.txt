@@ -1,9 +1,10 @@
-   Dark Mine
+Dark Mine
 
 You find yourself in an abandoned mine with competitors, the last one standing can claim all the gold. The mines are dark because all torches have been burned up, but they left their lorries with valuable explosives and other mining equipment. Use these to deceive, trap and eliminate your opponents.
 
-Goal: Last Man Standing (Be the last one alive to win)
+Goal: Eliminate your opponents.
 
-- Amount of relaunches is variable.
+- Choose between three different goals.
+- Amount of relaunches/kills/points is variable.
 - Use the dark caves to your advantage.
 - The lorries contain explosives, mining tools and more.

@@ -13,6 +13,7 @@ static cave_list;
 // Game modes.
 static const GAMEMODE_Deathmatch = 0;
 static const GAMEMODE_LastManStanding = 1;
+static const GAMEMODE_KingOfTheHill = 2;
 
 protected func Initialize()
 {
@@ -21,6 +22,12 @@ protected func Initialize()
 		CreateObject(Goal_DeathMatch);
 	else if (SCENPAR_GameMode == GAMEMODE_LastManStanding)
 		CreateObject(Goal_LastManStanding);
+	else if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
+	{
+		var goal = CreateObject(Goal_KingOfTheHill, LandscapeWidth() / 2, LandscapeHeight() / 2);
+		goal->SetRadius(72);
+		goal->SetPointLimit(Max(SCENPAR_NrRelaunchesKills, 1));
+	}
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	
@@ -64,6 +71,28 @@ protected func KillsToRelaunch()
 public func WinKillCount() 
 {
 	return Max(SCENPAR_NrRelaunchesKills, 1); 
+}
+
+// Forward callbacks to OnPlayerRelaunch for KotH goal.
+protected func InitializePlayer(int plr)
+{
+	if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
+		GameCall("OnPlayerRelaunch", plr, false);
+	return _inherited(plr, ...);
+}
+
+// Forward callbacks to OnPlayerRelaunch for KotH goal.
+protected func RelaunchPlayer(int plr, int killer)
+{
+	if (SCENPAR_GameMode == GAMEMODE_KingOfTheHill)
+	{
+		var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+		clonk->MakeCrewMember(plr);
+		SetCursor(plr, clonk);
+		clonk->DoEnergy(100000);
+		GameCall("OnPlayerRelaunch", plr, true);
+	}
+	return _inherited(plr, killer);
 }
 
 // Callback from the last man standing and deathmatch goal.

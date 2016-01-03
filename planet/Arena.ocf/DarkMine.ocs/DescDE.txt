@@ -1,10 +1,10 @@
-   Dunkle Mine
+Dunkle Mine
 
-Du befindest dich in einer verlassenen Mine, die noch immer Gold enthalten soll. Wenn du deine Widersacher ausschalten kannst, kannst du das Gold für dich beanspruchen. In der Mine sind noch einige Loren, gefüllt mit Sprengstoffen und anderem Werkzeug. Nutze dies, um deine Gegner zu täuschen und in die Falle zu locken.
+Du befindest dich in einer verlassenen Mine, die noch immer Gold enthalten soll. Wenn du deine Widersacher ausschalten kannst, kannst du das Gold fÃ¼r dich beanspruchen. In der Mine sind noch einige Loren, gefÃ¼llt mit Sprengstoffen und anderem Werkzeug. Nutze dies, um deine Gegner zu tÃ¤uschen und in die Falle zu locken.
 
-Ziel: Last Man Standing (Bleibe als letzter am Leben)
+Ziel: Eliminiere deinen Gegner.
 
-- Variable Anzahl Relaunches einstellbar.
+- Drei Spielziele einstellbar.
+- Variable Anzahl Relaunches/Kills/Punkte einstellbar.
 - Nutze die Dunkelheit zu deinem Vorteil.
-- Die Loren enthalten nützliche Ausrüstung.
-
+- Die Loren enthalten nÃ¼tzliche AusrÃ¼stung.

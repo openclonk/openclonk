@@ -5,7 +5,9 @@ ModeDeathmatch=Deathmatch
 DescModeDeathmatch=The first player to reach the required number of kills wins the round.
 ModeLastManStanding=Last Man Standing
 DescModeLastManStanding=The last surviving player wins the round.
+ModeKingOfTheHill=King Of The Hill
+DescModeKingOfTheHill=The one making the required number of kills as the king survives.
 
 # Scenario parameters: number of relaunches
-NrRelaunchesKills=Kills (DM) / Relaunches (LMS)
+NrRelaunchesKills=Kills/Relaunches/Points
 DescNrRelaunchesKills=Number of needed kills to win a deathmatch round or number of additional relaunches for a last man standing round.
