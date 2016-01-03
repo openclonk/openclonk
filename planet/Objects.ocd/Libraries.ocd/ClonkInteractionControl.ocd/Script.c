@@ -338,10 +338,17 @@ func GetInteractableObjects(array sort)
 				actiontype = ACTIONTYPE_EXTRA
 			});
 	}
-	
+	// Make sure that the Clonk's action target is always shown.
+	// You can push a lorry out of your bounding box and would, otherwise, then be unable to release it.
+	var main_criterion = Find_AtRect(-5, -10, 10, 20);
+	var action_target = nil;
+	if (action_target = GetActionTarget())
+	{
+		main_criterion = Find_Or(main_criterion, Find_InArray([action_target]));
+	}
 	// add interactables (script interface)
 	var interactables = FindObjects(
-		Find_AtPoint(0, 0),
+		main_criterion,
 		Find_Or(Find_OCF(OCF_Grab), Find_Func("IsInteractable", this), Find_OCF(OCF_Entrance)),
 		Find_NoContainer(), Find_Layer(GetObjectLayer()),
 		sort);
