@@ -249,6 +249,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	iammo->SetR(r / angPrec);
 	iammo->SetRDir(-4 + Random(9));
 	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0,0, angPrec);
+	iammo->SetController(clonk->GetController());
 	iammo->~Fuse();
 
 	//Particles
