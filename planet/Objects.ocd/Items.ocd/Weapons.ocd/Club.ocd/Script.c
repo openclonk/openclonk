@@ -219,6 +219,7 @@ func DoStrike(clonk, angle)
 			
 			obj->SetXDir((obj->GetXDir(100) + Sin(angle, speed)) / 2, div);
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, speed)) / 2, div);
+			obj->SetController(clonk->GetController());
 		}
 		AddEffect(en, obj, 1, 15, nil);
 		found=true;
