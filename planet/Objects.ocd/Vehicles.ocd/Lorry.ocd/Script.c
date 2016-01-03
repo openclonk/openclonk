@@ -113,6 +113,8 @@ public func FxDumpContentsTimer(object target, proplist effect, int time)
 				random_content = random_content[0];
 				random_content->Exit(x, RandomX(2, 3), Random(360), 0, 0, RandomX(-5, 5));
 				random_content->SetXDir(xdir, 100);
+				// Assume the controller of the lorry is also the one dumping the contents.
+				random_content->SetController(GetController());
 				AddEffect("BlockCollectionByLorry", random_content, 100, 8, this);
 			}		
 		}
