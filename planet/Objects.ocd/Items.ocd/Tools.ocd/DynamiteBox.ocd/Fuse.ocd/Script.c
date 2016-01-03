@@ -32,6 +32,9 @@ public func StartFusing(object controller)
 		// Fuse from both sides not supported
 		return RemoveObject();
 	}
+	
+	// Set a controller for this wire for killtracing, which can be passed to the fusing object.
+	SetController(controller->GetController());	
 		
 	var fuse_dir;	
 	var fuse_call;

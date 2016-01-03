@@ -150,8 +150,9 @@ private func Fusing()
 	return;
 }
 
-public func OnFuseFinished()
+public func OnFuseFinished(object fuse)
 {
+	SetController(fuse->GetController());
 	DoExplode();
 }
 

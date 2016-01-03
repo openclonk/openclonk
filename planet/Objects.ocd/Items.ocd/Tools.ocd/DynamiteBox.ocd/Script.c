@@ -142,8 +142,9 @@ public func GetInventoryIconOverlay()
 	return overlay;
 }
 
-public func OnFuseFinished()
+public func OnFuseFinished(object fuse)
 {
+	SetController(fuse->GetController());
 	DoExplode();
 }
 
