@@ -125,7 +125,6 @@ class C4AulScript
 public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
-	virtual void Clear(); // remove script, byte code and children
 	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
 	void Unreg(); // remove from list
 	virtual bool Delete() { return true; } // allow deletion on pure class

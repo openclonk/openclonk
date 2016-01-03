@@ -44,7 +44,6 @@ C4ScriptHost::~C4ScriptHost()
 
 void C4ScriptHost::Clear()
 {
-	C4AulScript::Clear();
 	ComponentHost.Clear();
 	Script.Clear();
 	LocalNamed.Reset();

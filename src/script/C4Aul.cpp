@@ -50,8 +50,6 @@ C4AulScript::C4AulScript()
 
 C4AulScript::~C4AulScript()
 {
-	// clear
-	Clear();
 	// unreg
 	Unreg();
 }
@@ -65,12 +63,6 @@ void C4AulScript::Unreg()
 	Prev = Next = NULL;
 	Engine = NULL;
 }
-
-
-void C4AulScript::Clear()
-{
-}
-
 
 void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
 {
@@ -147,8 +139,6 @@ void C4AulScriptEngine::Clear()
 		else Child0->Unreg();
 	// clear own stuff
 	GlobalPropList._getPropList()->Clear();
-	// clear inherited
-	C4AulScript::Clear();
 	// reset values
 	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
