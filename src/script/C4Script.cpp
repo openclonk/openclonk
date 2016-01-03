@@ -776,10 +776,11 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
 
+	C4PropListStatic * p = pEngine->GetPropList();
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
-		new C4AulDefFunc(pEngine->GetPropList(), pDef);
-#define F(f) AddFunc(pEngine, #f, Fn##f)
+		new C4AulDefFunc(p, pDef);
+#define F(f) ::AddFunc(p, #f, Fn##f)
 	F(Abs);
 	F(Min);
 	F(Max);
@@ -826,7 +827,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(eval);
 	F(GetConstantNameByValue);
 
-	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
-	AddFunc(pEngine, "LogCallStack", C4AulExec::FnLogCallStack);
+	::AddFunc(p, "Translate", C4AulExec::FnTranslate);
+	::AddFunc(p, "LogCallStack", C4AulExec::FnLogCallStack);
 #undef F
 }

@@ -255,9 +255,9 @@ protected:
 };
 
 template <typename RType, typename ThisType, typename ...ParTypes>
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(ThisType *, ParTypes...), bool Public=true)
+inline void AddFunc(C4PropListStatic * Parent, const char * Name, RType (*pFunc)(ThisType *, ParTypes...), bool Public=true)
 {
-	new C4AulEngineFunc<RType, ThisType, ParTypes...>(pOwner->GetPropList(), Name, pFunc, Public);
+	new C4AulEngineFunc<RType, ThisType, ParTypes...>(Parent, Name, pFunc, Public);
 }
 
 // a definition of a script constant
