@@ -44,7 +44,7 @@ const char *C4AulError::what() const noexcept
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
+		C4PropListStaticMember(NULL, NULL, ::Strings.RegString("Global")),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	GlobalNamedNames.Reset();
@@ -54,12 +54,7 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
 	Child0 = ChildL = NULL;
-	RegisterGlobalConstant("Global", GlobalPropList);
-}
-
-C4PropListStatic * C4AulScriptEngine::GetPropList()
-{
-	return GlobalPropList._getPropList()->IsStatic();
+	RegisterGlobalConstant("Global", C4VPropList(this));
 }
 
 C4AulScriptEngine::~C4AulScriptEngine()
@@ -77,7 +72,7 @@ void C4AulScriptEngine::Clear()
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
 	// clear own stuff
-	GlobalPropList._getPropList()->Clear();
+	C4PropListStaticMember::Clear();
 	// reset values
 	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
@@ -86,7 +81,7 @@ void C4AulScriptEngine::Clear()
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-	RegisterGlobalConstant("Global", GlobalPropList);
+	RegisterGlobalConstant("Global", C4VPropList(this));
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 	UserFiles.clear();
@@ -114,12 +109,12 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 	return true;
 }
 
-bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
+void C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
 	GameScript.ScenPropList.Denumerate(numbers);
-	return true;
+	C4PropListStaticMember::Denumerate(numbers);
 }
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
