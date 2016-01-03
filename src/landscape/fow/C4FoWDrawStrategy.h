@@ -162,7 +162,7 @@ public:
 private:
 	struct Vertex {
 		float x, y;
-		float r, g, b;
+		float r, g, b, a;
 	};
 
 	void DrawVertex(Vertex& vertex);

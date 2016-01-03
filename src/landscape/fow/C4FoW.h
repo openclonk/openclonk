@@ -65,6 +65,34 @@ private:
 	float x0, y0;
 };
 
+enum C4FoWFramebufShaderUniforms {
+	C4FoWFSU_ProjectionMatrix, // projection matrix
+	C4FoWFSU_Texture,          // source texture
+
+	C4FoWFSU_Count
+};
+
+enum C4FoWFramebufShaderAttributes {
+	C4FoWFSA_Position,
+	C4FoWFSA_TexCoord,
+
+	C4FoWFSA_Count
+};
+
+enum C4FoWRenderShaderUniforms {
+	C4FoWRSU_ProjectionMatrix, // projection matrix
+	C4FoWRSU_VertexOffset,     // offset applied to vertex (TODO: could be encoded in projection matrix)
+
+	C4FoWRSU_Count
+};
+
+enum C4FoWRenderShaderAttributes {
+	C4FoWRSA_Position,
+	C4FoWRSA_Color,
+
+	C4FoWRSA_Count
+};
+
 /**
 	This class holds all lights for the objects. It forwards the update, invalidation and render calls each to the
 	lights.

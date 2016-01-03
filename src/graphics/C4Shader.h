@@ -135,13 +135,6 @@ public:
 	bool LoadFragmentSlices(C4GroupSet *pGroupSet, const char *szFile);
 	bool LoadVertexSlices(C4GroupSet *pGroupSet, const char *szFile);
 
-#ifndef USE_CONSOLE
-	// Allocate a texture coordinate, returning its ID to be used with glMultiTexCoord.
-	// The texture coordinate will be visible to both shaders under the given name.
-	// Note that in contrast to uniforms, these will not disappear if not used!
-	GLenum AddTexCoord(const char *szName);
-#endif
-
 	// Assemble and link the shader. Should be called again after new slices are added.
 	bool Init(const char *szWhat, const char **szUniforms, const char **szAttributes);
 	bool Refresh();

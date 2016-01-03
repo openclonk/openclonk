@@ -241,23 +241,23 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		// Copy using shader
 		C4ShaderCall Call(pShader);
 		Call.Start();
-		if (Call.AllocTexUnit(0))
+		if (Call.AllocTexUnit(C4FoWFSU_Texture))
 			glBindTexture(GL_TEXTURE_2D, pBackSurface->textures[0].texName);
-		Call.SetUniformMatrix4x4(1, projectionMatrix);
+		Call.SetUniformMatrix4x4(C4FoWFSU_ProjectionMatrix, projectionMatrix);
 		glBlendFunc(GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_COLOR);
 		float normalBlend = 1.0f / 4.0f, // Normals change quickly
 		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
 		glBlendColor(0.0f,normalBlend,normalBlend,brightBlend);
 
-		glTexCoordPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(0));
-		glVertexPointer(2, GL_FLOAT, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_Position));
+		glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_TexCoord));
+		glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_Position), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
+		glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_TexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(0));
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_Position));
+		glDisableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_TexCoord));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		Call.Finish();

@@ -277,24 +277,6 @@ bool C4Shader::LoadSlices(ShaderSliceList& slices, C4GroupSet *pGroups, const ch
 	return true;
 }
 
-#ifndef USE_CONSOLE
-GLenum C4Shader::AddTexCoord(const char *szName)
-{
-	// Make sure we have enough space
-	assert(iTexCoords < C4Shader_MaxTexCoords);
-	if(iTexCoords >= C4Shader_MaxTexCoords)
-		return -1;
-
-	// Add slices
-	StdStrBuf Code = FormatString("gl_TexCoord[%d] = gl_MultiTexCoord%d;\n", iTexCoords, iTexCoords);
-	AddVertexSlice(C4Shader_Vertex_TexCoordPos, Code.getData());
-	Code.Format("#define %s gl_TexCoord[%d]\n", szName, iTexCoords);
-	AddFragmentSlice(-1, Code.getData());
-
-	return GL_TEXTURE0 + iTexCoords++;
-}
-#endif
-
 void C4Shader::ClearSlices()
 {
 	VertexSlices.clear();

@@ -131,7 +131,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 
 	// Upload vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	if (vbo == 0 || vbo_size < vertices.size())
+	if (vbo_size < vertices.size())
 	{
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_DRAW);
 		vbo_size = vertices.size();
@@ -146,18 +146,18 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	const float height = region->getSurfaceHeight() / 2.0;
 
 	// Set Y offset for vertex
-	float y_offset[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	call.SetUniform4fv(1, 1, y_offset);
+	float y_offset[] = { 0.0f, 0.0f };
+	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
 	// Enable scissor test to only draw in upper or lower half of texture
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(0, height, width, height);
 
 	// Setup state for 1st pass
-	glVertexPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
 
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
 	// for details.
@@ -170,7 +170,7 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	// Prepare state for 2nd pass
 	glBlendFunc(GL_ONE, GL_ONE);
 	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
 
 	// Render 2nd pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
@@ -179,16 +179,16 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
 	glScissor(0, 0, width, height);
-	glColorPointer(4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
 	y_offset[1] = height;
-	call.SetUniform4fv(1, 1, y_offset);
+	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 	
 	// Render 3rd pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
 	// Reset GL state
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_SCISSOR_TEST);
 
@@ -299,11 +299,14 @@ void C4FoWDrawWireframeStrategy::Begin(const C4FoWRegion* region)
 
 void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 {
+	// If we have nothing to draw (e.g. directly after initialization), abort early.
+	if (vertices.empty()) return;
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Upload vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	if (vbo == 0 || vbo_size < vertices.size())
+	if (vbo_size < vertices.size())
 	{
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STREAM_DRAW);
 		vbo_size = vertices.size();
@@ -313,20 +316,21 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 	}
 
-	glVertexPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glColorPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
 
 	// Set Y offset for vertex
-	const float y_offset[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	call.SetUniform4fv(1, 1, y_offset);
+	const float y_offset[] = { 0.0f, 0.0f };
+	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
 
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
 	// Reset GL state
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -353,8 +357,8 @@ void C4FoWDrawWireframeStrategy::DrawDarkVertex(float x, float y)
 	switch(phase)
 	{
 	case P_None:         return;
-	case P_Fade:         vtx.r = 0.0f; vtx.g = 0.5f; vtx.b = 0.0f; break;
-	case P_Intermediate: vtx.r = 0.0f; vtx.g = 0.0f; vtx.b = 0.5f; break;
+	case P_Fade:         vtx.r = 0.0f; vtx.g = 0.5f; vtx.b = 0.0f; vtx.a = 1.0f; break;
+	case P_Intermediate: vtx.r = 0.0f; vtx.g = 0.0f; vtx.b = 0.5f; vtx.a = 1.0f; break;
 	default:             assert(false); // only fade has dark vertices
 	}
 
@@ -371,10 +375,10 @@ void C4FoWDrawWireframeStrategy::DrawLightVertex(float x, float y)
 	switch(phase)
 	{
 	case P_None:         return;
-	case P_Fan:          vtx.r = 1.0f; vtx.g = 0.0f; vtx.b = 0.0f; break;
-	case P_FanMaxed:     vtx.r = 1.0f; vtx.g = 1.0f; vtx.b = 0.0f; break;
-	case P_Fade:         vtx.r = 0.0f; vtx.g = 1.0f; vtx.b = 0.0f; break;
-	case P_Intermediate: vtx.r = 0.0f; vtx.g = 0.0f; vtx.b = 1.0f; break;
+	case P_Fan:          vtx.r = 1.0f; vtx.g = 0.0f; vtx.b = 0.0f; vtx.a = 1.0f; break;
+	case P_FanMaxed:     vtx.r = 1.0f; vtx.g = 1.0f; vtx.b = 0.0f; vtx.a = 1.0f; break;
+	case P_Fade:         vtx.r = 0.0f; vtx.g = 1.0f; vtx.b = 0.0f; vtx.a = 1.0f; break;
+	case P_Intermediate: vtx.r = 0.0f; vtx.g = 0.0f; vtx.b = 1.0f; vtx.a = 1.0f; break;
 	default:             assert(false);
 	}
 
