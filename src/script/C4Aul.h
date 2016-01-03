@@ -75,32 +75,6 @@ protected:
 	friend class C4ScriptHost;
 };
 
-// script profiler entry
-class C4AulProfiler
-{
-private:
-	// map entry
-	struct Entry
-	{
-		C4AulScriptFunc *pFunc;
-		uint32_t tProfileTime;
-
-		bool operator < (const Entry &e2) const { return tProfileTime < e2.tProfileTime ; }
-	};
-
-	// items
-	std::vector<Entry> Times;
-
-public:
-	void CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime);
-	void Show();
-
-	static void Abort();
-	static void StartProfiling(C4AulScript *pScript);
-	static void StopProfiling();
-};
-
-
 // user text file to which scripts can write using FileWrite().
 // actually just writes to an internal buffer
 class C4AulUserFile
@@ -134,11 +108,9 @@ public:
 	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
-	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
-	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
-
 	friend class C4AulScriptEngine;
 	friend class C4AulDebug;
+	friend class C4AulProfiler;
 protected:
 	C4AulScriptEngine *Engine; //owning engine
 	C4AulScript *Prev, *Next; // tree structure
@@ -193,8 +165,6 @@ public:
 
 	// For the list of functions in the PropertyDlg
 	std::list<const char*> GetFunctionNames(C4PropList *);
-	void ResetProfilerTimes(); // zero all profiler times of owned functions
-	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
@@ -211,6 +181,7 @@ public:
 	C4AulUserFile *GetUserFile(int32_t handle); // get user file given by handle
 
 	friend class C4AulFunc;
+	friend class C4AulProfiler;
 	friend class C4ScriptHost;
 	friend class C4AulParse;
 	friend class C4AulDebug;

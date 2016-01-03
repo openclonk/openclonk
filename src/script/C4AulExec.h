@@ -73,15 +73,16 @@ private:
 	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
 	C4Value Values[MAX_VALUE_STACK];
 
+	void StartProfiling(C4ScriptHost *pScript); // starts recording the times
+	bool IsProfiling() { return fProfiling; }
+	void StopProfiling() { fProfiling=false; }
+	friend class C4AulProfiler;
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL);
 
 	void StartTrace();
-	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
-	void StopProfiling(); // stop the profiler and displays results
-	void AbortProfiling() { fProfiling=false; }
 	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = C4TimeMilliseconds::Now(); }
 	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += C4TimeMilliseconds::Now() - tDirectExecStart; }
 
@@ -230,5 +231,33 @@ private:
 };
 
 extern C4AulExec AulExec;
+
+// script profiler entry
+class C4AulProfiler
+{
+private:
+	// map entry
+	struct Entry
+	{
+		C4AulScriptFunc *pFunc;
+		uint32_t tProfileTime;
+
+		bool operator < (const Entry &e2) const { return tProfileTime < e2.tProfileTime ; }
+	};
+
+	// items
+	std::vector<Entry> Times;
+
+	void CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime);
+	void CollectTimes(C4PropListStatic * p);
+	void CollectTimes();
+	static void ResetTimes(C4PropListStatic * p);
+	static void ResetTimes();
+	void Show();
+public:
+	static void Abort() { AulExec.StopProfiling(); }
+	static void StartProfiling(C4ScriptHost *pScript); // reset times and start collecting new ones
+	static void StopProfiling(); // stop the profiler and displays results
+};
 
 #endif // C4AULEXEC_H

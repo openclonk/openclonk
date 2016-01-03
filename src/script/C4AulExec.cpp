@@ -912,31 +912,18 @@ void C4AulExec::StartTrace()
 		iTraceStart = ContextStackSize();
 }
 
-void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
+void C4AulExec::StartProfiling(C4ScriptHost *pProfiledScript)
 {
 	// stop previous profiler run
-	if (fProfiling) AbortProfiling();
+	if (fProfiling) StopProfiling();
 	fProfiling = true;
 	// resets profling times and starts recording the times
 	this->pProfiledScript = pProfiledScript;
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	tDirectExecStart = tNow; // in case profiling is started from DirectExec
 	tDirectExecTotal = 0;
-	pProfiledScript->ResetProfilerTimes();
 	for (C4AulScriptContext *pCtx = Contexts; pCtx <= pCurCtx; ++pCtx)
 		pCtx->tTime = tNow;
-}
-
-void C4AulExec::StopProfiling()
-{
-	// stop the profiler and displays results
-	if (!fProfiling) return;
-	fProfiling = false;
-	// collect profiler times
-	C4AulProfiler Profiler;
-	Profiler.CollectEntry(NULL, tDirectExecTotal);
-	pProfiledScript->CollectProfilerTimes(Profiler);
-	Profiler.Show();
 }
 
 void C4AulExec::PushContext(const C4AulScriptContext &rContext)
@@ -977,19 +964,27 @@ void C4AulExec::PopContext()
 	pCurCtx--;
 }
 
-void C4AulProfiler::StartProfiling(C4AulScript *pScript)
+void C4AulProfiler::StartProfiling(C4ScriptHost *pScript)
 {
 	AulExec.StartProfiling(pScript);
+	if(pScript)
+		ResetTimes(pScript->GetPropList());
+	else
+		ResetTimes();
 }
 
 void C4AulProfiler::StopProfiling()
 {
+	if (!AulExec.IsProfiling()) return;
 	AulExec.StopProfiling();
-}
-
-void C4AulProfiler::Abort()
-{
-	AulExec.AbortProfiling();
+	// collect profiler times
+	C4AulProfiler Profiler;
+	Profiler.CollectEntry(NULL, AulExec.tDirectExecTotal);
+	if(AulExec.pProfiledScript)
+		Profiler.CollectTimes(AulExec.pProfiledScript->GetPropList());
+	else
+		Profiler.CollectTimes();
+	Profiler.Show();
 }
 
 void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime)
@@ -1059,38 +1054,38 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 	}
 }
 
-void C4AulScript::ResetProfilerTimes()
+void C4AulProfiler::ResetTimes(C4PropListStatic * p)
 {
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
-		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
+	for (C4String *pFn = p->EnumerateOwnFuncs(); pFn; pFn = p->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = p->GetFunc(pFn)->SFunc()))
 			pSFunc->tProfileTime = 0;
 }
 
-void C4AulScript::CollectProfilerTimes(C4AulProfiler &rProfiler)
+void C4AulProfiler::CollectTimes(C4PropListStatic * p)
 {
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
-		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
-			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
+	for (C4String *pFn = p->EnumerateOwnFuncs(); pFn; pFn = p->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = p->GetFunc(pFn)->SFunc()))
+			CollectEntry(pSFunc, pSFunc->tProfileTime);
 }
 
-void C4AulScriptEngine::ResetProfilerTimes()
+void C4AulProfiler::ResetTimes()
 {
 	// zero all profiler times of owned functions
-	C4AulScript::ResetProfilerTimes();
+	ResetTimes(::ScriptEngine.GetPropList());
 	// reset sub-scripts
-	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
-		pScript->ResetProfilerTimes();
+	for (C4AulScript *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+		ResetTimes(pScript->GetPropList());
 }
 
-void C4AulScriptEngine::CollectProfilerTimes(C4AulProfiler &rProfiler)
+void C4AulProfiler::CollectTimes()
 {
 	// collect all profiler times of owned functions
-	C4AulScript::CollectProfilerTimes(rProfiler);
+	CollectTimes(::ScriptEngine.GetPropList());
 	// collect sub-scripts
-	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
-		pScript->CollectProfilerTimes(rProfiler);
+	for (C4AulScript *pScript = ::ScriptEngine.Child0; pScript; pScript = pScript->Next)
+		CollectTimes(pScript->GetPropList());
 }

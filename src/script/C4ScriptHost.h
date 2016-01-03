@@ -77,7 +77,7 @@ protected:
 	C4Set<C4Property> LocalValues;
 	C4AulScriptState State; // script state
 	friend class C4AulParse;
-	friend class C4AulScriptFunc;
+	friend class C4AulProfiler;
 	friend class C4AulDebug;
 };
 
