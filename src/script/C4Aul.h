@@ -75,18 +75,6 @@ protected:
 	friend class C4ScriptHost;
 };
 
-
-// aul script state
-enum C4AulScriptState
-{
-	ASS_ERROR,      // erroneous script
-	ASS_NONE,       // nothing
-	ASS_PREPARSED,  // function list built; CodeSize set
-	ASS_LINKED,     // includes and appends resolved
-	ASS_PARSED      // byte code generated
-};
-
-
 // script profiler entry
 class C4AulProfiler
 {
@@ -150,19 +138,11 @@ public:
 	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
 	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
-	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
-
 	// helper functions
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
-	friend class C4AulParseError;
-	friend class C4AulFunc;
-	friend class C4AulScriptFunc;
 	friend class C4AulScriptEngine;
-	friend class C4AulParse;
 	friend class C4AulDebug;
-	friend class C4ScriptHost;
-
 	// Translate a string using the script's lang table
 	std::string Translate(const std::string &text) const;
 
@@ -171,8 +151,6 @@ protected:
 
 	C4AulScriptEngine *Engine; //owning engine
 	C4AulScript *Prev, *Next; // tree structure
-
-	C4AulScriptState State; // script state
 
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();

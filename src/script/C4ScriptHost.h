@@ -23,6 +23,15 @@
 #include <C4ComponentHost.h>
 #include <C4Aul.h>
 
+// aul script state
+enum C4AulScriptState
+{
+	ASS_NONE,       // nothing
+	ASS_PREPARSED,  // function list built; CodeSize set
+	ASS_LINKED,     // includes and appends resolved
+	ASS_PARSED      // byte code generated
+};
+
 // generic script host for objects
 class C4ScriptHost : public C4AulScript
 {
@@ -35,6 +44,7 @@ public:
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
 	virtual bool LoadData(const char *szFilename, const char *szData, class C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
+	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
 protected:
@@ -62,6 +72,7 @@ protected:
 	StdStrBuf Script; // script
 	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
+	C4AulScriptState State; // script state
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;

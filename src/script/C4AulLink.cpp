@@ -150,7 +150,6 @@ void C4AulScriptEngine::UnLink()
 	for (C4AulScript *s = Child0; s; s = s->Next)
 		s->UnLink();
 	GetPropList()->Thaw();
-	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
 	// Do not clear global variables and constants, because they are registered by the
 	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
 	// variable or constant at runtime by removing it from the script.
@@ -176,9 +175,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// parse the scripts to byte code
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->Parse();
-
-		// engine is always parsed (for global funcs)
-		State = ASS_PARSED;
 
 		if (rDefs)
 			rDefs->CallEveryDefinition();
