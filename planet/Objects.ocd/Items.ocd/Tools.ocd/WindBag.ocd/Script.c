@@ -213,6 +213,7 @@ public func FxIntBurstWindTimer(object target, proplist effect, int time)
 		var vy_cone_reduced = vy_cone / 2 + vy_cone / (2 * Max(1, obj->GetMass() / 4)); 
 		obj->SetXDir(ox + vx_cone_reduced, 100);
 		obj->SetYDir(oy + vy_cone_reduced, 100);
+		obj->SetController(GetController());
 	}
 	return FX_OK;
 }
