@@ -45,7 +45,7 @@ public:
 class C4AulParseError : public C4AulError
 {
 public:
-	C4AulParseError(C4AulScript *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
+	C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
 	C4AulParseError(class C4AulParse * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
 };
 
@@ -136,9 +136,6 @@ public:
 
 	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
 	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
-
-	// helper functions
-	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 	friend class C4AulScriptEngine;
 	friend class C4AulDebug;

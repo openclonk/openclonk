@@ -59,6 +59,7 @@ protected:
 	virtual bool Parse(); // parse preparsed script; return if successfull
 	virtual void UnLink(); // reset to unlinked state
 
+	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 	std::list<StdCopyStrBuf> Includes; // include list
 	std::list<StdCopyStrBuf> Appends; // append list

@@ -229,7 +229,7 @@ private:
 	friend class C4AulParseError;
 };
 
-void C4AulScript::Warn(const char *pMsg, ...)
+void C4ScriptHost::Warn(const char *pMsg, ...)
 {
 	va_list args; va_start(args, pMsg);
 	StdStrBuf Buf;
@@ -301,7 +301,7 @@ C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const cha
 
 }
 
-C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const char *pIdtf, bool Warn)
+C4AulParseError::C4AulParseError(C4ScriptHost *pScript, const char *pMsg, const char *pIdtf, bool Warn)
 {
 	// compose error string
 	sMessage.Format("%s: %s%s",
