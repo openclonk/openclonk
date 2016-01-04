@@ -271,9 +271,9 @@ func GetFuel()
 	return fuel;
 }
 
-public func IsProjectileTarget()
+public func IsProjectileTarget(object projectile)
 {
-	return true;
+	return projectile->GetID() != GetID();
 }
 
 func OnProjectileHit(object projectile)
