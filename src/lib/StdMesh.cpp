@@ -15,6 +15,7 @@
  */
 
 #include "C4Include.h"
+#include <C4DrawGL.h>
 #include <StdMesh.h>
 #include <algorithm>
 
@@ -552,7 +553,7 @@ StdSubMesh::StdSubMesh() :
 StdMesh::StdMesh() :
 	Skeleton(new StdMeshSkeleton)
 #ifndef USE_CONSOLE
-	, vbo(0)
+	, vbo(0), vaoid(0)
 #endif
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
@@ -565,6 +566,8 @@ StdMesh::~StdMesh()
 #ifndef USE_CONSOLE
 	if (vbo)
 		glDeleteBuffers(1, &vbo);
+	if (vaoid)
+		pGL->FreeVAOID(vaoid);
 #endif
 }
 
@@ -585,6 +588,9 @@ void StdMesh::UpdateVBO()
 	if (vbo != 0)
 		glDeleteBuffers(1, &vbo);
 	glGenBuffers(1, &vbo);
+
+	// Allocate a VAO ID as well
+	vaoid = pGL->GenVAOID();
 
 	// Calculate total number of vertices
 	size_t total_vertices = SharedVertices.size();

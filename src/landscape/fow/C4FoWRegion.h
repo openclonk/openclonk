@@ -39,6 +39,7 @@ private:
 #ifndef USE_CONSOLE
 	GLuint hFrameBufDraw, hFrameBufRead;
 	GLuint hVBO;
+	unsigned int vaoid;
 #endif
 
 public:

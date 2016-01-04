@@ -56,6 +56,8 @@ C4LandscapeRenderGL::C4LandscapeRenderGL()
 	ZeroMem(Surfaces, sizeof(Surfaces));
 	hMaterialTexture = 0;
 	hVBO = 0;
+	hVAOIDNoLight = 0;
+	hVAOIDLight = 0;
 }
 
 C4LandscapeRenderGL::~C4LandscapeRenderGL()
@@ -145,8 +147,23 @@ void C4LandscapeRenderGL::Clear()
 	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
 	hMaterialTexture = 0;
 
-	glDeleteBuffers(1, &hVBO);
-	hVBO = 0;
+	if (hVBO != 0)
+	{
+		glDeleteBuffers(1, &hVBO);
+		hVBO = 0;
+	}
+
+	if (hVAOIDLight != 0)
+	{
+		pGL->FreeVAOID(hVAOIDLight);
+		hVAOIDLight = 0;
+	}
+
+	if (hVAOIDNoLight != 0)
+	{
+		pGL->FreeVAOID(hVAOIDNoLight);
+		hVAOIDNoLight = 0;
+	}
 }
 
 bool C4LandscapeRenderGL::InitLandscapeTexture()
@@ -638,6 +655,11 @@ bool C4LandscapeRenderGL::InitVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), NULL, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Also allocate the VAO IDs
+	assert(hVAOIDLight == 0);
+	assert(hVAOIDNoLight == 0);
+	hVAOIDLight = pGL->GenVAOID();
+	hVAOIDNoLight = pGL->GenVAOID();
 	return true;
 }
 
@@ -1075,27 +1097,30 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, nFloats * sizeof(float), vtxData);
 
-	// Setup state
-	glEnableVertexAttribArray(shader->GetAttribute(C4LRA_Position));
-	glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LandscapeTexCoord));
-
-	glVertexAttribPointer(shader->GetAttribute(C4LRA_Position), 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glVertexAttribPointer(shader->GetAttribute(C4LRA_LandscapeTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
-
-	if (Light)
+	// Bind VAO
+	unsigned int vaoid = Light ? hVAOIDLight : hVAOIDNoLight;
+	GLuint vao;
+	const bool has_vao = pGL->GetVAO(vaoid, vao);
+	glBindVertexArray(vao);
+	if (!has_vao)
 	{
-		glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
-		glVertexAttribPointer(shader->GetAttribute(C4LRA_LightTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));
+		// Setup state
+		glEnableVertexAttribArray(shader->GetAttribute(C4LRA_Position));
+		glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LandscapeTexCoord));
+		if (Light)
+			glEnableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
+
+		glVertexAttribPointer(shader->GetAttribute(C4LRA_Position), 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(shader->GetAttribute(C4LRA_LandscapeTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
+		if (Light)
+			glVertexAttribPointer(shader->GetAttribute(C4LRA_LightTexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(16 * sizeof(float)));
 	}
 
 	// Do the blit
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	// Reset state
-	glDisableVertexAttribArray(shader->GetAttribute(C4LRA_Position));
-	glDisableVertexAttribArray(shader->GetAttribute(C4LRA_LandscapeTexCoord));
-	if (Light)
-		glDisableVertexAttribArray(shader->GetAttribute(C4LRA_LightTexCoord));
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	ShaderCall.Finish();

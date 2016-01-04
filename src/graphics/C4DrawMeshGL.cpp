@@ -614,6 +614,7 @@ namespace
 
 		bool using_shared_vertices = instance.GetSubMesh().GetVertices().empty();
 		GLuint vbo = mesh_instance.GetMesh().GetVBO();
+		unsigned int vaoid = mesh_instance.GetMesh().GetVAOID();
 		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInBuffer();
 
 		// Cook the bone transform matrixes into something that OpenGL can use. This could be moved into RenderMeshImpl.
@@ -744,23 +745,31 @@ namespace
 			}
 
 			// Bind the vertex data of the mesh
-#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index));
-			glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
-			glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
+			GLuint vao;
+			const bool has_vao = pGL->GetVAO(vaoid, vao);
+			glBindVertexArray(vao);
+			if (!has_vao)
+			{
+#define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
+					glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
+				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
+					glEnableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
+				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
 #undef VERTEX_OFFSET
+			}
 
 			// Bind textures
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
@@ -822,14 +831,8 @@ namespace
 
 			size_t vertex_count = 3 * instance.GetNumFaces();
 			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
+			glBindVertexArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_TexCoord));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights0));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneWeights1));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices0));
-			glDisableVertexAttribArray(shader->GetAttribute(C4SSA_BoneIndices1));
 			call.Finish();
 
 			if(!pass.DepthCheck)

@@ -343,7 +343,7 @@ private:
 
 	// OpenGL optimizations
 	GLuint drawingDataVertexBufferObject;
-	GLuint drawingDataVertexArraysObject;
+	unsigned int drawingDataVertexArraysObject;
 	void ClearBufferObjects();
 
 	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
@@ -506,9 +506,6 @@ public:
 	bool usePrimitiveRestartIndexWorkaround;
 	GLsizei *GetMultiDrawElementsCountArray() { return &multiDrawElementsCountArray[0]; } 
 	GLvoid **GetMultiDrawElementsIndexArray() { return reinterpret_cast<GLvoid**> (&multiDrawElementsIndexArray[0]); }
-
-	// if true, OpenGL VAOs will not be used (instead the slower direct calls will be made)
-	bool useVAOWorkaround;
 
 	// usually, the following methods are used for drawing
 	void PreparePrimitiveRestartIndices(uint32_t forSize);

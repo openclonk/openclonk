@@ -112,11 +112,17 @@ C4FoWDrawLightTextureStrategy::C4FoWDrawLightTextureStrategy(const C4FoWLight* l
  : light(light), region(NULL), vbo_size(0)
 {
 	glGenBuffers(1, &vbo);
+	vaoids[0] = pGL->GenVAOID();
+	vaoids[1] = pGL->GenVAOID();
+	vaoids[2] = pGL->GenVAOID();
 }
 
 C4FoWDrawLightTextureStrategy::~C4FoWDrawLightTextureStrategy()
 {
 	glDeleteBuffers(1, &vbo);
+	pGL->FreeVAOID(vaoids[2]);
+	pGL->FreeVAOID(vaoids[1]);
+	pGL->FreeVAOID(vaoids[0]);
 }
 
 void C4FoWDrawLightTextureStrategy::Begin(const C4FoWRegion* regionPar)
@@ -154,10 +160,16 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glScissor(0, height, width, height);
 
 	// Setup state for 1st pass
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
+	GLuint vao1, vao2, vao3;
+	const bool has_vao1 = pGL->GetVAO(vaoids[0], vao1);
+	glBindVertexArray(vao1);
+	if (!has_vao1)
+	{
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r1)));
+	}
 
 	// Set up blend equation, see C4FoWDrawLightTextureStrategy::DrawVertex
 	// for details.
@@ -168,10 +180,19 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
 	// Prepare state for 2nd pass
-	glBlendFunc(GL_ONE, GL_ONE);
+	//glBlendFunc(GL_ONE, GL_ONE);
 	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
 
+	const bool has_vao2 = pGL->GetVAO(vaoids[1], vao2);
+	glBindVertexArray(vao2);
+	if (!has_vao2)
+	{
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r2)));
+	}
+	
 	// Render 2nd pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
@@ -179,16 +200,24 @@ void C4FoWDrawLightTextureStrategy::End(C4ShaderCall& call)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
 	glScissor(0, 0, width, height);
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
 	y_offset[1] = height;
 	call.SetUniform2fv(C4FoWRSU_VertexOffset, 1, y_offset);
+
+	const bool has_vao3 = pGL->GetVAO(vaoids[2], vao3);
+	glBindVertexArray(vao3);
+	if (!has_vao3)
+	{
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r3)));
+	}
 	
 	// Render 3rd pass
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
 	// Reset GL state
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_SCISSOR_TEST);
 
@@ -286,11 +315,13 @@ C4FoWDrawWireframeStrategy::C4FoWDrawWireframeStrategy(const C4FoWLight* light, 
   light(light), screen(screen), vbo_size(0)
 {
 	glGenBuffers(1, &vbo);
+	vaoid = pGL->GenVAOID();
 }
 
 C4FoWDrawWireframeStrategy::~C4FoWDrawWireframeStrategy()
 {
 	glDeleteBuffers(1, &vbo);
+	pGL->FreeVAOID(vaoid);
 }
 
 void C4FoWDrawWireframeStrategy::Begin(const C4FoWRegion* region)
@@ -316,11 +347,17 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
 	}
 
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	GLuint vao;
+	const bool has_vao = pGL->GetVAO(vaoid, vao);
+	glBindVertexArray(vao);
+	if (!has_vao)
+	{
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
 
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
-	glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Position), 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, x)));
+		glVertexAttribPointer(call.GetAttribute(C4FoWRSA_Color), 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const uint8_t*>(offsetof(Vertex, r)));
+	}
 
 	// Set Y offset for vertex
 	const float y_offset[] = { 0.0f, 0.0f };
@@ -329,8 +366,7 @@ void C4FoWDrawWireframeStrategy::End(C4ShaderCall& call)
 	glDrawElements(GL_TRIANGLES, triangulator.GetNIndices(), GL_UNSIGNED_INT, triangulator.GetIndices());
 
 	// Reset GL state
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Position));
-	glDisableVertexAttribArray(call.GetAttribute(C4FoWRSA_Color));
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

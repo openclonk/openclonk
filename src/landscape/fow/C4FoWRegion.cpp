@@ -21,7 +21,7 @@ C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
 	, pPlayer(pPlayer)
 #ifndef USE_CONSOLE
-	, hFrameBufDraw(0), hFrameBufRead(0), hVBO(0)
+	, hFrameBufDraw(0), hFrameBufRead(0), hVBO(0), vaoid(0)
 #endif
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
 	, pSurface(new C4Surface), pBackSurface(new C4Surface)
@@ -39,6 +39,10 @@ C4FoWRegion::~C4FoWRegion()
 
 	if (hVBO) {
 		glDeleteBuffers(1, &hVBO);
+	}
+
+	if (vaoid) {
+		pGL->FreeVAOID(vaoid);
 	}
 #endif
 }
@@ -283,6 +287,9 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 			glGenBuffers(1, &hVBO);
 			glBindBuffer(GL_ARRAY_BUFFER, hVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vtxData), vtxData, GL_STREAM_DRAW);
+
+			assert(vaoid == 0);
+			vaoid = pGL->GenVAOID();
 		}
 		else
 		{
@@ -301,15 +308,20 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		      brightBlend = 1.0f / 16.0f; // Intensity more slowly
 		glBlendColor(0.0f,normalBlend,normalBlend,brightBlend);
 
-		glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_Position));
-		glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_TexCoord));
-		glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_Position), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
-		glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_TexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(0));
+		GLuint vao;
+		const bool has_vao = pGL->GetVAO(vaoid, vao);
+		glBindVertexArray(vao);
+		if (!has_vao)
+		{
+			glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_Position));
+			glEnableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_TexCoord));
+			glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_Position), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(8 * sizeof(float)));
+			glVertexAttribPointer(pShader->GetAttribute(C4FoWFSA_TexCoord), 2, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<const uint8_t*>(0));
+		}
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glDisableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_Position));
-		glDisableVertexAttribArray(pShader->GetAttribute(C4FoWFSA_TexCoord));
+		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		Call.Finish();

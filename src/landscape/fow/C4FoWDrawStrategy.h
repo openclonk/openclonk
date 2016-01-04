@@ -142,6 +142,7 @@ private:
 	GLuint vbo;
 	std::vector<Vertex> vertices;
 	unsigned int vbo_size;
+	unsigned int vaoids[3]; // Three VAOs for the three passes
 };
 
 /** This draw strategy is the debug draw strategy (press Ctrl+F7,...) that
@@ -173,6 +174,7 @@ private:
 	GLuint vbo;
 	std::vector<Vertex> vertices;
 	unsigned int vbo_size;
+	unsigned int vaoid;
 };
 
 #endif

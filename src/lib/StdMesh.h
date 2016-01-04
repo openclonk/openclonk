@@ -203,6 +203,7 @@ public:
 
 #ifndef USE_CONSOLE
 	GLuint GetVBO() const { return vbo; }
+	unsigned int GetVAOID() const { return vaoid; }
 #endif
 
 	void SetLabel(const std::string &label) { Label = label; }
@@ -210,6 +211,7 @@ public:
 private:
 #ifndef USE_CONSOLE
 	GLuint vbo;
+	unsigned int vaoid;
 	void UpdateVBO();
 #endif
 

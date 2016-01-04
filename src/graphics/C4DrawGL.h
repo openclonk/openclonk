@@ -197,6 +197,10 @@ protected:
 	GLuint GenericVBOs[N_GENERIC_VBOS];
 	unsigned int GenericVBOSizes[N_GENERIC_VBOS];
 	unsigned int CurrentVBO;
+	// We need twice as much VAOs, since the sprite rendering routines work
+	// both with and without textures (in which case we either need texture
+	// coordinates or not).
+	unsigned int GenericVAOs[N_GENERIC_VBOS * 2];
 
 	// VAO IDs currently in use.
 	std::set<unsigned int> VAOIDs;

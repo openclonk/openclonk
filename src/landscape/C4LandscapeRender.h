@@ -119,6 +119,9 @@ private:
 	static const char *UniformNames[];
 	// VBO for landscape vertex data
 	GLuint hVBO;
+	// VAO IDs for rendering landscape w/ and w/o light
+	unsigned int hVAOIDNoLight;
+	unsigned int hVAOIDLight;
 
 	// 2D texture array of material textures
 	GLuint hMaterialTexture;

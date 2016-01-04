@@ -1021,45 +1021,35 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 			glObjectLabel(GL_BUFFER, drawingDataVertexBufferObject, -1, "<particles>/VBO");
 #endif
 
-		// generate new vertex arrays object
-		if (!Particles.useVAOWorkaround)
-		{
-			glGenVertexArrays(1, &drawingDataVertexArraysObject);
-			assert (drawingDataVertexArraysObject != 0 && "Could not generate OpenGL vertex arrays object.");
-			
-			// set up the vertex array structure once
-			glBindVertexArray(drawingDataVertexArraysObject);
-
-#ifdef GL_KHR_debug
-			if (glObjectLabel)
-				glObjectLabel(GL_VERTEX_ARRAY, drawingDataVertexArraysObject, -1, "<particles>/VAO");
-#endif
-
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-			glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
-			glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
-			glBindVertexArray(0);
-		}
+		// generate new VAO ID
+		drawingDataVertexArraysObject = pGL->GenVAOID();
+		assert (drawingDataVertexArraysObject != 0 && "Could not generate a VAO ID.");
 	}
 
-	assert ((Particles.useVAOWorkaround || drawingDataVertexArraysObject != 0) && "No vertex arrays object has been created yet.");
-	assert ((drawingDataVertexBufferObject != 0) && "No buffer object has been created yet.");
-
-	// bind the VBO and push the new vertex data
-	// this has to be done before binding the vertex arrays object
 	glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+
+	// Push the new vertex data
+	// this has to be done before binding the vertex arrays object
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(C4Particle::DrawingData::Vertex) * particleCount, &vertexCoordinates[0], GL_DYNAMIC_DRAW);
 
-	// bind VAO and set correct state
-	if (!Particles.useVAOWorkaround)
+	// set up the vertex array structure
+	GLuint vao;
+	const bool has_vao = pGL->GetVAO(drawingDataVertexArraysObject, vao);
+	glBindVertexArray(vao);
+
+	assert ((drawingDataVertexBufferObject != 0) && "No buffer object has been created yet.");
+	assert ((drawingDataVertexArraysObject != 0) && "No vertex arrays object has been created yet.");
+
+	if (!has_vao)
 	{
-		glBindVertexArray(drawingDataVertexArraysObject);
-	}
-	else
-	{
+#ifdef GL_KHR_debug
+		if (glObjectLabel)
+			glObjectLabel(GL_VERTEX_ARRAY, vao, -1, "<particles>/VAO");
+#endif
+
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
+		glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Position), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
 		glVertexAttribPointer(call.GetAttribute(C4SSA_Color), 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
@@ -1075,11 +1065,7 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 	}
 
 	// reset buffer data
-	if (!Particles.useVAOWorkaround)
-	{
-		glBindVertexArray(0);
-	}
-
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -1093,7 +1079,7 @@ void C4ParticleChunk::ClearBufferObjects()
 	if (drawingDataVertexBufferObject != 0) // the value 0 as a buffer index is reserved and will never be returned by glGenBuffers
 		glDeleteBuffers(1, &drawingDataVertexBufferObject);
 	if (drawingDataVertexArraysObject != 0)
-		glDeleteVertexArrays(1, &drawingDataVertexArraysObject);
+		pGL->FreeVAOID(drawingDataVertexArraysObject);
 
 	drawingDataVertexArraysObject = 0;
 	drawingDataVertexBufferObject = 0;
@@ -1180,13 +1166,6 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	// there is only one set of texture coordinates
 	glClientActiveTexture(GL_TEXTURE0);
 
-	if (Particles.useVAOWorkaround)
-	{
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-		glEnableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-	}
-
 	accessMutex.Enter();
 
 	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); )
@@ -1205,13 +1184,6 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	}
 
 	accessMutex.Leave();
-
-	if (Particles.useVAOWorkaround)
-	{
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Position));
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_Color));
-		glDisableVertexAttribArray(call.GetAttribute(C4SSA_TexCoord));
-	}
 
 	if (!Particles.usePrimitiveRestartIndexWorkaround)
 	{
@@ -1287,7 +1259,6 @@ C4ParticleSystem::C4ParticleSystem() : frameCounterAdvancedEvent(false)
 	currentSimulationTime = 0;
 	globalParticles = 0;
 	usePrimitiveRestartIndexWorkaround = false;
-	useVAOWorkaround = false;
 }
 
 C4ParticleSystem::~C4ParticleSystem()
@@ -1311,15 +1282,6 @@ void C4ParticleSystem::DoInit()
 	}
 
 	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
-	useVAOWorkaround = false;
-
-#ifndef USE_WIN32_WINDOWS
-	// Every window in developers' mode has an own OpenGL context at the moment. Certain objects are not shared between contexts.
-	// In that case we can just use the slower workaround without VAOs to allow the developer to view particles in every viewport.
-	// The best solution would obviously be to make all windows use a single OpenGL context. This has to be considered as a workaround.
-	if (Application.isEditor)
-		useVAOWorkaround = true;
-#endif
 }
 
 void C4ParticleSystem::ExecuteCalculation()

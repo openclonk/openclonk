@@ -646,21 +646,31 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(C4BltVertex), vertices);
 	}
 
-	const GLuint position = shader_call->GetAttribute(C4SSA_Position);
-	const GLuint color = shader_call->GetAttribute(C4SSA_Color);
-	const GLuint texcoord = has_tex ? shader_call->GetAttribute(C4SSA_TexCoord) : 0;
-
-	glEnableVertexAttribArray(position);
-	glEnableVertexAttribArray(color);
-
-	if(has_tex)
+	// Choose the VAO that corresponds to the chosen VBO. Also, use one
+	// that supplies texture coordinates if we have texturing enabled.
+	GLuint vao;
+	const unsigned int vao_index = vbo_index + (has_tex ? N_GENERIC_VBOS : 0);
+	const unsigned int vao_id = GenericVAOs[vao_index];
+	const bool has_vao = GetVAO(vao_id, vao);
+	glBindVertexArray(vao);
+	if (!has_vao)
 	{
-		glEnableVertexAttribArray(texcoord);
-		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
-	}
+		// Initialize VAO for this context
+		const GLuint position = shader_call->GetAttribute(C4SSA_Position);
+		const GLuint color = shader_call->GetAttribute(C4SSA_Color);
+		const GLuint texcoord = has_tex ? shader_call->GetAttribute(C4SSA_TexCoord) : 0;
 
-	glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
-	glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
+		glEnableVertexAttribArray(position);
+		glEnableVertexAttribArray(color);
+		if (has_tex)
+			glEnableVertexAttribArray(texcoord);
+
+
+		glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, ftx)));
+		glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, color)));
+		if (has_tex)
+			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(C4BltVertex), reinterpret_cast<const uint8_t*>(offsetof(C4BltVertex, tx)));
+	}
 
 	switch (op)
 	{
@@ -675,10 +685,8 @@ void CStdGL::PerformMultiBlt(C4Surface* sfcTarget, DrawOperation op, const C4Blt
 		break;
 	}
 
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	if(has_tex) glDisableVertexAttribArray(texcoord);
-	glDisableVertexAttribArray(position);
-	glDisableVertexAttribArray(color);
 }
 
 C4Shader* CStdGL::GetSpriteShader(bool haveBase, bool haveOverlay, bool haveNormal)
@@ -806,6 +814,8 @@ bool CStdGL::RestoreDeviceObjects()
 		GenericVBOSizes[i] = GENERIC_VBO_SIZE;
 		glBindBuffer(GL_ARRAY_BUFFER, GenericVBOs[i]);
 		glBufferData(GL_ARRAY_BUFFER, GenericVBOSizes[i] * sizeof(C4BltVertex), NULL, GL_STREAM_DRAW);
+		GenericVAOs[i] = GenVAOID();
+		GenericVAOs[i + N_GENERIC_VBOS] = GenVAOID();
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -832,9 +842,13 @@ bool CStdGL::InvalidateDeviceObjects()
 
 	// invalidate generic VBOs
 	if (GenericVBOs[0] != 0)
+	{
 		glDeleteBuffers(N_GENERIC_VBOS, GenericVBOs);
-	GenericVBOs[0] = 0;
-	CurrentVBO = 0;
+		GenericVBOs[0] = 0;
+		CurrentVBO = 0;
+		for (unsigned int i = 0; i < N_GENERIC_VBOS * 2; ++i)
+			FreeVAOID(GenericVAOs[i]);
+	}
 
 	// invalidate shaders
 
