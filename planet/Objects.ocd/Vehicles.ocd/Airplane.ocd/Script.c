@@ -10,7 +10,6 @@ local rdir;
 local thrust;
 local dir;
 local propanim;
-local health;
 local clonkmesh;
 
 public func IsVehicle() { return true; }
@@ -29,7 +28,6 @@ protected func Initialize()
 	thrust = 0;
 	rdir = 0;
 	dir = 0;
-	health = 50;
 	return;
 }
 
@@ -193,10 +191,6 @@ protected func FxIntControlRocketTimer(object target, proplist effect, int time)
 
 public func ContainedUp(object clonk)
 {
-	//plane is broken?
-	if(GetDamage() > health)
-		return;
-
 	//engine start
 	if(GetAction() == "Land")
 	{
@@ -207,10 +201,6 @@ public func ContainedUp(object clonk)
 
 public func ContainedDown(object clonk)
 {
-	//plane is broken?
-	if(GetDamage() > health)
-		return;
-
 	//engine shutoff
 	if(GetAction() == "Fly")
 	{
@@ -379,13 +369,12 @@ public func FaceLeft()
 
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage()
+public func Damage(int change, int cause, int by_player)
 {
-	if(GetDamage() >= health)
+	if (GetDamage() >= this.HitPoints)
 	{
-		if(Random(2)) PlaneDeath();
-		else
-			CancelFlight();
+		SetController(by_player);
+		PlaneDeath();
 	}
 }
 
@@ -393,12 +382,7 @@ private func PlaneDeath()
 {
 	while(Contents(0))
 		Contents(0)->Exit();
-	Explode(50);
-}
-
-public func Hit()
-{
-	if(GetDamage() >= health) PlaneDeath();
+	Explode(36);
 }
 
 public func ActivateEntrance(object clonk)
@@ -539,4 +523,5 @@ func Definition(def)
 local Name="$Name$";
 local Description="$Description$";
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local HitPoints = 50;
 
