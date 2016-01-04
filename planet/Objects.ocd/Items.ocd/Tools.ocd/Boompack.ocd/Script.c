@@ -44,8 +44,9 @@ func Fuse()
 	Launch(GetR());
 }
 
-func Incineration()
+func Incineration(int caused_by)
 {
+	SetController(caused_by);
 	Fuse();
 }
 
@@ -168,7 +169,6 @@ protected func Hit()
 	{
 		JumpOff(rider);
 	}
-	//Message("I have hit something",this);
 	Sound("Hits::GeneralHit?");
 	if(GetEffect("Flight",this)) DoFireworks();
 }
@@ -211,7 +211,12 @@ func Launch(int angle, object clonk)
 	Sound("Objects::Boompack::Launch");
 	AddEffect("Flight",this,150,1,this);
 	Sound("Objects::Boompack::Fly", false, 60, nil, 1);
-	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
+	
+	// Add hit check to explode on mid-air contact.
+	// But only if not ridden by a clonk, for riding clonks
+	// this effect is added when the clonk jumps off.
+	if (!clonk)
+		AddEffect("HitCheck", this, 1, 2, nil, nil);
 
 	//Ride the rocket!
 	if(clonk)
@@ -268,12 +273,12 @@ func GetFuel()
 
 public func IsProjectileTarget()
 {
-	return 1;
+	return true;
 }
 
-func OnProjectileHit()
+func OnProjectileHit(object projectile)
 {
-	Incinerate();
+	Incinerate(100, projectile->GetController());
 }
 
 func IsInventorProduct() { return true; }
