@@ -996,6 +996,7 @@ Swim = {
 //	SwimOffset = -5,
 	StartCall = "StartSwim",
 	AbortCall = "StopSwim",
+	Sound = "Clonk::Movement::DivingLoop*",
 },
 Hangle = {
 	Prototype = Action,

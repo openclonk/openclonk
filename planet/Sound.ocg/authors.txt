@@ -4,7 +4,7 @@ CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
 Author        Work(s)
 ===============================================================================
 
-ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Action/Munch2
+ala             - Fire/Spark1&2&3, Objects/Weapons/Musket/Click1&2&3, Clonk/Action/Munch2, Clonk/Movement/DivingLoop1&2&3
                   Structures/Repair, Structures/FinishBuilding made from following resources:
                       - JoelAudio: https://www.freesound.org/people/JoelAudio/sounds/135860/ - CC-By 3.0
                       - cmusounddesign: https://www.freesound.org/people/cmusounddesign/sounds/84696 - CC-By 3.0
