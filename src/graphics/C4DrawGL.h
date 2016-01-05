@@ -68,6 +68,12 @@ enum C4SS_Uniforms
 	C4SSU_AmbientTransform, // C4SSC_LIGHT
 	C4SSU_AmbientBrightness, // C4SSC_LIGHT
 
+	C4SSU_MaterialAmbient, // for meshes
+	C4SSU_MaterialDiffuse, // for meshes
+	C4SSU_MaterialSpecular, // for meshes
+	C4SSU_MaterialEmission, // for meshes
+	C4SSU_MaterialShininess, // for meshes
+
 	C4SSU_Bones, // for meshes
 	C4SSU_CullMode, // for meshes
 

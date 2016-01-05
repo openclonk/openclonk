@@ -220,6 +220,11 @@ bool CStdGL::PrepareSpriteShader(C4Shader& shader, const char* name, int ssc, C4
 	uniformNames[C4SSU_AmbientTex] = "ambientTex";
 	uniformNames[C4SSU_AmbientTransform] = "ambientTransform";
 	uniformNames[C4SSU_AmbientBrightness] = "ambientBrightness";
+	uniformNames[C4SSU_MaterialAmbient] = "materialAmbient"; // unused
+	uniformNames[C4SSU_MaterialDiffuse] = "materialDiffuse"; // unused
+	uniformNames[C4SSU_MaterialSpecular] = "materialSpecular"; // unused
+	uniformNames[C4SSU_MaterialEmission] = "materialEmission"; // unused
+	uniformNames[C4SSU_MaterialShininess] = "materialShininess"; // unused
 	uniformNames[C4SSU_Bones] = "bones"; // unused
 	uniformNames[C4SSU_CullMode] = "cullMode"; // unused
 	uniformNames[C4SSU_Count] = NULL;

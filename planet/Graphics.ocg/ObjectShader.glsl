@@ -1,6 +1,13 @@
 
 uniform mat3x2 lightTransform;
 
+#ifdef OC_MESH
+//uniform vec4 materialAmbient;
+uniform vec4 materialDiffuse;
+uniform vec4 materialEmission;
+uniform vec4 materialSpecular;
+#endif
+
 #ifdef OC_WITH_NORMALMAP
 uniform mat3 normalMatrix;
 uniform sampler2D normalTex;
@@ -28,9 +35,14 @@ varying vec2 texcoord;
 
 slice(material)
 {
-	// Default material properties. TODO: Populate them?
-	vec3 matEmit = vec3(0.0,0.0,0.0);
-	vec3 matSpot = vec3(1.0,1.0,1.0);
+	// Default material properties.
+#ifdef OC_MESH
+	vec3 matEmit = vec3(0.0, 0.0, 0.0);//materialEmission.rgb;
+	vec3 matSpot = vec3(1.0, 1.0, 1.0);//materialSpecular.rgb;
+#else
+	vec3 matEmit = vec3(0.0, 0.0, 0.0);
+	vec3 matSpot = vec3(1.0, 1.0, 1.0);
+#endif
 	float matAngle = 1.0;
 }
 
@@ -42,7 +54,7 @@ slice(texture)
 	// TODO: Add emission part of the material. Note we cannot just
 	// add this to the color, but it would need to be handled separately,
 	// such that it is independent from the incident light direction.
-	color = gl_FrontMaterial.diffuse;
+	color = materialDiffuse;
 #else
 
 #ifdef OC_HAVE_BASE

@@ -667,13 +667,6 @@ namespace
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-			// Set material properties
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
-			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
-
 			glFrontFace(parity ? GL_CW : GL_CCW);
 			if(mesh_instance.GetCompletion() < 1.0f)
 			{
@@ -734,6 +727,14 @@ namespace
 			call.SetUniformMatrix4x4(C4SSU_ProjectionMatrix, projectionMatrix);
 			call.SetUniformMatrix4x4(C4SSU_ModelViewMatrix, modelviewMatrix);
 			call.SetUniformMatrix3x3Transpose(C4SSU_NormalMatrix, normalMatrixTranspose);
+
+
+			// Upload material properties
+			call.SetUniform4fv(C4SSU_MaterialAmbient, 1, pass.Ambient);
+			call.SetUniform4fv(C4SSU_MaterialDiffuse, 1, pass.Diffuse);
+			call.SetUniform4fv(C4SSU_MaterialSpecular, 1, pass.Specular);
+			call.SetUniform4fv(C4SSU_MaterialEmission, 1, pass.Emissive);
+			call.SetUniform1f(C4SSU_MaterialShininess, pass.Shininess);
 
 			// Upload the current bone transformation matrixes (if there are any)
 			if (!bones.empty())
