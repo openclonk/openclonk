@@ -122,6 +122,10 @@ global func FxIntTestControlStart(object target, proplist effect, int temporary)
 	effect.Interval = 2;
 	effect.results = [];
 	Log("=====================================");
+	Log("Running kill tests: in each test K is");
+	Log("supposed to be the killer, V is the  ");
+	Log("the victim, and F is a fake killer   ");
+	Log("=====================================");
 	return FX_OK;
 }
 
@@ -154,7 +158,7 @@ global func FxIntTestControlStop(object target, proplist effect, int reason, boo
 global func FxIntTestControlOnDeath(object target, proplist effect, int killer, object clonk)
 {
 	// Log the result.
-	Log("Test %d (%s): %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, GetPlayerName(killer));
+	Log("Test %d [%s]: %v, killer = %s", effect.testnr, Call(Format("~Test%d_Log", effect.testnr)), plr_killer == killer, GetPlayerName(killer));
 	// Store the result.
 	effect.results[effect.testnr - 1] = (plr_killer == killer);
 	effect.launched = false;
@@ -210,7 +214,7 @@ public func OnClonkDeath(object clonk, int killer)
 
 /*-- Kill Tracing Tests --*/
 
-global func Test1_Log() { return "Object throw"; }
+global func Test1_Log() { return "K throws object on V"; }
 global func Test1_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -225,7 +229,7 @@ global func Test1_OnStart()
 }
 
 
-global func Test2_Log() { return "Lantern fire"; }
+global func Test2_Log() { return "K throws lantern to V (V dies of lantern fire)"; }
 global func Test2_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -241,7 +245,7 @@ global func Test2_OnStart()
 	return true;
 }
 
-global func Test3_Log() { return "Cannon shot"; }
+global func Test3_Log() { return "K shoots object with cannon at V"; }
 global func Test3_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -259,7 +263,7 @@ global func Test3_OnStart()
 	return true;
 }
 
-global func Test4_Log() { return "Wallkit asphyxiation"; }
+global func Test4_Log() { return "K placed wallkit on V (V dies of asphyxiation)"; }
 global func Test4_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -275,7 +279,7 @@ global func Test4_OnStart()
 	return true;
 }
 
-global func Test5_Log() { return "Sword strike"; }
+global func Test5_Log() { return "K strikes V with a sword"; }
 global func Test5_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -289,7 +293,7 @@ global func Test5_OnStart()
 	return true;
 }
 
-global func Test6_Log() { return "Club strike"; }
+global func Test6_Log() { return "K strikes V with a club"; }
 global func Test6_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -304,7 +308,7 @@ global func Test6_OnStart()
 	return true;
 }
 
-global func Test7_Log() { return "Axe strike"; }
+global func Test7_Log() { return "K strikes V with an axe"; }
 global func Test7_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -319,7 +323,7 @@ global func Test7_OnStart()
 	return true;
 }
 
-global func Test8_Log() { return "Firestone explosion (thrown)"; }
+global func Test8_Log() { return "K throws firestone at V (V dies of explosion)"; }
 global func Test8_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -333,7 +337,7 @@ global func Test8_OnStart()
 	return true;
 }
 
-global func Test9_Log() { return "Club object shot"; }
+global func Test9_Log() { return "K shoots object with club at V"; }
 global func Test9_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -350,7 +354,7 @@ global func Test9_OnStart()
 	return true;
 }
 
-global func Test10_Log() { return "Object moved by explosion"; }
+global func Test10_Log() { return "K throw firestone at object, object moves to V"; }
 global func Test10_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -366,7 +370,7 @@ global func Test10_OnStart()
 	return true;
 }
 
-global func Test11_Log() { return "Firestone material cascade"; }
+global func Test11_Log() { return "K explodes firestone material, one of the cascade firestones kills V"; }
 global func Test11_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -384,7 +388,7 @@ global func Test11_OnStart()
 	return true;
 }
 
-global func Test12_Log() { return "Bow shot (arrow)"; }
+global func Test12_Log() { return "K shoots a normal arrow at V"; }
 global func Test12_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -400,7 +404,7 @@ global func Test12_OnStart()
 	return true;
 }
 
-global func Test13_Log() { return "Bow shot (fire arrow)"; }
+global func Test13_Log() { return "K shoots a fire arrow at V"; }
 global func Test13_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -416,7 +420,7 @@ global func Test13_OnStart()
 	return true;
 }
 
-global func Test14_Log() { return "Bow shot (bomb arrow)"; }
+global func Test14_Log() { return "K shoots a bomb arrow at V"; }
 global func Test14_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -432,7 +436,7 @@ global func Test14_OnStart()
 	return true;
 }
 
-global func Test15_Log() { return "Musket shot"; }
+global func Test15_Log() { return "K shoots with the musket at V"; }
 global func Test15_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -449,7 +453,7 @@ global func Test15_OnStart()
 	return true;
 }
 
-global func Test16_Log() { return "Javelin throw"; }
+global func Test16_Log() { return "K throws a javelin at V"; }
 global func Test16_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -464,7 +468,7 @@ global func Test16_OnStart()
 	return true;
 }
 
-global func Test17_Log() { return "Grenade launcher shot"; }
+global func Test17_Log() { return "K shoots a grenade (with launcher) at V"; }
 global func Test17_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -481,7 +485,7 @@ global func Test17_OnStart()
 	return true;
 }
 
-global func Test18_Log() { return "Iron bomb explosion (thrown)"; }
+global func Test18_Log() { return "K throws an activated iron bomb at V (no collection by V)"; }
 global func Test18_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -497,7 +501,7 @@ global func Test18_OnStart()
 	return true;
 }
 
-global func Test19_Log() { return "Powder keg (shot by musket)"; }
+global func Test19_Log() { return "K ignites powder keg (musket shot) near V"; }
 global func Test19_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -515,7 +519,7 @@ global func Test19_OnStart()
 	return true;
 }
 
-global func Test20_Log() { return "Dynamite explosion (thrown)"; }
+global func Test20_Log() { return "K throws a fusing dynamite at V (no collection by V)"; }
 global func Test20_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -531,7 +535,7 @@ global func Test20_OnStart()
 	return true;
 }
 
-global func Test21_Log() { return "Incineration by burning clonk"; }
+global func Test21_Log() { return "F puts himself on fire, K is incinerated by F and then incinerates V"; }
 global func Test21_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -550,7 +554,7 @@ global func Test21_OnStart()
 	return true;
 }
 
-global func Test22_Log() { return "Lorry dump"; }
+global func Test22_Log() { return "K dumps object from a lorry onto V"; }
 global func Test22_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -571,7 +575,7 @@ global func Test22_OnStart()
 	return true;
 }
 
-global func Test23_Log() { return "Lorry destruction"; }
+global func Test23_Log() { return "K destroys a lorry with objects next to V"; }
 global func Test23_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -592,24 +596,23 @@ global func Test23_OnStart()
 	return true;
 }
 
-global func Test24_Log() { return "Catapult shot"; }
+global func Test24_Log() { return "K shoots an object with the catapult at V"; }
 global func Test24_OnStart()
 {
 	var victim = GetCrew(plr_victim);
 	var killer = GetCrew(plr_killer);
-	var fake_killer = GetCrew(plr_killer_fake);
 	
 	victim->SetPosition(240, 150);
 	victim->DoEnergy(-45);
 
 	var cannon = killer->CreateObject(Catapult);
-	fake_killer->CreateContents(Shield)->Enter(killer);
+	killer->CreateContents(Shield);
 	cannon->ControlUseStart(killer, 120, 0);
 	cannon->ControlUseStop(killer, 120, 0);
 	return true;
 }
 
-global func Test25_Log() { return "Moving lava"; }
+global func Test25_Log() { return "K lets lava move onto V (trigger: explosion)"; }
 global func Test25_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -628,7 +631,7 @@ global func Test25_OnStart()
 	return true;
 }
 
-global func Test26_Log() { return "Moving acid"; }
+global func Test26_Log() { return "K lets acid move onto V (trigger: explosion)"; }
 global func Test26_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -647,7 +650,7 @@ global func Test26_OnStart()
 	return true;
 }
 
-global func Test27_Log() { return "Windbag object shot"; }
+global func Test27_Log() { return "K uses windbag to shoot object at V"; }
 global func Test27_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -663,7 +666,7 @@ global func Test27_OnStart()
 	return true;
 }
 
-global func Test28_Log() { return "Balloon tumble out of map (hit rider)"; }
+global func Test28_Log() { return "K shoots at V hanging on a balloon (V tumbles out of map)"; }
 global func Test28_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -684,7 +687,7 @@ global func Test28_OnStart()
 	return true;
 }
 
-global func Test29_Log() { return "Balloon tumble out of map (hit balloon)"; }
+global func Test29_Log() { return "K shoots at balloon on which V hangs (V tumbles out of map)"; }
 global func Test29_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -705,7 +708,7 @@ global func Test29_OnStart()
 	return true;
 }
 
-global func Test30_Log() { return "Windbag shot out of map"; }
+global func Test30_Log() { return "K uses windbag to shoot V out of map"; }
 global func Test30_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -723,7 +726,7 @@ global func Test30_OnStart()
 	return true;
 }
 
-global func Test31_Log() { return "Boompack hit"; }
+global func Test31_Log() { return "K launches a boompack at V"; }
 global func Test31_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -738,7 +741,7 @@ global func Test31_OnStart()
 	return true;
 }
 
-global func Test32_Log() { return "Dynamite box (placed by other)"; }
+global func Test32_Log() { return "F places a dynamite box, K takes igniter and blasts V"; }
 global func Test32_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -758,7 +761,7 @@ global func Test32_OnStart()
 	return true;
 }
 
-global func Test33_Log() { return "Teleglove drop"; }
+global func Test33_Log() { return "K uses teleglove to drop object onto V"; }
 global func Test33_OnStart()
 {
 	var victim = GetCrew(plr_victim);
@@ -779,6 +782,123 @@ global func Test33_OnStart()
 	ScheduleCall(teleglove_fake, "ControlUseStart", 1, 0, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
 	ScheduleCall(teleglove_fake, "ControlUseHolding", 1, 15, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
 	ScheduleCall(teleglove_fake, "ControlUseStop", 16, 0, fake_killer, rock->GetX() - fake_killer->GetX(), rock->GetY() - fake_killer->GetY());
+	return true;
+}
+
+global func Test34_Log() { return "K blasts object from material which drops on V"; }
+global func Test34_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	DrawMaterialQuad("Rock", 80, 0, 160, 0, 160, 120, 80, 120);
+	DrawMaterialQuad("Tunnel", 100, 160, 120, 160, 140, 160, 120, 200);
+	
+	victim->SetPosition(120, 185);
+	victim->DoEnergy(-49);	
+	
+	var cannon = killer->CreateObject(Cannon);
+	cannon->CreateContents(PowderKeg);
+	killer->CreateContents(Firestone);
+	cannon->ControlUseStart(killer, 20, -10);
+	cannon->ControlUseStop(killer, 20, -10);
+	return true;
+}
+
+global func Test35_Log() { return "K throws an activated iron bomb at V (then collected by V)"; }
+global func Test35_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(170, 150);
+	victim->DoEnergy(-45);
+		
+	var bomb = killer->CreateContents(IronBomb);
+	bomb->ControlUse(killer);
+	killer->SetHandAction(0);
+	killer->ControlThrow(bomb, 20, -20);
+	ScheduleCall(victim, "BeginPickingUp", 70, 0);
+	ScheduleCall(victim, "EndPickingUp", 71, 0);
+	return true;
+}
+
+global func Test36_Log() { return "K throws a fusing dynamite at V (V tries to collect but can't)"; }
+global func Test36_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(140, 150);
+	victim->DoEnergy(-45);
+		
+	var dynamite = killer->CreateContents(Dynamite);
+	dynamite->ControlUse(killer);
+	killer->SetHandAction(0);
+	killer->ControlThrow(dynamite, 20, -20);
+	ScheduleCall(victim, "BeginPickingUp", 70, 0);
+	ScheduleCall(victim, "EndPickingUp", 71, 0);
+	return true;
+}
+
+global func Test37_Log() { return "K ignites boompack (musket shot) which shoots at V"; }
+global func Test37_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	victim->SetPosition(280, 150);
+	victim->DoEnergy(-45);
+		
+	CreateObject(Boompack, 240, 146)->SetR(90);
+	var musket = killer->CreateContents(Musket);
+	musket->CreateContents(LeadShot);
+	musket.loaded = true;
+	musket->ControlUseStart(killer, 20, -7);
+	musket->ControlUseStop(killer, 20, -7);
+	return true;
+}
+
+global func Test38_Log() { return "K ignites a battery of boompacks which shoot down V flying an airplane"; }
+global func Test38_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	var airplane = CreateObject(Airplane, 80, 50);
+	victim->Enter(airplane);
+	victim->SetAction("Walk");
+	airplane->FaceRight();
+	airplane->StartInstantFlight(90, 15);
+	airplane->SetXDir(12);
+	airplane->SetYDir(-5);
+	victim->DoEnergy(-45);
+	
+	killer->SetPosition(180, 150);	
+	for (var i = 0; i < 15; i++)	
+		CreateObjectAbove(Boompack, 240, 160);
+	var lantern = killer->CreateContents(Lantern);
+	killer->ObjectCommand("Throw", lantern, 20, -10);
+	return true;
+}
+
+global func Test39_Log() { return "K shoots at airship which carries V (V tumbles out of map)"; }
+global func Test39_OnStart()
+{
+	var victim = GetCrew(plr_victim);
+	var killer = GetCrew(plr_killer);
+	
+	ClearFreeRect(100, 0, LandscapeWidth() - 100, LandscapeHeight());
+	
+	var airship = CreateObjectAbove(Airship, 330, 165);
+	airship->DoDamage(20);
+	victim->SetPosition(330, 150);
+
+	var musket = killer->CreateContents(Musket);
+	musket->CreateContents(LeadShot);
+	musket.loaded = true;
+	musket->ControlUseStart(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
+	musket->ControlUseStop(killer, airship->GetX() - killer->GetX(), airship->GetY() - killer->GetY() - 12);
 	return true;
 }
 
