@@ -1,6 +1,6 @@
 #appendto Airship
 
-local health = 500;
+local HitPoints = 500;
 
 public func AllStop()
 {

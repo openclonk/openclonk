@@ -14,8 +14,6 @@ local propanim, turnanim;
 local throttle;
 local enginesound;
 
-local health = 30;
-
 //Rectangle defining where to look for objents contained in the gondola
 local gondola = [-20,-2,40,30];
 
@@ -42,10 +40,11 @@ protected func Initialize()
 	AddEffect("IntAirshipMovement", this, 1, 1, this);
 }
 
-public func Damage()
+public func Damage(int change, int cause, int by_player)
 {
-	if(GetDamage() >= health)
+	if (GetDamage() >= this.HitPoints)
 	{
+		SetController(by_player);
 		AirshipDeath();
 	}
 }
@@ -310,14 +309,14 @@ func AirshipDeath()
 	else
 		burntairship->PlayAnimation("TurnRight", 10, Anim_Const(animspot), Anim_Const(1000));
 
-	//Set ruin on fire
-	burntairship->Incinerate();
+	// Set ruin on fire: set controller of the fire to the cause of the death (which is the current controller of the airship).
+	burntairship->Incinerate(100, GetController());
 
 	//Make sure engine sound is gone
 	Sound("Structures::FanLoop",nil,nil,nil,-1);
 
 	//This object has served its purpose.
-	Explode(27);
+	Explode(20);
 }
 
 public func IsShipyardProduct() { return true; }
@@ -351,3 +350,4 @@ local Touchable = 2;
 local Plane = 500;
 local SolidMaskPlane = 275;
 local BorderBound = C4D_Border_Sides | C4D_Border_Top | C4D_Border_Bottom;
+local HitPoints = 30;
