@@ -77,7 +77,7 @@ private:
 
 #ifndef USE_CONSOLE
 	// shaders
-	GLhandleARB hProg;
+	GLuint hProg;
 	// shader variables
 	struct Variable { int address; const char* name; };
 	std::vector<Variable> Uniforms;
@@ -151,9 +151,8 @@ private:
 	StdStrBuf Build(const ShaderSliceList &Slices, bool fDebug = false);
 
 #ifndef USE_CONSOLE
-	GLhandleARB Create(GLenum iShaderType, const char *szWhat, const char *szShader);
-	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
-	int GetObjectStatus(GLhandleARB hObj, GLenum type);
+	GLuint Create(GLenum iShaderType, const char *szWhat, const char *szShader);
+	void DumpInfoLog(const char *szWhat, GLuint hShader, bool forProgram);
 #endif
 
 public:
@@ -186,35 +185,35 @@ public:
 	// something could be done about it.
 	void SetUniform1i(int iUniform, int iX) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform1iARB(pShader->GetUniform(iUniform), iX);
+			glUniform1i(pShader->GetUniform(iUniform), iX);
 	}
 	void SetUniform1f(int iUniform, float gX) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform1fARB(pShader->GetUniform(iUniform), gX);
+			glUniform1f(pShader->GetUniform(iUniform), gX);
 	}
 	void SetUniform2f(int iUniform, float gX, float gY) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform2fARB(pShader->GetUniform(iUniform), gX, gY);
+			glUniform2f(pShader->GetUniform(iUniform), gX, gY);
 	}
 	void SetUniform1iv(int iUniform, int iLength, const int *pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform1ivARB(pShader->GetUniform(iUniform), iLength, pVals);
+			glUniform1iv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform1fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform1fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+			glUniform1fv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform2fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform2fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+			glUniform2fv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform3fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform3fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+			glUniform3fv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 	void SetUniform4fv(int iUniform, int iLength, const float *pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniform4fvARB(pShader->GetUniform(iUniform), iLength, pVals);
+			glUniform4fv(pShader->GetUniform(iUniform), iLength, pVals);
 	}
 
 	// Matrices are in row-major order
@@ -235,7 +234,7 @@ public:
 
 	void SetUniformMatrix4x4fv(int iUniform, int iLength, const float* pVals) const {
 		if (pShader->HaveUniform(iUniform))
-			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
+			glUniformMatrix4fv(pShader->GetUniform(iUniform), iLength, GL_TRUE, pVals);
 	}
 
 	void SetUniformMatrix3x3(int iUniform, const StdMeshMatrix& matrix)
@@ -267,14 +266,14 @@ public:
 		if (pShader->HaveUniform(iUniform))
 		{
 			const float mat[16] = { matrix(0, 0), matrix(1, 0), matrix(2, 0), 0.0f, matrix(0, 1), matrix(1, 1), matrix(2, 1), 0.0f, matrix(0, 2), matrix(1, 2), matrix(2, 2), 0.0f, matrix(0, 3), matrix(1, 3), matrix(2, 3), 1.0f };
-			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), 1, GL_FALSE, mat);
+			glUniformMatrix4fv(pShader->GetUniform(iUniform), 1, GL_FALSE, mat);
 		}
 	}
 
 	void SetUniformMatrix4x4(int iUniform, const StdProjectionMatrix& matrix)
 	{
 		if (pShader->HaveUniform(iUniform))
-			glUniformMatrix4fvARB(pShader->GetUniform(iUniform), 1, GL_TRUE, matrix.data());
+			glUniformMatrix4fv(pShader->GetUniform(iUniform), 1, GL_TRUE, matrix.data());
 	}
 
 	void Start();

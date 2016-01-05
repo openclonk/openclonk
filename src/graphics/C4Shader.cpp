@@ -289,7 +289,7 @@ void C4Shader::Clear()
 #ifndef USE_CONSOLE
 	if (!hProg) return;
 	// Need to be detached, then deleted
-	glDeleteObjectARB(hProg);
+	glDeleteProgram(hProg);
 	hProg = 0;
 	// Clear uniform data
 	Uniforms.clear();
@@ -313,43 +313,46 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 
 #ifndef USE_CONSOLE
 	// Attempt to create shaders
-	const GLint hVert = Create(GL_VERTEX_SHADER_ARB,
-	               FormatString("%s vertex shader", szWhat).getData(),
-	               VertexShader.getData());
-	const GLint hFrag = Create(GL_FRAGMENT_SHADER_ARB,
-	               FormatString("%s fragment shader", szWhat).getData(),
-	               FragmentShader.getData());
+	const GLuint hVert = Create(GL_VERTEX_SHADER,
+	                            FormatString("%s vertex shader", szWhat).getData(),
+	                            VertexShader.getData());
+	const GLuint hFrag = Create(GL_FRAGMENT_SHADER,
+	                            FormatString("%s fragment shader", szWhat).getData(),
+	                            FragmentShader.getData());
 
 	if(!hFrag || !hVert)
 	{
-		if (hVert) glDeleteObjectARB(hVert);
+		if (hFrag) glDeleteShader(hFrag);
+		if (hVert) glDeleteShader(hVert);
 		return false;
 	}
 
 	// Link program
-	const GLint hNewProg = glCreateProgramObjectARB();
+	const GLuint hNewProg = glCreateProgram();
 #ifdef GL_KHR_debug
 	if (glObjectLabel)
 		glObjectLabel(GL_PROGRAM, hNewProg, -1, szWhat);
 #endif
-	glAttachObjectARB(hNewProg, hVert);
-	glAttachObjectARB(hNewProg, hFrag);
-	glLinkProgramARB(hNewProg);
+	glAttachShader(hNewProg, hVert);
+	glAttachShader(hNewProg, hFrag);
+	glLinkProgram(hNewProg);
 	// Delete vertex and fragment shader after we linked the program
-	glDeleteObjectARB(hFrag);
-	glDeleteObjectARB(hVert);
+	glDeleteShader(hFrag);
+	glDeleteShader(hVert);
 
 	// Link successful?
-	DumpInfoLog(FormatString("%s shader program", szWhat).getData(), hNewProg);
-	if(GetObjectStatus(hNewProg, GL_OBJECT_LINK_STATUS_ARB) != 1) {
-		glDeleteObjectARB(hNewProg);
+	DumpInfoLog(FormatString("%s shader program", szWhat).getData(), hNewProg, true);
+	GLint status;
+	glGetProgramiv(hNewProg, GL_LINK_STATUS, &status);
+	if(status != GL_TRUE) {
+		glDeleteProgram(hNewProg);
 		ShaderLogF("  gl: Failed to link %s shader!", szWhat);
 		return false;
 	}
 	ShaderLogF("  gl: %s shader linked successfully", szWhat);
 
 	// Everything successful, delete old shader
-	if (hProg != 0) glDeleteObjectARB(hProg);
+	if (hProg != 0) glDeleteProgram(hProg);
 	hProg = hNewProg;
 
 	// Allocate uniform and attribute arrays
@@ -368,13 +371,13 @@ bool C4Shader::Init(const char *szWhat, const char **szUniforms, const char **sz
 	// Get uniform and attribute locations. Note this is expected to fail for a few of them
 	// because the respective uniforms got optimized out!
 	for (int i = 0; i < iUniformCount; i++) {
-		Uniforms[i].address = glGetUniformLocationARB(hProg, szUniforms[i]);
+		Uniforms[i].address = glGetUniformLocation(hProg, szUniforms[i]);
 		Uniforms[i].name = szUniforms[i];
 		ShaderLogF("Uniform %s = %d", szUniforms[i], Uniforms[i].address);
 	}
 
 	for (int i = 0; i < iAttributeCount; i++) {
-		Attributes[i].address = glGetAttribLocationARB(hProg, szAttributes[i]);
+		Attributes[i].address = glGetAttribLocation(hProg, szAttributes[i]);
 		Attributes[i].name = szAttributes[i];
 		ShaderLogF("Attribute %s = %d", szAttributes[i], Attributes[i].address);
 	}
@@ -465,15 +468,15 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 	StdStrBuf Buf;
 #ifndef USE_CONSOLE
 	GLint iMaxFrags = 0, iMaxVerts = 0;
-	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &iMaxFrags);
-	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &iMaxVerts);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &iMaxFrags);
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &iMaxVerts);
 #else
 	int iMaxFrags = INT_MAX, iMaxVerts = INT_MAX;
 #endif
 	Buf.Format("#version %d\n"
-			   "#define MAX_FRAGMENT_UNIFORM_COMPONENTS %d\n"
-			   "#define MAX_VERTEX_UNIFORM_COMPONENTS %d\n",
-			   C4Shader_Version, iMaxFrags, iMaxVerts);
+	           "#define MAX_FRAGMENT_UNIFORM_COMPONENTS %d\n"
+	           "#define MAX_VERTEX_UNIFORM_COMPONENTS %d\n",
+	           C4Shader_Version, iMaxFrags, iMaxVerts);
 
 	// Put slices
 	int iPos = -1, iNextPos = -1;
@@ -516,56 +519,56 @@ StdStrBuf C4Shader::Build(const ShaderSliceList &Slices, bool fDebug)
 }
 
 #ifndef USE_CONSOLE
-GLhandleARB C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szShader)
+GLuint C4Shader::Create(GLenum iShaderType, const char *szWhat, const char *szShader)
 {
 	// Create shader
-	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
+	GLuint hShader = glCreateShader(iShaderType);
 #ifdef GL_KHR_debug
 	if (glObjectLabel)
 		glObjectLabel(GL_SHADER, hShader, -1, szWhat);
 #endif
 
 	// Compile
-	glShaderSourceARB(hShader, 1, &szShader, 0);
-	glCompileShaderARB(hShader);
+	glShaderSource(hShader, 1, &szShader, 0);
+	glCompileShader(hShader);
 
 	// Dump any information to log
-	DumpInfoLog(szWhat, hShader);
+	DumpInfoLog(szWhat, hShader, false);
 
 	// Success?
-	if(GetObjectStatus(hShader, GL_OBJECT_COMPILE_STATUS_ARB) == 1)
+	int status;
+	glGetShaderiv(hShader, GL_COMPILE_STATUS, &status);
+	if (status == GL_TRUE)
 		return hShader;
 
 	// Did not work :/
-	glDeleteObjectARB(hShader);
+	glDeleteShader(hShader);
 	return 0;
 }
 
-void C4Shader::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
+void C4Shader::DumpInfoLog(const char *szWhat, GLuint hShader, bool forProgram)
 {
 	// Get length of info line
-	int iLength = 0;
-	glGetObjectParameterivARB(hShader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &iLength);
+	GLint iLength = 0;
+	if (forProgram)
+		glGetProgramiv(hShader, GL_INFO_LOG_LENGTH, &iLength);
+	else
+		glGetShaderiv(hShader, GL_INFO_LOG_LENGTH, &iLength);
 	if(iLength <= 1) return;
 
 	// Allocate buffer, get data
-	char *pBuf = new char [iLength + 1];
+	std::vector<char> buf(iLength + 1);
 	int iActualLength = 0;
-	glGetInfoLogARB(hShader, iLength, &iActualLength, pBuf);
+	if (forProgram)
+		glGetProgramInfoLog(hShader, iLength, &iActualLength, &buf[0]);
+	else
+		glGetShaderInfoLog(hShader, iLength, &iActualLength, &buf[0]);
 	if(iActualLength > iLength || iActualLength <= 0) return;
 
 	// Terminate, log
-	pBuf[iActualLength] = '\0';
+	buf[iActualLength] = '\0';
 	ShaderLogF("  gl: Compiling %s:", szWhat);
-	ShaderLog(pBuf);
-	delete[] pBuf;
-}
-
-int C4Shader::GetObjectStatus(GLhandleARB hObj, GLenum type)
-{
-	int iStatus = 0;
-	glGetObjectParameterivARB(hObj, type, &iStatus);
-	return iStatus;
+	ShaderLog(&buf[0]);
 }
 #endif
 
@@ -605,7 +608,7 @@ void C4ShaderCall::Start()
 		const_cast<C4Shader *>(pShader)->Refresh();
 
 	// Activate shader
-	glUseProgramObjectARB(pShader->hProg);
+	glUseProgram(pShader->hProg);
 	fStarted = true;
 }
 
@@ -613,7 +616,7 @@ void C4ShaderCall::Finish()
 {
 	// Remove shader
 	if (fStarted) {
-		glUseProgramObjectARB(0);
+		glUseProgram(0);
 	}
 
 	iUnits = 0;
