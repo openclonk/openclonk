@@ -33,8 +33,8 @@ C4FoWRegion::~C4FoWRegion()
 {
 #ifndef USE_CONSOLE
 	if (hFrameBufDraw) {
-		glDeleteFramebuffersEXT(1, &hFrameBufDraw);
-		glDeleteFramebuffersEXT(1, &hFrameBufRead);
+		glDeleteFramebuffers(1, &hFrameBufDraw);
+		glDeleteFramebuffers(1, &hFrameBufRead);
 	}
 
 	if (hVBO) {
@@ -128,28 +128,28 @@ bool C4FoWRegion::BindFramebuf()
 	// Generate frame buffer object
 	if (!hFrameBufDraw)
 	{
-		glGenFramebuffersEXT(1, &hFrameBufDraw);
-		glGenFramebuffersEXT(1, &hFrameBufRead);
+		glGenFramebuffers(1, &hFrameBufDraw);
+		glGenFramebuffers(1, &hFrameBufRead);
 	}
 
 	// Bind current texture to frame buffer
-	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, hFrameBufDraw);
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, hFrameBufRead);
-	glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER_EXT,
-		GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, hFrameBufDraw);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, hFrameBufRead);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
 		pSurface->textures[0].texName, 0);
 	if (!pBackSurface->textures.empty())
-		glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT,
-			GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+		glFramebufferTexture2D(GL_READ_FRAMEBUFFER,
+			GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
 			pBackSurface->textures[0].texName, 0);
 
 	// Check status, unbind if something was amiss
-	GLenum status1 = glCheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER_EXT),
-		   status2 = glCheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER_EXT);
-	if (status1 != GL_FRAMEBUFFER_COMPLETE_EXT ||
-	   (pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE_EXT))
+	GLenum status1 = glCheckFramebufferStatus(GL_READ_FRAMEBUFFER),
+	       status2 = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	if (status1 != GL_FRAMEBUFFER_COMPLETE ||
+	   (pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE))
 	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return false;
 	}
 #endif
@@ -328,7 +328,7 @@ bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	}
 
 	// Done!
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	pDraw->RestorePrimaryClipper();
 
 	OldRegion = Region;
