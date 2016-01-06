@@ -185,7 +185,8 @@ private func InitAI()
 	npc_builder->CreateContents(Hammer);
 	npc_builder->SetObjectLayer(npc_builder);
 	npc_builder->SetDir(DIR_Left);
-	npc_builder->SetDialogue("Builder");		
+	npc_builder->SetDialogue("Builder");
+	npc_builder->SetAlternativeSkin("Carpenter");	
 	
 	// A farmer near the grain field.
 	var npc_farmer = CreateObjectAbove(Clonk, 720, 392);
@@ -203,15 +204,16 @@ private func InitAI()
 	npc_lookout->SetObjectLayer(npc_lookout);
 	npc_lookout->SetDir(DIR_Left);
 	npc_lookout->SetDialogue("Lookout");
+	npc_lookout->SetAlternativeSkin("Guard");
 
 	// Village head.
 	var npc_head = CreateObjectAbove(Clonk, 924, 672);
 	npc_head->SetColor(0x224455);
 	npc_head->SetName("Archibald");
 	npc_head->SetObjectLayer(npc_head);
-	npc_head->SetSkin(2);
 	npc_head->SetDir(DIR_Left);
 	npc_head->SetDialogue("VillageHead", true);
+	npc_head->SetAlternativeSkin("Sage");
 	return;
 }
 
@@ -253,9 +255,9 @@ protected func InitializePlayer(int plr)
 	var effect = AddEffect("TutorialTalkedToVillageHead", nil, 100, 5);
 	effect.plr = plr;
 	
-	//Dialogue->FindByName("VillageHead")->GetDialogueTarget()->SetPosition(584, 384);
-	//guide->HideGuide();
-	//StartSequence("Outro", 0, plr);
+	Dialogue->FindByName("VillageHead")->GetDialogueTarget()->SetPosition(584, 384);
+	guide->HideGuide();
+	StartSequence("Outro", 0, plr);
 	return;
 }
 

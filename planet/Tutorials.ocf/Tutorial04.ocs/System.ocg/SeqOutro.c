@@ -41,11 +41,13 @@ public func Outro_Init(int for_plr)
 	this.airplane2.BorderBound = 0;
 	// Each plane has a henchman which will kidnap the wipfs.
 	this.henchman1 = CreateObject(Clonk);
+	this.henchman1->SetAlternativeSkin("Leather");
 	this.henchman1->Enter(this.airplane1);
 	this.henchman1->SetAction("Walk");
 	this.henchman1->SetColor(0xff000000);
 	this.henchman1->CreateContents(Musket)->CreateContents(LeadShot);
 	this.henchman2 = CreateObject(Clonk);
+	this.henchman2->SetAlternativeSkin("Leather");
 	this.henchman2->Enter(this.airplane2);
 	this.henchman2->SetAction("Walk");
 	this.henchman2->SetColor(0xff000000);
@@ -53,14 +55,15 @@ public func Outro_Init(int for_plr)
 	
 	// Another henchman which will control the lookout.
 	this.henchman3 = CreateObject(Clonk);
+	this.henchman3->SetAlternativeSkin("Leather");	
 	this.henchman3->Enter(this.airplane2);
 	this.henchman3->SetAction("Walk");
 	this.henchman3->SetColor(0xff000000);
 	this.henchman3->CreateContents(Musket)->CreateContents(LeadShot);
 	
-	// The factioner lead which will do the talking.
+	// The faction leader which will do the talking.
 	this.leader = CreateObject(Clonk);
-	this.leader->SetSkin(2);
+	this.leader->SetAlternativeSkin("Doctor");
 	this.leader->Enter(this.airplane1);
 	this.leader->SetAction("Walk");
 	this.leader->SetColor(0xff000000);
