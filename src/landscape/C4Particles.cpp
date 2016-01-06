@@ -1026,8 +1026,8 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 			
 			// set up the vertex array structure once
 			glBindVertexArray(drawingDataVertexArraysObject);
-
-			// TODO: is this needed?
+			// Bind the correct buffer. glVertexAttribPointer required a valid GL_ARRAY_BUFFER to be bound.
+			// This is weird API design, but we can't do much about it.
 			glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 
 #ifdef GL_KHR_debug
