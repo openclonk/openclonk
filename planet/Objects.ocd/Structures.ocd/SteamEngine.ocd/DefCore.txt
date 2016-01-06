@@ -5,10 +5,10 @@ Category=C4D_Structure
 Width=66
 Height=48
 Offset=-33,-24
-Vertices=5
-VertexX=-16,18,-19,19,0
-VertexY=-4,-4,24,24,24
-VertexFriction=50,50,100,100
+Vertices=6
+VertexX=-16,18,-19,19,-10,10
+VertexY=-4,-4,24,24,24,24
+VertexFriction=50,50,100,100,100,100
 Mass=4000
 Components=Rock=6;Metal=3
 Collection=-33,7,12,12

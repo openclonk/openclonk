@@ -5,10 +5,10 @@ Category=C4D_Structure
 Width=128
 Height=106
 Offset=-64,-53
-Vertices=6
-VertexX=0,-64,58,-64,59,  0
-VertexY=53,53,53,  3, 3,-17
-VertexFriction=100,100,100,50,50,50
+Vertices=8
+VertexX=0,-64,58,-20,20,-64,59,0
+VertexY=53,53,53,53,53,3,3,-17
+VertexFriction=100,100,100,100,100,50,50,50
 Mass=4500
 Components=Wood=4;Metal=3
 Exclusive=1

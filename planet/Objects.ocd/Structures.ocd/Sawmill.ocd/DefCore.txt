@@ -5,10 +5,10 @@ Category=C4D_Structure
 Width=50
 Height=31
 Offset=-25,-15
-Vertices=6
-VertexX=0,20,25,-20,-25,0
-VertexY=-14,-13,14,-13,14,14
-VertexFriction=50,50,100,50,100,100
+Vertices=7
+VertexX=0,20,25,-20,-25,-5,5
+VertexY=-14,-13,14,-13,14,14,14
+VertexFriction=50,50,100,50,100,100,100
 Mass=1500
 Components=Rock=4;Wood=1;
 Exclusive=1
