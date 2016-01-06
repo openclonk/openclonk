@@ -64,9 +64,58 @@ bool C4FoWRegion::BindFramebuf()
 		// first half contains the brightness and direction information
 		iHgt *= 2;
 
-		// Create the texture
-		if (!pSurface->Create(iWdt, iHgt, false, 0, C4SF_Unlocked) || !pBackSurface->Create(iWdt, iHgt, false, 0, C4SF_Unlocked))
+		// Create the new surfaces
+		std::unique_ptr<C4Surface> pNewSurface(new C4Surface);
+		std::unique_ptr<C4Surface> pNewBackSurface(new C4Surface);
+		if (!pNewSurface->Create(iWdt, iHgt, false, 0, 0))
 			return false;
+		if (!pNewBackSurface->Create(iWdt, iHgt, false, 0, 0))
+			return false;
+
+		// Copy over old content. This avoids flicker in already
+		// explored regions that might get temporarily dark and
+		// re-faded-in with the surface swap. New area in the surface
+		// is initialized with darkness (black).
+		pSurface->Lock();
+		pBackSurface->Lock();
+		pNewSurface->Lock();
+		pNewBackSurface->Lock();
+
+		// Take into account that the texture
+		// is split for normals/intensity and colors, and also that
+		// OpenGL textures are upside down.
+		for (int y = 0; y < iHgt / 2; ++y)
+		{
+			for (int x = 0; x < iWdt; ++x)
+			{
+				if (y < pSurface->Hgt / 2 && x < pSurface->Wdt)
+				{
+					// Normals and intensity
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, pSurface->GetPixDw(x, pSurface->Hgt/2 - y, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y, false));
+
+					// Color
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, pSurface->GetPixDw(x, pSurface->Hgt/2 - y + pSurface->Hgt / 2, false));
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, pBackSurface->GetPixDw(x, pBackSurface->Hgt/2 - y + pBackSurface->Hgt / 2, false));
+				}
+				else
+				{
+					// Normals and intensity
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y, 0x000000ff);
+
+					// Color
+					pNewSurface->SetPixDw(x, pNewSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
+					pNewBackSurface->SetPixDw(x, pNewBackSurface->Hgt/2 - y + iHgt / 2, 0x000000ff);
+				}
+			}
+		}
+
+		pSurface = std::move(pNewSurface);
+		pBackSurface = std::move(pNewBackSurface);
+
+		pSurface->Unlock();
+		pBackSurface->Unlock();
 	}
 
 	// Generate frame buffer object
