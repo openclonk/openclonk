@@ -1,0 +1,11 @@
+The following graphics are created by Marky and are licensed under CC-BY 3.0 (http://creativecommons.org/licenses/by/3.0/):
+
+GraphicsPortraitBeggar.png, Beggar.jpg,
+GraphicsPortraitCarpenter.png, Carpenter.jpg,
+GraphicsPortraitDoctor.png, Doctor.jpg,
+GraphicsPortraitGuard.png, Guard.jpg,
+GraphicsPortraitLeather.png, Leather.jpg,
+GraphicsPortraitMaleBlackHair.png, MaleBlackHair.jpg,
+GraphicsPortraitMaleBrownHair.png, MaleBrownHair.jpg,
+GraphicsPortraitSage.png, Sage.jpg
+GraphicsPortraitYoungster.png, Youngster.jpg
