@@ -236,7 +236,9 @@ bool C4DefGraphics::Load(C4Group &hGroup, StdMeshSkeletonLoader &loader, bool fC
 	}
 
 	// Try from Mesh first
-	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, C4CFN_NormalMap, fColorByOwner)) return false;
+	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader))
+		if(!LoadMesh(hGroup, C4CFN_DefMeshXml, loader))
+			LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, C4CFN_NormalMap, fColorByOwner);
 
 	// load additional graphics
 	C4DefGraphics *pLastGraphics = this;
