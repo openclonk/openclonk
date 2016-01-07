@@ -32,7 +32,10 @@ func ControlUseStart(object clonk, int x, int y)
 	}
 	// Add bridge effect and pass target coordinates.
 	AddEffect("IntBridge", clonk, 1, 1, this, nil, x, y);
-	
+	// Make sure you can't turn the Clonk with left/right during construction.
+	var dir = DIR_Left;
+	if (x > 0) dir = DIR_Right;
+	clonk->SetTurnForced(dir);
 	return true;
 }
 
@@ -156,6 +159,8 @@ private func LoamDone(object clonk)
 	}
 	// Remove Effect
 	RemoveEffect("IntBridge", clonk);
+	// Allow Clonk to turn freely again.
+	clonk->SetTurnForced(-1);
 	// Remove loam object if most of it has been consumed
 	if (loamused > BridgeLength - 10)
 		RemoveObject();
