@@ -41,23 +41,30 @@ func ControlUseStart(object clonk, int x, int y)
 
 func HoldingEnabled() { return true; }
 
-func FxIntBridgeStart(object clonk, proplist effect, int temp, int x, int y)
+func FxIntBridgeStart(object clonk, effect fx, int temp, int x, int y)
 {
 	if (temp)
 		return FX_OK;
 	// Drawing times.
-	effect.Begin = 0;
-	effect.Last = 0;
+	fx.Begin = 0;
+	fx.Last = 0;
 	// Last bridge coordinates.
-	effect.LastX = GetX();
-	effect.LastY = clonk->GetDefBottom() + 4;
+	fx.LastX = GetX();
+	fx.LastY = clonk->GetDefBottom() + 4;
 	// Target coordinates.
-	effect.TargetX = x;
-	effect.TargetY = y;
+	fx.TargetX = x;
+	fx.TargetY = y;
+	// Dust particles that are used to hide that the material pops up out of nowhere.
+	fx.particles = 
+	{
+		Prototype = Particles_Dust(),
+		R = 200, G = 150, B = 50,
+		Size = PV_KeyFrames(0, 0, 1, 100, 3, 1000, 2),
+	};
 	return FX_OK;
 }
 
-func FxIntBridgeTimer(object clonk, proplist effect, int time)
+func FxIntBridgeTimer(object clonk, effect fx, int time)
 {
 	// something happened - don't try to dig anymore
 	if (!(clonk->~IsBridging()))
@@ -66,33 +73,30 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 		return true;
 	}
 
-	// clonk faces bridge direction
-	var tdir = 0;
 	// get global drawing coordinates
-	var x = effect.TargetX + GetX();
-	var y = effect.TargetY + GetY();
-	if (x > 0) ++tdir;
-	clonk->SetDir(tdir);
+	var x = fx.TargetX + GetX();
+	var y = fx.TargetY + GetY();
 
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
 	var min_dt = 3;
-	if (effect.TargetY < -20 && !Abs(effect.TargetX*5/effect.TargetY))
+	if (fx.TargetY < -20 && !Abs(fx.TargetX*5/fx.TargetY))
 		min_dt = 2;
 
 	// bridge speed by dig physical
 	var speed = clonk.ActMap.Dig.Speed/6;
 
 	// build bridge in chunks (for better angle precision)
-	var dt = time - effect.Last;
+	var dt = time - fx.Last;
 	if (dt < min_dt) return FX_OK;
-	effect.Last += dt;
+	fx.Last += dt;
 
 	// draw loam (earth) line
 	var line_wdt = 3;
 	var line_len = speed * dt;
-	var last_x = effect.LastX;
-	var last_y = effect.LastY;
-	var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);	
+	var last_x = fx.LastX;
+	var last_y = fx.LastY;
+	var dx = x-last_x, dy=y-last_y;
+	var d = Distance(dx, dy);
 	// Quantize angle as a multiple of 30 degrees.
 	var quant = 30;
 	var angle = Angle(0, 0, dx, dy);
@@ -103,15 +107,26 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 	// Don't use up loam if the mouse position is reached...
 	// wait for the mouse being moved and then continue bridging
 	// into that direction
-	if(!d) return FX_OK;
+	if(d <= 1) return FX_OK;
 
 	var ox = dy * line_wdt / d, oy = -dx * line_wdt / d;
 	dx = dx * line_len / (d*10);
 	dy = dy * line_len / (d*10);
 	DrawMaterialQuad("Earth-earth", last_x-ox,last_y-oy, last_x+dx-ox,last_y+dy-oy, last_x+dx+ox,last_y+dy+oy, last_x+ox,last_y+oy, DMQ_Bridge);
-	effect.LastX += dx;
-	effect.LastY += dy;
-
+	fx.LastX += dx;
+	fx.LastY += dy;
+	
+	// Some dust to hide the otherwise ugly construction.
+	var local_x = fx.LastX - clonk->GetX();
+	var local_y = fx.LastY - clonk->GetY();
+	clonk->CreateParticle("SmokeDirty", PV_Random(local_x - 5, local_x + 5), PV_Random(local_y - 5, local_y + 5), PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(5, 10), fx.particles, 40); 
+	
+	// Clonk faces bridge direction.
+	var view_direction = DIR_Left;
+	if (local_x > 0)
+		view_direction = DIR_Right;
+	clonk->SetTurnForced(view_direction);
+	
 	// bridge time is up?
 	loamused += Max(line_len/10,1);
 	if (loamused >= BridgeLength)
