@@ -1,8 +1,8 @@
 
 // Interpolated texture coordinates
-varying vec2 landscapeTexCoord;
+in vec2 landscapeTexCoord;
 #ifdef OC_DYNAMIC_LIGHT
-varying vec2 lightTexCoord;
+in vec2 lightTexCoord;
 #endif
 
 // Input textures
@@ -20,6 +20,8 @@ uniform sampler1D matMapTex;
 uniform float materialDepth;
 uniform vec2 materialSize;
 
+out vec4 fragColor;
+
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
 const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
@@ -28,7 +30,7 @@ const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
 vec4 queryMatMap(int pix)
 {
-	return texture1D(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
+	return texture(matMapTex, float(pix) / 2.0 / 256.0 + 0.5 / 2.0 / 256.0);
 }
 
 slice(init)
@@ -67,8 +69,8 @@ slice(coordinate)
 slice(texture)
 {
 	// our pixel color (without/with interpolation)
-	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
-	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
+	vec4 landscapePx = texture(landscapeTex[0], centerCoo);
+	vec4 realLandscapePx = texture(landscapeTex[0], texCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
@@ -77,12 +79,12 @@ slice(texture)
 	scalerCoo.y += float(iScaler / 8) / 32.0;
 
 	// query scaler texture
-	vec4 scalerPx = texture2D(scalerTex, scalerCoo);
+	vec4 scalerPx = texture(scalerTex, scalerCoo);
 
 	// Get "second" landscape pixel
 	vec2 centerCoo2 = centerCoo + fullStep * floor(vec2(-0.5, -0.5) +
 	                                               scalerPx.gb * 255.0 / 64.0);
-	vec4 landscapePx2 = texture2D(landscapeTex[0], centerCoo2);
+	vec4 landscapePx2 = texture(landscapeTex[0], centerCoo2);
 
 }
 
@@ -145,12 +147,11 @@ slice(normal)
 }
 
 slice(color) {
-#define color gl_FragColor
-	color = materialPx;
+	fragColor = materialPx;
 	vec4 color2 = materialPx2;
 }
 
 slice(color+10) {
 	// Mix second color into main color according to scaler
-	color = mix(color2, color, scalerPx.r);
+	fragColor = mix(color2, fragColor, scalerPx.r);
 }

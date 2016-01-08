@@ -34,9 +34,9 @@ C4Shader *C4FoW::GetFramebufShader()
 		// this is about how to utilise old frame buffer data in the lights texture.
 		// Or put in other words: This shader is responsible for fading lights out.
 		const char* FramebufVertexShader =
-			"attribute vec2 oc_Position;\n"
-			"attribute vec2 oc_TexCoord;\n"
-			"varying vec2 texcoord;\n"
+			"in vec2 oc_Position;\n"
+			"in vec2 oc_TexCoord;\n"
+			"out vec2 texcoord;\n"
 			"uniform mat4 projectionMatrix;\n"
 			"\n"
 			"slice(position)\n"
@@ -50,12 +50,13 @@ C4Shader *C4FoW::GetFramebufShader()
 			"}";
 
 		const char* FramebufFragmentShader =
-			"varying vec2 texcoord;\n"
+			"in vec2 texcoord;\n"
 			"uniform sampler2D tex;\n"
+			"out vec4 fragColor;\n"
 			"\n"
 			"slice(color)\n"
 			"{\n"
-			"  gl_FragColor = texture2D(tex, texcoord);\n"
+			"  fragColor = texture(tex, texcoord);\n"
 			"}";
 
 		FramebufShader.AddVertexSlices("built-in FoW framebuf shader", FramebufVertexShader);
@@ -90,9 +91,9 @@ C4Shader *C4FoW::GetRenderShader()
 	{
 		// Create the render shader. Fairly simple pass-through.
 		const char* RenderVertexShader =
-			"attribute vec2 oc_Position;\n"
-			"attribute vec4 oc_Color;\n"
-			"varying vec4 vtxColor;\n"
+			"in vec2 oc_Position;\n"
+			"in vec4 oc_Color;\n"
+			"out vec4 vtxColor;\n"
 			"uniform mat4 projectionMatrix;\n"
 			"uniform vec2 vertexOffset;\n"
 			"\n"
@@ -107,11 +108,12 @@ C4Shader *C4FoW::GetRenderShader()
 			"}";
 
 		const char* RenderFragmentShader =
-			"varying vec4 vtxColor;\n"
+			"in vec4 vtxColor;\n"
+			"out vec4 fragColor;\n"
 			"\n"
 			"slice(color)\n"
 			"{\n"
-			"  gl_FragColor = vtxColor;\n"
+			"  fragColor = vtxColor;\n"
 			"}";
 
 		RenderShader.AddVertexSlices("built-in FoW render shader", RenderVertexShader);

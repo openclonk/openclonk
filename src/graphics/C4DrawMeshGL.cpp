@@ -59,8 +59,8 @@ namespace
 	////////////////////////////////////////////
 	StdStrBuf Texture2DToCode(int index, bool hasTextureAnimation)
 	{
-		if (hasTextureAnimation) return FormatString("texture2D(oc_Texture%d, (oc_TextureMatrix%d * vec4(texcoord, 0.0, 1.0)).xy)", index, index);
-		return FormatString("texture2D(oc_Texture%d, texcoord)", index);
+		if (hasTextureAnimation) return FormatString("texture(oc_Texture%d, (oc_TextureMatrix%d * vec4(texcoord, 0.0, 1.0)).xy)", index, index);
+		return FormatString("texture(oc_Texture%d, texcoord)", index);
 	}
 
 	StdStrBuf TextureUnitSourceToCode(int index, StdMeshMaterialTextureUnit::BlendOpSourceType source, const float manualColor[3], float manualAlpha, bool hasTextureAnimation)
@@ -123,17 +123,17 @@ namespace
 		case StdMeshMaterialPass::DF_AlwaysFail:
 			return StdStrBuf("discard;");
 		case StdMeshMaterialPass::DF_Less:
-			return FormatString("if (!(color.a < %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a < %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_LessEqual:
-			return FormatString("if (!(color.a <= %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a <= %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_Equal:
-			return FormatString("if (!(color.a == %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a == %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_NotEqual:
-			return FormatString("if (!(color.a != %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a != %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_Greater:
-			return FormatString("if (!(color.a > %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a > %f)) discard;", pass.AlphaRejectionValue);
 		case StdMeshMaterialPass::DF_GreaterEqual:
-			return FormatString("if (!(color.a >= %f)) discard;", pass.AlphaRejectionValue);
+			return FormatString("if (!(fragColor.a >= %f)) discard;", pass.AlphaRejectionValue);
 		default:
 			assert(false);
 			return StdStrBuf();
@@ -238,10 +238,10 @@ namespace
 			"\n"
 			"slice(texture)\n"
 			"{\n"
-			"  vec4 diffuse = color;\n"
+			"  vec4 diffuse = fragColor;\n"
 			"  vec4 currentColor = diffuse;\n"
 			"  %s\n"
-			"  color = currentColor;\n"
+			"  fragColor = currentColor;\n"
 			"}\n"
 			"\n"
 			"slice(finish)\n"

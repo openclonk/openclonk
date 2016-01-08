@@ -15,13 +15,13 @@
 
 // Default Vertex Shader for the landscape.
 
-attribute vec2 oc_Position;
-attribute vec2 oc_LandscapeTexCoord;
-attribute vec2 oc_LightTexCoord;
+in vec2 oc_Position;
+in vec2 oc_LandscapeTexCoord;
+in vec2 oc_LightTexCoord;
 
-varying vec2 landscapeTexCoord;
+out vec2 landscapeTexCoord;
 #ifdef OC_DYNAMIC_LIGHT
-varying vec2 lightTexCoord;
+out vec2 lightTexCoord;
 #endif
 
 uniform mat4 projectionMatrix;

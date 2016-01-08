@@ -76,14 +76,14 @@ slice(texture+5)
 	// Query light texture
 	vec2 lightDirCoord = lightCoord;
 
-	vec4  lightPx = texture2D(lightTex, lightDirCoord);
+	vec4  lightPx = texture(lightTex, lightDirCoord);
 	float lightBright = maxLightBrightness * max(0.0, (lightPx.a-lightDarknessLevel)/(1.0-lightDarknessLevel));
 	vec3  lightDir = normalize(vec3(vec2(1.0, 1.0) - lightPx.yz * 3.0, lightDepth));
 
 	// Query light color texture (part of the light texture)
 	vec2 lightColorCoord = lightCoord - vec2(0.0, 0.5); // subtract offset for the color texture
 
-	vec3 lightColor = texture2D(lightTex, lightColorCoord.st).rgb;
+	vec3 lightColor = texture(lightTex, lightColorCoord.st).rgb;
 
 	// Normalise light colour
 	#ifdef LIGHT_DEBUG_COLOR
@@ -93,7 +93,7 @@ slice(texture+5)
 
 	// Ambient light
 	// Edxtra .xy since some old intel drivers return a vec3
-	float ambient = texture2D(ambientTex, (ambientTransform * vec3(gl_FragCoord.xy, 1.0)).xy).r;
+	float ambient = texture(ambientTex, (ambientTransform * vec3(gl_FragCoord.xy, 1.0)).xy).r;
 	ambient *= ambientBrightness;
 #ifdef OC_SKY
 	ambient = 0.999; // TODO: = 1.0 causes bugs?
@@ -144,7 +144,7 @@ slice(color+5)
 	// "spotty" and allow the material to self-illuminate. The light
 	// brightness overrules everything though (= FoW is last factor).
 	vec3 spotLight = pow(vec3(light,light,light), matSpot);
-	color.rgb = lightBright * color.rgb * (matEmit + lightColorNorm * spotLight);
+	fragColor.rgb = lightBright * fragColor.rgb * (matEmit + lightColorNorm * spotLight);
 #ifdef OC_LANDSCAPE
 	vec3 spotLight2 = pow(vec3(light2,light2,light2), matSpot2);
 	color2.rgb = lightBright * color2.rgb * (matEmit2 + lightColorNorm * spotLight2);
@@ -159,18 +159,18 @@ slice(finish+5)
 	float lightYDir = lightPx.b - 1.0/3.0;
 	float lightXDir = lightPx.g - 1.0/3.0;
 	float lightStrength = lightPx.a;
-	color =
+	fragColor =
 	  vec4(lightStrength * vec3(1.0-1.5*(max(0.0, lightYDir) + max(0.0,lightXDir)),
 	                            1.0-1.5*(max(0.0, lightYDir) + max(0.0,-lightXDir)),
 	                            1.0-1.5*max(0.0, -lightYDir)),
 	       1.0);
 #else
-    color = vec4(0.0, 0.0, 0.0, 0.0); // invisible
+    fragColor = vec4(0.0, 0.0, 0.0, 0.0); // invisible
 #endif
 #endif
 
 }
 
 slice(finish+10) {
-	color = vec4(pow(color.rgb, gamma), color.a);
+	fragColor = vec4(pow(fragColor.rgb, gamma), fragColor.a);
 }

@@ -23,7 +23,7 @@
 #include "C4Surface.h"
 
 // Shader version
-const int C4Shader_Version = 130; // GLSL 1.30 / OpenGL 3.0
+const int C4Shader_Version = 150; // GLSL 1.50 / OpenGL 3.2
 
 // Maximum number of texture coordinates
 const int C4Shader_MaxTexCoords = 8;

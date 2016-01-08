@@ -3,17 +3,17 @@ uniform sampler2D normalTex;
 uniform mat3 normalMatrix;
 
 #ifndef OPENCLONK
-varying vec2 texcoord;
+in vec2 texcoord;
+out vec4 fragColor;
 #define slice(x)
-#define color gl_FragColor
 void main()
 {
-	color = vec4(1.0, 1.0, 1.0, 1.0);
+	fragColor = vec4(1.0, 1.0, 1.0, 1.0);
 #endif
 
 slice(texture+1)
 {
-	color = color * texture2D(basemap, texcoord);
+	fragColor = fragColor * texture(basemap, texcoord);
 
 #ifndef OPENCLONK
 	// TODO: Could apply some default lighting here, for viewing the mesh in
@@ -27,7 +27,7 @@ slice(normal+1)
 	// from ObjectShader.glsl. It's probably optimized out,
 	// but a more elegant solution would be nice. Also maybe
 	// a function in UtilShader.glsl to reduce code duplication.
-	vec4 normalPx = texture2D(normalTex, texcoord);
+	vec4 normalPx = texture(normalTex, texcoord);
 	vec3 normalPxDir = 2.0 * (normalPx.xyz - vec3(0.5, 0.5, 0.5));
 	normal = normalize(normalMatrix * normalPxDir);
 }
