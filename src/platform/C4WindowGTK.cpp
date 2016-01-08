@@ -616,12 +616,15 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 		// Cannot just use ScrolledWindow because this would just move
 		// the GdkWindow of the DrawingArea.
-		GtkWidget* table;
-
+		GtkWidget* table = gtk_grid_new();
 		render_widget = gtk_drawing_area_new();
-		vw->h_scrollbar = gtk_hscrollbar_new(NULL);
-		vw->v_scrollbar = gtk_vscrollbar_new(NULL);
-		table = gtk_table_new(2, 2, false);
+		gtk_widget_set_hexpand(GTK_WIDGET(render_widget), true);
+		gtk_widget_set_vexpand(GTK_WIDGET(render_widget), true);
+		gtk_grid_attach(GTK_GRID(table), GTK_WIDGET(render_widget), 0, 0, 1, 1);
+		vw->h_scrollbar = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL, NULL);
+		gtk_grid_attach(GTK_GRID(table), vw->h_scrollbar, 0, 1, 1, 1);
+		vw->v_scrollbar = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL, NULL);
+		gtk_grid_attach(GTK_GRID(table), vw->v_scrollbar, 1, 0, 1, 1);
 
 		GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(vw->h_scrollbar));
 
@@ -640,10 +643,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		  G_CALLBACK(OnVScrollStatic),
 		  this
 		);
-
-		gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(render_widget), 0, 1, 0, 1, static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 0, 0);
-		gtk_table_attach(GTK_TABLE(table), vw->v_scrollbar, 1, 2, 0, 1, GTK_SHRINK, static_cast<GtkAttachOptions>(GTK_FILL | GTK_EXPAND), 0, 0);
-		gtk_table_attach(GTK_TABLE(table), vw->h_scrollbar, 0, 1, 1, 2, static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), GTK_SHRINK, 0, 0);
 
 		gtk_container_add(GTK_CONTAINER(window), table);
 
@@ -665,11 +664,15 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 		g_signal_connect_after(G_OBJECT(render_widget), "configure-event", G_CALLBACK(OnConfigureDareaStatic), this);
 
+#if !GTK_CHECK_VERSION(3,10,0)
 		// do not draw the default background
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+#endif
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+#if !GTK_CHECK_VERSION(3,14,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
+#endif
 	}
 	else if (windowKind == W_Fullscreen)
 	{
@@ -687,7 +690,9 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyRelease), this);
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScroll), this);
 		gtk_widget_add_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+#if !GTK_CHECK_VERSION(3,10,0)
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+#endif
 
 		GValue val = {0,{{0}}};
 		g_value_init (&val, G_TYPE_BOOLEAN);
@@ -695,7 +700,9 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_object_set_property (G_OBJECT (render_widget), "can-focus", &val);
 		g_object_set_property (G_OBJECT (window), "can-focus", &val);
 		g_value_unset (&val);
+#if !GTK_CHECK_VERSION(3,14,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
+#endif
 	}
 	else if (windowKind == W_GuiWindow)
 	{
@@ -707,7 +714,9 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScroll), this);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+#if !GTK_CHECK_VERSION(3,14,0)
 		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
+#endif
 	}
 	else if (windowKind == W_Console)
 	{
@@ -779,7 +788,8 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	gdk_flush();
 
 	if (windowKind == W_Fullscreen)
-		gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
+		gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)),
+		                      gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR));
 	return this;
 }
 
@@ -809,7 +819,9 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	// remains hidden afterwards. So we re-create it from scratch.
 	gtk_widget_destroy(GTK_WIDGET(render_widget));
 	render_widget = gtk_drawing_area_new();
+#if !GTK_CHECK_VERSION(3,10,0)
 	gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+#endif
 	g_object_set(G_OBJECT(render_widget), "can-focus", TRUE, NULL);
 	
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
@@ -832,7 +844,8 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	}
 
 	gdk_flush();
-	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)),
+	                      gdk_cursor_new_for_display(gdk_display_get_default(), GDK_BLANK_CURSOR));
 	return true;
 }
 
