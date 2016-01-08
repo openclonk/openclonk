@@ -413,11 +413,10 @@ private func BitePrey(object prey)
 
 private func ContactBottom()
 {
-	ChangeMovementDirection(RandomX(-1, 1), -1);
 	// The dead bat changes it animation once it has touched the ground.
 	if (!GetAlive())
 		PlayAnimation("Dead", 1, Anim_Linear(0, 0, GetAnimationLength("Dead"), 1, ANIM_Hold), Anim_Const(1000));
-	return;
+	return UpdateMovementDirectionOnContact();
 }
 
 private func ContactTop()
@@ -432,19 +431,38 @@ private func ContactTop()
 		Hang();
 		return;
 	}
-	ChangeMovementDirection(RandomX(-1, 1), 1);
-	return;
+	return UpdateMovementDirectionOnContact();
 }
 
 private func ContactLeft()
 {
-	ChangeMovementDirection(1, RandomX(-1, 1));
-	return;
+	return UpdateMovementDirectionOnContact();
 }
 
 private func ContactRight()
 {
-	ChangeMovementDirection(-1, RandomX(-1, 1));
+	return UpdateMovementDirectionOnContact();
+}
+
+private func UpdateMovementDirectionOnContact()
+{
+	var contact = GetContact(-1);
+	var xdir = RandomX(-1, 1);
+	var ydir = RandomX(-1, 1);
+	if (contact & CNAT_Right)
+		xdir = Min(xdir, 0);
+	if (contact & CNAT_Left)
+		xdir = Max(xdir, 0);
+	if (contact & CNAT_Bottom)
+		ydir = Min(ydir, 0);
+	if (contact & CNAT_Top)
+		ydir = Max(ydir, 0);
+	if (xdir == 0 && ydir == 0)
+	{
+		xdir = RandomX(-1, 1);
+		ydir = RandomX(-1, 1);
+	}
+	ChangeMovementDirection(xdir, ydir);
 	return;
 }
 
@@ -530,7 +548,7 @@ local ActMap = {
 	Flight = {
 		Prototype = Action,
 		Name = "Flight",
-		Procedure = DFA_FLIGHT,
+		Procedure = DFA_FLOAT,
 		Speed = 100,
 		Accel = 16,
 		Decel = 16,
