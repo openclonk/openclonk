@@ -573,7 +573,6 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
 void C4ConsoleGUI::AddNetMenu() {}
 void C4ConsoleGUI::ToolsDlgClose() {}
-void C4ConsoleGUI::ClearInput() {}
 bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}

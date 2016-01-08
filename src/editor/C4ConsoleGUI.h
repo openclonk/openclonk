@@ -86,7 +86,6 @@ public:
 	void AddNetMenu();
 	void ClearNetMenu();
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
-	void ClearInput();
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<const char*> &functions);
 	

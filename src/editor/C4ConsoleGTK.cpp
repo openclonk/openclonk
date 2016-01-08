@@ -822,7 +822,7 @@ void C4ConsoleGUI::ClearNetMenu()
 	state->itemNet = NULL;
 }
 
-void C4ConsoleGUI::ClearInput()
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
 {
 	// Don't need to do anything if the GUI is not created
 	if(state->txtScript == NULL) return;
@@ -842,21 +842,8 @@ void C4ConsoleGUI::ClearInput()
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	g_assert(store);
 	gtk_list_store_clear(store);
-}
 
-void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
-{
-	if(state->txtScript == NULL) return;
-
-	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
-	if(!completion)
-	{
-		ClearInput();
-		completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
-	}
-	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
-	g_assert(store);
 	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); ++it)
 	{
 		const char* fn = *it;
@@ -1046,7 +1033,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection, bool force_functi
 	if (PropertyDlgObject == rSelection.GetObject() && !force_function_update) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject);
+	std::list<const char *> functions = ::Console.GetScriptSuggestions(PropertyDlgObject, C4Console::MRU_Object);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
 	GtkListStore* store;
 
@@ -1496,7 +1483,10 @@ void C4ConsoleGUI::State::OnDestroy(GtkWidget* window, gpointer data)
 void C4ConsoleGUI::State::OnScriptEntry(GtkWidget* entry, gpointer data)
 {
 	C4ConsoleGUI::State* state = static_cast<C4ConsoleGUI::State*>(data);
-	Console.In(gtk_entry_get_text(GTK_ENTRY(state->txtScript)));
+	const char * text = gtk_entry_get_text(GTK_ENTRY(state->txtScript));
+	::Console.RegisterRecentInput(text, C4Console::MRU_Scenario);
+	::Console.In(text);
+	::Console.UpdateInputCtrl();
 	gtk_editable_select_region(GTK_EDITABLE(state->txtScript), 0, -1);
 }
 

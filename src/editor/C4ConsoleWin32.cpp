@@ -909,13 +909,6 @@ void C4ConsoleGUI::ClearPlayerMenu()
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 }
 
-void C4ConsoleGUI::ClearInput()
-{
-	HWND hCombo = GetDlgItem(hWindow,IDC_COMBOINPUT);
-	// Clear
-	SendMessage(hCombo,CB_RESETCONTENT,0,0);
-}
-
 /*
 void C4ConsoleGUI::ClearPropertyDlg(C4PropertyDlg *dlg)
 {

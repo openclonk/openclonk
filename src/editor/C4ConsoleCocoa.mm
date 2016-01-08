@@ -410,11 +410,6 @@ void C4ToolsDlg::EnableControls()
 	NeedPreviewUpdate();
 }
 
-void C4ConsoleGUI::ClearInput()
-{
-	[ctrler(this).consoleCombo setStringValue:[NSString string]];
-}
-
 void C4ConsoleGUI::ClearPlayerMenu()
 {
 }
@@ -428,6 +423,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
+	[ctrler(this).consoleCombo setStringValue:[NSString string]];
 	[ctrler(this) setInputFunctions:functions];
 }
 
