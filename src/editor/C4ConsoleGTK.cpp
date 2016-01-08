@@ -1338,20 +1338,16 @@ void C4ToolsDlg::NeedPreviewUpdate()
 void C4ToolsDlg::State::UpdatePreview()
 {
 	if (!hbox) return;
+	if (!gtk_widget_is_sensitive(preview)) return;
+
 	C4ToolsDlg* dlg = GetOwner();
 
-	C4Surface * sfcPreview;
-
-	int32_t iPrvWdt,iPrvHgt;
-
-	/* TODO: Set size request for image to read size from image's size request? */
-	iPrvWdt=64;
-	iPrvHgt=64;
-
-	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt,0))) return;
+	int width = gtk_widget_get_allocated_width(preview);
+	int height = gtk_widget_get_allocated_height(preview);
+	width = std::min(width, dlg->Grade * 2);
+	height = std::min(height, dlg->Grade * 2);
 
 	// fill bg
-	BYTE bCol = 0;
 	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
@@ -1361,7 +1357,6 @@ void C4ToolsDlg::State::UpdatePreview()
 	// Material-Texture
 	else
 	{
-		bCol=Mat2PixColDefault(::MaterialMap.Get(dlg->Material));
 		// Get/Create TexMap entry
 		BYTE iTex = ::TextureMap.GetIndex(dlg->Material, dlg->Texture, true);
 		if (iTex)
@@ -1376,29 +1371,27 @@ void C4ToolsDlg::State::UpdatePreview()
 			}
 		}
 	}
-	if (gtk_widget_is_sensitive(preview))
-		pDraw->DrawPatternedCircle( sfcPreview,
-		                              iPrvWdt/2,iPrvHgt/2,
-		                              dlg->Grade,
-		                              bCol, Pattern, *::Landscape.GetPal());
 
-	// TODO: Can we optimize this?
-	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);
-	guchar* data = gdk_pixbuf_get_pixels(pixbuf);
-	sfcPreview->Lock();
-	for (int x = 0; x < 64; ++ x) for (int y = 0; y < 64; ++ y)
+	// Copy the texture into a circle in a cairo surface
+	// TODO: Apply zoom factor to the circle size
+	cairo_surface_t * surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	cairo_surface_flush(surface);
+	unsigned char * data = cairo_image_surface_get_data(surface);
+	int stride = cairo_image_surface_get_stride(surface);
+
+	int x = width/2, y = height/2, r = dlg->Grade;
+	for (int ycnt = -std::min(r, height); ycnt < std::min(r, height - y); ycnt++)
+	{
+		int lwdt = (int)sqrt(float(r * r - ycnt * ycnt));
+		for (int xcnt = std::max(x - lwdt, 0); xcnt < std::min(x + lwdt, width); ++xcnt)
 		{
-			DWORD dw = sfcPreview->GetPixDw(x, y, true);
-			*data = (dw >> 16) & 0xff; ++ data;
-			*data = (dw >> 8 ) & 0xff; ++ data;
-			*data = (dw      ) & 0xff; ++ data;
-			*data = (dw >> 24) & 0xff; ++ data;
+			DWORD * pix = reinterpret_cast<DWORD *>(data + xcnt * 4 + (y + ycnt) * stride);
+			*pix = Pattern.PatternClr(xcnt, y + ycnt);
 		}
-
-	sfcPreview->Unlock();
-	gtk_image_set_from_pixbuf(GTK_IMAGE(preview), pixbuf);
-	g_object_unref(pixbuf);
-	delete sfcPreview;
+	}
+	cairo_surface_mark_dirty(surface);
+	gtk_image_set_from_surface(GTK_IMAGE(preview), surface);
+	cairo_surface_destroy(surface);
 }
 
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
