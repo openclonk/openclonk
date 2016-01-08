@@ -50,9 +50,11 @@
     </syntax>
     <desc>Inserts a material pixel at the given position and given speed.</desc>
     <remark>If the target position already contains material of the same density as the inserted material, the engine will search upwards for a proper insertion position.</remark>
+    <remark>If the target position is outside the landscape (either because one of the parameters is outside the map or because insertion position search found such a position), no material is inserted. The function still returns success if the out-of-landscape position has the same or lower density than the inserted pixel. Out-of-landscape densities are controlled by *Open-parameters in the <emlink href="scenario/scenario.html#SektionLandscape">Scenario.txt [Landscape] section</emlink>.</remark>
+    <remark>For the sake of material insertion calculations, all densities above C4M_Solid are considered the same.</remark>
     <related>
       <funclink>Material</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>2001-11</date>
+  <author>Sven2</author><date>2016-01</date>
 </funcs>
