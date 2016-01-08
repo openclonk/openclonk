@@ -459,4 +459,3 @@ bool C4GraphicsSystem::ToggleShowHelp()
 	return true;
 }
 
-C4GraphicsSystem GraphicsSystem;
