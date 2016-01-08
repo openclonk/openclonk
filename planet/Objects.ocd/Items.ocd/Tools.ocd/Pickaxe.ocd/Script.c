@@ -52,7 +52,6 @@ func ControlUseStart(object clonk, int ix, int iy)
 	clonk->SetHandAction(1);
 	clonk->UpdateAttach();
 	clonk->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
-
 	AddEffect("IntPickaxe", clonk, 1, 1, this);
 	return true;
 }
@@ -165,7 +164,17 @@ public func DigOutObject(object obj)
 		clonk->~DigOutObject(obj);
 }
 
-func FxIntPickaxeTimer(clonk, effect, time)
+public func FxIntPickaxeStart(object clonk, proplist effect, int temp)
+{
+	if (temp)
+		return FX_OK;
+	// Disable scaling during usage.
+	effect.actmap_scale = clonk.ActMap.Scale;
+	clonk.ActMap.Scale = nil;
+	return FX_OK;
+}
+
+public func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 {
 	++swingtime;
 	if(swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
@@ -178,13 +187,20 @@ func FxIntPickaxeTimer(clonk, effect, time)
 	var speed = 50;
 
 	var iPosition = swingtime*180/Pickaxe_SwingTime;
-	//Message("%d", clonk, iPosition);
 	speed = speed*(Cos(iPosition-45, 50)**2)/2500;
-	//Message("%d", clonk, speed);
 	// limit angle
 	angle = BoundBy(angle,65,300);
 	clonk->SetXDir(Sin(angle,+speed),100);
 	clonk->SetYDir(Cos(angle,-speed),100);
+}
+
+public func FxIntPickaxeStop(object clonk, proplist effect, int reason, bool temp)
+{
+	if (temp)
+		return FX_OK;
+	// Reset the clonk scaling entry in its ActMap.
+	clonk.ActMap.Scale = effect.actmap_scale;
+	return FX_OK;
 }
 
 protected func ControlUseCancel(object clonk, int ix, int iy)
