@@ -96,10 +96,8 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	focf = tocf = OCF_None;
 	// High level: Collection, Hit
 	if (!::Game.iTick3)
-	{
-		focf |= OCF_Collection; tocf |= OCF_Carryable;
-	}
-	focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
+		tocf |= OCF_Carryable;
+	focf |= OCF_Collection; focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
 
 	for (C4Object* obj1 : *this)
 		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
