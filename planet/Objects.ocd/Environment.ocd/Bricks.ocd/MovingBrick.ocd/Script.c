@@ -137,3 +137,4 @@ local ActMap = {
 };
 local Name = "MovingBrick";
 local Plane = 600;
+local SolidMaskPlane = 150; // move almost everything so background stuff can be put onto moving bricks
