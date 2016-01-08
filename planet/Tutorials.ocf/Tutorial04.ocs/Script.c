@@ -254,10 +254,6 @@ protected func InitializePlayer(int plr)
 	guide->ShowGuideMessage();
 	var effect = AddEffect("TutorialTalkedToVillageHead", nil, 100, 5);
 	effect.plr = plr;
-	
-	Dialogue->FindByName("VillageHead")->GetDialogueTarget()->SetPosition(584, 384);
-	guide->HideGuide();
-	StartSequence("Outro", 0, plr);
 	return;
 }
 

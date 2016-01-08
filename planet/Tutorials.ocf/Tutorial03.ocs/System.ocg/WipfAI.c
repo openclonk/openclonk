@@ -48,12 +48,12 @@ protected func FxTutorialWipfTimer(object target, proplist effect, int time)
 			return FX_OK;
 		if (IsWalking()) 
 		{
-			if (GetDir() == DIR_Left && GetX() < 648)
+			if ((GetDir() == DIR_Left || GetComDir() == COMD_Left) && GetX() < 656)
 			{
 				SetComDir(COMD_Right);
 				return FX_OK;
 			}
-			if (GetDir() == DIR_Right && GetX() > 840)
+			if ((GetDir() == DIR_Right || GetComDir() == COMD_Right) && GetX() > 832)
 			{
 				SetComDir(COMD_Left);
 				return FX_OK;
@@ -71,7 +71,7 @@ protected func FxTutorialWipfTimer(object target, proplist effect, int time)
 				return FX_OK;
 			}
 			// Start standing when com dir is stop and speed is zero.
-			if (GetComDir() == COMD_Stop && GetYDir() == 0)
+			if (GetComDir() == COMD_Stop && GetXDir() == 0)
 			{
 				SetAction("Stand");
 				return FX_OK;

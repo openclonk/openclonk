@@ -36,7 +36,28 @@ DlgVillageHeadYes=Yes, no problem.
 DlgVillageHeadPutOre=Please put three pieces of iron ore in the foundry.
 DlgVillageHeadThanks=Thanks a lot for helping out again.
 
-# Sequence: Outro
+# Sequence: Outro dialogue
 MsgVillageHeadNoise=What is that noise?
 MsgFarmerAirplanes=Oh no that must be the airplanes of the evil faction again.
 MsgEvilLeaderItsUs=Yes, it's us again! Resistance is futile, so tell your guard to stand down!
+MsgVillageHeadWhy=Why are you here again? You just destroyed our village...
+MsgEvilLeaderWipfs=I started a new hobby, I collect wipfs now.
+MsgVillageHeadManiac=You are a maniac, can't you leave us alone?
+MsgEvilLeader=I'll leave you be after I kidnapped all your wipfs.
+MsgPlayerDontTakeWipf=Please, don't take Roger...
+MsgEvilLeaderBegging=Oh little kid, begging is useless, my men are not prone to crying. Your wipf will be mine and it is best to forget about him, cause you won't see him again.
+MsgEvilLeaderBye=Okay, we are done here. Time to say goodbye to your pet friends... muhaha
+
+# Sequence: Outro messages
+MsgHenchman3DropMusket=You better drop that musket!
+MsgLookoutSurrender=Yes, I surrender.
+MsgHenchman1RunGirl=Run girl, or we shoot!
+MsgHenchman2Wipfs=Your wipfs are ours now, muhaha.
+MsgFarmerComment=You are evil.
+MsgKidnapperGotThem=We have got them!
+MsgHenchman1SeeYa=I am off now!
+MsgHenchman2SeeYa=Bye!
+MsgHenchman3SeeYa=See Ya!
+MsgHenchmanGotWipf1=I got one!
+MsgHenchmanGotWipf2=Wipf ahoy!
+MsgHenchmanGotWipf3=It'll be a nice ride.

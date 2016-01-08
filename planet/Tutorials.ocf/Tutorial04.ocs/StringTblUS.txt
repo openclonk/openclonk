@@ -19,7 +19,7 @@ MsgTutorialMakeLoamBridge=Now stand as close to the edge as possible and close t
 MsgTutorialProducePickaxe=Transfer the contents of the lorry to the workshop using the interaction menu (open with [%s]). Select the lorry and the workshop and then click the \"transfer all\" button in the middle of the menu. Then produce a pickaxe in the workshop, the rest of the materials will be used by the village head to produce other tools.
 MsgTutorialMineOre=Take the pickaxe and make your way to the ore mine below the foundry. Hack out three pieces of ore. The pickaxe is an alternative to explosives and can be used to mine harder materials like iron ore or gold. To use the pickaxe select it and point your mouse cursor are solid material close to the clonk, then press [%s].
 MsgTutorialPutOre=Collect the three pieces of ore and put them into the foundry. Then talk to the village head.
-MsgTutorialCompleted=Well, you helped the village head and completed this tutorial. But the villagers seem in trouble and your wipf got kidnapped... Time to make plans against the evil faction in the next tutorial.
+MsgTutorialCompleted=Well, you helped the village head and completed this tutorial. But the villagers seem in trouble and Roger got kidnapped... Time to make plans against the evil faction in the next tutorial.
 
 # Wipf name
 WipfName=Roger
