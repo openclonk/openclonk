@@ -71,6 +71,9 @@ CON_ZoomIn_Desc=Zoom into the game world to make visible more details.
 CON_ZoomOut=Zoom out
 CON_ZoomOut_Desc=Zoom out of the game world to get an overview.
 
+CON_Interact=Interact
+CON_Interact_Desc=Interact with vehicles, buildings and other things that stand next to the Clonk: enter and exit buildings, control and push vehicles into buildings, produce tools and weapons in workshops and much more.
+
 # -- Assignment specific strings
 
 KEY_MouseUse=Use 
@@ -95,9 +98,6 @@ KEY_Down=Down
 KEY_Down_Desc=Climb, swim down or drop down from the ceiling while hangling. While standing on the ground, you can collect an item that is lying about.
 
 KEY_AimAxis_Desc=Aim with the analog stick to throw or use some item into a direction. Can also be used instead of the direction pad for controlling the Clonk.
-
-KEY_Interact=Interact
-KEY_Interact_Desc=Interact with vehicles, buildings and other things that stand next to the Clonk: enter and exit buildings, control and push vehicles into buildings, produce tools and weapons in workshops and much more.
 
 KEY_Hotkey_Desc=Hotkeys:|No + l/r mouse click - Take the respective item in the/the other hand|No + Shift - Drop the respective item|No + Interact - Interact with the respective thing|No + Ctrl - Select the respective clonk from the crew list
 
