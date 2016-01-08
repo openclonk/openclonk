@@ -25,15 +25,23 @@ void C4Reloc::Init()
 {
 	Paths.clear();
 
+	// The system folder (i.e. installation path) has higher priority than the user path
+	// Although this is counter-intuitive (the user may want to overload system files in the user path),
+	// people had trouble when they downloaded e.g. an Objects.ocd file in a network lobby and that copy permanently
+	// ruined their OpenClonk installation with no obvious way to fix it.
+	// Not even reinstalling would fix the problem because reinstallation does not overwrite user data.
+	// We currently don't have any valid case where overloading system files would make sense so just give higher priority to the system path for now.
 #ifndef __APPLE__
+	// Add planet subfolder with highest priority because it's used when starting directly from the repository with binaries in the root folder
 	StdCopyStrBuf planet(Config.General.ExePath);
 	planet.AppendBackslash();
 	planet.Append("planet");
 	AddPath(planet.getData());
 #endif
-
-	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
+	// Add main system path
 	AddPath(Config.General.SystemDataPath);
+	// Add user path for additional data (player files, user scenarios, etc.)
+	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
 }
 
 bool C4Reloc::AddPath(const char* path, PathType pathType)
