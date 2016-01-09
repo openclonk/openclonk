@@ -85,7 +85,7 @@ void DisplayGroup(const C4Group &grp, const char *filter = NULL)
 		++file_count;
 		byte_count += entry->Size;
 	}
-	printf("%lu Entries, %lu Bytes\n", file_count, byte_count);
+	printf("%lu Entries, %lu Bytes\n", (unsigned long)file_count, (unsigned long)byte_count);
 }
 
 void PrintGroupInternals(C4Group &grp, int indent_level = 0)
