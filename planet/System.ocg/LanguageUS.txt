@@ -506,6 +506,7 @@ IDS_MSG_CMD_PLRCLR_USAGE=Usage: /plrclr [Johnny] ff0000
 IDS_MSG_CMD_START_USAGE=Usage: /start [timer]
 IDS_MSG_DEBUGMODENOTALLOWED=Debug mode: not allowed
 IDS_MSG_DEFINEKEY=Assign key
+IDS_MSG_DEFINEKEYDUPLICATE=Warning: Key "%s" is already used for control "%s". Duplicate assignments will only trigger one control at a time.
 IDS_MSG_DELETECLONK=Do you really want to delete %s %s?
 IDS_MSG_DELETECLONK_DESC=Delete the selected crew member.
 IDS_MSG_DELETECLONK_PLAYTIME= - this Clonk has a total playing time of %s!

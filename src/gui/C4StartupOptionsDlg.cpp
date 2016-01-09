@@ -367,6 +367,23 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControl
 		C4PlayerControlAssignment *config_assignment = config_set->GetAssignmentByControlName(assignment->GetControlName());
 		if (!config_assignment) config_assignment = config_set->CreateAssignmentForControl(assignment->GetControlName());
 		config_assignment->SetKey(key);
+		// check for duplicates. Allow them in principle because they can be used with priorities
+		// however, do warn because usually it may be unintended
+		// Just deleting the old assignments is also usually undesirable, because half of the time a newbi changes a control and creates a conflict,
+		// they may want to change the key they just assigned to something else instead
+		C4PlayerControlAssignment *other_assignment;
+		for (int32_t i = 0; (other_assignment = assignment_set->GetAssignmentByIndex(i)); ++i)
+			if (other_assignment != assignment)
+				if (other_assignment->GetTriggerKey() == key)
+				{
+					const char *gui_name = other_assignment->GetGUIName(Game.PlayerControlDefs);
+					// only warn for assignable keys, because other keys are typically derived from the settable keys
+					if (gui_name && *gui_name)
+					{
+						C4GUI::TheScreen.ShowMessage(FormatString(LoadResStr("IDS_MSG_DEFINEKEYDUPLICATE"), key.ToString(true, false).getData(), gui_name).getData(), LoadResStr("IDS_MSG_DEFINEKEY"), C4GUI::Ico_Error);
+					}
+				}
+
 	}
 }
 

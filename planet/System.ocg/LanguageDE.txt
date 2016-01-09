@@ -506,6 +506,7 @@ IDS_MSG_CMD_PLRCLR_USAGE=Verwendung: /plrclr [Hansi] ff0000
 IDS_MSG_CMD_START_USAGE=Verwendung: /start [Countdown]
 IDS_MSG_DEBUGMODENOTALLOWED=Debug-Modus: nicht erlaubt
 IDS_MSG_DEFINEKEY=Taste belegen
+IDS_MSG_DEFINEKEYDUPLICATE=Warnung: Taste "%s" ist schon "%s" zugewiesen. Doppelte Zuweisungen können immer nur eine Aktion auslösen.
 IDS_MSG_DELETECLONK=Soll %s %s wirklich gelöscht werden?
 IDS_MSG_DELETECLONK_DESC=Ausgewählten Clonk aus der Mannschaft entfernen.
 IDS_MSG_DELETECLONK_PLAYTIME= - dieser Clonk hat eine Gesamtspielzeit von %s!
