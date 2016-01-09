@@ -6,6 +6,7 @@
 	The following skins are available:
 	 - Beggar
 	 - Carpenter
+	 - DarkSkinned
 	 - Doctor
 	 - Guard
 	 - Leather
@@ -24,15 +25,17 @@ global func SetAlternativeSkin(string skin_name)
 		return FatalError(Format("SetAlternativeSkin must be called from crew member context (instead called from %i)", this->GetID()));
 		
 	// This is a list of valid skin names and which base skin of the clonk is used.
-	var skin_names = [["Beggar", 0], ["Carpenter", 0], ["Doctor", 2], ["Guard", 0], ["Leather", 2], ["MaleBlackHair", 0], ["MaleBrownHair", 0], ["Sage", 0], ["Youngster", 0]];
-	// Find the given name in the list and update the base skin of the clonk.
+	var skin_names = [["Beggar", 0, 0x4040ff], ["Carpenter", 0, 0xefef40], ["DarkSkinned", 0, 0x906000], ["Doctor", 2, 0xd0d0d0], ["Guard", 0, 0xa0a050], ["Leather", 2, 0xa0a020], ["MaleBlackHair", 0, 0x4040ff], ["MaleBrownHair", 0, 0x2020ff], ["Sage", 0, 0x813100], ["Youngster", 0, 0xba8e37]];
+	// Find the given name in the list and update the base skin and color of the clonk.
 	var found_name = false;
 	for (var name in skin_names)
 	{
 		if (name[0] == skin_name)
 		{
-			// Update base skin before setting new skin.
+			// Update mesh to the one required for the new skin.
 			this->SetSkin(name[1]);
+			// Update color to match the main clothing color found in the skin
+			this->SetColor(name[2]);
 			found_name = true;
 			break;
 		}
