@@ -26,6 +26,9 @@ static g_is_initialized,      // intro started
 
 func Initialize()
 {
+	npc_newton->SetAlternativeSkin("MaleBlackHair");
+	npc_pyrit->SetAlternativeSkin("MaleBrownHair");
+	npc_woody->SetAlternativeSkin("Youngster");
 	MakeRuinsOnDamage(); // see System.ocg/Ruins.c
 	PlaceGrass(40);
 	return true;

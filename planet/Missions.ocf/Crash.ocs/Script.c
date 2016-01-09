@@ -31,9 +31,9 @@ func DoInit(int first_player)
 	// NPC: Merchant.
 	var merchant = CreateObjectAbove(Clonk, 76, 870);
 	merchant->MakeInvincible();
-	merchant->SetSkin(1);
+	merchant->SetColor(RGB(55, 65, 75)); // currently overridden by skin
+	merchant->SetAlternativeSkin("Leather");
 	merchant->SetName("$NameMerchant$");
-	merchant->SetColor(RGB(55, 65, 75));
 	merchant->SetDir(DIR_Left);
 	merchant->SetObjectLayer(merchant);
 	merchant->SetDialogue("Merchant", true);

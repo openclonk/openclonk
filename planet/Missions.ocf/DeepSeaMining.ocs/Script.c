@@ -52,6 +52,7 @@ protected func PostIntroInitialize()
 	npc_tuesday = CreateObjectAbove(Clonk, g_tuesday_pos[0]+20, g_tuesday_pos[1]-20);
 	npc_tuesday->SetDir(DIR_Left);
 	npc_tuesday->SetColor(0x804000);
+	npc_tuesday->SetAlternativeSkin("Sage"); // DarkSkinned
 	npc_tuesday->SetName("$Tuesday$");
 	
 	return true;

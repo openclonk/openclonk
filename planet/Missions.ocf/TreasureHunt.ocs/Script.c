@@ -25,6 +25,7 @@ func DoInit(int first_player)
 		g_golden_shovel->SetLightRange(25,15);
 		g_golden_shovel->SetLightColor(0xffc000);
 	}
+	npc_dagobert->SetAlternativeSkin("Beggar");
 	// Start Intro.
 	StartSequence("Intro", 0, g_flagpole);
 	return true;

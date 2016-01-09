@@ -8,6 +8,7 @@ MissionAccess=S2Raid
 
 [Definitions]
 Definition2=Decoration.ocd\Misc.ocd\Hat.ocd
+Definition3=Decoration.ocd\Clonk.ocd\AltSkins.ocd
 
 [Player1]
 Wealth=0

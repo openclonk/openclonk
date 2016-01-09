@@ -43,6 +43,7 @@ func Outro_4()
 	this.pilot->SetAction("Walk");
 	this.pilot->SetName("Pyrit");
 	this.pilot->SetColor(0xff0000);
+	this.pilot->SetAlternativeSkin("MaleBrownHair");
 	this.pilot->SetDir(DIR_Right);
 	this.pilot->AttachMesh(Hat, "skeleton_head", "main", Trans_Translate(5500, 0, 0));
 	this.plane->FaceRight();

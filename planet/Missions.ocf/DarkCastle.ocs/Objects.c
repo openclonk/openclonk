@@ -302,6 +302,7 @@ func InitializeObjects()
 	g_cannoneer.StaticSaveVar = "g_cannoneer";
 	g_cannoneer->SetDir(DIR_Left);
 	g_cannoneer->SetName("Brutus");
+	g_cannoneer->SetAlternativeSkin("Guard");
 	var Clonk016 = CreateObjectAbove(Clonk, 1317, 334);
 	Clonk016->SetName("Archibald");
 	AI->AddAI(Clonk016);
