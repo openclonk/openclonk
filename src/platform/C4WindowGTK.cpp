@@ -442,18 +442,13 @@ static gboolean OnScroll(GtkWidget* widget, GdkEventScroll* event, gpointer user
 	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
 	int idy;
-	gdouble dx, dy;
-	if (gdk_event_get_scroll_deltas((GdkEvent*)event, &dx, &dy))
+	switch (event->direction)
 	{
-		idy = short(round(dy));
+	case GDK_SCROLL_UP: idy = 32; break;
+	case GDK_SCROLL_DOWN: idy = -32; break;
+	default: return false;
 	}
-	else
-	{
-		if (event->direction == GDK_SCROLL_UP)
-			idy = 32;
-		if (event->direction == GDK_SCROLL_DOWN)
-			idy = -32;
-	}
+
 	// FIXME: make the GUI api less insane here
 	if (pDlg)
 		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (idy << 16), pDlg, NULL);
@@ -727,7 +722,16 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), this);
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
 	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
-	gtk_widget_add_events(GTK_WIDGET(window), GDK_SMOOTH_SCROLL_MASK);
+
+	// TODO: It would be nice to support GDK_SCROLL_SMOOTH_MASK and
+	// smooth scrolling for scrolling in menus, however that should not
+	// change the scroll wheel behaviour ingame for zooming or
+	// inventory change. Note that when both GDK_SCROLL_MASK and
+	// GDK_SMOOTH_SCROLL_MASK are enabled, both type of scroll events
+	// are reported, so one needs to make sure to not double-process them.
+	// It would be nice to have smooth scrolling also e.g. for zooming
+	// ingame, but it probably requires the notion of smooth scrolling
+	// other parts of the engine as well.
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
