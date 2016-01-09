@@ -210,6 +210,8 @@ include_directories(
 	${PNG_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
 	${FREETYPE_INCLUDE_DIRS})
+link_directories(
+	${FREETYPE_LIBRARY_DIRS})
 
 if(CMAKE_SYSTEM MATCHES "Windows")
 	message(STATUS "Using Win32 threading.")
