@@ -19,7 +19,7 @@ func Initialize()
 				chest->CreateContents(FireArrow,1);
 				chest->CreateContents(BombArrow,1)->SetStackCount(5);
 				chest->CreateContents(Shield,1);
-				chest->CreateContents(Sword,1);
+				chest->CreateContents(IronBomb,3);
 			}
 		}
 	// Materials: Firestones
@@ -51,7 +51,7 @@ func InitializePlayer(int plr)
 	crew->CreateContents(Club);
 	crew->CreateContents(WindBag);
 	crew->CreateContents(Firestone,2);
-	crew.MaxEnergy = 120000;
+	crew.MaxEnergy = 100000;
 	crew->DoEnergy(1000);
 	return true;
 }
