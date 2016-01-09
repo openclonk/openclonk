@@ -123,7 +123,7 @@ func JoinPlayer(plr, prev_clonk)
 func FillHomebase(object homebase)
 {
 	// Quick buy items on hotkeys
-	homebase->SetQuickbuyItems([Hammer, Bow, Sword, Musket, GrenadeLauncher, nil, Firestone, IronBomb, nil, nil]);
+	homebase->SetQuickbuyItems([/*Hammer*/ nil, Bow, Sword, Musket, GrenadeLauncher, nil, Firestone, IronBomb, nil, nil]);
 
 	// Buy menu entries
 	homebase->AddCaption("$HomebaseWeapons$");
@@ -137,7 +137,7 @@ func FillHomebase(object homebase)
 
 	homebase->AddCaption("$HomebaseItems$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Consumable { item = Bread,     cost = 5  });
-	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
+	//homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Weapon { item = Hammer,    cost = 1000, desc = "$HomebaseDescHammer$", extra_width = 1 });
 
 	homebase->AddCaption("$HomebaseTechnology$");
 	homebase->AddHomebaseItem(new Homebase.ITEMTYPE_Technology { name="$HomebaseAdvancedWeapons$", item = Icon_World,cost = 100, desc="$HomebaseDescAdvancedWeapons$", tech = "AdvancedWeapons" });
