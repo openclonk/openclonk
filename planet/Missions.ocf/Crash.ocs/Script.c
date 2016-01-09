@@ -7,8 +7,16 @@
 
 static g_is_initialized, g_has_bought_plans, npc_pyrit;
 
+public func Initialize()
+{
+	// Show wealth in HUD.
+	GUI_Controller->ShowWealth();
+	return true;
+}
+
 func DoInit(int first_player)
 {
+
 	CreateObjectAbove(Windmill, 152, 825+48, 0);
 
 	// Set time of day to evening and create some clouds and celestials.
