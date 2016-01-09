@@ -388,6 +388,7 @@ private:
 	StdStrBuf Name;                // custom key name; used for association in config files
 	typedef std::vector<C4KeyboardCallbackInterface *> CBVec;
 	unsigned int uiPriority;       // key priority: If multiple keys of same code are defined, high prio overwrites low prio keys
+	bool is_down;                  // down-callbacks have been executed but up-callbacks have not (not compiled)
 
 public:
 	CBVec vecCallbacks; // a list of all callbacks assigned to that key
@@ -426,6 +427,8 @@ public:
 
 	void Update(const C4CustomKey *pByKey); // merge given key into this
 	bool Execute(C4KeyEventType eEv, C4KeyCodeEx key);
+
+	bool IsDown() const { return is_down; }
 
 	void KillCallbacks(const C4CustomKey *pOfKey); // remove any callbacks that were created by given key
 

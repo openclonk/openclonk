@@ -581,7 +581,7 @@ bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
 /* ----------------- C4CustomKey------------------ */
 
 C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-		: Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
+		: Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
 {
 	// generate code
 	if (DefCode.Key != KEY_Default) DefaultCodes.push_back(DefCode);
@@ -596,7 +596,7 @@ C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeySc
 }
 
 C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-		: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
+		: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0), is_down(false)
 {
 	// ctor for default key
 	Name.Copy(szName);
@@ -669,6 +669,8 @@ void C4CustomKey::CompileFunc(StdCompiler *pComp)
 
 bool C4CustomKey::Execute(C4KeyEventType eEv, C4KeyCodeEx key)
 {
+	// remember down-state
+	is_down = (eEv == KEYEV_Down);
 	// execute all callbacks
 	for (CBVec::iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
 		if ((*i)->OnKeyEvent(key, eEv))
@@ -892,12 +894,12 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 				assert(pKey);
 				// check priority
 				if (pKey->GetPriority() == uiExecPrio)
-					// check scope
-					if (pKey->GetScope() & InScope)
-						// check shift modifier (not on release, because a key release might happen with a different modifier than its pressing!)
-						if (InEvent == KEYEV_Up || pKey->IsCodeMatched(C4KeyCodeEx(FallbackKeys[j], C4KeyShiftState(InKey.dwShift))))
-							// exec it
-							if (pKey->Execute(InEvent, InKey))
+					// check scope and modifier
+					// (not on release of a key that has been down, because a key release might happen with a different modifier or in different scope than its pressing!)
+					if ((InEvent == KEYEV_Up && pKey->IsDown())
+						|| ((pKey->GetScope() & InScope) && pKey->IsCodeMatched(C4KeyCodeEx(FallbackKeys[j], C4KeyShiftState(InKey.dwShift)))))
+						// exec it
+						if (pKey->Execute(InEvent, InKey))
 								return true;
 			}
 		// nothing found in this priority: exec next
