@@ -74,6 +74,14 @@ private func Stick()
 		SetVertex(5, VTX_Y, -1, 2);
 		SetVertex(6, VTX_X, -4, 2);
 		SetVertex(6, VTX_Y, -1, 2);
+		
+		// Stick successful?
+		if (!Stuck())
+		{
+			// If not, draw in to prevent hook from dragging you down
+			if (grappler) grappler->DrawRopeIn();
+			return true;
+		}
 
 		rope->HookAnchored();
 		
