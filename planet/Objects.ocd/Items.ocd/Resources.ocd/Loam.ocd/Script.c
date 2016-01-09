@@ -51,6 +51,8 @@ func FxIntBridgeStart(object clonk, effect fx, int temp, int x, int y)
 	// Last bridge coordinates.
 	fx.LastX = GetX();
 	fx.LastY = clonk->GetDefBottom() + 4;
+	// Last points of the material.
+	fx.last_rectangle_points = nil;
 	// Target coordinates.
 	fx.TargetX = x;
 	fx.TargetY = y;
@@ -83,7 +85,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 		min_dt = 2;
 
 	// bridge speed by dig physical
-	var speed = clonk.ActMap.Dig.Speed/6;
+	var speed = clonk.ActMap.Dig.Speed * 2;
 
 	// build bridge in chunks (for better angle precision)
 	var dt = time - fx.Last;
@@ -92,7 +94,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 
 	// draw loam (earth) line
 	var line_wdt = 3;
-	var line_len = speed * dt;
+	var line_len = speed * dt / 100;
 	var last_x = fx.LastX;
 	var last_y = fx.LastY;
 	var dx = x-last_x, dy=y-last_y;
@@ -101,20 +103,50 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	var quant = 30;
 	var angle = Angle(0, 0, dx, dy);
 	angle = angle + quant/2 - Sign(angle-quant/2)*((angle-quant/2) % quant);
-	dx = Sin(angle, d);
-	dy = -Cos(angle, d);
+	dx = Sin(angle, line_len);
+	dy = -Cos(angle, line_len);
 
 	// Don't use up loam if the mouse position is reached...
 	// wait for the mouse being moved and then continue bridging
 	// into that direction
 	if(d <= 1) return FX_OK;
 
-	var ox = dy * line_wdt / d, oy = -dx * line_wdt / d;
-	dx = dx * line_len / (d*10);
-	dy = dy * line_len / (d*10);
-	DrawMaterialQuad("Earth-earth", last_x-ox,last_y-oy, last_x+dx-ox,last_y+dy-oy, last_x+dx+ox,last_y+dy+oy, last_x+ox,last_y+oy, DMQ_Bridge);
+	// Calculate offset edges of rectangle (which are meant to be added to a side's midpoint).
+	var off_x = Sin(angle + 90, line_wdt);
+	var off_y = -Cos(angle + 90, line_wdt);
+	
+	// If we don't have a last position, initialize it so that it fits the angle best.
+	// Otherwise, we already have an endpoint.
+	if (fx.last_rectangle_points == nil)
+	{
+		fx.last_rectangle_points = [
+			last_x + off_x,
+			last_y + off_y,
+			last_x - off_x,
+			last_y - off_y
+			];
+	}
+	
+	// Calculate new points based on the last position.
+	// Center of the new side.
 	fx.LastX += dx;
 	fx.LastY += dy;
+
+	var new_rectangle_points = [
+		fx.LastX + off_x,
+		fx.LastY + off_y,
+		fx.LastX - off_x,
+		fx.LastY - off_y
+		];
+
+	DrawMaterialQuad("Earth-earth",
+		fx.last_rectangle_points[0], fx.last_rectangle_points[1],
+		new_rectangle_points[0], new_rectangle_points[1],
+		new_rectangle_points[2], new_rectangle_points[3], 
+		fx.last_rectangle_points[2], fx.last_rectangle_points[3],
+		DMQ_Bridge);
+	
+	fx.last_rectangle_points = new_rectangle_points;
 	
 	// Some dust to hide the otherwise ugly construction.
 	var local_x = fx.LastX - clonk->GetX();
@@ -128,7 +160,7 @@ func FxIntBridgeTimer(object clonk, effect fx, int time)
 	clonk->SetTurnForced(view_direction);
 	
 	// bridge time is up?
-	loamused += Max(line_len/10,1);
+	loamused += Max(line_len, 1);
 	if (loamused >= BridgeLength)
 	{
 		clonk->CancelUse();
