@@ -286,7 +286,7 @@ private:
 
 	bool fThread;
 #ifdef HAVE_WINTHREAD
-	unsigned long iThread;
+	uintptr_t iThread;
 #elif defined(HAVE_PTHREAD)
 	pthread_t Thread;
 #endif
@@ -319,7 +319,7 @@ private:
 	bool fStopSignaled;
 
 #ifdef HAVE_WINTHREAD
-	unsigned long iThread;
+	uintptr_t iThread;
 #elif defined(HAVE_PTHREAD)
 	pthread_t Thread;
 #endif
