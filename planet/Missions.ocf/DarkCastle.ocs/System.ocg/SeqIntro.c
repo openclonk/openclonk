@@ -27,6 +27,7 @@ func Intro_Init()
 	this.dialogue->SetInteraction(false);
 
 	this.plane->FaceRight();
+	this.plane.PlaneDeath = this.Intro_PlaneDeath;
 }
 
 func Intro_Start(object hero)
@@ -96,6 +97,9 @@ func Intro_5()
 	g_cannon->DoFire(this.projectile, g_cannoneer, r);
 	return ScheduleNext(5);
 }
+
+// Don't explode. Plane death handled in sequence.
+func Intro_PlaneDeath() { return true; }
 
 func Intro_6()
 {

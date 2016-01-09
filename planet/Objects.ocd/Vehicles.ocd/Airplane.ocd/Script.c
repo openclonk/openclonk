@@ -374,7 +374,7 @@ public func Damage(int change, int cause, int by_player)
 	if (GetDamage() >= this.HitPoints)
 	{
 		SetController(by_player);
-		PlaneDeath();
+		this->~PlaneDeath();
 	}
 }
 
