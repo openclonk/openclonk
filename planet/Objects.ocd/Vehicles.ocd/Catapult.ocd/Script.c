@@ -159,7 +159,12 @@ protected func DoFire(object clonk, int power)
 	Trajectory->Remove(this);
 	
 	// The clonk will be the projectile if he sits in the catapult.
-	var projectile = Contents(0);
+	var projectile;
+	if (clonk && (clonk->Contained() == this))
+		projectile = clonk;
+	// If clonk isn't sitting in there, shoot stuff placed into the catapult
+	if (!projectile)
+		projectile = Contents(0);
 	// Otherwise, fire what is in the clonk's hand.
 	if (!projectile)
 		projectile = clonk->GetHandItem(0);
