@@ -125,7 +125,7 @@ public:
 
 	GtkWidget* helpAbout;
 
-	GtkWidget* lblCursor;
+	GtkWidget* statusBar;
 	GtkWidget* lblFrame;
 	GtkWidget* lblTime;
 
@@ -324,7 +324,7 @@ gboolean C4ConsoleGUI::State::OnPropertyDlgRescrollIdle(gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	C4Rect r(0, 0, 320, 320);
+	C4Rect r(0, 0, 400, 350);
 	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
 	state->InitGUI();
 	UpdateHaltCtrls(true);
@@ -355,7 +355,6 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeEdit), image_mode_edit);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeDraw), image_mode_draw);
 
-	
 	GtkWidget* top_hbox = gtk_toolbar_new();
 
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnPlay), -1);
@@ -365,43 +364,23 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeEdit), -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeDraw), -1);
 
-	lblCursor = gtk_label_new("");
-#if GTK_CHECK_VERSION(3,12,0)
-	gtk_widget_set_margin_start(lblCursor, 3);
-#else
-	gtk_widget_set_margin_left(lblCursor, 3);
-#endif
-	gtk_label_set_ellipsize(GTK_LABEL(lblCursor), PANGO_ELLIPSIZE_END);
-	GtkToolItem * itmCursor = gtk_tool_item_new();
-	gtk_tool_item_set_expand(itmCursor, TRUE);
-	gtk_container_add(GTK_CONTAINER(itmCursor), lblCursor);
-	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itmCursor, -1);
+	GtkToolItem * itm = gtk_tool_item_new();
+	gtk_tool_item_set_expand(itm, TRUE);
+	lblTime = gtk_label_new("00:00:00 (0 FPS)");
+	gtk_container_add(GTK_CONTAINER(itm), lblTime);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itm, -1);
+
+	itm = gtk_tool_item_new();
+	gtk_tool_item_set_expand(itm, TRUE);
+	lblFrame = gtk_label_new("Frame: 0");
+	gtk_container_add(GTK_CONTAINER(itm), lblFrame);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itm, -1);
 
 	// ------------ Statusbar ---------------------
-	GtkWidget* statusbar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-
-	GtkWidget* status_frame = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(status_frame), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(status_frame), statusbar);
-
-	lblFrame = gtk_label_new("Frame: 0");
-	lblTime = gtk_label_new("00:00:00 (0 FPS)");
-
-	gtk_widget_set_valign(lblFrame, GTK_ALIGN_CENTER);
-	gtk_widget_set_valign(lblTime, GTK_ALIGN_CENTER);
-
-	GtkWidget* sep1 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-
-	gtk_box_pack_start(GTK_BOX(statusbar), lblFrame, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), sep1, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), lblTime, true, true, 0);
+	statusBar = gtk_statusbar_new();
 
 	// ------------ Log view and script entry ---------------------
 	GtkWidget* scroll = gtk_scrolled_window_new(NULL, NULL);
-
-//	int scrollbar_spacing = 0;
-//	gtk_widget_style_get (widget, "scrollbar-spacing", &scrollBarSpacing, NULL);
-//	g_object_set (scroll, "scrollbar-spacing", 0, NULL);
 
 	txtLog = gtk_text_view_new();
 	txtScript = gtk_entry_new();
@@ -456,7 +435,6 @@ void C4ConsoleGUI::State::InitGUI()
 	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-
 	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
 
@@ -497,7 +475,7 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_widget_set_margin_top(txtScript, 3);
 	gtk_widget_set_margin_bottom(txtScript, 3);
 	gtk_container_add(GTK_CONTAINER(box), txtScript);
-	gtk_container_add(GTK_CONTAINER(box), status_frame);
+	gtk_container_add(GTK_CONTAINER(box), statusBar);
 
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
 	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));
@@ -559,7 +537,7 @@ void C4ConsoleGUI::State::Clear()
 
 	helpAbout = NULL;
 
-	lblCursor = NULL;
+	statusBar = NULL;
 	lblFrame = NULL;
 	lblTime = NULL;
 
@@ -582,8 +560,9 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 	switch (type)
 	{
 	case CONSOLE_Cursor:
-		label = state->lblCursor;
-		break;
+		gtk_statusbar_pop(GTK_STATUSBAR(state->statusBar), 0);
+		gtk_statusbar_push(GTK_STATUSBAR(state->statusBar), 0, text.getData());
+		return;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
 		break;
