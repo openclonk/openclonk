@@ -42,6 +42,7 @@ public func FxMoveTimer(object target, effect, int time)
 			var bubble = CreateObjectAbove(Fx_Bubble);
 			bubble->SetCon(2 * target->GetCon() / 3);
 			bubble->SetYDir(target->GetYDir());
+			bubble.creator = this.creator;
 		}
 		RemoveObject();
 		return -1;
