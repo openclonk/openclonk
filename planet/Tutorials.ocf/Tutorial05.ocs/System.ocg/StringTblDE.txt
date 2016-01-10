@@ -1,0 +1,29 @@
+# Dialogue: homeless
+DlgHomelessFood=Hey, you have got some food for a poor man?
+DlgHomelessNo=No, have nothing on me.
+DlgHomelessShame=That's a shame.
+DlgHomelessYes=Yes, here is some %s.
+DlgHomelessReward=Ah, thanks. I have this old club you can have, it might help against those robbers.
+
+# Dialogue: village head
+DlgVillageHeadHowToAttack=How can I stand a chance against these evil robbers?
+DlgVillageHeadNoIdea=I have no idea about combat. I can give you this axe, but it is not really a weapon.
+DlgVillageHeadThanks=Well thanks, I'll give it a try then.
+DlgVillageHeadGoodLuck=Good luck, let me know when it is safe to enter the cave.
+
+# Sequence: intro
+MsgVillageHeadAnnoyed=I am really annoyed by the evil faction, we have to strike back.
+MsgClonkHowToStrike=How can we strike back? They are many and armed to the teeth.
+MsgVillageHeadOrganize=We have to organize ourselves with another village, that is where we are heading.
+MsgClonkPoorGuy=Look at this poor guy, his cabin burned down. What has happened?
+MsgHomelessRobbers=Some robbers stole my goods and burned down my cabin.
+MsgClonkWhere=That is terrible. Do you know where they are?
+MsgHomelessLocation=Well they went into the cave ahead, where they also came from.
+MsgVillageHeadTeachThem=Well, %s here will teach them a lesson.
+MsgHomelessHappy=That would make me very happy.
+
+# Sequence: outro
+MsgClonkSafe=%s it is safe down here!
+MsgVillageHeadComing=Okay, I am coming down.
+MsgVillageHeadTakeElevator=Let's take this elevator up to the surface.
+MsgVillageHeadPassedCave=Thanks to you we manage to pass this cave and we can safely make it to the other village!

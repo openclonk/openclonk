@@ -1,0 +1,7 @@
+Robber's Cave
+
+Archibald the head of the village takes you with him on a journey to a neighbouring village to ask for help. On your way you stumble upon a guy who lost his house to robbers. To make your way to the other village you need to pass through the cave where these robbers hide.
+
+Goal: Battle your way through the robber's cave.
+
+Tutorial explains: weapons like bow, javelin, sword and shield.
