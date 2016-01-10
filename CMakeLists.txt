@@ -342,7 +342,6 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png
@@ -351,7 +350,6 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 	VERBATIM
 )
@@ -377,8 +375,6 @@ if(APPLE)
 		src/res/Rect_Trans.png
 		src/res/Fill_Trans.png
 		src/res/Picker_Trans.png
-		src/res/Ift_Trans.png
-		src/res/NoIft_Trans.png
 	)
 
 	if (CMAKE_GENERATOR STREQUAL Xcode)
