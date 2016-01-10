@@ -1,9 +1,9 @@
 Requirements
 ============
 You should be able to build OpenClonk with any C++ compiler that supports
-ISO C++11. That said, on Windows, we recommend using Microsoft Visual C++
-2010 or higher; the Express edition will be sufficient. On Linux, you will
-be fine with GNU g++ 4.6 or later. Apple users should use a clang-based
+ISO C++14. That said, on Windows, we recommend using Microsoft Visual C++
+2015 or higher; the Express edition will be sufficient. On Linux, you will
+be fine with GNU g++ 4.9 or later. Apple users should use a clang-based
 XCode version.
 
 To generate project files for your chosen build system, you will also have to
