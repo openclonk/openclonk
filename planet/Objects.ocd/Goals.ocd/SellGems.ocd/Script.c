@@ -59,8 +59,8 @@ public func GetDescription(int plr)
 		message = "$MsgGoalFulfilled$";	
 	else
 	{
-		var gems_solid = GetMaterialCount(Material("Ruby")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
-		gems_solid += GetMaterialCount(Material("Amethyst")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
+		var gems_solid = GetMaterialCount(Material("Ruby")) * 10 / 11 / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
+		gems_solid += GetMaterialCount(Material("Amethyst")) * 10 / 11 / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
 		var gems_pieces = ObjectCount(Find_Or(Find_ID(Ruby), Find_ID(Amethyst)));
 		message = Format("$MsgGoalUnfulfilled$", gems_to_sell, gems_solid, gems_pieces);
 	}
@@ -85,8 +85,8 @@ public func Activate(int plr)
 		message = "@$MsgGoalFulfilled$";	
 	else
 	{
-		var gems_solid = GetMaterialCount(Material("Ruby")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
-		gems_solid += GetMaterialCount(Material("Amethyst")) / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
+		var gems_solid = GetMaterialCount(Material("Ruby")) * 10 / 11 / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Ruby"));
+		gems_solid += GetMaterialCount(Material("Amethyst")) * 10 / 11 / GetMaterialVal("Blast2ObjectRatio", "Material", Material("Amethyst"));
 		var gems_pieces = ObjectCount(Find_Or(Find_ID(Ruby), Find_ID(Amethyst)));
 		message = Format("@$MsgGoalUnfulfilled$", gems_to_sell, gems_solid, gems_pieces);
 	}

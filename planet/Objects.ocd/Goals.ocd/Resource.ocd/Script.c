@@ -125,7 +125,7 @@ public func Activate(int plr)
 		{
 			var mat = resource_list[i];
 			var tol = tolerance_list[i];
-			var mat_cnt = GetMaterialCount(Material(mat));
+			var mat_cnt = GetMaterialCount(Material(mat)) * 10 / 11; // subtract some that gets lost on blasting
 			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 			var res_cnt = ObjectCount(Find_ID(res_id));
 			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
