@@ -5,7 +5,7 @@ func Initialize()
 	// Goal
 	var goal = FindObject(Find_ID(Goal_SellGems));
 	if (!goal) goal = CreateObject(Goal_SellGems);
-	goal->SetTargetAmount(30);
+	goal->SetTargetAmount(26);
 	// Rules
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
