@@ -1,6 +1,6 @@
 # Goal Description
-MsgGoalName=Free your Wipf
-MsgGoalDescription=Locate your little friend, free him and take him to the next settlement.
+MsgGoalName=Befreie deinen Wipf
+MsgGoalDescription=Finde deinen kleinen Freund. Dann befreie ihn und bringe ihn zur nächsten Siedlung.
 
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
@@ -9,19 +9,19 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialIntro=It seems your Rüdiger is lost again, he's quite a character! Wipfs tend to spend quite some time underground cause of their craving for digging, so you might find him there. For now just proceed to the right.
-MsgTutorialShovel=There is a shovel over there! Clonks need equipment to perform certain tasks, the shovel is used for digging. Pick up the shovel by standing in front of it and by pressing [%s].
-MsgTutorialInventory=Now the shovel is in your inventory, the five slots at the top of the screen. The item you have selected is highlighted and can be used. To change the item selection press the corresponding number key (%s) or use the %s to cycle through the inventory.  
-MsgTutorialDigging=Now that you are holding shovel, you better use it. Hold the [%s] to use the item currently selected. Select the shovel and you can start digging in the direction you are pointing towards.
-MsgTutorialFirestones=Watch out! The reddish material ahead is dangerous, if you dig through this material firestones will appear. These are fragile and highly explosive, luckily the clonk picks them up automatically when they are in range. Be sure to pick up a couple, they might come in handy.
-MsgTutorialFoundWipf=Almost found your little Rüdiger, but a patch of rock is in the way. Rock can not be dug away and must be blown. Throw some firestones on the rock, but keep your distance! Click the [%s] in the direction you want to throw.
-MsgTutorialBlastedRock=Well done, you blasted the rock and found your friend! He seems exhausted, bring him some food, for example the mushrooms in the caves around. To drop an item press [%s] plus the inventory number key while standing close to Rüdiger.
-MsgTutorialFedWipf=That has done him good! And he is off again... Also try to find a way out of here.
-MsgTutorialDigOutLoam=This way! These orange objects ahead are pieces of loam, dig them out and collect a few. Loam can be used to build bridges out of earth, hold the [%s] to construct a bridge in the direction of the mouse cursor.
-MsgTutorialFragileBridge=Wait a second... That bridge looks highly fragile, and below there is acid, which is very dangerous. You should let your wipf go ahead to probe the bridge since he is much lighter.
-MsgTutorialMakeLoamBridge=I told you so, it was fragile after all, luckily your friend made it. Use the pieces of loam to construct a bridge to safely pass the acid below and get to your furry friend.
-MsgTutorialCompleted=Well done! Let's proceed to the next tutorial.
+MsgTutorialIntro=Es scheint als wäre Rüdiger wieder verloren gegangen! Wipfe verbringen normalerweise einige Zeit unter der Erde, weil sie es lieben zu graben. Vielleicht findest du ihn da. Laufe jetzt erstmal nach rechts.
+MsgTutorialShovel=Da drüben ist eine Schaufel! Clonks brauchen für einige Aufgaben Werkzeuge - die Schaufel wird zum Graben benutzt. Nimm die Schaufel, indem du dich vor sie stellst und [%s] drückst.
+MsgTutorialInventory=Du hast die Schaufel in deinem Inventar oben am Bildschirm! Der ausgewählte Gegenstand ist hervorgehoben und kann benutzt werden. Um andere Gegenstände auszuwählen, drücke die zugehörige Zahl (%s) oder benutze %s um das Inventar durchzublättern.
+MsgTutorialDigging=Jetzt da du die Schaufel hast, benutze sie auch! Halte [%s] gedrückt um den ausgewählten Gegenstand zu benutzen. Wähle die Schaufel aus und du kannst anfangen in die Richtung zu graben, in die du zeigst.
+MsgTutorialFirestones=Pass auf! Das rötliche Material voraus ist gefährlich! Wenn du da durchgräbst, erscheinen Feuersteine. Diese sind zerbrechlich und hochexplosiv, doch zum Glück sammelt dein Clonk sie automatisch auf, wenn du sie freigräbst. Nimm ein paar mit - die werden noch nützlich.
+MsgTutorialFoundWipf=Du hast Rüdiger fast gefunden, aber es ist ein wenig Stein im Weg. Stein kann nicht durchgraben, sondern nur gesprengt werden. Wirf einige Feuersteine auf den Stein, aber halte Abstand! Klick [%s] in die Richtung, in die du werfen willst.
+MsgTutorialBlastedRock=Gut gemacht, du hast den Stein gesprengt und deinen Freund gefunden. Er scheint erschöpft, also bring ihm etwas zu essen. Sammel etwa ein paar Pilze aus den Höhlen hier. Um einen Gegenstand abzulegen, drücke [%s] und die zugehörige Zahl, sobald du vor Rüdiger stehst.
+MsgTutorialFedWipf=Das hat ihm gut getan! Und schon ist er wieder weg... Versuch auch einen Weg heraus zu finden.
+MsgTutorialDigOutLoam=Hier lang! Die orangenen Objekte vor dir sind Lehmklumpen. Grab ein paar aus und nimm sie mit, denn Lehm kann benutzt werden um Brücken aus Erde zu bauen. Halte dafür [%s] gedrückt um eine Brücke in die Richtung des Mauszeigers zu bauen.
+MsgTutorialFragileBridge=Warte mal... Die Brücke sieht sehr zerbrechlich aus und unter ihr ist gefährliche Säure. Du solltest deinen Wipf vorschicken um die Brücke zu testen.
+MsgTutorialMakeLoamBridge=Ich hab's gesagt: Sie war zerbrechlich! Zum Glück hat dein Freund es geschafft. Benutze die Lehmklumpen um eine Brücke zu bauen und über die Säure zu deinem felligen Freund zu kommen.
+MsgTutorialCompleted=Klasse! Lass uns mit dem nächsten Tutorial weitermachen.
 
 # Wipf name
 WipfName=Rüdiger
-WipfDescription=Your furry little friend.
+WipfDescription=Dein felliger kleiner Freund.
