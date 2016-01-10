@@ -4,6 +4,9 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 {
 	if (ctrl != CON_TutorialGuide)
 		return _inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...);
+	// Don't do anything if the player is a sequence.
+	if (GetActiveSequence())	
+		return;
 	// Find the guide object for this player.
 	var guide = FindObject(Find_ID(TutorialGuide), Find_Owner(plr));
 	if (!guide)
