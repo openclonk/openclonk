@@ -39,7 +39,7 @@ private func FxFlightTimer(object _this, effect, int time)
 	// Attack!
 	if (!effect.target)
 	{
-		if (g_lost) DoFireworks(NO_OWNER);
+		if (g_lost) return DoFireworks(NO_OWNER);
 		effect.target = GetRandomWindmill();
 	}
 	if(!(time % 10))
