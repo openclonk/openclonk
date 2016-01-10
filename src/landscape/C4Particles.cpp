@@ -1012,6 +1012,9 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 		// generate new buffer objects
 		glGenBuffers(1, &drawingDataVertexBufferObject);
 		assert (drawingDataVertexBufferObject != 0 && "Could not generate OpenGL buffer object.");
+		// Immediately bind the buffer.
+		// glVertexAttribPointer requires a valid GL_ARRAY_BUFFER to be bound and we need the buffer to be created for glObjectLabel.
+		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 
 #ifdef GL_KHR_debug
 		if (glObjectLabel)
@@ -1026,9 +1029,6 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj, C4ShaderCall& call,
 			
 			// set up the vertex array structure once
 			glBindVertexArray(drawingDataVertexArraysObject);
-			// Bind the correct buffer. glVertexAttribPointer required a valid GL_ARRAY_BUFFER to be bound.
-			// This is weird API design, but we can't do much about it.
-			glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
 
 #ifdef GL_KHR_debug
 			if (glObjectLabel)
