@@ -78,7 +78,6 @@ public:
 	int iTexSize; // size of textures
 	int iTexX, iTexY;     // number of textures in x/y-direction
 	int ClipX,ClipY,ClipX2,ClipY2;
-	bool fIsRenderTarget;              // set for surfaces to be used as offscreen render targets
 	bool fIsBackground; // background surfaces fill unused pixels with black, rather than transparency - must be set prior to loading
 #ifdef _DEBUG
 	int *dbg_idx;
@@ -127,7 +126,7 @@ public:
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
 	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
 	bool BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
-	bool Create(int iWdt, int iHgt, bool fIsRenderTarget, int MaxTextureSize, int iFlags);
+	bool Create(int iWdt, int iHgt, int iFlags = 0);
 	bool Copy(C4Surface &fromSfc);
 	bool CreateColorByOwner(C4Surface *pBySurface);  // create ColorByOwner-surface
 	bool SetAsClrByOwnerOf(C4Surface *pOfSurface);   // assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
@@ -163,7 +162,7 @@ public:
 private:
 	void MapBytes(BYTE *bpMap);
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
-	bool CreateTextures(int MaxTextureSize, int iFlags); // create ppTex-array
+	bool CreateTextures(int iFlags); // create ppTex-array
 	void FreeTextures();      // free ppTex-array if existant
 	
 	bool GetTexAtImpl(C4TexRef **ppTexRef, int &rX, int &rY);

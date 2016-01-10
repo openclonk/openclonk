@@ -71,9 +71,9 @@ bool C4FoWRegion::BindFramebuf()
 		// Create the new surfaces
 		std::unique_ptr<C4Surface> pNewSurface(new C4Surface);
 		std::unique_ptr<C4Surface> pNewBackSurface(new C4Surface);
-		if (!pNewSurface->Create(iWdt, iHgt, false, 0, 0))
+		if (!pNewSurface->Create(iWdt, iHgt))
 			return false;
-		if (!pNewBackSurface->Create(iWdt, iHgt, false, 0, 0))
+		if (!pNewBackSurface->Create(iWdt, iHgt))
 			return false;
 
 		// Copy over old content. This avoids flicker in already

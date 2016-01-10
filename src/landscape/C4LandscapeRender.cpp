@@ -182,7 +182,7 @@ bool C4LandscapeRenderGL::InitLandscapeTexture()
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
 	{
 		Surfaces[i] = new C4Surface();
-		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt, false, 0, 0))
+		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt))
 			return false;
 	}
 
