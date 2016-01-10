@@ -151,8 +151,10 @@ func InitializeObjects()
 	StoneDoor001->SetComDir(COMD_Down);
 	var StoneDoor002 = CreateObject(StoneDoor, 1348, 508);
 	StoneDoor002->SetComDir(COMD_Down);
+	StoneDoor002->DoDamage(170);
 	var StoneDoor003 = CreateObject(StoneDoor, 1347, 412);
 	StoneDoor003->SetComDir(COMD_Down);
+	StoneDoor003->DoDamage(170);
 
 	var SpinWheel001 = CreateObjectAbove(SpinWheel, 961, 672);
 	SpinWheel001->SetStoneDoor(StoneDoor001);
