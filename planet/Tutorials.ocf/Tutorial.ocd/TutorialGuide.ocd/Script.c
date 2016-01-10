@@ -93,6 +93,11 @@ public func EnableCloseOnLastMessage(bool disable)
 	return;
 }
 
+public func GetMessageCount()
+{
+	return GetLength(messages);
+}
+
 protected func Destruction()
 {
 	CloseGuideMenu();
