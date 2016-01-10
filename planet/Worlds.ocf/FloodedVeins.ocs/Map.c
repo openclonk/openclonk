@@ -173,8 +173,8 @@ public func DrawGemVeins(proplist map, int size, int difficulty)
 		if (node.conn_count == 0)
 			continue;
 		var tunnel = node.tunnels[0];
-		var gem_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 1, Right = 1, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 4, Wdt = wdt, Hgt = 10}]};
-		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 2, Right = 2, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 6, Wdt = wdt, Hgt = 2}]};
+		var gem_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 2, Right = 2, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 3, Wdt = wdt, Hgt = 9}]};
+		var granite_border = {Algo = MAPALGO_And, Op = [{Algo = MAPALGO_Border, Left = 2, Right = 2, Op = tunnel}, {Algo = MAPALGO_Rect, X = 0, Y = node.Y - 5, Wdt = wdt, Hgt = 2}]};
 		map->Draw(["Ruby", "Amethyst"][Random(2)], gem_border);
 		map->Draw("Granite", granite_border);
 		cnt++;
