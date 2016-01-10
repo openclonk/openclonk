@@ -54,7 +54,7 @@ const char *const SEPERATOR_TEXTURE = "--SEP--";
 C4LandscapeRenderGL::C4LandscapeRenderGL()
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
-	hMaterialTexture = 0;
+	ZeroMem(hMaterialTexture, sizeof(hMaterialTexture));
 	hVBO = 0;
 }
 
@@ -142,8 +142,9 @@ void C4LandscapeRenderGL::Clear()
 		delete Surfaces[i];
 		Surfaces[i] = NULL;
 	}
-	if (hMaterialTexture) glDeleteTextures(1, &hMaterialTexture);
-	hMaterialTexture = 0;
+
+	glDeleteTextures(C4LR_MipMapCount, hMaterialTexture);
+	std::fill_n(hMaterialTexture, C4LR_MipMapCount, 0);
 
 	glDeleteBuffers(1, &hVBO);
 	hVBO = 0;
@@ -180,7 +181,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	AddTexturesFromMap(pTexs);
 
 	// Determine depth to use
-	iMaterialTextureDepth = 2*MaterialTextureMap.size();
+	iMaterialTextureDepth = 1;
+	while(iMaterialTextureDepth < 2*int32_t(MaterialTextureMap.size()))
+		iMaterialTextureDepth <<= 1;
 	int32_t iNormalDepth = iMaterialTextureDepth / 2;
 
 	// Find the largest texture
@@ -194,16 +197,15 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Get size for our textures. We might be limited by hardware
 	int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
-	GLint iMaxTexSize, iMaxTexLayers;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &iMaxTexSize);
-	glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &iMaxTexLayers);
+	GLint iMaxTexSize;
+	glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &iMaxTexSize);
 	if (iTexWdt > iMaxTexSize || iTexHgt > iMaxTexSize)
 	{
 		iTexWdt = std::min(iTexWdt, iMaxTexSize);
 		iTexHgt = std::min(iTexHgt, iMaxTexSize);
 		LogF("   gl: Material textures too large, GPU only supports %dx%d! Cropping might occur!", iMaxTexSize, iMaxTexSize);
 	}
-	if(iMaterialTextureDepth >= iMaxTexLayers)
+	if(iMaterialTextureDepth >= iMaxTexSize)
 	{
 		LogF("   gl: Too many material textures! GPU only supports 3D texture depth of %d!", iMaxTexSize);
 		return false;
@@ -286,33 +288,70 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	// Clear error error(s?)
 	while(glGetError()) {}
 	
-	// Alloc 2D texture array
-	glGenTextures(1, &hMaterialTexture);
-
-	// Generate textures
+	// Alloc 3D textures
+	glEnable(GL_TEXTURE_3D);
+	glGenTextures(C4LR_MipMapCount, hMaterialTexture);
+	
+	// Generate textures (mipmaps too!)
 	int iSizeSum = 0;
+	BYTE *pLastData = new BYTE [iSize / 4];
+	for(int iMMLevel = 0; iMMLevel < C4LR_MipMapCount; iMMLevel++)
+	{
+		
+		// Scale the texture down for mip-mapping
+		if(iMMLevel) {
+			BYTE *pOut = pData;
+			BYTE *pIn[4] = { 
+				pLastData, pLastData + iBytesPP, 
+				pLastData + iBytesPP * iTexWdt, pLastData + iBytesPP * iTexWdt + iBytesPP
+			};
+			for (int i = 0; i < iMaterialTextureDepth; ++i)
+				for (int y = 0; y < iTexHgt / 2; ++y)
+				{
+					for (int x = 0; x < iTexWdt / 2; ++x)
+					{
+						for (int j = 0; j < iBytesPP; j++)
+						{
+							unsigned int s = 0;
+							s += *pIn[0]++; s += 3 * *pIn[1]++; s += 3 * *pIn[2]++; s += *pIn[3]++; 
+							*pOut++ = BYTE(s / 8);
+						}
+						pIn[0] += iBytesPP; pIn[1] += iBytesPP; pIn[2] += iBytesPP; pIn[3] += iBytesPP;
+					}
+					pIn[0] += iBytesPP * iTexWdt; pIn[1] += iBytesPP * iTexWdt;
+					pIn[2] += iBytesPP * iTexWdt; pIn[3] += iBytesPP * iTexWdt;
+				}
+			iTexWdt /= 2; iTexHgt /= 2;
+		}
 
-	// Select texture
-	glBindTexture(GL_TEXTURE_2D_ARRAY, hMaterialTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		// Select texture
+		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMMLevel]);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	// We fully expect to tile these
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_GENERATE_MIPMAP, GL_TRUE);
+		// We fully expect to tile these
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	// Make it happen!
-	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, iTexWdt, iTexHgt, iMaterialTextureDepth, 0, GL_BGRA,
-				iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
-				pData);
+		// Make it happen!
+		glTexImage3D(GL_TEXTURE_3D, 0, 4, iTexWdt, iTexHgt, iMaterialTextureDepth, 0, GL_BGRA,
+					iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
+					pData);
 	   
-	// Statistics
-	iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;
+		// Exchange buffers
+		BYTE *tmp = pLastData;
+		pLastData = pData;
+		pData = tmp;
+
+		// Statistics
+		iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;
+	}
 	
 	// Dispose of data
 	delete [] pData;
+	delete [] pLastData;
+	glDisable(GL_TEXTURE_3D);
 	
 	// Check whether we were successful
 	if(int err = glGetError())
@@ -322,9 +361,10 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	}
 
 	// Announce the good news
-	LogF("  gl: Texturing uses %d slots at %dx%d (%d MB total)",
+	LogF("  gl: Texturing uses %d slots at %dx%d, %d levels (%d MB total)",
 		static_cast<int>(MaterialTextureMap.size()),
 		iMaterialWidth, iMaterialHeight,
+		C4LR_MipMapCount,
 		iSizeSum / 1000000);
 
 	return true;
@@ -993,7 +1033,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion *Ligh
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_MaterialTex))
 	{
-		glBindTexture(GL_TEXTURE_2D_ARRAY, hMaterialTexture);
+        // Decide which mip-map level to use
+		double z = 0.5; int iMM = 0;
+		while(pGL->Zoom < z * ::Game.C4S.Landscape.MaterialZoom && iMM + 1 <C4LR_MipMapCount)
+			{ z /= 2; iMM++; }
+		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 	if(ShaderCall.AllocTexUnit(C4LRU_MatMapTex))
 	{
