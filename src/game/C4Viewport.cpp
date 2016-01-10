@@ -187,7 +187,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 	pDraw->SetZoom(cgo0.X, cgo0.Y, cgo0.Zoom);
 }
 
-void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
+void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 {
 #ifdef USE_CONSOLE
 	// No drawing in console mode
@@ -218,61 +218,68 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	last_game_draw_cgo = cgo;
 
-	// --- activate FoW here ---
-
-	// Render FoW only if active for player
-	C4FoWRegion* pFoW = NULL;
-	if (Player != NO_OWNER)
+	if (fDrawGame)
 	{
-		C4Player *pPlr = ::Players.Get(Player);
-		assert(pPlr != NULL);
+		// --- activate FoW here ---
 
-		if(pPlr->fFogOfWar) pFoW = this->pFoW.get();
+		// Render FoW only if active for player
+		C4FoWRegion* pFoW = NULL;
+		if (Player != NO_OWNER)
+		{
+			C4Player *pPlr = ::Players.Get(Player);
+			assert(pPlr != NULL);
+
+			if (pPlr->fFogOfWar) pFoW = this->pFoW.get();
+		}
+
+		// Update FoW
+		if (pFoW)
+		{
+			// Viewport region in landscape coordinates
+			const FLOAT_RECT vpRect = { cgo.TargetX, cgo.TargetX + cgo.Wdt, cgo.TargetY, cgo.TargetY + cgo.Hgt };
+			// Region in which the light is calculated
+			// At the moment, just choose integer coordinates to surround the viewport
+			const C4Rect lightRect(vpRect);
+			pFoW->Update(lightRect, vpRect);
+
+			pFoW->Render();
+		}
+
+		pDraw->SetFoW(pFoW);
+
+		C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
+			::Landscape.Sky.Draw(cgo);
+		C4ST_STOP(SkyStat)
+
+			::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
+
+		// Draw Landscape
+		C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
+			::Landscape.Draw(cgo, pFoW);
+		C4ST_STOP(LandStat)
+
+			// draw PXS (unclipped!)
+			C4ST_STARTNEW(PXSStat, "C4Viewport::Draw: PXS")
+			::PXS.Draw(cgo);
+		C4ST_STOP(PXSStat)
+
+			// draw objects
+			C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
+			::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
+		C4ST_STOP(ObjStat)
+
+			// draw global dynamic particles
+			C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
+			::Particles.DrawGlobalParticles(cgo);
+		C4ST_STOP(PartStat)
+
+			// Draw everything else without FoW
+			pDraw->SetFoW(NULL);
 	}
-
-	// Update FoW
-	if (pFoW)
+	else
 	{
-		// Viewport region in landscape coordinates
-		const FLOAT_RECT vpRect = { cgo.TargetX, cgo.TargetX + cgo.Wdt, cgo.TargetY, cgo.TargetY + cgo.Hgt };
-		// Region in which the light is calculated
-		// At the moment, just choose integer coordinates to surround the viewport
-		const C4Rect lightRect(vpRect);
-		pFoW->Update(lightRect, vpRect);
-
-		pFoW->Render();
+		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt, cgo.Y + cgo.Hgt, 0xff000000);
 	}
-
-	pDraw->SetFoW(pFoW);
-
-	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
-	::Landscape.Sky.Draw(cgo);
-	C4ST_STOP(SkyStat)
-
-	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
-
-	// Draw Landscape
-	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
-	::Landscape.Draw(cgo, pFoW);
-	C4ST_STOP(LandStat)
-
-	// draw PXS (unclipped!)
-	C4ST_STARTNEW(PXSStat, "C4Viewport::Draw: PXS")
-	::PXS.Draw(cgo);
-	C4ST_STOP(PXSStat)
-
-	// draw objects
-	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
-	C4ST_STOP(ObjStat)
-
-	// draw global dynamic particles
-	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
-	::Particles.DrawGlobalParticles(cgo);
-	C4ST_STOP(PartStat)
-
-	// Draw everything else without FoW
-	pDraw->SetFoW(NULL);
 
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
@@ -355,8 +362,15 @@ void C4Viewport::Execute()
 	C4Surface *target = pWindow ? pWindow->pSurface : FullScreen.pSurface;
 	cgo.Set(target,DrawX,DrawY,float(ViewWdt)/Zoom,float(ViewHgt)/Zoom,GetViewX(),GetViewY(),Zoom);
 	pDraw->PrepareRendering(target);
+	// Do not spoil game contents on owner-less viewport
+	bool draw_game = true;
+	if (Player == NO_OWNER)
+		if (!::Application.isEditor && !::Game.DebugMode)
+			if (!::Network.isEnabled() || !::Network.Clients.GetLocal() || ::Network.Clients.GetLocal()->isObserver())
+				if (::Game.PlayerInfos.GetJoinIssuedPlayerCount() > 0) // free scrolling allowed if the scenario was started explicitely without players to inspect the landscape
+					draw_game = false;
 	// Draw
-	Draw(cgo, true);
+	Draw(cgo, draw_game, true);
 	// Blit output
 	BlitOutput();
 }

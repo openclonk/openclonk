@@ -105,7 +105,7 @@ protected:
 	std::unique_ptr<C4ViewportWindow> pWindow;
 	std::unique_ptr<C4FoWRegion> pFoW;
 	void DrawPlayerStartup(C4TargetFacet &cgo);
-	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
+	void Draw(C4TargetFacet &cgo, bool fDrawGame, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
 	void DrawMenu(C4TargetFacet &cgo);
 	void DrawPlayerInfo(C4TargetFacet &cgo);

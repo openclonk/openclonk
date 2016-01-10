@@ -254,7 +254,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, f
 				// update facet
 				bkFct.Set(FullScreen.pSurface, 0, 0, ceil(float(bkWdt2)/zoom), ceil(float(bkHgt2)/zoom), iX/zoom, iY/zoom, zoom, 0, 0);
 				// draw there
-				pVP->Draw(bkFct, false);
+				pVP->Draw(bkFct, true, false);
 				// render
 				FullScreen.pSurface->PageFlip(); FullScreen.pSurface->PageFlip();
 				// get output (locking primary!)
