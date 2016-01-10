@@ -220,21 +220,20 @@ public func Ejection(object obj) { return Collection2(nil); }
 
 private func ShowMissingComponents()
 {
-	if(definition == nil)
+	if (definition == nil)
 	{
 		Message("");
 		return;
 	}
 		
 	var stuff = GetMissingComponents();
-	//var msg = "Construction Needs:";
 	var msg = "@";
-	for(var s in stuff)
-		if(s.count > 0)
+	for (var s in stuff)
+		if (s.count > 0)
 			msg = Format("%s %dx{{%i}}", msg, s.count, s.id);
-	
-	//Message("@%s",msg);
-	CustomMessage(msg, this, NO_OWNER, 0, 23);
+	// Ensure that the message is not below the bottom of the map.
+	var dy = 23 - Max(23 + GetY() - LandscapeHeight(), 0) / 2;
+	CustomMessage(msg, this, NO_OWNER, 0, dy);
 }
 
 private func GetMissingComponents()
