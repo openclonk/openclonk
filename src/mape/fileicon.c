@@ -17,7 +17,6 @@
 #include <gtk/gtk.h>
 
 #include "mape/fileicon.h"
-#include "mape-icons.h" // Generated file
 
 static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
                                         MapeFileIconType type)
@@ -26,6 +25,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	GdkPixbuf* pixbuf;
 	gint width, height;
 	GdkPixbuf* scaled_pixbuf;
+	GError *error = 0;
 
 	switch(type)
 	{
@@ -46,48 +46,28 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 		);
 		break;
 	case MAPE_FILE_ICON_C4OBJECT:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_ocd,
-			FALSE,
-			NULL
-		);
+		pixbuf = gdk_pixbuf_new_from_resource("/org/openclonk/mape/ocd.ico", &error);
 		break;
 	case MAPE_FILE_ICON_C4FOLDER:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_ocf,
-			FALSE,
-			NULL
-		);
+		pixbuf = gdk_pixbuf_new_from_resource("/org/openclonk/mape/ocf.ico", &error);
 		break;
 	case MAPE_FILE_ICON_C4GROUP:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_ocg,
-			FALSE,
-			NULL
-		);
+		pixbuf = gdk_pixbuf_new_from_resource("/org/openclonk/mape/ocg.ico", &error);
 		break;
 	case MAPE_FILE_ICON_C4SCENARIO:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_ocs,
-			FALSE,
-			NULL
-		);
+		pixbuf = gdk_pixbuf_new_from_resource("/org/openclonk/mape/ocs.ico", &error);
 		break;
 	case MAPE_FILE_ICON_C4MATERIAL:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_ocm,
-			FALSE,
-			NULL
-		);
+		pixbuf = gdk_pixbuf_new_from_resource("/org/openclonk/mape/ocm.ico", &error);
 		break;
 	default:
 		g_assert_not_reached();
 		break;
+	}
+	if (error)
+	{
+		fprintf (stderr, "Unable to create icon: %s\n", error->message);
+		g_error_free (error);
 	}
 
 	if(pixbuf == NULL)

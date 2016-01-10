@@ -43,7 +43,6 @@
 
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
-#include <editor-icons.h>
 
 using namespace OpenFileFlags;
 
@@ -78,14 +77,6 @@ namespace
 		if (SEqual(text, "------")) { g_free(text); return true; }
 		g_free(text);
 		return false;
-	}
-
-	GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
-	{
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
-		GtkWidget* image = gtk_image_new_from_pixbuf(pixbuf);
-		g_object_unref(pixbuf);
-		return image;
 	}
 }
 
@@ -336,12 +327,12 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 void C4ConsoleGUI::State::InitGUI()
 {
 	// ------------ Play/Pause and Mode ---------------------
-	GtkWidget* image_play = CreateImageFromInlinedPixbuf(play_pixbuf_data);
-	GtkWidget* image_pause = CreateImageFromInlinedPixbuf(halt_pixbuf_data);
+	GtkWidget* image_play = gtk_image_new_from_resource("/org/openclonk/engine/Play_Trans.png");
+	GtkWidget* image_pause = gtk_image_new_from_resource("/org/openclonk/engine/Halt_Trans.png");
 
-	GtkWidget* image_mode_play = CreateImageFromInlinedPixbuf(mouse_pixbuf_data);
-	GtkWidget* image_mode_edit = CreateImageFromInlinedPixbuf(cursor_pixbuf_data);
-	GtkWidget* image_mode_draw = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
+	GtkWidget* image_mode_play = gtk_image_new_from_resource("/org/openclonk/engine/Mouse_Trans.png");
+	GtkWidget* image_mode_edit = gtk_image_new_from_resource("/org/openclonk/engine/Cursor_Trans.png");
+	GtkWidget* image_mode_draw = gtk_image_new_from_resource("/org/openclonk/engine/Brush_Trans.png");
 
 	btnPlay = GTK_WIDGET(gtk_toggle_tool_button_new());
 	btnHalt = GTK_WIDGET(gtk_toggle_tool_button_new());
@@ -1077,14 +1068,14 @@ bool C4ToolsDlg::State::Open()
 		hbox = gtk_grid_new();
 		GtkWidget * toolbar = gtk_toolbar_new();
 
-		GtkWidget* image_brush = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
-		GtkWidget* image_line = CreateImageFromInlinedPixbuf(line_pixbuf_data);
-		GtkWidget* image_rect = CreateImageFromInlinedPixbuf(rect_pixbuf_data);
-		GtkWidget* image_fill = CreateImageFromInlinedPixbuf(fill_pixbuf_data);
-		GtkWidget* image_picker = CreateImageFromInlinedPixbuf(picker_pixbuf_data);
-		GtkWidget* image_dynamic = CreateImageFromInlinedPixbuf(dynamic_pixbuf_data);
-		GtkWidget* image_static = CreateImageFromInlinedPixbuf(static_pixbuf_data);
-		GtkWidget* image_exact = CreateImageFromInlinedPixbuf(exact_pixbuf_data);
+		GtkWidget* image_brush = gtk_image_new_from_resource("/org/openclonk/engine/Brush_Trans.png");
+		GtkWidget* image_line = gtk_image_new_from_resource("/org/openclonk/engine/Line_Trans.png");
+		GtkWidget* image_rect = gtk_image_new_from_resource("/org/openclonk/engine/Rect_Trans.png");
+		GtkWidget* image_fill = gtk_image_new_from_resource("/org/openclonk/engine/Fill_Trans.png");
+		GtkWidget* image_picker = gtk_image_new_from_resource("/org/openclonk/engine/Picker_Trans.png");
+		GtkWidget* image_dynamic = gtk_image_new_from_resource("/org/openclonk/engine/Dynamic_Trans.png");
+		GtkWidget* image_static = gtk_image_new_from_resource("/org/openclonk/engine/Static_Trans.png");
+		GtkWidget* image_exact = gtk_image_new_from_resource("/org/openclonk/engine/Exact_Trans.png");
 
 		brush = GTK_WIDGET(gtk_toggle_tool_button_new());
 		line = GTK_WIDGET(gtk_toggle_tool_button_new());

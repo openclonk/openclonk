@@ -1,0 +1,9 @@
+<gresources>
+  <gresource prefix="/org/openclonk/mape">
+    <file preprocess="to-pixdata">ocd.ico</file>
+    <file preprocess="to-pixdata">ocf.ico</file>
+    <file preprocess="to-pixdata">ocg.ico</file>
+    <file preprocess="to-pixdata">ocm.ico</file>
+    <file preprocess="to-pixdata">ocs.ico</file>
+  </gresource>
+</gresources>

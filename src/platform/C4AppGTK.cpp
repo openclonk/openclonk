@@ -34,8 +34,6 @@
 #include <gdk/gdkx.h>
 #endif
 
-#include <oc-icon.h>
-
 #include "C4AppGTKImpl.h"
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
@@ -60,7 +58,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	setlocale(LC_ALL,"");
 	gtk_init(&argc, &argv);
 
-	GdkPixbuf* icon = gdk_pixbuf_new_from_inline(-1, oc_icon_pixbuf_data, false, NULL);
+	GdkPixbuf* icon = gdk_pixbuf_new_from_resource("/org/openclonk/engine/oc.ico", NULL);
 	gtk_window_set_default_icon(icon);
 	g_object_unref(icon);
 	// Try to figure out the location of the executable
