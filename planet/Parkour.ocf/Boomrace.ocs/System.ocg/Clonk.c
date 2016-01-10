@@ -9,10 +9,7 @@ protected func RejectCollect(id objid, object obj)
 	return _inherited(objid, obj);
 }
 
-public func MaxContentsCount()
-{
-	return 0;
-}
+local MaxContentsCount = 0;
 
 public func ObjectControl(int plr, int ctrl)
 {

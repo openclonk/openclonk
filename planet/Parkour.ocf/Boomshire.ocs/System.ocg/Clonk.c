@@ -9,15 +9,8 @@ protected func RejectCollect(id objid, object obj)
 }
 
 // Only one inventory slot.
-public func MaxContentsCount()
-{
-	return 1;
-}
-
-public func HandObjects()
-{
-	return 1;
-}
+local MaxContentsCount = 1;
+local HandObjects = 1;
 
 // Lose all items on death.
 func StartDead()

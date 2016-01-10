@@ -55,7 +55,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_QuickSwitch)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
-		if(this->HandObjects() > 1)
+		if(this.HandObjects > 1)
 			return inherited(plr, ctrl, x, y, strength, repeat, release, ...);;
 		
 		// select last slot
@@ -144,8 +144,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (inventory_shift)
 	{
-		var current = (this->GetHandItemPos(0) + inventory_shift) % this->MaxContentsCount();
-		if (current < 0) current = this->MaxContentsCount() + current;
+		var current = (this->GetHandItemPos(0) + inventory_shift) % this.MaxContentsCount;
+		if (current < 0) current = this.MaxContentsCount + current;
 		this->SetHandItemPos(0, current);
 		return true;
 	}
@@ -193,7 +193,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// only the last-pressed key is taken into consideration.
 	// if 2 hotkeys are held, the earlier one is being treated as released
-	if (hot > 0 && hot <= this->MaxContentsCount())
+	if (hot > 0 && hot <= this.MaxContentsCount)
 	{
 		SetHandItemPos(0, hot-1);
 		return true;

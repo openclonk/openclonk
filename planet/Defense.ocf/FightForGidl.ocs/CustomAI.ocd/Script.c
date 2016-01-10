@@ -202,9 +202,8 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 		obj.JumpSpeed = obj.JumpSpeed * enemy.Speed / 100;
 		obj.FlySpeed = obj.FlySpeed * enemy.Speed / 100;
 	}
-	obj.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
+	obj.MaxContentsCount = 1;
 	obj->MakeInvincibleToFriendlyFire();
-	obj.MaxContentsCountVal = 1;
 	// Reward for killing enemy
 	obj.Bounty = enemy.Bounty;
 	// Vehicles
@@ -267,6 +266,4 @@ func LaunchEnemy(proplist enemy, int xmin, int xrange, int y)
 // 
 global func ForceVal2Array(v) {  if (GetType(v) != C4V_Array) return [v]; else return v; }
 
-// forward max contents count to property
-func Clonk_MaxContentsCount() { return this.MaxContentsCountVal; }
 

@@ -7,10 +7,10 @@
 	The inventory management:
 	The objects in the inventory are saved (parallel to Contents()) in the
 	array 'inventory'. They are accessed via GetItem(i) and GetItemPos(obj).
-	Other functions are MaxContentsCount() (defines the maximum number of
+	Other properties are MaxContentsCount (defines the maximum number of
 	contents)
 	
-	Furthermore the clonk has a defined amount of "hands", defined by HandObjects().
+	Furthermore the clonk has a defined amount of "hands", defined by local HandObjects.
 	The array 'use_objects' is a mapping of "hands" onto the inventory-slots.
 	The functions GetHandItem(i) returns the object in the "i"th hand.
 	
@@ -23,8 +23,8 @@
 
 
 /* Item limit */
-public func MaxContentsCount() { return 10; } // Size of the inventory
-public func HandObjects() { return 1; } // Amount of hands to select items
+local MaxContentsCount = 10; // Size of the inventory
+local HandObjects = 1; // Amount of hands to select items
 
 func Construction()
 {
@@ -35,7 +35,7 @@ func Construction()
 	this.inventory.hand_objects = [];
 	this.inventory.force_collection = false;
 
-	for(var i=0; i < HandObjects(); i++)
+	for(var i=0; i < HandObjects; i++)
 		this.inventory.hand_objects[i] = i;
 	return _inherited(...);
 }
@@ -85,7 +85,7 @@ public func GetHandItem(int i)
 public func SetHandItemPos(int hand, int inv)
 {
 	// indices are in range?	
-	if(hand >= HandObjects() || inv >= MaxContentsCount())
+	if(hand >= HandObjects || inv >= MaxContentsCount)
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
 	// no slot change?
@@ -214,8 +214,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount()-1)) return;
-	if (!Inside(two,0,MaxContentsCount()-1)) return;
+	if (!Inside(one,0,MaxContentsCount-1)) return;
+	if (!Inside(two,0,MaxContentsCount-1)) return;
 
 	// switch them around
 	var temp = this.inventory.objects[one];
@@ -279,7 +279,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
+	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount)
 	{
 		if (item)
 		{
@@ -319,7 +319,7 @@ protected func Collection2(object obj)
 	var i;
 	
 	// sort into selected hands if empty
-	for(i = 0; i < HandObjects(); i++)
+	for(i = 0; i < HandObjects; i++)
 		if(!GetHandItem(i))
 		{
 			sel = GetHandItemPos(i);
@@ -331,7 +331,7 @@ protected func Collection2(object obj)
 	// otherwise, first empty slot
 	if(!success)
 	{
-		for(var i = 0; i < MaxContentsCount(); ++i)
+		for(var i = 0; i < MaxContentsCount; ++i)
 		{
 			if (!GetItem(i))
 			{
@@ -464,7 +464,7 @@ protected func RejectCollect(id objid, object obj)
 	// Can't carry bucket material with bare hands.
 	if (obj->~IsBucketMaterial()) return true;
 	// check max contents
-	if (ContentsCount() >= MaxContentsCount()) return true;
+	if (ContentsCount() >= MaxContentsCount) return true;
 	
 	return _inherited(objid,obj,...);
 }

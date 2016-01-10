@@ -136,10 +136,7 @@ public func FxBlockCollectionByLorryTimer() { return FX_Execute_Kill; }
 
 /*-- Contents --*/
 
-private func MaxContentsCount()
-{
-	return 50;
-}
+local MaxContentsCount = 50;
 
 protected func RejectCollect(id object_id, object obj)
 {
@@ -148,7 +145,7 @@ protected func RejectCollect(id object_id, object obj)
 		return true;
 	
 	// Objects can still be collected.
-	if (ContentsCount() < this->MaxContentsCount())
+	if (ContentsCount() < MaxContentsCount)
 	{
 		Sound("Objects::Clonk");
 		return false;

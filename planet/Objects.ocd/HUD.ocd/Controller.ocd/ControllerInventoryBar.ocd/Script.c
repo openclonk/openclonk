@@ -238,7 +238,7 @@ private func UpdateInventory()
 // Sets the inventory size to the currently selected clonk
 private func UpdateInventoryButtons(object clonk)
 {
-	var max_contents_count = clonk->~MaxContentsCount();
+	var max_contents_count = clonk.MaxContentsCount;
 
 	var old_count = GetLength(inventory_slots);
 

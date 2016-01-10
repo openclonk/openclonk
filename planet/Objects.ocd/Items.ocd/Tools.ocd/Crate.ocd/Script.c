@@ -29,14 +29,11 @@ protected func Construction()
 
 /*-- Contents --*/
 
-private func MaxContentsCount()
-{
-	return 5;
-}
+local MaxContentsCount = 5;
 
 protected func RejectCollect(id def, object obj)
 {
-	if (ContentsCount() >= MaxContentsCount())
+	if (ContentsCount() >= MaxContentsCount)
 		return true;
 	if (obj->~IsCarryHeavy())
 		return true;

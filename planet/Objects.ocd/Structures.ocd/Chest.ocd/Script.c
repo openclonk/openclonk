@@ -23,14 +23,11 @@ protected func Construction()
 
 public func IsContainer() { return true; }
 
-private func MaxContentsCount()
-{
-	return 50;
-}
+local MaxContentsCount = 50;
 
 protected func RejectCollect()
 {
-	if (ContentsCount() >= this->MaxContentsCount())
+	if (ContentsCount() >= MaxContentsCount)
 		return true;
 	return false;
 }

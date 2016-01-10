@@ -5,7 +5,7 @@
 // overload function for objects with Inventory.ocd
 global func ShiftContents(bool shift_back, id target_id)
 {
-	if (this && (this->~HandObjects() > 0))
+	if (this && (this.HandObjects > 0))
 	{
 		// special handling for only one hand: just move the hand to next item
 		// always move hand 0
@@ -13,7 +13,7 @@ global func ShiftContents(bool shift_back, id target_id)
 		// move to target ID?
 		if(target_id)
 		{
-			for(var pos = 0; pos < this->MaxContentsCount(); ++pos)
+			for(var pos = 0; pos < this.MaxContentsCount; ++pos)
 			{
 				var obj = this.inventory.objects[pos];
 				if(!obj) continue;
@@ -29,11 +29,11 @@ global func ShiftContents(bool shift_back, id target_id)
 		var move_dir = 1;
 		if(shift_back) move_dir = -1;
 		var current_pos = this->GetHandItemPos(0);
-		for(var i = this->MaxContentsCount(); i > 0; --i)
+		for(var i = this.MaxContentsCount; i > 0; --i)
 		{
 			current_pos += move_dir;
-			if(current_pos < 0) current_pos = this->MaxContentsCount() + current_pos;
-			else current_pos = current_pos % this->MaxContentsCount();
+			if(current_pos < 0) current_pos = this.MaxContentsCount + current_pos;
+			else current_pos = current_pos % this.MaxContentsCount;
 			
 			// is there an object at the slot?
 			if(!this.inventory.objects[current_pos]) continue;

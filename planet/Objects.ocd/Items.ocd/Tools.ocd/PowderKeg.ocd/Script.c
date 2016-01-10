@@ -30,7 +30,7 @@ protected func Construction()
 	effect.oldcount = count;
 }
 
-protected func MaxContentsCount() {	return 12;	}
+local MaxContentsCount = 12;
 
 public func GetPowderCount()
 {

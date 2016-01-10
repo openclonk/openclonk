@@ -103,8 +103,7 @@ func JoinPlayer(plr, prev_clonk)
 	clonk->DoEnergy(1000);
 	clonk->MakeInvincibleToFriendlyFire();
 	// contents
-	clonk.MaxContentsCount = CustomAI.Clonk_MaxContentsCount;
-	clonk.MaxContentsCountVal = 1;
+	clonk.MaxContentsCount = 1;
 	if (prev_clonk) TransferInventory(prev_clonk, clonk);
 	if (!clonk->ContentsCount())
 	{

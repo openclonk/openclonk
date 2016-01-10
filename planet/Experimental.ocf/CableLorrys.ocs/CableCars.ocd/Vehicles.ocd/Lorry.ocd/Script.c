@@ -51,14 +51,11 @@ protected func ContactRight()
 
 /*-- Contents --*/
 
-private func MaxContentsCount()
-{
-	return 50;
-}
+local MaxContentsCount = 50;
 
 protected func RejectCollect(id object_id, object obj)
 {
-	if (ContentsCount() < this->MaxContentsCount())
+	if (ContentsCount() < MaxContentsCount)
 	{
 		Sound("Objects::Clonk");
 		return false;
