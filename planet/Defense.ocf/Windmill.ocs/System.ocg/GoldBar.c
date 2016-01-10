@@ -9,18 +9,18 @@ public func SetValue(int new_value)
 }
 
 // Give the player picking up the bar extra money
-private func Entrance(object container)
+public func RejectEntrance(object container)
 {
-	if (!container->~IsClonk()) return;
+	if (!container->~IsClonk()) return false;
 	var plr = container->GetOwner();
-	if (GetPlayerType(plr) != C4PT_User) return;
+	if (GetPlayerType(plr) != C4PT_User) return false;
 
 	DoWealth(plr, value);
 	Sound("UI::Cash", false, nil, plr);
 	if (g_chest && !g_chest->FindContents(GoldBar))
 		g_chest->SetMeshMaterial("DefaultChest", 0);
 	RemoveObject();
-	return false;
+	return true;
 }
 
 private func UpdatePicture()
