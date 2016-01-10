@@ -468,3 +468,27 @@ protected func RejectCollect(id objid, object obj)
 	
 	return _inherited(objid,obj,...);
 }
+
+public func GrabContents(object source, ...)
+{
+	// Try to put grabbed items into same slot (for respawn)
+	if (source)
+	{
+		var i = source->ContentsCount();
+		while (--i >= 0)
+		{
+			var item = source->Contents(i);
+			if (item)
+			{
+				var item_pos = source->GetItemPos(item);
+				// Collect this into same slot index if it's a valid, free slot for this object
+				if (GetType(item_pos) && item_pos >=0 && item_pos < MaxContentsCount && !GetItem(item_pos))
+				{
+					Collect(item, true, item_pos);
+				}
+			}
+		}
+	}
+	// Grab remaining items
+	return inherited(source, ...);
+}
