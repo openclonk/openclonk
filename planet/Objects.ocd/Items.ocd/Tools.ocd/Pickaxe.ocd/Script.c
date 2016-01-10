@@ -168,6 +168,8 @@ public func FxIntPickaxeStart(object clonk, proplist effect, int temp)
 {
 	if (temp)
 		return FX_OK;
+	// Ensure ActMap is local and writable
+	if (clonk.ActMap == clonk.Prototype.ActMap) clonk.ActMap = new clonk.ActMap {};
 	// Disable scaling during usage.
 	effect.actmap_scale = clonk.ActMap.Scale;
 	clonk.ActMap.Scale = nil;
