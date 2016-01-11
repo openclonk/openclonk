@@ -1346,7 +1346,11 @@ void C4StartupOptionsDlg::UpdateFontControls()
 	pFontSizeCombo->SetText(sSize.getData());
 }
 
+#ifdef _WIN32
 const char *DefaultFonts[] = { "Arial Unicode MS", "Comic Sans MS", C4DEFAULT_FONT_NAME, "Verdana", NULL };
+#else
+const char *DefaultFonts[] = { C4DEFAULT_FONT_NAME, NULL };
+#endif
 
 void C4StartupOptionsDlg::OnFontFaceComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
