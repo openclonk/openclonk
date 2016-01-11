@@ -206,13 +206,22 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	mouse.y = fmin(fmax(mouse.y, 0), actualSizeY);
 	int x = mouse.x;
 	int y = actualSizeY - mouse.y;
-	
+
 	C4Viewport* viewport = self.controller.viewport;
 	if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
 	{	
 		DWORD keyMask = flags;
 		if ([event type] == NSScrollWheel)
-			keyMask |= (int)[event deltaY] << 16;
+		{
+			// TODO: We could evaluate the full smooth scrolling
+			// information, but zoom and inventory scrolling don't
+			// do very well with that at the moment.
+			if ([event deltaY] > 0)
+				keyMask |= (+32) << 16;
+			else
+				keyMask |= (-32) << 16;
+		}
+
 		::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
 	}
 	else if (viewport)
@@ -383,22 +392,23 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 
 - (void) scrollWheel:(NSEvent *)event
 {
-	if (!Application.isEditor)
-		[self mouseEvent:event];
+	// Scroll viewport in editor mode
+	C4Viewport* viewport = self.controller.viewport;
+	if (Application.isEditor && viewport && !viewport->GetPlayerLock())
+	{
+		NSScrollView* scrollView = self.controller.scrollView;
+		NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
+		[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
+		[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
+		viewport->ViewPositionByScrollBars();
+		[self display];
+	}
 	else
 	{
-		C4Viewport* viewport = self.controller.viewport;
-		if (viewport)
-		{
-			NSScrollView* scrollView = self.controller.scrollView;
-			NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
-			[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
-			[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
-			viewport->ViewPositionByScrollBars();
-			[self display];
-		}
+		// If player lock is enabled or fullscreen: handle scroll
+		// event in-game.
+		[self mouseEvent:event];
 	}
-
 }
 
 - (void) mouseDown:        (NSEvent *)event {[self mouseEvent:event];}
