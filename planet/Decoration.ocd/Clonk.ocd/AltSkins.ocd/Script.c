@@ -55,6 +55,9 @@ global func SetAlternativeSkin(string skin_name)
 	// Check if a valid skin name has been given and return error otherwise.
 	if (!found_name)
 		return FatalError(Format("%s is not a valid skin name for SetAlternativeSkin", skin_name));
+		
+	// Remove backpack if possible (the clonk has a backpack by default).
+	this->~RemoveBackpack();
 
 	// Set the mesh material and update the portrait for dialogues.
 	this->SetMeshMaterial(Format("Clonk_%s", skin_name));
