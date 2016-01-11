@@ -81,6 +81,7 @@ infopablo       - Environemnt/Lightning/Thunder2 (https://www.freesound.org/peop
 nicStage        - Environemnt/Lightning/Thunder3 (https://www.freesound.org/people/nicStage/sounds/64460/ adapted by Maikel)
 jrosin          - Environemnt/Lightning/Thunder4 (https://www.freesound.org/people/jrosin/sounds/329978/ adapted by Maikel)
 shaka9          - Environemnt/Lightning/Thunder5 (https://www.freesound.org/people/shaka9/sounds/160514/ adapted by Maikel)
+Harbour11       - UI::Trumpet (adapted from http://freesound.org/people/Harbour11/sounds/194624/)
 
 The following sounds use two sources:
 
