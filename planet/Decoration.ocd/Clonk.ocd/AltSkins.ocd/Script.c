@@ -25,7 +25,19 @@ global func SetAlternativeSkin(string skin_name)
 		return FatalError(Format("SetAlternativeSkin must be called from crew member context (instead called from %i)", this->GetID()));
 		
 	// This is a list of valid skin names and which base skin of the clonk is used.
-	var skin_names = [["Beggar", 0, 0x4040ff], ["Carpenter", 0, 0xefef40], ["DarkSkinned", 0, 0x906000], ["Doctor", 2, 0xd0d0d0], ["Guard", 0, 0xa0a050], ["Leather", 2, 0xa0a020], ["MaleBlackHair", 0, 0x4040ff], ["MaleBrownHair", 0, 0x2020ff], ["Sage", 0, 0x813100], ["Youngster", 0, 0xba8e37]];
+	var skin_names = [["Beggar", 0, 0x4040ff],
+	                  ["Carpenter", 0, 0xefef40],
+	                  ["DarkSkinned", 0, 0x906000],
+	                  ["Doctor", 2, 0xd0d0d0],
+	                  ["Guard", 0, 0xa0a050],
+	                  ["Leather", 2, 0xa0a020],
+	                  ["MaleBlackHair", 0, 0x4040ff],
+	                  ["MaleBrownHair", 0, 0x2020ff],
+	               	  ["MaleDarkHair", 0, 0x406d99],
+	                  ["Sage", 0, 0x813100],
+	                  ["Youngster", 0, 0xba8e37],
+	                  ["YoungsterBlond", 0, 0x151366]
+	                 ];
 	// Find the given name in the list and update the base skin and color of the clonk.
 	var found_name = false;
 	for (var name in skin_names)
