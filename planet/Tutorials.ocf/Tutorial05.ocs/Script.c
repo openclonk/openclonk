@@ -125,7 +125,6 @@ private func InitAI()
 	var npc_homeless = CreateObjectAbove(Clonk, 220, 384);
 	npc_homeless->SetName("Dirk");
 	npc_homeless->SetObjectLayer(npc_homeless);
-	npc_homeless->SetSkin(3);
 	npc_homeless->SetDir(DIR_Left);
 	npc_homeless->SetDialogue("Homeless");
 	npc_homeless->SetAlternativeSkin("Beggar");
@@ -160,6 +159,7 @@ private func InitAI()
 	AI->SetGuardRange(robber2, 300, 560, 400, 200);
 	AI->SetAllyAlertRange(robber2, 60);
 	robber2->SetDir(DIR_Right);
+	robber2->SetAlternativeSkin("YoungsterBlond");
 	robber2.second_robber = true;
 
 	var robber3 = CreateObjectAbove(Clonk, 800, 706);

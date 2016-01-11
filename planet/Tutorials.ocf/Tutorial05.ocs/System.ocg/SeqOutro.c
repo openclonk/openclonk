@@ -30,6 +30,7 @@ public func Outro_1()
 
 public func Outro_2()
 {
+	this.head.ActMap.Walk.Speed = 38;
 	this.head->SetPosition(458, 732);
 	this.head->SetCommand("MoveTo", nil, 816, 702);
 	MessageBox("$MsgVillageHeadComing$", this.plr_clonk, this.head, this.plr, true);
@@ -62,7 +63,6 @@ public func Outro_5()
 	if (case->GetY() >= 254)
 		return ScheduleSame(10);
 	this.head->SetCommand("UnGrab");
-	this.head.ActMap.Walk.Speed = 38;
 	this.head->SetCommand("MoveTo", nil, this.head->GetX() + 100, this.head->GetY());
 	MessageBox("$MsgVillageHeadPassedCave$", this.plr_clonk, this.head, this.plr, true);
 	return ScheduleNext(30);
@@ -88,6 +88,8 @@ public func Outro_7()
 
 public func Outro_8()
 {
+	this.plr_clonk.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
+	this.head.ActMap.Walk.Speed = Clonk.ActMap.Walk.Speed;
 	return Stop();
 }
 
