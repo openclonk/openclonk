@@ -717,6 +717,8 @@ func SetPortrait(proplist custom_portrait)
 	return true;
 }
 
+public func CommandFailure() { return PlaySoundDoubt(); } // Callback from the engine when a command failed
+
 /* Magic */
 
 local magic_energy;

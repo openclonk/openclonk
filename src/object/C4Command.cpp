@@ -1781,10 +1781,11 @@ void C4Command::Fail(const char *szFailMessage)
 				{
 					::Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, C4RGB(0xff, 0xff, 0xff), true);
 				}
-				// Fail sound
-				StartSoundEffect("CommandFailure*",false,100,l_Obj);
 				// Stop Clonk
 				l_Obj->Action.ComDir = COMD_Stop;
+				// Clonk-specific fail action/sound
+				C4AulParSet pars(C4VString(CommandName(Command)), C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), Data);
+				l_Obj->Call(PSF_CommandFailure, &pars);
 			}
 	}
 }
