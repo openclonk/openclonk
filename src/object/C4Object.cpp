@@ -4397,7 +4397,7 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	// default action
 	if (!(Contents.ShiftContents(pTarget))) return;
 	// Selection sound
-	if (fDoCalls) if (!Contents.GetObject()->Call("~Selection", &C4AulParSet(C4VObj(this)))) StartSoundEffect("Grab",false,100,this);
+	if (fDoCalls) if (!Contents.GetObject()->Call("~Selection", &C4AulParSet(C4VObj(this)))) StartSoundEffect("Clonk::Action::Grab",false,100,this);
 	// update menu with the new item in "put" entry
 	if (Menu && Menu->IsActive() && Menu->IsContextMenu())
 	{

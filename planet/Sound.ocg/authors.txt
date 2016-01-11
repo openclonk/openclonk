@@ -73,7 +73,7 @@ Sven2           - Structures/StoneGate/GateMove (adapted from GateHit), IceHit* 
                   DiamondDigOut (adapted from GlassHit), FishMunch1 (adapted from Munch), Wallkit/Klick, Wallkit/Lock, UI::Open, UI::Close
                   CloseViewport (based on WaterBottleBoing by empraetorius (https://freesound.org/people/empraetorius/sounds/201260/)
                   Corrode (based on Pshshsh from Mirors_ http://www.freesound.org/people/Mirors_/sounds/81205/)
-                  UI::Select
+                  UI::Select, Clonk::Action::Grab, Clonk::Action::UnGrab
 Zapper          - Breathing
 zimbot          - Animals/Chippie/EggCrack1-3 (modified) (http://www.freesound.org/people/zimbot/sounds/244480/)
 xerana          - Environemnt/Lightning/Thunder1 (https://www.freesound.org/people/xerana/sounds/199638/ adapted by Maikel)

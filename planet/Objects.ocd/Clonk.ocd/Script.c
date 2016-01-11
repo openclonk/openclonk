@@ -112,17 +112,20 @@ protected func CatchBlow()
 	
 protected func Grab(object pTarget, bool fGrab)
 {
-	Sound("Grab");
+	if (fGrab)
+		Sound("Clonk::Action::Grab");
+	else
+		Sound("Clonk::Action::UnGrab");
 }
 
 protected func Get()
 {
-	Sound("Grab");
+	Sound("Clonk::Action::Grab");
 }
 
 protected func Put()
 {
-	Sound("Grab");
+	Sound("Clonk::Action::Grab");
 }
 
 protected func Death(int killed_by)
