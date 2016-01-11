@@ -13,16 +13,16 @@ Definition2=Decoration.ocd
 Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;Rule_BaseRespawn=1;
 
 [Player1]
-Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1
+Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1;WoodenBridge=1;Basement=1;
 
 [Player2]
-Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1
+Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1;WoodenBridge=1;Basement=1;
 
 [Player3]
-Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1
+Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1;WoodenBridge=1;Basement=1;
 
 [Player4]
-Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1
+Knowledge=ToolsWorkshop=1;Foundry=1;Flagpole=1;Elevator=1;Armory=1;ChemicalLab=1;Lorry=1;Pickaxe=1;Shovel=1;ToolsWorkshop_SplitFirestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Bucket=1;Sword=1;Metal=1;Balloon=1;Boompack=1;GrappleBow=1;JarOfWinds=1;Pipe=1;Pump=1;PowderKeg=1;Ropeladder=1;Bow=1;Arrow=1;Club=1;IronBomb=1;Javelin=1;Shield=1;Catapult=1;WallKit=1;WoodenBridge=1;Basement=1;
 
 [Landscape]
 Sky=Clouds2

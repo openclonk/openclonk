@@ -14,25 +14,25 @@ Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
 
 [Player1]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player2]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player3]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
 [Player4]
 Crew=Clonk=2
-Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1
+Knowledge=Flagpole=1;Foundry=1;WindGenerator=1;Compensator=1;Sawmill=1;ChemicalLab=1;Elevator=1;Pump=1;ToolsWorkshop=1;Basement=1;WallKit=1;GoldBar=1;Loam=1;Metal=1;Axe=1;Barrel=1;Bucket=1;Dynamite=1;Hammer=1;JarOfWinds=1;Pickaxe=1;Pipe=1;Shovel=1;TeleGlove=1;DynamiteBox=1;GrapleBow=1;InventorsLab=1;Lorry=1;RopeLadder=1;WoodenBridge=1
 BaseMaterial=Clonk=50;Bread=50;Wood=50;Metal=50
 BaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50
 
