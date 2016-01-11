@@ -271,6 +271,11 @@ public func RejectInteractionMenu(object to)
 	return _inherited(to, ...);
 }
 
+public func GetSurroundingEntryMessage(object for_clonk)
+{
+	if (!GetAlive()) return Format("{{Clonk_Grave}} %s", Clonk_Grave->GetInscriptionForClonk(this));
+}
+
 /* Carry items on the clonk */
 
 local iHandMesh;
@@ -1178,9 +1183,6 @@ local ThrowSpeed = 294;
 local NoBurnDecay = 1;
 local ContactIncinerate = 10;
 local BorderBound = C4D_Border_Sides;
-
-// Clonks are always shown in the interaction menu.
-public func HasInteractionMenu() { return true; }
 
 func Definition(def) {
 	// Set perspective
