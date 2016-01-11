@@ -1,6 +1,10 @@
 Name=Rohr
+NameSource=Zuflussrohr
+NameDrain=Abflussrohr
 UsageHelp=Drücke [Benutzen] vor einer Pumpe um von dort ein Zu- oder Abflussrohr zu legen.
 Description=Rohre können in Verbindung mit Pumpen zum Transport von Flüssigkeiten verwendet werden.
+DescriptionSource=Zuflussrohr von dem aus Flüssigkeit in die Pumpe gepumpt wird.
+DescriptionDrain=Abflusssrohr aus dem Flüssigkeit aus der Pumpe heraus läuft.
 
 MsgNoNewPipe=Hier ist keine Pumpe.
 MsgCreatedSource=Zuflussrohr angeschlossen.

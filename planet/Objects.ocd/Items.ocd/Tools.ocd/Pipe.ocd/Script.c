@@ -7,6 +7,7 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
+local PipeState = nil;
 
 protected func Hit()
 {
@@ -51,7 +52,10 @@ protected func ControlUse(object clonk, int x, int y)
 		liquid_pump->SetSource(pipe);
 		clonk->Message("$MsgCreatedSource$");
 		SetGraphics("Source", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+		Description = "$DescriptionSource$";
+		Name = "$NameSource$";
 		pipe->SetSource();
+		PipeState = "Source";
 	}
 	// Otherwise if liquid pump has no drain, create one.
 	else
@@ -59,7 +63,10 @@ protected func ControlUse(object clonk, int x, int y)
 		liquid_pump->SetDrain(pipe);
 		clonk->Message("$MsgCreatedDrain$");
 		SetGraphics("Drain", Pipe, GFX_Overlay, GFXOV_MODE_Picture);
+		Description = "$DescriptionDrain$";
+		Name = "$NameDrain$";
 		pipe->SetDrain();
+		PipeState = "Drain";
 	}
 	return true;
 }
@@ -68,6 +75,16 @@ protected func ControlUse(object clonk, int x, int y)
 public func ResetPicture()
 {
 	SetGraphics("", nil, GFX_Overlay, GFXOV_MODE_Picture);
+	Description = "$Description$";
+	Name = "$Name$";
+	PipeState = nil;
+	return true;
+}
+
+public func CanBeStackedWith(object other)
+{
+	// Do not stack source/drain/unused pipes
+	return inherited(other) && (PipeState == other.PipeState);
 }
 
 /* Cycling through several aperture offset indices to prevent easy clogging */

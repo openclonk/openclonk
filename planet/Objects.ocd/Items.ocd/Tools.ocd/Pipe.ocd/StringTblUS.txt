@@ -1,6 +1,10 @@
 Name=Pipe
+NameSource=Source pipe
+NameDrain=Drain pipe
 UsageHelp=Press [Use] in front of a pump to create a source or drain pipe.
 Description=In conjunction with pumps, pipes can be used to transport liquids.
+DescriptionSource=Source pipe from which liquid is pulled into the pump.
+DescriptionDrain=Drain pipe where liquids are pumped to.
 
 MsgNoNewPipe=There is no pump here.
 MsgCreatedSource=Connected source pipe.
