@@ -12,6 +12,7 @@
 
 // does not need power
 public func PowerNeed() { return 0; }
+public func IsPowerConsumer() { return false; }
 
 public func LampPosition(id def) { return [GetCalcDir()*-11,2]; }
 
