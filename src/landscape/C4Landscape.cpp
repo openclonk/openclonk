@@ -3289,7 +3289,6 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 	if (!GetMapColorIndex(szMaterial,szTexture,byCol)) return false;
 	if (!GetMapColorIndex(szBackMaterial,szBackTexture,byColBkg)) return false;
 	// Get material shape size
-	int32_t mat = PixCol2Mat(byCol);
 	C4Texture *texture = ::TextureMap.GetTexture(szTexture);
 	int32_t shape_wdt=0, shape_hgt=0;
 	if (texture && texture->GetMaterialShape())
