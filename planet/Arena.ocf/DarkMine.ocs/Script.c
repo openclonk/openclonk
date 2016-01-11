@@ -105,6 +105,8 @@ protected func OnPlayerRelaunch(int plr, bool is_relaunch)
 	// Players start in a random small cave, the cave depends on whether it is a relaunch.
 	var cave = FindStartCave(plr, is_relaunch);
 	clonk->SetPosition(cave[0], cave[1]);
+	// Ensure spawn position is free
+	for (var i=0; i<4; ++i) BlastFree(cave[0], cave[1], 13);
 
 	// Players start with a shovel, a pickaxe and two firestones.
 	clonk->CreateContents(Shovel);

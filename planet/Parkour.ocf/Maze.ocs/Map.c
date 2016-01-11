@@ -223,7 +223,7 @@ func DrawTunnels()
 func DrawStart()
 {
 	Draw("Tunnel", nil, [0, start_cave.Y - 8, start_cave.X + 4, 8]);
-	Draw("Brick", nil, [0, start_cave.Y, start_cave.X-2, 1]);
+	Draw("Brick", nil, [0, start_cave.Y, start_cave.X-2, 2]);
 	return true;
 }
 
