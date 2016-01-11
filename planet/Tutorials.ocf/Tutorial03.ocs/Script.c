@@ -116,7 +116,7 @@ private func InitVillageMain()
 	wheel->SetStoneDoor(door);
 	
 	// A tree is blocking the path down in this round.
-	CreateObject(MovingBrick, 870, 396);
+	CreateObject(MovingBrick, 870, 396).Plane = 200;
 	var tree = CreateObjectAbove(Tree_Coniferous, 890, 422);
 	tree->SetR(90);
 	tree.Plane = 450;
@@ -197,18 +197,16 @@ private func InitAI()
 
 	// A fireman NPC who extinguishes a burning cabin.	
 	var npc_fireman = CreateObjectAbove(Clonk, 200, 384);
-	npc_fireman->SetColor(0xff0000);
 	npc_fireman->SetName("Hubert");
 	var barrel = npc_fireman->CreateContents(Barrel);
 	barrel->SetFilled("Water", 300);
 	npc_fireman->SetObjectLayer(npc_fireman);
-	npc_fireman->SetSkin(2);
 	npc_fireman->SetDir(DIR_Left);
-	npc_fireman->SetDialogue("Fireman", true);	
+	npc_fireman->SetDialogue("Fireman", true);
+	npc_fireman->SetAlternativeSkin("MaleDarkHair");
 	
 	// A builder which tells you where to place the flagpole.
 	var npc_builder = CreateObjectAbove(Clonk, 504, 376);
-	npc_builder->SetColor(0x440088);
 	npc_builder->SetName("Kummerog");
 	npc_builder->CreateContents(Hammer);
 	npc_builder->SetObjectLayer(npc_builder);
@@ -227,7 +225,6 @@ private func InitAI()
 	
 	// Lookout.
 	var npc_lookout = CreateObjectAbove(Clonk, 992, 296);
-	npc_lookout->SetColor(0x000055);
 	npc_lookout->SetName("Larry");
 	npc_lookout->SetObjectLayer(npc_lookout);
 	npc_lookout->SetDir(DIR_Left);
@@ -236,7 +233,6 @@ private func InitAI()
 
 	// Village head.
 	var npc_head = CreateObjectAbove(Clonk, 840, 736);
-	npc_head->SetColor(0x224455);
 	npc_head->SetName("Archibald");
 	npc_head->SetObjectLayer(npc_head);
 	npc_head->SetDir(DIR_Right);

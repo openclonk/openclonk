@@ -171,16 +171,14 @@ private func InitAI()
 
 	// A fireman NPC who extinguishes a burning cabin.	
 	var npc_fireman = CreateObjectAbove(Clonk, 340, 352);
-	npc_fireman->SetColor(0xff0000);
 	npc_fireman->SetName("Hubert");
 	npc_fireman->SetObjectLayer(npc_fireman);
-	npc_fireman->SetSkin(2);
 	npc_fireman->SetDir(DIR_Right);
-	npc_fireman->SetDialogue("Fireman");	
+	npc_fireman->SetDialogue("Fireman");
+	npc_fireman->SetAlternativeSkin("MaleDarkHair");
 	
 	// A builder which tells you where to place the flagpole.
 	var npc_builder = CreateObjectAbove(Clonk, 504, 376);
-	npc_builder->SetColor(0x440088);
 	npc_builder->SetName("Kummerog");
 	npc_builder->CreateContents(Hammer);
 	npc_builder->SetObjectLayer(npc_builder);
@@ -199,7 +197,6 @@ private func InitAI()
 	
 	// Lookout.
 	var npc_lookout = CreateObjectAbove(Clonk, 992, 296);
-	npc_lookout->SetColor(0x000055);
 	npc_lookout->SetName("Larry");
 	npc_lookout->SetObjectLayer(npc_lookout);
 	npc_lookout->SetDir(DIR_Left);
@@ -208,7 +205,6 @@ private func InitAI()
 
 	// Village head.
 	var npc_head = CreateObjectAbove(Clonk, 924, 672);
-	npc_head->SetColor(0x224455);
 	npc_head->SetName("Archibald");
 	npc_head->SetObjectLayer(npc_head);
 	npc_head->SetDir(DIR_Left);
