@@ -229,6 +229,8 @@ extern C4KeyCode K_CONTROL_L;
 extern C4KeyCode K_CONTROL_R;
 extern C4KeyCode K_ALT_L;
 extern C4KeyCode K_ALT_R;
+extern C4KeyCode K_COMMAND_L;
+extern C4KeyCode K_COMMAND_R;
 extern C4KeyCode K_F1;
 extern C4KeyCode K_F2;
 extern C4KeyCode K_F3;

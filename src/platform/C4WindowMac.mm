@@ -67,6 +67,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 			[controller.window setCollectionBehavior:[controller.window collectionBehavior] | NSWindowCollectionBehaviorFullScreenPrimary];
 	}
 	SetTitle(Title);
+	eKind = windowKind;
 	return this;
 }
 
@@ -151,6 +152,8 @@ C4KeyCode K_CONTROL_L = 0x3b + CocoaKeycodeOffset;
 C4KeyCode K_CONTROL_R = 0x3e + CocoaKeycodeOffset;
 C4KeyCode K_ALT_L = 58 + CocoaKeycodeOffset;
 C4KeyCode K_ALT_R = 61 + CocoaKeycodeOffset;
+C4KeyCode K_COMMAND_L = 55 + CocoaKeycodeOffset;
+C4KeyCode K_COMMAND_R = 54 + CocoaKeycodeOffset;
 C4KeyCode K_F1 = 122 + CocoaKeycodeOffset;
 C4KeyCode K_F2 = 120 + CocoaKeycodeOffset;
 C4KeyCode K_F3 = 99 + CocoaKeycodeOffset;

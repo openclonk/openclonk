@@ -21,10 +21,13 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	//{ VK_CLEAR          , "Clear"         , NULL },
 	{ K_RETURN          , "Return"        , NULL },
 
-	/*K( VK_SHIFT          , "KeyShift"      , "Shift" ),
-	K( VK_CONTROL        , "KeyControl"    , "Control" ),
-	K( VK_MENU           , "Menu"          , NULL ),
-	K( VK_PAUSE          , "Pause"         , NULL ),*/
+	{ K_SHIFT_L        , "LeftShift"     , "LShift" },
+	{ K_SHIFT_R        , "RightShift"    , "RShift" },
+	{ K_CONTROL_L      , "LeftControl"   , "LCtrl" },
+	{ K_CONTROL_R      , "RightControl"  , "RCtrl" },
+	{ K_ALT_L          , "LeftAlt"       , "LAlt" },
+	{ K_ALT_R          , "RightAlt"      , "RAlt" },
+	{ K_PAUSE          , "Pause"         , NULL },
 
 /*	K( VK_CAPITAL        , "Capital"       , NULL ),
 	K( VK_KANA           , "Kana"          , NULL ),

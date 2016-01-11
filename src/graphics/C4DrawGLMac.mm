@@ -294,6 +294,15 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		[event modifierFlags] & NSShiftKeyMask,
 		false, NULL
 	);
+
+	C4Window* stdWindow = self.controller.stdWindow;
+	if (stdWindow->eKind == C4ConsoleGUI::W_Viewport)
+	{
+		if (type == KEYEV_Down)
+			Console.EditCursor.KeyDown([event keyCode]+CocoaKeycodeOffset, [event modifierFlags]);
+		else
+			Console.EditCursor.KeyUp([event keyCode]+CocoaKeycodeOffset, [event modifierFlags]);
+	}
 }
 
 - (void)keyDown:(NSEvent*)event
@@ -305,6 +314,31 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 - (void)keyUp:(NSEvent*)event
 {
 	[self keyEvent:event withKeyEventType:KEYEV_Up];
+}
+
+- (void)flagsChanged:(NSEvent*)event
+{
+	// Send keypress/release events for relevant modifier keys
+	// keyDown() is not called for modifier keys.
+	C4KeyCode key = (C4KeyCode)([event keyCode] + CocoaKeycodeOffset);
+	int modifier = 0;
+	if (key == K_SHIFT_L || key == K_SHIFT_R)
+		modifier = NSShiftKeyMask;
+	if (key == K_CONTROL_L || key == K_CONTROL_R)
+		modifier = NSControlKeyMask;
+	if (key == K_COMMAND_L || key == K_COMMAND_R)
+		modifier = NSCommandKeyMask;
+	if (key == K_ALT_L || key == K_ALT_R)
+		modifier = NSAlternateKeyMask;
+
+	if (modifier != 0)
+	{
+		int modifierMask = [event modifierFlags];
+		if (modifierMask & modifier)
+			[self keyEvent:event withKeyEventType:KEYEV_Down];
+		else
+			[self keyEvent:event withKeyEventType:KEYEV_Up];
+	}
 }
 
 - (NSDragOperation) draggingEntered:(id<NSDraggingInfo>)sender
