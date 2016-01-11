@@ -463,8 +463,11 @@ protected func RejectCollect(id objid, object obj)
 	}
 	// Can't carry bucket material with bare hands.
 	if (obj->~IsBucketMaterial()) return true;
-	// check max contents
-	if (ContentsCount() >= MaxContentsCount) return true;
+	// check max contents. But do not count CarryHeavy towards contents.
+	var contents_count = this->ContentsCount();
+	var carry_heavy_obj = this->GetCarryHeavy();
+	if (carry_heavy_obj && carry_heavy_obj->Contained() == this) --contents_count;
+	if (contents_count >= MaxContentsCount) return true;
 	
 	return _inherited(objid,obj,...);
 }
