@@ -25,7 +25,7 @@ Checkmaty       - ProjectileHitLiving*, Arrow/HitGround, Arrow/Shoot1/3, Bow/Dra
 				  Shield/WoodHit1-3, Musket/GunShot1-5, Musket/BulletShot1-2, Musket/BulletHitGround1-3
 Clonkonaut      - Clonk/Skin/Farmer/Die1
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
-Benboncan       - Blast*, BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
+Benboncan       - Blast*, BlastMetal, BlastLiquid3 (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
                   BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
