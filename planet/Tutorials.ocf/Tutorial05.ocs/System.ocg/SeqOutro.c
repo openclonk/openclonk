@@ -12,7 +12,7 @@ public func Outro_Init(int for_plr)
 
 public func Outro_JoinPlayer(int plr)
 {
-	SetPlayerZoomByViewRange(plr, 240, nil, PLRZOOM_Direct | PLRZOOM_Set);
+	SetPlayerZoomByViewRange(plr, 300, nil, PLRZOOM_Direct | PLRZOOM_Set);
 	return;
 }
 
@@ -30,7 +30,7 @@ public func Outro_1()
 
 public func Outro_2()
 {
-	this.head->SetPosition(392, 726);
+	this.head->SetPosition(458, 732);
 	this.head->SetCommand("MoveTo", nil, 816, 702);
 	MessageBox("$MsgVillageHeadComing$", this.plr_clonk, this.head, this.plr, true);
 	return ScheduleNext(10);
