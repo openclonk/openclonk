@@ -1,41 +1,41 @@
 # Dialogue: Lumberjack
-DlgLumberjackHello=Hello I am %s, the lumberjack of this small village.
-DlgLumberjackReply=My name is %s, you seem sad.
-DlgLumberjackSawmill=Yes, indeed. My sawmill got destroyed and I can't find any rock to rebuild it. Can you help me?
-DlgLumberjackRock=Yes, I'll find you some rock.
-DlgLumberjackWellDone=Thanks a lot, for constructing the sawmill. Can I do anything for you?
-DlgLumberjackFavor=Actually you can, I need wood, do you happen to have an axe?
-DlgLumberjackMines=No, I don't, but I have dropped my axe in the mines when I was hiding there during the attack.
-DlgLumberjackLook=Ok, I'll have a look.
+DlgLumberjackHello=Hallo, ich bin %s, die Holzfällerin des Dorfes.
+DlgLumberjackReply=Ich heiße %s. Du schaust traurig aus.
+DlgLumberjackSawmill=Ja, das stimmt. Mein Sägewerk wurde zerstört und ich finde keine Steine, um es wieder aufzubauen. Kannst du mir helfen?
+DlgLumberjackRock=Ja, ich werde dir Steine finden.
+DlgLumberjackWellDone=Danke vielmals, dass du das Sägewerk aufgebaut hast. Kann ich irgendwas für dich tun?
+DlgLumberjackFavor=Tatsächlich kannst du das, ja. Ich brauche Holz, du hast nicht zufällig eine Axt?
+DlgLumberjackMines=Nein, leider nicht. Ich habe meine Axt in der Mine fallen gelassen, als ich mich während des Angriffes versteckt habe.
+DlgLumberjackLook=Na gut, dann suche ich die Axt.
 
 # Dialogue: Fireman
-DlgFiremanOutOfWay=<c ff0000>Fire!</c> Out of my way!
-DlgFiremanLastFire=Phew that was the last fire!
-DlgFiremanGoodJob=Good job, have you been under attack?
-DlgFiremanEvilGuys=Yes our village has been, the evil guys took some of our wipfs.
-DlgFiremanFurryFriend=That is bad, I hope they won't take my little furry friend! How can I help?
-DlgFiremanFlagpole=We need to construct a new flag pole, to reconnect the power supply in our village.
+DlgFiremanOutOfWay=<c ff0000>Feuer!</c> Aus dem Weg!
+DlgFiremanLastFire=Ein Glück, das war das letzte Feuer!
+DlgFiremanGoodJob=Gut gemacht. Wurdet ihr angegriffen?
+DlgFiremanEvilGuys=Ja, das ganze Dorf wurde attackiert. Die bösen Typen haben einige unserer Wipfe gestohlen.
+DlgFiremanFurryFriend=Das ist schlimm. Ich hoffe, dass sie meinen kleinen Freund nicht  bekommen! Kann ich irgendwie helfen?
+DlgFiremanFlagpole=Wir müssen eine neue Flagge errichten, damit die Stromzufuhr wieder hergestellt ist.
 
 # Dialogue: Builder
-DlgBuilderHello=Hi there, my name is %s and I am a builder.
-DlgBuilderReply=Then you have lots of work. Do you need a hand?
-DlgBuilderFlagpole=Yes, can you construct a flagpole over here?
-DlgBuilderWhyHere=Of course, but why over here?
-DlgBuilderConnect=Because then the flagpole will provide a power connection between the wind generator and the elevator.
+DlgBuilderHello=Hallo du, mein Name ist %s. Ich bin hier der Baumeister.
+DlgBuilderReply=Dann hast du sicherlich viel zu tun. Brauchst du Hilfe?
+DlgBuilderFlagpole=Ja, kannst du hier drüben vielleicht eine Flagge errichten?
+DlgBuilderWhyHere=Na klar, aber warum gerade dort drüben?
+DlgBuilderConnect=Weil die Flagge dann Strom zwischen dem Windkraftwerk und dem Fahrstuhl leiten kann.
 
 # Dialogue: Farmer
-DlgFarmerHello=Hi, is my wipf safe here?
-DlgFarmerYesSafe=Yes it is, I will look after it. Are you helping us rebuild?
-DlgFarmerRebuild=I am!
+DlgFarmerHello=Huhu, ist mein Wipf sicher hier?
+DlgFarmerYesSafe=Ja, das ist er. Ich bewache ihn. Hilfst du uns beim Wiederaufbau?
+DlgFarmerRebuild=Das tue ich!
 
 # Dialogue: Lookout
-DlgLookoutHello=Hello, why are you standing over here?
-DlgLookoutProtecting=I am on the lookout for attacks from the evil faction.
-DlgLookoutMusket=Is that why you are carrying a musket?
-DlgLookoutNoChance=Yes, but I don't think I have any chance against those evil guys.
-DlgLookoutNoShow=Then let's hope they don't come again.
+DlgLookoutHello=Hallo, warum stehst du hier oben?
+DlgLookoutProtecting=Dies ist mein Posten. Ich halte Ausschau, für den Fall, dass die dunkle Fraktion wieder angreift.
+DlgLookoutMusket=Trägst du deshalb die Muskete?
+DlgLookoutNoChance=Ja, aber ich denke nicht, dass ich gegen diese Typen eine Chance habe.
+DlgLookoutNoShow=Dann lass uns hoffen, dass sie nicht wiederkommen!
 
 # Dialogue: Village head
-DlgVillageHeadHello=I am the head of this village.
-DlgVillageHeadHere=Why are you down here?
-DlgVillageHeadOverview=I am making an overview of the damages. Come back later, I'll have an assignment for you.
+DlgVillageHeadHello=Hallo. Ich bin das Dorfoberhaupt von Wipfdorf.
+DlgVillageHeadHere=Warum bist du denn hier unten?
+DlgVillageHeadOverview=Ich schaue mir die Beschädigungen hier an. Komm doch später noch einmal vorbei, dann habe ich sicher eine Aufgabe für dich.

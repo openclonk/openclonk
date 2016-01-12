@@ -1,7 +1,7 @@
-Carry & Construct
+Transport & Aufbau
 
-Roger has lead you to Wipfville, a small village full of wipfs. Finally he has found his friends and is happy. However, the villagers of Wipfville are less so. Their village has been under attack by an evil faction threatening to capture their wipf population. The first attack they could fend off, but has lead to lots of damage to the village. You decide to stay and help the villagers, because the Roger can make a lot of friends here.
+Rüdiger hat dich zu einem Ort namens Wipfdort geführt, ein kleines Dorf voller Wipfe. Endlich hat er seine Freunde gefunden und ist fröhlich. Die Dorfbewohner von Wipfdorf aber brauchen Hilfe. Ihr Dorf wurde von einer dunklen Fraktion angegriffen, die gedroht hat, all ihre Wipfe zu entführen. Den ersten Angriff konnten Sie abwehren, aber ihr Dorf wurde dabei zerstört. Du hast dich entschlossen, den Bewohnern zu helfen, da Rüdiger sich hier wohl zu fühlen scheint.
 
-Goal: Help the villagers rebuild there village.
+Ziel: Hilf den Dorfbewohner ihr Dorf wieder aufzubauen.
 
-Tutorial explains: constructing buildings, basic materials (metal, wood, rock) and mining.
+Lernrunde erklärt: Errichten von Gebäuden, Standardmaterial (Metall, Holz, Stein) und Bergbau.
