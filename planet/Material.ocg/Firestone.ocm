@@ -15,3 +15,4 @@ Corrode=50
 Placement=40
 TextureOverlay=firestone
 Inflammable=1
+MinShapeOverlap=50

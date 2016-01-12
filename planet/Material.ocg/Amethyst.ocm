@@ -13,4 +13,4 @@ TextureOverlay=amethyst
 LightEmit=128,90,164
 LightSpot=160,96,128
 LightAngle=204
-MinShapeOverlap=10
+MinShapeOverlap=30

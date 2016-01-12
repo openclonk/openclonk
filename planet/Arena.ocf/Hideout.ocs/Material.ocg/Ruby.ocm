@@ -9,3 +9,7 @@ MaxSlide=1
 Corrode=60
 Placement=21
 TextureOverlay=ruby
+LightEmit=0,0,128
+LightSpot=208,96,96
+LightAngle=204
+MinShapeOverlap=30
