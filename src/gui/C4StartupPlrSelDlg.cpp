@@ -730,6 +730,10 @@ void C4StartupPlrSelDlg::OnItemCheckChange(C4GUI::Element *pCheckBox)
 	switch (eMode)
 	{
 	case PSDM_Player:
+		// Deselect all other players
+		for (ListItem* pEl = static_cast<ListItem*>(pPlrListBox->GetFirst()); pEl != NULL; pEl = pEl->GetNext())
+			if (pCheckBox && pEl != pCheckBox->GetParent())
+				pEl->SetActivated(false);
 		// update Config.General.Participants
 		UpdateActivatedPlayers();
 		break;
@@ -769,7 +773,7 @@ void C4StartupPlrSelDlg::OnActivateBtn(C4GUI::Control *btn)
 	if (!pSel) return;
 	pSel->SetActivated(!pSel->IsActivated());
 	// update stuff
-	OnItemCheckChange(NULL);
+	OnItemCheckChange(pSel->GetCheckBox());
 }
 
 void C4StartupPlrSelDlg::DoBack()
@@ -934,7 +938,7 @@ void C4StartupPlrSelDlg::SelectItem(const StdStrBuf &Filename, bool fActivate)
 			{
 				pPlrItem->SetActivated(true);
 				// player activation updates
-				OnItemCheckChange(NULL);
+				OnItemCheckChange(pPlrItem->GetCheckBox());
 			}
 			// max one
 			return;
