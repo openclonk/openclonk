@@ -1,29 +1,29 @@
 # Dialogue: homeless
-DlgHomelessFood=Hey, you have got some food for a poor man?
-DlgHomelessNo=No, have nothing on me.
-DlgHomelessShame=That's a shame.
-DlgHomelessYes=Yes, here is some %s.
-DlgHomelessReward=Ah, thanks. I have this old club you can have, it might help against those robbers.
+DlgHomelessFood=Hast du etwas zu essen für einen armen Mann?
+DlgHomelessNo=Nein, ich habe nichts dabei.
+DlgHomelessShame=Schade.
+DlgHomelessYes=Ja, hier ist etwas %s.
+DlgHomelessReward=Vielen Dank! Ich habe diese alte Keule hier, vielleicht hilft sie dir gegen die Räuber.
 
 # Dialogue: village head
-DlgVillageHeadHowToAttack=How can I stand a chance against these evil robbers?
-DlgVillageHeadNoIdea=I have no idea about combat. I can give you this axe, but it is not really a weapon.
-DlgVillageHeadThanks=Well thanks, I'll give it a try then.
-DlgVillageHeadGoodLuck=Good luck, let me know when it is safe to enter the cave.
+DlgVillageHeadHowToAttack=Wie soll ich denn alleine gegen die Räuber kämpfen?
+DlgVillageHeadNoIdea=Vom Kämpfen habe ich leider keine Ahnung. Ich kann dir diese Axt hier geben, aber eine gute Waffe ist das nicht.
+DlgVillageHeadThanks=Na gut, danke trotzdem. Ich versuche mein Bestes.
+DlgVillageHeadGoodLuck=Viel Glück! Sag Bescheid, wenn die Höhle sicher ist.
 
 # Sequence: intro
-MsgVillageHeadAnnoyed=I am really annoyed by the evil faction, we have to strike back.
-MsgClonkHowToStrike=How can we strike back? They are many and armed to the teeth.
-MsgVillageHeadOrganize=We have to organize ourselves with another village, that is where we are heading.
-MsgClonkPoorGuy=Look at this poor guy, his cabin burned down. What has happened?
-MsgHomelessRobbers=Some robbers stole my goods and burned down my cabin.
-MsgClonkWhere=That is terrible. Do you know where they are?
-MsgHomelessLocation=Well they went into the cave ahead, where they also came from.
-MsgVillageHeadTeachThem=Well, %s here will teach them a lesson.
-MsgHomelessHappy=That would make me very happy.
+MsgVillageHeadAnnoyed=Die dunkle Fraktion ist zu weit gegangen. Wir müssen zurückschlagen.
+MsgClonkHowToStrike=Wie sollen wir zurückschlagen? Das sind so viele und die sind bis an die Zähne bewaffnet.
+MsgVillageHeadOrganize=Wir müssen uns mit anderen Dörfern zusammenschließen. Deshalb sind wir jetzt unterwegs zu einem.
+MsgClonkPoorGuy=Schau dir diesen armen Kerl an. Seine Hütte ist abgebrannt. Was ist passiert?
+MsgHomelessRobbers=Räuber haben mir alles genommen und mein Haus in Brand gesetzt.
+MsgClonkWhere=Wie schrecklich. Weißt du, wo die Räuber jetzt sind?
+MsgHomelessLocation=Die verstecken sich in der Höhle, wo sonst auch.
+MsgVillageHeadTeachThem=Nun, %s hier wird denen eine Lektion erteilen.
+MsgHomelessHappy=Das wäre toll.
 
 # Sequence: outro
-MsgClonkSafe=%s it is safe down here!
-MsgVillageHeadComing=Okay, I am coming down.
-MsgVillageHeadTakeElevator=Let's take this elevator up to the surface.
-MsgVillageHeadPassedCave=Thanks to you we manage to pass this cave and we can safely make it to the other village!
+MsgClonkSafe=%s, es ist jetzt sicher hier unten!
+MsgVillageHeadComing=Gut, ich bin auf dem Weg.
+MsgVillageHeadTakeElevator=Lass uns mit dem Fahrstuhl zur Oberfläche fahren.
+MsgVillageHeadPassedCave=Dank dir sind wir sicher durch diese Höhle gekommen und können nun sicher zum nächsten Dorf gelangen!
