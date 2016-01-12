@@ -25,22 +25,21 @@
 33=Ashes-ashes
 35=SandDry-sand
 
-36=Ore-ore
-
-50=Rock-rock
-51=Rock-rock_smooth
-
-53=Firestone-firestone
-
-54=Coal-coal
-
 55=Sand-sand
 56=Sand-sand
+
+70=Snow-snow1
 
 65=Ice-ice
 67=Ice-ice2
 
-70=Snow-snow1
+50=Rock-rock
+51=Rock-rock_smooth
+
+54=Coal-coal
+53=Firestone-firestone
+
+36=Ore-ore
 
 40=Granite-granite
 42=Granite-granite
