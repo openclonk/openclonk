@@ -9,3 +9,7 @@ MaxSlide=1
 Corrode=60
 Placement=21
 TextureOverlay=amethyst
+LightEmit=128,90,164
+LightSpot=160,96,128
+LightAngle=204
+MinShapeOverlap=30

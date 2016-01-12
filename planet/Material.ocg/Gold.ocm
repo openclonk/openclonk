@@ -13,3 +13,4 @@ TextureOverlay=gold
 LightEmit=0,64,64
 LightSpot=64,128,64
 LightAngle=230
+MinShapeOverlap=10
