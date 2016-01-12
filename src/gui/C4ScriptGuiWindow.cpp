@@ -1893,7 +1893,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 bool C4ScriptGuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &right, int32_t &bottom)
 {
 	const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
-	if (IsRoot() || isMainWindow || (style & C4ScriptGuiWindowStyleFlag::NoCrop))
+	if (IsRoot() || (style & C4ScriptGuiWindowStyleFlag::NoCrop))
 		return false;
 
 	if (pScrollBar->IsVisible())
