@@ -1,26 +1,26 @@
 # Dialogue: Chief
-DlgChiefHello=Hello I am chief of operations of the mines below. But we had a disaster and our dike protecting us from the sea broke, and now the mine is flooded.
-DlgChiefReply=Oh that is terrible, I came here to buy some metal from you.
-DlgChiefNoMetal=Well, we don't have any metal available as we can't transport it out of the mine. My miners are even stuck below.
-DlgChiefHelp=Well, what if I help you get the metal out of the mine?
-DlgChiefAppreciation=That would be wonderful! You can use this pump I have just built, unfortunately it is not strong enough to empty the sea here, but it may be of help.
-DlgChiefReward=Can I get some reward for this?
-DlgChiefMetal=Yes, of course. The metal you can get to the surface you may keep, if you tell me how you did it!
-DlgChiefLorry=I got the lorry with metal up to the surface!
-DlgChiefKeepLorry=That's great, now we can use your method to keep excavating the mine! You may keep the lorry and its contents.
-DlgChiefReally=You can really keep the lorry and the metal.
+DlgChiefHello=Hallo, ich bin der Vorarbeiter dieser Minenoperation. Es gab eine schlimme Katastrophe, der Damm zum Meer ist gebrochen und die Mine geflutet.
+DlgChiefReply=Oh nein, wie schrecklich. Ich bin gekommen, um Metall zu kaufen.
+DlgChiefNoMetal=Nun, wir haben gerade kein Metall da. Unser Transportweg aus der Mine ist geflutet. Ich habe noch Leute, die da unten festsitzen.
+DlgChiefHelp=Was ist, wenn ich euch helfe, das Metall aus der Mine zu bringen?
+DlgChiefAppreciation=Das wäre wundervoll. Du kannst diese Pumpe hier benutzen. Leider ist sie nicht stark genug, um alles Wasser hier wegzupumpen, aber vielleicht ist sie trotzdem nützlich.
+DlgChiefReward=Kriege ich eine Belohnung?
+DlgChiefMetal=Ja, natürlich. Du darfst alles Metall behalten, wenn du nach hier oben bringst. Wenn du mir sagst, wie du das geschafft hast!
+DlgChiefLorry=Hier ist die Lore mit dem Metall!
+DlgChiefKeepLorry=Klasse gemacht. Wir können jetzt die gleiche Methode anwenden, um die Mine weiter auszubeuten. Du kannst alles Metall behalten.
+DlgChiefReally=Du kannst wirklich die Lore und das Metall behalten.
 
 # Dialogue: Miner
-DlgMinerGreeting=Hi, I am %s, are you one of the miners?
-DlgMinerYes=Yes, I am %s. I have been locked down here for more than a day now. Do you have some food?
-DlgMinerNoFood=No, I am sorry. If I find something I'll be back.
-DlgMinerYesFood=Yes, I have a %s, you can have it.
-DlgMinerEatFood=Thank you for the food. How did you get in here? Do you know a way out?
-DlgMinerWayOut=Yes, you can just swim up, along the original path of the elevator.
+DlgMinerGreeting=Hallo, ich bin %s. Bist du einer der Minenleute hier?
+DlgMinerYes=Ja. Mein Name ist %s. Ich bin jetzt seit über einem Tag hier unten eingesperrt. Hast du vielleicht etwas zu essen?
+DlgMinerNoFood=Nein, tut mir leid. Wenn ich etwas finde, komme ich wieder.
+DlgMinerYesFood=Ja, ich habe hier etwas %s. Kannst du haben.
+DlgMinerEatFood=Danke für das Essen! Wie bist du eigentlich hier herunter gekommen? Gibt es einen Weg nach oben?
+DlgMinerWayOut=Ja, man kann einfach nach oben schwimmen, entlang des Fahrstuhlschachtes.
 
 # Dialogue: Explosive Expert
-DlgExpertHello=Hi I am looking for a way to get lorries out of this mine. Can you help?
-DlgExpertNoHelp=I have no clue how to achieve that. I only know about explosives.
-DlgExpertWhatExplosives=Oh explosives! What kind do you have and can I use them?
-DlgExpertUseExplosives=I have dynamite. Please use whatever you can find in the chemical lab or the workshop for your endeavour.
-DlgExpertThanks=Thanks a lot.
+DlgExpertHello=Hallo, ich suche nach einer Möglichkeit, um Loren an die Oberfläche zu bringen. Kannst du mir helfen?
+DlgExpertNoHelp=Dazu fällt mir gar nichts ein. Ich bin hier für Sprengstoffe zuständig.
+DlgExpertWhatExplosives=Oh, Sprengstoffe! Hast du welche, die ich verwenden kann?
+DlgExpertUseExplosives=Dynamit ist da. Nimm das, was du im Chemielabor oder in der Werkstatt findest.
+DlgExpertThanks=Vielen Dank.
