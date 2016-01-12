@@ -1,6 +1,6 @@
 # Goal Description
-MsgGoalName=Tool Production
-MsgGoalDescription=Help the villagers produce tools essential to operate their village.
+MsgGoalName=Werkzeugproduktion
+MsgGoalDescription=Hilf den Dorfbewohnern Werkzeuge herzustellen, die sie dringend brauchen.
 
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
@@ -9,18 +9,18 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialVillageHead=The buildings in Wipfville have been repaired again, but it seems the villagers are lacking tools to continue with their work. Descend into the mines and talk to the village head to let him know you want to help out. Take the elevator down into the mines, stand on the elevator case and press [%s] to grab the case, then press [%s] and [%s] to go up and down.
-MsgTutorialLoamProduction=To move the lorry to the elevator case you need a piece of loam to cross this gap over here. Go to the foundry and grab the bucket, to produce loam you need water and earth. Earth is collected in the bucket whilst you are digging with your shovel.
-MsgTutorialFillBucket=Now that you have both the shovel and the bucket in your inventory you can dig out earth. Dig out some earth to the right of the foundry and the bucket will fill itself automatically.
-MsgTutorialGetBarrel=Good, the bucket is filled, put it back into the foundry and now take out the barrel.
-MsgTutorialFillBarrel=The barrel is a heavy object which needs to be carried with both hands. While carrying the barrel you can't use any of your other inventory items. The barrel will fill itself automatically with once it is submerged in liquid. Find a body of water and swim in it with the barrel, then put the barrel back in the foundry.
-MsgTutorialProduceLoam=Now produce a piece of loam (in the interaction menu opened with [%s]) and take it back to the lorry.
-MsgTutorialMakeLoamBridge=Now stand as close to the edge as possible and close the gap with loam. Select the loam in your inventory and press [%s] in the direction you want to construct the bridge. Then grab the lorry with [%s] and move it to the workshop.
-MsgTutorialProducePickaxe=Transfer the contents of the lorry to the workshop using the interaction menu (open with [%s]). Select the lorry and the workshop and then click the \"transfer all\" button in the middle of the menu. Then produce a pickaxe in the workshop, the rest of the materials will be used by the village head to produce other tools.
-MsgTutorialMineOre=Take the pickaxe and make your way to the ore mine below the foundry. Hack out three pieces of ore. The pickaxe is an alternative to explosives and can be used to mine harder materials like iron ore or gold. To use the pickaxe select it and point your mouse cursor are solid material close to the clonk, then press [%s].
-MsgTutorialPutOre=Collect the three pieces of ore and put them into the foundry. Then talk to the village head.
-MsgTutorialCompleted=Well, you helped the village head and completed this tutorial. But the villagers seem in trouble and Rüdiger got kidnapped... Time to make plans against the evil faction in the next tutorial.
+MsgTutorialVillageHead=Die Gebäude in Wipfdorf wurden zwar repariert, aber damit die Bewohner von Wipfdorf wieder arbeiten können, brauchen sie Werkzeuge. Steige in die Minen hinab und berichte mit dem Dorfoberhaupt, dass du helfen willst. Nimm den Fahrstuhl, um damit in die Minen herunterzufahren. Stell dich dafür auf den Fahrstuhlkorb und drücke [%s] um diesen anzufassen, danach [%s] und [%s] um hinauf oder hinunter zu fahren.
+MsgTutorialLoamProduction=Um die Lore zum Fahrstuhlkorb zu schaffen, brauchst du ein Stück Lehm um damit diese Lücke zu schließen. Lehm kann mit Hilfe des Hochofens hergestellt werden, doch brauchst du dafür Erde und Wasser. Nimm den Eimer aus dem Hochofen, wenn du dort bist. Ein Eimer wird automatisch mit Erde gefüllt, wenn du die Schaufel zum Graben benutzt.
+MsgTutorialFillBucket=Mit der Schaufel und dem Eimer im Inventar kannst du jetzt Erde ausgraben. Benutze die Schaufel gleich rechts vom Hochofen und der Eimer wird sich automatisch mit Erde füllen.
+MsgTutorialGetBarrel=Gut, der Eimer ist jetzt gefüllt. Hole jetzt das Fass aus dem Hochofen.
+MsgTutorialFillBarrel=Ein Fass ist ein schweres Objekt und muss deswegen mit beiden Händen getragen werden. Während du ein solches bei dir hast, kannst du keine anderen Gegenstände aus deinem Inventar benutzen. Das Fass wird automatisch mit Wasser gefüllt, wenn es untergetaucht wird. Finde etwas Wasser und spring mit dem Fass hinein. Bringe das Fass danach zum Hochofen zurück.
+MsgTutorialProduceLoam=Stelle jetzt ein Stück Lehm her (benutze dazu das Interaktionsmenü, welches du mit [%s] öffnen kannst) und bringe es zur Lore.
+MsgTutorialMakeLoamBridge=Stelle dich nun so nah wie möglich an die Kante und schließe die Lücke mit Lehm. Wähle dazu den Lehmklumpen in deinem Inventar aus und drücke [%s] in die Richtung, in die du eine Lehmbrücke errichten willst. Fasse danach die Lore mit [%s] an und schiebe sie zur Werkstatt.
+MsgTutorialProducePickaxe=Mit dem Interaktionsmenü kannst du den Inhalt der Lore in die Werkstatt verschieben (öffne das Menü mit [%s]). Wähle im Menü auf der einen Seite die Lore und auf der anderen die Werkstatt aus und drücke dann den \"Alles verschieben\"-Knopf in der Mitte des Menüs. Stelle danach eine Spitzhacke her (ebenfalls im Interaktionsmenü). Die restlichen Materialien brauchen die Dorfbewohner zur Herstellung anderer Werkzeuge.
+MsgTutorialMineOre=Nimm die Spitzhacke mit und laufe dann zurück zum Erz in der Mine. Schürfe drei Erzklumpen mit der Spitzhacke. Die Spitzhacke kann alternativ statt Sprengstoffen zum Abbau von harten Materialien, wie Eisenerz oder Gold, verwendet werden. Um die Spitzhacke zu verwenden, ziele mit der Maus auf festen Material nahe des Clonks und halte [%s] gedrückt.
+MsgTutorialPutOre=Sammle die drei Erzklumpen ein und bringe sie zum Hochofen. Sprich danach mit dem Dorfoberhaupt.
+MsgTutorialCompleted=Du hast den Dorfbewohnern geholfen und damit diese Lernrunde abgeschlossen. Aber die Dorfbewohner wurden angegriffen und Rüdiger entführt...Zeit, in der nächsten Lernrunde Pläne gegen die dunkle Fraktion zu schmieden.
 
 # Wipf name
 WipfName=Rüdiger
-WipfDescription=Your furry little friend.
+WipfDescription=Dein felliger kleiner Freund.
