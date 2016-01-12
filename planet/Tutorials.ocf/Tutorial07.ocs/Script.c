@@ -257,8 +257,8 @@ global func FxTutorialFindStalactiteTimer(object target, proplist effect, int ti
 
 global func FxTutorialAirshipParkedTimer(object target, proplist effect, int timer)
 {
-	var clonk = FindObject(Find_ID(Clonk), Find_Distance(30, 700, 230));
-	var airship = FindObject(Find_ID(Airship), Find_Distance(30, 700, 230));
+	var clonk = FindObject(Find_ID(Clonk), Find_Distance(30, 688, 200));
+	var airship = FindObject(Find_ID(Airship), Find_Distance(30, 688, 200));
 	if (clonk && airship)
 	{
 		var plr = clonk->GetOwner();
@@ -299,7 +299,7 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	// Show airship parking space.
 	if (index == 1)
-		TutArrowShowPos(700, 240, 135);
+		TutArrowShowPos(688, 220, 135);
 	// Show dynamite placement location.
 	if (index == 3)
 		TutArrowShowPos(800, 200, 60);	
