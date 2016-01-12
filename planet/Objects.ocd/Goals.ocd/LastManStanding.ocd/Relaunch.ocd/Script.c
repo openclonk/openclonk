@@ -63,7 +63,7 @@ private func OpenWeaponMenu(object clonk)
 			menu = CreateObject(MenuStyle_Default, nil, nil, clonk->GetOwner());
 			menu->SetPermanent();
 			menu->SetTitle(Format("$MsgWeapon$", time / 36));
-			clonk->SetMenu(menu); 
+			clonk->SetMenu(menu, true); 
 			
 			for (var weapon in weapons)
 				menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
