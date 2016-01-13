@@ -211,30 +211,11 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 	return true;
 }
 
-namespace
-{
-	int GetNeedTexSize(int Size)
-	{
-		int iNeedSize = Size;
-
-	#ifndef USE_CONSOLE
-		if (!pGL || !GLEW_ARB_texture_non_power_of_two)
-	#endif
-		{
-			int n=0;
-			while ((1<<++n) < iNeedSize) {}
-			iNeedSize = 1<<n;
-		}
-
-		return iNeedSize;
-	}
-}
-
 bool C4Surface::CreateTextures(int MaxTextureSize, int Flags)
 {
 	// free previous
 	FreeTextures();
-	iTexSize=std::min(GetNeedTexSize(std::max(Wdt, Hgt)), pDraw->MaxTexSize);
+	iTexSize=std::min(std::max(Wdt, Hgt), pDraw->MaxTexSize);
 	if (MaxTextureSize)
 		iTexSize=std::min(iTexSize, MaxTextureSize);
 	// get the number of textures needed for this size
@@ -251,8 +232,8 @@ bool C4Surface::CreateTextures(int MaxTextureSize, int Flags)
 		{
 			int sizeX = iTexSize;
 			int sizeY = iTexSize;
-			if(x == iTexX-1) sizeX = GetNeedTexSize( (Wdt - 1) % iTexSize + 1);
-			if(y == iTexY-1) sizeY = GetNeedTexSize( (Hgt - 1) % iTexSize + 1);
+			if(x == iTexX-1) sizeX = (Wdt - 1) % iTexSize + 1;
+			if(y == iTexY-1) sizeY = (Hgt - 1) % iTexSize + 1;
 
 			textures.emplace_back(sizeX, sizeY, Flags);
 			
