@@ -1030,6 +1030,9 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 	Child->AttachParent = this;
 
 	MapBonesOfChildToParent(Parent->GetMesh().GetSkeleton(), Child->GetMesh().GetSkeleton());
+
+	if(OwnChild)
+		Child->DenumeratePointers();
 }
 
 bool StdMeshInstance::AttachedMesh::ClearPointers(class C4Object* pObj)
