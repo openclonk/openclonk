@@ -510,8 +510,12 @@ public func OnInteractionMenuOpen(object menu)
 {
 	_inherited(menu, ...);
 	
-	var surrounding = CreateObject(Helper_Surrounding);
-	surrounding->InitFor(this, menu);
+	// Allow picking up stuff from the surrounding only if not in a container itself.
+	if (!Contained())
+	{
+		var surrounding = CreateObject(Helper_Surrounding);
+		surrounding->InitFor(this, menu);
+	}
 }
 
 /* Mesh transformations */
