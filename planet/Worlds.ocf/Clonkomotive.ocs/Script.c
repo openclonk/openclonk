@@ -76,15 +76,17 @@ public func InitializePlayer(plr)
 	GivePlayerAirKnowledge(plr);
 	GivePlayerSpecificKnowledge(plr, [WoodenBridge]);
 	RemovePlayerSpecificKnowledge(plr, [WallKit]);
-	
+
 	// Give the player the elementary base materials and some tools.
 	GivePlayerElementaryBaseMaterial(plr);
 	GivePlayerToolsBaseMaterial(plr);
 	
 	// Take over small village at the start of the map.
-	for (var structure in FindObjects(Find_Func("IsFlagpole")))
-		structure->SetOwner(plr);
-	
+	for (var building in FindObjects(Find_Or(Find_ID(Sawmill), Find_ID(WindGenerator), Find_ID(ToolsWorkshop))))
+	{
+		building->SetOwner(plr);
+	}
+
 	// Set zoom range.
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct | PLRZOOM_LimitMax);
 	SetPlayerViewLock(plr, true);

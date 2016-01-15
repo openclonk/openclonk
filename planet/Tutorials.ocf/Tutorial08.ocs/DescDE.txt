@@ -1,7 +1,7 @@
 Wasserwerk
- 
-You were sent to the mine where the villagers of Wipfville get their metal supplies. Unfortunately the mine got flooded as a dike broke during a recent disaster. The chief of the mining operation tells you the mine is still in operation, but they have trouble getting the metal out of the mine. This is where you come in: help the miners salvage their lorries filled with metal.
 
-Goal: Salvage the lorry from the flooded mine.
+Du wurdest zu der Mine geschickt, aus der die Bewohner von Wipfdorf ihre Metallvorräte beziehen. Dummerweise wurde die Mine bei einem katastrophalen Dammbruch geflutet. Der Vorarbeiter der Minenarbeiter berichtet, dass die Mine noch in Betrieb ist, aber das Metall nicht mehr aus der Mine geschafft werden kann. Hier ist deine Aufgabe: Hilf den Minenarbeitern die Loren mit dem Metall zu bergen.
 
-Tutorial explains: Pump and liquids, elevator, wall kits.
+Ziel: Berge die Loren aus der überfluteten Mine.
+
+Lernrunde erklärt: Pumpe und Flüssigkeiten, Fahrstuhl, Wandbausatz.

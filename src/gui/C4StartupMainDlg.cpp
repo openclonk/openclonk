@@ -154,7 +154,9 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextRemove(C4GUI::Element *p
 
 void C4StartupMainDlg::OnPlayerSelContextAddPlr(C4GUI::Element *pTarget, const StdCopyStrBuf &rsFilename)
 {
-	SAddModule(Config.General.Participants, rsFilename.getData());
+	// De-select all other players for now (see #1529)
+	SCopy(rsFilename.getData(), Config.General.Participants);
+	//SAddModule(Config.General.Participants, rsFilename.getData());
 	UpdateParticipants();
 }
 

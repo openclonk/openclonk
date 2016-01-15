@@ -538,7 +538,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	if (index == 4)
 	{
 		var clonk = FindObject(Find_OCF(OCF_CrewMember), Find_Owner(plr));
-		var rock = FindObject(Find_ID(Rock), Sort_Distance(clonk->GetX(), clonk->GetY()));
+		var rock = FindObject(Find_ID(Rock), Find_NoContainer(), Find_OCF(OCF_InFree), Find_Distance(60, clonk->GetX(), clonk->GetY()), Sort_Distance(clonk->GetX(), clonk->GetY()));
 		TutArrowShowTarget(rock);
 	}
 	// Show the sawmill construction site.

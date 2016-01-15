@@ -1,2 +1,2 @@
-DE:Luftmine
+DE:Luftbergbau
 US:Airborne Mining

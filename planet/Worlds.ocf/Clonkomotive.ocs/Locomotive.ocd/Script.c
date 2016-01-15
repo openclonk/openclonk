@@ -138,8 +138,8 @@ private func UpdateFuel()
 
 private func GetBarrel()
 {
-	for (var barrel in FindObjects(Find_ID(Barrel), Find_Container(this)))
-		if (barrel->GetFillLevel())
+	for (var barrel in FindObjects(Find_Func("IsBarrel"), Find_Container(this)))
+		if (barrel->GetFillLevel() > 0)
 			return barrel;
 	return;
 }
@@ -177,7 +177,7 @@ public func IsContainer() { return true; }
 
 protected func RejectCollect(id object_id)
 {
-	if (object_id == Coal || object_id == Barrel)
+	if (object_id == Coal || object_id == Barrel || object_id == MetalBarrel)
 		return false;
 	return true;
 }

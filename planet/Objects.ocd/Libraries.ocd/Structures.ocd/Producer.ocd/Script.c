@@ -619,8 +619,10 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// But first hold the production until the power system gives it ok.
 	// Always register the power request even if power need is zero. The
 	// power network handles this correctly and a producer may decide to
-	// change its power need during production.
-	RegisterPowerRequest(this->PowerNeed());
+	// change its power need during production. Only do this for producers
+	// which are power consumers.
+	if (this->~IsPowerConsumer())
+		RegisterPowerRequest(this->PowerNeed());
 	
 	return FX_OK;
 }
@@ -659,8 +661,6 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
 	
-	//Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
-	
 	// Check if production time has been reached.
 	if (effect.Duration >= ProductionTime(effect.Product))
 		return FX_Execute_Kill;
@@ -673,21 +673,20 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if (temp) 
 		return FX_OK;
 	
-	// no need to consume power anymore
-	// always unregister even if there's a queue left to process, because OnNotEnoughPower relies on it
-	// and it gives other producers the chance to get some power
-	UnregisterPowerRequest();
+	// No need to consume power anymore. Always unregister even if there's a queue left to
+	// process, because OnNotEnoughPower relies on it and it gives other producers the chance
+	// to get some power. Do not unregister if this producer does not consumer power.
+	if (this->~IsPowerConsumer())
+		UnregisterPowerRequest();
 
 	if (reason != 0)
 		return FX_OK;
 
 	// Callback to the producer.
-	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
 	var product = CreateObject(effect.Product);
 	OnProductEjection(product);
-	
 	return FX_OK;
 }
 

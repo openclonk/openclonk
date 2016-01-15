@@ -167,7 +167,7 @@ public func OnRopeBreak()
 
 /*-- Grapple rope controls --*/
 
-public func FxIntGrappleControlControl(object target, proplist effect, int ctrl,  int x, int y, int strength, repeat, release)
+public func FxIntGrappleControlControl(object target, proplist effect, int ctrl, int x, int y, int strength, repeat, release)
 {
 	// Cancel this effect if clonk is now attached to something.
 	if (target->GetProcedure() == "ATTACH") 
@@ -337,9 +337,20 @@ public func FxIntGrappleControlTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
-private func Trans_RotX(int rotation, int ox, int oy)
+public func FxIntGrappleControlOnCarryHeavyPickUp(object target, proplist effect, object heavy_object)
 {
-	return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation, 0, 0, 1), Trans_Translate(ox, oy));
+	// Remove the control effect when a carry-heavy object is picked up.
+	// The rope will then be drawn in automatically.
+	RemoveEffect(nil, target, effect);
+	return;
+}
+
+public func FxIntGrappleControlRejectCarryHeavyPickUp(object target, proplist effect, object heavy_object)
+{
+	// Block picking up carry-heavy objects when this clonk is hanging on a rope.
+	if (rope->PullObjects())
+		return true;
+	return false;
 }
 
 public func FxIntGrappleControlStop(object target, proplist effect, int reason, int tmp)
@@ -359,6 +370,11 @@ public func FxIntGrappleControlStop(object target, proplist effect, int reason, 
 		this->GetRope()->BreakRope();
 	}
 	return FX_OK;
+}
+
+private func Trans_RotX(int rotation, int ox, int oy)
+{
+	return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation, 0, 0, 1), Trans_Translate(ox, oy));
 }
 
 public func RejectWindbagForce() { return true; }

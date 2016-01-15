@@ -31,7 +31,7 @@ Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/), UI::Confirmed (modified)
-CGEffex         - Splash1-3 (http://www.freesound.org/people/CGEffex/sounds/98335/)
+CGEffex         - Splash1-3 (http://www.freesound.org/people/CGEffex/sounds/98335/), Swim1-3 (modified by Sven2 from Splash1-3)
 Mirors_         - Pshshsh (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)

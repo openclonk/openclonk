@@ -36,7 +36,7 @@ protected func OnGoalsFulfilled()
 	// Achievement: Tutorial completed.
 	GainScenarioAchievement("TutorialCompleted", 3);	
 	// Dialogue options -> next round.
-	SetNextMission("Tutorials.ocf\\Tutorial06.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextMission("Tutorials.ocf\\Tutorial07.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }

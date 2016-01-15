@@ -295,11 +295,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 			case AB_Inc: // ++
 				CheckOpPar(C4V_Int, "++");
-				++(*pCurVal);
+				pCurVal->SetInt(pCurVal->_getInt() + 1);
 				break;
 			case AB_Dec: // --
 				CheckOpPar(C4V_Int, "--");
-				--(*pCurVal);
+				pCurVal->SetInt(pCurVal->_getInt() - 1);
 				break;
 			// postfix
 			case AB_Pow:  // **

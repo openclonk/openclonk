@@ -1,6 +1,6 @@
 # Goal Description
 MsgGoalName=Edelsteine abbauen
-MsgGoalDescription=Find and mine the gem stalactite, then sell the gems at the flagpole.
+MsgGoalDescription=Finde den Edelstein-Stalaktit, baue Edelsteine ab und verkaufe sie bei der Flagge.
 
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
@@ -9,9 +9,9 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialFindRubies=You are high up in the sky in an area with several sky islands. Talk to the pilot for some advice about the area and then take the airship and find the ruby stalactite hanging from one of the islands. You can grab the airship with [%s] and then steer it with %s.
-MsgTutorialParkAirship=Ah you found the ruby stalactite. Now it is time to blast it to gems! Park your airship in front of the rope ladders over there.
-MsgTutorialLadderJump=Good, now your companion will control the airship and you can jump to the ruby stalactite. Jump towards a hanging rope ladder and you will automatically grab it. You can switch sides or let go of the ladder by pressing the movement keys [%s]/[%s]. Instead of letting go you can also jump off the ladder if you press the movement key corresponding to the side your a hanging on while climbing up.
-MsgTutorialBlastGems=Okay, you can now plant some dynamite sticks on the stalactite and get back on board of the airship. Then fuse the dynamite to blast the stalactite.
-MsgTutorialCollectGems=Perfect blast! Now collect at least five gems and sell them back at the flagpole, you can sell them by transfering them into the flagpole using the interaction menu. If you are lazy you can use the teleglove to pick up the gems from the sky island below.
-MsgTutorialCompleted=Well done, you have stolen enough rubies from the evil wipf faction to hire some clonks for your attack on the faction's stronghold.
+MsgTutorialFindRubies=Schau an, du bist weit oben auf einigen Himmelsinseln. Sprich mit dem Piloten und frag ihn nach Hinweisen über diese Gegend. Nimm danach das Luftschiff und such den Edelstein-Stalaktit, der von einer Himmelsinsel hängen soll. Du kannst das Luftschiff mit [%s] anfassen und mit %s steuern.
+MsgTutorialParkAirship=Ah, du hast den Stalaktit gefunden. Es ist Zeit, Edelsteine herauszusprengen! Parke das Luftschiff vor den Strickleitern dort.
+MsgTutorialLadderJump=Gut. Dein Kollege wird ab jetzt das Luftschiff steuern. Du kannst bist zum Rubingestein springen. Springe an eine Strickleiter und dein Clonk wird sich automatisch festhalten. Mit den Bewegungstasten ([%s]/[%s]) kannst du an den Leitern die Seiten wechseln oder sie loslassen. Wenn du nach oben kletterst und die Richtungstasten der Richtung drückst, an der du gerade an einer Leiter hängst, kannst du auch abspringen.
+MsgTutorialBlastGems=Gut, jetzt kannst du einige Dynamitstangen an dem Stalaktit befestigen und danach zum Luftschiff zurückkehren. Drück danach den Zünder, um den Stalaktiten zu sprengen.
+MsgTutorialCollectGems=Eine perfekte Sprengung! Sammle jetzt wenigstens fünf Edelsteine und verkaufe sie an der Flagge. Du kannst Dinge verkaufen, indem du sie im Interaktionsmenü in die Flage ablegst. Wenn du keine Lust hast, alle Edelsteine vom Boden zu sammeln, kannst du auch den Telehandschuh aus der Lore verwenden, um die Brocken von der Himmelsinsel zu heben.
+MsgTutorialCompleted=Gut gemacht. Du hast genug Rubine von der Dunkelwipf-Fraktion gestohlen, um damit Clonks für einen Angriff auf die Feste anzuheuern.

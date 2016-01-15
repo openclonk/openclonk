@@ -147,7 +147,16 @@ func FxIntCheckObjectsStart(target, effect fx, temp)
 
 func FxIntCheckObjectsTimer(target, effect fx)
 {
-	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), Find_NoContainer(), Find_Layer(target->GetObjectLayer()),
+	// If contained, leave the search area intact, because otherwise we'd have to pass a "nil" parameter to FindObjects (which needs additional hacks).
+	// This is a tiny bit slower (because the area AND the container have to be checked), but the usecase of contained Clonks is rare anyway.
+	var container_restriction = Find_NoContainer();
+	var container = target->Contained();
+	if (container)
+	{
+		container_restriction = Find_Or(Find_Container(container), Find_InArray([container]));
+	}
+	
+	var new_objects = FindObjects(Find_AtRect(target->GetX() - 5, target->GetY() - 10, 10, 20), container_restriction, Find_Layer(target->GetObjectLayer()),
 		// Find all containers and objects with a custom menu.
 		Find_Or(Find_Func("IsContainer"), Find_Func("HasInteractionMenu")),
 		// Do not show objects with an extra slot though - even if they are containers. They count as items here.

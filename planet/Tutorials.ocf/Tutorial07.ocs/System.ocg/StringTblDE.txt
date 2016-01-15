@@ -1,13 +1,13 @@
 # Dialogue: Pilot
-DlgPilotHello=Hello I am %s, have you seen sky islands before?
-DlgPilotReply=No, but I have been told they are home to gem stalactites.
-DlgPilotBats=Yes, indeed. But you have to be careful, they are also home to bats which become active during night.
-DlgPilotAgainstBats=Oh, what can I do against bats?
-DlgPilotBowArrow=Well, if they attack you... You can fend them off using the bow and arrows.
-DlgPilotHaveBow=I see, well, do you have a bow for me?
-DlgPilotArmory=I think you can produce one in the armory together with arrows, I have built an armory on the island to the lower right from here.
+DlgPilotHello=Hallo, ich bin %s. Hast du schon einmal Himmelsinseln gesehen?
+DlgPilotReply=Nein, aber mir wurde gesagt, dass es hier Edelstein-Stalaktiten gibt.
+DlgPilotBats=Ja, das stimmt. Aber ebenso gibt es hier nachtaktive Fledermäuse, vor denen man sich in Acht nehmen muss.
+DlgPilotAgainstBats=Oh. Kann man etwas gegen die Fledermäuse tun?
+DlgPilotBowArrow=Nun ja, wenn sie angreifen...mit Pfeil und Bogen könntest du sie abwehren.
+DlgPilotHaveBow=Ich verstehe. Hast du einen Bogen für mich?
+DlgPilotArmory=Nein, aber in der Waffenschmiede kannst du einen Bogen und Pfeile herstellen. Ich habe eine Waffenschmiede auf einer unten rechts von hier gebaut.
 
 # Messages: Pilot
-DlgPilotGem0=Yeah a gem!
-DlgPilotGem1=I'll take that gem!
-DlgPilotGem2=That gem is mine!
+DlgPilotGem0=Yeah, ein Edelstein!
+DlgPilotGem1=Den Stein nehme ich!
+DlgPilotGem2=Der Stein gehört mir!

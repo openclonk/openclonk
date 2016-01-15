@@ -66,6 +66,7 @@ private:
 		void SetFilename(const StdStrBuf &sNewFN);
 
 	public:
+		C4GUI::CheckBox *GetCheckBox() const { return pCheck; }
 		ListItem *GetNext() const { return static_cast<ListItem *>(BaseClass::GetNext()); }
 		virtual uint32_t GetColorDw() const = 0; // get drawing color for portrait
 		bool IsActivated() const { return pCheck->GetChecked(); }

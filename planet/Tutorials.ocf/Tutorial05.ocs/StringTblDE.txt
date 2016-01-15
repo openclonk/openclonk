@@ -1,6 +1,6 @@
 # Goal Description
-MsgGoalName=Reach the village
-MsgGoalDescription=Traverse the cave and reach the village on the other side together with the village head.
+MsgGoalName=Erreiche das nächste Dorf
+MsgGoalDescription=Durchquere zusammen mit dem Dorfoberhaupt die Höhle bis zum nächsten Dorf.
 
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
@@ -9,10 +9,10 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
-MsgTutorialTalkToHead=You need to enter the cave and take down the robbers. Talk to the village head first, hopefully he has some idea on how to do this.
-MsgTutorialNotHelpful=That was not very helpful, but at least you have a weapon. You can test the axe on the straw men in the grain field, press [%s] to use axe and destroy the straw men.
-MsgTutorialFirstEnemy=The first robber in the cave has a bow and shoots arrows at you, maybe there is another way to approach him instead of engaging him head-on. Kill your enemy, if you die in the process you will respawn, so you can try multiple times.
-MsgTutorialOnRespawn=Okay, that did not work, maybe you can reach that chest over there by digging through the earth. Then take whatever is in the chest and use that to kill the robber. Some weapons can be thrown, just aim your mouse cursor at where you want to throw that weapon.
-MsgTutorialKilledFirst=Well done, that guy is eliminated. You can take his weapons and proceed to explore the cave and find more robbers. The bow can be used to shoot enemies over larger distance, aim with the mouse cursor in the direction you want to shoot.
-MsgTutorialKilledSecond=And another one down, you are getting the hang of it! He dropped some bread, pick it up and press [%s] to eat it. Then continue along the cave's path.
-MsgTutorialCompleted=Well done! Now you are a trained fighter. There are many more weapons in this game which you can try out in later tutorials or in other rounds. 
+MsgTutorialTalkToHead=Du musst die Höhle betreten und dich den Räubern stellen. Sprich zunächst mit dem Dorfoberhaupt, vielleicht hat er Ideen, die dir helfen können.
+MsgTutorialNotHelpful=Das war nicht sonderlich hilfreich, aber immerhin hast du eine Waffe. Diese kannst du erst mal an den Strohpuppen im Kornfeld testen. Drücke [%s] um die Axt zu benutzen und die Strohpuppen zu zerstören.
+MsgTutorialFirstEnemy=Der erste Räuber in der Höhle hat Pfeil und Bogen und kann dich aus der Ferne bekämpfen. Blindlings voranstürmen, wird dir nicht helfen. Vielleicht findest du eine Möglichkeit, ihn besser anzugreifen. Sollte dein Clonk beim Kampf umkommen, gibt es einen Respawn so oft wie nötig.
+MsgTutorialOnRespawn=Hm, das hat nicht so gut funktioniert. Vielleicht kannst du die Kiste da drüben erreichen, wenn du durch die Erde gräbst. Nimm, was auch immer in der Kiste ist zum Kämpfen. Manche Waffen können geworfen werden. Ziele einfach mit der Maus in die Richtung, in die du werfen möchtest.
+MsgTutorialKilledFirst=Gut gemacht, der ist erledigt. Nimm dir seine Waffe und gehe tiefer in die Höhle, wo sicher noch mehr Räuber sind. Mit dem Bogen lassen sich Feinde aus großer Entfernung bekämpfen. Ziele einfach mit der Maus in die Richtung, in die du schießen willst.
+MsgTutorialKilledSecond=Und noch einer weg! So langsam kriegst du den Dreh raus. Dieser hier hat etwas Brot fallen gelassen. Nimm das Brot und drücke [%s] um es zu essen. So füllst deine Lebensenergie wieder auf. Laufe danach weiter den Pfad entlang.
+MsgTutorialCompleted=Ausgezeichnet! Jetzt bist du ein ausgebildeter Kämpfer. Es gibt noch weitere Waffen in diesem Spiele, die du in späteren Lernrunden oder anderen Szenarien ausprobieren kannst.

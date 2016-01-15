@@ -26,5 +26,5 @@ SET(C4XVER1             7)
 SET(C4XVER2             0)
 
 # Set this variable to any string for pre-release versions, like "alpha" or
-# "rc1". Don't supply a value for release versions.
-SET(C4VERSIONEXTRA      "alpha0")
+# "rc1". Don't supply a value (FALSE) for release versions.
+SET(C4VERSIONEXTRA      FALSE)

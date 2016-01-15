@@ -18,10 +18,24 @@ protected func RejectCollect(id objid, object obj)
 	// Carry heavy only gets picked up if none held already
 	if(this.inventory.force_collection && obj->~IsCarryHeavy())
 	{
-		// collection of that object magically disabled?
+		// Collection of that object magically disabled?
 		if(GetEffect("NoCollection", obj)) return true;
+		
+		// Do callbacks to control effects to see if the effect blocks picking up a carry heavy object.
+		var block_carry_heavy = false;
+		var count = GetEffectCount("*Control*", this), control_effect;
+		while (count--)
+		{
+			control_effect = GetEffect("*Control*", this, count);
+			if (control_effect && EffectCall(this, control_effect, "RejectCarryHeavyPickUp", obj))
+			{
+				block_carry_heavy = true;
+				break;
+			}
+		}
 
-		if(IsCarryingHeavy())
+		// Don't pick up if already carrying a heavy object or if it is blocked.
+		if (IsCarryingHeavy() || block_carry_heavy)
 		{
 			CustomMessage("$TxtHandsFull$", this, this->GetController(), 0, 0, 0xff0000);
 			return true;
@@ -120,6 +134,15 @@ public func CarryHeavy(object target)
 
 	// Update attach stuff
 	this->~OnSlotFull();
+	
+	// Do callbacks to control effects for this clonk that a carry heavy object has been picked up.
+	var count = GetEffectCount("*Control*", this), control_effect;
+	while (count--)
+	{
+		control_effect = GetEffect("*Control*", this, count);
+		if (control_effect)
+			EffectCall(this, control_effect, "OnCarryHeavyPickUp", target);
+	}
 
 	return true;
 }

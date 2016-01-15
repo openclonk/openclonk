@@ -114,7 +114,7 @@ public:
 
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
-	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
+	void SetInt(int32_t i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
@@ -129,6 +129,7 @@ public:
 	bool IsIdenticalTo(const C4Value &cmp) const { return GetType()==cmp.GetType() && GetData()==cmp.GetData(); }
 
 	// Change and set Type to int in case it was nil or bool before
+	// Use with care: These don't handle int32_t overflow
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
 	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
 	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }

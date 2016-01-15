@@ -13,7 +13,7 @@ DlgFiremanDive=Oh, I just dive into any small lake I see with the barrel. There 
 # Dialogue: Builder
 DlgBuilderThanks=Thank you for constructing that flagpole.
 DlgBuilderNoProblem=No problem.
-DlgBuilderPowerConnection=With that flagpole the elevator is not connected to the power sources of our village, as you can see.
+DlgBuilderPowerConnection=With that flagpole the elevator is now connected to the power sources of our village, as you can see.
 
 # Dialogue: Farmer
 DlgFarmerWipf=Hi, how is my wipf doing?

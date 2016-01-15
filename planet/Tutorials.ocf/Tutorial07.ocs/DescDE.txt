@@ -1,7 +1,7 @@
-Airborne Mining
+Luftbergbau
 
-Up high in the skies, far above the stronghold of the evil wipf faction, one of the villagers has an airbase. The head of Wipfville has asked you to help him mine gems from the sky islands over there. The clunkers can help the villagers hire some men in their fight against the evil faction.
+Weit oben im Himmel, weit über der Feste der Dunkelwipf-Fraktion, hat einer der Dorfbewohner eine Himmelsbasis. Das Dorfoberhaupt hat dich gebeten, beim Abbau der Edelsteine auf diesen Inseln zu helfen. Die dadurch erwirtschafteten Clunker können helfen, einige Clonks zum Kampf geben die Dunkelwipf-Fraktion anzuwerben.
 
-Goal: Mine some gems from the sky islands.
+Ziel: Baue Edelsteine von den Himmelsinseln ab.
 
-Tutorial explains: Airship, rope ladder, selling valuables.
+Lernrunde erklärt: Luftschiff, Strickleiter, Verkauf von Wertsachen.

@@ -53,7 +53,7 @@ public:
 #endif
 
 	void Update(C4Rect r, const FLOAT_RECT& vp);
-	void Render(const C4TargetFacet *pOnScreen = NULL);
+	bool Render(const C4TargetFacet *pOnScreen = NULL);
 
 	// Fills a 2x3 matrix to transform fragment coordinates to light texture coordinates
 	void GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const;
