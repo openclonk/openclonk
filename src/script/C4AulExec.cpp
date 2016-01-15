@@ -146,37 +146,53 @@ void C4AulExec::ClearPointers(C4Object * obj)
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors)
 {
-	// Push parameters
-	C4Value *pPars = pCurVal + 1;
-	if (pnPars)
-		for (int i = 0; i < C4AUL_MAX_Par; i++)
-			PushValue(pnPars[i]);
-	if (pCurVal + 1 - pPars > pSFunc->GetParCount())
-		PopValues(pCurVal + 1 - pPars - pSFunc->GetParCount());
-	else
-		PushNullVals(pSFunc->GetParCount() - (pCurVal + 1 - pPars));
-
-	// Push a new context
-	C4AulScriptContext ctx;
-	ctx.tTime = 0;
-	ctx.Obj = p;
-	ctx.Return = NULL;
-	ctx.Pars = pPars;
-	ctx.Vars = pCurVal + 1;
-	ctx.Func = pSFunc;
-	ctx.CPos = NULL;
-	PushContext(ctx);
-
-	// Execute
-	return Exec(pSFunc->GetCode(), fPassErrors);
-}
-
-C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
-{
-
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
+	C4Value *pPars = pCurVal + 1;
+	try
+	{
+		// Push parameters
+		assert(pnPars);
+		for (int i = 0; i < pSFunc->GetParCount(); i++)
+			PushValue(pnPars[i]);
 
+		// Push a new context
+		C4AulScriptContext ctx;
+		ctx.tTime = 0;
+		ctx.Obj = p;
+		ctx.Return = NULL;
+		ctx.Pars = pPars;
+		ctx.Vars = pCurVal + 1;
+		ctx.Func = pSFunc;
+		ctx.CPos = NULL;
+		PushContext(ctx);
+
+		// Execute
+		return Exec(pSFunc->GetCode());
+	}
+	catch (C4AulError &e)
+	{
+		if(!e.shown) e.show();
+		// Unwind stack
+		while (pCurCtx > pOldCtx)
+		{
+			pCurCtx->dump(StdStrBuf(" by: "));
+			PopContext();
+		}
+		PopValuesUntil(pPars - 1);
+		// Pass?
+		if (fPassErrors)
+			throw;
+		// Trace
+		LogCallStack();
+	}
+
+	// Return nothing
+	return C4VNull;
+}
+
+C4Value C4AulExec::Exec(C4AulBCC *pCPos)
+{
 	try
 	{
 
@@ -792,29 +808,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	}
 	catch (C4AulError &e)
 	{
-		if(!e.shown) e.show();
 		// Save current position
 		assert(pCurCtx->Func->GetCode() <= pCPos);
 		pCurCtx->CPos = pCPos;
-		// Unwind stack
-		C4Value *pUntil = NULL;
-		while (pCurCtx >= pOldCtx)
-		{
-			pCurCtx->dump(StdStrBuf(" by: "));
-			pUntil = pCurCtx->Pars - 1;
-			PopContext();
-		}
-		if (pUntil)
-			PopValuesUntil(pUntil);
-		// Pass?
-		if (fPassErrors)
-			throw;
-		// Trace
-		LogCallStack();
+		throw;
 	}
-
-	// Return nothing
-	return C4VNull;
 }
 
 C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList *pContext)
@@ -1038,7 +1036,8 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 	try
 	{
 		pFunc->ParseFn(&::ScriptEngine, context);
-		C4Value vRetVal(Exec(pFunc.get(), p, NULL, fPassErrors));
+		C4AulParSet Pars;
+		C4Value vRetVal(Exec(pFunc.get(), p, Pars.Par, fPassErrors));
 		// profiler
 		StopDirectExec();
 		return vRetVal;

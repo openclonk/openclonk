@@ -79,7 +79,6 @@ private:
 	friend class C4AulProfiler;
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
-	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 	C4Value DirectExec(C4PropList *p, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL);
 
 	void StartTrace();
@@ -94,6 +93,7 @@ public:
 	void ClearPointers(C4Object *);
 
 private:
+	C4Value Exec(C4AulBCC *pCPos);
 	void PushContext(const C4AulScriptContext &rContext);
 	void PopContext();
 
