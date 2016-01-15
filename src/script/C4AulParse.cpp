@@ -130,11 +130,11 @@ public:
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
-	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, enum Type Type):
-			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(pOrgScript->Engine),
+	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, C4AulScriptEngine *Engine):
+			Fn(Fn), Host(NULL), pOrgScript(NULL), Engine(Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Type(Type),
+			Type(C4AulParse::PARSER),
 			ContextToExecIn(context),
 			fJump(false),
 			iStack(0),
@@ -1227,11 +1227,11 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 	throw C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
+void C4AulScriptFunc::ParseFn(C4AulScriptEngine *Engine, C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
-	C4AulParse state(this, context, C4AulParse::PARSER);
+	C4AulParse state(this, context, Engine);
 	state.Parse_DirectExec();
 }
 

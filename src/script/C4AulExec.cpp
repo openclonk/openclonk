@@ -1027,29 +1027,29 @@ C4Value C4AulExec::DirectExec(C4PropList *p, const char *szScript, const char *s
 #endif
 	// profiler
 	StartDirectExec();
-	C4ScriptHost * script = &::GameScript;
-	if (p == ::ScriptEngine.GetPropList())
-		script = NULL;
+	C4PropListStatic * script = ::GameScript.GetPropList();
+	if (p && p->IsStatic())
+		script = p->IsStatic();
 	else if (p && p->GetDef())
-		script = &p->GetDef()->Script;
+		script = p->GetDef();
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(script ? script->GetPropList() : p->IsStatic(), script, 0, szScript);
+	auto pFunc = std::make_unique<C4AulScriptFunc>(script, nullptr, nullptr, szScript);
 	// Parse function
 	try
 	{
-		pFunc->ParseFn(context);
-		C4Value vRetVal(Exec(pFunc, p, NULL, fPassErrors));
-		delete pFunc; pFunc = 0;
+		pFunc->ParseFn(&::ScriptEngine, context);
+		C4Value vRetVal(Exec(pFunc.get(), p, NULL, fPassErrors));
 		// profiler
 		StopDirectExec();
 		return vRetVal;
 	}
 	catch (C4AulError &ex)
 	{
-		delete pFunc;
 		if(fPassErrors)
 			throw;
 		ex.show();
+		LogCallStack();
+		StopDirectExec();
 		return C4VNull;
 	}
 }
