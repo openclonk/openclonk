@@ -1022,29 +1022,32 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 	// Swimming
 	else if(!GBackSemiSolid(0, -5))
 	{
-		var percent = GetAnimationPosition(GetRootAnimation(5))*200/GetAnimationLength("Swim");
-		percent = (percent%100);
-		if( percent < 40 )
+		if (GBackLiquid()) // re-check water background before effects to prevent waves in wrong color
 		{
-			if(iTime%5 == 0)
+			var percent = GetAnimationPosition(GetRootAnimation(5)) * 200 / GetAnimationLength("Swim");
+			percent = (percent % 100);
+			if (percent < 40)
 			{
-				var phases = PV_Linear(0, 7);
-				if (GetDir() == 1) phases = PV_Linear(8, 15);
-				var color = GetAverageTextureColor(GetTexture(0, 0));
-				var particles =
+				if (iTime % 5 == 0)
 				{
-					Size = 16,
-					Phase = phases,
-					CollisionVertex = 750,
-					OnCollision = PC_Die(),
-					R = (color >> 16) & 0xff,
-					G = (color >>  8) & 0xff,
-					B = (color >>  0) & 0xff,
-					Attach = ATTACH_Front,
-				};
-				CreateParticle("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
+					var phases = PV_Linear(0, 7);
+					if (GetDir() == 1) phases = PV_Linear(8, 15);
+					var color = GetAverageTextureColor(GetTexture(0, 0));
+					var particles =
+					{
+						Size = 16,
+						Phase = phases,
+						CollisionVertex = 750,
+						OnCollision = PC_Die(),
+						R = (color >> 16) & 0xff,
+						G = (color >> 8) & 0xff,
+						B = (color >> 0) & 0xff,
+						Attach = ATTACH_Front,
+					};
+					CreateParticle("Wave", 0, -4, (RandomX(-5, 5) - (-1 + 2 * GetDir()) * 4) / 4, 0, 16, particles);
+				}
+				Sound("Liquids::Splash?");
 			}
-			Sound("Liquids::Splash?");
 		}
 		// Animation speed by X
 		if(effect.animation_name != "Swim")
