@@ -240,9 +240,21 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawGame, bool fDrawOverlay)
 			// Region in which the light is calculated
 			// At the moment, just choose integer coordinates to surround the viewport
 			const C4Rect lightRect(vpRect);
-			pFoW->Update(lightRect, vpRect);
+			if (!lightRect.Wdt || !lightRect.Hgt)
+			{
+				// Do not bother initializing FoW on empty region; would cause errors in drawing proc
+				pFoW = NULL;
+			}
+			else
+			{
+				pFoW->Update(lightRect, vpRect);
 
-			pFoW->Render();
+				if (!pFoW->Render())
+				{
+					// If FoW init fails, do not set it for further drawing
+					pFoW = NULL;
+				}
+			}
 		}
 
 		pDraw->SetFoW(pFoW);

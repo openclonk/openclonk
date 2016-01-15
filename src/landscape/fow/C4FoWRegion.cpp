@@ -181,7 +181,7 @@ void C4FoWRegion::Update(C4Rect r, const FLOAT_RECT& vp)
 	ViewportRegion = vp;
 }
 
-void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
+bool C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 {
 #ifndef USE_CONSOLE
 	// Update FoW at interesting location
@@ -191,24 +191,24 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	if (pOnScreen)
 	{
 		pFoW->Render(this, pOnScreen, pPlayer, pGL->GetProjectionMatrix());
-		return;
+		return true;
 	}
 
 	// Set up shader. If this one doesn't work, we're really in trouble.
 	C4Shader *pShader = pFoW->GetFramebufShader();
 	assert(pShader);
-	if (!pShader) return;
+	if (!pShader) return false;
 
 	// Create & bind the frame buffer
 	pDraw->StorePrimaryClipper();
 	if(!BindFramebuf())
 	{
 		pDraw->RestorePrimaryClipper();
-		return;
+		return false;
 	}
 	assert(pSurface && hFrameBufDraw);
 	if (!pSurface || !hFrameBufDraw)
-		return;
+		return false;
 
 	// Set up a clean context
 	glViewport(0, 0, pSurface->Wdt, pSurface->Hgt);
@@ -321,6 +321,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	OldRegion = Region;
 #endif
+	return true;
 }
 
 void C4FoWRegion::GetFragTransform(const C4Rect& clipRect, const C4Rect& outRect, float lightTransform[6]) const
