@@ -1046,7 +1046,7 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 					};
 					CreateParticle("Wave", 0, -4, (RandomX(-5, 5) - (-1 + 2 * GetDir()) * 4) / 4, 0, 16, particles);
 				}
-				Sound("Liquids::Splash?");
+				Sound("Liquids::Swim?");
 			}
 		}
 		// Animation speed by X
