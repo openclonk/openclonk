@@ -139,9 +139,10 @@ private:
 		float r3, g3, b3, a3; // color for third pass
 	};
 
-	GLuint vbo;
+	GLuint bo[2];
 	std::vector<Vertex> vertices;
 	unsigned int vbo_size;
+	unsigned int ibo_size;
 	unsigned int vaoids[3]; // Three VAOs for the three passes
 };
 
@@ -171,9 +172,11 @@ private:
 	const C4FoWLight* light;
 	const C4TargetFacet* screen;
 
-	GLuint vbo;
+	GLuint bo[2];
+	GLuint ibo;
 	std::vector<Vertex> vertices;
 	unsigned int vbo_size;
+	unsigned int ibo_size;
 	unsigned int vaoid;
 };
 
