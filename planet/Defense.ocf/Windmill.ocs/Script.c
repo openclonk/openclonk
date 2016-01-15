@@ -27,10 +27,10 @@ static shared_wealth_remainder;
 func Initialize()
 {
 	// dev stuff (we will forget to turn this off for release)
-	AddMsgBoardCmd("waveinfo", "GameCall(\"ShowWaveInfo\")");
-	AddMsgBoardCmd("next", "GameCall(\"SetNextWave\", \"%s\")");
-	AddMsgBoardCmd("nextwait", "GameCall(\"SetNextWave\", \"%s\", true)");
-	AddMsgBoardCmd("scrooge", "GameCall(\"DoWealthForAll\", 1000000000)");
+	//AddMsgBoardCmd("waveinfo", "GameCall(\"ShowWaveInfo\")");
+	//AddMsgBoardCmd("next", "GameCall(\"SetNextWave\", \"%s\")");
+	//AddMsgBoardCmd("nextwait", "GameCall(\"SetNextWave\", \"%s\", true)");
+	//AddMsgBoardCmd("scrooge", "GameCall(\"DoWealthForAll\", 1000000000)");
 	// Wealth shown at all time
 	GUI_Controller->ShowWealth();
 	// static variable init
