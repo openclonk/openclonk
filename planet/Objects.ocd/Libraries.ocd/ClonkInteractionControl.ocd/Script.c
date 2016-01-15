@@ -378,6 +378,10 @@ func GetInteractableObjects(array sort)
 			if (interactable->GetOCF() & OCF_Grab)
 			{
 				var priority = 19;
+				// not if swimming because the grab command cannot really fix that (unlike e.g. scale/hangle)
+				if (GetProcedure() == "SWIM")
+					if (!this->~CanGrabUnderwater(interactable)) // unless it's a special clonk that can grab underwater. It needs to define a callback then.
+						continue;
 				// high priority if already grabbed
 				if (GetActionTarget() == interactable) priority = 0;
 				
