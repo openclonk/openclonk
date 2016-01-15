@@ -614,8 +614,10 @@ namespace
 
 		bool using_shared_vertices = instance.GetSubMesh().GetVertices().empty();
 		GLuint vbo = mesh_instance.GetMesh().GetVBO();
-		unsigned int vaoid = mesh_instance.GetMesh().GetVAOID();
-		size_t buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInBuffer();
+		GLuint ibo = mesh_instance.GetIBO();
+		unsigned int vaoid = mesh_instance.GetVAOID();
+		size_t vertex_buffer_offset = using_shared_vertices ? 0 : instance.GetSubMesh().GetOffsetInVBO();
+		size_t index_buffer_offset = instance.GetSubMesh().GetOffsetInIBO(); // note this is constant
 
 		// Cook the bone transform matrixes into something that OpenGL can use. This could be moved into RenderMeshImpl.
 		// Or, even better, we could upload them into a UBO, but Intel doesn't support them prior to Sandy Bridge.
@@ -745,22 +747,23 @@ namespace
 					glUniformMatrix4x3fv(shader->GetUniform(C4SSU_Bones), bones.size(), GL_TRUE, &bones[0].m[0][0]);
 			}
 
-			// Bind the vertex data of the mesh
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			GLuint vao;
 			const bool has_vao = pGL->GetVAO(vaoid, vao);
 			glBindVertexArray(vao);
 			if (!has_vao)
 			{
+				// Bind the vertex data of the mesh
+				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 #define VERTEX_OFFSET(field) reinterpret_cast<const uint8_t *>(offsetof(StdMeshVertex, field))
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(x));
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(nx));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Position), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(x));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_Normal), 3, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(nx));
 				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
-					glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(u));
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight));
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index));
-				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
+					glVertexAttribPointer(shader->GetAttribute(C4SSA_TexCoord), 2, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(u));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights0), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(bone_weight));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneWeights1), 4, GL_FLOAT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(bone_weight) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_weight)>::type));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices0), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(bone_index));
+				glVertexAttribPointer(shader->GetAttribute(C4SSA_BoneIndices1), 4, GL_SHORT, GL_FALSE, sizeof(StdMeshVertex), vertex_buffer_offset + VERTEX_OFFSET(bone_index) + 4 * sizeof(std::remove_all_extents<decltype(StdMeshVertex::bone_index)>::type));
 				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Position));
 				glEnableVertexAttribArray(shader->GetAttribute(C4SSA_Normal));
 				if (shader->GetAttribute(C4SSA_TexCoord) != -1)
@@ -831,9 +834,8 @@ namespace
 			}
 
 			size_t vertex_count = 3 * instance.GetNumFaces();
-			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, instance.GetFaces());
+			glDrawElements(GL_TRIANGLES, vertex_count, GL_UNSIGNED_INT, reinterpret_cast<void*>(index_buffer_offset));
 			glBindVertexArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			call.Finish();
 
 			if(!pass.DepthCheck)

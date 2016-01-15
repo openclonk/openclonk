@@ -165,14 +165,16 @@ public:
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 	// Return the offset into the backing vertex buffer where this SubMesh's data starts
-	size_t GetOffsetInBuffer() const { return buffer_offset; }
+	size_t GetOffsetInVBO() const { return vertex_buffer_offset; }
+	size_t GetOffsetInIBO() const { return index_buffer_offset; }
 
 private:
 	StdSubMesh();
 
 	std::vector<Vertex> Vertices; // Empty if we use shared vertices
 	std::vector<StdMeshFace> Faces;
-	size_t buffer_offset;
+	size_t vertex_buffer_offset;
+	size_t index_buffer_offset;
 
 	const StdMeshMaterial* Material;
 };
@@ -203,6 +205,7 @@ public:
 
 #ifndef USE_CONSOLE
 	GLuint GetVBO() const { return vbo; }
+	GLuint GetIBO() const { return ibo; }
 	unsigned int GetVAOID() const { return vaoid; }
 #endif
 
@@ -211,8 +214,10 @@ public:
 private:
 #ifndef USE_CONSOLE
 	GLuint vbo;
+	GLuint ibo;
 	unsigned int vaoid;
 	void UpdateVBO();
+	void UpdateIBO();
 #endif
 
 	StdMesh(const StdMesh& other); // non-copyable
@@ -267,7 +272,7 @@ protected:
 
 	const StdSubMesh *base;
 	// Faces sorted according to current face ordering
-	std::vector<StdMeshFace> Faces; // TODO: Indices could also be stored on GPU in a vbo (element index array). Should be done in a next step if at all.
+	std::vector<StdMeshFace> Faces;
 
 	const StdMeshMaterial* Material;
 
@@ -604,7 +609,16 @@ public:
 
 	const StdMesh& GetMesh() const { return *Mesh; }
 
+#ifndef USE_CONSOLE
+	GLuint GetIBO() const { return ibo ? ibo : Mesh->GetIBO(); }
+	unsigned int GetVAOID() const { return vaoid ? vaoid : Mesh->GetVAOID(); }
+#endif
+
 protected:
+#ifndef USE_CONSOLE
+	void UpdateIBO();
+#endif
+
 	AttachedMesh* AttachMeshImpl(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, uint32_t flags, bool own_child, unsigned int new_attach_number);
 
 	template<typename IteratorType, typename FuncObj>
@@ -635,6 +649,15 @@ protected:
 	AttachedMesh* AttachParent;
 
 	bool BoneTransformsDirty;
+
+#ifndef USE_CONSOLE
+	// private instance index buffer, and a VAO that is bound to it
+	// instead of the mesh's. We use a private IBO when we use custom
+	// face ordering. Otherwise, when we use the default face ordering,
+	// these members are 0 and we use the mesh's IBO and VAO instead.
+	GLuint ibo;
+	unsigned int vaoid;
+#endif
 private:
 	StdMeshInstance(const StdMeshInstance& other); // noncopyable
 	StdMeshInstance& operator=(const StdMeshInstance& other); // noncopyable
