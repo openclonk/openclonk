@@ -118,6 +118,9 @@ bool C4FoWRegion::BindFramebuf()
 		pBackSurface->Unlock();
 	}
 
+	// Cannot bind empty surface
+	if (!pSurface->iTexSize) return false;
+
 	// Generate frame buffer object
 	if (!hFrameBufDraw)
 	{
