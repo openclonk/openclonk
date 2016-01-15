@@ -2874,10 +2874,12 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 		Action.Time=0;
 		// reset action data and targets if procedure is changed
 		if ((Act ? Act->GetPropertyP(P_Procedure) : -1)
-		    != (LastAction ? LastAction->GetPropertyP(P_Procedure) : -1))
+			!= (LastAction ? LastAction->GetPropertyP(P_Procedure) : -1))
+		{
 			Action.Data = 0;
-		Action.Target = NULL;
-		Action.Target2 = NULL;
+			Action.Target = NULL;
+			Action.Target2 = NULL;
+		}
 	}
 	// Set new action
 
