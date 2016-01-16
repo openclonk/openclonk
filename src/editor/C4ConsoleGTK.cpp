@@ -43,7 +43,6 @@
 
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
-#include <editor-icons.h>
 
 using namespace OpenFileFlags;
 
@@ -78,14 +77,6 @@ namespace
 		if (SEqual(text, "------")) { g_free(text); return true; }
 		g_free(text);
 		return false;
-	}
-
-	GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
-	{
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
-		GtkWidget* image = gtk_image_new_from_pixbuf(pixbuf);
-		g_object_unref(pixbuf);
-		return image;
 	}
 }
 
@@ -125,7 +116,7 @@ public:
 
 	GtkWidget* helpAbout;
 
-	GtkWidget* lblCursor;
+	GtkWidget* statusBar;
 	GtkWidget* lblFrame;
 	GtkWidget* lblTime;
 
@@ -324,7 +315,7 @@ gboolean C4ConsoleGUI::State::OnPropertyDlgRescrollIdle(gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	C4Rect r(0, 0, 320, 320);
+	C4Rect r(0, 0, 400, 350);
 	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
 	state->InitGUI();
 	UpdateHaltCtrls(true);
@@ -336,12 +327,12 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 void C4ConsoleGUI::State::InitGUI()
 {
 	// ------------ Play/Pause and Mode ---------------------
-	GtkWidget* image_play = CreateImageFromInlinedPixbuf(play_pixbuf_data);
-	GtkWidget* image_pause = CreateImageFromInlinedPixbuf(halt_pixbuf_data);
+	GtkWidget* image_play = gtk_image_new_from_resource("/org/openclonk/engine/Play_Trans.png");
+	GtkWidget* image_pause = gtk_image_new_from_resource("/org/openclonk/engine/Halt_Trans.png");
 
-	GtkWidget* image_mode_play = CreateImageFromInlinedPixbuf(mouse_pixbuf_data);
-	GtkWidget* image_mode_edit = CreateImageFromInlinedPixbuf(cursor_pixbuf_data);
-	GtkWidget* image_mode_draw = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
+	GtkWidget* image_mode_play = gtk_image_new_from_resource("/org/openclonk/engine/Mouse_Trans.png");
+	GtkWidget* image_mode_edit = gtk_image_new_from_resource("/org/openclonk/engine/Cursor_Trans.png");
+	GtkWidget* image_mode_draw = gtk_image_new_from_resource("/org/openclonk/engine/Brush_Trans.png");
 
 	btnPlay = GTK_WIDGET(gtk_toggle_tool_button_new());
 	btnHalt = GTK_WIDGET(gtk_toggle_tool_button_new());
@@ -355,7 +346,6 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeEdit), image_mode_edit);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeDraw), image_mode_draw);
 
-	
 	GtkWidget* top_hbox = gtk_toolbar_new();
 
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnPlay), -1);
@@ -365,39 +355,23 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeEdit), -1);
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeDraw), -1);
 
-	lblCursor = gtk_label_new("");
-	gtk_misc_set_padding(GTK_MISC(lblCursor), 3, 0);
-	gtk_label_set_ellipsize(GTK_LABEL(lblCursor), PANGO_ELLIPSIZE_END);
-	GtkToolItem * itmCursor = gtk_tool_item_new();
-	gtk_tool_item_set_expand(itmCursor, TRUE);
-	gtk_container_add(GTK_CONTAINER(itmCursor), lblCursor);
-	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itmCursor, -1);
+	GtkToolItem * itm = gtk_tool_item_new();
+	gtk_tool_item_set_expand(itm, TRUE);
+	lblTime = gtk_label_new("00:00:00 (0 FPS)");
+	gtk_container_add(GTK_CONTAINER(itm), lblTime);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itm, -1);
+
+	itm = gtk_tool_item_new();
+	gtk_tool_item_set_expand(itm, TRUE);
+	lblFrame = gtk_label_new("Frame: 0");
+	gtk_container_add(GTK_CONTAINER(itm), lblFrame);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itm, -1);
 
 	// ------------ Statusbar ---------------------
-	GtkWidget* statusbar = gtk_hbox_new(false, 6);
-
-	GtkWidget* status_frame = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(status_frame), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(status_frame), statusbar);
-
-	lblFrame = gtk_label_new("Frame: 0");
-	lblTime = gtk_label_new("00:00:00 (0 FPS)");
-
-	gtk_misc_set_alignment(GTK_MISC(lblFrame), 0.0, 0.5);
-	gtk_misc_set_alignment(GTK_MISC(lblTime), 0.0, 0.5);
-
-	GtkWidget* sep1 = gtk_vseparator_new();
-
-	gtk_box_pack_start(GTK_BOX(statusbar), lblFrame, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), sep1, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), lblTime, true, true, 0);
+	statusBar = gtk_statusbar_new();
 
 	// ------------ Log view and script entry ---------------------
 	GtkWidget* scroll = gtk_scrolled_window_new(NULL, NULL);
-
-//	int scrollbar_spacing = 0;
-//	gtk_widget_style_get (widget, "scrollbar-spacing", &scrollBarSpacing, NULL);
-//	g_object_set (scroll, "scrollbar-spacing", 0, NULL);
 
 	txtLog = gtk_text_view_new();
 	txtScript = gtk_entry_new();
@@ -452,7 +426,6 @@ void C4ConsoleGUI::State::InitGUI()
 	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-
 	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
 
@@ -482,13 +455,18 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuHelp), helpAbout);
 
 	// ------------ Window ---------------------
-	GtkWidget* box = gtk_vbox_new(false, 0);
+	GtkWidget* box = gtk_grid_new();
+	gtk_orientable_set_orientation (GTK_ORIENTABLE(box), GTK_ORIENTATION_VERTICAL);
 
-	gtk_box_pack_start(GTK_BOX(box), menuBar, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(box), top_hbox, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(box), scroll, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 3);
-	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
+	gtk_container_add(GTK_CONTAINER(box), menuBar);
+	gtk_container_add(GTK_CONTAINER(box), top_hbox);
+	gtk_widget_set_vexpand(scroll, true);
+	gtk_widget_set_hexpand(scroll, true);
+	gtk_container_add(GTK_CONTAINER(box), scroll);
+	gtk_widget_set_margin_top(txtScript, 3);
+	gtk_widget_set_margin_bottom(txtScript, 3);
+	gtk_container_add(GTK_CONTAINER(box), txtScript);
+	gtk_container_add(GTK_CONTAINER(box), statusBar);
 
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
 	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));
@@ -550,7 +528,7 @@ void C4ConsoleGUI::State::Clear()
 
 	helpAbout = NULL;
 
-	lblCursor = NULL;
+	statusBar = NULL;
 	lblFrame = NULL;
 	lblTime = NULL;
 
@@ -573,8 +551,9 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 	switch (type)
 	{
 	case CONSOLE_Cursor:
-		label = state->lblCursor;
-		break;
+		gtk_statusbar_pop(GTK_STATUSBAR(state->statusBar), 0);
+		gtk_statusbar_push(GTK_STATUSBAR(state->statusBar), 0, text.getData());
+		return;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
 		break;
@@ -608,7 +587,7 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 	gdk_window_set_cursor(window_wnd, gdkcursor);
 	gdk_display_flush(display);
 	if (cursor)
-		gdk_cursor_unref (gdkcursor);
+		g_object_unref (gdkcursor);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
@@ -972,7 +951,8 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 {
 	if (state->propertydlg == NULL)
 	{
-		GtkWidget * vbox = state->propertydlg = gtk_vbox_new(false, 3);
+		GtkWidget * vbox = state->propertydlg = gtk_grid_new();
+		gtk_orientable_set_orientation(GTK_ORIENTABLE(vbox), GTK_ORIENTATION_VERTICAL);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
@@ -986,8 +966,11 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 		GtkWidget * entry = state->propertydlg_entry = gtk_entry_new();
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), textview);
-		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), entry, false, false, 0);
+		gtk_widget_set_vexpand(scrolled_wnd, true);
+		gtk_widget_set_hexpand(scrolled_wnd, true);
+		gtk_container_add(GTK_CONTAINER(vbox), scrolled_wnd);
+		gtk_widget_set_margin_top(entry, 3);
+		gtk_container_add(GTK_CONTAINER(vbox), entry);
 
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false);
 		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
@@ -1082,69 +1065,66 @@ bool C4ToolsDlg::State::Open()
 {
 	if (hbox == NULL)
 	{
-		hbox = gtk_hbox_new(false, 12);
-		GtkWidget* vbox = gtk_vbox_new(false, 6);
+		hbox = gtk_grid_new();
+		GtkWidget * toolbar = gtk_toolbar_new();
 
-		GtkWidget* image_brush = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
-		GtkWidget* image_line = CreateImageFromInlinedPixbuf(line_pixbuf_data);
-		GtkWidget* image_rect = CreateImageFromInlinedPixbuf(rect_pixbuf_data);
-		GtkWidget* image_fill = CreateImageFromInlinedPixbuf(fill_pixbuf_data);
-		GtkWidget* image_picker = CreateImageFromInlinedPixbuf(picker_pixbuf_data);
+		GtkWidget* image_brush = gtk_image_new_from_resource("/org/openclonk/engine/Brush_Trans.png");
+		GtkWidget* image_line = gtk_image_new_from_resource("/org/openclonk/engine/Line_Trans.png");
+		GtkWidget* image_rect = gtk_image_new_from_resource("/org/openclonk/engine/Rect_Trans.png");
+		GtkWidget* image_fill = gtk_image_new_from_resource("/org/openclonk/engine/Fill_Trans.png");
+		GtkWidget* image_picker = gtk_image_new_from_resource("/org/openclonk/engine/Picker_Trans.png");
+		GtkWidget* image_dynamic = gtk_image_new_from_resource("/org/openclonk/engine/Dynamic_Trans.png");
+		GtkWidget* image_static = gtk_image_new_from_resource("/org/openclonk/engine/Static_Trans.png");
+		GtkWidget* image_exact = gtk_image_new_from_resource("/org/openclonk/engine/Exact_Trans.png");
 
-		GtkWidget* image_dynamic = CreateImageFromInlinedPixbuf(dynamic_pixbuf_data);
-		GtkWidget* image_static = CreateImageFromInlinedPixbuf(static_pixbuf_data);
-		GtkWidget* image_exact = CreateImageFromInlinedPixbuf(exact_pixbuf_data);
+		brush = GTK_WIDGET(gtk_toggle_tool_button_new());
+		line = GTK_WIDGET(gtk_toggle_tool_button_new());
+		rect = GTK_WIDGET(gtk_toggle_tool_button_new());
+		fill = GTK_WIDGET(gtk_toggle_tool_button_new());
+		picker = GTK_WIDGET(gtk_toggle_tool_button_new());
+		landscape_dynamic = GTK_WIDGET(gtk_toggle_tool_button_new());
+		landscape_static = GTK_WIDGET(gtk_toggle_tool_button_new());
+		landscape_exact = GTK_WIDGET(gtk_toggle_tool_button_new());
 
-		landscape_dynamic = gtk_toggle_button_new();
-		landscape_static = gtk_toggle_button_new();
-		landscape_exact = gtk_toggle_button_new();
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(landscape_dynamic), image_dynamic);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(landscape_static), image_static);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(landscape_exact), image_exact);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(brush), image_brush);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(line), image_line);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(rect), image_rect);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(fill), image_fill);
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(picker), image_picker);
 
-		gtk_container_add(GTK_CONTAINER(landscape_dynamic), image_dynamic);
-		gtk_container_add(GTK_CONTAINER(landscape_static), image_static);
-		gtk_container_add(GTK_CONTAINER(landscape_exact), image_exact);
+		gtk_container_add(GTK_CONTAINER(toolbar), landscape_dynamic);
+		gtk_container_add(GTK_CONTAINER(toolbar), landscape_static);
+		gtk_container_add(GTK_CONTAINER(toolbar), landscape_exact);
+		gtk_container_add(GTK_CONTAINER(toolbar), GTK_WIDGET(gtk_separator_tool_item_new()));
+		gtk_container_add(GTK_CONTAINER(toolbar), brush);
+		gtk_container_add(GTK_CONTAINER(toolbar), line);
+		gtk_container_add(GTK_CONTAINER(toolbar), rect);
+		gtk_container_add(GTK_CONTAINER(toolbar), fill);
+		gtk_container_add(GTK_CONTAINER(toolbar), picker);
 
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_dynamic, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_static, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_exact, false, false, 0);
-
-		gtk_box_pack_start(GTK_BOX(hbox), vbox, false, false, 0);
-		vbox = gtk_vbox_new(false, 12);
-		gtk_box_pack_start(GTK_BOX(hbox), vbox, true, true, 0);
-		GtkWidget* local_hbox = gtk_hbox_new(false, 6);
-
-		brush = gtk_toggle_button_new();
-		line = gtk_toggle_button_new();
-		rect = gtk_toggle_button_new();
-		fill = gtk_toggle_button_new();
-		picker = gtk_toggle_button_new();
-
-		gtk_container_add(GTK_CONTAINER(brush), image_brush);
-		gtk_container_add(GTK_CONTAINER(line), image_line);
-		gtk_container_add(GTK_CONTAINER(rect), image_rect);
-		gtk_container_add(GTK_CONTAINER(fill), image_fill);
-		gtk_container_add(GTK_CONTAINER(picker), image_picker);
-
-		gtk_box_pack_start(GTK_BOX(local_hbox), brush, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), line, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), rect, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), fill, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), picker, false, false, 0);
-
-		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, false, false, 0);
-		local_hbox = gtk_hbox_new(false, 12);
-		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, true, true, 0);
+		gtk_grid_attach(GTK_GRID(hbox), toolbar, 0, 0, 5, 1);
 
 		preview = gtk_image_new();
-		gtk_box_pack_start(GTK_BOX(local_hbox), preview, false, false, 0);
+		gtk_widget_set_vexpand(preview, true);
+		gtk_widget_set_hexpand(preview, true);
+		gtk_grid_attach(GTK_GRID(hbox), preview, 0, 1, 1, 1);
 
-		scale = gtk_vscale_new(NULL);
-		gtk_box_pack_start(GTK_BOX(local_hbox), scale, false, false, 0);
+		scale = gtk_scale_new(GTK_ORIENTATION_VERTICAL, NULL);
+		gtk_widget_set_vexpand(scale, true);
+		gtk_grid_attach(GTK_GRID(hbox), scale, 1, 1, 1, 1);
 
-		vbox = gtk_vbox_new(false, 6);
+		GtkWidget * grid = gtk_grid_new();
 		fg_materials = gtk_combo_box_text_new();
-		fg_textures = gtk_combo_box_text_new();		
+		g_object_set(fg_materials, "margin", 3, NULL);
+		fg_textures = gtk_combo_box_text_new();
+		g_object_set(fg_textures, "margin", 3, NULL);
 		bg_materials = gtk_combo_box_text_new();
-		bg_textures = gtk_combo_box_text_new();	
+		g_object_set(bg_materials, "margin", 3, NULL);
+		bg_textures = gtk_combo_box_text_new();
+		g_object_set(bg_textures, "margin", 3, NULL);
 
 		// Link the material combo boxes together, but not the texture combo boxes,
 		// so that we can sort the texture combo box differently.
@@ -1155,23 +1135,33 @@ bool C4ToolsDlg::State::Open()
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(bg_materials), RowSeparatorFunc, NULL, NULL);
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(bg_textures), RowSeparatorFunc, NULL, NULL);
 
-		GtkWidget* fg_box = gtk_hbox_new(false, 6);
-		GtkWidget* fg_lbl = gtk_label_new("Foreground:");
-		gtk_box_pack_start(GTK_BOX(fg_box), fg_lbl, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(fg_box), fg_materials, true, false, 0);
-		gtk_box_pack_start(GTK_BOX(fg_box), fg_textures, true, false, 0);
+		gtk_grid_attach(GTK_GRID(grid), gtk_label_new(LoadResStr("IDS_CTL_MATERIAL")), 1, 0, 1, 1);
+		gtk_grid_attach(GTK_GRID(grid), gtk_label_new(LoadResStr("IDS_CTL_TEXTURE")), 2, 0, 1, 1);
 
+		GtkWidget* fg_lbl = gtk_label_new(LoadResStr("IDS_CTL_FOREGROUND"));
+		gtk_widget_set_halign(fg_lbl, GTK_ALIGN_END);
+#if GTK_CHECK_VERSION(3,12,0)
+		gtk_widget_set_margin_start(fg_lbl, 3);
+#else
+		gtk_widget_set_margin_left(fg_lbl, 3);
+#endif
+		gtk_grid_attach(GTK_GRID(grid), fg_lbl, 0, 1, 1, 1);
+		gtk_grid_attach(GTK_GRID(grid), fg_materials, 1, 1, 1, 1);
+		gtk_grid_attach(GTK_GRID(grid), fg_textures, 2, 1, 1, 1);
 
-		GtkWidget* bg_box = gtk_hbox_new(false, 6);
-		GtkWidget* bg_lbl = gtk_label_new("Background:");
-		gtk_box_pack_start(GTK_BOX(bg_box), bg_lbl, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(bg_box), bg_materials, true, false, 0);
-		gtk_box_pack_start(GTK_BOX(bg_box), bg_textures, true, false, 0);
+		GtkWidget* bg_lbl = gtk_label_new(LoadResStr("IDS_CTL_BACKGROUND"));
+		gtk_widget_set_halign(bg_lbl, GTK_ALIGN_END);
+#if GTK_CHECK_VERSION(3,12,0)
+		gtk_widget_set_margin_start(bg_lbl, 3);
+#else
+		gtk_widget_set_margin_left(bg_lbl, 3);
+#endif
+		gtk_grid_attach(GTK_GRID(grid), bg_lbl, 0, 2, 1, 1);
+		gtk_grid_attach(GTK_GRID(grid), bg_materials, 1, 2, 1, 1);
+		gtk_grid_attach(GTK_GRID(grid), bg_textures, 2, 2, 1, 1);
 
-		gtk_box_pack_start(GTK_BOX(vbox), fg_box, false, false, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), bg_box, false, false, 0);
+		gtk_grid_attach(GTK_GRID(hbox), grid, 2, 1, 1, 1);
 
-		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, true, true, 0); // ???
 		gtk_widget_show_all(hbox);
 
 		C4DevmodeDlg::AddPage(hbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_TOOLS"));
@@ -1239,11 +1229,11 @@ void C4ToolsDlg::State::UpdateToolCtrls()
 	g_signal_handler_block(fill, handlerFill);
 	g_signal_handler_block(picker, handlerPicker);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(brush), dlg->Tool == C4TLS_Brush);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(line), dlg->Tool == C4TLS_Line);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rect), dlg->Tool == C4TLS_Rect);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(fill), dlg->Tool == C4TLS_Fill);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(picker), dlg->Tool == C4TLS_Picker);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(brush), dlg->Tool == C4TLS_Brush);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(line), dlg->Tool == C4TLS_Line);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(rect), dlg->Tool == C4TLS_Rect);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(fill), dlg->Tool == C4TLS_Fill);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(picker), dlg->Tool == C4TLS_Picker);
 
 	g_signal_handler_unblock(brush, handlerBrush);
 	g_signal_handler_unblock(line, handlerLine);
@@ -1318,20 +1308,16 @@ void C4ToolsDlg::NeedPreviewUpdate()
 void C4ToolsDlg::State::UpdatePreview()
 {
 	if (!hbox) return;
+	if (!gtk_widget_is_sensitive(preview)) return;
+
 	C4ToolsDlg* dlg = GetOwner();
 
-	C4Surface * sfcPreview;
-
-	int32_t iPrvWdt,iPrvHgt;
-
-	/* TODO: Set size request for image to read size from image's size request? */
-	iPrvWdt=64;
-	iPrvHgt=64;
-
-	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt,0))) return;
+	int width = gtk_widget_get_allocated_width(preview);
+	int height = gtk_widget_get_allocated_height(preview);
+	width = std::min(width, dlg->Grade * 2);
+	height = std::min(height, dlg->Grade * 2);
 
 	// fill bg
-	BYTE bCol = 0;
 	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
@@ -1341,7 +1327,6 @@ void C4ToolsDlg::State::UpdatePreview()
 	// Material-Texture
 	else
 	{
-		bCol=Mat2PixColDefault(::MaterialMap.Get(dlg->Material));
 		// Get/Create TexMap entry
 		BYTE iTex = ::TextureMap.GetIndex(dlg->Material, dlg->Texture, true);
 		if (iTex)
@@ -1356,29 +1341,27 @@ void C4ToolsDlg::State::UpdatePreview()
 			}
 		}
 	}
-	if (gtk_widget_is_sensitive(preview))
-		pDraw->DrawPatternedCircle( sfcPreview,
-		                              iPrvWdt/2,iPrvHgt/2,
-		                              dlg->Grade,
-		                              bCol, Pattern, *::Landscape.GetPal());
 
-	// TODO: Can we optimize this?
-	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);
-	guchar* data = gdk_pixbuf_get_pixels(pixbuf);
-	sfcPreview->Lock();
-	for (int x = 0; x < 64; ++ x) for (int y = 0; y < 64; ++ y)
+	// Copy the texture into a circle in a cairo surface
+	// TODO: Apply zoom factor to the circle size
+	cairo_surface_t * surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	cairo_surface_flush(surface);
+	unsigned char * data = cairo_image_surface_get_data(surface);
+	int stride = cairo_image_surface_get_stride(surface);
+
+	int x = width/2, y = height/2, r = dlg->Grade;
+	for (int ycnt = -std::min(r, height); ycnt < std::min(r, height - y); ycnt++)
+	{
+		int lwdt = (int)sqrt(float(r * r - ycnt * ycnt));
+		for (int xcnt = std::max(x - lwdt, 0); xcnt < std::min(x + lwdt, width); ++xcnt)
 		{
-			DWORD dw = sfcPreview->GetPixDw(x, y, true);
-			*data = (dw >> 16) & 0xff; ++ data;
-			*data = (dw >> 8 ) & 0xff; ++ data;
-			*data = (dw      ) & 0xff; ++ data;
-			*data = (dw >> 24) & 0xff; ++ data;
+			DWORD * pix = reinterpret_cast<DWORD *>(data + xcnt * 4 + (y + ycnt) * stride);
+			*pix = Pattern.PatternClr(xcnt, y + ycnt);
 		}
-
-	sfcPreview->Unlock();
-	gtk_image_set_from_pixbuf(GTK_IMAGE(preview), pixbuf);
-	g_object_unref(pixbuf);
-	delete sfcPreview;
+	}
+	cairo_surface_mark_dirty(surface);
+	gtk_image_set_from_surface(GTK_IMAGE(preview), surface);
+	cairo_surface_destroy(surface);
 }
 
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
@@ -1393,13 +1376,13 @@ void C4ToolsDlg::State::UpdateLandscapeModeCtrls()
 	g_signal_handler_block(landscape_static, handlerStatic);
 	g_signal_handler_block(landscape_exact, handlerExact);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_dynamic), iMode==C4LSC_Dynamic);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_dynamic), iMode==C4LSC_Dynamic);
 	gtk_widget_set_sensitive(landscape_dynamic, iMode==C4LSC_Dynamic);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_static), iMode==C4LSC_Static);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_static), iMode==C4LSC_Static);
 	gtk_widget_set_sensitive(landscape_static, ::Landscape.HasMap());
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(landscape_exact), iMode==C4LSC_Exact);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(landscape_exact), iMode==C4LSC_Exact);
 
 	g_signal_handler_unblock(landscape_dynamic, handlerDynamic);
 	g_signal_handler_unblock(landscape_static, handlerStatic);

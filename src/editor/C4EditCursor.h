@@ -97,6 +97,7 @@ protected:
 	void ToolFailure();
 	void PutContents();
 	void UpdateDropTarget(DWORD dwKeyState);
+	void AppendMenuItem(int num, const StdStrBuf & label);
 	bool DoContextMenu(DWORD dwKeyState);
 	void ApplyToolFill();
 	void ApplyToolRect();

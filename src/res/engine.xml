@@ -1,0 +1,17 @@
+<gresources>
+	<gresource prefix="/org/openclonk/engine">
+		<file preprocess="to-pixdata">oc.ico</file>
+		<file preprocess="to-pixdata">Brush_Trans.png</file>
+		<file preprocess="to-pixdata">Halt_Trans.png</file>
+		<file preprocess="to-pixdata">Picker_Trans.png</file>
+		<file preprocess="to-pixdata">Cursor_Trans.png</file>
+		<file preprocess="to-pixdata">Play_Trans.png</file>
+		<file preprocess="to-pixdata">Dynamic_Trans.png</file>
+		<file preprocess="to-pixdata">Line_Trans.png</file>
+		<file preprocess="to-pixdata">Rect_Trans.png</file>
+		<file preprocess="to-pixdata">Exact_Trans.png</file>
+		<file preprocess="to-pixdata">Mouse_Trans.png</file>
+		<file preprocess="to-pixdata">Static_Trans.png</file>
+		<file preprocess="to-pixdata">Fill_Trans.png</file>
+	</gresource>
+</gresources>

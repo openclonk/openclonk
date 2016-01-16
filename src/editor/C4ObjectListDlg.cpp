@@ -776,9 +776,7 @@ void C4ObjectListDlg::Open()
 
 		g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroy), this);
 
-		// The VBox and Tree
-		GtkWidget* vbox = gtk_vbox_new(false, 8);
-
+		// The Tree
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_SHADOW_IN);
@@ -809,9 +807,10 @@ void C4ObjectListDlg::Open()
 		g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(OnSelectionChanged), this);
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), treeview);
-		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
+		gtk_widget_set_vexpand(scrolled_wnd, true);
+		gtk_widget_set_hexpand(scrolled_wnd, true);
 
-		gtk_container_add(GTK_CONTAINER(window), vbox);
+		gtk_container_add(GTK_CONTAINER(window), scrolled_wnd);
 
 		gtk_widget_show_all(window);
 	}

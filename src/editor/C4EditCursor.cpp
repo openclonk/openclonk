@@ -733,6 +733,27 @@ void C4EditCursor::ApplyToolFill()
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, pTools->Material, NULL, NULL, NULL));
 }
 
+void C4EditCursor::AppendMenuItem(int num, const StdStrBuf & label)
+{
+#ifdef USE_WIN32_WINDOWS
+	itemsObjselect[num].ItemId = IDM_VPORTDYN_FIRST + num;
+	if (num)
+		AppendMenu(GetSubMenu(hMenu,0), MF_STRING, IDM_VPORTDYN_FIRST + num, label.GetWideChar());
+	else
+		AppendMenu(GetSubMenu(hMenu,0), MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+#elif defined(WITH_DEVELOPER_MODE)
+	GtkWidget * wdg;
+	if (num)
+		wdg = gtk_menu_item_new_with_label(label.getData());
+	else
+		wdg = gtk_separator_menu_item_new();
+	itemsObjselect[num].MenuItem = wdg;
+	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
+	if (num)
+		g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &itemsObjselect[num]);
+#endif
+}
+
 bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 {
 	bool fObjectSelected = !!Selection.ObjectCount();
@@ -745,6 +766,11 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
+#elif defined(WITH_DEVELOPER_MODE)
+	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
+	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
+	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
+#endif
 
 	// Add selection and custom command entries for any objects at the cursor
 	ObjselectDelItems(); // clear previous entries
@@ -761,16 +787,20 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 			C4ValueArray *custom_commands = pObj->GetPropertyArray(P_EditCursorCommands);
 			if (custom_commands) entrycount += custom_commands->GetSize();
 		}
+#ifdef USE_WIN32_WINDOWS
 		// If too many entries would be shown, add a "..." in the end
 		const int maxentries = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
 		bool has_too_many_entries = (entrycount > maxentries);
 		if (has_too_many_entries) entrycount = maxentries + 1;
+#else
+		const int maxentries = std::numeric_limits<int>::max();
+#endif
 		itemsObjselect.resize(entrycount + 1); // +1 for a separator
 		// Add a separator bar
-		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
 		itemsObjselect[0].Object = NULL;
 		itemsObjselect[0].Command.Clear();
-		AppendMenu(hContext, MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+		itemsObjselect[0].EditCursor = this;
+		AppendMenuItem(0, StdStrBuf());
 		// Add all objects
 		int i_entry = 0;
 		for (int i_item = 0; i_item < itemcount; ++i_item)
@@ -778,10 +808,12 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 			++i_entry; if (i_entry >= maxentries) break;
 			// Add selection entry
 			C4Object *obj = (*atcursor)[i_item].getObj();
-			itemsObjselect[i_entry].ItemId = IDM_VPORTDYN_FIRST + i_entry;
+			assert(obj);
 			itemsObjselect[i_entry].Object = obj;
 			itemsObjselect[i_entry].Command.Clear();
-			AppendMenu(hContext, MF_STRING, IDM_VPORTDYN_FIRST + i_entry, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+			itemsObjselect[i_entry].EditCursor = this;
+			AppendMenuItem(i_entry, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()));
+
 			// Add custom command entries
 			C4ValueArray *custom_commands = obj->GetPropertyArray(P_EditCursorCommands);
 			if (custom_commands) for (int i_cmd = 0; i_cmd < custom_commands->GetSize(); ++i_cmd)
@@ -796,18 +828,14 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 					custom_command_szstr.Copy(custom_command_string->GetData()); // copy just in case script get reloaded inbetween
 				if (custom_command_szstr.getLength())
 				{
-					itemsObjselect[i_entry].ItemId = IDM_VPORTDYN_FIRST + i_entry;
 					itemsObjselect[i_entry].Object = obj;
-					itemsObjselect[i_entry].Command.Take(custom_command_szstr); 
-					AppendMenu(hContext, MF_STRING, IDM_VPORTDYN_FIRST + i_entry, FormatString("%s->%s", obj->GetName(), custom_command_szstr.getData()).GetWideChar());
-				}
-				else
-				{
-					// invalid entry in commands list. do not create a menu item.
-					itemsObjselect[i_entry].ItemId = 0;
+					itemsObjselect[i_entry].Command.Take(custom_command_szstr);
+					itemsObjselect[i_entry].EditCursor = this;
+					AppendMenuItem(i_entry, FormatString("%s->%s", obj->GetName(), custom_command_szstr.getData()));
 				}
 			}
 		}
+#ifdef USE_WIN32_WINDOWS
 		if (has_too_many_entries)
 		{
 			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST + maxentries + 1, L"...");
@@ -815,9 +843,11 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 			itemsObjselect[maxentries + 1].Object = NULL;
 			itemsObjselect[maxentries + 1].Command.Clear();
 		}
+#endif
 	}
 	delete atcursor;
 
+#ifdef USE_WIN32_WINDOWS
 	int32_t iItem = TrackPopupMenu(
 	                  hContext,
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
@@ -843,40 +873,9 @@ bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 		break;
 	}
 	ObjselectDelItems();
-#else
-#ifdef WITH_DEVELOPER_MODE
-	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
-	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
-	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
-
-	ObjselectDelItems();
-	C4FindObjectAtPoint pFO(X,Y);
-	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing
-	int itemcount = atcursor->GetSize();
-	if(itemcount > 0)
-	{
-		itemsObjselect.resize(itemcount+1); // +1 for a separator
-		itemsObjselect[0].MenuItem = gtk_separator_menu_item_new();
-		itemsObjselect[0].EditCursor = this;
-		gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemsObjselect[0].MenuItem);
-		int i = 0;
-		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
-		{
-			it->EditCursor = this;
-			C4Object * obj = (*atcursor)[i].getObj();
-			assert(obj);
-			it->Object = obj;
-			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
-			it->MenuItem = wdg;
-			gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
-			g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &*it);
-		}
-	}
-	delete atcursor;
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_widget_show_all(menuContext);
-
-	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, 0);
-#endif
+	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time());
 #endif
 	return true;
 }
@@ -1066,9 +1065,12 @@ void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
 
 		gdk_event_free(event);
 	}
-
-	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object, !IsShiftDown);
-	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
+	ObjselItemDt* it = static_cast<ObjselItemDt*>(data);
+	if (it->Command.getLength())
+		it->EditCursor->DoContextObjCommand(it->Object, it->Command.getData());
+	else
+		it->EditCursor->DoContextObjsel(it->Object, !IsShiftDown);
+	it->EditCursor->ObjselectDelItems();
 }
 
 #endif

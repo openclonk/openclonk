@@ -312,18 +312,16 @@ endif()
 ############################################################################
 # generated source files
 ############################################################################
-find_program(GDK_PIXBUF_CSOURCE gdk-pixbuf-csource)
+find_program(GLIB_COMPILE_RESOURCES glib-compile-resources)
 
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	OUTPUT mape-resource.c
 	COMMAND
-		${GDK_PIXBUF_CSOURCE} "--raw" "--static" "--build-list"
-		"mape_icon_ocd" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico"
-		"mape_icon_ocf" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico"
-		"mape_icon_ocg" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico"
-		"mape_icon_ocm" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico"
-		"mape_icon_ocs" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico"
-		> ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+		${GLIB_COMPILE_RESOURCES} "--internal" "--generate"
+		"--target" "mape-resource.c"
+		"--sourcedir" ${CMAKE_CURRENT_SOURCE_DIR}/src/res
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/res/mape.xml"
+	MAIN_DEPENDENCY src/res/mape.xml
 	DEPENDS
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
@@ -334,30 +332,18 @@ add_custom_command(
 )
 
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+	OUTPUT engine-resource.c
 	COMMAND
-		${GDK_PIXBUF_CSOURCE} "--raw" "--rle" "--static" "--build-list"
-		"brush_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png"
-		"halt_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png"
-		"picker_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png"
-		"cursor_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png"
-		"ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png"
-		"play_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png"
-		"dynamic_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png"
-		"line_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png"
-		"rect_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png"
-		"exact_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png"
-		"mouse_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png"
-		"static_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png"
-		"fill_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png"
-		"no_ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png"
-		> ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+		${GLIB_COMPILE_RESOURCES} "--internal" "--generate"
+		"--target" "engine-resource.c"
+		"--sourcedir" ${CMAKE_CURRENT_SOURCE_DIR}/src/res
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.xml"
+	MAIN_DEPENDENCY src/res/engine.xml
 	DEPENDS
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png
@@ -366,17 +352,6 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png
-		${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png
-	VERBATIM
-)
-
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
-	COMMAND
-		${GDK_PIXBUF_CSOURCE} "--raw" "--rle" "--static" "--build-list"
-		"oc_icon_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico"
-		> ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
-	DEPENDS
 		${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 	VERBATIM
 )
@@ -402,8 +377,6 @@ if(APPLE)
 		src/res/Rect_Trans.png
 		src/res/Fill_Trans.png
 		src/res/Picker_Trans.png
-		src/res/Ift_Trans.png
-		src/res/NoIft_Trans.png
 	)
 
 	if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -871,7 +844,7 @@ set(MAPE_SOURCES
 	src/mape/texture.h
 	src/mape/window.c
 	src/mape/window.h
-	${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	mape-resource.c
 )
 
 # source files specific to an operating system
@@ -924,8 +897,7 @@ if(USE_GTK)
 		src/platform/C4AppGTK.cpp
 		src/platform/C4AppGTKImpl.h
 		src/platform/C4WindowGTK.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
-		${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
+		engine-resource.c
 	)
 elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_GUI_SOURCES
