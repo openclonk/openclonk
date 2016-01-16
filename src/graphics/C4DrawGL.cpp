@@ -381,12 +381,6 @@ bool CStdGL::CreatePrimarySurfaces(unsigned int, unsigned int, int iColorDepth, 
 {
 	// store options
 	bool ok = RestoreDeviceObjects();
-
-	// We need at least OpenGL 3.0
-	if (!GLEW_VERSION_3_0)
-	{
-		return Error("  gl: OpenGL Version 3.0 or higher required. A better graphics driver will probably help.");
-	}
 	return ok;
 }
 
