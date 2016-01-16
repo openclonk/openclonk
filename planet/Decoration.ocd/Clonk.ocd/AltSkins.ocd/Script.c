@@ -34,6 +34,7 @@ global func SetAlternativeSkin(string skin_name)
 	                  ["MaleBlackHair", 0, 0x4040ff],
 	                  ["MaleBrownHair", 0, 0x2020ff],
 	               	  ["MaleDarkHair", 0, 0x406d99],
+	               	  ["Mime", 2, 0xffffff],
 	                  ["Sage", 0, 0x813100],
 	                  ["Youngster", 0, 0xba8e37],
 	                  ["YoungsterBlond", 0, 0x151366]
