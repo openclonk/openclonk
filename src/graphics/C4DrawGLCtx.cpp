@@ -24,6 +24,9 @@
 
 #ifndef USE_CONSOLE
 
+static const int REQUESTED_GL_CTX_MAJOR = 3;
+static const int REQUESTED_GL_CTX_MINOR = 2;
+
 std::list<CStdGLCtx*> CStdGLCtx::contexts;
 
 void CStdGLCtx::SelectCommon()
@@ -232,6 +235,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 				else
 				{
 					// init extensions
+					glewExperimental = GL_TRUE;
 					GLenum err = glewInit();
 					if(err != GLEW_OK)
 					{
@@ -329,17 +333,23 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 			else
 			{
 				// create context
-				if (Config.Graphics.DebugOpenGL && wglCreateContextAttribsARB)
+				if (wglCreateContextAttribsARB)
 				{
 					const int attribs[] = {
-						WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+						WGL_CONTEXT_FLAGS_ARB, Config.Graphics.DebugOpenGL ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+						WGL_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+						WGL_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
+						WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 						0
 					};
-					DebugLog("  gl: Creating debug context.");
+
+					if (Config.Graphics.DebugOpenGL)
+						DebugLog("  gl: Creating debug context.");
 					hrc = wglCreateContextAttribsARB(hDC, 0, attribs);
 				}
 				else
 				{
+					DebugLog("  gl: wglCreateContextAttribsARB not available; creating default context.");
 					hrc = wglCreateContext(hDC);
 				}
 
@@ -359,6 +369,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 		// After selecting the new context, we have to reinitialize GLEW to
 		// update its function pointers - the driver may elect to expose
 		// different extensions depending on the context attributes
+		glewExperimental = GL_TRUE;
 		GLenum err = glewInit();
 		if (err != GLEW_OK)
 		{
@@ -489,8 +500,8 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	const int attribs[] = {
-		GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-		GLX_CONTEXT_MINOR_VERSION_ARB, 1,
+		GLX_CONTEXT_MAJOR_VERSION_ARB, REQUESTED_GL_CTX_MAJOR,
+		GLX_CONTEXT_MINOR_VERSION_ARB, REQUESTED_GL_CTX_MINOR,
 		GLX_CONTEXT_FLAGS_ARB, (Config.Graphics.DebugOpenGL ? GLX_CONTEXT_DEBUG_BIT_ARB : 0),
 		GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
 		None
@@ -599,6 +610,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
