@@ -259,8 +259,8 @@ func Intro_Stop()
 	if (plane)
 	{
 		plane->FaceLeft();
-		plane->SetR(-130);
-		plane->SetPosition(1387, 238);
+		plane->SetR(-90);
+		plane->SetPosition(1387, 345);
 	}
 	return true;
 }

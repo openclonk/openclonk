@@ -28,10 +28,8 @@ func InitializeObjects()
 
 	var Tree_Coniferous2003 = CreateObjectAbove(Tree_Coniferous2, 347, 565);
 	var Tree_Coniferous2004 = CreateObjectAbove(Tree_Coniferous2, 422, 558);
-	CreateObjectAbove(Tree_Coniferous2, 1329, 384);
-	CreateObjectAbove(Tree_Coniferous2, 1364, 364);
-	CreateObjectAbove(Tree_Coniferous2, 1389, 327);
-	CreateObjectAbove(Tree_Coniferous2, 1295, 398);
+	CreateObjectAbove(Tree_Coniferous2, 1404, 390);
+	CreateObjectAbove(Tree_Coniferous2, 1290, 403);
 
 	CreateObject(Fern, 1331, 701);
 	CreateObject(Fern, 1468, 661);
@@ -143,7 +141,7 @@ func InitializeObjects()
 	CreateObject(Loam, 1360, 781);
 	CreateObject(Loam, 1519, 721);
 	CreateObject(Loam, 1348, 718);
-	CreateObject(Loam, 1379, 349);
+	CreateObject(Loam, 1358, 388);
 	CreateObject(Loam, 559, 1120);
 	CreateObject(Loam, 505, 850);
 	CreateObject(Loam, 517, 858);
