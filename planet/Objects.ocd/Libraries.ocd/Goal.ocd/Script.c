@@ -128,14 +128,14 @@ public func IsFulfilled() { return true; }
 // Overload: return the current description for this goal.
 public func GetDescription(int plr)
 {
-	return "WARNING: GetDescription(int plr) not overloaded by goal";
+	return this.Description ?? "WARNING: GetDescription(int plr) not overloaded by goal";
 }
 
 protected func Activate(plr)
 {
 	if (IsFulfilled())
 		return(MessageWindow("$MsgGoalFulfilled$", plr));
-	return MessageWindow(GetProperty("Description"), plr);
+	return MessageWindow(this->GetDescription(plr));
 }
 
 // Scenario sacing
