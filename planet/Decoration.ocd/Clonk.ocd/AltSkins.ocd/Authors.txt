@@ -12,3 +12,7 @@ GraphicsPortraitMaleDarkHair.png, MaleDarkHair.jpg,
 GraphicsPortraitSage.png, Sage.jpg,
 GraphicsPortraitYoungster.png, Youngster.jpg,
 GraphicsPortraitYoungsterBlond.png, YoungsterBlond.jpg
+
+The following graphics are created by Clonkonaut and are licensed under CC-BY 3.0 (http://creativecommons.org/licenses/by/3.0/):
+
+GraphicsPortraitMime.png, Mime.png, MimeOverlay.png

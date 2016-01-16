@@ -19,12 +19,9 @@ private func Initialize()
 
 	var concierge = CreateObjectAbove(Clonk, 70, 1030, NO_OWNER);
 	concierge->SetDir(DIR_Left);
-	concierge->SetSkin(2);
-	concierge->SetMeshMaterial("clonkMime");
-	concierge->SetColor(0xffffff);
+	concierge->SetAlternativeSkin("Mime");
 	concierge->SetObjectLayer(concierge);
 	concierge->SetName("$NameConcierge$");
-	concierge->SetPortrait({ Source = DialogueBoomshire });
 	concierge->SetDialogue("Concierge");
 	concierge->Sound("Circus", false, nil, nil, +1, 100);
 	Dialogue->FindByTarget(concierge)->AddAttention();
