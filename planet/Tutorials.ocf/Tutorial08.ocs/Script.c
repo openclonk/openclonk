@@ -99,7 +99,7 @@ private func InitMines()
 	lorry->CreateContents(Metal, 32);
 	
 	// Another lorry with coal and ore in the lower part of the mines.
-	var lorry = CreateObjectAbove(Lorry, 592, 974);
+	var lorry = CreateObjectAbove(Lorry, 517, 974);
 	lorry->CreateContents(Ore, 8);
 	lorry->CreateContents(Coal, 16);
 	
@@ -149,7 +149,7 @@ private func InitAI()
 	npc_chief->SetDialogue("Chief", true);
 	
 	// A miner npc for random conversation.
-	var npc_miner = CreateObjectAbove(Clonk, 360, 974);
+	var npc_miner = CreateObjectAbove(Clonk, 300, 974);
 	npc_miner->SetColor(0x990099);
 	npc_miner->SetName("Demi");
 	npc_miner->SetObjectLayer(npc_miner);
