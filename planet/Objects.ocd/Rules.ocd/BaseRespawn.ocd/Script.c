@@ -122,7 +122,14 @@ private func TransferInventory(object from, object to)
 	while (i--)
 		if (contents = from->Contents(i))
 			if (contents->~IsDroppedOnDeath(from))
+			{
 				contents->Exit();
+			}
+			else
+			{
+				// The new clonk doesn't burn. To be consistent, also extinguish contents
+				contents->Extinguish();
+			}
 	return to->GrabContents(from);
 }
 
