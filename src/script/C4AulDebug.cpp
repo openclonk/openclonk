@@ -333,7 +333,7 @@ C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			}
 			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != -1)
 			{
-				val = &pCtx->Vars[varIndex];
+				val = &pCtx->Pars[pCtx->Func->GetParCount() + varIndex];
 			}
 		}
 		const char* typeName = val ? GetC4VName(val->GetType()) : "any";

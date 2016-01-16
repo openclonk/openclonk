@@ -43,7 +43,6 @@ struct C4AulScriptContext
 	C4PropList *Obj;
 	C4Value *Return;
 	C4Value *Pars;
-	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	C4AulBCC *CPos;
 	C4TimeMilliseconds tTime; // initialized only by profiler if active
@@ -185,7 +184,7 @@ private:
 	int LocalValueStackSize() const
 	{
 		return ContextStackSize()
-		       ? pCurVal - pCurCtx->Vars - pCurCtx->Func->VarNamed.iSize + 1
+		       ? pCurVal - pCurCtx->Pars - pCurCtx->Func->GetParCount() - pCurCtx->Func->VarNamed.iSize + 1
 		       : pCurVal - Values + 1;
 	}
 

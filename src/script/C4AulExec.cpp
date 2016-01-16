@@ -56,24 +56,23 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		Dump.AppendChar('(');
 		int iNullPars = 0;
 		for (int i = 0; i < Func->GetParCount(); i++)
-			if (Pars + i < Vars)
+		{
+			if (!Pars[i])
+				iNullPars++;
+			else
 			{
-				if (!Pars[i])
-					iNullPars++;
-				else
+				if (i > iNullPars)
+					Dump.AppendChar(',');
+				// Insert missing null parameters
+				while (iNullPars > 0)
 				{
-					if (i > iNullPars)
-						Dump.AppendChar(',');
-					// Insert missing null parameters
-					while (iNullPars > 0)
-					{
-						Dump.Append("0,");
-						iNullPars--;
-					}
-					// Insert parameter
-					Dump.Append(Pars[i].GetDataString());
+					Dump.Append("0,");
+					iNullPars--;
 				}
+				// Insert parameter
+				Dump.Append(Pars[i].GetDataString());
 			}
+		}
 		Dump.AppendChar(')');
 	}
 	else
@@ -162,7 +161,6 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 		ctx.Obj = p;
 		ctx.Return = NULL;
 		ctx.Pars = pPars;
-		ctx.Vars = pCurVal + 1;
 		ctx.Func = pSFunc;
 		ctx.CPos = NULL;
 		PushContext(ctx);
@@ -247,12 +245,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 			case AB_ERR:
 				throw C4AulExecError("syntax error: see above for details");
 
-			case AB_PARN_CONTEXT:
+			case AB_DUP_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
-				break;
-
-			case AB_VARN_CONTEXT:
-				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Vars[pCPos->Par.i]);
 				break;
 
 			case AB_LOCALN:
@@ -733,7 +727,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos)
 				if (pCurVal->_getInt() >= pArray->GetSize())
 					break;
 				// Get next
-				pCurCtx->Vars[pCPos->Par.i] = pArray->GetItem(iItem);
+				pCurVal[pCPos->Par.i] = pArray->GetItem(iItem);
 				// Save position
 				pCurVal->SetInt(iItem + 1);
 				// Jump over next instruction
@@ -837,7 +831,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			throw C4AulExecError("using removed object");
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
-		ctx.Vars = pCurVal + 1;
 		ctx.Func = pSFunc;
 		ctx.CPos = NULL;
 		PushContext(ctx);

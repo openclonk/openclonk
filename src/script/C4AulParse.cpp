@@ -637,9 +637,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_THIS: return "THIS";
 	case AB_FUNC: return "FUNC";    // function
 
-	case AB_PARN_CONTEXT: return "AB_PARN_CONTEXT";
-	case AB_VARN_CONTEXT: return "AB_VARN_CONTEXT";
-
 // prefix
 	case AB_Inc: return "Inc";  // ++
 	case AB_Dec: return "Dec";  // --
@@ -678,6 +675,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_NIL: return "NIL";    // constant: nil
 	case AB_NEW_ARRAY: return "NEW_ARRAY";    // semi-constant: array
 	case AB_DUP: return "DUP";    // duplicate value from stack
+	case AB_DUP_CONTEXT: return "AB_DUP_CONTEXT"; // duplicate value from stack of parent function
 	case AB_NEW_PROPLIST: return "NEW_PROPLIST";    // create a new proplist
 	case AB_POP_TO: return "POP_TO";    // initialization of named var
 	case AB_JUMP: return "JUMP";    // jump
@@ -820,11 +818,10 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_CARRAY:
 	case AB_CFUNCTION:
 	case AB_NIL:
-	case AB_PARN_CONTEXT:
-	case AB_VARN_CONTEXT:
 	case AB_LOCALN:
 	case AB_GLOBALN:
 	case AB_DUP:
+	case AB_DUP_CONTEXT:
 	case AB_THIS:
 		return 1;
 
@@ -2103,7 +2100,7 @@ void C4AulParse::Parse_ForEach()
 	// push initial position (0)
 	AddBCC(AB_INT);
 	// get array element
-	int iStart = AddBCC(AB_FOREACH_NEXT, iVarID);
+	int iStart = AddBCC(AB_FOREACH_NEXT, 1 + iVarID - (iStack + Fn->VarNamed.iSize));
 	// jump out (FOREACH_NEXT will jump over this if
 	// we're not at the end of the array yet)
 	int iCond = AddBCC(AB_JUMP);
@@ -2159,12 +2156,12 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		}
 		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->ParNamed.GetItemNr(Idtf)) != -1)
 		{
-			AddBCC(AB_PARN_CONTEXT, ndx);
+			AddBCC(AB_DUP_CONTEXT, ndx);
 			Shift();
 		}
 		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->VarNamed.GetItemNr(Idtf)) != -1)
 		{
-			AddBCC(AB_VARN_CONTEXT, ndx);
+			AddBCC(AB_DUP_CONTEXT, ContextToExecIn->Func->GetParCount() + ndx);
 			Shift();
 		}
 		// check for variable (local)
