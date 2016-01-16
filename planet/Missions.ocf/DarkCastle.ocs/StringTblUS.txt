@@ -1,4 +1,4 @@
-MsgEncounterCave=An intruder tries to steal out gold. Catch him!
+MsgEncounterCave=An intruder tries to steal our gold. Catch him!
 MsgEncounterOutpost=Stop, in the name of the king!
 MsgEncounterKing=Ah, %s. I have been awaiting you.
 MsgEncounterShrooms=What is this in the cave? Fireworks? Maybe we can use them to get into the castle.
