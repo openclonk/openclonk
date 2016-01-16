@@ -185,9 +185,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 			pWindow->SetSize(Config.Graphics.WindowX, Config.Graphics.WindowY);
 	}
 
-	// after initializing graphics, the particle system can check for compatibility
-	::Particles.DoInit();
-
 	// Initialize gamepad
 	if (!pGamePadControl && Config.General.GamepadEnabled)
 		pGamePadControl = new C4GamePadControl();
