@@ -378,7 +378,7 @@ void C4Viewport::Execute()
 	bool draw_game = true;
 	if (Player == NO_OWNER)
 		if (!::Application.isEditor && !::Game.DebugMode)
-			if (!::Network.isEnabled() || !::Network.Clients.GetLocal() || ::Network.Clients.GetLocal()->isObserver())
+			if (!::Network.isEnabled() || !::Network.Clients.GetLocal() || !::Network.Clients.GetLocal()->isObserver())
 				if (::Game.PlayerInfos.GetJoinIssuedPlayerCount() > 0) // free scrolling allowed if the scenario was started explicitely without players to inspect the landscape
 					draw_game = false;
 	// Draw
