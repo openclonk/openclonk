@@ -983,11 +983,11 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 			return Fn->GetCodePos() - 1;
 		}
 
-		// Reduce Not + CONDN to COND
-		if(eType == AB_CONDN && pCPos1->bccType == AB_Not)
+		// Reduce Not + CONDN to COND, Not + COND to CONDN
+		if((eType == AB_CONDN || eType == AB_COND) && pCPos1->bccType == AB_Not)
 		{
-			pCPos1->bccType = AB_COND;
-			pCPos1->Par.i = X;
+			pCPos1->bccType = eType == AB_CONDN ? AB_COND : AB_CONDN;
+			pCPos1->Par.i = X + 1;
 			return Fn->GetCodePos() - 1;
 		}
 
