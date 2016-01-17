@@ -84,7 +84,6 @@ func ControlUseStop(object clonk, int ix, int iy)
 protected func DoSwing(object clonk, int ix, int iy)
 {
 	var angle = Angle(0,0,ix,iy);
-	Message("@Swing %d (%d,%d)", angle,ix,iy);
 
 	//Creates an imaginary line which runs for 'maxreach' distance (units in pixels)
 	//or until it hits a solid wall.
