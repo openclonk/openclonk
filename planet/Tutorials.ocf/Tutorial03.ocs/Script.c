@@ -203,7 +203,7 @@ private func InitAI()
 	barrel->SetFilled("Water", 300);
 	npc_fireman->SetObjectLayer(npc_fireman);
 	npc_fireman->SetDir(DIR_Left);
-	npc_fireman->SetDialogue("Fireman", true);
+	npc_fireman->SetDialogue("Fireman", false);
 	npc_fireman->SetAlternativeSkin("MaleDarkHair");
 	
 	// A builder which tells you where to place the flagpole.
@@ -212,7 +212,7 @@ private func InitAI()
 	npc_builder->CreateContents(Hammer);
 	npc_builder->SetObjectLayer(npc_builder);
 	npc_builder->SetDir(DIR_Left);
-	npc_builder->SetDialogue("Builder", true);
+	npc_builder->SetDialogue("Builder", false);
 	npc_builder->SetAlternativeSkin("Carpenter");
 	
 	// A farmer near the grain field.
@@ -414,7 +414,9 @@ global func FxTutorialSawmillFinishedTimer(object target, proplist effect)
 		// Notify lumberjack the sawmill is done.
 		var dialogue_lumberjack = Dialogue->FindByName("Lumberjack");
 		if (dialogue_lumberjack)
-			dialogue_lumberjack->SetDialogueProgress(5, nil, true);
+			dialogue_lumberjack->SetDialogueProgress(5, nil, false);
+		Dialogue->FindByName("Fireman")->AddAttention();
+		Dialogue->FindByName("Builder")->AddAttention();
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
@@ -457,6 +459,10 @@ global func FxTutorialPlacedFlagpoleTimer(object target, proplist effect)
 		guide->ShowGuideMessage();
 		var new_effect = AddEffect("TutorialTalkedToLumberjack2", nil, 100, 5);
 		new_effect.plr = effect.plr;
+		// Notify lumberjack that player talked to other npc's.
+		var dialogue_lumberjack = Dialogue->FindByName("Lumberjack");
+		if (dialogue_lumberjack)
+			dialogue_lumberjack->SetDialogueProgress(6, nil, true);
 		return FX_Execute_Kill;
 	}
 	return FX_OK;
