@@ -35,27 +35,35 @@ public func Dlg_Lumberjack_4(object clonk)
 
 public func Dlg_Lumberjack_5(object clonk)
 {
-	MessageBox("$DlgLumberjackWellDone$", clonk, dlg_target);
+	MessageBox("$DlgLumberjackTalkToOthers$", clonk, dlg_target);
+	StopDialogue();
+	SetDialogueProgress(5);
 	return true;
 }
 
 public func Dlg_Lumberjack_6(object clonk)
 {
-	MessageBox("$DlgLumberjackFavor$", clonk, clonk);
+	MessageBox("$DlgLumberjackWellDone$", clonk, dlg_target);
 	return true;
 }
 
 public func Dlg_Lumberjack_7(object clonk)
 {
-	MessageBox("$DlgLumberjackMines$", clonk, dlg_target);
+	MessageBox("$DlgLumberjackFavor$", clonk, clonk);
 	return true;
 }
 
 public func Dlg_Lumberjack_8(object clonk)
 {
+	MessageBox("$DlgLumberjackMines$", clonk, dlg_target);
+	return true;
+}
+
+public func Dlg_Lumberjack_9(object clonk)
+{
 	MessageBox("$DlgLumberjackLook$", clonk, clonk);
 	StopDialogue();
-	SetDialogueProgress(5);
+	SetDialogueProgress(6);
 	return true;
 }
 
