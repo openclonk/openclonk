@@ -970,6 +970,13 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 			return Fn->GetCodePos() - 1;
 		}
 
+		// Join POP_TO + DUP to AB_STACK_SET if both target the same slot
+		if(eType == AB_DUP && pCPos1->bccType == AB_POP_TO && X == pCPos1->Par.i + 1)
+		{
+			pCPos1->bccType = AB_STACK_SET;
+			return Fn->GetCodePos() - 1;
+		}
+
 		// Reduce some constructs like SUM + INT 1 to INC or DEC
 		if((eType == AB_Sum || eType == AB_Sub) &&
 			pCPos1->bccType == AB_INT &&
@@ -1006,7 +1013,7 @@ void C4AulParse::RemoveLastBCC()
 {
 	// Security: This is unsafe on anything that might get optimized away
 	C4AulBCC *pBCC = Fn->GetLastCode();
-	assert(pBCC->bccType != AB_STACK);
+	assert(pBCC->bccType != AB_STACK && pBCC->bccType != AB_STACK_SET && pBCC->bccType != AB_POP_TO);
 	// Correct stack
 	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.X);
 	// Remove
@@ -1071,6 +1078,7 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 		// the setter additionally has the new value on the stack
 		--Setter.Par.i;
 		break;
+	case AB_STACK_SET: Setter.bccType = AB_STACK_SET; break;
 	case AB_LOCALN:
 		Setter.bccType = AB_LOCALN_SET;
 		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
@@ -1087,7 +1095,17 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 	// Otherwise, the setter can just use the parameters originally meant for the getter.
 	// All getters push one value, so the parameter count is one more than the values they pop from the stack.
 	int iParCount = 1 - GetStackValue(Value.bccType, Value.Par.X);
-	if (!fLeaveValue || iParCount)
+	if (Value.bccType == AB_STACK_SET)
+	{
+		// STACK_SET has a side effect, so it can't be simply removed.
+		// Discard the unused value the usual way instead.
+		if (!fLeaveValue)
+			AddBCC(AB_STACK, -1);
+		// The original parameter isn't needed anymore, since in contrast to the other getters
+		// it does not indicate a position.
+		iParCount = 0;
+	}
+	else if (!fLeaveValue || iParCount)
 	{
 		RemoveLastBCC();
 		fJump = true; // In case the original BCC was a jump target
@@ -1100,7 +1118,7 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 		AddBCC(Value.bccType, Value.Par.X);
 	}
 	// Done. The returned BCC should be added later once the value to be set was pushed on top.
-	assert(GetStackValue(Value.bccType, Value.Par.X) == GetStackValue(Setter.bccType, Setter.Par.X)+1);
+	assert(iParCount == -GetStackValue(Setter.bccType, Setter.Par.X));
 	return Setter;
 }
 
