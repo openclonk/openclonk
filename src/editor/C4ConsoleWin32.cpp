@@ -81,6 +81,13 @@ public:
 	int property_dlg_inputarea_height;
 	int property_dlg_margin;
 	int property_dlg_okbutton_width;
+	HWND console_handle;
+	int console_default_width, console_default_height; // default (and minimum) console window size
+	int console_margin; // margins between controls and from window borders
+	int console_wide_margin; // larger margins around some console buttons
+	int console_button_height; // height of buttons and the three control rows in the console
+	int console_ok_button_width; // width of OK button to enter script commands (everyone just presses enter anyway...)
+	int console_status_width; // width of frame counter and time/FPS display status boxes
 
 	State(C4ConsoleGUI *console)
 	{
@@ -103,6 +110,14 @@ public:
 		property_dlg_inputarea_height = 0;
 		property_dlg_margin = 0;
 		property_dlg_okbutton_width = 0;
+		console_handle = NULL;
+		console_default_width = 0;
+		console_default_height = 0;
+		console_margin = 0;
+		console_wide_margin = 0;
+		console_button_height = 0;
+		console_ok_button_width = 0;
+		console_status_width = 0;
 	}
 
 	~State()
@@ -162,19 +177,18 @@ public:
 		SetMenuItemText(hSubMenu,IDM_HELP_ABOUT,LoadResStr("IDS_MENU_ABOUT"));
 	}
 
-	bool PropertyDlgInitLayout()
+	void PropertyDlgInitLayout()
 	{
 		// Find out desired sizes and margins of elements used in property dialogue.
 		// Just remember initial layout.
 		// This is easier than getting all values from Windows metrics definitions.
-		RECT client_rc = { 0,0,0,0 }, button_rc = { 0,0,0,0 };
-		if (!::GetClientRect(hPropertyDlg, &client_rc)) return false;
+		RECT client_rc = { 0,0,252,101 }, button_rc = { 207,182,254,202 };
+		::GetClientRect(hPropertyDlg, &client_rc);
 		HWND button = ::GetDlgItem(hPropertyDlg, IDOK);
-		if (!::GetWindowRect(button, &button_rc)) return false;
+		::GetWindowRect(button, &button_rc);
 		property_dlg_inputarea_height = button_rc.bottom - button_rc.top;
-		property_dlg_margin = 1; // hardcoded. The elements are actually placed quite poorly.
+		property_dlg_margin = 1; // hardcoded. The elements are actually placed quite poorly in the .rc, cannot derive from it
 		property_dlg_okbutton_width = button_rc.right - button_rc.left;
-		return true;
 	}
 
 	void PropertyDlgUpdateSize()
@@ -184,13 +198,12 @@ public:
 		// Reposition all child elements after size of property dialogue has changed
 		RECT rc = { 0,0,0,0 };
 		if (!::GetClientRect(hPropertyDlg, &rc)) return;
-		int y1 = rc.bottom - property_dlg_margin;
-		int y0 = y1 - property_dlg_inputarea_height;
+		int y0 = rc.bottom - property_dlg_margin - property_dlg_inputarea_height;
 		// Output text box
 		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_EDITOUTPUT), NULL,
 			property_dlg_margin,
 			property_dlg_margin,
-			rc.right,
+			rc.right - 2* property_dlg_margin,
 			y0 - 2* property_dlg_margin,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// Input ComboBox
@@ -198,14 +211,122 @@ public:
 			property_dlg_margin,
 			y0,
 			rc.right - property_dlg_okbutton_width - 3*property_dlg_margin,
-			y1,
+			property_dlg_inputarea_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 		// OK button
 		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDOK), NULL,
 			rc.right - property_dlg_margin - property_dlg_okbutton_width,
 			y0,
 			property_dlg_okbutton_width,
-			y1 - y0,
+			property_dlg_inputarea_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+	}
+
+	void ConsoleInitLayout()
+	{
+		// Find out desired sizes and margins of elements used in console dialogue.
+		// Just remember initial layout.
+		// This is easier than getting all values from Windows metrics definitions.
+		RECT console_rc = { 0,0,356,252 };
+		::GetWindowRect(console_handle, &console_rc);
+		console_default_width = console_rc.right - console_rc.left;
+		console_default_height = console_rc.bottom - console_rc.top;
+		console_margin = 1; // hardcoded margins
+		console_wide_margin = 3;
+		RECT button_rc = { 288,180,350,200 };
+		::GetWindowRect(::GetDlgItem(console_handle, IDOK), &button_rc);
+		console_button_height = button_rc.bottom - button_rc.top;
+		console_ok_button_width = button_rc.right - button_rc.left;
+		RECT status_rc = { 222,205,350,223 };
+		::GetWindowRect(::GetDlgItem(console_handle, IDC_STATICTIME), &status_rc);
+		console_status_width = status_rc.right - status_rc.left;
+	}
+
+	void ConsoleUpdateSize()
+	{
+		// Positions unknown?
+		if (!console_default_width) return;
+		// Reposition all child elements after size of console dialogue has changed
+		RECT rc = { 0,0,0,0 };
+		if (!::GetClientRect(console_handle, &rc)) return;
+		int y0 = rc.bottom - console_margin * 3 - console_button_height * 3;
+		int y1 = rc.bottom - console_margin * 2 - console_button_height * 2;
+		int y2 = rc.bottom - console_margin * 1 - console_button_height * 1;
+		int x0 = rc.right - console_margin - console_button_height;
+		// Output text box
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_EDITOUTPUT), NULL,
+			console_margin,
+			0,
+			x0 - console_margin - console_wide_margin,
+			y0 - console_margin,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Input ComboBox
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_COMBOINPUT), NULL,
+			console_margin,
+			y0,
+			rc.right - console_ok_button_width - console_margin * 3,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Input OK button
+		::SetWindowPos(::GetDlgItem(console_handle, IDOK), NULL,
+			rc.right - console_margin - console_ok_button_width,
+			y0,
+			console_ok_button_width,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Frame status bar
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICFRAME), NULL,
+			console_margin,
+			y1,
+			console_status_width,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Play button
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONPLAY), NULL,
+			console_margin + console_status_width + console_wide_margin,
+			y1,
+			console_button_height,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Halt button
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONHALT), NULL,
+			console_margin + console_status_width + console_wide_margin * 2 + console_button_height,
+			y1,
+			console_button_height,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Time/FPS status bar
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICTIME), NULL,
+			rc.right - console_margin - console_status_width,
+			y1,
+			console_status_width,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Main status bar
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_STATICCURSOR), NULL,
+			console_margin,
+			y2,
+			rc.right - 2* console_margin,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Tool buttons
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEPLAY), NULL,
+			x0,
+			console_margin,
+			console_button_height,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEEDIT), NULL,
+			x0,
+			console_margin * 2 + console_button_height,
+			console_button_height,
+			console_button_height,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		::SetWindowPos(::GetDlgItem(console_handle, IDC_BUTTONMODEDRAW), NULL,
+			x0,
+			console_margin * 3 + console_button_height * 2,
+			console_button_height,
+			console_button_height,
 			SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 };
@@ -229,7 +350,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		return true;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
-		StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), false);
+		StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), true);
 		Application.Quit();
 		return true;
 		//------------------------------------------------------------------------------------------------------------
@@ -244,7 +365,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		//------------------------------------------------------------------------------------------------------------
 	case WM_INITDIALOG:
 		Console.Active = true;
-		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+		SendMessage(hDlg, DM_SETDEFID, (WPARAM)IDOK, (LPARAM)0);
 		Console.UpdateMenuText(GetMenu(hDlg));
 		return true;
 		//------------------------------------------------------------------------------------------------------------
@@ -256,7 +377,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		case IDOK:
 			// IDC_COMBOINPUT to Console.In()
 			wchar_t buffer[16000];
-			GetDlgItemTextW(hDlg,IDC_COMBOINPUT,buffer,16000);
+			GetDlgItemTextW(hDlg, IDC_COMBOINPUT, buffer, 16000);
 			if (buffer[0])
 			{
 				StdStrBuf in_char(buffer);
@@ -309,13 +430,13 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		case IDM_VIEWPORT_NEW: Console.ViewportNew(); return true;
 		}
 		// New player viewport
-		if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
+		if (Inside((int)LOWORD(wParam), IDM_VIEWPORT_NEW1, IDM_VIEWPORT_NEW2))
 		{
-			::Viewports.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
+			::Viewports.CreateViewport(LOWORD(wParam) - IDM_VIEWPORT_NEW1);
 			return true;
 		}
 		// Remove player
-		if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
+		if (Inside((int)LOWORD(wParam), IDM_PLAYER_QUIT1, IDM_PLAYER_QUIT2))
 		{
 			C4Player *plr = ::Players.Get(LOWORD(wParam) - IDM_PLAYER_QUIT1);
 			if (!plr) return true;
@@ -323,10 +444,10 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			return true;
 		}
 		// Remove client
-		if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
+		if (Inside((int)LOWORD(wParam), IDM_NET_CLIENT1, IDM_NET_CLIENT2))
 		{
 			if (!::Control.isCtrlHost()) return false;
-			Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
+			Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam) - IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
 			return true;
 		}
 		return false;
@@ -339,7 +460,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		return false;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_COPYDATA:
-		{
+	{
 		COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
 		if (pcds->dwData == WM_USER_RELOADFILE)
 		{
@@ -350,12 +471,30 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			Game.ReloadFile(szPath);
 		}
 		return false;
-		}
-		//------------------------------------------------------------------------------------------------------------
+	}
+	//------------------------------------------------------------------------------------------------------------
 	case WM_INPUTLANGCHANGE:
 		::Application.OnKeyboardLayoutChanged();
+		break;
+	//------------------------------------------------------------------------------------------------------------
+	// Resizing
+	case WM_GETMINMAXINFO:
+		// Window may not become smaller than initial size
+		if (Console.state && Console.state->console_default_width)
+		{
+			MINMAXINFO *info = reinterpret_cast<MINMAXINFO *>(lParam);
+			info->ptMinTrackSize.x = Console.state->console_default_width;
+			info->ptMinTrackSize.y = Console.state->console_default_height;
+		}
+		return 0;
+	case WM_SIZING: Console.state->ConsoleUpdateSize(); break;
+	case WM_WINDOWPOSCHANGED:
+	{
+		const WINDOWPOS *data = reinterpret_cast<const WINDOWPOS *>(lParam);
+		if (data && !(data->flags & SWP_NOSIZE)) Console.state->ConsoleUpdateSize();
+		break;
 	}
-
+	}
 	return false;
 }
 
@@ -663,6 +802,9 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 		LocalFree(lpMsgBuf);
 		return NULL;
 	}
+	// Remember metrics
+	state->console_handle = hWindow;
+	state->ConsoleInitLayout();
 	// Restore window position
 	RestoreWindowPosition(hWindow, "Main", Config.GetSubkeyPath("Console"));
 	// Set icon
