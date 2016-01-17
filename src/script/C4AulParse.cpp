@@ -1083,14 +1083,17 @@ C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 	default: 
 		throw C4AulParseError(this, "assignment to a constant");
 	}
-	// Remove value BCC
-	RemoveLastBCC();
-	// Want the value?
-	if(fLeaveValue)
+	// If the new value is produced using the old one, the parameters to get the old one need to be duplicated.
+	// Otherwise, the setter can just use the parameters originally meant for the getter.
+	// All getters push one value, so the parameter count is one more than the values they pop from the stack.
+	int iParCount = 1 - GetStackValue(Value.bccType, Value.Par.X);
+	if (!fLeaveValue || iParCount)
 	{
-		// Duplicate parameters on stack
-		// (all push one value on the stack as result, so we have -(N-1) parameters)
-		int iParCount = -GetStackValue(Value.bccType, Value.Par.X) + 1;
+		RemoveLastBCC();
+		fJump = true; // In case the original BCC was a jump target
+	}
+	if (fLeaveValue && iParCount)
+	{
 		for(int i = 0; i < iParCount; i++)
 			AddBCC(AB_DUP, 1 - iParCount);
 		// Finally re-add original BCC
