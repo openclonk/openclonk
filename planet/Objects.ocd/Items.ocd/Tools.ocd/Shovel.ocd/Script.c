@@ -38,6 +38,8 @@ public func ControlUseStart(object clonk, int x, int y)
 		DigFree(clonk->GetX(), clonk->GetY(), 10);
 	}
 	
+	ControlUseHolding(clonk, x, y); // initial coordinate setup
+	
 	return true;
 }
 
