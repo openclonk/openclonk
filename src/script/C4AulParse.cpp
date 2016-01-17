@@ -1947,7 +1947,11 @@ void C4AulParse::Parse_DoWhile()
 	PushLoop();
 	// Execute body
 	Parse_Statement();
-	int BeforeCond = JumpHere();
+	int BeforeCond = -1;
+	if (Type == PARSER)
+		for (Loop::Control *pCtrl2 = pLoopStack->Controls; pCtrl2; pCtrl2 = pCtrl2->Next)
+			if (!pCtrl2->Break)
+				BeforeCond = JumpHere();
 	// Execute condition
 	if (TokenType != ATT_IDTF || !SEqual(Idtf, C4AUL_While))
 		UnexpectedToken("'while'");
