@@ -67,7 +67,7 @@ local fAiming;
 
 public func RejectUse(object clonk)
 {
-	return !CanStrikeWithWeapon(clonk) || !clonk->HasHandAction();
+	return !CanStrikeWithWeapon(clonk) || !clonk->HasHandAction(false, false, true);
 }
 
 public func ControlUseStart(object clonk, int x, int y)
@@ -94,6 +94,12 @@ func ControlUseHolding(object clonk, ix, iy)
 }
 
 public func ControlUseStop(object clonk, ix, iy)
+{
+	clonk->StopAim();
+	return true;
+}
+
+public func ControlUseCancel(object clonk, ix, iy)
 {
 	clonk->StopAim();
 	return true;
@@ -245,3 +251,4 @@ local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
+local ForceFreeHands = true;

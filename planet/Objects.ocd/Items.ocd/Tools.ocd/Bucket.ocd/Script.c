@@ -21,7 +21,7 @@ public func GetCarryTransform()
 
 public func RejectUse(object clonk)
 {
-	return !clonk->HasHandAction();
+	return !clonk->HasHandAction(false, false, true);
 }
 
 public func ControlUse(object clonk, int iX, int iY)
@@ -154,3 +154,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Collectible = true;
+local ForceFreeHands = true;

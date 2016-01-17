@@ -40,7 +40,8 @@ static const Pickaxe_SwingTime = 40;
 
 public func RejectUse(object clonk)
 {
-	return clonk->GetProcedure() != "WALK";
+	var proc = clonk->GetProcedure();
+	return proc != "WALK" && proc != "SCALE";
 }
 
 func ControlUseStart(object clonk, int ix, int iy)
@@ -166,18 +167,6 @@ public func DigOutObject(object obj)
 		clonk->~DigOutObject(obj);
 }
 
-public func FxIntPickaxeStart(object clonk, proplist effect, int temp)
-{
-	if (temp)
-		return FX_OK;
-	// Ensure ActMap is local and writable
-	if (clonk.ActMap == clonk.Prototype.ActMap) clonk.ActMap = new clonk.ActMap {};
-	// Disable scaling during usage.
-	effect.actmap_scale = clonk.ActMap.Scale;
-	clonk.ActMap.Scale = nil;
-	return FX_OK;
-}
-
 public func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 {
 	++swingtime;
@@ -196,15 +185,6 @@ public func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 	angle = BoundBy(angle,65,300);
 	clonk->SetXDir(Sin(angle,+speed),100);
 	clonk->SetYDir(Cos(angle,-speed),100);
-}
-
-public func FxIntPickaxeStop(object clonk, proplist effect, int reason, bool temp)
-{
-	if (temp)
-		return FX_OK;
-	// Reset the clonk scaling entry in its ActMap.
-	clonk.ActMap.Scale = effect.actmap_scale;
-	return FX_OK;
 }
 
 protected func ControlUseCancel(object clonk, int ix, int iy)
@@ -248,3 +228,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local MaxPickDensity = 70; // can't pick granite
+local ForceFreeHands = true;

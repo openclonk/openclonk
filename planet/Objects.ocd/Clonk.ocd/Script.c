@@ -455,27 +455,35 @@ static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
 static const CARRY_Grappler     = 8;
 
-func HasHandAction(sec, just_wear)
+func HasHandAction(sec, just_wear, bool force_landscape_letgo)
 {
+	// Check if the clonk is currently able to use hands
+	// sec: Needs both hands (e.g. CarryHeavy?)
+	// just_wear: ???
+	// force_landscape_letgo: Also allow from actions where hands are currently grabbing the landscape (scale, hangle)
 	if(sec && fBothHanded)
 		return false;
 	if(just_wear)
 	{
-		if( HasActionProcedure() && !fHandAction ) // For wear purpose fHandAction==-1 also blocks
+		if( HasActionProcedure(force_landscape_letgo) && !fHandAction ) // For wear purpose fHandAction==-1 also blocks
 			return true;
 	}
 	else
 	{
-		if( HasActionProcedure() && (!fHandAction || fHandAction == -1) )
+		if( HasActionProcedure(force_landscape_letgo) && (!fHandAction || fHandAction == -1) )
 			return true;
 	}
 	return false;
 }
 
-func HasActionProcedure()
+func HasActionProcedure(bool force_landscape_letgo)
 {
+	// Check if the clonk is currently in an action where he could use his hands
+	// if force_landscape_letgo is true, also allow during scale/hangle assuming the clonk will let go
 	var action = GetAction();
 	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride" || action == "BridgeStand")
+		return true;
+	if (force_landscape_letgo) if (action == "Scale" || action == "Hangle")
 		return true;
 	return false;
 }
