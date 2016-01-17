@@ -27,7 +27,7 @@ Martin Strohmeier (K-Pone)
 Tobias Zwick (Newton)
 
 <Thanks to our package maintainers>
-Benedict Etzel (B_E), Phillip Kern (pkern), Kevin Zheng and more
+Benedict Etzel (B_E), Philipp Kern (pkern), Kevin Zheng and more
 
 <Special Thanks to Contributors>
 Martin Adam (Win), Florian Graier (Nachtfalter), Mark Haßelbusch (Marky), Merten Ehmig (pluto), Benjamin Herr (Loriel), Armin Schäfer, Pyrit, Philip Holzmann (Batman), Alexander Semeniuk (AlteredARMOR), Andriel, Peewee,   Oliver Schneider (ker), Fabian Pietsch, Manuel Rieke (MrBeast), Felix Riese (Fungiform), Carl-Philip Hänsch (Carli), Sebastian Rühl, Gurkenglas and many more:
