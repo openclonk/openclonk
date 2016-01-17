@@ -52,7 +52,10 @@ func ControlUseStart(object clonk, int ix, int iy)
 	clonk->SetHandAction(1);
 	clonk->UpdateAttach();
 	clonk->PlayAnimation("StrikePickaxe", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
-	AddEffect("IntPickaxe", clonk, 1, 1, this);
+	var fx = AddEffect("IntPickaxe", clonk, 1, 1, this);
+	if (!fx) return false;
+	fx.x = ix;
+	fx.y = iy;
 	return true;
 }
 
@@ -66,12 +69,11 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 		clonk->PauseUse(this);
 		return true;
 	}
-
-	x = new_x; y = new_y;
+	var fx = GetEffect("IntPickaxe", clonk);
+	if (!fx) return clonk->CancelUse();
+	fx.x = new_x; fx.y = new_y;
 	return true;
 }
-
-local x, y;
 
 func ControlUseStop(object clonk, int ix, int iy)
 {
@@ -82,6 +84,7 @@ func ControlUseStop(object clonk, int ix, int iy)
 protected func DoSwing(object clonk, int ix, int iy)
 {
 	var angle = Angle(0,0,ix,iy);
+	Message("@Swing %d (%d,%d)", angle,ix,iy);
 
 	//Creates an imaginary line which runs for 'maxreach' distance (units in pixels)
 	//or until it hits a solid wall.
@@ -181,11 +184,11 @@ public func FxIntPickaxeTimer(object clonk, proplist effect, int time)
 	++swingtime;
 	if(swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
 	{
-		DoSwing(clonk,x,y);
+		DoSwing(clonk,effect.x,effect.y);
 		swingtime = 0;
 	}
 	
-	var angle = Angle(0,0,x,y);
+	var angle = Angle(0,0,effect.x,effect.y);
 	var speed = 50;
 
 	var iPosition = swingtime*180/Pickaxe_SwingTime;
