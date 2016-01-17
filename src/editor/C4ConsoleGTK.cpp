@@ -552,7 +552,7 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 	{
 	case CONSOLE_Cursor:
 		gtk_statusbar_pop(GTK_STATUSBAR(state->statusBar), 0);
-		gtk_statusbar_push(GTK_STATUSBAR(state->statusBar), 0, text.getData());
+		if (text.getData()) gtk_statusbar_push(GTK_STATUSBAR(state->statusBar), 0, text.getData());
 		return;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
