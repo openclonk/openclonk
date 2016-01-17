@@ -62,6 +62,7 @@ private func InitVillageEntrance()
 	var site = CreateObjectAbove(ConstructionSite, 264, 386);
 	site.MeshTransformation = Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0));
 	site->Set(Sawmill);
+	site->MakeUncancellable();
 	site->CreateContents(Wood, 1);
 	site->CreateContents(Rock, 1);	
 	
