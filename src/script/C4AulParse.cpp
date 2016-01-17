@@ -199,6 +199,7 @@ private:
 	void DebugChunk();
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
+	void DumpByteCode();
 
 	C4AulBCC MakeSetter(bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
 
@@ -694,6 +695,89 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_EOFN: return "EOFN";    // end of function
 
 	default: assert(false); return "UNKNOWN";
+	}
+}
+
+void C4AulParse::DumpByteCode()
+{
+	if (DEBUG_BYTECODE_DUMP && Type == PARSER)
+	{
+		fprintf(stderr, "%s:\n", Fn->GetName());
+		std::map<C4AulBCC *, int> labels;
+		int labeln = 0;
+		for (C4AulBCC *pBCC = Fn->GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
+		{
+			switch (pBCC->bccType)
+			{
+			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
+				labels[pBCC + pBCC->Par.i] = ++labeln; break;
+			default: break;
+			}
+		}
+		for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
+		{
+			C4AulBCCType eType = pBCC->bccType;
+			if (labels.find(pBCC) != labels.end())
+				fprintf(stderr, "%d:\n", labels[pBCC]);
+			fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
+			if (strlen(GetTTName(eType)) < 8) fprintf(stderr, "        ");
+			switch (eType)
+			{
+			case AB_FUNC:
+				fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
+			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
+			case AB_STRING:
+			{
+				const StdStrBuf &s = pBCC->Par.s->GetData();
+				std::string es;
+				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
+					if (std::isgraph((unsigned char)c))
+					{
+						es += c;
+					}
+					else
+					{
+						switch (c)
+						{
+						case '\'': es.append("\\'"); break;
+						case '\"': es.append("\\\""); break;
+						case '\\': es.append("\\\\"); break;
+						case '\a': es.append("\\a"); break;
+						case '\b': es.append("\\b"); break;
+						case '\f': es.append("\\f"); break;
+						case '\n': es.append("\\n"); break;
+						case '\r': es.append("\\r"); break;
+						case '\t': es.append("\\t"); break;
+						case '\v': es.append("\\v"); break;
+						default:
+						{
+							std::stringstream hex;
+							hex << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>((unsigned char)c);
+							es.append(hex.str());
+							break;
+						}
+						}
+					}
+				});
+				fprintf(stderr, "\t\"%s\"\n", es.c_str()); break;
+			}
+			case AB_DEBUG: case AB_NIL: case AB_RETURN:
+			case AB_PAR: case AB_THIS:
+			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
+			case AB_ERR: case AB_EOFN:
+				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+			case AB_CARRAY:
+				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;
+			case AB_CPROPLIST:
+				fprintf(stderr, "\t%s\n", C4VPropList(pBCC->Par.p).GetDataString().getData()); break;
+			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
+				fprintf(stderr, "\t% -d\n", labels[pBCC + pBCC->Par.i]); break;
+			default:
+				fprintf(stderr, "\t% -d\n", pBCC->Par.i); break;
+			}
+			if (eType == AB_EOFN) break;
+		}
 	}
 }
 
@@ -1487,89 +1571,9 @@ void C4AulParse::Parse_Function()
 		DebugChunk();
 		AddBCC(AB_RETURN);
 	}
+	DumpByteCode();
 	// add separator
 	AddBCC(AB_EOFN);
-
-	// dump bytecode
-	if (DEBUG_BYTECODE_DUMP && Type == PARSER)
-	{
-		fprintf(stderr, "%s:\n", Fn->GetName());
-		std::map<C4AulBCC *, int> labels;
-		int labeln = 0;
-		for (C4AulBCC *pBCC = Fn->GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
-		{
-			switch (pBCC->bccType)
-			{
-			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-				labels[pBCC + pBCC->Par.i] = ++labeln; break;
-			default: break;
-			}
-		}
-		for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
-		{
-			C4AulBCCType eType = pBCC->bccType;
-			if (labels.find(pBCC) != labels.end())
-				fprintf(stderr, "%d:\n", labels[pBCC]);
-			fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
-			switch (eType)
-			{
-			case AB_FUNC:
-				fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
-			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
-				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
-			case AB_STRING:
-			{
-				const StdStrBuf &s = pBCC->Par.s->GetData();
-				std::string es;
-				std::for_each(s.getData(), s.getData() + s.getLength(), [&es](char c) {
-					if (std::isgraph((unsigned char)c))
-					{
-						es += c;
-					}
-					else
-					{
-						switch (c)
-						{
-						case '\'': es.append("\\'"); break;
-						case '\"': es.append("\\\""); break;
-						case '\\': es.append("\\\\"); break;
-						case '\a': es.append("\\a"); break;
-						case '\b': es.append("\\b"); break;
-						case '\f': es.append("\\f"); break;
-						case '\n': es.append("\\n"); break;
-						case '\r': es.append("\\r"); break;
-						case '\t': es.append("\\t"); break;
-						case '\v': es.append("\\v"); break;
-						default:
-						{
-							std::stringstream hex;
-							hex << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>((unsigned char)c);
-							es.append(hex.str());
-							break;
-						}
-						}
-					}
-				});
-				fprintf(stderr, "\t\"%s\"\n", es.c_str()); break;
-			}
-			case AB_DEBUG: case AB_NIL: case AB_RETURN:
-			case AB_PAR: case AB_THIS:
-			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
-			case AB_ERR: case AB_EOFN:
-				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
-			case AB_CARRAY:
-				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;
-			case AB_CPROPLIST:
-				fprintf(stderr, "\t%s\n", C4VPropList(pBCC->Par.p).GetDataString().getData()); break;
-			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-				fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
-			default:
-				fprintf(stderr, "\t%d\n", pBCC->Par.i); break;
-			}
-			if (eType == AB_EOFN) break;
-		}
-	}
-
 	// Do not blame this function for script errors between functions
 	Fn = 0;
 	Shift();
