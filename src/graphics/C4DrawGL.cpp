@@ -962,7 +962,7 @@ unsigned int CStdGL::GenVAOID()
 
 	// Actually insert the ID
 #ifdef NDEBUG
-	std::set<unsigned int>::iterator> inserted_iter = VAOIDs.insert(NextVAOID, id);
+	std::set<unsigned int>::iterator inserted_iter = VAOIDs.insert(NextVAOID, id);
 #else
 	std::pair<std::set<unsigned int>::iterator, bool> inserted = VAOIDs.insert(id);
 	assert(inserted.second == true);
