@@ -1176,11 +1176,6 @@ public func ControlJump()
 	return false;
 }
 
-func FxIsWallKickStart(object target, int num, bool temp)
-{
-	return 1;
-}
-
 // Interaction with clonks is special:
 // * The clonk opening the menu should always have higher priority so the clonk is predictably selected on the left side even if standing behind e.g. a crate
 // * Other clonks should be behind because interaction with them is rare but having your fellow players stand in front of a building is very common
