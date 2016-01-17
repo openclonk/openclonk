@@ -78,6 +78,9 @@ public:
 	int MenuIndexViewport;
 	int MenuIndexNet;
 	int MenuIndexHelp;
+	int property_dlg_inputarea_height;
+	int property_dlg_margin;
+	int property_dlg_okbutton_width;
 
 	State(C4ConsoleGUI *console)
 	{
@@ -97,6 +100,9 @@ public:
 		MenuIndexViewport   =  2;
 		MenuIndexNet        = -1;
 		MenuIndexHelp       =  3;
+		property_dlg_inputarea_height = 0;
+		property_dlg_margin = 0;
+		property_dlg_okbutton_width = 0;
 	}
 
 	~State()
@@ -154,6 +160,53 @@ public:
 		// Help
 		hSubMenu = GetSubMenu(hMenu,MenuIndexHelp);
 		SetMenuItemText(hSubMenu,IDM_HELP_ABOUT,LoadResStr("IDS_MENU_ABOUT"));
+	}
+
+	bool PropertyDlgInitLayout()
+	{
+		// Find out desired sizes and margins of elements used in property dialogue.
+		// Just remember initial layout.
+		// This is easier than getting all values from Windows metrics definitions.
+		RECT client_rc = { 0,0,0,0 }, button_rc = { 0,0,0,0 };
+		if (!::GetClientRect(hPropertyDlg, &client_rc)) return false;
+		HWND button = ::GetDlgItem(hPropertyDlg, IDOK);
+		if (!::GetWindowRect(button, &button_rc)) return false;
+		property_dlg_inputarea_height = button_rc.bottom - button_rc.top;
+		property_dlg_margin = 1; // hardcoded. The elements are actually placed quite poorly.
+		property_dlg_okbutton_width = button_rc.right - button_rc.left;
+		return true;
+	}
+
+	void PropertyDlgUpdateSize()
+	{
+		// Positions unknown?
+		if (!property_dlg_inputarea_height) return;
+		// Reposition all child elements after size of property dialogue has changed
+		RECT rc = { 0,0,0,0 };
+		if (!::GetClientRect(hPropertyDlg, &rc)) return;
+		int y1 = rc.bottom - property_dlg_margin;
+		int y0 = y1 - property_dlg_inputarea_height;
+		// Output text box
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_EDITOUTPUT), NULL,
+			property_dlg_margin,
+			property_dlg_margin,
+			rc.right,
+			y0 - 2* property_dlg_margin,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// Input ComboBox
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDC_COMBOINPUT), NULL,
+			property_dlg_margin,
+			y0,
+			rc.right - property_dlg_okbutton_width - 3*property_dlg_margin,
+			y1,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
+		// OK button
+		::SetWindowPos(::GetDlgItem(hPropertyDlg, IDOK), NULL,
+			rc.right - property_dlg_margin - property_dlg_okbutton_width,
+			y0,
+			property_dlg_okbutton_width,
+			y1 - y0,
+			SWP_NOOWNERZORDER | SWP_NOZORDER);
 	}
 };
 
@@ -399,7 +452,7 @@ INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 		break;
 		//----------------------------------------------------------------------------------------------
 	case WM_DESTROY:
-		StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
+		StoreWindowPosition(hDlg, "Tools", Config.GetSubkeyPath("Console"), false);
 		break;
 		//----------------------------------------------------------------------------------------------
 	case WM_INITDIALOG:
@@ -511,13 +564,22 @@ INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPar
 		break;
 		//------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
-		StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
+		StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), true);
 		break;
 		//------------------------------------------------------------------------------------------------
 	case WM_INITDIALOG:
 		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
 		return true;
-		//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	// Callbacks during/after window resizing
+	case WM_SIZING: Console.state->PropertyDlgUpdateSize(); break;
+	case WM_WINDOWPOSCHANGED:
+	{
+		const WINDOWPOS *data = reinterpret_cast<const WINDOWPOS *>(lParam);
+		if (data && !(data->flags & SWP_NOSIZE)) Console.state->PropertyDlgUpdateSize();
+		break;
+	}
+	//------------------------------------------------------------------------------------------------
 	case WM_COMMAND:
 		// Evaluate command
 		switch (LOWORD(wParam))
@@ -839,6 +901,8 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 	                       PropertyDlgProc);
 	if (!hDialog) return false;
 	state->hPropertyDlg = hDialog;
+	// Remember initial layout
+	state->PropertyDlgInitLayout();
 	// Set text
 	SetWindowTextW(hDialog,LoadResStrW("IDS_DLG_PROPERTIES"));
 	// Enable controls
@@ -957,7 +1021,7 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 		dlg->state->pPreviewWindow = new C4ConsoleGUIPreviewWindow(GetDlgItem(dlg->state->hDialog, IDC_PREVIEW));
 	}
 	// Show window
-	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
+	RestoreWindowPosition(dlg->state->hDialog, "Tools", Config.GetSubkeyPath("Console"));
 	SetWindowPos(dlg->state->hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
 	ShowWindow(dlg->state->hDialog,SW_SHOWNOACTIVATE);
 	return true;

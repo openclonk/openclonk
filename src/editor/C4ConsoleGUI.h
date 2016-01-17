@@ -135,6 +135,8 @@ public:
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
 	void UpdateMenuText(HMENU hMenu);
+
+	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 };
 
