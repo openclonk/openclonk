@@ -16,7 +16,7 @@ public func Launch(int shooter)
 	AddEffect("HitCheck", this, 1,1, nil, nil);
 }
 
-protected func FxFadeTimer(object target, int num, int timer)
+protected func FxFadeTimer(object target, proplist effect, int timer)
 {
 	if(timer > FlightTime()) RemoveObject();
 }
