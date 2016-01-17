@@ -1493,9 +1493,4 @@ set(CPACK_PACKAGE_VERSION_MINOR "${C4XVER2}")
 set(CPACK_PACKAGE_FILE_NAME "openclonk-${C4XVER1}.${C4XVER2}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "openclonk-src-${C4XVER1}.${C4XVER2}")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
-# Somebody who uses Debian/Ubuntu should set this
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
-set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
-
 include(CPack)
