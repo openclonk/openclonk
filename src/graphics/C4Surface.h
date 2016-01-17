@@ -21,14 +21,6 @@
 #include <StdColors.h>
 #include <C4Rect.h>
 
-#ifdef _WIN32
-#include <C4windowswrapper.h>
-#endif
-
-#ifndef USE_CONSOLE
-#include <GL/glew.h>
-#endif
-
 #include <list>
 
 // blitting modes
@@ -83,8 +75,8 @@ public:
 	int *dbg_idx;
 #endif
 #ifndef USE_CONSOLE
-			GLenum Format;                // used color format in textures
-			CStdGLCtx * pCtx;
+	unsigned int Format;                // used color format in textures
+	CStdGLCtx * pCtx;
 #endif
 	std::vector<C4TexRef> textures;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
@@ -184,7 +176,7 @@ class C4TexRef
 public:
 	LOCKED_RECT texLock;   // current lock-data
 #ifndef USE_CONSOLE
-	GLuint texName;
+	unsigned int texName;
 #endif
 	int iSizeX;
 	int iSizeY;
