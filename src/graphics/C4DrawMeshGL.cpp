@@ -883,14 +883,9 @@ namespace
 		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
 			RenderAttachedMesh(projectionMatrix, modelviewMatrix, *attach_iter, dwModClr, dwBlitMode, dwPlayerColor, pFoW, clipRect, outRect, parity);
 
-		GLint modes[2];
 		// Check if we should draw in wireframe or normal mode
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
-		{
-			// save old mode
-			glGetIntegerv(GL_POLYGON_MODE, modes);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
@@ -898,10 +893,7 @@ namespace
 
 		// reset old mode to prevent rendering errors
 		if(dwBlitMode & C4GFXBLIT_WIREFRAME)
-		{
-			glPolygonMode(GL_FRONT, modes[0]);
-			glPolygonMode(GL_BACK, modes[1]);
-		}
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		// Render non-AM_DrawBefore attached meshes
 		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
