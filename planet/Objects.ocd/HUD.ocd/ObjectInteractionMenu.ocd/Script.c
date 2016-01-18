@@ -531,7 +531,7 @@ public func OnMoveAllToClicked(int menu_id)
 	for (obj in contents)
 	{
 		// Sanity, can actually happen if an item merges with others during the transfer etc.
-		if (!obj) continue;
+		if (!obj || !target) continue;
 		
 		var collected = target->Collect(obj, true);
 		if (collected)
