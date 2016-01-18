@@ -1165,7 +1165,7 @@ endif()
 
 if(GTK3_FOUND AND GTK3_gtksourceview_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
-	set_property(TARGET mape APPEND PROPERTY COMPILE_FLAGS ${GTK3_COMPILE_DEFINITIONS})
+	target_compile_options(mape PRIVATE ${GTK3_COMPILE_DEFINITIONS} ${GTK3_gtksourceview_COMPILE_DEFINITIONS})
 	target_include_directories(mape PRIVATE ${GTK3_INCLUDE_DIRS} ${GTK3_gtksourceview_INCLUDE_DIRS})
 	target_link_libraries(mape
 		${GTK3_LIBRARIES}
