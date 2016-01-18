@@ -30,19 +30,19 @@
 protected func Construction()
 {
 	_inherited(...);
-
-	SetAction("Walk");
-	SetDir(Random(2));
-	// Broadcast for rules
-	GameCallEx("OnClonkCreation", this);
+	
+	SetSkin(0);
 
 	AddEffect("IntTurn", this, 1, 1, this);
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
 	iHandMesh = [0,0];
-
-	SetSkin(0);
+	
+	SetAction("Walk");
+	SetDir(Random(2));
+	// Broadcast for rules
+	GameCallEx("OnClonkCreation", this);
 }
 
 /* When adding to the crew of a player */
@@ -661,7 +661,12 @@ func SetSkin(int new_skin)
 
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
-	if (!Contained()) SetAction("Jump"); //refreshes animation (unless contained, in which case this would cause the object to fall out)
+	//refreshes animation (whatever that means?)
+	// Go back to original action afterwards and hope
+	// that noone calls SetSkin during more compex activities
+	var prev_action = GetAction();
+	SetAction("Jump");
+	SetAction(prev_action);
 
 	return skin;
 }
