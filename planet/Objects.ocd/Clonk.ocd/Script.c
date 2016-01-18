@@ -661,7 +661,7 @@ func SetSkin(int new_skin)
 
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
-	SetAction("Jump"); //refreshes animation
+	if (!Contained()) SetAction("Jump"); //refreshes animation (unless contained, in which case this would cause the object to fall out)
 
 	return skin;
 }
