@@ -660,6 +660,7 @@ void StdMesh::UpdateIBO()
 	{
 		submesh.index_buffer_offset = offset * 3 * sizeof(GLuint);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, submesh.index_buffer_offset, submesh.GetNumFaces() * 3 * sizeof(GLuint), &submesh.Faces[0]);
+		offset += submesh.GetNumFaces();
 	}
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
