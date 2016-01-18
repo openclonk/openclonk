@@ -220,8 +220,9 @@ private func Construction()
 				text =
 				{
 					Target = this,
-					Top = "-0.45em",
-					Style = GUI_TextHCenter,
+					Top = "-0.5em",
+					Bottom = "0.5em",
+					Style = GUI_TextHCenter | GUI_TextVCenter,
 					Text = "",
 					Priority = 9
 				}
@@ -231,7 +232,6 @@ private func Construction()
 				Target = this,
 				Player = NO_OWNER,
 				ID = crew_next_id + 3,
-				Style = GUI_NoCrop,
 				Top = "100%+0.6em",
 				Bottom = "100%+0.85em",
 				BackgroundColor = RGB(40, 40, 40),
@@ -826,8 +826,9 @@ private func AddCrewBar(int foreground, int background)
 		text =
 		{
 			Target = this,
-			Top = "-0.45em",
-			Style = GUI_TextHCenter,
+			Top = "-0.5em",
+			Bottom = "0.5em",
+			Style = GUI_TextHCenter | GUI_TextVCenter,
 			Text = "",
 			Priority = 5
 		}

@@ -750,7 +750,7 @@ func CreateMainMenu(object obj, int slot)
 			{
 				Priority = 1,
 				Style = GUI_TextVCenter | GUI_TextHCenter,
-				Bottom = "+0.75em",
+				Bottom = "+1em",
 				Text = menu.title,
 				BackgroundColor = 0xa0000000,
 				//Decoration = menu.decoration

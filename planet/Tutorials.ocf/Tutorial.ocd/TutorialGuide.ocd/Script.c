@@ -147,13 +147,9 @@ private func InitializeMenu()
 	{
 		Left = Format("0%%%s", ToEmString(10 * menu_height + text_margin)),
 		Right = Format("100%%%s", ToEmString(- 5 * menu_height - text_margin)),
-		// Wrap the text again to scroll only one window instead of also scrolling e.g. the portrait.
-		text =
-		{
-			Target = this,
-			ID = 2,
-			Text = nil,
-		}
+		Target = this,
+		ID = 2,
+		Text = nil,
 	};	
 	prop_next =
 	{
@@ -222,8 +218,8 @@ private func ShowGuideMenu(int index)
 private func UpdateGuideMenu(string guide_message, bool has_next, bool has_prev, bool has_close)
 {
 	// Update the text message entry.
-	prop_menu.text.text.Text = guide_message;
-	GuiUpdateText(guide_message, id_menu, prop_menu.text.text.ID, this);
+	prop_menu.text.Text = guide_message;
+	GuiUpdateText(guide_message, id_menu, prop_menu.text.ID, this);
 	
 	// Update the next/close button.
 	if (has_next || has_close)

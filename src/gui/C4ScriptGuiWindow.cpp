@@ -1694,13 +1694,22 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 	// If this window contains text, we auto-fit to the text height;
 	// but we only break text when the window /would/ crop it otherwise.
 	StdCopyStrBuf *strBuf = props[C4ScriptGuiWindowPropertyName::text].GetStrBuf();
+	int minRequiredTextHeight = 0;
 	if (strBuf && !(style & C4ScriptGuiWindowStyleFlag::NoCrop))
 	{
 		StdStrBuf sText;
-		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), rcBounds.Wdt, &sText, true);
+		const int32_t rawTextHeight = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), rcBounds.Wdt, &sText, true);
 		// enable auto scroll
-		if (textHgt > rcBounds.Hgt)
-			rcBounds.Hgt = textHgt;
+		if (rawTextHeight - 1 > rcBounds.Hgt)
+		{
+			// If we need to scroll, we will also have to add a scrollbar that takes up some width.
+			// Recalculate the actual height, taking into account the scrollbar.
+			// This is not done in the calculation earlier, because then e.g. a 2x1em field could not contain two letters
+			// but would immediately add a linebreak.
+			// In the case that this window auto-resizes (FitChildren), the small additional margin to the bottom should not matter much.
+			const int32_t actualTextHeight = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), rcBounds.Wdt - pScrollBar->rcBounds.Wdt, &sText, true);
+			minRequiredTextHeight = actualTextHeight;
+		}
 	}
 
 	UpdateChildLayout(cgo, width, height);
@@ -1716,7 +1725,7 @@ bool C4ScriptGuiWindow::UpdateLayout(C4TargetFacet &cgo, float parentWidth, floa
 
 	// check if we need a scroll-bar
 	int32_t topMostChild = 0;
-	int32_t bottomMostChild = 0;
+	int32_t bottomMostChild = minRequiredTextHeight;
 	for (Element * element : *this)
 	{
 		C4ScriptGuiWindow *child = static_cast<C4ScriptGuiWindow*>(element);
@@ -1843,12 +1852,18 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 	{
 		StdStrBuf sText;
 		int alignment = ALeft;
+		// If we are showing a scrollbar, we need to leave a bit of space for it so that it doesn't overlap the text.
+		const int scrollbarXOffset = pScrollBar->IsVisible() ? pScrollBar->rcBounds.Wdt : 0;
+		const int scrollbarScroll = pScrollBar->IsVisible() ? this->GetScrollY() : 0;
+		const int actualDrawingWidth = outDrawWdt - scrollbarXOffset;
+		
 		// If we are set to NoCrop, the message will be split by string-defined line breaks only.
-		int allowedTextWidth = outDrawWdt;
+		int allowedTextWidth = actualDrawingWidth;
+		
 		if (style & C4ScriptGuiWindowStyleFlag::NoCrop)
 			allowedTextWidth = std::numeric_limits<int>::max();
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), allowedTextWidth, &sText, true);
-		float textYOffset = 0.0f, textXOffset = 0.0f;
+		float textYOffset = static_cast<float>(-scrollbarScroll), textXOffset = 0.0f;
 		if (style & C4ScriptGuiWindowStyleFlag::TextVCenter)
 			textYOffset = float(outDrawHgt) / 2.0f - float(textHgt) / 2.0f;
 		else if (style & C4ScriptGuiWindowStyleFlag::TextBottom)
@@ -1857,7 +1872,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 		{
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = float(outDrawWdt) / 2.0f;
+			textXOffset = float(actualDrawingWidth) / 2.0f;
 			alignment = ACenter;
 		}
 		else if (style & C4ScriptGuiWindowStyleFlag::TextRight)
@@ -1865,7 +1880,7 @@ bool C4ScriptGuiWindow::Draw(C4TargetFacet &cgo, int32_t player, C4Rect *current
 			alignment = ARight;
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
-			textXOffset = float(outDrawWdt);
+			textXOffset = float(actualDrawingWidth);
 		}
 		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, outDrawX + textXOffset, outDrawY + textYOffset, 0xffffffff, alignment);
 	}
@@ -1896,20 +1911,13 @@ bool C4ScriptGuiWindow::GetClippingRect(int32_t &left, int32_t &top, int32_t &ri
 	if (IsRoot() || (style & C4ScriptGuiWindowStyleFlag::NoCrop))
 		return false;
 
-	if (pScrollBar->IsVisible())
-	{
-		left = rcBounds.x;
-		top = rcBounds.y;
-		right = rcBounds.Wdt + left;
-		bottom = rcBounds.Hgt + top;
-		return true;
-	}
-
-	/*const int32_t &style = props[C4ScriptGuiWindowPropertyName::style].GetInt();
-	if (!isMainWindow && !(style & C4ScriptGuiWindowStyleFlag::NoCrop))
-		return static_cast<C4ScriptGuiWindow*>(GetParent())->GetClippingRect(left, top, right, bottom);
-		*/
-	return false;
+	// Other windows always clip their children.
+	// This implicitly clips childrens' text to the parent size, too.
+	left = rcBounds.x;
+	top = rcBounds.y;
+	right = rcBounds.Wdt + left;
+	bottom = rcBounds.Hgt + top;
+	return true;
 }
 
 void C4ScriptGuiWindow::SetTag(C4String *tag)
