@@ -322,7 +322,6 @@ namespace C4GameLobby
 		else if (eToState == CDS_Countdown)
 		{
 			StartSoundEffect("Fire::Fuse");
-			StartSoundEffect("Structures::Elevator::Moving", true);
 		}
 		if (eToState == CDS_Countdown || eToState == CDS_LongCountdown)
 		{
@@ -373,7 +372,7 @@ namespace C4GameLobby
 		{
 			// first countdown message
 			OnLog(Pkt.GetCountdownMsg(!fWasCountdown).getData(), C4GUI_LogFontClr2);
-			StartSoundEffect("Hits::Materials::Wood::WoodHit*");
+			StartSoundEffect("UI::Tick");
 		}
 	}
 
